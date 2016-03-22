@@ -25,6 +25,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override bool ContinueUserActivity(UIApplication application, NSUserActivity userActivity, UIApplicationRestorationHandler completionHandler)
 		{
+			CheckForAppLink(userActivity);
 			return true;
 		}
 
@@ -77,6 +78,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void UserActivityUpdated(UIApplication application, NSUserActivity userActivity)
 		{
+			CheckForAppLink(userActivity);
 		}
 
 		// from background to foreground, not yet active
@@ -121,6 +123,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			Application.Current = application;
 			_application = application;
+			(application as IApplicationController)?.SetAppIndexingProvider(new IOSAppIndexingProvider());
 
 			application.PropertyChanged += ApplicationOnPropertyChanged;
 		}
@@ -129,6 +132,25 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (args.PropertyName == "MainPage")
 				UpdateMainPage();
+		}
+
+		void CheckForAppLink(NSUserActivity userActivity)
+		{
+			var strLink = string.Empty;
+
+			switch (userActivity.ActivityType)
+			{
+				case "NSUserActivityTypeBrowsingWeb":
+					strLink = userActivity.WebPageUrl.AbsoluteString;
+					break;
+				default:
+					if (userActivity.UserInfo.ContainsKey(new NSString("link")))
+						strLink = userActivity.UserInfo[new NSString("link")].ToString();
+					break;
+			}
+
+			if (!string.IsNullOrEmpty(strLink))
+				_application.SendOnAppLinkRequestReceived(new Uri(strLink));
 		}
 
 		void SetMainPage()
