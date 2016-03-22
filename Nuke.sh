@@ -1,0 +1,1 @@
+git clean -fdx -e packages -e Components

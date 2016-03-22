@@ -1,0 +1,29 @@
+﻿<?xml version="1.0"?>
+<Template>
+	<TemplateConfiguration>
+		<_Name>Forms ContentView Xaml</_Name>
+		<Icon>md-xml-file-icon</Icon>
+		<_Category>Forms</_Category>
+		<LanguageName>C#</LanguageName>
+		<_Description>Creates a Forms ContentView with a CodeBehind class.</_Description>
+<!--		<ProjectType>Forms</ProjectType>-->
+		<DefaultFilename>MyView</DefaultFilename>
+	</TemplateConfiguration>
+	
+	<Conditions>
+	</Conditions>
+	
+	<!-- Template Content -->
+	<TemplateFiles>
+		<File name="${Name}.xaml" 
+			  DefaultExtension=".xaml" 
+			  AddStandardHeader="False" 
+			  BuildAction="EmbeddedResource"
+			  CustomTool="MSBuild:Compile"
+			  src="../Templates/Core/ContentView.xaml"/>
+        <File name="${Name}.xaml.cs" 
+        	  DependsOn="${Name}.xaml" 
+        	  AddStandardHeader="True"
+        	  src="../Templates/Core/ContentView.xaml.cs"/>
+	</TemplateFiles>
+</Template>
