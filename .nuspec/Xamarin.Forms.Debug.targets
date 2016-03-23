@@ -14,10 +14,20 @@
 	<PropertyGroup>
 		<CompileDependsOn>
 			$(CompileDependsOn);
-			GenerateDebugCode;
 			XamlC;
 		</CompileDependsOn>
 	</PropertyGroup>
+
+	<PropertyGroup>
+		<CoreCompileDependsOn Condition="'$(BuildingInsideVisualStudio)' == 'true' ">
+			DesignTimeMarkupCompilation;
+			$(CoreCompileDependsOn);
+		</CoreCompileDependsOn>
+	</PropertyGroup>
+
+	<Target Name="DesignTimeMarkupCompilation">
+		<CallTarget Condition="'$(BuildingProject)' != 'true' Or $(DesignTimeBuild) == 'true'" Targets="XamlG" />
+	</Target>
 
 	<Target Name="UpdateDesignTimeXaml" Condition="'$(UseHostCompilerIfAvailable)' == 'true'" DependsOnTargets="PrepareResources; Compile"/>
 
@@ -26,7 +36,6 @@
 	<PropertyGroup>
 		<XamlGDependsOn>
 			_PreXamlG;
-			_CollectXamlFiles;
 			_CoreXamlG;
 		</XamlGDependsOn>
 	</PropertyGroup>
@@ -35,46 +44,41 @@
 		<MakeDir Directories="$(IntermediateOutputPath)"/>
 	</Target>
 
-	<Target Name="_CollectXamlFiles">
+	<PropertyGroup>
+		<CoreCompileDependsOn>
+			IncludeXamlResource;
+			$(CoreCompileDependsOn)
+		</CoreCompileDependsOn>
+	</PropertyGroup>
+
+	<Target Name="IncludeXamlResource">
 		<ItemGroup>
-			<_XamlResources Include="@(EmbeddedResource)" Condition="'%(Extension)' == '.xaml'"/>
-		</ItemGroup>
-		<FixedCreateCSharpManifestResourceName ResourceFiles="@(_XamlResources)" RootNamespace="$(RootNamespace)">
-			<Output TaskParameter="ResourceFilesWithManifestResourceNames" ItemName="XamlFiles" />
-		</FixedCreateCSharpManifestResourceName>
-		<ItemGroup>
-			<XamlGFiles Include="@(XamlFiles->'$(IntermediateOutputPath)%(ManifestResourceName).g$(DefaultLanguageSourceExtension)')"/>
-			<Compile Include="@(XamlGFiles)"/>
-			<FileWrites Include="@(XamlGFiles)"/>
+			<XamlResource Include="@(EmbeddedResource)" Condition="'%(EmbeddedResource.Extension)' == '.xaml' AND '$(DefaultLanguageSourceExtension)' == '.cs'" />
+			<Compile Include="@(XamlResource->'$(IntermediateOutputPath)%(RelativeDir)%(FileName)%(Extension).g$(DefaultLanguageSourceExtension)')" />
 		</ItemGroup>
 	</Target>
 
 	<Target Name="_CoreXamlG"
-		Inputs = "@(XamlFiles)"
-		Outputs = "$(IntermediateOutputPath)%(ManifestResourceName).g$(DefaultLanguageSourceExtension)">
+		Inputs = "@(XamlResource)"
+		Outputs = "$(IntermediateOutputPath)%(RelativeDir)%(FileName)%(Extension).g$(DefaultLanguageSourceExtension)">
+		<MakeDir Directories="$(IntermediateOutputPath)%(XamlResource.RelativeDir)" Condition="!Exists('$(IntermediateOutputPath)%(RelativeDir)')" />
 		<XamlGTask
-			Source="@(XamlFiles)"
+			Source="@(XamlResource)"
 			Language = "$(Language)"
 			AssemblyName = "$(AssemblyName)"
-			OutputFile = "$(IntermediateOutputPath)%(ManifestResourceName).g$(DefaultLanguageSourceExtension)">
+			OutputFile = "$(IntermediateOutputPath)%(RelativeDir)%(FileName)%(Extension).g$(DefaultLanguageSourceExtension)">
 		</XamlGTask>
-	</Target>
-
-	<!-- duplicate legacy InitializeComponent, create a ctor with bool param -->
-	<Target Name="GenerateDebugCode">
-		<DebugXamlCTask 
-			Assembly = "$(IntermediateOutputPath)$(TargetFileName)" 
-			ReferencePath = "@(ReferencePath)"
-			DebugSymbols = "$(DebugSymbols)" />
+		<ItemGroup>
+			<FileWrites Include="@(XamlResource->'$(IntermediateOutputPath)%(RelativeDir)%(FileName)%(Extension).g$(DefaultLanguageSourceExtension)')" />
+		</ItemGroup>
 	</Target>
 
 	<Target Name="XamlC">
 		<XamlCTask
 			Assembly = "$(IntermediateOutputPath)$(TargetFileName)"
 			ReferencePath = "@(ReferencePath)"
-			DebugSymbols = "$(DebugSymbols)"
-			Verbosity = "4"
-			KeepXamlResources = "true"
-			OptimizeIL = "true" />
+			Verbosity = "2"
+			OptimizeIL = "true"
+			DebugSymbols = "$(DebugSymbols)" />
 	</Target>
 </Project>
