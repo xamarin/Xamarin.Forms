@@ -77,12 +77,13 @@ namespace Xamarin.Forms.Platform.iOS
 				layout: _layout = new CarouselViewController.Layout(
 					UICollectionViewScrollDirection.Horizontal
 				),
-				originPosition: Element.Position
+				initialPosition: Element.Position
 			);
 
 			// hook up on position changed event
 			// not ideal; the event is raised upon releasing the swipe instead of animation completion
-			_layout.OnSwipeOffsetChosen += o => OnPositionChange(o);
+			//_layout.OnSwipeOffsetChosen += o => OnPositionChange(o);
+			_controller.OnWillDisplayCell += o => OnPositionChange(o);
 
 			// hook up crud events
 			Element.CollectionChanged += OnCollectionChanged;
@@ -102,6 +103,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return false;
 
 			_position = position;
+			Element.Position = _position;
 
 			Controller.SendSelectedPositionChanged(position);
 			OnItemChange(position);
@@ -184,7 +186,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == "Position")
+			if (e.PropertyName == "Position" && _position != Element.Position)
 				// not ideal; the event is raised before the animation to move completes (or even starts)
 				ScrollToPosition(Element.Position);
 
@@ -283,12 +285,6 @@ namespace Xamarin.Forms.Platform.iOS
 			IVisualElementRenderer _renderer;
 			View _view;
 
-			[Export("initWithFrame:")]
-			internal Cell(RectangleF frame) : base(frame)
-			{
-				_position = -1;
-			}
-
 			void Bind(object item, int position)
 			{
 				//if (position != this.position)
@@ -300,6 +296,11 @@ namespace Xamarin.Forms.Platform.iOS
 				_controller.BindView(_view, item);
 			}
 
+			[Export("initWithFrame:")]
+			internal Cell(RectangleF frame) : base(frame)
+			{
+				_position = -1;
+			}
 			internal void Initialize(IItemViewController controller, object itemType, object item, int position)
 			{
 				_position = position;
@@ -327,7 +328,6 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			public Action<int> OnBind;
-
 			public override void LayoutSubviews()
 			{
 				base.LayoutSubviews();
@@ -340,18 +340,15 @@ namespace Xamarin.Forms.Platform.iOS
 		UICollectionViewLayout _layout;
 		CarouselViewRenderer _renderer;
 		int _nextItemTypeId;
-		int _originPosition;
+		int _initialPosition;
 
-		public Action<int> OnBind;
-		public Action<int> OnSwipeTargetChosen;
-
-		public CarouselViewController(CarouselViewRenderer renderer, UICollectionViewLayout layout, int originPosition) : base(layout)
+		public CarouselViewController(CarouselViewRenderer renderer, UICollectionViewLayout layout, int initialPosition) : base(layout)
 		{
 			_renderer = renderer;
 			_typeIdByType = new Dictionary<object, int>();
 			_nextItemTypeId = 0;
 			_layout = layout;
-			_originPosition = originPosition;
+			_initialPosition = initialPosition;
 		}
 
 		CarouselViewRenderer Renderer => _renderer;
@@ -367,15 +364,19 @@ namespace Xamarin.Forms.Platform.iOS
 			return collectionView.Frame.Size;
 		}
 
+		public Action<int> OnBind;
+		public Action<int> OnWillDisplayCell;
+
 		public override void WillDisplayCell(UICollectionView collectionView, UICollectionViewCell cell, NSIndexPath indexPath)
 		{
-			if (_originPosition == 0)
+			if (_initialPosition != 0) {
+				ScrollToPosition(_initialPosition, false);
+				_initialPosition = 0;
 				return;
+			}
 
-			// Ideally position zero would not be rendered in memory however it is.
-			// Thankfully, position zero is not displyed; position originPosition is rendered and displayed.
-			ScrollToPosition(_originPosition, false);
-			_originPosition = 0;
+			var index = indexPath.Row;
+			OnWillDisplayCell?.Invoke(index);
 		}
 		public override nint NumberOfSections(UICollectionView collectionView)
 		{
@@ -397,8 +398,8 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var index = indexPath.Row;
 
-			if (_originPosition != 0)
-				index = _originPosition;
+			if (_initialPosition != 0)
+				index = _initialPosition;
 
 			var item = Controller.GetItem(index);
 			var itemType = Controller.GetItemType(item);

@@ -267,7 +267,7 @@ namespace Xamarin.Forms.Platform.Android
 			internal override bool CanScrollHorizontally => true;
 			internal override bool CanScrollVertically => false;
 
-			internal override IntRectangle GetBounds(int originPosition, RecyclerView.State state) => 
+			internal override IntRectangle GetBounds(int originPosition, State state) => 
 				new IntRectangle(
 					LayoutItem(originPosition, 0).Location, 
 					new IntSize(_itemSize.Width * state.ItemCount, _itemSize.Height)
@@ -583,7 +583,7 @@ namespace Xamarin.Forms.Platform.Android
 				}
 
 				// initialize properties
-				VisualElementController.SetValueFromRenderer(CarouselView.PositionProperty, 0);
+				_position = Element.Position;
 
 				// initialize events
 				Element.CollectionChanged += OnCollectionChanged;
@@ -778,10 +778,7 @@ namespace Xamarin.Forms.Platform.Android
 		AdapterChangeType _adapterChangeType;
 		#endregion
 
-		public PhysicalLayoutManager(
-			Context context, 
-			VirtualLayoutManager virtualLayout, 
-			int positionOrigin)
+		public PhysicalLayoutManager(Context context, VirtualLayoutManager virtualLayout, int positionOrigin)
 		{
 			_positionOrigin = positionOrigin;
 			_context = context;
@@ -793,7 +790,7 @@ namespace Xamarin.Forms.Platform.Android
 			_scroller = new SeekAndSnapScroller(
 				context: context, 
 				vectorToPosition: adapterPosition => {
-					var end = virtualLayout.LayoutItem(positionOrigin, adapterPosition).Center();
+					var end = virtualLayout.LayoutItem(_positionOrigin, adapterPosition).Center();
 					var begin = Viewport.Center();
 					return end - begin;
 				}
