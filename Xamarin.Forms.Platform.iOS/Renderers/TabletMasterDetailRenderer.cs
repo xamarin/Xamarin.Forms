@@ -69,7 +69,7 @@ namespace Xamarin.Forms.Platform.iOS
 			get { return _innerDelegate == null ? null : _innerDelegate.PresentButton; }
 		}
 
-		public void Dispose()
+		public new void Dispose()
 		{
 			if (_disposed)
 				return;
