@@ -244,7 +244,7 @@ namespace Xamarin.Forms.Controls
 			public void SwipeToLast() => MoveToLast(swipe: true);
 		}
 
-		[Test]
+		//[Test]
 		public void SwipeStepJump()
 		{
 			var gallery = Gallery.Launch();
