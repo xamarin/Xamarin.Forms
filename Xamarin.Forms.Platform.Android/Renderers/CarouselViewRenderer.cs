@@ -778,7 +778,7 @@ namespace Xamarin.Forms.Platform.Android
 		AdapterChangeType _adapterChangeType;
 		#endregion
 
-		public PhysicalLayoutManager(Context context, VirtualLayoutManager virtualLayout, int positionOrigin)
+		internal PhysicalLayoutManager(Context context, VirtualLayoutManager virtualLayout, int positionOrigin)
 		{
 			_positionOrigin = positionOrigin;
 			_context = context;
@@ -850,24 +850,24 @@ namespace Xamarin.Forms.Platform.Android
 			base.Dispose(disposing);
 		}
 
-		public event Action<int> OnAppearing;
-		public event Action<int> OnBeginScroll;
-		public event Action<int> OnDisappearing;
-		public event Action<int> OnEndScroll;
+		internal event Action<int> OnAppearing;
+		internal event Action<int> OnBeginScroll;
+		internal event Action<int> OnDisappearing;
+		internal event Action<int> OnEndScroll;
 
-		public IntVector Velocity => _samples.Aggregate((o, a) => o + a) / _samples.Count;
-		public void Layout(int width, int height)
+		internal IntVector Velocity => _samples.Aggregate((o, a) => o + a) / _samples.Count;
+		internal void Layout(int width, int height)
 		{
 			// e.g. when rotated the width and height are updated the virtual layout will 
 			// need to resize and provide a new viewport offset given the current one.
 			_virtualLayout.Layout(_positionOrigin, new IntSize(width, height), ref _locationOffset);
 		}
-		public IntRectangle Viewport => Rectangle + _locationOffset;
-		public IEnumerable<int> VisiblePositions()
+		internal IntRectangle Viewport => Rectangle + _locationOffset;
+		internal IEnumerable<int> VisiblePositions()
 		{
 			return _visibleAdapterPosition;
 		}
-		public IEnumerable<AndroidView> Views()
+		internal IEnumerable<AndroidView> Views()
 		{
 			return _viewByAdaptorPosition.Values;
 		}
