@@ -44,7 +44,6 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		#region Static Fields
 		const int DefaultMinimumDimension = 44;
-		static readonly UIColor DefaultBackgroundColor = UIColor.White;
 		#endregion
 
 		#region Fields
@@ -246,11 +245,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 			void Bind(object item, int position)
 			{
-				//if (position != this.position)
-				//	controller.SendPositionDisappearing (this.position);
+				//if (position != this._position)
+				//	controller.SendPositionDisappearing (this._position);
 
 				_position = position;
-				OnBind?.Invoke(position);
+				OnBind?.Invoke(_position);
 
 				_controller.BindView(_view, item);
 			}
@@ -272,7 +271,7 @@ namespace Xamarin.Forms.Platform.iOS
 					_view = controller.CreateView(itemType);
 
 					// bind view
-					Bind(item, position);
+					Bind(item, _position);
 
 					// render view
 					_renderer = Platform.CreateRenderer(_view);
@@ -283,7 +282,7 @@ namespace Xamarin.Forms.Platform.iOS
 					ContentView.AddSubview(uiView);
 				}
 				else
-					Bind(item, position);
+					Bind(item, _position);
 			}
 
 			public Action<int> OnBind;
