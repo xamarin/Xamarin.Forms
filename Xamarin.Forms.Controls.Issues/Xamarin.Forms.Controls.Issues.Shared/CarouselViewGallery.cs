@@ -57,6 +57,7 @@ namespace Xamarin.Forms.Controls
 				galleryPage.Load(_app);
 				return galleryPage;
 			}
+			public void Screenshot(string message) => _app.Screenshot(message);
 		}
 
 		public class CarouselViewGallery : IGalleryPage
@@ -67,7 +68,7 @@ namespace Xamarin.Forms.Controls
 			internal const string OnPositionSelectedAbbr = "p";
 			internal const int EventQueueDepth = 7;
 
-			private const double SwipePercentage = 0.10;
+			private const double SwipePercentage = 0.50;
 			private const int SwipeSpeed = 2000;
 
 			static class Id
@@ -247,25 +248,32 @@ namespace Xamarin.Forms.Controls
 		public void SwipeStepJump()
 		{
 			var gallery = Gallery.Launch();
-			var carousel = gallery.NaviateToGallery<CarouselViewGallery>();
 
-			// start at something other than 0
-			Assert.AreNotEqual(0, CarouselViewGallery.InitialItemId);
-			Assert.AreEqual(CarouselViewGallery.InitialItemId, carousel.ItemId);
+			try {
+				var carousel = gallery.NaviateToGallery<CarouselViewGallery>();
 
-			// programatic jump to first/last
-			carousel.Last();
-			carousel.First();
+				// start at something other than 0
+				Assert.AreNotEqual(0, CarouselViewGallery.InitialItemId);
+				Assert.AreEqual(CarouselViewGallery.InitialItemId, carousel.ItemId);
 
-			// programatic step to page
-			carousel.StepToLast();
-			carousel.StepToFirst();
+				// programatic jump to first/last
+				carousel.Last();
+				carousel.First();
 
-			// swiping
-			carousel.SwipeToLast();
-			carousel.SwipeNext(); // test swipe past end
-			carousel.SwipeToFirst();
-			carousel.SwipePrevious(); // test swipe past start
+				// programatic step to page
+				carousel.StepToLast();
+				carousel.StepToFirst();
+
+				// swiping
+				carousel.SwipeToLast();
+				carousel.SwipeNext(); // test swipe past end
+				carousel.SwipeToFirst();
+				carousel.SwipePrevious(); // test swipe past start
+
+			} catch (Exception e) {
+				gallery.Screenshot(e.ToString());
+				throw e;
+			}
 		}
 #endif
     }
