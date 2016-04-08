@@ -195,7 +195,7 @@ namespace Xamarin.Forms.Platform.Android
 					return;
 
 				if (_defaultDrawable != null)
-					Control.SetBackgroundDrawable(_defaultDrawable);
+					Control.SetBackground(_defaultDrawable);
 
 				_drawableEnabled = false;
 			}
@@ -212,7 +212,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (_defaultDrawable == null)
 					_defaultDrawable = Control.Background;
 
-				Control.SetBackgroundDrawable(_backgroundDrawable);
+				Control.SetBackground(_backgroundDrawable);
 				_drawableEnabled = true;
 			}
 

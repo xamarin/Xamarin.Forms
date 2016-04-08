@@ -2,6 +2,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Android.Content;
 using Android.Graphics;
+using Android.Support.V4.Content;
 using Android.Text;
 using Android.Views;
 using Android.Widget;
@@ -39,7 +40,7 @@ namespace Xamarin.Forms.Platform.Android
 			SetPadding(padding, padding, padding, padding);
 
 			_imageView = new ImageView(context);
-			var imageParams = new LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.FillParent)
+			var imageParams = new LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.MatchParent)
 			{
 				Width = (int)context.ToPixels(60),
 				Height = (int)context.ToPixels(60),
@@ -55,8 +56,8 @@ namespace Xamarin.Forms.Platform.Android
 			_mainText.SetSingleLine(true);
 			_mainText.Ellipsize = TextUtils.TruncateAt.End;
 			_mainText.SetPadding((int)context.ToPixels(15), padding, padding, padding);
-			_mainText.SetTextAppearance(context, global::Android.Resource.Attribute.TextAppearanceListItem);
-			using (var lp = new LayoutParams(ViewGroup.LayoutParams.FillParent, ViewGroup.LayoutParams.WrapContent))
+			_mainText.SetTextAppearanceCompat(context, global::Android.Resource.Attribute.TextAppearanceListItem);
+			using (var lp = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent))
 				textLayout.AddView(_mainText, lp);
 
 			_detailText = new TextView(context);
@@ -64,8 +65,8 @@ namespace Xamarin.Forms.Platform.Android
 			_detailText.Ellipsize = TextUtils.TruncateAt.End;
 			_detailText.SetPadding((int)context.ToPixels(15), padding, padding, padding);
 			_detailText.Visibility = ViewStates.Gone;
-			_detailText.SetTextAppearance(context, global::Android.Resource.Attribute.TextAppearanceListItemSmall);
-			using (var lp = new LayoutParams(ViewGroup.LayoutParams.FillParent, ViewGroup.LayoutParams.WrapContent))
+			_detailText.SetTextAppearanceCompat(context, global::Android.Resource.Attribute.TextAppearanceListItemSmall);
+			using (var lp = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent))
 				textLayout.AddView(_detailText, lp);
 
 			var layoutParams = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent) { Width = 0, Weight = 1, Gravity = GravityFlags.Center };
@@ -118,7 +119,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (view != null)
 			{
-				using (var layout = new LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.FillParent))
+				using (var layout = new LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.MatchParent))
 					AddView(view, layout);
 
 				AccessoryView = view;
@@ -195,8 +196,9 @@ namespace Xamarin.Forms.Platform.Android
 				catch (TaskCanceledException)
 				{
 				}
-				catch (IOException e)
+				catch (IOException ex)
 				{
+					Log.Warning("Xamarin.Forms.Platform.Android.BaseCellView", "Error updating bitmap: {0}", ex);
 				}
 			}
 

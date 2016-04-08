@@ -30,7 +30,7 @@ namespace Xamarin.Forms.Platform.Android
 			base.OnAttachedToWindow();
 			var adapter = new CarouselPageAdapter(_viewPager, Element, Context);
 			_viewPager.Adapter = adapter;
-			_viewPager.SetOnPageChangeListener(adapter);
+			_viewPager.AddOnPageChangeListener(adapter);
 
 			adapter.UpdateCurrentItem();
 
@@ -50,7 +50,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (_viewPager != null)
 			{
 				RemoveView(_viewPager);
-				_viewPager.SetOnPageChangeListener(null);
+				_viewPager.ClearOnPageChangeListeners();
 				_viewPager.Dispose();
 			}
 

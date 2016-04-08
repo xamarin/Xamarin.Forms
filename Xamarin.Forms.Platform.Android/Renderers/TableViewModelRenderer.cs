@@ -110,7 +110,7 @@ namespace Xamarin.Forms.Platform.Android
 			AView bline;
 			if (makeBline)
 			{
-				bline = new AView(Context) { LayoutParameters = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.FillParent, 1) };
+				bline = new AView(Context) { LayoutParameters = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, 1) };
 
 				layout.AddView(bline);
 			}
