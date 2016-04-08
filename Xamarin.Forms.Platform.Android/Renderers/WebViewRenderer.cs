@@ -62,7 +62,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (Control == null)
 			{
 				var webView = new AWebView(Context);
-#pragma warning disable 618 // This can probably be replaced with LinearyLayout(LayoutParams.MatchParent, LayoutParams.MatchParent); just need to test that theory
+#pragma warning disable 618 // This can probably be replaced with LinearLayout(LayoutParams.MatchParent, LayoutParams.MatchParent); just need to test that theory
 				webView.LayoutParameters = new global::Android.Widget.AbsoluteLayout.LayoutParams(LayoutParams.MatchParent, LayoutParams.MatchParent, 0, 0);
 #pragma warning restore 618
 				webView.SetWebViewClient(new WebClient(this));
