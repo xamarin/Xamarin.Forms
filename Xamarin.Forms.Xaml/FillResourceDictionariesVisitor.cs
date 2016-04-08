@@ -37,6 +37,27 @@ namespace Xamarin.Forms.Xaml
 
 		public void Visit(ValueNode node, INode parentNode)
 		{
+			var parentElement = parentNode as IElementNode;
+			var value = Values [node];
+			var source = Values [parentNode];
+
+			XmlName propertyName;
+			if (ApplyPropertiesVisitor.TryGetPropertyName(node, parentNode, out propertyName)) {
+				if (parentElement.SkipProperties.Contains(propertyName))
+					return;
+				if (parentElement.SkipPrefix(node.NamespaceResolver.LookupPrefix(propertyName.NamespaceURI)))
+					return;
+				if (propertyName.NamespaceURI == "http://schemas.openxmlformats.org/markup-compatibility/2006" &&
+					propertyName.LocalName == "Ignorable") {
+					(parentNode.IgnorablePrefixes ?? (parentNode.IgnorablePrefixes = new List<string> ())).AddRange (
+						(value as string).Split (','));
+					return;
+				}
+				if (propertyName.LocalName != "MergedWith")
+					return;
+				ApplyPropertiesVisitor.SetPropertyValue(source, propertyName, value, Context.RootElement, node, Context, node);
+			}
+
 		}
 
 		public void Visit(MarkupNode node, INode parentNode)

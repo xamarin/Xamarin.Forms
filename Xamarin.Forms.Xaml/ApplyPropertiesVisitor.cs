@@ -291,7 +291,7 @@ namespace Xamarin.Forms.Xaml
 			return null;
 		}
 
-		public static void SetPropertyValue(object xamlelement, XmlName propertyName, object value, BindableObject rootElement,
+		public static void SetPropertyValue(object xamlelement, XmlName propertyName, object value, object rootElement,
 			INode node, HydratationContext context, IXmlLineInfo lineInfo)
 		{
 			var elementType = xamlelement.GetType();

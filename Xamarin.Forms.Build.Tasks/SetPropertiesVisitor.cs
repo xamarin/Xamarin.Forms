@@ -213,7 +213,7 @@ namespace Xamarin.Forms.Build.Tasks
 			return parentList.CollectionItems.Contains(node);
 		}
 
-		static string GetContentProperty(TypeReference typeRef)
+		internal static string GetContentProperty(TypeReference typeRef)
 		{
 			var typeDef = typeRef.Resolve();
 			var attributes = typeDef.CustomAttributes;

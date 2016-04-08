@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -36,6 +37,33 @@ namespace Xamarin.Forms.Build.Tasks
 
 		public void Visit(ValueNode node, INode parentNode)
 		{
+			XmlName propertyName;
+			if (!SetPropertiesVisitor.TryGetPropertyName(node, parentNode, out propertyName))
+			{
+				if (!IsCollectionItem(node, parentNode))
+					return;
+				string contentProperty;
+				if (!Context.Variables.ContainsKey((IElementNode)parentNode))
+					return;
+				var parentVar = Context.Variables[(IElementNode)parentNode];
+				if ((contentProperty = SetPropertiesVisitor.GetContentProperty(parentVar.VariableType)) != null)
+					propertyName = new XmlName(((IElementNode)parentNode).NamespaceURI, contentProperty);
+				else
+					return;
+			}
+
+			if (node.SkipPrefix((node.NamespaceResolver ?? parentNode.NamespaceResolver)?.LookupPrefix(propertyName.NamespaceURI)))
+				return;
+			if (propertyName.NamespaceURI == "http://schemas.openxmlformats.org/markup-compatibility/2006" &&
+				propertyName.LocalName == "Ignorable")
+			{
+				(parentNode.IgnorablePrefixes ?? (parentNode.IgnorablePrefixes = new List<string>())).AddRange(
+					(node.Value as string).Split(','));
+				return;
+			}
+			if (propertyName.LocalName != "MergedWith")
+				return;
+			SetPropertiesVisitor.SetPropertyValue(Context.Variables[(IElementNode)parentNode], propertyName, node, Context, node);
 		}
 
 		public void Visit(MarkupNode node, INode parentNode)
