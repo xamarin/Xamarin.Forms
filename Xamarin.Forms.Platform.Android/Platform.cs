@@ -526,7 +526,7 @@ namespace Xamarin.Forms.Platform.Android
 			_renderer.AddView(renderView.ViewGroup);
 		}
 
-#pragma warning disable 618
+#pragma warning disable 618 // This may need to be updated to work with TabLayout/AppCompat
 		ActionBar.Tab AddTab(Page page, int index)
 #pragma warning restore 618
 		{

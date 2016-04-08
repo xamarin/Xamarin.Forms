@@ -10,7 +10,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if ((int)Build.VERSION.SdkInt < 23)
 			{
-#pragma warning disable 618
+#pragma warning disable 618 // Using older version of SetTextAppearance for compatibility with API 15-22
 				textView.SetTextAppearance(context, resId);
 #pragma warning restore 618
 			}

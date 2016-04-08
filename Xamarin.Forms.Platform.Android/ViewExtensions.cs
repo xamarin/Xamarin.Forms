@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (s_apiLevel < 16)
 			{
-#pragma warning disable 618 
+#pragma warning disable 618 // Using older method for compatibility with API 15
 				view.SetBackgroundDrawable(drawable);
 #pragma warning restore 618
 			}
