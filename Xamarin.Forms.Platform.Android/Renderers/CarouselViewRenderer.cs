@@ -756,7 +756,6 @@ namespace Xamarin.Forms.Platform.Android
 
 		#region Static Fields
 		readonly static int s_samplesCount = 5;
-		readonly static Func<int, int> s_fixPosition = o => o;
 		#endregion
 
 		#region Fields
