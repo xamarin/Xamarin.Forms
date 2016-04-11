@@ -144,7 +144,9 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
+#pragma warning disable 618 // Eventually we will need to determine how to handle the v7 ActionBarDrawerToggle for AppCompat
 		ActionBarDrawerToggle MasterDetailPageToggle { get; set; }
+#pragma warning restore 618
 
 		void IDisposable.Dispose()
 		{
@@ -456,10 +458,10 @@ namespace Xamarin.Forms.Platform.Android
 			Color colorToUse = Color.Default;
 			if (CurrentNavigationPage != null)
 			{
-//#pragma warning disable 618
+#pragma warning disable 618 // Make sure Tint still works 
 				if (CurrentNavigationPage.Tint != Color.Default)
 					colorToUse = CurrentNavigationPage.Tint;
-//#pragma warning restore 618
+#pragma warning restore 618
 				else if (CurrentNavigationPage.BarBackgroundColor != Color.Default)
 					colorToUse = CurrentNavigationPage.BarBackgroundColor;
 			}
@@ -524,12 +526,14 @@ namespace Xamarin.Forms.Platform.Android
 			_renderer.AddView(renderView.ViewGroup);
 		}
 
+#pragma warning disable 618 // This may need to be updated to work with TabLayout/AppCompat
 		ActionBar.Tab AddTab(Page page, int index)
+#pragma warning restore 618
 		{
 			ActionBar actionBar = ((Activity)_context).ActionBar;
 			TabbedPage currentTabs = CurrentTabbedPage;
 
-			ActionBar.Tab atab = actionBar.NewTab();
+			var atab = actionBar.NewTab();
 			atab.SetText(page.Title);
 			atab.TabSelected += (sender, e) =>
 			{
@@ -588,7 +592,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		void CurrentNavigationPageOnPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+#pragma warning disable 618 // Make sure Tint still works
 			if (e.PropertyName == NavigationPage.TintProperty.PropertyName)
+#pragma warning restore 618
 				UpdateActionBarBackgroundColor();
 			else if (e.PropertyName == NavigationPage.BarBackgroundColorProperty.PropertyName)
 				UpdateActionBarBackgroundColor();
@@ -680,7 +686,11 @@ namespace Xamarin.Forms.Platform.Android
 			var drawer = GetRenderer(CurrentMasterDetailPage) as MasterDetailRenderer;
 			if (drawer == null)
 				return;
+
+#pragma warning disable 618 // Eventually we will need to determine how to handle the v7 ActionBarDrawerToggle for AppCompat
 			MasterDetailPageToggle = new ActionBarDrawerToggle(_context as Activity, drawer, icon, 0, 0);
+#pragma warning restore 618
+
 			MasterDetailPageToggle.SyncState();
 		}
 
@@ -731,7 +741,7 @@ namespace Xamarin.Forms.Platform.Android
 					return;
 
 				var page = sender as Page;
-				ActionBar.Tab atab = actionBar.GetTabAt(currentTabs.Children.IndexOf(page));
+				var atab = actionBar.GetTabAt(currentTabs.Children.IndexOf(page));
 				atab.SetText(page.Title);
 			}
 		}
@@ -815,7 +825,7 @@ namespace Xamarin.Forms.Platform.Android
 			var i = 0;
 			foreach (Page tab in CurrentTabbedPage.Children.OfType<Page>())
 			{
-				ActionBar.Tab realTab = AddTab(tab, i++);
+				var realTab = AddTab(tab, i++);
 				if (tab == CurrentTabbedPage.CurrentPage)
 					realTab.Select();
 			}

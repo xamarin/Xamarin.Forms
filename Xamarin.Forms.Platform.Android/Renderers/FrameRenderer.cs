@@ -32,7 +32,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateBackground()
 		{
-			SetBackgroundDrawable(new FrameDrawable(Element));
+			this.SetBackground(new FrameDrawable(Element));
 		}
 
 		class FrameDrawable : Drawable
