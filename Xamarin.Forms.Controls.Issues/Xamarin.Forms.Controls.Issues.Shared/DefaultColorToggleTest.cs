@@ -267,23 +267,6 @@ namespace Xamarin.Forms.Controls
 				}
 			};
 
-			const string defaultPlaceholderColorText = "Default Placeholder Color";
-			var entryPlaceholderColorDefaultToggle = new Entry { Placeholder = defaultPlaceholderColorText };
-
-			var entryPlaceholderToggleButton = new Button { Text = "Toggle Placeholder Color" };
-			entryPlaceholderToggleButton.Clicked += (sender, args) => {
-				if (entryPlaceholderColorDefaultToggle.PlaceholderColor.IsDefault)
-				{
-					entryPlaceholderColorDefaultToggle.PlaceholderColor = Color.Lime;
-					entryPlaceholderColorDefaultToggle.Placeholder = "Should Be Lime";
-				}
-				else
-				{
-					entryPlaceholderColorDefaultToggle.PlaceholderColor = Color.Default;
-					entryPlaceholderColorDefaultToggle.Placeholder = defaultPlaceholderColorText;
-				}
-			};
-
 			return new ContentPage {
 				Title = "TimePicker",
 				Padding = new Thickness(0, Device.OnPlatform(20, 0, 0), 0, Device.OnPlatform(00, 0, 0)),
