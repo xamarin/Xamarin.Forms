@@ -6,7 +6,7 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public static class ColorExtensions
 	{
-		static readonly int[][] ColorStates = { new[] { global::Android.Resource.Attribute.StateEnabled }, new[] { -global::Android.Resource.Attribute.StateEnabled } };
+		public static readonly int[][] ColorStates = { new[] { global::Android.Resource.Attribute.StateEnabled }, new[] { -global::Android.Resource.Attribute.StateEnabled } };
 
 		public static AColor ToAndroid(this Color self)
 		{

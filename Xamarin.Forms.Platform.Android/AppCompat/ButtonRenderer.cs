@@ -14,8 +14,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 {
 	public class ButtonRenderer : ViewRenderer<Button, AppCompatButton>, global::Android.Views.View.IOnAttachStateChangeListener
 	{
-		static readonly int[][] States = { new[] { GlobalResource.Attribute.StateEnabled }, new[] { -GlobalResource.Attribute.StateEnabled } };
-
 		ColorStateList _buttonDefaulTextColors;
 		Color _currentTextColor;
 		float _defaultFontSize;
@@ -128,9 +126,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 							{
 								Resources.Theme theme = context.Theme;
 								if (theme != null && theme.ResolveAttribute(id, value, true))
-									Control.SupportBackgroundTintList = ContextCompat.GetColorStateList(context, value.Data);
+#pragma warning disable 618
+									Control.SupportBackgroundTintList = Resources.GetColorStateList(value.Data);
+#pragma warning restore 618
 								else
-									Control.SupportBackgroundTintList = new ColorStateList(States, new[] { (int)0xffd7d6d6, 0x7fd7d6d6 });
+									Control.SupportBackgroundTintList = new ColorStateList(ColorExtensions.ColorStates, new[] { (int)0xffd7d6d6, 0x7fd7d6d6 });
 							}
 							catch (Exception ex)
 							{
@@ -145,7 +145,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			{
 				int intColor = backgroundColor.ToAndroid().ToArgb();
 				int disableColor = backgroundColor.MultiplyAlpha(0.5).ToAndroid().ToArgb();
-				Control.SupportBackgroundTintList = new ColorStateList(States, new[] { intColor, disableColor });
+				Control.SupportBackgroundTintList = new ColorStateList(ColorExtensions.ColorStates, new[] { intColor, disableColor });
 			}
 		}
 
@@ -256,9 +256,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			else
 			{
 				// Set the new enabled state color, preserving the default disabled state color
-				int defaultDisabledColor = _buttonDefaulTextColors.GetColorForState(States[1], color.ToAndroid());
+				int defaultDisabledColor = _buttonDefaulTextColors.GetColorForState(ColorExtensions.ColorStates[1], color.ToAndroid());
 
-				NativeButton.SetTextColor(new ColorStateList(States, new[] { color.ToAndroid().ToArgb(), defaultDisabledColor }));
+				NativeButton.SetTextColor(new ColorStateList(ColorExtensions.ColorStates, new[] { color.ToAndroid().ToArgb(), defaultDisabledColor }));
 			}
 		}
 

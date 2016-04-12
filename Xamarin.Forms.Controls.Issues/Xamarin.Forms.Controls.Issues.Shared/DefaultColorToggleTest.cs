@@ -113,6 +113,32 @@ namespace Xamarin.Forms.Controls
 				TextColor = Color.Red
 			};
 
+			const string disabledText = "Button is Disabled; Should have default disabled color.";
+			var buttonColorDisabled = new Button
+			{
+				Text = disabledText,
+				TextColor = Color.Green,
+				IsEnabled = false
+			};
+
+			var buttonDisableOtherButton = new Button()
+			{
+				Text = "Toggle IsEnabled"
+			};
+
+			buttonDisableOtherButton.Clicked += (sender, args) =>
+			{
+				buttonColorDisabled.IsEnabled = !buttonColorDisabled.IsEnabled;
+				if (!buttonColorDisabled.IsEnabled)
+				{
+					buttonColorDisabled.Text = disabledText;
+				}
+				else
+				{
+					buttonColorDisabled.Text = "Button is Enabled; Should Be Green";
+				}
+			};
+
 			buttonColorDefaultToggle.Clicked += (s, e) => {
 				if (buttonColorDefaultToggle.TextColor == Color.Default)
 				{
@@ -136,7 +162,9 @@ namespace Xamarin.Forms.Controls
 					Children =
 					{
 						buttonColorDefaultToggle,
-						buttonColorInitted
+						buttonColorInitted,
+						buttonColorDisabled,
+						buttonDisableOtherButton
 					}
 				}
 			}; 
@@ -251,19 +279,42 @@ namespace Xamarin.Forms.Controls
 			var timePickerColorDefaultToggle = new TimePicker { Time = new TimeSpan(11, 34, 00) };
 
 			var defaultText = "Should have default color text";
-			var label = new Label() {Text = defaultText };
+			var timePickerColorLabel = new Label() {Text = defaultText };
 
 			var toggleButton = new Button { Text = "Toggle TimePicker Text Color" };
 			toggleButton.Clicked += (sender, args) => {
 				if (timePickerColorDefaultToggle.TextColor.IsDefault)
 				{
 					timePickerColorDefaultToggle.TextColor = Color.Fuchsia;
-					label.Text = "Should have fuchsia text";
+					timePickerColorLabel.Text = "Should have fuchsia text";
 				}
 				else
 				{
 					timePickerColorDefaultToggle.TextColor = Color.Default;
-					label.Text = defaultText;
+					timePickerColorLabel.Text = defaultText;
+				}
+			};
+
+			const string disabledText = "TimePicker is Disabled; Should have default disabled color.";
+			var timePickerDisabledlabel = new Label { Text = disabledText};
+			var timePickerColorDisabled = new TimePicker {
+				IsEnabled = false,
+				TextColor = Color.Green
+			};
+
+			var buttonToggleEnabled = new Button() {
+				Text = "Toggle IsEnabled"
+			};
+
+			buttonToggleEnabled.Clicked += (sender, args) => {
+				timePickerColorDisabled.IsEnabled = !timePickerColorDisabled.IsEnabled;
+				if (!timePickerColorDisabled.IsEnabled)
+				{
+					timePickerDisabledlabel.Text = disabledText;
+				}
+				else
+				{
+					timePickerDisabledlabel.Text = "TimePicker is Enabled; Should Be Green";
 				}
 			};
 
@@ -275,10 +326,13 @@ namespace Xamarin.Forms.Controls
 					HorizontalOptions = LayoutOptions.Fill,
 					Children =
 					{
-						label,
+						timePickerColorLabel,
 						timePickerColorDefaultToggle,
 						toggleButton,
-						timePickerInit
+						timePickerInit,
+						timePickerDisabledlabel,
+						timePickerColorDisabled,
+						buttonToggleEnabled
 					}
 				}
 			};

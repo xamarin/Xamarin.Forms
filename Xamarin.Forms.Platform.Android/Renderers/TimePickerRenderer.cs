@@ -11,9 +11,6 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public class TimePickerRenderer : ViewRenderer<TimePicker, EditText>, TimePickerDialog.IOnTimeSetListener
 	{
-		// TODO EZH This data needs to be somewhere central for all the Android color stuff (same with the version in ButtonRenderer)
-		static readonly int[][] States = { new[] { global::Android.Resource.Attribute.StateEnabled }, new[] { -global::Android.Resource.Attribute.StateEnabled } };
-
 		AlertDialog _dialog;
 		Color _defaultTextColor;
 		Color _currentTextColor;
@@ -104,9 +101,9 @@ namespace Xamarin.Forms.Platform.Android
 			else
 			{
 				// Set the new enabled state color, preserving the default disabled state color
-				int defaultDisabledColor = _defaulTextColors.GetColorForState(States[1], color.ToAndroid());
+				int defaultDisabledColor = _defaulTextColors.GetColorForState(ColorExtensions.ColorStates[1], color.ToAndroid());
 
-				Control.SetTextColor(new ColorStateList(States, new[] { color.ToAndroid().ToArgb(), defaultDisabledColor }));
+				Control.SetTextColor(new ColorStateList(ColorExtensions.ColorStates, new[] { color.ToAndroid().ToArgb(), defaultDisabledColor }));
 			}
 		}
 
