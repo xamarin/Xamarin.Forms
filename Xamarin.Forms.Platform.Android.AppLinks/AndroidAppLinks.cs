@@ -6,7 +6,7 @@ using Android.Gms.Common.Apis;
 using Android.Runtime;
 using IndexingAction = Android.Gms.AppIndexing.Action;
 
-namespace Xamarin.Forms.Platform.Android
+namespace Xamarin.Forms.Platform.Android.AppLinks
 {
 	public class AndroidAppLinks : IAppLinks, IDisposable
 	{
@@ -97,3 +97,4 @@ namespace Xamarin.Forms.Platform.Android
 		}
 	}
 }
+
