@@ -10,7 +10,7 @@ namespace Xamarin.Forms.Controls
 		public DefaultColorToggleTest()
 		{
 			Title = "Test Color Toggle Page";
-
+			
 			Children.Add(TimePickerPage());
 			Children.Add(ButtonPage());
 			Children.Add(LabelPage());
@@ -286,6 +286,7 @@ namespace Xamarin.Forms.Controls
 
 			return new ContentPage {
 				Title = "TimePicker",
+				Padding = new Thickness(0, Device.OnPlatform(20, 0, 0), 0, Device.OnPlatform(00, 0, 0)),
 				Content = new StackLayout {
 					VerticalOptions = LayoutOptions.Fill,
 					HorizontalOptions = LayoutOptions.Fill,
