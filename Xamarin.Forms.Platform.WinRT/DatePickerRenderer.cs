@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 
 #if WINDOWS_UWP
 
@@ -12,6 +13,8 @@ namespace Xamarin.Forms.Platform.WinRT
 {
 	public class DatePickerRenderer : ViewRenderer<DatePicker, FormsDatePicker>, IWrapperAware
 	{
+		Brush _defaultBrush;
+
 		public void NotifyWrapped()
 		{
 			if (Control != null)
@@ -38,6 +41,14 @@ namespace Xamarin.Forms.Platform.WinRT
 				if (Control == null)
 				{
 					var picker = new FormsDatePicker();
+
+					picker.Loaded += (sender, args) => {
+						// The defaults from the control template won't be available
+						// right away; we have to wait until after the template has been applied
+						_defaultBrush = picker.Foreground;
+						UpdateTextColor();
+					};
+
 					picker.DateChanged += OnControlDateChanged;
 					SetNativeControl(picker);
 				}
@@ -60,6 +71,8 @@ namespace Xamarin.Forms.Platform.WinRT
 				UpdateMaximumDate();
 			else if (e.PropertyName == DatePicker.MinimumDateProperty.PropertyName)
 				UpdateMinimumDate();
+			if (e.PropertyName == TimePicker.TextColorProperty.PropertyName)
+				UpdateTextColor();
 		}
 
 		void OnControlDateChanged(object sender, DatePickerValueChangedEventArgs e)
@@ -92,6 +105,12 @@ namespace Xamarin.Forms.Platform.WinRT
 		{
 			DateTime mindate = Element.MinimumDate;
 			Control.MinYear = new DateTimeOffset(mindate);
+		}
+
+		void UpdateTextColor()
+		{
+			Color color = Element.TextColor;
+			Control.Foreground = color.IsDefault ? (_defaultBrush ?? color.ToBrush()) : color.ToBrush();
 		}
 	}
 }
