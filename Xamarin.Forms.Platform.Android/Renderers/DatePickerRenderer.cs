@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using Android.App;
+using Android.Content.Res;
 using Android.Widget;
 using AView = Android.Views.View;
 using Object = Java.Lang.Object;
@@ -11,6 +12,9 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		DatePickerDialog _dialog;
 		bool _disposed;
+		Color _defaultTextColor;
+		Color _currentTextColor;
+		ColorStateList _defaulTextColors;
 
 		public DatePickerRenderer()
 		{
@@ -47,24 +51,28 @@ namespace Xamarin.Forms.Platform.Android
 
 				textField.SetOnClickListener(TextFieldClickHandler.Instance);
 				SetNativeControl(textField);
+				_defaulTextColors = textField.TextColors;
 			}
 
 			SetDate(Element.Date);
 
 			UpdateMinimumDate();
 			UpdateMaximumDate();
+			UpdateTextColor();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == "Date" || e.PropertyName == DatePicker.FormatProperty.PropertyName)
+			if (e.PropertyName == DatePicker.DateProperty.PropertyName || e.PropertyName == DatePicker.FormatProperty.PropertyName)
 				SetDate(Element.Date);
-			else if (e.PropertyName == "MinimumDate")
+			else if (e.PropertyName == DatePicker.MinimumDateProperty.PropertyName)
 				UpdateMinimumDate();
-			else if (e.PropertyName == "MaximumDate")
+			else if (e.PropertyName == DatePicker.MaximumDateProperty.PropertyName)
 				UpdateMaximumDate();
+			if (e.PropertyName == DatePicker.TextColorProperty.PropertyName)
+				UpdateTextColor();
 		}
 
 		internal override void OnFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
@@ -138,6 +146,28 @@ namespace Xamarin.Forms.Platform.Android
 			if (_dialog != null)
 			{
 				_dialog.DatePicker.MinDate = (long)Element.MinimumDate.ToUniversalTime().Subtract(DateTime.MinValue.AddYears(1969)).TotalMilliseconds;
+			}
+		}
+
+		void UpdateTextColor()
+		{
+			// TODO EZH There's an opportunity here to throw all the code for TextColor in DatePicker, TimePicker, Button, and maybe Picker into one delegate class
+			// TODO EZH In fact, that might be a better place for ColorStates to live, with another copy on ColorExtensions
+
+			Color color = Element.TextColor;
+			if (color == _currentTextColor)
+				return;
+
+			_currentTextColor = color;
+
+			if (color.IsDefault)
+				Control.SetTextColor(_defaulTextColors);
+			else
+			{
+				// Set the new enabled state color, preserving the default disabled state color
+				int defaultDisabledColor = _defaulTextColors.GetColorForState(ColorExtensions.ColorStates[1], color.ToAndroid());
+
+				Control.SetTextColor(new ColorStateList(ColorExtensions.ColorStates, new[] { color.ToAndroid().ToArgb(), defaultDisabledColor }));
 			}
 		}
 
