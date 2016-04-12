@@ -8,6 +8,8 @@ namespace Xamarin.Forms
 	{
 		public static readonly BindableProperty FormatProperty = BindableProperty.Create("Format", typeof(string), typeof(TimePicker), "t");
 
+		public static readonly BindableProperty TextColorProperty = BindableProperty.Create("TextColor", typeof(Color), typeof(Label), Color.Default);
+
 		public static readonly BindableProperty TimeProperty = BindableProperty.Create("Time", typeof(TimeSpan), typeof(TimePicker), new TimeSpan(0), BindingMode.TwoWay, (bindable, value) =>
 		{
 			var time = (TimeSpan)value;
@@ -18,6 +20,12 @@ namespace Xamarin.Forms
 		{
 			get { return (string)GetValue(FormatProperty); }
 			set { SetValue(FormatProperty, value); }
+		}
+
+		public Color TextColor
+		{
+			get { return (Color)GetValue(TextColorProperty); }
+			set { SetValue(TextColorProperty, value); }
 		}
 
 		public TimeSpan Time

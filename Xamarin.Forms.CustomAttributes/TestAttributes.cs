@@ -652,7 +652,8 @@ namespace Xamarin.Forms.CustomAttributes
 		public enum TimePicker {
 			Format,
 			Time,
-			Focus
+			Focus,
+			TextColor
 		}
 
 		public enum WebView {
