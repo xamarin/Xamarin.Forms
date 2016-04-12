@@ -69,42 +69,37 @@ namespace Xamarin.Forms.Platform.iOS
 			get { return _innerDelegate == null ? null : _innerDelegate.PresentButton; }
 		}
 
-		protected override void Dispose(bool disposing)
+		public void Dispose()
 		{
-			if (disposing)
+			if (_disposed)
+				return;
+
+			if (Element != null)
 			{
-				if (_disposed)
-					return;
-
-				if (Element != null)
-				{
-					((Page)Element).SendDisappearing();
-					Element.PropertyChanged -= HandlePropertyChanged;
-					Element = null;
-				}
-
-				if (_tracker != null)
-				{
-					_tracker.Dispose();
-					_tracker = null;
-				}
-
-				if (_events != null)
-				{
-					_events.Dispose();
-					_events = null;
-				}
-
-				if (_masterController != null)
-				{
-					_masterController.WillAppear -= MasterControllerWillAppear;
-					_masterController.WillDisappear -= MasterControllerWillDisappear;
-				}
-
-				_disposed = true;
+				((Page)Element).SendDisappearing();
+				Element.PropertyChanged -= HandlePropertyChanged;
+				Element = null;
 			}
 
-			base.Dispose(disposing);
+			if (_tracker != null)
+			{
+				_tracker.Dispose();
+				_tracker = null;
+			}
+
+			if (_events != null)
+			{
+				_events.Dispose();
+				_events = null;
+			}
+
+			if (_masterController != null)
+			{
+				_masterController.WillAppear -= MasterControllerWillAppear;
+				_masterController.WillDisappear -= MasterControllerWillDisappear;
+			}
+
+			_disposed = true;
 		}
 
 		public VisualElement Element { get; private set; }
