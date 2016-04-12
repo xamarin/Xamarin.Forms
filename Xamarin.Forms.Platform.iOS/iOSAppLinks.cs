@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public async void DeregisterLink(IAppLinkEntry appLink)
 		{
 			if (string.IsNullOrEmpty(appLink.AppLinkUri?.ToString()))
-				throw new ArgumentNullException(nameof(appLink.AppLinkUri));
+				throw new ArgumentNullException("AppLinkUri");
 			await RemoveLinkAsync(appLink.AppLinkUri?.ToString());
 		}
 
@@ -32,13 +32,13 @@ namespace Xamarin.Forms.Platform.iOS
 		public async void RegisterLink(IAppLinkEntry appLink)
 		{
 			if (string.IsNullOrEmpty(appLink.AppLinkUri?.ToString()))
-				throw new ArgumentNullException(nameof(appLink.AppLinkUri));
+				throw new ArgumentNullException("AppLinkUri");
 			await AddLinkAsync(appLink);
 		}
 
 		public async void DeregisterAll()
 		{
-			var sucess = await ClearIndexedDataAsync();
+			await ClearIndexedDataAsync();
 		}
 
 		static async Task AddLinkAsync(IAppLinkEntry deepLinkUri)
