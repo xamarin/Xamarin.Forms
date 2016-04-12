@@ -464,7 +464,8 @@ namespace Xamarin.Forms.CustomAttributes
 			MinimumDate,
 			MaximumDate,
 			Focus,
-			IsVisible
+			IsVisible,
+			TextColor
 		}
 
 		public enum InputView
