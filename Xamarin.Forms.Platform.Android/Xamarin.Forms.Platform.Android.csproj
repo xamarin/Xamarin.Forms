@@ -229,7 +229,6 @@
     <Compile Include="Renderers\OpenGLViewRenderer.cs" />
     <Compile Include="AppCompat\CarouselPageRenderer.cs" />
     <Compile Include="AppCompat\FormsFragmentPagerAdapter.cs" />
-    <Compile Include="AndroidAppLinks.cs" />
     <Compile Include="AndroidAppIndexProvider.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
