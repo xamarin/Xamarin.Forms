@@ -17,6 +17,8 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty MaximumDateProperty = BindableProperty.Create("MaximumDate", typeof(DateTime), typeof(DatePicker), new DateTime(2100, 12, 31),
 			validateValue: ValidateMaximumDate, coerceValue: CoerceMaximumDate);
 
+		public static readonly BindableProperty TextColorProperty = BindableProperty.Create("TextColor", typeof(Color), typeof(DatePicker), Color.Default);
+
 		public DateTime Date
 		{
 			get { return (DateTime)GetValue(DateProperty); }
@@ -39,6 +41,12 @@ namespace Xamarin.Forms
 		{
 			get { return (DateTime)GetValue(MinimumDateProperty); }
 			set { SetValue(MinimumDateProperty, value); }
+		}
+
+		public Color TextColor
+		{
+			get { return (Color)GetValue(TextColorProperty); }
+			set { SetValue(TextColorProperty, value); }
 		}
 
 		public event EventHandler<DateChangedEventArgs> DateSelected;

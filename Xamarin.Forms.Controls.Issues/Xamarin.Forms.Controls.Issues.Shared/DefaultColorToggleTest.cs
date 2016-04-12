@@ -10,7 +10,8 @@ namespace Xamarin.Forms.Controls
 		public DefaultColorToggleTest()
 		{
 			Title = "Test Color Toggle Page";
-			
+
+			Children.Add(DatePickerPage());
 			Children.Add(TimePickerPage());
 			Children.Add(ButtonPage());
 			Children.Add(LabelPage());
@@ -332,6 +333,71 @@ namespace Xamarin.Forms.Controls
 						timePickerInit,
 						timePickerDisabledlabel,
 						timePickerColorDisabled,
+						buttonToggleEnabled
+					}
+				}
+			};
+		}
+
+		static ContentPage DatePickerPage()
+		{
+			var pickerInit = new DatePicker { Date = new DateTime(1978, 12, 24), TextColor = Color.Red };
+			var pickerColorDefaultToggle = new DatePicker { Date = new DateTime(1978, 12, 24) };
+
+			var defaultText = "Should have default color text";
+			var pickerColorLabel = new Label { Text = defaultText };
+
+			var toggleButton = new Button { Text = "Toggle DatePicker Text Color" };
+			toggleButton.Clicked += (sender, args) => {
+				if (pickerColorDefaultToggle.TextColor.IsDefault)
+				{
+					pickerColorDefaultToggle.TextColor = Color.Fuchsia;
+					pickerColorLabel.Text = "Should have fuchsia text";
+				}
+				else
+				{
+					pickerColorDefaultToggle.TextColor = Color.Default;
+					pickerColorLabel.Text = defaultText;
+				}
+			};
+
+			const string disabledText = "DatePicker is Disabled; Should have default disabled color.";
+			var pickerDisabledlabel = new Label { Text = disabledText };
+			var pickerColorDisabled = new DatePicker {
+				IsEnabled = false,
+				TextColor = Color.Green
+			};
+
+			var buttonToggleEnabled = new Button() {
+				Text = "Toggle IsEnabled"
+			};
+
+			buttonToggleEnabled.Clicked += (sender, args) => {
+				pickerColorDisabled.IsEnabled = !pickerColorDisabled.IsEnabled;
+				if (!pickerColorDisabled.IsEnabled)
+				{
+					pickerDisabledlabel.Text = disabledText;
+				}
+				else
+				{
+					pickerDisabledlabel.Text = "DatePicker is Enabled; Should Be Green";
+				}
+			};
+
+			return new ContentPage {
+				Title = "DatePicker",
+				Padding = new Thickness(0, Device.OnPlatform(20, 0, 0), 0, Device.OnPlatform(00, 0, 0)),
+				Content = new StackLayout {
+					VerticalOptions = LayoutOptions.Fill,
+					HorizontalOptions = LayoutOptions.Fill,
+					Children =
+					{
+						pickerColorLabel,
+						pickerColorDefaultToggle,
+						toggleButton,
+						pickerInit,
+						pickerDisabledlabel,
+						pickerColorDisabled,
 						buttonToggleEnabled
 					}
 				}
