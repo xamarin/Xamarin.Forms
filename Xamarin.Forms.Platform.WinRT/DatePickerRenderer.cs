@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
@@ -29,6 +30,7 @@ namespace Xamarin.Forms.Platform.WinRT
 			{
 				Control.ForceInvalidate -= PickerOnForceInvalidate;
 				Control.DateChanged -= OnControlDateChanged;
+				Control.Loaded -= ControlOnLoaded;
 			}
 
 			base.Dispose(disposing);
@@ -41,16 +43,9 @@ namespace Xamarin.Forms.Platform.WinRT
 				if (Control == null)
 				{
 					var picker = new FormsDatePicker();
-
-					picker.Loaded += (sender, args) => {
-						// The defaults from the control template won't be available
-						// right away; we have to wait until after the template has been applied
-						_defaultBrush = picker.Foreground;
-						UpdateTextColor();
-					};
-
-					picker.DateChanged += OnControlDateChanged;
 					SetNativeControl(picker);
+					Control.Loaded += ControlOnLoaded;
+					Control.DateChanged += OnControlDateChanged;
 				}
 
 				UpdateMinimumDate();
@@ -59,6 +54,14 @@ namespace Xamarin.Forms.Platform.WinRT
 			}
 
 			base.OnElementChanged(e);
+		}
+
+		void ControlOnLoaded(object sender, RoutedEventArgs routedEventArgs)
+		{
+			// The defaults from the control template won't be available
+			// right away; we have to wait until after the template has been applied
+			_defaultBrush = Control.Foreground;
+			UpdateTextColor();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)

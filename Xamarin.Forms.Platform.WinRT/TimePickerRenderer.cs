@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 
@@ -29,6 +30,7 @@ namespace Xamarin.Forms.Platform.WinRT
 			{
 				Control.ForceInvalidate -= PickerOnForceInvalidate;
 				Control.TimeChanged -= OnControlTimeChanged;
+				Control.Loaded -= ControlOnLoaded;
 			}
 
 			base.Dispose(disposing);
@@ -43,21 +45,22 @@ namespace Xamarin.Forms.Platform.WinRT
 				if (Control == null)
 				{
 					var picker = new FormsTimePicker();
-					picker.TimeChanged += OnControlTimeChanged;
-
-					picker.Loaded += (sender, args) =>
-					{
-						// The defaults from the control template won't be available
-						// right away; we have to wait until after the template has been applied
-						_defaultBrush = picker.Foreground;
-						UpdateTextColor();
-					};
-					
 					SetNativeControl(picker);
+
+					Control.TimeChanged += OnControlTimeChanged;
+					Control.Loaded += ControlOnLoaded;
 				}
 
 				UpdateTime();
 			}
+		}
+
+		void ControlOnLoaded(object sender, RoutedEventArgs routedEventArgs)
+		{
+			// The defaults from the control template won't be available
+			// right away; we have to wait until after the template has been applied
+			_defaultBrush = Control.Foreground;
+			UpdateTextColor();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
