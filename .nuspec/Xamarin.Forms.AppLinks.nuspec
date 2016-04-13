@@ -25,6 +25,6 @@
     </references>
   </metadata>
   <files>
-    <file src="..\Stubs\Xamarin.Forms.Platform.Android\bin\$Configuration$\Xamarin.Forms.Platform.Android.AppLinks.dll" target="lib\MonoAndroid10" />
+    <file src="..\Xamarin.Forms.Platform.Android.AppLinks\bin\$Configuration$\Xamarin.Forms.Platform.Android.AppLinks.dll" target="lib\MonoAndroid10" />
   </files>
 </package>
