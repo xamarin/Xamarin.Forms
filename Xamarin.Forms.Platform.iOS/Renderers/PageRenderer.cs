@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 #if __UNIFIED__
 using UIKit;
 
@@ -61,13 +60,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (element != null)
 				element.SendViewInitialized(NativeView);
 
-			var controller = (IElementController)oldElement;
-			if (controller != null && controller.EffectControlProvider == this)
-				controller.EffectControlProvider = null;
-
-			controller = element;
-			if (controller != null)
-				controller.EffectControlProvider = this;
+			EffectUtilities.RegisterEffectControlProvider(this, oldElement, element);
 		}
 
 		public void SetElementSize(Size size)
