@@ -149,7 +149,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateTextColor()
 		{
-			_textColorSwitcher.UpdateTextColor(Control, Element.TextColor);
+			_textColorSwitcher?.UpdateTextColor(Control, Element.TextColor);
 		}
 
 		class TextFieldClickHandler : Object, IOnClickListener
