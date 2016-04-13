@@ -58,7 +58,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var searchableAttributeSet = await GetAttributeSet(deepLinkUri, contentType, id);
 			var searchItem = new CSSearchableItem(id, appDomain, searchableAttributeSet);
 			//we need to make sure we index the item in spotlight first or the RelatedUniqueIdentifier will not work
-			var wasIndexed = await IndexItemAsync(searchItem);
+			await IndexItemAsync(searchItem);
 
 #if __UNIFIED__
 			var activity = new NSUserActivity($"{appDomain}.{contentType}");
