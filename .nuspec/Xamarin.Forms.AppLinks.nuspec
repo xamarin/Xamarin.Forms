@@ -18,9 +18,11 @@
         <dependency id="Xamarin.GooglePlayServices.AppIndexing" version="[29.0.0.1]"/>
       </group>
     </dependencies>
-     <group targetFramework="MonoAndroid10">
+    <references>
+      <group targetFramework="MonoAndroid10">
         <reference file="Xamarin.Forms.Platform.Android.AppLinks.dll" />
       </group>
+    </references>
   </metadata>
   <files>
     <file src="..\Stubs\Xamarin.Forms.Platform.Android\bin\$Configuration$\Xamarin.Forms.Platform.Android.AppLinks.dll" target="lib\MonoAndroid10" />
