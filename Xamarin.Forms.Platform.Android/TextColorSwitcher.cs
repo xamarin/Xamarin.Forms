@@ -13,7 +13,6 @@ namespace Xamarin.Forms.Platform.Android
 
 		readonly ColorStateList _defaulTextColors;
 		Color _currentTextColor;
-		Color _defaultTextColor;
 
 		public TextColorSwitcher(ColorStateList textColors)
 		{
