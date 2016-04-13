@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -39,7 +38,6 @@ namespace Xamarin.Forms.Platform.WinRT
 				if (hourPicker != null)
 				{
 					hourPicker.DropDownClosed += PickerOnDropDownClosed;
-					Debug.WriteLine($"hourPicker.Foreground = {((SolidColorBrush)hourPicker.Foreground).Color}");
 				}
 
 				var minutePicker = GetTemplateChild("MinutePicker") as ComboBox;
@@ -64,8 +62,6 @@ namespace Xamarin.Forms.Platform.WinRT
 			// To fix this, we have to invalidate the control
 			// This only applies to Windows 8.1
 			ForceInvalidate?.Invoke(this, EventArgs.Empty);
-
-			Debug.WriteLine($"Foreground = {((SolidColorBrush)Foreground).Color}");
 		}
 
 		void WindowOnActivated(object sender, WindowActivatedEventArgs windowActivatedEventArgs)
