@@ -12,9 +12,7 @@ namespace Xamarin.Forms.Platform.Android
 	public class TimePickerRenderer : ViewRenderer<TimePicker, EditText>, TimePickerDialog.IOnTimeSetListener
 	{
 		AlertDialog _dialog;
-		Color _defaultTextColor;
-		Color _currentTextColor;
-		ColorStateList _defaulTextColors;
+		TextColorSwitcher _textColorSwitcher;
 
 		public TimePickerRenderer()
 		{
@@ -40,7 +38,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				textField.SetOnClickListener(TimePickerListener.Instance);
 				SetNativeControl(textField);
-				_defaulTextColors = textField.TextColors;
+				_textColorSwitcher = new TextColorSwitcher(textField.TextColors); 
 			}
 
 			SetTime(e.NewElement.Time);
@@ -90,21 +88,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateTextColor()
 		{
-			Color color = Element.TextColor;
-			if (color == _currentTextColor)
-				return;
-
-			_currentTextColor = color;
-
-			if (color.IsDefault)
-				Control.SetTextColor(_defaulTextColors);
-			else
-			{
-				// Set the new enabled state color, preserving the default disabled state color
-				int defaultDisabledColor = _defaulTextColors.GetColorForState(ColorExtensions.ColorStates[1], color.ToAndroid());
-
-				Control.SetTextColor(new ColorStateList(ColorExtensions.ColorStates, new[] { color.ToAndroid().ToArgb(), defaultDisabledColor }));
-			}
+			_textColorSwitcher.UpdateTextColor(Control, Element.TextColor);
 		}
 
 		class TimePickerListener : Object, IOnClickListener

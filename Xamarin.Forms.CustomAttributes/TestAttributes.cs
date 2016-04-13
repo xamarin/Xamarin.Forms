@@ -692,7 +692,8 @@ namespace Xamarin.Forms.CustomAttributes
 			Title,
 			Items,
 			SelectedIndex,
-			Focus
+			Focus,
+			TextColor
 		}
 
 		public enum FileImageSource {

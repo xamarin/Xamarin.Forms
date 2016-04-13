@@ -12,9 +12,7 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		DatePickerDialog _dialog;
 		bool _disposed;
-		Color _defaultTextColor;
-		Color _currentTextColor;
-		ColorStateList _defaulTextColors;
+		TextColorSwitcher _textColorSwitcher;
 
 		public DatePickerRenderer()
 		{
@@ -51,7 +49,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				textField.SetOnClickListener(TextFieldClickHandler.Instance);
 				SetNativeControl(textField);
-				_defaulTextColors = textField.TextColors;
+				_textColorSwitcher = new TextColorSwitcher(textField.TextColors); 
 			}
 
 			SetDate(Element.Date);
@@ -151,24 +149,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateTextColor()
 		{
-			// TODO EZH There's an opportunity here to throw all the code for TextColor in DatePicker, TimePicker, Button, and maybe Picker into one delegate class
-			// TODO EZH In fact, that might be a better place for ColorStates to live, with another copy on ColorExtensions
-
-			Color color = Element.TextColor;
-			if (color == _currentTextColor)
-				return;
-
-			_currentTextColor = color;
-
-			if (color.IsDefault)
-				Control.SetTextColor(_defaulTextColors);
-			else
-			{
-				// Set the new enabled state color, preserving the default disabled state color
-				int defaultDisabledColor = _defaulTextColors.GetColorForState(ColorExtensions.ColorStates[1], color.ToAndroid());
-
-				Control.SetTextColor(new ColorStateList(ColorExtensions.ColorStates, new[] { color.ToAndroid().ToArgb(), defaultDisabledColor }));
-			}
+			_textColorSwitcher.UpdateTextColor(Control, Element.TextColor);
 		}
 
 		class TextFieldClickHandler : Object, IOnClickListener

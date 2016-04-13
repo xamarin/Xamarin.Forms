@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Xamarin.Forms.CustomAttributes;
 
 namespace Xamarin.Forms.Controls
@@ -11,6 +12,7 @@ namespace Xamarin.Forms.Controls
 		{
 			Title = "Test Color Toggle Page";
 
+			Children.Add(PickerPage());
 			Children.Add(DatePickerPage());
 			Children.Add(TimePickerPage());
 			Children.Add(ButtonPage());
@@ -386,6 +388,74 @@ namespace Xamarin.Forms.Controls
 
 			return new ContentPage {
 				Title = "DatePicker",
+				Padding = new Thickness(0, Device.OnPlatform(20, 0, 0), 0, Device.OnPlatform(00, 0, 0)),
+				Content = new StackLayout {
+					VerticalOptions = LayoutOptions.Fill,
+					HorizontalOptions = LayoutOptions.Fill,
+					Children =
+					{
+						pickerColorLabel,
+						pickerColorDefaultToggle,
+						toggleButton,
+						pickerInit,
+						pickerDisabledlabel,
+						pickerColorDisabled,
+						buttonToggleEnabled
+					}
+				}
+			};
+		}
+
+		static ContentPage PickerPage()
+		{
+			var pickerInit = new Picker { TextColor = Color.Red, Items = { "Item 1", "Item 2", "Item 3" }, SelectedIndex = 1 };
+
+			var pickerColorDefaultToggle = new Picker { Items = { "Item 1", "Item 2", "Item 3" } , SelectedIndex = 1 };
+
+			var defaultText = "Should have default color text";
+			var pickerColorLabel = new Label { Text = defaultText };
+
+			var toggleButton = new Button { Text = "Toggle Picker Text Color" };
+			toggleButton.Clicked += (sender, args) => {
+				if (pickerColorDefaultToggle.TextColor.IsDefault)
+				{
+					pickerColorDefaultToggle.TextColor = Color.Fuchsia;
+					pickerColorLabel.Text = "Should have fuchsia text";
+				}
+				else
+				{
+					pickerColorDefaultToggle.TextColor = Color.Default;
+					pickerColorLabel.Text = defaultText;
+				}
+			};
+
+			const string disabledText = "Picker is Disabled; Should have default disabled color.";
+			var pickerDisabledlabel = new Label { Text = disabledText };
+			var pickerColorDisabled = new Picker {
+				IsEnabled = false,
+				TextColor = Color.Green,
+				Items = { "Item 1", "Item 2", "Item 3" },
+				SelectedIndex = 1
+			};
+
+			var buttonToggleEnabled = new Button() {
+				Text = "Toggle IsEnabled"
+			};
+
+			buttonToggleEnabled.Clicked += (sender, args) => {
+				pickerColorDisabled.IsEnabled = !pickerColorDisabled.IsEnabled;
+				if (!pickerColorDisabled.IsEnabled)
+				{
+					pickerDisabledlabel.Text = disabledText;
+				}
+				else
+				{
+					pickerDisabledlabel.Text = "Picker is Enabled; Should Be Green";
+				}
+			};
+
+			return new ContentPage {
+				Title = "Picker",
 				Padding = new Thickness(0, Device.OnPlatform(20, 0, 0), 0, Device.OnPlatform(00, 0, 0)),
 				Content = new StackLayout {
 					VerticalOptions = LayoutOptions.Fill,
