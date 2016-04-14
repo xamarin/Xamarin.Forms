@@ -45,7 +45,11 @@ namespace Xamarin.Forms.Platform.WinRT
 			{
 				if (_flipView == null)
 				{
-					_flipView = new FlipView { IsSynchronizedWithCurrentItem = false, ItemTemplate = (WDataTemplate)WApp.Current.Resources["ItemTemplate"] };
+					_flipView = new FlipView 
+					{
+						IsSynchronizedWithCurrentItem = false,
+						ItemTemplate = (WDataTemplate)WApp.Current.Resources["ItemTemplate"]
+					};
 				}
 
 				_flipView.ItemsSource = Element.ItemsSource;
