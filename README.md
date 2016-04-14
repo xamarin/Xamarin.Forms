@@ -55,3 +55,4 @@ We follow the style used by the [.NET Foundation](https://github.com/dotnet/core
 
 - [How to Contribute](https://github.com/xamarin/xamarin.forms/wiki/Contributing-Code)
 - Use [Bugzilla](https://bugzilla.xamarin.com/) to track open issues.
+ 
