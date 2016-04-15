@@ -192,21 +192,6 @@ namespace Xamarin.Forms
 				return new Enumerator(this);
 			}
 
-			public int IndexOf(object item)
-			{
-				// madness ported from listProxy
-				CollectionSynchronizationContext syncContext = SyncContext;
-				if (syncContext != null)
-				{
-					int value = -1;
-					syncContext.Callback(Enumerable, SyncContext.Context, () => value = _indexable.IndexOf(item), false);
-
-					return value;
-				}
-
-				return _indexable.IndexOf(item);
-			}
-
 			void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 			{
 				Action onCollectionChanged = () =>
