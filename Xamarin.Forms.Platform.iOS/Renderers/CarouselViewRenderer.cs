@@ -55,16 +55,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		int _position;
 		CarouselViewController _controller;
+		RectangleF _lastBounds;
 		#endregion
 
-		new UIScrollView Control
-		{
-			get
-			{
-				Initialize();
-				return base.Control;
-			}
-		}
 		ICarouselViewController Controller
 		{
 			get { return Element; }
@@ -76,6 +69,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (carouselView != null)
 				return;
 
+			_lastBounds = Bounds;
 			_controller = new CarouselViewController(
 				renderer: this,
 				initialPosition: Element.Position
@@ -220,6 +214,17 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		public override void LayoutSubviews()
+		{
+			base.LayoutSubviews();
+
+			if (_lastBounds == Bounds)
+				return;
+
+			base.Control.ReloadData();
+			_lastBounds = Bounds;
+			_controller.ScrollToPosition(_position, false);
+		}
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
 			return Control.GetSizeRequest(widthConstraint, heightConstraint, DefaultMinimumDimension, DefaultMinimumDimension);
