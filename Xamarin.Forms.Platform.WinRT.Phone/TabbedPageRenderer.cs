@@ -37,7 +37,7 @@ namespace Xamarin.Forms.Platform.WinRT
 			get { return Element; }
 		}
 
-		public Pivot Control
+		public FormsPivot Control
 		{
 			get;
 			private set;
@@ -88,6 +88,8 @@ namespace Xamarin.Forms.Platform.WinRT
 				Control.DataContext = Element;
 				OnPagesChanged(Element.Children, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 				UpdateCurrentPage();
+				UpdateBarTextColor();
+				UpdateBarBackgroundColor();
 
 				((INotifyCollectionChanged)Element.Children).CollectionChanged += OnPagesChanged;
 				element.PropertyChanged += OnElementPropertyChanged;
@@ -234,8 +236,12 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == "CurrentPage")
+			if (e.PropertyName == nameof(TabbedPage.CurrentPage))
 				UpdateCurrentPage();
+			else if (e.PropertyName == TabbedPage.BarTextColorProperty.PropertyName)
+				UpdateBarTextColor();
+			else if (e.PropertyName == TabbedPage.BarBackgroundColorProperty.PropertyName)
+				UpdateBarBackgroundColor();
 		}
 
 		void UpdateCurrentPage()
@@ -267,6 +273,32 @@ namespace Xamarin.Forms.Platform.WinRT
 		void OnTrackerUpdated(object sender, EventArgs e)
 		{
 
+		}
+
+		Brush GetBarBackgroundBrush()
+		{
+			object defaultColor = Windows.UI.Xaml.Application.Current.Resources["AppBarBackgroundThemeBrush"];
+			if (Element.BarBackgroundColor.IsDefault && defaultColor != null)
+				return (Brush)defaultColor;
+			return Element.BarBackgroundColor.ToBrush();
+		}
+
+		Brush GetBarForegroundBrush()
+		{
+			object defaultColor = Windows.UI.Xaml.Application.Current.Resources["AppBarItemForegroundThemeBrush"];
+			if (Element.BarTextColor.IsDefault)
+				return (Brush)defaultColor;
+			return Element.BarTextColor.ToBrush();
+		}
+
+		void UpdateBarBackgroundColor()
+		{
+			Control.ToolbarBackground = GetBarBackgroundBrush();
+		}
+
+		void UpdateBarTextColor()
+		{
+			Control.ToolbarForeground = GetBarForegroundBrush();
 		}
 
 		void UpdateTitle(Page child)
