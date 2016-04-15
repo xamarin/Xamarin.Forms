@@ -461,7 +461,7 @@ namespace Xamarin.Forms.Build.Tasks
 					context.IL.Emit(OpCodes.Ldloc, parent);
 					context.IL.Append(vnode.PushConvertedValue(context,
 						propertyType,
-						new ICustomAttributeProvider[] { propertyType.Resolve() },
+						new ICustomAttributeProvider[] { property, propertyType.Resolve() },
 						valueNode.PushServiceProvider(context), false, true));
 					context.IL.Emit(OpCodes.Callvirt, propertySetterRef);
 
