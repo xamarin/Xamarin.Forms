@@ -21,11 +21,8 @@ namespace Xamarin.Forms
 				_mergedWith = value;
 				if (_mergedWith == null)
 					return;
-				var ms = _mergedWith.GetTypeInfo ().BaseType.GetTypeInfo().DeclaredMethods;
-				foreach (var me in ms)
-					System.Diagnostics.Debug.WriteLine (me.Name);
-				var m = _mergedWith.GetTypeInfo ().BaseType.GetTypeInfo().DeclaredMethods.FirstOrDefault (mi => mi.Name == "GetInstance");
-				_mergedInstance = m.Invoke(null, new object[] {_mergedWith}) as ResourceDictionary;
+
+				_mergedInstance = _mergedWith.GetTypeInfo().BaseType.GetTypeInfo().DeclaredMethods.First(mi => mi.Name == "GetInstance").Invoke(null, new object[] {_mergedWith}) as ResourceDictionary;
 			}
 		}
 
