@@ -55,9 +55,10 @@ namespace Xamarin.Forms
 			get { return (int)GetValue(PositionProperty); }
 			set { SetValue(PositionProperty, value); }
 		}
-		public int Item
+		public object Item
 		{
-			get { return (int)GetValue(ItemProperty); }
+			get { return GetValue(ItemProperty); }
+			internal set { SetValue(ItemProperty, value); }
 		}
 
 		public event EventHandler<SelectedItemChangedEventArgs> ItemSelected;
@@ -81,9 +82,10 @@ namespace Xamarin.Forms
 		{
 			if (item.Equals(_lastItem))
 				return;
-
-			ItemSelected?.Invoke(this, new SelectedItemChangedEventArgs(item));
 			_lastItem = item;
+
+            Item = item;
+            ItemSelected?.Invoke(this, new SelectedItemChangedEventArgs(item));
 		}
 		void ICarouselViewController.SendSelectedPositionChanged(int position)
 		{
