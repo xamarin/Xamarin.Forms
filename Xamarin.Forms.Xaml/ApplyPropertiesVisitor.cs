@@ -133,7 +133,7 @@ namespace Xamarin.Forms.Xaml
 				if (typeof (IEnumerable).GetTypeInfo().IsAssignableFrom(Context.Types[parentElement].GetTypeInfo()))
 				{
 					var source = Values[parentNode];
-					if (Context.Types[parentElement] != typeof (ResourceDictionary))
+					if (!(typeof (ResourceDictionary).IsAssignableFrom(Context.Types[parentElement])))
 					{
 						var addMethod =
 							Context.Types[parentElement].GetRuntimeMethods().First(mi => mi.Name == "Add" && mi.GetParameters().Length == 1);

@@ -80,7 +80,8 @@ namespace Xamarin.Forms.Build.Tasks
 				var parentVar = Context.Variables[(IElementNode)parentNode];
 				if (parentVar.VariableType.ImplementsInterface(Module.Import(typeof (IEnumerable))))
 				{
-					if (parentVar.VariableType.FullName == "Xamarin.Forms.ResourceDictionary" &&
+					if ((parentVar.VariableType.FullName == "Xamarin.Forms.ResourceDictionary" ||
+						parentVar.VariableType.Resolve().BaseType.FullName == "Xamarin.Forms.ResourceDictionary") &&
 					    !node.Properties.ContainsKey(XmlName.xKey))
 					{
 						node.Accept(new SetPropertiesVisitor(Context), parentNode);
@@ -107,7 +108,8 @@ namespace Xamarin.Forms.Build.Tasks
 									.Resolve()
 									.Methods.Single(md => md.Name == "Add" && md.Parameters.Count == 1)));
 					}
-					else if (parentVar.VariableType.FullName == "Xamarin.Forms.ResourceDictionary" &&
+					else if ((parentVar.VariableType.FullName == "Xamarin.Forms.ResourceDictionary" ||
+						parentVar.VariableType.Resolve().BaseType.FullName == "Xamarin.Forms.ResourceDictionary") &&
 					         node.Properties.ContainsKey(XmlName.xKey))
 					{
 						node.Accept(new SetPropertiesVisitor(Context), parentNode);
@@ -146,7 +148,8 @@ namespace Xamarin.Forms.Build.Tasks
 			XmlName propertyName;
 			if (SetPropertiesVisitor.TryGetPropertyName(node, parentNode, out propertyName) &&
 			    (propertyName.LocalName == "Resources" || propertyName.LocalName.EndsWith(".Resources", StringComparison.Ordinal)) &&
-			    Context.Variables[node].VariableType.FullName == "Xamarin.Forms.ResourceDictionary")
+				(Context.Variables[node].VariableType.FullName == "Xamarin.Forms.ResourceDictionary" ||
+					Context.Variables[node].VariableType.Resolve().BaseType.FullName == "Xamarin.Forms.ResourceDictionary"))
 				SetPropertiesVisitor.SetPropertyValue(Context.Variables[(IElementNode)parentNode], propertyName, node, Context, node);
 		}
 

@@ -5,4 +5,10 @@
 	<Style x:Key="sharedfoo" TargetType="Label">
 		<Setter Property="TextColor" Value="Pink" />
 	</Style>
+	<Style x:Key="sharedbar" TargetType="Label">
+		<Setter Property="TextColor" Value="Blue" />
+	</Style>
+	<Style TargetType="Label">
+		<Setter Property="TextColor" Value="Red" />
+	</Style>
 </ResourceDictionary>

@@ -118,7 +118,7 @@ namespace Xamarin.Forms.Build.Tasks
 				if (parentVar.VariableType.ImplementsInterface(Module.Import(typeof (IEnumerable))))
 				{
 					var elementType = parentVar.VariableType;
-					if (elementType.FullName != "Xamarin.Forms.ResourceDictionary")
+					if (elementType.FullName != "Xamarin.Forms.ResourceDictionary" && elementType.Resolve().BaseType.FullName != "Xamarin.Forms.ResourceDictionary")
 					{
 						var adderTuple = elementType.GetMethods(md => md.Name == "Add" && md.Parameters.Count == 1, Module).First();
 						var adderRef = Module.Import(adderTuple.Item1);
