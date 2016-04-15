@@ -24,10 +24,8 @@ namespace Xamarin.Forms
 				defaultBindingMode: BindingMode.TwoWay
 			);
 
-		#region Fields
 		object _lastItem;
 		int _lastPosition;
-		#endregion
 
 		public CarouselView()
 		{
@@ -37,14 +35,12 @@ namespace Xamarin.Forms
 			HorizontalOptions = LayoutOptions.FillAndExpand;
 		}
 
-		#region Private Members
 		object GetItem(int position)
 		{
 			var controller = (IItemViewController)this;
 			object item = controller.GetItem(position);
 			return item;
 		}
-		#endregion
 
 		// non-public bc unable to implement on iOS
 		internal event EventHandler<ItemVisibilityEventArgs> ItemAppearing;
@@ -91,8 +87,9 @@ namespace Xamarin.Forms
 		{
 			if (_lastPosition == position)
 				return;
-
 			_lastPosition = position;
+
+            Item = ((IItemViewController)this).GetItem(position);
 			PositionSelected?.Invoke(this, new SelectedPositionChangedEventArgs(position));
 		}
 	}
