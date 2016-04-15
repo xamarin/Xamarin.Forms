@@ -30,21 +30,19 @@ using MonoTouch.CoreLocation;
 
 namespace Xamarin.Forms.ControlGallery.iOS
 {
-	public class CustomIOSMapRenderer : ViewRenderer<CustomMapView, global::MapKit.MKMapView>
+	public class CustomIOSMapRenderer : ViewRenderer<CustomMapView, MKMapView>
 	{
 		private MKMapView _mapView;
-
-		private CustomMapView CustomMapView {
-			get { return Element as CustomMapView; }
-		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<CustomMapView> e)
 		{
 			base.OnElementChanged(e);
 
-			if (e.NewElement != null) {
-				if (Control == null) {
-					_mapView = new MKMapView((CoreGraphics.CGRect)UIScreen.MainScreen.Bounds);
+			if (e.NewElement != null)
+			{
+				if (Control == null)
+				{
+					_mapView = new MKMapView(UIScreen.MainScreen.Bounds);
 					_mapView.MapType = MKMapType.Standard;
 					_mapView.RotateEnabled = false;
 					SetNativeControl(_mapView);
@@ -55,11 +53,6 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			CLLocationCoordinate2D coords = new CLLocationCoordinate2D(48.857, 2.351);
 			MKCoordinateSpan span = new MKCoordinateSpan(MilesToLatitudeDegrees(20), MilesToLongitudeDegrees(20, coords.Latitude));
 			_mapView.Region = new MKCoordinateRegion(coords, span);
-		}
-
-		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
-		{
-			return Control.GetSizeRequest(widthConstraint, heightConstraint, 44, 44);
 		}
 
 		public double MilesToLatitudeDegrees(double miles)
@@ -96,12 +89,14 @@ namespace Xamarin.Forms.ControlGallery.iOS
 
 			NativeiOSCell c = reusableCell as NativeiOSCell;
 
-			if (c == null) {
+			if (c == null)
+			{
 				c = new NativeiOSCell(s_rid);
 			}
 
 			UIImage i = null;
-			if (!string.IsNullOrWhiteSpace(x.ImageFilename)) {
+			if (!string.IsNullOrWhiteSpace(x.ImageFilename))
+			{
 				i = UIImage.FromFile("Images/" + x.ImageFilename + ".jpg");
 			}
 
@@ -132,13 +127,15 @@ namespace Xamarin.Forms.ControlGallery.iOS
 
 			_imageView = new UIImageView();
 
-			_headingLabel = new UILabel() {
+			_headingLabel = new UILabel()
+			{
 				Font = UIFont.FromName("Cochin-BoldItalic", 22f),
 				TextColor = UIColor.FromRGB(127, 51, 0),
 				BackgroundColor = UIColor.Clear
 			};
 
-			_subheadingLabel = new UILabel() {
+			_subheadingLabel = new UILabel()
+			{
 				Font = UIFont.FromName("AmericanTypewriter", 12f),
 				TextColor = UIColor.FromRGB(38, 127, 0),
 				TextAlignment = UITextAlignment.Center,
@@ -185,13 +182,15 @@ namespace Xamarin.Forms.ControlGallery.iOS
 
 			_imageView = new UIImageView();
 
-			_headingLabel = new UILabel() {
+			_headingLabel = new UILabel()
+			{
 				Font = UIFont.FromName("Cochin-BoldItalic", 22f),
 				TextColor = UIColor.FromRGB(127, 51, 0),
 				BackgroundColor = UIColor.Clear
 			};
 
-			_subheadingLabel = new UILabel() {
+			_subheadingLabel = new UILabel()
+			{
 				Font = UIFont.FromName("AmericanTypewriter", 12f),
 				TextColor = UIColor.FromRGB(38, 127, 0),
 				TextAlignment = UITextAlignment.Center,
@@ -230,15 +229,18 @@ namespace Xamarin.Forms.ControlGallery.iOS
 		{
 			base.OnElementChanged(e);
 
-			if (Control == null) {
+			if (Control == null)
+			{
 				SetNativeControl(new UITableView());
 			}
 
-			if (e.OldElement != null) {
+			if (e.OldElement != null)
+			{
 				// unsubscribe
 			}
 
-			if (e.NewElement != null) {
+			if (e.NewElement != null)
+			{
 				// subscribe
 
 				var s = new NativeiOSListViewSource(e.NewElement);
@@ -250,7 +252,8 @@ namespace Xamarin.Forms.ControlGallery.iOS
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == NativeListView.ItemsProperty.PropertyName) {
+			if (e.PropertyName == NativeListView.ItemsProperty.PropertyName)
+			{
 				// update the Items list in the UITableViewSource
 				var s = new NativeiOSListViewSource(Element);
 
@@ -274,15 +277,18 @@ namespace Xamarin.Forms.ControlGallery.iOS
 		{
 			base.OnElementChanged(e);
 
-			if (Control == null) {
+			if (Control == null)
+			{
 				SetNativeControl(new UITableView());
 			}
 
-			if (e.OldElement != null) {
+			if (e.OldElement != null)
+			{
 				// unsubscribe
 			}
 
-			if (e.NewElement != null) {
+			if (e.NewElement != null)
+			{
 				// subscribe
 
 				var s = new NativeListViewSource(e.NewElement);
@@ -294,7 +300,8 @@ namespace Xamarin.Forms.ControlGallery.iOS
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == NativeListView.ItemsProperty.PropertyName) {
+			if (e.PropertyName == NativeListView.ItemsProperty.PropertyName)
+			{
 				// update the Items list in the UITableViewSource
 				var s = new NativeListViewSource(Element);
 				Control.Source = s;
@@ -314,11 +321,10 @@ namespace Xamarin.Forms.ControlGallery.iOS
 		NativeListView2 _listView;
 		readonly NSString _cellIdentifier = new NSString("TableCell");
 
-		public IEnumerable<DataSource> Items {
+		public IEnumerable<DataSource> Items
+		{
 			//get{ }
-			set {
-				_tableItems = value.ToList();
-			}
+			set { _tableItems = value.ToList(); }
 		}
 
 		public NativeiOSListViewSource(NativeListView2 view)
@@ -349,7 +355,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
 
 		public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
 		{
-			_listView.NotifyItemSelected(_tableItems [indexPath.Row]);
+			_listView.NotifyItemSelected(_tableItems[indexPath.Row]);
 			Console.WriteLine("Row " + indexPath.Row.ToString() + " selected");
 			tableView.DeselectRow(indexPath, true);
 		}
@@ -370,18 +376,22 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			NativeiOSListViewCell cell = tableView.DequeueReusableCell(_cellIdentifier) as NativeiOSListViewCell;
 
 			// if there are no cells to reuse, create a new one
-			if (cell == null) {
+			if (cell == null)
+			{
 				cell = new NativeiOSListViewCell(_cellIdentifier);
 			}
 
-			if (string.IsNullOrWhiteSpace(_tableItems [indexPath.Row].ImageFilename)) {
-				cell.UpdateCell(_tableItems [indexPath.Row].Name
-					, _tableItems [indexPath.Row].Category
+			if (string.IsNullOrWhiteSpace(_tableItems[indexPath.Row].ImageFilename))
+			{
+				cell.UpdateCell(_tableItems[indexPath.Row].Name
+					, _tableItems[indexPath.Row].Category
 					, null);
-			} else {
-				cell.UpdateCell(_tableItems [indexPath.Row].Name
-					, _tableItems [indexPath.Row].Category
-					, UIImage.FromFile("Images/" + _tableItems [indexPath.Row].ImageFilename + ".jpg"));
+			}
+			else
+			{
+				cell.UpdateCell(_tableItems[indexPath.Row].Name
+					, _tableItems[indexPath.Row].Category
+					, UIImage.FromFile("Images/" + _tableItems[indexPath.Row].ImageFilename + ".jpg"));
 			}
 
 			return cell;
@@ -395,10 +405,9 @@ namespace Xamarin.Forms.ControlGallery.iOS
 		string _cellIdentifier = "TableCell";
 		NativeListView _listView;
 
-		public IEnumerable<string> Items {
-			set {
-				_tableItems = value.ToList();
-			}
+		public IEnumerable<string> Items
+		{
+			set { _tableItems = value.ToList(); }
 		}
 
 		public NativeListViewSource(NativeListView view)
@@ -419,11 +428,12 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			return _tableItems.Count;
 		}
 #endif
+
 		#region user interaction methods
 
 		public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
 		{
-			_listView.NotifyItemSelected(_tableItems [indexPath.Row]);
+			_listView.NotifyItemSelected(_tableItems[indexPath.Row]);
 
 			Console.WriteLine("Row " + indexPath.Row.ToString() + " selected");
 
@@ -451,7 +461,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
 				cell = new UITableViewCell(UITableViewCellStyle.Subtitle, _cellIdentifier);
 
 			// set the item text
-			cell.TextLabel.Text = _tableItems [indexPath.Row];//.Items[indexPath.Row].Heading;
+			cell.TextLabel.Text = _tableItems[indexPath.Row]; //.Items[indexPath.Row].Heading;
 
 			// if it's a cell style that supports a subheading, set it
 			//			if(item.CellStyle == UITableViewCellStyle.Subtitle 
@@ -487,8 +497,10 @@ namespace Xamarin.Forms.ControlGallery.iOS
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Bugzilla21177.CollectionView> e)
 		{
-			if (e.NewElement != null) {
-				var flowLayout = new UICollectionViewFlowLayout {
+			if (e.NewElement != null)
+			{
+				var flowLayout = new UICollectionViewFlowLayout
+				{
 					SectionInset = new UIEdgeInsets(20, 20, 20, 20),
 					ScrollDirection = UICollectionViewScrollDirection.Vertical,
 					MinimumInteritemSpacing = 5, // minimum spacing between cells 
@@ -519,7 +531,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
 		public override void ViewDidLoad()
 		{
 			base.ViewDidLoad();
-			CollectionView.RegisterClassForCell(typeof(CollectionViewCell), cellId);
+			CollectionView.RegisterClassForCell(typeof (CollectionViewCell), cellId);
 		}
 
 #if __UNIFIED__
@@ -548,7 +560,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
 		public override UICollectionViewCell GetCell(UICollectionView collectionView, NSIndexPath indexPath)
 		{
 			var cell = (CollectionViewCell)collectionView.DequeueReusableCell(cellId, indexPath);
-			cell.Label.Text = items [indexPath.Row];
+			cell.Label.Text = items[indexPath.Row];
 			return cell;
 		}
 
@@ -560,9 +572,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
 
 	public class CollectionViewCell : UICollectionViewCell
 	{
-		public UILabel Label {
-			get; private set;
-		}
+		public UILabel Label { get; private set; }
 
 		[Export("initWithFrame:")]
 		public CollectionViewCell(RectangleF frame) : base(frame)
