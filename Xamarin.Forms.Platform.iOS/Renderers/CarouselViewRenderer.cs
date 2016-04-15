@@ -141,7 +141,7 @@ namespace Xamarin.Forms.Platform.iOS
 					break;
 
 				case NotifyCollectionChangedAction.Remove:
-					if (Element.Count == 0)
+					if (Controller.Count == 0)
 						throw new InvalidOperationException("CarouselView must retain a least one item.");
 
 					if (e.OldStartingIndex == _position)
@@ -149,7 +149,7 @@ namespace Xamarin.Forms.Platform.iOS
 						_controller.DeleteItems(
 							Enumerable.Range(e.OldStartingIndex, e.OldItems.Count)
 						);
-						if (_position == Element.Count)
+						if (_position == Controller.Count)
 							_position--;
 						OnItemChange(_position);
 					}
@@ -352,7 +352,7 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 		public override nint GetItemsCount(UICollectionView collectionView, nint section)
 		{
-			var result = Element.Count;
+			var result = Controller.Count;
 			return result;
 		}
 		public override UICollectionViewCell GetCell(UICollectionView collectionView, NSIndexPath indexPath)

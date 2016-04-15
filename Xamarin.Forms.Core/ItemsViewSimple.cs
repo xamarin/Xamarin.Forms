@@ -30,8 +30,6 @@ namespace Xamarin.Forms
 		{
 		}
 
-		public int Count => _itemSource.Count;
-
 		public IEnumerable ItemsSource
 		{
 			get { return (IEnumerable)GetValue(ItemsSourceProperty); }
@@ -43,6 +41,8 @@ namespace Xamarin.Forms
 			get { return (DataTemplate)GetValue(ItemTemplateProperty); }
 			set { SetValue(ItemTemplateProperty, value); }
 		}
+
+		int IItemViewController.Count => _itemSource.Count;
 
 		void IItemViewController.BindView(View view, object item)
 		{
