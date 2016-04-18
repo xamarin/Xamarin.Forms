@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseDataSource.cs" />
+    <Compile Include="CardView.cs" />
     <Compile Include="CompoundCollection.cs" />
     <Compile Include="DataItem.cs" />
     <Compile Include="DataPage.cs" />
