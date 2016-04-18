@@ -37,7 +37,7 @@ namespace Xamarin.Forms.Platform.WinPhone
 				Control.Value = Element.Date;
 			else if (e.PropertyName == DatePicker.FormatProperty.PropertyName)
 				UpdateFormatString();
-			else if (e.PropertyName == TimePicker.TextColorProperty.PropertyName)
+			else if (e.PropertyName == DatePicker.TextColorProperty.PropertyName)
 				UpdateTextColor();
 		}
 

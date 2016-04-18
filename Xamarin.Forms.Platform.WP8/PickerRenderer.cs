@@ -71,7 +71,7 @@ namespace Xamarin.Forms.Platform.WinPhone
 			{
 				UpdateAlignment();
 			}
-			else if (e.PropertyName == TimePicker.TextColorProperty.PropertyName)
+			else if (e.PropertyName == Picker.TextColorProperty.PropertyName)
 			{
 				UpdateTextColor();
 			}

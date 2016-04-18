@@ -69,7 +69,7 @@ namespace Xamarin.Forms.Platform.WinRT
 				UpdateSelectedIndex();
 			else if (e.PropertyName == Picker.TitleProperty.PropertyName)
 				UpdateTitle();
-			else if (e.PropertyName == TimePicker.TextColorProperty.PropertyName)
+			else if (e.PropertyName == Picker.TextColorProperty.PropertyName)
 				UpdateTextColor();
 		}
 
