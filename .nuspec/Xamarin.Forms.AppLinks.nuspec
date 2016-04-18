@@ -14,7 +14,7 @@
     <copyright>Copyright 2013-2016</copyright>
     <dependencies>
       <group targetFramework="MonoAndroid10">
-        <dependency id="Xamarin.Android.Support.v4" version="[23.1.1.1]"/>
+        <dependency id="Xamarin.Android.Support.v4" version="[23.3.0]"/>
         <dependency id="Xamarin.GooglePlayServices.AppIndexing" version="[29.0.0.1]"/>
       </group>
     </dependencies>
