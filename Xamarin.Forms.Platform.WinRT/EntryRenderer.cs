@@ -102,7 +102,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		void OnNativeTextChanged(object sender, Windows.UI.Xaml.Controls.TextChangedEventArgs args)
 		{
-			Element.SetValueCore(Entry.TextProperty, Control.Text);
+			Element?.SetValueCore(Entry.TextProperty, Control.Text);
 		}
 
 		void TextBoxOnKeyUp(object sender, KeyRoutedEventArgs args)
@@ -110,7 +110,7 @@ namespace Xamarin.Forms.Platform.WinRT
 			if (args.Key != VirtualKey.Enter)
 				return;
 
-			Element.SendCompleted();
+			Element?.SendCompleted();
 		}
 
 		void UpdateAlignment()
