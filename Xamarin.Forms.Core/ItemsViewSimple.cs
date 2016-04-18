@@ -9,18 +9,18 @@ namespace Xamarin.Forms
 {
 	public abstract class ItemsView : View, IItemViewController
 	{
-		public static readonly BindableProperty ItemsSourceProperty = 
+		public static readonly BindableProperty ItemsSourceProperty =
 			BindableProperty.Create(
 				propertyName: "ItemsSource",
-				returnType: typeof(IEnumerable), 
-				declaringType: typeof(ItemsView), 
+				returnType: typeof(IEnumerable),
+				declaringType: typeof(ItemsView),
 				defaultValue: Enumerable.Empty<object>()
 			);
 
-		public static readonly BindableProperty ItemTemplateProperty = 
+		public static readonly BindableProperty ItemTemplateProperty =
 			BindableProperty.Create(
-				propertyName: "ItemTemplate", 
-				returnType: typeof(DataTemplate), 
+				propertyName: "ItemTemplate",
+				returnType: typeof(DataTemplate),
 				declaringType: typeof(ItemsView)
 			);
 
@@ -80,7 +80,7 @@ namespace Xamarin.Forms
 				var itemsSource = ItemsSource;
 				if (itemsSource == null)
 					itemsSource = Enumerable.Empty<object>();
-				
+
 				// abstract enumerable, IList, IList<T>, and IReadOnlyList<T>
 				_itemSource = new ItemSource(itemsSource);
 
@@ -194,8 +194,7 @@ namespace Xamarin.Forms
 
 			void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 			{
-				Action onCollectionChanged = () =>
-				{
+				Action onCollectionChanged = () => {
 					if (CollectionChanged != null)
 						CollectionChanged(this, e);
 				};
