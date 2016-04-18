@@ -5,10 +5,12 @@ using System.Text;
 #if __UNIFIED__
 using Foundation;
 using UIKit;
+using CoreSpotlight;
 
 #else
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
+using MonoTouch.CoreSpotlight;
 #endif
 
 namespace Xamarin.Forms.Platform.iOS
@@ -142,6 +144,10 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				case "NSUserActivityTypeBrowsingWeb":
 					strLink = userActivity.WebPageUrl.AbsoluteString;
+					break;
+				case "com.apple.corespotlightitem":
+					if (userActivity.UserInfo.ContainsKey(CSSearchableItem.ActivityIdentifier))
+						strLink = userActivity.UserInfo.ObjectForKey(CSSearchableItem.ActivityIdentifier).ToString();
 					break;
 				default:
 					if (userActivity.UserInfo.ContainsKey(new NSString("link")))
