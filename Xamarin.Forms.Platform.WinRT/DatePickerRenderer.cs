@@ -74,7 +74,7 @@ namespace Xamarin.Forms.Platform.WinRT
 				UpdateMaximumDate();
 			else if (e.PropertyName == DatePicker.MinimumDateProperty.PropertyName)
 				UpdateMinimumDate();
-			if (e.PropertyName == TimePicker.TextColorProperty.PropertyName)
+			else if (e.PropertyName == DatePicker.TextColorProperty.PropertyName)
 				UpdateTextColor();
 		}
 
