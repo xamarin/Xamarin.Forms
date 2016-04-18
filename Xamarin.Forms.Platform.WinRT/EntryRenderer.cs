@@ -44,6 +44,17 @@ namespace Xamarin.Forms.Platform.WinRT
 			}
 		}
 
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing && Control != null)
+			{
+				Control.TextChanged -= OnNativeTextChanged;
+				Control.KeyUp -= TextBoxOnKeyUp;
+			}
+
+			base.Dispose(disposing);
+		}
+
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);
@@ -102,15 +113,15 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		void OnNativeTextChanged(object sender, Windows.UI.Xaml.Controls.TextChangedEventArgs args)
 		{
-			Element?.SetValueCore(Entry.TextProperty, Control.Text);
+			Element.SetValueCore(Entry.TextProperty, Control.Text);
 		}
 
 		void TextBoxOnKeyUp(object sender, KeyRoutedEventArgs args)
 		{
-			if (args.Key != VirtualKey.Enter)
+			if (args?.Key != VirtualKey.Enter)
 				return;
 
-			Element?.SendCompleted();
+			Element.SendCompleted();
 		}
 
 		void UpdateAlignment()
