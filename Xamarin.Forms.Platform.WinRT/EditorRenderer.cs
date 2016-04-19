@@ -22,10 +22,10 @@ namespace Xamarin.Forms.Platform.WinRT
 				{
 					var textBox = new TextBox { AcceptsReturn = true, TextWrapping = TextWrapping.Wrap };
 
+					SetNativeControl(textBox);
+
 					textBox.TextChanged += OnNativeTextChanged;
 					textBox.LostFocus += OnLostFocus;
-					
-					SetNativeControl(textBox);
 				}
 
 				UpdateText();

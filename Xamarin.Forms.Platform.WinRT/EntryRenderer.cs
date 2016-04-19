@@ -27,10 +27,11 @@ namespace Xamarin.Forms.Platform.WinRT
 				if (Control == null)
 				{
 					var textBox = new FormsTextBox { Style = Windows.UI.Xaml.Application.Current.Resources["FormsTextBoxStyle"] as Windows.UI.Xaml.Style };
+					
+					SetNativeControl(textBox);
 
 					textBox.TextChanged += OnNativeTextChanged;
 					textBox.KeyUp += TextBoxOnKeyUp;
-					SetNativeControl(textBox);
 				}
 
 				UpdateIsPassword();
