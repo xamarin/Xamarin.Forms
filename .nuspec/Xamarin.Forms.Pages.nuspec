@@ -14,6 +14,7 @@
     <dependencies>
       <group>
         <dependency id="Xamarin.Forms$IdAppend$" version="$version$"/>
+        <dependency id="Newtonsoft.Json" version="8.0.3"/>
       </group>
     </dependencies>
     <references>
