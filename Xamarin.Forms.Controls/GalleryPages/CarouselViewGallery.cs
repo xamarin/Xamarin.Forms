@@ -65,7 +65,6 @@ namespace Xamarin.Forms.Controls
 
 			public ItemView()
 			{
-
 				var change = CreateButton("Change", "Change", (items, index) => items[index] = new Moo());
 
 				var removeBar = new StackLayout
@@ -207,10 +206,11 @@ namespace Xamarin.Forms.Controls
 
 		static Button CreateButton(string text, string automationId, Action onClicked = null)
 		{
-			var button = new Button
+			var button = new Button 
 			{
-				Text = text,
-				AutomationId = automationId
+				Text = text, 
+				AutomationId = automationId,
+				WidthRequest = 50
 			};
 
 			if (onClicked != null)
@@ -218,8 +218,10 @@ namespace Xamarin.Forms.Controls
 
 			return button;
 		}
-		static Label CreateValue(string text, string automationId = "") => CreateLabel(text, Color.Olive, automationId);
-		static Label CreateCopy(string text, string automationId = "") => CreateLabel(text, Color.White, automationId);
+		static Label CreateValue(string text, string automationId = "") => 
+			CreateLabel(text, Color.Olive, automationId);
+		static Label CreateCopy(string text, string automationId = "") =>
+			CreateLabel(text, Color.White, automationId);
 		static Label CreateLabel(string text, Color color, string automationId)
 		{
 			return new Label()
@@ -232,16 +234,17 @@ namespace Xamarin.Forms.Controls
 
 		const int StartPosition = 1;
 		const int EventQueueLength = 7;
+		static readonly ObservableCollection<Item> EmptyItems = new ObservableCollection<Item>();
 
 		readonly CarouselView _carouselView;
 		readonly MyDataTemplateSelector _selector;
-		readonly IList<Item> _items;
 		readonly Label _position;
 		readonly Label _selectedItem;
 		readonly Label _selectedPosition;
 		readonly Queue<string> _events;
 		readonly Label _eventLog;
 		int _eventId;
+		ObservableCollection<Item> _items;
 
 		void OnEvent(string name)
 		{
@@ -251,25 +254,40 @@ namespace Xamarin.Forms.Controls
 				_events.Dequeue();
 			_eventLog.Text = string.Join(", ", _events.ToArray().Reverse());
 
+			UpdatePosition();
+		}
+
+		void UpdatePosition()
+		{
 			_position.Text = $"{_carouselView.Position}";
 		}
 
 		public CarouselViewGallaryPage()
 		{
-			_selector = new MyDataTemplateSelector();
-			_items = new ObservableCollection<Item>() {
-				new Baz(),
-				new Poo(),
-				new Foo(),
-				new Bar(),
-			};
+			_items = EmptyItems;
+
+			_selector = new MyDataTemplateSelector ();
+			Func<ObservableCollection<Item>> itemsFactory = () => 
+				_items = new ObservableCollection<Item>() 
+				{
+					new Baz(),
+					new Poo(),
+					new Foo(),
+					new Bar(),
+				};
 
 			_carouselView = new CarouselView
 			{
 				BackgroundColor = Color.Purple,
-				ItemsSource = _items,
 				ItemTemplate = _selector,
 				Position = StartPosition
+				//,ItemsSource = _items = new ObservableCollection<Item>()
+				//{
+				//	new Baz(),
+				//	new Poo(),
+				//	new Foo(),
+				//	new Bar(),
+				//}
 			};
 
 			_events = new Queue<string>();
@@ -277,7 +295,7 @@ namespace Xamarin.Forms.Controls
 			_position = CreateValue($"{_carouselView.Position}", "Position");
 			_selectedItem = CreateValue("?", "SelectedItem");
 			_selectedPosition = CreateValue("?", "SelectedPosition");
-			_eventLog = CreateValue(string.Empty, "EventLog");
+			_eventLog = CreateValue("", "EventLog");
 
 			_carouselView.ItemSelected += (s, o) =>
 			{
@@ -310,18 +328,28 @@ namespace Xamarin.Forms.Controls
 						if (_carouselView.Position == 0)
 							return;
 						_carouselView.Position--;
+						if (_items == EmptyItems)
+							UpdatePosition();
 					}),
 					CreateButton (">", "Next", () => {
 						if (_carouselView.Position == _items.Count - 1)
 							return;
 						_carouselView.Position++;
+						if (_items == EmptyItems)
+							UpdatePosition();
 					}),
-					CreateButton (">>", "Last", () => _carouselView.Position = _items.Count - 1)
+					CreateButton (">>", "Last", () => _carouselView.Position = _items.Count - 1),
+					CreateButton("Load", "Load", () => _carouselView.ItemsSource = _items = itemsFactory()),
+					CreateButton("Clear", "Clear", () => {
+						_items = EmptyItems;
+						_selectedItem.Text = "?";
+						_selectedPosition.Text = "?";
+						_carouselView.ItemsSource = null;
+					})
 				}
 			};
 
-
-			var statusBar = new StackLayout
+			var statusBar = new StackLayout 
 			{
 				Orientation = StackOrientation.Horizontal,
 				Children = {

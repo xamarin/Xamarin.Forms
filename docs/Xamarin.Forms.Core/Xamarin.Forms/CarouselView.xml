@@ -37,14 +37,14 @@
       </Docs>
     </Member>
     <Member MemberName="Item">
-      <MemberSignature Language="C#" Value="public int Item { get; }" />
-      <MemberSignature Language="ILAsm" Value=".property instance int32 Item" />
+      <MemberSignature Language="C#" Value="public object Item { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance object Item" />
       <MemberType>Property</MemberType>
       <AssemblyInfo>
         <AssemblyVersion>2.0.0.0</AssemblyVersion>
       </AssemblyInfo>
       <ReturnValue>
-        <ReturnType>System.Int32</ReturnType>
+        <ReturnType>System.Object</ReturnType>
       </ReturnValue>
       <Docs>
         <summary>To be added.</summary>

@@ -14,7 +14,7 @@ namespace Xamarin.Forms
 				propertyName: "ItemsSource",
 				returnType: typeof(IEnumerable),
 				declaringType: typeof(ItemsView),
-				defaultValue: Enumerable.Empty<object>()
+				propertyChanging: (b, o, n) => ((ItemsView)b).ItemsSourceChanging((IEnumerable)o, (IEnumerable)n)
 			);
 
 		public static readonly BindableProperty ItemTemplateProperty =
@@ -24,7 +24,9 @@ namespace Xamarin.Forms
 				declaringType: typeof(ItemsView)
 			);
 
-		ItemSource _itemSource;
+		static object s_defaultDataTemplate = new DataTemplate(typeof(Label));
+		static object s_defaultBindingContext = new object();
+		IndexableItemsSource _indexableItemSource;
 
 		internal ItemsView()
 		{
@@ -54,7 +56,17 @@ namespace Xamarin.Forms
 			}
 		}
 
-		int IItemViewController.Count => _itemSource.Count;
+		int IItemViewController.Count
+		{
+			get
+			{
+
+				if (IsDefaultItemSource)
+					return int.MaxValue;
+
+				return _indexableItemSource.Count;
+			}
+		}
 
 		void IItemViewController.BindView(View view, object item)
 		{
@@ -70,10 +82,20 @@ namespace Xamarin.Forms
 			return view;
 		}
 
-		object IItemViewController.GetItem(int index) => _itemSource[index];
+		object IItemViewController.GetItem(int index)
+		{
+
+			if (IsDefaultItemSource)
+				return s_defaultBindingContext;
+
+			return _indexableItemSource[index];
+		}
 
 		object IItemViewController.GetItemType(object item)
 		{
+			if (IsDefaultItemSource)
+				return s_defaultDataTemplate;
+
 			DataTemplate dataTemplate = ItemTemplate;
 			var dataTemplateSelector = dataTemplate as DataTemplateSelector;
 			if (dataTemplateSelector != null)
@@ -85,34 +107,34 @@ namespace Xamarin.Forms
 			return dataTemplate;
 		}
 
-		protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
+		internal event NotifyCollectionChangedEventHandler CollectionChanged;
+
+		internal virtual void ItemsSourceChanging(IEnumerable oldValue, IEnumerable newValue)
 		{
-			if (propertyName == nameof(ItemsSource))
+			if (newValue == null)
 			{
-				var itemsSource = ItemsSource;
-				if (itemsSource == null)
-					itemsSource = Enumerable.Empty<object>();
-
-				// abstract enumerable, IList, IList<T>, and IReadOnlyList<T>
-				_itemSource = new ItemSource(itemsSource);
-
-				// subscribe to collection changed events
-				var dynamicItemSource = _itemSource as INotifyCollectionChanged;
-				if (dynamicItemSource != null)
-				{
-					new WeakNotifyCollectionChanged(this, dynamicItemSource);
-				}
+				_indexableItemSource = null;
+				return;
 			}
 
-			base.OnPropertyChanged(propertyName);
-		}
+			// abstract enumerable, IList, IList<T>, and IReadOnlyList<T>
+			var indexableItemSource = new IndexableItemsSource(newValue);
+			if (indexableItemSource.Count == 0)
+				throw new ArgumentException("ItemSource must contain at least one element.");
+			_indexableItemSource = indexableItemSource;
 
-		internal event NotifyCollectionChangedEventHandler CollectionChanged;
+			// subscribe to collection changed events
+			var dynamicItemSource = _indexableItemSource as INotifyCollectionChanged;
+			if (dynamicItemSource != null)
+				new WeakNotifyCollectionChanged(this, dynamicItemSource);
+		}
 
 		internal void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			CollectionChanged?.Invoke(sender, e);
 		}
+
+		internal bool IsDefaultItemSource => _indexableItemSource == null;
 
 		sealed class WeakNotifyCollectionChanged
 		{
@@ -143,11 +165,11 @@ namespace Xamarin.Forms
 			}
 		}
 
-		sealed class ItemSource : IEnumerable<object>, INotifyCollectionChanged
+		sealed class IndexableItemsSource : IEnumerable<object>, INotifyCollectionChanged
 		{
 			IndexableCollection _indexable;
 
-			internal ItemSource(IEnumerable enumerable)
+			internal IndexableItemsSource(IEnumerable enumerable)
 			{
 				_indexable = new IndexableCollection(enumerable);
 				var dynamicItemSource = enumerable as INotifyCollectionChanged;
@@ -206,8 +228,7 @@ namespace Xamarin.Forms
 
 			void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 			{
-				Action onCollectionChanged = () =>
-				{
+				Action onCollectionChanged = () => {
 					if (CollectionChanged != null)
 						CollectionChanged(this, e);
 				};
@@ -228,10 +249,10 @@ namespace Xamarin.Forms
 
 			internal struct Enumerator : IEnumerator<object>
 			{
-				readonly ItemSource _itemSource;
+				readonly IndexableItemsSource _itemSource;
 				int _index;
 
-				internal Enumerator(ItemSource itemSource) : this()
+				internal Enumerator(IndexableItemsSource itemSource) : this()
 				{
 					_itemSource = itemSource;
 				}

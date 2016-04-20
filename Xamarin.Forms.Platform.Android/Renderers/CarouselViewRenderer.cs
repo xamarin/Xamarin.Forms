@@ -442,9 +442,8 @@ namespace Xamarin.Forms.Platform.Android
 			// layoutManager
 			recyclerView.SetLayoutManager(
 				layout: _physicalLayout = new PhysicalLayoutManager(
-					context: Context,
-					virtualLayout: new VirtualLayoutManager(),
-					positionOrigin: Element.Position
+					context: Context, 
+					virtualLayout: new VirtualLayoutManager()
 				)
 			);
 
@@ -493,9 +492,17 @@ namespace Xamarin.Forms.Platform.Android
 			};
 
 			// adapter
+			InitializeAdapter();
+		}
+		void InitializeAdapter()
+		{
+			_position = Element.Position;
+
+			LayoutManager.Reset(Element.Position);
+
 			var adapter = new ItemViewAdapter(this);
 			adapter.RegisterAdapterDataObserver(new PositionUpdater(this));
-			recyclerView.SetAdapter(adapter);
+			Control.SetAdapter(adapter);
 		}
 
 		ItemViewAdapter Adapter => (ItemViewAdapter)Control.GetAdapter();
@@ -547,6 +554,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 		ICarouselViewController Controller => Element;
 		IVisualElementController VisualElementController => Element;
+		bool IsDefaultItemSource => Controller.Count == int.MaxValue;
 		void OnPositionChanged()
 		{
 			Element.Position = _position;
@@ -573,12 +581,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (newElement != null)
 			{
 				if (Control == null)
-				{
 					Initialize();
-				}
-
-				// initialize properties
-				_position = Element.Position;
 
 				// initialize events
 				Element.CollectionChanged += OnCollectionChanged;
@@ -586,8 +589,11 @@ namespace Xamarin.Forms.Platform.Android
 		}
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == "Position" && _position != Element.Position)
+			if (e.PropertyName == "Position" && _position != Element.Position && !IsDefaultItemSource)
 				_physicalLayout.ScrollToPosition(Element.Position);
+
+			if (e.PropertyName == "ItemsSource")
+				InitializeAdapter();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -778,9 +784,8 @@ namespace Xamarin.Forms.Platform.Android
 		AdapterChangeType _adapterChangeType;
 		#endregion
 
-		internal PhysicalLayoutManager(Context context, VirtualLayoutManager virtualLayout, int positionOrigin)
+		internal PhysicalLayoutManager(Context context, VirtualLayoutManager virtualLayout)
 		{
-			_positionOrigin = positionOrigin;
 			_context = context;
 			_virtualLayout = virtualLayout;
 			_viewByAdaptorPosition = new Dictionary<int, AndroidView>();
@@ -799,6 +804,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			_scroller.OnBeginScroll += adapterPosition => OnBeginScroll?.Invoke(adapterPosition);
 			_scroller.OnEndScroll += adapterPosition => OnEndScroll?.Invoke(adapterPosition);
+
+			Reset(0);
 		}
 
 		#region Private Members
@@ -856,6 +863,13 @@ namespace Xamarin.Forms.Platform.Android
 		internal event Action<int> OnDisappearing;
 		internal event Action<int> OnEndScroll;
 
+		internal void Reset(int positionOrigin)
+		{
+			_viewByAdaptorPosition.Clear();
+			_positionOrigin = positionOrigin;
+			_visibleAdapterPosition.Clear();
+			_locationOffset = IntVector.Origin;
+		}
 		internal IntVector Velocity => _samples.Aggregate((o, a) => o + a) / _samples.Count;
 		internal void Layout(int width, int height)
 		{
