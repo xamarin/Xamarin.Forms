@@ -132,9 +132,9 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateCanGoBackForward();
 		}
 
-		void OnEvalRequested(object sender, EventArg<string> eventArg)
+		void OnEvalRequested(object sender, EvalRequested eventArg)
 		{
-			EvaluateJavascript(eventArg.Data);
+			EvaluateJavascript(eventArg.Script);
 		}
 
 		void OnGoBackRequested(object sender, EventArgs eventArgs)

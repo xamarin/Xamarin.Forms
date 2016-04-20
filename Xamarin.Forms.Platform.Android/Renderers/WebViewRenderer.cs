@@ -116,9 +116,9 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateCanGoBackForward();
 		}
 
-		void OnEvalRequested(object sender, EventArg<string> eventArg)
+		void OnEvalRequested(object sender, EvalRequested eventArg)
 		{
-			LoadUrl("javascript:" + eventArg.Data);
+			LoadUrl("javascript:" + eventArg.Script);
 		}
 
 		void OnGoBackRequested(object sender, EventArgs eventArgs)

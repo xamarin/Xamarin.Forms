@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Platform.WinPhone
 		public async void LoadHtml(string html, string baseUrl)
 		{
 			string fileName = string.Format("formslocal_{0}.html", DateTime.Now.Ticks);
-			;
+			
 			await SaveToIsoStore(fileName, html);
 			Control.Navigate(new Uri(fileName, UriKind.Relative));
 		}
@@ -80,9 +80,9 @@ namespace Xamarin.Forms.Platform.WinPhone
 			UpdateCanGoBackForward();
 		}
 
-		void OnEvalRequested(object sender, EventArg<string> eventArg)
+		void OnEvalRequested(object sender, EvalRequested eventArg)
 		{
-			Control.Dispatcher.BeginInvoke(() => Control.InvokeScript("eval", eventArg.Data));
+			Control.Dispatcher.BeginInvoke(() => Control.InvokeScript("eval", eventArg.Script));
 		}
 
 		void OnGoBackRequested(object sender, EventArgs eventArgs)

@@ -94,9 +94,9 @@ namespace Xamarin.Forms.Platform.WinRT
 			UpdateCanGoBackForward();
 		}
 
-		async void OnEvalRequested(object sender, EventArg<string> eventArg)
+		async void OnEvalRequested(object sender, EvalRequested eventArg)
 		{
-			await Control.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () => await Control.InvokeScriptAsync("eval", new[] { eventArg.Data }));
+			await Control.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, async () => await Control.InvokeScriptAsync("eval", new[] { eventArg.Script }));
 		}
 
 		void OnGoBackRequested(object sender, EventArgs eventArgs)
