@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using Windows.System;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.WinPhone;
 
 namespace Xamarin.Forms

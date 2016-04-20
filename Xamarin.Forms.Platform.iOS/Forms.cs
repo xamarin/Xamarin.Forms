@@ -11,6 +11,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Xamarin.Forms.Internals;
 #if __UNIFIED__
 using UIKit;
 using CoreFoundation;

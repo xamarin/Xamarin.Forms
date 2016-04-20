@@ -9,6 +9,8 @@ using Xamarin.Forms;
 using Xamarin.Forms.Core.UnitTests;
 using System.Security.Cryptography;
 using System.Text;
+using Xamarin.Forms.Internals;
+
 #if WINDOWS_PHONE
 using Xamarin.Forms.Platform.WinPhone;
 #endif

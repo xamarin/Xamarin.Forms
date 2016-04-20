@@ -17,6 +17,7 @@ using Windows.Storage.Streams;
 using Windows.System;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
+using Xamarin.Forms.Internals;
 
 #if WINDOWS_UWP
 

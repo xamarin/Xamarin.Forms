@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace Xamarin.Forms
+namespace Xamarin.Forms.Internals
 {
 	public abstract class Ticker
 	{

@@ -15,6 +15,7 @@ using Android.Content;
 using Android.Content.Res;
 using Android.OS;
 using Android.Util;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android;
 using Resource = Android.Resource;
 using Trace = System.Diagnostics.Trace;
