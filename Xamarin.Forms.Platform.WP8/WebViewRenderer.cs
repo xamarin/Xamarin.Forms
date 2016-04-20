@@ -5,10 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.WinPhone
 {
-	public class WebViewRenderer : ViewRenderer<WebView, WebBrowser>, IWebViewRenderer
+	public class WebViewRenderer : ViewRenderer<WebView, WebBrowser>, IWebViewDelegate
 	{
 		WebNavigationEvent _eventState;
 		bool _updating;

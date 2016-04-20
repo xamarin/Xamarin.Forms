@@ -2,11 +2,12 @@ using System;
 using System.ComponentModel;
 using Android.Webkit;
 using Android.Widget;
+using Xamarin.Forms.Internals;
 using AWebView = Android.Webkit.WebView;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class WebViewRenderer : ViewRenderer<WebView, AWebView>, IWebViewRenderer
+	public class WebViewRenderer : ViewRenderer<WebView, AWebView>, IWebViewDelegate
 	{
 		bool _ignoreSourceChanges;
 		FormsWebChromeClient _webChromeClient;

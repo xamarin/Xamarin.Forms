@@ -1,6 +1,6 @@
 using System;
 
-namespace Xamarin.Forms
+namespace Xamarin.Forms.Internals
 {
 	public class EvalRequested : EventArgs
 	{

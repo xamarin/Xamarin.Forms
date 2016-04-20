@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using Windows.UI.Core;
 using Windows.UI.Xaml.Controls;
+using Xamarin.Forms.Internals;
 
 #if WINDOWS_UWP
 
@@ -11,7 +12,7 @@ namespace Xamarin.Forms.Platform.UWP
 namespace Xamarin.Forms.Platform.WinRT
 #endif
 {
-	public class WebViewRenderer : ViewRenderer<WebView, Windows.UI.Xaml.Controls.WebView>, IWebViewRenderer
+	public class WebViewRenderer : ViewRenderer<WebView, Windows.UI.Xaml.Controls.WebView>, IWebViewDelegate
 	{
 		WebNavigationEvent _eventState;
 		bool _updating;
