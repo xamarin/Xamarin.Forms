@@ -58,6 +58,7 @@ namespace Xamarin.Forms.Platform.WinRT
 				catch (NotImplementedException)
 				{
 					// see https://bugzilla.xamarin.com/show_bug.cgi?id=33135
+					// WinRT implementation of Windows.UI.Xaml.Setter.get_Value is not implemented.
 				}
 			}
 
