@@ -88,6 +88,11 @@ namespace Xamarin.Forms.Core.UnitTests
 				invokeOnMainThread (action);
 		}
 
+		public Ticker CreateTicker()
+		{
+			return new MockTicker();
+		}
+
 		public void StartTimer (TimeSpan interval, Func<bool> callback)
 		{
 			Timer timer = null;
@@ -265,6 +270,26 @@ namespace Xamarin.Forms.Core.UnitTests
 	{
 		public MockApplication ()
 		{
+		}
+	}
+
+	internal class MockTicker : Ticker
+	{
+		bool _enabled;
+
+		protected override void EnableTimer()
+		{
+			_enabled = true;
+
+			while (_enabled)
+			{
+				SendSignals(16);
+			}
+		}
+
+		protected override void DisableTimer()
+		{
+			_enabled = false;
 		}
 	}
 }

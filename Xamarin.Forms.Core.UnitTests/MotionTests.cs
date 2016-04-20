@@ -6,20 +6,20 @@ namespace Xamarin.Forms.Core.UnitTests
 {
 	internal class BlockingTicker : Ticker
 	{
-		bool enabled;
+		bool _enabled;
 
 		protected override void EnableTimer ()
 		{
-			enabled = true;
+			_enabled = true;
 
-			while (enabled) {
+			while (_enabled) {
 				SendSignals (16);
 			}
 		}
 
 		protected override void DisableTimer ()
 		{
-			enabled = false;
+			_enabled = false;
 		}
 	}
 

@@ -28,7 +28,7 @@ namespace Xamarin.Forms.Platform.WinRT
 {
 	internal abstract class WindowsBasePlatformServices : IPlatformServices
 	{
-		 CoreDispatcher _dispatcher;
+		CoreDispatcher _dispatcher;
 
 		public WindowsBasePlatformServices(CoreDispatcher dispatcher)
 		{
@@ -43,29 +43,9 @@ namespace Xamarin.Forms.Platform.WinRT
 			_dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => action()).WatchForError();
 		}
 
-		public ITimer CreateTimer(Action<object> callback)
+		public Ticker CreateTicker()
 		{
-			return new WindowsTimer(new Timer(o => callback(o), null, Timeout.Infinite, Timeout.Infinite));
-		}
-
-		public ITimer CreateTimer(Action<object> callback, object state, int dueTime, int period)
-		{
-			return new WindowsTimer(new Timer(o => callback(o), state, dueTime, period));
-		}
-
-		public ITimer CreateTimer(Action<object> callback, object state, long dueTime, long period)
-		{
-			return CreateTimer(callback, state, TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(period));
-		}
-
-		public ITimer CreateTimer(Action<object> callback, object state, TimeSpan dueTime, TimeSpan period)
-		{
-			return new WindowsTimer(new Timer(o => callback(o), state, dueTime, period));
-		}
-
-		public ITimer CreateTimer(Action<object> callback, object state, uint dueTime, uint period)
-		{
-			return CreateTimer(callback, state, TimeSpan.FromMilliseconds(dueTime), TimeSpan.FromMilliseconds(period));
+			return new WindowsTicker();
 		}
 
 		public virtual Assembly[] GetAssemblies()

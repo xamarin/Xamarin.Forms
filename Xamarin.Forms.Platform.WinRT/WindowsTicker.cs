@@ -2,7 +2,6 @@
 using Windows.UI.Xaml;
 
 #if WINDOWS_UWP
-
 namespace Xamarin.Forms.Platform.UWP
 #else
 
@@ -11,7 +10,7 @@ namespace Xamarin.Forms.Platform.WinRT
 {
 	internal class WindowsTicker : Ticker
 	{
-		 DispatcherTimer _timer;
+		readonly DispatcherTimer _timer;
 
 		public WindowsTicker()
 		{

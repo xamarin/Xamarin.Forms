@@ -173,29 +173,9 @@ namespace Xamarin.Forms
 				NSRunLoop.Main.BeginInvokeOnMainThread(action.Invoke);
 			}
 
-			public ITimer CreateTimer(Action<object> callback)
+			public Ticker CreateTicker()
 			{
-				return new _Timer(new Timer(o => callback(o)));
-			}
-
-			public ITimer CreateTimer(Action<object> callback, object state, int dueTime, int period)
-			{
-				return new _Timer(new Timer(o => callback(o), state, dueTime, period));
-			}
-
-			public ITimer CreateTimer(Action<object> callback, object state, long dueTime, long period)
-			{
-				return new _Timer(new Timer(o => callback(o), state, dueTime, period));
-			}
-
-			public ITimer CreateTimer(Action<object> callback, object state, TimeSpan dueTime, TimeSpan period)
-			{
-				return new _Timer(new Timer(o => callback(o), state, dueTime, period));
-			}
-
-			public ITimer CreateTimer(Action<object> callback, object state, uint dueTime, uint period)
-			{
-				return new _Timer(new Timer(o => callback(o), state, dueTime, period));
+				return new CADisplayLinkTicker();
 			}
 
 			public Assembly[] GetAssemblies()
