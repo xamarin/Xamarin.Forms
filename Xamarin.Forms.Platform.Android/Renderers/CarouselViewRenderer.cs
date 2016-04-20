@@ -421,7 +421,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				_disposed = true;
 				if (Element != null)
-					Element.CollectionChanged -= OnCollectionChanged;
+					Controller.CollectionChanged -= OnCollectionChanged;
 			}
 
 			base.Dispose(disposing);
@@ -470,17 +470,9 @@ namespace Xamarin.Forms.Platform.Android
 			_physicalLayout.OnBeginScroll += position => scrolling = true;
 			_physicalLayout.OnEndScroll += position => scrolling = false;
 
-			// appearing
-			_physicalLayout.OnAppearing += appearingPosition =>
-			{
-				Controller.SendPositionAppearing(appearingPosition);
-			};
-
 			// disappearing
 			_physicalLayout.OnDisappearing += disappearingPosition =>
 			{
-				Controller.SendPositionDisappearing(disappearingPosition);
-
 				// animation completed
 				if (!scrolling && !dragging)
 				{
@@ -554,7 +546,6 @@ namespace Xamarin.Forms.Platform.Android
 		}
 		ICarouselViewController Controller => Element;
 		IVisualElementController VisualElementController => Element;
-		bool IsDefaultItemSource => Controller.Count == int.MaxValue;
 		void OnPositionChanged()
 		{
 			Element.Position = _position;
@@ -575,7 +566,7 @@ namespace Xamarin.Forms.Platform.Android
 			CarouselView newElement = e.NewElement;
 			if (oldElement != null)
 			{
-				e.OldElement.CollectionChanged -= OnCollectionChanged;
+				((IItemViewController)e.OldElement).CollectionChanged -= OnCollectionChanged;
 			}
 
 			if (newElement != null)
@@ -584,12 +575,12 @@ namespace Xamarin.Forms.Platform.Android
 					Initialize();
 
 				// initialize events
-				Element.CollectionChanged += OnCollectionChanged;
+				Controller.CollectionChanged += OnCollectionChanged;
 			}
 		}
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == "Position" && _position != Element.Position && !IsDefaultItemSource)
+			if (e.PropertyName == "Position" && _position != Element.Position && !Controller.IgnorePositionUpdates)
 				_physicalLayout.ScrollToPosition(Element.Position);
 
 			if (e.PropertyName == "ItemsSource")
@@ -1213,13 +1204,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 		#endregion
 
-		public override int ItemCount
-		{
-			get
-			{
-				return Controller.Count;
-			}
-		}
+		public override int ItemCount => Controller.Count;
 		public override int GetItemViewType(int position)
 		{
 			// get item and type from ItemSource and ItemTemplate

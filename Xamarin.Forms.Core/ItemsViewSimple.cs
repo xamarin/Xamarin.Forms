@@ -14,7 +14,7 @@ namespace Xamarin.Forms
 				propertyName: "ItemsSource",
 				returnType: typeof(IEnumerable),
 				declaringType: typeof(ItemsView),
-				propertyChanging: (b, o, n) => ((ItemsView)b).ItemsSourceChanging((IEnumerable)o, (IEnumerable)n)
+				propertyChanging: (b, o, n) => ((ItemsView)b).OnItemsSourceChanging((IEnumerable)o, (IEnumerable)n)
 			);
 
 		public static readonly BindableProperty ItemTemplateProperty =
@@ -24,178 +24,131 @@ namespace Xamarin.Forms
 				declaringType: typeof(ItemsView)
 			);
 
-		static object s_defaultDataTemplate = new DataTemplate(typeof(Label));
-		static object s_defaultBindingContext = new object();
-		IndexableItemsSource _indexableItemSource;
+		ItemsSourceProxy _itemSourceProxy;
 
-		internal ItemsView()
+		public ItemsView()
 		{
+			_itemSourceProxy = new ItemsSourceProxy(
+				itemSource: Enumerable.Empty<object>(),
+				itemSourceAsList: OnInitializeItemSource(),
+				onCollectionChanged: (s, e) => { }
+			);
 		}
 
 		public IEnumerable ItemsSource
 		{
-			get
-			{
-				return (IEnumerable)GetValue(ItemsSourceProperty);
-			}
-			set
-			{
-				SetValue(ItemsSourceProperty, value);
-			}
+			get { return (IEnumerable)GetValue(ItemsSourceProperty); }
+			set { SetValue(ItemsSourceProperty, value); }
 		}
-
 		public DataTemplate ItemTemplate
 		{
-			get
-			{
-				return (DataTemplate)GetValue(ItemTemplateProperty);
-			}
-			set
-			{
-				SetValue(ItemTemplateProperty, value);
-			}
+			get { return (DataTemplate)GetValue(ItemTemplateProperty); }
+			set { SetValue(ItemTemplateProperty, value); }
 		}
 
-		int IItemViewController.Count
+		protected abstract IReadOnlyList<object> OnInitializeItemSource();
+		protected abstract IReadOnlyList<object> OnItemsSourceChanging(
+			IReadOnlyList<object> itemSource,
+			ref NotifyCollectionChangedEventHandler collectionChanged);
+		internal virtual void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue) { }
+		protected virtual DataTemplate GetDataTemplate(object item) => null;
+
+		internal event NotifyCollectionChangedEventHandler CollectionChanged;
+		internal void OnItemsSourceChanging(IEnumerable oldValue, IEnumerable newValue)
 		{
-			get
-			{
+			// wrap up enumerable, IList, IList<T>, and IReadOnlyList<T>
+			var itemSourceAsList = newValue?.ToReadOnlyList();
 
-				if (IsDefaultItemSource)
-					return int.MaxValue;
+			// allow interception of itemSource
+			NotifyCollectionChangedEventHandler collectionChanged = (s, e) => { };
+			itemSourceAsList = OnItemsSourceChanging(itemSourceAsList, ref collectionChanged);
+			if (itemSourceAsList == null)
+				throw new InvalidOperationException(
+					"OnItemsSourceChanging must return non-null itemSource as IReadOnlyList");
 
-				return _indexableItemSource.Count;
-			}
+			// dispatch CollectionChangedEvent to ItemView without a strong reference to ItemView and
+			// synchronize dispatch and element access via CollectionSynchronizationContext protocol
+			_itemSourceProxy = new ItemsSourceProxy(newValue, itemSourceAsList, collectionChanged);
+
+			OnItemsSourceChanged(oldValue, newValue);
 		}
 
-		void IItemViewController.BindView(View view, object item)
+		event NotifyCollectionChangedEventHandler IItemViewController.CollectionChanged
 		{
-			view.BindingContext = item;
+			add { CollectionChanged += value; }
+			remove { CollectionChanged -= value; }
 		}
-
+		int IItemViewController.Count => _itemSourceProxy.Count;
+		void IItemViewController.BindView(View view, object item) => view.BindingContext = item;
+		object IItemViewController.GetItem(int index) => _itemSourceProxy[index];
 		View IItemViewController.CreateView(object type)
 		{
-			var dataTemplate = (DataTemplate)type;
-			object content = dataTemplate.CreateContent();
-			var view = (View)content;
+			object content = ((DataTemplate)type).CreateContent();
+			var view = content as View;
+			if (view == null)
+				throw new InvalidOperationException($"DataTemplate returned non-view content: '{content}'.");
+
 			view.Parent = this;
 			return view;
 		}
-
-		object IItemViewController.GetItem(int index)
-		{
-
-			if (IsDefaultItemSource)
-				return s_defaultBindingContext;
-
-			return _indexableItemSource[index];
-		}
-
 		object IItemViewController.GetItemType(object item)
 		{
-			if (IsDefaultItemSource)
-				return s_defaultDataTemplate;
+			// allow interception of DataTemplate resolution
+			var dataTemplate = GetDataTemplate(item);
+			if (dataTemplate != null)
+				return dataTemplate;
 
-			DataTemplate dataTemplate = ItemTemplate;
+			// resolve DataTemplate (possibly via DataTemplateSelector)
+			dataTemplate = ItemTemplate;
 			var dataTemplateSelector = dataTemplate as DataTemplateSelector;
 			if (dataTemplateSelector != null)
 				dataTemplate = dataTemplateSelector.SelectTemplate(item, this);
 
 			if (item == null)
-				throw new ArgumentException($"No DataTemplate resolved for item: {item}.");
+				throw new ArgumentException($"No DataTemplate resolved for item: '{item}'.");
 
 			return dataTemplate;
 		}
 
-		internal event NotifyCollectionChangedEventHandler CollectionChanged;
+		IItemViewController Controller => this;
 
-		internal virtual void ItemsSourceChanging(IEnumerable oldValue, IEnumerable newValue)
+		sealed class ItemsSourceProxy
 		{
-			if (newValue == null)
+			readonly object _itemSource;
+			readonly IReadOnlyList<object> _itemSourceAsList;
+			readonly WeakReference<NotifyCollectionChangedEventHandler> _onCollectionChanged;
+
+			internal ItemsSourceProxy(
+				object itemSource,
+				IReadOnlyList<object> itemSourceAsList,
+				NotifyCollectionChangedEventHandler onCollectionChanged)
 			{
-				_indexableItemSource = null;
-				return;
-			}
+				_itemSource = itemSource;
+				_itemSourceAsList = itemSourceAsList;
+				_onCollectionChanged = new WeakReference<NotifyCollectionChangedEventHandler>(onCollectionChanged);
 
-			// abstract enumerable, IList, IList<T>, and IReadOnlyList<T>
-			var indexableItemSource = new IndexableItemsSource(newValue);
-			if (indexableItemSource.Count == 0)
-				throw new ArgumentException("ItemSource must contain at least one element.");
-			_indexableItemSource = indexableItemSource;
-
-			// subscribe to collection changed events
-			var dynamicItemSource = _indexableItemSource as INotifyCollectionChanged;
-			if (dynamicItemSource != null)
-				new WeakNotifyCollectionChanged(this, dynamicItemSource);
-		}
-
-		internal void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-		{
-			CollectionChanged?.Invoke(sender, e);
-		}
-
-		internal bool IsDefaultItemSource => _indexableItemSource == null;
-
-		sealed class WeakNotifyCollectionChanged
-		{
-			readonly WeakReference<INotifyCollectionChanged> _weakCollection;
-			readonly WeakReference<ItemsView> _weakSource;
-
-			public WeakNotifyCollectionChanged(ItemsView source, INotifyCollectionChanged incc)
-			{
-				incc.CollectionChanged += OnCollectionChanged;
-
-				_weakSource = new WeakReference<ItemsView>(source);
-				_weakCollection = new WeakReference<INotifyCollectionChanged>(incc);
-			}
-
-			void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-			{
-				ItemsView source;
-				if (!_weakSource.TryGetTarget(out source))
-				{
-					INotifyCollectionChanged collection;
-					if (_weakCollection.TryGetTarget(out collection))
-						collection.CollectionChanged -= OnCollectionChanged;
-
+				var dynamicItemSource = itemSource as INotifyCollectionChanged;
+				if (dynamicItemSource == null)
 					return;
-				}
 
-				source.OnCollectionChanged(sender, e);
-			}
-		}
-
-		sealed class IndexableItemsSource : IEnumerable<object>, INotifyCollectionChanged
-		{
-			IndexableCollection _indexable;
-
-			internal IndexableItemsSource(IEnumerable enumerable)
-			{
-				_indexable = new IndexableCollection(enumerable);
-				var dynamicItemSource = enumerable as INotifyCollectionChanged;
-				if (dynamicItemSource != null)
-					dynamicItemSource.CollectionChanged += OnCollectionChanged;
+				dynamicItemSource.CollectionChanged += SynchronizeOnCollectionChanged;
 			}
 
-			public int Count => _indexable.Count;
-
-			public IEnumerable Enumerable => _indexable.Enumerable;
-
+			public int Count => _itemSourceAsList.Count;
 			public object this[int index]
 			{
 				get
 				{
-					// madness ported from listProxy
-					CollectionSynchronizationContext syncContext = SyncContext;
-					if (syncContext != null)
+					// Device.IsInvokeRequired will be false
+
+					if (SyncContext != null)
 					{
 						object value = null;
-						syncContext.Callback(Enumerable, SyncContext.Context, () => value = _indexable[index], false);
-
+						Synchronize(() => value = _itemSourceAsList[index]);
 						return value;
 					}
 
-					return _indexable[index];
+					return _itemSourceAsList[index];
 				}
 			}
 
@@ -203,174 +156,48 @@ namespace Xamarin.Forms
 			{
 				get
 				{
+					if (_itemSource == null)
+						return null;
+
 					CollectionSynchronizationContext syncContext;
-					BindingBase.TryGetSynchronizedCollection(Enumerable, out syncContext);
+					BindingBase.TryGetSynchronizedCollection((IEnumerable)_itemSource, out syncContext);
 					return syncContext;
 				}
 			}
-
-			IEnumerator IEnumerable.GetEnumerator()
+			void Synchronize(Action action)
 			{
-				return GetEnumerator();
+				SyncContext.Callback(
+					collection: (IEnumerable)_itemSource,
+					accessMethod: action
+				);
 			}
-
-			IEnumerator<object> IEnumerable<object>.GetEnumerator()
+			void SynchronizeOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 			{
-				return GetEnumerator();
+				if (SyncContext != null)
+				{
+					Synchronize(() => OnCollectionChanged(sender, e));
+					return;
+				}
+
+				OnCollectionChanged(sender, e);
 			}
-
-			public event NotifyCollectionChangedEventHandler CollectionChanged;
-
-			public Enumerator GetEnumerator()
-			{
-				return new Enumerator(this);
-			}
-
 			void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 			{
-				Action onCollectionChanged = () => {
-					if (CollectionChanged != null)
-						CollectionChanged(this, e);
-				};
-
-				// madness ported from listProxy
-				CollectionSynchronizationContext syncContext = SyncContext;
-				if (syncContext != null)
+				if (Device.IsInvokeRequired)
 				{
-					syncContext.Callback(Enumerable, syncContext.Context, () => Device.BeginInvokeOnMainThread(onCollectionChanged), false);
+					Device.BeginInvokeOnMainThread(() => OnCollectionChanged(sender, e));
+					return;
 				}
 
-				else if (Device.IsInvokeRequired)
-					Device.BeginInvokeOnMainThread(onCollectionChanged);
-
-				else
-					onCollectionChanged();
-			}
-
-			internal struct Enumerator : IEnumerator<object>
-			{
-				readonly IndexableItemsSource _itemSource;
-				int _index;
-
-				internal Enumerator(IndexableItemsSource itemSource) : this()
+				NotifyCollectionChangedEventHandler onCollectionChanged;
+				if (!_onCollectionChanged.TryGetTarget(out onCollectionChanged))
 				{
-					_itemSource = itemSource;
+					var dynamicItemSource = (INotifyCollectionChanged)_itemSource;
+					dynamicItemSource.CollectionChanged -= SynchronizeOnCollectionChanged;
+					return;
 				}
 
-				public bool MoveNext()
-				{
-					if (_index == _itemSource.Count)
-						return false;
-
-					Current = _itemSource[_index++];
-					return true;
-				}
-
-				public object Current
-				{
-					get; private set;
-				}
-
-				public void Reset()
-				{
-					Current = null;
-					_index = 0;
-				}
-
-				public void Dispose()
-				{
-				}
-			}
-
-			struct IndexableCollection : IEnumerable<object>
-			{
-				internal IndexableCollection(IEnumerable list)
-				{
-					Enumerable = list;
-
-					if (list is IList)
-						return;
-
-					if (list is IList<object>)
-						return;
-
-					if (list is IReadOnlyList<object>)
-						return;
-
-					Enumerable = list.Cast<object>().ToArray();
-				}
-
-				internal IEnumerable Enumerable
-				{
-					get;
-				}
-
-				internal int Count
-				{
-					get
-					{
-						var list = Enumerable as IList;
-						if (list != null)
-							return list.Count;
-
-						var listOf = Enumerable as IList<object>;
-						if (listOf != null)
-							return listOf.Count;
-
-						var readOnlyList = (IReadOnlyList<object>)Enumerable;
-						return readOnlyList.Count;
-					}
-				}
-
-				internal object this[int index]
-				{
-					get
-					{
-						var list = Enumerable as IList;
-						if (list != null)
-							return list[index];
-
-						var listOf = Enumerable as IList<object>;
-						if (listOf != null)
-							return listOf[index];
-
-						var readOnlyList = (IReadOnlyList<object>)Enumerable;
-						return readOnlyList[index];
-					}
-				}
-
-				internal int IndexOf(object item)
-				{
-					var list = Enumerable as IList;
-					if (list != null)
-						return list.IndexOf(item);
-
-					var listOf = Enumerable as IList<object>;
-					if (listOf != null)
-						return listOf.IndexOf(item);
-
-					var readOnlyList = (IReadOnlyList<object>)Enumerable;
-					return readOnlyList.IndexOf(item);
-				}
-
-				public IEnumerator<object> GetEnumerator()
-				{
-					var list = Enumerable as IList;
-					if (list != null)
-						return list.Cast<object>().GetEnumerator();
-
-					var listOf = Enumerable as IList<object>;
-					if (listOf != null)
-						return listOf.GetEnumerator();
-
-					var readOnlyList = (IReadOnlyList<object>)Enumerable;
-					return readOnlyList.GetEnumerator();
-				}
-
-				IEnumerator IEnumerable.GetEnumerator()
-				{
-					return GetEnumerator();
-				}
+				onCollectionChanged(sender, e);
 			}
 		}
 	}

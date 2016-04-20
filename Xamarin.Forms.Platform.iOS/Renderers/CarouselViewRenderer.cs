@@ -19,9 +19,9 @@ using PointF = CoreGraphics.CGPoint;
 using System.Diagnostics;
 
 #else
-using nfloat=System.Single;
-using nint=System.Int32;
-using nuint=System.UInt32;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
 #endif
 
 namespace Xamarin.Forms.Platform.iOS
@@ -196,7 +196,7 @@ namespace Xamarin.Forms.Platform.iOS
 					position = 0;
 
 				_controller.ReloadData(position);
-				_scrollToTarget = -1;
+				_scrollToTarget = null;
 			}
 
 			base.OnElementPropertyChanged(sender, e);
@@ -209,7 +209,7 @@ namespace Xamarin.Forms.Platform.iOS
 			CarouselView newElement = e.NewElement;
 			if (oldElement != null)
 			{
-				e.OldElement.CollectionChanged -= OnCollectionChanged;
+				((IItemViewController)e.OldElement).CollectionChanged -= OnCollectionChanged;
 			}
 
 			if (newElement != null)
@@ -222,7 +222,7 @@ namespace Xamarin.Forms.Platform.iOS
 				_position = Element.Position;
 
 				// hook up crud events
-				Element.CollectionChanged += OnCollectionChanged;
+				Controller.CollectionChanged += OnCollectionChanged;
 			}
 		}
 
@@ -317,7 +317,7 @@ namespace Xamarin.Forms.Platform.iOS
 		CarouselViewRenderer _renderer;
 		int _nextItemTypeId;
 		int? _initialPosition;
-		int _lastVisibleCell;
+		int _lastPosition;
 
 		internal CarouselViewController(
 			CarouselViewRenderer renderer)
@@ -326,7 +326,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_renderer = renderer;
 			_typeIdByType = new Dictionary<object, int>();
 			_nextItemTypeId = 0;
-			_lastVisibleCell = -1;
+			_lastPosition = -1;
 		}
 
 		CarouselViewRenderer Renderer => _renderer;
@@ -349,18 +349,18 @@ namespace Xamarin.Forms.Platform.iOS
 			// only ever seems to be a single cell visible at a time
 			var visibleCell = (Cell)CollectionView.VisibleCells[0];
 			var position = visibleCell.Position;
-			if (position == _lastVisibleCell)
+			if (position == _lastPosition)
 				return;
 
-			_lastVisibleCell = position;
+			_lastPosition = position;
 			OnCellAppeared(position);
 		}
 
 		internal Action<int> OnCellAppeared;
 
 		public override void CellDisplayingEnded(
-			UICollectionView collectionView, 
-			UICollectionViewCell cell, 
+			UICollectionView collectionView,
+			UICollectionViewCell cell,
 			NSIndexPath indexPath)
 		{
 			if (_initialPosition != null)
@@ -369,8 +369,8 @@ namespace Xamarin.Forms.Platform.iOS
 			DisplayCell();
 		}
 		public override void WillDisplayCell(
-			UICollectionView collectionView, 
-			UICollectionViewCell cell, 
+			UICollectionView collectionView,
+			UICollectionViewCell cell,
 			NSIndexPath indexPath)
 		{
 			if (_initialPosition != null)
@@ -417,7 +417,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 		internal void ReloadData(int? initialPosition = null)
 		{
-			_lastVisibleCell = -1;
+			if (initialPosition == null)
+				initialPosition = _lastPosition;
+			else
+				_lastPosition = (int)initialPosition;
 
 			_initialPosition = initialPosition;
 			if (initialPosition == 0)
