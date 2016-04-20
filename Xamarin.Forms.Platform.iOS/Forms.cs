@@ -86,7 +86,6 @@ namespace Xamarin.Forms
 			Device.PlatformServices = new IOSPlatformServices();
 			Device.Info = new IOSDeviceInfo();
 
-			Ticker.Default = new CADisplayLinkTicker();
 			Registrar.RegisterAll(new[] { typeof(ExportRendererAttribute), typeof(ExportCellAttribute), typeof(ExportImageSourceHandlerAttribute) });
 
 			Device.Idiom = UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad ? TargetIdiom.Tablet : TargetIdiom.Phone;
