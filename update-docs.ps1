@@ -38,6 +38,13 @@ function ParseChanges
             }
 
         } 
+
+        if($changes[$n] -match "^New Type: (.*)"){
+            $modified = "$($docsPath.Replace("\", "/"))/$(ClassToXMLPath($matches[1]))"
+            Write-Host "$modified was added"
+            $suggestedCommands += "git add $modified"
+        }
+
         $n = $n + 1
     }
 
