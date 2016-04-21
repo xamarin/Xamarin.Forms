@@ -17,7 +17,7 @@
         </Setter>
       </Style>
 
-      <Style x:Key="SpeakerPageStyle" TargetType="p:DataPage" BasedOn="{StaticResource EventPageStyle}" />
+      <Style Class="Speakers" ApplyToDerivedTypes="True" CanCascade="True" TargetType="p:DataPage" BasedOn="{StaticResource EventPageStyle}" />
 
       <Style x:Key="DetailPageStyle" TargetType="p:DataPage">
         <Setter Property="ControlTemplate">

@@ -5,7 +5,7 @@
                 x:Class="PagesGallery.SpeakersPage"
                 Title="Speakers"
                 DetailTemplate="{StaticResource SpeakerDetailTemplate}"
-                Style="{StaticResource SpeakerPageStyle}">
+                StyleClass="Speakers">
   <p:DataPage.DataSource>
     <p:JsonDataSource Source="http://demo7391822.mockable.io/speakers" />
   </p:DataPage.DataSource>
