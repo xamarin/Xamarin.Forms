@@ -419,7 +419,7 @@
           <AttributeName>System.Diagnostics.DebuggerStepThrough</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Runtime.CompilerServices.AsyncStateMachine(typeof(Xamarin.Forms.NavigationPage/&lt;PopAsync&gt;d__68))</AttributeName>
+          <AttributeName>System.Runtime.CompilerServices.AsyncStateMachine(typeof(Xamarin.Forms.NavigationPage/&lt;PopAsync&gt;c__async0))</AttributeName>
         </Attribute>
       </Attributes>
       <ReturnValue>
@@ -515,7 +515,7 @@
           <AttributeName>System.Diagnostics.DebuggerStepThrough</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Runtime.CompilerServices.AsyncStateMachine(typeof(Xamarin.Forms.NavigationPage/&lt;PopToRootAsync&gt;d__71))</AttributeName>
+          <AttributeName>System.Runtime.CompilerServices.AsyncStateMachine(typeof(Xamarin.Forms.NavigationPage/&lt;PopToRootAsync&gt;c__async1))</AttributeName>
         </Attribute>
       </Attributes>
       <ReturnValue>
@@ -572,7 +572,7 @@
           <AttributeName>System.Diagnostics.DebuggerStepThrough</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Runtime.CompilerServices.AsyncStateMachine(typeof(Xamarin.Forms.NavigationPage/&lt;PushAsync&gt;d__65))</AttributeName>
+          <AttributeName>System.Runtime.CompilerServices.AsyncStateMachine(typeof(Xamarin.Forms.NavigationPage/&lt;PushAsync&gt;c__async2))</AttributeName>
         </Attribute>
       </Attributes>
       <ReturnValue>

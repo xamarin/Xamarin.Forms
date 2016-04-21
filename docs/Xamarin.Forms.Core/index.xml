@@ -3,7 +3,7 @@
     <Assembly Name="Xamarin.Forms.Core" Version="2.0.0.0">
       <Attributes>
         <Attribute>
-          <AttributeName>System.Diagnostics.Debuggable(System.Diagnostics.DebuggableAttribute+DebuggingModes.Default | System.Diagnostics.DebuggableAttribute+DebuggingModes.DisableOptimizations | System.Diagnostics.DebuggableAttribute+DebuggingModes.EnableEditAndContinue | System.Diagnostics.DebuggableAttribute+DebuggingModes.IgnoreSymbolStoreSequencePoints)</AttributeName>
+          <AttributeName>System.Diagnostics.Debuggable(System.Diagnostics.DebuggableAttribute+DebuggingModes.DisableOptimizations | System.Diagnostics.DebuggableAttribute+DebuggingModes.IgnoreSymbolStoreSequencePoints)</AttributeName>
         </Attribute>
         <Attribute>
           <AttributeName>System.Reflection.AssemblyCompany("Xamarin Inc.")</AttributeName>
@@ -12,7 +12,7 @@
           <AttributeName>System.Reflection.AssemblyConfiguration("")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyCopyright("Copyright © Xamarin Inc. 2013-2015")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyCopyright("Copyright � Xamarin Inc. 2013-2016")</AttributeName>
         </Attribute>
         <Attribute>
           <AttributeName>System.Reflection.AssemblyDescription("")</AttributeName>
@@ -28,9 +28,6 @@
         </Attribute>
         <Attribute>
           <AttributeName>System.Reflection.AssemblyTrademark("")</AttributeName>
-        </Attribute>
-        <Attribute>
-          <AttributeName>System.Runtime.CompilerServices.CompilationRelaxations(8)</AttributeName>
         </Attribute>
         <Attribute>
           <AttributeName>System.Runtime.CompilerServices.InternalsVisibleTo("Xamarin.Forms.Platform.iOS")</AttributeName>
@@ -102,6 +99,9 @@
           <AttributeName>System.Runtime.CompilerServices.InternalsVisibleTo("Xamarin.Forms.Core.Android.UITests")</AttributeName>
         </Attribute>
         <Attribute>
+          <AttributeName>System.Runtime.CompilerServices.InternalsVisibleTo("Xamarin.Forms.Core.Windows.UITests")</AttributeName>
+        </Attribute>
+        <Attribute>
           <AttributeName>System.Runtime.CompilerServices.InternalsVisibleTo("Xamarin.Forms.iOS.UITests")</AttributeName>
         </Attribute>
         <Attribute>
@@ -118,6 +118,12 @@
         </Attribute>
         <Attribute>
           <AttributeName>System.Runtime.CompilerServices.InternalsVisibleTo("Xamarin.Forms.Platform")</AttributeName>
+        </Attribute>
+        <Attribute>
+          <AttributeName>System.Runtime.CompilerServices.InternalsVisibleTo("Xamarin.Forms.Pages")</AttributeName>
+        </Attribute>
+        <Attribute>
+          <AttributeName>System.Runtime.CompilerServices.InternalsVisibleTo("Xamarin.Forms.Pages.UnitTests")</AttributeName>
         </Attribute>
         <Attribute>
           <AttributeName>System.Runtime.CompilerServices.RuntimeCompatibility(WrapNonExceptionThrows=true)</AttributeName>
@@ -169,6 +175,9 @@
       <Type Name="BoundsTypeConverter" Kind="Class" />
       <Type Name="BoxView" Kind="Class" />
       <Type Name="Button" Kind="Class" />
+      <Type Name="Button+ButtonContentLayout" Kind="Class" />
+      <Type Name="Button+ButtonContentLayout+ImagePosition" Kind="Enumeration" />
+      <Type Name="Button+ButtonContentTypeConverter" Kind="Class" />
       <Type Name="CarouselPage" Kind="Class" />
       <Type Name="CarouselView" Kind="Class" />
       <Type Name="Cell" Kind="Class" />
@@ -230,11 +239,11 @@
       <Type Name="HandlerAttribute" Kind="Class" />
       <Type Name="HtmlWebViewSource" Kind="Class" />
       <Type Name="IAnimatable" Kind="Interface" />
-      <Type Name="ICarouselViewController" Kind="Interface" />
       <Type Name="IAppIndexingProvider" Kind="Interface" />
       <Type Name="IApplicationController" Kind="Interface" />
       <Type Name="IAppLinkEntry" Kind="Interface" />
       <Type Name="IAppLinks" Kind="Interface" />
+      <Type Name="ICarouselViewController" Kind="Interface" />
       <Type Name="IDefinition" Kind="Interface" />
       <Type Name="IEffectControlProvider" Kind="Interface" />
       <Type Name="IElementController" Kind="Interface" />
@@ -250,6 +259,7 @@
       <Type Name="INativeElementView" Kind="Interface" />
       <Type Name="INavigation" Kind="Interface" />
       <Type Name="InputView" Kind="Class" />
+      <Type Name="IOpenGlViewController" Kind="Interface" />
       <Type Name="IOpenGLViewController" Kind="Interface" />
       <Type Name="IPageContainer`1" DisplayName="IPageContainer&lt;T&gt;" Kind="Interface" />
       <Type Name="IPlatform" Kind="Interface" />
