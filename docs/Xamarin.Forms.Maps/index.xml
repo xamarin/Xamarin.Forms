@@ -3,7 +3,7 @@
     <Assembly Name="Xamarin.Forms.Maps" Version="2.0.0.0">
       <Attributes>
         <Attribute>
-          <AttributeName>System.Diagnostics.Debuggable(System.Diagnostics.DebuggableAttribute+DebuggingModes.Default | System.Diagnostics.DebuggableAttribute+DebuggingModes.DisableOptimizations | System.Diagnostics.DebuggableAttribute+DebuggingModes.EnableEditAndContinue | System.Diagnostics.DebuggableAttribute+DebuggingModes.IgnoreSymbolStoreSequencePoints)</AttributeName>
+          <AttributeName>System.Diagnostics.Debuggable(System.Diagnostics.DebuggableAttribute+DebuggingModes.DisableOptimizations | System.Diagnostics.DebuggableAttribute+DebuggingModes.IgnoreSymbolStoreSequencePoints)</AttributeName>
         </Attribute>
         <Attribute>
           <AttributeName>System.Reflection.AssemblyCompany("Xamarin Inc.")</AttributeName>
@@ -12,7 +12,7 @@
           <AttributeName>System.Reflection.AssemblyConfiguration("")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyCopyright("Copyright © Xamarin Inc. 2013-2015")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyCopyright("Copyright � Xamarin Inc. 2013-2016")</AttributeName>
         </Attribute>
         <Attribute>
           <AttributeName>System.Reflection.AssemblyDescription("")</AttributeName>
@@ -33,9 +33,6 @@
           <AttributeName>System.Resources.NeutralResourcesLanguage("en")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Runtime.CompilerServices.CompilationRelaxations(8)</AttributeName>
-        </Attribute>
-        <Attribute>
           <AttributeName>System.Runtime.CompilerServices.InternalsVisibleTo("Xamarin.Forms.Maps.iOS")</AttributeName>
         </Attribute>
         <Attribute>
@@ -46,6 +43,15 @@
         </Attribute>
         <Attribute>
           <AttributeName>System.Runtime.CompilerServices.InternalsVisibleTo("Xamarin.Forms.Maps.WP8")</AttributeName>
+        </Attribute>
+        <Attribute>
+          <AttributeName>System.Runtime.CompilerServices.InternalsVisibleTo("Xamarin.Forms.Maps.UWP")</AttributeName>
+        </Attribute>
+        <Attribute>
+          <AttributeName>System.Runtime.CompilerServices.InternalsVisibleTo("Xamarin.Forms.Maps.WinRT.Phone")</AttributeName>
+        </Attribute>
+        <Attribute>
+          <AttributeName>System.Runtime.CompilerServices.InternalsVisibleTo("Xamarin.Forms.Maps.WinRT.Tablet")</AttributeName>
         </Attribute>
         <Attribute>
           <AttributeName>System.Runtime.CompilerServices.InternalsVisibleTo("iOSUnitTests")</AttributeName>
