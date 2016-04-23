@@ -9,6 +9,7 @@ using Android.App;
 
 namespace Xamarin.Forms.Platform.Android.AppLinks
 {
+	[Preserve(AllMembers = true)]
 	public class AndroidAppLinks : IAppLinks, IDisposable
 	{
 		readonly GoogleApiClient _client;
