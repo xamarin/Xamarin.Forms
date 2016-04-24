@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
@@ -8,11 +11,13 @@ namespace Xamarin.Forms
 	{
 		public static readonly BindableProperty PositionProperty =
 			BindableProperty.Create(
-				propertyName: nameof(Position),
-				returnType: typeof(int),
-				declaringType: typeof(CarouselView),
-				defaultValue: 0,
-				defaultBindingMode: BindingMode.TwoWay
+				propertyName: nameof(Position), 
+				returnType: typeof(int), 
+				declaringType: typeof(CarouselView), 
+				defaultValue: 0, 
+				defaultBindingMode: BindingMode.TwoWay,
+				validateValue: (b, o) => ((CarouselView)b).OnValidatePosition((int)o),
+				propertyChanged: (b, o, n) => ((CarouselView)b).OnPositionChanged()
 			);
 
 		public static readonly BindableProperty ItemProperty =
@@ -21,9 +26,15 @@ namespace Xamarin.Forms
 				returnType: typeof(object),
 				declaringType: typeof(CarouselView),
 				defaultValue: null,
-				defaultBindingMode: BindingMode.TwoWay
+				defaultBindingMode: BindingMode.TwoWay,
+				coerceValue: (b, o) => ((CarouselView)b).OnCoerceItem(o)
 			);
 
+		static object s_defaultItem = new object();
+		static object s_defaultView = new Label() { Text = "DEFAULT" };
+
+		readonly DataTemplate _defaultDataTemplate;
+		CarouselViewItemSource _itemsSource;
 		object _lastItem;
 		int _lastPosition;
 
@@ -31,43 +42,23 @@ namespace Xamarin.Forms
 		{
 			_lastPosition = 0;
 			_lastItem = null;
+			_defaultDataTemplate = new DataTemplate(() => DefaultView ?? s_defaultView);
+
 			VerticalOptions = LayoutOptions.FillAndExpand;
 			HorizontalOptions = LayoutOptions.FillAndExpand;
 		}
 
-		object GetItem(int position)
-		{
-			var controller = (IItemViewController)this;
-			object item = controller.GetItem(position);
-			return item;
-		}
-
-		// non-public bc unable to implement on iOS
-		internal event EventHandler<ItemVisibilityEventArgs> ItemAppearing;
-		internal event EventHandler<ItemVisibilityEventArgs> ItemDisappearing;
-
 		public int Position
 		{
-			get
-			{
-				return (int)GetValue(PositionProperty);
-			}
-			set
-			{
-				SetValue(PositionProperty, value);
-			}
+			get { return (int)GetValue(PositionProperty); }
+			set { SetValue(PositionProperty, value); }
 		}
 		public object Item
 		{
-			get
-			{
-				return GetValue(ItemProperty);
-			}
-			internal set
-			{
-				SetValue(ItemProperty, value);
-			}
+			get { return GetValue(ItemProperty); }
+			internal set { SetValue(ItemProperty, value); }
 		}
+		View DefaultView { get; set; } // vNext feature
 
 		public event EventHandler<SelectedItemChangedEventArgs> ItemSelected;
 		public event EventHandler<SelectedPositionChangedEventArgs> PositionSelected;
@@ -77,32 +68,133 @@ namespace Xamarin.Forms
 			var minimumSize = new Size(40, 40);
 			return new SizeRequest(minimumSize, minimumSize);
 		}
+		protected override DataTemplate GetDataTemplate(object item)
+		{
+			if (item == s_defaultItem)
+				return _defaultDataTemplate;
 
-		void ICarouselViewController.SendPositionAppearing(int position)
-		{
-			ItemAppearing?.Invoke(this, new ItemVisibilityEventArgs(GetItem(position)));
+			return base.GetDataTemplate(item);
 		}
-		void ICarouselViewController.SendPositionDisappearing(int position)
+		protected override IReadOnlyList<object> OnInitializeItemSource()
 		{
-			ItemDisappearing?.Invoke(this, new ItemVisibilityEventArgs(GetItem(position)));
+			return _itemsSource = new CarouselViewItemSource();
 		}
+		protected override IReadOnlyList<object> OnItemsSourceChanging(
+			IReadOnlyList<object> itemsSource,
+			ref NotifyCollectionChangedEventHandler collectionChanged)
+		{
+			// intercept calls to ItemSource
+			_itemsSource.ItemsSource = itemsSource;
+
+
+			if (itemsSource == null)
+				return _itemsSource;
+
+			// intercept calls from CollectionChanged
+			var baseCollectionChanged = collectionChanged;
+			collectionChanged = (s, e) =>
+			{
+				// when user itemsSource is empty provide a default view
+				var removeLast = itemsSource.Count == 1 && e.Action == NotifyCollectionChangedAction.Remove;
+				if (removeLast)
+					e = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
+
+				// when user itemsSource adds first item then reset to clear default view
+				var addFirst = itemsSource.Count == 0 && e.Action == NotifyCollectionChangedAction.Add;
+				if (addFirst)
+					e = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
+
+				baseCollectionChanged(s, e);
+			};
+
+			return _itemsSource;
+		}
+		internal override void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue)
+		{
+			// when ItemsSource is empty position can and must be zero
+			if (_itemsSource.IsEmpty)
+				Position = 0;
+
+			// when we're short on items whack position to be in range
+			else if (_itemsSource.Count <= Position)
+			{
+				// when ItemsSource is null any initial position can be selected
+				if (!_itemsSource.IsNull)
+					Position = _itemsSource.Count - 1;
+			}
+
+			// get item now that position is updated
+			Item = Controller.GetItem(Position);
+
+			// notify app of position changes
+			Controller.SendSelectedPositionChanged(Position);
+
+			base.OnItemsSourceChanged(oldValue, newValue);
+		}
+
+		ICarouselViewController Controller => this;
+		bool ICarouselViewController.IgnorePositionUpdates => _itemsSource.IsNull;
 		void ICarouselViewController.SendSelectedItemChanged(object item)
 		{
-			if (item.Equals(_lastItem))
-				return;
-			_lastItem = item;
-
 			Item = item;
-			ItemSelected?.Invoke(this, new SelectedItemChangedEventArgs(item));
+			SendChangedEvents();
 		}
 		void ICarouselViewController.SendSelectedPositionChanged(int position)
 		{
-			if (_lastPosition == position)
-				return;
-			_lastPosition = position;
+			Position = position;
+			Item = Controller.GetItem(position);
+			SendChangedEvents();
+		}
+		void SendChangedEvents()
+		{
+			if (_lastPosition != Position)
+				PositionSelected?.Invoke(this, new SelectedPositionChangedEventArgs(Position));
+			_lastPosition = Position;
 
-			Item = ((IItemViewController)this).GetItem(position);
-			PositionSelected?.Invoke(this, new SelectedPositionChangedEventArgs(position));
+			if (!Equals(_lastItem, Item))
+				ItemSelected?.Invoke(this, new SelectedItemChangedEventArgs(Item));
+			_lastItem = Item;
+		}
+
+		object OnCoerceItem(object item) => item == s_defaultItem ? null : item;
+		void OnPositionChanged()
+		{
+			// if renderer is ignoring position updates then manually update position
+			if (Controller.IgnorePositionUpdates)
+				SendChangedEvents();
+		}
+		bool OnValidatePosition(int value)
+		{
+			if (value < 0)
+				return false;
+
+			if (Controller.IgnorePositionUpdates)
+				return true;
+
+			return value < Controller.Count;
+		}
+
+		sealed class CarouselViewItemSource : IReadOnlyList<object>
+		{
+			IReadOnlyList<object> _itemsSource;
+
+			public int Count => IsNullOrEmpty ? 1 : _itemsSource.Count;
+			public object this[int index] => IsNullOrEmpty ? s_defaultItem : _itemsSource[index];
+			public IEnumerator<object> GetEnumerator()
+			{
+				// ItemsView never actually uses GetEnumerator
+				throw new NotSupportedException();
+			}
+			IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+			internal IReadOnlyList<object> ItemsSource
+			{
+				get { return _itemsSource; }
+				set { _itemsSource = value; }
+			}
+			internal bool IsNull => _itemsSource == null;
+			internal bool IsEmpty => !IsNull && _itemsSource.Count == 0;
+			internal bool IsNullOrEmpty => IsNull || IsEmpty;
 		}
 	}
 }

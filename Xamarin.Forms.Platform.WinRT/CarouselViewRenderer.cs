@@ -25,13 +25,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		bool _leftAdd;
 
-		ICarouselViewController Controller
-		{
-			get
-			{
-				return Element;
-			}
-		}
+		ICarouselViewController Controller => Element;
 
 		protected override void OnElementChanged(ElementChangedEventArgs<CarouselView> e)
 		{
@@ -41,7 +35,7 @@ namespace Xamarin.Forms.Platform.WinRT
 			{
 				_flipView.SelectionChanged -= SelectionChanged;
 				_flipView.ItemsSource = null;
-				Element.CollectionChanged -= CollectionChanged;
+				((IItemViewController)e.OldElement).CollectionChanged -= OnCollectionChanged;
 			}
 
 			if (e.NewElement != null)
@@ -58,7 +52,7 @@ namespace Xamarin.Forms.Platform.WinRT
 				_flipView.ItemsSource = Element.ItemsSource;
 				_flipView.SelectedIndex = Element.Position;
 				_flipView.SelectionChanged += SelectionChanged;
-				Element.CollectionChanged += CollectionChanged;
+				Controller.CollectionChanged += OnCollectionChanged;
 			}
 
 			if (_flipView != Control)
@@ -77,7 +71,7 @@ namespace Xamarin.Forms.Platform.WinRT
 			base.OnElementPropertyChanged(sender, e);
 		}
 
-		void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			Controller.SendSelectedPositionChanged(_flipView.SelectedIndex);
 

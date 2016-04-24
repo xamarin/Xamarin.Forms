@@ -1,4 +1,6 @@
-﻿namespace Xamarin.Forms
+﻿using System.Collections.Specialized;
+
+namespace Xamarin.Forms
 {
 	public interface IItemViewController
 	{
@@ -6,9 +8,7 @@
 		View CreateView(object itemType);
 		object GetItem(int index);
 		object GetItemType(object item);
-		int Count
-		{
-			get;
-		}
+		int Count { get; }
+		event NotifyCollectionChangedEventHandler CollectionChanged;
 	}
 }

@@ -206,11 +206,11 @@ namespace Xamarin.Forms
 			CollectionSynchronizationContext sync;
 			if (BindingBase.TryGetSynchronizedCollection(ProxiedEnumerable, out sync))
 			{
-				sync.Callback(ProxiedEnumerable, sync.Context, () =>
+				sync.Callback(ProxiedEnumerable, () =>
 				{
 					e = e.WithCount(Count);
 					Device.BeginInvokeOnMainThread(action);
-				}, false);
+				});
 			}
 			else
 			{
@@ -257,7 +257,7 @@ namespace Xamarin.Forms
 				};
 
 				if (syncContext != null)
-					syncContext.Callback(ProxiedEnumerable, syncContext.Context, getFromList, false);
+					syncContext.Callback(ProxiedEnumerable, getFromList);
 				else
 					getFromList();
 
@@ -339,7 +339,7 @@ namespace Xamarin.Forms
 				if (syncContext == null)
 					move();
 				else
-					syncContext.Callback(ProxiedEnumerable, syncContext.Context, move, false);
+					syncContext.Callback(ProxiedEnumerable, move);
 
 				if (!moved)
 					break;
