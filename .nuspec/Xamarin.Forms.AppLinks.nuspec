@@ -10,7 +10,7 @@
     <iconUrl>http://xamarin.com/content/images/nuget/xamarin.png</iconUrl>
     <projectUrl>http://xamarin.com/forms</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Build native UIs for iOS, Android, and Windows Phone from a single, shared C# codebase</description>
+    <description>Add support for deep linking and indexing app content using Xamarin.Forms on the Android Platform</description>
     <copyright>Copyright 2013-2016</copyright>
     <dependencies>
       <group targetFramework="MonoAndroid10">

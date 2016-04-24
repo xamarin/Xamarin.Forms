@@ -8,7 +8,7 @@
 
 		public static readonly BindableProperty ImageSourceProperty = BindableProperty.Create(nameof(ImageSource), typeof(ImageSource), typeof(ListItemControl), default(ImageSource));
 
-		public static readonly BindableProperty PlaceholdImageSourceProperty = BindableProperty.Create(nameof(PlaceholdImageSource), typeof(ImageSource), typeof(ListItemControl), default(ImageSource));
+		public static readonly BindableProperty PlaceHolderImageSourceProperty = BindableProperty.Create(nameof(PlaceholderImageSource), typeof(ImageSource), typeof(ListItemControl), default(ImageSource));
 
 		public static readonly BindableProperty AspectProperty = BindableProperty.Create(nameof(Aspect), typeof(Aspect), typeof(ListItemControl), default(Aspect));
 
@@ -30,10 +30,10 @@
 			set { SetValue(ImageSourceProperty, value); }
 		}
 
-		public ImageSource PlaceholdImageSource
+		public ImageSource PlaceholderImageSource
 		{
-			get { return (ImageSource)GetValue(PlaceholdImageSourceProperty); }
-			set { SetValue(PlaceholdImageSourceProperty, value); }
+			get { return (ImageSource)GetValue(PlaceHolderImageSourceProperty); }
+			set { SetValue(PlaceHolderImageSourceProperty, value); }
 		}
 
 		public string Title

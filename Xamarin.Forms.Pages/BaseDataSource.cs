@@ -34,6 +34,7 @@ namespace Xamarin.Forms.Pages
 			}
 		}
 
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 		public object this[string key]
 		{
 			get
@@ -48,18 +49,19 @@ namespace Xamarin.Forms.Pages
 					OnKeyChanged(key);
 			}
 		}
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 
 		IEnumerable<string> IDataSource.MaskedKeys => _dataSourceList.MaskedKeys;
 
-		void IDataSource.MaskKey(string key)
+		async void IDataSource.MaskKey(string key)
 		{
-			Initialize();
+			await Initialize();
 			_dataSourceList.MaskKey(key);
 		}
 
-		void IDataSource.UnmaskKey(string key)
+		async void IDataSource.UnmaskKey(string key)
 		{
-			Initialize();
+			await Initialize();
 			_dataSourceList.UnmaskKey(key);
 		}
 
@@ -80,7 +82,7 @@ namespace Xamarin.Forms.Pages
 
 		protected abstract bool SetValue(string key, object value);
 
-		async void Initialize()
+		async Task Initialize()
 		{
 			// Do this lazy because GetRawData is virtual and calling it in the ctor is therefor unfriendly
 			if (_initialized)

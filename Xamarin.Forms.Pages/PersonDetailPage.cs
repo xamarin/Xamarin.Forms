@@ -22,15 +22,15 @@ namespace Xamarin.Forms.Pages
 
 		public PersonDetailPage()
 		{
-			SetBinding(DisplayNameProperty, new DataSourceBinding("DisplayName"));
-			SetBinding(PhoneNumberProperty, new DataSourceBinding("PhoneNumber"));
-			SetBinding(ImageProperty, new DataSourceBinding("Image"));
-			SetBinding(EmailProperty, new DataSourceBinding("Email"));
-			SetBinding(AddressProperty, new DataSourceBinding("Address"));
-			SetBinding(EmployerProperty, new DataSourceBinding("Employer"));
-			SetBinding(TwitterProperty, new DataSourceBinding("Twitter"));
-			SetBinding(FacebookProperty, new DataSourceBinding("Facebook"));
-			SetBinding(WebsiteProperty, new DataSourceBinding("Website"));
+			SetBinding(DisplayNameProperty, new DataSourceBinding(nameof(DisplayName)));
+			SetBinding(PhoneNumberProperty, new DataSourceBinding(nameof(PhoneNumber)));
+			SetBinding(ImageProperty, new DataSourceBinding(nameof(Image)));
+			SetBinding(EmailProperty, new DataSourceBinding(nameof(Email)));
+			SetBinding(AddressProperty, new DataSourceBinding(nameof(Address)));
+			SetBinding(EmployerProperty, new DataSourceBinding(nameof(Employer)));
+			SetBinding(TwitterProperty, new DataSourceBinding(nameof(Twitter)));
+			SetBinding(FacebookProperty, new DataSourceBinding(nameof(Facebook)));
+			SetBinding(WebsiteProperty, new DataSourceBinding(nameof(Website)));
 		}
 
 		public string Address

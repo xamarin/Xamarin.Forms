@@ -7,7 +7,7 @@ namespace Xamarin.Forms.Pages
 {
 	internal class DataSourceList : IList<IDataItem>, IReadOnlyList<IDataItem>, INotifyCollectionChanged
 	{
-		readonly List<int> _maskedIndexes = new List<int>(); // Indicies  
+		readonly List<int> _maskedIndexes = new List<int>(); // Indices  
 		readonly HashSet<string> _maskedKeys = new HashSet<string>();
 		IList<IDataItem> _mainList;
 

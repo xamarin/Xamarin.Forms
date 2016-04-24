@@ -17,21 +17,21 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		public async void DeregisterLink(IAppLinkEntry appLink)
 		{
-			if (string.IsNullOrEmpty(appLink.AppLinkUri?.ToString()))
+			if (string.IsNullOrWhiteSpace(appLink.AppLinkUri?.ToString()))
 				throw new ArgumentNullException("AppLinkUri");
 			await RemoveLinkAsync(appLink.AppLinkUri?.ToString());
 		}
 
 		public async void DeregisterLink(Uri uri)
 		{
-			if (string.IsNullOrEmpty(uri?.ToString()))
+			if (string.IsNullOrWhiteSpace(uri?.ToString()))
 				throw new ArgumentNullException(nameof(uri));
 			await RemoveLinkAsync(uri.ToString());
 		}
 
 		public async void RegisterLink(IAppLinkEntry appLink)
 		{
-			if (string.IsNullOrEmpty(appLink.AppLinkUri?.ToString()))
+			if (string.IsNullOrWhiteSpace(appLink.AppLinkUri?.ToString()))
 				throw new ArgumentNullException("AppLinkUri");
 			await AddLinkAsync(appLink);
 		}

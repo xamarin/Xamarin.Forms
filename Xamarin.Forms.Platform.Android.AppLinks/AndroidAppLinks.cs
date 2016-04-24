@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Platform.Android.AppLinks
 
 		public static void Init(Activity activity)
 		{
-			if(IsInitialized)
+			if (IsInitialized)
 				return;
 			IsInitialized = true;
 
@@ -65,7 +65,7 @@ namespace Xamarin.Forms.Platform.Android.AppLinks
 			}
 		}
 
-		static IndexingAction BuildIndextAction(IAppLinkEntry appLink)
+		static IndexingAction BuildIndexAction(IAppLinkEntry appLink)
 		{
 			Thing item = new Thing.Builder().SetName(appLink.Title).SetDescription(appLink.Description).SetUrl(global::Android.Net.Uri.Parse(appLink.AppLinkUri.AbsoluteUri)).Build();
 			Thing thing = new IndexingAction.Builder(IndexingAction.TypeView).SetObject(item).SetActionStatus(IndexingAction.StatusTypeCompleted).Build();
@@ -75,7 +75,7 @@ namespace Xamarin.Forms.Platform.Android.AppLinks
 
 		async Task IndexItemAsync(IAppLinkEntry appLink)
 		{
-			IndexingAction indexAction = BuildIndextAction(appLink);
+			IndexingAction indexAction = BuildIndexAction(appLink);
 
 			if (_client.IsConnected && appLink.IsLinkActive)
 			{

@@ -7,7 +7,7 @@ namespace Xamarin.Forms.Pages
 	public class CardView : DataView
 	{
 		public static readonly BindableProperty TextProperty =
-			BindableProperty.Create("Text", typeof(string), typeof(CardView), null, BindingMode.OneWay);
+			BindableProperty.Create(nameof(Text), typeof(string), typeof(CardView), null, BindingMode.OneWay);
 
 		public string Text
 		{
@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Pages
 		}
 
 		public static readonly BindableProperty DetailProperty =
-			BindableProperty.Create("Detail", typeof(string), typeof(CardView), null, BindingMode.OneWay);
+			BindableProperty.Create(nameof(Detail), typeof(string), typeof(CardView), null, BindingMode.OneWay);
 
 		public string Detail
 		{
@@ -25,7 +25,7 @@ namespace Xamarin.Forms.Pages
 		}
 
 		public static readonly BindableProperty ImageSourceProperty =
-			BindableProperty.Create("ImageSource", typeof(ImageSource), typeof(CardView), null, BindingMode.OneWay);
+			BindableProperty.Create(nameof(ImageSource), typeof(ImageSource), typeof(CardView), null, BindingMode.OneWay);
 
 		public ImageSource ImageSource
 		{
