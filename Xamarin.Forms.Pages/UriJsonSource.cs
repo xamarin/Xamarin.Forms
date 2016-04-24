@@ -19,7 +19,7 @@ namespace Xamarin.Forms.Pages
 
 		public override async Task<string> GetJson()
 		{
-			var webClient = new HttpClient(new ModernHttpClient.NativeMessageHandler());
+			var webClient = new HttpClient();
 			try
 			{
 				string json = await webClient.GetStringAsync(Uri);
