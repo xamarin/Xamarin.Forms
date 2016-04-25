@@ -91,9 +91,10 @@ namespace Xamarin.Forms.Platform.iOS
 					return;
 				_scrollToTarget = null;
 			}
-
 			else if (position == _position)
+			{
 				return;
+			}
 
 			_position = position;
 			Element.Position = position;

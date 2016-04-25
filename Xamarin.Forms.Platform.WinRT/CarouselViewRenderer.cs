@@ -39,9 +39,9 @@ namespace Xamarin.Forms.Platform.WinRT
 				((IItemViewController)e.OldElement).CollectionChanged -= OnCollectionChanged;
 			}
 
-			if (Element != null)
+			if (e.NewElement != null)
 			{
-				if (e.NewElement != null)
+				if (Element != null)
 				{
 					if (_flipView == null)
 					{

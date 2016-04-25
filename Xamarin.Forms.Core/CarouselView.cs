@@ -37,7 +37,7 @@ namespace Xamarin.Forms
 		CarouselViewItemSource _itemsSource;
 		object _lastItem;
 		int _lastPosition;
-		bool __ignorePositionUpdate;
+		bool _ignorePositionUpdate;
 
 		public CarouselView()
 		{
@@ -100,9 +100,9 @@ namespace Xamarin.Forms
 				// we're short on items
 				else if (itemsSource.Count <= Position)
 				{
-					__ignorePositionUpdate = true;
+					_ignorePositionUpdate = true;
 					Position = itemsSource.Count - 1;
-					__ignorePositionUpdate = false;
+					_ignorePositionUpdate = false;
 				}
 			}
 
@@ -176,7 +176,7 @@ namespace Xamarin.Forms
 			// if renderer is ignoring position updates then manually update position
 			if (Controller.IgnorePositionUpdates)
 			{
-				if (!__ignorePositionUpdate)
+				if (!_ignorePositionUpdate)
 					SendChangedEvents();
 			}
 		}

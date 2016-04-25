@@ -96,6 +96,7 @@ namespace Xamarin.Forms
 			if (objectList != null)
 				return new GenericListAsReadOnlyList<object>(objectList);
 
+			// allow IList<AnyType> without falling through to the array copy below
 			var typedList = (IReadOnlyList<object>)(
 				from iface in enumerable.GetType().GetTypeInfo().ImplementedInterfaces
 				where iface.Name == typeof(IList<>).Name && iface.GetGenericTypeDefinition() == typeof(IList<>)
@@ -105,6 +106,7 @@ namespace Xamarin.Forms
 			if (typedList != null)
 				return typedList;
 
+			// ToArray instead of ToList to save memory
 			return enumerable.Cast<object>().ToArray();
 		}
 

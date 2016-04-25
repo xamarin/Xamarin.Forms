@@ -293,13 +293,6 @@ namespace Xamarin.Forms.Controls
 				BackgroundColor = Color.Purple,
 				ItemTemplate = _selector,
 				Position = StartPosition
-				//,ItemsSource = _items = new ObservableCollection<Item>()
-				//{
-				//	new Baz(),
-				//	new Poo(),
-				//	new Foo(),
-				//	new Bar(),
-				//}
 			};
 
 			_events = new Queue<string>();
