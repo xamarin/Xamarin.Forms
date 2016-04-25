@@ -126,7 +126,7 @@ namespace Xamarin.Forms
 		{
 			IList<T> _list;
 
-			internal GenericListAsReadOnlyList(IList<T> list)
+			public GenericListAsReadOnlyList(IList<T> list)
 			{
 				_list = list;
 			}
