@@ -195,7 +195,6 @@ namespace Xamarin.Forms.Controls
 		public CorePageView (Page rootPage, NavigationBehavior navigationBehavior = NavigationBehavior.PushAsync)
 		{
 			var pages = new List<Page> {
-				new CarouselViewGallaryPage {Title = "CarouselView Gallery"},
 				new AppLinkPageGallery {Title = "App Link Page Gallery"},
 				new CarouselViewGallaryLaunchPage {Title = "CarouselView Gallery"},
 				new NestedNativeControlGalleryPage {Title = "Nested Native Controls Gallery"},
