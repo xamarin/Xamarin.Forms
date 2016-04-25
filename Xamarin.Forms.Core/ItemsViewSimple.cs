@@ -25,14 +25,16 @@ namespace Xamarin.Forms
 			);
 
 		ItemsSourceProxy _itemSourceProxy;
-		NotifyCollectionChangedEventHandler _collectionChanged;
+		NotifyCollectionChangedEventHandler _onCollectionChanged;
 
 		public ItemsView()
 		{
+			_onCollectionChanged = OnCollectionChanged;
+
 			_itemSourceProxy = new ItemsSourceProxy(
 				itemSource: Enumerable.Empty<object>(),
 				itemSourceAsList: OnInitializeItemSource(),
-				onCollectionChanged: _collectionChanged = CollectionChanged
+				onCollectionChanged: _onCollectionChanged
 			);
 		}
 
@@ -61,19 +63,25 @@ namespace Xamarin.Forms
 			var itemSourceAsList = newValue?.ToReadOnlyList();
 
 			// allow interception of itemSource
-			_collectionChanged = CollectionChanged;
-			itemSourceAsList = OnItemsSourceChanging(itemSourceAsList, ref _collectionChanged);
+			var onCollectionChanged = _onCollectionChanged;
+			itemSourceAsList = OnItemsSourceChanging(itemSourceAsList, ref _onCollectionChanged);
 			if (itemSourceAsList == null)
 				throw new InvalidOperationException(
 					"OnItemsSourceChanging must return non-null itemSource as IReadOnlyList");
 
 			// dispatch CollectionChangedEvent to ItemView without a strong reference to ItemView and
 			// synchronize dispatch and element access via CollectionSynchronizationContext protocol
-			_itemSourceProxy = new ItemsSourceProxy(newValue, itemSourceAsList, _collectionChanged);
+			_itemSourceProxy?.Dispose();
+			_itemSourceProxy = new ItemsSourceProxy(newValue, itemSourceAsList, onCollectionChanged);
 
 			OnItemsSourceChanged(oldValue, newValue);
 		}
 
+		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (CollectionChanged != null)
+				CollectionChanged(sender, e);
+		}
 		event NotifyCollectionChangedEventHandler IItemViewController.CollectionChanged
 		{
 			add { CollectionChanged += value; }
@@ -113,7 +121,7 @@ namespace Xamarin.Forms
 
 		IItemViewController Controller => this;
 
-		sealed class ItemsSourceProxy
+		sealed class ItemsSourceProxy : IDisposable
 		{
 			readonly object _itemSource;
 			readonly IReadOnlyList<object> _itemSourceAsList;
@@ -151,6 +159,10 @@ namespace Xamarin.Forms
 
 					return _itemSourceAsList[index];
 				}
+			}
+			public void Dispose()
+			{
+				_onCollectionChanged.SetTarget(null);
 			}
 
 			CollectionSynchronizationContext SyncContext

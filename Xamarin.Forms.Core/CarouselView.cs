@@ -117,10 +117,10 @@ namespace Xamarin.Forms
 			collectionChanged = (s, e) =>
 			{
 				// when user itemsSource is empty provide a default view
-				var removeLast = itemsSource.Count == 0 && e.Action == NotifyCollectionChangedAction.Remove;
+				var removeLast = _itemsSource.ItemsSource.Count == 0 && e.Action == NotifyCollectionChangedAction.Remove;
 
 				// when user itemsSource adds first item then reset to clear default view
-				var addFirst = itemsSource.Count == 1 && e.Action == NotifyCollectionChangedAction.Add;
+				var addFirst = _itemsSource.ItemsSource.Count == 1 && e.Action == NotifyCollectionChangedAction.Add;
 
 				if (addFirst || removeLast)
 				{
