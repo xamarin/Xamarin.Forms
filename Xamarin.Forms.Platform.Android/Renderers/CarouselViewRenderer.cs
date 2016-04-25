@@ -575,10 +575,10 @@ namespace Xamarin.Forms.Platform.Android
 		}
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == "Position" && _position != Element.Position && !Controller.IgnorePositionUpdates)
+			if (e.PropertyName == nameof(Element.Position) && _position != Element.Position && !Controller.IgnorePositionUpdates)
 				_physicalLayout.ScrollToPosition(Element.Position);
 
-			if (e.PropertyName == "ItemsSource")
+			if (e.PropertyName == nameof(Element.ItemsSource))
 				InitializeAdapter();
 
 			base.OnElementPropertyChanged(sender, e);

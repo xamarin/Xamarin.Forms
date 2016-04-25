@@ -125,9 +125,9 @@ namespace Xamarin.Forms.Core.UnitTests
 			CollectionSynchronizationContext syncContext;
 			Assert.IsTrue (BindingBase.TryGetSynchronizedCollection (stuff, out syncContext));
 			Assert.That (syncContext, Is.Not.Null);
-			//Assert.AreSame (syncContext.Callback, callback);
-			//Assert.That (syncContext.ContextReference, Is.Not.Null);
-			//Assert.That (syncContext.ContextReference.Target, Is.SameAs (context));
+			Assert.AreSame (syncContext.CallbackDelegate, callback);
+			Assert.That (syncContext.ContextReference, Is.Not.Null);
+			Assert.That (syncContext.ContextReference.Target, Is.SameAs (context));
 		}
 
 		[Test]

@@ -186,10 +186,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == "Position" && _position != Element.Position && !Controller.IgnorePositionUpdates)
+			if (e.PropertyName == nameof(Element.Position) && _position != Element.Position && !Controller.IgnorePositionUpdates)
 				ScrollToPosition(Element.Position, animated: true);
 
-			if (e.PropertyName == "ItemsSource")
+			if (e.PropertyName == nameof(Element.ItemsSource))
 			{
 				_position = Element.Position;
 				_controller.ReloadData(_position);

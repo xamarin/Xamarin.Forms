@@ -18,5 +18,8 @@ namespace Xamarin.Forms
 		{
 			_callback(collection, _contextReference.Target, accessMethod, writeAccess);
 		}
+
+		internal CollectionSynchronizationCallback CallbackDelegate => _callback;
+		internal WeakReference ContextReference => _contextReference;
 	}
 }
