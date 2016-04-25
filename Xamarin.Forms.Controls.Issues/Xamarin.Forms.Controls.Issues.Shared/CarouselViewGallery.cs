@@ -407,7 +407,7 @@ namespace Xamarin.Forms.Controls
 			}
 		}
 
-		[Test]
+		//[Test]
 		public void SwipeStepJump()
 		{
 			var gallery = Gallery.Launch();
