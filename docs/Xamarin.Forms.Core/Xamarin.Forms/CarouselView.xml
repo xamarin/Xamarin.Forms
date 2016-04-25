@@ -36,6 +36,26 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
+    <Member MemberName="GetDataTemplate">
+      <MemberSignature Language="C#" Value="protected override Xamarin.Forms.DataTemplate GetDataTemplate (object item);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance class Xamarin.Forms.DataTemplate GetDataTemplate(object item) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>Xamarin.Forms.DataTemplate</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="item" Type="System.Object" />
+      </Parameters>
+      <Docs>
+        <param name="item">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
     <Member MemberName="Item">
       <MemberSignature Language="C#" Value="public object Item { get; }" />
       <MemberSignature Language="ILAsm" Value=".property instance object Item" />
@@ -79,6 +99,45 @@
       </ReturnValue>
       <Docs>
         <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="OnInitializeItemSource">
+      <MemberSignature Language="C#" Value="protected override System.Collections.Generic.IReadOnlyList&lt;object&gt; OnInitializeItemSource ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance class System.Collections.Generic.IReadOnlyList`1&lt;object&gt; OnInitializeItemSource() cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Collections.Generic.IReadOnlyList&lt;System.Object&gt;</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="OnItemsSourceChanging">
+      <MemberSignature Language="C#" Value="protected override System.Collections.Generic.IReadOnlyList&lt;object&gt; OnItemsSourceChanging (System.Collections.Generic.IReadOnlyList&lt;object&gt; itemsSource, ref System.Collections.Specialized.NotifyCollectionChangedEventHandler collectionChanged);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance class System.Collections.Generic.IReadOnlyList`1&lt;object&gt; OnItemsSourceChanging(class System.Collections.Generic.IReadOnlyList`1&lt;object&gt; itemsSource, class System.Collections.Specialized.NotifyCollectionChangedEventHandler collectionChanged) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Collections.Generic.IReadOnlyList&lt;System.Object&gt;</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="itemsSource" Type="System.Collections.Generic.IReadOnlyList&lt;System.Object&gt;" />
+        <Parameter Name="collectionChanged" Type="System.Collections.Specialized.NotifyCollectionChangedEventHandler&amp;" RefType="ref" />
+      </Parameters>
+      <Docs>
+        <param name="itemsSource">To be added.</param>
+        <param name="collectionChanged">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -150,41 +209,19 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-    <Member MemberName="Xamarin.Forms.ICarouselViewController.SendPositionAppearing">
-      <MemberSignature Language="C#" Value="void ICarouselViewController.SendPositionAppearing (int position);" />
-      <MemberSignature Language="ILAsm" Value=".method hidebysig newslot virtual instance void Xamarin.Forms.ICarouselViewController.SendPositionAppearing(int32 position) cil managed" />
-      <MemberType>Method</MemberType>
+    <Member MemberName="Xamarin.Forms.ICarouselViewController.IgnorePositionUpdates">
+      <MemberSignature Language="C#" Value="bool Xamarin.Forms.ICarouselViewController.IgnorePositionUpdates { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance bool Xamarin.Forms.ICarouselViewController.IgnorePositionUpdates" />
+      <MemberType>Property</MemberType>
       <AssemblyInfo>
         <AssemblyVersion>2.0.0.0</AssemblyVersion>
       </AssemblyInfo>
       <ReturnValue>
-        <ReturnType>System.Void</ReturnType>
+        <ReturnType>System.Boolean</ReturnType>
       </ReturnValue>
-      <Parameters>
-        <Parameter Name="position" Type="System.Int32" />
-      </Parameters>
       <Docs>
-        <param name="position">To be added.</param>
         <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
-    <Member MemberName="Xamarin.Forms.ICarouselViewController.SendPositionDisappearing">
-      <MemberSignature Language="C#" Value="void ICarouselViewController.SendPositionDisappearing (int position);" />
-      <MemberSignature Language="ILAsm" Value=".method hidebysig newslot virtual instance void Xamarin.Forms.ICarouselViewController.SendPositionDisappearing(int32 position) cil managed" />
-      <MemberType>Method</MemberType>
-      <AssemblyInfo>
-        <AssemblyVersion>2.0.0.0</AssemblyVersion>
-      </AssemblyInfo>
-      <ReturnValue>
-        <ReturnType>System.Void</ReturnType>
-      </ReturnValue>
-      <Parameters>
-        <Parameter Name="position" Type="System.Int32" />
-      </Parameters>
-      <Docs>
-        <param name="position">To be added.</param>
-        <summary>To be added.</summary>
+        <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
