@@ -9,6 +9,7 @@ namespace Xamarin.Forms.Pages.Azure
 		public static readonly BindableProperty UriProperty = 
 			BindableProperty.Create(nameof(Uri), typeof(Uri), typeof(AzureSource), null);
 
+		[TypeConverter(typeof(UriTypeConverter))]
 		public Uri Uri
 		{
 			get { return (Uri)GetValue(UriProperty); }
