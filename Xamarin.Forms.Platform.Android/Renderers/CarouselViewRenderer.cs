@@ -422,6 +422,9 @@ namespace Xamarin.Forms.Platform.Android
 				_disposed = true;
 				if (Element != null)
 					Element.CollectionChanged -= OnCollectionChanged;
+
+				SetNativeControl(null);
+				RemoveAllViews();
 			}
 
 			base.Dispose(disposing);
@@ -570,18 +573,21 @@ namespace Xamarin.Forms.Platform.Android
 				e.OldElement.CollectionChanged -= OnCollectionChanged;
 			}
 
-			if (newElement != null)
+			if (Element != null)
 			{
-				if (Control == null)
+				if (newElement != null)
 				{
-					Initialize();
+					if (Control == null)
+					{
+						Initialize();
+					}
+
+					// initialize properties
+					_position = Element.Position;
+
+					// initialize events
+					Element.CollectionChanged += OnCollectionChanged;
 				}
-
-				// initialize properties
-				_position = Element.Position;
-
-				// initialize events
-				Element.CollectionChanged += OnCollectionChanged;
 			}
 		}
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)

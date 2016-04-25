@@ -54,6 +54,7 @@ namespace Xamarin.Forms.Platform.iOS
 		int? _targetPosition;
 
 		int _position;
+		bool _disposed;
 		CarouselViewController _controller;
 		RectangleF _lastBounds;
 		#endregion
@@ -202,19 +203,36 @@ namespace Xamarin.Forms.Platform.iOS
 				e.OldElement.CollectionChanged -= OnCollectionChanged;
 			}
 
-			if (newElement != null)
+			if (Element != null)
 			{
-				if (Control == null)
+				if (newElement != null)
 				{
-					Initialize();
+					if (Control == null)
+					{
+						Initialize();
+					}
+
+					// initialize properties
+					_position = Element.Position;
+
+					// hook up crud events
+					Element.CollectionChanged += OnCollectionChanged;
 				}
-
-				// initialize properties
-				_position = Element.Position;
-
-				// hook up crud events
-				Element.CollectionChanged += OnCollectionChanged;
 			}
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing && !_disposed)
+			{
+				_disposed = true;
+				if (Element != null)
+					Element.CollectionChanged -= OnCollectionChanged;
+
+				SetNativeControl(null);
+			}
+
+			base.Dispose(disposing);
 		}
 
 		public override void LayoutSubviews()

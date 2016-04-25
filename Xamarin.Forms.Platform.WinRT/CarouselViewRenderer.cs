@@ -23,6 +23,7 @@ namespace Xamarin.Forms.Platform.WinRT
 	{
 		WFlipView _flipView;
 
+		bool _disposed;
 		bool _leftAdd;
 
 		ICarouselViewController Controller
@@ -41,28 +42,44 @@ namespace Xamarin.Forms.Platform.WinRT
 			{
 				_flipView.SelectionChanged -= SelectionChanged;
 				_flipView.ItemsSource = null;
-				Element.CollectionChanged -= CollectionChanged;
+				e.OldElement.CollectionChanged -= CollectionChanged;
 			}
 
-			if (e.NewElement != null)
+			if (Element != null)
 			{
-				if (_flipView == null)
+				if (e.NewElement != null)
 				{
-					_flipView = new FlipView
+					if (_flipView == null)
 					{
-						IsSynchronizedWithCurrentItem = false,
-						ItemTemplate = (WDataTemplate)WApp.Current.Resources["ItemTemplate"]
-					};
+						_flipView = new FlipView {
+							IsSynchronizedWithCurrentItem = false,
+							ItemTemplate = (WDataTemplate)WApp.Current.Resources["ItemTemplate"]
+						};
+					}
+
+					_flipView.ItemsSource = Element.ItemsSource;
+					_flipView.SelectedIndex = Element.Position;
+					_flipView.SelectionChanged += SelectionChanged;
+					Element.CollectionChanged += CollectionChanged;
 				}
 
-				_flipView.ItemsSource = Element.ItemsSource;
-				_flipView.SelectedIndex = Element.Position;
-				_flipView.SelectionChanged += SelectionChanged;
-				Element.CollectionChanged += CollectionChanged;
+				if (_flipView != Control)
+					SetNativeControl(_flipView);
+			}
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing && !_disposed)
+			{
+				_disposed = true;
+				if (Element != null)
+					Element.CollectionChanged -= CollectionChanged;
+
+				SetNativeControl(null);
 			}
 
-			if (_flipView != Control)
-				SetNativeControl(_flipView);
+			base.Dispose(disposing);
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
