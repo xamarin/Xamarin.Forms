@@ -221,6 +221,7 @@ namespace Xamarin.Forms.Controls
 			{
 				Text = text, 
 				AutomationId = automationId,
+				TextColor = Color.White,
 				WidthRequest = 50
 			};
 
@@ -372,6 +373,9 @@ namespace Xamarin.Forms.Controls
 					CreateButton("Clear", "Clear", () => {
 						_items = null;
 						_carouselView.ItemsSource = null;
+					}),
+					CreateButton("Add", "Add", () => {
+						_items.Insert (0, new Moo ());
 					})
 				}
 			};

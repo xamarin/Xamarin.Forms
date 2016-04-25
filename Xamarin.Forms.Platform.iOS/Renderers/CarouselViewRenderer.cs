@@ -136,23 +136,27 @@ namespace Xamarin.Forms.Platform.iOS
 					if (Controller.Count == 0)
 						throw new InvalidOperationException("CarouselView must retain a least one item.");
 
-					if (e.OldStartingIndex == _position)
+					var removedPosition = e.OldStartingIndex;
+
+					if (removedPosition == _position)
 					{
 						_controller.DeleteItems(
 							Enumerable.Range(e.OldStartingIndex, e.OldItems.Count)
 						);
 						if (_position == Controller.Count)
-							_position--;
+							OnPositionChange(_position - 1);
 						OnItemChange(_position);
 					}
 
-					else
+					else if (removedPosition > _position)
 					{
-						_controller.ReloadData();
-
-						if (e.OldStartingIndex < _position)
-							ShiftPosition(-e.OldItems.Count);
+						_controller.DeleteItems(
+							Enumerable.Range(e.OldStartingIndex, e.OldItems.Count)
+						);
 					}
+
+					else
+						ShiftPosition(-e.OldItems.Count);
 
 					break;
 
@@ -175,7 +179,9 @@ namespace Xamarin.Forms.Platform.iOS
 			// By default the position remains the same which causes an animation in the case
 			// of the added/removed position preceding the current position. I prefer the constructed
 			// Android behavior whereby the item remains the same and the position changes.
-			ScrollToPosition(_position + offset, false);
+			var position = _position + offset;
+			_controller.ReloadData(position);
+			OnPositionChange(position);
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)

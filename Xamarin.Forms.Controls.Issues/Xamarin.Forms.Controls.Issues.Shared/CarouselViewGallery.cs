@@ -93,6 +93,14 @@ namespace Xamarin.Forms.Controls
 				internal static string Clear = nameof(Clear);
 				internal static string Launch = nameof(Launch);
 				internal static string Pop = nameof(Pop);
+
+				internal static string RemoveLeft = nameof(RemoveLeft);
+				internal static string RemoveRight = nameof(RemoveRight);
+				internal static string Remove = nameof(Remove);
+
+				internal static string AddLeft = nameof(AddLeft);
+				internal static string AddRight = nameof(AddRight);
+				internal static string Change = nameof(Change);
 			}
 			enum Event
 			{
@@ -259,6 +267,73 @@ namespace Xamarin.Forms.Controls
 			public void First() => Tap(Id.First, 0);
 			public void Last() => Tap(Id.Last, _itemIds.Count - 1);
 
+			public void StepNext() => Tap(Id.Next, _currentPosition + 1);
+			public void StepPrevious() => Tap(Id.Previous, _currentPosition - 1);
+			public void Step(int steps) => Move(steps, swipe: false);
+			public void StepToPosition(int position) => MoveToPosition(position, swipe: false);
+			public void StepToItem(int item) => MoveToItem(item, swipe: false);
+			public void StepToFirst() => MoveToFirst(swipe: false);
+			public void StepToLast() => MoveToLast(swipe: false);
+
+			public void SwipeNext() => Swipe(next: true, expectedPosition: _currentPosition + 1);
+			public void SwipePrevious() => Swipe(next: false, expectedPosition: _currentPosition - 1);
+			public void Swipe(int swipes) => Move(swipes, swipe: true);
+			public void SwipeToPosition(int position) => MoveToPosition(position, swipe: true);
+			public void SwipeToItem(int item) => MoveToItem(item, swipe: true);
+			public void SwipeToFirst() => MoveToFirst(swipe: true);
+			public void SwipeToLast() => MoveToLast(swipe: true);
+
+			public void RemoveAllLeft()
+			{
+				while (_currentPosition > 0)
+					RemoveLeft();
+			}
+			public void RemoveAllRight()
+			{
+				while (_currentPosition < _itemIds.Count - 1)
+					RemoveRight();
+			}
+			public void RemoveAll()
+			{
+				while (_itemIds.Count > 0)
+					Remove();
+			}
+			public void RemoveLeft() {
+				_app.Tap(Id.RemoveLeft);
+				_itemIds.RemoveAt(_currentPosition - 1);
+				_currentPosition--;
+				ExpectEvent(Event.OnPositionSelected);
+				WaitForPosition(_currentPosition);
+			}
+			public void RemoveRight() {
+				_app.Tap(Id.RemoveRight);
+				_itemIds.RemoveAt(_currentPosition + 1);
+				WaitForPosition(_currentPosition);
+			}
+			public void Remove() {
+				_app.Tap(Id.Remove);
+				_itemIds.RemoveAt(_currentPosition);
+				if (_itemIds.Count == _currentPosition)
+				{
+					if (_currentPosition == 0)
+					{
+						// removed last element
+						WaitForValue(Id.SelectedItem, null);
+						WaitForValue(Id.SelectedPosition, _currentPosition);
+						_currentItem = null;
+						ExpectEvent(Event.OnItemSelected);
+						VerifyEvents();
+						return;
+					}
+
+					// removed tail element
+					_currentPosition--;
+					ExpectEvent(Event.OnPositionSelected);
+				}
+				ExpectEvent(Event.OnItemSelected);
+				WaitForPosition(_currentPosition);
+			}
+
 			public void Load0()
 			{
 				_app.Tap(Id.Load0);
@@ -315,22 +390,6 @@ namespace Xamarin.Forms.Controls
 				VerifyEvents();
 			}
 
-			public void StepNext() => Tap(Id.Next, _currentPosition + 1);
-			public void StepPrevious() => Tap(Id.Previous, _currentPosition - 1);
-			public void Step(int steps) => Move(steps, swipe: false);
-			public void StepToPosition(int position) => MoveToPosition(position, swipe: false);
-			public void StepToItem(int item) => MoveToItem(item, swipe: false);
-			public void StepToFirst() => MoveToFirst(swipe: false);
-			public void StepToLast() => MoveToLast(swipe: false);
-
-			public void SwipeNext() => Swipe(next: true, expectedPosition: _currentPosition + 1);
-			public void SwipePrevious() => Swipe(next: false, expectedPosition: _currentPosition - 1);
-			public void Swipe(int swipes) => Move(swipes, swipe: true);
-			public void SwipeToPosition(int position) => MoveToPosition(position, swipe: true);
-			public void SwipeToItem(int item) => MoveToItem(item, swipe: true);
-			public void SwipeToFirst() => MoveToFirst(swipe: true);
-			public void SwipeToLast() => MoveToLast(swipe: true);
-
 			public void Launch()
 			{
 				_currentPosition = InitialPosition;
@@ -359,6 +418,35 @@ namespace Xamarin.Forms.Controls
 
 				// start at something other than 0
 				Assert.AreNotEqual(0, CarouselViewGallery.InitialPosition);
+
+				// remove all
+				carousel.Launch();
+
+				carousel.Load();
+				carousel.StepNext();
+				carousel.RemoveAll();
+
+				carousel.Load();
+				carousel.Last();
+				carousel.RemoveAllLeft();
+
+				carousel.Load();
+				carousel.First();
+				carousel.RemoveAllRight();
+				carousel.Pop();
+
+				// remove
+				carousel.Launch();
+				carousel.Load();
+				carousel.RemoveLeft();
+				carousel.StepNext();
+
+				carousel.RemoveRight();
+				carousel.StepPrevious();
+				carousel.StepNext();
+
+				carousel.Remove(); // remove rightmost
+				carousel.Pop();
 
 				// clear with Empty ItemsSource
 				carousel.Launch();

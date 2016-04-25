@@ -31,7 +31,7 @@ namespace Xamarin.Forms
 			);
 
 		static object s_defaultItem = new object();
-		static object s_defaultView = new Label() { Text = "DEFAULT" };
+		static object s_defaultView = new Label();
 
 		readonly DataTemplate _defaultDataTemplate;
 		CarouselViewItemSource _itemsSource;
@@ -117,14 +117,19 @@ namespace Xamarin.Forms
 			collectionChanged = (s, e) =>
 			{
 				// when user itemsSource is empty provide a default view
-				var removeLast = itemsSource.Count == 1 && e.Action == NotifyCollectionChangedAction.Remove;
-				if (removeLast)
-					e = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
+				var removeLast = itemsSource.Count == 0 && e.Action == NotifyCollectionChangedAction.Remove;
 
 				// when user itemsSource adds first item then reset to clear default view
-				var addFirst = itemsSource.Count == 0 && e.Action == NotifyCollectionChangedAction.Add;
-				if (addFirst)
+				var addFirst = itemsSource.Count == 1 && e.Action == NotifyCollectionChangedAction.Add;
+
+				if (addFirst || removeLast)
+				{
 					e = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
+
+					// not ideal; happens before default item appears or disappears
+					Item = Controller.GetItem(Position);
+					SendChangedEvents();
+				}
 
 				baseCollectionChanged(s, e);
 			};

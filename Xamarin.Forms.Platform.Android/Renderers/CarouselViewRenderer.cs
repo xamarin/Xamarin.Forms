@@ -276,11 +276,11 @@ namespace Xamarin.Forms.Platform.Android
 			internal override Tuple<int, int> GetPositions(
 				int positionOrigin,
 				int itemCount,
-				IntRectangle viewport,
-				bool includeBuffer)
+				IntRectangle viewport)
 			{
-				// returns one item off-screen in either direction. 
-				int buffer = includeBuffer ? 1 : 0;
+				// a delete could happen next; we need to layout elements that may slide on screen after a delete
+				int buffer = 1;
+
 				int left = GetPosition(itemCount, positionOrigin - buffer, viewport.Left);
 				int right = GetPosition(itemCount, positionOrigin + buffer, viewport.Right, exclusive: true);
 
@@ -328,14 +328,17 @@ namespace Xamarin.Forms.Platform.Android
 
 			readonly Action _onDragEnd;
 			readonly Action _onDragStart;
+			readonly Action _onScrollSettled;
 			ScrollState _lastScrollState;
 
 			internal OnScrollListener(
 				Action onDragEnd,
-				Action onDragStart)
+				Action onDragStart,
+				Action onScrollSettled)
 			{
 				_onDragEnd = onDragEnd;
 				_onDragStart = onDragStart;
+				_onScrollSettled = onScrollSettled;
 			}
 
 			public override void OnScrollStateChanged(RecyclerView recyclerView, int newState)
@@ -346,6 +349,9 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (_lastScrollState == ScrollState.Dragging && state != ScrollState.Dragging)
 					_onDragEnd();
+
+				if (_lastScrollState != ScrollState.Idle && state == ScrollState.Idle)
+					_onScrollSettled();
 
 				_lastScrollState = state;
 				base.OnScrollStateChanged(recyclerView, newState);
@@ -444,46 +450,33 @@ namespace Xamarin.Forms.Platform.Android
 			// layoutManager
 			recyclerView.SetLayoutManager(
 				layout: _physicalLayout = new PhysicalLayoutManager(
-					context: Context, 
+					context: Context,
 					virtualLayout: new VirtualLayoutManager()
 				)
 			);
 
 			// swiping
-			var dragging = false;
 			recyclerView.AddOnScrollListener(
 				new OnScrollListener(
-					onDragStart: () => dragging = true,
+					onDragStart: () => { },
 					onDragEnd: () =>
 					{
-						dragging = false;
 						var velocity = _physicalLayout.Velocity;
 
 						var target = velocity.X > 0 ?
 							_physicalLayout.VisiblePositions().Max() :
 							_physicalLayout.VisiblePositions().Min();
 						_physicalLayout.ScrollToPosition(target);
+					},
+					onScrollSettled: () => {
+						var visiblePositions = _physicalLayout.VisiblePositions().ToArray();
+						_position = visiblePositions.Single();
+
+						OnPositionChanged();
+						OnItemChanged();
 					}
 				)
 			);
-
-			// scrolling
-			var scrolling = false;
-			_physicalLayout.OnBeginScroll += position => scrolling = true;
-			_physicalLayout.OnEndScroll += position => scrolling = false;
-
-			// disappearing
-			_physicalLayout.OnDisappearing += disappearingPosition =>
-			{
-				// animation completed
-				if (!scrolling && !dragging)
-				{
-					_position = _physicalLayout.VisiblePositions().Single();
-
-					OnPositionChanged();
-					OnItemChanged();
-				}
-			};
 
 			// adapter
 			InitializeAdapter();
@@ -683,8 +676,7 @@ namespace Xamarin.Forms.Platform.Android
 			internal abstract Tuple<int, int> GetPositions(
 				int positionOrigin,
 				int itemCount,
-				IntRectangle viewport,
-				bool isPreLayout
+				IntRectangle viewport
 			);
 
 			internal abstract IntRectangle LayoutItem(int positionOrigin, int position);
@@ -734,21 +726,6 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			protected override int HorizontalSnapPreference => (int)_snapPreference;
-			protected override void OnStart()
-			{
-				OnBeginScroll?.Invoke(TargetPosition);
-				base.OnStart();
-			}
-			protected override void OnStop()
-			{
-				// expected this to be triggered with the animation stops but it
-				// actually seems to be triggered when the target is found
-				OnEndScroll?.Invoke(TargetPosition);
-				base.OnStop();
-			}
-
-			public event Action<int> OnBeginScroll;
-			public event Action<int> OnEndScroll;
 
 			public override PointF ComputeScrollVectorForPosition(int targetPosition)
 			{
@@ -795,9 +772,6 @@ namespace Xamarin.Forms.Platform.Android
 				}
 			);
 
-			_scroller.OnBeginScroll += adapterPosition => OnBeginScroll?.Invoke(adapterPosition);
-			_scroller.OnEndScroll += adapterPosition => OnEndScroll?.Invoke(adapterPosition);
-
 			Reset(0);
 		}
 
@@ -825,36 +799,12 @@ namespace Xamarin.Forms.Platform.Android
 			OffsetChildren(delta);
 			OnLayoutChildren(recycler, state);
 		}
-		void OnAppearingOrDisappearing(int position, bool isAppearing)
-		{
-			if (isAppearing)
-			{
-				if (!_visibleAdapterPosition.Contains(position))
-				{
-					_visibleAdapterPosition.Add(position);
-					OnAppearing?.Invoke(position);
-				}
-			}
-			else
-			{
-				if (_visibleAdapterPosition.Contains(position))
-				{
-					_visibleAdapterPosition.Remove(position);
-					OnDisappearing?.Invoke(position);
-				}
-			}
-		}
 		#endregion
 
 		protected override void Dispose(bool disposing)
 		{
 			base.Dispose(disposing);
 		}
-
-		internal event Action<int> OnAppearing;
-		internal event Action<int> OnBeginScroll;
-		internal event Action<int> OnDisappearing;
-		internal event Action<int> OnEndScroll;
 
 		internal void Reset(int positionOrigin)
 		{
@@ -871,10 +821,7 @@ namespace Xamarin.Forms.Platform.Android
 			_virtualLayout.Layout(_positionOrigin, new IntSize(width, height), ref _locationOffset);
 		}
 		internal IntRectangle Viewport => Rectangle + _locationOffset;
-		internal IEnumerable<int> VisiblePositions()
-		{
-			return _visibleAdapterPosition;
-		}
+		internal IEnumerable<int> VisiblePositions() => _visibleAdapterPosition;
 		internal IEnumerable<AndroidView> Views()
 		{
 			return _viewByAdaptorPosition.Values;
@@ -890,7 +837,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			// low-fidelity change event; assume everything has changed. If adapter reports it has "stable IDs" then 
 			// RecyclerView will attempt to synthesize high-fidelity change events: added, removed, moved, updated.
-			base.OnItemsChanged(recyclerView);
+			Reset(0);
+			RemoveAllViews();
 		}
 		public override void OnItemsAdded(RecyclerView recyclerView, int positionStart, int itemCount)
 		{
@@ -1057,11 +1005,7 @@ namespace Xamarin.Forms.Platform.Android
 			var positions = _virtualLayout.GetPositions(
 				positionOrigin: _positionOrigin,
 				itemCount: state.ItemCount,
-				viewport: Viewport,
-				// IsPreLayout => some type of data update of yet unknown type. Must assume update 
-				// could be remove so virtualLayout must +1 off-screen left in case origin is 
-				// removed and +n off-screen right to slide onscreen if a big item is removed
-				isPreLayout: state.IsPreLayout || adapterChangeType == AdapterChangeType.Removed
+				viewport: Viewport
 			).ToRange();
 
 			// disappearing
@@ -1081,7 +1025,6 @@ namespace Xamarin.Forms.Platform.Android
 
 				// remove
 				_viewByAdaptorPosition.Remove(position);
-				OnAppearingOrDisappearing(position, false);
 
 				// scrap
 				new DecoratedView(this, view).DetachAndScrap(recycler);
@@ -1094,6 +1037,7 @@ namespace Xamarin.Forms.Platform.Android
 				_locationOffset = new IntVector(vlayout.Width - Width, _locationOffset.Y);
 			}
 
+			_visibleAdapterPosition.Clear();
 			var nextLocationOffset = new IntPoint(int.MaxValue, int.MaxValue);
 			var nextPositionOrigin = int.MaxValue;
 			foreach (var position in positions)
@@ -1111,7 +1055,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				var isVisible = Viewport.IntersectsWith(layout);
 				if (isVisible)
-					OnAppearingOrDisappearing(position, true);
+					_visibleAdapterPosition.Add(position);
 
 				// update offsets
 				if (isVisible && position < nextPositionOrigin)

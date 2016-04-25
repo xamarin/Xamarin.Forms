@@ -25,13 +25,14 @@ namespace Xamarin.Forms
 			);
 
 		ItemsSourceProxy _itemSourceProxy;
+		NotifyCollectionChangedEventHandler _collectionChanged;
 
 		public ItemsView()
 		{
 			_itemSourceProxy = new ItemsSourceProxy(
 				itemSource: Enumerable.Empty<object>(),
 				itemSourceAsList: OnInitializeItemSource(),
-				onCollectionChanged: (s, e) => { }
+				onCollectionChanged: _collectionChanged = CollectionChanged
 			);
 		}
 
@@ -60,15 +61,15 @@ namespace Xamarin.Forms
 			var itemSourceAsList = newValue?.ToReadOnlyList();
 
 			// allow interception of itemSource
-			NotifyCollectionChangedEventHandler collectionChanged = (s, e) => { };
-			itemSourceAsList = OnItemsSourceChanging(itemSourceAsList, ref collectionChanged);
+			_collectionChanged = CollectionChanged;
+			itemSourceAsList = OnItemsSourceChanging(itemSourceAsList, ref _collectionChanged);
 			if (itemSourceAsList == null)
 				throw new InvalidOperationException(
 					"OnItemsSourceChanging must return non-null itemSource as IReadOnlyList");
 
 			// dispatch CollectionChangedEvent to ItemView without a strong reference to ItemView and
 			// synchronize dispatch and element access via CollectionSynchronizationContext protocol
-			_itemSourceProxy = new ItemsSourceProxy(newValue, itemSourceAsList, collectionChanged);
+			_itemSourceProxy = new ItemsSourceProxy(newValue, itemSourceAsList, _collectionChanged);
 
 			OnItemsSourceChanged(oldValue, newValue);
 		}
