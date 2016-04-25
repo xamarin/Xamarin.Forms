@@ -18,6 +18,39 @@
     <remarks>To be added.</remarks>
   </Docs>
   <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public ItemsView ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor() cil managed" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters />
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetDataTemplate">
+      <MemberSignature Language="C#" Value="protected virtual Xamarin.Forms.DataTemplate GetDataTemplate (object item);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance class Xamarin.Forms.DataTemplate GetDataTemplate(object item) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>Xamarin.Forms.DataTemplate</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="item" Type="System.Object" />
+      </Parameters>
+      <Docs>
+        <param name="item">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
     <Member MemberName="ItemsSource">
       <MemberSignature Language="C#" Value="public System.Collections.IEnumerable ItemsSource { get; set; }" />
       <MemberSignature Language="ILAsm" Value=".property instance class System.Collections.IEnumerable ItemsSource" />
@@ -77,6 +110,45 @@
       </ReturnValue>
       <Docs>
         <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="OnInitializeItemSource">
+      <MemberSignature Language="C#" Value="protected abstract System.Collections.Generic.IReadOnlyList&lt;object&gt; OnInitializeItemSource ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance class System.Collections.Generic.IReadOnlyList`1&lt;object&gt; OnInitializeItemSource() cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Collections.Generic.IReadOnlyList&lt;System.Object&gt;</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="OnItemsSourceChanging">
+      <MemberSignature Language="C#" Value="protected abstract System.Collections.Generic.IReadOnlyList&lt;object&gt; OnItemsSourceChanging (System.Collections.Generic.IReadOnlyList&lt;object&gt; itemSource, ref System.Collections.Specialized.NotifyCollectionChangedEventHandler collectionChanged);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance class System.Collections.Generic.IReadOnlyList`1&lt;object&gt; OnItemsSourceChanging(class System.Collections.Generic.IReadOnlyList`1&lt;object&gt; itemSource, class System.Collections.Specialized.NotifyCollectionChangedEventHandler collectionChanged) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Collections.Generic.IReadOnlyList&lt;System.Object&gt;</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="itemSource" Type="System.Collections.Generic.IReadOnlyList&lt;System.Object&gt;" />
+        <Parameter Name="collectionChanged" Type="System.Collections.Specialized.NotifyCollectionChangedEventHandler&amp;" RefType="ref" />
+      </Parameters>
+      <Docs>
+        <param name="itemSource">To be added.</param>
+        <param name="collectionChanged">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
