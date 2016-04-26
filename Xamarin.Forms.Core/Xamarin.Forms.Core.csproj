@@ -136,7 +136,6 @@
     <Compile Include="IResourcesProvider.cs" />
     <Compile Include="IRootObjectProvider.cs" />
     <Compile Include="IScrollViewController.cs" />
-    <Compile Include="ItemsViewSimple.cs" />
     <Compile Include="ItemTappedEventArgs.cs" />
     <Compile Include="ItemVisibilityEventArgs.cs" />
     <Compile Include="IValueConverterProvider.cs" />
