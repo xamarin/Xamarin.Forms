@@ -1,22 +1,25 @@
 using System;
+using System.Collections;
 
 namespace Xamarin.Forms
 {
 	internal sealed class CollectionSynchronizationContext
 	{
+		CollectionSynchronizationCallback _callback;
+		WeakReference _contextReference;
+
 		internal CollectionSynchronizationContext(object context, CollectionSynchronizationCallback callback)
 		{
-			ContextReference = new WeakReference(context);
-			Callback = callback;
+			_contextReference = new WeakReference(context);
+			_callback = callback;
 		}
 
-		internal CollectionSynchronizationCallback Callback { get; private set; }
-
-		internal object Context
+		internal void Callback(IEnumerable collection, Action accessMethod, bool writeAccess = false)
 		{
-			get { return ContextReference != null ? ContextReference.Target : null; }
+			_callback(collection, _contextReference.Target, accessMethod, writeAccess);
 		}
 
-		internal WeakReference ContextReference { get; }
+		internal CollectionSynchronizationCallback CallbackDelegate => _callback;
+		internal WeakReference ContextReference => _contextReference;
 	}
 }

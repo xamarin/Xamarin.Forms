@@ -68,12 +68,13 @@ namespace Xamarin.Forms.Controls
 		public class CarouselViewGallery : IGalleryPage
 		{
 			internal const int InitialItems = 4;
-			internal const int InitialItemId = 1;
+			internal const int InitialPosition = 1;
 			internal const string OnItemSelectedAbbr = "i";
 			internal const string OnPositionSelectedAbbr = "p";
+			internal const string Null = "null";
 			internal const int EventQueueDepth = 7;
 
-			private const double SwipePercentage = 0.50;
+			private const double SwipePercentage = 0.75;
 			private const int SwipeSpeed = 2000;
 
 			static class Id
@@ -88,6 +89,19 @@ namespace Xamarin.Forms.Controls
 				internal static string Previous = nameof(Previous);
 				internal static string First = nameof(First);
 				internal static string Last = nameof(Last);
+				internal static string Load = nameof(Load);
+				internal static string Load0 = nameof(Load0);
+				internal static string Clear = nameof(Clear);
+				internal static string Launch = nameof(Launch);
+				internal static string Pop = nameof(Pop);
+
+				internal static string RemoveLeft = nameof(RemoveLeft);
+				internal static string RemoveRight = nameof(RemoveRight);
+				internal static string Remove = nameof(Remove);
+
+				internal static string AddLeft = nameof(AddLeft);
+				internal static string AddRight = nameof(AddRight);
+				internal static string Change = nameof(Change);
 			}
 			enum Event
 			{
@@ -98,34 +112,49 @@ namespace Xamarin.Forms.Controls
 			IApp _app;
 			List<int> _itemIds;
 			int _currentPosition;
-			int _currentItem;
+			int? _currentItem;
 			Queue<string> _expectedEvents;
 			int _eventId;
+			bool _loaded;
+			int _start;
 
 			public CarouselViewGallery()
 			{
-				_itemIds = Enumerable.Range(0, InitialItems).ToList();
-				_currentPosition = InitialItemId;
-				_currentItem = _itemIds[_currentPosition];
+				_itemIds = new List<int>();
+				_currentPosition = InitialPosition;
 				_expectedEvents = new Queue<string>();
 				_eventId = 0;
+				_loaded = false;
 			}
 
 			void IUIProxy.Load(IApp app)
 			{
 				_app = app;
-				WaitForValue(Id.ItemId, _currentItem);
-				WaitForValue(Id.Position, _currentPosition);
+				WaitForValue(Id.Launch, Id.Launch);
 			}
 
 			private void WaitForValue(string marked, object value)
 			{
+				if (value == null)
+					value = "null";
+
 				var query = $"* marked:'{marked}' text:'{value}'";
 				_app.WaitForElement(o => o.Raw(query));
-
+			}
+			private void WaitForNotValue(string marked, object value)
+			{
+				var query = $"* marked:'{marked}' text:'{value}'";
+				_app.WaitForNoElement(o => o.Raw(query));
 			}
 			private void WaitForPosition(int expectedPosition)
 			{
+				if (!_loaded)
+				{
+					WaitForValue(Id.Position, expectedPosition);
+					_currentPosition = expectedPosition;
+					return;
+				}
+
 				var expectedItem = _itemIds[expectedPosition];
 
 				// expect no movement
@@ -142,6 +171,10 @@ namespace Xamarin.Forms.Controls
 				WaitForValue(Id.SelectedPosition, expectedPosition);
 				_currentPosition = expectedPosition;
 
+				VerifyEvents();
+			}
+			private void VerifyEvents()
+			{
 				// check expected events
 				var expectedEvents = string.Join(", ", _expectedEvents.ToArray().Reverse());
 				WaitForValue(Id.EventLog, expectedEvents);
@@ -152,7 +185,9 @@ namespace Xamarin.Forms.Controls
 					return;
 
 				ExpectEvent(Event.OnPositionSelected);
-				ExpectEvent(Event.OnItemSelected);
+
+				if (_loaded)
+					ExpectEvent(Event.OnItemSelected);
 			}
 			private void ExpectEvent(Event e)
 			{
@@ -248,6 +283,129 @@ namespace Xamarin.Forms.Controls
 			public void SwipeToItem(int item) => MoveToItem(item, swipe: true);
 			public void SwipeToFirst() => MoveToFirst(swipe: true);
 			public void SwipeToLast() => MoveToLast(swipe: true);
+
+			public void RemoveAllLeft()
+			{
+				while (_currentPosition > 0)
+					RemoveLeft();
+			}
+			public void RemoveAllRight()
+			{
+				while (_currentPosition < _itemIds.Count - 1)
+					RemoveRight();
+			}
+			public void RemoveAll()
+			{
+				while (_itemIds.Count > 0)
+					Remove();
+			}
+			public void RemoveLeft() {
+				_app.Tap(Id.RemoveLeft);
+				_itemIds.RemoveAt(_currentPosition - 1);
+				_currentPosition--;
+				ExpectEvent(Event.OnPositionSelected);
+				WaitForPosition(_currentPosition);
+			}
+			public void RemoveRight() {
+				_app.Tap(Id.RemoveRight);
+				_itemIds.RemoveAt(_currentPosition + 1);
+				WaitForPosition(_currentPosition);
+			}
+			public void Remove() {
+				_app.Tap(Id.Remove);
+				_itemIds.RemoveAt(_currentPosition);
+				if (_itemIds.Count == _currentPosition)
+				{
+					if (_currentPosition == 0)
+					{
+						// removed last element
+						WaitForValue(Id.SelectedItem, null);
+						WaitForValue(Id.SelectedPosition, _currentPosition);
+						_currentItem = null;
+						ExpectEvent(Event.OnItemSelected);
+						VerifyEvents();
+						return;
+					}
+
+					// removed tail element
+					_currentPosition--;
+					ExpectEvent(Event.OnPositionSelected);
+				}
+				ExpectEvent(Event.OnItemSelected);
+				WaitForPosition(_currentPosition);
+			}
+
+			public void Load0()
+			{
+				_app.Tap(Id.Load0);
+				_loaded = true;
+				_itemIds = Enumerable.Range(_start, 0).ToList();
+
+				if (_currentPosition != 0)
+					ExpectEvent(Event.OnPositionSelected);
+				_currentPosition = 0;
+
+				if (_currentItem != null)
+					ExpectEvent(Event.OnItemSelected);
+				_currentItem = null;
+
+				WaitForValue(Id.Position, _currentPosition);
+				WaitForValue(Id.SelectedItem, _currentItem);
+
+				VerifyEvents();
+			}
+			public void Load()
+			{
+				_app.Tap(Id.Load);
+				_loaded = true;
+				_itemIds = Enumerable.Range(_start, InitialItems).ToList();
+				_start += InitialItems;
+
+				if (_currentPosition >= InitialItems)
+				{
+					ExpectEvent(Event.OnPositionSelected);
+					_currentPosition = InitialItems - 1;
+				}
+
+				var currentItem = _itemIds[_currentPosition];
+				if (_currentItem != currentItem)
+					ExpectEvent(Event.OnItemSelected);
+				_currentItem = currentItem;
+
+				WaitForValue(Id.Position, _currentPosition);
+				WaitForValue(Id.ItemId, _currentItem);
+				WaitForValue(Id.SelectedItem, _currentItem);
+
+				VerifyEvents();
+			}
+			public void Clear()
+			{
+				_app.Tap(Id.Clear);
+				_loaded = false;
+				_itemIds = new List<int>();
+
+				WaitForValue(Id.SelectedItem, Null);
+				WaitForValue(Id.Position, _currentPosition);
+
+				ExpectEvent(Event.OnItemSelected);
+				VerifyEvents();
+			}
+
+			public void Launch()
+			{
+				_currentPosition = InitialPosition;
+				Tap(Id.Launch, _currentPosition);
+			}
+			public void Pop()
+			{
+				_app.Back();
+				_loaded = false;
+				_itemIds = new List<int>();
+				_expectedEvents.Clear();
+				_eventId = 0;
+
+				WaitForValue(Id.Launch, Id.Launch);
+			}
 		}
 
 		//[Test]
@@ -260,18 +418,70 @@ namespace Xamarin.Forms.Controls
 				var carousel = gallery.NaviateToGallery<CarouselViewGallery>();
 
 				// start at something other than 0
-				Assert.AreNotEqual(0, CarouselViewGallery.InitialItemId);
-				Assert.AreEqual(CarouselViewGallery.InitialItemId, carousel.ItemId);
+				Assert.AreNotEqual(0, CarouselViewGallery.InitialPosition);
+
+				// remove all
+				carousel.Launch();
+
+				carousel.Load();
+				carousel.StepNext();
+				carousel.RemoveAll();
+
+				carousel.Load();
+				carousel.Last();
+				carousel.RemoveAllLeft();
+
+				carousel.Load();
+				carousel.First();
+				carousel.RemoveAllRight();
+				carousel.Pop();
+
+				// remove
+				carousel.Launch();
+				carousel.Load();
+				carousel.RemoveLeft();
+				carousel.StepNext();
+
+				carousel.RemoveRight();
+				carousel.StepPrevious();
+				carousel.StepNext();
+
+				carousel.Remove(); // remove rightmost
+				carousel.Pop();
+
+				// clear with Empty ItemsSource
+				carousel.Launch();
+				carousel.Load();
+				carousel.Load0();
+
+				// set position to ItemsSource.Count - 1
+				carousel.Load();
+				carousel.Last();
+				carousel.Clear();
+				carousel.StepNext();
+				carousel.Load();
+				carousel.Pop();
+
+				// swipe before programmatic jump
+				carousel.Launch();
+				carousel.Load();
+				carousel.SwipeNext();
+				carousel.Pop();
+
+				// position can be set even if ItemsSource is null
+				carousel.Launch();
+				carousel.StepNext();
+				carousel.Load();
+				carousel.Clear();
+				carousel.StepPrevious();
+				carousel.Load();
 
 				gallery.App.SetOrientationPortrait();
-
 				for (var i = 0; i < 2; i++)
 				{
-					// programatic jump to first/last
+					// programmatic jump to first/last
 					carousel.Last();
 					carousel.First();
-
-					// programatic step to page
 					carousel.StepToLast();
 					carousel.StepToFirst();
 
@@ -283,6 +493,7 @@ namespace Xamarin.Forms.Controls
 
 					gallery.App.SetOrientationLandscape();
 				}
+				gallery.App.SetOrientationPortrait();
 
 				gallery.Screenshot("End");
 			}

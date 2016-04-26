@@ -2,8 +2,7 @@ namespace Xamarin.Forms
 {
 	public interface ICarouselViewController : IItemViewController
 	{
-		void SendPositionAppearing(int position);
-		void SendPositionDisappearing(int position);
+		bool IgnorePositionUpdates { get; }
 		void SendSelectedItemChanged(object item);
 		void SendSelectedPositionChanged(int position);
 	}

@@ -16,11 +16,12 @@ using MonoTouch.Foundation;
 using RectangleF = CoreGraphics.CGRect;
 using SizeF = CoreGraphics.CGSize;
 using PointF = CoreGraphics.CGPoint;
+using System.Diagnostics;
 
 #else
-using nfloat=System.Single;
-using nint=System.Int32;
-using nuint=System.UInt32;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
 #endif
 
 namespace Xamarin.Forms.Platform.iOS
@@ -44,27 +45,19 @@ namespace Xamarin.Forms.Platform.iOS
 	/// </summary>
 	public class CarouselViewRenderer : ViewRenderer<CarouselView, UICollectionView>
 	{
-		#region Static Fields
+		const int DefaultItemsCount = 1;
 		const int DefaultMinimumDimension = 44;
-		#endregion
 
-		#region Fields
 		// As on Android, ScrollToPostion from 0 to 2 should not raise OnPositionChanged for 1
 		// Tracking the _targetPosition allows for skipping events for intermediate positions
-		int? _targetPosition;
+		int? _scrollToTarget;
 
 		int _position;
+		bool _disposed;
 		CarouselViewController _controller;
 		RectangleF _lastBounds;
-		#endregion
 
-		ICarouselViewController Controller
-		{
-			get
-			{
-				return Element;
-			}
-		}
+		ICarouselViewController Controller => Element;
 		void Initialize()
 		{
 			// cache hit? 
@@ -74,13 +67,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 			_lastBounds = Bounds;
 			_controller = new CarouselViewController(
-				renderer: this,
-				initialPosition: Element.Position
+				renderer: this
 			);
 
 			// hook up on position changed event
-			// not ideal; the event is raised upon releasing the swipe instead of animation completion
-			_controller.OnWillDisplayCell += o => OnPositionChange(o);
+			_controller.OnPositionChanged = OnPositionChange;
 
 			// populate cache
 			SetNativeControl(_controller.CollectionView);
@@ -93,26 +84,31 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 		void OnPositionChange(int position)
 		{
-			if (position == _position)
+			// do not report intermediate positions while scrolling
+			if (_scrollToTarget != null)
+			{
+				if (position != _scrollToTarget)
+					return;
+				_scrollToTarget = null;
+			}
+			else if (position == _position)
+			{
 				return;
+			}
 
-			if (_targetPosition != null && position != _targetPosition)
-				return;
-
-			_targetPosition = null;
 			_position = position;
-			Element.Position = _position;
+			Element.Position = position;
 
 			Controller.SendSelectedPositionChanged(position);
-			OnItemChange(position);
-			return;
 		}
-		void ScrollToPosition(int position, bool animated = true)
+		void ScrollToPosition(int position, bool animated)
 		{
 			if (position == _position)
 				return;
 
-			_targetPosition = position;
+			if (animated)
+				_scrollToTarget = position;
+
 			_controller.ScrollToPosition(position, animated);
 		}
 		void OnCollectionChanged(object source, NotifyCollectionChangedEventArgs e)
@@ -141,23 +137,27 @@ namespace Xamarin.Forms.Platform.iOS
 					if (Controller.Count == 0)
 						throw new InvalidOperationException("CarouselView must retain a least one item.");
 
-					if (e.OldStartingIndex == _position)
+					var removedPosition = e.OldStartingIndex;
+
+					if (removedPosition == _position)
 					{
 						_controller.DeleteItems(
 							Enumerable.Range(e.OldStartingIndex, e.OldItems.Count)
 						);
 						if (_position == Controller.Count)
-							_position--;
+							OnPositionChange(_position - 1);
 						OnItemChange(_position);
 					}
 
-					else
+					else if (removedPosition > _position)
 					{
-						_controller.ReloadData();
-
-						if (e.OldStartingIndex < _position)
-							ShiftPosition(-e.OldItems.Count);
+						_controller.DeleteItems(
+							Enumerable.Range(e.OldStartingIndex, e.OldItems.Count)
+						);
 					}
+
+					else
+						ShiftPosition(-e.OldItems.Count);
 
 					break;
 
@@ -180,14 +180,21 @@ namespace Xamarin.Forms.Platform.iOS
 			// By default the position remains the same which causes an animation in the case
 			// of the added/removed position preceding the current position. I prefer the constructed
 			// Android behavior whereby the item remains the same and the position changes.
-			ScrollToPosition(_position + offset, false);
+			var position = _position + offset;
+			_controller.ReloadData(position);
+			OnPositionChange(position);
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == "Position" && _position != Element.Position)
-				// not ideal; the event is raised before the animation to move completes (or even starts)
-				ScrollToPosition(Element.Position);
+			if (e.PropertyName == nameof(Element.Position) && _position != Element.Position && !Controller.IgnorePositionUpdates)
+				ScrollToPosition(Element.Position, animated: true);
+
+			if (e.PropertyName == nameof(Element.ItemsSource))
+			{
+				_position = Element.Position;
+				_controller.ReloadData(_position);
+			}
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -198,23 +205,31 @@ namespace Xamarin.Forms.Platform.iOS
 			CarouselView oldElement = e.OldElement;
 			CarouselView newElement = e.NewElement;
 			if (oldElement != null)
-			{
-				e.OldElement.CollectionChanged -= OnCollectionChanged;
-			}
+				((IItemViewController)oldElement).CollectionChanged -= OnCollectionChanged;
 
 			if (newElement != null)
 			{
 				if (Control == null)
-				{
 					Initialize();
-				}
 
 				// initialize properties
 				_position = Element.Position;
 
 				// hook up crud events
-				Element.CollectionChanged += OnCollectionChanged;
+				((IItemViewController)newElement).CollectionChanged += OnCollectionChanged;
 			}
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing && !_disposed)
+			{
+				_disposed = true;
+				if (Element != null)
+					((IItemViewController)Element).CollectionChanged -= OnCollectionChanged;
+			}
+
+			base.Dispose(disposing);
 		}
 
 		public override void LayoutSubviews()
@@ -226,7 +241,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 			base.Control.ReloadData();
 			_lastBounds = Bounds;
-			_controller.ScrollToPosition(_position, false);
+
+			var wasPortrait = _lastBounds.Height > _lastBounds.Width;
+			var nowPortrait = Bounds.Height > Bounds.Width;
+			if (wasPortrait != nowPortrait)
+				_controller.ScrollToPosition(_position, false);
 		}
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
@@ -257,15 +276,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 			void Bind(object item, int position)
 			{
-				//if (position != this._position)
-				//	controller.SendPositionDisappearing (this._position);
-
 				_position = position;
-				OnBind?.Invoke(_position);
-
 				_controller.BindView(_view, item);
 			}
 
+			internal int Position => _position;
 			[Export("initWithFrame:")]
 			internal Cell(RectangleF frame) : base(frame)
 			{
@@ -297,11 +312,9 @@ namespace Xamarin.Forms.Platform.iOS
 					Bind(item, _position);
 			}
 
-			public Action<int> OnBind;
 			public override void LayoutSubviews()
 			{
 				base.LayoutSubviews();
-
 				_renderer.Element.Layout(new Rectangle(0, 0, ContentView.Frame.Width, ContentView.Frame.Height));
 			}
 		}
@@ -309,17 +322,17 @@ namespace Xamarin.Forms.Platform.iOS
 		readonly Dictionary<object, int> _typeIdByType;
 		CarouselViewRenderer _renderer;
 		int _nextItemTypeId;
-		int _initialPosition;
+		int? _initialPosition;
+		int _lastPosition;
 
 		internal CarouselViewController(
-			CarouselViewRenderer renderer,
-			int initialPosition)
+			CarouselViewRenderer renderer)
 			: base(new Layout(UICollectionViewScrollDirection.Horizontal))
 		{
 			_renderer = renderer;
 			_typeIdByType = new Dictionary<object, int>();
 			_nextItemTypeId = 0;
-			_initialPosition = initialPosition;
+			_lastPosition = 0;
 		}
 
 		CarouselViewRenderer Renderer => _renderer;
@@ -334,44 +347,86 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			return collectionView.Frame.Size;
 		}
-
-		internal Action<int> OnBind;
-		internal Action<int> OnWillDisplayCell;
-
-		public override void WillDisplayCell(UICollectionView collectionView, UICollectionViewCell cell, NSIndexPath indexPath)
+		void DisplayCell()
 		{
-			if (_initialPosition != 0)
+			if (CollectionView.VisibleCells.Length == 0)
+				return;
+
+			// only ever seems to be a single cell visible at a time
+			var visibleCell = (Cell)CollectionView.VisibleCells[0];
+			var position = visibleCell.Position;
+			if (position == _lastPosition)
+				return;
+
+			_lastPosition = position;
+			OnPositionChanged(position);
+		}
+
+		internal Action<int> OnPositionChanged;
+
+		public override void CellDisplayingEnded(
+			UICollectionView collectionView,
+			UICollectionViewCell cell,
+			NSIndexPath indexPath)
+		{
+			if (_initialPosition != null)
+				return;
+
+			DisplayCell();
+		}
+		public override void WillDisplayCell(
+			UICollectionView collectionView,
+			UICollectionViewCell cell,
+			NSIndexPath indexPath)
+		{
+			// silently scroll to initial position
+			if (_initialPosition != null)
 			{
-				ScrollToPosition(_initialPosition, false);
-				_initialPosition = 0;
+				ScrollToPosition((int)_initialPosition, false);
+				_initialPosition = null;
 				return;
 			}
 
-			var index = indexPath.Row;
-			OnWillDisplayCell?.Invoke(index);
+			DisplayCell();
 		}
-		public override nint NumberOfSections(UICollectionView collectionView)
-		{
-			return 1;
-		}
+		public override nint NumberOfSections(UICollectionView collectionView) => 1;
 		public override void ViewDidLoad()
 		{
 			base.ViewDidLoad();
 
 			CollectionView.PagingEnabled = true;
 			CollectionView.BackgroundColor = UIColor.Clear;
+			CollectionView.ContentInset = new UIEdgeInsets(0, 0, 0, 0);
 		}
 		public override nint GetItemsCount(UICollectionView collectionView, nint section)
 		{
-			var result = Controller.Count;
-			return result;
+			var count = Controller.Count;
+
+			// this happens when CarouselView has a null ItemsSource. CarouselView is *trying* to tell iOS
+			// that all positions are valid by saying Count is int.MaxValue and then when iOS asks for any position 
+			// the default view can be returned. Unfortunetly, iOS allocates memory upfront for all positions
+			// so will hang trying to allocate int.MaxValue slots.
+
+			// Android works because our bespoke renderer lazily allocates memory so can start at any position; 
+			// its is more memory efficient that the stock iOS or even Android renderer in this regard. Yea us.
+			if (count == int.MaxValue)
+				count = _initialPosition + 1 ?? 0;
+
+			return count;
 		}
 		public override UICollectionViewCell GetCell(UICollectionView collectionView, NSIndexPath indexPath)
 		{
 			var index = indexPath.Row;
 
-			if (_initialPosition != 0)
-				index = _initialPosition;
+			// load initial position then silently scroll to position (see WillDisplayCell)
+			if (_initialPosition != null)
+			{
+				index = (int)_initialPosition;
+
+				// no need to scroll if we're already at the inital position
+				if (_initialPosition == _lastPosition)
+					_initialPosition = null;
+			}
 
 			var item = Controller.GetItem(index);
 			var itemType = Controller.GetItemType(item);
@@ -386,14 +441,17 @@ namespace Xamarin.Forms.Platform.iOS
 			var cell = (Cell)CollectionView.DequeueReusableCell(itemTypeId.ToString(), indexPath);
 			cell.Initialize(Element, itemType, item, index);
 
-			// a semantically weak approach to OnAppearing; decided not to expose as such
-			if (cell.OnBind == null)
-				cell.OnBind += o => OnBind?.Invoke(o);
-
 			return cell;
 		}
 
-		internal void ReloadData() => CollectionView.ReloadData();
+		internal void ReloadData(int? initialPosition = null)
+		{
+			if (initialPosition == null)
+				initialPosition = _lastPosition;
+
+			_initialPosition = initialPosition;
+			CollectionView.ReloadData();
+		}
 		internal void ReloadItems(IEnumerable<int> positions)
 		{
 			var indices = positions.Select(o => NSIndexPath.FromRowSection(o, 0)).ToArray();
