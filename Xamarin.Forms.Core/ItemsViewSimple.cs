@@ -26,15 +26,16 @@ namespace Xamarin.Forms
 
 		ItemsSourceProxy _itemSourceProxy;
 		NotifyCollectionChangedEventHandler _onCollectionChanged;
+		NotifyCollectionChangedEventHandler _onCollectionChangedProxy;
 
 		public ItemsView()
 		{
-			_onCollectionChanged = OnCollectionChanged;
+			_onCollectionChanged = _onCollectionChangedProxy = OnCollectionChanged;
 
 			_itemSourceProxy = new ItemsSourceProxy(
-				itemSource: Enumerable.Empty<object>(),
-				itemSourceAsList: OnInitializeItemSource(),
-				onCollectionChanged: _onCollectionChanged
+				itemsSource: Enumerable.Empty<object>(),
+				itemsSourceAsList: OnInitializeItemSource(),
+				onCollectionChanged: new WeakReference<NotifyCollectionChangedEventHandler>(_onCollectionChangedProxy)
 			);
 		}
 
@@ -64,15 +65,22 @@ namespace Xamarin.Forms
 
 			// allow interception of itemSource
 			var onCollectionChanged = _onCollectionChanged;
-			itemSourceAsList = OnItemsSourceChanging(itemSourceAsList, ref _onCollectionChanged);
+			itemSourceAsList = OnItemsSourceChanging(itemSourceAsList, ref onCollectionChanged);
 			if (itemSourceAsList == null)
 				throw new InvalidOperationException(
 					"OnItemsSourceChanging must return non-null itemSource as IReadOnlyList");
 
+			// keep callback alive
+			_onCollectionChangedProxy = onCollectionChanged;
+
 			// dispatch CollectionChangedEvent to ItemView without a strong reference to ItemView and
 			// synchronize dispatch and element access via CollectionSynchronizationContext protocol
 			_itemSourceProxy?.Dispose();
-			_itemSourceProxy = new ItemsSourceProxy(newValue, itemSourceAsList, onCollectionChanged);
+			_itemSourceProxy = new ItemsSourceProxy(
+				itemsSource: newValue, 
+				itemsSourceAsList:itemSourceAsList, 
+				onCollectionChanged: new WeakReference<NotifyCollectionChangedEventHandler>(_onCollectionChangedProxy)
+			);
 
 			OnItemsSourceChanged(oldValue, newValue);
 		}
@@ -123,27 +131,27 @@ namespace Xamarin.Forms
 
 		sealed class ItemsSourceProxy : IDisposable
 		{
-			readonly object _itemSource;
-			readonly IReadOnlyList<object> _itemSourceAsList;
+			readonly object _itemsSource;
+			readonly IReadOnlyList<object> _itemsSourceAsList;
 			readonly WeakReference<NotifyCollectionChangedEventHandler> _onCollectionChanged;
 
 			internal ItemsSourceProxy(
-				object itemSource,
-				IReadOnlyList<object> itemSourceAsList,
-				NotifyCollectionChangedEventHandler onCollectionChanged)
+				object itemsSource,
+				IReadOnlyList<object> itemsSourceAsList,
+				WeakReference<NotifyCollectionChangedEventHandler> onCollectionChanged)
 			{
-				_itemSource = itemSource;
-				_itemSourceAsList = itemSourceAsList;
-				_onCollectionChanged = new WeakReference<NotifyCollectionChangedEventHandler>(onCollectionChanged);
+				_itemsSource = itemsSource;
+				_itemsSourceAsList = itemsSourceAsList;
+				_onCollectionChanged = onCollectionChanged;
 
-				var dynamicItemSource = itemSource as INotifyCollectionChanged;
+				var dynamicItemSource = itemsSource as INotifyCollectionChanged;
 				if (dynamicItemSource == null)
 					return;
 
 				dynamicItemSource.CollectionChanged += SynchronizeOnCollectionChanged;
 			}
 
-			public int Count => _itemSourceAsList.Count;
+			public int Count => _itemsSourceAsList.Count;
 			public object this[int index]
 			{
 				get
@@ -153,11 +161,11 @@ namespace Xamarin.Forms
 					if (SyncContext != null)
 					{
 						object value = null;
-						Synchronize(() => value = _itemSourceAsList[index]);
+						Synchronize(() => value = _itemsSourceAsList[index]);
 						return value;
 					}
 
-					return _itemSourceAsList[index];
+					return _itemsSourceAsList[index];
 				}
 			}
 			public void Dispose()
@@ -169,18 +177,18 @@ namespace Xamarin.Forms
 			{
 				get
 				{
-					if (_itemSource == null)
+					if (_itemsSource == null)
 						return null;
 
 					CollectionSynchronizationContext syncContext;
-					BindingBase.TryGetSynchronizedCollection((IEnumerable)_itemSource, out syncContext);
+					BindingBase.TryGetSynchronizedCollection((IEnumerable)_itemsSource, out syncContext);
 					return syncContext;
 				}
 			}
 			void Synchronize(Action action)
 			{
 				SyncContext.Callback(
-					collection: (IEnumerable)_itemSource,
+					collection: (IEnumerable)_itemsSource,
 					accessMethod: action
 				);
 			}
@@ -205,7 +213,7 @@ namespace Xamarin.Forms
 				NotifyCollectionChangedEventHandler onCollectionChanged;
 				if (!_onCollectionChanged.TryGetTarget(out onCollectionChanged))
 				{
-					var dynamicItemSource = (INotifyCollectionChanged)_itemSource;
+					var dynamicItemSource = (INotifyCollectionChanged)_itemsSource;
 					dynamicItemSource.CollectionChanged -= SynchronizeOnCollectionChanged;
 					return;
 				}
