@@ -14,16 +14,16 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls
 {
 	[Preserve(AllMembers = true)]
-	public sealed class CarouselViewGallaryLaunchPage : ContentPage
+	public sealed class CarouselViewGalleryLaunchPage : ContentPage
 	{
-		public CarouselViewGallaryLaunchPage()
+		public CarouselViewGalleryLaunchPage()
 		{
 			var button = new Button {
 				Text = "Launch",
 				AutomationId = "Launch"
 			};
 
-			button.Clicked += (s, e) => this.Navigation.PushAsync(new CarouselViewGallaryPage());
+			button.Clicked += (s, e) => this.Navigation.PushAsync(new CarouselViewGalleryPage());
 
 			Content = new StackLayout {
 				Children = {
@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Controls
 	}
 
 	[Preserve(AllMembers = true)]
-	public sealed class CarouselViewGallaryPage : ContentPage
+	public sealed class CarouselViewGalleryPage : ContentPage
 	{
 		public abstract class Item
 		{
@@ -274,7 +274,7 @@ namespace Xamarin.Forms.Controls
 			_position.Text = $"{_carouselView.Position}";
 		}
 
-		public CarouselViewGallaryPage()
+		public CarouselViewGalleryPage()
 		{
 			_items = EmptyItems;
 

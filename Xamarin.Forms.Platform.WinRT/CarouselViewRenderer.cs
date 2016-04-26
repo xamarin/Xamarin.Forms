@@ -158,11 +158,11 @@ namespace Xamarin.Forms.Platform.WinRT
 				_itemsSource = null;
 			}
 
-			if (e.NewElement != null)
+			if (Element != null)
 			{
-				if (Element != null)
+				if (e.NewElement != null)
 				{
-					if (_flipView == null)
+					if (Control == null)
 					{
 						_flipView = new FlipView 
 						{
@@ -178,6 +178,8 @@ namespace Xamarin.Forms.Platform.WinRT
 							_flipView.SelectedIndex = (int)_initialPosition;
 							_initialPosition = null;
 						};
+
+						SetNativeControl(_flipView);
 					}
 
 					_itemsSource = new ControllerAsList(Element);
@@ -187,9 +189,6 @@ namespace Xamarin.Forms.Platform.WinRT
 
 					// Controller.CollectionChanged += OnCollectionChanged;
 				}
-
-				if (_flipView != Control)
-					SetNativeControl(_flipView);
 			}
 		}
 
