@@ -17,6 +17,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			base.Setup ();
 			Device.PlatformServices = new MockPlatformServices (getStreamAsync: GetStreamAsync);
+			Device.Info = new TestDeviceInfo();
 		}
 
 		[TearDown]
@@ -67,8 +68,10 @@ namespace Xamarin.Forms.Core.UnitTests
 			image.Aspect = Aspect.AspectFill;
 			var result = image.GetSizeRequest (double.PositiveInfinity, 10);
 
-			Assert.AreEqual (50, result.Request.Width);
-			Assert.AreEqual (10, result.Request.Height);
+			// Device Width == 100; should scale height proportionally
+
+			Assert.AreEqual(100, result.Request.Width);
+			Assert.AreEqual(20, result.Request.Height);
 		}
 
 		[Test]
@@ -79,8 +82,10 @@ namespace Xamarin.Forms.Core.UnitTests
 			image.Aspect = Aspect.AspectFill;
 			var result = image.GetSizeRequest (25, double.PositiveInfinity);
 
-			Assert.AreEqual (25, result.Request.Width);
-			Assert.AreEqual (5, result.Request.Height);
+			// Device Height == 200; should scale width proportionally
+
+			Assert.AreEqual (1000, result.Request.Width);
+			Assert.AreEqual (200, result.Request.Height);
 		}
 
 		[Test]
@@ -88,10 +93,12 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			var image = new Image {Source = ImageSource.FromFile ("File.png"), Platform = new UnitPlatform (), IsPlatformEnabled = true};
 
-			image.Aspect = Aspect.AspectFill;
+			image.Aspect = Aspect.Fill;
 			var result = image.GetSizeRequest (double.PositiveInfinity, 10);
 
-			Assert.AreEqual (50, result.Request.Width);
+			// Device Width == 100
+
+			Assert.AreEqual (100, result.Request.Width);
 			Assert.AreEqual (10, result.Request.Height);
 		}
 
@@ -100,11 +107,13 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			var image = new Image {Source = ImageSource.FromFile ("File.png"), Platform = new UnitPlatform (), IsPlatformEnabled = true};
 
-			image.Aspect = Aspect.AspectFill;
+			image.Aspect = Aspect.Fill;
 			var result = image.GetSizeRequest (25, double.PositiveInfinity);
 
+			// Device Height == 200
+
 			Assert.AreEqual (25, result.Request.Width);
-			Assert.AreEqual (5, result.Request.Height);
+			Assert.AreEqual (200, result.Request.Height);
 		}
 
 		[Test]

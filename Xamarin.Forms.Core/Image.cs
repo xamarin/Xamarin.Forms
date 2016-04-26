@@ -54,54 +54,48 @@ namespace Xamarin.Forms
 		{
 			SizeRequest desiredSize = base.OnSizeRequest(double.PositiveInfinity, double.PositiveInfinity);
 
-			double desiredAspect = desiredSize.Request.Width / desiredSize.Request.Height;
-			double constraintAspect = widthConstraint / heightConstraint;
-
 			double desiredWidth = desiredSize.Request.Width;
 			double desiredHeight = desiredSize.Request.Height;
 
 			if (desiredWidth == 0 || desiredHeight == 0)
 				return new SizeRequest(new Size(0, 0));
 
+			// Arbitrarily cap size at the screen size because infinity is just crazy.
+			Size screenSize = Device.Info.PixelScreenSize;
+			if (heightConstraint == double.PositiveInfinity)
+				heightConstraint = Device.info.CurrentOrientation.IsPortrait()
+				? screenSize.Height
+				: screenSize.Width;
+
+			if (widthConstraint == double.PositiveInfinity)
+				widthConstraint = Device.info.CurrentOrientation.IsLandscape()
+				? screenSize.Height
+				: screenSize.Width;
+
+			// Scale the image so it exactly fills the view. Scaling may not be uniform in X and Y.
+			if (Aspect == Aspect.Fill)
+				return new SizeRequest(new Size(widthConstraint, heightConstraint));
+
 			double width = desiredWidth;
 			double height = desiredHeight;
-			if (constraintAspect > desiredAspect)
+
+			double heightScale = heightConstraint / desiredHeight;
+			double widthScale = widthConstraint / desiredWidth;
+
+			switch (Aspect)
 			{
-				// constraint area is proportionally wider than image
-				switch (Aspect)
-				{
-					case Aspect.AspectFit:
-					case Aspect.AspectFill:
-						height = Math.Min(desiredHeight, heightConstraint);
-						width = desiredWidth * (height / desiredHeight);
-						break;
-					case Aspect.Fill:
-						width = Math.Min(desiredWidth, widthConstraint);
-						height = desiredHeight * (width / desiredWidth);
-						break;
-				}
-			}
-			else if (constraintAspect < desiredAspect)
-			{
-				// constraint area is proportionally taller than image
-				switch (Aspect)
-				{
-					case Aspect.AspectFit:
-					case Aspect.AspectFill:
-						width = Math.Min(desiredWidth, widthConstraint);
-						height = desiredHeight * (width / desiredWidth);
-						break;
-					case Aspect.Fill:
-						height = Math.Min(desiredHeight, heightConstraint);
-						width = desiredWidth * (height / desiredHeight);
-						break;
-				}
-			}
-			else
-			{
-				// constraint area is same aspect as image
-				width = Math.Min(desiredWidth, widthConstraint);
-				height = desiredHeight * (width / desiredWidth);
+				case Aspect.AspectFit:
+					// Scale the image to fit the view. Some parts may be left empty (letter boxing).
+					var fitScale = Math.Min(heightScale, widthScale);
+					height = desiredHeight * fitScale;
+					width = desiredWidth * fitScale;
+					break;
+				case Aspect.AspectFill:
+					// Scale the image to fill the view. Some parts may be clipped in order to fill the view.
+					var fillScale = Math.Max(heightScale, widthScale);
+					height = desiredHeight * fillScale;
+					width = desiredWidth * fillScale;
+					break;
 			}
 
 			return new SizeRequest(new Size(width, height));

@@ -228,6 +228,7 @@
     <BundleResource Include="Images\Vegetables.jpg" />
     <BundleResource Include="Images\Vegetables%402x.jpg" />
     <BundleResource Include="toolbar_close.png" />
+    <Content Include="xamagon.png" />
     <BundleResource Include="test.jpg" />
   </ItemGroup>
   <ItemGroup>
