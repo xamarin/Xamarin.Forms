@@ -10,6 +10,9 @@ using WBinding = Windows.UI.Xaml.Data.Binding;
 using WApp = Windows.UI.Xaml.Application;
 using WSize = Windows.Foundation.Size;
 using WDataTemplate = Windows.UI.Xaml.DataTemplate;
+using System.Collections.Generic;
+using System.Collections;
+using System.Collections.ObjectModel;
 
 #if WINDOWS_UWP
 
@@ -19,12 +22,121 @@ namespace Xamarin.Forms.Platform.UWP
 namespace Xamarin.Forms.Platform.WinRT
 #endif
 {
+	internal class ItemsSource :
+		// must derive from Collection for WindowsPhone to hookup CollectionChanged
+		Collection<object>, 
+		INotifyCollectionChanged,
+		IDisposable
+	{
+
+		internal ItemsSource(IList<object> controller)
+			: base(controller)
+		{
+			((ControllerAsList)Items).CollectionChanged += OnCollectionChanged;
+		}
+
+		public event NotifyCollectionChangedEventHandler CollectionChanged;
+		public void Dispose()
+		{
+			var list = (ControllerAsList)Items;
+			list.CollectionChanged -= OnCollectionChanged;
+		}
+
+		private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (CollectionChanged != null)
+				CollectionChanged(sender, e);
+		}
+	}
+
+	internal class ControllerAsList :
+		IList<object>,
+		INotifyCollectionChanged,
+		IDisposable
+	{
+		// windows phone shouldn't hang if the count is int.MaxValue but it does
+		const int s_hack = 5000;
+
+		ICarouselViewController _controller;
+
+		internal ControllerAsList(ICarouselViewController controller)
+		{
+			_controller = controller;
+			_controller.CollectionChanged += OnCollectionChanged;
+		}
+
+		private void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			if (CollectionChanged != null)
+				CollectionChanged(sender, e);
+		}
+
+		public object this[int index]
+		{
+			get {
+				return _controller.GetItem(index);
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
+		public int Count => _controller.Count == int.MaxValue ? s_hack : _controller.Count;
+
+		public bool IsReadOnly => false;
+		public int IndexOf(object item)
+		{
+			throw new NotSupportedException();
+		}
+		public void Insert(int index, object item)
+		{
+			throw new NotSupportedException();
+		}
+		public void RemoveAt(int index)
+		{
+			throw new NotSupportedException();
+		}
+		public void Add(object item)
+		{
+			throw new NotSupportedException();
+		}
+		public void Clear()
+		{
+			throw new NotSupportedException();
+		}
+		public bool Contains(object item)
+		{
+			throw new NotSupportedException();
+		}
+		public void CopyTo(object[] array, int arrayIndex)
+		{
+			throw new NotSupportedException();
+		}
+		public bool Remove(object item)
+		{
+			throw new NotSupportedException();
+		}
+		public IEnumerator<object> GetEnumerator()
+		{
+			throw new NotSupportedException();
+		}
+		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+		public event NotifyCollectionChangedEventHandler CollectionChanged;
+
+		public void Dispose()
+		{
+			_controller.CollectionChanged -= OnCollectionChanged;
+		}
+	}
+
 	public class CarouselViewRenderer : ViewRenderer<CarouselView, FrameworkElement>
 	{
 		WFlipView _flipView;
+		ControllerAsList _itemsSource;
 
 		bool _disposed;
 		bool _leftAdd;
+		int? _initialPosition;
 
 		ICarouselViewController Controller => Element;
 
@@ -34,9 +146,16 @@ namespace Xamarin.Forms.Platform.WinRT
 
 			if (e.OldElement != null)
 			{
+				// Controller.CollectionChanged -= OnCollectionChanged;
+
 				_flipView.SelectionChanged -= SelectionChanged;
+
+				var itemsSource = (ItemsSource)_flipView.ItemsSource;
 				_flipView.ItemsSource = null;
-				((IItemViewController)e.OldElement).CollectionChanged -= OnCollectionChanged;
+				itemsSource?.Dispose();
+
+				_itemsSource.Dispose();
+				_itemsSource = null;
 			}
 
 			if (e.NewElement != null)
@@ -45,16 +164,28 @@ namespace Xamarin.Forms.Platform.WinRT
 				{
 					if (_flipView == null)
 					{
-						_flipView = new FlipView {
+						_flipView = new FlipView 
+						{
 							IsSynchronizedWithCurrentItem = false,
 							ItemTemplate = (WDataTemplate)WApp.Current.Resources["ItemTemplate"]
 						};
+
+						_flipView.LayoutUpdated += (o, a) => 
+						{
+							if (_initialPosition == null)
+								return;
+
+							_flipView.SelectedIndex = (int)_initialPosition;
+							_initialPosition = null;
+						};
 					}
 
-					_flipView.ItemsSource = Element.ItemsSource;
-					_flipView.SelectedIndex = Element.Position;
+					_itemsSource = new ControllerAsList(Element);
+					_flipView.ItemsSource = new ItemsSource(_itemsSource);
 					_flipView.SelectionChanged += SelectionChanged;
-					((IItemViewController)e.NewElement).CollectionChanged += OnCollectionChanged;
+					_initialPosition = Element.Position;
+
+					// Controller.CollectionChanged += OnCollectionChanged;
 				}
 
 				if (_flipView != Control)
@@ -76,11 +207,19 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == "Position" && _flipView.SelectedIndex != Element.Position)
+			if (e.PropertyName == nameof(Element.Position) && _flipView.SelectedIndex != Element.Position)
 			{
 				if (!_leftAdd)
 					_flipView.SelectedIndex = Element.Position;
 				_leftAdd = false;
+			}
+
+			if (e.PropertyName == nameof(Element.ItemsSource))
+			{
+				var itemsSource = (ItemsSource)_flipView.ItemsSource;
+				_initialPosition = Element.Position;
+				_flipView.ItemsSource = new ItemsSource(_itemsSource);
+				itemsSource?.Dispose();
 			}
 
 			base.OnElementPropertyChanged(sender, e);
@@ -105,9 +244,6 @@ namespace Xamarin.Forms.Platform.WinRT
 					break;
 
 				case NotifyCollectionChangedAction.Remove:
-					if (Controller.Count == 0)
-						throw new InvalidOperationException("CarouselView must retain a least one item.");
-
 					if (e.OldStartingIndex < Element.Position)
 						PositionChanged(Element.Position - e.OldItems.Count);
 					break;
@@ -138,10 +274,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 			object addedItem = addedItems.SingleOrDefault();
 			if (addedItem != null)
-			{
 				PositionChanged(_flipView.SelectedIndex);
-				Controller.SendSelectedItemChanged(addedItems.Single());
-			}
 		}
 	}
 

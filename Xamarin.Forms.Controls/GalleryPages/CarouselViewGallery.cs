@@ -221,8 +221,8 @@ namespace Xamarin.Forms.Controls
 			{
 				Text = text, 
 				AutomationId = automationId,
-				TextColor = Color.White,
-				WidthRequest = 50
+				TextColor = Color.White
+				//,WidthRequest = 50
 			};
 
 			if (onClicked != null)
@@ -325,7 +325,7 @@ namespace Xamarin.Forms.Controls
 
 			var moveBar = new StackLayout {
 				Orientation = StackOrientation.Horizontal,
-				HorizontalOptions = LayoutOptions.FillAndExpand,
+				HorizontalOptions = LayoutOptions.Start,
 				Children = {
 					CreateButton ("<<", "First", () => _carouselView.Position = 0),
 					CreateButton ("<", "Previous", () => {
@@ -347,7 +347,7 @@ namespace Xamarin.Forms.Controls
 			};
 			var loadBar = new StackLayout {
 				Orientation = StackOrientation.Horizontal,
-				HorizontalOptions = LayoutOptions.FillAndExpand,
+				HorizontalOptions = LayoutOptions.Start,
 				Children = {
 					CreateButton("Load", "Load", () => {
 						try {
