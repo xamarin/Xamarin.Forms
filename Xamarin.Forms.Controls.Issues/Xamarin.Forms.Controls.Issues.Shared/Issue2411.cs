@@ -240,7 +240,6 @@ namespace Xamarin.Forms.Controls.TestCasesPages
 				HasUnevenRows = true,
 				ItemTemplate = new DataTemplate (typeof(CellTemplateScrollToUneven))
 			};
-			_listView.TakePerformanceHit = true;
 			_listView.ItemTapped += (sender, e) => ((ListView)sender).SelectedItem = null;
 
 			_listView.AutomationId = "listView";
