@@ -14,6 +14,7 @@ namespace Xamarin.Forms.Controls
 				Keyboard.Default,
 				Keyboard.Email,
 				Keyboard.Numeric,
+				Keyboard.Plain,
 				Keyboard.Telephone,
 				Keyboard.Text,
 				Keyboard.Url
