@@ -30,6 +30,8 @@ function ParseChanges
         [string[]]$changes
     )
 
+    $docsPath = $docsPath.Replace("\", "/")
+
     $suggestedCommands = @()
 
     if($changes.Length -eq 0){
@@ -40,7 +42,7 @@ function ParseChanges
         if($changes[$n+1] -match "Member Added:" -or $changes[$n+1] -match "Member Removed:"){
         
             if($changes[$n] -match "^Updating: (.*)"){
-                $modified = "$($docsPath.Replace("\", "/"))/$(ClassToXMLPath($matches[1]))"
+                $modified = "$($docsPath)/$(ClassToXMLPath $matches[1])"
                 Write-Host "$modified was modified"
                 $suggestedCommands += "git add $modified"
             }
@@ -48,7 +50,7 @@ function ParseChanges
         } 
 
         if($changes[$n] -match "^New Type: (.*)"){
-            $modified = "$($docsPath.Replace("\", "/"))/$(ClassToXMLPath($matches[1]))"
+            $modified = "$($docsPath)/$(ClassToXMLPath $matches[1])"
             Write-Host "$modified was added"
             $suggestedCommands += "git add $modified"
         }
@@ -66,16 +68,49 @@ function ParseChanges
 
 function ClassToXMLPath
 {
-    param( [string]$class )
+    param([string]$class)
+         
     $lastDot = $class.LastIndexOf(".")
-    return $class.Substring(0, $lastDot) + "/" + $class.Substring($lastDot + 1, $class.Length - $lastDot - 1) + ".xml"
+    $output = $class.Substring(0, $lastDot) + "/" + $class.Substring($lastDot + 1, $class.Length - $lastDot - 1) + ".xml"
+    
+    # Unfortunate but necessary fix for IOpenGlViewController
+    # Because git is case sensitive but Windows isn't, and Windows has the filename
+    # set to IOpenGlViewController by default
+    $output = $output.Replace("IOpenGlViewController", "IOpenGLViewController")
+
+    return $output
+}
+
+# Resets the line endings changed by mdoc
+# So we don't see a lot of 'modified docs' which really aren't changed
+function FixLineEndings
+{
+    param
+    ( 
+        [string[]]$changes,
+        [string]$docsPath
+    )
+
+    Write-Host "Resetting line endings modified by mdoc..."
+
+    $docsPath = $docsPath.Replace("\", "/")
+
+    $changes | % { 
+        if($_ -match "^Updating: (.*)"){
+            $modified = "$($docsPath)/$(ClassToXMLPath $matches[1])"
+
+            (Get-Content $modified).Replace("`n", "`r`n") | Set-Content $modified
+        }
+    }
 }
 
 # Core
 $dllPath = "Xamarin.Forms.Core\bin\Debug\Xamarin.Forms.Core.dll"
 $docsPath = "docs\Xamarin.Forms.Core"
 $changes = Update $dllPath $docsPath
+$changes = ($changes | % { $_.Replace("/", "+") })
 ParseChanges $dllPath $docsPath $changes
+FixLineEndings $changes $docsPath
 
 Write-Host
 
@@ -83,7 +118,9 @@ Write-Host
 $dllPath = "Xamarin.Forms.Xaml\bin\Debug\Xamarin.Forms.Xaml.dll"
 $docsPath = "docs\Xamarin.Forms.Xaml"
 $changes = Update $dllPath $docsPath
+$changes = ($changes | % { $_.Replace("/", "+") })
 ParseChanges $dllPath $docsPath $changes
+FixLineEndings $changes $docsPath
 
 Write-Host
 
@@ -91,4 +128,6 @@ Write-Host
 $dllPath = "Xamarin.Forms.Maps\bin\Debug\Xamarin.Forms.Maps.dll"
 $docsPath = "docs\Xamarin.Forms.Maps"
 $changes = Update $dllPath $docsPath
+$changes = ($changes | % { $_.Replace("/", "+") })
 ParseChanges $dllPath $docsPath $changes
+FixLineEndings $changes $docsPath
