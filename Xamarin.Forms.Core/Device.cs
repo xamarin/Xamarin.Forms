@@ -48,6 +48,31 @@ namespace Xamarin.Forms
 			PlatformServices.BeginInvokeOnMainThread(action);
 		}
 
+		internal static T BeginInvokeOnMainThreadWait<T>(Func<T> action)
+		{
+			if (s_platformServices == null || !PlatformServices.IsInvokeRequired)
+				return action();
+
+			var tcs = new TaskCompletionSource<T>();
+			
+			PlatformServices.BeginInvokeOnMainThread(() =>
+			{
+				try
+				{
+					T result = action();
+					tcs.SetResult(result);
+				}
+				catch (Exception ex)
+				{
+					tcs.SetException(ex);
+				}
+			});
+			tcs.Task.Wait();
+			if (tcs.Task.Exception != null)
+				throw (tcs.Task.Exception);
+			return tcs.Task.Result;
+		}
+
 		public static double GetNamedSize(NamedSize size, Element targetElement)
 		{
 			return GetNamedSize(size, targetElement.GetType());

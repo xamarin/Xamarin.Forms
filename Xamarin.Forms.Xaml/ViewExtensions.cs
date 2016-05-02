@@ -26,21 +26,28 @@
 // THE SOFTWARE.
 
 using System;
+using System.Threading.Tasks;
 
 namespace Xamarin.Forms.Xaml
 {
 	public static class Extensions
 	{
-		public static TXaml LoadFromXaml<TXaml>(this TXaml view, Type callingType) 
+		public static TXaml LoadFromXaml<TXaml>(this TXaml view, Type callingType)
 		{
-			XamlLoader.Load(view, callingType);
-			return view;
+			return Device.BeginInvokeOnMainThreadWait(() =>
+			{
+				XamlLoader.Load(view, callingType);
+				return view;
+			});
 		}
 
 		internal static TXaml LoadFromXaml<TXaml>(this TXaml view, string xaml)
 		{
-			XamlLoader.Load(view, xaml);
-			return view;
+			return Device.BeginInvokeOnMainThreadWait(() =>
+			{
+				XamlLoader.Load(view, xaml);
+				return view;
+			});
 		}
 	}
 }
