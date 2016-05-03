@@ -87,7 +87,7 @@
       <Targets>
         <Target Type="System.Object" />
       </Targets>
-      <Member MemberName="LoadFromXaml&lt;TView&gt;">
+      <Member MemberName="LoadFromXaml&lt;TXaml&gt;">
         <MemberSignature Language="C#" Value="public static TXaml LoadFromXaml&lt;TXaml&gt; (this TXaml view, Type callingType);" />
         <MemberSignature Language="ILAsm" Value=".method public static hidebysig !!TXaml LoadFromXaml&lt;TXaml&gt;(!!TXaml view, class System.Type callingType) cil managed" />
         <MemberType>ExtensionMethod</MemberType>
@@ -95,11 +95,7 @@
           <ReturnType>TXaml</ReturnType>
         </ReturnValue>
         <TypeParameters>
-          <TypeParameter Name="TView">
-            <Constraints>
-              <BaseTypeName>Xamarin.Forms.BindableObject</BaseTypeName>
-            </Constraints>
-          </TypeParameter>
+          <TypeParameter Name="TXaml" />
         </TypeParameters>
         <Parameters>
           <Parameter Name="view" Type="TXaml" RefType="this" />
@@ -109,7 +105,7 @@
           <typeparam name="TXaml">To be added.</typeparam>
           <param name="view">To be added.</param>
           <param name="callingType">To be added.</param>
-          <summary>Configures <paramref name="view" /> with the properties that are defined in the application manifest for <paramref name="callingType" />.</summary>
+          <summary>To be added.</summary>
         </Docs>
         <Link Type="Xamarin.Forms.Xaml.Extensions" Member="M:Xamarin.Forms.Xaml.Extensions.LoadFromXaml``1(``0,System.Type)" />
       </Member>
