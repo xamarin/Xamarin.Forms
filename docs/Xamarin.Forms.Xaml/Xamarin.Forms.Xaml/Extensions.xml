@@ -21,8 +21,8 @@
   </Docs>
   <Members>
     <Member MemberName="LoadFromXaml&lt;TView&gt;">
-      <MemberSignature Language="C#" Value="public static TView LoadFromXaml&lt;TView&gt; (this TView view, Type callingType) where TView : Xamarin.Forms.BindableObject;" />
-      <MemberSignature Language="ILAsm" Value=".method public static hidebysig !!TView LoadFromXaml&lt;(class Xamarin.Forms.BindableObject) TView&gt;(!!TView view, class System.Type callingType) cil managed" />
+      <MemberSignature Language="C#" Value="public static TXaml LoadFromXaml&lt;TXaml&gt; (this TXaml view, Type callingType);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig !!TXaml LoadFromXaml&lt;TXaml&gt;(!!TXaml view, class System.Type callingType) cil managed" />
       <MemberType>Method</MemberType>
       <AssemblyInfo>
         <AssemblyVersion>1.0.0.0</AssemblyVersion>
@@ -34,7 +34,7 @@
         <AssemblyVersion>2.0.0.0</AssemblyVersion>
       </AssemblyInfo>
       <ReturnValue>
-        <ReturnType>TView</ReturnType>
+        <ReturnType>TXaml</ReturnType>
       </ReturnValue>
       <TypeParameters>
         <TypeParameter Name="TView">
@@ -44,11 +44,11 @@
         </TypeParameter>
       </TypeParameters>
       <Parameters>
-        <Parameter Name="view" Type="TView" RefType="this" />
+        <Parameter Name="view" Type="TXaml" RefType="this" />
         <Parameter Name="callingType" Type="System.Type" />
       </Parameters>
       <Docs>
-        <typeparam name="TView">To be added.</typeparam>
+        <typeparam name="TXaml">To be added.</typeparam>
         <param name="view">To be added.</param>
         <param name="callingType">To be added.</param>
         <summary>Configures <paramref name="view" /> with the properties that are defined in the application manifest for <paramref name="callingType" />.</summary>
