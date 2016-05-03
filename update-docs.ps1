@@ -2,7 +2,9 @@
     [Parameter(Position = 0)]
     [String]$MdocPath = ".\tools\mdoc\mdoc.exe",
     [Parameter(Position = 1)]
-    [String]$ProfilePath = "C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETPortable\v4.5\Profile\Profile259"
+    [String]$ProfilePath = "C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETPortable\v4.5\Profile\Profile259",
+    [Parameter(Position = 2)]
+    [switch]$FailOnChanges
 )
 
 function Update
@@ -21,7 +23,7 @@ function Update
     }
 }
 
-function ParseChanges
+function ReportChanges
 {
     param
     ( 
@@ -32,37 +34,31 @@ function ParseChanges
 
     $docsPath = $docsPath.Replace("\", "/")
 
-    $suggestedCommands = @()
-
     if($changes.Length -eq 0){
         return
     }
 
     $changes | % {$n=0} { 
-        if($changes[$n+1] -match "Member Added:" -or $changes[$n+1] -match "Member Removed:"){
+
+        if($changes[$n+1] -match "Member Added:" -or $changes[$n+1] -match "Member Removed:") {
         
-            if($changes[$n] -match "^Updating: (.*)"){
+            if($changes[$n] -match "^Updating: (.*)") {
                 $modified = "$($docsPath)/$(ClassToXMLPath $matches[1])"
                 Write-Host "$modified was modified"
-                $suggestedCommands += "git add $modified"
             }
-
         } 
 
-        if($changes[$n] -match "^New Type: (.*)"){
+        if($changes[$n] -match "^New Type: (.*)") {
             $modified = "$($docsPath)/$(ClassToXMLPath $matches[1])"
             Write-Host "$modified was added"
-            $suggestedCommands += "git add $modified"
+        }
+
+         if($changes[$n] -match "^Class no longer present; file renamed: (.*)") {
+            $modified = $matches[1].Replace(".remove", "")
+            Write-Host "$modified was removed"
         }
 
         $n = $n + 1
-    }
-
-    if($suggestedCommands.Length -gt 0) {
-        Write-Host "Suggested git commands:"
-        $suggestedCommands | % { Write-Host $_ }
-    } else {
-        Write-Host "No actual docs changes were made."
     }
 }
 
@@ -104,13 +100,35 @@ function FixLineEndings
     }
 }
 
+function CheckForFailure
+{
+    param( [string]$docsPath )
+
+    if(-not $FailOnChanges){
+        return $false
+    }
+
+    $docsPath = $docsPath.Replace("\", "/")
+    $diffs = git diff $($docsPath) 2> $null
+    if($diffs){
+        return $true
+    }
+
+    return $false
+}
+
+$failed = $false
+
 # Core
 $dllPath = "Xamarin.Forms.Core\bin\Debug\Xamarin.Forms.Core.dll"
 $docsPath = "docs\Xamarin.Forms.Core"
 $changes = Update $dllPath $docsPath
-$changes = ($changes | % { $_.Replace("/", "+") })
-ParseChanges $dllPath $docsPath $changes
+$changes = ($changes | % { $_.Replace("/", "+") }) # Fix-up for nested types
+ReportChanges $dllPath $docsPath $changes
 FixLineEndings $changes $docsPath
+if(-not $failed){
+    $failed = CheckForFailure $docsPath
+}
 
 Write-Host
 
@@ -118,9 +136,12 @@ Write-Host
 $dllPath = "Xamarin.Forms.Xaml\bin\Debug\Xamarin.Forms.Xaml.dll"
 $docsPath = "docs\Xamarin.Forms.Xaml"
 $changes = Update $dllPath $docsPath
-$changes = ($changes | % { $_.Replace("/", "+") })
-ParseChanges $dllPath $docsPath $changes
+$changes = ($changes | % { $_.Replace("/", "+") }) # Fix-up for nested types
+ReportChanges $dllPath $docsPath $changes
 FixLineEndings $changes $docsPath
+if(-not $failed){
+    $failed = CheckForFailure $docsPath
+}
 
 Write-Host
 
@@ -128,6 +149,16 @@ Write-Host
 $dllPath = "Xamarin.Forms.Maps\bin\Debug\Xamarin.Forms.Maps.dll"
 $docsPath = "docs\Xamarin.Forms.Maps"
 $changes = Update $dllPath $docsPath
-$changes = ($changes | % { $_.Replace("/", "+") })
-ParseChanges $dllPath $docsPath $changes
+$changes = ($changes | % { $_.Replace("/", "+") }) # Fix-up for nested types
+ReportChanges $dllPath $docsPath $changes
 FixLineEndings $changes $docsPath
+if(-not $failed){
+    $failed = CheckForFailure $docsPath
+}
+
+if($failed){
+    Write-Warning "Not all of the documentation changes have been committed"
+    exit 1
+} else {
+    exit 0
+} 
