@@ -137,8 +137,7 @@ namespace Xamarin.Forms.Platform.Android
 					// and so we can preserve the default disabled color
 					_textColorDefault = Control.TextColors;
 				}
-
-				Control.SetTextColor(Element.TextColor.ToAndroidPreserveDisabled(_textColorDefault));
+				Control.SetTextColor(Element.TextColor.ToAndroidOverrideDisabled(_textColorDefault));
 			}
 		}
 

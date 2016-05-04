@@ -31,6 +31,11 @@ namespace Xamarin.Forms.Platform.Android
 			return ToAndroid(self);
 		}
 
+		public static ColorStateList ToAndroidOverrideDisabled(this Color color, ColorStateList defaults)
+		{
+			return new ColorStateList(States, new[] { color.ToAndroid().ToArgb(), color.ToAndroid().ToArgb() });
+		}
+
 		public static ColorStateList ToAndroidPreserveDisabled(this Color color, ColorStateList defaults)
 		{
 			int disabled = defaults.GetColorForState(States[1], color.ToAndroid());
