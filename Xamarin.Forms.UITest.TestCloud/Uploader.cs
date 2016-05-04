@@ -48,7 +48,7 @@ namespace Xamarin.Forms.UITest.TestCloud
 				{ "o|output=", "output destination for NUnit XML", s => outputFile = s },
 				{ "a|account=", "Test Cloud key", s => account = s },
 				{ "u|user=", "Test Cloud user", s => user = s },
-				{ "i|include=", "add a category to the test run", str => categories.Add(str) },
+				{ "n|include=", "add a category to the test run", str => categories.Add(str) },
 				{ "e|exclude=", "exclude a category from the test run", str => excludeCategories.Add(str) }
 			};
 
@@ -208,7 +208,7 @@ namespace Xamarin.Forms.UITest.TestCloud
 					{ "ld|listdevicesets", "Lists defined devices sets", ListDeviceSets },
 					{ "a|account=", "Test Cloud key", str => account = str },
 					{ "u|user=", "Test Cloud user", str => user = str },
-					{ "i|include=", "add a category to the test run", str => categories.Add(str) },
+					{ "n|include=", "add a category to the test run", str => categories.Add(str) },
 					{ "e|exclude=", "exclude a category from the test run", str => excludeCategories.Add(str) }
 				};
 
