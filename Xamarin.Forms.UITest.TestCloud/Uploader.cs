@@ -38,7 +38,7 @@ namespace Xamarin.Forms.UITest.TestCloud
 					s => platform = (DeviceSet.Platform)Enum.Parse(typeof (DeviceSet.Platform), s)
 				},
 				{ "d|deviceset=", "the device set to use for the test run", s => deviceSet = StringToDeviceSet(s) },
-				{ "c|category=", "specify the category to run in Test cloud [deprecated, use include]", str => categories.Add(str) },
+				{ "c|category=", "add a category to the test run [deprecated, use include]", str => categories.Add(str) },
 				{ "s|series=", "specify the series when uploaded to Test Cloud", s => series = s },
 				{ "l|list", "list categories available in test suite", ListCategories },
 				{ "sets", "list available device sets", ListDeviceSets },
@@ -48,8 +48,8 @@ namespace Xamarin.Forms.UITest.TestCloud
 				{ "o|output=", "output destination for NUnit XML", s => outputFile = s },
 				{ "a|account=", "Test Cloud key", s => account = s },
 				{ "u|user=", "Test Cloud user", s => user = s },
-				{ "i|include=", "specify a category to include in Test cloud run", str => categories.Add(str) },
-				{ "e|exclude=", "specify a category to exclude from Test cloud run", str => excludeCategories.Add(str) }
+				{ "i|include=", "add a category to the test run", str => categories.Add(str) },
+				{ "e|exclude=", "exclude a category from the test run", str => excludeCategories.Add(str) }
 			};
 
 			List<string> extra;
@@ -202,14 +202,14 @@ namespace Xamarin.Forms.UITest.TestCloud
 				{
 					{ "q|quit", "quit", Exit },
 					{ "h|help", "show this message and exit", str => ShowInteractiveHelp(options) },
-					{ "c|category=", "specify the category to run in Test cloud [deprecated, use include]", str => categories.Add(str) },
+					{ "c|category=", "add a category to the test run [deprecated, use include]", str => categories.Add(str) },
 					{ "d|deviceset=", "specify the device set to upload", str => deviceSet = str },
 					{ "lc|listcategories", "Lists categories in uitests", ListCategories },
 					{ "ld|listdevicesets", "Lists defined devices sets", ListDeviceSets },
 					{ "a|account=", "Test Cloud key", str => account = str },
 					{ "u|user=", "Test Cloud user", str => user = str },
-					{ "i|include=", "specify a category to include in Test cloud run", str => categories.Add(str) },
-					{ "e|exclude=", "specify a category to exclude from Test cloud run", str => excludeCategories.Add(str) }
+					{ "i|include=", "add a category to the test run", str => categories.Add(str) },
+					{ "e|exclude=", "exclude a category from the test run", str => excludeCategories.Add(str) }
 				};
 
 				List<string> extra;
