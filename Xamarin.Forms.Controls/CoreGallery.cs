@@ -86,7 +86,15 @@ namespace Xamarin.Forms.Controls
 			AutomationId = "TabbedPageRoot";
 
 			BarBackgroundColor = Color.Maroon;
-			BarTextColor = Color.White;
+			BarTextColor = Color.Yellow;
+
+			Device.StartTimer(TimeSpan.FromSeconds(2), () =>
+			{
+				BarBackgroundColor = Color.Default;
+				BarTextColor = Color.Default;
+
+				return false;
+			});
 
 			Children.Add(new CoreRootPage(this, NavigationBehavior.PushModalAsync) { Title = "Tab 1" });
 			Children.Add(new CoreRootPage(this, NavigationBehavior.PushModalAsync) { Title = "Tab 2" });
@@ -94,7 +102,8 @@ namespace Xamarin.Forms.Controls
 				{
 					Title = "Rubriques",
 					Icon = "coffee.png",
-					BarBackgroundColor = Color.Blue
+					BarBackgroundColor = Color.Blue,
+					BarTextColor = Color.Aqua
 				});
 
 			Children.Add(new NavigationPage(new Page())
@@ -358,8 +367,16 @@ namespace Xamarin.Forms.Controls
 		}
 	}
 
-	internal class CoreRootPage : ContentPage
+	internal class CoreRootPage : ContentPage, IBarTextColorController
 	{
+		public static readonly BindableProperty BarTextColorProperty = BindableProperty.Create(nameof(BarTextColor), typeof(Color), typeof(CoreRootPage), Color.Default);
+
+		public Color BarTextColor
+		{
+			get { return (Color)GetValue(BarTextColorProperty); }
+			set { SetValue(BarTextColorProperty, value); }
+		}
+
 		public CoreRootPage (Page rootPage, NavigationBehavior navigationBehavior = NavigationBehavior.PushAsync)
 		{
 			IStringProvider stringProvider = DependencyService.Get<IStringProvider> ();

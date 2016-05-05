@@ -242,7 +242,7 @@
         <Setter Property="HeaderTemplate">
             <Setter.Value>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Title}" Foreground="{TemplateBinding ToolbarForeground}" />
+					<TextBlock Text="{Binding Title}" Foreground="{Binding BarTextColor, Converter={StaticResource ColorConverter}, ConverterParameter=DefaultTextForegroundThemeBrush}" />
                 </DataTemplate>
             </Setter.Value>
         </Setter>
@@ -453,7 +453,7 @@
 	</DataTemplate>
 
 	<DataTemplate x:Key="TabbedPageHeader">
-		<TextBlock Text="{Binding Title}" />
+		<TextBlock Text="{Binding Title}" Foreground="{Binding BarTextColor, Converter={StaticResource ColorConverter}, ConverterParameter=DefaultTextForegroundThemeBrush}" />
 	</DataTemplate>
 
 	<Style x:Key="JumpListGrid" TargetType="GridView">

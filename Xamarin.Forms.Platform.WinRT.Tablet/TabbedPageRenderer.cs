@@ -11,6 +11,8 @@ namespace Xamarin.Forms.Platform.WinRT
 	public class TabbedPageRenderer
 		: IVisualElementRenderer
 	{
+		Color _barBackgroundColor;
+		Color _barTextColor;
 		Canvas _canvas;
 
 		bool _disposed;
@@ -109,7 +111,7 @@ namespace Xamarin.Forms.Platform.WinRT
 		Brush GetBarForegroundBrush()
 		{
 			object defaultColor = Windows.UI.Xaml.Application.Current.Resources["ApplicationForegroundThemeBrush"];
-			if (Page.BarTextColor.IsDefault)
+			if (Page.BarTextColor.IsDefault && defaultColor != null)
 				return (Brush)defaultColor;
 			return Page.BarTextColor.ToBrush();
 		}
@@ -182,12 +184,48 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		void UpdateBarBackgroundColor()
 		{
-			_tabs.Background = GetBarBackgroundBrush();
+			TabbedPage tabbedPage = Element as TabbedPage;
+			if (tabbedPage == null) return;
+			var barBackgroundColor = tabbedPage.BarBackgroundColor;
+
+			if (barBackgroundColor == _barBackgroundColor) return;
+			_barBackgroundColor = barBackgroundColor;
+
+			if (_tabs.ToolbarBackground == null && barBackgroundColor.IsDefault) return;
+
+			var brush = GetBarBackgroundBrush();
+			if (brush == _tabs.ToolbarBackground) return;
+
+			_tabs.ToolbarBackground = brush;
+			foreach (var item in _tabs.Items)
+			{
+				var colorController = item as IBarBackgroundColorController;
+				if (colorController != null)
+					colorController.BarBackgroundColor = barBackgroundColor;
+			}
 		}
 
 		void UpdateBarTextColor()
 		{
-			_tabs.Foreground = GetBarForegroundBrush();
+			TabbedPage tabbedPage = Element as TabbedPage;
+			if (tabbedPage == null) return;
+			var barTextColor = tabbedPage.BarTextColor;
+
+			if (barTextColor == _barTextColor) return;
+			_barTextColor = barTextColor;
+
+			if (_tabs.ToolbarForeground == null && barTextColor.IsDefault) return;
+
+			var brush = GetBarForegroundBrush();
+			if (brush == _tabs.ToolbarForeground) return;
+
+			_tabs.ToolbarForeground = brush;
+			foreach (var item in _tabs.Items)
+			{
+				var colorController = item as IBarTextColorController;
+				if (colorController != null)
+					colorController.BarTextColor = barTextColor;
+			}
 		}
 
 		void UpdateCurrentPage()
