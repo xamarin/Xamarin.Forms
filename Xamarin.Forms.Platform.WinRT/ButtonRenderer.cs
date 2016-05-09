@@ -44,12 +44,10 @@ namespace Xamarin.Forms.Platform.WinRT
 				if (Element.BorderColor != Color.Default)
 					UpdateBorderColor();
 
-				if (Element.BorderWidth != 0)
-					UpdateBorderWidth();
-
 				if (Element.BorderRadius != (int)Button.BorderRadiusProperty.DefaultValue)
 					UpdateBorderRadius();
 
+				UpdateBorderWidth();
 				UpdateFont();
 			}
 		}
@@ -120,7 +118,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		void UpdateBorderWidth()
 		{
-			Control.BorderThickness = Element.BorderWidth == 0d ? new WThickness(3) : new WThickness(Element.BorderWidth);
+			Control.BorderThickness = new WThickness(Element.BorderWidth);
 		}
 
 		void UpdateContent()

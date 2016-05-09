@@ -33,7 +33,7 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty FontAttributesProperty = BindableProperty.Create("FontAttributes", typeof(FontAttributes), typeof(Button), FontAttributes.None,
 			propertyChanged: SpecificFontPropertyChanged);
 
-		public static readonly BindableProperty BorderWidthProperty = BindableProperty.Create("BorderWidth", typeof(double), typeof(Button), 0d);
+		public static readonly BindableProperty BorderWidthProperty = BindableProperty.Create("BorderWidth", typeof(double), typeof(Button), DefaultBorderWidth);
 
 		public static readonly BindableProperty BorderColorProperty = BindableProperty.Create("BorderColor", typeof(Color), typeof(Button), Color.Default);
 
@@ -237,6 +237,28 @@ namespace Xamarin.Forms
 		{
 			if (oldvalue != null)
 				oldvalue.SourceChanged -= OnSourceChanged;
+		}
+
+		// Windows 8.1/WP 8.1 have a different default behavior where if the BorderThickness is not explicitly set, it
+		// uses a BorderThickness of 2.5 on all sides on phone devices, and 2 otherwise. Because the BorderWidthProperty
+		// was otherwise set to 0d, it was not accounting for scenarios where a user did in fact want the button's border
+		// to be 0. If it is already 0 by default, the 8.1 Control's BorderThickness couldn't be properly compared. This
+		// private property to allow BorderWidthProperty to bind to for its correct default value and still uses 0 for
+		// the other platforms.
+		static double DefaultBorderWidth
+		{
+			get
+			{
+				double _value = 0d;
+				Device.OnPlatform(WinPhone: () =>
+				{
+					if (Device.Idiom == TargetIdiom.Phone)
+						_value = 2.5d;
+					else
+						_value = 2d;
+				});
+				return _value;
+			}
 		}
 
 		static void SpecificFontPropertyChanged(BindableObject bindable, object oldValue, object newValue)
