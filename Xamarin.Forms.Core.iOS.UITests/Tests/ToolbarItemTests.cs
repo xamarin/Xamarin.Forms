@@ -12,8 +12,9 @@ namespace Xamarin.Forms.Core.UITests
 	{
 		string btn1Id = "tb1";
 		string btn4Id = "tb4";
-
+#if __ANDROID__
 		static bool isSecondaryMenuOpen = false;
+#endif
 		static void ShouldShowMenu ()
 		{
 #if __ANDROID__
