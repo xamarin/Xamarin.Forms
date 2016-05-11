@@ -8,7 +8,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_NavigationPageRenderer))]
-	public class NavigationPage : Page, IPageContainer<Page>, INavigationPageController
+	public class NavigationPage : Page, IPageContainer<Page>, INavigationPageController, IBarTextColorController, IBarBackgroundColorController
 	{
 		public static readonly BindableProperty BackButtonTitleProperty = BindableProperty.CreateAttached("BackButtonTitle", typeof(string), typeof(Page), null);
 

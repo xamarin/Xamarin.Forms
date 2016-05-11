@@ -1,6 +1,6 @@
 <Type Name="TabbedPage" FullName="Xamarin.Forms.TabbedPage">
-  <TypeSignature Language="C#" Value="public class TabbedPage : Xamarin.Forms.MultiPage&lt;Xamarin.Forms.Page&gt;" />
-  <TypeSignature Language="ILAsm" Value=".class public auto ansi beforefieldinit TabbedPage extends Xamarin.Forms.MultiPage`1&lt;class Xamarin.Forms.Page&gt;" />
+  <TypeSignature Language="C#" Value="public class TabbedPage : Xamarin.Forms.MultiPage&lt;Xamarin.Forms.Page&gt;, Xamarin.Forms.IBarBackgroundColorController, Xamarin.Forms.IBarTextColorController" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi beforefieldinit TabbedPage extends Xamarin.Forms.MultiPage`1&lt;class Xamarin.Forms.Page&gt; implements class Xamarin.Forms.IBarBackgroundColorController, class Xamarin.Forms.IBarTextColorController" />
   <AssemblyInfo>
     <AssemblyName>Xamarin.Forms.Core</AssemblyName>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
@@ -17,7 +17,14 @@
       <BaseTypeArgument TypeParamName="T">Xamarin.Forms.Page</BaseTypeArgument>
     </BaseTypeArguments>
   </Base>
-  <Interfaces />
+  <Interfaces>
+    <Interface>
+      <InterfaceName>Xamarin.Forms.IBarBackgroundColorController</InterfaceName>
+    </Interface>
+    <Interface>
+      <InterfaceName>Xamarin.Forms.IBarTextColorController</InterfaceName>
+    </Interface>
+  </Interfaces>
   <Attributes>
     <Attribute>
       <AttributeName>Xamarin.Forms.RenderWith(typeof(Xamarin.Forms.Platform._TabbedPageRenderer))</AttributeName>

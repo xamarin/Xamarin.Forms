@@ -1,0 +1,31 @@
+<Type Name="IBarTextColorController" FullName="Xamarin.Forms.IBarTextColorController">
+  <TypeSignature Language="C#" Value="public interface IBarTextColorController" />
+  <TypeSignature Language="ILAsm" Value=".class public interface auto ansi abstract IBarTextColorController" />
+  <AssemblyInfo>
+    <AssemblyName>Xamarin.Forms.Core</AssemblyName>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Interfaces />
+  <Docs>
+    <summary>To be added.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
+  <Members>
+    <Member MemberName="BarTextColor">
+      <MemberSignature Language="C#" Value="public Xamarin.Forms.Color BarTextColor { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance valuetype Xamarin.Forms.Color BarTextColor" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>Xamarin.Forms.Color</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+</Type>

@@ -92,6 +92,8 @@
     <Compile Include="ElementEventArgs.cs" />
     <Compile Include="ElementTemplate.cs" />
     <Compile Include="EmailKeyboard.cs" />
+    <Compile Include="IBarBackgroundColorController.cs" />
+    <Compile Include="IBarTextColorController.cs" />
     <Compile Include="IEntryController.cs" />
     <Compile Include="IImageController.cs" />
     <Compile Include="INavigationPageController.cs" />

@@ -12,7 +12,8 @@ namespace Xamarin.Forms.Platform.WinRT
 	{
 		public TabbedPagePresenter()
 		{
-			SizeChanged += (s, e) => {
+			SizeChanged += (s, e) =>
+			{
 				if (ActualWidth > 0 && ActualHeight > 0)
 				{
 					var tab = ((Page)DataContext);
@@ -25,6 +26,13 @@ namespace Xamarin.Forms.Platform.WinRT
 	public class TabbedPageRenderer
 		: IVisualElementRenderer, ITitleProvider
 	{
+		Color _barBackgroundColor;
+		Color _barTextColor;
+		bool _disposed;
+		VisualElementTracker<Page, Pivot> _tracker;
+		bool _showTitle;
+		ITitleProvider TitleProvider => this;
+
 		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
 
 		public FrameworkElement ContainerElement
@@ -67,7 +75,8 @@ namespace Xamarin.Forms.Platform.WinRT
 			{
 				if (Control == null)
 				{
-					Control = new FormsPivot {
+					Control = new FormsPivot
+					{
 						Style = (Windows.UI.Xaml.Style)Windows.UI.Xaml.Application.Current.Resources["TabbedPageStyle"]
 					};
 					Control.HeaderTemplate = (Windows.UI.Xaml.DataTemplate)Windows.UI.Xaml.Application.Current.Resources["TabbedPageHeader"];
@@ -75,7 +84,8 @@ namespace Xamarin.Forms.Platform.WinRT
 
 					Control.SelectionChanged += OnSelectionChanged;
 
-					Tracker = new BackgroundTracker<Pivot>(Windows.UI.Xaml.Controls.Control.BackgroundProperty) {
+					Tracker = new BackgroundTracker<Pivot>(Windows.UI.Xaml.Controls.Control.BackgroundProperty)
+					{
 						Element = (Page)element,
 						Control = Control,
 						Container = Control
@@ -194,7 +204,7 @@ namespace Xamarin.Forms.Platform.WinRT
 		{
 			set
 			{
-				(Control as FormsPivot).ToolbarBackground = value;
+				Control.ToolbarBackground = value;
 			}
 		}
 
@@ -202,7 +212,7 @@ namespace Xamarin.Forms.Platform.WinRT
 		{
 			set
 			{
-				(Control as FormsPivot).ToolbarForeground = value;
+				Control.ToolbarForeground = value;
 			}
 		}
 
@@ -212,10 +222,6 @@ namespace Xamarin.Forms.Platform.WinRT
 			if (changed != null)
 				changed(this, e);
 		}
-
-		bool _disposed;
-		VisualElementTracker<Page, Pivot> _tracker;
-		bool _showTitle;
 
 		void OnPagesChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
@@ -286,19 +292,53 @@ namespace Xamarin.Forms.Platform.WinRT
 		Brush GetBarForegroundBrush()
 		{
 			object defaultColor = Windows.UI.Xaml.Application.Current.Resources["AppBarItemForegroundThemeBrush"];
-			if (Element.BarTextColor.IsDefault)
+			if (Element.BarTextColor.IsDefault && defaultColor != null)
 				return (Brush)defaultColor;
 			return Element.BarTextColor.ToBrush();
 		}
 
 		void UpdateBarBackgroundColor()
 		{
-			Control.ToolbarBackground = GetBarBackgroundBrush();
+			if (Element == null) return;
+			var barBackgroundColor = Element.BarBackgroundColor;
+
+			if (barBackgroundColor == _barBackgroundColor) return;
+			_barBackgroundColor = barBackgroundColor;
+
+			if (Control.ToolbarBackground == null && barBackgroundColor.IsDefault) return;
+
+			var brush = GetBarBackgroundBrush();
+			if (brush == Control.ToolbarBackground) return;
+
+			TitleProvider.BarBackgroundBrush = brush;
+			foreach (var item in Control.Items)
+			{
+				var colorController = item as IBarBackgroundColorController;
+				if (colorController != null)
+					colorController.BarBackgroundColor = barBackgroundColor;
+			}
 		}
 
 		void UpdateBarTextColor()
 		{
-			Control.ToolbarForeground = GetBarForegroundBrush();
+			if (Element == null) return;
+			var barTextColor = Element.BarTextColor;
+
+			if (barTextColor == _barTextColor) return;
+			_barTextColor = barTextColor;
+
+			if (Control.ToolbarForeground == null && barTextColor.IsDefault) return;
+
+			var brush = GetBarForegroundBrush();
+			if (brush == Control.ToolbarForeground) return;
+
+			TitleProvider.BarForegroundBrush = brush;
+			foreach (var item in Control.Items)
+			{
+				var colorController = item as IBarTextColorController;
+				if (colorController != null)
+					colorController.BarTextColor = barTextColor;
+			}
 		}
 
 		void UpdateTitle(Page child)
@@ -313,7 +353,8 @@ namespace Xamarin.Forms.Platform.WinRT
 			{
 				Control.Title = navigationRenderer.Title;
 			}
-			else {
+			else
+			{
 				((ITitleProvider)this).ShowTitle = false;
 			}
 
