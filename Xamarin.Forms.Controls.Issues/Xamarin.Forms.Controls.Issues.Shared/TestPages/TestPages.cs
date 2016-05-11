@@ -29,7 +29,7 @@ namespace Xamarin.Forms.Controls
 		{
 			IApp app = null;
 #if __ANDROID__
-			app = ConfigureApp.Android.ApkFile (AppPaths.ApkPath).Debug ().EnableLocalScreenshots().StartApp ();
+			app = ConfigureApp.Android.ApkFile (AppPaths.ApkPath).Debug ().StartApp ();
 #elif __IOS__ 
 			app = ConfigureApp.iOS.InstalledApp (AppPaths.BundleId).Debug ()
 				//Uncomment to run from a specific iOS SIM, get the ID from XCode -> Devices
