@@ -37,17 +37,14 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void Dispose(bool disposing)
 		{
-			if (disposing)
-			{
-				foreach (VisualElement child in Element.InternalChildren)
-				{
+			if(disposing) {
+				foreach(VisualElement child in Element.InternalChildren) {
 					IVisualElementRenderer renderer = Platform.GetRenderer(child);
-					if (renderer != null)
+					if(renderer != null)
 						renderer.Dispose();
 				}
 
-				if (Element != null)
-				{
+				if(Element != null) {
 					var navController = (INavigationPageController)Element;
 
 					navController.PushRequested -= OnPushed;
@@ -77,8 +74,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnElementChanged(e);
 
-			if (e.OldElement != null)
-			{
+			if(e.OldElement != null) {
 				var oldNavController = (INavigationPageController)e.OldElement;
 
 				oldNavController.PushRequested -= OnPushed;
@@ -106,7 +102,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnLayout(changed, l, t, r, b);
 
-			for (var i = 0; i < ChildCount; i++)
+			for(var i = 0; i < ChildCount; i++)
 				GetChildAt(i).Layout(0, 0, r - l, b - t);
 		}
 
@@ -118,7 +114,7 @@ namespace Xamarin.Forms.Platform.Android
 		protected virtual Task<bool> OnPopViewAsync(Page page, bool animated)
 		{
 			Page pageToShow = ((INavigationPageController)Element).StackCopy.Skip(1).FirstOrDefault();
-			if (pageToShow == null)
+			if(pageToShow == null)
 				return Task.FromResult(false);
 
 			return SwitchContentAsync(pageToShow, animated, true);
@@ -131,6 +127,15 @@ namespace Xamarin.Forms.Platform.Android
 
 		void InsertPageBefore(Page page, Page before)
 		{
+
+			int index = Element.InternalChildren.IndexOf(before);
+			if(index == -1)
+				throw new InvalidOperationException("This should never happen, please file a bug");
+
+			//Device.StartTimer(TimeSpan.FromMilliseconds(0), () => {
+			//	((Platform)Element.Platform).UpdateNavigationTitleBar();
+			//	return false;
+			//});
 		}
 
 		void OnInsertPageBeforeRequested(object sender, NavigationRequestedEventArgs e)
@@ -165,16 +170,14 @@ namespace Xamarin.Forms.Platform.Android
 
 			containerToRemove.RemoveFromParent();
 
-			if (rendererToRemove != null)
-			{
+			if(rendererToRemove != null) {
 				rendererToRemove.ViewGroup.RemoveFromParent();
 				rendererToRemove.Dispose();
 			}
 
 			containerToRemove?.Dispose();
 
-			Device.StartTimer(TimeSpan.FromMilliseconds(0), () =>
-			{
+			Device.StartTimer(TimeSpan.FromMilliseconds(0), () => {
 				((Platform)Element.Platform).UpdateNavigationTitleBar();
 				return false;
 			});
@@ -186,7 +189,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			IVisualElementRenderer rendererToAdd = Platform.GetRenderer(view);
 			bool existing = rendererToAdd != null;
-			if (!existing)
+			if(!existing)
 				Platform.SetRenderer(view, rendererToAdd = Platform.CreateRenderer(view));
 
 			Page pageToRemove = _current;
@@ -202,24 +205,20 @@ namespace Xamarin.Forms.Platform.Android
 
 			var tcs = new TaskCompletionSource<bool>();
 
-			if (animated)
-			{
-				if (s_currentAnimation != null)
+			if(animated) {
+				if(s_currentAnimation != null)
 					s_currentAnimation.Cancel();
 
-				if (removed)
-				{
+				if(removed) {
 					// animate out
-					if (containerToAdd.Parent != this)
+					if(containerToAdd.Parent != this)
 						AddView(containerToAdd, Element.LogicalChildren.IndexOf(rendererToAdd.Element));
 					else
 						((Page)rendererToAdd.Element).SendAppearing();
 					containerToAdd.Visibility = ViewStates.Visible;
 
-					if (containerToRemove != null)
-					{
-						Action<AndroidAnimation.Animator> done = a =>
-						{
+					if(containerToRemove != null) {
+						Action<AndroidAnimation.Animator> done = a => {
 							containerToRemove.Visibility = ViewStates.Gone;
 							containerToRemove.Alpha = 1;
 							containerToRemove.ScaleX = 1;
@@ -231,68 +230,64 @@ namespace Xamarin.Forms.Platform.Android
 
 							VisualElement removedElement = rendererToRemove.Element;
 							rendererToRemove.Dispose();
-							if (removedElement != null)
+							if(removedElement != null)
 								Platform.SetRenderer(removedElement, null);
 						};
 
 						// should always happen
-						s_currentAnimation = containerToRemove.Animate().Alpha(0).ScaleX(0.8f).ScaleY(0.8f).SetDuration(250).SetListener(new GenericAnimatorListener { OnEnd = a =>
-						{
-							s_currentAnimation = null;
-							done(a);
-						},
-							OnCancel = done });
+						s_currentAnimation = containerToRemove.Animate().Alpha(0).ScaleX(0.8f).ScaleY(0.8f).SetDuration(250).SetListener(new GenericAnimatorListener {
+							OnEnd = a => {
+								s_currentAnimation = null;
+								done(a);
+							},
+							OnCancel = done
+						});
 					}
-				}
-				else
-				{
+				} else {
 					bool containerAlreadyAdded = containerToAdd.Parent == this;
 					// animate in
-					if (!containerAlreadyAdded)
+					if(!containerAlreadyAdded)
 						AddView(containerToAdd);
 					else
 						((Page)rendererToAdd.Element).SendAppearing();
 
-					if (existing)
+					if(existing)
 						Element.ForceLayout();
 
 					containerToAdd.Alpha = 0;
 					containerToAdd.ScaleX = containerToAdd.ScaleY = 0.8f;
 					containerToAdd.Visibility = ViewStates.Visible;
-					s_currentAnimation = containerToAdd.Animate().Alpha(1).ScaleX(1).ScaleY(1).SetDuration(250).SetListener(new GenericAnimatorListener { OnEnd = a =>
-					{
-						if (containerToRemove != null && containerToRemove.Handle != IntPtr.Zero)
-						{
-							containerToRemove.Visibility = ViewStates.Gone;
-							if (pageToRemove != null)
-								pageToRemove.SendDisappearing();
+					s_currentAnimation = containerToAdd.Animate().Alpha(1).ScaleX(1).ScaleY(1).SetDuration(250).SetListener(new GenericAnimatorListener {
+						OnEnd = a => {
+							if(containerToRemove != null && containerToRemove.Handle != IntPtr.Zero) {
+								containerToRemove.Visibility = ViewStates.Gone;
+								if(pageToRemove != null)
+									pageToRemove.SendDisappearing();
+							}
+							s_currentAnimation = null;
+							tcs.TrySetResult(true);
+							((Platform)Element.Platform).NavAnimationInProgress = false;
 						}
-						s_currentAnimation = null;
-						tcs.TrySetResult(true);
-						((Platform)Element.Platform).NavAnimationInProgress = false;
-					} });
+					});
 				}
-			}
-			else
-			{
+			} else {
 				// just do it fast
-				if (containerToRemove != null)
-				{
-					if (removed)
+				if(containerToRemove != null) {
+					if(removed)
 						RemoveView(containerToRemove);
 					else
 						containerToRemove.Visibility = ViewStates.Gone;
 				}
 
-				if (containerToAdd.Parent != this)
+				if(containerToAdd.Parent != this)
 					AddView(containerToAdd);
 				else
 					((Page)rendererToAdd.Element).SendAppearing();
 
-				if (containerToRemove != null && !removed)
+				if(containerToRemove != null && !removed)
 					pageToRemove.SendDisappearing();
 
-				if (existing)
+				if(existing)
 					Element.ForceLayout();
 
 				containerToAdd.Visibility = ViewStates.Visible;
