@@ -5,7 +5,7 @@ namespace Xamarin.Forms
 {
 	public abstract class Effect
 	{
-		internal Effect()
+		protected Effect()
 		{
 		}
 
