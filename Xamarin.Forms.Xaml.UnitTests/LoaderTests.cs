@@ -76,6 +76,22 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			bindable.SetValue (MessageProperty, value);
 		}
 	}
+
+	public static class AttachedBPStaticProperty
+	{
+		public static BindableProperty AttachedProperty { get; } =
+			BindableProperty.CreateAttached("Attached", typeof(string), typeof(AttachedBPStaticProperty), null);
+
+		public static string GetAttached (BindableObject bindable)
+		{
+			return (string)bindable.GetValue (AttachedProperty);
+		}
+
+		public static void SetAttached (BindableObject bindable, string value)
+		{
+			bindable.SetValue (AttachedProperty, value);
+		}
+	}
 	
 	[Flags]
 	public enum MockFlags
@@ -583,6 +599,20 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			var label = new Label ().LoadFromXaml (xaml);
 			label.BindingContext = "foobar";
 			Assert.AreEqual ("raboof", label.Text);
+		}
+
+		[Test]
+		public void TestAttachedBPStaticProperty ()
+		{
+			var xaml = @"
+				<View
+				xmlns=""http://xamarin.com/schemas/2014/forms""
+				xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+				xmlns:local=""clr-namespace:Xamarin.Forms.Xaml.UnitTests;assembly=Xamarin.Forms.Xaml.UnitTests""
+				local:AttachedBPStaticProperty.Attached=""hello world!"">
+				</View>";
+			var view = new View ().LoadFromXaml (xaml);
+			Assert.AreEqual ("hello world!", AttachedBPStaticProperty.GetAttached (view));
 		}
 
 		[Test]
