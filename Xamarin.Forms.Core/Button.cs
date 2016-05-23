@@ -114,6 +114,10 @@ namespace Xamarin.Forms
 
 		void IButtonController.SendClicked()
 		{
+			OnClicked();
+		}
+		
+		protected virtual void OnClicked(){
 			ICommand cmd = Command;
 			if (cmd != null)
 				cmd.Execute(CommandParameter);
