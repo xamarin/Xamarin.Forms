@@ -411,13 +411,21 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var button = new UIButton(new RectangleF(0, 0, 1, 1));
 
-			if (!item.IsDestructive)
-				button.SetBackgroundImage(NormalBackground, UIControlState.Normal);
+			if (item.BackgroundColor == Color.Default)
+			{
+				if (!item.IsDestructive)
+					button.SetBackgroundImage(NormalBackground, UIControlState.Normal);
+				else
+					button.SetBackgroundImage(DestructiveBackground, UIControlState.Normal);
+			}
 			else
-				button.SetBackgroundImage(DestructiveBackground, UIControlState.Normal);
+				button.BackgroundColor = item.BackgroundColor.ToUIColor();
 
 			button.SetTitle(item.Text, UIControlState.Normal);
 			button.TitleEdgeInsets = new UIEdgeInsets(0, 15, 0, 15);
+
+			if (item.TextColor != Color.Default)
+				button.SetTitleColor(item.TextColor.ToUIColor(), UIControlState.Normal);
 
 			button.Enabled = item.IsEnabled;
 

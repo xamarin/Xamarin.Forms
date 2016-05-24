@@ -17,6 +17,9 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty IconProperty = BindableProperty.Create("Icon", typeof(FileImageSource), typeof(MenuItem), default(FileImageSource));
 
+		public static readonly BindableProperty BackgroundColorProperty = BindableProperty.Create("BackgroundColor", typeof(Color), typeof(MenuItem), Color.Default);
+		public static readonly BindableProperty TextColorProperty = BindableProperty.Create("TextColor", typeof(Color), typeof(MenuItem), Color.Default);
+
 		internal static readonly BindableProperty IsEnabledProperty = BindableProperty.Create("IsEnabled", typeof(bool), typeof(ToolbarItem), true);
 
 		public ICommand Command
@@ -47,6 +50,24 @@ namespace Xamarin.Forms
 		{
 			get { return (string)GetValue(TextProperty); }
 			set { SetValue(TextProperty, value); }
+		}
+
+		/// <summary>
+		/// Setting the background color of the menu item if target platform is iOS.
+		/// </summary>
+		public Color BackgroundColor
+		{
+			get { return (Color)GetValue(BackgroundColorProperty); }
+			set { SetValue(BackgroundColorProperty, value); }
+		}
+
+		/// <summary>
+		/// Setting the text olor of the menu item if target platform is iOS.
+		/// </summary>
+		public Color TextColor
+		{
+			get { return (Color)GetValue(TextColorProperty); }
+			set { SetValue(TextColorProperty, value); }
 		}
 
 		internal bool IsEnabled
