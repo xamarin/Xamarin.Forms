@@ -1302,6 +1302,9 @@ namespace Xamarin.Forms
 					case NotifyCollectionChangedAction.Replace:
 						e = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, ConvertItems(e.NewItems), ConvertItems(e.OldItems), e.OldStartingIndex);
 						break;
+                    case NotifyCollectionChangedAction.Reset:
+                        e = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, ConvertItems(e.OldItems));
+                        break;
 				}
 
 				OnCollectionChanged(e);
