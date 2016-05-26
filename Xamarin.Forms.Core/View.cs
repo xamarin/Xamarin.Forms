@@ -49,7 +49,9 @@ namespace Xamarin.Forms
 						foreach (IElement item in _gestureRecognizers.OfType<IElement>())
 							item.Parent = this;
 						break;
-				}
+                    case NotifyCollectionChangedAction.Move:
+                        throw new NotImplementedException();// TODO - Implement Move Action
+                }
 			};
 		}
 

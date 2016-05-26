@@ -455,7 +455,7 @@ namespace Xamarin.Forms
 					while ((_rwlock & (RwWrite | RwWait)) > 0)
 						sw.SpinOnce();
 
-					if ((Interlocked.Add(ref _rwlock, RwRead) & (RwWait | RwWait)) == 0)
+					if ((Interlocked.Add(ref _rwlock, RwRead) & (RwWrite | RwWait)) == 0)
 						return;
 
 					Interlocked.Add(ref _rwlock, -RwRead);
