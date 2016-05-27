@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace Xamarin.Forms
 {
-	public abstract class ItemsView<TVisual> : IDisposable, View, IItemsView<TVisual> where TVisual : BindableObject
+	public abstract class ItemsView<TVisual> : View, IItemsView<TVisual> where TVisual : BindableObject
 	{
 		/*
 		public static readonly BindableProperty InfiniteScrollingProperty =
@@ -89,10 +89,5 @@ namespace Xamarin.Forms
 
 			return !(lv.CachingStrategy == ListViewCachingStrategy.RetainElement && lv.ItemTemplate is DataTemplateSelector);
 		}
-
-        public void Dispose()
-        {
-            TemplatedItems.Dispose();
-        }
     }
 }

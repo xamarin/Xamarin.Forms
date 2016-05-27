@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 namespace Xamarin.Forms
 {
 	[ContentProperty("Children")]
-	public abstract class MultiPage<T> : Page, IDisposable, IViewContainer<T>, IPageContainer<T>, IItemsView<T> where T : Page
+	public abstract class MultiPage<T> : Page, IViewContainer<T>, IPageContainer<T>, IItemsView<T> where T : Page
 	{
 		public static readonly BindableProperty ItemsSourceProperty = BindableProperty.Create("ItemsSource", typeof(IEnumerable), typeof(MultiPage<>), null);
 
@@ -355,10 +355,5 @@ namespace Xamarin.Forms
 			else if (SelectedItem is T)
 				CurrentPage = (T)SelectedItem;
 		}
-
-        public void Dispose()
-        {
-            _templatedItems.Dispose();
-        }
     }
 }
