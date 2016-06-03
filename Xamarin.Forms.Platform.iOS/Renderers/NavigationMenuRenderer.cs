@@ -79,7 +79,7 @@ namespace Xamarin.Forms.Platform.iOS
 				set
 				{
 					_icon = value;
-					_image.SetImage(new UIImage(_icon), UIControlState.Normal);
+					_image.SetImage(UIImage.FromBundle(_icon), UIControlState.Normal);
 				}
 			}
 

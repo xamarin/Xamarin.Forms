@@ -136,7 +136,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			void UpdateIcon()
 			{
-				((SecondaryToolbarItemContent)CustomView).Image = string.IsNullOrEmpty(_item.Icon) ? null : new UIImage(_item.Icon);
+				((SecondaryToolbarItemContent)CustomView).Image = string.IsNullOrEmpty(_item.Icon) ? null : UIImage.FromBundle(_item.Icon);
 			}
 
 			void UpdateIsEnabled()
