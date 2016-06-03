@@ -43,6 +43,15 @@ namespace Xamarin.Forms
 			}
 		}
 
+		protected override void OnBindingContextChanged()
+		{
+			base.OnBindingContextChanged();
+
+			var listView = (this.Parent as ListView);
+			if(View != null && listView != null && listView.HasUnevenRows && listView.CachingStrategy == ListViewCachingStrategy.RecycleElement)
+				View.InvalidateMeasureInternal(Xamarin.Forms.Internals.InvalidationTrigger.RendererReady);
+		}
+
 		internal override ReadOnlyCollection<Element> LogicalChildren => _logicalChildren ?? base.LogicalChildren;
 	}
 }
