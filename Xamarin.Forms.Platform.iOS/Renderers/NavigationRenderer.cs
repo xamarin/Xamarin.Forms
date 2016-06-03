@@ -523,6 +523,8 @@ namespace Xamarin.Forms.Platform.iOS
 				_removeControllers = _removeControllers.Remove(target);
 				ViewControllers = _removeControllers;
 			}
+			var parentingViewController = ViewControllers.Last() as ParentingViewController;
+			UpdateLeftBarButtonItem(parentingViewController, page);
 		}
 
 		void RemoveViewControllers(bool animated)
@@ -627,11 +629,13 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		void UpdateLeftBarButtonItem(ParentingViewController containerController)
+		void UpdateLeftBarButtonItem(ParentingViewController containerController, Page pageBeingRemoved = null)
 		{
+			if (containerController == null)
+				return;
 			var currentChild = containerController.Child;
 			var firstPage = ((INavigationPageController)Element).StackCopy.LastOrDefault();
-			if ((currentChild != firstPage && NavigationPage.GetHasBackButton(currentChild)) || _parentMasterDetailPage == null)
+			if ((firstPage != pageBeingRemoved && currentChild != firstPage && NavigationPage.GetHasBackButton(currentChild)) || _parentMasterDetailPage == null)
 				return;
 
 			if (!_parentMasterDetailPage.ShouldShowToolbarButton())
