@@ -90,6 +90,7 @@ namespace Xamarin.Forms.Controls
 			listview.ItemsSource = patientGroups;
 		}
 
+		[Preserve(AllMembers = true)]
 		public class GroupHeaderViewCell : ViewCell
 		{
 			TapGestureRecognizer tapGesture;
@@ -120,6 +121,7 @@ namespace Xamarin.Forms.Controls
 			}
 		}
 
+		[Preserve(AllMembers = true)]
 		public class ItemTestViewCell : ViewCell
 		{
 			public ItemTestViewCell()
@@ -133,7 +135,8 @@ namespace Xamarin.Forms.Controls
 			}
 		}
 
-		class RangeObservableCollection<T> : ObservableCollection<T>
+		[Preserve(AllMembers = true)]
+		public class RangeObservableCollection<T> : ObservableCollection<T>
 		{
 			private bool _suppressNotification = false;
 
@@ -159,11 +162,11 @@ namespace Xamarin.Forms.Controls
 			}
 		}
 
-		#region Helper Classes
-
-		class PatientsGroupViewModel : RangeObservableCollection<PatientViewModel>
+		[Preserve(AllMembers = true)]
+		public class PatientsGroupViewModel : RangeObservableCollection<PatientViewModel>
 		{
 			public bool IsCollapsed { get; private set; }
+
 			public string Title { get; set; }
 
 			private readonly List<PatientViewModel> _patients;
@@ -195,7 +198,8 @@ namespace Xamarin.Forms.Controls
 			}
 		}
 
-		class PatientViewModel
+		[Preserve(AllMembers = true)]
+		public class PatientViewModel
 		{
 			public PatientViewModel(string code)
 			{
@@ -207,9 +211,8 @@ namespace Xamarin.Forms.Controls
 			public string Description { get; set; }
 		}
 
-		#endregion
 
-#if UITEST
+		#if UITEST
 		[Test]
 		public void Bugzilla40704Test()
 		{
