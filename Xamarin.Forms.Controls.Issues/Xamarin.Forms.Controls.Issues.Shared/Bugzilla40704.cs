@@ -35,7 +35,8 @@ namespace Xamarin.Forms.Controls
 
 			var button = new Button()
 			{
-				Text = "Collapse", AutomationId = "btnCollappse"
+				Text = "Collapse",
+				AutomationId = "btnCollappse"
 			};
 			listview.Footer = button;
 			button.Clicked += Button_Clicked;
@@ -58,7 +59,7 @@ namespace Xamarin.Forms.Controls
 
 			var patientGroups = new List<PatientsGroupViewModel>();
 			var random = new Random();
-        
+
 			for (var i = 0; i < groupsNumber; i++)
 			{
 				var patients = new List<PatientViewModel>();
@@ -123,9 +124,9 @@ namespace Xamarin.Forms.Controls
 		{
 			public ItemTestViewCell()
 			{
-				
+
 				var grd = new Grid { BackgroundColor = Color.Yellow };
-				var lbl = new Label { HorizontalOptions = LayoutOptions.FillAndExpand, TextColor = Color.Black, FontSize = 16, LineBreakMode = LineBreakMode.WordWrap  };
+				var lbl = new Label { HorizontalOptions = LayoutOptions.FillAndExpand, TextColor = Color.Black, FontSize = 16, LineBreakMode = LineBreakMode.WordWrap };
 				lbl.SetBinding(Label.TextProperty, new Binding("Description"));
 				grd.Children.Add(lbl);
 				View = grd;
@@ -208,18 +209,20 @@ namespace Xamarin.Forms.Controls
 
 		#endregion
 
-		#if UITEST
+#if UITEST
 		[Test]
 		public void Bugzilla40704Test()
 		{
-			RunningApp.ScrollDownTo("btnCollappse", "lstMain", ScrollStrategy.Programmatically, 0.5, 1, timeout: TimeSpan.FromMinutes(2));
+			RunningApp.ScrollDownTo("btnCollappse", "lstMain", ScrollStrategy.Gesture, 0.8, timeout: TimeSpan.FromMinutes(2));
 			RunningApp.Tap("btnCollappse");
+			RunningApp.ScrollDownTo("btnCollappse", "lstMain", ScrollStrategy.Gesture, 0.8, timeout: TimeSpan.FromMinutes(2));
 			RunningApp.Tap("btnCollappse");
+			RunningApp.ScrollDownTo("btnCollappse", "lstMain", ScrollStrategy.Gesture, 0.8, timeout: TimeSpan.FromMinutes(2));
 			RunningApp.Tap("btnCollappse");
 			RunningApp.WaitForElement("Menu - 2");
 			RunningApp.WaitForElement("Menu - 1");
 			RunningApp.WaitForElement("Menu - 0");
 		}
-		#endif
+#endif
 	}
 }
