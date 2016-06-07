@@ -12,7 +12,7 @@ namespace Xamarin.Forms.Controls
 	{
 		protected override void Init()
 		{
-			var layout = new StackLayout { VerticalOptions = LayoutOptions.Center, BackgroundColor = Color.Red };
+			var layout = new StackLayout { VerticalOptions = LayoutOptions.Center };
 			var lbl = new Label();
 			var slider = new Slider();
 			slider.HeightRequest = 50;
