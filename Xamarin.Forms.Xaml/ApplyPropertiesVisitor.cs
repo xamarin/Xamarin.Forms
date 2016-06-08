@@ -273,11 +273,17 @@ namespace Xamarin.Forms.Xaml
 		static BindableProperty GetBindableProperty(Type elementType, string localName, IXmlLineInfo lineInfo,
 			bool throwOnError = false)
 		{
+			PropertyInfo bindablePropertyInfo = null;
 			var bindableFieldInfo =
 				elementType.GetFields().FirstOrDefault(fi => fi.Name == localName + "Property" && fi.IsStatic && fi.IsPublic);
+			if (bindableFieldInfo == null)
+			{
+				bindablePropertyInfo =
+					elementType.GetProperties().FirstOrDefault(pi => pi.Name == localName + "Property" && pi.GetMethod.IsStatic && pi.GetMethod.IsPublic);
+			}
 
 			Exception exception = null;
-			if (exception == null && bindableFieldInfo == null)
+			if (exception == null && bindableFieldInfo == null && bindablePropertyInfo == null)
 			{
 				exception =
 					new XamlParseException(
@@ -285,7 +291,12 @@ namespace Xamarin.Forms.Xaml
 			}
 
 			if (exception == null)
-				return bindableFieldInfo.GetValue(null) as BindableProperty;
+			{
+				if (bindableFieldInfo != null)
+					return bindableFieldInfo.GetValue(null) as BindableProperty;
+				if (bindablePropertyInfo != null)
+					return bindablePropertyInfo.GetValue(null) as BindableProperty;
+			}
 			if (throwOnError)
 				throw exception;
 			return null;
