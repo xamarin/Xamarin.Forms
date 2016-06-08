@@ -7,7 +7,7 @@
   </AssemblyInfo>
   <Interfaces />
   <Docs>
-    <summary>Inteface that represents a data source provider.</summary>
+    <summary>Interface that represents a data source provider.</summary>
     <remarks>To be added.</remarks>
   </Docs>
   <Members>

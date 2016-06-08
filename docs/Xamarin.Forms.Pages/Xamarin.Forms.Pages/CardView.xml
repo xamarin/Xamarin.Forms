@@ -39,7 +39,7 @@
       </ReturnValue>
       <Docs>
         <summary>Gets or sets the detailed description of the card view.</summary>
-        <value>The detailed description of the card view..</value>
+        <value>The detailed description of the card view.</value>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -54,7 +54,7 @@
         <ReturnType>Xamarin.Forms.BindableProperty</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Backing store for the <see cref="P:Xamarin.Forms.Pages.CardView.Detail" /> property..</summary>
+        <summary>Backing store for the <see cref="P:Xamarin.Forms.Pages.CardView.Detail" /> property.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
