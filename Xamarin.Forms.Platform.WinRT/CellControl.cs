@@ -249,15 +249,17 @@ namespace Xamarin.Forms.Platform.WinRT
 				}
 				else
 				{
-					string textContent = newContext.ToString();
-
+					IItemsView<Cell> controller = lv;
 					if (isGroupHeader)
 					{
 						TemplatedItemsList<ItemsView<Cell>, Cell> group = GetGroup(newContext, lv);
-						textContent = GetDisplayTextFromGroup(lv, group);
+						cell = controller.CreateDefault(GetDisplayTextFromGroup(lv, group));
 					}
-
-					cell = lv.CreateDefaultCell(textContent);
+					else
+					{
+						cell = controller.CreateDefault(newContext);
+						cell.BindingContext = newContext;
+					}
 				}
 
 				// A TableView cell should already have its parent,

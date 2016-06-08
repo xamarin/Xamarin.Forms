@@ -338,11 +338,6 @@ namespace Xamarin.Forms
 			content.Parent = null;
 		}
 
-		internal Cell CreateDefaultCell(object item)
-		{
-			return CreateDefault(item);
-		}
-
 		internal void NotifyRowTapped(int groupIndex, int inGroupIndex, Cell cell = null)
 		{
 			TemplatedItemsList<ItemsView<Cell>, Cell> group = TemplatedItems.GetGroup(groupIndex);
