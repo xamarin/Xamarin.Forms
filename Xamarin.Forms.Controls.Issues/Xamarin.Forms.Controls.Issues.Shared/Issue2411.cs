@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Controls.TestCasesPages
 #if __ANDROID__
 		[Ignore ("Appearing event is tied to virtualization in TabbedPage for Material")]
 #endif
-		[Issue (IssueTracker.Github, 2411, "ScrollToPositon.MakeVisible not called every time TabbedPage", PlatformAffected.Android)]
+		[Issue (IssueTracker.Github, 2411, "ScrollToPosition.MakeVisible not called every time TabbedPage", PlatformAffected.Android)]
 		public void Issue2411ScrollToPositionMakeVisible ()
 		{
 			RunningApp.WaitForElement (q => q.Marked ("99 99 99 99 99 99"));
@@ -56,7 +56,7 @@ namespace Xamarin.Forms.Controls.TestCasesPages
 		}
 
 		[Test]
-		[Issue (IssueTracker.Github, 2411, "ScrollToPositon.End crashing in TabbedPage", PlatformAffected.Android)]
+		[Issue (IssueTracker.Github, 2411, "ScrollToPosition.End crashing in TabbedPage", PlatformAffected.Android)]
 		public void Issue2411ScrollToPositionEndCrash ()
 		{
 			RunningApp.Tap (q => q.Marked ("Crash in ScrollToPosition.End"));
@@ -75,6 +75,11 @@ namespace Xamarin.Forms.Controls.TestCasesPages
 		{
 			RunningApp.Tap (q => q.Marked ("Crash in ScrollToPosition.End"));
 			RunningApp.Tap (q => q.Marked ("Scroll To in OnAppearing Uneven"));
+
+			var dontRun = RunningApp.Query(q => q.Marked(XamarinListViewScrollToBugPage3.DontRun));
+			if (dontRun.Length > 0)
+				Assert.Inconclusive("Ignored on iOS < 9 until Bugzilla 28277 is resolved.");
+
 			RunningApp.Screenshot ("On Third Tab");
 			RunningApp.WaitForElement (q => q.Marked ("99 99 99 99 99 99"));
 		}
@@ -203,13 +208,30 @@ namespace Xamarin.Forms.Controls.TestCasesPages
 		ListView _listView;
 		ObservableCollection<ListObj> _collection = new ObservableCollection<ListObj> ();
 		int _i =0;
+		public const string DontRun = "Don't run";
 		public XamarinListViewScrollToBugPage3 ()
 		{
 			Title = "Scroll To in OnAppearing Uneven";
 
-			for (_i = 0; _i < 100; _i++) {
-				var item = new ListObj { Name = string.Format ("{0} {0} {0} {0} {0} {0}", _i) };
-				_collection.Add (item);
+			bool runTest = true;
+			// This test will fail in iOS < 9 because using ScrollTo with UnevenRows with estimation is currently not working.
+			// It did not previously fail because this test used `TakePerformanceHit` to turn off row estimation. However, as
+			// that was never a public feature, it was never a valid fix for the test.
+			// https://bugzilla.xamarin.com/show_bug.cgi?id=28277
+#if !UITEST
+				if (App.IOSVersion < 9)
+					runTest = false;
+#endif
+
+			if (!runTest)
+				_collection.Add(new ListObj { Name = DontRun });
+			else
+			{
+				for (_i = 0; _i < 100; _i++)
+				{
+					var item = new ListObj { Name = string.Format("{0} {0} {0} {0} {0} {0}", _i) };
+					_collection.Add(item);
+				}
 			}
 
 			var btnAdd = new Button {
