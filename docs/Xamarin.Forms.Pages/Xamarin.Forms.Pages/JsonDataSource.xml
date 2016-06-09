@@ -68,7 +68,7 @@
       <Docs>
         <param name="key">The key of the data to get.</param>
         <summary>Returns the first data item that matches the <paramref name="key" />.</summary>
-        <returns>The first data item that matches the <paramref name="key" />, or <see langwor="null" /> if no such item exists.</returns>
+        <returns>The first data item that matches the <paramref name="key" />, or <see langword="null" /> if no such item exists.</returns>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>

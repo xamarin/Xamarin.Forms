@@ -163,7 +163,7 @@
         <Parameter Name="value" Type="System.Object" />
       </Parameters>
       <Docs>
-        <param name="key">The idenitifier for the data item to change.</param>
+        <param name="key">The identifier for the data item to change.</param>
         <param name="value">The new value.</param>
         <summary>Sets the data that is identified by <paramref name="key" /> to <paramref name="value" /> and calls the <see cref="M:Xamarin.Forms.Pages.BaseDataSource.OnPropertyChanged" /> method if <paramref name="value" /> is different from the current value.</summary>
         <returns><see langword="false" /> if the new value is the same as the old value. Otherwise, <see langword="true" />.</returns>
