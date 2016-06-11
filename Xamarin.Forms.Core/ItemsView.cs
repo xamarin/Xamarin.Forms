@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 
 namespace Xamarin.Forms
 {
@@ -88,5 +89,5 @@ namespace Xamarin.Forms
 
 			return !(lv.CachingStrategy == ListViewCachingStrategy.RetainElement && lv.ItemTemplate is DataTemplateSelector);
 		}
-	}
+    }
 }

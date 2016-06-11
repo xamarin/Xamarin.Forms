@@ -14,8 +14,9 @@ namespace Xamarin.Forms
 					return 0.5;
 				case LayoutAlignment.End:
 					return 1;
-			}
-			throw new ArgumentOutOfRangeException("align");
+                default:// TODO - Maybe there is a specific value for LayoutAlignment.Fill ?
+                    throw new ArgumentOutOfRangeException("align");
+            }
 		}
 	}
 }

@@ -355,5 +355,5 @@ namespace Xamarin.Forms
 			else if (SelectedItem is T)
 				CurrentPage = (T)SelectedItem;
 		}
-	}
+    }
 }
