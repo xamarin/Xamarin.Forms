@@ -9,6 +9,6 @@ namespace Xamarin.Forms
 		{
 		}
 
-		public List<Page> PoppedPages { get; set; }
+        public IEnumerable<Page> PoppedPages { get; set; }
 	}
 }
