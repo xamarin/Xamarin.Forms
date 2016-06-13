@@ -59,6 +59,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override SizeRequest GetDesiredSize(int widthConstraint, int heightConstraint)
 		{
+			if (Control == null)
+				return (base.GetDesiredSize(widthConstraint, heightConstraint));
+				        
 			AView view = _container == this ? (AView)Control : _container;
 			view.Measure(widthConstraint, heightConstraint);
 
@@ -81,6 +84,12 @@ namespace Xamarin.Forms.Platform.Android
 					_container.RemoveFromParent();
 					_container.Dispose();
 					_container = null;
+				}
+
+				if (Element != null && _focusChangeHandler != null)
+				{
+					Element.FocusChangeRequested -= _focusChangeHandler;
+					_focusChangeHandler = null;
 				}
 
 				_disposed = true;

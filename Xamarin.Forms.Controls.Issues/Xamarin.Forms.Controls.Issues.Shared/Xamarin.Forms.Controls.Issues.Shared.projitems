@@ -98,10 +98,13 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla39702.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla40005.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla40173.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla39821.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla40185.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla40333.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla31806.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla41078.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CarouselAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla34561.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla34727.cs" />
@@ -400,6 +403,7 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla39963.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla39987.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla40704.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Bugzilla22229.xaml">
