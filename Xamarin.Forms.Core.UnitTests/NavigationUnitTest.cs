@@ -193,7 +193,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			var nav = new NavigationPage ();
 
 			List<Page> poppedChildren = null;
-			nav.PoppedToRoot += (sender, args) => poppedChildren = (args as PoppedToRootEventArgs).PoppedPages;
+            nav.PoppedToRoot += (sender, args) => poppedChildren = (args as PoppedToRootEventArgs).PoppedPages.ToList();
 
 			var root = new ContentPage {Content = new View ()};
 			var child1 = new ContentPage {Content = new View ()};
@@ -203,7 +203,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			await nav.PushAsync (child1);
 			await nav.PushAsync (child2);
 
-			nav.PopToRootAsync ();
+			await nav.PopToRootAsync ();
 
 			Assert.IsNotNull (poppedChildren);
 			Assert.AreEqual (2, poppedChildren.Count);
