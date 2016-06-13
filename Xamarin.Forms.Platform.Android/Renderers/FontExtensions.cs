@@ -9,11 +9,11 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public static class FontExtensions
 	{
-		private static string[] SupportedFontExtensions = { ".ttf", ".otf" };
+		static string[] SupportedFontExtensions = { ".ttf", ".otf" };
 
-		private static readonly Dictionary<Tuple<string, FontAttributes>, Typeface> Typefaces = new Dictionary<Tuple<string, FontAttributes>, Typeface>();
+		static readonly Dictionary<Tuple<string, FontAttributes>, Typeface> Typefaces = new Dictionary<Tuple<string, FontAttributes>, Typeface>();
 
-		private static Typeface s_defaultTypeface;
+		static Typeface s_defaultTypeface;
 
 		public static float ToScaledPixel(this Font self)
 		{
