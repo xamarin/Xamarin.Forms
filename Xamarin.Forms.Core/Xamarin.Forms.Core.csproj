@@ -22,6 +22,8 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>
+    </NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>full</DebugType>
@@ -31,17 +33,20 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>
+    </NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Turkey|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\Turkey\</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>
+    </NoWarn>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <WarningLevel>4</WarningLevel>
     <Optimize>false</Optimize>
   </PropertyGroup>
   <ItemGroup>
@@ -405,7 +410,7 @@
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj">
-      <Project>{67F9D3A8-F71E-4428-913F-C37AE82CDB24}</Project>
+      <Project>{67f9d3a8-f71e-4428-913f-c37ae82cdb24}</Project>
       <Name>Xamarin.Forms.Platform</Name>
     </ProjectReference>
   </ItemGroup>
