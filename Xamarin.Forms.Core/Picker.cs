@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
@@ -19,11 +21,19 @@ namespace Xamarin.Forms
 				if (eh != null)
 					eh(bindable, EventArgs.Empty);
 			}, coerceValue: CoerceSelectedIndex);
+		public static readonly BindableProperty ItemsSourceProperty = BindableProperty.Create (nameof (ItemsSource), typeof (IEnumerable), typeof (Picker), null, propertyChanged: OnItemsSourcePropertyChanged);
+
+		public static readonly BindableProperty SelectedItemProperty = BindableProperty.Create (nameof (SelectedItem), typeof (object), typeof (Picker), null, BindingMode.TwoWay, propertyChanged: OnSelectedItemPropertyChanged);
 
 		public Picker()
 		{
 			Items = new ObservableList<string>();
 			((ObservableList<string>)Items).CollectionChanged += OnItemsCollectionChanged;
+			SelectedIndexChanged += (o, e) =>
+			{
+				if (ItemsSource != null && SelectedIndex >= 0)
+					SelectedItem = ItemsSource.Cast<object> ().ToList () [SelectedIndex];
+			};
 		}
 
 		public IList<string> Items { get; }
@@ -46,6 +56,16 @@ namespace Xamarin.Forms
 			set { SetValue(TitleProperty, value); }
 		}
 
+		public IEnumerable<object> ItemsSource {
+			get { return (IEnumerable<object>)GetValue (ItemsSourceProperty); }
+			set { SetValue (ItemsSourceProperty, value); }
+		}
+
+		public object SelectedItem {
+			get { return GetValue (SelectedItemProperty); }
+			set { SetValue (SelectedItemProperty, value); }
+		}
+
 		public event EventHandler SelectedIndexChanged;
 
 		static object CoerceSelectedIndex(BindableObject bindable, object value)
@@ -58,5 +78,39 @@ namespace Xamarin.Forms
 		{
 			SelectedIndex = SelectedIndex.Clamp(-1, Items.Count - 1);
 		}
+
+		static void OnItemsSourcePropertyChanged (BindableObject bindable, object value, object newValue)
+		{
+			var picker = (Picker)bindable;
+			var notifyCollection = newValue as INotifyCollectionChanged;
+			if (notifyCollection != null) {
+				notifyCollection.CollectionChanged += (sender, args) => {
+					if (args.NewItems != null)
+						foreach (var newItem in args.NewItems)
+							picker.Items.Add ((newItem ?? "").ToString ());
+
+					if (args.OldItems != null)
+						foreach (var oldItem in args.OldItems)
+							picker.Items.Remove ((oldItem ?? "").ToString ());
+				};
+			}
+
+			var enumerable = newValue as IEnumerable;
+			if (enumerable == null)
+				return;
+
+			picker.Items.Clear ();
+
+			foreach (var item in enumerable)
+				picker.Items.Add ((item ?? "").ToString ());
+		}
+
+		static void OnSelectedItemPropertyChanged (BindableObject bindable, object value, object newValue)
+		{
+			var picker = (Picker)bindable;
+			if (picker.ItemsSource != null)
+				picker.SelectedIndex = picker.ItemsSource.IndexOf(picker.SelectedItem);
+		}
+
 	}
 }
