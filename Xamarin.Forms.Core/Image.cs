@@ -1,10 +1,11 @@
 using System;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_ImageRenderer))]
-	public class Image : View
+	public class Image : View, IImageController
 	{
 		public static readonly BindableProperty SourceProperty = BindableProperty.Create("Source", typeof(ImageSource), typeof(Image), default(ImageSource), propertyChanging: OnSourcePropertyChanging,
 			propertyChanged: OnSourcePropertyChanged);
@@ -110,7 +111,7 @@ namespace Xamarin.Forms
 		void OnSourceChanged(object sender, EventArgs eventArgs)
 		{
 			OnPropertyChanged(SourceProperty.PropertyName);
-			InvalidateMeasure(InvalidationTrigger.MeasureChanged);
+			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 		}
 
 		static void OnSourcePropertyChanged(BindableObject bindable, object oldvalue, object newvalue)
@@ -125,7 +126,7 @@ namespace Xamarin.Forms
 				newvalue.SourceChanged += OnSourceChanged;
 				SetInheritedBindingContext(newvalue, BindingContext);
 			}
-			InvalidateMeasure(InvalidationTrigger.MeasureChanged);
+			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 		}
 
 		static void OnSourcePropertyChanging(BindableObject bindable, object oldvalue, object newvalue)
@@ -140,6 +141,11 @@ namespace Xamarin.Forms
 
 			oldvalue.SourceChanged -= OnSourceChanged;
 			await oldvalue.Cancel();
+		}
+
+		void IImageController.SetIsLoading(bool isLoading)
+		{
+			SetValue(IsLoadingPropertyKey, isLoading);
 		}
 	}
 }

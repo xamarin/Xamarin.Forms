@@ -1,4 +1,5 @@
 using System;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
@@ -45,9 +46,9 @@ namespace Xamarin.Forms
 
 			LayoutInformation layoutInformationCopy = _layoutInformation;
 
-			for (var i = 0; i < LogicalChildren.Count; i++)
+			for (var i = 0; i < LogicalChildrenInternal.Count; i++)
 			{
-				var child = (View)LogicalChildren[i];
+				var child = (View)LogicalChildrenInternal[i];
 				if (child.IsVisible)
 					LayoutChildIntoBoundingRegion(child, layoutInformationCopy.Plots[i], layoutInformationCopy.Requests[i]);
 			}
@@ -73,17 +74,17 @@ namespace Xamarin.Forms
 			ComputeConstraintForView(view, false);
 		}
 
-		internal override void InvalidateMeasure(InvalidationTrigger trigger)
+		internal override void InvalidateMeasureInternal(InvalidationTrigger trigger)
 		{
 			_layoutInformation = new LayoutInformation();
-			base.InvalidateMeasure(trigger);
+			base.InvalidateMeasureInternal(trigger);
 		}
 
 		void AlignOffAxis(LayoutInformation layout, StackOrientation orientation, double widthConstraint, double heightConstraint)
 		{
 			for (var i = 0; i < layout.Plots.Length; i++)
 			{
-				if (!((View)LogicalChildren[i]).IsVisible)
+				if (!((View)LogicalChildrenInternal[i]).IsVisible)
 					continue;
 				if (orientation == StackOrientation.Vertical)
 				{
@@ -130,9 +131,9 @@ namespace Xamarin.Forms
 			if (orientation == StackOrientation.Vertical)
 			{
 				View expander = null;
-				for (var i = 0; i < LogicalChildren.Count; i++)
+				for (var i = 0; i < LogicalChildrenInternal.Count; i++)
 				{
-					var child = (View)LogicalChildren[i];
+					var child = (View)LogicalChildrenInternal[i];
 					if (!child.IsVisible)
 						continue;
 
@@ -166,9 +167,9 @@ namespace Xamarin.Forms
 			else
 			{
 				View expander = null;
-				for (var i = 0; i < LogicalChildren.Count; i++)
+				for (var i = 0; i < LogicalChildrenInternal.Count; i++)
 				{
-					var child = (View)LogicalChildren[i];
+					var child = (View)LogicalChildrenInternal[i];
 					if (!child.IsVisible)
 						continue;
 
@@ -219,7 +220,7 @@ namespace Xamarin.Forms
 
 			for (var i = 0; i < layout.Plots.Length; i++)
 			{
-				var child = (View)LogicalChildren[i];
+				var child = (View)LogicalChildrenInternal[i];
 				if (!child.IsVisible)
 					continue;
 
@@ -291,7 +292,7 @@ namespace Xamarin.Forms
 
 			for (var i = 0; i < layout.Plots.Length; i++)
 			{
-				var child = (View)LogicalChildren[i];
+				var child = (View)LogicalChildrenInternal[i];
 				if (!child.IsVisible)
 					continue;
 
@@ -397,9 +398,9 @@ namespace Xamarin.Forms
 				double spacePerExpander = extraSpace / layout.Expanders;
 				double yOffset = 0;
 
-				for (var i = 0; i < LogicalChildren.Count; i++)
+				for (var i = 0; i < LogicalChildrenInternal.Count; i++)
 				{
-					var child = (View)LogicalChildren[i];
+					var child = (View)LogicalChildrenInternal[i];
 					if (!child.IsVisible)
 						continue;
 					Rectangle plot = layout.Plots[i];
@@ -425,9 +426,9 @@ namespace Xamarin.Forms
 				double spacePerExpander = extraSpace / layout.Expanders;
 				double xOffset = 0;
 
-				for (var i = 0; i < LogicalChildren.Count; i++)
+				for (var i = 0; i < LogicalChildrenInternal.Count; i++)
 				{
-					var child = (View)LogicalChildren[i];
+					var child = (View)LogicalChildrenInternal[i];
 					if (!child.IsVisible)
 						continue;
 					Rectangle plot = layout.Plots[i];

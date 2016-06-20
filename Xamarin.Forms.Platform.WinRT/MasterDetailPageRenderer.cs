@@ -40,6 +40,8 @@ namespace Xamarin.Forms.Platform.WinRT
 			get { return Device.Idiom == TargetIdiom.Phone; }
 		}
 
+		IPageController PageController => Element as IPageController;
+
 		public void Dispose()
 		{
 			Dispose(true);
@@ -54,6 +56,8 @@ namespace Xamarin.Forms.Platform.WinRT
 		{
 			set { _container.ToolbarForeground = value; }
 		}
+
+		IMasterDetailPageController MasterDetailPageController => Element as IMasterDetailPageController;
 
 		bool ITitleProvider.ShowTitle
 		{
@@ -166,15 +170,12 @@ namespace Xamarin.Forms.Platform.WinRT
 		bool GetIsMasterAPopover()
 		{
 			// TODO: Support tablet being shrunk to a very small size
-			return !Element.ShouldShowSplitMode;
+			return !MasterDetailPageController.ShouldShowSplitMode;
 		}
 
 		void OnLoaded(object sender, RoutedEventArgs args)
 		{
-			if (Element == null)
-				return;
-
-			Element.SendAppearing();
+			PageController?.SendAppearing();
 		}
 
 		void OnNativeSizeChanged(object sender, SizeChangedEventArgs e)
@@ -184,10 +185,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		void OnUnloaded(object sender, RoutedEventArgs args)
 		{
-			if (Element == null)
-				return;
-
-			Element.SendDisappearing();
+			PageController?.SendDisappearing();
 		}
 
 		void OnUserClosedPopover(object sender, EventArgs e)
@@ -266,8 +264,8 @@ namespace Xamarin.Forms.Platform.WinRT
 			if (!isPopover)
 				detailWidth -= masterWidth;
 
-			Element.MasterBounds = new Rectangle(0, 0, masterWidth, constraint.Height);
-			Element.DetailBounds = new Rectangle(0, 0, detailWidth, constraint.Height);
+			MasterDetailPageController.MasterBounds = new Rectangle(0, 0, masterWidth, constraint.Height);
+			MasterDetailPageController.DetailBounds = new Rectangle(0, 0, detailWidth, constraint.Height);
 		}
 
 		void UpdateIsPresented()

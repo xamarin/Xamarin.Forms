@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
@@ -86,7 +87,7 @@ namespace Xamarin.Forms
 
 		internal ObservableCollection<Element> InternalChildren { get; } = new ObservableCollection<Element>();
 
-		internal override ReadOnlyCollection<Element> LogicalChildren
+		internal override ReadOnlyCollection<Element> LogicalChildrenInternal
 		{
 			get { return _logicalChildren ?? (_logicalChildren = new ReadOnlyCollection<Element>(InternalChildren)); }
 		}
@@ -168,7 +169,7 @@ namespace Xamarin.Forms
 		protected virtual void InvalidateLayout()
 		{
 			_hasDoneLayout = false;
-			InvalidateMeasure(InvalidationTrigger.MeasureChanged);
+			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 			if (!_hasDoneLayout)
 				ForceLayout();
 		}
@@ -210,10 +211,10 @@ namespace Xamarin.Forms
 			if (!ShouldLayoutChildren())
 				return;
 
-			var oldBounds = new Rectangle[LogicalChildren.Count];
+			var oldBounds = new Rectangle[LogicalChildrenInternal.Count];
 			for (var index = 0; index < oldBounds.Length; index++)
 			{
-				var c = (VisualElement)LogicalChildren[index];
+				var c = (VisualElement)LogicalChildrenInternal[index];
 				oldBounds[index] = c.Bounds;
 			}
 
@@ -230,7 +231,7 @@ namespace Xamarin.Forms
 			for (var i = 0; i < oldBounds.Length; i++)
 			{
 				Rectangle oldBound = oldBounds[i];
-				Rectangle newBound = ((VisualElement)LogicalChildren[i]).Bounds;
+				Rectangle newBound = ((VisualElement)LogicalChildrenInternal[i]).Bounds;
 				if (oldBound != newBound)
 				{
 					EventHandler handler = LayoutChanged;
@@ -277,11 +278,11 @@ namespace Xamarin.Forms
 
 		internal virtual void OnChildMeasureInvalidated(VisualElement child, InvalidationTrigger trigger)
 		{
-			ReadOnlyCollection<Element> children = LogicalChildren;
+			ReadOnlyCollection<Element> children = LogicalChildrenInternal;
 			int count = children.Count;
 			for (var index = 0; index < count; index++)
 			{
-				var v = LogicalChildren[index] as VisualElement;
+				var v = LogicalChildrenInternal[index] as VisualElement;
 				if (v != null && v.IsVisible && (!v.IsPlatformEnabled || !v.IsNativeStateConsistent))
 					return;
 			}
@@ -304,11 +305,11 @@ namespace Xamarin.Forms
 			_allocatedFlag = false;
 			if (trigger == InvalidationTrigger.RendererReady)
 			{
-				InvalidateMeasure(InvalidationTrigger.RendererReady);
+				InvalidateMeasureInternal(InvalidationTrigger.RendererReady);
 			}
 			else
 			{
-				InvalidateMeasure(InvalidationTrigger.MeasureChanged);
+				InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 			}
 
 			s_resolutionList.Add(new KeyValuePair<Layout, int>(this, GetElementDepth(this)));
@@ -416,7 +417,7 @@ namespace Xamarin.Forms
 
 		bool ShouldLayoutChildren()
 		{
-			if (!LogicalChildren.Any() || Width <= 0 || Height <= 0 || !IsVisible || !IsNativeStateConsistent || DisableLayout)
+			if (!LogicalChildrenInternal.Any() || Width <= 0 || Height <= 0 || !IsVisible || !IsNativeStateConsistent || DisableLayout)
 				return false;
 
 			foreach (Element element in VisibleDescendants())

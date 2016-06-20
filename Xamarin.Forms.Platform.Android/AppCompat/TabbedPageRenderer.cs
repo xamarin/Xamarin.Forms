@@ -17,6 +17,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 	public class TabbedPageRenderer : VisualElementRenderer<TabbedPage>, TabLayout.IOnTabSelectedListener, ViewPager.IOnPageChangeListener, IManageFragments
 	{
 		Drawable _backgroundDrawable;
+		int? _defaultColor;
 		bool _disposed;
 		FragmentManager _fragmentManager;
 		TabLayout _tabLayout;
@@ -28,7 +29,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			AutoPackage = false;
 		}
 
-		public FragmentManager FragmentManager => _fragmentManager ?? (_fragmentManager = ((FormsAppCompatActivity)Context).SupportFragmentManager);
+		FragmentManager FragmentManager => _fragmentManager ?? (_fragmentManager = ((FormsAppCompatActivity)Context).SupportFragmentManager);
 
 		internal bool UseAnimations
 		{
@@ -43,7 +44,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			}
 		}
 
-		public void SetFragmentManager(FragmentManager childFragmentManager)
+		IPageController PageController => Element as IPageController;
+
+		void IManageFragments.SetFragmentManager(FragmentManager childFragmentManager)
 		{
 			if (_fragmentManager == null)
 				_fragmentManager = childFragmentManager;
@@ -113,7 +116,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				}
 
 				if (Element != null)
-					Element.InternalChildren.CollectionChanged -= OnChildrenCollectionChanged;
+					PageController.InternalChildren.CollectionChanged -= OnChildrenCollectionChanged;
 			}
 
 			base.Dispose(disposing);
@@ -122,13 +125,13 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		protected override void OnAttachedToWindow()
 		{
 			base.OnAttachedToWindow();
-			Element.SendAppearing();
+			PageController.SendAppearing();
 		}
 
 		protected override void OnDetachedFromWindow()
 		{
 			base.OnDetachedFromWindow();
-			Element.SendDisappearing();
+			PageController.SendDisappearing();
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<TabbedPage> e)
@@ -138,7 +141,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			var activity = (FormsAppCompatActivity)Context;
 
 			if (e.OldElement != null)
-				e.OldElement.InternalChildren.CollectionChanged -= OnChildrenCollectionChanged;
+				((IPageController)e.OldElement).InternalChildren.CollectionChanged -= OnChildrenCollectionChanged;
 
 			if (e.NewElement != null)
 			{
@@ -153,7 +156,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 						tabs = _tabLayout = new TabLayout(activity) { TabMode = TabLayout.ModeFixed, TabGravity = TabLayout.GravityFill };
 					FormsViewPager pager =
 						_viewPager =
-						new FormsViewPager(activity) 
+						new FormsViewPager(activity)
 						{
 							OverScrollMode = OverScrollMode.Never,
 							EnableGesture = UseAnimations,
@@ -176,7 +179,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					ScrollToCurrentPage();
 
 				UpdateIgnoreContainerAreas();
-				tabbedPage.InternalChildren.CollectionChanged += OnChildrenCollectionChanged;
+				((IPageController)tabbedPage).InternalChildren.CollectionChanged += OnChildrenCollectionChanged;
 				UpdateBarBackgroundColor();
 				UpdateBarTextColor();
 			}
@@ -215,11 +218,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			if (width > 0 && height > 0)
 			{
-				Element.ContainerArea = new Rectangle(0, context.FromPixels(tabsHeight), context.FromPixels(width), context.FromPixels(height - tabsHeight));
+				PageController.ContainerArea = new Rectangle(0, context.FromPixels(tabsHeight), context.FromPixels(width), context.FromPixels(height - tabsHeight));
 
-				for (var i = 0; i < Element.InternalChildren.Count; i++)
+				for (var i = 0; i < PageController.InternalChildren.Count; i++)
 				{
-					var child = Element.InternalChildren[i] as VisualElement;
+					var child = PageController.InternalChildren[i] as VisualElement;
 					if (child == null)
 						continue;
 					IVisualElementRenderer renderer = Android.Platform.GetRenderer(child);
@@ -266,7 +269,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void UpdateIgnoreContainerAreas()
 		{
-			foreach (Page child in Element.Children)
+			foreach (IPageController child in Element.Children)
 				child.IgnoresContainerArea = child is NavigationPage;
 		}
 
@@ -274,16 +277,16 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		{
 			TabLayout tabs = _tabLayout;
 
-			if (position >= Element.InternalChildren.Count)
+			if (position >= PageController.InternalChildren.Count)
 				return;
 
-			var leftPage = (Page)Element.InternalChildren[position];
+			var leftPage = (Page)PageController.InternalChildren[position];
 			IVisualElementRenderer leftRenderer = Android.Platform.GetRenderer(leftPage);
 
 			if (leftRenderer == null)
 				return;
 
-			if (offset <= 0 || position >= Element.InternalChildren.Count - 1)
+			if (offset <= 0 || position >= PageController.InternalChildren.Count - 1)
 			{
 				var leftNavRenderer = leftRenderer as NavigationPageRenderer;
 				if (leftNavRenderer != null)
@@ -293,7 +296,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			}
 			else
 			{
-				var rightPage = (Page)Element.InternalChildren[position + 1];
+				var rightPage = (Page)PageController.InternalChildren[position + 1];
 				IVisualElementRenderer rightRenderer = Android.Platform.GetRenderer(rightPage);
 
 				var leftHeight = 0;
@@ -364,9 +367,18 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			if (_disposed || _tabLayout == null)
 				return;
 
-			Color textColor = Element.BarTextColor;
-			if (!textColor.IsDefault)
-				_tabLayout.SetTabTextColors(textColor.ToAndroid().ToArgb(), textColor.ToAndroid().ToArgb());
+			int currentColor = _tabLayout.TabTextColors.DefaultColor;
+
+			if (!_defaultColor.HasValue)
+				_defaultColor = currentColor;
+
+			Color newTextColor = Element.BarTextColor;
+			int newTextColorArgb = newTextColor.ToAndroid().ToArgb();
+
+			if (!newTextColor.IsDefault && currentColor != newTextColorArgb)
+				_tabLayout.SetTabTextColors(newTextColorArgb, newTextColorArgb);
+			else if (newTextColor.IsDefault && _defaultColor.HasValue && currentColor != _defaultColor)
+				_tabLayout.SetTabTextColors(_defaultColor.Value, _defaultColor.Value);
 		}
 	}
 }

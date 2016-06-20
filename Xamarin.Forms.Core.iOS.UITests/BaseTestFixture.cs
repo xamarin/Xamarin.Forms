@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 using NUnit.Framework;
-
+using Xamarin.Forms.Controls;
 using Xamarin.UITest;
 using Xamarin.UITest.Queries;
 
@@ -32,8 +33,17 @@ namespace Xamarin.Forms.Core.UITests
 #pragma warning restore 618
 		protected virtual void FixtureSetup ()
 		{
-			if (ShouldResetPerFixture) {
-				RelaunchApp ();
+			try
+			{
+				if (ShouldResetPerFixture)
+				{
+					RelaunchApp();
+				}
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine(ex);
+				throw;
 			}
 		}
 
@@ -70,7 +80,9 @@ namespace Xamarin.Forms.Core.UITests
 				// if at first you dont succeed
 				RunningApp.Restart ();
 			}
-			App = RunningApp.App;
+
+			// Wrap the app in ScreenshotConditional so it only takes screenshots if the SCREENSHOTS symbol is specified
+			App = new ScreenshotConditionalApp(RunningApp.App);
 
 			App.SetOrientationPortrait ();
 			ScreenBounds = App.RootViewRect ();

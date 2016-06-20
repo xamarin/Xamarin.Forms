@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
+using Xamarin.Forms.Internals;
+
 #if __UNIFIED__
 using UIKit;
 #else
@@ -85,21 +86,30 @@ namespace Xamarin.Forms.Platform.iOS
 				get { return ViewCell; }
 			}
 
+			internal bool SupressSeparator { get; set; }
+
 			public override void LayoutSubviews()
 			{
 				//This sets the content views frame.
 				base.LayoutSubviews();
 
-				var contentFrame = ContentView.Frame;
+				if (SupressSeparator)
+				{
+					var oldFrame = Frame;
+					ContentView.Bounds = Frame = new RectangleF(oldFrame.Location, new SizeF(oldFrame.Width, oldFrame.Height + 0.5f));
+				}
 
-				Layout.LayoutChildIntoBoundingRegion(ViewCell.View, contentFrame.ToRectangle());
+				var contentFrame = ContentView.Frame;
+				var view = ViewCell.View;
+
+				Layout.LayoutChildIntoBoundingRegion(view, contentFrame.ToRectangle());
 
 				if (_rendererRef == null)
 					return;
 
 				IVisualElementRenderer renderer;
 				if (_rendererRef.TryGetTarget(out renderer))
-					renderer.NativeView.Frame = contentFrame;
+					renderer.NativeView.Frame = view.Bounds.ToRectangleF();
 			}
 
 			public override SizeF SizeThatFits(SizeF size)
@@ -112,8 +122,9 @@ namespace Xamarin.Forms.Platform.iOS
 				var height = size.Height > 0 ? size.Height : double.PositiveInfinity;
 				var result = renderer.Element.Measure(width, height);
 
-				// make sure to add in the separator
-				return new SizeF(size.Width, (float)result.Request.Height + 1f / UIScreen.MainScreen.Scale);
+				// make sure to add in the separator if needed
+				var finalheight = ((float)result.Request.Height + (SupressSeparator ? 0f : 1f)) / UIScreen.MainScreen.Scale;
+				return new SizeF(size.Width, finalheight);
 			}
 
 			protected override void Dispose(bool disposing)
@@ -144,11 +155,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 			void UpdateCell(ViewCell cell)
 			{
-				if (_viewCell != null)
-					Device.BeginInvokeOnMainThread(_viewCell.SendDisappearing);
+				ICellController cellController = _viewCell;
+				if (cellController != null)
+					Device.BeginInvokeOnMainThread(cellController.SendDisappearing);
 
 				_viewCell = cell;
-				Device.BeginInvokeOnMainThread(_viewCell.SendAppearing);
+				cellController = cell;
+
+				Device.BeginInvokeOnMainThread(cellController.SendAppearing);
 
 				IVisualElementRenderer renderer;
 				if (_rendererRef == null || !_rendererRef.TryGetTarget(out renderer))

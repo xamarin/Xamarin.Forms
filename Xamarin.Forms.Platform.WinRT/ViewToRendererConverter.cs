@@ -66,7 +66,7 @@ namespace Xamarin.Forms.Platform.WinRT
 				_view.IsInNativeLayout = false;
 
 				var content = Content as FrameworkElement;
-				content.Arrange(new Rect(0, 0, finalSize.Width, finalSize.Height));
+				content.Arrange(new Rect(_view.X, _view.Y, _view.Width, _view.Height));
 				return finalSize;
 			}
 
@@ -97,7 +97,7 @@ namespace Xamarin.Forms.Platform.WinRT
 				var wrapperAwareRenderer = currentRenderer as IWrapperAware;
 				wrapperAwareRenderer?.NotifyWrapped();
 
-				foreach (Element child in currentView.LogicalChildren)
+				foreach (Element child in ((IElementController)currentView).LogicalChildren)
 				{
 					var childView = child as View;
 					if (childView == null)

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
@@ -51,7 +52,7 @@ namespace Xamarin.Forms
 
 		protected override void LayoutChildren(double x, double y, double width, double height)
 		{
-			foreach (View child in LogicalChildren)
+			foreach (View child in LogicalChildrenInternal)
 			{
 				Rectangle rect = ComputeLayoutForRegion(child, new Size(width, height));
 				rect.X += x;
@@ -78,7 +79,7 @@ namespace Xamarin.Forms
 		{
 			var bestFitSize = new Size();
 			var minimum = new Size();
-			foreach (View child in LogicalChildren)
+			foreach (View child in LogicalChildrenInternal)
 			{
 				SizeRequest desiredSize = ComputeBoundingRegionDesiredSize(child);
 
@@ -132,7 +133,7 @@ namespace Xamarin.Forms
 		{
 			if (e.PropertyName == LayoutFlagsProperty.PropertyName || e.PropertyName == LayoutBoundsProperty.PropertyName)
 			{
-				InvalidateMeasure(InvalidationTrigger.MeasureChanged);
+				InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 				UpdateChildrenLayout();
 			}
 		}

@@ -2,6 +2,7 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Core.UnitTests
 {
@@ -770,7 +771,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			};
 
 			layout.Children.Remove (labela0);
-			Assert.False (layout.LogicalChildren.Contains (labela0));
+			Assert.False (((IElementController)layout).LogicalChildren.Contains (labela0));
 		}
 
 		[Test]
@@ -1555,7 +1556,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			bool fire = true;
 			child.SizeChanged += (sender, args) => {
 				if (fire)
-					child.InvalidateMeasure (InvalidationTrigger.Undefined);
+					((IVisualElementController)child).InvalidateMeasure(InvalidationTrigger.Undefined);
 				fire = false;
 			};
 

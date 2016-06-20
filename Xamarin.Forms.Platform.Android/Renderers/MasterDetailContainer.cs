@@ -1,8 +1,10 @@
 using System;
+using Android.App;
 using Android.Content;
 using Android.Content.Res;
 using Android.Runtime;
 using Android.Views;
+using Android.Widget;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -22,6 +24,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		public MasterDetailContainer(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer) { }
 
+		IMasterDetailPageController MasterDetailPageController => _parent as IMasterDetailPageController;
+
 		public VisualElement ChildView
 		{
 			get { return _childView; }
@@ -38,19 +42,24 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (_childView == null)
 					return;
+				
+				AddChildView(_childView);
+			}
+		}
 
-				IVisualElementRenderer renderer = Platform.GetRenderer(_childView);
-				if (renderer == null)
-					Platform.SetRenderer(_childView, renderer = Platform.CreateRenderer(_childView));
+		protected virtual void AddChildView(VisualElement childView)
+		{
+			IVisualElementRenderer renderer = Platform.GetRenderer(childView);
+			if (renderer == null)
+				Platform.SetRenderer(childView, renderer = Platform.CreateRenderer(childView));
 
-				if (renderer.ViewGroup.Parent != this)
-				{
-					if (renderer.ViewGroup.Parent != null)
-						renderer.ViewGroup.RemoveFromParent();
-					SetDefaultBackgroundColor(renderer);
-					AddView(renderer.ViewGroup);
-					renderer.UpdateLayout();
-				}
+			if (renderer.ViewGroup.Parent != this)
+			{
+				if (renderer.ViewGroup.Parent != null)
+					renderer.ViewGroup.RemoveFromParent();
+				SetDefaultBackgroundColor(renderer);
+				AddView(renderer.ViewGroup);
+				renderer.UpdateLayout();
 			}
 		}
 
@@ -67,7 +76,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override bool OnInterceptTouchEvent(MotionEvent ev)
 		{
-			bool isShowingPopover = _parent.IsPresented && !_parent.ShouldShowSplitMode;
+			bool isShowingPopover = _parent.IsPresented && !MasterDetailPageController.ShouldShowSplitMode;
 			if (!_isMaster && isShowingPopover)
 				return true;
 			return base.OnInterceptTouchEvent(ev);
@@ -90,12 +99,12 @@ namespace Xamarin.Forms.Platform.Android
 
 			Rectangle bounds = GetBounds(_isMaster, l, t, r, b);
 			if (_isMaster)
-				_parent.MasterBounds = bounds;
+				MasterDetailPageController.MasterBounds = bounds;
 			else
-				_parent.DetailBounds = bounds;
+				MasterDetailPageController.DetailBounds = bounds;
 
 			IVisualElementRenderer renderer = Platform.GetRenderer(_childView);
-			renderer.UpdateLayout();
+			renderer?.UpdateLayout();
 		}
 
 		void DisposeChildRenderers()
@@ -111,9 +120,10 @@ namespace Xamarin.Forms.Platform.Android
 			double width = Context.FromPixels(right - left);
 			double height = Context.FromPixels(bottom - top);
 			double xPos = 0;
+			bool supressPadding = false;
 
 			//splitview
-			if (_parent.ShouldShowSplitMode)
+			if (MasterDetailPageController.ShouldShowSplitMode)
 			{
 				//to keep some behavior we have on iPad where you can toggle and it won't do anything 
 				bool isDefaultNoToggle = _parent.MasterBehavior == MasterBehavior.Default;
@@ -122,15 +132,17 @@ namespace Xamarin.Forms.Platform.Android
 			}
 			else
 			{
+				//if we are showing the normal popover master doesn't have padding
+				supressPadding = isMasterPage;
 				//popover make the master smaller
 				width = isMasterPage && (Device.Info.CurrentOrientation.IsLandscape() || Device.Idiom == TargetIdiom.Tablet) ? DefaultWidthMaster : width;
 			}
 
-			double padding = Context.FromPixels(TopPadding);
+			double padding = supressPadding ? 0 : Context.FromPixels(TopPadding);
 			return new Rectangle(xPos, padding, width, height - padding);
 		}
 
-		void SetDefaultBackgroundColor(IVisualElementRenderer renderer)
+		protected void SetDefaultBackgroundColor(IVisualElementRenderer renderer)
 		{
 			if (ChildView.BackgroundColor == Color.Default)
 			{

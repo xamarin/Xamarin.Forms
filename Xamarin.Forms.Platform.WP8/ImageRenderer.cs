@@ -27,6 +27,8 @@ namespace Xamarin.Forms.Platform.WinPhone
 
 	public class ImageRenderer : ViewRenderer<Image, System.Windows.Controls.Image>
 	{
+		IElementController ElementController => Element as IElementController;
+
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
 			// Someone reported a NRE happening in this method which can only be explained by Control being null
@@ -76,7 +78,7 @@ namespace Xamarin.Forms.Platform.WinPhone
 
 		async void SetSource(System.Windows.Controls.Image image)
 		{
-			((IElementController)Element).SetValueFromRenderer(Image.IsLoadingPropertyKey, true);
+			((IImageController)Element).SetIsLoading(true);
 
 			ImageSource source = Element.Source;
 			IImageSourceHandler handler;
@@ -100,7 +102,7 @@ namespace Xamarin.Forms.Platform.WinPhone
 			else
 				image.Source = null;
 
-			((IElementController)Element).SetValueFromRenderer(Image.IsLoadingPropertyKey, false);
+			((IImageController)Element).SetIsLoading(false);
 		}
 	}
 
@@ -122,7 +124,7 @@ namespace Xamarin.Forms.Platform.WinPhone
 			}
 			return Task.FromResult(image);
 		}
-	}
+	} 
 
 	public sealed class StreamImagesourceHandler : IImageSourceHandler
 	{
@@ -133,7 +135,7 @@ namespace Xamarin.Forms.Platform.WinPhone
 			var streamsource = imagesource as StreamImageSource;
 			if (streamsource != null && streamsource.Stream != null)
 			{
-				using (Stream stream = await streamsource.GetStreamAsync(cancelationToken))
+				using (Stream stream = await ((IStreamImageSource)streamsource).GetStreamAsync(cancelationToken))
 				{
 					bitmapimage = new BitmapImage();
 					bitmapimage.SetSource(stream);

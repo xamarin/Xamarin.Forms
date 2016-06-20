@@ -20,7 +20,11 @@ namespace Xamarin.Forms.Platform.WinPhone
 			AutoPackage = false;
 		}
 
+		IMasterDetailPageController MasterDetailPageController => Element as IMasterDetailPageController;
+
 		public bool Visible { get; private set; }
+
+		IPageController PageController => Element as IPageController;
 
 		protected override System.Windows.Size ArrangeOverride(System.Windows.Size finalSize)
 		{
@@ -33,10 +37,10 @@ namespace Xamarin.Forms.Platform.WinPhone
 			base.OnElementChanged(e);
 
 			if (e.OldElement != null)
-				e.OldElement.BackButtonPressed -= HandleBackButtonPressed;
+				((IMasterDetailPageController)e.OldElement).BackButtonPressed -= HandleBackButtonPressed;
 
 			if (e.NewElement != null)
-				e.NewElement.BackButtonPressed += HandleBackButtonPressed;
+				((IMasterDetailPageController)e.NewElement).BackButtonPressed += HandleBackButtonPressed;
 
 			LoadDetail();
 			LoadMaster();
@@ -47,11 +51,11 @@ namespace Xamarin.Forms.Platform.WinPhone
 			{
 				if (Element.IsPresented)
 					Toggle();
-				Element.SendAppearing();
+				PageController.SendAppearing();
 			};
 			Unloaded += (sender, args) =>
 			{
-				Element.SendDisappearing();
+				PageController.SendDisappearing();
 				if (Visible)
 				{
 					var platform = (Platform)Element.Platform;
@@ -170,8 +174,8 @@ namespace Xamarin.Forms.Platform.WinPhone
 
 			var platform = Element.Platform as Platform;
 			Size screenSize = platform.Size;
-			Element.MasterBounds = new Rectangle(0, 0, screenSize.Width - 20, screenSize.Height - 20);
-			Element.DetailBounds = new Rectangle(0, 0, width, height);
+			MasterDetailPageController.MasterBounds = new Rectangle(0, 0, screenSize.Width - 20, screenSize.Height - 20);
+			MasterDetailPageController.DetailBounds = new Rectangle(0, 0, width, height);
 
 			_popup.Width = width - 20;
 			_popup.Height = height - 20;

@@ -6,6 +6,8 @@ using System.Drawing;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Xamarin.Forms.Internals;
+
 #if __UNIFIED__
 using UIKit;
 using CoreGraphics;
@@ -50,6 +52,8 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 
 		Page Current { get; set; }
+
+		IPageController PageController => Element as IPageController;
 
 		public VisualElement Element { get; private set; }
 
@@ -142,7 +146,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (!_appeared)
 			{
 				_appeared = true;
-				((NavigationPage)Element)?.SendAppearing();
+				PageController?.SendAppearing();
 			}
 
 			base.ViewDidAppear(animated);
@@ -158,7 +162,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			_appeared = false;
-			((NavigationPage)Element).SendDisappearing();
+			PageController.SendDisappearing();
 		}
 
 		public override void ViewDidLayoutSubviews()
@@ -175,7 +179,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			double trueBottom = toolbar.Hidden ? toolbarY : toolbar.Frame.Bottom;
 			var modelSize = _queuedSize.IsZero ? Element.Bounds.Size : _queuedSize;
-			((NavigationPage)Element).ContainerArea = 
+			PageController.ContainerArea = 
 				new Rectangle(0, toolbar.Hidden ? 0 : toolbar.Frame.Height, modelSize.Width, modelSize.Height - trueBottom);
 
 			if (!_queuedSize.IsZero)
@@ -217,18 +221,20 @@ namespace Xamarin.Forms.Platform.iOS
 					"NavigationPage must have a root Page before being used. Either call PushAsync with a valid Page, or pass a Page to the constructor before usage.");
 			}
 
-			navPage.PushRequested += OnPushRequested;
-			navPage.PopRequested += OnPopRequested;
-			navPage.PopToRootRequested += OnPopToRootRequested;
-			navPage.RemovePageRequested += OnRemovedPageRequested;
-			navPage.InsertPageBeforeRequested += OnInsertPageBeforeRequested;
+			var navController = ((INavigationPageController)navPage);
+
+			navController.PushRequested += OnPushRequested;
+			navController.PopRequested += OnPopRequested;
+			navController.PopToRootRequested += OnPopToRootRequested;
+			navController.RemovePageRequested += OnRemovedPageRequested;
+			navController.InsertPageBeforeRequested += OnInsertPageBeforeRequested;
 
 			UpdateTint();
 			UpdateBarBackgroundColor();
 			UpdateBarTextColor();
 
 			// If there is already stuff on the stack we need to push it
-			navPage.StackCopy.Reverse().ForEach(async p => await PushPageAsync(p, false));
+			((INavigationPageController)navPage).StackCopy.Reverse().ForEach(async p => await PushPageAsync(p, false));
 
 			_tracker = new VisualElementTracker(this);
 
@@ -260,17 +266,19 @@ namespace Xamarin.Forms.Platform.iOS
 
 				var navPage = (NavigationPage)Element;
 				navPage.PropertyChanged -= HandlePropertyChanged;
-				navPage.PushRequested -= OnPushRequested;
-				navPage.PopRequested -= OnPopRequested;
-				navPage.PopToRootRequested -= OnPopToRootRequested;
-				navPage.RemovePageRequested -= OnRemovedPageRequested;
-				navPage.InsertPageBeforeRequested -= OnInsertPageBeforeRequested;
+
+				var navController = ((INavigationPageController)navPage);
+				navController.PushRequested -= OnPushRequested;
+				navController.PopRequested -= OnPopRequested;
+				navController.PopToRootRequested -= OnPopToRootRequested;
+				navController.RemovePageRequested -= OnRemovedPageRequested;
+				navController.InsertPageBeforeRequested -= OnInsertPageBeforeRequested;
 			}
 
 			base.Dispose(disposing);
 			if (_appeared)
 			{
-				((Page)Element).SendDisappearing();
+				PageController.SendDisappearing();
 
 				_appeared = false;
 			}
@@ -518,6 +526,8 @@ namespace Xamarin.Forms.Platform.iOS
 				_removeControllers = _removeControllers.Remove(target);
 				ViewControllers = _removeControllers;
 			}
+			var parentingViewController = ViewControllers.Last() as ParentingViewController;
+			UpdateLeftBarButtonItem(parentingViewController, page);
 		}
 
 		void RemoveViewControllers(bool animated)
@@ -542,7 +552,7 @@ namespace Xamarin.Forms.Platform.iOS
 				for (var i = 0; i < removed; i++)
 				{
 					// lets just pop these suckers off, do not await, the true is there to make this fast
-					await ((NavigationPage)Element).PopAsyncInner(animated, true);
+					await ((INavigationPageController)Element).PopAsyncInner(animated, true);
 				}
 				// because we skip the normal pop process we need to dispose ourselves
 				controller.Dispose();
@@ -622,11 +632,13 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		void UpdateLeftBarButtonItem(ParentingViewController containerController)
+		void UpdateLeftBarButtonItem(ParentingViewController containerController, Page pageBeingRemoved = null)
 		{
+			if (containerController == null)
+				return;
 			var currentChild = containerController.Child;
-			var firstPage = ((NavigationPage)Element).StackCopy.LastOrDefault();
-			if ((currentChild != firstPage && NavigationPage.GetHasBackButton(currentChild)) || _parentMasterDetailPage == null)
+			var firstPage = ((INavigationPageController)Element).StackCopy.LastOrDefault();
+			if ((firstPage != pageBeingRemoved && currentChild != firstPage && NavigationPage.GetHasBackButton(currentChild)) || _parentMasterDetailPage == null)
 				return;
 
 			if (!_parentMasterDetailPage.ShouldShowToolbarButton())
@@ -845,7 +857,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (disposing)
 				{
-					Child.SendDisappearing();
+					((IPageController)Child).SendDisappearing();
 					Child = null;
 					_tracker.Target = null;
 					_tracker.CollectionChanged -= TrackerOnCollectionChanged;

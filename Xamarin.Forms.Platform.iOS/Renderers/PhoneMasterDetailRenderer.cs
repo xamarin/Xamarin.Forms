@@ -37,11 +37,15 @@ namespace Xamarin.Forms.Platform.iOS
 
 		VisualElementTracker _tracker;
 
+		IPageController PageController => Element as IPageController;
+
 		public PhoneMasterDetailRenderer()
 		{
 			if (!Forms.IsiOS7OrNewer)
 				WantsFullScreenLayout = true;
 		}
+
+		IMasterDetailPageController MasterDetailPageController => Element as IMasterDetailPageController;
 
 		bool Presented
 		{
@@ -110,13 +114,13 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void ViewDidAppear(bool animated)
 		{
 			base.ViewDidAppear(animated);
-			((Page)Element).SendAppearing();
+			PageController.SendAppearing();
 		}
 
 		public override void ViewDidDisappear(bool animated)
 		{
 			base.ViewDidDisappear(animated);
-			((Page)Element).SendDisappearing();
+			PageController.SendDisappearing();
 		}
 
 		public override void ViewDidLayoutSubviews()
@@ -153,7 +157,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void WillRotate(UIInterfaceOrientation toInterfaceOrientation, double duration)
 		{
-			if (!((MasterDetailPage)Element).ShouldShowSplitMode && _presented)
+			if (!MasterDetailPageController.ShouldShowSplitMode && _presented)
 				Presented = false;
 
 			base.WillRotate(toInterfaceOrientation, duration);
@@ -196,7 +200,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				EmptyContainers();
 
-				((Page)Element).SendDisappearing();
+				PageController.SendDisappearing();
 
 				_disposed = true;
 			}
@@ -270,8 +274,8 @@ namespace Xamarin.Forms.Platform.iOS
 			else
 				_detailController.View.Frame = target;
 
-			((MasterDetailPage)Element).MasterBounds = new Rectangle(0, 0, masterFrame.Width, masterFrame.Height);
-			((MasterDetailPage)Element).DetailBounds = new Rectangle(0, 0, frame.Width, frame.Height);
+			MasterDetailPageController.MasterBounds = new Rectangle(0, 0, masterFrame.Width, masterFrame.Height);
+			MasterDetailPageController.DetailBounds = new Rectangle(0, 0, frame.Width, frame.Height);
 
 			if (Presented)
 				_clickOffView.Frame = _detailController.View.Frame;

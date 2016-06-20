@@ -11,6 +11,8 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		bool _isDisposed;
 
+		IElementController ElementController => Element as IElementController;
+
 		public ImageRenderer()
 		{
 			AutoPackage = false;
@@ -69,7 +71,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (previous != null && Equals(previous.Source, Element.Source))
 				return;
 
-			((IElementController)Element).SetValueFromRenderer(Image.IsLoadingPropertyKey, true);
+			((IImageController)Element).SetIsLoading(true);
 
 			var formsImageView = Control as FormsImageView;
 			if (formsImageView != null)
@@ -98,10 +100,9 @@ namespace Xamarin.Forms.Platform.Android
 			if (!_isDisposed)
 			{
 				Control.SetImageBitmap(bitmap);
-				if (bitmap != null)
-					bitmap.Dispose();
+				bitmap?.Dispose();
 
-				((IElementController)Element).SetValueFromRenderer(Image.IsLoadingPropertyKey, false);
+				((IImageController)Element).SetIsLoading(false);
 				((IVisualElementController)Element).NativeSizeChanged();
 			}
 		}

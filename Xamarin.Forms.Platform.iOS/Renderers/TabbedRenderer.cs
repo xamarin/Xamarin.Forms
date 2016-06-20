@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Collections.Generic;
+using Xamarin.Forms.Internals;
 #if __UNIFIED__
 using UIKit;
 #else
@@ -25,6 +26,9 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		bool _loaded;
 		Size _queuedSize;
+
+		IPageController PageController => Element as IPageController;
+		IElementController ElementController => Element as IElementController;
 
 		public override UIViewController SelectedViewController
 		{
@@ -102,14 +106,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewDidAppear(bool animated)
 		{
-			((TabbedPage)Element).SendAppearing();
+			PageController.SendAppearing();
 			base.ViewDidAppear(animated);
 		}
 
 		public override void ViewDidDisappear(bool animated)
 		{
 			base.ViewDidDisappear(animated);
-			((TabbedPage)Element).SendDisappearing();
+			PageController.SendDisappearing();
 		}
 
 		public override void ViewDidLayoutSubviews()
@@ -126,7 +130,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			var frame = View.Frame;
 			var tabBarFrame = TabBar.Frame;
-			((TabbedPage)Element).ContainerArea = new Rectangle(0, 0, frame.Width, frame.Height - tabBarFrame.Height);
+			PageController.ContainerArea = new Rectangle(0, 0, frame.Width, frame.Height - tabBarFrame.Height);
 
 			if (!_queuedSize.IsZero)
 			{
@@ -149,7 +153,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (disposing)
 			{
-				((TabbedPage)Element).SendDisappearing();
+				PageController.SendDisappearing();
 				Tabbed.PropertyChanged -= OnPropertyChanged;
 				Tabbed.PagesChanged -= OnPagesChanged;
 				FinishedCustomizingViewControllers -= HandleFinishedCustomizingViewControllers;
@@ -258,9 +262,9 @@ namespace Xamarin.Forms.Platform.iOS
 		void SetControllers()
 		{
 			var list = new List<UIViewController>();
-			for (var i = 0; i < Element.LogicalChildren.Count; i++)
+			for (var i = 0; i < ElementController.LogicalChildren.Count; i++)
 			{
-				var child = Element.LogicalChildren[i];
+				var child = ElementController.LogicalChildren[i];
 				var v = child as VisualElement;
 				if (v == null)
 					continue;
@@ -352,7 +356,7 @@ namespace Xamarin.Forms.Platform.iOS
 				var originalIndex = -1;
 				if (int.TryParse(viewControllers[i].TabBarItem.Tag.ToString(), out originalIndex))
 				{
-					var page = (Page)Tabbed.InternalChildren[originalIndex];
+					var page = (TabbedPage)((IPageController)Tabbed).InternalChildren[originalIndex];
 					TabbedPage.SetIndex(page, i);
 				}
 			}
@@ -360,7 +364,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateCurrentPage()
 		{
-			((TabbedPage)Element).CurrentPage = SelectedIndex >= 0 && SelectedIndex < Tabbed.InternalChildren.Count ? Tabbed.GetPageByIndex((int)SelectedIndex) : null;
+			var count = ((IPageController)Tabbed).InternalChildren.Count;
+			((TabbedPage)Element).CurrentPage = SelectedIndex >= 0 && SelectedIndex < count ? Tabbed.GetPageByIndex((int)SelectedIndex) : null;
 		}
 
 		void IEffectControlProvider.RegisterEffect(Effect effect)

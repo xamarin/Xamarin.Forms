@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Drawing;
+using Xamarin.Forms.Internals;
 #if __UNIFIED__
 using UIKit;
 #else
@@ -37,10 +38,14 @@ namespace Xamarin.Forms.Platform.iOS
 				WantsFullScreenLayout = true;
 		}
 
+		IElementController ElementController => Element as IElementController;
+
 		protected CarouselPage Carousel
 		{
 			get { return (CarouselPage)Element; }
 		}
+
+		IPageController PageController => (IPageController)Element;
 
 		protected int SelectedIndex
 		{
@@ -98,7 +103,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			_appeared = true;
-			Carousel.SendAppearing();
+			PageController.SendAppearing();
 		}
 
 		public override void ViewDidDisappear(bool animated)
@@ -109,7 +114,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			_appeared = false;
-			Carousel.SendDisappearing();
+			PageController.SendDisappearing();
 		}
 
 		public override void ViewDidLayoutSubviews()
@@ -139,9 +144,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 			View.Add(_scrollView);
 
-			for (var i = 0; i < Element.LogicalChildren.Count; i++)
+			for (var i = 0; i < ElementController.LogicalChildren.Count; i++)
 			{
-				Element element = Element.LogicalChildren[i];
+				Element element = ElementController.LogicalChildren[i];
 				var child = element as ContentPage;
 				if (child != null)
 					InsertPage(child, i);
@@ -199,7 +204,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (_appeared)
 				{
 					_appeared = false;
-					Carousel.SendDisappearing();
+					PageController?.SendDisappearing();
 				}
 
 				if (_events != null)
@@ -266,10 +271,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnDecelerationEnded(object sender, EventArgs eventArgs)
 		{
-			if (_ignoreNativeScrolling || SelectedIndex >= Element.LogicalChildren.Count)
+			if (_ignoreNativeScrolling || SelectedIndex >= ElementController.LogicalChildren.Count)
 				return;
 
-			Carousel.CurrentPage = (ContentPage)Element.LogicalChildren[SelectedIndex];
+			Carousel.CurrentPage = (ContentPage)ElementController.LogicalChildren[SelectedIndex];
 		}
 
 		void OnPagesChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -335,9 +340,9 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			Clear();
 
-			for (var i = 0; i < Element.LogicalChildren.Count; i++)
+			for (var i = 0; i < ElementController.LogicalChildren.Count; i++)
 			{
-				Element element = Element.LogicalChildren[i];
+				Element element = ElementController.LogicalChildren[i];
 				var child = element as ContentPage;
 				if (child != null)
 					InsertPage(child, i);
