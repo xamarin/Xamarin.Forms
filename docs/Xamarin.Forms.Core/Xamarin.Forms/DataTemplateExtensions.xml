@@ -10,8 +10,8 @@
   </Base>
   <Interfaces />
   <Docs>
-    <summary>To be added.</summary>
-    <remarks>To be added.</remarks>
+    <summary>Contains convenience extension methods for <see cref="T:Xamarin.Forms.DataTemplate" />.</summary>
+    <remarks></remarks>
   </Docs>
   <Members>
     <Member MemberName="SetBinding">
@@ -33,14 +33,22 @@
         <Parameter Name="stringFormat" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="self">To be added.</param>
-        <param name="targetProperty">To be added.</param>
-        <param name="path">To be added.</param>
-        <param name="mode">To be added.</param>
-        <param name="converter">To be added.</param>
-        <param name="stringFormat">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <param name="self">The <see cref="T:Xamarin.Forms.DataTemplate" />.</param>
+        <param name="targetProperty">The BindableProperty on which to set a binding.</param>
+        <param name="path">A <see cref="T:System.String" /> indicating the property path to bind to.</param>
+        <param name="mode">The <see cref="T:Xamarin.Forms.BindingMode" /> for the binding. This parameter is optional. Default is <see cref="E:Xamarin.Forms.BindingMode.Default" />.</param>
+        <param name="converter">An <see cref="T:Xamarin.Forms.IValueConverter" /> for the binding. This parameter is optional. Default is <see langword="null" />.</param>
+        <param name="stringFormat">A string used as stringFormat for the binding. This parameter is optional. Default is <see langword="null" />.</param>
+        <summary>Creates and applies a binding to a property.</summary>
+        <remarks>
+          <para>The following example shows how to use the extension method to set a binding.</para>
+          <example>
+            <code lang="C#"><![CDATA[
+var itemTemplate = new DataTemplate(typeof(TextCell));
+itemTemplate.SetBinding (TextCell.TextProperty, "Name");
+      ]]></code>
+          </example>
+        </remarks>
       </Docs>
     </Member>
     <Member MemberName="SetBinding&lt;TSource&gt;">
@@ -65,15 +73,30 @@
         <Parameter Name="stringFormat" Type="System.String" />
       </Parameters>
       <Docs>
-        <typeparam name="TSource">To be added.</typeparam>
-        <param name="self">To be added.</param>
-        <param name="targetProperty">To be added.</param>
-        <param name="sourceProperty">To be added.</param>
-        <param name="mode">To be added.</param>
-        <param name="converter">To be added.</param>
-        <param name="stringFormat">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
+        <typeparam name="TSource">The source type.</typeparam>
+        <param name="self">The DataTemplate.</param>
+        <param name="targetProperty">The BindableProperty to bind to</param>
+        <param name="sourceProperty">An expression used to retrieve the source path.</param>
+        <param name="mode">The BindingMode for the binding. This parameter is optional. Default is <see cref="E:Xamarin.Forms.BindingMode.Default" />.</param>
+        <param name="converter">An IValueConverter for the binding. This parameter is optional. Default is <see langword="null" />.</param>
+        <param name="stringFormat">A string used as stringFormat for the binding. This parameter is optional. Default is <see langword="null" />.</param>
+        <summary>Creates and applies a binding from an expression.</summary>
+        <remarks>
+          <para>This extension method uses Expression instead of path to creates and sets bindings. Using Expressions is more refactoring friendly.</para>
+          <para>This following example illustrates the setting of a binding using the extension method.</para>
+          <example>
+            <code lang="C#"><![CDATA[
+public class PersonViewModel
+{
+  public string Name { get; set; }
+  public string Company { get; set; }
+}
+
+var itemTemplate = new DataTemplate(typeof(TextCell));
+itemTemplate.SetBinding<PersonViewModel> (TextCell.TextProperty, vm => vm.Name);
+      ]]></code>
+          </example>
+        </remarks>
       </Docs>
     </Member>
   </Members>
