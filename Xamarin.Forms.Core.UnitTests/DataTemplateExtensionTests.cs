@@ -9,18 +9,18 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public void SetBindingNull()
 		{
-			Assert.That(() => DataTemplateExtensions.SetBinding(null, MockBindable.TextProperty, "Name"),
+			Assert.That(() => TemplateExtensions.SetBinding(null, MockBindable.TextProperty, "Name"),
 				Throws.InstanceOf<ArgumentNullException>());
-			Assert.That(() => DataTemplateExtensions.SetBinding(new DataTemplate(() => new MockBindable()), null, "Name"),
+			Assert.That(() => TemplateExtensions.SetBinding(new DataTemplate(() => new MockBindable()), null, "Name"),
 				Throws.InstanceOf<ArgumentNullException>());
-			Assert.That(() => DataTemplateExtensions.SetBinding(new DataTemplate(() => new MockBindable()), MockBindable.TextProperty, null),
+			Assert.That(() => TemplateExtensions.SetBinding(new DataTemplate(() => new MockBindable()), MockBindable.TextProperty, null),
 				Throws.InstanceOf<ArgumentNullException>());
 
-			Assert.That(() => DataTemplateExtensions.SetBinding<MockViewModel>(null, MockBindable.TextProperty, vm => vm.Text),
+			Assert.That(() => TemplateExtensions.SetBinding<MockViewModel>(null, MockBindable.TextProperty, vm => vm.Text),
 				Throws.InstanceOf<ArgumentNullException>());
-			Assert.That(() => DataTemplateExtensions.SetBinding<MockViewModel>(new DataTemplate(() => new MockBindable()), null, vm => vm.Text),
+			Assert.That(() => TemplateExtensions.SetBinding<MockViewModel>(new DataTemplate(() => new MockBindable()), null, vm => vm.Text),
 				Throws.InstanceOf<ArgumentNullException>());
-			Assert.That(() => DataTemplateExtensions.SetBinding<MockViewModel>(new DataTemplate(() => new MockBindable()), MockBindable.TextProperty, null),
+			Assert.That(() => TemplateExtensions.SetBinding<MockViewModel>(new DataTemplate(() => new MockBindable()), MockBindable.TextProperty, null),
 				Throws.InstanceOf<ArgumentNullException>());
 		}
 	}
