@@ -15,6 +15,7 @@ using Android.Views;
 using Android.Widget;
 using Xamarin.Forms.Platform.Android.AppCompat;
 using FragmentManager = Android.Support.V4.App.FragmentManager;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -70,6 +71,8 @@ namespace Xamarin.Forms.Platform.Android
 		internal Page Page { get; private set; }
 
 		#endregion
+
+		IPageController CurrentPageController => _navModel.CurrentPage as IPageController;
 
 		ActionBar ActionBar
 		{
@@ -195,7 +198,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			Page modal = _navModel.PopModal();
 
-			modal.SendDisappearing();
+			((IPageController)modal).SendDisappearing();
 			var source = new TaskCompletionSource<Page>();
 
 			IVisualElementRenderer modalRenderer = GetRenderer(modal);
@@ -210,7 +213,7 @@ namespace Xamarin.Forms.Platform.Android
 							modalRenderer.ViewGroup.RemoveFromParent();
 							modalRenderer.Dispose();
 							source.TrySetResult(modal);
-							_navModel.CurrentPage?.SendAppearing();
+							CurrentPageController?.SendAppearing();
 						}
 					});
 				}
@@ -219,7 +222,7 @@ namespace Xamarin.Forms.Platform.Android
 					modalRenderer.ViewGroup.RemoveFromParent();
 					modalRenderer.Dispose();
 					source.TrySetResult(modal);
-					_navModel.CurrentPage?.SendAppearing();
+					CurrentPageController?.SendAppearing();
 				}
 			}
 
@@ -256,7 +259,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		async Task INavigation.PushModalAsync(Page modal, bool animated)
 		{
-			_navModel.CurrentPage?.SendDisappearing();
+			CurrentPageController?.SendDisappearing();
 
 			_navModel.PushModal(modal);
 
@@ -266,7 +269,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			// Verify that the modal is still on the stack
 			if (_navModel.CurrentPage == modal)
-				modal.SendAppearing();
+				((IPageController)modal).SendAppearing();
 
 			_toolbarTracker.Target = _navModel.Roots.Last();
 
@@ -345,12 +348,13 @@ namespace Xamarin.Forms.Platform.Android
 
 			foreach (ToolbarItem item in _toolbarTracker.ToolbarItems)
 			{
+				IMenuItemController controller = item;
 				item.PropertyChanged += HandleToolbarItemPropertyChanged;
 				if (item.Order == ToolbarItemOrder.Secondary)
 				{
 					IMenuItem menuItem = menu.Add(item.Text);
-					menuItem.SetEnabled(item.IsEnabled);
-					menuItem.SetOnMenuItemClickListener(new GenericMenuClickListener(item.Activate));
+					menuItem.SetEnabled(controller.IsEnabled);
+					menuItem.SetOnMenuItemClickListener(new GenericMenuClickListener(controller.Activate));
 				}
 				else
 				{
@@ -361,9 +365,9 @@ namespace Xamarin.Forms.Platform.Android
 						if (iconBitmap != null)
 							menuItem.SetIcon(iconBitmap);
 					}
-					menuItem.SetEnabled(item.IsEnabled);
+					menuItem.SetEnabled(controller.IsEnabled);
 					menuItem.SetShowAsAction(ShowAsAction.Always);
-					menuItem.SetOnMenuItemClickListener(new GenericMenuClickListener(item.Activate));
+					menuItem.SetOnMenuItemClickListener(new GenericMenuClickListener(controller.Activate));
 				}
 			}
 		}
@@ -563,7 +567,7 @@ namespace Xamarin.Forms.Platform.Android
 				result.AddRange(AncestorPagesOfPage(((MasterDetailPage)root).Detail));
 			else
 			{
-				foreach (Page page in root.InternalChildren.OfType<Page>())
+				foreach (Page page in ((IPageController)root).InternalChildren.OfType<Page>())
 					result.AddRange(AncestorPagesOfPage(page));
 			}
 

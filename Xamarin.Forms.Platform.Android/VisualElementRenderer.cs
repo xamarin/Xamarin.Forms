@@ -41,9 +41,9 @@ namespace Xamarin.Forms.Platform.Android
 						_gestureListener =
 						new InnerGestureListener(_tapGestureHandler.OnTap, _tapGestureHandler.TapGestureRecognizers, _panGestureHandler.OnPan, _panGestureHandler.OnPanStarted, _panGestureHandler.OnPanComplete)));
 
-			_scaleDetector =
-				new Lazy<ScaleGestureDetector>(
-					() => new ScaleGestureDetector(Context, new InnerScaleListener(_pinchGestureHandler.OnPinch, _pinchGestureHandler.OnPinchStarted, _pinchGestureHandler.OnPinchEnded), Handler));
+			_scaleDetector = new Lazy<ScaleGestureDetector>(
+					() => new ScaleGestureDetector(Context, new InnerScaleListener(_pinchGestureHandler.OnPinch, _pinchGestureHandler.OnPinchStarted, _pinchGestureHandler.OnPinchEnded))
+					);
 		}
 
 		public TElement Element { get; private set; }
@@ -306,7 +306,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (Element == null)
 				return;
 
-			ReadOnlyCollection<Element> children = Element.LogicalChildren;
+			ReadOnlyCollection<Element> children = ((IElementController)Element).LogicalChildren;
 			for (var i = 0; i < children.Count; i++)
 			{
 				var visualElement = children[i] as VisualElement;

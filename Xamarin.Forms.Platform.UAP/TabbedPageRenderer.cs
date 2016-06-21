@@ -6,6 +6,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -20,20 +21,20 @@ namespace Xamarin.Forms.Platform.UWP
 				if (ActualWidth > 0 && ActualHeight > 0)
 				{
 					var tab = (Page)DataContext;
-					((TabbedPage)tab.RealParent).ContainerArea = new Rectangle(0, 0, ActualWidth, ActualHeight);
+					((IPageController)tab.RealParent).ContainerArea = new Rectangle(0, 0, ActualWidth, ActualHeight);
 				}
 			};
 		}
 
 		void TabbedPagePresenter_Loaded(object sender, RoutedEventArgs e)
 		{
-			var tab = (Page)DataContext;
+			var tab = (IPageController)DataContext;
 			tab.SendAppearing();
 		}
 
 		void TabbedPagePresenter_Unloaded(object sender, RoutedEventArgs e)
 		{
-			var tab = (Page)DataContext;
+			var tab = (IPageController)DataContext;
 			tab.SendDisappearing();
 		}
 	}
@@ -77,6 +78,8 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			set { (Control as FormsPivot).ToolbarForeground = value; }
 		}
+
+		IPageController PageController => Element as IPageController;
 
 		bool ITitleProvider.ShowTitle
 		{
@@ -190,7 +193,7 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 
 			_disposed = true;
-			Element?.SendDisappearing();
+			PageController?.SendDisappearing();
 			SetElement(null);
 			Tracker = null;
 		}
@@ -215,10 +218,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void OnLoaded(object sender, RoutedEventArgs args)
 		{
-			if (Element == null)
-				return;
-
-			Element.SendAppearing();
+			PageController?.SendAppearing();
 		}
 
 		void OnPagesChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -238,17 +238,14 @@ namespace Xamarin.Forms.Platform.UWP
 			Page currentPage = Element.CurrentPage;
 			if (currentPage == page)
 				return;
-			currentPage?.SendDisappearing();
+			((IPageController)currentPage)?.SendDisappearing();
 			Element.CurrentPage = page;
-			page?.SendAppearing();
+			((IPageController)page)?.SendAppearing();
 		}
 
 		void OnUnloaded(object sender, RoutedEventArgs args)
 		{
-			if (Element == null)
-				return;
-
-			Element.SendDisappearing();
+			PageController?.SendDisappearing();
 		}
 
 		Brush GetBarBackgroundBrush()

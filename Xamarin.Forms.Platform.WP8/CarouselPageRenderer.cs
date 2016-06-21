@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Phone.Controls;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.WinPhone
 {
@@ -75,7 +76,7 @@ namespace Xamarin.Forms.Platform.WinPhone
 				if (element.ActualWidth > 0 && element.ActualHeight > 0)
 				{
 					var carouselItem = (Page)DataContext;
-					((CarouselPage)carouselItem.RealParent).ContainerArea = new Rectangle(0, 0, element.ActualWidth, element.ActualHeight);
+					((IPageController)carouselItem.RealParent).ContainerArea = new Rectangle(0, 0, element.ActualWidth, element.ActualHeight);
 				}
 			};
 		}
@@ -132,8 +133,8 @@ namespace Xamarin.Forms.Platform.WinPhone
 			_page.PagesChanged += OnPagesChanged;
 			_page.PropertyChanged += OnPropertyChanged;
 
-			Loaded += (sender, args) => _page.SendAppearing();
-			Unloaded += (sender, args) => _page.SendDisappearing();
+			Loaded += (sender, args) => ((IPageController)_page).SendAppearing();
+			Unloaded += (sender, args) => ((IPageController)_page).SendDisappearing();
 
 			OnElementChanged(new VisualElementChangedEventArgs(oldElement, element));
 		}
