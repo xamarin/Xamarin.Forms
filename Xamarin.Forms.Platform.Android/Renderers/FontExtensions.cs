@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Android.Content.Res;
 using Android.Graphics;
 using AApplication = Android.App.Application;
@@ -9,9 +10,9 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public static class FontExtensions
 	{
-		static string[] SupportedFontExtensions = { ".ttf", ".otf" };
-
 		static readonly Dictionary<Tuple<string, FontAttributes>, Typeface> Typefaces = new Dictionary<Tuple<string, FontAttributes>, Typeface>();
+
+		static readonly Regex LoadFromAssets = new Regex(@"\w+\.((ttf)|(otf))\#\w*");
 
 		static Typeface s_defaultTypeface;
 
@@ -52,24 +53,21 @@ namespace Xamarin.Forms.Platform.Android
 			if (Typefaces.TryGetValue(key, out result))
 				return result;
 
-			var style = TypefaceStyle.Normal;
-			if ((self.FontAttributes & (FontAttributes.Bold | FontAttributes.Italic)) == (FontAttributes.Bold | FontAttributes.Italic))
-				style = TypefaceStyle.BoldItalic;
-			else if ((self.FontAttributes & FontAttributes.Bold) != 0)
-				style = TypefaceStyle.Bold;
-			else if ((self.FontAttributes & FontAttributes.Italic) != 0)
-				style = TypefaceStyle.Italic;
-
-			if (SupportedFontExtensions.Any(f => self.FontFamily.EndsWith(f, StringComparison.InvariantCultureIgnoreCase)))
-				result = Typeface.CreateFromAsset(AApplication.Context.Assets, self.FontFamily);
-			else if (self.FontFamily != null)
-				result = Typeface.Create(self.FontFamily, style);
-
-			if (result == null)
+			if(self.FontFamily == null)
+			{
+				var style = ParseFontAttributes(self.FontAttributes);
 				result = Typeface.Create(Typeface.Default, style);
-
-			Typefaces[key] = result;
-			return result;
+			}
+			else if (LoadFromAssets.IsMatch(self.FontFamily))
+			{
+				result = Typeface.CreateFromAsset(AApplication.Context.Assets, self.FontFamily);
+			}
+			else
+			{
+				var style = ParseFontAttributes(self.FontAttributes);
+				result = Typeface.Create(self.FontFamily, style);
+			}
+			return (Typefaces[key] = result);
 		}
 
 		internal static bool IsDefault(this IFontElement self)
@@ -79,29 +77,51 @@ namespace Xamarin.Forms.Platform.Android
 
 		internal static Typeface ToTypeface(this IFontElement self)
 		{
+			if(self.IsDefault())
+				return s_defaultTypeface ?? (s_defaultTypeface = Typeface.Default);
+
 			var key = new Tuple<string, FontAttributes>(self.FontFamily, self.FontAttributes);
 			Typeface result;
 			if (Typefaces.TryGetValue(key, out result))
 				return result;
 
-			var style = TypefaceStyle.Normal;
-			if ((self.FontAttributes & (FontAttributes.Bold | FontAttributes.Italic)) == (FontAttributes.Bold | FontAttributes.Italic))
-				style = TypefaceStyle.BoldItalic;
-			else if ((self.FontAttributes & FontAttributes.Bold) != 0)
-				style = TypefaceStyle.Bold;
-			else if ((self.FontAttributes & FontAttributes.Italic) != 0)
-				style = TypefaceStyle.Italic;
-
-			if (SupportedFontExtensions.Any(f => self.FontFamily.EndsWith(f, StringComparison.InvariantCultureIgnoreCase)))
-				result = Typeface.CreateFromAsset(AApplication.Context.Assets, self.FontFamily);
-			else if (self.FontFamily != null)
-				result = Typeface.Create(self.FontFamily, style);
-
-			if (result == null)
+			if (self.FontFamily == null)
+			{
+				var style = ParseFontAttributes(self.FontAttributes);
 				result = Typeface.Create(Typeface.Default, style);
+			}
+			else if (LoadFromAssets.IsMatch(self.FontFamily))
+			{
+				result = Typeface.CreateFromAsset(AApplication.Context.Assets, FontNameToFontFile(self.FontFamily));
+			}
+			else
+			{
+				var style = ParseFontAttributes(self.FontAttributes);
+				result = Typeface.Create(self.FontFamily, style);
+			}
+			return (Typefaces[key] = result);
 
-			Typefaces[key] = result;
-			return result;
+		}
+
+		internal static TypefaceStyle ParseFontAttributes(FontAttributes attrs)
+		{
+			var style = TypefaceStyle.Normal;
+			if ((attrs & (FontAttributes.Bold | FontAttributes.Italic)) == (FontAttributes.Bold | FontAttributes.Italic))
+				style = TypefaceStyle.BoldItalic;
+			else if ((attrs & FontAttributes.Bold) != 0)
+				style = TypefaceStyle.Bold;
+			else if ((attrs & FontAttributes.Italic) != 0)
+				style = TypefaceStyle.Italic;
+			return style;
+		}
+
+		private static string FontNameToFontFile(string fontFamily)
+		{
+			int hashtagIndex = fontFamily.IndexOf('#');
+			if (hashtagIndex >= 0)
+				return fontFamily.Substring(0, hashtagIndex);
+
+			throw new InvalidOperationException($"Can't parse the {nameof(fontFamily)} {fontFamily}");
 		}
 	}
 }
