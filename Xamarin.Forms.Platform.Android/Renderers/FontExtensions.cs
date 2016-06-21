@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
-using Android.Content.Res;
 using Android.Graphics;
 using AApplication = Android.App.Application;
 
@@ -53,18 +51,18 @@ namespace Xamarin.Forms.Platform.Android
 			if (Typefaces.TryGetValue(key, out result))
 				return result;
 
-			if(self.FontFamily == null)
+			if (self.FontFamily == null)
 			{
-				var style = ParseFontAttributes(self.FontAttributes);
+				var style = ToTypefaceStyle(self.FontAttributes);
 				result = Typeface.Create(Typeface.Default, style);
 			}
 			else if (LoadFromAssets.IsMatch(self.FontFamily))
 			{
-				result = Typeface.CreateFromAsset(AApplication.Context.Assets, self.FontFamily);
+				result = Typeface.CreateFromAsset(AApplication.Context.Assets, FontNameToFontFile(self.FontFamily));
 			}
 			else
 			{
-				var style = ParseFontAttributes(self.FontAttributes);
+				var style = ToTypefaceStyle(self.FontAttributes);
 				result = Typeface.Create(self.FontFamily, style);
 			}
 			return (Typefaces[key] = result);
@@ -77,7 +75,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		internal static Typeface ToTypeface(this IFontElement self)
 		{
-			if(self.IsDefault())
+			if (self.IsDefault())
 				return s_defaultTypeface ?? (s_defaultTypeface = Typeface.Default);
 
 			var key = new Tuple<string, FontAttributes>(self.FontFamily, self.FontAttributes);
@@ -87,7 +85,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (self.FontFamily == null)
 			{
-				var style = ParseFontAttributes(self.FontAttributes);
+				var style = ToTypefaceStyle(self.FontAttributes);
 				result = Typeface.Create(Typeface.Default, style);
 			}
 			else if (LoadFromAssets.IsMatch(self.FontFamily))
@@ -96,14 +94,13 @@ namespace Xamarin.Forms.Platform.Android
 			}
 			else
 			{
-				var style = ParseFontAttributes(self.FontAttributes);
+				var style = ToTypefaceStyle(self.FontAttributes);
 				result = Typeface.Create(self.FontFamily, style);
 			}
 			return (Typefaces[key] = result);
-
 		}
 
-		internal static TypefaceStyle ParseFontAttributes(FontAttributes attrs)
+		public static TypefaceStyle ToTypefaceStyle(FontAttributes attrs)
 		{
 			var style = TypefaceStyle.Normal;
 			if ((attrs & (FontAttributes.Bold | FontAttributes.Italic)) == (FontAttributes.Bold | FontAttributes.Italic))
@@ -115,7 +112,7 @@ namespace Xamarin.Forms.Platform.Android
 			return style;
 		}
 
-		private static string FontNameToFontFile(string fontFamily)
+		static string FontNameToFontFile(string fontFamily)
 		{
 			int hashtagIndex = fontFamily.IndexOf('#');
 			if (hashtagIndex >= 0)
