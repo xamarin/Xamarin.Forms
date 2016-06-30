@@ -188,7 +188,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		internal IListProxy ListProxy
+		public IListProxy ListProxy
 		{
 			get { return (IListProxy)GetValue(ListProxyPropertyKey.BindableProperty); }
 			private set { SetValue(ListProxyPropertyKey, value); }
