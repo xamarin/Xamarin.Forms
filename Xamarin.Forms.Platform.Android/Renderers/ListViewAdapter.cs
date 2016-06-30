@@ -144,9 +144,9 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				object item = null;
 				if (_listView.IsGroupingEnabled)
-					item = ((ITemplatedItemsView<Cell>)TemplatedItemsView.TemplatedItems.GetGroup(group)).ListProxy[row];
+					item = TemplatedItemsView.TemplatedItems.GetGroup(group).ListProxy[row];
 				else
-					item = ((ITemplatedItemsView<Cell>)TemplatedItemsView.TemplatedItems).ListProxy[position];
+					item = TemplatedItemsView.TemplatedItems.ListProxy[position];
 				itemTemplate = selector.SelectTemplate(item, _listView);
 			}
 			int key;
