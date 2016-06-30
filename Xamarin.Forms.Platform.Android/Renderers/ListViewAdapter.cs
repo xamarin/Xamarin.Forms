@@ -405,7 +405,7 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					if (_listView.CachingStrategy == ListViewCachingStrategy.RecycleElement)
 					{
-						var groupContent = _listView.TemplatedItems.GroupHeaderTemplate.CreateContent(group.ItemsSource, _listView) as Cell;
+						var groupContent = _listView.TemplatedItems.GroupHeaderTemplate?.CreateContent(group.ItemsSource, _listView) as Cell;
 						if (groupContent != null)
 						{
 							groupContent.Parent = _listView;
