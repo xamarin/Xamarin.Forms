@@ -188,10 +188,15 @@ namespace Xamarin.Forms
 			}
 		}
 
-		public IListProxy ListProxy
+		internal IListProxy ListProxy
 		{
 			get { return (IListProxy)GetValue(ListProxyPropertyKey.BindableProperty); }
 			private set { SetValue(ListProxyPropertyKey, value); }
+		}
+
+		IListProxy ITemplatedItemsList<TItem>.ListProxy
+		{
+			get { return ListProxy; }
 		}
 
 		DataTemplate ItemTemplate
