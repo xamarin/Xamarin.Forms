@@ -7,6 +7,26 @@ using Xamarin.Forms.Controls.Issues;
 
 namespace Xamarin.Forms.Controls
 {
+	public static class FakeVendorExtensions
+	{
+		public static readonly BindableProperty FooProperty = BindableProperty.Create("Foo", typeof(bool), typeof(MasterDetailPage), true);
+
+		public static void SetFoo(this MasterDetailPage mdp, bool value)
+		{
+			mdp.SetValue(FooProperty, value);
+		}
+
+		public static bool GetFoo(this MasterDetailPage mdp)
+		{
+			return (bool)mdp.GetValue(FooProperty);
+		}
+
+		public static void SetVendorFoo(this IMasterDetailPageWindowsConfiguration config, bool value)
+		{
+			config.Element.SetFoo(value);
+		}
+	}
+
 	public class App : Application
 	{
 		public const string AppName = "XamarinFormsControls";
@@ -25,11 +45,27 @@ namespace Xamarin.Forms.Controls
 			_testCloudService = DependencyService.Get<ITestCloudService>();
 			InitInsights();
 
-			MainPage = new MasterDetailPage
+			var x = new MasterDetailPage
 			{
 				Master = new ContentPage { Title = "Master", BackgroundColor = Color.Red },
 				Detail = CoreGallery.GetMainPage()
 			};
+
+			// set some platform specific stuff
+			x.OnAndroid().SomeAndroidThing = 4;
+			x.OnAndroid().SomeOtherAndroidThing = 5;
+
+			// or
+
+			x.OnAndroid().UseTabletDefaults().SetThing(5);
+
+			x.OnWindows()
+				.UsePartialCollapse();
+
+			// Vendor Specific
+			x.OnWindows().SetVendorFoo(false);
+
+			MainPage = x;
 		}
 
 		protected override void OnAppLinkRequestReceived(Uri uri)

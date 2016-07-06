@@ -3,8 +3,173 @@ using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
 {
+	public interface IElementConfiguration<out T> where T : Element
+	{
+		T Element { get; }
+	}
+
+	public interface IMasterDetailPagePlatformConfiguration
+	{
+		IMasterDetailPageWindowsConfiguration OnWindows();
+
+		IMasterDetailPageAndroidConfiguration OnAndroid();
+
+		IMasterDetailPageiOSConfiguration iOS { get; }
+	}
+
+	public interface IMasterDetailPageWindowsConfiguration : IElementConfiguration<MasterDetailPage>
+	{
+		CollapseStyle CollapseStyle { get; set; }
+	}
+
+	public interface IMasterDetailPageAndroidConfiguration : IElementConfiguration<MasterDetailPage>
+	{
+		int SomeAndroidThing { get; set; }
+
+		int SomeOtherAndroidThing { get; set; }
+	}
+
+	public interface IMasterDetailPageiOSConfiguration
+	{
+	}
+
+	public class MasterDetailPageWindowsConfiguration : IMasterDetailPageWindowsConfiguration
+	{
+		public MasterDetailPageWindowsConfiguration(MasterDetailPage element)
+		{
+			Element = element;
+		}
+
+		public CollapseStyle CollapseStyle 
+		{
+			get { return (CollapseStyle)Element.GetValue(MasterDetailPageWindowsSpecifics.CollapseStyleProperty); }
+			set { Element.SetValue(MasterDetailPageWindowsSpecifics.CollapseStyleProperty, value); }
+		}
+
+		public MasterDetailPage Element { get; }
+	}
+
+	public static class MasterDetailPageWindowsSpecifics
+	{
+		public static readonly BindableProperty CollapseStyleProperty = BindableProperty.Create("CollapseStyle", typeof(CollapseStyle),
+			typeof(MasterDetailPage), 1);
+
+		public static void SetCollapseStyle(this MasterDetailPage mdp, CollapseStyle value)
+		{
+			mdp.SetValue(CollapseStyleProperty, value);
+		}
+
+		public static CollapseStyle GetCollapseStyle(this MasterDetailPage mdp)
+		{
+			return (CollapseStyle)mdp.GetValue(CollapseStyleProperty);
+		}
+	}
+
+	internal class MasterDetailPageAndroidConfiguration : IMasterDetailPageAndroidConfiguration
+	{
+		public MasterDetailPageAndroidConfiguration(MasterDetailPage element)
+		{
+			Element = element;
+		}
+
+		public int SomeAndroidThing 
+		{
+			get { return (int)Element.GetValue(MasterDetailPageAndroidSpecifics.SomeAndroidThingProperty); }
+			set { Element.SetValue(MasterDetailPageAndroidSpecifics.SomeAndroidThingProperty, value); }
+		}
+
+		public int SomeOtherAndroidThing
+		{
+			get { return (int)Element.GetValue(MasterDetailPageAndroidSpecifics.SomeOtherAndroidThingProperty); }
+			set { Element.SetValue(MasterDetailPageAndroidSpecifics.SomeOtherAndroidThingProperty, value); }
+		}
+
+		public MasterDetailPage Element { get; }
+	}
+
+	internal class MasterDetailPageiOsConfiguration : IMasterDetailPageiOSConfiguration
+	{
+	}
+
+	public static class MasterDetailPageAndroidSpecifics
+	{
+		#region Properties
+
+		public static readonly BindableProperty SomeAndroidThingProperty = BindableProperty.Create("SomeAndroidThing", typeof(int),
+			typeof(MasterDetailPage), 1);
+
+		public static void SetSomeAndroidThing(this MasterDetailPage mdp, int value)
+		{
+			mdp.SetValue(SomeAndroidThingProperty, value);
+		}
+
+		public static int GetSomeAndroidThing(this MasterDetailPage mdp)
+		{
+			return (int)mdp.GetValue(SomeAndroidThingProperty);
+		}
+
+		public static readonly BindableProperty SomeOtherAndroidThingProperty = BindableProperty.Create("SomeOtherAndroidThing", typeof(int),
+			typeof(MasterDetailPage), 1);
+
+		public static void SetSomeOtherAndroidThingThing(this MasterDetailPage mdp, int value)
+		{
+			mdp.SetValue(SomeOtherAndroidThingProperty, value);
+		}
+
+		public static int GetSomeOtherAndroidThing(this MasterDetailPage mdp)
+		{
+			return (int)mdp.GetValue(SomeOtherAndroidThingProperty);
+		}
+
+
+		#endregion
+
+		#region Configuration
+
+		public static IMasterDetailPageAndroidConfiguration UseTabletDefaults(this IMasterDetailPageAndroidConfiguration config)
+		{
+			config.SomeAndroidThing = 10;
+			config.SomeOtherAndroidThing = 45;
+
+			return config;
+		}
+
+		public static IMasterDetailPageAndroidConfiguration UsePhabletDefaults(this IMasterDetailPageAndroidConfiguration config)
+		{
+			config.SomeAndroidThing = 8;
+			config.SomeOtherAndroidThing = 40;
+
+			return config;
+		}
+
+		public static IMasterDetailPageAndroidConfiguration UsePhoneDefaults(this IMasterDetailPageAndroidConfiguration config)
+		{
+			config.SomeAndroidThing = 5;
+			config.SomeOtherAndroidThing = 30;
+
+			return config;
+		}
+
+		public static IMasterDetailPageAndroidConfiguration SetThing(this IMasterDetailPageAndroidConfiguration config, int value)
+		{
+			config.SomeAndroidThing = value;
+			return config;
+		}
+
+		#endregion
+	}
+
+	public static class MasterDetailPageWindowsConfigurationExtensions
+	{
+		public static IMasterDetailPageWindowsConfiguration UsePartialCollapse(this IMasterDetailPageWindowsConfiguration config)
+		{
+			config.CollapseStyle = CollapseStyle.Partial;
+			return config;
+		}
+	}
+
 	[RenderWith(typeof(_MasterDetailPageRenderer))]
-	public class MasterDetailPage : Page, IMasterDetailPageController
+	public class MasterDetailPage : Page, IMasterDetailPageController, IMasterDetailPagePlatformConfiguration
 	{
 		public static readonly BindableProperty IsGestureEnabledProperty = BindableProperty.Create("IsGestureEnabled", typeof(bool), typeof(MasterDetailPage), true);
 
@@ -21,6 +186,13 @@ namespace Xamarin.Forms
 		Page _master;
 
 		Rectangle _masterBounds;
+
+		public MasterDetailPage()
+		{
+			_windows = new MasterDetailPageWindowsConfiguration(this);
+			_android = new MasterDetailPageAndroidConfiguration(this);
+			iOS = new MasterDetailPageiOsConfiguration();
+		}
 
 		IPageController PageController => this as IPageController;
 
@@ -237,5 +409,29 @@ namespace Xamarin.Forms
 			var page = (MasterDetailPage)sender;
 			UpdateMasterBehavior(page);
 		}
+
+		IMasterDetailPageWindowsConfiguration _windows;
+		IMasterDetailPageAndroidConfiguration _android;
+
+		public IMasterDetailPageWindowsConfiguration OnWindows()
+		{
+			return _windows;
+		}
+
+		public IMasterDetailPageAndroidConfiguration OnAndroid()
+		{
+			return _android;
+		}
+
+		public IMasterDetailPageiOSConfiguration iOS { get; }
+	}
+
+
+// Should this be in a different namespace? Xamarin.Forms.PlatformSpecific
+
+	public enum CollapseStyle
+	{
+		None,
+		Partial
 	}
 }
