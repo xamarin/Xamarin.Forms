@@ -298,7 +298,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateIsRefreshing()
 		{
-            if (_refresh != null)
+			if (_refresh != null)
 				_refresh.Refreshing = Element.IsRefreshing;
 		}
 
