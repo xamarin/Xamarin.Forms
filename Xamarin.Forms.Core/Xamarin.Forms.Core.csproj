@@ -87,6 +87,7 @@
     <Compile Include="DateChangedEventArgs.cs" />
     <Compile Include="DelegateLogListener.cs" />
     <Compile Include="EnumerableExtensions.cs" />
+    <Compile Include="IElementConfiguration.cs" />
     <Compile Include="IFontElement.cs" />
     <Compile Include="DependencyAttribute.cs" />
     <Compile Include="DependencyFetchTarget.cs" />

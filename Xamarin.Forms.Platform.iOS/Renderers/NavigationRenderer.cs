@@ -49,6 +49,8 @@ namespace Xamarin.Forms.Platform.iOS
 				var parentingViewController = (ParentingViewController)ViewControllers.Last();
 				UpdateLeftBarButtonItem(parentingViewController);
 			});
+
+			
 		}
 
 		Page Current { get; set; }
@@ -181,7 +183,10 @@ namespace Xamarin.Forms.Platform.iOS
 			base.ViewDidLoad();
 
 			if (Forms.IsiOS7OrNewer)
-				NavigationBar.Translucent = false;
+			{
+				
+				UpdateTranslucent();
+			}
 			else
 				WantsFullScreenLayout = false;
 
@@ -437,6 +442,18 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateBackgroundColor();
 			else if (e.PropertyName == NavigationPage.CurrentPageProperty.PropertyName)
 				Current = ((NavigationPage)Element).CurrentPage;
+			else if (e.PropertyName == NavigationPageiOSpecifics.IsNavigationBarTranslucentProperty.PropertyName)
+				UpdateTranslucent();
+		}
+
+		void UpdateTranslucent()
+		{
+			if (!Forms.IsiOS7OrNewer)
+			{
+				return;
+			}
+
+			NavigationBar.Translucent = ((NavigationPage)Element).GetIsNavigationBarTranslucent();
 		}
 
 		void InsertPageBefore(Page page, Page before)
@@ -807,6 +824,7 @@ namespace Xamarin.Forms.Platform.iOS
 			public override void ViewWillAppear(bool animated)
 			{
 				UpdateNavigationBarVisibility(animated);
+				EdgesForExtendedLayout = UIRectEdge.None;
 				base.ViewWillAppear(animated);
 			}
 

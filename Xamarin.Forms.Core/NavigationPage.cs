@@ -8,7 +8,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_NavigationPageRenderer))]
-	public class NavigationPage : Page, IPageContainer<Page>, INavigationPageController
+	public class NavigationPage : Page, IPageContainer<Page>, INavigationPageController, INavigationPagePlatformConfiguration
 	{
 		public static readonly BindableProperty BackButtonTitleProperty = BindableProperty.CreateAttached("BackButtonTitle", typeof(string), typeof(Page), null);
 
@@ -27,9 +27,16 @@ namespace Xamarin.Forms
 
 		static readonly BindablePropertyKey CurrentPagePropertyKey = BindableProperty.CreateReadOnly("CurrentPage", typeof(Page), typeof(NavigationPage), null);
 		public static readonly BindableProperty CurrentPageProperty = CurrentPagePropertyKey.BindableProperty;
+		readonly INavigationPageiOSConfiguration _iOS;
+		readonly INavigationPageWindowsConfiguration _windows;
+		readonly INavigationPageAndroidConfiguration _android;
 
 		public NavigationPage()
 		{
+			_android = new NavigationPageAndroidConfiguration(this);;
+			_windows = new NavigationPageWindowsConfiguration(this);;
+			_iOS = new NavigationPageiOSConfiguration(this);;
+
 			Navigation = new NavigationImpl(this);
 		}
 
@@ -440,6 +447,21 @@ namespace Xamarin.Forms
 			{
 				Owner.RemovePage(page);
 			}
+		}
+
+		public INavigationPageWindowsConfiguration OnWindows()
+		{
+			return _windows;
+		}
+
+		public INavigationPageAndroidConfiguration OnAndroid()
+		{
+			return _android;
+		}
+
+		public INavigationPageiOSConfiguration OniOS()
+		{
+			return _iOS;
 		}
 	}
 }
