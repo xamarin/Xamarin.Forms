@@ -128,8 +128,6 @@
     <Compile Include="Cells\SwitchCellRenderer.cs" />
     <Compile Include="Cells\TextCellRenderer.cs" />
     <Compile Include="Cells\ViewCellRenderer.cs" />
-    <Compile Include="ColorExtensions.cs" />
-    <Compile Include="ContextExtensions.cs" />
     <Compile Include="GetDesiredSizeDelegate.cs" />
     <Compile Include="IDeviceInfoProvider.cs" />
     <Compile Include="InnerGestureListener.cs" />
@@ -148,7 +146,6 @@
     <Compile Include="PanGestureHandler.cs" />
     <Compile Include="PinchGestureHandler.cs" />
     <Compile Include="PlatformEffect.cs" />
-    <Compile Include="LayoutExtensions.cs" />
     <Compile Include="Renderers\AHorizontalScrollView.cs" />
     <Compile Include="Renderers\ButtonDrawable.cs" />
     <Compile Include="Renderers\AlignmentExtensions.cs" />
@@ -158,7 +155,6 @@
     <Compile Include="Renderers\EditorEditText.cs" />
     <Compile Include="Renderers\EntryEditText.cs" />
     <Compile Include="Renderers\FileImageSourceHandler.cs" />
-    <Compile Include="Renderers\FormattedStringExtensions.cs" />
     <Compile Include="Renderers\FormsImageView.cs" />
     <Compile Include="Renderers\FormsTextView.cs" />
     <Compile Include="Renderers\FormsWebChromeClient.cs" />
@@ -177,9 +173,7 @@
     <Compile Include="Renderers\StreamImagesourceHandler.cs" />
     <Compile Include="Renderers\ToolbarButton.cs" />
     <Compile Include="Renderers\ToolbarImageButton.cs" />
-    <Compile Include="Renderers\ViewGroupExtensions.cs" />
     <Compile Include="TapGestureHandler.cs" />
-    <Compile Include="TextViewExtensions.cs" />
     <Compile Include="TextColorSwitcher.cs" />
     <Compile Include="ViewInitializedEventArgs.cs" />
     <Compile Include="VisualElementChangedEventArgs.cs" />
@@ -201,7 +195,6 @@
     <Compile Include="Renderers\DatePickerRenderer.cs" />
     <Compile Include="Renderers\EditorRenderer.cs" />
     <Compile Include="Renderers\EntryRenderer.cs" />
-    <Compile Include="Renderers\FontExtensions.cs" />
     <Compile Include="Renderers\FrameRenderer.cs" />
     <Compile Include="Renderers\ImageRenderer.cs" />
     <Compile Include="Renderers\LabelRenderer.cs" />
@@ -225,8 +218,6 @@
     <Compile Include="Renderers\TimePickerRenderer.cs" />
     <Compile Include="Renderers\WebViewRenderer.cs" />
     <Compile Include="ResourceManager.cs" />
-    <Compile Include="ViewExtensions.cs" />
-    <Compile Include="VisualElementExtensions.cs" />
     <Compile Include="VisualElementPackager.cs" />
     <Compile Include="VisualElementRenderer.cs" />
     <Compile Include="VisualElementRendererFlags.cs" />
@@ -234,11 +225,23 @@
     <Compile Include="Renderers\PickerRenderer.cs" />
     <Compile Include="KeyboardManager.cs" />
     <Compile Include="ResourcesProvider.cs" />
-    <Compile Include="Extensions.cs" />
     <Compile Include="Renderers\OpenGLViewRenderer.cs" />
     <Compile Include="AppCompat\CarouselPageRenderer.cs" />
     <Compile Include="AppCompat\FormsFragmentPagerAdapter.cs" />
     <Compile Include="AndroidAppIndexProvider.cs" />
+    <Compile Include="Extensions\NativeBindingExtensions.cs" />
+    <Compile Include="Extensions\ColorConverter.cs" />
+    <Compile Include="Extensions\ColorExtensions.cs" />
+    <Compile Include="Extensions\Extensions.cs" />
+    <Compile Include="NativeViewPropertyListener.cs" />
+    <Compile Include="Extensions\FontExtensions.cs" />
+    <Compile Include="Extensions\FormattedStringExtensions.cs" />
+    <Compile Include="Extensions\ViewGroupExtensions.cs" />
+    <Compile Include="Extensions\TextViewExtensions.cs" />
+    <Compile Include="Extensions\ContextExtensions.cs" />
+    <Compile Include="Extensions\LayoutExtensions.cs" />
+    <Compile Include="Extensions\ViewExtensions.cs" />
+    <Compile Include="Extensions\VisualElementExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -260,6 +263,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Extensions\" />
   </ItemGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Import Project="..\packages\Xamarin.Android.Support.Vector.Drawable.23.3.0\build\Xamarin.Android.Support.Vector.Drawable.targets" Condition="Exists('..\packages\Xamarin.Android.Support.Vector.Drawable.23.3.0\build\Xamarin.Android.Support.Vector.Drawable.targets')" />

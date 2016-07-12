@@ -131,6 +131,9 @@
     <Compile Include="..\Xamarin.Forms.Platform.WinRT\AlignmentExtensions.cs">
       <Link>AlignmentExtensions.cs</Link>
     </Compile>
+    <Compile Include="..\Xamarin.Forms.Platform.WinRT\ColorToBrushNativeBindingConverter.cs">
+      <Link>ColorToBrushNativeBindingConverter.cs</Link>
+    </Compile>
     <Compile Include="..\Xamarin.Forms.Platform.WinRT\FormsTextBox.cs">
       <Link>FormsTextBox.cs</Link>
     </Compile>
@@ -154,6 +157,12 @@
     </Compile>
     <Compile Include="..\Xamarin.Forms.Platform.WinRT\IWrapperAware.cs">
       <Link>IWrapperAware.cs</Link>
+    </Compile>
+    <Compile Include="..\Xamarin.Forms.Platform.WinRT\NativeBindingExtensions.cs">
+      <Link>NativeBindingExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\Xamarin.Forms.Platform.WinRT\NativePropertyListener.cs">
+      <Link>NativePropertyListener.cs</Link>
     </Compile>
     <Compile Include="..\Xamarin.Forms.Platform.WinRT\NativeViewWrapper.cs">
       <Link>NativeViewWrapper.cs</Link>

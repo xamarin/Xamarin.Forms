@@ -33,6 +33,12 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal
 					if (nncgPage != null) {
 						AddNativeControls (nncgPage);
 					}
+					
+					var nncgPage1 = args.Page as NativeBindingGalleryPage;
+
+					if (nncgPage1 != null) {
+						AddNativeBindings(nncgPage1);
+					}
 				};
 			} 
 
@@ -103,6 +109,30 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal
 				}
 			);
 
+			page.NativeControlsAdded = true;
+		}
+		
+		void AddNativeBindings(NativeBindingGalleryPage page)
+		{
+			if (page.NativeControlsAdded)
+				return;
+
+			StackLayout sl = page.Layout;
+
+			var txbLabel = new TextBlock {
+				FontSize = 14,
+				FontFamily = new FontFamily("HelveticaNeue")
+			};
+
+			var btnColor = new Windows.UI.Xaml.Controls.Button { Content = "Toggle Label Color", Height = 80 };
+			btnColor.Click += (sender, args) => txbLabel.Foreground = new SolidColorBrush(Windows.UI.Colors.Pink);
+
+			txbLabel.SetBinding("Text", new Binding("NativeLabel"));
+			txbLabel.SetBinding("Foreground", new Binding("NativeLabelColor", BindingMode.TwoWay));
+
+			sl?.Children.Add(txbLabel);
+			sl?.Children.Add(btnColor.ToView());
+	
 			page.NativeControlsAdded = true;
 		}
     }

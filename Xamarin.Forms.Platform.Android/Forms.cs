@@ -135,7 +135,7 @@ namespace Xamarin.Forms
 
 			if (!IsInitialized)
 			{
-				Registrar.RegisterAll(new[] { typeof(ExportRendererAttribute), typeof(ExportCellAttribute), typeof(ExportImageSourceHandlerAttribute) });
+				Registrar.RegisterAll(new[] { typeof(ExportRendererAttribute), typeof(ExportCellAttribute), typeof(ExportImageSourceHandlerAttribute), typeof(NativeBindingConverterAttribute) });
 			}
 
 			int minWidthDp = Context.Resources.Configuration.SmallestScreenWidthDp;

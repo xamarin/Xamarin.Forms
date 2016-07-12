@@ -62,5 +62,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 			return null;
 		}
+
+		internal static List<object> GetViewAndDescedants(this UIView view)
+		{
+			var viewsToLookUp = new List<object> { view };
+			viewsToLookUp.AddRange(view.Descendants());
+			return viewsToLookUp;
+		}
 	}
 }

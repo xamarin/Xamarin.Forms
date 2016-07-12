@@ -54,3 +54,5 @@ using Xamarin.Forms.Platform.WinRT;
 [assembly: ExportCell(typeof(EntryCell), typeof(EntryCellRenderer))]
 [assembly: ExportCell(typeof(SwitchCell), typeof(SwitchCellRenderer))]
 [assembly: ExportCell(typeof(ViewCell), typeof(ViewCellRenderer))]
+
+[assembly: NativeBindingConverter(typeof(Windows.UI.Xaml.Media.Brush), typeof(ColorToBrushNativeBindingConverter))]

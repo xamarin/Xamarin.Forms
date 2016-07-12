@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -8,6 +8,7 @@ using System.IO;
 using UIKit;
 using Foundation;
 using CoreGraphics;
+using AdvancedColorPicker;
 #else
 using MonoTouch.UIKit;
 using MonoTouch.Foundation;
@@ -163,6 +164,13 @@ namespace Xamarin.Forms.ControlGallery.iOS
 					if (nncgPage != null) {
 						AddNativeControls (nncgPage);
 					}
+
+					var nncgPage1 = args.Page as NativeBindingGalleryPage;
+
+					if (nncgPage1 != null)
+					{
+						AddNativeBindings(nncgPage1);
+					}
 				};
 			}	
 
@@ -270,6 +278,45 @@ namespace Xamarin.Forms.ControlGallery.iOS
 
 			// And we'll use the width (which is fine) and substitute our own height
 			return new SizeRequest (new Size (badRect.Width, 20));
+		}
+
+		void AddNativeBindings(NativeBindingGalleryPage page)
+		{
+			if (page.NativeControlsAdded)
+				return;
+
+			StackLayout sl = page.Layout;
+
+			int width = (int)sl.Width;
+			int heightCustomLabelView = 100;
+
+			var uilabel = new UILabel(new CGRect(0, 0, width, heightCustomLabelView))
+			{
+				MinimumFontSize = 14f,
+				Lines = 0,
+				LineBreakMode = UILineBreakMode.WordWrap,
+				Font = UIFont.FromName("Helvetica", 24f),
+				Text = "DefaultText"
+			};
+
+			var uibuttonColor = new UIButton(UIButtonType.RoundedRect);
+			uibuttonColor.SetTitle("Toggle Text Color Binding", UIControlState.Normal);
+			uibuttonColor.Font = UIFont.FromName("Helvetica", 14f);
+			uibuttonColor.TouchUpInside += (sender, args) => uilabel.TextColor = UIColor.Blue;
+
+			uilabel.SetBinding("Text", new Binding("NativeLabel"));
+			uilabel.SetBinding(nameof(uilabel.TextColor), new Binding("NativeLabelColor"));
+
+			var uiView = new UIView(new CGRect(0, 0, width, heightCustomLabelView));
+			uiView.Add(uilabel);
+			sl?.Children.Add(uiView);
+			sl?.Children.Add(uibuttonColor.ToView());
+#if !_CLASSIC_
+			var colorPicker = new ColorPickerView(new CGRect(0, 0, width, 300));
+			colorPicker.SetBinding("SelectedColor", new Binding("NativeLabelColor", BindingMode.TwoWay), "ColorPicked");
+			sl?.Children.Add(colorPicker);
+#endif
+			page.NativeControlsAdded = true;
 		}
 	}
 #endif

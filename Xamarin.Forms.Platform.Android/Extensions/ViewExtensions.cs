@@ -6,6 +6,7 @@ using Android.Util;
 using Android.Views;
 using AView = Android.Views.View;
 using AColor = Android.Graphics.Color;
+using System.Collections.Generic;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -39,7 +40,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				view.Background = drawable;
 			}
-			
+
 		}
 
 		public static void SetWindowBackground(this AView view)
@@ -63,6 +64,15 @@ namespace Xamarin.Forms.Platform.Android
 					}
 				}
 			}
+		}
+
+		public static List<object> GetViewAndDescedants(this AView view)
+		{
+			var viewsToLookUp = new List<object> { view };
+			var viewGroup = view as ViewGroup;
+			if (viewGroup != null)
+				viewsToLookUp.AddRange(viewGroup.GetChildrenOfType<global::Android.Views.View>());
+			return viewsToLookUp;
 		}
 	}
 }

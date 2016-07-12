@@ -83,6 +83,9 @@
     <Compile Include="Renderers\ExportRendererAttribute.cs" />
     <Compile Include="Resources\StringResources.Designer.cs" />
     <Compile Include="ViewInitializedEventArgs.cs" />
+    <Compile Include="Extensions\NativeBindingExtensions.cs" />
+    <Compile Include="Extensions\UIColorConverter.cs" />
+    <Compile Include="NativeViewPropertyListener.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Deserializer.cs" />

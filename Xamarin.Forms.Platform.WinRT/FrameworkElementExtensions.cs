@@ -75,14 +75,12 @@ namespace Xamarin.Forms.Platform.WinRT
 		internal static IEnumerable<T> GetDescendantsByName<T>(this DependencyObject parent, string elementName) where T : DependencyObject
 		{
 			int myChildrenCount = VisualTreeHelper.GetChildrenCount(parent);
-			for (int i = 0; i < myChildrenCount; i++)
-			{
+			for (int i = 0; i < myChildrenCount; i++) {
 				var child = VisualTreeHelper.GetChild(parent, i);
 				var controlName = child.GetValue(FrameworkElement.NameProperty) as string;
 				if (controlName == elementName && child is T)
 					yield return child as T;
-				else
-				{
+				else {
 					foreach (var subChild in child.GetDescendantsByName<T>(elementName))
 						yield return subChild;
 				}
@@ -92,8 +90,7 @@ namespace Xamarin.Forms.Platform.WinRT
 		internal static T GetFirstDescendant<T>(this DependencyObject element) where T : FrameworkElement
 		{
 			int count = VisualTreeHelper.GetChildrenCount(element);
-			for (var i = 0; i < count; i++)
-			{
+			for (var i = 0; i < count; i++) {
 				DependencyObject child = VisualTreeHelper.GetChild(element, i);
 
 				T target = child as T ?? GetFirstDescendant<T>(child);
@@ -114,8 +111,7 @@ namespace Xamarin.Forms.Platform.WinRT
 			Type type = element.GetType();
 
 			DependencyProperty foregroundProperty;
-			if (!ForegroundProperties.Value.TryGetValue(type, out foregroundProperty))
-			{
+			if (!ForegroundProperties.Value.TryGetValue(type, out foregroundProperty)) {
 				FieldInfo field = type.GetFields().FirstOrDefault(f => f.Name == "ForegroundProperty");
 				if (field == null)
 					throw new ArgumentException("type is not a Foregroundable type");
@@ -127,6 +123,21 @@ namespace Xamarin.Forms.Platform.WinRT
 			}
 
 			return foregroundProperty;
+		}
+
+		internal static IEnumerable<object> GetControlAndDescedants(this FrameworkElement self)
+		{
+			int myChildrenCount = VisualTreeHelper.GetChildrenCount(self);
+			for (int i = 0; i < myChildrenCount; i++) {
+				var child = VisualTreeHelper.GetChild(self, i);
+				if (child is FrameworkElement)
+					yield return child as FrameworkElement;
+				else {
+					foreach (var subChild in (child as FrameworkElement).GetControlAndDescedants())
+						yield return subChild;
+				}
+			}
+			yield return self as FrameworkElement;
 		}
 	}
 }
