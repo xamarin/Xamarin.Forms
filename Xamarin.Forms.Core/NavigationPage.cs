@@ -31,7 +31,6 @@ namespace Xamarin.Forms
 		public NavigationPage()
 		{
 			_platformConfigurationRegistry = new PlatformConfigurationRegistry<NavigationPage>(this);
-			_platformConfigurationRegistry .Add(typeof(IConfigIOS), new NavigationPageiOSConfiguration(this));
 
 			Navigation = new NavigationImpl(this);
 		}

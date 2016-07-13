@@ -31,45 +31,29 @@ namespace Xamarin.Forms
 
 	#region Windows
 
-	public class MasterDetailPageWindowsConfiguration : IPlatformElementConfiguration<IConfigWindows, MasterDetailPage>
-	{
-		public MasterDetailPageWindowsConfiguration(MasterDetailPage element)
-		{
-			Element = element;
-		}
-
-		public MasterDetailPage Element { get; }
-
-		public CollapseStyle CollapseStyle
-		{
-			get { return (CollapseStyle)Element.GetValue(MasterDetailPageWindowsSpecifics.CollapseStyleProperty); }
-			set { Element.SetValue(MasterDetailPageWindowsSpecifics.CollapseStyleProperty, value); }
-		}
-	}
-
 	public static class MasterDetailPageWindowsSpecifics
 	{
 		public static readonly BindableProperty CollapseStyleProperty = BindableProperty.Create("CollapseStyle",
 			typeof(CollapseStyle),
-			typeof(MasterDetailPage), CollapseStyle.None);
+			typeof(IPlatformElementConfiguration<IConfigWindows, MasterDetailPage>), CollapseStyle.None);
 
-		public static CollapseStyle GetCollapseStyle(this MasterDetailPage mdp)
+		public static CollapseStyle GetCollapseStyle(this IPlatformElementConfiguration<IConfigWindows, MasterDetailPage> config)
 		{
-			return (CollapseStyle)mdp.GetValue(CollapseStyleProperty);
+			return (CollapseStyle)config.Element.GetValue(CollapseStyleProperty);
 		}
 
-		public static void SetCollapseStyle(this MasterDetailPage mdp, CollapseStyle value)
+		public static void SetCollapseStyle(this IPlatformElementConfiguration<IConfigWindows, MasterDetailPage> config, CollapseStyle value)
 		{
-			mdp.SetValue(CollapseStyleProperty, value);
+			config.Element.SetValue(CollapseStyleProperty, value);
 		}
 	}
 
 	public static class MasterDetailPageWindowsConfigurationExtensions
 	{
-		public static MasterDetailPageWindowsConfiguration UsePartialCollapse(
-			this MasterDetailPageWindowsConfiguration config)
+		public static IPlatformElementConfiguration<IConfigWindows, MasterDetailPage> UsePartialCollapse(
+			this IPlatformElementConfiguration<IConfigWindows, MasterDetailPage> config)
 		{
-			config.CollapseStyle = CollapseStyle.Partial;
+			config.Element.SetValue(MasterDetailPageWindowsSpecifics.CollapseStyleProperty, CollapseStyle.Partial);
 			return config;
 		}
 	}
@@ -77,16 +61,6 @@ namespace Xamarin.Forms
 	#endregion
 
 	#region Android
-
-	public class MasterDetailPageAndroidConfiguration : IPlatformElementConfiguration<IConfigAndroid, MasterDetailPage>
-	{
-		public MasterDetailPageAndroidConfiguration(MasterDetailPage element)
-		{
-			Element = element;
-		}
-
-		public MasterDetailPage Element { get; }
-	}
 
 	public static class MasterDetailPageAndroidSpecifics
 	{
@@ -149,7 +123,7 @@ namespace Xamarin.Forms
 
 	#region iOS
 
-	public class MasterDetailPageiOSConfiguration : EmptyConfiguration<IConfigIOS, MasterDetailPage>
+	public class MasterDetailPageiOSConfiguration : Configuration<IConfigIOS, MasterDetailPage>
 	{
 		public MasterDetailPageiOSConfiguration (MasterDetailPage element) : base(element)
 		{
@@ -162,39 +136,7 @@ namespace Xamarin.Forms
 
 	#region NavigationPage 
 
-	#region Windows
-
-	public class NavigationPageWindowsConfiguration : EmptyConfiguration<IConfigWindows, NavigationPage>
-	{
-		public NavigationPageWindowsConfiguration(NavigationPage element) : base(element)
-		{
-		}
-	}
-
-	#endregion
-
-	#region Android
-
-	public class NavigationPageAndroidConfiguration : EmptyConfiguration<IConfigAndroid, NavigationPage>
-	{
-		public NavigationPageAndroidConfiguration(NavigationPage element) : base(element)
-		{
-		}
-	}
-
-	#endregion
-
 	#region iOS
-
-	public class NavigationPageiOSConfiguration : IPlatformElementConfiguration<IConfigIOS, NavigationPage>
-	{
-		public NavigationPageiOSConfiguration(NavigationPage element)
-		{
-			Element = element;
-		}
-
-		public NavigationPage Element { get; }
-	}
 
 	public static class NavigationPageiOSpecifics
 	{
@@ -218,31 +160,21 @@ namespace Xamarin.Forms
 
 	#endregion
 
-	public static class OnDemandConfigurationFactory<TPlatform, TElement> 
-		where TPlatform : IConfigPlatform
-		where TElement : Element
-	{
-		public static EmptyConfiguration<TPlatform, TElement> Create(TElement element)
-		{
-			return new EmptyConfiguration<TPlatform, TElement>(element);
-		}
-	}
-
-	public class EmptyConfiguration<TPlatform, TElement> : IPlatformElementConfiguration<TPlatform, TElement> 
+	public class Configuration<TPlatform, TElement> : IPlatformElementConfiguration<TPlatform, TElement> 
 		where TPlatform : IConfigPlatform
 		where TElement : Element
 		
 	{
-		public EmptyConfiguration(TElement element)
+		public Configuration(TElement element)
 		{
 			Element = element;
 		}
 
 		public TElement Element { get; }
 
-		public static EmptyConfiguration<TPlatform, TElement> Create(TElement element)
+		public static Configuration<TPlatform, TElement> Create(TElement element)
 		{
-			return new EmptyConfiguration<TPlatform, TElement>(element);
+			return new Configuration<TPlatform, TElement>(element);
 		}
 	}
 
@@ -288,11 +220,6 @@ namespace Xamarin.Forms
 			_element = element;
 		}
 
-		internal void Add(Type platformType, object configuration)
-		{
-			_platformSpecifics.Add(platformType, configuration);
-		}
-
 		public IPlatformElementConfiguration<T, TElement> On<T>() where T : IConfigPlatform
 		{
 			if (_platformSpecifics.ContainsKey(typeof(T)))
@@ -300,7 +227,7 @@ namespace Xamarin.Forms
 				return (IPlatformElementConfiguration<T, TElement>)_platformSpecifics[typeof(T)];
 			}
 
-			var emptyConfig = EmptyConfiguration<T, TElement>.Create(_element);
+			var emptyConfig = Configuration<T, TElement>.Create(_element);
 
 			_platformSpecifics.Add(typeof(T), emptyConfig);
 

@@ -242,9 +242,6 @@ namespace Xamarin.Forms
 		public MasterDetailPage()
 		{
 			_platformConfigurationRegistry = new PlatformConfigurationRegistry<MasterDetailPage>(this);
-
-			_platformConfigurationRegistry.Add(typeof(IConfigAndroid), new MasterDetailPageAndroidConfiguration(this));
-			_platformConfigurationRegistry.Add(typeof(IConfigWindows), new MasterDetailPageWindowsConfiguration(this));
 		}
 
 		readonly PlatformConfigurationRegistry<MasterDetailPage> _platformConfigurationRegistry;
