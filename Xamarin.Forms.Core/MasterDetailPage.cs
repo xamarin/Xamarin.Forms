@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
@@ -21,13 +22,6 @@ namespace Xamarin.Forms
 		Page _master;
 
 		Rectangle _masterBounds;
-
-		public MasterDetailPage()
-		{
-			_windows = new MasterDetailPageWindowsConfiguration(this);
-			_android = new MasterDetailPageAndroidConfiguration(this);
-			_ios = new MasterDetailPageiOSConfiguration(this);
-		}
 
 		IPageController PageController => this as IPageController;
 
@@ -245,23 +239,19 @@ namespace Xamarin.Forms
 			UpdateMasterBehavior(page);
 		}
 
-		readonly MasterDetailPageWindowsConfiguration _windows;
-		readonly MasterDetailPageAndroidConfiguration _android;
-		readonly MasterDetailPageiOSConfiguration _ios;
-
-		public IPlatformElementConfiguration<IConfigWindows, MasterDetailPage> OnWindows()
+		public MasterDetailPage()
 		{
-			return _windows;
+			_platformConfigurationRegistry = new PlatformConfigurationRegistry<MasterDetailPage>(this);
+
+			_platformConfigurationRegistry.Add(typeof(IConfigAndroid), new MasterDetailPageAndroidConfiguration(this));
+			_platformConfigurationRegistry.Add(typeof(IConfigWindows), new MasterDetailPageWindowsConfiguration(this));
 		}
 
-		public IPlatformElementConfiguration<IConfigAndroid, MasterDetailPage> OnAndroid()
-		{
-			return _android;
-		}
+		readonly PlatformConfigurationRegistry<MasterDetailPage> _platformConfigurationRegistry;
 
-		public IPlatformElementConfiguration<IConfigIOS, MasterDetailPage> OniOS()
+		public IPlatformElementConfiguration<T, MasterDetailPage> On<T>() where T : IConfigPlatform
 		{
-			return _ios;
+			return _platformConfigurationRegistry.On<T>();
 		}
 	}
 }

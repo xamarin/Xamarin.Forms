@@ -1,3 +1,6 @@
+using System;
+using System.Collections.Generic;
+
 namespace Xamarin.Forms
 {
 	public interface IConfigElement<out T> where T : Element
@@ -13,9 +16,7 @@ namespace Xamarin.Forms
 
 	public interface IElementConfiguration<out TElement> where TElement : Element
 	{
-		IPlatformElementConfiguration<IConfigWindows, TElement> OnWindows();
- 		IPlatformElementConfiguration<IConfigAndroid, TElement> OnAndroid();
- 		IPlatformElementConfiguration<IConfigIOS, TElement> OniOS();
+		IPlatformElementConfiguration<T, TElement> On<T>() where T : IConfigPlatform;
 	}
 
 	public interface IConfigPlatform { }
@@ -217,6 +218,16 @@ namespace Xamarin.Forms
 
 	#endregion
 
+	public static class OnDemandConfigurationFactory<TPlatform, TElement> 
+		where TPlatform : IConfigPlatform
+		where TElement : Element
+	{
+		public static EmptyConfiguration<TPlatform, TElement> Create(TElement element)
+		{
+			return new EmptyConfiguration<TPlatform, TElement>(element);
+		}
+	}
+
 	public class EmptyConfiguration<TPlatform, TElement> : IPlatformElementConfiguration<TPlatform, TElement> 
 		where TPlatform : IConfigPlatform
 		where TElement : Element
@@ -228,20 +239,25 @@ namespace Xamarin.Forms
 		}
 
 		public TElement Element { get; }
+
+		public static EmptyConfiguration<TPlatform, TElement> Create(TElement element)
+		{
+			return new EmptyConfiguration<TPlatform, TElement>(element);
+		}
 	}
 
 	#region Vendor
 	
 	public static class FakeVendorExtensions
 	{
-		public static readonly BindableProperty FooProperty = BindableProperty.Create("VendorFoo", typeof(bool), typeof(IPlatformElementConfiguration<IConfigWindows, MasterDetailPage> ), true);
+		public static readonly BindableProperty FooProperty = BindableProperty.Create("VendorFoo", typeof(bool), typeof(IPlatformElementConfiguration<IConfigIOS, MasterDetailPage> ), true);
 
-		public static void SetVendorFoo(this IPlatformElementConfiguration<IConfigWindows, MasterDetailPage>  mdp, bool value)
+		public static void SetVendorFoo(this IPlatformElementConfiguration<IConfigIOS, MasterDetailPage>  mdp, bool value)
 		{
 			mdp.Element.SetValue(FooProperty, value);
 		}
 
-		public static bool GetVendorFoo(this IPlatformElementConfiguration<IConfigWindows, MasterDetailPage>  mdp)
+		public static bool GetVendorFoo(this IPlatformElementConfiguration<IConfigIOS, MasterDetailPage>  mdp)
 		{
 			return (bool)mdp.Element.GetValue(FooProperty);
 		}
@@ -255,5 +271,40 @@ namespace Xamarin.Forms
 	{
 		None,
 		Partial
+	}
+
+	/// <summary>
+	/// Helper that handles storing and lookup of platform specifics implementations
+	/// </summary>
+	/// <typeparam name="TElement">The Element type</typeparam>
+	internal class PlatformConfigurationRegistry<TElement> : IElementConfiguration<TElement>
+		where TElement : Element
+	{
+		readonly TElement _element;
+		readonly Dictionary<Type, object> _platformSpecifics = new Dictionary<Type, object>();
+
+		internal PlatformConfigurationRegistry(TElement element)
+		{
+			_element = element;
+		}
+
+		internal void Add(Type platformType, object configuration)
+		{
+			_platformSpecifics.Add(platformType, configuration);
+		}
+
+		public IPlatformElementConfiguration<T, TElement> On<T>() where T : IConfigPlatform
+		{
+			if (_platformSpecifics.ContainsKey(typeof(T)))
+			{
+				return (IPlatformElementConfiguration<T, TElement>)_platformSpecifics[typeof(T)];
+			}
+
+			var emptyConfig = EmptyConfiguration<T, TElement>.Create(_element);
+
+			_platformSpecifics.Add(typeof(T), emptyConfig);
+
+			return emptyConfig;
+		}
 	}
 }

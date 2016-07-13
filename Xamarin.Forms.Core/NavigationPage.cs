@@ -27,15 +27,11 @@ namespace Xamarin.Forms
 
 		static readonly BindablePropertyKey CurrentPagePropertyKey = BindableProperty.CreateReadOnly("CurrentPage", typeof(Page), typeof(NavigationPage), null);
 		public static readonly BindableProperty CurrentPageProperty = CurrentPagePropertyKey.BindableProperty;
-		readonly NavigationPageiOSConfiguration _iOS;
-		readonly NavigationPageWindowsConfiguration _windows;
-		readonly NavigationPageAndroidConfiguration _android;
-
+		
 		public NavigationPage()
 		{
-			_android = new NavigationPageAndroidConfiguration(this);;
-			_windows = new NavigationPageWindowsConfiguration(this);;
-			_iOS = new NavigationPageiOSConfiguration(this);;
+			_platformConfigurationRegistry = new PlatformConfigurationRegistry<NavigationPage>(this);
+			_platformConfigurationRegistry .Add(typeof(IConfigIOS), new NavigationPageiOSConfiguration(this));
 
 			Navigation = new NavigationImpl(this);
 		}
@@ -449,19 +445,11 @@ namespace Xamarin.Forms
 			}
 		}
 
-		public IPlatformElementConfiguration<IConfigWindows, NavigationPage> OnWindows()
-		{
-			return _windows;
-		}
+		readonly PlatformConfigurationRegistry<NavigationPage> _platformConfigurationRegistry;
 
-		public IPlatformElementConfiguration<IConfigAndroid, NavigationPage> OnAndroid()
+		public IPlatformElementConfiguration<T, NavigationPage> On<T>() where T : IConfigPlatform
 		{
-			return _android;
-		}
-
-		public IPlatformElementConfiguration<IConfigIOS, NavigationPage> OniOS()
-		{
-			return _iOS;
+			return _platformConfigurationRegistry.On<T>();
 		}
 	}
 }
