@@ -9,19 +9,14 @@ namespace Xamarin.Forms
 
 	public interface IMasterDetailPagePlatformConfiguration
 	{
-		IMasterDetailPageAndroidConfiguration OnAndroid();
-		IMasterDetailPageiOSConfiguration OniOS();
-		IMasterDetailPageWindowsConfiguration OnWindows();
+		MasterDetailPageAndroidConfiguration OnAndroid();
+		MasterDetailPageiOSConfiguration OniOS();
+		MasterDetailPageWindowsConfiguration  OnWindows();
 	}
 
 	#region Windows
 
-	public interface IMasterDetailPageWindowsConfiguration : IElementConfiguration<MasterDetailPage>
-	{
-		CollapseStyle CollapseStyle { get; set; }
-	}
-
-	public class MasterDetailPageWindowsConfiguration : IMasterDetailPageWindowsConfiguration
+	public class MasterDetailPageWindowsConfiguration : IElementConfiguration<MasterDetailPage>
 	{
 		public MasterDetailPageWindowsConfiguration(MasterDetailPage element)
 		{
@@ -56,8 +51,8 @@ namespace Xamarin.Forms
 
 	public static class MasterDetailPageWindowsConfigurationExtensions
 	{
-		public static IMasterDetailPageWindowsConfiguration UsePartialCollapse(
-			this IMasterDetailPageWindowsConfiguration config)
+		public static MasterDetailPageWindowsConfiguration UsePartialCollapse(
+			this MasterDetailPageWindowsConfiguration config)
 		{
 			config.CollapseStyle = CollapseStyle.Partial;
 			return config;
@@ -68,14 +63,7 @@ namespace Xamarin.Forms
 
 	#region Android
 
-	public interface IMasterDetailPageAndroidConfiguration : IElementConfiguration<MasterDetailPage>
-	{
-		int SomeAndroidThing { get; set; }
-
-		int SomeOtherAndroidThing { get; set; }
-	}
-
-	internal class MasterDetailPageAndroidConfiguration : IMasterDetailPageAndroidConfiguration
+	public class MasterDetailPageAndroidConfiguration : IElementConfiguration<MasterDetailPage>
 	{
 		public MasterDetailPageAndroidConfiguration(MasterDetailPage element)
 		{
@@ -133,8 +121,8 @@ namespace Xamarin.Forms
 
 		#region Configuration
 
-		public static IMasterDetailPageAndroidConfiguration UseTabletDefaults(
-			this IMasterDetailPageAndroidConfiguration config)
+		public static MasterDetailPageAndroidConfiguration UseTabletDefaults(
+			this MasterDetailPageAndroidConfiguration config)
 		{
 			config.SomeAndroidThing = 10;
 			config.SomeOtherAndroidThing = 45;
@@ -142,8 +130,8 @@ namespace Xamarin.Forms
 			return config;
 		}
 
-		public static IMasterDetailPageAndroidConfiguration UsePhabletDefaults(
-			this IMasterDetailPageAndroidConfiguration config)
+		public static MasterDetailPageAndroidConfiguration UsePhabletDefaults(
+			this MasterDetailPageAndroidConfiguration config)
 		{
 			config.SomeAndroidThing = 8;
 			config.SomeOtherAndroidThing = 40;
@@ -151,7 +139,7 @@ namespace Xamarin.Forms
 			return config;
 		}
 
-		public static IMasterDetailPageAndroidConfiguration UsePhoneDefaults(this IMasterDetailPageAndroidConfiguration config)
+		public static MasterDetailPageAndroidConfiguration UsePhoneDefaults(this MasterDetailPageAndroidConfiguration config)
 		{
 			config.SomeAndroidThing = 5;
 			config.SomeOtherAndroidThing = 30;
@@ -159,7 +147,7 @@ namespace Xamarin.Forms
 			return config;
 		}
 
-		public static IMasterDetailPageAndroidConfiguration SetThing(this IMasterDetailPageAndroidConfiguration config,
+		public static MasterDetailPageAndroidConfiguration SetThing(this MasterDetailPageAndroidConfiguration config,
 			int value)
 		{
 			config.SomeAndroidThing = value;
@@ -173,14 +161,9 @@ namespace Xamarin.Forms
 
 	#region iOS
 
-	public interface IMasterDetailPageiOSConfiguration : IElementConfiguration<MasterDetailPage>
+	public class MasterDetailPageiOSConfiguration : EmptyElementConfiguration<MasterDetailPage>
 	{
-	}
-
-	internal class MasterDetailPageiOsConfiguration : EmptyElementConfiguration<MasterDetailPage>,
-		IMasterDetailPageiOSConfiguration
-	{
-		public MasterDetailPageiOsConfiguration(MasterDetailPage element) : base(element)
+		public MasterDetailPageiOSConfiguration (MasterDetailPage element) : base(element)
 		{
 		}
 	}
@@ -193,19 +176,14 @@ namespace Xamarin.Forms
 
 	public interface INavigationPagePlatformConfiguration
 	{
-		INavigationPageAndroidConfiguration OnAndroid();
-		INavigationPageiOSConfiguration OniOS();
-		INavigationPageWindowsConfiguration OnWindows();
+		NavigationPageAndroidConfiguration OnAndroid();
+		NavigationPageiOSConfiguration OniOS();
+		NavigationPageWindowsConfiguration OnWindows();
 	}
 
 	#region Windows
 
-	public interface INavigationPageWindowsConfiguration : IElementConfiguration<NavigationPage>
-	{
-	}
-
-	public class NavigationPageWindowsConfiguration : EmptyElementConfiguration<NavigationPage>,
-		INavigationPageWindowsConfiguration
+	public class NavigationPageWindowsConfiguration : EmptyElementConfiguration<NavigationPage>
 	{
 		public NavigationPageWindowsConfiguration(NavigationPage element) : base(element)
 		{
@@ -216,12 +194,7 @@ namespace Xamarin.Forms
 
 	#region Android
 
-	public interface INavigationPageAndroidConfiguration : IElementConfiguration<NavigationPage>
-	{
-	}
-
-	public class NavigationPageAndroidConfiguration : EmptyElementConfiguration<NavigationPage>,
-		INavigationPageAndroidConfiguration
+	public class NavigationPageAndroidConfiguration : EmptyElementConfiguration<NavigationPage>
 	{
 		public NavigationPageAndroidConfiguration(NavigationPage element) : base(element)
 		{
@@ -232,12 +205,7 @@ namespace Xamarin.Forms
 
 	#region iOS
 
-	public interface INavigationPageiOSConfiguration : IElementConfiguration<NavigationPage>
-	{
-		bool IsNavigationBarTranslucent { get; set; }
-	}
-
-	public class NavigationPageiOSConfiguration : INavigationPageiOSConfiguration
+	public class NavigationPageiOSConfiguration : IElementConfiguration<NavigationPage>
 	{
 		public NavigationPageiOSConfiguration(NavigationPage element)
 		{
@@ -288,18 +256,26 @@ namespace Xamarin.Forms
 	
 	public static class FakeVendorExtensions
 	{
-		public static readonly BindableProperty FooProperty = BindableProperty.Create("VendorFoo", typeof(bool), typeof(IMasterDetailPageWindowsConfiguration), true);
+		public static readonly BindableProperty FooProperty = BindableProperty.Create("VendorFoo", typeof(bool), typeof(MasterDetailPageWindowsConfiguration), true);
 
-		public static void SetVendorFoo(this IMasterDetailPageWindowsConfiguration mdp, bool value)
+		public static void SetVendorFoo(this MasterDetailPageWindowsConfiguration mdp, bool value)
 		{
 			mdp.Element.SetValue(FooProperty, value);
 		}
 
-		public static bool GetVendorFoo(this IMasterDetailPageWindowsConfiguration mdp)
+		public static bool GetVendorFoo(this MasterDetailPageWindowsConfiguration mdp)
 		{
 			return (bool)mdp.Element.GetValue(FooProperty);
 		}
 	}
 
 	#endregion
+
+	// Should this be in a different namespace? Xamarin.Forms.PlatformSpecific
+
+	public enum CollapseStyle
+	{
+		None,
+		Partial
+	}
 }

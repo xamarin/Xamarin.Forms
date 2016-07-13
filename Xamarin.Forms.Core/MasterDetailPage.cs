@@ -26,7 +26,7 @@ namespace Xamarin.Forms
 		{
 			_windows = new MasterDetailPageWindowsConfiguration(this);
 			_android = new MasterDetailPageAndroidConfiguration(this);
-			_ios = new MasterDetailPageiOsConfiguration(this);
+			_ios = new MasterDetailPageiOSConfiguration(this);
 		}
 
 		IPageController PageController => this as IPageController;
@@ -245,34 +245,23 @@ namespace Xamarin.Forms
 			UpdateMasterBehavior(page);
 		}
 
-		readonly IMasterDetailPageWindowsConfiguration _windows;
-		readonly IMasterDetailPageAndroidConfiguration _android;
-		readonly IMasterDetailPageiOSConfiguration _ios;
+		readonly MasterDetailPageWindowsConfiguration _windows;
+		readonly MasterDetailPageAndroidConfiguration _android;
+		readonly MasterDetailPageiOSConfiguration _ios;
 
-		public IMasterDetailPageWindowsConfiguration OnWindows()
+		public MasterDetailPageWindowsConfiguration OnWindows()
 		{
 			return _windows;
 		}
 
-		public IMasterDetailPageAndroidConfiguration OnAndroid()
+		public MasterDetailPageAndroidConfiguration OnAndroid()
 		{
 			return _android;
 		}
 
-		public IMasterDetailPageiOSConfiguration OniOS()
+		public MasterDetailPageiOSConfiguration OniOS()
 		{
 			return _ios;
 		}
-
-		public IMasterDetailPageiOSConfiguration iOS { get; }
-	}
-
-
-// Should this be in a different namespace? Xamarin.Forms.PlatformSpecific
-
-	public enum CollapseStyle
-	{
-		None,
-		Partial
 	}
 }

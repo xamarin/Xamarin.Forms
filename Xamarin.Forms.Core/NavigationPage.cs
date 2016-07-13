@@ -27,9 +27,9 @@ namespace Xamarin.Forms
 
 		static readonly BindablePropertyKey CurrentPagePropertyKey = BindableProperty.CreateReadOnly("CurrentPage", typeof(Page), typeof(NavigationPage), null);
 		public static readonly BindableProperty CurrentPageProperty = CurrentPagePropertyKey.BindableProperty;
-		readonly INavigationPageiOSConfiguration _iOS;
-		readonly INavigationPageWindowsConfiguration _windows;
-		readonly INavigationPageAndroidConfiguration _android;
+		readonly NavigationPageiOSConfiguration _iOS;
+		readonly NavigationPageWindowsConfiguration _windows;
+		readonly NavigationPageAndroidConfiguration _android;
 
 		public NavigationPage()
 		{
@@ -449,17 +449,17 @@ namespace Xamarin.Forms
 			}
 		}
 
-		public INavigationPageWindowsConfiguration OnWindows()
+		public NavigationPageWindowsConfiguration OnWindows()
 		{
 			return _windows;
 		}
 
-		public INavigationPageAndroidConfiguration OnAndroid()
+		public NavigationPageAndroidConfiguration OnAndroid()
 		{
 			return _android;
 		}
 
-		public INavigationPageiOSConfiguration OniOS()
+		public NavigationPageiOSConfiguration OniOS()
 		{
 			return _iOS;
 		}
