@@ -7,26 +7,6 @@ using Xamarin.Forms.Controls.Issues;
 
 namespace Xamarin.Forms.Controls
 {
-	public static class FakeVendorExtensions
-	{
-		public static readonly BindableProperty FooProperty = BindableProperty.Create("Foo", typeof(bool), typeof(MasterDetailPage), true);
-
-		public static void SetFoo(this MasterDetailPage mdp, bool value)
-		{
-			mdp.SetValue(FooProperty, value);
-		}
-
-		public static bool GetFoo(this MasterDetailPage mdp)
-		{
-			return (bool)mdp.GetValue(FooProperty);
-		}
-
-		public static void SetVendorFoo(this IMasterDetailPageWindowsConfiguration config, bool value)
-		{
-			config.Element.SetFoo(value);
-		}
-	}
-
 	public class App : Application
 	{
 		public const string AppName = "XamarinFormsControls";
