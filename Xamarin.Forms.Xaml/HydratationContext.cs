@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Xamarin.Forms.Xaml
 {
@@ -20,5 +21,7 @@ namespace Xamarin.Forms.Xaml
 		public bool DoNotThrowOnExceptions { get; set; }
 
 		public object RootElement { get; set; }
+
+		public Assembly CurrentAssembly { get; set; }
 	}
 }

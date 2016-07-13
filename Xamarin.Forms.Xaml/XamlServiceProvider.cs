@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Xaml.Internals
 			if (node != null)
 			{
 				IXamlTypeResolver = new XamlTypeResolver(node.NamespaceResolver, XamlParser.GetElementType,
-					context.RootElement.GetType().GetTypeInfo().Assembly);
+					context.CurrentAssembly ?? context.RootElement.GetType().GetTypeInfo().Assembly);
 
 				var enode = node;
 				while (enode != null && !(enode is IElementNode))
