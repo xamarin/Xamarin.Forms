@@ -1,57 +1,30 @@
 using NUnit.Framework;
 
+
 namespace Xamarin.Forms.Core.UnitTests
 {
-	public static class FakeVendorExtensions
-	{
-		public static readonly BindableProperty FooProperty = BindableProperty.Create("FooWindows", typeof(bool),
-			typeof(MasterDetailPage), true);
-
-		public static void SetFoo(this MasterDetailPage mdp, bool value)
-		{
-			mdp.SetValue(FooProperty, value);
-		}
-
-		public static bool GetFoo(this MasterDetailPage mdp)
-		{
-			return (bool)mdp.GetValue(FooProperty);
-		}
-
-		public static void SetFoo(this IMasterDetailPageWindowsConfiguration config, bool value)
-		{
-			config.Element.SetValue(FooProperty, value);
-		}
-
-		public static bool GetFoo(this IMasterDetailPageWindowsConfiguration config)
-		{
-			return config.Element.GetFoo();
-		}
-	}
-
 	[TestFixture]
 	public class PlatformSpecificsTests
 	{
 		[Test]
-		public void AttachedProperty()
+		public void VendorPlatformProperty()
 		{
 			var x = new MasterDetailPage();
 
-			Assert.IsTrue(x.GetFoo());
+			Assert.IsTrue(x.OnWindows().GetVendorFoo());
 
-			x.SetFoo(false);
+			x.OnWindows().SetVendorFoo(false);
 
-			Assert.IsFalse(x.GetFoo());
+			Assert.IsFalse(x.OnWindows().GetVendorFoo());
 		}
 
 		[Test]
 		public void ConsumeVendorSetting()
 		{
 			var x = new MasterDetailPage();
-			x.OnWindows().SetFoo(false);
+			x.OnWindows().SetVendorFoo(false);
 
-			Assert.IsFalse(x.GetFoo());
-
-			Assert.IsFalse(x.OnWindows().GetFoo());
+			Assert.IsFalse(x.OnWindows().GetVendorFoo());
 		}
 
 		[Test]

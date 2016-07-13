@@ -288,21 +288,16 @@ namespace Xamarin.Forms
 	
 	public static class FakeVendorExtensions
 	{
-		public static readonly BindableProperty FooProperty = BindableProperty.Create("Foo", typeof(bool), typeof(MasterDetailPage), true);
+		public static readonly BindableProperty FooProperty = BindableProperty.Create("VendorFoo", typeof(bool), typeof(IMasterDetailPageWindowsConfiguration), true);
 
-		public static void SetFoo(this MasterDetailPage mdp, bool value)
+		public static void SetVendorFoo(this IMasterDetailPageWindowsConfiguration mdp, bool value)
 		{
-			mdp.SetValue(FooProperty, value);
+			mdp.Element.SetValue(FooProperty, value);
 		}
 
-		public static bool GetFoo(this MasterDetailPage mdp)
+		public static bool GetVendorFoo(this IMasterDetailPageWindowsConfiguration mdp)
 		{
-			return (bool)mdp.GetValue(FooProperty);
-		}
-
-		public static void SetVendorFoo(this IMasterDetailPageWindowsConfiguration config, bool value)
-		{
-			config.Element.SetFoo(value);
+			return (bool)mdp.Element.GetValue(FooProperty);
 		}
 	}
 
