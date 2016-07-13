@@ -4,7 +4,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_MasterDetailPageRenderer))]
-	public class MasterDetailPage : Page, IMasterDetailPageController, IMasterDetailPagePlatformConfiguration
+	public class MasterDetailPage : Page, IMasterDetailPageController, IElementConfiguration<MasterDetailPage>
 	{
 		public static readonly BindableProperty IsGestureEnabledProperty = BindableProperty.Create("IsGestureEnabled", typeof(bool), typeof(MasterDetailPage), true);
 
@@ -249,17 +249,17 @@ namespace Xamarin.Forms
 		readonly MasterDetailPageAndroidConfiguration _android;
 		readonly MasterDetailPageiOSConfiguration _ios;
 
-		public MasterDetailPageWindowsConfiguration OnWindows()
+		public IPlatformElementConfiguration<IConfigWindows, MasterDetailPage> OnWindows()
 		{
 			return _windows;
 		}
 
-		public MasterDetailPageAndroidConfiguration OnAndroid()
+		public IPlatformElementConfiguration<IConfigAndroid, MasterDetailPage> OnAndroid()
 		{
 			return _android;
 		}
 
-		public MasterDetailPageiOSConfiguration OniOS()
+		public IPlatformElementConfiguration<IConfigIOS, MasterDetailPage> OniOS()
 		{
 			return _ios;
 		}

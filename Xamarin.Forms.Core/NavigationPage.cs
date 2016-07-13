@@ -8,7 +8,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_NavigationPageRenderer))]
-	public class NavigationPage : Page, IPageContainer<Page>, INavigationPageController, INavigationPagePlatformConfiguration
+	public class NavigationPage : Page, IPageContainer<Page>, INavigationPageController, IElementConfiguration<NavigationPage> 
 	{
 		public static readonly BindableProperty BackButtonTitleProperty = BindableProperty.CreateAttached("BackButtonTitle", typeof(string), typeof(Page), null);
 
@@ -449,17 +449,17 @@ namespace Xamarin.Forms
 			}
 		}
 
-		public NavigationPageWindowsConfiguration OnWindows()
+		public IPlatformElementConfiguration<IConfigWindows, NavigationPage> OnWindows()
 		{
 			return _windows;
 		}
 
-		public NavigationPageAndroidConfiguration OnAndroid()
+		public IPlatformElementConfiguration<IConfigAndroid, NavigationPage> OnAndroid()
 		{
 			return _android;
 		}
 
-		public NavigationPageiOSConfiguration OniOS()
+		public IPlatformElementConfiguration<IConfigIOS, NavigationPage> OniOS()
 		{
 			return _iOS;
 		}

@@ -32,15 +32,12 @@ namespace Xamarin.Forms.Controls
 			};
 
 			// set some platform specific stuff
-			x.OnAndroid().SomeAndroidThing = 4;
-			x.OnAndroid().SomeOtherAndroidThing = 5;
+			x.OnAndroid().SetSomeAndroidThing(4);
+			x.OnAndroid().SetSomeOtherAndroidThing(5);
 
 			// or
 
-			x.OnAndroid().UseTabletDefaults().SetThing(5);
-
-			x.OnWindows()
-				.UsePartialCollapse();
+			x.OnAndroid().UseTabletDefaults().SetSomeOtherAndroidThing(5);
 
 			// Vendor Specific
 			x.OnWindows().SetVendorFoo(false);

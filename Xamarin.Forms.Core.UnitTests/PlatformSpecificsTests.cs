@@ -31,9 +31,9 @@ namespace Xamarin.Forms.Core.UnitTests
 		public void Properties()
 		{
 			var x = new MasterDetailPage();
-			x.OnAndroid().SomeAndroidThing = 42;
+			x.OnAndroid().SetSomeAndroidThing(42);
 
-			Assert.IsTrue(x.OnAndroid().SomeAndroidThing == 42);
+			Assert.IsTrue(x.OnAndroid().GetSomeAndroidThing() == 42);
 		}
 
 		[Test]
@@ -43,13 +43,23 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			x.OnAndroid().UseTabletDefaults();
 			
-			Assert.IsTrue(x.OnAndroid().SomeAndroidThing == 10);
-			Assert.IsTrue(x.OnAndroid().SomeOtherAndroidThing == 45);
+			Assert.IsTrue(x.OnAndroid().GetSomeAndroidThing() == 10);
+			Assert.IsTrue(x.OnAndroid().GetSomeOtherAndroidThing() == 45);
 
 			x.OnAndroid().UsePhabletDefaults();
 			
-			Assert.IsTrue(x.OnAndroid().SomeAndroidThing == 8);
-			Assert.IsTrue(x.OnAndroid().SomeOtherAndroidThing == 40);
+			Assert.IsTrue(x.OnAndroid().GetSomeAndroidThing() == 8);
+			Assert.IsTrue(x.OnAndroid().GetSomeOtherAndroidThing() == 40);
+		}
+
+		[Test]
+		public void NavigationPageiOSConfiguration()
+		{
+			var x = new NavigationPage();
+
+			x.OniOS().SetNavigationBarIsTranslucent(true);
+
+			Assert.IsTrue(x.OniOS().GetNavigationBarIsTranslucent()); 
 		}
 	}
 }

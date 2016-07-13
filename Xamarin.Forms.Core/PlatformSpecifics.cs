@@ -1,22 +1,36 @@
 namespace Xamarin.Forms
 {
-	public interface IElementConfiguration<out T> where T : Element
+	public interface IConfigElement<out T> where T : Element
+ 	{
+ 		T Element { get; }
+ 	}
+
+	public interface IPlatformElementConfiguration<out TPlatform, out TElement> : IConfigElement<TElement> 
+		where TPlatform : IConfigPlatform
+ 		where TElement : Element
+ 	{
+ 	}
+
+	public interface IElementConfiguration<out TElement> where TElement : Element
 	{
-		T Element { get; }
+		IPlatformElementConfiguration<IConfigWindows, TElement> OnWindows();
+ 		IPlatformElementConfiguration<IConfigAndroid, TElement> OnAndroid();
+ 		IPlatformElementConfiguration<IConfigIOS, TElement> OniOS();
 	}
+
+	public interface IConfigPlatform { }
+
+	public interface IConfigIOS : IConfigPlatform { }
+
+	public interface IConfigAndroid : IConfigPlatform { }
+
+	public interface IConfigWindows : IConfigPlatform { }
 
 	#region MDP
 
-	public interface IMasterDetailPagePlatformConfiguration
-	{
-		MasterDetailPageAndroidConfiguration OnAndroid();
-		MasterDetailPageiOSConfiguration OniOS();
-		MasterDetailPageWindowsConfiguration  OnWindows();
-	}
-
 	#region Windows
 
-	public class MasterDetailPageWindowsConfiguration : IElementConfiguration<MasterDetailPage>
+	public class MasterDetailPageWindowsConfiguration : IPlatformElementConfiguration<IConfigWindows, MasterDetailPage>
 	{
 		public MasterDetailPageWindowsConfiguration(MasterDetailPage element)
 		{
@@ -63,7 +77,7 @@ namespace Xamarin.Forms
 
 	#region Android
 
-	public class MasterDetailPageAndroidConfiguration : IElementConfiguration<MasterDetailPage>
+	public class MasterDetailPageAndroidConfiguration : IPlatformElementConfiguration<IConfigAndroid, MasterDetailPage>
 	{
 		public MasterDetailPageAndroidConfiguration(MasterDetailPage element)
 		{
@@ -71,86 +85,59 @@ namespace Xamarin.Forms
 		}
 
 		public MasterDetailPage Element { get; }
-
-		public int SomeAndroidThing
-		{
-			get { return (int)Element.GetValue(MasterDetailPageAndroidSpecifics.SomeAndroidThingProperty); }
-			set { Element.SetValue(MasterDetailPageAndroidSpecifics.SomeAndroidThingProperty, value); }
-		}
-
-		public int SomeOtherAndroidThing
-		{
-			get { return (int)Element.GetValue(MasterDetailPageAndroidSpecifics.SomeOtherAndroidThingProperty); }
-			set { Element.SetValue(MasterDetailPageAndroidSpecifics.SomeOtherAndroidThingProperty, value); }
-		}
 	}
 
 	public static class MasterDetailPageAndroidSpecifics
 	{
 		#region Properties
-
+		
 		public static readonly BindableProperty SomeAndroidThingProperty = BindableProperty.Create("SomeAndroidThing",
 			typeof(int),
 			typeof(MasterDetailPage), 1);
 
-		public static void SetSomeAndroidThing(this MasterDetailPage mdp, int value)
-		{
-			mdp.SetValue(SomeAndroidThingProperty, value);
-		}
-
-		public static int GetSomeAndroidThing(this MasterDetailPage mdp)
-		{
-			return (int)mdp.GetValue(SomeAndroidThingProperty);
-		}
-
 		public static readonly BindableProperty SomeOtherAndroidThingProperty =
 			BindableProperty.Create("SomeOtherAndroidThing", typeof(int),
 				typeof(MasterDetailPage), 1);
-
-		public static void SetSomeOtherAndroidThing(this MasterDetailPage mdp, int value)
-		{
-			mdp.SetValue(SomeOtherAndroidThingProperty, value);
-		}
-
-		public static int GetSomeOtherAndroidThing(this MasterDetailPage mdp)
-		{
-			return (int)mdp.GetValue(SomeOtherAndroidThingProperty);
-		}
-
+		
 		#endregion
 
 		#region Configuration
 
-		public static MasterDetailPageAndroidConfiguration UseTabletDefaults(
-			this MasterDetailPageAndroidConfiguration config)
-		{
-			config.SomeAndroidThing = 10;
-			config.SomeOtherAndroidThing = 45;
-
-			return config;
-		}
-
-		public static MasterDetailPageAndroidConfiguration UsePhabletDefaults(
-			this MasterDetailPageAndroidConfiguration config)
-		{
-			config.SomeAndroidThing = 8;
-			config.SomeOtherAndroidThing = 40;
-
-			return config;
-		}
-
-		public static MasterDetailPageAndroidConfiguration UsePhoneDefaults(this MasterDetailPageAndroidConfiguration config)
-		{
-			config.SomeAndroidThing = 5;
-			config.SomeOtherAndroidThing = 30;
-
-			return config;
-		}
-
-		public static MasterDetailPageAndroidConfiguration SetThing(this MasterDetailPageAndroidConfiguration config,
+		public static IPlatformElementConfiguration<IConfigAndroid, MasterDetailPage> SetSomeAndroidThing(this IPlatformElementConfiguration<IConfigAndroid, MasterDetailPage> config,
 			int value)
 		{
-			config.SomeAndroidThing = value;
+			config.Element.SetValue(SomeAndroidThingProperty, value);
+			return config;
+		}
+
+		public static IPlatformElementConfiguration<IConfigAndroid, MasterDetailPage> SetSomeOtherAndroidThing(this IPlatformElementConfiguration<IConfigAndroid, MasterDetailPage> config,
+			int value)
+		{
+			config.Element.SetValue(SomeOtherAndroidThingProperty, value);
+			return config;
+		}
+
+		public static int GetSomeAndroidThing(this IPlatformElementConfiguration<IConfigAndroid, MasterDetailPage> config)
+		{
+			return (int)config.Element.GetValue(SomeAndroidThingProperty);
+		}
+
+		public static int GetSomeOtherAndroidThing(this IPlatformElementConfiguration<IConfigAndroid, MasterDetailPage> config)
+		{
+			return (int)config.Element.GetValue(SomeOtherAndroidThingProperty);
+		}
+
+		public static IPlatformElementConfiguration<IConfigAndroid, MasterDetailPage> UseTabletDefaults(this IPlatformElementConfiguration<IConfigAndroid, MasterDetailPage> config)
+		{
+			config.SetSomeAndroidThing(10);
+			config.SetSomeOtherAndroidThing(45);
+			return config;
+		}
+
+		public static IPlatformElementConfiguration<IConfigAndroid, MasterDetailPage> UsePhabletDefaults(this IPlatformElementConfiguration<IConfigAndroid, MasterDetailPage> config)
+		{
+			config.SetSomeAndroidThing(8);
+			config.SetSomeOtherAndroidThing(40);
 			return config;
 		}
 
@@ -161,7 +148,7 @@ namespace Xamarin.Forms
 
 	#region iOS
 
-	public class MasterDetailPageiOSConfiguration : EmptyElementConfiguration<MasterDetailPage>
+	public class MasterDetailPageiOSConfiguration : EmptyConfiguration<IConfigIOS, MasterDetailPage>
 	{
 		public MasterDetailPageiOSConfiguration (MasterDetailPage element) : base(element)
 		{
@@ -174,16 +161,9 @@ namespace Xamarin.Forms
 
 	#region NavigationPage 
 
-	public interface INavigationPagePlatformConfiguration
-	{
-		NavigationPageAndroidConfiguration OnAndroid();
-		NavigationPageiOSConfiguration OniOS();
-		NavigationPageWindowsConfiguration OnWindows();
-	}
-
 	#region Windows
 
-	public class NavigationPageWindowsConfiguration : EmptyElementConfiguration<NavigationPage>
+	public class NavigationPageWindowsConfiguration : EmptyConfiguration<IConfigWindows, NavigationPage>
 	{
 		public NavigationPageWindowsConfiguration(NavigationPage element) : base(element)
 		{
@@ -194,7 +174,7 @@ namespace Xamarin.Forms
 
 	#region Android
 
-	public class NavigationPageAndroidConfiguration : EmptyElementConfiguration<NavigationPage>
+	public class NavigationPageAndroidConfiguration : EmptyConfiguration<IConfigAndroid, NavigationPage>
 	{
 		public NavigationPageAndroidConfiguration(NavigationPage element) : base(element)
 		{
@@ -205,7 +185,7 @@ namespace Xamarin.Forms
 
 	#region iOS
 
-	public class NavigationPageiOSConfiguration : IElementConfiguration<NavigationPage>
+	public class NavigationPageiOSConfiguration : IPlatformElementConfiguration<IConfigIOS, NavigationPage>
 	{
 		public NavigationPageiOSConfiguration(NavigationPage element)
 		{
@@ -213,12 +193,6 @@ namespace Xamarin.Forms
 		}
 
 		public NavigationPage Element { get; }
-
-		public bool IsNavigationBarTranslucent
-		{
-			get { return (bool)Element.GetValue(NavigationPageiOSpecifics.IsNavigationBarTranslucentProperty); }
-			set { Element.SetValue(NavigationPageiOSpecifics.IsNavigationBarTranslucentProperty, value); }
-		}
 	}
 
 	public static class NavigationPageiOSpecifics
@@ -227,14 +201,15 @@ namespace Xamarin.Forms
 			BindableProperty.Create("IsNavigationBarTranslucent", typeof(bool),
 				typeof(NavigationPage), false);
 
-		public static bool GetIsNavigationBarTranslucent(this NavigationPage navigationPage)
+		public static bool GetNavigationBarIsTranslucent(this IPlatformElementConfiguration<IConfigIOS, NavigationPage> config)
 		{
-			return (bool)navigationPage.GetValue(IsNavigationBarTranslucentProperty);
+			return (bool)config.Element.GetValue(IsNavigationBarTranslucentProperty);
 		}
 
-		public static void SetIsNavigationBarTranslucent(this NavigationPage navigationPage, bool value)
+		public static IPlatformElementConfiguration<IConfigIOS, NavigationPage> SetNavigationBarIsTranslucent(this IPlatformElementConfiguration<IConfigIOS, NavigationPage> config, bool value)
 		{
-			navigationPage.SetValue(IsNavigationBarTranslucentProperty, value);
+			config.Element.SetValue(IsNavigationBarTranslucentProperty, value);
+			return config;
 		}
 	}
 
@@ -242,28 +217,31 @@ namespace Xamarin.Forms
 
 	#endregion
 
-	public class EmptyElementConfiguration<T> : IElementConfiguration<T> where T : Element
+	public class EmptyConfiguration<TPlatform, TElement> : IPlatformElementConfiguration<TPlatform, TElement> 
+		where TPlatform : IConfigPlatform
+		where TElement : Element
+		
 	{
-		public EmptyElementConfiguration(T element)
+		public EmptyConfiguration(TElement element)
 		{
 			Element = element;
 		}
 
-		public T Element { get; }
+		public TElement Element { get; }
 	}
 
 	#region Vendor
 	
 	public static class FakeVendorExtensions
 	{
-		public static readonly BindableProperty FooProperty = BindableProperty.Create("VendorFoo", typeof(bool), typeof(MasterDetailPageWindowsConfiguration), true);
+		public static readonly BindableProperty FooProperty = BindableProperty.Create("VendorFoo", typeof(bool), typeof(IPlatformElementConfiguration<IConfigWindows, MasterDetailPage> ), true);
 
-		public static void SetVendorFoo(this MasterDetailPageWindowsConfiguration mdp, bool value)
+		public static void SetVendorFoo(this IPlatformElementConfiguration<IConfigWindows, MasterDetailPage>  mdp, bool value)
 		{
 			mdp.Element.SetValue(FooProperty, value);
 		}
 
-		public static bool GetVendorFoo(this MasterDetailPageWindowsConfiguration mdp)
+		public static bool GetVendorFoo(this IPlatformElementConfiguration<IConfigWindows, MasterDetailPage>  mdp)
 		{
 			return (bool)mdp.Element.GetValue(FooProperty);
 		}
