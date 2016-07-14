@@ -14,8 +14,9 @@ namespace Xamarin.Forms.Controls
 			var invalidImageFileName = new Button() {Text = "Load Invalid Image File Name" };
 			var invalidImageFile = new Button() {Text = "Load Invalid Image File" };
 			var fakeUri = new Button() {Text = "Load Image With Fake URI" };
-
 			var crashImage = new Button() {Text = "Image Handler Which Throws Exception" };
+
+			var uriInvalidImageData = new Button() {Text = "URI returning invalid image data" };
 
 			var image = new Image();
 
@@ -44,9 +45,14 @@ namespace Xamarin.Forms.Controls
 				image.Source = new FailImageSource();
 			};
 
+			uriInvalidImageData.Clicked += (sender, args) =>
+			{
+				image.Source = ImageSource.FromUri(new Uri("http://192.168.1.10:8543/fail"));
+			};
+
 			Content = new StackLayout()
 			{
-				Children = { image, legitImage, invalidImageFile, invalidImageFileName, fakeUri, crashImage }
+				Children = { image, legitImage, invalidImageFile, invalidImageFileName, fakeUri, crashImage, uriInvalidImageData }
 			};
 		}
 	}

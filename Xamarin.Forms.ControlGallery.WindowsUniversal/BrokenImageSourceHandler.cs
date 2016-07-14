@@ -7,7 +7,7 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal
 {
 	public sealed class BrokenImageSourceHandler : IImageSourceHandler
 	{
-		public Task<Windows.UI.Xaml.Media.ImageSource> LoadImageAsync(ImageSource imagesoure, CancellationToken cancellationToken = new CancellationToken())
+		public Task<Windows.UI.Xaml.Media.ImageSource> LoadImageAsync(ImageSource imagesource, CancellationToken cancellationToken = new CancellationToken())
 		{
 			throw new Exception("Fail");
 		}
