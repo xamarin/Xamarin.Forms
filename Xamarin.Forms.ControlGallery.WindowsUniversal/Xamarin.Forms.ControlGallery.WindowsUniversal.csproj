@@ -117,6 +117,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="coffee.png" />
+    <Content Include="invalidimage.jpg" />
     <Content Include="toolbar_close.png" />
     <None Include="project.json" />
     <Content Include="..\Xamarin.Forms.ControlGallery.WP8\bank.png">
@@ -156,6 +157,7 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="BrokenImageSourceHandler.cs" />
     <Compile Include="BrokenNativeControl.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
