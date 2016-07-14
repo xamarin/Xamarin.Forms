@@ -1,5 +1,7 @@
 using NUnit.Framework;
-
+using Xamarin.Forms.PlatformConfiguration.Android;
+using Xamarin.Forms.PlatformConfiguration.iOS;
+using ImAVendor.Forms.iOS;
 
 namespace Xamarin.Forms.Core.UnitTests
 {

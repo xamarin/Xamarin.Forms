@@ -1,5 +1,6 @@
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.PlatformConfiguration.iOS;
 
 namespace Xamarin.Forms.Controls
 {

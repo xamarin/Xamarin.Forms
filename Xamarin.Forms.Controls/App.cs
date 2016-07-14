@@ -4,6 +4,9 @@ using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 using Xamarin.Forms.Controls.Issues;
+using Xamarin.Forms.PlatformConfiguration.Android;
+using Xamarin.Forms.PlatformConfiguration.iOS;
+using ImAVendor.Forms.iOS;
 
 namespace Xamarin.Forms.Controls
 {

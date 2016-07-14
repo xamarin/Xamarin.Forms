@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.PlatformConfiguration.iOS;
 
 #if __UNIFIED__
 using UIKit;
@@ -21,9 +22,9 @@ using SizeF = CoreGraphics.CGSize;
 using PointF = CoreGraphics.CGPoint;
 
 #else
-using nfloat=System.Single;
-using nint=System.Int32;
-using nuint=System.UInt32;
+using nfloat = System.Single;
+using nint = System.Int32;
+using nuint = System.UInt32;
 #endif
 
 namespace Xamarin.Forms.Platform.iOS
@@ -498,7 +499,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (page == null)
 				throw new ArgumentNullException("page");
 			if (page == Current)
-				throw new NotSupportedException(); // should never happen as NavPage protecs against this
+				throw new NotSupportedException(); // should never happen as NavPage protects against this
 
 			var target = Platform.GetRenderer(page).ViewController.ParentViewController;
 

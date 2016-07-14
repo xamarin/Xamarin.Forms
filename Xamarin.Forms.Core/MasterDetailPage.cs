@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Xamarin.Forms.Platform;
+using Xamarin.Forms.PlatformConfiguration;
 
 namespace Xamarin.Forms
 {
