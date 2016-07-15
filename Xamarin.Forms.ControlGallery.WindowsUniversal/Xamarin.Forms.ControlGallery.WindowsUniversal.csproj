@@ -151,13 +151,15 @@
       <Link>seth.png</Link>
     </Content>
     <Content Include="Properties\default.rd.xml" />
+    <Compile Include="..\Xamarin.Forms.ControlGallery.Windows\BrokenImageSourceHandler.cs">
+      <Link>BrokenImageSourceHandler.cs</Link>
+    </Compile>
     <Compile Include="..\Xamarin.Forms.ControlGallery.Windows\StringProvider.cs">
       <Link>StringProvider.cs</Link>
     </Compile>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="BrokenImageSourceHandler.cs" />
     <Compile Include="BrokenNativeControl.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>

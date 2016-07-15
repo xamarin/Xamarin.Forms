@@ -14,8 +14,7 @@ namespace Xamarin.Forms.Platform.UWP
 namespace Xamarin.Forms.Platform.WinRT
 #endif
 {
-	// TODO EZH Change this class name so it makes sense
-	public sealed class ImageLoaderSourceHandler : IImageSourceHandler
+	public sealed class UriImageSourceHandler : IImageSourceHandler
 	{
 		public async Task<Windows.UI.Xaml.Media.ImageSource> LoadImageAsync(ImageSource imagesource, CancellationToken cancellationToken = new CancellationToken())
 		{
@@ -39,7 +38,7 @@ namespace Xamarin.Forms.Platform.WinRT
 				}
 				catch (Exception ex) 
 				{
-					Log.Warning("Image Loading", $"{nameof(ImageLoaderSourceHandler)} could not load {imageLoader.Uri}: {ex}");
+					Log.Warning("Image Loading", $"{nameof(UriImageSourceHandler)} could not load {imageLoader.Uri}: {ex}");
 
 					// According to https://msdn.microsoft.com/library/windows/apps/jj191522
 					// this can happen if the image data is bad or the app is close to its 
