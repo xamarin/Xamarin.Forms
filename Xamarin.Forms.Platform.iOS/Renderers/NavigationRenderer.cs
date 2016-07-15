@@ -443,7 +443,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateBackgroundColor();
 			else if (e.PropertyName == NavigationPage.CurrentPageProperty.PropertyName)
 				Current = ((NavigationPage)Element).CurrentPage;
-			else if (e.PropertyName == NavigationPageiOSpecifics.IsNavigationBarTranslucentProperty.PropertyName)
+			else if (e.PropertyName == NavigationPageConfig.IsNavigationBarTranslucentProperty.PropertyName)
 				UpdateTranslucent();
 		}
 

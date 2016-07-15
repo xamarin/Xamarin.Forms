@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Xamarin.Forms.Controls.Issues;
 using Xamarin.Forms.PlatformConfiguration.Android;
 using Xamarin.Forms.PlatformConfiguration.iOS;
-using ImAVendor.Forms.iOS;
+using ImAVendor.Forms.PlatformConfiguration.iOS;
 
 namespace Xamarin.Forms.Controls
 {

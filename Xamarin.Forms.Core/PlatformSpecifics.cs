@@ -171,11 +171,12 @@ namespace Xamarin.Forms.PlatformConfiguration.iOS
 {
 	public interface IConfigIOS : IConfigPlatform { }
 
-	public static class NavigationPageiOSpecifics
+	public static class NavigationPageConfig
 	{
 		public static readonly BindableProperty IsNavigationBarTranslucentProperty =
 			BindableProperty.Create("IsNavigationBarTranslucent", typeof(bool),
-				typeof(NavigationPage), false);
+				typeof(NavigationPageConfig), false);
+
 		public static bool GetNavigationBarIsTranslucent(this IPlatformElementConfiguration<IConfigIOS, NavigationPage> config)
 		{
 			return (bool)config.Element.GetValue(IsNavigationBarTranslucentProperty);
@@ -188,13 +189,15 @@ namespace Xamarin.Forms.PlatformConfiguration.iOS
 	}
 }
 
-namespace ImAVendor.Forms.iOS
+namespace ImAVendor.Forms.PlatformConfiguration.iOS
 {
 	using Xamarin.Forms.PlatformConfiguration;
 	using Xamarin.Forms.PlatformConfiguration.iOS;
 
-	public static class FakeVendorExtensions
+	public static class FakeVendorConfig
 	{
+		const string NavBarTranslucentEffectName = "XamControl.NavigationPageTranslucentEffect";
+
 		public static readonly BindableProperty FooProperty = BindableProperty.Create("VendorFoo", typeof(bool), typeof(IPlatformElementConfiguration<IConfigIOS, MasterDetailPage>), true);
 
 		public static void SetVendorFoo(this IPlatformElementConfiguration<IConfigIOS, MasterDetailPage> mdp, bool value)
@@ -205,6 +208,32 @@ namespace ImAVendor.Forms.iOS
 		public static bool GetVendorFoo(this IPlatformElementConfiguration<IConfigIOS, MasterDetailPage> mdp)
 		{
 			return (bool)mdp.Element.GetValue(FooProperty);
+		}
+
+
+		public static readonly BindableProperty IsNavigationBarTranslucentProperty =
+	BindableProperty.Create("IsNavigationBarTranslucent", typeof(bool),
+		typeof(FakeVendorConfig), false);
+
+		public static bool GetNavigationBarIsTranslucentVendor(this IPlatformElementConfiguration<IConfigIOS, NavigationPage> config)
+		{
+			AttachEffect(config);
+			return (bool)config.Element.GetValue(IsNavigationBarTranslucentProperty);
+		}
+		public static IPlatformElementConfiguration<IConfigIOS, NavigationPage> SetNavigationBarIsTranslucentVendor(this IPlatformElementConfiguration<IConfigIOS, NavigationPage> config, bool value)
+		{
+			AttachEffect(config);
+			config.Element.SetValue(IsNavigationBarTranslucentProperty, value);
+			return config;
+		}
+
+		static void AttachEffect(IPlatformElementConfiguration<IConfigIOS, NavigationPage> config)
+		{
+			IElementController controller = config.Element;
+			if (controller.EffectIsAttached(NavBarTranslucentEffectName))
+				return;
+
+			config.Element.Effects.Add(Effect.Resolve(NavBarTranslucentEffectName));
 		}
 	}
 }
