@@ -93,7 +93,6 @@
     <Compile Include="ControlGalleryPages\NestedNativeControlGalleryPage.cs" />
     <Compile Include="ControlGalleryPages\PanGestureGalleryPage.cs" />
     <Compile Include="CoreGalleryPages\KeyboardCoreGalleryPage.cs" />
-    <Compile Include="FailImageSource.cs" />
     <Compile Include="GalleryPages\BackgroundImageGallery.cs" />
     <Compile Include="GalleryPages\ControlTemplatePage.cs" />
     <Compile Include="GalleryPages\ControlTemplateXamlPage.xaml.cs">
