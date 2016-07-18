@@ -211,29 +211,43 @@ namespace ImAVendor.Forms.PlatformConfiguration.iOS
 		}
 
 
+		public static bool GetIsNavigationBarTranslucent(BindableObject element)
+		{
+			return (bool)element.GetValue(IsNavigationBarTranslucentProperty);
+		}
+
 		public static readonly BindableProperty IsNavigationBarTranslucentProperty =
-	BindableProperty.Create("IsNavigationBarTranslucent", typeof(bool),
-		typeof(FakeVendorConfig), false);
+	BindableProperty.CreateAttached("IsNavigationBarTranslucent", typeof(bool),
+		typeof(FakeVendorConfig), false, propertyChanging: IsNavigationBarTranslucentPropertyChanging);
+
+		public static void SetIsNavigationBarTranslucent(BindableObject element, bool value)
+		{
+			element.SetValue(IsNavigationBarTranslucentProperty, value);
+		}
 
 		public static bool GetNavigationBarIsTranslucentVendor(this IPlatformElementConfiguration<IConfigIOS, NavigationPage> config)
 		{
-			AttachEffect(config);
-			return (bool)config.Element.GetValue(IsNavigationBarTranslucentProperty);
+			return GetIsNavigationBarTranslucent(config.Element);
 		}
+
 		public static IPlatformElementConfiguration<IConfigIOS, NavigationPage> SetNavigationBarIsTranslucentVendor(this IPlatformElementConfiguration<IConfigIOS, NavigationPage> config, bool value)
 		{
-			AttachEffect(config);
-			config.Element.SetValue(IsNavigationBarTranslucentProperty, value);
+			SetIsNavigationBarTranslucent(config.Element, value);
 			return config;
 		}
 
-		static void AttachEffect(IPlatformElementConfiguration<IConfigIOS, NavigationPage> config)
+		static void IsNavigationBarTranslucentPropertyChanging(BindableObject bindable, object oldValue, object newValue)
 		{
-			IElementController controller = config.Element;
-			if (controller.EffectIsAttached(NavBarTranslucentEffectName))
+			AttachEffect(bindable as NavigationPage);
+		}
+
+		static void AttachEffect(NavigationPage element)
+		{
+			IElementController controller = element;
+			if (controller == null || controller.EffectIsAttached(NavBarTranslucentEffectName))
 				return;
 
-			config.Element.Effects.Add(Effect.Resolve(NavBarTranslucentEffectName));
+			element.Effects.Add(Effect.Resolve(NavBarTranslucentEffectName));
 		}
 	}
 }
