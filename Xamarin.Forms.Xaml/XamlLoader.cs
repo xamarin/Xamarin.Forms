@@ -39,7 +39,7 @@ namespace Xamarin.Forms.Xaml
 	{
 		static readonly Dictionary<Type, string> XamlResources = new Dictionary<Type, string>();
 		internal static bool DoNotThrowOnExceptions { get; set; }
-		internal static IXamlFileProvider XamlFileProvider { get; set; }
+		internal static Func<Type, string> XamlFileProvider { get; set; }
 
 		public static void Load(object view, Type callingType)
 		{
@@ -75,7 +75,7 @@ namespace Xamarin.Forms.Xaml
 			}
 		}
 
-		[Obsolete ("Use the XamlFileProvider to provide xaml files")]
+		[Obsolete ("Use the XamlFileProvider to provide xaml files. We will remove this when Cycle 8 hits Stable.")]
 		public static object Create (string xaml, bool doNotThrow = false)
 		{
 			object inflatedView = null;
@@ -122,7 +122,7 @@ namespace Xamarin.Forms.Xaml
 			string xaml = null;
 
 			//the Previewer might want to provide it's own xaml for this... let them do that
-			if (XamlFileProvider != null && (xaml = XamlFileProvider.GetXamlFor(type)) != null)
+			if (XamlFileProvider != null && (xaml = XamlFileProvider(type)) != null)
 				return xaml;
 
 			var assembly = type.GetTypeInfo().Assembly;
