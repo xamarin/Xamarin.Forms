@@ -22,6 +22,12 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		[TestFixture]
 		public class Tests
 		{
+			[SetUp]
+			public void SetUp()
+			{
+				XamlLoader.XamlFileProvider = null;
+			}
+
 			[TestCase(false)]
 			[TestCase(true)]
 			public void XamlContentIsReplaced(bool useCompiledXaml)

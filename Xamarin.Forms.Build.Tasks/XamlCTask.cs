@@ -295,6 +295,7 @@ namespace Xamarin.Forms.Build.Tasks
 						il.Emit(OpCodes.Ldarg_0);
 						var initCompRuntime = typeDef.Methods.FirstOrDefault(md => md.Name == "__InitComponentRuntime");
 						il.Emit(OpCodes.Call, initCompRuntime);
+						il.Emit(OpCodes.Ret);
 						il.Append(nop);
 
 						var visitorContext = new ILContext(il, body);
