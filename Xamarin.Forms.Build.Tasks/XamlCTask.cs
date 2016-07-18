@@ -232,6 +232,16 @@ namespace Xamarin.Forms.Build.Tasks
 					}
 					LogLine(2, "");
 
+					if (typeDef.Methods.FirstOrDefault(md => md.Name == "__InitComponentRuntime") != null) {
+						LogLine(2, "   __InitComponentRuntime already exists... not duplicating");
+					} else {
+						LogString(2, "   Duplicating {0}.InitializeComponent () into {0}.__InitComponentRuntime ... ", typeDef.Name);
+						var initCompRuntime = new MethodDefinition("__InitComponentRuntime", initComp.Attributes, initComp.ReturnType);
+						initCompRuntime.Body = initComp.Body;
+						typeDef.Methods.Add(initCompRuntime);
+						LogLine(2, "done.");
+					}
+
 					LogString(2, "   Parsing Xaml... ");
 					var rootnode = ParseXaml(resource.GetResourceStream(), typeDef);
 					if (rootnode == null)
