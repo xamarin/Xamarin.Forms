@@ -33,13 +33,20 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Xml;
 
+namespace Xamarin.Forms.Xaml.Internals
+{
+	public static class XamlLoader
+	{
+		public static Func<Type, string> XamlFileProvider { get; internal set; }
+		internal static bool DoNotThrowOnExceptions { get; set; }
+	}
+}
+
 namespace Xamarin.Forms.Xaml
 {
 	internal static class XamlLoader
 	{
 		static readonly Dictionary<Type, string> XamlResources = new Dictionary<Type, string>();
-		internal static bool DoNotThrowOnExceptions { get; set; }
-		internal static Func<Type, string> XamlFileProvider { get; set; }
 
 		public static void Load(object view, Type callingType)
 		{
@@ -68,7 +75,7 @@ namespace Xamarin.Forms.Xaml
 					XamlParser.ParseXaml (rootnode, reader);
 					Visit (rootnode, new HydratationContext {
 						RootElement = view,
-						DoNotThrowOnExceptions = XamlLoader.DoNotThrowOnExceptions
+						DoNotThrowOnExceptions = Xamarin.Forms.Xaml.Internals.XamlLoader.DoNotThrowOnExceptions
 					});
 					break;
 				}
@@ -122,7 +129,7 @@ namespace Xamarin.Forms.Xaml
 			string xaml = null;
 
 			//the Previewer might want to provide it's own xaml for this... let them do that
-			if (XamlFileProvider != null && (xaml = XamlFileProvider(type)) != null)
+			if (Xamarin.Forms.Xaml.Internals.XamlLoader.XamlFileProvider != null && (xaml = Xamarin.Forms.Xaml.Internals.XamlLoader.XamlFileProvider(type)) != null)
 				return xaml;
 
 			var assembly = type.GetTypeInfo().Assembly;

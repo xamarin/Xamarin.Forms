@@ -25,7 +25,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			[SetUp]
 			public void SetUp()
 			{
-				XamlLoader.XamlFileProvider = null;
+				Xamarin.Forms.Xaml.Internals.XamlLoader.XamlFileProvider = null;
 			}
 
 			[TestCase(false)]
@@ -35,7 +35,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				var layout = new XamlLoaderGetXamlForTypeTests(useCompiledXaml);
 				Assert.That(layout.Content, Is.TypeOf<Button>());
 
-				XamlLoader.XamlFileProvider = (t) => {
+				Xamarin.Forms.Xaml.Internals.XamlLoader.XamlFileProvider = (t) => {
 					if (t == typeof(XamlLoaderGetXamlForTypeTests))
 						return @"
 	<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
