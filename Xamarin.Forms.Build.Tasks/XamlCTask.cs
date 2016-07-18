@@ -259,6 +259,44 @@ namespace Xamarin.Forms.Build.Tasks
 						var body = new MethodBody(initComp);
 						var il = body.GetILProcessor();
 						il.Emit(OpCodes.Nop);
+
+						// Generating branching code for the Previewer
+						//	IL_0007:  call class [mscorlib]System.Func`2<class [mscorlib]System.Type,string> class [Xamarin.Forms.Xaml]Xamarin.Forms.Xaml.XamlLoader::get_XamlFileProvider()
+						//  IL_000c:  brfalse IL_0031
+						//  IL_0011:  call class [mscorlib]System.Func`2<class [mscorlib]System.Type,string> class [Xamarin.Forms.Xaml]Xamarin.Forms.Xaml.XamlLoader::get_XamlFileProvider()
+						//  IL_0016:  ldarg.0 
+						//  IL_0017:  call instance class [mscorlib]System.Type object::GetType()
+						//  IL_001c:  callvirt instance !1 class [mscorlib]System.Func`2<class [mscorlib]System.Type, string>::Invoke(!0)
+						//  IL_0021:  brfalse IL_0031
+						//  IL_0026:  ldarg.0 
+						//  IL_0027:  call instance void class Xamarin.Forms.Xaml.UnitTests.XamlLoaderGetXamlForTypeTests::__InitComponentRuntime()
+						//  IL_002c:  ret
+						//  IL_0031:  nop
+
+						var nop = Instruction.Create(OpCodes.Nop);
+						var getXamlFileProvider = body.Method.Module.Import(body.Method.Module.Import(typeof(XamlLoader))
+								.Resolve()
+								.Properties.FirstOrDefault(pd => pd.Name == "XamlFileProvider")
+						        .GetMethod);
+						il.Emit(OpCodes.Call, getXamlFileProvider);
+						il.Emit(OpCodes.Brfalse, nop);
+						il.Emit(OpCodes.Call, getXamlFileProvider);
+						il.Emit(OpCodes.Ldarg_0);
+						var getType = body.Method.Module.Import(body.Method.Module.Import(typeof(object))
+										  .Resolve()
+						                  .Methods.FirstOrDefault(md => md.Name == "GetType"));
+						il.Emit(OpCodes.Call, getType);
+						var func = body.Method.Module.Import(body.Method.Module.Import(typeof(Func<Type, string>))
+								 .Resolve()
+								 .Methods.FirstOrDefault(md => md.Name == "Invoke"));
+						func = func.ResolveGenericParameters(body.Method.Module.Import(typeof(Func<Type, string>)), body.Method.Module);
+						il.Emit(OpCodes.Callvirt, func);
+						il.Emit(OpCodes.Brfalse, nop);
+						il.Emit(OpCodes.Ldarg_0);
+						var initCompRuntime = typeDef.Methods.FirstOrDefault(md => md.Name == "__InitComponentRuntime");
+						il.Emit(OpCodes.Call, initCompRuntime);
+						il.Append(nop);
+
 						var visitorContext = new ILContext(il, body);
 
 						rootnode.Accept(new XamlNodeVisitor((node, parent) => node.Parent = parent), null);
