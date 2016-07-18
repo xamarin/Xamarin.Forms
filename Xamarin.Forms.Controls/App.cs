@@ -35,15 +35,15 @@ namespace Xamarin.Forms.Controls
 			};
 
 			// set some platform specific stuff
-			x.On<IConfigAndroid>().SetSomeAndroidThing(4);
-			x.On<IConfigAndroid>().SetSomeOtherAndroidThing(5);
+			x.On<AndroidPlatform>().SetSomeAndroidThing(4);
+			x.On<AndroidPlatform>().SetSomeOtherAndroidThing(5);
 
 			// or
 
-			x.On<IConfigAndroid>().UseTabletDefaults().SetSomeOtherAndroidThing(5);
+			x.On<AndroidPlatform>().UseTabletDefaults().SetSomeOtherAndroidThing(5);
 
 			// Vendor Specific
-			x.On<IConfigIOS>().SetVendorFoo(false);
+			x.On<iOSPlatform>().SetVendorFoo(false);
 
 			MainPage = x;
 		}

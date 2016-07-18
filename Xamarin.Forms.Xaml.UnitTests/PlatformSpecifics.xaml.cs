@@ -27,7 +27,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			public void PlatformSpecificPropertyIsSet(bool useCompiledXaml)
 			{
 				var layout = new PlatformSpecific(useCompiledXaml);
-				Assert.AreEqual(layout.On<IConfigAndroid>().GetSomeAndroidThing(), 9999);
+				Assert.AreEqual(layout.On<AndroidPlatform>().GetSomeAndroidThing(), 9999);
 			}
 		}
 	}

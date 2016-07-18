@@ -454,7 +454,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 			}
 
-			NavigationBar.Translucent = ((NavigationPage)Element).On<IConfigIOS>().GetNavigationBarIsTranslucent();
+			NavigationBar.Translucent = ((NavigationPage)Element).On<iOSPlatform>().GetNavigationBarIsTranslucent();
 		}
 
 		void InsertPageBefore(Page page, Page before)

@@ -13,29 +13,29 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			var x = new MasterDetailPage();
 
-			Assert.IsTrue(x.On<IConfigIOS>().GetVendorFoo());
+			Assert.IsTrue(x.On<iOSPlatform>().GetVendorFoo());
 
-			x.On<IConfigIOS>().SetVendorFoo(false);
+			x.On<iOSPlatform>().SetVendorFoo(false);
 
-			Assert.IsFalse(x.On<IConfigIOS>().GetVendorFoo());
+			Assert.IsFalse(x.On<iOSPlatform>().GetVendorFoo());
 		}
 
 		[Test]
 		public void ConsumeVendorSetting()
 		{
 			var x = new MasterDetailPage();
-			x.On<IConfigIOS>().SetVendorFoo(false);
+			x.On<iOSPlatform>().SetVendorFoo(false);
 
-			Assert.IsFalse(x.On<IConfigIOS>().GetVendorFoo());
+			Assert.IsFalse(x.On<iOSPlatform>().GetVendorFoo());
 		}
 
 		[Test]
 		public void Properties()
 		{
 			var x = new MasterDetailPage();
-			x.On<IConfigAndroid>().SetSomeAndroidThing(42);
+			x.On<AndroidPlatform>().SetSomeAndroidThing(42);
 
-			Assert.IsTrue(x.On<IConfigAndroid>().GetSomeAndroidThing() == 42);
+			Assert.IsTrue(x.On<AndroidPlatform>().GetSomeAndroidThing() == 42);
 		}
 
 		[Test]
@@ -43,15 +43,15 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			var x = new MasterDetailPage();
 
-			x.On<IConfigAndroid>().UseTabletDefaults();
+			x.On<AndroidPlatform>().UseTabletDefaults();
 
-			Assert.IsTrue(x.On<IConfigAndroid>().GetSomeAndroidThing() == 10);
-			Assert.IsTrue(x.On<IConfigAndroid>().GetSomeOtherAndroidThing() == 45);
+			Assert.IsTrue(x.On<AndroidPlatform>().GetSomeAndroidThing() == 10);
+			Assert.IsTrue(x.On<AndroidPlatform>().GetSomeOtherAndroidThing() == 45);
 
-			x.On<IConfigAndroid>().UsePhabletDefaults();
+			x.On<AndroidPlatform>().UsePhabletDefaults();
 			
-			Assert.IsTrue(x.On<IConfigAndroid>().GetSomeAndroidThing() == 8);
-			Assert.IsTrue(x.On<IConfigAndroid>().GetSomeOtherAndroidThing() == 40);
+			Assert.IsTrue(x.On<AndroidPlatform>().GetSomeAndroidThing() == 8);
+			Assert.IsTrue(x.On<AndroidPlatform>().GetSomeOtherAndroidThing() == 40);
 		}
 
 		[Test]
@@ -59,9 +59,9 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			var x = new NavigationPage();
 
-			x.On<IConfigIOS>().SetNavigationBarIsTranslucent(true);
+			x.On<iOSPlatform>().SetNavigationBarIsTranslucent(true);
 
-			Assert.IsTrue(x.On<IConfigIOS>().GetNavigationBarIsTranslucent()); 
+			Assert.IsTrue(x.On<iOSPlatform>().GetNavigationBarIsTranslucent()); 
 		}
 	}
 }

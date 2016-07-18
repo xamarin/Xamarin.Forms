@@ -25,8 +25,8 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			var button = new Button { Text = "Toggle Translucent", BackgroundColor = Color.Yellow };
 
-			button.Clicked += (sender, args) => On<IConfigIOS>()
-				.SetNavigationBarIsTranslucentVendor(!On<IConfigIOS>().GetNavigationBarIsTranslucentVendor());
+			button.Clicked += (sender, args) => On<iOSPlatform>()
+				.SetNavigationBarIsTranslucentVendor(!On<iOSPlatform>().GetNavigationBarIsTranslucentVendor());
 
 			var content = new ContentPage
 			{

@@ -53,7 +53,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			//{
 			//	return;
 			//}
-			navBar.Translucent = ((NavigationPage)Element).On<IConfigIOS>().GetNavigationBarIsTranslucentVendor();
+			navBar.Translucent = ((NavigationPage)Element).On<iOSPlatform>().GetNavigationBarIsTranslucentVendor();
 		}
 
 		UINavigationBar GetNavigationBar()
