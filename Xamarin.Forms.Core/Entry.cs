@@ -25,6 +25,9 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty FontAttributesProperty = BindableProperty.Create("FontAttributes", typeof(FontAttributes), typeof(Entry), FontAttributes.None);
 
+		public static new readonly BindableProperty IsFocusedProperty =
+				BindableProperty.Create (nameof (IsFocused), typeof (bool), typeof (Entry), false, BindingMode.TwoWay, propertyChanged: OnIsFocusedChanged);
+
 		public TextAlignment HorizontalTextAlignment
 		{
 			get { return (TextAlignment)GetValue(HorizontalTextAlignmentProperty); }
@@ -80,6 +83,11 @@ namespace Xamarin.Forms
 			set { SetValue(FontSizeProperty, value); }
 		}
 
+		public new bool IsFocused {
+			get { return (bool)GetValue (IsFocusedProperty); }
+			set { SetValue (IsFocusedProperty, value); }
+		}
+
 		public event EventHandler Completed;
 
 		public event EventHandler<TextChangedEventArgs> TextChanged;
@@ -94,6 +102,18 @@ namespace Xamarin.Forms
 			var entry = (Entry)bindable;
 
 			entry.TextChanged?.Invoke(entry, new TextChangedEventArgs((string)oldValue, (string)newValue));
+		}
+
+		public static void OnIsFocusedChanged (object sender, object oldValue, object newvalue)
+		{
+			OnIsFocusedChanged ((VisualElement)sender, (bool)oldValue, (bool)newvalue);
+		}
+
+		public static void OnIsFocusedChanged (VisualElement sender, bool oldValue, bool newValue)
+		{
+			if (newValue)
+				sender.Focus ();
+			sender.SetValue (IsFocusedProperty, false);
 		}
 	}
 }
