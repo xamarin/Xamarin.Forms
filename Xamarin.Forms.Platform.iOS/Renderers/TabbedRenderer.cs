@@ -215,7 +215,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				UIImage image = null;
 				if (!string.IsNullOrEmpty(page.Icon))
-					image = new UIImage(page.Icon);
+					image = UIImage.FromBundle(page.Icon);
 
 				// the new UITabBarItem forces redraw, setting the UITabBarItem.Image does not
 				renderer.ViewController.TabBarItem = new UITabBarItem(page.Title, image, 0);

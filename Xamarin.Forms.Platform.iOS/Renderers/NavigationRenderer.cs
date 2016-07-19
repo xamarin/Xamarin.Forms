@@ -383,7 +383,7 @@ namespace Xamarin.Forms.Platform.iOS
 				try
 				{
 					//UIImage ctor throws on file not found if MonoTouch.ObjCRuntime.Class.ThrowOnInitFailure is true;
-					pack.NavigationItem.TitleView = new UIImageView(new UIImage(titleIcon));
+					pack.NavigationItem.TitleView = new UIImageView(UIImage.FromBundle(titleIcon));
 				}
 				catch
 				{
@@ -653,7 +653,7 @@ namespace Xamarin.Forms.Platform.iOS
 				try
 				{
 					containerController.NavigationItem.LeftBarButtonItem =
-						new UIBarButtonItem(new UIImage(_parentMasterDetailPage.Master.Icon), UIBarButtonItemStyle.Plain,
+						new UIBarButtonItem(UIImage.FromBundle(_parentMasterDetailPage.Master.Icon), UIBarButtonItemStyle.Plain,
 						(o, e) => _parentMasterDetailPage.IsPresented = !_parentMasterDetailPage.IsPresented);
 				}
 				catch (Exception)
