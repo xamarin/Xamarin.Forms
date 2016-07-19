@@ -73,95 +73,135 @@ namespace Xamarin.Forms.PlatformConfiguration
 
 namespace Xamarin.Forms.PlatformConfiguration.Android
 {
+	using FormsElement = Xamarin.Forms.MasterDetailPage;
+
 	public interface AndroidPlatform : IConfigPlatform { }
 
-	public static class MasterDetailPageConfig
+	public static class MasterDetailPage
 	{
-		#region Properties
-
-		public static readonly BindableProperty SomeAndroidThingProperty = BindableProperty.Create("SomeAndroidThing",
-			typeof(int),
-			typeof(MasterDetailPageConfig), 1);
+		public static readonly BindableProperty SomeAndroidThingProperty =
+			BindableProperty.Create("SomeAndroidThing", typeof(int),
+			typeof(MasterDetailPage), 1);
 
 		public static readonly BindableProperty SomeOtherAndroidThingProperty =
 			BindableProperty.Create("SomeOtherAndroidThing", typeof(int),
-				typeof(MasterDetailPageConfig), 1);
+			typeof(MasterDetailPage), 1);
 
-		#endregion
+		public static int GetSomeAndroidThing(BindableObject element)
+		{
+			return (int)element.GetValue(SomeAndroidThingProperty);
+		}
 
-		#region Configuration
+		public static void SetSomeAndroidThing(BindableObject element, int value)
+		{
+			element.SetValue(SomeAndroidThingProperty, value);
+		}
 
-		public static IPlatformElementConfiguration<AndroidPlatform, MasterDetailPage> SetSomeAndroidThing(this IPlatformElementConfiguration<AndroidPlatform, MasterDetailPage> config,
+		public static int GetSomeOtherAndroidThing(BindableObject element)
+		{
+			return (int)element.GetValue(SomeOtherAndroidThingProperty);
+		}
+
+		public static void SetSomeOtherAndroidThing(BindableObject element, int value)
+		{
+			element.SetValue(SomeOtherAndroidThingProperty, value);
+		}
+
+		public static int GetSomeAndroidThing(this IPlatformElementConfiguration<AndroidPlatform, FormsElement> config)
+		{
+			return (int)config.Element.GetValue(SomeAndroidThingProperty);
+		}
+
+		public static IPlatformElementConfiguration<AndroidPlatform, FormsElement> SetSomeAndroidThing(this IPlatformElementConfiguration<AndroidPlatform, FormsElement> config,
 			int value)
 		{
 			config.Element.SetValue(SomeAndroidThingProperty, value);
 			return config;
 		}
 
-		public static IPlatformElementConfiguration<AndroidPlatform, MasterDetailPage> SetSomeOtherAndroidThing(this IPlatformElementConfiguration<AndroidPlatform, MasterDetailPage> config,
-			int value)
+		public static int GetSomeOtherAndroidThing(this IPlatformElementConfiguration<AndroidPlatform, FormsElement> config)
+		{
+			return (int)config.Element.GetValue(SomeOtherAndroidThingProperty);
+		}
+
+		public static IPlatformElementConfiguration<AndroidPlatform, FormsElement> SetSomeOtherAndroidThing(this IPlatformElementConfiguration<AndroidPlatform, FormsElement> config, int value)
 		{
 			config.Element.SetValue(SomeOtherAndroidThingProperty, value);
 			return config;
 		}
 
-		public static int GetSomeAndroidThing(this IPlatformElementConfiguration<AndroidPlatform, MasterDetailPage> config)
-		{
-			return (int)config.Element.GetValue(SomeAndroidThingProperty);
-		}
-
-		public static int GetSomeOtherAndroidThing(this IPlatformElementConfiguration<AndroidPlatform, MasterDetailPage> config)
-		{
-			return (int)config.Element.GetValue(SomeOtherAndroidThingProperty);
-		}
-
-		public static IPlatformElementConfiguration<AndroidPlatform, MasterDetailPage> UseTabletDefaults(this IPlatformElementConfiguration<AndroidPlatform, MasterDetailPage> config)
+		public static IPlatformElementConfiguration<AndroidPlatform, FormsElement> UseTabletDefaults(this IPlatformElementConfiguration<AndroidPlatform, FormsElement> config)
 		{
 			config.SetSomeAndroidThing(10);
 			config.SetSomeOtherAndroidThing(45);
 			return config;
 		}
 
-		public static IPlatformElementConfiguration<AndroidPlatform, MasterDetailPage> UsePhabletDefaults(this IPlatformElementConfiguration<AndroidPlatform, MasterDetailPage> config)
+		public static IPlatformElementConfiguration<AndroidPlatform, FormsElement> UsePhabletDefaults(this IPlatformElementConfiguration<AndroidPlatform, FormsElement> config)
 		{
 			config.SetSomeAndroidThing(8);
 			config.SetSomeOtherAndroidThing(40);
 			return config;
 		}
-
-		#endregion
 	}
 }
 
+// Use the platform specific namespace to hide the platform specific properties from renderers that don't care about them
 namespace Xamarin.Forms.PlatformConfiguration.Windows
 {
+	// Alias the Forms Element to make implementation easier 
+	// and to distinguish from the configuration class.
+	using FormsElement = Xamarin.Forms.MasterDetailPage;
+
 	public interface WindowsPlatform : IConfigPlatform { }
 
+	// define any required enums, etc.
 	public enum CollapseStyle
 	{
 		None,
 		Partial
 	}
-	public static class MasterDetailPageConfig
+
+	// Create static configuration class
+	public static class MasterDetailPage
 	{
-		public static readonly BindableProperty CollapseStyleProperty = BindableProperty.Create("CollapseStyle",
-			typeof(CollapseStyle),
-			typeof(MasterDetailPageConfig), CollapseStyle.None);
+		// Create Attached BindableProperty on the Xamarin.Forms.PlatformConfiguration.Windows.MasterDetailPage class
+		public static readonly BindableProperty CollapseStyleProperty =
+			BindableProperty.CreateAttached("CollapseStyle", typeof(CollapseStyle),
+			typeof(MasterDetailPage), CollapseStyle.None);
 
-		public static CollapseStyle GetCollapseStyle(this IPlatformElementConfiguration<WindowsPlatform, MasterDetailPage> config)
+		// Implement required Get/Set methods for XAML binding to Attached BindableProperty.
+		public static CollapseStyle GetCollapseStyle(BindableObject element)
 		{
-			return (CollapseStyle)config.Element.GetValue(CollapseStyleProperty);
+			return (CollapseStyle)element.GetValue(CollapseStyleProperty);
 		}
 
-		public static void SetCollapseStyle(this IPlatformElementConfiguration<WindowsPlatform, MasterDetailPage> config, CollapseStyle value)
+		public static void SetCollapseStyle(BindableObject element, CollapseStyle value)
 		{
-			config.Element.SetValue(CollapseStyleProperty, value);
+			element.SetValue(CollapseStyleProperty, value);
 		}
 
-		public static IPlatformElementConfiguration<WindowsPlatform, MasterDetailPage> UsePartialCollapse(
-			this IPlatformElementConfiguration<WindowsPlatform, MasterDetailPage> config)
+		// Implement extension methods for the discoverable fluent implementation
+		// Target the WindowsPlatform and the FormsElement (i.e., Xamarin.Forms.MasterDetailPage)
+		public static CollapseStyle GetCollapseStyle(this IPlatformElementConfiguration<WindowsPlatform, FormsElement> config)
 		{
-			config.Element.SetValue(CollapseStyleProperty, CollapseStyle.Partial);
+			// Recommended: put all logic in the Get/Set methods defined above and simply call those from the
+			// extension methods.
+			return GetCollapseStyle(config.Element);
+		}
+
+		public static IPlatformElementConfiguration<WindowsPlatform, FormsElement> UseCollapseStyle(this IPlatformElementConfiguration<WindowsPlatform, FormsElement> config, CollapseStyle value)
+		{
+			SetCollapseStyle(config.Element, value);
+			return config;
+
+		}
+
+		// Optionally create convenience methods for quick configuration
+		public static IPlatformElementConfiguration<WindowsPlatform, FormsElement> UsePartialCollapse(
+			this IPlatformElementConfiguration<WindowsPlatform, FormsElement> config)
+		{
+			SetCollapseStyle(config.Element, CollapseStyle.Partial);
 			return config;
 		}
 	}
@@ -169,21 +209,34 @@ namespace Xamarin.Forms.PlatformConfiguration.Windows
 
 namespace Xamarin.Forms.PlatformConfiguration.iOS
 {
+	using FormsElement = Xamarin.Forms.NavigationPage;
+
 	public interface iOSPlatform : IConfigPlatform { }
 
-	public static class NavigationPageConfig
+	public static class NavigationPage
 	{
 		public static readonly BindableProperty IsNavigationBarTranslucentProperty =
 			BindableProperty.Create("IsNavigationBarTranslucent", typeof(bool),
-				typeof(NavigationPageConfig), false);
+			typeof(NavigationPage), false);
 
-		public static bool GetNavigationBarIsTranslucent(this IPlatformElementConfiguration<iOSPlatform, NavigationPage> config)
+		public static bool GetIsNavigationBarTranslucent(BindableObject element)
 		{
-			return (bool)config.Element.GetValue(IsNavigationBarTranslucentProperty);
+			return (bool)element.GetValue(IsNavigationBarTranslucentProperty);
 		}
-		public static IPlatformElementConfiguration<iOSPlatform, NavigationPage> SetNavigationBarIsTranslucent(this IPlatformElementConfiguration<iOSPlatform, NavigationPage> config, bool value)
+
+		public static void SetIsNavigationBarTranslucent(BindableObject element, bool value)
 		{
-			config.Element.SetValue(IsNavigationBarTranslucentProperty, value);
+			element.SetValue(IsNavigationBarTranslucentProperty, value);
+		}
+
+		public static bool IsNavigationBarTranslucent(this IPlatformElementConfiguration<iOSPlatform, FormsElement> config)
+		{
+			return GetIsNavigationBarTranslucent(config.Element);
+		}
+
+		public static IPlatformElementConfiguration<iOSPlatform, FormsElement> EnableTranslucentNavigationBar(this IPlatformElementConfiguration<iOSPlatform, FormsElement> config, bool value)
+		{
+			SetIsNavigationBarTranslucent(config.Element, value);
 			return config;
 		}
 	}
@@ -193,44 +246,67 @@ namespace ImAVendor.Forms.PlatformConfiguration.iOS
 {
 	using Xamarin.Forms.PlatformConfiguration;
 	using Xamarin.Forms.PlatformConfiguration.iOS;
+	using FormsElement = Xamarin.Forms.MasterDetailPage;
 
-	public static class FakeVendorConfig
+	public static class MasterDetailPage
+	{
+		public static readonly BindableProperty FooProperty =
+			BindableProperty.Create("VendorFoo", typeof(bool),
+			typeof(MasterDetailPage), true);
+
+		public static void SetVendorFoo(BindableObject element, bool value)
+		{
+			element.SetValue(FooProperty, value);
+		}
+
+		public static bool GetVendorFoo(BindableObject element)
+		{
+			return (bool)element.GetValue(FooProperty);
+		}
+
+		public static IPlatformElementConfiguration<iOSPlatform, FormsElement> SetVendorFoo(this IPlatformElementConfiguration<iOSPlatform, FormsElement> config, bool value)
+		{
+			SetVendorFoo(config.Element, value);
+			return config;
+		}
+
+		public static bool GetVendorFoo(this IPlatformElementConfiguration<iOSPlatform, FormsElement> mdp)
+		{
+			return GetVendorFoo(mdp.Element);
+		}
+	}
+}
+
+namespace ImAVendor.Forms.PlatformConfiguration.iOS
+{
+	using Xamarin.Forms.PlatformConfiguration;
+	using Xamarin.Forms.PlatformConfiguration.iOS;
+	using FormsElement = Xamarin.Forms.NavigationPage;
+
+	public static class NavigationPage
 	{
 		const string NavBarTranslucentEffectName = "XamControl.NavigationPageTranslucentEffect";
 
-		public static readonly BindableProperty FooProperty = BindableProperty.Create("VendorFoo", typeof(bool), typeof(IPlatformElementConfiguration<iOSPlatform, MasterDetailPage>), true);
-
-		public static void SetVendorFoo(this IPlatformElementConfiguration<iOSPlatform, MasterDetailPage> mdp, bool value)
-		{
-			mdp.Element.SetValue(FooProperty, value);
-		}
-
-		public static bool GetVendorFoo(this IPlatformElementConfiguration<iOSPlatform, MasterDetailPage> mdp)
-		{
-			return (bool)mdp.Element.GetValue(FooProperty);
-		}
-
+		public static readonly BindableProperty IsNavigationBarTranslucentProperty =
+			BindableProperty.CreateAttached("IsNavigationBarTranslucent", typeof(bool),
+			typeof(NavigationPage), false, propertyChanging: IsNavigationBarTranslucentPropertyChanging);
 
 		public static bool GetIsNavigationBarTranslucent(BindableObject element)
 		{
 			return (bool)element.GetValue(IsNavigationBarTranslucentProperty);
 		}
 
-		public static readonly BindableProperty IsNavigationBarTranslucentProperty =
-	BindableProperty.CreateAttached("IsNavigationBarTranslucent", typeof(bool),
-		typeof(FakeVendorConfig), false, propertyChanging: IsNavigationBarTranslucentPropertyChanging);
-
 		public static void SetIsNavigationBarTranslucent(BindableObject element, bool value)
 		{
 			element.SetValue(IsNavigationBarTranslucentProperty, value);
 		}
 
-		public static bool GetNavigationBarIsTranslucentVendor(this IPlatformElementConfiguration<iOSPlatform, NavigationPage> config)
+		public static bool IsNavigationBarTranslucentVendor(this IPlatformElementConfiguration<iOSPlatform, FormsElement> config)
 		{
 			return GetIsNavigationBarTranslucent(config.Element);
 		}
 
-		public static IPlatformElementConfiguration<iOSPlatform, NavigationPage> SetNavigationBarIsTranslucentVendor(this IPlatformElementConfiguration<iOSPlatform, NavigationPage> config, bool value)
+		public static IPlatformElementConfiguration<iOSPlatform, FormsElement> EnableTranslucentNavigationBarVendor(this IPlatformElementConfiguration<iOSPlatform, FormsElement> config, bool value)
 		{
 			SetIsNavigationBarTranslucent(config.Element, value);
 			return config;
@@ -238,10 +314,10 @@ namespace ImAVendor.Forms.PlatformConfiguration.iOS
 
 		static void IsNavigationBarTranslucentPropertyChanging(BindableObject bindable, object oldValue, object newValue)
 		{
-			AttachEffect(bindable as NavigationPage);
+			AttachEffect(bindable as FormsElement);
 		}
 
-		static void AttachEffect(NavigationPage element)
+		static void AttachEffect(FormsElement element)
 		{
 			IElementController controller = element;
 			if (controller == null || controller.EffectIsAttached(NavBarTranslucentEffectName))

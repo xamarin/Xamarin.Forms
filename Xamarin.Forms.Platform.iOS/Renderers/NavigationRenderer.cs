@@ -443,7 +443,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateBackgroundColor();
 			else if (e.PropertyName == NavigationPage.CurrentPageProperty.PropertyName)
 				Current = ((NavigationPage)Element).CurrentPage;
-			else if (e.PropertyName == NavigationPageConfig.IsNavigationBarTranslucentProperty.PropertyName)
+			else if (e.PropertyName == PlatformConfiguration.iOS.NavigationPage.IsNavigationBarTranslucentProperty.PropertyName)
 				UpdateTranslucent();
 		}
 
@@ -454,7 +454,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 			}
 
-			NavigationBar.Translucent = ((NavigationPage)Element).On<iOSPlatform>().GetNavigationBarIsTranslucent();
+			NavigationBar.Translucent = ((NavigationPage)Element).On<iOSPlatform>().IsNavigationBarTranslucent();
 		}
 
 		void InsertPageBefore(Page page, Page before)

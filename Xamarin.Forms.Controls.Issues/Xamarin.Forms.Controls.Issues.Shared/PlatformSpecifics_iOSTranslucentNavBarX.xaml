@@ -5,5 +5,5 @@
              xmlns:ios="clr-namespace:ImAVendor.Forms.PlatformConfiguration.iOS;assembly=Xamarin.Forms.Core"
              x:Class="Xamarin.Forms.Controls.Issues.PlatformSpecifics_iOSTranslucentNavBarX"
 						 BackgroundColor="Pink"
-						 ios:FakeVendorConfig.IsNavigationBarTranslucent="true">
+						 ios:NavigationPage.IsNavigationBarTranslucent="true">
 </local:TestNavigationPage>

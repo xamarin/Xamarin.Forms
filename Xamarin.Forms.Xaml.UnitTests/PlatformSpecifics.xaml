@@ -4,7 +4,7 @@
 			 xmlns:forms="http://xamarin.com/schemas/2014/forms"
 			 xmlns:android="clr-namespace:Xamarin.Forms.PlatformConfiguration.Android;assembly=Xamarin.Forms.Core"
 			 x:Class="Xamarin.Forms.Xaml.UnitTests.PlatformSpecific"
-			 android:MasterDetailPageConfig.SomeAndroidThing="9999"
+			 android:MasterDetailPage.SomeAndroidThing="9999"
 			 x:Name="TestMDP">
 	<forms:MasterDetailPage.Master>
 		<forms:ContentPage x:Name="masterPage" Title="Platform Specifics" />

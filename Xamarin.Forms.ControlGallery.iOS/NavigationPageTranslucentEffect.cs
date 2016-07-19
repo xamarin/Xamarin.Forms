@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using VendorConfig = ImAVendor.Forms.PlatformConfiguration.iOS;
 using ImAVendor.Forms.PlatformConfiguration.iOS;
 using UIKit;
 using Xamarin.Forms;
@@ -34,7 +35,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
 
 			try
 			{
-				if (e.PropertyName == FakeVendorConfig.IsNavigationBarTranslucentProperty.PropertyName)
+				if (e.PropertyName == VendorConfig.NavigationPage.IsNavigationBarTranslucentProperty.PropertyName)
 					UpdateTranslucent();
 			}
 			catch (Exception ex)
@@ -53,7 +54,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			//{
 			//	return;
 			//}
-			navBar.Translucent = ((NavigationPage)Element).On<iOSPlatform>().GetNavigationBarIsTranslucentVendor();
+			navBar.Translucent = ((NavigationPage)Element).On<iOSPlatform>().IsNavigationBarTranslucentVendor();
 		}
 
 		UINavigationBar GetNavigationBar()
