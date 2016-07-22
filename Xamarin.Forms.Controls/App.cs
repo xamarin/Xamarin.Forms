@@ -3,10 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-using Xamarin.Forms.Controls.Issues;
-using Xamarin.Forms.PlatformConfiguration.Android;
-using Xamarin.Forms.PlatformConfiguration.iOS;
-using ImAVendor.Forms.PlatformConfiguration.iOS;
+using Xamarin.Forms.PlatformConfiguration.Windows;
 
 namespace Xamarin.Forms.Controls
 {
@@ -35,15 +32,8 @@ namespace Xamarin.Forms.Controls
 			};
 
 			// set some platform specific stuff
-			x.On<AndroidPlatform>().SetSomeAndroidThing(4);
-			x.On<AndroidPlatform>().SetSomeOtherAndroidThing(5);
-
-			// or
-
-			x.On<AndroidPlatform>().UseTabletDefaults().SetSomeOtherAndroidThing(5);
-
-			// Vendor Specific
-			x.On<iOSPlatform>().SetVendorFoo(false);
+			x.On<WindowsPlatform>().UseCollapseStyle(CollapseStyle.None);
+			x.On<WindowsPlatform>().UsePartialCollapse();
 
 			MainPage = x;
 		}

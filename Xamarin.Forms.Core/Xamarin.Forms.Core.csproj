@@ -97,9 +97,7 @@
     <Compile Include="PlatformConfiguration\IConfigPlatform.cs" />
     <Compile Include="PlatformConfiguration\IElementConfiguration.cs" />
     <Compile Include="PlatformConfiguration\IPlatformElementConfiguration.cs" />
-    <Compile Include="PlatformConfiguration\Android\MasterDetailPage.cs" />
     <Compile Include="PlatformConfiguration\PlatformConfigurationRegistry.cs" />
-    <Compile Include="PlatformConfiguration\VendorTest.cs" />
     <Compile Include="IFontElement.cs" />
     <Compile Include="DependencyAttribute.cs" />
     <Compile Include="DependencyFetchTarget.cs" />

@@ -2,8 +2,8 @@
 <local:TestNavigationPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Xamarin.Forms.Controls"
-             xmlns:ios="clr-namespace:ImAVendor.Forms.PlatformConfiguration.iOS;assembly=Xamarin.Forms.Core"
+             xmlns:ios="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOS;assembly=Xamarin.Forms.Core"
              x:Class="Xamarin.Forms.Controls.Issues.PlatformSpecifics_iOSTranslucentNavBarX"
-						 BackgroundColor="Pink"
-						 ios:NavigationPage.IsNavigationBarTranslucent="true">
+			 BackgroundColor="Pink"
+			 ios:NavigationPage.IsNavigationBarTranslucent="true">
 </local:TestNavigationPage>

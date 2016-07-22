@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 using Xamarin.Forms;
-using Xamarin.Forms.PlatformConfiguration.Android;
+using Xamarin.Forms.PlatformConfiguration.Windows;
 using NUnit.Framework;
 
 namespace Xamarin.Forms.Xaml.UnitTests
@@ -27,7 +27,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			public void PlatformSpecificPropertyIsSet(bool useCompiledXaml)
 			{
 				var layout = new PlatformSpecific(useCompiledXaml);
-				Assert.AreEqual(layout.On<AndroidPlatform>().GetSomeAndroidThing(), 9999);
+				Assert.AreEqual(layout.On<WindowsPlatform>().GetCollapseStyle(), CollapseStyle.Partial);
 			}
 		}
 	}
