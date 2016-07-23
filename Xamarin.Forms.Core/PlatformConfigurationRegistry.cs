@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Xamarin.Forms.PlatformConfiguration
+namespace Xamarin.Forms
 {
 	/// <summary>
 	/// Helper that handles storing and lookup of platform specifics implementations

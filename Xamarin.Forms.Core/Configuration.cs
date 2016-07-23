@@ -1,5 +1,5 @@
 
-namespace Xamarin.Forms.PlatformConfiguration
+namespace Xamarin.Forms
 {
 	public class Configuration<TPlatform, TElement> : IPlatformElementConfiguration<TPlatform, TElement>
 			where TPlatform : IConfigPlatform

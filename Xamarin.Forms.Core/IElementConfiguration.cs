@@ -1,5 +1,5 @@
 
-namespace Xamarin.Forms.PlatformConfiguration
+namespace Xamarin.Forms
 {
 	public interface IElementConfiguration<out TElement> where TElement : Element
 	{
