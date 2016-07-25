@@ -3,11 +3,13 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_TabbedPageRenderer))]
-	public class TabbedPage : MultiPage<Page>
+	public class TabbedPage : MultiPage<Page>, IElementConfiguration<TabbedPage>
 	{
 		public static readonly BindableProperty BarBackgroundColorProperty = BindableProperty.Create(nameof(BarBackgroundColor), typeof(Color), typeof(TabbedPage), Color.Default);
 
 		public static readonly BindableProperty BarTextColorProperty = BindableProperty.Create(nameof(BarTextColor), typeof(Color), typeof(TabbedPage), Color.Default);
+
+		readonly PlatformConfigurationRegistry<TabbedPage> _platformConfigurationRegistry;
 
 		public Color BarBackgroundColor
 		{
@@ -40,6 +42,16 @@ namespace Xamarin.Forms
 				page.Title = item.ToString();
 
 			return page;
+		}
+
+		public TabbedPage()
+		{
+			_platformConfigurationRegistry = new PlatformConfigurationRegistry<TabbedPage>(this);
+		}
+
+		public new IPlatformElementConfiguration<T, TabbedPage> On<T>() where T : IConfigPlatform
+		{
+			return _platformConfigurationRegistry.On<T>();
 		}
 	}
 }

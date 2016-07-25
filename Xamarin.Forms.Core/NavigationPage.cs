@@ -446,7 +446,7 @@ namespace Xamarin.Forms
 
 		readonly PlatformConfigurationRegistry<NavigationPage> _platformConfigurationRegistry;
 
-		public IPlatformElementConfiguration<T, NavigationPage> On<T>() where T : IConfigPlatform
+		public new IPlatformElementConfiguration<T, NavigationPage> On<T>() where T : IConfigPlatform
 		{
 			return _platformConfigurationRegistry.On<T>();
 		}
