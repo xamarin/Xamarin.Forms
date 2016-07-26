@@ -227,7 +227,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				_collectionChangeHandler = HandleGestureRecognizerCollectionChanged;
 
 			var observableCollection = (ObservableCollection<IGestureRecognizer>)view.GestureRecognizers;
-			observableCollection.CollectionChanged += _collectionChangeHandler;
+			if (observableCollection != null)
+			{
+				observableCollection.CollectionChanged += _collectionChangeHandler;
+			}
 		}
 
 		void UnsubscribeGestureRecognizers(VisualElement element)
