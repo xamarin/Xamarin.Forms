@@ -87,11 +87,10 @@
     <Compile Include="DateChangedEventArgs.cs" />
     <Compile Include="DelegateLogListener.cs" />
     <Compile Include="EnumerableExtensions.cs" />
-    <Compile Include="PlatformConfiguration\Android\AndroidPlatform.cs" />
-    <Compile Include="PlatformConfiguration\iOS\iOSPlatform.cs" />
-    <Compile Include="PlatformConfiguration\iOS\NavigationPage.cs" />
-    <Compile Include="PlatformConfiguration\Windows\MasterDetailPage.cs" />
-    <Compile Include="PlatformConfiguration\Windows\CollapseStyle.cs" />
+    <Compile Include="PlatformConfiguration\ExtensionPoints.cs" />
+    <Compile Include="PlatformConfiguration\iOSSpecific\NavigationPage.cs" />
+    <Compile Include="PlatformConfiguration\WindowsSpecific\MasterDetailPage.cs" />
+    <Compile Include="PlatformConfiguration\WindowsSpecific\CollapseStyle.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="IConfigElement.cs" />
     <Compile Include="IConfigPlatform.cs" />
@@ -206,7 +205,6 @@
     <Compile Include="PanUpdatedEventArgs.cs" />
     <Compile Include="Performance.cs" />
     <Compile Include="PinchGestureUpdatedEventArgs.cs" />
-    <Compile Include="PlatformConfiguration\Windows\WindowsPlatform.cs" />
     <Compile Include="PlatformEffect.cs" />
     <Compile Include="PointTypeConverter.cs" />
     <Compile Include="Internals\PreserveAttribute.cs" />
@@ -437,7 +435,9 @@
       <Name>Xamarin.Forms.Platform</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="PlatformConfiguration\AndroidSpecific\" />
+  </ItemGroup>
   <PropertyGroup>
     <PostBuildEvent>
     </PostBuildEvent>

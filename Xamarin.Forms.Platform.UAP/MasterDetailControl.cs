@@ -2,6 +2,7 @@
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
+using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -51,6 +52,8 @@ namespace Xamarin.Forms.Platform.UWP
 			DetailTitleVisibility = Visibility.Collapsed;
 			if (Device.Idiom != TargetIdiom.Phone)
 				MasterToolbarVisibility = Visibility.Collapsed;
+
+			CollapseStyle = CollapseStyle.None;
 		}
 
 		public FrameworkElement Detail
@@ -148,6 +151,8 @@ namespace Xamarin.Forms.Platform.UWP
 			set { SetValue(ShouldShowSplitModeProperty, value); }
 		}
 
+		public CollapseStyle CollapseStyle { get; set; }
+
 		public Brush ToolbarBackground
 		{
 			get { return (Brush)GetValue(ToolbarBackgroundProperty); }
@@ -216,7 +221,9 @@ namespace Xamarin.Forms.Platform.UWP
 			if (_split == null)
 				return;
 
-			_split.DisplayMode = ShouldShowSplitMode ? SplitViewDisplayMode.Inline : SplitViewDisplayMode.Overlay;
+			_split.DisplayMode = ShouldShowSplitMode 
+				? SplitViewDisplayMode.Inline 
+				: CollapseStyle == CollapseStyle.None ? SplitViewDisplayMode.Overlay : SplitViewDisplayMode.CompactOverlay;
 		}
 	}
 }

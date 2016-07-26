@@ -1,7 +1,7 @@
 
-namespace Xamarin.Forms.PlatformConfiguration.iOS
+namespace Xamarin.Forms.PlatformConfiguration.iOSSpecific
 {
-	using FormsElement = Xamarin.Forms.NavigationPage;
+	using FormsElement = Forms.NavigationPage;
 
 	public static class NavigationPage
 	{
@@ -19,12 +19,12 @@ namespace Xamarin.Forms.PlatformConfiguration.iOS
 			element.SetValue(IsNavigationBarTranslucentProperty, value);
 		}
 
-		public static bool IsNavigationBarTranslucent(this IPlatformElementConfiguration<iOSPlatform, FormsElement> config)
+		public static bool IsNavigationBarTranslucent(this IPlatformElementConfiguration<iOS, FormsElement> config)
 		{
 			return GetIsNavigationBarTranslucent(config.Element);
 		}
 
-		public static IPlatformElementConfiguration<iOSPlatform, FormsElement> EnableTranslucentNavigationBar(this IPlatformElementConfiguration<iOSPlatform, FormsElement> config, bool value)
+		public static IPlatformElementConfiguration<iOS, FormsElement> EnableTranslucentNavigationBar(this IPlatformElementConfiguration<iOS, FormsElement> config, bool value)
 		{
 			SetIsNavigationBarTranslucent(config.Element, value);
 			return config;

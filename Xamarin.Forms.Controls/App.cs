@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-using Xamarin.Forms.PlatformConfiguration.Windows;
+using Xamarin.Forms.PlatformConfiguration;
+using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 
 namespace Xamarin.Forms.Controls
 {
@@ -25,22 +26,15 @@ namespace Xamarin.Forms.Controls
 			_testCloudService = DependencyService.Get<ITestCloudService>();
 			InitInsights();
 
-			var x = new MasterDetailPage
+			MainPage = new MasterDetailPage
 			{
 				Master = new ContentPage { Title = "Master", BackgroundColor = Color.Red },
 				Detail = CoreGallery.GetMainPage()
 			};
-
-			// set some platform specific stuff
-			x.On<WindowsPlatform>().UseCollapseStyle(CollapseStyle.None);
-			x.On<WindowsPlatform>().UsePartialCollapse();
-
-			MainPage = x;
 		}
 
 		protected override void OnAppLinkRequestReceived(Uri uri)
 		{
-
 			var appDomain = "http://" + AppName.ToLowerInvariant() + "/";
 
 			if (!uri.ToString().ToLowerInvariant().StartsWith(appDomain))

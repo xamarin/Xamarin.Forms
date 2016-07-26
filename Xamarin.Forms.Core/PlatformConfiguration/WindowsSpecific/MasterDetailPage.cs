@@ -1,7 +1,7 @@
 
-namespace Xamarin.Forms.PlatformConfiguration.Windows
+namespace Xamarin.Forms.PlatformConfiguration.WindowsSpecific
 {
-	using FormsElement = Xamarin.Forms.MasterDetailPage;
+	using FormsElement = Forms.MasterDetailPage;
 
 	public static class MasterDetailPage
 	{
@@ -19,20 +19,20 @@ namespace Xamarin.Forms.PlatformConfiguration.Windows
 			element.SetValue(CollapseStyleProperty, value);
 		}
 
-		public static CollapseStyle GetCollapseStyle(this IPlatformElementConfiguration<WindowsPlatform, FormsElement> config)
+		public static CollapseStyle GetCollapseStyle(this IPlatformElementConfiguration<Windows, FormsElement> config)
 		{
 			return GetCollapseStyle(config.Element);
 		}
 
-		public static IPlatformElementConfiguration<WindowsPlatform, FormsElement> UseCollapseStyle(this IPlatformElementConfiguration<WindowsPlatform, FormsElement> config, CollapseStyle value)
+		public static IPlatformElementConfiguration<Windows, FormsElement> UseCollapseStyle(this IPlatformElementConfiguration<Windows, FormsElement> config, CollapseStyle value)
 		{
 			SetCollapseStyle(config.Element, value);
 			return config;
 
 		}
 
-		public static IPlatformElementConfiguration<WindowsPlatform, FormsElement> UsePartialCollapse(
-			this IPlatformElementConfiguration<WindowsPlatform, FormsElement> config)
+		public static IPlatformElementConfiguration<Windows, FormsElement> UsePartialCollapse(
+			this IPlatformElementConfiguration<Windows, FormsElement> config)
 		{
 			SetCollapseStyle(config.Element, CollapseStyle.Partial);
 			return config;

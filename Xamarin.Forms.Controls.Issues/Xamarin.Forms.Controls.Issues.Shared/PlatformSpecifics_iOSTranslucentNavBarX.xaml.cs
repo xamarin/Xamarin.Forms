@@ -1,7 +1,8 @@
 ﻿using Xamarin.Forms;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-using Xamarin.Forms.PlatformConfiguration.iOS;
+using Xamarin.Forms.PlatformConfiguration;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using Xamarin.Forms.Xaml;
 
 namespace Xamarin.Forms.Controls.Issues
@@ -24,8 +25,7 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			var button = new Button { Text = "Toggle Translucent", BackgroundColor = Color.Yellow };
 
-			button.Clicked += (sender, args) => On<iOSPlatform>()
-				.EnableTranslucentNavigationBar(!On<iOSPlatform>().IsNavigationBarTranslucent());
+			button.Clicked += (sender, args) => On<iOS>().EnableTranslucentNavigationBar(!On<iOS>().IsNavigationBarTranslucent());
 
 			var content = new ContentPage
 			{

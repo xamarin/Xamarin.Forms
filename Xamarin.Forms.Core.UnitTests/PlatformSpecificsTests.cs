@@ -1,7 +1,8 @@
 using NUnit.Framework;
-using Xamarin.Forms.PlatformConfiguration.Android;
-using Xamarin.Forms.PlatformConfiguration.iOS;
 using ImAVendor.Forms.PlatformConfiguration.iOS;
+using Xamarin.Forms.PlatformConfiguration;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 
 namespace Xamarin.Forms.Core.UnitTests
 {
@@ -13,29 +14,29 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			var x = new MasterDetailPage();
 
-			Assert.IsTrue(x.On<iOSPlatform>().GetVendorFoo());
+			Assert.IsTrue(x.On<iOS>().GetVendorFoo());
 
-			x.On<iOSPlatform>().SetVendorFoo(false);
+			x.On<iOS>().SetVendorFoo(false);
 
-			Assert.IsFalse(x.On<iOSPlatform>().GetVendorFoo());
+			Assert.IsFalse(x.On<iOS>().GetVendorFoo());
 		}
 
 		[Test]
 		public void ConsumeVendorSetting()
 		{
 			var x = new MasterDetailPage();
-			x.On<iOSPlatform>().SetVendorFoo(false);
+			x.On<iOS>().SetVendorFoo(false);
 
-			Assert.IsFalse(x.On<iOSPlatform>().GetVendorFoo());
+			Assert.IsFalse(x.On<iOS>().GetVendorFoo());
 		}
 
 		[Test]
 		public void Properties()
 		{
 			var x = new MasterDetailPage();
-			x.On<AndroidPlatform>().SetSomeAndroidThing(42);
+			x.On<Android>().SetSomeAndroidThing(42);
 
-			Assert.IsTrue(x.On<AndroidPlatform>().GetSomeAndroidThing() == 42);
+			Assert.IsTrue(x.On<Android>().GetSomeAndroidThing() == 42);
 		}
 
 		[Test]
@@ -43,15 +44,15 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			var x = new MasterDetailPage();
 
-			x.On<AndroidPlatform>().UseTabletDefaults();
+			x.On<Android>().UseTabletDefaults();
 
-			Assert.IsTrue(x.On<AndroidPlatform>().GetSomeAndroidThing() == 10);
-			Assert.IsTrue(x.On<AndroidPlatform>().GetSomeOtherAndroidThing() == 45);
+			Assert.IsTrue(x.On<Android>().GetSomeAndroidThing() == 10);
+			Assert.IsTrue(x.On<Android>().GetSomeOtherAndroidThing() == 45);
 
-			x.On<AndroidPlatform>().UsePhabletDefaults();
+			x.On<Android>().UsePhabletDefaults();
 			
-			Assert.IsTrue(x.On<AndroidPlatform>().GetSomeAndroidThing() == 8);
-			Assert.IsTrue(x.On<AndroidPlatform>().GetSomeOtherAndroidThing() == 40);
+			Assert.IsTrue(x.On<Android>().GetSomeAndroidThing() == 8);
+			Assert.IsTrue(x.On<Android>().GetSomeOtherAndroidThing() == 40);
 		}
 
 		[Test]
@@ -59,9 +60,9 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			var x = new NavigationPage();
 
-			x.On<iOSPlatform>().EnableTranslucentNavigationBar(true);
+			x.On<iOS>().EnableTranslucentNavigationBar(true);
 
-			Assert.IsTrue(x.On<iOSPlatform>().IsNavigationBarTranslucent()); 
+			Assert.IsTrue(x.On<iOS>().IsNavigationBarTranslucent()); 
 		}
 	}
 }
@@ -70,7 +71,6 @@ namespace ImAVendor.Forms.PlatformConfiguration.iOS
 {
 	using Xamarin.Forms;
 	using Xamarin.Forms.PlatformConfiguration;
-	using Xamarin.Forms.PlatformConfiguration.iOS;
 	using FormsElement = Xamarin.Forms.MasterDetailPage;
 
 	public static class MasterDetailPage
@@ -89,13 +89,13 @@ namespace ImAVendor.Forms.PlatformConfiguration.iOS
 			return (bool)element.GetValue(FooProperty);
 		}
 
-		public static IPlatformElementConfiguration<iOSPlatform, FormsElement> SetVendorFoo(this IPlatformElementConfiguration<iOSPlatform, FormsElement> config, bool value)
+		public static IPlatformElementConfiguration<iOS, FormsElement> SetVendorFoo(this IPlatformElementConfiguration<iOS, FormsElement> config, bool value)
 		{
 			SetVendorFoo(config.Element, value);
 			return config;
 		}
 
-		public static bool GetVendorFoo(this IPlatformElementConfiguration<iOSPlatform, FormsElement> mdp)
+		public static bool GetVendorFoo(this IPlatformElementConfiguration<iOS, FormsElement> mdp)
 		{
 			return GetVendorFoo(mdp.Element);
 		}
@@ -106,7 +106,6 @@ namespace ImAVendor.Forms.PlatformConfiguration.iOS
 {
 	using Xamarin.Forms;
 	using Xamarin.Forms.PlatformConfiguration;
-	using Xamarin.Forms.PlatformConfiguration.iOS;
 	using FormsElement = Xamarin.Forms.NavigationPage;
 
 	public static class NavigationPage
@@ -127,12 +126,12 @@ namespace ImAVendor.Forms.PlatformConfiguration.iOS
 			element.SetValue(IsNavigationBarTranslucentProperty, value);
 		}
 
-		public static bool IsNavigationBarTranslucentVendor(this IPlatformElementConfiguration<iOSPlatform, FormsElement> config)
+		public static bool IsNavigationBarTranslucentVendor(this IPlatformElementConfiguration<iOS, FormsElement> config)
 		{
 			return GetIsNavigationBarTranslucent(config.Element);
 		}
 
-		public static IPlatformElementConfiguration<iOSPlatform, FormsElement> EnableTranslucentNavigationBarVendor(this IPlatformElementConfiguration<iOSPlatform, FormsElement> config, bool value)
+		public static IPlatformElementConfiguration<iOS, FormsElement> EnableTranslucentNavigationBarVendor(this IPlatformElementConfiguration<iOS, FormsElement> config, bool value)
 		{
 			SetIsNavigationBarTranslucent(config.Element, value);
 			return config;
@@ -154,7 +153,7 @@ namespace ImAVendor.Forms.PlatformConfiguration.iOS
 	}
 }
 
-namespace Xamarin.Forms.PlatformConfiguration.Android
+namespace Xamarin.Forms.PlatformConfiguration.AndroidSpecific
 {
 	using FormsElement = Xamarin.Forms.MasterDetailPage;
 
@@ -188,37 +187,37 @@ namespace Xamarin.Forms.PlatformConfiguration.Android
 			element.SetValue(SomeOtherAndroidThingProperty, value);
 		}
 
-		public static int GetSomeAndroidThing(this IPlatformElementConfiguration<AndroidPlatform, FormsElement> config)
+		public static int GetSomeAndroidThing(this IPlatformElementConfiguration<Android, FormsElement> config)
 		{
 			return (int)config.Element.GetValue(SomeAndroidThingProperty);
 		}
 
-		public static IPlatformElementConfiguration<AndroidPlatform, FormsElement> SetSomeAndroidThing(this IPlatformElementConfiguration<AndroidPlatform, FormsElement> config,
+		public static IPlatformElementConfiguration<Android, FormsElement> SetSomeAndroidThing(this IPlatformElementConfiguration<Android, FormsElement> config,
 			int value)
 		{
 			config.Element.SetValue(SomeAndroidThingProperty, value);
 			return config;
 		}
 
-		public static int GetSomeOtherAndroidThing(this IPlatformElementConfiguration<AndroidPlatform, FormsElement> config)
+		public static int GetSomeOtherAndroidThing(this IPlatformElementConfiguration<Android, FormsElement> config)
 		{
 			return (int)config.Element.GetValue(SomeOtherAndroidThingProperty);
 		}
 
-		public static IPlatformElementConfiguration<AndroidPlatform, FormsElement> SetSomeOtherAndroidThing(this IPlatformElementConfiguration<AndroidPlatform, FormsElement> config, int value)
+		public static IPlatformElementConfiguration<Android, FormsElement> SetSomeOtherAndroidThing(this IPlatformElementConfiguration<Android, FormsElement> config, int value)
 		{
 			config.Element.SetValue(SomeOtherAndroidThingProperty, value);
 			return config;
 		}
 
-		public static IPlatformElementConfiguration<AndroidPlatform, FormsElement> UseTabletDefaults(this IPlatformElementConfiguration<AndroidPlatform, FormsElement> config)
+		public static IPlatformElementConfiguration<Android, FormsElement> UseTabletDefaults(this IPlatformElementConfiguration<Android, FormsElement> config)
 		{
 			config.SetSomeAndroidThing(10);
 			config.SetSomeOtherAndroidThing(45);
 			return config;
 		}
 
-		public static IPlatformElementConfiguration<AndroidPlatform, FormsElement> UsePhabletDefaults(this IPlatformElementConfiguration<AndroidPlatform, FormsElement> config)
+		public static IPlatformElementConfiguration<Android, FormsElement> UsePhabletDefaults(this IPlatformElementConfiguration<Android, FormsElement> config)
 		{
 			config.SetSomeAndroidThing(8);
 			config.SetSomeOtherAndroidThing(40);
