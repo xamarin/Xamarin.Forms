@@ -1,14 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Xamarin.Forms.Internals;
+
 #if __UNIFIED__
-using CoreGraphics;
+using Foundation;
 using UIKit;
 
 #else
 using MonoTouch.UIKit;
+using MonoTouch.Foundation;
+
 #endif
 
 #if !__UNIFIED__
-	// Save ourselves a ton of ugly ifdefs below
+// Save ourselves a ton of ugly ifdefs below
 using CGSize = System.Drawing.SizeF;
 #endif
 
@@ -31,5 +36,11 @@ namespace Xamarin.Forms.Platform.iOS
 		public UIView NativeView { get; }
 
 		public SizeThatFitsDelegate SizeThatFitsDelegate { get; set; }
+
+		protected override void OnBindingContextChanged()
+		{
+			FormsNativeBindingExtensions.SetNativeBindingContext(NativeView?.GetViewAndDescedants(), BindingContext);
+			base.OnBindingContextChanged();
+		}
 	}
 }

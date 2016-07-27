@@ -8,7 +8,7 @@ using System.Text;
 
 namespace Xamarin.Forms
 {
-	public sealed class Binding : BindingBase
+	public class Binding : BindingBase
 	{
 		internal const string SelfPath = ".";
 		IValueConverter _converter;
@@ -18,16 +18,16 @@ namespace Xamarin.Forms
 		string _path;
 		object _source;
 
-		public Binding()
+		internal Binding()
 		{
 		}
 
 		public Binding(string path, BindingMode mode = BindingMode.Default, IValueConverter converter = null, object converterParameter = null, string stringFormat = null, object source = null)
 		{
 			if (path == null)
-				throw new ArgumentNullException("path");
+				throw new ArgumentNullException(nameof(path));
 			if (string.IsNullOrWhiteSpace(path))
-				throw new ArgumentException("path can not be an empty string", "path");
+				throw new ArgumentException("path can not be an empty string", nameof(path));
 
 			Path = path;
 			Converter = converter;
@@ -85,7 +85,7 @@ namespace Xamarin.Forms
 											  string stringFormat = null)
 		{
 			if (propertyGetter == null)
-				throw new ArgumentNullException("propertyGetter");
+				throw new ArgumentNullException(nameof(propertyGetter));
 
 			string path = GetBindingPath(propertyGetter);
 			return new Binding(path, mode, converter, converterParameter, stringFormat);

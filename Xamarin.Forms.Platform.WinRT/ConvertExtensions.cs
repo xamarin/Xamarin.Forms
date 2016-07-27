@@ -19,5 +19,10 @@ namespace Xamarin.Forms.Platform.WinRT
 		{
 			return Windows.UI.Color.FromArgb((byte)(color.A * 255), (byte)(color.R * 255), (byte)(color.G * 255), (byte)(color.B * 255));
 		}
+
+		public static Color ToColor(this Windows.UI.Color color)
+		{
+			return Color.FromRgba(color.R, color.G, color.B, color.A);
+		}
 	}
 }

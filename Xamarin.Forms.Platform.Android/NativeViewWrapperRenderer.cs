@@ -61,5 +61,13 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		protected override bool ManageNativeControlLifetime => false;
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing)
+				FormsNativeBindingExtensions.ClearBindings(Element);
+
+			base.Dispose(disposing);
+		}
 	}
 }

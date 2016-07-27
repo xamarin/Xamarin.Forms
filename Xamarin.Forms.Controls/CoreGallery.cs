@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
@@ -220,6 +220,7 @@ namespace Xamarin.Forms.Controls
 		public CorePageView (Page rootPage, NavigationBehavior navigationBehavior = NavigationBehavior.PushAsync)
 		{
 			var pages = new List<Page> {
+				new NativeBindingGalleryPage {Title = "Native Binding Controls Gallery"},
 				new AppLinkPageGallery {Title = "App Link Page Gallery"},
 				new NestedNativeControlGalleryPage {Title = "Nested Native Controls Gallery"},
 				new CellForceUpdateSizeGalleryPage {Title = "Cell Force Update Size Gallery"},

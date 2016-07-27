@@ -64,3 +64,4 @@ using Xamarin.Forms.Platform.Android;
 [assembly: Xamarin.Forms.Dependency(typeof(Deserializer))]
 [assembly: Xamarin.Forms.Dependency(typeof(ResourcesProvider))]
 [assembly: Preserve]
+[assembly: NativeBindingConverter(typeof(global::Android.Graphics.Color), typeof(ColorConverter))]

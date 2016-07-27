@@ -1,3 +1,6 @@
+using System.Collections.Generic;
+using Xamarin.Forms.Internals;
+
 namespace Xamarin.Forms.Platform.Android
 {
 	public class NativeViewWrapper : View
@@ -18,5 +21,11 @@ namespace Xamarin.Forms.Platform.Android
 		public OnLayoutDelegate OnLayoutDelegate { get; }
 
 		public OnMeasureDelegate OnMeasureDelegate { get; }
+
+		protected override void OnBindingContextChanged()
+		{
+			FormsNativeBindingExtensions.SetNativeBindingContext(NativeView?.GetViewAndDescedants(), BindingContext);
+			base.OnBindingContextChanged();
+		}
 	}
 }

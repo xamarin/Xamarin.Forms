@@ -71,5 +71,13 @@ namespace Xamarin.Forms.Platform.WinRT
 				Control.LayoutUpdated += (sender, args) => { ((IVisualElementController)Element)?.InvalidateMeasure(InvalidationTrigger.MeasureChanged); };
 			}
 		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing)
+				FormsNativeBindingExtensions.ClearBindings(Element);
+
+			base.Dispose(disposing);
+		}
 	}
 }

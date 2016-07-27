@@ -99,8 +99,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Renderers\DatePickerRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Renderers\EditorRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Renderers\EntryRenderer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Renderers\FontExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Renderers\FormattedStringExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Renderers\FrameRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Renderers\ImageRenderer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Renderers\KeyboardInsetTracker.cs" />
@@ -136,10 +134,8 @@
     <Compile Include="NativeViewWrapper.cs" />
     <Compile Include="NativeViewWrapperRenderer.cs" />
     <Compile Include="PlatformEffect.cs" />
-    <Compile Include="LayoutExtensions.cs" />
     <Compile Include="Renderers\AlignmentExtensions.cs" />
     <Compile Include="Forms.cs" />
-    <Compile Include="PageExtensions.cs" />
     <Compile Include="Resources\StringResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -148,6 +144,13 @@
     <Compile Include="ViewInitializedEventArgs.cs" />
     <Compile Include="IOSAppIndexingProvider.cs" />
     <Compile Include="IOSAppLinks.cs" />
+    <Compile Include="Extensions\NativeBindingExtensions.cs" />
+    <Compile Include="Extensions\UIColorConverter.cs" />
+    <Compile Include="NativeViewPropertyListener.cs" />
+    <Compile Include="Extensions\LayoutExtensions.cs" />
+    <Compile Include="Extensions\PageExtensions.cs" />
+    <Compile Include="Extensions\FormattedStringExtensions.cs" />
+    <Compile Include="Extensions\FontExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\StringResources.ar.resx" />

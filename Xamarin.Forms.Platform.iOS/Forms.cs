@@ -87,7 +87,7 @@ namespace Xamarin.Forms
 			Device.PlatformServices = new IOSPlatformServices();
 			Device.Info = new IOSDeviceInfo();
 
-			Registrar.RegisterAll(new[] { typeof(ExportRendererAttribute), typeof(ExportCellAttribute), typeof(ExportImageSourceHandlerAttribute) });
+			Registrar.RegisterAll(new[] { typeof(ExportRendererAttribute), typeof(ExportCellAttribute), typeof(ExportImageSourceHandlerAttribute), typeof(NativeBindingConverterAttribute) });
 
 			Device.Idiom = UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad ? TargetIdiom.Tablet : TargetIdiom.Phone;
 
@@ -246,13 +246,13 @@ namespace Xamarin.Forms
 				{
 #else
 				timer = NSTimer.CreateRepeatingScheduledTimer (interval, () => {
-				#endif
+#endif
 					if (!callback())
 #if __UNIFIED__
 						t.Invalidate();
 #else
 						timer.Invalidate ();
-						#endif
+#endif
 				});
 				NSRunLoop.Main.AddTimer(timer, NSRunLoopMode.Common);
 			}

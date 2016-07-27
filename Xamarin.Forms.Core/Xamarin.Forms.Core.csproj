@@ -416,6 +416,13 @@
     <Compile Include="IAppIndexingProvider.cs" />
     <Compile Include="ListStringTypeConverter.cs" />
     <Compile Include="PoppedToRootEventArgs.cs" />
+    <Compile Include="INativeValueConverter.cs" />
+    <Compile Include="NativeBindingConverterAttribute.cs" />
+    <Compile Include="Internals\FormsNativeBindingExtensions.cs" />
+    <Compile Include="NativeViewEventFiredEventArgs.cs" />
+    <Compile Include="NativeViewEventListener.cs" />
+    <Compile Include="BindableProxy.cs" />
+    <Compile Include="NativeBinding.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>

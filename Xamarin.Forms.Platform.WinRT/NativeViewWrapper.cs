@@ -1,10 +1,10 @@
+using System.Linq;
 using Windows.UI.Xaml;
+using Xamarin.Forms.Internals;
 
 #if WINDOWS_UWP
-
 namespace Xamarin.Forms.Platform.UWP
 #else
-
 namespace Xamarin.Forms.Platform.WinRT
 #endif
 {
@@ -26,5 +26,11 @@ namespace Xamarin.Forms.Platform.WinRT
 		public MeasureOverrideDelegate MeasureOverrideDelegate { get; set; }
 
 		public FrameworkElement NativeElement { get; }
+
+		protected override void OnBindingContextChanged()
+		{
+			FormsNativeBindingExtensions.SetNativeBindingContext(NativeElement?.GetControlAndDescedants().ToList(), BindingContext);
+			base.OnBindingContextChanged();
+		}
 	}
 }
