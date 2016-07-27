@@ -164,6 +164,9 @@
     <Compile Include="..\Xamarin.Forms.Platform.WinRT\NativeViewWrapperRenderer.cs">
       <Link>NativeViewWrapperRenderer.cs</Link>
     </Compile>
+    <Compile Include="..\Xamarin.Forms.Platform.WinRT\PlatformConfigurationExtensions.cs">
+      <Link>PlatformConfigurationExtensions.cs</Link>
+    </Compile>
     <Compile Include="..\Xamarin.Forms.Platform.WinRT\PlatformEffect.cs">
       <Link>PlatformEffect.cs</Link>
     </Compile>
@@ -177,7 +180,6 @@
       <Link>LayoutExtensions.cs</Link>
     </Compile>
     <Compile Include="IToolBarForegroundBinder.cs" />
-    <Compile Include="PlatformConfigurationExtensions.cs" />
     <Compile Include="SearchBarRenderer.cs" />
     <Compile Include="..\Xamarin.Forms.Platform.WinRT\TextAlignmentToHorizontalAlignmentConverter.cs">
       <Link>TextAlignmentToHorizontalAlignmentConverter.cs</Link>

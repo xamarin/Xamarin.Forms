@@ -7,11 +7,5 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			return (element).On<PlatformConfiguration.iOS>();
 		}
-
-		public static IPlatformElementConfiguration<PlatformConfiguration.iOS, T> Locally<T>(this T element) 
-			where T : Element, IElementConfiguration<T>
-		{
-			return (element).On<PlatformConfiguration.iOS>();
-		}
 	}
 }

@@ -101,6 +101,7 @@
     <Compile Include="GalleryPages\LayoutPerformanceGallery.cs" />
     <Compile Include="GalleryPages\NavigationPropertiesGallery.cs" />
     <Compile Include="ControlGalleryPages\ListViewSelectionColor.cs" />
+    <Compile Include="GalleryPages\PlatformSpecificsGallery.cs" />
     <Compile Include="LegacyRepro\Page1.xaml.cs">
       <DependentUpon>Page1.xaml</DependentUpon>
     </Compile>
