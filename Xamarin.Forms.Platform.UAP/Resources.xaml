@@ -261,7 +261,7 @@
 								</Grid.RowDefinitions>
                                 <StackPanel Grid.Row="0" Orientation="Horizontal" Visibility="{TemplateBinding MasterToolbarVisibility}"  Background="{TemplateBinding ToolbarBackground}">
                                     <Button Name="PaneTogglePane"  Style="{ThemeResource PaneButton}" Foreground="{TemplateBinding ToolbarForeground}" />
-                                    <TextBlock Style="{ThemeResource TitleTextBlockStyle}" VerticalAlignment="Center" Text="{TemplateBinding MasterTitle}" Visibility="{TemplateBinding MasterTitleVisibility}" Foreground="{TemplateBinding ToolbarForeground}"/>
+                                    <TextBlock Margin="10,0,0,0"  Style="{ThemeResource TitleTextBlockStyle}" VerticalAlignment="Center" Text="{TemplateBinding MasterTitle}" Visibility="{TemplateBinding MasterTitleVisibility}" Foreground="{TemplateBinding ToolbarForeground}"/>
 								</StackPanel>
 
 								<ContentPresenter x:Name="MasterPresenter" Grid.Row="1" Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Master}" />

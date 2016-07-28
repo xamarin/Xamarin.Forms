@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -18,8 +19,14 @@ namespace Xamarin.Forms.Platform.UWP
 
 		public static readonly DependencyProperty IsPaneOpenProperty = DependencyProperty.Register("IsPaneOpen", typeof(bool), typeof(MasterDetailControl), new PropertyMetadata(default(bool)));
 
-		public static readonly DependencyProperty ShouldShowSplitModeProperty = DependencyProperty.Register("ShouldShowSplitMode", typeof(bool), typeof(MasterDetailControl),
+		public static readonly DependencyProperty ShouldShowSplitModeProperty = DependencyProperty.Register(nameof(ShouldShowSplitMode), typeof(bool), typeof(MasterDetailControl),
 			new PropertyMetadata(default(bool), OnShouldShowSplitModeChanged));
+
+		public static readonly DependencyProperty CollapseStyleProperty = DependencyProperty.Register(nameof(CollapseStyle), typeof(CollapseStyle), 
+			typeof(MasterDetailControl), new PropertyMetadata(CollapseStyle.None, CollapseStyleChanged));
+		
+		public static readonly DependencyProperty CollapsedPaneWidthProperty = DependencyProperty.Register(nameof(CollapsedPaneWidth), typeof(double), typeof(MasterDetailControl),
+			new PropertyMetadata(48d, CollapsedPaneWidthChanged));
 
 		public static readonly DependencyProperty DetailTitleProperty = DependencyProperty.Register("DetailTitle", typeof(string), typeof(MasterDetailControl), new PropertyMetadata(default(string)));
 
@@ -48,12 +55,12 @@ namespace Xamarin.Forms.Platform.UWP
 		public MasterDetailControl()
 		{
 			DefaultStyleKey = typeof(MasterDetailControl);
-			MasterTitleVisibility = Visibility.Collapsed;
+
+			// TODO EZH This thing actually contains the command bar right now; we'll need to fix that
 			DetailTitleVisibility = Visibility.Collapsed;
-			if (Device.Idiom != TargetIdiom.Phone)
-				MasterToolbarVisibility = Visibility.Collapsed;
 
 			CollapseStyle = CollapseStyle.None;
+			
 		}
 
 		public FrameworkElement Detail
@@ -151,7 +158,17 @@ namespace Xamarin.Forms.Platform.UWP
 			set { SetValue(ShouldShowSplitModeProperty, value); }
 		}
 
-		public CollapseStyle CollapseStyle { get; set; }
+		public CollapseStyle CollapseStyle
+		{
+			get { return (CollapseStyle)GetValue(CollapseStyleProperty); }
+			set { SetValue(CollapseStyleProperty, value); }
+		}
+
+		public double CollapsedPaneWidth
+		{
+			get { return (double)GetValue(CollapsedPaneWidthProperty); }
+			set { SetValue(CollapsedPaneWidthProperty, value); }
+		}
 
 		public Brush ToolbarBackground
 		{
@@ -211,6 +228,16 @@ namespace Xamarin.Forms.Platform.UWP
 			((MasterDetailControl)dependencyObject).UpdateMode();
 		}
 
+		static void CollapseStyleChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
+		{
+			((MasterDetailControl)dependencyObject).UpdateMode();
+		}
+
+		static void CollapsedPaneWidthChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+		{
+			((MasterDetailControl)dependencyObject).UpdateMode();
+		}
+
 		void OnToggleClicked(object sender, RoutedEventArgs args)
 		{
 			IsPaneOpen = !IsPaneOpen;
@@ -219,11 +246,22 @@ namespace Xamarin.Forms.Platform.UWP
 		void UpdateMode()
 		{
 			if (_split == null)
+			{
 				return;
+			}
 
 			_split.DisplayMode = ShouldShowSplitMode 
 				? SplitViewDisplayMode.Inline 
 				: CollapseStyle == CollapseStyle.None ? SplitViewDisplayMode.Overlay : SplitViewDisplayMode.CompactOverlay;
+
+			_split.CompactPaneLength = CollapsedPaneWidth;
+
+			if (_split.DisplayMode == SplitViewDisplayMode.Inline)
+			{
+				// If we've determined that the pane will always be open, then there's no
+				// reason to display the show/hide pane button
+				MasterToolbarVisibility = Visibility.Collapsed;
+			}
 		}
 	}
 }

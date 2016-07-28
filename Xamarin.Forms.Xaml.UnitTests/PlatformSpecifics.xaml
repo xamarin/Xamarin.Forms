@@ -5,6 +5,7 @@
 			 xmlns:windowsSpecific="clr-namespace:Xamarin.Forms.PlatformConfiguration.WindowsSpecific;assembly=Xamarin.Forms.Core"
 			 x:Class="Xamarin.Forms.Xaml.UnitTests.PlatformSpecific"
 			 windowsSpecific:MasterDetailPage.CollapseStyle="Partial"
+			 windowsSpecific:MasterDetailPage.CollapsedPaneWidth="96"
 			 x:Name="TestMDP">
 	<forms:MasterDetailPage.Master>
 		<forms:ContentPage x:Name="masterPage" Title="Platform Specifics" />

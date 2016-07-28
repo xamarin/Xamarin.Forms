@@ -7,6 +7,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
+using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.MasterDetailPage;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -133,7 +134,7 @@ IPageController PageController => Element as IPageController;
 				{
 					Control = new MasterDetailControl();
 					Control.Loaded += OnControlLoaded;
-					Control.Unloaded += OnControlUnlaoded;
+					Control.Unloaded += OnControlUnloaded;
 					Control.SizeChanged += OnNativeSizeChanged;
 
 					Control.RegisterPropertyChangedCallback(MasterDetailControl.IsPaneOpenProperty, OnIsPaneOpenChanged);
@@ -160,7 +161,9 @@ IPageController PageController => Element as IPageController;
 				UpdateMaster();
 			else if (e.PropertyName == "Detail")
 				UpdateDetail();
-			else if (e.PropertyName == "ShouldShowSplitMode")
+			else if (e.PropertyName == nameof(MasterDetailControl.ShouldShowSplitMode)
+			         || e.PropertyName == Specifics.CollapseStyleProperty.PropertyName
+			         || e.PropertyName == Specifics.CollapsedPaneWidthProperty.PropertyName)
 				UpdateMode();
 		}
 
@@ -203,7 +206,7 @@ IPageController PageController => Element as IPageController;
 			UpdateBounds();
 		}
 
-		void OnControlUnlaoded(object sender, RoutedEventArgs routedEventArgs)
+		void OnControlUnloaded(object sender, RoutedEventArgs routedEventArgs)
 		{
 			PageController?.SendDisappearing();
 		}
@@ -293,7 +296,7 @@ IPageController PageController => Element as IPageController;
 		void UpdateMode()
 		{
 			Control.CollapseStyle = Element.OnThisPlatform().GetCollapseStyle();
-
+			Control.CollapsedPaneWidth = Element.OnThisPlatform().CollapsedPaneWidth();
 			Control.ShouldShowSplitMode = MasterDetailPageController.ShouldShowSplitMode;
 		}
 

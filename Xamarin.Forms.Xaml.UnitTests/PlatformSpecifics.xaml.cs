@@ -29,6 +29,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			{
 				var layout = new PlatformSpecific(useCompiledXaml);
 				Assert.AreEqual(layout.On<Windows>().GetCollapseStyle(), CollapseStyle.Partial);
+				Assert.AreEqual(layout.On<Windows>().CollapsedPaneWidth(), 96d);
 			}
 		}
 	}
