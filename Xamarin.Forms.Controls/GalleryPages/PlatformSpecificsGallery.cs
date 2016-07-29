@@ -1,5 +1,6 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Input;
 using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
@@ -47,15 +48,15 @@ namespace Xamarin.Forms.Controls
 
 		public class NavItem
 		{
-			public NavItem(string text, string imageSource, ICommand command)
+			public NavItem(string text, string icon, ICommand command)
 			{
 				Text = text;
-				ImageSource = imageSource;
+				Icon = icon;
 				Command = command;
 			}
 
 			public string Text { get; set; }
-			public string ImageSource { get; set; }
+			public string Icon { get; set; }
 			public ICommand Command { get; set; }
 		}
 
@@ -63,53 +64,112 @@ namespace Xamarin.Forms.Controls
 		{
 			public NavList(IEnumerable<NavItem> items)
 			{
-				var cell = new DataTemplate(typeof(ImageCell));
-
-				cell.SetBinding(TextCell.TextProperty, "Text");
-				cell.SetBinding(ImageCell.ImageSourceProperty, "ImageSource");
-				cell.SetBinding(TextCell.CommandProperty, "Command");
-
-				ItemTemplate = cell;
 				ItemsSource = items;
+				ItemTapped += (sender, args) => (args.Item as NavItem)?.Command.Execute(null);
 
-				RowHeight = 80;
-				WidthRequest = 48;
+				ItemTemplate = new DataTemplate(() =>
+				{
+					var grid = new Grid();
+					grid.ColumnDefinitions.Add(new ColumnDefinition { Width = 48 });
+					grid.ColumnDefinitions.Add(new ColumnDefinition { Width = 200 });
+
+					grid.Margin = new Thickness(0, 10, 0, 10);
+
+					var text = new Label
+					{
+						VerticalOptions = LayoutOptions.Fill
+					};
+					text.SetBinding(Label.TextProperty, "Text");
+					
+					var glyph = new Label
+					{
+						FontFamily = "Segoe MDL2 Assets",
+						FontSize = 24,
+						HorizontalTextAlignment = TextAlignment.Center,
+					};
+
+					glyph.SetBinding(Label.TextProperty, "Icon");
+					
+					grid.Children.Add(glyph);
+					grid.Children.Add(text);
+
+					Grid.SetColumn(glyph, 0);
+					Grid.SetColumn(text, 1);
+
+					grid.WidthRequest = 48;
+
+					var cell = new ViewCell
+					{
+						View = grid
+					};
+
+					return cell;
+				});
 			}
 		}
 
-		static Layout CreateCollapseStyleChanger(MasterDetailPage page)
+		static Layout CreateChanger(Type enumType, string defaultOption, Action<Picker> selectedIndexChanged, string label)
 		{
-			var collapseStylePicker = new Picker();
-			string[] collapseStyles = Enum.GetNames(typeof(CollapseStyle));
-			foreach (string collapseStyle in collapseStyles)
+			var picker = new Picker();
+			string[] options = Enum.GetNames(enumType);
+			foreach (string option in options)
 			{
-				collapseStylePicker.Items.Add(collapseStyle);
+				picker.Items.Add(option);
 			}
 
-			collapseStylePicker.SelectedIndex =
-				collapseStyles.IndexOf(Enum.GetName(typeof(CollapseStyle), page.On<Windows>().GetCollapseStyle()));
+			picker.SelectedIndex = options.IndexOf(defaultOption);
 
-			collapseStylePicker.SelectedIndexChanged += (sender, args) =>
+			picker.SelectedIndexChanged += (sender, args) =>
 			{
-				page.On<Windows>()
-					.SetCollapseStyle(
-						(CollapseStyle)Enum.Parse(typeof(CollapseStyle), collapseStylePicker.Items[collapseStylePicker.SelectedIndex]));
+				selectedIndexChanged(picker);
 			};
 
-			var layout = new StackLayout
+			var changerLabel = new Label { Text = label, VerticalOptions = LayoutOptions.Center };
+
+			var layout = new Grid
 			{
-				Orientation = StackOrientation.Horizontal,
-				Children = { new Label { Text = "Select Collapse Style" }, collapseStylePicker }
+				HorizontalOptions = LayoutOptions.Center,
+				ColumnDefinitions = new ColumnDefinitionCollection()
+				{
+					new ColumnDefinition { Width = 150 },
+					new ColumnDefinition { Width = 100 }
+				},
+				Children = { changerLabel, picker }
 			};
+
+			Grid.SetColumn(changerLabel, 0);
+			Grid.SetColumn(picker, 1);
 
 			return layout;
 		}
 
+		static Layout CreateCollapseStyleChanger(MasterDetailPage page)
+		{
+			var enumType = typeof(CollapseStyle);
+
+			return CreateChanger(enumType,
+				Enum.GetName(enumType, page.On<Windows>().GetCollapseStyle()),
+				picker => {
+					page.On<Windows>().SetCollapseStyle((CollapseStyle)Enum.Parse(enumType, picker.Items[picker.SelectedIndex]));
+				}, "Select Collapse Style");
+		}
+
+		static Layout CreateToolbarPlacementChanger(MasterDetailPage page)
+		{
+			var enumType = typeof(ToolbarPlacement);
+
+			return CreateChanger(enumType,
+				Enum.GetName(enumType, page.On<Windows>().GetToolbarPlacement()),
+				picker => {
+					page.On<Windows>().SetToolbarPlacement((ToolbarPlacement)Enum.Parse(enumType, picker.Items[picker.SelectedIndex]));
+				}, "Select Toolbar Placement");
+		}
+
 		static Layout CreateCollapseWidthAdjuster(MasterDetailPage page)
 		{
-			var adjustCollapseWidthLabel = new Label() { Text = "Adjust Collapsed Width", VerticalTextAlignment = TextAlignment.Center, VerticalOptions = LayoutOptions.Center};
+			var adjustCollapseWidthLabel = new Label { Text = "Adjust Collapsed Width", VerticalTextAlignment = TextAlignment.Center, VerticalOptions = LayoutOptions.Center};
 			var adjustCollapseWidthEntry = new Entry { Text = page.On<Windows>().CollapsedPaneWidth().ToString() }; 
-			var adjustCollapseWidthButton = new Button { Text = "Change" };
+			var adjustCollapseWidthButton = new Button { Text = "Change", BackgroundColor = Color.Gray };
 			adjustCollapseWidthButton.Clicked += (sender, args) =>
 			{
 				double newWidth;
@@ -121,11 +181,54 @@ namespace Xamarin.Forms.Controls
 			
 			var adjustCollapsedWidthSection = new StackLayout()
 			{
+				HorizontalOptions = LayoutOptions.Center,
 				Orientation = StackOrientation.Horizontal,
 				Children = { adjustCollapseWidthLabel, adjustCollapseWidthEntry, adjustCollapseWidthButton}
 			};
 
 			return adjustCollapsedWidthSection;
+		}
+
+		static Layout CreateAddRemoveToolBarItemButtons(Page page)
+		{
+			var layout = new StackLayout { Orientation = StackOrientation.Vertical, HorizontalOptions = LayoutOptions.Center };
+			layout.Children.Add(new Label {Text = "Toolbar Items:"});
+
+			var buttonLayout = new StackLayout { Orientation = StackOrientation.Horizontal, HorizontalOptions = LayoutOptions.Center };
+
+			layout.Children.Add(buttonLayout);
+
+			var addPrimary = new Button { Text = "Add Primary", BackgroundColor = Color.Gray };
+			var addSecondary = new Button { Text = "Add Secondary", BackgroundColor = Color.Gray };
+			var remove = new Button { Text = "Remove", BackgroundColor = Color.Gray };
+
+			buttonLayout.Children.Add(addPrimary);
+			buttonLayout.Children.Add(addSecondary);
+			buttonLayout.Children.Add(remove);
+
+			Action action = () => page.DisplayAlert(CommandBarActionTitle, CommandBarActionMessage, CommandBarActionDismiss);
+
+			addPrimary.Clicked += (sender, args) =>
+			{
+				var index = page.ToolbarItems.Count(item => item.Order == ToolbarItemOrder.Primary) + 1;
+				page.ToolbarItems.Add(new ToolbarItem($"Primary {index}", "coffee.png", action, ToolbarItemOrder.Primary));
+			};
+
+			addSecondary.Clicked += (sender, args) =>
+			{
+				var index = page.ToolbarItems.Count(item => item.Order == ToolbarItemOrder.Secondary) + 1;
+				page.ToolbarItems.Add(new ToolbarItem($"Secondary {index}", "coffee.png", action, ToolbarItemOrder.Secondary));
+			};
+
+			remove.Clicked += (sender, args) =>
+			{
+				if (page.ToolbarItems.Any())
+				{
+					page.ToolbarItems.RemoveAt(0);
+				}
+			};
+
+			return layout;
 		}
 
 		MasterDetailPage CreateMdpPage()
@@ -142,8 +245,10 @@ namespace Xamarin.Forms.Controls
 			// Build the navigation pane items
 			var navItems = new List<NavItem>
 			{
-				new NavItem("Return To Gallery", "coffee.png", new Command(RestoreOriginal)),
-				new NavItem("Display Alert", "coffee.png", new Command(() => DisplayAlert("Hey!", "This is an alert", "OK")))
+				new NavItem("Display Alert", "\uE171", new Command(() => DisplayAlert("Alert", "This is an alert", "OK"))),
+				new NavItem("Return To Gallery", "\uE106", new Command(RestoreOriginal)),
+				new NavItem("Save", "\uE105", new Command(() => DisplayAlert("Save", "Fake save dialog", "OK"))),
+				new NavItem("Audio", "\uE189", new Command(() => DisplayAlert("Audio", "Never gonna give you up...", "OK")))
 			};
 
 			var navList = new NavList(navItems);
@@ -156,21 +261,64 @@ namespace Xamarin.Forms.Controls
 			var detailContent = new StackLayout { VerticalOptions = LayoutOptions.Fill, HorizontalOptions = LayoutOptions.Fill };
 			detailContent.Children.Add(new Label
 			{ 
-				HeightRequest = 200,
-				Text = "Features",
+				Text = "Platform Features",
+				FontAttributes = FontAttributes.Bold,
 				HorizontalTextAlignment = TextAlignment.Center,
 				VerticalTextAlignment = TextAlignment.Center
 			});
 
 			detailContent.Children.Add(CreateCollapseStyleChanger(page));
+			detailContent.Children.Add(CreateToolbarPlacementChanger(page));
 			detailContent.Children.Add(CreateCollapseWidthAdjuster(page));
+			detailContent.Children.Add(CreateAddRemoveToolBarItemButtons(page));
 
 			detail.Content = detailContent;
 
 			page.Master = master;
+			
+			AddToolBarItems(page);
+
 			page.Detail = detail;
 
 			return page;
+		}
+
+		const string CommandBarActionTitle = "Hey!";
+		const string CommandBarActionMessage = "Command Bar Item Clicked";
+		const string CommandBarActionDismiss = "OK";
+
+		void AddToolBarItems(Page page)
+		{
+			Action action = () => page.DisplayAlert(CommandBarActionTitle, CommandBarActionMessage, CommandBarActionDismiss);
+
+			var tb1 = new ToolbarItem("Primary 1", "coffee.png", action, ToolbarItemOrder.Primary)
+			{
+				IsEnabled = true,
+				AutomationId = "toolbaritem_primary1"
+			};
+
+			var tb2 = new ToolbarItem("Primary 2", "coffee.png", action, ToolbarItemOrder.Primary)
+			{
+				IsEnabled = true,
+				AutomationId = "toolbaritem_primary2"
+			};
+
+			var tb3 = new ToolbarItem("Seconday 1", "coffee.png", action, ToolbarItemOrder.Secondary)
+			{
+				IsEnabled = true,
+				AutomationId = "toolbaritem_secondary3"
+			};
+
+			var tb4 = new ToolbarItem("Secondary 2", "coffee.png", action, ToolbarItemOrder.Secondary)
+			{
+				IsEnabled = true,
+				AutomationId = "toolbaritem_secondary4"
+			};
+
+			page.ToolbarItems.Add(tb1);
+			page.ToolbarItems.Add(tb2);
+			page.ToolbarItems.Add(tb3);
+			page.ToolbarItems.Add(tb4);
 		}
 	}
 }

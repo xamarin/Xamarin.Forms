@@ -7,6 +7,7 @@
 	<ResourceDictionary.MergedDictionaries>
 		<ResourceDictionary Source="FormsTextBoxStyle.xaml" />
 		<ResourceDictionary Source="AutoSuggestStyle.xaml" />
+		<ResourceDictionary Source="MasterDetailControlStyle.xaml" />
 	</ResourceDictionary.MergedDictionaries>
 	
 	<uwp:CaseConverter x:Key="LowerConverter" ConvertToUpper="False" />
@@ -247,52 +248,7 @@
 		</Setter>
 	</Style>
 
-	<Style TargetType="uwp:MasterDetailControl">
-		<Setter Property="ToolbarForeground" Value="{ThemeResource DefaultTextForegroundThemeBrush}" />
-		<Setter Property="Template">
-			<Setter.Value>
-				<ControlTemplate TargetType="uwp:MasterDetailControl">
-					<SplitView x:Name="SplitView" IsPaneOpen="{Binding IsPaneOpen,RelativeSource={RelativeSource TemplatedParent},Mode=TwoWay}" DisplayMode="Overlay">
-						<SplitView.Pane>
-							<Grid>
-								<Grid.RowDefinitions>
-									<RowDefinition Height="Auto" />
-									<RowDefinition Height="*" />
-								</Grid.RowDefinitions>
-                                <StackPanel Grid.Row="0" Orientation="Horizontal" Visibility="{TemplateBinding MasterToolbarVisibility}"  Background="{TemplateBinding ToolbarBackground}">
-                                    <Button Name="PaneTogglePane"  Style="{ThemeResource PaneButton}" Foreground="{TemplateBinding ToolbarForeground}" />
-                                    <TextBlock Margin="10,0,0,0"  Style="{ThemeResource TitleTextBlockStyle}" VerticalAlignment="Center" Text="{TemplateBinding MasterTitle}" Visibility="{TemplateBinding MasterTitleVisibility}" Foreground="{TemplateBinding ToolbarForeground}"/>
-								</StackPanel>
-
-								<ContentPresenter x:Name="MasterPresenter" Grid.Row="1" Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Master}" />
-							</Grid>
-						</SplitView.Pane>
-						<SplitView.Content>
-							<Grid>
-								<Grid.RowDefinitions>
-									<RowDefinition Height="Auto" />
-									<RowDefinition Height="*" />
-								</Grid.RowDefinitions>
-
-                                <uwp:FormsCommandBar x:Name="CommandBar" Grid.Row="0" Foreground="{TemplateBinding ToolbarForeground}" Background="{TemplateBinding ToolbarBackground}" Visibility="{TemplateBinding DetailTitleVisibility}" VerticalContentAlignment="Top">
-                                    <uwp:FormsCommandBar.Content>
-                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                            <Button Name="ContentTogglePane" Style="{ThemeResource PaneButton}" Foreground="{TemplateBinding ToolbarForeground}"  Visibility="{Binding ElementName=SplitView,Path=IsPaneOpen,Converter={StaticResource InvertedBoolVisibilityConverter}}" />
-											<ContentControl VerticalAlignment="Top" VerticalContentAlignment="Center" Height="{StaticResource TitleBarHeight}">
-												<TextBlock Text="{TemplateBinding DetailTitle}" Margin="10,0,0,0" Foreground="{TemplateBinding ToolbarForeground}" Style="{ThemeResource TitleTextBlockStyle}" />
-											</ContentControl>
-										</StackPanel>
-                                    </uwp:FormsCommandBar.Content>
-                                </uwp:FormsCommandBar>
-
-                                <ContentPresenter x:Name="DetailPresenter" Grid.Row="1" Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Detail}" />
-							</Grid>
-						</SplitView.Content>
-					</SplitView>
-				</ControlTemplate>
-			</Setter.Value>
-		</Setter>
-	</Style>
+	
 
 	<Style x:Key="FormsListViewItem" TargetType="ListViewItem">
 		<Setter Property="FontFamily" Value="{ThemeResource ContentControlThemeFontFamily}" />

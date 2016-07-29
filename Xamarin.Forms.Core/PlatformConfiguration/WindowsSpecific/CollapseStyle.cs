@@ -3,7 +3,7 @@ namespace Xamarin.Forms.PlatformConfiguration.WindowsSpecific
 {
 	public enum CollapseStyle
 	{
-		None,
+		Full,
 		Partial
 	}
 }

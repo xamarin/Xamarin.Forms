@@ -10,7 +10,7 @@ namespace Xamarin.Forms.PlatformConfiguration.WindowsSpecific
 
 		public static readonly BindableProperty CollapseStyleProperty =
 			BindableProperty.CreateAttached("CollapseStyle", typeof(CollapseStyle),
-				typeof(MasterDetailPage), CollapseStyle.None);
+				typeof(MasterDetailPage), CollapseStyle.Full);
 
 		public static CollapseStyle GetCollapseStyle(BindableObject element)
 		{
@@ -68,6 +68,37 @@ namespace Xamarin.Forms.PlatformConfiguration.WindowsSpecific
 			this IPlatformElementConfiguration<Windows, FormsElement> config, double value)
 		{
 			config.Element.SetValue(CollapsedPaneWidthProperty, value);
+			return config;
+		}
+
+		#endregion
+
+		#region ToolbarPlacement
+
+		public static readonly BindableProperty ToolbarPlacementProperty =
+			BindableProperty.CreateAttached("ToolbarPlacement", typeof(ToolbarPlacement),
+				// TODO EZH This should probably be a different type - whatever covers all the toolbar providers (Navigation, Tabbed, etc)
+				typeof(MasterDetailPage), ToolbarPlacement.Default);
+
+		public static ToolbarPlacement GetToolbarPlacement(BindableObject element)
+		{
+			return (ToolbarPlacement)element.GetValue(ToolbarPlacementProperty);
+		}
+
+		public static void SetToolbarPlacement(BindableObject element, ToolbarPlacement toolbarPlacement)
+		{
+			element.SetValue(ToolbarPlacementProperty, toolbarPlacement);
+		}
+
+		public static ToolbarPlacement GetToolbarPlacement(this IPlatformElementConfiguration<Windows, FormsElement> config)
+		{
+			return (ToolbarPlacement)config.Element.GetValue(ToolbarPlacementProperty);
+		}
+		
+		public static IPlatformElementConfiguration<Windows, FormsElement> SetToolbarPlacement(
+			this IPlatformElementConfiguration<Windows, FormsElement> config, ToolbarPlacement value)
+		{
+			config.Element.SetValue(ToolbarPlacementProperty, value);
 			return config;
 		}
 

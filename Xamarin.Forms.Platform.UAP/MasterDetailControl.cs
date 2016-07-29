@@ -23,7 +23,11 @@ namespace Xamarin.Forms.Platform.UWP
 			new PropertyMetadata(default(bool), OnShouldShowSplitModeChanged));
 
 		public static readonly DependencyProperty CollapseStyleProperty = DependencyProperty.Register(nameof(CollapseStyle), typeof(CollapseStyle), 
-			typeof(MasterDetailControl), new PropertyMetadata(CollapseStyle.None, CollapseStyleChanged));
+			typeof(MasterDetailControl), new PropertyMetadata(CollapseStyle.Full, CollapseStyleChanged));
+
+		// TODO EZH Can we pull this out so that we can use it on multiple controls? Rather than repeat it for everything that supports it
+		public static readonly DependencyProperty ToolbarPlacementProperty = DependencyProperty.Register(nameof(ToolbarPlacement), typeof(ToolbarPlacement), 
+			typeof(MasterDetailControl), new PropertyMetadata(ToolbarPlacement.Default, ToolbarPlacementChanged));
 		
 		public static readonly DependencyProperty CollapsedPaneWidthProperty = DependencyProperty.Register(nameof(CollapsedPaneWidth), typeof(double), typeof(MasterDetailControl),
 			new PropertyMetadata(48d, CollapsedPaneWidthChanged));
@@ -45,6 +49,9 @@ namespace Xamarin.Forms.Platform.UWP
 		public static readonly DependencyProperty MasterToolbarVisibilityProperty = DependencyProperty.Register("MasterToolbarVisibility", typeof(Visibility), typeof(MasterDetailControl),
 			new PropertyMetadata(default(Visibility)));
 
+		public static readonly DependencyProperty ContentTogglePaneButtonVisibilityProperty = DependencyProperty.Register(nameof(ContentTogglePaneButtonVisibility), typeof(Visibility), typeof(MasterDetailControl),
+			new PropertyMetadata(default(Visibility)));
+		
 		CommandBar _commandBar;
 
 		TaskCompletionSource<CommandBar> _commandBarTcs;
@@ -56,11 +63,9 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			DefaultStyleKey = typeof(MasterDetailControl);
 
-			// TODO EZH This thing actually contains the command bar right now; we'll need to fix that
 			DetailTitleVisibility = Visibility.Collapsed;
 
-			CollapseStyle = CollapseStyle.None;
-			
+			CollapseStyle = CollapseStyle.Full;
 		}
 
 		public FrameworkElement Detail
@@ -164,6 +169,18 @@ namespace Xamarin.Forms.Platform.UWP
 			set { SetValue(CollapseStyleProperty, value); }
 		}
 
+		public ToolbarPlacement ToolbarPlacement
+		{
+			get { return (ToolbarPlacement)GetValue(ToolbarPlacementProperty); }
+			set { SetValue(ToolbarPlacementProperty, value); }
+		}
+
+		public Visibility ContentTogglePaneButtonVisibility
+		{
+			get { return (Visibility)GetValue(ContentTogglePaneButtonVisibilityProperty); }
+			set { SetValue(ContentTogglePaneButtonVisibilityProperty, value); }
+		}
+
 		public double CollapsedPaneWidth
 		{
 			get { return (double)GetValue(CollapsedPaneWidthProperty); }
@@ -217,7 +234,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 			_commandBar = GetTemplateChild("CommandBar") as CommandBar;
 
-			UpdateMode();
+			UpdateToolbarPlacement();
+			UpdateMode(); 
 
 			if (_commandBarTcs != null)
 				_commandBarTcs.SetResult(_commandBar);
@@ -231,6 +249,11 @@ namespace Xamarin.Forms.Platform.UWP
 		static void CollapseStyleChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
 		{
 			((MasterDetailControl)dependencyObject).UpdateMode();
+		}
+
+		static void ToolbarPlacementChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
+		{
+			((MasterDetailControl)dependencyObject).UpdateToolbarPlacement();
 		}
 
 		static void CollapsedPaneWidthChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
@@ -252,15 +275,43 @@ namespace Xamarin.Forms.Platform.UWP
 
 			_split.DisplayMode = ShouldShowSplitMode 
 				? SplitViewDisplayMode.Inline 
-				: CollapseStyle == CollapseStyle.None ? SplitViewDisplayMode.Overlay : SplitViewDisplayMode.CompactOverlay;
+				: CollapseStyle == CollapseStyle.Full ? SplitViewDisplayMode.Overlay : SplitViewDisplayMode.CompactOverlay;
 
 			_split.CompactPaneLength = CollapsedPaneWidth;
 
 			if (_split.DisplayMode == SplitViewDisplayMode.Inline)
 			{
 				// If we've determined that the pane will always be open, then there's no
-				// reason to display the show/hide pane button
+				// reason to display the show/hide pane button in the master
 				MasterToolbarVisibility = Visibility.Collapsed;
+			}
+
+			// If we're in compact mode or the pane is always open,
+			// we don't need to display the content pane's toggle button
+			ContentTogglePaneButtonVisibility = _split.DisplayMode == SplitViewDisplayMode.Overlay 
+				? Visibility.Visible 
+				: Visibility.Collapsed;
+		}
+
+		void UpdateToolbarPlacement()
+		{
+			if (_commandBar == null)
+			{
+				return;
+			}
+
+			switch (ToolbarPlacement)
+			{
+				case ToolbarPlacement.Top:
+					Windows.UI.Xaml.Controls.Grid.SetRow(_commandBar, 0);
+					break;
+				case ToolbarPlacement.Bottom:
+					Windows.UI.Xaml.Controls.Grid.SetRow(_commandBar, 2);
+					break;
+				case ToolbarPlacement.Default:
+				default:
+					Windows.UI.Xaml.Controls.Grid.SetRow(_commandBar, Device.Idiom == TargetIdiom.Phone ? 2 : 0);
+					break;
 			}
 		}
 	}

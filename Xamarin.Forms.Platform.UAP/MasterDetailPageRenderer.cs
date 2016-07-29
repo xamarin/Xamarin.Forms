@@ -58,7 +58,7 @@ namespace Xamarin.Forms.Platform.UWP
 			set { Control.ToolbarForeground = value; }
 		}
 		
-IPageController PageController => Element as IPageController;
+		IPageController PageController => Element as IPageController;
 
 		IMasterDetailPageController MasterDetailPageController => Element as IMasterDetailPageController;
 
@@ -70,16 +70,16 @@ IPageController PageController => Element as IPageController;
 			{
 				if (_showTitle == value)
 					return;
+
 				_showTitle = value;
-				if (_showTitle)
-					Control.DetailTitleVisibility = Visibility.Visible;
-				else
-					Control.DetailTitleVisibility = Visibility.Collapsed;
+				Control.DetailTitleVisibility = _showTitle ? Visibility.Visible : Visibility.Collapsed;
 			}
 		}
 
 		string ITitleProvider.Title
 		{
+			// TODO EZH This can't possibly be right; I can set the title and maybe the control will display what I set, but subsequent queries will return something different?
+			// TODO EZH Also, I *might* set the title and nothing happens because the Control is null, but I get no feedback 
 			get { return Element?.Title; }
 
 			set
@@ -146,6 +146,7 @@ IPageController PageController => Element as IPageController;
 				UpdateDetail();
 				UpdateMaster();
 				UpdateMode();
+				UpdateToolbarPlacement();
 				UpdateIsPresented();
 
 				if (!string.IsNullOrEmpty(e.NewElement.AutomationId))
@@ -165,6 +166,8 @@ IPageController PageController => Element as IPageController;
 			         || e.PropertyName == Specifics.CollapseStyleProperty.PropertyName
 			         || e.PropertyName == Specifics.CollapsedPaneWidthProperty.PropertyName)
 				UpdateMode();
+			else if(e.PropertyName == Specifics.ToolbarPlacementProperty.PropertyName)
+				UpdateToolbarPlacement();
 		}
 
 		void ClearDetail()
@@ -298,6 +301,11 @@ IPageController PageController => Element as IPageController;
 			Control.CollapseStyle = Element.OnThisPlatform().GetCollapseStyle();
 			Control.CollapsedPaneWidth = Element.OnThisPlatform().CollapsedPaneWidth();
 			Control.ShouldShowSplitMode = MasterDetailPageController.ShouldShowSplitMode;
+		}
+
+		void UpdateToolbarPlacement()
+		{
+			Control.ToolbarPlacement = Element.OnThisPlatform().GetToolbarPlacement();
 		}
 
 #if WINDOWS_UWP
