@@ -18,4 +18,6 @@ namespace Xamarin.Forms.PlatformConfiguration.WindowsSpecific
 		/// </summary>
 		Bottom
 	}
+
+	
 }

@@ -313,6 +313,22 @@ namespace Xamarin.Forms.Platform.UWP
 					Windows.UI.Xaml.Controls.Grid.SetRow(_commandBar, Device.Idiom == TargetIdiom.Phone ? 2 : 0);
 					break;
 			}
+
+			AdjustCommandBarForTitle();
+		}
+
+		void AdjustCommandBarForTitle()
+		{
+			if (Windows.UI.Xaml.Controls.Grid.GetRow(_commandBar) == 0)
+			{
+				Windows.UI.Xaml.Controls.Grid.SetColumn(_commandBar, 1);
+				Windows.UI.Xaml.Controls.Grid.SetColumnSpan(_commandBar, 1);
+			}
+			else
+			{
+				Windows.UI.Xaml.Controls.Grid.SetColumn(_commandBar, 0);
+				Windows.UI.Xaml.Controls.Grid.SetColumnSpan(_commandBar, 2);
+			}
 		}
 	}
 }

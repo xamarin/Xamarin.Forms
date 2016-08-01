@@ -257,7 +257,7 @@ namespace Xamarin.Forms.Controls
 			masterContent.Children.Add(navList);
 			master.Content = masterContent;
 
-			var detail = new ContentPage { Title = "Detail" };
+			var detail = new ContentPage { Title = "This is the detail page's Title" };
 			var detailContent = new StackLayout { VerticalOptions = LayoutOptions.Fill, HorizontalOptions = LayoutOptions.Fill };
 			detailContent.Children.Add(new Label
 			{ 

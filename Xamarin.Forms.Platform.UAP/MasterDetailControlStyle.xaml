@@ -52,8 +52,10 @@
 									</ContentControl>
 								</StackPanel>
 
-								<uwp:FormsCommandBar x:Name="CommandBar" Grid.Row="0" Grid.Column="1"  Foreground="{TemplateBinding ToolbarForeground}" Background="{TemplateBinding ToolbarBackground}"  VerticalContentAlignment="Top">
-                                    
+								<uwp:FormsCommandBar x:Name="CommandBar" Grid.Row="0" Grid.Column="1" 
+													 Foreground="{TemplateBinding ToolbarForeground}" 
+													 Background="{TemplateBinding ToolbarBackground}" 
+													 VerticalContentAlignment="Top">
                                 </uwp:FormsCommandBar>
 
 								<ContentPresenter x:Name="DetailPresenter" Grid.Column="0" Grid.ColumnSpan="2"  Grid.Row="1" Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Detail}" />

@@ -271,6 +271,7 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 
 			Control.DetailTitle = (_detail as NavigationPage)?.CurrentPage?.Title ?? _detail.Title ?? Element?.Title;
+			(this as ITitleProvider).ShowTitle = !string.IsNullOrEmpty(Control.DetailTitle);
 		}
 
 		void UpdateIsPresented()

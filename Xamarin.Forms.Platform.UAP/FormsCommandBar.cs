@@ -6,6 +6,8 @@ namespace Xamarin.Forms.Platform.UWP
 {
 	public class FormsCommandBar : CommandBar
 	{
+		// TODO Once 10.0.14393.0 is available, enable dynamic overflow: https://msdn.microsoft.com/en-us/library/windows/apps/windows.ui.xaml.controls.commandbar.isdynamicoverflowenabled.aspx 
+
 		Windows.UI.Xaml.Controls.Button _moreButton;
 
 		public FormsCommandBar()
@@ -28,6 +30,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateMore()
 		{
+			// TODO Add a version check; in 10.0.14393.0 and above we can just let the SDK handle this for us: https://msdn.microsoft.com/library/windows/apps/windows.ui.xaml.controls.commandbar.overflowbuttonvisibility.aspx
 			if (_moreButton == null)
 				return;
 
