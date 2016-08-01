@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Linq;
-using System.Collections.Generic;
-
-using Xamarin.Forms;
 
 using NUnit.Framework;
 
-namespace Xamarin.Forms.Xaml.UnitTests.Compiled
+namespace Xamarin.Forms.Xaml.UnitTests
 {
 	public class ConvertibleToView
 	{
