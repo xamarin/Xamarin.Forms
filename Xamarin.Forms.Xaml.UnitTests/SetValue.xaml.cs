@@ -8,6 +8,14 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Xaml.UnitTests.Compiled
 {
+	public class ConvertibleToView
+	{
+		public static implicit operator View(ConvertibleToView source)
+		{
+			return new Button();
+		}
+	}
+
 	public partial class SetValue : ContentPage
 	{	
 		public SetValue ()
@@ -185,6 +193,22 @@ namespace Xamarin.Forms.Xaml.UnitTests.Compiled
 			{
 				var page = new SetValue (useCompiledXaml);
 				Assert.AreEqual (AbsoluteLayoutFlags.PositionProportional | AbsoluteLayoutFlags.WidthProportional, AbsoluteLayout.GetLayoutFlags (page.label14));
+			}
+
+			[TestCase(false)]
+			[TestCase(true)]
+			public void ConversionsAreAppliedOnSet(bool useCompiledXaml)
+			{
+				var page = new SetValue(useCompiledXaml);
+				Assert.That(page.content0.Content, Is.TypeOf<Button>());
+			}
+
+			[TestCase(false)]
+			[TestCase(true)]
+			public void ConversionsAreAppliedOnAdd(bool useCompiledXaml)
+			{
+				var page = new SetValue(useCompiledXaml);
+				Assert.That(page.stack4.Children[0], Is.TypeOf<Button>());
 			}
 		}
 	}
