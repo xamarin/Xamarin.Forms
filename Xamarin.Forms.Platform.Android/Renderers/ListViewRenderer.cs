@@ -300,7 +300,8 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (_refresh != null)
 			{
-				if (Element.IsRefreshing && isInitialValue)
+				var isRefreshing = Element.IsRefreshing;
+				if (isRefreshing && isInitialValue)
 				{
 					_refresh.Refreshing = false;
 					_refresh.Post(() =>
@@ -309,7 +310,7 @@ namespace Xamarin.Forms.Platform.Android
 					});
 				}
 				else
-					_refresh.Refreshing = Element.IsRefreshing;
+					_refresh.Refreshing = isRefreshing;
 			}
 		}
 
