@@ -24,9 +24,21 @@ namespace Xamarin.Forms.PlatformConfiguration.iOSSpecific
 			return GetIsNavigationBarTranslucent(config.Element);
 		}
 
-		public static IPlatformElementConfiguration<iOS, FormsElement> EnableTranslucentNavigationBar(this IPlatformElementConfiguration<iOS, FormsElement> config, bool value)
+		public static IPlatformElementConfiguration<iOS, FormsElement> SetIsNavigationBarTranslucent(this IPlatformElementConfiguration<iOS, FormsElement> config, bool value)
 		{
 			SetIsNavigationBarTranslucent(config.Element, value);
+			return config;
+		}
+
+		public static IPlatformElementConfiguration<iOS, FormsElement> EnableTranslucentNavigationBar(this IPlatformElementConfiguration<iOS, FormsElement> config)
+		{
+			SetIsNavigationBarTranslucent(config.Element, true);
+			return config;
+		}
+
+		public static IPlatformElementConfiguration<iOS, FormsElement>DisableTranslucentNavigationBar(this IPlatformElementConfiguration<iOS, FormsElement> config)
+		{
+			SetIsNavigationBarTranslucent(config.Element, false);
 			return config;
 		}
 	}
