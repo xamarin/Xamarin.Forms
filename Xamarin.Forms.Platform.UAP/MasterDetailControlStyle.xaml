@@ -33,14 +33,8 @@
 									<RowDefinition Height="Auto" />
 								</Grid.RowDefinitions>
 
-								<!-- TODO EZH Pane does have a setting for being on the right, maybe a PS for that is in order -->
-								<!-- TODO EZH Add PS For ToolBarAlignment (Left or Right, Right is default) -->
+								<!-- TODO EZH Verify that the correct things happen if you navigate *to* the MDP (back button) -->
 								
-								<!-- TODO EZH See what happens with all this on Win8.1 -->
-								<!-- TODO EZH See what happens with all this on Win Phone 8.1 -->
-
-								<!-- TODO EZH Verify that the correct things happen if you navigate to the MDP (back button) -->
-								<!-- TODO EZH Verify that the correct things happen if you put a nav page in the detail of an MDP (title and such) -->
 								
 								<StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
 									

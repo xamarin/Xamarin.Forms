@@ -21,6 +21,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformSpecificsGalleries
 
 			var master = new ContentPage { Title = "Master Detail Page" };
 			var masterContent = new StackLayout { Spacing = 10, Margin = new Thickness(0, 10, 5, 0) };
+			var detail = new ContentPage { Title = "This is the detail page's Title" };
 
 			// Build the navigation pane items
 			var navItems = new List<NavItem>
@@ -28,7 +29,9 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformSpecificsGalleries
 				new NavItem("Display Alert", "\uE171", new Command(() => DisplayAlert("Alert", "This is an alert", "OK"))),
 				new NavItem("Return To Gallery", "\uE106", restore),
 				new NavItem("Save", "\uE105", new Command(() => DisplayAlert("Save", "Fake save dialog", "OK"))),
-				new NavItem("Audio", "\uE189", new Command(() => DisplayAlert("Audio", "Never gonna give you up...", "OK")))
+				new NavItem("Audio", "\uE189", new Command(() => DisplayAlert("Audio", "Never gonna give you up...", "OK"))),
+				new NavItem("Set Detail to Navigation Page", "\uE16F", new Command(() => Detail = CreateNavigationPage())),
+				new NavItem("Set Detail to Content Page", "\uE160", new Command(() => Detail = detail)),
 			};
 
 			var navList = new NavList(navItems);
@@ -37,7 +40,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformSpecificsGalleries
 			masterContent.Children.Add(navList);
 			master.Content = masterContent;
 
-			var detail = new ContentPage { Title = "This is the detail page's Title" };
+			
 			var detailContent = new StackLayout { VerticalOptions = LayoutOptions.Fill, HorizontalOptions = LayoutOptions.Fill };
 			detailContent.Children.Add(new Label
 			{
@@ -289,6 +292,29 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformSpecificsGalleries
 					return cell;
 				});
 			}
+		}
+
+		static NavigationPage CreateNavigationPage()
+		{
+			var page = new NavigationPage { Title = "This is the Navigation Page Title" };
+
+			page.PushAsync(CreateNavSubPage());
+
+			return page;
+		}
+
+		static ContentPage CreateNavSubPage()
+		{
+			var page = new ContentPage();
+
+			var label = new Label { Text = "This is content in a nav page" };
+			var button = new Button() { Text = "Push Another Page"};
+
+			button.Clicked += (sender, args) => page.Navigation.PushAsync(CreateNavSubPage());
+
+			page.Content = new StackLayout { Children = { label, button } };
+
+			return page;
 		}
 	}
 }

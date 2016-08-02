@@ -78,8 +78,6 @@ namespace Xamarin.Forms.Platform.UWP
 
 		string ITitleProvider.Title
 		{
-			// TODO EZH This can't possibly be right; I can set the title and maybe the control will display what I set, but subsequent queries will return something different?
-			// TODO EZH Also, I *might* set the title and nothing happens because the Control is null, but I get no feedback 
 			get { return Element?.Title; }
 
 			set
