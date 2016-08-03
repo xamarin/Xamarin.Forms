@@ -89,6 +89,8 @@
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="PlatformConfiguration\AndroidSpecific\Application.cs" />
     <Compile Include="PlatformConfiguration\ExtensionPoints.cs" />
+    <Compile Include="PlatformConfiguration\iOSSpecific\BlurEffectStyle.cs" />
+    <Compile Include="PlatformConfiguration\iOSSpecific\BoxView.cs" />
     <Compile Include="PlatformConfiguration\iOSSpecific\NavigationPage.cs" />
     <Compile Include="PlatformConfiguration\WindowsSpecific\MasterDetailPage.cs" />
     <Compile Include="PlatformConfiguration\WindowsSpecific\CollapseStyle.cs" />
