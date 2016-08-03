@@ -5,9 +5,14 @@ using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
 {
+	public interface ILabelController : IViewController
+	{
+		TextAlignment EffectiveTextAlignment { get; }
+	}
+
 	[ContentProperty("Text")]
 	[RenderWith(typeof(_LabelRenderer))]
-	public class Label : View, IFontElement, ITextElement, IElementConfiguration<Label>
+	public class Label : View, IFontElement, ILabelController, ITextElement, IElementConfiguration<Label>
 	{
 		public static readonly BindableProperty HorizontalTextAlignmentProperty = BindableProperty.Create("HorizontalTextAlignment", typeof(TextAlignment), typeof(Label), TextAlignment.Start,
 			propertyChanged: OnHorizontalTextAlignmentPropertyChanged);
@@ -135,6 +140,23 @@ namespace Xamarin.Forms
 
 		double IFontElement.FontSizeDefaultValueCreator() =>
 			Device.GetNamedSize(NamedSize.Default, (Label)this);
+
+		TextAlignment ILabelController.EffectiveTextAlignment
+		{
+			get
+			{
+				var flow = FlowDirection;
+				if (flow == FlowDirection.LeftToRight)
+					return HorizontalTextAlignment;
+				// invert in right to left mode
+				var result = HorizontalTextAlignment;
+				if (result == TextAlignment.Start)
+					return TextAlignment.End;
+				else if (result == TextAlignment.End)
+					return TextAlignment.Start;
+				return TextAlignment.Center;
+			}
+		}
 
 		void IFontElement.OnFontAttributesChanged(FontAttributes oldValue, FontAttributes newValue) =>
 			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);

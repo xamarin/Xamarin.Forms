@@ -593,8 +593,7 @@ namespace Xamarin.Forms
 
 				OnPropertyChanged(property.PropertyName);
 
-				if (property.PropertyChanged != null)
-					property.PropertyChanged(this, original, value);
+				property.PropertyChanged?.Invoke(this, original, value);
 			}
 		}
 
@@ -605,7 +604,8 @@ namespace Xamarin.Forms
 			IsBeingSet = 1 << 1,
 			IsDynamicResource = 1 << 2,
 			IsSetFromStyle = 1 << 3,
-			IsDefaultValue = 1 << 4
+			IsDefaultValue = 1 << 4,
+			IsInherited = 1 << 5,
 		}
 
 		class BindablePropertyContext

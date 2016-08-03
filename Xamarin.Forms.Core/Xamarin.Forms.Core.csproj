@@ -110,6 +110,8 @@
     <Compile Include="IElementConfiguration.cs" />
     <Compile Include="IPlatformElementConfiguration.cs" />
     <Compile Include="PlatformConfigurationRegistry.cs" />
+    <Compile Include="EffectiveFlowDirection.cs" />
+    <Compile Include="FlowDirection.cs" />
     <Compile Include="IFontElement.cs" />
     <Compile Include="DependencyAttribute.cs" />
     <Compile Include="DependencyFetchTarget.cs" />
