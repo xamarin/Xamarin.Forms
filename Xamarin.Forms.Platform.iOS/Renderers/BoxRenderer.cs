@@ -24,8 +24,6 @@ namespace Xamarin.Forms.Platform.iOS
 	public class BoxRenderer : VisualElementRenderer<BoxView>
 	{
 		UIColor _colorToRenderer;
-		UIVisualEffectView _blur;
-		BlurEffectStyle _previousBlur;
 		SizeF _previousSize;
 
 		public override void Draw(RectangleF rect)
@@ -38,13 +36,6 @@ namespace Xamarin.Forms.Platform.iOS
 			base.Draw(rect);
 
 			_previousSize = Bounds.Size;
-
-			if (_blur != null)
-			{
-				_blur.Frame = rect;
-				if (_blur.Superview == null)
-					Superview.Add(_blur);
-			}
 		}
 
 		public override void LayoutSubviews()
@@ -58,10 +49,7 @@ namespace Xamarin.Forms.Platform.iOS
 			base.OnElementChanged(e);
 
 			if (Element != null)
-			{
 				SetBackgroundColor(Element.BackgroundColor);
-				SetBlur();
-			}
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -71,8 +59,6 @@ namespace Xamarin.Forms.Platform.iOS
 				SetBackgroundColor(Element.BackgroundColor);
 			else if (e.PropertyName == VisualElement.IsVisibleProperty.PropertyName && Element.IsVisible)
 				SetNeedsDisplay();
-			else if (e.PropertyName == PlatformConfiguration.iOSSpecific.BoxView.BlurEffectProperty.PropertyName)
-				SetBlur();
 		}
 
 		protected override void SetBackgroundColor(Color color)
@@ -86,47 +72,6 @@ namespace Xamarin.Forms.Platform.iOS
 			else
 				_colorToRenderer = color.ToUIColor();
 
-			SetNeedsDisplay();
-		}
-
-		void SetBlur()
-		{
-			if (Element == null)
-				return;
-
-			var blur = Element.OnThisPlatform().GetBlurEffect();
-
-			if (_previousBlur == blur)
-				return;
-
-			if (_blur != null)
-			{
-				_blur.RemoveFromSuperview();
-				_blur = null;
-			}
-
-			if (blur == BlurEffectStyle.None)
-			{
-				SetNeedsDisplay();
-				return;
-			}
-
-			UIBlurEffect blurEffect;
-			switch (blur)
-			{
-				default:
-				case BlurEffectStyle.ExtraLight:
-					blurEffect = UIBlurEffect.FromStyle(UIBlurEffectStyle.ExtraLight);
-					break;
-				case BlurEffectStyle.Light:
-					blurEffect = UIBlurEffect.FromStyle(UIBlurEffectStyle.Light);
-					break;
-				case BlurEffectStyle.Dark:
-					blurEffect = UIBlurEffect.FromStyle(UIBlurEffectStyle.Dark);
-					break;
-			}
-
-			_blur = new UIVisualEffectView(blurEffect);
 			SetNeedsDisplay();
 		}
 	}
