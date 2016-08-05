@@ -33,10 +33,7 @@
 									<RowDefinition Height="Auto" />
 								</Grid.RowDefinitions>
 
-								<!-- TODO EZH Verify that the correct things happen if you navigate *to* the MDP (back button) -->
-								
-								
-								<StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+								<StackPanel x:Name="TitleBar" Grid.Row="0" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Background="{TemplateBinding ToolbarBackground}" >
 									
 									<Button Name="ContentTogglePane" Style="{ThemeResource PaneButton}" Foreground="{TemplateBinding ToolbarForeground}"  
 											Visibility="{TemplateBinding ContentTogglePaneButtonVisibility}" />

@@ -9,9 +9,11 @@ namespace Xamarin.Forms.Controls
 		public PlatformSpecificsGallery()
 		{
 			var mdpWindowsButton = new Button { Text = "Master Detail Page (Windows)" };
+			var npWindowsButton = new Button { Text = "Navigation Page (Windows)" };
 			var navpageiOSButton = new Button() { Text = "Navigation Page (iOS)"};
 
 			mdpWindowsButton.Clicked += (sender, args) => { SetRoot(new MasterDetailPageWindows(new Command(RestoreOriginal))); };
+			npWindowsButton.Clicked += (sender, args) => { SetRoot(new NavigationPageWindows(new Command(RestoreOriginal))); };
 			navpageiOSButton.Clicked += (sender, args) => { SetRoot(NavigationPageiOS.Create(new Command(RestoreOriginal))); };
 
 			Content = new StackLayout

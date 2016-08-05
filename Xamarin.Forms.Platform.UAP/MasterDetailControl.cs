@@ -53,6 +53,7 @@ namespace Xamarin.Forms.Platform.UWP
 			new PropertyMetadata(default(Visibility)));
 		
 		CommandBar _commandBar;
+		StackPanel _titleBar;
 
 		TaskCompletionSource<CommandBar> _commandBarTcs;
 		FrameworkElement _masterPresenter;
@@ -233,6 +234,7 @@ namespace Xamarin.Forms.Platform.UWP
 			_detailPresenter = GetTemplateChild("DetailPresenter") as FrameworkElement;
 
 			_commandBar = GetTemplateChild("CommandBar") as CommandBar;
+			_titleBar = GetTemplateChild("TitleBar") as StackPanel;
 
 			UpdateToolbarPlacement();
 			UpdateMode(); 
@@ -323,11 +325,13 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				Windows.UI.Xaml.Controls.Grid.SetColumn(_commandBar, 1);
 				Windows.UI.Xaml.Controls.Grid.SetColumnSpan(_commandBar, 1);
+				Windows.UI.Xaml.Controls.Grid.SetColumnSpan(_titleBar, 1);
 			}
 			else
 			{
 				Windows.UI.Xaml.Controls.Grid.SetColumn(_commandBar, 0);
 				Windows.UI.Xaml.Controls.Grid.SetColumnSpan(_commandBar, 2);
+				Windows.UI.Xaml.Controls.Grid.SetColumnSpan(_titleBar, 2);
 			}
 		}
 	}
