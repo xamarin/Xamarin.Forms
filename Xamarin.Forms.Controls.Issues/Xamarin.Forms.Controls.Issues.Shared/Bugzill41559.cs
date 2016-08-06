@@ -6,6 +6,7 @@ using Xamarin.Forms.CustomAttributes;
 #if UITEST
 using Xamarin.UITest;
 using NUnit.Framework;
+using System.Linq;
 #endif
 
 namespace Xamarin.Forms.Controls.Issues
@@ -31,7 +32,11 @@ namespace Xamarin.Forms.Controls.Issues
 		public void Bugzilla41559Test ()
 		{
 			RunningApp.Tap("NumericEntry");
-			var buttonCount = RunningApp.Query("Done").Count();
+
+			const string DoneButtonText = "Done";
+			RunningApp.WaitForElement(DoneButtonText);
+			var buttonCount = RunningApp.Query(DoneButtonText).Count();
+
 			Assert.GreaterOrEqual(buttonCount, 1, "Done keyboard button is not added");
 		}
 #endif
