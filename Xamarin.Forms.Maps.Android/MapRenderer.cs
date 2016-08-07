@@ -41,13 +41,18 @@ namespace Xamarin.Forms.Maps.Android
 			return new SizeRequest (new Size (Context.ToPixels (40), Context.ToPixels (40)));
 		}
 
+		protected virtual MapView CreateMapView()
+		{
+			return new MapView(Context);
+		}
+
 		protected override void OnElementChanged (ElementChangedEventArgs<View> e)
 		{
 			base.OnElementChanged (e);
 
 			var oldMapView = (MapView)Control;
 
-			var mapView = new MapView (Context);
+			var mapView = CreateMapView();
 			mapView.OnCreate (s_bundle);
 			mapView.OnResume ();
 			SetNativeControl (mapView);
