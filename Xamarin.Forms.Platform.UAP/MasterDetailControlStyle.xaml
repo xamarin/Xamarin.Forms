@@ -34,7 +34,7 @@
 								</Grid.RowDefinitions>
 
 								<StackPanel x:Name="TitleBar" Grid.Row="0" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Background="{TemplateBinding ToolbarBackground}" >
-									
+
 									<Button Name="ContentTogglePane" Style="{ThemeResource PaneButton}" Foreground="{TemplateBinding ToolbarForeground}"  
 											Visibility="{TemplateBinding ContentTogglePaneButtonVisibility}" />
 
@@ -46,8 +46,7 @@
 								<uwp:FormsCommandBar x:Name="CommandBar" Grid.Row="0" Grid.Column="1" 
 													 Foreground="{TemplateBinding ToolbarForeground}" 
 													 Background="{TemplateBinding ToolbarBackground}" 
-													 VerticalContentAlignment="Top">
-                                </uwp:FormsCommandBar>
+													 VerticalContentAlignment="Top" />
 
 								<ContentPresenter x:Name="DetailPresenter" Grid.Column="0" Grid.ColumnSpan="2"  Grid.Row="1" Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Detail}" />
 							</Grid>

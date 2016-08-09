@@ -261,6 +261,7 @@ namespace Xamarin.Forms.Platform.WinRT
 			return Element.BarTextColor.ToBrush();
 		}
 
+        // TODO EZH Why don't this and GetToolBarProvider ever get called on either platform?
 		Task<CommandBar> GetCommandBarAsync()
 		{
 			var platform = (Platform)Element.Platform;
@@ -517,12 +518,14 @@ namespace Xamarin.Forms.Platform.WinRT
 
         void UpdateToolbarPlacement()
 		{
+#if WINDOWS_UWP
             if (_container == null)
             {
                 return;
             }
 
             _container.ToolbarPlacement = Element.OnThisPlatform().GetToolbarPlacement();
+#endif
 		}
 
 #pragma warning disable 1998 // considered for removal

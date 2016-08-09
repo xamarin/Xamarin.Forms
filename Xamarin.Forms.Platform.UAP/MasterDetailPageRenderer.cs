@@ -144,12 +144,16 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateDetail();
 				UpdateMaster();
 				UpdateMode();
-				UpdateToolbarPlacement();
 				UpdateIsPresented();
 
 				if (!string.IsNullOrEmpty(e.NewElement.AutomationId))
 					Control.SetValue(AutomationProperties.AutomationIdProperty, e.NewElement.AutomationId);
-			}
+
+#if WINDOWS_UWP
+                UpdateToolbarPlacement();
+#endif
+
+            }
 		}
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -302,12 +306,13 @@ namespace Xamarin.Forms.Platform.UWP
 			Control.ShouldShowSplitMode = MasterDetailPageController.ShouldShowSplitMode;
 		}
 
-		void UpdateToolbarPlacement()
+#if WINDOWS_UWP
+
+        void UpdateToolbarPlacement()
 		{
 			Control.ToolbarPlacement = Element.OnThisPlatform().GetToolbarPlacement();
 		}
 
-#if WINDOWS_UWP
 		public void BindForegroundColor(AppBar appBar)
 		{
 			SetAppBarForegroundBinding(appBar);

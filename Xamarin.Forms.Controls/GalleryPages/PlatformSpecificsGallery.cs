@@ -10,15 +10,17 @@ namespace Xamarin.Forms.Controls
 		{
 			var mdpWindowsButton = new Button { Text = "Master Detail Page (Windows)" };
 			var npWindowsButton = new Button { Text = "Navigation Page (Windows)" };
+            var tbWindowsButton = new Button { Text = "Tabbed Page (Windows)" };
 			var navpageiOSButton = new Button() { Text = "Navigation Page (iOS)"};
 
 			mdpWindowsButton.Clicked += (sender, args) => { SetRoot(new MasterDetailPageWindows(new Command(RestoreOriginal))); };
 			npWindowsButton.Clicked += (sender, args) => { SetRoot(new NavigationPageWindows(new Command(RestoreOriginal))); };
+		    tbWindowsButton.Clicked += (sender, args) => { SetRoot(new TabbedPageWindows(new Command(RestoreOriginal))); };
 			navpageiOSButton.Clicked += (sender, args) => { SetRoot(NavigationPageiOS.Create(new Command(RestoreOriginal))); };
 
 			Content = new StackLayout
 			{
-				Children = { mdpWindowsButton, npWindowsButton, navpageiOSButton }
+				Children = { mdpWindowsButton, npWindowsButton, tbWindowsButton, navpageiOSButton }
 			};
 		}
 

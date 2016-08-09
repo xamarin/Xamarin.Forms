@@ -25,10 +25,6 @@ namespace Xamarin.Forms.Platform.UWP
 		public static readonly DependencyProperty CollapseStyleProperty = DependencyProperty.Register(nameof(CollapseStyle), typeof(CollapseStyle), 
 			typeof(MasterDetailControl), new PropertyMetadata(CollapseStyle.Full, CollapseStyleChanged));
 
-		// TODO EZH Can we pull this out so that we can use it on multiple controls? Rather than repeat it for everything that supports it
-		public static readonly DependencyProperty ToolbarPlacementProperty = DependencyProperty.Register(nameof(ToolbarPlacement), typeof(ToolbarPlacement), 
-			typeof(MasterDetailControl), new PropertyMetadata(ToolbarPlacement.Default, ToolbarPlacementChanged));
-		
 		public static readonly DependencyProperty CollapsedPaneWidthProperty = DependencyProperty.Register(nameof(CollapsedPaneWidth), typeof(double), typeof(MasterDetailControl),
 			new PropertyMetadata(48d, CollapsedPaneWidthChanged));
 
@@ -59,8 +55,9 @@ namespace Xamarin.Forms.Platform.UWP
 		FrameworkElement _masterPresenter;
 		FrameworkElement _detailPresenter;
 		SplitView _split;
+	    ToolbarPlacement _toolbarPlacement;
 
-		public MasterDetailControl()
+	    public MasterDetailControl()
 		{
 			DefaultStyleKey = typeof(MasterDetailControl);
 
@@ -170,13 +167,17 @@ namespace Xamarin.Forms.Platform.UWP
 			set { SetValue(CollapseStyleProperty, value); }
 		}
 
-		public ToolbarPlacement ToolbarPlacement
-		{
-			get { return (ToolbarPlacement)GetValue(ToolbarPlacementProperty); }
-			set { SetValue(ToolbarPlacementProperty, value); }
-		}
+	    public ToolbarPlacement ToolbarPlacement
+	    {
+	        get { return _toolbarPlacement; }
+	        set
+	        {
+	            _toolbarPlacement = value;
+	            UpdateToolbarPlacement();
+	        }
+	    }
 
-		public Visibility ContentTogglePaneButtonVisibility
+	    public Visibility ContentTogglePaneButtonVisibility
 		{
 			get { return (Visibility)GetValue(ContentTogglePaneButtonVisibilityProperty); }
 			set { SetValue(ContentTogglePaneButtonVisibilityProperty, value); }
@@ -321,7 +322,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void AdjustCommandBarForTitle()
 		{
-		    if (_commandBar == null)
+		    if (_commandBar == null || _titleBar == null)
 		    {
 		        return;
 		    }

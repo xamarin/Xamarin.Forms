@@ -19,14 +19,13 @@
 							<RowDefinition Height="Auto" />
 						</Grid.RowDefinitions>
 
-						<!-- TODO EZH Set this up to work with a similar layout to MasterDetailControl (separate Title from CommandBar) -->
 						<!-- TODO EZH Fix this naming; it's a commandbar or toolbar, not a navigationbar -->
 
-						<ContentControl Grid.Row="0" Grid.Column="0" VerticalAlignment="Top" VerticalContentAlignment="Center" Height="{ThemeResource TitleBarHeight}">
-							<TextBlock Text="{Binding Title}"  VerticalAlignment="Center" Padding="10,0,0,0" Foreground="{TemplateBinding TitleBrush}" Style="{ThemeResource TitleTextBlockStyle}" />
-						</ContentControl>
+							<Border x:Name="TitleBar" Grid.Row="0" Grid.Column="0" VerticalAlignment="Top" Background="{TemplateBinding ToolbarBackground}" Height="{ThemeResource TitleBarHeight}" HorizontalAlignment="Stretch"  Visibility="{Binding ShowNavigationBar,RelativeSource={RelativeSource Mode=TemplatedParent},Converter={StaticResource BoolVisibilityConverter}}">
+								<TextBlock Text="{Binding Title}" VerticalAlignment="Center" Padding="10,0,0,0" Foreground="{TemplateBinding TitleBrush}" Style="{ThemeResource TitleTextBlockStyle}" />
+							</Border>
 
-						<uwp:FormsCommandBar x:Name="CommandBar" Grid.Row="0" Grid.Column="1"  VerticalContentAlignment="Top" Background="{TemplateBinding ToolbarBackground}"  Visibility="{Binding ShowNavigationBar,RelativeSource={RelativeSource Mode=TemplatedParent},Converter={StaticResource BoolVisibilityConverter}}" />
+						<uwp:FormsCommandBar x:Name="CommandBar" Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Top" Background="{TemplateBinding ToolbarBackground}" Visibility="{Binding ShowNavigationBar,RelativeSource={RelativeSource Mode=TemplatedParent},Converter={StaticResource BoolVisibilityConverter}}" />
 
 						<ContentPresenter Margin="{TemplateBinding ContentMargin}" ContentTransitions="{TemplateBinding ContentTransitions}" x:Name="presenter" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" />
 					</Grid>
