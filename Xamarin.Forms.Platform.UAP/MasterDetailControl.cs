@@ -321,7 +321,12 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void AdjustCommandBarForTitle()
 		{
-			if (Windows.UI.Xaml.Controls.Grid.GetRow(_commandBar) == 0)
+		    if (_commandBar == null)
+		    {
+		        return;
+		    }
+
+		    if (Windows.UI.Xaml.Controls.Grid.GetRow(_commandBar) == 0)
 			{
 				Windows.UI.Xaml.Controls.Grid.SetColumn(_commandBar, 1);
 				Windows.UI.Xaml.Controls.Grid.SetColumnSpan(_commandBar, 1);

@@ -164,7 +164,7 @@ namespace Xamarin.Forms.Platform.UWP
 			         || e.PropertyName == Specifics.CollapseStyleProperty.PropertyName
 			         || e.PropertyName == Specifics.CollapsedPaneWidthProperty.PropertyName)
 				UpdateMode();
-			else if(e.PropertyName == Specifics.ToolbarPlacementProperty.PropertyName)
+			else if(e.PropertyName ==  PlatformConfiguration.WindowsSpecific.Page.ToolbarPlacementProperty.PropertyName)
 				UpdateToolbarPlacement();
 		}
 

@@ -13,6 +13,8 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
+
 #if WINDOWS_UWP
 using Windows.UI.Xaml.Data;
 using Windows.UI.Core;
@@ -72,7 +74,7 @@ namespace Xamarin.Forms.Platform.WinRT
 		{
 			set
 			{
-				_container.NavigationBarBackground = value;
+				_container.ToolbarBackground = value;
 				UpdateTitleOnParents();
 			}
 		}
@@ -187,6 +189,7 @@ namespace Xamarin.Forms.Platform.WinRT
 				LookupRelevantParents();
 				UpdateTitleColor();
 				UpdateNavigationBarBackground();
+                UpdateToolbarPlacement();
 				Element.PropertyChanged += OnElementPropertyChanged;
 				((INavigationPageController)Element).PushRequested += OnPushRequested;
 				((INavigationPageController)Element).PopRequested += OnPopRequested;
@@ -343,6 +346,8 @@ namespace Xamarin.Forms.Platform.WinRT
 				UpdateNavigationBarBackground();
 			else if (e.PropertyName == Page.PaddingProperty.PropertyName)
 				UpdatePadding();
+            else if (e.PropertyName == PlatformConfiguration.WindowsSpecific.Page.ToolbarPlacementProperty.PropertyName)
+				UpdateToolbarPlacement();
 		}
 
 		void OnLoaded(object sender, RoutedEventArgs args)
@@ -508,6 +513,16 @@ namespace Xamarin.Forms.Platform.WinRT
 		void UpdateTitleColor()
 		{
 			(this as ITitleProvider).BarForegroundBrush = GetBarForegroundBrush();
+		}
+
+        void UpdateToolbarPlacement()
+		{
+            if (_container == null)
+            {
+                return;
+            }
+
+            _container.ToolbarPlacement = Element.OnThisPlatform().GetToolbarPlacement();
 		}
 
 #pragma warning disable 1998 // considered for removal

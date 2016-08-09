@@ -2,6 +2,7 @@
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
+using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 
 #if WINDOWS_UWP
 
@@ -21,8 +22,12 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		public static readonly DependencyProperty ShowNavigationBarProperty = DependencyProperty.Register("ShowNavigationBar", typeof(bool), typeof(PageControl), new PropertyMetadata(true));
 
-		public static readonly DependencyProperty NavigationBarBackgroundProperty = DependencyProperty.Register("NavigationBarBackground", typeof(Brush), typeof(PageControl),
+		public static readonly DependencyProperty ToolbarBackgroundProperty = DependencyProperty.Register(nameof(ToolbarBackground), typeof(Brush), typeof(PageControl),
 			new PropertyMetadata(default(Brush)));
+
+        // TODO EZH Can we pull this out so that we can use it on multiple controls? Rather than repeat it for everything that supports it
+        public static readonly DependencyProperty ToolbarPlacementProperty = DependencyProperty.Register(nameof(ToolbarPlacement), typeof(ToolbarPlacement), 
+			typeof(PageControl), new PropertyMetadata(ToolbarPlacement.Default, ToolbarPlacementChanged));
 
 		public static readonly DependencyProperty BackButtonTitleProperty = DependencyProperty.Register("BackButtonTitle", typeof(string), typeof(PageControl), new PropertyMetadata(false));
 
@@ -35,6 +40,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		AppBarButton _backButton;
 		CommandBar _commandBar;
+        ContentControl _titleBar;
 
 		TaskCompletionSource<CommandBar> _commandBarTcs;
 		Windows.UI.Xaml.Controls.ContentPresenter _presenter;
@@ -72,10 +78,16 @@ namespace Xamarin.Forms.Platform.WinRT
 			set { SetValue(InvisibleBackButtonCollapsedProperty, value); }
 		}
 
-		public Brush NavigationBarBackground
+		public Brush ToolbarBackground
 		{
-			get { return (Brush)GetValue(NavigationBarBackgroundProperty); }
-			set { SetValue(NavigationBarBackgroundProperty, value); }
+			get { return (Brush)GetValue(ToolbarBackgroundProperty); }
+			set { SetValue(ToolbarBackgroundProperty, value); }
+		}
+
+        public ToolbarPlacement ToolbarPlacement
+		{
+			get { return (ToolbarPlacement)GetValue(ToolbarPlacementProperty); }
+			set { SetValue(ToolbarPlacementProperty, value); }
 		}
 
 		public bool ShowBackButton
@@ -125,12 +137,10 @@ namespace Xamarin.Forms.Platform.WinRT
 			_presenter = GetTemplateChild("presenter") as Windows.UI.Xaml.Controls.ContentPresenter;
 
 			_commandBar = GetTemplateChild("CommandBar") as CommandBar;
+            _titleBar = GetTemplateChild("TitleBar") as ContentControl;
 
 			TaskCompletionSource<CommandBar> tcs = _commandBarTcs;
-			if (tcs != null)
-			{
-				tcs.SetResult(_commandBar);
-			}
+		    tcs?.SetResult(_commandBar);
 		}
 
 		void OnBackClicked(object sender, RoutedEventArgs e)
@@ -150,6 +160,11 @@ namespace Xamarin.Forms.Platform.WinRT
 			((PageControl)dependencyObject).UpdateBackButton();
 		}
 
+        static void ToolbarPlacementChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
+		{
+			((PageControl)dependencyObject).UpdateToolbarPlacement();
+		}
+
 		void UpdateBackButton()
 		{
 			if (_backButton == null)
@@ -161,6 +176,49 @@ namespace Xamarin.Forms.Platform.WinRT
 				_backButton.Visibility = InvisibleBackButtonCollapsed ? Visibility.Collapsed : Visibility.Visible;
 
 			_backButton.Opacity = ShowBackButton ? 1 : 0;
+		}
+
+        void UpdateToolbarPlacement()
+		{
+			if (_commandBar == null)
+			{
+				return;
+			}
+
+			switch (ToolbarPlacement)
+			{
+				case ToolbarPlacement.Top:
+					Windows.UI.Xaml.Controls.Grid.SetRow(_commandBar, 0);
+					break;
+				case ToolbarPlacement.Bottom:
+					Windows.UI.Xaml.Controls.Grid.SetRow(_commandBar, 2);
+					break;
+				case ToolbarPlacement.Default:
+				default:
+					Windows.UI.Xaml.Controls.Grid.SetRow(_commandBar, Device.Idiom == TargetIdiom.Phone ? 2 : 0);
+					break;
+			}
+
+		    AdjustCommandBarForTitle();
+		}
+
+        void AdjustCommandBarForTitle()
+		{
+            if (_commandBar == null)
+		    {
+		        return;
+		    }
+
+			if (Windows.UI.Xaml.Controls.Grid.GetRow(_commandBar) == 0)
+			{
+				Windows.UI.Xaml.Controls.Grid.SetColumn(_commandBar, 1);
+				Windows.UI.Xaml.Controls.Grid.SetColumnSpan(_commandBar, 1);
+			}
+			else
+			{
+				Windows.UI.Xaml.Controls.Grid.SetColumn(_commandBar, 0);
+				Windows.UI.Xaml.Controls.Grid.SetColumnSpan(_commandBar, 2);
+			}
 		}
 	}
 }

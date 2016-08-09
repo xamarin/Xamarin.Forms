@@ -5,6 +5,7 @@
 	x:Class="Xamarin.Forms.Platform.UWP.Resources">
 
 	<ResourceDictionary.MergedDictionaries>
+		<ResourceDictionary Source="PageControlStyle.xaml" />
 		<ResourceDictionary Source="FormsTextBoxStyle.xaml" />
 		<ResourceDictionary Source="AutoSuggestStyle.xaml" />
 		<ResourceDictionary Source="MasterDetailControlStyle.xaml" />
@@ -608,33 +609,6 @@
         </Setter>
     </Style>
 
-	<Style x:Key="PageControlDefaultStyle" TargetType="uwp:PageControl">
-		<Setter Property="ContentMargin" Value="0" />
-		<Setter Property="TitleBrush" Value="{ThemeResource DefaultTextForegroundThemeBrush}" />
-		<Setter Property="Template">
-			<Setter.Value>
-				<ControlTemplate TargetType="uwp:PageControl">
-					<Grid Background="{TemplateBinding Background}">
-						<Grid.RowDefinitions>
-							<RowDefinition Height="Auto" />
-							<RowDefinition Height="*" />
-						</Grid.RowDefinitions>
-
-                        <uwp:FormsCommandBar x:Name="CommandBar" Grid.Row="0" VerticalContentAlignment="Top" Background="{TemplateBinding NavigationBarBackground}"  Visibility="{Binding ShowNavigationBar,RelativeSource={RelativeSource Mode=TemplatedParent},Converter={StaticResource BoolVisibilityConverter}}">
-                            <uwp:FormsCommandBar.Content>
-                                <ContentControl VerticalAlignment="Top" VerticalContentAlignment="Center" Height="{ThemeResource TitleBarHeight}">
-                                    <TextBlock Text="{Binding Title}"  VerticalAlignment="Center" Padding="10,0,0,0" Foreground="{TemplateBinding TitleBrush}" Style="{ThemeResource TitleTextBlockStyle}" />
-                                </ContentControl>
-                          </uwp:FormsCommandBar.Content>
-                        </uwp:FormsCommandBar>
-
-						<ContentPresenter Margin="{TemplateBinding ContentMargin}" ContentTransitions="{TemplateBinding ContentTransitions}" x:Name="presenter" Grid.Row="1" />
-					</Grid>
-				</ControlTemplate>
-			</Setter.Value>
-		</Setter>
-	</Style>
-
 	<Style TargetType="uwp:StepperControl">
 		<Setter Property="Template">
 			<Setter.Value>
@@ -653,6 +627,7 @@
 		</Setter>
 	</Style>
 
+	<!-- TODO EZH Chesterton's Fence -->
 	<Style TargetType="uwp:PageControl" BasedOn="{StaticResource PageControlDefaultStyle}" />
 
 	<Style TargetType="TextBox">

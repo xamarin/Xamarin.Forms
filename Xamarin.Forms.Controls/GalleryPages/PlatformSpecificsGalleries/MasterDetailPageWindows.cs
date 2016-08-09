@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows.Input;
 using Xamarin.Forms.PlatformConfiguration;
@@ -59,7 +60,10 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformSpecificsGalleries
 
 			picker.SelectedIndex = options.IndexOf(defaultOption);
 
-			picker.SelectedIndexChanged += (sender, args) => { selectedIndexChanged(picker); };
+			picker.SelectedIndexChanged += (sender, args) =>
+			{
+			    selectedIndexChanged(picker);
+			};
 
 			var changerLabel = new Label { Text = label, VerticalOptions = LayoutOptions.Center };
 
@@ -80,7 +84,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformSpecificsGalleries
 			return layout;
 		}
 
-		public static Layout CreateToolbarPlacementChanger(MasterDetailPage page)
+		public static Layout CreateToolbarPlacementChanger(Page page)
 		{
 			Type enumType = typeof(ToolbarPlacement);
 
@@ -141,13 +145,13 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformSpecificsGalleries
 
 	public class NavigationPageWindows : NavigationPage
 	{
-		public NavigationPageWindows()
+		public NavigationPageWindows(ICommand restore)
 		{
-			PushAsync(CreateRoot());
+			PushAsync(CreateRoot(restore));
 			AddToolBarItems(this);
 		}
 
-		ContentPage CreateRoot()
+		ContentPage CreateRoot(ICommand restore)
 		{
 			var page = new ContentPage();
 
@@ -171,10 +175,6 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformSpecificsGalleries
 
 	public class MasterDetailPageWindows : MasterDetailPage
 	{
-		const string CommandBarActionTitle = "Hey!";
-		const string CommandBarActionMessage = "Command Bar Item Clicked";
-		const string CommandBarActionDismiss = "OK";
-
 		public MasterDetailPageWindows(ICommand restore)
 		{
 			On<Windows>()
@@ -225,10 +225,6 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformSpecificsGalleries
 
 			Detail = detail;
 		}
-
-		
-
-		
 
 		static Layout CreateCollapseStyleChanger(MasterDetailPage page)
 		{

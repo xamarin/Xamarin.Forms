@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Controls
 
 			Content = new StackLayout
 			{
-				Children = { mdpWindowsButton, navpageiOSButton }
+				Children = { mdpWindowsButton, npWindowsButton, navpageiOSButton }
 			};
 		}
 
