@@ -31,11 +31,11 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				var count = 0;
 
-				//Get each adapter's count + 1 for the header
+				//Get each adapter's count + 1 for the header (if there is one)
 				ITableModel model = Controller.Model;
 				int section = model.GetSectionCount();
 				for (var i = 0; i < section; i++)
-					count += model.GetRowCount(i) + 1;
+					count += model.GetRowCount(i) + (string.IsNullOrEmpty(model.GetSectionTitle(i)) ? 0 : 1);
 
 				return count;
 			}
@@ -80,12 +80,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override AView GetView(int position, AView convertView, ViewGroup parent)
 		{
-			object obj = this[position];
-			if (obj == null)
-				return new AView(Context);
-
 			bool isHeader, nextIsHeader;
 			Cell item = GetCellForPosition(position, out isHeader, out nextIsHeader);
+			if (item == null)
+				return new AView(Context);
 
 			var makeBline = true;
 			var layout = convertView as ConditionalFocusLayout;
@@ -173,14 +171,17 @@ namespace Xamarin.Forms.Platform.Android
 			int sectionCount = model.GetSectionCount();
 			for (var sectionIndex = 0; sectionIndex < sectionCount; sectionIndex++)
 			{
-				if (position == 0)
+				var sectionHasHeader = !string.IsNullOrEmpty(model.GetSectionTitle(sectionIndex));
+				var headerCount = sectionHasHeader ? 1 : 0;
+
+				if (position == 0 && sectionHasHeader)
 					return;
 
-				int size = model.GetRowCount(sectionIndex) + 1;
+				int size = model.GetRowCount(sectionIndex) + headerCount;
 
 				if (position < size)
 				{
-					model.RowSelected(sectionIndex, position - 1);
+					model.RowSelected(sectionIndex, position - headerCount);
 					return;
 				}
 
@@ -198,21 +199,20 @@ namespace Xamarin.Forms.Platform.Android
 
 			for (var sectionIndex = 0; sectionIndex < sectionCount; sectionIndex ++)
 			{
-				int size = model.GetRowCount(sectionIndex) + 1;
+				var sectionTitle = model.GetSectionTitle(sectionIndex);
+				var sectionHasHeader = !string.IsNullOrEmpty(sectionTitle);
+				var headerCount = sectionHasHeader ? 1 : 0;
 
-				if (position == 0)
+				int size = model.GetRowCount(sectionIndex) + headerCount;
+
+				if (position == 0 && sectionHasHeader)
 				{
 					isHeader = true;
-					nextIsHeader = size == 0 && sectionIndex < sectionCount - 1;
+					nextIsHeader = size == 1 && sectionIndex < sectionCount - 1;
 
-					Cell header = model.GetHeaderCell(sectionIndex);
-
-					Cell resultCell = null;
-					if (header != null)
-						resultCell = header;
-
+					Cell resultCell = model.GetHeaderCell(sectionIndex);
 					if (resultCell == null)
-						resultCell = new TextCell { Text = model.GetSectionTitle(sectionIndex) };
+						resultCell = new TextCell { Text = sectionTitle };
 
 					resultCell.Parent = _view;
 
@@ -222,7 +222,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (position < size)
 				{
 					nextIsHeader = position == size - 1;
-					return (Cell)model.GetItem(sectionIndex, position - 1);
+					return (Cell)model.GetItem(sectionIndex, position - headerCount);
 				}
 
 				position -= size;
