@@ -235,6 +235,7 @@ namespace Xamarin.Forms.Platform.WinRT
 						defaultContext = listViewController.GetDisplayTextFromGroup(newContext);
 
 					cell = listViewController.CreateDefaultCell(defaultContext);
+					cell.BindingContext = defaultContext;
 				}
 
 				// A TableView cell should already have its parent,
