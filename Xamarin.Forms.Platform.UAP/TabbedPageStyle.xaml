@@ -67,7 +67,8 @@
 							</VisualStateGroup>
 						</VisualStateManager.VisualStateGroups>
 
-						<ContentControl x:Name="TitleBar" VerticalAlignment="Top" VerticalContentAlignment="Center" Height="{ThemeResource TitleBarHeight}" Grid.Column="0" Grid.Row="0" Visibility="{TemplateBinding TitleVisibility}" Background="{TemplateBinding ToolbarBackground}">
+						<ContentControl x:Name="TitleBar" VerticalAlignment="Top" VerticalContentAlignment="Center" Height="{ThemeResource TitleBarHeight}" Grid.Column="0" Grid.Row="0" 
+										Visibility="{TemplateBinding TitleVisibility}" Background="{TemplateBinding ToolbarBackground}">
 							<TextBlock Text="{TemplateBinding Title}"  VerticalAlignment="Center" Padding="10,0,0,0" Foreground="{TemplateBinding ToolbarForeground}" Style="{ThemeResource TitleTextBlockStyle}" />
 						</ContentControl>
 

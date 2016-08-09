@@ -99,7 +99,7 @@ namespace Xamarin.Forms.Platform.WinRT
 					return;
 
 				_showTitle = value;
-				UpdateNavigationBarVisible();
+				UpdateTitleVisible();
 				UpdateTitleOnParents();
 			}
 		}
@@ -336,7 +336,7 @@ namespace Xamarin.Forms.Platform.WinRT
 			else if (e.PropertyName == NavigationPage.BackButtonTitleProperty.PropertyName)
 				UpdateBackButtonTitle();
 			else if (e.PropertyName == NavigationPage.HasNavigationBarProperty.PropertyName)
-				UpdateNavigationBarVisible();
+				UpdateTitleVisible();
 		}
 
 		void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -440,7 +440,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 			IVisualElementRenderer renderer = page.GetOrCreateRenderer();
 
-			UpdateNavigationBarVisible();
+			UpdateTitleVisible();
 			UpdateTitleOnParents();
 
 			if (isAnimated && _transition == null)
@@ -490,16 +490,16 @@ namespace Xamarin.Forms.Platform.WinRT
 			(this as ITitleProvider).BarBackgroundBrush = GetBarBackgroundBrush();
 		}
 
-		void UpdateNavigationBarVisible()
+		void UpdateTitleVisible()
 		{
 			UpdateTitleOnParents();
 
-			bool showing = _container.ShowNavigationBar;
+			bool showing = _container.TitleVisibility == Visibility.Visible;
 			bool newValue = GetIsNavBarPossible() && NavigationPage.GetHasNavigationBar(_currentPage);
 			if (showing == newValue)
 				return;
 
-			_container.ShowNavigationBar = newValue;
+			_container.TitleVisibility = newValue ? Visibility.Visible : Visibility.Collapsed;
 
 			// Force ContentHeight/Width to update, doesn't work from inside PageControl for some reason
 			_container.UpdateLayout();

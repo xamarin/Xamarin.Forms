@@ -67,8 +67,11 @@ namespace Xamarin.Forms.Platform.WinRT
 		protected override void OnApplyTemplate()
 		{
 			base.OnApplyTemplate();
+			
 			_commandBar = GetTemplateChild("CommandBar") as CommandBar;
             _titleBar = GetTemplateChild("TitleBar") as ContentControl;
+			UpdateToolbarPlacement();
+
 			TaskCompletionSource<CommandBar> tcs = _commandBarTcs;
 		    tcs?.SetResult(_commandBar);
 		}

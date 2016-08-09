@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Platform.WinRT
 		public static readonly DependencyProperty ShowBackButtonProperty = DependencyProperty.Register("ShowBackButton", typeof(bool), typeof(PageControl),
 			new PropertyMetadata(false, OnShowBackButtonChanged));
 
-		public static readonly DependencyProperty ShowNavigationBarProperty = DependencyProperty.Register("ShowNavigationBar", typeof(bool), typeof(PageControl), new PropertyMetadata(true));
+		public static readonly DependencyProperty TitleVisibilityProperty = DependencyProperty.Register(nameof(TitleVisibility), typeof(Visibility), typeof(PageControl), new PropertyMetadata(Visibility.Visible));
 
 		public static readonly DependencyProperty ToolbarBackgroundProperty = DependencyProperty.Register(nameof(ToolbarBackground), typeof(Brush), typeof(PageControl),
 			new PropertyMetadata(default(Brush)));
@@ -104,10 +104,10 @@ namespace Xamarin.Forms.Platform.WinRT
 			set { SetValue(ShowBackButtonProperty, value); }
 		}
 
-		public bool ShowNavigationBar
+		public Visibility TitleVisibility
 		{
-			get { return (bool)GetValue(ShowNavigationBarProperty); }
-			set { SetValue(ShowNavigationBarProperty, value); }
+			get { return (Visibility)GetValue(TitleVisibilityProperty); }
+			set { SetValue(TitleVisibilityProperty, value); }
 		}
 
 		public Brush TitleBrush
@@ -147,6 +147,7 @@ namespace Xamarin.Forms.Platform.WinRT
 			_commandBar = GetTemplateChild("CommandBar") as CommandBar;
 #if WINDOWS_UWP
             _titleBar = GetTemplateChild("TitleBar") as Border;
+			UpdateToolbarPlacement();
 #endif
 
 			TaskCompletionSource<CommandBar> tcs = _commandBarTcs;
@@ -215,6 +216,11 @@ namespace Xamarin.Forms.Platform.WinRT
 		        return;
 		    }
             
+		   // TODO EZH This fails if you have the toolbar at the top and remove all of the commands; it collapses and we're left with a blank section to the right of the title
+		   // We can probably make this work by dropping the left auto column in each layout and making the top row control a border which goes all the way across with the title background
+		   // the contents would be a grid with auto|* and a placeholder for the command bar; the code below could just reparent the command bar and ignore titlebar altogether
+		   // probably will fix the top bar gap under the title on narrow screens when the secondary command menu opens (see phone with toolbarplacement top for example)
+
 			if (Windows.UI.Xaml.Controls.Grid.GetRow(_commandBar) == 0)
 			{
 				Windows.UI.Xaml.Controls.Grid.SetColumn(_commandBar, 1);
