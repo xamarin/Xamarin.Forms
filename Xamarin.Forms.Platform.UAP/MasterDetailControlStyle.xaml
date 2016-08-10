@@ -23,32 +23,37 @@
 						</SplitView.Pane>
 						<SplitView.Content>
 							<Grid>
-								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="Auto"></ColumnDefinition>
-									<ColumnDefinition Width="*"></ColumnDefinition>
-								</Grid.ColumnDefinitions>
 								<Grid.RowDefinitions>
 									<RowDefinition Height="Auto" />
 									<RowDefinition Height="*" />
 									<RowDefinition Height="Auto" />
 								</Grid.RowDefinitions>
 
-								<StackPanel x:Name="TitleBar" Grid.Row="0" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Background="{TemplateBinding ToolbarBackground}" >
+								<Grid x:Name="TitleBar" Background="{TemplateBinding ToolbarBackground}" HorizontalAlignment="Stretch">
+									<Grid.ColumnDefinitions>
+										<ColumnDefinition Width="Auto"></ColumnDefinition>
+										<ColumnDefinition Width="*"></ColumnDefinition>
+									</Grid.ColumnDefinitions>
 
-									<Button Name="ContentTogglePane" Style="{ThemeResource PaneButton}" Foreground="{TemplateBinding ToolbarForeground}"  
+									<StackPanel Orientation="Horizontal" VerticalAlignment="Center" Background="{TemplateBinding ToolbarBackground}" >
+
+										<Button Name="ContentTogglePane" Style="{ThemeResource PaneButton}" Foreground="{TemplateBinding ToolbarForeground}"  
 											Visibility="{TemplateBinding ContentTogglePaneButtonVisibility}" />
 
-									<ContentControl VerticalAlignment="Top" VerticalContentAlignment="Center" Height="{StaticResource TitleBarHeight}">
-										<TextBlock Text="{TemplateBinding DetailTitle}" Margin="10,0,0,0" Foreground="{TemplateBinding ToolbarForeground}" Style="{ThemeResource TitleTextBlockStyle}" Visibility="{TemplateBinding DetailTitleVisibility}" />
-									</ContentControl>
-								</StackPanel>
+										<Border Height="{ThemeResource TitleBarHeight}" Visibility="{TemplateBinding DetailTitleVisibility}">
+											<TextBlock Text="{TemplateBinding DetailTitle}" VerticalAlignment="Center" Margin="10,0,0,0" Foreground="{TemplateBinding ToolbarForeground}" Style="{ThemeResource TitleTextBlockStyle}" />
+										</Border>
+										
+									</StackPanel>
 
-								<uwp:FormsCommandBar x:Name="CommandBar" Grid.Row="0" Grid.Column="1" 
-													 Foreground="{TemplateBinding ToolbarForeground}" 
-													 Background="{TemplateBinding ToolbarBackground}" 
-													 VerticalContentAlignment="Top" />
+									<Border x:Name="TopCommandBarArea" Grid.Column="1" HorizontalAlignment="Stretch">
+										<uwp:FormsCommandBar x:Name="CommandBar" VerticalContentAlignment="Top" Background="{TemplateBinding ToolbarBackground}" Height="{ThemeResource TitleBarHeight}" />
+									</Border>
+								</Grid>
 
-								<ContentPresenter x:Name="DetailPresenter" Grid.Column="0" Grid.ColumnSpan="2"  Grid.Row="1" Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Detail}" />
+								<ContentPresenter x:Name="DetailPresenter" Grid.Row="1" Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Detail}" />
+
+								<Border x:Name="BottomCommandBarArea" Grid.Row="2" HorizontalAlignment="Stretch"></Border>
 							</Grid>
 						</SplitView.Content>
 					</SplitView>

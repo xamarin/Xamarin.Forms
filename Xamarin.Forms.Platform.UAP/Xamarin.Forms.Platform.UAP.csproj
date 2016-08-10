@@ -186,6 +186,7 @@
     </Compile>
     <Compile Include="StepperControl.cs" />
     <Compile Include="TabbedPageRenderer.cs" />
+    <Compile Include="ToolbarPlacementHelper.cs" />
     <Content Include="Properties\Xamarin.Forms.Platform.UAP.rd.xml" />
     <Compile Include="..\Xamarin.Forms.Core\Properties\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>

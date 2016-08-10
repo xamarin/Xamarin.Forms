@@ -446,9 +446,6 @@
 		</Setter>
 	</Style>
 
-	<!-- TODO EZH Chesterton's Fence -->
-	<Style TargetType="uwp:PageControl" BasedOn="{StaticResource PageControlDefaultStyle}" />
-
 	<Style TargetType="TextBox">
 		<Setter Property="Margin" Value="0" />
 	</Style>

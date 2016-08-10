@@ -34,8 +34,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformSpecificsGalleries
 			restoreButton.Clicked += (sender, args) => restore.Execute(null);
 			content.Children.Add(restoreButton);
 
-			var navButton = new Button { Text = "Push Page" };
-			navButton.Clicked += (sender, args) => PushAsync(CreateSecondPage());
+			var navButton = new Button { Text = "Push Page (with no title)" };
+			navButton.Clicked += (sender, args) => PushAsync(CreatePageWithNoTitle());
 			content.Children.Add(navButton);
 
 			page.Content = content;
@@ -43,9 +43,9 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformSpecificsGalleries
 			return page;
 		}
 
-		ContentPage CreateSecondPage()
+		ContentPage CreatePageWithNoTitle()
 		{
-			var page = new ContentPage { Title = "Second Content Page Title" };
+			var page = new ContentPage {  };
 
 			var content = new StackLayout
 			{

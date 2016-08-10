@@ -49,7 +49,8 @@ namespace Xamarin.Forms.Platform.UWP
 			new PropertyMetadata(default(Visibility)));
 		
 		CommandBar _commandBar;
-		StackPanel _titleBar;
+		Border _bottomCommandBarArea;
+		Border _topCommandBarArea;
 
 		TaskCompletionSource<CommandBar> _commandBarTcs;
 		FrameworkElement _masterPresenter;
@@ -235,7 +236,8 @@ namespace Xamarin.Forms.Platform.UWP
 			_detailPresenter = GetTemplateChild("DetailPresenter") as FrameworkElement;
 
 			_commandBar = GetTemplateChild("CommandBar") as CommandBar;
-			_titleBar = GetTemplateChild("TitleBar") as StackPanel;
+			_bottomCommandBarArea = GetTemplateChild("BottomCommandBarArea") as Border;
+			_topCommandBarArea = GetTemplateChild("TopCommandBarArea") as Border;
 
 			UpdateToolbarPlacement();
 			UpdateMode(); 
@@ -298,47 +300,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateToolbarPlacement()
 		{
-			if (_commandBar == null)
-			{
-				return;
-			}
-
-			switch (ToolbarPlacement)
-			{
-				case ToolbarPlacement.Top:
-					Windows.UI.Xaml.Controls.Grid.SetRow(_commandBar, 0);
-					break;
-				case ToolbarPlacement.Bottom:
-					Windows.UI.Xaml.Controls.Grid.SetRow(_commandBar, 2);
-					break;
-				case ToolbarPlacement.Default:
-				default:
-					Windows.UI.Xaml.Controls.Grid.SetRow(_commandBar, Device.Idiom == TargetIdiom.Phone ? 2 : 0);
-					break;
-			}
-
-			AdjustCommandBarForTitle();
-		}
-
-		void AdjustCommandBarForTitle()
-		{
-		    if (_commandBar == null || _titleBar == null)
-		    {
-		        return;
-		    }
-
-		    if (Windows.UI.Xaml.Controls.Grid.GetRow(_commandBar) == 0)
-			{
-				Windows.UI.Xaml.Controls.Grid.SetColumn(_commandBar, 1);
-				Windows.UI.Xaml.Controls.Grid.SetColumnSpan(_commandBar, 1);
-				Windows.UI.Xaml.Controls.Grid.SetColumnSpan(_titleBar, 1);
-			}
-			else
-			{
-				Windows.UI.Xaml.Controls.Grid.SetColumn(_commandBar, 0);
-				Windows.UI.Xaml.Controls.Grid.SetColumnSpan(_commandBar, 2);
-				Windows.UI.Xaml.Controls.Grid.SetColumnSpan(_titleBar, 2);
-			}
+			ToolbarPlacementHelper.UpdateToolbarPlacement(_commandBar, ToolbarPlacement, _bottomCommandBarArea, _topCommandBarArea);
 		}
 	}
 }

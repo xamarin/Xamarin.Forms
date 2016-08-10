@@ -21,10 +21,12 @@ namespace Xamarin.Forms.Platform.WinRT
 		public static readonly DependencyProperty ToolbarBackgroundProperty = DependencyProperty.Register(nameof(ToolbarBackground), typeof(Brush), typeof(FormsPivot), new PropertyMetadata(default(Brush)));
 
 		CommandBar _commandBar;
-
+#if WINDOWS_UWP
+		Border _bottomCommandBarArea;
+		Border _topCommandBarArea;
+#endif
 		TaskCompletionSource<CommandBar> _commandBarTcs;
 	    ToolbarPlacement _toolbarPlacement;
-	    ContentControl _titleBar;
 
 	    public Brush ToolbarBackground
 		{
@@ -50,7 +52,9 @@ namespace Xamarin.Forms.Platform.WinRT
 	        set
 	        {
 	            _toolbarPlacement = value;
+#if WINDOWS_UWP
 	            UpdateToolbarPlacement();
+#endif
 	        }
 	    }
 
@@ -69,56 +73,22 @@ namespace Xamarin.Forms.Platform.WinRT
 			base.OnApplyTemplate();
 			
 			_commandBar = GetTemplateChild("CommandBar") as CommandBar;
-            _titleBar = GetTemplateChild("TitleBar") as ContentControl;
+
+#if WINDOWS_UWP
+			_bottomCommandBarArea = GetTemplateChild("BottomCommandBarArea") as Border;
+			_topCommandBarArea = GetTemplateChild("TopCommandBarArea") as Border;
 			UpdateToolbarPlacement();
+#endif
 
 			TaskCompletionSource<CommandBar> tcs = _commandBarTcs;
 		    tcs?.SetResult(_commandBar);
 		}
 
-        void UpdateToolbarPlacement()
+#if WINDOWS_UWP
+		void UpdateToolbarPlacement()
 		{
-			if (_commandBar == null)
-			{
-				return;
-			}
-
-			switch (ToolbarPlacement)
-			{
-				case ToolbarPlacement.Top:
-					Windows.UI.Xaml.Controls.Grid.SetRow(_commandBar, 0);
-					break;
-				case ToolbarPlacement.Bottom:
-					Windows.UI.Xaml.Controls.Grid.SetRow(_commandBar, 2);
-					break;
-				case ToolbarPlacement.Default:
-				default:
-					Windows.UI.Xaml.Controls.Grid.SetRow(_commandBar, Device.Idiom == TargetIdiom.Phone ? 2 : 0);
-					break;
-			}
-
-			AdjustCommandBarForTitle();
+			ToolbarPlacementHelper.UpdateToolbarPlacement(_commandBar, ToolbarPlacement, _bottomCommandBarArea, _topCommandBarArea);
 		}
-
-		void AdjustCommandBarForTitle()
-		{
-		    if (_commandBar == null || _titleBar == null)
-		    {
-		        return;
-		    }
-
-		    if (Windows.UI.Xaml.Controls.Grid.GetRow(_commandBar) == 0)
-			{
-				Windows.UI.Xaml.Controls.Grid.SetColumn(_commandBar, 1);
-				Windows.UI.Xaml.Controls.Grid.SetColumnSpan(_commandBar, 1);
-				Windows.UI.Xaml.Controls.Grid.SetColumnSpan(_titleBar, 1);
-			}
-			else
-			{
-				Windows.UI.Xaml.Controls.Grid.SetColumn(_commandBar, 0);
-				Windows.UI.Xaml.Controls.Grid.SetColumnSpan(_commandBar, 2);
-				Windows.UI.Xaml.Controls.Grid.SetColumnSpan(_titleBar, 2);
-			}
-		}
+#endif
 	}
 }

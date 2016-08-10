@@ -60,7 +60,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			var x = new NavigationPage();
 
-			x.On<iOS>().EnableTranslucentNavigationBar(true);
+			x.On<iOS>().SetIsNavigationBarTranslucent(true);
 
 			Assert.IsTrue(x.On<iOS>().IsNavigationBarTranslucent()); 
 		}

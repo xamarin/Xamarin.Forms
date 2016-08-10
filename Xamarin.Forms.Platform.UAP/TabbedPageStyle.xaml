@@ -23,10 +23,7 @@
 			<Setter.Value>
 				<ControlTemplate TargetType="uwp:FormsPivot">
 					<Grid x:Name="RootElement" Background="{TemplateBinding Background}" HorizontalAlignment="{TemplateBinding HorizontalAlignment}" VerticalAlignment="{TemplateBinding VerticalAlignment}">
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="Auto"></ColumnDefinition>
-							<ColumnDefinition Width="*"></ColumnDefinition>
-						</Grid.ColumnDefinitions>
+						
 						<Grid.RowDefinitions>
 							<RowDefinition Height="Auto"/>
 							<RowDefinition Height="*"/>
@@ -67,14 +64,22 @@
 							</VisualStateGroup>
 						</VisualStateManager.VisualStateGroups>
 
-						<ContentControl x:Name="TitleBar" VerticalAlignment="Top" VerticalContentAlignment="Center" Height="{ThemeResource TitleBarHeight}" Grid.Column="0" Grid.Row="0" 
-										Visibility="{TemplateBinding TitleVisibility}" Background="{TemplateBinding ToolbarBackground}">
-							<TextBlock Text="{TemplateBinding Title}"  VerticalAlignment="Center" Padding="10,0,0,0" Foreground="{TemplateBinding ToolbarForeground}" Style="{ThemeResource TitleTextBlockStyle}" />
-						</ContentControl>
+						<Grid x:Name="TitleBar" Background="{TemplateBinding ToolbarBackground}" HorizontalAlignment="Stretch">
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto"></ColumnDefinition>
+								<ColumnDefinition Width="*"></ColumnDefinition>
+							</Grid.ColumnDefinitions>
 
-						<uwp:FormsCommandBar x:Name="CommandBar" Grid.Row="0" Grid.Column="1" VerticalContentAlignment="Top" Background="{TemplateBinding ToolbarBackground}" />
+							<Border Height="{ThemeResource TitleBarHeight}" Visibility="{TemplateBinding TitleVisibility}">
+								<TextBlock Text="{Binding Title}" VerticalAlignment="Center" Padding="10,0,0,0" Foreground="{TemplateBinding ToolbarForeground}" Style="{ThemeResource TitleTextBlockStyle}" />
+							</Border>
+							
+							<Border x:Name="TopCommandBarArea" Grid.Column="1" HorizontalAlignment="Stretch">
+								<uwp:FormsCommandBar x:Name="CommandBar" VerticalContentAlignment="Top" Background="{TemplateBinding ToolbarBackground}" Height="{ThemeResource TitleBarHeight}" />
+							</Border>
+						</Grid>
 						
-						<Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2">
+						<Grid Grid.Row="1">
 							<Grid.Resources>
 								<ControlTemplate x:Key="NextTemplate" TargetType="Button">
 									<Border x:Name="Root" BorderBrush="{ThemeResource SystemControlForegroundTransparentBrush}" BorderThickness="{ThemeResource PivotNavButtonBorderThemeThickness}" Background="{ThemeResource SystemControlBackgroundBaseMediumLowBrush}">
@@ -184,6 +189,8 @@
 								</PivotPanel>
 							</ScrollViewer>
 						</Grid>
+
+						<Border x:Name="BottomCommandBarArea" Grid.Row="2" HorizontalAlignment="Stretch"></Border>
 					</Grid>
 				</ControlTemplate>
 			</Setter.Value>

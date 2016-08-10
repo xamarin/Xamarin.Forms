@@ -40,14 +40,16 @@ namespace Xamarin.Forms.Platform.WinRT
 		CommandBar _commandBar;
 
 #if WINDOWS_UWP
-        Border _titleBar;
         ToolbarPlacement _toolbarPlacement;
+		Border _bottomCommandBarArea;
+		Border _topCommandBarArea;
 #endif
 
         TaskCompletionSource<CommandBar> _commandBarTcs;
 		Windows.UI.Xaml.Controls.ContentPresenter _presenter;
+	    
 
-        public PageControl()
+	    public PageControl()
 		{
 			InitializeComponent();
 		}
@@ -146,7 +148,8 @@ namespace Xamarin.Forms.Platform.WinRT
 
 			_commandBar = GetTemplateChild("CommandBar") as CommandBar;
 #if WINDOWS_UWP
-            _titleBar = GetTemplateChild("TitleBar") as Border;
+			_bottomCommandBarArea = GetTemplateChild("BottomCommandBarArea") as Border;
+			_topCommandBarArea = GetTemplateChild("TopCommandBarArea") as Border;
 			UpdateToolbarPlacement();
 #endif
 
@@ -187,52 +190,7 @@ namespace Xamarin.Forms.Platform.WinRT
 #if WINDOWS_UWP
         void UpdateToolbarPlacement()
 		{
-			if (_commandBar == null)
-			{
-				return;
-			}
-
-			switch (ToolbarPlacement)
-			{
-				case ToolbarPlacement.Top:
-					Windows.UI.Xaml.Controls.Grid.SetRow(_commandBar, 0);
-					break;
-				case ToolbarPlacement.Bottom:
-					Windows.UI.Xaml.Controls.Grid.SetRow(_commandBar, 2);
-					break;
-				case ToolbarPlacement.Default:
-				default:
-					Windows.UI.Xaml.Controls.Grid.SetRow(_commandBar, Device.Idiom == TargetIdiom.Phone ? 2 : 0);
-					break;
-			}
-
-		    AdjustCommandBarForTitle();
-		}
-
-        void AdjustCommandBarForTitle()
-		{
-           if (_commandBar == null || _titleBar == null)
-		    {
-		        return;
-		    }
-            
-		   // TODO EZH This fails if you have the toolbar at the top and remove all of the commands; it collapses and we're left with a blank section to the right of the title
-		   // We can probably make this work by dropping the left auto column in each layout and making the top row control a border which goes all the way across with the title background
-		   // the contents would be a grid with auto|* and a placeholder for the command bar; the code below could just reparent the command bar and ignore titlebar altogether
-		   // probably will fix the top bar gap under the title on narrow screens when the secondary command menu opens (see phone with toolbarplacement top for example)
-
-			if (Windows.UI.Xaml.Controls.Grid.GetRow(_commandBar) == 0)
-			{
-				Windows.UI.Xaml.Controls.Grid.SetColumn(_commandBar, 1);
-				Windows.UI.Xaml.Controls.Grid.SetColumnSpan(_commandBar, 1);
-                Windows.UI.Xaml.Controls.Grid.SetColumnSpan(_titleBar, 1);
-			}
-			else
-			{
-				Windows.UI.Xaml.Controls.Grid.SetColumn(_commandBar, 0);
-				Windows.UI.Xaml.Controls.Grid.SetColumnSpan(_commandBar, 2);
-                Windows.UI.Xaml.Controls.Grid.SetColumnSpan(_titleBar, 2);
-			}
+			ToolbarPlacementHelper.UpdateToolbarPlacement(_commandBar, ToolbarPlacement, _bottomCommandBarArea, _topCommandBarArea);
 		}
 #endif
     }
