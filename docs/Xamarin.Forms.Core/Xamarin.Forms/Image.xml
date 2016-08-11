@@ -191,7 +191,7 @@ indicator.BindingContext = image;]]></code>
       <Docs>
         <summary>Gets or sets the opacity flag for the image. This is a bindable property.</summary>
         <value>A <see cref="T:System.Boolean" /> indicating the value for the property. Default is false.</value>
-        <remarks>If true, you'll be able to see through transparent parts of the image.</remarks>
+        <remarks>If true, you'll be able to see transparent parts of the image.</remarks>
       </Docs>
     </Member>
     <Member MemberName="IsOpaqueProperty">
