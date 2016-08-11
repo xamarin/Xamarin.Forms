@@ -10,36 +10,21 @@ namespace Xamarin.Forms
     [RenderWith(typeof(_PickerRenderer))]
     public class Picker : View
     {
-        public static readonly BindableProperty TextColorProperty = BindableProperty.Create(nameof(TextColor),
-            typeof(Color), typeof(Picker), Color.Default);
+        public static readonly BindableProperty TextColorProperty = BindableProperty.Create(nameof(TextColor), typeof(Color), typeof(Picker), Color.Default);
 
-        public static readonly BindableProperty TitleProperty = BindableProperty.Create(nameof(Title), typeof(string),
-            typeof(Picker), default(string));
+        public static readonly BindableProperty TitleProperty = BindableProperty.Create(nameof(Title), typeof(string), typeof(Picker), default(string));
 
-        public static readonly BindableProperty SelectedIndexProperty = BindableProperty.Create(nameof(SelectedIndex),
-            typeof(int), typeof(Picker), -1,
-            BindingMode.TwoWay,
+        public static readonly BindableProperty SelectedIndexProperty = BindableProperty.Create(nameof(SelectedIndex), typeof(int), typeof(Picker), -1, BindingMode.TwoWay,
             propertyChanged: OnSelectedIndexChanged,
             coerceValue: CoerceSelectedIndex);
 
-        public static readonly BindableProperty SelectedValueMemberPathProperty =
-            BindableProperty.Create(nameof(SelectedValueMemberPath), typeof(string), typeof(Picker));
+        public static readonly BindableProperty SelectedValueMemberPathProperty = BindableProperty.Create(nameof(SelectedValueMemberPath), typeof(string), typeof(Picker));
 
-        public static readonly BindableProperty ItemsSourceProperty = BindableProperty.Create(nameof(ItemsSource),
-            typeof(IList), typeof(Picker),
-            default(IList),
-            propertyChanged: OnItemsSourceChanged);
+        public static readonly BindableProperty ItemsSourceProperty = BindableProperty.Create(nameof(ItemsSource), typeof(IList), typeof(Picker), default(IList), propertyChanged: OnItemsSourceChanged);
 
-        public static readonly BindableProperty DisplayMemberPathProperty =
-            BindableProperty.Create(nameof(DisplayMemberPath), typeof(string),
-                typeof(Picker),
-                propertyChanged: OnDisplayMemberPathChanged);
+        public static readonly BindableProperty DisplayMemberPathProperty = BindableProperty.Create(nameof(DisplayMemberPath), typeof(string), typeof(Picker), propertyChanged: OnDisplayMemberPathChanged);
 
-        public static readonly BindableProperty SelectedItemProperty = BindableProperty.Create(nameof(SelectedItem),
-            typeof(object), typeof(Picker),
-            null,
-            BindingMode.TwoWay,
-            propertyChanged: OnSelectedItemChanged);
+        public static readonly BindableProperty SelectedItemProperty = BindableProperty.Create(nameof(SelectedItem), typeof(object), typeof(Picker), null, BindingMode.TwoWay, propertyChanged: OnSelectedItemChanged);
 
         public Picker()
         {
@@ -131,7 +116,10 @@ namespace Xamarin.Forms
         {
             switch (e.Action)
             {
+                case NotifyCollectionChangedAction.Move:
+                case NotifyCollectionChangedAction.Replace:
                 case NotifyCollectionChangedAction.Reset:
+                    // Clear Items collection and re-populate it with values from ItemsSource
                     BindItems();
                     return;
                 case NotifyCollectionChangedAction.Remove:
@@ -139,14 +127,6 @@ namespace Xamarin.Forms
                     break;
                 case NotifyCollectionChangedAction.Add:
                     AddItems(e);
-                    break;
-                case NotifyCollectionChangedAction.Move:
-                    // TODO Make more intelligent decision
-                    BindItems();
-                    break;
-                case NotifyCollectionChangedAction.Replace:
-                    // TODO Make more intelligent decision
-                    BindItems();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -183,7 +163,6 @@ namespace Xamarin.Forms
 
         static bool IsPrimitive(object item)
         {
-            // TODO What is missing
             return item is string || item is int || item is double || item is decimal || item is Enum ||
                    item is DateTime;
         }
@@ -199,11 +178,8 @@ namespace Xamarin.Forms
 
         void OnItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
-            if (e.Action == NotifyCollectionChangedAction.Remove || e.Action == NotifyCollectionChangedAction.Reset)
-            {
-                SelectedIndex = SelectedIndex.Clamp(-1, Items.Count - 1);
-                UpdateSelectedItem();
-            }
+            SelectedIndex = SelectedIndex.Clamp(-1, Items.Count - 1);
+            UpdateSelectedItem();
         }
 
         static void OnItemsSourceChanged(BindableObject bindable, object oldValue, object newValue)
