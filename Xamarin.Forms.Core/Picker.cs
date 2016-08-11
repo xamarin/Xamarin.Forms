@@ -10,76 +10,42 @@ namespace Xamarin.Forms
     [RenderWith(typeof(_PickerRenderer))]
     public class Picker : View
     {
-        public static readonly BindableProperty TextColorProperty =
-            BindableProperty.Create(
-                nameof(TextColor),
-                typeof(Color),
-                typeof(Picker),
-                Color.Default);
+        public static readonly BindableProperty TextColorProperty = BindableProperty.Create(nameof(TextColor),
+            typeof(Color), typeof(Picker), Color.Default);
 
-        public static readonly BindableProperty TitleProperty =
-            BindableProperty.Create(
-                nameof(Title),
-                typeof(string),
-                typeof(Picker),
-                default(string));
+        public static readonly BindableProperty TitleProperty = BindableProperty.Create(nameof(Title), typeof(string),
+            typeof(Picker), default(string));
 
-        public static readonly BindableProperty SelectedIndexProperty =
-            BindableProperty.Create(
-                nameof(SelectedIndex),
-                typeof(int),
-                typeof(Picker),
-                -1,
-                BindingMode.TwoWay,
-                propertyChanged: OnSelectedIndexChanged,
-                coerceValue: CoerceSelectedIndex);
+        public static readonly BindableProperty SelectedIndexProperty = BindableProperty.Create(nameof(SelectedIndex),
+            typeof(int), typeof(Picker), -1,
+            BindingMode.TwoWay,
+            propertyChanged: OnSelectedIndexChanged,
+            coerceValue: CoerceSelectedIndex);
 
         public static readonly BindableProperty SelectedValueMemberPathProperty =
-            BindableProperty.Create(
-                nameof(SelectedValueMemberPath),
-                typeof(string),
-                typeof(Picker));
+            BindableProperty.Create(nameof(SelectedValueMemberPath), typeof(string), typeof(Picker));
 
-        public static readonly BindableProperty ItemsSourceProperty =
-            BindableProperty.Create(
-                nameof(ItemsSource),
-                typeof(IList),
-                typeof(Picker),
-                default(IList),
-                propertyChanged: OnItemsSourceChanged);
+        public static readonly BindableProperty ItemsSourceProperty = BindableProperty.Create(nameof(ItemsSource),
+            typeof(IList), typeof(Picker),
+            default(IList),
+            propertyChanged: OnItemsSourceChanged);
 
         public static readonly BindableProperty DisplayMemberPathProperty =
-            BindableProperty.Create(
-                nameof(DisplayMemberPath),
-                typeof(string),
+            BindableProperty.Create(nameof(DisplayMemberPath), typeof(string),
                 typeof(Picker),
                 propertyChanged: OnDisplayMemberPathChanged);
 
-        public static readonly BindableProperty SelectedItemProperty =
-            BindableProperty.Create(
-                nameof(SelectedItem),
-                typeof(object),
-                typeof(Picker),
-                null,
-                BindingMode.TwoWay,
-                propertyChanged: OnSelectedItemChanged);
+        public static readonly BindableProperty SelectedItemProperty = BindableProperty.Create(nameof(SelectedItem),
+            typeof(object), typeof(Picker),
+            null,
+            BindingMode.TwoWay,
+            propertyChanged: OnSelectedItemChanged);
 
         public Picker()
         {
             ((ObservableList<string>)Items).CollectionChanged += OnItemsCollectionChanged;
         }
 
-        /// <summary>
-        /// Set the name of the property that should be used to display the objects in <see cref="ItemsSource" />.
-        /// If left blank the <see cref="object.ToString" /> will be called
-        /// </summary>
-        /// <remarks>
-        /// Setting a value that does not exists on the object cause exception
-        /// </remarks>
-        /// <para>
-        /// Settings this value only affect objects that are not primitive types.
-        /// </para>
-        /// <exception cref="ArgumentException">Setting a value that does not exists on the object cause exception</exception>
         public string DisplayMemberPath
         {
             get { return (string)GetValue(DisplayMemberPathProperty); }
@@ -126,12 +92,6 @@ namespace Xamarin.Forms
 
         public event EventHandler SelectedIndexChanged;
 
-        /// <summary>
-        /// Get the value to display through reflection on <paramref name="item" /> using property <see cref="DisplayMemberPath" />
-        /// </summary>
-        /// <param name="item">Item to get value from.</param>
-        /// <returns>Value of the property <see cref="DisplayMemberPath" /> if not <c>null</c>; otherwise ToString()</returns>
-        /// <exception cref="ArgumentException">If no property with name <see cref="DisplayMemberPath" /> is found</exception>
         protected virtual string GetDisplayMember(object item)
         {
             return GetPropertyValue(item, DisplayMemberPath) as string;
