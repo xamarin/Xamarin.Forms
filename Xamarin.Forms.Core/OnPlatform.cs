@@ -7,6 +7,8 @@ namespace Xamarin.Forms
 		public T iOS { get; set; }
 
 		public T WinPhone { get; set; }
+		
+		public T Windows { get; set; }
 
 		public static implicit operator T(OnPlatform<T> onPlatform)
 		{
@@ -16,9 +18,10 @@ namespace Xamarin.Forms
 					return onPlatform.iOS;
 				case TargetPlatform.Android:
 					return onPlatform.Android;
-				case TargetPlatform.Windows:
 				case TargetPlatform.WinPhone:
 					return onPlatform.WinPhone;
+				case TargetPlatform.Windows:
+					return onPlatform.Windows;
 			}
 
 			return onPlatform.iOS;
