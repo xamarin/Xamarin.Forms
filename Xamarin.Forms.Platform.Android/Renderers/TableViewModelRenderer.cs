@@ -4,6 +4,8 @@ using Android.Views;
 using Android.Widget;
 using AView = Android.Views.View;
 using AListView = Android.Widget.ListView;
+using System;
+using System.Collections.Generic;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -13,41 +15,62 @@ namespace Xamarin.Forms.Platform.Android
 		protected readonly Context Context;
 		ITableViewController Controller => _view;
 		Cell _restoreFocus;
+		Cell[] _cellCache;
+		Cell[] CellCache
+		{
+			get
+			{
+				if (_cellCache == null)
+					FillCache();
+				return _cellCache;
+			}
+		}
+		bool[] _isHeaderCache;
+		bool[] IsHeaderCache
+		{
+			get
+			{
+				if (_isHeaderCache == null)
+					FillCache();
+				return _isHeaderCache;
+			}
+		}
+		bool[] _nextIsHeaderCache;
+		bool[] NextIsHeaderCache
+		{
+			get
+			{
+				if (_nextIsHeaderCache == null)
+					FillCache();
+				return _nextIsHeaderCache;
+			}
+		}
 
 		public TableViewModelRenderer(Context context, AListView listView, TableView view) : base(context)
 		{
 			_view = view;
 			Context = context;
 
-			Controller.ModelChanged += (sender, args) => NotifyDataSetChanged();
+			Controller.ModelChanged += (sender, args) =>
+			{
+				InvalidateCellCache();
+				NotifyDataSetChanged();
+			};
 
 			listView.OnItemClickListener = this;
 			listView.OnItemLongClickListener = this;
 		}
 
-		public override int Count
-		{
-			get
-			{
-				var count = 0;
-
-				//Get each adapter's count + 1 for the header (if there is one)
-				ITableModel model = Controller.Model;
-				int section = model.GetSectionCount();
-				for (var i = 0; i < section; i++)
-					count += model.GetRowCount(i) + (string.IsNullOrEmpty(model.GetSectionTitle(i)) ? 0 : 1);
-
-				return count;
-			}
-		}
+		public override int Count => CellCache.Length;
 
 		public override object this[int position]
 		{
 			get
 			{
-				bool isHeader, nextIsHeader;
-				Cell cell = GetCellForPosition(position, out isHeader, out nextIsHeader);
-				return cell;
+				if (position < 0 || position >= CellCache.Length)
+					return null;
+
+				return CellCache[position];
 			}
 		}
 
@@ -55,15 +78,11 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			get
 			{
-				//The headers count as a view type too
+				// 1 for the headers + 1 for each non header cell
 				var viewTypeCount = 1;
-				ITableModel model = Controller.Model;
-
-				//Get each adapter's ViewTypeCount
-				int section = model.GetSectionCount();
-				for (var i = 0; i < section; i++)
-					viewTypeCount += model.GetRowCount(i);
-
+				foreach (var b in IsHeaderCache)
+					if (!b)
+						viewTypeCount++;
 				return viewTypeCount;
 			}
 		}
@@ -168,25 +187,13 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			ITableModel model = Controller.Model;
 
-			int sectionCount = model.GetSectionCount();
-			for (var sectionIndex = 0; sectionIndex < sectionCount; sectionIndex++)
-			{
-				var sectionHasHeader = !string.IsNullOrEmpty(model.GetSectionTitle(sectionIndex));
-				var headerCount = sectionHasHeader ? 1 : 0;
+			if (position < 0 || position >= CellCache.Length)
+				return;
 
-				if (position == 0 && sectionHasHeader)
-					return;
+			if (IsHeaderCache[position])
+				return;
 
-				int size = model.GetRowCount(sectionIndex) + headerCount;
-
-				if (position < size)
-				{
-					model.RowSelected(sectionIndex, position - headerCount);
-					return;
-				}
-
-				position -= size;
-			}
+			model.RowSelected(CellCache[position]);
 		}
 
 		Cell GetCellForPosition(int position, out bool isHeader, out bool nextIsHeader)
@@ -194,41 +201,66 @@ namespace Xamarin.Forms.Platform.Android
 			isHeader = false;
 			nextIsHeader = false;
 
+			if (position < 0 || position >= CellCache.Length)
+				return null;
+
+			isHeader = IsHeaderCache[position];
+			nextIsHeader = NextIsHeaderCache[position];
+			return CellCache[position];
+		}
+
+		void FillCache()
+		{
 			ITableModel model = Controller.Model;
 			int sectionCount = model.GetSectionCount();
 
-			for (var sectionIndex = 0; sectionIndex < sectionCount; sectionIndex ++)
+			var newCellCache = new List<Cell>();
+			var newIsHeaderCache = new List<bool>();
+			var newNextIsHeaderCache = new List<bool>();
+
+			for (var sectionIndex = 0; sectionIndex < sectionCount; sectionIndex++)
 			{
 				var sectionTitle = model.GetSectionTitle(sectionIndex);
-				var sectionHasHeader = !string.IsNullOrEmpty(sectionTitle);
-				var headerCount = sectionHasHeader ? 1 : 0;
+				var sectionRowCount = model.GetRowCount(sectionIndex);
 
-				int size = model.GetRowCount(sectionIndex) + headerCount;
-
-				if (position == 0 && sectionHasHeader)
+				if (!string.IsNullOrEmpty(sectionTitle))
 				{
-					isHeader = true;
-					nextIsHeader = size == 1 && sectionIndex < sectionCount - 1;
+					Cell headerCell = model.GetHeaderCell(sectionIndex);
+					if (headerCell == null)
+						headerCell = new TextCell { Text = sectionTitle };
+					headerCell.Parent = _view;
 
-					Cell resultCell = model.GetHeaderCell(sectionIndex);
-					if (resultCell == null)
-						resultCell = new TextCell { Text = sectionTitle };
-
-					resultCell.Parent = _view;
-
-					return resultCell;
+					newIsHeaderCache.Add(true);
+					newNextIsHeaderCache.Add(sectionRowCount == 0 && sectionIndex < sectionCount - 1);
+					newCellCache.Add(headerCell);
 				}
 
-				if (position < size)
+				for (int i = 0; i < sectionRowCount; i++)
 				{
-					nextIsHeader = position == size - 1;
-					return (Cell)model.GetItem(sectionIndex, position - headerCount);
+					newIsHeaderCache.Add(false);
+					newNextIsHeaderCache.Add(i == sectionRowCount - 1 && sectionIndex < sectionCount - 1);
+					newCellCache.Add((Cell)model.GetItem(sectionIndex, i));
 				}
-
-				position -= size;
 			}
 
-			return null;
+			_cellCache = newCellCache.ToArray();
+			_isHeaderCache = newIsHeaderCache.ToArray();
+			_nextIsHeaderCache = newNextIsHeaderCache.ToArray();
+		}
+
+		void InvalidateCellCache()
+		{
+			_cellCache = null;
+			_isHeaderCache = null;
+			_nextIsHeaderCache = null;
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing)
+				InvalidateCellCache();
+
+			base.Dispose(disposing);
 		}
 	}
 }
