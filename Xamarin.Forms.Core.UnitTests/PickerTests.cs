@@ -335,56 +335,7 @@ namespace Xamarin.Forms.Core.UnitTests
             Assert.AreEqual(null, picker.SelectedItem);
         }
 
-        [Test]
-        public void TestSelectedValue()
-        {
-            var bindingContext = new BindingContext
-            {
-                Items = new ObservableCollection<object>
-                {
-                    new Tuple<string,int>("John", 42),
-                    new Tuple<string,int>("Ringo", 13),
-                    new Tuple<string,int>("George", 2)
-                },
-            };
-            var picker = new Picker
-            {
-                ItemsSource = bindingContext.Items,
-                DisplayMemberPath = "Item1",
-                SelectedValueMemberPath = "Item2",
-                SelectedIndex = 0
-            };
-            Assert.AreEqual(0, picker.SelectedIndex);
-            Assert.AreEqual("John", picker.Items[0]);
-            Assert.AreEqual(42, picker.SelectedValue);
-        }
 
-        [Test]
-        public void TestSelectedValueBindingContext()
-        {
-            var bindingContext = new BindingContext
-            {
-                Items = new ObservableCollection<object>
-                {
-                    new Tuple<string,int>("John", 42),
-                    new Tuple<string,int>("Ringo", 13),
-                    new Tuple<string,int>("George", 2)
-                },
-            };
-            // TODO: Setting the SelectedIndex to zero prior to the BindingContext
-            // has evaluated and the ItemsSource property is set is a no-op since Items is empty
-            var picker = new Picker
-            {
-                DisplayMemberPath = "Item1",
-                SelectedValueMemberPath = "Item2",
-                SelectedIndex = 0,
-                BindingContext = bindingContext
-            };
-            picker.SetBinding(Picker.ItemsSourceProperty, "Items");
-            // picker.SelectedIndex = 0; // Uncomment this line and it works
-            Assert.AreEqual(0, picker.SelectedIndex);
-            Assert.AreEqual("John", picker.Items[0]);
-            Assert.AreEqual(42, picker.SelectedValue);
-        }
+
     }
 }

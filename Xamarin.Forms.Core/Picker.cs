@@ -64,15 +64,6 @@ namespace Xamarin.Forms
                 BindingMode.TwoWay,
                 propertyChanged: OnSelectedItemChanged);
 
-        static readonly BindablePropertyKey s_selectedValuePropertyKey =
-            BindableProperty.CreateReadOnly(
-                nameof(SelectedValue),
-                typeof(object),
-                typeof(Picker),
-                null);
-
-        public static readonly BindableProperty SelectedValueProperty = s_selectedValuePropertyKey.BindableProperty;
-
         public Picker()
         {
             ((ObservableList<string>)Items).CollectionChanged += OnItemsCollectionChanged;
@@ -113,12 +104,6 @@ namespace Xamarin.Forms
         {
             get { return GetValue(SelectedItemProperty); }
             set { SetValue(SelectedItemProperty, value); }
-        }
-
-        public object SelectedValue
-        {
-            get { return GetValue(SelectedValueProperty); }
-            private set { SetValue(s_selectedValuePropertyKey, value); }
         }
 
         public string SelectedValueMemberPath
@@ -314,7 +299,6 @@ namespace Xamarin.Forms
             // TODO Should we prevent call to FindObject since the object is already known
             // by setting a flag, or otherwise indicate, that we, internally, forced a SelectedIndex changed
             SelectedIndex = index;
-            SelectedValue = GetSelectedValue(selectedItem);
         }
 
         void UpdateSelectedItem()
@@ -326,7 +310,6 @@ namespace Xamarin.Forms
             else
             {
                 SelectedItem = ItemsSource?[SelectedIndex];
-                SelectedValue = GetSelectedValue(SelectedItem);
             }
         }
     }
