@@ -168,9 +168,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla39829.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla39458.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla39853.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PlatformSpecifics_iOSBlurEffect.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PlatformSpecifics_AndroidSoftInputAdjust.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PlatformSpecifics_iOSTranslucentNavBar.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformSpecifics_iOSTranslucentNavBarX.xaml.cs">
       <DependentUpon>PlatformSpecifics_iOSTranslucentNavBarX.xaml</DependentUpon>
       <SubType>Code</SubType>

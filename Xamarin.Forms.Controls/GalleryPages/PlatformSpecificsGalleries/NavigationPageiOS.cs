@@ -8,7 +8,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformSpecificsGalleries
 	{
 		public static NavigationPageiOS Create(ICommand restore)
 		{
-			var restoreButton = new Button {Text = "Back To Gallery" };
+			var restoreButton = new Button { Text = "Back To Gallery" };
 			restoreButton.Clicked += (sender, args) => restore.Execute(null);
 
 			var translucentToggleButton = new Button { Text = "Toggle Translucent NavBar" };

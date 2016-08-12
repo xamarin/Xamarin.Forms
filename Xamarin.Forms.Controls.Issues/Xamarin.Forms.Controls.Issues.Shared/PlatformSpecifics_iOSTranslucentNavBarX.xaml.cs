@@ -8,7 +8,7 @@ using Xamarin.Forms.Xaml;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 60001, "Platform Specifics - iOS Translucent Navigation Bar XAML", PlatformAffected.iOS)]
+	[Issue(IssueTracker.None, 0, "Platform Specifics - iOS Translucent Navigation Bar XAML", PlatformAffected.iOS)]
 #if APP
 	[XamlCompilation(XamlCompilationOptions.Compile)]
 #endif
