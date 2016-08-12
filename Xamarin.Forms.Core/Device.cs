@@ -59,7 +59,7 @@ namespace Xamarin.Forms
 		}
 
 #warning Windows 8.1 or UWP applications no longer use the WinPhone action parameter. Please use the Windows parameter to run Action on a Windows 8.1 or UWP application.
-		public static void OnPlatform(Action iOS = null, Action Android = null, Action WinPhone = null, Action Windows, Action Default = null)
+		public static void OnPlatform(Action iOS = null, Action Android = null, Action WinPhone = null, Action Windows = null, Action Default = null)
 		{
 			switch (OS)
 			{
