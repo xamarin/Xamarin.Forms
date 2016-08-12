@@ -27,9 +27,6 @@ namespace Xamarin.Forms
 				case TargetPlatform.Windows:
 					return ( onPlatform.Windows ?? onPlatform.Default ) ?? onPlatform.WinPhone;
 					break;
-				default:
-					onPlatform.Default;
-					break;
 			}
 
 			return onPlatform.iOS;
