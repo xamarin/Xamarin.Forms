@@ -58,7 +58,8 @@ namespace Xamarin.Forms
 			return GetNamedSize(size, targetElementType, false);
 		}
 
-		public static void OnPlatform(Action iOS = null, Action Android = null, Action WinPhone = null, Action Default = null)
+#warning Windows 8.1 or UWP applications no longer use the WinPhone action parameter. Please use the Windows parameter to run Action on a Windows 8.1 or UWP application.
+		public static void OnPlatform(Action iOS = null, Action Android = null, Action WinPhone = null, Action Windows, Action Default = null)
 		{
 			switch (OS)
 			{
@@ -75,6 +76,11 @@ namespace Xamarin.Forms
 						Default();
 					break;
 				case TargetPlatform.Windows:
+					if (Windows != null)
+						Windows();
+					else if (Default != null)
+						Default();
+					break;
 				case TargetPlatform.WinPhone:
 					if (WinPhone != null)
 						WinPhone();
@@ -88,7 +94,8 @@ namespace Xamarin.Forms
 			}
 		}
 
-		public static T OnPlatform<T>(T iOS, T Android, T WinPhone)
+#warning Windows 8.1 or UWP applications no longer retun the WinPhone type, please update your application to reflect this change.
+		public static T OnPlatform<T>(T iOS, T Android, T WinPhone, T Windows)
 		{
 			switch (OS)
 			{
@@ -96,9 +103,10 @@ namespace Xamarin.Forms
 					return iOS;
 				case TargetPlatform.Android:
 					return Android;
-				case TargetPlatform.Windows:
 				case TargetPlatform.WinPhone:
 					return WinPhone;
+				case TargetPlatform.Windows:
+					return Windows;
 			}
 
 			return iOS;
