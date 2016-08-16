@@ -2,11 +2,18 @@ using System;
 using System.Drawing;
 using System.Runtime.Remoting.Channels;
 using System.ComponentModel;
+
 #if __UNIFIED__
 using UIKit;
+using RectangleF = CoreGraphics.CGRect;
+using SizeF = CoreGraphics.CGSize;
+using PointF = CoreGraphics.CGPoint;
 
 #else
 using MonoTouch.UIKit;
+using nfloat=System.Single;
+using nint=System.Int32;
+using nuint=System.UInt32;
 #endif
 
 namespace Xamarin.Forms.Platform.iOS
@@ -14,6 +21,7 @@ namespace Xamarin.Forms.Platform.iOS
 	public class EntryRenderer : ViewRenderer<Entry, UITextField>
 	{
 		UIColor _defaultTextColor;
+		UIToolbar _accessoryView;
 
 		public EntryRenderer()
 		{
@@ -144,6 +152,21 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateKeyboard()
 		{
 			Control.ApplyKeyboard(Element.Keyboard);
+
+			if (Device.Idiom == TargetIdiom.Phone && Element.Keyboard == Keyboard.Numeric)
+			{
+				// iPhone does not have a dismiss keyboard button
+				var keyboardWidth = UIScreen.MainScreen.Bounds.Width;
+				_accessoryView = new UIToolbar(new RectangleF(0, 0, keyboardWidth, 44)) { BarStyle = UIBarStyle.Default, Translucent = true };
+
+				var spacer = new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace);
+				var doneButton = new UIBarButtonItem(UIBarButtonSystemItem.Done, (o, a) =>
+				{
+					Control.ResignFirstResponder();
+				});
+				_accessoryView.SetItems(new[] { spacer, doneButton }, false);
+				Control.InputAccessoryView = _accessoryView;
+			}
 		}
 
 		void UpdatePassword()
