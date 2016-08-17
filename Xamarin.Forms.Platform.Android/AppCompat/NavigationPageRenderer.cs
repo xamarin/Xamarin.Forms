@@ -30,7 +30,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 	{
 		public delegate bool BackButtonPressedEventHandler(object sender, EventArgs e);
 
-        readonly List<Fragment> _fragmentStack = new List<Fragment>();
+		readonly List<Fragment> _fragmentStack = new List<Fragment>();
 
 		Drawable _backgroundDrawable;
 		Page _current;
