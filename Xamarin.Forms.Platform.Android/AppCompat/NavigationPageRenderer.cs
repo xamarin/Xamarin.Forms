@@ -28,7 +28,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 {
 	public class NavigationPageRenderer : VisualElementRenderer<NavigationPage>, IManageFragments
 	{
-        public delegate bool BackButtonPressedEventHandler(object sender, EventArgs e);
+		public delegate bool BackButtonPressedEventHandler(object sender, EventArgs e);
 
         readonly List<Fragment> _fragmentStack = new List<Fragment>();
 
@@ -359,16 +359,16 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			valueAnim.Start();
 		}
 
-        public static event BackButtonPressedEventHandler BackPressed;
+		public static event BackButtonPressedEventHandler BackPressed;
 
-        void BarOnNavigationClick(object sender, AToolbar.NavigationClickEventArgs navigationClickEventArgs)
+		void BarOnNavigationClick(object sender, AToolbar.NavigationClickEventArgs navigationClickEventArgs)
 		{
-            if (BackPressed != null && BackPressed(this, EventArgs.Empty))
-                return;
-            Element?.PopAsync();
+			if (BackPressed != null && BackPressed(this, EventArgs.Empty))
+				return;
+			Element?.PopAsync();
 		}
 
-        void CurrentOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+		void CurrentOnPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == NavigationPage.HasNavigationBarProperty.PropertyName)
 				ToolbarVisible = NavigationPage.GetHasNavigationBar(Current);
