@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public PageRenderer()
 		{
-			View = new FormsNSView(NSScreen.MainScreen.VisibleFrame);
+			View = new FormsNSView();
 		}
 
 		void IEffectControlProvider.RegisterEffect(Effect effect)

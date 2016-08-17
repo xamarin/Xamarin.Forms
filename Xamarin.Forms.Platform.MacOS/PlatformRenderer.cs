@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		internal PlatformRenderer(Platform platform)
 		{
 			Platform = platform;
-			View = new FormsNSView(NSApplication.SharedApplication.Windows[0].Frame);
+			View = new NSView(NSApplication.SharedApplication.Windows[0].Frame);
 		}
 
 		public Platform Platform { get; set; }
@@ -29,8 +29,6 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public override void ViewWillAppear()
 		{
-
-			//View.BackgroundColor = UIColor.White;
 			Platform.WillAppear();
 			base.ViewWillAppear();
 		}

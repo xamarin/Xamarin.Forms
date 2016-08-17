@@ -5,13 +5,13 @@ using CoreGraphics;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
-	public class FormsApplicationDelegate : NSApplicationDelegate
+	public abstract class FormsApplicationDelegate : NSApplicationDelegate
 	{
 
 		Application _application;
 		bool _isSuspended;
-		NSWindow _window;
 
+		public abstract NSWindow MainWindow { get; }
 
 		protected FormsApplicationDelegate()
 		{
@@ -43,13 +43,11 @@ namespace Xamarin.Forms.Platform.MacOS
 			// prepare you apps window and views for display
 			// keep lightweight, anything long winded should be executed asynchronously on a secondary thread.
 			// application:didFinishLaunchingWithOptions
+			if (MainWindow == null)
+				throw new InvalidOperationException("Please provide a main window in your app");
 
-			var style = NSWindowStyle.Closable | NSWindowStyle.Resizable | NSWindowStyle.Titled;
-			var rect = NSWindow.FrameRectFor(NSScreen.MainScreen.Frame, style);
-			var window = new NSWindow(rect, style, NSBackingStore.Buffered, false);
-			window.Display();
-			window.MakeKeyAndOrderFront(NSApplication.SharedApplication);
-			_window = window;
+			MainWindow.Display();
+			MainWindow.MakeKeyAndOrderFront(NSApplication.SharedApplication);
 			if (_application == null)
 				throw new InvalidOperationException("You MUST invoke LoadApplication () before calling base.FinishedLaunching ()");
 
@@ -96,10 +94,10 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (_application.MainPage == null)
 				return;
 
-			var platformRenderer = (PlatformRenderer)_window.ContentViewController;
-			_window.ContentViewController = _application.MainPage.CreateViewController();
-			_window.ContentView.LayoutSubtreeIfNeeded();
-			_window.ContentView.NeedsLayout = true;
+			var platformRenderer = (PlatformRenderer)MainWindow.ContentViewController;
+			MainWindow.ContentViewController = _application.MainPage.CreateViewController();
+			MainWindow.ContentView.LayoutSubtreeIfNeeded();
+			MainWindow.ContentView.NeedsLayout = true;
 			if (platformRenderer != null)
 				((IDisposable)platformRenderer.Platform).Dispose();
 		}
