@@ -1,4 +1,5 @@
 ﻿using System;
+using AppKit;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
@@ -101,7 +102,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 				var nativeControl = childRenderer.NativeView;
 
-				//Renderer.NativeView.BringSubviewToFront(nativeControl);
+				nativeControl.RemoveFromSuperview();
+				Renderer.NativeView.AddSubview(nativeControl, NSWindowOrderingMode.Above, null);
 				nativeControl.Layer.ZPosition = z * 1000;
 			}
 		}

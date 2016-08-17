@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AppKit;
-using Foundation;
-using AppKit;
 using RectangleF = CoreGraphics.CGRect;
 using SizeF = CoreGraphics.CGSize;
 using PointF = CoreGraphics.CGPoint;
@@ -286,12 +284,6 @@ namespace Xamarin.Forms.Platform.MacOS
 			return Page == page || _modals.Contains(page);
 		}
 
-		async Task PresentModal(Page modal, bool animated)
-		{
-		}
-
-
-
 		public static IVisualElementRenderer CreateRenderer(VisualElement element)
 		{
 			var t = element.GetType();
@@ -399,19 +391,21 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			TargetApplication.NavigationProxy.Inner = this;
 		}
+
 		internal void DidAppear()
 		{
 			_animateModals = false;
 			TargetApplication.NavigationProxy.Inner = this;
 			_animateModals = true;
 		}
+
 		internal void WillAppear()
 		{
 			if (_appeared)
 				return;
 
-			//	_renderer.View.color = UIColor.White;
-			//	_renderer.View.ContentMode = UIViewContentMode.Redraw;
+			//_renderer.View.backg = UIColor.White;
+			//_renderer.View.ContentMode = UIViewContentMode.Redraw;
 
 			Page.Platform = this;
 			AddChild(Page);
@@ -447,9 +441,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			DisposeModelAndChildrenRenderers(view);
 		}
 
-		IVisualElementRenderer GetRenderer(object element)
+		async Task PresentModal(Page modal, bool animated)
 		{
-			throw new NotImplementedException();
 		}
 
 	}

@@ -7,7 +7,7 @@ namespace Xamarin.Forms.Platform.MacOS
 	{
 		VisualElement Element { get; }
 
-		FormsNSView NativeView { get; }
+		NSView NativeView { get; }
 
 		NSViewController ViewController { get; }
 

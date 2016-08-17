@@ -6,10 +6,10 @@ namespace Xamarin.Forms.Platform.MacOS
 {
 	internal class PlatformRenderer : NSViewController
 	{
-		internal PlatformRenderer(Platform platform) : base(nibNameOrNull: null, nibBundleOrNull: null)
+		internal PlatformRenderer(Platform platform)
 		{
 			Platform = platform;
-			View = new NSView(new CGRect(0, 0, 800, 800));
+			View = new FormsNSView(NSApplication.SharedApplication.Windows[0].Frame);
 		}
 
 		public Platform Platform { get; set; }
@@ -23,18 +23,13 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public override void ViewDidLayout()
 		{
-			Platform.LayoutSubviews();
 			base.ViewDidLayout();
+			Platform.LayoutSubviews();
 		}
-
-		//public override void ViewDidLayoutSubviews()
-		//{
-		//	base.ViewDidLayoutSubviews();
-		//	Platform.LayoutSubviews();
-		//}
 
 		public override void ViewWillAppear()
 		{
+
 			//View.BackgroundColor = UIColor.White;
 			Platform.WillAppear();
 			base.ViewWillAppear();

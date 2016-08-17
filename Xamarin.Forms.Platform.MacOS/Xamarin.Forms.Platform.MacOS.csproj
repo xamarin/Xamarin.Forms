@@ -67,7 +67,6 @@
     <Compile Include="CADisplayLinkTicker.cs" />
     <Compile Include="Extensions\PageExtensions.cs" />
     <Compile Include="IVisualElementRenderer.cs" />
-    <Compile Include="DefaultRenderer.cs" />
     <Compile Include="VisualElementRenderer.cs" />
     <Compile Include="ElementChangedEventArgs.cs" />
     <Compile Include="VisualElementChangedEventArgs.cs" />
@@ -99,6 +98,11 @@
     <Compile Include="FormsNSView.cs" />
     <Compile Include="Extensions\ColorExtensions.cs" />
     <Compile Include="Extensions\DrawingExtensions.cs" />
+    <Compile Include="Renderers\DefaultRenderer.cs" />
+    <Compile Include="Renderers\LabelRenderer.cs" />
+    <Compile Include="Extensions\FontExtensions.cs" />
+    <Compile Include="Extensions\FormattedStringExtensions.cs" />
+    <Compile Include="Extensions\AlignmentExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj">

@@ -98,6 +98,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			var platformRenderer = (PlatformRenderer)_window.ContentViewController;
 			_window.ContentViewController = _application.MainPage.CreateViewController();
+			_window.ContentView.LayoutSubtreeIfNeeded();
+			_window.ContentView.NeedsLayout = true;
 			if (platformRenderer != null)
 				((IDisposable)platformRenderer.Platform).Dispose();
 		}

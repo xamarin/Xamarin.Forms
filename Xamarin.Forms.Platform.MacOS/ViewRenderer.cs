@@ -1,5 +1,7 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using AppKit;
+using CoreGraphics;
 using Xamarin.Forms;
 
 namespace Xamarin.Forms.Platform.MacOS
@@ -13,6 +15,18 @@ namespace Xamarin.Forms.Platform.MacOS
 		NSColor _defaultColor;
 
 		public TNativeView Control { get; private set; }
+
+		public override void Layout()
+		{
+			base.Layout();
+			if (Control != null)
+			{
+				Control.Frame = new CGRect(0, 0, (nfloat)Element.Width, (nfloat)Element.Height);
+				//Control.LayoutSubtreeIfNeeded();
+			}
+
+
+		}
 
 		//public override void LayoutSubviews()
 		//{
@@ -96,18 +110,22 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected override void SetBackgroundColor(Color color)
 		{
-			if (Control == null)
+			var formsNSView = Control as FormsNSView;
+			if (formsNSView == null)
 				return;
 
-			//if (color == Color.Default)
-			//	Control.BackgroundColor = _defaultColor;
-			//else
-			//	Control.BackgroundColor = color.ToUIColor();
+			if (color == Color.Default)
+				formsNSView.BackgroundColor = _defaultColor;
+			else
+				formsNSView.BackgroundColor = color.ToNSColor();
 		}
 
 		protected void SetNativeControl(TNativeView uiview)
 		{
-			//_defaultColor = uiview.BackgroundColor;
+			var formsNSView = Control as FormsNSView;
+			if (formsNSView != null)
+				_defaultColor = formsNSView.BackgroundColor;
+
 			Control = uiview;
 
 			if (Element.BackgroundColor != Color.Default)

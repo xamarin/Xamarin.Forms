@@ -31,3 +31,4 @@ using Xamarin.Forms.Internals;
 [assembly: Xamarin.Forms.Dependency(typeof(ResourcesProvider))]
 
 [assembly: ExportRenderer(typeof(Page), typeof(PageRenderer))]
+[assembly: ExportRenderer(typeof(Label), typeof(LabelRenderer))]

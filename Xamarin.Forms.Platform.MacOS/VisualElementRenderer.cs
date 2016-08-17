@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		AutoPackage = 1 << 2
 	}
 
-	public class VisualElementRenderer<TElement> : FormsNSView, IVisualElementRenderer, IEffectControlProvider where TElement : VisualElement
+	public class VisualElementRenderer<TElement> : NSView, IVisualElementRenderer, IEffectControlProvider where TElement : VisualElement
 	{
 
 		readonly NSColor _defaultColor = NSColor.Clear;
@@ -35,7 +35,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			_propertyChangedHandler = OnElementPropertyChanged;
 
-			//BackgroundColor = NSColor.Clear;
+			//	BackgroundColor = NSColor.Clear;
 		}
 
 		public TElement Element { get; private set; }
@@ -84,11 +84,10 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public virtual SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
-			return new SizeRequest(new Size(200, 200));
-			//return NativeView.GetSizeRequest(widthConstraint, heightConstraint);
+			return NativeView.GetSizeRequest(widthConstraint, heightConstraint);
 		}
 
-		public FormsNSView NativeView
+		public NSView NativeView
 		{
 			get { return this; }
 		}
@@ -221,10 +220,10 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected virtual void SetBackgroundColor(Color color)
 		{
-			if (color == Color.Default)
-				BackgroundColor = _defaultColor;
-			else
-				BackgroundColor = color.ToNSColor();
+			//if (color == Color.Default)
+			//	BackgroundColor = _defaultColor;
+			//else
+			//	BackgroundColor = color.ToNSColor();
 		}
 
 		protected virtual void UpdateNativeWidget()

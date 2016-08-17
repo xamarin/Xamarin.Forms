@@ -15,9 +15,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		IPageController PageController => Element as IPageController;
 
-		public PageRenderer() : base(nibNameOrNull: null, nibBundleOrNull: null)
+		public PageRenderer()
 		{
-			View = new FormsNSView();
+			View = new FormsNSView(NSScreen.MainScreen.VisibleFrame);
 		}
 
 		void IEffectControlProvider.RegisterEffect(Effect effect)
@@ -36,9 +36,9 @@ namespace Xamarin.Forms.Platform.MacOS
 			return NativeView.GetSizeRequest(widthConstraint, heightConstraint);
 		}
 
-		public FormsNSView NativeView
+		public NSView NativeView
 		{
-			get { return _disposed ? null : View as FormsNSView; }
+			get { return _disposed ? null : View; }
 		}
 
 		public void SetElement(VisualElement element)
@@ -74,6 +74,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			PageController.SendAppearing();
 		}
 
+
 		public override void ViewDidDisappear()
 		{
 			base.ViewDidDisappear();
@@ -85,15 +86,17 @@ namespace Xamarin.Forms.Platform.MacOS
 			PageController.SendDisappearing();
 		}
 
+		public override void ViewWillDisappear()
+		{
+			base.ViewWillDisappear();
+
+			//View.Window?.EndEditing(true);
+		}
+
 		public override void ViewWillAppear()
 		{
 			Init();
 			base.ViewWillAppear();
-		}
-
-		public override void ViewDidLayout()
-		{
-			base.ViewDidLayout();
 		}
 
 		public override void ViewDidLoad()
@@ -101,15 +104,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			//Seems this is not being called
 			base.ViewDidLoad();
-			Init();
 
-		}
-
-		public override void ViewWillDisappear()
-		{
-			base.ViewWillDisappear();
-
-			//View.Window?.EndEditing(true);
 		}
 
 		protected override void Dispose(bool disposing)
@@ -159,6 +154,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			//	NativeView.AccessibilityIdentifier = id;
 		}
 
+		internal FormsNSView FormsNativeView => View as FormsNSView;
+
 		void Init()
 		{
 
@@ -207,14 +204,14 @@ namespace Xamarin.Forms.Platform.MacOS
 			string bgImage = ((Page)Element).BackgroundImage;
 			if (!string.IsNullOrEmpty(bgImage))
 			{
-				NativeView.BackgroundColor = NSColor.FromPatternImage(NSImage.ImageNamed(bgImage));
+				FormsNativeView.BackgroundColor = NSColor.FromPatternImage(NSImage.ImageNamed(bgImage));
 				return;
 			}
 			Color bgColor = Element.BackgroundColor;
 			if (bgColor.IsDefault)
-				NativeView.BackgroundColor = NSColor.White;
+				FormsNativeView.BackgroundColor = NSColor.White;
 			else
-				NativeView.BackgroundColor = bgColor.ToNSColor();
+				FormsNativeView.BackgroundColor = bgColor.ToNSColor();
 		}
 
 		void UpdateTitle()
