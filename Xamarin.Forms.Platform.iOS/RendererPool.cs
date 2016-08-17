@@ -1,7 +1,11 @@
 using System;
 using System.Collections.Generic;
 
+#if __MOBILE__
 namespace Xamarin.Forms.Platform.iOS
+#else
+namespace Xamarin.Forms.Platform.MacOS
+#endif
 {
 	public sealed class RendererPool
 	{
