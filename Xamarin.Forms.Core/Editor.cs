@@ -21,7 +21,7 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty FontAttributesProperty = BindableProperty.Create("FontAttributes", typeof(FontAttributes), typeof(Editor), FontAttributes.None);
 
 		public static readonly BindableProperty TextColorProperty = BindableProperty.Create("TextColor", typeof(Color), typeof(Editor), Color.Default);
-		readonly PlatformConfigurationRegistry<Editor> _platformConfigurationRegistry;
+		readonly Lazy<PlatformConfigurationRegistry<Editor>> _platformConfigurationRegistry;
 
 		public string Text
 		{
@@ -60,12 +60,12 @@ namespace Xamarin.Forms
 
 		public Editor()
 		{
-			_platformConfigurationRegistry = new PlatformConfigurationRegistry<Editor>(this);
+			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Editor>>(() => new PlatformConfigurationRegistry<Editor>(this));
 		}
 
 		public IPlatformElementConfiguration<T, Editor> On<T>() where T : IConfigPlatform
 		{
-			return _platformConfigurationRegistry.On<T>();
+			return _platformConfigurationRegistry.Value.On<T>();
 		}
 
 		internal void SendCompleted()

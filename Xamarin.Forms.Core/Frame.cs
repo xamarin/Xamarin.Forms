@@ -1,3 +1,4 @@
+using System;
 using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
@@ -10,12 +11,12 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty HasShadowProperty = BindableProperty.Create("HasShadow", typeof(bool), typeof(Frame), true);
 
-		readonly PlatformConfigurationRegistry<Frame> _platformConfigurationRegistry;
+		readonly Lazy<PlatformConfigurationRegistry<Frame>> _platformConfigurationRegistry;
 
 		public Frame()
 		{
 			Padding = new Size(20, 20);
-			_platformConfigurationRegistry = new PlatformConfigurationRegistry<Frame>(this);
+			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Frame>>(() => new PlatformConfigurationRegistry<Frame>(this));
 		}
 
 		public bool HasShadow
@@ -32,7 +33,7 @@ namespace Xamarin.Forms
 
 		public IPlatformElementConfiguration<T, Frame> On<T>() where T : IConfigPlatform
 		{
-			return _platformConfigurationRegistry.On<T>();
+			return _platformConfigurationRegistry.Value.On<T>();
 		}
 	}
 }

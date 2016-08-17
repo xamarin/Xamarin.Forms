@@ -10,7 +10,7 @@ namespace Xamarin.Forms
 	{
 		static Application s_current;
 		readonly Task<IDictionary<string, object>> _propertiesTask;
-		readonly PlatformConfigurationRegistry<Application> _platformConfigurationRegistry;
+		readonly Lazy<PlatformConfigurationRegistry<Application>> _platformConfigurationRegistry;
 
 		IAppIndexingProvider _appIndexProvider;
 		bool _isSaving;
@@ -33,7 +33,7 @@ namespace Xamarin.Forms
 
 			SystemResources = DependencyService.Get<ISystemResourcesProvider>().GetSystemResources();
 			SystemResources.ValuesChanged += OnParentResourcesChanged;
-			_platformConfigurationRegistry = new PlatformConfigurationRegistry<Application>(this);
+			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Application>>(() => new PlatformConfigurationRegistry<Application>(this));
 		}
 
 		public IAppLinks AppLinks
@@ -150,7 +150,7 @@ namespace Xamarin.Forms
 
 		public IPlatformElementConfiguration<T, Application> On<T>() where T : IConfigPlatform
 		{
-			return _platformConfigurationRegistry.On<T>();
+			return _platformConfigurationRegistry.Value.On<T>();
 		}
 
 		protected virtual void OnAppLinkRequestReceived(Uri uri)

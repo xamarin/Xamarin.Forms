@@ -15,7 +15,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty HasUnevenRowsProperty = BindableProperty.Create("HasUnevenRows", typeof(bool), typeof(TableView), false);
 
-		readonly PlatformConfigurationRegistry<TableView> _platformConfigurationRegistry;
+		readonly Lazy<PlatformConfigurationRegistry<TableView>> _platformConfigurationRegistry;
 
 		readonly TableSectionModel _tableModel;
 
@@ -31,7 +31,7 @@ namespace Xamarin.Forms
 		{
 			VerticalOptions = HorizontalOptions = LayoutOptions.FillAndExpand;
 			Model = _tableModel = new TableSectionModel(this, root);
-			_platformConfigurationRegistry = new PlatformConfigurationRegistry<TableView>(this);
+			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<TableView>>(() => new PlatformConfigurationRegistry<TableView>(this));
 		}
 
 		public bool HasUnevenRows
@@ -132,7 +132,7 @@ namespace Xamarin.Forms
 
 		public IPlatformElementConfiguration<T, TableView> On<T>() where T : IConfigPlatform
 		{
-			return _platformConfigurationRegistry.On<T>();
+			return _platformConfigurationRegistry.Value.On<T>();
 		}
 
 		void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

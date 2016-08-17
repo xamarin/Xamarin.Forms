@@ -52,11 +52,11 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty LineBreakModeProperty = BindableProperty.Create("LineBreakMode", typeof(LineBreakMode), typeof(Label), LineBreakMode.WordWrap,
 			propertyChanged: (bindable, oldvalue, newvalue) => ((Label)bindable).InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged));
 
-		readonly PlatformConfigurationRegistry<Label> _platformConfigurationRegistry;
+		readonly Lazy<PlatformConfigurationRegistry<Label>> _platformConfigurationRegistry;
 
 		public Label()
 		{
-			_platformConfigurationRegistry = new PlatformConfigurationRegistry<Label>(this);
+			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Label>>(() => new PlatformConfigurationRegistry<Label>(this));
 		}
 
 		bool _cancelEvents;
@@ -296,7 +296,7 @@ namespace Xamarin.Forms
 
 		public IPlatformElementConfiguration<T, Label> On<T>() where T : IConfigPlatform
 		{
-			return _platformConfigurationRegistry.On<T>();
+			return _platformConfigurationRegistry.Value.On<T>();
 		}
 	}
 }

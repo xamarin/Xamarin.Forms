@@ -42,11 +42,11 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty IncrementProperty = BindableProperty.Create("Increment", typeof(double), typeof(Stepper), 1.0);
 
-		readonly PlatformConfigurationRegistry<Stepper> _platformConfigurationRegistry;
+		readonly Lazy<PlatformConfigurationRegistry<Stepper>> _platformConfigurationRegistry;
 
 		public Stepper()
 		{
-			_platformConfigurationRegistry = new PlatformConfigurationRegistry<Stepper>(this);
+			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Stepper>>(() => new PlatformConfigurationRegistry<Stepper>(this));
 		}
 
 		public Stepper(double min, double max, double val, double increment)
@@ -96,7 +96,7 @@ namespace Xamarin.Forms
 		
 		public IPlatformElementConfiguration<T, Stepper> On<T>() where T : IConfigPlatform
 		{
-			return _platformConfigurationRegistry.On<T>();
+			return _platformConfigurationRegistry.Value.On<T>();
 		}
 	}
 }

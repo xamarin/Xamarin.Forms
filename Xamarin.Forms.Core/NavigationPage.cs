@@ -30,7 +30,7 @@ namespace Xamarin.Forms
 		
 		public NavigationPage()
 		{
-			_platformConfigurationRegistry = new PlatformConfigurationRegistry<NavigationPage>(this);
+			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<NavigationPage>>(() => new PlatformConfigurationRegistry<NavigationPage>(this));
 
 			Navigation = new NavigationImpl(this);
 		}
@@ -444,11 +444,11 @@ namespace Xamarin.Forms
 			}
 		}
 
-		readonly PlatformConfigurationRegistry<NavigationPage> _platformConfigurationRegistry;
+		readonly Lazy<PlatformConfigurationRegistry<NavigationPage>> _platformConfigurationRegistry;
 
 		public new IPlatformElementConfiguration<T, NavigationPage> On<T>() where T : IConfigPlatform
 		{
-			return _platformConfigurationRegistry.On<T>();
+			return _platformConfigurationRegistry.Value.On<T>();
 		}
 	}
 }

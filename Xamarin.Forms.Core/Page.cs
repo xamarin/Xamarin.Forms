@@ -35,7 +35,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty IconProperty = BindableProperty.Create("Icon", typeof(FileImageSource), typeof(Page), default(FileImageSource));
 
-		readonly PlatformConfigurationRegistry<Page> _platformConfigurationRegistry;
+		readonly Lazy<PlatformConfigurationRegistry<Page>> _platformConfigurationRegistry;
 
 		bool _allocatedFlag;
 		Rectangle _containerArea;
@@ -55,7 +55,7 @@ namespace Xamarin.Forms
 			toolbarItems.CollectionChanged += OnToolbarItemsCollectionChanged;
 			ToolbarItems = toolbarItems;
 			PageController.InternalChildren.CollectionChanged += InternalChildrenOnCollectionChanged;
-			_platformConfigurationRegistry = new PlatformConfigurationRegistry<Page>(this);
+			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Page>>(() => new PlatformConfigurationRegistry<Page>(this));
 		}
 
 		public string BackgroundImage
@@ -407,7 +407,7 @@ namespace Xamarin.Forms
 
 		public IPlatformElementConfiguration<T, Page> On<T>() where T : IConfigPlatform
 		{
-			return _platformConfigurationRegistry.On<T>();
+			return _platformConfigurationRegistry.Value.On<T>();
 		}
 	}
 }

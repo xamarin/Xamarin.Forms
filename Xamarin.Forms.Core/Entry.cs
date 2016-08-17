@@ -25,11 +25,11 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty FontAttributesProperty = BindableProperty.Create("FontAttributes", typeof(FontAttributes), typeof(Entry), FontAttributes.None);
 
-		readonly PlatformConfigurationRegistry<Entry> _platformConfigurationRegistry;
+		readonly Lazy<PlatformConfigurationRegistry<Entry>> _platformConfigurationRegistry;
 
 		public Entry()
 		{
-			_platformConfigurationRegistry = new PlatformConfigurationRegistry<Entry>(this);
+			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Entry>>(() => new PlatformConfigurationRegistry<Entry>(this));
 		}
 
 		public TextAlignment HorizontalTextAlignment
@@ -105,7 +105,7 @@ namespace Xamarin.Forms
 
 		public IPlatformElementConfiguration<T, Entry> On<T>() where T : IConfigPlatform
 		{
-			return _platformConfigurationRegistry.On<T>();
+			return _platformConfigurationRegistry.Value.On<T>();
 		}
 	}
 }

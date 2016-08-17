@@ -1,3 +1,4 @@
+using System;
 using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
@@ -9,11 +10,11 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty ColorProperty = BindableProperty.Create("Color", typeof(Color), typeof(ActivityIndicator), Color.Default);
 
-		readonly PlatformConfigurationRegistry<ActivityIndicator> _platformConfigurationRegistry;
+		readonly Lazy<PlatformConfigurationRegistry<ActivityIndicator>> _platformConfigurationRegistry;
 
 		public ActivityIndicator()
 		{
-			_platformConfigurationRegistry = new PlatformConfigurationRegistry<ActivityIndicator>(this);
+			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<ActivityIndicator>>(() => new PlatformConfigurationRegistry<ActivityIndicator>(this));
 		}
 
 		public Color Color
@@ -29,7 +30,7 @@ namespace Xamarin.Forms
 		}
 		public IPlatformElementConfiguration<T, ActivityIndicator> On<T>() where T : IConfigPlatform
 		{
-			return _platformConfigurationRegistry.On<T>();
+			return _platformConfigurationRegistry.Value.On<T>();
 		}
 	}
 }

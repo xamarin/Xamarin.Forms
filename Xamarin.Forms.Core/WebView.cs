@@ -32,11 +32,11 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty CanGoForwardProperty = CanGoForwardPropertyKey.BindableProperty;
 
-		readonly PlatformConfigurationRegistry<WebView> _platformConfigurationRegistry;
+		readonly Lazy<PlatformConfigurationRegistry<WebView>> _platformConfigurationRegistry;
 
 		public WebView()
 		{
-			_platformConfigurationRegistry = new PlatformConfigurationRegistry<WebView>(this);
+			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<WebView>>(() => new PlatformConfigurationRegistry<WebView>(this));
 		}
 
 		public bool CanGoBack
@@ -132,7 +132,7 @@ namespace Xamarin.Forms
 
 		public IPlatformElementConfiguration<T, WebView> On<T>() where T : IConfigPlatform
 		{
-			return _platformConfigurationRegistry.On<T>();
+			return _platformConfigurationRegistry.Value.On<T>();
 		}
 	}
 }

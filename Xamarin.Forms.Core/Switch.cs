@@ -13,11 +13,11 @@ namespace Xamarin.Forms
 				eh(bindable, new ToggledEventArgs((bool)newValue));
 		}, defaultBindingMode: BindingMode.TwoWay);
 
-		readonly PlatformConfigurationRegistry<Switch> _platformConfigurationRegistry;
+		readonly Lazy<PlatformConfigurationRegistry<Switch>> _platformConfigurationRegistry;
 
 		public Switch()
 		{
-			_platformConfigurationRegistry = new PlatformConfigurationRegistry<Switch>(this);
+			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Switch>>(() => new PlatformConfigurationRegistry<Switch>(this));
 		}
 
 		public bool IsToggled
@@ -30,7 +30,7 @@ namespace Xamarin.Forms
 
 		public IPlatformElementConfiguration<T, Switch> On<T>() where T : IConfigPlatform
 		{
-			return _platformConfigurationRegistry.On<T>();
+			return _platformConfigurationRegistry.Value.On<T>();
 		}
 	}
 }

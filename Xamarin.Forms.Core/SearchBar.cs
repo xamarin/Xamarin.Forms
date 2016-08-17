@@ -37,7 +37,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty PlaceholderColorProperty = BindableProperty.Create("PlaceholderColor", typeof(Color), typeof(SearchBar), Color.Default);
 
-		readonly PlatformConfigurationRegistry<SearchBar> _platformConfigurationRegistry;
+		readonly Lazy<PlatformConfigurationRegistry<SearchBar>> _platformConfigurationRegistry;
 
 		public Color CancelButtonColor
 		{
@@ -117,7 +117,7 @@ namespace Xamarin.Forms
 
 		public SearchBar()
 		{
-			_platformConfigurationRegistry = new PlatformConfigurationRegistry<SearchBar>(this);
+			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<SearchBar>>(() => new PlatformConfigurationRegistry<SearchBar>(this));
 		}
 
 		void ISearchBarController.OnSearchButtonPressed()
@@ -162,7 +162,7 @@ namespace Xamarin.Forms
 
 		public IPlatformElementConfiguration<T, SearchBar> On<T>() where T : IConfigPlatform
 		{
-			return _platformConfigurationRegistry.On<T>();
+			return _platformConfigurationRegistry.Value.On<T>();
 		}
 	}
 }

@@ -1,3 +1,4 @@
+using System;
 using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
@@ -9,7 +10,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty BarTextColorProperty = BindableProperty.Create(nameof(BarTextColor), typeof(Color), typeof(TabbedPage), Color.Default);
 
-		readonly PlatformConfigurationRegistry<TabbedPage> _platformConfigurationRegistry;
+		readonly Lazy<PlatformConfigurationRegistry<TabbedPage>> _platformConfigurationRegistry;
 
 		public Color BarBackgroundColor
 		{
@@ -46,12 +47,12 @@ namespace Xamarin.Forms
 
 		public TabbedPage()
 		{
-			_platformConfigurationRegistry = new PlatformConfigurationRegistry<TabbedPage>(this);
+			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<TabbedPage>>(() => new PlatformConfigurationRegistry<TabbedPage>(this));
 		}
 
 		public new IPlatformElementConfiguration<T, TabbedPage> On<T>() where T : IConfigPlatform
 		{
-			return _platformConfigurationRegistry.On<T>();
+			return _platformConfigurationRegistry.Value.On<T>();
 		}
 	}
 }

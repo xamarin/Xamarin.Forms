@@ -16,11 +16,11 @@ namespace Xamarin.Forms
 			return time.TotalHours < 24 && time.TotalMilliseconds >= 0;
 		});
 
-		readonly PlatformConfigurationRegistry<TimePicker> _platformConfigurationRegistry;
+		readonly Lazy<PlatformConfigurationRegistry<TimePicker>> _platformConfigurationRegistry;
 
 		public TimePicker()
 		{
-			_platformConfigurationRegistry = new PlatformConfigurationRegistry<TimePicker>(this);
+			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<TimePicker>>(() => new PlatformConfigurationRegistry<TimePicker>(this));
 		}
 
 		public string Format
@@ -43,7 +43,7 @@ namespace Xamarin.Forms
 
 		public IPlatformElementConfiguration<T, TimePicker> On<T>() where T : IConfigPlatform
 		{
-			return _platformConfigurationRegistry.On<T>();
+			return _platformConfigurationRegistry.Value.On<T>();
 		}
 	}
 }

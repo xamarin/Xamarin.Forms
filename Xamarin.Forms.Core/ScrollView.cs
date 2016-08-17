@@ -22,7 +22,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty ContentSizeProperty = ContentSizePropertyKey.BindableProperty;
 
-		readonly PlatformConfigurationRegistry<ScrollView> _platformConfigurationRegistry;
+		readonly Lazy<PlatformConfigurationRegistry<ScrollView>> _platformConfigurationRegistry;
 
 		View _content;
 
@@ -72,7 +72,7 @@ namespace Xamarin.Forms
 
 		public ScrollView()
 		{
-			_platformConfigurationRegistry = new PlatformConfigurationRegistry<ScrollView>(this);
+			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<ScrollView>>(() => new PlatformConfigurationRegistry<ScrollView>(this));
 		}
 
 		Point IScrollViewController.GetScrollPositionForElement(VisualElement item, ScrollToPosition pos)
@@ -142,7 +142,7 @@ namespace Xamarin.Forms
 
 		public IPlatformElementConfiguration<T, ScrollView> On<T>() where T : IConfigPlatform
 		{
-			return _platformConfigurationRegistry.On<T>();
+			return _platformConfigurationRegistry.Value.On<T>();
 		}
 
 		public Task ScrollToAsync(double x, double y, bool animated)

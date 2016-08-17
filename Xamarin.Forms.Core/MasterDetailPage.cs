@@ -241,14 +241,14 @@ namespace Xamarin.Forms
 
 		public MasterDetailPage()
 		{
-			_platformConfigurationRegistry = new PlatformConfigurationRegistry<MasterDetailPage>(this);
+			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<MasterDetailPage>>(() => new PlatformConfigurationRegistry<MasterDetailPage>(this));
 		}
 
-		readonly PlatformConfigurationRegistry<MasterDetailPage> _platformConfigurationRegistry;
+		readonly Lazy<PlatformConfigurationRegistry<MasterDetailPage>> _platformConfigurationRegistry;
 
 		public new IPlatformElementConfiguration<T, MasterDetailPage> On<T>() where T : IConfigPlatform
 		{
-			return _platformConfigurationRegistry.On<T>();
+			return _platformConfigurationRegistry.Value.On<T>();
 		}
 	}
 }

@@ -20,11 +20,11 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty IsLoadingProperty = IsLoadingPropertyKey.BindableProperty;
 
-		readonly PlatformConfigurationRegistry<Image> _platformConfigurationRegistry;
+		readonly Lazy<PlatformConfigurationRegistry<Image>> _platformConfigurationRegistry;
 
 		public Image()
 		{
-			_platformConfigurationRegistry = new PlatformConfigurationRegistry<Image>(this);
+			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Image>>(() => new PlatformConfigurationRegistry<Image>(this));
 		}
 
 		public Aspect Aspect
@@ -167,7 +167,7 @@ namespace Xamarin.Forms
 
 		public IPlatformElementConfiguration<T, Image> On<T>() where T : IConfigPlatform
 		{
-			return _platformConfigurationRegistry.On<T>();
+			return _platformConfigurationRegistry.Value.On<T>();
 		}
 	}
 }

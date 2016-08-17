@@ -40,11 +40,11 @@ namespace Xamarin.Forms
 				eh(slider, new ValueChangedEventArgs((double)oldValue, (double)newValue));
 		});
 
-		readonly PlatformConfigurationRegistry<Slider> _platformConfigurationRegistry;
+		readonly Lazy<PlatformConfigurationRegistry<Slider>> _platformConfigurationRegistry;
 
 		public Slider()
 		{
-			_platformConfigurationRegistry = new PlatformConfigurationRegistry<Slider>(this);
+			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Slider>>(() => new PlatformConfigurationRegistry<Slider>(this));
 		}
 
 		public Slider(double min, double max, double val) : this()
@@ -87,7 +87,7 @@ namespace Xamarin.Forms
 
 		public IPlatformElementConfiguration<T, Slider> On<T>() where T : IConfigPlatform
 		{
-			return _platformConfigurationRegistry.On<T>();
+			return _platformConfigurationRegistry.Value.On<T>();
 		}
 	}
 }

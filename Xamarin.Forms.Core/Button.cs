@@ -43,7 +43,7 @@ namespace Xamarin.Forms
 			propertyChanging: (bindable, oldvalue, newvalue) => ((Button)bindable).OnSourcePropertyChanging((ImageSource)oldvalue, (ImageSource)newvalue),
 			propertyChanged: (bindable, oldvalue, newvalue) => ((Button)bindable).OnSourcePropertyChanged((ImageSource)oldvalue, (ImageSource)newvalue));
 
-		readonly PlatformConfigurationRegistry<Button> _platformConfigurationRegistry;
+		readonly Lazy<PlatformConfigurationRegistry<Button>> _platformConfigurationRegistry;
 
 		bool _cancelEvents;
 
@@ -148,12 +148,12 @@ namespace Xamarin.Forms
 
 		public Button()
 		{
-			_platformConfigurationRegistry = new PlatformConfigurationRegistry<Button>(this);
+			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Button>>(() => new PlatformConfigurationRegistry<Button>(this));
 		}
 
 		public IPlatformElementConfiguration<T, Button> On<T>() where T : IConfigPlatform
 		{
-			return _platformConfigurationRegistry.On<T>();
+			return _platformConfigurationRegistry.Value.On<T>();
 		}
 
 		protected override void OnBindingContextChanged()

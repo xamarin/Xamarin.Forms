@@ -8,11 +8,11 @@ namespace Xamarin.Forms
 	{
 		public static readonly BindableProperty ColorProperty = BindableProperty.Create("Color", typeof(Color), typeof(BoxView), Color.Default);
 
-		readonly PlatformConfigurationRegistry<BoxView> _platformConfigurationRegistry;
+		readonly Lazy<PlatformConfigurationRegistry<BoxView>> _platformConfigurationRegistry;
 
 		public BoxView()
 		{
-			_platformConfigurationRegistry = new PlatformConfigurationRegistry<BoxView>(this);
+			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<BoxView>>(() => new PlatformConfigurationRegistry<BoxView>(this));
 		}
 
 		public Color Color
@@ -23,7 +23,7 @@ namespace Xamarin.Forms
 
 		public IPlatformElementConfiguration<T, BoxView> On<T>() where T : IConfigPlatform
 		{
-			return _platformConfigurationRegistry.On<T>();
+			return _platformConfigurationRegistry.Value.On<T>();
 		}
 
 		[Obsolete("Use OnMeasure")]

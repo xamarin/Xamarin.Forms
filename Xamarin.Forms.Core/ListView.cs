@@ -43,7 +43,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty SeparatorColorProperty = BindableProperty.Create("SeparatorColor", typeof(Color), typeof(ListView), Color.Default);
 
-		readonly PlatformConfigurationRegistry<ListView> _platformConfigurationRegistry;
+		readonly Lazy<PlatformConfigurationRegistry<ListView>> _platformConfigurationRegistry;
 
 		BindingBase _groupDisplayBinding;
 
@@ -66,7 +66,7 @@ namespace Xamarin.Forms
 
 			TemplatedItems.IsGroupingEnabledProperty = IsGroupingEnabledProperty;
 			TemplatedItems.GroupHeaderTemplateProperty = GroupHeaderTemplateProperty;
-			_platformConfigurationRegistry = new PlatformConfigurationRegistry<ListView>(this);
+			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<ListView>>(() => new PlatformConfigurationRegistry<ListView>(this));
 		}
 
 		public ListView([Parameter("CachingStrategy")] ListViewCachingStrategy cachingStrategy) : this()
@@ -579,7 +579,7 @@ namespace Xamarin.Forms
 
 		public IPlatformElementConfiguration<T, ListView> On<T>() where T : IConfigPlatform
 		{
-			return _platformConfigurationRegistry.On<T>();
+			return _platformConfigurationRegistry.Value.On<T>();
 		}
 	}
 }

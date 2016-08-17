@@ -10,7 +10,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty HasRenderLoopProperty = BindableProperty.Create("HasRenderLoop", typeof(bool), typeof(OpenGLView), default(bool));
 
-		readonly PlatformConfigurationRegistry<OpenGLView> _platformConfigurationRegistry;
+		readonly Lazy<PlatformConfigurationRegistry<OpenGLView>> _platformConfigurationRegistry;
 
 		#endregion
 
@@ -39,12 +39,12 @@ namespace Xamarin.Forms
 
 		public OpenGLView()
 		{
-			_platformConfigurationRegistry = new PlatformConfigurationRegistry<OpenGLView>(this);
+			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<OpenGLView>>(() => new PlatformConfigurationRegistry<OpenGLView>(this));
 		}
 
 		public IPlatformElementConfiguration<T, OpenGLView> On<T>() where T : IConfigPlatform
 		{
-			return _platformConfigurationRegistry.On<T>();
+			return _platformConfigurationRegistry.Value.On<T>();
 		}
 	}
 }

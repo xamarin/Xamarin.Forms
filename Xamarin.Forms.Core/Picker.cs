@@ -20,13 +20,13 @@ namespace Xamarin.Forms
 					eh(bindable, EventArgs.Empty);
 			}, coerceValue: CoerceSelectedIndex);
 
-		readonly PlatformConfigurationRegistry<Picker> _platformConfigurationRegistry;
+		readonly Lazy<PlatformConfigurationRegistry<Picker>> _platformConfigurationRegistry;
 
 		public Picker()
 		{
 			Items = new ObservableList<string>();
 			((ObservableList<string>)Items).CollectionChanged += OnItemsCollectionChanged;
-			_platformConfigurationRegistry = new PlatformConfigurationRegistry<Picker>(this);
+			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Picker>>(() => new PlatformConfigurationRegistry<Picker>(this));
 		}
 
 		public IList<string> Items { get; }
@@ -64,7 +64,7 @@ namespace Xamarin.Forms
 
 		public IPlatformElementConfiguration<T, Picker> On<T>() where T : IConfigPlatform
 		{
-			return _platformConfigurationRegistry.On<T>();
+			return _platformConfigurationRegistry.Value.On<T>();
 		}
 	}
 }

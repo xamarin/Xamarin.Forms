@@ -19,11 +19,11 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty TextColorProperty = BindableProperty.Create(nameof(TextColor), typeof(Color), typeof(DatePicker), Color.Default);
 
-		readonly PlatformConfigurationRegistry<DatePicker> _platformConfigurationRegistry;
+		readonly Lazy<PlatformConfigurationRegistry<DatePicker>> _platformConfigurationRegistry;
 
 		public DatePicker()
 		{
-			_platformConfigurationRegistry = new PlatformConfigurationRegistry<DatePicker>(this);
+			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<DatePicker>>(() => new PlatformConfigurationRegistry<DatePicker>(this));
 		}
 
 		public DateTime Date
@@ -113,7 +113,7 @@ namespace Xamarin.Forms
 
 		public IPlatformElementConfiguration<T, DatePicker> On<T>() where T : IConfigPlatform
 		{
-			return _platformConfigurationRegistry.On<T>();
+			return _platformConfigurationRegistry.Value.On<T>();
 		}
 	}
 }

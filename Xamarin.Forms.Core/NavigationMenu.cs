@@ -11,11 +11,11 @@ namespace Xamarin.Forms
 	{
 		readonly List<Page> _targets = new List<Page>();
 
-		readonly PlatformConfigurationRegistry<NavigationMenu> _platformConfigurationRegistry;
+		readonly Lazy<PlatformConfigurationRegistry<NavigationMenu>> _platformConfigurationRegistry;
 
 		public NavigationMenu()
 		{
-			_platformConfigurationRegistry = new PlatformConfigurationRegistry<NavigationMenu>(this);
+			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<NavigationMenu>>(() => new PlatformConfigurationRegistry<NavigationMenu>(this));
 		}
 
 		public IEnumerable<Page> Targets
@@ -61,7 +61,7 @@ namespace Xamarin.Forms
 
 		public IPlatformElementConfiguration<T, NavigationMenu> On<T>() where T : IConfigPlatform
 		{
-			return _platformConfigurationRegistry.On<T>();
+			return _platformConfigurationRegistry.Value.On<T>();
 		}
 
 		internal void SendTargetSelected(Page target)
