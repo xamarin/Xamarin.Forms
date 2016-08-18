@@ -79,7 +79,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				if (Control == null)
 				{
-					SetNativeControl(new NSTextField(RectangleF.Empty) { BackgroundColor = NSColor.Clear });
+					SetNativeControl(new NSTextField(RectangleF.Empty) { BackgroundColor = NSColor.Clear, Editable = false, Bezeled = false, DrawsBackground = false });
 				}
 
 				UpdateText();
