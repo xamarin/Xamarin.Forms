@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		AutoPackage = 1 << 2
 	}
 
-	public class VisualElementRenderer<TElement> : NSView, IVisualElementRenderer, IEffectControlProvider where TElement : VisualElement
+	public class VisualElementRenderer<TElement> : FormsNSView, IVisualElementRenderer, IEffectControlProvider where TElement : VisualElement
 	{
 
 		readonly NSColor _defaultColor = NSColor.Clear;
@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		VisualElementPackager _packager;
 		VisualElementTracker _tracker;
 
-		protected VisualElementRenderer() : base(RectangleF.Empty)
+		protected VisualElementRenderer() : base(false, RectangleF.Empty)
 		{
 			_propertyChangedHandler = OnElementPropertyChanged;
 
@@ -220,10 +220,10 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected virtual void SetBackgroundColor(Color color)
 		{
-			//if (color == Color.Default)
-			//	BackgroundColor = _defaultColor;
-			//else
-			//	BackgroundColor = color.ToNSColor();
+			if (color == Color.Default)
+				BackgroundColor = _defaultColor;
+			else
+				BackgroundColor = color.ToNSColor();
 		}
 
 		protected virtual void UpdateNativeWidget()
