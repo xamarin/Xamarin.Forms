@@ -103,6 +103,7 @@
     <Compile Include="Extensions\FontExtensions.cs" />
     <Compile Include="Extensions\FormattedStringExtensions.cs" />
     <Compile Include="Extensions\AlignmentExtensions.cs" />
+    <Compile Include="Renderers\ButtonRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj">
