@@ -30,6 +30,11 @@ using Xamarin.Forms.Internals;
 [assembly: Xamarin.Forms.Dependency(typeof(Deserializer))]
 [assembly: Xamarin.Forms.Dependency(typeof(ResourcesProvider))]
 
+[assembly: ExportImageSourceHandler(typeof(FileImageSource), typeof(FileImageSourceHandler))]
+[assembly: ExportImageSourceHandler(typeof(StreamImageSource), typeof(StreamImagesourceHandler))]
+[assembly: ExportImageSourceHandler(typeof(UriImageSource), typeof(ImageLoaderSourceHandler))]
+
+
 [assembly: ExportRenderer(typeof(Page), typeof(PageRenderer))]
 [assembly: ExportRenderer(typeof(Label), typeof(LabelRenderer))]
 [assembly: ExportRenderer(typeof(Button), typeof(ButtonRenderer))]

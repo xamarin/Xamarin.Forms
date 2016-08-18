@@ -104,6 +104,8 @@
     <Compile Include="Extensions\FormattedStringExtensions.cs" />
     <Compile Include="Extensions\AlignmentExtensions.cs" />
     <Compile Include="Renderers\ButtonRenderer.cs" />
+    <Compile Include="ImageSourceHandlers.cs" />
+    <Compile Include="Extensions\ButtonExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj">
