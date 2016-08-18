@@ -161,7 +161,10 @@ namespace Xamarin.Forms.Platform.MacOS
 				// iOS is a really big fan of you not actually modifying the View's of the UIViewControllers
 				if ((!(visualElement is Page) || visualElement is ContentPage) && width > 0 && height > 0 && parent != null && boundsChanged)
 				{
-					var target = new RectangleF(x, y, width, height);
+					var visualParent = parent as VisualElement;
+
+					float newY = visualParent == null ? y : (float)(visualParent.Height - y - view.Height);
+					var target = new RectangleF(x, newY, width, height);
 					// must reset transform prior to setting frame...
 					caLayer.Transform = transform;
 					uiview.Frame = target;
