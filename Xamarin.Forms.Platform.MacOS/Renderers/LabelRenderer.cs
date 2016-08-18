@@ -112,10 +112,10 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected override void SetBackgroundColor(Color color)
 		{
-			//if (color == Color.Default)
-			//	BackgroundColor = NSColor.Clear;
-			//else
-			//	BackgroundColor = color.ToNSColor();
+			if (color == Color.Default)
+				BackgroundColor = NSColor.Clear;
+			else
+				BackgroundColor = color.ToNSColor();
 		}
 
 		void UpdateAlignment()
@@ -166,7 +166,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				Control.AttributedStringValue = formatted.ToAttributed(Element, (Color)values[2]);
 			else
 			{
-				Control.StringValue = (string)values[1];
+				Control.StringValue = (string)values[1] ?? "";
 				// default value of color documented to be black in iOS docs
 				Control.Font = Element.ToNSFont();
 				Control.TextColor = ((Color)values[2]).ToUIColor(ColorExtensions.Black);
