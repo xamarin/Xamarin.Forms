@@ -34,8 +34,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		protected VisualElementRenderer() : base(false, RectangleF.Empty)
 		{
 			_propertyChangedHandler = OnElementPropertyChanged;
-
-			//	BackgroundColor = NSColor.Clear;
+			BackgroundColor = _defaultColor;
 		}
 
 		public TElement Element { get; private set; }
@@ -154,10 +153,6 @@ namespace Xamarin.Forms.Platform.MacOS
 				SetAutomationId(Element.AutomationId);
 		}
 
-		//public override SizeF SizeThatFits(SizeF size)
-		//{
-		//	return new SizeF(0, 0);
-		//}
 		protected override void Dispose(bool disposing)
 		{
 			if ((_flags & VisualElementRendererFlags.Disposed) != 0)

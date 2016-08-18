@@ -18,7 +18,12 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public static SizeRequest GetSizeRequest(this NSView self, double widthConstraint, double heightConstraint, double minimumWidth = -1, double minimumHeight = -1)
 		{
-			var s = self.FittingSize;
+			CoreGraphics.CGSize s;
+			var control = self as NSControl;
+			if (control != null)
+				s = control.SizeThatFits(new CoreGraphics.CGSize(widthConstraint, heightConstraint));
+			else
+				s = self.FittingSize;
 			var request = new Size(s.Width == float.PositiveInfinity ? double.PositiveInfinity : s.Width, s.Height == float.PositiveInfinity ? double.PositiveInfinity : s.Height);
 			var minimum = new Size(minimumWidth < 0 ? request.Width : minimumWidth, minimumHeight < 0 ? request.Height : minimumHeight);
 			return new SizeRequest(request, minimum);

@@ -136,6 +136,12 @@ namespace Xamarin.Forms.Platform.MacOS
 			AddSubview(uiview);
 		}
 
+		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
+		{
+			return (Control ?? NativeView).GetSizeRequest(widthConstraint, heightConstraint);
+			//return base.GetDesiredSize(widthConstraint, heightConstraint);
+		}
+
 		void UpdateIsEnabled()
 		{
 			if (Element == null || Control == null)

@@ -68,7 +68,7 @@ namespace Xamarin.Forms.Platform.MacOS
 					fitSize = Control.SizeThatFits(Element.Bounds.Size.ToSizeF());
 					labelHeight = (nfloat)Math.Min(Bounds.Height, fitSize.Height);
 					yOffset = (nfloat)labelHeight;
-					Control.Frame = new RectangleF(0, yOffset, (nfloat)Element.Width, labelHeight);
+					Control.Frame = new RectangleF(0, 0, (nfloat)Element.Width, labelHeight);
 					break;
 			}
 		}
