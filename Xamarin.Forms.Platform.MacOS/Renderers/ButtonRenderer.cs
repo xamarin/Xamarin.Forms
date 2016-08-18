@@ -65,7 +65,8 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			var model = Element;
 			var shouldDrawImage = model.BackgroundColor == Color.Default;
-
+			if (!shouldDrawImage)
+				Control.Cell.BackgroundColor = model.BackgroundColor.ToNSColor();
 		}
 
 		void UpdateBorder()
