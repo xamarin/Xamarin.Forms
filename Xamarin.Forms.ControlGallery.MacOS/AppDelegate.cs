@@ -14,6 +14,8 @@ namespace Xamarin.Forms.ControlGallery.MacOS
 		public AppDelegate()
 		{
 			var style = NSWindowStyle.Closable | NSWindowStyle.Resizable | NSWindowStyle.Titled;
+
+			//var rect = new CoreGraphics.CGRect(0, 0, 1000, 1000);
 			var rect = NSWindow.FrameRectFor(NSScreen.MainScreen.Frame, style);
 			_window = new NSWindow(rect, style, NSBackingStore.Buffered, false);
 		}

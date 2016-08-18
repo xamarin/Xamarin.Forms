@@ -113,5 +113,28 @@
   <ItemGroup>
     <InterfaceDefinition Include="MainMenu.xib" />
   </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\bank.png" />
+    <BundleResource Include="Resources\bank%402x.png" />
+    <BundleResource Include="Resources\calculator.png" />
+    <BundleResource Include="Resources\calculator%402x.png" />
+    <BundleResource Include="Resources\coffee%402x.png" />
+    <BundleResource Include="Resources\cover1.jpg" />
+    <BundleResource Include="Resources\cover1small.jpg" />
+    <BundleResource Include="Resources\crimson.jpg" />
+    <BundleResource Include="Resources\crimsonsmall.jpg" />
+    <BundleResource Include="Resources\Default%402x.png" />
+    <BundleResource Include="Resources\Intranet-icon.png" />
+    <BundleResource Include="Resources\menuIcon.png" />
+    <BundleResource Include="Resources\menuIcon%402x.png" />
+    <BundleResource Include="Resources\oasis.jpg" />
+    <BundleResource Include="Resources\oasissmall.jpg" />
+    <BundleResource Include="Resources\photo.jpg" />
+    <BundleResource Include="Resources\seth.png" />
+    <BundleResource Include="Resources\seth%402x.png" />
+    <BundleResource Include="Resources\settings%402x.png" />
+    <BundleResource Include="Resources\test.jpg" />
+    <BundleResource Include="Resources\toolbar_close.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
 </Project>
