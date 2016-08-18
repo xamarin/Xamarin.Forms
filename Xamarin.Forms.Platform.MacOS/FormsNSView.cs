@@ -12,7 +12,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 		public FormsNSView(bool isFlipped, CoreGraphics.CGRect frame) : base(frame)
 		{
-			_isFlipped = isFlipped;
+			//_isFlipped = isFlipped;
 		}
 
 		public override void DrawRect(CoreGraphics.CGRect dirtyRect)
@@ -33,6 +33,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				return _isFlipped;
 			}
 		}
+
 		public NSColor BackgroundColor
 		{
 			get;
