@@ -115,6 +115,8 @@
     <Compile Include="Renderers\EntryRenderer.cs" />
     <Compile Include="Renderers\EditorRenderer.cs" />
     <Compile Include="Renderers\FrameRenderer.cs" />
+    <Compile Include="Controls\FormsImageView.cs" />
+    <Compile Include="Renderers\ImageRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj">

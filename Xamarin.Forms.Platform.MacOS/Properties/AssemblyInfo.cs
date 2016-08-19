@@ -45,3 +45,4 @@ using Xamarin.Forms.Internals;
 [assembly: ExportRenderer(typeof(Editor), typeof(EditorRenderer))]
 [assembly: ExportRenderer(typeof(Entry), typeof(EntryRenderer))]
 [assembly: ExportRenderer(typeof(Frame), typeof(FrameRenderer))]
+[assembly: ExportRenderer(typeof(Image), typeof(ImageRenderer))]
