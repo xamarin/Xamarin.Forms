@@ -107,6 +107,7 @@
     <Compile Include="ImageSourceHandlers.cs" />
     <Compile Include="Extensions\ButtonExtensions.cs" />
     <Compile Include="Renderers\BoxViewRenderer.cs" />
+    <Compile Include="EventTracker.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj">

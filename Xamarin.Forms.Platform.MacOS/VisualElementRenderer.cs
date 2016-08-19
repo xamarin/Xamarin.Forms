@@ -24,12 +24,12 @@ namespace Xamarin.Forms.Platform.MacOS
 		readonly List<EventHandler<VisualElementChangedEventArgs>> _elementChangedHandlers = new List<EventHandler<VisualElementChangedEventArgs>>();
 
 		readonly PropertyChangedEventHandler _propertyChangedHandler;
-		//EventTracker _events;
 
 		VisualElementRendererFlags _flags = VisualElementRendererFlags.AutoPackage | VisualElementRendererFlags.AutoTrack;
 
 		VisualElementPackager _packager;
 		VisualElementTracker _tracker;
+		EventTracker _events;
 
 		protected VisualElementRenderer() : base(false, RectangleF.Empty)
 		{
@@ -135,11 +135,11 @@ namespace Xamarin.Forms.Platform.MacOS
 					_packager.Load();
 				}
 
-				//if (AutoTrack && _events == null)
-				//{
-				//	_events = new EventTracker(this);
-				//	_events.LoadEvents(this);
-				//}
+				if (AutoTrack && _events == null)
+				{
+					_events = new EventTracker(this);
+					_events.LoadEvents(this);
+				}
 
 				element.PropertyChanged += _propertyChangedHandler;
 			}
@@ -161,11 +161,11 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			if (disposing)
 			{
-				//if (_events != null)
-				//{
-				//	_events.Dispose();
-				//	_events = null;
-				//}
+				if (_events != null)
+				{
+					_events.Dispose();
+					_events = null;
+				}
 				if (_tracker != null)
 				{
 					_tracker.Dispose();
