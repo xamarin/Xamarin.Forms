@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Drawing;
 using AppKit;
 
 namespace Xamarin.Forms.Platform.MacOS
@@ -130,7 +129,6 @@ namespace Xamarin.Forms.Platform.MacOS
 				return;
 			if (!Element.IsPassword && !(Control is NSSecureTextField))
 				return;
-
 		}
 
 		void UpdateFont()

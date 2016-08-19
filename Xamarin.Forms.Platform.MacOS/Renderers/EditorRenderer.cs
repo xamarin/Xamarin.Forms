@@ -1,13 +1,15 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Drawing;
 using AppKit;
+using Foundation;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
 	public class EditorRenderer : ViewRenderer<Editor, NSTextField>
 	{
+		const string _newLineSelector = "insertNewline";
 		bool _disposed;
+
 		IElementController ElementController => Element as IElementController;
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Editor> e)
@@ -16,11 +18,22 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			if (Control == null)
 			{
-				SetNativeControl(new NSTextField());
-
+				SetNativeControl(new NSTextField { UsesSingleLineMode = false });
+				Control.Cell.Scrollable = true;
+				Control.Cell.Wraps = true;
 				Control.Changed += HandleChanged;
 				Control.EditingBegan += OnEditingBegan;
 				Control.EditingEnded += OnEditingBegan;
+				Control.DoCommandBySelector = (control, textView, commandSelector) =>
+				{
+					var result = false;
+					if (commandSelector.Name.StartsWith(_newLineSelector, StringComparison.InvariantCultureIgnoreCase))
+					{
+						textView.InsertText(new NSString(Environment.NewLine));
+						result = true;
+					}
+					return result;
+				};
 			}
 
 			if (e.NewElement != null)
@@ -106,7 +119,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		void UpdateText()
 		{
 			if (Control.StringValue != Element.Text)
-				Control.StringValue = Element.Text;
+				Control.StringValue = Element.Text ?? string.Empty;
 		}
 
 		void UpdateTextColor()
