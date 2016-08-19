@@ -1,20 +1,21 @@
 ﻿using System.ComponentModel;
 using System.Drawing;
 using AppKit;
+using CoreImage;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
 	public class ActivityIndicatorRenderer : ViewRenderer<ActivityIndicator, NSProgressIndicator>
 	{
+		static CIColorPolynomial _currentColorFilter;
+		static NSColor _currentColor;
+
 		protected override void OnElementChanged(ElementChangedEventArgs<ActivityIndicator> e)
 		{
 			if (e.NewElement != null)
 			{
 				if (Control == null)
-				{
 					SetNativeControl(new NSProgressIndicator(RectangleF.Empty) { Style = NSProgressIndicatorStyle.Spinning });
-					Control.WantsLayer = true;
-				}
 
 				UpdateColor();
 				UpdateIsRunning();
@@ -35,8 +36,27 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateColor()
 		{
-			//could be a color filter but it didn't worked
-			//Control.ControlTint = NSControlTint. Element.Color == Color.Default ? null : Element.Color.ToNSColor();
+			var color = Element.Color;
+			if (_currentColorFilter == null && color.IsDefault)
+				return;
+
+			if (color.IsDefault)
+				Control.ContentFilters = new CIFilter[0];
+
+			var newColor = Element.Color.ToNSColor();
+			if (_currentColor == newColor)
+				return;
+
+			_currentColor = newColor;
+
+			_currentColorFilter = new CIColorPolynomial
+			{
+				RedCoefficients = new CIVector(_currentColor.RedComponent),
+				BlueCoefficients = new CIVector(_currentColor.BlueComponent),
+				GreenCoefficients = new CIVector(_currentColor.GreenComponent)
+			};
+
+			Control.ContentFilters = new CIFilter[1] { _currentColorFilter };
 		}
 
 		void UpdateIsRunning()
