@@ -43,7 +43,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			LayoutSubviews();
 		}
 
-		public void LayoutSubviews()
+		void LayoutSubviews()
 		{
 			if (Control == null)
 				return;
@@ -79,7 +79,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				if (Control == null)
 				{
-					SetNativeControl(new NSTextField(RectangleF.Empty) { BackgroundColor = NSColor.Clear, Editable = false, Bezeled = false, DrawsBackground = false });
+					SetNativeControl(new NSTextField() { BackgroundColor = NSColor.Clear, Editable = false, Bezeled = false, DrawsBackground = false });
 				}
 
 				UpdateText();
