@@ -43,3 +43,4 @@ using Xamarin.Forms.Internals;
 [assembly: ExportRenderer(typeof(ActivityIndicator), typeof(ActivityIndicatorRenderer))]
 [assembly: ExportRenderer(typeof(DatePicker), typeof(DatePickerRenderer))]
 [assembly: ExportRenderer(typeof(Editor), typeof(EditorRenderer))]
+[assembly: ExportRenderer(typeof(Entry), typeof(EntryRenderer))]

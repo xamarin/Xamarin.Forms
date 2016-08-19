@@ -7,6 +7,7 @@ namespace Xamarin.Forms.Platform.MacOS
 {
 	public class EditorRenderer : ViewRenderer<Editor, NSTextField>
 	{
+		bool _disposed;
 		IElementController ElementController => Element as IElementController;
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Editor> e)
@@ -18,7 +19,8 @@ namespace Xamarin.Forms.Platform.MacOS
 				SetNativeControl(new NSTextField());
 
 				Control.Changed += HandleChanged;
-				Control.Activated += OnActivated;
+				Control.EditingBegan += OnEditingBegan;
+				Control.EditingEnded += OnEditingBegan;
 			}
 
 			if (e.NewElement != null)
@@ -57,7 +59,22 @@ namespace Xamarin.Forms.Platform.MacOS
 			else
 				Control.BackgroundColor = color.ToNSColor();
 
-			base.SetBackgroundColor(color)
+			base.SetBackgroundColor(color);
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing && !_disposed)
+			{
+				_disposed = true;
+				if (Control != null)
+				{
+					Control.Changed -= HandleChanged;
+					Control.EditingBegan -= OnEditingBegan;
+					Control.EditingEnded -= OnEditingBegan;
+				}
+			}
+			base.Dispose(disposing);
 		}
 
 		void HandleChanged(object sender, EventArgs e)
@@ -65,13 +82,13 @@ namespace Xamarin.Forms.Platform.MacOS
 			ElementController.SetValueFromRenderer(Editor.TextProperty, Control.StringValue);
 		}
 
-		void OnEnded(object sender, EventArgs eventArgs)
+		void OnEditingEnded(object sender, EventArgs eventArgs)
 		{
 			Element.SetValue(VisualElement.IsFocusedPropertyKey, false);
 			Element.SendCompleted();
 		}
 
-		void OnActivated(object sender, EventArgs eventArgs)
+		void OnEditingBegan(object sender, EventArgs eventArgs)
 		{
 			ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, true);
 		}
