@@ -112,6 +112,7 @@
     <Compile Include="Renderers\ActivityIndicatorRenderer.cs" />
     <Compile Include="Renderers\DatePickerRenderer.cs" />
     <Compile Include="Extensions\DateExtensions.cs" />
+    <Compile Include="Extensions\EditorRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj">
