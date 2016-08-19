@@ -110,6 +110,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected override void SetBackgroundColor(Color color)
 		{
+			base.SetBackgroundColor(color);
 			var formsNSView = Control as FormsNSView;
 			if (formsNSView == null)
 				return;

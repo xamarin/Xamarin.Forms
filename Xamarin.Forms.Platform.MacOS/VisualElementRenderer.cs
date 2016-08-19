@@ -2,9 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using AppKit;
-using Xamarin.Forms;
-using RectangleF = CoreGraphics.CGRect;
-using SizeF = CoreGraphics.CGSize;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
@@ -18,26 +15,20 @@ namespace Xamarin.Forms.Platform.MacOS
 
 	public class VisualElementRenderer<TElement> : FormsNSView, IVisualElementRenderer, IEffectControlProvider where TElement : VisualElement
 	{
-
 		readonly NSColor _defaultColor = NSColor.Clear;
-
 		readonly List<EventHandler<VisualElementChangedEventArgs>> _elementChangedHandlers = new List<EventHandler<VisualElementChangedEventArgs>>();
-
 		readonly PropertyChangedEventHandler _propertyChangedHandler;
 
 		VisualElementRendererFlags _flags = VisualElementRendererFlags.AutoPackage | VisualElementRendererFlags.AutoTrack;
-
 		VisualElementPackager _packager;
 		VisualElementTracker _tracker;
 		EventTracker _events;
 
-		protected VisualElementRenderer() : base(false, RectangleF.Empty)
+		protected VisualElementRenderer()
 		{
 			_propertyChangedHandler = OnElementPropertyChanged;
 			BackgroundColor = _defaultColor;
 		}
-
-		public TElement Element { get; private set; }
 
 		protected bool AutoPackage
 		{
@@ -70,9 +61,11 @@ namespace Xamarin.Forms.Platform.MacOS
 				OnRegisterEffect(platformEffect);
 		}
 
-		VisualElement IVisualElementRenderer.Element
+		VisualElement IVisualElementRenderer.Element => Element;
+
+		void IVisualElementRenderer.SetElement(VisualElement element)
 		{
-			get { return Element; }
+			SetElement((TElement)element);
 		}
 
 		event EventHandler<VisualElementChangedEventArgs> IVisualElementRenderer.ElementChanged
@@ -81,32 +74,23 @@ namespace Xamarin.Forms.Platform.MacOS
 			remove { _elementChangedHandlers.Remove(value); }
 		}
 
-		public virtual SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
-		{
-			return NativeView.GetSizeRequest(widthConstraint, heightConstraint);
-		}
+		public event EventHandler<ElementChangedEventArgs<TElement>> ElementChanged;
 
-		public NSView NativeView
-		{
-			get { return this; }
-		}
+		public TElement Element { get; private set; }
 
-		void IVisualElementRenderer.SetElement(VisualElement element)
-		{
-			SetElement((TElement)element);
-		}
+		public NSView NativeView => this;
 
 		public void SetElementSize(Size size)
 		{
 			Xamarin.Forms.Layout.LayoutChildIntoBoundingRegion(Element, new Rectangle(Element.X, Element.Y, size.Width, size.Height));
 		}
 
-		public virtual NSViewController ViewController
+		public virtual SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
-			get { return null; }
+			return NativeView.GetSizeRequest(widthConstraint, heightConstraint);
 		}
 
-		public event EventHandler<ElementChangedEventArgs<TElement>> ElementChanged;
+		public virtual NSViewController ViewController => null;
 
 		public void SetElement(TElement element)
 		{
