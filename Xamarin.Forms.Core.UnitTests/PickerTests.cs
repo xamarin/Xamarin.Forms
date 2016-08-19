@@ -107,49 +107,82 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(-1, picker.SelectedIndex);
 		}
 
-        [Test]
-        public void TestSelectedIndexOutOfRangeUpdatesSelectedItem()
-        {
-            var picker = new Picker
-            {
-                ItemsSource = new ObservableCollection<string>
-                {
-                    "Monkey",
-                    "Banana",
-                    "Lemon"
-                },
-                SelectedIndex = 0
-            };
-            Assert.AreEqual("Monkey", picker.SelectedItem);
-            picker.SelectedIndex = 42;
-            Assert.AreEqual("Lemon", picker.SelectedItem);
-            picker.SelectedIndex = -42;
-            Assert.IsNull(picker.SelectedItem);
-        }
+		[Test]
+		public void TestSelectedIndexOutOfRangeUpdatesSelectedItem()
+		{
+			var picker = new Picker
+			{
+				ItemsSource = new ObservableCollection<string>
+				{
+					"Monkey",
+					"Banana",
+					"Lemon"
+				},
+				SelectedIndex = 0
+			};
+			Assert.AreEqual("Monkey", picker.SelectedItem);
+			picker.SelectedIndex = 42;
+			Assert.AreEqual("Lemon", picker.SelectedItem);
+			picker.SelectedIndex = -42;
+			Assert.IsNull(picker.SelectedItem);
+		}
 
-        [Test]
-        public void TestDisplayFunc()
-        {
-            Func<object, string> customDisplayFunc = o =>
-            {
-                var f = (ContextFixture)o;
-                return $"{f.DisplayName} ({f.ComplexName})";
-            };
-            var obj = new ContextFixture("Monkey", "Complex Monkey");
-            var picker = new Picker
-            {
-                DisplayMemberPath = "Name",
-                DisplayFunc = customDisplayFunc,
-                ItemsSource = new ObservableCollection<object>
-                {
-                    obj
-                },
-                SelectedIndex = 1
-            };
-            Assert.AreEqual("Monkey (Complex Monkey)", picker.Items[0]);
-        }
+		[Test]
+		public void TestUnsubscribeINotifyCollectionChanged()
+		{
+			var list = new ObservableCollection<string>();
+			var picker = new Picker
+			{
+				ItemsSource = list
+			};
+			Assert.AreEqual(0, picker.Items.Count);
+			var newList = new ObservableCollection<string>();
+			picker.ItemsSource = newList;
+			list.Add("item");
+			Assert.AreEqual(0, picker.Items.Count);
+		}
 
-        [Test]
+		[Test]
+		public void TestEmptyCollectionResetItems()
+		{
+			var list = new ObservableCollection<string>
+			{
+				"John",
+				"George",
+				"Ringo"
+			};
+			var picker = new Picker
+			{
+				ItemsSource = list
+			};
+			Assert.AreEqual(3, picker.Items.Count);
+			picker.ItemsSource = new ObservableCollection<string>();
+			Assert.AreEqual(0, picker.Items.Count);
+		}
+
+		[Test]
+		public void TestDisplayFunc()
+		{
+			Func<object, string> customDisplayFunc = o =>
+			{
+				var f = (ContextFixture)o;
+				return $"{f.DisplayName} ({f.ComplexName})";
+			};
+			var obj = new ContextFixture("Monkey", "Complex Monkey");
+			var picker = new Picker
+			{
+				DisplayMemberPath = "Name",
+				DisplayFunc = customDisplayFunc,
+				ItemsSource = new ObservableCollection<object>
+				{
+					obj
+				},
+				SelectedIndex = 1
+			};
+			Assert.AreEqual("Monkey (Complex Monkey)", picker.Items[0]);
+		}
+
+		[Test]
 		public void TestSetItemsSourceProperty()
 		{
 			var items = new ObservableCollection<object>
@@ -170,23 +203,23 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("0", picker.Items[3]);
 		}
 
-        [Test]
-        public void TestDisplayMemberPathShouldThrowArgumentExceptionInvalidPath()
-        {
-            var obj = new ContextFixture("Monkey", "Complex Monkey");
-            Func<Picker> picker = () => new Picker
-            {
-                DisplayMemberPath = "Name",
-                ItemsSource = new ObservableCollection<object>
-                {
-                    obj
-                },
-                SelectedIndex = 1
-            };
-            Assert.Throws<ArgumentException>(() => picker());
-        }
+		[Test]
+		public void TestDisplayMemberPathShouldThrowArgumentExceptionInvalidPath()
+		{
+			var obj = new ContextFixture("Monkey", "Complex Monkey");
+			Func<Picker> picker = () => new Picker
+			{
+				DisplayMemberPath = "Name",
+				ItemsSource = new ObservableCollection<object>
+				{
+					obj
+				},
+				SelectedIndex = 1
+			};
+			Assert.Throws<ArgumentException>(() => picker());
+		}
 
-        [Test]
+		[Test]
 		public void TestItemsSourceCollectionChangedAppend()
 		{
 			var items = new ObservableCollection<object>
