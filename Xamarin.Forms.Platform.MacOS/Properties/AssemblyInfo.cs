@@ -38,3 +38,4 @@ using Xamarin.Forms.Internals;
 [assembly: ExportRenderer(typeof(Page), typeof(PageRenderer))]
 [assembly: ExportRenderer(typeof(Label), typeof(LabelRenderer))]
 [assembly: ExportRenderer(typeof(Button), typeof(ButtonRenderer))]
+[assembly: ExportRenderer(typeof(BoxView), typeof(BoxViewRenderer))]
