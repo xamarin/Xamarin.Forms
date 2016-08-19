@@ -114,6 +114,7 @@
     <Compile Include="Extensions\DateExtensions.cs" />
     <Compile Include="Renderers\EntryRenderer.cs" />
     <Compile Include="Renderers\EditorRenderer.cs" />
+    <Compile Include="Renderers\FrameRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj">
