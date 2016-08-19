@@ -157,16 +157,16 @@ namespace Xamarin.Forms
 			}
 			// Find the property by walking the display member path to find any nested properties
 			string[] propertyPathParts = memberPath.Split('.');
-			object propertyValue = null;
+			object propertyValue = item;
 			foreach (string propertyPathPart in propertyPathParts)
 			{
-				PropertyInfo propInfo = item.GetType().GetTypeInfo().GetDeclaredProperty(propertyPathPart);
+				PropertyInfo propInfo = propertyValue.GetType().GetTypeInfo().GetDeclaredProperty(propertyPathPart);
 				if (propInfo == null)
 				{
 					throw new ArgumentException(
-						$"No property with name '{memberPath}' was found on '{item.GetType().FullName}'");
+						$"No property with name '{propertyPathPart}' was found on '{propertyValue.GetType().FullName}'");
 				}
-				propertyValue = propInfo.GetValue(item);
+				propertyValue = propInfo.GetValue(propertyValue);
 			}
 			return propertyValue;
 		}

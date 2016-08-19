@@ -1,11 +1,19 @@
 using System;
 using NUnit.Framework;
 using System.Collections.ObjectModel;
+using System.Runtime.InteropServices;
 
 namespace Xamarin.Forms.Core.UnitTests
 {
 	internal class ContextFixture
 	{
+		public class NestedClass
+		{
+			public string Nested { get; set; }
+		}
+
+		public NestedClass Nested { get; set; }
+
 		public string DisplayName { get; set; }
 
 		public string ComplexName { get; set; }
@@ -369,6 +377,28 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(1, picker.Items.Count);
 			Assert.AreEqual(-1, picker.SelectedIndex);
 			Assert.AreEqual(bindingContext.SelectedItem, picker.SelectedItem);
+		}
+
+		[Test]
+		public void TestNestedDisplayMemberPathExpression()
+		{
+			var obj = new ContextFixture
+			{
+				Nested = new ContextFixture.NestedClass
+				{
+					Nested = "NestedProperty"
+				}
+			};
+			var picker = new Picker
+			{
+				DisplayMemberPath = "Nested.Nested",
+				ItemsSource = new ObservableCollection<object>
+				{
+					obj
+				},
+				SelectedIndex = 0
+			};
+			Assert.AreEqual("NestedProperty", picker.Items[0]);
 		}
 
 		[Test]
