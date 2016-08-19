@@ -109,6 +109,7 @@
     <Compile Include="Renderers\BoxViewRenderer.cs" />
     <Compile Include="Renderers\ScrollViewRenderer.cs" />
     <Compile Include="EventTracker.cs" />
+    <Compile Include="Renderers\ActivityIndicatorRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj">
