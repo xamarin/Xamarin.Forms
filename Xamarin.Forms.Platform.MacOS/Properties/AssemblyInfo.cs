@@ -41,3 +41,4 @@ using Xamarin.Forms.Internals;
 [assembly: ExportRenderer(typeof(BoxView), typeof(BoxViewRenderer))]
 [assembly: ExportRenderer(typeof(ScrollView), typeof(ScrollViewRenderer))]
 [assembly: ExportRenderer(typeof(ActivityIndicator), typeof(ActivityIndicatorRenderer))]
+[assembly: ExportRenderer(typeof(DatePicker), typeof(DatePickerRenderer))]

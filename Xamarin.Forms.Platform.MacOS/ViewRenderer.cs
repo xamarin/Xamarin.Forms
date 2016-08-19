@@ -20,28 +20,8 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			base.Layout();
 			if (Control != null)
-			{
 				Control.Frame = new CGRect(0, 0, (nfloat)Element.Width, (nfloat)Element.Height);
-				//Control.LayoutSubtreeIfNeeded();
-			}
-
-
 		}
-
-		//public override void LayoutSubviews()
-		//{
-		//	base.LayoutSubviews();
-		//	if (Control != null)
-		//		Control.Frame = new RectangleF(0, 0, (nfloat)Element.Width, (nfloat)Element.Height);
-		//}
-
-		//public override SizeF SizeThatFits(SizeF size)
-		//{
-		//	if (Control == null)
-		//		return (base.SizeThatFits(size));
-
-		//	return Control.SizeThatFits(size);
-		//}
 
 		/// <summary>
 		/// Determines whether the native control is disposed of when this renderer is disposed
@@ -111,6 +91,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		protected override void SetBackgroundColor(Color color)
 		{
 			base.SetBackgroundColor(color);
+
 			var formsNSView = Control as FormsNSView;
 			if (formsNSView == null)
 				return;

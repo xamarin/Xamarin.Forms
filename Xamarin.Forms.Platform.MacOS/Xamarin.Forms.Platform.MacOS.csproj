@@ -110,6 +110,8 @@
     <Compile Include="Renderers\ScrollViewRenderer.cs" />
     <Compile Include="EventTracker.cs" />
     <Compile Include="Renderers\ActivityIndicatorRenderer.cs" />
+    <Compile Include="Renderers\DatePickerRenderer.cs" />
+    <Compile Include="Extensions\DateExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj">
