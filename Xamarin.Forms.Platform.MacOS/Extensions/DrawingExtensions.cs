@@ -11,6 +11,12 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			return new Point(point.X, point.Y);
 		}
+
+		public static PointF ToPointF(this Point point)
+		{
+			return new PointF(point.X, point.Y);
+		}
+
 	}
 
 	public static class SizeExtensions

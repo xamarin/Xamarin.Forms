@@ -8,21 +8,6 @@ namespace Xamarin.Forms.Platform.MacOS
 {
 	public class BoxViewRenderer : ViewRenderer<BoxView, FormsNSView>
 	{
-		NSColor _colorToRenderer;
-
-		SizeF _previousSize;
-
-
-		//public override void Layout()
-		//{
-		//	if (_previousSize != Bounds.Size)
-		//		SetNeedsDisplayInRect();
-		//}
-
-		//public override void LayoutSubviews()
-		//{
-
-		//}
 		protected override void OnElementChanged(ElementChangedEventArgs<BoxView> e)
 		{
 			if (e.NewElement != null)
