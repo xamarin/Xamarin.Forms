@@ -47,3 +47,4 @@ using Xamarin.Forms.Internals;
 [assembly: ExportRenderer(typeof(Frame), typeof(FrameRenderer))]
 [assembly: ExportRenderer(typeof(Image), typeof(ImageRenderer))]
 [assembly: ExportRenderer(typeof(OpenGLView), typeof(OpenGLViewRenderer))]
+[assembly: ExportRenderer(typeof(Picker), typeof(PickerRenderer))]
