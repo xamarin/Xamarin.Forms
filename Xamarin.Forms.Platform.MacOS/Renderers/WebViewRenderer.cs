@@ -94,7 +94,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void OnEvalRequested(object sender, EvalRequested eventArg)
 		{
-			Control.StringByEvaluatingJavaScriptFromString(script);
+			Control?.StringByEvaluatingJavaScriptFromString(eventArg?.Script);
 		}
 
 		void OnGoBackRequested(object sender, EventArgs eventArgs)
