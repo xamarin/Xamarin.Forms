@@ -126,6 +126,7 @@
     <Compile Include="Renderers\StepperRenderer.cs" />
     <Compile Include="Renderers\SwitchRenderer.cs" />
     <Compile Include="Renderers\TimePickerRenderer.cs" />
+    <Compile Include="Renderers\WebViewRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj">

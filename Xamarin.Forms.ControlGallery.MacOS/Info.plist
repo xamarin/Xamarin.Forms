@@ -30,5 +30,10 @@
 	<string>public.app-category.developer-tools</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 </dict>
 </plist>
