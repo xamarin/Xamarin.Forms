@@ -121,6 +121,7 @@
     <Compile Include="Controls\MacOSOpenGLView.cs" />
     <Compile Include="Renderers\PickerRenderer.cs" />
     <Compile Include="Renderers\ProgressBarRenderer.cs" />
+    <Compile Include="Renderers\SearchBarRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj">

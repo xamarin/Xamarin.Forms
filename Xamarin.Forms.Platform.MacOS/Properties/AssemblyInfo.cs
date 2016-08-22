@@ -49,3 +49,4 @@ using Xamarin.Forms.Internals;
 [assembly: ExportRenderer(typeof(OpenGLView), typeof(OpenGLViewRenderer))]
 [assembly: ExportRenderer(typeof(Picker), typeof(PickerRenderer))]
 [assembly: ExportRenderer(typeof(ProgressBar), typeof(ProgressBarRenderer))]
+[assembly: ExportRenderer(typeof(SearchBar), typeof(SearchBarRenderer))]
