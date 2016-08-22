@@ -55,7 +55,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			base.SetBackgroundColor(color);
 
-			if (Control != null)
+			if (Control == null)
 				return;
 
 			if (color == Color.Default)
