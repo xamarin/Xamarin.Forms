@@ -80,16 +80,6 @@ namespace Xamarin.Forms.Platform.MacOS
 			ElementController?.SetValueFromRenderer(TimePicker.TimeProperty, Control.DateValue.ToDateTime() - new DateTime(2001, 1, 1));
 		}
 
-		void OnEnded(object sender, EventArgs eventArgs)
-		{
-			ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
-		}
-
-		void OnStarted(object sender, EventArgs eventArgs)
-		{
-			ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, true);
-		}
-
 		void UpdateTime()
 		{
 			var time = new DateTime(2001, 1, 1).Add(Element.Time);
@@ -97,7 +87,6 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (Control.DateValue != newDate)
 				Control.DateValue = newDate;
 		}
-
 
 		void UpdateTextColor()
 		{
