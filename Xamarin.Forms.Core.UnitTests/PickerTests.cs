@@ -1,7 +1,6 @@
 using System;
 using NUnit.Framework;
 using System.Collections.ObjectModel;
-using System.Runtime.InteropServices;
 
 namespace Xamarin.Forms.Core.UnitTests
 {
@@ -399,6 +398,22 @@ namespace Xamarin.Forms.Core.UnitTests
 				SelectedIndex = 0
 			};
 			Assert.AreEqual("NestedProperty", picker.Items[0]);
+		}
+
+		[Test]
+		public void TestItemsSourceEnums()
+		{
+			var picker = new Picker
+			{
+				ItemsSource = new ObservableCollection<TextAlignment>
+				{
+					TextAlignment.Start,
+					TextAlignment.Center,
+					TextAlignment.End
+				},
+				SelectedIndex = 0
+			};
+			Assert.AreEqual("Start", picker.Items[0]);
 		}
 
 		[Test]

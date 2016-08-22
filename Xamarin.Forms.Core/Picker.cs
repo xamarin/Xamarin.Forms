@@ -95,6 +95,18 @@ namespace Xamarin.Forms
 			{
 				return DisplayFunc(item);
 			}
+			if (item == null)
+			{
+				return null;
+			}
+			bool isValueType = item.GetType().GetTypeInfo().IsValueType;
+			if (isValueType || string.IsNullOrEmpty(DisplayMemberPath) || item is string)
+			{
+				// For a mix of objects in ItemsSourc to be handled correctly in conjunction with DisplayMemberPath
+				// we need to handle value types and string so that GetPropertyValue doesn't throw exception if the property
+				// doesn't exist on the item object
+				return item.ToString();
+			}
 			return GetPropertyValue(item, DisplayMemberPath) as string;
 		}
 
@@ -148,12 +160,11 @@ namespace Xamarin.Forms
 		{
 			if (item == null)
 			{
-				return null;
+				throw new ArgumentNullException(nameof(item));
 			}
-			// TODO How to handle Nullable types
-			if (IsPrimitive(item) || string.IsNullOrEmpty(memberPath))
+			if (string.IsNullOrEmpty(memberPath))
 			{
-				return item.ToString();
+				throw new ArgumentNullException(nameof(memberPath));
 			}
 			// Find the property by walking the display member path to find any nested properties
 			string[] propertyPathParts = memberPath.Split('.');
@@ -169,12 +180,6 @@ namespace Xamarin.Forms
 				propertyValue = propInfo.GetValue(propertyValue);
 			}
 			return propertyValue;
-		}
-
-		static bool IsPrimitive(object item)
-		{
-			return item is string || item is int || item is double || item is decimal || item is Enum ||
-				   item is DateTime;
 		}
 
 		static void OnDisplayMemberPathChanged(BindableObject bindable, object oldValue, object newValue)
