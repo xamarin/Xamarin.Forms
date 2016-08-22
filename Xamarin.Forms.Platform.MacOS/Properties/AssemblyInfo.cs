@@ -51,3 +51,4 @@ using Xamarin.Forms.Internals;
 [assembly: ExportRenderer(typeof(ProgressBar), typeof(ProgressBarRenderer))]
 [assembly: ExportRenderer(typeof(SearchBar), typeof(SearchBarRenderer))]
 [assembly: ExportRenderer(typeof(Slider), typeof(SliderRenderer))]
+[assembly: ExportRenderer(typeof(Stepper), typeof(StepperRenderer))]

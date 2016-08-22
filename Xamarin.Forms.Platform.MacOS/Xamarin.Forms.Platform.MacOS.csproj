@@ -123,6 +123,7 @@
     <Compile Include="Renderers\ProgressBarRenderer.cs" />
     <Compile Include="Renderers\SearchBarRenderer.cs" />
     <Compile Include="Renderers\SliderRenderer.cs" />
+    <Compile Include="Renderers\StepperRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj">
