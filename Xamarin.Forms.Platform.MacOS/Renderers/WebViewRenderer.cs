@@ -39,8 +39,8 @@ namespace Xamarin.Forms.Platform.MacOS
 						AutoresizingMask = NSViewResizingMask.WidthSizable,
 						AutoresizesSubviews = true
 					});
-					Control.OnFinishedLoading += NSWebViewFinishedLoad;
-					Control.OnFailedLoading += NSWebViewFailedLoadWithError;
+					Control.OnFinishedLoading += OnNSWebViewFinishedLoad;
+					Control.OnFailedLoading += OnNSWebViewFailedLoadWithError;
 
 					Element.EvalRequested += OnEvalRequested;
 					Element.GoBackRequested += OnGoBackRequested;
@@ -66,8 +66,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (disposing && !_disposed)
 			{
 				_disposed = true;
-				Control.OnFinishedLoading -= NSWebViewFinishedLoad;
-				Control.OnFailedLoading -= NSWebViewFailedLoadWithError;
+				Control.OnFinishedLoading -= OnNSWebViewFinishedLoad;
+				Control.OnFailedLoading -= OnNSWebViewFailedLoadWithError;
 				Element.EvalRequested -= OnEvalRequested;
 				Element.GoBackRequested -= OnGoBackRequested;
 				Element.GoForwardRequested -= OnGoForwardRequested;
@@ -94,7 +94,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void OnEvalRequested(object sender, EvalRequested eventArg)
 		{
-			EvaluateJavascript(eventArg.Script);
+			Control.StringByEvaluatingJavaScriptFromString(script);
 		}
 
 		void OnGoBackRequested(object sender, EventArgs eventArgs)
@@ -119,14 +119,14 @@ namespace Xamarin.Forms.Platform.MacOS
 			UpdateCanGoBackForward();
 		}
 
-		void NSWebViewFailedLoadWithError(object sender, WebKit.WebResourceErrorEventArgs e)
+		void OnNSWebViewFailedLoadWithError(object sender, WebKit.WebResourceErrorEventArgs e)
 		{
 			Element?.SendNavigated(new WebNavigatedEventArgs(_lastEvent, new UrlWebViewSource { Url = Control.MainFrameUrl }, Control.MainFrameUrl, WebNavigationResult.Failure));
 
 			UpdateCanGoBackForward();
 		}
 
-		void NSWebViewFinishedLoad(object sender, WebKit.WebResourceCompletedEventArgs e)
+		void OnNSWebViewFinishedLoad(object sender, WebKit.WebResourceCompletedEventArgs e)
 		{
 			if (Control.IsLoading)
 				return;
@@ -138,11 +138,6 @@ namespace Xamarin.Forms.Platform.MacOS
 			Element?.SendNavigated(new WebNavigatedEventArgs(_lastEvent, Element?.Source, Control.MainFrameUrl, WebNavigationResult.Success));
 
 			UpdateCanGoBackForward();
-		}
-
-		void EvaluateJavascript(string script)
-		{
-			throw new NotImplementedException();
 		}
 	}
 }
