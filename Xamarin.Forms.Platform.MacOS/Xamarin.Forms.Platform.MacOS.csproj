@@ -122,6 +122,7 @@
     <Compile Include="Renderers\PickerRenderer.cs" />
     <Compile Include="Renderers\ProgressBarRenderer.cs" />
     <Compile Include="Renderers\SearchBarRenderer.cs" />
+    <Compile Include="Renderers\SliderRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj">

@@ -50,3 +50,4 @@ using Xamarin.Forms.Internals;
 [assembly: ExportRenderer(typeof(Picker), typeof(PickerRenderer))]
 [assembly: ExportRenderer(typeof(ProgressBar), typeof(ProgressBarRenderer))]
 [assembly: ExportRenderer(typeof(SearchBar), typeof(SearchBarRenderer))]
+[assembly: ExportRenderer(typeof(Slider), typeof(SliderRenderer))]
