@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Globalization;
 using System.Reflection;
 using Xamarin.Forms.Platform;
 
@@ -32,6 +33,14 @@ namespace Xamarin.Forms
 				typeof(Func<object, string>),
 				typeof(Picker));
 
+		public static readonly BindableProperty DisplayConverterProperty =
+			BindableProperty.Create(
+				nameof(DisplayConverter),
+				typeof(IValueConverter),
+				typeof(Picker),
+				default(IValueConverter));
+
+		
 		public Picker()
 		{
 			((ObservableList<string>)Items).CollectionChanged += OnItemsCollectionChanged;
@@ -47,6 +56,12 @@ namespace Xamarin.Forms
 		{
 			get { return (Func<object, string>)GetValue(DisplayFuncProperty); }
 			set { SetValue(DisplayFuncProperty, value); }
+		}
+
+		public IValueConverter DisplayConverter
+		{
+			get { return (IValueConverter)GetValue(DisplayConverterProperty); }
+			set { SetValue(DisplayConverterProperty, value); }
 		}
 
 		public IList<string> Items { get; } = new ObservableList<string>();
@@ -91,6 +106,15 @@ namespace Xamarin.Forms
 
 		protected virtual string GetDisplayMember(object item)
 		{
+			if (DisplayConverter != null)
+			{
+				var display = DisplayConverter.Convert(item, typeof(string), null, CultureInfo.CurrentUICulture) as string;
+				if (display == null)
+				{
+					throw new ArgumentException("value must be converted to string");
+				}
+				return display;
+			}
 			if (DisplayFunc != null)
 			{
 				return DisplayFunc(item);

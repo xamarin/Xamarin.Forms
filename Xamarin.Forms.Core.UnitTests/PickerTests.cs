@@ -1,6 +1,7 @@
 using System;
 using NUnit.Framework;
 using System.Collections.ObjectModel;
+using System.Globalization;
 
 namespace Xamarin.Forms.Core.UnitTests
 {
@@ -33,6 +34,23 @@ namespace Xamarin.Forms.Core.UnitTests
 		public ObservableCollection<object> Items { get; set; }
 
 		public object SelectedItem { get; set; }
+	}
+
+	internal class PickerTestValueConverter : IValueConverter
+	{
+		public bool ConvertCalled { get; private set; }
+
+		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			ConvertCalled = true;
+			var cf = (ContextFixture)value;
+			return cf.DisplayName;
+		}
+
+		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+		{
+			throw new NotImplementedException();
+		}
 	}
 
 	[TestFixture]
@@ -208,6 +226,23 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(5, picker.Items.Count);
 			Assert.AreEqual("John", picker.Items[0]);
 			Assert.AreEqual("0", picker.Items[3]);
+		}
+
+		[Test]
+		public void TestDisplayConverter()
+		{
+			var obj = new ContextFixture("John", "John Doe");
+			var converter = new PickerTestValueConverter();
+			var picker = new Picker
+			{
+				DisplayConverter = converter,
+				ItemsSource = new ObservableCollection<object>
+				{
+					obj
+				}
+			};
+			Assert.IsTrue(converter.ConvertCalled);
+			Assert.AreEqual("John", picker.Items[0]);
 		}
 
 		[Test]
