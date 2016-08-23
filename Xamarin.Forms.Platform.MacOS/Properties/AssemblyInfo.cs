@@ -62,4 +62,4 @@ using Xamarin.Forms.Internals;
 [assembly: ExportCell(typeof(ImageCell), typeof(ImageCellRenderer))]
 //[assembly: ExportCell(typeof(EntryCell), typeof(EntryCellRenderer))]
 //[assembly: ExportCell(typeof(ViewCell), typeof(ViewCellRenderer))]
-//[assembly: ExportCell(typeof(SwitchCell), typeof(SwitchCellRenderer))]
+[assembly: ExportCell(typeof(SwitchCell), typeof(SwitchCellRenderer))]

@@ -5,6 +5,8 @@ namespace Xamarin.Forms.Platform.MacOS
 {
 	public class CellRenderer : IRegisterable
 	{
+		static readonly BindableProperty RealCellProperty = BindableProperty.CreateAttached("RealCell", typeof(CellTableViewCell), typeof(Cell), null);
+
 		EventHandler _onForceUpdateSizeRequested;
 
 		public virtual NSView GetCell(Cell item, NSView reusableView, NSTableView tv)
@@ -54,6 +56,16 @@ namespace Xamarin.Forms.Platform.MacOS
 			};
 
 			cell.ForceUpdateSizeRequested += _onForceUpdateSizeRequested;
+		}
+
+		internal static CellTableViewCell GetRealCell(BindableObject cell)
+		{
+			return (CellTableViewCell)cell.GetValue(RealCellProperty);
+		}
+
+		internal static void SetRealCell(BindableObject cell, CellTableViewCell renderer)
+		{
+			cell.SetValue(RealCellProperty, renderer);
 		}
 	}
 }

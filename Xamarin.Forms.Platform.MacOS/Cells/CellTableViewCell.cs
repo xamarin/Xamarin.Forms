@@ -26,6 +26,9 @@ namespace Xamarin.Forms.Platform.MacOS
 			var availableWidth = Frame.Width - padding * 2;
 			nfloat imageWidth = 0;
 			nfloat imageHeight = 0;
+			nfloat accessoryViewWidth = 0;
+
+			var style = _style;
 
 			if (ImageView != null)
 			{
@@ -33,8 +36,22 @@ namespace Xamarin.Forms.Platform.MacOS
 				ImageView.Frame = new CGRect(padding, 0, imageWidth, imageHeight);
 			}
 
+			if (AccessoryView != null)
+			{
+				accessoryViewWidth = _style == NSTableViewCellStyle.Value1 ? 50 : 100;
+				AccessoryView.Frame = new CGRect(availableWidth - accessoryViewWidth + padding, 0, accessoryViewWidth, availableHeight);
+				foreach (var subView in AccessoryView.Subviews)
+				{
+					var size = subView.FittingSize;
+
+					var x = ((AccessoryView.Bounds.Width - size.Width));
+					var y = ((AccessoryView.Bounds.Height - size.Height) / 2);
+					subView.Frame = new CGRect(new CGPoint(x, y), size);
+				}
+			}
+
 			var labelHeights = availableHeight;
-			var labelWidth = availableWidth - imageWidth;
+			var labelWidth = availableWidth - imageWidth - accessoryViewWidth;
 
 			if (DetailTextLabel != null && !string.IsNullOrEmpty(DetailTextLabel.StringValue))
 			{
@@ -81,6 +98,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public NSImageView ImageView { get; private set; }
 
+		public NSView AccessoryView { get; private set; }
+
 		internal static NSView GetNativeCell(NSTableView tableView, Cell cell, bool recycleCells = false, string templateId = "")
 		{
 			var id = cell.GetType().FullName;
@@ -118,6 +137,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (style == NSTableViewCellStyle.Image || style == NSTableViewCellStyle.ImageSubtitle)
 				AddSubview(ImageView = new NSImageView());
 
+			if (style == NSTableViewCellStyle.Value1)
+				AddSubview(AccessoryView = new FormsNSView { BackgroundColor = NSColor.Clear });
 		}
 	}
 }

@@ -134,6 +134,7 @@
     <Compile Include="Cells\NSTableViewCellStyle.cs" />
     <Compile Include="Extensions\NSTextFieldExtensions.cs" />
     <Compile Include="Cells\ImageCellRenderer.cs" />
+    <Compile Include="Cells\SwitchCellRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj">
