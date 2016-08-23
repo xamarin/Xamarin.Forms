@@ -4,7 +4,6 @@ using AppKit;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
-
 	public class StepperRenderer : ViewRenderer<Stepper, NSStepper>
 	{
 		bool _disposed;

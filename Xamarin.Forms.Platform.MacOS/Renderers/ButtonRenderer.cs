@@ -124,7 +124,6 @@ namespace Xamarin.Forms.Platform.MacOS
 			else
 			{
 				var textWithColor = new NSAttributedString(Element.Text ?? "", foregroundColor: color.ToNSColor());
-				//	textWithColor.(CTStringAttributeKey.ForegroundColor, color.ToNSColor(), new NSRange(0, textWithColor.Length));
 				Control.AttributedTitle = textWithColor;
 			}
 		}
