@@ -38,14 +38,17 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			if (AccessoryView != null)
 			{
-				accessoryViewWidth = _style == NSTableViewCellStyle.Value1 ? 50 : 100;
+				accessoryViewWidth = _style == NSTableViewCellStyle.Value1 ? 50 : availableWidth - 100;
 				AccessoryView.Frame = new CGRect(availableWidth - accessoryViewWidth + padding, 0, accessoryViewWidth, availableHeight);
 				foreach (var subView in AccessoryView.Subviews)
 				{
+					//try to find the size the control wants, if no width use default width
 					var size = subView.FittingSize;
+					if (size.Width == 0)
+						size.Width = accessoryViewWidth;
 
-					var x = ((AccessoryView.Bounds.Width - size.Width));
-					var y = ((AccessoryView.Bounds.Height - size.Height) / 2);
+					var x = AccessoryView.Bounds.Width - size.Width;
+					var y = (AccessoryView.Bounds.Height - size.Height) / 2;
 					subView.Frame = new CGRect(new CGPoint(x, y), size);
 				}
 			}
@@ -137,7 +140,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (style == NSTableViewCellStyle.Image || style == NSTableViewCellStyle.ImageSubtitle)
 				AddSubview(ImageView = new NSImageView());
 
-			if (style == NSTableViewCellStyle.Value1)
+			if (style == NSTableViewCellStyle.Value1 || style == NSTableViewCellStyle.Value2)
 				AddSubview(AccessoryView = new FormsNSView { BackgroundColor = NSColor.Clear });
 		}
 	}

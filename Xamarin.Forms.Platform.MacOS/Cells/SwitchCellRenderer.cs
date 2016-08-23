@@ -28,7 +28,6 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				uiSwitch = new NSButton { AllowsMixedState = false, Title = string.Empty };
 				uiSwitch.SetButtonType(NSButtonType.Switch);
-				uiSwitch.Frame = tvc.AccessoryView.Frame;
 			}
 
 			var boolCell = (SwitchCell)item;

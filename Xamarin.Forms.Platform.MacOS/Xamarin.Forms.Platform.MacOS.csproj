@@ -135,6 +135,7 @@
     <Compile Include="Extensions\NSTextFieldExtensions.cs" />
     <Compile Include="Cells\ImageCellRenderer.cs" />
     <Compile Include="Cells\SwitchCellRenderer.cs" />
+    <Compile Include="Cells\EntryCellRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj">
