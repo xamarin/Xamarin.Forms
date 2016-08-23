@@ -1,12 +1,12 @@
 ﻿using System;
 using System.ComponentModel;
 using AppKit;
+using CoreGraphics;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
 	public class CellTableViewCell : FormsNSView, INativeElementView
 	{
-
 		static NSColor _defaultBackgroundFieldColor = NSColor.Clear;
 		Cell _cell;
 		NSTableViewCellStyle _style;
@@ -30,7 +30,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (ImageView != null)
 			{
 				imageHeight = imageWidth = availableHeight;
-				ImageView.Frame = new CoreGraphics.CGRect(padding, 0, imageWidth, imageHeight);
+				ImageView.Frame = new CGRect(padding, 0, imageWidth, imageHeight);
 			}
 
 			var labelHeights = availableHeight;
@@ -39,12 +39,10 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (DetailTextLabel != null && !string.IsNullOrEmpty(DetailTextLabel.StringValue))
 			{
 				labelHeights = availableHeight / 2;
-
-				DetailTextLabel.Frame = new CoreGraphics.CGRect(imageWidth + padding, 0, labelWidth, labelHeights);
+				DetailTextLabel.CenterTextVertically(new CGRect(imageWidth + padding, 0, labelWidth, labelHeights));
 			}
 
-			TextLabel.CenterTextVertically(new CoreGraphics.CGRect(imageWidth + padding, availableHeight - labelHeights, labelWidth, labelHeights));
-
+			TextLabel.CenterTextVertically(new CGRect(imageWidth + padding, availableHeight - labelHeights, labelWidth, labelHeights));
 			base.Layout();
 		}
 
@@ -86,53 +84,8 @@ namespace Xamarin.Forms.Platform.MacOS
 		internal static NSView GetNativeCell(NSTableView tableView, Cell cell, bool recycleCells = false, string templateId = "")
 		{
 			var id = cell.GetType().FullName;
-
 			var renderer = (CellRenderer)Registrar.Registered.GetHandler(cell.GetType());
-
-			//ContextActionsCell contextCell = null;
-			//UITableViewCell reusableCell = null;
-			//if (cell.HasContextActions || recycleCells)
-			//{
-			//	contextCell = (ContextActionsCell)tableView.DequeueReusableCell(ContextActionsCell.Key + templateId);
-			//	if (contextCell == null)
-			//	{
-			//		contextCell = new ContextActionsCell(templateId);
-			//		reusableCell = tableView.DequeueReusableCell(id);
-			//	}
-			//	else
-			//	{
-			//		contextCell.Close();
-			//		reusableCell = contextCell.ContentCell;
-
-			//		if (reusableCell.ReuseIdentifier.ToString() != id)
-			//			reusableCell = null;
-			//	}
-			//}
-			//else
-			//	reusableCell = tableView.DequeueReusableCell(id);
-
 			var nativeCell = renderer.GetCell(cell, null, tableView);
-
-			//var cellWithContent = nativeCell;
-
-			//// Sometimes iOS for returns a dequeued cell whose Layer is hidden. 
-			//// This prevents it from showing up, so lets turn it back on!
-			//if (cellWithContent.Layer.Hidden)
-			//	cellWithContent.Layer.Hidden = false;
-
-			//if (contextCell != null)
-			//{
-			//	contextCell.Update(tableView, cell, nativeCell);
-			//	var viewTableCell = contextCell.ContentCell as ViewCellRenderer.ViewTableCell;
-			//	if (viewTableCell != null)
-			//		viewTableCell.SupressSeparator = true;
-			//	nativeCell = contextCell;
-			//}
-
-			//// Because the layer was hidden we need to layout the cell by hand
-			//if (cellWithContent != null)
-			//	cellWithContent.LayoutSubviews();
-
 			return nativeCell;
 		}
 
@@ -144,10 +97,11 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				Bordered = false,
 				Selectable = false,
-				Editable = false
+				Editable = false,
+				Font = NSFont.LabelFontOfSize(NSFont.SystemFontSize)
 			});
 
-			TextLabel.Cell.BackgroundColor = _defaultBackgroundFieldColor;
+			TextLabel.Cell.BackgroundColor = NSColor.Clear;
 
 			if (style == NSTableViewCellStyle.Image || style == NSTableViewCellStyle.Subtitle)
 			{
@@ -155,18 +109,14 @@ namespace Xamarin.Forms.Platform.MacOS
 				{
 					Bordered = false,
 					Selectable = false,
-					Editable = false
+					Editable = false,
+					Font = NSFont.LabelFontOfSize(NSFont.SmallSystemFontSize)
 				});
-				DetailTextLabel.Cell.BackgroundColor = _defaultBackgroundFieldColor;
+				DetailTextLabel.Cell.BackgroundColor = NSColor.Clear;
 			}
 
 			if (style == NSTableViewCellStyle.Image)
 				AddSubview(ImageView = new NSImageView());
-
-		}
-
-		public virtual void SetBackground()
-		{
 
 		}
 	}
