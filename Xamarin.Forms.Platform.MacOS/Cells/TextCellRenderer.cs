@@ -16,7 +16,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			var tvc = reusableView as CellTableViewCell;
 			if (tvc == null)
 				tvc = new CellTableViewCell(NSTableViewCellStyle.Subtitle, item.GetType().FullName);
-			else
+
+			if (tvc.Cell != null)
 				tvc.Cell.PropertyChanged -= tvc.HandlePropertyChanged;
 
 			tvc.Cell = textCell;

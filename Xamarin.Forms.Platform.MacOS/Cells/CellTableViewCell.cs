@@ -103,7 +103,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			TextLabel.Cell.BackgroundColor = NSColor.Clear;
 
-			if (style == NSTableViewCellStyle.Image || style == NSTableViewCellStyle.Subtitle)
+			if (style == NSTableViewCellStyle.Image || style == NSTableViewCellStyle.Subtitle || style == NSTableViewCellStyle.ImageSubtitle)
 			{
 				AddSubview(DetailTextLabel = new NSTextField
 				{
@@ -115,7 +115,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				DetailTextLabel.Cell.BackgroundColor = NSColor.Clear;
 			}
 
-			if (style == NSTableViewCellStyle.Image)
+			if (style == NSTableViewCellStyle.Image || style == NSTableViewCellStyle.ImageSubtitle)
 				AddSubview(ImageView = new NSImageView());
 
 		}
