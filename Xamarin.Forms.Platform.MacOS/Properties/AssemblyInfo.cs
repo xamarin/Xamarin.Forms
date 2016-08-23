@@ -55,3 +55,11 @@ using Xamarin.Forms.Internals;
 [assembly: ExportRenderer(typeof(Switch), typeof(SwitchRenderer))]
 [assembly: ExportRenderer(typeof(TimePicker), typeof(TimePickerRenderer))]
 [assembly: ExportRenderer(typeof(WebView), typeof(WebViewRenderer))]
+[assembly: ExportCell(typeof(Cell), typeof(CellRenderer))]
+
+[assembly: ExportCell(typeof(TextCell), typeof(TextCellRenderer))]
+
+//[assembly: ExportCell(typeof(ImageCell), typeof(ImageCellRenderer))]
+//[assembly: ExportCell(typeof(EntryCell), typeof(EntryCellRenderer))]
+//[assembly: ExportCell(typeof(ViewCell), typeof(ViewCellRenderer))]
+//[assembly: ExportCell(typeof(SwitchCell), typeof(SwitchCellRenderer))]

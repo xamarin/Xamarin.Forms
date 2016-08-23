@@ -127,6 +127,10 @@
     <Compile Include="Renderers\SwitchRenderer.cs" />
     <Compile Include="Renderers\TimePickerRenderer.cs" />
     <Compile Include="Renderers\WebViewRenderer.cs" />
+    <Compile Include="Cells\CellTableViewCell.cs" />
+    <Compile Include="Cells\CellRenderer.cs" />
+    <Compile Include="Cells\TextCellRenderer.cs" />
+    <Compile Include="Cells\NSTableViewCellStyle.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj">
@@ -141,6 +145,7 @@
   <ItemGroup>
     <Folder Include="Extensions\" />
     <Folder Include="Renderers\" />
+    <Folder Include="Cells\" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
 </Project>
