@@ -7,6 +7,7 @@ namespace Xamarin.Forms.Platform.MacOS
 	public class CellTableViewCell : FormsNSView, INativeElementView
 	{
 
+		static NSColor _defaultBackgroundFieldColor = NSColor.Clear;
 		Cell _cell;
 		NSTableViewCellStyle _style;
 
@@ -20,24 +21,29 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public override void Layout()
 		{
+			var padding = 10;
 			var availableHeight = Frame.Height;
-			var availableWidth = Frame.Width;
+			var availableWidth = Frame.Width - padding * 2;
 			nfloat imageWidth = 0;
 			nfloat imageHeight = 0;
 
 			if (ImageView != null)
 			{
 				imageHeight = imageWidth = availableHeight;
-				ImageView.Frame = new CoreGraphics.CGRect(0, 0, imageWidth, imageHeight);
+				ImageView.Frame = new CoreGraphics.CGRect(padding, 0, imageWidth, imageHeight);
 			}
 
-			if (DetailTextLabel != null)
+			var labelHeights = availableHeight;
+			var labelWidth = availableWidth - imageWidth;
+
+			if (DetailTextLabel != null && !string.IsNullOrEmpty(DetailTextLabel.StringValue))
 			{
-				var labelHeights = availableHeight / 2;
-				var labelWidth = availableWidth - imageWidth;
-				DetailTextLabel.Frame = new CoreGraphics.CGRect(imageWidth, 0, labelWidth, labelHeights);
-				TextLabel.Frame = new CoreGraphics.CGRect(imageWidth, labelHeights, labelWidth, labelHeights);
+				labelHeights = availableHeight / 2;
+
+				DetailTextLabel.Frame = new CoreGraphics.CGRect(imageWidth + padding, 0, labelWidth, labelHeights);
 			}
+
+			TextLabel.CenterTextVertically(new CoreGraphics.CGRect(imageWidth + padding, availableHeight - labelHeights, labelWidth, labelHeights));
 
 			base.Layout();
 		}
@@ -141,7 +147,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				Editable = false
 			});
 
-			TextLabel.Cell.BackgroundColor = Color.Transparent.ToNSColor();
+			TextLabel.Cell.BackgroundColor = _defaultBackgroundFieldColor;
 
 			if (style == NSTableViewCellStyle.Image || style == NSTableViewCellStyle.Subtitle)
 			{
@@ -151,7 +157,7 @@ namespace Xamarin.Forms.Platform.MacOS
 					Selectable = false,
 					Editable = false
 				});
-				DetailTextLabel.Cell.BackgroundColor = Color.Transparent.ToNSColor();
+				DetailTextLabel.Cell.BackgroundColor = _defaultBackgroundFieldColor;
 			}
 
 			if (style == NSTableViewCellStyle.Image)
