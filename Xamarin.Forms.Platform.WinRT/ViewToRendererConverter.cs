@@ -86,7 +86,7 @@ namespace Xamarin.Forms.Platform.WinRT
 					result = new Windows.Foundation.Size(request.Width, request.Height);
 				}
 
-				_view.Layout(new Rectangle(0, 0, result.Width, result.Width));
+				_view.Layout(new Rectangle(0, 0, result.Width, result.Height));
 				return result;
 			}
 

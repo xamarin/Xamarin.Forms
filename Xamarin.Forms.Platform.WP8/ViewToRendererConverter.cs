@@ -70,7 +70,7 @@ namespace Xamarin.Forms.Platform.WinPhone
 				else
 					result = new System.Windows.Size(request.Width, request.Height);
 
-				_view.Layout(new Rectangle(0, 0, result.Width, result.Width));
+				_view.Layout(new Rectangle(0, 0, result.Width, result.Height));
 				return result;
 			}
 		}
