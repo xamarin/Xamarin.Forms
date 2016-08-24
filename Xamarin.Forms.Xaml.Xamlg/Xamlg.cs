@@ -39,8 +39,9 @@ namespace Xamarin.Forms.Xaml
 	public class Xamlg
 	{
 		static readonly string HelpString = "xamlg.exe - a utility for generating partial classes from XAML.\n" +
-		                                    "xamlg.exe xamlfile[,outputfile]...\n\n" +
-		                                    "If an outputfile is not specified one will be created using the format <xamlfile>.g.cs\n\n";
+											"xamlg.exe xamlfile[,outputfile][,language]...\n\n" +
+											"If an outputfile is not specified one will be created using the format <xamlfile>.g.cs\n\n" +
+											"If a language is specified the output file will be generated with that CodeDomProvider\n\n";
 
 		public static void Main(string[] args)
 		{
@@ -70,17 +71,25 @@ namespace Xamarin.Forms.Xaml
 			{
 				var f = file;
 				var n = "";
-
+				var language = "C#";
 				var sub = file.IndexOf(",", StringComparison.InvariantCulture);
 				if (sub > 0)
 				{
-					n = f.Substring(sub + 1);
+					var subLang = file.IndexOf(',', sub + 1);
+					if (subLang > 0)
+					{
+						n = f.Substring(sub + 1, subLang - sub - 1);
+						language = f.Substring(subLang + 1);
+					}
+					else
+						n = f.Substring(sub + 1);
+
 					f = f.Substring(0, sub);
 				}
 				else
-					n = string.Concat(Path.GetFileName(f), ".g.", XamlGTask.Provider.FileExtension);
+					n = string.Concat(Path.GetFileName(f), ".g.cs");
 
-				XamlGTask.GenerateFile(f, n);
+				XamlGTask.GenerateFile(f, n, language);
 			}
 		}
 
