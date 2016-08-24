@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using AppKit;
+using Foundation;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
@@ -26,13 +27,13 @@ namespace Xamarin.Forms.Platform.MacOS
 			SetRealCell(item, tvc);
 
 			if (nsEntry == null)
-				tvc.AccessoryView.AddSubview(nsEntry = new NSTextField { });
+				tvc.AccessoryView.AddSubview(nsEntry = new NSTextField());
 
 			var entryCell = (EntryCell)item;
 
 			tvc.Cell = item;
 			tvc.Cell.PropertyChanged += OnCellPropertyChanged;
-			nsEntry.Activated += OnTextFieldTextChanged;
+			nsEntry.Changed += OnTextFieldTextChanged;
 
 			WireUpForceUpdateSizeRequested(item, tvc, tv);
 
@@ -68,10 +69,19 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		static void OnTextFieldTextChanged(object sender, EventArgs eventArgs)
 		{
-			var cell = (CellTableViewCell)sender;
-			var model = (EntryCell)cell.Cell;
+			var notification = (NSNotification)sender;
+			var view = (NSView)notification.Object;
+			var field = (NSTextField)view;
 
-			model.Text = (cell.AccessoryView.Subviews[0] as NSTextField).StringValue;
+			CellTableViewCell realCell = null;
+			while (view.Superview != null && realCell == null)
+			{
+				view = view.Superview;
+				realCell = view as CellTableViewCell;
+			}
+
+			if (realCell != null)
+				((EntryCell)realCell.Cell).Text = field.StringValue;
 		}
 
 		static void UpdateHorizontalTextAlignment(CellTableViewCell cell, EntryCell entryCell)
@@ -106,6 +116,15 @@ namespace Xamarin.Forms.Platform.MacOS
 				return;
 
 			(cell.AccessoryView.Subviews[0] as NSTextField).StringValue = entryCell.Text;
+		}
+
+		internal override void UpdateBackgroundChild(Cell cell, NSColor backgroundColor)
+		{
+			var realCell = (CellTableViewCell)GetRealCell(cell);
+
+			(realCell.AccessoryView.Subviews[0] as NSTextField).BackgroundColor = backgroundColor;
+
+			base.UpdateBackgroundChild(cell, backgroundColor);
 		}
 	}
 }
