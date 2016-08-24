@@ -109,7 +109,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				if (Control == null)
 				{
-					SetNativeControl(new NSTableView());
+					SetNativeControl(new NSTableView { SelectionHighlightStyle = NSTableViewSelectionHighlightStyle.SourceList });
 					//this is needed .. can we go around it ?
 					Control.AddColumn(new NSTableColumn("Values"));
 					Control.Source = _dataSource = e.NewElement.HasUnevenRows ? new UnevenListViewDataSource(e.NewElement, Control) : new ListViewDataSource(e.NewElement, Control);
