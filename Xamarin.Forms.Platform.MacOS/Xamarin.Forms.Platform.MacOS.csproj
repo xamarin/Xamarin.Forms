@@ -136,6 +136,8 @@
     <Compile Include="Cells\ImageCellRenderer.cs" />
     <Compile Include="Cells\SwitchCellRenderer.cs" />
     <Compile Include="Cells\EntryCellRenderer.cs" />
+    <Compile Include="Cells\ViewCellRenderer.cs" />
+    <Compile Include="Cells\ViewCellNSView.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj">
