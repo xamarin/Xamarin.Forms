@@ -60,7 +60,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		internal static NSView GetRealCell(BindableObject cell)
 		{
-			return (CellTableViewCell)cell.GetValue(RealCellProperty);
+			return (NSView)cell.GetValue(RealCellProperty);
 		}
 
 		internal static void SetRealCell(BindableObject cell, NSView renderer)
