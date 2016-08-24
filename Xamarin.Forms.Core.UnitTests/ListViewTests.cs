@@ -105,6 +105,25 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
+		[Description("Setting Header and Footer should pass BindingContext.")]
+		public void SettingHeaderFooterPassesBindingContext()
+		{
+			var bc = new object();
+			var listView = new ListView
+			{
+				BindingContext = bc,
+			};
+
+			var header = new BoxView();
+			var footer = new BoxView();
+			listView.Footer = footer;
+			listView.Header = header;
+
+			Assert.That(header.BindingContext, Is.SameAs(bc));
+			Assert.That(footer.BindingContext, Is.SameAs(bc));
+		}
+
+		[Test]
 		[Description ("Setting GroupDisplayBinding or GroupHeaderTemplate when the other is set should set the other one to null.")]
 		public void SettingGroupHeaderTemplateSetsDisplayBindingToNull()
 		{
