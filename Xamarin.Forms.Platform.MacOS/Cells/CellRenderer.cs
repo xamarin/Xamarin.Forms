@@ -26,16 +26,17 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected void UpdateBackground(NSView tableViewCell, Cell cell)
 		{
+			var bgColor = NSColor.White;
+			var element = cell.RealParent as VisualElement;
+			if (element != null)
+				bgColor = element.BackgroundColor == Color.Default ? bgColor : element.BackgroundColor.ToNSColor();
+
+			UpdateBackgroundChild(cell, bgColor);
+
 			var formsNSView = tableViewCell as FormsNSView;
 			if (formsNSView == null)
 				return;
 
-			var bgColor = NSColor.White;
-
-			var element = cell.RealParent as VisualElement;
-			if (element != null)
-				bgColor = element.BackgroundColor == Color.Default ? bgColor : element.BackgroundColor.ToNSColor();
-			UpdateBackgroundChild(cell, bgColor);
 			formsNSView.BackgroundColor = bgColor;
 		}
 
