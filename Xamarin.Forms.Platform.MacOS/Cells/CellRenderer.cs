@@ -5,7 +5,7 @@ namespace Xamarin.Forms.Platform.MacOS
 {
 	public class CellRenderer : IRegisterable
 	{
-		static readonly BindableProperty RealCellProperty = BindableProperty.CreateAttached("RealCell", typeof(CellTableViewCell), typeof(Cell), null);
+		static readonly BindableProperty RealCellProperty = BindableProperty.CreateAttached("RealCell", typeof(NSView), typeof(Cell), null);
 
 		EventHandler _onForceUpdateSizeRequested;
 
@@ -26,22 +26,22 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected void UpdateBackground(NSView tableViewCell, Cell cell)
 		{
-			//if (cell.GetIsGroupHeader<ItemsView<Cell>, Cell>())
-			//{
-			//	if (UIDevice.CurrentDevice.CheckSystemVersion(7, 0))
-			//		tableViewCell.BackgroundColor = new UIColor(247f / 255f, 247f / 255f, 247f / 255f, 1);
-			//}
-			//else
-			//{
-			//	// Must be set to a solid color or blending issues will occur
-			//	var bgColor = UIColor.White;
+			var formsNSView = tableViewCell as FormsNSView;
+			if (formsNSView == null)
+				return;
 
-			//	var element = cell.RealParent as VisualElement;
-			//	if (element != null)
-			//		bgColor = element.BackgroundColor == Color.Default ? bgColor : element.BackgroundColor.ToNSColor();
+			var bgColor = NSColor.White;
 
-			//	tableViewCell.BackgroundColor = bgColor;
-			//}
+			var element = cell.RealParent as VisualElement;
+			if (element != null)
+				bgColor = element.BackgroundColor == Color.Default ? bgColor : element.BackgroundColor.ToNSColor();
+			UpdateBackgroundChild(cell, bgColor);
+			formsNSView.BackgroundColor = bgColor;
+		}
+
+		internal virtual void UpdateBackgroundChild(Cell cell, NSColor backgroundColor)
+		{
+
 		}
 
 		protected void WireUpForceUpdateSizeRequested(ICellController cell, NSView nativeCell, NSTableView tableView)
@@ -58,12 +58,12 @@ namespace Xamarin.Forms.Platform.MacOS
 			cell.ForceUpdateSizeRequested += _onForceUpdateSizeRequested;
 		}
 
-		internal static CellTableViewCell GetRealCell(BindableObject cell)
+		internal static NSView GetRealCell(BindableObject cell)
 		{
 			return (CellTableViewCell)cell.GetValue(RealCellProperty);
 		}
 
-		internal static void SetRealCell(BindableObject cell, CellTableViewCell renderer)
+		internal static void SetRealCell(BindableObject cell, NSView renderer)
 		{
 			cell.SetValue(RealCellProperty, renderer);
 		}
