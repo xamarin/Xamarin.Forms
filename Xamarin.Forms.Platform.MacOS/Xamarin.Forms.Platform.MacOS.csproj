@@ -128,7 +128,7 @@
     <Compile Include="Renderers\TimePickerRenderer.cs" />
     <Compile Include="Renderers\WebViewRenderer.cs" />
     <Compile Include="Renderers\ListViewRenderer.cs" />
-    <Compile Include="Cells\CellTableViewCell.cs" />
+    <Compile Include="Cells\CellNSView.cs" />
     <Compile Include="Cells\CellRenderer.cs" />
     <Compile Include="Cells\TextCellRenderer.cs" />
     <Compile Include="Cells\NSTableViewCellStyle.cs" />

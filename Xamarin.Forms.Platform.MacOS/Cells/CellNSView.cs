@@ -5,18 +5,54 @@ using CoreGraphics;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
-	public class CellTableViewCell : FormsNSView, INativeElementView
+	public class CellNSView : FormsNSView, INativeElementView
 	{
-		static NSColor _defaultBackgroundFieldColor = NSColor.Clear;
+		static readonly NSColor _defaultChildViewsBackground = NSColor.Clear;
 		Cell _cell;
 		NSTableViewCellStyle _style;
 
 		public Action<object, PropertyChangedEventArgs> PropertyChanged;
 
-		public CellTableViewCell(NSTableViewCellStyle style, string key)
+		public CellNSView(NSTableViewCellStyle style, string key)
 		{
 			_style = style;
 			CreateUI();
+		}
+
+		public NSTextField TextLabel { get; private set; }
+
+		public NSTextField DetailTextLabel { get; private set; }
+
+		public NSImageView ImageView { get; private set; }
+
+		public NSView AccessoryView { get; private set; }
+
+		public Element Element => Cell;
+
+		public Cell Cell
+		{
+			get { return _cell; }
+			set
+			{
+				if (_cell == value)
+					return;
+
+				ICellController cellController = _cell;
+
+				if (cellController != null)
+					Device.BeginInvokeOnMainThread(cellController.SendDisappearing);
+
+				_cell = value;
+				cellController = value;
+
+				if (cellController != null)
+					Device.BeginInvokeOnMainThread(cellController.SendAppearing);
+			}
+		}
+
+		public void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			PropertyChanged?.Invoke(this, e);
 		}
 
 		public override void Layout()
@@ -66,43 +102,6 @@ namespace Xamarin.Forms.Platform.MacOS
 			base.Layout();
 		}
 
-		public Cell Cell
-		{
-			get { return _cell; }
-			set
-			{
-				if (_cell == value)
-					return;
-
-				ICellController cellController = _cell;
-
-				if (cellController != null)
-					Device.BeginInvokeOnMainThread(cellController.SendDisappearing);
-
-				_cell = value;
-				cellController = value;
-
-				if (cellController != null)
-					Device.BeginInvokeOnMainThread(cellController.SendAppearing);
-			}
-		}
-
-		public Element Element => Cell;
-
-		public void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			if (PropertyChanged != null)
-				PropertyChanged(this, e);
-		}
-
-		public NSTextField TextLabel { get; private set; }
-
-		public NSTextField DetailTextLabel { get; private set; }
-
-		public NSImageView ImageView { get; private set; }
-
-		public NSView AccessoryView { get; private set; }
-
 		internal static NSView GetNativeCell(NSTableView tableView, Cell cell, bool recycleCells = false, string templateId = "")
 		{
 			var id = cell.GetType().FullName;
@@ -123,7 +122,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				Font = NSFont.LabelFontOfSize(NSFont.SystemFontSize)
 			});
 
-			TextLabel.Cell.BackgroundColor = NSColor.Clear;
+			TextLabel.Cell.BackgroundColor = _defaultChildViewsBackground;
 
 			if (style == NSTableViewCellStyle.Image || style == NSTableViewCellStyle.Subtitle || style == NSTableViewCellStyle.ImageSubtitle)
 			{
@@ -134,14 +133,14 @@ namespace Xamarin.Forms.Platform.MacOS
 					Editable = false,
 					Font = NSFont.LabelFontOfSize(NSFont.SmallSystemFontSize)
 				});
-				DetailTextLabel.Cell.BackgroundColor = NSColor.Clear;
+				DetailTextLabel.Cell.BackgroundColor = _defaultChildViewsBackground;
 			}
 
 			if (style == NSTableViewCellStyle.Image || style == NSTableViewCellStyle.ImageSubtitle)
 				AddSubview(ImageView = new NSImageView());
 
 			if (style == NSTableViewCellStyle.Value1 || style == NSTableViewCellStyle.Value2)
-				AddSubview(AccessoryView = new FormsNSView { BackgroundColor = NSColor.Clear });
+				AddSubview(AccessoryView = new FormsNSView { BackgroundColor = _defaultChildViewsBackground });
 		}
 	}
 }

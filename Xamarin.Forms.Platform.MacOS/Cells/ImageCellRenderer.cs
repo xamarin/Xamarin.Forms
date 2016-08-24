@@ -9,11 +9,11 @@ namespace Xamarin.Forms.Platform.MacOS
 	{
 		public override NSView GetCell(Cell item, NSView reusableView, NSTableView tv)
 		{
-			var tvc = reusableView as CellTableViewCell;
+			var tvc = reusableView as CellNSView;
 			if (tvc == null)
-				tvc = new CellTableViewCell(NSTableViewCellStyle.ImageSubtitle, item.GetType().FullName);
+				tvc = new CellNSView(NSTableViewCellStyle.ImageSubtitle, item.GetType().FullName);
 
-			var result = (CellTableViewCell)base.GetCell(item, tvc, tv);
+			var result = (CellNSView)base.GetCell(item, tvc, tv);
 
 			var imageCell = (ImageCell)item;
 
@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected override void HandlePropertyChanged(object sender, PropertyChangedEventArgs args)
 		{
-			var tvc = (CellTableViewCell)sender;
+			var tvc = (CellNSView)sender;
 			var imageCell = (ImageCell)tvc.Cell;
 
 			base.HandlePropertyChanged(sender, args);
@@ -35,7 +35,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				SetImage(imageCell, tvc);
 		}
 
-		async void SetImage(ImageCell cell, CellTableViewCell target)
+		static async void SetImage(ImageCell cell, CellNSView target)
 		{
 			var source = cell.ImageSource;
 

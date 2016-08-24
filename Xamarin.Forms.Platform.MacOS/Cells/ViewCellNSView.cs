@@ -9,9 +9,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		ViewCell _viewCell;
 
-		public ViewCellNSView(string key)
-		{
-		}
+		public ViewCellNSView(string key) { }
+
+		public Element Element => ViewCell;
 
 		public ViewCell ViewCell
 		{
@@ -24,30 +24,10 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 		}
 
-		Element INativeElementView.Element
-		{
-			get { return ViewCell; }
-		}
-
 		public override void Layout()
 		{
 			base.Layout();
 			LayoutSubviews();
-		}
-
-		public void LayoutSubviews()
-		{
-			var contentFrame = Frame;
-			var view = ViewCell.View;
-
-			Xamarin.Forms.Layout.LayoutChildIntoBoundingRegion(view, contentFrame.ToRectangle());
-
-			if (_rendererRef == null)
-				return;
-
-			IVisualElementRenderer renderer;
-			if (_rendererRef.TryGetTarget(out renderer))
-				renderer.NativeView.Frame = view.Bounds.ToRectangleF();
 		}
 
 		protected override void Dispose(bool disposing)
@@ -66,6 +46,21 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 
 			base.Dispose(disposing);
+		}
+
+		void LayoutSubviews()
+		{
+			var contentFrame = Frame;
+			var view = ViewCell.View;
+
+			Xamarin.Forms.Layout.LayoutChildIntoBoundingRegion(view, contentFrame.ToRectangle());
+
+			if (_rendererRef == null)
+				return;
+
+			IVisualElementRenderer renderer;
+			if (_rendererRef.TryGetTarget(out renderer))
+				renderer.NativeView.Frame = view.Bounds.ToRectangleF();
 		}
 
 		IVisualElementRenderer GetNewRenderer()

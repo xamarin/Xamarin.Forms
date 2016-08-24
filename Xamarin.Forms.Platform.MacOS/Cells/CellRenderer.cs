@@ -11,7 +11,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public virtual NSView GetCell(Cell item, NSView reusableView, NSTableView tv)
 		{
-			var tvc = reusableView as CellTableViewCell ?? new CellTableViewCell(NSTableViewCellStyle.Default, item.GetType().FullName);
+			var tvc = reusableView as CellNSView ?? new CellNSView(NSTableViewCellStyle.Default, item.GetType().FullName);
 
 			tvc.Cell = item;
 
@@ -40,11 +40,6 @@ namespace Xamarin.Forms.Platform.MacOS
 			formsNSView.BackgroundColor = bgColor;
 		}
 
-		internal virtual void UpdateBackgroundChild(Cell cell, NSColor backgroundColor)
-		{
-
-		}
-
 		protected void WireUpForceUpdateSizeRequested(ICellController cell, NSView nativeCell, NSTableView tableView)
 		{
 			cell.ForceUpdateSizeRequested -= _onForceUpdateSizeRequested;
@@ -58,6 +53,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			cell.ForceUpdateSizeRequested += _onForceUpdateSizeRequested;
 		}
+
+		internal virtual void UpdateBackgroundChild(Cell cell, NSColor backgroundColor) { }
 
 		internal static NSView GetRealCell(BindableObject cell)
 		{

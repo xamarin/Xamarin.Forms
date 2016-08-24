@@ -12,16 +12,20 @@ namespace Xamarin.Forms.Platform.MacOS
 		public override NSView GetCell(Cell item, NSView reusableView, NSTableView tv)
 		{
 			NSTextField nsEntry = null;
-			var tvc = reusableView as CellTableViewCell;
+			var tvc = reusableView as CellNSView;
 			if (tvc == null)
-				tvc = new CellTableViewCell(NSTableViewCellStyle.Value2, item.GetType().FullName);
+				tvc = new CellNSView(NSTableViewCellStyle.Value2, item.GetType().FullName);
 			else
 			{
 				tvc.Cell.PropertyChanged -= OnCellPropertyChanged;
 
 				nsEntry = tvc.AccessoryView.Subviews[0] as NSTextField;
-				nsEntry.RemoveFromSuperview();
-				nsEntry.Activated -= OnTextFieldTextChanged;
+				if (nsEntry != null)
+				{
+					nsEntry.RemoveFromSuperview();
+					nsEntry.Changed -= OnTextFieldTextChanged;
+				}
+
 			}
 
 			SetRealCell(item, tvc);
@@ -48,10 +52,19 @@ namespace Xamarin.Forms.Platform.MacOS
 			return tvc;
 		}
 
+		internal override void UpdateBackgroundChild(Cell cell, NSColor backgroundColor)
+		{
+			var realCell = (CellNSView)GetRealCell(cell);
+
+			(realCell.AccessoryView.Subviews[0] as NSTextField).BackgroundColor = backgroundColor;
+
+			base.UpdateBackgroundChild(cell, backgroundColor);
+		}
+
 		static void OnCellPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			var entryCell = (EntryCell)sender;
-			var realCell = (CellTableViewCell)GetRealCell(entryCell);
+			var realCell = (CellNSView)GetRealCell(entryCell);
 
 			if (e.PropertyName == EntryCell.LabelProperty.PropertyName)
 				UpdateLabel(realCell, entryCell);
@@ -73,58 +86,49 @@ namespace Xamarin.Forms.Platform.MacOS
 			var view = (NSView)notification.Object;
 			var field = (NSTextField)view;
 
-			CellTableViewCell realCell = null;
+			CellNSView realCell = null;
 			while (view.Superview != null && realCell == null)
 			{
 				view = view.Superview;
-				realCell = view as CellTableViewCell;
+				realCell = view as CellNSView;
 			}
 
 			if (realCell != null)
 				((EntryCell)realCell.Cell).Text = field.StringValue;
 		}
 
-		static void UpdateHorizontalTextAlignment(CellTableViewCell cell, EntryCell entryCell)
+		static void UpdateHorizontalTextAlignment(CellNSView cell, EntryCell entryCell)
 		{
 			(cell.AccessoryView.Subviews[0] as NSTextField).Alignment = entryCell.HorizontalTextAlignment.ToNativeTextAlignment();
 		}
 
-		static void UpdateIsEnabled(CellTableViewCell cell, EntryCell entryCell)
+		static void UpdateIsEnabled(CellNSView cell, EntryCell entryCell)
 		{
 			cell.TextLabel.Enabled = entryCell.IsEnabled;
 			(cell.AccessoryView.Subviews[0] as NSTextField).Enabled = entryCell.IsEnabled;
 		}
 
-		static void UpdateLabel(CellTableViewCell cell, EntryCell entryCell)
+		static void UpdateLabel(CellNSView cell, EntryCell entryCell)
 		{
 			cell.TextLabel.StringValue = entryCell.Label;
 		}
 
-		static void UpdateLabelColor(CellTableViewCell cell, EntryCell entryCell)
+		static void UpdateLabelColor(CellNSView cell, EntryCell entryCell)
 		{
 			cell.TextLabel.TextColor = entryCell.LabelColor.ToNSColor(DefaultTextColor);
 		}
 
-		static void UpdatePlaceholder(CellTableViewCell cell, EntryCell entryCell)
+		static void UpdatePlaceholder(CellNSView cell, EntryCell entryCell)
 		{
 			(cell.AccessoryView.Subviews[0] as NSTextField).PlaceholderString = entryCell.Placeholder ?? "";
 		}
 
-		static void UpdateText(CellTableViewCell cell, EntryCell entryCell)
+		static void UpdateText(CellNSView cell, EntryCell entryCell)
 		{
 			if ((cell.AccessoryView.Subviews[0] as NSTextField).StringValue == entryCell.Text)
 				return;
 
 			(cell.AccessoryView.Subviews[0] as NSTextField).StringValue = entryCell.Text;
-		}
-
-		internal override void UpdateBackgroundChild(Cell cell, NSColor backgroundColor)
-		{
-			var realCell = (CellTableViewCell)GetRealCell(cell);
-
-			(realCell.AccessoryView.Subviews[0] as NSTextField).BackgroundColor = backgroundColor;
-
-			base.UpdateBackgroundChild(cell, backgroundColor);
 		}
 	}
 }

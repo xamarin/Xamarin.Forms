@@ -1,21 +1,20 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using AppKit;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
 	public class TextCellRenderer : CellRenderer
 	{
-		static readonly Color DefaultDetailColor = new Color(.32, .4, .57);
-		static readonly Color DefaultTextColor = Color.Black;
+		static readonly Color defaultDetailColor = new Color(.32, .4, .57);
+		static readonly Color defaultTextColor = Color.Black;
 
 		public override NSView GetCell(Cell item, NSView reusableView, NSTableView tv)
 		{
 			var textCell = (TextCell)item;
 
-			var tvc = reusableView as CellTableViewCell;
+			var tvc = reusableView as CellNSView;
 			if (tvc == null)
-				tvc = new CellTableViewCell(NSTableViewCellStyle.Subtitle, item.GetType().FullName);
+				tvc = new CellNSView(NSTableViewCellStyle.Subtitle, item.GetType().FullName);
 
 			if (tvc.Cell != null)
 				tvc.Cell.PropertyChanged -= tvc.HandlePropertyChanged;
@@ -26,8 +25,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			tvc.TextLabel.StringValue = textCell.Text ?? "";
 			tvc.DetailTextLabel.StringValue = textCell.Detail ?? "";
-			tvc.TextLabel.TextColor = textCell.TextColor.ToNSColor(DefaultTextColor);
-			tvc.DetailTextLabel.TextColor = textCell.DetailColor.ToNSColor(DefaultDetailColor);
+			tvc.TextLabel.TextColor = textCell.TextColor.ToNSColor(defaultTextColor);
+			tvc.DetailTextLabel.TextColor = textCell.DetailColor.ToNSColor(defaultDetailColor);
 
 			WireUpForceUpdateSizeRequested(item, tvc, tv);
 
@@ -40,7 +39,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected virtual void HandlePropertyChanged(object sender, PropertyChangedEventArgs args)
 		{
-			var tvc = (CellTableViewCell)sender;
+			var tvc = (CellNSView)sender;
 			var textCell = (TextCell)tvc.Cell;
 			if (args.PropertyName == TextCell.TextProperty.PropertyName)
 			{
@@ -53,14 +52,14 @@ namespace Xamarin.Forms.Platform.MacOS
 				tvc.DetailTextLabel.SizeToFit();
 			}
 			else if (args.PropertyName == TextCell.TextColorProperty.PropertyName)
-				tvc.TextLabel.TextColor = textCell.TextColor.ToNSColor(DefaultTextColor);
+				tvc.TextLabel.TextColor = textCell.TextColor.ToNSColor(defaultTextColor);
 			else if (args.PropertyName == TextCell.DetailColorProperty.PropertyName)
-				tvc.DetailTextLabel.TextColor = textCell.DetailColor.ToNSColor(DefaultTextColor);
+				tvc.DetailTextLabel.TextColor = textCell.DetailColor.ToNSColor(defaultTextColor);
 			else if (args.PropertyName == Cell.IsEnabledProperty.PropertyName)
 				UpdateIsEnabled(tvc, textCell);
 		}
 
-		static void UpdateIsEnabled(CellTableViewCell cell, TextCell entryCell)
+		static void UpdateIsEnabled(CellNSView cell, TextCell entryCell)
 		{
 			cell.TextLabel.Enabled = entryCell.IsEnabled;
 			cell.DetailTextLabel.Enabled = entryCell.IsEnabled;
