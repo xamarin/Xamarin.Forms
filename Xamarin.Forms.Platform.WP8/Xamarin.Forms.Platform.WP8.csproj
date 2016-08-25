@@ -144,6 +144,7 @@
     <Compile Include="AsyncValue.cs" />
     <Compile Include="BrushHelpers.cs" />
     <Compile Include="CellControl.cs" />
+    <Compile Include="CheckBoxRenderer.cs" />
     <Compile Include="CollapseWhenEmptyConverter.cs" />
     <Compile Include="Deserializer.cs" />
     <Compile Include="CustomContextMenu.cs" />

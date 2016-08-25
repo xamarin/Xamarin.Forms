@@ -44,7 +44,10 @@ namespace Xamarin.Forms.Platform
 	[RenderWith (typeof (ButtonRenderer))]
 	internal class _ButtonRenderer { }
 
-	[RenderWith (typeof (TableViewRenderer))]
+    [RenderWith(typeof(CheckBoxRenderer))]
+    internal class _CheckBoxRenderer { }
+
+    [RenderWith (typeof (TableViewRenderer))]
 	internal class _TableViewRenderer { }
 
 	[RenderWith (typeof (ListViewRenderer))]
