@@ -98,8 +98,6 @@ namespace Xamarin.Forms.Platform.MacOS
 			return templatedItems.Count;
 		}
 
-		const string identifer = "myCellIdentifier";
-
 		public override NSView GetViewForItem(NSTableView tableView, NSTableColumn tableColumn, nint row)
 		{
 			var indexPath = NSIndexPath.FromItemSection(row, 1);
@@ -108,6 +106,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			var nativeCell = CellNSView.GetNativeCell(tableView, cell, true, id.ToString());
 			return nativeCell;
 		}
+
 
 		public void UpdateGrouping()
 		{

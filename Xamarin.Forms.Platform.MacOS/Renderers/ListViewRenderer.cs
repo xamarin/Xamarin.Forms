@@ -281,7 +281,9 @@ namespace Xamarin.Forms.Platform.MacOS
 				var request = headerView.Measure(width, double.PositiveInfinity, MeasureFlags.IncludeMargins);
 				Xamarin.Forms.Layout.LayoutChildIntoBoundingRegion(headerView, new Rectangle(0, 0, width, request.Request.Height));
 
-				//Control.HeaderView = _headerRenderer.NativeView;
+				var tableHeaderView = new NSTableHeaderView(headerView.Bounds.ToRectangleF());
+				tableHeaderView.AddSubview(_headerRenderer.NativeView);
+				_table.HeaderView = tableHeaderView;
 				headerView.MeasureInvalidated += OnHeaderMeasureInvalidated;
 			}
 			else if (_headerRenderer != null)
