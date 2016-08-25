@@ -7,7 +7,7 @@ namespace Xamarin.Forms.Platform.MacOS
 {
 	public class EntryCellRenderer : CellRenderer
 	{
-		static readonly Color DefaultTextColor = Color.Black;
+		static readonly Color defaultTextColor = Color.Black;
 
 		public override NSView GetCell(Cell item, NSView reusableView, NSTableView tv)
 		{
@@ -115,7 +115,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		static void UpdateLabelColor(CellNSView cell, EntryCell entryCell)
 		{
-			cell.TextLabel.TextColor = entryCell.LabelColor.ToNSColor(DefaultTextColor);
+			cell.TextLabel.TextColor = entryCell.LabelColor.ToNSColor(defaultTextColor);
 		}
 
 		static void UpdatePlaceholder(CellNSView cell, EntryCell entryCell)
