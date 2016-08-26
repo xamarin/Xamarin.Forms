@@ -1,5 +1,6 @@
 ﻿using System;
 using AppKit;
+using RectangleF = CoreGraphics.CGRect;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
@@ -8,8 +9,6 @@ namespace Xamarin.Forms.Platform.MacOS
 		WeakReference<IVisualElementRenderer> _rendererRef;
 
 		ViewCell _viewCell;
-
-		public ViewCellNSView(string key) { }
 
 		public Element Element => ViewCell;
 
@@ -26,8 +25,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public override void Layout()
 		{
-			base.Layout();
 			LayoutSubviews();
+			base.Layout();
 		}
 
 		protected override void Dispose(bool disposing)
@@ -53,6 +52,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			var contentFrame = Frame;
 			var view = ViewCell.View;
 
+			view.Measure(contentFrame.Width, contentFrame.Height, MeasureFlags.IncludeMargins);
 			Xamarin.Forms.Layout.LayoutChildIntoBoundingRegion(view, contentFrame.ToRectangle());
 
 			if (_rendererRef == null)
@@ -61,6 +61,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			IVisualElementRenderer renderer;
 			if (_rendererRef.TryGetTarget(out renderer))
 				renderer.NativeView.Frame = view.Bounds.ToRectangleF();
+
 		}
 
 		IVisualElementRenderer GetNewRenderer()

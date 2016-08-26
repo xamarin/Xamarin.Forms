@@ -103,7 +103,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			var indexPath = NSIndexPath.FromItemSection(row, 1);
 			var id = TemplateIdForPath(indexPath);
 			var cell = GetCellForPath(indexPath);
-			var nativeCell = CellNSView.GetNativeCell(tableView, cell, true, id.ToString());
+
+			var nativeCell = CellNSView.GetNativeCell(tableView, cell, id.ToString());
 			return nativeCell;
 		}
 

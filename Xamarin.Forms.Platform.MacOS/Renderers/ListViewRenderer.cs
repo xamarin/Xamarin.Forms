@@ -30,10 +30,11 @@ namespace Xamarin.Forms.Platform.MacOS
 			table.AllowsColumnReordering = false;
 			table.AllowsColumnResizing = false;
 			table.AllowsColumnSelection = false;
+
 			//this is needed .. can we go around it ?
-			table.AddColumn(new NSTableColumn("get"));
+			table.AddColumn(new NSTableColumn("1"));
 			//this line hides the header by default
-			//table.HeaderView = null;
+			table.HeaderView = null;
 
 			table.Source = _dataSource = list.HasUnevenRows ? new UnevenListViewDataSource(list, _table) : new ListViewDataSource(list, _table);
 

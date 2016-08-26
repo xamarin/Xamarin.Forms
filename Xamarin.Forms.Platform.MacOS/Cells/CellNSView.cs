@@ -13,7 +13,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public Action<object, PropertyChangedEventArgs> PropertyChanged;
 
-		public CellNSView(NSTableViewCellStyle style, string key)
+		public CellNSView(NSTableViewCellStyle style)
 		{
 			_style = style;
 			CreateUI();
@@ -102,11 +102,16 @@ namespace Xamarin.Forms.Platform.MacOS
 			base.Layout();
 		}
 
-		internal static NSView GetNativeCell(NSTableView tableView, Cell cell, bool recycleCells = false, string templateId = "")
+
+		internal static NSView GetNativeCell(NSTableView tableView, Cell cell, string templateId = "")
 		{
-			var id = cell.GetType().FullName;
+
+			var reusable = tableView.MakeView(templateId, tableView);
 			var renderer = (CellRenderer)Registrar.Registered.GetHandler(cell.GetType());
-			var nativeCell = renderer.GetCell(cell, null, tableView);
+			var nativeCell = renderer.GetCell(cell, reusable, tableView);
+			if (string.IsNullOrEmpty(nativeCell.Identifier))
+				nativeCell.Identifier = templateId;
+			nativeCell.LayoutSubtreeIfNeeded();
 			return nativeCell;
 		}
 

@@ -11,7 +11,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			var cell = reusableView as ViewCellNSView;
 			if (cell == null)
-				cell = new ViewCellNSView(item.GetType().FullName);
+				cell = new ViewCellNSView();
 			else
 				cell.ViewCell.PropertyChanged -= ViewCellPropertyChanged;
 

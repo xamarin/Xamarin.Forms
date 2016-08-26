@@ -14,7 +14,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			NSTextField nsEntry = null;
 			var tvc = reusableView as CellNSView;
 			if (tvc == null)
-				tvc = new CellNSView(NSTableViewCellStyle.Value2, item.GetType().FullName);
+				tvc = new CellNSView(NSTableViewCellStyle.Value2);
 			else
 			{
 				tvc.Cell.PropertyChanged -= OnCellPropertyChanged;

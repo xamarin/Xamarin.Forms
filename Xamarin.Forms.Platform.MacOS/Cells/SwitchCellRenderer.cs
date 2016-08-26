@@ -11,7 +11,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			var tvc = reusableView as CellNSView;
 			NSButton nsSwitch = null;
 			if (tvc == null)
-				tvc = new CellNSView(NSTableViewCellStyle.Value1, item.GetType().FullName);
+				tvc = new CellNSView(NSTableViewCellStyle.Value1);
 			else
 			{
 				nsSwitch = tvc.AccessoryView.Subviews[0] as NSButton;

@@ -11,7 +11,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public virtual NSView GetCell(Cell item, NSView reusableView, NSTableView tv)
 		{
-			var tvc = reusableView as CellNSView ?? new CellNSView(NSTableViewCellStyle.Default, item.GetType().FullName);
+			var tvc = reusableView as CellNSView ?? new CellNSView(NSTableViewCellStyle.Default);
 
 			tvc.Cell = item;
 
