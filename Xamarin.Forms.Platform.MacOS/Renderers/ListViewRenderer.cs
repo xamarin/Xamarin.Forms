@@ -11,7 +11,6 @@ namespace Xamarin.Forms.Platform.MacOS
 {
 	public class ListViewRenderer : ViewRenderer<ListView, NSView>
 	{
-
 		bool _disposed;
 		public const int DefaultRowHeight = 44;
 		ListViewDataSource _dataSource;
@@ -28,11 +27,13 @@ namespace Xamarin.Forms.Platform.MacOS
 		public virtual NSTableView CreateNSTableView(ListView list)
 		{
 			var table = new NSTableView { SelectionHighlightStyle = NSTableViewSelectionHighlightStyle.SourceList };
-
+			table.AllowsColumnReordering = false;
+			table.AllowsColumnResizing = false;
+			table.AllowsColumnSelection = false;
 			//this is needed .. can we go around it ?
-			table.AddColumn(new NSTableColumn(""));
+			table.AddColumn(new NSTableColumn("get"));
 			//this line hides the header by default
-			table.HeaderView = null;
+			//table.HeaderView = null;
 
 			table.Source = _dataSource = list.HasUnevenRows ? new UnevenListViewDataSource(list, _table) : new ListViewDataSource(list, _table);
 
@@ -274,16 +275,13 @@ namespace Xamarin.Forms.Platform.MacOS
 				}
 
 				_headerRenderer = Platform.CreateRenderer(headerView);
-				// This will force measure to invalidate, which we haven't hooked up to yet because we are smarter!
 				Platform.SetRenderer(headerView, _headerRenderer);
 
-				double width = Bounds.Width;
-				var request = headerView.Measure(width, double.PositiveInfinity, MeasureFlags.IncludeMargins);
-				Xamarin.Forms.Layout.LayoutChildIntoBoundingRegion(headerView, new Rectangle(0, 0, width, request.Request.Height));
+				var request = headerView.Measure(double.PositiveInfinity, double.PositiveInfinity, MeasureFlags.IncludeMargins);
+				Xamarin.Forms.Layout.LayoutChildIntoBoundingRegion(headerView, new Rectangle(0, 0, request.Request.Width, request.Request.Height));
 
-				var tableHeaderView = new NSTableHeaderView(headerView.Bounds.ToRectangleF());
-				tableHeaderView.AddSubview(_headerRenderer.NativeView);
-				_table.HeaderView = tableHeaderView;
+				_table.HeaderView = new CustomNSTableHeaderView(new CoreGraphics.CGRect(0, 0, Math.Max(Bounds.Width, headerView.Width), Math.Max(Bounds.Height, headerView.Height)), _headerRenderer);
+
 				headerView.MeasureInvalidated += OnHeaderMeasureInvalidated;
 			}
 			else if (_headerRenderer != null)
