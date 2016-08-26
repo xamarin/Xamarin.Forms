@@ -50,9 +50,9 @@ namespace Xamarin.Forms.Platform.WinRT
 			return formsStyle;
 		}
 
-		static Windows.UI.Xaml.Style GetAncestorSetters(Windows.UI.Xaml.Style value)
+		static Windows.UI.Xaml.Style GetAncestorSetters (Windows.UI.Xaml.Style value)
 		{
-			var style = new Windows.UI.Xaml.Style(value.TargetType)
+			var style = new Windows.UI.Xaml.Style (value.TargetType)
 			{
 				BasedOn = value.BasedOn
 			};
@@ -61,7 +61,7 @@ namespace Xamarin.Forms.Platform.WinRT
 				style.Setters.Add(valSetter);
 			}
 
-			var ancestorStyles = new List<Windows.UI.Xaml.Style>();
+			var ancestorStyles = new List<Windows.UI.Xaml.Style> ();
 
 			Windows.UI.Xaml.Style currStyle = style;
 			while (currStyle.BasedOn != null)
@@ -79,14 +79,14 @@ namespace Xamarin.Forms.Platform.WinRT
 						continue;
 
 					var derviedSetter = style.Setters
-						.OfType<Windows.UI.Xaml.Setter>()
-						.FirstOrDefault(x => x.Property == parentSetter.Property);
+						.OfType<Windows.UI.Xaml.Setter> ()
+						.FirstOrDefault (x => x.Property == parentSetter.Property);
 
 					//Ignore any ancestor setters which a child setter has already overridden
 					if (derviedSetter != null)
 						continue;
 					else
-						style.Setters.Add(parentSetter);
+						style.Setters.Add (parentSetter);
 				}
 			}
 			return style;
