@@ -140,6 +140,10 @@
     <Compile Include="Cells\ViewCellNSView.cs" />
     <Compile Include="Renderers\ListViewDataSource.cs" />
     <Compile Include="Renderers\CustomNSTableHeaderView.cs" />
+    <Compile Include="Renderers\CarouselPageRenderer.cs" />
+    <Compile Include="Extensions\NSScrollViewExtensions.cs" />
+    <Compile Include="Controls\FormsScrollView.cs" />
+    <Compile Include="Controls\FormsScrollViewScrollChangedEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj">
