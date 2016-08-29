@@ -52,7 +52,6 @@ namespace Xamarin.Forms.Platform.MacOS
 			var contentFrame = Frame;
 			var view = ViewCell.View;
 
-			view.Measure(contentFrame.Width, contentFrame.Height, MeasureFlags.IncludeMargins);
 			Xamarin.Forms.Layout.LayoutChildIntoBoundingRegion(view, contentFrame.ToRectangle());
 
 			if (_rendererRef == null)
@@ -105,6 +104,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 
 			Platform.SetRenderer(_viewCell.View, renderer);
+
 		}
 	}
 }

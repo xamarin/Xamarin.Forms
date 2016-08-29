@@ -39,8 +39,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public override void Layout()
 		{
-			base.Layout();
 			LayoutSubviews();
+			base.Layout();
 		}
 
 		void LayoutSubviews()

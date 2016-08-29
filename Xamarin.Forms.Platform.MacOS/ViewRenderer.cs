@@ -18,9 +18,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public override void Layout()
 		{
-			base.Layout();
 			if (Control != null)
 				Control.Frame = new CGRect(0, 0, (nfloat)Element.Width, (nfloat)Element.Height);
+			base.Layout();
 		}
 
 		/// <summary>
