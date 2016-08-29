@@ -1,16 +1,12 @@
 ﻿using System;
-
-using RectangleF = CoreGraphics.CGRect;
-using SizeF = CoreGraphics.CGSize;
-using PointF = CoreGraphics.CGPoint;
 using System.Collections.Generic;
-using AppKit;
 using System.Collections.Specialized;
 using System.ComponentModel;
-
+using AppKit;
 using Xamarin.Forms.Internals;
-using Foundation;
-using ObjCRuntime;
+using PointF = CoreGraphics.CGPoint;
+using RectangleF = CoreGraphics.CGRect;
+using SizeF = CoreGraphics.CGSize;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
