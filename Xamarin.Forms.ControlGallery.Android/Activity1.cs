@@ -205,17 +205,8 @@ namespace Xamarin.Forms.ControlGallery.Android
 
 			var app = new App ();
 
-			var mdp = app.MainPage as MasterDetailPage;
-			var detail = mdp?.Detail as NavigationPage;
-			if (detail != null) {
-				detail.Pushed += (sender, args) => {
-					var nncgPage = args.Page as NestedNativeControlGalleryPage;
-
-					if (nncgPage != null) {
-						AddNativeControls (nncgPage);
-					}
-				};
-			} 
+			// When the native control gallery loads up, it'll let us know so we can add the nested native controls
+			MessagingCenter.Subscribe<NestedNativeControlGalleryPage>(this, NestedNativeControlGalleryPage.ReadyForNativeControlsMessage, AddNativeControls);
 
 			LoadApplication (app);
 		}
@@ -329,15 +320,8 @@ namespace Xamarin.Forms.ControlGallery.Android
 
 			var app = new App ();
 
-			var mdp = app.MainPage as MasterDetailPage;
-			var detail = mdp?.Detail as NavigationPage;
-			if (detail != null) {
-				detail.Pushed += (sender, args) => {
-					var nncgPage = args.Page as NestedNativeControlGalleryPage;
-
-					if (nncgPage != null) {
-						AddNativeControls (nncgPage);
-					}
+			// When the native control gallery loads up, it'll let us know so we can add the nested native controls
+			MessagingCenter.Subscribe<NestedNativeControlGalleryPage>(this, NestedNativeControlGalleryPage.ReadyForNativeControlsMessage, AddNativeControls);
 
 					var nncgPage1 = args.Page as NativeBindingGalleryPage;
 
@@ -346,8 +330,6 @@ namespace Xamarin.Forms.ControlGallery.Android
 						AddNativeBindings(nncgPage1);
 					}
 
-				};
-			}
 
 			LoadApplication (app);
 		}
