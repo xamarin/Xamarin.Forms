@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Platform.MacOS
 	{
 		bool _appeared;
 		bool _disposed;
-		//EventTracker _events;
+		EventTracker _events;
 		VisualElementPackager _packager;
 		VisualElementTracker _tracker;
 
@@ -118,11 +118,11 @@ namespace Xamarin.Forms.Platform.MacOS
 
 				_appeared = false;
 
-				//if (_events != null)
-				//{
-				//	_events.Dispose();
-				//	_events = null;
-				//}
+				if (_events != null)
+				{
+					_events.Dispose();
+					_events = null;
+				}
 
 				if (_packager != null)
 				{
@@ -175,8 +175,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			Element.PropertyChanged += OnHandlePropertyChanged;
 			_tracker = new VisualElementTracker(this);
 
-			//_events = new EventTracker(this);
-			//_events.LoadEvents(View);
+			_events = new EventTracker(this);
+			_events.LoadEvents(View);
 		}
 
 		void OnHandlePropertyChanged(object sender, PropertyChangedEventArgs e)
