@@ -58,15 +58,9 @@ namespace Xamarin.Forms.Xaml
 					return;
 				if (parentElement.SkipProperties.Contains(propertyName))
 					return;
-				if (parentElement.SkipPrefix(node.NamespaceResolver.LookupPrefix(propertyName.NamespaceURI)))
-					return;
 				if (propertyName.NamespaceURI == "http://schemas.openxmlformats.org/markup-compatibility/2006" &&
-				    propertyName.LocalName == "Ignorable")
-				{
-					(parentNode.IgnorablePrefixes ?? (parentNode.IgnorablePrefixes = new List<string>())).AddRange(
-						(value as string).Split(','));
+					propertyName.LocalName == "Ignorable")
 					return;
-				}
 				SetPropertyValue(source, propertyName, value, Context.RootElement, node, Context, node);
 			}
 			else if (IsCollectionItem(node, parentNode) && parentNode is IElementNode)
@@ -91,9 +85,6 @@ namespace Xamarin.Forms.Xaml
 
 		public void Visit(ElementNode node, INode parentNode)
 		{
-			if (node.SkipPrefix(node.NamespaceResolver.LookupPrefix(node.NamespaceURI)))
-				return;
-
 			var value = Values[node];
 			var parentElement = parentNode as IElementNode;
 			var markupExtension = value as IMarkupExtension;
@@ -111,21 +102,29 @@ namespace Xamarin.Forms.Xaml
 				value = valueProvider.ProvideValue(serviceProvider);
 			}
 
-			XmlName propertyName;
-			if (TryGetPropertyName(node, parentNode, out propertyName))
-			{
+			XmlName propertyName = XmlName.Empty;
+
+			//Simplify ListNodes with single elements
+			var pList = parentNode as ListNode;
+			if (pList != null && pList.CollectionItems.Count == 1) {
+				propertyName = pList.XmlName;
+				parentNode = parentNode.Parent;
+				parentElement = parentNode as IElementNode;
+			}
+
+			if (propertyName != XmlName.Empty || TryGetPropertyName(node, parentNode, out propertyName)) {
 				if (Skips.Contains(propertyName))
 					return;
 				if (parentElement.SkipProperties.Contains(propertyName))
 					return;
 
-				var source = Values[parentNode];
+				var source = Values [parentNode];
 
 				if (propertyName == XmlName._CreateContent && source is ElementTemplate)
 					SetTemplate(source as ElementTemplate, node);
 				else
 					SetPropertyValue(source, propertyName, value, Context.RootElement, node, Context, node);
-			}
+			} 
 			else if (IsCollectionItem(node, parentNode) && parentNode is IElementNode)
 			{
 				// Collection element, implicit content, or implicit collection element.
@@ -434,14 +433,16 @@ namespace Xamarin.Forms.Xaml
 			((IDataTemplate)dt).LoadTemplate = () =>
 			{
 #pragma warning restore 0612
+				var cnode = node.Clone();
 				var context = new HydratationContext { ParentContext = Context, RootElement = Context.RootElement };
-				node.Accept(new ExpandMarkupsVisitor(context), null);
-				node.Accept(new NamescopingVisitor(context), null);
-				node.Accept(new CreateValuesVisitor(context), null);
-				node.Accept(new RegisterXNamesVisitor(context), null);
-				node.Accept(new FillResourceDictionariesVisitor(context), null);
-				node.Accept(new ApplyPropertiesVisitor(context, true), null);
-				return context.Values[node];
+				cnode.Accept(new XamlNodeVisitor((n, parent) => n.Parent = parent), node.Parent); //set parents for {StaticResource}
+				cnode.Accept(new ExpandMarkupsVisitor(context), null);
+				cnode.Accept(new NamescopingVisitor(context), null);
+				cnode.Accept(new CreateValuesVisitor(context), null);
+				cnode.Accept(new RegisterXNamesVisitor(context), null);
+				cnode.Accept(new FillResourceDictionariesVisitor(context), null);
+				cnode.Accept(new ApplyPropertiesVisitor(context, true), null);
+				return context.Values[cnode];
 			};
 		}
 	}
