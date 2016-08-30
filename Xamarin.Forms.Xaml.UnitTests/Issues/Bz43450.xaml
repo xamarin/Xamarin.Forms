@@ -1,16 +1,15 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
-<forms:ContentPage xmlns="clr-namespace:Xamarin.Forms.Xaml.UnitTests;assembly=Xamarin.Forms.Xaml.UnitTests"
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-			 xmlns:forms="http://xamarin.com/schemas/2014/forms"
 			 x:Class="Xamarin.Forms.Xaml.UnitTests.Bz43450">
-	<forms:Grid>
-		<forms:Grid.RowDefinition>
-			<forms:RowDefinition Height="20"/>
-			<forms:RowDefinition Height="*"/>
-			<forms:RowDefinition Height="20"/>
-		</forms:Grid.RowDefinition>
-		<forms:BoxView BackgroundColor="Red"/>
-		<forms:BoxView Grid.Row="1" BackgroundColor="Yellow"/>
-		<forms:BoxView Grid.Row="2" BackgroundColor="Green"/>
-	</forms:Grid>
-</forms:ContentPage>
+	<Grid>
+		<Grid.RowDefinition>
+			<RowDefinition Height="20"/>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="20"/>
+		</Grid.RowDefinition>
+		<BoxView BackgroundColor="Red"/>
+		<BoxView Grid.Row="1" BackgroundColor="Yellow"/>
+		<BoxView Grid.Row="2" BackgroundColor="Green"/>
+	</Grid>
+</ContentPage>
