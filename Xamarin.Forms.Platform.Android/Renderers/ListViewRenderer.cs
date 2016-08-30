@@ -94,6 +94,11 @@ namespace Xamarin.Forms.Platform.Android
 			_adapter.IsAttachedToWindow = _isAttached;
 		}
 
+		protected override AListView CreateNativeControl()
+		{
+			return new AListView(Context);
+		}
+
 		protected override void OnElementChanged(ElementChangedEventArgs<ListView> e)
 		{
 			base.OnElementChanged(e);
@@ -115,7 +120,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (nativeListView == null)
 				{
 					var ctx = Context;
-					nativeListView = new AListView(ctx);
+					nativeListView = CreateNativeControl();
 					_refresh = new SwipeRefreshLayout(ctx);
 					_refresh.SetOnRefreshListener(this);
 					_refresh.AddView(nativeListView, LayoutParams.MatchParent);
