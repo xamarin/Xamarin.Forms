@@ -87,6 +87,7 @@
     <Compile Include="DateChangedEventArgs.cs" />
     <Compile Include="DelegateLogListener.cs" />
     <Compile Include="EnumerableExtensions.cs" />
+    <Compile Include="ICheckedController.cs" />
     <Compile Include="IFontElement.cs" />
     <Compile Include="DependencyAttribute.cs" />
     <Compile Include="DependencyFetchTarget.cs" />
@@ -211,6 +212,7 @@
     <Compile Include="IValueConverter.cs" />
     <Compile Include="ConcurrentDictionary.cs" />
     <Compile Include="PropertyChangingEventHandler.cs" />
+    <Compile Include="RadioButton.cs" />
     <Compile Include="ReadOnlyCastingList.cs" />
     <Compile Include="ReadOnlyListAdapter.cs" />
     <Compile Include="RectangleTypeConverter.cs" />
