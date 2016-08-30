@@ -10,9 +10,19 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 
 		}
+
 		public FormsNSView(bool isFlipped, CoreGraphics.CGRect frame) : base(frame)
 		{
 			//_isFlipped = isFlipped;
+		}
+
+		public override void Layout()
+		{
+			foreach (var view in Subviews)
+			{
+				view.Frame = Bounds;
+			}
+			base.Layout();
 		}
 
 		public override void DrawRect(CoreGraphics.CGRect dirtyRect)

@@ -144,6 +144,7 @@
     <Compile Include="Extensions\NSScrollViewExtensions.cs" />
     <Compile Include="Controls\FormsScrollView.cs" />
     <Compile Include="Controls\FormsScrollViewScrollChangedEventArgs.cs" />
+    <Compile Include="Renderers\MasterDetailPageRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj">
