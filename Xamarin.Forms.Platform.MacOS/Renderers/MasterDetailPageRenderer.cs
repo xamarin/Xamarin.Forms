@@ -4,9 +4,6 @@ using AppKit;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
-
-
-
 	public class MasterDetailPageRenderer : NSSplitViewController, IVisualElementRenderer, IEffectControlProvider
 	{
 		bool _disposed;
@@ -174,10 +171,15 @@ namespace Xamarin.Forms.Platform.MacOS
 			AddSplitViewItem(new NSSplitViewItem { ViewController = detail, HoldingPriority = 0.8f });
 
 
-			View.AddConstraint(NSLayoutConstraint.Create(SplitViewItems[0], NSLayoutAttribute.Width, NSLayoutRelation.LessThanOrEqual, 0.2f, 100));
-			View.AddConstraint(NSLayoutConstraint.Create(SplitViewItems[1], NSLayoutAttribute.Width, NSLayoutRelation.GreaterThanOrEqual, 0.8f, 100));
+			View.AddConstraint(NSLayoutConstraint.Create(SplitViewItems[0].ViewController.View, NSLayoutAttribute.Width, NSLayoutRelation.LessThanOrEqual, 0.2f, 100));
+			View.AddConstraint(NSLayoutConstraint.Create(SplitViewItems[1].ViewController.View, NSLayoutAttribute.Width, NSLayoutRelation.GreaterThanOrEqual, 0.8f, 100));
 
 			MasterDetailPage.Master.PropertyChanged += HandleMasterPropertyChanged;
+		}
+
+		public override CoreGraphics.CGRect GetEffectiveRect(NSSplitView splitView, CoreGraphics.CGRect proposedEffectiveRect, CoreGraphics.CGRect drawnRect, nint dividerIndex)
+		{
+			return CoreGraphics.CGRect.Empty;
 		}
 
 		void ClearControllers()
