@@ -173,7 +173,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				}
 				else if (width <= 0 || height <= 0)
 				{
-					caLayer.Hidden = true;
+					//caLayer.Hidden = true;
 					return;
 				}
 

@@ -145,6 +145,7 @@
     <Compile Include="Controls\FormsScrollView.cs" />
     <Compile Include="Controls\FormsScrollViewScrollChangedEventArgs.cs" />
     <Compile Include="Renderers\MasterDetailPageRenderer.cs" />
+    <Compile Include="Renderers\TabbedPageRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj">
