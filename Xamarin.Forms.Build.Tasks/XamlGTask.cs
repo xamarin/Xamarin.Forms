@@ -14,8 +14,6 @@ namespace Xamarin.Forms.Build.Tasks
 {
 	public class XamlGTask : Task
 	{
-		internal static CodeDomProvider Provider = new CSharpCodeProvider();
-
 		[Required]
 		public string Source { get; set; }
 
@@ -41,7 +39,7 @@ namespace Xamarin.Forms.Build.Tasks
 
 			try
 			{
-				GenerateFile(Source, OutputFile);
+				GenerateFile(Source, OutputFile, Language);
 				return true;
 			}
 			catch (XmlException xe)
@@ -101,7 +99,7 @@ namespace Xamarin.Forms.Build.Tasks
 		}
 
 		internal static void GenerateCode(string rootType, string rootNs, CodeTypeReference baseType,
-			IDictionary<string, CodeTypeReference> namesAndTypes, string outFile)
+			IDictionary<string, CodeTypeReference> namesAndTypes, string outFile, string language)
 		{
 			if (rootType == null)
 			{
@@ -172,17 +170,20 @@ namespace Xamarin.Forms.Build.Tasks
 			}
 
 			using (var writer = new StreamWriter(outFile))
-				Provider.GenerateCodeFromCompileUnit(ccu, writer, new CodeGeneratorOptions());
+			{
+				using (var provider = CodeDomProvider.CreateProvider(language ?? "C#"))
+					provider.GenerateCodeFromCompileUnit(ccu, writer, new CodeGeneratorOptions());
+			}
 		}
 
-		internal static void GenerateFile(string xamlFile, string outFile)
+		internal static void GenerateFile(string xamlFile, string outFile, string language)
 		{
 			string rootType, rootNs;
 			CodeTypeReference baseType;
 			IDictionary<string, CodeTypeReference> namesAndTypes;
 			using (StreamReader reader = File.OpenText(xamlFile))
 				ParseXaml(reader, out rootType, out rootNs, out baseType, out namesAndTypes);
-			GenerateCode(rootType, rootNs, baseType, namesAndTypes, outFile);
+			GenerateCode(rootType, rootNs, baseType, namesAndTypes, outFile, language);
 		}
 
 		static Dictionary<string, CodeTypeReference> GetNamesAndTypes(XmlNode root, XmlNamespaceManager nsmgr)
