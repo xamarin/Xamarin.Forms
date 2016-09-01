@@ -167,6 +167,9 @@
     <Compile Include="..\Xamarin.Forms.Platform.WinRT\PlatformEffect.cs">
       <Link>PlatformEffect.cs</Link>
     </Compile>
+    <Compile Include="..\Xamarin.Forms.Platform.WinRT\RadioButtonRenderer.cs">
+      <Link>RadioButtonRenderer.cs</Link>
+    </Compile>
     <Compile Include="..\Xamarin.Forms.Platform.WinRT\UriImageSourceHandler.cs">
       <Link>UriImageSourceHandler.cs</Link>
     </Compile>

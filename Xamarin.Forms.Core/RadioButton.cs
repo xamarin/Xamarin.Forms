@@ -75,7 +75,7 @@ namespace Xamarin.Forms
         public string GroupName
         {
             get { return (string)GetValue(GroupNameProperty); }
-            set { SetValue(GroupNameProperty, value); }
+            set { SetValue(GroupNameProperty, value ?? string.Empty); }
         }
 
         public event EventHandler Checked;
