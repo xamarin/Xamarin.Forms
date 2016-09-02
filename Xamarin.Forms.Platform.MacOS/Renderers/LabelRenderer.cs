@@ -169,7 +169,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				Control.StringValue = (string)values[1] ?? "";
 				// default value of color documented to be black in iOS docs
 				Control.Font = Element.ToNSFont();
-				Control.TextColor = ((Color)values[2]).ToUIColor(ColorExtensions.Black);
+				Control.TextColor = ((Color)values[2]).ToNSColor(ColorExtensions.Black);
 			}
 
 			LayoutSubviews();

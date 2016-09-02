@@ -37,7 +37,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			return color.ToNSColor();
 		}
 
-		public static NSColor ToUIColor(this Color color, NSColor defaultColor)
+		public static NSColor ToNSColor(this Color color, NSColor defaultColor)
 		{
 			if (color.IsDefault)
 				return defaultColor;
