@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Diagnostics;
 using Xamarin.Forms.Platform.MacOS;
 
 namespace Xamarin.Forms
@@ -12,9 +12,9 @@ namespace Xamarin.Forms
 			if (IsInitialized)
 				return;
 			IsInitialized = true;
-			//	Color.Accent = Color.FromRgba(50, 79, 133, 255);
 
-			//Log.Listeners.Add(new DelegateLogListener((c, m) => Trace.WriteLine(m, c)));
+			Color.Accent = Color.FromRgba(50, 79, 133, 255);
+			Log.Listeners.Add(new DelegateLogListener((c, m) => Trace.WriteLine(m, c)));
 
 			Device.OS = TargetPlatform.iOS;
 			Device.PlatformServices = new MacOSPlatformServices();
@@ -24,7 +24,7 @@ namespace Xamarin.Forms
 
 			Device.Idiom = TargetIdiom.Desktop;
 
-			//ExpressionSearch.Default = new iOSExpressionSearch();
+			ExpressionSearch.Default = new MacOSExpressionSearch();
 
 		}
 	}

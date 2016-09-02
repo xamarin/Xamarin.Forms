@@ -149,6 +149,7 @@
     <Compile Include="Renderers\NavigationPageRenderer.cs" />
     <Compile Include="Controls\FormsPageControllerDelegate.cs" />
     <Compile Include="Controls\PageWrapper.cs" />
+    <Compile Include="MacOSExpressionSearch.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj">
