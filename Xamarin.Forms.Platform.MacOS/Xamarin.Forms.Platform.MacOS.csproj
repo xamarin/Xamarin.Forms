@@ -150,6 +150,7 @@
     <Compile Include="Controls\FormsPageControllerDelegate.cs" />
     <Compile Include="Controls\PageWrapper.cs" />
     <Compile Include="MacOSExpressionSearch.cs" />
+    <Compile Include="MainToolBarDelegate.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj">

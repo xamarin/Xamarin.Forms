@@ -104,7 +104,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 				ClearContentRenderer();
 
-				NSNotificationCenter.DefaultCenter.RemoveObserver(this, BoundsChangedNotification);
+				//NSNotificationCenter.DefaultCenter.RemoveObserver(this, BoundsChangedNotification);
 			}
 
 			base.Dispose(disposing);

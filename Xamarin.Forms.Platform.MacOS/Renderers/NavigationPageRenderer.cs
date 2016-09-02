@@ -16,6 +16,8 @@ namespace Xamarin.Forms.Platform.MacOS
 	{
 		bool _disposed;
 		bool _appeared;
+		string _previousTitle;
+		string _currentTitle;
 		EventTracker _events;
 		VisualElementTracker _tracker;
 		Stack<PageWrapper> _currentStack = new Stack<PageWrapper>();
@@ -34,19 +36,12 @@ namespace Xamarin.Forms.Platform.MacOS
 		public NavigationPageRenderer() : this(IntPtr.Zero) { }
 		public NavigationPageRenderer(IntPtr coder)
 		{
-			View = new FormsNSView { WantsLayer = true, BackgroundColor = Color.Pink.ToNSColor() };
+			View = new FormsNSView { WantsLayer = true };
 
-
-			ConfigurePageRenderer();
 		}
-
-
 
 		protected virtual void ConfigurePageRenderer()
 		{
-			Title = "hello";
-			//TransitionStyle = NSPageControllerTransitionStyle.StackHistory;
-			//Delegate = new PageDelagete(GetPageIdentifier, GetPageViewController);
 			//var transiton = new CATransition();
 			//transiton.Type = CAAnimation.TransitionPush;
 			//transiton.Subtype = CAAnimation.TransitionFromLeft;
@@ -210,55 +205,25 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected virtual async Task<bool> OnPopViewAsync(Page page, bool animated)
 		{
-			var wrapper = _currentStack.Peek();
-			if (page != wrapper.Page)
-				throw new NotSupportedException("Popped page does not appear on top of current navigation stack, please file a bug.");
-
-			View.Subviews.Last().RemoveFromSuperview();
-			(page as IPageController)?.SendDisappearing();
-
-			_currentStack.Pop();
+			var removed = true;
+			RemovePage(page);
 
 			UpdateToolBarVisible();
-			return true;
+			return removed;
 		}
 
 		protected virtual bool OnPushAsync(Page page, bool animated)
 		{
 			var shown = true;
-			var wrapper = new PageWrapper(page);
-
-			_currentStack.Push(wrapper);
-			var newIndex = _currentStack.Count;
-			var vc = CreateViewControllerForPage(page);
-			page.Layout(new Rectangle(0, 0, View.Bounds.Width, View.Bounds.Height));
-			View.AddSubview(vc.NativeView, NSWindowOrderingMode.Above, null);
-			(page as IPageController)?.SendAppearing();
+			AddPage(page);
 			UpdateToolBarVisible();
 			return shown;
 		}
 
-
-		NSViewController GetPageViewController(string identifier)
-		{
-			var pageWrapper = _currentStack.FirstOrDefault((arg) => arg.Identifier == identifier);
-			if (pageWrapper == null)
-				throw new Exception(nameof(identifier) + " not found ");
-			return CreateViewControllerForPage(pageWrapper.Page).ViewController;
-		}
-
-		string GetPageIdentifier(NSObject obj)
-		{
-			if (obj == null)
-			{
-			}
-			var ns = obj as PageWrapper;
-			return ns?.Identifier ?? "";
-		}
-
-
 		void Init()
 		{
+			ConfigurePageRenderer();
+
 			var navPage = (NavigationPage)Element;
 
 			if (navPage.CurrentPage == null)
@@ -290,6 +255,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			UpdateToolBarVisible();
 			UpdateBackgroundColor();
 		}
+
+
 
 		IVisualElementRenderer CreateViewControllerForPage(Page page)
 		{
@@ -338,9 +305,45 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			if (page == null)
 				throw new ArgumentNullException(nameof(page));
-			var target = Platform.GetRenderer(page).ViewController.ParentViewController;
+			var target = Platform.GetRenderer(page);
+
+			var wrapper = _currentStack.Peek();
+			if (page != wrapper.Page)
+				throw new NotSupportedException("Popped page does not appear on top of current navigation stack, please file a bug.");
+
+			target.NativeView.RemoveFromSuperview();
+			(page as IPageController)?.SendDisappearing();
+
+			_currentStack.Pop();
+
+			target.Dispose();
+
+			UpdateTitles(_currentStack.Peek().Page);
 		}
 
+		void AddPage(Page page)
+		{
+			if (page == null)
+				throw new ArgumentNullException(nameof(page));
+
+			var wrapper = new PageWrapper(page);
+
+			_currentStack.Push(wrapper);
+			var newIndex = _currentStack.Count;
+			var vc = CreateViewControllerForPage(page);
+			page.Layout(new Rectangle(0, 0, View.Bounds.Width, View.Bounds.Height));
+			View.AddSubview(vc.NativeView, NSWindowOrderingMode.Above, null);
+			UpdateTitles(page);
+
+			(page as IPageController)?.SendAppearing();
+		}
+
+		void UpdateTitles(Page page)
+		{
+			_previousTitle = _currentStack.Count <= 1 ? "" : NavigationPage.GetHasBackButton(page) ? NavigationPage.GetBackButtonTitle(page) ?? _currentStack.ElementAt(_currentStack.Count - 1).Page.Title : "";
+
+			_currentTitle = page.Title;
+		}
 
 		void UpdateBarTextColor()
 		{
@@ -364,7 +367,31 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateToolBarVisible()
 		{
+			NSApplication.SharedApplication.MainWindow.Toolbar = new NSToolbar("MainToolbar")
+			{
+				Delegate = new MainToolBarDelegate(GetCurrentPageTitle, GetPreviousPageTitle, NavigateBackFrombackButton)
+			};
 
+			NSApplication.SharedApplication.MainWindow.Toolbar.InsertItem(MainToolBarDelegate.BackButtonIdentifier, 0);
+			NSApplication.SharedApplication.MainWindow.Toolbar.InsertItem(NSToolbar.NSToolbarFlexibleSpaceItemIdentifier, 1);
+			NSApplication.SharedApplication.MainWindow.Toolbar.InsertItem(MainToolBarDelegate.TitleIdentifier, 2);
+			NSApplication.SharedApplication.MainWindow.Toolbar.InsertItem(NSToolbar.NSToolbarFlexibleSpaceItemIdentifier, 3);
+
+		}
+
+		void NavigateBackFrombackButton()
+		{
+			PopViewAsync(_currentStack.Peek().Page, true);
+		}
+
+		string GetCurrentPageTitle()
+		{
+			return _currentTitle ?? "";
+		}
+
+		string GetPreviousPageTitle()
+		{
+			return _previousTitle ?? "";
 		}
 	}
 }

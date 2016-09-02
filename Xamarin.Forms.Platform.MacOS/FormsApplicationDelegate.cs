@@ -38,11 +38,6 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public override void DidFinishLaunching(Foundation.NSNotification notification)
 		{
-			// check contents of launch options and evaluate why the app was launched and respond
-			// initialize the important data structures
-			// prepare you apps window and views for display
-			// keep lightweight, anything long winded should be executed asynchronously on a secondary thread.
-			// application:didFinishLaunchingWithOptions
 			if (MainWindow == null)
 				throw new InvalidOperationException("Please provide a main window in your app");
 
