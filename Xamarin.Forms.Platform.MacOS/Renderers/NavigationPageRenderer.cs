@@ -256,8 +256,6 @@ namespace Xamarin.Forms.Platform.MacOS
 			UpdateBackgroundColor();
 		}
 
-
-
 		IVisualElementRenderer CreateViewControllerForPage(Page page)
 		{
 			if (Platform.GetRenderer(page) == null)
@@ -305,20 +303,19 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			if (page == null)
 				throw new ArgumentNullException(nameof(page));
-			var target = Platform.GetRenderer(page);
 
 			var wrapper = _currentStack.Peek();
 			if (page != wrapper.Page)
 				throw new NotSupportedException("Popped page does not appear on top of current navigation stack, please file a bug.");
 
-			target.NativeView.RemoveFromSuperview();
-			(page as IPageController)?.SendDisappearing();
-
 			_currentStack.Pop();
 
+			var target = Platform.GetRenderer(page);
+			target.NativeView.RemoveFromSuperview();
 			target.Dispose();
-
 			UpdateTitles(_currentStack.Peek().Page);
+			(page as IPageController)?.SendDisappearing();
+
 		}
 
 		void AddPage(Page page)
@@ -329,20 +326,21 @@ namespace Xamarin.Forms.Platform.MacOS
 			var wrapper = new PageWrapper(page);
 
 			_currentStack.Push(wrapper);
-			var newIndex = _currentStack.Count;
+
 			var vc = CreateViewControllerForPage(page);
 			page.Layout(new Rectangle(0, 0, View.Bounds.Width, View.Bounds.Height));
 			View.AddSubview(vc.NativeView, NSWindowOrderingMode.Above, null);
 			UpdateTitles(page);
-
 			(page as IPageController)?.SendAppearing();
 		}
 
 		void UpdateTitles(Page page)
 		{
-			_previousTitle = _currentStack.Count <= 1 ? "" : NavigationPage.GetHasBackButton(page) ? NavigationPage.GetBackButtonTitle(page) ?? _currentStack.ElementAt(_currentStack.Count - 1).Page.Title : "";
-
 			_currentTitle = page.Title;
+			if (_currentStack.Count <= 1)
+				_previousTitle = "";
+			else
+				_previousTitle = NavigationPage.GetHasBackButton(page) ? NavigationPage.GetBackButtonTitle(_currentStack.ElementAt(_currentStack.Count - 2).Page) ?? _currentStack.ElementAt(_currentStack.Count - 1).Page.Title : "";
 		}
 
 		void UpdateBarTextColor()
@@ -367,15 +365,23 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateToolBarVisible()
 		{
-			NSApplication.SharedApplication.MainWindow.Toolbar = new NSToolbar("MainToolbar")
+			if (NavigationPage.GetHasNavigationBar(_currentStack.Peek().Page))
 			{
-				Delegate = new MainToolBarDelegate(GetCurrentPageTitle, GetPreviousPageTitle, NavigateBackFrombackButton)
-			};
+				NSApplication.SharedApplication.MainWindow.Toolbar = new NSToolbar("MainToolbar")
+				{
+					Delegate = new MainToolBarDelegate(GetCurrentPageTitle, GetPreviousPageTitle, NavigateBackFrombackButton)
+				};
 
-			NSApplication.SharedApplication.MainWindow.Toolbar.InsertItem(MainToolBarDelegate.BackButtonIdentifier, 0);
-			NSApplication.SharedApplication.MainWindow.Toolbar.InsertItem(NSToolbar.NSToolbarFlexibleSpaceItemIdentifier, 1);
-			NSApplication.SharedApplication.MainWindow.Toolbar.InsertItem(MainToolBarDelegate.TitleIdentifier, 2);
-			NSApplication.SharedApplication.MainWindow.Toolbar.InsertItem(NSToolbar.NSToolbarFlexibleSpaceItemIdentifier, 3);
+				NSApplication.SharedApplication.MainWindow.Toolbar.InsertItem(MainToolBarDelegate.BackButtonIdentifier, 0);
+				NSApplication.SharedApplication.MainWindow.Toolbar.InsertItem(NSToolbar.NSToolbarFlexibleSpaceItemIdentifier, 1);
+				NSApplication.SharedApplication.MainWindow.Toolbar.InsertItem(MainToolBarDelegate.TitleIdentifier, 2);
+				NSApplication.SharedApplication.MainWindow.Toolbar.InsertItem(NSToolbar.NSToolbarFlexibleSpaceItemIdentifier, 3);
+			}
+
+			else
+			{
+				NSApplication.SharedApplication.MainWindow.Toolbar = null;
+			}
 
 		}
 
