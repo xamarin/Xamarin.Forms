@@ -6,6 +6,7 @@ namespace Xamarin.Forms.Platform.MacOS
 {
 	public class MasterDetailPageRenderer : NSSplitViewController, IVisualElementRenderer, IEffectControlProvider
 	{
+		const double _masterWidthPercentage = 0.2;
 		bool _disposed;
 		EventTracker _events;
 		VisualElementTracker _tracker;
@@ -91,6 +92,13 @@ namespace Xamarin.Forms.Platform.MacOS
 		public void SetElementSize(Size size)
 		{
 			Element.Layout(new Rectangle(Element.X, Element.Y, size.Width, size.Height));
+			var masterWidth = _masterWidthPercentage * size.Width;
+
+			MasterDetailPage.Master.Layout(new Rectangle(0, 0, masterWidth, size.Height));
+			MasterDetailPage.Detail.Layout(new Rectangle(masterWidth, 0, size.Width - masterWidth, size.Height));
+
+			View.AddConstraint(NSLayoutConstraint.Create(SplitViewItems[0].ViewController.View, NSLayoutAttribute.Width, NSLayoutRelation.LessThanOrEqual, 0.1f, (nfloat)MasterDetailPage.Master.Width));
+			View.AddConstraint(NSLayoutConstraint.Create(SplitViewItems[1].ViewController.View, NSLayoutAttribute.Width, NSLayoutRelation.GreaterThanOrEqual, 0.1f, (nfloat)MasterDetailPage.Detail.Width));
 
 		}
 
@@ -98,7 +106,6 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			get { return this; }
 		}
-
 
 		protected virtual void OnElementChanged(VisualElementChangedEventArgs e)
 		{
@@ -122,14 +129,6 @@ namespace Xamarin.Forms.Platform.MacOS
 			_events.LoadEvents(NativeView);
 
 			base.ViewWillAppear();
-		}
-
-		public override void ViewDidLayout()
-		{
-
-			View.LayoutSubtreeIfNeeded();
-
-			base.ViewDidLayout();
 		}
 
 		void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -166,13 +165,9 @@ namespace Xamarin.Forms.Platform.MacOS
 			var master = Platform.GetRenderer(MasterDetailPage.Master).ViewController;
 			var detail = Platform.GetRenderer(MasterDetailPage.Detail).ViewController;
 
-
 			AddSplitViewItem(new NSSplitViewItem { ViewController = master, HoldingPriority = 0.2f });
 			AddSplitViewItem(new NSSplitViewItem { ViewController = detail, HoldingPriority = 0.8f });
 
-
-			View.AddConstraint(NSLayoutConstraint.Create(SplitViewItems[0].ViewController.View, NSLayoutAttribute.Width, NSLayoutRelation.LessThanOrEqual, 0.2f, 100));
-			View.AddConstraint(NSLayoutConstraint.Create(SplitViewItems[1].ViewController.View, NSLayoutAttribute.Width, NSLayoutRelation.GreaterThanOrEqual, 0.8f, 100));
 
 			MasterDetailPage.Master.PropertyChanged += HandleMasterPropertyChanged;
 		}
