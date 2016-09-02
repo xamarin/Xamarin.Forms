@@ -60,8 +60,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				if (Element != null)
 				{
-					PageController.SendDisappearing();
-					((Element as IPageContainer<Page>).CurrentPage as IPageController).SendDisappearing();
+					PageController?.SendDisappearing();
+					((Element as IPageContainer<Page>)?.CurrentPage as IPageController)?.SendDisappearing();
 					Element.PropertyChanged -= HandlePropertyChanged;
 					Element = null;
 				}
