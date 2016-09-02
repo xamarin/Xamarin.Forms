@@ -55,23 +55,11 @@ namespace Xamarin.Forms.Platform.MacOS
 			var location = TemplatedItemsView.TemplatedItems.GetGroupAndIndexOfItem(eventArg.SelectedItem);
 			if (location.Item1 == -1 || location.Item2 == -1)
 			{
-				//	var selectedIndexPath = _uiTableView.IndexPathForSelectedRow;
-
-				//	var animate = true;
-
-				//	if (selectedIndexPath != null)
-				//	{
-				//		var cell = _uiTableView.CellAt(selectedIndexPath) as ContextActionsCell;
-				//		if (cell != null)
-				//		{
-				//			cell.PrepareForDeselect();
-				//			if (cell.IsOpen)
-				//				animate = false;
-				//		}
-				//	}
-
-				//	if (selectedIndexPath != null)
-				//		_uiTableView.DeselectRow(selectedIndexPath, animate);
+				var row = _nsTableView.SelectedRow;
+				int groupIndex = 1;
+				var selectedIndexPath = NSIndexPath.FromItemSection(row, groupIndex);
+				if (selectedIndexPath != null)
+					_nsTableView.DeselectRow(selectedIndexPath.Item);
 				return;
 			}
 
@@ -85,7 +73,10 @@ namespace Xamarin.Forms.Platform.MacOS
 			var row = _nsTableView.SelectedRow;
 			var indexPath = NSIndexPath.FromItemSection(row, groupIndex);
 			var formsCell = GetCellForPath(indexPath);
+			if (formsCell == null)
+				return;
 
+			_selectionFromNative = true;
 			Controller.NotifyRowTapped((int)indexPath.Section, (int)indexPath.Item, formsCell);
 		}
 
