@@ -179,7 +179,10 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void ClearControllers()
 		{
-
+			if (SplitViewItems.Length == 0)
+				return;
+			RemoveSplitViewItem(SplitViewItems[1]);
+			RemoveSplitViewItem(SplitViewItems[0]);
 		}
 
 		void HandleMasterPropertyChanged(object sender, PropertyChangedEventArgs e)
