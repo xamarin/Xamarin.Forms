@@ -36,11 +36,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			View = new FormsNSView { WantsLayer = true, BackgroundColor = Color.Pink.ToNSColor() };
 
-			var transiton = new CATransition();
-			transiton.Type = CAAnimation.TransitionPush;
-			transiton.Subtype = CAAnimation.TransitionFromLeft;
 
-			View.Animations = NSDictionary.FromObjectAndKey(transiton, new NSString("subviews"));
 			ConfigurePageRenderer();
 		}
 
@@ -51,7 +47,10 @@ namespace Xamarin.Forms.Platform.MacOS
 			Title = "hello";
 			//TransitionStyle = NSPageControllerTransitionStyle.StackHistory;
 			//Delegate = new PageDelagete(GetPageIdentifier, GetPageViewController);
-
+			//var transiton = new CATransition();
+			//transiton.Type = CAAnimation.TransitionPush;
+			//transiton.Subtype = CAAnimation.TransitionFromLeft;
+			//View.Animations = NSDictionary.FromObjectAndKey(transiton, new NSString("subviews"));
 		}
 
 		protected override void Dispose(bool disposing)
@@ -131,7 +130,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public Task<bool> PushPageAsync(Page page, bool animated = true)
 		{
-			return OnPushAsync(page, animated);
+			return Task.FromResult(OnPushAsync(page, animated));
 		}
 
 		protected virtual void OnElementChanged(VisualElementChangedEventArgs e)
@@ -211,7 +210,6 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected virtual async Task<bool> OnPopViewAsync(Page page, bool animated)
 		{
-
 			var wrapper = _currentStack.Peek();
 			if (page != wrapper.Page)
 				throw new NotSupportedException("Popped page does not appear on top of current navigation stack, please file a bug.");
@@ -225,20 +223,17 @@ namespace Xamarin.Forms.Platform.MacOS
 			return true;
 		}
 
-		protected virtual async Task<bool> OnPushAsync(Page page, bool animated)
+		protected virtual bool OnPushAsync(Page page, bool animated)
 		{
 			var shown = true;
 			var wrapper = new PageWrapper(page);
 
 			_currentStack.Push(wrapper);
-			var newIndex = _currentStack.Count - 1;
-
+			var newIndex = _currentStack.Count;
 			var vc = CreateViewControllerForPage(page);
-
-			View.AddSubview(vc.NativeView);
-			vc.NativeView.LayoutSubtreeIfNeeded();
+			page.Layout(new Rectangle(0, 0, View.Bounds.Width, View.Bounds.Height));
+			View.AddSubview(vc.NativeView, NSWindowOrderingMode.Above, null);
 			(page as IPageController)?.SendAppearing();
-
 			UpdateToolBarVisible();
 			return shown;
 		}

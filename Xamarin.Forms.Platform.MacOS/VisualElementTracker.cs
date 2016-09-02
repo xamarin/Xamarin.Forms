@@ -163,7 +163,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				{
 					var visualParent = parent as VisualElement;
 
-					float newY = visualParent == null ? y : (float)(visualParent.Height - y - view.Height);
+					float newY = visualParent == null ? y : Math.Max(0, (float)(visualParent.Height - y - view.Height));
 					var target = new RectangleF(x, newY, width, height);
 					// must reset transform prior to setting frame...
 					caLayer.Transform = transform;
