@@ -6,7 +6,12 @@ namespace Xamarin.Forms.Platform.MacOS
 	public class FormsNSView : NSView
 	{
 
-		public FormsNSView()
+		public FormsNSView(IntPtr ptr) : this(false, CoreGraphics.CGRect.Empty)
+		{
+
+		}
+
+		public FormsNSView() : this(false, CoreGraphics.CGRect.Empty)
 		{
 
 		}
@@ -18,10 +23,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public override void Layout()
 		{
-			foreach (var view in Subviews)
-			{
-				view.Frame = Bounds;
-			}
+
 			base.Layout();
 		}
 
