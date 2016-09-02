@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			//this line hides the header by default
 			table.HeaderView = null;
 
-			table.Source = _dataSource = list.HasUnevenRows ? new UnevenListViewDataSource(list, _table) : new ListViewDataSource(list, _table);
+			table.Source = _dataSource = list.HasUnevenRows ? new UnevenListViewDataSource(list, table) : new ListViewDataSource(list, table);
 
 			return table;
 		}
@@ -159,6 +159,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			base.OnElementChanged(e);
 		}
+
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{

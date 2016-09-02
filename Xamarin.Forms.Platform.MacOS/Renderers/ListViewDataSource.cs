@@ -13,7 +13,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		static int s_dataTemplateIncrementer = 2; // lets start at not 0 because
 		readonly nfloat _defaultSectionHeight;
 		readonly Dictionary<DataTemplate, int> _templateToId = new Dictionary<DataTemplate, int>();
-		readonly NSTableView _uiTableView;
+		readonly NSTableView _nsTableView;
 		protected readonly ListView List;
 		IListViewController Controller => List;
 		ITemplatedItemsView<Cell> TemplatedItemsView => List;
@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		public ListViewDataSource(ListViewDataSource source)
 		{
 			List = source.List;
-			_uiTableView = source._uiTableView;
+			_nsTableView = source._nsTableView;
 			_defaultSectionHeight = source._defaultSectionHeight;
 			_selectionFromNative = source._selectionFromNative;
 
@@ -32,7 +32,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public ListViewDataSource(ListView list, NSTableView tableView)
 		{
-			_uiTableView = tableView;
+			_nsTableView = tableView;
 
 			List = list;
 			List.ItemSelected += OnItemSelected;
@@ -75,7 +75,18 @@ namespace Xamarin.Forms.Platform.MacOS
 				return;
 			}
 
-			//_uiTableView.SelectRow(NSIndexPath.FromRowSection(location.Item2, location.Item1), true, UITableViewScrollPosition.Middle);
+			_nsTableView.SelectRow(location.Item1, false);
+		}
+
+		public override void SelectionDidChange(NSNotification notification)
+		{
+			int groupIndex = 1;
+
+			var row = _nsTableView.SelectedRow;
+			var indexPath = NSIndexPath.FromItemSection(row, groupIndex);
+			var formsCell = GetCellForPath(indexPath);
+
+			Controller.NotifyRowTapped((int)indexPath.Section, (int)indexPath.Item, formsCell);
 		}
 
 		public override nint GetRowCount(NSTableView tableView)
@@ -112,7 +123,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		public void UpdateGrouping()
 		{
 			UpdateShortNameListener();
-			_uiTableView.ReloadData();
+			_nsTableView.ReloadData();
 		}
 
 		protected Cell GetCellForPath(NSIndexPath indexPath)
@@ -127,7 +138,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void OnShortNamesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			_uiTableView.ReloadData();
+			_nsTableView.ReloadData();
 		}
 
 		int TemplateIdForPath(NSIndexPath indexPath)
