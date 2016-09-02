@@ -58,8 +58,8 @@ namespace Xamarin.Forms.Platform.MacOS
 				var row = _nsTableView.SelectedRow;
 				int groupIndex = 1;
 				var selectedIndexPath = NSIndexPath.FromItemSection(row, groupIndex);
-				if (selectedIndexPath != null)
-					_nsTableView.DeselectRow(selectedIndexPath.Item);
+				//if (selectedIndexPath != null)
+				//	_nsTableView.DeselectRow(selectedIndexPath.Item);
 				return;
 			}
 
