@@ -4,10 +4,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using AppKit;
-using CoreAnimation;
-using CoreGraphics;
-using Foundation;
-using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.MacOS
@@ -26,6 +22,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		IElementController ElementController => Element as IElementController;
 
+		INavigationPageController NavigationController => Element as INavigationPageController;
+
 		void IEffectControlProvider.RegisterEffect(Effect effect)
 		{
 			var platformEffect = effect as PlatformEffect;
@@ -34,10 +32,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 
 		public NavigationPageRenderer() : this(IntPtr.Zero) { }
-		public NavigationPageRenderer(IntPtr coder)
+		public NavigationPageRenderer(IntPtr handle)
 		{
 			View = new FormsNSView { WantsLayer = true };
-
 		}
 
 		protected virtual void ConfigurePageRenderer()
@@ -120,12 +117,12 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public Task<bool> PopViewAsync(Page page, bool animated = true)
 		{
-			return OnPopViewAsync(page, animated);
+			return Task.FromResult(OnPop(page, animated));
 		}
 
 		public Task<bool> PushPageAsync(Page page, bool animated = true)
 		{
-			return Task.FromResult(OnPushAsync(page, animated));
+			return Task.FromResult(OnPush(page, animated));
 		}
 
 		protected virtual void OnElementChanged(VisualElementChangedEventArgs e)
@@ -186,8 +183,6 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateBarTextColor();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor();
-			else if (e.PropertyName == NavigationPage.CurrentPageProperty.PropertyName)
-				UpdateCurrentPage();
 
 		}
 
@@ -203,7 +198,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			return success;
 		}
 
-		protected virtual async Task<bool> OnPopViewAsync(Page page, bool animated)
+		protected virtual bool OnPop(Page page, bool animated)
 		{
 			var removed = true;
 			RemovePage(page);
@@ -212,7 +207,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			return removed;
 		}
 
-		protected virtual bool OnPushAsync(Page page, bool animated)
+		protected virtual bool OnPush(Page page, bool animated)
 		{
 			var shown = true;
 			AddPage(page);
@@ -343,24 +338,13 @@ namespace Xamarin.Forms.Platform.MacOS
 				_previousTitle = NavigationPage.GetHasBackButton(page) ? NavigationPage.GetBackButtonTitle(_currentStack.ElementAt(_currentStack.Count - 2).Page) ?? _currentStack.ElementAt(_currentStack.Count - 1).Page.Title : "";
 		}
 
-		void UpdateBarTextColor()
-		{
-
-		}
 
 		void UpdateBackgroundColor()
 		{
-
-		}
-
-		void UpdateBarBackgroundColor()
-		{
-
-		}
-
-		void UpdateCurrentPage()
-		{
-
+			if (!(View is FormsNSView))
+				return;
+			var color = Element.BackgroundColor == Color.Default ? Color.White : Element.BackgroundColor;
+			(View as FormsNSView).BackgroundColor = color.ToNSColor();
 		}
 
 		void UpdateToolBarVisible()
@@ -377,17 +361,15 @@ namespace Xamarin.Forms.Platform.MacOS
 				NSApplication.SharedApplication.MainWindow.Toolbar.InsertItem(MainToolBarDelegate.TitleIdentifier, 2);
 				NSApplication.SharedApplication.MainWindow.Toolbar.InsertItem(NSToolbar.NSToolbarFlexibleSpaceItemIdentifier, 3);
 			}
-
 			else
 			{
 				NSApplication.SharedApplication.MainWindow.Toolbar = null;
 			}
-
 		}
 
-		void NavigateBackFrombackButton()
+		async void NavigateBackFrombackButton()
 		{
-			PopViewAsync(_currentStack.Peek().Page, true);
+			await NavigationController?.PopAsyncInner(true, true);
 		}
 
 		string GetCurrentPageTitle()
@@ -398,6 +380,16 @@ namespace Xamarin.Forms.Platform.MacOS
 		string GetPreviousPageTitle()
 		{
 			return _previousTitle ?? "";
+		}
+
+		void UpdateBarBackgroundColor()
+		{
+
+		}
+
+		void UpdateBarTextColor()
+		{
+
 		}
 	}
 }
