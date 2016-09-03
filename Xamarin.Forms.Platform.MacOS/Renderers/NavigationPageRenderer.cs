@@ -202,7 +202,6 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			var removed = true;
 			RemovePage(page);
-
 			UpdateToolBarVisible();
 			return removed;
 		}
@@ -307,6 +306,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			var target = Platform.GetRenderer(page);
 			target.NativeView.RemoveFromSuperview();
+			if (View.Subviews.Count() > 0)
+				View.Subviews.Last().Layer.Hidden = false;
 			target.Dispose();
 			UpdateTitles(_currentStack.Peek().Page);
 			(page as IPageController)?.SendDisappearing();
@@ -321,9 +322,10 @@ namespace Xamarin.Forms.Platform.MacOS
 			var wrapper = new PageWrapper(page);
 
 			_currentStack.Push(wrapper);
-
+			if (View.Subviews.Count() > 0)
+				View.Subviews.Last().Layer.Hidden = true;
 			var vc = CreateViewControllerForPage(page);
-			page.Layout(new Rectangle(0, 0, View.Bounds.Width, View.Bounds.Height));
+			page.Layout(new Rectangle(0, 0, View.Bounds.Width, View.Frame.Height));
 			View.AddSubview(vc.NativeView, NSWindowOrderingMode.Above, null);
 			UpdateTitles(page);
 			(page as IPageController)?.SendAppearing();
@@ -349,6 +351,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateToolBarVisible()
 		{
+			if (!_currentStack.Any())
+				return;
+
 			if (NavigationPage.GetHasNavigationBar(_currentStack.Peek().Page))
 			{
 				NSApplication.SharedApplication.MainWindow.Toolbar = new NSToolbar("MainToolbar")
