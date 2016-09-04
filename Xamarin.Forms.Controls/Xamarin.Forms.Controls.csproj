@@ -240,6 +240,9 @@
       <DependentUpon>XamlNativeViews.xaml</DependentUpon>
     </Compile>
     <Compile Include="GalleryPages\MacOSTestGallery.cs" />
+    <Compile Include="MacTwitterDemo.xaml.cs">
+      <DependentUpon>MacTwitterDemo.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Import Project="..\.nuspec\Xamarin.Forms.targets" />
@@ -261,7 +264,10 @@
     <EmbeddedResource Include="GalleryPages\StyleXamlGallery.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Include="GalleryPages\XamlNativeViews.xaml">
+    <EmbeddedResource Include="GalleryPages\XamlNativeViews.xaml">   
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MacTwitterDemo.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
   </ItemGroup>

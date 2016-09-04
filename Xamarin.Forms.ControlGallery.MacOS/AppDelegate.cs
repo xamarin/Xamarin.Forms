@@ -15,9 +15,10 @@ namespace Xamarin.Forms.ControlGallery.MacOS
 		{
 			var style = NSWindowStyle.Closable | NSWindowStyle.Resizable | NSWindowStyle.Titled;
 
-			//var rect = new CoreGraphics.CGRect(0, 0, 1000, 1000);
-			var rect = NSWindow.FrameRectFor(NSScreen.MainScreen.Frame, style);
+			var rect = new CoreGraphics.CGRect(200, 1000, 400, 600);
+			//var rect = NSWindow.FrameRectFor(NSScreen.MainScreen.Frame, style);
 			_window = new NSWindow(rect, style, NSBackingStore.Buffered, false);
+			_window.Title = "Twitter XF Mac";
 		}
 
 		public override NSWindow MainWindow

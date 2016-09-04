@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<MasterDetailPage xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="Xamarin.Forms.Controls.MacTwitterDemo">
+	<MasterDetailPage.Master>
+		<ContentPage BackgroundColor="#24456e" Title="Master">
+			<Grid>
+				<Grid.RowDefinitions>
+					<RowDefinition />
+					<RowDefinition Height="50" />
+				</Grid.RowDefinitions>
+				<ScrollView Margin="0,45,0,0" BackgroundColor="Transparent">
+					<StackLayout>
+						<Image Source="rui.jpg" WidthRequest="50" HeightRequest="50" HorizontalOptions="Center" />
+						<Image Source="noun_13328_cc.png" Margin="0,20,0,0" WidthRequest="25"/>
+						<Image Source="noun_473162_cc.png" Margin="0,20,0,0" WidthRequest="25"/>
+						<Image Source="noun_590415_cc.png" Margin="0,20,0,0" WidthRequest="22"  />
+						<Image Source="noun_582370_cc.png" Margin="0,20,0,0" WidthRequest="25" />
+						<Image Source="noun_557135_cc.png" Margin="0,20,0,0" WidthRequest="25" HeightRequest="25"  />
+						<Image Source="noun_575425_cc.png" Margin="0,20,0,0" WidthRequest="25" />
+					</StackLayout>
+				</ScrollView>
+				<Image Grid.Row="1" Source="noun_72548_cc.png" WidthRequest="25" HeightRequest="25" VerticalOptions="Start" />
+			</Grid>
+		</ContentPage>
+	</MasterDetailPage.Master>
+	<MasterDetailPage.Detail>
+		<ContentPage BackgroundColor="#ffffff" Title="Home">
+			<ListView x:Name="lstTweets" RowHeight="125" BackgroundColor="#ffffff">
+				<ListView.Header>
+					<Grid HeightRequest="45"  BackgroundColor="#ffffff">
+						<Grid.RowDefinitions>
+							<RowDefinition />
+							<RowDefinition Height="0.5" />
+						</Grid.RowDefinitions>
+						<Label Text="Home" FontFamily="Helvetica" FontSize="14" VerticalOptions="CenterAndExpand" VerticalTextAlignment="Center"  HorizontalOptions="CenterAndExpand" />
+						<BoxView Color="#cbd5dd" Grid.Row="1" HeightRequest="1" HorizontalOptions="FillAndExpand" />
+					</Grid>
+				</ListView.Header>
+				<ListView.ItemTemplate>
+					<DataTemplate>
+						<ViewCell>
+							<Grid BackgroundColor="White" Padding="0,5,0,5" RowSpacing="3">
+								<Grid.RowDefinitions>
+									<RowDefinition Height="Auto" />
+									<RowDefinition Height="*" />
+									<RowDefinition Height="Auto" />
+                                    <RowDefinition Height="0.5" />
+								</Grid.RowDefinitions>
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="50" />
+									<ColumnDefinition Width="*" />
+								</Grid.ColumnDefinitions>
+								<Image Source="xamarinlogo.png" Grid.RowSpan="3" Margin="0,5,0,0" WidthRequest="50" HeightRequest="50" VerticalOptions="Start">
+								</Image>
+								<Label FontFamily="Helvetica" FontSize="15" Grid.Column="1" Grid.Row="0" Text="Xamarin" VerticalOptions="Start" VerticalTextAlignment="Start">
+								</Label>
+								<Label Grid.Column="1" FontFamily="Helvetica" FontSize="14" Grid.Row="1" Text="Download the source code for the #XamarinEvolve 2016 app, leveraging 93% codeshare across iOS, Android, and Windows: http://xmn.io/26xD51i ">
+								</Label>
+								<StackLayout HorizontalOptions="Start" Spacing="40" VerticalOptions="Center" Orientation="Horizontal" Grid.Column="1" Grid.Row="2" Padding="0,10,0,10">
+									<Image Source="noun_390620_cc.png" HeightRequest="15" WidthRequest="15" VerticalOptions="Center" HorizontalOptions="Start" />
+									<Image Source="noun_516525_cc.png" HeightRequest="15" WidthRequest="15" VerticalOptions="Center" HorizontalOptions="Start" />
+									<Image Source="noun_409070_cc.png" HeightRequest="15" WidthRequest="15" VerticalOptions="Center" HorizontalOptions="Start" />
+								</StackLayout>
+                                <BoxView Color="#cbd5dd" Grid.Row="3" Grid.ColumnSpan="2" HorizontalOptions="FillAndExpand" />
+							</Grid>
+						</ViewCell>
+					</DataTemplate>
+				</ListView.ItemTemplate>
+			</ListView>
+		</ContentPage>
+	</MasterDetailPage.Detail>
+</MasterDetailPage>

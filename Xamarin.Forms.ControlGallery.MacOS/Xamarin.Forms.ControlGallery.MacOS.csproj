@@ -135,6 +135,18 @@
     <BundleResource Include="Resources\settings%402x.png" />
     <BundleResource Include="Resources\test.jpg" />
     <BundleResource Include="Resources\toolbar_close.png" />
+    <BundleResource Include="Resources\noun_516525_cc.png" />
+    <BundleResource Include="Resources\noun_409070_cc.png" />
+    <BundleResource Include="Resources\noun_390620_cc.png" />
+    <BundleResource Include="Resources\noun_473162_cc.png" />
+    <BundleResource Include="Resources\noun_13328_cc.png" />
+    <BundleResource Include="Resources\noun_557135_cc.png" />
+    <BundleResource Include="Resources\noun_575425_cc.png" />
+    <BundleResource Include="Resources\noun_582370_cc.png" />
+    <BundleResource Include="Resources\noun_590415_cc.png" />
+    <BundleResource Include="Resources\noun_72548_cc.png" />
+    <BundleResource Include="Resources\xamarinlogo.png" />
+    <BundleResource Include="Resources\rui.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
 </Project>
