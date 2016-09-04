@@ -100,6 +100,12 @@ namespace Xamarin.Forms.Platform.MacOS
 			base.Dispose(disposing);
 		}
 
+		public override void ViewWillDraw()
+		{
+			UpdateHeader();
+			base.ViewWillDraw();
+		}
+
 		protected override void OnElementChanged(ElementChangedEventArgs<ListView> e)
 		{
 			_requestedScroll = null;
@@ -145,8 +151,8 @@ namespace Xamarin.Forms.Platform.MacOS
 				templatedItems.GroupedCollectionChanged += OnGroupedCollectionChanged;
 
 				UpdateRowHeight();
-				UpdateHeader();
-				UpdateFooter();
+				//UpdateHeader();
+				//UpdateFooter();
 				UpdatePullToRefreshEnabled();
 				UpdateIsRefreshing();
 				UpdateSeparatorColor();
@@ -280,9 +286,9 @@ namespace Xamarin.Forms.Platform.MacOS
 				Platform.SetRenderer(headerView, _headerRenderer);
 
 				var request = headerView.Measure(double.PositiveInfinity, double.PositiveInfinity, MeasureFlags.IncludeMargins);
-				Xamarin.Forms.Layout.LayoutChildIntoBoundingRegion(headerView, new Rectangle(0, 0, request.Request.Width, request.Request.Height));
+				Xamarin.Forms.Layout.LayoutChildIntoBoundingRegion(headerView, new Rectangle(0, 0, _table.Bounds.Width, request.Request.Height));
 
-				_table.HeaderView = new CustomNSTableHeaderView(new CoreGraphics.CGRect(0, 0, Math.Max(Bounds.Width, headerView.Width), Math.Max(Bounds.Height, headerView.Height)), _headerRenderer);
+				_table.HeaderView = new CustomNSTableHeaderView(new CoreGraphics.CGRect(0, 0, Math.Max(Bounds.Width, headerView.Width), headerView.Height), _headerRenderer);
 
 				headerView.MeasureInvalidated += OnHeaderMeasureInvalidated;
 			}
@@ -433,7 +439,6 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			_table.BackgroundColor = color.ToNSColor(NSColor.White);
 		}
-
 	}
 
 }
