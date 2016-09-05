@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-
-using Xamarin.Forms;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace Xamarin.Forms.Xaml.UnitTests
 {
+	[XamlCompilation(XamlCompilationOptions.Skip)]
 	public partial class Bz43450 : ContentPage
 	{
 		public Bz43450()
@@ -25,7 +22,10 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			[TestCase(false)]
 			public void DoesNotAllowGridRowDefinition(bool useCompiledXaml)
 			{
-				Assert.Throws<XamlParseException>(()=> new Bz43450(useCompiledXaml));
+				if (!useCompiledXaml)
+					Assert.Throws<XamlParseException>(() => new Bz43450(useCompiledXaml));
+				else
+					Assert.Throws<XamlParseException>(() => MockCompiler.Compile(typeof(Bz43450)));
 			}
 		}
 	}
