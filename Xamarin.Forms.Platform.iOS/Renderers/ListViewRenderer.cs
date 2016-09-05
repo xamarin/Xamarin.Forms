@@ -1090,7 +1090,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewWillAppear(bool animated)
 		{
-			base.ViewWillAppear(animated);
+            // TODO: Uncommenting this line results in Bug 43993.
+			//base.ViewWillAppear(animated);
 
 			if (_list.IsRefreshing && _refresh.Refreshing)
 			{
