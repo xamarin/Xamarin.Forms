@@ -27,7 +27,11 @@
 	{
 	}
 
-	internal class _ButtonRenderer
+    internal class _CheckBoxRenderer
+    {
+    }
+
+    internal class _ButtonRenderer
 	{
 	}
 

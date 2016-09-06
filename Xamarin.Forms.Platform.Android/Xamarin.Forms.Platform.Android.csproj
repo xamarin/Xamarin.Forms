@@ -154,6 +154,8 @@
     <Compile Include="Renderers\ButtonDrawable.cs" />
     <Compile Include="Renderers\AlignmentExtensions.cs" />
     <Compile Include="IStartActivityForResult.cs" />
+    <Compile Include="Renderers\CheckBoxDrawable.cs" />
+    <Compile Include="Renderers\CheckBoxRenderer.cs" />
     <Compile Include="Renderers\ConditionalFocusLayout.cs" />
     <Compile Include="Renderers\DescendantFocusToggler.cs" />
     <Compile Include="Renderers\EditorEditText.cs" />

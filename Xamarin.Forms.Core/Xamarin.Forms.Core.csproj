@@ -69,6 +69,8 @@
     <Compile Include="Cells\ImageCell.cs" />
     <Compile Include="Cells\INativeElementView.cs" />
     <Compile Include="ChatKeyboard.cs" />
+    <Compile Include="CheckBox.cs" />
+    <Compile Include="CheckedEventArgs.cs" />
     <Compile Include="ChildCollectionChangedEventArgs.cs" />
     <Compile Include="CollectionSynchronizationCallback.cs" />
     <Compile Include="CollectionSynchronizationContext.cs" />
