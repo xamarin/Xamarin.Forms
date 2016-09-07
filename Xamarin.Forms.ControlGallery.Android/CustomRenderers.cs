@@ -23,6 +23,7 @@ using System.Reflection;
 [assembly: ExportRenderer(typeof(NativeListView), typeof(NativeListViewRenderer))]
 [assembly: ExportRenderer(typeof(NativeListView2), typeof(NativeAndroidListViewRenderer))]
 [assembly: ExportRenderer(typeof(NativeCell), typeof(NativeAndroidCellRenderer))]
+[assembly: ExportRenderer(typeof(ZoomableScrollView), typeof(ZoomableScrollViewRenderer))]
 #if PRE_APPLICATION_CLASS
 #elif FORMS_APPLICATION_ACTIVITY
 #else
@@ -459,6 +460,116 @@ namespace Xamarin.Forms.ControlGallery.Android
 			}
 
 			base.OnElementChanged(e);
+		}
+	}
+
+	public class ZoomableScrollViewRenderer : ScrollViewRenderer
+	{
+		private bool _isCentered = false;
+		private ScaleGestureDetector _scaleDetector;
+		private bool _isScaleProcess = false;
+
+		protected override void OnElementChanged(VisualElementChangedEventArgs e)
+		{
+			base.OnElementChanged(e);
+
+			if (e.NewElement != null)
+			{
+				_scaleDetector = new ScaleGestureDetector(Context, new ClearScaleListener(scale =>
+				{
+
+					_isScaleProcess = true;
+
+					var scrollView = Element as ZoomableScrollView;
+
+					var horScrollView = GetChildAt(0) as global::Android.Widget.HorizontalScrollView;
+
+					var content = horScrollView.GetChildAt(0);
+
+					//TODO: need to rewrite this stuff to match what iOS is doing
+					var newScale = Math.Min(Math.Max(content.ScaleX * scale, 1f / (float)scrollView.MaxZoom), 1f);
+					content.ScaleX = content.ScaleY = newScale;
+
+					//System.Diagnostics.Debug.WriteLine($"Delta: {scale}  Final: {content.ScaleX}");
+
+				}, () =>
+				{
+					_isScaleProcess = false;
+					//System.Diagnostics.Debug.WriteLine("Finished");
+				}));
+			}
+		}
+
+		public override bool OnTouchEvent(MotionEvent ev)
+		{
+			if (ev.PointerCount == 2 || _isScaleProcess)
+			{
+				var handled = _scaleDetector.OnTouchEvent(ev);
+
+				if (handled)
+					return true;
+			}
+
+			return base.OnTouchEvent(ev);
+		}
+
+		protected override void OnLayout(bool changed, int left, int top, int right, int bottom)
+		{
+			base.OnLayout(changed, left, top, right, bottom);
+
+			if (!_isCentered)
+			{
+				_isCentered = true;
+
+				var horScrollView = GetChildAt(0) as global::Android.Widget.HorizontalScrollView;
+
+				if (horScrollView != null)
+				{
+					ScrollTo(0, (horScrollView.Height - Height) / 2);
+
+					var content = horScrollView.GetChildAt(0);
+					if (content != null)
+					{
+						horScrollView.ScrollTo((content.Width - horScrollView.Width) / 2, 0);
+						content.ScaleX = content.ScaleY = 1;
+					}
+				}
+			}
+		}
+	}
+	public class ClearScaleListener : ScaleGestureDetector.SimpleOnScaleGestureListener
+	{
+		private Action<float> _onScale;
+		private System.Action _onScaleEnd;
+		bool _skip = false;
+
+		public ClearScaleListener(Action<float> onScale, System.Action onScaleEnd = null)
+		{
+			_onScale = onScale;
+			_onScaleEnd = onScaleEnd;
+		}
+
+		public override bool OnScale(ScaleGestureDetector detector)
+		{
+			if (_skip)
+			{
+				_skip = false;
+				return true;
+			}
+			_onScale?.Invoke(detector.ScaleFactor);
+			return true;
+		}
+
+		public override void OnScaleEnd(ScaleGestureDetector detector)
+		{
+			_onScaleEnd?.Invoke();
+		}
+
+		public override bool OnScaleBegin(ScaleGestureDetector detector)
+		{
+			//System.Diagnostics.Debug.WriteLine($"Begin {detector.ScaleFactor}");
+			_skip = true;
+			return base.OnScaleBegin(detector);
 		}
 	}
 }
