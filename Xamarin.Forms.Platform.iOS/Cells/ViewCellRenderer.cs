@@ -93,7 +93,8 @@ namespace Xamarin.Forms.Platform.iOS
 				//This sets the content views frame.
 				base.LayoutSubviews();
 
-				if (SupressSeparator)
+				//TODO: Determine how best to hide the separator line when there is an accessory on the cell
+				if (SupressSeparator && Accessory == UITableViewCellAccessory.None)
 				{
 					var oldFrame = Frame;
 					ContentView.Bounds = Frame = new RectangleF(oldFrame.Location, new SizeF(oldFrame.Width, oldFrame.Height + 0.5f));
