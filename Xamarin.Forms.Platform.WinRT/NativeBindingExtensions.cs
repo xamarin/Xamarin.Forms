@@ -15,10 +15,10 @@ namespace Xamarin.Forms.Platform.WinRT
 	{
 		public static void SetBinding(this FrameworkElement view, string propertyName, BindingBase bindingBase, string updateSourceEventName = null)
 		{
-            var binding = bindingBase as Binding;
-            updateSourceEventName = updateSourceEventName ?? binding?.UpdateSourceEventName;
+			var binding = bindingBase as Binding;
+			updateSourceEventName = updateSourceEventName ?? binding?.UpdateSourceEventName;
 
-            if (IsNullOrEmpty(updateSourceEventName))
+			if (IsNullOrEmpty(updateSourceEventName))
 			{
 				NativePropertyListener nativePropertyListener = null;
 				if (bindingBase.Mode == BindingMode.TwoWay)
