@@ -18,5 +18,16 @@ namespace Xamarin.Forms.Platform.Android
 			}
 			return null;
 		}
+
+		public async Task<Movie> LoadAnimatedImageAsync(ImageSource imagesource, Context context, CancellationToken cancelationToken = default(CancellationToken))
+		{
+			var streamsource = imagesource as StreamImageSource;
+			if (streamsource != null && streamsource.Stream != null)
+			{
+				using (Stream stream = await ((IStreamImageSource)streamsource).GetStreamAsync(cancelationToken).ConfigureAwait(false))
+					return await Movie.DecodeStreamAsync(stream).ConfigureAwait(false);
+			}
+			return null;
+		}
 	}
 }

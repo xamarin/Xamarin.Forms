@@ -55,6 +55,16 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateBitmap();
 			else if (e.PropertyName == Image.AspectProperty.PropertyName)
 				UpdateAspect();
+			else if (e.PropertyName == Image.IsPlayingProperty.PropertyName)
+				PlayAnimation();
+		}
+
+		void PlayAnimation()
+		{
+			if (Element.IsPlaying)
+				((FormsImageView)Control).PlayAnimation();
+			else
+				((FormsImageView)Control).StopAnimation();
 		}
 
 		void UpdateAspect()
@@ -69,6 +79,7 @@ namespace Xamarin.Forms.Platform.Android
 				throw new InvalidOperationException("Image Bitmap must not be updated from background thread");
 
 			Bitmap bitmap = null;
+			Movie animation = null;
 
 			ImageSource source = Element.Source;
 			IImageSourceHandler handler;
@@ -83,12 +94,14 @@ namespace Xamarin.Forms.Platform.Android
 				formsImageView.SkipInvalidate();
 
 			Control.SetImageResource(global::Android.Resource.Color.Transparent);
+			((FormsImageView)Control).InitializeSource();
 
 			if (source != null && (handler = Registrar.Registered.GetHandler<IImageSourceHandler>(source.GetType())) != null)
 			{
 				try
 				{
 					bitmap = await handler.LoadImageAsync(source, Context);
+					animation = await handler.LoadAnimatedImageAsync(source, Context);
 				}
 				catch (TaskCanceledException)
 				{
@@ -105,7 +118,14 @@ namespace Xamarin.Forms.Platform.Android
 			if (!_isDisposed)
 			{
 				Control.SetImageBitmap(bitmap);
+				Element.SetValue(Image.IsAnimatedProperty, false);
 				bitmap?.Dispose();
+
+				if (animation != null)
+				{
+					((FormsImageView)Control).SetAnimatedImage(animation, Element.IsPlaying);
+					Element.SetValue(Image.IsAnimatedProperty, true);
+				}
 
 				((IImageController)Element).SetIsLoading(false);
 				((IVisualElementController)Element).NativeSizeChanged();
