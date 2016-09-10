@@ -121,7 +121,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		public override void OnPause()
 		{
-		    Page currentPage = (Application.Current.MainPage as IPageContainer<Page>)?.CurrentPage;
+            Page currentPage = (Application.Current.MainPage as IPageContainer<Page>)?.CurrentPage;
             if (currentPage == null || currentPage == PageController)
                 PageController?.SendDisappearing();
 
@@ -132,7 +132,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		{
             Page currentPage = (Application.Current.MainPage as IPageContainer<Page>)?.CurrentPage;
             if (UserVisibleHint && (currentPage == null || currentPage == PageController))
-				PageController?.SendAppearing();
+                PageController?.SendAppearing();
 
 			base.OnResume();
 		}
