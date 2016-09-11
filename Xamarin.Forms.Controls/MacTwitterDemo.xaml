@@ -11,10 +11,10 @@
                     <StackLayout>
                         <Image Source="rui.jpg" WidthRequest="50" HeightRequest="50" HorizontalOptions="Center" />
                         <Image Source="home.png" Margin="0,20,0,0" WidthRequest="25"/>
-                        <Image Source="notifications.png" Margin="0,20,0,0" WidthRequest="25"/>
-                        <Image Source="messages.png" Margin="0,20,0,0" WidthRequest="22"  />
+                        <Image Source="notifications.png" Margin="0,20,0,0" WidthRequest="25" />
+                        <Image Source="messages.png" Margin="0,20,0,0" WidthRequest="22" />
                         <Image Source="profile.png" Margin="0,20,0,0" WidthRequest="25" />
-                        <Image Source="lists.png" Margin="0,20,0,0" WidthRequest="25" HeightRequest="25"  />
+                        <Image Source="lists.png" Margin="0,20,0,0" WidthRequest="25" />
                         <Image Source="search.png" Margin="0,20,0,0" WidthRequest="25" />
                     </StackLayout>
                 </ScrollView>
@@ -32,7 +32,7 @@
                             <RowDefinition Height="0.5" />
                         </Grid.RowDefinitions>
                         <Label Text="Home" FontFamily="Helvetica" FontSize="14" VerticalOptions="CenterAndExpand" VerticalTextAlignment="Center"  HorizontalOptions="CenterAndExpand" />
-                        <BoxView Color="#cbd5dd" Grid.Row="1" HeightRequest="1" HorizontalOptions="FillAndExpand" />
+                        <BoxView Color="#cbd5dd" Grid.Row="1" />
                     </Grid>
                 </ListView.Header>
                 <ListView.ItemTemplate>
@@ -49,18 +49,15 @@
                                     <ColumnDefinition Width="50" />
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <Image Source="xamarinlogo.png" Grid.RowSpan="3" Margin="0,5,0,0" WidthRequest="50" HeightRequest="50" VerticalOptions="Start">
-                                </Image>
-                                <Label FontFamily="Helvetica" FontSize="15" Grid.Column="1" Grid.Row="0" Text="Xamarin" VerticalOptions="Start" VerticalTextAlignment="Start">
-                                </Label>
-                                <Label Grid.Column="1" FontFamily="Helvetica" FontSize="14" Grid.Row="1" Text="Download the source code for the #XamarinEvolve 2016 app, leveraging 93% codeshare across iOS, Android, and Windows: http://xmn.io/26xD51i ">
-                                </Label>
+                                <Image Source="xamarinlogo.png" Grid.RowSpan="3" Margin="0,5,0,0" WidthRequest="50" HeightRequest="50" VerticalOptions="Start" />
+                                <Label FontFamily="Helvetica" FontSize="15" Grid.Column="1" Grid.Row="0" Text="Xamarin" VerticalOptions="Start" VerticalTextAlignment="Start" />
+                                <Label FontFamily="Helvetica" FontSize="14" Grid.Column="1" Grid.Row="1" Text="Download the source code for the #XamarinEvolve 2016 app, leveraging 93% codeshare across iOS, Android, and Windows: http://xmn.io/26xD51i" />
                                 <StackLayout HorizontalOptions="Start" Spacing="40" VerticalOptions="Center" Orientation="Horizontal" Grid.Column="1" Grid.Row="2" Padding="0,10,0,10">
-                                    <Image Source="reply.png" HeightRequest="15" WidthRequest="15" VerticalOptions="Center" HorizontalOptions="Start" />
-                                    <Image Source="retweet.png" HeightRequest="15" WidthRequest="15" VerticalOptions="Center" HorizontalOptions="Start" />
-                                    <Image Source="favorite.png" HeightRequest="15" WidthRequest="15" VerticalOptions="Center" HorizontalOptions="Start" />
+                                    <Image Source="reply.png" WidthRequest="15" />
+                                    <Image Source="retweet.png" WidthRequest="15" />
+                                    <Image Source="favorite.png" WidthRequest="15" />
                                 </StackLayout>
-                                <BoxView Color="#cbd5dd" Grid.Row="3" Grid.ColumnSpan="2" HorizontalOptions="FillAndExpand" />
+                                <BoxView Color="#cbd5dd" Grid.Row="3" Grid.ColumnSpan="2" />
                             </Grid>
                         </ViewCell>
                     </DataTemplate>
