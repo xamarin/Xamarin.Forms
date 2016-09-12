@@ -16,7 +16,7 @@ namespace Xamarin.Forms
 			Color.Accent = Color.FromRgba(50, 79, 133, 255);
 			Log.Listeners.Add(new DelegateLogListener((c, m) => Trace.WriteLine(m, c)));
 
-			Device.OS = TargetPlatform.iOS;
+			Device.OS = TargetPlatform.Mac;
 			Device.PlatformServices = new MacOSPlatformServices();
 			Device.Info = new MacOSDeviceInfo();
 
