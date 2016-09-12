@@ -24,7 +24,6 @@ namespace Xamarin.Forms.Platform.MacOS
 		readonly PlatformRenderer _renderer;
 		bool _animateModals = true;
 		bool _appeared;
-
 		bool _disposed;
 
 		internal Platform()
@@ -32,43 +31,14 @@ namespace Xamarin.Forms.Platform.MacOS
 			_renderer = new PlatformRenderer(this);
 			_modals = new List<Page>();
 
-			var busyCount = 0;
-			//MessagingCenter.Subscribe(this, Page.BusySetSignalName, (Page sender, bool enabled) =>
-			//{
-			//	if (!PageIsChildOfPlatform(sender))
-			//		return;
-			//	busyCount = Math.Max(0, enabled ? busyCount + 1 : busyCount - 1);
-			//	NSApplication.SharedApplication.NetworkActivityIndicatorVisible = busyCount > 0;
-			//});
-
 			MessagingCenter.Subscribe(this, Page.AlertSignalName, (Page sender, AlertArguments arguments) =>
 			{
 				if (!PageIsChildOfPlatform(sender))
 					return;
 
-				//if (Forms.IsiOS8OrNewer)
-				//{
-				//	var alert = UIAlertController.Create(arguments.Title, arguments.Message, UIAlertControllerStyle.Alert);
-				//	var oldFrame = alert.View.Frame;
-				//	alert.View.Frame = new RectangleF(oldFrame.X, oldFrame.Y, oldFrame.Width, oldFrame.Height - _alertPadding * 2);
-				//	alert.AddAction(UIAlertAction.Create(arguments.Cancel, UIAlertActionStyle.Cancel, a => arguments.SetResult(false)));
-				//	if (arguments.Accept != null)
-				//		alert.AddAction(UIAlertAction.Create(arguments.Accept, UIAlertActionStyle.Default, a => arguments.SetResult(true)));
-				//	var page = _modals.Any() ? _modals.Last() : Page;
-				//	var vc = GetRenderer(page).ViewController;
-				//	vc.PresentViewController(alert, true, null);
-				//}
-				//else
-				//{
-				//	UIAlertView alertView;
-				//	if (arguments.Accept != null)
-				//		alertView = new UIAlertView(arguments.Title, arguments.Message, null, arguments.Cancel, arguments.Accept);
-				//	else
-				//		alertView = new UIAlertView(arguments.Title, arguments.Message, null, arguments.Cancel);
-
-				//	alertView.Dismissed += (o, args) => arguments.SetResult(args.ButtonIndex != 0);
-				//	alertView.Show();
-				//}
+				var alert = NSAlert.WithMessage(arguments.Title, arguments.Cancel, arguments.Accept, null, arguments.Message);
+				var result = alert.RunModal();
+				arguments.SetResult(result == 1);
 			});
 
 			MessagingCenter.Subscribe(this, Page.ActionSheetSignalName, (Page sender, ActionSheetArguments arguments) =>
@@ -76,75 +46,29 @@ namespace Xamarin.Forms.Platform.MacOS
 				if (!PageIsChildOfPlatform(sender))
 					return;
 
-				var pageRoot = sender;
-				while (!Application.IsApplicationOrNull(pageRoot.RealParent))
-					pageRoot = (Page)pageRoot.RealParent;
-				var pageRenderer = GetRenderer(pageRoot);
+				var alert = NSAlert.WithMessage(arguments.Title, arguments.Cancel, arguments.Destruction, null, "");
+				if (arguments.Buttons != null)
+				{
+					alert.AccessoryView = GetExtraButton(arguments);
+					alert.Layout();
+				}
 
-				//if (Forms.IsiOS8OrNewer)
-				//{
-				//	var alert = UIAlertController.Create(arguments.Title, null, UIAlertControllerStyle.ActionSheet);
+				var result = (int)alert.RunSheetModal(NSApplication.SharedApplication.MainWindow);
+				var titleResult = string.Empty;
+				if (result == 1)
+					titleResult = arguments.Cancel;
+				else if (result == 0)
+					titleResult = arguments.Destruction;
+				else if (result > 1 && arguments.Buttons != null && result - 2 <= arguments.Buttons.Count())
+					titleResult = arguments.Buttons.ElementAt(result - 2);
 
-				//	if (arguments.Cancel != null)
-				//	{
-				//		alert.AddAction(UIAlertAction.Create(arguments.Cancel, UIAlertActionStyle.Cancel, a => arguments.SetResult(arguments.Cancel)));
-				//	}
-
-				//	if (arguments.Destruction != null)
-				//	{
-				//		alert.AddAction(UIAlertAction.Create(arguments.Destruction, UIAlertActionStyle.Destructive, a => arguments.SetResult(arguments.Destruction)));
-				//	}
-
-				//	foreach (var label in arguments.Buttons)
-				//	{
-				//		if (label == null)
-				//			continue;
-
-				//		var blabel = label;
-				//		alert.AddAction(UIAlertAction.Create(blabel, UIAlertActionStyle.Default, a => arguments.SetResult(blabel)));
-				//	}
-
-				//	if (UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad)
-				//	{
-				//		UIDevice.CurrentDevice.BeginGeneratingDeviceOrientationNotifications();
-				//		var observer = NSNotificationCenter.DefaultCenter.AddObserver(UIDevice.OrientationDidChangeNotification,
-				//			n => { alert.PopoverPresentationController.SourceRect = pageRenderer.ViewController.View.Bounds; });
-
-				//		arguments.Result.Task.ContinueWith(t =>
-				//		{
-				//			NSNotificationCenter.DefaultCenter.RemoveObserver(observer);
-				//			UIDevice.CurrentDevice.EndGeneratingDeviceOrientationNotifications();
-				//		}, TaskScheduler.FromCurrentSynchronizationContext());
-
-				//		alert.PopoverPresentationController.SourceView = pageRenderer.ViewController.View;
-				//		alert.PopoverPresentationController.SourceRect = pageRenderer.ViewController.View.Bounds;
-				//		alert.PopoverPresentationController.PermittedArrowDirections = 0; // No arrow
-				//	}
-
-				//	pageRenderer.ViewController.PresentViewController(alert, true, null);
-				//}
-				//else
-				//{
-				//	var actionSheet = new UIActionSheet(arguments.Title, null, arguments.Cancel, arguments.Destruction, arguments.Buttons.ToArray());
-
-				//	actionSheet.ShowInView(pageRenderer.NativeView);
-
-				//	actionSheet.Clicked += (o, args) =>
-				//	{
-				//		string title = null;
-				//		if (args.ButtonIndex != -1)
-				//			title = actionSheet.ButtonTitle(args.ButtonIndex);
-
-				//		// iOS 8 always calls WillDismiss twice, once with the real result, and again with -1.
-				//		arguments.Result.TrySetResult(title);
-				//	};
-				//}
+				arguments.SetResult(titleResult);
 			});
 		}
 
 		void INavigation.InsertPageBefore(Page page, Page before)
 		{
-			throw new InvalidOperationException("InsertPageBefore is not supported globally on iOS, please use a NavigationPage.");
+			throw new InvalidOperationException("InsertPageBefore is not supported globally on MacOS, please use a NavigationPage.");
 		}
 
 		IReadOnlyList<Page> INavigation.ModalStack
@@ -164,7 +88,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		Task<Page> INavigation.PopAsync(bool animated)
 		{
-			throw new InvalidOperationException("PopAsync is not supported globally on iOS, please use a NavigationPage.");
+			throw new InvalidOperationException("PopAsync is not supported globally on MacOS, please use a NavigationPage.");
 		}
 
 		Task<Page> INavigation.PopModalAsync()
@@ -274,14 +198,6 @@ namespace Xamarin.Forms.Platform.MacOS
 				DisposeModelAndChildrenRenderers(modal);
 
 			_renderer.Dispose();
-		}
-
-		bool PageIsChildOfPlatform(Page page)
-		{
-			while (!Application.IsApplicationOrNull(page.RealParent))
-				page = (Page)page.RealParent;
-
-			return Page == page || _modals.Contains(page);
 		}
 
 		public static IVisualElementRenderer CreateRenderer(VisualElement element)
@@ -404,15 +320,41 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (_appeared)
 				return;
 
-			//_renderer.View.backg = UIColor.White;
-			//_renderer.View.ContentMode = UIViewContentMode.Redraw;
-
 			Page.Platform = this;
 			AddChild(Page);
 
 			Page.DescendantRemoved += HandleChildRemoved;
 
 			_appeared = true;
+		}
+
+		static FormsNSView GetExtraButton(ActionSheetArguments arguments)
+		{
+			var newView = new FormsNSView();
+			int height = 50;
+			int i = 0;
+			foreach (var button in arguments.Buttons)
+			{
+				var btn = new NSButton { Title = button, Tag = i };
+				btn.SetButtonType(NSButtonType.MomentaryPushIn);
+				btn.Activated += (s, e) =>
+				{
+					NSApplication.SharedApplication.EndSheet(NSApplication.SharedApplication.MainWindow.AttachedSheet, ((NSButton)s).Tag + 2);
+				};
+				btn.Frame = new RectangleF(0, height * i, 300, height);
+				newView.AddSubview(btn);
+				i++;
+			}
+			newView.Frame = new RectangleF(0, 0, 300, height * i);
+			return newView;
+		}
+
+		bool PageIsChildOfPlatform(Page page)
+		{
+			while (!Application.IsApplicationOrNull(page.RealParent))
+				page = (Page)page.RealParent;
+
+			return Page == page || _modals.Contains(page);
 		}
 
 		void AddChild(VisualElement view)
@@ -446,6 +388,5 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 
 	}
-
 }
 
