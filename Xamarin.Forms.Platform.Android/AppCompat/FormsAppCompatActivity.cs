@@ -472,6 +472,29 @@ namespace Xamarin.Forms.Platform.Android
 			SetStatusBarVisibility(adjust);
 		}
 
+		public override void OnWindowAttributesChanged(WindowManagerLayoutParams @params)
+		{
+			base.OnWindowAttributesChanged(@params);
+
+			if (@params.Flags.HasFlag(WindowManagerFlags.Fullscreen))
+			{
+				if(Forms.TitleBarVisibility != AndroidTitleBarVisibility.Never)
+					Forms.TitleBarVisibility = AndroidTitleBarVisibility.Never;
+			}
+			else
+			{
+				if (Forms.TitleBarVisibility != AndroidTitleBarVisibility.Default)
+					Forms.TitleBarVisibility = AndroidTitleBarVisibility.Default;
+			}
+
+			if (Xamarin.Forms.Application.Current == null || Xamarin.Forms.Application.Current.MainPage == null) return;
+
+			var displayMetrics = Resources.DisplayMetrics;
+			var width = displayMetrics.WidthPixels;
+			var height = displayMetrics.HeightPixels;
+			AppCompat.Platform.LayoutRootPage(this, Xamarin.Forms.Application.Current.MainPage, width, height);
+		}
+
 		void SetStatusBarVisibility(SoftInput mode)
 		{
 			if (!Forms.IsLollipopOrNewer)
