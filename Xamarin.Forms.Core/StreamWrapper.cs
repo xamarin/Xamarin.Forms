@@ -71,9 +71,7 @@ namespace Xamarin.Forms
 		protected override void Dispose(bool disposing)
 		{
 			_wrapped.Dispose();
-			EventHandler eh = Disposed;
-			if (eh != null)
-				eh(this, EventArgs.Empty);
+			Disposed?.Invoke(this, EventArgs.Empty);
 
 			base.Dispose(disposing);
 		}

@@ -1863,9 +1863,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			protected virtual void OnPropertyChanged ([CallerMemberName] string propertyName = null)
 			{
-				PropertyChangedEventHandler handler = PropertyChanged;
-				if (handler != null)
-					handler (this, new PropertyChangedEventArgs (propertyName));
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 			}
 		}
 
@@ -2488,9 +2486,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			public void SignalAllPropertiesChanged (bool useNull)
 			{
-				var changed = PropertyChanged;
-				if (changed != null)
-					changed (this, new PropertyChangedEventArgs ((useNull) ? null : String.Empty));
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs((useNull) ? null : String.Empty));
 			}
 		}
 

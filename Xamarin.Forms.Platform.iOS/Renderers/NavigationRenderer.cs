@@ -269,9 +269,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual void OnElementChanged(VisualElementChangedEventArgs e)
 		{
-			var changed = ElementChanged;
-			if (changed != null)
-				changed(this, e);
+			ElementChanged?.Invoke(this, e);
 		}
 
 		protected virtual async Task<bool> OnPopToRoot(Page page, bool animated)
@@ -788,18 +786,14 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				base.ViewDidAppear(animated);
 
-				var handler = Appearing;
-				if (handler != null)
-					handler(this, EventArgs.Empty);
+				Appearing?.Invoke(this, EventArgs.Empty);
 			}
 
 			public override void ViewDidDisappear(bool animated)
 			{
 				base.ViewDidDisappear(animated);
 
-				var handler = Disappearing;
-				if (handler != null)
-					handler(this, EventArgs.Empty);
+				Disappearing?.Invoke(this, EventArgs.Empty);
 			}
 
 			public override void ViewDidLayoutSubviews()

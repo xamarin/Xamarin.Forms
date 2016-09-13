@@ -1262,9 +1262,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			public object VM {
 				get {
 					Count++;
-					var eh = Invoked;
-					if (eh != null)
-						eh (this, EventArgs.Empty);
+					Invoked?.Invoke(this, EventArgs.Empty);
 					return new object ();
 				}
 			}

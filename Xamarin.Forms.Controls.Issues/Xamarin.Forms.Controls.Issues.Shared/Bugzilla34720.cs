@@ -292,10 +292,7 @@ namespace Xamarin.Forms.Controls
 
 			protected virtual void RaisePropertyChanged (string propertyName)
 			{
-				PropertyChangedEventHandler propertyChanged = PropertyChanged;
-				if (propertyChanged != null) {
-					propertyChanged (this, new PropertyChangedEventArgs (propertyName));
-				}
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 			}
 		}
 

@@ -33,11 +33,7 @@ namespace Xamarin.Forms.Controls
 			}
 
 			void OnPropertyChanged(string caller) {
-				var handler = PropertyChanged;
-				if (handler != null) 
-				{
-					handler(this, new PropertyChangedEventArgs(caller));
-				}
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(caller));
 			}
 		}
 

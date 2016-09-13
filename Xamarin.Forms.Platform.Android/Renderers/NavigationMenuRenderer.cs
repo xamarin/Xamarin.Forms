@@ -82,8 +82,7 @@ namespace Xamarin.Forms.Platform.Android
 				_image.SetScaleType(ImageView.ScaleType.FitCenter);
 				_image.Click += (object sender, EventArgs e) =>
 				{
-					if (OnSelected != null)
-						OnSelected();
+					OnSelected?.Invoke();
 				};
 				AddView(_image, new LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent) { Gravity = GravityFlags.Center });
 

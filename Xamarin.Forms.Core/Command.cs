@@ -72,9 +72,7 @@ namespace Xamarin.Forms
 
 		public void ChangeCanExecute()
 		{
-			EventHandler changed = CanExecuteChanged;
-			if (changed != null)
-				changed(this, EventArgs.Empty);
+			CanExecuteChanged?.Invoke(this, EventArgs.Empty);
 		}
 	}
 }

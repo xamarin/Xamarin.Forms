@@ -167,9 +167,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			bool OnShouldReturn(UITextField view)
 			{
-				var handler = KeyboardDoneButtonPressed;
-				if (handler != null)
-					handler(this, EventArgs.Empty);
+				KeyboardDoneButtonPressed?.Invoke(this, EventArgs.Empty);
 
 				TextField.ResignFirstResponder();
 				return true;
@@ -177,9 +175,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			void TextFieldOnEditingChanged(object sender, EventArgs eventArgs)
 			{
-				var handler = TextFieldTextChanged;
-				if (handler != null)
-					handler(this, EventArgs.Empty);
+				TextFieldTextChanged?.Invoke(this, EventArgs.Empty);
 			}
 		}
 	}

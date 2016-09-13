@@ -85,9 +85,7 @@ namespace Xamarin.Forms
 
 		internal static void SendViewInitialized(this VisualElement self, global::Android.Views.View nativeView)
 		{
-			EventHandler<ViewInitializedEventArgs> viewInitialized = ViewInitialized;
-			if (viewInitialized != null)
-				viewInitialized(self, new ViewInitializedEventArgs { View = self, NativeView = nativeView });
+			ViewInitialized?.Invoke(self, new ViewInitializedEventArgs { View = self, NativeView = nativeView });
 		}
 
 		static void SetupInit(Context activity, Assembly resourceAssembly)

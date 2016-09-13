@@ -125,23 +125,17 @@ namespace Xamarin.Forms
 
 		protected virtual void OnBindingContextChanged()
 		{
-			EventHandler change = BindingContextChanged;
-			if (change != null)
-				change(this, EventArgs.Empty);
+			BindingContextChanged?.Invoke(this, EventArgs.Empty);
 		}
 
 		protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
 		{
-			PropertyChangedEventHandler handler = PropertyChanged;
-			if (handler != null)
-				handler(this, new PropertyChangedEventArgs(propertyName));
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
 		protected virtual void OnPropertyChanging([CallerMemberName] string propertyName = null)
 		{
-			PropertyChangingEventHandler changing = PropertyChanging;
-			if (changing != null)
-				changing(this, new PropertyChangingEventArgs(propertyName));
+			PropertyChanging?.Invoke(this, new PropertyChangingEventArgs(propertyName));
 		}
 
 		protected void UnapplyBindings()
@@ -275,8 +269,7 @@ namespace Xamarin.Forms
 			BindingBase oldBinding = context.Binding;
 			context.Binding = binding;
 
-			if (targetProperty.BindingChanging != null)
-				targetProperty.BindingChanging(this, oldBinding, binding);
+			targetProperty.BindingChanging?.Invoke(this, oldBinding, binding);
 
 			binding.Apply(BindingContext, this, targetProperty);
 		}
@@ -448,8 +441,7 @@ namespace Xamarin.Forms
 			bool same = Equals(original, newValue);
 			if (!same)
 			{
-				if (property.PropertyChanging != null)
-					property.PropertyChanging(this, original, newValue);
+				property.PropertyChanging?.Invoke(this, original, newValue);
 
 				OnPropertyChanging(property.PropertyName);
 			}
@@ -461,8 +453,7 @@ namespace Xamarin.Forms
 			if (!same)
 			{
 				OnPropertyChanged(property.PropertyName);
-				if (property.PropertyChanged != null)
-					property.PropertyChanged(this, original, newValue);
+				property.PropertyChanged?.Invoke(this, original, newValue);
 			}
 		}
 
@@ -509,8 +500,7 @@ namespace Xamarin.Forms
 		{
 			context.Binding.Unapply();
 
-			if (property.BindingChanging != null)
-				property.BindingChanging(this, context.Binding, null);
+			property.BindingChanging?.Invoke(this, context.Binding, null);
 
 			context.Binding = null;
 		}
@@ -543,8 +533,7 @@ namespace Xamarin.Forms
 			bool same = Equals(value, original);
 			if (!silent && (!same || raiseOnEqual))
 			{
-				if (property.PropertyChanging != null)
-					property.PropertyChanging(this, original, value);
+				property.PropertyChanging?.Invoke(this, original, value);
 
 				OnPropertyChanging(property.PropertyName);
 			}
@@ -580,8 +569,7 @@ namespace Xamarin.Forms
 
 				OnPropertyChanged(property.PropertyName);
 
-				if (property.PropertyChanged != null)
-					property.PropertyChanged(this, original, value);
+				property.PropertyChanged?.Invoke(this, original, value);
 			}
 		}
 

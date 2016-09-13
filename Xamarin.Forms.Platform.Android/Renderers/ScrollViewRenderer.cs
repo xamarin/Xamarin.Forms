@@ -174,9 +174,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void OnElementChanged(VisualElementChangedEventArgs e)
 		{
-			EventHandler<VisualElementChangedEventArgs> changed = ElementChanged;
-			if (changed != null)
-				changed(this, e);
+			ElementChanged?.Invoke(this, e);
 		}
 
 		protected override void OnLayout(bool changed, int left, int top, int right, int bottom)

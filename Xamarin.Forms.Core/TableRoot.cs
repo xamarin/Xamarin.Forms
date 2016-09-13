@@ -20,9 +20,7 @@ namespace Xamarin.Forms
 
 		void ChildCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
 		{
-			EventHandler<ChildCollectionChangedEventArgs> handler = SectionCollectionChanged;
-			if (handler != null)
-				handler(this, new ChildCollectionChangedEventArgs(notifyCollectionChangedEventArgs));
+			SectionCollectionChanged?.Invoke(this, new ChildCollectionChangedEventArgs(notifyCollectionChangedEventArgs));
 		}
 
 		void ChildPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)

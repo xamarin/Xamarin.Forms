@@ -17,14 +17,12 @@ namespace Xamarin.Forms.Core.UnitTests
 	{
 		public void FireEvent ()
 		{
-			if (MockEvent != null)
-				MockEvent (this, EventArgs.Empty);
+			MockEvent?.Invoke(this, EventArgs.Empty);
 		}
 
 		public void FireEvent2 ()
 		{
-			if (MockEvent2 != null)
-				MockEvent2 (this, EventArgs.Empty);
+			MockEvent2?.Invoke(this, EventArgs.Empty);
 		}
 
 		public event EventHandler MockEvent;

@@ -551,11 +551,7 @@ namespace Xamarin.Forms
 			if (!IsFocused)
 				return;
 
-			EventHandler<FocusRequestArgs> unfocus = FocusChangeRequested;
-			if (unfocus != null)
-			{
-				unfocus(this, new FocusRequestArgs());
-			}
+			FocusChangeRequested?.Invoke(this, new FocusRequestArgs());
 		}
 
 		public event EventHandler<FocusEventArgs> Unfocused;
@@ -583,8 +579,7 @@ namespace Xamarin.Forms
 
 		protected void OnChildrenReordered()
 		{
-			if (ChildrenReordered != null)
-				ChildrenReordered(this, EventArgs.Empty);
+			ChildrenReordered?.Invoke(this, EventArgs.Empty);
 		}
 
 		protected virtual SizeRequest OnMeasure(double widthConstraint, double heightConstraint)
@@ -718,9 +713,7 @@ namespace Xamarin.Forms
 
 		void OnFocused()
 		{
-			EventHandler<FocusEventArgs> focus = Focused;
-			if (focus != null)
-				focus(this, new FocusEventArgs(this, true));
+			Focused?.Invoke(this, new FocusEventArgs(this, true));
 		}
 
 		static void OnIsFocusedPropertyChanged(BindableObject bindable, object oldvalue, object newvalue)
@@ -757,9 +750,7 @@ namespace Xamarin.Forms
 
 		void OnUnfocus()
 		{
-			EventHandler<FocusEventArgs> unFocus = Unfocused;
-			if (unFocus != null)
-				unFocus(this, new FocusEventArgs(this, false));
+			Unfocused?.Invoke(this, new FocusEventArgs(this, false));
 		}
 
 		void SetSize(double width, double height)
@@ -771,8 +762,7 @@ namespace Xamarin.Forms
 			Height = height;
 
 			SizeAllocated(width, height);
-			if (SizeChanged != null)
-				SizeChanged(this, EventArgs.Empty);
+			SizeChanged?.Invoke(this, EventArgs.Empty);
 		}
 
 		internal class FocusRequestArgs : EventArgs

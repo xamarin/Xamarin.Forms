@@ -30,10 +30,7 @@ namespace Xamarin.Forms.Controls
 
 			void OnPropertyChanged (string prop)
 			{
-				var handler = PropertyChanged;
-				if (handler != null) {
-					handler(this, new PropertyChangedEventArgs(prop));
-				}
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
 			}
 
 			public int NumberOfTimesTapped

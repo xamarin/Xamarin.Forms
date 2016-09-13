@@ -56,8 +56,7 @@ namespace Xamarin.Forms.Internals
 
 		void EmitCollectionChanged()
 		{
-			if (CollectionChanged != null)
-				CollectionChanged(this, EventArgs.Empty);
+			CollectionChanged?.Invoke(this, EventArgs.Empty);
 		}
 
 		IEnumerable<ToolbarItem> GetCurrentToolbarItems(Page page)

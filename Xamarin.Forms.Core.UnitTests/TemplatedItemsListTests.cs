@@ -73,16 +73,14 @@ namespace Xamarin.Forms.Core.UnitTests
 			{
 				base.SetupContent (content, index);
 
-				if (Hooked != null)
-					Hooked (content);
+				Hooked?.Invoke(content);
 			}
 
 			protected override void UnhookContent (BindableObject content)
 			{
 				base.UnhookContent (content);
 
-				if (Unhooked != null)
-					Unhooked (content);
+				Unhooked?.Invoke(content);
 			}
 		}
 

@@ -95,9 +95,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void IOnFocusChangeListener.OnFocusChange(global::Android.Views.View view, bool hasFocus)
 		{
-			Action<bool> focusChanged = FocusChanged;
-			if (focusChanged != null)
-				focusChanged(hasFocus);
+			FocusChanged?.Invoke(hasFocus);
 		}
 
 		void ITextWatcher.AfterTextChanged(IEditable s)
@@ -110,9 +108,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void ITextWatcher.OnTextChanged(ICharSequence s, int start, int before, int count)
 		{
-			Action<string> changed = TextChanged;
-			if (changed != null)
-				changed(s != null ? s.ToString() : null);
+			TextChanged?.Invoke(s != null ? s.ToString() : null);
 		}
 
 		public void SetLabelTextColor(Color color, int defaultColorResourceId)
@@ -137,9 +133,7 @@ namespace Xamarin.Forms.Platform.Android
 		void OnKeyboardDoneButtonPressed(object sender, EventArgs e)
 		{
 			// TODO Clear focus
-			Action editingCompleted = EditingCompleted;
-			if (editingCompleted != null)
-				editingCompleted();
+			EditingCompleted?.Invoke();
 		}
 	}
 }

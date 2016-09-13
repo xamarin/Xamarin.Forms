@@ -252,8 +252,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			OnUpdateNativeControl(_layer);
 
-			if (NativeControlUpdated != null)
-				NativeControlUpdated(this, EventArgs.Empty);
+			NativeControlUpdated?.Invoke(this, EventArgs.Empty);
 		}
 	}
 }

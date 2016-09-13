@@ -64,8 +64,7 @@ namespace Xamarin.Forms.Controls
 				}
 				set {
 					_text = value;
-					if(PropertyChanged != null)
-						PropertyChanged(this, new PropertyChangedEventArgs("Text"));
+					PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Text"));
 				}
 			}
 

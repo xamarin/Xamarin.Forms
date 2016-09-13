@@ -63,8 +63,7 @@ namespace Xamarin.Forms.Platform.iOS
 				SetupLayer();
 				_image.TouchUpInside += (object sender, EventArgs e) =>
 				{
-					if (Selected != null)
-						Selected();
+					Selected?.Invoke();
 				};
 				_image.ContentMode = UIViewContentMode.ScaleAspectFit;
 				_image.Center = ContentView.Center;

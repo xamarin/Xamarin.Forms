@@ -22,16 +22,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 		static void OnKeyboardHidden(object sender, UIKeyboardEventArgs args)
 		{
-			var handler = KeyboardWillHide;
-			if (handler != null)
-				handler(sender, args);
+			KeyboardWillHide?.Invoke(sender, args);
 		}
 
 		static void OnKeyboardShown(object sender, UIKeyboardEventArgs args)
 		{
-			var handler = KeyboardWillShow;
-			if (handler != null)
-				handler(sender, args);
+			KeyboardWillShow?.Invoke(sender, args);
 		}
 	}
 }

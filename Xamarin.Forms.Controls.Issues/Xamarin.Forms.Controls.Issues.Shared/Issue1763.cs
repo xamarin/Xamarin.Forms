@@ -96,9 +96,7 @@ namespace Xamarin.Forms.Controls
 		protected virtual ViewModelBase2 SetProperty<T> (ref T field, T value, [CallerMemberName] string propertyName = null)
 		{
 			field = value;
-			PropertyChangedEventHandler handler = PropertyChanged;
-			if (handler != null)
-				handler (this, new PropertyChangedEventArgs (propertyName));
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 			return this;
 		}
 	}

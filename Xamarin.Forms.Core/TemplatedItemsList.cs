@@ -752,9 +752,7 @@ namespace Xamarin.Forms
 
 		void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
 		{
-			NotifyCollectionChangedEventHandler changed = CollectionChanged;
-			if (changed != null)
-				changed(this, e);
+			CollectionChanged?.Invoke(this, e);
 		}
 
 		void OnCollectionChangedGrouped(NotifyCollectionChangedEventArgs e)
@@ -916,9 +914,7 @@ namespace Xamarin.Forms
 
 		void OnInnerCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			NotifyCollectionChangedEventHandler handler = GroupedCollectionChanged;
-			if (handler != null)
-				handler(sender, e);
+			GroupedCollectionChanged?.Invoke(sender, e);
 		}
 
 		void OnItemsSourceChanged(bool fromGrouping = false)
@@ -1318,9 +1314,7 @@ namespace Xamarin.Forms
 
 			void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
 			{
-				NotifyCollectionChangedEventHandler changed = CollectionChanged;
-				if (changed != null)
-					changed(this, e);
+				CollectionChanged?.Invoke(this, e);
 			}
 
 			void OnItemsListCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

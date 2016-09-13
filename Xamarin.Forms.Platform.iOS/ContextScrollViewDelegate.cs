@@ -132,8 +132,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				ClearCloserRecognizer(scrollView);
 
-				if (ClosedCallback != null)
-					ClosedCallback();
+				ClosedCallback?.Invoke();
 			}
 		}
 
