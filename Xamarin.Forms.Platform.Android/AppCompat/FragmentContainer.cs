@@ -33,6 +33,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		IPageController PageController => Page as IPageController;
 
+		// pager measure sets this to false
 		public override bool UserVisibleHint
 		{
 			get { return base.UserVisibleHint; }
