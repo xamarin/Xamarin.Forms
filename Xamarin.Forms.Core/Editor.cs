@@ -9,8 +9,7 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty TextProperty = BindableProperty.Create("Text", typeof(string), typeof(Editor), null, BindingMode.TwoWay, propertyChanged: (bindable, oldValue, newValue) =>
 		{
 			var editor = (Editor)bindable;
-			if (editor.TextChanged != null)
-				editor.TextChanged(editor, new TextChangedEventArgs((string)oldValue, (string)newValue));
+			editor.TextChanged?.Invoke(editor, new TextChangedEventArgs((string)oldValue, (string)newValue));
 		});
 
 		public static readonly BindableProperty FontFamilyProperty = BindableProperty.Create("FontFamily", typeof(string), typeof(Editor), default(string));
@@ -70,9 +69,7 @@ namespace Xamarin.Forms
 
 		internal void SendCompleted()
 		{
-			EventHandler handler = Completed;
-			if (handler != null)
-				handler(this, EventArgs.Empty);
+			Completed?.Invoke(this, EventArgs.Empty);
 		}
 	}
 }

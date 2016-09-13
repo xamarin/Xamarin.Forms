@@ -67,9 +67,7 @@ namespace Xamarin.Forms.Platform.Android
 		public override void OnConfigurationChanged(Configuration newConfig)
 		{
 			base.OnConfigurationChanged(newConfig);
-			EventHandler handler = ConfigurationChanged;
-			if (handler != null)
-				handler(this, new EventArgs());
+			ConfigurationChanged?.Invoke(this, new EventArgs());
 		}
 
 		// FIXME: THIS SHOULD NOT BE MANDATORY

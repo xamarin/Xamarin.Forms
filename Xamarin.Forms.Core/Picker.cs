@@ -15,9 +15,7 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty SelectedIndexProperty = BindableProperty.Create(nameof(SelectedIndex), typeof(int), typeof(Picker), -1, BindingMode.TwoWay,
 			propertyChanged: (bindable, oldvalue, newvalue) =>
 			{
-				EventHandler eh = ((Picker)bindable).SelectedIndexChanged;
-				if (eh != null)
-					eh(bindable, EventArgs.Empty);
+				((Picker)bindable).SelectedIndexChanged?.Invoke(bindable, EventArgs.Empty);
 			}, coerceValue: CoerceSelectedIndex);
 
 		readonly Lazy<PlatformConfigurationRegistry<Picker>> _platformConfigurationRegistry;

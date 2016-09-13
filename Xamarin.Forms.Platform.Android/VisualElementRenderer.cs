@@ -291,9 +291,7 @@ namespace Xamarin.Forms.Platform.Android
 			for (var i = 0; i < _elementChangedHandlers.Count; i++)
 				_elementChangedHandlers[i](this, args);
 
-			EventHandler<ElementChangedEventArgs<TElement>> changed = ElementChanged;
-			if (changed != null)
-				changed(this, e);
+			ElementChanged?.Invoke(this, e);
 		}
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)

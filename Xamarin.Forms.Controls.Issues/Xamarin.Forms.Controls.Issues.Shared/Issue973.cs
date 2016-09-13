@@ -152,9 +152,7 @@ namespace Xamarin.Forms.Controls
 						new Button {
 							Text = "Present Master",
 							Command = new Command (() => {
-								var handler = PresentMaster;
-								if (handler != null)
-									handler(this, EventArgs.Empty);
+								PresentMaster?.Invoke(this, EventArgs.Empty);
 							})
 						}
 					}

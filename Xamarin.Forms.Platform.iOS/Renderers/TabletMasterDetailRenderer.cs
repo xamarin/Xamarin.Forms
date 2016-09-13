@@ -24,18 +24,14 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.ViewWillAppear(animated);
 
-			var eh = WillAppear;
-			if (eh != null)
-				eh(this, EventArgs.Empty);
+			WillAppear?.Invoke(this, EventArgs.Empty);
 		}
 
 		public override void ViewWillDisappear(bool animated)
 		{
 			base.ViewWillDisappear(animated);
 
-			var eh = WillDisappear;
-			if (eh != null)
-				eh(this, EventArgs.Empty);
+			WillDisappear?.Invoke(this, EventArgs.Empty);
 		}
 
 		public event EventHandler WillAppear;
@@ -236,9 +232,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (e.NewElement != null)
 				e.NewElement.PropertyChanged += HandlePropertyChanged;
 
-			var changed = ElementChanged;
-			if (changed != null)
-				changed(this, e);
+			ElementChanged?.Invoke(this, e);
 		}
 
 		void ClearControllers()

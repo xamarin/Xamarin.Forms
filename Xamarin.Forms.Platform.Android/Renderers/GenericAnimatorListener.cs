@@ -13,22 +13,19 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override void OnAnimationCancel(Animator animation)
 		{
-			if (OnCancel != null)
-				OnCancel(animation);
+			OnCancel?.Invoke(animation);
 			base.OnAnimationCancel(animation);
 		}
 
 		public override void OnAnimationEnd(Animator animation)
 		{
-			if (OnEnd != null)
-				OnEnd(animation);
+			OnEnd?.Invoke(animation);
 			base.OnAnimationEnd(animation);
 		}
 
 		public override void OnAnimationRepeat(Animator animation)
 		{
-			if (OnRepeat != null)
-				OnRepeat(animation);
+			OnRepeat?.Invoke(animation);
 			base.OnAnimationRepeat(animation);
 		}
 

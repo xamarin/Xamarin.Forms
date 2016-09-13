@@ -101,9 +101,7 @@ namespace Xamarin.Forms
 
 		void OnItemSizeChanged(object sender, EventArgs e)
 		{
-			EventHandler eh = ItemSizeChanged;
-			if (eh != null)
-				eh(this, EventArgs.Empty);
+			ItemSizeChanged?.Invoke(this, EventArgs.Empty);
 		}
 	}
 }

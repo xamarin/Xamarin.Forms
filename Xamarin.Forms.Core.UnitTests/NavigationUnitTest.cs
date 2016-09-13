@@ -412,8 +412,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		protected override bool OnBackButtonPressed ()
 		{
-			if (BackPressed != null)
-				BackPressed (this, EventArgs.Empty);
+			BackPressed?.Invoke(this, EventArgs.Empty);
 			return Handle;
 		}
 	}

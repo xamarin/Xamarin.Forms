@@ -19,9 +19,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (keyCode == Keycode.Back && e.Action == KeyEventActions.Down)
 			{
-				EventHandler handler = BackButtonPressed;
-				if (handler != null)
-					handler(this, EventArgs.Empty);
+				BackButtonPressed?.Invoke(this, EventArgs.Empty);
 			}
 			return base.OnKeyPreIme(keyCode, e);
 		}

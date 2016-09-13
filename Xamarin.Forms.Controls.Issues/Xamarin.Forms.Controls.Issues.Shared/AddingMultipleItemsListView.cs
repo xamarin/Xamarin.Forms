@@ -43,10 +43,7 @@ namespace Xamarin.Forms.Controls
 
 		protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
 		{
-			PropertyChangedEventHandler handler = PropertyChanged;
-			if (handler != null) {
-				handler(this, new PropertyChangedEventArgs(propertyName));
-			}
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 	}
 
@@ -108,10 +105,7 @@ namespace Xamarin.Forms.Controls
 			OnPropertyChanged("IsValid");
 			OnPropertyChanged("Errors");
 
-			var callback = IsValidChanged;
-			if (callback != null) {
-				callback(this, EventArgs.Empty);
-			}
+			IsValidChanged?.Invoke(this, EventArgs.Empty);
 
 			// Spit out errors for easier debugging.
 			if (_errors != null && _errors.Count > 0) {
@@ -190,10 +184,7 @@ namespace Xamarin.Forms.Controls
 
 		public void RaiseCanExecuteChanged()
 		{
-			var handler = CanExecuteChanged;
-			if (handler != null) {
-				handler(this, EventArgs.Empty);
-			}
+			CanExecuteChanged?.Invoke(this, EventArgs.Empty);
 		}
 	}
 

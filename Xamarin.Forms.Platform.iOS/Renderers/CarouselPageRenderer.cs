@@ -228,9 +228,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual void OnElementChanged(VisualElementChangedEventArgs e)
 		{
-			EventHandler<VisualElementChangedEventArgs> changed = ElementChanged;
-			if (changed != null)
-				changed(this, e);
+			ElementChanged?.Invoke(this, e);
 		}
 
 		void Clear()

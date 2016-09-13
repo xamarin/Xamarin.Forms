@@ -120,9 +120,7 @@ namespace Xamarin.Forms
 			if (cmd != null)
 				cmd.Execute(CommandParameter);
 
-			EventHandler handler = Clicked;
-			if (handler != null)
-				handler(this, EventArgs.Empty);
+			Clicked?.Invoke(this, EventArgs.Empty);
 		}
 
 		public FontAttributes FontAttributes

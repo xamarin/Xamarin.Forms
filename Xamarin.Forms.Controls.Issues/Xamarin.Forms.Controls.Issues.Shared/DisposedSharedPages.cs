@@ -10,9 +10,7 @@ namespace Xamarin.Forms.Controls
 
 		public void SendRendererDisposed ()
 		{
-			var handler = RendererDisposed;
-			if (handler != null)
-				handler (this, EventArgs.Empty);
+			RendererDisposed?.Invoke(this, EventArgs.Empty);
 		}
 
 		public int DisposedLabelCount { get; private set; }
@@ -59,9 +57,7 @@ namespace Xamarin.Forms.Controls
 
 		public void SendRendererDisposed ()
 		{
-			var handler = RendererDisposed;
-			if (handler != null)
-				handler (this, EventArgs.Empty);
+			RendererDisposed?.Invoke(this, EventArgs.Empty);
 		}
 	}
 

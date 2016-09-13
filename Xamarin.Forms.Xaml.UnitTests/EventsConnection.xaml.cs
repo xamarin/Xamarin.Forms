@@ -21,9 +21,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 
 		public void SendClicked ()
 		{
-			var eh = Clicked;
-			if (eh != null)
-				eh (this, EventArgs.Empty);
+			Clicked?.Invoke(this, EventArgs.Empty);
 		}
 	}
 
@@ -33,9 +31,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 
 		public void SendClicked ()
 		{
-			var eh = Clicked;
-			if (eh != null)
-				eh (this, new ItemTappedEventArgs ("foo", "bar"));
+			Clicked?.Invoke(this, new ItemTappedEventArgs("foo", "bar"));
 		}
 	}
 

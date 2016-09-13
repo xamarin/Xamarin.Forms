@@ -45,8 +45,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (PropertyChanged != null)
-				PropertyChanged(this, e);
+			PropertyChanged?.Invoke(this, e);
 		}
 
 		internal static UITableViewCell GetNativeCell(UITableView tableView, Cell cell, bool recycleCells = false, string templateId = "")

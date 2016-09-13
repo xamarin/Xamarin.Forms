@@ -249,16 +249,12 @@ namespace Xamarin.Forms
 
 		void IListViewController.SendCellAppearing(Cell cell)
 		{
-			EventHandler<ItemVisibilityEventArgs> handler = ItemAppearing;
-			if (handler != null)
-				handler(this, new ItemVisibilityEventArgs(cell.BindingContext));
+			ItemAppearing?.Invoke(this, new ItemVisibilityEventArgs(cell.BindingContext));
 		}
 
 		void IListViewController.SendCellDisappearing(Cell cell)
 		{
-			EventHandler<ItemVisibilityEventArgs> handler = ItemDisappearing;
-			if (handler != null)
-				handler(this, new ItemVisibilityEventArgs(cell.BindingContext));
+			ItemDisappearing?.Invoke(this, new ItemVisibilityEventArgs(cell.BindingContext));
 		}
 
 		void IListViewController.SendRefreshing()
@@ -569,23 +565,18 @@ namespace Xamarin.Forms
 
 		void OnRefreshing(EventArgs e)
 		{
-			EventHandler handler = Refreshing;
-			if (handler != null)
-				handler(this, e);
+			Refreshing?.Invoke(this, e);
 		}
 
 		void OnScrollToRequested(ScrollToRequestedEventArgs e)
 		{
-			EventHandler<ScrollToRequestedEventArgs> handler = ScrollToRequested;
-			if (handler != null)
-				handler(this, e);
+			ScrollToRequested?.Invoke(this, e);
 		}
 
 		static void OnSelectedItemChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			var list = (ListView)bindable;
-			if (list.ItemSelected != null)
-				list.ItemSelected(list, new SelectedItemChangedEventArgs(newValue));
+			list.ItemSelected?.Invoke(list, new SelectedItemChangedEventArgs(newValue));
 		}
 
 		static bool ValidateHeaderFooterTemplate(BindableObject bindable, object value)

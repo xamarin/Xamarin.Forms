@@ -30,9 +30,7 @@ namespace Xamarin.Forms
 
 		public void Display()
 		{
-			EventHandler handler = DisplayRequested;
-			if (handler != null)
-				handler(this, EventArgs.Empty);
+			DisplayRequested?.Invoke(this, EventArgs.Empty);
 		}
 
 		event EventHandler DisplayRequested;

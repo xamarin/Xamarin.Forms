@@ -217,8 +217,7 @@ namespace Xamarin.Forms.Controls
 
 			backingStore = value;
 
-			if (onChanged != null)
-				onChanged ();
+			onChanged?.Invoke();
 
 			OnPropertyChanged (propertyName);
 		}

@@ -409,8 +409,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			public void Add (string s)
 			{
 				Items.Add(s);
-				if (CollectionChanged != null)
-					CollectionChanged (this, new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Add, s));
+				CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, s));
 			}
 
 			public IEnumerator<string> GetEnumerator ()

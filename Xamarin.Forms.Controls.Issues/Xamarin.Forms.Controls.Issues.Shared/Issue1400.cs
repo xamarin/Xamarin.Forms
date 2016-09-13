@@ -110,8 +110,8 @@ namespace Xamarin.Forms.Controls
 
         public void OnPropertyChanged(PropertyChangedEventArgs e)
         {
-            if (PropertyChanged != null) PropertyChanged(this, e);
-        }
+			PropertyChanged?.Invoke(this, e);
+		}
     }
 
     public class MyGroup : ObservableCollection<MyData>, INotifyPropertyChanged
