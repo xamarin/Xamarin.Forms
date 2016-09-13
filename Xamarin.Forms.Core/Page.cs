@@ -314,14 +314,10 @@ namespace Xamarin.Forms
             if (Device.OS == TargetPlatform.Android)
             {
                 if (pageContainer != null && pageContainer.GetType() != typeof(TabbedPage))
-                {
                     ((IPageController)pageContainer.CurrentPage)?.SendAppearing();
-                }
             }
             else
-            {
                 ((IPageController)pageContainer?.CurrentPage)?.SendAppearing();
-            }
 		}
 
 		void IPageController.SendDisappearing()
