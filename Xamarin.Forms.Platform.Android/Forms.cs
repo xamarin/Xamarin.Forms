@@ -83,13 +83,14 @@ namespace Xamarin.Forms
 		/// <param name="visibility">Title bar visibility enum</param>
 		public static void SetTitleBarVisibility(AndroidTitleBarVisibility visibility)
 		{
-			if((Activity)Context == null) throw new NullReferenceException("Must be called after Xamarin.Forms.Forms.Init() method");
+			if((Activity)Context == null)
+				throw new NullReferenceException("Must be called after Xamarin.Forms.Forms.Init() method");
 
 			TitleBarVisibility = visibility;
 
 			if (TitleBarVisibility == AndroidTitleBarVisibility.Never)
 			{
-				if(!((Activity)Context).Window.Attributes.Flags.HasFlag(WindowManagerFlags.Fullscreen))
+				if (!((Activity)Context).Window.Attributes.Flags.HasFlag(WindowManagerFlags.Fullscreen))
 					((Activity)Context).Window.AddFlags(WindowManagerFlags.Fullscreen);
 			}
 			else

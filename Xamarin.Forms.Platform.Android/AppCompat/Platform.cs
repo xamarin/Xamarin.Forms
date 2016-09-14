@@ -270,8 +270,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		internal static void LayoutRootPage(FormsAppCompatActivity activity, Page page, int width, int height)
 		{
 			int statusBarHeight = Forms.IsLollipopOrNewer ? activity.GetStatusBarHeight() : 0;
-			statusBarHeight = activity.Window.Attributes.Flags.HasFlag(WindowManagerFlags.Fullscreen) ? 0 : statusBarHeight;
-			statusBarHeight = Forms.TitleBarVisibility == AndroidTitleBarVisibility.Never ? 0 : statusBarHeight; // just to be sure
+			statusBarHeight = activity.Window.Attributes.Flags.HasFlag(WindowManagerFlags.Fullscreen) || Forms.TitleBarVisibility == AndroidTitleBarVisibility.Never ? 0 : statusBarHeight;
 
 			if (page is MasterDetailPage)
 				page.Layout(new Rectangle(0, 0, activity.FromPixels(width), activity.FromPixels(height)));

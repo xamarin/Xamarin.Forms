@@ -478,7 +478,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (@params.Flags.HasFlag(WindowManagerFlags.Fullscreen))
 			{
-				if(Forms.TitleBarVisibility != AndroidTitleBarVisibility.Never)
+				if (Forms.TitleBarVisibility != AndroidTitleBarVisibility.Never)
 					Forms.TitleBarVisibility = AndroidTitleBarVisibility.Never;
 			}
 			else
@@ -487,7 +487,8 @@ namespace Xamarin.Forms.Platform.Android
 					Forms.TitleBarVisibility = AndroidTitleBarVisibility.Default;
 			}
 
-			if (Xamarin.Forms.Application.Current == null || Xamarin.Forms.Application.Current.MainPage == null) return;
+			if (Xamarin.Forms.Application.Current == null || Xamarin.Forms.Application.Current.MainPage == null)
+				return;
 
 			var displayMetrics = Resources.DisplayMetrics;
 			var width = displayMetrics.WidthPixels;
