@@ -73,7 +73,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		View View => Element as View;
 
-	    void IEffectControlProvider.RegisterEffect(Effect effect)
+		void IEffectControlProvider.RegisterEffect(Effect effect)
 		{
 			var platformEffect = effect as PlatformEffect;
 			if (platformEffect != null)
@@ -85,15 +85,15 @@ namespace Xamarin.Forms.Platform.Android
 			_tapGestureHandler.OnSingleClick();
 		}
 
-        public override bool OnInterceptTouchEvent(MotionEvent ev)
-        {
-            if (Element.InputTransparent && Element.IsEnabled)
-                return false;
+		public override bool OnInterceptTouchEvent(MotionEvent ev)
+		{
+			if (Element.InputTransparent && Element.IsEnabled)
+				return false;
 
-            return base.OnInterceptTouchEvent(ev);
-        }
+			return base.OnInterceptTouchEvent(ev);
+		}
 
-        bool IOnTouchListener.OnTouch(AView v, MotionEvent e)
+		bool IOnTouchListener.OnTouch(AView v, MotionEvent e)
 		{
 			var handled = false;
 			if (_pinchGestureHandler.IsPinchSupported)
@@ -105,12 +105,12 @@ namespace Xamarin.Forms.Platform.Android
 
 			_gestureListener?.OnTouchEvent(e);
 
-		    return _gestureDetector.Value.OnTouchEvent(e) || handled;
+			return _gestureDetector.Value.OnTouchEvent(e) || handled;
 		}
 
 		VisualElement IVisualElementRenderer.Element => Element;
 
-	    event EventHandler<VisualElementChangedEventArgs> IVisualElementRenderer.ElementChanged
+		event EventHandler<VisualElementChangedEventArgs> IVisualElementRenderer.ElementChanged
 		{
 			add { _elementChangedHandlers.Add(value); }
 			remove { _elementChangedHandlers.Remove(value); }
@@ -135,13 +135,13 @@ namespace Xamarin.Forms.Platform.Android
 		public void UpdateLayout()
 		{
 			Performance.Start();
-		    Tracker?.UpdateLayout();
-		    Performance.Stop();
+			Tracker?.UpdateLayout();
+			Performance.Stop();
 		}
 
 		public ViewGroup ViewGroup => this;
 
-	    public event EventHandler<ElementChangedEventArgs<TElement>> ElementChanged;
+		public event EventHandler<ElementChangedEventArgs<TElement>> ElementChanged;
 
 		public void SetElement(TElement element)
 		{
@@ -285,10 +285,10 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			var args = new VisualElementChangedEventArgs(e.OldElement, e.NewElement);
 			foreach (EventHandler<VisualElementChangedEventArgs> handler in _elementChangedHandlers)
-			    handler(this, args);
+				handler(this, args);
 
-		    ElementChanged?.Invoke(this, e);
-        }
+			ElementChanged?.Invoke(this, e);
+		}
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
@@ -306,12 +306,12 @@ namespace Xamarin.Forms.Platform.Android
 			ReadOnlyCollection<Element> children = ((IElementController)Element).LogicalChildren;
 			foreach (Element element in children)
 			{
-			    var visualElement = element as VisualElement;
-			    if (visualElement == null)
-			        continue;
+				var visualElement = element as VisualElement;
+				if (visualElement == null)
+					continue;
 
-			    IVisualElementRenderer renderer = Platform.GetRenderer(visualElement);
-			    renderer?.UpdateLayout();
+				IVisualElementRenderer renderer = Platform.GetRenderer(visualElement);
+				renderer?.UpdateLayout();
 			}
 		}
 
