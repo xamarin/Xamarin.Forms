@@ -5,7 +5,7 @@ using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class VisualElementPackager : IDisposable
+	public sealed class VisualElementPackager : IDisposable
 	{
 		readonly EventHandler<ElementEventArgs> _childAddedHandler;
 		readonly EventHandler<ElementEventArgs> _childRemovedHandler;
@@ -47,7 +47,6 @@ namespace Xamarin.Forms.Platform.Android
 
 				_renderer.Element.ChildAdded -= _childAddedHandler;
 				_renderer.Element.ChildRemoved -= _childRemovedHandler;
-
 				_renderer.Element.ChildrenReordered -= _childReorderedHandler;
 				_renderer = null;
 			}

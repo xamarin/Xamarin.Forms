@@ -9,7 +9,7 @@ using Object = Java.Lang.Object;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class VisualElementTracker : IDisposable
+	public sealed class VisualElementTracker : IDisposable
 	{
 		readonly EventHandler<EventArg<VisualElement>> _batchCommittedHandler;
 		readonly IList<string> _batchedProperties = new List<string>();
