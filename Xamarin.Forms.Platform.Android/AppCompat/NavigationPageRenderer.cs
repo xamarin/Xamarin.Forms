@@ -41,6 +41,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		ToolbarTracker _toolbarTracker;
 		bool _toolbarVisible;
 
+		// The following is based on https://android.googlesource.com/platform/frameworks/support/+/refs/heads/master/v4/java/android/support/v4/app/FragmentManager.java#849
+		const int TransitionDuration = 220;
+
 		public NavigationPageRenderer()
 		{
 			AutoPackage = false;
@@ -71,7 +74,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			}
 		}
 
-		FragmentManager FragmentManager => _fragmentManager ?? (_fragmentManager = ((FormsAppCompatActivity)Context).SupportFragmentManager);
+		FragmentManager FragmentManager
+			=> _fragmentManager ?? (_fragmentManager = ((FormsAppCompatActivity)Context).SupportFragmentManager);
 
 		IPageController PageController => Element as IPageController;
 
@@ -132,14 +136,14 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 				if (Element != null)
 				{
-					foreach(Element element in PageController.InternalChildren)
+					foreach (Element element in PageController.InternalChildren)
 					{
 						var child = element as VisualElement;
 						if (child == null)
 						{
 							continue;
 						}
-							
+
 						IVisualElementRenderer renderer = Android.Platform.GetRenderer(child);
 						renderer?.Dispose();
 					}
@@ -280,7 +284,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			}
 			_lastActionBarHeight = barHeight;
 
-			bar.Measure(MeasureSpecFactory.MakeMeasureSpec(r - l, MeasureSpecMode.Exactly), MeasureSpecFactory.MakeMeasureSpec(barHeight, MeasureSpecMode.Exactly));
+			bar.Measure(MeasureSpecFactory.MakeMeasureSpec(r - l, MeasureSpecMode.Exactly),
+				MeasureSpecFactory.MakeMeasureSpec(barHeight, MeasureSpecMode.Exactly));
 
 			int internalHeight = b - t - barHeight;
 			int containerHeight = ToolbarVisible ? internalHeight : b - t;
@@ -320,7 +325,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			else
 				transaction.SetTransition((int)FragmentTransit.FragmentClose);
 		}
-
+		
 		internal int GetNavBarHeight()
 		{
 			if (!ToolbarVisible)
@@ -401,7 +406,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void HandleToolbarItemPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == MenuItem.IsEnabledProperty.PropertyName || e.PropertyName == MenuItem.TextProperty.PropertyName || e.PropertyName == MenuItem.IconProperty.PropertyName)
+			if (e.PropertyName == MenuItem.IsEnabledProperty.PropertyName || e.PropertyName == MenuItem.TextProperty.PropertyName ||
+			    e.PropertyName == MenuItem.IconProperty.PropertyName)
 				UpdateMenu();
 		}
 
@@ -496,12 +502,13 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				return;
 
 			_drawerLayout = (DrawerLayout)renderer;
-			_drawerToggle = new ActionBarDrawerToggle((Activity)context, _drawerLayout, bar, global::Android.Resource.String.Ok, global::Android.Resource.String.Ok)
+			_drawerToggle = new ActionBarDrawerToggle((Activity)context, _drawerLayout, bar, global::Android.Resource.String.Ok,
+				global::Android.Resource.String.Ok)
 			{
 				ToolbarNavigationClickListener = new ClickListener(Element)
 			};
 
-			if (_drawerListener != null) 
+			if (_drawerListener != null)
 			{
 				_drawerLayout.RemoveDrawerListener(_drawerListener);
 			}
@@ -569,6 +576,12 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			var tcs = new TaskCompletionSource<bool>();
 			Fragment fragment = FragmentContainer.CreateInstance(view);
 			FragmentManager fm = FragmentManager;
+
+#if DEBUG
+			// Enables logging of moveToState operations to logcat
+			FragmentManager.EnableDebugLogging(true);
+#endif
+
 			List<Fragment> fragments = _fragmentStack;
 
 			Current = view;
@@ -599,7 +612,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 						transaction.Remove(currentToRemove);
 						popPage = popToRoot;
 					}
-
+					
 					Fragment toShow = fragments.Last();
 					// Execute pending transactions so that we can be sure the fragment list is accurate.
 					fm.ExecutePendingTransactions();
@@ -621,7 +634,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			// The fragment transitions don't really SUPPORT telling you when they end
 			// There are some hacks you can do, but they actually are worse than just doing this:
-			
+
 			if (animated)
 			{
 				if (!removed)
@@ -633,12 +646,15 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				else if (_drawerToggle != null && ((INavigationPageController)Element).StackDepth == 2)
 					AnimateArrowOut();
 
-				Device.StartTimer(TimeSpan.FromMilliseconds(200), () =>
+				Device.StartTimer(TimeSpan.FromMilliseconds(TransitionDuration), () =>
 				{
 					tcs.TrySetResult(true);
-					fragment.UserVisibleHint = true;
+					fragment.UserVisibleHint = !removed;
 					if (removed)
+					{
 						UpdateToolbar();
+					}
+
 					return false;
 				});
 			}
@@ -647,8 +663,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				Device.StartTimer(TimeSpan.FromMilliseconds(1), () =>
 				{
 					tcs.TrySetResult(true);
-					fragment.UserVisibleHint = true;
+					fragment.UserVisibleHint = !removed;
 					UpdateToolbar();
+
 					return false;
 				});
 			}
@@ -656,7 +673,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			Context.HideKeyboard(this);
 			((Platform)Element.Platform).NavAnimationInProgress = false;
 
-			// 200ms is how long the animations are, and they are "reversible" in the sense that starting another one slightly before it's done is fine
+			// TransitionDuration is how long the built-in animations are, and they are "reversible" in the sense that starting another one slightly before it's done is fine
 
 			return tcs.Task;
 		}

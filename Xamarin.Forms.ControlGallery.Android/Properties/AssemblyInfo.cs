@@ -33,5 +33,4 @@ using Android.App;
 [assembly: UsesPermission (Android.Manifest.Permission.Internet)]
 [assembly: UsesPermission (Android.Manifest.Permission.WriteExternalStorage)]
 
-[assembly: Android.App.MetaData("com.google.android.maps.v2.API_KEY", Value = "AIzaSyAdstcJQswxEjzX5YjLaMcu2aRVEBJw39Y")]
 [assembly: Xamarin.Forms.ResolutionGroupName ("XamControl")]
