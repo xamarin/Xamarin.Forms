@@ -41,7 +41,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		AndroidApplicationLifecycleState _previousState;
 
-		bool _renderersAdded;
+		bool _renderersAdded, _isFullScreen;
 		int _statusBarHeight = -1;
 		global::Android.Views.View _statusBarUnderlay;
 
@@ -476,19 +476,27 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnWindowAttributesChanged(@params);
 
+			if (Xamarin.Forms.Application.Current == null || Xamarin.Forms.Application.Current.MainPage == null)
+				return;
+
 			if (@params.Flags.HasFlag(WindowManagerFlags.Fullscreen))
 			{
 				if (Forms.TitleBarVisibility != AndroidTitleBarVisibility.Never)
 					Forms.TitleBarVisibility = AndroidTitleBarVisibility.Never;
+
+				if (_isFullScreen)
+					return;
 			}
 			else
 			{
 				if (Forms.TitleBarVisibility != AndroidTitleBarVisibility.Default)
 					Forms.TitleBarVisibility = AndroidTitleBarVisibility.Default;
+
+				if (!_isFullScreen)
+					return;
 			}
 
-			if (Xamarin.Forms.Application.Current == null || Xamarin.Forms.Application.Current.MainPage == null)
-				return;
+			_isFullScreen = !_isFullScreen;
 
 			var displayMetrics = Resources.DisplayMetrics;
 			var width = displayMetrics.WidthPixels;
