@@ -318,20 +318,15 @@ namespace Xamarin.Forms.ControlGallery.Android
 			// uncomment to verify turning off title bar works. This is not intended to be dynamic really.
 			//Forms.SetTitleBarVisibility (AndroidTitleBarVisibility.Never);
 
-			var app = new App ();
+			var app = new App();
 
 			// When the native control gallery loads up, it'll let us know so we can add the nested native controls
 			MessagingCenter.Subscribe<NestedNativeControlGalleryPage>(this, NestedNativeControlGalleryPage.ReadyForNativeControlsMessage, AddNativeControls);
 
-					var nncgPage1 = args.Page as NativeBindingGalleryPage;
+			// When the native binding gallery loads up, it'll let us know so we can set up the native bindings
+			MessagingCenter.Subscribe<NativeBindingGalleryPage >(this, NativeBindingGalleryPage.ReadyForNativeBindingsMessage, AddNativeBindings);
 
-					if (nncgPage1 != null)
-					{
-						AddNativeBindings(nncgPage1);
-					}
-
-
-			LoadApplication (app);
+			LoadApplication(app);
 		}
 
 		public override void OnConfigurationChanged (global::Android.Content.Res.Configuration newConfig)

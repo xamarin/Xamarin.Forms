@@ -26,12 +26,9 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal
 
 			// When the native control gallery loads up, it'll let us know so we can add the nested native controls
 			MessagingCenter.Subscribe<NestedNativeControlGalleryPage>(this, NestedNativeControlGalleryPage.ReadyForNativeControlsMessage, AddNativeControls);
-					}
-
-					var nncgPage1 = args.Page as NativeBindingGalleryPage;
-
-					if (nncgPage1 != null) {
-						AddNativeBindings(nncgPage1);
+					
+			// When the native binding gallery loads up, it'll let us know so we can set up the native bindings
+			MessagingCenter.Subscribe<NativeBindingGalleryPage >(this, NativeBindingGalleryPage.ReadyForNativeBindingsMessage, AddNativeBindings);
 
 			LoadApplication (app);
         }

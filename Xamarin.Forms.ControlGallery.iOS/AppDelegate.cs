@@ -154,13 +154,9 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			// When the native control gallery loads up, it'll let us know so we can add the nested native controls
 			MessagingCenter.Subscribe<NestedNativeControlGalleryPage>(this, NestedNativeControlGalleryPage.ReadyForNativeControlsMessage, AddNativeControls);
 			MessagingCenter.Subscribe<Bugzilla40911>(this, Bugzilla40911.ReadyToSetUp40911Test, SetUp40911Test);
-		
 
-					var nncgPage1 = args.Page as NativeBindingGalleryPage;
-
-					if (nncgPage1 != null)
-					{
-						AddNativeBindings(nncgPage1);
+			// When the native binding gallery loads up, it'll let us know so we can set up the native bindings
+			MessagingCenter.Subscribe<NativeBindingGalleryPage >(this, NativeBindingGalleryPage.ReadyForNativeBindingsMessage, AddNativeBindings);
 
 			LoadApplication(app);
 			return base.FinishedLaunching(uiApplication, launchOptions);
@@ -310,7 +306,8 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			sl?.Children.Add(colorPicker);
 			page.NativeControlsAdded = true;
 		}
-#region Stuff for repro of Bugzilla case 40911
+
+		#region Stuff for repro of Bugzilla case 40911
 
 		void SetUp40911Test(Bugzilla40911 page)
 		{
@@ -329,11 +326,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			var loginViewController = new UIViewController { View = { BackgroundColor = UIColor.White } };
 			var button = UIButton.FromType (UIButtonType.RoundedRect);
             button.SetTitle ("Login", UIControlState.Normal);
-#if __UNIFIED__
-            button.Frame = new CoreGraphics.CGRect (20, 100, 200, 44);
-#else
-			button.Frame = new RectangleF (20, 100, 200, 44);
-#endif
+            button.Frame = new CGRect (20, 100, 200, 44);
             loginViewController.View.AddSubview (button);
 
             button.TouchUpInside += (sender, e) => {
@@ -351,7 +344,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
             vc.PresentViewController (loginViewController, true, null);
 		}
 
-#endregion
+		#endregion
 	}
 
 	public class ColorConverter : IValueConverter
