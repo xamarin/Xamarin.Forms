@@ -204,7 +204,7 @@ namespace Xamarin.Forms.Maps.Android
 				opts.SetPosition(new LatLng(pin.Position.Latitude, pin.Position.Longitude));
 				opts.SetTitle(pin.Label);
 				opts.SetSnippet(pin.Address);
-				Marker marker = map.AddMarker(opts);
+				var marker = map.AddMarker(opts);
 
 				// associate pin with marker for later lookup in event handlers
 				pin.Id = marker.Id;
@@ -215,7 +215,7 @@ namespace Xamarin.Forms.Maps.Android
 		void MapOnMarkerClick(object sender, GoogleMap.InfoWindowClickEventArgs eventArgs)
 		{
 			// clicked marker
-			Marker marker = eventArgs.Marker;
+			var marker = eventArgs.Marker;
 
 			// lookup pin
 			Pin targetPin = null;
@@ -312,7 +312,7 @@ namespace Xamarin.Forms.Maps.Android
 
 			foreach (Pin p in pins)
 			{
-				Marker marker = _markers.FirstOrDefault(m => (object)m.Id == p.Id);
+				var marker = _markers.FirstOrDefault(m => (object)m.Id == p.Id);
 				if (marker == null)
 				{
 					continue;
