@@ -62,18 +62,34 @@ namespace Xamarin.Forms.Controls
 		[Preserve(AllMembers = true)]
 		class ListViewPage : ContentPage
 		{
+			ListView _ListView;
+			List<Person> _People = new List<Person>();
+
 			public ListViewPage(string id)
 			{
 				Title = $"List {id}";
 
-				var people = new List<Person>();
-
 				for (var x = 0; x < 1000; x++)
 				{
-					people.Add(new Person("Bob", "Bobson", "San Francisco", "California"));
+					_People.Add(new Person("Bob", "Bobson", "San Francisco", "California"));
 				}
 
-				Content = new ListView(ListViewCachingStrategy.RecycleElement) { ItemsSource = people, ItemTemplate = new DataTemplate(typeof(ListViewCell)) };
+				_ListView = new ListView(ListViewCachingStrategy.RecycleElement) { ItemTemplate = new DataTemplate(typeof(ListViewCell)) };
+				Content = _ListView;
+			}
+
+			protected override void OnAppearing()
+			{
+				base.OnAppearing();
+
+				_ListView.ItemsSource = _People;
+			}
+
+			protected override void OnDisappearing()
+			{
+				base.OnDisappearing();
+
+				_ListView.ItemsSource = null;
 			}
 		}
 
