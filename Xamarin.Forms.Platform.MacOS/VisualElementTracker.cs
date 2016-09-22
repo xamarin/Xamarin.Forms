@@ -18,6 +18,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		// Track these by hand because the calls down into iOS are too expensive
 		bool _isInteractive;
 		Rectangle _lastBounds;
+		Rectangle _lastParentBounds;
 
 		CALayer _layer;
 		int _updateCount;
@@ -35,6 +36,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			renderer.ElementChanged += OnRendererElementChanged;
 			SetElement(null, renderer.Element);
 		}
+
+		IElementController ElementController => Renderer.Element as IElementController;
 
 		IVisualElementRenderer Renderer { get; set; }
 
@@ -99,6 +102,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		void OnUpdateNativeControl(CALayer caLayer)
 		{
 			var view = Renderer.Element;
+			var viewParent = view.RealParent as VisualElement;
 			var uiview = Renderer.NativeView;
 
 			if (view == null || view.Batched)
@@ -112,6 +116,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 
 			var boundsChanged = _lastBounds != view.Bounds;
+			var parentBoundsChanged = _lastParentBounds != (viewParent == null ? Rectangle.Zero : viewParent.Bounds);
+
 
 			var thread = !boundsChanged && !caLayer.Frame.IsEmpty;
 
@@ -158,8 +164,10 @@ namespace Xamarin.Forms.Platform.MacOS
 				var transform = CATransform3D.Identity;
 
 				// Dont ever attempt to actually change the layout of a Page unless it is a ContentPage
-				// iOS is a really big fan of you not actually modifying the View's of the UIViewControllers
-				if ((!(visualElement is Page) || visualElement is ContentPage) && width > 0 && height > 0 && parent != null && boundsChanged)
+				// iOS is a really big fan of you not actually modifying the View's of the NSViewControllers
+				// TODO: Find why it doesn't work to check if the parentsBounds changed  and remove true;
+				parentBoundsChanged = true;
+				if ((!(visualElement is Page) || visualElement is ContentPage) && width > 0 && height > 0 && parent != null && (boundsChanged || parentBoundsChanged))
 				{
 					var visualParent = parent as VisualElement;
 
@@ -177,33 +185,35 @@ namespace Xamarin.Forms.Platform.MacOS
 					return;
 				}
 
-				//caLayer.AnchorPoint = new PointF(anchorX, anchorY);
-				//caLayer.Opacity = opacity;
-				//const double epsilon = 0.001;
+				//anchor in MacOS is 0.0
+				caLayer.AnchorPoint = new PointF(anchorX - 0.5f, anchorY - 0.5f);
+				caLayer.Opacity = opacity;
+				const double epsilon = 0.001;
 
 				//// position is relative to anchor point
-				//if (Math.Abs(anchorX - .5) > epsilon)
-				//	transform = transform.Translate((anchorX - .5f) * width, 0, 0);
-				//if (Math.Abs(anchorY - .5) > epsilon)
-				//	transform = transform.Translate(0, (anchorY - .5f) * height, 0);
+				if (Math.Abs(anchorX - .5) > epsilon)
+					transform = transform.Translate((anchorX - .5f) * width, 0, 0);
+				if (Math.Abs(anchorY - .5) > epsilon)
+					transform = transform.Translate(0, (anchorY - .5f) * height, 0);
 
-				//if (Math.Abs(translationX) > epsilon || Math.Abs(translationY) > epsilon)
-				//	transform = transform.Translate(translationX, translationY, 0);
+				if (Math.Abs(translationX) > epsilon || Math.Abs(translationY) > epsilon)
+					transform = transform.Translate(translationX, translationY, 0);
 
-				//if (Math.Abs(scale - 1) > epsilon)
-				//	transform = transform.Scale(scale);
+				if (Math.Abs(scale - 1) > epsilon)
+					transform = transform.Scale(scale);
 
 				//// not just an optimization, iOS will not "pixel align" a view which has m34 set
-				//if (Math.Abs(rotationY % 180) > epsilon || Math.Abs(rotationX % 180) > epsilon)
-				//	transform.m34 = 1.0f / -400f;
+				// is it the same issue on MacOS?
+				if (Math.Abs(rotationY % 180) > epsilon || Math.Abs(rotationX % 180) > epsilon)
+					transform.m34 = 1.0f / -400f;
 
-				//if (Math.Abs(rotationX % 360) > epsilon)
-				//	transform = transform.Rotate(rotationX * (float)Math.PI / 180.0f, 1.0f, 0.0f, 0.0f);
-				//if (Math.Abs(rotationY % 360) > epsilon)
-				//	transform = transform.Rotate(rotationY * (float)Math.PI / 180.0f, 0.0f, 1.0f, 0.0f);
+				if (Math.Abs(rotationX % 360) > epsilon)
+					transform = transform.Rotate(rotationX * (float)Math.PI / 180.0f, 1.0f, 0.0f, 0.0f);
+				if (Math.Abs(rotationY % 360) > epsilon)
+					transform = transform.Rotate(rotationY * (float)Math.PI / 180.0f, 0.0f, 1.0f, 0.0f);
 
-				//transform = transform.Rotate(rotation * (float)Math.PI / 180.0f, 0.0f, 0.0f, 1.0f);
-				//caLayer.Transform = transform;
+				transform = transform.Rotate(rotation * (float)Math.PI / 180.0f, 0.0f, 0.0f, 1.0f);
+				caLayer.Transform = transform;
 			};
 
 			if (thread)
@@ -212,6 +222,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				update();
 
 			_lastBounds = view.Bounds;
+			_lastParentBounds = viewParent == null ? Rectangle.Zero : viewParent.Bounds;
 		}
 
 		void SetElement(VisualElement oldElement, VisualElement newElement)
@@ -249,11 +260,44 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			if (_layer == null)
 				return;
+			try
+			{
+				OnUpdateNativeControl(_layer);
+			}
+			catch (Exception ex)
+			{
 
-			OnUpdateNativeControl(_layer);
-
+			}
 			if (NativeControlUpdated != null)
 				NativeControlUpdated(this, EventArgs.Empty);
+
+
+			if (_element is Layout && ElementController != null)
+				EnsureChildrenPosition();
+
+		}
+
+		void EnsureChildrenPosition()
+		{
+			if (ElementController.LogicalChildren.Count == 0 || _lastBounds == _element.Bounds)
+				return;
+
+			try
+			{
+				for (var z = 0; z < ElementController.LogicalChildren.Count; z++)
+				{
+					var child = ElementController.LogicalChildren[z] as VisualElement;
+					if (child == null)
+						continue;
+					child.BatchBegin();
+					child.BatchCommit();
+				}
+			}
+			catch (Exception ex)
+			{
+
+			}
+
 		}
 	}
 }

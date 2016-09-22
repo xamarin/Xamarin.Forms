@@ -7,6 +7,7 @@ namespace Xamarin.Forms.Controls
 	{
 		public MacOSTestGallery()
 		{
+			mainDemoStack.Children.Add(MakeNewStackLayout());
 			var items = new List<MyItem1>();
 			for (int i = 0; i < 5000; i++)
 			{
@@ -121,7 +122,8 @@ namespace Xamarin.Forms.Controls
 								CreateButton(new Button.ButtonContentLayout(Button.ButtonContentLayout.ImagePosition.Left, 10)),
 								CreateButton(new Button.ButtonContentLayout(Button.ButtonContentLayout.ImagePosition.Top, 10)),
 								CreateButton(new Button.ButtonContentLayout(Button.ButtonContentLayout.ImagePosition.Bottom, 10)),
-								CreateButton(new Button.ButtonContentLayout(Button.ButtonContentLayout.ImagePosition.Right, 10))
+								CreateButton(new Button.ButtonContentLayout(Button.ButtonContentLayout.ImagePosition.Right, 10)),
+								mainDemoStack
 							}
 			};
 			var lbl = new Label { Text = "Second label", TextColor = Color.White, VerticalTextAlignment = TextAlignment.Start, HorizontalTextAlignment = TextAlignment.Center };
@@ -260,6 +262,7 @@ namespace Xamarin.Forms.Controls
 
 		static int _pageID;
 
+		static StackLayout mainDemoStack = new StackLayout { BackgroundColor = Color.Blue };
 
 		static ContentPage GetNewPage()
 		{
@@ -287,6 +290,32 @@ namespace Xamarin.Forms.Controls
 
 			return new ContentPage { Icon = "bank.png", BackgroundColor = _pageID % 2 == 0 ? Color.Blue : Color.Green, Title = label.Text, Content = lyout };
 		}
+
+		static StackLayout MakeNewStackLayout()
+		{
+			var count = 0;
+			var stacklayout = new StackLayout { BackgroundColor = Color.Red };
+
+			stacklayout.Children.Add(new Label { Text = $"HEllO {count}" });
+			stacklayout.Children.Add(new Button
+			{
+				Text = "Change layout",
+				Command = new Command(() =>
+				{
+					count += 2;
+					stacklayout.Children.RemoveAt(2);
+
+					var ll = new StackLayout();
+					ll.Children.Add(new Label { Text = $"HEllO {count}" });
+					ll.Children.Add(new Label { Text = $"HEllO {count + 1}" });
+					stacklayout.Children.Add(ll);
+				})
+			});
+			stacklayout.Children.Add(new Label { Text = $"HEllO {count + 1}" });
+			count += 2;
+			return stacklayout;
+		}
+
 
 
 		static Button CreateButton(Button.ButtonContentLayout layout)
