@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 
 			TabView.DrawsBackground = false;
-			TabStyle = NSTabViewControllerTabStyle.Toolbar;
+			TabStyle = NSTabViewControllerTabStyle.SegmentedControlOnTop;
 			TabView.TabViewType = NSTabViewType.NSNoTabsNoBorder;
 
 			Tabbed.PropertyChanged += OnPropertyChanged;
@@ -206,7 +206,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				if (pageRenderer != null)
 				{
 					pageRenderer.ViewController.Identifier = i.ToString();
-					var newTVI = new NSTabViewItem { ViewController = pageRenderer.ViewController, Color = NSColor.Purple };
+					var newTVI = new NSTabViewItem { ViewController = pageRenderer.ViewController, Label = page.Title };
 					if (page.Icon != null)
 						newTVI.Image = new NSImage(page.Icon);
 
