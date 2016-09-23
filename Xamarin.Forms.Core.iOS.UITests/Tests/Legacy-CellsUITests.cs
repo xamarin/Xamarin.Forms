@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-
+using System.Threading.Tasks;
 using NUnit.Framework;
 
 using Xamarin.Forms.CustomAttributes;
@@ -99,24 +99,25 @@ namespace Xamarin.Forms.Core.UITests
 		[Description("ListView with ImageCells, file access problems")]
 		[UiTest(typeof(ListView))]
 		[UiTest(typeof(ImageCell))]
-		public void CellsGalleryImageUrlCellList()
+		public async Task CellsGalleryImageUrlCellList()
 		{
 
 			App.ScrollForElement("* marked:'ImageCell Url List'", new Drag(ScreenBounds, Drag.Direction.BottomToTop, Drag.DragLength.Medium));
 
 			App.Tap(q => q.Marked("ImageCell Url List"));
 
-			var scollBounds = App.Query(q => q.Marked("ImageUrlCellListView")).First().Rect;
-			App.ScrollForElement("* marked:'Detail 200'", new Drag(scollBounds, Drag.Direction.BottomToTop, Drag.DragLength.Long), 40);
-
-			App.WaitForElement(q => q.Marked("Detail 200"), "Timeout : Detail 200");
+			//var scollBounds = App.Query(q => q.Marked("ImageUrlCellListView")).First().Rect;
+			//App.ScrollForElement("* marked:'Detail 200'", new Drag(scollBounds, Drag.Direction.BottomToTop, Drag.DragLength.Medium));
+			//App.ScrollUp();
+			//App.WaitForElement(q => q.Marked("Detail 200"), "Timeout : Detail 200");
 
 			App.Screenshot("All ImageCells are present");
 
+			await Task.Delay(1000);
 			var numberOfImages = App.Query(q => q.Raw(PlatformViews.Image)).Length;
 			// Check that there are images present. In Android, 
 			// have to make sure that there are more than 2 for navigation.
-			Assert.IsTrue(numberOfImages > 2;
+			Assert.IsTrue(numberOfImages > 2);
 
 			App.Screenshot("Images are present");
 		}
@@ -245,6 +246,7 @@ namespace Xamarin.Forms.Core.UITests
 
 			App.Screenshot("Before clicking Entry");
 
+#if !__IOS__
 			App.Tap(PlatformQueries.EntryCellWithPlaceholder("I am a placeholder"));
 			App.EnterText(PlatformQueries.EntryCellWithPlaceholder("I am a placeholder"), "Hi");
 			App.Screenshot("Entered Text");
@@ -252,6 +254,8 @@ namespace Xamarin.Forms.Core.UITests
 
 			App.WaitForElement(q => q.Marked("Entered: 1"));
 			App.Screenshot("Completed should have changed label's text");
+			
+#endif
 		}
 
 		protected override void TestTearDown()
