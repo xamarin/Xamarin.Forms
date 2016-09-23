@@ -210,8 +210,7 @@ namespace Xamarin.Forms
 
 			public void StartTimer(TimeSpan interval, Func<bool> callback)
 			{
-				NSTimer timer = null;
-				timer = NSTimer.CreateRepeatingScheduledTimer(interval, t =>
+				NSTimer timer = NSTimer.CreateRepeatingTimer(interval, t =>
 				{
 					if (!callback())
 						t.Invalidate();
