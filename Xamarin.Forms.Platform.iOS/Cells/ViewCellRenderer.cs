@@ -1,23 +1,8 @@
 using System;
 using System.ComponentModel;
-using Xamarin.Forms.Internals;
-
-#if __UNIFIED__
 using UIKit;
-#else
-using MonoTouch.UIKit;
-using System.Drawing;
-#endif
-#if __UNIFIED__
 using RectangleF = CoreGraphics.CGRect;
 using SizeF = CoreGraphics.CGSize;
-using PointF = CoreGraphics.CGPoint;
-
-#else
-using nfloat=System.Single;
-using nint=System.Int32;
-using nuint=System.UInt32;
-#endif
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -81,10 +66,7 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 			}
 
-			Element INativeElementView.Element
-			{
-				get { return ViewCell; }
-			}
+			Element INativeElementView.Element => ViewCell;
 
 			internal bool SupressSeparator { get; set; }
 
@@ -93,10 +75,11 @@ namespace Xamarin.Forms.Platform.iOS
 				//This sets the content views frame.
 				base.LayoutSubviews();
 
-				if (SupressSeparator)
+				//TODO: Determine how best to hide the separator line when there is an accessory on the cell
+				if (SupressSeparator && Accessory == UITableViewCellAccessory.None)
 				{
 					var oldFrame = Frame;
-					ContentView.Bounds = Frame = new RectangleF(oldFrame.Location, new SizeF(oldFrame.Width, oldFrame.Height + 0.5f));
+					ContentView.Bounds = new RectangleF(oldFrame.Location, new SizeF(oldFrame.Width, oldFrame.Height + 0.5f));
 				}
 
 				var contentFrame = ContentView.Frame;
@@ -118,10 +101,10 @@ namespace Xamarin.Forms.Platform.iOS
 				if (!_rendererRef.TryGetTarget(out renderer))
 					return base.SizeThatFits(size);
 
-                		if (renderer.Element == null)
-                			return SizeF.Empty;
-                			
-                		double width = size.Width;
+				if (renderer.Element == null)
+					return SizeF.Empty;
+
+				double width = size.Width;
 				var height = size.Height > 0 ? size.Height : double.PositiveInfinity;
 				var result = renderer.Element.Measure(width, height);
 

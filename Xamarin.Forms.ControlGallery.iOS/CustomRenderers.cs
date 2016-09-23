@@ -1,26 +1,14 @@
 ﻿using System;
-using Xamarin.Forms.Controls;
-using Xamarin.Forms;
-using Xamarin.Forms.Platform.iOS;
-using Xamarin.Forms.ControlGallery.iOS;
 using System.Collections.Generic;
-using System.Linq;
-using System.Drawing;
-using System.Collections;
-
-#if __UNIFIED__
-using UIKit;
-using MapKit;
 using CoreLocation;
 using Foundation;
+using MapKit;
+using UIKit;
+using Xamarin.Forms;
+using Xamarin.Forms.ControlGallery.iOS;
+using Xamarin.Forms.Controls;
+using Xamarin.Forms.Platform.iOS;
 using RectangleF = CoreGraphics.CGRect;
-
-#else
-using MonoTouch.UIKit;
-using MonoTouch.Foundation;
-using MonoTouch.MapKit;
-using MonoTouch.CoreLocation;
-#endif
 
 [assembly: ExportRenderer(typeof(Bugzilla21177.CollectionView), typeof(CollectionViewRenderer))]
 [assembly: ExportRenderer(typeof(Bugzilla31395.CustomContentView), typeof(CustomContentRenderer))]
@@ -29,6 +17,7 @@ using MonoTouch.CoreLocation;
 [assembly: ExportRenderer(typeof(NativeListView), typeof(NativeListViewRenderer))]
 [assembly: ExportRenderer(typeof(CustomMapView), typeof(CustomIOSMapRenderer))]
 [assembly: ExportRenderer(typeof(TabbedPage), typeof(TabbedPageWithCustomBarColorRenderer))]
+[assembly: ExportRenderer(typeof(Bugzilla43161.AccessoryViewCell), typeof(AccessoryViewCellRenderer))]
 namespace Xamarin.Forms.ControlGallery.iOS
 {
 	public class CustomIOSMapRenderer : ViewRenderer<CustomMapView, MKMapView>
@@ -325,7 +314,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
 		public IEnumerable<DataSource> Items
 		{
 			//get{ }
-			set { _tableItems =  new List<DataSource>(value); }
+			set { _tableItems = new List<DataSource>(value); }
 		}
 
 		public NativeiOSListViewSource(NativeListView2 view)
@@ -338,19 +327,10 @@ namespace Xamarin.Forms.ControlGallery.iOS
 		/// Called by the TableView to determine how many cells to create for that particular section.
 		/// </summary>
 
-#if __UNIFIED__
 		public override nint RowsInSection(UITableView tableview, nint section)
 		{
 			return _tableItems.Count;
 		}
-#else
-		public override int RowsInSection (UITableView tableview, int section)
-		{
-			return _tableItems.Count;
-		}
-
-#endif
-
 
 		#region user interaction methods
 
@@ -418,18 +398,10 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			_listView = view;
 		}
 
-#if __UNIFIED__
 		public override nint RowsInSection(UITableView tableview, nint section)
 		{
 			return _tableItems.Count;
 		}
-
-#else
-		public override int RowsInSection (UITableView tableview, int section)
-		{
-			return _tableItems.Count;
-		}
-#endif
 
 		#region user interaction methods
 
@@ -536,10 +508,9 @@ namespace Xamarin.Forms.ControlGallery.iOS
 		public override void ViewDidLoad()
 		{
 			base.ViewDidLoad();
-			CollectionView.RegisterClassForCell(typeof (CollectionViewCell), cellId);
+			CollectionView.RegisterClassForCell(typeof(CollectionViewCell), cellId);
 		}
 
-#if __UNIFIED__
 		public override nint NumberOfSections(UICollectionView collectionView)
 		{
 			return 1;
@@ -549,18 +520,6 @@ namespace Xamarin.Forms.ControlGallery.iOS
 		{
 			return items.Count;
 		}
-
-#else
-		public override int NumberOfSections (UICollectionView collectionView)
-		{
-			return 1;
-		}
-
-		public override int GetItemsCount (UICollectionView collectionView, int section)
-		{
-			return items.Count;
-		}
-#endif
 
 		public override UICollectionViewCell GetCell(UICollectionView collectionView, NSIndexPath indexPath)
 		{
@@ -602,6 +561,22 @@ namespace Xamarin.Forms.ControlGallery.iOS
 
 			//UITabBar.Appearance.TintColor = UIColor.White;
 			//UITabBar.Appearance.BarTintColor = UIColor.Purple;
+		}
+	}
+
+	public class AccessoryViewCellRenderer : ViewCellRenderer
+	{
+		public override UITableViewCell GetCell(Cell item, UITableViewCell reusableCell, UITableView tv)
+		{
+			var cell = base.GetCell(item, reusableCell, tv);
+
+			// remove highlight on selected cell
+			cell.SelectionStyle = UITableViewCellSelectionStyle.None;
+
+			// iOS right arrow
+			cell.Accessory = UITableViewCellAccessory.DisclosureIndicator;
+
+			return cell;
 		}
 	}
 }

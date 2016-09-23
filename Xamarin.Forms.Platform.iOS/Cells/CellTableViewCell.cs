@@ -1,12 +1,6 @@
 using System;
 using System.ComponentModel;
-using Xamarin.Forms.Internals;
-#if __UNIFIED__
 using UIKit;
-
-#else
-using MonoTouch.UIKit;
-#endif
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -32,7 +26,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (cellController != null)
 					Device.BeginInvokeOnMainThread(cellController.SendDisappearing);
-				
+
 				_cell = value;
 				cellController = value;
 
@@ -91,7 +85,7 @@ namespace Xamarin.Forms.Platform.iOS
 				contextCell.Update(tableView, cell, nativeCell);
 				var viewTableCell = contextCell.ContentCell as ViewCellRenderer.ViewTableCell;
 				if (viewTableCell != null)
-					viewTableCell.SupressSeparator = true;
+					viewTableCell.SupressSeparator = tableView.SeparatorStyle == UITableViewCellSeparatorStyle.None;
 				nativeCell = contextCell;
 			}
 
