@@ -18,6 +18,8 @@ namespace Xamarin.Forms.Platform.MacOS
 		VisualElementTracker _tracker;
 		Stack<PageWrapper> _currentStack = new Stack<PageWrapper>();
 
+		NSToolbar _toolbar => NSApplication.SharedApplication.MainWindow.Toolbar;
+
 		IPageController PageController => Element as IPageController;
 
 		IElementController ElementController => Element as IElementController;
@@ -35,6 +37,17 @@ namespace Xamarin.Forms.Platform.MacOS
 		public NavigationPageRenderer(IntPtr handle)
 		{
 			View = new FormsNSView { WantsLayer = true };
+
+		}
+
+		protected virtual NSToolbar ConfigureToolbar()
+		{
+			var toolbar = new NSToolbar("MainToolbar")
+			{
+				Delegate = new MainToolBarDelegate(GetCurrentPageTitle, GetPreviousPageTitle, NavigateBackFrombackButton)
+			};
+
+			return toolbar;
 		}
 
 		protected virtual void ConfigurePageRenderer()
@@ -136,6 +149,13 @@ namespace Xamarin.Forms.Platform.MacOS
 			var changed = ElementChanged;
 			if (changed != null)
 				changed(this, e);
+		}
+
+		public override void ViewWillDisappear()
+		{
+			base.ViewWillDisappear();
+			NSApplication.SharedApplication.MainWindow.ToggleToolbarShown(this);
+
 		}
 
 		public override void ViewDidDisappear()
@@ -356,20 +376,24 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			if (NavigationPage.GetHasNavigationBar(_currentStack.Peek().Page))
 			{
-				NSApplication.SharedApplication.MainWindow.Toolbar = new NSToolbar("MainToolbar")
-				{
-					Delegate = new MainToolBarDelegate(GetCurrentPageTitle, GetPreviousPageTitle, NavigateBackFrombackButton)
-				};
-
-				NSApplication.SharedApplication.MainWindow.Toolbar.InsertItem(MainToolBarDelegate.BackButtonIdentifier, 0);
-				NSApplication.SharedApplication.MainWindow.Toolbar.InsertItem(NSToolbar.NSToolbarFlexibleSpaceItemIdentifier, 1);
-				NSApplication.SharedApplication.MainWindow.Toolbar.InsertItem(MainToolBarDelegate.TitleIdentifier, 2);
-				NSApplication.SharedApplication.MainWindow.Toolbar.InsertItem(NSToolbar.NSToolbarFlexibleSpaceItemIdentifier, 3);
+				NSApplication.SharedApplication.MainWindow.Toolbar = ConfigureToolbar();
+				UpdateToolbarItems();
 			}
 			else
 			{
-				NSApplication.SharedApplication.MainWindow.Toolbar = null;
+				if (_toolbar != null && _toolbar.Visible)
+				{
+					NSApplication.SharedApplication.MainWindow.ToggleToolbarShown(this);
+				}
+
 			}
+		}
+		void UpdateToolbarItems()
+		{
+			_toolbar.InsertItem(MainToolBarDelegate.BackButtonIdentifier, 0);
+			_toolbar.InsertItem(NSToolbar.NSToolbarFlexibleSpaceItemIdentifier, 1);
+			_toolbar.InsertItem(MainToolBarDelegate.TitleIdentifier, 2);
+			_toolbar.InsertItem(NSToolbar.NSToolbarFlexibleSpaceItemIdentifier, 3);
 		}
 
 		async void NavigateBackFrombackButton()
