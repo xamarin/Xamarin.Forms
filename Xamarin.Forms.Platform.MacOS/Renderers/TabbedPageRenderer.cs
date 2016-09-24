@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 
 			TabView.DrawsBackground = false;
-			TabStyle = NSTabViewControllerTabStyle.SegmentedControlOnTop;
+			TabStyle = NSTabViewControllerTabStyle.Toolbar;
 			TabView.TabViewType = NSTabViewType.NSNoTabsNoBorder;
 
 			Tabbed.PropertyChanged += OnPropertyChanged;
