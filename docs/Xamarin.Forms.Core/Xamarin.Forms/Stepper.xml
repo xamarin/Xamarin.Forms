@@ -240,7 +240,7 @@
       <Docs>
         <summary>Gets or sets the maximum selectable value. This is a bindable property.</summary>
         <value>A double.</value>
-        <remarks>Must be data-bound before Value to avoid Value being set to default Maximum if Value is greater than default Maximum.</remarks>
+        <remarks>To be added.</remarks>
       </Docs>
     </Member>
     <Member MemberName="MaximumProperty">
@@ -281,9 +281,9 @@
         <ReturnType>System.Double</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Gets or sets the minimum selectable value. This is a bindable property.</summary>
+        <summary>Gets or sets the minimum selectabel value. This is a bindable property.</summary>
         <value>A double.</value>
-        <remarks>Must be data-bound before Value to avoid Value being set to default Minimum if Value is less than default Minimum.</remarks>
+        <remarks>To be added.</remarks>
       </Docs>
     </Member>
     <Member MemberName="MinimumProperty">
@@ -351,7 +351,7 @@
       <Docs>
         <summary>Gets or sets the current value. This is a bindable property.</summary>
         <value>A double.</value>
-        <remarks>Must be data-bound after Minimum and Maximum to avoid falling in the default stepper range.</remarks>
+        <remarks>To be added.</remarks>
       </Docs>
     </Member>
     <Member MemberName="ValueChanged">
