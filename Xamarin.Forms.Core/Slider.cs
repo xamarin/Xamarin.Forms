@@ -6,17 +6,6 @@ namespace Xamarin.Forms
 	[RenderWith(typeof(_SliderRenderer))]
 	public class Slider : View, IElementConfiguration<Slider>
 	{
-		public static readonly BindableProperty MaximumProperty = BindableProperty.Create("Maximum", typeof(double), typeof(Slider), 1d, validateValue: (bindable, value) =>
-		{
-			var slider = (Slider)bindable;
-			return (double)value > slider.Minimum;
-		}, coerceValue: (bindable, value) =>
-		{
-			var slider = (Slider)bindable;
-			slider.Value = slider.Value.Clamp(slider.Minimum, (double)value);
-			return value;
-		});
-
 		public static readonly BindableProperty MinimumProperty = BindableProperty.Create("Minimum", typeof(double), typeof(Slider), 0d, validateValue: (bindable, value) =>
 		{
 			var slider = (Slider)bindable;
@@ -28,6 +17,17 @@ namespace Xamarin.Forms
 			return value;
 		});
 
+		public static readonly BindableProperty MaximumProperty = BindableProperty.Create("Maximum", typeof(double), typeof(Slider), 1d, validateValue: (bindable, value) =>
+		{
+			var slider = (Slider)bindable;
+			return (double)value > slider.Minimum;
+		}, coerceValue: (bindable, value) =>
+		{
+			var slider = (Slider)bindable;
+			slider.Value = slider.Value.Clamp(slider.Minimum, (double)value);
+			return value;
+		});
+
 		public static readonly BindableProperty ValueProperty = BindableProperty.Create("Value", typeof(double), typeof(Slider), 0d, BindingMode.TwoWay, coerceValue: (bindable, value) =>
 		{
 			var slider = (Slider)bindable;
@@ -35,7 +35,9 @@ namespace Xamarin.Forms
 		}, propertyChanged: (bindable, oldValue, newValue) =>
 		{
 			var slider = (Slider)bindable;
-			slider.ValueChanged?.Invoke(slider, new ValueChangedEventArgs((double)oldValue, (double)newValue));
+			EventHandler<ValueChangedEventArgs> eh = slider.ValueChanged;
+			if (eh != null)
+				eh(slider, new ValueChangedEventArgs((double)oldValue, (double)newValue));
 		});
 
 		readonly Lazy<PlatformConfigurationRegistry<Slider>> _platformConfigurationRegistry;
@@ -48,7 +50,7 @@ namespace Xamarin.Forms
 		public Slider(double min, double max, double val) : this()
 		{
 			if (min >= max)
-				throw new ArgumentOutOfRangeException(nameof(min));
+				throw new ArgumentOutOfRangeException("min");
 
 			if (max > Minimum)
 			{
@@ -63,30 +65,18 @@ namespace Xamarin.Forms
 			Value = val.Clamp(min, max);
 		}
 
-		/// <summary>
-		/// Gets or sets the highest possible Value for the slider.
-		/// Must be data-bound before Value to avoid Value being set to default Maximum if Value is greater than default Maximum.
-		/// </summary>
 		public double Maximum
 		{
 			get { return (double)GetValue(MaximumProperty); }
 			set { SetValue(MaximumProperty, value); }
 		}
 
-		/// <summary>
-		/// Gets or sets the lowest possible Value for the slider.
-		/// Must be data-bound before Value to avoid Value being set to default Minimum if Value is less than default Minimum.
-		/// </summary>
 		public double Minimum
 		{
 			get { return (double)GetValue(MinimumProperty); }
 			set { SetValue(MinimumProperty, value); }
 		}
 
-		/// <summary>
-		/// Gets or sets the current value for the slider.
-		/// Must be data-bound after Minimum and Maximum to avoid falling in the default slider range.
-		/// </summary>
 		public double Value
 		{
 			get { return (double)GetValue(ValueProperty); }
