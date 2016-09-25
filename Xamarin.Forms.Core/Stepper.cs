@@ -35,9 +35,7 @@ namespace Xamarin.Forms
 		}, propertyChanged: (bindable, oldValue, newValue) =>
 		{
 			var stepper = (Stepper)bindable;
-			EventHandler<ValueChangedEventArgs> eh = stepper.ValueChanged;
-			if (eh != null)
-				eh(stepper, new ValueChangedEventArgs((double)oldValue, (double)newValue));
+			stepper.ValueChanged?.Invoke(stepper, new ValueChangedEventArgs((double)oldValue, (double)newValue));
 		});
 
 		public static readonly BindableProperty IncrementProperty = BindableProperty.Create("Increment", typeof(double), typeof(Stepper), 1.0);
@@ -52,7 +50,8 @@ namespace Xamarin.Forms
 		public Stepper(double min, double max, double val, double increment)
 		{
 			if (min >= max)
-				throw new ArgumentOutOfRangeException("min");
+				throw new ArgumentOutOfRangeException(nameof(min));
+
 			if (max > Minimum)
 			{
 				Maximum = max;
@@ -68,24 +67,39 @@ namespace Xamarin.Forms
 			Increment = increment;
 		}
 
+		/// <summary>
+		/// The increment by which Value is increased or decreased.
+		/// </summary>
 		public double Increment
 		{
 			get { return (double)GetValue(IncrementProperty); }
 			set { SetValue(IncrementProperty, value); }
 		}
 
+		/// <summary>
+		/// Gets or sets the highest possible Value for the stepper.
+		/// Must be data-bound before Value to avoid Value being set to default Maximum if Value is greater than default Maximum.
+		/// </summary>
 		public double Maximum
 		{
 			get { return (double)GetValue(MaximumProperty); }
 			set { SetValue(MaximumProperty, value); }
 		}
 
+		/// <summary>
+		/// Gets or sets the lowest possible Value for the stepper.
+		/// Must be data-bound before Value to avoid Value being set to default Minimum if Value is less than default Minimum.
+		/// </summary>
 		public double Minimum
 		{
 			get { return (double)GetValue(MinimumProperty); }
 			set { SetValue(MinimumProperty, value); }
 		}
 
+		/// <summary>
+		/// Gets or sets the current value for the stepper.
+		/// Must be data-bound after Minimum and Maximum to avoid falling in the default stepper range.
+		/// </summary>
 		public double Value
 		{
 			get { return (double)GetValue(ValueProperty); }
@@ -93,7 +107,7 @@ namespace Xamarin.Forms
 		}
 
 		public event EventHandler<ValueChangedEventArgs> ValueChanged;
-		
+
 		public IPlatformElementConfiguration<T, Stepper> On<T>() where T : IConfigPlatform
 		{
 			return _platformConfigurationRegistry.Value.On<T>();
