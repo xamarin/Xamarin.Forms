@@ -30,8 +30,8 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty ValueProperty = BindableProperty.Create("Value", typeof(double), typeof(Stepper), 0.0, BindingMode.TwoWay, (bindable, value) =>
 		{
-			var slider = (Slider)bindable;
-			return (double)value >= slider.Minimum && (double)value <= slider.Maximum;
+			var stepper = (Stepper)bindable;
+			return (double)value >= stepper.Minimum && (double)value <= stepper.Maximum;
 		}, coerceValue: (bindable, value) =>
 		{
 			var stepper = (Stepper)bindable;
