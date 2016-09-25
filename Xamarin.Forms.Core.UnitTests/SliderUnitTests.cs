@@ -70,6 +70,14 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
+		public void TestInvalidValue()
+		{
+			var slider = new Slider();
+			Assert.Throws<ArgumentException>(() => slider.Value = slider.Minimum - 1);
+			Assert.Throws<ArgumentException>(() => slider.Value = slider.Maximum + 1);
+		}
+
+		[Test]
 		public void TestValueChanged ()
 		{
 			var slider = new Slider ();

@@ -41,6 +41,14 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
+		public void TestInvalidValue()
+		{
+			var stepper = new Stepper();
+			Assert.Throws<ArgumentException>(() => stepper.Value = stepper.Minimum - 1);
+			Assert.Throws<ArgumentException>(() => stepper.Value = stepper.Maximum + 1);
+		}
+
+		[Test]
 		public void TestValidMaxValue ()
 		{
 			Stepper stepper = new Stepper ();
