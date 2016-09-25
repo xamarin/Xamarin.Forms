@@ -27,8 +27,8 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		public const string Key = "ContextActionsCell";
 
-		static readonly UIImage DestructiveBackground;
-		static readonly UIImage NormalBackground;
+		static readonly UIImage s_destructiveBackground;
+		static readonly UIImage s_normalBackground;
 		readonly List<UIButton> _buttons = new List<UIButton>();
 		readonly List<MenuItem> _menuItems = new List<MenuItem>();
 
@@ -46,12 +46,12 @@ namespace Xamarin.Forms.Platform.iOS
 			var context = UIGraphics.GetCurrentContext();
 			context.SetFillColor(1, 0, 0, 1);
 			context.FillRect(rect);
-			DestructiveBackground = UIGraphics.GetImageFromCurrentImageContext();
+			s_destructiveBackground = UIGraphics.GetImageFromCurrentImageContext();
 
 			context.SetFillColor(UIColor.LightGray.ToColor().ToCGColor());
 			context.FillRect(rect);
 
-			NormalBackground = UIGraphics.GetImageFromCurrentImageContext();
+			s_normalBackground = UIGraphics.GetImageFromCurrentImageContext();
 
 			context.Dispose();
 		}
@@ -66,15 +66,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public UITableViewCell ContentCell { get; private set; }
 
-		public bool IsOpen
-		{
-			get { return ScrollDelegate.IsOpen; }
-		}
+		public bool IsOpen => ScrollDelegate.IsOpen;
 
-		ContextScrollViewDelegate ScrollDelegate
-		{
-			get { return (ContextScrollViewDelegate)_scroller.Delegate; }
-		}
+		ContextScrollViewDelegate ScrollDelegate => (ContextScrollViewDelegate)_scroller.Delegate;
 
 		Element INativeElementView.Element
 		{
@@ -181,9 +175,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (_scroller == null)
 			{
-				_scroller = new UIScrollView(new RectangleF(0, 0, width, height));
-				_scroller.ScrollsToTop = false;
-				_scroller.ShowsHorizontalScrollIndicator = false;
+				_scroller = new UIScrollView(new RectangleF(0, 0, width, height))
+				{
+					ScrollsToTop = false,
+					ShowsHorizontalScrollIndicator = false
+				};
 
 				if (Forms.IsiOS8OrNewer)
 					_scroller.PreservesSuperviewLayoutMargins = true;
@@ -195,9 +191,8 @@ namespace Xamarin.Forms.Platform.iOS
 				_scroller.Frame = new RectangleF(0, 0, width, height);
 				isOpen = ScrollDelegate.IsOpen;
 
-				for (var i = 0; i < _buttons.Count; i++)
+				foreach (var b in _buttons)
 				{
-					var b = _buttons[i];
 					b.RemoveFromSuperview();
 					b.Dispose();
 				}
@@ -286,8 +281,8 @@ namespace Xamarin.Forms.Platform.iOS
 					_moreButton = null;
 				}
 
-				for (var i = 0; i < _buttons.Count; i++)
-					_buttons[i].Dispose();
+				foreach (UIButton b in _buttons)
+					b.Dispose();
 
 				_buttons.Clear();
 				_menuItems.Clear();
@@ -306,9 +301,9 @@ namespace Xamarin.Forms.Platform.iOS
 		void ActivateMore()
 		{
 			var displayed = new HashSet<nint>();
-			for (var i = 0; i < _buttons.Count; i++)
+			foreach (UIButton b in _buttons)
 			{
-				var tag = _buttons[i].Tag;
+				var tag = b.Tag;
 				if (tag >= 0)
 					displayed.Add(tag);
 			}
@@ -411,10 +406,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var button = new UIButton(new RectangleF(0, 0, 1, 1));
 
-			if (!item.IsDestructive)
-				button.SetBackgroundImage(NormalBackground, UIControlState.Normal);
-			else
-				button.SetBackgroundImage(DestructiveBackground, UIControlState.Normal);
+			button.SetBackgroundImage(!item.IsDestructive ? s_normalBackground : s_destructiveBackground, UIControlState.Normal);
 
 			button.SetTitle(item.Text, UIControlState.Normal);
 			button.TitleEdgeInsets = new UIEdgeInsets(0, 15, 0, 15);
@@ -442,9 +434,9 @@ namespace Xamarin.Forms.Platform.iOS
 		nfloat GetLargestWidth()
 		{
 			nfloat largestWidth = 0;
-			for (var i = 0; i < _buttons.Count; i++)
+			foreach (UIButton b in _buttons)
 			{
-				var frame = _buttons[i].Frame;
+				var frame = b.Frame;
 				if (frame.Width > largestWidth)
 					largestWidth = frame.Width;
 			}
@@ -579,7 +571,7 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 
 				var button = new UIButton(new RectangleF(0, 0, largestWidth, height));
-				button.SetBackgroundImage(NormalBackground, UIControlState.Normal);
+				button.SetBackgroundImage(s_normalBackground, UIControlState.Normal);
 				button.TitleEdgeInsets = new UIEdgeInsets(0, 15, 0, 15);
 				button.SetTitle(StringResources.More, UIControlState.Normal);
 
@@ -638,9 +630,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void SetupSelection(UITableView table)
 		{
-			for (var i = 0; i < table.GestureRecognizers.Length; i++)
+			foreach (UIGestureRecognizer gr in table.GestureRecognizers)
 			{
-				var r = table.GestureRecognizers[i] as SelectGestureRecognizer;
+				var r = gr as SelectGestureRecognizer;
 				if (r != null)
 					return;
 			}
@@ -672,8 +664,10 @@ namespace Xamarin.Forms.Platform.iOS
 			static void Tapped(UIGestureRecognizer recognizer)
 			{
 				var selector = (SelectGestureRecognizer)recognizer;
-
 				var table = (UITableView)recognizer.View;
+
+				if (selector._lastPath == null)
+					return;
 
 				if (!selector._lastPath.Equals(table.IndexPathForSelectedRow))
 					table.SelectRow(selector._lastPath, false, UITableViewScrollPosition.None);
@@ -683,10 +677,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		class MoreActionSheetController : UIAlertController
 		{
-			public override UIAlertControllerStyle PreferredStyle
-			{
-				get { return UIAlertControllerStyle.ActionSheet; }
-			}
+			public override UIAlertControllerStyle PreferredStyle => UIAlertControllerStyle.ActionSheet;
 
 			public override void WillRotate(UIInterfaceOrientation toInterfaceOrientation, double duration)
 			{
