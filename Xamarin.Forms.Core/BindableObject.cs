@@ -486,7 +486,7 @@ namespace Xamarin.Forms
 			for (var i = 0; i < properties.Count; i++)
 			{
 				BindablePropertyContext context = properties[i];
-				if (context != null || ReferenceEquals(context.Property, property))
+				if (context != null && ReferenceEquals(context.Property, property))
 					return context;
 			}
 
