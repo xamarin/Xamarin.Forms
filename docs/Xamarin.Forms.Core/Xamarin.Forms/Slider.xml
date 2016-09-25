@@ -182,8 +182,7 @@ namespace FormsGallery
       <Docs>
         <summary>Gets or sets the maximum selectable value for the Slider. This is a bindable property.</summary>
         <value>A double.</value>
-        <remarks>
-        </remarks>
+        <remarks>Must be data-bound before Value to avoid Value being set to default Maximum if Value is greater than default Maximum.</remarks>
       </Docs>
     </Member>
     <Member MemberName="MaximumProperty">
@@ -227,8 +226,7 @@ namespace FormsGallery
       <Docs>
         <summary>Gets or sets the minimum selectable value for the Slider. This is a bindable property.</summary>
         <value>A double.</value>
-        <remarks>
-        </remarks>
+        <remarks>Must be data-bound before Value to avoid Value being set to default Minimum if Value is less than default Minimum.</remarks>
       </Docs>
     </Member>
     <Member MemberName="MinimumProperty">
@@ -297,8 +295,7 @@ namespace FormsGallery
       <Docs>
         <summary>Gets or sets the current value. This is a bindable property.</summary>
         <value>A double.</value>
-        <remarks>
-        </remarks>
+        <remarks>Must be data-bound after Minimum and Maximum to avoid falling in the default slider range.</remarks>
       </Docs>
     </Member>
     <Member MemberName="ValueChanged">
