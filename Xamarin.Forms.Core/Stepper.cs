@@ -28,16 +28,18 @@ namespace Xamarin.Forms
 			return value;
 		});
 
-		public static readonly BindableProperty ValueProperty = BindableProperty.Create("Value", typeof(double), typeof(Stepper), 0.0, BindingMode.TwoWay, coerceValue: (bindable, value) =>
+		public static readonly BindableProperty ValueProperty = BindableProperty.Create("Value", typeof(double), typeof(Stepper), 0.0, BindingMode.TwoWay, (bindable, value) =>
+		{
+			var slider = (Slider)bindable;
+			return (double)value >= slider.Minimum && (double)value <= slider.Maximum;
+		}, coerceValue: (bindable, value) =>
 		{
 			var stepper = (Stepper)bindable;
 			return ((double)value).Clamp(stepper.Minimum, stepper.Maximum);
 		}, propertyChanged: (bindable, oldValue, newValue) =>
 		{
 			var stepper = (Stepper)bindable;
-			EventHandler<ValueChangedEventArgs> eh = stepper.ValueChanged;
-			if (eh != null)
-				eh(stepper, new ValueChangedEventArgs((double)oldValue, (double)newValue));
+			stepper.ValueChanged?.Invoke(stepper, new ValueChangedEventArgs((double)oldValue, (double)newValue));
 		});
 
 		public static readonly BindableProperty IncrementProperty = BindableProperty.Create("Increment", typeof(double), typeof(Stepper), 1.0);
@@ -52,7 +54,7 @@ namespace Xamarin.Forms
 		public Stepper(double min, double max, double val, double increment)
 		{
 			if (min >= max)
-				throw new ArgumentOutOfRangeException("min");
+				throw new ArgumentOutOfRangeException(nameof(min));
 			if (max > Minimum)
 			{
 				Maximum = max;
