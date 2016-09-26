@@ -234,9 +234,7 @@ namespace Xamarin.Forms
 				Rectangle newBound = ((VisualElement)LogicalChildrenInternal[i]).Bounds;
 				if (oldBound != newBound)
 				{
-					EventHandler handler = LayoutChanged;
-					if (handler != null)
-						handler(this, EventArgs.Empty);
+					LayoutChanged?.Invoke(this, EventArgs.Empty);
 					return;
 				}
 			}

@@ -66,9 +66,7 @@ namespace Xamarin.Forms
 
 		void IEntryCellController.SendCompleted()
 		{
-			EventHandler handler = Completed;
-			if (handler != null)
-				handler(this, EventArgs.Empty);
+			Completed?.Invoke(this, EventArgs.Empty);
 		}
 
 		static void OnHorizontalTextAlignmentPropertyChanged(BindableObject bindable, object oldValue, object newValue)

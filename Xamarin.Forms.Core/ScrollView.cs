@@ -133,9 +133,7 @@ namespace Xamarin.Forms
 			ScrollX = x;
 			ScrollY = y;
 
-			EventHandler<ScrolledEventArgs> handler = Scrolled;
-			if (handler != null)
-				handler(this, new ScrolledEventArgs(x, y));
+			Scrolled?.Invoke(this, new ScrolledEventArgs(x, y));
 		}
 
 		public event EventHandler<ScrolledEventArgs> Scrolled;
@@ -289,9 +287,7 @@ namespace Xamarin.Forms
 		void OnScrollToRequested(ScrollToRequestedEventArgs e)
 		{
 			CheckTaskCompletionSource();
-			EventHandler<ScrollToRequestedEventArgs> handler = ScrollToRequested;
-			if (handler != null)
-				handler(this, e);
+			ScrollToRequested?.Invoke(this, e);
 		}
 
 		event EventHandler<ScrollToRequestedEventArgs> ScrollToRequested;

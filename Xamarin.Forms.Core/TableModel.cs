@@ -46,8 +46,7 @@ namespace Xamarin.Forms
 
 		public void RowLongPressed(object item)
 		{
-			if (ItemLongPressed != null)
-				ItemLongPressed(this, new EventArg<object>(item));
+			ItemLongPressed?.Invoke(this, new EventArg<object>(item));
 
 			OnRowLongPressed(item);
 		}
@@ -59,8 +58,7 @@ namespace Xamarin.Forms
 
 		public void RowSelected(object item)
 		{
-			if (ItemSelected != null)
-				ItemSelected(this, new EventArg<object>(item));
+			ItemSelected?.Invoke(this, new EventArg<object>(item));
 
 			OnRowSelected(item);
 		}

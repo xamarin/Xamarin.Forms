@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -56,8 +56,7 @@ namespace Xamarin.Forms.Internals
 
 		void EmitCollectionChanged()
 		{
-			if (CollectionChanged != null)
-				CollectionChanged(this, EventArgs.Empty);
+			CollectionChanged?.Invoke(this, EventArgs.Empty);
 		}
 
 		IEnumerable<ToolbarItem> GetCurrentToolbarItems(Page page)
