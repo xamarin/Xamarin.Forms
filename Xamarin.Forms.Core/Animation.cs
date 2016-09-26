@@ -104,8 +104,7 @@ namespace Xamarin.Forms
 					if (val >= 1.0f)
 					{
 						animation._finishedTriggered = true;
-						if (animation._finished != null)
-							animation._finished();
+						animation._finished?.Invoke();
 					}
 				}
 			};

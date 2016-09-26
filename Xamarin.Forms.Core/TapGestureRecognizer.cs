@@ -46,9 +46,7 @@ namespace Xamarin.Forms
 				handler(sender, new TappedEventArgs(CommandParameter));
 
 #pragma warning disable 0618 // retain until TappedCallback removed
-			Action<View, object> callback = TappedCallback;
-			if (callback != null)
-				callback(sender, TappedCallbackParameter);
+			TappedCallback?.Invoke(sender, TappedCallbackParameter);
 #pragma warning restore
 		}
 

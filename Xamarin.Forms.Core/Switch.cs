@@ -8,9 +8,7 @@ namespace Xamarin.Forms
 	{
 		public static readonly BindableProperty IsToggledProperty = BindableProperty.Create("IsToggled", typeof(bool), typeof(Switch), false, propertyChanged: (bindable, oldValue, newValue) =>
 		{
-			EventHandler<ToggledEventArgs> eh = ((Switch)bindable).Toggled;
-			if (eh != null)
-				eh(bindable, new ToggledEventArgs((bool)newValue));
+			((Switch)bindable).Toggled?.Invoke(bindable, new ToggledEventArgs((bool)newValue));
 		}, defaultBindingMode: BindingMode.TwoWay);
 
 		readonly Lazy<PlatformConfigurationRegistry<Switch>> _platformConfigurationRegistry;

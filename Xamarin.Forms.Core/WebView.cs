@@ -66,16 +66,12 @@ namespace Xamarin.Forms
 
 		public void GoBack()
 		{
-			EventHandler handler = GoBackRequested;
-			if (handler != null)
-				handler(this, EventArgs.Empty);
+			GoBackRequested?.Invoke(this, EventArgs.Empty);
 		}
 
 		public void GoForward()
 		{
-			EventHandler handler = GoForwardRequested;
-			if (handler != null)
-				handler(this, EventArgs.Empty);
+			GoForwardRequested?.Invoke(this, EventArgs.Empty);
 		}
 
 		public event EventHandler<WebNavigatedEventArgs> Navigated;
@@ -118,16 +114,12 @@ namespace Xamarin.Forms
 
 		internal void SendNavigated(WebNavigatedEventArgs args)
 		{
-			EventHandler<WebNavigatedEventArgs> handler = Navigated;
-			if (handler != null)
-				handler(this, args);
+			Navigated?.Invoke(this, args);
 		}
 
 		internal void SendNavigating(WebNavigatingEventArgs args)
 		{
-			EventHandler<WebNavigatingEventArgs> handler = Navigating;
-			if (handler != null)
-				handler(this, args);
+			Navigating?.Invoke(this, args);
 		}
 
 		public IPlatformElementConfiguration<T, WebView> On<T>() where T : IConfigPlatform

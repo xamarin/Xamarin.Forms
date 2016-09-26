@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows.Input;
 
 namespace Xamarin.Forms
@@ -72,9 +72,7 @@ namespace Xamarin.Forms
 
 		public void ChangeCanExecute()
 		{
-			EventHandler changed = CanExecuteChanged;
-			if (changed != null)
-				changed(this, EventArgs.Empty);
+			CanExecuteChanged?.Invoke(this, EventArgs.Empty);
 		}
 	}
 }

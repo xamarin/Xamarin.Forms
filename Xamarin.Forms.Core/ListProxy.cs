@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -225,16 +225,12 @@ namespace Xamarin.Forms
 
 		void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
 		{
-			NotifyCollectionChangedEventHandler changed = CollectionChanged;
-			if (changed != null)
-				changed(this, e);
+			CollectionChanged?.Invoke(this, e);
 		}
 
 		void OnCountChanged()
 		{
-			EventHandler changed = CountChanged;
-			if (changed != null)
-				changed(this, EventArgs.Empty);
+			CountChanged?.Invoke(this, EventArgs.Empty);
 		}
 
 		bool TryGetValue(int index, out object value)

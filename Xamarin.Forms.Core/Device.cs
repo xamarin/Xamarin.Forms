@@ -65,26 +65,22 @@ namespace Xamarin.Forms
 				case TargetPlatform.iOS:
 					if (iOS != null)
 						iOS();
-					else if (Default != null)
-						Default();
-					break;
+					else Default?.Invoke();
+				break;
 				case TargetPlatform.Android:
 					if (Android != null)
 						Android();
-					else if (Default != null)
-						Default();
-					break;
+					else Default?.Invoke();
+				break;
 				case TargetPlatform.Windows:
 				case TargetPlatform.WinPhone:
 					if (WinPhone != null)
 						WinPhone();
-					else if (Default != null)
-						Default();
-					break;
+					else Default?.Invoke();
+				break;
 				case TargetPlatform.Other:
-					if (Default != null)
-						Default();
-					break;
+				Default?.Invoke();
+				break;
 			}
 		}
 

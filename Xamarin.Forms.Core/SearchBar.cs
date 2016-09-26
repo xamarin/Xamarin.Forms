@@ -15,9 +15,7 @@ namespace Xamarin.Forms
 			propertyChanged: (bindable, oldValue, newValue) =>
 			{
 				var searchBar = (SearchBar)bindable;
-				EventHandler<TextChangedEventArgs> eh = searchBar.TextChanged;
-				if (eh != null)
-					eh(searchBar, new TextChangedEventArgs((string)oldValue, (string)newValue));
+				searchBar.TextChanged?.Invoke(searchBar, new TextChangedEventArgs((string)oldValue, (string)newValue));
 			});
 
 		public static readonly BindableProperty CancelButtonColorProperty = BindableProperty.Create("CancelButtonColor", typeof(Color), typeof(SearchBar), default(Color));

@@ -257,8 +257,7 @@ namespace Xamarin.Forms
 
 			CurrentPage = (Page)PageController.InternalChildren.Last();
 
-			if (Popped != null)
-				Popped(this, args);
+			Popped?.Invoke(this, args);
 
 			return page;
 		}
@@ -338,8 +337,7 @@ namespace Xamarin.Forms
 					await args.Task;
 			}
 
-			if (PoppedToRoot != null)
-				PoppedToRoot(this, new PoppedToRootEventArgs(root, childrenToRemove.OfType<Page>().ToList()));
+			PoppedToRoot?.Invoke(this, new PoppedToRootEventArgs(root, childrenToRemove.OfType<Page>().ToList()));
 		}
 
 		async Task PushAsyncInner(Page page, bool animated)
@@ -360,8 +358,7 @@ namespace Xamarin.Forms
 					await args.Task;
 			}
 
-			if (Pushed != null)
-				Pushed(this, args);
+			Pushed?.Invoke(this, args);
 		}
 
 		void PushPage(Page page)
@@ -385,9 +382,7 @@ namespace Xamarin.Forms
 			if (!PageController.InternalChildren.Contains(page))
 				throw new ArgumentException("Page to remove must be contained on this Navigation Page");
 
-			EventHandler<NavigationRequestedEventArgs> handler = RemovePageRequestedInternal;
-			if (handler != null)
-				handler(this, new NavigationRequestedEventArgs(page, true));
+			RemovePageRequestedInternal?.Invoke(this, new NavigationRequestedEventArgs(page, true));
 
 			PageController.InternalChildren.Remove(page);
 		}

@@ -35,9 +35,7 @@ namespace Xamarin.Forms
 		}, propertyChanged: (bindable, oldValue, newValue) =>
 		{
 			var stepper = (Stepper)bindable;
-			EventHandler<ValueChangedEventArgs> eh = stepper.ValueChanged;
-			if (eh != null)
-				eh(stepper, new ValueChangedEventArgs((double)oldValue, (double)newValue));
+			stepper.ValueChanged?.Invoke(stepper, new ValueChangedEventArgs((double)oldValue, (double)newValue));
 		});
 
 		public static readonly BindableProperty IncrementProperty = BindableProperty.Create("Increment", typeof(double), typeof(Stepper), 1.0);

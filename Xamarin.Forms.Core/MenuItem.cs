@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows.Input;
 
 namespace Xamarin.Forms
@@ -80,9 +80,7 @@ namespace Xamarin.Forms
 
 		protected virtual void OnClicked()
 		{
-			EventHandler handler = Clicked;
-			if (handler != null)
-				handler(this, EventArgs.Empty);
+			Clicked?.Invoke(this, EventArgs.Empty);
 		}
 
 		void IMenuItemController.Activate()

@@ -16,9 +16,7 @@ namespace Xamarin.Forms
 
 		protected void OnSourceChanged()
 		{
-			EventHandler eh = SourceChanged;
-			if (eh != null)
-				eh(this, EventArgs.Empty);
+			SourceChanged?.Invoke(this, EventArgs.Empty);
 		}
 
 		internal abstract void Load(IWebViewDelegate renderer);
