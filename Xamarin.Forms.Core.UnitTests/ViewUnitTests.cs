@@ -720,7 +720,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				WidthRequest = 50,
 				MinimumWidthRequest = 100,
 				HeightRequest = 25,
-			    MinimumHeightRequest = 75
+				MinimumHeightRequest = 75
 			};
 			
 			Assert.AreEqual(50, view.WidthRequest);
