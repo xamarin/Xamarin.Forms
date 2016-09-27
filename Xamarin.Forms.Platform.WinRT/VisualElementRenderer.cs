@@ -170,7 +170,7 @@ namespace Xamarin.Forms.Platform.WinRT
 				Control.Arrange(myRect);
 			}
 
-			var arrangedChildren = new List<UIElement>();
+			List<UIElement> arrangedChildren = null;
 			for (var i = 0; i < ElementController.LogicalChildren.Count; i++)
 			{
 				var child = ElementController.LogicalChildren[i] as VisualElement;
@@ -183,7 +183,12 @@ namespace Xamarin.Forms.Platform.WinRT
 
 				renderer.ContainerElement.Arrange(new Rect(bounds.X, bounds.Y, Math.Max(0, bounds.Width), Math.Max(0, bounds.Height)));
 
-				arrangedChildren.Add(renderer.ContainerElement);
+				if (ArrangeNativeChildren)
+				{
+					if (arrangedChildren == null)
+						arrangedChildren = new List<UIElement>();
+					arrangedChildren.Add(renderer.ContainerElement);
+				}
 			}
 
 			if (ArrangeNativeChildren)
@@ -194,7 +199,7 @@ namespace Xamarin.Forms.Platform.WinRT
 				for (int i = 0; i < nativeChildren.Count; i++)
 				{
 					var nativeChild = nativeChildren[i];
-					if (arrangedChildren.Contains(nativeChild))
+					if (arrangedChildren?.Contains(nativeChild) == true)
 						// don't try to rearrange renderers that were just arranged, 
 						// lest you suffer a layout cycle
 						continue;
