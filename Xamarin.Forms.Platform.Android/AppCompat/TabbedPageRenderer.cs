@@ -100,6 +100,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 						pageRenderer.ViewGroup.RemoveFromParent();
 						pageRenderer.Dispose();
 					}
+					pageToRemove.PropertyChanged -= OnPagePropertyChanged;
 					pageToRemove.ClearValue(Android.Platform.RendererProperty);
 				}
 
