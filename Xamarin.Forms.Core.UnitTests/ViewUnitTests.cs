@@ -717,12 +717,17 @@ namespace Xamarin.Forms.Core.UnitTests
 			{
 				Platform = new UnitPlatform(),
 				IsPlatformEnabled = true,
-				WidthRequest = 50,
-				MinimumWidthRequest = 100,
+				WidthRequest = 50,				
 				HeightRequest = 25,
-				MinimumHeightRequest = 75
 			};
-			
+
+			bool signaled = false;
+			view.MeasureInvalidated += (sender, args) => signaled = true;
+
+			view.MinimumWidthRequest = 100;
+			view.MinimumHeightRequest = 75;
+
+			Assert.True(signaled);
 			Assert.AreEqual(50, view.WidthRequest);
 			Assert.AreEqual(100, view.MinimumWidthRequest);
 			Assert.AreEqual(25, view.HeightRequest);
