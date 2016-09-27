@@ -125,7 +125,7 @@ namespace Xamarin.Forms
 			if (horizontalOptions.Alignment != LayoutAlignment.Fill)
 			{
 				SizeRequest request = child.Measure(region.Width, region.Height, MeasureFlags.IncludeMargins);
-				double diff = Math.Max(0, region.Width - request.Request.Width);
+				double diff = Math.Max(0, region.Width - Math.Max(request.Request.Width, request.Minimum.Width));
 				region.X += (int)(diff * horizontalOptions.Alignment.ToDouble());
 				region.Width -= diff;
 			}
@@ -134,7 +134,7 @@ namespace Xamarin.Forms
 			if (verticalOptions.Alignment != LayoutAlignment.Fill)
 			{
 				SizeRequest request = child.Measure(region.Width, region.Height, MeasureFlags.IncludeMargins);
-				double diff = Math.Max(0, region.Height - request.Request.Height);
+				double diff = Math.Max(0, region.Height - Math.Max(request.Request.Height, request.Minimum.Height));
 				region.Y += (int)(diff * verticalOptions.Alignment.ToDouble());
 				region.Height -= diff;
 			}
@@ -253,7 +253,7 @@ namespace Xamarin.Forms
 				if (child.HorizontalOptions.Alignment != LayoutAlignment.Fill)
 				{
 					SizeRequest request = canUseAlreadyDoneRequest ? childSizeRequest : child.Measure(region.Width, region.Height, MeasureFlags.IncludeMargins);
-					double diff = Math.Max(0, region.Width - request.Request.Width);
+					double diff = Math.Max(0, region.Width - Math.Max(request.Request.Width, request.Minimum.Width));
 					region.X += (int)(diff * child.HorizontalOptions.Alignment.ToDouble());
 					region.Width -= diff;
 				}
@@ -261,7 +261,7 @@ namespace Xamarin.Forms
 				if (child.VerticalOptions.Alignment != LayoutAlignment.Fill)
 				{
 					SizeRequest request = canUseAlreadyDoneRequest ? childSizeRequest : child.Measure(region.Width, region.Height, MeasureFlags.IncludeMargins);
-					double diff = Math.Max(0, region.Height - request.Request.Height);
+					double diff = Math.Max(0, region.Height - Math.Max(request.Request.Height, request.Minimum.Height));
 					region.Y += (int)(diff * child.VerticalOptions.Alignment.ToDouble());
 					region.Height -= diff;
 				}

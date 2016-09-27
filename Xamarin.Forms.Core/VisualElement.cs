@@ -485,16 +485,10 @@ namespace Xamarin.Forms
 					minimum.Width = widthRequest;
 			}
 
-			double minimumHeightRequest = MinimumHeightRequest;
-			double minimumWidthRequest = MinimumWidthRequest;
-
-			if (minimumHeightRequest != -1)
-				minimum.Height = minimumHeightRequest;
-			if (minimumWidthRequest != -1)
-				minimum.Width = minimumWidthRequest;
-
-			minimum.Height = Math.Min(request.Height, minimum.Height);
-			minimum.Width = Math.Min(request.Width, minimum.Width);
+			if (MinimumHeightRequest != -1)
+				minimum.Height = MinimumHeightRequest;
+			if (MinimumWidthRequest != -1)
+				minimum.Width = MinimumWidthRequest;
 
 			var r = new SizeRequest(request, minimum);
 
