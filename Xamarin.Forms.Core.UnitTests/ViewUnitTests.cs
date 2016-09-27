@@ -711,6 +711,25 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
+		public void MinimumSizeRequest()
+		{
+			var view = new View
+			{
+				Platform = new UnitPlatform(),
+				IsPlatformEnabled = true,
+				WidthRequest = 50,
+				MinimumWidthRequest = 100,
+				HeightRequest = 25,
+			    MinimumHeightRequest = 75
+			};
+			
+			Assert.AreEqual(50, view.WidthRequest);
+			Assert.AreEqual(100, view.MinimumWidthRequest);
+			Assert.AreEqual(25, view.HeightRequest);
+			Assert.AreEqual(75, view.MinimumHeightRequest);
+		}
+
+		[Test]
 		public void StartTimerSimple ()
 		{
 			Device.PlatformServices = new MockPlatformServices ();
