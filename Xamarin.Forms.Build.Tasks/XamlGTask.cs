@@ -109,6 +109,18 @@ namespace Xamarin.Forms.Build.Tasks
 				return;
 			}
 
+			CodeCompileUnit compileUnit = GenerateCode(rootType, rootNs, baseType, namesAndTypes);
+
+			using (var writer = new StreamWriter(outFile))
+				Provider.GenerateCodeFromCompileUnit(compileUnit, writer, new CodeGeneratorOptions());
+		}
+
+		internal static CodeCompileUnit GenerateCode(string rootType, string rootNs, CodeTypeReference baseType,
+			IDictionary<string, CodeTypeReference> namesAndTypes)
+		{
+			if (rootType == null)
+				throw new ArgumentNullException(nameof(rootType));
+
 			var ccu = new CodeCompileUnit();
 			var declNs = new CodeNamespace(rootNs);
 			ccu.Namespaces.Add(declNs);
@@ -171,8 +183,7 @@ namespace Xamarin.Forms.Build.Tasks
 				initcomp.Statements.Add(assign);
 			}
 
-			using (var writer = new StreamWriter(outFile))
-				Provider.GenerateCodeFromCompileUnit(ccu, writer, new CodeGeneratorOptions());
+			return ccu;
 		}
 
 		internal static void GenerateFile(string xamlFile, string outFile)
