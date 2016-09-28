@@ -43,6 +43,8 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		void OnControlLoaded(object sender, RoutedEventArgs routedEventArgs)
 		{
+			Width = 200;
+
 			_foregroundDefault = Control.GetForegroundCache();
 			UpdateColor();
 		}
