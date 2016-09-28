@@ -113,9 +113,9 @@ namespace Xamarin.Forms.Build.Tasks
 			var declNs = new CodeNamespace(rootNs);
 			ccu.Namespaces.Add(declNs);
 
-			declNs.Imports.Add(new CodeNamespaceImport("System"));
-			declNs.Imports.Add(new CodeNamespaceImport("Xamarin.Forms"));
-			declNs.Imports.Add(new CodeNamespaceImport("Xamarin.Forms.Xaml"));
+			declNs.Imports.Add(new CodeNamespaceImport("global::System"));
+			declNs.Imports.Add(new CodeNamespaceImport("global::Xamarin.Forms"));
+			declNs.Imports.Add(new CodeNamespaceImport("global::Xamarin.Forms.Xaml"));
 
 			var declType = new CodeTypeDeclaration(rootType);
 			declType.IsPartial = true;
