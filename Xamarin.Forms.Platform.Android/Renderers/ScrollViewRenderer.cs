@@ -202,7 +202,18 @@ namespace Xamarin.Forms.Platform.Android
 		internal void UpdateScrollPosition(double x, double y)
 		{
 			if (_view != null)
+			{
+				if (_view.Orientation == ScrollOrientation.Horizontal || _view.Orientation == ScrollOrientation.Both)
+				{
+					if (x == 0)
+						x = _hScrollView.ScrollX;
+
+					if (y == 0)
+						y = ScrollY;
+				}
+
 				Controller.SetScrolledPosition(x, y);
+			}
 		}
 
 		static int GetDistance(double start, double position, double v)
