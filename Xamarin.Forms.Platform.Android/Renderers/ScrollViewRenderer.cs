@@ -259,8 +259,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			var x = (int)Forms.Context.ToPixels(e.ScrollX);
 			var y = (int)Forms.Context.ToPixels(e.ScrollY);
-			int currentX = _view.Orientation == ScrollOrientation.Horizontal ? _hScrollView.ScrollX : ScrollX;
-			int currentY = _view.Orientation == ScrollOrientation.Horizontal ? _hScrollView.ScrollY : ScrollY;
+			int currentX = _view.Orientation == ScrollOrientation.Horizontal || _view.Orientation == ScrollOrientation.Both ? _hScrollView.ScrollX : ScrollX;
+			int currentY = _view.Orientation == ScrollOrientation.Vertical || _view.Orientation == ScrollOrientation.Both ? ScrollY : _hScrollView.ScrollY;
 			if (e.Mode == ScrollToMode.Element)
 			{
 				Point itemPosition = Controller.GetScrollPositionForElement(e.Element as VisualElement, e.Position);
