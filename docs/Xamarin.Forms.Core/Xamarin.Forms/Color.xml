@@ -1388,7 +1388,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>AliceBlue, the color that is represented by the RGB value AliceBlue.</summary>
+        <summary>AliceBlue, the color that is represented by the RGB value #FFF0F8FF.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1403,7 +1403,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>AntiqueWhite, the color that is represented by the RGB value AntiqueWhite.</summary>
+        <summary>AntiqueWhite, the color that is represented by the RGB value #FFFAEBD7.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1418,7 +1418,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Aquamarine, the color that is represented by the RGB value Aquamarine.</summary>
+        <summary>Aquamarine, the color that is represented by the RGB value #FF7FFFD4.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1433,7 +1433,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Azure, the color that is represented by the RGB value Azure.</summary>
+        <summary>Azure, the color that is represented by the RGB value #FFF0FFFF.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1448,7 +1448,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Beige, the color that is represented by the RGB value Beige.</summary>
+        <summary>Beige, the color that is represented by the RGB value #FFF5F5DC.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1463,7 +1463,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Bisque, the color that is represented by the RGB value Bisque.</summary>
+        <summary>Bisque, the color that is represented by the RGB value #FFFFE4C4.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1478,7 +1478,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>BlanchedAlmond, the color that is represented by the RGB value BlanchedAlmond.</summary>
+        <summary>BlanchedAlmond, the color that is represented by the RGB value #FFFFEBCD.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1493,7 +1493,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>BlueViolet, the color that is represented by the RGB value BlueViolet.</summary>
+        <summary>BlueViolet, the color that is represented by the RGB value #FF8A2BE2.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1508,7 +1508,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Brown, the color that is represented by the RGB value Brown.</summary>
+        <summary>Brown, the color that is represented by the RGB value #FFA52A2A.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1523,7 +1523,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>BurlyWood, the color that is represented by the RGB value BurlyWood.</summary>
+        <summary>BurlyWood, the color that is represented by the RGB value #FFDEB887.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1538,7 +1538,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>CadetBlue, the color that is represented by the RGB value CadetBlue.</summary>
+        <summary>CadetBlue, the color that is represented by the RGB value #FF5F9EA0.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1553,7 +1553,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Chartreuse, the color that is represented by the RGB value Chartreuse.</summary>
+        <summary>Chartreuse, the color that is represented by the RGB value #FF7FFF00.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1568,7 +1568,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Chocolate, the color that is represented by the RGB value Chocolate.</summary>
+        <summary>Chocolate, the color that is represented by the RGB value #FFD2691E.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1583,7 +1583,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Coral, the color that is represented by the RGB value Coral.</summary>
+        <summary>Coral, the color that is represented by the RGB value #FFFF7F50.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1598,7 +1598,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>CornflowerBlue, the color that is represented by the RGB value CornflowerBlue.</summary>
+        <summary>CornflowerBlue, the color that is represented by the RGB value #FF6495ED.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1613,7 +1613,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Cornsilk, the color that is represented by the RGB value Cornsilk.</summary>
+        <summary>Cornsilk, the color that is represented by the RGB value #FFFFF8DC.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1628,7 +1628,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Crimson, the color that is represented by the RGB value Crimson.</summary>
+        <summary>Crimson, the color that is represented by the RGB value #FFDC143C.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1643,7 +1643,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Cyan, the color that is represented by the RGB value Cyan.</summary>
+        <summary>Cyan, the color that is represented by the RGB value #FF00FFFF.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1658,7 +1658,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>DarkBlue, the color that is represented by the RGB value DarkBlue.</summary>
+        <summary>DarkBlue, the color that is represented by the RGB value #FF00008B.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1673,7 +1673,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>DarkCyan, the color that is represented by the RGB value DarkCyan.</summary>
+        <summary>DarkCyan, the color that is represented by the RGB value #FF008B8B.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1688,7 +1688,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>DarkGoldenrod, the color that is represented by the RGB value DarkGoldenrod.</summary>
+        <summary>DarkGoldenrod, the color that is represented by the RGB value #FFB8860B.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1703,7 +1703,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>DarkGray, the color that is represented by the RGB value DarkGray.</summary>
+        <summary>DarkGray, the color that is represented by the RGB value #FFA9A9A9.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1718,7 +1718,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>DarkGreen, the color that is represented by the RGB value DarkGreen.</summary>
+        <summary>DarkGreen, the color that is represented by the RGB value #FF006400.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1733,7 +1733,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>DarkKhaki, the color that is represented by the RGB value DarkKhaki.</summary>
+        <summary>DarkKhaki, the color that is represented by the RGB value #FFBDB76B.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1748,7 +1748,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>DarkMagenta, the color that is represented by the RGB value DarkMagenta.</summary>
+        <summary>DarkMagenta, the color that is represented by the RGB value #FF8B008B.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1763,7 +1763,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>DarkOliveGreen, the color that is represented by the RGB value DarkOliveGreen.</summary>
+        <summary>DarkOliveGreen, the color that is represented by the RGB value #FF556B2F.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1778,7 +1778,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>DarkOrange, the color that is represented by the RGB value DarkOrange.</summary>
+        <summary>DarkOrange, the color that is represented by the RGB value #FFFF8C00.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1793,7 +1793,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>DarkOrchid, the color that is represented by the RGB value DarkOrchid.</summary>
+        <summary>DarkOrchid, the color that is represented by the RGB value #FF9932CC.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1808,7 +1808,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>DarkRed, the color that is represented by the RGB value DarkRed.</summary>
+        <summary>DarkRed, the color that is represented by the RGB value #FF8B0000.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1823,7 +1823,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>DarkSalmon, the color that is represented by the RGB value DarkSalmon.</summary>
+        <summary>DarkSalmon, the color that is represented by the RGB value #FFE9967A.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1838,7 +1838,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>DarkSeaGreen, the color that is represented by the RGB value DarkSeaGreen.</summary>
+        <summary>DarkSeaGreen, the color that is represented by the RGB value #FF8FBC8F.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1853,7 +1853,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>DarkSlateBlue, the color that is represented by the RGB value DarkSlateBlue.</summary>
+        <summary>DarkSlateBlue, the color that is represented by the RGB value #FF483D8B.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1868,7 +1868,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>DarkSlateGray, the color that is represented by the RGB value DarkSlateGray.</summary>
+        <summary>DarkSlateGray, the color that is represented by the RGB value #FF2F4F4F.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1883,7 +1883,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>DarkTurquoise, the color that is represented by the RGB value DarkTurquoise.</summary>
+        <summary>DarkTurquoise, the color that is represented by the RGB value #FF00CED1.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1898,7 +1898,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>DarkViolet, the color that is represented by the RGB value DarkViolet.</summary>
+        <summary>DarkViolet, the color that is represented by the RGB value #FF9400D3.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1913,7 +1913,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>DeepPink, the color that is represented by the RGB value DeepPink.</summary>
+        <summary>DeepPink, the color that is represented by the RGB value #FFFF1493.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1928,7 +1928,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>DeepSkyBlue, the color that is represented by the RGB value DeepSkyBlue.</summary>
+        <summary>DeepSkyBlue, the color that is represented by the RGB value #FF00BFFF.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1943,7 +1943,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>DimGray, the color that is represented by the RGB value DimGray.</summary>
+        <summary>DimGray, the color that is represented by the RGB value #FF696969.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1958,7 +1958,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>DodgerBlue, the color that is represented by the RGB value DodgerBlue.</summary>
+        <summary>DodgerBlue, the color that is represented by the RGB value #FF1E90FF.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1973,7 +1973,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Firebrick, the color that is represented by the RGB value Firebrick.</summary>
+        <summary>Firebrick, the color that is represented by the RGB value #FFB22222.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -1988,7 +1988,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>FloralWhite, the color that is represented by the RGB value FloralWhite.</summary>
+        <summary>FloralWhite, the color that is represented by the RGB value #FFFFFAF0.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2003,7 +2003,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>ForestGreen, the color that is represented by the RGB value ForestGreen.</summary>
+        <summary>ForestGreen, the color that is represented by the RGB value #FF228B22.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2018,7 +2018,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Gainsboro, the color that is represented by the RGB value Gainsboro.</summary>
+        <summary>Gainsboro, the color that is represented by the RGB value #FFDCDCDC.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2033,7 +2033,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>GhostWhite, the color that is represented by the RGB value GhostWhite.</summary>
+        <summary>GhostWhite, the color that is represented by the RGB value #FFF8F8FF.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2048,7 +2048,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Gold, the color that is represented by the RGB value Gold.</summary>
+        <summary>Gold, the color that is represented by the RGB value #FFFFD700.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2063,7 +2063,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Goldenrod, the color that is represented by the RGB value Goldenrod.</summary>
+        <summary>Goldenrod, the color that is represented by the RGB value #FFDAA520.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2078,7 +2078,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>GreenYellow, the color that is represented by the RGB value GreenYellow.</summary>
+        <summary>GreenYellow, the color that is represented by the RGB value #FFADFF2F.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2093,7 +2093,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Honeydew, the color that is represented by the RGB value Honeydew.</summary>
+        <summary>Honeydew, the color that is represented by the RGB value #FFF0FFF0.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2108,7 +2108,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>HotPink, the color that is represented by the RGB value HotPink.</summary>
+        <summary>HotPink, the color that is represented by the RGB value #FFFF69B4.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2123,7 +2123,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>IndianRed, the color that is represented by the RGB value IndianRed.</summary>
+        <summary>IndianRed, the color that is represented by the RGB value #FFCD5C5C.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2138,7 +2138,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Indigo, the color that is represented by the RGB value Indigo.</summary>
+        <summary>Indigo, the color that is represented by the RGB value #FF4B0082.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2153,7 +2153,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Ivory, the color that is represented by the RGB value Ivory.</summary>
+        <summary>Ivory, the color that is represented by the RGB value #FFFFFFF0.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2168,7 +2168,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Khaki, the color that is represented by the RGB value Khaki.</summary>
+        <summary>Khaki, the color that is represented by the RGB value #FFF0E68C.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2183,7 +2183,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Lavender, the color that is represented by the RGB value Lavender.</summary>
+        <summary>Lavender, the color that is represented by the RGB value #FFE6E6FA.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2198,7 +2198,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>LavenderBlush, the color that is represented by the RGB value LavenderBlush.</summary>
+        <summary>LavenderBlush, the color that is represented by the RGB value #FFFFF0F5.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2213,7 +2213,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>LawnGreen, the color that is represented by the RGB value LawnGreen.</summary>
+        <summary>LawnGreen, the color that is represented by the RGB value #FF7CFC00.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2228,7 +2228,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>LemonChiffon, the color that is represented by the RGB value LemonChiffon.</summary>
+        <summary>LemonChiffon, the color that is represented by the RGB value #FFFFFACD.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2243,7 +2243,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>LightBlue, the color that is represented by the RGB value LightBlue.</summary>
+        <summary>LightBlue, the color that is represented by the RGB value #FFADD8E6.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2258,7 +2258,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>LightCoral, the color that is represented by the RGB value LightCoral.</summary>
+        <summary>LightCoral, the color that is represented by the RGB value #FFF08080.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2273,7 +2273,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>LightCyan, the color that is represented by the RGB value LightCyan.</summary>
+        <summary>LightCyan, the color that is represented by the RGB value #FFE0FFFF.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2288,7 +2288,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>LightGoldenrodYellow, the color that is represented by the RGB value LightGoldenrodYellow.</summary>
+        <summary>LightGoldenrodYellow, the color that is represented by the RGB value #FFFAFAD2.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2303,7 +2303,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>LightGray, the color that is represented by the RGB value LightGray.</summary>
+        <summary>LightGray, the color that is represented by the RGB value #FFD3D3D3.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2318,7 +2318,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>LightGreen, the color that is represented by the RGB value LightGreen.</summary>
+        <summary>LightGreen, the color that is represented by the RGB value #FF90EE90.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2333,7 +2333,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>LightPink, the color that is represented by the RGB value LightPink.</summary>
+        <summary>LightPink, the color that is represented by the RGB value #FFFFB6C1.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2348,7 +2348,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>LightSalmon, the color that is represented by the RGB value LightSalmon.</summary>
+        <summary>LightSalmon, the color that is represented by the RGB value #FFFFA07A.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2363,7 +2363,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>LightSeaGreen, the color that is represented by the RGB value LightSeaGreen.</summary>
+        <summary>LightSeaGreen, the color that is represented by the RGB value #FF20B2AA.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2378,7 +2378,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>LightSkyBlue, the color that is represented by the RGB value LightSkyBlue.</summary>
+        <summary>LightSkyBlue, the color that is represented by the RGB value #FF87CEFA.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2393,7 +2393,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>LightSlateGray, the color that is represented by the RGB value LightSlateGray.</summary>
+        <summary>LightSlateGray, the color that is represented by the RGB value #FF778899.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2408,7 +2408,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>LightSteelBlue, the color that is represented by the RGB value LightSteelBlue.</summary>
+        <summary>LightSteelBlue, the color that is represented by the RGB value #FFB0C4DE.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2423,7 +2423,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>LightYellow, the color that is represented by the RGB value LightYellow.</summary>
+        <summary>LightYellow, the color that is represented by the RGB value #FFFFFFE0.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2438,7 +2438,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>LimeGreen, the color that is represented by the RGB value LimeGreen.</summary>
+        <summary>LimeGreen, the color that is represented by the RGB value #FF32CD32.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2453,7 +2453,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Linen, the color that is represented by the RGB value Linen.</summary>
+        <summary>Linen, the color that is represented by the RGB value #FFFAF0E6.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2468,7 +2468,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Magenta, the color that is represented by the RGB value Magenta.</summary>
+        <summary>Magenta, the color that is represented by the RGB value #FFFF00FF.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2483,7 +2483,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>MediumAquamarine, the color that is represented by the RGB value MediumAquamarine.</summary>
+        <summary>MediumAquamarine, the color that is represented by the RGB value #FF66CDAA.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2498,7 +2498,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>MediumBlue, the color that is represented by the RGB value MediumBlue.</summary>
+        <summary>MediumBlue, the color that is represented by the RGB value #FF0000CD.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2513,7 +2513,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>MediumOrchid, the color that is represented by the RGB value MediumOrchid.</summary>
+        <summary>MediumOrchid, the color that is represented by the RGB value #FFBA55D3.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2528,7 +2528,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>MediumPurple, the color that is represented by the RGB value MediumPurple.</summary>
+        <summary>MediumPurple, the color that is represented by the RGB value #FF9370DB.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2543,7 +2543,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>MediumSeaGreen, the color that is represented by the RGB value MediumSeaGreen.</summary>
+        <summary>MediumSeaGreen, the color that is represented by the RGB value #FF3CB371.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2558,7 +2558,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>MediumSlateBlue, the color that is represented by the RGB value MediumSlateBlue.</summary>
+        <summary>MediumSlateBlue, the color that is represented by the RGB value #FF7B68EE.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2573,7 +2573,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>MediumSpringGreen, the color that is represented by the RGB value MediumSpringGreen.</summary>
+        <summary>MediumSpringGreen, the color that is represented by the RGB value #FF00FA9A.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2588,7 +2588,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>MediumTurquoise, the color that is represented by the RGB value MediumTurquoise.</summary>
+        <summary>MediumTurquoise, the color that is represented by the RGB value #FF48D1CC.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2603,7 +2603,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>MediumVioletRed, the color that is represented by the RGB value MediumVioletRed.</summary>
+        <summary>MediumVioletRed, the color that is represented by the RGB value #FFC71585.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2618,7 +2618,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>MidnightBlue, the color that is represented by the RGB value MidnightBlue.</summary>
+        <summary>MidnightBlue, the color that is represented by the RGB value #FF191970.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2633,7 +2633,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>MintCream, the color that is represented by the RGB value MintCream.</summary>
+        <summary>MintCream, the color that is represented by the RGB value #FFF5FFFA.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2648,7 +2648,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>MistyRose, the color that is represented by the RGB value MistyRose.</summary>
+        <summary>MistyRose, the color that is represented by the RGB value #FFFFE4E1.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2663,7 +2663,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Moccasin, the color that is represented by the RGB value Moccasin.</summary>
+        <summary>Moccasin, the color that is represented by the RGB value #FFFFE4B5.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2678,7 +2678,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>NavajoWhite, the color that is represented by the RGB value NavajoWhite.</summary>
+        <summary>NavajoWhite, the color that is represented by the RGB value #FFFFDEAD.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2693,7 +2693,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>OldLace, the color that is represented by the RGB value OldLace.</summary>
+        <summary>OldLace, the color that is represented by the RGB value #FFFDF5E6.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2708,7 +2708,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>OliveDrab, the color that is represented by the RGB value OliveDrab.</summary>
+        <summary>OliveDrab, the color that is represented by the RGB value #FF6B8E23.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2723,7 +2723,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>OrangeRed, the color that is represented by the RGB value OrangeRed.</summary>
+        <summary>OrangeRed, the color that is represented by the RGB value #FFFF4500.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2738,7 +2738,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Orchid, the color that is represented by the RGB value Orchid.</summary>
+        <summary>Orchid, the color that is represented by the RGB value #FFDA70D6.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2753,7 +2753,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>PaleGoldenrod, the color that is represented by the RGB value PaleGoldenrod.</summary>
+        <summary>PaleGoldenrod, the color that is represented by the RGB value #FFEEE8AA.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2768,7 +2768,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>PaleGreen, the color that is represented by the RGB value PaleGreen.</summary>
+        <summary>PaleGreen, the color that is represented by the RGB value #FF98FB98.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2783,7 +2783,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>PaleTurquoise, the color that is represented by the RGB value PaleTurquoise.</summary>
+        <summary>PaleTurquoise, the color that is represented by the RGB value #FFAFEEEE.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2798,7 +2798,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>PaleVioletRed, the color that is represented by the RGB value PaleVioletRed.</summary>
+        <summary>PaleVioletRed, the color that is represented by the RGB value #FFDB7093.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2813,7 +2813,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>PapayaWhip, the color that is represented by the RGB value PapayaWhip.</summary>
+        <summary>PapayaWhip, the color that is represented by the RGB value #FFFFEFD5.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2828,7 +2828,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>PeachPuff, the color that is represented by the RGB value PeachPuff.</summary>
+        <summary>PeachPuff, the color that is represented by the RGB value #FFFFDAB9.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2843,7 +2843,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Peru, the color that is represented by the RGB value Peru.</summary>
+        <summary>Peru, the color that is represented by the RGB value #FFCD853F.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2858,7 +2858,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Plum, the color that is represented by the RGB value Plum.</summary>
+        <summary>Plum, the color that is represented by the RGB value #FFDDA0DD.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2873,7 +2873,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>PowderBlue, the color that is represented by the RGB value PowderBlue.</summary>
+        <summary>PowderBlue, the color that is represented by the RGB value #FFB0E0E6.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2888,7 +2888,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>RosyBrown, the color that is represented by the RGB value RosyBrown.</summary>
+        <summary>RosyBrown, the color that is represented by the RGB value #FFBC8F8F.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2903,7 +2903,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>RoyalBlue, the color that is represented by the RGB value RoyalBlue.</summary>
+        <summary>RoyalBlue, the color that is represented by the RGB value #FF4169E1.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2918,7 +2918,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>SaddleBrown, the color that is represented by the RGB value SaddleBrown.</summary>
+        <summary>SaddleBrown, the color that is represented by the RGB value #FF8B4513.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2933,7 +2933,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Salmon, the color that is represented by the RGB value Salmon.</summary>
+        <summary>Salmon, the color that is represented by the RGB value #FFFA8072.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2948,7 +2948,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>SandyBrown, the color that is represented by the RGB value SandyBrown.</summary>
+        <summary>SandyBrown, the color that is represented by the RGB value #FFF4A460.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2963,7 +2963,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>SeaGreen, the color that is represented by the RGB value SeaGreen.</summary>
+        <summary>SeaGreen, the color that is represented by the RGB value #FF2E8B57.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2978,7 +2978,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>SeaShell, the color that is represented by the RGB value SeaShell.</summary>
+        <summary>SeaShell, the color that is represented by the RGB value #FFFFF5EE.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -2993,7 +2993,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Sienna, the color that is represented by the RGB value Sienna.</summary>
+        <summary>Sienna, the color that is represented by the RGB value #FFA0522D.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -3008,7 +3008,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>SkyBlue, the color that is represented by the RGB value SkyBlue.</summary>
+        <summary>SkyBlue, the color that is represented by the RGB value #FF87CEEB.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -3023,7 +3023,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>SlateBlue, the color that is represented by the RGB value SlateBlue.</summary>
+        <summary>SlateBlue, the color that is represented by the RGB value #FF6A5ACD.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -3038,7 +3038,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>SlateGray, the color that is represented by the RGB value SlateGray.</summary>
+        <summary>SlateGray, the color that is represented by the RGB value #FF708090.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -3053,7 +3053,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Snow, the color that is represented by the RGB value Snow.</summary>
+        <summary>Snow, the color that is represented by the RGB value #FFFFFAFA.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -3068,7 +3068,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>SpringGreen, the color that is represented by the RGB value SpringGreen.</summary>
+        <summary>SpringGreen, the color that is represented by the RGB value #FF00FF7F.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -3083,7 +3083,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>SteelBlue, the color that is represented by the RGB value SteelBlue.</summary>
+        <summary>SteelBlue, the color that is represented by the RGB value #FF4682B4.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -3098,7 +3098,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Tan, the color that is represented by the RGB value Tan.</summary>
+        <summary>Tan, the color that is represented by the RGB value #FFD2B48C.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -3113,7 +3113,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Thistle, the color that is represented by the RGB value Thistle.</summary>
+        <summary>Thistle, the color that is represented by the RGB value #FFD8BFD8.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -3128,7 +3128,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Tomato, the color that is represented by the RGB value Tomato.</summary>
+        <summary>Tomato, the color that is represented by the RGB value #FFFF6347.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -3143,7 +3143,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Turquoise, the color that is represented by the RGB value Turquoise.</summary>
+        <summary>Turquoise, the color that is represented by the RGB value #FF40E0D0.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -3158,7 +3158,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Violet, the color that is represented by the RGB value Violet.</summary>
+        <summary>Violet, the color that is represented by the RGB value #FFEE82EE.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -3173,7 +3173,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Wheat, the color that is represented by the RGB value Wheat.</summary>
+        <summary>Wheat, the color that is represented by the RGB value #FFF5DEB3.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -3188,7 +3188,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>WhiteSmoke, the color that is represented by the RGB value WhiteSmoke.</summary>
+        <summary>WhiteSmoke, the color that is represented by the RGB value #FFF5F5F5.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
@@ -3203,7 +3203,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>YellowGreen, the color that is represented by the RGB value YellowGreen.</summary>
+        <summary>YellowGreen, the color that is represented by the RGB value #FF9ACD32.</summary>
         <remarks></remarks>
       </Docs>
     </Member>
