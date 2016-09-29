@@ -203,7 +203,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (_view != null)
 			{
-				if (_view.Orientation == ScrollOrientation.Horizontal || _view.Orientation == ScrollOrientation.Both)
+				if (_view.Orientation == ScrollOrientation.Both)
 				{
 					if (x == 0)
 						x = _hScrollView.ScrollX;
