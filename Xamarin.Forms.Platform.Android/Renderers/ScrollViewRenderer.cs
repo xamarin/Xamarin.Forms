@@ -286,10 +286,19 @@ namespace Xamarin.Forms.Platform.Android
 						return;
 					}
 
-					if (_view.Orientation == ScrollOrientation.Horizontal)
-						_hScrollView.ScrollTo(distX, distY);
-					else
-						ScrollTo(distX, distY);
+					switch (_view.Orientation)
+					{
+						case ScrollOrientation.Horizontal:
+							_hScrollView.ScrollTo(distX, distY);
+							break;
+						case ScrollOrientation.Vertical:
+							ScrollTo(distX, distY);
+							break;
+						default:
+							_hScrollView.ScrollTo(distX, distY);
+							ScrollTo(distX, distY);
+							break;
+					}
 				};
 				animator.AnimationEnd += delegate
 				{
@@ -302,10 +311,19 @@ namespace Xamarin.Forms.Platform.Android
 			}
 			else
 			{
-				if (_view.Orientation == ScrollOrientation.Horizontal)
-					_hScrollView.ScrollTo(x, y);
-				else
-					ScrollTo(x, y);
+				switch (_view.Orientation)
+				{
+					case ScrollOrientation.Horizontal:
+						_hScrollView.ScrollTo(x, y);
+						break;
+					case ScrollOrientation.Vertical:
+						ScrollTo(x, y);
+						break;
+					default:
+						_hScrollView.ScrollTo(x, y);
+						ScrollTo(x, y);
+						break;
+				}
 				Controller.SendScrollFinished();
 			}
 		}
