@@ -206,10 +206,10 @@ namespace Xamarin.Forms.Platform.Android
 				if (_view.Orientation == ScrollOrientation.Both)
 				{
 					if (x == 0)
-						x = _hScrollView.ScrollX;
+						x = Forms.Context.FromPixels(_hScrollView.ScrollX);
 
 					if (y == 0)
-						y = ScrollY;
+						y = Forms.Context.FromPixels(ScrollY);
 				}
 
 				Controller.SetScrolledPosition(x, y);
