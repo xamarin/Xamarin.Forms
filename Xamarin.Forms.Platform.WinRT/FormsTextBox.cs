@@ -37,7 +37,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		public new static readonly DependencyProperty TextProperty = DependencyProperty.Register(nameof(Text), typeof(string), typeof(FormsTextBox), new PropertyMetadata("", TextPropertyChanged));
 
-		static InputScope s_passwordInputScope;
+		InputScope s_passwordInputScope;
 		Border _borderElement;
 		InputScope _cachedInputScope;
 		bool _cachedPredictionsSetting;
@@ -87,7 +87,7 @@ namespace Xamarin.Forms.Platform.WinRT
 			set { SetValue(TextProperty, value); }
 		}
 
-		static InputScope PasswordInputScope
+		InputScope PasswordInputScope
 		{
 			get
 			{
