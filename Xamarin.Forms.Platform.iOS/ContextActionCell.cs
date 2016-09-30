@@ -672,11 +672,11 @@ namespace Xamarin.Forms.Platform.iOS
 			static void Tapped(UIGestureRecognizer recognizer)
 			{
 				var selector = (SelectGestureRecognizer)recognizer;
-				var table = (UITableView)recognizer.View;
 
 				if (selector._lastPath == null)
 					return;
 
+				var table = (UITableView)recognizer.View;
 				if (!selector._lastPath.Equals(table.IndexPathForSelectedRow))
 					table.SelectRow(selector._lastPath, false, UITableViewScrollPosition.None);
 				table.Source.RowSelected(table, selector._lastPath);
