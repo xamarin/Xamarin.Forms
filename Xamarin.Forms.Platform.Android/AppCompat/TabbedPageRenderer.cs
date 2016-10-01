@@ -179,9 +179,14 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					ScrollToCurrentPage();
 
 				UpdateIgnoreContainerAreas();
-				((IPageController)tabbedPage).InternalChildren.CollectionChanged += OnChildrenCollectionChanged;
 				UpdateBarBackgroundColor();
 				UpdateBarTextColor();
+
+				((IPageController)tabbedPage).InternalChildren.CollectionChanged += OnChildrenCollectionChanged;
+				foreach (Page child in tabbedPage.Children)
+				{
+					child.PropertyChanged += ChildOnPropertyChanged;
+				}
 			}
 		}
 
@@ -261,6 +266,31 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			}
 
 			UpdateIgnoreContainerAreas();
+
+			if (e.OldItems != null)
+			{
+				foreach (Page child in e.OldItems)
+				{
+					child.PropertyChanged -= ChildOnPropertyChanged;
+				}
+			}
+
+			if (e.NewItems != null)
+			{
+				foreach (Page child in e.NewItems)
+				{
+					child.PropertyChanged += ChildOnPropertyChanged;
+				}
+			}
+		}
+
+		void ChildOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChangedEventArgs)
+		{
+			if (propertyChangedEventArgs.PropertyName != Page.TitleProperty.PropertyName)
+				return;
+
+			TabLayout.Tab tab = _tabLayout.GetTabAt(Element.Children.IndexOf(sender));
+			tab.SetText((sender as Page).Title);
 		}
 
 		void ScrollToCurrentPage()
