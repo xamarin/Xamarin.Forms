@@ -1,41 +1,32 @@
-﻿namespace Xamarin.Forms.PlatformConfiguration.iOSSpecific
+﻿using System;
+using System.Collections.Generic;
+
+namespace Xamarin.Forms.PlatformConfiguration.iOSSpecific
 {
 	using FormsElement = Forms.Entry;
 
 	public static class Entry
 	{
-		public static readonly BindableProperty HasDoneButtonProperty = BindableProperty.Create("HasDoneButton", typeof(bool), typeof(Entry), false);
+		public static readonly BindableProperty KeyboardToolbarProperty = BindableProperty.Create("KeyboardToolbar", typeof(List<Tuple<UIBarButtonSystemItem, Action>>), typeof(Entry));
 
-		public static bool GetHasDoneButton(BindableObject element)
+		public static List<Tuple<UIBarButtonSystemItem, Action>> GetKeyboardToolbar(BindableObject element)
 		{
-			return (bool)element.GetValue(HasDoneButtonProperty);
+			return (List<Tuple<UIBarButtonSystemItem, Action>>)element.GetValue(KeyboardToolbarProperty);
 		}
 
-		public static void SetHasDoneButton(BindableObject element, bool value)
+		public static void SetKeyboardToolbar(BindableObject element, List<Tuple<UIBarButtonSystemItem, Action>> value)
 		{
-			element.SetValue(HasDoneButtonProperty, value);
+			element.SetValue(KeyboardToolbarProperty, value);
 		}
 
-		public static bool HasDoneButton(this IPlatformElementConfiguration<iOS, FormsElement> config)
+		public static List<Tuple<UIBarButtonSystemItem, Action>> KeyboardToolbar(this IPlatformElementConfiguration<iOS, FormsElement> config)
 		{
-			return GetHasDoneButton(config.Element);
+			return GetKeyboardToolbar(config.Element);
 		}
 
-		public static IPlatformElementConfiguration<iOS, FormsElement> SetHasDoneButton(this IPlatformElementConfiguration<iOS, FormsElement> config, bool value)
+		public static IPlatformElementConfiguration<iOS, FormsElement> SetKeyboardToolbar(this IPlatformElementConfiguration<iOS, FormsElement> config, List<Tuple<UIBarButtonSystemItem, Action>> value)
 		{
-			SetHasDoneButton(config.Element, value);
-			return config;
-		}
-
-		public static IPlatformElementConfiguration<iOS, FormsElement> EnableDoneButton(this IPlatformElementConfiguration<iOS, FormsElement> config)
-		{
-			SetHasDoneButton(config.Element, true);
-			return config;
-		}
-
-		public static IPlatformElementConfiguration<iOS, FormsElement> DisableDoneButton(this IPlatformElementConfiguration<iOS, FormsElement> config)
-		{
-			SetHasDoneButton(config.Element, false);
+			SetKeyboardToolbar(config.Element, value);
 			return config;
 		}
 	}
