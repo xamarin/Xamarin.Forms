@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 
 using System.Drawing;
+using System.Linq;
 using CoreGraphics;
 using UIKit;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
@@ -64,7 +65,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateFont();
 				UpdateKeyboard();
 				UpdateAlignment();
-				UpdateHasDoneButton();
+				UpdateKeyboardToolbar();
 			}
 		}
 
@@ -93,8 +94,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateColor();
 				UpdatePlaceholder();
 			}
-			else if (e.PropertyName == PlatformConfiguration.iOSSpecific.Entry.HasDoneButtonProperty.PropertyName)
-				UpdateHasDoneButton();
+			else if (e.PropertyName == PlatformConfiguration.iOSSpecific.Entry.KeyboardToolbarProperty.PropertyName)
+				UpdateKeyboardToolbar();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -183,28 +184,36 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.Text = Element.Text;
 		}
 
-		void UpdateHasDoneButton()
+		void UpdateKeyboardToolbar()
 		{
-			if (Element.OnThisPlatform().HasDoneButton())
+			var list = Element.OnThisPlatform().KeyboardToolbar();
+
+			if (list == null || list.Count == 0)
 			{
+				Control.InputAccessoryView = null;
+			}
+			else
+			{
+				var count = new UIBarButtonItem[list.Count];
+				for (var i = 0; i < count.Length; i++)
+				{
+					int local = i;
+					count[i] = new UIBarButtonItem((UIKit.UIBarButtonSystemItem)(long)list[i].Item1, delegate
+					{
+						BeginInvokeOnMainThread(() =>
+						{
+							var action = list[local].Item2;
+							action?.Invoke();
+						});
+					});
+				}
+
 				Control.InputAccessoryView = new UIToolbar(new CGRect(0.0f, 0.0f, Control.Frame.Size.Width, 44.0f))
 				{
 					BarTintColor = UIColor.FromRGB(240, 240, 240),
 					Translucent = false,
-					Items = new[]
-					{
-						new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace),
-						new UIBarButtonItem(UIBarButtonSystemItem.Done, delegate
-						{
-							Control.ResignFirstResponder();
-							((IEntryController)Element).SendCompleted();
-						}) { TintColor = UIColor.FromRGB(50, 50, 50) }
-					}
+					Items = count
 				};
-			}
-			else
-			{
-				Control.InputAccessoryView = null;
 			}
 		}
 	}
