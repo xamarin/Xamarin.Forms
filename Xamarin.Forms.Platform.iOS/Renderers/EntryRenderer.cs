@@ -2,7 +2,9 @@ using System;
 using System.ComponentModel;
 
 using System.Drawing;
+using CoreGraphics;
 using UIKit;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -62,6 +64,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateFont();
 				UpdateKeyboard();
 				UpdateAlignment();
+				UpdateHasDoneButton();
 			}
 		}
 
@@ -90,6 +93,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateColor();
 				UpdatePlaceholder();
 			}
+			else if (e.PropertyName == PlatformConfiguration.iOSSpecific.Entry.HasDoneButtonProperty.PropertyName)
+				UpdateHasDoneButton();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -176,6 +181,31 @@ namespace Xamarin.Forms.Platform.iOS
 			// ReSharper disable once RedundantCheckBeforeAssignment
 			if (Control.Text != Element.Text)
 				Control.Text = Element.Text;
+		}
+
+		void UpdateHasDoneButton()
+		{
+			if (Element.OnThisPlatform().HasDoneButton())
+			{
+				Control.InputAccessoryView = new UIToolbar(new CGRect(0.0f, 0.0f, Control.Frame.Size.Width, 44.0f))
+				{
+					BarTintColor = UIColor.FromRGB(240, 240, 240),
+					Translucent = false,
+					Items = new[]
+					{
+						new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace),
+						new UIBarButtonItem(UIBarButtonSystemItem.Done, delegate
+						{
+							Control.ResignFirstResponder();
+							((IEntryController)Element).SendCompleted();
+						}) { TintColor = UIColor.FromRGB(50, 50, 50) }
+					}
+				};
+			}
+			else
+			{
+				Control.InputAccessoryView = null;
+			}
 		}
 	}
 }
