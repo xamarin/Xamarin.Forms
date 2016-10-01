@@ -1,10 +1,10 @@
 ﻿namespace Xamarin.Forms.PlatformConfiguration.iOSSpecific
 {
-	using FormsElement = Forms.InputView;
+	using FormsElement = Forms.Entry;
 
-	public static class InputView
+	public static class Entry
 	{
-		public static readonly BindableProperty HasDoneButtonProperty = BindableProperty.Create("HasDoneButton", typeof(bool), typeof(InputView), false);
+		public static readonly BindableProperty HasDoneButtonProperty = BindableProperty.Create("HasDoneButton", typeof(bool), typeof(Entry), false);
 
 		public static bool GetHasDoneButton(BindableObject element)
 		{
