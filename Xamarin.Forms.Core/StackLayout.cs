@@ -469,18 +469,12 @@ namespace Xamarin.Forms
 				if (layoutInformation.Plots != null)
 				{
 					Plots = new Rectangle[layoutInformation.Plots.Length];
-					for (var i = 0; i < Plots.Length; i++)
-					{
-						Plots[i] = layoutInformation.Plots[i];
-					}
+					Array.Copy(layoutInformation.Plots, Plots, layoutInformation.Plots.Length);
 				}
 				if (layoutInformation.Requests != null)
 				{
 					Requests = new SizeRequest[layoutInformation.Requests.Length];
-					for (var i = 0; i < Requests.Length; i++)
-					{
-						Requests[i] = layoutInformation.Requests[i];
-					}
+					Array.Copy(layoutInformation.Requests, Requests, layoutInformation.Requests.Length);
 				}
 			}
 		}
