@@ -91,6 +91,7 @@
     <Compile Include="PlatformConfiguration\ExtensionPoints.cs" />
     <Compile Include="PlatformConfiguration\iOSSpecific\BlurEffectStyle.cs" />
     <Compile Include="PlatformConfiguration\iOSSpecific\Entry.cs" />
+    <Compile Include="PlatformConfiguration\iOSSpecific\KeyboardToolbarItem.cs" />
     <Compile Include="PlatformConfiguration\iOSSpecific\NavigationPage.cs" />
     <Compile Include="PlatformConfiguration\iOSSpecific\UIBarButtonSystemItem.cs" />
     <Compile Include="PlatformConfiguration\iOSSpecific\VisualElement.cs" />

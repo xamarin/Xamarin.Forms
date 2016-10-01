@@ -198,14 +198,14 @@ namespace Xamarin.Forms.Platform.iOS
 				for (var i = 0; i < count.Length; i++)
 				{
 					int local = i;
-					count[i] = new UIBarButtonItem((UIKit.UIBarButtonSystemItem)(long)list[i].Item1, delegate
+					count[local] = new UIBarButtonItem((UIKit.UIBarButtonSystemItem)(long)list[local].UIBarButtonSystemItem, delegate
 					{
 						BeginInvokeOnMainThread(() =>
 						{
-							var action = list[local].Item2;
+							var action = list[local].Action;
 							action?.Invoke();
 						});
-					});
+					}){ TintColor = list[local].TintColor.ToUIColor() };
 				}
 
 				Control.InputAccessoryView = new UIToolbar(new CGRect(0.0f, 0.0f, Control.Frame.Size.Width, 44.0f))
