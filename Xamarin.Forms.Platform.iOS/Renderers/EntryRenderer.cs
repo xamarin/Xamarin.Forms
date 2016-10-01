@@ -191,30 +191,29 @@ namespace Xamarin.Forms.Platform.iOS
 			if (list == null || list.Count == 0)
 			{
 				Control.InputAccessoryView = null;
+				return;
 			}
-			else
-			{
-				var count = new UIBarButtonItem[list.Count];
-				for (var i = 0; i < count.Length; i++)
-				{
-					int local = i;
-					count[local] = new UIBarButtonItem((UIKit.UIBarButtonSystemItem)(long)list[local].UIBarButtonSystemItem, delegate
-					{
-						BeginInvokeOnMainThread(() =>
-						{
-							var action = list[local].Action;
-							action?.Invoke();
-						});
-					}){ TintColor = list[local].TintColor.ToUIColor() };
-				}
 
-				Control.InputAccessoryView = new UIToolbar(new CGRect(0.0f, 0.0f, Control.Frame.Size.Width, 44.0f))
+			var count = new UIBarButtonItem[list.Count];
+			for (var i = 0; i < count.Length; i++)
+			{
+				int local = i;
+				count[local] = new UIBarButtonItem((UIKit.UIBarButtonSystemItem)(long)list[local].UIBarButtonSystemItem, delegate
 				{
-					BarTintColor = UIColor.FromRGB(240, 240, 240),
-					Translucent = false,
-					Items = count
-				};
+					BeginInvokeOnMainThread(() =>
+					{
+						var action = list[local].Action;
+						action?.Invoke();
+					});
+				}){ TintColor = list[local].TintColor.ToUIColor() };
 			}
+
+			Control.InputAccessoryView = new UIToolbar(new CGRect(0.0f, 0.0f, Control.Frame.Size.Width, 44.0f))
+			{
+				BarTintColor = UIColor.FromRGB(240, 240, 240),
+				Translucent = false,
+				Items = count
+			};
 		}
 	}
 }
