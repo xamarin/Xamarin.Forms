@@ -32,7 +32,7 @@ namespace Xamarin.Forms
 				return;
 			}
 
-			if (width == _layoutInformation.Constraint.Width && height == _layoutInformation.Constraint.Height)
+			if (width == _layoutInformation.Constraint.Width && height == _layoutInformation.Constraint.Height && _layoutInformation.Plots != null)
 			{
 				StackOrientation orientation = Orientation;
 
