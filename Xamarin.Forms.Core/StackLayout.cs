@@ -44,7 +44,7 @@ namespace Xamarin.Forms
 				CalculateLayout(_layoutInformation, x, y, width, height, true);
 			}
 
-			LayoutInformation layoutInformationCopy = _layoutInformation;
+			LayoutInformation layoutInformationCopy = new LayoutInformation(_layoutInformation);
 
 			for (var i = 0; i < LogicalChildrenInternal.Count; i++)
 			{
@@ -456,6 +456,33 @@ namespace Xamarin.Forms
 			public Size MinimumSize;
 			public Rectangle[] Plots;
 			public SizeRequest[] Requests;
+
+			public LayoutInformation() { }
+
+			public LayoutInformation(LayoutInformation layoutInformation)
+			{
+				Bounds = layoutInformation.Bounds;
+				CompressionSpace = layoutInformation.CompressionSpace;
+				Constraint = layoutInformation.Constraint;
+				Expanders = layoutInformation.Expanders;
+				MinimumSize = layoutInformation.MinimumSize;
+				if (layoutInformation.Plots != null)
+				{
+					Plots = new Rectangle[layoutInformation.Plots.Length];
+					for (var i = 0; i < Plots.Length; i++)
+					{
+						Plots[i] = layoutInformation.Plots[i];
+					}
+				}
+				if (layoutInformation.Requests != null)
+				{
+					Requests = new SizeRequest[layoutInformation.Requests.Length];
+					for (var i = 0; i < Requests.Length; i++)
+					{
+						Requests[i] = layoutInformation.Requests[i];
+					}
+				}
+			}
 		}
 	}
 }
