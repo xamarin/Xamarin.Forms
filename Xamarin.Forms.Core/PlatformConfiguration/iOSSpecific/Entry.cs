@@ -28,5 +28,28 @@ namespace Xamarin.Forms.PlatformConfiguration.iOSSpecific
 			SetKeyboardToolbar(config.Element, value);
 			return config;
 		}
+
+		public static IPlatformElementConfiguration<Android, FormsElement> EnableKeyboardToolbar(this IPlatformElementConfiguration<Android, FormsElement> config)
+		{
+			var keyboardToolbar = GetKeyboardToolbar(config.Element);
+
+			if (keyboardToolbar == null || keyboardToolbar.Count == 0)
+			{
+				keyboardToolbar = new List<KeyboardToolbarItem>()
+				{
+					new KeyboardToolbarItem(UIBarButtonSystemItem.FlexibleSpace),
+					new KeyboardToolbarItem(UIBarButtonSystemItem.Done, () => { config.Element.Unfocus();})
+				};
+			}
+
+			SetKeyboardToolbar(config.Element, keyboardToolbar);
+			return config;
+		}
+
+		public static IPlatformElementConfiguration<Android, FormsElement> DisableKeyboardToolbar(this IPlatformElementConfiguration<Android, FormsElement> config)
+		{
+			SetKeyboardToolbar(config.Element, null);
+			return config;
+		}
 	}
 }
