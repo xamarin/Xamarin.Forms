@@ -173,6 +173,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				if (_drawerLayout != null && _drawerListener != null)
 				{
 					_drawerLayout.RemoveDrawerListener(_drawerListener);
+					_drawerListener = null;
 				}
 
 				_drawerToggle = null;
@@ -645,7 +646,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				Device.StartTimer(TimeSpan.FromMilliseconds(TransitionDuration), () =>
 				{
 					tcs.TrySetResult(true);
-					fragment.UserVisibleHint = !removed;
+					fragment.UserVisibleHint = true;
 					if (removed)
 					{
 						UpdateToolbar();
@@ -659,7 +660,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				Device.StartTimer(TimeSpan.FromMilliseconds(1), () =>
 				{
 					tcs.TrySetResult(true);
-					fragment.UserVisibleHint = !removed;
+					fragment.UserVisibleHint = true;
 					UpdateToolbar();
 
 					return false;
