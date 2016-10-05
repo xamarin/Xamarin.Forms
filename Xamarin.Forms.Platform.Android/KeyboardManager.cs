@@ -14,14 +14,15 @@ namespace Xamarin.Forms.Platform.Android
 			if (Forms.Context == null)
 				throw new InvalidOperationException("Call Forms.Init() before HideKeyboard");
 
+			if (inputView == null)
+				return;
+
 			using (var inputMethodManager = (InputMethodManager)Forms.Context.GetSystemService(Context.InputMethodService))
 			{
-				IBinder windowToken = null;
-
 				if (!overrideValidation && !(inputView is EditText || inputView is TextView || inputView is SearchView))
 					throw new ArgumentException("inputView should be of type EditText, SearchView, or TextView");
 
-				windowToken = inputView.WindowToken;
+				IBinder windowToken = inputView.WindowToken;
 				if (windowToken != null)
 					inputMethodManager.HideSoftInputFromWindow(windowToken, HideSoftInputFlags.None);
 			}
