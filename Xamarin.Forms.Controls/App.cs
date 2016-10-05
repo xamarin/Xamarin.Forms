@@ -8,6 +8,25 @@ using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 
 namespace Xamarin.Forms.Controls
 {
+	public class Bugzilla44596SplashPage : ContentPage
+	{
+		Action FinishedLoading { get; set; }
+
+
+		public Bugzilla44596SplashPage(Action finishedLoading)
+		{
+			BackgroundColor = Color.Blue;
+			FinishedLoading = finishedLoading;
+		}
+
+
+		protected async override void OnAppearing()
+		{
+			base.OnAppearing();
+			await Task.Delay(2000);
+			FinishedLoading?.Invoke();
+		}
+	}
 	public class App : Application
 	{
 		public const string AppName = "XamarinFormsControls";
@@ -26,11 +45,17 @@ namespace Xamarin.Forms.Controls
 			_testCloudService = DependencyService.Get<ITestCloudService>();
 			InitInsights();
 
-			MainPage = new MasterDetailPage
-			{
-				Master = new ContentPage { Title = "Master", BackgroundColor = Color.Red },
-				Detail = CoreGallery.GetMainPage()
-			};
+			//IF I AM STILL HERE IN THE PR NOT COMMENTED OUT THEN SOMETHING HAS GONE TERRIBLY WRONG
+			MainPage = new Bugzilla44596SplashPage(() =>
+						{
+							var newTabbedPage = new TabbedPage();
+							newTabbedPage.Children.Add(new ContentPage { BackgroundColor = Color.Red, Content = new Label { Text = "yay" } });
+							MainPage = new MasterDetailPage
+							{
+								Master = new ContentPage { Title = "Master", BackgroundColor = Color.Red },
+								Detail = newTabbedPage
+							};
+						});
 		}
 
 		protected override void OnAppLinkRequestReceived(Uri uri)
