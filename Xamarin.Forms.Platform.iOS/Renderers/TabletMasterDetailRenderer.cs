@@ -57,12 +57,9 @@ namespace Xamarin.Forms.Platform.iOS
 		IPageController PageController => Element as IPageController;
 		IElementController ElementController => Element as IElementController;
 
-		protected MasterDetailPage MasterDetailPage
-		{
-			get { return _masterDetailPage ?? (_masterDetailPage = (MasterDetailPage)Element); }
-		}
+		protected MasterDetailPage MasterDetailPage => _masterDetailPage ?? (_masterDetailPage = (MasterDetailPage)Element);
 
-		IMasterDetailPageController MasterDetailPageController => MasterDetailPage as IMasterDetailPageController;
+	    IMasterDetailPageController MasterDetailPageController => MasterDetailPage as IMasterDetailPageController;
 
 		UIBarButtonItem PresentButton
 		{
@@ -71,12 +68,25 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void Dispose(bool disposing)
 		{
-		    if (!_disposed && disposing)
+		    if (_disposed)
+		    {
+                return;
+		    }
+
+		    _disposed = true;
+
+		    if (disposing)
 		    {
 		        if (Element != null)
 		        {
 		            PageController.SendDisappearing();
 		            Element.PropertyChanged -= HandlePropertyChanged;
+
+		            if (MasterDetailPage?.Master != null)
+		            {
+                        MasterDetailPage.Master.PropertyChanged -= HandleMasterPropertyChanged;
+                    }
+
 		            Element = null;
 		        }
 
@@ -97,9 +107,8 @@ namespace Xamarin.Forms.Platform.iOS
 		            _masterController.WillAppear -= MasterControllerWillAppear;
 		            _masterController.WillDisappear -= MasterControllerWillDisappear;
 		        }
-
-		        _disposed = true;
 		    }
+
 		    base.Dispose(disposing);
 		}
 
