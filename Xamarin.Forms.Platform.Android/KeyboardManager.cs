@@ -33,6 +33,9 @@ namespace Xamarin.Forms.Platform.Android
 			if (Forms.Context == null)
 				throw new InvalidOperationException("Call Forms.Init() before ShowKeyboard");
 
+			if (inputView == null)
+				return;
+
 			using (var inputMethodManager = (InputMethodManager)Forms.Context.GetSystemService(Context.InputMethodService))
 			{
 				if (inputView is EditText || inputView is TextView || inputView is SearchView)
