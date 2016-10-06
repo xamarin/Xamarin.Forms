@@ -485,7 +485,7 @@ namespace Xamarin.Forms
 		public static readonly Color Teal = FromRgb(0, 128, 128);
 		public static readonly Color Thistle = FromRgb(216, 191, 216);
 		public static readonly Color Tomato = FromRgb(255, 99, 71);
-		public static readonly Color Transparent = FromRgb(255, 255, 255);
+		public static readonly Color Transparent = FromRgba(0, 255, 255, 255);
 		public static readonly Color Turquoise = FromRgb(64, 224, 208);
 		public static readonly Color Violet = FromRgb(238, 130, 238);
 		public static readonly Color Wheat = FromRgb(245, 222, 179);
