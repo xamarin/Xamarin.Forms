@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 {
 	internal class MasterDetailContainer : Xamarin.Forms.Platform.Android.MasterDetailContainer, IManageFragments
 	{
-		PageContainer _pageContainer;
+		internal PageContainer PageContainer;
 		FragmentManager _fragmentManager;
 		readonly bool _isMaster;
 		MasterDetailPage _parent;
@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			// If we're using a PageContainer (i.e., we've wrapped our contents in a Fragment),
 			// Make sure that it gets laid out
-			if (_pageContainer != null)
+			if (PageContainer != null)
 			{
 				if (_isMaster)
 				{
@@ -43,20 +43,20 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					// so we subtract _parent.MasterBounds.Top from our starting point (to get 0) and add it to the 
 					// bottom (so the master page stretches to the bottom of the screen)
 					var height = (int)Context.ToPixels(controller.MasterBounds.Height + controller.MasterBounds.Top);
-					_pageContainer.Layout(0, 0, width, height);
+					PageContainer.Layout(0, 0, width, height);
 				}
 				else
 				{
-					_pageContainer.Layout(l, t, r, b);
+					PageContainer.Layout(l, t, r, b);
 				}
 
-				_pageContainer.Child.UpdateLayout();
+				PageContainer.Child.UpdateLayout();
 			}
 		}
 
 		protected override void AddChildView(VisualElement childView)
 		{
-			_pageContainer = null;
+			PageContainer = null;
 
 			Page page = childView as NavigationPage ?? (Page)(childView as TabbedPage);
 
@@ -91,7 +91,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 				fc?.SetOnCreateCallback(pc =>
 				{
-					_pageContainer = pc;
+					PageContainer = pc;
 					SetDefaultBackgroundColor(pc.Child);
 				});
 
@@ -140,7 +140,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				}
 
 				_parent = null;
-				_pageContainer = null;
+				PageContainer = null;
 				_fragmentManager = null;
 			}
 

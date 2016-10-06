@@ -115,7 +115,7 @@ namespace Xamarin.Forms.Platform.Android
 			_childView.ClearValue(Platform.RendererProperty);
 		}
 
-		Rectangle GetBounds(bool isMasterPage, int left, int top, int right, int bottom)
+		internal Rectangle GetBounds(bool isMasterPage, int left, int top, int right, int bottom)
 		{
 			double width = Context.FromPixels(right - left);
 			double height = Context.FromPixels(bottom - top);
