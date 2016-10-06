@@ -210,8 +210,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (diff != 0)
 			{
-				// clear status bar color so master page can take whole screen height
-				if(Forms.IsLollipopOrNewer)
+				// set status bar color so status controls have a background
+				if (Forms.IsLollipopOrNewer)
 					Window.SetStatusBarColor(((ColorDrawable)_statusBarUnderlay.Background).Color);
 
 				if (Window.Attributes.SoftInputMode != SoftInput.AdjustResize)
@@ -225,7 +225,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 			else
 			{
-				// set status bar color so status controls have a background
+				// clear status bar color so master page can take whole screen height
 				if (Forms.IsLollipopOrNewer)
 					Window.SetStatusBarColor(AColor.Transparent);
 
