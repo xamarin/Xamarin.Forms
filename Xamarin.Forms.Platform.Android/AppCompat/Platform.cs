@@ -269,11 +269,32 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		internal static void LayoutRootPage(FormsAppCompatActivity activity, Page page, int width, int height)
 		{
-			int statusBarHeight = Forms.IsLollipopOrNewer ? activity.GetStatusBarHeight() : 0;
-			statusBarHeight = activity.Window.Attributes.Flags.HasFlag(WindowManagerFlags.Fullscreen) || Forms.TitleBarVisibility == AndroidTitleBarVisibility.Never ? 0 : statusBarHeight;
+			int statusBarHeight = !Forms.IsLollipopOrNewer || activity.Window.Attributes.Flags.HasFlag(WindowManagerFlags.Fullscreen) || Forms.TitleBarVisibility == AndroidTitleBarVisibility.Never ? 0 : activity.GetStatusBarHeight();
+			IVisualElementRenderer renderer = Android.Platform.GetRenderer(page);
 
 			if (page is MasterDetailPage)
+			{
+				var detailContainer = (renderer as MasterDetailPageRenderer).GetChildAt(0) as MasterDetailContainer;
+				var detail = ((MasterDetailPage)page).Detail;
+
+				detailContainer.TopPadding = statusBarHeight;
+				((IMasterDetailPageController)page).DetailBounds = detailContainer.GetBounds(false, 0, 0, width, height);
+				detailContainer.PageContainer?.Child.UpdateLayout();
+				detail.Layout(new Rectangle(0, 0, width, height));
+
+				if (((IMasterDetailPageController)page).ShouldShowSplitMode)
+				{
+					var masterContainer = (renderer as MasterDetailPageRenderer).GetChildAt(1) as MasterDetailContainer;
+					var master = ((MasterDetailPage)page).Master;
+
+					masterContainer.TopPadding = statusBarHeight;
+					((IMasterDetailPageController)page).MasterBounds = masterContainer.GetBounds(true, 0, 0, width, height);
+					masterContainer.PageContainer?.Child.UpdateLayout();
+					master.Layout(new Rectangle(0, 0, width, height));
+				}
+
 				page.Layout(new Rectangle(0, 0, activity.FromPixels(width), activity.FromPixels(height)));
+			}
 			else
 			{
 				page.Layout(new Rectangle(0, activity.FromPixels(statusBarHeight), activity.FromPixels(width), activity.FromPixels(height - statusBarHeight)));
