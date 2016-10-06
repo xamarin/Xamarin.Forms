@@ -6,6 +6,8 @@ using System.Linq;
 using Android.App;
 using Android.Content;
 using Android.Content.Res;
+using Android.Graphics;
+using Android.Graphics.Drawables;
 using Android.OS;
 using Android.Runtime;
 using Android.Support.V4.Content;
@@ -181,10 +183,13 @@ namespace Xamarin.Forms.Platform.Android
 			OnStateChanged();
 
 			AddStatusBarUnderlay();
+			Window.DecorView.ViewTreeObserver.GlobalLayout += ViewTreeObserverOnGlobalLayout;
 		}
 
 		protected override void OnDestroy()
 		{
+			Window.DecorView.ViewTreeObserver.GlobalLayout -= ViewTreeObserverOnGlobalLayout;
+
 			MessagingCenter.Unsubscribe<Page, AlertArguments>(this, Page.AlertSignalName);
 			MessagingCenter.Unsubscribe<Page, bool>(this, Page.BusySetSignalName);
 			MessagingCenter.Unsubscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName);
@@ -193,6 +198,46 @@ namespace Xamarin.Forms.Platform.Android
 
 			// call at the end to avoid race conditions with Platform dispose
 			base.OnDestroy();
+		}
+
+		void ViewTreeObserverOnGlobalLayout(object sender, EventArgs eventArgs)
+		{
+			var rect = new Rect();
+			Window.DecorView.GetWindowVisibleDisplayFrame(rect);
+
+			int height = Window.DecorView.Context.Resources.DisplayMetrics.HeightPixels;
+			int diff = height - rect.Bottom;
+
+			if (diff != 0)
+			{
+				// clear status bar color so master page can take whole screen height
+				if(Forms.IsLollipopOrNewer)
+					Window.SetStatusBarColor(((ColorDrawable)_statusBarUnderlay.Background).Color);
+
+				if (Window.Attributes.SoftInputMode != SoftInput.AdjustResize)
+					return;
+
+				if (_layout.PaddingBottom != diff)
+				{
+					// keyboard has appeared in resize mode - set padding to show full height of the content
+					_layout.SetPadding(0, 0, 0, diff);
+				}
+			}
+			else
+			{
+				// set status bar color so status controls have a background
+				if (Forms.IsLollipopOrNewer)
+					Window.SetStatusBarColor(AColor.Transparent);
+
+				if (Window.Attributes.SoftInputMode != SoftInput.AdjustResize)
+					return;
+
+				if (_layout.PaddingBottom != 0)
+				{
+					// keyboard has disappeared in resize mode - reset padding
+					_layout.SetPadding(0, 0, 0, 0);
+				}
+			}
 		}
 
 		protected override void OnNewIntent(Intent intent)
@@ -311,6 +356,7 @@ namespace Xamarin.Forms.Platform.Android
 					int b = AColor.GetBlueComponent(primaryColorDark);
 					int a = AColor.GetAlphaComponent(primaryColorDark);
 					SetStatusBarColor(AColor.Argb(a, r, g, b));
+					// do not set underlay background color here
 				}
 			}
 		}
@@ -454,26 +500,25 @@ namespace Xamarin.Forms.Platform.Android
 
 		void SetSoftInputMode()
 		{
-			SoftInput adjust = SoftInput.AdjustPan;
+			var adjust = SoftInput.AdjustPan;
 
 			if (Xamarin.Forms.Application.Current != null)
 			{
 				var elementValue = Xamarin.Forms.Application.Current.OnThisPlatform().GetWindowSoftInputModeAdjust();
 				switch (elementValue)
 				{
-					default:
-					case WindowSoftInputModeAdjust.Pan:
-						adjust = SoftInput.AdjustPan;
-						break;
-
 					case WindowSoftInputModeAdjust.Resize:
 						adjust = SoftInput.AdjustResize;
+						break;
+
+					default:
+						adjust = SoftInput.AdjustPan;
 						break;
 				}
 			}
 
 			Window.SetSoftInputMode(adjust);
-			SetStatusBarVisibility(adjust);
+			SetSystemUiVisibility(adjust);
 		}
 
 		public override void OnWindowAttributesChanged(WindowManagerLayoutParams @params)
@@ -502,13 +547,15 @@ namespace Xamarin.Forms.Platform.Android
 
 			_isFullScreen = !_isFullScreen;
 
+			_statusBarUnderlay.Visibility = _isFullScreen ? ViewStates.Gone : ViewStates.Visible;
+
 			var displayMetrics = Resources.DisplayMetrics;
 			var width = displayMetrics.WidthPixels;
 			var height = displayMetrics.HeightPixels;
 			AppCompat.Platform.LayoutRootPage(this, Xamarin.Forms.Application.Current.MainPage, width, height);
 		}
 
-		void SetStatusBarVisibility(SoftInput mode)
+		void SetSystemUiVisibility(SoftInput mode)
 		{
 			if (!Forms.IsLollipopOrNewer)
 				return;
