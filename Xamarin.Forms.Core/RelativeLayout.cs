@@ -8,13 +8,13 @@ namespace Xamarin.Forms
 {
 	public class RelativeLayout : Layout<View>
 	{
-		public static readonly BindableProperty XConstraintProperty = BindableProperty.CreateAttached("XConstraint", typeof(Constraint), typeof(RelativeLayout), null);
+		public static readonly BindableProperty XConstraintProperty = BindableProperty.CreateAttached("XConstraint", typeof(Constraint), typeof(RelativeLayout), null, BindingMode.OneWay, null, ConstraintChanged);
 
-		public static readonly BindableProperty YConstraintProperty = BindableProperty.CreateAttached("YConstraint", typeof(Constraint), typeof(RelativeLayout), null);
+		public static readonly BindableProperty YConstraintProperty = BindableProperty.CreateAttached("YConstraint", typeof(Constraint), typeof(RelativeLayout), null, BindingMode.OneWay, null, ConstraintChanged);
 
-		public static readonly BindableProperty WidthConstraintProperty = BindableProperty.CreateAttached("WidthConstraint", typeof(Constraint), typeof(RelativeLayout), null);
+		public static readonly BindableProperty WidthConstraintProperty = BindableProperty.CreateAttached("WidthConstraint", typeof(Constraint), typeof(RelativeLayout), null, BindingMode.OneWay, null, ConstraintChanged);
 
-		public static readonly BindableProperty HeightConstraintProperty = BindableProperty.CreateAttached("HeightConstraint", typeof(Constraint), typeof(RelativeLayout), null);
+		public static readonly BindableProperty HeightConstraintProperty = BindableProperty.CreateAttached("HeightConstraint", typeof(Constraint), typeof(RelativeLayout), null, BindingMode.OneWay, null, ConstraintChanged);
 
 		public static readonly BindableProperty BoundsConstraintProperty = BindableProperty.CreateAttached("BoundsConstraint", typeof(BoundsConstraint), typeof(RelativeLayout), null);
 
@@ -70,6 +70,25 @@ namespace Xamarin.Forms
 				_childrenInSolveOrder = result;
 				return _childrenInSolveOrder;
 			}
+		}
+
+		static void ConstraintChanged(BindableObject bindable, object oldValue, object newValue)
+		{
+			View view = bindable as View;
+
+			(view?.Parent as RelativeLayout)?.UpdateBoundsConstraint(view);
+		}
+
+		void UpdateBoundsConstraint(View view)
+		{
+			if (GetBoundsConstraint(view) == null)
+				return; // Bounds constraint hasn't been calculated yet, no need to update just yet
+
+			CreateBoundsFromConstraints(view, GetXConstraint(view), GetYConstraint(view), GetWidthConstraint(view), GetHeightConstraint(view));
+
+			_childrenInSolveOrder = null; // New constraints may have impact on solve order
+
+			InvalidateLayout();
 		}
 
 		public static BoundsConstraint GetBoundsConstraint(BindableObject bindable)
@@ -248,13 +267,13 @@ namespace Xamarin.Forms
 		static Rectangle SolveView(View view)
 		{
 			BoundsConstraint boundsConstraint = GetBoundsConstraint(view);
-			var result = new Rectangle();
 
 			if (boundsConstraint == null)
 			{
 				throw new Exception("BoundsConstraint should not be null at this point");
 			}
-			result = boundsConstraint.Compute();
+
+			var result = boundsConstraint.Compute();
 
 			return result;
 		}
@@ -280,7 +299,7 @@ namespace Xamarin.Forms
 			public void Add(View view, Expression<Func<Rectangle>> bounds)
 			{
 				if (bounds == null)
-					throw new ArgumentNullException("bounds");
+					throw new ArgumentNullException(nameof(bounds));
 				SetBoundsConstraint(view, BoundsConstraint.FromExpression(bounds));
 
 				base.Add(view);
