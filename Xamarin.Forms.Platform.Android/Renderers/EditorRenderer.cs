@@ -114,6 +114,11 @@ namespace Xamarin.Forms.Platform.Android
 
 			Control.Text = newText;
 			Control.SetSelection(newText.Length);
+
+			if (Element.IsFocused)
+			{
+				Control.ShowKeyboard();
+			}
 		}
 
 		void UpdateTextColor()
