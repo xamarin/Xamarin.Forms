@@ -44,7 +44,7 @@
       <para>When specifying a color with a hexadecimal number, app developers can use 3, 4, or 6 digits. If the developer specifies 3 digits, they are interpreted as RGB doublet data for a fully opaque color. For example, "#123" specifies the color that is represented by "#FF112233". If the developer provides a 4-digit hexadecimal number, then the data are interpreted as above, except that the first digit specifies the alpha channel. For example, "#1234" specifies the color that is represented by "#11223344". Finally, if the developer provides a 6 digit hexadecimal number, the data are interpreted as a fully opaque color with those RGB values. For example, "#112233" specifies the color that is represented by "#FF112233".</para>
       <para>When specifying a color with a string, app developers can use color name in isolation, or prefix it with "Color.". For example, both <c>Purple</c> and <c>Color.Purple</c> are valid ways to specify the color purple. The following table describes the valid color names that can be used to specify colors in XAML.
 <list type="table"><listheader><term>Color</term><description>Short Name</description><description>RGB Value</description></listheader>
-<item><term>Color.Transparent</term><description>Transparent</description><description>0, 0, 0 (With the alpha channel set to 0.)</description></item>
+<item><term>Color.Transparent</term><description>Transparent</description><description>255, 255, 255 (With the alpha channel set to 0.)</description></item>
   <item><term>Color.Aqua</term><description>Aqua</description><description>0, 255, 255</description></item>
   <item><term>Color.Black</term><description>Black</description><description>0, 0, 0</description></item>
   <item><term>Color.Blue</term><description>Blue</description><description>0, 0, 255</description></item>
@@ -1250,7 +1250,7 @@
         <ReturnType>Xamarin.Forms.Color</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>The transparent color, represented by the RGB value #00000000.</summary>
+        <summary>The transparent color, represented by the RGB value #ffffff00.</summary>
         <remarks>The Alpha channel of the <see cref="F:Xamarin.Forms.Color.Transparent" /> color is set to <c>0</c>.</remarks>
       </Docs>
     </Member>
