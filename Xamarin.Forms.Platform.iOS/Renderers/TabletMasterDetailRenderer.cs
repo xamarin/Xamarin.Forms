@@ -59,7 +59,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected MasterDetailPage MasterDetailPage => _masterDetailPage ?? (_masterDetailPage = (MasterDetailPage)Element);
 
-	    IMasterDetailPageController MasterDetailPageController => MasterDetailPage as IMasterDetailPageController;
+		IMasterDetailPageController MasterDetailPageController => MasterDetailPage as IMasterDetailPageController;
 
 		UIBarButtonItem PresentButton
 		{
@@ -68,48 +68,50 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void Dispose(bool disposing)
 		{
-		    if (_disposed)
-		    {
-                return;
-		    }
+			if (_disposed)
+			{
+				return;
+			}
 
-		    _disposed = true;
+			_disposed = true;
 
-		    if (disposing)
-		    {
-		        if (Element != null)
-		        {
-		            PageController.SendDisappearing();
-		            Element.PropertyChanged -= HandlePropertyChanged;
+			if (disposing)
+			{
+				if (Element != null)
+				{
+					PageController.SendDisappearing();
+					Element.PropertyChanged -= HandlePropertyChanged;
 
-		            if (MasterDetailPage?.Master != null)
-		            {
-                        MasterDetailPage.Master.PropertyChanged -= HandleMasterPropertyChanged;
-                    }
+					if (MasterDetailPage?.Master != null)
+					{
+						MasterDetailPage.Master.PropertyChanged -= HandleMasterPropertyChanged;
+					}
 
-		            Element = null;
-		        }
+					Element = null;
+				}
 
-		        if (_tracker != null)
-		        {
-		            _tracker.Dispose();
-		            _tracker = null;
-		        }
+				if (_tracker != null)
+				{
+					_tracker.Dispose();
+					_tracker = null;
+				}
 
-		        if (_events != null)
-		        {
-		            _events.Dispose();
-		            _events = null;
-		        }
+				if (_events != null)
+				{
+					_events.Dispose();
+					_events = null;
+				}
 
-		        if (_masterController != null)
-		        {
-		            _masterController.WillAppear -= MasterControllerWillAppear;
-		            _masterController.WillDisappear -= MasterControllerWillDisappear;
-		        }
-		    }
+				if (_masterController != null)
+				{
+					_masterController.WillAppear -= MasterControllerWillAppear;
+					_masterController.WillDisappear -= MasterControllerWillDisappear;
+				}
 
-		    base.Dispose(disposing);
+				ClearControllers();
+			}
+
+			base.Dispose(disposing);
 		}
 
 		public VisualElement Element { get; private set; }
