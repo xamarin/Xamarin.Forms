@@ -220,25 +220,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			var layout = false;
 			if (Page != null)
 			{
-				var removeList = new List<global::Android.Views.View>();
-				for (int i = 0; i < _renderer.ChildCount; i++)
-				{
-					removeList.Add(_renderer.GetChildAt(i));
-				}
+				_renderer.RemoveAllViews();
 
-				var renderersToDispose = _navModel.Roots.Select(Android.Platform.GetRenderer).ToList();
-
-				Device.StartTimer(TimeSpan.FromSeconds(1), () =>
-				{
-					foreach (var view in removeList)
-					{
-						_renderer.RemoveView(view);
-						foreach (IVisualElementRenderer rootRenderer in renderersToDispose)
-							rootRenderer.Dispose();
-					}
-					return false;
-				});
-
+				foreach (IVisualElementRenderer rootRenderer in _navModel.Roots.Select(Android.Platform.GetRenderer))
+					rootRenderer.Dispose();
 				_navModel = new NavigationModel();
 
 				layout = true;

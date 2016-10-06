@@ -100,7 +100,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				}
 
 				transaction.Add(Id, fragment);
-				transaction.SetTransition((int)FragmentTransit.None);
+				transaction.SetTransition((int)FragmentTransit.FragmentOpen);
 				transaction.Commit();
 
 				_currentFragment = fragment;
