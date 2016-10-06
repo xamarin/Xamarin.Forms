@@ -19,33 +19,16 @@ namespace Xamarin.Forms
 					switch (color) {
 					case "Default": return Color.Default;
 					case "Accent": return Color.Accent;
-					case "Transparent": return Color.Transparent;
-					case "Aqua": return Color.Aqua;
-					case "Black": return Color.Black;
-					case "Blue": return Color.Blue;
-					case "Fuchsia": return Color.Fuchsia;
-					case "Gray": return Color.Gray;
-					case "Green": return Color.Green;
-					case "Lime": return Color.Lime;
-					case "Maroon": return Color.Maroon;
-					case "Navy": return Color.Navy;
-					case "Olive": return Color.Olive;
-					case "Orange": return Color.Orange;
-					case "Purple": return Color.Purple;
-					case "Pink": return Color.Pink;
-					case "Red": return Color.Red;
-					case "Silver": return Color.Silver;
-					case "Teal": return Color.Teal;
-					case "White": return Color.White;
-					case "Yellow": return Color.Yellow;
-
 					case "AliceBlue": return Color.AliceBlue;
 					case "AntiqueWhite": return Color.AntiqueWhite;
+					case "Aqua": return Color.Aqua;
 					case "Aquamarine": return Color.Aquamarine;
 					case "Azure": return Color.Azure;
 					case "Beige": return Color.Beige;
 					case "Bisque": return Color.Bisque;
+					case "Black": return Color.Black;
 					case "BlanchedAlmond": return Color.BlanchedAlmond;
+					case "Blue": return Color.Blue;
 					case "BlueViolet": return Color.BlueViolet;
 					case "Brown": return Color.Brown;
 					case "BurlyWood": return Color.BurlyWood;
@@ -81,10 +64,13 @@ namespace Xamarin.Forms
 					case "Firebrick": return Color.Firebrick;
 					case "FloralWhite": return Color.FloralWhite;
 					case "ForestGreen": return Color.ForestGreen;
+					case "Fuchsia": return Color.Fuchsia;
 					case "Gainsboro": return Color.Gainsboro;
 					case "GhostWhite": return Color.GhostWhite;
 					case "Gold": return Color.Gold;
 					case "Goldenrod": return Color.Goldenrod;
+					case "Gray": return Color.Gray;
+					case "Green": return Color.Green;
 					case "GreenYellow": return Color.GreenYellow;
 					case "Honeydew": return Color.Honeydew;
 					case "HotPink": return Color.HotPink;
@@ -109,9 +95,11 @@ namespace Xamarin.Forms
 					case "LightSlateGray": return Color.LightSlateGray;
 					case "LightSteelBlue": return Color.LightSteelBlue;
 					case "LightYellow": return Color.LightYellow;
+					case "Lime": return Color.Lime;
 					case "LimeGreen": return Color.LimeGreen;
 					case "Linen": return Color.Linen;
 					case "Magenta": return Color.Magenta;
+					case "Maroon": return Color.Maroon;
 					case "MediumAquamarine": return Color.MediumAquamarine;
 					case "MediumBlue": return Color.MediumBlue;
 					case "MediumOrchid": return Color.MediumOrchid;
@@ -126,8 +114,11 @@ namespace Xamarin.Forms
 					case "MistyRose": return Color.MistyRose;
 					case "Moccasin": return Color.Moccasin;
 					case "NavajoWhite": return Color.NavajoWhite;
+					case "Navy": return Color.Navy;
 					case "OldLace": return Color.OldLace;
+					case "Olive": return Color.Olive;
 					case "OliveDrab": return Color.OliveDrab;
+					case "Orange": return Color.Orange;
 					case "OrangeRed": return Color.OrangeRed;
 					case "Orchid": return Color.Orchid;
 					case "PaleGoldenrod": return Color.PaleGoldenrod;
@@ -137,8 +128,11 @@ namespace Xamarin.Forms
 					case "PapayaWhip": return Color.PapayaWhip;
 					case "PeachPuff": return Color.PeachPuff;
 					case "Peru": return Color.Peru;
+					case "Pink": return Color.Pink;
 					case "Plum": return Color.Plum;
 					case "PowderBlue": return Color.PowderBlue;
+					case "Purple": return Color.Purple;
+					case "Red": return Color.Red;
 					case "RosyBrown": return Color.RosyBrown;
 					case "RoyalBlue": return Color.RoyalBlue;
 					case "SaddleBrown": return Color.SaddleBrown;
@@ -147,21 +141,25 @@ namespace Xamarin.Forms
 					case "SeaGreen": return Color.SeaGreen;
 					case "SeaShell": return Color.SeaShell;
 					case "Sienna": return Color.Sienna;
+					case "Silver": return Color.Silver;
 					case "SkyBlue": return Color.SkyBlue;
 					case "SlateBlue": return Color.SlateBlue;
 					case "SlateGray": return Color.SlateGray;
 					case "Snow": return Color.Snow;
 					case "SpringGreen": return Color.SpringGreen;
 					case "SteelBlue": return Color.SteelBlue;
-					case "Tan": return Color.Tan;;
+					case "Tan": return Color.Tan;
+					case "Teal": return Color.Teal;
 					case "Thistle": return Color.Thistle;
 					case "Tomato": return Color.Tomato;
+					case "Transparent": return Color.Transparent;
 					case "Turquoise": return Color.Turquoise;
 					case "Violet": return Color.Violet;
 					case "Wheat": return Color.Wheat;
+					case "White": return Color.White;
 					case "WhiteSmoke": return Color.WhiteSmoke;
+					case "Yellow": return Color.Yellow;
 					case "YellowGreen": return Color.YellowGreen;
-
 					}
 					var field = typeof(Color).GetFields().FirstOrDefault(fi => fi.IsStatic && fi.Name == color);
 					if (field != null)
