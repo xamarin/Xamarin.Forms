@@ -41,7 +41,7 @@ namespace Xamarin.Forms
 
 			public IList<string> StyleClass
 			{
-				get { return _styleClass; }
+				get { return _styleClass ?? (_styleClass = new List<string()); }
 				set
 				{
 					if (_styleClass == value)
