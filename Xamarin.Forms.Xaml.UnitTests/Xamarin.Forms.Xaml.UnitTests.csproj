@@ -129,6 +129,7 @@
     <Compile Include="Validation\SetterOnNonBP.xaml.cs">
       <DependentUpon>SetterOnNonBP.xaml</DependentUpon>
     </Compile>
+    <Compile Include="XamlG\XamlGTaskTests.cs" />
     <Compile Include="XamlParseExceptionConstraint.cs" />
     <Compile Include="Issues\Issue2062.xaml.cs">
       <DependentUpon>Issue2062.xaml</DependentUpon>
@@ -368,8 +369,8 @@
     <Compile Include="XStaticException.xaml.cs">
       <DependentUpon>XStaticException.xaml</DependentUpon>
     </Compile>
-     <Compile Include="CompiledTypeConverter.xaml.cs" >
-       <DependentUpon>CompiledTypeConverter.xaml</DependentUpon>
+    <Compile Include="CompiledTypeConverter.xaml.cs">
+      <DependentUpon>CompiledTypeConverter.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
@@ -656,7 +657,7 @@
     <EmbeddedResource Include="XStaticException.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
-    <EmbeddedResource Include="CompiledTypeConverter.xaml" >
+    <EmbeddedResource Include="CompiledTypeConverter.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
   </ItemGroup>
