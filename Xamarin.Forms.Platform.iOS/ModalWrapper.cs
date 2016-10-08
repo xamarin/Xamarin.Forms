@@ -2,14 +2,23 @@ using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	internal class PlatformRenderer : UIViewController
+	internal class ModalWrapper : UIViewController
 	{
-		internal PlatformRenderer(Platform platform)
-		{
-			Platform = platform;
-		}
+		IVisualElementRenderer _modal;
+		internal bool Appeared { get; private set; }
 
-		public Platform Platform { get; set; }
+		bool _disposed;
+
+		internal ModalWrapper(IVisualElementRenderer modal)
+		{
+			_modal = modal;
+
+			View.BackgroundColor = UIColor.White;
+			View.AddSubview(modal.ViewController.View);
+			AddChildViewController(modal.ViewController);
+
+			modal.ViewController.DidMoveToParentViewController(this);
+		}
 
 		public override UIInterfaceOrientationMask GetSupportedInterfaceOrientations()
 		{
@@ -17,6 +26,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				return ChildViewControllers[0].GetSupportedInterfaceOrientations();
 			}
+
 			return base.GetSupportedInterfaceOrientations();
 		}
 
@@ -49,16 +59,51 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override bool ShouldAutomaticallyForwardRotationMethods => true;
 
-		public override void ViewDidAppear(bool animated)
-		{
-			base.ViewDidAppear(animated);
-			Platform.DidAppear();
-		}
-
 		public override void ViewDidLayoutSubviews()
 		{
 			base.ViewDidLayoutSubviews();
-			Platform.LayoutSubviews();
+			_modal?.SetElementSize(new Size(View.Bounds.Width, View.Bounds.Height));
+		}
+
+		public override void ViewWillAppear(bool animated)
+		{
+			View.BackgroundColor = UIColor.White;
+			base.ViewWillAppear(animated);
+		}
+
+		public override void ViewDidAppear(bool animated)
+		{
+			base.ViewDidAppear(animated);
+
+			if (Appeared || _disposed)
+				return;
+
+			Appeared = true;
+		}
+
+		public override void ViewDidDisappear(bool animated)
+		{
+			base.ViewDidDisappear(animated);
+
+			if (!Appeared || _disposed)
+				return;
+
+			Appeared = false;
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (_disposed)
+				return;
+
+			_disposed = true;
+
+			if (disposing)
+			{
+				Appeared = false;
+				_modal = null;
+			}
+			base.Dispose(disposing);
 		}
 	}
 }
