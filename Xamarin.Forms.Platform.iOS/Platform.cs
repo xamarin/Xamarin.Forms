@@ -313,9 +313,8 @@ namespace Xamarin.Forms.Platform.iOS
 		internal void DisposeModelAndChildrenRenderers(Element view)
 		{
 			IVisualElementRenderer renderer;
-			var descendants = view.Descendants();
 
-			foreach (VisualElement child in descendants)
+			foreach (VisualElement child in view.Descendants())
 			{
 				renderer = GetRenderer(child);
 				child.ClearValue(RendererProperty);
