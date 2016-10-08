@@ -286,9 +286,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			bar.Measure(MeasureSpecFactory.MakeMeasureSpec(r - l, MeasureSpecMode.Exactly), MeasureSpecFactory.MakeMeasureSpec(barHeight, MeasureSpecMode.Exactly));
 
-			int internalHeight = b - t - barHeight;
-			int containerHeight = ToolbarVisible ? internalHeight : b - t;
-			containerHeight -= ContainerPadding;
+			int containerHeight = b - t - ContainerPadding;
 
 			PageController.ContainerArea = new Rectangle(0, 0, Context.FromPixels(r - l), Context.FromPixels(containerHeight));
 			// Potential for optimization here, the exact conditions by which you don't need to do this are complex
@@ -300,17 +298,20 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				AView child = GetChildAt(i);
 				bool isBar = JNIEnv.IsSameObject(child.Handle, bar.Handle);
 
-				if (ToolbarVisible)
+				if (isBar)
 				{
-					if (isBar)
+					if (ToolbarVisible)
 						bar.Layout(0, 0, r - l, barHeight);
 					else
-						child.Layout(0, barHeight + ContainerPadding, r, b);
+						bar.Layout(0, -1000, r, barHeight - 1000);
 				}
 				else
 				{
-					if (isBar)
-						bar.Layout(0, -1000, r, barHeight - 1000);
+					var pageContainer = (PageContainer)child;
+					var hasNavigationBar = (bool)pageContainer.Child.Element.GetValue(NavigationPage.HasNavigationBarProperty);
+
+					if (hasNavigationBar)
+						child.Layout(0, barHeight + ContainerPadding, r, b);
 					else
 						child.Layout(0, ContainerPadding, r, b);
 				}
