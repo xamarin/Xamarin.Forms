@@ -50,7 +50,9 @@ namespace Xamarin.Forms.Controls.Issues
 			await Task.Delay(2000);
 			NavigationPage.SetHasNavigationBar(this, true);
 			await Task.Delay(2000);
-
+			NavigationPage.SetHasNavigationBar(this, false);
+			await Task.Delay(2000);
+			NavigationPage.SetHasNavigationBar(this, true);
 		}
 	}
 }
