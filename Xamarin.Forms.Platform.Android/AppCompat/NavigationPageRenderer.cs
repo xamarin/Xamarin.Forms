@@ -86,7 +86,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				if (_toolbarVisible == value)
 					return;
 				_toolbarVisible = value;
-				RequestLayout();
+				Element.ForceLayout();
 			}
 		}
 
@@ -277,8 +277,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			int barHeight = ActionBarHeight();
 
-			Element.NavigationBarHeight = Context.FromPixels(barHeight);
-
 			if (barHeight != _lastActionBarHeight && _lastActionBarHeight > 0)
 			{
 				ResetToolbar();
@@ -290,10 +288,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			int containerHeight = b - t - ContainerPadding;
 
+			Element.NavigationBarHeight = Context.FromPixels(barHeight);
+
 			PageController.ContainerArea = new Rectangle(0, 0, Context.FromPixels(r - l), Context.FromPixels(containerHeight));
-			// Potential for optimization here, the exact conditions by which you don't need to do this are complex
-			// and the cost of doing when it's not needed is moderate to low since the layout will short circuit pretty fast
-			Element.ForceLayout();
 
 			for (var i = 0; i < ChildCount; i++)
 			{
