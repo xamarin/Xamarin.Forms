@@ -277,6 +277,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			int barHeight = ActionBarHeight();
 
+			Element.NavigationBarHeight = Context.FromPixels(barHeight);
+
 			if (barHeight != _lastActionBarHeight && _lastActionBarHeight > 0)
 			{
 				ResetToolbar();

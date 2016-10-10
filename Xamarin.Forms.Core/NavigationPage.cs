@@ -61,6 +61,8 @@ namespace Xamarin.Forms
 
 		internal Task CurrentNavigationTask { get; set; }
 
+        internal double NavigationBarHeight { get; set; }
+
 		Stack<Page> INavigationPageController.StackCopy
 		{
 			get
@@ -218,6 +220,14 @@ namespace Xamarin.Forms
 			}
 
 			return base.OnBackButtonPressed();
+		}
+
+		protected internal override void LayoutChild(VisualElement element, Rectangle area)
+		{
+			if (GetHasNavigationBar(element))
+				area.Height -= NavigationBarHeight;
+
+			base.LayoutChild(element, area);
 		}
 
 		event EventHandler<NavigationRequestedEventArgs> InsertPageBeforeRequestedInternal;
