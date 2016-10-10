@@ -61,7 +61,7 @@ namespace Xamarin.Forms
 
 		internal Task CurrentNavigationTask { get; set; }
 
-        internal double NavigationBarHeight { get; set; }
+		internal double NavigationBarHeight { get; set; }
 
 		Stack<Page> INavigationPageController.StackCopy
 		{
