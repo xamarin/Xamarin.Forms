@@ -187,6 +187,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla43161.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla39768.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla41271.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TollbarHideAppCompat.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)_Template.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1028.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1075.cs" />
