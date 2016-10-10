@@ -6,52 +6,52 @@ namespace Xamarin.Forms.PlatformConfiguration.iOSSpecific
 
 	public static class TabbedPage
 	{
-		public static readonly BindableProperty TabSlidesProperty = BindableProperty.Create(nameof(TabSlides), typeof(Dictionary<int, TabSlide>), typeof(TabbedPage));
+		public static readonly BindableProperty TabSwipesProperty = BindableProperty.Create(nameof(TabSwipes), typeof(Dictionary<int, TabSwipe>), typeof(TabbedPage));
 
-		public static Dictionary<int, TabSlide> GetTabSlides(BindableObject element)
+		public static Dictionary<int, TabSwipe> GetTabSwipes(BindableObject element)
 		{
-			return (Dictionary<int, TabSlide>)element.GetValue(TabSlidesProperty);
+			return (Dictionary<int, TabSwipe>)element.GetValue(TabSwipesProperty);
 		}
 
-		public static void SetTabSlides(BindableObject element, Dictionary<int, TabSlide> value)
+		public static void SetTabSwipes(BindableObject element, Dictionary<int, TabSwipe> value)
 		{
-			element.SetValue(TabSlidesProperty, value);
+			element.SetValue(TabSwipesProperty, value);
 		}
 
-		public static Dictionary<int, TabSlide> TabSlides(this IPlatformElementConfiguration<iOS, FormsElement> config)
+		public static Dictionary<int, TabSwipe> TabSwipes(this IPlatformElementConfiguration<iOS, FormsElement> config)
 		{
-			return GetTabSlides(config.Element);
+			return GetTabSwipes(config.Element);
 		}
 
-		public static IPlatformElementConfiguration<iOS, FormsElement> SetTabSlides(this IPlatformElementConfiguration<iOS, FormsElement> config, Dictionary<int, TabSlide> value)
+		public static IPlatformElementConfiguration<iOS, FormsElement> SetTabSwipes(this IPlatformElementConfiguration<iOS, FormsElement> config, Dictionary<int, TabSwipe> value)
 		{
-			SetTabSlides(config.Element, value);
+			SetTabSwipes(config.Element, value);
 			return config;
 		}
 
-		public static IPlatformElementConfiguration<iOS, FormsElement> EnableTabSlides(this IPlatformElementConfiguration<iOS, FormsElement> config)
+		public static IPlatformElementConfiguration<iOS, FormsElement> EnableTabSwipes(this IPlatformElementConfiguration<iOS, FormsElement> config)
 		{
-			Dictionary<int, TabSlide> tabSlides = GetTabSlides(config.Element);
-			if (tabSlides == null || tabSlides.Count == 0)
+			Dictionary<int, TabSwipe> tabSwipes = GetTabSwipes(config.Element);
+			if (tabSwipes == null || tabSwipes.Count == 0)
 			{
-				if (tabSlides == null)
+				if (tabSwipes == null)
 				{
-					tabSlides = new Dictionary<int, TabSlide>();
+					tabSwipes = new Dictionary<int, TabSwipe>();
 				}
 
 				for (var i = 0; i < config.Element.Children.Count; i++)
 				{
-					tabSlides.Add(i, new TabSlide());
+					tabSwipes.Add(i, new TabSwipe());
 				}
 			}
 
-			SetTabSlides(config.Element, tabSlides);
+			SetTabSwipes(config.Element, tabSwipes);
 			return config;
 		}
 
-		public static IPlatformElementConfiguration<iOS, FormsElement> DisableTabSlides(this IPlatformElementConfiguration<iOS, FormsElement> config)
+		public static IPlatformElementConfiguration<iOS, FormsElement> DisableTabSwipes(this IPlatformElementConfiguration<iOS, FormsElement> config)
 		{
-			SetTabSlides(config.Element, null);
+			SetTabSwipes(config.Element, null);
 			return config;
 		}
 	}
