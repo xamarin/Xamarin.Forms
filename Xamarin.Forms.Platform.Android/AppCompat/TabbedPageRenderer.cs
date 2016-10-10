@@ -184,6 +184,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				UpdateBarBackgroundColor();
 				UpdateBarTextColor();
 				UpdateSwipePaging();
+				UpdateOffscreenPageLimit();
 			}
 		}
 
@@ -289,9 +290,14 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				child.IgnoresContainerArea = child is NavigationPage;
 		}
 
+		void UpdateOffscreenPageLimit()
+		{
+			_viewPager.OffscreenPageLimit = Element.OnThisPlatform().OffscreenPageLimit();
+		}
+
 		void UpdateSwipePaging()
 		{
-			_viewPager.EnableGesture = ((TabbedPage)Element).OnThisPlatform().IsSwipePagingEnabled();
+			_viewPager.EnableGesture = Element.OnThisPlatform().IsSwipePagingEnabled();
 		}
 
 		void UpdateTabBarTranslation(int position, float offset)

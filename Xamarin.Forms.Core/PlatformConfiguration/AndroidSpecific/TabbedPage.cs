@@ -40,5 +40,30 @@
 			SetIsSwipePagingEnabled(config.Element, false);
 			return config;
 		}
+
+		public static readonly BindableProperty OffscreenPageLimitProperty =
+			BindableProperty.Create("OffscreenPageLimit", typeof(int),
+			typeof(TabbedPage), 3, validateValue: (binding, value) => (int)value >= 0);
+
+		public static int GetOffscreenPageLimitProperty(BindableObject element)
+		{
+			return (int)element.GetValue(OffscreenPageLimitProperty);
+		}
+
+		public static void SetOffscreenPageLimitProperty(BindableObject element, int value)
+		{
+			element.SetValue(OffscreenPageLimitProperty, value);
+		}
+
+		public static int OffscreenPageLimit(this IPlatformElementConfiguration<Android, FormsElement> config)
+		{
+			return GetOffscreenPageLimitProperty(config.Element);
+		}
+
+		public static IPlatformElementConfiguration<Android, FormsElement> SetOffscreenPageLimitProperty(this IPlatformElementConfiguration<Android, FormsElement> config, int value)
+		{
+			SetOffscreenPageLimitProperty(config.Element, value);
+			return config;
+		}
 	}
 }
