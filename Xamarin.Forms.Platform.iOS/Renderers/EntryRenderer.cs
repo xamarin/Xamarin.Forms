@@ -139,7 +139,6 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateKeyboard()
 		{
 			Control.ApplyKeyboard(Element.Keyboard);
-			Control.ReloadInputViews();
 		}
 
 		void UpdatePassword()
