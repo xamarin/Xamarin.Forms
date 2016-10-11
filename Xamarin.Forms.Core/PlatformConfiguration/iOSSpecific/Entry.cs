@@ -6,7 +6,7 @@ namespace Xamarin.Forms.PlatformConfiguration.iOSSpecific
 
 	public static class Entry
 	{
-		public static readonly BindableProperty KeyboardToolbarProperty = BindableProperty.Create("KeyboardToolbar", typeof(List<KeyboardToolbarItem>), typeof(Entry));
+		public static readonly BindableProperty KeyboardToolbarProperty = BindableProperty.Create(nameof(KeyboardToolbar), typeof(List<KeyboardToolbarItem>), typeof(Entry));
 
 		public static List<KeyboardToolbarItem> GetKeyboardToolbar(BindableObject element)
 		{
