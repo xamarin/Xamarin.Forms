@@ -306,11 +306,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		class ButtonTouchListener : Object, IOnTouchListener
 		{
-			#region Statics
-
 			public static readonly Lazy<ButtonTouchListener> Instance = new Lazy<ButtonTouchListener>(() => new ButtonTouchListener());
-
-			#endregion
 
 			public bool OnTouch(AView v, AMotionEvent e)
 			{
