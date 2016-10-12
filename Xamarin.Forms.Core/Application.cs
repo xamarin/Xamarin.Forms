@@ -233,7 +233,7 @@ namespace Xamarin.Forms
 			var deserializer = DependencyService.Get<IDeserializer>();
 			if (deserializer == null)
 			{
-				Log.Warning("Startup", "No IDeserialzier was found registered");
+				Log.Warning("Startup", "No IDeserializer was found registered");
 				return new Dictionary<string, object>(4);
 			}
 
@@ -283,15 +283,21 @@ namespace Xamarin.Forms
 
 		async Task SetPropertiesAsync()
 		{
+			var deserializer = DependencyService.Get<IDeserializer>();
+			if (deserializer == null)
+			{
+				Log.Warning("SetProperties", "No IDeserializer was found registered");
+				return;
+			}
 			if (_isSaving)
 			{
 				_saveAgain = true;
 				return;
 			}
 			_isSaving = true;
-			await DependencyService.Get<IDeserializer>().SerializePropertiesAsync(Properties);
+			await deserializer.SerializePropertiesAsync(Properties);
 			if (_saveAgain)
-				await DependencyService.Get<IDeserializer>().SerializePropertiesAsync(Properties);
+				await deserializer.SerializePropertiesAsync(Properties);
 			_isSaving = _saveAgain = false;
 		}
 
