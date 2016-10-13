@@ -125,8 +125,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					if (!activity.IsDestroyed)
 					{
 						FragmentTransaction trans = FragmentManager.BeginTransaction();
+						trans.DisallowAddToBackStack();
 
-						while(_fragmentStack.Count != 0)
+						while (_fragmentStack.Count != 0)
 						{
 							Fragment fragment = _fragmentStack.Last();
 							_fragmentStack.Remove(fragment);
