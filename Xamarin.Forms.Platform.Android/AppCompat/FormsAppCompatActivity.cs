@@ -41,12 +41,14 @@ namespace Xamarin.Forms.Platform.Android
 
 		AndroidApplicationLifecycleState _previousState;
 
-		bool _renderersAdded, _isFullScreen;
+		bool _isFullScreen;
 		int _statusBarHeight = -1;
 		global::Android.Views.View _statusBarUnderlay;
 
 		// Override this if you want to handle the default Android behavior of restoring fragments on an application restart
 		protected virtual bool AllowFragmentRestore => false;
+
+		protected virtual bool ShouldUseDefaultRenderers => true;
 
 		protected FormsAppCompatActivity()
 		{
@@ -103,9 +105,9 @@ namespace Xamarin.Forms.Platform.Android
 			_statusBarUnderlay.SetBackgroundColor(color);
 		}
 
-		protected void LoadApplication(Application application)
+		protected virtual void LoadApplication(Application application)
 		{
-			if (!_renderersAdded)
+			if (ShouldUseDefaultRenderers)
 			{
 				RegisterHandlerForDefaultRenderer(typeof(NavigationPage), typeof(NavigationPageRenderer), typeof(NavigationRenderer));
 				RegisterHandlerForDefaultRenderer(typeof(TabbedPage), typeof(TabbedPageRenderer), typeof(TabbedRenderer));
@@ -115,8 +117,6 @@ namespace Xamarin.Forms.Platform.Android
 				RegisterHandlerForDefaultRenderer(typeof(Picker), typeof(AppCompat.PickerRenderer), typeof(PickerRenderer));
 				RegisterHandlerForDefaultRenderer(typeof(Frame), typeof(AppCompat.FrameRenderer), typeof(FrameRenderer));
 				RegisterHandlerForDefaultRenderer(typeof(CarouselPage), typeof(AppCompat.CarouselPageRenderer), typeof(CarouselPageRenderer));
-
-				_renderersAdded = true;
 			}
 
 			if (application == null)
