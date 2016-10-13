@@ -62,20 +62,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			if (page == null)
 			{
+				// If the previous occupant of this container was a fragment, we need to remove it properly
+				AddOrRemoveFragment(true);
+
 				// The thing we're adding is not a NavigationPage or TabbedPage, so we can just use the old AddChildView 
-
-				if (_currentFragment != null)
-				{
-					// But first, if the previous occupant of this container was a fragment, we need to remove it properly
-					FragmentTransaction transaction = FragmentManager.BeginTransaction();
-					transaction.DisallowAddToBackStack();
-					transaction.Remove(_currentFragment);
-					transaction.SetTransition((int)FragmentTransit.None);
-					transaction.Commit();
-
-					_currentFragment = null;
-				}
-				
 				base.AddChildView(childView);
 			}
 			else
@@ -92,21 +82,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					SetDefaultBackgroundColor(pc.Child);
 				});
 
-				FragmentTransaction transaction = FragmentManager.BeginTransaction();
-				transaction.DisallowAddToBackStack();
-
-				if (_currentFragment != null)
-				{
-					transaction.Remove(_currentFragment);
-				}
-
-				transaction.Add(Id, fragment);
-				transaction.SetTransition((int)FragmentTransit.None);
-				transaction.Commit();
-
-				_currentFragment = fragment;
-
-				new Handler(Looper.MainLooper).PostAtFrontOfQueue(() => FragmentManager.ExecutePendingTransactions());
+				AddOrRemoveFragment(false, fragment);
 			}
 		}
 
@@ -121,17 +97,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			if (disposing)
 			{
-				if (_currentFragment != null)
-				{
-					FragmentTransaction transaction = FragmentManager.BeginTransaction();
-					transaction.DisallowAddToBackStack();
-					transaction.Remove(_currentFragment);
-					transaction.SetTransition((int)FragmentTransit.None);
-					transaction.CommitAllowingStateLoss();
-					FragmentManager.ExecutePendingTransactions();
-
-					_currentFragment = null;
-				}
+				AddOrRemoveFragment(true, shouldAllowStateLoss: true);
 
 				_parent = null;
 				_pageContainer = null;
@@ -145,6 +111,45 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		{
 			if (_fragmentManager == null)
 				_fragmentManager = fragmentManager;
+		}
+
+		void AddOrRemoveFragment(bool shouldRemove, Fragment newValue = null, bool shouldAllowStateLoss = false)
+		{
+			if ((shouldRemove && (_currentFragment == null || newValue != null)) || (!shouldRemove && newValue == null))
+				return;
+
+			FragmentTransaction transaction = FragmentManager.BeginTransaction();
+			transaction.DisallowAddToBackStack();
+
+			if (shouldRemove)
+				transaction.Remove(_currentFragment);
+			else
+			{
+				if(_currentFragment != null)
+					transaction.Remove(_currentFragment);
+				transaction.Add(Id, newValue);
+			}
+
+			transaction.SetTransition((int)FragmentTransit.None);
+
+			if (Build.VERSION.SdkInt >= BuildVersionCodes.N)
+			{
+				if (!shouldAllowStateLoss)
+					transaction.CommitNow();
+				else
+					transaction.CommitNowAllowingStateLoss();
+			}
+			else
+			{
+				if (!shouldAllowStateLoss)
+					transaction.Commit();
+				else
+					transaction.CommitAllowingStateLoss();
+
+				new Handler(Looper.MainLooper).PostAtFrontOfQueue(() => FragmentManager.ExecutePendingTransactions());
+			}
+
+			_currentFragment = newValue;
 		}
 	}
 }
