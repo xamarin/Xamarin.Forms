@@ -106,6 +106,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnEditingEnded(object sender, EventArgs e)
 		{
+			ElementController.SetValueFromRenderer(Entry.TextProperty, Control.Text);
 			ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
 		}
 
