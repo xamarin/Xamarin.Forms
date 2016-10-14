@@ -145,6 +145,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void SetElement(TElement element)
 		{
+			if(ReferenceEquals(Element, element))
+				throw new ArgumentException(nameof(element) + " cannot be the same as " + nameof(Element));
+
 			if (element == null)
 				throw new ArgumentNullException(nameof(element));
 
