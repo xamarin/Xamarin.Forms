@@ -311,13 +311,17 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			public bool OnTouch(AView v, AMotionEvent e)
 			{
 				var renderer = v.Tag as ButtonRenderer;
-				if (e.Action == AMotionEventActions.Down)
+				if (renderer != null)
 				{
-					((IButtonController)renderer?.Element)?.SendPressed();
-				}
-				else if (e.Action == AMotionEventActions.Up)
-				{
-					((IButtonController)renderer?.Element)?.SendReleased();
+					var buttonController = renderer.Element as IButtonController;
+					if (e.Action == AMotionEventActions.Down)
+					{
+						buttonController?.SendPressed();
+					}
+					else if (e.Action == AMotionEventActions.Up)
+					{
+						buttonController?.SendReleased();
+					}
 				}
 				return false;
 			}
