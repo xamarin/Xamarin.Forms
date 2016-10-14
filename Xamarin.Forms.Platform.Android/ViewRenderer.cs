@@ -104,18 +104,61 @@ namespace Xamarin.Forms.Platform.Android
 			base.Dispose(disposing);
 		}
 
+		[Obsolete("Use SetupElement, SetupControl, TearDownElement, and TearDownControl instead.")]
 		protected override void OnElementChanged(ElementChangedEventArgs<TView> e)
 		{
 			base.OnElementChanged(e);
 
+			if (e.NewElement != null)
+			{
+				SetupElement();
+				SetupControl();
+			}
+
+			if (e.OldElement != null)
+			{
+				TearDownElement();
+				TearDownControl();
+			}
+		}
+
+		/// <summary>
+		/// Subscribe event handlers to and update properties of Element.
+		/// This method is called before SetupControl().
+		/// </summary>
+		protected virtual void SetupElement()
+		{
 			if (_focusChangeHandler == null)
 				_focusChangeHandler = OnFocusChangeRequested;
 
-			if (e.OldElement != null)
-				e.OldElement.FocusChangeRequested -= _focusChangeHandler;
+			Element.FocusChangeRequested += _focusChangeHandler;
+		}
 
-			if (e.NewElement != null)
-				e.NewElement.FocusChangeRequested += _focusChangeHandler;
+		/// <summary>
+		/// Subscribe event handlers to and update properties of Control.
+		/// Use Element if needed while building Control.
+		/// Optional: Override CreateNativeControl() and call SetNativeControl() to replace default Control.
+		/// This method is called after SetupElement().
+		/// </summary>
+		protected virtual void SetupControl()
+		{
+		}
+
+		/// <summary>
+		/// Unsubscribe event handlers from Element and clean up other resources as necessary.
+		/// This method is called before TearDownControl().
+		/// </summary>
+		protected virtual void TearDownElement()
+		{
+			Element.FocusChangeRequested -= _focusChangeHandler;
+		}
+
+		/// <summary>
+		/// Unsubscribe event handlers from Control and clean up other resources as necessary.
+		/// This method is called after TearDownElement().
+		/// </summary>
+		protected virtual void TearDownControl()
+		{
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
