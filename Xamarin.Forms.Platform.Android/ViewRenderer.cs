@@ -147,7 +147,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		/// <summary>
-		/// Unsubscribe event handlers from Element and clean up other resources as necessary.
+		/// Unsubscribe event handlers from the old element and clean up other resources as necessary.
 		/// This method is called before TearDownControl().
 		/// <param name="oldElement">Old element before Element is set to the new element.</param>
 		/// </summary>
