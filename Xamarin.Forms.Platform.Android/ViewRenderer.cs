@@ -111,53 +111,57 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (e.NewElement != null)
 			{
-				SetupElement();
-				SetupControl();
+				SetupElement(e.NewElement);
+				SetupControl(e.NewElement);
 			}
 
 			if (e.OldElement != null)
 			{
-				TearDownElement();
-				TearDownControl();
+				TearDownElement(e.OldElement);
+				TearDownControl(e.OldElement);
 			}
 		}
 
 		/// <summary>
-		/// Subscribe event handlers to and update properties of Element.
+		/// Subscribe event handlers to and update properties of the new element.
 		/// This method is called before SetupControl().
+		/// <param name="newElement">New element Element is set to.</param>
 		/// </summary>
-		protected virtual void SetupElement()
+		protected virtual void SetupElement(TView newElement)
 		{
 			if (_focusChangeHandler == null)
 				_focusChangeHandler = OnFocusChangeRequested;
 
-			Element.FocusChangeRequested += _focusChangeHandler;
+			newElement.FocusChangeRequested += _focusChangeHandler;
 		}
 
 		/// <summary>
 		/// Subscribe event handlers to and update properties of Control.
-		/// Use Element if needed while building Control.
+		/// Use newElement if needed while building Control.
 		/// Optional: Override CreateNativeControl() and call SetNativeControl() to replace default Control.
 		/// This method is called after SetupElement().
+		/// <param name="newElement">New element Element is set to.</param>
 		/// </summary>
-		protected virtual void SetupControl()
+		protected virtual void SetupControl(TView newElement)
 		{
 		}
 
 		/// <summary>
 		/// Unsubscribe event handlers from Element and clean up other resources as necessary.
 		/// This method is called before TearDownControl().
+		/// <param name="oldElement">Old element before Element is set to the new element.</param>
 		/// </summary>
-		protected virtual void TearDownElement()
+		protected virtual void TearDownElement(TView oldElement)
 		{
-			Element.FocusChangeRequested -= _focusChangeHandler;
+			oldElement.FocusChangeRequested -= _focusChangeHandler;
 		}
 
 		/// <summary>
 		/// Unsubscribe event handlers from Control and clean up other resources as necessary.
 		/// This method is called after TearDownElement().
+		/// <param name="oldElement">Old element before Element is set to the new element.</param>
 		/// </summary>
-		protected virtual void TearDownControl()
+		protected virtual void TearDownControl(TView oldElement)
 		{
 		}
 
