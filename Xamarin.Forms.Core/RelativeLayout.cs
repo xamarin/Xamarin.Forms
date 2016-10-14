@@ -121,6 +121,26 @@ namespace Xamarin.Forms
 			bindable.SetValue(BoundsConstraintProperty, value);
 		}
 
+		public static void SetHeightConstraint(BindableObject bindable, Constraint value)
+		{
+			bindable.SetValue(HeightConstraintProperty, value);
+		}
+
+		public static void SetWidthConstraint(BindableObject bindable, Constraint value)
+		{
+			bindable.SetValue(WidthConstraintProperty, value);
+		}
+
+		public static void SetXConstraint(BindableObject bindable, Constraint value)
+		{
+			bindable.SetValue(XConstraintProperty, value);
+		}
+
+		public static void SetYConstraint(BindableObject bindable, Constraint value)
+		{
+			bindable.SetValue(YConstraintProperty, value);
+		}
+
 		protected override void LayoutChildren(double x, double y, double width, double height)
 		{
 			foreach (View child in ChildrenInSolveOrder)
@@ -327,7 +347,10 @@ namespace Xamarin.Forms
 
 			public void Add(View view, Constraint xConstraint = null, Constraint yConstraint = null, Constraint widthConstraint = null, Constraint heightConstraint = null)
 			{
-				Parent.CreateBoundsFromConstraints(view, xConstraint, yConstraint, widthConstraint, heightConstraint);
+				RelativeLayout.SetXConstraint(view, xConstraint);
+				RelativeLayout.SetYConstraint(view, yConstraint);
+				RelativeLayout.SetWidthConstraint(view, widthConstraint);
+				RelativeLayout.SetHeightConstraint(view, heightConstraint);
 
 				base.Add(view);
 			}
