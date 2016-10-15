@@ -10,6 +10,8 @@ namespace Xamarin.Forms
 	[RenderWith(typeof(_NavigationPageRenderer))]
 	public class NavigationPage : Page, IPageContainer<Page>, INavigationPageController, IElementConfiguration<NavigationPage> 
 	{
+		internal static readonly BindableProperty InternalPaddingProperty = BindableProperty.Create("InternalPadding", typeof(Thickness), typeof(Page), default(Thickness));
+
 		public static readonly BindableProperty BackButtonTitleProperty = BindableProperty.CreateAttached("BackButtonTitle", typeof(string), typeof(Page), null);
 
 		public static readonly BindableProperty HasNavigationBarProperty = BindableProperty.CreateAttached("HasNavigationBar", typeof(bool), typeof(Page), true);
@@ -197,6 +199,11 @@ namespace Xamarin.Forms
 
 		public event EventHandler<NavigationEventArgs> Pushed;
 
+		internal static void SetInternalPadding(Page page, Thickness bound)
+		{
+			page.SetValue(InternalPaddingProperty, bound);
+		}
+
 		public static void SetBackButtonTitle(BindableObject page, string value)
 		{
 			page.SetValue(BackButtonTitleProperty, value);
@@ -235,10 +242,18 @@ namespace Xamarin.Forms
 
 		protected internal override void LayoutChild(VisualElement element, Rectangle area)
 		{
-			if (GetHasNavigationBar(element))
-				area.Height -= NavigationBarHeight;
+			var internalBound = (Thickness)element.GetValue(InternalPaddingProperty);
+			if (!internalBound.IsDefault)
+			{
+				area = new Rectangle(
+					area.X + internalBound.Left,
+					area.Y + internalBound.Top,
+					area.Width - internalBound.Right,
+					area.Height - internalBound.Bottom);
+			}
 
-			base.LayoutChild(element, area);
+			if (!element.Bounds.Equals(area))
+				base.LayoutChild(element, area);
 		}
 
 		event EventHandler<NavigationRequestedEventArgs> InsertPageBeforeRequestedInternal;

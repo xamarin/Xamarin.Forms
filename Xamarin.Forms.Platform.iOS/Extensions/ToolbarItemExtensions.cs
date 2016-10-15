@@ -123,6 +123,12 @@ namespace Xamarin.Forms.Platform.iOS
 					UpdateIsEnabled();
 			}
 
+			public override UIColor TintColor
+			{
+				get { return ((SecondaryToolbarItemContent)CustomView).TextColor; }
+				set { ((SecondaryToolbarItemContent)CustomView).TextColor = value; }
+			}
+
 			void UpdateIcon()
 			{
 				((SecondaryToolbarItemContent)CustomView).Image = string.IsNullOrEmpty(_item.Icon) ? null : new UIImage(_item.Icon);
@@ -164,6 +170,12 @@ namespace Xamarin.Forms.Platform.iOS
 					}
 				}
 
+				public UIColor TextColor
+				{
+					get { return _label.TextColor; }
+					set { _label.TextColor = value; }
+				}
+
 				public UIImage Image
 				{
 					get { return _imageView.Image; }
@@ -192,6 +204,7 @@ namespace Xamarin.Forms.Platform.iOS
 						return;
 					}
 
+					_label.TextColor = TextColor;
 					_label.Hidden = false;
 					var availableWidth = Bounds.Width - padding * 3 - imageSize.Width;
 					var stringSize = _label.SizeThatFits(new SizeF(availableWidth, Bounds.Height - padding * 2));
