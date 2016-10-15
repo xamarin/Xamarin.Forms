@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Platform.Android
 		// Override this if you want to handle the default Android behavior of restoring fragments on an application restart
 		protected virtual bool AllowFragmentRestore => false;
 
-		protected virtual bool ShouldUseDefaultRenderers => true;
+		protected virtual bool ShouldUseDefaultHandlersForRenderers => true;
 
 		protected FormsAppCompatActivity()
 		{
@@ -105,19 +105,9 @@ namespace Xamarin.Forms.Platform.Android
 			_statusBarUnderlay.SetBackgroundColor(color);
 		}
 
-		protected virtual void LoadApplication(Application application)
+		protected void LoadApplication(Application application)
 		{
-			if (ShouldUseDefaultRenderers)
-			{
-				RegisterHandlerForDefaultRenderer(typeof(NavigationPage), typeof(NavigationPageRenderer), typeof(NavigationRenderer));
-				RegisterHandlerForDefaultRenderer(typeof(TabbedPage), typeof(TabbedPageRenderer), typeof(TabbedRenderer));
-				RegisterHandlerForDefaultRenderer(typeof(MasterDetailPage), typeof(MasterDetailPageRenderer), typeof(MasterDetailRenderer));
-				RegisterHandlerForDefaultRenderer(typeof(Button), typeof(AppCompat.ButtonRenderer), typeof(ButtonRenderer));
-				RegisterHandlerForDefaultRenderer(typeof(Switch), typeof(AppCompat.SwitchRenderer), typeof(SwitchRenderer));
-				RegisterHandlerForDefaultRenderer(typeof(Picker), typeof(AppCompat.PickerRenderer), typeof(PickerRenderer));
-				RegisterHandlerForDefaultRenderer(typeof(Frame), typeof(AppCompat.FrameRenderer), typeof(FrameRenderer));
-				RegisterHandlerForDefaultRenderer(typeof(CarouselPage), typeof(AppCompat.CarouselPageRenderer), typeof(CarouselPageRenderer));
-			}
+			RegisterAllDefaultHandlersForRenderers();
 
 			if (application == null)
 				throw new ArgumentNullException("application");
@@ -437,6 +427,21 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 
 			Registrar.Registered.Register(target, handler);
+		}
+
+		protected virtual void RegisterAllDefaultHandlersForRenderers()
+		{
+			if (!ShouldUseDefaultHandlersForRenderers)
+				return;
+
+			RegisterHandlerForDefaultRenderer(typeof(NavigationPage), typeof(NavigationPageRenderer), typeof(NavigationRenderer));
+			RegisterHandlerForDefaultRenderer(typeof(TabbedPage), typeof(TabbedPageRenderer), typeof(TabbedRenderer));
+			RegisterHandlerForDefaultRenderer(typeof(MasterDetailPage), typeof(MasterDetailPageRenderer), typeof(MasterDetailRenderer));
+			RegisterHandlerForDefaultRenderer(typeof(Button), typeof(AppCompat.ButtonRenderer), typeof(ButtonRenderer));
+			RegisterHandlerForDefaultRenderer(typeof(Switch), typeof(AppCompat.SwitchRenderer), typeof(SwitchRenderer));
+			RegisterHandlerForDefaultRenderer(typeof(Picker), typeof(AppCompat.PickerRenderer), typeof(PickerRenderer));
+			RegisterHandlerForDefaultRenderer(typeof(Frame), typeof(AppCompat.FrameRenderer), typeof(FrameRenderer));
+			RegisterHandlerForDefaultRenderer(typeof(CarouselPage), typeof(AppCompat.CarouselPageRenderer), typeof(CarouselPageRenderer));
 		}
 
 		void SetMainPage()
