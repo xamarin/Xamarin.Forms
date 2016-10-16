@@ -251,26 +251,13 @@ namespace Xamarin.Forms.Platform.Android
 				else
 					UnsetSelectedBackground(layout);
 
+				AddViewToLayout(convertView, parent, cell, cellIsBeingReused, layout);
+
 				Performance.Stop();
 				return layout;
 			}
 
-			AView view = CellFactory.GetCell(cell, convertView, parent, _context, _listView);
-
-			Performance.Start("AddView");
-
-			if (cellIsBeingReused)
-			{
-				if (convertView != view)
-				{
-					layout.RemoveViewAt(0);
-					layout.AddView(view, 0);
-				}
-			}
-			else
-				layout.AddView(view, 0);
-
-			Performance.Stop("AddView");
+			AddViewToLayout(convertView, parent, cell, cellIsBeingReused, layout);
 
 			bool isHeader = cell.GetIsGroupHeader<ItemsView<Cell>, Cell>();
 
@@ -290,6 +277,27 @@ namespace Xamarin.Forms.Platform.Android
 			Performance.Stop();
 
 			return layout;
+		}
+
+		void AddViewToLayout(AView convertView, ViewGroup parent, Cell cell, bool cellIsBeingReused, ConditionalFocusLayout layout)
+		{
+			AView view = CellFactory.GetCell(cell, convertView, parent, _context, _listView);
+
+			Performance.Start("AddView");
+
+			if (cellIsBeingReused)
+			{
+				// Hack: SetSelectAllOnFocus does not work when layout does not refresh its view collection, so this will remove and add view even if it's the same as convertView
+				//if (convertView != view)
+				{
+					layout.RemoveViewAt(0);
+					layout.AddView(view, 0);
+				}
+			}
+			else
+				layout.AddView(view, 0);
+
+			Performance.Stop("AddView");
 		}
 
 		public override bool IsEnabled(int position)
