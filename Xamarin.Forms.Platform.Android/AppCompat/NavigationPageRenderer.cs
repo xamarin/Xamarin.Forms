@@ -86,7 +86,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				if (_toolbarVisible == value)
 					return;
 				_toolbarVisible = value;
-				Element.ForceLayout();
+				UpdateInternalPadding(Current);
 			}
 		}
 
@@ -288,8 +288,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			int containerHeight = b - t - ContainerPadding;
 
-			Element.NavigationBarHeight = Context.FromPixels(barHeight);
-
 			PageController.ContainerArea = new Rectangle(0, 0, Context.FromPixels(r - l), Context.FromPixels(containerHeight));
 
 			for (var i = 0; i < ChildCount; i++)
@@ -307,12 +305,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				else
 				{
 					var pageContainer = (PageContainer)child;
-					var hasNavigationBar = (bool)pageContainer.Child.Element.GetValue(NavigationPage.HasNavigationBarProperty);
 
-					if (hasNavigationBar)
-						child.Layout(0, barHeight + ContainerPadding, r, b);
-					else
-						child.Layout(0, ContainerPadding, r, b);
+					UpdateInternalPadding((Page)pageContainer.Child.Element);
+					child.Layout(0, ContainerPadding, r, b);
 				}
 			}
 		}
@@ -382,6 +377,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void CurrentOnPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if(e.PropertyName == NavigationPage.InternalPaddingProperty.PropertyName)
+				Element.ForceLayout();
 			if (e.PropertyName == NavigationPage.HasNavigationBarProperty.PropertyName)
 				ToolbarVisible = NavigationPage.GetHasNavigationBar(Current);
 			else if (e.PropertyName == Page.TitleProperty.PropertyName)
@@ -789,6 +786,21 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				bar.SetTitleTextColor(textColor.ToAndroid().ToArgb());
 
 			bar.Title = Element.CurrentPage.Title ?? "";
+		}
+
+		void UpdateInternalPadding(Page page)
+		{
+			var barHeight = _lastActionBarHeight;
+			var topOffset = Context.FromPixels(barHeight);
+
+			Thickness area;
+
+			if (NavigationPage.GetHasNavigationBar(page))
+				area = new Thickness(0, topOffset, 0, topOffset);
+			else
+				area = new Thickness(0, 0, 0, 0);
+
+			NavigationPage.SetInternalPadding(page, area);
 		}
 
 		class ClickListener : Object, IOnClickListener

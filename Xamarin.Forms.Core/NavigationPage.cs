@@ -63,19 +63,6 @@ namespace Xamarin.Forms
 
 		internal Task CurrentNavigationTask { get; set; }
 
-		internal double NavigationBarHeight
-		{
-			get { return _navigationBarHeight; }
-			set
-			{
-				if(_navigationBarHeight.Equals(value))
-					return;
-				_navigationBarHeight = value;
-				if(!PageController.ContainerArea.IsEmpty)
-					ForceLayout();
-			}
-		}
-
 		Stack<Page> INavigationPageController.StackCopy
 		{
 			get
@@ -201,7 +188,8 @@ namespace Xamarin.Forms
 
 		internal static void SetInternalPadding(Page page, Thickness bound)
 		{
-			page.SetValue(InternalPaddingProperty, bound);
+			if(!((Thickness)page.GetValue(InternalPaddingProperty)).Equals(bound))
+				page.SetValue(InternalPaddingProperty, bound);
 		}
 
 		public static void SetBackButtonTitle(BindableObject page, string value)
@@ -481,7 +469,6 @@ namespace Xamarin.Forms
 		}
 
 		readonly Lazy<PlatformConfigurationRegistry<NavigationPage>> _platformConfigurationRegistry;
-		private double _navigationBarHeight;
 
 		public new IPlatformElementConfiguration<T, NavigationPage> On<T>() where T : IConfigPlatform
 		{
