@@ -92,10 +92,7 @@ namespace Xamarin.Forms
 		public Page CurrentPage
 		{
 			get { return (Page)GetValue(CurrentPageProperty); }
-			private set
-			{
-				SetValue(CurrentPagePropertyKey, value);
-			}
+			private set { SetValue(CurrentPagePropertyKey, value); }
 		}
 
 		public Page RootPage
