@@ -110,10 +110,10 @@ namespace Xamarin.Forms.Platform.Android
 			RegisterAllDefaultHandlersForRenderers();
 
 			if (application == null)
-				throw new ArgumentNullException("application");
+				throw new ArgumentNullException(nameof(application));
 
 			_application = application;
-			(application as IApplicationController)?.SetAppIndexingProvider(new AndroidAppIndexProvider(this));
+			(application as IApplicationController).SetAppIndexingProvider(new AndroidAppIndexProvider(this));
 			Xamarin.Forms.Application.Current = application;
 
 			CheckForAppLink(Intent);
