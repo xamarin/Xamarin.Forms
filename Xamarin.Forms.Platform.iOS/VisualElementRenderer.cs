@@ -121,7 +121,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public void SetElement(TElement element)
 		{
 			if (ReferenceEquals(Element, element))
-				throw new ArgumentException(nameof(element) + " cannot be the same as " + nameof(Element));
+				return;
 
 			var oldElement = Element;
 			Element = element;

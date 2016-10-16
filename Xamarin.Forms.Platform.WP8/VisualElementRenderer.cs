@@ -88,7 +88,7 @@ namespace Xamarin.Forms.Platform.WinPhone
 		public void SetElement(VisualElement element)
 		{
 			if (ReferenceEquals(Element, element))
-				throw new ArgumentException(nameof(element) + " cannot be the same as " + nameof(Element));
+				return;
 
 			TElement oldElement = Element;
 			Element = (TElement)element;
