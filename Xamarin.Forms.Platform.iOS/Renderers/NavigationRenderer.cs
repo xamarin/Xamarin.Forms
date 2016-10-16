@@ -23,6 +23,7 @@ namespace Xamarin.Forms.Platform.iOS
 		Size _queuedSize;
 		UIViewController[] _removeControllers;
 		VisualElementTracker _tracker;
+		private Page _current;
 
 		public NavigationRenderer()
 		{
@@ -37,7 +38,25 @@ namespace Xamarin.Forms.Platform.iOS
 			
 		}
 
-		Page Current { get; set; }
+		private Page Current
+		{
+			get { return _current; }
+			set
+			{
+				if (_current == value)
+					return;
+
+				if (_current != null)
+					_current.PropertyChanged -= CurrentOnPropertyChanged;
+
+				_current = value;
+
+				if (_current != null)
+				{
+					_current.PropertyChanged += CurrentOnPropertyChanged;
+				}
+			}
+		}
 
 		IPageController PageController => Element as IPageController;
 
@@ -133,19 +152,15 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.ViewDidLayoutSubviews();
 
-			var navPage = (NavigationPage)Element;
-
 			var modelSize = _queuedSize.IsZero ? Element.Bounds.Size : _queuedSize;
 
 			ViewControllers
 				.Cast<ParentingViewController>()
 				.Select(vc => vc.Child)
-				.ForEach(UpdatePageContainerArea);
+				.ForEach(UpdateInternalPadding);
 
 			PageController.ContainerArea =
 				new Rectangle(0, 0, modelSize.Width, modelSize.Height);
-
-			navPage.ForceLayout();
 
 			if (!_queuedSize.IsZero)
 			{
@@ -307,7 +322,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var pack = CreateViewControllerForPage(page);
 			var task = GetAppearedOrDisappearedTask(page);
 
-			UpdatePageContainerArea(page);
+			UpdateInternalPadding(page);
 
 			PushViewController(pack, animated);
 
@@ -430,6 +445,12 @@ namespace Xamarin.Forms.Platform.iOS
 				Current = ((NavigationPage)Element).CurrentPage;
 			else if (e.PropertyName == PlatformConfiguration.iOSSpecific.NavigationPage.IsNavigationBarTranslucentProperty.PropertyName)
 				UpdateTranslucent();
+		}
+
+		private void CurrentOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == NavigationPage.InternalPaddingProperty.PropertyName)
+				ElementForceLayout();
 		}
 
 		void UpdateTranslucent()
@@ -671,7 +692,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return !topViewController?.Toolbar.Hidden ?? false;
 		}
 
-		void UpdatePageContainerArea(Page page)
+		void UpdateInternalPadding(Page page)
 		{
 			// The below is done to get a proper difference to take away from the ContainerArea height
 			// in a similar way to ViewDidLayoutSubviews. Transitioning between a page without the
@@ -704,6 +725,29 @@ namespace Xamarin.Forms.Platform.iOS
 				area = new Thickness(0, topOffset, 0, topOffset);
 
 			NavigationPage.SetInternalPadding(page, area);
+		}
+
+		void ElementForceLayout()
+		{
+			var isNavBarAnimate = NavigationBar.Layer.AnimationKeys?.Any() ?? false;
+			var isCurrentAnimate = ((ParentingViewController)TopViewController).View?.Layer.AnimationKeys?.Any() ?? false;
+
+			if (isNavBarAnimate && isCurrentAnimate)
+			{
+				UIView.Animate(
+					duration: HideShowBarDuration,
+					delay: 0,
+					animation: () =>
+					{
+						((NavigationPage)Element).ForceLayout();
+					},
+					completion: null,
+					options: UIViewAnimationOptions.CurveLinear);
+			}
+			else
+			{
+				((NavigationPage)Element).ForceLayout();
+			}
 		}
 
 		class SecondaryToolbar : UIToolbar
@@ -958,6 +1002,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (NavigationController.NavigationBarHidden == hasNavBar)
 					NavigationController.SetNavigationBarHidden(!hasNavBar, animated);
+
+				if(!hasNavBar)
+					NavigationController.ViewDidLayoutSubviews();
 			}
 
 			void UpdateToolbarItems()
