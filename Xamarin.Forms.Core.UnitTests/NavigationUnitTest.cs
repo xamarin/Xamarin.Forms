@@ -507,12 +507,12 @@ namespace Xamarin.Forms.Core.UnitTests
 				navPage.Navigation.InsertPageBefore(navPage.RootPage, navPage.CurrentPage);
 			});
 
-			Assert.Throws<ArgumentException>(() =>
+			Assert.Throws<ArgumentNullException>(() =>
 			{
 				navPage.Navigation.InsertPageBefore(null, navPage.CurrentPage);
 			});
 
-			Assert.Throws<ArgumentException>(() =>
+			Assert.Throws<ArgumentNullException>(() =>
 			{
 				navPage.Navigation.InsertPageBefore(new ContentPage(), null);
 			});
@@ -543,7 +543,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				navPage.Navigation.RemovePage(newPage);
 			});
 
-			Assert.Throws<ArgumentException>(() =>
+			Assert.Throws<ArgumentNullException>(() =>
 			{
 				navPage.Navigation.RemovePage(null);
 			});

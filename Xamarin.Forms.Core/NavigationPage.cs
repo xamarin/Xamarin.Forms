@@ -314,10 +314,10 @@ namespace Xamarin.Forms
 		void InsertPageBefore(Page page, Page before)
 		{
 			if (page == null || before == null)
-				throw new ArgumentException($"Both {nameof(page)} and {nameof(before)} must be initialized.");
+				throw new ArgumentNullException($"Neither {nameof(page)} nor {nameof(before)} can be null.");
 
 			if (!PageController.InternalChildren.Contains(before))
-				throw new ArgumentException("before must be a child of the NavigationPage", "before");
+				throw new ArgumentException($"{nameof(before)} must be a child of the NavigationPage", nameof(before));
 
 			if (PageController.InternalChildren.Contains(page))
 				throw new ArgumentException("Cannot insert page which is already in the navigation stack");
@@ -396,7 +396,7 @@ namespace Xamarin.Forms
 		void RemovePage(Page page)
 		{
 			if (page == null)
-				throw new ArgumentException($"{nameof(page)} must be initialized.");
+				throw new ArgumentNullException($"{nameof(page)} cannot be null.");
 
 			if (page == CurrentPage && CurrentPage == RootPage)
 				throw new InvalidOperationException("Cannot remove root page when it is also the currently displayed page.");
