@@ -18,6 +18,7 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _appeared;
 		bool _ignorePopCall;
 		bool _loaded;
+		bool _isNavigating;
 		MasterDetailPage _parentMasterDetailPage;
 		Size _queuedSize;
 		UIViewController[] _removeControllers;
@@ -135,7 +136,6 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateToolBarVisible();
 
 			var navBarFrame = NavigationBar.Frame;
-
 			var toolbar = _secondaryToolbar;
 			// Use 0 if the NavBar is hidden or will be hidden
 			var toolbarY = NavigationBarHidden || !NavigationPage.GetHasNavigationBar(Current) ? 0 : navBarFrame.Bottom;
@@ -143,8 +143,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			double trueBottom = toolbar.Hidden ? toolbarY : toolbar.Frame.Bottom;
 			var modelSize = _queuedSize.IsZero ? Element.Bounds.Size : _queuedSize;
-			PageController.ContainerArea = 
-				new Rectangle(0, toolbar.Hidden ? 0 : toolbar.Frame.Height, modelSize.Width, modelSize.Height - trueBottom);
+			if (!_isNavigating)
+				PageController.ContainerArea = new Rectangle(0, toolbar.Hidden ? 0 : toolbar.Frame.Height, modelSize.Width, modelSize.Height - trueBottom);
 
 			if (!_queuedSize.IsZero)
 			{
@@ -317,9 +317,12 @@ namespace Xamarin.Forms.Platform.iOS
 			var pack = CreateViewControllerForPage(page);
 			var task = GetAppearedOrDisappearedTask(page);
 
+			_isNavigating = true;
 			PushViewController(pack, animated);
 
 			var shown = await task;
+			_isNavigating = false;
+			View.SetNeedsLayout();
 			UpdateToolBarVisible();
 			return shown;
 		}
