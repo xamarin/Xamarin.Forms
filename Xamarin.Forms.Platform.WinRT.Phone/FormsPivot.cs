@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -44,7 +46,7 @@ namespace Xamarin.Forms.Platform.WinRT
 		{
 			get { return (Visibility)GetValue(TitleVisibilityProperty); }
 			set { SetValue(TitleVisibilityProperty, value); }
-		}
+		} 
 
         public ToolbarPlacement ToolbarPlacement
 	    {
@@ -77,7 +79,13 @@ namespace Xamarin.Forms.Platform.WinRT
 #if WINDOWS_UWP
 			_bottomCommandBarArea = GetTemplateChild("BottomCommandBarArea") as Border;
 			_topCommandBarArea = GetTemplateChild("TopCommandBarArea") as Border;
-			UpdateToolbarPlacement();
+
+			if (_commandBar != null && _bottomCommandBarArea != null && _topCommandBarArea != null)
+			{
+				// We have to wait for the command bar to load so that it'll be in the control hierarchy
+				// otherwise we can't properly move it to wherever the toolbar is supposed to be
+				_commandBar.Loaded += (sender, args) => UpdateToolbarPlacement();
+			}
 #endif
 
 			TaskCompletionSource<CommandBar> tcs = _commandBarTcs;
