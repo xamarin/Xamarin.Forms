@@ -217,7 +217,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateIsRefreshing();
 				UpdateSeparatorColor();
 				UpdateSeparatorVisibility();
-				UpdateIsBounceEnabled();
+				UpdateBounces();
 
 				var selected = e.NewElement.SelectedItem;
 				if (selected != null)
@@ -253,8 +253,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateFooter();
 			else if (e.PropertyName == "RefreshAllowed")
 				UpdatePullToRefreshEnabled();
-			else if (e.PropertyName == PlatformConfiguration.iOSSpecific.ListView.IsBounceEnabledProperty.PropertyName)
-				UpdateIsBounceEnabled();
+			else if (e.PropertyName == PlatformConfiguration.iOSSpecific.ListView.BouncesProperty.PropertyName)
+				UpdateBounces();
 		}
 
 		NSIndexPath[] GetPaths(int section, int index, int count)
@@ -599,9 +599,9 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		void UpdateIsBounceEnabled()
+		void UpdateBounces()
 		{
-			Control.Bounces = Element.OnThisPlatform().IsBounceEnabled();
+			Control.Bounces = Element.OnThisPlatform().Bounces();
 		}
 
 		internal class UnevenListViewDataSource : ListViewDataSource
