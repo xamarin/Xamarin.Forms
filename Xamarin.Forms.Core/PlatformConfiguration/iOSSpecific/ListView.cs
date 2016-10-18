@@ -4,26 +4,38 @@
 
 	public static class ListView
 	{
-		public static readonly BindableProperty IsBounceEnabledProperty = BindableProperty.Create(nameof(IsBounceEnabled), typeof(bool), typeof(ListView), true);
+		public static readonly BindableProperty BouncesProperty = BindableProperty.Create(nameof(Bounces), typeof(bool), typeof(ListView), true);
 
-		public static bool GetIsBounceEnabled(BindableObject element)
+		public static bool GetBounces(BindableObject element)
 		{
-			return (bool)element.GetValue(IsBounceEnabledProperty);
+			return (bool)element.GetValue(BouncesProperty);
 		}
 
-		public static void SetIsBounceEnabled(BindableObject element, bool value)
+		public static void SetBounces(BindableObject element, bool value)
 		{
-			element.SetValue(IsBounceEnabledProperty, value);
+			element.SetValue(BouncesProperty, value);
 		}
 
-		public static bool IsBounceEnabled(this IPlatformElementConfiguration<iOS, FormsElement> config)
+		public static bool Bounces(this IPlatformElementConfiguration<iOS, FormsElement> config)
 		{
-			return GetIsBounceEnabled(config.Element);
+			return GetBounces(config.Element);
 		}
 
-		public static IPlatformElementConfiguration<iOS, FormsElement> SetIsBounceEnabled(this IPlatformElementConfiguration<iOS, FormsElement> config, bool value)
+		public static IPlatformElementConfiguration<iOS, FormsElement> SetBounces(this IPlatformElementConfiguration<iOS, FormsElement> config, bool value)
 		{
-			SetIsBounceEnabled(config.Element, value);
+			SetBounces(config.Element, value);
+			return config;
+		}
+
+		public static IPlatformElementConfiguration<iOS, FormsElement> EnableBounces(this IPlatformElementConfiguration<iOS, FormsElement> config)
+		{
+			SetBounces(config.Element, true);
+			return config;
+		}
+
+		public static IPlatformElementConfiguration<iOS, FormsElement> DisableBounces(this IPlatformElementConfiguration<iOS, FormsElement> config)
+		{
+			SetBounces(config.Element, false);
 			return config;
 		}
 	}
