@@ -7,6 +7,7 @@ using System.Linq;
 using Foundation;
 using UIKit;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using RectangleF = CoreGraphics.CGRect;
 using SizeF = CoreGraphics.CGSize;
 
@@ -187,7 +188,7 @@ namespace Xamarin.Forms.Platform.iOS
 					SetNativeControl(_tableViewController.TableView);
 					if (Forms.IsiOS9OrNewer)
 						Control.CellLayoutMarginsFollowReadableWidth = false;
-
+					
 					_insetTracker = new KeyboardInsetTracker(_tableViewController.TableView, () => Control.Window, insets => Control.ContentInset = Control.ScrollIndicatorInsets = insets, point =>
 					{
 						var offset = Control.ContentOffset;
@@ -216,6 +217,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateIsRefreshing();
 				UpdateSeparatorColor();
 				UpdateSeparatorVisibility();
+				UpdateBounces();
 
 				var selected = e.NewElement.SelectedItem;
 				if (selected != null)
@@ -251,6 +253,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateFooter();
 			else if (e.PropertyName == "RefreshAllowed")
 				UpdatePullToRefreshEnabled();
+			else if (e.PropertyName == PlatformConfiguration.iOSSpecific.ListView.BouncesProperty.PropertyName)
+				UpdateBounces();
 		}
 
 		NSIndexPath[] GetPaths(int section, int index, int count)
@@ -593,6 +597,11 @@ namespace Xamarin.Forms.Platform.iOS
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
+		}
+
+		void UpdateBounces()
+		{
+			Control.Bounces = Element.OnThisPlatform().Bounces();
 		}
 
 		internal class UnevenListViewDataSource : ListViewDataSource
