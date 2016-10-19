@@ -400,20 +400,20 @@ namespace Xamarin.Forms.Platform.iOS
 
 			foreach (KeyValuePair<int, TabBarItem> keyValuePair in tabBarItems)
 			{
-				if(Forms.IsiOS10OrNewer)
-					TabBar.Items[keyValuePair.Key].BadgeColor = keyValuePair.Value.BadgeColor.ToUIColor();
-
-				TabBar.Items[keyValuePair.Key].BadgeValue = keyValuePair.Value.BadgeValue;
-
-				if (keyValuePair.Value.ShouldRemoveImageTint)
+				if (Forms.IsiOS8OrNewer)
 				{
-					if (TabBar.Items[keyValuePair.Key].Image != null)
-						TabBar.Items[keyValuePair.Key].Image = TabBar.Items[keyValuePair.Key].Image.ImageWithRenderingMode(UIImageRenderingMode.AlwaysOriginal);
-				}
-				else
-				{
-					if (TabBar.Items[keyValuePair.Key].Image != null)
-						TabBar.Items[keyValuePair.Key].Image = TabBar.Items[keyValuePair.Key].Image.ImageWithRenderingMode(UIImageRenderingMode.Automatic);
+					TabBar.Items[keyValuePair.Key].BadgeValue = keyValuePair.Value.BadgeValue;
+
+					if (keyValuePair.Value.ShouldRemoveImageTint)
+					{
+						if (TabBar.Items[keyValuePair.Key].Image != null)
+							TabBar.Items[keyValuePair.Key].Image = TabBar.Items[keyValuePair.Key].Image.ImageWithRenderingMode(UIImageRenderingMode.AlwaysOriginal);
+					}
+					else
+					{
+						if (TabBar.Items[keyValuePair.Key].Image != null)
+							TabBar.Items[keyValuePair.Key].Image = TabBar.Items[keyValuePair.Key].Image.ImageWithRenderingMode(UIImageRenderingMode.Automatic);
+					}
 				}
 
 				TabBar.Items[keyValuePair.Key].SelectedImage = keyValuePair.Value.SelectedImage != null ? new UIImage(keyValuePair.Value.SelectedImage) : null;
@@ -430,15 +430,20 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 
 				UIColor titleTextColor = keyValuePair.Value.TitleTextColor == Color.Default ? null : keyValuePair.Value.TitleTextColor.ToUIColor();
-				UIColor selectedTitleTextColor = keyValuePair.Value.SelectedTitleTextColor == Color.Default ? null : keyValuePair.Value.SelectedTitleTextColor.ToUIColor();
+				UIColor selectedTitleTextColor = keyValuePair.Value.SelectedTitleTextColor == Color.Default ? TabBar.TintColor : keyValuePair.Value.SelectedTitleTextColor.ToUIColor();
 				UIColor badgeTextColor = keyValuePair.Value.BadgeTextColor == Color.Default ? null : keyValuePair.Value.BadgeTextColor.ToUIColor();
 				UIColor selectedBadgeTextColor = keyValuePair.Value.SelectedBadgeTextColor == Color.Default ? null : keyValuePair.Value.SelectedBadgeTextColor.ToUIColor();
 
 				TabBar.Items[keyValuePair.Key].SetTitleTextAttributes(new UITextAttributes {TextColor = titleTextColor }, UIControlState.Normal);
 				TabBar.Items[keyValuePair.Key].SetTitleTextAttributes(new UITextAttributes { TextColor = selectedTitleTextColor }, UIControlState.Selected);
 
-				TabBar.Items[keyValuePair.Key].SetBadgeTextAttributes(new UIStringAttributes { ForegroundColor = badgeTextColor }, UIControlState.Normal);
-				TabBar.Items[keyValuePair.Key].SetBadgeTextAttributes(new UIStringAttributes { ForegroundColor = selectedBadgeTextColor }, UIControlState.Selected);
+				if (Forms.IsiOS10OrNewer)
+				{
+					TabBar.Items[keyValuePair.Key].BadgeColor = keyValuePair.Value.BadgeColor.ToUIColor();
+
+					TabBar.Items[keyValuePair.Key].SetBadgeTextAttributes(new UIStringAttributes { ForegroundColor = badgeTextColor }, UIControlState.Normal);
+					TabBar.Items[keyValuePair.Key].SetBadgeTextAttributes(new UIStringAttributes { ForegroundColor = selectedBadgeTextColor }, UIControlState.Selected);
+				}
 			}
 		}
 
