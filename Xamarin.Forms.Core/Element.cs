@@ -343,11 +343,14 @@ namespace Xamarin.Forms
 
 		protected virtual void OnChildAdded(Element child)
 		{
+			var bindingContext = child.BindingContext;
+
 			child.Parent = this;
 			if (Platform != null)
 				child.Platform = Platform;
 
-			child.ApplyBindings();
+			if(bindingContext == child.BindingContext)
+				child.ApplyBindings();
 
 			if (ChildAdded != null)
 				ChildAdded(this, new ElementEventArgs(child));
