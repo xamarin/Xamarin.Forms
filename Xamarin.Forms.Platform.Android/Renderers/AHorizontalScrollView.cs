@@ -32,7 +32,7 @@ namespace Xamarin.Forms.Platform.Android
 		public override bool OnTouchEvent(MotionEvent ev)
 		{
 			// If the touch is caught by the horizontal scrollview, forward it to the parent so custom renderers can be notified of the touch.
-			var verticalScrollViewerRenderer = (global::Android.Widget.ScrollView)Parent as ScrollViewRenderer;
+			var verticalScrollViewerRenderer = Parent as ScrollViewRenderer;
 			if (verticalScrollViewerRenderer != null)
 			{
 				verticalScrollViewerRenderer.ShouldSkipOnTouch = true;
