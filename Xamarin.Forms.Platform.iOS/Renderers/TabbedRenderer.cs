@@ -4,6 +4,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using UIKit;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -71,6 +72,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			UpdateBarBackgroundColor();
 			UpdateBarTextColor();
+			UpdateTabBarItems();
 
 			EffectUtilities.RegisterEffectControlProvider(this, oldElement, element);
 		}
@@ -241,6 +243,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateBarBackgroundColor();
 			else if (e.PropertyName == TabbedPage.BarTextColorProperty.PropertyName)
 				UpdateBarTextColor();
+			else if (e.PropertyName == PlatformConfiguration.iOSSpecific.TabbedPage.TabBarItemsProperty.PropertyName)
+				UpdateTabBarItems();
 		}
 
 		void Reset()
@@ -385,6 +389,57 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var count = ((IPageController)Tabbed).InternalChildren.Count;
 			((TabbedPage)Element).CurrentPage = SelectedIndex >= 0 && SelectedIndex < count ? Tabbed.GetPageByIndex((int)SelectedIndex) : null;
+		}
+
+		void UpdateTabBarItems()
+		{
+			Dictionary<int, TabBarItem> tabBarItems = ((TabbedPage)Element).OnThisPlatform().TabBarItems();
+
+			if (tabBarItems == null)
+				return;
+
+			foreach (KeyValuePair<int, TabBarItem> keyValuePair in tabBarItems)
+			{
+				if(Forms.IsiOS10OrNewer)
+					TabBar.Items[keyValuePair.Key].BadgeColor = keyValuePair.Value.BadgeColor.ToUIColor();
+
+				TabBar.Items[keyValuePair.Key].BadgeValue = keyValuePair.Value.BadgeValue;
+
+				if (keyValuePair.Value.ShouldRemoveImageTint)
+				{
+					if (TabBar.Items[keyValuePair.Key].Image != null)
+						TabBar.Items[keyValuePair.Key].Image = TabBar.Items[keyValuePair.Key].Image.ImageWithRenderingMode(UIImageRenderingMode.AlwaysOriginal);
+				}
+				else
+				{
+					if (TabBar.Items[keyValuePair.Key].Image != null)
+						TabBar.Items[keyValuePair.Key].Image = TabBar.Items[keyValuePair.Key].Image.ImageWithRenderingMode(UIImageRenderingMode.Automatic);
+				}
+
+				TabBar.Items[keyValuePair.Key].SelectedImage = keyValuePair.Value.SelectedImage != null ? new UIImage(keyValuePair.Value.SelectedImage) : null;
+
+				if (keyValuePair.Value.ShouldRemoveSelectedImageTint)
+				{
+					if (TabBar.Items[keyValuePair.Key].SelectedImage != null)
+						TabBar.Items[keyValuePair.Key].SelectedImage = TabBar.Items[keyValuePair.Key].SelectedImage.ImageWithRenderingMode(UIImageRenderingMode.AlwaysOriginal);
+				}
+				else
+				{
+					if (TabBar.Items[keyValuePair.Key].SelectedImage != null)
+						TabBar.Items[keyValuePair.Key].SelectedImage = TabBar.Items[keyValuePair.Key].SelectedImage.ImageWithRenderingMode(UIImageRenderingMode.Automatic);
+				}
+
+				UIColor titleTextColor = keyValuePair.Value.TitleTextColor == Color.Default ? null : keyValuePair.Value.TitleTextColor.ToUIColor();
+				UIColor selectedTitleTextColor = keyValuePair.Value.SelectedTitleTextColor == Color.Default ? null : keyValuePair.Value.SelectedTitleTextColor.ToUIColor();
+				UIColor badgeTextColor = keyValuePair.Value.BadgeTextColor == Color.Default ? null : keyValuePair.Value.BadgeTextColor.ToUIColor();
+				UIColor selectedBadgeTextColor = keyValuePair.Value.SelectedBadgeTextColor == Color.Default ? null : keyValuePair.Value.SelectedBadgeTextColor.ToUIColor();
+
+				TabBar.Items[keyValuePair.Key].SetTitleTextAttributes(new UITextAttributes {TextColor = titleTextColor }, UIControlState.Normal);
+				TabBar.Items[keyValuePair.Key].SetTitleTextAttributes(new UITextAttributes { TextColor = selectedTitleTextColor }, UIControlState.Selected);
+
+				TabBar.Items[keyValuePair.Key].SetBadgeTextAttributes(new UIStringAttributes { ForegroundColor = badgeTextColor }, UIControlState.Normal);
+				TabBar.Items[keyValuePair.Key].SetBadgeTextAttributes(new UIStringAttributes { ForegroundColor = selectedBadgeTextColor }, UIControlState.Selected);
+			}
 		}
 
 		void IEffectControlProvider.RegisterEffect(Effect effect)
