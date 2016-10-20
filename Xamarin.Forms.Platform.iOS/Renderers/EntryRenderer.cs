@@ -2,7 +2,10 @@ using System;
 using System.ComponentModel;
 
 using System.Drawing;
+using System.Linq;
+using CoreGraphics;
 using UIKit;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -62,6 +65,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateFont();
 				UpdateKeyboard();
 				UpdateAlignment();
+				UpdateKeyboardToolbar();
 			}
 		}
 
@@ -90,6 +94,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateColor();
 				UpdatePlaceholder();
 			}
+			else if (e.PropertyName == PlatformConfiguration.iOSSpecific.Entry.KeyboardToolbarProperty.PropertyName)
+				UpdateKeyboardToolbar();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -182,6 +188,38 @@ namespace Xamarin.Forms.Platform.iOS
 			// ReSharper disable once RedundantCheckBeforeAssignment
 			if (Control.Text != Element.Text)
 				Control.Text = Element.Text;
+		}
+
+		void UpdateKeyboardToolbar()
+		{
+			var list = Element.OnThisPlatform().KeyboardToolbar();
+
+			if (list == null || list.Count == 0)
+			{
+				Control.InputAccessoryView = null;
+				return;
+			}
+
+			var count = new UIBarButtonItem[list.Count];
+			for (var i = 0; i < count.Length; i++)
+			{
+				int local = i;
+				count[local] = new UIBarButtonItem((UIKit.UIBarButtonSystemItem)(long)list[local].UIBarButtonSystemItem, delegate
+				{
+					BeginInvokeOnMainThread(() =>
+					{
+						var action = list[local].Action;
+						action?.Invoke();
+					});
+				}){ TintColor = list[local].TintColor.ToUIColor() };
+			}
+
+			Control.InputAccessoryView = new UIToolbar(new CGRect(0.0f, 0.0f, Control.Frame.Size.Width, 44.0f))
+			{
+				BarTintColor = UIColor.FromRGB(240, 240, 240),
+				Translucent = false,
+				Items = count
+			};
 		}
 	}
 }
