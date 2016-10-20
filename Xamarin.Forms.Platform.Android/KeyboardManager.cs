@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Platform.Android
 				throw new InvalidOperationException("Call Forms.Init() before HideKeyboard");
 
 			if (inputView == null)
-				return;
+				throw new ArgumentNullException(nameof(inputView) + " must be set before the keyboard can be hidden.");
 
 			using (var inputMethodManager = (InputMethodManager)Forms.Context.GetSystemService(Context.InputMethodService))
 			{
@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Platform.Android
 				throw new InvalidOperationException("Call Forms.Init() before ShowKeyboard");
 
 			if (inputView == null)
-				return;
+				throw new ArgumentNullException(nameof(inputView) + " must be set before the keyboard can be shown.");
 
 			using (var inputMethodManager = (InputMethodManager)Forms.Context.GetSystemService(Context.InputMethodService))
 			{
