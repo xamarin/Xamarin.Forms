@@ -66,9 +66,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public UIViewController ViewController => _disposed ? null : this;
 
-		public override void ViewDidAppear(bool animated)
+		public override void ViewWillAppear(bool animated)
 		{
-			base.ViewDidAppear(animated);
+			base.ViewWillAppear(animated);
 
 			if (_appeared || _disposed)
 				return;
