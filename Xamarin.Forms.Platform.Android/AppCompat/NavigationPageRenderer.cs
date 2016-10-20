@@ -23,6 +23,7 @@ using Fragment = Android.Support.V4.App.Fragment;
 using FragmentManager = Android.Support.V4.App.FragmentManager;
 using FragmentTransaction = Android.Support.V4.App.FragmentTransaction;
 using Object = Java.Lang.Object;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
@@ -627,7 +628,15 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					fragments.Add(fragment);
 				}
 			}
-			transaction.Commit();
+
+			if (Element.On<PlatformConfiguration.Android>().IsAllowingStateLoss())
+			{
+				transaction.CommitAllowingStateLoss();
+			}
+			else
+			{
+				transaction.Commit();
+			}
 
 			// The fragment transitions don't really SUPPORT telling you when they end
 			// There are some hacks you can do, but they actually are worse than just doing this:
