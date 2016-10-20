@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 using Foundation;
 using UIKit;
 using Xamarin.Forms.Platform.iOS.Resources;
@@ -656,9 +657,20 @@ namespace Xamarin.Forms.Platform.iOS
 					return;
 
 				var table = (UITableView)recognizer.View;
-				if (!selector._lastPath.Equals(table.IndexPathForSelectedRow))
+
+				if (table.IndexPathsForSelectedRows != null && table.IndexPathsForSelectedRows.Contains(selector._lastPath))
+				{
+					if (!table.AllowsMultipleSelectionDuringEditing || !table.Editing)
+						return;
+
+					table.DeselectRow(selector._lastPath, false);
+					table.Source.RowDeselected(table, selector._lastPath);
+				}
+				else
+				{
 					table.SelectRow(selector._lastPath, false, UITableViewScrollPosition.None);
-				table.Source.RowSelected(table, selector._lastPath);
+					table.Source.RowSelected(table, selector._lastPath);
+				}
 			}
 		}
 
