@@ -277,7 +277,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				var detailContainer = (renderer as MasterDetailPageRenderer).GetChildAt(0) as MasterDetailContainer;
 				var detail = ((MasterDetailPage)page).Detail;
 
-				detailContainer.TopPadding = statusBarHeight;
+				detailContainer.TopPadding = page.Parent is NavigationPage ? 0 : statusBarHeight;
 				((IMasterDetailPageController)page).DetailBounds = detailContainer.GetBounds(false, 0, 0, width, height);
 				detailContainer.PageContainer?.Child.UpdateLayout();
 				detail.Layout(new Rectangle(0, 0, width, height));
@@ -287,7 +287,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					var masterContainer = (renderer as MasterDetailPageRenderer).GetChildAt(1) as MasterDetailContainer;
 					var master = ((MasterDetailPage)page).Master;
 
-					masterContainer.TopPadding = statusBarHeight;
+					masterContainer.TopPadding = page.Parent is NavigationPage ? 0 : statusBarHeight;
 					((IMasterDetailPageController)page).MasterBounds = masterContainer.GetBounds(true, 0, 0, width, height);
 					masterContainer.PageContainer?.Child.UpdateLayout();
 					master.Layout(new Rectangle(0, 0, width, height));
