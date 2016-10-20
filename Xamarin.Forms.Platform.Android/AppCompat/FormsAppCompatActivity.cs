@@ -232,6 +232,11 @@ namespace Xamarin.Forms.Platform.Android
 			// counterpart to OnPause
 			base.OnResume();
 
+			if (CurrentFocus != null && (CurrentFocus is EditText || CurrentFocus is TextView || CurrentFocus is SearchView))
+			{
+				CurrentFocus.ShowKeyboard();
+			}
+
 			_previousState = _currentState;
 			_currentState = AndroidApplicationLifecycleState.OnResume;
 
