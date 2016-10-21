@@ -53,5 +53,30 @@
 			SetSendAppearingEventOnResume(config.Element, value);
 			return config;
 		}
+
+		public static readonly BindableProperty CanShowKeyboardOnResumeProperty =
+			BindableProperty.Create(nameof(CanShowKeyboardOnResume), typeof(bool),
+			typeof(Application), false);
+
+		public static bool GetCanShowKeyboardOnResume(BindableObject element)
+		{
+			return (bool)element.GetValue(CanShowKeyboardOnResumeProperty);
+		}
+
+		public static void SetCanShowKeyboardOnResume(BindableObject element, bool value)
+		{
+			element.SetValue(CanShowKeyboardOnResumeProperty, value);
+		}
+
+		public static bool GetCanShowKeyboardOnResume(this IPlatformElementConfiguration<Android, FormsElement> config)
+		{
+			return GetCanShowKeyboardOnResume(config.Element);
+		}
+
+		public static IPlatformElementConfiguration<Android, FormsElement> CanShowKeyboardOnResume(this IPlatformElementConfiguration<Android, FormsElement> config, bool value)
+		{
+			SetCanShowKeyboardOnResume(config.Element, value);
+			return config;
+		}
 	}
 }
