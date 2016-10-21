@@ -4,9 +4,7 @@
 
 	public static class Application
 	{
-		public static readonly BindableProperty SendDisappearingEventOnPauseProperty =
-			BindableProperty.Create("SendDisappearingEventOnPause", typeof(bool),
-			typeof(Application), true);
+		public static readonly BindableProperty SendDisappearingEventOnPauseProperty = BindableProperty.Create(nameof(SendDisappearingEventOnPause), typeof(bool), typeof(Application), true);
 
 		public static bool GetSendDisappearingEventOnPause(BindableObject element)
 		{
@@ -29,9 +27,7 @@
 			return config;
 		}
 
-		public static readonly BindableProperty SendAppearingEventOnResumeProperty =
-			BindableProperty.Create("SendAppearingEventOnResume", typeof(bool),
-			typeof(Application), true);
+		public static readonly BindableProperty SendAppearingEventOnResumeProperty = BindableProperty.Create(nameof(SendAppearingEventOnResume), typeof(bool), typeof(Application), true);
 
 		public static bool GetSendAppearingEventOnResume(BindableObject element)
 		{
@@ -54,9 +50,7 @@
 			return config;
 		}
 
-		public static readonly BindableProperty CanShowKeyboardOnResumeProperty =
-			BindableProperty.Create(nameof(CanShowKeyboardOnResume), typeof(bool),
-			typeof(Application), false);
+		public static readonly BindableProperty CanShowKeyboardOnResumeProperty = BindableProperty.Create(nameof(CanShowKeyboardOnResume), typeof(bool), typeof(Application), false);
 
 		public static bool GetCanShowKeyboardOnResume(BindableObject element)
 		{
