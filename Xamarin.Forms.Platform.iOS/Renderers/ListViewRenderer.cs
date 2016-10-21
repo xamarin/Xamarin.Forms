@@ -7,6 +7,7 @@ using System.Linq;
 using Foundation;
 using UIKit;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using RectangleF = CoreGraphics.CGRect;
 using SizeF = CoreGraphics.CGSize;
 
@@ -608,6 +609,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 			public override nfloat GetHeightForRow(UITableView tableView, NSIndexPath indexPath)
 			{
+				if (List.OnThisPlatform().IsUsingDynamicViewCellsOnly())
+				{
+					if(Forms.IsiOS8OrNewer && List.HasUnevenRows && List.RowHeight == -1 && List.TemplatedItems.AsQueryable().ElementType == typeof(ViewCell))
+						return UITableView.AutomaticDimension;
+
+					throw new InvalidOperationException("IsUsingDynamicViewCellsOnly works on iOS 8+ with uneven rows, row height of -1, and ViewCell items.");
+				}
+
 				var cell = GetCellForPath(indexPath);
 
 				if (List.RowHeight == -1 && cell.Height == -1 && cell is ViewCell)
