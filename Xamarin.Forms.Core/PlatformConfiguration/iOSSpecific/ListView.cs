@@ -4,26 +4,26 @@
 
 	public static class ListView
 	{
-		public static readonly BindableProperty IsUsingDynamicViewCellsOnlyProperty = BindableProperty.Create(nameof(IsUsingDynamicViewCellsOnly), typeof(bool), typeof(ListView), false);
+		public static readonly BindableProperty IsUsingAutoSizedViewCellsOnlyProperty = BindableProperty.Create(nameof(IsUsingAutoSizedViewCellsOnly), typeof(bool), typeof(ListView), false);
 
-		public static bool GetIsUsingDynamicViewCellsOnly(BindableObject element)
+		public static bool GetIsUsingAutoSizedViewCellsOnly(BindableObject element)
 		{
-			return (bool)element.GetValue(IsUsingDynamicViewCellsOnlyProperty);
+			return (bool)element.GetValue(IsUsingAutoSizedViewCellsOnlyProperty);
 		}
 
-		public static void SetIsUsingDynamicViewCellsOnly(BindableObject element, bool value)
+		public static void SetIsUsingAutoSizedViewCellsOnly(BindableObject element, bool value)
 		{
-			element.SetValue(IsUsingDynamicViewCellsOnlyProperty, value);
+			element.SetValue(IsUsingAutoSizedViewCellsOnlyProperty, value);
 		}
 
-		public static bool IsUsingDynamicViewCellsOnly(this IPlatformElementConfiguration<iOS, FormsElement> config)
+		public static bool IsUsingAutoSizedViewCellsOnly(this IPlatformElementConfiguration<iOS, FormsElement> config)
 		{
-			return GetIsUsingDynamicViewCellsOnly(config.Element);
+			return GetIsUsingAutoSizedViewCellsOnly(config.Element);
 		}
 
-		public static IPlatformElementConfiguration<iOS, FormsElement> SetIsUsingDynamicViewCellsOnly(this IPlatformElementConfiguration<iOS, FormsElement> config, bool value)
+		public static IPlatformElementConfiguration<iOS, FormsElement> SetIsUsingAutoSizedViewCellsOnly(this IPlatformElementConfiguration<iOS, FormsElement> config, bool value)
 		{
-			SetIsUsingDynamicViewCellsOnly(config.Element, value);
+			SetIsUsingAutoSizedViewCellsOnly(config.Element, value);
 			return config;
 		}
 	}

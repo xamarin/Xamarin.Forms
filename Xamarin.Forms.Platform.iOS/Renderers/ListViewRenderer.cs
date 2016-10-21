@@ -609,12 +609,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 			public override nfloat GetHeightForRow(UITableView tableView, NSIndexPath indexPath)
 			{
-				if (List.OnThisPlatform().IsUsingDynamicViewCellsOnly())
+				if (List.OnThisPlatform().IsUsingAutoSizedViewCellsOnly())
 				{
-					if(Forms.IsiOS8OrNewer && List.HasUnevenRows && List.RowHeight == -1 && List.TemplatedItems.AsQueryable().ElementType == typeof(ViewCell))
+					if (Forms.IsiOS8OrNewer && List.HasUnevenRows && List.RowHeight == -1)
 						return UITableView.AutomaticDimension;
 
-					throw new InvalidOperationException("IsUsingDynamicViewCellsOnly works on iOS 8+ with uneven rows, row height of -1, and ViewCell items.");
+					throw new InvalidOperationException("IsUsingAutoSizedViewCellsOnly works on iOS 8+ with uneven rows, a row height of -1, and ViewCell items only.");
 				}
 
 				var cell = GetCellForPath(indexPath);
