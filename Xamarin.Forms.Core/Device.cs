@@ -16,7 +16,7 @@ namespace Xamarin.Forms
 
 		public static TargetPlatform OS { get; internal set; }
 
-		internal static DeviceInfo Info
+		public static DeviceInfo Info
 		{
 			get
 			{
@@ -24,7 +24,7 @@ namespace Xamarin.Forms
 					throw new InvalidOperationException("You MUST call Xamarin.Forms.Init(); prior to using it.");
 				return info;
 			}
-			set { info = value; }
+			internal set { info = value; }
 		}
 
 		internal static bool IsInvokeRequired

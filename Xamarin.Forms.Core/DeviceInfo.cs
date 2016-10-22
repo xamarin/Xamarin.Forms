@@ -4,19 +4,39 @@ using System.Runtime.CompilerServices;
 
 namespace Xamarin.Forms
 {
-	internal abstract class DeviceInfo : INotifyPropertyChanged, IDisposable
+	public abstract class DeviceInfo : INotifyPropertyChanged, IDisposable
 	{
 		DeviceOrientation _currentOrientation;
+		ScreenOrientation _screenOrientation;
 		bool _disposed;
 
-		public DeviceOrientation CurrentOrientation
+		internal DeviceOrientation CurrentOrientation
 		{
 			get { return _currentOrientation; }
-			internal set
+			set
 			{
 				if (Equals(_currentOrientation, value))
 					return;
 				_currentOrientation = value;
+
+				if(value == DeviceOrientation.Portrait)
+					ScreenOrientation = ScreenOrientation.Portrait;
+				else if (value == DeviceOrientation.Landscape)
+					ScreenOrientation = ScreenOrientation.Landscape;
+
+				OnPropertyChanged();
+			}
+		}
+
+		public ScreenOrientation ScreenOrientation
+		{
+			get { return _screenOrientation; }
+			internal set
+			{
+				if (Equals(_screenOrientation, value))
+					return;
+
+				_screenOrientation = value;
 				OnPropertyChanged();
 			}
 		}
@@ -47,5 +67,11 @@ namespace Xamarin.Forms
 			if (handler != null)
 				handler(this, new PropertyChangedEventArgs(propertyName));
 		}
+	}
+
+	public enum ScreenOrientation
+	{
+		Portrait,
+		Landscape
 	}
 }
