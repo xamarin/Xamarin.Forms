@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Xamarin.Forms.CustomAttributes;
+﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 #if UITEST
@@ -13,15 +12,12 @@ namespace Xamarin.Forms.Controls
 	[Issue(IssueTracker.Bugzilla, 41415, "ScrollX and ScrollY values are not consistent with iOS", PlatformAffected.Android)]
 	public class Bugzilla41415 : TestContentPage
 	{
+		const string ButtonText = "Click Me";
+		float _x = 0;
+		float _y = 0;
+
 		protected override void Init()
 		{
-			var scrollView = new ScrollView
-			{
-				Orientation = ScrollOrientation.Both,
-				HorizontalOptions = LayoutOptions.FillAndExpand,
-				VerticalOptions = LayoutOptions.FillAndExpand
-			};
-
 			var grid = new Grid
 			{
 				BackgroundColor = Color.Yellow,
@@ -40,10 +36,47 @@ namespace Xamarin.Forms.Controls
 				}
 			};
 
-			scrollView.Content = grid;
-			scrollView.Scrolled += (sender, args) => { Debug.WriteLine("{0:0.0} {1:0.0}", args.ScrollX, args.ScrollY); };
+			var labelx = new Label();
+			var labely = new Label();
 
-			Content = scrollView;
+			var scrollView = new ScrollView
+			{
+				Orientation = ScrollOrientation.Both,
+				HorizontalOptions = LayoutOptions.FillAndExpand,
+				VerticalOptions = LayoutOptions.FillAndExpand
+			};
+
+			scrollView.Content = grid;
+			scrollView.Scrolled += (sender, args) =>
+			{
+				labelx.Text = $"x: {args.ScrollX}";
+				labely.Text = $"y: {args.ScrollY}";
+			};
+
+			var button = new Button { Text = ButtonText };
+			button.Clicked += async (sender, e) =>
+			{
+				await scrollView.ScrollToAsync(_x + 100, _y + 100, true);
+				_x = 100;
+			};
+
+			Content = new StackLayout { Children = { button, labelx, labely, scrollView } };
 		}
+
+#if UITEST
+
+		[Test]
+		public void Bugzilla41415Test()
+		{
+			RunningApp.WaitForElement(q => q.Marked(ButtonText));
+			RunningApp.Tap(q => q.Marked(ButtonText));
+			RunningApp.WaitForElement(q => q.Marked("x: 100"));
+			RunningApp.WaitForElement(q => q.Marked("y: 100"));
+			RunningApp.Tap(q => q.Marked(ButtonText));
+			RunningApp.WaitForElement(q => q.Marked("x: 200"));
+			RunningApp.WaitForElement(q => q.Marked("y: 100"));
+		}
+
+#endif
 	}
 }
