@@ -13,8 +13,8 @@ namespace Xamarin.Forms.Controls
 	public class Bugzilla41415 : TestContentPage
 	{
 		const string ButtonText = "Click Me";
-		float _x = 0;
-		float _y = 0;
+		float _x, _y;
+		bool _didXChange, _didYChange;
 
 		protected override void Init()
 		{
@@ -38,6 +38,8 @@ namespace Xamarin.Forms.Controls
 
 			var labelx = new Label();
 			var labely = new Label();
+			var labelz = new Label();
+			var labela = new Label();
 
 			var scrollView = new ScrollView
 			{
@@ -51,16 +53,43 @@ namespace Xamarin.Forms.Controls
 			{
 				labelx.Text = $"x: {args.ScrollX}";
 				labely.Text = $"y: {args.ScrollY}";
+
+				// first and second taps
+				if (_x == 0)
+				{
+					if (args.ScrollX != 0 && args.ScrollX != 100)
+						_didXChange = true;
+					if (args.ScrollY != 0 && args.ScrollY != 100)
+						_didYChange = true;
+				}
+				else if (_x == 100)
+				{
+					if (args.ScrollX != _x && args.ScrollX != _x + 100)
+						_didXChange = true;
+					if (args.ScrollY != 100)
+						_didYChange = true;
+				}
+
+				labelz.Text = "z: " + _didXChange.ToString();
+				labela.Text = "a: " + _didYChange.ToString();
 			};
 
 			var button = new Button { Text = ButtonText };
 			button.Clicked += async (sender, e) =>
 			{
+				// reset
+				labelx.Text = null;
+				labely.Text = null;
+				labelz.Text = null;
+				labela.Text = null;
+				_didXChange = false;
+				_didYChange = false;
+
 				await scrollView.ScrollToAsync(_x + 100, _y + 100, true);
 				_x = 100;
 			};
 
-			Content = new StackLayout { Children = { button, labelx, labely, scrollView } };
+			Content = new StackLayout { Children = { button, labelx, labely, labelz, labela, scrollView } };
 		}
 
 #if UITEST
@@ -72,9 +101,13 @@ namespace Xamarin.Forms.Controls
 			RunningApp.Tap(q => q.Marked(ButtonText));
 			RunningApp.WaitForElement(q => q.Marked("x: 100"));
 			RunningApp.WaitForElement(q => q.Marked("y: 100"));
+			RunningApp.WaitForElement(q => q.Marked("z: true"));
+			RunningApp.WaitForElement(q => q.Marked("a: true"));
 			RunningApp.Tap(q => q.Marked(ButtonText));
 			RunningApp.WaitForElement(q => q.Marked("x: 200"));
 			RunningApp.WaitForElement(q => q.Marked("y: 100"));
+			RunningApp.WaitForElement(q => q.Marked("z: true"));
+			RunningApp.WaitForElement(q => q.Marked("a: false"));
 		}
 
 #endif
