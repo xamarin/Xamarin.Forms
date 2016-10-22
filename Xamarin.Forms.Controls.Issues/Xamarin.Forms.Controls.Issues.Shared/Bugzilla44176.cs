@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Controls
 
 			var grid = new Grid
 			{
-				InputTransparent = false,
+				InputTransparent = true,
 				WidthRequest = 250,
 				HeightRequest = 50,
 				AutomationId = "grid"
@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Controls
 
 			var contentView = new ContentView
 			{
-				InputTransparent = false,
+				InputTransparent = true,
 				WidthRequest = 250,
 				HeightRequest = 50,
 				AutomationId = "contentView"
@@ -40,12 +40,24 @@ namespace Xamarin.Forms.Controls
 
 			var stackLayout = new StackLayout
 			{
-				InputTransparent = false,
+				InputTransparent = true,
 				WidthRequest = 250,
 				HeightRequest = 50,
 				AutomationId = "stackLayout"
 			};
 			AddTapGesture(result, stackLayout);
+
+			var color = new Button
+			{
+				Text = "Add colors",
+				Command = new Command(() =>
+				{
+					grid.BackgroundColor = Color.Red;
+					contentView.BackgroundColor = Color.Blue;
+					stackLayout.BackgroundColor = Color.Yellow;
+				}),
+				AutomationId = "color"
+			};
 
 			var parent = new StackLayout
 			{
@@ -55,6 +67,7 @@ namespace Xamarin.Forms.Controls
 				VerticalOptions = LayoutOptions.Center,
 				Children =
 				{
+					color,
 					result,
 					grid,
 					contentView,
@@ -78,6 +91,21 @@ namespace Xamarin.Forms.Controls
 		[Test]
 		public void Test()
 		{
+			RunningApp.WaitForElement(q => q.Marked("grid"));
+			RunningApp.Tap(q => q.Marked("grid"));
+			RunningApp.WaitForElement(q => q.Marked("Success"));
+
+			RunningApp.WaitForElement(q => q.Marked("contentView"));
+			RunningApp.Tap(q => q.Marked("contentView"));
+			RunningApp.WaitForElement(q => q.Marked("Success"));
+
+			RunningApp.WaitForElement(q => q.Marked("stackLayout"));
+			RunningApp.Tap(q => q.Marked("stackLayout"));
+			RunningApp.WaitForElement(q => q.Marked("Success"));
+
+			RunningApp.WaitForElement(q => q.Marked("color"));
+			RunningApp.Tap(q => q.Marked("color"));
+
 			RunningApp.WaitForElement(q => q.Marked("grid"));
 			RunningApp.Tap(q => q.Marked("grid"));
 			RunningApp.WaitForElement(q => q.Marked("Success"));
