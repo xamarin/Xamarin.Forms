@@ -101,13 +101,13 @@ namespace Xamarin.Forms.Controls
 			RunningApp.Tap(q => q.Marked(ButtonText));
 			RunningApp.WaitForElement(q => q.Marked("x: 100"));
 			RunningApp.WaitForElement(q => q.Marked("y: 100"));
-			RunningApp.WaitForElement(q => q.Marked("z: true"));
-			RunningApp.WaitForElement(q => q.Marked("a: true"));
+			RunningApp.WaitForElement(q => q.Marked("z: True"));
+			RunningApp.WaitForElement(q => q.Marked("a: True"));
 			RunningApp.Tap(q => q.Marked(ButtonText));
 			RunningApp.WaitForElement(q => q.Marked("x: 200"));
 			RunningApp.WaitForElement(q => q.Marked("y: 100"));
-			RunningApp.WaitForElement(q => q.Marked("z: true"));
-			RunningApp.WaitForElement(q => q.Marked("a: false"));
+			RunningApp.WaitForElement(q => q.Marked("z: True"));
+			RunningApp.WaitForElement(q => q.Marked("a: False"));
 		}
 
 #endif
