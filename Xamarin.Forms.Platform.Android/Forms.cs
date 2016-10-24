@@ -193,7 +193,7 @@ namespace Xamarin.Forms
 			readonly IDeviceInfoProvider _formsActivity;
 			readonly Size _pixelScreenSize;
 			readonly double _scalingFactor;
-		    bool _disposed;
+			bool _disposed;
 
 			Orientation _previousOrientation = Orientation.Undefined;
 
@@ -225,12 +225,12 @@ namespace Xamarin.Forms
 
 			protected override void Dispose(bool disposing)
 			{
-			    if (_disposed)
-			        return;
+				if (_disposed)
+					return;
 
 				_formsActivity.ConfigurationChanged -= ConfigurationChanged;
 
-			    _disposed = true;
+				_disposed = true;
 
 				base.Dispose(disposing);
 			}
