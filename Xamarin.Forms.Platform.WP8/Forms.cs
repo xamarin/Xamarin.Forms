@@ -73,6 +73,7 @@ namespace Xamarin.Forms
 		{
 			internal const string BWPorientationChangedName = "Xamarin.WP8.OrientationChanged";
 			readonly double _scalingFactor;
+		    bool _disposed;
 
 			public WP8DeviceInfo()
 			{
@@ -98,7 +99,13 @@ namespace Xamarin.Forms
 
 			protected override void Dispose(bool disposing)
 			{
+			    if (_disposed)
+			        return;
+
 				MessagingCenter.Unsubscribe<FormsApplicationPage, DeviceOrientation>(this, BWPorientationChangedName);
+
+			    _disposed = true;
+
 				base.Dispose(disposing);
 			}
 		}
