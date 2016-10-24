@@ -130,7 +130,10 @@ namespace Xamarin.Forms
 				Device.info = null;
 			}
 
-			Device.Info = new AndroidDeviceInfo(activity);
+			// probably could be done in a better way
+			var deviceInfoProvider = activity as IDeviceInfoProvider;
+			if (deviceInfoProvider != null)
+				Device.Info = new AndroidDeviceInfo(deviceInfoProvider);
 
 			var ticker = Ticker.Default as AndroidTicker;
 			if (ticker != null)
@@ -187,21 +190,18 @@ namespace Xamarin.Forms
 
 		class AndroidDeviceInfo : DeviceInfo
 		{
-			bool disposed;
-			readonly Context _formsActivity;
+			readonly IDeviceInfoProvider _formsActivity;
 			readonly Size _pixelScreenSize;
 			readonly double _scalingFactor;
+		    bool _disposed;
 
 			Orientation _previousOrientation = Orientation.Undefined;
 
-			public AndroidDeviceInfo(Context formsActivity)
+			public AndroidDeviceInfo(IDeviceInfoProvider formsActivity)
 			{
 				_formsActivity = formsActivity;
 				CheckOrientationChanged(_formsActivity.Resources.Configuration.Orientation);
-				// This will not be an implementation of IDeviceInfoProvider when running inside the context
-				// of layoutlib, which is what the Android Designer does.
-				if (_formsActivity is IDeviceInfoProvider)
-					((IDeviceInfoProvider) _formsActivity).ConfigurationChanged += ConfigurationChanged;
+				formsActivity.ConfigurationChanged += ConfigurationChanged;
 
 				using (DisplayMetrics display = formsActivity.Resources.DisplayMetrics)
 				{
@@ -225,11 +225,13 @@ namespace Xamarin.Forms
 
 			protected override void Dispose(bool disposing)
 			{
-				if (disposing && !disposed) {
-					disposed = true;
-					if (_formsActivity is IDeviceInfoProvider)
-						((IDeviceInfoProvider) _formsActivity).ConfigurationChanged -= ConfigurationChanged;
-				}
+			    if (_disposed)
+			        return;
+
+				_formsActivity.ConfigurationChanged -= ConfigurationChanged;
+
+			    _disposed = true;
+
 				base.Dispose(disposing);
 			}
 

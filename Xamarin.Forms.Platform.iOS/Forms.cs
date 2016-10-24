@@ -129,6 +129,7 @@ namespace Xamarin.Forms
 			readonly NSObject _notification;
 			readonly Size _scaledScreenSize;
 			readonly double _scalingFactor;
+		    bool _disposed;
 
 			public IOSDeviceInfo()
 			{
@@ -153,7 +154,12 @@ namespace Xamarin.Forms
 
 			protected override void Dispose(bool disposing)
 			{
+			    if (_disposed)
+			        return;
+
 				_notification.Dispose();
+
+			    _disposed = true;
 				base.Dispose(disposing);
 			}
 		}
