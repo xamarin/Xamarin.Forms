@@ -50,26 +50,26 @@
 			return config;
 		}
 
-		public static readonly BindableProperty CanShowKeyboardOnResumeProperty = BindableProperty.Create(nameof(CanShowKeyboardOnResume), typeof(bool), typeof(Application), false);
+		public static readonly BindableProperty ShouldPreserveKeyboardOnResumeProperty = BindableProperty.Create(nameof(ShouldPreserveKeyboardOnResume), typeof(bool), typeof(Application), false);
 
-		public static bool GetCanShowKeyboardOnResume(BindableObject element)
+		public static bool GetShouldPreserveKeyboardOnResume(BindableObject element)
 		{
-			return (bool)element.GetValue(CanShowKeyboardOnResumeProperty);
+			return (bool)element.GetValue(ShouldPreserveKeyboardOnResumeProperty);
 		}
 
-		public static void SetCanShowKeyboardOnResume(BindableObject element, bool value)
+		public static void SetShouldPreserveKeyboardOnResume(BindableObject element, bool value)
 		{
-			element.SetValue(CanShowKeyboardOnResumeProperty, value);
+			element.SetValue(ShouldPreserveKeyboardOnResumeProperty, value);
 		}
 
-		public static bool GetCanShowKeyboardOnResume(this IPlatformElementConfiguration<Android, FormsElement> config)
+		public static bool GetShouldPreserveKeyboardOnResume(this IPlatformElementConfiguration<Android, FormsElement> config)
 		{
-			return GetCanShowKeyboardOnResume(config.Element);
+			return GetShouldPreserveKeyboardOnResume(config.Element);
 		}
 
-		public static IPlatformElementConfiguration<Android, FormsElement> CanShowKeyboardOnResume(this IPlatformElementConfiguration<Android, FormsElement> config, bool value)
+		public static IPlatformElementConfiguration<Android, FormsElement> ShouldPreserveKeyboardOnResume(this IPlatformElementConfiguration<Android, FormsElement> config, bool value)
 		{
-			SetCanShowKeyboardOnResume(config.Element, value);
+			SetShouldPreserveKeyboardOnResume(config.Element, value);
 			return config;
 		}
 	}
