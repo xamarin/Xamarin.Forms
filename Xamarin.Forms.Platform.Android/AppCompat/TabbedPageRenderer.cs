@@ -254,7 +254,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void OnChildrenCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			e.Apply((o, i, c) => SetupPage((Page)o, i), (o, i) => TeardownPage((Page)o, i), Reset);
+			e.Apply((o, i, c) => SetupPage((Page)o), (o, i) => TeardownPage((Page)o), Reset);
 
 			FormsViewPager pager = _viewPager;
 			TabLayout tabs = _tabLayout;
@@ -278,24 +278,23 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			UpdateIgnoreContainerAreas();
 		}
 
-		void TeardownPage(Page page, int i)
+		void TeardownPage(Page page)
 		{
 			page.PropertyChanged -= OnPagePropertyChanged;
 		}
 
-		void SetupPage(Page page, int i)
+		void SetupPage(Page page)
 		{
 			page.PropertyChanged += OnPagePropertyChanged;
 		}
 
 		void Reset()
 		{
-			var i = 0;
 			foreach (var page in Element.Children)
-				SetupPage(page, i++);
+				SetupPage(page);
 		}
 
-		private void OnPagePropertyChanged(object sender, PropertyChangedEventArgs e)
+		void OnPagePropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == Page.TitleProperty.PropertyName)
 			{
