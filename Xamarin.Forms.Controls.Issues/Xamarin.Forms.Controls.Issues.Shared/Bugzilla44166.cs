@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Collections.ObjectModel;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
+using System.Threading;
+using System.Diagnostics;
 
 #if UITEST
 using Xamarin.UITest;
@@ -20,10 +20,10 @@ namespace Xamarin.Forms.Controls
 		{
 			var label = new Label() { Text = "Testing..." };
 
-			var goButton = new Button { Text = "Go" };
+			var goButton = new Button { Text = "Go", AutomationId = "Go" };
 			goButton.Clicked += (sender, args) => Application.Current.MainPage = new _44166MDP();
 
-			var gcButton = new Button { Text = "GC" };
+			var gcButton = new Button { Text = "GC", AutomationId = "GC" };
 			gcButton.Clicked += (sender, args) =>
 			{
 				GC.Collect();
@@ -142,7 +142,7 @@ namespace Xamarin.Forms.Controls
 			Debug.WriteLine($"++++++++ {nameof(_44166Master)} constructor, {Counter} allocated");
 
 			Title = "Master";
-			var goButton = new Button { Text = "Back" };
+			var goButton = new Button { Text = "Back", AutomationId = "Back"};
 			goButton.Clicked += (sender, args) => Application.Current.MainPage = new Bugzilla44166();
 
 			Content = new StackLayout
