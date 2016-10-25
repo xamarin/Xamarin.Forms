@@ -19,10 +19,18 @@ namespace Xamarin.Forms
 					return;
 				_currentOrientation = value;
 
-				if(value == DeviceOrientation.Portrait)
-					ScreenOrientation = ScreenOrientation.Portrait;
-				else if (value == DeviceOrientation.Landscape)
-					ScreenOrientation = ScreenOrientation.Landscape;
+				switch (value)
+				{
+					case DeviceOrientation.Portrait:
+						ScreenOrientation = ScreenOrientation.Portrait;
+						break;
+					case DeviceOrientation.Landscape:
+						ScreenOrientation = ScreenOrientation.Landscape;
+						break;
+					default:
+						ScreenOrientation = ScreenOrientation.Other;
+						break;
+				}
 
 				OnPropertyChanged();
 			}
@@ -69,6 +77,7 @@ namespace Xamarin.Forms
 
 	public enum ScreenOrientation
 	{
+		Other,
 		Portrait,
 		Landscape
 	}
