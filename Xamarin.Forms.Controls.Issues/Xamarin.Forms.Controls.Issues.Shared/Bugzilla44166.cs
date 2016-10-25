@@ -71,9 +71,10 @@ namespace Xamarin.Forms.Controls
 			RunningApp.WaitForElement(q => q.Marked("Back"));
 			RunningApp.Tap(q => q.Marked("Back"));
 
+			RunningApp.WaitForElement(q => q.Marked("GC"));
+
 			for (var n = 0; n < 10; n++)
 			{
-				RunningApp.WaitForElement(q => q.Marked("GC"));
 				RunningApp.Tap(q => q.Marked("GC"));
 
 				if (RunningApp.Query(q => q.Marked("Success")).Length > 0)
