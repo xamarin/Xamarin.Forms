@@ -188,7 +188,7 @@ namespace Xamarin.Forms.Platform.iOS
 					SetNativeControl(_tableViewController.TableView);
 					if (Forms.IsiOS9OrNewer)
 						Control.CellLayoutMarginsFollowReadableWidth = false;
-					
+
 					_insetTracker = new KeyboardInsetTracker(_tableViewController.TableView, () => Control.Window, insets => Control.ContentInset = Control.ScrollIndicatorInsets = insets, point =>
 					{
 						var offset = Control.ContentOffset;
