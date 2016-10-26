@@ -126,14 +126,13 @@ namespace Xamarin.Forms
 
 		internal class IOSDeviceInfo : DeviceInfo
 		{
-			readonly NSObject _notification;
 			readonly Size _scaledScreenSize;
 			readonly double _scalingFactor;
 			bool _disposed;
 
 			public IOSDeviceInfo()
 			{
-				_notification = UIDevice.Notifications.ObserveOrientationDidChange((sender, args) => CurrentOrientation = UIDevice.CurrentDevice.Orientation.ToDeviceOrientation());
+				NSNotificationCenter.DefaultCenter.AddObserver(UIApplication.DidChangeStatusBarOrientationNotification, StatusBarOrientationDidChange);
 
 				_scalingFactor = UIScreen.MainScreen.Scale;
 				_scaledScreenSize = new Size(UIScreen.MainScreen.Bounds.Width, UIScreen.MainScreen.Bounds.Height);
@@ -152,12 +151,17 @@ namespace Xamarin.Forms
 				get { return _scalingFactor; }
 			}
 
+			public void StatusBarOrientationDidChange(NSNotification notification)
+			{
+				ScreenOrientation = UIApplication.SharedApplication.StatusBarOrientation.ToScreenOrientation();
+			}
+
 			protected override void Dispose(bool disposing)
 			{
 				if (_disposed)
 					return;
 
-				_notification.Dispose();
+				NSNotificationCenter.DefaultCenter.RemoveObserver(UIApplication.DidChangeStatusBarOrientationNotification);
 
 				_disposed = true;
 				base.Dispose(disposing);

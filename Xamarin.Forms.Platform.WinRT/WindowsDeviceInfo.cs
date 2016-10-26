@@ -1,6 +1,7 @@
 ﻿using System;
 using Windows.Foundation;
 using Windows.Graphics.Display;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 
 #if WINDOWS_UWP
@@ -20,8 +21,8 @@ namespace Xamarin.Forms.Platform.WinRT
 		{
 			// TODO: Screen size and DPI can change at any time
 			_information = DisplayInformation.GetForCurrentView();
+			ScreenOrientation = GetScreenOrientation(ApplicationView.GetForCurrentView().Orientation);
 			_information.OrientationChanged += OnOrientationChanged;
-			CurrentOrientation = GetDeviceOrientation(_information.CurrentOrientation);
 		}
 
 		public override Size PixelScreenSize
@@ -88,27 +89,24 @@ namespace Xamarin.Forms.Platform.WinRT
 			base.Dispose(disposing);
 		}
 
-		static DeviceOrientation GetDeviceOrientation(DisplayOrientations orientations)
+		static ScreenOrientation GetScreenOrientation(ApplicationViewOrientation orientations)
 		{
 			switch (orientations)
 			{
-				case DisplayOrientations.Landscape:
-				case DisplayOrientations.LandscapeFlipped:
-					return DeviceOrientation.Landscape;
+				case ApplicationViewOrientation.Landscape:
+					return ScreenOrientation.Landscape;
 
-				case DisplayOrientations.Portrait:
-				case DisplayOrientations.PortraitFlipped:
-					return DeviceOrientation.Portrait;
+				case ApplicationViewOrientation.Portrait:
+					return ScreenOrientation.Portrait;
 
 				default:
-				case DisplayOrientations.None:
-					return DeviceOrientation.Other;
+					return ScreenOrientation.Other;
 			}
 		}
 
 		void OnOrientationChanged(DisplayInformation sender, object args)
 		{
-			CurrentOrientation = GetDeviceOrientation(sender.CurrentOrientation);
+			ScreenOrientation = GetScreenOrientation(ApplicationView.GetForCurrentView().Orientation);
 		}
 	}
 }

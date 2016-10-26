@@ -41,7 +41,7 @@ namespace Xamarin.Forms.Platform.WinPhone
 			Cell cell = null;
 
 			System.Windows.Point pos = e.GetPosition(System.Windows.Application.Current.RootVisual);
-			if (Device.Info.CurrentOrientation.IsLandscape())
+			if (Device.Info.ScreenOrientation == ScreenOrientation.Landscape)
 			{
 				double x = pos.Y;
 				double y = System.Windows.Application.Current.RootVisual.RenderSize.Width - pos.X + (SystemTray.IsVisible ? 72 : 0);

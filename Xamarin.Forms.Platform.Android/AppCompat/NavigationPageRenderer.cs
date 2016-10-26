@@ -346,7 +346,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			}
 
 			if (actionBarHeight <= 0)
-				return Device.Info.CurrentOrientation.IsPortrait() ? (int)Context.ToPixels(56) : (int)Context.ToPixels(48);
+				return Device.Info.ScreenOrientation == ScreenOrientation.Portrait ? (int)Context.ToPixels(56) : (int)Context.ToPixels(48);
 
 			return actionBarHeight;
 		}
@@ -394,7 +394,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		async void DeviceInfoPropertyChanged(object sender, PropertyChangedEventArgs e)
 #pragma warning restore 1998
 		{
-			if (nameof(Device.Info.CurrentOrientation) == e.PropertyName)
+			if (nameof(Device.Info.ScreenOrientation) == e.PropertyName)
 				ResetToolbar();
 		}
 

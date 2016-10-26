@@ -4,26 +4,20 @@ namespace Xamarin.Forms.Platform.WinPhone
 {
 	internal static class Extensions
 	{
-		public static DeviceOrientation ToDeviceOrientation(this PageOrientation pageOrientation)
+		public static ScreenOrientation ToScreenOrientation(this PageOrientation pageOrientation)
 		{
 			switch (pageOrientation)
 			{
-				case PageOrientation.None:
-					return DeviceOrientation.Other;
 				case PageOrientation.Portrait:
-					return DeviceOrientation.Portrait;
-				case PageOrientation.Landscape:
-					return DeviceOrientation.Landscape;
 				case PageOrientation.PortraitUp:
-					return DeviceOrientation.PortraitUp;
 				case PageOrientation.PortraitDown:
-					return DeviceOrientation.PortraitDown;
+					return ScreenOrientation.Portrait;
+				case PageOrientation.Landscape:
 				case PageOrientation.LandscapeRight:
-					return DeviceOrientation.LandscapeRight;
 				case PageOrientation.LandscapeLeft:
-					return DeviceOrientation.LandscapeLeft;
+					return ScreenOrientation.Landscape;
 				default:
-					return DeviceOrientation.Other;
+					return ScreenOrientation.Other;
 			}
 		}
 	}

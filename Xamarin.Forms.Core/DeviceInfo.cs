@@ -6,35 +6,8 @@ namespace Xamarin.Forms
 {
 	public abstract class DeviceInfo : INotifyPropertyChanged, IDisposable
 	{
-		DeviceOrientation _currentOrientation;
 		ScreenOrientation _screenOrientation;
 		bool _disposed;
-
-		internal DeviceOrientation CurrentOrientation
-		{
-			get { return _currentOrientation; }
-			set
-			{
-				if (Equals(_currentOrientation, value))
-					return;
-				_currentOrientation = value;
-
-				switch (value)
-				{
-					case DeviceOrientation.Portrait:
-						ScreenOrientation = ScreenOrientation.Portrait;
-						break;
-					case DeviceOrientation.Landscape:
-						ScreenOrientation = ScreenOrientation.Landscape;
-						break;
-					default:
-						ScreenOrientation = ScreenOrientation.Other;
-						break;
-				}
-
-				OnPropertyChanged();
-			}
-		}
 
 		public ScreenOrientation ScreenOrientation
 		{
@@ -73,12 +46,5 @@ namespace Xamarin.Forms
 		{
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
-	}
-
-	public enum ScreenOrientation
-	{
-		Other,
-		Portrait,
-		Landscape
 	}
 }
