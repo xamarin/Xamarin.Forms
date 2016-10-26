@@ -201,7 +201,7 @@ namespace Xamarin.Forms
 				_formsActivity = formsActivity;
 				CheckOrientationChanged();
 				_formsActivity.ConfigurationChanged += ConfigurationChanged;
-				
+
 				using (DisplayMetrics display = formsActivity.Resources.DisplayMetrics)
 				{
 					_scalingFactor = display.Density;
