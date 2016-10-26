@@ -134,6 +134,7 @@ namespace Xamarin.Forms
 			{
 				NSNotificationCenter.DefaultCenter.AddObserver(UIApplication.DidChangeStatusBarOrientationNotification, StatusBarOrientationDidChange);
 
+				ScreenOrientation = UIApplication.SharedApplication.StatusBarOrientation.ToScreenOrientation();
 				_scalingFactor = UIScreen.MainScreen.Scale;
 				_scaledScreenSize = new Size(UIScreen.MainScreen.Bounds.Width, UIScreen.MainScreen.Bounds.Height);
 				PixelScreenSize = new Size(_scaledScreenSize.Width * _scalingFactor, _scaledScreenSize.Height * _scalingFactor);
