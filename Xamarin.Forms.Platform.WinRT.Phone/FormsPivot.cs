@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -46,7 +44,7 @@ namespace Xamarin.Forms.Platform.WinRT
 		{
 			get { return (Visibility)GetValue(TitleVisibilityProperty); }
 			set { SetValue(TitleVisibilityProperty, value); }
-		} 
+		}
 
         public ToolbarPlacement ToolbarPlacement
 	    {
