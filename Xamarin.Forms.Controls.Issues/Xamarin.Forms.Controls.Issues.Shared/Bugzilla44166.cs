@@ -65,16 +65,19 @@ namespace Xamarin.Forms.Controls
 		[Test]
 		public void Bugzilla44166Test()
 		{
+			RunningApp.Screenshot("Start");
 			RunningApp.WaitForElement(q => q.Marked("Go"));
 			RunningApp.Tap(q => q.Marked("Go"));
 
 			RunningApp.WaitForElement(q => q.Marked("Back"));
 			RunningApp.Tap(q => q.Marked("Back"));
 
+			RunningApp.Screenshot("First check for GC button");
 			RunningApp.WaitForElement(q => q.Marked("GC"));
 
 			for (var n = 0; n < 10; n++)
 			{
+				RunningApp.Screenshot($"Going to tap GC iteration {n}");
 				RunningApp.Tap(q => q.Marked("GC"));
 
 				if (RunningApp.Query(q => q.Marked("Success")).Length > 0)
