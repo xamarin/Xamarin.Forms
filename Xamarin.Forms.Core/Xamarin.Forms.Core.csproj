@@ -89,9 +89,11 @@
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="PlatformConfiguration\AndroidSpecific\AppCompat\Application.cs" />
     <Compile Include="PlatformConfiguration\AndroidSpecific\Application.cs" />
+    <Compile Include="PlatformConfiguration\AndroidSpecific\TabbedPage.cs" />
     <Compile Include="PlatformConfiguration\ExtensionPoints.cs" />
     <Compile Include="PlatformConfiguration\iOSSpecific\BlurEffectStyle.cs" />
     <Compile Include="PlatformConfiguration\iOSSpecific\ListView.cs" />
+    <Compile Include="PlatformConfiguration\iOSSpecific\Entry.cs" />
     <Compile Include="PlatformConfiguration\iOSSpecific\NavigationPage.cs" />
     <Compile Include="PlatformConfiguration\iOSSpecific\StatusBarTextColorMode.cs" />
     <Compile Include="PlatformConfiguration\iOSSpecific\Page.cs" />
