@@ -69,8 +69,8 @@ namespace Xamarin.Forms.Controls
 			RunningApp.WaitForElement(q => q.Marked("Go"));
 			RunningApp.Tap(q => q.Marked("Go"));
 
-			RunningApp.WaitForElement(q => q.Marked("Back"));
-			RunningApp.Tap(q => q.Marked("Back"));
+			RunningApp.WaitForElement(q => q.Marked("Previous"));
+			RunningApp.Tap(q => q.Marked("Previous"));
 
 			RunningApp.Screenshot("First check for GC button");
 			RunningApp.WaitForElement(q => q.Marked("GC"));
@@ -145,7 +145,7 @@ namespace Xamarin.Forms.Controls
 			Debug.WriteLine($"++++++++ {nameof(_44166Master)} constructor, {Counter} allocated");
 
 			Title = "Master";
-			var goButton = new Button { Text = "Back", AutomationId = "Back"};
+			var goButton = new Button { Text = "Return", AutomationId = "Return"};
 			goButton.Clicked += (sender, args) => Application.Current.MainPage = new Bugzilla44166();
 
 			Content = new StackLayout
@@ -192,7 +192,7 @@ namespace Xamarin.Forms.Controls
 			Interlocked.Increment(ref Counter);
 			Debug.WriteLine($"++++++++ {nameof(_44166NavContent)} constructor, {Counter} allocated");
 
-			var goButton = new Button { Text = "Back" };
+			var goButton = new Button { Text = "Previous", AutomationId = "Previous" };
 			goButton.Clicked += (sender, args) => Application.Current.MainPage = new Bugzilla44166();
 
 			Content = new StackLayout
