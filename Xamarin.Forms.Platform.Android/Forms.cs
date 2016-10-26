@@ -14,6 +14,7 @@ using Android.App;
 using Android.Content;
 using Android.Content.Res;
 using Android.OS;
+using Android.Runtime;
 using Android.Util;
 using Android.Views;
 using Xamarin.Forms.Internals;
@@ -195,14 +196,12 @@ namespace Xamarin.Forms
 			readonly double _scalingFactor;
 			bool _disposed;
 
-			Orientation _previousOrientation = Orientation.Undefined;
-
 			public AndroidDeviceInfo(IDeviceInfoProvider formsActivity)
 			{
 				_formsActivity = formsActivity;
-				CheckOrientationChanged(_formsActivity.Resources.Configuration.Orientation);
-				formsActivity.ConfigurationChanged += ConfigurationChanged;
-
+				CheckOrientationChanged();
+				_formsActivity.ConfigurationChanged += ConfigurationChanged;
+				
 				using (DisplayMetrics display = formsActivity.Resources.DisplayMetrics)
 				{
 					_scalingFactor = display.Density;
@@ -235,17 +234,32 @@ namespace Xamarin.Forms
 				base.Dispose(disposing);
 			}
 
-			void CheckOrientationChanged(Orientation orientation)
+			void CheckOrientationChanged()
 			{
-				if (!_previousOrientation.Equals(orientation))
-					CurrentOrientation = orientation.ToDeviceOrientation();
+				var outSize = new global::Android.Graphics.Point();
+				Context.GetSystemService(Context.WindowService).JavaCast<IWindowManager>().DefaultDisplay.GetSize(outSize);
 
-				_previousOrientation = orientation;
+				if (outSize.X < outSize.Y)
+				{
+					if(ScreenOrientation != ScreenOrientation.Portrait)
+						ScreenOrientation = ScreenOrientation.Portrait;
+				}
+				else if (outSize.X > outSize.Y)
+				{
+					if(ScreenOrientation != ScreenOrientation.Landscape)
+						ScreenOrientation = ScreenOrientation.Landscape;
+				}
+				else
+				{
+					// Normally, this should not happen since SQUARE is deprecated.
+					if (ScreenOrientation != ScreenOrientation.Other)
+						ScreenOrientation = ScreenOrientation.Other;
+				}
 			}
 
 			void ConfigurationChanged(object sender, EventArgs e)
 			{
-				CheckOrientationChanged(_formsActivity.Resources.Configuration.Orientation);
+				CheckOrientationChanged();
 			}
 		}
 

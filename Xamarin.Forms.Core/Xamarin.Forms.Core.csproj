@@ -106,8 +106,7 @@
     <Compile Include="IFontElement.cs" />
     <Compile Include="DependencyAttribute.cs" />
     <Compile Include="DependencyFetchTarget.cs" />
-    <Compile Include="DeviceOrientation.cs" />
-    <Compile Include="DeviceOrientationExtensions.cs" />
+    <Compile Include="ScreenOrientation.cs" />
     <Compile Include="Effect.cs" />
     <Compile Include="ElementEventArgs.cs" />
     <Compile Include="ElementTemplate.cs" />
