@@ -23,28 +23,28 @@ namespace Xamarin.Forms
 			}
 		}
 
-        public ScreenOrientation ScreenOrientation
-        {
-            get { return _screenOrientation; }
-            internal set
-            {
-                if (Equals(_screenOrientation, value))
-                    return;
+		public ScreenOrientation ScreenOrientation
+		{
+			get { return _screenOrientation; }
+			internal set
+			{
+				if (Equals(_screenOrientation, value))
+					return;
 
-                _screenOrientation = value;
-                OnPropertyChanged();
-            }
-        }
+				_screenOrientation = value;
+				OnPropertyChanged();
+			}
+		}
 
-        public abstract Size PixelScreenSize { get; }
+		public abstract Size PixelScreenSize { get; }
 
 		public abstract Size ScaledScreenSize { get; }
 
 		public abstract double ScalingFactor { get; }
 
-	    internal abstract void BeginOrientationNotifications();
+		internal abstract void BeginOrientationNotifications();
 
-	    internal abstract void EndOrientationNotifications();
+		internal abstract void EndOrientationNotifications();
 
 		public void Dispose()
 		{

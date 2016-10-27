@@ -1,4 +1,5 @@
 ﻿using System;
+using Windows.Devices.Sensors;
 using Windows.Foundation;
 using Windows.Graphics.Display;
 using Windows.UI.ViewManagement;
@@ -12,17 +13,22 @@ namespace Xamarin.Forms.Platform.UWP
 namespace Xamarin.Forms.Platform.WinRT
 #endif
 {
-	internal class WindowsDeviceInfo : DeviceInfo
+	sealed class WindowsDeviceInfo : DeviceInfo
 	{
 		DisplayInformation _information;
+		SimpleOrientationSensor _simpleOrientationSensor;
 		bool _isDisposed;
 
 		public WindowsDeviceInfo()
 		{
 			// TODO: Screen size and DPI can change at any time
 			_information = DisplayInformation.GetForCurrentView();
-			ScreenOrientation = GetScreenOrientation(ApplicationView.GetForCurrentView().Orientation);
-			_information.OrientationChanged += OnOrientationChanged;
+
+			// initialize orientations
+			DeviceOrientation = _information.NativeOrientation == DisplayOrientations.Portrait ? DeviceOrientation.Portrait : DeviceOrientation.Landscape;
+			SetScreenOrientation(ApplicationView.GetForCurrentView().Orientation);
+
+			BeginOrientationNotifications();
 		}
 
 		public override Size PixelScreenSize
@@ -73,6 +79,81 @@ namespace Xamarin.Forms.Platform.WinRT
 			}
 		}
 
+		internal override void BeginOrientationNotifications()
+		{
+			if(_information == null)
+				_information = DisplayInformation.GetForCurrentView();
+			_information.OrientationChanged += OnScreenOrientationChanged;
+
+			if (_simpleOrientationSensor != null)
+				return;
+
+			_simpleOrientationSensor = SimpleOrientationSensor.GetDefault();
+			_simpleOrientationSensor.OrientationChanged += OnDeviceOrientationChanged;
+		}
+
+		internal override void EndOrientationNotifications()
+		{
+			if (_information != null)
+			{
+				_information.OrientationChanged -= OnScreenOrientationChanged;
+				_information = null;
+			}
+
+			if (_simpleOrientationSensor == null)
+				return;
+
+			_simpleOrientationSensor.OrientationChanged -= OnDeviceOrientationChanged;
+			_simpleOrientationSensor = null;
+		}
+
+		void OnDeviceOrientationChanged(SimpleOrientationSensor sender, SimpleOrientationSensorOrientationChangedEventArgs args)
+		{
+			SetDeviceOrientation(args.Orientation);
+		}
+
+		void OnScreenOrientationChanged(DisplayInformation sender, object args)
+		{
+			SetScreenOrientation(ApplicationView.GetForCurrentView().Orientation);
+		}
+
+		void SetDeviceOrientation(SimpleOrientation orientation)
+		{
+			switch (orientation)
+			{
+				case SimpleOrientation.Rotated90DegreesCounterclockwise:
+					DeviceOrientation = _information.NativeOrientation == DisplayOrientations.Portrait ? DeviceOrientation.Landscape : DeviceOrientation.PortraitFlipped;
+					break;
+				case SimpleOrientation.Rotated180DegreesCounterclockwise:
+					DeviceOrientation = _information.NativeOrientation == DisplayOrientations.Portrait ? DeviceOrientation.PortraitFlipped : DeviceOrientation.LandscapeFlipped;
+					break;
+				case SimpleOrientation.Rotated270DegreesCounterclockwise:
+					DeviceOrientation = _information.NativeOrientation == DisplayOrientations.Portrait ? DeviceOrientation.LandscapeFlipped : DeviceOrientation.Portrait;
+					break;
+				case SimpleOrientation.NotRotated:
+					break;
+				default:
+					DeviceOrientation = DeviceOrientation.Other;
+					break;
+			}
+		}
+
+		void SetScreenOrientation(ApplicationViewOrientation orientations)
+		{
+			switch (orientations)
+			{
+				case ApplicationViewOrientation.Landscape:
+					ScreenOrientation = ScreenOrientation.Landscape;
+					break;
+				case ApplicationViewOrientation.Portrait:
+					ScreenOrientation = ScreenOrientation.Portrait;
+					break;
+				default:
+					ScreenOrientation = ScreenOrientation.Other;
+					break;
+			}
+		}
+
 		protected override void Dispose(bool disposing)
 		{
 			if (_isDisposed)
@@ -80,33 +161,12 @@ namespace Xamarin.Forms.Platform.WinRT
 
 			if (disposing)
 			{
-				_information.OrientationChanged -= OnOrientationChanged;
-				_information = null;
+				EndOrientationNotifications();
 			}
 
 			_isDisposed = true;
 
 			base.Dispose(disposing);
-		}
-
-		static ScreenOrientation GetScreenOrientation(ApplicationViewOrientation orientations)
-		{
-			switch (orientations)
-			{
-				case ApplicationViewOrientation.Landscape:
-					return ScreenOrientation.Landscape;
-
-				case ApplicationViewOrientation.Portrait:
-					return ScreenOrientation.Portrait;
-
-				default:
-					return ScreenOrientation.Other;
-			}
-		}
-
-		void OnOrientationChanged(DisplayInformation sender, object args)
-		{
-			ScreenOrientation = GetScreenOrientation(ApplicationView.GetForCurrentView().Orientation);
 		}
 	}
 }

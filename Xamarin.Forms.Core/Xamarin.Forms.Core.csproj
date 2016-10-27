@@ -86,7 +86,6 @@
     <Compile Include="DataTemplateSelector.cs" />
     <Compile Include="DateChangedEventArgs.cs" />
     <Compile Include="DelegateLogListener.cs" />
-    <Compile Include="DeviceOrientation.cs" />
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="PlatformConfiguration\AndroidSpecific\AppCompat\Application.cs" />
     <Compile Include="PlatformConfiguration\AndroidSpecific\Application.cs" />
@@ -107,6 +106,7 @@
     <Compile Include="IFontElement.cs" />
     <Compile Include="DependencyAttribute.cs" />
     <Compile Include="DependencyFetchTarget.cs" />
+    <Compile Include="DeviceOrientation.cs" />
     <Compile Include="ScreenOrientation.cs" />
     <Compile Include="Effect.cs" />
     <Compile Include="ElementEventArgs.cs" />

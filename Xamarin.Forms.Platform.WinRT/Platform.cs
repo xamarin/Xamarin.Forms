@@ -426,7 +426,7 @@ namespace Xamarin.Forms.Platform.WinRT
 			{
 				StatusBar statusBar = StatusBar.GetForCurrentView();
 
-				bool landscape = Device.Info.CurrentOrientation.IsLandscape();
+				bool landscape = Device.Info.ScreenOrientation == ScreenOrientation.Landscape;
 				bool titleBar = CoreApplication.GetCurrentView().TitleBar.IsVisible;
 				double offset = landscape ? statusBar.OccludedRect.Width : statusBar.OccludedRect.Height;
 

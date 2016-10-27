@@ -4,6 +4,6 @@ namespace Xamarin.Forms
 	{
 		Other,
 		Portrait,
-        Landscape
+		Landscape
 	}
 }

@@ -214,7 +214,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		async void DeviceInfoPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == "CurrentOrientation")
+			if (e.PropertyName == "ScreenOrientation")
 			{
 				if (!MasterDetailPageController.ShouldShowSplitMode && Presented)
 				{
