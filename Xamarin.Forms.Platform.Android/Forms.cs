@@ -262,7 +262,7 @@ namespace Xamarin.Forms
 			}
 
 			void SetDeviceOrientation(int? rotation = null)
-		    {
+			{
 			    SurfaceOrientation surfaceOrientation = GetSurfaceOrientation(rotation);
 
 			    if (PixelScreenSize.Width < PixelScreenSize.Height)
@@ -303,7 +303,7 @@ namespace Xamarin.Forms
 				}
 				else
 					DeviceOrientation = DeviceOrientation.Other;
-		    }
+			}
 
 			void SetScreenOrientation()
 			{
