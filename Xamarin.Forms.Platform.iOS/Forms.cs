@@ -124,7 +124,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		internal class IOSDeviceInfo : DeviceInfo
+		sealed class IOSDeviceInfo : DeviceInfo
 		{
 			readonly Size _scaledScreenSize;
 			readonly double _scalingFactor;
@@ -132,27 +132,45 @@ namespace Xamarin.Forms
 
 			public IOSDeviceInfo()
 			{
-				NSNotificationCenter.DefaultCenter.AddObserver(UIApplication.DidChangeStatusBarOrientationNotification, StatusBarOrientationDidChange);
-
-				ScreenOrientation = UIApplication.SharedApplication.StatusBarOrientation.ToScreenOrientation();
 				_scalingFactor = UIScreen.MainScreen.Scale;
 				_scaledScreenSize = new Size(UIScreen.MainScreen.Bounds.Width, UIScreen.MainScreen.Bounds.Height);
 				PixelScreenSize = new Size(_scaledScreenSize.Width * _scalingFactor, _scaledScreenSize.Height * _scalingFactor);
+
+				// initialize orientations
+				DeviceOrientation = UIDevice.CurrentDevice.Orientation.ToDevicenOrientation();
+				ScreenOrientation = UIApplication.SharedApplication.StatusBarOrientation.ToScreenOrientation();
+
+				BeginOrientationNotifications();
 			}
 
 			public override Size PixelScreenSize { get; }
 
-			public override Size ScaledScreenSize
+			public override Size ScaledScreenSize => _scaledScreenSize;
+
+			public override double ScalingFactor => _scalingFactor;
+
+			internal override void BeginOrientationNotifications()
 			{
-				get { return _scaledScreenSize; }
+				NSNotificationCenter.DefaultCenter.AddObserver(new NSString("UIDeviceOrientationDidChangeNotification"),OnDeviceOrientationChanged);
+				NSNotificationCenter.DefaultCenter.AddObserver(UIApplication.DidChangeStatusBarOrientationNotification, OnScreenOrientationChanged);
+
+				UIDevice.CurrentDevice.BeginGeneratingDeviceOrientationNotifications();
 			}
 
-			public override double ScalingFactor
+			internal override void EndOrientationNotifications()
 			{
-				get { return _scalingFactor; }
+				UIDevice.CurrentDevice.EndGeneratingDeviceOrientationNotifications();
+
+				NSNotificationCenter.DefaultCenter.RemoveObserver(new NSString("UIDeviceOrientationDidChangeNotification"));
+				NSNotificationCenter.DefaultCenter.RemoveObserver(UIApplication.DidChangeStatusBarOrientationNotification);
 			}
 
-			public void StatusBarOrientationDidChange(NSNotification notification)
+			void OnDeviceOrientationChanged(NSNotification notification)
+			{
+				DeviceOrientation = UIDevice.CurrentDevice.Orientation.ToDevicenOrientation();
+			}
+
+			void OnScreenOrientationChanged(NSNotification notification)
 			{
 				ScreenOrientation = UIApplication.SharedApplication.StatusBarOrientation.ToScreenOrientation();
 			}
@@ -162,7 +180,7 @@ namespace Xamarin.Forms
 				if (_disposed)
 					return;
 
-				NSNotificationCenter.DefaultCenter.RemoveObserver(UIApplication.DidChangeStatusBarOrientationNotification);
+				EndOrientationNotifications();
 
 				_disposed = true;
 				base.Dispose(disposing);

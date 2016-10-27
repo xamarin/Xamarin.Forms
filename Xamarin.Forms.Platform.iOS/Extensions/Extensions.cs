@@ -49,6 +49,21 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		internal static DeviceOrientation ToDevicenOrientation(this UIDeviceOrientation orientation)
+		{
+			switch (orientation)
+			{
+				case UIDeviceOrientation.Portrait:
+				case UIDeviceOrientation.PortraitUpsideDown:
+					return DeviceOrientation.Portrait;
+				case UIDeviceOrientation.LandscapeLeft:
+				case UIDeviceOrientation.LandscapeRight:
+					return DeviceOrientation.Landscape;
+				default:
+					return DeviceOrientation.Other;
+			}
+		}
+
 		internal static ScreenOrientation ToScreenOrientation(this UIInterfaceOrientation orientation)
 		{
 			switch (orientation)

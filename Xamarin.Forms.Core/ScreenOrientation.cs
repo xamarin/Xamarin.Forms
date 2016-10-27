@@ -4,6 +4,15 @@ namespace Xamarin.Forms
 	{
 		Other,
 		Portrait,
-		Landscape
+        Landscape
+	}
+
+	public enum DeviceOrientation
+	{
+		Other,
+		Portrait,
+		PortraitFlipped,
+		Landscape,
+		LandscapeFlipped
 	}
 }

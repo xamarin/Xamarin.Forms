@@ -6,27 +6,45 @@ namespace Xamarin.Forms
 {
 	public abstract class DeviceInfo : INotifyPropertyChanged, IDisposable
 	{
+		DeviceOrientation _deviceOrientation;
 		ScreenOrientation _screenOrientation;
 		bool _disposed;
 
-		public ScreenOrientation ScreenOrientation
+		public DeviceOrientation DeviceOrientation
 		{
-			get { return _screenOrientation; }
+			get { return _deviceOrientation; }
 			internal set
 			{
-				if (Equals(_screenOrientation, value))
+				if (Equals(_deviceOrientation, value))
 					return;
 
-				_screenOrientation = value;
+				_deviceOrientation = value;
 				OnPropertyChanged();
 			}
 		}
 
-		public abstract Size PixelScreenSize { get; }
+        public ScreenOrientation ScreenOrientation
+        {
+            get { return _screenOrientation; }
+            internal set
+            {
+                if (Equals(_screenOrientation, value))
+                    return;
+
+                _screenOrientation = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public abstract Size PixelScreenSize { get; }
 
 		public abstract Size ScaledScreenSize { get; }
 
 		public abstract double ScalingFactor { get; }
+
+	    internal abstract void BeginOrientationNotifications();
+
+	    internal abstract void EndOrientationNotifications();
 
 		public void Dispose()
 		{
