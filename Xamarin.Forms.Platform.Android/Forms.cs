@@ -193,7 +193,7 @@ namespace Xamarin.Forms
 		sealed class AndroidDeviceInfo : DeviceInfo
 		{
 			readonly IDeviceInfoProvider _formsActivity;
-		    AndroidOrientationEventListener _androidOrientationEventListener;
+			AndroidOrientationEventListener _androidOrientationEventListener;
 
 			readonly Size _pixelScreenSize;
 			readonly double _scalingFactor;
@@ -236,10 +236,10 @@ namespace Xamarin.Forms
 
 				if (_androidOrientationEventListener.CanDetectOrientation())
 					_androidOrientationEventListener.Enable();
-		    }
+			}
 
-		    internal override void EndOrientationNotifications()
-		    {
+			internal override void EndOrientationNotifications()
+			{
 				_formsActivity.ConfigurationChanged -= OnConfigurationChanged;
 
 				if (_androidOrientationEventListener == null)
@@ -249,7 +249,7 @@ namespace Xamarin.Forms
 				_androidOrientationEventListener.Disable();
 				_androidOrientationEventListener.Dispose();
 			    _androidOrientationEventListener = null;
-		    }
+			}
 
 			void OnDeviceOrientationChanged(object sender, int i)
 			{
@@ -363,19 +363,19 @@ namespace Xamarin.Forms
 			}
 		}
 
-	    class AndroidOrientationEventListener : OrientationEventListener
-	    {
-	        public event EventHandler<int> OrientationChanged;
+		class AndroidOrientationEventListener : OrientationEventListener
+		{
+			public event EventHandler<int> OrientationChanged;
 
-	        public AndroidOrientationEventListener(Context context, [GeneratedEnum] SensorDelay rate) : base(context, rate)
-	        { 
-	        }
+			public AndroidOrientationEventListener(Context context, [GeneratedEnum] SensorDelay rate) : base(context, rate)
+			{ 
+			}
 
-	        public override void OnOrientationChanged(int orientation)
-	        {
-	            OrientationChanged?.Invoke(this, orientation);
-	        }
-	    }
+			public override void OnOrientationChanged(int orientation)
+			{
+				OrientationChanged?.Invoke(this, orientation);
+			}
+		}
 
 		class AndroidExpressionSearch : ExpressionVisitor, IExpressionSearch
 		{
