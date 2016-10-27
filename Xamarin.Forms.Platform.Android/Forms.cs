@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
 using Android.Content.Res;
+using Android.Hardware;
 using Android.OS;
 using Android.Runtime;
 using Android.Util;
@@ -189,18 +190,19 @@ namespace Xamarin.Forms
 			return rc;
 		}
 
-		class AndroidDeviceInfo : DeviceInfo
+		sealed class AndroidDeviceInfo : DeviceInfo
 		{
 			readonly IDeviceInfoProvider _formsActivity;
+		    AndroidOrientationEventListener _androidOrientationEventListener;
+
 			readonly Size _pixelScreenSize;
 			readonly double _scalingFactor;
+
 			bool _disposed;
 
 			public AndroidDeviceInfo(IDeviceInfoProvider formsActivity)
 			{
 				_formsActivity = formsActivity;
-				CheckOrientationChanged();
-				_formsActivity.ConfigurationChanged += ConfigurationChanged;
 
 				using (DisplayMetrics display = formsActivity.Resources.DisplayMetrics)
 				{
@@ -208,18 +210,144 @@ namespace Xamarin.Forms
 					_pixelScreenSize = new Size(display.WidthPixels, display.HeightPixels);
 					ScaledScreenSize = new Size(_pixelScreenSize.Width / _scalingFactor, _pixelScreenSize.Height / _scalingFactor);
 				}
+
+				// initialize orientations
+				SetDeviceOrientation();
+				SetScreenOrientation();
+
+				BeginOrientationNotifications();
 			}
 
-			public override Size PixelScreenSize
-			{
-				get { return _pixelScreenSize; }
-			}
+			public override Size PixelScreenSize => _pixelScreenSize;
 
 			public override Size ScaledScreenSize { get; }
 
-			public override double ScalingFactor
+			public override double ScalingFactor => _scalingFactor;
+
+			internal override void BeginOrientationNotifications()
 			{
-				get { return _scalingFactor; }
+				_formsActivity.ConfigurationChanged += OnConfigurationChanged;
+
+				if (_androidOrientationEventListener != null)
+					return;
+
+				_androidOrientationEventListener = new AndroidOrientationEventListener(Context, SensorDelay.Normal);
+				_androidOrientationEventListener.OrientationChanged += OnDeviceOrientationChanged;
+
+				if (_androidOrientationEventListener.CanDetectOrientation())
+					_androidOrientationEventListener.Enable();
+		    }
+
+		    internal override void EndOrientationNotifications()
+		    {
+				_formsActivity.ConfigurationChanged -= OnConfigurationChanged;
+
+				if (_androidOrientationEventListener == null)
+				    return;
+
+				_androidOrientationEventListener.OrientationChanged -= OnDeviceOrientationChanged;
+				_androidOrientationEventListener.Disable();
+				_androidOrientationEventListener.Dispose();
+			    _androidOrientationEventListener = null;
+		    }
+
+			void OnDeviceOrientationChanged(object sender, int i)
+			{
+				SetDeviceOrientation(i);
+			}
+
+			void OnConfigurationChanged(object sender, EventArgs e)
+			{
+				SetScreenOrientation();
+			}
+
+			void SetDeviceOrientation(int? rotation = null)
+		    {
+			    SurfaceOrientation surfaceOrientation = GetSurfaceOrientation(rotation);
+
+			    if (PixelScreenSize.Width < PixelScreenSize.Height)
+				{
+					switch (surfaceOrientation)
+					{
+						case SurfaceOrientation.Rotation0:
+							DeviceOrientation = DeviceOrientation.Portrait;
+							break;
+						case SurfaceOrientation.Rotation90:
+							DeviceOrientation = DeviceOrientation.Landscape;
+							break;
+						case SurfaceOrientation.Rotation180:
+							DeviceOrientation = DeviceOrientation.PortraitFlipped;
+							break;
+						default:
+							DeviceOrientation = DeviceOrientation.LandscapeFlipped;
+							break;
+					}
+				}
+				else if (PixelScreenSize.Width > PixelScreenSize.Height)
+				{
+					switch (surfaceOrientation)
+					{
+						case SurfaceOrientation.Rotation0:
+							DeviceOrientation = DeviceOrientation.Landscape;
+							break;
+						case SurfaceOrientation.Rotation90:
+							DeviceOrientation = DeviceOrientation.Portrait;
+							break;
+						case SurfaceOrientation.Rotation180:
+							DeviceOrientation = DeviceOrientation.LandscapeFlipped;
+							break;
+						default:
+							DeviceOrientation = DeviceOrientation.PortraitFlipped;
+							break;
+					}
+				}
+				else
+					DeviceOrientation = DeviceOrientation.Other;
+		    }
+
+			void SetScreenOrientation()
+			{
+				switch (Context.Resources.Configuration.Orientation)
+				{
+					case Orientation.Portrait:
+						ScreenOrientation = ScreenOrientation.Portrait;
+						break;
+					case Orientation.Landscape:
+						ScreenOrientation = ScreenOrientation.Landscape;
+						break;
+					default:
+						ScreenOrientation = ScreenOrientation.Other;
+						break;
+				}
+			}
+
+			static SurfaceOrientation GetSurfaceOrientation(int? rotation)
+			{
+				SurfaceOrientation surfaceOrientation;
+				if (rotation == null)
+				{
+					surfaceOrientation = Context.GetSystemService(Context.WindowService).JavaCast<IWindowManager>().DefaultDisplay.Rotation;
+				}
+				else
+				{
+					switch (rotation.Value)
+					{
+						case 0:
+							surfaceOrientation = SurfaceOrientation.Rotation0;
+							break;
+						case 90:
+							surfaceOrientation = SurfaceOrientation.Rotation90;
+							break;
+						case 180:
+							surfaceOrientation = SurfaceOrientation.Rotation180;
+							break;
+						default:
+							surfaceOrientation = SurfaceOrientation.Rotation270;
+							break;
+					}
+				}
+
+				return surfaceOrientation;
 			}
 
 			protected override void Dispose(bool disposing)
@@ -227,41 +355,27 @@ namespace Xamarin.Forms
 				if (_disposed)
 					return;
 
-				_formsActivity.ConfigurationChanged -= ConfigurationChanged;
+				EndOrientationNotifications();
 
 				_disposed = true;
 
 				base.Dispose(disposing);
 			}
-
-			void CheckOrientationChanged()
-			{
-				var outSize = new global::Android.Graphics.Point();
-				Context.GetSystemService(Context.WindowService).JavaCast<IWindowManager>().DefaultDisplay.GetSize(outSize);
-
-				if (outSize.X < outSize.Y)
-				{
-					if(ScreenOrientation != ScreenOrientation.Portrait)
-						ScreenOrientation = ScreenOrientation.Portrait;
-				}
-				else if (outSize.X > outSize.Y)
-				{
-					if(ScreenOrientation != ScreenOrientation.Landscape)
-						ScreenOrientation = ScreenOrientation.Landscape;
-				}
-				else
-				{
-					// Normally, this should not happen since SQUARE is deprecated.
-					if (ScreenOrientation != ScreenOrientation.Other)
-						ScreenOrientation = ScreenOrientation.Other;
-				}
-			}
-
-			void ConfigurationChanged(object sender, EventArgs e)
-			{
-				CheckOrientationChanged();
-			}
 		}
+
+	    class AndroidOrientationEventListener : OrientationEventListener
+	    {
+	        public event EventHandler<int> OrientationChanged;
+
+	        public AndroidOrientationEventListener(Context context, [GeneratedEnum] SensorDelay rate) : base(context, rate)
+	        { 
+	        }
+
+	        public override void OnOrientationChanged(int orientation)
+	        {
+	            OrientationChanged?.Invoke(this, orientation);
+	        }
+	    }
 
 		class AndroidExpressionSearch : ExpressionVisitor, IExpressionSearch
 		{
