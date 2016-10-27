@@ -291,13 +291,13 @@ namespace Xamarin.Forms
 							DeviceOrientation = DeviceOrientation.Landscape;
 							break;
 						case SurfaceOrientation.Rotation90:
-							DeviceOrientation = DeviceOrientation.Portrait;
+							DeviceOrientation = DeviceOrientation.PortraitFlipped;
 							break;
 						case SurfaceOrientation.Rotation180:
 							DeviceOrientation = DeviceOrientation.LandscapeFlipped;
 							break;
 						default:
-							DeviceOrientation = DeviceOrientation.PortraitFlipped;
+							DeviceOrientation = DeviceOrientation.Portrait;
 							break;
 					}
 				}
