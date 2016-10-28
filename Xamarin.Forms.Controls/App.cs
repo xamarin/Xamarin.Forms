@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-using Xamarin.Forms.Controls.Issues;
+using Xamarin.Forms.PlatformConfiguration;
+using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 
 namespace Xamarin.Forms.Controls
 {
+
 	public class App : Application
 	{
 		public const string AppName = "XamarinFormsControls";
@@ -30,11 +32,22 @@ namespace Xamarin.Forms.Controls
 				Master = new ContentPage { Title = "Master", BackgroundColor = Color.Red },
 				Detail = CoreGallery.GetMainPage()
 			};
+
+			//// Uncomment to verify that there is no gray screen displayed between the blue splash and red MasterDetailPage.
+			//MainPage = new Bugzilla44596SplashPage(() =>
+			//{
+			//	var newTabbedPage = new TabbedPage();
+			//	newTabbedPage.Children.Add(new ContentPage { BackgroundColor = Color.Red, Content = new Label { Text = "yay" } });
+			//	MainPage = new MasterDetailPage
+			//	{
+			//		Master = new ContentPage { Title = "Master", BackgroundColor = Color.Red },
+			//		Detail = newTabbedPage
+			//	};
+			//});
 		}
 
 		protected override void OnAppLinkRequestReceived(Uri uri)
 		{
-
 			var appDomain = "http://" + AppName.ToLowerInvariant() + "/";
 
 			if (!uri.ToString().ToLowerInvariant().StartsWith(appDomain))

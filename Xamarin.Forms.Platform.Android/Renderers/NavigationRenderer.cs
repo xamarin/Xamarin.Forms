@@ -14,6 +14,7 @@ namespace Xamarin.Forms.Platform.Android
 		static ViewPropertyAnimator s_currentAnimation;
 
 		Page _current;
+		bool _disposed;
 
 		public NavigationRenderer()
 		{
@@ -35,19 +36,28 @@ namespace Xamarin.Forms.Platform.Android
 			return OnPushAsync(page, animated);
 		}
 
+		IPageController PageController => Element as IPageController;
+
 		protected override void Dispose(bool disposing)
 		{
-			if (disposing)
+			if (disposing && !_disposed)
 			{
-				foreach (VisualElement child in Element.InternalChildren)
-				{
-					IVisualElementRenderer renderer = Platform.GetRenderer(child);
-					if (renderer != null)
-						renderer.Dispose();
-				}
+				_disposed = true;
 
 				if (Element != null)
 				{
+					foreach (Element element in PageController.InternalChildren)
+					{
+						var child = (VisualElement)element;
+						if (child == null)
+						{
+							continue;
+						}
+
+						IVisualElementRenderer renderer = Platform.GetRenderer(child);
+						renderer?.Dispose();
+					}
+
 					var navController = (INavigationPageController)Element;
 
 					navController.PushRequested -= OnPushed;
@@ -64,13 +74,13 @@ namespace Xamarin.Forms.Platform.Android
 		protected override void OnAttachedToWindow()
 		{
 			base.OnAttachedToWindow();
-			Element.SendAppearing();
+			PageController?.SendAppearing();
 		}
 
 		protected override void OnDetachedFromWindow()
 		{
 			base.OnDetachedFromWindow();
-			Element.SendDisappearing();
+			PageController?.SendDisappearing();
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<NavigationPage> e)
@@ -99,7 +109,10 @@ namespace Xamarin.Forms.Platform.Android
 			newNavController.RemovePageRequested += OnRemovePageRequested;
 
 			// If there is already stuff on the stack we need to push it
-			newNavController.StackCopy.Reverse().ForEach(p => PushViewAsync(p, false));
+			foreach(Page page in newNavController.StackCopy.Reverse())
+			{
+				PushViewAsync(page, false);
+			}
 		}
 
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)
@@ -132,7 +145,7 @@ namespace Xamarin.Forms.Platform.Android
 		void InsertPageBefore(Page page, Page before)
 		{
 
-			int index = Element.InternalChildren.IndexOf(before);
+			int index = PageController.InternalChildren.IndexOf(before);
 			if (index == -1)
 				throw new InvalidOperationException("This should never happen, please file a bug");
 
@@ -220,9 +233,9 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					// animate out
 					if (containerToAdd.Parent != this)
-						AddView(containerToAdd, Element.LogicalChildren.IndexOf(rendererToAdd.Element));
+						AddView(containerToAdd, ((IElementController)Element).LogicalChildren.IndexOf(rendererToAdd.Element));
 					else
-						((Page)rendererToAdd.Element).SendAppearing();
+						((IPageController)rendererToAdd.Element).SendAppearing();
 					containerToAdd.Visibility = ViewStates.Visible;
 
 					if (containerToRemove != null)
@@ -260,7 +273,7 @@ namespace Xamarin.Forms.Platform.Android
 					if (!containerAlreadyAdded)
 						AddView(containerToAdd);
 					else
-						((Page)rendererToAdd.Element).SendAppearing();
+						((IPageController)rendererToAdd.Element).SendAppearing();
 
 					if (existing)
 						Element.ForceLayout();
@@ -273,8 +286,7 @@ namespace Xamarin.Forms.Platform.Android
 						if (containerToRemove != null && containerToRemove.Handle != IntPtr.Zero)
 						{
 							containerToRemove.Visibility = ViewStates.Gone;
-							if (pageToRemove != null)
-								pageToRemove.SendDisappearing();
+							((IPageController)pageToRemove)?.SendDisappearing();
 						}
 						s_currentAnimation = null;
 						tcs.TrySetResult(true);
@@ -296,10 +308,10 @@ namespace Xamarin.Forms.Platform.Android
 				if (containerToAdd.Parent != this)
 					AddView(containerToAdd);
 				else
-					((Page)rendererToAdd.Element).SendAppearing();
+					((IPageController)rendererToAdd.Element).SendAppearing();
 
 				if (containerToRemove != null && !removed)
-					pageToRemove.SendDisappearing();
+					((IPageController)pageToRemove).SendDisappearing();
 
 				if (existing)
 					Element.ForceLayout();

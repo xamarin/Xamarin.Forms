@@ -51,6 +51,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			}
 		}
 
+		IPageController MasterPageController => Element.Master as IPageController;
+		IPageController DetailPageController => Element.Detail as IPageController;
+		IPageController PageController => Element as IPageController;
+
 		void IDrawerListener.OnDrawerClosed(global::Android.Views.View drawerView)
 		{
 		}
@@ -118,6 +122,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 					_masterLayout = new MasterDetailContainer(newElement, true, Context)
 					{
+						TopPadding = ((IMasterDetailPageController)newElement).ShouldShowSplitMode ? statusBarHeight : 0,
 						LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent) { Gravity = (int)GravityFlags.Start }
 					};
 
@@ -183,17 +188,21 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 				if (_detailLayout != null)
 				{
+					RemoveView(_detailLayout);
 					_detailLayout.Dispose();
 					_detailLayout = null;
 				}
 
 				if (_masterLayout != null)
 				{
+					RemoveView(_masterLayout);
 					_masterLayout.Dispose();
 					_masterLayout = null;
 				}
 
 				Device.Info.PropertyChanged -= DeviceInfoPropertyChanged;
+
+				RemoveDrawerListener(this);
 
 				if (Element != null)
 				{
@@ -201,6 +210,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					Element.PropertyChanged -= HandlePropertyChanged;
 					Element.Appearing -= MasterDetailPageAppearing;
 					Element.Disappearing -= MasterDetailPageDisappearing;
+
 					Element.ClearValue(Android.Platform.RendererProperty);
 					Element = null;
 				}
@@ -212,13 +222,13 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		protected override void OnAttachedToWindow()
 		{
 			base.OnAttachedToWindow();
-			Element.SendAppearing();
+			PageController.SendAppearing();
 		}
 
 		protected override void OnDetachedFromWindow()
 		{
 			base.OnDetachedFromWindow();
-			Element.SendDisappearing();
+			PageController.SendDisappearing();
 		}
 
 		protected virtual void OnElementChanged(VisualElement oldElement, VisualElement newElement)
@@ -263,7 +273,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				UpdateMaster();
 			else if (e.PropertyName == "Detail")
 				UpdateDetail();
-			else if (e.PropertyName == "IsGestureEnabled")
+			else if (e.PropertyName == MasterDetailPage.IsGestureEnabledProperty.PropertyName)
 				SetGestureState();
 			else if (e.PropertyName == MasterDetailPage.IsPresentedProperty.PropertyName)
 			{
@@ -279,14 +289,14 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void MasterDetailPageAppearing(object sender, EventArgs e)
 		{
-			Element.Master?.SendAppearing();
-			Element.Detail?.SendAppearing();
+			MasterPageController?.SendAppearing();
+			DetailPageController?.SendAppearing();
 		}
 
 		void MasterDetailPageDisappearing(object sender, EventArgs e)
 		{
-			Element.Master?.SendDisappearing();
-			Element.Detail?.SendDisappearing();
+			MasterPageController?.SendDisappearing();
+			DetailPageController?.SendDisappearing();
 		}
 
 		void OnBackButtonPressed(object sender, BackButtonPressedEventArgs backButtonPressedEventArgs)

@@ -7,6 +7,7 @@ using Android.Content.Res;
 using Android.OS;
 using Android.Views;
 using Android.Widget;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -104,6 +105,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			_application = application;
 			Xamarin.Forms.Application.Current = application;
+
+			SetSoftInputMode();
 
 			application.PropertyChanged += AppOnPropertyChanged;
 
@@ -221,6 +224,8 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (args.PropertyName == "MainPage")
 				InternalSetPage(_application.MainPage);
+			if (args.PropertyName == PlatformConfiguration.AndroidSpecific.Application.WindowSoftInputModeAdjustProperty.PropertyName)
+				SetSoftInputMode();
 		}
 
 		void InternalSetPage(Page page)
@@ -238,11 +243,6 @@ namespace Xamarin.Forms.Platform.Android
 			MessagingCenter.Subscribe(this, Page.BusySetSignalName, (Page sender, bool enabled) =>
 			{
 				busyCount = Math.Max(0, enabled ? busyCount + 1 : busyCount - 1);
-
-				if (!Forms.SupportsProgress)
-					return;
-
-				SetProgressBarIndeterminate(true);
 				UpdateProgressBarVisibility(busyCount > 0);
 			});
 
@@ -307,11 +307,36 @@ namespace Xamarin.Forms.Platform.Android
 			InternalSetPage(_application.MainPage);
 		}
 
+		void SetSoftInputMode()
+		{
+			SoftInput adjust = SoftInput.AdjustPan;
+
+			if (Xamarin.Forms.Application.Current != null)
+			{
+				var elementValue = Xamarin.Forms.Application.Current.OnThisPlatform().GetWindowSoftInputModeAdjust();
+				switch (elementValue)
+				{
+					default:
+					case WindowSoftInputModeAdjust.Pan:
+						adjust = SoftInput.AdjustPan;
+						break;
+					case WindowSoftInputModeAdjust.Resize:
+						adjust = SoftInput.AdjustResize;
+						break;
+				}
+			}
+
+			Window.SetSoftInputMode(adjust);
+		}
+
 		void UpdateProgressBarVisibility(bool isBusy)
 		{
 			if (!Forms.SupportsProgress)
 				return;
+#pragma warning disable 612, 618
+			SetProgressBarIndeterminate(true);
 			SetProgressBarIndeterminateVisibility(isBusy);
+#pragma warning restore 612, 618
 		}
 
 		internal class DefaultApplication : Application

@@ -34,6 +34,7 @@ namespace Xamarin.Forms.Platform.WinRT
 	public class LabelRenderer : ViewRenderer<Label, TextBlock>
 	{
 		bool _fontApplied;
+		bool _isInitiallyDefault;
 
 		protected override Windows.Foundation.Size ArrangeOverride(Windows.Foundation.Size finalSize)
 		{
@@ -71,6 +72,8 @@ namespace Xamarin.Forms.Platform.WinRT
 					SetNativeControl(new TextBlock());
 				}
 
+				_isInitiallyDefault = Element.IsDefault();
+
 				UpdateText(Control);
 				UpdateColor(Control);
 				UpdateAlign(Control);
@@ -81,7 +84,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == Label.TextProperty.PropertyName)
+			if (e.PropertyName == Label.TextProperty.PropertyName || e.PropertyName == Label.FormattedTextProperty.PropertyName)
 				UpdateText(Control);
 			else if (e.PropertyName == Label.TextColorProperty.PropertyName)
 				UpdateColor(Control);
@@ -134,7 +137,7 @@ namespace Xamarin.Forms.Platform.WinRT
 				return;
 
 #pragma warning disable 618
-			Font fontToApply = label.IsDefault() ? Font.SystemFontOfSize(NamedSize.Medium) : label.Font;
+			Font fontToApply = label.IsDefault() && _isInitiallyDefault ? Font.SystemFontOfSize(NamedSize.Medium) : label.Font;
 #pragma warning restore 618
 
 			textBlock.ApplyFont(fontToApply);
@@ -165,7 +168,7 @@ namespace Xamarin.Forms.Platform.WinRT
 					textBlock.TextWrapping = TextWrapping.NoWrap;
 					break;
 				case LineBreakMode.TailTruncation:
-					textBlock.TextTrimming = TextTrimming.WordEllipsis;
+					textBlock.TextTrimming = TextTrimming.CharacterEllipsis;
 					textBlock.TextWrapping = TextWrapping.NoWrap;
 					break;
 				case LineBreakMode.MiddleTruncation:

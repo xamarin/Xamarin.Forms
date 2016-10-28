@@ -41,6 +41,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		Page Page { get; set; }
 
+		IPageController CurrentPageController => _navModel.CurrentPage as IPageController;
+
 		public void Dispose()
 		{
 			if (_disposed)
@@ -79,7 +81,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		Task<Page> INavigation.PopModalAsync(bool animated)
 		{
 			Page modal = _navModel.PopModal();
-			modal.SendDisappearing();
+			((IPageController)modal).SendDisappearing();
 			var source = new TaskCompletionSource<Page>();
 
 			IVisualElementRenderer modalRenderer = Android.Platform.GetRenderer(modal);
@@ -95,7 +97,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 							modalContainer.RemoveFromParent();
 							modalContainer.Dispose();
 							source.TrySetResult(modal);
-							_navModel.CurrentPage?.SendAppearing();
+							CurrentPageController?.SendAppearing();
 							modalContainer = null;
 						}
 					});
@@ -105,7 +107,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					modalContainer.RemoveFromParent();
 					modalContainer.Dispose();
 					source.TrySetResult(modal);
-					_navModel.CurrentPage?.SendAppearing();
+					CurrentPageController?.SendAppearing();
 				}
 			}
 
@@ -139,7 +141,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		async Task INavigation.PushModalAsync(Page modal, bool animated)
 		{
-			_navModel.CurrentPage?.SendDisappearing();
+			CurrentPageController?.SendDisappearing();
 
 			_navModel.PushModal(modal);
 
@@ -151,7 +153,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			// Verify that the modal is still on the stack
 			if (_navModel.CurrentPage == modal)
-				modal.SendAppearing();
+				((IPageController)modal).SendAppearing();
 		}
 
 		void INavigation.RemovePage(Page page)
@@ -191,7 +193,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		void IPlatformLayout.OnLayout(bool changed, int l, int t, int r, int b)
 		{
 			if (changed)
-				LayoutRootPage(Page, r - l, b - t);
+				LayoutRootPage((FormsAppCompatActivity)_context, Page, r - l, b - t);
 
 			Android.Platform.GetRenderer(Page).UpdateLayout();
 
@@ -236,7 +238,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			Page.Platform = this;
 			AddChild(Page, layout);
 
-			((Application)Page.RealParent).NavigationProxy.Inner = this;
+			Application.Current.NavigationProxy.Inner = this;
 		}
 
 		void AddChild(Page page, bool layout = false)
@@ -249,7 +251,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			Android.Platform.SetRenderer(page, renderView);
 
 			if (layout)
-				LayoutRootPage(page, _renderer.Width, _renderer.Height);
+				LayoutRootPage((FormsAppCompatActivity)_context, page, _renderer.Width, _renderer.Height);
 
 			_renderer.AddView(renderView.ViewGroup);
 		}
@@ -265,16 +267,16 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			return handled;
 		}
 
-		void LayoutRootPage(Page page, int width, int height)
+		internal static void LayoutRootPage(FormsAppCompatActivity activity, Page page, int width, int height)
 		{
-			var activity = (FormsAppCompatActivity)_context;
 			int statusBarHeight = Forms.IsLollipopOrNewer ? activity.GetStatusBarHeight() : 0;
+			statusBarHeight = activity.Window.Attributes.Flags.HasFlag(WindowManagerFlags.Fullscreen) || Forms.TitleBarVisibility == AndroidTitleBarVisibility.Never ? 0 : statusBarHeight;
 
 			if (page is MasterDetailPage)
-				page.Layout(new Rectangle(0, 0, _context.FromPixels(width), _context.FromPixels(height)));
+				page.Layout(new Rectangle(0, 0, activity.FromPixels(width), activity.FromPixels(height)));
 			else
 			{
-				page.Layout(new Rectangle(0, _context.FromPixels(statusBarHeight), _context.FromPixels(width), _context.FromPixels(height - statusBarHeight)));
+				page.Layout(new Rectangle(0, activity.FromPixels(statusBarHeight), activity.FromPixels(width), activity.FromPixels(height - statusBarHeight)));
 			}
 		}
 

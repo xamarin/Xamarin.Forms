@@ -1,12 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-#if __UNIFIED__
-using UIKit;
-
-#else
-using MonoTouch.UIKit;
-#endif
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -53,8 +46,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			var sameChildrenTypes = true;
 
-			var oldChildren = _oldElement.LogicalChildren;
-			var newChildren = newElement.LogicalChildren;
+			var oldChildren = ((IElementController)_oldElement).LogicalChildren;
+			var newChildren = ((IElementController)newElement).LogicalChildren;
 
 			if (oldChildren.Count == newChildren.Count)
 			{
@@ -102,7 +95,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void FillChildrenWithRenderers(VisualElement element)
 		{
-			foreach (var logicalChild in element.LogicalChildren)
+			foreach (var logicalChild in ((IElementController)element).LogicalChildren)
 			{
 				var child = logicalChild as VisualElement;
 				if (child != null)
@@ -128,7 +121,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateRenderers(Element newElement)
 		{
-			if (newElement.LogicalChildren.Count == 0)
+			var newElementController = (IElementController)newElement;
+
+			if (newElementController.LogicalChildren.Count == 0)
 				return;
 
 			var subviews = _parent.NativeView.Subviews;
@@ -139,7 +134,7 @@ namespace Xamarin.Forms.Platform.iOS
 					continue;
 
 				var x = (int)childRenderer.NativeView.Layer.ZPosition / 1000;
-				var element = newElement.LogicalChildren[x] as VisualElement;
+				var element = newElementController.LogicalChildren[x] as VisualElement;
 				if (element == null)
 					continue;
 

@@ -1,13 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-#if __UNIFIED__
 using UIKit;
-
-#else
-using MonoTouch.UIKit;
-
-#endif
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -18,6 +12,8 @@ namespace Xamarin.Forms.Platform.iOS
 		EventTracker _events;
 		VisualElementPackager _packager;
 		VisualElementTracker _tracker;
+
+		IPageController PageController => Element as IPageController;
 
 		public PageRenderer()
 		{
@@ -78,7 +74,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			_appeared = true;
-			((Page)Element).SendAppearing();
+			PageController.SendAppearing();
 		}
 
 		public override void ViewDidDisappear(bool animated)
@@ -89,7 +85,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			_appeared = false;
-			((Page)Element).SendDisappearing();
+			PageController.SendDisappearing();
 		}
 
 		public override void ViewDidLoad()
@@ -132,7 +128,7 @@ namespace Xamarin.Forms.Platform.iOS
 				Element.PropertyChanged -= OnHandlePropertyChanged;
 				Platform.SetRenderer(Element, null);
 				if (_appeared)
-					((Page)Element).SendDisappearing();
+					PageController.SendDisappearing();
 
 				_appeared = false;
 

@@ -41,17 +41,6 @@ namespace Xamarin.Forms.Xaml
 		public void Visit(ValueNode node, INode parentNode)
 		{
 			Values[node] = node.Value;
-
-			XmlName propertyName;
-			if (ApplyPropertiesVisitor.TryGetPropertyName(node, parentNode, out propertyName))
-			{
-				if (propertyName.NamespaceURI == "http://schemas.openxmlformats.org/markup-compatibility/2006" &&
-				    propertyName.LocalName == "Ignorable")
-				{
-					(parentNode.IgnorablePrefixes ?? (parentNode.IgnorablePrefixes = new List<string>())).AddRange(
-						(node.Value as string).Split(','));
-				}
-			}
 		}
 
 		public void Visit(MarkupNode node, INode parentNode)
@@ -61,9 +50,6 @@ namespace Xamarin.Forms.Xaml
 		public void Visit(ElementNode node, INode parentNode)
 		{
 			object value = null;
-
-			if (node.SkipPrefix(node.NamespaceResolver.LookupPrefix(node.NamespaceURI)))
-				return;
 
 			XamlParseException xpe;
 			var type = XamlParser.GetElementType(node.XmlType, node, Context.RootElement?.GetType().GetTypeInfo().Assembly,
@@ -88,8 +74,7 @@ namespace Xamarin.Forms.Xaml
 			else if (!type.GetTypeInfo().DeclaredConstructors.Any(ci => ci.IsPublic && ci.GetParameters().Length == 0) &&
 			         !ValidateCtorArguments(type, node, out ctorargname))
 			{
-				throw new XamlParseException(
-					String.Format("The Property {0} is required to create a {1} object.", ctorargname, type.FullName), node);
+				throw new XamlParseException($"The Property {ctorargname} is required to create a {type.FullName} object.", node);
 			}
 			else
 			{
@@ -121,8 +106,8 @@ namespace Xamarin.Forms.Xaml
 
 			Values[node] = value;
 
-			var typeExtension = value as TypeExtension;
-			if (typeExtension != null)
+			var markup = value as IMarkupExtension;
+			if (markup != null && (value is TypeExtension || value is StaticExtension))
 			{
 				var serviceProvider = new XamlServiceProvider(node, Context);
 
@@ -132,7 +117,7 @@ namespace Xamarin.Forms.Xaml
 				foreach (var cnode in node.CollectionItems)
 					cnode.Accept(visitor, node);
 
-				value = typeExtension.ProvideValue(serviceProvider);
+				value = markup.ProvideValue(serviceProvider);
 
 				node.Properties.Clear();
 				node.CollectionItems.Clear();
@@ -213,12 +198,27 @@ namespace Xamarin.Forms.Xaml
 
 			var factoryMethod = ((string)((ValueNode)node.Properties[XmlName.xFactoryMethod]).Value);
 			Type[] types = arguments == null ? new Type[0] : arguments.Select(a => a.GetType()).ToArray();
-			var mi = nodeType.GetRuntimeMethod(factoryMethod, types);
-			if (mi == null || !mi.IsStatic)
-			{
-				throw new MissingMemberException(String.Format("No static method found for {0}::{1} ({2})", nodeType.FullName,
-					factoryMethod, string.Join(", ", types.Select(t => t.FullName))));
-			}
+			Func<MethodInfo, bool> isMatch = m => {
+				if (m.Name != factoryMethod)
+					return false;
+				var p = m.GetParameters();
+				if (p.Length != types.Length)
+					return false;
+				if (!m.IsStatic)
+					return false;
+				for (var i = 0; i < p.Length; i++) {
+					if ((p [i].ParameterType.IsAssignableFrom(types [i])))
+						continue;
+					var op_impl = p [i].ParameterType.GetRuntimeMethod("op_Implicit", new [] { types [i]});
+					if (op_impl == null)
+						return false;
+					arguments [i] = op_impl.Invoke(null, new [] { arguments [i]});
+				}
+				return true;
+			};
+			var mi = nodeType.GetRuntimeMethods().FirstOrDefault(isMatch);
+			if (mi == null)
+				throw new MissingMemberException($"No static method found for {nodeType.FullName}::{factoryMethod} ({string.Join(", ", types.Select(t => t.FullName))})");
 			return mi.Invoke(null, arguments);
 		}
 
@@ -296,73 +296,87 @@ namespace Xamarin.Forms.Xaml
 			{
 				var valuestring = ((ValueNode)node.CollectionItems[0]).Value as string;
 
-				if (nodeType == typeof (bool))
+				if (nodeType == typeof(SByte)) {
+					sbyte retval;
+					if (sbyte.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out retval))
+						return retval;
+				}
+				if (nodeType == typeof(Int16)) {
+					short retval;
+					if (short.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out retval))
+						return retval;
+				}
+				if (nodeType == typeof(Int32)) {
+					int retval;
+					if (int.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out retval))
+						return retval;
+				}
+				if (nodeType == typeof(Int64)) {
+					long retval;
+					if (long.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out retval))
+						return retval;
+				}
+				if (nodeType == typeof(Byte)) {
+					byte retval;
+					if (byte.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out retval))
+						return retval;
+				}
+				if (nodeType == typeof(UInt16)) {
+					ushort retval;
+					if (ushort.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out retval))
+						return retval;
+				}
+				if (nodeType == typeof(UInt32)) {
+					uint retval;
+					if (uint.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out retval))
+						return retval;
+				}
+				if (nodeType == typeof(UInt64)) {
+					ulong retval;
+					if (ulong.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out retval))
+						return retval;
+				}
+				if (nodeType == typeof(Single)) {
+					float retval;
+					if (float.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out retval))
+						return retval;
+				}
+				if (nodeType == typeof(Double)) {
+					double retval;
+					if (double.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out retval))
+						return retval;
+				}
+				if (nodeType == typeof (Boolean))
 				{
 					bool outbool;
 					if (bool.TryParse(valuestring, out outbool))
-						value = outbool;
+						return outbool;
 				}
-				else if (nodeType == typeof (char))
+				if (nodeType == typeof(TimeSpan)) {
+					TimeSpan retval;
+					if (TimeSpan.TryParse(valuestring, CultureInfo.InvariantCulture, out retval))
+						return retval;
+				}
+				if (nodeType == typeof (char))
 				{
 					char retval;
 					if (char.TryParse(valuestring, out retval))
-						value = retval;
+						return retval;
 				}
-				else if (nodeType == typeof (string))
-					value = valuestring;
-				else if (nodeType == typeof (decimal))
+				if (nodeType == typeof (string))
+					return valuestring;
+				if (nodeType == typeof (decimal))
 				{
 					decimal retval;
 					if (decimal.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out retval))
-						value = retval;
+						return retval;
 				}
-				else if (nodeType == typeof (float))
-				{
-					float retval;
-					if (float.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out retval))
-						value = retval;
-				}
-				else if (nodeType == typeof (double))
-				{
-					double retval;
-					if (double.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out retval))
-						value = retval;
-				}
-				else if (nodeType == typeof (byte))
-				{
-					byte retval;
-					if (byte.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out retval))
-						value = retval;
-				}
-				else if (nodeType == typeof (short))
-				{
-					short retval;
-					if (short.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out retval))
-						value = retval;
-				}
-				else if (nodeType == typeof (int))
-				{
-					int retval;
-					if (int.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out retval))
-						value = retval;
-				}
-				else if (nodeType == typeof (long))
-				{
-					long retval;
-					if (long.TryParse(valuestring, NumberStyles.Number, CultureInfo.InvariantCulture, out retval))
-						value = retval;
-				}
-				else if (nodeType == typeof (TimeSpan))
-				{
-					TimeSpan retval;
-					if (TimeSpan.TryParse(valuestring, CultureInfo.InvariantCulture, out retval))
-						value = retval;
-				}
+
 				else if (nodeType == typeof (Uri))
 				{
 					Uri retval;
 					if (Uri.TryCreate(valuestring, UriKind.RelativeOrAbsolute, out retval))
-						value = retval;
+						return retval;
 				}
 			}
 			return value;

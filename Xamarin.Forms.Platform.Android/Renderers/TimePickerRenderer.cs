@@ -19,13 +19,24 @@ namespace Xamarin.Forms.Platform.Android
 			AutoPackage = false;
 		}
 
+		IElementController ElementController => Element as IElementController;
+
 		void TimePickerDialog.IOnTimeSetListener.OnTimeSet(ATimePicker view, int hourOfDay, int minute)
 		{
-			((IElementController)Element).SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
+			ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
 
-			((IElementController)Element).SetValueFromRenderer(TimePicker.TimeProperty, new TimeSpan(hourOfDay, minute, 0));
+			ElementController.SetValueFromRenderer(TimePicker.TimeProperty, new TimeSpan(hourOfDay, minute, 0));
 			Control.ClearFocus();
+
+			if (Forms.IsLollipopOrNewer)
+				_dialog.CancelEvent -= OnCancelButtonClicked;
+
 			_dialog = null;
+		}
+
+		protected override EditText CreateNativeControl()
+		{
+			return new EditText(Context) { Focusable = false, Clickable = true, Tag = this };
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<TimePicker> e)
@@ -34,7 +45,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (e.OldElement == null)
 			{
-				var textField = new EditText(Context) { Focusable = false, Clickable = true, Tag = this };
+				var textField = CreateNativeControl();
 
 				textField.SetOnClickListener(TimePickerListener.Instance);
 				SetNativeControl(textField);
@@ -66,8 +77,12 @@ namespace Xamarin.Forms.Platform.Android
 			else if (_dialog != null)
 			{
 				_dialog.Hide();
-				((IElementController)Element).SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
+				ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
 				Control.ClearFocus();
+
+				if (Forms.IsLollipopOrNewer)
+					_dialog.CancelEvent -= OnCancelButtonClicked;
+
 				_dialog = null;
 			}
 		}
@@ -75,10 +90,19 @@ namespace Xamarin.Forms.Platform.Android
 		void OnClick()
 		{
 			TimePicker view = Element;
-			((IElementController)Element).SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, true);
+			ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, true);
 
 			_dialog = new TimePickerDialog(Context, this, view.Time.Hours, view.Time.Minutes, false);
+
+			if (Forms.IsLollipopOrNewer)
+				_dialog.CancelEvent += OnCancelButtonClicked;
+
 			_dialog.Show();
+		}
+
+		void OnCancelButtonClicked(object sender, EventArgs e)
+		{
+			Element.Unfocus();
 		}
 
 		void SetTime(TimeSpan time)

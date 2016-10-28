@@ -1,17 +1,9 @@
 using System;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-#if __UNIFIED__
+using System.Globalization;
+using CoreSpotlight;
 using Foundation;
 using UIKit;
-using CoreSpotlight;
-
-#else
-using MonoTouch.Foundation;
-using MonoTouch.UIKit;
-using MonoTouch.CoreSpotlight;
-#endif
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -63,6 +55,8 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_application != null && _isSuspended)
 			{
 				_isSuspended = false;
+				CultureInfo.CurrentCulture.ClearCachedData();
+				TimeZoneInfo.ClearCachedData();
 				_application.SendResume();
 			}
 		}

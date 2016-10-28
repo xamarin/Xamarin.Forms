@@ -81,15 +81,15 @@ namespace Xamarin.Forms.Platform.Android
 		public bool OnActionItemClicked(ActionMode mode, IMenuItem item)
 		{
 			OnActionItemClickedImpl(item);
-			if (mode != null && mode.Handle != IntPtr.Zero)
-				mode.Finish();
+			_actionMode?.Finish();
 			return true;
 		}
 
 		bool global::Android.Support.V7.View.ActionMode.ICallback.OnActionItemClicked(global::Android.Support.V7.View.ActionMode mode, IMenuItem item)
 		{
 			OnActionItemClickedImpl(item);
-			mode.Finish();
+
+			_supportActionMode?.Finish();
 			return true;
 		}
 
@@ -202,7 +202,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (action.Command != null)
 					action.Command.CanExecuteChanged += commandChanged;
 
-				if (!action.IsEnabled)
+				if (!((IMenuItemController)action).IsEnabled)
 					item.SetEnabled(false);
 			}
 		}
@@ -210,6 +210,9 @@ namespace Xamarin.Forms.Platform.Android
 		bool HandleContextMode(AView view, int position)
 		{
 			Cell cell = GetCellForPosition(position);
+
+			if (cell == null)
+				return false;
 
 			if (_actionMode != null || _supportActionMode != null)
 			{
@@ -247,7 +250,7 @@ namespace Xamarin.Forms.Platform.Android
 		void OnActionItemClickedImpl(IMenuItem item)
 		{
 			int index = item.ItemId;
-			MenuItem action = ActionModeContext.ContextActions[index];
+			IMenuItemController action = ActionModeContext.ContextActions[index];
 
 			action.Activate();
 		}

@@ -1,10 +1,11 @@
 using System;
+using System.Collections.Generic;
 using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_MasterDetailPageRenderer))]
-	public class MasterDetailPage : Page, IMasterDetailPageController
+	public class MasterDetailPage : Page, IMasterDetailPageController, IElementConfiguration<MasterDetailPage>
 	{
 		public static readonly BindableProperty IsGestureEnabledProperty = BindableProperty.Create("IsGestureEnabled", typeof(bool), typeof(MasterDetailPage), true);
 
@@ -22,6 +23,8 @@ namespace Xamarin.Forms
 
 		Rectangle _masterBounds;
 
+		IPageController PageController => this as IPageController;
+
 		public Page Detail
 		{
 			get { return _detail; }
@@ -38,9 +41,9 @@ namespace Xamarin.Forms
 
 				OnPropertyChanging();
 				if (_detail != null)
-					InternalChildren.Remove(_detail);
+					PageController.InternalChildren.Remove(_detail);
 				_detail = value;
-				InternalChildren.Add(_detail);
+				PageController.InternalChildren.Add(_detail);
 				OnPropertyChanged();
 			}
 		}
@@ -76,9 +79,9 @@ namespace Xamarin.Forms
 
 				OnPropertyChanging();
 				if (_master != null)
-					InternalChildren.Remove(_master);
+					PageController.InternalChildren.Remove(_master);
 				_master = value;
-				InternalChildren.Add(_master);
+				PageController.InternalChildren.Add(_master);
 				OnPropertyChanged();
 			}
 		}
@@ -234,6 +237,18 @@ namespace Xamarin.Forms
 		{
 			var page = (MasterDetailPage)sender;
 			UpdateMasterBehavior(page);
+		}
+
+		public MasterDetailPage()
+		{
+			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<MasterDetailPage>>(() => new PlatformConfigurationRegistry<MasterDetailPage>(this));
+		}
+
+		readonly Lazy<PlatformConfigurationRegistry<MasterDetailPage>> _platformConfigurationRegistry;
+
+		public new IPlatformElementConfiguration<T, MasterDetailPage> On<T>() where T : IConfigPlatform
+		{
+			return _platformConfigurationRegistry.Value.On<T>();
 		}
 	}
 }

@@ -46,6 +46,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla31333.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla31366.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla31964.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla32033.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla32034.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla32776.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla32842.xaml.cs">
@@ -61,6 +62,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla34007.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla35078.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla35127.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla35132.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla35157.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla35294.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla35472.cs" />
@@ -104,7 +106,34 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla40185.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla40333.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla31806.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla40408.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla40858.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla40824.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla40911.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla40955.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla41078.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla40998.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla41205.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla41418.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla41424.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla42069.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla42069_Page.xaml.cs">
+      <DependentUpon>Bugzilla42069_Page.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla42074.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla42075.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla42329.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla42364.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla42519.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla43516.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla44166.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla44461.cs" />
+
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla44584.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla42832.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla44044.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla44338.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CarouselAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla34561.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla34727.cs" />
@@ -113,6 +142,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla38416.xaml.cs">
       <DependentUpon>Bugzilla38416.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)FailImageSource.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)InputTransparentIssue.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IsInvokeRequiredRaceCondition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IsPasswordToggleTest.cs" />
@@ -151,7 +181,23 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla39829.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla39458.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla39853.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PlatformSpecifics_iOSTranslucentNavBarX.xaml.cs">
+      <DependentUpon>PlatformSpecifics_iOSTranslucentNavBarX.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)TestPages\ScreenshotConditionalApp.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla41842.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla42277.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ImageLoadingErrorHandling.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla33561.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla43214.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla42602.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla43161.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla39768.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla41271.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla40722.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla41153.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla44129.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)_Template.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1028.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1075.cs" />
@@ -175,9 +221,6 @@
       <DependentUpon>Issue1545.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue1546.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Issue1549.xaml.cs">
-      <DependentUpon>Issue1549.xaml</DependentUpon>
-    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue1554.xaml.cs">
       <DependentUpon>Issue1554.xaml</DependentUpon>
     </Compile>
@@ -404,6 +447,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla39963.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla39987.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla40704.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla41038.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla38284.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla39486.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue55555.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla41029.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla39908.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla39489.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Bugzilla22229.xaml">
@@ -413,9 +463,6 @@
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue1545.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue1549.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue1554.xaml">
@@ -531,6 +578,18 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Bugzilla39636.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)PlatformSpecifics_iOSTranslucentNavBarX.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Bugzilla42069_Page.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>

@@ -1,33 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Drawing;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-
-#if __UNIFIED__
-using CoreGraphics;
 using Foundation;
-using ObjCRuntime;
 using UIKit;
 using RectangleF = CoreGraphics.CGRect;
-using SizeF = CoreGraphics.CGSize;
-using PointF = CoreGraphics.CGPoint;
-
-#else
-using MonoTouch;
-using MonoTouch.CoreAnimation;
-using MonoTouch.CoreFoundation;
-using MonoTouch.CoreGraphics;
-using MonoTouch.UIKit;
-using MonoTouch.Foundation;
-using MonoTouch.ObjCRuntime;
-
-using nfloat = System.Single;
-using nint = System.Int32;
-using nuint = System.UInt32;
-#endif
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -171,16 +148,6 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 
 		Page Page { get; set; }
-
-		Application TargetApplication
-		{
-			get
-			{
-				if (Page == null)
-					return null;
-				return Page.RealParent as Application;
-			}
-		}
 
 		void IDisposable.Dispose()
 		{
@@ -327,7 +294,7 @@ namespace Xamarin.Forms.Platform.iOS
 		internal void DidAppear()
 		{
 			_animateModals = false;
-			TargetApplication.NavigationProxy.Inner = this;
+			Application.Current.NavigationProxy.Inner = this;
 			_animateModals = true;
 		}
 
@@ -411,7 +378,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			Page.DescendantRemoved += HandleChildRemoved;
 
-			TargetApplication.NavigationProxy.Inner = this;
+			Application.Current.NavigationProxy.Inner = this;
 		}
 
 		internal void WillAppear()

@@ -131,6 +131,9 @@
     <Compile Include="..\Xamarin.Forms.Platform.WinRT\AlignmentExtensions.cs">
       <Link>AlignmentExtensions.cs</Link>
     </Compile>
+    <Compile Include="..\Xamarin.Forms.Platform.WinRT\BrushHelpers.cs">
+      <Link>BrushHelpers.cs</Link>
+    </Compile>
     <Compile Include="..\Xamarin.Forms.Platform.WinRT\FormsTextBox.cs">
       <Link>FormsTextBox.cs</Link>
     </Compile>
@@ -155,14 +158,29 @@
     <Compile Include="..\Xamarin.Forms.Platform.WinRT\IWrapperAware.cs">
       <Link>IWrapperAware.cs</Link>
     </Compile>
+    <Compile Include="..\Xamarin.Forms.Platform.WinRT\NativeBindingExtensions.cs">
+      <Link>NativeBindingExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\Xamarin.Forms.Platform.WinRT\NativeEventWrapper.cs">
+      <Link>NativeEventWrapper.cs</Link>
+    </Compile>
+    <Compile Include="..\Xamarin.Forms.Platform.WinRT\NativePropertyListener.cs">
+      <Link>NativePropertyListener.cs</Link>
+    </Compile>
     <Compile Include="..\Xamarin.Forms.Platform.WinRT\NativeViewWrapper.cs">
       <Link>NativeViewWrapper.cs</Link>
     </Compile>
     <Compile Include="..\Xamarin.Forms.Platform.WinRT\NativeViewWrapperRenderer.cs">
       <Link>NativeViewWrapperRenderer.cs</Link>
     </Compile>
+    <Compile Include="..\Xamarin.Forms.Platform.WinRT\PlatformConfigurationExtensions.cs">
+      <Link>PlatformConfigurationExtensions.cs</Link>
+    </Compile>
     <Compile Include="..\Xamarin.Forms.Platform.WinRT\PlatformEffect.cs">
       <Link>PlatformEffect.cs</Link>
+    </Compile>
+    <Compile Include="..\Xamarin.Forms.Platform.WinRT\UriImageSourceHandler.cs">
+      <Link>UriImageSourceHandler.cs</Link>
     </Compile>
     <Compile Include="..\Xamarin.Forms.Platform.WinRT\ViewExtensions.cs">
       <Link>ViewExtensions.cs</Link>
@@ -171,12 +189,15 @@
       <Link>LayoutExtensions.cs</Link>
     </Compile>
     <Compile Include="IToolBarForegroundBinder.cs" />
+    <Compile Include="NativeBindingService.cs" />
+    <Compile Include="NativeValueConverterService.cs" />
     <Compile Include="SearchBarRenderer.cs" />
     <Compile Include="..\Xamarin.Forms.Platform.WinRT\TextAlignmentToHorizontalAlignmentConverter.cs">
       <Link>TextAlignmentToHorizontalAlignmentConverter.cs</Link>
     </Compile>
     <Compile Include="StepperControl.cs" />
     <Compile Include="TabbedPageRenderer.cs" />
+    <Compile Include="ToolbarPlacementHelper.cs" />
     <Content Include="Properties\Xamarin.Forms.Platform.UAP.rd.xml" />
     <Compile Include="..\Xamarin.Forms.Core\Properties\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
@@ -282,9 +303,6 @@
     </Compile>
     <Compile Include="..\Xamarin.Forms.Platform.WinRT\ImageConverter.cs">
       <Link>ImageConverter.cs</Link>
-    </Compile>
-    <Compile Include="..\Xamarin.Forms.Platform.WinRT\ImageLoaderSourceHandler.cs">
-      <Link>ImageLoaderSourceHandler.cs</Link>
     </Compile>
     <Compile Include="..\Xamarin.Forms.Platform.WinRT\ImageRenderer.cs">
       <Link>ImageRenderer.cs</Link>
@@ -421,7 +439,15 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="AutoSuggestStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="FormsTextBoxStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="MasterDetailControlStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -429,9 +455,17 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="PageControlStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Resources.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="TabbedPageStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>

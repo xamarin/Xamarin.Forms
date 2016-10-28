@@ -8,6 +8,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Xamarin.Forms.Internals;
 
 #if WINDOWS_UWP
 
@@ -41,7 +42,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 			Unloaded += (sender, args) =>
 			{
-				Cell cell = Cell;
+				ICellController cell = Cell;
 				if (cell != null)
 					cell.SendDisappearing();
 			};
@@ -96,7 +97,9 @@ namespace Xamarin.Forms.Platform.WinRT
 					}
 				}
 
-				return new Windows.Foundation.Size(0, 0);
+				// This needs to return a size with a non-zero height; 
+				// otherwise, it kills virtualization.
+				return new Windows.Foundation.Size(0, Cell.DefaultCellHeight);
 			}
 
 			// Children still need measure called on them
@@ -108,28 +111,6 @@ namespace Xamarin.Forms.Platform.WinRT
 			}
 
 			return result;
-		}
-
-		static string GetDisplayTextFromGroup(ListView lv, TemplatedItemsList<ItemsView<Cell>, Cell> group)
-		{
-			string displayBinding = null;
-
-			if (lv.GroupDisplayBinding != null)
-				displayBinding = group.Name;
-
-			if (lv.GroupShortNameBinding != null)
-				displayBinding = group.ShortName;
-
-			// TODO: what if they set both? should it default to the ShortName, like it will here?
-			// ShortNames binding did not appear to be functional before.
-			return displayBinding;
-		}
-
-		static TemplatedItemsList<ItemsView<Cell>, Cell> GetGroup(object newContext, ListView lv)
-		{
-			int groupIndex = lv.TemplatedItems.GetGlobalIndexOfGroup(newContext);
-			TemplatedItemsList<ItemsView<Cell>, Cell> group = lv.TemplatedItems.GetGroup(groupIndex);
-			return group;
 		}
 
 		ListView GetListView()
@@ -236,37 +217,37 @@ namespace Xamarin.Forms.Platform.WinRT
 			{
 				bool isGroupHeader = IsGroupHeader;
 				DataTemplate template = isGroupHeader ? lv.GroupHeaderTemplate : lv.ItemTemplate;
+				object bindingContext = newContext;
 
 				if (template is DataTemplateSelector)
 				{
-					template = ((DataTemplateSelector)template).SelectTemplate(newContext, lv);
+					template = ((DataTemplateSelector)template).SelectTemplate(bindingContext, lv);
 				}
 
 				if (template != null)
 				{
 					cell = template.CreateContent() as Cell;
-					cell.BindingContext = newContext;
 				}
 				else
 				{
-					string textContent = newContext.ToString();
+					IListViewController listViewController = lv;
 
 					if (isGroupHeader)
-					{
-						TemplatedItemsList<ItemsView<Cell>, Cell> group = GetGroup(newContext, lv);
-						textContent = GetDisplayTextFromGroup(lv, group);
-					}
+						bindingContext = listViewController.GetDisplayTextFromGroup(bindingContext);
 
-					cell = lv.CreateDefaultCell(textContent);
+					cell = listViewController.CreateDefaultCell(bindingContext);
 				}
 
 				// A TableView cell should already have its parent,
 				// but we need to set the parent for a ListView cell.
 				cell.Parent = lv;
 
+				// Set inherited BindingContext after setting the Parent so it won't be wiped out
+				BindableObject.SetInheritedBindingContext(cell, bindingContext);
+
 				// This provides the Group Header styling (e.g., larger font, etc.) when the
 				// template is loaded later.
-				TemplatedItemsList<ItemsView<Cell>, Cell>.SetIsGroupHeader(cell, isGroupHeader);
+				cell.SetIsGroupHeader<ItemsView<Cell>, Cell>(isGroupHeader);
 			}
 
 			Cell = cell;
@@ -277,12 +258,12 @@ namespace Xamarin.Forms.Platform.WinRT
 			if (oldCell != null)
 			{
 				oldCell.PropertyChanged -= _propertyChangedHandler;
-				oldCell.SendDisappearing();
+				((ICellController)oldCell).SendDisappearing();
 			}
 
 			if (newCell != null)
 			{
-				newCell.SendAppearing();
+				((ICellController)newCell).SendAppearing();
 
 				UpdateContent(newCell);
 				SetupContextMenu();

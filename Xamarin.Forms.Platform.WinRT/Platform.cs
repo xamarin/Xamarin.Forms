@@ -11,9 +11,12 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
+using Xamarin.Forms.Internals;
 
 #if WINDOWS_UWP
+using Windows.Foundation;
 using Windows.Foundation.Metadata;
+using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 #endif
 
@@ -97,6 +100,7 @@ namespace Xamarin.Forms.Platform.WinRT
 			_navModel.Push(newRoot, null);
 			newRoot.NavigationProxy.Inner = this;
 			SetCurrent(newRoot, false, true);
+			Application.Current.NavigationProxy.Inner = this;
 		}
 
 		public IReadOnlyList<Page> NavigationStack
@@ -502,8 +506,8 @@ namespace Xamarin.Forms.Platform.WinRT
 			return _page.BottomAppBar as CommandBar;
 #else
 			IToolbarProvider provider = GetToolbarProvider();
-			var titleProvider = provider as ITitleProvider;
-			if (provider == null || (titleProvider != null && !titleProvider.ShowTitle))
+			//var titleProvider = provider as ITitleProvider; 
+			if (provider == null) // || (titleProvider != null && !titleProvider.ShowTitle))
 				return null;
 
 			return await provider.GetCommandBarAsync();
@@ -517,6 +521,7 @@ namespace Xamarin.Forms.Platform.WinRT
 			_page.BottomAppBar = commandBar;
 			return commandBar;
 #else
+
 			var bar = new FormsCommandBar();
 			if (Device.Idiom != TargetIdiom.Phone)
 				bar.Style = (Windows.UI.Xaml.Style)Windows.UI.Xaml.Application.Current.Resources["TitleToolbar"];
@@ -591,6 +596,17 @@ namespace Xamarin.Forms.Platform.WinRT
 				options.SetResult((string)e.ClickedItem);
 			};
 
+			TypedEventHandler<CoreWindow, CharacterReceivedEventArgs> onEscapeButtonPressed = delegate(CoreWindow window, CharacterReceivedEventArgs args)
+			{
+				if (args.KeyCode == 27)
+				{
+					dialog.Hide();
+					options.SetResult(ContentDialogResult.None.ToString());
+				}
+			};
+
+			Window.Current.CoreWindow.CharacterReceived += onEscapeButtonPressed;
+
 			_actionSheetOptions = options;
 
 			if (options.Cancel != null)
@@ -604,6 +620,8 @@ namespace Xamarin.Forms.Platform.WinRT
 				options.SetResult(options.Cancel);
 			else if (result == ContentDialogResult.Primary)
 				options.SetResult(options.Destruction);
+
+			Window.Current.CoreWindow.CharacterReceived -= onEscapeButtonPressed;
 		}
 #else
 		void OnPageActionSheet(Page sender, ActionSheetArguments options)
@@ -626,7 +644,6 @@ namespace Xamarin.Forms.Platform.WinRT
 			list.ItemClick += (s, e) =>
 			{
 				_currentActionSheet.IsOpen = false;
-				_currentActionSheet = null;
 				options.SetResult((string)e.ClickedItem);
 			};
 
@@ -721,13 +738,13 @@ namespace Xamarin.Forms.Platform.WinRT
 			if (options.Accept != null)
 			{
 				dialog.Commands.Add(new UICommand(options.Accept));
-				dialog.DefaultCommandIndex = (uint)dialog.Commands.Count - 1;
+				dialog.DefaultCommandIndex = 0;
 			}
 
 			if (options.Cancel != null)
 			{
 				dialog.Commands.Add(new UICommand(options.Cancel));
-				dialog.CancelCommandIndex = 0;
+				dialog.CancelCommandIndex = (uint)dialog.Commands.Count - 1;
 			}
 
 			IUICommand command = await dialog.ShowAsync();

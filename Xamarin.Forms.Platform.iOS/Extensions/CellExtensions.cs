@@ -1,10 +1,6 @@
 using System;
-#if __UNIFIED__
 using Foundation;
-
-#else
-using MonoTouch.Foundation;
-#endif
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -20,16 +16,16 @@ namespace Xamarin.Forms.Platform.iOS
 			if (self.RealParent is ListView)
 			{
 				var section = 0;
-				var til = TemplatedItemsList<ItemsView<Cell>, Cell>.GetGroup(self);
+				var til = self.GetGroup<ItemsView<Cell>, Cell>();
 				if (til != null)
-					section = TemplatedItemsList<ItemsView<Cell>, Cell>.GetIndex(til.HeaderContent);
+					section = til.HeaderContent.GetIndex<ItemsView<Cell>, Cell>();
 
-				var row = TemplatedItemsList<ItemsView<Cell>, Cell>.GetIndex(self);
+				var row = self.GetIndex<ItemsView<Cell>, Cell>();
 				path = NSIndexPath.FromRowSection(row, section);
 			}
 			else if (self.RealParent is TableView)
 			{
-				var tmPath = TableView.TableSectionModel.GetPath(self);
+				var tmPath = self.GetPath();
 				path = NSIndexPath.FromRowSection(tmPath.Item2, tmPath.Item1);
 			}
 			else

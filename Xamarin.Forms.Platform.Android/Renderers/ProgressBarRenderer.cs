@@ -10,18 +10,25 @@ namespace Xamarin.Forms.Platform.Android
 			AutoPackage = false;
 		}
 
+		protected override AProgressBar CreateNativeControl()
+		{
+			return new AProgressBar(Context, null, global::Android.Resource.Attribute.ProgressBarStyleHorizontal) { Indeterminate = false, Max = 10000 };
+		}
+
 		protected override void OnElementChanged(ElementChangedEventArgs<ProgressBar> e)
 		{
 			base.OnElementChanged(e);
 
-			if (e.OldElement == null)
+			if (e.NewElement != null)
 			{
-				var progressBar = new AProgressBar(Context, null, global::Android.Resource.Attribute.ProgressBarStyleHorizontal) { Indeterminate = false, Max = 10000 };
+				if (Control == null)
+				{
+					var progressBar = CreateNativeControl();
 
-				SetNativeControl(progressBar);
+					SetNativeControl(progressBar);
+				}
+				UpdateProgress();
 			}
-
-			UpdateProgress();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)

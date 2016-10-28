@@ -1,27 +1,15 @@
 using System;
-using System.Drawing;
 using System.ComponentModel;
-#if __UNIFIED__
 using UIKit;
-#else
-using MonoTouch.UIKit;
-#endif
-#if __UNIFIED__
 using RectangleF = CoreGraphics.CGRect;
-using SizeF = CoreGraphics.CGSize;
-using PointF = CoreGraphics.CGPoint;
-
-#else
-using nfloat=System.Single;
-using nint=System.Int32;
-using nuint=System.UInt32;
-#endif
 
 namespace Xamarin.Forms.Platform.iOS
 {
 	public class EditorRenderer : ViewRenderer<Editor, UITextView>
 	{
 		UIToolbar _accessoryView;
+
+		IElementController ElementController => Element as IElementController;
 
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
@@ -106,7 +94,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void HandleChanged(object sender, EventArgs e)
 		{
-			((IElementController)Element).SetValueFromRenderer(Editor.TextProperty, Control.Text);
+			ElementController.SetValueFromRenderer(Editor.TextProperty, Control.Text);
 		}
 
 		void OnEnded(object sender, EventArgs eventArgs)
@@ -117,7 +105,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnStarted(object sender, EventArgs eventArgs)
 		{
-			((IElementController)Element).SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, true);
+			ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, true);
 		}
 
 		void UpdateEditable()

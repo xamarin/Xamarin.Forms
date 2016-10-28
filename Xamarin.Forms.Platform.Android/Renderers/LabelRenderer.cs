@@ -67,12 +67,17 @@ namespace Xamarin.Forms.Platform.Android
 			return result;
 		}
 
+		protected override TextView CreateNativeControl()
+		{
+			return new FormsTextView(Context);
+		}
+
 		protected override void OnElementChanged(ElementChangedEventArgs<Label> e)
 		{
 			base.OnElementChanged(e);
 			if (_view == null)
 			{
-				_view = new FormsTextView(Context);
+				_view = (FormsTextView)CreateNativeControl();
 				_labelTextColorDefault = _view.TextColors;
 				SetNativeControl(_view);
 			}
@@ -155,32 +160,31 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateLineBreakMode()
 		{
+            _view.SetSingleLine(false);
 			switch (Element.LineBreakMode)
 			{
 				case LineBreakMode.NoWrap:
-					_view.SetSingleLine(true);
+					_view.SetMaxLines(1);
 					_view.Ellipsize = null;
 					break;
 				case LineBreakMode.WordWrap:
-					_view.SetSingleLine(false);
 					_view.Ellipsize = null;
 					_view.SetMaxLines(100);
 					break;
 				case LineBreakMode.CharacterWrap:
-					_view.SetSingleLine(false);
 					_view.Ellipsize = null;
 					_view.SetMaxLines(100);
 					break;
 				case LineBreakMode.HeadTruncation:
-					_view.SetSingleLine(true);
+					_view.SetMaxLines(1);
 					_view.Ellipsize = TextUtils.TruncateAt.Start;
 					break;
 				case LineBreakMode.TailTruncation:
-					_view.SetSingleLine(true);
+					_view.SetMaxLines(1);
 					_view.Ellipsize = TextUtils.TruncateAt.End;
 					break;
 				case LineBreakMode.MiddleTruncation:
-					_view.SetSingleLine(true);
+					_view.SetMaxLines(1);
 					_view.Ellipsize = TextUtils.TruncateAt.Middle;
 					break;
 			}

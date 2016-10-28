@@ -11,6 +11,8 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		bool _isDisposed;
 
+		IElementController ElementController => Element as IElementController;
+
 		public ImageRenderer()
 		{
 			AutoPackage = false;
@@ -26,13 +28,18 @@ namespace Xamarin.Forms.Platform.Android
 			base.Dispose(disposing);
 		}
 
+		protected override AImageView CreateNativeControl()
+		{
+			return new FormsImageView(Context);
+		}
+
 		protected override void OnElementChanged(ElementChangedEventArgs<Image> e)
 		{
 			base.OnElementChanged(e);
 
 			if (e.OldElement == null)
 			{
-				var view = new FormsImageView(Context);
+				var view = CreateNativeControl();
 				SetNativeControl(view);
 			}
 
@@ -98,8 +105,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (!_isDisposed)
 			{
 				Control.SetImageBitmap(bitmap);
-				if (bitmap != null)
-					bitmap.Dispose();
+				bitmap?.Dispose();
 
 				((IImageController)Element).SetIsLoading(false);
 				((IVisualElementController)Element).NativeSizeChanged();

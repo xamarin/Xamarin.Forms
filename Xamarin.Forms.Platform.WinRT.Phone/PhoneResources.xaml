@@ -242,7 +242,7 @@
         <Setter Property="HeaderTemplate">
             <Setter.Value>
                 <DataTemplate>
-                    <TextBlock Text="{Binding Title}" Foreground="{TemplateBinding ToolbarForeground}" />
+					<TextBlock Text="{Binding Title}" Name="TabbedPageHeaderTextBlock" />
                 </DataTemplate>
             </Setter.Value>
         </Setter>
@@ -277,7 +277,7 @@
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
                         <Grid x:Name="grdToolbar" Background="{TemplateBinding ToolbarBackground}" >
-                            <TextBlock Padding="10,0,0,0" Text="{TemplateBinding Title}" VerticalAlignment="Center" Style="{ThemeResource HeaderTextBlockStyle}" Foreground="{TemplateBinding ToolbarForeground}" Visibility="{TemplateBinding ToolbarVisibility}"  Height="79"/>
+							<TextBlock Padding="10,0,0,0" Text="{TemplateBinding Title}" VerticalAlignment="Center" Style="{ThemeResource HeaderTextBlockStyle}" Foreground="{TemplateBinding ToolbarForeground}" Visibility="{TemplateBinding TitleVisibility}"  Height="79"/>
                         </Grid>
                         <ScrollViewer x:Name="ScrollViewer" HorizontalSnapPointsAlignment="Center" HorizontalSnapPointsType="MandatorySingle" HorizontalScrollBarVisibility="Hidden" Margin="{TemplateBinding Padding}" Grid.Row="1" Template="{StaticResource ScrollViewerScrollBarlessTemplate}" VerticalSnapPointsType="None" VerticalScrollBarVisibility="Disabled" VerticalScrollMode="Disabled" VerticalContentAlignment="Stretch" ZoomMode="Disabled">
                             <PivotPanel x:Name="Panel" VerticalAlignment="Stretch">
@@ -435,8 +435,8 @@
 							<RowDefinition Height="Auto" />
 							<RowDefinition Height="*" />
 						</Grid.RowDefinitions>
-
-                        <Grid Height="79" Background="{TemplateBinding NavigationBarBackground}" Visibility="{Binding ShowNavigationBar,RelativeSource={RelativeSource Mode=TemplatedParent},Converter={StaticResource BoolVisibilityConverter}}">
+						
+						<Grid Height="79" Background="{TemplateBinding ToolbarBackground}"  Visibility="{TemplateBinding TitleVisibility}">
                             <TextBlock Margin="10,0,0,0" Name="title" Foreground="{TemplateBinding TitleBrush}" VerticalAlignment="Center" Style="{ThemeResource HeaderTextBlockStyle}" Text="{Binding Title}" />
                         </Grid>
                    		<ContentPresenter x:Name="presenter" Grid.Row="1" ContentTransitions="{TemplateBinding ContentTransitions}" />
@@ -450,10 +450,6 @@
 	
 	<DataTemplate x:Key="TabbedPage">
 		<local:TabbedPagePresenter Content="{Binding Converter={StaticResource PageToRenderer}}" />
-	</DataTemplate>
-
-	<DataTemplate x:Key="TabbedPageHeader">
-		<TextBlock Text="{Binding Title}" />
 	</DataTemplate>
 
 	<Style x:Key="JumpListGrid" TargetType="GridView">

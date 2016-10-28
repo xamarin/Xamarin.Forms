@@ -96,12 +96,17 @@ namespace Xamarin.Forms.Controls
 		{
 			AutomationId = "TabbedPageRoot";
 
-			BarBackgroundColor = Color.Maroon;
-			BarTextColor = Color.Yellow;
 
-			Device.StartTimer(TimeSpan.FromSeconds(2), () => {
-				BarBackgroundColor = Color.Default;
-				BarTextColor = Color.Default;
+			Device.StartTimer(TimeSpan.FromSeconds(6), () => {
+				BarBackgroundColor = Color.Maroon;
+				BarTextColor = Color.Yellow;
+
+				Device.StartTimer(TimeSpan.FromSeconds(6), () => {
+					BarBackgroundColor = Color.Default;
+					BarTextColor = Color.Default;
+
+					return false;
+				});
 
 				return false;
 			});
@@ -112,7 +117,8 @@ namespace Xamarin.Forms.Controls
 				{
 					Title = "Rubriques",
 					Icon = "coffee.png",
-					BarBackgroundColor = Color.Blue
+					BarBackgroundColor = Color.Blue,
+					BarTextColor = Color.Aqua
 				});
 
 			Children.Add(new NavigationPage(new Page())
@@ -214,6 +220,9 @@ namespace Xamarin.Forms.Controls
 		public CorePageView (Page rootPage, NavigationBehavior navigationBehavior = NavigationBehavior.PushAsync)
 		{
 			var pages = new List<Page> {
+				new PlatformSpecificsGallery() {Title = "Platform Specifics"},
+				new NativeBindingGalleryPage {Title = "Native Binding Controls Gallery"},
+				new XamlNativeViews {Title = "Xaml Native Views Gallery"},
 				new AppLinkPageGallery {Title = "App Link Page Gallery"},
 				new NestedNativeControlGalleryPage {Title = "Nested Native Controls Gallery"},
 				new CellForceUpdateSizeGalleryPage {Title = "Cell Force Update Size Gallery"},

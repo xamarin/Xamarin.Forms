@@ -40,6 +40,8 @@ namespace Xamarin.Forms.Platform.WinRT
 			get { return Device.Idiom == TargetIdiom.Phone; }
 		}
 
+		IPageController PageController => Element as IPageController;
+
 		public void Dispose()
 		{
 			Dispose(true);
@@ -141,6 +143,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 			_disposed = true;
 
+			PageController?.SendDisappearing();
 			SetElement(null);
 		}
 
@@ -173,10 +176,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		void OnLoaded(object sender, RoutedEventArgs args)
 		{
-			if (Element == null)
-				return;
-
-			Element.SendAppearing();
+			PageController?.SendAppearing();
 		}
 
 		void OnNativeSizeChanged(object sender, SizeChangedEventArgs e)
@@ -186,10 +186,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		void OnUnloaded(object sender, RoutedEventArgs args)
 		{
-			if (Element == null)
-				return;
-
-			Element.SendDisappearing();
+			PageController?.SendDisappearing();
 		}
 
 		void OnUserClosedPopover(object sender, EventArgs e)

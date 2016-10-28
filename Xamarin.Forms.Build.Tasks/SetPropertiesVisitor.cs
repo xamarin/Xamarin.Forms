@@ -3,9 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
+
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
+
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
 
@@ -15,7 +17,7 @@ namespace Xamarin.Forms.Build.Tasks
 	{
 		static int dtcount;
 
-		readonly IList<XmlName> skips = new List<XmlName>
+		static readonly IList<XmlName> skips = new List<XmlName>
 		{
 			XmlName.xKey,
 			XmlName.xTypeArguments,
@@ -32,20 +34,11 @@ namespace Xamarin.Forms.Build.Tasks
 		}
 
 		public ILContext Context { get; }
+		public bool StopOnResourceDictionary { get; }
+		public bool VisitChildrenFirst { get; } = true;
+		public bool StopOnDataTemplate { get; } = true;
 
 		ModuleDefinition Module { get; }
-
-		public bool VisitChildrenFirst
-		{
-			get { return true; }
-		}
-
-		public bool StopOnDataTemplate
-		{
-			get { return true; }
-		}
-
-		public bool StopOnResourceDictionary { get; }
 
 		public void Visit(ValueNode node, INode parentNode)
 		{
@@ -67,16 +60,12 @@ namespace Xamarin.Forms.Build.Tasks
 
 			if (skips.Contains(propertyName))
 				return;
-			if (node.SkipPrefix((node.NamespaceResolver ?? parentNode.NamespaceResolver)?.LookupPrefix(propertyName.NamespaceURI)))
+			if (parentNode is IElementNode && ((IElementNode)parentNode).SkipProperties.Contains (propertyName))
 				return;
 			if (propertyName.NamespaceURI == "http://schemas.openxmlformats.org/markup-compatibility/2006" &&
 			    propertyName.LocalName == "Ignorable")
-			{
-				(parentNode.IgnorablePrefixes ?? (parentNode.IgnorablePrefixes = new List<string>())).AddRange(
-					(node.Value as string).Split(','));
 				return;
-			}
-			SetPropertyValue(Context.Variables[(IElementNode)parentNode], propertyName, node, Context, node);
+			Context.IL.Append(SetPropertyValue(Context.Variables [(IElementNode)parentNode], propertyName, node, Context, node));
 		}
 
 		public void Visit(MarkupNode node, INode parentNode)
@@ -85,13 +74,30 @@ namespace Xamarin.Forms.Build.Tasks
 
 		public void Visit(ElementNode node, INode parentNode)
 		{
-			if (node.SkipPrefix((node.NamespaceResolver ?? parentNode.NamespaceResolver)?.LookupPrefix(node.NamespaceURI)))
+			XmlName propertyName = XmlName.Empty;
+
+			//Simplify ListNodes with single elements
+			var pList = parentNode as ListNode;
+			if (pList != null && pList.CollectionItems.Count == 1) {
+				propertyName = pList.XmlName;
+				parentNode = parentNode.Parent;
+			}
+
+			if ((propertyName != XmlName.Empty || TryGetPropertyName(node, parentNode, out propertyName)) && skips.Contains(propertyName))
 				return;
 
 			//if this node is an IMarkupExtension, invoke ProvideValue() and replace the variable
 			var vardef = Context.Variables[node];
 			var vardefref = new VariableDefinitionReference(vardef);
-			Context.IL.Append(ProvideValue(vardefref, Context, Module, node));
+			var localName = propertyName.LocalName;
+			TypeReference declaringTypeReference = null;
+			FieldReference bpRef = null;
+			PropertyDefinition propertyRef = null;
+			if (parentNode is IElementNode && propertyName != XmlName.Empty) {
+				bpRef = GetBindablePropertyReference(Context.Variables [(IElementNode)parentNode], propertyName.NamespaceURI, ref localName, Context, node);
+				propertyRef = Context.Variables [(IElementNode)parentNode].VariableType.GetProperty(pd => pd.Name == localName, out declaringTypeReference);
+			}
+			Context.IL.Append(ProvideValue(vardefref, Context, Module, node, bpRef:bpRef, propertyRef:propertyRef, propertyDeclaringTypeRef: declaringTypeReference));
 			if (vardef != vardefref.VariableDefinition)
 			{
 				vardef = vardefref.VariableDefinition;
@@ -99,16 +105,17 @@ namespace Xamarin.Forms.Build.Tasks
 				Context.Variables[node] = vardef;
 			}
 
-			XmlName propertyName;
-			if (TryGetPropertyName(node, parentNode, out propertyName))
+			if (propertyName != XmlName.Empty)
 			{
 				if (skips.Contains(propertyName))
+					return;
+				if (parentNode is IElementNode && ((IElementNode)parentNode).SkipProperties.Contains (propertyName))
 					return;
 
 				if (propertyName == XmlName._CreateContent)
 					SetDataTemplate((IElementNode)parentNode, node, Context, node);
 				else
-					SetPropertyValue(Context.Variables[(IElementNode)parentNode], propertyName, node, Context, node);
+					Context.IL.Append(SetPropertyValue(Context.Variables[(IElementNode)parentNode], propertyName, node, Context, node));
 			}
 			else if (IsCollectionItem(node, parentNode) && parentNode is IElementNode)
 			{
@@ -136,22 +143,25 @@ namespace Xamarin.Forms.Build.Tasks
 					var name = new XmlName(node.NamespaceURI, contentProperty);
 					if (skips.Contains(name))
 						return;
-					SetPropertyValue(Context.Variables[(IElementNode)parentNode], name, node, Context, node);
+					if (parentNode is IElementNode && ((IElementNode)parentNode).SkipProperties.Contains (propertyName))
+						return;
+					Context.IL.Append(SetPropertyValue(Context.Variables[(IElementNode)parentNode], name, node, Context, node));
 				}
 			}
 			else if (IsCollectionItem(node, parentNode) && parentNode is ListNode)
 			{
-				//				IL_000d:  ldloc.2 
-				//				IL_000e:  callvirt instance class [mscorlib]System.Collections.Generic.IList`1<!0> class [Xamarin.Forms.Core]Xamarin.Forms.Layout`1<class [Xamarin.Forms.Core]Xamarin.Forms.View>::get_Children()
-				//				IL_0013:  ldloc.0 
-				//				IL_0014:  callvirt instance void class [mscorlib]System.Collections.Generic.ICollection`1<class [Xamarin.Forms.Core]Xamarin.Forms.View>::Add(!0)
+//				IL_000d:  ldloc.2 
+//				IL_000e:  callvirt instance class [mscorlib]System.Collections.Generic.IList`1<!0> class [Xamarin.Forms.Core]Xamarin.Forms.Layout`1<class [Xamarin.Forms.Core]Xamarin.Forms.View>::get_Children()
+//				IL_0013:  ldloc.0 
+//				IL_0014:  callvirt instance void class [mscorlib]System.Collections.Generic.ICollection`1<class [Xamarin.Forms.Core]Xamarin.Forms.View>::Add(!0)
 
 				var parentList = (ListNode)parentNode;
 				var parent = Context.Variables[((IElementNode)parentNode.Parent)];
 
 				if (skips.Contains(parentList.XmlName))
 					return;
-
+				if (parentNode is IElementNode && ((IElementNode)parentNode).SkipProperties.Contains (propertyName))
+					return;
 				var elementType = parent.VariableType;
 				var localname = parentList.XmlName.LocalName;
 
@@ -177,7 +187,9 @@ namespace Xamarin.Forms.Build.Tasks
 					Context.IL.Emit(OpCodes.Callvirt, adderRef);
 					if (adderRef.ReturnType.FullName != "System.Void")
 						Context.IL.Emit(OpCodes.Pop);
-				}
+				} else
+					throw new XamlParseException(string.Format("Property {0} not found", localname), node);
+
 			}
 		}
 
@@ -227,7 +239,7 @@ namespace Xamarin.Forms.Build.Tasks
 		}
 
 		public static IEnumerable<Instruction> ProvideValue(VariableDefinitionReference vardefref, ILContext context,
-			ModuleDefinition module, ElementNode node)
+		                                                    ModuleDefinition module, ElementNode node, FieldReference bpRef = null, PropertyReference propertyRef = null, TypeReference propertyDeclaringTypeRef = null)
 		{
 			GenericInstanceType markupExtension;
 			IList<TypeReference> genericArguments;
@@ -248,7 +260,7 @@ namespace Xamarin.Forms.Build.Tasks
 				else
 					vardefref.VariableDefinition = new VariableDefinition(module.Import(genericArguments.First()));
 				yield return Instruction.Create(OpCodes.Ldloc, context.Variables[node]);
-				foreach (var instruction in node.PushServiceProvider(context))
+				foreach (var instruction in node.PushServiceProvider(context, bpRef, propertyRef, propertyDeclaringTypeRef))
 					yield return instruction;
 				yield return Instruction.Create(OpCodes.Callvirt, provideValue);
 
@@ -267,7 +279,7 @@ namespace Xamarin.Forms.Build.Tasks
 
 				vardefref.VariableDefinition = new VariableDefinition(module.Import(genericArguments.First()));
 				yield return Instruction.Create(OpCodes.Ldloc, context.Variables[node]);
-				foreach (var instruction in node.PushServiceProvider(context))
+				foreach (var instruction in node.PushServiceProvider(context, bpRef, propertyRef, propertyDeclaringTypeRef))
 					yield return instruction;
 				yield return Instruction.Create(OpCodes.Callvirt, provideValue);
 				yield return Instruction.Create(OpCodes.Stloc, vardefref.VariableDefinition);
@@ -280,7 +292,7 @@ namespace Xamarin.Forms.Build.Tasks
 
 				vardefref.VariableDefinition = new VariableDefinition(module.TypeSystem.Object);
 				yield return Instruction.Create(OpCodes.Ldloc, context.Variables[node]);
-				foreach (var instruction in node.PushServiceProvider(context))
+				foreach (var instruction in node.PushServiceProvider(context, bpRef, propertyRef, propertyDeclaringTypeRef))
 					yield return instruction;
 				yield return Instruction.Create(OpCodes.Callvirt, provideValue);
 				yield return Instruction.Create(OpCodes.Stloc, vardefref.VariableDefinition);
@@ -293,266 +305,359 @@ namespace Xamarin.Forms.Build.Tasks
 
 				vardefref.VariableDefinition = new VariableDefinition(module.TypeSystem.Object);
 				yield return Instruction.Create(OpCodes.Ldloc, context.Variables[node]);
-				foreach (var instruction in node.PushServiceProvider(context))
+				foreach (var instruction in node.PushServiceProvider(context, bpRef, propertyRef, propertyDeclaringTypeRef))
 					yield return instruction;
 				yield return Instruction.Create(OpCodes.Callvirt, provideValue);
 				yield return Instruction.Create(OpCodes.Stloc, vardefref.VariableDefinition);
 			}
 		}
 
-		public static void SetPropertyValue(VariableDefinition parent, XmlName propertyName, INode valueNode,
-			ILContext context, IXmlLineInfo iXmlLineInfo)
+		public static IEnumerable<Instruction> SetPropertyValue(VariableDefinition parent, XmlName propertyName, INode valueNode, ILContext context, IXmlLineInfo iXmlLineInfo)
 		{
-			var elementType = parent.VariableType;
-			var localName = propertyName.LocalName;
 			var module = context.Body.Method.Module;
-			var br = Instruction.Create(OpCodes.Nop);
-			TypeReference declaringTypeReference;
-			var handled = false;
-
-			//If it's an attached BP, update elementType and propertyName
-			GetNameAndTypeRef(ref elementType, propertyName.NamespaceURI, ref localName, context, iXmlLineInfo);
+			var localName = propertyName.LocalName;
+			var bpRef = GetBindablePropertyReference(parent, propertyName.NamespaceURI, ref localName, context, iXmlLineInfo);
 
 			//If the target is an event, connect
-			//			IL_0007:  ldloc.0 
-			//			IL_0008:  ldarg.0 
-			//			IL_0009:  ldftn instance void class Xamarin.Forms.Xaml.XamlcTests.MyPage::OnButtonClicked(object, class [mscorlib]System.EventArgs)
-			//			IL_000f:  newobj instance void class [mscorlib]System.EventHandler::'.ctor'(object, native int)
-			//			IL_0014:  callvirt instance void class [Xamarin.Forms.Core]Xamarin.Forms.Button::add_Clicked(class [mscorlib]System.EventHandler)
+			if (CanConnectEvent(parent, localName))
+				return ConnectEvent(parent, localName, valueNode, iXmlLineInfo, context);
 
-			var eventinfo = elementType.GetEvent(ed => ed.Name == localName);
-			if (eventinfo != null)
-			{
-				var value = ((ValueNode)valueNode).Value;
+			//If Value is DynamicResource, SetDynamicResource
+			if (CanSetDynamicResource(bpRef, valueNode, context))
+				return SetDynamicResource(parent, bpRef, valueNode as IElementNode, iXmlLineInfo, context);
 
-				context.IL.Emit(OpCodes.Ldloc, parent);
-				if (context.Root is VariableDefinition)
-					context.IL.Emit(OpCodes.Ldloc, context.Root as VariableDefinition);
-				else if (context.Root is FieldDefinition)
-				{
-					context.IL.Emit(OpCodes.Ldarg_0);
-					context.IL.Emit(OpCodes.Ldfld, context.Root as FieldDefinition);
-				}
-				else
-					throw new InvalidProgramException();
-				var declaringType = context.Body.Method.DeclaringType;
-				if (declaringType.IsNested)
-					declaringType = declaringType.DeclaringType;
-				var handler = declaringType.AllMethods().FirstOrDefault(md => md.Name == value as string);
-				if (handler == null)
-				{
-					throw new XamlParseException(
-						string.Format("EventHandler \"{0}\" not found in type \"{1}\"", value, context.Body.Method.DeclaringType.FullName),
-						iXmlLineInfo);
-				}
-				context.IL.Emit(OpCodes.Ldftn, handler);
-				//FIXME: eventually get the right ctor instead fo the First() one, just in case another one could exists (not even sure it's possible).
-				var ctor = module.Import(eventinfo.EventType.Resolve().GetConstructors().First());
-				ctor = ctor.ResolveGenericParameters(eventinfo.EventType, module);
-				context.IL.Emit(OpCodes.Newobj, module.Import(ctor));
-				context.IL.Emit(OpCodes.Callvirt, module.Import(eventinfo.AddMethod));
-				return;
-			}
+			//If Value is a BindingBase and target is a BP, SetBinding
+			if (CanSetBinding(bpRef, valueNode, context))
+				return SetBinding(parent, bpRef, valueNode as IElementNode, iXmlLineInfo, context);
 
-			FieldReference bpRef = elementType.GetField(fd => fd.Name == localName + "Property" && fd.IsStatic && fd.IsPublic,
-				out declaringTypeReference);
-			if (bpRef != null)
-			{
+			//If it's a BP, SetValue ()
+			if (CanSetValue(bpRef, valueNode, iXmlLineInfo, context))
+				return SetValue(parent, bpRef, valueNode, iXmlLineInfo, context);
+
+			//If it's a property, set it
+			if (CanSet(parent, localName, valueNode, context))
+				return Set(parent, localName, valueNode, iXmlLineInfo, context);
+
+			//If it's an already initialized property, add to it
+			if (CanAdd(parent, localName, valueNode, context))
+				return Add(parent, localName, valueNode, iXmlLineInfo, context);
+
+			throw new XamlParseException($"No property, bindable property, or event found for '{localName}'", iXmlLineInfo);
+		}
+
+		static FieldReference GetBindablePropertyReference(VariableDefinition parent, string namespaceURI, ref string localName, ILContext context, IXmlLineInfo iXmlLineInfo)
+		{
+			var module = context.Body.Method.Module;
+			TypeReference declaringTypeReference;
+
+			//If it's an attached BP, update elementType and propertyName
+			var bpOwnerType = parent.VariableType;
+			GetNameAndTypeRef(ref bpOwnerType, namespaceURI, ref localName, context, iXmlLineInfo);
+			var name = $"{localName}Property";
+			FieldReference bpRef = bpOwnerType.GetField(fd => fd.Name == name &&
+														fd.IsStatic &&
+														fd.IsPublic, out declaringTypeReference);
+			if (bpRef != null) {
 				bpRef = module.Import(bpRef.ResolveGenericParameters(declaringTypeReference));
 				bpRef.FieldType = module.Import(bpRef.FieldType);
 			}
+			return bpRef;
+		}
 
-			//If Value is DynamicResource, SetDynamicResource
+		static bool CanConnectEvent(VariableDefinition parent, string localName)
+		{
+			return parent.VariableType.GetEvent(ed => ed.Name == localName) != null;
+		}
+
+		static IEnumerable<Instruction> ConnectEvent(VariableDefinition parent, string localName, INode valueNode, IXmlLineInfo iXmlLineInfo, ILContext context)
+		{
+			var elementType = parent.VariableType;
+			var module = context.Body.Method.Module;
+			var eventinfo = elementType.GetEvent(ed => ed.Name == localName);
+
+//			IL_0007:  ldloc.0 
+//			IL_0008:  ldarg.0 
+//
+//			IL_0009:  ldftn instance void class Xamarin.Forms.Xaml.XamlcTests.MyPage::OnButtonClicked(object, class [mscorlib]System.EventArgs)
+//OR, if the handler is virtual
+//			IL_000x:  ldarg.0 
+//			IL_0009:  ldvirtftn instance void class Xamarin.Forms.Xaml.XamlcTests.MyPage::OnButtonClicked(object, class [mscorlib]System.EventArgs)
+//
+//			IL_000f:  newobj instance void class [mscorlib]System.EventHandler::'.ctor'(object, native int)
+//			IL_0014:  callvirt instance void class [Xamarin.Forms.Core]Xamarin.Forms.Button::add_Clicked(class [mscorlib]System.EventHandler)
+
+			var value = ((ValueNode)valueNode).Value;
+
+			yield return Instruction.Create(OpCodes.Ldloc, parent);
+			if (context.Root is VariableDefinition)
+				yield return Instruction.Create(OpCodes.Ldloc, context.Root as VariableDefinition);
+			else if (context.Root is FieldDefinition) {
+				yield return Instruction.Create(OpCodes.Ldarg_0);
+				yield return Instruction.Create(OpCodes.Ldfld, context.Root as FieldDefinition);
+			} else 
+				throw new InvalidProgramException();
+			var declaringType = context.Body.Method.DeclaringType;
+			while (declaringType.IsNested)
+				declaringType = declaringType.DeclaringType;
+			var handler = declaringType.AllMethods().FirstOrDefault(md => md.Name == value as string);
+			if (handler == null) 
+				throw new XamlParseException($"EventHandler \"{value}\" not found in type \"{context.Body.Method.DeclaringType.FullName}\"", iXmlLineInfo);
+			if (handler.IsVirtual) {
+				yield return Instruction.Create(OpCodes.Ldarg_0);
+				yield return Instruction.Create(OpCodes.Ldvirtftn, handler);
+			} else
+				yield return Instruction.Create(OpCodes.Ldftn, handler);
+
+			//FIXME: eventually get the right ctor instead fo the First() one, just in case another one could exists (not even sure it's possible).
+			var ctor = module.Import(eventinfo.EventType.Resolve().GetConstructors().First());
+			ctor = ctor.ResolveGenericParameters(eventinfo.EventType, module);
+			yield return Instruction.Create(OpCodes.Newobj, module.Import(ctor));
+			yield return Instruction.Create(OpCodes.Callvirt, module.Import(eventinfo.AddMethod));
+		}
+
+		static bool CanSetDynamicResource(FieldReference bpRef, INode valueNode, ILContext context)
+		{
+			if (bpRef == null)
+				return false;
+			var elementNode = valueNode as IElementNode;
+			if (elementNode == null)
+				return false;
+			
 			VariableDefinition varValue;
-			if (bpRef != null && valueNode is IElementNode &&
-			    context.Variables.TryGetValue(valueNode as IElementNode, out varValue) &&
-			    varValue.VariableType.FullName == typeof (DynamicResource).FullName)
-			{
-				var setDynamicResource =
-					module.Import(typeof (IDynamicResourceHandler)).Resolve().Methods.First(m => m.Name == "SetDynamicResource");
-				var getKey = typeof (DynamicResource).GetProperty("Key").GetMethod;
+			if (!context.Variables.TryGetValue(valueNode as IElementNode, out varValue))
+				return false;
+			return varValue.VariableType.FullName == typeof(DynamicResource).FullName;
+		}
 
-				context.IL.Emit(OpCodes.Ldloc, parent);
-				context.IL.Emit(OpCodes.Ldsfld, bpRef);
-				context.IL.Emit(OpCodes.Ldloc, varValue);
-				context.IL.Emit(OpCodes.Callvirt, module.Import(getKey));
-				context.IL.Emit(OpCodes.Callvirt, module.Import(setDynamicResource));
-				return;
+		static IEnumerable<Instruction> SetDynamicResource(VariableDefinition parent, FieldReference bpRef, IElementNode elementNode, IXmlLineInfo iXmlLineInfo, ILContext context)
+		{
+			var module = context.Body.Method.Module;
+			var varValue = context.Variables [elementNode];
+			var setDynamicResource = module.Import(typeof(IDynamicResourceHandler)).Resolve().Methods.First(m => m.Name == "SetDynamicResource");
+			var getKey = typeof(DynamicResource).GetProperty("Key").GetMethod;
+
+			yield return Instruction.Create(OpCodes.Ldloc, parent);
+			yield return Instruction.Create(OpCodes.Ldsfld, bpRef);
+			yield return Instruction.Create(OpCodes.Ldloc, varValue);
+			yield return Instruction.Create(OpCodes.Callvirt, module.Import(getKey));
+			yield return Instruction.Create(OpCodes.Callvirt, module.Import(setDynamicResource));
+		}
+
+		static bool CanSetBinding(FieldReference bpRef, INode valueNode, ILContext context)
+		{
+			var module = context.Body.Method.Module;
+
+			if (bpRef == null)
+				return false;
+			var elementNode = valueNode as IElementNode;
+			if (elementNode == null)
+				return false;
+
+			VariableDefinition varValue;
+			if (!context.Variables.TryGetValue(valueNode as IElementNode, out varValue))
+				return false;
+			return varValue.VariableType.InheritsFromOrImplements(module.Import(typeof(BindingBase)));
+		}
+
+		static IEnumerable<Instruction> SetBinding(VariableDefinition parent, FieldReference bpRef, IElementNode elementNode, IXmlLineInfo iXmlLineInfo, ILContext context)
+		{
+			var module = context.Body.Method.Module;
+			var varValue = context.Variables [elementNode];
+
+			//TODO: check if parent is a BP
+			var setBinding = typeof(BindableObject).GetMethod("SetBinding", new [] { typeof(BindableProperty), typeof(BindingBase) });
+
+			yield return Instruction.Create(OpCodes.Ldloc, parent);
+			yield return Instruction.Create(OpCodes.Ldsfld, bpRef);
+			yield return Instruction.Create(OpCodes.Ldloc, varValue);
+			yield return Instruction.Create(OpCodes.Callvirt, module.Import(setBinding));
+		}
+
+		static bool CanSetValue(FieldReference bpRef, INode node, IXmlLineInfo iXmlLineInfo, ILContext context)
+		{
+			var module = context.Body.Method.Module;
+
+			if (bpRef == null)
+				return false;
+
+			if (node is ValueNode)
+				return true;
+
+			var elementNode = node as IElementNode;
+			if (elementNode == null)
+				return false;
+
+			VariableDefinition varValue;
+			if (!context.Variables.TryGetValue(elementNode, out varValue))
+				return false;
+
+			var bpTypeRef = bpRef.GetBindablePropertyType(iXmlLineInfo, module);
+			return varValue.VariableType.InheritsFromOrImplements(bpTypeRef);
+		}
+
+		static IEnumerable<Instruction> SetValue(VariableDefinition parent, FieldReference bpRef, INode node, IXmlLineInfo iXmlLineInfo, ILContext context)
+		{
+			var setValue = typeof(BindableObject).GetMethod("SetValue", new [] { typeof(BindableProperty), typeof(object) });
+			var valueNode = node as ValueNode;
+			var elementNode = node as IElementNode;
+			var module = context.Body.Method.Module;
+
+//			IL_0007:  ldloc.0 
+//			IL_0008:  ldsfld class [Xamarin.Forms.Core]Xamarin.Forms.BindableProperty [Xamarin.Forms.Core]Xamarin.Forms.Label::TextProperty
+//			IL_000d:  ldstr "foo"
+//			IL_0012:  callvirt instance void class [Xamarin.Forms.Core]Xamarin.Forms.BindableObject::SetValue(class [Xamarin.Forms.Core]Xamarin.Forms.BindableProperty, object)
+
+			yield return Instruction.Create(OpCodes.Ldloc, parent);
+			yield return Instruction.Create(OpCodes.Ldsfld, bpRef);
+
+			if (valueNode != null) {
+				foreach (var instruction in valueNode.PushConvertedValue(context, bpRef, valueNode.PushServiceProvider(context, bpRef:bpRef), true, false))
+					yield return instruction;
+			} else if (elementNode != null) {
+				yield return Instruction.Create(OpCodes.Ldloc, context.Variables [elementNode]);
+				if (context.Variables [elementNode].VariableType.IsValueType)
+					yield return Instruction.Create(OpCodes.Box, context.Variables [elementNode].VariableType);
 			}
 
-			//If Value is a BindingBase and target is a BP, SetBinding
-			if (bpRef != null && valueNode is IElementNode &&
-			    context.Variables.TryGetValue(valueNode as IElementNode, out varValue) &&
-			    varValue.VariableType.InheritsFromOrImplements(module.Import(typeof (BindingBase))))
-			{
-				//TODO: check if parent is a BP
-				var setBinding = typeof (BindableObject).GetMethod("SetBinding",
-					new[] { typeof (BindableProperty), typeof (BindingBase) });
+			yield return Instruction.Create(OpCodes.Callvirt, module.Import(setValue));
+		}
 
-				context.IL.Emit(OpCodes.Ldloc, parent);
-				context.IL.Emit(OpCodes.Ldsfld, bpRef);
-				context.IL.Emit(OpCodes.Ldloc, varValue);
-				context.IL.Emit(OpCodes.Callvirt, module.Import(setBinding));
-				return;
+		static bool CanSet(VariableDefinition parent, string localName, INode node, ILContext context)
+		{
+			var module = context.Body.Method.Module;
+			TypeReference declaringTypeReference;
+			var property = parent.VariableType.GetProperty(pd => pd.Name == localName, out declaringTypeReference);
+			if (property == null)
+				return false;
+			var propertySetter = property.SetMethod;
+			if (propertySetter == null || !propertySetter.IsPublic || propertySetter.IsStatic)
+				return false;
+
+			if (node is ValueNode)
+				return true;
+
+			var elementNode = node as IElementNode;
+			if (elementNode == null)
+				return false;
+
+			var vardef = context.Variables [elementNode];
+			var propertyType = property.ResolveGenericPropertyType(declaringTypeReference);
+			var implicitOperator = vardef.VariableType.GetImplicitOperatorTo(propertyType, module);
+
+			if (implicitOperator != null)
+				return true;
+			if (vardef.VariableType.InheritsFromOrImplements(propertyType))
+				return true;
+			if (propertyType.FullName == "System.Object")
+				return true;
+
+			//I'd like to get rid of this condition. This comment used to be //TODO replace latest check by a runtime type check
+			if (vardef.VariableType.FullName == "System.Object")
+				return true;
+
+			return false;
+		}
+
+		static IEnumerable<Instruction> Set(VariableDefinition parent, string localName, INode node, IXmlLineInfo iXmlLineInfo, ILContext context)
+		{
+			var module = context.Body.Method.Module;
+			TypeReference declaringTypeReference;
+			var property = parent.VariableType.GetProperty(pd => pd.Name == localName, out declaringTypeReference);
+			var propertySetter = property.SetMethod;
+
+//			IL_0007:  ldloc.0
+//			IL_0008:  ldstr "foo"
+//			IL_000d:  callvirt instance void class [Xamarin.Forms.Core]Xamarin.Forms.Label::set_Text(string)
+
+			module.Import(parent.VariableType.Resolve());
+			var propertySetterRef = module.Import(module.Import(propertySetter).ResolveGenericParameters(declaringTypeReference, module));
+			propertySetterRef.ImportTypes(module);
+			var propertyType = property.ResolveGenericPropertyType(declaringTypeReference);
+			var valueNode = node as ValueNode;
+			var elementNode = node as IElementNode;
+
+			yield return Instruction.Create(OpCodes.Ldloc, parent);
+
+			if (valueNode != null) {
+				foreach (var instruction in valueNode.PushConvertedValue(context, propertyType, new ICustomAttributeProvider [] { property, propertyType.Resolve() }, valueNode.PushServiceProvider(context, propertyRef:property), false, true))
+					yield return instruction;
+				yield return Instruction.Create(OpCodes.Callvirt, propertySetterRef);
+			} else if (elementNode != null) {
+				var vardef = context.Variables [elementNode];
+				var implicitOperator = vardef.VariableType.GetImplicitOperatorTo(propertyType, module);
+				yield return Instruction.Create(OpCodes.Ldloc, vardef);
+				if (implicitOperator != null) {
+//					IL_000f:  call !0 class [Xamarin.Forms.Core]Xamarin.Forms.OnPlatform`1<bool>::op_Implicit(class [Xamarin.Forms.Core]Xamarin.Forms.OnPlatform`1<!0>)
+					yield return Instruction.Create(OpCodes.Call, module.Import(implicitOperator));
+				} else if (!vardef.VariableType.IsValueType && propertyType.IsValueType)
+					yield return Instruction.Create(OpCodes.Unbox_Any, module.Import(propertyType));
+				else if (vardef.VariableType.IsValueType && propertyType.FullName == "System.Object")
+					yield return Instruction.Create(OpCodes.Box, vardef.VariableType);
+				yield return Instruction.Create(OpCodes.Callvirt, propertySetterRef);
 			}
+		}
 
-			//If it's a BP, SetValue ()
-			//			IL_0007:  ldloc.0 
-			//			IL_0008:  ldsfld class [Xamarin.Forms.Core]Xamarin.Forms.BindableProperty [Xamarin.Forms.Core]Xamarin.Forms.Label::TextProperty
-			//			IL_000d:  ldstr "foo"
-			//			IL_0012:  callvirt instance void class [Xamarin.Forms.Core]Xamarin.Forms.BindableObject::SetValue(class [Xamarin.Forms.Core]Xamarin.Forms.BindableProperty, object)
-			if (bpRef != null)
-			{
-				//TODO: check if parent is a BP
-				var setValue = typeof (BindableObject).GetMethod("SetValue", new[] { typeof (BindableProperty), typeof (object) });
+		static bool CanAdd(VariableDefinition parent, string localName, INode node, ILContext context)
+		{
+			var module = context.Body.Method.Module;
+			TypeReference declaringTypeReference;
+			var property = parent.VariableType.GetProperty(pd => pd.Name == localName, out declaringTypeReference);
+			if (property == null)
+				return false;
+			var propertyGetter = property.GetMethod;
+			if (propertyGetter == null || !propertyGetter.IsPublic || propertyGetter.IsStatic)
+				return false;
+			var elementNode = node as IElementNode;
+			if (elementNode == null)
+				return false;
 
-				if (valueNode is ValueNode)
-				{
-					context.IL.Emit(OpCodes.Ldloc, parent);
-					context.IL.Emit(OpCodes.Ldsfld, bpRef);
-					context.IL.Append(((ValueNode)valueNode).PushConvertedValue(context, bpRef, valueNode.PushServiceProvider(context),
-						true, false));
-					context.IL.Emit(OpCodes.Callvirt, module.Import(setValue));
-					return;
-				}
-				if (valueNode is IElementNode)
-				{
-					var getPropertyReturnType = module.Import(typeof (BindableProperty).GetProperty("ReturnType").GetGetMethod());
-					//FIXME: this should check for inheritance too
-					var isInstanceOfType = module.Import(typeof (Type).GetMethod("IsInstanceOfType", new[] { typeof (object) }));
-					var brfalse = Instruction.Create(OpCodes.Nop);
+			var vardef = context.Variables [elementNode];
+			var propertyGetterRef = module.Import(propertyGetter);
+			propertyGetterRef = module.Import(propertyGetterRef.ResolveGenericParameters(declaringTypeReference, module));
+			var propertyType = propertyGetterRef.ReturnType.ResolveGenericParameters(declaringTypeReference);
 
-					context.IL.Emit(OpCodes.Ldsfld, bpRef);
-					context.IL.Emit(OpCodes.Call, getPropertyReturnType);
-					context.IL.Emit(OpCodes.Ldloc, context.Variables[valueNode as IElementNode]);
-					if (context.Variables[valueNode as IElementNode].VariableType.IsValueType)
-						context.IL.Emit(OpCodes.Box, context.Variables[valueNode as IElementNode].VariableType);
-					context.IL.Emit(OpCodes.Callvirt, isInstanceOfType);
-					context.IL.Emit(OpCodes.Brfalse, brfalse);
-					context.IL.Emit(OpCodes.Ldloc, parent);
-					context.IL.Emit(OpCodes.Ldsfld, bpRef);
-					context.IL.Emit(OpCodes.Ldloc, context.Variables[(IElementNode)valueNode]);
-					if (context.Variables[valueNode as IElementNode].VariableType.IsValueType)
-						context.IL.Emit(OpCodes.Box, context.Variables[valueNode as IElementNode].VariableType);
-					context.IL.Emit(OpCodes.Callvirt, module.Import(setValue));
-					context.IL.Emit(OpCodes.Br, br);
-					context.IL.Append(brfalse);
-					handled = true;
-				}
-			}
+			//TODO check md.Parameters[0] type
+			var adderTuple = propertyType.GetMethods(md => md.Name == "Add" && md.Parameters.Count == 1, module).FirstOrDefault();
+			if (adderTuple == null)
+				return false;
 
-			//If it's a property, set it
-			//			IL_0007:  ldloc.0 
-			//			IL_0008:  ldstr "foo"
-			//			IL_000d:  callvirt instance void class [Xamarin.Forms.Core]Xamarin.Forms.Label::set_Text(string)
-			PropertyDefinition property = elementType.GetProperty(pd => pd.Name == localName, out declaringTypeReference);
-			MethodDefinition propertySetter;
-			if (property != null && (propertySetter = property.SetMethod) != null && propertySetter.IsPublic)
-			{
-				module.Import(elementType.Resolve());
-				var propertySetterRef =
-					module.Import(module.Import(propertySetter).ResolveGenericParameters(declaringTypeReference, module));
-				propertySetterRef.ImportTypes(module);
-				var propertyType = property.ResolveGenericPropertyType(declaringTypeReference);
-				ValueNode vnode = null;
+			return true;
+		}
 
-				if ((vnode = valueNode as ValueNode) != null)
-				{
-					context.IL.Emit(OpCodes.Ldloc, parent);
-					context.IL.Append(vnode.PushConvertedValue(context,
-						propertyType,
-						new ICustomAttributeProvider[] { property, propertyType.Resolve() },
-						valueNode.PushServiceProvider(context), false, true));
-					context.IL.Emit(OpCodes.Callvirt, propertySetterRef);
+		static IEnumerable<Instruction> Add(VariableDefinition parent, string localName, INode node, IXmlLineInfo iXmlLineInfo, ILContext context)
+		{
+			var module = context.Body.Method.Module;
+			TypeReference declaringTypeReference;
+			var property = parent.VariableType.GetProperty(pd => pd.Name == localName, out declaringTypeReference);
+			var propertyGetter = property.GetMethod;
+			var elementNode = node as IElementNode;
+			var vardef = context.Variables [elementNode];
+			var propertyGetterRef = module.Import(propertyGetter);
+			propertyGetterRef = module.Import(propertyGetterRef.ResolveGenericParameters(declaringTypeReference, module));
+			var propertyType = propertyGetterRef.ReturnType.ResolveGenericParameters(declaringTypeReference);
+			//TODO check md.Parameters[0] type
+			var adderTuple = propertyType.GetMethods(md => md.Name == "Add" && md.Parameters.Count == 1, module).FirstOrDefault();
+			var adderRef = module.Import(adderTuple.Item1);
+			adderRef = module.Import(adderRef.ResolveGenericParameters(adderTuple.Item2, module));
+			var childType = GetParameterType(adderRef.Parameters [0]);
+			var implicitOperator = vardef.VariableType.GetImplicitOperatorTo(childType, module);
 
-					context.IL.Append(br);
-					return;
-				}
-				if (valueNode is IElementNode)
-				{
-					var vardef = context.Variables[(ElementNode)valueNode];
-					var implicitOperators =
-						vardef.VariableType.GetMethods(md => md.IsPublic && md.IsStatic && md.IsSpecialName && md.Name == "op_Implicit",
-							module).ToList();
-					MethodReference implicitOperator = null;
-					if (implicitOperators.Any())
-					{
-						foreach (var op in implicitOperators)
-						{
-							var cast = op.Item1;
-							var opDeclTypeRef = op.Item2;
-							var castDef = module.Import(cast).ResolveGenericParameters(opDeclTypeRef, module);
-							var returnType = castDef.ReturnType;
-							if (returnType.IsGenericParameter)
-								returnType = ((GenericInstanceType)opDeclTypeRef).GenericArguments[((GenericParameter)returnType).Position];
-							if (returnType.FullName == propertyType.FullName &&
-							    cast.Parameters[0].ParameterType.Name == vardef.VariableType.Name)
-							{
-								implicitOperator = castDef;
-								break;
-							}
-						}
-					}
+			yield return Instruction.Create(OpCodes.Ldloc, parent);
+			yield return Instruction.Create(OpCodes.Callvirt, propertyGetterRef);
+			yield return Instruction.Create(OpCodes.Ldloc, vardef);
+			if (implicitOperator != null)
+				yield return Instruction.Create(OpCodes.Call, module.Import(implicitOperator));
+			yield return Instruction.Create(OpCodes.Callvirt, adderRef);
+			if (adderRef.ReturnType.FullName != "System.Void")
+				yield return Instruction.Create(OpCodes.Pop);
+		}
 
-					//TODO replace latest check by a runtime type check
-					if (implicitOperator != null || vardef.VariableType.InheritsFromOrImplements(propertyType) ||
-					    propertyType.FullName == "System.Object" || vardef.VariableType.FullName == "System.Object")
-					{
-						context.IL.Emit(OpCodes.Ldloc, parent);
-						context.IL.Emit(OpCodes.Ldloc, vardef);
-						if (implicitOperator != null)
-						{
-							//						IL_000f:  call !0 class [Xamarin.Forms.Core]Xamarin.Forms.OnPlatform`1<bool>::op_Implicit(class [Xamarin.Forms.Core]Xamarin.Forms.OnPlatform`1<!0>)
-							context.IL.Emit(OpCodes.Call, module.Import(implicitOperator));
-						}
-						else if (!vardef.VariableType.IsValueType && propertyType.IsValueType)
-							context.IL.Emit(OpCodes.Unbox_Any, module.Import(propertyType));
-						else if (vardef.VariableType.IsValueType && propertyType.FullName == "System.Object")
-							context.IL.Emit(OpCodes.Box, vardef.VariableType);
-						context.IL.Emit(OpCodes.Callvirt, propertySetterRef);
-						context.IL.Append(br);
-						return;
-					}
-					handled = true;
-				}
-			}
-
-			//If it's an already initialized property, add to it
-			MethodDefinition propertyGetter;
-			//TODO: check if property is assigned
-			if (property != null && (propertyGetter = property.GetMethod) != null && propertyGetter.IsPublic)
-			{
-				var propertyGetterRef = module.Import(propertyGetter);
-				propertyGetterRef = module.Import(propertyGetterRef.ResolveGenericParameters(declaringTypeReference, module));
-				var propertyType = propertyGetterRef.ReturnType.ResolveGenericParameters(declaringTypeReference);
-
-				//TODO check md.Parameters[0] type
-				var adderTuple =
-					propertyType.GetMethods(md => md.Name == "Add" && md.Parameters.Count == 1, module).FirstOrDefault();
-				if (adderTuple != null)
-				{
-					var adderRef = module.Import(adderTuple.Item1);
-					adderRef = module.Import(adderRef.ResolveGenericParameters(adderTuple.Item2, module));
-
-					if (valueNode is IElementNode)
-					{
-						context.IL.Emit(OpCodes.Ldloc, parent);
-						context.IL.Emit(OpCodes.Callvirt, propertyGetterRef);
-						context.IL.Emit(OpCodes.Ldloc, context.Variables[(ElementNode)valueNode]);
-						context.IL.Emit(OpCodes.Callvirt, adderRef);
-						if (adderRef.ReturnType.FullName != "System.Void")
-							context.IL.Emit(OpCodes.Pop);
-						context.IL.Append(br);
-						return;
-					}
-				}
-			}
-			if (!handled)
-			{
-				throw new XamlParseException(string.Format("No property, bindable property, or event found for '{0}'", localName),
-					iXmlLineInfo);
-			}
-			context.IL.Append(br);
+		public static TypeReference GetParameterType(ParameterDefinition param)
+		{
+			if (!param.ParameterType.IsGenericParameter)
+				return param.ParameterType;
+			var type = (param.Method as MethodReference).DeclaringType as GenericInstanceType;
+			return type.GenericArguments [0];
 		}
 
 		static bool GetNameAndTypeRef(ref TypeReference elementType, string namespaceURI, ref string localname,

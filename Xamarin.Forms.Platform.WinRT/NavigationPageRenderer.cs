@@ -13,6 +13,8 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
+
 #if WINDOWS_UWP
 using Windows.UI.Xaml.Data;
 using Windows.UI.Core;
@@ -72,7 +74,7 @@ namespace Xamarin.Forms.Platform.WinRT
 		{
 			set
 			{
-				_container.NavigationBarBackground = value;
+				_container.ToolbarBackground = value;
 				UpdateTitleOnParents();
 			}
 		}
@@ -86,6 +88,8 @@ namespace Xamarin.Forms.Platform.WinRT
 			}
 		}
 
+		IPageController PageController => Element as IPageController;
+
 		bool ITitleProvider.ShowTitle
 		{
 			get { return _showTitle; }
@@ -95,7 +99,7 @@ namespace Xamarin.Forms.Platform.WinRT
 					return;
 
 				_showTitle = value;
-				UpdateNavigationBarVisible();
+				UpdateTitleVisible();
 				UpdateTitleOnParents();
 			}
 		}
@@ -158,7 +162,7 @@ namespace Xamarin.Forms.Platform.WinRT
 				((INavigationPageController)oldElement).PushRequested -= OnPushRequested;
 				((INavigationPageController)oldElement).PopRequested -= OnPopRequested;
 				((INavigationPageController)oldElement).PopToRootRequested -= OnPopToRootRequested;
-				oldElement.InternalChildren.CollectionChanged -= OnChildrenChanged;
+				((IPageController)oldElement).InternalChildren.CollectionChanged -= OnChildrenChanged;
 				oldElement.PropertyChanged -= OnElementPropertyChanged;
 			}
 
@@ -185,11 +189,12 @@ namespace Xamarin.Forms.Platform.WinRT
 				LookupRelevantParents();
 				UpdateTitleColor();
 				UpdateNavigationBarBackground();
+                UpdateToolbarPlacement();
 				Element.PropertyChanged += OnElementPropertyChanged;
 				((INavigationPageController)Element).PushRequested += OnPushRequested;
 				((INavigationPageController)Element).PopRequested += OnPopRequested;
 				((INavigationPageController)Element).PopToRootRequested += OnPopToRootRequested;
-				Element.InternalChildren.CollectionChanged += OnChildrenChanged;
+				PageController.InternalChildren.CollectionChanged += OnChildrenChanged;
 
 				if (!string.IsNullOrEmpty(Element.AutomationId))
 					_container.SetValue(AutomationProperties.AutomationIdProperty, Element.AutomationId);
@@ -204,7 +209,7 @@ namespace Xamarin.Forms.Platform.WinRT
 		{
 			if (!disposing || _disposed)
 				return;
-			Element?.SendDisappearing();
+			PageController?.SendDisappearing();
 			_disposed = true;
 
 			_container.PointerPressed -= OnPointerPressed;
@@ -220,6 +225,13 @@ namespace Xamarin.Forms.Platform.WinRT
 
 			if (_parentMasterDetailPage != null)
 				_parentMasterDetailPage.PropertyChanged -= MultiPagePropertyChanged;
+
+#if WINDOWS_UWP
+			if (_navManager != null)
+			{
+				_navManager.AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
+			}
+#endif
 		}
 
 		protected void OnElementChanged(VisualElementChangedEventArgs e)
@@ -249,6 +261,7 @@ namespace Xamarin.Forms.Platform.WinRT
 			return Element.BarTextColor.ToBrush();
 		}
 
+        // TODO EZH Why don't this and GetToolBarProvider ever get called on either platform?
 		Task<CommandBar> GetCommandBarAsync()
 		{
 			var platform = (Platform)Element.Platform;
@@ -323,7 +336,7 @@ namespace Xamarin.Forms.Platform.WinRT
 			else if (e.PropertyName == NavigationPage.BackButtonTitleProperty.PropertyName)
 				UpdateBackButtonTitle();
 			else if (e.PropertyName == NavigationPage.HasNavigationBarProperty.PropertyName)
-				UpdateNavigationBarVisible();
+				UpdateTitleVisible();
 		}
 
 		void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -334,6 +347,8 @@ namespace Xamarin.Forms.Platform.WinRT
 				UpdateNavigationBarBackground();
 			else if (e.PropertyName == Page.PaddingProperty.PropertyName)
 				UpdatePadding();
+            else if (e.PropertyName == PlatformConfiguration.WindowsSpecific.Page.ToolbarPlacementProperty.PropertyName)
+				UpdateToolbarPlacement();
 		}
 
 		void OnLoaded(object sender, RoutedEventArgs args)
@@ -344,7 +359,7 @@ namespace Xamarin.Forms.Platform.WinRT
 #if WINDOWS_UWP
 			_navManager = SystemNavigationManager.GetForCurrentView();
 #endif
-			Element.SendAppearing();
+			PageController.SendAppearing();
 			UpdateBackButton();
 			UpdateTitleOnParents();
 		}
@@ -375,7 +390,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		void OnPopRequested(object sender, NavigationRequestedEventArgs e)
 		{
-			var newCurrent = (Page)Element.InternalChildren[Element.InternalChildren.Count - 2];
+			var newCurrent = (Page)PageController.InternalChildren[PageController.InternalChildren.Count - 2];
 			SetPage(newCurrent, e.Animated, true);
 		}
 
@@ -391,10 +406,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		void OnUnloaded(object sender, RoutedEventArgs args)
 		{
-			if (Element == null)
-				return;
-
-			Element.SendDisappearing();
+			PageController?.SendDisappearing();
 		}
 
 		void PushExistingNavigationStack()
@@ -428,7 +440,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 			IVisualElementRenderer renderer = page.GetOrCreateRenderer();
 
-			UpdateNavigationBarVisible();
+			UpdateTitleVisible();
 			UpdateTitleOnParents();
 
 			if (isAnimated && _transition == null)
@@ -448,7 +460,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		void UpdateBackButton()
 		{
-			bool showBackButton = Element.InternalChildren.Count > 1 && NavigationPage.GetHasBackButton(_currentPage);
+			bool showBackButton = PageController.InternalChildren.Count > 1 && NavigationPage.GetHasBackButton(_currentPage);
 			_container.ShowBackButton = showBackButton;
 
 #if WINDOWS_UWP
@@ -470,7 +482,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		void UpdateContainerArea()
 		{
-			Element.ContainerArea = new Rectangle(0, 0, _container.ContentWidth, _container.ContentHeight);
+			PageController.ContainerArea = new Rectangle(0, 0, _container.ContentWidth, _container.ContentHeight);
 		}
 
 		void UpdateNavigationBarBackground()
@@ -478,16 +490,16 @@ namespace Xamarin.Forms.Platform.WinRT
 			(this as ITitleProvider).BarBackgroundBrush = GetBarBackgroundBrush();
 		}
 
-		void UpdateNavigationBarVisible()
+		void UpdateTitleVisible()
 		{
 			UpdateTitleOnParents();
 
-			bool showing = _container.ShowNavigationBar;
+			bool showing = _container.TitleVisibility == Visibility.Visible;
 			bool newValue = GetIsNavBarPossible() && NavigationPage.GetHasNavigationBar(_currentPage);
 			if (showing == newValue)
 				return;
 
-			_container.ShowNavigationBar = newValue;
+			_container.TitleVisibility = newValue ? Visibility.Visible : Visibility.Collapsed;
 
 			// Force ContentHeight/Width to update, doesn't work from inside PageControl for some reason
 			_container.UpdateLayout();
@@ -502,6 +514,18 @@ namespace Xamarin.Forms.Platform.WinRT
 		void UpdateTitleColor()
 		{
 			(this as ITitleProvider).BarForegroundBrush = GetBarForegroundBrush();
+		}
+
+        void UpdateToolbarPlacement()
+		{
+#if WINDOWS_UWP
+            if (_container == null)
+            {
+                return;
+            }
+
+            _container.ToolbarPlacement = Element.OnThisPlatform().GetToolbarPlacement();
+#endif
 		}
 
 #pragma warning disable 1998 // considered for removal

@@ -1,10 +1,4 @@
 using System;
-#if __UNIFIED__
-using UIKit;
-
-#else
-using MonoTouch.UIKit;
-#endif
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -13,6 +7,8 @@ namespace Xamarin.Forms.Platform.iOS
 		VisualElement _element;
 
 		bool _isDisposed;
+
+		IElementController ElementController => Renderer.Element as IElementController;
 
 		public VisualElementPackager(IVisualElementRenderer renderer)
 		{
@@ -33,9 +29,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public void Load()
 		{
-			for (var i = 0; i < Renderer.Element.LogicalChildren.Count; i++)
+			for (var i = 0; i < ElementController.LogicalChildren.Count; i++)
 			{
-				var child = Renderer.Element.LogicalChildren[i] as VisualElement;
+				var child = ElementController.LogicalChildren[i] as VisualElement;
 				if (child != null)
 					OnChildAdded(child);
 			}
@@ -90,12 +86,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void EnsureChildrenOrder()
 		{
-			if (Renderer.Element.LogicalChildren.Count == 0)
+			if (ElementController.LogicalChildren.Count == 0)
 				return;
 
-			for (var z = 0; z < Renderer.Element.LogicalChildren.Count; z++)
+			for (var z = 0; z < ElementController.LogicalChildren.Count; z++)
 			{
-				var child = Renderer.Element.LogicalChildren[z] as VisualElement;
+				var child = ElementController.LogicalChildren[z] as VisualElement;
 				if (child == null)
 					continue;
 				var childRenderer = Platform.GetRenderer(child);
@@ -152,9 +148,11 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 				else
 				{
-					for (var i = 0; i < oldElement.LogicalChildren.Count; i++)
+					var elementController = ((IElementController)oldElement);
+
+					for (var i = 0; i < elementController.LogicalChildren.Count; i++)
 					{
-						var child = oldElement.LogicalChildren[i] as VisualElement;
+						var child = elementController.LogicalChildren[i] as VisualElement;
 						if (child != null)
 							OnChildRemoved(child);
 					}

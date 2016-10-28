@@ -107,10 +107,9 @@ namespace Xamarin.Forms
 			}
 		}
 
-		internal virtual ReadOnlyCollection<Element> LogicalChildren
-		{
-			get { return EmptyChildren; }
-		}
+		internal virtual ReadOnlyCollection<Element> LogicalChildrenInternal => EmptyChildren;
+
+		ReadOnlyCollection<Element> IElementController.LogicalChildren => LogicalChildrenInternal;
 
 		internal bool Owned { get; set; }
 
@@ -255,6 +254,16 @@ namespace Xamarin.Forms
 			SetValueCore(property, value);
 		}
 
+		bool IElementController.EffectIsAttached(string name)
+		{
+			foreach (var effect in Effects)
+			{
+				if (effect.ResolveId == name)
+					return true;
+			}
+			return false;
+		}
+
 		object INameScope.FindByName(string name)
 		{
 			INameScope namescope = GetNameScope();
@@ -310,9 +319,9 @@ namespace Xamarin.Forms
 			var gotBindingContext = false;
 			object bc = null;
 
-			for (var index = 0; index < LogicalChildren.Count; index++)
+			for (var index = 0; index < LogicalChildrenInternal.Count; index++)
 			{
-				Element child = LogicalChildren[index];
+				Element child = LogicalChildrenInternal[index];
 
 				if (!gotBindingContext)
 				{
@@ -386,7 +395,7 @@ namespace Xamarin.Forms
 
 			while (queue.Count > 0)
 			{
-				ReadOnlyCollection<Element> children = queue.Dequeue().LogicalChildren;
+				ReadOnlyCollection<Element> children = queue.Dequeue().LogicalChildrenInternal;
 				for (var i = 0; i < children.Count; i++)
 				{
 					Element child = children[i];
@@ -480,7 +489,7 @@ namespace Xamarin.Forms
 
 			while (queue.Count > 0)
 			{
-				ReadOnlyCollection<Element> children = queue.Dequeue().LogicalChildren;
+				ReadOnlyCollection<Element> children = queue.Dequeue().LogicalChildrenInternal;
 				for (var i = 0; i < children.Count; i++)
 				{
 					var child = children[i] as VisualElement;

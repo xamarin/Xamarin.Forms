@@ -14,6 +14,7 @@ using Android.Util;
 using Android.Views;
 using Android.Widget;
 using Xamarin.Forms.Platform.Android.AppCompat;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using AToolbar = Android.Support.V7.Widget.Toolbar;
 using AColor = Android.Graphics.Color;
 using AlertDialog = Android.Support.V7.App.AlertDialog;
@@ -40,9 +41,12 @@ namespace Xamarin.Forms.Platform.Android
 
 		AndroidApplicationLifecycleState _previousState;
 
-		bool _renderersAdded;
+		bool _renderersAdded, _isFullScreen;
 		int _statusBarHeight = -1;
 		global::Android.Views.View _statusBarUnderlay;
+
+		// Override this if you want to handle the default Android behavior of restoring fragments on an application restart
+		protected virtual bool AllowFragmentRestore => false;
 
 		protected FormsAppCompatActivity()
 		{
@@ -122,6 +126,8 @@ namespace Xamarin.Forms.Platform.Android
 			(application as IApplicationController)?.SetAppIndexingProvider(new AndroidAppIndexProvider(this));
 			Xamarin.Forms.Application.Current = application;
 
+			SetSoftInputMode();
+
 			CheckForAppLink(Intent);
 
 			application.PropertyChanged += AppOnPropertyChanged;
@@ -141,6 +147,14 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void OnCreate(Bundle savedInstanceState)
 		{
+			if (!AllowFragmentRestore)
+			{
+				// Remove the automatically persisted fragment structure; we don't need them
+				// because we're rebuilding everything from scratch. This saves a bit of memory
+				// and prevents loading errors from child fragment managers
+				savedInstanceState?.Remove("android:support:fragments");
+			}
+
 			base.OnCreate(savedInstanceState);
 
 			AToolbar bar;
@@ -155,8 +169,6 @@ namespace Xamarin.Forms.Platform.Android
 
 			SetSupportActionBar(bar);
 
-			Window.SetSoftInputMode(SoftInput.AdjustPan);
-
 			_layout = new ARelativeLayout(BaseContext);
 			SetContentView(_layout);
 
@@ -167,29 +179,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			OnStateChanged();
 
-			_statusBarUnderlay = new global::Android.Views.View(this);
-			var layoutParameters = new ARelativeLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, GetStatusBarHeight()) { AlignWithParent = true };
-			layoutParameters.AddRule(LayoutRules.AlignTop);
-			_statusBarUnderlay.LayoutParameters = layoutParameters;
-			_layout.AddView(_statusBarUnderlay);
-
-			if (Forms.IsLollipopOrNewer)
-			{
-				Window.DecorView.SystemUiVisibility = (StatusBarVisibility)(SystemUiFlags.LayoutFullscreen | SystemUiFlags.LayoutStable);
-				Window.AddFlags(WindowManagerFlags.DrawsSystemBarBackgrounds);
-				Window.SetStatusBarColor(AColor.Transparent);
-
-				int primaryColorDark = GetColorPrimaryDark();
-
-				if (primaryColorDark != 0)
-				{
-					int r = AColor.GetRedComponent(primaryColorDark);
-					int g = AColor.GetGreenComponent(primaryColorDark);
-					int b = AColor.GetBlueComponent(primaryColorDark);
-					int a = AColor.GetAlphaComponent(primaryColorDark);
-					SetStatusBarColor(AColor.Argb(a, r, g, b));
-				}
-			}
+			AddStatusBarUnderlay();
 		}
 
 		protected override void OnDestroy()
@@ -290,10 +280,39 @@ namespace Xamarin.Forms.Platform.Android
 			return _statusBarHeight = result;
 		}
 
+		void AddStatusBarUnderlay()
+		{
+			_statusBarUnderlay = new global::Android.Views.View(this);
+
+			var layoutParameters = new ARelativeLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, GetStatusBarHeight()) { AlignWithParent = true };
+			layoutParameters.AddRule(LayoutRules.AlignTop);
+			_statusBarUnderlay.LayoutParameters = layoutParameters;
+			_layout.AddView(_statusBarUnderlay);
+
+			if (Forms.IsLollipopOrNewer)
+			{
+				Window.AddFlags(WindowManagerFlags.DrawsSystemBarBackgrounds);
+				Window.SetStatusBarColor(AColor.Transparent);
+
+				int primaryColorDark = GetColorPrimaryDark();
+
+				if (primaryColorDark != 0)
+				{
+					int r = AColor.GetRedComponent(primaryColorDark);
+					int g = AColor.GetGreenComponent(primaryColorDark);
+					int b = AColor.GetBlueComponent(primaryColorDark);
+					int a = AColor.GetAlphaComponent(primaryColorDark);
+					SetStatusBarColor(AColor.Argb(a, r, g, b));
+				}
+			}
+		}
+
 		void AppOnPropertyChanged(object sender, PropertyChangedEventArgs args)
 		{
 			if (args.PropertyName == "MainPage")
 				InternalSetPage(_application.MainPage);
+			if (args.PropertyName == PlatformConfiguration.AndroidSpecific.Application.WindowSoftInputModeAdjustProperty.PropertyName)
+				SetSoftInputMode();
 		}
 
 		void CheckForAppLink(Intent intent)
@@ -395,10 +414,6 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			_busyCount = Math.Max(0, enabled ? _busyCount + 1 : _busyCount - 1);
 
-			if (!Forms.SupportsProgress)
-				return;
-
-			SetProgressBarIndeterminate(true);
 			UpdateProgressBarVisibility(_busyCount > 0);
 		}
 
@@ -429,12 +444,85 @@ namespace Xamarin.Forms.Platform.Android
 			InternalSetPage(_application.MainPage);
 		}
 
+		void SetSoftInputMode()
+		{
+			SoftInput adjust = SoftInput.AdjustPan;
+
+			if (Xamarin.Forms.Application.Current != null)
+			{
+				var elementValue = Xamarin.Forms.Application.Current.OnThisPlatform().GetWindowSoftInputModeAdjust();
+				switch (elementValue)
+				{
+					default:
+					case WindowSoftInputModeAdjust.Pan:
+						adjust = SoftInput.AdjustPan;
+						break;
+
+					case WindowSoftInputModeAdjust.Resize:
+						adjust = SoftInput.AdjustResize;
+						break;
+				}
+			}
+
+			Window.SetSoftInputMode(adjust);
+			SetStatusBarVisibility(adjust);
+		}
+
+		public override void OnWindowAttributesChanged(WindowManagerLayoutParams @params)
+		{
+			base.OnWindowAttributesChanged(@params);
+
+			if (Xamarin.Forms.Application.Current == null || Xamarin.Forms.Application.Current.MainPage == null)
+				return;
+
+			if (@params.Flags.HasFlag(WindowManagerFlags.Fullscreen))
+			{
+				if (Forms.TitleBarVisibility != AndroidTitleBarVisibility.Never)
+					Forms.TitleBarVisibility = AndroidTitleBarVisibility.Never;
+
+				if (_isFullScreen)
+					return;
+			}
+			else
+			{
+				if (Forms.TitleBarVisibility != AndroidTitleBarVisibility.Default)
+					Forms.TitleBarVisibility = AndroidTitleBarVisibility.Default;
+
+				if (!_isFullScreen)
+					return;
+			}
+
+			_isFullScreen = !_isFullScreen;
+
+			var displayMetrics = Resources.DisplayMetrics;
+			var width = displayMetrics.WidthPixels;
+			var height = displayMetrics.HeightPixels;
+			AppCompat.Platform.LayoutRootPage(this, Xamarin.Forms.Application.Current.MainPage, width, height);
+		}
+
+		void SetStatusBarVisibility(SoftInput mode)
+		{
+			if (!Forms.IsLollipopOrNewer)
+				return;
+
+			if (mode == SoftInput.AdjustResize)
+			{
+				Window.DecorView.SystemUiVisibility = (StatusBarVisibility)(SystemUiFlags.Immersive);
+			}
+			else
+				Window.DecorView.SystemUiVisibility = (StatusBarVisibility)(SystemUiFlags.LayoutFullscreen | SystemUiFlags.LayoutStable);
+
+			_layout?.Invalidate();
+		}
+
 		void UpdateProgressBarVisibility(bool isBusy)
 		{
 			if (!Forms.SupportsProgress)
 				return;
-
+#pragma warning disable 612, 618
+			SetProgressBarIndeterminate(true);
 			SetProgressBarIndeterminateVisibility(isBusy);
+#pragma warning restore 612, 618
 		}
 
 		internal class DefaultApplication : Application

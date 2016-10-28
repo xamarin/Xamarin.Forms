@@ -1,13 +1,9 @@
 using System;
-using System.Drawing;
-using System.Runtime.Remoting.Channels;
 using System.ComponentModel;
-#if __UNIFIED__
-using UIKit;
 
-#else
-using MonoTouch.UIKit;
-#endif
+using System.Drawing;
+using UIKit;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -19,6 +15,8 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			Frame = new RectangleF(0, 20, 320, 40);
 		}
+
+		IElementController ElementController => Element as IElementController;
 
 		protected override void Dispose(bool disposing)
 		{
@@ -65,6 +63,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateFont();
 				UpdateKeyboard();
 				UpdateAlignment();
+				UpdateAdjustsFontSizeToFitWidth();
 			}
 		}
 
@@ -93,23 +92,31 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateColor();
 				UpdatePlaceholder();
 			}
+			else if (e.PropertyName == PlatformConfiguration.iOSSpecific.Entry.AdjustsFontSizeToFitWidthProperty.PropertyName)
+				UpdateAdjustsFontSizeToFitWidth();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
 
 		void OnEditingBegan(object sender, EventArgs e)
 		{
-			((IElementController)Element).SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, true);
+			ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, true);
 		}
 
 		void OnEditingChanged(object sender, EventArgs eventArgs)
 		{
-			((IElementController)Element).SetValueFromRenderer(Entry.TextProperty, Control.Text);
+			ElementController.SetValueFromRenderer(Entry.TextProperty, Control.Text);
 		}
 
 		void OnEditingEnded(object sender, EventArgs e)
 		{
-			((IElementController)Element).SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
+			// Typing aid changes don't always raise EditingChanged event
+			if (Control.Text != Element.Text)
+			{
+				ElementController.SetValueFromRenderer(Entry.TextProperty, Control.Text);
+			}
+
+			ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
 		}
 
 		bool OnShouldReturn(UITextField view)
@@ -132,6 +139,11 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.TextColor = _defaultTextColor;
 			else
 				Control.TextColor = textColor.ToUIColor();
+		}
+
+		void UpdateAdjustsFontSizeToFitWidth()
+		{
+			Control.AdjustsFontSizeToFitWidth = Element.OnThisPlatform().AdjustsFontSizeToFitWidth();
 		}
 
 		void UpdateFont()

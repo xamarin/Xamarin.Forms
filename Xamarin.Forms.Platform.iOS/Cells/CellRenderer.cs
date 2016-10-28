@@ -1,12 +1,6 @@
 using System;
-#if __UNIFIED__
 using UIKit;
-using Foundation;
-
-#else
-using MonoTouch.UIKit;
-using MonoTouch.Foundation;
-#endif
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -32,7 +26,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected void UpdateBackground(UITableViewCell tableViewCell, Cell cell)
 		{
-			if (TemplatedItemsList<ItemsView<Cell>, Cell>.GetIsGroupHeader(cell))
+			if (cell.GetIsGroupHeader<ItemsView<Cell>, Cell>())
 			{
 				if (UIDevice.CurrentDevice.CheckSystemVersion(7, 0))
 					tableViewCell.BackgroundColor = new UIColor(247f / 255f, 247f / 255f, 247f / 255f, 1);
@@ -50,11 +44,11 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		protected void WireUpForceUpdateSizeRequested(Cell cell, UITableViewCell nativeCell, UITableView tableView)
+		protected void WireUpForceUpdateSizeRequested(ICellController cell, UITableViewCell nativeCell, UITableView tableView)
 		{
 			cell.ForceUpdateSizeRequested -= _onForceUpdateSizeRequested;
 
-			_onForceUpdateSizeRequested = delegate
+			_onForceUpdateSizeRequested = (sender, e) => 
 			{
 				var index = tableView.IndexPathForCell(nativeCell);
 				if (index != null)

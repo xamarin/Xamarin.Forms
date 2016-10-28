@@ -250,7 +250,7 @@
 		<Setter Property="ItemsPanel">
 			<Setter.Value>
 				<ItemsPanelTemplate>
-					<StackPanel Orientation="Horizontal" Margin="0,11,0,0" Background="{TemplateBinding ToolbarBackground}" />
+					<StackPanel Orientation="Horizontal" Margin="0,11,0,0" Background="{Binding BarBackgroundColor, Converter={StaticResource ColorConverter}, ConverterParameter=TabButtonBackgroundBrush}" Name="TabbedPageHeaderStackPanel" />
 				</ItemsPanelTemplate>
 			</Setter.Value>
 		</Setter>
@@ -261,7 +261,7 @@
 						<StackPanel VerticalAlignment="Bottom">
 							<Image DataContext="{Binding Icon, Converter={StaticResource ImageConverter}}" Source="{Binding Value}" HorizontalAlignment="Left" />
 							<TextBlock Margin="0,15,0,15" Text="{Binding Title, Converter={StaticResource UpperConverter}}"
-									   Style="{ThemeResource CaptionTextBlockStyle}" FontWeight="SemiBold" Foreground="{TemplateBinding ToolbarForeground}"  HorizontalAlignment="Left" />
+									   Style="{ThemeResource CaptionTextBlockStyle}" FontWeight="SemiBold" Name="TabbedPageHeaderTextBlock"  HorizontalAlignment="Left" />
 						</StackPanel>
 					</local:TabButton>
 				</DataTemplate>
@@ -327,7 +327,7 @@
 							<RowDefinition Height="*" />
 						</Grid.RowDefinitions>
 
-						<Grid Grid.Row="0" Grid.Column="0" Height="79" VerticalAlignment="Center" Background="{TemplateBinding NavigationBarBackground}" Visibility="{Binding ShowNavigationBar,RelativeSource={RelativeSource Mode=TemplatedParent},Converter={StaticResource BoolVisibilityConverter}}">
+						<Grid Grid.Row="0" Grid.Column="0" Height="79" VerticalAlignment="Center" Background="{TemplateBinding ToolbarBackground}" Visibility="{TemplateBinding TitleVisibility}">
 							<Grid.ColumnDefinitions>
 								<ColumnDefinition Width="Auto" MinWidth="{Binding TitleInset,RelativeSource={RelativeSource TemplatedParent}}" />
 								<ColumnDefinition Width="*" />

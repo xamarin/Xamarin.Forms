@@ -1,29 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Drawing;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using Xamarin.Forms.Internals;
-#if __UNIFIED__
-using UIKit;
 using CoreGraphics;
-#else
-using MonoTouch.UIKit;
-using MonoTouch.CoreGraphics;
-#endif
-#if __UNIFIED__
-using RectangleF = CoreGraphics.CGRect;
-using SizeF = CoreGraphics.CGSize;
+using UIKit;
+using Xamarin.Forms.Internals;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using PointF = CoreGraphics.CGPoint;
-
-#else
-using nfloat=System.Single;
-using nint=System.Int32;
-using nuint=System.UInt32;
-#endif
+using RectangleF = CoreGraphics.CGRect;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -48,9 +33,13 @@ namespace Xamarin.Forms.Platform.iOS
 				var parentingViewController = (ParentingViewController)ViewControllers.Last();
 				UpdateLeftBarButtonItem(parentingViewController);
 			});
+
+			
 		}
 
 		Page Current { get; set; }
+
+		IPageController PageController => Element as IPageController;
 
 		public VisualElement Element { get; private set; }
 
@@ -106,31 +95,9 @@ namespace Xamarin.Forms.Platform.iOS
 			return OnPopToRoot(page, animated);
 		}
 
-		public override UIViewController[] PopToRootViewController(bool animated)
-		{
-			if (!_ignorePopCall && ViewControllers.Length > 1)
-				RemoveViewControllers(animated);
-
-			return base.PopToRootViewController(animated);
-		}
-
 		public Task<bool> PopViewAsync(Page page, bool animated = true)
 		{
 			return OnPopViewAsync(page, animated);
-		}
-
-#if __UNIFIED__
-		public override UIViewController PopViewController(bool animated)
-#else
-		public override UIViewController PopViewControllerAnimated (bool animated)
-		#endif
-		{
-			RemoveViewControllers(animated);
-#if __UNIFIED__
-			return base.PopViewController(animated);
-#else
-			return base.PopViewControllerAnimated (animated);
-			#endif
 		}
 
 		public Task<bool> PushPageAsync(Page page, bool animated = true)
@@ -143,7 +110,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (!_appeared)
 			{
 				_appeared = true;
-				((NavigationPage)Element)?.SendAppearing();
+				PageController?.SendAppearing();
 			}
 
 			base.ViewDidAppear(animated);
@@ -159,7 +126,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			_appeared = false;
-			((NavigationPage)Element).SendDisappearing();
+			PageController.SendDisappearing();
 		}
 
 		public override void ViewDidLayoutSubviews()
@@ -176,7 +143,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			double trueBottom = toolbar.Hidden ? toolbarY : toolbar.Frame.Bottom;
 			var modelSize = _queuedSize.IsZero ? Element.Bounds.Size : _queuedSize;
-			((NavigationPage)Element).ContainerArea = 
+			PageController.ContainerArea = 
 				new Rectangle(0, toolbar.Hidden ? 0 : toolbar.Frame.Height, modelSize.Width, modelSize.Height - trueBottom);
 
 			if (!_queuedSize.IsZero)
@@ -200,7 +167,10 @@ namespace Xamarin.Forms.Platform.iOS
 			base.ViewDidLoad();
 
 			if (Forms.IsiOS7OrNewer)
-				NavigationBar.Translucent = false;
+			{
+				
+				UpdateTranslucent();
+			}
 			else
 				WantsFullScreenLayout = false;
 
@@ -275,7 +245,7 @@ namespace Xamarin.Forms.Platform.iOS
 			base.Dispose(disposing);
 			if (_appeared)
 			{
-				((Page)Element).SendDisappearing();
+				PageController.SendDisappearing();
 
 				_appeared = false;
 			}
@@ -323,11 +293,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var task = GetAppearedOrDisappearedTask(page);
 
 			UIViewController poppedViewController;
-#if __UNIFIED__
 			poppedViewController = base.PopViewController(animated);
-#else
-			poppedViewController = base.PopViewControllerAnimated (animated);
-			#endif
 
 			if (poppedViewController == null)
 			{
@@ -456,6 +422,18 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateBackgroundColor();
 			else if (e.PropertyName == NavigationPage.CurrentPageProperty.PropertyName)
 				Current = ((NavigationPage)Element).CurrentPage;
+			else if (e.PropertyName == PlatformConfiguration.iOSSpecific.NavigationPage.IsNavigationBarTranslucentProperty.PropertyName)
+				UpdateTranslucent();
+		}
+
+		void UpdateTranslucent()
+		{
+			if (!Forms.IsiOS7OrNewer)
+			{
+				return;
+			}
+
+			NavigationBar.Translucent = ((NavigationPage)Element).OnThisPlatform().IsNavigationBarTranslucent();
 		}
 
 		void InsertPageBefore(Page page, Page before)
@@ -500,7 +478,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (page == null)
 				throw new ArgumentNullException("page");
 			if (page == Current)
-				throw new NotSupportedException(); // should never happen as NavPage protecs against this
+				throw new NotSupportedException(); // should never happen as NavPage protects against this
 
 			var target = Platform.GetRenderer(page).ViewController.ParentViewController;
 
@@ -511,6 +489,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 			// In the future we may want to make RemovePageAsync and deprecate RemovePage to handle cases where Push/Pop is called
 			// during a remove cycle. 
+			var parentingVC = target as ParentingViewController;
+			if (parentingVC != null)
+				parentingVC.IgnorePageBeingRemoved = true;
 
 			if (_removeControllers == null)
 			{
@@ -523,36 +504,8 @@ namespace Xamarin.Forms.Platform.iOS
 				_removeControllers = _removeControllers.Remove(target);
 				ViewControllers = _removeControllers;
 			}
-		}
-
-		void RemoveViewControllers(bool animated)
-		{
-			var controller = TopViewController as ParentingViewController;
-			if (controller == null || controller.Child == null)
-				return;
-
-			// Gesture in progress, lets not be proactive and just wait for it to finish
-			var count = ViewControllers.Length;
-			var task = GetAppearedOrDisappearedTask(controller.Child);
-			task.ContinueWith(async t =>
-			{
-				// task returns true if the user lets go of the page and is not popped
-				// however at this point the renderer is already off the visual stack so we just need to update the NavigationPage
-				// Also worth noting this task returns on the main thread
-				if (t.Result)
-					return;
-				_ignorePopCall = true;
-				// because iOS will just chain multiple animations together...
-				var removed = count - ViewControllers.Length;
-				for (var i = 0; i < removed; i++)
-				{
-					// lets just pop these suckers off, do not await, the true is there to make this fast
-					await ((INavigationPageController)Element).PopAsyncInner(animated, true);
-				}
-				// because we skip the normal pop process we need to dispose ourselves
-				controller.Dispose();
-				_ignorePopCall = false;
-			}, TaskScheduler.FromCurrentSynchronizationContext());
+			var parentingViewController = ViewControllers.Last() as ParentingViewController;
+			UpdateLeftBarButtonItem(parentingViewController, page);
 		}
 
 		void UpdateBackgroundColor()
@@ -627,11 +580,13 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		void UpdateLeftBarButtonItem(ParentingViewController containerController)
+		void UpdateLeftBarButtonItem(ParentingViewController containerController, Page pageBeingRemoved = null)
 		{
+			if (containerController == null)
+				return;
 			var currentChild = containerController.Child;
 			var firstPage = ((INavigationPageController)Element).StackCopy.LastOrDefault();
-			if ((currentChild != firstPage && NavigationPage.GetHasBackButton(currentChild)) || _parentMasterDetailPage == null)
+			if ((firstPage != pageBeingRemoved && currentChild != firstPage && NavigationPage.GetHasBackButton(currentChild)) || _parentMasterDetailPage == null)
 				return;
 
 			if (!_parentMasterDetailPage.ShouldShowToolbarButton())
@@ -792,6 +747,12 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 			}
 
+			public bool IgnorePageBeingRemoved
+			{
+				get;
+				set;
+			}
+
 			public event EventHandler Appearing;
 
 			public override void DidRotate(UIInterfaceOrientation fromInterfaceOrientation)
@@ -843,15 +804,40 @@ namespace Xamarin.Forms.Platform.iOS
 			public override void ViewWillAppear(bool animated)
 			{
 				UpdateNavigationBarVisibility(animated);
+				EdgesForExtendedLayout = UIRectEdge.None;
 				base.ViewWillAppear(animated);
+			}
+
+			public override async void DidMoveToParentViewController(UIViewController parent)
+			{
+				//If Parent of our child is already null we removed this using our API
+				//If we still have parent and we are removing our render we need to update our navigation
+				if (parent == null && !IgnorePageBeingRemoved)
+				{
+					NavigationRenderer n;
+					if (_navigation.TryGetTarget(out n))
+					{
+						var navController = n.Element as INavigationPageController;
+						await navController?.PopAsyncInner(true, true);
+					}
+
+				}
+				base.DidMoveToParentViewController(parent);
+
 			}
 
 			protected override void Dispose(bool disposing)
 			{
 				if (disposing)
 				{
-					Child.SendDisappearing();
-					Child = null;
+					((IPageController)Child).SendDisappearing();
+
+					if (Child != null)
+					{
+						Child.PropertyChanged -= HandleChildPropertyChanged;
+						Child = null;
+					}
+
 					_tracker.Target = null;
 					_tracker.CollectionChanged -= TrackerOnCollectionChanged;
 					_tracker = null;
@@ -939,6 +925,40 @@ namespace Xamarin.Forms.Platform.iOS
 				if (_navigation.TryGetTarget(out n))
 					n.UpdateToolBarVisible();
 			}
+
+			public override UIInterfaceOrientationMask GetSupportedInterfaceOrientations()
+			{
+				IVisualElementRenderer childRenderer;
+				if (Child != null && (childRenderer = Platform.GetRenderer(Child)) != null)
+					return childRenderer.ViewController.GetSupportedInterfaceOrientations();
+				return base.GetSupportedInterfaceOrientations();
+			}
+
+			public override UIInterfaceOrientation PreferredInterfaceOrientationForPresentation()
+			{
+				IVisualElementRenderer childRenderer;
+				if (Child != null && (childRenderer = Platform.GetRenderer(Child)) != null)
+					return childRenderer.ViewController.PreferredInterfaceOrientationForPresentation();
+				return base.PreferredInterfaceOrientationForPresentation();
+			}
+
+			public override bool ShouldAutorotate()
+			{
+				IVisualElementRenderer childRenderer;
+				if (Child != null && (childRenderer = Platform.GetRenderer(Child)) != null)
+					return childRenderer.ViewController.ShouldAutorotate();				
+				return base.ShouldAutorotate();
+			}
+
+			public override bool ShouldAutorotateToInterfaceOrientation(UIInterfaceOrientation toInterfaceOrientation)
+			{
+				IVisualElementRenderer childRenderer;
+				if (Child != null && (childRenderer = Platform.GetRenderer(Child)) != null)
+					return childRenderer.ViewController.ShouldAutorotateToInterfaceOrientation(toInterfaceOrientation);
+				return base.ShouldAutorotateToInterfaceOrientation(toInterfaceOrientation);
+			}
+
+			public override bool ShouldAutomaticallyForwardRotationMethods => true;
 		}
 
 		void IEffectControlProvider.RegisterEffect(Effect effect)

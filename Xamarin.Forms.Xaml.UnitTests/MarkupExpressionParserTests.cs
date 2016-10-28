@@ -68,7 +68,13 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				throw new NotImplementedException ();
 			}
 
+
 			public List<string> IgnorablePrefixes { get; set; }
+
+			public INode Clone()
+			{
+				throw new NotImplementedException();
+			}
 		}
 
 		[SetUp]
@@ -171,11 +177,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				}
 			}
 
-			public object TargetProperty {
-				get {
-					throw new NotImplementedException ();
-				}
-			}
+			public object TargetProperty { get; } = null;
 		}
 
 		[Test]

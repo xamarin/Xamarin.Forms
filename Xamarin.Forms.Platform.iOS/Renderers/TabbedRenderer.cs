@@ -1,30 +1,25 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Linq;
-using System.Collections.Generic;
-#if __UNIFIED__
 using UIKit;
-#else
-using MonoTouch.UIKit;
-#endif
-#if __UNIFIED__
-using RectangleF = CoreGraphics.CGRect;
-using SizeF = CoreGraphics.CGSize;
-using PointF = CoreGraphics.CGPoint;
-
-#else
-using nfloat=System.Single;
-using nint=System.Int32;
-using nuint=System.UInt32;
-#endif
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.iOS
 {
 	public class TabbedRenderer : UITabBarController, IVisualElementRenderer, IEffectControlProvider
 	{
+		bool _barBackgroundColorWasSet;
+		bool _barTextColorWasSet;
+		UIColor _defaultBarTextColor;
+		bool _defaultBarTextColorSet;
+		UIColor _defaultBarColor;
+		bool _defaultBarColorSet;
 		bool _loaded;
 		Size _queuedSize;
+
+		IPageController PageController => Element as IPageController;
+		IElementController ElementController => Element as IElementController;
 
 		public override UIViewController SelectedViewController
 		{
@@ -102,14 +97,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewDidAppear(bool animated)
 		{
-			((TabbedPage)Element).SendAppearing();
+			PageController.SendAppearing();
 			base.ViewDidAppear(animated);
 		}
 
 		public override void ViewDidDisappear(bool animated)
 		{
 			base.ViewDidDisappear(animated);
-			((TabbedPage)Element).SendDisappearing();
+			PageController.SendDisappearing();
 		}
 
 		public override void ViewDidLayoutSubviews()
@@ -126,7 +121,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			var frame = View.Frame;
 			var tabBarFrame = TabBar.Frame;
-			((TabbedPage)Element).ContainerArea = new Rectangle(0, 0, frame.Width, frame.Height - tabBarFrame.Height);
+			PageController.ContainerArea = new Rectangle(0, 0, frame.Width, frame.Height - tabBarFrame.Height);
 
 			if (!_queuedSize.IsZero)
 			{
@@ -149,7 +144,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (disposing)
 			{
-				((TabbedPage)Element).SendDisappearing();
+				PageController.SendDisappearing();
 				Tabbed.PropertyChanged -= OnPropertyChanged;
 				Tabbed.PagesChanged -= OnPagesChanged;
 				FinishedCustomizingViewControllers -= HandleFinishedCustomizingViewControllers;
@@ -258,9 +253,9 @@ namespace Xamarin.Forms.Platform.iOS
 		void SetControllers()
 		{
 			var list = new List<UIViewController>();
-			for (var i = 0; i < Element.LogicalChildren.Count; i++)
+			for (var i = 0; i < ElementController.LogicalChildren.Count; i++)
 			{
-				var child = Element.LogicalChildren[i];
+				var child = ElementController.LogicalChildren[i];
 				var v = child as VisualElement;
 				if (v == null)
 					continue;
@@ -305,14 +300,31 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			var barBackgroundColor = Tabbed.BarBackgroundColor;
+			var isDefaultColor = barBackgroundColor.IsDefault;
+
+			if (isDefaultColor && !_barBackgroundColorWasSet)
+				return;
+
+			if (!_defaultBarColorSet)
+			{
+				if (Forms.IsiOS7OrNewer)
+					_defaultBarColor = TabBar.BarTintColor;
+				else
+					_defaultBarColor = TabBar.TintColor;
+
+				_defaultBarColorSet = true;
+			}
+
+			if (!isDefaultColor)
+				_barBackgroundColorWasSet = true;
 
 			if (Forms.IsiOS7OrNewer)
 			{
-				TabBar.BarTintColor = barBackgroundColor == Color.Default ? UINavigationBar.Appearance.BarTintColor : barBackgroundColor.ToUIColor();
+				TabBar.BarTintColor = isDefaultColor ? _defaultBarColor : barBackgroundColor.ToUIColor();
 			}
 			else
 			{
-				TabBar.TintColor = barBackgroundColor == Color.Default ? UINavigationBar.Appearance.TintColor : barBackgroundColor.ToUIColor();
+				TabBar.TintColor = isDefaultColor ? _defaultBarColor : barBackgroundColor.ToUIColor();
 			}
 		}
 
@@ -322,13 +334,24 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			var barTextColor = Tabbed.BarTextColor;
+			var isDefaultColor = barTextColor.IsDefault;
 
-			var globalAttributes = UINavigationBar.Appearance.GetTitleTextAttributes();
+			if (isDefaultColor && !_barTextColorWasSet)
+				return;
 
-			var attributes = new UITextAttributes { Font = globalAttributes.Font };
+			if (!_defaultBarTextColorSet)
+			{
+				_defaultBarTextColor = TabBar.TintColor;
+				_defaultBarTextColorSet = true;
+			}
 
-			if (barTextColor == Color.Default)
-				attributes.TextColor = globalAttributes.TextColor;
+			if (!isDefaultColor)
+				_barTextColorWasSet = true;
+
+			var attributes = new UITextAttributes();
+
+			if (isDefaultColor)
+				attributes.TextColor = _defaultBarTextColor;
 			else
 				attributes.TextColor = barTextColor.ToUIColor();
 
@@ -341,7 +364,7 @@ namespace Xamarin.Forms.Platform.iOS
 			// setting the unselected icon tint is not supported by iOS
 			if (Forms.IsiOS7OrNewer)
 			{
-				TabBar.TintColor = barTextColor == Color.Default ? UINavigationBar.Appearance.TintColor : barTextColor.ToUIColor();
+				TabBar.TintColor = isDefaultColor ? _defaultBarTextColor : barTextColor.ToUIColor();
 			}
 		}
 
@@ -352,7 +375,7 @@ namespace Xamarin.Forms.Platform.iOS
 				var originalIndex = -1;
 				if (int.TryParse(viewControllers[i].TabBarItem.Tag.ToString(), out originalIndex))
 				{
-					var page = (Page)Tabbed.InternalChildren[originalIndex];
+					var page = (Page)((IPageController)Tabbed).InternalChildren[originalIndex];
 					TabbedPage.SetIndex(page, i);
 				}
 			}
@@ -360,7 +383,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateCurrentPage()
 		{
-			((TabbedPage)Element).CurrentPage = SelectedIndex >= 0 && SelectedIndex < Tabbed.InternalChildren.Count ? Tabbed.GetPageByIndex((int)SelectedIndex) : null;
+			var count = ((IPageController)Tabbed).InternalChildren.Count;
+			((TabbedPage)Element).CurrentPage = SelectedIndex >= 0 && SelectedIndex < count ? Tabbed.GetPageByIndex((int)SelectedIndex) : null;
 		}
 
 		void IEffectControlProvider.RegisterEffect(Effect effect)

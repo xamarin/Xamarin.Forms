@@ -560,7 +560,7 @@ namespace Xamarin.Forms
 
 		public event EventHandler<FocusEventArgs> Unfocused;
 
-		protected virtual void InvalidateMeasureInternal()
+		protected virtual void InvalidateMeasure()
 		{
 			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 		}
@@ -633,9 +633,9 @@ namespace Xamarin.Forms
 
 		internal void ComputeConstrainsForChildren()
 		{
-			for (var i = 0; i < LogicalChildren.Count; i++)
+			for (var i = 0; i < LogicalChildrenInternal.Count; i++)
 			{
-				var child = LogicalChildren[i] as View;
+				var child = LogicalChildrenInternal[i] as View;
 				if (child != null)
 					ComputeConstraintForView(child);
 			}

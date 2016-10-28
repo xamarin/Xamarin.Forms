@@ -1,25 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Collections.Generic;
-using System.Drawing;
-using Xamarin.Forms.Platform.iOS.Resources;
-#if __UNIFIED__
-using UIKit;
 using Foundation;
-#else
-using MonoTouch.UIKit;
-using MonoTouch.Foundation;
-#endif
-#if __UNIFIED__
+using UIKit;
+using Xamarin.Forms.Platform.iOS.Resources;
+using PointF = CoreGraphics.CGPoint;
 using RectangleF = CoreGraphics.CGRect;
 using SizeF = CoreGraphics.CGSize;
-using PointF = CoreGraphics.CGPoint;
-
-#else
-using nfloat=System.Single;
-using nint=System.Int32;
-#endif
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -131,7 +119,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public void Update(UITableView tableView, Cell cell, UITableViewCell nativeCell)
 		{
-			var parentListView = cell.RealParent as ListView;
+			var parentListView = cell.RealParent as IListViewController;
 			var recycling = parentListView != null && parentListView.CachingStrategy == ListViewCachingStrategy.RecycleElement;
 			if (_cell != cell && recycling)
 			{
@@ -342,7 +330,7 @@ namespace Xamarin.Forms.Platform.iOS
 						_scroller.SetContentOffset(new PointF(0, 0), true);
 						MenuItem mi;
 						if (weakItem.TryGetTarget(out mi))
-							mi.Activate();
+							((IMenuItemController)mi).Activate();
 					});
 					actionSheet.AddAction(action);
 				}
@@ -419,7 +407,7 @@ namespace Xamarin.Forms.Platform.iOS
 			button.SetTitle(item.Text, UIControlState.Normal);
 			button.TitleEdgeInsets = new UIEdgeInsets(0, 15, 0, 15);
 
-			button.Enabled = item.IsEnabled;
+			button.Enabled = ((IMenuItemController)item).IsEnabled;
 
 			return button;
 		}
@@ -460,7 +448,7 @@ namespace Xamarin.Forms.Platform.iOS
 			else
 			{
 				_scroller.SetContentOffset(new PointF(0, 0), true);
-				_cell.ContextActions[(int)button.Tag].Activate();
+				((IMenuItemController)_cell.ContextActions[(int)button.Tag]).Activate();
 			}
 		}
 
@@ -468,7 +456,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (e.PropertyName == "HasContextActions")
 			{
-				var parentListView = _cell.RealParent as ListView;
+				var parentListView = _cell.RealParent as IListViewController;
 				var recycling = parentListView != null && parentListView.CachingStrategy == ListViewCachingStrategy.RecycleElement;
 				if (!recycling)
 					ReloadRow();
@@ -477,7 +465,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnContextItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			var parentListView = _cell.RealParent as ListView;
+			var parentListView = _cell.RealParent as IListViewController;
 			var recycling = parentListView != null && parentListView.CachingStrategy == ListViewCachingStrategy.RecycleElement;
 			if (recycling)
 				Update(_tableView, _cell, ContentCell);
@@ -488,7 +476,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnMenuItemPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			var parentListView = _cell.RealParent as ListView;
+			var parentListView = _cell.RealParent as IListViewController;
 			var recycling = parentListView != null && parentListView.CachingStrategy == ListViewCachingStrategy.RecycleElement;
 			if (recycling)
 				Update(_tableView, _cell, ContentCell);
@@ -673,8 +661,10 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				var selector = (SelectGestureRecognizer)recognizer;
 
-				var table = (UITableView)recognizer.View;
+				if (selector._lastPath == null)
+					return;
 
+				var table = (UITableView)recognizer.View;
 				if (!selector._lastPath.Equals(table.IndexPathForSelectedRow))
 					table.SelectRow(selector._lastPath, false, UITableViewScrollPosition.None);
 				table.Source.RowSelected(table, selector._lastPath);
@@ -708,7 +698,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				// do not activate a -1 index when dismissing by clicking outside the popover
 				if (buttonIndex >= 0)
-					Items[(int)buttonIndex].Activate();
+					((IMenuItemController)Items[(int)buttonIndex]).Activate();
 			}
 		}
 	}

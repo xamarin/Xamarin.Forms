@@ -23,6 +23,8 @@ namespace Xamarin.Forms.Platform.Android
 			AutoPackage = false;
 		}
 
+		IElementController ElementController => Element as IElementController;
+
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing && !_isDisposed)
@@ -32,6 +34,11 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			base.Dispose(disposing);
+		}
+
+		protected override EditText CreateNativeControl()
+		{
+			return new EditText(Context) { Focusable = false, Clickable = true, Tag = this };
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Picker> e)
@@ -44,7 +51,7 @@ namespace Xamarin.Forms.Platform.Android
 				((ObservableList<string>)e.NewElement.Items).CollectionChanged += RowsCollectionChanged;
 				if (Control == null)
 				{
-					var textField = new EditText(Context) { Focusable = false, Clickable = true, Tag = this };
+					var textField = CreateNativeControl();
 					textField.SetOnClickListener(PickerListener.Instance);
 					_textColorSwitcher = new TextColorSwitcher(textField.TextColors);
 					SetNativeControl(textField);
@@ -77,7 +84,7 @@ namespace Xamarin.Forms.Platform.Android
 			else if (_dialog != null)
 			{
 				_dialog.Hide();
-				((IElementController)Element).SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
+				ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
 				Control.ClearFocus();
 				_dialog = null;
 			}
@@ -101,14 +108,14 @@ namespace Xamarin.Forms.Platform.Android
 			var layout = new LinearLayout(Context) { Orientation = Orientation.Vertical };
 			layout.AddView(picker);
 
-			((IElementController)Element).SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, true);
+			ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, true);
 
 			var builder = new AlertDialog.Builder(Context);
 			builder.SetView(layout);
 			builder.SetTitle(model.Title ?? "");
 			builder.SetNegativeButton(global::Android.Resource.String.Cancel, (s, a) =>
 			{
-				((IElementController)Element).SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
+				ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
 				// It is possible for the Content of the Page to be changed when Focus is changed.
 				// In this case, we'll lose our Control.
 				Control?.ClearFocus();
@@ -116,14 +123,14 @@ namespace Xamarin.Forms.Platform.Android
 			});
 			builder.SetPositiveButton(global::Android.Resource.String.Ok, (s, a) =>
 			{
-				((IElementController)Element).SetValueFromRenderer(Picker.SelectedIndexProperty, picker.Value);
+				ElementController.SetValueFromRenderer(Picker.SelectedIndexProperty, picker.Value);
 				// It is possible for the Content of the Page to be changed on SelectedIndexChanged. 
 				// In this case, the Element & Control will no longer exist.
 				if (Element != null)
 				{
 					if (model.Items.Count > 0 && Element.SelectedIndex >= 0)
 						Control.Text = model.Items[Element.SelectedIndex];
-					((IElementController)Element).SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
+					ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
 					// It is also possible for the Content of the Page to be changed when Focus is changed.
 					// In this case, we'll lose our Control.
 					Control?.ClearFocus();
@@ -131,7 +138,12 @@ namespace Xamarin.Forms.Platform.Android
 				_dialog = null;
 			});
 
-			(_dialog = builder.Create()).Show();
+			_dialog = builder.Create();
+			_dialog.DismissEvent += (sender, args) =>
+			{
+				ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
+			};
+			_dialog.Show();
 		}
 
 		void RowsCollectionChanged(object sender, EventArgs e)

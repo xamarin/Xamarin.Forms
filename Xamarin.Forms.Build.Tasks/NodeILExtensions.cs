@@ -37,10 +37,8 @@ namespace Xamarin.Forms.Build.Tasks
 			IEnumerable<Instruction> pushServiceProvider, bool boxValueTypes, bool unboxValueTypes)
 		{
 			var module = context.Body.Method.Module;
-			var targetTypeRef = GetBPReturnType(context, bpRef, node);
-
-			TypeReference typeConverter;
-			bpRef.HasTypeConverter(module, out typeConverter);
+			var targetTypeRef = bpRef.GetBindablePropertyType(node, module);
+			var typeConverter = bpRef.GetBindablePropertyTypeConverter(module);
 
 			return node.PushConvertedValue(context, targetTypeRef, typeConverter, pushServiceProvider, boxValueTypes,
 				unboxValueTypes);
@@ -52,6 +50,21 @@ namespace Xamarin.Forms.Build.Tasks
 		{
 			var module = context.Body.Method.Module;
 			var str = (string)node.Value;
+
+			//If the TypeConverter has a ProvideCompiledAttribute that can be resolved, shortcut this
+			var compiledConverterName = typeConverter?.GetCustomAttribute (module.Import(typeof(ProvideCompiledAttribute)))?.ConstructorArguments?.First().Value as string;
+			Type compiledConverterType;
+			if (compiledConverterName != null && (compiledConverterType = Type.GetType (compiledConverterName)) != null) {
+				var compiledConverter = Activator.CreateInstance (compiledConverterType);
+				var converter = typeof(ICompiledTypeConverter).GetMethods ().FirstOrDefault (md => md.Name == "ConvertFromString");
+				var instructions = (IEnumerable<Instruction>)converter.Invoke (compiledConverter, new object[] {
+					node.Value as string, context.Body.Method.Module, node as BaseNode});
+				foreach (var i in instructions)
+					yield return i;
+				if (targetTypeRef.IsValueType && boxValueTypes)
+					yield return Instruction.Create (OpCodes.Box, module.Import (targetTypeRef));
+				yield break;
+			}
 
 			//If there's a [TypeConverter], use it
 			if (typeConverter != null)
@@ -101,58 +114,100 @@ namespace Xamarin.Forms.Build.Tasks
 				yield return Instruction.Create(OpCodes.Ldc_I4, ParseEnum(targetTypeRef, str, node));
 			else if (targetTypeRef.FullName == "System.Char")
 				yield return Instruction.Create(OpCodes.Ldc_I4, Char.Parse(str));
-			else if (targetTypeRef.FullName == "System.Byte")
-				yield return Instruction.Create(OpCodes.Ldc_I4, Byte.Parse(str, CultureInfo.InvariantCulture));
+			else if (targetTypeRef.FullName == "System.SByte")
+				yield return Instruction.Create(OpCodes.Ldc_I4, SByte.Parse(str, CultureInfo.InvariantCulture));
 			else if (targetTypeRef.FullName == "System.Int16")
 				yield return Instruction.Create(OpCodes.Ldc_I4, Int16.Parse(str, CultureInfo.InvariantCulture));
 			else if (targetTypeRef.FullName == "System.Int32")
 				yield return Instruction.Create(OpCodes.Ldc_I4, Int32.Parse(str, CultureInfo.InvariantCulture));
 			else if (targetTypeRef.FullName == "System.Int64")
 				yield return Instruction.Create(OpCodes.Ldc_I8, Int64.Parse(str, CultureInfo.InvariantCulture));
+			else if (targetTypeRef.FullName == "System.Byte")
+				yield return Instruction.Create(OpCodes.Ldc_I4, Byte.Parse(str, CultureInfo.InvariantCulture));
+			else if (targetTypeRef.FullName == "System.UInt16")
+				yield return Instruction.Create(OpCodes.Ldc_I4, UInt16.Parse(str, CultureInfo.InvariantCulture));
+			else if (targetTypeRef.FullName == "System.UInt32")
+				yield return Instruction.Create(OpCodes.Ldc_I4, UInt32.Parse(str, CultureInfo.InvariantCulture));
+			else if (targetTypeRef.FullName == "System.UInt64")
+				yield return Instruction.Create(OpCodes.Ldc_I8, UInt64.Parse(str, CultureInfo.InvariantCulture));
 			else if (targetTypeRef.FullName == "System.Single")
 				yield return Instruction.Create(OpCodes.Ldc_R4, Single.Parse(str, CultureInfo.InvariantCulture));
 			else if (targetTypeRef.FullName == "System.Double")
 				yield return Instruction.Create(OpCodes.Ldc_R8, Double.Parse(str, CultureInfo.InvariantCulture));
-			else if (targetTypeRef.FullName == "System.Boolean")
-			{
+			else if (targetTypeRef.FullName == "System.Boolean") {
 				if (Boolean.Parse(str))
 					yield return Instruction.Create(OpCodes.Ldc_I4_1);
 				else
 					yield return Instruction.Create(OpCodes.Ldc_I4_0);
-			}
-			else if (targetTypeRef.FullName == "System.TimeSpan")
-			{
+			} else if (targetTypeRef.FullName == "System.TimeSpan") {
 				var ts = TimeSpan.Parse(str, CultureInfo.InvariantCulture);
 				var ticks = ts.Ticks;
 				var timeSpanCtor =
-					module.Import(typeof (TimeSpan))
+					module.Import(typeof(TimeSpan))
 						.Resolve()
 						.Methods.FirstOrDefault(md => md.IsConstructor && md.Parameters.Count == 1);
 				var timeSpanCtorRef = module.Import(timeSpanCtor);
 
 				yield return Instruction.Create(OpCodes.Ldc_I8, ticks);
 				yield return Instruction.Create(OpCodes.Newobj, timeSpanCtorRef);
-			}
-			else if (targetTypeRef.FullName == "System.DateTime")
-			{
+			} else if (targetTypeRef.FullName == "System.DateTime") {
 				var dt = DateTime.Parse(str, CultureInfo.InvariantCulture);
 				var ticks = dt.Ticks;
 				var dateTimeCtor =
-					module.Import(typeof (DateTime))
+					module.Import(typeof(DateTime))
 						.Resolve()
 						.Methods.FirstOrDefault(md => md.IsConstructor && md.Parameters.Count == 1);
 				var dateTimeCtorRef = module.Import(dateTimeCtor);
 
 				yield return Instruction.Create(OpCodes.Ldc_I8, ticks);
 				yield return Instruction.Create(OpCodes.Newobj, dateTimeCtorRef);
-			}
-			else if (targetTypeRef.FullName == "System.String" && str.StartsWith("{}", StringComparison.Ordinal))
+			} else if (targetTypeRef.FullName == "System.String" && str.StartsWith("{}", StringComparison.Ordinal))
 				yield return Instruction.Create(OpCodes.Ldstr, str.Substring(2));
 			else if (targetTypeRef.FullName == "System.String")
 				yield return Instruction.Create(OpCodes.Ldstr, str);
 			else if (targetTypeRef.FullName == "System.Object")
 				yield return Instruction.Create(OpCodes.Ldstr, str);
-			else
+			else if (targetTypeRef.FullName == "System.Decimal") {
+				decimal outdecimal;
+				if (decimal.TryParse(str, NumberStyles.Number, CultureInfo.InvariantCulture, out outdecimal)) {
+					var vardef = new VariableDefinition(context.Body.Method.Module.Import(typeof(decimal)));
+					context.Body.Variables.Add(vardef);
+					//Use an extra temp var so we can push the value to the stack, just like other cases
+					//					IL_0003:  ldstr "adecimal"
+					//					IL_0008:  ldc.i4.s 0x6f
+					//					IL_000a:  call class [mscorlib]System.Globalization.CultureInfo class [mscorlib]System.Globalization.CultureInfo::get_InvariantCulture()
+					//					IL_000f:  ldloca.s 0
+					//					IL_0011:  call bool valuetype [mscorlib]System.Decimal::TryParse(string, valuetype [mscorlib]System.Globalization.NumberStyles, class [mscorlib]System.IFormatProvider, [out] valuetype [mscorlib]System.Decimal&)
+					//					IL_0016:  pop
+					yield return Instruction.Create(OpCodes.Ldstr, str);
+					yield return Instruction.Create(OpCodes.Ldc_I4, 0x6f); //NumberStyles.Number
+					var getInvariantInfo =
+						context.Body.Method.Module.Import(typeof(CultureInfo))
+							.Resolve()
+							.Properties.FirstOrDefault(pd => pd.Name == "InvariantCulture")
+							.GetMethod;
+					var getInvariant = context.Body.Method.Module.Import(getInvariantInfo);
+					yield return Instruction.Create(OpCodes.Call, getInvariant);
+					yield return Instruction.Create(OpCodes.Ldloca, vardef);
+					var tryParseInfo =
+						context.Body.Method.Module.Import(typeof(decimal))
+							.Resolve()
+							.Methods.FirstOrDefault(md => md.Name == "TryParse" && md.Parameters.Count == 4);
+					var tryParse = context.Body.Method.Module.Import(tryParseInfo);
+					yield return Instruction.Create(OpCodes.Call, tryParse);
+					yield return Instruction.Create(OpCodes.Pop);
+					yield return Instruction.Create(OpCodes.Ldloc, vardef);
+				} else {
+					yield return Instruction.Create(OpCodes.Ldc_I4_0);
+					var decimalctorinfo =
+						context.Body.Method.Module.Import(typeof(decimal))
+							.Resolve()
+							.Methods.FirstOrDefault(
+								md => md.IsConstructor && md.Parameters.Count == 1 && md.Parameters [0].ParameterType.FullName == "System.Int32");
+					var decimalctor = context.Body.Method.Module.Import(decimalctorinfo);
+					yield return Instruction.Create(OpCodes.Newobj, decimalctor);
+				}
+			} else
 				yield return Instruction.Create(OpCodes.Ldnull);
 
 			if (isNullable)
@@ -184,95 +239,6 @@ namespace Xamarin.Forms.Build.Tasks
 				return result.Value;
 
 			throw new XamlParseException(string.Format("Enum value not found for {0}", value), lineInfo);
-		}
-
-		static bool HasTypeConverter(this FieldReference bpRef, ModuleDefinition module,
-			out TypeReference typeConverterReference)
-		{
-			typeConverterReference = null;
-
-			var declaringType = bpRef.DeclaringType;
-			var bpName = bpRef.Name;
-			var pName = bpName.EndsWith("Property", StringComparison.Ordinal) ? bpName.Substring(0, bpName.Length - 8) : bpName;
-			var property = declaringType.Resolve().Properties.FirstOrDefault(p => p.Name == pName);
-			CustomAttribute attr = null;
-
-			if (property != null)
-			{
-				if (property.HasCustomAttributes)
-				{
-					attr =
-						property.CustomAttributes.FirstOrDefault(
-							cad => TypeConverterAttribute.TypeConvertersType.Contains(cad.AttributeType.FullName));
-				}
-				if (attr == null && property.PropertyType.Resolve().HasCustomAttributes)
-				{
-					attr =
-						property.PropertyType.Resolve()
-							.CustomAttributes.FirstOrDefault(
-								cad => TypeConverterAttribute.TypeConvertersType.Contains(cad.AttributeType.FullName));
-				}
-
-				if (attr == null)
-					return false;
-
-				typeConverterReference = attr.ConstructorArguments[0].Value as TypeReference;
-				return true;
-			}
-
-			var getters = bpRef.DeclaringType.GetMethods(md => md.Name == "Get" + pName && md.IsStatic, module).SingleOrDefault();
-			if (getters != null)
-			{
-				if (getters.Item1.HasCustomAttributes)
-				{
-					attr =
-						getters.Item1.CustomAttributes.FirstOrDefault(
-							cad => TypeConverterAttribute.TypeConvertersType.Contains(cad.AttributeType.FullName));
-				}
-				else if (getters.Item1.ReturnType.Resolve().HasCustomAttributes)
-				{
-					attr =
-						getters.Item1.ReturnType.Resolve()
-							.CustomAttributes.FirstOrDefault(
-								cad => TypeConverterAttribute.TypeConvertersType.Contains(cad.AttributeType.FullName));
-				}
-
-				if (attr == null)
-					return false;
-
-				typeConverterReference = attr.ConstructorArguments[0].Value as TypeReference;
-				return true;
-			}
-
-			return false;
-		}
-
-		static TypeReference GetBPReturnType(ILContext context, FieldReference bpRef, IXmlLineInfo lineInfo)
-		{
-			//Find a property with a matching name
-			var name = bpRef.Name;
-			if (!name.EndsWith("Property", StringComparison.Ordinal))
-				return context.Body.Method.Module.TypeSystem.Object;
-			name = name.Substring(0, name.Length - 8);
-
-			//First, check for a property
-			TypeReference declaringTypeRef;
-			var property = bpRef.DeclaringType.GetProperty(pd => pd.Name == name, out declaringTypeRef);
-			if (property != null)
-				return property.PropertyType;
-
-			//Then check for getter or setter (attached BPs)
-			var getters =
-				bpRef.DeclaringType.GetMethods(md => md.Name == "Get" + name && md.IsStatic, context.Body.Method.Module)
-					.SingleOrDefault();
-			if (getters != null)
-				return getters.Item1.ReturnType;
-
-			//throws
-			throw new XamlParseException(
-				string.Format(
-					"Can not find a Property named \"{0}\" or a static method named \"Get{0}\" for BindableProperty \"{1}\"", name,
-					bpRef.Name), lineInfo);
 		}
 
 		public static IEnumerable<Instruction> PushXmlLineInfo(this INode node, ILContext context)
@@ -383,14 +349,37 @@ namespace Xamarin.Forms.Build.Tasks
 			}
 		}
 
-		public static IEnumerable<Instruction> PushServiceProvider(this INode node, ILContext context)
+		static IEnumerable<Instruction> PushTargetProperty(FieldReference bpRef, PropertyReference propertyRef, TypeReference declaringTypeReference, ModuleDefinition module)
+		{
+			if (bpRef != null) {
+				yield return Instruction.Create(OpCodes.Ldsfld, bpRef);
+				yield break;
+			}
+			if (propertyRef != null) {
+//				IL_0000:  ldtoken [mscorlib]System.String
+//				IL_0005:  call class [mscorlib]System.Type class [mscorlib] System.Type::GetTypeFromHandle(valuetype [mscorlib] System.RuntimeTypeHandle)
+//				IL_000a:  ldstr "Foo"
+//				IL_000f:  callvirt instance class [mscorlib] System.Reflection.PropertyInfo class [mscorlib] System.Type::GetProperty(string)
+				var getTypeFromHandle = module.Import(typeof(Type).GetMethod("GetTypeFromHandle", new [] { typeof(RuntimeTypeHandle) }));
+				var getPropertyInfo = module.Import(typeof(Type).GetMethod("GetProperty", new [] { typeof(string) }));
+				yield return Instruction.Create(OpCodes.Ldtoken, module.Import(declaringTypeReference ?? propertyRef.DeclaringType));
+				yield return Instruction.Create(OpCodes.Call, module.Import(getTypeFromHandle));
+				yield return Instruction.Create(OpCodes.Ldstr, propertyRef.Name);
+				yield return Instruction.Create(OpCodes.Callvirt, module.Import(getPropertyInfo));
+				yield break;
+			}
+			yield return Instruction.Create(OpCodes.Ldnull);
+			yield break;
+		}
+
+		public static IEnumerable<Instruction> PushServiceProvider(this INode node, ILContext context, FieldReference bpRef = null, PropertyReference propertyRef = null, TypeReference declaringTypeReference = null)
 		{
 			var module = context.Body.Method.Module;
 
 #if NOSERVICEPROVIDER
 			yield return Instruction.Create (OpCodes.Ldnull);
 			yield break;
-			#endif
+#endif
 
 			var ctorinfo = typeof (XamlServiceProvider).GetConstructor(new Type[] { });
 			var ctor = module.Import(ctorinfo);
@@ -415,8 +404,11 @@ namespace Xamarin.Forms.Build.Tasks
 				foreach (var instruction in pushParentIl)
 					yield return instruction;
 
+				foreach (var instruction in PushTargetProperty(bpRef, propertyRef, declaringTypeReference, module))
+					yield return instruction;
+
 				var targetProviderCtor =
-					module.Import(typeof (SimpleValueTargetProvider).GetConstructor(new[] { typeof (object[]) }));
+					module.Import(typeof (SimpleValueTargetProvider).GetConstructor(new[] { typeof (object[]), typeof(object) }));
 				yield return Instruction.Create(OpCodes.Newobj, targetProviderCtor);
 				yield return Instruction.Create(OpCodes.Callvirt, addService);
 			}

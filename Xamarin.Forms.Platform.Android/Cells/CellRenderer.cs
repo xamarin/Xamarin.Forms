@@ -5,6 +5,7 @@ using Android.Views;
 using Android.Widget;
 using AView = Android.Views.View;
 using Object = Java.Lang.Object;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -23,7 +24,7 @@ namespace Xamarin.Forms.Platform.Android
 		public AView GetCell(Cell item, AView convertView, ViewGroup parent, Context context)
 		{
 			Performance.Start();
-
+			
 			Cell = item;
 			Cell.PropertyChanged -= PropertyChangedHandler;
 
@@ -32,14 +33,18 @@ namespace Xamarin.Forms.Platform.Android
 			if (convertView != null)
 			{
 				Object tag = convertView.Tag;
-				var renderHolder = tag as RendererHolder;
-				if (renderHolder != null)
+				CellRenderer renderer = (tag as RendererHolder)?.Renderer;
+				
+				Cell oldCell = renderer?.Cell;
+
+				if (oldCell != null)
 				{
-					Cell oldCell = renderHolder.Renderer.Cell;
-					oldCell.SendDisappearing();
+					((ICellController)oldCell).SendDisappearing();
 
 					if (Cell != oldCell)
+					{
 						SetRenderer(oldCell, null);
+					}
 				}
 			}
 
@@ -49,12 +54,12 @@ namespace Xamarin.Forms.Platform.Android
 
 			var holder = view.Tag as RendererHolder;
 			if (holder == null)
-				view.Tag = new RendererHolder { Renderer = this };
+				view.Tag = new RendererHolder(this);
 			else
 				holder.Renderer = this;
 
 			Cell.PropertyChanged += PropertyChangedHandler;
-			Cell.SendAppearing();
+			((ICellController)Cell).SendAppearing();
 
 			Performance.Stop();
 
@@ -85,9 +90,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected void WireUpForceUpdateSizeRequested(Cell cell, AView nativeCell)
 		{
-			cell.ForceUpdateSizeRequested -= _onForceUpdateSizeRequested;
+			ICellController cellController = cell;
+			cellController.ForceUpdateSizeRequested -= _onForceUpdateSizeRequested;
 
-			_onForceUpdateSizeRequested = delegate
+			_onForceUpdateSizeRequested = (sender, e) => 
 			{
 				// RenderHeight may not be changed, but that's okay, since we
 				// don't actually use the height argument in the OnMeasure override.
@@ -96,7 +102,7 @@ namespace Xamarin.Forms.Platform.Android
 				nativeCell.SetMinimumWidth(nativeCell.MeasuredWidth);
 			};
 
-			cell.ForceUpdateSizeRequested += _onForceUpdateSizeRequested;
+			cellController.ForceUpdateSizeRequested += _onForceUpdateSizeRequested;
 		}
 
 		internal static CellRenderer GetRenderer(BindableObject cell)
@@ -120,12 +126,26 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			renderer.OnCellPropertyChanged(sender, e);
-			;
 		}
 
 		class RendererHolder : Object
 		{
-			public CellRenderer Renderer;
+			readonly WeakReference<CellRenderer> _rendererRef;
+
+			public RendererHolder(CellRenderer renderer)
+			{
+				_rendererRef = new WeakReference<CellRenderer>(renderer);
+			}
+
+			public CellRenderer Renderer
+			{
+				get
+				{
+					CellRenderer renderer;
+					return _rendererRef.TryGetTarget(out renderer) ? renderer : null;
+				}
+				set { _rendererRef.SetTarget(value); }
+			}
 		}
 	}
 }

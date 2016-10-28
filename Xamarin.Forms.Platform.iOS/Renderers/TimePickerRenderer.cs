@@ -1,23 +1,8 @@
 using System;
-using System.Drawing;
 using System.ComponentModel;
-#if __UNIFIED__
-using UIKit;
 using Foundation;
-#else
-using MonoTouch.UIKit;
-using MonoTouch.Foundation;
-#endif
-#if __UNIFIED__
+using UIKit;
 using RectangleF = CoreGraphics.CGRect;
-using SizeF = CoreGraphics.CGSize;
-using PointF = CoreGraphics.CGPoint;
-
-#else
-using nfloat=System.Single;
-using nint=System.Int32;
-using nuint=System.UInt32;
-#endif
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -26,12 +11,14 @@ namespace Xamarin.Forms.Platform.iOS
 		UIDatePicker _picker;
 		UIColor _defaultTextColor;
 
+		IElementController ElementController => Element as IElementController;
+
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing)
 			{
-				Control.Started -= OnStarted;
-				Control.Ended -= OnEnded;
+				Control.EditingDidBegin -= OnStarted;
+				Control.EditingDidEnd -= OnEnded;
 
 				_picker.ValueChanged -= OnValueChanged;
 			}
@@ -47,8 +34,8 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					var entry = new NoCaretField { BorderStyle = UITextBorderStyle.RoundedRect };
 
-					entry.Started += OnStarted;
-					entry.Ended += OnEnded;
+					entry.EditingDidBegin += OnStarted;
+					entry.EditingDidEnd += OnEnded;
 
 					_picker = new UIDatePicker { Mode = UIDatePickerMode.Time, TimeZone = new NSTimeZone("UTC") };
 
@@ -89,17 +76,17 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnEnded(object sender, EventArgs eventArgs)
 		{
-			((IElementController)Element).SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
+			ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
 		}
 
 		void OnStarted(object sender, EventArgs eventArgs)
 		{
-			((IElementController)Element).SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, true);
+			ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, true);
 		}
 
 		void OnValueChanged(object sender, EventArgs e)
 		{
-			((IElementController)Element).SetValueFromRenderer(TimePicker.TimeProperty, _picker.Date.ToDateTime() - new DateTime(1, 1, 1));
+			ElementController.SetValueFromRenderer(TimePicker.TimeProperty, _picker.Date.ToDateTime() - new DateTime(1, 1, 1));
 		}
 
 		void UpdateTextColor()

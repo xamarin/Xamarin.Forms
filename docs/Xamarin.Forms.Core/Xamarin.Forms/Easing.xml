@@ -179,9 +179,11 @@
         <ReturnType>Xamarin.Forms.Easing</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary><para>Jumps towards, and then bounces as it settles at the final value.</para></summary>
+        <summary>
+          <para>Jumps towards, and then bounces as it settles at the final value.</para>
+        </summary>
         <remarks>
-            <img href="Easing.BounceIn.png" />
+          <img href="Easing.BounceIn.png" />
         </remarks>
       </Docs>
     </Member>
@@ -406,7 +408,7 @@
         <ReturnType>Xamarin.Forms.Easing</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Accelerates in and out.</summary>
+        <summary>Accelerates in and decelerates out.</summary>
         <remarks>
           <para>
             <img href="Easing.SinInOut.gif" />

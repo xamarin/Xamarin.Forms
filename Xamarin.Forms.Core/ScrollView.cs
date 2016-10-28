@@ -6,7 +6,7 @@ namespace Xamarin.Forms
 {
 	[ContentProperty("Content")]
 	[RenderWith(typeof(_ScrollViewRenderer))]
-	public class ScrollView : Layout, IScrollViewController
+	public class ScrollView : Layout, IScrollViewController, IElementConfiguration<ScrollView>
 	{
 		public static readonly BindableProperty OrientationProperty = BindableProperty.Create("Orientation", typeof(ScrollOrientation), typeof(ScrollView), ScrollOrientation.Vertical);
 
@@ -21,6 +21,8 @@ namespace Xamarin.Forms
 		static readonly BindablePropertyKey ContentSizePropertyKey = BindableProperty.CreateReadOnly("ContentSize", typeof(Size), typeof(ScrollView), default(Size));
 
 		public static readonly BindableProperty ContentSizeProperty = ContentSizePropertyKey.BindableProperty;
+
+		readonly Lazy<PlatformConfigurationRegistry<ScrollView>> _platformConfigurationRegistry;
 
 		View _content;
 
@@ -66,6 +68,11 @@ namespace Xamarin.Forms
 		{
 			get { return (double)GetValue(ScrollYProperty); }
 			private set { SetValue(ScrollYPropertyKey, value); }
+		}
+
+		public ScrollView()
+		{
+			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<ScrollView>>(() => new PlatformConfigurationRegistry<ScrollView>(this));
 		}
 
 		Point IScrollViewController.GetScrollPositionForElement(VisualElement item, ScrollToPosition pos)
@@ -132,6 +139,11 @@ namespace Xamarin.Forms
 		}
 
 		public event EventHandler<ScrolledEventArgs> Scrolled;
+
+		public IPlatformElementConfiguration<T, ScrollView> On<T>() where T : IConfigPlatform
+		{
+			return _platformConfigurationRegistry.Value.On<T>();
+		}
 
 		public Task ScrollToAsync(double x, double y, bool animated)
 		{
@@ -256,7 +268,7 @@ namespace Xamarin.Forms
 
 		double GetMaxHeight(double height)
 		{
-			return Math.Max(height, _content.Bounds.Bottom + Padding.Bottom);
+			return Math.Max(height, _content.Bounds.Top + Padding.Top + _content.Bounds.Bottom + Padding.Bottom);
 		}
 
 		static double GetMaxHeight(double height, SizeRequest size)
@@ -266,7 +278,7 @@ namespace Xamarin.Forms
 
 		double GetMaxWidth(double width)
 		{
-			return Math.Max(width, _content.Bounds.Right + Padding.Right);
+			return Math.Max(width, _content.Bounds.Left + Padding.Left + _content.Bounds.Right + Padding.Right);
 		}
 
 		static double GetMaxWidth(double width, SizeRequest size)

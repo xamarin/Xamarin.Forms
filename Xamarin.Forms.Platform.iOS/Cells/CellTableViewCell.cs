@@ -1,11 +1,6 @@
 using System;
 using System.ComponentModel;
-#if __UNIFIED__
 using UIKit;
-
-#else
-using MonoTouch.UIKit;
-#endif
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -27,11 +22,16 @@ namespace Xamarin.Forms.Platform.iOS
 				if (_cell == value)
 					return;
 
-				if (_cell != null)
-					Device.BeginInvokeOnMainThread(_cell.SendDisappearing);
+				ICellController cellController = _cell;
+
+				if (cellController != null)
+					Device.BeginInvokeOnMainThread(cellController.SendDisappearing);
+
 				_cell = value;
-				if (_cell != null)
-					Device.BeginInvokeOnMainThread(_cell.SendAppearing);
+				cellController = value;
+
+				if (cellController != null)
+					Device.BeginInvokeOnMainThread(cellController.SendAppearing);
 			}
 		}
 
@@ -83,6 +83,9 @@ namespace Xamarin.Forms.Platform.iOS
 			if (contextCell != null)
 			{
 				contextCell.Update(tableView, cell, nativeCell);
+				var viewTableCell = contextCell.ContentCell as ViewCellRenderer.ViewTableCell;
+				if (viewTableCell != null)
+					viewTableCell.SupressSeparator = tableView.SeparatorStyle == UITableViewCellSeparatorStyle.None;
 				nativeCell = contextCell;
 			}
 

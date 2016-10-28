@@ -11,13 +11,13 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_PageRenderer))]
-	public class Page : VisualElement, ILayout
+	public class Page : VisualElement, ILayout, IPageController, IElementConfiguration<Page>
 	{
-		internal const string BusySetSignalName = "Xamarin.BusySet";
+		public const string BusySetSignalName = "Xamarin.BusySet";
 
-		internal const string AlertSignalName = "Xamarin.SendAlert";
+		public const string AlertSignalName = "Xamarin.SendAlert";
 
-		internal const string ActionSheetSignalName = "Xamarin.ShowActionSheet";
+		public const string ActionSheetSignalName = "Xamarin.ShowActionSheet";
 
 		internal static readonly BindableProperty IgnoresContainerAreaProperty = BindableProperty.Create("IgnoresContainerArea", typeof(bool), typeof(Page), false);
 
@@ -35,6 +35,8 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty IconProperty = BindableProperty.Create("Icon", typeof(FileImageSource), typeof(Page), default(FileImageSource));
 
+		readonly Lazy<PlatformConfigurationRegistry<Page>> _platformConfigurationRegistry;
+
 		bool _allocatedFlag;
 		Rectangle _containerArea;
 
@@ -44,12 +46,16 @@ namespace Xamarin.Forms
 
 		ReadOnlyCollection<Element> _logicalChildren;
 
+		IPageController PageController => this as IPageController;
+		IElementController ElementController => this as IElementController;
+
 		public Page()
 		{
 			var toolbarItems = new ObservableCollection<ToolbarItem>();
 			toolbarItems.CollectionChanged += OnToolbarItemsCollectionChanged;
 			ToolbarItems = toolbarItems;
-			InternalChildren.CollectionChanged += InternalChildrenOnCollectionChanged;
+			PageController.InternalChildren.CollectionChanged += InternalChildrenOnCollectionChanged;
+			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Page>>(() => new PlatformConfigurationRegistry<Page>(this));
 		}
 
 		public string BackgroundImage
@@ -84,7 +90,7 @@ namespace Xamarin.Forms
 
 		public IList<ToolbarItem> ToolbarItems { get; internal set; }
 
-		internal Rectangle ContainerArea
+		Rectangle IPageController.ContainerArea
 		{
 			get { return _containerArea; }
 			set
@@ -97,18 +103,16 @@ namespace Xamarin.Forms
 			}
 		}
 
-		internal bool IgnoresContainerArea
+		bool IPageController.IgnoresContainerArea
 		{
 			get { return (bool)GetValue(IgnoresContainerAreaProperty); }
 			set { SetValue(IgnoresContainerAreaProperty, value); }
 		}
 
-		internal ObservableCollection<Element> InternalChildren { get; } = new ObservableCollection<Element>();
+		ObservableCollection<Element> IPageController.InternalChildren { get; } = new ObservableCollection<Element>();
 
-		internal override ReadOnlyCollection<Element> LogicalChildren
-		{
-			get { return _logicalChildren ?? (_logicalChildren = new ReadOnlyCollection<Element>(InternalChildren)); }
-		}
+		internal override ReadOnlyCollection<Element> LogicalChildrenInternal => 
+			_logicalChildren ?? (_logicalChildren = new ReadOnlyCollection<Element>(PageController.InternalChildren));
 
 		public event EventHandler LayoutChanged;
 
@@ -154,7 +158,7 @@ namespace Xamarin.Forms
 			Rectangle originalArea = area;
 			if (_containerAreaSet)
 			{
-				area = ContainerArea;
+				area = PageController.ContainerArea;
 				area.X += Padding.Left;
 				area.Y += Padding.Right;
 				area.Width -= Padding.HorizontalThickness;
@@ -163,13 +167,13 @@ namespace Xamarin.Forms
 				area.Height = Math.Max(0, area.Height);
 			}
 
-			foreach (Element element in LogicalChildren)
+			foreach (Element element in ElementController.LogicalChildren)
 			{
 				var child = element as VisualElement;
 				if (child == null)
 					continue;
 				var page = child as Page;
-				if (page != null && page.IgnoresContainerArea)
+				if (page != null && ((IPageController)page).IgnoresContainerArea)
 				{
 					Forms.Layout.LayoutChildIntoBoundingRegion(child, originalArea);
 				}
@@ -237,8 +241,8 @@ namespace Xamarin.Forms
 			if (!ShouldLayoutChildren())
 				return;
 
-			var startingLayout = new List<Rectangle>(LogicalChildren.Count);
-			foreach (VisualElement c in LogicalChildren)
+			var startingLayout = new List<Rectangle>(ElementController.LogicalChildren.Count);
+			foreach (VisualElement c in ElementController.LogicalChildren)
 			{
 				startingLayout.Add(c.Bounds);
 			}
@@ -250,9 +254,9 @@ namespace Xamarin.Forms
 
 			LayoutChildren(x, y, w, h);
 
-			for (var i = 0; i < LogicalChildren.Count; i++)
+			for (var i = 0; i < ElementController.LogicalChildren.Count; i++)
 			{
-				var c = (VisualElement)LogicalChildren[i];
+				var c = (VisualElement)ElementController.LogicalChildren[i];
 
 				if (c.Bounds != startingLayout[i])
 				{
@@ -275,9 +279,9 @@ namespace Xamarin.Forms
 			}
 			else
 			{
-				for (var i = 0; i < LogicalChildren.Count; i++)
+				for (var i = 0; i < ElementController.LogicalChildren.Count; i++)
 				{
-					var v = LogicalChildren[i] as VisualElement;
+					var v = ElementController.LogicalChildren[i] as VisualElement;
 					if (v != null && v.IsVisible && (!v.IsPlatformEnabled || !v.IsNativeStateConsistent))
 						return;
 				}
@@ -291,7 +295,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		internal void SendAppearing()
+		void IPageController.SendAppearing()
 		{
 			if (_hasAppeared)
 				return;
@@ -307,10 +311,10 @@ namespace Xamarin.Forms
 				handler(this, EventArgs.Empty);
 
 			var pageContainer = this as IPageContainer<Page>;
-			pageContainer?.CurrentPage?.SendAppearing();
+			((IPageController)pageContainer?.CurrentPage)?.SendAppearing();
 		}
 
-		internal void SendDisappearing()
+		void IPageController.SendDisappearing()
 		{
 			if (!_hasAppeared)
 				return;
@@ -321,7 +325,7 @@ namespace Xamarin.Forms
 				MessagingCenter.Send(this, BusySetSignalName, false);
 
 			var pageContainer = this as IPageContainer<Page>;
-			pageContainer?.CurrentPage?.SendDisappearing();
+			((IPageController)pageContainer?.CurrentPage)?.SendDisappearing();
 
 			OnDisappearing();
 			EventHandler handler = Disappearing;
@@ -377,21 +381,21 @@ namespace Xamarin.Forms
 
 		bool ShouldLayoutChildren()
 		{
-			if (!LogicalChildren.Any() || Width <= 0 || Height <= 0 || !IsNativeStateConsistent)
+			if (!ElementController.LogicalChildren.Any() || Width <= 0 || Height <= 0 || !IsNativeStateConsistent)
 				return false;
 
 			var container = this as IPageContainer<Page>;
-			if (container != null && container.CurrentPage != null)
+			if (container?.CurrentPage != null)
 			{
-				if (InternalChildren.Contains(container.CurrentPage))
+				if (PageController.InternalChildren.Contains(container.CurrentPage))
 					return container.CurrentPage.IsPlatformEnabled && container.CurrentPage.IsNativeStateConsistent;
 				return true;
 			}
 
 			var any = false;
-			for (var i = 0; i < LogicalChildren.Count; i++)
+			for (var i = 0; i < ElementController.LogicalChildren.Count; i++)
 			{
-				var v = LogicalChildren[i] as VisualElement;
+				var v = ElementController.LogicalChildren[i] as VisualElement;
 				if (v != null && (!v.IsPlatformEnabled || !v.IsNativeStateConsistent))
 				{
 					any = true;
@@ -399,6 +403,11 @@ namespace Xamarin.Forms
 				}
 			}
 			return !any;
+		}
+
+		public IPlatformElementConfiguration<T, Page> On<T>() where T : IConfigPlatform
+		{
+			return _platformConfigurationRegistry.Value.On<T>();
 		}
 	}
 }

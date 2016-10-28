@@ -1,22 +1,8 @@
 using System;
 using System.ComponentModel;
-using System.Diagnostics;
-#if __UNIFIED__
 using UIKit;
-#else
-using MonoTouch.UIKit;
-using System.Drawing;
-#endif
-#if __UNIFIED__
 using RectangleF = CoreGraphics.CGRect;
 using SizeF = CoreGraphics.CGSize;
-using PointF = CoreGraphics.CGPoint;
-
-#else
-using nfloat=System.Single;
-using nint=System.Int32;
-using nuint=System.UInt32;
-#endif
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -80,15 +66,21 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 			}
 
-			Element INativeElementView.Element
-			{
-				get { return ViewCell; }
-			}
+			Element INativeElementView.Element => ViewCell;
+
+			internal bool SupressSeparator { get; set; }
 
 			public override void LayoutSubviews()
 			{
 				//This sets the content views frame.
 				base.LayoutSubviews();
+
+				//TODO: Determine how best to hide the separator line when there is an accessory on the cell
+				if (SupressSeparator && Accessory == UITableViewCellAccessory.None)
+				{
+					var oldFrame = Frame;
+					ContentView.Bounds = new RectangleF(oldFrame.Location, new SizeF(oldFrame.Width, oldFrame.Height + 0.5f));
+				}
 
 				var contentFrame = ContentView.Frame;
 				var view = ViewCell.View;
@@ -109,12 +101,16 @@ namespace Xamarin.Forms.Platform.iOS
 				if (!_rendererRef.TryGetTarget(out renderer))
 					return base.SizeThatFits(size);
 
+				if (renderer.Element == null)
+					return SizeF.Empty;
+
 				double width = size.Width;
 				var height = size.Height > 0 ? size.Height : double.PositiveInfinity;
 				var result = renderer.Element.Measure(width, height);
 
-				// make sure to add in the separator
-				return new SizeF(size.Width, (float)result.Request.Height + 1f / UIScreen.MainScreen.Scale);
+				// make sure to add in the separator if needed
+				var finalheight = (float)result.Request.Height + (SupressSeparator ? 0f : 1f) / UIScreen.MainScreen.Scale;
+				return new SizeF(size.Width, finalheight);
 			}
 
 			protected override void Dispose(bool disposing)
@@ -145,11 +141,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 			void UpdateCell(ViewCell cell)
 			{
-				if (_viewCell != null)
-					Device.BeginInvokeOnMainThread(_viewCell.SendDisappearing);
+				ICellController cellController = _viewCell;
+				if (cellController != null)
+					Device.BeginInvokeOnMainThread(cellController.SendDisappearing);
 
 				_viewCell = cell;
-				Device.BeginInvokeOnMainThread(_viewCell.SendAppearing);
+				cellController = cell;
+
+				Device.BeginInvokeOnMainThread(cellController.SendAppearing);
 
 				IVisualElementRenderer renderer;
 				if (_rendererRef == null || !_rendererRef.TryGetTarget(out renderer))

@@ -16,6 +16,7 @@ using Android.Content;
 using Android.Runtime;
 using Android.Util;
 using AButton = Android.Widget.Button;
+using AView = Android.Views.View;
 using Android.OS;
 using System.Reflection;
 
@@ -33,6 +34,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 	public class NativeDroidMasterDetail : Xamarin.Forms.Platform.Android.AppCompat.MasterDetailPageRenderer
 	{
 		MasterDetailPage _page;
+		bool _disposed;
 
 		protected override void OnElementChanged(VisualElement oldElement, VisualElement newElement)
 		{
@@ -44,7 +46,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 			}
 
 			_page = newElement as MasterDetailPage;
-			_page.PropertyChanged += Page_PropertyChanged; 
+			_page.PropertyChanged += Page_PropertyChanged;
 			_page.LayoutChanged += Page_LayoutChanged;
 		}
 
@@ -60,10 +62,18 @@ namespace Xamarin.Forms.ControlGallery.Android
 
 		protected override void Dispose(bool disposing)
 		{
+			if (_disposed)
+			{
+				return;
+			}
+
+			_disposed = true;
+
 			if (disposing && _page != null)
 			{
 				_page.LayoutChanged -= Page_LayoutChanged;
 				_page.PropertyChanged -= Page_PropertyChanged;
+				_page = null;
 			}
 
 			base.Dispose(disposing);
@@ -97,13 +107,18 @@ namespace Xamarin.Forms.ControlGallery.Android
 		{
 		}
 
+		protected override global::Android.Widget.ListView CreateNativeControl()
+		{
+			return new global::Android.Widget.ListView(Forms.Context);
+		}
+
 		protected override void OnElementChanged(ElementChangedEventArgs<NativeListView> e)
 		{
 			base.OnElementChanged(e);
 
 			if (Control == null)
 			{
-				SetNativeControl(new global::Android.Widget.ListView(Forms.Context));
+				SetNativeControl(CreateNativeControl());
 			}
 
 			if (e.OldElement != null)
@@ -266,13 +281,18 @@ namespace Xamarin.Forms.ControlGallery.Android
 		{
 		}
 
+		protected override global::Android.Widget.ListView CreateNativeControl()
+		{
+			return new global::Android.Widget.ListView(Forms.Context);
+		}
+
 		protected override void OnElementChanged(ElementChangedEventArgs<NativeListView2> e)
 		{
 			base.OnElementChanged(e);
 
 			if (Control == null)
 			{
-				SetNativeControl(new global::Android.Widget.ListView(Forms.Context));
+				SetNativeControl(CreateNativeControl());
 			}
 
 			if (e.OldElement != null)
@@ -406,10 +426,23 @@ namespace Xamarin.Forms.ControlGallery.Android
 			return view;
 		}
 	}
+
+	[Preserve]
 	public class CustomContentRenderer : ViewRenderer
 	{
+		[Preserve]
+		public CustomContentRenderer()
+		{
+			AutoPackage = true;
+		}
+
+		protected override AView CreateNativeControl()
+		{
+			return new AView(Context);
+		}
 	}
 
+	[Preserve]
 	public class CustomNativeButton : AButton
 	{
 		public CustomNativeButton(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer)
@@ -435,11 +468,16 @@ namespace Xamarin.Forms.ControlGallery.Android
 
 	public class CustomButtonRenderer : ButtonRenderer
 	{
+		protected override AButton CreateNativeControl()
+		{
+			return new CustomNativeButton(Context);
+		}
+
 		protected override void OnElementChanged(ElementChangedEventArgs<Button> e)
 		{
 			if (Control == null)
 			{
-				CustomNativeButton b = new CustomNativeButton(Context);
+				CustomNativeButton b = (CustomNativeButton)CreateNativeControl();
 				SetNativeControl(b);
 			}
 

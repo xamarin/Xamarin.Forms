@@ -1,22 +1,8 @@
 using System;
-using System.Linq;
-using System.Drawing;
 using System.ComponentModel;
-#if __UNIFIED__
+using System.Linq;
 using UIKit;
-#else
-using MonoTouch.UIKit;
-#endif
-#if __UNIFIED__
-using RectangleF = CoreGraphics.CGRect;
-using SizeF = CoreGraphics.CGSize;
 using PointF = CoreGraphics.CGPoint;
-
-#else
-using nfloat=System.Single;
-using nint=System.Int32;
-using nuint=System.UInt32;
-#endif
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -36,6 +22,8 @@ namespace Xamarin.Forms.Platform.iOS
 		UIGestureRecognizer _tapGesture;
 
 		VisualElementTracker _tracker;
+
+		IPageController PageController => Element as IPageController;
 
 		public PhoneMasterDetailRenderer()
 		{
@@ -112,13 +100,13 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void ViewDidAppear(bool animated)
 		{
 			base.ViewDidAppear(animated);
-			((Page)Element).SendAppearing();
+			PageController.SendAppearing();
 		}
 
 		public override void ViewDidDisappear(bool animated)
 		{
 			base.ViewDidDisappear(animated);
-			((Page)Element).SendDisappearing();
+			PageController.SendDisappearing();
 		}
 
 		public override void ViewDidLayoutSubviews()
@@ -198,7 +186,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				EmptyContainers();
 
-				((Page)Element).SendDisappearing();
+				PageController.SendDisappearing();
 
 				_disposed = true;
 			}
