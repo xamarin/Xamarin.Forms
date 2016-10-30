@@ -2,7 +2,7 @@
 {
 	public enum DeviceOrientation
 	{
-		Other,
+		Unknown,
 		Portrait,
 		PortraitFlipped,
 		Landscape,

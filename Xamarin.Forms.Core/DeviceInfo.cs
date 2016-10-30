@@ -42,9 +42,9 @@ namespace Xamarin.Forms
 
 		public abstract double ScalingFactor { get; }
 
-		internal abstract void BeginOrientationNotifications();
+		public abstract void BeginDeviceOrientationNotifications();
 
-		internal abstract void EndOrientationNotifications();
+		public abstract void EndDeviceOrientationNotifications();
 
 		public void Dispose()
 		{

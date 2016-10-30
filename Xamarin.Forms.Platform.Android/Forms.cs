@@ -202,8 +202,6 @@ namespace Xamarin.Forms
 
 			public AndroidDeviceInfo(IDeviceInfoProvider formsActivity)
 			{
-				_formsActivity = formsActivity;
-
 				using (DisplayMetrics display = formsActivity.Resources.DisplayMetrics)
 				{
 					_scalingFactor = display.Density;
@@ -211,11 +209,10 @@ namespace Xamarin.Forms
 					ScaledScreenSize = new Size(_pixelScreenSize.Width / _scalingFactor, _pixelScreenSize.Height / _scalingFactor);
 				}
 
-				// initialize orientations
-				SetDeviceOrientation();
+				// initialize screen orientation
 				SetScreenOrientation();
-
-				BeginOrientationNotifications();
+				_formsActivity = formsActivity;
+				_formsActivity.ConfigurationChanged += OnConfigurationChanged;
 			}
 
 			public override Size PixelScreenSize => _pixelScreenSize;
@@ -224,10 +221,8 @@ namespace Xamarin.Forms
 
 			public override double ScalingFactor => _scalingFactor;
 
-			internal override void BeginOrientationNotifications()
+			public override void BeginDeviceOrientationNotifications()
 			{
-				_formsActivity.ConfigurationChanged += OnConfigurationChanged;
-
 				if (_androidOrientationEventListener != null)
 					return;
 
@@ -238,10 +233,8 @@ namespace Xamarin.Forms
 					_androidOrientationEventListener.Enable();
 			}
 
-			internal override void EndOrientationNotifications()
+			public override void EndDeviceOrientationNotifications()
 			{
-				_formsActivity.ConfigurationChanged -= OnConfigurationChanged;
-
 				if (_androidOrientationEventListener == null)
 				    return;
 
@@ -261,48 +254,42 @@ namespace Xamarin.Forms
 				SetScreenOrientation();
 			}
 
-			void SetDeviceOrientation(int? rotation = null)
+			void SetDeviceOrientation(int rotation)
 			{
-			    SurfaceOrientation surfaceOrientation = GetSurfaceOrientation(rotation);
+				if (rotation == OrientationEventListener.OrientationUnknown)
+				{
+					DeviceOrientation = DeviceOrientation.Unknown;
+					return;
+				}
 
 			    if (PixelScreenSize.Width < PixelScreenSize.Height)
-				{
-					switch (surfaceOrientation)
-					{
-						case SurfaceOrientation.Rotation0:
-							DeviceOrientation = DeviceOrientation.Portrait;
-							break;
-						case SurfaceOrientation.Rotation90:
-							DeviceOrientation = DeviceOrientation.Landscape;
-							break;
-						case SurfaceOrientation.Rotation180:
-							DeviceOrientation = DeviceOrientation.PortraitFlipped;
-							break;
-						default:
-							DeviceOrientation = DeviceOrientation.LandscapeFlipped;
-							break;
-					}
-				}
+			    {
+				    const int threshold = 45;
+
+				    if (rotation <= threshold || rotation > 360 - threshold)
+						DeviceOrientation = DeviceOrientation.Portrait;
+					else if (rotation <= 360 - threshold && rotation > 270 - threshold)
+						DeviceOrientation = DeviceOrientation.Landscape;
+					else if (rotation <= 270 - threshold && rotation > 180 - threshold)
+						DeviceOrientation = DeviceOrientation.PortraitFlipped;
+					else if (rotation <= 180 - threshold && rotation > threshold)
+						DeviceOrientation = DeviceOrientation.LandscapeFlipped;
+			    }
 				else if (PixelScreenSize.Width > PixelScreenSize.Height)
-				{
-					switch (surfaceOrientation)
-					{
-						case SurfaceOrientation.Rotation0:
-							DeviceOrientation = DeviceOrientation.Landscape;
-							break;
-						case SurfaceOrientation.Rotation90:
-							DeviceOrientation = DeviceOrientation.PortraitFlipped;
-							break;
-						case SurfaceOrientation.Rotation180:
-							DeviceOrientation = DeviceOrientation.LandscapeFlipped;
-							break;
-						default:
-							DeviceOrientation = DeviceOrientation.Portrait;
-							break;
-					}
-				}
-				else
-					DeviceOrientation = DeviceOrientation.Other;
+			    {
+					const int threshold = 45;
+
+				    if (rotation <= threshold || rotation > 360 - threshold)
+					    DeviceOrientation = DeviceOrientation.Landscape;
+				    else if (rotation <= 360 - threshold && rotation > 270 - threshold)
+					    DeviceOrientation = DeviceOrientation.PortraitFlipped;
+				    else if (rotation <= 270 - threshold && rotation > 180 - threshold)
+					    DeviceOrientation = DeviceOrientation.LandscapeFlipped;
+				    else if (rotation <= 180 - threshold && rotation > threshold)
+					    DeviceOrientation = DeviceOrientation.Portrait;
+			    }
+			    else
+				    DeviceOrientation = DeviceOrientation.Unknown;
 			}
 
 			void SetScreenOrientation()
@@ -321,41 +308,16 @@ namespace Xamarin.Forms
 				}
 			}
 
-			static SurfaceOrientation GetSurfaceOrientation(int? rotation)
-			{
-				SurfaceOrientation surfaceOrientation;
-				if (rotation == null)
-				{
-					surfaceOrientation = Context.GetSystemService(Context.WindowService).JavaCast<IWindowManager>().DefaultDisplay.Rotation;
-				}
-				else
-				{
-					switch (rotation.Value)
-					{
-						case 0:
-							surfaceOrientation = SurfaceOrientation.Rotation0;
-							break;
-						case 90:
-							surfaceOrientation = SurfaceOrientation.Rotation90;
-							break;
-						case 180:
-							surfaceOrientation = SurfaceOrientation.Rotation180;
-							break;
-						default:
-							surfaceOrientation = SurfaceOrientation.Rotation270;
-							break;
-					}
-				}
-
-				return surfaceOrientation;
-			}
-
 			protected override void Dispose(bool disposing)
 			{
 				if (_disposed)
 					return;
 
-				EndOrientationNotifications();
+				if (disposing)
+				{
+					_formsActivity.ConfigurationChanged -= OnConfigurationChanged;
+					EndDeviceOrientationNotifications();
+				}
 
 				_disposed = true;
 
