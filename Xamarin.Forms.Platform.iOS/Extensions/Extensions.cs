@@ -60,7 +60,7 @@ namespace Xamarin.Forms.Platform.iOS
 				case UIDeviceOrientation.LandscapeRight:
 					return DeviceOrientation.Landscape;
 				default:
-					return DeviceOrientation.Other;
+					return DeviceOrientation.Unknown;
 			}
 		}
 

@@ -24,11 +24,9 @@ namespace Xamarin.Forms.Platform.WinRT
 			// TODO: Screen size and DPI can change at any time
 			_information = DisplayInformation.GetForCurrentView();
 
-			// initialize orientations
-			DeviceOrientation = _information.NativeOrientation == DisplayOrientations.Portrait ? DeviceOrientation.Portrait : DeviceOrientation.Landscape;
+			// initialize screen orientation
 			SetScreenOrientation(ApplicationView.GetForCurrentView().Orientation);
-
-			BeginOrientationNotifications();
+			_information.OrientationChanged += OnScreenOrientationChanged;
 		}
 
 		public override Size PixelScreenSize
@@ -79,12 +77,8 @@ namespace Xamarin.Forms.Platform.WinRT
 			}
 		}
 
-		internal override void BeginOrientationNotifications()
+		public override void BeginDeviceOrientationNotifications()
 		{
-			if(_information == null)
-				_information = DisplayInformation.GetForCurrentView();
-			_information.OrientationChanged += OnScreenOrientationChanged;
-
 			if (_simpleOrientationSensor != null)
 				return;
 
@@ -92,14 +86,8 @@ namespace Xamarin.Forms.Platform.WinRT
 			_simpleOrientationSensor.OrientationChanged += OnDeviceOrientationChanged;
 		}
 
-		internal override void EndOrientationNotifications()
+		public override void EndDeviceOrientationNotifications()
 		{
-			if (_information != null)
-			{
-				_information.OrientationChanged -= OnScreenOrientationChanged;
-				_information = null;
-			}
-
 			if (_simpleOrientationSensor == null)
 				return;
 
@@ -133,7 +121,7 @@ namespace Xamarin.Forms.Platform.WinRT
 				case SimpleOrientation.NotRotated:
 					break;
 				default:
-					DeviceOrientation = DeviceOrientation.Other;
+					DeviceOrientation = DeviceOrientation.Unknown;
 					break;
 			}
 		}
@@ -161,7 +149,9 @@ namespace Xamarin.Forms.Platform.WinRT
 
 			if (disposing)
 			{
-				EndOrientationNotifications();
+				_information.OrientationChanged -= OnScreenOrientationChanged;
+				_information = null;
+				EndDeviceOrientationNotifications();
 			}
 
 			_isDisposed = true;

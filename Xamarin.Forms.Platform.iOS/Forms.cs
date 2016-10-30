@@ -136,11 +136,9 @@ namespace Xamarin.Forms
 				_scaledScreenSize = new Size(UIScreen.MainScreen.Bounds.Width, UIScreen.MainScreen.Bounds.Height);
 				PixelScreenSize = new Size(_scaledScreenSize.Width * _scalingFactor, _scaledScreenSize.Height * _scalingFactor);
 
-				// initialize orientations
-				DeviceOrientation = UIDevice.CurrentDevice.Orientation.ToDevicenOrientation();
+				// initialize screen orientation
 				ScreenOrientation = UIApplication.SharedApplication.StatusBarOrientation.ToScreenOrientation();
-
-				BeginOrientationNotifications();
+				NSNotificationCenter.DefaultCenter.AddObserver(UIApplication.DidChangeStatusBarOrientationNotification, OnScreenOrientationChanged);
 			}
 
 			public override Size PixelScreenSize { get; }
@@ -149,20 +147,16 @@ namespace Xamarin.Forms
 
 			public override double ScalingFactor => _scalingFactor;
 
-			internal override void BeginOrientationNotifications()
+			public override void BeginDeviceOrientationNotifications()
 			{
 				NSNotificationCenter.DefaultCenter.AddObserver(new NSString("UIDeviceOrientationDidChangeNotification"),OnDeviceOrientationChanged);
-				NSNotificationCenter.DefaultCenter.AddObserver(UIApplication.DidChangeStatusBarOrientationNotification, OnScreenOrientationChanged);
-
 				UIDevice.CurrentDevice.BeginGeneratingDeviceOrientationNotifications();
 			}
 
-			internal override void EndOrientationNotifications()
+			public override void EndDeviceOrientationNotifications()
 			{
 				UIDevice.CurrentDevice.EndGeneratingDeviceOrientationNotifications();
-
-				NSNotificationCenter.DefaultCenter.RemoveObserver(new NSString("UIDeviceOrientationDidChangeNotification"));
-				NSNotificationCenter.DefaultCenter.RemoveObserver(UIApplication.DidChangeStatusBarOrientationNotification);
+				NSNotificationCenter.DefaultCenter.RemoveObserver(new NSString("UIDeviceOrientationDidChangeNotification"));			
 			}
 
 			void OnDeviceOrientationChanged(NSNotification notification)
@@ -180,7 +174,11 @@ namespace Xamarin.Forms
 				if (_disposed)
 					return;
 
-				EndOrientationNotifications();
+				if (disposing)
+				{
+					NSNotificationCenter.DefaultCenter.RemoveObserver(UIApplication.DidChangeStatusBarOrientationNotification);
+					EndDeviceOrientationNotifications();
+				}
 
 				_disposed = true;
 				base.Dispose(disposing);
