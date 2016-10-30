@@ -92,9 +92,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			Update(_tableView, _cell, ContentCell);
 
-			//_scroller.Frame = Bounds;
-			//ContentCell.Frame = Bounds;
-
 			if (ContentCell is ViewCellRenderer.ViewTableCell && ContentCell.Subviews.Length > 0 && Math.Abs(ContentCell.Subviews[0].Frame.Height - Bounds.Height) > 1)
 			{
 				// Something goes weird inside iOS where LayoutSubviews wont get called when updating the bounds if the user
