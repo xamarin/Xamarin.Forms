@@ -149,7 +149,7 @@ namespace Xamarin.Forms
 
 			public override void BeginDeviceOrientationNotifications()
 			{
-				NSNotificationCenter.DefaultCenter.AddObserver(new NSString("UIDeviceOrientationDidChangeNotification"),OnDeviceOrientationChanged);
+				NSNotificationCenter.DefaultCenter.AddObserver(new NSString("UIDeviceOrientationDidChangeNotification"), OnDeviceOrientationChanged);
 				UIDevice.CurrentDevice.BeginGeneratingDeviceOrientationNotifications();
 			}
 
