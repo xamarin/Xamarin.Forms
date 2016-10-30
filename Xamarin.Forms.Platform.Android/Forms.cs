@@ -279,14 +279,14 @@ namespace Xamarin.Forms
 				{
 					const int threshold = 45;
 
-				    if (rotation <= threshold || rotation > 360 - threshold)
-					    DeviceOrientation = DeviceOrientation.Landscape;
-				    else if (rotation <= 360 - threshold && rotation > 270 - threshold)
-					    DeviceOrientation = DeviceOrientation.PortraitFlipped;
-				    else if (rotation <= 270 - threshold && rotation > 180 - threshold)
-					    DeviceOrientation = DeviceOrientation.LandscapeFlipped;
-				    else if (rotation <= 180 - threshold && rotation > threshold)
-					    DeviceOrientation = DeviceOrientation.Portrait;
+					if (rotation <= threshold || rotation > 360 - threshold)
+						DeviceOrientation = DeviceOrientation.Landscape;
+					else if (rotation <= 360 - threshold && rotation > 270 - threshold)
+						DeviceOrientation = DeviceOrientation.PortraitFlipped;
+					else if (rotation <= 270 - threshold && rotation > 180 - threshold)
+						DeviceOrientation = DeviceOrientation.LandscapeFlipped;
+					else if (rotation <= 180 - threshold && rotation > threshold)
+						DeviceOrientation = DeviceOrientation.Portrait;
 				}
 				else
 					DeviceOrientation = DeviceOrientation.Unknown;
