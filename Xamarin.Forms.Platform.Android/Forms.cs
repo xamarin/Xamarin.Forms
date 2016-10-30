@@ -210,8 +210,8 @@ namespace Xamarin.Forms
 				}
 
 				// initialize screen orientation
-				SetScreenOrientation();
 				_formsActivity = formsActivity;
+				SetScreenOrientation();
 				_formsActivity.ConfigurationChanged += OnConfigurationChanged;
 			}
 
@@ -241,7 +241,7 @@ namespace Xamarin.Forms
 				_androidOrientationEventListener.OrientationChanged -= OnDeviceOrientationChanged;
 				_androidOrientationEventListener.Disable();
 				_androidOrientationEventListener.Dispose();
-			    _androidOrientationEventListener = null;
+				_androidOrientationEventListener = null;
 			}
 
 			void OnDeviceOrientationChanged(object sender, int i)
@@ -294,7 +294,7 @@ namespace Xamarin.Forms
 
 			void SetScreenOrientation()
 			{
-				switch (Context.Resources.Configuration.Orientation)
+				switch (_formsActivity.Resources.Configuration.Orientation)
 				{
 					case Orientation.Portrait:
 						ScreenOrientation = ScreenOrientation.Portrait;
