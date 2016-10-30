@@ -18,12 +18,12 @@ namespace Xamarin.Forms.Controls
 		{
 			var result = new Label
 			{
-				Text = "Success"
+				Text = "Original"
 			};
 
 			var grid = new Grid
 			{
-				IsEnabled = false,
+				IsEnabled = true,
 				WidthRequest = 250,
 				HeightRequest = 50,
 				AutomationId = "grid"
@@ -32,7 +32,7 @@ namespace Xamarin.Forms.Controls
 
 			var contentView = new ContentView
 			{
-				IsEnabled = false,
+				IsEnabled = true,
 				WidthRequest = 250,
 				HeightRequest = 50,
 				AutomationId = "contentView"
@@ -41,7 +41,7 @@ namespace Xamarin.Forms.Controls
 
 			var stackLayout = new StackLayout
 			{
-				IsEnabled = false,
+				IsEnabled = true,
 				WidthRequest = 250,
 				HeightRequest = 50,
 				AutomationId = "stackLayout"
@@ -71,16 +71,18 @@ namespace Xamarin.Forms.Controls
 				AutomationId = "color"
 			};
 
-			var enabled = new Button
+			var disabled = new Button
 			{
-				Text = "Enabled",
+				Text = "Disabled",
 				Command = new Command(() =>
 				{
-					grid.IsEnabled = true;
-					contentView.IsEnabled = true;
-					stackLayout.IsEnabled = true;
+					grid.IsEnabled = false;
+					contentView.IsEnabled = false;
+					stackLayout.IsEnabled = false;
+
+					result.Text = "Original";
 				}),
-				AutomationId = "enabled"
+				AutomationId = "disabled"
 			};
 
 			var parent = new StackLayout
@@ -92,7 +94,7 @@ namespace Xamarin.Forms.Controls
 				Children =
 				{
 					color,
-					enabled,
+					disabled,
 					result,
 					grid,
 					contentView,
@@ -119,36 +121,6 @@ namespace Xamarin.Forms.Controls
 		{
 			RunningApp.WaitForElement(q => q.Marked("grid"));
 			RunningApp.Tap(q => q.Marked("grid"));
-			RunningApp.WaitForElement(q => q.Marked("Success"));
-
-			RunningApp.WaitForElement(q => q.Marked("contentView"));
-			RunningApp.Tap(q => q.Marked("contentView"));
-			RunningApp.WaitForElement(q => q.Marked("Success"));
-
-			RunningApp.WaitForElement(q => q.Marked("stackLayout"));
-			RunningApp.Tap(q => q.Marked("stackLayout"));
-			RunningApp.WaitForElement(q => q.Marked("Success"));
-
-			RunningApp.WaitForElement(q => q.Marked("color"));
-			RunningApp.Tap(q => q.Marked("color"));
-
-			RunningApp.WaitForElement(q => q.Marked("grid"));
-			RunningApp.Tap(q => q.Marked("grid"));
-			RunningApp.WaitForElement(q => q.Marked("Success"));
-
-			RunningApp.WaitForElement(q => q.Marked("contentView"));
-			RunningApp.Tap(q => q.Marked("contentView"));
-			RunningApp.WaitForElement(q => q.Marked("Success"));
-
-			RunningApp.WaitForElement(q => q.Marked("stackLayout"));
-			RunningApp.Tap(q => q.Marked("stackLayout"));
-			RunningApp.WaitForElement(q => q.Marked("Success"));
-
-			RunningApp.WaitForElement(q => q.Marked("enabled"));
-			RunningApp.Tap(q => q.Marked("enabled"));
-
-			RunningApp.WaitForElement(q => q.Marked("grid"));
-			RunningApp.Tap(q => q.Marked("grid"));
 			RunningApp.WaitForElement(q => q.Marked("Child"));
 
 			RunningApp.WaitForElement(q => q.Marked("contentView"));
@@ -173,6 +145,36 @@ namespace Xamarin.Forms.Controls
 			RunningApp.WaitForElement(q => q.Marked("stackLayout"));
 			RunningApp.Tap(q => q.Marked("stackLayout"));
 			RunningApp.WaitForElement(q => q.Marked("Child"));
+
+			RunningApp.WaitForElement(q => q.Marked("disabled"));
+			RunningApp.Tap(q => q.Marked("disabled"));
+
+			RunningApp.WaitForElement(q => q.Marked("grid"));
+			RunningApp.Tap(q => q.Marked("grid"));
+			RunningApp.WaitForElement(q => q.Marked("Original"));
+
+			RunningApp.WaitForElement(q => q.Marked("contentView"));
+			RunningApp.Tap(q => q.Marked("contentView"));
+			RunningApp.WaitForElement(q => q.Marked("Original"));
+
+			RunningApp.WaitForElement(q => q.Marked("stackLayout"));
+			RunningApp.Tap(q => q.Marked("stackLayout"));
+			RunningApp.WaitForElement(q => q.Marked("Original"));
+
+			RunningApp.WaitForElement(q => q.Marked("color"));
+			RunningApp.Tap(q => q.Marked("color"));
+
+			RunningApp.WaitForElement(q => q.Marked("grid"));
+			RunningApp.Tap(q => q.Marked("grid"));
+			RunningApp.WaitForElement(q => q.Marked("Original"));
+
+			RunningApp.WaitForElement(q => q.Marked("contentView"));
+			RunningApp.Tap(q => q.Marked("contentView"));
+			RunningApp.WaitForElement(q => q.Marked("Original"));
+
+			RunningApp.WaitForElement(q => q.Marked("stackLayout"));
+			RunningApp.Tap(q => q.Marked("stackLayout"));
+			RunningApp.WaitForElement(q => q.Marked("Original"));
 		}
 #endif
 	}
