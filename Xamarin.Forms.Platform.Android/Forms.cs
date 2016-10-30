@@ -262,11 +262,11 @@ namespace Xamarin.Forms
 					return;
 				}
 
-			    if (PixelScreenSize.Width < PixelScreenSize.Height)
-			    {
-				    const int threshold = 45;
+				if (PixelScreenSize.Width < PixelScreenSize.Height)
+				{
+					const int threshold = 45;
 
-				    if (rotation <= threshold || rotation > 360 - threshold)
+					if (rotation <= threshold || rotation > 360 - threshold)
 						DeviceOrientation = DeviceOrientation.Portrait;
 					else if (rotation <= 360 - threshold && rotation > 270 - threshold)
 						DeviceOrientation = DeviceOrientation.Landscape;
@@ -274,9 +274,9 @@ namespace Xamarin.Forms
 						DeviceOrientation = DeviceOrientation.PortraitFlipped;
 					else if (rotation <= 180 - threshold && rotation > threshold)
 						DeviceOrientation = DeviceOrientation.LandscapeFlipped;
-			    }
+				}
 				else if (PixelScreenSize.Width > PixelScreenSize.Height)
-			    {
+				{
 					const int threshold = 45;
 
 				    if (rotation <= threshold || rotation > 360 - threshold)
@@ -287,9 +287,9 @@ namespace Xamarin.Forms
 					    DeviceOrientation = DeviceOrientation.LandscapeFlipped;
 				    else if (rotation <= 180 - threshold && rotation > threshold)
 					    DeviceOrientation = DeviceOrientation.Portrait;
-			    }
-			    else
-				    DeviceOrientation = DeviceOrientation.Unknown;
+				}
+				else
+					DeviceOrientation = DeviceOrientation.Unknown;
 			}
 
 			void SetScreenOrientation()
