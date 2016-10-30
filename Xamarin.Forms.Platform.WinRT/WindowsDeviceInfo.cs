@@ -13,7 +13,7 @@ namespace Xamarin.Forms.Platform.UWP
 namespace Xamarin.Forms.Platform.WinRT
 #endif
 {
-	sealed class WindowsDeviceInfo : DeviceInfo
+	class WindowsDeviceInfo : DeviceInfo
 	{
 		DisplayInformation _information;
 		SimpleOrientationSensor _simpleOrientationSensor;

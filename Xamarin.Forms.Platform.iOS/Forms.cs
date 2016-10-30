@@ -124,7 +124,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		sealed class IOSDeviceInfo : DeviceInfo
+		class IOSDeviceInfo : DeviceInfo
 		{
 			readonly Size _scaledScreenSize;
 			readonly double _scalingFactor;
