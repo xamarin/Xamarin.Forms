@@ -190,7 +190,7 @@ namespace Xamarin.Forms
 			return rc;
 		}
 
-		sealed class AndroidDeviceInfo : DeviceInfo
+		class AndroidDeviceInfo : DeviceInfo
 		{
 			readonly IDeviceInfoProvider _formsActivity;
 			AndroidOrientationEventListener _androidOrientationEventListener;
