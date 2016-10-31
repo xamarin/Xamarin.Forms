@@ -226,7 +226,7 @@ namespace Xamarin.Forms
 				if (_androidOrientationEventListener != null)
 					return;
 
-				_androidOrientationEventListener = new AndroidOrientationEventListener(Context, SensorDelay.Normal);
+				_androidOrientationEventListener = new AndroidOrientationEventListener((Context)_formsActivity, SensorDelay.Normal);
 				_androidOrientationEventListener.OrientationChanged += OnDeviceOrientationChanged;
 
 				if (_androidOrientationEventListener.CanDetectOrientation())
