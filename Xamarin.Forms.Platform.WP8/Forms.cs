@@ -92,9 +92,16 @@ namespace Xamarin.Forms
 
 			public override Size ScaledScreenSize { get; }
 
-			public override double ScalingFactor
+			public override double ScalingFactor => _scalingFactor;
+
+			public override void BeginDeviceOrientationNotifications()
 			{
-				get { return _scalingFactor; }
+				throw new NotImplementedException();
+			}
+
+			public override void EndDeviceOrientationNotifications()
+			{
+				throw new NotImplementedException();
 			}
 
 			protected override void Dispose(bool disposing)
