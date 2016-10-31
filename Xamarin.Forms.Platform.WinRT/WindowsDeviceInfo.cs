@@ -2,6 +2,7 @@
 using Windows.Devices.Sensors;
 using Windows.Foundation;
 using Windows.Graphics.Display;
+using Windows.UI.Core;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 
@@ -105,25 +106,31 @@ namespace Xamarin.Forms.Platform.WinRT
 			SetScreenOrientation(ApplicationView.GetForCurrentView().Orientation);
 		}
 
-		void SetDeviceOrientation(SimpleOrientation orientation)
+		async void SetDeviceOrientation(SimpleOrientation orientation)
 		{
-			switch (orientation)
+			await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.High,
+			() =>
 			{
-				case SimpleOrientation.Rotated90DegreesCounterclockwise:
-					DeviceOrientation = _information.NativeOrientation == DisplayOrientations.Portrait ? DeviceOrientation.Landscape : DeviceOrientation.PortraitFlipped;
-					break;
-				case SimpleOrientation.Rotated180DegreesCounterclockwise:
-					DeviceOrientation = _information.NativeOrientation == DisplayOrientations.Portrait ? DeviceOrientation.PortraitFlipped : DeviceOrientation.LandscapeFlipped;
-					break;
-				case SimpleOrientation.Rotated270DegreesCounterclockwise:
-					DeviceOrientation = _information.NativeOrientation == DisplayOrientations.Portrait ? DeviceOrientation.LandscapeFlipped : DeviceOrientation.Portrait;
-					break;
-				case SimpleOrientation.NotRotated:
-					break;
-				default:
-					DeviceOrientation = DeviceOrientation.Unknown;
-					break;
+				switch (orientation)
+				{
+					case SimpleOrientation.Rotated90DegreesCounterclockwise:
+						DeviceOrientation = _information.NativeOrientation == DisplayOrientations.Portrait ? DeviceOrientation.Landscape : DeviceOrientation.PortraitFlipped;
+						break;
+					case SimpleOrientation.Rotated180DegreesCounterclockwise:
+						DeviceOrientation = _information.NativeOrientation == DisplayOrientations.Portrait ? DeviceOrientation.PortraitFlipped : DeviceOrientation.LandscapeFlipped;
+						break;
+					case SimpleOrientation.Rotated270DegreesCounterclockwise:
+						DeviceOrientation = _information.NativeOrientation == DisplayOrientations.Portrait ? DeviceOrientation.LandscapeFlipped : DeviceOrientation.Portrait;
+						break;
+					case SimpleOrientation.NotRotated:
+						DeviceOrientation = _information.NativeOrientation == DisplayOrientations.Portrait ? DeviceOrientation.Portrait : DeviceOrientation.Landscape;
+						break;
+					default:
+						DeviceOrientation = DeviceOrientation.Unknown;
+						break;
+				}
 			}
+			);
 		}
 
 		void SetScreenOrientation(ApplicationViewOrientation orientations)
