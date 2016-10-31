@@ -161,7 +161,7 @@ namespace Xamarin.Forms
 
 			void OnDeviceOrientationChanged(NSNotification notification)
 			{
-				DeviceOrientation = UIDevice.CurrentDevice.Orientation.ToDevicenOrientation();
+				DeviceOrientation = UIDevice.CurrentDevice.Orientation.ToDeviceOrientation();
 			}
 
 			void OnScreenOrientationChanged(NSNotification notification)
