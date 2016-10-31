@@ -49,7 +49,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		internal static DeviceOrientation ToDevicenOrientation(this UIDeviceOrientation orientation)
+		internal static DeviceOrientation ToDeviceOrientation(this UIDeviceOrientation orientation)
 		{
 			switch (orientation)
 			{
