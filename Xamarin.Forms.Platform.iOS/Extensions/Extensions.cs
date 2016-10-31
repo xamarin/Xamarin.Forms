@@ -54,11 +54,13 @@ namespace Xamarin.Forms.Platform.iOS
 			switch (orientation)
 			{
 				case UIDeviceOrientation.Portrait:
-				case UIDeviceOrientation.PortraitUpsideDown:
 					return DeviceOrientation.Portrait;
+				case UIDeviceOrientation.PortraitUpsideDown:
+					return DeviceOrientation.PortraitFlipped;
 				case UIDeviceOrientation.LandscapeLeft:
-				case UIDeviceOrientation.LandscapeRight:
 					return DeviceOrientation.Landscape;
+				case UIDeviceOrientation.LandscapeRight:
+					return DeviceOrientation.LandscapeFlipped;
 				default:
 					return DeviceOrientation.Unknown;
 			}
