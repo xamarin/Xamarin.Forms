@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Core.UITests
 
 		protected BaseTestFixture()
 		{
-			ShouldResetPerFixture = true;
+			ShouldResetPerFixture = false;
 		}
 
 		protected abstract void NavigateToGallery();
