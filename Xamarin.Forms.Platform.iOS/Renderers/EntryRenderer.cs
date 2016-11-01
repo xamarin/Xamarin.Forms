@@ -2,6 +2,9 @@ using System;
 using System.ComponentModel;
 
 using System.Drawing;
+using CoreGraphics;
+using Foundation;
+using ObjCRuntime;
 using UIKit;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 
@@ -37,25 +40,23 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.OnElementChanged(e);
 
-			var textField = Control;
-
-			if (Control == null)
-			{
-				SetNativeControl(textField = new UITextField(RectangleF.Empty));
-
-				_defaultTextColor = textField.TextColor;
-				textField.BorderStyle = UITextBorderStyle.RoundedRect;
-
-				textField.EditingChanged += OnEditingChanged;
-
-				textField.ShouldReturn = OnShouldReturn;
-
-				textField.EditingDidBegin += OnEditingBegan;
-				textField.EditingDidEnd += OnEditingEnded;
-			}
-
 			if (e.NewElement != null)
 			{
+				if (Control == null)
+				{
+					SetNativeControl(new UITextFieldWrapper(RectangleF.Empty));
+
+					_defaultTextColor = Control.TextColor;
+					Control.BorderStyle = UITextBorderStyle.RoundedRect;
+
+					Control.EditingChanged += OnEditingChanged;
+
+					Control.ShouldReturn = OnShouldReturn;
+
+					Control.EditingDidBegin += OnEditingBegan;
+					Control.EditingDidEnd += OnEditingEnded;
+				}
+
 				UpdatePlaceholder();
 				UpdatePassword();
 				UpdateText();
@@ -191,6 +192,33 @@ namespace Xamarin.Forms.Platform.iOS
 			// ReSharper disable once RedundantCheckBeforeAssignment
 			if (Control.Text != Element.Text)
 				Control.Text = Element.Text;
+		}
+	}
+
+	public class UITextFieldWrapper : UITextField
+	{
+		public UITextFieldWrapper(CGRect frame) : base(frame)
+		{
+		}
+
+		public override bool CanPerform(Selector action, NSObject withSender)
+		{
+			if (action == new Selector("copy:"))
+				return false;
+
+			if (action == new Selector("cut:"))
+				return false;
+
+			if (action == new Selector("paste:"))
+				return false;
+
+			if (action == new Selector("select:"))
+				return false;
+
+			if (action == new Selector("selectAll:"))
+				return false;
+
+			return base.CanPerform(action, withSender);
 		}
 	}
 }
