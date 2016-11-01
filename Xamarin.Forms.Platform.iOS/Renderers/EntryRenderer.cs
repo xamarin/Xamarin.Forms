@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 using System.Drawing;
@@ -13,6 +14,8 @@ namespace Xamarin.Forms.Platform.iOS
 	public class EntryRenderer : ViewRenderer<Entry, UITextField>
 	{
 		UIColor _defaultTextColor;
+		UITextField _uiTextField;
+		bool _disposed;
 
 		public EntryRenderer()
 		{
@@ -23,38 +26,59 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void Dispose(bool disposing)
 		{
+			if (_disposed)
+				return;
+
 			if (disposing)
 			{
-				if (Control != null)
+				UnregisterEvents();
+				if (_uiTextField != null)
 				{
-					Control.EditingDidBegin -= OnEditingBegan;
-					Control.EditingChanged -= OnEditingChanged;
-					Control.EditingDidEnd -= OnEditingEnded;
+					_uiTextField.Dispose();
+					_uiTextField = null;
 				}
 			}
 
+			_disposed = true;
+
 			base.Dispose(disposing);
+		}
+
+		void UnregisterEvents()
+		{
+			if (_uiTextField == null)
+				return;
+
+			_uiTextField.EditingDidBegin -= OnEditingBegan;
+			_uiTextField.EditingChanged -= OnEditingChanged;
+			_uiTextField.EditingDidEnd -= OnEditingEnded;
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Entry> e)
 		{
 			base.OnElementChanged(e);
 
+			if (e.OldElement != null)
+			{
+				UnregisterEvents();
+			}
+
 			if (e.NewElement != null)
 			{
 				if (Control == null)
 				{
-					SetNativeControl(new UITextFieldWrapper(RectangleF.Empty));
+					_uiTextField = new UITextFieldWrapper(Element, RectangleF.Empty)
+					{
+						BorderStyle = UITextBorderStyle.RoundedRect,
+						ShouldReturn = OnShouldReturn
+					};
 
-					_defaultTextColor = Control.TextColor;
-					Control.BorderStyle = UITextBorderStyle.RoundedRect;
+					_uiTextField.EditingChanged += OnEditingChanged;
+					_uiTextField.EditingDidBegin += OnEditingBegan;
+					_uiTextField.EditingDidEnd += OnEditingEnded;
 
-					Control.EditingChanged += OnEditingChanged;
-
-					Control.ShouldReturn = OnShouldReturn;
-
-					Control.EditingDidBegin += OnEditingBegan;
-					Control.EditingDidEnd += OnEditingEnded;
+					_defaultTextColor = _uiTextField.TextColor;
+					SetNativeControl(_uiTextField);
 				}
 
 				UpdatePlaceholder();
@@ -195,27 +219,38 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 	}
 
-	public class UITextFieldWrapper : UITextField
+	class UITextFieldWrapper : UITextField
 	{
-		public UITextFieldWrapper(CGRect frame) : base(frame)
+		readonly Entry _element;
+
+		internal UITextFieldWrapper(Entry element, CGRect frame) : base(frame)
 		{
+			_element = element;
 		}
 
 		public override bool CanPerform(Selector action, NSObject withSender)
 		{
-			if (action == new Selector("copy:"))
+			List<SelectorAction> disabledSelectorActions = _element.On<PlatformConfiguration.iOS>().DisabledSelectorActions();
+
+			if(disabledSelectorActions == null || disabledSelectorActions.Count == 0)
+				return base.CanPerform(action, withSender);
+
+			if (disabledSelectorActions.Contains(SelectorAction.All))
 				return false;
 
-			if (action == new Selector("cut:"))
+			if (disabledSelectorActions.Contains(SelectorAction.Copy) && action == new Selector("copy:"))
 				return false;
 
-			if (action == new Selector("paste:"))
+			if (disabledSelectorActions.Contains(SelectorAction.Cut) && action == new Selector("cut:"))
 				return false;
 
-			if (action == new Selector("select:"))
+			if (disabledSelectorActions.Contains(SelectorAction.Paste) && action == new Selector("paste:"))
 				return false;
 
-			if (action == new Selector("selectAll:"))
+			if (disabledSelectorActions.Contains(SelectorAction.Select) && action == new Selector("select:"))
+				return false;
+
+			if (disabledSelectorActions.Contains(SelectorAction.SelectAll) && action == new Selector("selectAll:"))
 				return false;
 
 			return base.CanPerform(action, withSender);
