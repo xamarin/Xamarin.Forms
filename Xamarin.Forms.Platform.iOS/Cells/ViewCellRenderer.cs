@@ -43,6 +43,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (e.PropertyName == Cell.IsEnabledProperty.PropertyName)
 				UpdateIsEnabled(realCell, viewCell);
+			else if (e.PropertyName == "Index")
+				MessagingCenter.Send(this, "PreserveActivityIndicatorState");
 		}
 
 		internal class ViewTableCell : UITableViewCell, INativeElementView
