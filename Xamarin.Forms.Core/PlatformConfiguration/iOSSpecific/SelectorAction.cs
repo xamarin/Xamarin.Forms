@@ -2,11 +2,15 @@
 {
 	public enum SelectorAction
 	{
+		All,
 		Copy,
 		Cut,
+		Delete,
+		Lookup,
 		Paste,
+		Replace,
 		Select,
 		SelectAll,
-		All
+		Share
 	}
 }

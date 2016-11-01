@@ -244,13 +244,25 @@ namespace Xamarin.Forms.Platform.iOS
 			if (disabledSelectorActions.Contains(SelectorAction.Cut) && action == new Selector("cut:"))
 				return false;
 
+			if (disabledSelectorActions.Contains(SelectorAction.Delete) && action == new Selector("delete:"))
+				return false;
+
+			if (disabledSelectorActions.Contains(SelectorAction.Lookup) && action == new Selector("_lookup:"))
+				return false;
+
 			if (disabledSelectorActions.Contains(SelectorAction.Paste) && action == new Selector("paste:"))
+				return false;
+
+			if (disabledSelectorActions.Contains(SelectorAction.Replace) && action == new Selector("_promptForReplace:"))
 				return false;
 
 			if (disabledSelectorActions.Contains(SelectorAction.Select) && action == new Selector("select:"))
 				return false;
 
 			if (disabledSelectorActions.Contains(SelectorAction.SelectAll) && action == new Selector("selectAll:"))
+				return false;
+
+			if (disabledSelectorActions.Contains(SelectorAction.Share) && action == new Selector("_share:"))
 				return false;
 
 			return base.CanPerform(action, withSender);
