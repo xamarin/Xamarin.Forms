@@ -3,9 +3,11 @@
 	public enum SelectorAction
 	{
 		All,
+		AddShortcut,
 		Copy,
 		Cut,
 		Delete,
+		Define,
 		Lookup,
 		Paste,
 		Replace,

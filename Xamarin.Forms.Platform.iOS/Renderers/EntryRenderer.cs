@@ -238,10 +238,16 @@ namespace Xamarin.Forms.Platform.iOS
 			if (disabledSelectorActions.Contains(SelectorAction.All))
 				return false;
 
+			if (disabledSelectorActions.Contains(SelectorAction.AddShortcut) && action == new Selector("_addShortcut:"))
+				return false;
+
 			if (disabledSelectorActions.Contains(SelectorAction.Copy) && action == new Selector("copy:"))
 				return false;
 
 			if (disabledSelectorActions.Contains(SelectorAction.Cut) && action == new Selector("cut:"))
+				return false;
+
+			if (disabledSelectorActions.Contains(SelectorAction.Define) && action == new Selector("define:"))
 				return false;
 
 			if (disabledSelectorActions.Contains(SelectorAction.Delete) && action == new Selector("delete:"))
