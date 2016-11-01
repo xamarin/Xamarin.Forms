@@ -27,7 +27,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			UpdateBackground(cell, item);
 			UpdateIsEnabled(cell, viewCell);
-
 			return cell;
 		}
 
@@ -43,7 +42,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var realCell = (ViewTableCell)GetRealCell(viewCell);
 
 			if (e.PropertyName == Cell.IsEnabledProperty.PropertyName)
-				UpdateIsEnabled(realCell, viewCell);	
+				UpdateIsEnabled(realCell, viewCell);
 		}
 
 		internal class ViewTableCell : UITableViewCell, INativeElementView
