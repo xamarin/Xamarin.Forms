@@ -8,6 +8,17 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		bool _disposed;
 
+		public ActivityIndicatorRenderer()
+		{
+			MessagingCenter.Subscribe<ListViewRenderer.ListViewDataSource>(this, "PreserveActivityIndicatorState", sender =>
+			{
+				if (Control != null && !Control.IsAnimating && Element != null && Element.IsRunning)
+				{
+					Control.StartAnimating();
+				}
+			});
+		}
+
 		protected override void OnElementChanged(ElementChangedEventArgs<ActivityIndicator> e)
 		{
 			if (e.NewElement != null)
@@ -15,13 +26,6 @@ namespace Xamarin.Forms.Platform.iOS
 				if (Control == null)
 				{
 					SetNativeControl(new UIActivityIndicatorView(RectangleF.Empty) { ActivityIndicatorViewStyle = UIActivityIndicatorViewStyle.Gray });
-					MessagingCenter.Subscribe<ListViewRenderer.ListViewDataSource>(this, "PreserveActivityIndicatorState", sender =>
-					{
-						if (Control != null && !Control.IsAnimating && Element.IsRunning)
-						{
-							Control.StartAnimating();
-						}
-					});
 				}
 
 				UpdateColor();
