@@ -119,6 +119,8 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else if (e.PropertyName == PlatformConfiguration.iOSSpecific.Entry.AdjustsFontSizeToFitWidthProperty.PropertyName)
 				UpdateAdjustsFontSizeToFitWidth();
+			else if (e.PropertyName == PlatformConfiguration.iOSSpecific.Entry.DisabledSelectorActionsProperty.PropertyName)
+				UpdateDisabledSelectorActions();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -217,58 +219,61 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Control.Text != Element.Text)
 				Control.Text = Element.Text;
 		}
+
+		void UpdateDisabledSelectorActions()
+		{
+			(_uiTextField as UITextFieldWrapper).DisabledSelectorActions = Element.On<PlatformConfiguration.iOS>().DisabledSelectorActions();
+		}
 	}
 
 	class UITextFieldWrapper : UITextField
 	{
-		readonly Entry _element;
+		internal List<SelectorAction> DisabledSelectorActions { get; set; }
 
-		internal UITextFieldWrapper(Entry element, CGRect frame) : base(frame)
+		internal UITextFieldWrapper(List<SelectorAction> disabledSelectorActions, CGRect frame) : base(frame)
 		{
-			_element = element;
+			DisabledSelectorActions = disabledSelectorActions;
 		}
 
 		public override bool CanPerform(Selector action, NSObject withSender)
 		{
-			List<SelectorAction> disabledSelectorActions = _element.On<PlatformConfiguration.iOS>().DisabledSelectorActions();
-
-			if(disabledSelectorActions == null || disabledSelectorActions.Count == 0)
+			if(DisabledSelectorActions == null || DisabledSelectorActions.Count == 0)
 				return base.CanPerform(action, withSender);
 
-			if (disabledSelectorActions.Contains(SelectorAction.All))
+			if (DisabledSelectorActions.Contains(SelectorAction.All))
 				return false;
 
-			if (disabledSelectorActions.Contains(SelectorAction.AddShortcut) && action == new Selector("_addShortcut:"))
+			if (DisabledSelectorActions.Contains(SelectorAction.AddShortcut) && action == new Selector("_addShortcut:"))
 				return false;
 
-			if (disabledSelectorActions.Contains(SelectorAction.Copy) && action == new Selector("copy:"))
+			if (DisabledSelectorActions.Contains(SelectorAction.Copy) && action == new Selector("copy:"))
 				return false;
 
-			if (disabledSelectorActions.Contains(SelectorAction.Cut) && action == new Selector("cut:"))
+			if (DisabledSelectorActions.Contains(SelectorAction.Cut) && action == new Selector("cut:"))
 				return false;
 
-			if (disabledSelectorActions.Contains(SelectorAction.Define) && action == new Selector("_define:"))
+			if (DisabledSelectorActions.Contains(SelectorAction.Define) && action == new Selector("_define:"))
 				return false;
 
-			if (disabledSelectorActions.Contains(SelectorAction.Delete) && action == new Selector("delete:"))
+			if (DisabledSelectorActions.Contains(SelectorAction.Delete) && action == new Selector("delete:"))
 				return false;
 
-			if (disabledSelectorActions.Contains(SelectorAction.Lookup) && action == new Selector("_lookup:"))
+			if (DisabledSelectorActions.Contains(SelectorAction.Lookup) && action == new Selector("_lookup:"))
 				return false;
 
-			if (disabledSelectorActions.Contains(SelectorAction.Paste) && action == new Selector("paste:"))
+			if (DisabledSelectorActions.Contains(SelectorAction.Paste) && action == new Selector("paste:"))
 				return false;
 
-			if (disabledSelectorActions.Contains(SelectorAction.Replace) && action == new Selector("_promptForReplace:"))
+			if (DisabledSelectorActions.Contains(SelectorAction.Replace) && action == new Selector("_promptForReplace:"))
 				return false;
 
-			if (disabledSelectorActions.Contains(SelectorAction.Select) && action == new Selector("select:"))
+			if (DisabledSelectorActions.Contains(SelectorAction.Select) && action == new Selector("select:"))
 				return false;
 
-			if (disabledSelectorActions.Contains(SelectorAction.SelectAll) && action == new Selector("selectAll:"))
+			if (DisabledSelectorActions.Contains(SelectorAction.SelectAll) && action == new Selector("selectAll:"))
 				return false;
 
-			if (disabledSelectorActions.Contains(SelectorAction.Share) && action == new Selector("_share:"))
+			if (DisabledSelectorActions.Contains(SelectorAction.Share) && action == new Selector("_share:"))
 				return false;
 
 			return base.CanPerform(action, withSender);
