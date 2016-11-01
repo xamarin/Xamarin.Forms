@@ -247,7 +247,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (disabledSelectorActions.Contains(SelectorAction.Cut) && action == new Selector("cut:"))
 				return false;
 
-			if (disabledSelectorActions.Contains(SelectorAction.Define) && action == new Selector("define:"))
+			if (disabledSelectorActions.Contains(SelectorAction.Define) && action == new Selector("_define:"))
 				return false;
 
 			if (disabledSelectorActions.Contains(SelectorAction.Delete) && action == new Selector("delete:"))
