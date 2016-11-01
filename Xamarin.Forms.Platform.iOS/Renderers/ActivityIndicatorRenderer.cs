@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (Control == null)
 				{
 					SetNativeControl(new UIActivityIndicatorView(RectangleF.Empty) { ActivityIndicatorViewStyle = UIActivityIndicatorViewStyle.Gray });
-					MessagingCenter.Subscribe<ViewCellRenderer>(this, "PreserveActivityIndicatorState", sender =>
+					MessagingCenter.Subscribe<ListViewRenderer.ListViewDataSource>(this, "PreserveActivityIndicatorState", sender =>
 					{
 						if (Control != null && !Control.IsAnimating && Element.IsRunning)
 						{
@@ -60,7 +60,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			if(disposing)
-				MessagingCenter.Unsubscribe<ViewCellRenderer>(this, "PreserveActivityIndicatorState");
+				MessagingCenter.Unsubscribe<ListViewRenderer.ListViewDataSource>(this, "PreserveActivityIndicatorState");
 
 			_disposed = true;
 

@@ -812,7 +812,7 @@ namespace Xamarin.Forms.Platform.iOS
 				var bgColor = tableView.IndexPathForSelectedRow != null && tableView.IndexPathForSelectedRow.Equals(indexPath) ? UIColor.Clear : DefaultBackgroundColor;
 
 				SetCellBackgroundColor(nativeCell, bgColor);
-
+				MessagingCenter.Send(this, "PreserveActivityIndicatorState");
 				return nativeCell;
 			}
 
