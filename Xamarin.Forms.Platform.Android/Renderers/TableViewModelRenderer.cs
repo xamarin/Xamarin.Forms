@@ -17,8 +17,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		public Color? SectionHeaderDividerBackgroundColor { get; set; }
 		public Color? SectionDividerBackgroundColor { get; set; }
-		public Drawable Divider { get; set; }
-		public int DividerHeight { get; set; } = 1;
+		public Color? DividerBackgroundColor { get; set; }
+		public int? DividerHeight { get; set; }
 
 		public TableViewModelRenderer(Context context, AListView listView, TableView view) : base(context)
 		{
@@ -119,7 +119,7 @@ namespace Xamarin.Forms.Platform.Android
 			AView bline;
 			if (makeBline)
 			{
-				bline = new AView(Context) { LayoutParameters = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, DividerHeight) };
+				bline = new AView(Context) { LayoutParameters = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, DividerHeight ?? 1) };
 
 				layout.AddView(bline);
 			}
@@ -132,8 +132,8 @@ namespace Xamarin.Forms.Platform.Android
 				bline.SetBackgroundColor(SectionDividerBackgroundColor?.ToAndroid() ?? Color.Transparent.ToAndroid());
 			else
 			{
-				if (Divider != null)
-					bline.SetBackground(Divider);
+				if (DividerBackgroundColor != null)
+					bline.SetBackgroundColor(DividerBackgroundColor.Value.ToAndroid());
 				else
 				{
 					using (var value = new TypedValue())
