@@ -10,7 +10,7 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	internal class NoCaretField : UITextFieldWrapper
 	{
-		public NoCaretField(List<SelectorAction> disabledSelectorActions) : base(disabledSelectorActions, new RectangleF())
+		public NoCaretField() : base(new RectangleF())
 		{
 		}
 
@@ -43,7 +43,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (Control == null)
 				{
-					_noCaretField = new NoCaretField(Element.On<PlatformConfiguration.iOS>().DisabledSelectorActions()) { BorderStyle = UITextBorderStyle.RoundedRect };
+					_noCaretField = new NoCaretField { BorderStyle = UITextBorderStyle.RoundedRect };
 
 					_noCaretField.EditingDidBegin += OnStarted;
 					_noCaretField.EditingDidEnd += OnEnded;

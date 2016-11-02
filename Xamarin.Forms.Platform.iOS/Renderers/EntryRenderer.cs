@@ -67,7 +67,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (Control == null)
 				{
-					_uiTextField = new UITextFieldWrapper(Element, RectangleF.Empty)
+					_uiTextField = new UITextFieldWrapper(RectangleF.Empty)
 					{
 						BorderStyle = UITextBorderStyle.RoundedRect,
 						ShouldReturn = OnShouldReturn
@@ -230,9 +230,8 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		internal List<SelectorAction> DisabledSelectorActions { get; set; }
 
-		internal UITextFieldWrapper(List<SelectorAction> disabledSelectorActions, CGRect frame) : base(frame)
+		internal UITextFieldWrapper(CGRect frame) : base(frame)
 		{
-			DisabledSelectorActions = disabledSelectorActions;
 		}
 
 		public override bool CanPerform(Selector action, NSObject withSender)
