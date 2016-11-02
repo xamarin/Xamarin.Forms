@@ -32,17 +32,17 @@ namespace Xamarin.Forms.Platform.iOS
 					_defaultTextColor = null;
 				}
 
+				if (_picker != null)
+				{
+					_picker.Dispose();
+					_picker = null;
+				}
+
 				if (_noCaretField != null)
 				{
 					_noCaretField.Dispose();
 					_noCaretField = null;
 				}
-
-				if (_picker != null)
-				{
-					_picker.Dispose();
-					_picker = null;
-				}		
 			}
 
 			_disposed = true;
