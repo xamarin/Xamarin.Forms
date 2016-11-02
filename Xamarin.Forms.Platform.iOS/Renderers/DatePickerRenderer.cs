@@ -71,6 +71,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateMaximumDate();
 				UpdateMinimumDate();
 				UpdateTextColor();
+				UpdateDisabledSelectorActions();
 			}
 		}
 

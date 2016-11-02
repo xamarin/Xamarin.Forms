@@ -89,6 +89,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateKeyboard();
 				UpdateAlignment();
 				UpdateAdjustsFontSizeToFitWidth();
+				UpdateDisabledSelectorActions();
 			}
 		}
 
