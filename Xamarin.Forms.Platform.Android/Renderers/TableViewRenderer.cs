@@ -14,6 +14,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual TableViewModelRenderer GetModelRenderer(AListView listView, TableView view)
 		{
+			// make sure these are in sync or else dividers can't be hidden
+			Control.DividerHeight = Element.On<PlatformConfiguration.Android>().DividerHeight();
+
 			return new TableViewModelRenderer(Context, listView, view)
 			{
 				SectionHeaderDividerBackgroundColor = Element.On<PlatformConfiguration.Android>().SectionHeaderDividerBackgroundColor(),
