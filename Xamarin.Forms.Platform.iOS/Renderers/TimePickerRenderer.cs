@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using Foundation;
 using UIKit;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using RectangleF = CoreGraphics.CGRect;
 
 namespace Xamarin.Forms.Platform.iOS
@@ -10,54 +11,83 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		UIDatePicker _picker;
 		UIColor _defaultTextColor;
+		NoCaretField _noCaretField;
+
+		bool _disposed;
 
 		IElementController ElementController => Element as IElementController;
 
 		protected override void Dispose(bool disposing)
 		{
+			if (_disposed)
+				return;
+
 			if (disposing)
 			{
-				Control.EditingDidBegin -= OnStarted;
-				Control.EditingDidEnd -= OnEnded;
+				UnregisterEvents();
 
-				_picker.ValueChanged -= OnValueChanged;
+				if (_noCaretField != null)
+				{
+					_noCaretField.Dispose();
+					_noCaretField = null;
+				}
+
+				if (_picker != null)
+				{
+					_picker.Dispose();
+					_picker = null;
+				}
+
+				if (_defaultTextColor != null)
+				{
+					_defaultTextColor.Dispose();
+					_defaultTextColor = null;
+				}
 			}
+
+			_disposed = true;
 
 			base.Dispose(disposing);
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<TimePicker> e)
 		{
+			if (e.OldElement != null)
+			{
+				UnregisterEvents();
+			}
+
 			if (e.NewElement != null)
 			{
 				if (Control == null)
 				{
-					var entry = new NoCaretField { BorderStyle = UITextBorderStyle.RoundedRect };
+					_noCaretField = new NoCaretField { BorderStyle = UITextBorderStyle.RoundedRect };
 
-					entry.EditingDidBegin += OnStarted;
-					entry.EditingDidEnd += OnEnded;
+					_noCaretField.EditingDidBegin += OnStarted;
+					_noCaretField.EditingDidEnd += OnEnded;
 
 					_picker = new UIDatePicker { Mode = UIDatePickerMode.Time, TimeZone = new NSTimeZone("UTC") };
 
 					var width = UIScreen.MainScreen.Bounds.Width;
 					var toolbar = new UIToolbar(new RectangleF(0, 0, width, 44)) { BarStyle = UIBarStyle.Default, Translucent = true };
 					var spacer = new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace);
-					var doneButton = new UIBarButtonItem(UIBarButtonSystemItem.Done, (o, a) => entry.ResignFirstResponder());
+					var doneButton = new UIBarButtonItem(UIBarButtonSystemItem.Done, (o, a) => _noCaretField.ResignFirstResponder());
 
 					toolbar.SetItems(new[] { spacer, doneButton }, false);
 
-					entry.InputView = _picker;
-					entry.InputAccessoryView = toolbar;
+					_noCaretField.InputView = _picker;
+					_noCaretField.InputAccessoryView = toolbar;
 
-					_defaultTextColor = entry.TextColor;
+					_defaultTextColor = _noCaretField.TextColor;
 
 					_picker.ValueChanged += OnValueChanged;
 
-					SetNativeControl(entry);
+					SetNativeControl(_noCaretField);
 				}
 
 				UpdateTime();
 				UpdateTextColor();
+				UpdateDisabledSelectorActions();
 			}
 
 			base.OnElementChanged(e);
@@ -69,9 +99,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (e.PropertyName == TimePicker.TimeProperty.PropertyName || e.PropertyName == TimePicker.FormatProperty.PropertyName)
 				UpdateTime();
-
-			if (e.PropertyName == TimePicker.TextColorProperty.PropertyName || e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
+			else if (e.PropertyName == TimePicker.TextColorProperty.PropertyName || e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateTextColor();
+			else if (e.PropertyName == PlatformConfiguration.iOSSpecific.TimePicker.DisabledSelectorActionsProperty.PropertyName)
+				UpdateDisabledSelectorActions();
 		}
 
 		void OnEnded(object sender, EventArgs eventArgs)
@@ -103,6 +134,23 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			_picker.Date = new DateTime(1, 1, 1).Add(Element.Time).ToNSDate();
 			Control.Text = DateTime.Today.Add(Element.Time).ToString(Element.Format);
+		}
+
+		void UpdateDisabledSelectorActions()
+		{
+			_noCaretField.DisabledSelectorActions = Element.On<PlatformConfiguration.iOS>().DisabledSelectorActions();
+		}
+
+		void UnregisterEvents()
+		{
+			if (_noCaretField != null)
+			{
+				_noCaretField.EditingDidBegin -= OnStarted;
+				_noCaretField.EditingDidEnd -= OnEnded;
+			}
+
+			if (_picker != null)
+				_picker.ValueChanged -= OnValueChanged;
 		}
 	}
 }
