@@ -160,6 +160,12 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				UnregisterEvents();
 
+				if (_defaultTextColor != null)
+				{
+					_defaultTextColor.Dispose();
+					_defaultTextColor = null;
+				}
+
 				if (_noCaretField != null)
 				{
 					_noCaretField.Dispose();
@@ -170,12 +176,6 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					_picker.Dispose();
 					_picker = null;
-				}
-
-				if (_defaultTextColor != null)
-				{
-					_defaultTextColor.Dispose();
-					_defaultTextColor = null;
 				}
 			}
 

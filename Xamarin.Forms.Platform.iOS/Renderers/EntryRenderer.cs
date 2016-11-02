@@ -32,6 +32,13 @@ namespace Xamarin.Forms.Platform.iOS
 			if (disposing)
 			{
 				UnregisterEvents();
+
+				if (_defaultTextColor != null)
+				{
+					_defaultTextColor.Dispose();
+					_defaultTextColor = null;
+				}
+
 				if (_uiTextField != null)
 				{
 					_uiTextField.Dispose();
