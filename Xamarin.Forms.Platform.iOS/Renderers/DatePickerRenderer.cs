@@ -86,7 +86,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateMaximumDate();
 			else if (e.PropertyName == DatePicker.TextColorProperty.PropertyName || e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateTextColor();
-			else if (e.PropertyName == PlatformConfiguration.iOSSpecific.Entry.DisabledSelectorActionsProperty.PropertyName)
+			else if (e.PropertyName == PlatformConfiguration.iOSSpecific.DatePicker.DisabledSelectorActionsProperty.PropertyName)
 				UpdateDisabledSelectorActions();
 		}
 
