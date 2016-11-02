@@ -73,24 +73,24 @@
 			return config;
 		}
 
-		public static readonly BindableProperty DividerHeightProperty = BindableProperty.Create(nameof(DividerHeight), typeof(int?), typeof(TableView));
+		public static readonly BindableProperty DividerHeightProperty = BindableProperty.Create(nameof(DividerHeight), typeof(int), typeof(TableView), 1);
 
-		public static int? GetDividerHeight(BindableObject element)
+		public static int GetDividerHeight(BindableObject element)
 		{
-			return (int?)element.GetValue(DividerHeightProperty);
+			return (int)element.GetValue(DividerHeightProperty);
 		}
 
-		public static void SetDividerHeight(BindableObject element, int? value)
+		public static void SetDividerHeight(BindableObject element, int value)
 		{
 			element.SetValue(DividerHeightProperty, value);
 		}
 
-		public static int? DividerHeight(this IPlatformElementConfiguration<Android, FormsElement> config)
+		public static int DividerHeight(this IPlatformElementConfiguration<Android, FormsElement> config)
 		{
 			return GetDividerHeight(config.Element);
 		}
 
-		public static IPlatformElementConfiguration<Android, FormsElement> SetDividerHeight(this IPlatformElementConfiguration<Android, FormsElement> config, int? value)
+		public static IPlatformElementConfiguration<Android, FormsElement> SetDividerHeight(this IPlatformElementConfiguration<Android, FormsElement> config, int value)
 		{
 			SetDividerHeight(config.Element, value);
 			return config;
