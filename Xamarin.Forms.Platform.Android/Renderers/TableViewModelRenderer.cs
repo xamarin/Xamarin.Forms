@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Platform.Android
 		public Color? SectionHeaderDividerBackgroundColor { get; set; }
 		public Color? SectionDividerBackgroundColor { get; set; }
 		public Color? DividerBackgroundColor { get; set; }
-		public int? DividerHeight { get; set; }
+		public int DividerHeight { get; set; } = 1;
 
 		public TableViewModelRenderer(Context context, AListView listView, TableView view) : base(context)
 		{
@@ -119,7 +119,7 @@ namespace Xamarin.Forms.Platform.Android
 			AView bline;
 			if (makeBline)
 			{
-				bline = new AView(Context) { LayoutParameters = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, DividerHeight ?? 1) };
+				bline = new AView(Context) { LayoutParameters = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, DividerHeight) };
 
 				layout.AddView(bline);
 			}
