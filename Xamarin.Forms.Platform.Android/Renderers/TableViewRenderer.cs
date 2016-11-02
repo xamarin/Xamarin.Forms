@@ -1,11 +1,13 @@
 using Android.Views;
-using AView = Android.Views.View;
 using AListView = Android.Widget.ListView;
 
 namespace Xamarin.Forms.Platform.Android
 {
 	public class TableViewRenderer : ViewRenderer<TableView, AListView>
 	{
+		public Color? SectionHeaderDividerBackgroundColor { get; set; }
+		public Color? SectionDividerBackgroundColor { get; set; }
+
 		public TableViewRenderer()
 		{
 			AutoPackage = false;
@@ -13,7 +15,13 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual TableViewModelRenderer GetModelRenderer(AListView listView, TableView view)
 		{
-			return new TableViewModelRenderer(Context, listView, view);
+			return new TableViewModelRenderer(Context, listView, view)
+			{
+				SectionHeaderDividerBackgroundColor = SectionHeaderDividerBackgroundColor,
+				SectionDividerBackgroundColor = SectionDividerBackgroundColor,
+				Divider = Control.Divider,
+				DividerHeight = Control.DividerHeight
+			};
 		}
 
 		protected override Size MinimumSize()

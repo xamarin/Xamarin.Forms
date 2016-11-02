@@ -1,4 +1,5 @@
 using Android.Content;
+using Android.Graphics.Drawables;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
@@ -13,6 +14,11 @@ namespace Xamarin.Forms.Platform.Android
 		protected readonly Context Context;
 		ITableViewController Controller => _view;
 		Cell _restoreFocus;
+
+		public Color? SectionHeaderDividerBackgroundColor { get; set; }
+		public Color? SectionDividerBackgroundColor { get; set; }
+		public Drawable Divider { get; set; }
+		public int DividerHeight { get; set; } = 1;
 
 		public TableViewModelRenderer(Context context, AListView listView, TableView view) : base(context)
 		{
@@ -113,7 +119,7 @@ namespace Xamarin.Forms.Platform.Android
 			AView bline;
 			if (makeBline)
 			{
-				bline = new AView(Context) { LayoutParameters = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, 1) };
+				bline = new AView(Context) { LayoutParameters = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, DividerHeight) };
 
 				layout.AddView(bline);
 			}
@@ -121,20 +127,25 @@ namespace Xamarin.Forms.Platform.Android
 				bline = layout.GetChildAt(1);
 
 			if (isHeader)
-				bline.SetBackgroundColor(Color.Accent.ToAndroid());
+				bline.SetBackgroundColor(SectionHeaderDividerBackgroundColor?.ToAndroid() ?? Color.Accent.ToAndroid());
 			else if (nextIsHeader)
-				bline.SetBackgroundColor(global::Android.Graphics.Color.Transparent);
+				bline.SetBackgroundColor(SectionDividerBackgroundColor?.ToAndroid() ?? Color.Transparent.ToAndroid());
 			else
 			{
-				using (var value = new TypedValue())
+				if (Divider != null)
+					bline.SetBackground(Divider);
+				else
 				{
-					int id = global::Android.Resource.Drawable.DividerHorizontalDark;
-					if (Context.Theme.ResolveAttribute(global::Android.Resource.Attribute.ListDivider, value, true))
-						id = value.ResourceId;
-					else if (Context.Theme.ResolveAttribute(global::Android.Resource.Attribute.Divider, value, true))
-						id = value.ResourceId;
+					using (var value = new TypedValue())
+					{
+						int id = global::Android.Resource.Drawable.DividerHorizontalDark;
+						if (Context.Theme.ResolveAttribute(global::Android.Resource.Attribute.ListDivider, value, true))
+							id = value.ResourceId;
+						else if (Context.Theme.ResolveAttribute(global::Android.Resource.Attribute.Divider, value, true))
+							id = value.ResourceId;
 
-					bline.SetBackgroundResource(id);
+						bline.SetBackgroundResource(id);
+					}
 				}
 			}
 
