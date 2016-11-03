@@ -26,8 +26,20 @@ namespace Xamarin.Forms.Platform.WinRT
 			_information = DisplayInformation.GetForCurrentView();
 
 			// initialize screen orientation
-			SetScreenOrientation(ApplicationView.GetForCurrentView().Orientation);
+			SetScreenOrientation(_information.CurrentOrientation);
 			_information.OrientationChanged += OnScreenOrientationChanged;
+
+			MessagingCenter.Subscribe<Page, Size>(this, "SizeChanged", (sender, args) =>
+			{
+				if (args.Width < args.Height)
+					LayoutOrientation = LayoutOrientation.Portrait;
+				else if (args.Width > args.Height)
+					LayoutOrientation = LayoutOrientation.Landscape;
+				else if (args.IsZero)
+					LayoutOrientation = LayoutOrientation.Unknown;
+				else
+					LayoutOrientation = LayoutOrientation.Other;
+			});
 		}
 
 		public override Size PixelScreenSize
@@ -103,7 +115,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		void OnScreenOrientationChanged(DisplayInformation sender, object args)
 		{
-			SetScreenOrientation(ApplicationView.GetForCurrentView().Orientation);
+			SetScreenOrientation(_information.CurrentOrientation);
 		}
 
 		async void SetDeviceOrientation(SimpleOrientation orientation)
@@ -134,17 +146,19 @@ namespace Xamarin.Forms.Platform.WinRT
 			);
 		}
 
-		void SetScreenOrientation(ApplicationViewOrientation orientations)
+		void SetScreenOrientation(DisplayOrientations orientations)
 		{
 			switch (orientations)
 			{
-				case ApplicationViewOrientation.Landscape:
+				case DisplayOrientations.Landscape:
 					ScreenOrientation = ScreenOrientation.Landscape;
 					break;
-				case ApplicationViewOrientation.Portrait:
+				case DisplayOrientations.Portrait:
 					ScreenOrientation = ScreenOrientation.Portrait;
 					break;
-				// there is no "Unknown" state currently so we will ignore this check
+				case DisplayOrientations.None:
+					ScreenOrientation = ScreenOrientation.Unknown;
+					break;
 				default:
 					ScreenOrientation = ScreenOrientation.Other;
 					break;
@@ -158,6 +172,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 			if (disposing)
 			{
+				MessagingCenter.Unsubscribe<Page, Size>(this, "SizeChanged");
 				_information.OrientationChanged -= OnScreenOrientationChanged;
 				_information = null;
 				EndDeviceOrientationNotifications();

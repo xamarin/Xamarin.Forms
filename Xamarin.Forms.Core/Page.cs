@@ -11,7 +11,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_PageRenderer))]
-	public class Page : VisualElement, ILayout, IPageController, IElementConfiguration<Page>
+	public class Page : VisualElement, ILayout, IPageController, IElementConfiguration<Page>, IDisposable
 	{
 		public const string BusySetSignalName = "Xamarin.BusySet";
 
@@ -44,6 +44,8 @@ namespace Xamarin.Forms
 
 		bool _hasAppeared;
 
+		bool _disposed;
+
 		ReadOnlyCollection<Element> _logicalChildren;
 
 		IPageController PageController => this as IPageController;
@@ -56,6 +58,12 @@ namespace Xamarin.Forms
 			ToolbarItems = toolbarItems;
 			PageController.InternalChildren.CollectionChanged += InternalChildrenOnCollectionChanged;
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Page>>(() => new PlatformConfigurationRegistry<Page>(this));
+			SizeChanged += OnSizeChanged;
+		}
+
+		void OnSizeChanged(object sender, EventArgs eventArgs)
+		{
+			MessagingCenter.Send(this, "SizeChanged", new Size {Width = Width, Height = Height});
 		}
 
 		public string BackgroundImage
@@ -408,6 +416,49 @@ namespace Xamarin.Forms
 		public IPlatformElementConfiguration<T, Page> On<T>() where T : IConfigPlatform
 		{
 			return _platformConfigurationRegistry.Value.On<T>();
+		}
+
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		protected virtual void Dispose(bool disposing)
+		{
+			if (_disposed)
+				return;
+
+			if (disposing)
+			{
+				// get rid of managed resources
+				var toolbarItems = ToolbarItems as ObservableCollection<ToolbarItem>;
+				if(toolbarItems != null)
+					toolbarItems.CollectionChanged -= OnToolbarItemsCollectionChanged;
+
+				if (PageController?.InternalChildren != null)
+				{
+					PageController.InternalChildren.CollectionChanged -= InternalChildrenOnCollectionChanged;
+
+					foreach (Element child in PageController.InternalChildren)
+					{
+						var view = child as View;
+						if (view != null) view.MeasureInvalidated -= OnChildMeasureInvalidated;
+					}
+				}
+
+				SizeChanged -= OnSizeChanged;
+
+			}
+			// get rid of unmanaged resources
+
+			_disposed = true;
+		}
+
+
+		~Page()
+		{
+			Dispose(false);
 		}
 	}
 }

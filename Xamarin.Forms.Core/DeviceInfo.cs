@@ -8,6 +8,7 @@ namespace Xamarin.Forms
 	{
 		DeviceOrientation _deviceOrientation;
 		ScreenOrientation _screenOrientation;
+		LayoutOrientation _layoutOrientation;
 		bool _disposed;
 
 		public DeviceOrientation DeviceOrientation
@@ -32,6 +33,19 @@ namespace Xamarin.Forms
 					return;
 
 				_screenOrientation = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public LayoutOrientation LayoutOrientation
+		{
+			get { return _layoutOrientation; }
+			internal set
+			{
+				if (Equals(_layoutOrientation, value))
+					return;
+
+				_layoutOrientation = value;
 				OnPropertyChanged();
 			}
 		}
