@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Github, 1, "Issue Description", PlatformAffected.Default)]
+	[Issue(IssueTracker.Github, 1, "Issue Description")]
 	public class Issue1 : TestContentPage // or TestMasterDetailPage, etc ...
 	{
 		protected override void Init()
@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Controls
 			// Initialize ui here instead of ctor
 			Content = new Label
 			{
-				AutomationId = "PageLabel",
+				AutomationId = "IssuePageLabel",
 				Text = "See if I'm here"
 			};
 		}
@@ -26,8 +26,8 @@ namespace Xamarin.Forms.Controls
 		[Test]
 		public void Issue1Test ()
 		{
-			RunningApp.Screenshot ("I am at Issue1");
-			RunningApp.WaitForElement (q => q.Marked ("PageLabel"));
+			RunningApp.Screenshot ("I am at Issue 1");
+			RunningApp.WaitForElement (q => q.Marked ("IssuePageLabel"));
 			RunningApp.Screenshot ("I see the Label");
 		}
 #endif
