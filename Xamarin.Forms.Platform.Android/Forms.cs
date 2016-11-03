@@ -289,7 +289,7 @@ namespace Xamarin.Forms
 						DeviceOrientation = DeviceOrientation.Portrait;
 				}
 				else
-					DeviceOrientation = DeviceOrientation.Unknown;
+					DeviceOrientation = DeviceOrientation.Other;
 			}
 
 			void SetScreenOrientation()
@@ -301,6 +301,9 @@ namespace Xamarin.Forms
 						break;
 					case Orientation.Landscape:
 						ScreenOrientation = ScreenOrientation.Landscape;
+						break;
+					case Orientation.Undefined:
+						ScreenOrientation = ScreenOrientation.Unknown;
 						break;
 					default:
 						ScreenOrientation = ScreenOrientation.Other;

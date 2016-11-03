@@ -61,8 +61,10 @@ namespace Xamarin.Forms.Platform.iOS
 					return DeviceOrientation.Landscape;
 				case UIDeviceOrientation.LandscapeRight:
 					return DeviceOrientation.LandscapeFlipped;
-				default:
+				case UIDeviceOrientation.Unknown:
 					return DeviceOrientation.Unknown;
+				default:
+					return DeviceOrientation.Other;
 			}
 		}
 
@@ -76,6 +78,8 @@ namespace Xamarin.Forms.Platform.iOS
 				case UIInterfaceOrientation.LandscapeLeft:
 				case UIInterfaceOrientation.LandscapeRight:
 					return ScreenOrientation.Landscape;
+				case UIInterfaceOrientation.Unknown:
+					return ScreenOrientation.Unknown;
 				default:
 					return ScreenOrientation.Other;
 			}

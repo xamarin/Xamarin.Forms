@@ -126,7 +126,7 @@ namespace Xamarin.Forms.Platform.WinRT
 						DeviceOrientation = _information.NativeOrientation == DisplayOrientations.Portrait ? DeviceOrientation.Portrait : DeviceOrientation.Landscape;
 						break;
 					default:
-						DeviceOrientation = DeviceOrientation.Unknown;
+						DeviceOrientation = DeviceOrientation.Other;
 						break;
 				}
 			}
