@@ -16,6 +16,8 @@ namespace Xamarin.Forms.Platform.WinPhone
 				case PageOrientation.LandscapeRight:
 				case PageOrientation.LandscapeLeft:
 					return ScreenOrientation.Landscape;
+				case PageOrientation.None:
+					return ScreenOrientation.Unknown;
 				default:
 					return ScreenOrientation.Other;
 			}

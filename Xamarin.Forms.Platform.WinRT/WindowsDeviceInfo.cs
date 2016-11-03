@@ -125,6 +125,7 @@ namespace Xamarin.Forms.Platform.WinRT
 					case SimpleOrientation.NotRotated:
 						DeviceOrientation = _information.NativeOrientation == DisplayOrientations.Portrait ? DeviceOrientation.Portrait : DeviceOrientation.Landscape;
 						break;
+					// there is no "Unknown" state currently so we will ignore this check
 					default:
 						DeviceOrientation = DeviceOrientation.Other;
 						break;
@@ -143,6 +144,7 @@ namespace Xamarin.Forms.Platform.WinRT
 				case ApplicationViewOrientation.Portrait:
 					ScreenOrientation = ScreenOrientation.Portrait;
 					break;
+				// there is no "Unknown" state currently so we will ignore this check
 				default:
 					ScreenOrientation = ScreenOrientation.Other;
 					break;
