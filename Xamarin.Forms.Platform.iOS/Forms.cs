@@ -139,18 +139,6 @@ namespace Xamarin.Forms
 				// initialize screen orientation
 				ScreenOrientation = UIApplication.SharedApplication.StatusBarOrientation.ToScreenOrientation();
 				NSNotificationCenter.DefaultCenter.AddObserver(UIApplication.DidChangeStatusBarOrientationNotification, OnScreenOrientationChanged);
-
-				MessagingCenter.Subscribe<Page, Size>(this, "SizeChanged", (sender, args) =>
-				{
-					if (args.Width < args.Height)
-						LayoutOrientation = LayoutOrientation.Portrait;
-					else if (args.Width > args.Height)
-						LayoutOrientation = LayoutOrientation.Landscape;
-					else if (args.IsZero)
-						LayoutOrientation = LayoutOrientation.Unknown;
-					else
-						LayoutOrientation = LayoutOrientation.Other;
-				});
 			}
 
 			public override Size PixelScreenSize { get; }
@@ -188,7 +176,6 @@ namespace Xamarin.Forms
 
 				if (disposing)
 				{
-					MessagingCenter.Unsubscribe<Page, Size>(this, "SizeChanged");
 					NSNotificationCenter.DefaultCenter.RemoveObserver(UIApplication.DidChangeStatusBarOrientationNotification);
 					EndDeviceOrientationNotifications();
 				}

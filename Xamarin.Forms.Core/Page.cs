@@ -63,7 +63,17 @@ namespace Xamarin.Forms
 
 		void OnSizeChanged(object sender, EventArgs eventArgs)
 		{
-			MessagingCenter.Send(this, "SizeChanged", new Size {Width = Width, Height = Height});
+			LayoutOrientation layoutOrientation;
+			if (Width < Height)
+				layoutOrientation = LayoutOrientation.Portrait;
+			else if (Width > Height)
+				layoutOrientation = LayoutOrientation.Landscape;
+			else if (Width <= 0 || Height <= 0)
+				layoutOrientation = LayoutOrientation.Unknown;
+			else
+				layoutOrientation = LayoutOrientation.Other;
+
+			Device.Info.PageOrientation = new PageOrientation { Page = this, LayoutOrientation = layoutOrientation };
 		}
 
 		public string BackgroundImage

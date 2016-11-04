@@ -28,18 +28,6 @@ namespace Xamarin.Forms.Platform.WinRT
 			// initialize screen orientation
 			SetScreenOrientation(_information.CurrentOrientation);
 			_information.OrientationChanged += OnScreenOrientationChanged;
-
-			MessagingCenter.Subscribe<Page, Size>(this, "SizeChanged", (sender, args) =>
-			{
-				if (args.Width < args.Height)
-					LayoutOrientation = LayoutOrientation.Portrait;
-				else if (args.Width > args.Height)
-					LayoutOrientation = LayoutOrientation.Landscape;
-				else if (args.IsZero)
-					LayoutOrientation = LayoutOrientation.Unknown;
-				else
-					LayoutOrientation = LayoutOrientation.Other;
-			});
 		}
 
 		public override Size PixelScreenSize
@@ -172,7 +160,6 @@ namespace Xamarin.Forms.Platform.WinRT
 
 			if (disposing)
 			{
-				MessagingCenter.Unsubscribe<Page, Size>(this, "SizeChanged");
 				_information.OrientationChanged -= OnScreenOrientationChanged;
 				_information = null;
 				EndDeviceOrientationNotifications();
