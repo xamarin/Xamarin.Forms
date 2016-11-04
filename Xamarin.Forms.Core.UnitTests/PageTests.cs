@@ -499,6 +499,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			Device.Info = new TestDeviceInfo();
 
+			View child;
 			var page = new ContentPage
 			{
 				IsPlatformEnabled = true,
