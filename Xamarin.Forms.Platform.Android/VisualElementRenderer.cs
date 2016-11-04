@@ -85,6 +85,14 @@ namespace Xamarin.Forms.Platform.Android
 			_tapGestureHandler.OnSingleClick();
 		}
 
+		public override bool OnInterceptTouchEvent(MotionEvent ev)
+		{
+			if (!Element.IsEnabled || Element.InputTransparent)
+				return true;
+
+			return base.OnInterceptTouchEvent(ev);
+		}
+
 		bool IOnTouchListener.OnTouch(AView v, MotionEvent e)
 		{
 			if (!Element.IsEnabled)

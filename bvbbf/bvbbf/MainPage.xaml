@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:bvbbf"
+             x:Class="bvbbf.MainPage">
+
+  <Button Text="Click" HorizontalOptions="Center" VerticalOptions="Center" Clicked="Button_OnClicked"></Button>
+
+</ContentPage>
