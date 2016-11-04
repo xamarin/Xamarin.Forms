@@ -1,22 +1,22 @@
-﻿using Microsoft.Phone.Controls;
+﻿using WPageOrientation = Microsoft.Phone.Controls.PageOrientation;
 
 namespace Xamarin.Forms.Platform.WinPhone
 {
 	internal static class Extensions
 	{
-		public static ScreenOrientation ToScreenOrientation(this PageOrientation pageOrientation)
+		public static ScreenOrientation ToScreenOrientation(this WPageOrientation pageOrientation)
 		{
 			switch (pageOrientation)
 			{
-				case PageOrientation.Portrait:
-				case PageOrientation.PortraitUp:
-				case PageOrientation.PortraitDown:
+				case WPageOrientation.Portrait:
+				case WPageOrientation.PortraitUp:
+				case WPageOrientation.PortraitDown:
 					return ScreenOrientation.Portrait;
-				case PageOrientation.Landscape:
-				case PageOrientation.LandscapeRight:
-				case PageOrientation.LandscapeLeft:
+				case WPageOrientation.Landscape:
+				case WPageOrientation.LandscapeRight:
+				case WPageOrientation.LandscapeLeft:
 					return ScreenOrientation.Landscape;
-				case PageOrientation.None:
+				case WPageOrientation.None:
 					return ScreenOrientation.Unknown;
 				default:
 					return ScreenOrientation.Other;
