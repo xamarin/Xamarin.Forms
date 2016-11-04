@@ -126,9 +126,10 @@ namespace Xamarin.Forms
 					return false;
 
 				MasterBehavior behavior = MasterBehavior;
+				ScreenOrientation orientation = Device.Info.ScreenOrientation;
 
-				bool isSplitOnLandscape = (behavior == MasterBehavior.SplitOnLandscape || behavior == MasterBehavior.Default) && this.IsLandscape();
-				bool isSplitOnPortrait = behavior == MasterBehavior.SplitOnPortrait && this.IsPortrait();
+				bool isSplitOnLandscape = (behavior == MasterBehavior.SplitOnLandscape || behavior == MasterBehavior.Default) && orientation == ScreenOrientation.Landscape;
+				bool isSplitOnPortrait = behavior == MasterBehavior.SplitOnPortrait && orientation == ScreenOrientation.Portrait;
 				return behavior == MasterBehavior.Split || isSplitOnLandscape || isSplitOnPortrait;
 			}
 		}
@@ -141,9 +142,10 @@ namespace Xamarin.Forms
 				return true;
 
 			MasterBehavior behavior = MasterBehavior;
+			ScreenOrientation orientation = Device.Info.ScreenOrientation;
 
-			bool isSplitOnLandscape = (behavior == MasterBehavior.SplitOnLandscape || behavior == MasterBehavior.Default) && this.IsLandscape();
-			bool isSplitOnPortrait = behavior == MasterBehavior.SplitOnPortrait && this.IsPortrait();
+			bool isSplitOnLandscape = (behavior == MasterBehavior.SplitOnLandscape || behavior == MasterBehavior.Default) && orientation == ScreenOrientation.Landscape;
+			bool isSplitOnPortrait = behavior == MasterBehavior.SplitOnPortrait && orientation == ScreenOrientation.Portrait;
 			return behavior != MasterBehavior.Split && !isSplitOnLandscape && !isSplitOnPortrait;
 		}
 
