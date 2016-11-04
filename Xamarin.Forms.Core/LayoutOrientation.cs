@@ -3,7 +3,7 @@
 	public enum LayoutOrientation
 	{
 		Unknown,
-		Other,
+		Square,
 		Portrait,
 		Landscape
 	}
