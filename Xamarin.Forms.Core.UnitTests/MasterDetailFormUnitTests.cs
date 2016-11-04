@@ -24,6 +24,16 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			get { return 2; }
 		}
+
+		public override void BeginDeviceOrientationNotifications()
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void EndDeviceOrientationNotifications()
+		{
+			throw new NotImplementedException();
+		}
 	}
 
 	[TestFixture]
@@ -295,15 +305,16 @@ namespace Xamarin.Forms.Core.UnitTests
 		public void ThorwsInSetIsPresentOnSplitPortraitModeOnTablet ()
 		{
 			Device.Idiom = TargetIdiom.Tablet;
-			Device.Info.ScreenOrientation = ScreenOrientation.Portrait;
 
 			var page = new MasterDetailPage {
 				Master = new ContentPage { Content = new View (), IsPlatformEnabled = true, Title = "Foo" },
 				Detail = new ContentPage { Content = new View (), IsPlatformEnabled = true },
 				IsPlatformEnabled = true,
-				Platform = new UnitPlatform (),
-				MasterBehavior = MasterBehavior.SplitOnPortrait
+				Platform = new UnitPlatform ()
 			};
+
+			page.Layout(new Rectangle(0, 0, 500, 1000));
+			page.MasterBehavior = MasterBehavior.SplitOnPortrait;
 
 			Assert.Throws<InvalidOperationException> (() => page.IsPresented = false);
 		}
@@ -311,16 +322,16 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public void TestSetIsPresentedOnPopoverMode ()
 		{
-			Device.Info.ScreenOrientation = ScreenOrientation.Landscape;
-
 			var page = new MasterDetailPage {
 				Master = new ContentPage { Content = new View (), IsPlatformEnabled = true, Title = "Foo" },
 				Detail = new ContentPage { Content = new View (), IsPlatformEnabled = true },
 				IsPlatformEnabled = true,
-				Platform = new UnitPlatform (),
-				MasterBehavior = MasterBehavior.Popover
+				Platform = new UnitPlatform ()
 			};
 			page.IsPresented = true;
+
+			page.Layout(new Rectangle(0, 0, 1000, 500));
+			page.MasterBehavior = MasterBehavior.Popover;
 
 			Assert.AreEqual (true, page.IsPresented);
 		}
