@@ -88,6 +88,7 @@
     <Compile Include="DelegateLogListener.cs" />
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="LayoutOrientation.cs" />
+    <Compile Include="PageExtensions.cs" />
     <Compile Include="PlatformConfiguration\AndroidSpecific\AppCompat\Application.cs" />
     <Compile Include="PlatformConfiguration\AndroidSpecific\Application.cs" />
     <Compile Include="PlatformConfiguration\AndroidSpecific\TabbedPage.cs" />

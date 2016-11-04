@@ -64,12 +64,12 @@ namespace Xamarin.Forms
 		void OnSizeChanged(object sender, EventArgs eventArgs)
 		{
 			LayoutOrientation layoutOrientation;
-			if (Width < Height)
+			if (Width <= 0 || Height <= 0)
+				layoutOrientation = LayoutOrientation.Unknown;
+			else if (Width < Height)
 				layoutOrientation = LayoutOrientation.Portrait;
 			else if (Width > Height)
 				layoutOrientation = LayoutOrientation.Landscape;
-			else if (Width <= 0 || Height <= 0)
-				layoutOrientation = LayoutOrientation.Unknown;
 			else
 				layoutOrientation = LayoutOrientation.Other;
 
