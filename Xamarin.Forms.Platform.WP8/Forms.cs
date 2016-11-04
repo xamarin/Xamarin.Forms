@@ -109,7 +109,8 @@ namespace Xamarin.Forms
 				if (_disposed)
 					return;
 
-				MessagingCenter.Unsubscribe<FormsApplicationPage, ScreenOrientation>(this, BWPorientationChangedName);
+				if(disposing)
+					MessagingCenter.Unsubscribe<FormsApplicationPage, ScreenOrientation>(this, BWPorientationChangedName);
 
 				_disposed = true;
 
