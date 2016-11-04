@@ -453,7 +453,8 @@ namespace Xamarin.Forms
 					foreach (Element child in PageController.InternalChildren)
 					{
 						var view = child as View;
-						if (view != null) view.MeasureInvalidated -= OnChildMeasureInvalidated;
+						if (view != null)
+							view.MeasureInvalidated -= OnChildMeasureInvalidated;
 					}
 				}
 
@@ -464,7 +465,6 @@ namespace Xamarin.Forms
 
 			_disposed = true;
 		}
-
 
 		~Page()
 		{
