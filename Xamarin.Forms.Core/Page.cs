@@ -71,7 +71,7 @@ namespace Xamarin.Forms
 			else if (Width > Height)
 				layoutOrientation = LayoutOrientation.Landscape;
 			else
-				layoutOrientation = LayoutOrientation.Other;
+				layoutOrientation = LayoutOrientation.Square;
 
 			Device.Info.PageOrientation = new PageOrientation { Page = this, LayoutOrientation = layoutOrientation };
 		}

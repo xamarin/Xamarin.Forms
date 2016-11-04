@@ -6,10 +6,6 @@ namespace Xamarin.Forms.Core.UnitTests
 {
 	internal class TestDeviceInfo : DeviceInfo
 	{
-		public TestDeviceInfo ()
-		{
-			ScreenOrientation = ScreenOrientation.Portrait;
-		}
 		public override Size PixelScreenSize
 		{
 			get { return new Size (100, 200); }

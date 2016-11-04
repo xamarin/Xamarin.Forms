@@ -383,7 +383,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			ActionSheetArguments args = null;
 			MessagingCenter.Subscribe (this, Page.ActionSheetSignalName, (Page sender, ActionSheetArguments e) => args = e);
 
-			var task = page.DisplayActionSheet ("Title", "Cancel", "Destruction", "Other 1", "Other 2");
+			var task = page.DisplayActionSheet ("Title", "Cancel", "Destruction", "Other 1", "Square 2");
 
 			Assert.AreEqual ("Title", args.Title);
 			Assert.AreEqual ("Destruction", args.Destruction);
@@ -492,6 +492,37 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			Assert.True (sentNav);
 			Assert.True (sent);
+		}
+
+		[Test]
+		public void TestLayoutOrientation()
+		{
+			Device.Info = new TestDeviceInfo();
+
+			View child;
+			var page = new ContentPage
+			{
+				IsPlatformEnabled = true,
+				Platform = new UnitPlatform()
+			};
+
+			Assert.Null(Device.Info.PageOrientation);
+
+			// layout did not change so PageOrientation is not initialized
+			page.Layout(new Rectangle(0, 0, -1, -1));
+			Assert.Null(Device.Info.PageOrientation);
+
+			page.Layout(new Rectangle(0, 0, -10, -10));
+			Assert.AreEqual(LayoutOrientation.Unknown, Device.Info.PageOrientation.LayoutOrientation);
+
+			page.Layout(new Rectangle(0, 0, 800, 800));
+			Assert.AreEqual(LayoutOrientation.Square, Device.Info.PageOrientation.LayoutOrientation);
+
+			page.Layout(new Rectangle(0, 0, 800, 400));
+			Assert.AreEqual(LayoutOrientation.Landscape, Device.Info.PageOrientation.LayoutOrientation);
+
+			page.Layout(new Rectangle(0, 0, 400, 800));
+			Assert.AreEqual(LayoutOrientation.Portrait, Device.Info.PageOrientation.LayoutOrientation);
 		}
 	}	
 }
