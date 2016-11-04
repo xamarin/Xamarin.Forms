@@ -73,6 +73,10 @@ namespace Xamarin.Forms
 			else
 				layoutOrientation = LayoutOrientation.Square;
 
+			// in case size changes multiple times for the same page
+			if (Device.Info.PageOrientation != null && Device.Info.PageOrientation.Page == this && Device.Info.PageOrientation.LayoutOrientation == layoutOrientation)
+				return;
+
 			Device.Info.PageOrientation = new PageOrientation { Page = this, LayoutOrientation = layoutOrientation };
 		}
 
