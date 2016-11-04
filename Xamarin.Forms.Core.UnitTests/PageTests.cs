@@ -383,7 +383,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			ActionSheetArguments args = null;
 			MessagingCenter.Subscribe (this, Page.ActionSheetSignalName, (Page sender, ActionSheetArguments e) => args = e);
 
-			var task = page.DisplayActionSheet ("Title", "Cancel", "Destruction", "Other 1", "Square 2");
+			var task = page.DisplayActionSheet ("Title", "Cancel", "Destruction", "Other 1", "Other 2");
 
 			Assert.AreEqual ("Title", args.Title);
 			Assert.AreEqual ("Destruction", args.Destruction);
