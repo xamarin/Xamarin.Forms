@@ -264,17 +264,12 @@ namespace Xamarin.Forms.Platform.Android
 		void UpdateClipToBounds()
 		{
 			var layout = _renderer.Element as Layout;
-			var parent = _renderer.ViewGroup.Parent as ViewGroup;
+			var parent = _renderer.ViewGroup;
 
 			if (parent == null || layout == null)
 				return;
 
-			bool shouldClip = layout.IsClippedToBounds;
-
-			if ((int)Build.VERSION.SdkInt >= 18 && parent.ClipChildren == shouldClip)
-				return;
-
-			parent.SetClipChildren(shouldClip);
+			parent.SetClipChildren(layout.IsClippedToBounds);
 			parent.Invalidate();
 		}
 
