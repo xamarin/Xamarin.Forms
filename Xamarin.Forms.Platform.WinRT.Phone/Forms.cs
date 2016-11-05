@@ -40,7 +40,9 @@ namespace Xamarin.Forms
 				typeof (ExportImageSourceHandlerAttribute)
 			});
 
+#pragma warning disable 612
 			MessagingCenter.Subscribe<Page, bool> (Device.PlatformServices, Page.BusySetSignalName, OnPageBusy);
+#pragma warning restore 612
 
 			HardwareButtons.BackPressed += OnBackPressed;
 

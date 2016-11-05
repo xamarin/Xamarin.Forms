@@ -13,6 +13,7 @@ namespace Xamarin.Forms
 	[RenderWith(typeof(_PageRenderer))]
 	public class Page : VisualElement, ILayout, IPageController, IElementConfiguration<Page>
 	{
+		[Obsolete]
 		public const string BusySetSignalName = "Xamarin.BusySet";
 
 		public const string AlertSignalName = "Xamarin.SendAlert";
@@ -23,6 +24,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty BackgroundImageProperty = BindableProperty.Create("BackgroundImage", typeof(string), typeof(Page), default(string));
 
+		[Obsolete]
 		public static readonly BindableProperty IsBusyProperty = BindableProperty.Create("IsBusy", typeof(bool), typeof(Page), false, propertyChanged: (bo, o, n) => ((Page)bo).OnPageBusyChanged());
 
 		public static readonly BindableProperty PaddingProperty = BindableProperty.Create("Padding", typeof(Thickness), typeof(Page), default(Thickness), propertyChanged: (bindable, old, newValue) =>
@@ -70,6 +72,7 @@ namespace Xamarin.Forms
 			set { SetValue(IconProperty, value); }
 		}
 
+		[Obsolete]
 		public bool IsBusy
 		{
 			get { return (bool)GetValue(IsBusyProperty); }
@@ -302,8 +305,10 @@ namespace Xamarin.Forms
 
 			_hasAppeared = true;
 
+#pragma warning disable 612
 			if (IsBusy)
 				MessagingCenter.Send(this, BusySetSignalName, true);
+#pragma warning restore 612
 
 			OnAppearing();
 			EventHandler handler = Appearing;
@@ -321,8 +326,10 @@ namespace Xamarin.Forms
 
 			_hasAppeared = false;
 
+#pragma warning disable 612
 			if (IsBusy)
 				MessagingCenter.Send(this, BusySetSignalName, false);
+#pragma warning restore 612
 
 			var pageContainer = this as IPageContainer<Page>;
 			((IPageController)pageContainer?.CurrentPage)?.SendDisappearing();
@@ -368,7 +375,9 @@ namespace Xamarin.Forms
 			if (!_hasAppeared)
 				return;
 
+#pragma warning disable 612
 			MessagingCenter.Send(this, BusySetSignalName, IsBusy);
+#pragma warning restore 612
 		}
 
 		void OnToolbarItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)

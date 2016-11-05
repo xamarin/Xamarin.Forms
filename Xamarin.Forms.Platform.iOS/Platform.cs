@@ -32,6 +32,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_renderer = new PlatformRenderer(this);
 			_modals = new List<Page>();
 
+#pragma warning disable 612
 			var busyCount = 0;
 			MessagingCenter.Subscribe(this, Page.BusySetSignalName, (Page sender, bool enabled) =>
 			{
@@ -40,6 +41,7 @@ namespace Xamarin.Forms.Platform.iOS
 				busyCount = Math.Max(0, enabled ? busyCount + 1 : busyCount - 1);
 				UIApplication.SharedApplication.NetworkActivityIndicatorVisible = busyCount > 0;
 			});
+#pragma warning restore 612
 
 			MessagingCenter.Subscribe(this, Page.AlertSignalName, (Page sender, AlertArguments arguments) =>
 			{
@@ -158,7 +160,9 @@ namespace Xamarin.Forms.Platform.iOS
 			Page.DescendantRemoved -= HandleChildRemoved;
 			MessagingCenter.Unsubscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName);
 			MessagingCenter.Unsubscribe<Page, AlertArguments>(this, Page.AlertSignalName);
+#pragma warning disable 612
 			MessagingCenter.Unsubscribe<Page, bool>(this, Page.BusySetSignalName);
+#pragma warning restore 612
 
 			DisposeModelAndChildrenRenderers(Page);
 			foreach (var modal in _modals)
