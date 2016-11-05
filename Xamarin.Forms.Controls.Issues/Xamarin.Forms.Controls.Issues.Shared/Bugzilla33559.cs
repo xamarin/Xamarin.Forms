@@ -12,7 +12,7 @@ namespace Xamarin.Forms.Controls
 	[Issue(IssueTracker.Bugzilla, 33559, "Scaled image escapes the bounds of its container", PlatformAffected.Android)]
 	public class Bugzilla33559 : TestContentPage // or TestMasterDetailPage, etc ...
 	{
-		public Image Image = new Image { HorizontalOptions = LayoutOptions.CenterAndExpand, VerticalOptions = LayoutOptions.CenterAndExpand, Source = "icon.png", Opacity = .85 };
+		public Image Image = new Image { HorizontalOptions = LayoutOptions.CenterAndExpand, VerticalOptions = LayoutOptions.CenterAndExpand, Source = "Icon.png", Opacity = .85 };
 
 		protected override void Init()
 		{
