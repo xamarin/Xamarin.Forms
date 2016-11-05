@@ -55,6 +55,7 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla32847.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla33268.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla33559.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla33612.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla33714.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla33890.cs" />
@@ -130,7 +131,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla43569.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla44166.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla44461.cs" />
-
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla44584.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla42832.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla44044.cs" />
