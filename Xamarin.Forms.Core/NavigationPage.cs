@@ -27,7 +27,21 @@ namespace Xamarin.Forms
 
 		static readonly BindablePropertyKey CurrentPagePropertyKey = BindableProperty.CreateReadOnly("CurrentPage", typeof(Page), typeof(NavigationPage), null);
 		public static readonly BindableProperty CurrentPageProperty = CurrentPagePropertyKey.BindableProperty;
-		
+
+		public static readonly BindableProperty IsNavigationBarTranslucentProperty = BindableProperty.Create("IsNavigationBarTranslucent", typeof(bool), typeof(NavigationPage), false);
+
+		public bool IsNavigationBarTranslucent
+		{
+			get { return (bool)GetValue(IsNavigationBarTranslucentProperty); }
+			set
+			{
+				if (Device.OS != TargetPlatform.iOS)
+					return;
+
+				SetValue(IsNavigationBarTranslucentProperty, value);
+			}
+		}
+
 		public NavigationPage()
 		{
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<NavigationPage>>(() => new PlatformConfigurationRegistry<NavigationPage>(this));
