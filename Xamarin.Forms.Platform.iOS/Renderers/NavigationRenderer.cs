@@ -318,7 +318,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var task = GetAppearedOrDisappearedTask(page);
 
 			PushViewController(pack, animated);
-			
+
 			var shown = await task;
 			UpdateToolBarVisible();
 			return shown;
