@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 using Foundation;
 using UIKit;
 using Xamarin.Forms.Platform.iOS.Resources;
@@ -57,6 +58,13 @@ namespace Xamarin.Forms.Platform.iOS
 		public bool IsOpen
 		{
 			get { return ScrollDelegate.IsOpen; }
+		}
+
+		public bool IsTouchInDisabledButton(PointF pointf)
+		{
+			double totalButtonWidth = _buttons.Aggregate(0.0, (current, uiButton) => current + uiButton.Frame.Width);
+
+			return _buttons.Any(uiButton => !uiButton.Enabled && pointf.X >= uiButton.Frame.X - totalButtonWidth && pointf.X <= uiButton.Frame.X);
 		}
 
 		ContextScrollViewDelegate ScrollDelegate
@@ -644,7 +652,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 					var cell = table.CellAt(_lastPath) as ContextActionsCell;
 
-					return cell != null;
+					return cell != null && !cell.IsTouchInDisabledButton(pos);
 				};
 			}
 
