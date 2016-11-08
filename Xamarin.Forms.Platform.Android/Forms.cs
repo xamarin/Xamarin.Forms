@@ -132,10 +132,7 @@ namespace Xamarin.Forms
 				Device.info = null;
 			}
 
-			// probably could be done in a better way
-			var deviceInfoProvider = activity as IDeviceInfoProvider;
-			if (deviceInfoProvider != null)
-				Device.Info = new AndroidDeviceInfo(deviceInfoProvider);
+			Device.Info = new AndroidDeviceInfo(activity);
 
 			var ticker = Ticker.Default as AndroidTicker;
 			if (ticker != null)
@@ -192,17 +189,16 @@ namespace Xamarin.Forms
 
 		class AndroidDeviceInfo : DeviceInfo
 		{
-			readonly IDeviceInfoProvider _formsActivity;
+			bool _disposed;
+			readonly Context _context;
 			AndroidOrientationEventListener _androidOrientationEventListener;
 
 			readonly Size _pixelScreenSize;
 			readonly double _scalingFactor;
 
-			bool _disposed;
-
-			public AndroidDeviceInfo(IDeviceInfoProvider formsActivity)
+			public AndroidDeviceInfo(Context context)
 			{
-				using (DisplayMetrics display = formsActivity.Resources.DisplayMetrics)
+				using (DisplayMetrics display = context.Resources.DisplayMetrics)
 				{
 					_scalingFactor = display.Density;
 					_pixelScreenSize = new Size(display.WidthPixels, display.HeightPixels);
@@ -210,9 +206,13 @@ namespace Xamarin.Forms
 				}
 
 				// initialize screen orientation
-				_formsActivity = formsActivity;
+				_context = context;
 				SetScreenOrientation();
-				_formsActivity.ConfigurationChanged += OnConfigurationChanged;
+				// This will not be an implementation of IDeviceInfoProvider when running inside the context
+				// of layoutlib, which is what the Android Designer does.
+				var deviceInfoProvider = _context as IDeviceInfoProvider;
+				if (deviceInfoProvider != null)
+					deviceInfoProvider.ConfigurationChanged += OnConfigurationChanged;
 			}
 
 			public override Size PixelScreenSize => _pixelScreenSize;
@@ -226,7 +226,7 @@ namespace Xamarin.Forms
 				if (_androidOrientationEventListener != null)
 					return;
 
-				_androidOrientationEventListener = new AndroidOrientationEventListener((Context)_formsActivity, SensorDelay.Normal);
+				_androidOrientationEventListener = new AndroidOrientationEventListener(_context, SensorDelay.Normal);
 				_androidOrientationEventListener.OrientationChanged += OnDeviceOrientationChanged;
 
 				if (_androidOrientationEventListener.CanDetectOrientation())
@@ -294,7 +294,7 @@ namespace Xamarin.Forms
 
 			void SetScreenOrientation()
 			{
-				switch (_formsActivity.Resources.Configuration.Orientation)
+				switch (_context.Resources.Configuration.Orientation)
 				{
 					case Orientation.Portrait:
 						ScreenOrientation = ScreenOrientation.Portrait;
@@ -318,7 +318,9 @@ namespace Xamarin.Forms
 
 				if (disposing)
 				{
-					_formsActivity.ConfigurationChanged -= OnConfigurationChanged;
+					var deviceInfoProvider = _context as IDeviceInfoProvider;
+					if (deviceInfoProvider != null)
+						deviceInfoProvider.ConfigurationChanged -= OnConfigurationChanged;
 					EndDeviceOrientationNotifications();
 				}
 
