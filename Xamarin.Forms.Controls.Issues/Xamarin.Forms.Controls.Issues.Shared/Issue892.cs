@@ -66,7 +66,7 @@ namespace Xamarin.Forms.Controls
 			Master = master;
 			Detail = new CustomNavDetailPage ("Initial Page");
 
-			MessagingCenter.Subscribe<NestedNavPageRootView> (this, "PresentMaster", (sender) => {
+			MessagingCenter.Instance.Subscribe<NestedNavPageRootView> (this, "PresentMaster", (sender) => {
 				IsPresented = true;
 			});
 		}
@@ -158,7 +158,7 @@ namespace Xamarin.Forms.Controls
 					new Button {
 						Text = "Present Master",
 						Command = new Command (() => {
-							MessagingCenter.Send<NestedNavPageRootView> (this, "PresentMaster");
+							MessagingCenter.Instance.Send<NestedNavPageRootView> (this, "PresentMaster");
 						})
 					}
 				}

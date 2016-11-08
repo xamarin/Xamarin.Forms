@@ -219,7 +219,7 @@ namespace Xamarin.Forms.Platform.iOS
 		void HandleMasterPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == Page.IconProperty.PropertyName || e.PropertyName == Page.TitleProperty.PropertyName)
-				MessagingCenter.Send<IVisualElementRenderer>(this, NavigationRenderer.UpdateToolbarButtons);
+				MessagingCenter.Instance.Send<IVisualElementRenderer>(this, NavigationRenderer.UpdateToolbarButtons);
 		}
 
 		void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)

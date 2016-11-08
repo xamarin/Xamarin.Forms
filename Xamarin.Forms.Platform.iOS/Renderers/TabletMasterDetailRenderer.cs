@@ -230,7 +230,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			MasterDetailPageController.UpdateMasterBehavior();
-			MessagingCenter.Send<IVisualElementRenderer>(this, NavigationRenderer.UpdateToolbarButtons);
+			MessagingCenter.Instance.Send<IVisualElementRenderer>(this, NavigationRenderer.UpdateToolbarButtons);
 			base.WillRotate(toInterfaceOrientation, duration);
 		}
 
@@ -265,7 +265,7 @@ namespace Xamarin.Forms.Platform.iOS
 		void HandleMasterPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == Page.IconProperty.PropertyName || e.PropertyName == Page.TitleProperty.PropertyName)
-				MessagingCenter.Send<IVisualElementRenderer>(this, NavigationRenderer.UpdateToolbarButtons);
+				MessagingCenter.Instance.Send<IVisualElementRenderer>(this, NavigationRenderer.UpdateToolbarButtons);
 		}
 
 		void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -279,7 +279,7 @@ namespace Xamarin.Forms.Platform.iOS
 				ToggleMaster();
 			else if (e.PropertyName == MasterDetailPage.IsGestureEnabledProperty.PropertyName)
 				PresentsWithGesture = MasterDetailPage.IsGestureEnabled;
-			MessagingCenter.Send<IVisualElementRenderer>(this, NavigationRenderer.UpdateToolbarButtons);
+			MessagingCenter.Instance.Send<IVisualElementRenderer>(this, NavigationRenderer.UpdateToolbarButtons);
 		}
 
 		void MasterControllerWillAppear(object sender, EventArgs e)

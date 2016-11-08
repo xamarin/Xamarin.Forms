@@ -13,7 +13,7 @@ namespace Xamarin.Forms.Controls
 				return new MessageViewModel { Subject = "Subject Line " + i, MessagePreview = "Lorem ipsum dolorem monkeys bonkers " + i };
 			}));
 
-			MessagingCenter.Subscribe<MessageViewModel, MessageViewModel> (this, "DeleteMessage", (vm, vm2) => {
+			MessagingCenter.Instance.Subscribe<MessageViewModel, MessageViewModel> (this, "DeleteMessage", (vm, vm2) => {
 				Messages.Remove (vm);
 			});
 		}
@@ -30,8 +30,8 @@ namespace Xamarin.Forms.Controls
 	{
 		public MessageViewModel()
 		{
-			Delete = new Command (() => MessagingCenter.Send (this, "DeleteMessage", this));
-			Move = new Command (() => MessagingCenter.Send (this, "MoveMessage", this));
+			Delete = new Command (() => MessagingCenter.Instance.Send (this, "DeleteMessage", this));
+			Move = new Command (() => MessagingCenter.Instance.Send (this, "MoveMessage", this));
 		}
 
 		public string Subject

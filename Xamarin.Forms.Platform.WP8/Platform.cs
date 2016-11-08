@@ -51,13 +51,13 @@ namespace Xamarin.Forms.Platform.WinPhone
 			SystemTray.SetProgressIndicator(page, indicator = new ProgressIndicator { IsVisible = false, IsIndeterminate = true });
 
 			var busyCount = 0;
-			MessagingCenter.Subscribe(this, Page.BusySetSignalName, (Page sender, bool enabled) =>
+			MessagingCenter.Instance.Subscribe(this, Page.BusySetSignalName, (Page sender, bool enabled) =>
 			{
 				busyCount = Math.Max(0, enabled ? busyCount + 1 : busyCount - 1);
 				indicator.IsVisible = busyCount > 0;
 			});
 
-			MessagingCenter.Subscribe(this, Page.AlertSignalName, (Page sender, AlertArguments arguments) =>
+			MessagingCenter.Instance.Subscribe(this, Page.AlertSignalName, (Page sender, AlertArguments arguments) =>
 			{
 				var messageBox = new CustomMessageBox { Title = arguments.Title, Message = arguments.Message };
 				if (arguments.Accept != null)
@@ -72,7 +72,7 @@ namespace Xamarin.Forms.Platform.WinPhone
 				};
 			});
 
-			MessagingCenter.Subscribe(this, Page.ActionSheetSignalName, (Page sender, ActionSheetArguments arguments) =>
+			MessagingCenter.Instance.Subscribe(this, Page.ActionSheetSignalName, (Page sender, ActionSheetArguments arguments) =>
 			{
 				var messageBox = new CustomMessageBox { Title = arguments.Title };
 

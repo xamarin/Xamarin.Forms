@@ -35,7 +35,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					return;
 				_navAnimationInProgress = value;
 				if (value)
-					MessagingCenter.Send(this, CloseContextActionsSignalName);
+					MessagingCenter.Instance.Send(this, CloseContextActionsSignalName);
 			}
 		}
 

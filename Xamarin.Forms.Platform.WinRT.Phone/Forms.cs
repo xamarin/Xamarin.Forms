@@ -40,7 +40,7 @@ namespace Xamarin.Forms
 				typeof (ExportImageSourceHandlerAttribute)
 			});
 
-			MessagingCenter.Subscribe<Page, bool> (Device.PlatformServices, Page.BusySetSignalName, OnPageBusy);
+			MessagingCenter.Instance.Subscribe<Page, bool> (Device.PlatformServices, Page.BusySetSignalName, OnPageBusy);
 
 			HardwareButtons.BackPressed += OnBackPressed;
 
