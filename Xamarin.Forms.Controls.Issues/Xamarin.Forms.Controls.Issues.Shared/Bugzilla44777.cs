@@ -12,7 +12,7 @@ namespace Xamarin.Forms.Controls
 		protected override void Init()
 		{
 			Master = new ContentPage() { Title = "I am a master page" };
-			Detail = new NavigationPage(new ContentPage());
+			Detail = new NavigationPage(new ContentPage { Content = new Label { Text = "The status bar text color on this page should be white on blue. When you show the Master page fully, the status bar text should be black on white. If the status bar text remains white when the Master page is fully presented, this test has failed." } });
 			((NavigationPage)Detail).BarBackgroundColor = Color.Blue;
 			((NavigationPage)Detail).BarTextColor = Color.White;
 
