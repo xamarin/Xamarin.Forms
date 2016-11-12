@@ -366,6 +366,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var titleText = NavigationPage.GetBackButtonTitle(page);
 			if (titleText != null)
 			{
+				// adding a custom event handler to UIBarButtonItem for navigating back seems to be ignored.
 				pack.NavigationItem.BackBarButtonItem = new UIBarButtonItem { Title = titleText, Style = UIBarButtonItemStyle.Plain };
 			}
 
