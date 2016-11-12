@@ -366,8 +366,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var titleText = NavigationPage.GetBackButtonTitle(page);
 			if (titleText != null)
 			{
-				pack.NavigationItem.BackBarButtonItem = 
-					new UIBarButtonItem(titleText, UIBarButtonItemStyle.Plain, async (o, e) => await PopViewAsync(page));
+				pack.NavigationItem.BackBarButtonItem = new UIBarButtonItem { Title = titleText, Style = UIBarButtonItemStyle.Plain };
 			}
 
 			var pageRenderer = Platform.GetRenderer(page);
