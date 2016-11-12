@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Controls
 				Text = "Open Page2",
 				Command = new Command(async o =>
 				{
-					await (((o as Button).Parent as Page).Parent as NavigationPage).PushAsync(new Page2());
+					await (Parent as NavigationPage).PushAsync(new Page2());
 				})
 			};
 		}
