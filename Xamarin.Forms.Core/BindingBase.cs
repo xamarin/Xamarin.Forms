@@ -10,7 +10,7 @@ namespace Xamarin.Forms
 
 		BindingMode _mode = BindingMode.Default;
 		string _stringFormat;
-        object _nullValue;
+		object _nullValue;
 
 		internal BindingBase()
 		{
@@ -39,20 +39,20 @@ namespace Xamarin.Forms
 
 				_stringFormat = value;
 			}
-        }
+		}
 
-        public object NullValue
-        {
-            get { return _nullValue; }
-            set
-            {
-                ThrowIfApplied();
+		public object NullValue
+		{
+			get { return _nullValue; }
+			set
+			{
+				ThrowIfApplied();
 
-                _nullValue = value;
-            }
-        }
+				_nullValue = value;
+			}
+		}
 
-        internal bool AllowChaining { get; set; }
+		internal bool AllowChaining { get; set; }
 
 		internal object Context { get; set; }
 
@@ -94,15 +94,15 @@ namespace Xamarin.Forms
 
 		internal abstract BindingBase Clone();
 
-        internal virtual object GetSourceValue(object value, Type targetPropertyType)
-        {
-            if (StringFormat != null)
-                return string.Format(StringFormat, value ?? NullValue);
+		internal virtual object GetSourceValue(object value, Type targetPropertyType)
+		{
+			if (StringFormat != null)
+				return string.Format(StringFormat, value ?? NullValue);
 
-            return value ?? NullValue;
-        }
+			return value ?? NullValue;
+		}
 
-        internal virtual object GetTargetValue(object value, Type sourcePropertyType)
+		internal virtual object GetTargetValue(object value, Type sourcePropertyType)
 		{
 			return value;
 		}

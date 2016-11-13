@@ -25,7 +25,7 @@ namespace Xamarin.Forms.Xaml
 
 		public string UpdateSourceEventName { get; set; }
 
-        public object NullValue { get; set; }
+		public object NullValue { get; set; }
 
 		BindingBase IMarkupExtension<BindingBase>.ProvideValue(IServiceProvider serviceProvider)
 		{

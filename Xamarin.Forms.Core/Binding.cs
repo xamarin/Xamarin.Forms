@@ -36,7 +36,7 @@ namespace Xamarin.Forms
 			Mode = mode;
 			StringFormat = stringFormat;
 			Source = source;
-            NullValue = nullValue;
+			NullValue = nullValue;
 		}
 
 		public IValueConverter Converter
@@ -83,9 +83,11 @@ namespace Xamarin.Forms
 			}
 		}
 
-		internal string UpdateSourceEventName {
+		internal string UpdateSourceEventName
+		{
 			get { return _updateSourceEventName; }
-			set {
+			set
+			{
 				ThrowIfApplied();
 				_updateSourceEventName = value;
 			}
@@ -111,22 +113,22 @@ namespace Xamarin.Forms
 			_expression.Apply(fromTarget);
 		}
 
-        internal override void Apply(object newContext, BindableObject bindObj, BindableProperty targetProperty)
-        {
-            object src = _source;
-            if (newContext == null && src == null)
-                base.Apply(NullValue, bindObj, targetProperty);
-            else
-                base.Apply(src ?? newContext, bindObj, targetProperty);
+		internal override void Apply(object newContext, BindableObject bindObj, BindableProperty targetProperty)
+		{
+			object src = _source;
+			if (newContext == null && src == null)
+				base.Apply(NullValue, bindObj, targetProperty);
+			else
+				base.Apply(src ?? newContext, bindObj, targetProperty);
 
-            object bindingContext = src ?? Context ?? newContext ?? NullValue;
-            if (_expression == null && bindingContext != null)
-                _expression = new BindingExpression(this, SelfPath);
+			object bindingContext = src ?? Context ?? newContext ?? NullValue;
+			if (_expression == null && bindingContext != null)
+				_expression = new BindingExpression(this, SelfPath);
 
-            _expression.Apply(bindingContext, bindObj, targetProperty);
-        }
+			_expression.Apply(bindingContext, bindObj, targetProperty);
+		}
 
-        internal override BindingBase Clone()
+		internal override BindingBase Clone()
 		{
 			return new Binding(Path, Mode) { Converter = Converter, ConverterParameter = ConverterParameter, StringFormat = StringFormat, Source = Source, NullValue = NullValue, UpdateSourceEventName = UpdateSourceEventName };
 		}

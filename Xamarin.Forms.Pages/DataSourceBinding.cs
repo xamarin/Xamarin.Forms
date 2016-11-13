@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Pages
 		{
 		}
 
-		public DataSourceBinding(string path, BindingMode mode = BindingMode.Default, IValueConverter converter = null, object converterParameter = null, string stringFormat = null, object nullValue=null)
+		public DataSourceBinding(string path, BindingMode mode = BindingMode.Default, IValueConverter converter = null, object converterParameter = null, string stringFormat = null, object nullValue = null)
 		{
 			if (path == null)
 				throw new ArgumentNullException(nameof(path));
@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Pages
 			ConverterParameter = converterParameter;
 			Mode = mode;
 			StringFormat = stringFormat;
-            NullValue = nullValue;
+			NullValue = nullValue;
 		}
 
 		public IValueConverter Converter
