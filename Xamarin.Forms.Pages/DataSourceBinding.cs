@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Pages
 		{
 		}
 
-		public DataSourceBinding(string path, BindingMode mode = BindingMode.Default, IValueConverter converter = null, object converterParameter = null, string stringFormat = null)
+		public DataSourceBinding(string path, BindingMode mode = BindingMode.Default, IValueConverter converter = null, object converterParameter = null, string stringFormat = null, object nullValue=null)
 		{
 			if (path == null)
 				throw new ArgumentNullException(nameof(path));
@@ -31,6 +31,7 @@ namespace Xamarin.Forms.Pages
 			ConverterParameter = converterParameter;
 			Mode = mode;
 			StringFormat = stringFormat;
+            NullValue = nullValue;
 		}
 
 		public IValueConverter Converter
@@ -97,7 +98,7 @@ namespace Xamarin.Forms.Pages
 
 		internal override BindingBase Clone()
 		{
-			return new DataSourceBinding(Path, Mode) { Converter = Converter, ConverterParameter = ConverterParameter, StringFormat = StringFormat };
+			return new DataSourceBinding(Path, Mode) { Converter = Converter, ConverterParameter = ConverterParameter, StringFormat = StringFormat, NullValue = NullValue };
 		}
 
 		internal override object GetSourceValue(object value, Type targetPropertyType)
