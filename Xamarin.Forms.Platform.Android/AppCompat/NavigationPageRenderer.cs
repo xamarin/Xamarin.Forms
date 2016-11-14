@@ -41,8 +41,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		ToolbarTracker _toolbarTracker;
 		bool _toolbarVisible;
 
-        // The following is based on https://android.googlesource.com/platform/frameworks/support/+/refs/heads/master/v4/java/android/support/v4/app/FragmentManager.java#849
-        const int TransitionDuration = 220;
+		// The following is based on https://android.googlesource.com/platform/frameworks/support/+/refs/heads/master/v4/java/android/support/v4/app/FragmentManager.java#849
+		const int TransitionDuration = 220;
 
 		public NavigationPageRenderer()
 		{
@@ -539,9 +539,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			});
 		}
 
-        void ResetToolbar()
-        {
-	        AToolbar oldToolbar = _toolbar;
+		void ResetToolbar()
+		{
+			AToolbar oldToolbar = _toolbar;
 
 			_toolbar.RemoveFromParent();
 			_toolbar.NavigationClick -= BarOnNavigationClick;
@@ -553,9 +553,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			UpdateMenu();
 
 			// Preserve old values that can't be duplicated by calling methods above
-	        if (_toolbar != null)
+			if (_toolbar != null)
 				_toolbar.Subtitle = oldToolbar.Subtitle;
-        }
+		}
 
 		void SetupToolbar()
 		{
