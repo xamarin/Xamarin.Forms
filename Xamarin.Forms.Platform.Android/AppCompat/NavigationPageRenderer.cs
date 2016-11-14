@@ -552,7 +552,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			UpdateToolbar();
 			UpdateMenu();
 
-			// Preserve old values that can't be duplicated by calling methods above
+			// Preserve old values that can't be replicated by calling methods above
 			if (_toolbar != null)
 				_toolbar.Subtitle = oldToolbar.Subtitle;
 		}
