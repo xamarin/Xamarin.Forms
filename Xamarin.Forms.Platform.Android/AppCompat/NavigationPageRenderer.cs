@@ -795,7 +795,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				bar.SetTitleTextColor(textColor.ToAndroid().ToArgb());
 
 			bar.Title = Element.CurrentPage.Title ?? "";
-            bar.Subtitle = _toolbarBag.Subtitle;
+
+			if (_toolbarBag != null)
+				bar.Subtitle = _toolbarBag.Subtitle;
 		}
 
 		class ClickListener : Object, IOnClickListener
