@@ -116,10 +116,7 @@ namespace Xamarin.Forms
 		internal override void Apply(object newContext, BindableObject bindObj, BindableProperty targetProperty)
 		{
 			object src = _source;
-			if (newContext == null && src == null)
-				base.Apply(NullValue, bindObj, targetProperty);
-			else
-				base.Apply(src ?? newContext, bindObj, targetProperty);
+			base.Apply(src ?? newContext ?? NullValue, bindObj, targetProperty);
 
 			object bindingContext = src ?? Context ?? newContext ?? NullValue;
 			if (_expression == null && bindingContext != null)
