@@ -64,6 +64,10 @@ namespace Xamarin.Forms.Controls
 			RunningApp.Screenshot ("Clicked Leave");
 
 			RunningApp.WaitForElement (q => q.Marked ("Bug Repro's"));
+
+			RunningApp.ClearText(q => q.Raw("* marked:'SearchBarGo'"));
+			RunningApp.EnterText(q => q.Raw("* marked:'SearchBarGo'"), "G198");
+
 			RunningApp.Tap (q => q.Marked ("SearchButton"));
 			RunningApp.Screenshot ("Navigate into gallery again");
 

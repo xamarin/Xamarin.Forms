@@ -154,5 +154,25 @@ namespace Xamarin.Forms.Controls
 				text = await reader.ReadToEndAsync();
 			return text;
 		}
+
+		public bool NavigateToTestPage(string test)
+		{
+			try
+			{
+				Current.MainPage.Navigation.PushModalAsync(TestCases.GetTestCases());
+
+				TestCases.TestCaseScreen.PageToAction[test]();
+				return true;
+			}
+			catch (Exception ex) 
+			{
+				Application.Current.MainPage.DisplayAlert("doh", ex.ToString(), "ok");
+				Log.Warning("UITests", $"Error attempting to navigate directly to {test}: {ex}");
+			}
+
+			// TODO EZH Forcing this to true for now so we can figure out which tests fail using direct nav
+			// once we've fixed them, we can have this properly return false
+			return true;
+		}
 	}
 }
