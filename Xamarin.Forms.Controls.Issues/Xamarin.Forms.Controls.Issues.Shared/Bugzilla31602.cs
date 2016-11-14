@@ -126,6 +126,12 @@ namespace Xamarin.Forms.Controls
 				RunningApp.WaitForElement (q => q.Marked ("SideMenu"));
 			}
 		}
+
+		[TearDown]
+		public void TearDown() 
+		{
+			RunningApp.SetOrientationPortrait ();
+		}
 #endif
 	}
 }

@@ -85,6 +85,12 @@ namespace Xamarin.Forms.Controls
 			RunningApp.Tap (c => c.Marked ("btnStack"));
 			RunningApp.WaitForElement (c => c.Marked ("Stack 1"));
 		}
+
+		[TearDown]
+		public void TearDown() 
+		{
+			RunningApp.SetOrientationPortrait ();
+		}
 #endif
 	}
 }

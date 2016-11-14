@@ -101,6 +101,12 @@ namespace Xamarin.Forms.Controls
 			RunningApp.SetOrientationLandscape ();
 		}
 
+		[TearDown]
+		public void TearDown() 
+		{
+			RunningApp.SetOrientationPortrait ();
+		}
+
 		void Back()
 		{
 #if __IOS__

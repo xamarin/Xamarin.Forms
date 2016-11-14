@@ -21,6 +21,8 @@ namespace Xamarin.Forms.Core.UITests
 		public bool ShouldResetPerFixture { get; protected set; }
 		public AppRect ScreenBounds { get; private set; }
 
+		protected bool Isolate;
+
 		protected BaseTestFixture()
 		{
 			ShouldResetPerFixture = true;
@@ -73,7 +75,18 @@ namespace Xamarin.Forms.Core.UITests
 		void RelaunchApp()
 		{
 			App = null;
-			App = AppSetup.Setup();
+			App = AppSetup.Setup(isolate: Isolate);
+
+			if (!Isolate)
+			{
+#if __IOS__
+				App.Invoke("reset:", string.Empty);
+#endif
+#if __ANDROID__
+				App.Invoke("Reset");
+#endif
+			}
+
 			App.SetOrientationPortrait();
 			ScreenBounds = App.RootViewRect();
 			NavigateToGallery();

@@ -40,8 +40,9 @@ namespace Xamarin.Forms.Controls
 		public void PushButton ()
 		{
 			RunningApp.Tap (q => q.Marked ("Modal Push Pop Test"));
-			System.Threading.Thread.Sleep (5);
+			System.Threading.Thread.Sleep (2000);
 			// if it didn't crash, yay
+			RunningApp.WaitForElement(q => q.Marked("Modal Push Pop Test"));
 		}
 #endif
     }

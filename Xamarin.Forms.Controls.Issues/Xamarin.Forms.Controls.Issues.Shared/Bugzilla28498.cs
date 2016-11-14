@@ -73,6 +73,12 @@ namespace Xamarin.Forms.Controls
 			else
 				Assert.Inconclusive ("Should be button here, but rotation could take some time on XTC");
 		}
+
+		[TearDown]
+		public void TearDown() 
+		{
+			RunningApp.SetOrientationPortrait ();
+		}
 #endif
 	}
 }

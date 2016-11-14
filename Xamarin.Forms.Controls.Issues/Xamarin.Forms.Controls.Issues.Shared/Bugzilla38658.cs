@@ -69,6 +69,12 @@ namespace Xamarin.Forms.Controls
 			RunningApp.Back ();
 			RunningApp.WaitForElement (q => q.Marked ("btn"));
 		}
+
+		[TearDown]
+		public void TearDown() 
+		{
+			RunningApp.SetOrientationPortrait ();
+		}
 #endif
 	}
 }

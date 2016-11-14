@@ -75,6 +75,12 @@ namespace Xamarin.Forms.Controls
 				RunningApp.Tap (q => q.Marked ("btnMaster"));
 			}
 		}
+
+		[TearDown]
+		public void TearDown() 
+		{
+			RunningApp.SetOrientationPortrait ();
+		}
 		#endif
 	}
 }
