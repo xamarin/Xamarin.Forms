@@ -40,7 +40,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		AToolbar _toolbar;
 		ToolbarTracker _toolbarTracker;
 		bool _toolbarVisible;
-        ToolbarBag _toolbarBag;
 
         // The following is based on https://android.googlesource.com/platform/frameworks/support/+/refs/heads/master/v4/java/android/support/v4/app/FragmentManager.java#849
         const int TransitionDuration = 220;
@@ -542,10 +541,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
         void ResetToolbar()
         {
-            _toolbarBag = new ToolbarBag
-            {
-                Subtitle = _toolbar.Subtitle
-            };
+	        AToolbar oldToolbar = _toolbar;
 
 			_toolbar.RemoveFromParent();
 			_toolbar.NavigationClick -= BarOnNavigationClick;
@@ -555,7 +551,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			RegisterToolbar();
 			UpdateToolbar();
 			UpdateMenu();
-		}
+
+			// Preserve old values that can't be duplicated by calling methods above
+	        if (_toolbar != null)
+				_toolbar.Subtitle = oldToolbar.Subtitle;
+        }
 
 		void SetupToolbar()
 		{
@@ -795,9 +795,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				bar.SetTitleTextColor(textColor.ToAndroid().ToArgb());
 
 			bar.Title = Element.CurrentPage.Title ?? "";
-
-			if (_toolbarBag != null)
-				bar.Subtitle = _toolbarBag.Subtitle;
 		}
 
 		class ClickListener : Object, IOnClickListener
@@ -844,10 +841,4 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			}
 		}
 	}
-
-    // Used when resetting toolbar so that custom values can be preserved.
-    class ToolbarBag
-    {
-        public string Subtitle { get; set; }
-    }
 }
