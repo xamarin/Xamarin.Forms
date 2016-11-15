@@ -124,12 +124,23 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				{
 					if (!activity.IsDestroyed)
 					{
-						FragmentManager fm = FragmentManager;
-						FragmentTransaction trans = fm.BeginTransaction();
-						foreach (Fragment fragment in _fragmentStack)
+						FragmentTransaction trans = FragmentManager.BeginTransaction();
+						trans.DisallowAddToBackStack();
+
+						while (_fragmentStack.Count != 0)
+						{
+							Fragment fragment = _fragmentStack.Last();
+							_fragmentStack.Remove(fragment);
 							trans.Remove(fragment);
-						trans.CommitAllowingStateLoss();
-						fm.ExecutePendingTransactions();
+						}
+
+						if (Build.VERSION.SdkInt >= BuildVersionCodes.N)
+							trans.CommitNowAllowingStateLoss();
+						else
+						{
+							trans.CommitAllowingStateLoss();
+							new Handler(Looper.MainLooper).PostAtFrontOfQueue(() => FragmentManager.ExecutePendingTransactions());
+						}
 					}
 				}
 
@@ -572,7 +583,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		{
 			var tcs = new TaskCompletionSource<bool>();
 			Fragment fragment = FragmentContainer.CreateInstance(view);
-			FragmentManager fm = FragmentManager;
 
 #if DEBUG
 			// Enables logging of moveToState operations to logcat
@@ -584,7 +594,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			Current = view;
 
 			((Platform)Element.Platform).NavAnimationInProgress = true;
-			FragmentTransaction transaction = fm.BeginTransaction();
+			FragmentTransaction transaction = FragmentManager.BeginTransaction();
 
 			if (animated)
 				SetupPageTransition(transaction, !removed);
@@ -612,8 +622,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					
 					Fragment toShow = fragments.Last();
 					// Execute pending transactions so that we can be sure the fragment list is accurate.
-					fm.ExecutePendingTransactions();
-					if (fm.Fragments.Contains(toShow))
+					new Handler(Looper.MainLooper).PostAtFrontOfQueue(() => FragmentManager.ExecutePendingTransactions());
+					if (FragmentManager.Fragments.Contains(toShow))
 						transaction.Show(toShow);
 					else
 						transaction.Add(Id, toShow);
@@ -627,7 +637,14 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					fragments.Add(fragment);
 				}
 			}
-			transaction.Commit();
+
+			if (Build.VERSION.SdkInt >= BuildVersionCodes.N)
+				transaction.CommitNow();
+			else
+			{
+				transaction.Commit();
+				new Handler(Looper.MainLooper).PostAtFrontOfQueue(() => FragmentManager.ExecutePendingTransactions());
+			}
 
 			// The fragment transitions don't really SUPPORT telling you when they end
 			// There are some hacks you can do, but they actually are worse than just doing this:
