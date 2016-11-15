@@ -23,18 +23,5 @@ namespace Xamarin.Forms.Platform.Android
 			}
 			return null;
 		}
-
-		internal static DeviceOrientation ToDeviceOrientation(this Orientation orientation)
-		{
-			switch (orientation)
-			{
-				case Orientation.Landscape:
-					return DeviceOrientation.Landscape;
-				case Orientation.Portrait:
-					return DeviceOrientation.Portrait;
-				default:
-					return DeviceOrientation.Other;
-			}
-		}
 	}
 }

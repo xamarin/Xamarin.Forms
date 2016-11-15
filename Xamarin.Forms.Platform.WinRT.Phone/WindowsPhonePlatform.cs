@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Platform.WinRT
 		{
 			get
 			{
-				bool landscape = Device.Info.CurrentOrientation.IsLandscape ();
+				bool landscape = Device.Info.ScreenOrientation == ScreenOrientation.Landscape;
 				double offset = (landscape) ? _status.OccludedRect.Width : _status.OccludedRect.Height;
 
 				Rectangle original = base.WindowBounds;

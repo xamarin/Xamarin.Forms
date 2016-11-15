@@ -4,19 +4,48 @@ using System.Runtime.CompilerServices;
 
 namespace Xamarin.Forms
 {
-	internal abstract class DeviceInfo : INotifyPropertyChanged, IDisposable
+	public abstract class DeviceInfo : INotifyPropertyChanged, IDisposable
 	{
-		DeviceOrientation _currentOrientation;
+		DeviceOrientation _deviceOrientation;
+		ScreenOrientation _screenOrientation;
+		PageOrientation _pageOrientation;
 		bool _disposed;
 
-		public DeviceOrientation CurrentOrientation
+		public DeviceOrientation DeviceOrientation
 		{
-			get { return _currentOrientation; }
+			get { return _deviceOrientation; }
 			internal set
 			{
-				if (Equals(_currentOrientation, value))
+				if (Equals(_deviceOrientation, value))
 					return;
-				_currentOrientation = value;
+
+				_deviceOrientation = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public ScreenOrientation ScreenOrientation
+		{
+			get { return _screenOrientation; }
+			internal set
+			{
+				if (Equals(_screenOrientation, value))
+					return;
+
+				_screenOrientation = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public PageOrientation PageOrientation
+		{
+			get { return _pageOrientation; }
+			internal set
+			{
+				if (Equals(_pageOrientation, value))
+					return;
+
+				_pageOrientation = value;
 				OnPropertyChanged();
 			}
 		}
@@ -26,6 +55,10 @@ namespace Xamarin.Forms
 		public abstract Size ScaledScreenSize { get; }
 
 		public abstract double ScalingFactor { get; }
+
+		public abstract void BeginDeviceOrientationNotifications();
+
+		public abstract void EndDeviceOrientationNotifications();
 
 		public void Dispose()
 		{
@@ -43,9 +76,7 @@ namespace Xamarin.Forms
 
 		protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
 		{
-			PropertyChangedEventHandler handler = PropertyChanged;
-			if (handler != null)
-				handler(this, new PropertyChangedEventArgs(propertyName));
+			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 	}
 }

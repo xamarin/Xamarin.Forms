@@ -118,7 +118,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void DeviceInfoPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == "CurrentOrientation")
+			if (e.PropertyName == "ScreenOrientation")
 			{
 				DatePickerDialog currentDialog = _dialog;
 				if (currentDialog != null && currentDialog.IsShowing)

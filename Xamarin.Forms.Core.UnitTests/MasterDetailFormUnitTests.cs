@@ -8,7 +8,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	{
 		public TestDeviceInfo ()
 		{
-			CurrentOrientation = DeviceOrientation.Portrait;
+			ScreenOrientation = ScreenOrientation.Portrait;
 		}
 		public override Size PixelScreenSize
 		{
@@ -23,6 +23,16 @@ namespace Xamarin.Forms.Core.UnitTests
 		public override double ScalingFactor
 		{
 			get { return 2; }
+		}
+
+		public override void BeginDeviceOrientationNotifications()
+		{
+			throw new NotImplementedException();
+		}
+
+		public override void EndDeviceOrientationNotifications()
+		{
+			throw new NotImplementedException();
 		}
 	}
 
@@ -295,7 +305,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		public void ThorwsInSetIsPresentOnSplitPortraitModeOnTablet ()
 		{
 			Device.Idiom = TargetIdiom.Tablet;
-			Device.Info.CurrentOrientation = DeviceOrientation.Portrait;
+			Device.Info.ScreenOrientation = ScreenOrientation.Portrait;
 
 			var page = new MasterDetailPage {
 				Master = new ContentPage { Content = new View (), IsPlatformEnabled = true, Title = "Foo" },
@@ -311,7 +321,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public void TestSetIsPresentedOnPopoverMode ()
 		{
-			Device.Info.CurrentOrientation = DeviceOrientation.Landscape;
+			Device.Info.ScreenOrientation = ScreenOrientation.Landscape;
 
 			var page = new MasterDetailPage {
 				Master = new ContentPage { Content = new View (), IsPlatformEnabled = true, Title = "Foo" },

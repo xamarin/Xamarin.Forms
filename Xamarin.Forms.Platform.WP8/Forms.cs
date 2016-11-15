@@ -73,10 +73,11 @@ namespace Xamarin.Forms
 		{
 			internal const string BWPorientationChangedName = "Xamarin.WP8.OrientationChanged";
 			readonly double _scalingFactor;
+			bool _disposed;
 
 			public WP8DeviceInfo()
 			{
-				MessagingCenter.Subscribe(this, BWPorientationChangedName, (FormsApplicationPage page, DeviceOrientation orientation) => { CurrentOrientation = orientation; });
+				MessagingCenter.Subscribe(this, BWPorientationChangedName, (FormsApplicationPage page, ScreenOrientation orientation) => { ScreenOrientation = orientation; });
 
 				Content content = System.Windows.Application.Current.Host.Content;
 
@@ -91,14 +92,28 @@ namespace Xamarin.Forms
 
 			public override Size ScaledScreenSize { get; }
 
-			public override double ScalingFactor
+			public override double ScalingFactor => _scalingFactor;
+
+			public override void BeginDeviceOrientationNotifications()
 			{
-				get { return _scalingFactor; }
+				throw new NotImplementedException();
+			}
+
+			public override void EndDeviceOrientationNotifications()
+			{
+				throw new NotImplementedException();
 			}
 
 			protected override void Dispose(bool disposing)
 			{
-				MessagingCenter.Unsubscribe<FormsApplicationPage, DeviceOrientation>(this, BWPorientationChangedName);
+				if (_disposed)
+					return;
+
+				if(disposing)
+					MessagingCenter.Unsubscribe<FormsApplicationPage, ScreenOrientation>(this, BWPorientationChangedName);
+
+				_disposed = true;
+
 				base.Dispose(disposing);
 			}
 		}

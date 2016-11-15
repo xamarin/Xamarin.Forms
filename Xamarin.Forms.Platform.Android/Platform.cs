@@ -361,8 +361,8 @@ namespace Xamarin.Forms.Platform.Android
 					IMenuItem menuItem = menu.Add(item.Text);
 					if (!string.IsNullOrEmpty(item.Icon))
 					{
-						var iconBitmap = new BitmapDrawable(_context.Resources, ResourceManager.GetBitmap(_context.Resources, item.Icon));
-						if (iconBitmap != null && iconBitmap.Bitmap != null)
+						Drawable iconBitmap = _context.Resources.GetDrawable(item.Icon);
+						if (iconBitmap != null)
 							menuItem.SetIcon(iconBitmap);
 					}
 					menuItem.SetEnabled(controller.IsEnabled);
@@ -948,10 +948,7 @@ namespace Xamarin.Forms.Platform.Android
 				FileImageSource titleIcon = NavigationPage.GetTitleIcon(view);
 				if (!string.IsNullOrWhiteSpace(titleIcon))
 				{
-					var iconBitmap = new BitmapDrawable(_context.Resources, ResourceManager.GetBitmap(_context.Resources, titleIcon));
-					if (iconBitmap != null && iconBitmap.Bitmap != null)
-						actionBar.SetLogo(iconBitmap);
-
+					actionBar.SetLogo(_context.Resources.GetDrawable(titleIcon));
 					useLogo = true;
 					showHome = true;
 					showTitle = true;
