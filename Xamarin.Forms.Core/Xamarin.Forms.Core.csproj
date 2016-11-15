@@ -212,6 +212,7 @@
     <Compile Include="Performance.cs" />
     <Compile Include="PinchGestureUpdatedEventArgs.cs" />
     <Compile Include="PlatformConfiguration\WindowsSpecific\Page.cs" />
+    <Compile Include="PlatformConfiguration\WindowsSpecific\SearchBar.cs" />
     <Compile Include="PlatformConfiguration\WindowsSpecific\ToolbarPlacement.cs" />
     <Compile Include="PlatformEffect.cs" />
     <Compile Include="PointTypeConverter.cs" />

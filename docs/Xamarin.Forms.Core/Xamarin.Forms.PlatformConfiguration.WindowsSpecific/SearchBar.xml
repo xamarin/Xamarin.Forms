@@ -1,0 +1,290 @@
+<Type Name="SearchBar" FullName="Xamarin.Forms.PlatformConfiguration.WindowsSpecific.SearchBar">
+  <TypeSignature Language="C#" Value="public static class SearchBar" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi abstract sealed beforefieldinit SearchBar extends System.Object" />
+  <AssemblyInfo>
+    <AssemblyName>Xamarin.Forms.Core</AssemblyName>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Object</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Docs>
+    <summary>To be added.</summary>
+    <remarks>To be added.</remarks>
+  </Docs>
+  <Members>
+    <Member MemberName="AutoMaximizeSuggestionArea">
+      <MemberSignature Language="C#" Value="public static bool AutoMaximizeSuggestionArea (this Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Windows,Xamarin.Forms.SearchBar&gt; config);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig bool AutoMaximizeSuggestionArea(class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.Windows, class Xamarin.Forms.SearchBar&gt; config) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="config" Type="Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Windows,Xamarin.Forms.SearchBar&gt;" RefType="this" />
+      </Parameters>
+      <Docs>
+        <param name="config">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="AutoMaximizeSuggestionAreaProperty">
+      <MemberSignature Language="C#" Value="public static readonly Xamarin.Forms.BindableProperty AutoMaximizeSuggestionAreaProperty;" />
+      <MemberSignature Language="ILAsm" Value=".field public static initonly class Xamarin.Forms.BindableProperty AutoMaximizeSuggestionAreaProperty" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>Xamarin.Forms.BindableProperty</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetAutoMaximizeSuggestionArea">
+      <MemberSignature Language="C#" Value="public static bool GetAutoMaximizeSuggestionArea (Xamarin.Forms.BindableObject element);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig bool GetAutoMaximizeSuggestionArea(class Xamarin.Forms.BindableObject element) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="element" Type="Xamarin.Forms.BindableObject" />
+      </Parameters>
+      <Docs>
+        <param name="element">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetSuggestions">
+      <MemberSignature Language="C#" Value="public static System.Collections.ObjectModel.ObservableCollection&lt;string&gt; GetSuggestions (Xamarin.Forms.BindableObject element);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig class System.Collections.ObjectModel.ObservableCollection`1&lt;string&gt; GetSuggestions(class Xamarin.Forms.BindableObject element) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Collections.ObjectModel.ObservableCollection&lt;System.String&gt;</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="element" Type="Xamarin.Forms.BindableObject" />
+      </Parameters>
+      <Docs>
+        <param name="element">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetTextChangedAction">
+      <MemberSignature Language="C#" Value="public static Action GetTextChangedAction (Xamarin.Forms.BindableObject element);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig class System.Action GetTextChangedAction(class Xamarin.Forms.BindableObject element) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Action</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="element" Type="Xamarin.Forms.BindableObject" />
+      </Parameters>
+      <Docs>
+        <param name="element">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetTextChangedAction">
+      <MemberSignature Language="C#" Value="public static Action GetTextChangedAction (this Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Windows,Xamarin.Forms.SearchBar&gt; config);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig class System.Action GetTextChangedAction(class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.Windows, class Xamarin.Forms.SearchBar&gt; config) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Action</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="config" Type="Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Windows,Xamarin.Forms.SearchBar&gt;" RefType="this" />
+      </Parameters>
+      <Docs>
+        <param name="config">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SetAutoMaximizeSuggestionArea">
+      <MemberSignature Language="C#" Value="public static void SetAutoMaximizeSuggestionArea (Xamarin.Forms.BindableObject element, bool value);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void SetAutoMaximizeSuggestionArea(class Xamarin.Forms.BindableObject element, bool value) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="element" Type="Xamarin.Forms.BindableObject" />
+        <Parameter Name="value" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="element">To be added.</param>
+        <param name="value">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SetAutoMaximizeSuggestionArea">
+      <MemberSignature Language="C#" Value="public static Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Windows,Xamarin.Forms.SearchBar&gt; SetAutoMaximizeSuggestionArea (this Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Windows,Xamarin.Forms.SearchBar&gt; config, bool value);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.Windows, class Xamarin.Forms.SearchBar&gt; SetAutoMaximizeSuggestionArea(class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.Windows, class Xamarin.Forms.SearchBar&gt; config, bool value) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Windows,Xamarin.Forms.SearchBar&gt;</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="config" Type="Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Windows,Xamarin.Forms.SearchBar&gt;" RefType="this" />
+        <Parameter Name="value" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="config">To be added.</param>
+        <param name="value">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SetSuggestions">
+      <MemberSignature Language="C#" Value="public static void SetSuggestions (Xamarin.Forms.BindableObject element, System.Collections.ObjectModel.ObservableCollection&lt;string&gt; collection);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void SetSuggestions(class Xamarin.Forms.BindableObject element, class System.Collections.ObjectModel.ObservableCollection`1&lt;string&gt; collection) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="element" Type="Xamarin.Forms.BindableObject" />
+        <Parameter Name="collection" Type="System.Collections.ObjectModel.ObservableCollection&lt;System.String&gt;" />
+      </Parameters>
+      <Docs>
+        <param name="element">To be added.</param>
+        <param name="collection">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SetTextChangedAction">
+      <MemberSignature Language="C#" Value="public static void SetTextChangedAction (Xamarin.Forms.BindableObject element, Action value);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void SetTextChangedAction(class Xamarin.Forms.BindableObject element, class System.Action value) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="element" Type="Xamarin.Forms.BindableObject" />
+        <Parameter Name="value" Type="System.Action" />
+      </Parameters>
+      <Docs>
+        <param name="element">To be added.</param>
+        <param name="value">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SetTextChangedAction">
+      <MemberSignature Language="C#" Value="public static Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Windows,Xamarin.Forms.SearchBar&gt; SetTextChangedAction (this Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Windows,Xamarin.Forms.SearchBar&gt; config, Action value);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.Windows, class Xamarin.Forms.SearchBar&gt; SetTextChangedAction(class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.Windows, class Xamarin.Forms.SearchBar&gt; config, class System.Action value) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Windows,Xamarin.Forms.SearchBar&gt;</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="config" Type="Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Windows,Xamarin.Forms.SearchBar&gt;" RefType="this" />
+        <Parameter Name="value" Type="System.Action" />
+      </Parameters>
+      <Docs>
+        <param name="config">To be added.</param>
+        <param name="value">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Suggestions">
+      <MemberSignature Language="C#" Value="public static System.Collections.ObjectModel.ObservableCollection&lt;string&gt; Suggestions (this Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Windows,Xamarin.Forms.SearchBar&gt; config);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig class System.Collections.ObjectModel.ObservableCollection`1&lt;string&gt; Suggestions(class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.Windows, class Xamarin.Forms.SearchBar&gt; config) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Collections.ObjectModel.ObservableCollection&lt;System.String&gt;</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="config" Type="Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Windows,Xamarin.Forms.SearchBar&gt;" RefType="this" />
+      </Parameters>
+      <Docs>
+        <param name="config">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SuggestionsProperty">
+      <MemberSignature Language="C#" Value="public static readonly Xamarin.Forms.BindableProperty SuggestionsProperty;" />
+      <MemberSignature Language="ILAsm" Value=".field public static initonly class Xamarin.Forms.BindableProperty SuggestionsProperty" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>Xamarin.Forms.BindableProperty</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="TextChangedActionProperty">
+      <MemberSignature Language="C#" Value="public static readonly Xamarin.Forms.BindableProperty TextChangedActionProperty;" />
+      <MemberSignature Language="ILAsm" Value=".field public static initonly class Xamarin.Forms.BindableProperty TextChangedActionProperty" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>Xamarin.Forms.BindableProperty</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+  </Members>
+</Type>

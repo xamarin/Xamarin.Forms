@@ -480,6 +480,7 @@
       <Type Name="CollapseStyle" Kind="Enumeration" />
       <Type Name="MasterDetailPage" Kind="Class" />
       <Type Name="Page" Kind="Class" />
+      <Type Name="SearchBar" Kind="Class" />
       <Type Name="ToolbarPlacement" Kind="Enumeration" />
     </Namespace>
     <Namespace Name="Xamarin.Forms.Xaml">
@@ -1727,6 +1728,115 @@
           <summary>To be added.</summary>
         </Docs>
         <Link Type="Xamarin.Forms.PlatformConfiguration.WindowsSpecific.Page" Member="M:Xamarin.Forms.PlatformConfiguration.WindowsSpecific.Page.SetToolbarPlacement(Xamarin.Forms.IPlatformElementConfiguration{Xamarin.Forms.PlatformConfiguration.Windows,Xamarin.Forms.Page},Xamarin.Forms.PlatformConfiguration.WindowsSpecific.ToolbarPlacement)" />
+      </Member>
+    </ExtensionMethod>
+    <ExtensionMethod>
+      <Targets>
+        <Target Type="T:Xamarin.Forms.IPlatformElementConfiguration`2" />
+      </Targets>
+      <Member MemberName="AutoMaximizeSuggestionArea">
+        <MemberSignature Language="C#" Value="public static bool AutoMaximizeSuggestionArea (this Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Windows,Xamarin.Forms.SearchBar&gt; config);" />
+        <MemberSignature Language="ILAsm" Value=".method public static hidebysig bool AutoMaximizeSuggestionArea(class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.Windows, class Xamarin.Forms.SearchBar&gt; config) cil managed" />
+        <MemberType>ExtensionMethod</MemberType>
+        <ReturnValue>
+          <ReturnType>System.Boolean</ReturnType>
+        </ReturnValue>
+        <Parameters>
+          <Parameter Name="config" Type="Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Windows,Xamarin.Forms.SearchBar&gt;" RefType="this" />
+        </Parameters>
+        <Docs>
+          <param name="config">To be added.</param>
+          <summary>To be added.</summary>
+        </Docs>
+        <Link Type="Xamarin.Forms.PlatformConfiguration.WindowsSpecific.SearchBar" Member="M:Xamarin.Forms.PlatformConfiguration.WindowsSpecific.SearchBar.AutoMaximizeSuggestionArea(Xamarin.Forms.IPlatformElementConfiguration{Xamarin.Forms.PlatformConfiguration.Windows,Xamarin.Forms.SearchBar})" />
+      </Member>
+    </ExtensionMethod>
+    <ExtensionMethod>
+      <Targets>
+        <Target Type="T:Xamarin.Forms.IPlatformElementConfiguration`2" />
+      </Targets>
+      <Member MemberName="GetTextChangedAction">
+        <MemberSignature Language="C#" Value="public static Action GetTextChangedAction (this Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Windows,Xamarin.Forms.SearchBar&gt; config);" />
+        <MemberSignature Language="ILAsm" Value=".method public static hidebysig class System.Action GetTextChangedAction(class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.Windows, class Xamarin.Forms.SearchBar&gt; config) cil managed" />
+        <MemberType>ExtensionMethod</MemberType>
+        <ReturnValue>
+          <ReturnType>System.Action</ReturnType>
+        </ReturnValue>
+        <Parameters>
+          <Parameter Name="config" Type="Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Windows,Xamarin.Forms.SearchBar&gt;" RefType="this" />
+        </Parameters>
+        <Docs>
+          <param name="config">To be added.</param>
+          <summary>To be added.</summary>
+        </Docs>
+        <Link Type="Xamarin.Forms.PlatformConfiguration.WindowsSpecific.SearchBar" Member="M:Xamarin.Forms.PlatformConfiguration.WindowsSpecific.SearchBar.GetTextChangedAction(Xamarin.Forms.IPlatformElementConfiguration{Xamarin.Forms.PlatformConfiguration.Windows,Xamarin.Forms.SearchBar})" />
+      </Member>
+    </ExtensionMethod>
+    <ExtensionMethod>
+      <Targets>
+        <Target Type="T:Xamarin.Forms.IPlatformElementConfiguration`2" />
+      </Targets>
+      <Member MemberName="SetAutoMaximizeSuggestionArea">
+        <MemberSignature Language="C#" Value="public static Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Windows,Xamarin.Forms.SearchBar&gt; SetAutoMaximizeSuggestionArea (this Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Windows,Xamarin.Forms.SearchBar&gt; config, bool value);" />
+        <MemberSignature Language="ILAsm" Value=".method public static hidebysig class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.Windows, class Xamarin.Forms.SearchBar&gt; SetAutoMaximizeSuggestionArea(class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.Windows, class Xamarin.Forms.SearchBar&gt; config, bool value) cil managed" />
+        <MemberType>ExtensionMethod</MemberType>
+        <ReturnValue>
+          <ReturnType>Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Windows,Xamarin.Forms.SearchBar&gt;</ReturnType>
+        </ReturnValue>
+        <Parameters>
+          <Parameter Name="config" Type="Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Windows,Xamarin.Forms.SearchBar&gt;" RefType="this" />
+          <Parameter Name="value" Type="System.Boolean" />
+        </Parameters>
+        <Docs>
+          <param name="config">To be added.</param>
+          <param name="value">To be added.</param>
+          <summary>To be added.</summary>
+        </Docs>
+        <Link Type="Xamarin.Forms.PlatformConfiguration.WindowsSpecific.SearchBar" Member="M:Xamarin.Forms.PlatformConfiguration.WindowsSpecific.SearchBar.SetAutoMaximizeSuggestionArea(Xamarin.Forms.IPlatformElementConfiguration{Xamarin.Forms.PlatformConfiguration.Windows,Xamarin.Forms.SearchBar},System.Boolean)" />
+      </Member>
+    </ExtensionMethod>
+    <ExtensionMethod>
+      <Targets>
+        <Target Type="T:Xamarin.Forms.IPlatformElementConfiguration`2" />
+      </Targets>
+      <Member MemberName="SetTextChangedAction">
+        <MemberSignature Language="C#" Value="public static Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Windows,Xamarin.Forms.SearchBar&gt; SetTextChangedAction (this Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Windows,Xamarin.Forms.SearchBar&gt; config, Action value);" />
+        <MemberSignature Language="ILAsm" Value=".method public static hidebysig class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.Windows, class Xamarin.Forms.SearchBar&gt; SetTextChangedAction(class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.Windows, class Xamarin.Forms.SearchBar&gt; config, class System.Action value) cil managed" />
+        <MemberType>ExtensionMethod</MemberType>
+        <ReturnValue>
+          <ReturnType>Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Windows,Xamarin.Forms.SearchBar&gt;</ReturnType>
+        </ReturnValue>
+        <Parameters>
+          <Parameter Name="config" Type="Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Windows,Xamarin.Forms.SearchBar&gt;" RefType="this" />
+          <Parameter Name="value" Type="System.Action" />
+        </Parameters>
+        <Docs>
+          <param name="config">To be added.</param>
+          <param name="value">To be added.</param>
+          <summary>To be added.</summary>
+        </Docs>
+        <Link Type="Xamarin.Forms.PlatformConfiguration.WindowsSpecific.SearchBar" Member="M:Xamarin.Forms.PlatformConfiguration.WindowsSpecific.SearchBar.SetTextChangedAction(Xamarin.Forms.IPlatformElementConfiguration{Xamarin.Forms.PlatformConfiguration.Windows,Xamarin.Forms.SearchBar},System.Action)" />
+      </Member>
+    </ExtensionMethod>
+    <ExtensionMethod>
+      <Targets>
+        <Target Type="T:Xamarin.Forms.IPlatformElementConfiguration`2" />
+      </Targets>
+      <Member MemberName="Suggestions">
+        <MemberSignature Language="C#" Value="public static System.Collections.ObjectModel.ObservableCollection&lt;string&gt; Suggestions (this Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Windows,Xamarin.Forms.SearchBar&gt; config);" />
+        <MemberSignature Language="ILAsm" Value=".method public static hidebysig class System.Collections.ObjectModel.ObservableCollection`1&lt;string&gt; Suggestions(class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.Windows, class Xamarin.Forms.SearchBar&gt; config) cil managed" />
+        <MemberType>ExtensionMethod</MemberType>
+        <ReturnValue>
+          <ReturnType>System.Collections.ObjectModel.ObservableCollection&lt;System.String&gt;</ReturnType>
+        </ReturnValue>
+        <Parameters>
+          <Parameter Name="config" Type="Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Windows,Xamarin.Forms.SearchBar&gt;" RefType="this" />
+        </Parameters>
+        <Docs>
+          <param name="config">To be added.</param>
+          <summary>To be added.</summary>
+        </Docs>
+        <Link Type="Xamarin.Forms.PlatformConfiguration.WindowsSpecific.SearchBar" Member="M:Xamarin.Forms.PlatformConfiguration.WindowsSpecific.SearchBar.Suggestions(Xamarin.Forms.IPlatformElementConfiguration{Xamarin.Forms.PlatformConfiguration.Windows,Xamarin.Forms.SearchBar})" />
       </Member>
     </ExtensionMethod>
     <ExtensionMethod>

@@ -1,7 +1,10 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
+using Xamarin.Forms.PlatformConfiguration;
+using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -24,8 +27,11 @@ namespace Xamarin.Forms.Platform.UWP
 				{
 					SetNativeControl(new AutoSuggestBox { QueryIcon = new SymbolIcon(Symbol.Find) });
 					Control.QuerySubmitted += OnQuerySubmitted;
+					Control.SuggestionChosen += OnSuggestionChosen;
 					Control.TextChanged += OnTextChanged;
 					Control.Loaded += OnControlLoaded;
+					Control.AutoMaximizeSuggestionArea = Element.OnThisPlatform().AutoMaximizeSuggestionArea();
+					Control.ItemsSource = Element.OnThisPlatform().Suggestions();
 				}
 
 				UpdateText();
@@ -62,6 +68,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateTextColor();
 			else if (e.PropertyName == SearchBar.PlaceholderColorProperty.PropertyName)
 				UpdatePlaceholderColor();
+			else if (e.PropertyName == PlatformConfiguration.WindowsSpecific.SearchBar.AutoMaximizeSuggestionAreaProperty.PropertyName)
+				UpdateAutoMaximizeSuggestionAreaProperty();
 		}
 
 		void OnControlLoaded(object sender, RoutedEventArgs routedEventArgs)
@@ -78,12 +86,20 @@ namespace Xamarin.Forms.Platform.UWP
 			((ISearchBarController)Element).OnSearchButtonPressed();
 		}
 
+		void OnSuggestionChosen(AutoSuggestBox sender, AutoSuggestBoxSuggestionChosenEventArgs args)
+		{
+			((IElementController)Element).SetValueFromRenderer(SearchBar.TextProperty, sender.Text);
+		}
+
 		void OnTextChanged(AutoSuggestBox sender, AutoSuggestBoxTextChangedEventArgs e)
 		{
 			if (e.Reason == AutoSuggestionBoxTextChangeReason.ProgrammaticChange)
 				return;
 
 			((IElementController)Element).SetValueFromRenderer(SearchBar.TextProperty, sender.Text);
+
+			Action platformSpecificAction = Element.OnThisPlatform().GetTextChangedAction();
+			platformSpecificAction?.Invoke();
 		}
 
 		void UpdateAlignment()
@@ -92,6 +108,11 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 
 			_queryTextBox.TextAlignment = Element.HorizontalTextAlignment.ToNativeTextAlignment();
+		}
+
+		void UpdateAutoMaximizeSuggestionAreaProperty()
+		{
+			Control.AutoMaximizeSuggestionArea = !Control.AutoMaximizeSuggestionArea;
 		}
 
 		void UpdateCancelButtonColor()
