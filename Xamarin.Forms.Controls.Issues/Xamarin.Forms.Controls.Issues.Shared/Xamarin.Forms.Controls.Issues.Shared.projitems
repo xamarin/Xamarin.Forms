@@ -128,8 +128,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla42519.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla43516.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla44096.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla43569.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla44096.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla43663.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla44166.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla44176.cs" />
@@ -140,7 +138,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla44044.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla46458.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla44338.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla46458.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla45743.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CarouselAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla34561.cs" />
