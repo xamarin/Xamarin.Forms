@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Linq;
 using Foundation;
 using UIKit;
 using Xamarin.Forms.Platform.iOS.Resources;
@@ -657,8 +656,18 @@ namespace Xamarin.Forms.Platform.iOS
 					return;
 
 				var table = (UITableView)recognizer.View;
+				var isRowSelected = false;
 
-				if (table.IndexPathsForSelectedRows != null && table.IndexPathsForSelectedRows.Contains(selector._lastPath))
+				foreach(var indexPath in table.IndexPathsForSelectedRows)
+				{
+					if(indexPath == selector._lastPath)
+					{
+						isRowSelected = true;
+						break;
+					}
+				}
+
+				if (table.IndexPathsForSelectedRows != null && isRowSelected)
 				{
 					if (!table.AllowsMultipleSelectionDuringEditing || !table.Editing)
 						return;
