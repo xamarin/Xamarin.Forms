@@ -23,7 +23,7 @@ namespace Xamarin.Forms
 		{
 		}
 
-		public Binding(string path, BindingMode mode = BindingMode.Default, IValueConverter converter = null, object converterParameter = null, string stringFormat = null, object source = null)
+		public Binding(string path, BindingMode mode = BindingMode.Default, IValueConverter converter = null, object converterParameter = null, string stringFormat = null, object source = null, object nullValue = null)
 		{
 			if (path == null)
 				throw new ArgumentNullException("path");
@@ -36,6 +36,7 @@ namespace Xamarin.Forms
 			Mode = mode;
 			StringFormat = stringFormat;
 			Source = source;
+			NullValue = nullValue;
 		}
 
 		public IValueConverter Converter
@@ -82,9 +83,11 @@ namespace Xamarin.Forms
 			}
 		}
 
-		internal string UpdateSourceEventName {
+		internal string UpdateSourceEventName
+		{
 			get { return _updateSourceEventName; }
-			set {
+			set
+			{
 				ThrowIfApplied();
 				_updateSourceEventName = value;
 			}
@@ -113,9 +116,9 @@ namespace Xamarin.Forms
 		internal override void Apply(object newContext, BindableObject bindObj, BindableProperty targetProperty)
 		{
 			object src = _source;
-			base.Apply(src ?? newContext, bindObj, targetProperty);
+			base.Apply(src ?? newContext ?? NullValue, bindObj, targetProperty);
 
-			object bindingContext = src ?? Context ?? newContext;
+			object bindingContext = src ?? Context ?? newContext ?? NullValue;
 			if (_expression == null && bindingContext != null)
 				_expression = new BindingExpression(this, SelfPath);
 
@@ -124,7 +127,7 @@ namespace Xamarin.Forms
 
 		internal override BindingBase Clone()
 		{
-			return new Binding(Path, Mode) { Converter = Converter, ConverterParameter = ConverterParameter, StringFormat = StringFormat, Source = Source, UpdateSourceEventName = UpdateSourceEventName };
+			return new Binding(Path, Mode) { Converter = Converter, ConverterParameter = ConverterParameter, StringFormat = StringFormat, Source = Source, NullValue = NullValue, UpdateSourceEventName = UpdateSourceEventName };
 		}
 
 		internal override object GetSourceValue(object value, Type targetPropertyType)

@@ -10,6 +10,7 @@ namespace Xamarin.Forms
 
 		BindingMode _mode = BindingMode.Default;
 		string _stringFormat;
+		object _nullValue;
 
 		internal BindingBase()
 		{
@@ -37,6 +38,17 @@ namespace Xamarin.Forms
 				ThrowIfApplied();
 
 				_stringFormat = value;
+			}
+		}
+
+		public object NullValue
+		{
+			get { return _nullValue; }
+			set
+			{
+				ThrowIfApplied();
+
+				_nullValue = value;
 			}
 		}
 
@@ -85,9 +97,9 @@ namespace Xamarin.Forms
 		internal virtual object GetSourceValue(object value, Type targetPropertyType)
 		{
 			if (StringFormat != null)
-				return string.Format(StringFormat, value);
+				return string.Format(StringFormat, value ?? NullValue);
 
-			return value;
+			return value ?? NullValue;
 		}
 
 		internal virtual object GetTargetValue(object value, Type sourcePropertyType)
