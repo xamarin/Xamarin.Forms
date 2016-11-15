@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Maps.WinRT
 			if (e.OldElement != null)
 			{
 				var mapModel = e.OldElement;
-				MessagingCenter.Unsubscribe<Map, MapSpan>(this, "MapMoveToRegion");
+				MessagingCenter.Instance.Unsubscribe<Map, MapSpan>(this, "MapMoveToRegion");
 				((ObservableCollection<Pin>)mapModel.Pins).CollectionChanged -= OnCollectionChanged;
 			}
 
@@ -50,7 +50,7 @@ namespace Xamarin.Forms.Maps.WinRT
 					Control.CenterChanged += async (s, a) => await UpdateVisibleRegion();
 				}
 
-				MessagingCenter.Subscribe<Map, MapSpan>(this, "MapMoveToRegion", async (s, a) => await MoveToRegion(a), mapModel);
+				MessagingCenter.Instance.Subscribe<Map, MapSpan>(this, "MapMoveToRegion", async (s, a) => await MoveToRegion(a), mapModel);
 
 				UpdateMapType();
 				UpdateHasScrollEnabled();
@@ -85,7 +85,7 @@ namespace Xamarin.Forms.Maps.WinRT
 			{
 				_disposed = true;
 
-				MessagingCenter.Unsubscribe<Map, MapSpan>(this, "MapMoveToRegion");
+				MessagingCenter.Instance.Unsubscribe<Map, MapSpan>(this, "MapMoveToRegion");
 
 				if (Element != null)
 					((ObservableCollection<Pin>)Element.Pins).CollectionChanged -= OnCollectionChanged;

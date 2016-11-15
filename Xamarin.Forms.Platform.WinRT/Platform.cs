@@ -70,7 +70,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 			_container.SizeChanged += OnRendererSizeChanged;
 
-			MessagingCenter.Subscribe(this, Page.BusySetSignalName, (Page sender, bool enabled) =>
+			MessagingCenter.Instance.Subscribe(this, Page.BusySetSignalName, (Page sender, bool enabled) =>
 			{
 				Windows.UI.Xaml.Controls.ProgressBar indicator = GetBusyIndicator();
 				indicator.Visibility = enabled ? Visibility.Visible : Visibility.Collapsed;
@@ -78,8 +78,8 @@ namespace Xamarin.Forms.Platform.WinRT
 
 			_toolbarTracker.CollectionChanged += OnToolbarItemsChanged;
 
-			MessagingCenter.Subscribe<Page, AlertArguments>(this, Page.AlertSignalName, OnPageAlert);
-			MessagingCenter.Subscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName, OnPageActionSheet);
+			MessagingCenter.Instance.Subscribe<Page, AlertArguments>(this, Page.AlertSignalName, OnPageAlert);
+			MessagingCenter.Instance.Subscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName, OnPageActionSheet);
 
 			UpdateBounds();
 

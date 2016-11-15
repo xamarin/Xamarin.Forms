@@ -25,7 +25,7 @@ namespace Xamarin.Forms.Controls
 					AutomationId = "ModalPagePopButton",
 					Text ="Pop Me",
 					Command = new Command (async () => {
-						MessagingCenter.Send (this, "update");
+						MessagingCenter.Instance.Send (this, "update");
 						await Navigation.PopModalAsync ();
 					})
 				};
@@ -38,7 +38,7 @@ namespace Xamarin.Forms.Controls
 			{
 				Title = "Testpage 1";
 
-				MessagingCenter.Subscribe<ModalPage> (this, "update", sender => {
+				MessagingCenter.Instance.Subscribe<ModalPage> (this, "update", sender => {
 					BlowUp ();
 				});
 

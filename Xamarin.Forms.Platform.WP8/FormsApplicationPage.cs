@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Platform.WinPhone
 			PhoneApplicationService.Current.Deactivated += OnDeactivated;
 			PhoneApplicationService.Current.Closing += OnClosing;
 
-			MessagingCenter.Send(this, Forms.WP8DeviceInfo.BWPorientationChangedName, Orientation.ToDeviceOrientation());
+			MessagingCenter.Instance.Send(this, Forms.WP8DeviceInfo.BWPorientationChangedName, Orientation.ToDeviceOrientation());
 			OrientationChanged += OnOrientationChanged;
 			//DeserializePropertyStore ();
 		}
@@ -69,7 +69,7 @@ namespace Xamarin.Forms.Platform.WinPhone
 
 		void OnOrientationChanged(object sender, OrientationChangedEventArgs e)
 		{
-			MessagingCenter.Send(this, Forms.WP8DeviceInfo.BWPorientationChangedName, e.Orientation.ToDeviceOrientation());
+			MessagingCenter.Instance.Send(this, Forms.WP8DeviceInfo.BWPorientationChangedName, e.Orientation.ToDeviceOrientation());
 		}
 
 		void SetMainPage()

@@ -95,7 +95,7 @@ namespace Xamarin.Forms.Maps
 			if (mapSpan == null)
 				throw new ArgumentNullException(nameof(mapSpan));
 			LastMoveToRegion = mapSpan;
-			MessagingCenter.Send(this, "MapMoveToRegion", mapSpan);
+			MessagingCenter.Instance.Send(this, "MapMoveToRegion", mapSpan);
 		}
 
 		void PinsOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

@@ -118,7 +118,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (null, map.VisibleRegion);
 
 			bool signaled = false;
-			MessagingCenter.Subscribe<Map, MapSpan> (this, "MapMoveToRegion", (s, a) => {
+			MessagingCenter.Instance.Subscribe<Map, MapSpan> (this, "MapMoveToRegion", (s, a) => {
 				signaled = true;
 				map.VisibleRegion = a;
 			}, map);
