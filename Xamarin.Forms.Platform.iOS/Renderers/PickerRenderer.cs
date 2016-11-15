@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using UIKit;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using RectangleF = CoreGraphics.CGRect;
 
 namespace Xamarin.Forms.Platform.iOS
@@ -9,22 +10,28 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		UIPickerView _picker;
 		UIColor _defaultTextColor;
+		NoCaretField _noCaretField;
+
+		bool _disposed;
 
 		IElementController ElementController => Element as IElementController;
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Picker> e)
 		{
 			if (e.OldElement != null)
+			{
 				((ObservableList<string>)e.OldElement.Items).CollectionChanged -= RowsCollectionChanged;
+				UnregisterEvents();
+			}
 
 			if (e.NewElement != null)
 			{
 				if (Control == null)
 				{
-					var entry = new NoCaretField { BorderStyle = UITextBorderStyle.RoundedRect };
+					_noCaretField = new NoCaretField { BorderStyle = UITextBorderStyle.RoundedRect };
 
-					entry.EditingDidBegin += OnStarted;
-					entry.EditingDidEnd += OnEnded;
+					_noCaretField.EditingDidBegin += OnStarted;
+					_noCaretField.EditingDidEnd += OnEnded;
 
 					_picker = new UIPickerView();
 
@@ -37,23 +44,24 @@ namespace Xamarin.Forms.Platform.iOS
 						if (s.SelectedIndex == -1 && Element.Items != null && Element.Items.Count > 0)
 							UpdatePickerSelectedIndex(0);
 						UpdatePickerFromModel(s);
-						entry.ResignFirstResponder();
+						_noCaretField.ResignFirstResponder();
 					});
 
 					toolbar.SetItems(new[] { spacer, doneButton }, false);
 
-					entry.InputView = _picker;
-					entry.InputAccessoryView = toolbar;
+					_noCaretField.InputView = _picker;
+					_noCaretField.InputAccessoryView = toolbar;
 
-					_defaultTextColor = entry.TextColor;
+					_defaultTextColor = _noCaretField.TextColor;
 
-					SetNativeControl(entry);
+					SetNativeControl(_noCaretField);
 				}
 
 				_picker.Model = new PickerSource(this);
 
 				UpdatePicker();
 				UpdateTextColor();
+				UpdateDisabledSelectorActions();
 
 				((ObservableList<string>)e.NewElement.Items).CollectionChanged += RowsCollectionChanged;
 			}
@@ -70,6 +78,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdatePicker();
 			if (e.PropertyName == Picker.TextColorProperty.PropertyName || e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateTextColor();
+			else if (e.PropertyName == PlatformConfiguration.iOSSpecific.Picker.DisabledSelectorActionsProperty.PropertyName)
+				UpdateDisabledSelectorActions();
 		}
 
 		void OnEnded(object sender, EventArgs eventArgs)
@@ -135,6 +145,53 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.TextColor = _defaultTextColor;
 			else
 				Control.TextColor = textColor.ToUIColor();
+		}
+
+		void UpdateDisabledSelectorActions()
+		{
+			_noCaretField.DisabledSelectorActions = Element.On<PlatformConfiguration.iOS>().DisabledSelectorActions();
+		}
+
+		void UnregisterEvents()
+		{
+			if (_noCaretField != null)
+			{
+				_noCaretField.EditingDidBegin -= OnStarted;
+				_noCaretField.EditingDidEnd -= OnEnded;
+			}
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (_disposed)
+				return;
+
+			if (disposing)
+			{
+				UnregisterEvents();
+
+				if (_defaultTextColor != null)
+				{
+					_defaultTextColor.Dispose();
+					_defaultTextColor = null;
+				}
+
+				if (_picker != null)
+				{
+					_picker.Dispose();
+					_picker = null;
+				}
+
+				if (_noCaretField != null)
+				{
+					_noCaretField.Dispose();
+					_noCaretField = null;
+				}
+			}
+
+			_disposed = true;
+
+			base.Dispose(disposing);
 		}
 
 		class PickerSource : UIPickerViewModel

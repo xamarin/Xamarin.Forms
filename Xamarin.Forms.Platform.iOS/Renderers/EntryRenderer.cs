@@ -1,7 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 using System.Drawing;
+using CoreGraphics;
+using Foundation;
+using ObjCRuntime;
 using UIKit;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 
@@ -10,6 +14,8 @@ namespace Xamarin.Forms.Platform.iOS
 	public class EntryRenderer : ViewRenderer<Entry, UITextField>
 	{
 		UIColor _defaultTextColor;
+		UITextField _uiTextField;
+		bool _disposed;
 
 		public EntryRenderer()
 		{
@@ -20,42 +26,68 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void Dispose(bool disposing)
 		{
+			if (_disposed)
+				return;
+
 			if (disposing)
 			{
-				if (Control != null)
+				UnregisterEvents();
+
+				if (_defaultTextColor != null)
 				{
-					Control.EditingDidBegin -= OnEditingBegan;
-					Control.EditingChanged -= OnEditingChanged;
-					Control.EditingDidEnd -= OnEditingEnded;
+					_defaultTextColor.Dispose();
+					_defaultTextColor = null;
+				}
+
+				if (_uiTextField != null)
+				{
+					_uiTextField.Dispose();
+					_uiTextField = null;
 				}
 			}
 
+			_disposed = true;
+
 			base.Dispose(disposing);
+		}
+
+		void UnregisterEvents()
+		{
+			if (_uiTextField == null)
+				return;
+
+			_uiTextField.EditingDidBegin -= OnEditingBegan;
+			_uiTextField.EditingChanged -= OnEditingChanged;
+			_uiTextField.EditingDidEnd -= OnEditingEnded;
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Entry> e)
 		{
 			base.OnElementChanged(e);
 
-			var textField = Control;
-
-			if (Control == null)
+			if (e.OldElement != null)
 			{
-				SetNativeControl(textField = new UITextField(RectangleF.Empty));
-
-				_defaultTextColor = textField.TextColor;
-				textField.BorderStyle = UITextBorderStyle.RoundedRect;
-
-				textField.EditingChanged += OnEditingChanged;
-
-				textField.ShouldReturn = OnShouldReturn;
-
-				textField.EditingDidBegin += OnEditingBegan;
-				textField.EditingDidEnd += OnEditingEnded;
+				UnregisterEvents();
 			}
 
 			if (e.NewElement != null)
 			{
+				if (Control == null)
+				{
+					_uiTextField = new UITextFieldWrapper(RectangleF.Empty)
+					{
+						BorderStyle = UITextBorderStyle.RoundedRect,
+						ShouldReturn = OnShouldReturn
+					};
+
+					_uiTextField.EditingChanged += OnEditingChanged;
+					_uiTextField.EditingDidBegin += OnEditingBegan;
+					_uiTextField.EditingDidEnd += OnEditingEnded;
+
+					_defaultTextColor = _uiTextField.TextColor;
+					SetNativeControl(_uiTextField);
+				}
+
 				UpdatePlaceholder();
 				UpdatePassword();
 				UpdateText();
@@ -64,6 +96,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateKeyboard();
 				UpdateAlignment();
 				UpdateAdjustsFontSizeToFitWidth();
+				UpdateDisabledSelectorActions();
 			}
 		}
 
@@ -94,6 +127,8 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else if (e.PropertyName == PlatformConfiguration.iOSSpecific.Entry.AdjustsFontSizeToFitWidthProperty.PropertyName)
 				UpdateAdjustsFontSizeToFitWidth();
+			else if (e.PropertyName == PlatformConfiguration.iOSSpecific.Entry.DisabledSelectorActionsProperty.PropertyName)
+				UpdateDisabledSelectorActions();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -191,6 +226,64 @@ namespace Xamarin.Forms.Platform.iOS
 			// ReSharper disable once RedundantCheckBeforeAssignment
 			if (Control.Text != Element.Text)
 				Control.Text = Element.Text;
+		}
+
+		void UpdateDisabledSelectorActions()
+		{
+			(_uiTextField as UITextFieldWrapper).DisabledSelectorActions = Element.On<PlatformConfiguration.iOS>().DisabledSelectorActions();
+		}
+	}
+
+	class UITextFieldWrapper : UITextField
+	{
+		internal List<SelectorAction> DisabledSelectorActions { get; set; }
+
+		internal UITextFieldWrapper(CGRect frame) : base(frame)
+		{
+		}
+
+		public override bool CanPerform(Selector action, NSObject withSender)
+		{
+			if(DisabledSelectorActions == null || DisabledSelectorActions.Count == 0)
+				return base.CanPerform(action, withSender);
+
+			if (DisabledSelectorActions.Contains(SelectorAction.All))
+				return false;
+
+			if (DisabledSelectorActions.Contains(SelectorAction.AddShortcut) && action == new Selector("_addShortcut:"))
+				return false;
+
+			if (DisabledSelectorActions.Contains(SelectorAction.Copy) && action == new Selector("copy:"))
+				return false;
+
+			if (DisabledSelectorActions.Contains(SelectorAction.Cut) && action == new Selector("cut:"))
+				return false;
+
+			if (DisabledSelectorActions.Contains(SelectorAction.Define) && action == new Selector("_define:"))
+				return false;
+
+			if (DisabledSelectorActions.Contains(SelectorAction.Delete) && action == new Selector("delete:"))
+				return false;
+
+			if (DisabledSelectorActions.Contains(SelectorAction.Lookup) && action == new Selector("_lookup:"))
+				return false;
+
+			if (DisabledSelectorActions.Contains(SelectorAction.Paste) && action == new Selector("paste:"))
+				return false;
+
+			if (DisabledSelectorActions.Contains(SelectorAction.Replace) && action == new Selector("_promptForReplace:"))
+				return false;
+
+			if (DisabledSelectorActions.Contains(SelectorAction.Select) && action == new Selector("select:"))
+				return false;
+
+			if (DisabledSelectorActions.Contains(SelectorAction.SelectAll) && action == new Selector("selectAll:"))
+				return false;
+
+			if (DisabledSelectorActions.Contains(SelectorAction.Share) && action == new Selector("_share:"))
+				return false;
+
+			return base.CanPerform(action, withSender);
 		}
 	}
 }

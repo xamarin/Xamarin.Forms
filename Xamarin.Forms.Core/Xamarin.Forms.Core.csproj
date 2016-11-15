@@ -92,8 +92,12 @@
     <Compile Include="PlatformConfiguration\AndroidSpecific\TabbedPage.cs" />
     <Compile Include="PlatformConfiguration\ExtensionPoints.cs" />
     <Compile Include="PlatformConfiguration\iOSSpecific\BlurEffectStyle.cs" />
+    <Compile Include="PlatformConfiguration\iOSSpecific\DatePicker.cs" />
     <Compile Include="PlatformConfiguration\iOSSpecific\Entry.cs" />
     <Compile Include="PlatformConfiguration\iOSSpecific\NavigationPage.cs" />
+    <Compile Include="PlatformConfiguration\iOSSpecific\Picker.cs" />
+    <Compile Include="PlatformConfiguration\iOSSpecific\SelectorAction.cs" />
+    <Compile Include="PlatformConfiguration\iOSSpecific\TimePicker.cs" />
     <Compile Include="PlatformConfiguration\iOSSpecific\VisualElement.cs" />
     <Compile Include="PlatformConfiguration\WindowsSpecific\MasterDetailPage.cs" />
     <Compile Include="PlatformConfiguration\WindowsSpecific\CollapseStyle.cs" />

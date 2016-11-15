@@ -1,12 +1,14 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using Foundation;
 using UIKit;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using RectangleF = CoreGraphics.CGRect;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	internal class NoCaretField : UITextField
+	internal class NoCaretField : UITextFieldWrapper
 	{
 		public NoCaretField() : base(new RectangleF())
 		{
@@ -22,6 +24,9 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		UIDatePicker _picker;
 		UIColor _defaultTextColor;
+		NoCaretField _noCaretField;
+
+		bool _disposed;
 
 		IElementController ElementController => Element as IElementController;
 
@@ -29,38 +34,44 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.OnElementChanged(e);
 
-			if (e.OldElement == null)
+			if (e.OldElement != null)
 			{
-				var entry = new NoCaretField { BorderStyle = UITextBorderStyle.RoundedRect };
-
-				entry.EditingDidBegin += OnStarted;
-				entry.EditingDidEnd += OnEnded;
-
-				_picker = new UIDatePicker { Mode = UIDatePickerMode.Date, TimeZone = new NSTimeZone("UTC") };
-
-				_picker.ValueChanged += HandleValueChanged;
-
-				var width = UIScreen.MainScreen.Bounds.Width;
-				var toolbar = new UIToolbar(new RectangleF(0, 0, width, 44)) { BarStyle = UIBarStyle.Default, Translucent = true };
-				var spacer = new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace);
-				var doneButton = new UIBarButtonItem(UIBarButtonSystemItem.Done, (o, a) => entry.ResignFirstResponder());
-
-				toolbar.SetItems(new[] { spacer, doneButton }, false);
-
-				entry.InputView = _picker;
-				entry.InputAccessoryView = toolbar;
-
-				_defaultTextColor = entry.TextColor;
-
-				SetNativeControl(entry);
+				UnregisterEvents();
 			}
 
 			if (e.NewElement != null)
 			{
+				if (Control == null)
+				{
+					_noCaretField = new NoCaretField { BorderStyle = UITextBorderStyle.RoundedRect };
+
+					_noCaretField.EditingDidBegin += OnStarted;
+					_noCaretField.EditingDidEnd += OnEnded;
+
+					_picker = new UIDatePicker { Mode = UIDatePickerMode.Date, TimeZone = new NSTimeZone("UTC") };
+
+					_picker.ValueChanged += HandleValueChanged;
+
+					var width = UIScreen.MainScreen.Bounds.Width;
+					var toolbar = new UIToolbar(new RectangleF(0, 0, width, 44)) { BarStyle = UIBarStyle.Default, Translucent = true };
+					var spacer = new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace);
+					var doneButton = new UIBarButtonItem(UIBarButtonSystemItem.Done, (o, a) => _noCaretField.ResignFirstResponder());
+
+					toolbar.SetItems(new[] { spacer, doneButton }, false);
+
+					_noCaretField.InputView = _picker;
+					_noCaretField.InputAccessoryView = toolbar;
+
+					_defaultTextColor = _noCaretField.TextColor;
+
+					SetNativeControl(_noCaretField);
+				}
+
 				UpdateDateFromModel(false);
 				UpdateMaximumDate();
 				UpdateMinimumDate();
 				UpdateTextColor();
+				UpdateDisabledSelectorActions();
 			}
 		}
 
@@ -76,6 +87,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateMaximumDate();
 			else if (e.PropertyName == DatePicker.TextColorProperty.PropertyName || e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateTextColor();
+			else if (e.PropertyName == PlatformConfiguration.iOSSpecific.DatePicker.DisabledSelectorActionsProperty.PropertyName)
+				UpdateDisabledSelectorActions();
 		}
 
 		void HandleValueChanged(object sender, EventArgs e)
@@ -119,6 +132,56 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.TextColor = _defaultTextColor;
 			else
 				Control.TextColor = textColor.ToUIColor();
+		}
+
+		void UpdateDisabledSelectorActions()
+		{
+			_noCaretField.DisabledSelectorActions = Element.On<PlatformConfiguration.iOS>().DisabledSelectorActions();
+		}
+
+		void UnregisterEvents()
+		{
+			if (_noCaretField != null)
+			{
+				_noCaretField.EditingDidBegin -= OnStarted;
+				_noCaretField.EditingDidEnd -= OnEnded;
+			}
+
+			if (_picker != null)
+				_picker.ValueChanged -= HandleValueChanged;
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (_disposed)
+				return;
+
+			if (disposing)
+			{
+				UnregisterEvents();
+
+				if (_defaultTextColor != null)
+				{
+					_defaultTextColor.Dispose();
+					_defaultTextColor = null;
+				}
+
+				if (_picker != null)
+				{
+					_picker.Dispose();
+					_picker = null;
+				}
+
+				if (_noCaretField != null)
+				{
+					_noCaretField.Dispose();
+					_noCaretField = null;
+				}
+			}
+
+			_disposed = true;
+
+			base.Dispose(disposing);
 		}
 	}
 }
