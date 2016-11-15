@@ -94,6 +94,8 @@
     <Compile Include="PlatformConfiguration\iOSSpecific\BlurEffectStyle.cs" />
     <Compile Include="PlatformConfiguration\iOSSpecific\Entry.cs" />
     <Compile Include="PlatformConfiguration\iOSSpecific\NavigationPage.cs" />
+    <Compile Include="PlatformConfiguration\iOSSpecific\TabBarItem.cs" />
+    <Compile Include="PlatformConfiguration\iOSSpecific\TabbedPage.cs" />
     <Compile Include="PlatformConfiguration\iOSSpecific\VisualElement.cs" />
     <Compile Include="PlatformConfiguration\WindowsSpecific\MasterDetailPage.cs" />
     <Compile Include="PlatformConfiguration\WindowsSpecific\CollapseStyle.cs" />
