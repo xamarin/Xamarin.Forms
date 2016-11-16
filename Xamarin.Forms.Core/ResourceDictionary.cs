@@ -57,7 +57,7 @@ namespace Xamarin.Forms
 
 		public int Count
 		{
-			get { return _innerDictionary.Count + (_mergedInstance != null ? _mergedInstance.Count: 0); }
+			get { return _innerDictionary.Count; }
 		}
 
 		bool ICollection<KeyValuePair<string, object>>.IsReadOnly
@@ -88,8 +88,6 @@ namespace Xamarin.Forms
 			{
 				if (_innerDictionary.ContainsKey(index))
 					return _innerDictionary[index];
-				if (_mergedInstance != null && _mergedInstance.ContainsKey(index))
-					return _mergedInstance[index];
 				throw new KeyNotFoundException($"The resource '{index}' is not present in the dictionary.");
 			}
 			set
@@ -121,13 +119,25 @@ namespace Xamarin.Forms
 
 		public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
 		{
-			var rd = (IEnumerable<KeyValuePair<string,object>>)_innerDictionary;
-			if (_mergedInstance != null)
-				rd = rd.Concat(_mergedInstance._innerDictionary);
-			return rd.GetEnumerator();
+			return _innerDictionary.GetEnumerator();
+		}
+
+		internal IEnumerable<KeyValuePair<string, object>> MergedResources {
+			get {
+				if (_mergedInstance != null)
+					foreach (var r in _mergedInstance.MergedResources)
+						yield return r;
+				foreach (var r in _innerDictionary)
+					yield return r;
+			}
 		}
 
 		public bool TryGetValue(string key, out object value)
+		{
+			return _innerDictionary.TryGetValue(key, out value);
+		}
+
+		internal bool TryGetMergedValue(string key, out object value)
 		{
 			return _innerDictionary.TryGetValue(key, out value) || (_mergedInstance != null && _mergedInstance.TryGetValue(key, out value));
 		}
