@@ -2,13 +2,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using System.Reflection;
 using System.Linq;
+using System.Reflection;
 
 namespace Xamarin.Forms
 {
 	public class ResourceDictionary : IResourceDictionary, IDictionary<string, object>
 	{
+		static ConditionalWeakTable<Type, ResourceDictionary> s_instances = new ConditionalWeakTable<Type, ResourceDictionary>();
 		readonly Dictionary<string, object> _innerDictionary = new Dictionary<string, object>();
 
 		Type _mergedWith;
@@ -18,26 +19,17 @@ namespace Xamarin.Forms
 			set { 
 				if (_mergedWith == value)
 					return;
+
+				if (!typeof(ResourceDictionary).GetTypeInfo().IsAssignableFrom(value.GetTypeInfo()))
+					throw new ArgumentException("MergedWith should inherit from ResourceDictionary");
+
 				_mergedWith = value;
 				if (_mergedWith == null)
 					return;
 
-				_mergedInstance = _mergedWith.GetTypeInfo().BaseType.GetTypeInfo().DeclaredMethods.First(mi => mi.Name == "GetInstance").Invoke(null, new object[] {_mergedWith}) as ResourceDictionary;
+				_mergedInstance = s_instances.GetValue(_mergedWith,(key) => (ResourceDictionary)Activator.CreateInstance(key));
 				OnValuesChanged (_mergedInstance.ToArray());
 			}
-		}
-
-		static Dictionary<Type, ResourceDictionary> _instances;
-		static ResourceDictionary GetInstance(Type type)
-		{
-			_instances = _instances ?? new Dictionary<Type, ResourceDictionary>();
-			ResourceDictionary rd;
-			if (!_instances.TryGetValue(type, out rd))
-			{
-				rd = ((ResourceDictionary)Activator.CreateInstance(type));
-				_instances [type] = rd;
-			}
-			return rd;
 		}
 
 		ResourceDictionary _mergedInstance;

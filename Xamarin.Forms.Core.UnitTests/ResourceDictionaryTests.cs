@@ -253,13 +253,13 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Fail ();
 		}
 
-        [Test]
-        public void ShowKeyInExceptionIfNotFound()
-        {
-            var rd = new ResourceDictionary();
-            rd.Add("foo", "bar");
-            var ex = Assert.Throws<KeyNotFoundException>(() => { var foo = rd["test_invalid_key"]; });
-            Assert.That(ex.Message, Is.StringContaining("test_invalid_key"));
-        }
-    }
+		[Test]
+		public void ShowKeyInExceptionIfNotFound()
+		{
+			var rd = new ResourceDictionary();
+			rd.Add("foo", "bar");
+			var ex = Assert.Throws<KeyNotFoundException>(() => { var foo = rd ["test_invalid_key"]; });
+			Assert.That(ex.Message, Is.StringContaining("test_invalid_key"));
+		}
+	}
 }
