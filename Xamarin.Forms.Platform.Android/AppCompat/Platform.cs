@@ -270,30 +270,31 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		internal static void LayoutRootPage(FormsAppCompatActivity activity, Page page, int width, int height)
 		{
 			int statusBarHeight = !Forms.IsLollipopOrNewer || activity.Window.Attributes.Flags.HasFlag(WindowManagerFlags.Fullscreen) || Forms.TitleBarVisibility == AndroidTitleBarVisibility.Never ? 0 : activity.GetStatusBarHeight();
-			IVisualElementRenderer renderer = Android.Platform.GetRenderer(page);
 
-			if (page is MasterDetailPage)
+			var masterDetailPage = page as MasterDetailPage;
+			if (masterDetailPage != null)
 			{
-				var detailContainer = (renderer as MasterDetailPageRenderer).GetChildAt(0) as MasterDetailContainer;
-				var detail = ((MasterDetailPage)page).Detail;
+				var renderer = (MasterDetailPageRenderer)Android.Platform.GetRenderer(page);
+				var detailContainer = renderer.GetChildAt(0) as MasterDetailContainer;
+				Page detail = masterDetailPage.Detail;
 
-				detailContainer.TopPadding = page.Parent is NavigationPage ? 0 : statusBarHeight;
+				detailContainer.TopPadding = renderer.HasAncestorNavigationPage(masterDetailPage) ? 0 : statusBarHeight;
 				((IMasterDetailPageController)page).DetailBounds = detailContainer.GetBounds(false, 0, 0, width, height);
 				detailContainer.PageContainer?.Child.UpdateLayout();
 				detail.Layout(new Rectangle(0, 0, width, height));
 
 				if (((IMasterDetailPageController)page).ShouldShowSplitMode)
 				{
-					var masterContainer = (renderer as MasterDetailPageRenderer).GetChildAt(1) as MasterDetailContainer;
-					var master = ((MasterDetailPage)page).Master;
+					var masterContainer = renderer.GetChildAt(1) as MasterDetailContainer;
+					Page master = masterDetailPage.Master;
 
-					masterContainer.TopPadding = page.Parent is NavigationPage ? 0 : statusBarHeight;
+					masterContainer.TopPadding = statusBarHeight;
 					((IMasterDetailPageController)page).MasterBounds = masterContainer.GetBounds(true, 0, 0, width, height);
 					masterContainer.PageContainer?.Child.UpdateLayout();
 					master.Layout(new Rectangle(0, 0, width, height));
 				}
 
-				page.Layout(new Rectangle(0, 0, activity.FromPixels(width), activity.FromPixels(height)));
+				masterDetailPage.Layout(new Rectangle(0, 0, activity.FromPixels(width), activity.FromPixels(height)));
 			}
 			else
 			{
