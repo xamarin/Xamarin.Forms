@@ -76,7 +76,7 @@ namespace Xamarin.Forms
 
 			public WP8DeviceInfo()
 			{
-				MessagingCenter.Subscribe(this, BWPorientationChangedName, (FormsApplicationPage page, DeviceOrientation orientation) => { CurrentOrientation = orientation; });
+				Messaging.Instance.Subscribe(this, BWPorientationChangedName, (FormsApplicationPage page, DeviceOrientation orientation) => { CurrentOrientation = orientation; });
 
 				Content content = System.Windows.Application.Current.Host.Content;
 
@@ -98,7 +98,7 @@ namespace Xamarin.Forms
 
 			protected override void Dispose(bool disposing)
 			{
-				MessagingCenter.Unsubscribe<FormsApplicationPage, DeviceOrientation>(this, BWPorientationChangedName);
+				Messaging.Instance.Unsubscribe<FormsApplicationPage, DeviceOrientation>(this, BWPorientationChangedName);
 				base.Dispose(disposing);
 			}
 		}

@@ -13,7 +13,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		public override void TearDown()
 		{
 			base.TearDown ();
-			MessagingCenter.ClearSubscribers();
+			Messaging.Instance.ClearSubscribers();
 		}
 
 		[Test]
@@ -294,7 +294,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		public void BusyNotSentWhenNotVisible ()
 		{
 			var sent = false;
-			MessagingCenter.Subscribe<Page, bool> (this, Page.BusySetSignalName, (p, b) => sent = true);
+			Messaging.Instance.Subscribe<Page, bool> (this, Page.BusySetSignalName, (p, b) => sent = true);
 
 			new ContentPage { IsBusy = true };
 
@@ -305,7 +305,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		public void BusySentWhenBusyPageAppears()
 		{
 			var sent = false;
-			MessagingCenter.Subscribe<Page, bool> (this, Page.BusySetSignalName, (p, b) => {
+			Messaging.Instance.Subscribe<Page, bool> (this, Page.BusySetSignalName, (p, b) => {
 				Assert.That (b, Is.True);
 				sent = true;
 			});
@@ -326,7 +326,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			((IPageController)page).SendAppearing();
 
 			var sent = false;
-			MessagingCenter.Subscribe<Page, bool> (this, Page.BusySetSignalName, (p, b) => {
+			Messaging.Instance.Subscribe<Page, bool> (this, Page.BusySetSignalName, (p, b) => {
 				Assert.That (b, Is.False);
 				sent = true;
 			});
@@ -340,7 +340,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		public void BusySentWhenVisiblePageSetToBusy()
 		{
 			var sent = false;
-			MessagingCenter.Subscribe<Page, bool> (this, Page.BusySetSignalName, (p, b) => sent = true);
+			Messaging.Instance.Subscribe<Page, bool> (this, Page.BusySetSignalName, (p, b) => sent = true);
 
 			var page = new ContentPage();
 			((IPageController)page).SendAppearing();
@@ -358,7 +358,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			var page = new ContentPage ();
 
 			AlertArguments args = null;
-			MessagingCenter.Subscribe (this, Page.AlertSignalName, (Page sender, AlertArguments e) => args = e);
+			Messaging.Instance.Subscribe (this, Page.AlertSignalName, (Page sender, AlertArguments e) => args = e);
 
 			var task = page.DisplayAlert ("Title", "Message", "Accept", "Cancel");
 
@@ -381,7 +381,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			var page = new ContentPage ();
 
 			ActionSheetArguments args = null;
-			MessagingCenter.Subscribe (this, Page.ActionSheetSignalName, (Page sender, ActionSheetArguments e) => args = e);
+			Messaging.Instance.Subscribe (this, Page.ActionSheetSignalName, (Page sender, ActionSheetArguments e) => args = e);
 
 			var task = page.DisplayActionSheet ("Title", "Cancel", "Destruction", "Other 1", "Other 2");
 

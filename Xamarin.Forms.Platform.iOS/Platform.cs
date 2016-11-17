@@ -33,7 +33,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_modals = new List<Page>();
 
 			var busyCount = 0;
-			MessagingCenter.Subscribe(this, Page.BusySetSignalName, (Page sender, bool enabled) =>
+			Messaging.Instance.Subscribe(this, Page.BusySetSignalName, (Page sender, bool enabled) =>
 			{
 				if (!PageIsChildOfPlatform(sender))
 					return;
@@ -41,7 +41,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UIApplication.SharedApplication.NetworkActivityIndicatorVisible = busyCount > 0;
 			});
 
-			MessagingCenter.Subscribe(this, Page.AlertSignalName, (Page sender, AlertArguments arguments) =>
+			Messaging.Instance.Subscribe(this, Page.AlertSignalName, (Page sender, AlertArguments arguments) =>
 			{
 				if (!PageIsChildOfPlatform(sender))
 					return;
@@ -56,7 +56,7 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 			});
 
-			MessagingCenter.Subscribe(this, Page.ActionSheetSignalName, (Page sender, ActionSheetArguments arguments) =>
+			Messaging.Instance.Subscribe(this, Page.ActionSheetSignalName, (Page sender, ActionSheetArguments arguments) =>
 			{
 				if (!PageIsChildOfPlatform(sender))
 					return;
@@ -91,9 +91,9 @@ namespace Xamarin.Forms.Platform.iOS
 			_disposed = true;
 
 			Page.DescendantRemoved -= HandleChildRemoved;
-			MessagingCenter.Unsubscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName);
-			MessagingCenter.Unsubscribe<Page, AlertArguments>(this, Page.AlertSignalName);
-			MessagingCenter.Unsubscribe<Page, bool>(this, Page.BusySetSignalName);
+			Messaging.Instance.Unsubscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName);
+			Messaging.Instance.Unsubscribe<Page, AlertArguments>(this, Page.AlertSignalName);
+			Messaging.Instance.Unsubscribe<Page, bool>(this, Page.BusySetSignalName);
 
 			DisposeModelAndChildrenRenderers(Page);
 			foreach (var modal in _modals)

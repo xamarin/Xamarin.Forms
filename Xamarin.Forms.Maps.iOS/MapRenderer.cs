@@ -122,7 +122,7 @@ namespace Xamarin.Forms.Maps.iOS
 				if (Element != null)
 				{
 					var mapModel = (Map)Element;
-					MessagingCenter.Unsubscribe<Map, MapSpan>(this, "MapMoveToRegion");
+					Messaging.Instance.Unsubscribe<Map, MapSpan>(this, "MapMoveToRegion");
 					((ObservableCollection<Pin>)mapModel.Pins).CollectionChanged -= OnCollectionChanged;
 				}
 
@@ -146,7 +146,7 @@ namespace Xamarin.Forms.Maps.iOS
 			if (e.OldElement != null)
 			{
 				var mapModel = (Map)e.OldElement;
-				MessagingCenter.Unsubscribe<Map, MapSpan>(this, "MapMoveToRegion");
+				Messaging.Instance.Unsubscribe<Map, MapSpan>(this, "MapMoveToRegion");
 				((ObservableCollection<Pin>)mapModel.Pins).CollectionChanged -= OnCollectionChanged;
 			}
 
@@ -163,7 +163,7 @@ namespace Xamarin.Forms.Maps.iOS
 					mkMapView.RegionChanged += MkMapViewOnRegionChanged;
 				}
 
-				MessagingCenter.Subscribe<Map, MapSpan>(this, "MapMoveToRegion", (s, a) => MoveToRegion(a), mapModel);
+				Messaging.Instance.Subscribe<Map, MapSpan>(this, "MapMoveToRegion", (s, a) => MoveToRegion(a), mapModel);
 				if (mapModel.LastMoveToRegion != null)
 					MoveToRegion(mapModel.LastMoveToRegion, false);
 

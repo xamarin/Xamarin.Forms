@@ -110,13 +110,13 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			FormsMaps.Init ();
 			window.RootViewController = FormsApp.GetFormsApp ().CreateViewController ();
 		
-			MessagingCenter.Subscribe<RootPagesGallery, Type> (this, Messages.ChangeRoot, (sender, pagetype) => {
+			Messaging.Instance.Subscribe<RootPagesGallery, Type> (this, Messages.ChangeRoot, (sender, pagetype) => {
 				window = new UIWindow (UIScreen.MainScreen.Bounds);
 				window.RootViewController = ((Page) Activator.CreateInstance(pagetype)).CreateViewController();
 				window.MakeKeyAndVisible ();
 			});
 
-			MessagingCenter.Subscribe<HomeButton> (this, Messages.GoHome, (sender) => {
+			Messaging.Instance.Subscribe<HomeButton> (this, Messages.GoHome, (sender) => {
 				window = new UIWindow (UIScreen.MainScreen.Bounds);
 				window.RootViewController = FormsApp.GetFormsApp ().CreateViewController ();
 				window.MakeKeyAndVisible ();
@@ -155,11 +155,11 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			_app = app;
 
 			// When the native control gallery loads up, it'll let us know so we can add the nested native controls
-			MessagingCenter.Subscribe<NestedNativeControlGalleryPage>(this, NestedNativeControlGalleryPage.ReadyForNativeControlsMessage, AddNativeControls);
-			MessagingCenter.Subscribe<Bugzilla40911>(this, Bugzilla40911.ReadyToSetUp40911Test, SetUp40911Test);
+			Messaging.Instance.Subscribe<NestedNativeControlGalleryPage>(this, NestedNativeControlGalleryPage.ReadyForNativeControlsMessage, AddNativeControls);
+			Messaging.Instance.Subscribe<Bugzilla40911>(this, Bugzilla40911.ReadyToSetUp40911Test, SetUp40911Test);
 
 			// When the native binding gallery loads up, it'll let us know so we can set up the native bindings
-			MessagingCenter.Subscribe<NativeBindingGalleryPage>(this, NativeBindingGalleryPage.ReadyForNativeBindingsMessage, AddNativeBindings);
+			Messaging.Instance.Subscribe<NativeBindingGalleryPage>(this, NativeBindingGalleryPage.ReadyForNativeBindingsMessage, AddNativeBindings);
 
 			LoadApplication(app);
 			return base.FinishedLaunching(uiApplication, launchOptions);

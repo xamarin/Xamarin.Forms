@@ -202,7 +202,7 @@ namespace Xamarin.Forms.Controls
 			ItemsSource = roots;
 
 #if PRE_APPLICATION_CLASS
-			ItemSelected += (sender, args) => MessagingCenter.Send (this, Messages.ChangeRoot, ((CoreViewContainer)args.SelectedItem).PageType);
+			ItemSelected += (sender, args) => Messaging.Instance.Send (this, Messages.ChangeRoot, ((CoreViewContainer)args.SelectedItem).PageType);
 #else			
 			ItemSelected += (sender, args) => {
 				var app = Application.Current as App;

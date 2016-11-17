@@ -123,7 +123,7 @@ namespace Xamarin.Forms
 		public Task<string> DisplayActionSheet(string title, string cancel, string destruction, params string[] buttons)
 		{
 			var args = new ActionSheetArguments(title, cancel, destruction, buttons);
-			MessagingCenter.Send(this, ActionSheetSignalName, args);
+			Messaging.Instance.Send(this, ActionSheetSignalName, args);
 			return args.Result.Task;
 		}
 
@@ -138,7 +138,7 @@ namespace Xamarin.Forms
 				throw new ArgumentNullException("cancel");
 
 			var args = new AlertArguments(title, message, accept, cancel);
-			MessagingCenter.Send(this, AlertSignalName, args);
+			Messaging.Instance.Send(this, AlertSignalName, args);
 			return args.Result.Task;
 		}
 
@@ -300,7 +300,7 @@ namespace Xamarin.Forms
 			_hasAppeared = true;
 
 			if (IsBusy)
-				MessagingCenter.Send(this, BusySetSignalName, true);
+				Messaging.Instance.Send(this, BusySetSignalName, true);
 
 			OnAppearing();
 			EventHandler handler = Appearing;
@@ -319,7 +319,7 @@ namespace Xamarin.Forms
 			_hasAppeared = false;
 
 			if (IsBusy)
-				MessagingCenter.Send(this, BusySetSignalName, false);
+				Messaging.Instance.Send(this, BusySetSignalName, false);
 
 			var pageContainer = this as IPageContainer<Page>;
 			((IPageController)pageContainer?.CurrentPage)?.SendDisappearing();
@@ -365,7 +365,7 @@ namespace Xamarin.Forms
 			if (!_hasAppeared)
 				return;
 
-			MessagingCenter.Send(this, BusySetSignalName, IsBusy);
+			Messaging.Instance.Send(this, BusySetSignalName, IsBusy);
 		}
 
 		void OnToolbarItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
