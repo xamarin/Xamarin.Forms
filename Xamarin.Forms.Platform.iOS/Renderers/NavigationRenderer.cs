@@ -110,18 +110,10 @@ namespace Xamarin.Forms.Platform.iOS
 			return OnPopViewAsync(page, animated);
 		}
 
-#if __UNIFIED__
 		public override UIViewController PopViewController(bool animated)
-#else
-		public override UIViewController PopViewControllerAnimated (bool animated)
-		#endif
 		{
 			RemoveViewControllers(animated);
-#if __UNIFIED__
 			return base.PopViewController(animated);
-#else
-			return base.PopViewControllerAnimated (animated);
-			#endif
 		}
 
 		public Task<bool> PushPageAsync(Page page, bool animated = true)
