@@ -75,7 +75,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (Forms.IsiOS8OrNewer)
 				{
-					PresentAlert(arguments, pageRenderer);
+					PresentAlert(arguments);
 				}
 				else
 				{
@@ -419,7 +419,7 @@ namespace Xamarin.Forms.Platform.iOS
 			PresentAlert(window, alert);
 		}
 
-		void PresentAlert(ActionSheetArguments arguments, IVisualElementRenderer pageRenderer)
+		void PresentAlert(ActionSheetArguments arguments)
 		{
 			var alert = UIAlertController.Create(arguments.Title, null, UIAlertControllerStyle.ActionSheet);
 			var window = new UIWindow { BackgroundColor = Color.Transparent.ToUIColor() };
@@ -454,7 +454,7 @@ namespace Xamarin.Forms.Platform.iOS
 			window.WindowLevel = UIWindowLevel.Alert + 1;
 			window.MakeKeyAndVisible();
 
-			if (UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad)
+			if (UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad && arguments != null)
 			{
 				UIDevice.CurrentDevice.BeginGeneratingDeviceOrientationNotifications();
 				var observer = NSNotificationCenter.DefaultCenter.AddObserver(UIDevice.OrientationDidChangeNotification,
