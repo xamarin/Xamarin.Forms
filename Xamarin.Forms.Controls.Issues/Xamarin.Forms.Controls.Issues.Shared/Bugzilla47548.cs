@@ -42,17 +42,14 @@ namespace Xamarin.Forms.Controls.Issues
 				ItemsSource = list
 			};
 
-			var grid = new Grid
-			{
-				BackgroundColor = Color.FromRgb(Guid.NewGuid().ToByteArray()[0], Guid.NewGuid().ToByteArray()[0], Guid.NewGuid().ToByteArray()[0])
-			};
-			grid.RowDefinitions.Add(new RowDefinition {Height = 75});
+			var grid = new Grid();
+			grid.RowDefinitions.Add(new RowDefinition { Height = 75 });
 			grid.RowDefinitions.Add(new RowDefinition());
 
 			var sl = new StackLayout
 			{
 				Orientation = StackOrientation.Horizontal,
-				BackgroundColor = Color.Red,
+				BackgroundColor = Color.FromRgb(Guid.NewGuid().ToByteArray()[0], Guid.NewGuid().ToByteArray()[0], Guid.NewGuid().ToByteArray()[0]),
 				HorizontalOptions = LayoutOptions.FillAndExpand,
 				VerticalOptions = LayoutOptions.FillAndExpand
 			};
@@ -73,8 +70,7 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				WidthRequest = 50,
 				HeightRequest = 50,
-				HorizontalOptions = LayoutOptions.FillAndExpand,
-				BackgroundColor = Color.DeepPink
+				HorizontalOptions = LayoutOptions.FillAndExpand
 			};
 			var t2 = new TapGestureRecognizer();
 			t2.Tapped += TapGestureRecognizerT;
