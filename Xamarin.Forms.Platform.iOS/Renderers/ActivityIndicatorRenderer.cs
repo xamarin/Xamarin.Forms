@@ -6,19 +6,6 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class ActivityIndicatorRenderer : ViewRenderer<ActivityIndicator, UIActivityIndicatorView>
 	{
-		bool _disposed;
-
-		public ActivityIndicatorRenderer()
-		{
-			MessagingCenter.Subscribe<ListViewRenderer.ListViewDataSource>(this, "PreserveActivityIndicatorState", sender =>
-			{
-				if (Control != null && !Control.IsAnimating && Element != null && Element.IsRunning)
-				{
-					Control.StartAnimating();
-				}
-			});
-		}
-
 		protected override void OnElementChanged(ElementChangedEventArgs<ActivityIndicator> e)
 		{
 			if (e.NewElement != null)
@@ -58,17 +45,12 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.StopAnimating();
 		}
 
-		protected override void Dispose(bool disposing)
+		internal void PreserveState()
 		{
-			if (_disposed)
-				return;
-
-			if(disposing)
-				MessagingCenter.Unsubscribe<ListViewRenderer.ListViewDataSource>(this, "PreserveActivityIndicatorState");
-
-			_disposed = true;
-
-			base.Dispose(disposing);
+			if (Control != null && !Control.IsAnimating && Element != null && Element.IsRunning)
+			{
+				Control.StartAnimating();
+			}
 		}
 	}
 }
