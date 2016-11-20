@@ -43,7 +43,7 @@ namespace Xamarin.Forms.Platform.Android
 		AndroidApplicationLifecycleState _previousState;
 
 		bool _renderersAdded, _isFullScreen;
-		int _statusBarHeight = -1;
+		int _statusBarUnderlayHeight = -1;
 		global::Android.Views.View _statusBarUnderlay;
 		protected bool ShouldAddStatusBarUnderlay = true;
 
@@ -277,19 +277,19 @@ namespace Xamarin.Forms.Platform.Android
 			OnStateChanged();
 		}
 
-		internal int GetStatusBarHeight()
+		internal int GetStatusBarUnderlayHeight()
 		{
-			if (!ShouldAddStatusBarUnderlay)
+			if (!Forms.IsLollipopOrNewer || !ShouldAddStatusBarUnderlay)
 				return 0;
 
-			if (_statusBarHeight >= 0)
-				return _statusBarHeight;
+			if (_statusBarUnderlayHeight >= 0)
+				return _statusBarUnderlayHeight;
 
 			var result = 0;
 			int resourceId = Resources.GetIdentifier("status_bar_height", "dimen", "android");
 			if (resourceId > 0)
 				result = Resources.GetDimensionPixelSize(resourceId);
-			return _statusBarHeight = result;
+			return _statusBarUnderlayHeight = result;
 		}
 
 		void AddStatusBarUnderlay()
@@ -298,7 +298,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				_statusBarUnderlay = new global::Android.Views.View(this);
 
-				var layoutParameters = new ARelativeLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, GetStatusBarHeight())
+				var layoutParameters = new ARelativeLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, GetStatusBarUnderlayHeight())
 				{
 					AlignWithParent = true
 				};

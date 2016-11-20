@@ -269,14 +269,13 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		internal static void LayoutRootPage(FormsAppCompatActivity activity, Page page, int width, int height)
 		{
-			int statusBarHeight = Forms.IsLollipopOrNewer ? activity.GetStatusBarHeight() : 0;
-			statusBarHeight = activity.Window.Attributes.Flags.HasFlag(WindowManagerFlags.Fullscreen) || Forms.TitleBarVisibility == AndroidTitleBarVisibility.Never ? 0 : statusBarHeight;
+			int statusBarUnderlayHeight = activity.Window.Attributes.Flags.HasFlag(WindowManagerFlags.Fullscreen) || Forms.TitleBarVisibility == AndroidTitleBarVisibility.Never ? 0 : activity.GetStatusBarUnderlayHeight();
 
 			if (page is MasterDetailPage)
 				page.Layout(new Rectangle(0, 0, activity.FromPixels(width), activity.FromPixels(height)));
 			else
 			{
-				page.Layout(new Rectangle(0, activity.FromPixels(statusBarHeight), activity.FromPixels(width), activity.FromPixels(height - statusBarHeight)));
+				page.Layout(new Rectangle(0, activity.FromPixels(statusBarUnderlayHeight), activity.FromPixels(width), activity.FromPixels(height - statusBarUnderlayHeight)));
 			}
 		}
 
@@ -365,7 +364,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			protected override void OnLayout(bool changed, int l, int t, int r, int b)
 			{
 				var activity = (FormsAppCompatActivity)Context;
-				int statusBarHeight = Forms.IsLollipopOrNewer ? activity.GetStatusBarHeight() : 0;
+				int statusBarHeight = Forms.IsLollipopOrNewer ? activity.GetStatusBarUnderlayHeight() : 0;
 				if (changed)
 				{
 					if (_modal is MasterDetailPage)
