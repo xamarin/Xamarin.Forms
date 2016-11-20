@@ -45,6 +45,7 @@ namespace Xamarin.Forms.Platform.Android
 		bool _renderersAdded, _isFullScreen;
 		int _statusBarHeight = -1;
 		global::Android.Views.View _statusBarUnderlay;
+		protected bool ShouldAddStatusBarUnderlay = true;
 
 		// Override this if you want to handle the default Android behavior of restoring fragments on an application restart
 		protected virtual bool AllowFragmentRestore => false;
@@ -101,7 +102,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void SetStatusBarColor(AColor color)
 		{
-			_statusBarUnderlay.SetBackgroundColor(color);
+			_statusBarUnderlay?.SetBackgroundColor(color);
 		}
 
 		protected void LoadApplication(Application application)
@@ -278,6 +279,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		internal int GetStatusBarHeight()
 		{
+			if (!ShouldAddStatusBarUnderlay)
+				return 0;
+
 			if (_statusBarHeight >= 0)
 				return _statusBarHeight;
 
@@ -290,12 +294,18 @@ namespace Xamarin.Forms.Platform.Android
 
 		void AddStatusBarUnderlay()
 		{
-			_statusBarUnderlay = new global::Android.Views.View(this);
+			if (ShouldAddStatusBarUnderlay)
+			{
+				_statusBarUnderlay = new global::Android.Views.View(this);
 
-			var layoutParameters = new ARelativeLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, GetStatusBarHeight()) { AlignWithParent = true };
-			layoutParameters.AddRule(LayoutRules.AlignTop);
-			_statusBarUnderlay.LayoutParameters = layoutParameters;
-			_layout.AddView(_statusBarUnderlay);
+				var layoutParameters = new ARelativeLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, GetStatusBarHeight())
+				{
+					AlignWithParent = true
+				};
+				layoutParameters.AddRule(LayoutRules.AlignTop);
+				_statusBarUnderlay.LayoutParameters = layoutParameters;
+				_layout.AddView(_statusBarUnderlay);
+			}
 
 			if (Forms.IsLollipopOrNewer)
 			{
