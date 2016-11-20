@@ -105,7 +105,19 @@ namespace Xamarin.Forms.Platform.Android
 
 			_gestureListener?.OnTouchEvent(e);
 
-			return _gestureDetector.Value.OnTouchEvent(e) || handled;
+			// NB. This "try" addresses the symptoms of SOME of the issues listed in BZ #42678.
+			// Namely the ObjectDisposedException that occurs when calling OnTouchEvent below.
+			// It is not clear where the exception comes from, since nobody actually disposes
+			// _gestureDetector at the moment. May have something to do with _gestureListener
+			// which is the event receiver for the detector and does get disposed. See comment
+			// attached to InternalGestureListener .ctor(IntPtr, JniHandleOwnership) for potentially
+			// related insights. Perhaps someone with a better idea of what's going on here could
+			// suggest a more pre-emptive fix? In the meantime, this prevents the app from randomly
+			// crashing to the home screen and ruining everyone's day.
+			try { handled |= _gestureDetector.Value.OnTouchEvent(e); }
+			catch (ObjectDisposedException) { }
+
+			return handled;
 		}
 
 		VisualElement IVisualElementRenderer.Element => Element;
