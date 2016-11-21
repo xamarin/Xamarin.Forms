@@ -90,6 +90,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void SetControlPropertiesFromProxy()
 		{
+			// if new values are null, old values are preserved.
+
 			Control.SetTitleColor(UIButton.Appearance.TitleColor(UIControlState.Normal), UIControlState.Normal);
 			Control.SetTitleColor(UIButton.Appearance.TitleColor(UIControlState.Highlighted), UIControlState.Highlighted);
 			Control.SetTitleColor(UIButton.Appearance.TitleColor(UIControlState.Disabled), UIControlState.Disabled);
