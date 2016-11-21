@@ -193,7 +193,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			sl?.Children.Add(uilabel);
 
 			// Create and add a native Button 
-			var uibutton = new UIButton(UIButtonType.RoundedRect);
+			var uibutton = new UIButton(UIButtonType.System);
 			uibutton.SetTitle("Toggle Text Amount", UIControlState.Normal);
 			uibutton.Font = UIFont.FromName("Helvetica", 14f);
 
@@ -292,7 +292,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
 				Text = "DefaultText"
 			};
 
-			var uibuttonColor = new UIButton(UIButtonType.RoundedRect);
+			var uibuttonColor = new UIButton(UIButtonType.System);
 			uibuttonColor.SetTitle("Toggle Text Color Binding", UIControlState.Normal);
 			uibuttonColor.Font = UIFont.FromName("Helvetica", 14f);
 			uibuttonColor.TouchUpInside += (sender, args) => uilabel.TextColor = UIColor.Blue;
@@ -335,7 +335,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
 		public void StartPressed40911()
 		{
 			var loginViewController = new UIViewController { View = { BackgroundColor = UIColor.White } };
-			var button = UIButton.FromType(UIButtonType.RoundedRect);
+			var button = UIButton.FromType(UIButtonType.System);
 			button.SetTitle("Login", UIControlState.Normal);
 			button.Frame = new CGRect(20, 100, 200, 44);
 			loginViewController.View.AddSubview(button);
