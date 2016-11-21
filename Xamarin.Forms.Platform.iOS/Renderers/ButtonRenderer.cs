@@ -51,9 +51,13 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (Control == null)
 				{
-					SetNativeControl(new UIButton(UIButtonType.RoundedRect));
+					SetNativeControl(new UIButton(UIButtonType.System));
 
 					Debug.Assert(Control != null, "Control != null");
+
+					Control.SetTitleColor(UIButton.Appearance.TitleColor(UIControlState.Normal), UIControlState.Normal);
+					Control.SetTitleColor(UIButton.Appearance.TitleColor(UIControlState.Highlighted), UIControlState.Highlighted);
+					Control.SetTitleColor(UIButton.Appearance.TitleColor(UIControlState.Disabled), UIControlState.Disabled);
 
 					_buttonTextColorDefaultNormal = Control.TitleColor(UIControlState.Normal);
 					_buttonTextColorDefaultHighlighted = Control.TitleColor(UIControlState.Highlighted);
