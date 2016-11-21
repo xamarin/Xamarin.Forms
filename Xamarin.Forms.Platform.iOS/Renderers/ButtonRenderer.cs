@@ -90,23 +90,15 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void SetControlPropertiesFromProxy()
 		{
-			// if new values are null, old values are preserved.
+			var controlStates = new[] {UIControlState.Normal, UIControlState.Highlighted, UIControlState.Disabled};
 
-			Control.SetTitleColor(UIButton.Appearance.TitleColor(UIControlState.Normal), UIControlState.Normal);
-			Control.SetTitleColor(UIButton.Appearance.TitleColor(UIControlState.Highlighted), UIControlState.Highlighted);
-			Control.SetTitleColor(UIButton.Appearance.TitleColor(UIControlState.Disabled), UIControlState.Disabled);
-
-			Control.SetTitleShadowColor(UIButton.Appearance.TitleShadowColor(UIControlState.Normal), UIControlState.Normal);
-			Control.SetTitleShadowColor(UIButton.Appearance.TitleShadowColor(UIControlState.Highlighted), UIControlState.Highlighted);
-			Control.SetTitleShadowColor(UIButton.Appearance.TitleShadowColor(UIControlState.Disabled), UIControlState.Disabled);
-
-			Control.SetBackgroundImage(UIButton.Appearance.BackgroundImageForState(UIControlState.Normal), UIControlState.Normal);
-			Control.SetBackgroundImage(UIButton.Appearance.BackgroundImageForState(UIControlState.Highlighted), UIControlState.Highlighted);
-			Control.SetBackgroundImage(UIButton.Appearance.BackgroundImageForState(UIControlState.Disabled), UIControlState.Disabled);
-
-			Control.SetImage(UIButton.Appearance.ImageForState(UIControlState.Normal), UIControlState.Normal);
-			Control.SetImage(UIButton.Appearance.ImageForState(UIControlState.Highlighted), UIControlState.Highlighted);
-			Control.SetImage(UIButton.Appearance.ImageForState(UIControlState.Disabled), UIControlState.Disabled);
+			foreach (UIControlState uiControlState in controlStates)
+			{
+				Control.SetTitleColor(UIButton.Appearance.TitleColor(uiControlState), uiControlState); // if new values are null, old values are preserved.
+				Control.SetTitleShadowColor(UIButton.Appearance.TitleShadowColor(uiControlState), uiControlState);
+				Control.SetBackgroundImage(UIButton.Appearance.BackgroundImageForState(uiControlState), uiControlState);
+				Control.SetImage(UIButton.Appearance.ImageForState(uiControlState), uiControlState);
+			}
 		}
 
 		void OnButtonTouchUpInside(object sender, EventArgs eventArgs)
