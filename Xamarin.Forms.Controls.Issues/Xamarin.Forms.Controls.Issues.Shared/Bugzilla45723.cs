@@ -1,5 +1,7 @@
 ﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.PlatformConfiguration;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 
 #if UITEST
 using Xamarin.UITest;
@@ -32,6 +34,7 @@ namespace Xamarin.Forms.Controls.Issues
 			Padding = 50;
 			var editor = new Editor { HorizontalOptions = LayoutOptions.FillAndExpand };
 			var editorButton = new Button { Text = "OK", HorizontalOptions = LayoutOptions.End };
+			editorButton.On<iOS>().SetCanBecomeFirstResponder(true);
 			var editorLayout = new StackLayout { Orientation = StackOrientation.Horizontal, Children = { editor, editorButton }, VerticalOptions = LayoutOptions.Start };
 			var endtry = new Entry { Placeholder = "Entry", HorizontalOptions = LayoutOptions.FillAndExpand };
 			var entryButton = new Button { Text = "OK", HorizontalOptions = LayoutOptions.End };
