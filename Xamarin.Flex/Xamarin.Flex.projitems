@@ -11,7 +11,4 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Flex.cs" Condition=" '$(EnableDefaultCompileItems)' == 'true' " />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="$(MSBuildThisFileDirectory)Xamarin.Forms.Core\Xamarin.Forms.PlatformConfiguration.iOSSpecific\VisualElement.xml" />
-  </ItemGroup>
 </Project>
