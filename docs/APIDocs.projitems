@@ -11,4 +11,7 @@
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)Xamarin.Forms.Core\Xamarin.Forms\" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="$(MSBuildThisFileDirectory)Xamarin.Forms.Core\Xamarin.Forms.PlatformConfiguration.iOSSpecific\VisualElement.xml" />
+  </ItemGroup>
 </Project>
