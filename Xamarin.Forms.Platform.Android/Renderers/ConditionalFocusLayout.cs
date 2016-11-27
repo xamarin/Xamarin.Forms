@@ -26,11 +26,11 @@ namespace Xamarin.Forms.Platform.Android
 			(aView as EntryCellView)?.EditText.SetOnTouchListener(this);
 
 			var viewCell = item as ViewCell;
-			if (viewCell == null || viewCell?.View == null)
+			if (viewCell?.View == null)
 				return;
 
 			IVisualElementRenderer renderer = Platform.GetRenderer(viewCell.View);
-			if (renderer?.ViewGroup?.ChildCount != 0)
+			if (renderer?.ViewGroup != null && renderer.ViewGroup.ChildCount != 0)
 				(renderer.ViewGroup.GetChildAt(0) as EditText)?.SetOnTouchListener(this);
 
 			foreach (Element descendant in viewCell.View.Descendants())
@@ -39,7 +39,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (element == null)
 					continue;
 				renderer = Platform.GetRenderer(element);
-				if (renderer?.ViewGroup?.ChildCount == 0)
+				if (renderer?.ViewGroup == null || renderer.ViewGroup.ChildCount == 0)
 					continue;
 				(renderer.ViewGroup.GetChildAt(0) as EditText)?.SetOnTouchListener(this);
 			}
