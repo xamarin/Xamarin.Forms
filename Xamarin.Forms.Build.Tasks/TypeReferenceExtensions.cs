@@ -136,10 +136,10 @@ namespace Xamarin.Forms.Build.Tasks
 				var arrayType = typeRef.Resolve();
 				if (arrayInterfaces.Contains(baseClass.FullName))
 					return true;
-				if (array.Dimensions.Count == 1 &&  //generic interfaces are not implemented on multidimensional arrays
+				if (array.IsVector &&  //generic interfaces are not implemented on multidimensional arrays
 					arrayGenericInterfaces.Contains(baseClass.Resolve().FullName) &&
 					baseClass.IsGenericInstance &&
-					(baseClass as GenericInstanceType).GenericArguments[0].FullName == arrayType.FullName)
+					TypeRefComparer.Default.Equals((baseClass as GenericInstanceType).GenericArguments[0], arrayType))
 					return true;
 				return baseClass.FullName == "System.Object";
 			}
@@ -147,6 +147,8 @@ namespace Xamarin.Forms.Build.Tasks
 			if (typeRef.FullName == "System.Object")
 				return false;
 			var typeDef = typeRef.Resolve();
+			if (TypeRefComparer.Default.Equals(typeDef, baseClass.Resolve()))
+				return true;
 			if (typeDef.Interfaces.Any(ir => TypeRefComparer.Default.Equals(ir, baseClass)))
 				return true;
 			if (typeDef.BaseType == null)
