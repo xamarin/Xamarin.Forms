@@ -75,7 +75,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
-		public void LayoutChangesAtRuntime()
+		public void LayoutIsUpdatedWhenConstraintsChange()
 		{
 			var relativeLayout = new RelativeLayout
 			{
