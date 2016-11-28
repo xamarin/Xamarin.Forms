@@ -36,9 +36,9 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					IPlatform platform = Element.Platform;
 					if (platform.GetType() == typeof(AppCompat.Platform))
-						MessagingCenter.Unsubscribe<AppCompat.Platform, string>(this, ControlWebViewStateSignalName);
+						MessagingCenter.Unsubscribe<FormsAppCompatActivity, string>(this, ControlWebViewStateSignalName);
 					else
-						MessagingCenter.Unsubscribe<Platform, string>(this, ControlWebViewStateSignalName);
+						MessagingCenter.Unsubscribe<FormsApplicationActivity, string>(this, ControlWebViewStateSignalName);
 
 					Control?.StopLoading();
 
