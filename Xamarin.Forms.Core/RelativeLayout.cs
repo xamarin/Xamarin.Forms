@@ -347,10 +347,14 @@ namespace Xamarin.Forms
 
 			public void Add(View view, Constraint xConstraint = null, Constraint yConstraint = null, Constraint widthConstraint = null, Constraint heightConstraint = null)
 			{
+				view.BatchBegin();
+
 				RelativeLayout.SetXConstraint(view, xConstraint);
 				RelativeLayout.SetYConstraint(view, yConstraint);
 				RelativeLayout.SetWidthConstraint(view, widthConstraint);
 				RelativeLayout.SetHeightConstraint(view, heightConstraint);
+
+				view.BatchCommit();
 
 				base.Add(view);
 			}
