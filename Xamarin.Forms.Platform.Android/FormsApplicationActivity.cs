@@ -163,6 +163,8 @@ namespace Xamarin.Forms.Platform.Android
 			// Avoid writing to permanent storage and CPU intensive tasks
 			base.OnPause();
 
+			MessagingCenter.Send(this, WebViewRenderer.ControlWebViewStateSignalName, "Pause");
+
 			_previousState = _currentState;
 			_currentState = AndroidApplicationLifecycleState.OnPause;
 
@@ -183,6 +185,8 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			// counterpart to OnPause
 			base.OnResume();
+
+			MessagingCenter.Send(this, WebViewRenderer.ControlWebViewStateSignalName, "Resume");
 
 			_previousState = _currentState;
 			_currentState = AndroidApplicationLifecycleState.OnResume;

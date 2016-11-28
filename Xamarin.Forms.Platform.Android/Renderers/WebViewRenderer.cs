@@ -11,6 +11,7 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		bool _ignoreSourceChanges;
 		FormsWebChromeClient _webChromeClient;
+		internal const string ControlWebViewStateSignalName = "Xamarin.ControlWebViewState";
 
 		public WebViewRenderer()
 		{
@@ -19,7 +20,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void LoadHtml(string html, string baseUrl)
 		{
-			Control.LoadDataWithBaseURL(baseUrl == null ? "file:///android_asset/" : baseUrl, html, "text/html", "UTF-8", null);
+			Control.LoadDataWithBaseURL(baseUrl ?? "file:///android_asset/", html, "text/html", "UTF-8", null);
 		}
 
 		public void LoadUrl(string url)
@@ -33,8 +34,14 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (Element != null)
 				{
-					if (Control != null)
-						Control.StopLoading();
+					IPlatform platform = Element.Platform;
+					if (platform.GetType() == typeof(AppCompat.Platform))
+						MessagingCenter.Unsubscribe<AppCompat.Platform, string>(this, ControlWebViewStateSignalName);
+					else
+						MessagingCenter.Unsubscribe<Platform, string>(this, ControlWebViewStateSignalName);
+
+					Control?.StopLoading();
+
 					Element.EvalRequested -= OnEvalRequested;
 					Element.GoBackRequested -= OnGoBackRequested;
 					Element.GoForwardRequested -= OnGoForwardRequested;
@@ -80,6 +87,12 @@ namespace Xamarin.Forms.Platform.Android
 				webView.Settings.JavaScriptEnabled = true;
 				webView.Settings.DomStorageEnabled = true;
 				SetNativeControl(webView);
+
+				IPlatform platform = Element.Platform;
+				if (platform.GetType() == typeof(AppCompat.Platform))
+					MessagingCenter.Subscribe<FormsAppCompatActivity, string>(this, ControlWebViewStateSignalName, (sender, playbackType) => { ControlPlayback(playbackType); });
+				else
+					MessagingCenter.Subscribe<FormsApplicationActivity, string>(this, ControlWebViewStateSignalName, (sender, playbackType) => { ControlPlayback(playbackType); });
 			}
 
 			if (e.OldElement != null)
@@ -116,8 +129,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (_ignoreSourceChanges)
 				return;
 
-			if (Element.Source != null)
-				Element.Source.Load(this);
+			Element.Source?.Load(this);
 
 			UpdateCanGoBackForward();
 		}
@@ -149,6 +161,26 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			Element.CanGoBack = Control.CanGoBack();
 			Element.CanGoForward = Control.CanGoForward();
+		}
+
+		void ControlPlayback(string playbackType)
+		{
+			if (Element == null || Control == null)
+				return;
+
+			switch (playbackType)
+			{
+				case "Pause":
+					Control.OnPause();
+					Control.PauseTimers();
+					break;
+				case "Resume":
+					Control.OnResume();
+					Control.ResumeTimers();
+					break;
+				default:
+					throw new NotSupportedException();
+			}
 		}
 
 		class WebClient : WebViewClient
