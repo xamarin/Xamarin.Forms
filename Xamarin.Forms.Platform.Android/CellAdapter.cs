@@ -174,7 +174,7 @@ namespace Xamarin.Forms.Platform.Android
 			view.SetBackgroundResource(0);
 		}
 
-		internal void CloseContextAction()
+		internal void CloseContextActions()
 		{
 			_actionMode?.Finish();
 			_supportActionMode?.Finish();
@@ -224,7 +224,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (!cell.HasContextActions)
 				{
-					CloseContextAction();
+					CloseContextActions();
 					return false;
 				}
 
