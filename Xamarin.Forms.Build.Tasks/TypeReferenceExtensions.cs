@@ -84,6 +84,9 @@ namespace Xamarin.Forms.Build.Tasks
 			if (typeRef.FullName == baseClass.FullName)
 				return true;
 
+			if (typeRef.IsValueType)
+				return false;
+
 			var arrayInterfaces = new[]
 			{
 				"System.Collections.IEnumerable",
@@ -93,7 +96,7 @@ namespace Xamarin.Forms.Build.Tasks
 
 			var arrayGenericInterfaces = new[]
 			{
-				"System.Collections.IEnumerable`1",
+				"System.Collections.Generic.IEnumerable`1",
 				"System.Collections.Generic.IList`1",
 				"System.Collections.Generic.IReadOnlyCollection<T>",
 				"System.Collections.Generic.IReadOnlyList<T>",
@@ -117,13 +120,11 @@ namespace Xamarin.Forms.Build.Tasks
 				return false;
 			}
 
+			if (typeRef.FullName == "System.Object")
+				return false;
 			var typeDef = typeRef.Resolve();
-			if (typeDef.FullName == baseClass.FullName)
-				return true;
 			if (typeDef.Interfaces.Any(ir => ir.FullName == baseClass.FullName))
 				return true;
-			if (typeDef.FullName == "System.Object")
-				return false;
 			if (typeDef.BaseType == null)
 				return false;
 			return typeDef.BaseType.InheritsFromOrImplements(baseClass);
