@@ -445,6 +445,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		void OnDataChanged()
 		{
+			if (ActionModeContext != null && !TemplatedItemsView.TemplatedItems.Contains(ActionModeContext))
+				CloseContextAction();
+
 			if (IsAttachedToWindow)
 				NotifyDataSetChanged();
 			else

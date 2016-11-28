@@ -176,10 +176,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		internal void CloseContextAction()
 		{
-			if (_actionMode != null)
-				_actionMode.Finish();
-			if (_supportActionMode != null)
-				_supportActionMode.Finish();
+			_actionMode?.Finish();
+			_supportActionMode?.Finish();
 		}
 
 		void CreateContextMenu(IMenu menu)
@@ -226,8 +224,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (!cell.HasContextActions)
 				{
-					_actionMode?.Finish();
-					_supportActionMode?.Finish();
+					CloseContextAction();
 					return false;
 				}
 
