@@ -4,11 +4,29 @@ using Mono.Cecil;
 using Xamarin.Forms.Build.Tasks;
 using System.Collections.Generic;
 
+namespace Xamarin.Forms
+{
+	public class Effect
+	{
+	}
+}
 namespace Xamarin.Forms.Xaml.XamlcUnitTests
 {
 	[TestFixture]
 	public class TypeReferenceExtensionsTests
 	{
+		class Foo
+		{
+		}
+
+		class Foo<T> : Foo
+		{
+		}
+
+		class Bar<T> : Foo<T>
+		{
+		}
+
 		ModuleDefinition module;
 
 		[SetUp]
@@ -28,54 +46,67 @@ namespace Xamarin.Forms.Xaml.XamlcUnitTests
 		}
 
 		[TestCase(typeof(bool), typeof(BindableObject), ExpectedResult = false)]
-		[TestCase(typeof(System.Collections.Generic.Dictionary<System.String,System.String>), typeof(Xamarin.Forms.BindableObject), ExpectedResult = false)]
-		[TestCase(typeof(System.Collections.Generic.List<System.String>), typeof(Xamarin.Forms.BindableObject), ExpectedResult = false)]
-		[TestCase(typeof(System.Collections.Generic.List<Xamarin.Forms.Button>), typeof(Xamarin.Forms.BindableObject), ExpectedResult = false)]
-		[TestCase(typeof(System.Collections.Generic.Queue<System.Collections.Generic.KeyValuePair<System.String,System.String>>), typeof(Xamarin.Forms.BindableObject), ExpectedResult = false)]
-		[TestCase(typeof(System.Double), typeof(System.Double), ExpectedResult = true)]
-		[TestCase(typeof(System.Object), typeof(System.Collections.Generic.IList<Xamarin.Forms.TriggerBase>), ExpectedResult = false)]
-		[TestCase(typeof(System.Object), typeof(System.Double), ExpectedResult = false)]
-		[TestCase(typeof(System.Object), typeof(System.Nullable<System.Int32>), ExpectedResult = false)]
-		[TestCase(typeof(System.Object), typeof(System.Object), ExpectedResult = true)]
-		[TestCase(typeof(System.SByte), typeof(Xamarin.Forms.BindableObject), ExpectedResult = false)]
-		[TestCase(typeof(System.String[]), typeof(System.Collections.IEnumerable), ExpectedResult = true)]
-		[TestCase(typeof(System.String[]), typeof(System.Object), ExpectedResult = true)]
-		[TestCase(typeof(System.String[]), typeof(Xamarin.Forms.BindingBase), ExpectedResult = false)]
-		[TestCase(typeof(System.String[]), typeof(System.Collections.Generic.IEnumerable<string>), ExpectedResult = true)]
-		[TestCase(typeof(System.Type), typeof(System.Object), ExpectedResult = true)]
-		[TestCase(typeof(System.Type), typeof(System.Type), ExpectedResult = true)]
-		[TestCase(typeof(System.Type), typeof(Xamarin.Forms.BindableObject), ExpectedResult = false)]
+		[TestCase(typeof(Dictionary<string, string>), typeof(BindableObject), ExpectedResult = false)]
+		[TestCase(typeof(List<string>), typeof(BindableObject), ExpectedResult = false)]
+		[TestCase(typeof(List<Button>), typeof(BindableObject), ExpectedResult = false)]
+		[TestCase(typeof(Queue<KeyValuePair<string, string>>), typeof(BindableObject), ExpectedResult = false)]
+		[TestCase(typeof(double), typeof(double), ExpectedResult = true)]
+		[TestCase(typeof(object), typeof(IList<TriggerBase>), ExpectedResult = false)]
+		[TestCase(typeof(object), typeof(double), ExpectedResult = false)]
+		[TestCase(typeof(object), typeof(int?), ExpectedResult = false)]
+		[TestCase(typeof(object), typeof(object), ExpectedResult = true)]
+		[TestCase(typeof(sbyte), typeof(BindableObject), ExpectedResult = false)]
+		[TestCase(typeof(string[]), typeof(System.Collections.IEnumerable), ExpectedResult = true)]
+		[TestCase(typeof(string[]), typeof(object), ExpectedResult = true)]
+		[TestCase(typeof(string[]), typeof(string), ExpectedResult = false)]
+		[TestCase(typeof(string[]), typeof(BindingBase), ExpectedResult = false)]
+		[TestCase(typeof(string[]), typeof(IEnumerable<string>), ExpectedResult = true)]
+		[TestCase(typeof(Type), typeof(object), ExpectedResult = true)]
+		[TestCase(typeof(Type), typeof(Type), ExpectedResult = true)]
+		[TestCase(typeof(Type), typeof(BindableObject), ExpectedResult = false)]
 		[TestCase(typeof(System.Windows.Input.ICommand), typeof(System.Windows.Input.ICommand), ExpectedResult = true)]
-		[TestCase(typeof(System.Windows.Input.ICommand), typeof(Xamarin.Forms.BindingBase), ExpectedResult = false)]
-		[TestCase(typeof(Xamarin.Forms.BindingBase), typeof(Xamarin.Forms.BindingBase), ExpectedResult = true)]
-		[TestCase(typeof(Xamarin.Forms.BindingCondition), typeof(Xamarin.Forms.BindableObject), ExpectedResult = false)]
-		[TestCase(typeof(Xamarin.Forms.Button), typeof(Xamarin.Forms.BindableObject), ExpectedResult = true)]
-		[TestCase(typeof(Xamarin.Forms.Button), typeof(Xamarin.Forms.BindingBase), ExpectedResult = false)]
-		[TestCase(typeof(Xamarin.Forms.Button), typeof(Xamarin.Forms.View), ExpectedResult = true)]
-		[TestCase(typeof(Xamarin.Forms.Color), typeof(Xamarin.Forms.BindableObject), ExpectedResult = false)]
-		[TestCase(typeof(Xamarin.Forms.Color), typeof(Xamarin.Forms.BindingBase), ExpectedResult = false)]
-		[TestCase(typeof(Xamarin.Forms.Color), typeof(Xamarin.Forms.Color), ExpectedResult = true)]
-		[TestCase(typeof(Xamarin.Forms.ColumnDefinition), typeof(Xamarin.Forms.BindableObject), ExpectedResult = true)]
-		[TestCase(typeof(Xamarin.Forms.ColumnDefinition), typeof(Xamarin.Forms.BindingBase), ExpectedResult = false)]
-		[TestCase(typeof(Xamarin.Forms.ColumnDefinition), typeof(Xamarin.Forms.ColumnDefinitionCollection), ExpectedResult = false)]
-		[TestCase(typeof(Xamarin.Forms.Constraint), typeof(Xamarin.Forms.BindingBase), ExpectedResult = false)]
-		[TestCase(typeof(Xamarin.Forms.Constraint), typeof(Xamarin.Forms.Constraint), ExpectedResult = true)]
-		[TestCase(typeof(Xamarin.Forms.ConstraintExpression), typeof(Xamarin.Forms.BindableObject), ExpectedResult = false)]
-		[TestCase(typeof(Xamarin.Forms.ContentPage), typeof(Xamarin.Forms.BindableObject), ExpectedResult = true)]
-		[TestCase(typeof(Xamarin.Forms.ContentPage), typeof(Xamarin.Forms.Page), ExpectedResult = true)]
-		[TestCase(typeof(Xamarin.Forms.ContentView), typeof(Xamarin.Forms.BindableObject), ExpectedResult = true)]
-		[TestCase(typeof(Xamarin.Forms.ContentView[]), typeof(System.Collections.Generic.IList<Xamarin.Forms.ContentView>), ExpectedResult = true)]
-		[TestCase(typeof(Xamarin.Forms.MultiTrigger), typeof(System.Collections.Generic.IList<Xamarin.Forms.TriggerBase>), ExpectedResult = false)]
-		[TestCase(typeof(Xamarin.Forms.OnIdiom<System.Double>), typeof(Xamarin.Forms.BindableObject), ExpectedResult = false)]
-		[TestCase(typeof(Xamarin.Forms.OnPlatform<System.String>), typeof(System.String), ExpectedResult = false)]
-		[TestCase(typeof(Xamarin.Forms.OnPlatform<System.String>), typeof(Xamarin.Forms.BindableObject), ExpectedResult = false)]
-		[TestCase(typeof(Xamarin.Forms.OnPlatform<System.String>), typeof(Xamarin.Forms.BindingBase), ExpectedResult = false)]
-		[TestCase(typeof(Xamarin.Forms.OnPlatform<Xamarin.Forms.FontAttributes>), typeof(Xamarin.Forms.BindableObject), ExpectedResult = false)]
-		[TestCase(typeof(Xamarin.Forms.StackLayout), typeof(Xamarin.Forms.Layout<Xamarin.Forms.View>), ExpectedResult = true)]
-		[TestCase(typeof(Xamarin.Forms.StackLayout), typeof(Xamarin.Forms.View), ExpectedResult = true)]
+		[TestCase(typeof(System.Windows.Input.ICommand), typeof(BindingBase), ExpectedResult = false)]
+		[TestCase(typeof(BindingBase), typeof(BindingBase), ExpectedResult = true)]
+		[TestCase(typeof(BindingCondition), typeof(BindableObject), ExpectedResult = false)]
+		[TestCase(typeof(Button), typeof(BindableObject), ExpectedResult = true)]
+		[TestCase(typeof(Button), typeof(BindingBase), ExpectedResult = false)]
+		[TestCase(typeof(Button), typeof(View), ExpectedResult = true)]
+		[TestCase(typeof(Color), typeof(BindableObject), ExpectedResult = false)]
+		[TestCase(typeof(Color), typeof(BindingBase), ExpectedResult = false)]
+		[TestCase(typeof(Color), typeof(Color), ExpectedResult = true)]
+		[TestCase(typeof(ColumnDefinition), typeof(BindableObject), ExpectedResult = true)]
+		[TestCase(typeof(ColumnDefinition), typeof(BindingBase), ExpectedResult = false)]
+		[TestCase(typeof(ColumnDefinition), typeof(ColumnDefinitionCollection), ExpectedResult = false)]
+		[TestCase(typeof(Constraint), typeof(BindingBase), ExpectedResult = false)]
+		[TestCase(typeof(Constraint), typeof(Constraint), ExpectedResult = true)]
+		[TestCase(typeof(ConstraintExpression), typeof(BindableObject), ExpectedResult = false)]
+		[TestCase(typeof(ContentPage), typeof(BindableObject), ExpectedResult = true)]
+		[TestCase(typeof(ContentPage), typeof(Page), ExpectedResult = true)]
+		[TestCase(typeof(ContentView), typeof(BindableObject), ExpectedResult = true)]
+		[TestCase(typeof(ContentView[]), typeof(IList<ContentView>), ExpectedResult = true)]
+		[TestCase(typeof(MultiTrigger), typeof(IList<TriggerBase>), ExpectedResult = false)]
+		[TestCase(typeof(OnIdiom<double>), typeof(BindableObject), ExpectedResult = false)]
+		[TestCase(typeof(OnPlatform<string>), typeof(string), ExpectedResult = false)]
+		[TestCase(typeof(OnPlatform<string>), typeof(BindableObject), ExpectedResult = false)]
+		[TestCase(typeof(OnPlatform<string>), typeof(BindingBase), ExpectedResult = false)]
+		[TestCase(typeof(OnPlatform<FontAttributes>), typeof(BindableObject), ExpectedResult = false)]
+		[TestCase(typeof(StackLayout), typeof(Layout<View>), ExpectedResult = true)]
+		[TestCase(typeof(StackLayout), typeof(View), ExpectedResult = true)]
+		[TestCase(typeof(Foo<string>), typeof(Foo), ExpectedResult = true)]
+		[TestCase(typeof(Bar<string>), typeof(Foo), ExpectedResult = true)]
+		[TestCase(typeof(Bar<string>), typeof(Foo<string>), ExpectedResult = true)]
 		public bool TestInheritsFromOrImplements(Type typeRef, Type baseClass)
 		{
 			return TypeReferenceExtensions.InheritsFromOrImplements(module.Import(typeRef), module.Import(baseClass));
+		}
+
+		[Test]
+		public void TestSameTypeNamesFromDifferentAssemblies()
+		{
+			var core = typeof(BindableObject).Assembly;
+			var test = typeof(TypeReferenceExtensionsTests).Assembly;
+
+			Assert.False(TestInheritsFromOrImplements(test.GetType("Xamarin.Forms.Effect"), core.GetType("Xamarin.Forms.Effect")));
 		}
 	}
 }
