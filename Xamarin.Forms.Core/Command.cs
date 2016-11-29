@@ -16,7 +16,7 @@ namespace Xamarin.Forms
 		{
 			if (execute == null)
 			{
-				throw new ArgumentNullException("execute");
+				throw new ArgumentNullException(nameof(execute));
 			}
 		}
 
@@ -30,9 +30,9 @@ namespace Xamarin.Forms
 			}, o => o is T && canExecute((T)o))
 		{
 			if (execute == null)
-				throw new ArgumentNullException("execute");
+				throw new ArgumentNullException(nameof(execute));
 			if (canExecute == null)
-				throw new ArgumentNullException("canExecute");
+				throw new ArgumentNullException(nameof(canExecute));
 		}
 	}
 
@@ -44,7 +44,7 @@ namespace Xamarin.Forms
 		public Command(Action<object> execute)
 		{
 			if (execute == null)
-				throw new ArgumentNullException("execute");
+				throw new ArgumentNullException(nameof(execute));
 
 			_execute = execute;
 		}
@@ -52,13 +52,13 @@ namespace Xamarin.Forms
 		public Command(Action execute) : this(o => execute())
 		{
 			if (execute == null)
-				throw new ArgumentNullException("execute");
+				throw new ArgumentNullException(nameof(execute));
 		}
 
 		public Command(Action<object> execute, Func<object, bool> canExecute) : this(execute)
 		{
 			if (canExecute == null)
-				throw new ArgumentNullException("canExecute");
+				throw new ArgumentNullException(nameof(canExecute));
 
 			_canExecute = canExecute;
 		}
@@ -66,9 +66,9 @@ namespace Xamarin.Forms
 		public Command(Action execute, Func<bool> canExecute) : this(o => execute(), o => canExecute())
 		{
 			if (execute == null)
-				throw new ArgumentNullException("execute");
+				throw new ArgumentNullException(nameof(execute));
 			if (canExecute == null)
-				throw new ArgumentNullException("canExecute");
+				throw new ArgumentNullException(nameof(canExecute));
 		}
 
 		public bool CanExecute(object parameter)
@@ -89,8 +89,7 @@ namespace Xamarin.Forms
 		public void ChangeCanExecute()
 		{
 			EventHandler changed = CanExecuteChanged;
-			if (changed != null)
-				changed(this, EventArgs.Empty);
+			changed?.Invoke(this, EventArgs.Empty);
 		}
 	}
 }
