@@ -198,7 +198,8 @@ namespace Xamarin.Forms.Platform.iOS
 				if (renderer?.ViewController.TabBarItem == null)
 					return;
 
-				SetTabBarItem(renderer);
+
+                SetTabBarItem(renderer);
 			}
 		}
 
@@ -391,7 +392,8 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateCurrentPage()
 		{
 			var count = ((IPageController)Tabbed).InternalChildren.Count;
-			((TabbedPage)Element).CurrentPage = SelectedIndex >= 0 && SelectedIndex < count ? Tabbed.GetPageByIndex((int)SelectedIndex) : null;
+            var index = (int)SelectedIndex;
+            ((TabbedPage)Element).CurrentPage = index >= 0 && index < count ? Tabbed.GetPageByIndex(index) : null;
 		}
 
 		void IEffectControlProvider.RegisterEffect(Effect effect)
@@ -407,17 +409,32 @@ namespace Xamarin.Forms.Platform.iOS
 			if(page == null)
 				throw new InvalidCastException($"{nameof(renderer)} must be a {nameof(Page)} renderer.");
 
-			UIImage icon = null;
-			if (!string.IsNullOrEmpty(page.Icon))
-				icon = new UIImage(page.Icon);
-
-			renderer.ViewController.TabBarItem = new UITabBarItem(page.Title, icon, 0)
-			{
-				Tag = Tabbed.Children.IndexOf(page),
-				AccessibilityIdentifier = page.AutomationId
-			};
-
-			icon?.Dispose();
+            var icons = GetIcon(page);
+		    renderer.ViewController.TabBarItem = new UITabBarItem(page.Title, icons?.Item1, icons?.Item2)
+		    {
+                Tag = Tabbed.Children.IndexOf(page),
+                AccessibilityIdentifier = page.AutomationId
+            };
+            icons?.Item1?.Dispose();
+            icons?.Item2?.Dispose();
 		}
-	}
+
+        /// <summary>
+        /// Get the icon for the tab bar item of this page
+        /// </summary>
+        /// <returns>
+        /// A tuple containing as item1: the unselected version of the icon, item2: the selected version of the icon (item2 can be null),
+        /// or null if no icon should be set.
+        /// </returns>
+	    protected virtual Tuple<UIImage, UIImage> GetIcon(Page page)
+	    {
+	        if (!string.IsNullOrEmpty(page.Icon))
+	        {
+	            var icon = new UIImage(page.Icon);
+                return Tuple.Create(icon, (UIImage)null);
+            }
+
+	        return null;
+	    }
+    }
 }
