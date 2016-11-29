@@ -91,9 +91,9 @@ namespace Xamarin.Forms.Platform.Android
 
 				IPlatform platform = Element.Platform;
 				if (platform.GetType() == typeof(AppCompat.Platform))
-					MessagingCenter.Subscribe<FormsAppCompatActivity, string>(this, HandleWebViewStateSignalName, (sender, playbackType) => { HandleStateChange(playbackType); });
+					MessagingCenter.Subscribe<FormsAppCompatActivity, string>(this, HandleWebViewStateSignalName, (sender, state) => { HandleStateChange(state); });
 				else
-					MessagingCenter.Subscribe<FormsApplicationActivity, string>(this, HandleWebViewStateSignalName, (sender, playbackType) => { HandleStateChange(playbackType); });
+					MessagingCenter.Subscribe<FormsApplicationActivity, string>(this, HandleWebViewStateSignalName, (sender, state) => { HandleStateChange(state); });
 			}
 
 			if (e.OldElement != null)
