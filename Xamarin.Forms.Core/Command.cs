@@ -58,7 +58,18 @@ namespace Xamarin.Forms
 		public bool CanExecute(object parameter)
 		{
 			if (_canExecute != null)
-				return _canExecute(parameter);
+			{
+				try
+				{
+					return _canExecute(parameter);
+				}
+				catch (InvalidCastException ex)
+				{
+					Log.Warning("Command", $"CanExecute can't run with the current BindingContext; this is probably a temporary inherited context issue: {ex}");
+				}
+
+				return false;
+			}
 
 			return true;
 		}
