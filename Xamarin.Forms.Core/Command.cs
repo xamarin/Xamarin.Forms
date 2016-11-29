@@ -3,7 +3,7 @@ using System.Windows.Input;
 
 namespace Xamarin.Forms
 {
-	public sealed class Command<T> : Command
+	public sealed class Command<T> : Command 
 	{
 		public Command(Action<T> execute) : base(o => execute((T)o))
 		{
@@ -63,9 +63,9 @@ namespace Xamarin.Forms
 				{
 					return _canExecute(parameter);
 				}
-				catch (InvalidCastException ex)
+				catch (Exception ex)
 				{
-					Log.Warning("Command", $"CanExecute can't run with the current BindingContext; this is probably a temporary inherited context issue: {ex}");
+					Log.Warning("Command", $"Error determining whether the Command can execute: {ex}");
 				}
 
 				return false;
