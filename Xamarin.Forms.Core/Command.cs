@@ -5,10 +5,19 @@ namespace Xamarin.Forms
 {
 	public sealed class Command<T> : Command 
 	{
-		public Command(Action<T> execute) : base(o => execute((T)o))
+		public Command(Action<T> execute) 
+			: base(o =>
+			{
+				if (o is T)
+				{
+					execute((T)o);
+				}
+			})
 		{
 			if (execute == null)
+			{
 				throw new ArgumentNullException("execute");
+			}
 		}
 
 		public Command(Action<T> execute, Func<T, bool> canExecute) 
