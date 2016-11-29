@@ -11,7 +11,14 @@ namespace Xamarin.Forms
 				throw new ArgumentNullException("execute");
 		}
 
-		public Command(Action<T> execute, Func<T, bool> canExecute) : base(o => execute((T)o), o => canExecute((T)o))
+		public Command(Action<T> execute, Func<T, bool> canExecute) 
+			: base(o =>
+			{
+				if (o is T)
+				{
+					execute((T)o);
+				}
+			}, o => o is T && canExecute((T)o))
 		{
 			if (execute == null)
 				throw new ArgumentNullException("execute");
@@ -58,18 +65,7 @@ namespace Xamarin.Forms
 		public bool CanExecute(object parameter)
 		{
 			if (_canExecute != null)
-			{
-				try
-				{
-					return _canExecute(parameter);
-				}
-				catch (Exception ex)
-				{
-					Log.Warning("Command", $"Error determining whether the Command can execute: {ex}");
-				}
-
-				return false;
-			}
+				return _canExecute(parameter);
 
 			return true;
 		}
