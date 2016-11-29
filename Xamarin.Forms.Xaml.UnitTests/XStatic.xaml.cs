@@ -8,6 +8,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		public static string MockStaticProperty { get { return "Property"; } }
 		public const string MockConstant = "Constant";
 		public static string MockField = "Field";
+		public static string MockFieldRef = MockConstant;
 		public string InstanceProperty { get { return "InstanceProperty"; } }
 		public static readonly Color BackgroundColor = Color.Fuchsia;
 	}
@@ -101,6 +102,14 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			{
 				var layout = new XStatic(useCompiledXaml);
 				Assert.AreEqual(ScrollOrientation.Both, layout.enuM.Orientation);
+			}
+
+			[TestCase(false)]
+			[TestCase(true)]
+			public void FieldRef(bool useCompiledXaml)
+			{
+				var layout = new XStatic(useCompiledXaml);
+				Assert.AreEqual("Constant", layout.field2.Text);
 			}
 		}
 	}

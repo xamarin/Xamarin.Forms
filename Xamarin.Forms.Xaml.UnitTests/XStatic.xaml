@@ -16,5 +16,7 @@
 				Text="{x:Static local:MockxStatic.MockField}"/>
 		<ScrollView x:Name="enuM"
 				Orientation="{x:Static ScrollOrientation.Both}"/>
+		<Label x:Name="field2"
+				Text="{x:Static local:MockxStatic.MockFieldRef}" />
 	</StackLayout>
 </ContentPage>
