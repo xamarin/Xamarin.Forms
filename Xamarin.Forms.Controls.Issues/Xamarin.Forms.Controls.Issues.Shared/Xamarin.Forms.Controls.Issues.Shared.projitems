@@ -18,6 +18,7 @@
       <DependentUpon>Bugzilla22229.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla22401.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla22986.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla23942.xaml.cs">
       <DependentUpon>Bugzilla23942.xaml</DependentUpon>
     </Compile>
