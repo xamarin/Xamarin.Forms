@@ -1,5 +1,7 @@
 ﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.PlatformConfiguration;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 
 #if UITEST
 using Xamarin.UITest;
@@ -20,6 +22,7 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		protected override void Init()
 		{
+			Application.Current.On<Android>().ShouldHandleWebViewStateOnLifecycleChange(true);
 			PushAsync(new WebPage());
 		}
 	}

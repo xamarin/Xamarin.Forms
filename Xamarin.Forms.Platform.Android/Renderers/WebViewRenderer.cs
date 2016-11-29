@@ -11,7 +11,7 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		bool _ignoreSourceChanges;
 		FormsWebChromeClient _webChromeClient;
-		internal const string ControlWebViewStateSignalName = "Xamarin.ControlWebViewState";
+		internal const string HandleWebViewStateSignalName = "Xamarin.HandleWebViewState";
 
 		public WebViewRenderer()
 		{
@@ -36,10 +36,11 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					IPlatform platform = Element.Platform;
 					if (platform.GetType() == typeof(AppCompat.Platform))
-						MessagingCenter.Unsubscribe<FormsAppCompatActivity, string>(this, ControlWebViewStateSignalName);
+						MessagingCenter.Unsubscribe<FormsAppCompatActivity, string>(this, HandleWebViewStateSignalName);
 					else
-						MessagingCenter.Unsubscribe<FormsApplicationActivity, string>(this, ControlWebViewStateSignalName);
+						MessagingCenter.Unsubscribe<FormsApplicationActivity, string>(this, HandleWebViewStateSignalName);
 
+					HandleStateChange("Pause");
 					Control?.StopLoading();
 
 					Element.EvalRequested -= OnEvalRequested;
@@ -90,9 +91,9 @@ namespace Xamarin.Forms.Platform.Android
 
 				IPlatform platform = Element.Platform;
 				if (platform.GetType() == typeof(AppCompat.Platform))
-					MessagingCenter.Subscribe<FormsAppCompatActivity, string>(this, ControlWebViewStateSignalName, (sender, playbackType) => { ControlPlayback(playbackType); });
+					MessagingCenter.Subscribe<FormsAppCompatActivity, string>(this, HandleWebViewStateSignalName, (sender, playbackType) => { HandleStateChange(playbackType); });
 				else
-					MessagingCenter.Subscribe<FormsApplicationActivity, string>(this, ControlWebViewStateSignalName, (sender, playbackType) => { ControlPlayback(playbackType); });
+					MessagingCenter.Subscribe<FormsApplicationActivity, string>(this, HandleWebViewStateSignalName, (sender, playbackType) => { HandleStateChange(playbackType); });
 			}
 
 			if (e.OldElement != null)
@@ -163,12 +164,12 @@ namespace Xamarin.Forms.Platform.Android
 			Element.CanGoForward = Control.CanGoForward();
 		}
 
-		void ControlPlayback(string playbackType)
+		void HandleStateChange(string state)
 		{
 			if (Element == null || Control == null)
 				return;
 
-			switch (playbackType)
+			switch (state)
 			{
 				case "Pause":
 					Control.OnPause();
