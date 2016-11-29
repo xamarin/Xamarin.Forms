@@ -198,7 +198,6 @@ namespace Xamarin.Forms.Platform.iOS
 				if (renderer?.ViewController.TabBarItem == null)
 					return;
 
-
 				SetTabBarItem(renderer);
 			}
 		}
@@ -412,8 +411,8 @@ namespace Xamarin.Forms.Platform.iOS
 			var icons = GetIcon(page);
 			renderer.ViewController.TabBarItem = new UITabBarItem(page.Title, icons?.Item1, icons?.Item2)
 			{
-			    Tag = Tabbed.Children.IndexOf(page),
-			    AccessibilityIdentifier = page.AutomationId
+				Tag = Tabbed.Children.IndexOf(page),
+				AccessibilityIdentifier = page.AutomationId
 			};
 			icons?.Item1?.Dispose();
 			icons?.Item2?.Dispose();
