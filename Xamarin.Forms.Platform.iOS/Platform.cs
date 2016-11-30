@@ -75,7 +75,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (Forms.IsiOS8OrNewer)
 				{
-					PresentAlert(arguments);
+					PresentActionSheet(arguments);
 				}
 				else
 				{
@@ -419,7 +419,7 @@ namespace Xamarin.Forms.Platform.iOS
 			PresentAlert(window, alert);
 		}
 
-		void PresentAlert(ActionSheetArguments arguments)
+		void PresentActionSheet(ActionSheetArguments arguments)
 		{
 			var alert = UIAlertController.Create(arguments.Title, null, UIAlertControllerStyle.ActionSheet);
 			var window = new UIWindow { BackgroundColor = Color.Transparent.ToUIColor() };
