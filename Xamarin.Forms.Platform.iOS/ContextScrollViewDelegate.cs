@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Platform.iOS
 		GlobalCloseContextGestureRecognizer _globalCloser;
 
 		bool _isDisposed;
-
+		static UIScrollView _scrollViewBeingScrolled;
 		UITableView _table;
 
 		public ContextScrollViewDelegate(UIView container, List<UIButton> buttons, bool isOpen)
@@ -72,6 +72,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void DraggingStarted(UIScrollView scrollView)
 		{
+			if (_scrollViewBeingScrolled == null)
+				_scrollViewBeingScrolled = scrollView;
+			else if(_scrollViewBeingScrolled != null && !ReferenceEquals(_scrollViewBeingScrolled, scrollView))
+			{
+				scrollView.SetContentOffset(new PointF(0,0), false);
+				return;
+			}
+
 			if (!IsOpen)
 				SetButtonsShowing(true);
 
@@ -90,6 +98,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void Scrolled(UIScrollView scrollView)
 		{
+			if (_scrollViewBeingScrolled != null && !ReferenceEquals(_scrollViewBeingScrolled, scrollView))
+			{
+				scrollView.SetContentOffset(new PointF(0, 0), false);
+				return;
+			}
+
 			var width = _finalButtonSize;
 			var count = _buttons.Count;
 
@@ -117,9 +131,8 @@ namespace Xamarin.Forms.Platform.iOS
 				RestoreHighlight(scrollView);
 
 				ClearCloserRecognizer(scrollView);
-
-				if (ClosedCallback != null)
-					ClosedCallback();
+				_scrollViewBeingScrolled = null;
+				ClosedCallback?.Invoke();
 			}
 		}
 
@@ -131,6 +144,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void WillEndDragging(UIScrollView scrollView, PointF velocity, ref PointF targetContentOffset)
 		{
+			if (_scrollViewBeingScrolled != null && !ReferenceEquals(_scrollViewBeingScrolled, scrollView))
+			{
+				scrollView.SetContentOffset(new PointF(0, 0), false);
+				return;
+			}
+
 			var width = ButtonsWidth;
 			var x = targetContentOffset.X;
 			var parentThreshold = scrollView.Frame.Width * .4f;
@@ -196,6 +215,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (disposing)
 			{
+				_scrollViewBeingScrolled = null;
 				ClosedCallback = null;
 
 				_table = null;
