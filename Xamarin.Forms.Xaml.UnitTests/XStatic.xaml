@@ -4,8 +4,8 @@
 			 xmlns:local="clr-namespace:Xamarin.Forms.Xaml.UnitTests"
 			 x:Class="Xamarin.Forms.Xaml.UnitTests.XStatic">
 	<ContentPage.ToolbarItems>
-        <ToolbarItem Icon="{x:Static local:MockxStatic.MockFieldRef}" />
-    </ContentPage.ToolbarItems>
+		<ToolbarItem Icon="{x:Static local:MockxStatic.MockFieldRef}" />
+	</ContentPage.ToolbarItems>
 	<StackLayout>
 		<Label x:Name="staticproperty"
 			   Text="{x:Static Member=local:MockxStatic.MockStaticProperty}" />

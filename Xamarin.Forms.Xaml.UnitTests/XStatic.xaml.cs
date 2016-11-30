@@ -117,6 +117,15 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				var layout = new XStatic(useCompiledXaml);
 				Assert.AreEqual("ic_close.png", layout.field2.Text);
 			}
+
+			[TestCase(false)]
+			[TestCase(true)]
+			// https://bugzilla.xamarin.com/show_bug.cgi?id=48242
+			public void xStaticAndImplicitOperators(bool useCompiledXaml)
+			{
+				var layout = new XStatic(useCompiledXaml);
+				Assert.AreEqual("ic_close.png", layout.ToolbarItems[0].Icon.File);
+			}
 		}
 	}
 }
