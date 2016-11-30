@@ -3,12 +3,18 @@ using Xamarin.Forms.Core.UnitTests;
 
 namespace Xamarin.Forms.Xaml.UnitTests
 {
+
+	public class Icons
+	{
+		public const string CLOSE = "ic_close.png";
+	}
+
 	public class MockxStatic
 	{
 		public static string MockStaticProperty { get { return "Property"; } }
 		public const string MockConstant = "Constant";
 		public static string MockField = "Field";
-		public static string MockFieldRef = MockConstant;
+		public static string MockFieldRef = Icons.CLOSE;
 		public string InstanceProperty { get { return "InstanceProperty"; } }
 		public static readonly Color BackgroundColor = Color.Fuchsia;
 	}
@@ -109,7 +115,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			public void FieldRef(bool useCompiledXaml)
 			{
 				var layout = new XStatic(useCompiledXaml);
-				Assert.AreEqual("Constant", layout.field2.Text);
+				Assert.AreEqual("ic_close.png", layout.field2.Text);
 			}
 		}
 	}
