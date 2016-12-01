@@ -58,7 +58,44 @@ namespace Xamarin.Forms
 			return GetNamedSize(size, targetElementType, false);
 		}
 
-		public static void OnPlatform(Action iOS = null, Action Android = null, Action WinPhone = null, Action Default = null)
+		public static void OnPlatform(Action iOS = null, Action Android = null, Action WinPhone = null, Action Default = null, Action Tizen = null)
+		{
+			switch (OS)
+			{
+				case TargetPlatform.iOS:
+					if (iOS != null)
+						iOS();
+					else if (Default != null)
+						Default();
+					break;
+				case TargetPlatform.Android:
+					if (Android != null)
+						Android();
+					else if (Default != null)
+						Default();
+					break;
+				case TargetPlatform.Windows:
+				case TargetPlatform.WinPhone:
+					if (WinPhone != null)
+						WinPhone();
+					else if (Default != null)
+						Default();
+					break;
+				case TargetPlatform.Tizen:
+					if (Tizen != null)
+						Tizen();
+					else if (Default != null)
+						Default();
+					break;
+				case TargetPlatform.Other:
+					if (Default != null)
+						Default();
+					break;
+			}
+		}
+
+		[Obsolete("OnPlatform is obsolete, please use OnPlatform (Action, Action, Action, Action, Action)")]
+		public static void OnPlatform(Action iOS, Action Android, Action WinPhone, Action Default)
 		{
 			switch (OS)
 			{
@@ -88,6 +125,25 @@ namespace Xamarin.Forms
 			}
 		}
 
+		public static T OnPlatform<T>(T iOS, T Android, T WinPhone, T Tizen)
+		{
+			switch (OS)
+			{
+				case TargetPlatform.iOS:
+					return iOS;
+				case TargetPlatform.Android:
+					return Android;
+				case TargetPlatform.Windows:
+				case TargetPlatform.WinPhone:
+					return WinPhone;
+				case TargetPlatform.Tizen:
+					return Tizen;
+			}
+
+			return iOS;
+		}
+
+		[Obsolete("OnPlatform<T> is obsolete, please use OnPlatform<T> (T, T, T, T)")]
 		public static T OnPlatform<T>(T iOS, T Android, T WinPhone)
 		{
 			switch (OS)
