@@ -338,7 +338,6 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			//	var page = new SetValue(useCompiledXaml);
 			//	Assert.AreEqual("Foo", page.implicit3.Foo.Value);
 			//}
->>>>>>> [XamlC] more op_implicit conversions
 		}
 	}
 }
