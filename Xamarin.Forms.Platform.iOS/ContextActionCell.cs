@@ -106,7 +106,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public void PrepareForDeselect()
 		{
-			ScrollDelegate.PrepareForDeselect(_scroller);
+			ScrollDelegate.PrepareForDeselect();
 		}
 
 		public override SizeF SizeThatFits(SizeF size)
@@ -177,8 +177,10 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else
 			{
-				_scroller.Frame = new RectangleF(0, 0, width, height);
+				// Orientation change re-sets Frame which in turn triggers Scrolled event of the scroll view.
+				// Preserve state before Frame changes.
 				isOpen = ScrollDelegate.IsOpen;
+				_scroller.Frame = new RectangleF(0, 0, width, height);
 
 				for (var i = 0; i < _buttons.Count; i++)
 				{
@@ -189,7 +191,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				_buttons.Clear();
 
-				ScrollDelegate.Unhook(_scroller);
+				ScrollDelegate.Unhook();
 				ScrollDelegate.Dispose();
 			}
 
@@ -244,7 +246,7 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 			}
 
-			_scroller.Delegate = new ContextScrollViewDelegate(container, _buttons, isOpen);
+			_scroller.Delegate = new ContextScrollViewDelegate(_scroller, container, _buttons, isOpen);
 			_scroller.ContentSize = new SizeF(totalWidth, height);
 
 			if (isOpen)
