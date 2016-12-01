@@ -58,8 +58,6 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			[TestCase(false)]
 			public void XStaticWithXamlC(bool useCompiledXaml)
 			{
-				if (useCompiledXaml)
-					MockCompiler.Compile(typeof(Bz48554));
 				Bz48554 page = null;
 				Assert.DoesNotThrow(()=> page = new Bz48554(useCompiledXaml));
 				Assert.NotNull(page.SliderGrades);
