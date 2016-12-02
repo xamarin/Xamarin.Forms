@@ -190,7 +190,7 @@ namespace Xamarin.Forms.Build.Tasks
 					}
 
 					if (outputGeneratedILAsCode)
-						Logger.LogLine(2, "   Decompiling option has been removed. Use a 3rd party decompiler to admire the beauty fo the IL generated");
+						Logger.LogLine(2, "   Decompiling option has been removed. Use a 3rd party decompiler to admire the beauty of the IL generated");
 
 					resourcesToPrune.Add(resource);
 				}
