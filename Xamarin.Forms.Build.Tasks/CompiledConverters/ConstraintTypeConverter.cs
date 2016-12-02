@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Core.XamlC
 			double size;
 
 			if (string.IsNullOrEmpty(value) || !double.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out size))
-				throw new XamlParseException($"Cannot convert \"{value}\" into {typeof(Rectangle)}", node);
+				throw new XamlParseException($"Cannot convert \"{value}\" into {typeof(Constraint)}", node);
 
 			yield return Instruction.Create(OpCodes.Ldc_R8, size);
 
