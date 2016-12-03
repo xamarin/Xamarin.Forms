@@ -80,14 +80,16 @@ namespace Xamarin.Forms.Controls.Issues
 			Content = listView;
 		}
 
-		void ListViewOnItemTapped(object sender, ItemTappedEventArgs itemTappedEventArgs)
+		async void ListViewOnItemTapped(object sender, ItemTappedEventArgs itemTappedEventArgs)
 		{
-			;
+			var item = (Model48271)itemTappedEventArgs.Item;
+			await DisplayAlert("Alert", item.Text + ", " + item.Detail, "OK");
 		}
 
-		void ListViewOnItemSelected(object sender, SelectedItemChangedEventArgs selectedItemChangedEventArgs)
+		async void ListViewOnItemSelected(object sender, SelectedItemChangedEventArgs selectedItemChangedEventArgs)
 		{
-			;
+			var item = (Model48271)selectedItemChangedEventArgs.SelectedItem;
+			await DisplayAlert("Alert", item.Text + ", " + item.Detail, "OK");
 		}
 	}
 
