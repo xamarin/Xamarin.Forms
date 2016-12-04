@@ -80,12 +80,23 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateStatusBarPrefersHidden();
 		}
 
-		public override void ViewDidDisappear(bool animated)
+		public override async void ViewDidDisappear(bool animated)
 		{
 			base.ViewDidDisappear(animated);
 
 			if (!_appeared || _disposed)
 				return;
+
+			var navigationPage = Element.Parent as NavigationPage;
+			if (navigationPage != null)
+			{
+				int managedStackCount = navigationPage.Navigation.NavigationStack.Count;
+				IVisualElementRenderer renderer = Platform.GetRenderer(navigationPage);
+				var navigationController = renderer as UINavigationController;
+				int? nativeStackCount = navigationController?.ViewControllers.Length;
+				if (managedStackCount > nativeStackCount)
+					await ((INavigationPageController)renderer.Element).PopAsyncInner(animated, true);
+			}
 
 			_appeared = false;
 			PageController.SendDisappearing();
@@ -122,6 +133,7 @@ namespace Xamarin.Forms.Platform.iOS
 			base.ViewWillDisappear(animated);
 
 			View.Window?.EndEditing(true);
+			
 		}
 
 		protected override void Dispose(bool disposing)

@@ -11,62 +11,48 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 39908, " Back button hit quickly results in jumbled pages")]
-	public class Bugzilla39908 : TestContentPage // or TestMasterDetailPage, etc ...
+	[Issue(IssueTracker.Bugzilla, 39908, " Back button hit quickly results in jumbled pages", PlatformAffected.iOS)]
+	public class Bugzilla39908 : TestNavigationPage // or TestMasterDetailPage, etc ...
 	{
 		protected override void Init()
 		{
-			var label = "Root Page";
+			PushAsync(new ContentPage39908());
+		}
+	}
+
+	[Preserve(AllMembers = true)]
+	public class ContentPage39908 : ContentPage
+	{
+		public ContentPage39908()
+		{
+			string label = "Page " + Navigation.NavigationStack.Count;
+
+			var button = new Button
+			{
+				Text = "Another one",
+				AutomationId = "Another one"
+			};
+			button.Clicked += AddNewPage;
 
 			Title = label;
 			Content = new StackLayout
 			{
 				VerticalOptions = LayoutOptions.Center,
-				Children = {
-					new Label {
-						HorizontalTextAlignment = TextAlignment.Center,
-						Text = label
-					},
-					NewButton ()
-				}
-			};
-		}
-
-
-
-		private Button NewButton()
-		{
-			var newPageButton = new Button();
-			newPageButton.Text = "Another one";
-			newPageButton.Clicked += OnNewPage;
-
-			return newPageButton;
-		}
-
-		private ContentPage NewPage()
-		{
-			var label = Navigation != null ? "Page " + (Navigation.NavigationStack.Count - 1) : "Root Page";
-
-			return new ContentPage
-			{
-				Title = label,
-				Content = new StackLayout
+				Children =
 				{
-					VerticalOptions = LayoutOptions.Center,
-					Children = {
-					new Label {
+					new Label
+					{
 						HorizontalTextAlignment = TextAlignment.Center,
 						Text = label
 					},
-					NewButton ()
-				}
+					button
 				}
 			};
 		}
 
-		private async void OnNewPage(object sender, EventArgs e)
+		void AddNewPage(object sender, EventArgs e)
 		{
-			await Navigation.PushAsync(NewPage());
+			Navigation.PushAsync(new ContentPage39908());
 		}
 	}
 }
