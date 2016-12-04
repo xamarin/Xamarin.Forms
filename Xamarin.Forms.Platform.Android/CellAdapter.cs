@@ -177,8 +177,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		internal void CloseContextAction()
 		{
-			_actionMode?.Finish();
-			_supportActionMode?.Finish();
+			if (_actionMode != null)
+				_actionMode.Finish();
+			if (_supportActionMode != null)
+				_supportActionMode.Finish();
 		}
 
 		internal static void CloseContextMenu()
