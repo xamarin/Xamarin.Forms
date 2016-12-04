@@ -112,6 +112,7 @@ namespace Xamarin.Forms.Platform.Android
 			OnDestroyActionModeImpl();
 			_actionMode.Dispose();
 			_actionMode = null;
+			OpenCellAdapter = null;
 		}
 
 		void global::Android.Support.V7.View.ActionMode.ICallback.OnDestroyActionMode(global::Android.Support.V7.View.ActionMode mode)
