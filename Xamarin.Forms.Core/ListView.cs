@@ -43,6 +43,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty SeparatorColorProperty = BindableProperty.Create("SeparatorColor", typeof(Color), typeof(ListView), Color.Default);
 
+		internal const string CloseContextMenuSignalName = "Xamarin.CloseContextMenu";
 		readonly Lazy<PlatformConfigurationRegistry<ListView>> _platformConfigurationRegistry;
 
 		BindingBase _groupDisplayBinding;
@@ -594,6 +595,11 @@ namespace Xamarin.Forms
 				return true;
 			var template = (DataTemplate)value;
 			return template.CreateContent() is View;
+		}
+
+		public void CloseContextMenu()
+		{
+			MessagingCenter.Send(this, CloseContextMenuSignalName);
 		}
 
 		public IPlatformElementConfiguration<T, ListView> On<T>() where T : IConfigPlatform
