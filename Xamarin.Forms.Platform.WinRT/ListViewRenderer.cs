@@ -46,6 +46,13 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		protected WListView List { get; private set; }
 
+		bool _disposed;
+
+		public ListViewRenderer()
+		{
+			MessagingCenter.Subscribe<ListView>(this, ListView.CloseContextMenuSignalName, a => { CellControl.CloseContextMenu(); });
+		}
+
 		protected override void OnElementChanged(ElementChangedEventArgs<ListView> e)
 		{
 			base.OnElementChanged(e);
@@ -138,21 +145,31 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		protected override void Dispose(bool disposing)
 		{
-			if (List != null)
+			if (_disposed)
+				return;
+
+			_disposed = true;
+
+			if (disposing)
 			{
-				List.Tapped -= ListOnTapped;
-				List.KeyUp -= OnKeyPressed;
+				MessagingCenter.Unsubscribe<ListView>(this, ListView.CloseContextMenuSignalName);
 
-				List.SelectionChanged -= OnControlSelectionChanged;
+				if (List != null)
+				{
+					List.Tapped -= ListOnTapped;
+					List.KeyUp -= OnKeyPressed;
 
-				List.DataContext = null;
-				List = null;
-			}
+					List.SelectionChanged -= OnControlSelectionChanged;
 
-			if (_zoom != null)
-			{
-				_zoom.ViewChangeCompleted -= OnViewChangeCompleted;
-				_zoom = null;
+					List.DataContext = null;
+					List = null;
+				}
+
+				if (_zoom != null)
+				{
+					_zoom.ViewChangeCompleted -= OnViewChangeCompleted;
+					_zoom = null;
+				}
 			}
 
 			base.Dispose(disposing);
