@@ -64,7 +64,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		protected FrameworkElement CellContent => (FrameworkElement)Content;
 
-		static WeakReference<FrameworkElement> OpenCellContent { get; set; }
+		static WeakReference<CellControl> OpenCellControl { get; set; }
 
 		protected override Windows.Foundation.Size MeasureOverride(Windows.Foundation.Size availableSize)
 		{
@@ -200,19 +200,22 @@ namespace Xamarin.Forms.Platform.WinRT
 			}
 
 			FlyoutBase.ShowAttachedFlyout(CellContent);
-			OpenCellContent = new WeakReference<FrameworkElement>(CellContent);
+			OpenCellControl = new WeakReference<CellControl>(this);
 		}
 
 		internal static void CloseContextMenu()
 		{
-			FrameworkElement openCellContent;
-			if (OpenCellContent == null || !OpenCellContent.TryGetTarget(out openCellContent))
+			if (OpenCellControl == null)
 				return;
 
-			var flyout = FlyoutBase.GetAttachedFlyout(openCellContent) as MenuFlyout;
+			CellControl openCellControl;
+			if (!OpenCellControl.TryGetTarget(out openCellControl))
+				return;
+
+			var flyout = FlyoutBase.GetAttachedFlyout(openCellControl.CellContent) as MenuFlyout;
 			flyout?.Hide();
 
-			OpenCellContent = null;
+			OpenCellControl = null;
 		}
 
 		void SetCell(object newContext)
