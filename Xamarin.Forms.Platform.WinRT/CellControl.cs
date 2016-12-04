@@ -191,6 +191,7 @@ namespace Xamarin.Forms.Platform.WinRT
 			if (FlyoutBase.GetAttachedFlyout(CellContent) == null)
 			{
 				var flyout = new MenuFlyout();
+				flyout.Closed += FlyoutOnClosed;
 				SetupMenuItems(flyout);
 
 				((INotifyCollectionChanged)Cell.ContextActions).CollectionChanged += OnContextActionsChanged;
@@ -201,6 +202,11 @@ namespace Xamarin.Forms.Platform.WinRT
 
 			FlyoutBase.ShowAttachedFlyout(CellContent);
 			OpenCellControl = new WeakReference<CellControl>(this);
+		}
+
+		void FlyoutOnClosed(object sender, object o)
+		{
+			OpenCellControl = null;
 		}
 
 		internal static void CloseContextMenu()
@@ -300,6 +306,10 @@ namespace Xamarin.Forms.Platform.WinRT
 					((INotifyCollectionChanged)_contextActions).CollectionChanged -= OnContextActionsChanged;
 					_contextActions = null;
 				}
+
+				var flyout = FlyoutBase.GetAttachedFlyout(CellContent) as MenuFlyout;
+				if (flyout != null)
+					flyout.Closed -= FlyoutOnClosed;
 
 				FlyoutBase.SetAttachedFlyout(CellContent, null);
 				return;
