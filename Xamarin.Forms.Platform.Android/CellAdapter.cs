@@ -119,6 +119,7 @@ namespace Xamarin.Forms.Platform.Android
 			OnDestroyActionModeImpl();
 			_supportActionMode.Dispose();
 			_supportActionMode = null;
+			OpenCellAdapter = null;
 		}
 
 		public bool OnPrepareActionMode(ActionMode mode, IMenu menu)
