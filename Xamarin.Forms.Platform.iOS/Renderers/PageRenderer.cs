@@ -96,10 +96,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 			int managedStackCount = navigationPage.Navigation.NavigationStack.Count;
 			IVisualElementRenderer renderer = Platform.GetRenderer(navigationPage);
-			var navigationController = renderer as UINavigationController;
 
-			int? nativeStackCount = navigationController?.ViewControllers.Length;
-			if (nativeStackCount.HasValue && managedStackCount > nativeStackCount.Value)
+			var navigationController = renderer as UINavigationController;
+			if (navigationController != null && managedStackCount > navigationController.ViewControllers.Length)
 				await ((INavigationPageController)renderer.Element).PopAsyncInner(animated, true);
 		}
 
