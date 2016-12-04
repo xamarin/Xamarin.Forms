@@ -16,16 +16,16 @@ namespace Xamarin.Forms.Controls
 	{
 		protected override void Init()
 		{
-			PushAsync(new ContentPage39908());
+			PushAsync(new ContentPage39908(1));
 		}
 	}
 
 	[Preserve(AllMembers = true)]
 	public class ContentPage39908 : ContentPage
 	{
-		public ContentPage39908()
+		public ContentPage39908(int count)
 		{
-			string label = "Page " + Navigation.NavigationStack.Count;
+			string label = "Page " + count;
 
 			var button = new Button
 			{
@@ -52,7 +52,8 @@ namespace Xamarin.Forms.Controls
 
 		void AddNewPage(object sender, EventArgs e)
 		{
-			Navigation.PushAsync(new ContentPage39908());
+			int count = (Parent as NavigationPage).Navigation.NavigationStack.Count;
+			Navigation.PushAsync(new ContentPage39908(++count));
 		}
 	}
 }
