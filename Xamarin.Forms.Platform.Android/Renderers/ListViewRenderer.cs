@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Platform.Android
 		IVisualElementRenderer _footerRenderer;
 		Container _headerView;
 		Container _footerView;
-		bool _isAttached;
+		bool _isAttached, _disposed;
 		ScrollToRequestedEventArgs _pendingScrollTo;
 
 		SwipeRefreshLayout _refresh;
@@ -26,6 +26,7 @@ namespace Xamarin.Forms.Platform.Android
 		public ListViewRenderer()
 		{
 			AutoPackage = false;
+			MessagingCenter.Subscribe<ListView>(this, ListView.CloseContextMenuSignalName, a => { CellAdapter.CloseContextMenu(); });
 		}
 
 		void SwipeRefreshLayout.IOnRefreshListener.OnRefresh()
@@ -36,8 +37,15 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void Dispose(bool disposing)
 		{
+			if (_disposed)
+				return;
+
+			_disposed = true;
+
 			if (disposing)
 			{
+				MessagingCenter.Unsubscribe<ListView>(this, ListView.CloseContextMenuSignalName);
+
 				if (_headerView == null)
 					return;
 

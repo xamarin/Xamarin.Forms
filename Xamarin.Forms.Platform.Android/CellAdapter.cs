@@ -22,6 +22,7 @@ namespace Xamarin.Forms.Platform.Android
 		bool _actionModeNeedsUpdates;
 		AView _contextView;
 		global::Android.Support.V7.View.ActionMode _supportActionMode;
+		static WeakReference<CellAdapter> OpenCellAdapter { get; set; }
 
 		protected CellAdapter(Context context)
 		{
@@ -176,10 +177,21 @@ namespace Xamarin.Forms.Platform.Android
 
 		internal void CloseContextAction()
 		{
-			if (_actionMode != null)
-				_actionMode.Finish();
-			if (_supportActionMode != null)
-				_supportActionMode.Finish();
+			_actionMode?.Finish();
+			_supportActionMode?.Finish();
+		}
+
+		internal static void CloseContextMenu()
+		{
+			if (OpenCellAdapter == null)
+				return;
+
+			CellAdapter openCellAdapter;
+			if(!OpenCellAdapter.TryGetTarget(out openCellAdapter))
+				return;
+			
+			openCellAdapter.CloseContextAction();
+			OpenCellAdapter = null;
 		}
 
 		void CreateContextMenu(IMenu menu)
@@ -241,6 +253,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (!cell.HasContextActions)
 					return false;
 
+				OpenCellAdapter = new WeakReference<CellAdapter>(this);
 				ActionModeContext = cell;
 
 				var appCompatActivity = Forms.Context as FormsAppCompatActivity;
