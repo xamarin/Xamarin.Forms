@@ -133,7 +133,6 @@ namespace Xamarin.Forms.Platform.iOS
 			base.ViewWillDisappear(animated);
 
 			View.Window?.EndEditing(true);
-			
 		}
 
 		protected override void Dispose(bool disposing)
