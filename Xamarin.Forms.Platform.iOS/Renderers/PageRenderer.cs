@@ -86,6 +86,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (!_appeared || _disposed)
 				return;
+
 			_appeared = false;
 			PageController.SendDisappearing();
 
