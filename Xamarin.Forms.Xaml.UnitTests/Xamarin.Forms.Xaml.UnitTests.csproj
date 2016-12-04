@@ -390,9 +390,6 @@
     <Compile Include="Issues\Bz47703.xaml.cs">
       <DependentUpon>Bz47703.xaml</DependentUpon>
     </Compile>
-     <Compile Include="Issues\Bz43301.xaml.cs">
-       <DependentUpon>Bz43301.xaml</DependentUpon>
-     </Compile>
      <Compile Include="FactoryMethodMissingCtor.xaml.cs">
        <DependentUpon>FactoryMethodMissingCtor.xaml</DependentUpon>
      </Compile>
