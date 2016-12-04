@@ -214,7 +214,6 @@ namespace Xamarin.Forms.Platform.WinRT
 
 			var flyout = FlyoutBase.GetAttachedFlyout(openCellControl.CellContent) as MenuFlyout;
 			flyout?.Hide();
-
 			OpenCellControl = null;
 		}
 
