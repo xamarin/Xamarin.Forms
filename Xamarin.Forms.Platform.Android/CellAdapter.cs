@@ -82,6 +82,7 @@ namespace Xamarin.Forms.Platform.Android
 		public bool OnActionItemClicked(ActionMode mode, IMenuItem item)
 		{
 			OnActionItemClickedImpl(item);
+			// Disable menu item so it can't be double tapped.
 			item.SetEnabled(false);
 			_actionMode?.Finish();
 			return true;
@@ -90,6 +91,7 @@ namespace Xamarin.Forms.Platform.Android
 		bool global::Android.Support.V7.View.ActionMode.ICallback.OnActionItemClicked(global::Android.Support.V7.View.ActionMode mode, IMenuItem item)
 		{
 			OnActionItemClickedImpl(item);
+			// Disable menu item so it can't be double tapped.
 			item.SetEnabled(false);
 			_supportActionMode?.Finish();
 			return true;
