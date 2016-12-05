@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using UIKit;
 using PageUIStatusBarAnimation = Xamarin.Forms.PlatformConfiguration.iOSSpecific.UIStatusBarAnimation;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
@@ -80,7 +81,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateStatusBarPrefersHidden();
 		}
 
-		public override async void ViewDidDisappear(bool animated)
+		public override void ViewDidDisappear(bool animated)
 		{
 			base.ViewDidDisappear(animated);
 
@@ -99,7 +100,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 			var navigationController = renderer as UINavigationController;
 			if (navigationController != null && managedStackCount > navigationController.ViewControllers.Length)
-				await ((INavigationPageController)renderer.Element).PopAsyncInner(animated, true);
+			{
+				Task<Page> task = ((INavigationPageController)renderer.Element).PopAsyncInner(animated, true);
+				Task.WaitAll(task);
+			}
 		}
 
 		public override void ViewDidLoad()
