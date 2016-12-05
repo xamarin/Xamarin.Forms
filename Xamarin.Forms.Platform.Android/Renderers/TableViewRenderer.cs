@@ -1,5 +1,6 @@
+using System.ComponentModel;
 using Android.Views;
-using AView = Android.Views.View;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using AListView = Android.Widget.ListView;
 
 namespace Xamarin.Forms.Platform.Android
@@ -13,7 +14,16 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual TableViewModelRenderer GetModelRenderer(AListView listView, TableView view)
 		{
-			return new TableViewModelRenderer(Context, listView, view);
+			// make sure these are in sync or else dividers can't be hidden
+			Control.DividerHeight = Element.On<PlatformConfiguration.Android>().DividerHeight();
+
+			return new TableViewModelRenderer(Context, listView, view)
+			{
+				SectionHeaderDividerBackgroundColor = Element.On<PlatformConfiguration.Android>().SectionHeaderDividerBackgroundColor(),
+				SectionDividerBackgroundColor = Element.On<PlatformConfiguration.Android>().SectionDividerBackgroundColor(),
+				DividerBackgroundColor = Element.On<PlatformConfiguration.Android>().DividerBackgroundColor(),
+				DividerHeight = Control.DividerHeight
+			};
 		}
 
 		protected override Size MinimumSize()
@@ -44,6 +54,19 @@ namespace Xamarin.Forms.Platform.Android
 
 			TableViewModelRenderer source = GetModelRenderer(listView, view);
 			listView.Adapter = source;
+		}
+
+		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			base.OnElementPropertyChanged(sender, e);
+
+			if (e.PropertyName == PlatformConfiguration.AndroidSpecific.TableView.DividerHeightProperty.PropertyName)
+				UpdateDividerHeight();
+		}
+
+		void UpdateDividerHeight()
+		{
+			Control.DividerHeight = Element.On<PlatformConfiguration.Android>().DividerHeight();
 		}
 	}
 }
