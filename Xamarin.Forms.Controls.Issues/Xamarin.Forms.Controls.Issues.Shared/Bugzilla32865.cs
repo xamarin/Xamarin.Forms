@@ -44,6 +44,8 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		public DetailView32865()
 		{
+			Title = "Page1";
+
 			var label = new Label
 			{
 				Text = "Push a page and then change master icon. The icon should be changeable from any page on the navigation stack.",
@@ -96,6 +98,8 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		public DetailView232865()
 		{
+			Title = "Page2";
+
 			var button = new Button()
 			{
 				Text = "Icon 1",
