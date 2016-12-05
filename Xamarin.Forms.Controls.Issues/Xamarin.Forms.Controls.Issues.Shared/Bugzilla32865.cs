@@ -31,11 +31,11 @@ namespace Xamarin.Forms.Controls.Issues
 
 		public void ChangeIcon()
 		{
-			Master.Icon = "one.png";
+			Master.Icon = "settings";
 		}
 		public void ChangeIcon2()
 		{
-			Master.Icon = "two.png";
+			Master.Icon = "menuIcon";
 		}
 	}
 
