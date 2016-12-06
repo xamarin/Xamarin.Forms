@@ -72,14 +72,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void DraggingStarted(UIScrollView scrollView)
 		{
+			if (ShouldIgnoreScrolling(scrollView))
+				return;
+
 			if (_scrollViewBeingScrolled == null)
 				_scrollViewBeingScrolled = scrollView;
-			else if(_scrollViewBeingScrolled != null && !ReferenceEquals(_scrollViewBeingScrolled, scrollView))
-			{
-				scrollView.SetContentOffset(new PointF(0,0), false);
-				return;
-			}
-
+			
 			if (!IsOpen)
 				SetButtonsShowing(true);
 
@@ -98,11 +96,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void Scrolled(UIScrollView scrollView)
 		{
-			if (_scrollViewBeingScrolled != null && !ReferenceEquals(_scrollViewBeingScrolled, scrollView))
-			{
-				scrollView.SetContentOffset(new PointF(0, 0), false);
+			if (ShouldIgnoreScrolling(scrollView))
 				return;
-			}
 
 			var width = _finalButtonSize;
 			var count = _buttons.Count;
@@ -144,11 +139,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void WillEndDragging(UIScrollView scrollView, PointF velocity, ref PointF targetContentOffset)
 		{
-			if (_scrollViewBeingScrolled != null && !ReferenceEquals(_scrollViewBeingScrolled, scrollView))
-			{
-				scrollView.SetContentOffset(new PointF(0, 0), false);
+			if (ShouldIgnoreScrolling(scrollView))
 				return;
-			}
 
 			var width = ButtonsWidth;
 			var x = targetContentOffset.X;
@@ -204,6 +196,15 @@ namespace Xamarin.Forms.Platform.iOS
 				if (UIDevice.CurrentDevice.CheckSystemVersion(8, 0))
 					RestoreHighlight(scrollView);
 			}
+		}
+
+		static bool ShouldIgnoreScrolling(UIScrollView scrollView)
+		{
+			if (_scrollViewBeingScrolled == null || ReferenceEquals(_scrollViewBeingScrolled, scrollView))
+				return false;
+
+			scrollView.SetContentOffset(new PointF(0, 0), false);
+			return true;
 		}
 
 		protected override void Dispose(bool disposing)
