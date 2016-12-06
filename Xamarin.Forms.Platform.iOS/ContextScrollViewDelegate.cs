@@ -88,8 +88,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (ShouldIgnoreScrolling(scrollView))
 				return;
 
-			if (s_scrollViewBeingScrolled == null)
-				s_scrollViewBeingScrolled = new WeakReference<UIScrollView>(scrollView);
+			s_scrollViewBeingScrolled = new WeakReference<UIScrollView>(scrollView);
 			
 			if (!IsOpen)
 				SetButtonsShowing(true);
