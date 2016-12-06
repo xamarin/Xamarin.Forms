@@ -46,14 +46,14 @@ namespace Xamarin.Forms.Platform.iOS
 				if (!PageIsChildOfPlatform(sender))
 					return;
 
-				if (Forms.IsiOS9OrNewer)
+				if (Forms.IsiOS8OrNewer)
 				{
 					PresentAlert(arguments);
 				}
-				else if (Forms.IsiOS8OrNewer)
-				{
-					Present8Alert(arguments);
-				}
+				//else if (Forms.IsiOS8OrNewer)
+				//{
+				//	Present8Alert(arguments);
+				//}
 				else
 				{
 					PresentPre8Alert(arguments);
@@ -70,14 +70,14 @@ namespace Xamarin.Forms.Platform.iOS
 					pageRoot = (Page)pageRoot.RealParent;
 				var pageRenderer = GetRenderer(pageRoot);
 
-				if (Forms.IsiOS9OrNewer)
+				if (Forms.IsiOS8OrNewer)
 				{
 					PresentActionSheet(arguments);
 				}
-				else if (Forms.IsiOS8OrNewer)
-				{
-					Present8ActionSheet(arguments, pageRenderer);
-				}
+				//else if (Forms.IsiOS8OrNewer)
+				//{
+				//	Present8ActionSheet(arguments, pageRenderer);
+				//}
 				else
 				{
 					PresentPre8ActionSheet(arguments, pageRenderer);
@@ -458,6 +458,12 @@ namespace Xamarin.Forms.Platform.iOS
 				alert.PopoverPresentationController.SourceView = window.RootViewController.View;
 				alert.PopoverPresentationController.SourceRect = window.RootViewController.View.Bounds;
 				alert.PopoverPresentationController.PermittedArrowDirections = 0; // No arrow
+			}
+
+			if(!Forms.IsiOS9OrNewer)
+			{
+				// For iOS 8, we need to explicitly set the size of the window
+				window.Frame = new RectangleF(0, 0, UIScreen.MainScreen.Bounds.Width, UIScreen.MainScreen.Bounds.Height);
 			}
 
 			window.RootViewController.PresentViewController(alert, true, null);
