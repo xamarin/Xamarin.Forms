@@ -220,7 +220,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (disposing)
 			{
-				s_scrollViewBeingScrolled = null;
 				ClosedCallback = null;
 
 				_table = null;
