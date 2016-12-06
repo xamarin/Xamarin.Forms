@@ -68,7 +68,20 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public Action ClosedCallback { get; set; }
 
-		public bool IsOpen { get; private set; }
+		bool _isOpen;
+		public bool IsOpen
+		{
+			get { return _isOpen; }
+			private set
+			{
+				if (_isOpen == value)
+					return;
+
+				_isOpen = value;
+
+				s_scrollViewBeingScrolled = null;
+			}
+		}
 
 		public override void DraggingStarted(UIScrollView scrollView)
 		{
@@ -126,7 +139,6 @@ namespace Xamarin.Forms.Platform.iOS
 				RestoreHighlight(scrollView);
 
 				ClearCloserRecognizer(scrollView);
-				s_scrollViewBeingScrolled = null;
 				ClosedCallback?.Invoke();
 			}
 		}
