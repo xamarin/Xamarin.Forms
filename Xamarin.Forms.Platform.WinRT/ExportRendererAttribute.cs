@@ -9,10 +9,13 @@ namespace Xamarin.Forms.Platform.WinRT
 #endif
 {
 	[AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
-	public sealed class ExportRendererAttribute : HandlerAttribute
+	public sealed class ExportRendererAttribute : BaseExportRendererAttribute
 	{
 		public ExportRendererAttribute(Type handler, Type target) : base(handler, target)
 		{
+#if WINDOWS_UWP
+			MajorVersion = Convert.ToInt32(WindowsDeviceInfo.GetOSVersion().Split('.')[0]);
+#endif
 		}
 	}
 

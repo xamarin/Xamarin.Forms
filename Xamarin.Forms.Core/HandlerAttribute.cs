@@ -11,9 +11,9 @@ namespace Xamarin.Forms
 			HandlerType = handler;
 		}
 
-		internal Type HandlerType { get; private set; }
+		internal Type HandlerType { get; }
 
-		internal Type TargetType { get; private set; }
+		internal Type TargetType { get; }
 
 		public virtual bool ShouldRegister()
 		{

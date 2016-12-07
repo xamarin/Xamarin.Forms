@@ -93,6 +93,7 @@
     <Compile Include="ElementTests.cs" />
     <Compile Include="EntryCellTests.cs" />
     <Compile Include="EntryUnitTests.cs" />
+    <Compile Include="ExportRendererTests.cs" />
     <Compile Include="FluentTests.cs" />
     <Compile Include="FontUnitTests.cs" />
     <Compile Include="FormattedStringTests.cs" />
