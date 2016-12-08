@@ -6,6 +6,33 @@ using Mono.Cecil.Rocks;
 
 namespace Xamarin.Forms.Build.Tasks
 {
+	class TypeRefComparer : IEqualityComparer<TypeReference>
+	{
+		static string GetAssembly(TypeReference typeRef)
+		{
+			var md = typeRef.Scope as ModuleDefinition;
+			if (md != null)
+				return md.Assembly.FullName;
+			var anr = typeRef.Scope as AssemblyNameReference;
+			if (anr != null)
+				return anr.FullName;
+			throw new ArgumentOutOfRangeException(nameof(typeRef));
+		}
+
+		public bool Equals(TypeReference x, TypeReference y)
+		{
+			return GetAssembly(x) == GetAssembly(y) && x.FullName == y.FullName;
+		}
+
+		public int GetHashCode(TypeReference obj)
+		{
+			return $"{GetAssembly(obj)}//{obj.FullName}".GetHashCode();
+		}
+
+		static TypeRefComparer s_default;
+		public static TypeRefComparer Default => s_default ?? (s_default = new TypeRefComparer());
+	}
+
 	static class TypeReferenceExtensions
 	{
 		public static PropertyDefinition GetProperty(this TypeReference typeRef, Func<PropertyDefinition, bool> predicate,
@@ -65,12 +92,9 @@ namespace Xamarin.Forms.Build.Tasks
 			genericArguments = null;
 			var typeDef = typeRef.Resolve();
 			TypeReference iface;
-			if (
-				(iface =
-					typeDef.Interfaces.FirstOrDefault(
-						tr =>
-							tr.FullName.StartsWith(@interface) && tr.IsGenericInstance && (tr as GenericInstanceType).HasGenericArguments)) !=
-				null)
+			if ((iface = typeDef.Interfaces.FirstOrDefault(tr =>
+							tr.FullName.StartsWith(@interface, StringComparison.Ordinal) &&
+							tr.IsGenericInstance && (tr as GenericInstanceType).HasGenericArguments)) != null)
 			{
 				interfaceReference = iface as GenericInstanceType;
 				genericArguments = (iface as GenericInstanceType).GenericArguments;
@@ -82,44 +106,56 @@ namespace Xamarin.Forms.Build.Tasks
 			return false;
 		}
 
+		static readonly string[] arrayInterfaces = {
+			"System.ICloneable",
+			"System.Collections.IEnumerable",
+			"System.Collections.IList",
+			"System.Collections.ICollection",
+			"System.Collections.IStructuralComparable",
+			"System.Collections.IStructuralEquatable",
+		};
+
+		static readonly string[] arrayGenericInterfaces = {
+			"System.Collections.Generic.IEnumerable`1",
+			"System.Collections.Generic.IList`1",
+			"System.Collections.Generic.ICollection`1",
+			"System.Collections.Generic.IReadOnlyCollection`1",
+			"System.Collections.Generic.IReadOnlyList`1",
+		};
+
 		public static bool InheritsFromOrImplements(this TypeReference typeRef, TypeReference baseClass)
 		{
-			var arrayInterfaces = new[]
-			{
-				"System.IEnumerable",
-				"System.Collections.IList",
-				"System.Collections.Collection"
-			};
+			if (TypeRefComparer.Default.Equals(typeRef, baseClass))
+				return true;
 
-			var arrayGenericInterfaces = new[]
-			{
-				"System.IEnumerable`1",
-				"System.Collections.Generic.IList`1",
-				"System.Collections.Generic.IReadOnlyCollection<T>",
-				"System.Collections.Generic.IReadOnlyList<T>",
-				"System.Collections.Generic.Collection<T>"
-			};
+			if (typeRef.IsValueType)
+				return false;
 
-			if (typeRef.IsArray)
-			{
+			if (typeRef.IsArray) {
+				var array = (ArrayType)typeRef;
 				var arrayType = typeRef.Resolve();
 				if (arrayInterfaces.Contains(baseClass.FullName))
 					return true;
-				if (arrayGenericInterfaces.Contains(baseClass.Resolve().FullName) &&
-				    baseClass.IsGenericInstance &&
-				    (baseClass as GenericInstanceType).GenericArguments[0].FullName == arrayType.FullName)
+				if (array.IsVector &&  //generic interfaces are not implemented on multidimensional arrays
+					arrayGenericInterfaces.Contains(baseClass.Resolve().FullName) &&
+					baseClass.IsGenericInstance &&
+					TypeRefComparer.Default.Equals((baseClass as GenericInstanceType).GenericArguments[0], arrayType))
 					return true;
+				return baseClass.FullName == "System.Object";
 			}
-			var typeDef = typeRef.Resolve();
-			if (typeDef.FullName == baseClass.FullName)
-				return true;
-			if (typeDef.Interfaces.Any(ir => ir.FullName == baseClass.FullName))
-				return true;
-			if (typeDef.FullName == "System.Object")
+
+			if (typeRef.FullName == "System.Object")
 				return false;
+			var typeDef = typeRef.Resolve();
+			if (TypeRefComparer.Default.Equals(typeDef, baseClass.Resolve()))
+				return true;
+			if (typeDef.Interfaces.Any(ir => TypeRefComparer.Default.Equals(ir, baseClass)))
+				return true;
 			if (typeDef.BaseType == null)
 				return false;
-			return typeDef.BaseType.InheritsFromOrImplements(baseClass);
+
+			typeRef = typeDef.BaseType.ResolveGenericParameters(typeRef);
+			return typeRef.InheritsFromOrImplements(baseClass);
 		}
 
 		public static CustomAttribute GetCustomAttribute(this TypeReference typeRef, TypeReference attribute)
@@ -201,9 +237,10 @@ namespace Xamarin.Forms.Build.Tasks
 		}
 
 		public static MethodReference GetImplicitOperatorTo(this TypeReference fromType, TypeReference toType, ModuleDefinition module)
-		{ 
-			var implicitOperators = fromType.GetMethods(md => md.IsPublic && md.IsStatic && md.IsSpecialName && md.Name == "op_Implicit",
-												module).ToList();
+		{
+			var implicitOperatorsOnFromType = fromType.GetMethods(md => md.IsPublic && md.IsStatic && md.IsSpecialName && md.Name == "op_Implicit", module);
+			var implicitOperatorsOnToType = toType.GetMethods(md => md.IsPublic && md.IsStatic && md.IsSpecialName && md.Name == "op_Implicit", module);
+			var implicitOperators = implicitOperatorsOnFromType.Concat(implicitOperatorsOnToType).ToList();
 			if (implicitOperators.Any()) {
 				foreach (var op in implicitOperators) {
 					var cast = op.Item1;

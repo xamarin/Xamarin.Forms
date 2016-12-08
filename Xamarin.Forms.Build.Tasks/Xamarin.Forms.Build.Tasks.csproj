@@ -100,6 +100,8 @@
     <Compile Include="CompiledConverters\RectangleTypeConverter.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="XamlTask.cs" />
+    <Compile Include="CompiledMarkupExtensions\ArrayExtension.cs" />
+    <Compile Include="CompiledConverters\ConstraintTypeConverter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
@@ -119,10 +121,6 @@
     <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">
       <Project>{57B8B73D-C3B5-4C42-869E-7B2F17D354AC}</Project>
       <Name>Xamarin.Forms.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\ICSharpCode.Decompiler\ICSharpCode.Decompiler.csproj">
-      <Project>{984CC812-9470-4A13-AFF9-CC44068D666C}</Project>
-      <Name>ICSharpCode.Decompiler</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

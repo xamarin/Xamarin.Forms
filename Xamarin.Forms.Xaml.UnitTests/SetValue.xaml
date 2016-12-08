@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <ContentPage 
 	xmlns="http://xamarin.com/schemas/2014/forms"
 	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
@@ -84,5 +84,18 @@
 			</ContentView.Content>
 		</ContentView>
 		<local:MockViewWithValues x:Name="mockView0" UShort="32" ADecimal="42" />
+		<local:ViewWithEnums x:Name="enums" IntEnum="Foo" ByteEnum="Bar" />
+		<local:MockViewWithValues x:Name="implicit0">
+			<local:MockViewWithValues.BPBar>
+				<local:SV_Foo Value="Bar"/>
+			</local:MockViewWithValues.BPBar>
+		</local:MockViewWithValues>
+		<local:MockViewWithValues x:Name="implicit1" BPFoo="Foo" />
+		<local:MockViewWithValues x:Name="implicit2">
+			<local:MockViewWithValues.Bar>
+				<local:SV_Foo Value="Bar"/>
+			</local:MockViewWithValues.Bar>
+		</local:MockViewWithValues>
+		<local:MockViewWithValues x:Name="implicit3" Foo="Foo" />
 	</StackLayout>
 </ContentPage>

@@ -188,6 +188,7 @@
     <Compile Include="..\Xamarin.Forms.Platform.WinRT\LayoutExtensions.cs">
       <Link>LayoutExtensions.cs</Link>
     </Compile>
+    <Compile Include="FormsPresenter.cs" />
     <Compile Include="IToolBarForegroundBinder.cs" />
     <Compile Include="NativeBindingService.cs" />
     <Compile Include="NativeValueConverterService.cs" />
@@ -442,6 +443,11 @@
     <Page Include="AutoSuggestStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="FormsCommandBarStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
     <Page Include="FormsTextBoxStyle.xaml">
       <SubType>Designer</SubType>

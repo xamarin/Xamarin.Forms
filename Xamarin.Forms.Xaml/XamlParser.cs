@@ -31,6 +31,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Xml;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Xaml
 {
