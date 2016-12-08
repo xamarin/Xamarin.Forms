@@ -324,6 +324,11 @@ namespace Xamarin.Forms.Platform.WinRT
 
 			Children.Add(control);
 
+            if (Element == null)
+            {
+                throw new Exception("When calling SetNativeControl the Element property (of the ViewRenderer) must have a non-null value.");
+            }
+
 			Element.IsNativeStateConsistent = false;
 			control.Loaded += OnControlLoaded;
 
