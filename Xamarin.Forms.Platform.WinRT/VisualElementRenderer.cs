@@ -325,7 +325,7 @@ namespace Xamarin.Forms.Platform.WinRT
 			Children.Add(control);
 
 			if (Element == null)
-				throw new InvalidOperationException("When calling SetNativeControl the Element property must have a non-null value.");
+				throw new InvalidOperationException("Changes to the native control require the Element property must have a non-null value.");
 
 			Element.IsNativeStateConsistent = false;
 			control.Loaded += OnControlLoaded;
