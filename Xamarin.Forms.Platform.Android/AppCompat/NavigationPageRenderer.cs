@@ -74,7 +74,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			}
 		}
 
-		FragmentManager FragmentManager => _fragmentManager ?? (_fragmentManager = ((FormsAppCompatActivity)Context).SupportFragmentManager);
+		FragmentManager FragmentManager	=> _fragmentManager ?? (_fragmentManager = ((FormsAppCompatActivity)Context).SupportFragmentManager);
 
 		IPageController PageController => Element as IPageController;
 
@@ -324,7 +324,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			else
 				transaction.SetTransition((int)FragmentTransit.FragmentClose);
 		}
-
+		
 		internal int GetNavBarHeight()
 		{
 			if (!ToolbarVisible)
@@ -584,6 +584,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			FragmentManager.EnableDebugLogging(true);
 #endif
 
+			List<Fragment> fragments = _fragmentStack;
+
 			Current = page;
 
 			((Platform)Element.Platform).NavAnimationInProgress = true;
@@ -594,10 +596,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			transaction.DisallowAddToBackStack();
 
-			if (_fragmentStack.Count == 0)
+			if (fragments.Count == 0)
 			{
 				transaction.Add(Id, fragment);
-				_fragmentStack.Add(fragment);
+				fragments.Add(fragment);
 			}
 			else
 			{
@@ -605,15 +607,15 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				{
 					// pop only one page, or pop everything to the root
 					var popPage = true;
-					while (_fragmentStack.Count > 1 && popPage)
+					while (fragments.Count > 1 && popPage)
 					{
-						Fragment currentToRemove = _fragmentStack.Last();
-						_fragmentStack.RemoveAt(_fragmentStack.Count - 1);
+						Fragment currentToRemove = fragments.Last();
+						fragments.RemoveAt(fragments.Count - 1);
 						transaction.Remove(currentToRemove);
 						popPage = popToRoot;
 					}
-
-					Fragment toShow = _fragmentStack.Last();
+					
+					Fragment toShow = fragments.Last();
 					// Execute pending transactions so that we can be sure the fragment list is accurate.
 					FragmentManager.ExecutePendingTransactions();
 					if (FragmentManager.Fragments.Contains(toShow))
@@ -624,10 +626,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				else
 				{
 					// push
-					Fragment currentToHide = _fragmentStack.Last();
+					Fragment currentToHide = fragments.Last();
 					transaction.Hide(currentToHide);
 					transaction.Add(Id, fragment);
-					_fragmentStack.Add(fragment);
+					fragments.Add(fragment);
 				}
 			}
 
