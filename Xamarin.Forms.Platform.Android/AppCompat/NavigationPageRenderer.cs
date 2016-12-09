@@ -584,8 +584,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			FragmentManager.EnableDebugLogging(true);
 #endif
 
-			List<Fragment> fragments = _fragmentStack;
-
 			Current = page;
 
 			((Platform)Element.Platform).NavAnimationInProgress = true;
@@ -596,10 +594,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			transaction.DisallowAddToBackStack();
 
-			if (fragments.Count == 0)
+			if (_fragmentStack.Count == 0)
 			{
 				transaction.Add(Id, fragment);
-				fragments.Add(fragment);
+				_fragmentStack.Add(fragment);
 			}
 			else
 			{
@@ -607,15 +605,15 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				{
 					// pop only one page, or pop everything to the root
 					var popPage = true;
-					while (fragments.Count > 1 && popPage)
+					while (_fragmentStack.Count > 1 && popPage)
 					{
-						Fragment currentToRemove = fragments.Last();
-						fragments.RemoveAt(fragments.Count - 1);
+						Fragment currentToRemove = _fragmentStack.Last();
+						_fragmentStack.RemoveAt(_fragmentStack.Count - 1);
 						transaction.Remove(currentToRemove);
 						popPage = popToRoot;
 					}
 					
-					Fragment toShow = fragments.Last();
+					Fragment toShow = _fragmentStack.Last();
 					// Execute pending transactions so that we can be sure the fragment list is accurate.
 					FragmentManager.ExecutePendingTransactions();
 					if (FragmentManager.Fragments.Contains(toShow))
@@ -626,10 +624,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				else
 				{
 					// push
-					Fragment currentToHide = fragments.Last();
+					Fragment currentToHide = _fragmentStack.Last();
 					transaction.Hide(currentToHide);
 					transaction.Add(Id, fragment);
-					fragments.Add(fragment);
+					_fragmentStack.Add(fragment);
 				}
 			}
 
