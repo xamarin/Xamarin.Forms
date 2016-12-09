@@ -1,4 +1,13 @@
-﻿using System.Collections.Generic;
+//
+// TriggerValueProvider.cs
+//
+// Author:
+//       Stephane Delcroix <stdelc@microsoft.com>
+//
+// Copyright (c) 2016 
+
+using System;
+using System.Collections.Generic;
 
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -8,7 +17,8 @@ using Xamarin.Forms.Build.Tasks;
 
 namespace Xamarin.Forms.Core.XamlC
 {
-	class SetterValueProvider : ICompiledValueProvider
+	
+	class TriggerValueProvider : ICompiledValueProvider
 	{
 		public IEnumerable<Instruction> ProvideValue(VariableDefinitionReference vardefref, ModuleDefinition module, BaseNode node, ILContext context)
 		{
@@ -23,13 +33,13 @@ namespace Xamarin.Forms.Core.XamlC
 			var bpRef = (new BindablePropertyConverter()).GetBindablePropertyFieldReference((string)bpNode.Value, module, bpNode);
 
 			TypeReference _;
-			var setValueRef = module.Import(module.Import(typeof(Setter)).GetProperty(p => p.Name == "Value", out _).SetMethod);
+			var setValueRef = module.Import(module.Import(typeof(Trigger)).GetProperty(p => p.Name == "Value", out _).SetMethod);
 
 			//push the setter
 			yield return Instruction.Create(OpCodes.Ldloc, vardefref.VariableDefinition);
 
 			//push the value
-			foreach (var instruction in ((ValueNode)valueNode).PushConvertedValue(context, bpRef, valueNode.PushServiceProvider(context, bpRef: bpRef), boxValueTypes: true, unboxValueTypes: false))
+			foreach (var instruction in ((ValueNode)valueNode).PushConvertedValue(context, bpRef, valueNode.PushServiceProvider(context, bpRef: bpRef), true, false))
 				yield return instruction;
 
 			//set the value
