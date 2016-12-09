@@ -49,8 +49,8 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (Control == null)
 				{
-					UITextField textField;
-					SetNativeControl(textField = new UITextField(RectangleF.Empty));
+					var textField = new UITextField(RectangleF.Empty);
+					SetNativeControl(textField);
 
 					_defaultTextColor = textField.TextColor;
 					textField.BorderStyle = UITextBorderStyle.RoundedRect;
