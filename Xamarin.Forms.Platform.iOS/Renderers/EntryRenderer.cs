@@ -10,6 +10,7 @@ namespace Xamarin.Forms.Platform.iOS
 	public class EntryRenderer : ViewRenderer<Entry, UITextField>
 	{
 		UIColor _defaultTextColor;
+		bool _disposed;
 
 		public EntryRenderer()
 		{
@@ -20,8 +21,15 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void Dispose(bool disposing)
 		{
+			if (_disposed)
+				return;
+
+			_disposed = true;
+
 			if (disposing)
 			{
+				_defaultTextColor = null;
+
 				if (Control != null)
 				{
 					Control.EditingDidBegin -= OnEditingBegan;
@@ -37,26 +45,25 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.OnElementChanged(e);
 
-			var textField = Control;
-
-			if (Control == null)
-			{
-				SetNativeControl(textField = new UITextField(RectangleF.Empty));
-
-				_defaultTextColor = textField.TextColor;
-				textField.BorderStyle = UITextBorderStyle.RoundedRect;
-				textField.ClipsToBounds = true;
-
-				textField.EditingChanged += OnEditingChanged;
-
-				textField.ShouldReturn = OnShouldReturn;
-
-				textField.EditingDidBegin += OnEditingBegan;
-				textField.EditingDidEnd += OnEditingEnded;
-			}
-
 			if (e.NewElement != null)
 			{
+				if (Control == null)
+				{
+					UITextField textField;
+					SetNativeControl(textField = new UITextField(RectangleF.Empty));
+
+					_defaultTextColor = textField.TextColor;
+					textField.BorderStyle = UITextBorderStyle.RoundedRect;
+					textField.ClipsToBounds = true;
+
+					textField.EditingChanged += OnEditingChanged;
+
+					textField.ShouldReturn = OnShouldReturn;
+
+					textField.EditingDidBegin += OnEditingBegan;
+					textField.EditingDidEnd += OnEditingEnded;
+				}
+
 				UpdatePlaceholder();
 				UpdatePassword();
 				UpdateText();
