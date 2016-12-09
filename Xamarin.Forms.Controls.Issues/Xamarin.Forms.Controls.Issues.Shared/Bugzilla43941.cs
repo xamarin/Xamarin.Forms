@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Controls.Issues
 			PushAsync(new LandingPage43941());
 		}
 
-#if UITEST
+#if UITEST && __IOS__
 		[Test]
 		public void Bugzilla43941Test()
 		{
@@ -48,8 +48,8 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		public ContentPage43941()
 		{
-			Interlocked.Increment(ref LandingPage43941.s_counter);
-			System.Diagnostics.Debug.WriteLine("Page: " + LandingPage43941.s_counter);
+			Interlocked.Increment(ref LandingPage43941.Counter);
+			System.Diagnostics.Debug.WriteLine("Page: " + LandingPage43941.Counter);
 
 			var list = new List<int>();
 			for (var i = 0; i < 30; i++)
@@ -66,22 +66,22 @@ namespace Xamarin.Forms.Controls.Issues
 
 		~ContentPage43941()
 		{
-			Interlocked.Decrement(ref LandingPage43941.s_counter);
-			System.Diagnostics.Debug.WriteLine("Page: " + LandingPage43941.s_counter);
+			Interlocked.Decrement(ref LandingPage43941.Counter);
+			System.Diagnostics.Debug.WriteLine("Page: " + LandingPage43941.Counter);
 		}
 	}
 
 	[Preserve(AllMembers = true)]
 	public class LandingPage43941 : ContentPage
 	{
-		public static int s_counter;
-		public Label _label;
+		public static int Counter;
+		public Label Label;
 
 		public LandingPage43941()
 		{
-			_label = new Label
+			Label = new Label
 			{
-				Text = "Counter: " + s_counter,
+				Text = "Counter: " + Counter,
 				HorizontalTextAlignment = TextAlignment.Center,
 				VerticalTextAlignment = TextAlignment.Center
 			};
@@ -99,7 +99,7 @@ namespace Xamarin.Forms.Controls.Issues
 						Text = "Click Push to show a ListView. When you hit the Back button, Counter will show the number of pages that have not been finalized yet."
 						+ " If you click GC, the counter should be 0."
 					},
-					_label,
+					Label,
 					new Button
 					{
 						Text = "GC",
@@ -109,7 +109,7 @@ namespace Xamarin.Forms.Controls.Issues
 							GC.Collect();
 							GC.WaitForPendingFinalizers();
 							GC.Collect();
-							_label.Text = "Counter: " + s_counter;
+							Label.Text = "Counter: " + Counter;
 						})
 					},
 					new Button
@@ -129,8 +129,8 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			base.OnAppearing();
 
-			if (_label != null)
-				_label.Text = "Counter: " + s_counter;
+			if (Label != null)
+				Label.Text = "Counter: " + Counter;
 		}
 	}
 }
