@@ -683,16 +683,16 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		Fragment GetFragment(Page page, bool removed, bool popToRoot)
 		{
-			// push
-			if (!removed && !popToRoot)
-				return FragmentContainer.CreateInstance(page);
-
 			// pop
 			if (removed)
 				return _fragmentStack[_fragmentStack.Count - 2];
 
 			// pop to root
-			return _fragmentStack[0];
+			if(popToRoot)
+				return _fragmentStack[0];
+
+			// push
+			return FragmentContainer.CreateInstance(page);
 		}
 
 		void ToolbarTrackerOnCollectionChanged(object sender, EventArgs eventArgs)
