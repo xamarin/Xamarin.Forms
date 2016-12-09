@@ -664,12 +664,10 @@ namespace Xamarin.Forms.Platform.iOS
 				if (_disposed)
 					return;
 
-				if (disposing)
-				{
-					_prototype = null;
-				}
-
 				_disposed = true;
+
+				if (disposing)
+					_prototype = null;
 
 				base.Dispose(disposing);
 			}
