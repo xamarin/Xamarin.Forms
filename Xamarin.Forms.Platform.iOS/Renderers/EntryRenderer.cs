@@ -45,34 +45,34 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.OnElementChanged(e);
 
-			if (e.NewElement != null)
+			if (e.NewElement == null)
+				return;
+
+			if (Control == null)
 			{
-				if (Control == null)
-				{
-					var textField = new UITextField(RectangleF.Empty);
-					SetNativeControl(textField);
+				var textField = new UITextField(RectangleF.Empty);
+				SetNativeControl(textField);
 
-					_defaultTextColor = textField.TextColor;
-					textField.BorderStyle = UITextBorderStyle.RoundedRect;
-					textField.ClipsToBounds = true;
+				_defaultTextColor = textField.TextColor;
+				textField.BorderStyle = UITextBorderStyle.RoundedRect;
+				textField.ClipsToBounds = true;
 
-					textField.EditingChanged += OnEditingChanged;
+				textField.EditingChanged += OnEditingChanged;
 
-					textField.ShouldReturn = OnShouldReturn;
+				textField.ShouldReturn = OnShouldReturn;
 
-					textField.EditingDidBegin += OnEditingBegan;
-					textField.EditingDidEnd += OnEditingEnded;
-				}
-
-				UpdatePlaceholder();
-				UpdatePassword();
-				UpdateText();
-				UpdateColor();
-				UpdateFont();
-				UpdateKeyboard();
-				UpdateAlignment();
-				UpdateAdjustsFontSizeToFitWidth();
+				textField.EditingDidBegin += OnEditingBegan;
+				textField.EditingDidEnd += OnEditingEnded;
 			}
+
+			UpdatePlaceholder();
+			UpdatePassword();
+			UpdateText();
+			UpdateColor();
+			UpdateFont();
+			UpdateKeyboard();
+			UpdateAlignment();
+			UpdateAdjustsFontSizeToFitWidth();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
