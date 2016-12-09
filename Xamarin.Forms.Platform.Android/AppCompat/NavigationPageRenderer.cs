@@ -574,11 +574,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			_toolbar = bar;
 		}
 
-		Task<bool> SwitchContentAsync(Page view, bool animated, bool removed = false, bool popToRoot = false)
+		Task<bool> SwitchContentAsync(Page page, bool animated, bool removed = false, bool popToRoot = false)
 		{
 			var tcs = new TaskCompletionSource<bool>();
-			Fragment fragment = FragmentContainer.CreateInstance(view);
-			FragmentManager fm = FragmentManager;
+			Fragment fragment = GetFragment(page, removed, popToRoot);
 
 #if DEBUG
 			// Enables logging of moveToState operations to logcat
@@ -587,10 +586,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			List<Fragment> fragments = _fragmentStack;
 
-			Current = view;
+			Current = page;
 
 			((Platform)Element.Platform).NavAnimationInProgress = true;
-			FragmentTransaction transaction = fm.BeginTransaction();
+			FragmentTransaction transaction = FragmentManager.BeginTransaction();
 
 			if (animated)
 				SetupPageTransition(transaction, !removed);
@@ -618,8 +617,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					
 					Fragment toShow = fragments.Last();
 					// Execute pending transactions so that we can be sure the fragment list is accurate.
-					fm.ExecutePendingTransactions();
-					if (fm.Fragments.Contains(toShow))
+					FragmentManager.ExecutePendingTransactions();
+					if (FragmentManager.Fragments.Contains(toShow))
 						transaction.Show(toShow);
 					else
 						transaction.Add(Id, toShow);
@@ -682,6 +681,20 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			// TransitionDuration is how long the built-in animations are, and they are "reversible" in the sense that starting another one slightly before it's done is fine
 
 			return tcs.Task;
+		}
+
+		Fragment GetFragment(Page page, bool removed, bool popToRoot)
+		{
+			if (FragmentManager.Fragments == null)
+				return FragmentContainer.CreateInstance(page);
+
+			if (removed)
+				return FragmentManager.Fragments[FragmentManager.Fragments.Count - 2];
+
+			if (popToRoot)
+				return FragmentManager.Fragments[0];
+
+			throw new NotSupportedException();
 		}
 
 		void ToolbarTrackerOnCollectionChanged(object sender, EventArgs eventArgs)
