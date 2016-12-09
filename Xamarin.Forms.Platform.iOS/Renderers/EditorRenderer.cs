@@ -27,9 +27,6 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.OnElementChanged(e);
 
-			if (e.NewElement == null)
-				return;
-
 			if (Control == null)
 			{
 				SetNativeControl(new UITextView(RectangleF.Empty));
@@ -55,11 +52,14 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.Ended += OnEnded;
 			}
 
-			UpdateText();
-			UpdateFont();
-			UpdateTextColor();
-			UpdateKeyboard();
-			UpdateEditable();
+			if (e.NewElement != null)
+			{
+				UpdateText();
+				UpdateFont();
+				UpdateTextColor();
+				UpdateKeyboard();
+				UpdateEditable();
+			}
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
