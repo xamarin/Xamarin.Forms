@@ -13,8 +13,28 @@ namespace Xamarin.Forms.Platform.iOS
 	public abstract class ViewRenderer<TView, TNativeView> : VisualElementRenderer<TView> where TView : View where TNativeView : UIView
 	{
 		UIColor _defaultColor;
+		TNativeView _control;
 
-		public TNativeView Control { get; private set; }
+		public TNativeView Control
+		{
+			get { return _control; }
+			protected set
+			{
+				if (ReferenceEquals(_control, value))
+					return;
+
+				_control = value;
+
+				_defaultColor = _control.BackgroundColor;
+
+				if (Element.BackgroundColor != Color.Default)
+					SetBackgroundColor(Element.BackgroundColor);
+
+				UpdateIsEnabled();
+
+				AddSubview(_control);
+			}
+		}
 
 		public override void LayoutSubviews()
 		{
@@ -107,6 +127,7 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.BackgroundColor = color.ToUIColor();
 		}
 
+		[Obsolete("Set Control directly instead.")]
 		protected void SetNativeControl(TNativeView uiview)
 		{
 			_defaultColor = uiview.BackgroundColor;

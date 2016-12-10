@@ -39,7 +39,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (Control == null)
 			{
-				SetNativeControl(new UITextView(RectangleF.Empty));
+				//SetNativeControl(new UITextView(RectangleF.Empty));
+				Control = new UITextView(RectangleF.Empty);
 
 				if (Device.Idiom == TargetIdiom.Phone)
 				{
