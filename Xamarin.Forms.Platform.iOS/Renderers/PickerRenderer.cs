@@ -153,6 +153,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (_picker != null)
 				{
+					if (_picker.Model != null)
+					{
+						_picker.Model.Dispose();
+						_picker.Model = null;
+					}
+
 					_picker.RemoveFromSuperview();
 					_picker.Dispose();
 					_picker = null;
@@ -173,11 +179,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 		class PickerSource : UIPickerViewModel
 		{
-			readonly PickerRenderer _renderer;
+			PickerRenderer _renderer;
+			bool _disposed;
 
-			public PickerSource(PickerRenderer model)
+			public PickerSource(PickerRenderer renderer)
 			{
-				_renderer = model;
+				_renderer = renderer;
 			}
 
 			public int SelectedIndex { get; internal set; }
@@ -214,6 +221,19 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if(_renderer.Element.On<PlatformConfiguration.iOS>().UpdateMode() == UpdateMode.Immediately)
 					_renderer.UpdatePickerFromModel(this);
+			}
+
+			protected override void Dispose(bool disposing)
+			{
+				if (_disposed)
+					return;
+
+				_disposed = true;
+
+				if (disposing)
+					_renderer = null;
+
+				base.Dispose(disposing);
 			}
 		}
 	}
