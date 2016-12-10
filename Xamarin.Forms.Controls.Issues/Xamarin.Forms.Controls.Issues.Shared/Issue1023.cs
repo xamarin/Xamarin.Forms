@@ -118,7 +118,7 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				HasUnevenRows = true,
 				ItemsSource = new List<string> { "DatePicker", "Picker", "TimePicker" },
-				ItemTemplate = new PickerDataTemplateSelector(),
+				ItemTemplate = new DataTemplateSelector1023(),
 				AutomationId = "ListView"
 			};
 		}
@@ -131,13 +131,13 @@ namespace Xamarin.Forms.Controls.Issues
 	}
 
 	[Preserve(AllMembers = true)]
-	public class PickerDataTemplateSelector : DataTemplateSelector
+	public class DataTemplateSelector1023 : DataTemplateSelector
 	{
 		public DataTemplate DatePickerTemplate { get; set; }
 		public DataTemplate PickerTemplate { get; set; }
 		public DataTemplate TimePickerTemplate { get; set; }
 
-		public PickerDataTemplateSelector()
+		public DataTemplateSelector1023()
 		{
 			DatePickerTemplate = new DataTemplate(() => new ViewCell { View = new DatePicker() });
 			PickerTemplate = new DataTemplate(() => new ViewCell { View = new Picker() });
