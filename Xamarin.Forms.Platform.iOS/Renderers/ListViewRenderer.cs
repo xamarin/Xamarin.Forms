@@ -667,7 +667,13 @@ namespace Xamarin.Forms.Platform.iOS
 				_disposed = true;
 
 				if (disposing)
-					_prototype = null;
+				{
+					if (_prototype != null)
+					{
+						_prototype.Dispose();
+						_prototype = null;
+					}
+				}
 
 				base.Dispose(disposing);
 			}
