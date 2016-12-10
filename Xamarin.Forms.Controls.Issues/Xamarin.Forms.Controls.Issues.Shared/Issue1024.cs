@@ -12,7 +12,7 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.None, 1024, "Entry is leaking when used in ViewCell", PlatformAffected.iOS)]
+	[Issue(IssueTracker.None, 1024, "Entry and Editor are leaking when used in ViewCell", PlatformAffected.iOS)]
 	public class Bugzilla1024 : TestNavigationPage
 	{
 		protected override void Init()
@@ -117,8 +117,8 @@ namespace Xamarin.Forms.Controls.Issues
 			Content = new ListView
 			{
 				HasUnevenRows = true,
-				ItemsSource = new List<int> { 1, 2, 3 },
-				ItemTemplate = new DataTemplate(typeof(ViewCell1024)),
+				ItemsSource = new List<string> { "Entry", "Editor"},
+				ItemTemplate = new InputViewDataTemplateSelector(),
 				AutomationId = "ListView"
 			};
 		}
@@ -131,16 +131,28 @@ namespace Xamarin.Forms.Controls.Issues
 	}
 
 	[Preserve(AllMembers = true)]
-	public class ViewCell1024 : ViewCell
+	public class InputViewDataTemplateSelector : DataTemplateSelector
 	{
-		public ViewCell1024()
+		public DataTemplate EntryTemplate { get; set; }
+		public DataTemplate EditorTemplate { get; set; }
+
+		public InputViewDataTemplateSelector()
 		{
-			View = new Entry
+			EntryTemplate = new DataTemplate(() => new ViewCell { View = new Entry { BackgroundColor = Color.DarkGoldenrod, Text = "Entry" } });
+			EditorTemplate = new DataTemplate(() => new ViewCell { View = new Editor { BackgroundColor = Color.Bisque, Text = "Editor" } });
+		}
+
+		protected override DataTemplate OnSelectTemplate(object item, BindableObject container)
+		{
+			switch (item as string)
 			{
-				Text = "Entry",
-				BackgroundColor = Color.Beige,
-				HeightRequest = 50
-			};
+				case "Entry":
+					return EntryTemplate;
+				case "Editor":
+					return EditorTemplate;
+			}
+
+			return null;
 		}
 	}
 }
