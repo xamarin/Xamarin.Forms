@@ -791,7 +791,8 @@ namespace Xamarin.Forms
 
 			if (!GetIsDefault(TriggersProperty)) {
 				var triggers = GetValue(TriggersProperty) as AttachedCollection<Trigger>;
-				triggers.DetachFrom(this);
+				if (null != triggers)
+                    triggers.DetachFrom(this);
 			}
 		}
 	}
