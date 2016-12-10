@@ -130,15 +130,7 @@ namespace Xamarin.Forms.Platform.iOS
 		[Obsolete("Set Control directly instead.")]
 		protected void SetNativeControl(TNativeView uiview)
 		{
-			_defaultColor = uiview.BackgroundColor;
 			Control = uiview;
-
-			if (Element.BackgroundColor != Color.Default)
-				SetBackgroundColor(Element.BackgroundColor);
-
-			UpdateIsEnabled();
-
-			AddSubview(uiview);
 		}
 
 		internal override void SendVisualElementInitialized(VisualElement element, UIView nativeView)
