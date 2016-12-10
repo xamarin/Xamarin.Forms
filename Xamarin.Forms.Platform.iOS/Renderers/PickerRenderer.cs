@@ -11,6 +11,7 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		UIPickerView _picker;
 		UIColor _defaultTextColor;
+		bool _disposed;
 
 		IElementController ElementController => Element as IElementController;
 
@@ -137,6 +138,37 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.TextColor = _defaultTextColor;
 			else
 				Control.TextColor = textColor.ToUIColor();
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (_disposed)
+				return;
+
+			_disposed = true;
+
+			if (disposing)
+			{
+				_defaultTextColor = null;
+
+				if (_picker != null)
+				{
+					_picker.RemoveFromSuperview();
+					_picker.Dispose();
+					_picker = null;
+				}
+
+				if (Control != null)
+				{
+					Control.EditingDidBegin -= OnStarted;
+					Control.EditingDidEnd -= OnEnded;
+				}
+
+				if(Element != null)
+					((INotifyCollectionChanged)Element.Items).CollectionChanged -= RowsCollectionChanged;
+			}
+
+			base.Dispose(disposing);
 		}
 
 		class PickerSource : UIPickerViewModel
