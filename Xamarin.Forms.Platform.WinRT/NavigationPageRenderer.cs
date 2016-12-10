@@ -417,17 +417,22 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		void SetPage(Page page, bool isAnimated, bool isPopping)
 		{
-			if (_currentPage != null)
+            // Ignore if same page loaded
+            if (page == _currentPage)
+                return;
+
+            // The new changes of this method, for :MasterDetails.Detail = exist page; performance
+            if (_currentPage != null)
 			{
-				if (isPopping)
-					_currentPage.Cleanup();
+				//if (isPopping)
+				//	_currentPage.Cleanup();
 
 				_container.Content = null;
 
 				_currentPage.PropertyChanged -= OnCurrentPagePropertyChanged;
 			}
 
-			if (!isPopping)
+			//if (!isPopping)
 				_previousPage = _currentPage;
 
 			_currentPage = page;
@@ -438,12 +443,12 @@ namespace Xamarin.Forms.Platform.WinRT
 			UpdateBackButton();
 			UpdateBackButtonTitle();
 
-			page.PropertyChanged += OnCurrentPagePropertyChanged;
+            page.PropertyChanged -= OnCurrentPagePropertyChanged;
+            page.PropertyChanged += OnCurrentPagePropertyChanged;
 
 			IVisualElementRenderer renderer = page.GetOrCreateRenderer();
 
-			UpdateTitleVisible();
-			UpdateTitleOnParents();
+
 
 			if (isAnimated && _transition == null)
 			{
@@ -456,9 +461,20 @@ namespace Xamarin.Forms.Platform.WinRT
 			else if (isAnimated && _container.ContentTransitions.Count == 0)
 				_container.ContentTransitions.Add(_transition);
 
-			_container.Content = renderer.ContainerElement;
+            if (null != _previousPage)
+                ((IPageController)_previousPage)?.SendDisappearing();
+            _container.Content = renderer.ContainerElement;
+            if (_container.CheckContentIfExist(renderer.ContainerElement))
+                ((IPageController)page)?.SendAppearing();
+            
 			_container.DataContext = page;
-		}
+
+
+            UpdateTitleVisible();
+            UpdateTitleOnParents();
+
+            
+        }
 
 		void UpdateBackButton()
 		{
@@ -541,15 +557,23 @@ namespace Xamarin.Forms.Platform.WinRT
 			if (_parentTabbedPage != null)
 			{
 				render = Platform.GetRenderer(_parentTabbedPage) as ITitleProvider;
-				if (render != null)
-					render.ShowTitle = (_parentTabbedPage.CurrentPage == Element) && NavigationPage.GetHasNavigationBar(_currentPage);
+                if (render != null && _parentTabbedPage.CurrentPage == Element)
+                {
+                    render.ShowTitle = NavigationPage.GetHasNavigationBar(_currentPage);
+                }else {
+                    render = null;
+                }
 			}
 
 			if (_parentMasterDetailPage != null)
 			{
 				render = Platform.GetRenderer(_parentMasterDetailPage) as ITitleProvider;
-				if (render != null)
-					render.ShowTitle = (_parentMasterDetailPage.Detail == Element) && NavigationPage.GetHasNavigationBar(_currentPage);
+                if (render != null && _parentMasterDetailPage.Detail == Element)
+                {
+                    render.ShowTitle = NavigationPage.GetHasNavigationBar(_currentPage);
+                }else {
+                    render = null;
+                }
 			}
 
 			if (render != null && render.ShowTitle)

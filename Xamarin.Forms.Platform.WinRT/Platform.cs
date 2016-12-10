@@ -356,6 +356,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		Rectangle _bounds;
 		readonly Canvas _container;
+        List<FrameworkElement> RenderHistory = new List<FrameworkElement>();
 		readonly Windows.UI.Xaml.Controls.Page _page;
 		Windows.UI.Xaml.Controls.ProgressBar _busyIndicator;
 		Page _currentPage;
@@ -464,40 +465,59 @@ namespace Xamarin.Forms.Platform.WinRT
 			UpdatePageSizes();
 		}
 
-		async void SetCurrent(Page newPage, bool animated, bool popping = false, Action completedCallback = null)
-		{
-			if (newPage == _currentPage)
-				return;
+        async void SetCurrent(Page newPage, bool animated, bool popping = false, Action completedCallback = null)
+        {
+            if (newPage == _currentPage)
+                return;
 
-			newPage.Platform = this;
+            newPage.Platform = this;
 
-			if (_currentPage != null)
-			{
-				Page previousPage = _currentPage;
-				IVisualElementRenderer previousRenderer = GetRenderer(previousPage);
-				_container.Children.Remove(previousRenderer.ContainerElement);
+            // The new changes of this method, for : App.MainPag = existPage;
 
-				if (popping)
-					previousPage.Cleanup();
-			}
+            if (_currentPage != null)
+            {
+                Page previousPage = _currentPage;
+                IVisualElementRenderer previousRenderer = GetRenderer(previousPage);
 
-			newPage.Layout(new Rectangle(0, 0, _page.ActualWidth, _page.ActualHeight));
+                // We should just hide it, not remove or add again, that cause much performance
+                //_container.Children.Remove(previousRenderer.ContainerElement);
+                previousRenderer.ContainerElement.Visibility = Visibility.Collapsed;
 
-			IVisualElementRenderer pageRenderer = newPage.GetOrCreateRenderer();
-			_container.Children.Add(pageRenderer.ContainerElement);
+                // Don't clean every page(that will cause performance)
+                //if (popping)
+                //    previousPage.Cleanup();
+            }
 
-			pageRenderer.ContainerElement.Width = _container.ActualWidth;
-			pageRenderer.ContainerElement.Height = _container.ActualHeight;
 
-			if (completedCallback != null)
-				completedCallback();
 
-			_currentPage = newPage;
+            newPage.Layout(new Rectangle(0, 0, _page.ActualWidth, _page.ActualHeight));
+            IVisualElementRenderer pageRenderer = newPage.GetOrCreateRenderer();
 
-			UpdateToolbarTracker();
-			UpdateToolbarTitle(newPage);
-			await UpdateToolbarItems();
-		}
+            if (null != _currentPage)
+                ((IPageController)_currentPage)?.SendDisappearing();
+
+            // Only if the page are new, we should add it, once only(avoid performance)
+            if (_container.Children.Any( x => x == pageRenderer.ContainerElement))
+                pageRenderer.ContainerElement.Visibility = Visibility.Visible;
+            else
+                _container.Children.Add(pageRenderer.ContainerElement);
+
+            if (_container.Children.Any(x => x == pageRenderer.ContainerElement))
+                ((IPageController)newPage)?.SendAppearing();
+
+            pageRenderer.ContainerElement.Width = _container.ActualWidth;
+            pageRenderer.ContainerElement.Height = _container.ActualHeight;
+
+            if (completedCallback != null)
+                completedCallback();
+
+            _currentPage = newPage;
+
+            UpdateToolbarTracker();
+            UpdateToolbarTitle(newPage);
+            await UpdateToolbarItems();
+
+        }
 
 		void UpdateToolbarTitle(Page page)
 		{

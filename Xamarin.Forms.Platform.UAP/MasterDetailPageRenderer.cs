@@ -15,6 +15,7 @@ namespace Xamarin.Forms.Platform.UWP
 	{
 		Page _master;
 		Page _detail;
+        Page _previousDetail;
 		bool _showTitle;
 
 		VisualElementTracker<Page, FrameworkElement> _tracker;
@@ -181,14 +182,16 @@ namespace Xamarin.Forms.Platform.UWP
 
 			_detail.PropertyChanged -= OnDetailPropertyChanged;
 
-			IVisualElementRenderer renderer = Platform.GetRenderer(_detail);
-			renderer?.Dispose();
 
-			_detail.ClearValue(Platform.RendererProperty);
-			_detail = null;
-		}
 
-		void ClearMaster()
+            IVisualElementRenderer renderer = Platform.GetRenderer(_detail);
+            renderer?.Dispose();
+
+            _detail.ClearValue(Platform.RendererProperty);
+            _detail = null;
+        }
+
+        void ClearMaster()
 		{
 			if (_master == null)
 				return;
@@ -250,20 +253,28 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateDetail()
 		{
-			ClearDetail();
+            // Do not clear it, it will cause performance when next time switch back
+            //ClearDetail();
 
-			FrameworkElement element = null;
+            FrameworkElement element = null;
 
-			_detail = Element.Detail;
+            _previousDetail = _detail;
+            _detail = Element.Detail;
 			if (_detail != null)
 			{
-				_detail.PropertyChanged += OnDetailPropertyChanged;
+                _detail.PropertyChanged -= OnDetailPropertyChanged;
+                _detail.PropertyChanged += OnDetailPropertyChanged;
 
 				IVisualElementRenderer renderer = _detail.GetOrCreateRenderer();
 				element = renderer.ContainerElement;
 			}
 
-			Control.Detail = element;
+            if (null != _previousDetail)
+                ((IPageController)_previousDetail)?.SendDisappearing();
+            Control.Detail = element;
+            if (Control.CheckContentIfExist(element))
+                ((IPageController)_detail)?.SendAppearing();
+            
 			UpdateDetailTitle();
 		}
 
