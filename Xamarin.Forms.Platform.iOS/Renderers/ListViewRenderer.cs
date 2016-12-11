@@ -637,24 +637,25 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					var target = viewCell.View;
 					if (_prototype == null)
-					{
 						_prototype = Platform.CreateRenderer(target);
-						Platform.SetRenderer(target, _prototype);
-					}
 					else
-					{
 						_prototype.SetElement(target);
-						Platform.SetRenderer(target, _prototype);
-					}
+
+					Platform.SetRenderer(target, _prototype);
 
 					var req = target.Measure(tableView.Frame.Width, double.PositiveInfinity, MeasureFlags.IncludeMargins);
 
 					target.ClearValue(Platform.RendererProperty);
-					foreach (var descendant in target.Descendants())
+					foreach (Element descendant in target.Descendants())
+					{
+						IVisualElementRenderer renderer = Platform.GetRenderer(descendant as VisualElement);
 						descendant.ClearValue(Platform.RendererProperty);
+						renderer?.Dispose();
+					}
 
 					return (nfloat)req.Request.Height;
 				}
+
 				var renderHeight = cell.RenderHeight;
 				return renderHeight > 0 ? (nfloat)renderHeight : DefaultRowHeight;
 			}
