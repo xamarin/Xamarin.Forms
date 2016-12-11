@@ -54,9 +54,9 @@ namespace Xamarin.Forms.Platform.Android
 
 			var platform = _listView.Platform;
 			if (platform.GetType() == typeof(AppCompat.Platform))
-				Messaging.Instance.Subscribe<AppCompat.Platform>(this, AppCompat.Platform.CloseContextActionsSignalName, p => CloseContextAction());
+				Messaging.Instance.Subscribe<AppCompat.Platform>(this, AppCompat.Platform.CloseContextActionsSignalName, p => CloseContextActions());
 			else
-				Messaging.Instance.Subscribe<Platform>(this, Platform.CloseContextActionsSignalName, p => CloseContextAction());
+				Messaging.Instance.Subscribe<Platform>(this, Platform.CloseContextActionsSignalName, p => CloseContextActions());
 		}
 
 		public override int Count
