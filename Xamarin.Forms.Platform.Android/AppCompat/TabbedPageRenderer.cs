@@ -370,20 +370,28 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void UpdateTabIcons()
 		{
-			TabLayout tabs = _tabLayout;
-
-			if (tabs.TabCount != Element.Children.Count)
-				return;
-
-			for (var i = 0; i < Element.Children.Count; i++)
+			try
 			{
-				Page child = Element.Children[i];
-				FileImageSource icon = child.Icon;
-				if (string.IsNullOrEmpty(icon))
-					continue;
+				TabLayout tabs = _tabLayout;
 
-				TabLayout.Tab tab = tabs.GetTabAt(i);
-				SetTabIcon(tab, icon);
+				if (tabs.TabCount != Element.Children.Count)
+					return;
+
+				for (var i = 0; i < Element.Children.Count; i++)
+				{
+					Page child = Element.Children[i];
+					FileImageSource icon = child.Icon;
+					if (string.IsNullOrEmpty(icon))
+						continue;
+
+					TabLayout.Tab tab = tabs.GetTabAt(i);
+					SetTabIcon(tab, icon);
+				}
+			}
+			catch (NullReferenceException ex)
+			{
+				Log.Warning("Xamarin.Forms.Platform.Android.TabbedPageRenderer", "Could not retrieve tab icon resources, {0}", ex);
+				throw;
 			}
 		}
 
