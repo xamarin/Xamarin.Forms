@@ -120,22 +120,26 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			get
 			{
-				double height = ActualHeight;
-				double width = ActualWidth;
+                //double height = ActualHeight;
+                //double width = ActualWidth;
 
-				if (_commandBar != null)
-					height -= _commandBar.ActualHeight;
+                //if (_commandBar != null)
+                //	height -= _commandBar.ActualHeight;
 
-				if (ShouldShowSplitMode && IsPaneOpen)
-				{
-					if (_split != null)
-						width -= _split.OpenPaneLength;
-					else if (_detailPresenter != null)
-						width -= _masterPresenter.ActualWidth;
-				}
+                //if (ShouldShowSplitMode && IsPaneOpen)
+                //{
+                //	if (_split != null)
+                //		width -= _split.OpenPaneLength;
+                //	else if (_detailPresenter != null)
+                //		width -= _masterPresenter.ActualWidth;
+                //}
 
-				return new Windows.Foundation.Size(width, height);
-			}
+                //return new Windows.Foundation.Size(width, height);
+
+                // This is more clean and good way, if use the old way, it will failed calculate the details size after resize
+                return new Windows.Foundation.Size(this.DetailContent.ActualWidth, this.DetailContent.ActualHeight);
+
+            }
 		}
 
 		public string DetailTitle

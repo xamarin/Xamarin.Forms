@@ -245,11 +245,13 @@ namespace Xamarin.Forms.Platform.UWP
 		void UpdateBounds()
 		{
 			Windows.Foundation.Size masterSize = Control.MasterSize;
-			Windows.Foundation.Size detailSize = Control.DetailSize;
+            Windows.Foundation.Size detailSize = Control.DetailSize;
+
 
 			MasterDetailPageController.MasterBounds = new Rectangle(0, 0, masterSize.Width, masterSize.Height);
 			MasterDetailPageController.DetailBounds = new Rectangle(0, 0, detailSize.Width, detailSize.Height);
-		}
+            RefreshInsidePagesSize();
+            }
 
 		void UpdateDetail()
 		{
@@ -272,13 +274,28 @@ namespace Xamarin.Forms.Platform.UWP
             if (null != _previousDetail)
                 ((IPageController)_previousDetail)?.SendDisappearing();
             Control.Detail = element;
+            
             if (Control.CheckContentIfExist(element))
                 ((IPageController)_detail)?.SendAppearing();
             
 			UpdateDetailTitle();
-		}
 
-		void UpdateDetailTitle()
+            // avoid other page size not right after switch back
+            RefreshInsidePagesSize();
+
+        }
+
+
+        private void RefreshInsidePagesSize()
+        {
+            if (null != _detail)
+            ((IPageController)_detail).ContainerArea = new Rectangle(0, 0, MasterDetailPageController.DetailBounds.Width, MasterDetailPageController.DetailBounds.Height);
+            
+        }
+
+
+
+        void UpdateDetailTitle()
 		{
 			if (_detail == null)
 				return;

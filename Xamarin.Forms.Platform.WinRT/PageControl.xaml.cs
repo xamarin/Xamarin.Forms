@@ -227,5 +227,18 @@ namespace Xamarin.Forms.Platform.WinRT
         internal bool CheckContentIfExist(UIElement element) {
             return this.ContentController.Children.Any(x => x == element);
         }
+
+
+        internal void RecalcVisiblitiy(UIElement element)
+        {
+            foreach (var item in this.ContentController.Children)
+            {
+                if (element == item && element.Visibility != item.Visibility)
+                    item.Visibility = element.Visibility;
+                else if (element != item && element.Visibility != Visibility.Collapsed)
+                    item.Visibility = Visibility.Collapsed;
+            }
+        }
+
     }
 }

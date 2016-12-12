@@ -473,7 +473,8 @@ namespace Xamarin.Forms.Platform.WinRT
             UpdateTitleVisible();
             UpdateTitleOnParents();
 
-            
+            // update the inside pages size, if first page change size(because phone orientation changed), navigate to (exist) second page, the page size must resize again
+            RefreshInsidePagesSize();
         }
 
 		void UpdateBackButton()
@@ -498,12 +499,27 @@ namespace Xamarin.Forms.Platform.WinRT
 			_container.BackButtonTitle = title;
 		}
 
-		void UpdateContainerArea()
-		{
-			PageController.ContainerArea = new Rectangle(0, 0, _container.ContentWidth, _container.ContentHeight);
-		}
+        void UpdateContainerArea()
+        {
+            PageController.ContainerArea = new Rectangle(0, 0, _container.ContentWidth, _container.ContentHeight);
+            
+            // Resize the inside pages
+            RefreshInsidePagesSize();
+            // Rechange visibility again(avoid after change phone orientation, the first page will show up)
+            IVisualElementRenderer renderer = _currentPage.GetOrCreateRenderer();
+            _container.RecalcVisiblitiy(renderer.ContainerElement);
+            
+        }
 
-		void UpdateNavigationBarBackground()
+        private void RefreshInsidePagesSize() {
+            foreach (IPageController item in PageController.InternalChildren)
+            {
+                if (item == _currentPage)
+                    item.ContainerArea = new Rectangle(0, 0, _container.ContentWidth, _container.ContentHeight);
+            }
+        }
+
+        void UpdateNavigationBarBackground()
 		{
 			(this as ITitleProvider).BarBackgroundBrush = GetBarBackgroundBrush();
 		}

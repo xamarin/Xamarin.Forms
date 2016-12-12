@@ -225,13 +225,17 @@ namespace Xamarin.Forms.Platform.WinRT
 				return;
 			foreach (Page root in _navModel.Roots)
 			{
-				root.Layout(bounds);
-				IVisualElementRenderer renderer = GetRenderer(root);
-				if (renderer != null)
-				{
-					renderer.ContainerElement.Width = _container.ActualWidth;
-					renderer.ContainerElement.Height = _container.ActualHeight;
-				}
+                // Don't resize every page, it will let previous page visible in new design page display mode
+                if (root == _currentPage)
+                {
+                    root.Layout(bounds);
+                    IVisualElementRenderer renderer = GetRenderer(root);
+                    if (renderer != null)
+                    {
+                        renderer.ContainerElement.Width = _container.ActualWidth;
+                        renderer.ContainerElement.Height = _container.ActualHeight;
+                    }
+                }
 			}
 		}
 
@@ -356,7 +360,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		Rectangle _bounds;
 		readonly Canvas _container;
-        List<FrameworkElement> RenderHistory = new List<FrameworkElement>();
+
 		readonly Windows.UI.Xaml.Controls.Page _page;
 		Windows.UI.Xaml.Controls.ProgressBar _busyIndicator;
 		Page _currentPage;
