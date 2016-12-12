@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 44690, "Item inside a ListView does not keep TranslationX after scroll", PlatformAffected.iOS)]
-	public class Bugzilla1023 : TestContentPage
+	public class Bugzilla44690 : TestContentPage
 	{
 		public List<Item44690> Items { get; set; }
 
@@ -83,6 +83,7 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		public string Text { get; set; }
 		public double PosX { get; set; }
+		//public double PosX { get; set; } = 25;
 
 		public ICommand MoveCommand => new Command(Move);
 
