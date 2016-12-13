@@ -304,20 +304,19 @@ namespace Xamarin.Forms.Platform.UWP
 			(this as ITitleProvider).ShowTitle = !string.IsNullOrEmpty(Control.DetailTitle);
 		}
 
-		void UpdateIsPresented()
-		{
-            if (Control.IsPaneOpen != Element.IsPresented)
-			{
-                Control.IsPaneOpen = Element.IsPresented;
+        void UpdateIsPresented()
+        {
+            Control.IsPaneOpen = Element.IsPresented;
 
-                // Fix in PC mode, the split change, but the detail content width not changed
-                if (Control.ShouldShowSplitMode)
-                {
+            // Fix in PC mode, the split change, but the detail content width not changed
+            if (Control.ShouldShowSplitMode)
+            {
+                if (Control.Width != MasterDetailPageController.DetailBounds.Width)
                     Control.UpdateLayout();
-                    UpdateBounds();
-                }
+                UpdateBounds();
+                UpdateMode();
             }
-		}
+        }
 
 		void UpdateMaster()
 		{

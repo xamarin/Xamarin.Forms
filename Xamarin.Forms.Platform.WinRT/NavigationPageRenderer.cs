@@ -477,7 +477,7 @@ namespace Xamarin.Forms.Platform.WinRT
             RefreshInsidePagesSize();
         }
 
-		void UpdateBackButton()
+		internal void UpdateBackButton()
 		{
 			bool showBackButton = PageController.InternalChildren.Count > 1 && NavigationPage.GetHasBackButton(_currentPage);
 			_container.ShowBackButton = showBackButton;

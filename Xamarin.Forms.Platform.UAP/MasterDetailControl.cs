@@ -315,7 +315,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (_split == null)
 			{
-				return;
+                return;
 			}
 
 			_split.DisplayMode = ShouldShowSplitMode 
@@ -324,18 +324,24 @@ namespace Xamarin.Forms.Platform.UWP
 
 			_split.CompactPaneLength = CollapsedPaneWidth;
 
-			if (_split.DisplayMode == SplitViewDisplayMode.Inline)
-			{
-				// If we've determined that the pane will always be open, then there's no
-				// reason to display the show/hide pane button in the master
-				MasterToolbarVisibility = Visibility.Collapsed;
-			}
+            if (_split.DisplayMode == SplitViewDisplayMode.Inline)
+            {
+                // If we've determined that the pane will always be open, then there's no
+                // reason to display the show/hide pane button in the master
+                MasterToolbarVisibility = Visibility.Collapsed;
+            }
 
-			// If we're in compact mode or the pane is always open,
-			// we don't need to display the content pane's toggle button
-			ContentTogglePaneButtonVisibility = _split.DisplayMode == SplitViewDisplayMode.Overlay 
+            // If we're in compact mode or the pane is always open,
+            // we don't need to display the content pane's toggle button
+            ContentTogglePaneButtonVisibility = _split.DisplayMode == SplitViewDisplayMode.Overlay 
 				? Visibility.Visible 
 				: Visibility.Collapsed;
-		}
-	}
+
+            // if panel default mode is always open, but we set IsPresented = false
+            if (!IsPaneOpen)
+            {
+                ContentTogglePaneButtonVisibility = Visibility.Visible;
+            }
+        }
+    }
 }

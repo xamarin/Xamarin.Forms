@@ -525,6 +525,10 @@ namespace Xamarin.Forms.Platform.WinRT
 
             UpdatePageSizes();
 
+            // When App.MainPage navigate to exist navigation page, maybe in UWP Desktop App lose Back button on the top, That's why I add it
+            if (pageRenderer is NavigationPageRenderer)
+                ((NavigationPageRenderer)pageRenderer).UpdateBackButton();
+
             await UpdateToolbarItems();
 
         }
