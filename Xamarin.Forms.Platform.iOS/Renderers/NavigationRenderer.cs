@@ -14,7 +14,7 @@ using RectangleF = CoreGraphics.CGRect;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class NavigationRenderer : UINavigationController, IVisualElementRenderer, IEffectControlProvider
+	public class NavigationRenderer : UINavigationController, IVisualElementRenderer
 	{
 		internal const string UpdateToolbarButtons = "Xamarin.UpdateToolbarButtons";
 		bool _appeared;
@@ -1007,9 +1007,7 @@ namespace Xamarin.Forms.Platform.iOS
 		
 		void IEffectControlProvider.RegisterEffect(Effect effect)
 		{
-			var platformEffect = effect as PlatformEffect;
-			if (platformEffect != null)
-				platformEffect.Container = View;
+			VisualElementRenderer<VisualElement>.RegisterEffect(effect, View);
 		}
 	}
 }

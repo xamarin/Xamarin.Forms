@@ -55,6 +55,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			OnElementChanged(new VisualElementChangedEventArgs(oldElement, element));
 
+			EffectUtilities.RegisterEffectControlProvider(this, oldElement, element);
+
 			if (Element != null && !string.IsNullOrEmpty(Element.AutomationId))
 				AccessibilityIdentifier = Element.AutomationId;
 
@@ -260,5 +262,10 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 
 		#endregion
+
+		void IEffectControlProvider.RegisterEffect(Effect effect)
+		{
+			VisualElementRenderer<VisualElement>.RegisterEffect(effect, this, NativeView);
+		}
 	}
 }

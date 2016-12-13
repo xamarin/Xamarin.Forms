@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Platform.iOS
 		AutoPackage = 1 << 2
 	}
 
-	public class VisualElementRenderer<TElement> : UIView, IVisualElementRenderer, IEffectControlProvider where TElement : VisualElement
+	public class VisualElementRenderer<TElement> : UIView, IVisualElementRenderer where TElement : VisualElement
 	{
 		readonly UIColor _defaultColor = UIColor.Clear;
 
@@ -71,6 +71,16 @@ namespace Xamarin.Forms.Platform.iOS
 				else
 					_flags &= ~VisualElementRendererFlags.AutoTrack;
 			}
+		}
+
+		public static void RegisterEffect(Effect effect, UIView container, UIView control = null)
+		{
+			var platformEffect = effect as PlatformEffect;
+			if (platformEffect == null)
+				return;
+
+			platformEffect.Container = container;
+			platformEffect.Control = control;
 		}
 
 		void IEffectControlProvider.RegisterEffect(Effect effect)

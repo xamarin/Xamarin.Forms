@@ -88,6 +88,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 				OnElementChanged(new VisualElementChangedEventArgs(oldElement, element));
 
+				EffectUtilities.RegisterEffectControlProvider(this, oldElement, element);
+
 				if (element != null)
 					element.SendViewInitialized(this);
 
@@ -233,6 +235,11 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (ScrollView != null)
 				Controller.SetScrolledPosition(ContentOffset.X, ContentOffset.Y);
+		}
+
+		void IEffectControlProvider.RegisterEffect(Effect effect)
+		{
+			VisualElementRenderer<VisualElement>.RegisterEffect(effect, this, NativeView);
 		}
 	}
 }
