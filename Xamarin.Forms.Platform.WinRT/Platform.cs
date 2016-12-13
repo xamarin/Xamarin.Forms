@@ -228,11 +228,14 @@ namespace Xamarin.Forms.Platform.WinRT
                 // Don't resize every page, it will let previous page visible in new design page display mode
                 if (root == _currentPage)
                 {
-                    root.Layout(bounds);
+                    if (root.Width != bounds.Width || root.Height != bounds.Height)
+                        root.Layout(bounds);
                     IVisualElementRenderer renderer = GetRenderer(root);
                     if (renderer != null)
                     {
-                        renderer.ContainerElement.Width = _container.ActualWidth;
+                        if (renderer.ContainerElement.Width != _container.ActualWidth)
+                            renderer.ContainerElement.Width = _container.ActualWidth;
+                        if (renderer.ContainerElement.Height != _container.ActualHeight)
                         renderer.ContainerElement.Height = _container.ActualHeight;
                     }
                 }
@@ -519,11 +522,16 @@ namespace Xamarin.Forms.Platform.WinRT
 
             UpdateToolbarTracker();
             UpdateToolbarTitle(newPage);
+
+            UpdatePageSizes();
+
             await UpdateToolbarItems();
 
         }
 
-		void UpdateToolbarTitle(Page page)
+        
+
+        void UpdateToolbarTitle(Page page)
 		{
 			if (_toolbarProvider == null)
 				return;
