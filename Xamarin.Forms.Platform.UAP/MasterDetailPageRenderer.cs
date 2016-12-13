@@ -306,7 +306,17 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateIsPresented()
 		{
-			Control.IsPaneOpen = Element.IsPresented;
+            if (Control.IsPaneOpen != Element.IsPresented)
+			{
+                Control.IsPaneOpen = Element.IsPresented;
+
+                // Fix in PC mode, the split change, but the detail content width not changed
+                if (Control.ShouldShowSplitMode)
+                {
+                    Control.UpdateLayout();
+                    UpdateBounds();
+                }
+            }
 		}
 
 		void UpdateMaster()
