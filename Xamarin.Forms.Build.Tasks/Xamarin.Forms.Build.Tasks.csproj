@@ -102,6 +102,12 @@
     <Compile Include="XamlTask.cs" />
     <Compile Include="CompiledMarkupExtensions\ArrayExtension.cs" />
     <Compile Include="CompiledConverters\ConstraintTypeConverter.cs" />
+    <Compile Include="CompiledConverters\ThicknessTypeConverter.cs" />
+    <Compile Include="MethodBodyExtensions.cs" />
+    <Compile Include="CompiledConverters\TypeTypeConverter.cs" />
+    <Compile Include="CompiledValueProviders\SetterValueProvider.cs" />
+    <Compile Include="CompiledValueProviders\ICompiledValueProvider.cs" />
+    <Compile Include="CompiledValueProviders\TriggerValueProvider.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
@@ -125,6 +131,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="CompiledMarkupExtensions\" />
+    <Folder Include="CompiledValueProviders\" />
   </ItemGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

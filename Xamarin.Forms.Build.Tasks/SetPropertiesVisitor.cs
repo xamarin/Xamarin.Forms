@@ -242,7 +242,8 @@ namespace Xamarin.Forms.Build.Tasks
 		}
 
 		public static IEnumerable<Instruction> ProvideValue(VariableDefinitionReference vardefref, ILContext context,
-		                                                    ModuleDefinition module, ElementNode node, FieldReference bpRef = null, PropertyReference propertyRef = null, TypeReference propertyDeclaringTypeRef = null)
+		                                                    ModuleDefinition module, ElementNode node, FieldReference bpRef = null,
+		                                                    PropertyReference propertyRef = null, TypeReference propertyDeclaringTypeRef = null)
 		{
 			GenericInstanceType markupExtension;
 			IList<TypeReference> genericArguments;
@@ -306,8 +307,25 @@ namespace Xamarin.Forms.Build.Tasks
 			}
 			else if (context.Variables[node].VariableType.ImplementsInterface(module.Import(typeof (IValueProvider))))
 			{
-				var markExt = module.Import(typeof (IValueProvider)).Resolve();
-				var provideValueInfo = markExt.Methods.First(md => md.Name == "ProvideValue");
+				var valueProviderType = context.Variables[node].VariableType;
+				//If the IValueProvider has a ProvideCompiledAttribute that can be resolved, shortcut this
+				var compiledValueProviderName = valueProviderType?.GetCustomAttribute(module.Import(typeof(ProvideCompiledAttribute)))?.ConstructorArguments?[0].Value as string;
+				Type compiledValueProviderType;
+				if (compiledValueProviderName != null && (compiledValueProviderType = Type.GetType(compiledValueProviderName)) != null) {
+					var compiledValueProvider = Activator.CreateInstance(compiledValueProviderType);
+					var cProvideValue = typeof(ICompiledValueProvider).GetMethods().FirstOrDefault(md => md.Name == "ProvideValue");
+					var instructions = (IEnumerable<Instruction>)cProvideValue.Invoke(compiledValueProvider, new object[] {
+						vardefref,
+						context.Body.Method.Module,
+						node as BaseNode,
+						context});
+					foreach (var i in instructions)
+						yield return i;
+					yield break;
+				}
+
+				var valueProviderDef = module.Import(typeof (IValueProvider)).Resolve();
+				var provideValueInfo = valueProviderDef.Methods.First(md => md.Name == "ProvideValue");
 				var provideValue = module.Import(provideValueInfo);
 
 				vardefref.VariableDefinition = new VariableDefinition(module.TypeSystem.Object);
@@ -953,12 +971,19 @@ namespace Xamarin.Forms.Build.Tasks
 			var valueNode = node as ValueNode;
 			var elementNode = node as IElementNode;
 
-			yield return Instruction.Create(OpCodes.Ldloc, parent);
+			//if it's a value type, load the address so we can invoke methods on it
+			if (parent.VariableType.IsValueType)
+				yield return Instruction.Create(OpCodes.Ldloca, parent);
+			else
+				yield return Instruction.Create(OpCodes.Ldloc, parent);
 
 			if (valueNode != null) {
 				foreach (var instruction in valueNode.PushConvertedValue(context, propertyType, new ICustomAttributeProvider [] { property, propertyType.Resolve() }, valueNode.PushServiceProvider(context, propertyRef:property), false, true))
 					yield return instruction;
-				yield return Instruction.Create(OpCodes.Callvirt, propertySetterRef);
+				if (parent.VariableType.IsValueType)
+					yield return Instruction.Create(OpCodes.Call, propertySetterRef);
+				else
+					yield return Instruction.Create(OpCodes.Callvirt, propertySetterRef);
 			} else if (elementNode != null) {
 				var vardef = context.Variables [elementNode];
 				var implicitOperator = vardef.VariableType.GetImplicitOperatorTo(propertyType, module);
@@ -970,7 +995,10 @@ namespace Xamarin.Forms.Build.Tasks
 					yield return Instruction.Create(OpCodes.Unbox_Any, module.Import(propertyType));
 				else if (vardef.VariableType.IsValueType && propertyType.FullName == "System.Object")
 					yield return Instruction.Create(OpCodes.Box, vardef.VariableType);
-				yield return Instruction.Create(OpCodes.Callvirt, propertySetterRef);
+				if (parent.VariableType.IsValueType)
+					yield return Instruction.Create(OpCodes.Call, propertySetterRef);
+				else
+					yield return Instruction.Create(OpCodes.Callvirt, propertySetterRef);
 			}
 		}
 
@@ -1024,6 +1052,8 @@ namespace Xamarin.Forms.Build.Tasks
 			yield return Instruction.Create(OpCodes.Ldloc, vardef);
 			if (implicitOperator != null)
 				yield return Instruction.Create(OpCodes.Call, module.Import(implicitOperator));
+			if (implicitOperator == null && vardef.VariableType.IsValueType && !childType.IsValueType)
+				yield return Instruction.Create(OpCodes.Box, vardef.VariableType);
 			yield return Instruction.Create(OpCodes.Callvirt, adderRef);
 			if (adderRef.ReturnType.FullName != "System.Void")
 				yield return Instruction.Create(OpCodes.Pop);
@@ -1151,6 +1181,8 @@ namespace Xamarin.Forms.Build.Tasks
 				module.Import(typeof (IDataTemplate)).Resolve().Properties.First(p => p.Name == "LoadTemplate").SetMethod;
 #pragma warning restore 0612
 			parentContext.IL.Emit(OpCodes.Callvirt, module.Import(propertySetter));
+
+			loadTemplate.Body.Optimize();
 		}
 	}
 
