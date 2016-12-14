@@ -69,7 +69,7 @@ We follow the style used by the [.NET Foundation](https://github.com/dotnet/core
 
 - [How to Contribute](https://github.com/xamarin/xamarin.forms/wiki/Contributing-Code)
 
-### Mailing Lists
+### Xamarin.Forms Evolution
 
 To discuss this project and participate in the design, we use the [Xamarin.Forms Evolution](https://forums.xamarin.com/categories/xamarin-forms-evolution) discussion board.   
 
