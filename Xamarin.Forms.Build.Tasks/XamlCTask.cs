@@ -185,7 +185,7 @@ namespace Xamarin.Forms.Build.Tasks
 					if (OptimizeIL)
 					{
 						Logger.LogString(2, "   Optimizing IL... ");
-						initComp.Body.OptimizeMacros();
+						initComp.Body.Optimize();
 						Logger.LogLine(2, "done");
 					}
 
