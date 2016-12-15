@@ -240,5 +240,10 @@ namespace Xamarin.Forms.Platform.WinRT
             }
         }
 
+        internal void RemoveContent(UIElement element)
+        {
+            ContentController.Children.Remove(element);
+        }
+
     }
 }

@@ -113,7 +113,10 @@ namespace Xamarin.Forms.Platform.UWP
             return this.DetailContent.Children.Any(x => x == element);
         }
 
-
+        internal void RemoveContent(FrameworkElement element)
+        {
+            DetailContent.Children.Remove(element);
+        }
 
 
         public Windows.Foundation.Size DetailSize

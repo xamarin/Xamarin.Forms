@@ -406,5 +406,25 @@ namespace Xamarin.Forms
 		{
 			return _platformConfigurationRegistry.Value.On<T>();
 		}
-	}
+
+
+        private bool _retainsRenderer = false;
+        public bool RetainsRenderer
+        {
+            get { return _retainsRenderer; }
+            set
+            {
+                if (Xamarin.Forms.Device.OS == TargetPlatform.Windows || Xamarin.Forms.Device.OS == TargetPlatform.WinPhone)
+                {
+                    _retainsRenderer = value;
+                }
+                else
+                {
+                    throw new NotImplementedException("Only worked for Windows platform for now.");
+                }
+
+            }
+        }
+
+    }
 }

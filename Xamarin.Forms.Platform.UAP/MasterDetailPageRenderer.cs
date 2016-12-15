@@ -180,15 +180,17 @@ namespace Xamarin.Forms.Platform.UWP
 			if (_detail == null)
 				return;
 
-			_detail.PropertyChanged -= OnDetailPropertyChanged;
+            if (!_detail.RetainsRenderer)
+            {
+                _detail.PropertyChanged -= OnDetailPropertyChanged;
 
+                IVisualElementRenderer renderer = Platform.GetRenderer(_detail);
+                Control.RemoveContent(renderer.ContainerElement);
+                renderer?.Dispose();
 
-
-            IVisualElementRenderer renderer = Platform.GetRenderer(_detail);
-            renderer?.Dispose();
-
-            _detail.ClearValue(Platform.RendererProperty);
-            _detail = null;
+                _detail.ClearValue(Platform.RendererProperty);
+                _detail = null;
+            }
         }
 
         void ClearMaster()
@@ -255,8 +257,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateDetail()
 		{
-            // Do not clear it, it will cause performance when next time switch back
-            //ClearDetail();
+            ClearDetail();
 
             FrameworkElement element = null;
 

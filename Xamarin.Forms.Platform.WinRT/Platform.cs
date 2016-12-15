@@ -486,13 +486,19 @@ namespace Xamarin.Forms.Platform.WinRT
                 Page previousPage = _currentPage;
                 IVisualElementRenderer previousRenderer = GetRenderer(previousPage);
 
-                // We should just hide it, not remove or add again, that cause much performance
-                //_container.Children.Remove(previousRenderer.ContainerElement);
-                previousRenderer.ContainerElement.Visibility = Visibility.Collapsed;
 
-                // Don't clean every page(that will cause performance)
-                //if (popping)
-                //    previousPage.Cleanup();
+                // Don't clean if RetainsRenderer is true
+                if (popping && !previousPage.RetainsRenderer)
+                {
+                    previousPage.Cleanup();
+                    _container.Children.Remove(previousRenderer.ContainerElement);
+                }
+                else
+                {
+                    // We should just hide it, not remove or add again, that cause much performance
+                    //_container.Children.Remove(previousRenderer.ContainerElement);
+                    previousRenderer.ContainerElement.Visibility = Visibility.Collapsed;
+                }
             }
 
 

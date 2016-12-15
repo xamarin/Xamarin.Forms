@@ -424,15 +424,21 @@ namespace Xamarin.Forms.Platform.WinRT
             // The new changes of this method, for :MasterDetails.Detail = exist page; performance
             if (_currentPage != null)
 			{
-				//if (isPopping)
-				//	_currentPage.Cleanup();
+                // Don't clean if RetainsRenderer is true
+                if (isPopping && !_currentPage.RetainsRenderer)
+                {
+                    IVisualElementRenderer previousRenderer = _currentPage.GetOrCreateRenderer();
+                    _container.RemoveContent(previousRenderer.ContainerElement);
+                    _currentPage.Cleanup();
+                }
+                
 
-				_container.Content = null;
+                _container.Content = null;
 
 				_currentPage.PropertyChanged -= OnCurrentPagePropertyChanged;
 			}
 
-			//if (!isPopping)
+			if (!isPopping)
 				_previousPage = _currentPage;
 
 			_currentPage = page;
