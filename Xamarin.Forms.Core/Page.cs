@@ -407,14 +407,5 @@ namespace Xamarin.Forms
 			return _platformConfigurationRegistry.Value.On<T>();
 		}
 
-
-        public bool RetainsRenderer
-        {
-            get { return (bool)GetValue(RetainsRendererProperty); }
-            internal set { SetValue(RetainsRendererProperty, value); }
-        }
-        public static readonly BindableProperty RetainsRendererProperty = BindableProperty.Create("RetainsRenderer", typeof(bool), typeof(Page), false);
-
-
     }
 }

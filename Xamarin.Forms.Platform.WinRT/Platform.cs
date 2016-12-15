@@ -488,7 +488,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 
                 // Don't clean if RetainsRenderer is true
-                if (popping && !previousPage.RetainsRenderer)
+                if (popping && !previousPage.GetRetainsRendererValue())
                 {
                     previousPage.Cleanup();
                     _container.Children.Remove(previousRenderer.ContainerElement);

@@ -66,7 +66,6 @@
     <Compile Include="..\Xamarin.Forms.Core\Properties\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="RetainsRendererExtentions.cs" />
   </ItemGroup>
   <ItemGroup Condition=" '$(OS)' != 'Unix' ">
     <Compile Include="BrushHelpers.cs" />

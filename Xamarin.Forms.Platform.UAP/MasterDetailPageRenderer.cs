@@ -180,7 +180,7 @@ namespace Xamarin.Forms.Platform.UWP
 			if (_detail == null)
 				return;
 
-            if (!_detail.RetainsRenderer)
+            if (!_detail.GetRetainsRendererValue())
             {
                 _detail.PropertyChanged -= OnDetailPropertyChanged;
 

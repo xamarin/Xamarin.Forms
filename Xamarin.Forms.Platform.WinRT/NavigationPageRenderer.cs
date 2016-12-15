@@ -425,7 +425,7 @@ namespace Xamarin.Forms.Platform.WinRT
             if (_currentPage != null)
 			{
                 // Don't clean if RetainsRenderer is true
-                if (isPopping && !_currentPage.RetainsRenderer)
+                if (isPopping && !page.GetRetainsRendererValue())
                 {
                     IVisualElementRenderer previousRenderer = _currentPage.GetOrCreateRenderer();
                     _container.RemoveContent(previousRenderer.ContainerElement);
