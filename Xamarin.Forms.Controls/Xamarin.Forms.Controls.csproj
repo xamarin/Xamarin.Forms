@@ -247,7 +247,6 @@
 		<Compile Include="HanselForms\BaseView.cs" />
 		<Compile Include="HanselForms\HBaseViewModel.cs" />
 		<Compile Include="HanselForms\RootPage.cs" />
-		<Compile Include="HanselForms\TwitterPage.xaml.cs" />
 		<Compile Include="HanselForms\WebsiteView.cs" />
 		<Compile Include="HanselForms\BlogPage.xaml.cs">
 			<DependentUpon>BlogPage.xaml</DependentUpon>
