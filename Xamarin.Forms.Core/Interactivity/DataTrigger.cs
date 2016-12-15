@@ -48,9 +48,7 @@ namespace Xamarin.Forms
 
 		object IValueProvider.ProvideValue(IServiceProvider serviceProvider)
 		{
-			var valueconverter = serviceProvider.GetService(typeof(IValueConverterProvider)) as IValueConverterProvider;
-			(Condition as BindingCondition).ValueConverter = valueconverter;
-
+			//This is no longer required
 			return this;
 		}
 	}
