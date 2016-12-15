@@ -5,6 +5,7 @@ using Xamarin.Forms.Xaml;
 namespace Xamarin.Forms
 {
 	[ContentProperty("Setters")]
+	[ProvideCompiled("Xamarin.Forms.Core.XamlC.PassthroughValueProvider")]
 	public sealed class DataTrigger : TriggerBase, IValueProvider
 	{
 		public DataTrigger([TypeConverter(typeof(TypeTypeConverter))] [Parameter("TargetType")] Type targetType) : base(new BindingCondition(), targetType)
