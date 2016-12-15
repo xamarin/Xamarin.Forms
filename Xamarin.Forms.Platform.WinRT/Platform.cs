@@ -761,8 +761,19 @@ namespace Xamarin.Forms.Platform.WinRT
 				dialog.CancelCommandIndex = (uint)dialog.Commands.Count - 1;
 			}
 
-			IUICommand command = await dialog.ShowAsyncQueue();
-			options.SetResult(command.Label == options.Accept);
+			if (Device.IsInvokeRequired)
+			{
+				Device.BeginInvokeOnMainThread(async () =>
+				{
+					IUICommand command = await dialog.ShowAsyncQueue();
+					options.SetResult(command.Label == options.Accept);
+				});
+			}
+			else
+			{
+				IUICommand command = await dialog.ShowAsyncQueue();
+				options.SetResult(command.Label == options.Accept);
+			}
 		}
 	}
 	
@@ -774,11 +785,6 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		public static async Task<IUICommand> ShowAsyncQueue(this MessageDialog dialog)
 		{
-			if (!Window.Current.Dispatcher.HasThreadAccess)
-			{
-				throw new InvalidOperationException("This method can only be invoked from UI thread.");
-			}
-
 			while (_currentDialogShowRequest != null)
 			{
 				await _currentDialogShowRequest.Task;
