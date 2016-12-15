@@ -265,8 +265,6 @@
     <BundleResource Include="Resources\instagram.png" />
     <BundleResource Include="Resources\instagram%402x.png" />
     <BundleResource Include="Resources\lists.png" />
-    <BundleResource Include="Resources\MacTwitterDemo.xaml" />
-    <BundleResource Include="Resources\MacTwitterDemo.xaml.cs" />
     <BundleResource Include="Resources\messages.png" />
     <BundleResource Include="Resources\notifications.png" />
     <BundleResource Include="Resources\profile.png" />
