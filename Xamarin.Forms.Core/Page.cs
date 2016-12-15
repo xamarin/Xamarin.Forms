@@ -408,23 +408,13 @@ namespace Xamarin.Forms
 		}
 
 
-        private bool _retainsRenderer = false;
         public bool RetainsRenderer
         {
-            get { return _retainsRenderer; }
-            set
-            {
-                if (Xamarin.Forms.Device.OS == TargetPlatform.Windows || Xamarin.Forms.Device.OS == TargetPlatform.WinPhone)
-                {
-                    _retainsRenderer = value;
-                }
-                else
-                {
-                    throw new NotImplementedException("Only worked for Windows platform for now.");
-                }
-
-            }
+            get { return (bool)GetValue(RetainsRendererProperty); }
+            internal set { SetValue(RetainsRendererProperty, value); }
         }
+        public static readonly BindableProperty RetainsRendererProperty = BindableProperty.Create("RetainsRenderer", typeof(bool), typeof(Page), false);
+
 
     }
 }
