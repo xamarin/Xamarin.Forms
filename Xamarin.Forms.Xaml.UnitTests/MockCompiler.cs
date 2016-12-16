@@ -19,11 +19,12 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				Assembly = assembly,
 				ReferencePath = string.Join(";", refs),
 				KeepXamlResources = true,
+				OptimizeIL = true,
 				Type = type.FullName
 			};
 
 			var exceptions = new List<Exception>();
-			if (!xamlc.Compile(exceptions) && exceptions.Any())
+			if (!xamlc.Execute(exceptions) && exceptions.Any())
 				throw exceptions [0];
 		}
 	}

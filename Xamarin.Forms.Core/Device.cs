@@ -104,6 +104,18 @@ namespace Xamarin.Forms
 			return iOS;
 		}
 
+		public static T OnPlatform<T>(T iOS, T Android, T WinPhone, T Tizen)
+		{
+			if (OS == TargetPlatform.Tizen)
+			{
+				return Tizen;
+			}
+			else
+			{
+				return OnPlatform<T>(iOS, Android, WinPhone);
+			}
+		}
+
 		public static void OpenUri(Uri uri)
 		{
 			PlatformServices.OpenUriAction(uri);

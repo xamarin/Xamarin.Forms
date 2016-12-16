@@ -49,8 +49,7 @@ namespace Xamarin.Forms.Platform.UWP
 			new PropertyMetadata(default(Visibility)));
 		
 		CommandBar _commandBar;
-		Border _bottomCommandBarArea;
-		Border _topCommandBarArea;
+		readonly ToolbarPlacementHelper _toolbarPlacementHelper = new ToolbarPlacementHelper();
 
 		TaskCompletionSource<CommandBar> _commandBarTcs;
 		FrameworkElement _masterPresenter;
@@ -174,7 +173,7 @@ namespace Xamarin.Forms.Platform.UWP
 	        set
 	        {
 	            _toolbarPlacement = value;
-	            UpdateToolbarPlacement();
+	            _toolbarPlacementHelper.UpdateToolbarPlacement();
 	        }
 	    }
 
@@ -236,10 +235,8 @@ namespace Xamarin.Forms.Platform.UWP
 			_detailPresenter = GetTemplateChild("DetailPresenter") as FrameworkElement;
 
 			_commandBar = GetTemplateChild("CommandBar") as CommandBar;
-			_bottomCommandBarArea = GetTemplateChild("BottomCommandBarArea") as Border;
-			_topCommandBarArea = GetTemplateChild("TopCommandBarArea") as Border;
-
-			UpdateToolbarPlacement();
+			_toolbarPlacementHelper.Initialize(_commandBar, () => ToolbarPlacement, GetTemplateChild);
+			
 			UpdateMode(); 
 
 			if (_commandBarTcs != null)
@@ -254,11 +251,6 @@ namespace Xamarin.Forms.Platform.UWP
 		static void CollapseStyleChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
 		{
 			((MasterDetailControl)dependencyObject).UpdateMode();
-		}
-
-		static void ToolbarPlacementChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
-		{
-			((MasterDetailControl)dependencyObject).UpdateToolbarPlacement();
 		}
 
 		static void CollapsedPaneWidthChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
@@ -296,11 +288,6 @@ namespace Xamarin.Forms.Platform.UWP
 			ContentTogglePaneButtonVisibility = _split.DisplayMode == SplitViewDisplayMode.Overlay 
 				? Visibility.Visible 
 				: Visibility.Collapsed;
-		}
-
-		void UpdateToolbarPlacement()
-		{
-			ToolbarPlacementHelper.UpdateToolbarPlacement(_commandBar, ToolbarPlacement, _bottomCommandBarArea, _topCommandBarArea);
 		}
 	}
 }

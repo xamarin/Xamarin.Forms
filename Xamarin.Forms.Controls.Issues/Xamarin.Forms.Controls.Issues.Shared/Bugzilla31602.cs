@@ -1,5 +1,4 @@
 ﻿using System;
-
 using Xamarin.Forms.CustomAttributes;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -7,13 +6,17 @@ using System.Windows.Input;
 using Xamarin.Forms.Internals;
 
 #if UITEST
-using Xamarin.UITest;
+using Xamarin.Forms.Core.UITests;
 using Xamarin.UITest.iOS;
 using NUnit.Framework;
 #endif
 
-namespace Xamarin.Forms.Controls
+namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[NUnit.Framework.Category(UITestCategories.MasterDetailPage)]
+#endif
+
 	[Preserve (AllMembers = true)]
 	[Issue (IssueTracker.Bugzilla, 31602, "not possible to programmatically open master page after iPad landscape -> portrait rotation, also tests 31664")]
 	public class Bugzilla31602 : TestMasterDetailPage
@@ -125,6 +128,12 @@ namespace Xamarin.Forms.Controls
 				RunningApp.Tap (q => q.Marked ("Sidemenu Opener"));
 				RunningApp.WaitForElement (q => q.Marked ("SideMenu"));
 			}
+		}
+
+		[TearDown]
+		public void TearDown() 
+		{
+			RunningApp.SetOrientationPortrait ();
 		}
 #endif
 	}

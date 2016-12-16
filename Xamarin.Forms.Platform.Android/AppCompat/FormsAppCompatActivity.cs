@@ -15,6 +15,7 @@ using Android.Views;
 using Android.Widget;
 using Xamarin.Forms.Platform.Android.AppCompat;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific.AppCompat;
 using AToolbar = Android.Support.V7.Widget.Toolbar;
 using AColor = Android.Graphics.Color;
 using AlertDialog = Android.Support.V7.App.AlertDialog;
@@ -126,6 +127,8 @@ namespace Xamarin.Forms.Platform.Android
 			(application as IApplicationController)?.SetAppIndexingProvider(new AndroidAppIndexProvider(this));
 			Xamarin.Forms.Application.Current = application;
 
+			SetSoftInputMode();
+
 			CheckForAppLink(Intent);
 
 			application.PropertyChanged += AppOnPropertyChanged;
@@ -167,8 +170,6 @@ namespace Xamarin.Forms.Platform.Android
 
 			SetSupportActionBar(bar);
 
-			SetSoftInputMode();
-
 			_layout = new ARelativeLayout(BaseContext);
 			SetContentView(_layout);
 
@@ -184,15 +185,14 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void OnDestroy()
 		{
-			// may never be called
-			base.OnDestroy();
-
 			MessagingCenter.Unsubscribe<Page, AlertArguments>(this, Page.AlertSignalName);
 			MessagingCenter.Unsubscribe<Page, bool>(this, Page.BusySetSignalName);
 			MessagingCenter.Unsubscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName);
 
-			if (_platform != null)
-				_platform.Dispose();
+			_platform?.Dispose();
+
+			// call at the end to avoid race conditions with Platform dispose
+			base.OnDestroy();
 		}
 
 		protected override void OnNewIntent(Intent intent)
@@ -231,6 +231,14 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			// counterpart to OnPause
 			base.OnResume();
+
+			if (_application.OnThisPlatform().GetShouldPreserveKeyboardOnResume())
+			{
+				if (CurrentFocus != null && (CurrentFocus is EditText || CurrentFocus is TextView || CurrentFocus is SearchView))
+				{
+					CurrentFocus.ShowKeyboard();
+				}
+			}
 
 			_previousState = _currentState;
 			_currentState = AndroidApplicationLifecycleState.OnResume;

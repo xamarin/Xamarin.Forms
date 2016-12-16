@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using UIKit;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -57,10 +58,7 @@ namespace Xamarin.Forms.Platform.iOS
 		IPageController PageController => Element as IPageController;
 		IElementController ElementController => Element as IElementController;
 
-		protected MasterDetailPage MasterDetailPage
-		{
-			get { return _masterDetailPage ?? (_masterDetailPage = (MasterDetailPage)Element); }
-		}
+		protected MasterDetailPage MasterDetailPage => _masterDetailPage ?? (_masterDetailPage = (MasterDetailPage)Element);
 
 		IMasterDetailPageController MasterDetailPageController => MasterDetailPage as IMasterDetailPageController;
 
@@ -71,36 +69,50 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void Dispose(bool disposing)
 		{
-		    if (!_disposed && disposing)
-		    {
-		        if (Element != null)
-		        {
-		            PageController.SendDisappearing();
-		            Element.PropertyChanged -= HandlePropertyChanged;
-		            Element = null;
-		        }
+			if (_disposed)
+			{
+				return;
+			}
 
-		        if (_tracker != null)
-		        {
-		            _tracker.Dispose();
-		            _tracker = null;
-		        }
+			_disposed = true;
 
-		        if (_events != null)
-		        {
-		            _events.Dispose();
-		            _events = null;
-		        }
+			if (disposing)
+			{
+				if (Element != null)
+				{
+					PageController.SendDisappearing();
+					Element.PropertyChanged -= HandlePropertyChanged;
 
-		        if (_masterController != null)
-		        {
-		            _masterController.WillAppear -= MasterControllerWillAppear;
-		            _masterController.WillDisappear -= MasterControllerWillDisappear;
-		        }
+					if (MasterDetailPage?.Master != null)
+					{
+						MasterDetailPage.Master.PropertyChanged -= HandleMasterPropertyChanged;
+					}
 
-		        _disposed = true;
-		    }
-		    base.Dispose(disposing);
+					Element = null;
+				}
+
+				if (_tracker != null)
+				{
+					_tracker.Dispose();
+					_tracker = null;
+				}
+
+				if (_events != null)
+				{
+					_events.Dispose();
+					_events = null;
+				}
+
+				if (_masterController != null)
+				{
+					_masterController.WillAppear -= MasterControllerWillAppear;
+					_masterController.WillDisappear -= MasterControllerWillDisappear;
+				}
+
+				ClearControllers();
+			}
+
+			base.Dispose(disposing);
 		}
 
 		public VisualElement Element { get; private set; }
@@ -161,7 +173,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void ViewDidDisappear(bool animated)
 		{
 			base.ViewDidDisappear(animated);
-			PageController.SendDisappearing();
+			PageController?.SendDisappearing();
 		}
 
 		public override void ViewDidLayoutSubviews()
@@ -211,16 +223,21 @@ namespace Xamarin.Forms.Platform.iOS
 			if (!MasterDetailPageController.ShouldShowSplitMode && _masterVisible)
 			{
 				MasterDetailPageController.CanChangeIsPresented = true;
-				if (Forms.IsiOS8OrNewer)
-				{
-					PreferredDisplayMode = UISplitViewControllerDisplayMode.PrimaryHidden;
-					PreferredDisplayMode = UISplitViewControllerDisplayMode.Automatic;
-				}
+				PreferredDisplayMode = UISplitViewControllerDisplayMode.PrimaryHidden;
+				PreferredDisplayMode = UISplitViewControllerDisplayMode.Automatic;
 			}
 
 			MasterDetailPageController.UpdateMasterBehavior();
 			MessagingCenter.Send<IVisualElementRenderer>(this, NavigationRenderer.UpdateToolbarButtons);
 			base.WillRotate(toInterfaceOrientation, duration);
+		}
+
+		public override UIViewController ChildViewControllerForStatusBarHidden()
+		{
+			if (((MasterDetailPage)Element).Detail != null)
+				return (UIViewController)Platform.GetRenderer(((MasterDetailPage)Element).Detail);
+			else
+				return base.ChildViewControllerForStatusBarHidden();
 		}
 
 		protected virtual void OnElementChanged(VisualElementChangedEventArgs e)
@@ -287,10 +304,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void PerformButtonSelector()
 		{
-			if (Forms.IsiOS8OrNewer)
-				DisplayModeButtonItem.Target.PerformSelector(DisplayModeButtonItem.Action, DisplayModeButtonItem, 0);
-			else
-				PresentButton.Target.PerformSelector(PresentButton.Action, PresentButton, 0);
+			DisplayModeButtonItem.Target.PerformSelector(DisplayModeButtonItem.Action, DisplayModeButtonItem, 0);
 		}
 
 		void ToggleMaster()

@@ -4,9 +4,10 @@ using Xamarin.Forms.Internals;
 #if UITEST
 using NUnit.Framework;
 using Xamarin.UITest;
+using Xamarin.Forms.Core.UITests;
 #endif
 
-namespace Xamarin.Forms.Controls
+namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve (AllMembers=true)]
 	[Issue (IssueTracker.Github, 181, "Color not initialized for Label", PlatformAffected.Android, NavigationBehavior.PushModalAsync)]
@@ -35,7 +36,7 @@ namespace Xamarin.Forms.Controls
 
 #if UITEST
 		[Test]
-		[Category ("ManualReview")]
+		[Category(UITestCategories.ManualReview)]
 		[UiTest (typeof(Label), "TextColor")]
 		public void Issue181TestsLabelShouldHaveRedText ()
 		{

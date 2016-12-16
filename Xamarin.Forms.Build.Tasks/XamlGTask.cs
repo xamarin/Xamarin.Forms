@@ -101,7 +101,7 @@ namespace Xamarin.Forms.Build.Tasks
 		}
 
 		internal static void GenerateCode(string rootType, string rootNs, CodeTypeReference baseType,
-			IDictionary<string, CodeTypeReference> namesAndTypes, string outFile)
+			IDictionary<string, CodeTypeReference> namesAndTypes, string xamlFile, string outFile)
 		{
 			if (rootType == null)
 			{
@@ -113,12 +113,13 @@ namespace Xamarin.Forms.Build.Tasks
 			var declNs = new CodeNamespace(rootNs);
 			ccu.Namespaces.Add(declNs);
 
-			declNs.Imports.Add(new CodeNamespaceImport("System"));
-			declNs.Imports.Add(new CodeNamespaceImport("Xamarin.Forms"));
-			declNs.Imports.Add(new CodeNamespaceImport("Xamarin.Forms.Xaml"));
-
-			var declType = new CodeTypeDeclaration(rootType);
-			declType.IsPartial = true;
+			var declType = new CodeTypeDeclaration(rootType) {
+				IsPartial = true,
+				CustomAttributes = {
+					new CodeAttributeDeclaration(new CodeTypeReference($"global::{typeof(XamlFilePathAttribute).FullName}"),
+						 new CodeAttributeArgument(new CodePrimitiveExpression(xamlFile)))
+				}
+			};
 			declType.BaseTypes.Add(baseType);
 
 			declNs.Types.Add(declType);
@@ -128,7 +129,7 @@ namespace Xamarin.Forms.Build.Tasks
 				Name = "InitializeComponent",
 				CustomAttributes =
 				{
-					new CodeAttributeDeclaration(new CodeTypeReference(typeof (GeneratedCodeAttribute)),
+					new CodeAttributeDeclaration(new CodeTypeReference($"global::{typeof (GeneratedCodeAttribute).FullName}"),
 						new CodeAttributeArgument(new CodePrimitiveExpression("Xamarin.Forms.Build.Tasks.XamlG")),
 						new CodeAttributeArgument(new CodePrimitiveExpression("0.0.0.0")))
 				}
@@ -136,8 +137,8 @@ namespace Xamarin.Forms.Build.Tasks
 			declType.Members.Add(initcomp);
 
 			initcomp.Statements.Add(new CodeMethodInvokeExpression(
-				new CodeThisReferenceExpression(),
-				"LoadFromXaml", new CodeTypeOfExpression(declType.Name)));
+				new CodeTypeReferenceExpression(new CodeTypeReference($"global::{typeof(Extensions).FullName}")),
+				"LoadFromXaml", new CodeThisReferenceExpression(), new CodeTypeOfExpression(declType.Name)));
 
 			foreach (var entry in namesAndTypes)
 			{
@@ -150,7 +151,7 @@ namespace Xamarin.Forms.Build.Tasks
 					Type = type,
 					CustomAttributes =
 					{
-						new CodeAttributeDeclaration(new CodeTypeReference(typeof (GeneratedCodeAttribute)),
+						new CodeAttributeDeclaration(new CodeTypeReference($"global::{typeof (GeneratedCodeAttribute).FullName}"),
 							new CodeAttributeArgument(new CodePrimitiveExpression("Xamarin.Forms.Build.Tasks.XamlG")),
 							new CodeAttributeArgument(new CodePrimitiveExpression("0.0.0.0")))
 					}
@@ -160,8 +161,9 @@ namespace Xamarin.Forms.Build.Tasks
 
 				var find_invoke = new CodeMethodInvokeExpression(
 					new CodeMethodReferenceExpression(
-						new CodeThisReferenceExpression(),
-						"FindByName", type), new CodePrimitiveExpression(name));
+						new CodeTypeReferenceExpression(new CodeTypeReference($"global::{typeof(NameScopeExtensions).FullName}")),
+						"FindByName", type),
+					new CodeThisReferenceExpression(), new CodePrimitiveExpression(name));
 
 				//CodeCastExpression cast = new CodeCastExpression (type, find_invoke);
 
@@ -180,9 +182,10 @@ namespace Xamarin.Forms.Build.Tasks
 			string rootType, rootNs;
 			CodeTypeReference baseType;
 			IDictionary<string, CodeTypeReference> namesAndTypes;
+
 			using (StreamReader reader = File.OpenText(xamlFile))
 				ParseXaml(reader, out rootType, out rootNs, out baseType, out namesAndTypes);
-			GenerateCode(rootType, rootNs, baseType, namesAndTypes, outFile);
+			GenerateCode(rootType, rootNs, baseType, namesAndTypes, System.IO.Path.GetFullPath(xamlFile), outFile);
 		}
 
 		static Dictionary<string, CodeTypeReference> GetNamesAndTypes(XmlNode root, XmlNamespaceManager nsmgr)
@@ -232,14 +235,14 @@ namespace Xamarin.Forms.Build.Tasks
 			{
 				foreach (var typeArg in typeArguments)
 				{
-					var ns_uri = "";
+					var prefix = "";
 					var _type = typeArg;
 					if (typeArg.Contains(":"))
 					{
-						var prefix = typeArg.Split(':')[0].Trim();
-						ns_uri = getNamespaceOfPrefix(prefix);
+						prefix = typeArg.Split(':')[0].Trim();
 						_type = typeArg.Split(':')[1].Trim();
 					}
+					var ns_uri = getNamespaceOfPrefix(prefix);
 					returnType.TypeArguments.Add(GetType(ns_uri, _type, null, getNamespaceOfPrefix));
 				}
 			}
@@ -249,7 +252,7 @@ namespace Xamarin.Forms.Build.Tasks
 
 		static string GetNamespace(string namespaceuri)
 		{
-			if (!XmlnsHelper.IsCustom(namespaceuri))
+			if (namespaceuri == "http://xamarin.com/schemas/2014/forms")
 				return "Xamarin.Forms";
 			if (namespaceuri == "http://schemas.microsoft.com/winfx/2009/xaml")
 				return "System";

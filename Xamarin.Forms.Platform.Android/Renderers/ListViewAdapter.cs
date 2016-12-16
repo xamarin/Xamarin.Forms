@@ -54,9 +54,9 @@ namespace Xamarin.Forms.Platform.Android
 
 			var platform = _listView.Platform;
 			if (platform.GetType() == typeof(AppCompat.Platform))
-				MessagingCenter.Subscribe<AppCompat.Platform>(this, AppCompat.Platform.CloseContextActionsSignalName, p => CloseContextAction());
+				MessagingCenter.Subscribe<AppCompat.Platform>(this, AppCompat.Platform.CloseContextActionsSignalName, p => CloseContextActions());
 			else
-				MessagingCenter.Subscribe<Platform>(this, Platform.CloseContextActionsSignalName, p => CloseContextAction());
+				MessagingCenter.Subscribe<Platform>(this, Platform.CloseContextActionsSignalName, p => CloseContextActions());
 		}
 
 		public override int Count
@@ -210,13 +210,6 @@ namespace Xamarin.Forms.Platform.Android
 				}
 				cell = (Cell)boxedCell.Element;
 
-				if (ActionModeContext == cell)
-				{
-					// This appears to never happen, the theory is android keeps all views alive that are currently selected for long-press (preventing them from being recycled).
-					// This is convenient since we wont have to worry about the user scrolling the cell offscreen and us losing our context actions.
-					ActionModeContext = null;
-					ContextView = null;
-				}
 				// We are going to re-set the Platform here because in some cases (headers mostly) its possible this is unset and
 				// when the binding context gets updated the measure passes will all fail. By applying this here the Update call
 				// further down will result in correct layouts.
@@ -328,7 +321,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (disposing)
 			{
-				CloseContextAction();
+				CloseContextActions();
 
 				var platform = _listView.Platform;
 				if (platform.GetType() == typeof(AppCompat.Platform))
@@ -452,6 +445,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		void OnDataChanged()
 		{
+			if (ActionModeContext != null && !TemplatedItemsView.TemplatedItems.Contains(ActionModeContext))
+				CloseContextActions();
+
 			if (IsAttachedToWindow)
 				NotifyDataSetChanged();
 			else

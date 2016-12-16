@@ -361,8 +361,8 @@ namespace Xamarin.Forms.Platform.Android
 					IMenuItem menuItem = menu.Add(item.Text);
 					if (!string.IsNullOrEmpty(item.Icon))
 					{
-						Drawable iconBitmap = _context.Resources.GetDrawable(item.Icon);
-						if (iconBitmap != null)
+						var iconBitmap = new BitmapDrawable(_context.Resources, ResourceManager.GetBitmap(_context.Resources, item.Icon));
+						if (iconBitmap != null && iconBitmap.Bitmap != null)
 							menuItem.SetIcon(iconBitmap);
 					}
 					menuItem.SetEnabled(controller.IsEnabled);
@@ -427,6 +427,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		internal void UpdateActionBar()
 		{
+			if (ActionBar == null) //Fullscreen theme doesn't have action bar
+			{
+				return;
+			}
 			List<Page> relevantAncestors = AncestorPagesOfPage(_navModel.CurrentPage);
 
 			IEnumerable<NavigationPage> navPages = relevantAncestors.OfType<NavigationPage>();
@@ -944,7 +948,10 @@ namespace Xamarin.Forms.Platform.Android
 				FileImageSource titleIcon = NavigationPage.GetTitleIcon(view);
 				if (!string.IsNullOrWhiteSpace(titleIcon))
 				{
-					actionBar.SetLogo(_context.Resources.GetDrawable(titleIcon));
+					var iconBitmap = new BitmapDrawable(_context.Resources, ResourceManager.GetBitmap(_context.Resources, titleIcon));
+					if (iconBitmap != null && iconBitmap.Bitmap != null)
+						actionBar.SetLogo(iconBitmap);
+
 					useLogo = true;
 					showHome = true;
 					showTitle = true;
@@ -1020,7 +1027,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			foreach (IVisualElementRenderer view in _navModel.Roots.Select(GetRenderer))
-				view.UpdateLayout();
+				view?.UpdateLayout();
 		}
 
 		SizeRequest IPlatform.GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)

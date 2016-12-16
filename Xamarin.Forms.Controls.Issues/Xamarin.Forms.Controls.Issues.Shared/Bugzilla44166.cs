@@ -1,16 +1,16 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Collections.ObjectModel;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
+using System.Threading;
+using System.Diagnostics;
 
 #if UITEST
 using Xamarin.UITest;
 using NUnit.Framework;
 #endif
 
-namespace Xamarin.Forms.Controls
+namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 44166, "MasterDetailPage instances do not get disposed upon GC")]
@@ -20,10 +20,10 @@ namespace Xamarin.Forms.Controls
 		{
 			var label = new Label() { Text = "Testing..." };
 
-			var goButton = new Button { Text = "Go" };
+			var goButton = new Button { Text = "Go", AutomationId = "Go" };
 			goButton.Clicked += (sender, args) => Application.Current.MainPage = new _44166MDP();
 
-			var gcButton = new Button { Text = "GC" };
+			var gcButton = new Button { Text = "GC", AutomationId = "GC" };
 			gcButton.Clicked += (sender, args) =>
 			{
 				GC.Collect();
@@ -61,19 +61,20 @@ namespace Xamarin.Forms.Controls
 			};
 		}
 
-		#if UITEST
+#if UITEST
 		[Test]
 		public void Bugzilla44166Test()
 		{
 			RunningApp.WaitForElement(q => q.Marked("Go"));
 			RunningApp.Tap(q => q.Marked("Go"));
 
-			RunningApp.WaitForElement(q => q.Marked("Back"));
-			RunningApp.Tap(q => q.Marked("Back"));
+			RunningApp.WaitForElement(q => q.Marked("Previous"));
+			RunningApp.Tap(q => q.Marked("Previous"));
 
-			for(int n = 0; n < 10; n++)
+			RunningApp.WaitForElement(q => q.Marked("GC"));
+
+			for (var n = 0; n < 10; n++)
 			{
-				RunningApp.WaitForElement(q => q.Marked("GC"));
 				RunningApp.Tap(q => q.Marked("GC"));
 
 				if (RunningApp.Query(q => q.Marked("Success")).Length > 0)
@@ -82,7 +83,7 @@ namespace Xamarin.Forms.Controls
 				}
 			}
 
-			var pageStats = string.Empty;
+			string pageStats = string.Empty;
 
 			if (_44166MDP.Counter > 0)
 			{
@@ -106,7 +107,7 @@ namespace Xamarin.Forms.Controls
 
 			Assert.Fail($"At least one of the pages was not collected: {pageStats}");
 		}
-		#endif
+#endif
 	}
 
 	[Preserve(AllMembers = true)]
@@ -121,7 +122,7 @@ namespace Xamarin.Forms.Controls
 
 			Master = new _44166Master();
 			Detail = new _44166Detail();
-		}
+        }
 
 		~_44166MDP()
 		{
@@ -141,7 +142,7 @@ namespace Xamarin.Forms.Controls
 			Debug.WriteLine($"++++++++ {nameof(_44166Master)} constructor, {Counter} allocated");
 
 			Title = "Master";
-			var goButton = new Button { Text = "Back" };
+			var goButton = new Button { Text = "Return", AutomationId = "Return"};
 			goButton.Clicked += (sender, args) => Application.Current.MainPage = new Bugzilla44166();
 
 			Content = new StackLayout
@@ -188,7 +189,7 @@ namespace Xamarin.Forms.Controls
 			Interlocked.Increment(ref Counter);
 			Debug.WriteLine($"++++++++ {nameof(_44166NavContent)} constructor, {Counter} allocated");
 
-			var goButton = new Button { Text = "Back" };
+			var goButton = new Button { Text = "Previous", AutomationId = "Previous" };
 			goButton.Clicked += (sender, args) => Application.Current.MainPage = new Bugzilla44166();
 
 			Content = new StackLayout

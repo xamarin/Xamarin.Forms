@@ -37,7 +37,7 @@ namespace Xamarin.Forms.Platform.WinPhone
 			if (Element.BorderColor != Color.Default)
 				UpdateBorderColor();
 
-			if (Element.BorderWidth != 0)
+			if (Element.BorderWidth != (double)Button.BorderWidthProperty.DefaultValue)
 				UpdateBorderWidth();
 
 			UpdateFont();
@@ -84,7 +84,7 @@ namespace Xamarin.Forms.Platform.WinPhone
 
 		void UpdateBorderWidth()
 		{
-			Control.BorderThickness = Element.BorderWidth == 0d ? new WThickness(3) : new WThickness(Element.BorderWidth);
+			Control.BorderThickness = Element.BorderWidth == (double)Button.BorderWidthProperty.DefaultValue ? new WThickness(3) : new WThickness(Element.BorderWidth);
 		}
 
 		void UpdateContent()

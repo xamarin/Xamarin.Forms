@@ -541,6 +541,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void ResetToolbar()
 		{
+			AToolbar oldToolbar = _toolbar;
+
 			_toolbar.RemoveFromParent();
 			_toolbar.NavigationClick -= BarOnNavigationClick;
 			_toolbar = null;
@@ -549,6 +551,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			RegisterToolbar();
 			UpdateToolbar();
 			UpdateMenu();
+
+			// Preserve old values that can't be replicated by calling methods above
+			if (_toolbar != null)
+				_toolbar.Subtitle = oldToolbar.Subtitle;
 		}
 
 		void SetupToolbar()
@@ -627,7 +633,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					fragments.Add(fragment);
 				}
 			}
-			transaction.Commit();
+
+			// We don't currently support fragment restoration, so we don't need to worry about
+			// whether the commit loses state
+			transaction.CommitAllowingStateLoss();
 
 			// The fragment transitions don't really SUPPORT telling you when they end
 			// There are some hacks you can do, but they actually are worse than just doing this:
@@ -709,8 +718,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					FileImageSource icon = item.Icon;
 					if (!string.IsNullOrEmpty(icon))
 					{
-						Drawable iconBitmap = context.Resources.GetDrawable(icon);
-						if (iconBitmap != null)
+						var iconBitmap = new BitmapDrawable(context.Resources, ResourceManager.GetBitmap(context.Resources, icon));
+						if (iconBitmap != null && iconBitmap.Bitmap != null)
 							menuItem.SetIcon(iconBitmap);
 					}
 					menuItem.SetEnabled(controller.IsEnabled);

@@ -399,5 +399,90 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (scroll.ScrollX, Is.EqualTo (100));
 			Assert.That (scroll.ScrollY, Is.EqualTo (100));
 		}
+
+		[Test]
+		public void TestScrollContentMarginHorizontal()
+		{
+			View view = new View { IsPlatformEnabled = true, Margin = 100, WidthRequest = 100, HeightRequest = 100 };
+
+			var scroll = new ScrollView
+			{
+				Content = view,
+				Orientation = ScrollOrientation.Horizontal,
+				Platform = new UnitPlatform()
+			};
+			scroll.Layout(new Rectangle(0, 0, 100, 100));
+
+			Assert.AreEqual(new Size(300, 100), scroll.ContentSize);
+			Assert.AreEqual(100, scroll.Height);
+			Assert.AreEqual(100, scroll.Width);
+		}
+
+		[Test]
+		public void TestScrollContentMarginVertical()
+		{
+			View view = new View { IsPlatformEnabled = true, Margin = 100, WidthRequest = 100, HeightRequest = 100 };
+
+			var scroll = new ScrollView
+			{
+				Content = view,
+				Orientation = ScrollOrientation.Vertical,
+				Platform = new UnitPlatform()
+			};
+			scroll.Layout(new Rectangle(0, 0, 100, 100));
+
+			Assert.AreEqual(new Size(100, 300), scroll.ContentSize);
+			Assert.AreEqual(100, scroll.Height);
+			Assert.AreEqual(100, scroll.Width);
+		}
+
+		[Test]
+		public void TestScrollContentMarginBiDirectional()
+		{
+			View view = new View { IsPlatformEnabled = true, Margin = 100, WidthRequest = 100, HeightRequest = 100 };
+
+			var scroll = new ScrollView
+			{
+				Content = view,
+				Orientation = ScrollOrientation.Both,
+				Platform = new UnitPlatform()
+			};
+			scroll.Layout(new Rectangle(0, 0, 100, 100));
+
+			Assert.AreEqual(new Size(300, 300), scroll.ContentSize);
+			Assert.AreEqual(100, scroll.Height);
+			Assert.AreEqual(100, scroll.Width);
+		}
+
+		[Test]
+		public void TestBackToBackBiDirectionalScroll()
+		{
+			var scrollView = new ScrollView
+			{
+				Orientation = ScrollOrientation.Both,
+				Platform = new UnitPlatform(),
+				Content = new Grid
+				{
+					WidthRequest = 1000,
+					HeightRequest = 1000
+				}
+			};
+
+			var y100Count = 0;
+
+			((IScrollViewController)scrollView).ScrollToRequested += (sender, args) =>
+			{
+				if (args.ScrollY == 100)
+				{
+					++y100Count;
+				}
+			};
+
+			scrollView.ScrollToAsync(100, 100, true);
+			Assert.AreEqual(y100Count, 1);
+
+			scrollView.ScrollToAsync(0, 100, true);
+			Assert.AreEqual(y100Count, 2);
+		}
 	}
 }

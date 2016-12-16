@@ -3,18 +3,23 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Core.UITests
 {
-	[Category ("Lifecycle")]
+	[Category(UITestCategories.LifeCycle)]
 	internal class AppearingUITests : BaseTestFixture
 	{
-
-		public AppearingUITests ()
+		public AppearingUITests()
 		{
-			ShouldResetPerFixture = false;
 		}
 
 		protected override void NavigateToGallery ()
 		{
 			App.NavigateToGallery (GalleryQueries.AppearingGallery);
+		}
+
+		protected override void TestTearDown()
+		{
+			base.TestTearDown();
+			ResetApp();
+			NavigateToGallery();
 		}
 
 		[Test]

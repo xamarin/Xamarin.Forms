@@ -86,8 +86,6 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateFont();
 			else if (e.PropertyName == Button.BorderWidthProperty.PropertyName || e.PropertyName == Button.BorderRadiusProperty.PropertyName || e.PropertyName == Button.BorderColorProperty.PropertyName)
 				UpdateBorder();
-			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
-				UpdateBackgroundVisibility();
 			else if (e.PropertyName == Button.ImageProperty.PropertyName)
 				UpdateImage();
 		}
@@ -123,10 +121,8 @@ namespace Xamarin.Forms.Platform.iOS
 			if (button.BorderColor != Color.Default)
 				uiButton.Layer.BorderColor = button.BorderColor.ToCGColor();
 
-			uiButton.Layer.BorderWidth = (float)button.BorderWidth;
+			uiButton.Layer.BorderWidth = Math.Max(0f, (float)button.BorderWidth);
 			uiButton.Layer.CornerRadius = button.BorderRadius;
-
-			UpdateBackgroundVisibility();
 		}
 
 		void UpdateFont()
@@ -152,10 +148,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UIButton button = Control;
 				if (button != null && uiimage != null)
 				{
-					if (Forms.IsiOS7OrNewer)
-						button.SetImage(uiimage.ImageWithRenderingMode(UIImageRenderingMode.AlwaysOriginal), UIControlState.Normal);
-					else
-						button.SetImage(uiimage, UIControlState.Normal);
+					button.SetImage(uiimage.ImageWithRenderingMode(UIImageRenderingMode.AlwaysOriginal), UIControlState.Normal);
 
 					button.ImageView.ContentMode = UIViewContentMode.ScaleAspectFit;
 
@@ -194,9 +187,8 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.SetTitleColor(Element.TextColor.ToUIColor(), UIControlState.Normal);
 				Control.SetTitleColor(Element.TextColor.ToUIColor(), UIControlState.Highlighted);
 				Control.SetTitleColor(_buttonTextColorDefaultDisabled, UIControlState.Disabled);
-
-				if (Forms.IsiOS7OrNewer)
-					Control.TintColor = Element.TextColor.ToUIColor();
+				
+				Control.TintColor = Element.TextColor.ToUIColor();
 			}
 		}
 

@@ -7,6 +7,7 @@ using UIKit;
 using Xamarin.Forms;
 using Xamarin.Forms.ControlGallery.iOS;
 using Xamarin.Forms.Controls;
+using Xamarin.Forms.Controls.Issues;
 using Xamarin.Forms.Platform.iOS;
 using RectangleF = CoreGraphics.CGRect;
 
@@ -18,6 +19,7 @@ using RectangleF = CoreGraphics.CGRect;
 [assembly: ExportRenderer(typeof(CustomMapView), typeof(CustomIOSMapRenderer))]
 [assembly: ExportRenderer(typeof(TabbedPage), typeof(TabbedPageWithCustomBarColorRenderer))]
 [assembly: ExportRenderer(typeof(Bugzilla43161.AccessoryViewCell), typeof(AccessoryViewCellRenderer))]
+[assembly: ExportRenderer(typeof(Bugzilla36802.AccessoryViewCell), typeof(AccessoryViewCellRenderer))]
 namespace Xamarin.Forms.ControlGallery.iOS
 {
 	public class CustomIOSMapRenderer : ViewRenderer<CustomMapView, MKMapView>
@@ -469,6 +471,8 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			Element.InvokeItemSelected(indexPath.Row);
 		}
 
+		CollectionViewController _controller;
+
 		protected override void OnElementChanged(ElementChangedEventArgs<Bugzilla21177.CollectionView> e)
 		{
 			if (e.NewElement != null)
@@ -480,8 +484,8 @@ namespace Xamarin.Forms.ControlGallery.iOS
 					MinimumInteritemSpacing = 5, // minimum spacing between cells 
 					MinimumLineSpacing = 5 // minimum spacing between rows if ScrollDirection is Vertical or between columns if Horizontal 
 				};
-				var collectionView = new CollectionViewController(flowLayout, ItemSelected);
-				SetNativeControl(collectionView.CollectionView);
+				_controller = new CollectionViewController(flowLayout, ItemSelected);
+				SetNativeControl(_controller.CollectionView);
 			}
 
 			base.OnElementChanged(e);
