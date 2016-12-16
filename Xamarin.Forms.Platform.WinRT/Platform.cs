@@ -481,7 +481,7 @@ namespace Xamarin.Forms.Platform.WinRT
 					previousPage.Cleanup();
 			}
 
-			newPage.Layout(new Rectangle(0, 0, _page.ActualWidth, _page.ActualHeight));
+			newPage.Layout(new Rectangle(0, 0, _container.ActualWidth, _container.ActualHeight));
 
 			IVisualElementRenderer pageRenderer = newPage.GetOrCreateRenderer();
 			_container.Children.Add(pageRenderer.ContainerElement);
