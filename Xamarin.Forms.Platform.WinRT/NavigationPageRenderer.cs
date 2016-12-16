@@ -417,17 +417,22 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		void SetPage(Page page, bool isAnimated, bool isPopping)
 		{
-			if (_currentPage != null)
+            // Ignore if same page loaded
+            if (page == _currentPage)
+                return;
+
+            // The new changes of this method, for :MasterDetails.Detail = exist page; performance
+            if (_currentPage != null)
 			{
-				if (isPopping)
-					_currentPage.Cleanup();
+				//if (isPopping)
+				//	_currentPage.Cleanup();
 
 				_container.Content = null;
 
 				_currentPage.PropertyChanged -= OnCurrentPagePropertyChanged;
 			}
 
-			if (!isPopping)
+			//if (!isPopping)
 				_previousPage = _currentPage;
 
 			_currentPage = page;
@@ -438,12 +443,12 @@ namespace Xamarin.Forms.Platform.WinRT
 			UpdateBackButton();
 			UpdateBackButtonTitle();
 
-			page.PropertyChanged += OnCurrentPagePropertyChanged;
+            page.PropertyChanged -= OnCurrentPagePropertyChanged;
+            page.PropertyChanged += OnCurrentPagePropertyChanged;
 
 			IVisualElementRenderer renderer = page.GetOrCreateRenderer();
 
-			UpdateTitleVisible();
-			UpdateTitleOnParents();
+
 
 			if (isAnimated && _transition == null)
 			{
@@ -456,11 +461,23 @@ namespace Xamarin.Forms.Platform.WinRT
 			else if (isAnimated && _container.ContentTransitions.Count == 0)
 				_container.ContentTransitions.Add(_transition);
 
-			_container.Content = renderer.ContainerElement;
+            if (null != _previousPage)
+                ((IPageController)_previousPage)?.SendDisappearing();
+            _container.Content = renderer.ContainerElement;
+            if (_container.CheckContentIfExist(renderer.ContainerElement))
+                ((IPageController)page)?.SendAppearing();
+            
 			_container.DataContext = page;
-		}
 
-		void UpdateBackButton()
+
+            UpdateTitleVisible();
+            UpdateTitleOnParents();
+
+            // update the inside pages size, if first page change size(because phone orientation changed), navigate to (exist) second page, the page size must resize again
+            RefreshInsidePagesSize();
+        }
+
+		internal void UpdateBackButton()
 		{
 			bool showBackButton = PageController.InternalChildren.Count > 1 && NavigationPage.GetHasBackButton(_currentPage);
 			_container.ShowBackButton = showBackButton;
@@ -482,12 +499,27 @@ namespace Xamarin.Forms.Platform.WinRT
 			_container.BackButtonTitle = title;
 		}
 
-		void UpdateContainerArea()
-		{
-			PageController.ContainerArea = new Rectangle(0, 0, _container.ContentWidth, _container.ContentHeight);
-		}
+        void UpdateContainerArea()
+        {
+            PageController.ContainerArea = new Rectangle(0, 0, _container.ContentWidth, _container.ContentHeight);
+            
+            // Resize the inside pages
+            RefreshInsidePagesSize();
+            // Rechange visibility again(avoid after change phone orientation, the first page will show up)
+            IVisualElementRenderer renderer = _currentPage.GetOrCreateRenderer();
+            _container.RecalcVisiblitiy(renderer.ContainerElement);
+            
+        }
 
-		void UpdateNavigationBarBackground()
+        private void RefreshInsidePagesSize() {
+            foreach (IPageController item in PageController.InternalChildren)
+            {
+                if (item == _currentPage)
+                    item.ContainerArea = new Rectangle(0, 0, _container.ContentWidth, _container.ContentHeight);
+            }
+        }
+
+        void UpdateNavigationBarBackground()
 		{
 			(this as ITitleProvider).BarBackgroundBrush = GetBarBackgroundBrush();
 		}
@@ -541,15 +573,23 @@ namespace Xamarin.Forms.Platform.WinRT
 			if (_parentTabbedPage != null)
 			{
 				render = Platform.GetRenderer(_parentTabbedPage) as ITitleProvider;
-				if (render != null)
-					render.ShowTitle = (_parentTabbedPage.CurrentPage == Element) && NavigationPage.GetHasNavigationBar(_currentPage);
+                if (render != null && _parentTabbedPage.CurrentPage == Element)
+                {
+                    render.ShowTitle = NavigationPage.GetHasNavigationBar(_currentPage);
+                }else {
+                    render = null;
+                }
 			}
 
 			if (_parentMasterDetailPage != null)
 			{
 				render = Platform.GetRenderer(_parentMasterDetailPage) as ITitleProvider;
-				if (render != null)
-					render.ShowTitle = (_parentMasterDetailPage.Detail == Element) && NavigationPage.GetHasNavigationBar(_currentPage);
+                if (render != null && _parentMasterDetailPage.Detail == Element)
+                {
+                    render.ShowTitle = NavigationPage.GetHasNavigationBar(_currentPage);
+                }else {
+                    render = null;
+                }
 			}
 
 			if (render != null && render.ShowTitle)
