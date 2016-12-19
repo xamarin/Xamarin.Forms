@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using Android.Support.V4.View;
 using Android.Views;
+using Xamarin.Forms.Internals;
 using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
