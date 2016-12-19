@@ -35,7 +35,7 @@ namespace Xamarin.Forms.Build.Tasks
 		{
 			Context.Scopes[node] = Context.Scopes[parentNode];
 			if (IsXNameProperty(node, parentNode))
-				RegisterName((string)node.Value, Context.Scopes[node].Item1, Context.Scopes[node].Item2, node);
+				RegisterName((string)node.Value, Context.Scopes[node].Item1, Context.Scopes[node].Item2, Context.Variables[(IElementNode)parentNode], node);
 		}
 
 		public void Visit(MarkupNode node, INode parentNode)
@@ -124,7 +124,7 @@ namespace Xamarin.Forms.Build.Tasks
 			Context.IL.Emit(OpCodes.Call, setNS);
 		}
 
-		void RegisterName(string str, VariableDefinition namescopeVarDef, IList<string> namesInNamescope, INode node)
+		void RegisterName(string str, VariableDefinition namescopeVarDef, IList<string> namesInNamescope, VariableDefinition element, INode node)
 		{
 			if (namesInNamescope.Contains(str))
 				throw new XamlParseException($"An element with the name \"{str}\" already exists in this NameScope", node as IXmlLineInfo);
@@ -138,7 +138,7 @@ namespace Xamarin.Forms.Build.Tasks
 
 			Context.IL.Emit(OpCodes.Ldloc, namescopeVarDef);
 			Context.IL.Emit(OpCodes.Ldstr, str);
-			Context.IL.Append(node.PushXmlLineInfo(Context));
+			Context.IL.Emit(OpCodes.Ldloc, element);
 			Context.IL.Emit(OpCodes.Callvirt, register);
 		}
 	}
