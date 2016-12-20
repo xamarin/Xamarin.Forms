@@ -180,7 +180,7 @@ namespace Xamarin.Forms.Platform.iOS
 					SelectedIndex = (int)row;
 				}
 
-				if(!_renderer.Element.On<PlatformConfiguration.iOS>().ShouldChangeSelectedIndexWhenDone())
+				if(_renderer.Element.On<PlatformConfiguration.iOS>().UpdateMode() == UpdateMode.Immediately)
 					_renderer.UpdatePickerFromModel(this);
 			}
 		}

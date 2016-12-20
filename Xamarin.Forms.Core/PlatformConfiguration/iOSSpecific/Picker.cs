@@ -4,26 +4,26 @@
 
 	public static class Picker
 	{
-		public static readonly BindableProperty ShouldChangeSelectedIndexWhenDoneProperty = BindableProperty.Create(nameof(ShouldChangeSelectedIndexWhenDone), typeof(bool), typeof(Picker), false);
+		public static readonly BindableProperty UpdateModeProperty = BindableProperty.Create(nameof(UpdateMode), typeof(UpdateMode), typeof(Picker), default(UpdateMode));
 
-		public static bool GetShouldChangeSelectedIndexWhenDone(BindableObject element)
+		public static UpdateMode GetUpdateMode(BindableObject element)
 		{
-			return (bool)element.GetValue(ShouldChangeSelectedIndexWhenDoneProperty);
+			return (UpdateMode)element.GetValue(UpdateModeProperty);
 		}
 
-		public static void SetShouldChangeSelectedIndexWhenDone(BindableObject element, bool value)
+		public static void SetUpdateMode(BindableObject element, UpdateMode value)
 		{
-			element.SetValue(ShouldChangeSelectedIndexWhenDoneProperty, value);
+			element.SetValue(UpdateModeProperty, value);
 		}
 
-		public static bool ShouldChangeSelectedIndexWhenDone(this IPlatformElementConfiguration<iOS, FormsElement> config)
+		public static UpdateMode UpdateMode(this IPlatformElementConfiguration<iOS, FormsElement> config)
 		{
-			return GetShouldChangeSelectedIndexWhenDone(config.Element);
+			return GetUpdateMode(config.Element);
 		}
 
-		public static IPlatformElementConfiguration<iOS, FormsElement> SetShouldChangeSelectedIndexWhenDone(this IPlatformElementConfiguration<iOS, FormsElement> config, bool value)
+		public static IPlatformElementConfiguration<iOS, FormsElement> SetUpdateMode(this IPlatformElementConfiguration<iOS, FormsElement> config, UpdateMode value)
 		{
-			SetShouldChangeSelectedIndexWhenDone(config.Element, value);
+			SetUpdateMode(config.Element, value);
 			return config;
 		}
 	}
