@@ -96,22 +96,6 @@ namespace Xamarin.Forms.Platform.iOS
 				return uiRecognizer;
 			}
 
-			var swipeRecognizer = recognizer as SwipeGestureRecognizer;
-				if (swipeRecognizer != null)
-				{ 
-				UISwipeGestureRecognizer uiRecognizer = CreateSwipeRecognizer(GetSwipeDirection("left"), r =>
-					{
-						var tapGestureRecognizer = weakRecognizer.Target as SwipeGestureRecognizer;
-						var eventTracker = weakEventTracker.Target as EventTracker;
-						var view = eventTracker?._renderer?.Element as View;
-
-						if (tapGestureRecognizer != null && view != null)
-							tapGestureRecognizer.HandleLeftSwipe(view);
-				});
-					return uiRecognizer;
-				}
-
-
 			var pinchRecognizer = recognizer as PinchGestureRecognizer;
 			if (pinchRecognizer != null)
 			{
