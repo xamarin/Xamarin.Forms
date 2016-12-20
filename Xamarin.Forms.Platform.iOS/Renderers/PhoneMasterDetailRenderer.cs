@@ -7,7 +7,7 @@ using PointF = CoreGraphics.CGPoint;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class PhoneMasterDetailRenderer : UIViewController, IVisualElementRenderer
+	public class PhoneMasterDetailRenderer : UIViewController, IVisualElementRenderer, IEffectControlProvider
 	{
 		UIView _clickOffView;
 		UIViewController _detailController;

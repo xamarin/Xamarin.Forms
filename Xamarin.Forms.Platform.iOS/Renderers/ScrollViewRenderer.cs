@@ -6,7 +6,7 @@ using RectangleF = CoreGraphics.CGRect;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class ScrollViewRenderer : UIScrollView, IVisualElementRenderer
+	public class ScrollViewRenderer : UIScrollView, IVisualElementRenderer, IEffectControlProvider
 	{
 		EventTracker _events;
 		KeyboardInsetTracker _insetTracker;

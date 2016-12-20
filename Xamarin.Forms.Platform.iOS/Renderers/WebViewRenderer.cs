@@ -7,7 +7,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class WebViewRenderer : UIWebView, IVisualElementRenderer, IWebViewDelegate
+	public class WebViewRenderer : UIWebView, IVisualElementRenderer, IWebViewDelegate, IEffectControlProvider
 	{
 		EventTracker _events;
 		bool _ignoreSourceChanges;

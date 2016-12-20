@@ -9,7 +9,7 @@ using PageUIStatusBarAnimation = Xamarin.Forms.PlatformConfiguration.iOSSpecific
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class TabbedRenderer : UITabBarController, IVisualElementRenderer
+	public class TabbedRenderer : UITabBarController, IVisualElementRenderer, IEffectControlProvider
 	{
 		bool _barBackgroundColorWasSet;
 		bool _barTextColorWasSet;

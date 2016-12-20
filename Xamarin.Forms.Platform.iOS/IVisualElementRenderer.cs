@@ -3,7 +3,7 @@ using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public interface IVisualElementRenderer : IDisposable, IRegisterable, IEffectControlProvider
+	public interface IVisualElementRenderer : IDisposable, IRegisterable
 	{
 		VisualElement Element { get; }
 

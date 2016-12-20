@@ -7,7 +7,7 @@ using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class PageRenderer : UIViewController, IVisualElementRenderer
+	public class PageRenderer : UIViewController, IVisualElementRenderer, IEffectControlProvider
 	{
 		bool _appeared;
 		bool _disposed;

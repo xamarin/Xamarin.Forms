@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Platform.iOS
 		AutoPackage = 1 << 2
 	}
 
-	public class VisualElementRenderer<TElement> : UIView, IVisualElementRenderer where TElement : VisualElement
+	public class VisualElementRenderer<TElement> : UIView, IVisualElementRenderer, IEffectControlProvider where TElement : VisualElement
 	{
 		readonly UIColor _defaultColor = UIColor.Clear;
 

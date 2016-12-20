@@ -39,7 +39,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public event EventHandler WillDisappear;
 	}
 
-	public class TabletMasterDetailRenderer : UISplitViewController, IVisualElementRenderer
+	public class TabletMasterDetailRenderer : UISplitViewController, IVisualElementRenderer, IEffectControlProvider
 	{
 		UIViewController _detailController;
 
