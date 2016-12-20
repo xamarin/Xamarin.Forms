@@ -96,6 +96,22 @@ namespace Xamarin.Forms.Platform.iOS
 				return uiRecognizer;
 			}
 
+			var swipeRecognizer = recognizer as SwipeGestureRecognizer;
+				if (swipeRecognizer != null)
+				{ 
+				UISwipeGestureRecognizer uiRecognizer = CreateSwipeRecognizer(GetSwipeDirection("left"), r =>
+					{
+						var tapGestureRecognizer = weakRecognizer.Target as SwipeGestureRecognizer;
+						var eventTracker = weakEventTracker.Target as EventTracker;
+						var view = eventTracker?._renderer?.Element as View;
+
+						if (tapGestureRecognizer != null && view != null)
+							tapGestureRecognizer.HandleLeftSwipe(view);
+				});
+					return uiRecognizer;
+				}
+
+
 			var pinchRecognizer = recognizer as PinchGestureRecognizer;
 			if (pinchRecognizer != null)
 			{
@@ -205,6 +221,57 @@ namespace Xamarin.Forms.Platform.iOS
 			return null;
 		}
 
+		protected virtual List<UIGestureRecognizer> GetNativeSwipeRecognizers(IGestureRecognizer recognizer)
+		{
+			if (recognizer == null)
+				return null;
+
+			List<UIGestureRecognizer> swipeGestureList = new List<UIGestureRecognizer>();
+
+			var weakRecognizer = new WeakReference(recognizer);
+			var weakEventTracker = new WeakReference(this);
+
+			var swipeRecognizer = recognizer as SwipeGestureRecognizer;
+
+			if (swipeRecognizer != null)
+			{
+				foreach (var envHandler in swipeRecognizer.GetType().GetEvents().Where(w => w.Name.Contains("Swipe")).ToList())
+				{
+					UISwipeGestureRecognizer uiRecognizer = CreateSwipeRecognizer(GetSwipeDirection(envHandler.Name), r =>
+					{
+					var tapGestureRecognizer = weakRecognizer.Target as SwipeGestureRecognizer;
+					var eventTracker = weakEventTracker.Target as EventTracker;
+					var view = eventTracker?._renderer?.Element as View;
+
+					if (tapGestureRecognizer != null && view != null)
+						switch (envHandler.Name)
+						{
+							case "SwipeLeft": tapGestureRecognizer.HandleLeftSwipe(view);
+							break;	                                  
+							case "SwipeRight":	tapGestureRecognizer.HandleRightSwipe(view);
+							break;
+							case "SwipeUp": tapGestureRecognizer.HandleUpSwipe(view);
+							break;
+							case "SwipeDown": tapGestureRecognizer.HandleDownSwipe(view);
+							break;	
+							default: tapGestureRecognizer.HandleRightSwipe(view);
+							break;	
+						}
+					});
+					swipeGestureList.Add(uiRecognizer);
+				}
+				return swipeGestureList;
+			}
+			return null;
+		}
+
+
+		UISwipeGestureRecognizer CreateSwipeRecognizer(UISwipeGestureRecognizerDirection swipeDirection, Action<UISwipeGestureRecognizer> action)
+		{
+			var result = new UISwipeGestureRecognizer(action) { Direction = swipeDirection };
+			return result; 
+		}
+
 		UIPanGestureRecognizer CreatePanRecognizer(int numTouches, Action<UIPanGestureRecognizer> action)
 		{
 			var result = new UIPanGestureRecognizer(action);
@@ -235,14 +302,30 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (_gestureRecognizers.ContainsKey(recognizer))
 					continue;
-
-				var nativeRecognizer = GetNativeRecognizer(recognizer);
-				if (nativeRecognizer != null)
+				string recognizerName = recognizer.ToString();
+				if (recognizerName.Contains("SwipeGestureRecognizer"))
 				{
-					nativeRecognizer.ShouldReceiveTouch = _shouldReceive;
-					_handler.AddGestureRecognizer(nativeRecognizer);
+					List<UIGestureRecognizer> nativeRecognizer = GetNativeSwipeRecognizers(recognizer);
+					if (nativeRecognizer != null)
+					{
+						foreach (UIGestureRecognizer item in nativeRecognizer)
+						{
+							item.ShouldReceiveTouch = _shouldReceive;
+							_handler.AddGestureRecognizer(item);
 
-					_gestureRecognizers[recognizer] = nativeRecognizer;
+							_gestureRecognizers[recognizer] = item;
+						}
+					}
+				}
+				else {
+					var nativeRecognizer = GetNativeRecognizer(recognizer);
+					if (nativeRecognizer != null)
+					{
+						nativeRecognizer.ShouldReceiveTouch = _shouldReceive;
+						_handler.AddGestureRecognizer(nativeRecognizer);
+
+						_gestureRecognizers[recognizer] = nativeRecognizer;
+					}
 				}
 			}
 
@@ -283,6 +366,18 @@ namespace Xamarin.Forms.Platform.iOS
 					ElementGestureRecognizers.CollectionChanged += _collectionChangedHandler;
 					LoadRecognizers();
 				}
+			}
+		}
+
+		private UISwipeGestureRecognizerDirection GetSwipeDirection(string swipeAction)
+		{
+			switch (swipeAction)
+			{
+				case "SwipeLeft": return UISwipeGestureRecognizerDirection.Left;
+				case "SwipeUp": return UISwipeGestureRecognizerDirection.Up;
+				case "SwipeRight": return UISwipeGestureRecognizerDirection.Right;
+				case "SwipeDown": return UISwipeGestureRecognizerDirection.Down;	
+				default: return UISwipeGestureRecognizerDirection.Right;
 			}
 		}
 	}
