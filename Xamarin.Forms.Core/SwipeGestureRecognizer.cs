@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Windows.Input;
 using System.Linq;
 
@@ -46,7 +46,7 @@ namespace Xamarin.Forms
 
 			EventHandler handler = SwipeRight;
 			if (handler != null)
-				handler(sender, new SwipeRightEventArgs(CommandParameter));
+				handler(sender, new SwipeEventArgs(CommandParameter));
 		}
 
 		internal void HandleLeftSwipe(View sender)
@@ -57,7 +57,7 @@ namespace Xamarin.Forms
 
 			EventHandler handler = SwipeLeft;
 			if (handler != null)
-				handler(sender, new SwipeLeftEventArgs(CommandParameter));
+				handler(sender, new SwipeEventArgs(CommandParameter));
 		}
 
 		internal void HandleDownSwipe(View sender)
@@ -68,7 +68,7 @@ namespace Xamarin.Forms
 
 			EventHandler handler = SwipeDown;
 			if (handler != null)
-				handler(sender, new SwipeDownEventArgs(CommandParameter));
+				handler(sender, new SwipeEventArgs(CommandParameter));
 		}
 
 		internal void HandleUpSwipe(View sender)
@@ -79,7 +79,7 @@ namespace Xamarin.Forms
 
 			EventHandler handler = SwipeUp;
 			if (handler != null)
-				handler(sender, new SwipeDownEventArgs(CommandParameter));
+				handler(sender, new SwipeEventArgs(CommandParameter));
 		}
 
 	}
