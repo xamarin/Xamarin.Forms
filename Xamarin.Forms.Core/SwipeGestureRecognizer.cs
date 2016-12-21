@@ -1,6 +1,5 @@
 using System;
 using System.Windows.Input;
-using System.Linq;
 
 namespace Xamarin.Forms
 {
@@ -35,8 +34,6 @@ namespace Xamarin.Forms
 		public event EventHandler SwipeDown;
 
 		public event EventHandler SwipeUp;
-
-		//public event EventHandler SwipeCompleted;
 
 		internal void HandleRightSwipe(View sender)
 		{
@@ -81,8 +78,5 @@ namespace Xamarin.Forms
 			if (handler != null)
 				handler(sender, new SwipeEventArgs(CommandParameter));
 		}
-
 	}
-
-
 }
