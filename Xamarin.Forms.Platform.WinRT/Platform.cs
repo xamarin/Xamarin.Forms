@@ -213,14 +213,14 @@ namespace Xamarin.Forms.Platform.WinRT
 			return new SizeRequest();
 		}
 
-		internal virtual Rectangle WindowBounds
+		internal virtual Rectangle ContainerBounds
 		{
 			get { return _bounds; }
 		}
 
 		internal void UpdatePageSizes()
 		{
-			Rectangle bounds = WindowBounds;
+			Rectangle bounds = ContainerBounds;
 			if (bounds.IsEmpty)
 				return;
 			foreach (Page root in _navModel.Roots)
@@ -303,13 +303,16 @@ namespace Xamarin.Forms.Platform.WinRT
 				button.Command = new MenuItemCommand(item);
 				button.DataContext = item;
 
-#if WINDOWS_UWP
-				toolBarProvider?.BindForegroundColor(button);
-#endif
 
 				ToolbarItemOrder order = item.Order == ToolbarItemOrder.Default ? ToolbarItemOrder.Primary : item.Order;
+
 				if (order == ToolbarItemOrder.Primary)
+				{
+#if WINDOWS_UWP
+					toolBarProvider?.BindForegroundColor(button);
+#endif
 					commandBar.PrimaryCommands.Add(button);
+				}
 				else
 					commandBar.SecondaryCommands.Add(button);
 			}
@@ -363,7 +366,6 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		Rectangle _bounds;
 		readonly Canvas _container;
-
 		readonly Windows.UI.Xaml.Controls.Page _page;
 		Windows.UI.Xaml.Controls.ProgressBar _busyIndicator;
 		Page _currentPage;
@@ -443,27 +445,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		void UpdateBounds()
 		{
-			_bounds = new Rectangle(0, 0, _page.ActualWidth, _page.ActualHeight);
-#if WINDOWS_UWP
-			StatusBar statusBar = MobileStatusBar;
-			if (statusBar != null)
-			{
-				bool landscape = Device.Info.CurrentOrientation.IsLandscape();
-				bool titleBar = CoreApplication.GetCurrentView().TitleBar.IsVisible;
-				double offset = landscape ? statusBar.OccludedRect.Width : statusBar.OccludedRect.Height;
-
-				_bounds = new Rectangle(0, 0, _page.ActualWidth - (landscape ? offset : 0), _page.ActualHeight - (landscape ? 0 : offset));
-
-				// Even if the MainPage is a ContentPage not inside of a NavigationPage, the calculated bounds
-				// assume the TitleBar is there even if it isn't visible. When UpdatePageSizes is called,
-				// _container.ActualWidth is correct because it's aware that the TitleBar isn't there, but the
-				// bounds aren't, and things can subsequently run under the StatusBar.
-				if (!titleBar)
-				{
-					_bounds.Width -= (_bounds.Width - _container.ActualWidth);
-				}
-			}
-#endif
+			_bounds = new Rectangle(0, 0, _container.ActualWidth, _container.ActualHeight);
 		}
 
 		void OnRendererSizeChanged(object sender, SizeChangedEventArgs sizeChangedEventArgs)
@@ -502,8 +484,7 @@ namespace Xamarin.Forms.Platform.WinRT
             }
 
 
-
-            newPage.Layout(new Rectangle(0, 0, _page.ActualWidth, _page.ActualHeight));
+			newPage.Layout(ContainerBounds);
             IVisualElementRenderer pageRenderer = newPage.GetOrCreateRenderer();
 
             if (null != _currentPage)
@@ -768,7 +749,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 			if (Device.Idiom == TargetIdiom.Phone)
 			{
-				double height = WindowBounds.Height;
+				double height = _page.ActualHeight;
 				stack.Height = height;
 				stack.Width = size.Width;
 				border.BorderThickness = new Windows.UI.Xaml.Thickness(0);
@@ -803,8 +784,41 @@ namespace Xamarin.Forms.Platform.WinRT
 				dialog.CancelCommandIndex = (uint)dialog.Commands.Count - 1;
 			}
 
-			IUICommand command = await dialog.ShowAsync();
-			options.SetResult(command.Label == options.Accept);
+			if (Device.IsInvokeRequired)
+			{
+				Device.BeginInvokeOnMainThread(async () =>
+				{
+					IUICommand command = await dialog.ShowAsyncQueue();
+					options.SetResult(command.Label == options.Accept);
+				});
+			}
+			else
+			{
+				IUICommand command = await dialog.ShowAsyncQueue();
+				options.SetResult(command.Label == options.Accept);
+			}
+		}
+	}
+	
+	// refer to http://stackoverflow.com/questions/29209954/multiple-messagedialog-app-crash for why this is used
+	// in order to allow for multiple MessageDialogs, or a crash occurs otherwise
+	public static class MessageDialogExtensions
+	{
+		static TaskCompletionSource<MessageDialog> _currentDialogShowRequest;
+
+		public static async Task<IUICommand> ShowAsyncQueue(this MessageDialog dialog)
+		{
+			while (_currentDialogShowRequest != null)
+			{
+				await _currentDialogShowRequest.Task;
+			}
+
+			var request = _currentDialogShowRequest = new TaskCompletionSource<MessageDialog>();
+			var result = await dialog.ShowAsync();
+			_currentDialogShowRequest = null;
+			request.SetResult(dialog);
+
+			return result;
 		}
 	}
 }

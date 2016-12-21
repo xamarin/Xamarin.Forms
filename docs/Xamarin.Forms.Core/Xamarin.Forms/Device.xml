@@ -210,6 +210,44 @@ button.HeightRequest = Device.OnPlatform (20,30,30);
         </remarks>
       </Docs>
     </Member>
+    <Member MemberName="OnPlatform&lt;T&gt;">
+      <MemberSignature Language="C#" Value="public static T OnPlatform&lt;T&gt; (T iOS, T Android, T WinPhone, T Tizen);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig !!T OnPlatform&lt;T&gt;(!!T iOS, !!T Android, !!T WinPhone, !!T Tizen) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>T</ReturnType>
+      </ReturnValue>
+      <TypeParameters>
+        <TypeParameter Name="T" />
+      </TypeParameters>
+      <Parameters>
+        <Parameter Name="iOS" Type="T" />
+        <Parameter Name="Android" Type="T" />
+        <Parameter Name="WinPhone" Type="T" />
+        <Parameter Name="Tizen" Type="T" />
+      </Parameters>
+      <Docs>
+        <typeparam name="T">The type of the value to be returned.</typeparam>
+        <param name="iOS">The value for iOS.</param>
+        <param name="Android">The value for Android.</param>
+        <param name="WinPhone">The value for WinPhone.</param>
+        <param name="WinPhone">The value for Tizen.</param>
+        <summary>Returns different values depending on the <see cref="T:Xamarin.Forms.TargetOS" /> Xamarin.Forms is working on.</summary>
+        <returns>The value for the current OS.</returns>
+        <remarks>
+          <para>This example shows how to use different heights for a Button on different OS.
+          </para>
+          <example>
+            <code lang="C#"><![CDATA[
+button.HeightRequest = Device.OnPlatform (20,30,30);
+          ]]></code>
+          </example>
+        </remarks>
+      </Docs>
+    </Member>
     <Member MemberName="OpenUri">
       <MemberSignature Language="C#" Value="public static void OpenUri (Uri uri);" />
       <MemberSignature Language="ILAsm" Value=".method public static hidebysig void OpenUri(class System.Uri uri) cil managed" />
