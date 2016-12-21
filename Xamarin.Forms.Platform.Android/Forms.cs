@@ -120,7 +120,6 @@ namespace Xamarin.Forms
 			if (!IsInitialized)
 				Log.Listeners.Add(new DelegateLogListener((c, m) => Trace.WriteLine(m, c)));
 
-			Device.OS = TargetPlatform.Android;
 			Device.PlatformServices = new AndroidPlatformServices();
 
 			// use field and not property to avoid exception in getter
@@ -400,6 +399,8 @@ namespace Xamarin.Forms
 					return Looper.MainLooper != Looper.MyLooper();
 				}
 			}
+
+			public string RuntimePlatform => Device.Android;
 
 			public void OpenUriAction(Uri uri)
 			{
