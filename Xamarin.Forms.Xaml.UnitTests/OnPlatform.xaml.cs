@@ -104,6 +104,25 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				layout = new OnPlatform(useCompiledXaml);
 				Assert.AreEqual(FontAttributes.Italic, layout.label0.FontAttributes);
 			}
+
+			[TestCase(false)]
+			[TestCase(true)]
+			public void OnPlatform2Syntax(bool useCompiledXaml)
+			{
+				((MockPlatformServices)Device.PlatformServices).RuntimePlatform = Device.Android;
+				var layout = new OnPlatform(useCompiledXaml);
+				Assert.AreEqual(42, layout.label0.HeightRequest);
+
+				((MockPlatformServices)Device.PlatformServices).RuntimePlatform = Device.iOS;
+				layout = new OnPlatform(useCompiledXaml);
+				Assert.AreEqual(21, layout.label0.HeightRequest);
+
+
+				((MockPlatformServices)Device.PlatformServices).RuntimePlatform = "FooBar";
+				layout = new OnPlatform(useCompiledXaml);
+				Assert.AreEqual(42, layout.label0.HeightRequest);
+
+			}
 		}
 	}
 }

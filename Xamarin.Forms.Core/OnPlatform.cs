@@ -12,13 +12,13 @@ namespace Xamarin.Forms
 			Platforms = new List<On>();
 		}
 
-		bool useFallback;
+		bool useLegacyFallback;
 		T android;
 		[Obsolete]
 		public T Android {
 			get { return android; }
 			set {
-				useFallback = true;
+				useLegacyFallback = true;
 				android = value;
 			}
 		}
@@ -28,7 +28,7 @@ namespace Xamarin.Forms
 		public T iOS {
 			get { return ios; }
 			set {
-				useFallback = true;
+				useLegacyFallback = true;
 				ios = value;
 			}
 		}
@@ -38,12 +38,12 @@ namespace Xamarin.Forms
 		public T WinPhone {
 			get { return winPhone; }
 			set {
-				useFallback = true;
+				useLegacyFallback = true;
 				winPhone = value;
 			}
 		}
 
-		public IList<On> Platforms { get; private set;}
+		public IList<On> Platforms { get; private set; }
 
 		static readonly IValueConverterProvider s_valueConverter = DependencyService.Get<IValueConverterProvider>();
 
@@ -59,20 +59,20 @@ namespace Xamarin.Forms
 				return (T)s_valueConverter.Convert(onPlat.Value, typeof(T), null, null);
 			}
 
-			if (!onPlatform.useFallback)
+			if (!onPlatform.useLegacyFallback)
 				return default(T);
 
 			//legacy fallback
-#pragma warning disable 0612
+#pragma warning disable 0618, 0612
 			return Device.OnPlatform(iOS: onPlatform.iOS, Android: onPlatform.Android, WinPhone: onPlatform.WinPhone);
-#pragma warning restore 0612
-			}
+#pragma warning restore 0618, 0612
 		}
 	}
 
 	[ContentProperty("Value")]
 	public class On
 	{
+		[TypeConverter(typeof(ListStringTypeConverter))]
 		public IList<string> Platform { get; set; }
 		public object Value { get; set; }
 	}
