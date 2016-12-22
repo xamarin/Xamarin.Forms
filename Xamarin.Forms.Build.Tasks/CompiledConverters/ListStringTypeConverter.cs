@@ -20,9 +20,6 @@ namespace Xamarin.Forms.Core.XamlC
 			}
 			var parts = value.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()).ToList();
 
-			var list = module.Import(typeof(List<>)).Resolve().Methods;
-			if (list == null)
-				yield break;
 			var listCtor = module.Import(typeof(List<>)).Resolve().Methods.FirstOrDefault(md => md.IsConstructor && md.Parameters.Count == 1 && md.Parameters[0].ParameterType.FullName == "System.Int32");
 			var listCtorRef = module.Import(listCtor);
 			listCtorRef = module.Import(listCtorRef.ResolveGenericParameters(module.Import(typeof(List<string>)), module));
