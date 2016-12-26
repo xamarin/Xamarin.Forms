@@ -665,9 +665,12 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				}
 				else if (_drawerToggle != null && ((INavigationPageController)Element).StackDepth == 2)
 					AnimateArrowOut();
-			}
 
-			AddTransitionTimer(tcs, fragment, fm, fragmentsToRemove, !animated || removed);
+				AddTransitionTimer(tcs, fragment, fm, fragmentsToRemove, removed);
+
+			}
+			else
+				AddTransitionTimer(tcs, fragment, fm, fragmentsToRemove, true);
 
 			Context.HideKeyboard(this);
 			((Platform)Element.Platform).NavAnimationInProgress = false;
