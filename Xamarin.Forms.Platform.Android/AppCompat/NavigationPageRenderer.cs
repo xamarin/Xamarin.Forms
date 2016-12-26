@@ -666,11 +666,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				else if (_drawerToggle != null && ((INavigationPageController)Element).StackDepth == 2)
 					AnimateArrowOut();
 
-				AddTransitionTimer(tcs, fragment, fm, fragmentsToRemove, removed);
-
+				AddTransitionTimer(tcs, fragment, fm, fragmentsToRemove, TransitionDuration, removed);
 			}
 			else
-				AddTransitionTimer(tcs, fragment, fm, fragmentsToRemove, true);
+				AddTransitionTimer(tcs, fragment, fm, fragmentsToRemove, 1, true);
 
 			Context.HideKeyboard(this);
 			((Platform)Element.Platform).NavAnimationInProgress = false;
@@ -808,9 +807,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			bar.Title = Element.CurrentPage.Title ?? "";
 		}
 
-		void AddTransitionTimer(TaskCompletionSource<bool> tcs, Fragment fragment, FragmentManager fm, IReadOnlyCollection<Fragment> fragmentsToRemove, bool shouldUpdateToolbar)
+		void AddTransitionTimer(TaskCompletionSource<bool> tcs, Fragment fragment, FragmentManager fm, IReadOnlyCollection<Fragment> fragmentsToRemove, int duration, bool shouldUpdateToolbar)
 		{
-			Device.StartTimer(TimeSpan.FromMilliseconds(TransitionDuration), () =>
+			Device.StartTimer(TimeSpan.FromMilliseconds(duration), () =>
 			{
 				tcs.TrySetResult(true);
 				fragment.UserVisibleHint = true;
