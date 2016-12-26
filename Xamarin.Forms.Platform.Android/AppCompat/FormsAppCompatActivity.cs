@@ -102,7 +102,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void SetStatusBarColor(AColor color)
 		{
-			_statusBarUnderlay?.SetBackgroundColor(color);
+			if (ShouldAddStatusBarUnderlay)
+				_statusBarUnderlay?.SetBackgroundColor(color);
+			else
+				Window.SetStatusBarColor(color);
 		}
 
 		protected void LoadApplication(Application application)
