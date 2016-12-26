@@ -311,8 +311,6 @@ namespace Xamarin.Forms.ControlGallery.Android
 			ToolbarResource = Resource.Layout.Toolbar;
 			TabLayoutResource = Resource.Layout.Tabbar;
 
-			// uncomment to test not adding status bar underlay when main layout is being constructed
-			//ShouldAddStatusBarUnderlay = false;
 			base.OnCreate (bundle);
 
 			if (!Debugger.IsAttached)
