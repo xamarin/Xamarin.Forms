@@ -54,5 +54,17 @@ namespace Xamarin.Forms.Controls.Issues
 				}
 			};
 		}
+
+		protected override void OnAppearing()
+		{
+			base.OnAppearing();
+			System.Diagnostics.Debug.WriteLine("appearing");
+		}
+
+		protected override void OnDisappearing()
+		{
+			base.OnDisappearing();
+			System.Diagnostics.Debug.WriteLine("disappearing");
+		}
 	}
 }
