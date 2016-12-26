@@ -274,9 +274,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			if (page is MasterDetailPage)
 				page.Layout(new Rectangle(0, 0, activity.FromPixels(width), activity.FromPixels(height)));
 			else
-			{
 				page.Layout(new Rectangle(0, activity.FromPixels(statusBarUnderlayHeight), activity.FromPixels(width), activity.FromPixels(height - statusBarUnderlayHeight)));
-			}
 		}
 
 		Task PresentModal(Page modal, bool animated)
@@ -364,17 +362,17 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			protected override void OnLayout(bool changed, int l, int t, int r, int b)
 			{
 				var activity = (FormsAppCompatActivity)Context;
-				int statusBarHeight = Forms.IsLollipopOrNewer ? activity.GetStatusBarUnderlayHeight() : 0;
+				int statusBarUnderlayHeight = activity.GetStatusBarUnderlayHeight();
 				if (changed)
 				{
 					if (_modal is MasterDetailPage)
 						_modal.Layout(new Rectangle(0, 0, activity.FromPixels(r - l), activity.FromPixels(b - t)));
 					else
 					{
-						_modal.Layout(new Rectangle(0, activity.FromPixels(statusBarHeight), activity.FromPixels(r - l), activity.FromPixels(b - t - statusBarHeight)));
+						_modal.Layout(new Rectangle(0, activity.FromPixels(statusBarUnderlayHeight), activity.FromPixels(r - l), activity.FromPixels(b - t - statusBarUnderlayHeight)));
 					}
 
-					_backgroundView.Layout(0, statusBarHeight, r - l, b - t);
+					_backgroundView.Layout(0, statusBarUnderlayHeight, r - l, b - t);
 				}
 
 				_renderer.UpdateLayout();
