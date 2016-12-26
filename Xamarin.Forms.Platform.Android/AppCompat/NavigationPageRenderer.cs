@@ -807,7 +807,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			bar.Title = Element.CurrentPage.Title ?? "";
 		}
 
-		void AddTransitionTimer(TaskCompletionSource<bool> tcs, Fragment fragment, FragmentManager fm, IReadOnlyCollection<Fragment> fragmentsToRemove, int duration, bool shouldUpdateToolbar)
+		void AddTransitionTimer(TaskCompletionSource<bool> tcs, Fragment fragment, FragmentManager fragmentManager, IReadOnlyCollection<Fragment> fragmentsToRemove, int duration, bool shouldUpdateToolbar)
 		{
 			Device.StartTimer(TimeSpan.FromMilliseconds(duration), () =>
 			{
@@ -816,10 +816,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				if (shouldUpdateToolbar)
 					UpdateToolbar();
 
-				FragmentTransaction fragmentTransaction = fm.BeginTransaction();
+				FragmentTransaction fragmentTransaction = fragmentManager.BeginTransaction();
 				fragmentTransaction.DisallowAddToBackStack();
-				foreach (Fragment fragment1 in fragmentsToRemove)
-					fragmentTransaction.Remove(fragment1);
+				foreach (Fragment frag in fragmentsToRemove)
+					fragmentTransaction.Remove(frag);
 
 				fragmentTransaction.CommitAllowingStateLoss();
 
