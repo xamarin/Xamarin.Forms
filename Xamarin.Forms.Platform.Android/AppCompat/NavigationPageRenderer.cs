@@ -44,8 +44,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		DrawerLayout _drawerLayout;
 		bool _toolbarVisible;
 
-		// The following is based on https://android.googlesource.com/platform/frameworks/support/+/refs/heads/master/v4/java/android/support/v4/app/FragmentManager.java#849
-		const int TransitionDuration = 220;
+		// The following is based on https://android.googlesource.com/platform/frameworks/support.git/+/4a7e12af4ec095c3a53bb8481d8d92f63157c3b7/v4/java/android/support/v4/app/FragmentManager.java#677
+		protected virtual int TransitionDuration { get; set; } = 220;
 
 		public NavigationPageRenderer()
 		{
@@ -608,6 +608,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				SetupPageTransition(transaction, !removed);
 
 			transaction.DisallowAddToBackStack();
+			var fragmentsToRemove = new List<Fragment>();
 
 			if (_fragmentStack.Count == 0)
 			{
@@ -623,9 +624,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					while (_fragmentStack.Count > 1 && popPage)
 					{
 						Fragment currentToRemove = _fragmentStack.Last();
-						_fragmentStack.RemoveAt(_fragmentStack.Count - 1);
-						transaction.Remove(currentToRemove);
-						popPage = popToRoot;
+                        _fragmentStack.RemoveAt(_fragmentStack.Count - 1);
+                        transaction.Hide(currentToRemove);
+                        fragmentsToRemove.Add(currentToRemove);
+                        popPage = popToRoot;
 					}
 					
 					Fragment toShow = _fragmentStack.Last();
@@ -649,7 +651,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			// We don't currently support fragment restoration, so we don't need to worry about
 			// whether the commit loses state
 			transaction.CommitAllowingStateLoss();
-
+		
 			// The fragment transitions don't really SUPPORT telling you when they end
 			// There are some hacks you can do, but they actually are worse than just doing this:
 
@@ -664,34 +666,14 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				else if (_drawerToggle != null && ((INavigationPageController)Element).StackDepth == 2)
 					AnimateArrowOut();
 
-				Device.StartTimer(TimeSpan.FromMilliseconds(TransitionDuration), () =>
-				{
-					tcs.TrySetResult(true);
-					fragment.UserVisibleHint = true;
-					if (removed)
-					{
-						UpdateToolbar();
-					}
+				AddTransitionTimer(tcs, fragment, fm, fragmentsToRemove, removed);
 
-					return false;
-				});
 			}
 			else
-			{
-				Device.StartTimer(TimeSpan.FromMilliseconds(1), () =>
-				{
-					tcs.TrySetResult(true);
-					fragment.UserVisibleHint = true;
-					UpdateToolbar();
-
-					return false;
-				});
-			}
+				AddTransitionTimer(tcs, fragment, fm, fragmentsToRemove, true);
 
 			Context.HideKeyboard(this);
 			((Platform)Element.Platform).NavAnimationInProgress = false;
-
-			// TransitionDuration is how long the built-in animations are, and they are "reversible" in the sense that starting another one slightly before it's done is fine
 
 			return tcs.Task;
 		}
@@ -824,6 +806,26 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				bar.SetTitleTextColor(textColor.ToAndroid().ToArgb());
 
 			bar.Title = Element.CurrentPage.Title ?? "";
+		}
+
+		void AddTransitionTimer(TaskCompletionSource<bool> tcs, Fragment fragment, FragmentManager fm, IReadOnlyCollection<Fragment> fragmentsToRemove, bool shouldUpdateToolbar)
+		{
+			Device.StartTimer(TimeSpan.FromMilliseconds(TransitionDuration), () =>
+			{
+				tcs.TrySetResult(true);
+				fragment.UserVisibleHint = true;
+				if (shouldUpdateToolbar)
+					UpdateToolbar();
+
+				FragmentTransaction fragmentTransaction = fm.BeginTransaction();
+				fragmentTransaction.DisallowAddToBackStack();
+				foreach (Fragment fragment1 in fragmentsToRemove)
+					fragmentTransaction.Remove(fragment1);
+
+				fragmentTransaction.CommitAllowingStateLoss();
+
+				return false;
+			});
 		}
 
 		class ClickListener : Object, IOnClickListener
