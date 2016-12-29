@@ -7,12 +7,6 @@ using Xamarin.UITest;
 using NUnit.Framework;
 #endif
 
-// Apply the default category of "Issues" to all of the tests in this assembly
-// We use this as a catch-all for tests which haven't been individually categorized
-#if UITEST
-[assembly: NUnit.Framework.Category("Issues")]
-#endif
-
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
@@ -21,8 +15,16 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		protected override void Init()
 		{
+			var stackLayout = new StackLayout();
+
+			var l = new Label
+			{
+				Text = "Swipe multiple cells at the same time. Only one cell should show its context actions."
+			};
+			stackLayout.Children.Add(l);
+
 			var list = new List<int>();
-			for (var i = 0; i < 10; i++)
+			for (var i = 0; i < 20; i++)
 				list.Add(i);
 
 			var listView = new ListView
@@ -51,8 +53,9 @@ namespace Xamarin.Forms.Controls.Issues
 					};
 				})
 			};
+			stackLayout.Children.Add(listView);
 
-			Content = listView;
+			Content = stackLayout;
 		}
 	}
 }
