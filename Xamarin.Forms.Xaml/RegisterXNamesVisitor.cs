@@ -31,17 +31,7 @@ namespace Xamarin.Forms.Xaml
 		{
 			if (!IsXNameProperty(node, parentNode))
 				return;
-			try
-			{
-				((IElementNode)parentNode).Namescope.RegisterName((string)node.Value, Values[parentNode]);
-			}
-			catch (ArgumentException ae)
-			{
-				if (ae.ParamName != "name")
-					throw ae;
-				throw new XamlParseException(
-					string.Format("An element with the name \"{0}\" already exists in this NameScope", (string)node.Value), node);
-			}
+			((IElementNode)parentNode).Namescope.RegisterName((string)node.Value, Values[parentNode]);
 		}
 
 		public void Visit(MarkupNode node, INode parentNode)
