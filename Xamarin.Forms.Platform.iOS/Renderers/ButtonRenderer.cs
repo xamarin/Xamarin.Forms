@@ -23,6 +23,8 @@ namespace Xamarin.Forms.Platform.iOS
 		// but under iOS that suggestion won't work
 		readonly nfloat _minimumButtonHeight = 44; // Apple docs
 
+		static readonly UIControlState[] s_controlStates = { UIControlState.Normal, UIControlState.Highlighted, UIControlState.Disabled };
+
 		public override SizeF SizeThatFits(SizeF size)
 		{
 			var result = base.SizeThatFits(size);
@@ -90,9 +92,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void SetControlPropertiesFromProxy()
 		{
-			var controlStates = new[] {UIControlState.Normal, UIControlState.Highlighted, UIControlState.Disabled};
-
-			foreach (UIControlState uiControlState in controlStates)
+			foreach (UIControlState uiControlState in s_controlStates)
 			{
 				Control.SetTitleColor(UIButton.Appearance.TitleColor(uiControlState), uiControlState); // if new values are null, old values are preserved.
 				Control.SetTitleShadowColor(UIButton.Appearance.TitleShadowColor(uiControlState), uiControlState);
