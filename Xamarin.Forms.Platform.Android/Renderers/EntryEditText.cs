@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (keyCode == Keycode.Back && e.Action == KeyEventActions.Down)
 			{
 				this.HideKeyboard();
-				ClearFocus();
+				OnKeyboardBackPressed?.Invoke(this, EventArgs.Empty);
 			}
 
 			return true;
@@ -36,5 +36,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			return (this as IDescendantFocusToggler).RequestFocus(this, () => base.RequestFocus(direction, previouslyFocusedRect));
 		}
+
+		internal event EventHandler OnKeyboardBackPressed;
 	}
 }
