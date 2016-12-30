@@ -23,12 +23,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override bool OnKeyPreIme(Keycode keyCode, KeyEvent e)
 		{
-			if (keyCode == Keycode.Back && e.Action == KeyEventActions.Down)
-			{
-				this.HideKeyboard();
-				OnKeyboardBackPressed?.Invoke(this, EventArgs.Empty);
-			}
+			if (keyCode != Keycode.Back || e.Action != KeyEventActions.Down)
+				return base.OnKeyPreIme(keyCode, e);
 
+			this.HideKeyboard();
+			OnKeyboardBackPressed?.Invoke(this, EventArgs.Empty);
 			return true;
 		}
 
