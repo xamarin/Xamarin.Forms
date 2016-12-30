@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Foundation;
 using UIKit;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using RectangleF = CoreGraphics.CGRect;
 
 namespace Xamarin.Forms.Platform.iOS
@@ -26,10 +27,18 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _appeared;
 
 		bool _disposed;
+		UIView _pageOverlayView;
 
 		internal Platform()
 		{
-			_renderer = new PlatformRenderer(this);
+			_renderer = new PlatformRenderer(this)
+			{
+				View =
+				{
+					BackgroundColor = UIColor.White,
+					ContentMode = UIViewContentMode.Redraw
+				}
+			};
 			_modals = new List<Page>();
 
 			var busyCount = 0;
@@ -79,9 +88,13 @@ namespace Xamarin.Forms.Platform.iOS
 			MessagingCenter.Unsubscribe<Page, AlertArguments>(this, Page.AlertSignalName);
 			MessagingCenter.Unsubscribe<Page, bool>(this, Page.BusySetSignalName);
 
-			DisposeModelAndChildrenRenderers(Page);
 			foreach (var modal in _modals)
+			{
+				_modals.Remove(modal);
 				DisposeModelAndChildrenRenderers(modal);
+			}
+
+			DisposeModelAndChildrenRenderers(Page);
 
 			_renderer.Dispose();
 		}
@@ -166,9 +179,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			modal.DescendantRemoved += HandleChildRemoved;
 
-			if (_appeared)
-				return PresentModal(modal, _animateModals && animated);
-			return Task.FromResult<object>(null);
+			return PresentModal(modal, _animateModals && animated);
 		}
 
 		void INavigation.RemovePage(Page page)
@@ -212,14 +223,16 @@ namespace Xamarin.Forms.Platform.iOS
 
 		internal void DidAppear()
 		{
-			_animateModals = false;
-			Application.Current.NavigationProxy.Inner = this;
-			_animateModals = true;
+			if (_appeared || _disposed)
+				return;
+
+			_appeared = true;
 		}
 
 		internal void DisposeModelAndChildrenRenderers(Element view)
 		{
 			IVisualElementRenderer renderer;
+
 			foreach (VisualElement child in view.Descendants())
 			{
 				renderer = GetRenderer(child);
@@ -228,24 +241,26 @@ namespace Xamarin.Forms.Platform.iOS
 				if (renderer != null)
 				{
 					renderer.NativeView.RemoveFromSuperview();
+					renderer.ViewController?.Dispose();
 					renderer.Dispose();
 				}
 			}
 
 			renderer = GetRenderer((VisualElement)view);
+			view.ClearValue(RendererProperty);
 			if (renderer != null)
 			{
 				if (renderer.ViewController != null)
 				{
 					var modalWrapper = renderer.ViewController.ParentViewController as ModalWrapper;
-					if (modalWrapper != null)
-						modalWrapper.Dispose();
+					modalWrapper?.Dispose();
+
+					renderer.ViewController.Dispose();
 				}
 
 				renderer.NativeView.RemoveFromSuperview();
 				renderer.Dispose();
 			}
-			view.ClearValue(RendererProperty);
 		}
 
 		internal void DisposeRendererAndChildren(IVisualElementRenderer rendererToRemove)
@@ -265,6 +280,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			rendererToRemove.NativeView.RemoveFromSuperview();
+			rendererToRemove.ViewController?.Dispose();
 			rendererToRemove.Dispose();
 		}
 
@@ -274,11 +290,10 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			var rootRenderer = GetRenderer(Page);
+			rootRenderer?.SetElementSize(new Size(_renderer.View.Bounds.Width, _renderer.View.Bounds.Height));
 
-			if (rootRenderer == null)
-				return;
-
-			rootRenderer.SetElementSize(new Size(_renderer.View.Bounds.Width, _renderer.View.Bounds.Height));
+			if (_pageOverlayView != null && !ReferenceEquals(_pageOverlayView, _renderer.View.Subviews.LastOrDefault()))
+				throw new InvalidOperationException("Overlay must be the topmost subview of MainPage.");
 		}
 
 		internal void SetPage(Page newRoot)
@@ -287,33 +302,16 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 			if (Page != null)
 				throw new NotImplementedException();
+
 			Page = newRoot;
-
-			if (_appeared == false)
-				return;
-
 			Page.Platform = this;
 			AddChild(Page);
 
 			Page.DescendantRemoved += HandleChildRemoved;
 
+			_animateModals = false;
 			Application.Current.NavigationProxy.Inner = this;
-		}
-
-		internal void WillAppear()
-		{
-			if (_appeared)
-				return;
-
-			_renderer.View.BackgroundColor = UIColor.White;
-			_renderer.View.ContentMode = UIViewContentMode.Redraw;
-
-			Page.Platform = this;
-			AddChild(Page);
-
-			Page.DescendantRemoved += HandleChildRemoved;
-
-			_appeared = true;
+			_animateModals = true;
 		}
 
 		void AddChild(VisualElement view)
@@ -447,6 +445,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 		async Task PresentModal(Page modal, bool animated)
 		{
+			AddPageOverlay();
+			while (!_appeared)
+			{
+				await Task.Delay(5);
+			}
+
 			var modalRenderer = GetRenderer(modal);
 			if (modalRenderer == null)
 			{
@@ -463,16 +467,51 @@ namespace Xamarin.Forms.Platform.iOS
 				if (controller != null)
 				{
 					await controller.PresentViewControllerAsync(wrapper, animated);
-					await Task.Delay(5);
+					while (!wrapper.Appeared)
+					{
+						await Task.Delay(5);
+					}
 					return;
 				}
+
+				Console.Error.WriteLine("Presenting topmost modal had no renderer");
 			}
 
-			// One might wonder why these delays are here... well thats a great question. It turns out iOS will claim the 
-			// presentation is complete before it really is. It does not however inform you when it is really done (and thus 
-			// would be safe to dismiss the VC). Fortunately this is almost never an issue
+			// After presentation is done, wait until the wrapper has appeared.
 			await _renderer.PresentViewControllerAsync(wrapper, animated);
-			await Task.Delay(5);
+			while (!wrapper.Appeared)
+			{
+				await Task.Delay(5);
+			}
+			RemovePageOverlay();
+		}
+
+		void AddPageOverlay()
+		{
+			var color = Application.Current.OnThisPlatform().PageOverlayColorWhenPushingModal();
+
+			if (color == null || _pageOverlayView != null || _renderer.View.Subviews.Contains(_pageOverlayView))
+				return;
+
+			_pageOverlayView = new UIView
+			{
+				Frame = _renderer.View.Bounds,
+				AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight,
+				BackgroundColor = color.Value.ToUIColor()
+			};
+
+			_renderer.View.AddSubview(_pageOverlayView);
+			_renderer.View.BringSubviewToFront(_pageOverlayView);
+		}
+
+		void RemovePageOverlay()
+		{
+			if (_pageOverlayView == null)
+				return;
+
+			_pageOverlayView.RemoveFromSuperview();
+			_pageOverlayView.Dispose();
+			_pageOverlayView = null;
 		}
 
 		internal class DefaultRenderer : VisualElementRenderer<VisualElement>
