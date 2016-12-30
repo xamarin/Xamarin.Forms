@@ -25,18 +25,16 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (keyCode == Keycode.Back && e.Action == KeyEventActions.Down)
 			{
-				EventHandler handler = OnKeyboardBackPressed;
-				if (handler != null)
-					handler(this, EventArgs.Empty);
+				this.HideKeyboard();
+				ClearFocus();
 			}
-			return base.OnKeyPreIme(keyCode, e);
+
+			return true;
 		}
 
 		public override bool RequestFocus(FocusSearchDirection direction, Rect previouslyFocusedRect)
 		{
 			return (this as IDescendantFocusToggler).RequestFocus(this, () => base.RequestFocus(direction, previouslyFocusedRect));
 		}
-
-		internal event EventHandler OnKeyboardBackPressed;
 	}
 }

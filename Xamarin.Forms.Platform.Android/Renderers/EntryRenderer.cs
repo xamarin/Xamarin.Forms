@@ -66,7 +66,6 @@ namespace Xamarin.Forms.Platform.Android
 				_textView.ImeOptions = ImeAction.Done;
 				_textView.AddTextChangedListener(this);
 				_textView.SetOnEditorActionListener(this);
-				_textView.OnKeyboardBackPressed += (sender, args) => _textView.ClearFocus();
 				SetNativeControl(_textView);
 			}
 
