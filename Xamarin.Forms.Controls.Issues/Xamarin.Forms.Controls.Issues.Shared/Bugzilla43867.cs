@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Controls.Issues
 				{
 					new Label
 					{
-						Text = "Focus and unfocus each element 10 times. Observe that the soft keyboard does not change layout while hiding."
+						Text = "Focus and unfocus each element 10 times. Observe that the soft keyboard does not show different characters while hiding."
 					},
 					new Entry
 					{
