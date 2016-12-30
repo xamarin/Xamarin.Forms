@@ -174,16 +174,15 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 				Current = null;
 
-				// dispose child renderers at the end to avoid compliations with MasterDetailPage being nested under NavigationPage
+				// We dispose the child renderers after cleaning up everything related to DrawerLayout in case
+				// one of the children is a MasterDetailPage (which may dispose of the DrawerLayout).
 				if (Element != null)
 				{
 					foreach (Element element in PageController.InternalChildren)
 					{
 						var child = element as VisualElement;
 						if (child == null)
-						{
 							continue;
-						}
 
 						IVisualElementRenderer renderer = Android.Platform.GetRenderer(child);
 						renderer?.Dispose();
