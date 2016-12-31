@@ -45,14 +45,15 @@ namespace Xamarin.Forms.Platform.iOS
 		GlobalCloseContextGestureRecognizer _globalCloser;
 
 		bool _isDisposed;
-
+		UIScrollView _scrollView;
 		UITableView _table;
 
-		public ContextScrollViewDelegate(UIView container, List<UIButton> buttons, bool isOpen)
+		public ContextScrollViewDelegate(UIScrollView scrollView, UIView container, List<UIButton> buttons, bool isOpen)
 		{
 			IsOpen = isOpen;
 			_container = container;
 			_buttons = buttons;
+			_scrollView = scrollView;
 
 			for (var i = 0; i < buttons.Count; i++)
 			{
@@ -62,11 +63,17 @@ namespace Xamarin.Forms.Platform.iOS
 				ButtonsWidth += b.Frame.Width;
 				_finalButtonSize = b.Frame.Width;
 			}
+
+			if (IsOpen)
+			{
+				RemoveHighlight();
+				AddClosers();
+			}
 		}
 
 		public nfloat ButtonsWidth { get; }
 
-		public Action ClosedCallback { get; set; }
+		public NSAction ClosedCallback { get; set; }
 
 		public bool IsOpen { get; private set; }
 
@@ -75,17 +82,17 @@ namespace Xamarin.Forms.Platform.iOS
 			if (!IsOpen)
 				SetButtonsShowing(true);
 
-			var cell = GetContextCell(scrollView);
+			var cell = GetContextCell();
 			if (!cell.Selected)
 				return;
 
 			if (!IsOpen)
-				RemoveHighlight(scrollView);
+				RemoveHighlight();
 		}
 
-		public void PrepareForDeselect(UIScrollView scrollView)
+		public void PrepareForDeselect()
 		{
-			RestoreHighlight(scrollView);
+			RestoreHighlight();
 		}
 
 		public override void Scrolled(UIScrollView scrollView)
@@ -114,19 +121,19 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				IsOpen = false;
 				SetButtonsShowing(false);
-				RestoreHighlight(scrollView);
+				RestoreHighlight();
 
-				ClearCloserRecognizer(scrollView);
+				ClearCloserRecognizer();
 
 				if (ClosedCallback != null)
 					ClosedCallback();
 			}
 		}
 
-		public void Unhook(UIScrollView scrollView)
+		public void Unhook()
 		{
-			RestoreHighlight(scrollView);
-			ClearCloserRecognizer(scrollView);
+			RestoreHighlight();
+			ClearCloserRecognizer();
 		}
 
 		public override void WillEndDragging(UIScrollView scrollView, PointF velocity, ref PointF targetContentOffset)
@@ -140,50 +147,57 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				IsOpen = true;
 				targetContentOffset = new PointF(width, 0);
-				RemoveHighlight(scrollView);
+				RemoveHighlight();
 
-				if (_globalCloser == null)
-				{
-					UIView view = scrollView;
-					while (view.Superview != null)
-					{
-						view = view.Superview;
-
-						NSAction close = () =>
-						{
-							if (UIDevice.CurrentDevice.CheckSystemVersion(8, 0))
-								RestoreHighlight(scrollView);
-
-							IsOpen = false;
-							scrollView.SetContentOffset(new PointF(0, 0), true);
-
-							ClearCloserRecognizer(scrollView);
-						};
-
-						var table = view as UITableView;
-						if (table != null)
-						{
-							_table = table;
-							_globalCloser = new GlobalCloseContextGestureRecognizer(scrollView, close);
-							_globalCloser.ShouldRecognizeSimultaneously = (recognizer, r) => r == _table.PanGestureRecognizer;
-							table.AddGestureRecognizer(_globalCloser);
-
-							_closer = new UITapGestureRecognizer(close);
-							var cell = GetContextCell(scrollView);
-							cell.ContentCell.AddGestureRecognizer(_closer);
-						}
-					}
-				}
+				AddClosers();
 			}
 			else
 			{
-				ClearCloserRecognizer(scrollView);
+				ClearCloserRecognizer();
 
 				IsOpen = false;
 				targetContentOffset = new PointF(0, 0);
 
 				if (UIDevice.CurrentDevice.CheckSystemVersion(8, 0))
-					RestoreHighlight(scrollView);
+					RestoreHighlight();
+			}
+		}
+
+		private void AddClosers()
+		{
+			NSAction close = () =>
+			{
+				if (UIDevice.CurrentDevice.CheckSystemVersion(8, 0))
+					RestoreHighlight();
+
+				IsOpen = false;
+				_scrollView.SetContentOffset(new PointF(0, 0), true);
+
+				ClearCloserRecognizer();
+			};
+
+			if (_globalCloser == null)
+			{
+				UIView view = _scrollView;
+				while (view.Superview != null)
+				{
+					view = view.Superview;
+
+					var table = view as UITableView;
+					if (table != null)
+					{
+						_table = table;
+						_globalCloser = new GlobalCloseContextGestureRecognizer(_scrollView, close);
+						_globalCloser.ShouldRecognizeSimultaneously = (recognizer, r) => r == _table.PanGestureRecognizer;
+						table.AddGestureRecognizer(_globalCloser);
+
+						_closer = new UITapGestureRecognizer(close);
+						var cell = GetContextCell();
+						cell.ContentCell.AddGestureRecognizer(_closer);
+
+						break;
+					}
+				}
 			}
 		}
 
@@ -196,24 +210,25 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (disposing)
 			{
+				ClearCloserRecognizer();
 				ClosedCallback = null;
 
-				_table = null;
 				_backgroundView = null;
 				_container = null;
 
 				_buttons = null;
+				_scrollView = null;
 			}
 
 			base.Dispose(disposing);
 		}
 
-		void ClearCloserRecognizer(UIScrollView scrollView)
+		void ClearCloserRecognizer()
 		{
 			if (_globalCloser == null || _globalCloser.State == UIGestureRecognizerState.Cancelled)
 				return;
 
-			var cell = GetContextCell(scrollView);
+			var cell = GetContextCell();
 			cell.ContentCell.RemoveGestureRecognizer(_closer);
 			_closer.Dispose();
 			_closer = null;
@@ -224,9 +239,9 @@ namespace Xamarin.Forms.Platform.iOS
 			_globalCloser = null;
 		}
 
-		ContextActionsCell GetContextCell(UIScrollView scrollView)
+		ContextActionsCell GetContextCell()
 		{
-			var view = scrollView.Superview.Superview;
+			var view = _scrollView.Superview.Superview;
 			var cell = view as ContextActionsCell;
 			while (view.Superview != null)
 			{
@@ -240,9 +255,9 @@ namespace Xamarin.Forms.Platform.iOS
 			return cell;
 		}
 
-		void RemoveHighlight(UIScrollView scrollView)
+		void RemoveHighlight()
 		{
-			var subviews = scrollView.Superview.Superview.Subviews;
+			var subviews = _scrollView.Superview.Superview.Subviews;
 
 			var count = 0;
 			for (var i = 0; i < subviews.Length; i++)
@@ -258,20 +273,20 @@ namespace Xamarin.Forms.Platform.iOS
 			_backgroundView = subviews[0];
 			_backgroundView.RemoveFromSuperview();
 
-			var cell = GetContextCell(scrollView);
+			var cell = GetContextCell();
 			cell.SelectionStyle = UITableViewCellSelectionStyle.None;
 		}
 
-		void RestoreHighlight(UIScrollView scrollView)
+		void RestoreHighlight()
 		{
 			if (_backgroundView == null)
 				return;
 
-			var cell = GetContextCell(scrollView);
+			var cell = GetContextCell();
 			cell.SelectionStyle = UITableViewCellSelectionStyle.Default;
 			cell.SetSelected(true, false);
 
-			scrollView.Superview.Superview.InsertSubview(_backgroundView, 0);
+			_scrollView.Superview.Superview.InsertSubview(_backgroundView, 0);
 			_backgroundView = null;
 		}
 
