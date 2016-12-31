@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Foundation;
 using UIKit;
 using NSAction = System.Action;
 using PointF = CoreGraphics.CGPoint;
@@ -44,8 +45,8 @@ namespace Xamarin.Forms.Platform.iOS
 		UIView _container;
 		GlobalCloseContextGestureRecognizer _globalCloser;
 
-		bool _isDisposed;
-
+		bool _isOpen, _isDisposed;
+		static WeakReference<ContextScrollViewDelegate> OpenContextScrollViewDelegate { get; set; }
 		UITableView _table;
 
 		public ContextScrollViewDelegate(UIView container, List<UIButton> buttons, bool isOpen)
@@ -68,7 +69,32 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public Action ClosedCallback { get; set; }
 
-		public bool IsOpen { get; private set; }
+		public bool IsOpen
+		{
+			get { return _isOpen;  }
+			private set
+			{
+				if (Equals(_isOpen, value))
+					return;
+
+				_isOpen = value;
+
+				OpenContextScrollViewDelegate = _isOpen ? new WeakReference<ContextScrollViewDelegate>(this) : null;
+			}
+		}
+
+		internal static void CloseContextMenu()
+		{
+			if (OpenContextScrollViewDelegate == null)
+				return;
+
+			ContextScrollViewDelegate openContextScrollViewDelegate;
+			if (!OpenContextScrollViewDelegate.TryGetTarget(out openContextScrollViewDelegate))
+				return;
+
+			openContextScrollViewDelegate._globalCloser.TouchesBegan(new NSSet(), new UIEvent());
+			OpenContextScrollViewDelegate = null;
+		}
 
 		public override void DraggingStarted(UIScrollView scrollView)
 		{

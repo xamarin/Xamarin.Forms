@@ -28,6 +28,12 @@ namespace Xamarin.Forms.Platform.iOS
 		FormsUITableViewController _tableViewController;
 		IListViewController Controller => Element;
 		ITemplatedItemsView<Cell> TemplatedItemsView => Element;
+
+		public ListViewRenderer()
+		{
+			MessagingCenter.Subscribe<ListView>(this, ListView.CloseContextMenuSignalName, a => { ContextScrollViewDelegate.CloseContextMenu(); });
+		}
+
 		public override UIViewController ViewController => _tableViewController;
 
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
@@ -128,6 +134,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (disposing)
 			{
+				MessagingCenter.Unsubscribe<ListView>(this, ListView.CloseContextMenuSignalName);
+
 				if (_headerRenderer != null)
 				{
 					var platform = _headerRenderer.Element.Platform as Platform;

@@ -62,10 +62,9 @@ namespace Xamarin.Forms.Platform.WinRT
 			set { SetValue(IsGroupHeaderProperty, value); }
 		}
 
-		protected FrameworkElement CellContent
-		{
-			get { return (FrameworkElement)Content; }
-		}
+		protected FrameworkElement CellContent => (FrameworkElement)Content;
+
+		static WeakReference<CellControl> OpenCellControl { get; set; }
 
 		protected override Windows.Foundation.Size MeasureOverride(Windows.Foundation.Size availableSize)
 		{
@@ -192,6 +191,7 @@ namespace Xamarin.Forms.Platform.WinRT
 			if (FlyoutBase.GetAttachedFlyout(CellContent) == null)
 			{
 				var flyout = new MenuFlyout();
+				flyout.Closed += FlyoutOnClosed;
 				SetupMenuItems(flyout);
 
 				((INotifyCollectionChanged)Cell.ContextActions).CollectionChanged += OnContextActionsChanged;
@@ -201,6 +201,26 @@ namespace Xamarin.Forms.Platform.WinRT
 			}
 
 			FlyoutBase.ShowAttachedFlyout(CellContent);
+			OpenCellControl = new WeakReference<CellControl>(this);
+		}
+
+		void FlyoutOnClosed(object sender, object o)
+		{
+			OpenCellControl = null;
+		}
+
+		internal static void CloseContextMenu()
+		{
+			if (OpenCellControl == null)
+				return;
+
+			CellControl openCellControl;
+			if (!OpenCellControl.TryGetTarget(out openCellControl))
+				return;
+
+			var flyout = FlyoutBase.GetAttachedFlyout(openCellControl.CellContent) as MenuFlyout;
+			flyout?.Hide();
+			OpenCellControl = null;
 		}
 
 		void SetCell(object newContext)
@@ -286,6 +306,10 @@ namespace Xamarin.Forms.Platform.WinRT
 					((INotifyCollectionChanged)_contextActions).CollectionChanged -= OnContextActionsChanged;
 					_contextActions = null;
 				}
+
+				var flyout = FlyoutBase.GetAttachedFlyout(CellContent) as MenuFlyout;
+				if (flyout != null)
+					flyout.Closed -= FlyoutOnClosed;
 
 				FlyoutBase.SetAttachedFlyout(CellContent, null);
 				return;

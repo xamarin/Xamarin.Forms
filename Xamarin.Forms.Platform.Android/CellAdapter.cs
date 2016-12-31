@@ -22,6 +22,7 @@ namespace Xamarin.Forms.Platform.Android
 		bool _actionModeNeedsUpdates;
 		AView _contextView;
 		global::Android.Support.V7.View.ActionMode _supportActionMode;
+		static WeakReference<CellAdapter> OpenCellAdapter { get; set; }
 
 		protected CellAdapter(Context context)
 		{
@@ -111,6 +112,7 @@ namespace Xamarin.Forms.Platform.Android
 			OnDestroyActionModeImpl();
 			_actionMode.Dispose();
 			_actionMode = null;
+			OpenCellAdapter = null;
 		}
 
 		void global::Android.Support.V7.View.ActionMode.ICallback.OnDestroyActionMode(global::Android.Support.V7.View.ActionMode mode)
@@ -118,6 +120,7 @@ namespace Xamarin.Forms.Platform.Android
 			OnDestroyActionModeImpl();
 			_supportActionMode.Dispose();
 			_supportActionMode = null;
+			OpenCellAdapter = null;
 		}
 
 		public bool OnPrepareActionMode(ActionMode mode, IMenu menu)
@@ -180,6 +183,19 @@ namespace Xamarin.Forms.Platform.Android
 			_supportActionMode?.Finish();
 		}
 
+		internal static void CloseContextMenu()
+		{
+			if (OpenCellAdapter == null)
+				return;
+
+			CellAdapter openCellAdapter;
+			if(!OpenCellAdapter.TryGetTarget(out openCellAdapter))
+				return;
+			
+			openCellAdapter.CloseContextAction();
+			OpenCellAdapter = null;
+		}
+
 		void CreateContextMenu(IMenu menu)
 		{
 			var changed = new PropertyChangedEventHandler(OnContextActionPropertyChanged);
@@ -238,6 +254,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (!cell.HasContextActions)
 					return false;
 
+				OpenCellAdapter = new WeakReference<CellAdapter>(this);
 				ActionModeContext = cell;
 
 				var appCompatActivity = Forms.Context as FormsAppCompatActivity;
