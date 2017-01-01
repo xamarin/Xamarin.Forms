@@ -393,23 +393,26 @@ namespace Xamarin.Forms
 
 		internal void NotifyRowTapped(int groupIndex, int inGroupIndex, Cell cell = null)
 		{
-			var group = TemplatedItems.GetGroup(groupIndex);
+			TemplatedItemsList<ItemsView<Cell>, Cell> group = TemplatedItems.GetGroup(groupIndex);
 
 			bool changed = _previousGroupSelected != groupIndex || _previousRowSelected != inGroupIndex;
 
 			_previousRowSelected = inGroupIndex;
 			_previousGroupSelected = groupIndex;
+
+			object item = group.ListProxy[inGroupIndex];
+
+			// Set SelectedItem before any events so we don't override any changes they may have made.
+			SetValueCore(SelectedItemProperty, item, SetValueFlags.ClearOneWayBindings | SetValueFlags.ClearDynamicResource | (changed ? SetValueFlags.RaiseOnEqual : 0));
+
+			// Using cell properties is unreliable in the context of RecycleElement
 			if (cell == null)
 			{
 				cell = group[inGroupIndex];
+				cell.OnTapped();
 			}
 
-			// Set SelectedItem before any events so we don't override any changes they may have made.
-			SetValueCore(SelectedItemProperty, cell.BindingContext, SetValueFlags.ClearOneWayBindings | SetValueFlags.ClearDynamicResource | (changed ? SetValueFlags.RaiseOnEqual : 0));
-
-			cell.OnTapped();
-
-			ItemTapped?.Invoke(this, new ItemTappedEventArgs(group, cell.BindingContext));
+			ItemTapped?.Invoke(this, new ItemTappedEventArgs(group, item));
 		}
 
 		internal void NotifyRowTapped(int index, Cell cell = null)
