@@ -178,7 +178,6 @@ namespace Xamarin.Forms.Platform.iOS
 					SelectedItem = _renderer.Element.Items[(int)row];
 					SelectedIndex = (int)row;
 				}
-				_renderer.UpdatePickerFromModel(this);
 			}
 		}
 	}
