@@ -43,6 +43,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla29158.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla29363.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla29229.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla31141.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla31145.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla31333.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla31366.cs" />
@@ -55,6 +56,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla32847.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla33248.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla33268.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla33612.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla33714.cs" />
@@ -81,6 +83,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla37863.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla37601.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla38105.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla38723.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla38827.xaml.cs">
       <DependentUpon>Bugzilla38827.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -114,6 +117,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla40824.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla40911.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla40955.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla41054.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla41078.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla40998.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla41205.cs" />
