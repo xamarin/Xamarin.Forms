@@ -22,6 +22,10 @@ namespace Xamarin.Forms.Xaml
 
 		public string StringFormat { get; set; }
 
+		public object TargetNullValue { get; set; }
+
+		public object FallbackValue { get; set; }
+
 		public object Source { get; set; }
 
 		public string UpdateSourceEventName { get; set; }
@@ -31,7 +35,7 @@ namespace Xamarin.Forms.Xaml
 		BindingBase IMarkupExtension<BindingBase>.ProvideValue(IServiceProvider serviceProvider)
 		{
 			if (TypedBinding == null)
-				return new Binding(Path, Mode, Converter, ConverterParameter, StringFormat, Source) { UpdateSourceEventName = UpdateSourceEventName };
+				return new Binding(Path, Mode, Converter, ConverterParameter, StringFormat, Source) { UpdateSourceEventName = UpdateSourceEventName, TargetNullValue = TargetNullValue, FallbackValue = FallbackValue };
 
 			TypedBinding.Mode = Mode;
 			TypedBinding.Converter = Converter;
@@ -39,6 +43,8 @@ namespace Xamarin.Forms.Xaml
 			TypedBinding.StringFormat = StringFormat;
 			TypedBinding.Source = Source;
 			TypedBinding.UpdateSourceEventName = UpdateSourceEventName;
+			TypedBinding.TargetNullValue = TargetNullValue;
+			TypedBinding.FallbackValue = FallbackValue;
 			return TypedBinding;
 		}
 

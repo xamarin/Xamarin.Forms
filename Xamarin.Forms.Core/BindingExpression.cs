@@ -110,6 +110,8 @@ namespace Xamarin.Forms
 			bool needsGetter = (mode == BindingMode.TwoWay && !fromTarget) || mode == BindingMode.OneWay;
 			bool needsSetter = !needsGetter && ((mode == BindingMode.TwoWay && fromTarget) || mode == BindingMode.OneWayToSource);
 
+			bool hasValidBinding = true;
+
 			object current = sourceObject;
 			object previous = null;
 			BindingExpressionPart part = null;
@@ -135,6 +137,8 @@ namespace Xamarin.Forms
 				{
 					if ((needsGetter && part.LastGetter == null) || (needsSetter && part.NextPart == null && part.LastSetter == null))
 					{
+						hasValidBinding = false;
+
 						Log.Warning("Binding", PropertyNotFoundErrorMessage, part.Content, current, target.GetType(), property.PropertyName);
 						break;
 					}
@@ -166,11 +170,15 @@ namespace Xamarin.Forms
 
 				if (!TryConvert(part, ref value, property.ReturnType, true))
 				{
+					hasValidBinding = false;
+
 					Log.Warning("Binding", "{0} can not be converted to type '{1}'", value, property.ReturnType);
 					return;
 				}
 
-				target.SetValueCore(property, value, BindableObject.SetValueFlags.ClearDynamicResource, BindableObject.SetValuePrivateFlags.Default | BindableObject.SetValuePrivateFlags.Converted);
+				object bindingValue = (hasValidBinding) ? value : Binding.FallbackValue;
+
+				target.SetValueCore(property, bindingValue, BindableObject.SetValueFlags.ClearDynamicResource, BindableObject.SetValuePrivateFlags.Default | BindableObject.SetValuePrivateFlags.Converted);
 			}
 			else if (needsSetter && part.LastSetter != null && current != null)
 			{
@@ -424,7 +432,7 @@ namespace Xamarin.Forms
 			}
 
 			public void SubscribeTo(INotifyPropertyChanged source, PropertyChangedEventHandler listener)
-			{ 
+			{
 				source.PropertyChanged += _handler;
 				_source.SetTarget(source);
 				_listener.SetTarget(listener);
@@ -433,7 +441,7 @@ namespace Xamarin.Forms
 			public void Unsubscribe()
 			{
 				INotifyPropertyChanged source;
-				if (_source.TryGetTarget(out source) && source!=null)
+				if (_source.TryGetTarget(out source) && source != null)
 					source.PropertyChanged -= _handler;
 				_source.SetTarget(null);
 				_listener.SetTarget(null);
