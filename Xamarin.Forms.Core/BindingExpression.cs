@@ -176,7 +176,7 @@ namespace Xamarin.Forms
 					return;
 				}
 
-				object bindingValue = (hasValidBinding) ? value : Binding.FallbackValue;
+				object bindingValue = (hasValidBinding) ? value ?? Binding.TargetNullValue : Binding.FallbackValue;
 
 				target.SetValueCore(property, bindingValue, BindableObject.SetValueFlags.ClearDynamicResource, BindableObject.SetValuePrivateFlags.Default | BindableObject.SetValuePrivateFlags.Converted);
 			}

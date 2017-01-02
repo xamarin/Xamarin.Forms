@@ -118,7 +118,7 @@ namespace Xamarin.Forms
 			object src = _source;
 			base.Apply(src ?? newContext, bindObj, targetProperty);
 
-			object bindingContext = src ?? Context ?? newContext ?? TargetNullValue;
+			object bindingContext = src ?? Context ?? newContext;
 			if (_expression == null && bindingContext != null)
 				_expression = new BindingExpression(this, SelfPath);
 
