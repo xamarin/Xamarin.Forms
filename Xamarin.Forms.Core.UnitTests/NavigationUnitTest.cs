@@ -43,6 +43,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			var popped = await nav.Navigation.PopAsync ();
 
 			Assert.True (fired);
+			Assert.IsNull(nav.CurrentNavigationTask);
 			Assert.AreSame (childRoot, nav.CurrentPage);
 			Assert.AreEqual (childRoot2, popped);
 
@@ -50,6 +51,31 @@ namespace Xamarin.Forms.Core.UnitTests
 			var last = await nav.Navigation.PopAsync ();
 
 			Assert.IsNull (last);
+		}
+
+		[Test]
+		public async Task TestActiveNavigationTaskCount()
+		{
+			NavigationPage nav = new NavigationPage();
+
+			nav.PushAsync(new ContentPage());
+			Assert.IsNull(nav.CurrentNavigationTask);
+			nav.Navigation.PushAsync(new ContentPage());
+			Assert.IsNotNull(nav.CurrentNavigationTask);
+			nav.Navigation.PopAsync();
+			Assert.IsNull(nav.CurrentNavigationTask);
+			nav.Navigation.PushAsync(new ContentPage());
+			Assert.IsNotNull(nav.CurrentNavigationTask);
+			nav.Navigation.PushAsync(new ContentPage());
+			Assert.IsNotNull(nav.CurrentNavigationTask);
+			await nav.Navigation.PopAsync();
+			Assert.IsNull(nav.CurrentNavigationTask);
+			nav.PushAsync(new ContentPage());
+			nav.PushAsync(new ContentPage());
+			Assert.IsNotNull(nav.CurrentNavigationTask);
+			nav.PopToRootAsync(true);
+			await Task.Delay(2000);
+			Assert.IsNull(nav.CurrentNavigationTask);
 		}
 
 		[Test]

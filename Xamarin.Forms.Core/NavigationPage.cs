@@ -61,6 +61,8 @@ namespace Xamarin.Forms
 
 		internal Task CurrentNavigationTask { get; set; }
 
+		internal int ActiveNavigationTaskCount { get; set; }
+
 		Stack<Page> INavigationPageController.StackCopy
 		{
 			get
@@ -114,12 +116,13 @@ namespace Xamarin.Forms
 
 		public async Task<Page> PopAsync(bool animated)
 		{
+			ActiveNavigationTaskCount++;
 			if (CurrentNavigationTask != null && !CurrentNavigationTask.IsCompleted)
 			{
 				var tcs = new TaskCompletionSource<bool>();
 				Task oldTask = CurrentNavigationTask;
 				CurrentNavigationTask = tcs.Task;
-				await oldTask;
+				await oldTask.ContinueWith((t) => ResolveActiveNavigation(t));
 
 				Page page = await ((INavigationPageController)this).PopAsyncInner(animated);
 				tcs.SetResult(true);
@@ -128,7 +131,12 @@ namespace Xamarin.Forms
 
 			Task<Page> result = ((INavigationPageController)this).PopAsyncInner(animated);
 			CurrentNavigationTask = result;
-			return await result;
+			return await result.ContinueWith((t) =>
+			{
+				if (t.Status == TaskStatus.RanToCompletion)
+					UpdateActiveNavigationTaskCount();
+				return t.Result;
+			});
 		}
 
 		public event EventHandler<NavigationEventArgs> Popped;
@@ -142,12 +150,13 @@ namespace Xamarin.Forms
 
 		public async Task PopToRootAsync(bool animated)
 		{
+			ActiveNavigationTaskCount++;
 			if (CurrentNavigationTask != null && !CurrentNavigationTask.IsCompleted)
 			{
 				var tcs = new TaskCompletionSource<bool>();
 				Task oldTask = CurrentNavigationTask;
 				CurrentNavigationTask = tcs.Task;
-				await oldTask;
+				await oldTask.ContinueWith((t) => ResolveActiveNavigation(t));
 
 				await PopToRootAsyncInner(animated);
 				tcs.SetResult(true);
@@ -156,7 +165,7 @@ namespace Xamarin.Forms
 
 			Task result = PopToRootAsyncInner(animated);
 			CurrentNavigationTask = result;
-			await result;
+			await result.ContinueWith((t) => ResolveActiveNavigation(t));
 		}
 
 		public Task PushAsync(Page page)
@@ -166,12 +175,13 @@ namespace Xamarin.Forms
 
 		public async Task PushAsync(Page page, bool animated)
 		{
+			ActiveNavigationTaskCount++;
 			if (CurrentNavigationTask != null && !CurrentNavigationTask.IsCompleted)
 			{
 				var tcs = new TaskCompletionSource<bool>();
 				Task oldTask = CurrentNavigationTask;
 				CurrentNavigationTask = tcs.Task;
-				await oldTask;
+				await oldTask.ContinueWith((t) => ResolveActiveNavigation(t));
 
 				await PushAsyncInner(page, animated);
 				tcs.SetResult(true);
@@ -179,7 +189,7 @@ namespace Xamarin.Forms
 			}
 
 			CurrentNavigationTask = PushAsyncInner(page, animated);
-			await CurrentNavigationTask;
+			await CurrentNavigationTask.ContinueWith((t) => ResolveActiveNavigation(t));
 		}
 
 		public event EventHandler<NavigationEventArgs> Pushed;
@@ -314,6 +324,13 @@ namespace Xamarin.Forms
 				ForceLayout();
 		}
 
+		void UpdateActiveNavigationTaskCount()
+		{
+			ActiveNavigationTaskCount -= 1;
+			if (ActiveNavigationTaskCount == 0)
+				CurrentNavigationTask = null;
+		}
+
 		async Task PopToRootAsyncInner(bool animated)
 		{
 			if (((INavigationPageController)this).StackDepth == 1)
@@ -362,6 +379,12 @@ namespace Xamarin.Forms
 
 			if (Pushed != null)
 				Pushed(this, args);
+		}
+
+		Task ResolveActiveNavigation(Task task)
+		{
+			UpdateActiveNavigationTaskCount();
+			return task;
 		}
 
 		void PushPage(Page page)
