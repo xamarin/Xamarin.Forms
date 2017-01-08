@@ -162,8 +162,6 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			MessagingCenter.Subscribe<NativeBindingGalleryPage>(this, NativeBindingGalleryPage.ReadyForNativeBindingsMessage, AddNativeBindings);
 
 			LoadApplication(app);
-			// uncomment to set default button title color for normal state
-			//UIButton.Appearance.SetTitleColor(UIColor.Red, UIControlState.Normal);
 			return base.FinishedLaunching(uiApplication, launchOptions);
 		}
 
