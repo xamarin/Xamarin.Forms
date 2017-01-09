@@ -101,18 +101,6 @@ namespace Xamarin.Forms.Platform.iOS
 			((IButtonController)Element)?.SendPressed();
 		}
 
-		void UpdateBackgroundVisibility()
-		{
-			if (Forms.IsiOS7OrNewer)
-				return;
-
-			var model = Element;
-			var shouldDrawImage = model.BackgroundColor == Color.Default;
-
-			foreach (var control in Control.Subviews.Where(sv => !(sv is UILabel)))
-				control.Alpha = shouldDrawImage ? 1.0f : 0.0f;
-		}
-
 		void UpdateBorder()
 		{
 			var uiButton = Control;
