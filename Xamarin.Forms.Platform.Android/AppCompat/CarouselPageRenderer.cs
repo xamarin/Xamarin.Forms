@@ -3,6 +3,7 @@ using System.ComponentModel;
 using Android.Content;
 using Android.Support.V4.View;
 using Android.Views;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
@@ -103,7 +104,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					ScrollToCurrentPage();
 
 				((IPageController)carouselPage).InternalChildren.CollectionChanged += OnChildrenCollectionChanged;
+
+			    UpdateOffscreenPageLimit();
 			}
+
+
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -144,5 +149,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		{
 			_viewPager.SetCurrentItem(Element.Children.IndexOf(Element.CurrentPage), true);
 		}
-	}
+
+        void UpdateOffscreenPageLimit()
+        {
+            _viewPager.OffscreenPageLimit = Element.OnThisPlatform().OffscreenPageLimit();
+        }
+    }
 }
