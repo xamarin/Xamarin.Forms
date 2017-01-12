@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Controls
 		protected override void OnAppearing()
 		{
 			base.OnAppearing();
-			MessagingCenter.Send(this, ReadyForNativeBindingsMessage);
+			Messaging.Instance.Send(this, ReadyForNativeBindingsMessage);
 		}
 
 		public NativeBindingGalleryPage()

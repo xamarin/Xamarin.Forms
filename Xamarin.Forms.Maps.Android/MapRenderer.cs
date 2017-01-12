@@ -70,7 +70,7 @@ namespace Xamarin.Forms.Maps.Android
 			{
 				if (Element != null)
 				{
-					MessagingCenter.Unsubscribe<Map, MapSpan>(this, MoveMessageName);
+					Messaging.Instance.Unsubscribe<Map, MapSpan>(this, MoveMessageName);
 					((ObservableCollection<Pin>)Element.Pins).CollectionChanged -= OnCollectionChanged;
 				}
 
@@ -104,7 +104,7 @@ namespace Xamarin.Forms.Maps.Android
 				Map oldMapModel = e.OldElement;
 				((ObservableCollection<Pin>)oldMapModel.Pins).CollectionChanged -= OnCollectionChanged;
 
-				MessagingCenter.Unsubscribe<Map, MapSpan>(this, MoveMessageName);
+				Messaging.Instance.Unsubscribe<Map, MapSpan>(this, MoveMessageName);
 
 #pragma warning disable 618
 				if (oldMapView.Map != null)
@@ -133,7 +133,7 @@ namespace Xamarin.Forms.Maps.Android
 				SetMapType();
 			}
 
-			MessagingCenter.Subscribe<Map, MapSpan>(this, MoveMessageName, OnMoveToRegionMessage, Map);
+			Messaging.Instance.Subscribe<Map, MapSpan>(this, MoveMessageName, OnMoveToRegionMessage, Map);
 
 			var incc = Map.Pins as INotifyCollectionChanged;
 			if (incc != null)

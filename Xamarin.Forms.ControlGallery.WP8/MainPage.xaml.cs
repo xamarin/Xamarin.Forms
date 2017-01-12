@@ -35,13 +35,13 @@ namespace Xamarin.Forms.ControlGallery.WP8
 
 			Content = CoreGallery.GetMainPage ().ConvertPageToUIElement (this);
 
-			MessagingCenter.Subscribe<RootPagesGallery, Type>(this, Messages.ChangeRoot, (sender, pagetype) =>
+			Messaging.Instance.Subscribe<RootPagesGallery, Type>(this, Messages.ChangeRoot, (sender, pagetype) =>
 			{
 				var page = ((Page) Activator.CreateInstance(pagetype));
 				app.MainPage = page;
 			});
 
-			MessagingCenter.Subscribe<HomeButton>(this, Messages.GoHome, (sender) => {
+			Messaging.Instance.Subscribe<HomeButton>(this, Messages.GoHome, (sender) => {
 				var page = FormsApp.GetFormsApp ();
 				app.MainPage = page;
 			});
@@ -62,7 +62,7 @@ namespace Xamarin.Forms.ControlGallery.WP8
 			var app = new Controls.App ();
 
 			// When the native control gallery loads up, it'll let us know so we can add the nested native controls
-			MessagingCenter.Subscribe<NestedNativeControlGalleryPage>(this, NestedNativeControlGalleryPage.ReadyForNativeControlsMessage, AddNativeControls);
+			Messaging.Instance.Subscribe<NestedNativeControlGalleryPage>(this, NestedNativeControlGalleryPage.ReadyForNativeControlsMessage, AddNativeControls);
 
 			LoadApplication (app);
 		}

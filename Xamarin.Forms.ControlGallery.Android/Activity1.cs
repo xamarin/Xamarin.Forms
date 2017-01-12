@@ -145,17 +145,17 @@ namespace Xamarin.Forms.ControlGallery.Android
 
 			SetPage (FormsApp.GetFormsApp ());
 
-			MessagingCenter.Subscribe<RootPagesGallery, Type> (this, Messages.ChangeRoot, (sender, pageType) => {
+			Messaging.Instance.Subscribe<RootPagesGallery, Type> (this, Messages.ChangeRoot, (sender, pageType) => {
 				var page = ((Page)Activator.CreateInstance (pageType));
 				SetPage (page);
 			});
 
-			MessagingCenter.Subscribe<RootPagesGallery, Type> (this, Messages.ChangeRoot, (sender, pageType) => {
+			Messaging.Instance.Subscribe<RootPagesGallery, Type> (this, Messages.ChangeRoot, (sender, pageType) => {
 				var page = ((Page)Activator.CreateInstance (pageType));
 				SetPage (page);
 			});
 
-			MessagingCenter.Subscribe<HomeButton> (this, Messages.GoHome, (sender) => {
+			Messaging.Instance.Subscribe<HomeButton> (this, Messages.GoHome, (sender) => {
 				var screen = FormsApp.GetFormsApp ();
 				SetPage (screen);
  			});
@@ -207,7 +207,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 			var app = new App ();
 
 			// When the native control gallery loads up, it'll let us know so we can add the nested native controls
-			MessagingCenter.Subscribe<NestedNativeControlGalleryPage>(this, NestedNativeControlGalleryPage.ReadyForNativeControlsMessage, AddNativeControls);
+			Messaging.Instance.Subscribe<NestedNativeControlGalleryPage>(this, NestedNativeControlGalleryPage.ReadyForNativeControlsMessage, AddNativeControls);
 
 			LoadApplication (app);
 		}
@@ -331,10 +331,10 @@ namespace Xamarin.Forms.ControlGallery.Android
 			_app = app;
 
 			// When the native control gallery loads up, it'll let us know so we can add the nested native controls
-			MessagingCenter.Subscribe<NestedNativeControlGalleryPage>(this, NestedNativeControlGalleryPage.ReadyForNativeControlsMessage, AddNativeControls);
+			Messaging.Instance.Subscribe<NestedNativeControlGalleryPage>(this, NestedNativeControlGalleryPage.ReadyForNativeControlsMessage, AddNativeControls);
 
 			// When the native binding gallery loads up, it'll let us know so we can set up the native bindings
-			MessagingCenter.Subscribe<NativeBindingGalleryPage >(this, NativeBindingGalleryPage.ReadyForNativeBindingsMessage, AddNativeBindings);
+			Messaging.Instance.Subscribe<NativeBindingGalleryPage >(this, NativeBindingGalleryPage.ReadyForNativeBindingsMessage, AddNativeBindings);
 
 			LoadApplication(app);
 		}

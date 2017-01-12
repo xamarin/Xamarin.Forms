@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 
 namespace Xamarin.Forms
 {
+	[Obsolete("MessagingCenter is obsolete in favor of Messaging.")]
 	public static class MessagingCenter
 	{
 		class Sender : Tuple<string, Type, Type>

@@ -145,9 +145,9 @@ namespace Xamarin.Forms.Platform.Android
 			// may never be called
 			base.OnDestroy();
 
-			MessagingCenter.Unsubscribe<Page, AlertArguments>(this, Page.AlertSignalName);
-			MessagingCenter.Unsubscribe<Page, bool>(this, Page.BusySetSignalName);
-			MessagingCenter.Unsubscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName);
+			Messaging.Instance.Unsubscribe<Page, AlertArguments>(this, Page.AlertSignalName);
+			Messaging.Instance.Unsubscribe<Page, bool>(this, Page.BusySetSignalName);
+			Messaging.Instance.Unsubscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName);
 
 			if (_canvas != null)
 				((IDisposable)_canvas).Dispose();
@@ -240,7 +240,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			var busyCount = 0;
-			MessagingCenter.Subscribe(this, Page.BusySetSignalName, (Page sender, bool enabled) =>
+			Messaging.Instance.Subscribe(this, Page.BusySetSignalName, (Page sender, bool enabled) =>
 			{
 				busyCount = Math.Max(0, enabled ? busyCount + 1 : busyCount - 1);
 				UpdateProgressBarVisibility(busyCount > 0);
@@ -248,7 +248,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			UpdateProgressBarVisibility(busyCount > 0);
 
-			MessagingCenter.Subscribe(this, Page.AlertSignalName, (Page sender, AlertArguments arguments) =>
+			Messaging.Instance.Subscribe(this, Page.AlertSignalName, (Page sender, AlertArguments arguments) =>
 			{
 				AlertDialog alert = new AlertDialog.Builder(this).Create();
 				alert.SetTitle(arguments.Title);
@@ -260,7 +260,7 @@ namespace Xamarin.Forms.Platform.Android
 				alert.Show();
 			});
 
-			MessagingCenter.Subscribe(this, Page.ActionSheetSignalName, (Page sender, ActionSheetArguments arguments) =>
+			Messaging.Instance.Subscribe(this, Page.ActionSheetSignalName, (Page sender, ActionSheetArguments arguments) =>
 			{
 				var builder = new AlertDialog.Builder(this);
 				builder.SetTitle(arguments.Title);

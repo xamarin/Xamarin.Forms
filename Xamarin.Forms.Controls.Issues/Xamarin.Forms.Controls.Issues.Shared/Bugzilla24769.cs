@@ -27,7 +27,7 @@ namespace Xamarin.Forms.Controls
 			var progressBar = new ProgressBar { Progress = 0.1 };
 
 			btn.Clicked += (sender, arg) => {
-				MessagingCenter.Send (this, "set_progress");
+				Messaging.Instance.Send (this, "set_progress");
 				progressBar.Progress += 0.1;
 			};
 
@@ -60,7 +60,7 @@ namespace Xamarin.Forms.Controls
 
 			var progress = new ProgressBar { Progress = 0.1 };
 
-			MessagingCenter.Subscribe<Bugzilla24769> (this, "set_progress", sender => { progress.Progress += 0.1; });
+			Messaging.Instance.Subscribe<Bugzilla24769> (this, "set_progress", sender => { progress.Progress += 0.1; });
 
 			View =
 				new StackLayout {

@@ -43,7 +43,7 @@ namespace Xamarin.Forms.Maps.WP8
 			Control.CenterChanged += (s, a) => UpdateVisibleRegion();
 			//Control.ViewChangeOnFrame += (s, a) => UpdateVisibleRegion ();
 
-			MessagingCenter.Subscribe<Map, MapSpan>(this, "MapMoveToRegion", (s, a) => MoveToRegion(a), Element);
+			Messaging.Instance.Subscribe<Map, MapSpan>(this, "MapMoveToRegion", (s, a) => MoveToRegion(a), Element);
 
 			((ObservableCollection<Pin>)Element.Pins).CollectionChanged += OnCollectionChanged;
 

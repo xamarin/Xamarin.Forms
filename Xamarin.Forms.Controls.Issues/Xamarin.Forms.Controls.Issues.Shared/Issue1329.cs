@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Controls
 			var navigation = new NavigationPage (GetPage ("root page"));
 			var pageNum = 0;
 
-			MessagingCenter.Subscribe<Button> (
+			Messaging.Instance.Subscribe<Button> (
 				navigation, 
 				"PushPage", 
 				(sender) => navigation.PushAsync (GetPage ("Page #: " + ++pageNum)) 
@@ -32,7 +32,7 @@ namespace Xamarin.Forms.Controls
 				Text = name
 			};
 
-			button.Clicked += (sender, e) => MessagingCenter.Send<Button> ((Button)sender, "PushPage");
+			button.Clicked += (sender, e) => Messaging.Instance.Send<Button> ((Button)sender, "PushPage");
 
 			var page = new ContentPage {
 				Content = button

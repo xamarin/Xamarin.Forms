@@ -11,7 +11,7 @@ namespace Xamarin.Forms.Controls
 		protected override void OnAppearing()
 		{
 			base.OnAppearing();
-			MessagingCenter.Send(this, ReadyForNativeControlsMessage);
+			Messaging.Instance.Send(this, ReadyForNativeControlsMessage);
 		}
 
 		public NestedNativeControlGalleryPage ()

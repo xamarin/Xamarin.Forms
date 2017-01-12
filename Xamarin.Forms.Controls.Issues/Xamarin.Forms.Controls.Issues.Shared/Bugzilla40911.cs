@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			Content = Layout;
 
-			MessagingCenter.Send(this, ReadyToSetUp40911Test);
+			Messaging.Instance.Send(this, ReadyToSetUp40911Test);
 		}
 
 #if UITEST && __IOS__

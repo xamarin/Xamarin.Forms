@@ -28,7 +28,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public NavigationRenderer()
 		{
-			MessagingCenter.Subscribe<IVisualElementRenderer>(this, UpdateToolbarButtons, sender =>
+			Messaging.Instance.Subscribe<IVisualElementRenderer>(this, UpdateToolbarButtons, sender =>
 			{
 				if (!ViewControllers.Any())
 					return;
@@ -226,7 +226,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (disposing)
 			{
-				MessagingCenter.Unsubscribe<IVisualElementRenderer>(this, UpdateToolbarButtons);
+				Messaging.Instance.Unsubscribe<IVisualElementRenderer>(this, UpdateToolbarButtons);
 
 				foreach (var childViewController in ViewControllers)
 					childViewController.Dispose();

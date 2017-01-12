@@ -18,7 +18,7 @@ namespace Xamarin.Forms.ControlGallery.Windows
 			var app = new Controls.App ();
 
 			// When the native control gallery loads up, it'll let us know so we can add the nested native controls
-			MessagingCenter.Subscribe<NestedNativeControlGalleryPage>(this, NestedNativeControlGalleryPage.ReadyForNativeControlsMessage, AddNativeControls);
+			Messaging.Instance.Subscribe<NestedNativeControlGalleryPage>(this, NestedNativeControlGalleryPage.ReadyForNativeControlsMessage, AddNativeControls);
 
 			LoadApplication (app);
 		}

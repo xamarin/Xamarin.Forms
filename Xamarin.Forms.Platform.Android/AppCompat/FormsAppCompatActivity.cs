@@ -185,9 +185,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void OnDestroy()
 		{
-			MessagingCenter.Unsubscribe<Page, AlertArguments>(this, Page.AlertSignalName);
-			MessagingCenter.Unsubscribe<Page, bool>(this, Page.BusySetSignalName);
-			MessagingCenter.Unsubscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName);
+			Messaging.Instance.Unsubscribe<Page, AlertArguments>(this, Page.AlertSignalName);
+			Messaging.Instance.Unsubscribe<Page, bool>(this, Page.BusySetSignalName);
+			Messaging.Instance.Unsubscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName);
 
 			_platform?.Dispose();
 
@@ -372,9 +372,9 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			_busyCount = 0;
-			MessagingCenter.Subscribe<Page, bool>(this, Page.BusySetSignalName, OnPageBusy);
-			MessagingCenter.Subscribe<Page, AlertArguments>(this, Page.AlertSignalName, OnAlertRequested);
-			MessagingCenter.Subscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName, OnActionSheetRequested);
+			Messaging.Instance.Subscribe<Page, bool>(this, Page.BusySetSignalName, OnPageBusy);
+			Messaging.Instance.Subscribe<Page, AlertArguments>(this, Page.AlertSignalName, OnAlertRequested);
+			Messaging.Instance.Subscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName, OnActionSheetRequested);
 
 			_platform = new AppCompat.Platform(this);
 			if (_application != null)
