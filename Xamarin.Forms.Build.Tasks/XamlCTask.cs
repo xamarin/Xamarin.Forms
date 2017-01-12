@@ -174,7 +174,7 @@ namespace Xamarin.Forms.Build.Tasks
 
 					Logger.LogString(2, "   Replacing {0}.InitializeComponent ()... ", typeDef.Name);
 					Exception e;
-					if (!TryCoreCompile(initComp, initCompRuntime, rootnode, xamlFilePath, out e)) {
+					if (!TryCoreCompile(initComp, initCompRuntime, rootnode, out e)) {
 						success = false;
 						Logger.LogLine(2, "failed.");
 						(thrownExceptions = thrownExceptions ?? new List<Exception>()).Add(e);
