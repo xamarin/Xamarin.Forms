@@ -824,7 +824,7 @@ namespace Xamarin.Forms.Platform.iOS
 			public override void ViewWillAppear(bool animated)
 			{
 				UpdateNavigationBarVisibility(animated);
-				EdgesForExtendedLayout = UIRectEdge.None;
+				EdgesForExtendedLayout = NavigationController.NavigationBar.Translucent ? UIRectEdge.All : UIRectEdge.None;
 				base.ViewWillAppear(animated);
 			}
 
