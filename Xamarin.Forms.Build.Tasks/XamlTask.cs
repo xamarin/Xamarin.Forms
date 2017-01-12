@@ -31,10 +31,11 @@ namespace Xamarin.Forms.Build.Tasks
 		public override bool Execute()
 		{
 			Logger = new Logger(Log, Verbosity);
-			return Execute(null);
+			IList<Exception> _;
+			return Execute(out _);
 		}
 
-		public abstract bool Execute(IList<Exception> thrownExceptions);
+		public abstract bool Execute(out IList<Exception> thrownExceptions);
 
 		protected static MethodDefinition DuplicateMethodDef(TypeDefinition typeDef, MethodDefinition methodDef, string newName)
 		{

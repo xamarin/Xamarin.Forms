@@ -10,8 +10,9 @@ namespace Xamarin.Forms.Build.Tasks
 {
 	public class DebugXamlCTask : XamlTask
 	{
-		public override bool Execute(IList<Exception> thrownExceptions)
+		public override bool Execute(out IList<Exception> thrownExceptions)
 		{
+			thrownExceptions = null;
 			Logger = Logger ?? new Logger(null, Verbosity);
 			Logger.LogLine(1, "Preparing debug code for xamlc");
 			Logger.LogLine(1, "\nAssembly: {0}", Assembly);
