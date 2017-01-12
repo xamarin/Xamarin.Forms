@@ -40,8 +40,8 @@ namespace Xamarin.Forms.Build.Tasks
 			}
 			var assemblyDefinition = AssemblyDefinition.ReadAssembly(Assembly, new ReaderParameters
 			{
-				//ReadSymbols = DebugSymbols,
-				AssemblyResolver = resolver
+				ReadSymbols = DebugSymbols,
+				AssemblyResolver = resolver,
 			});
 
 			foreach (var module in assemblyDefinition.Modules)
