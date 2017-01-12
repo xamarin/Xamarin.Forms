@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Platform.MacOS
 	{
 		static readonly NSColor s_defaultChildViewsBackground = NSColor.Clear;
 		Cell _cell;
-	    readonly NSTableViewCellStyle _style;
+		readonly NSTableViewCellStyle _style;
 
 		public Action<object, PropertyChangedEventArgs> PropertyChanged;
 

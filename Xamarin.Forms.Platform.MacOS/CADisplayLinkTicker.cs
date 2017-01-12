@@ -30,11 +30,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected override void DisableTimer()
 		{
-			if (_link != null)
-			{
-				_link.Stop();
-				_link.Dispose();
-			}
+			_link?.Stop();
+			_link?.Dispose();
 			_link = null;
 		}
 
