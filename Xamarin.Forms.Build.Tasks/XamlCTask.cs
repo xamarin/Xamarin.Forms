@@ -23,9 +23,11 @@ namespace Xamarin.Forms.Build.Tasks
 		}
 
 		internal string Type { get; set; }
+		internal MethodDefinition InitCompForType { get; private set; }
 
-		public override bool Execute(IList<Exception> thrownExceptions)
+		public override bool Execute(out IList<Exception> thrownExceptions)
 		{
+			thrownExceptions = null;
 			Logger = Logger ?? new Logger(null, Verbosity);
 			Logger.LogLine(1, "Compiling Xaml");
 			Logger.LogLine(1, "\nAssembly: {0}", Assembly);
@@ -172,14 +174,17 @@ namespace Xamarin.Forms.Build.Tasks
 
 					Logger.LogString(2, "   Replacing {0}.InitializeComponent ()... ", typeDef.Name);
 					Exception e;
-					if (!TryCoreCompile(initComp, initCompRuntime, rootnode, out e)) {
+					if (!TryCoreCompile(initComp, initCompRuntime, rootnode, xamlFilePath, out e)) {
 						success = false;
 						Logger.LogLine(2, "failed.");
-						thrownExceptions?.Add(e);
+						(thrownExceptions = thrownExceptions ?? new List<Exception>()).Add(e);
 						Logger.LogException(null, null, null, xamlFilePath, e);
 						Logger.LogLine(4, e.StackTrace);
 						continue;
 					}
+					if (Type != null)
+						InitCompForType = initComp;
+
 					Logger.LogLine(2, "done.");
 
 					if (OptimizeIL)
@@ -228,7 +233,7 @@ namespace Xamarin.Forms.Build.Tasks
 			{
 				Logger.LogLine(1, "failed.");
 				Logger.LogException(null, null, null, null, e);
-				thrownExceptions?.Add(e);
+				(thrownExceptions = thrownExceptions ?? new List<Exception>()).Add(e);
 				Logger.LogLine(4, e.StackTrace);
 				success = false;
 			}
