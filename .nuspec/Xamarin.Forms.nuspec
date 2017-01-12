@@ -63,12 +63,6 @@
         <reference file="Xamarin.Forms.Xaml.dll" />
         <reference file="Xamarin.Forms.Platform.UAP.dll" />
       </group>
-      <group targetFramework="WP80">
-        <reference file="Xamarin.Forms.Core.dll" />
-        <reference file="Xamarin.Forms.Platform.dll" />
-        <reference file="Xamarin.Forms.Xaml.dll" />
-        <reference file="Xamarin.Forms.Platform.WP8.dll" />
-      </group>
     </references>
   </metadata>
   <files>
@@ -145,17 +139,6 @@
     <file src="..\Xamarin.Forms.Xaml\bin\$Configuration$\Xamarin.Forms.Xaml.*mdb" target="lib\Xamarin.iOS10" />
     <file src="..\docs\Xamarin.Forms.Xaml.xml" target="lib\Xamarin.iOS10" />
     <file src="..\Stubs\Xamarin.Forms.Platform.iOS\bin\iPhone\$Configuration$\Xamarin.Forms.Platform.dll" target="lib\Xamarin.iOS10" />
-
-    <!--Windows Phone 8-->
-    <file src="..\Xamarin.Forms.Platform.WP8\bin\$Configuration$\Xamarin.Forms.Platform.WP8.dll" target="lib\WP80" />
-    <file src="..\Xamarin.Forms.Platform.WP8\bin\$Configuration$\Xamarin.Forms.Platform.WP8.*pdb" target="lib\WP80" />
-    <file src="..\Xamarin.Forms.Core\bin\$Configuration$\Xamarin.Forms.Core.dll" target="lib\WP80" />
-    <file src="..\Xamarin.Forms.Core\bin\$Configuration$\Xamarin.Forms.Core.*pdb" target="lib\WP80" />
-    <file src="..\docs\Xamarin.Forms.Core.xml" target="lib\WP80" />
-    <file src="..\Xamarin.Forms.Xaml\bin\$Configuration$\Xamarin.Forms.Xaml.dll" target="lib\WP80" />
-    <file src="..\Xamarin.Forms.Xaml\bin\$Configuration$\Xamarin.Forms.Xaml.*pdb" target="lib\WP80" />
-    <file src="..\docs\Xamarin.Forms.Xaml.xml" target="lib\WP80" />
-    <file src="..\Stubs\Xamarin.Forms.Platform.WP8\bin\$Configuration$\Xamarin.Forms.Platform.dll" target="lib\WP80" />
 
     <!--WinRT Phone-->
     <file src="..\Xamarin.Forms.Platform.WinRT\bin\$Configuration$\Xamarin.Forms.Platform.WinRT.dll" target="lib\wpa81" />

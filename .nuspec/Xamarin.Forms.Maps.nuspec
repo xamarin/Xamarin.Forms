@@ -46,10 +46,6 @@
         <reference file="Xamarin.Forms.Maps.dll" />
         <reference file="Xamarin.Forms.Maps.UWP.dll" />
       </group>
-      <group targetFramework="WP80">
-        <reference file="Xamarin.Forms.Maps.dll" />
-        <reference file="Xamarin.Forms.Maps.WP8.dll" />
-      </group>
     </references>
   </metadata>
   <files>
@@ -63,10 +59,6 @@
     <file src="..\Xamarin.Forms.Maps.iOS\bin\iPhoneSimulator\$Configuration$\Xamarin.Forms.Maps.iOS.dll" target="lib\Xamarin.iOS10" />
     <file src="..\Xamarin.Forms.Maps\bin\$Configuration$\Xamarin.Forms.Maps.dll" target="lib\Xamarin.iOS10" />
     <file src="..\docs\Xamarin.Forms.Maps.xml" target="lib\Xamarin.iOS10" />
-
-    <file src="..\Xamarin.Forms.Maps.WP8\bin\$Configuration$\Xamarin.Forms.Maps.WP8.dll" target="lib\WP80" />
-    <file src="..\Xamarin.Forms.Maps\bin\$Configuration$\Xamarin.Forms.Maps.dll" target="lib\WP80" />
-    <file src="..\docs\Xamarin.Forms.Maps.xml" target="lib\WP80" />
     
     <!--UWP-->
     <file src="..\Xamarin.Forms.Maps.UWP\bin\$Configuration$\Xamarin.Forms.Maps.UWP.dll" target="lib\uap10.0" />
@@ -116,7 +108,6 @@
     <file src="..\Xamarin.Forms.Maps.Design\bin\$Configuration$\Xamarin.Forms.Maps.Design.dll" target="lib\portable-win+net45+wp80+win81+wpa81+MonoAndroid10+Xamarin.iOS10\Design" />
     <file src="..\Xamarin.Forms.Maps.Design\bin\$Configuration$\Xamarin.Forms.Maps.Design.dll" target="lib\MonoAndroid10\Design" />
     <file src="..\Xamarin.Forms.Maps.Design\bin\$Configuration$\Xamarin.Forms.Maps.Design.dll" target="lib\Xamarin.iOS10\Design" />
-    <file src="..\Xamarin.Forms.Maps.Design\bin\$Configuration$\Xamarin.Forms.Maps.Design.dll" target="lib\WP80\Design" />
     <file src="..\Xamarin.Forms.Maps.Design\bin\$Configuration$\Xamarin.Forms.Maps.Design.dll" target="lib\wpa81\Design" />
     <file src="..\Xamarin.Forms.Maps.Design\bin\$Configuration$\Xamarin.Forms.Maps.Design.dll" target="lib\win81\Design" />
     <file src="..\Xamarin.Forms.Maps.Design\bin\$Configuration$\Xamarin.Forms.Maps.Design.dll" target="lib\uap10.0\Design" />
