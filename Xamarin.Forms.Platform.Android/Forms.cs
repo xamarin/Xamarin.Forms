@@ -120,7 +120,6 @@ namespace Xamarin.Forms
 			if (!IsInitialized)
 				Log.Listeners.Add(new DelegateLogListener((c, m) => Trace.WriteLine(m, c)));
 
-			Device.OS = TargetPlatform.Android;
 			Device.PlatformServices = new AndroidPlatformServices();
 
 			// use field and not property to avoid exception in getter
@@ -385,7 +384,14 @@ namespace Xamarin.Forms
 			{
 				using (var client = new HttpClient())
 				using (HttpResponseMessage response = await client.GetAsync(uri, cancellationToken))
+				{
+					if (!response.IsSuccessStatusCode)
+					{
+						Log.Warning("HTTP Request", $"Could not retrieve {uri}, status code {response.StatusCode}");
+						return null;
+					}
 					return await response.Content.ReadAsStreamAsync();
+				}
 			}
 
 			public IIsolatedStorageFile GetUserStoreForApplication()
@@ -400,6 +406,8 @@ namespace Xamarin.Forms
 					return Looper.MainLooper != Looper.MyLooper();
 				}
 			}
+
+			public string RuntimePlatform => Device.Android;
 
 			public void OpenUriAction(Uri uri)
 			{

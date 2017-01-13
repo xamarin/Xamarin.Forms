@@ -61,10 +61,8 @@ namespace Xamarin.Forms
 			Log.Listeners.Add(new DelegateLogListener((c, m) => Trace.WriteLine(m, c)));
 
 #if __MOBILE__
-			Device.OS = TargetPlatform.iOS;
 			Device.Idiom = UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad ? TargetIdiom.Tablet : TargetIdiom.Phone;
 #else
-			Device.OS = TargetPlatform.macOS;
 			Device.Idiom = TargetIdiom.Desktop;
 #endif
 			Device.PlatformServices = new IOSPlatformServices();
@@ -200,7 +198,14 @@ namespace Xamarin.Forms
 			{
 				using (var client = GetHttpClient())
 				using (var response = await client.GetAsync(uri, cancellationToken))
+				{
+					if (!response.IsSuccessStatusCode)
+					{
+						Log.Warning("HTTP Request", $"Could not retrieve {uri}, status code {response.StatusCode}");
+						return null;
+					}
 					return await response.Content.ReadAsStreamAsync();
+				}
 			}
 
 			public IIsolatedStorageFile GetUserStoreForApplication()
@@ -209,6 +214,12 @@ namespace Xamarin.Forms
 			}
 
 			public bool IsInvokeRequired => !NSThread.IsMain;
+
+#if __MOBILE__
+			public string RuntimePlatform => Device.iOS;
+#else
+			public string RuntimePlatform => Device.macOS;
+#endif
 
 			public void OpenUriAction(Uri uri)
 			{
