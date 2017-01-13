@@ -28,6 +28,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 {
 	public class NavigationPageRenderer : VisualElementRenderer<NavigationPage>, IManageFragments
 	{
+		public delegate bool BackButtonPressedEventHandler(object sender, EventArgs e);
+
 		readonly List<Fragment> _fragmentStack = new List<Fragment>();
 
 		Drawable _backgroundDrawable;
@@ -392,8 +394,12 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			valueAnim.Start();
 		}
 
+		public static event BackButtonPressedEventHandler BackPressed;
+
 		void BarOnNavigationClick(object sender, AToolbar.NavigationClickEventArgs navigationClickEventArgs)
 		{
+			if (BackPressed != null && BackPressed(this, EventArgs.Empty))
+				return;
 			Element?.PopAsync();
 		}
 
