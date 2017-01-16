@@ -461,7 +461,7 @@ namespace Xamarin.Forms
 		public static readonly Color PapayaWhip = FromRgb(255, 239, 213);
 		public static readonly Color PeachPuff = FromRgb(255, 218, 185);
 		public static readonly Color Peru = FromRgb(205, 133, 63);
-		public static readonly Color Pink = FromRgb(255, 192, 203);
+		public static readonly Color Pink = FromRgb(255, 102, 255);
 		public static readonly Color Plum = FromRgb(221, 160, 221);
 		public static readonly Color PowderBlue = FromRgb(176, 224, 230);
 		public static readonly Color Purple = FromRgb(128, 0, 128);
