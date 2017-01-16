@@ -162,7 +162,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected virtual NSTabViewItem GetTabViewItem(Page page, IVisualElementRenderer pageRenderer)
 		{
-			var tvi = new NSTabViewItem { ViewController = pageRenderer.ViewController, Label = page.Title };
+			var tvi = new NSTabViewItem { ViewController = pageRenderer.ViewController, Label = page.Title ?? "" };
 			if (!string.IsNullOrEmpty(page.Icon))
 				tvi.Image = GetTabViewItemIcon(page.Icon);
 			return tvi;
