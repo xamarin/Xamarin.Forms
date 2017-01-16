@@ -6,6 +6,7 @@ using Xamarin.UITest.Desktop;
 using Xamarin.UITest.Queries;
 using System.Linq;
 using System.Diagnostics;
+using System.Threading;
 
 namespace Xamarin.Forms.Core.macOS.UITests
 {
@@ -128,8 +129,7 @@ namespace Xamarin.Forms.Core.macOS.UITests
 		public void EnterText(string text)
 		{
 			var textField = _cocoaApp.QueryByType("Textfield").First();
-			_cocoaApp.Click(textField.Rect.CenterX, textField.Rect.CenterY);
-			_cocoaApp.EnterText(text);
+			EnterText(text, textField.Rect.CenterX, textField.Rect.CenterY);
 		}
 
 		public void EnterText(Func<AppQuery, AppWebQuery> query, string text)
@@ -140,8 +140,7 @@ namespace Xamarin.Forms.Core.macOS.UITests
 		public void EnterText(string marked, string text)
 		{
 			var textField = _cocoaApp.QueryById(marked).FirstOrDefault((arg) => arg.Class.Contains("SearchField") || arg.Class.Contains("TextField"));
-			_cocoaApp.Click(textField.Rect.CenterX, textField.Rect.CenterY);
-			_cocoaApp.EnterText(text);
+			EnterText(text, textField.Rect.CenterX, textField.Rect.CenterY);
 		}
 
 		public void EnterText(Func<AppQuery, AppQuery> query, string text)
@@ -157,6 +156,16 @@ namespace Xamarin.Forms.Core.macOS.UITests
 				EnterText(marked, text);
 			}
 		}
+
+		void EnterText(string text, float x, float y)
+		{
+			_cocoaApp.Click(x, y);
+			_cocoaApp.Click(x, y);
+			Thread.Sleep(500);
+			_cocoaApp.EnterText(text);
+			Thread.Sleep(500);
+		}
+
 
 		public UITest.Queries.AppResult[] Flash(string marked)
 		{
@@ -254,12 +263,20 @@ namespace Xamarin.Forms.Core.macOS.UITests
 			var queryStr = query(new AppQuery(QueryPlatform.iOS)).ToString();
 			var results = new List<Xamarin.UITest.Queries.AppResult>();
 			var isMarked = System.Text.RegularExpressions.Regex.IsMatch(queryStr, @"\bmarked\b");
+			var isText = System.Text.RegularExpressions.Regex.IsMatch(queryStr, @"\btext\b");
 			if (isMarked)
 			{
 				var markedWords = System.Text.RegularExpressions.Regex.Split(queryStr, @"\bmarked\b:'");
 				var isAll = markedWords[0].Trim() == "*";
 				var markedWord = markedWords[1].Remove(markedWords[1].Length - 1);
 				return Query(markedWord);
+			}
+			if (isText)
+			{
+				var textWords = System.Text.RegularExpressions.Regex.Split(queryStr, @"\btext\b:'");
+				var isAll = textWords[0].Trim() == "*";
+				var textWord = textWords[1].Remove(textWords[1].Length - 1);
+				return Query(textWord);
 			}
 			else if (queryStr.Contains("* index:0"))
 			{
@@ -462,6 +479,7 @@ namespace Xamarin.Forms.Core.macOS.UITests
 		{
 			var queryById = _cocoaApp.QueryById(marked).First();
 			_cocoaApp.Click(queryById.Rect.CenterX, queryById.Rect.CenterY);
+			Thread.Sleep(1000);
 		}
 
 		public void Tap(Func<AppQuery, AppQuery> query)
