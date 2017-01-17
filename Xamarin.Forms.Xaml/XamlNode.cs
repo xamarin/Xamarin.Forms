@@ -135,7 +135,7 @@ namespace Xamarin.Forms.Xaml
 
 		public override void Accept(IXamlNodeVisitor visitor, INode parentNode)
 		{
-			if (visitor.VisitingMode == TreeVisitingMode.TopDown)
+			if (!SkipVisitNode(visitor, parentNode) && visitor.VisitingMode == TreeVisitingMode.TopDown)
 				visitor.Visit(this, parentNode);
 
 			if (!SkipChildren(visitor, parentNode)) {
@@ -145,7 +145,7 @@ namespace Xamarin.Forms.Xaml
 					node.Accept(visitor, this);
 			}
 
-			if (visitor.VisitingMode == TreeVisitingMode.BottomUp)
+			if (!SkipVisitNode(visitor, parentNode) && visitor.VisitingMode == TreeVisitingMode.BottomUp)
 				visitor.Visit(this, parentNode);
 
 		}
@@ -166,6 +166,9 @@ namespace Xamarin.Forms.Xaml
 		protected bool SkipChildren(IXamlNodeVisitor visitor, INode parentNode) =>
 			(visitor.StopOnDataTemplate && IsDataTemplate(parentNode)) ||
 			(visitor.StopOnResourceDictionary && IsResourceDictionary());
+
+		protected bool SkipVisitNode(IXamlNodeVisitor visitor, INode parentNode) =>
+			!visitor.VisitNodeOnDataTemplate && IsDataTemplate(parentNode);
 
 		public override INode Clone()
 		{
@@ -190,7 +193,7 @@ namespace Xamarin.Forms.Xaml
 
 		public override void Accept(IXamlNodeVisitor visitor, INode parentNode)
 		{
-			if (visitor.VisitingMode == TreeVisitingMode.TopDown)
+			if (!SkipVisitNode(visitor, parentNode) && visitor.VisitingMode == TreeVisitingMode.TopDown)
 				visitor.Visit(this, parentNode);
 
 			if (!SkipChildren(visitor, parentNode)) {
@@ -200,7 +203,7 @@ namespace Xamarin.Forms.Xaml
 					node.Accept(visitor, this);
 			}
 
-			if (visitor.VisitingMode == TreeVisitingMode.BottomUp)
+			if (!SkipVisitNode(visitor, parentNode) && visitor.VisitingMode == TreeVisitingMode.BottomUp)
 				visitor.Visit(this, parentNode);
 		}
 	}

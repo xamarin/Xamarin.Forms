@@ -39,6 +39,7 @@ namespace Xamarin.Forms.Build.Tasks
 		public bool StopOnResourceDictionary { get; }
 		public TreeVisitingMode VisitingMode => TreeVisitingMode.BottomUp;
 		public bool StopOnDataTemplate => true;
+		public bool VisitNodeOnDataTemplate => true;
 
 		ModuleDefinition Module { get; }
 
@@ -88,6 +89,11 @@ namespace Xamarin.Forms.Build.Tasks
 			if ((propertyName != XmlName.Empty || TryGetPropertyName(node, parentNode, out propertyName)) && skips.Contains(propertyName))
 				return;
 
+			if (propertyName == XmlName._CreateContent) {
+				SetDataTemplate((IElementNode)parentNode, node, Context, node);
+				return;
+			}
+
 			//if this node is an IMarkupExtension, invoke ProvideValue() and replace the variable
 			var vardef = Context.Variables[node];
 			var vardefref = new VariableDefinitionReference(vardef);
@@ -115,9 +121,9 @@ namespace Xamarin.Forms.Build.Tasks
 				if (parentNode is IElementNode && ((IElementNode)parentNode).SkipProperties.Contains (propertyName))
 					return;
 
-				if (propertyName == XmlName._CreateContent)
-					SetDataTemplate((IElementNode)parentNode, node, Context, node);
-				else
+				//if (propertyName == XmlName._CreateContent)
+				//	SetDataTemplate((IElementNode)parentNode, node, Context, node);
+				//else
 					Context.IL.Append(SetPropertyValue(Context.Variables[(IElementNode)parentNode], propertyName, node, Context, node));
 			}
 			else if (IsCollectionItem(node, parentNode) && parentNode is IElementNode)

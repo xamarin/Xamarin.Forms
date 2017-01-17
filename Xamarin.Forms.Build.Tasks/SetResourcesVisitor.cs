@@ -22,6 +22,7 @@ namespace Xamarin.Forms.Build.Tasks
 		public TreeVisitingMode VisitingMode => TreeVisitingMode.TopDown;
 		public bool StopOnDataTemplate => true;
 		public bool StopOnResourceDictionary => false;
+		public bool VisitNodeOnDataTemplate => false;
 
 		public void Visit(ValueNode node, INode parentNode)
 		{

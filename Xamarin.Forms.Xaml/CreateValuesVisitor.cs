@@ -26,6 +26,7 @@ namespace Xamarin.Forms.Xaml
 		public TreeVisitingMode VisitingMode => TreeVisitingMode.BottomUp;
 		public bool StopOnDataTemplate => true;
 		public bool StopOnResourceDictionary => false;
+		public bool VisitNodeOnDataTemplate => false;
 
 		public void Visit(ValueNode node, INode parentNode)
 		{
