@@ -27,7 +27,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			else if (TestPage40251.Arg == "BackgroundImage")
 			{
 				originalValues.Add("BackgroundImage", UIButton.Appearance.BackgroundImageForState(UIControlState.Normal));
-				UIButton.Appearance.SetBackgroundImage(new UIImage("image.png"), UIControlState.Normal);
+				UIButton.Appearance.SetBackgroundImage(new UIImage("Intranet-icon.png"), UIControlState.Normal);
 			}
 		}
 

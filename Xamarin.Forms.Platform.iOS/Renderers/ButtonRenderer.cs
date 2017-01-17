@@ -97,7 +97,6 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.SetTitleColor(UIButton.Appearance.TitleColor(uiControlState), uiControlState); // if new values are null, old values are preserved.
 				Control.SetTitleShadowColor(UIButton.Appearance.TitleShadowColor(uiControlState), uiControlState);
 				Control.SetBackgroundImage(UIButton.Appearance.BackgroundImageForState(uiControlState), uiControlState);
-				Control.SetImage(UIButton.Appearance.ImageForState(uiControlState), uiControlState); // UpdateImage() renders this useless.
 			}
 		}
 
