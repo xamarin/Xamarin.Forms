@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Platform.MacOS
         EventTracker _events;
         VisualElementTracker _tracker;
 
-        public CarouselPageRenderer() { View = new FormsNSView { BackgroundColor = NSColor.Clear }; }
+		public CarouselPageRenderer() { View = new NSView { WantsLayer = true }; View.Layer.BackgroundColor = NSColor.White.CGColor; }
         public CarouselPageRenderer(IntPtr handle) : base(handle) { }
 
         IElementController ElementController => Element;
@@ -178,17 +178,18 @@ namespace Xamarin.Forms.Platform.MacOS
 
         void UpdateBackground()
         {
+			if (View.Layer == null)
+				return;
+			
             string bgImage = ((Page)Element).BackgroundImage;
-            var formsBackgroundView = View as FormsNSView;
-            if (formsBackgroundView == null)
-                return;
-
+     
             if (!string.IsNullOrEmpty(bgImage)) {
-                formsBackgroundView.BackgroundColor = NSColor.FromPatternImage(NSImage.ImageNamed(bgImage));
+				View.Layer.BackgroundColor = NSColor.FromPatternImage(NSImage.ImageNamed(bgImage)).CGColor;
                 return;
             }
+
             Color bgColor = Element.BackgroundColor;
-            formsBackgroundView.BackgroundColor = bgColor.IsDefault ? NSColor.White : bgColor.ToNSColor();
+			View.Layer.BackgroundColor = bgColor.IsDefault ? NSColor.White.CGColor : bgColor.ToCGColor();
         }
 
         void UpdateCurrentPage(bool animated = true)

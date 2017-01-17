@@ -1,11 +1,9 @@
 ﻿using System.ComponentModel;
-
-using RectangleF = CoreGraphics.CGRect;
-using SizeF = CoreGraphics.CGSize;
+using AppKit;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
-	public class BoxViewRenderer : ViewRenderer<BoxView, FormsNSView>
+	public class BoxViewRenderer : ViewRenderer<BoxView, NSView>
 	{
 		protected override void OnElementChanged(ElementChangedEventArgs<BoxView> e)
 		{
@@ -13,7 +11,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				if (Control == null)
 				{
-					SetNativeControl(new FormsNSView());
+					SetNativeControl(new NSView());
 				}
 				SetBackgroundColor(Element.Color);
 			}
@@ -34,8 +32,8 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			if (Element == null || Control == null)
 				return;
-
-			Control.BackgroundColor = color.ToNSColor();
+			Control.WantsLayer = true;
+			Control.Layer.BackgroundColor = color.ToCGColor();
 		}
 	}
 }

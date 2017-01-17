@@ -11,7 +11,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 	public abstract class ViewRenderer<TView, TNativeView> : VisualElementRenderer<TView> where TView : View where TNativeView : NSView
 	{
-		NSColor _defaultColor;
+		CGColor _defaultColor;
 
 		public TNativeView Control { get; private set; }
 
@@ -88,28 +88,24 @@ namespace Xamarin.Forms.Platform.MacOS
 		protected override void SetBackgroundColor(Color color)
 		{
 			base.SetBackgroundColor(color);
-
-			var formsNSView = Control as FormsNSView;
-			if (formsNSView == null)
-				return;
-
-			formsNSView.BackgroundColor = color == Color.Default ? _defaultColor : color.ToNSColor();
+			if(Control != null)
+				Control.Layer.BackgroundColor = color == Color.Default ? _defaultColor : color.ToCGColor();
 		}
 
-		protected void SetNativeControl(TNativeView uiview)
+		protected void SetNativeControl(TNativeView uiView)
 		{
-			var formsNSView = Control as FormsNSView;
-			if (formsNSView != null)
-				_defaultColor = formsNSView.BackgroundColor;
+			uiView.WantsLayer = true;
+			
+			_defaultColor = uiView.Layer.BackgroundColor;
 
-			Control = uiview;
+			Control = uiView;
 
 			if (Element.BackgroundColor != Color.Default)
 				SetBackgroundColor(Element.BackgroundColor);
 
 			UpdateIsEnabled();
 
-			AddSubview(uiview);
+			AddSubview(uiView);
 		}
 
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)

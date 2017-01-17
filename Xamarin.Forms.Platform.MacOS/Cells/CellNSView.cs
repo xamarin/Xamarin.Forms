@@ -5,9 +5,10 @@ using CoreGraphics;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
-    internal class CellNSView : FormsNSView, INativeElementView
+    internal class CellNSView : NSView, INativeElementView
 	{
 		static readonly NSColor s_defaultChildViewsBackground = NSColor.Clear;
+		static readonly CGColor s_defaultHeaderViewsBackground = NSColor.LightGray.CGColor;
 		Cell _cell;
 		readonly NSTableViewCellStyle _style;
 
@@ -15,6 +16,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public CellNSView(NSTableViewCellStyle style)
 		{
+			WantsLayer = true;
 			_style = style;
 			CreateUI();
 		}
@@ -118,8 +120,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				nativeCell.Identifier = templateId;
 
 		    if (!isHeader) return nativeCell;
-		    var formsNsView = nativeCell as FormsNSView;
-		    if (formsNsView != null) formsNsView.BackgroundColor = NSColor.LightGray;
+			if (nativeCell.Layer != null) nativeCell.Layer.BackgroundColor = s_defaultHeaderViewsBackground;
 		    return nativeCell;
 		}
 
@@ -153,7 +154,11 @@ namespace Xamarin.Forms.Platform.MacOS
 				AddSubview(ImageView = new NSImageView());
 
 			if (style == NSTableViewCellStyle.Value1 || style == NSTableViewCellStyle.Value2)
-				AddSubview(AccessoryView = new FormsNSView { BackgroundColor = s_defaultChildViewsBackground });
+			{
+				var accessoryView = new NSView { WantsLayer = true };
+				accessoryView.Layer.BackgroundColor = s_defaultChildViewsBackground.CGColor;
+				AddSubview(AccessoryView = accessoryView);
+			}
 		}
 	}
 }

@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
         public PageRenderer()
         {
-            View = new FormsNSView();
+			View = new NSView { WantsLayer = true };
         }
 
         void IEffectControlProvider.RegisterEffect(Effect effect)
@@ -132,8 +132,6 @@ namespace Xamarin.Forms.Platform.MacOS
                 NativeView.AccessibilityIdentifier = id;
         }
 
-        internal FormsNSView FormsNativeView => View as FormsNSView;
-
         void Init()
         {
             if (_init)
@@ -166,11 +164,11 @@ namespace Xamarin.Forms.Platform.MacOS
         {
             string bgImage = ((Page)Element).BackgroundImage;
             if (!string.IsNullOrEmpty(bgImage)) {
-                FormsNativeView.BackgroundColor = NSColor.FromPatternImage(NSImage.ImageNamed(bgImage));
+				View.Layer.BackgroundColor = NSColor.FromPatternImage(NSImage.ImageNamed(bgImage)).CGColor;
                 return;
             }
             Color bgColor = Element.BackgroundColor;
-            FormsNativeView.BackgroundColor = bgColor.IsDefault ? NSColor.White : bgColor.ToNSColor();
+			View.Layer.BackgroundColor = bgColor.IsDefault ? NSColor.White.CGColor : bgColor.ToCGColor();
         }
 
         void UpdateTitle()

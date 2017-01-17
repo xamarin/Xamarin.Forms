@@ -289,7 +289,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			var title = GetCurrentPageTitle();
 			var item = new NSToolbarItem(title);
-			var view = new FormsNSView();
+			var view = new NSView();
 			var titleField = new NSTextField
 			{
 				AllowsEditingTextAttributes = true,

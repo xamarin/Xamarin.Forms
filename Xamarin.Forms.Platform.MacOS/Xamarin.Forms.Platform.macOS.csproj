@@ -159,7 +159,6 @@
     <Compile Include="Renderers\TableViewDataSource.cs" />
     <Compile Include="NativeToolbarTracker.cs" />
     <Compile Include="Extensions\NSButtonExtensions.cs" />
-    <Compile Include="Controls\FormsNSView.cs" />
     <Compile Include="Controls\VerticallyCenteredTextFieldCell.cs" />
     <Compile Include="..\Xamarin.Forms.Platform.iOS\Forms.cs">
       <Link>Forms.cs</Link>

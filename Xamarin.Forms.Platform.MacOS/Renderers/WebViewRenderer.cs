@@ -46,7 +46,7 @@ namespace Xamarin.Forms.Platform.MacOS
 					Element.GoBackRequested += OnGoBackRequested;
 					Element.GoForwardRequested += OnGoForwardRequested;
 
-					BackgroundColor = NSColor.Clear;
+					Layer.BackgroundColor = NSColor.Clear.CGColor;
 				}
 			}
 

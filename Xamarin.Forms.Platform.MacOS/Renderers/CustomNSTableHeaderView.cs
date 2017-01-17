@@ -7,7 +7,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public CustomNSTableHeaderView(double width, IVisualElementRenderer headerRenderer)
 		{
-			AddSubview(new FormsNSView { BackgroundColor = NSColor.White });
+			var view = new NSView { WantsLayer = true };
+			view.Layer.BackgroundColor = NSColor.White.CGColor;
+			AddSubview(view);
 			AddSubview(headerRenderer.NativeView);
 			Update(width, headerRenderer);
 		}

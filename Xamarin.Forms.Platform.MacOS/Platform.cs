@@ -211,9 +211,9 @@ namespace Xamarin.Forms.Platform.MacOS
 			_appeared = true;
 		}
 
-		static FormsNSView GetExtraButton(ActionSheetArguments arguments)
+		static NSView GetExtraButton(ActionSheetArguments arguments)
 		{
-			var newView = new FormsNSView();
+			var newView = new NSView();
 			int height = 50;
 			int width = 300;
 			int i = 0;

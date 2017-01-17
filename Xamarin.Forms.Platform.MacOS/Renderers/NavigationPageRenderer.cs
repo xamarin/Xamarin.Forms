@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		public NavigationPageRenderer() : this(IntPtr.Zero) { }
 		public NavigationPageRenderer(IntPtr handle)
 		{
-			View = new FormsNSView { WantsLayer = true };
+			View = new NSView { WantsLayer = true };
 		}
 
 		public VisualElement Element { get; private set; }
@@ -319,10 +319,10 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateBackgroundColor()
 		{
-			if (!(View is FormsNSView))
+			if (View.Layer  == null)
 				return;
 			var color = Element.BackgroundColor == Color.Default ? Color.White : Element.BackgroundColor;
-			(View as FormsNSView).BackgroundColor = color.ToNSColor();
+			View.Layer.BackgroundColor = color.ToCGColor();
 		}
 
 		void UpdateBarBackgroundColor()

@@ -158,7 +158,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			public ViewControllerWrapper(IVisualElementRenderer renderer)
 			{
 				_renderer = renderer;
-				View = new FormsNSView();
+				View = new NSView { WantsLayer = true };
 				AddChildViewController(renderer.ViewController);
 				View.AddSubview(renderer.NativeView);
 			}

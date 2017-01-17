@@ -111,9 +111,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		protected override void SetBackgroundColor(Color color)
 		{
 			if (color == Color.Default)
-				BackgroundColor = NSColor.Clear;
+				Layer.BackgroundColor = NSColor.Clear.CGColor;
 			else
-				BackgroundColor = color.ToNSColor();
+				Layer.BackgroundColor = color.ToCGColor();
 		}
 
 		void UpdateAlignment()

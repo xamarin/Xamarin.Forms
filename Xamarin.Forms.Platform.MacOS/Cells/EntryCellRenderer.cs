@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using AppKit;
+using CoreGraphics;
 using Foundation;
 
 namespace Xamarin.Forms.Platform.MacOS

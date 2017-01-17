@@ -1,5 +1,6 @@
 ﻿using System;
 using AppKit;
+using CoreGraphics;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
@@ -26,6 +27,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected void UpdateBackground(NSView tableViewCell, Cell cell)
 		{
+			tableViewCell.WantsLayer = true;
 			var bgColor = NSColor.White;
 			var element = cell.RealParent as VisualElement;
 			if (element != null)
@@ -33,11 +35,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			UpdateBackgroundChild(cell, bgColor);
 
-			var formsNSView = tableViewCell as FormsNSView;
-			if (formsNSView == null)
-				return;
-
-			formsNSView.BackgroundColor = bgColor;
+			tableViewCell.Layer.BackgroundColor = bgColor.CGColor;
 		}
 
 		protected void WireUpForceUpdateSizeRequested(ICellController cell, NSView nativeCell, NSTableView tableView)
@@ -46,7 +44,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			_onForceUpdateSizeRequested = (sender, e) =>
 			{
-                //TODO: Implement ForceUpdateSize
+				//TODO: Implement ForceUpdateSize
 			};
 
 			cell.ForceUpdateSizeRequested += _onForceUpdateSizeRequested;

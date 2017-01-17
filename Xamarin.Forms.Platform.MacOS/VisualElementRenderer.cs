@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using AppKit;
+using CoreGraphics;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
@@ -13,9 +14,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		AutoPackage = 1 << 2
 	}
 
-	public class VisualElementRenderer<TElement> : FormsNSView, IVisualElementRenderer, IEffectControlProvider where TElement : VisualElement
+	public class VisualElementRenderer<TElement> : NSView, IVisualElementRenderer, IEffectControlProvider where TElement : VisualElement
 	{
-		readonly NSColor _defaultColor = NSColor.Clear;
+		readonly CGColor _defaultColor = NSColor.Clear.CGColor;
 		readonly List<EventHandler<VisualElementChangedEventArgs>> _elementChangedHandlers = new List<EventHandler<VisualElementChangedEventArgs>>();
 		readonly PropertyChangedEventHandler _propertyChangedHandler;
 
@@ -26,8 +27,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected VisualElementRenderer()
 		{
+			WantsLayer = true;
 			_propertyChangedHandler = OnElementPropertyChanged;
-			BackgroundColor = _defaultColor;
+			Layer.BackgroundColor = _defaultColor;
 		}
 
 		protected bool AutoPackage
@@ -200,9 +202,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		protected virtual void SetBackgroundColor(Color color)
 		{
 			if (color == Color.Default)
-				BackgroundColor = _defaultColor;
+				Layer.BackgroundColor = _defaultColor;
 			else
-				BackgroundColor = color.ToNSColor();
+				Layer.BackgroundColor = color.ToCGColor();
 		}
 
 		protected virtual void UpdateNativeWidget()
