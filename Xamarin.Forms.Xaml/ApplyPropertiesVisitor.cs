@@ -117,11 +117,7 @@ namespace Xamarin.Forms.Xaml
 					return;
 
 				var source = Values [parentNode];
-
-				//if (propertyName == XmlName._CreateContent && source is ElementTemplate)
-				//	SetTemplate(source as ElementTemplate, node);
-				//else
-					SetPropertyValue(source, propertyName, value, Context.RootElement, node, Context, node);
+				SetPropertyValue(source, propertyName, value, Context.RootElement, node, Context, node);
 			} else if (IsCollectionItem(node, parentNode) && parentNode is IElementNode) {
 				// Collection element, implicit content, or implicit collection element.
 				string contentProperty;

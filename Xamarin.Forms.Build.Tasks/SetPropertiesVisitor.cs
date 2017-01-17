@@ -120,11 +120,8 @@ namespace Xamarin.Forms.Build.Tasks
 					return;
 				if (parentNode is IElementNode && ((IElementNode)parentNode).SkipProperties.Contains (propertyName))
 					return;
-
-				//if (propertyName == XmlName._CreateContent)
-				//	SetDataTemplate((IElementNode)parentNode, node, Context, node);
-				//else
-					Context.IL.Append(SetPropertyValue(Context.Variables[(IElementNode)parentNode], propertyName, node, Context, node));
+				
+				Context.IL.Append(SetPropertyValue(Context.Variables[(IElementNode)parentNode], propertyName, node, Context, node));
 			}
 			else if (IsCollectionItem(node, parentNode) && parentNode is IElementNode)
 			{
