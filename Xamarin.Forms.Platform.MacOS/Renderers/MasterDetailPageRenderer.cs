@@ -36,6 +36,8 @@ namespace Xamarin.Forms.Platform.MacOS
 					Element = null;
 				}
 
+				ClearControllers();
+
 				_tracker?.Dispose();
 				_tracker = null;
 				_events?.Dispose();
@@ -143,21 +145,32 @@ namespace Xamarin.Forms.Platform.MacOS
 		void ClearControllers()
 		{
 			while (SplitViewItems.Length > 0)
-				RemoveSplitViewItem(SplitViewItems.Last());
+			{
+				var splitItem = SplitViewItems.Last();
+				var childVisualRenderer = splitItem.ViewController as ViewControllerWrapper;
+				RemoveSplitViewItem(splitItem);
+				IVisualElementRenderer render = null;
+				if (childVisualRenderer.RendererWeakRef.TryGetTarget(out render))
+				{
+					render.Dispose();
+				}
+				childVisualRenderer.Dispose();
+				childVisualRenderer = null;
+			}
 		}
 
 		//TODO: Implement Background color on MDP
 		void UpdateBackground()
 		{
-			
+
 		}
 
-	    sealed class ViewControllerWrapper : NSViewController
+		sealed class ViewControllerWrapper : NSViewController
 		{
-			readonly IVisualElementRenderer _renderer;
+			internal WeakReference<IVisualElementRenderer> RendererWeakRef;
 			public ViewControllerWrapper(IVisualElementRenderer renderer)
 			{
-				_renderer = renderer;
+				RendererWeakRef = new WeakReference<IVisualElementRenderer>(renderer);
 				View = new NSView { WantsLayer = true };
 				AddChildViewController(renderer.ViewController);
 				View.AddSubview(renderer.NativeView);
@@ -165,8 +178,19 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			public override void ViewWillLayout()
 			{
-				_renderer?.Element?.Layout(new Rectangle(0, 0, View.Bounds.Width, View.Bounds.Height));
+				IVisualElementRenderer renderer;
+				if (RendererWeakRef.TryGetTarget(out renderer))
+					renderer?.Element?.Layout(new Rectangle(0, 0, View.Bounds.Width, View.Bounds.Height));
 				base.ViewWillLayout();
+			}
+
+			protected override void Dispose(bool disposing)
+			{
+				if (disposing && RendererWeakRef != null)
+				{
+					RendererWeakRef = null;
+				}
+				base.Dispose(disposing);
 			}
 		}
 	}

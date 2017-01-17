@@ -6,8 +6,8 @@ namespace Xamarin.Forms.Platform.MacOS
 {
 	internal class PlatformNavigation : INavigation, IDisposable
 	{
-		readonly ModalPageTracker _modalTracker;
-		readonly PlatformRenderer _platformRenderer;
+		ModalPageTracker _modalTracker;
+		PlatformRenderer _platformRenderer;
 		bool _animateModals;
 		bool _disposed;
 
@@ -96,6 +96,8 @@ namespace Xamarin.Forms.Platform.MacOS
 				if (disposing)
 				{
 					_modalTracker.Dispose();
+					_modalTracker = null;
+					_platformRenderer = null;
 				}
 
 				_disposed = true;
