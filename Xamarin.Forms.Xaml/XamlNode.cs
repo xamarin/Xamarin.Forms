@@ -161,18 +161,21 @@ namespace Xamarin.Forms.Xaml
 
 		public override void Accept(IXamlNodeVisitor visitor, INode parentNode)
 		{
-			if (!visitor.VisitChildrenFirst)
+			if (visitor.VisitingMode == TreeVisitingMode.TopDown)
 				visitor.Visit(this, parentNode);
+
 			if ((!visitor.StopOnDataTemplate || !IsDataTemplate(this, parentNode)) &&
-			    (!visitor.StopOnResourceDictionary || !IsResourceDictionary(this, parentNode)))
-			{
+				(!visitor.StopOnResourceDictionary || !IsResourceDictionary(this, parentNode))) {
+
 				foreach (var node in Properties.Values.ToList())
 					node.Accept(visitor, this);
 				foreach (var node in CollectionItems)
 					node.Accept(visitor, this);
+
 			}
-			if (visitor.VisitChildrenFirst)
+			if (visitor.VisitingMode == TreeVisitingMode.BottomUp)
 				visitor.Visit(this, parentNode);
+
 		}
 
 		internal static bool IsDataTemplate(INode node, INode parentNode)
@@ -214,8 +217,9 @@ namespace Xamarin.Forms.Xaml
 
 		public override void Accept(IXamlNodeVisitor visitor, INode parentNode)
 		{
-			if (!visitor.VisitChildrenFirst)
+			if (visitor.VisitingMode == TreeVisitingMode.TopDown)
 				visitor.Visit(this, parentNode);
+
 			if ((!visitor.StopOnDataTemplate || !IsDataTemplate(this, parentNode)) &&
 				(!visitor.StopOnResourceDictionary || !IsResourceDictionary(this, parentNode)))
 			{
@@ -224,7 +228,7 @@ namespace Xamarin.Forms.Xaml
 				foreach (var node in CollectionItems)
 					node.Accept(visitor, this);
 			}
-			if (visitor.VisitChildrenFirst)
+			if (visitor.VisitingMode == TreeVisitingMode.BottomUp)
 				visitor.Visit(this, parentNode);
 		}
 	}
@@ -243,11 +247,11 @@ namespace Xamarin.Forms.Xaml
 
 		public override void Accept(IXamlNodeVisitor visitor, INode parentNode)
 		{
-			if (!visitor.VisitChildrenFirst)
+			if (visitor.VisitingMode == TreeVisitingMode.TopDown)
 				visitor.Visit(this, parentNode);
 			foreach (var node in CollectionItems)
 				node.Accept(visitor, this);
-			if (visitor.VisitChildrenFirst)
+			if (visitor.VisitingMode == TreeVisitingMode.BottomUp)
 				visitor.Visit(this, parentNode);
 		}
 

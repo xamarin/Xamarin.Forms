@@ -37,8 +37,8 @@ namespace Xamarin.Forms.Build.Tasks
 
 		public ILContext Context { get; }
 		public bool StopOnResourceDictionary { get; }
-		public bool VisitChildrenFirst { get; } = true;
-		public bool StopOnDataTemplate { get; } = true;
+		public TreeVisitingMode VisitingMode => TreeVisitingMode.BottomUp;
+		public bool StopOnDataTemplate => true;
 
 		ModuleDefinition Module { get; }
 

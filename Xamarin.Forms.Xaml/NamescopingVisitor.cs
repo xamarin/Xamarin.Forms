@@ -14,20 +14,9 @@ namespace Xamarin.Forms.Xaml
 
 		Dictionary<INode, object> Values { get; set; }
 
-		public bool VisitChildrenFirst
-		{
-			get { return false; }
-		}
-
-		public bool StopOnDataTemplate
-		{
-			get { return false; }
-		}
-
-		public bool StopOnResourceDictionary
-		{
-			get { return false; }
-		}
+		public TreeVisitingMode VisitingMode => TreeVisitingMode.TopDown;
+		public bool StopOnDataTemplate => false;
+		public bool StopOnResourceDictionary => false;
 
 		public void Visit(ValueNode node, INode parentNode)
 		{
