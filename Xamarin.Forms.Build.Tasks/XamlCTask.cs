@@ -144,10 +144,16 @@ namespace Xamarin.Forms.Build.Tasks
 
 						var initCompRuntime = typeDef.Methods.FirstOrDefault(md => md.Name == "__InitComponentRuntime");
 						if (initCompRuntime != null)
-							Logger.LogLine(2, "   __InitComponentRuntime already exists... not duplicating");
+							Logger.LogLine(2, "   __InitComponentRuntime already exists... not renaming");
 						else {
-							Logger.LogString(2, "   Duplicating {0}.InitializeComponent () into {0}.__InitComponentRuntime ... ", typeDef.Name);
-							initCompRuntime = DuplicateMethodDef(typeDef, initComp, "__InitComponentRuntime");
+							Logger.LogString(2, "   Renaming {0}.InitializeComponent () into {0}.__InitComponentRuntime ... ", typeDef.Name);
+							initCompRuntime = initComp;
+							initCompRuntime.Name = "__InitComponentRuntime";
+							Logger.LogLine(2, "done.");
+							Logger.LogString(2, "   Recreating empty {0}.InitializeComponent ...", typeDef.Name);
+							initComp = new MethodDefinition("InitializeComponent", initComp.Attributes, initComp.ReturnType);
+							typeDef.Methods.Add(initComp);
+
 							Logger.LogLine(2, "done.");
 						}
 
@@ -166,7 +172,7 @@ namespace Xamarin.Forms.Build.Tasks
 						if (!TryCoreCompile(initComp, initCompRuntime, rootnode, out e)) {
 							success = false;
 							Logger.LogLine(2, "failed.");
-							thrownExceptions?.Add(e);
+							(thrownExceptions = thrownExceptions ?? new List<Exception>()).Add(e);
 							Logger.LogException(null, null, null, xamlFilePath, e);
 							Logger.LogLine(4, e.StackTrace);
 							continue;
@@ -214,7 +220,7 @@ namespace Xamarin.Forms.Build.Tasks
 				} catch (Exception e) {
 					Logger.LogLine(1, "failed.");
 					Logger.LogException(null, null, null, null, e);
-					thrownExceptions?.Add(e);
+					(thrownExceptions = thrownExceptions ?? new List<Exception>()).Add(e);
 					Logger.LogLine(4, e.StackTrace);
 					success = false;
 				}
@@ -244,6 +250,7 @@ namespace Xamarin.Forms.Build.Tasks
 					//  IL_0031:  nop
 
 					var nop = Instruction.Create(OpCodes.Nop);
+
 					var getXamlFileProvider = body.Method.Module.ImportReference(body.Method.Module.ImportReference(typeof(Xamarin.Forms.Xaml.Internals.XamlLoader))
 							.Resolve()
 							.Properties.FirstOrDefault(pd => pd.Name == "XamlFileProvider")

@@ -38,19 +38,6 @@ namespace Xamarin.Forms.Build.Tasks
 
 		public abstract bool Execute(out IList<Exception> thrownExceptions);
 
-		protected static MethodDefinition DuplicateMethodDef(TypeDefinition typeDef, MethodDefinition methodDef, string newName)
-		{
-			var dup = new MethodDefinition(newName, methodDef.Attributes, methodDef.ReturnType);
-			dup.Body = new MethodBody(dup);
-			var il = dup.Body.GetILProcessor();
-			foreach (var instr in methodDef.Body.Instructions)
-				il.Append(instr);
-			if (methodDef.Body.HasVariables || methodDef.Body.HasExceptionHandlers)
-				throw new NotImplementedException();
-			typeDef.Methods.Add(dup);
-			return dup;
-		}
-
 		internal static ILRootNode ParseXaml(Stream stream, TypeReference typeReference)
 		{
 			ILRootNode rootnode = null;

@@ -5,6 +5,7 @@ using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
+using Xamarin.Forms.Xaml;
 
 namespace Xamarin.Forms.Build.Tasks
 {
@@ -16,6 +17,8 @@ namespace Xamarin.Forms.Build.Tasks
 			Logger = Logger ?? new Logger(null, Verbosity);
 			Logger.LogLine(1, "Preparing debug code for xamlc");
 			Logger.LogLine(1, "\nAssembly: {0}", Assembly);
+
+			var skipassembly = true; //change this to false to enable XamlC by default
 
 			var resolver = new DefaultAssemblyResolver();
 			if (!string.IsNullOrEmpty(DependencyPaths))
@@ -43,8 +46,30 @@ namespace Xamarin.Forms.Build.Tasks
 				ReadSymbols = DebugSymbols,
 				AssemblyResolver = resolver
 			})) {
+				CustomAttribute xamlcAttr;
+				if (assemblyDefinition.HasCustomAttributes &&
+					(xamlcAttr =
+						assemblyDefinition.CustomAttributes.FirstOrDefault(
+							ca => ca.AttributeType.FullName == "Xamarin.Forms.Xaml.XamlCompilationAttribute")) != null) {
+					var options = (XamlCompilationOptions)xamlcAttr.ConstructorArguments[0].Value;
+					if ((options & XamlCompilationOptions.Skip) == XamlCompilationOptions.Skip)
+						skipassembly = true;
+					if ((options & XamlCompilationOptions.Compile) == XamlCompilationOptions.Compile)
+						skipassembly = false;
+				}
 
 				foreach (var module in assemblyDefinition.Modules) {
+					var skipmodule = skipassembly;
+					if (module.HasCustomAttributes &&
+						(xamlcAttr =
+							module.CustomAttributes.FirstOrDefault(
+								ca => ca.AttributeType.FullName == "Xamarin.Forms.Xaml.XamlCompilationAttribute")) != null) {
+						var options = (XamlCompilationOptions)xamlcAttr.ConstructorArguments[0].Value;
+						if ((options & XamlCompilationOptions.Skip) == XamlCompilationOptions.Skip)
+							skipmodule = true;
+						if ((options & XamlCompilationOptions.Compile) == XamlCompilationOptions.Compile)
+							skipmodule = false;
+					}
 					Logger.LogLine(2, " Module: {0}", module.Name);
 					foreach (var resource in module.Resources.OfType<EmbeddedResource>()) {
 						Logger.LogString(2, "  Resource: {0}... ", resource.Name);
@@ -58,6 +83,23 @@ namespace Xamarin.Forms.Build.Tasks
 							Logger.LogLine(2, "no type found... skipped.");
 							continue;
 						}
+						var skiptype = skipmodule;
+						if (typeDef.HasCustomAttributes &&
+							(xamlcAttr =
+								typeDef.CustomAttributes.FirstOrDefault(
+									ca => ca.AttributeType.FullName == "Xamarin.Forms.Xaml.XamlCompilationAttribute")) != null) {
+							var options = (XamlCompilationOptions)xamlcAttr.ConstructorArguments[0].Value;
+							if ((options & XamlCompilationOptions.Skip) == XamlCompilationOptions.Skip)
+								skiptype = true;
+							if ((options & XamlCompilationOptions.Compile) == XamlCompilationOptions.Compile)
+								skiptype = false;
+						}
+
+						if (skiptype) {
+							Logger.LogLine(2, "Has XamlCompilationAttribute set to Skip and not Compile... skipped");
+							continue;
+						}
+
 						var initComp = typeDef.Methods.FirstOrDefault(md => md.Name == "InitializeComponent");
 						if (initComp == null) {
 							Logger.LogLine(2, "no InitializeComponent found... skipped.");
@@ -65,24 +107,30 @@ namespace Xamarin.Forms.Build.Tasks
 						}
 						var initCompRuntime = typeDef.Methods.FirstOrDefault(md => md.Name == "__InitComponentRuntime");
 						if (initCompRuntime == null) {
-							Logger.LogLine(2, "no __InitComponentRuntime found... duplicating.");
-							initCompRuntime = DuplicateMethodDef(typeDef, initComp, "__InitComponentRuntime");
+							Logger.LogString(2, "no __InitComponentRuntime found. renaming {0}.InitializeComponent () into {0}.__InitComponentRuntime.", typeDef.Name);
+							initCompRuntime = initComp;
+							initCompRuntime.Name = "__InitComponentRuntime";
+							Logger.LogLine(2, "done.");
+							Logger.LogString(2, "   Recreating empty {0}.InitializeComponent ...", typeDef.Name);
+							initComp = new MethodDefinition("InitializeComponent", initComp.Attributes, initComp.ReturnType);
+							typeDef.Methods.Add(initComp);
+							Logger.LogLine(2, "done.");
 						}
 
-						//					IL_0000:  ldarg.0 
-						//					IL_0001:  callvirt instance void class [Xamarin.Forms.Core]Xamarin.Forms.ContentPage::'.ctor'()
-						//
-						//					IL_0006:  nop 
-						//					IL_0007:  ldarg.1 
-						//					IL_0008:  brfalse IL_0018
-						//
-						//					IL_000d:  ldarg.0 
-						//					IL_000e:  callvirt instance void class Xamarin.Forms.Xaml.XamlcTests.MyPage::InitializeComponent()
-						//					IL_0013:  br IL_001e
-						//
-						//					IL_0018:  ldarg.0 
-						//					IL_0019:  callvirt instance void class Xamarin.Forms.Xaml.XamlcTests.MyPage::__InitComponentRuntime()
-						//					IL_001e:  ret 
+//						IL_0000:  ldarg.0 
+//						IL_0001:  callvirt instance void class [Xamarin.Forms.Core]Xamarin.Forms.ContentPage::'.ctor'()
+//
+//						IL_0006:  nop 
+//						IL_0007:  ldarg.1 
+//						IL_0008:  brfalse IL_0018
+//
+//						IL_000d:  ldarg.0 
+//						IL_000e:  callvirt instance void class Xamarin.Forms.Xaml.XamlcTests.MyPage::InitializeComponent()
+//						IL_0013:  br IL_001e
+//
+//						IL_0018:  ldarg.0 
+//						IL_0019:  callvirt instance void class Xamarin.Forms.Xaml.XamlcTests.MyPage::__InitComponentRuntime()
+//						IL_001e:  ret 
 
 						var altCtor =
 							typeDef.Methods.Where(
