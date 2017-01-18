@@ -10,7 +10,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			_isOpaque = isOpaque;
 		}
+
 		public override bool IsOpaque => _isOpaque;
 	}
 }
-

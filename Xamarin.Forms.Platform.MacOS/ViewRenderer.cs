@@ -9,7 +9,8 @@ namespace Xamarin.Forms.Platform.MacOS
 	{
 	}
 
-	public abstract class ViewRenderer<TView, TNativeView> : VisualElementRenderer<TView> where TView : View where TNativeView : NSView
+	public abstract class ViewRenderer<TView, TNativeView> : VisualElementRenderer<TView> where TView : View
+		where TNativeView : NSView
 	{
 		CGColor _defaultColor;
 
@@ -32,9 +33,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			base.Dispose(disposing);
 
-		    if (!disposing || Control == null || !ManageNativeControlLifetime) return;
-		    Control.Dispose();
-		    Control = null;
+			if (!disposing || Control == null || !ManageNativeControlLifetime) return;
+			Control.Dispose();
+			Control = null;
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<TView> e)
@@ -46,7 +47,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			if (e.NewElement != null)
 			{
-				if (Control != null && e.OldElement != null && e.OldElement.BackgroundColor != e.NewElement.BackgroundColor || e.NewElement.BackgroundColor != Color.Default)
+				if (Control != null && e.OldElement != null && e.OldElement.BackgroundColor != e.NewElement.BackgroundColor ||
+					e.NewElement.BackgroundColor != Color.Default)
 					SetBackgroundColor(e.NewElement.BackgroundColor);
 
 				e.NewElement.FocusChangeRequested += ViewOnFocusChangeRequested;
@@ -88,14 +90,14 @@ namespace Xamarin.Forms.Platform.MacOS
 		protected override void SetBackgroundColor(Color color)
 		{
 			base.SetBackgroundColor(color);
-			if(Control != null)
+			if (Control != null)
 				Control.Layer.BackgroundColor = color == Color.Default ? _defaultColor : color.ToCGColor();
 		}
 
 		protected void SetNativeControl(TNativeView uiView)
 		{
 			uiView.WantsLayer = true;
-			
+
 			_defaultColor = uiView.Layer.BackgroundColor;
 
 			Control = uiView;

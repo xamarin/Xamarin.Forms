@@ -11,14 +11,13 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public abstract NSWindow MainWindow { get; }
 
-	    protected override void Dispose(bool disposing)
+		protected override void Dispose(bool disposing)
 		{
 			if (disposing && _application != null)
 				_application.PropertyChanged -= ApplicationOnPropertyChanged;
 
 			base.Dispose(disposing);
 		}
-
 
 		protected void LoadApplication(Application application)
 		{
@@ -49,17 +48,17 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			// applicationDidBecomeActive
 			// execute any OpenGL ES drawing calls
-		    if (_application == null || !_isSuspended) return;
-		    _isSuspended = false;
-		    _application.SendResume();
+			if (_application == null || !_isSuspended) return;
+			_isSuspended = false;
+			_application.SendResume();
 		}
 
 		public override async void DidResignActive(Foundation.NSNotification notification)
 		{
 			// applicationWillResignActive
-		    if (_application == null) return;
-		    _isSuspended = true;
-		    await _application.SendSleepAsync();
+			if (_application == null) return;
+			_isSuspended = true;
+			await _application.SendSleepAsync();
 		}
 
 		void ApplicationOnPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -80,8 +79,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			var platformRenderer = (PlatformRenderer)MainWindow.ContentViewController;
 			MainWindow.ContentViewController = _application.MainPage.CreateViewController();
-		    (platformRenderer?.Platform as IDisposable)?.Dispose();
+			(platformRenderer?.Platform as IDisposable)?.Dispose();
 		}
 	}
 }
-

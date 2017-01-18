@@ -7,19 +7,19 @@ namespace Xamarin.Forms.Platform.MacOS
 {
 	public class Platform : BindableObject, IPlatform, IDisposable
 	{
-		internal static readonly BindableProperty RendererProperty = BindableProperty.CreateAttached("Renderer", typeof(IVisualElementRenderer), typeof(Platform), default(IVisualElementRenderer),
-				propertyChanged: (bindable, oldvalue, newvalue) =>
-				{
-					var view = bindable as VisualElement;
-					if (view != null)
-						view.IsPlatformEnabled = newvalue != null;
-				});
+		internal static readonly BindableProperty RendererProperty = BindableProperty.CreateAttached("Renderer",
+			typeof(IVisualElementRenderer), typeof(Platform), default(IVisualElementRenderer),
+			propertyChanged: (bindable, oldvalue, newvalue) =>
+			{
+				var view = bindable as VisualElement;
+				if (view != null)
+					view.IsPlatformEnabled = newvalue != null;
+			});
 
 		readonly PlatformRenderer PlatformRenderer;
 
 		bool _appeared;
 		bool _disposed;
-
 
 		internal static NativeToolbarTracker NativeToolbarTracker = new NativeToolbarTracker();
 
@@ -132,7 +132,6 @@ namespace Xamarin.Forms.Platform.MacOS
 			renderer?.NativeView?.RemoveFromSuperview();
 			renderer?.Dispose();
 
-
 			view.ClearValue(RendererProperty);
 		}
 
@@ -221,10 +220,12 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				var btn = new NSButton { Title = button, Tag = i };
 				btn.SetButtonType(NSButtonType.MomentaryPushIn);
-				btn.Activated += (s, e) =>
-				{
-					NSApplication.SharedApplication.EndSheet(NSApplication.SharedApplication.MainWindow.AttachedSheet, ((NSButton)s).Tag + 2);
-				};
+				btn.Activated +=
+					(s, e) =>
+					{
+						NSApplication.SharedApplication.EndSheet(NSApplication.SharedApplication.MainWindow.AttachedSheet,
+							((NSButton)s).Tag + 2);
+					};
 				btn.Frame = new RectangleF(0, height * i, width, height);
 				newView.AddSubview(btn);
 				i++;
@@ -259,4 +260,3 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 	}
 }
-

@@ -1,6 +1,5 @@
 ﻿using System;
 using AppKit;
-
 using RectangleF = CoreGraphics.CGRect;
 using SizeF = CoreGraphics.CGSize;
 using PointF = CoreGraphics.CGPoint;
@@ -28,7 +27,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			var result = base.GetDesiredSize(widthConstraint, heightConstraint);
 			result.Minimum = new Size(Math.Min(10, result.Request.Width), result.Request.Height);
-			if ((Element.LineBreakMode & (LineBreakMode.TailTruncation | LineBreakMode.HeadTruncation | LineBreakMode.MiddleTruncation)) != 0)
+			if ((Element.LineBreakMode &
+				(LineBreakMode.TailTruncation | LineBreakMode.HeadTruncation | LineBreakMode.MiddleTruncation)) != 0)
 			{
 				if (result.Request.Width > widthConstraint)
 					result.Request = new Size(Math.Max(result.Minimum.Width, widthConstraint), result.Request.Height);
@@ -77,7 +77,13 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				if (Control == null)
 				{
-					SetNativeControl(new NSTextField() { BackgroundColor = NSColor.Clear, Editable = false, Bezeled = false, DrawsBackground = false });
+					SetNativeControl(new NSTextField()
+					{
+						BackgroundColor = NSColor.Clear,
+						Editable = false,
+						Bezeled = false,
+						DrawsBackground = false
+					});
 				}
 
 				UpdateText();
@@ -174,4 +180,3 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 	}
 }
-

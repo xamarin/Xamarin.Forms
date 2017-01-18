@@ -46,7 +46,9 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateText();
 			else if (e.PropertyName == Button.FontProperty.PropertyName)
 				UpdateFont();
-			else if (e.PropertyName == Button.BorderWidthProperty.PropertyName || e.PropertyName == Button.BorderRadiusProperty.PropertyName || e.PropertyName == Button.BorderColorProperty.PropertyName)
+			else if (e.PropertyName == Button.BorderWidthProperty.PropertyName ||
+					e.PropertyName == Button.BorderRadiusProperty.PropertyName ||
+					e.PropertyName == Button.BorderColorProperty.PropertyName)
 				UpdateBorder();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundVisibility();
@@ -127,4 +129,3 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 	}
 }
-

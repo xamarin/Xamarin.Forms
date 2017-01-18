@@ -58,7 +58,6 @@ namespace Xamarin.Forms.Platform.MacOS
 			IVisualElementRenderer renderer;
 			if (_rendererRef.TryGetTarget(out renderer))
 				renderer.NativeView.Frame = view.Bounds.ToRectangleF();
-
 		}
 
 		IVisualElementRenderer GetNewRenderer()
@@ -101,8 +100,6 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 
 			Platform.SetRenderer(_viewCell.View, renderer);
-
 		}
 	}
 }
-

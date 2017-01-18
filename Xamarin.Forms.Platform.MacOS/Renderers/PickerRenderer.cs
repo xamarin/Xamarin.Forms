@@ -5,146 +5,149 @@ using Foundation;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
-    public class PickerRenderer : ViewRenderer<Picker, NSComboBox>
-    {
-        bool _disposed;
-        NSColor _defaultTextColor;
-        NSColor _defaultBackgroundColor;
+	public class PickerRenderer : ViewRenderer<Picker, NSComboBox>
+	{
+		bool _disposed;
+		NSColor _defaultTextColor;
+		NSColor _defaultBackgroundColor;
 
-        IElementController ElementController => Element;
+		IElementController ElementController => Element;
 
-        protected override void OnElementChanged(ElementChangedEventArgs<Picker> e)
-        {
-            if (e.NewElement != null) {
-                if (Control == null)
-                    SetNativeControl(new NSComboBox { Editable = false });
+		protected override void OnElementChanged(ElementChangedEventArgs<Picker> e)
+		{
+			if (e.NewElement != null)
+			{
+				if (Control == null)
+					SetNativeControl(new NSComboBox { Editable = false });
 
-                _defaultTextColor = Control.TextColor;
-                _defaultBackgroundColor = Control.BackgroundColor;
+				_defaultTextColor = Control.TextColor;
+				_defaultBackgroundColor = Control.BackgroundColor;
 
-                Control.UsesDataSource = true;
-                Control.DataSource = new ComboDataSource(this);
+				Control.UsesDataSource = true;
+				Control.DataSource = new ComboDataSource(this);
 
-                Control.SelectionChanged += ComboBoxSelectionChanged;
+				Control.SelectionChanged += ComboBoxSelectionChanged;
 
-                UpdatePicker();
-                UpdateTextColor();
-            }
+				UpdatePicker();
+				UpdateTextColor();
+			}
 
-            base.OnElementChanged(e);
-        }
+			base.OnElementChanged(e);
+		}
 
-        protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            base.OnElementPropertyChanged(sender, e);
-            if (e.PropertyName == Picker.TitleProperty.PropertyName)
-                UpdatePicker();
-            if (e.PropertyName == Picker.SelectedIndexProperty.PropertyName)
-                UpdatePicker();
-            if (e.PropertyName == Picker.TextColorProperty.PropertyName || e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
-                UpdateTextColor();
-        }
+		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			base.OnElementPropertyChanged(sender, e);
+			if (e.PropertyName == Picker.TitleProperty.PropertyName)
+				UpdatePicker();
+			if (e.PropertyName == Picker.SelectedIndexProperty.PropertyName)
+				UpdatePicker();
+			if (e.PropertyName == Picker.TextColorProperty.PropertyName ||
+				e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
+				UpdateTextColor();
+		}
 
-        protected override void SetBackgroundColor(Color color)
-        {
-            base.SetBackgroundColor(color);
+		protected override void SetBackgroundColor(Color color)
+		{
+			base.SetBackgroundColor(color);
 
-            if (Control == null)
-                return;
+			if (Control == null)
+				return;
 
-            Control.BackgroundColor = color == Color.Default ? _defaultBackgroundColor : color.ToNSColor();
-        }
+			Control.BackgroundColor = color == Color.Default ? _defaultBackgroundColor : color.ToNSColor();
+		}
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing) {
-                if (!_disposed) {
-                    _disposed = true;
-                    if (Element != null) {
-                        //((ObservableList<string>)Element.Items).CollectionChanged -= RowsCollectionChanged;
-                    }
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				if (!_disposed)
+				{
+					_disposed = true;
+					if (Element != null)
+					{
+						//((ObservableList<string>)Element.Items).CollectionChanged -= RowsCollectionChanged;
+					}
 
+					if (Control != null)
+						Control.SelectionChanged -= ComboBoxSelectionChanged;
+				}
+			}
+			base.Dispose(disposing);
+		}
 
-                    if (Control != null)
-                        Control.SelectionChanged -= ComboBoxSelectionChanged;
-                }
-            }
-            base.Dispose(disposing);
-        }
+		void ComboBoxSelectionChanged(object sender, EventArgs e)
+		{
+			ElementController?.SetValueFromRenderer(Picker.SelectedIndexProperty, (int)Control.SelectedIndex);
+		}
 
-        void ComboBoxSelectionChanged(object sender, EventArgs e)
-        {
-            ElementController?.SetValueFromRenderer(Picker.SelectedIndexProperty, (int)Control.SelectedIndex);
-        }
+		void OnEnded(object sender, EventArgs eventArgs)
+		{
+			ElementController?.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
+		}
 
-        void OnEnded(object sender, EventArgs eventArgs)
-        {
-            ElementController?.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
-        }
+		void OnStarted(object sender, EventArgs eventArgs)
+		{
+			ElementController?.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, true);
+		}
 
-        void OnStarted(object sender, EventArgs eventArgs)
-        {
-            ElementController?.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, true);
-        }
+		void RowsCollectionChanged(object sender, EventArgs e)
+		{
+			UpdatePicker();
+		}
 
-        void RowsCollectionChanged(object sender, EventArgs e)
-        {
-            UpdatePicker();
-        }
+		void UpdatePicker()
+		{
+			if (Control == null || Element == null)
+				return;
 
-        void UpdatePicker()
-        {
-            if (Control == null || Element == null)
-                return;
+			var selectedIndex = Element.SelectedIndex;
+			var items = Element.Items;
+			Control.PlaceholderString = Element.Title ?? string.Empty;
+			Control.ReloadData();
+			if (items == null || items.Count == 0 || selectedIndex < 0)
+				return;
 
-            var selectedIndex = Element.SelectedIndex;
-            var items = Element.Items;
-            Control.PlaceholderString = Element.Title ?? string.Empty;
-            Control.ReloadData();
-            if (items == null || items.Count == 0 || selectedIndex < 0)
-                return;
+			Control.SelectItem(selectedIndex);
+		}
 
-            Control.SelectItem(selectedIndex);
-        }
+		void UpdateTextColor()
+		{
+			if (Control == null || Element == null)
+				return;
 
-        void UpdateTextColor()
-        {
-            if (Control == null || Element == null)
-                return;
+			var textColor = Element.TextColor;
 
-            var textColor = Element.TextColor;
+			if (textColor.IsDefault || !Element.IsEnabled)
+				Control.TextColor = _defaultTextColor;
+			else
+				Control.TextColor = textColor.ToNSColor();
+		}
 
-            if (textColor.IsDefault || !Element.IsEnabled)
-                Control.TextColor = _defaultTextColor;
-            else
-                Control.TextColor = textColor.ToNSColor();
-        }
+		class ComboDataSource : NSComboBoxDataSource
+		{
+			readonly PickerRenderer _renderer;
 
-        class ComboDataSource : NSComboBoxDataSource
-        {
-            readonly PickerRenderer _renderer;
+			public ComboDataSource(PickerRenderer model)
+			{
+				_renderer = model;
+			}
 
-            public ComboDataSource(PickerRenderer model)
-            {
-                _renderer = model;
-            }
+			public override nint ItemCount(NSComboBox comboBox)
+			{
+				return _renderer.Element.Items?.Count ?? 0;
+			}
 
-            public override nint ItemCount(NSComboBox comboBox)
-            {
-                return _renderer.Element.Items?.Count ?? 0;
-            }
+			public override NSObject ObjectValueForItem(NSComboBox comboBox, nint index)
+			{
+				return new NSString(_renderer.Element.Items[(int)index]);
+			}
 
-            public override NSObject ObjectValueForItem(NSComboBox comboBox, nint index)
-            {
-                return new NSString(_renderer.Element.Items[(int)index]);
-            }
-
-            public override nint IndexOfItem(NSComboBox comboBox, string value)
-            {
-                var index = _renderer.Element.Items?.IndexOf(value) ?? -1;
-                return index;
-            }
-        }
-    }
+			public override nint IndexOfItem(NSComboBox comboBox, string value)
+			{
+				var index = _renderer.Element.Items?.IndexOf(value) ?? -1;
+				return index;
+			}
+		}
+	}
 }
-

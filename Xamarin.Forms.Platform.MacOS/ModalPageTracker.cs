@@ -54,7 +54,6 @@ namespace Xamarin.Forms.Platform.MacOS
 				{
 					foreach (var modal in _modals)
 						Platform.DisposeModelAndChildrenRenderers(modal);
-
 				}
 				_disposed = true;
 			}
@@ -83,9 +82,12 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			_renderer.AddChildViewController(toViewController);
 
-			NSViewControllerTransitionOptions option = animated ? NSViewControllerTransitionOptions.SlideUp : NSViewControllerTransitionOptions.None;
+			NSViewControllerTransitionOptions option = animated
+				? NSViewControllerTransitionOptions.SlideUp
+				: NSViewControllerTransitionOptions.None;
 
-			var task = _renderer.HandleAsyncAnimation(fromViewController, toViewController, option, () => fromViewController.View.Layer.Hidden = true, true);
+			var task = _renderer.HandleAsyncAnimation(fromViewController, toViewController, option,
+				() => fromViewController.View.Layer.Hidden = true, true);
 			return task;
 		}
 
@@ -96,9 +98,12 @@ namespace Xamarin.Forms.Platform.MacOS
 			var i = Math.Max(0, _renderer.ChildViewControllers.Length - 2);
 			var toViewController = _renderer.ChildViewControllers[i];
 
-			NSViewControllerTransitionOptions option = animated ? NSViewControllerTransitionOptions.SlideDown : NSViewControllerTransitionOptions.None;
+			NSViewControllerTransitionOptions option = animated
+				? NSViewControllerTransitionOptions.SlideDown
+				: NSViewControllerTransitionOptions.None;
 
-			var task = _renderer.HandleAsyncAnimation(controller, toViewController, option, () => Platform.DisposeModelAndChildrenRenderers(modal), modal);
+			var task = _renderer.HandleAsyncAnimation(controller, toViewController, option,
+				() => Platform.DisposeModelAndChildrenRenderers(modal), modal);
 			return task;
 		}
 	}

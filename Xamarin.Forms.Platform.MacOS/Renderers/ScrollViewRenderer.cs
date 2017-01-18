@@ -4,6 +4,7 @@ using AppKit;
 using RectangleF = CoreGraphics.CGRect;
 using ObjCRuntime;
 using Foundation;
+
 // ReSharper disable UnusedMember.Local
 // ReSharper disable UnusedParameter.Local
 
@@ -20,12 +21,13 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			DrawsBackground = false;
 			ContentView.PostsBoundsChangedNotifications = true;
-			NSNotificationCenter.DefaultCenter.AddObserver(this, new Selector(nameof(UpdateScrollPosition)), BoundsChangedNotification, ContentView);
+			NSNotificationCenter.DefaultCenter.AddObserver(this, new Selector(nameof(UpdateScrollPosition)),
+				BoundsChangedNotification, ContentView);
 		}
 
-	    IScrollViewController Controller => Element as IScrollViewController;
+		IScrollViewController Controller => Element as IScrollViewController;
 
-	    public VisualElement Element { get; private set; }
+		public VisualElement Element { get; private set; }
 
 		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
 
@@ -72,12 +74,13 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public void SetElementSize(Size size)
 		{
-			Xamarin.Forms.Layout.LayoutChildIntoBoundingRegion(Element, new Rectangle(Element.X, Element.Y, size.Width, size.Height));
+			Xamarin.Forms.Layout.LayoutChildIntoBoundingRegion(Element,
+				new Rectangle(Element.X, Element.Y, size.Width, size.Height));
 		}
 
 		public NSViewController ViewController => null;
 
-	    public override void Layout()
+		public override void Layout()
 		{
 			base.Layout();
 			LayoutSubviews();
@@ -107,9 +110,9 @@ namespace Xamarin.Forms.Platform.MacOS
 			base.Dispose(disposing);
 		}
 
-	    void OnElementChanged(VisualElementChangedEventArgs e)
+		void OnElementChanged(VisualElementChangedEventArgs e)
 		{
-            ElementChanged?.Invoke(this, e);
+			ElementChanged?.Invoke(this, e);
 		}
 
 		void PackContent()
@@ -169,7 +172,9 @@ namespace Xamarin.Forms.Platform.MacOS
 				return;
 			}
 
-			Point scrollPoint = (e.Mode == ScrollToMode.Position) ? new Point(e.ScrollX, Element.Height - e.ScrollY) : Controller.GetScrollPositionForElement(e.Element as VisualElement, e.Position);
+			Point scrollPoint = (e.Mode == ScrollToMode.Position)
+				? new Point(e.ScrollX, Element.Height - e.ScrollY)
+				: Controller.GetScrollPositionForElement(e.Element as VisualElement, e.Position);
 
 			(DocumentView as NSView)?.ScrollPoint(scrollPoint.ToPointF());
 
@@ -187,7 +192,8 @@ namespace Xamarin.Forms.Platform.MacOS
 				return;
 			var contentSize = ((ScrollView)Element).ContentSize.ToSizeF();
 			if (!contentSize.IsEmpty)
-				_contentRenderer.NativeView.Frame = new RectangleF(0, Element.Height - contentSize.Height, contentSize.Width, contentSize.Height);
+				_contentRenderer.NativeView.Frame = new RectangleF(0, Element.Height - contentSize.Height, contentSize.Width,
+					contentSize.Height);
 		}
 
 		[Export(nameof(UpdateScrollPosition))]
@@ -207,4 +213,3 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 	}
 }
-

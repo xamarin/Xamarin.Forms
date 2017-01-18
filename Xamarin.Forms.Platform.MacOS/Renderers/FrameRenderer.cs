@@ -18,7 +18,8 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName || e.PropertyName == Xamarin.Forms.Frame.OutlineColorProperty.PropertyName ||
+			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName ||
+				e.PropertyName == Xamarin.Forms.Frame.OutlineColorProperty.PropertyName ||
 				e.PropertyName == Xamarin.Forms.Frame.HasShadowProperty.PropertyName)
 				SetupLayer();
 		}
@@ -54,4 +55,3 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 	}
 }
-

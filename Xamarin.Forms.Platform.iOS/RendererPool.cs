@@ -4,12 +4,14 @@ using System.Collections.Generic;
 #if __MOBILE__
 namespace Xamarin.Forms.Platform.iOS
 #else
+
 namespace Xamarin.Forms.Platform.MacOS
 #endif
 {
 	public sealed class RendererPool
 	{
-		readonly Dictionary<Type, Stack<IVisualElementRenderer>> _freeRenderers = new Dictionary<Type, Stack<IVisualElementRenderer>>();
+		readonly Dictionary<Type, Stack<IVisualElementRenderer>> _freeRenderers =
+			new Dictionary<Type, Stack<IVisualElementRenderer>>();
 
 		readonly VisualElement _oldElement;
 

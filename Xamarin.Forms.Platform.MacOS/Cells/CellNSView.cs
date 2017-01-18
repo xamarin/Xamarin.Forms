@@ -5,7 +5,7 @@ using CoreGraphics;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
-    internal class CellNSView : NSView, INativeElementView
+	internal class CellNSView : NSView, INativeElementView
 	{
 		static readonly NSColor s_defaultChildViewsBackground = NSColor.Clear;
 		static readonly CGColor s_defaultHeaderViewsBackground = NSColor.LightGray.CGColor;
@@ -63,19 +63,19 @@ namespace Xamarin.Forms.Platform.MacOS
 			nfloat availableHeight = Frame.Height;
 			nfloat availableWidth = Frame.Width - padding * 2;
 			nfloat imageWidth = 0;
-		    nfloat accessoryViewWidth = 0;
-
+			nfloat accessoryViewWidth = 0;
 
 			if (ImageView != null)
 			{
-			    nfloat imageHeight = imageWidth = availableHeight;
-			    ImageView.Frame = new CGRect(padding, 0, imageWidth, imageHeight);
+				nfloat imageHeight = imageWidth = availableHeight;
+				ImageView.Frame = new CGRect(padding, 0, imageWidth, imageHeight);
 			}
 
 			if (AccessoryView != null)
 			{
 				accessoryViewWidth = _style == NSTableViewCellStyle.Value1 ? 50 : availableWidth - 100;
-				AccessoryView.Frame = new CGRect(availableWidth - accessoryViewWidth + padding, 0, accessoryViewWidth, availableHeight);
+				AccessoryView.Frame = new CGRect(availableWidth - accessoryViewWidth + padding, 0, accessoryViewWidth,
+					availableHeight);
 				foreach (var subView in AccessoryView.Subviews)
 				{
 					//try to find the size the control wants, if no width use default width
@@ -98,11 +98,13 @@ namespace Xamarin.Forms.Platform.MacOS
 				DetailTextLabel.CenterTextVertically(new CGRect(imageWidth + padding, 0, labelWidth, labelHeights));
 			}
 
-			TextLabel.CenterTextVertically(new CGRect(imageWidth + padding, availableHeight - labelHeights, labelWidth, labelHeights));
+			TextLabel.CenterTextVertically(new CGRect(imageWidth + padding, availableHeight - labelHeights, labelWidth,
+				labelHeights));
 			base.Layout();
 		}
 
-		internal static NSView GetNativeCell(NSTableView tableView, Cell cell, string templateId = "", bool isHeader = false, bool isRecycle = false)
+		internal static NSView GetNativeCell(NSTableView tableView, Cell cell, string templateId = "", bool isHeader = false,
+			bool isRecycle = false)
 		{
 			var reusable = tableView.MakeView(templateId, tableView);
 			NSView nativeCell;
@@ -119,9 +121,9 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (string.IsNullOrEmpty(nativeCell.Identifier))
 				nativeCell.Identifier = templateId;
 
-		    if (!isHeader) return nativeCell;
+			if (!isHeader) return nativeCell;
 			if (nativeCell.Layer != null) nativeCell.Layer.BackgroundColor = s_defaultHeaderViewsBackground;
-		    return nativeCell;
+			return nativeCell;
 		}
 
 		void CreateUI()
@@ -138,7 +140,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			TextLabel.Cell.BackgroundColor = s_defaultChildViewsBackground;
 
-			if (style == NSTableViewCellStyle.Image || style == NSTableViewCellStyle.Subtitle || style == NSTableViewCellStyle.ImageSubtitle)
+			if (style == NSTableViewCellStyle.Image || style == NSTableViewCellStyle.Subtitle ||
+				style == NSTableViewCellStyle.ImageSubtitle)
 			{
 				AddSubview(DetailTextLabel = new NSTextField
 				{

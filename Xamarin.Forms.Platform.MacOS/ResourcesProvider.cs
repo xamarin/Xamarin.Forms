@@ -9,7 +9,6 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public ResourcesProvider()
 		{
-
 		}
 
 		public IResourceDictionary GetSystemResources()
@@ -56,4 +55,3 @@ namespace Xamarin.Forms.Platform.MacOS
 		//}
 	}
 }
-

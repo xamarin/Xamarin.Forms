@@ -3,6 +3,7 @@ using System;
 #if __MOBILE__
 using UIKit;
 #endif
+
 namespace Xamarin.Forms
 {
 	[AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]

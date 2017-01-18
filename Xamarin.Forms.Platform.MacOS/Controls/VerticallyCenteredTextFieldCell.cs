@@ -4,9 +4,10 @@ using CoreGraphics;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
-    sealed class VerticallyCenteredTextFieldCell : NSTextFieldCell
+	sealed class VerticallyCenteredTextFieldCell : NSTextFieldCell
 	{
-	    readonly nfloat _yOffset;
+		readonly nfloat _yOffset;
+
 		public VerticallyCenteredTextFieldCell(nfloat yOffset, NSFont font = null)
 		{
 			if (font != null)
@@ -33,4 +34,3 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 	}
 }
-

@@ -7,210 +7,223 @@ using Foundation;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
-    [Register("CarouselPageRenderer")]
-    public class CarouselPageRenderer : NSPageController, IVisualElementRenderer
-    {
-        bool _appeared;
-        bool _disposed;
-        EventTracker _events;
-        VisualElementTracker _tracker;
+	[Register("CarouselPageRenderer")]
+	public class CarouselPageRenderer : NSPageController, IVisualElementRenderer
+	{
+		bool _appeared;
+		bool _disposed;
+		EventTracker _events;
+		VisualElementTracker _tracker;
 
-		public CarouselPageRenderer() { View = new NSView { WantsLayer = true }; View.Layer.BackgroundColor = NSColor.White.CGColor; }
-        public CarouselPageRenderer(IntPtr handle) : base(handle) { }
+		public CarouselPageRenderer()
+		{
+			View = new NSView
+			{
+				WantsLayer = true,
+				Layer = { BackgroundColor = NSColor.White.CGColor }
+			};
+		}
 
-        IElementController ElementController => Element;
-        IPageController PageController => (IPageController)Element;
+		public CarouselPageRenderer(IntPtr handle) : base(handle)
+		{
+		}
 
-        public override nint SelectedIndex
-        {
-            get
-            {
-                return base.SelectedIndex;
-            }
-            set
-            {
-                if (base.SelectedIndex == value)
-                    return;
-                base.SelectedIndex = value;
-                if (Carousel != null)
-                    Carousel.CurrentPage = (ContentPage)ElementController.LogicalChildren[(int)SelectedIndex];
-            }
-        }
+		IElementController ElementController => Element;
 
-        public VisualElement Element { get; private set; }
+		IPageController PageController => (IPageController)Element;
 
-        public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
+		public override nint SelectedIndex
+		{
+			get { return base.SelectedIndex; }
+			set
+			{
+				if (base.SelectedIndex == value)
+					return;
+				base.SelectedIndex = value;
+				if (Carousel != null)
+					Carousel.CurrentPage = (ContentPage)ElementController.LogicalChildren[(int)SelectedIndex];
+			}
+		}
 
-        public SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
-        {
-            return NativeView.GetSizeRequest(widthConstraint, heightConstraint);
-        }
+		public VisualElement Element { get; private set; }
 
-        public NSView NativeView => View;
+		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
 
-        public void SetElement(VisualElement element)
-        {
-            VisualElement oldElement = Element;
-            Element = element;
+		public SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
+		{
+			return NativeView.GetSizeRequest(widthConstraint, heightConstraint);
+		}
 
-            Init();
+		public NSView NativeView => View;
 
-            OnElementChanged(new VisualElementChangedEventArgs(oldElement, element));
-        }
+		public void SetElement(VisualElement element)
+		{
+			VisualElement oldElement = Element;
+			Element = element;
 
-        public void SetElementSize(Size size)
-        {
-            Element.Layout(new Rectangle(Element.X, Element.Y, size.Width, size.Height));
-        }
+			Init();
 
-        public NSViewController ViewController => this;
+			OnElementChanged(new VisualElementChangedEventArgs(oldElement, element));
+		}
 
-        public override void ViewDidAppear()
-        {
-            base.ViewDidAppear();
-            if (_appeared || _disposed)
-                return;
+		public void SetElementSize(Size size)
+		{
+			Element.Layout(new Rectangle(Element.X, Element.Y, size.Width, size.Height));
+		}
 
-            _appeared = true;
-            PageController.SendAppearing();
-        }
+		public NSViewController ViewController => this;
 
-        public override void ViewDidDisappear()
-        {
-            base.ViewDidDisappear();
+		public override void ViewDidAppear()
+		{
+			base.ViewDidAppear();
+			if (_appeared || _disposed)
+				return;
 
-            if (!_appeared || _disposed)
-                return;
+			_appeared = true;
+			PageController.SendAppearing();
+		}
 
-            _appeared = false;
-            PageController.SendDisappearing();
-        }
+		public override void ViewDidDisappear()
+		{
+			base.ViewDidDisappear();
 
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && !_disposed) {
-                if (Carousel != null) {
-                    Carousel.PropertyChanged -= OnPropertyChanged;
-                    Carousel.PagesChanged -= OnPagesChanged;
-                }
+			if (!_appeared || _disposed)
+				return;
 
-                Platform.SetRenderer(Element, null);
+			_appeared = false;
+			PageController.SendDisappearing();
+		}
 
-                if (_appeared) {
-                    _appeared = false;
-                    PageController?.SendDisappearing();
-                }
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing && !_disposed)
+			{
+				if (Carousel != null)
+				{
+					Carousel.PropertyChanged -= OnPropertyChanged;
+					Carousel.PagesChanged -= OnPagesChanged;
+				}
 
-                if (_events != null) {
-                    _events.Dispose();
-                    _events = null;
-                }
+				Platform.SetRenderer(Element, null);
 
-                if (_tracker != null) {
-                    _tracker.Dispose();
-                    _tracker = null;
-                }
+				if (_appeared)
+				{
+					_appeared = false;
+					PageController?.SendDisappearing();
+				}
 
-                Element = null;
-                _disposed = true;
-            }
+				if (_events != null)
+				{
+					_events.Dispose();
+					_events = null;
+				}
 
-            base.Dispose(disposing);
-        }
+				if (_tracker != null)
+				{
+					_tracker.Dispose();
+					_tracker = null;
+				}
 
-        void OnElementChanged(VisualElementChangedEventArgs e)
-        {
-            ElementChanged?.Invoke(this, e);
-        }
+				Element = null;
+				_disposed = true;
+			}
 
-        void ConfigureNSPageController()
-        {
-            TransitionStyle = NSPageControllerTransitionStyle.HorizontalStrip;
-        }
+			base.Dispose(disposing);
+		}
 
-        CarouselPage Carousel => Element as CarouselPage;
+		void OnElementChanged(VisualElementChangedEventArgs e)
+		{
+			ElementChanged?.Invoke(this, e);
+		}
 
-        void Init()
-        {
-            Delegate = new PageControllerDelegate();
+		void ConfigureNSPageController()
+		{
+			TransitionStyle = NSPageControllerTransitionStyle.HorizontalStrip;
+		}
 
-            _tracker = new VisualElementTracker(this);
-            _events = new EventTracker(this);
-            _events.LoadEvents(View);
+		CarouselPage Carousel => Element as CarouselPage;
 
-            ConfigureNSPageController();
+		void Init()
+		{
+			Delegate = new PageControllerDelegate();
 
-            UpdateBackground();
-            UpdateSource();
+			_tracker = new VisualElementTracker(this);
+			_events = new EventTracker(this);
+			_events.LoadEvents(View);
 
-            Carousel.PropertyChanged += OnPropertyChanged;
-            Carousel.PagesChanged += OnPagesChanged;
-        }
+			ConfigureNSPageController();
 
-        void UpdateSource()
-        {
-            var pages = new List<NSPageContainer>();
-            for (var i = 0; i < ElementController.LogicalChildren.Count; i++) {
-                Element element = ElementController.LogicalChildren[i];
-                var child = element as ContentPage;
-                if (child != null)
-                    pages.Add(new NSPageContainer(child, i));
-            }
+			UpdateBackground();
+			UpdateSource();
 
-            ArrangedObjects = pages.ToArray();
-            UpdateCurrentPage(false);
-        }
+			Carousel.PropertyChanged += OnPropertyChanged;
+			Carousel.PagesChanged += OnPagesChanged;
+		}
 
-        void OnPagesChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            UpdateSource();
-        }
+		void UpdateSource()
+		{
+			var pages = new List<NSPageContainer>();
+			for (var i = 0; i < ElementController.LogicalChildren.Count; i++)
+			{
+				Element element = ElementController.LogicalChildren[i];
+				var child = element as ContentPage;
+				if (child != null)
+					pages.Add(new NSPageContainer(child, i));
+			}
 
-        void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName == nameof(TabbedPage.CurrentPage))
-                UpdateCurrentPage();
-            else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
-                UpdateBackground();
-            else if (e.PropertyName == Page.BackgroundImageProperty.PropertyName)
-                UpdateBackground();
-        }
+			ArrangedObjects = pages.ToArray();
+			UpdateCurrentPage(false);
+		}
 
-        void UpdateBackground()
-        {
+		void OnPagesChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			UpdateSource();
+		}
+
+		void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == nameof(TabbedPage.CurrentPage))
+				UpdateCurrentPage();
+			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
+				UpdateBackground();
+			else if (e.PropertyName == Page.BackgroundImageProperty.PropertyName)
+				UpdateBackground();
+		}
+
+		void UpdateBackground()
+		{
 			if (View.Layer == null)
 				return;
-			
-            string bgImage = ((Page)Element).BackgroundImage;
-     
-            if (!string.IsNullOrEmpty(bgImage)) {
+
+			string bgImage = ((Page)Element).BackgroundImage;
+
+			if (!string.IsNullOrEmpty(bgImage))
+			{
 				View.Layer.BackgroundColor = NSColor.FromPatternImage(NSImage.ImageNamed(bgImage)).CGColor;
-                return;
-            }
+				return;
+			}
 
-            Color bgColor = Element.BackgroundColor;
+			Color bgColor = Element.BackgroundColor;
 			View.Layer.BackgroundColor = bgColor.IsDefault ? NSColor.White.CGColor : bgColor.ToCGColor();
-        }
+		}
 
-        void UpdateCurrentPage(bool animated = true)
-        {
-            ContentPage current = Carousel.CurrentPage;
-            if (current != null) {
-                int index = Carousel.CurrentPage != null ? CarouselPage.GetIndex(Carousel.CurrentPage) : 0;
-                if (index < 0)
-                    index = 0;
+		void UpdateCurrentPage(bool animated = true)
+		{
+			ContentPage current = Carousel.CurrentPage;
+			if (current != null)
+			{
+				int index = Carousel.CurrentPage != null ? CarouselPage.GetIndex(Carousel.CurrentPage) : 0;
+				if (index < 0)
+					index = 0;
 
-                if (SelectedIndex == index)
-                    return;
+				if (SelectedIndex == index)
+					return;
 
-                if (animated) {
-                    NSAnimationContext.RunAnimation(context => {
-                        ((NSPageController)Animator).SelectedIndex = index;
-                    }, CompleteTransition);
-                } else {
-                    SelectedIndex = index;
-                }
-            }
-        }
-    }
+				if (animated)
+					NSAnimationContext.RunAnimation(context => { ((NSPageController)Animator).SelectedIndex = index; },
+						CompleteTransition);
+				else SelectedIndex = index;
+			}
+		}
+	}
 }

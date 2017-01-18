@@ -6,6 +6,7 @@ namespace Xamarin.Forms.Platform.MacOS
 	internal class LayoutRenderer : DefaultRenderer
 	{
 		CGRect _bounds;
+
 		public override void Layout()
 		{
 			base.Layout();

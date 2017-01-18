@@ -1,22 +1,20 @@
 using System;
 using CoreGraphics;
-
 using PointF = CoreGraphics.CGPoint;
 using RectangleF = CoreGraphics.CGRect;
 using SizeF = CoreGraphics.CGSize;
-
 #if __MOBILE__
 using UIKit;
 namespace Xamarin.Forms.Platform.iOS
 #else
 using AppKit;
 using UIColor = AppKit.NSColor;
+
 namespace Xamarin.Forms.Platform.MacOS
 #endif
 {
 	public static class ColorExtensions
 	{
-
 #if __MOBILE__
 		internal static readonly UIColor Black = UIColor.Black;
 		internal static readonly UIColor SeventyPercentGrey = new UIColor(0.7f, 0.7f, 0.7f, 1);
@@ -24,6 +22,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		internal static readonly NSColor Black = NSColor.Black;
 		internal static readonly NSColor SeventyPercentGrey = NSColor.FromRgba(0.7f, 0.7f, 0.7f, 1);
 #endif
+
 		public static CGColor ToCGColor(this Color color)
 		{
 			return new CGColor((float)color.R, (float)color.G, (float)color.B, (float)color.A);
@@ -42,6 +41,7 @@ namespace Xamarin.Forms.Platform.MacOS
 #endif
 			return new Color(red, green, blue, alpha);
 		}
+
 #if __MOBILE__
 		public static UIColor ToUIColor(this Color color)
 		{

@@ -23,15 +23,9 @@ namespace Xamarin.Forms.Platform.MacOS
 			Items = new List<Item>();
 		}
 
-		public NSToolbarItemGroup Group
-		{
-			get;
-        }
+		public NSToolbarItemGroup Group { get; }
 
-		public List<Item> Items
-		{
-			get;
-        }
+		public List<Item> Items { get; }
 	}
 
 	internal class NativeToolbarTracker : NSToolbarDelegate
@@ -40,12 +34,12 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		INavigationPageController NavigationController => _navigation;
 
-        readonly string _defaultBackButtonTitle = "Back";
-	    readonly ToolbarTracker _toolbarTracker;
+		readonly string _defaultBackButtonTitle = "Back";
+		readonly ToolbarTracker _toolbarTracker;
 
 		NSToolbar _toolbar;
 		NavigationPage _navigation;
-	  
+
 		bool _hasTabs;
 
 		const double BackButtonItemWidth = 36;
@@ -88,8 +82,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 				if (_navigation != null)
 				{
-				    var parentTabbedPage = _navigation.Parent as TabbedPage;
-				    if (parentTabbedPage != null)
+					var parentTabbedPage = _navigation.Parent as TabbedPage;
+					if (parentTabbedPage != null)
 					{
 						_hasTabs = parentTabbedPage.OnThisPlatform().GetTabsStyle() == TabsStyle.OnNavigation;
 					}
@@ -100,7 +94,6 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateToolBar();
 			}
 		}
-
 
 		public void TryHide(NavigationPage navPage = null)
 		{
@@ -142,16 +135,16 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected virtual NSToolbar ConfigureToolbar()
 		{
-		    var toolbar = new NSToolbar(ToolBarId)
-		    {
-		        DisplayMode = NSToolbarDisplayMode.Icon,
-		        AllowsUserCustomization = false,
-		        ShowsBaselineSeparator = true,
-		        SizeMode = NSToolbarSizeMode.Regular,
-		        Delegate = this
-		    };
+			var toolbar = new NSToolbar(ToolBarId)
+			{
+				DisplayMode = NSToolbarDisplayMode.Icon,
+				AllowsUserCustomization = false,
+				ShowsBaselineSeparator = true,
+				SizeMode = NSToolbarSizeMode.Regular,
+				Delegate = this
+			};
 
-		    return toolbar;
+			return toolbar;
 		}
 
 		internal void UpdateToolBar()
@@ -177,7 +170,8 @@ namespace Xamarin.Forms.Platform.MacOS
 					NSApplication.SharedApplication.MainWindow.Toolbar = _toolbar;
 
 					_toolbar.InsertItem(NavigationGroupIdentifier, 0);
-					_toolbar.InsertItem(HasTabs ? NSToolbar.NSToolbarSpaceItemIdentifier : NSToolbar.NSToolbarFlexibleSpaceItemIdentifier, 1);
+					_toolbar.InsertItem(
+						HasTabs ? NSToolbar.NSToolbarSpaceItemIdentifier : NSToolbar.NSToolbarFlexibleSpaceItemIdentifier, 1);
 					_toolbar.InsertItem(HasTabs ? TabbedGroupIdentifier : TitleGroupIdentifier, 2);
 					_toolbar.InsertItem(NSToolbar.NSToolbarFlexibleSpaceItemIdentifier, 3);
 					_toolbar.InsertItem(ToolbarItemsGroupIdentifier, 4);
@@ -204,17 +198,17 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			var bgColor = GetBackgroundColor().CGColor;
 
-
-		    if (_nsToolbarItemViewer?.Superview?.Superview == null ||
-		        _nsToolbarItemViewer.Superview.Superview.Superview == null) return;
-		    // NSTitlebarView
-		    _nsToolbarItemViewer.Superview.Superview.Superview.WantsLayer = true;
-		    _nsToolbarItemViewer.Superview.Superview.Superview.Layer.BackgroundColor = bgColor;
+			if (_nsToolbarItemViewer?.Superview?.Superview == null ||
+				_nsToolbarItemViewer.Superview.Superview.Superview == null) return;
+			// NSTitlebarView
+			_nsToolbarItemViewer.Superview.Superview.Superview.WantsLayer = true;
+			_nsToolbarItemViewer.Superview.Superview.Superview.Layer.BackgroundColor = bgColor;
 		}
 
 		void NavigationPagePropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName.Equals(NavigationPage.BarTextColorProperty.PropertyName) || e.PropertyName.Equals(NavigationPage.BarBackgroundColorProperty.PropertyName))
+			if (e.PropertyName.Equals(NavigationPage.BarTextColorProperty.PropertyName) ||
+				e.PropertyName.Equals(NavigationPage.BarBackgroundColorProperty.PropertyName))
 				UpdateToolBar();
 		}
 
@@ -225,9 +219,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		async Task NavigateBackFrombackButton()
 		{
-		    var popAsyncInner = NavigationController?.PopAsyncInner(true, true);
-		    if (popAsyncInner != null)
-		        await popAsyncInner;
+			var popAsyncInner = NavigationController?.PopAsyncInner(true, true);
+			if (popAsyncInner != null)
+				await popAsyncInner;
 		}
 
 		bool ShowBackButton()
@@ -358,25 +352,26 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			var items = new List<ToolbarItem>();
 
-		    var tabbedPage = _navigation.Parent as TabbedPage;
-		    if (tabbedPage != null)
-		    {
-		        foreach (var item in tabbedPage.Children)
-		        {
-		            var tbI = new ToolbarItem
-		            {
-		                Text = item.Title,
-		                Icon = item.Icon,
-		                Command = new Command(() => tabbedPage.SelectedItem = item)
-		            };
-		            items.Add(tbI);
-		        }
-		    }
+			var tabbedPage = _navigation.Parent as TabbedPage;
+			if (tabbedPage != null)
+			{
+				foreach (var item in tabbedPage.Children)
+				{
+					var tbI = new ToolbarItem
+					{
+						Text = item.Title,
+						Icon = item.Icon,
+						Command = new Command(() => tabbedPage.SelectedItem = item)
+					};
+					items.Add(tbI);
+				}
+			}
 
-		    UpdateGroup(_tabbedGroup, items, ToolbarItemWidth, ToolbarItemSpacing);
+			UpdateGroup(_tabbedGroup, items, ToolbarItemWidth, ToolbarItemSpacing);
 		}
 
-		static void UpdateGroup(NativeToolbarGroup group, IList<ToolbarItem> toolbarItems, double itemWidth, double itemSpacing)
+		static void UpdateGroup(NativeToolbarGroup group, IList<ToolbarItem> toolbarItems, double itemWidth,
+			double itemSpacing)
 		{
 			int count = toolbarItems.Count;
 			group.Items.Clear();
@@ -424,7 +419,8 @@ namespace Xamarin.Forms.Platform.MacOS
 				group.Group.Subitems = subItems;
 				group.Group.View = view;
 			}
-			else {
+			else
+			{
 				group.Group.Subitems = new NSToolbarItem[] { };
 				group.Group.View = new NSView();
 			}

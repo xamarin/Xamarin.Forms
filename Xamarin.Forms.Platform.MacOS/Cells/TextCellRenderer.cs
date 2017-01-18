@@ -14,7 +14,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			var tvc = reusableView as CellNSView ?? new CellNSView(NSTableViewCellStyle.Subtitle);
 
-		    if (tvc.Cell != null)
+			if (tvc.Cell != null)
 				tvc.Cell.PropertyChanged -= tvc.HandlePropertyChanged;
 
 			tvc.Cell = textCell;
@@ -64,4 +64,3 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 	}
 }
-

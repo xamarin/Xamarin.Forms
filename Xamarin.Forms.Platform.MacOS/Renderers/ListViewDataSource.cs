@@ -9,19 +9,23 @@ namespace Xamarin.Forms.Platform.MacOS
 	internal class ListViewDataSource : NSTableViewSource
 	{
 		IVisualElementRenderer _prototype;
-	    const int DefaultItemTemplateId = 1;
+		const int DefaultItemTemplateId = 1;
 		static int s_dataTemplateIncrementer = 2; // lets start at not 0 because
 		static int s_sectionCount;
 		readonly nfloat _defaultSectionHeight;
 		readonly Dictionary<DataTemplate, int> _templateToId = new Dictionary<DataTemplate, int>();
 		readonly NSTableView _nsTableView;
 		protected readonly ListView List;
+
 		IListViewController Controller => List;
+
 		ITemplatedItemsView<Cell> TemplatedItemsView => List;
+
 		bool _selectionFromNative;
 		bool _selectionFromForms;
 
 		public virtual bool IsGroupingEnabled => List.IsGroupingEnabled;
+
 		public Dictionary<int, int> Counts { get; set; }
 
 		public ListViewDataSource(ListViewDataSource source)
@@ -65,7 +69,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				return;
 			}
 			_selectionFromForms = true;
-		    var rowId = location.Item2;
+			var rowId = location.Item2;
 
 			_nsTableView.SelectRow(rowId, false);
 		}
@@ -82,7 +86,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (selectedRow == -1)
 				return;
 
-		    Cell cell = null;
+			Cell cell = null;
 			NSIndexPath indexPath = GetPathFromRow(selectedRow, ref cell);
 
 			if (cell == null)
@@ -139,7 +143,6 @@ namespace Xamarin.Forms.Platform.MacOS
 					count += group.Count + 1;
 				}
 				s_sectionCount = sections;
-
 			}
 			return count;
 		}
@@ -183,7 +186,6 @@ namespace Xamarin.Forms.Platform.MacOS
 					templatedList.UpdateContent(cell, itemIndexInSection);
 					controller.SendAppearing();
 				}
-
 			}
 			else
 				throw new NotSupportedException();
@@ -226,7 +228,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		NSIndexPath GetPathFromRow(nint row, ref Cell cell)
 		{
-		    var sectionIndex = 0;
+			var sectionIndex = 0;
 			bool isGroupHeader = false;
 			int itemIndexInSection;
 			if (IsGroupingEnabled)

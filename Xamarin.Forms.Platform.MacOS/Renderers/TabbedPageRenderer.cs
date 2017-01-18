@@ -10,8 +10,8 @@ namespace Xamarin.Forms.Platform.MacOS
 {
 	public class TabbedPageRenderer : NSTabViewController, IVisualElementRenderer, IEffectControlProvider
 	{
-	    const float DefaultImageSizeSegmentedButton = 19;
-	    bool _disposed;
+		const float DefaultImageSizeSegmentedButton = 19;
+		bool _disposed;
 		bool _updatingControllers;
 		bool _barBackgroundColorWasSet;
 		bool _barTextColorWasSet;
@@ -30,16 +30,16 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public NSView NativeView => View;
 
-	    public void SetElement(VisualElement element)
+		public void SetElement(VisualElement element)
 		{
 			var oldElement = Element;
 			Element = element;
 
 			if (oldElement != null)
 			{
-			    oldElement.PropertyChanged -= OnPropertyChanged;
-			    var tabbedPage = oldElement as TabbedPage;
-			    if (tabbedPage != null) tabbedPage.PagesChanged -= OnPagesChanged;
+				oldElement.PropertyChanged -= OnPropertyChanged;
+				var tabbedPage = oldElement as TabbedPage;
+				if (tabbedPage != null) tabbedPage.PagesChanged -= OnPagesChanged;
 			}
 
 			if (element != null)
@@ -85,12 +85,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public NSViewController ViewController => this;
 
-	    public override nint SelectedTabViewItemIndex
+		public override nint SelectedTabViewItemIndex
 		{
-			get
-			{
-				return base.SelectedTabViewItemIndex;
-			}
+			get { return base.SelectedTabViewItemIndex; }
 			set
 			{
 				base.SelectedTabViewItemIndex = value;
@@ -151,13 +148,12 @@ namespace Xamarin.Forms.Platform.MacOS
 					break;
 			}
 
-
 			TabView.TabViewType = NSTabViewType.NSNoTabsNoBorder;
 		}
 
 		protected virtual void OnElementChanged(VisualElementChangedEventArgs e)
 		{
-		    ElementChanged?.Invoke(this, e);
+			ElementChanged?.Invoke(this, e);
 		}
 
 		protected virtual NSTabViewItem GetTabViewItem(Page page, IVisualElementRenderer pageRenderer)
@@ -171,7 +167,8 @@ namespace Xamarin.Forms.Platform.MacOS
 		protected virtual NSImage GetTabViewItemIcon(string imageName)
 		{
 			var image = NSImage.ImageNamed(imageName);
-			bool shouldResize = TabStyle == NSTabViewControllerTabStyle.SegmentedControlOnTop || TabStyle == NSTabViewControllerTabStyle.SegmentedControlOnBottom;
+			bool shouldResize = TabStyle == NSTabViewControllerTabStyle.SegmentedControlOnTop ||
+								TabStyle == NSTabViewControllerTabStyle.SegmentedControlOnBottom;
 			if (shouldResize)
 				image = image.ResizeTo(new CGSize(DefaultImageSizeSegmentedButton, DefaultImageSizeSegmentedButton));
 			return image;
@@ -183,7 +180,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected TabbedPage Tabbed => (TabbedPage)Element;
 
-	    void OnPagePropertyChanged(object sender, PropertyChangedEventArgs e)
+		void OnPagePropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == Page.TitleProperty.PropertyName)
 			{
@@ -200,7 +197,6 @@ namespace Xamarin.Forms.Platform.MacOS
 
 				if (!string.IsNullOrEmpty(page.Icon))
 				{
-
 					TabViewItems[index].Image = new NSImage(page.Icon);
 				}
 				else if (TabViewItems[index].Image != null)
@@ -279,7 +275,6 @@ namespace Xamarin.Forms.Platform.MacOS
 			renderer.ViewController.Identifier = index.ToString();
 
 			page.PropertyChanged += OnPagePropertyChanged;
-
 		}
 
 		void TeardownPage(Page page)
@@ -313,7 +308,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		void UpdateCurrentPage()
 		{
 			var count = PageController.InternalChildren.Count;
-			Tabbed.CurrentPage = SelectedTabViewItemIndex >= 0 && SelectedTabViewItemIndex < count ? Tabbed.GetPageByIndex((int)SelectedTabViewItemIndex) : null;
+			Tabbed.CurrentPage = SelectedTabViewItemIndex >= 0 && SelectedTabViewItemIndex < count
+				? Tabbed.GetPageByIndex((int)SelectedTabViewItemIndex)
+				: null;
 		}
 
 		//TODO: Implement UpdateBarBackgroundColor
@@ -336,7 +333,6 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			if (!isDefaultColor)
 				_barBackgroundColorWasSet = true;
-
 		}
 
 		//TODO: Implement UpdateBarTextColor

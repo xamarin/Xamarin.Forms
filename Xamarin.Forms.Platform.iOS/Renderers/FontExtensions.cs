@@ -2,14 +2,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Xamarin.Forms;
-
-
 #if __MOBILE__
 using UIKit;
 namespace Xamarin.Forms.Platform.iOS
 #else
 using AppKit;
 using UIFont = AppKit.NSFont;
+
 namespace Xamarin.Forms.Platform.MacOS
 #endif
 {
@@ -128,8 +127,10 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		internal static bool IsDefault(this Span self)
 		{
-			return self.FontFamily == null && self.FontSize == Device.GetNamedSize(NamedSize.Default, typeof(Label), true) && self.FontAttributes == FontAttributes.None;
+			return self.FontFamily == null && self.FontSize == Device.GetNamedSize(NamedSize.Default, typeof(Label), true) &&
+					self.FontAttributes == FontAttributes.None;
 		}
+
 #if __MOBILE__
 		internal static UIFont ToUIFont(this Label label)
 #else
@@ -137,8 +138,10 @@ namespace Xamarin.Forms.Platform.MacOS
 #endif
 		{
 			var values = label.GetValues(Label.FontFamilyProperty, Label.FontSizeProperty, Label.FontAttributesProperty);
-			return ToUIFont((string)values[0], (float)(double)values[1], (FontAttributes)values[2]) ?? UIFont.SystemFontOfSize(UIFont.LabelFontSize);
+			return ToUIFont((string)values[0], (float)(double)values[1], (FontAttributes)values[2]) ??
+					UIFont.SystemFontOfSize(UIFont.LabelFontSize);
 		}
+
 #if __MOBILE__
 		internal static UIFont ToUIFont(this IFontElement element)
 #else

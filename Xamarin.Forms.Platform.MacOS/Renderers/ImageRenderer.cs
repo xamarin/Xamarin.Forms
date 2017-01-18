@@ -8,7 +8,7 @@ namespace Xamarin.Forms.Platform.MacOS
 	{
 		bool _isDisposed;
 
-	    protected override void Dispose(bool disposing)
+		protected override void Dispose(bool disposing)
 		{
 			if (_isDisposed)
 				return;
@@ -71,8 +71,8 @@ namespace Xamarin.Forms.Platform.MacOS
 				if (Equals(oldSource, source))
 					return;
 
-			    var imageSource = oldSource as FileImageSource;
-			    if (imageSource != null && source is FileImageSource && imageSource.File == ((FileImageSource)source).File)
+				var imageSource = oldSource as FileImageSource;
+				if (imageSource != null && source is FileImageSource && imageSource.File == ((FileImageSource)source).File)
 					return;
 
 				Control.Image = null;
@@ -114,4 +114,3 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 	}
 }
-

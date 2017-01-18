@@ -1,11 +1,11 @@
 ﻿using CoreGraphics;
 using Xamarin.Forms.Internals;
-
 #if __MOBILE__
 using UIKit;
 namespace Xamarin.Forms.Platform.iOS
 #else
 using UIView = AppKit.NSView;
+
 namespace Xamarin.Forms.Platform.MacOS
 #endif
 {
@@ -23,6 +23,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			// fall back to the default implementation
 			return result ?? base.GetDesiredSize(widthConstraint, heightConstraint);
 		}
+
 #if __MOBILE__
 		public override void LayoutSubviews()
 		{

@@ -60,7 +60,8 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == SearchBar.PlaceholderProperty.PropertyName || e.PropertyName == SearchBar.PlaceholderColorProperty.PropertyName)
+			if (e.PropertyName == SearchBar.PlaceholderProperty.PropertyName ||
+				e.PropertyName == SearchBar.PlaceholderColorProperty.PropertyName)
 				UpdatePlaceholder();
 			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 			{
@@ -137,10 +138,10 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 			else
 			{
-				var textWithColor = new NSAttributedString(Control.Cell.CancelButtonCell.Title ?? "", foregroundColor: cancelButtonColor.ToNSColor());
+				var textWithColor = new NSAttributedString(Control.Cell.CancelButtonCell.Title ?? "",
+					foregroundColor: cancelButtonColor.ToNSColor());
 				Control.Cell.CancelButtonCell.AttributedTitle = textWithColor;
 			}
-
 		}
 
 		void UpdateFont()
@@ -176,4 +177,3 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 	}
 }
-

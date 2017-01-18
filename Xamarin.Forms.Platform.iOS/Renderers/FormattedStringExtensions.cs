@@ -1,11 +1,11 @@
 using Foundation;
-
 #if __MOBILE__
 using UIKit;
 namespace Xamarin.Forms.Platform.iOS
 #else
 using AppKit;
 using UIColor = AppKit.NSColor;
+
 namespace Xamarin.Forms.Platform.MacOS
 #endif
 {
@@ -28,11 +28,13 @@ namespace Xamarin.Forms.Platform.MacOS
 #if __MOBILE__
 			return new NSAttributedString(span.Text, font == Font.Default ? null : font.ToUIFont(), fgcolor.ToUIColor(), span.BackgroundColor.ToUIColor());
 #else
-			return new NSAttributedString(span.Text, font == Font.Default ? null : font.ToNSFont(), fgcolor.ToNSColor(), span.BackgroundColor.ToNSColor());
+			return new NSAttributedString(span.Text, font == Font.Default ? null : font.ToNSFont(), fgcolor.ToNSColor(),
+				span.BackgroundColor.ToNSColor());
 #endif
 		}
 
-		public static NSAttributedString ToAttributed(this FormattedString formattedString, Font defaultFont, Color defaultForegroundColor)
+		public static NSAttributedString ToAttributed(this FormattedString formattedString, Font defaultFont,
+			Color defaultForegroundColor)
 		{
 			if (formattedString == null)
 				return null;
@@ -84,7 +86,8 @@ namespace Xamarin.Forms.Platform.MacOS
 #endif
 		}
 
-		internal static NSAttributedString ToAttributed(this FormattedString formattedString, Element owner, Color defaultForegroundColor)
+		internal static NSAttributedString ToAttributed(this FormattedString formattedString, Element owner,
+			Color defaultForegroundColor)
 		{
 			if (formattedString == null)
 				return null;

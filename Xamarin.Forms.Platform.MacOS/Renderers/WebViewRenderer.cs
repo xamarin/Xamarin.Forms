@@ -18,7 +18,8 @@ namespace Xamarin.Forms.Platform.MacOS
 		void IWebViewDelegate.LoadHtml(string html, string baseUrl)
 		{
 			if (html != null)
-				Control.MainFrame.LoadHtmlString(html, baseUrl == null ? new NSUrl(NSBundle.MainBundle.BundlePath, true) : new NSUrl(baseUrl, true));
+				Control.MainFrame.LoadHtmlString(html,
+					baseUrl == null ? new NSUrl(NSBundle.MainBundle.BundlePath, true) : new NSUrl(baseUrl, true));
 		}
 
 		void IWebViewDelegate.LoadUrl(string url)
@@ -75,7 +76,6 @@ namespace Xamarin.Forms.Platform.MacOS
 			base.Dispose(disposing);
 		}
 
-
 		void Load()
 		{
 			if (_ignoreSourceChanges)
@@ -124,7 +124,8 @@ namespace Xamarin.Forms.Platform.MacOS
 		void OnNSWebViewFailedLoadWithError(object sender, WebKit.WebResourceErrorEventArgs e)
 		{
 			_lastEvent = _lastBackForwardEvent;
-			Element?.SendNavigated(new WebNavigatedEventArgs(_lastEvent, new UrlWebViewSource { Url = Control.MainFrameUrl }, Control.MainFrameUrl, WebNavigationResult.Failure));
+			Element?.SendNavigated(new WebNavigatedEventArgs(_lastEvent, new UrlWebViewSource { Url = Control.MainFrameUrl },
+				Control.MainFrameUrl, WebNavigationResult.Failure));
 
 			UpdateCanGoBackForward();
 		}
@@ -139,7 +140,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			_ignoreSourceChanges = false;
 
 			_lastEvent = _lastBackForwardEvent;
-			Element?.SendNavigated(new WebNavigatedEventArgs(_lastEvent, Element?.Source, Control.MainFrameUrl, WebNavigationResult.Success));
+			Element?.SendNavigated(new WebNavigatedEventArgs(_lastEvent, Element?.Source, Control.MainFrameUrl,
+				WebNavigationResult.Success));
 
 			UpdateCanGoBackForward();
 		}

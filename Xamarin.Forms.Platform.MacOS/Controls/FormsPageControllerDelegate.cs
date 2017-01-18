@@ -9,7 +9,8 @@ namespace Xamarin.Forms.Platform.MacOS
 		readonly Func<NSObject, string> _getIdentifier;
 		readonly Func<string, NSViewController> _getViewController;
 
-		public FormsPageControllerDelegate(Func<NSObject, string> getIdentifier, Func<string, NSViewController> getViewController)
+		public FormsPageControllerDelegate(Func<NSObject, string> getIdentifier,
+			Func<string, NSViewController> getViewController)
 		{
 			_getIdentifier = getIdentifier;
 			_getViewController = getViewController;
@@ -20,11 +21,9 @@ namespace Xamarin.Forms.Platform.MacOS
 			return _getViewController(identifier);
 		}
 
-
 		public override string GetIdentifier(NSPageController pv, NSObject obj)
 		{
 			return _getIdentifier(obj);
 		}
-
 	}
 }

@@ -14,10 +14,14 @@ namespace Xamarin.Forms.Platform.MacOS
 		AutoPackage = 1 << 2
 	}
 
-	public class VisualElementRenderer<TElement> : NSView, IVisualElementRenderer, IEffectControlProvider where TElement : VisualElement
+	public class VisualElementRenderer<TElement> : NSView, IVisualElementRenderer, IEffectControlProvider
+		where TElement : VisualElement
 	{
 		readonly CGColor _defaultColor = NSColor.Clear.CGColor;
-		readonly List<EventHandler<VisualElementChangedEventArgs>> _elementChangedHandlers = new List<EventHandler<VisualElementChangedEventArgs>>();
+
+		readonly List<EventHandler<VisualElementChangedEventArgs>> _elementChangedHandlers =
+			new List<EventHandler<VisualElementChangedEventArgs>>();
+
 		readonly PropertyChangedEventHandler _propertyChangedHandler;
 
 		VisualElementRendererFlags _flags = VisualElementRendererFlags.AutoPackage | VisualElementRendererFlags.AutoTrack;
@@ -84,7 +88,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public void SetElementSize(Size size)
 		{
-			Xamarin.Forms.Layout.LayoutChildIntoBoundingRegion(Element, new Rectangle(Element.X, Element.Y, size.Width, size.Height));
+			Xamarin.Forms.Layout.LayoutChildIntoBoundingRegion(Element,
+				new Rectangle(Element.X, Element.Y, size.Width, size.Height));
 		}
 
 		public virtual SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
@@ -104,7 +109,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			if (element != null)
 			{
-				if (element.BackgroundColor != Color.Default || (oldElement != null && element.BackgroundColor != oldElement.BackgroundColor))
+				if (element.BackgroundColor != Color.Default ||
+					(oldElement != null && element.BackgroundColor != oldElement.BackgroundColor))
 					SetBackgroundColor(element.BackgroundColor);
 
 				UpdateClipToBounds();
@@ -131,7 +137,6 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 
 			OnElementChanged(new ElementChangedEventArgs<TElement>(oldElement, element));
-
 
 			EffectUtilities.RegisterEffectControlProvider(this, oldElement, element);
 
@@ -214,7 +219,6 @@ namespace Xamarin.Forms.Platform.MacOS
 		//TODO: Implement ClipToBounds
 		void UpdateClipToBounds()
 		{
-
 		}
 	}
 }

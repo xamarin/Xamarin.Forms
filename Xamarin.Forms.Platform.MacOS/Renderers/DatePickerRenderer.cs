@@ -22,14 +22,14 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				if (Control == null)
 				{
-				    _picker = new NSDatePicker
-				    {
-				        DatePickerMode = NSDatePickerMode.Single,
-				        TimeZone = new NSTimeZone("UTC"),
-				        DatePickerStyle = NSDatePickerStyle.TextFieldAndStepper,
-				        DatePickerElements = NSDatePickerElementFlags.YearMonthDateDay
-				    };
-				    _picker.ValidateProposedDateValue += HandleValueChanged;
+					_picker = new NSDatePicker
+					{
+						DatePickerMode = NSDatePickerMode.Single,
+						TimeZone = new NSTimeZone("UTC"),
+						DatePickerStyle = NSDatePickerStyle.TextFieldAndStepper,
+						DatePickerElements = NSDatePickerElementFlags.YearMonthDateDay
+					};
+					_picker.ValidateProposedDateValue += HandleValueChanged;
 					_defaultTextColor = _picker.TextColor;
 					_defaultBackgroundColor = _picker.BackgroundColor;
 
@@ -41,20 +41,21 @@ namespace Xamarin.Forms.Platform.MacOS
 			UpdateMaximumDate();
 			UpdateMinimumDate();
 			UpdateTextColor();
-
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == DatePicker.DateProperty.PropertyName || e.PropertyName == DatePicker.FormatProperty.PropertyName)
+			if (e.PropertyName == DatePicker.DateProperty.PropertyName ||
+				e.PropertyName == DatePicker.FormatProperty.PropertyName)
 				UpdateDateFromModel();
 			else if (e.PropertyName == DatePicker.MinimumDateProperty.PropertyName)
 				UpdateMinimumDate();
 			else if (e.PropertyName == DatePicker.MaximumDateProperty.PropertyName)
 				UpdateMaximumDate();
-			else if (e.PropertyName == DatePicker.TextColorProperty.PropertyName || e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
+			else if (e.PropertyName == DatePicker.TextColorProperty.PropertyName ||
+					e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateTextColor();
 		}
 
@@ -66,7 +67,6 @@ namespace Xamarin.Forms.Platform.MacOS
 					_picker.ValidateProposedDateValue -= HandleValueChanged;
 
 				_disposed = true;
-
 			}
 			base.Dispose(disposing);
 		}
@@ -136,4 +136,3 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 	}
 }
-

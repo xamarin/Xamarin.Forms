@@ -5,6 +5,7 @@ namespace Xamarin.Forms.Platform.iOS
 #else
 using UIView = AppKit.NSView;
 using UIViewController = AppKit.NSViewController;
+
 namespace Xamarin.Forms.Platform.MacOS
 #endif
 {

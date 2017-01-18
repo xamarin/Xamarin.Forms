@@ -5,10 +5,6 @@ namespace Xamarin.Forms.Platform.MacOS
 {
 	internal class ScrollViewScrollChangedEventArgs : EventArgs
 	{
-		public PointF CurrentScrollPoint
-		{
-			get;
-			set;
-		}
+		public PointF CurrentScrollPoint { get; set; }
 	}
 }

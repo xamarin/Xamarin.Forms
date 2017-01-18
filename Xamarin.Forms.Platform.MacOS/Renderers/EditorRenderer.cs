@@ -36,11 +36,11 @@ namespace Xamarin.Forms.Platform.MacOS
 				};
 			}
 
-		    if (e.NewElement == null) return;
-		    UpdateText();
-		    UpdateFont();
-		    UpdateTextColor();
-		    UpdateEditable();
+			if (e.NewElement == null) return;
+			UpdateText();
+			UpdateFont();
+			UpdateTextColor();
+			UpdateEditable();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -66,7 +66,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (Control == null)
 				return;
 
-            Control.BackgroundColor = color == Color.Default ? NSColor.Clear : color.ToNSColor();
+			Control.BackgroundColor = color == Color.Default ? NSColor.Clear : color.ToNSColor();
 
 			base.SetBackgroundColor(color);
 		}
@@ -120,10 +120,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateTextColor()
 		{
-		    var textColor = Element.TextColor;
+			var textColor = Element.TextColor;
 
-		    Control.TextColor = textColor.IsDefault ? NSColor.Black : textColor.ToNSColor();
+			Control.TextColor = textColor.IsDefault ? NSColor.Black : textColor.ToNSColor();
 		}
 	}
 }
-

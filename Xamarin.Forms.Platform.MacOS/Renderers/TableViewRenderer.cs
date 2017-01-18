@@ -6,11 +6,11 @@ namespace Xamarin.Forms.Platform.MacOS
 {
 	public class TableViewRenderer : ViewRenderer<TableView, NSView>
 	{
-	    const int DefaultRowHeight = 44;
+		const int DefaultRowHeight = 44;
 
-	    internal NSTableView TableView { get; set; }
+		internal NSTableView TableView { get; set; }
 
-	    public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
+		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
 			return Control.GetSizeRequest(widthConstraint, heightConstraint, DefaultRowHeight, DefaultRowHeight);
 		}
@@ -87,7 +87,6 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateBackgroundView()
 		{
-
 		}
 
 		void UpdateRowHeight()

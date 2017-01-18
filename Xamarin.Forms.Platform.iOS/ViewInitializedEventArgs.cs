@@ -3,6 +3,7 @@ using System;
 using TNativeView = UIKit.UIView;
 #else
 using TNativeView = AppKit.NSView;
+
 #endif
 
 namespace Xamarin.Forms

@@ -12,11 +12,6 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public Page Page { get; }
 
-		public int Index
-		{
-			get;
-			set;
-		}
+		public int Index { get; set; }
 	}
-
 }

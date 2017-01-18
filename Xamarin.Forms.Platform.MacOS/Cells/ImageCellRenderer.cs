@@ -11,7 +11,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			var tvc = reusableView as CellNSView ?? new CellNSView(NSTableViewCellStyle.ImageSubtitle);
 
-		    var result = (CellNSView)base.GetCell(item, tvc, tv);
+			var result = (CellNSView)base.GetCell(item, tvc, tv);
 
 			var imageCell = (ImageCell)item;
 
@@ -66,4 +66,3 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 	}
 }
-

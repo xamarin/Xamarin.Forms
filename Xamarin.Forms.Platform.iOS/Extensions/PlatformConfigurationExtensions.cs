@@ -3,6 +3,7 @@ using CurrentPlatform = Xamarin.Forms.PlatformConfiguration.iOS;
 namespace Xamarin.Forms.Platform.iOS
 #else
 using CurrentPlatform = Xamarin.Forms.PlatformConfiguration.macOS;
+
 namespace Xamarin.Forms.Platform.MacOS
 #endif
 {

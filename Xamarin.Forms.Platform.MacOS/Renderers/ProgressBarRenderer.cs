@@ -11,11 +11,18 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected override void OnElementChanged(ElementChangedEventArgs<ProgressBar> e)
 		{
-		    if (e.NewElement == null) return;
-		    if (Control == null)
-		        SetNativeControl(new NSProgressIndicator { IsDisplayedWhenStopped = true, Style = NSProgressIndicatorStyle.Bar, MinValue = 0, MaxValue = 1 });
-		    UpdateProgress();
+			if (e.NewElement == null) return;
+			if (Control == null)
+				SetNativeControl(new NSProgressIndicator
+				{
+					IsDisplayedWhenStopped = true,
+					Style = NSProgressIndicatorStyle.Bar,
+					MinValue = 0,
+					MaxValue = 1
+				});
+			UpdateProgress();
 		}
+
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);
@@ -58,4 +65,3 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 	}
 }
-

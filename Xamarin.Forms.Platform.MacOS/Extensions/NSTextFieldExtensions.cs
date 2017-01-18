@@ -38,9 +38,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			var stringHeight = self.Cell.AttributedStringValue.Size.Height;
 			var titleRect = self.Cell.TitleRectForBounds(frame);
-			var newTitleRect = new CGRect(titleRect.X, frame.Y + (frame.Height - stringHeight) / 2.0, titleRect.Width, stringHeight);
+			var newTitleRect = new CGRect(titleRect.X, frame.Y + (frame.Height - stringHeight) / 2.0, titleRect.Width,
+				stringHeight);
 			self.Frame = newTitleRect;
 		}
 	}
 }
-

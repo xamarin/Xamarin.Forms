@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		IPageController PageController => Element as IPageController;
 
-	    void IEffectControlProvider.RegisterEffect(Effect effect)
+		void IEffectControlProvider.RegisterEffect(Effect effect)
 		{
 			var platformEffect = effect as PlatformEffect;
 			if (platformEffect != null)
@@ -103,7 +103,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			base.ViewWillAppear();
 		}
 
-		public override CGRect GetEffectiveRect(NSSplitView splitView, CGRect proposedEffectiveRect, CGRect drawnRect, nint dividerIndex)
+		public override CGRect GetEffectiveRect(NSSplitView splitView, CGRect proposedEffectiveRect, CGRect drawnRect,
+			nint dividerIndex)
 		{
 			return CGRect.Empty;
 		}
@@ -113,7 +114,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (View.Frame.Width == -1)
 				return;
 			var width = View.Frame.Width;
-		    var masterWidth = MasterWidthPercentage * width;
+			var masterWidth = MasterWidthPercentage * width;
 			if (SplitViewItems.Length > 0)
 				SplitViewItems[0].MaximumThickness = SplitViewItems[0].MinimumThickness = (nfloat)masterWidth;
 		}
@@ -136,8 +137,14 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			ClearControllers();
 
-			AddSplitViewItem(new NSSplitViewItem { ViewController = new ViewControllerWrapper(Platform.GetRenderer(MasterDetailPage.Master)) });
-			AddSplitViewItem(new NSSplitViewItem { ViewController = new ViewControllerWrapper(Platform.GetRenderer(MasterDetailPage.Detail)) });
+			AddSplitViewItem(new NSSplitViewItem
+			{
+				ViewController = new ViewControllerWrapper(Platform.GetRenderer(MasterDetailPage.Master))
+			});
+			AddSplitViewItem(new NSSplitViewItem
+			{
+				ViewController = new ViewControllerWrapper(Platform.GetRenderer(MasterDetailPage.Detail))
+			});
 
 			UpdateChildrenLayout();
 		}
@@ -162,12 +169,12 @@ namespace Xamarin.Forms.Platform.MacOS
 		//TODO: Implement Background color on MDP
 		void UpdateBackground()
 		{
-
 		}
 
 		sealed class ViewControllerWrapper : NSViewController
 		{
 			internal WeakReference<IVisualElementRenderer> RendererWeakRef;
+
 			public ViewControllerWrapper(IVisualElementRenderer renderer)
 			{
 				RendererWeakRef = new WeakReference<IVisualElementRenderer>(renderer);

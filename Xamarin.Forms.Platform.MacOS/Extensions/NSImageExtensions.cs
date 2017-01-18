@@ -13,7 +13,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			resizedImage.LockFocus();
 			self.Size = newSize;
 			NSGraphicsContext.CurrentContext.ImageInterpolation = NSImageInterpolation.High;
-			self.Draw(CoreGraphics.CGPoint.Empty, new CoreGraphics.CGRect(0, 0, newSize.Width, newSize.Height), NSCompositingOperation.Copy, 1.0f);
+			self.Draw(CoreGraphics.CGPoint.Empty, new CoreGraphics.CGRect(0, 0, newSize.Width, newSize.Height),
+				NSCompositingOperation.Copy, 1.0f);
 			resizedImage.UnlockFocus();
 			return resizedImage;
 		}

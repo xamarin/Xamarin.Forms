@@ -26,7 +26,6 @@ namespace Xamarin.Forms.Platform.MacOS
 					nsEntry.RemoveFromSuperview();
 					nsEntry.Changed -= OnTextFieldTextChanged;
 				}
-
 			}
 
 			SetRealCell(item, tvc);
@@ -57,11 +56,11 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			var realCell = (CellNSView)GetRealCell(cell);
 
-		    var nsTextField = realCell.AccessoryView.Subviews[0] as NSTextField;
-		    if (nsTextField != null)
-		        nsTextField.BackgroundColor = backgroundColor;
+			var nsTextField = realCell.AccessoryView.Subviews[0] as NSTextField;
+			if (nsTextField != null)
+				nsTextField.BackgroundColor = backgroundColor;
 
-		    base.UpdateBackgroundChild(cell, backgroundColor);
+			base.UpdateBackgroundChild(cell, backgroundColor);
 		}
 
 		static void OnCellPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -102,17 +101,17 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		static void UpdateHorizontalTextAlignment(CellNSView cell, EntryCell entryCell)
 		{
-		    var nsTextField = cell.AccessoryView.Subviews[0] as NSTextField;
-		    if (nsTextField != null)
-		        nsTextField.Alignment = entryCell.HorizontalTextAlignment.ToNativeTextAlignment();
+			var nsTextField = cell.AccessoryView.Subviews[0] as NSTextField;
+			if (nsTextField != null)
+				nsTextField.Alignment = entryCell.HorizontalTextAlignment.ToNativeTextAlignment();
 		}
 
 		static void UpdateIsEnabled(CellNSView cell, EntryCell entryCell)
 		{
-		    cell.TextLabel.Enabled = entryCell.IsEnabled;
-		    var nsTextField = cell.AccessoryView.Subviews[0] as NSTextField;
-		    if (nsTextField != null)
-		        nsTextField.Enabled = entryCell.IsEnabled;
+			cell.TextLabel.Enabled = entryCell.IsEnabled;
+			var nsTextField = cell.AccessoryView.Subviews[0] as NSTextField;
+			if (nsTextField != null)
+				nsTextField.Enabled = entryCell.IsEnabled;
 		}
 
 		static void UpdateLabel(CellNSView cell, EntryCell entryCell)
@@ -127,20 +126,19 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		static void UpdatePlaceholder(CellNSView cell, EntryCell entryCell)
 		{
-		    var nsTextField = cell.AccessoryView.Subviews[0] as NSTextField;
-		    if (nsTextField != null)
-		        nsTextField.PlaceholderString = entryCell.Placeholder ?? "";
+			var nsTextField = cell.AccessoryView.Subviews[0] as NSTextField;
+			if (nsTextField != null)
+				nsTextField.PlaceholderString = entryCell.Placeholder ?? "";
 		}
 
 		static void UpdateText(CellNSView cell, EntryCell entryCell)
 		{
-		    var nsTextField = cell.AccessoryView.Subviews[0] as NSTextField;
-		    if (nsTextField != null && nsTextField.StringValue == entryCell.Text)
+			var nsTextField = cell.AccessoryView.Subviews[0] as NSTextField;
+			if (nsTextField != null && nsTextField.StringValue == entryCell.Text)
 				return;
 
-		    if (nsTextField != null)
-		        nsTextField.StringValue = entryCell.Text;
+			if (nsTextField != null)
+				nsTextField.StringValue = entryCell.Text;
 		}
-	}  
+	}
 }
-

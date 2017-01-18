@@ -19,7 +19,6 @@ namespace Xamarin.Forms.Platform.MacOS
 					return NSCellImagePosition.ImageBelow;
 				default:
 					return NSCellImagePosition.ImageOnly;
-
 			}
 		}
 	}

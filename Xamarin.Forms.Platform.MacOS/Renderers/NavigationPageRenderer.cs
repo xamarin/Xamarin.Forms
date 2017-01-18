@@ -31,7 +31,10 @@ namespace Xamarin.Forms.Platform.MacOS
 				platformEffect.Container = View;
 		}
 
-		public NavigationPageRenderer() : this(IntPtr.Zero) { }
+		public NavigationPageRenderer() : this(IntPtr.Zero)
+		{
+		}
+
 		public NavigationPageRenderer(IntPtr handle)
 		{
 			View = new NSView { WantsLayer = true };
@@ -173,7 +176,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			var navPage = (NavigationPage)Element;
 
 			if (navPage.CurrentPage == null)
-				throw new InvalidOperationException("NavigationPage must have a root Page before being used. Either call PushAsync with a valid Page, or pass a Page to the constructor before usage.");
+				throw new InvalidOperationException(
+					"NavigationPage must have a root Page before being used. Either call PushAsync with a valid Page, or pass a Page to the constructor before usage.");
 
 			Platform.NativeToolbarTracker.Navigation = navPage;
 
@@ -192,7 +196,6 @@ namespace Xamarin.Forms.Platform.MacOS
 			_events = new EventTracker(this);
 			_events.LoadEvents(NativeView);
 			_tracker = new VisualElementTracker(this);
-
 
 			((INavigationPageController)navPage).StackCopy.Reverse().ForEach(async p => await PushPageAsync(p, false));
 
@@ -215,7 +218,6 @@ namespace Xamarin.Forms.Platform.MacOS
 				throw new ArgumentNullException(nameof(before));
 			if (page == null)
 				throw new ArgumentNullException(nameof(page));
-
 		}
 
 		void OnInsertPageBeforeRequested(object sender, NavigationRequestedEventArgs e)
@@ -283,7 +285,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (animated)
 			{
 				var previousPageRenderer = Platform.GetRenderer(previousPage);
-				return await this.HandleAsyncAnimation(target.ViewController, previousPageRenderer.ViewController, NSViewControllerTransitionOptions.SlideBackward, () => Platform.DisposeRendererAndChildren(target), true);
+				return await this.HandleAsyncAnimation(target.ViewController, previousPageRenderer.ViewController,
+					NSViewControllerTransitionOptions.SlideBackward, () => Platform.DisposeRendererAndChildren(target), true);
 			}
 
 			RemovePage(page, false);
@@ -314,12 +317,13 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 			var vco = Platform.GetRenderer(oldPage);
 			AddChildViewController(vc.ViewController);
-			return await this.HandleAsyncAnimation(vco.ViewController, vc.ViewController, NSViewControllerTransitionOptions.SlideForward, () => (page as IPageController)?.SendAppearing(), true);
+			return await this.HandleAsyncAnimation(vco.ViewController, vc.ViewController,
+				NSViewControllerTransitionOptions.SlideForward, () => (page as IPageController)?.SendAppearing(), true);
 		}
 
 		void UpdateBackgroundColor()
 		{
-			if (View.Layer  == null)
+			if (View.Layer == null)
 				return;
 			var color = Element.BackgroundColor == Color.Default ? Color.White : Element.BackgroundColor;
 			View.Layer.BackgroundColor = color.ToCGColor();

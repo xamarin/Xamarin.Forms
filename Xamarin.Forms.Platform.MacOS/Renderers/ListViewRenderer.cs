@@ -17,6 +17,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		IVisualElementRenderer _footerRenderer;
 
 		IListViewController Controller => Element;
+
 		ITemplatedItemsView<Cell> TemplatedItemsView => Element;
 
 		public const int DefaultRowHeight = 44;
@@ -31,7 +32,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected virtual NSTableView CreateNSTableView(ListView list)
 		{
-		    NSTableView table = new NSTableView().AsListViewLook();
+			NSTableView table = new NSTableView().AsListViewLook();
 			table.Source = _dataSource = new ListViewDataSource(list, table);
 			return table;
 		}
@@ -133,13 +134,13 @@ namespace Xamarin.Forms.Platform.MacOS
 			base.OnElementChanged(e);
 		}
 
-
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);
 			if (e.PropertyName == ListView.RowHeightProperty.PropertyName)
 				UpdateRowHeight();
-			else if (e.PropertyName == ListView.IsGroupingEnabledProperty.PropertyName || (e.PropertyName == ListView.HasUnevenRowsProperty.PropertyName))
+			else if (e.PropertyName == ListView.IsGroupingEnabledProperty.PropertyName ||
+					(e.PropertyName == ListView.HasUnevenRowsProperty.PropertyName))
 				_dataSource.Update();
 			else if (e.PropertyName == ListView.IsPullToRefreshEnabledProperty.PropertyName)
 				UpdatePullToRefreshEnabled();
@@ -180,13 +181,12 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				if (_headerRenderer != null)
 				{
-
 					if (header != null && _headerRenderer.GetType() == Registrar.Registered.GetHandlerType(header.GetType()))
 					{
 						_headerRenderer.SetElement(headerView);
-					    var customNSTableHeaderView = _table.HeaderView as CustomNSTableHeaderView;
-					    customNSTableHeaderView?.Update(Bounds.Width, _headerRenderer);
-					    return;
+						var customNSTableHeaderView = _table.HeaderView as CustomNSTableHeaderView;
+						customNSTableHeaderView?.Update(Bounds.Width, _headerRenderer);
+						return;
 					}
 					ClearHeader();
 				}
@@ -226,7 +226,8 @@ namespace Xamarin.Forms.Platform.MacOS
 						goto case NotifyCollectionChangedAction.Reset;
 
 					_table.BeginUpdates();
-					_table.InsertRows(NSIndexSet.FromArray(Enumerable.Range(e.NewStartingIndex, e.NewItems.Count).ToArray()), NSTableViewAnimation.SlideUp);
+					_table.InsertRows(NSIndexSet.FromArray(Enumerable.Range(e.NewStartingIndex, e.NewItems.Count).ToArray()),
+						NSTableViewAnimation.SlideUp);
 					_table.EndUpdates();
 
 					break;
@@ -236,7 +237,8 @@ namespace Xamarin.Forms.Platform.MacOS
 						goto case NotifyCollectionChangedAction.Reset;
 
 					_table.BeginUpdates();
-					_table.RemoveRows(NSIndexSet.FromArray(Enumerable.Range(e.NewStartingIndex, e.NewItems.Count).ToArray()), NSTableViewAnimation.SlideDown);
+					_table.RemoveRows(NSIndexSet.FromArray(Enumerable.Range(e.NewStartingIndex, e.NewItems.Count).ToArray()),
+						NSTableViewAnimation.SlideDown);
 					_table.EndUpdates();
 
 					break;
@@ -311,4 +313,3 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 	}
 }
-

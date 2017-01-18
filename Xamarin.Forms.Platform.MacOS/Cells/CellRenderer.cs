@@ -6,7 +6,8 @@ namespace Xamarin.Forms.Platform.MacOS
 {
 	public class CellRenderer : IRegisterable
 	{
-		static readonly BindableProperty s_realCellProperty = BindableProperty.CreateAttached("RealCell", typeof(NSView), typeof(Cell), null);
+		static readonly BindableProperty s_realCellProperty = BindableProperty.CreateAttached("RealCell", typeof(NSView),
+			typeof(Cell), null);
 
 		EventHandler _onForceUpdateSizeRequested;
 
@@ -50,7 +51,9 @@ namespace Xamarin.Forms.Platform.MacOS
 			cell.ForceUpdateSizeRequested += _onForceUpdateSizeRequested;
 		}
 
-		internal virtual void UpdateBackgroundChild(Cell cell, NSColor backgroundColor) { }
+		internal virtual void UpdateBackgroundChild(Cell cell, NSColor backgroundColor)
+		{
+		}
 
 		internal static NSView GetRealCell(BindableObject cell)
 		{
@@ -63,4 +66,3 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 	}
 }
-

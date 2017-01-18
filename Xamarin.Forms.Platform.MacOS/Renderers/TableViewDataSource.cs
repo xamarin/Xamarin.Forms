@@ -20,10 +20,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			_tableView = tableViewRenderer.Element;
 			_nsTableView = tableViewRenderer.TableView;
-			Controller.ModelChanged += (s, e) =>
-			{
-			    _nsTableView?.ReloadData();
-			};
+			Controller.ModelChanged += (s, e) => { _nsTableView?.ReloadData(); };
 			AutomaticallyDeselect = true;
 		}
 
@@ -41,7 +38,6 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			GetComputedIndexes(row, out sectionIndex, out itemIndexInSection, out isHeader);
 
-
 			var cell = Controller.Model.GetCell(sectionIndex, itemIndexInSection - 1);
 			Controller.Model.RowSelected(cell);
 			if (AutomaticallyDeselect)
@@ -54,7 +50,6 @@ namespace Xamarin.Forms.Platform.MacOS
 			var sections = Controller.Model.GetSectionCount();
 			for (int i = 0; i < sections; i++)
 			{
-
 				count += Controller.Model.GetRowCount(i) + 1;
 			}
 
@@ -62,7 +57,6 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			return count;
 		}
-
 
 		public override bool ShouldSelectRow(NSTableView tableView, nint row)
 		{
@@ -88,7 +82,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (isHeader)
 			{
 				id = HeaderIdentifier;
-				cell = Controller.Model.GetHeaderCell(sectionIndex) ?? new TextCell { Text = Controller.Model.GetSectionTitle(sectionIndex) };
+				cell = Controller.Model.GetHeaderCell(sectionIndex) ??
+						new TextCell { Text = Controller.Model.GetSectionTitle(sectionIndex) };
 			}
 			else
 			{

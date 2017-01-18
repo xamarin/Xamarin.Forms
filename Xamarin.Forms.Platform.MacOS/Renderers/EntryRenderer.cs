@@ -17,10 +17,10 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			base.OnElementChanged(e);
 
-		    if (Control == null)
+			if (Control == null)
 			{
-			    NSTextField textField;
-			    SetNativeControl(textField = e.NewElement.IsPassword ? new NSSecureTextField() : new NSTextField());
+				NSTextField textField;
+				SetNativeControl(textField = e.NewElement.IsPassword ? new NSSecureTextField() : new NSTextField());
 
 				_defaultTextColor = textField.TextColor;
 
@@ -41,7 +41,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == Entry.PlaceholderProperty.PropertyName || e.PropertyName == Entry.PlaceholderColorProperty.PropertyName)
+			if (e.PropertyName == Entry.PlaceholderProperty.PropertyName ||
+				e.PropertyName == Entry.PlaceholderColorProperty.PropertyName)
 				UpdatePlaceholder();
 			else if (e.PropertyName == Entry.IsPasswordProperty.PropertyName)
 				UpdatePassword();
@@ -160,4 +161,3 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 	}
 }
-

@@ -21,6 +21,7 @@ using TNativeView = UIKit.UIView;
 using AppKit;
 using Xamarin.Forms.Platform.MacOS;
 using TNativeView = AppKit.NSView;
+
 #endif
 
 namespace Xamarin.Forms
@@ -29,10 +30,13 @@ namespace Xamarin.Forms
 	{
 		//Preserve GetCallingAssembly
 		static readonly bool nevertrue = false;
+
 		public static bool IsInitialized { get; private set; }
+
 #if __MOBILE__
 		static bool? s_isiOS9OrNewer;
 #endif
+
 		static Forms()
 		{
 			if (nevertrue)
@@ -68,7 +72,8 @@ namespace Xamarin.Forms
 			Device.PlatformServices = new IOSPlatformServices();
 			Device.Info = new IOSDeviceInfo();
 
-			Registrar.RegisterAll(new[] { typeof(ExportRendererAttribute), typeof(ExportCellAttribute), typeof(ExportImageSourceHandlerAttribute) });
+			Registrar.RegisterAll(new[]
+				{ typeof(ExportRendererAttribute), typeof(ExportCellAttribute), typeof(ExportImageSourceHandlerAttribute) });
 			ExpressionSearch.Default = new iOSExpressionSearch();
 		}
 
@@ -297,7 +302,8 @@ namespace Xamarin.Forms
 
 				public Task<Stream> OpenFileAsync(string path, FileMode mode, FileAccess access, FileShare share)
 				{
-					Stream stream = _isolatedStorageFile.OpenFile(path, (System.IO.FileMode)mode, (System.IO.FileAccess)access, (System.IO.FileShare)share);
+					Stream stream = _isolatedStorageFile.OpenFile(path, (System.IO.FileMode)mode, (System.IO.FileAccess)access,
+						(System.IO.FileShare)share);
 					return Task.FromResult(stream);
 				}
 			}

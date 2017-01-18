@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using static System.String;
-
 #if __MOBILE__
 using UIKit;
 namespace Xamarin.Forms.Platform.iOS
 #else
 using UIView = AppKit.NSView;
+
 namespace Xamarin.Forms.Platform.MacOS
 #endif
 {
@@ -21,7 +21,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			return self.Subviews.Concat(self.Subviews.SelectMany(s => s.Descendants()));
 		}
 
-		public static SizeRequest GetSizeRequest(this UIView self, double widthConstraint, double heightConstraint, double minimumWidth = -1, double minimumHeight = -1)
+		public static SizeRequest GetSizeRequest(this UIView self, double widthConstraint, double heightConstraint,
+			double minimumWidth = -1, double minimumHeight = -1)
 		{
 			CoreGraphics.CGSize s;
 #if __MOBILE__
@@ -33,12 +34,15 @@ namespace Xamarin.Forms.Platform.MacOS
 			else
 				s = self.FittingSize;
 #endif
-			var request = new Size(s.Width == float.PositiveInfinity ? double.PositiveInfinity : s.Width, s.Height == float.PositiveInfinity ? double.PositiveInfinity : s.Height);
-			var minimum = new Size(minimumWidth < 0 ? request.Width : minimumWidth, minimumHeight < 0 ? request.Height : minimumHeight);
+			var request = new Size(s.Width == float.PositiveInfinity ? double.PositiveInfinity : s.Width,
+				s.Height == float.PositiveInfinity ? double.PositiveInfinity : s.Height);
+			var minimum = new Size(minimumWidth < 0 ? request.Width : minimumWidth,
+				minimumHeight < 0 ? request.Height : minimumHeight);
 			return new SizeRequest(request, minimum);
 		}
 
-		public static void SetBinding(this UIView view, string propertyName, BindingBase bindingBase, string updateSourceEventName = null)
+		public static void SetBinding(this UIView view, string propertyName, BindingBase bindingBase,
+			string updateSourceEventName = null)
 		{
 			var binding = bindingBase as Binding;
 			//This will allow setting bindings from Xaml by reusing the MarkupExtension
@@ -97,7 +101,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			NativeBindingHelpers.SetValue(target, targetProperty, value);
 		}
 
-		public static void SetBindingContext(this UIView target, object bindingContext, Func<UIView, IEnumerable<UIView>> getChildren = null)
+		public static void SetBindingContext(this UIView target, object bindingContext,
+			Func<UIView, IEnumerable<UIView>> getChildren = null)
 		{
 			NativeBindingHelpers.SetBindingContext(target, bindingContext, getChildren);
 		}
@@ -126,6 +131,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			return null;
 		}
+
 #if __MOBILE__
 		internal static UIView FindFirstResponder(this UIView view)
 		{

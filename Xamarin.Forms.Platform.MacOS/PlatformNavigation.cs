@@ -86,7 +86,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void INavigation.InsertPageBefore(Page page, Page before)
 		{
-			throw new InvalidOperationException("InsertPageBefore is not supported globally on MacOS, please use a NavigationPage.");
+			throw new InvalidOperationException(
+				"InsertPageBefore is not supported globally on MacOS, please use a NavigationPage.");
 		}
 
 		protected virtual void Dispose(bool disposing)
@@ -107,7 +108,6 @@ namespace Xamarin.Forms.Platform.MacOS
 		public void Dispose()
 		{
 			Dispose(true);
-
 		}
 	}
 }

@@ -37,4 +37,3 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 	}
 }
-

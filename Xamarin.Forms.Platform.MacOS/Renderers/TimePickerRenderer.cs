@@ -32,7 +32,6 @@ namespace Xamarin.Forms.Platform.MacOS
 					Control.ValidateProposedDateValue += HandleValueChanged;
 					_defaultTextColor = Control.TextColor;
 					_defaultBackgroundColor = Control.BackgroundColor;
-
 				}
 
 				UpdateTime();
@@ -44,10 +43,12 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == TimePicker.TimeProperty.PropertyName || e.PropertyName == TimePicker.FormatProperty.PropertyName)
+			if (e.PropertyName == TimePicker.TimeProperty.PropertyName ||
+				e.PropertyName == TimePicker.FormatProperty.PropertyName)
 				UpdateTime();
 
-			if (e.PropertyName == TimePicker.TextColorProperty.PropertyName || e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
+			if (e.PropertyName == TimePicker.TextColorProperty.PropertyName ||
+				e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateTextColor();
 		}
 
@@ -59,7 +60,6 @@ namespace Xamarin.Forms.Platform.MacOS
 					Control.ValidateProposedDateValue -= HandleValueChanged;
 
 				_disposed = true;
-
 			}
 			base.Dispose(disposing);
 		}
@@ -75,7 +75,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void HandleValueChanged(object sender, NSDatePickerValidatorEventArgs e)
 		{
-			ElementController?.SetValueFromRenderer(TimePicker.TimeProperty, Control.DateValue.ToDateTime() - new DateTime(2001, 1, 1));
+			ElementController?.SetValueFromRenderer(TimePicker.TimeProperty,
+				Control.DateValue.ToDateTime() - new DateTime(2001, 1, 1));
 		}
 
 		void UpdateTime()
@@ -101,4 +102,3 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 	}
 }
-
