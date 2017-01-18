@@ -7,6 +7,7 @@ using Xamarin.UITest.Queries;
 using System.Linq;
 using System.Diagnostics;
 using System.Threading;
+using System.Drawing;
 
 namespace Xamarin.Forms.Core.macOS.UITests
 {
@@ -73,12 +74,13 @@ namespace Xamarin.Forms.Core.macOS.UITests
 
 		public void ClearText()
 		{
-
+			_cocoaApp.ClearText();
 		}
 
 		public void ClearText(string marked)
 		{
-
+			var textField = _cocoaApp.QueryById(marked).FirstOrDefault((arg) => arg.Class.Contains("SearchField") || arg.Class.Contains("TextField"));
+			ClearText(textField.Rect.CenterX, textField.Rect.CenterY);
 		}
 
 		public void ClearText(Func<AppQuery, AppWebQuery> query)
@@ -88,7 +90,16 @@ namespace Xamarin.Forms.Core.macOS.UITests
 
 		public void ClearText(Func<AppQuery, AppQuery> query)
 		{
+			var queryStr = query(new AppQuery(QueryPlatform.iOS)).ToString();
 
+			var isMarked = System.Text.RegularExpressions.Regex.IsMatch(queryStr, @"\bmarked\b");
+			if (isMarked)
+			{
+				var markedWord = System.Text.RegularExpressions.Regex.Split(queryStr, @"\bmarked\b:'");
+				var isAll = markedWord[0].Trim() == "*";
+				var marked = markedWord[1].Replace("'", "");
+				ClearText(marked);
+			}
 		}
 
 		public void DismissKeyboard()
@@ -163,6 +174,14 @@ namespace Xamarin.Forms.Core.macOS.UITests
 			_cocoaApp.Click(x, y);
 			Thread.Sleep(500);
 			_cocoaApp.EnterText(text);
+			Thread.Sleep(500);
+		}
+
+		void ClearText(float x, float y)
+		{
+			_cocoaApp.DoubleClick(new PointF(x, y));
+			Thread.Sleep(500);
+			_cocoaApp.ClearText();
 			Thread.Sleep(500);
 		}
 
