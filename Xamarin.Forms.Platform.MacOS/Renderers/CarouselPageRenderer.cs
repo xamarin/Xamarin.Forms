@@ -142,7 +142,6 @@ namespace Xamarin.Forms.Platform.MacOS
 
             UpdateBackground();
             UpdateSource();
-            UpdateCurrentPage(false);
 
             Carousel.PropertyChanged += OnPropertyChanged;
             Carousel.PagesChanged += OnPagesChanged;
@@ -159,6 +158,7 @@ namespace Xamarin.Forms.Platform.MacOS
             }
 
             ArrangedObjects = pages.ToArray();
+            UpdateCurrentPage(false);
         }
 
         void OnPagesChanged(object sender, NotifyCollectionChangedEventArgs e)
