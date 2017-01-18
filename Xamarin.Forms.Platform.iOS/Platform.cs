@@ -38,8 +38,9 @@ namespace Xamarin.Forms.Platform.iOS
 		readonly PlatformRenderer _renderer;
 		bool _animateModals = true;
 		bool _appeared;
-
 		bool _disposed;
+
+		UIPopoverPresentationController _popoverPresentationController;
 
 		internal Platform()
 		{
@@ -447,7 +448,7 @@ namespace Xamarin.Forms.Platform.iOS
 			PresentPopUp(window, alert, arguments);
 		}
 
-		static void PresentPopUp(UIWindow window, UIAlertController alert, ActionSheetArguments arguments = null)
+		static void PresentPopUp(UIWindow window, UIViewController alert, ActionSheetArguments arguments = null)
 		{
 			window.RootViewController = new UIViewController();
 			window.RootViewController.View.BackgroundColor = Color.Transparent.ToUIColor();
@@ -528,6 +529,46 @@ namespace Xamarin.Forms.Platform.iOS
 
 			// If there aren't any modals, then the platform renderer will have the Window
 			_renderer.View?.Window?.EndEditing(true);
+		}
+
+		public async Task<T> ShowPopup<T>(Popup<T> popup)
+		{
+			var wrapper = PopupWrapper<T>.Wrap(popup);
+
+			var currenPageRenderer = GetRenderer(Application.Current.MainPage);
+			var presentingViewController = currenPageRenderer.ViewController;
+
+			var anchorNativeView = popup.Anchor == null ? currenPageRenderer.NativeView : GetRenderer(popup.Anchor).NativeView;
+
+			wrapper.ModalInPopover = !popup.IsLightDismissEnabled;
+			wrapper.ModalPresentationStyle = UIModalPresentationStyle.Popover;
+
+			presentingViewController.PresentViewController(wrapper, true, null);
+
+			_popoverPresentationController = wrapper.PopoverPresentationController;
+
+			_popoverPresentationController.DidDismiss += (sender, e) =>
+			{
+				popup.LightDismiss();
+				_popoverPresentationController = null;
+			};
+
+			_popoverPresentationController.SourceRect = new RectangleF(anchorNativeView.Bounds.Location, anchorNativeView.Bounds.Size);
+			_popoverPresentationController.SourceView = anchorNativeView;
+
+			var result = await popup.Result;
+
+			if (!Forms.IsiOS9OrNewer)
+			{
+				await presentingViewController.DismissViewControllerAsync(true);
+			}
+			else
+			{
+				presentingViewController.DismissViewController(true, null);
+			}
+
+			_popoverPresentationController = null;
+			return result;
 		}
 
 		internal class DefaultRenderer : VisualElementRenderer<VisualElement>

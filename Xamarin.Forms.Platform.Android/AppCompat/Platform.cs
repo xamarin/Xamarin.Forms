@@ -438,6 +438,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			return source.Task.ContinueWith(task => NavAnimationInProgress = false);
 		}
 
+		public Task<T> ShowPopup<T>(Popup<T> popup)
+		{
+			throw new NotImplementedException();
+		}
+
 		sealed class ModalContainer : ViewGroup
 		{
 			AView _backgroundView;

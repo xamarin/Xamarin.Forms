@@ -79,6 +79,11 @@ namespace Xamarin.Forms.Core.UnitTests
 			{
 			}
 
+			public Task<T> ShowPopup<T>(Popup<T> popup)
+			{
+				throw new NotImplementedException();
+			}
+
 			public System.Collections.Generic.IReadOnlyList<Page> NavigationStack
 			{
 				get { return new List<Page> (); }

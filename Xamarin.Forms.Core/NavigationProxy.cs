@@ -244,5 +244,14 @@ namespace Xamarin.Forms.Internals
 			list.RemoveAt(list.Count - 1);
 			return result;
 		}
+
+		public async Task<T> ShowPopup<T>(Popup<T> popup)
+		{
+			if(Inner != null){
+				return await Inner.ShowPopup(popup);
+			}
+
+			return await popup.Result; // This probably isn't right
+		}
 	}
 }

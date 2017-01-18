@@ -310,6 +310,8 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new VisualStateManagerGallery(), "VisualStateManager Gallery"),
 				new GalleryPageFactory(() => new FlowDirectionGalleryLandingPage(), "FlowDirection"),
 				new GalleryPageFactory(() => new AutomationPropertiesGallery(), "Accessibility"),
+				new GalleryPageFactory(() => new PopoverGallery(), "Popover Gallery"),
+				new GalleryPageFactory(() => new AlertGallery(), "DisplayAlert Gallery"),
 				new GalleryPageFactory(() => new PlatformSpecificsGallery(), "Platform Specifics"),
 				new GalleryPageFactory(() => new NativeBindingGalleryPage(), "Native Binding Controls Gallery"),
 				new GalleryPageFactory(() => new XamlNativeViews(), "Xaml Native Views Gallery"),
@@ -328,7 +330,7 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new AutomationIdGallery(), "AutomationID Gallery"),
 				new GalleryPageFactory(() => new LayoutPerformanceGallery(), "Layout Perf Gallery"),
 				new GalleryPageFactory(() => new ListViewSelectionColor(), "ListView SelectionColor Gallery"),
-				new GalleryPageFactory(() => new AlertGallery(), "DisplayAlert Gallery"),
+				
 				new GalleryPageFactory(() => new ToolbarItems(), "ToolbarItems Gallery"),
 				new GalleryPageFactory(() => new ActionSheetGallery(), "ActionSheet Gallery"),
 				new GalleryPageFactory(() => new ActivityIndicatorCoreGalleryPage(), "ActivityIndicator Gallery"),

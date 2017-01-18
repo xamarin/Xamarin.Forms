@@ -24,5 +24,7 @@ namespace Xamarin.Forms
 		Task PushModalAsync(Page page, bool animated);
 
 		void RemovePage(Page page);
+
+		Task<T> ShowPopup<T>(Popup<T> popup);
 	}
 }
