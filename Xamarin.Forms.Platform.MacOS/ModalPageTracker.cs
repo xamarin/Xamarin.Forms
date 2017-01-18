@@ -98,9 +98,11 @@ namespace Xamarin.Forms.Platform.MacOS
 			var i = Math.Max(0, _renderer.ChildViewControllers.Length - 2);
 			var toViewController = _renderer.ChildViewControllers[i];
 
+			toViewController.View.Layer.Hidden = false;
+
 			NSViewControllerTransitionOptions option = animated
-				? NSViewControllerTransitionOptions.SlideDown
-				: NSViewControllerTransitionOptions.None;
+							? NSViewControllerTransitionOptions.SlideDown
+							: NSViewControllerTransitionOptions.None;
 
 			var task = _renderer.HandleAsyncAnimation(controller, toViewController, option,
 				() => Platform.DisposeModelAndChildrenRenderers(modal), modal);
