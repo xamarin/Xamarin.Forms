@@ -13,6 +13,7 @@ namespace Xamarin
 #if __MOBILE__
 
 		static bool? s_isiOs8OrNewer;
+		static bool? s_isiOs9OrNewer;
 		static bool? s_isiOs10OrNewer;
 
 		internal static bool IsiOs8OrNewer
@@ -22,6 +23,16 @@ namespace Xamarin
 				if (!s_isiOs8OrNewer.HasValue)
 					s_isiOs8OrNewer = UIDevice.CurrentDevice.CheckSystemVersion(8, 0);
 				return s_isiOs8OrNewer.Value;
+			}
+		}
+
+		internal static bool IsiOs9OrNewer
+		{
+			get
+			{
+				if (!s_isiOs9OrNewer.HasValue)
+					s_isiOs9OrNewer = UIDevice.CurrentDevice.CheckSystemVersion(9, 0);
+				return s_isiOs9OrNewer.Value;
 			}
 		}
 
