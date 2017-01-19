@@ -9,16 +9,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		public CustomNSTableHeaderView() : this(0, null) { }
 		public CustomNSTableHeaderView(double width, IVisualElementRenderer headerRenderer)
 		{
-			var view = new NSView { WantsLayer = true };
-			view.Layer.BackgroundColor = NSColor.Purple.CGColor;
+			var view = new NSView { WantsLayer = true, Layer = { BackgroundColor = NSColor.Clear.CGColor } };
 			AddSubview(view);
 			Update(width, headerRenderer);
-		}
-
-		public override void DrawRect(CoreGraphics.CGRect dirtyRect)
-		{
-			//	Layer.BackgroundColor = Color.Pink.ToCGColor();
-			//base.DrawRect(dirtyRect);
 		}
 
 		public void Update(double width, IVisualElementRenderer headerRenderer)
@@ -40,6 +33,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		//hides default text field
 		public override NSAttributedString PageHeader => new NSAttributedString("");
+
+		public override void DrawRect(CGRect dirtyRect) { }
 
 		public override void Layout()
 		{
