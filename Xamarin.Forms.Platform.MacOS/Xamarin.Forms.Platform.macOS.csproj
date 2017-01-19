@@ -87,7 +87,6 @@
     <Compile Include="..\Xamarin.Forms.Platform.iOS\RendererPool.cs">
       <Link>RendererPool.cs</Link>
     </Compile>
-    <Compile Include="ViewRenderer.cs" />
     <Compile Include="..\Xamarin.Forms.Platform.iOS\EffectUtilities.cs">
       <Link>EffectUtilities.cs</Link>
     </Compile>
@@ -214,6 +213,9 @@
     </Compile>
     <Compile Include="..\Xamarin.Forms.Platform.iOS\VisualElementPackager.cs">
       <Link>VisualElementPackager.cs</Link>
+    </Compile>
+    <Compile Include="..\Xamarin.Forms.Platform.iOS\ViewRenderer.cs">
+      <Link>ViewRenderer.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>
