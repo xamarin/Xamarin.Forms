@@ -95,7 +95,6 @@
     </Compile>
     <Compile Include="Renderers\PageRenderer.cs" />
     <Compile Include="Renderers\DefaultRenderer.cs" />
-    <Compile Include="Renderers\LabelRenderer.cs" />
     <Compile Include="Extensions\AlignmentExtensions.cs" />
     <Compile Include="Renderers\ButtonRenderer.cs" />
     <Compile Include="ImageSourceHandlers.cs" />
@@ -208,6 +207,9 @@
     </Compile>
     <Compile Include="..\Xamarin.Forms.Platform.iOS\ViewInitializedEventArgs.cs">
       <Link>ViewInitializedEventArgs.cs</Link>
+    </Compile>
+    <Compile Include="..\Xamarin.Forms.Platform.iOS\Renderers\LabelRenderer.cs">
+      <Link>Renderers\LabelRenderer.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>
