@@ -15,8 +15,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			//this is needed .. can we go around it ?
 			self.AddColumn(new NSTableColumn("1"));
 			//this line hides the header by default
-			self.HeaderView = null;
-
+			self.HeaderView = new CustomNSTableHeaderView();
 			return self;
 		}
 	}

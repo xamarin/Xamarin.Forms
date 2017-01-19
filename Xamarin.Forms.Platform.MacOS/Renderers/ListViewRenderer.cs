@@ -179,22 +179,34 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			if (headerView != null)
 			{
-				if (_headerRenderer != null)
-				{
-					if (header != null && _headerRenderer.GetType() == Registrar.Registered.GetHandlerType(header.GetType()))
-					{
-						_headerRenderer.SetElement(headerView);
-						var customNSTableHeaderView = _table.HeaderView as CustomNSTableHeaderView;
-						customNSTableHeaderView?.Update(Bounds.Width, _headerRenderer);
-						return;
-					}
-					ClearHeader();
-				}
+				//Header reuse is not working for now , problem with size of something that is not inside a layout
+				//if (_headerRenderer != null)
+				//{
+				//	if (header != null && _headerRenderer.GetType() == Registrar.Registered.GetHandlerType(header.GetType()))
+				//	{
+				//		_headerRenderer.SetElement(headerView);
+				//		_table.HeaderView = new CustomNSTableHeaderView(Bounds.Width, _headerRenderer);
+				//		//	Layout();
+				//		//var customNSTableHeaderView = _table.HeaderView as CustomNSTableHeaderView;
+				//		//customNSTableHeaderView?.Update(Bounds.Width, _headerRenderer);
+				//		//NativeView.Layout();
+				//		//NativeView.SetNeedsDisplayInRect(NativeView.Bounds);
+				//		//NativeView.LayoutSubtreeIfNeeded();
+				//		//_table.LayoutSubtreeIfNeeded();
+				//		//_table.NeedsDisplay = true;
+				//		//NativeView.NeedsDisplay = true;
+				//		return;
+				//	}
+				ClearHeader();
+				//}
 
 				_headerRenderer = Platform.CreateRenderer(headerView);
 				Platform.SetRenderer(headerView, _headerRenderer);
-
 				_table.HeaderView = new CustomNSTableHeaderView(Bounds.Width, _headerRenderer);
+
+				//We need this since the NSSCrollView doesn't know of the new size of our header
+				//TODO: Find a better solution 
+				(Control as NSScrollView)?.ContentView.ScrollToPoint(new CoreGraphics.CGPoint(0, -_table.HeaderView.Frame.Height));
 			}
 			else if (_headerRenderer != null)
 			{
