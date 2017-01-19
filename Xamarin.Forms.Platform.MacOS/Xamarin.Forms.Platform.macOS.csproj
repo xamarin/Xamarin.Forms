@@ -97,7 +97,6 @@
     <Compile Include="Extensions\ButtonExtensions.cs" />
     <Compile Include="Renderers\BoxViewRenderer.cs" />
     <Compile Include="Renderers\ScrollViewRenderer.cs" />
-    <Compile Include="EventTracker.cs" />
     <Compile Include="Renderers\ActivityIndicatorRenderer.cs" />
     <Compile Include="Renderers\DatePickerRenderer.cs" />
     <Compile Include="Renderers\EntryRenderer.cs" />
@@ -218,6 +217,9 @@
     </Compile>
     <Compile Include="..\Xamarin.Forms.Platform.iOS\VisualElementTracker.cs">
       <Link>VisualElementTracker.cs</Link>
+    </Compile>
+    <Compile Include="..\Xamarin.Forms.Platform.iOS\EventTracker.cs">
+      <Link>EventTracker.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>
