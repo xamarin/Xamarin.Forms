@@ -73,7 +73,6 @@
     <Compile Include="Platform.cs" />
     <Compile Include="CADisplayLinkTicker.cs" />
     <Compile Include="Extensions\PageExtensions.cs" />
-    <Compile Include="VisualElementRenderer.cs" />
     <Compile Include="..\Xamarin.Forms.Platform.iOS\ExportCellAttribute.cs">
       <Link>ExportCellAttribute.cs</Link>
     </Compile>
@@ -220,6 +219,9 @@
     </Compile>
     <Compile Include="..\Xamarin.Forms.Platform.iOS\EventTracker.cs">
       <Link>EventTracker.cs</Link>
+    </Compile>
+    <Compile Include="..\Xamarin.Forms.Platform.iOS\VisualElementRenderer.cs">
+      <Link>VisualElementRenderer.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>
