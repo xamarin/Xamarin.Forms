@@ -83,7 +83,6 @@
     <Compile Include="..\Xamarin.Forms.Platform.iOS\Deserializer.cs">
       <Link>Deserializer.cs</Link>
     </Compile>
-    <Compile Include="VisualElementPackager.cs" />
     <Compile Include="VisualElementTracker.cs" />
     <Compile Include="..\Xamarin.Forms.Platform.iOS\RendererPool.cs">
       <Link>RendererPool.cs</Link>
@@ -212,6 +211,9 @@
     </Compile>
     <Compile Include="..\Xamarin.Forms.Platform.iOS\ResourcesProvider.cs">
       <Link>ResourcesProvider.cs</Link>
+    </Compile>
+    <Compile Include="..\Xamarin.Forms.Platform.iOS\VisualElementPackager.cs">
+      <Link>VisualElementPackager.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>
