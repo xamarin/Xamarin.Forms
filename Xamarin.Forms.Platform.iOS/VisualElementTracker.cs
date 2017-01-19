@@ -276,6 +276,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			if (_layer == null)
 			{
+#if !__MOBILE__
+				Renderer.NativeView.WantsLayer = true;
+#endif
 				_layer = Renderer.NativeView.Layer;
 #if __MOBILE__
 				_isInteractive = Renderer.NativeView.UserInteractionEnabled;
