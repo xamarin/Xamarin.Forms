@@ -8,7 +8,7 @@ namespace Xamarin.Forms.Platform.MacOS
 {
 	internal class ModalPageTracker : IDisposable
 	{
-		readonly NSViewController _renderer;
+		NSViewController _renderer;
 		List<Page> _modals;
 		bool _disposed;
 
@@ -54,6 +54,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				{
 					foreach (var modal in _modals)
 						Platform.DisposeModelAndChildrenRenderers(modal);
+					_renderer = null;
 				}
 				_disposed = true;
 			}
@@ -87,7 +88,12 @@ namespace Xamarin.Forms.Platform.MacOS
 				: NSViewControllerTransitionOptions.None;
 
 			var task = _renderer.HandleAsyncAnimation(fromViewController, toViewController, option,
-				() => fromViewController.View.Layer.Hidden = true, true);
+				() =>
+				{
+					//Hack: adjust if needed
+					toViewController.View.Frame = _renderer.View.Bounds;
+					fromViewController.View.Layer.Hidden = true;
+				}, true);
 			return task;
 		}
 

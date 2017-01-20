@@ -129,6 +129,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected virtual void ConfigureTabView()
 		{
+			View.WantsLayer = true;
+			TabView.WantsLayer = true;
 			TabView.DrawsBackground = false;
 			var tabStyle = Tabbed.OnThisPlatform().GetTabsStyle();
 			switch (tabStyle)
@@ -176,6 +178,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected virtual void UpdateNativeWidget()
 		{
+			TabView.Layout();
 		}
 
 		protected TabbedPage Tabbed => (TabbedPage)Element;
