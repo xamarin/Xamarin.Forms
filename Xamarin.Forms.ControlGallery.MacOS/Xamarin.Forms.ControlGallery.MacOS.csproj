@@ -362,6 +362,9 @@
     <BundleResource Include="..\Xamarin.Forms.ControlGallery.iOS\toolbar_close.png">
       <Link>Resources\toolbar_close.png</Link>
     </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.iOS\coffee.png">
+      <Link>Resources\coffee.png</Link>
+    </BundleResource>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
 </Project>
