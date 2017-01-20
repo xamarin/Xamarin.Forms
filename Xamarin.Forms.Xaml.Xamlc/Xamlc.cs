@@ -62,7 +62,8 @@ namespace Xamarin.Forms.Xaml
 				KeepXamlResources = keep,
 				OptimizeIL = optimize,
 				DependencyPaths = paths,
-				ReferencePath = refs
+				ReferencePath = refs,
+				DebugSymbols = true,
 			};
 			IList<Exception> _;
 			xamlc.Execute(out _);
