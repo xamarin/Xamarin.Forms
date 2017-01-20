@@ -11,6 +11,8 @@ namespace Xamarin.Forms.Platform.MacOS
 	public class TabbedPageRenderer : NSTabViewController, IVisualElementRenderer, IEffectControlProvider
 	{
 		const float DefaultImageSizeSegmentedButton = 19;
+		const int TabHolderHeight = 30;
+
 		bool _disposed;
 		bool _updatingControllers;
 		bool _barBackgroundColorWasSet;
@@ -18,6 +20,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		bool _defaultBarTextColorSet;
 		bool _defaultBarColorSet;
 		VisualElementTracker _tracker;
+		bool _loaded;
+		Size _queuedSize;
+
 
 		public VisualElement Element { get; private set; }
 
@@ -80,10 +85,36 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public void SetElementSize(Size size)
 		{
-			Element.Layout(new Rectangle(Element.X, Element.Y, size.Width, size.Height));
+			if (_loaded)
+				Element.Layout(new Rectangle(Element.X, Element.Y, size.Width, size.Height));
+			else
+				_queuedSize = size;
 		}
 
 		public NSViewController ViewController => this;
+
+		public override void ViewWillLayout()
+		{
+			base.ViewWillLayout();
+
+			if (Element == null)
+				return;
+
+			if (!Element.Bounds.IsEmpty)
+				View.Frame = new System.Drawing.RectangleF((float)Element.X, (float)Element.Y, (float)Element.Width, (float)Element.Height);
+
+			var frame = View.Frame;
+			PageController.ContainerArea = new Rectangle(0, 0, frame.Width, frame.Height - TabHolderHeight);
+
+			if (!_queuedSize.IsZero)
+			{
+				Element.Layout(new Rectangle(Element.X, Element.Y, _queuedSize.Width, _queuedSize.Height));
+				_queuedSize = Size.Zero;
+			}
+
+			_loaded = true;
+		}
+
 
 		public override nint SelectedTabViewItemIndex
 		{
