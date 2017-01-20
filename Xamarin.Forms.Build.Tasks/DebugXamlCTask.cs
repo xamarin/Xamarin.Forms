@@ -2,9 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 using Mono.Cecil;
 using Mono.Cecil.Cil;
+using Mono.Cecil.Mdb;
+using Mono.Cecil.Pdb;
 using Mono.Cecil.Rocks;
+
 using Xamarin.Forms.Xaml;
 
 namespace Xamarin.Forms.Build.Tasks
@@ -44,6 +48,7 @@ namespace Xamarin.Forms.Build.Tasks
 			using (var assemblyDefinition = AssemblyDefinition.ReadAssembly(Assembly, new ReaderParameters {
 				ReadWrite = true,
 				ReadSymbols = DebugSymbols,
+				SymbolReaderProvider = System.Type.GetType("Mono.Runtime") != null ? ((ISymbolReaderProvider)(new MdbReaderProvider())) : ((ISymbolReaderProvider)new PdbReaderProvider()),
 				AssemblyResolver = resolver
 			})) {
 				CustomAttribute xamlcAttr;
@@ -177,6 +182,7 @@ namespace Xamarin.Forms.Build.Tasks
 				}
 				Logger.LogString(1, "Writing the assembly... ");
 				assemblyDefinition.Write(new WriterParameters {
+					SymbolWriterProvider = System.Type.GetType("Mono.Runtime") != null ? ((ISymbolWriterProvider)(new MdbWriterProvider())) : ((ISymbolWriterProvider)new MdbWriterProvider()),
 					WriteSymbols = DebugSymbols
 				});
 			}

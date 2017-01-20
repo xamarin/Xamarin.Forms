@@ -2,12 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using Mono.Cecil.Rocks;
-using Xamarin.Forms.Xaml;
 using Mono.Cecil.Mdb;
 using Mono.Cecil.Pdb;
+
+using Xamarin.Forms.Xaml;
 
 namespace Xamarin.Forms.Build.Tasks
 {
