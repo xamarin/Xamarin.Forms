@@ -28,6 +28,8 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				ReferencePath = string.Join(";", refs),
 				KeepXamlResources = true,
 				OptimizeIL = true,
+				DebugSymbols = false,
+				ReadOnly = true,
 				Type = type.FullName
 			};
 

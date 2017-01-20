@@ -27,6 +27,7 @@ namespace Xamarin.Forms.Build.Tasks
 
 		internal string Type { get; set; }
 		internal MethodDefinition InitCompForType { get; private set; }
+		internal bool ReadOnly { get; set; }
 
 		public override bool Execute(out IList<Exception> thrownExceptions)
 		{
@@ -69,12 +70,14 @@ namespace Xamarin.Forms.Build.Tasks
 				}
 			}
 
-			using (var assemblyDefinition = AssemblyDefinition.ReadAssembly(Path.GetFullPath(Assembly), new ReaderParameters {
-				ReadWrite = true,
+			var readerParameters = new ReaderParameters {
 				AssemblyResolver = resolver,
+				ReadWrite = !ReadOnly,
 				ReadSymbols = DebugSymbols,
-				SymbolReaderProvider = System.Type.GetType("Mono.Runtime") != null ? ((ISymbolReaderProvider)(new MdbReaderProvider())) : ((ISymbolReaderProvider)new PdbReaderProvider()),
-			})) {
+				SymbolReaderProvider = DebugSymbols ? (System.Type.GetType("Mono.Runtime") != null ? ((ISymbolReaderProvider)(new MdbReaderProvider())) : ((ISymbolReaderProvider)new PdbReaderProvider())) : null,
+			};
+
+			using (var assemblyDefinition = AssemblyDefinition.ReadAssembly(Path.GetFullPath(Assembly),readerParameters)) {
 				CustomAttribute xamlcAttr;
 				if (assemblyDefinition.HasCustomAttributes &&
 					(xamlcAttr =
@@ -215,11 +218,14 @@ namespace Xamarin.Forms.Build.Tasks
 					return success;
 				}
 
+				if (ReadOnly)
+					return success;
+				
 				Logger.LogString(1, "Writing the assembly... ");
 				try {
 					assemblyDefinition.Write(new WriterParameters {
 						WriteSymbols = DebugSymbols,
-						SymbolWriterProvider = System.Type.GetType("Mono.Runtime") != null ? ((ISymbolWriterProvider)(new MdbWriterProvider())) : ((ISymbolWriterProvider)new MdbWriterProvider()),
+						SymbolWriterProvider = DebugSymbols ? (System.Type.GetType("Mono.Runtime") != null ? ((ISymbolWriterProvider)(new MdbWriterProvider())) : ((ISymbolWriterProvider)new MdbWriterProvider())): null,
 					});
 					Logger.LogLine(1, "done.");
 				} catch (Exception e) {
