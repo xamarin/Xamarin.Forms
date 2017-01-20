@@ -249,7 +249,7 @@ namespace Xamarin.Forms.Platform.MacOS
 						goto case NotifyCollectionChangedAction.Reset;
 
 					_table.BeginUpdates();
-					_table.RemoveRows(NSIndexSet.FromArray(Enumerable.Range(e.NewStartingIndex, e.NewItems.Count).ToArray()),
+					_table.RemoveRows(NSIndexSet.FromArray(Enumerable.Range(e.OldStartingIndex, e.OldItems.Count).ToArray()),
 						NSTableViewAnimation.SlideDown);
 					_table.EndUpdates();
 
