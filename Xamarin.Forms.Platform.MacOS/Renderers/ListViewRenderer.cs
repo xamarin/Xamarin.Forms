@@ -32,7 +32,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected virtual NSTableView CreateNSTableView(ListView list)
 		{
-			NSTableView table = new NSTableView().AsListViewLook();
+			NSTableView table = new FormsNSTableView().AsListViewLook();
 			table.Source = _dataSource = new ListViewDataSource(list, table);
 			return table;
 		}
@@ -322,6 +322,21 @@ namespace Xamarin.Forms.Platform.MacOS
 		//TODO: Implement Footer
 		void UpdateFooter()
 		{
+		}
+
+		class FormsNSTableView : NSTableView
+		{
+			//NSTableView doesn't support selection notfications after the items is already selected
+			//so we do it ourselves by hooking mouse down event
+			public override void MouseDown(NSEvent theEvent)
+			{
+				var clickLocation = ConvertPointFromView(theEvent.LocationInWindow, null);
+				var clickedRow = GetRow(clickLocation);
+
+				base.MouseDown(theEvent);
+				if (clickedRow != -1)
+					(Source as ListViewDataSource)?.OnRowClicked();
+			}
 		}
 	}
 }

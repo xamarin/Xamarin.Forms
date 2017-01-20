@@ -22,7 +22,6 @@ namespace Xamarin.Forms.Platform.MacOS
 		ITemplatedItemsView<Cell> TemplatedItemsView => List;
 
 		bool _selectionFromNative;
-		bool _selectionFromForms;
 
 		public virtual bool IsGroupingEnabled => List.IsGroupingEnabled;
 
@@ -50,6 +49,23 @@ namespace Xamarin.Forms.Platform.MacOS
 			_nsTableView.ReloadData();
 		}
 
+		public void OnRowClicked()
+		{
+			var selectedRow = _nsTableView.SelectedRow;
+			if (selectedRow == -1)
+				return;
+
+			Cell cell = null;
+			NSIndexPath indexPath = GetPathFromRow(selectedRow, ref cell);
+
+			if (cell == null)
+				return;
+
+			_selectionFromNative = true;
+			Controller.NotifyRowTapped((int)indexPath.Section, (int)indexPath.Item, cell);
+		}
+
+
 		public void OnItemSelected(object sender, SelectedItemChangedEventArgs eventArg)
 		{
 			if (_selectionFromNative)
@@ -68,32 +84,10 @@ namespace Xamarin.Forms.Platform.MacOS
 					_nsTableView.DeselectRow(selectedIndexPath.Item);
 				return;
 			}
-			_selectionFromForms = true;
+
 			var rowId = location.Item2;
 
 			_nsTableView.SelectRow(rowId, false);
-		}
-
-		public override void SelectionDidChange(NSNotification notification)
-		{
-			if (_selectionFromForms)
-			{
-				_selectionFromForms = false;
-				return;
-			}
-
-			var selectedRow = _nsTableView.SelectedRow;
-			if (selectedRow == -1)
-				return;
-
-			Cell cell = null;
-			NSIndexPath indexPath = GetPathFromRow(selectedRow, ref cell);
-
-			if (cell == null)
-				return;
-
-			_selectionFromNative = true;
-			Controller.NotifyRowTapped((int)indexPath.Section, (int)indexPath.Item, cell);
 		}
 
 		public override bool IsGroupRow(NSTableView tableView, nint row)
