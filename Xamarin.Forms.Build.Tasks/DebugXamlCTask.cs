@@ -22,8 +22,6 @@ namespace Xamarin.Forms.Build.Tasks
 			Logger.LogLine(1, "Preparing debug code for xamlc");
 			Logger.LogLine(1, "\nAssembly: {0}", Assembly);
 
-			var skipassembly = true; //change this to false to enable XamlC by default
-
 			var resolver = new DefaultAssemblyResolver();
 			if (!string.IsNullOrEmpty(DependencyPaths))
 			{
@@ -51,30 +49,7 @@ namespace Xamarin.Forms.Build.Tasks
 				SymbolReaderProvider = System.Type.GetType("Mono.Runtime") != null ? ((ISymbolReaderProvider)(new MdbReaderProvider())) : ((ISymbolReaderProvider)new PdbReaderProvider()),
 				AssemblyResolver = resolver
 			})) {
-				CustomAttribute xamlcAttr;
-				if (assemblyDefinition.HasCustomAttributes &&
-					(xamlcAttr =
-						assemblyDefinition.CustomAttributes.FirstOrDefault(
-							ca => ca.AttributeType.FullName == "Xamarin.Forms.Xaml.XamlCompilationAttribute")) != null) {
-					var options = (XamlCompilationOptions)xamlcAttr.ConstructorArguments[0].Value;
-					if ((options & XamlCompilationOptions.Skip) == XamlCompilationOptions.Skip)
-						skipassembly = true;
-					if ((options & XamlCompilationOptions.Compile) == XamlCompilationOptions.Compile)
-						skipassembly = false;
-				}
-
 				foreach (var module in assemblyDefinition.Modules) {
-					var skipmodule = skipassembly;
-					if (module.HasCustomAttributes &&
-						(xamlcAttr =
-							module.CustomAttributes.FirstOrDefault(
-								ca => ca.AttributeType.FullName == "Xamarin.Forms.Xaml.XamlCompilationAttribute")) != null) {
-						var options = (XamlCompilationOptions)xamlcAttr.ConstructorArguments[0].Value;
-						if ((options & XamlCompilationOptions.Skip) == XamlCompilationOptions.Skip)
-							skipmodule = true;
-						if ((options & XamlCompilationOptions.Compile) == XamlCompilationOptions.Compile)
-							skipmodule = false;
-					}
 					Logger.LogLine(2, " Module: {0}", module.Name);
 					foreach (var resource in module.Resources.OfType<EmbeddedResource>()) {
 						Logger.LogString(2, "  Resource: {0}... ", resource.Name);
@@ -82,26 +57,11 @@ namespace Xamarin.Forms.Build.Tasks
 						if (!resource.IsXaml(out classname)) {
 							Logger.LogLine(2, "skipped.");
 							continue;
-						}
+						} else
+							Logger.LogLine(2, "");
 						TypeDefinition typeDef = module.GetType(classname);
 						if (typeDef == null) {
 							Logger.LogLine(2, "no type found... skipped.");
-							continue;
-						}
-						var skiptype = skipmodule;
-						if (typeDef.HasCustomAttributes &&
-							(xamlcAttr =
-								typeDef.CustomAttributes.FirstOrDefault(
-									ca => ca.AttributeType.FullName == "Xamarin.Forms.Xaml.XamlCompilationAttribute")) != null) {
-							var options = (XamlCompilationOptions)xamlcAttr.ConstructorArguments[0].Value;
-							if ((options & XamlCompilationOptions.Skip) == XamlCompilationOptions.Skip)
-								skiptype = true;
-							if ((options & XamlCompilationOptions.Compile) == XamlCompilationOptions.Compile)
-								skiptype = false;
-						}
-
-						if (skiptype) {
-							Logger.LogLine(2, "Has XamlCompilationAttribute set to Skip and not Compile... skipped");
 							continue;
 						}
 
@@ -112,12 +72,15 @@ namespace Xamarin.Forms.Build.Tasks
 						}
 						var initCompRuntime = typeDef.Methods.FirstOrDefault(md => md.Name == "__InitComponentRuntime");
 						if (initCompRuntime == null) {
-							Logger.LogString(2, "no __InitComponentRuntime found. renaming {0}.InitializeComponent () into {0}.__InitComponentRuntime.", typeDef.Name);
+							Logger.LogString(2, "   No __InitComponentRuntime found. renaming {0}.InitializeComponent () into {0}.__InitComponentRuntime.", typeDef.Name);
 							initCompRuntime = initComp;
 							initCompRuntime.Name = "__InitComponentRuntime";
 							Logger.LogLine(2, "done.");
 							Logger.LogString(2, "   Recreating empty {0}.InitializeComponent ...", typeDef.Name);
 							initComp = new MethodDefinition("InitializeComponent", initComp.Attributes, initComp.ReturnType);
+							initComp.Body = new MethodBody(initComp);
+							initComp.Body.GetILProcessor().Emit(OpCodes.Ret);
+
 							typeDef.Methods.Add(initComp);
 							Logger.LogLine(2, "done.");
 						}
