@@ -84,6 +84,7 @@
     <Compile Include="AppDelegate.cs" />
     <Compile Include="NativeServices.cs" />
     <Compile Include="BrokenNativeControl.cs" />
+    <Compile Include="CustomRenderers.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Controls\Xamarin.Forms.Controls.csproj">
@@ -364,6 +365,30 @@
     </BundleResource>
     <BundleResource Include="..\Xamarin.Forms.ControlGallery.iOS\coffee.png">
       <Link>Resources\coffee.png</Link>
+    </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.iOS\Images\FlowerBuds.jpg">
+      <Link>Images\FlowerBuds.jpg</Link>
+    </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.iOS\Images\FlowerBuds%402x.jpg">
+      <Link>Images\FlowerBuds%402x.jpg</Link>
+    </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.iOS\Images\Fruits.jpg">
+      <Link>Images\Fruits.jpg</Link>
+    </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.iOS\Images\Fruits%402x.jpg">
+      <Link>Images\Fruits%402x.jpg</Link>
+    </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.iOS\Images\Legumes.jpg">
+      <Link>Images\Legumes.jpg</Link>
+    </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.iOS\Images\Legumes%402x.jpg">
+      <Link>Images\Legumes%402x.jpg</Link>
+    </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.iOS\Images\Vegetables.jpg">
+      <Link>Images\Vegetables.jpg</Link>
+    </BundleResource>
+    <BundleResource Include="..\Xamarin.Forms.ControlGallery.iOS\Images\Vegetables%402x.jpg">
+      <Link>Images\Vegetables%402x.jpg</Link>
     </BundleResource>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Mac\Xamarin.Mac.CSharp.targets" />
