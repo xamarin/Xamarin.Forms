@@ -116,7 +116,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		static void UpdateLabel(CellNSView cell, EntryCell entryCell)
 		{
-			cell.TextLabel.StringValue = entryCell.Label;
+			cell.TextLabel.StringValue = entryCell.Label ?? "";
 		}
 
 		static void UpdateLabelColor(CellNSView cell, EntryCell entryCell)
@@ -138,7 +138,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				return;
 
 			if (nsTextField != null)
-				nsTextField.StringValue = entryCell.Text;
+				nsTextField.StringValue = entryCell.Text ?? "";
 		}
 	}
 }

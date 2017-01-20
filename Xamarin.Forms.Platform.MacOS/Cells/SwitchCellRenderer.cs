@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			tvc.Cell = item;
 			tvc.Cell.PropertyChanged += OnCellPropertyChanged;
 			tvc.AccessoryView.AddSubview(nsSwitch);
-			tvc.TextLabel.StringValue = boolCell.Text;
+			tvc.TextLabel.StringValue = boolCell.Text ?? "";
 
 			nsSwitch.State = boolCell.On ? NSCellStateValue.On : NSCellStateValue.Off;
 			nsSwitch.Activated += OnSwitchValueChanged;
@@ -64,7 +64,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (e.PropertyName == SwitchCell.OnProperty.PropertyName)
 				((NSButton)realCell.AccessoryView.Subviews[0]).State = boolCell.On ? NSCellStateValue.On : NSCellStateValue.Off;
 			else if (e.PropertyName == SwitchCell.TextProperty.PropertyName)
-				realCell.TextLabel.StringValue = boolCell.Text;
+				realCell.TextLabel.StringValue = boolCell.Text ?? "";
 			else if (e.PropertyName == Cell.IsEnabledProperty.PropertyName)
 				UpdateIsEnabled(realCell, boolCell);
 		}
