@@ -130,12 +130,12 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateControllers()
 		{
+			ClearControllers();
+
 			if (Platform.GetRenderer(MasterDetailPage.Master) == null)
 				Platform.SetRenderer(MasterDetailPage.Master, Platform.CreateRenderer(MasterDetailPage.Master));
 			if (Platform.GetRenderer(MasterDetailPage.Detail) == null)
 				Platform.SetRenderer(MasterDetailPage.Detail, Platform.CreateRenderer(MasterDetailPage.Detail));
-
-			ClearControllers();
 
 			AddSplitViewItem(new NSSplitViewItem
 			{
