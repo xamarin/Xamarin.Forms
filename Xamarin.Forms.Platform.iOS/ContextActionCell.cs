@@ -658,16 +658,19 @@ namespace Xamarin.Forms.Platform.iOS
 				var table = (UITableView)recognizer.View;
 				var isRowSelected = false;
 
-				foreach(var indexPath in table.IndexPathsForSelectedRows)
+				if (table.IndexPathsForSelectedRows != null)
 				{
-					if(indexPath == selector._lastPath)
+					foreach (NSIndexPath indexPath in table.IndexPathsForSelectedRows)
 					{
+						if (indexPath != selector._lastPath)
+							continue;
+
 						isRowSelected = true;
 						break;
 					}
 				}
 
-				if (table.IndexPathsForSelectedRows != null && isRowSelected)
+				if (isRowSelected)
 				{
 					if (!table.AllowsMultipleSelectionDuringEditing || !table.Editing)
 						return;
