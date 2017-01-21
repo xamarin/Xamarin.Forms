@@ -140,7 +140,10 @@ namespace Xamarin.Forms.Core.macOS.UITests
 
 		public void EnterText(string text)
 		{
-			var textField = _cocoaApp.QueryByType("Textfield").First();
+			var all = _cocoaApp.Query();
+			var staticText = _cocoaApp.QueryByType("StaticText");
+			var textFields = _cocoaApp.QueryByType("Textfield");
+			var textField = staticText.Union(textFields).FirstOrDefault();
 			EnterText(text, textField.Rect.CenterX, textField.Rect.CenterY);
 		}
 
