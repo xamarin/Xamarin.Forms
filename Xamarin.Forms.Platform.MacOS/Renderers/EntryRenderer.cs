@@ -6,6 +6,33 @@ namespace Xamarin.Forms.Platform.MacOS
 {
 	public class EntryRenderer : ViewRenderer<Entry, NSTextField>
 	{
+		class BoolEventArgs : EventArgs
+		{
+			public BoolEventArgs(bool value)
+			{
+				Value = value;
+			}
+			public bool Value
+			{
+				get;
+				private set;
+			}
+		}
+		class FormsNSTextField : NSTextField
+		{
+			public EventHandler<BoolEventArgs> FocusChanged;
+			public override bool ResignFirstResponder()
+			{
+				FocusChanged?.Invoke(this, new BoolEventArgs(false));
+				return base.ResignFirstResponder();
+			}
+			public override bool BecomeFirstResponder()
+			{
+				FocusChanged?.Invoke(this, new BoolEventArgs(true));
+				return base.BecomeFirstResponder();
+			}
+		}
+
 		bool _disposed;
 		NSColor _defaultTextColor;
 
@@ -20,7 +47,15 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (Control == null)
 			{
 				NSTextField textField;
-				SetNativeControl(textField = e.NewElement.IsPassword ? new NSSecureTextField() : new NSTextField());
+				if (e.NewElement.IsPassword)
+					textField = new NSSecureTextField();
+				else
+				{
+					textField = new FormsNSTextField();
+					(textField as FormsNSTextField).FocusChanged += TextFieldFocusChanged;
+				}
+
+				SetNativeControl(textField);
 
 				_defaultTextColor = textField.TextColor;
 
@@ -86,10 +121,17 @@ namespace Xamarin.Forms.Platform.MacOS
 					Control.EditingBegan -= OnEditingBegan;
 					Control.Changed -= OnChanged;
 					Control.EditingEnded -= OnEditingEnded;
+					var formsNSTextField = (Control as FormsNSTextField);
+					if (formsNSTextField != null)
+						formsNSTextField.FocusChanged -= TextFieldFocusChanged;
 				}
 			}
 
 			base.Dispose(disposing);
+		}
+		void TextFieldFocusChanged(object sender, BoolEventArgs e)
+		{
+			ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, e.Value);
 		}
 
 		void OnEditingBegan(object sender, EventArgs e)
