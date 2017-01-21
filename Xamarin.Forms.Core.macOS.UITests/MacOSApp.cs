@@ -641,10 +641,31 @@ namespace Xamarin.Forms.Core.macOS.UITests
 
 		static void EnterText(string marked, int index, string text)
 		{
+			UITest.Desktop.AppResult textField = null;
 			var safeIndex = Math.Max(index, 0);
 			var textFields = _cocoaApp.QueryById(marked).Where((arg) => arg.Class.Contains("SearchField") || arg.Class.Contains("TextField"));
-			var textField = textFields.ElementAt(safeIndex);
-			EnterText(text, textField.Rect.CenterX, textField.Rect.CenterY);
+			if (textFields.Count() > 0)
+			{
+				textField = textFields.ElementAt(safeIndex);
+			}
+			else
+			{
+				var markedField = _cocoaApp.QueryById(marked);
+				if (markedField.Length > 0)
+				{
+					textField = markedField[0];
+				}
+				else
+				{
+
+					var allTextFields = _cocoaApp.QueryByType("TextField");
+					textField = allTextFields[0];
+				}
+			}
+
+			if (textField != null)
+				EnterText(text, textField.Rect.CenterX, textField.Rect.CenterY);
+
 		}
 
 		static void EnterText(string text, float x, float y)
