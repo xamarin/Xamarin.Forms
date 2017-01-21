@@ -474,7 +474,7 @@ namespace Xamarin.Forms.Core.macOS.UITests
 
 		public void Tap(string marked)
 		{
-			Tap(marked, 1);
+			Tap(marked, 0);
 		}
 
 		public void Tap(Func<AppQuery, AppQuery> query)
