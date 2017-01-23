@@ -107,9 +107,8 @@ namespace Xamarin.Forms.Platform.MacOS
 					{
 						AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable,
 						DocumentView = _table = CreateNSTableView(e.NewElement),
-                        HasVerticalScroller = true,
-                        ScrollerStyle = NSScrollerStyle.Overlay
-
+						HasVerticalScroller = true,
+						ScrollerStyle = NSScrollerStyle.Overlay
 					};
 					SetNativeControl(scroller);
 				}
