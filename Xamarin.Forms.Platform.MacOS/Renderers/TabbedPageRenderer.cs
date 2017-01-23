@@ -192,14 +192,23 @@ namespace Xamarin.Forms.Platform.MacOS
 		protected virtual NSTabViewItem GetTabViewItem(Page page, IVisualElementRenderer pageRenderer)
 		{
 			var tvi = new NSTabViewItem { ViewController = pageRenderer.ViewController, Label = page.Title ?? "" };
-			if (!string.IsNullOrEmpty(page.Icon))
-				tvi.Image = GetTabViewItemIcon(page.Icon);
+			if (!string.IsNullOrEmpty (page.Icon)) {
+				var image = GetTabViewItemIcon (page.Icon);
+				if (image != null)
+					tvi.Image = image;
+			}
 			return tvi;
 		}
 
 		protected virtual NSImage GetTabViewItemIcon(string imageName)
 		{
-			var image = NSImage.ImageNamed(imageName);
+			var image = NSImage.ImageNamed (imageName);
+			if(image == null)
+				image = new NSImage (imageName);
+
+			if (image == null)
+				return null;
+
 			bool shouldResize = TabStyle == NSTabViewControllerTabStyle.SegmentedControlOnTop ||
 								TabStyle == NSTabViewControllerTabStyle.SegmentedControlOnBottom;
 			if (shouldResize)
