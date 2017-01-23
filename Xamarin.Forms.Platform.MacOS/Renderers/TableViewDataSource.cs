@@ -47,13 +47,11 @@ namespace Xamarin.Forms.Platform.MacOS
 		public override nint GetRowCount(NSTableView tableView)
 		{
 			nint count = 0;
-			var sections = Controller.Model.GetSectionCount();
-			for (int i = 0; i < sections; i++)
+			s_sectionCount = Controller.Model.GetSectionCount();
+			for (int i = 0; i < s_sectionCount; i++)
 			{
 				count += Controller.Model.GetRowCount(i) + 1;
 			}
-
-			s_sectionCount = Controller.Model.GetSectionCount();
 
 			return count;
 		}
@@ -88,7 +86,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			else
 			{
 				id = ItemIdentifier;
-				cell = Controller.Model.GetCell(sectionIndex, itemIndexInSection - 1);
+				cell = Controller.Model.GetCell(sectionIndex, itemIndexInSection);
 			}
 
 			var nativeCell = CellNSView.GetNativeCell(tableView, cell, id, isHeader);
@@ -104,13 +102,18 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			for (int i = 0; i < s_sectionCount; i++)
 			{
-				var itemsInSection = Controller.Model.GetRowCount(i) + i + 1;
+				var groupCount = Controller.Model.GetRowCount(i);
+				var itemsInSection = groupCount + 1;
 
 				if (row < totalItems + itemsInSection)
 				{
 					sectionIndex = i;
 					itemIndexInSection = (int)row - totalItems;
 					isHeader = itemIndexInSection == 0;
+					if (isHeader)
+						itemIndexInSection = -1;
+					else
+						itemIndexInSection = itemIndexInSection - 1;
 					break;
 				}
 				totalItems += itemsInSection;
