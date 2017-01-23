@@ -38,7 +38,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			GetComputedIndexes(row, out sectionIndex, out itemIndexInSection, out isHeader);
 
-			var cell = Controller.Model.GetCell(sectionIndex, itemIndexInSection - 1);
+			var cell = Controller.Model.GetCell(sectionIndex, itemIndexInSection);
 			Controller.Model.RowSelected(cell);
 			if (AutomaticallyDeselect)
 				_nsTableView.DeselectRow(row);
