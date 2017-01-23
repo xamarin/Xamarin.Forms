@@ -160,7 +160,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				return;
 			}
 
-			var currentPage = NavigationController.StackCopy.Peek();
+			var currentPage = NavigationController.Peek();
 
 			if (NavigationPage.GetHasNavigationBar(currentPage))
 			{
@@ -260,7 +260,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			if (NavigationController == null)
 				return string.Empty;
-			return NavigationController.StackCopy.Peek().Title ?? "";
+			return NavigationController.Peek().Title ?? "";
 		}
 
 		string GetPreviousPageTitle()
@@ -268,7 +268,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (NavigationController == null || NavigationController.StackDepth <= 1)
 				return string.Empty;
 
-			return NavigationController.StackCopy.ElementAt(NavigationController.StackDepth - 1).Title ?? _defaultBackButtonTitle;
+			return NavigationController.Peek(1).Title ?? _defaultBackButtonTitle;
 		}
 
 		List<ToolbarItem> GetToolbarItems()
@@ -315,7 +315,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (_toolbar == null || _navigation == null || _toolbarGroup == null)
 				return;
 
-			var currentPage = NavigationController.StackCopy.Peek();
+			var currentPage = NavigationController.Peek();
 			UpdateGroup(_toolbarGroup, currentPage.ToolbarItems, ToolbarItemWidth, ToolbarItemSpacing);
 		}
 

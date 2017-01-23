@@ -197,7 +197,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			_events.LoadEvents(NativeView);
 			_tracker = new VisualElementTracker(this);
 
-			((INavigationPageController)navPage).StackCopy.Reverse().ForEach(async p => await PushPageAsync(p, false));
+			((INavigationPageController)navPage).Pages.ForEach(async p => await PushPageAsync(p, false));
 
 			UpdateBackgroundColor();
 		}
