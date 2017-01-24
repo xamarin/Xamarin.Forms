@@ -1,11 +1,6 @@
 using System;
-using System.Dynamic;
 using System.Linq;
-using System.Security.Cryptography;
-
 using Xamarin.UITest;
-using Xamarin.UITest.Android;
-using Xamarin.UITest.iOS;
 using Xamarin.UITest.Queries;
 
 namespace Xamarin.Forms.Core.UITests

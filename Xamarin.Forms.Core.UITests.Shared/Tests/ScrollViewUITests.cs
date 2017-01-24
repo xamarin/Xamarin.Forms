@@ -1,5 +1,4 @@
 ﻿using NUnit.Framework;
-using Xamarin.UITest;
 
 namespace Xamarin.Forms.Core.UITests
 {

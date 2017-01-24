@@ -5,20 +5,20 @@ using Xamarin.UITest.iOS;
 namespace Xamarin.Forms.Core.UITests
 {
 	[TestFixture]
-	[Category ("Cells")]
+	[Category("Cells")]
 	internal class UnevenListTests : BaseTestFixture
 	{
-		public UnevenListTests ()
+		public UnevenListTests()
 		{
 		}
 
-		protected override void NavigateToGallery ()
+		protected override void NavigateToGallery()
 		{
-			App.NavigateToGallery (GalleryQueries.UnevenListGalleryLegacy);
+			App.NavigateToGallery(GalleryQueries.UnevenListGalleryLegacy);
 		}
 
 		[Test]
-		public void UnevenListCellTest ()
+		public void UnevenListCellTest()
 		{
 			if (UnevenListTests.ShouldRunTest(App))
 			{
@@ -28,11 +28,10 @@ namespace Xamarin.Forms.Core.UITests
 			}
 		}
 
-		public static bool ShouldRunTest (IApp app)
+		public static bool ShouldRunTest(IApp app)
 		{
 			var appAs = app as iOSApp;
 			return (appAs != null && appAs.Device.IsPhone);
 		}
-
 	}
 }

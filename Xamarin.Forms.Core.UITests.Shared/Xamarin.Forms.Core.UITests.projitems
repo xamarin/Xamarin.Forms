@@ -15,7 +15,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Remotes\BaseViewContainerRemote.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Remotes\EventViewContainerRemote.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Remotes\LayeredViewContainerRemote.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Remotes\RemoteFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Remotes\StateViewContainerRemote.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Remotes\ViewContainerRemote.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\ActionSheetUITests.cs" />

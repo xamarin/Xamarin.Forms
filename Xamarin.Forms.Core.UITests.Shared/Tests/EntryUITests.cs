@@ -1,18 +1,5 @@
-using System;
-using System.CodeDom;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Threading;
-using System.Reflection;
-
 using NUnit.Framework;
-
 using Xamarin.Forms.CustomAttributes;
-using Xamarin.UITest.Android;
-using Xamarin.UITest.Queries;
-using Xamarin.UITest.iOS;
 
 namespace Xamarin.Forms.Core.UITests
 {
@@ -20,50 +7,57 @@ namespace Xamarin.Forms.Core.UITests
 	[Category(UITestCategories.Entry)]
 	internal class EntryUITests : _ViewUITests
 	{
-		public EntryUITests ()
+		public EntryUITests()
 		{
 			PlatformViewType = Views.Entry;
 		}
 
-		protected override void NavigateToGallery ()
+		protected override void NavigateToGallery()
 		{
-			App.NavigateToGallery (GalleryQueries.EntryGallery);
+			App.NavigateToGallery(GalleryQueries.EntryGallery);
 		}
 
 		// TODO
-		public override void _Focus () {}
+		public override void _Focus()
+		{
+		}
 
-		[UiTestExempt (ExemptReason.CannotTest, "Invalid interaction")]
-		public override void _GestureRecognizers () {}
+		[UiTestExempt(ExemptReason.CannotTest, "Invalid interaction")]
+		public override void _GestureRecognizers()
+		{
+		}
 
 		// TODO
-		public override void _IsFocused () {}
+		public override void _IsFocused()
+		{
+		}
 
 		// TODO
-		public override void _UnFocus () {}
+		public override void _UnFocus()
+		{
+		}
 
 		// TODO
 		// Implement control specific ui tests
 		[Test]
-		[UiTest (typeof(Entry), "Completed")]
-		public void Completed ()
+		[UiTest(typeof(Entry), "Completed")]
+		public void Completed()
 		{
-			var remote = new EventViewContainerRemote (App, Test.Entry.Completed, PlatformViewType);
-			remote.GoTo ();
+			var remote = new EventViewContainerRemote(App, Test.Entry.Completed, PlatformViewType);
+			remote.GoTo();
 
-			App.EnterText (q=> q.Raw (remote.ViewQuery), "Test");
+			App.EnterText(q => q.Raw(remote.ViewQuery), "Test");
 
-			App.PressEnter ();
+			App.PressEnter();
 
-			var eventLabelText = remote.GetEventLabel ().Text;
-			Assert.AreEqual (eventLabelText, "Event: Completed (fired 1)");
+			var eventLabelText = remote.GetEventLabel().Text;
+			Assert.AreEqual(eventLabelText, "Event: Completed (fired 1)");
 		}
 
-		protected override void FixtureTeardown ()
+		protected override void FixtureTeardown()
 		{
-			App.NavigateBack ();
-			base.FixtureTeardown ();
+			App.NavigateBack();
+			base.FixtureTeardown();
 		}
-
 	}
 }

@@ -1,19 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.Remoting.Messaging;
-
-using NUnit.Framework;
-
-using Xamarin.UITest;
-using Xamarin.UITest.Queries;
-using Xamarin.UITest.Android;
-using Xamarin.UITest.iOS;
 using System.Globalization;
-using System.Text.RegularExpressions;
-using System.IO;
-
+using System.Linq;
 namespace Xamarin.Forms.Core.UITests
 {
 

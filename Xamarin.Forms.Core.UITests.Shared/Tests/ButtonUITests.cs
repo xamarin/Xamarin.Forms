@@ -1,18 +1,5 @@
-using System;
-using System.CodeDom;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Threading;
-using System.Reflection;
-
 using NUnit.Framework;
-
 using Xamarin.Forms.CustomAttributes;
-using Xamarin.UITest.Android;
-using Xamarin.UITest.Queries;
-using Xamarin.UITest.iOS;
 
 namespace Xamarin.Forms.Core.UITests
 {
@@ -20,109 +7,114 @@ namespace Xamarin.Forms.Core.UITests
 	[Category(UITestCategories.Button)]
 	internal class ButtonUITests : _ViewUITests
 	{
-		public ButtonUITests ()
+		public ButtonUITests()
 		{
 			PlatformViewType = Views.Button;
 		}
 
-		protected override void NavigateToGallery ()
+		protected override void NavigateToGallery()
 		{
-			App.NavigateToGallery (GalleryQueries.ButtonGallery);
+			App.NavigateToGallery(GalleryQueries.ButtonGallery);
 		}
 
 		// View Tests
-		[UiTestExempt (ExemptReason.CannotTest, "Invalid interaction")]
-		public override void _Focus () {}
+		[UiTestExempt(ExemptReason.CannotTest, "Invalid interaction")]
+		public override void _Focus()
+		{
+		}
 
-		[UiTestExempt (ExemptReason.CannotTest, "Invalid interaction")]
-		public override void _GestureRecognizers () {}
+		[UiTestExempt(ExemptReason.CannotTest, "Invalid interaction")]
+		public override void _GestureRecognizers()
+		{
+		}
 
-		[UiTestExempt (ExemptReason.CannotTest, "Invalid interaction")]
-		public override void _IsFocused () {}
+		[UiTestExempt(ExemptReason.CannotTest, "Invalid interaction")]
+		public override void _IsFocused()
+		{
+		}
 
-		[UiTestExempt (ExemptReason.CannotTest, "Invalid interaction")]
-		public override void _UnFocus () {}
+		[UiTestExempt(ExemptReason.CannotTest, "Invalid interaction")]
+		public override void _UnFocus()
+		{
+		}
 
 		// Button Tests
 		[Test]
-		[UiTest (typeof(Button),"BorderColor")]
-		[UiTestBroken (BrokenReason.CalabashAndroidUnsupported, "Figure out how to get Android Drawables")]
-		[UiTestBroken (BrokenReason.CalabashiOSUnsupported, "iOS nil result")]
-		public void BorderColor ()
+		[UiTest(typeof(Button), "BorderColor")]
+		[UiTestBroken(BrokenReason.CalabashAndroidUnsupported, "Figure out how to get Android Drawables")]
+		[UiTestBroken(BrokenReason.CalabashiOSUnsupported, "iOS nil result")]
+		public void BorderColor()
 		{
 			//TODO iOS
-			var remote = new ViewContainerRemote (App, Test.Button.BorderColor, PlatformViewType);
-			remote.GoTo ();
-			
+			var remote = new ViewContainerRemote(App, Test.Button.BorderColor, PlatformViewType);
+			remote.GoTo();
 		}
 
 		[Test]
-		[UiTest (typeof (Button), "BorderRadius")]
-		[UiTestBroken (BrokenReason.CalabashAndroidUnsupported, "Figure out how to get Android Drawables")]
-		public void BorderRadius ()
+		[UiTest(typeof(Button), "BorderRadius")]
+		[UiTestBroken(BrokenReason.CalabashAndroidUnsupported, "Figure out how to get Android Drawables")]
+		public void BorderRadius()
 		{
-			var remote = new ViewContainerRemote (App, Test.Button.BorderRadius, PlatformViewType);
-			remote.GoTo ();
+			var remote = new ViewContainerRemote(App, Test.Button.BorderRadius, PlatformViewType);
+			remote.GoTo();
 
 #if __IOS__
-			var borderRadius = remote.GetProperty<float> (Button.BorderRadiusProperty);
-			Assert.AreEqual (20.0f, borderRadius);
+			var borderRadius = remote.GetProperty<float>(Button.BorderRadiusProperty);
+			Assert.AreEqual(20.0f, borderRadius);
 #endif
-
 		}
 
 		[Test]
-		[UiTest (typeof (Button), "BorderWidth")]
-		[UiTestBroken (BrokenReason.CalabashAndroidUnsupported, "Figure out how to get Android Drawables")]
-		public void BorderWidth ()
+		[UiTest(typeof(Button), "BorderWidth")]
+		[UiTestBroken(BrokenReason.CalabashAndroidUnsupported, "Figure out how to get Android Drawables")]
+		public void BorderWidth()
 		{
-			var remote = new ViewContainerRemote (App, Test.Button.BorderWidth, PlatformViewType);
-			remote.GoTo ();
+			var remote = new ViewContainerRemote(App, Test.Button.BorderWidth, PlatformViewType);
+			remote.GoTo();
 
 #if __IOS__
-			var borderWidth = remote.GetProperty<float> (Button.BorderWidthProperty);
-				Assert.AreEqual (15.0f, borderWidth);
+			var borderWidth = remote.GetProperty<float>(Button.BorderWidthProperty);
+			Assert.AreEqual(15.0f, borderWidth);
 #endif
-
 		}
 
 		[Test]
-		[UiTest (typeof (Button), "Clicked")]
-		public void Clicked ()
+		[UiTest(typeof(Button), "Clicked")]
+		public void Clicked()
 		{
-			var remote = new EventViewContainerRemote (App, Test.Button.Clicked, PlatformViewType);
-			remote.GoTo ();
+			var remote = new EventViewContainerRemote(App, Test.Button.Clicked, PlatformViewType);
+			remote.GoTo();
 
-			var textBeforeClick = remote.GetEventLabel ().Text;
-			Assert.AreEqual ("Event: Clicked (none)", textBeforeClick);
-			
+			var textBeforeClick = remote.GetEventLabel().Text;
+			Assert.AreEqual("Event: Clicked (none)", textBeforeClick);
+
 			// Click Button
-			remote.TapView ();
+			remote.TapView();
 
-			var textAfterClick = remote.GetEventLabel ().Text;
-			Assert.AreEqual ("Event: Clicked (fired 1)", textAfterClick);
+			var textAfterClick = remote.GetEventLabel().Text;
+			Assert.AreEqual("Event: Clicked (fired 1)", textAfterClick);
 		}
-		
+
 		[Test]
-		[UiTest (typeof (Button), "Command")]
-		public void Command ()
+		[UiTest(typeof(Button), "Command")]
+		public void Command()
 		{
-			var remote = new ViewContainerRemote (App, Test.Button.Command, PlatformViewType);
-			remote.GoTo ();
+			var remote = new ViewContainerRemote(App, Test.Button.Command, PlatformViewType);
+			remote.GoTo();
 
-			remote.TapView ();
+			remote.TapView();
 
-			App.WaitForElement (q => q.Marked ("Hello Command"));
-			App.Tap (q => q.Marked ("Destroy"));
+			App.WaitForElement(q => q.Marked("Hello Command"));
+			App.Tap(q => q.Marked("Destroy"));
 		}
 
 		[Test]
-		[UiTest (typeof (Button), "Font")]
-		public void Font ()
+		[UiTest(typeof(Button), "Font")]
+		public void Font()
 		{
 			//TODO iOS
-			var remote = new ViewContainerRemote (App, Test.Button.Font, PlatformViewType);
-			remote.GoTo ();
+			var remote = new ViewContainerRemote(App, Test.Button.Font, PlatformViewType);
+			remote.GoTo();
 
 #if __ANDROID__
 			var isBold = remote.GetProperty<bool> (Button.FontProperty);
@@ -130,30 +122,30 @@ namespace Xamarin.Forms.Core.UITests
 #elif __MACOS__
 			Assert.Inconclusive("needs testing");
 #else
-			var font = remote.GetProperty<Font> (Button.FontProperty);
-			Assert.True (font.FontAttributes.HasFlag (FontAttributes.Bold));
+			var font = remote.GetProperty<Font>(Button.FontProperty);
+			Assert.True(font.FontAttributes.HasFlag(FontAttributes.Bold));
 #endif
 		}
 
 		[Test]
-		[UiTest (typeof (Button), "Image")]
-		[UiTestExempt (ExemptReason.TimeConsuming, "Need way to check Android resources")]
-		public void Image ()
+		[UiTest(typeof(Button), "Image")]
+		[UiTestExempt(ExemptReason.TimeConsuming, "Need way to check Android resources")]
+		public void Image()
 		{
 			//TODO iOS
-			var remote = new ViewContainerRemote (App, Test.Button.Image, PlatformViewType);
-			remote.GoTo ();
+			var remote = new ViewContainerRemote(App, Test.Button.Image, PlatformViewType);
+			remote.GoTo();
 		}
 
 		[Test]
-		[UiTest (typeof (Button), "Text")]
-		public void Text ()
+		[UiTest(typeof(Button), "Text")]
+		public void Text()
 		{
-			var remote = new ViewContainerRemote (App, Test.Button.Text, PlatformViewType);
-			remote.GoTo ();
+			var remote = new ViewContainerRemote(App, Test.Button.Text, PlatformViewType);
+			remote.GoTo();
 
-			var buttonText = remote.GetProperty<string> (Button.TextProperty);
-			Assert.AreEqual ("Text", buttonText);
+			var buttonText = remote.GetProperty<string>(Button.TextProperty);
+			Assert.AreEqual("Text", buttonText);
 		}
 
 		//TODO iOS
@@ -171,10 +163,10 @@ namespace Xamarin.Forms.Core.UITests
 		}
 #endif
 
-		protected override void FixtureTeardown ()
+		protected override void FixtureTeardown()
 		{
-			App.NavigateBack ();
-			base.FixtureTeardown ();
+			App.NavigateBack();
+			base.FixtureTeardown();
 		}
 	}
 }

@@ -1,18 +1,5 @@
-using System;
-using System.CodeDom;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Threading;
-using System.Reflection;
-
 using NUnit.Framework;
-
 using Xamarin.Forms.CustomAttributes;
-using Xamarin.UITest.Android;
-using Xamarin.UITest.Queries;
-using Xamarin.UITest.iOS;
 
 namespace Xamarin.Forms.Core.UITests
 {
@@ -20,82 +7,105 @@ namespace Xamarin.Forms.Core.UITests
 	[Category(UITestCategories.WebView)]
 	internal class WebViewUITests : _ViewUITests
 	{
-		public WebViewUITests ()
+		public WebViewUITests()
 		{
 			PlatformViewType = Views.WebView;
 		}
 
-		protected override void NavigateToGallery ()
+		protected override void NavigateToGallery()
 		{
-			App.NavigateToGallery (GalleryQueries.WebViewGallery);
+			App.NavigateToGallery(GalleryQueries.WebViewGallery);
 		}
 
 		[Category(UITestCategories.ManualReview)]
-		public override void _IsEnabled ()
+		public override void _IsEnabled()
 		{
-			Assert.Inconclusive ("Does not make sense for WebView");
+			Assert.Inconclusive("Does not make sense for WebView");
 		}
 
 		[Test]
 		[Category(UITestCategories.ManualReview)]
 		[Ignore("Keep empty test from failing in Test Cloud")]
-		public override void _IsVisible () {}
+		public override void _IsVisible()
+		{
+		}
 
-		[UiTestExempt (ExemptReason.CannotTest, "Invalid interaction with Label")]
-		public override void _Focus () {}
+		[UiTestExempt(ExemptReason.CannotTest, "Invalid interaction with Label")]
+		public override void _Focus()
+		{
+		}
 
 		// TODO
-		public override void _GestureRecognizers () {}
+		public override void _GestureRecognizers()
+		{
+		}
 
-		[UiTestExempt (ExemptReason.CannotTest, "Invalid interaction with Label")]
-		public override void _IsFocused () {}
-
-		[Test]
-		[Category(UITestCategories.ManualReview)]
-		[Ignore("Keep empty test from failing in Test Cloud")]
-		public override void _Opacity () {}
-
-		[Test]
-		[Category(UITestCategories.ManualReview)]
-		[Ignore("Keep empty test from failing in Test Cloud")]
-		public override void _Rotation () {}
+		[UiTestExempt(ExemptReason.CannotTest, "Invalid interaction with Label")]
+		public override void _IsFocused()
+		{
+		}
 
 		[Test]
 		[Category(UITestCategories.ManualReview)]
 		[Ignore("Keep empty test from failing in Test Cloud")]
-		public override void _RotationX () {}
+		public override void _Opacity()
+		{
+		}
 
 		[Test]
 		[Category(UITestCategories.ManualReview)]
 		[Ignore("Keep empty test from failing in Test Cloud")]
-		public override void _RotationY () {}
-
-
-		[Test]
-		[Category(UITestCategories.ManualReview)]
-		[Ignore("Keep empty test from failing in Test Cloud")]
-		public override void _TranslationX () {}
+		public override void _Rotation()
+		{
+		}
 
 		[Test]
 		[Category(UITestCategories.ManualReview)]
 		[Ignore("Keep empty test from failing in Test Cloud")]
-		public override void _TranslationY () {}
+		public override void _RotationX()
+		{
+		}
 
 		[Test]
-		[Category (UITestCategories.ManualReview)]
+		[Category(UITestCategories.ManualReview)]
 		[Ignore("Keep empty test from failing in Test Cloud")]
-		public override void _Scale () {}
+		public override void _RotationY()
+		{
+		}
 
-		[UiTestExempt (ExemptReason.CannotTest, "Invalid interaction with Label")]
-		public override void _UnFocus () {}
+		[Test]
+		[Category(UITestCategories.ManualReview)]
+		[Ignore("Keep empty test from failing in Test Cloud")]
+		public override void _TranslationX()
+		{
+		}
+
+		[Test]
+		[Category(UITestCategories.ManualReview)]
+		[Ignore("Keep empty test from failing in Test Cloud")]
+		public override void _TranslationY()
+		{
+		}
+
+		[Test]
+		[Category(UITestCategories.ManualReview)]
+		[Ignore("Keep empty test from failing in Test Cloud")]
+		public override void _Scale()
+		{
+		}
+
+		[UiTestExempt(ExemptReason.CannotTest, "Invalid interaction with Label")]
+		public override void _UnFocus()
+		{
+		}
 
 		// TODO
 		// Implement control specific ui tests
 
-		protected override void FixtureTeardown ()
+		protected override void FixtureTeardown()
 		{
-			App.NavigateBack ();
-			base.FixtureTeardown ();
+			App.NavigateBack();
+			base.FixtureTeardown();
 		}
 	}
 }

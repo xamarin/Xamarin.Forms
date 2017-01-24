@@ -52,27 +52,6 @@ namespace Xamarin.Forms.Core.UITests
 
 	internal static class Queries
 	{
-		#region Shared queries 
-		public static Func<AppQuery, AppQuery> RootPageListView = PlatformQueries.RootPageListView; 
-		public static Func<AppQuery, AppQuery> GalleryListView = PlatformQueries.GalleryListView; 
-
-		public static Func<AppQuery, AppQuery> ButtonWithText (string text)
-		{
-			return q => q.Button (text);
-		}
-
-		public static Func<AppQuery, AppQuery> ElementWithText (string text)
-		{
-			return q => q.Marked (text);
-		}
-
-		public static Func<AppQuery, AppQuery> All ()
-		{
-			return q => q.All ();
-		}
-
-		#endregion
-
 		#region Platform queries
 
 		public static Func<AppQuery, AppQuery> NavigationBarBackButton ()
@@ -89,16 +68,6 @@ namespace Xamarin.Forms.Core.UITests
 		{
 			return PlatformQueries.Root;
 		}
-
-		public static Func<AppQuery, AppQuery> EntryCellWithPlaceholder (string placeholder)
-		{
-			return PlatformQueries.EntryCellWithPlaceholder (placeholder);
-		} 
-
-		public static Func<AppQuery, AppQuery> EntryCellWithText (string placeholder)
-		{
-			return PlatformQueries.EntryCellWithText (placeholder);
-		} 
 
 		#endregion
 

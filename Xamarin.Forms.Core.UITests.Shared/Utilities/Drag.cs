@@ -1,5 +1,3 @@
-using System.Reflection.Emit;
-
 using Xamarin.UITest.Queries;
 
 namespace Xamarin.Forms.Core.UITests

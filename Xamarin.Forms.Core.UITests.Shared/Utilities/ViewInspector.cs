@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-using Xamarin.UITest;
-using Xamarin.UITest.Android;
-using Xamarin.UITest.iOS;
+﻿using Xamarin.UITest;
 using System.Linq;
 
 namespace Xamarin.Forms.Core.UITests
