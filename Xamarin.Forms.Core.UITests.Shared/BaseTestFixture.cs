@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using NUnit.Framework;
 using Xamarin.Forms.Controls;
 using Xamarin.UITest;
@@ -17,7 +12,9 @@ namespace Xamarin.Forms.Core.UITests
 		// TODO: Landscape tests
 
 		public static IApp App { get; set; }
+
 		public string PlatformViewType { get; protected set; }
+
 		public static AppRect ScreenBounds { get; set; }
 
 		[TestFixtureTearDown]
@@ -113,6 +110,7 @@ namespace Xamarin.Forms.Core.UITests
 }
 
 #if UITEST
+
 namespace Xamarin.Forms.Core.UITests
 {
 	using NUnit.Framework;
@@ -136,4 +134,5 @@ namespace Xamarin.Forms.Core.UITests
 		}
 	}
 }
+
 #endif
