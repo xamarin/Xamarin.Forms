@@ -157,7 +157,10 @@ namespace Xamarin.Forms.Build.Tasks
 			var typeDef = typeRef.Resolve();
 			if (TypeRefComparer.Default.Equals(typeDef, baseClass.Resolve()))
 				return true;
-			if (typeDef.Interfaces.Any(ir => TypeRefComparer.Default.Equals(ir.InterfaceType, baseClass)))
+			if (typeDef.Interfaces.Any(ir => {
+				ir = ir.InterfaceType.ResolveGenericParameters(typeRef);
+				return TypeRefComparer.Default.Equals(ir, baseClass);
+			}))
 				return true;
 			if (typeDef.BaseType == null)
 				return false;
@@ -257,10 +260,8 @@ namespace Xamarin.Forms.Build.Tasks
 					var returnType = castDef.ReturnType;
 					if (returnType.IsGenericParameter)
 						returnType = ((GenericInstanceType)opDeclTypeRef).GenericArguments [((GenericParameter)returnType).Position];
-					if (returnType.FullName == toType.FullName &&
-					    cast.Parameters [0].ParameterType.Name == fromType.Name) {
+					if (returnType.InheritsFromOrImplements(toType))
 						return castDef;
-					}
 				}
 			}
 			return null;
