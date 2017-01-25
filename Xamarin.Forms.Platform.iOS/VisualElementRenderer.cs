@@ -364,7 +364,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			else if (element.Parent is ViewCell)
 				return true;
 			else
-				return IsInViewCell(element.Parent);
+				return IsOnViewCell(element.Parent);
 		}
 	}
 }
