@@ -206,6 +206,14 @@ namespace Xamarin.Forms.Platform.MacOS
 					Superview.Add(_blur);
 			}
 		}
+#else
+		public override void MouseDown(NSEvent theEvent)
+		{
+			bool inViewCell = IsOnViewCell(Element);
+
+			if (Element.InputTransparent || inViewCell)
+				base.MouseDown(theEvent);
+		}
 #endif
 
 		protected override void Dispose(bool disposing)
@@ -346,6 +354,17 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (clippableLayout != null)
 				ClipsToBounds = clippableLayout.IsClippedToBounds;
 #endif
+		}
+
+		static bool IsOnViewCell(Element element)
+		{
+
+			if (element.Parent == null)
+				return false;
+			else if (element.Parent is ViewCell)
+				return true;
+			else
+				return IsInViewCell(element.Parent);
 		}
 	}
 }
