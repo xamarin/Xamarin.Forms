@@ -1,25 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-
-using Xamarin.Forms;
-
 using NUnit.Framework;
+using Xamarin.Forms;
 using Xamarin.Forms.Core.UnitTests;
 
 namespace Xamarin.Forms.Xaml.UnitTests
 {
-	public class Bz27968Page : ContentPage
+	public partial class Bz51567 : ContentPage
 	{
-	}
-
-	public partial class Bz27968 : Bz27968Page
-	{
-		public Bz27968 ()
+		public Bz51567()
 		{
-			InitializeComponent ();
+			InitializeComponent();
 		}
 
-		public Bz27968 (bool useCompiledXaml)
+		public Bz51567(bool useCompiledXaml)
 		{
 			//this stub will be replaced at compile time
 		}
@@ -41,10 +35,12 @@ namespace Xamarin.Forms.Xaml.UnitTests
 
 			[TestCase(true)]
 			[TestCase(false)]
-			public void BaseClassIdentifiersAreValidForResources (bool useCompiledXaml)
+			public void SetterWithElementValue(bool useCompiledXaml)
 			{
-				var layout = new Bz27968 (useCompiledXaml);
-				Assert.That (layout.Resources ["listView"], Is.TypeOf<ListView> ());
+				var page = new Bz51567(useCompiledXaml);
+				var style = page.Resources["ListText"] as Style;
+				var setter = style.Setters[1];
+				Assert.NotNull(setter);
 			}
 		}
 	}
