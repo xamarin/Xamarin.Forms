@@ -11,6 +11,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		static readonly CGColor s_defaultHeaderViewsBackground = NSColor.LightGray.CGColor;
 		Cell _cell;
 		readonly NSTableViewCellStyle _style;
+		NSView _contexActionsTrackingView;
 
 		public Action<object, PropertyChangedEventArgs> PropertyChanged;
 
@@ -100,6 +101,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			TextLabel.CenterTextVertically(new CGRect(imageWidth + padding, availableHeight - labelHeights, labelWidth,
 				labelHeights));
+
+			_contexActionsTrackingView.Frame = Frame;
 			base.Layout();
 		}
 
@@ -162,6 +165,53 @@ namespace Xamarin.Forms.Platform.MacOS
 				accessoryView.Layer.BackgroundColor = s_defaultChildViewsBackground.CGColor;
 				AddSubview(AccessoryView = accessoryView);
 			}
+
+			AddSubview(_contexActionsTrackingView = new TrackingClickNSView());
+		}
+	}
+
+	class TrackingClickNSView : NSView
+	{
+		public override void RightMouseDown(NSEvent theEvent)
+		{
+			HandleContextActions(theEvent);
+
+			base.RightMouseDown(theEvent);
+		}
+
+		void HandleContextActions(NSEvent theEvent)
+		{
+
+			var contextActionCell = (Superview as CellNSView).Cell;
+			var contextActionsCount = contextActionCell.ContextActions.Count;
+			if (contextActionsCount > 0)
+			{
+				NSMenu menu = new NSMenu();
+				for (int i = 0; i < contextActionsCount; i++)
+				{
+					var contextAction = contextActionCell.ContextActions[i];
+					var nsMenuItem = GetNSMenuItem(i, contextAction);
+					menu.AddItem(nsMenuItem);
+				}
+
+				NSMenu.PopUpContextMenu(menu, theEvent, this);
+			}
+		}
+
+		static NSMenuItem GetNSMenuItem(int i, MenuItem contextAction)
+		{
+			var menuItem = new NSMenuItem(contextAction.Text ?? "");
+			menuItem.Tag = i;
+			menuItem.Enabled = contextAction.IsEnabled;
+			if (menuItem.Enabled)
+				menuItem.Activated += (sender, e) =>
+				{
+					((IMenuItemController)contextAction).Activate();
+				};
+			if (!string.IsNullOrEmpty(contextAction.Icon))
+				menuItem.Image = new NSImage(contextAction.Icon);
+
+			return menuItem;
 		}
 	}
 }
