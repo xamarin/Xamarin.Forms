@@ -11,7 +11,6 @@ namespace Xamarin
 	{
 		static bool s_isInitialized;
 #if __MOBILE__
-
 		static bool? s_isiOs8OrNewer;
 		static bool? s_isiOs9OrNewer;
 		static bool? s_isiOs10OrNewer;
