@@ -58,6 +58,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void SetAspect()
 		{
+			//TODO: Implement set Image Aspect
 			//Control.ContentMode = Element.Aspect.ToUIViewContentMode();
 		}
 

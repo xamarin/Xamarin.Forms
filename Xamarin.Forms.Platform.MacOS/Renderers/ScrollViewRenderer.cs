@@ -199,7 +199,6 @@ namespace Xamarin.Forms.Platform.MacOS
 		[Export(nameof(UpdateScrollPosition))]
 		void UpdateScrollPosition()
 		{
-			System.Diagnostics.Debug.WriteLine("need to fix this math");
 			var convertedPoint = (DocumentView as NSView)?.ConvertPointFromView(ContentView.Bounds.Location, ContentView);
 			if (convertedPoint.HasValue)
 				Controller.SetScrolledPosition(Math.Max(0, convertedPoint.Value.X), Math.Max(0, convertedPoint.Value.Y));

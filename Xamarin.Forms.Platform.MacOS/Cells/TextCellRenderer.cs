@@ -41,12 +41,12 @@ namespace Xamarin.Forms.Platform.MacOS
 			var textCell = (TextCell)tvc.Cell;
 			if (args.PropertyName == TextCell.TextProperty.PropertyName)
 			{
-				tvc.TextLabel.StringValue = ((TextCell)tvc.Cell).Text ?? "";
+				tvc.TextLabel.StringValue = textCell.Text ?? "";
 				tvc.TextLabel.SizeToFit();
 			}
 			else if (args.PropertyName == TextCell.DetailProperty.PropertyName)
 			{
-				tvc.DetailTextLabel.StringValue = ((TextCell)tvc.Cell).Detail ?? "";
+				tvc.DetailTextLabel.StringValue = textCell.Detail ?? "";
 				tvc.DetailTextLabel.SizeToFit();
 			}
 			else if (args.PropertyName == TextCell.TextColorProperty.PropertyName)

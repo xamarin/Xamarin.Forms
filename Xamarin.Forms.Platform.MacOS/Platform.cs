@@ -140,7 +140,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (rendererToRemove == null || rendererToRemove.Element == null)
 				return;
 
-			if (rendererToRemove.Element != null && GetRenderer(rendererToRemove.Element) == rendererToRemove)
+			if (GetRenderer(rendererToRemove.Element) == rendererToRemove)
 				rendererToRemove.Element.ClearValue(RendererProperty);
 
 			if (rendererToRemove.NativeView != null)
@@ -250,7 +250,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				viewRenderer.SetElementSize(new Size(PlatformRenderer.View.Bounds.Width, PlatformRenderer.View.Bounds.Height));
 			}
 			else
-				Console.Error.WriteLine("Potential view double add");
+				Console.Error.WriteLine("A Renderer was already found, potential view double add");
 		}
 
 		void HandleChildRemoved(object sender, ElementEventArgs e)

@@ -81,13 +81,13 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void INavigation.RemovePage(Page page)
 		{
-			throw new InvalidOperationException("RemovePage is not supported globally on iOS, please use a NavigationPage.");
+			throw new InvalidOperationException("RemovePage is not supported globally on macOS, please use a NavigationPage.");
 		}
 
 		void INavigation.InsertPageBefore(Page page, Page before)
 		{
 			throw new InvalidOperationException(
-				"InsertPageBefore is not supported globally on MacOS, please use a NavigationPage.");
+				"InsertPageBefore is not supported globally on macOS, please use a NavigationPage.");
 		}
 
 		protected virtual void Dispose(bool disposing)

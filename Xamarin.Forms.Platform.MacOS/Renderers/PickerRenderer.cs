@@ -66,6 +66,7 @@ namespace Xamarin.Forms.Platform.MacOS
 					_disposed = true;
 					if (Element != null)
 					{
+						//TODO: Implement ObservableList picker source change 
 						//((ObservableList<string>)Element.Items).CollectionChanged -= RowsCollectionChanged;
 					}
 
