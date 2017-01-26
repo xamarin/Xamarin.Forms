@@ -41,14 +41,14 @@ namespace Xamarin.Forms.Core.UnitTests
 		public override void Setup()
 		{
 			base.Setup ();
-			ExpressionSearch.Default = new UnitExpressionSearch ();
+			ExpressionSearch.Default = new Lazy<IExpressionSearch> (() => new UnitExpressionSearch());
 		}
 
 		[TearDown]
 		public override void TearDown()
 		{
 			base.TearDown ();
-			ExpressionSearch.Default = new UnitExpressionSearch ();
+			ExpressionSearch.Default = new Lazy<IExpressionSearch>(() => new UnitExpressionSearch());
 		}
 
 		[Test]

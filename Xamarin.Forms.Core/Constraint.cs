@@ -28,7 +28,7 @@ namespace Xamarin.Forms
 			var result = new Constraint
 			{
 				_measureFunc = layout => compiled(),
-				RelativeTo = ExpressionSearch.Default.FindObjects<View>(expression).ToArray() // make sure we have our own copy
+				RelativeTo = ExpressionSearch.Default.Value.FindObjects<View>(expression).ToArray() // make sure we have our own copy
 			};
 
 			return result;

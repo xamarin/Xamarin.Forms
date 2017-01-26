@@ -60,7 +60,7 @@ namespace Xamarin.Forms
 
 			Device.Idiom = UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad ? TargetIdiom.Tablet : TargetIdiom.Phone;
 
-			ExpressionSearch.Default = new iOSExpressionSearch();
+			ExpressionSearch.Default = new Lazy<IExpressionSearch>(() => new iOSExpressionSearch());
 		}
 
 		public static event EventHandler<ViewInitializedEventArgs> ViewInitialized;

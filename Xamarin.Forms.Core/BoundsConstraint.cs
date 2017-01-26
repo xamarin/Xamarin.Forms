@@ -20,7 +20,7 @@ namespace Xamarin.Forms
 			var result = new BoundsConstraint
 			{
 				_measureFunc = compiled,
-				RelativeTo = parents ?? ExpressionSearch.Default.FindObjects<View>(expression).ToArray() // make sure we have our own copy
+				RelativeTo = parents ?? ExpressionSearch.Default.Value.FindObjects<View>(expression).ToArray() // make sure we have our own copy
 			};
 
 			return result;

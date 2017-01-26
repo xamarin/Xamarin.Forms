@@ -58,7 +58,7 @@ namespace Xamarin.Forms
 					break;
 			}
 #endif
-			ExpressionSearch.Default = new WindowsExpressionSearch();
+			ExpressionSearch.Default = new Lazy<IExpressionSearch>(() => new WindowsExpressionSearch());
 
 #if WINDOWS_UWP
 			Registrar.ExtraAssemblies = rendererAssemblies?.ToArray();

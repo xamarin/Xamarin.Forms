@@ -294,10 +294,10 @@ namespace Xamarin.Forms
 				Func<double> heightCompiled = height != null ? height.Compile() : () => view.Measure(Parent.Width, Parent.Height, MeasureFlags.IncludeMargins).Request.Height;
 
 				var parents = new List<View>();
-				parents.AddRange(ExpressionSearch.Default.FindObjects<View>(x));
-				parents.AddRange(ExpressionSearch.Default.FindObjects<View>(y));
-				parents.AddRange(ExpressionSearch.Default.FindObjects<View>(width));
-				parents.AddRange(ExpressionSearch.Default.FindObjects<View>(height));
+				parents.AddRange(ExpressionSearch.Default.Value.FindObjects<View>(x));
+				parents.AddRange(ExpressionSearch.Default.Value.FindObjects<View>(y));
+				parents.AddRange(ExpressionSearch.Default.Value.FindObjects<View>(width));
+				parents.AddRange(ExpressionSearch.Default.Value.FindObjects<View>(height));
 
 				BoundsConstraint bounds = BoundsConstraint.FromExpression(() => new Rectangle(xCompiled(), yCompiled(), widthCompiled(), heightCompiled()), parents.Distinct().ToArray());
 

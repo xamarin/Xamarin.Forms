@@ -59,7 +59,7 @@ namespace Xamarin.Forms
 
 			Device.Idiom = TargetIdiom.Phone;
 
-			ExpressionSearch.Default = new WinPhoneExpressionSearch();
+			ExpressionSearch.Default = new Lazy<IExpressionSearch>(() => new WinPhoneExpressionSearch()); 
 
 			s_isInitialized = true;
 		}

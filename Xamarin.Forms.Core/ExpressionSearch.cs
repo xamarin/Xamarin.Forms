@@ -1,7 +1,9 @@
+using System;
+
 namespace Xamarin.Forms
 {
 	internal abstract class ExpressionSearch
 	{
-		internal static IExpressionSearch Default { get; set; }
+		internal static Lazy<IExpressionSearch> Default { get; set; }
 	}
 }

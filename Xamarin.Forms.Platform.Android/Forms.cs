@@ -146,7 +146,7 @@ namespace Xamarin.Forms
 			Device.Idiom = minWidthDp >= TabletCrossover ? TargetIdiom.Tablet : TargetIdiom.Phone;
 
 			if (ExpressionSearch.Default == null)
-				ExpressionSearch.Default = new AndroidExpressionSearch();
+				ExpressionSearch.Default = new Lazy<IExpressionSearch>(() => new AndroidExpressionSearch()); 
 
 			IsInitialized = true;
 		}
