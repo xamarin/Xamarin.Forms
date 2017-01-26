@@ -260,45 +260,6 @@
 		<Compile Include="GalleryPages\MacTwitterDemo.xaml.cs">
 			<DependentUpon>MacTwitterDemo.xaml</DependentUpon>
 		</Compile>
-		<Compile Include="FormsGallery\AbsoluteLayoutDemoPage.cs" />
-		<Compile Include="FormsGallery\ActivityIndicatorDemoPage.cs" />
-		<Compile Include="FormsGallery\BoxViewDemoPage.cs" />
-		<Compile Include="FormsGallery\ButtonDemoPage.cs" />
-		<Compile Include="FormsGallery\CarouselPageDemoPage.cs" />
-		<Compile Include="FormsGallery\ContentPageDemoPage.cs" />
-		<Compile Include="FormsGallery\ContentViewDemoPage.cs" />
-		<Compile Include="FormsGallery\DatePickerDemoPage.cs" />
-		<Compile Include="FormsGallery\EditorDemoPage.cs" />
-		<Compile Include="FormsGallery\EntryCellDemoPage.cs" />
-		<Compile Include="FormsGallery\EntryDemoPage.cs" />
-		<Compile Include="FormsGallery\FrameDemoPage.cs" />
-		<Compile Include="FormsGallery\GridDemoPage.cs" />
-		<Compile Include="FormsGallery\HomePage.cs" />
-		<Compile Include="FormsGallery\ImageCellDemoPage.cs" />
-		<Compile Include="FormsGallery\ImageDemoPage.cs" />
-		<Compile Include="FormsGallery\LabelDemoPage.cs" />
-		<Compile Include="FormsGallery\ListViewDemoPage.cs" />
-		<Compile Include="FormsGallery\MapDemoPage.cs" />
-		<Compile Include="FormsGallery\MasterDetailPageDemoPage.cs" />
-		<Compile Include="FormsGallery\NamedColor.cs" />
-		<Compile Include="FormsGallery\NamedColorPage.cs" />
-		<Compile Include="FormsGallery\NavigationPageDemoPage.cs" />
-		<Compile Include="FormsGallery\PickerDemoPage.cs" />
-		<Compile Include="FormsGallery\ProgressBarDemoPage.cs" />
-		<Compile Include="FormsGallery\RelativeLayoutDemoPage.cs" />
-		<Compile Include="FormsGallery\ScrollViewDemoPage.cs" />
-		<Compile Include="FormsGallery\SearchBarDemoPage.cs" />
-		<Compile Include="FormsGallery\SliderDemoPage.cs" />
-		<Compile Include="FormsGallery\StackLayoutDemoPage.cs" />
-		<Compile Include="FormsGallery\StepperDemoPage.cs" />
-		<Compile Include="FormsGallery\SwitchCellDemoPage.cs" />
-		<Compile Include="FormsGallery\SwitchDemoPage.cs" />
-		<Compile Include="FormsGallery\TabbedPageDemoPage.cs" />
-		<Compile Include="FormsGallery\TableViewFormDemoPage.cs" />
-		<Compile Include="FormsGallery\TableViewMenuDemoPage.cs" />
-		<Compile Include="FormsGallery\TextCellDemoPage.cs" />
-		<Compile Include="FormsGallery\TimePickerDemoPage.cs" />
-		<Compile Include="FormsGallery\WebViewDemoPage.cs" />
 	</ItemGroup>
 	<Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
 	<Import Project="..\.nuspec\Xamarin.Forms.targets" />
@@ -393,9 +354,6 @@
 		<Reference Include="System.Net.Http.Primitives">
 			<HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\portable-net40+sl4+win8+wp71+wpa81\System.Net.Http.Primitives.dll</HintPath>
 		</Reference>
-	</ItemGroup>
-	<ItemGroup>
-	  <Folder Include="FormsGallery\" />
 	</ItemGroup>
 	<Target Name="BeforeBuild">
 		<CreateItem Include="blank.config">
