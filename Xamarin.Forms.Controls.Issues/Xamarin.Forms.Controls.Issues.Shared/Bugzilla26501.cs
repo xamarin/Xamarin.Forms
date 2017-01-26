@@ -136,9 +136,6 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST
 		[Test]
-#if __MACOS__
-		[Ignore("Context Actions not implemented yet")]
-#endif
 		public void TestCellsShowAfterRefresh()
 		{
 			RunningApp.Tap (q => q.Marked ("Refresh"));

@@ -496,17 +496,30 @@ namespace Xamarin.Forms.Core.macOS.UITests
 
 		public void TouchAndHold(string marked)
 		{
+			TouchAndHold(marked, 0);
+		}
+
+		void TouchAndHold(string marked, int index)
+		{
+			var safeIndex = Math.Max(index, 0);
+			var queryById = _cocoaApp.QueryById(marked.Trim())[safeIndex];
+			TouchAndHoldCoordinates(queryById.Rect.CenterX, queryById.Rect.CenterY);
 
 		}
 
 		public void TouchAndHold(Func<AppQuery, AppQuery> query)
 		{
+			string markedWord = string.Empty;
+			int indexMarked = 0;
 
+			if (ExtractInfo(query, out markedWord, out indexMarked))
+				TouchAndHold(markedWord, indexMarked);
 		}
 
 		public void TouchAndHoldCoordinates(float x, float y)
 		{
-
+			_cocoaApp.RightClick(x, y);
+			Thread.Sleep(1000);
 		}
 
 		public void WaitFor(Func<bool> predicate, string timeoutMessage = "Timed out waiting...", TimeSpan? timeout = default(TimeSpan?), TimeSpan? retryFrequency = default(TimeSpan?), TimeSpan? postTimeout = default(TimeSpan?))

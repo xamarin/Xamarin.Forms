@@ -9,9 +9,6 @@ using Xamarin.UITest.Queries;
 
 namespace Xamarin.Forms.Core.UITests
 {
-#if __MACOS__
-	[Ignore("Not tested on the MAC")]
-#endif
 	[TestFixture]
 	[Category(UITestCategories.Cells)]
 	internal class ContextActionsListUITests : BaseTestFixture
@@ -34,7 +31,7 @@ namespace Xamarin.Forms.Core.UITests
 		const string mark = "Mark";
 
 
-#if __ANDROID__
+#if __ANDROID__ || __MACOS__
 		[Test]
 		public void ContextActionsShow ()
 		{
@@ -84,9 +81,6 @@ namespace Xamarin.Forms.Core.UITests
 		}
 #endif
 	}
-#if __MACOS__
-	[Ignore("Not tested on the MAC")]
-#endif
 	[TestFixture]
 	[Category(UITestCategories.Cells)]
 	internal class ContextActionsTableUITests : BaseTestFixture
@@ -108,7 +102,7 @@ namespace Xamarin.Forms.Core.UITests
 		const string mark = "Mark";
 		const string cellWithNoContextActions = "I have no ContextActions";
 
-#if __ANDROID__
+#if __ANDROID__ || __MACOS__
 		[Test]
 		public void ContextActionsShowAndReset ()
 		{
