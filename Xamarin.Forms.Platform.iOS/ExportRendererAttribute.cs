@@ -4,9 +4,9 @@ using UIKit;
 namespace Xamarin.Forms
 {
 	[AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
-	public sealed class ExportRendererAttribute : HandlerAttribute
+	public sealed class ExportRendererAttribute : BaseExportRendererAttribute
 	{
-		public ExportRendererAttribute(Type handler, Type target, UIUserInterfaceIdiom idiom) : base(handler, target)
+		public ExportRendererAttribute(Type handler, Type target, UIUserInterfaceIdiom idiom) : this(handler, target)
 		{
 			Idiomatic = true;
 			Idiom = idiom;
@@ -14,7 +14,7 @@ namespace Xamarin.Forms
 
 		public ExportRendererAttribute(Type handler, Type target) : base(handler, target)
 		{
-			Idiomatic = false;
+			MajorVersion = Convert.ToInt32(UIDevice.CurrentDevice.SystemVersion.Split('.')[0]);
 		}
 
 		internal UIUserInterfaceIdiom Idiom { get; }
@@ -23,7 +23,10 @@ namespace Xamarin.Forms
 
 		public override bool ShouldRegister()
 		{
-			return !Idiomatic || Idiom == UIDevice.CurrentDevice.UserInterfaceIdiom;
+			if (!(!Idiomatic || Idiom == UIDevice.CurrentDevice.UserInterfaceIdiom))
+				return false;
+
+			return base.ShouldRegister();
 		}
 	}
 }
