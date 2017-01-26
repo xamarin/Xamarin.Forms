@@ -26,19 +26,21 @@ namespace Xamarin.Forms.Controls.Issues
 				{
 					new Label
 					{
-						Text = "Focus and unfocus each element 10 times. Observe that the soft keyboard does not show different characters while hiding."
+						Text = "Focus and unfocus each element 10 times using the Back button. Observe that the soft keyboard does not show different characters while hiding. Now repeat the test by tapping off of the element."
 					},
 					new Entry
 					{
 						WidthRequest = 250,
 						HeightRequest = 50,
-						BackgroundColor = Color.AntiqueWhite
+						BackgroundColor = Color.AntiqueWhite,
+						Keyboard = Keyboard.Numeric
 					},
 					new Editor
 					{
 						WidthRequest = 250,
 						HeightRequest = 50,
-						BackgroundColor = Color.BurlyWood
+						BackgroundColor = Color.BurlyWood,
+						Keyboard = Keyboard.Numeric
 					}
 				}
 			};
