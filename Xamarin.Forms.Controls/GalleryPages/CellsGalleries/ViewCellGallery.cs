@@ -1,26 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Xamarin.Forms.Controls
 {
 	public class ViewCellGallery : ContentPage
 	{
-		public ViewCellGallery ()
+		public ViewCellGallery()
 		{
 			Title = "ViewCell Gallery - Legacy";
 
-			Content = new TableView {
+			Content = new TableView
+			{
 				RowHeight = 150,
-				Root = new TableRoot {
-					new TableSection ("Testing") {
-						new ViewCell {View = new ProductCellView ("0")},
-						new ViewCell {View = new ProductCellView ("1")},
-						new ViewCell {View = new ProductCellView ("2")},
-						new ViewCell {View = new ProductCellView ("3")},
-						new ViewCell {View = new ProductCellView ("4")}
+				Root = new TableRoot
+				{
+					new TableSection("Testing")
+					{
+						new ViewCell { View = new ProductCellView("0") },
+						new ViewCell { View = new ProductCellView("1") },
+						new ViewCell { View = new ProductCellView("2") },
+						new ViewCell { View = new ProductCellView("3") },
+						new ViewCell { View = new ProductCellView("4") }
 					}
 				}
 			};
@@ -34,26 +34,30 @@ namespace Xamarin.Forms.Controls
 			if (Device.RuntimePlatform == Device.iOS && Device.Idiom == TargetIdiom.Tablet)
 				Padding = new Thickness(0, 0, 0, 60);
 
-			var stringToImageSourceConverter = new GenericValueConverter (
-				obj => new UriImageSource() {
-					Uri = new Uri ((string) obj)
+			var stringToImageSourceConverter = new GenericValueConverter(
+				obj => new UriImageSource()
+				{
+					Uri = new Uri((string)obj)
 				});
 
-			var dataTemplate = new DataTemplate (() => {
+			var dataTemplate = new DataTemplate(() =>
+			{
 				var cell = new ViewCell();
 
 				var image = new Image();
-				image.SetBinding (Image.SourceProperty, new Binding ("Image", converter: stringToImageSourceConverter));
+				image.SetBinding(Image.SourceProperty, new Binding("Image", converter: stringToImageSourceConverter));
 				image.WidthRequest = 160;
 				image.HeightRequest = 160;
 
 				var text = new Label();
-				text.SetBinding (Label.TextProperty, new Binding ("Text"));
-				text.SetBinding (Label.TextColorProperty, new Binding ("TextColor"));
+				text.SetBinding(Label.TextProperty, new Binding("Text"));
+				text.SetBinding(Label.TextColorProperty, new Binding("TextColor"));
 
-				cell.View = new StackLayout {
+				cell.View = new StackLayout
+				{
 					Orientation = StackOrientation.Horizontal,
-					Children = {
+					Children =
+					{
 						image,
 						text
 					}
@@ -62,7 +66,8 @@ namespace Xamarin.Forms.Controls
 				return cell;
 			});
 
-			var albums = new[] {
+			var albums = new[]
+			{
 				"https://evolve.xamarin.com/images/sessions/joseph-mayo-icon.jpg",
 				"https://evolve.xamarin.com/images/sessions/jon-skeet-icon.jpg",
 				"https://evolve.xamarin.com/images/sessions/rachel-reese-icon.jpg",
@@ -92,8 +97,10 @@ namespace Xamarin.Forms.Controls
 
 			var label = new Label { Text = "I have not been selected" };
 
-			var listView = new ListView {
-				ItemsSource = Enumerable.Range (0, albums.Length).Select (i => new {
+			var listView = new ListView
+			{
+				ItemsSource = Enumerable.Range(0, albums.Length).Select(i => new
+				{
 					Text = "Text " + i,
 					TextColor = i % 2 == 0 ? Color.Red : Color.Blue,
 					Detail = "Detail " + i,
@@ -106,7 +113,6 @@ namespace Xamarin.Forms.Controls
 			listView.ItemSelected += (sender, args) => label.Text = "I was selected";
 
 			Content = new StackLayout { Children = { label, listView } };
-
 		}
 	}
 }

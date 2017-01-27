@@ -17,15 +17,16 @@ using Xamarin.Forms.Platform.iOS;
 [assembly: Dependency(typeof(CacheService))]
 [assembly: ExportRenderer(typeof(DisposePage), typeof(DisposePageRenderer))]
 [assembly: ExportRenderer(typeof(DisposeLabel), typeof(DisposeLabelRenderer))]
+
 namespace Xamarin.Forms.ControlGallery.iOS
 {
 	public class CacheService : ICacheService
 	{
 		public void ClearImageCache()
 		{
-			var documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-			var cache = Path.Combine(documents, ".config", ".isolated-storage", "ImageLoaderCache");
-			foreach (var file in Directory.GetFiles(cache))
+			string documents = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+			string cache = Path.Combine(documents, ".config", ".isolated-storage", "ImageLoaderCache");
+			foreach (string file in Directory.GetFiles(cache))
 			{
 				File.Delete(file);
 			}
@@ -41,7 +42,6 @@ namespace Xamarin.Forms.ControlGallery.iOS
 				((DisposePage)Element).SendRendererDisposed();
 			}
 			base.Dispose(disposing);
-
 		}
 	}
 
@@ -49,7 +49,6 @@ namespace Xamarin.Forms.ControlGallery.iOS
 	{
 		protected override void Dispose(bool disposing)
 		{
-
 			if (disposing)
 			{
 				((DisposeLabel)Element).SendRendererDisposed();
@@ -68,11 +67,9 @@ namespace Xamarin.Forms.ControlGallery.iOS
 
 	public class TestCloudService : ITestCloudService
 	{
-		public bool IsOnTestCloud()
+		public string GetTestCloudDevice()
 		{
-			var isInTestCloud = Environment.GetEnvironmentVariable("XAMARIN_TEST_CLOUD");
-
-			return isInTestCloud != null && isInTestCloud.Equals("1");
+			return Environment.GetEnvironmentVariable("XTC_DEVICE");
 		}
 
 		public string GetTestCloudDeviceName()
@@ -80,9 +77,11 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			return Environment.GetEnvironmentVariable("XTC_DEVICE_NAME");
 		}
 
-		public string GetTestCloudDevice()
+		public bool IsOnTestCloud()
 		{
-			return Environment.GetEnvironmentVariable("XTC_DEVICE");
+			string isInTestCloud = Environment.GetEnvironmentVariable("XAMARIN_TEST_CLOUD");
+
+			return isInTestCloud != null && isInTestCloud.Equals("1");
 		}
 	}
 
@@ -139,7 +138,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
 		{
 			App.IOSVersion = int.Parse(UIDevice.CurrentDevice.SystemVersion.Substring(0, 1));
 
-			Xamarin.Calabash.Start();
+			Calabash.Start();
 			Forms.Init();
 			FormsMaps.Init();
 			Forms.ViewInitialized += (object sender, ViewInitializedEventArgs e) =>
@@ -155,14 +154,78 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			_app = app;
 
 			// When the native control gallery loads up, it'll let us know so we can add the nested native controls
-			MessagingCenter.Subscribe<NestedNativeControlGalleryPage>(this, NestedNativeControlGalleryPage.ReadyForNativeControlsMessage, AddNativeControls);
+			MessagingCenter.Subscribe<NestedNativeControlGalleryPage>(this,
+				NestedNativeControlGalleryPage.ReadyForNativeControlsMessage, AddNativeControls);
 			MessagingCenter.Subscribe<Bugzilla40911>(this, Bugzilla40911.ReadyToSetUp40911Test, SetUp40911Test);
 
 			// When the native binding gallery loads up, it'll let us know so we can set up the native bindings
-			MessagingCenter.Subscribe<NativeBindingGalleryPage>(this, NativeBindingGalleryPage.ReadyForNativeBindingsMessage, AddNativeBindings);
+			MessagingCenter.Subscribe<NativeBindingGalleryPage>(this,
+				NativeBindingGalleryPage.ReadyForNativeBindingsMessage, AddNativeBindings);
 
 			LoadApplication(app);
 			return base.FinishedLaunching(uiApplication, launchOptions);
+		}
+
+		[Export("navigateToTest:")]
+		public string NavigateToTest(string test)
+		{
+			// According to https://developer.xamarin.com/guides/testcloud/uitest/working-with/backdoors/
+			// this method has to return a string
+			return _app.NavigateToTestPage(test).ToString();
+		}
+
+		[Export("reset:")]
+		public string Reset(string str)
+		{
+			_app.Reset();
+			return string.Empty;
+		}
+
+		void AddNativeBindings(NativeBindingGalleryPage page)
+		{
+			if (page.NativeControlsAdded)
+				return;
+
+			StackLayout sl = page.Layout;
+
+			var width = (int)sl.Width;
+			var heightCustomLabelView = 100;
+
+			var uilabel = new UILabel(new RectangleF(0, 0, width, heightCustomLabelView))
+			{
+				MinimumFontSize = 14f,
+				Lines = 0,
+				LineBreakMode = UILineBreakMode.WordWrap,
+				Font = UIFont.FromName("Helvetica", 24f),
+				Text = "DefaultText"
+			};
+
+			var uibuttonColor = new UIButton(UIButtonType.RoundedRect);
+			uibuttonColor.SetTitle("Toggle Text Color Binding", UIControlState.Normal);
+			uibuttonColor.Font = UIFont.FromName("Helvetica", 14f);
+			uibuttonColor.TouchUpInside += (sender, args) => uilabel.TextColor = UIColor.Blue;
+
+			var nativeColorConverter = new ColorConverter();
+
+			uilabel.SetBinding("Text", new Binding("NativeLabel"));
+			uilabel.SetBinding(nameof(uilabel.TextColor),
+				new Binding("NativeLabelColor", converter: nativeColorConverter));
+
+			var kvoSlider = new KVOUISlider();
+			kvoSlider.MaxValue = 100;
+			kvoSlider.MinValue = 0;
+			kvoSlider.SetBinding(nameof(kvoSlider.KVOValue), new Binding("Age", BindingMode.TwoWay));
+			sl?.Children.Add(kvoSlider);
+
+			var uiView = new UIView(new RectangleF(0, 0, width, heightCustomLabelView));
+			uiView.Add(uilabel);
+			sl?.Children.Add(uiView);
+			sl?.Children.Add(uibuttonColor.ToView());
+			var colorPicker = new ColorPickerView(new CGRect(0, 0, width, 300));
+			colorPicker.SetBinding("SelectedColor",
+				new Binding("NativeLabelColor", BindingMode.TwoWay, nativeColorConverter), "ColorPicked");
+			sl?.Children.Add(colorPicker);
+			page.NativeControlsAdded = true;
 		}
 
 		void AddNativeControls(NestedNativeControlGalleryPage page)
@@ -194,7 +257,6 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			var uibutton = new UIButton(UIButtonType.RoundedRect);
 			uibutton.SetTitle("Toggle Text Amount", UIControlState.Normal);
 			uibutton.Font = UIFont.FromName("Helvetica", 14f);
-
 
 			uibutton.TouchUpInside += (sender, args) =>
 			{
@@ -235,7 +297,8 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			var explanation1 = new UILabel
 			{
 				MinimumFontSize = 14f,
-				Text = "The next control is the same broken class as above, but we pass in an override to the GetDesiredSize method.",
+				Text =
+					"The next control is the same broken class as above, but we pass in an override to the GetDesiredSize method.",
 				Lines = 0,
 				LineBreakMode = UILineBreakMode.WordWrap,
 				Font = UIFont.FromName("Helvetica", 24f)
@@ -254,8 +317,8 @@ namespace Xamarin.Forms.ControlGallery.iOS
 
 		SizeRequest? FixSize(NativeViewWrapperRenderer renderer, double width, double height)
 		{
-			var uiView = renderer.Control;
-			var view = renderer.Element;
+			UIView uiView = renderer.Control;
+			NativeViewWrapper view = renderer.Element;
 
 			if (uiView == null || view == null)
 			{
@@ -265,55 +328,10 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			var constraint = new CGSize(width, height);
 
 			// Let the BrokenNativeControl determine its size (which we know will be wrong)
-			var badRect = uiView.SizeThatFits(constraint);
+			CGSize badRect = uiView.SizeThatFits(constraint);
 
 			// And we'll use the width (which is fine) and substitute our own height
 			return new SizeRequest(new Size(badRect.Width, 20));
-		}
-
-		void AddNativeBindings(NativeBindingGalleryPage page)
-		{
-			if (page.NativeControlsAdded)
-				return;
-
-			StackLayout sl = page.Layout;
-
-			int width = (int)sl.Width;
-			int heightCustomLabelView = 100;
-
-			var uilabel = new UILabel(new RectangleF(0, 0, width, heightCustomLabelView))
-			{
-				MinimumFontSize = 14f,
-				Lines = 0,
-				LineBreakMode = UILineBreakMode.WordWrap,
-				Font = UIFont.FromName("Helvetica", 24f),
-				Text = "DefaultText"
-			};
-
-			var uibuttonColor = new UIButton(UIButtonType.RoundedRect);
-			uibuttonColor.SetTitle("Toggle Text Color Binding", UIControlState.Normal);
-			uibuttonColor.Font = UIFont.FromName("Helvetica", 14f);
-			uibuttonColor.TouchUpInside += (sender, args) => uilabel.TextColor = UIColor.Blue;
-
-			var nativeColorConverter = new ColorConverter();
-
-			uilabel.SetBinding("Text", new Binding("NativeLabel"));
-			uilabel.SetBinding(nameof(uilabel.TextColor), new Binding("NativeLabelColor", converter: nativeColorConverter));
-
-			var kvoSlider = new KVOUISlider();
-			kvoSlider.MaxValue = 100;
-			kvoSlider.MinValue = 0;
-			kvoSlider.SetBinding(nameof(kvoSlider.KVOValue), new Binding("Age", BindingMode.TwoWay));
-			sl?.Children.Add(kvoSlider);
-
-			var uiView = new UIView(new RectangleF(0, 0, width, heightCustomLabelView));
-			uiView.Add(uilabel);
-			sl?.Children.Add(uiView);
-			sl?.Children.Add(uibuttonColor.ToView());
-			var colorPicker = new ColorPickerView(new CGRect(0, 0, width, 300));
-			colorPicker.SetBinding("SelectedColor", new Binding("NativeLabelColor", BindingMode.TwoWay, nativeColorConverter), "ColorPicked");
-			sl?.Children.Add(colorPicker);
-			page.NativeControlsAdded = true;
 		}
 
 		#region Stuff for repro of Bugzilla case 40911
@@ -322,10 +340,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
 		{
 			var button = new Button { Text = "Start" };
 
-			button.Clicked += (s, e) =>
-			{
-				StartPressed40911();
-			};
+			button.Clicked += (s, e) => { StartPressed40911(); };
 
 			page.Layout.Children.Add(button);
 		}
@@ -333,19 +348,22 @@ namespace Xamarin.Forms.ControlGallery.iOS
 		public void StartPressed40911()
 		{
 			var loginViewController = new UIViewController { View = { BackgroundColor = UIColor.White } };
-			var button = UIButton.FromType(UIButtonType.RoundedRect);
+			UIButton button = UIButton.FromType(UIButtonType.RoundedRect);
 			button.SetTitle("Login", UIControlState.Normal);
 			button.Frame = new CGRect(20, 100, 200, 44);
 			loginViewController.View.AddSubview(button);
 
 			button.TouchUpInside += (sender, e) =>
 			{
-				Xamarin.Forms.Application.Current.MainPage = new ContentPage { Content = new Label { Text = "40911 Success" } };
+				Xamarin.Forms.Application.Current.MainPage = new ContentPage
+				{
+					Content = new Label { Text = "40911 Success" }
+				};
 				loginViewController.DismissViewController(true, null);
 			};
 
-			var window = UIApplication.SharedApplication.KeyWindow;
-			var vc = window.RootViewController;
+			UIWindow window = UIApplication.SharedApplication.KeyWindow;
+			UIViewController vc = window.RootViewController;
 			while (vc.PresentedViewController != null)
 			{
 				vc = vc.PresentedViewController;
@@ -355,44 +373,24 @@ namespace Xamarin.Forms.ControlGallery.iOS
 		}
 
 		#endregion
-
-		[Export("navigateToTest:")]
-		public string NavigateToTest(string test)
-		{
-			// According to https://developer.xamarin.com/guides/testcloud/uitest/working-with/backdoors/
-			// this method has to return a string
-			return _app.NavigateToTestPage(test).ToString();
-		}
-
-		[Export("reset:")]
-		public string Reset(string str)
-		{
-			_app.Reset();
-			return String.Empty;
-		}
 	}
 
 	[Register("KVOUISlider")]
 	public class KVOUISlider : UISlider
 	{
+		float _kVOValue;
 
 		public KVOUISlider()
 		{
 			ValueChanged += (s, e) => KVOValue = Value;
 		}
 
-		float _kVOValue;
 		[Export("kvovalue")]
 		public float KVOValue
 		{
-			get
-			{
-
-				return _kVOValue;
-			}
+			get { return _kVOValue; }
 			set
 			{
-
 				WillChangeValue(nameof(KVOValue).ToLower());
 				_kVOValue = Value = value;
 				DidChangeValue(nameof(KVOValue).ToLower());
@@ -417,4 +415,5 @@ namespace Xamarin.Forms.ControlGallery.iOS
 		}
 	}
 }
+
 #endif

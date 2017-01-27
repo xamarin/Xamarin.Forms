@@ -1,6 +1,4 @@
-﻿using System;
-using Xamarin.Forms;
-using Xamarin.Forms.PlatformConfiguration;
+﻿using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 
 namespace Xamarin.Forms.Controls.GalleryPages.PlatformSpecificsGalleries
@@ -23,7 +21,12 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformSpecificsGalleries
 					new Button
 					{
 						Text = "Toggle AdjustsFontSizeToFitWidth",
-						Command = new Command(() => entry.On<iOS>().SetAdjustsFontSizeToFitWidthEnabled(!entry.On<iOS>().IsAdjustsFontSizeToFitWidthEnabled()))
+						Command =
+							new Command(
+								() =>
+									entry.On<iOS>()
+										.SetAdjustsFontSizeToFitWidthEnabled(
+											!entry.On<iOS>().IsAdjustsFontSizeToFitWidthEnabled()))
 					}
 				}
 			};

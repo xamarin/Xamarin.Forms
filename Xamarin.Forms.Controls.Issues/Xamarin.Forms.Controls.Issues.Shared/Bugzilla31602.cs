@@ -1,8 +1,8 @@
 ﻿using System;
-using Xamarin.Forms.CustomAttributes;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 #if UITEST
@@ -17,38 +17,42 @@ namespace Xamarin.Forms.Controls.Issues
 	[NUnit.Framework.Category(UITestCategories.MasterDetailPage)]
 #endif
 
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Bugzilla, 31602, "not possible to programmatically open master page after iPad landscape -> portrait rotation, also tests 31664")]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Bugzilla, 31602,
+			"not possible to programmatically open master page after iPad landscape -> portrait rotation, also tests 31664"
+		)
+	]
 	public class Bugzilla31602 : TestMasterDetailPage
 	{
-		protected override void Init ()
+		protected override void Init()
 		{
-			BindingContext = new MasterViewModel1 ();
+			BindingContext = new MasterViewModel1();
 			((MasterViewModel1)BindingContext).MasterPage = this;
 
-			Master = new SidemenuPage ();
-			Detail = new NavigationPage (new DetailPage1 (Master as SidemenuPage));
+			Master = new SidemenuPage();
+			Detail = new NavigationPage(new DetailPage1(Master as SidemenuPage));
 		}
 
 		public class SidemenuPage : ContentPage
 		{
-			public SidemenuPage ()
+			public SidemenuPage()
 			{
 				Title = "Side";
 				Icon = "menuIcon.png";
 				var lbl = new Label { Text = "SideMenu" };
-				var btn = new Button { Text = "Menu Opener"  };
+				var btn = new Button { Text = "Menu Opener" };
 
-				btn.SetBinding (Button.CommandProperty, new Binding ("OpenSideMenuCommand"));
+				btn.SetBinding(Button.CommandProperty, new Binding("OpenSideMenuCommand"));
 
 				var stackpanel = new StackLayout { VerticalOptions = LayoutOptions.Center };
 
-				stackpanel.Children.Add (btn);
-				stackpanel.Children.Add (lbl);
+				stackpanel.Children.Add(btn);
+				stackpanel.Children.Add(lbl);
 				Content = stackpanel;
 			}
 
-			public void ChangeIcon() {
+			public void ChangeIcon()
+			{
 				Icon = "bank.png";
 			}
 		}
@@ -57,63 +61,64 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			SidemenuPage _sideMenu;
 
-			public DetailPage1 (SidemenuPage menu)
+			public DetailPage1(SidemenuPage menu)
 			{
 				_sideMenu = menu;
 				Title = "Detail";
 				var btns = new Button { Text = "Change Icon" };
-				btns.Clicked += (object sender, EventArgs e) => {
-					_sideMenu.ChangeIcon();
-				};
-				var btn = new Button { Text = "Sidemenu Opener"  };
-				btn.SetBinding (Button.CommandProperty, new Binding ("OpenSideMenuCommand"));
-				Content = new StackLayout { Children = { btns, btn} };
+				btns.Clicked += (object sender, EventArgs e) => { _sideMenu.ChangeIcon(); };
+				var btn = new Button { Text = "Sidemenu Opener" };
+				btn.SetBinding(Button.CommandProperty, new Binding("OpenSideMenuCommand"));
+				Content = new StackLayout { Children = { btns, btn } };
 			}
 		}
 
-		[Preserve (AllMembers = true)]
+		[Preserve(AllMembers = true)]
 		public class MasterViewModel1 : INotifyPropertyChanged
 		{
+			bool _isMenuOpen;
 			public MasterDetailPage MasterPage;
 
-			public event PropertyChangedEventHandler PropertyChanged = delegate { };
-
-			protected void OnPropertyChanged ([CallerMemberName] string propertyName = null)
+			public MasterViewModel1()
 			{
-				if (PropertyChanged != null) {
-					PropertyChanged (this, new PropertyChangedEventArgs (propertyName));
-				}
+				IsMenuOpen = true;
+				OpenSideMenuCommand = new Command(OpenSideMenu);
 			}
 
-			bool _isMenuOpen;
-
-			public bool IsMenuOpen {
+			public bool IsMenuOpen
+			{
 				get { return _isMenuOpen; }
-				private set {
-					if (_isMenuOpen != value) {
-						System.Diagnostics.Debug.WriteLine ("setting new sidemenu visibility flag to: " + value);
+				private set
+				{
+					if (_isMenuOpen != value)
+					{
+						System.Diagnostics.Debug.WriteLine("setting new sidemenu visibility flag to: " + value);
 						_isMenuOpen = value;
-						OnPropertyChanged ();
+						OnPropertyChanged();
 					}
 				}
 			}
 
 			public ICommand OpenSideMenuCommand { get; private set; }
 
-			public MasterViewModel1 ()
+			public event PropertyChangedEventHandler PropertyChanged = delegate { };
+
+			protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
 			{
-				IsMenuOpen = true;
-				OpenSideMenuCommand = new Command (OpenSideMenu);
+				if (PropertyChanged != null)
+				{
+					PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+				}
 			}
 
-			void OpenSideMenu ()
+			void OpenSideMenu()
 			{
 				IsMenuOpen = true;
 				MasterPage.IsPresented = IsMenuOpen;
 			}
 		}
 
-		#if UITEST
+#if UITEST
 		[Test]
 		public void Bugzilla31602Test ()
 		{

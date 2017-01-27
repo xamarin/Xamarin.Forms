@@ -2,19 +2,21 @@ using Xamarin.Forms.CustomAttributes;
 
 namespace Xamarin.Forms.Controls
 {
-	[Issue (IssueTracker.Bugzilla, 36649, "LineBreakMode.NoWrap is handled incorrectly on Windows Phone 8.1 RT",
+	[Issue(IssueTracker.Bugzilla, 36649, "LineBreakMode.NoWrap is handled incorrectly on Windows Phone 8.1 RT",
 		PlatformAffected.WinRT)]
 	public class Bugzilla36649 : TestContentPage
 	{
-		protected override void Init ()
+		protected override void Init()
 		{
-			var label = new Label {
+			var label = new Label
+			{
 				Style = Device.Styles.BodyStyle,
 				FontSize = 20,
 				Text =
 					"This test is successful if the line below does not wrap and does not have an ellipsis at the end of the visible text."
 			};
-			var testLabel = new Label {
+			var testLabel = new Label
+			{
 				TextColor = Color.Red,
 				Style = Device.Styles.BodyStyle,
 				FontSize = 20,

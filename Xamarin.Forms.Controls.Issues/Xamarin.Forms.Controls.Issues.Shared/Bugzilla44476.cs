@@ -9,13 +9,14 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 44476, "[Android] Unwanted margin at top of details page when nested in a NavigationPage")]
+	[Issue(IssueTracker.Bugzilla, 44476,
+		"[Android] Unwanted margin at top of details page when nested in a NavigationPage")]
 	public class Bugzilla44476 : TestNavigationPage
 	{
 		protected override void Init()
 		{
 			BackgroundColor = Color.Maroon;
-			
+
 			PushAsync(new MasterDetailPage
 			{
 				Title = "Bugzilla Issue 44476",

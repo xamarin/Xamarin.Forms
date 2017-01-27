@@ -5,15 +5,13 @@ namespace Xamarin.Forms.Controls
 {
 	public class Bugzilla44596SplashPage : ContentPage
 	{
-		Action FinishedLoading { get; set; }
-
-
 		public Bugzilla44596SplashPage(Action finishedLoading)
 		{
 			BackgroundColor = Color.Blue;
 			FinishedLoading = finishedLoading;
 		}
 
+		Action FinishedLoading { get; set; }
 
 		protected async override void OnAppearing()
 		{

@@ -18,26 +18,15 @@ namespace Xamarin.Forms.Controls
 	[Issue(IssueTracker.Bugzilla, 43214, "Setting Listview.IsRefreshing to false does not work on second \"pull\"")]
 	public class Bugzilla43214 : TestContentPage
 	{
-		public class MyViewModel : ViewModel
-		{
-			bool _isBusy;
-
-			public bool IsBusy
-			{
-				get { return _isBusy; }
-				set
-				{
-					_isBusy = value;
-					OnPropertyChanged();
-				}
-			}
-		}
-
 		protected override void Init()
 		{
 			var vm = new MyViewModel();
 
-			var label = new Label { Text = "Pull list to refresh once, then pull to refresh again. If the indicator does not disappear, this test has failed." };
+			var label = new Label
+			{
+				Text =
+					"Pull list to refresh once, then pull to refresh again. If the indicator does not disappear, this test has failed."
+			};
 			var listview = new ListView
 			{
 				ItemsSource = Enumerable.Range(0, 20),
@@ -55,6 +44,21 @@ namespace Xamarin.Forms.Controls
 			var stacklayout = new StackLayout { Children = { label, listview }, BindingContext = vm };
 
 			Content = stacklayout;
+		}
+
+		public class MyViewModel : ViewModel
+		{
+			bool _isBusy;
+
+			public bool IsBusy
+			{
+				get { return _isBusy; }
+				set
+				{
+					_isBusy = value;
+					OnPropertyChanged();
+				}
+			}
 		}
 	}
 }

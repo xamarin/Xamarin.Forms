@@ -1,20 +1,27 @@
 ﻿using System;
-
-using Xamarin.Forms.CustomAttributes;
-using Xamarin.Forms.Internals;
 using System.Linq;
 using System.Threading.Tasks;
+using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 33561, "ListView Pull-to-Refresh ActivityIndicator animation stuck when navigating away and then back again")]
+	[Issue(IssueTracker.Bugzilla, 33561,
+		"ListView Pull-to-Refresh ActivityIndicator animation stuck when navigating away and then back again")]
 	public class Bugzilla33561 : TestTabbedPage
 	{
+		protected override void Init()
+		{
+			Children.Add(new NavigationPage(new ListPage()) { Title = "page 1" });
+			Children.Add(new ContentPage() { Title = "page 2" });
+			Children.Add(new ContentPage() { Title = "page 3" });
+		}
+
 		public class ListPage : ContentPage
 		{
-			ListView _listView;
 			bool _isRefreshing;
+			ListView _listView;
 
 			public ListPage()
 			{
@@ -43,15 +50,12 @@ namespace Xamarin.Forms.Controls
 
 				Content = _listView;
 
-				Device.StartTimer(TimeSpan.FromSeconds(5), () => { _listView.IsRefreshing = false; return false; });
+				Device.StartTimer(TimeSpan.FromSeconds(5), () =>
+				{
+					_listView.IsRefreshing = false;
+					return false;
+				});
 			}
-		}
-
-		protected override void Init()
-		{
-			Children.Add(new NavigationPage(new ListPage()) { Title = "page 1" });
-			Children.Add(new ContentPage() { Title = "page 2" });
-			Children.Add(new ContentPage() { Title = "page 3" });
 		}
 	}
 }

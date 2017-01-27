@@ -18,7 +18,11 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformSpecificsGalleries
 			Button button2 = GetButton(box, BlurEffectStyle.ExtraLight);
 			Button button3 = GetButton(box, BlurEffectStyle.Light);
 			Button button4 = GetButton(box, BlurEffectStyle.Dark);
-			var buttons = new StackLayout { Orientation = StackOrientation.Horizontal, Children = { button1, button2, button3, button4 } };
+			var buttons = new StackLayout
+			{
+				Orientation = StackOrientation.Horizontal,
+				Children = { button1, button2, button3, button4 }
+			};
 
 			Content = new StackLayout { Children = { buttons, new AbsoluteLayout { Children = { image, box } } } };
 			Title = "Visual Element Features";

@@ -6,7 +6,8 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms.Controls
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 42069, "Garbage Collector can not collect pages that use ImageSource as a StaticResource",
+	[Issue(IssueTracker.Bugzilla, 42069,
+		"Garbage Collector can not collect pages that use ImageSource as a StaticResource",
 		PlatformAffected.All)]
 	public class Bugzilla42069 : TestNavigationPage
 	{
@@ -20,14 +21,15 @@ namespace Xamarin.Forms.Controls
 			if (!Application.Current.Resources.ContainsKey("SomeSmallImage"))
 			{
 				ImageSource smallImage;
-				switch (Device.RuntimePlatform) {
-				default:
-					smallImage = "coffee.png";
-					break;
-				case Device.WinPhone:
-				case Device.Windows:
-					smallImage = "bank.png";
-					break;
+				switch (Device.RuntimePlatform)
+				{
+					default:
+						smallImage = "coffee.png";
+						break;
+					case Device.WinPhone:
+					case Device.Windows:
+						smallImage = "bank.png";
+						break;
 				}
 
 				Application.Current.Resources.Add("SomeSmallImage", smallImage);

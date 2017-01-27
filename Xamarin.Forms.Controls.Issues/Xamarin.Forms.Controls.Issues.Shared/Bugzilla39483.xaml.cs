@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Xamarin.Forms;
+﻿using System.Collections.Generic;
 using Xamarin.Forms.CustomAttributes;
 
 namespace Xamarin.Forms.Controls.Issues
@@ -12,11 +6,11 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Bugzilla, 39483, "ListView Context Menu localization", PlatformAffected.iOS)]
 	public partial class Bugzilla39483 : ContentPage
 	{
-		public Bugzilla39483 ()
+		public Bugzilla39483()
 		{
 #if APP
 
-			InitializeComponent ();
+			InitializeComponent();
 
 			BindingContext = new DemoViewModel();
 
@@ -26,6 +20,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 	public class DemoViewModel : ViewModelBase
 	{
+		List<string> _dataList;
+
 		public DemoViewModel()
 		{
 			DataList = new List<string>();
@@ -35,14 +31,12 @@ namespace Xamarin.Forms.Controls.Issues
 			DataList.Add("Listenelement 4");
 		}
 
-		List<string> _dataList;
 		public List<string> DataList
 		{
-			get
+			get { return _dataList; }
+			set
 			{
-				return _dataList;
-			}
-			set { _dataList = value;
+				_dataList = value;
 				OnPropertyChanged();
 			}
 		}

@@ -16,7 +16,8 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 36846, "ActionBar does not dismiss when content which called it is removed", PlatformAffected.Android)]
+	[Issue(IssueTracker.Bugzilla, 36846, "ActionBar does not dismiss when content which called it is removed",
+		PlatformAffected.Android)]
 	public class Bugzilla36846 : TestNavigationPage // or TestMasterDetailPage, etc ...
 	{
 		protected override void Init()
@@ -27,8 +28,6 @@ namespace Xamarin.Forms.Controls.Issues
 
 	public class ListWithLongPress : ContentPage
 	{
-		public ObservableCollection<string> MyCollection { get; set; }
-
 		public ListWithLongPress()
 		{
 			MyCollection = new ObservableCollection<string>();
@@ -94,6 +93,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 			Content = stackLayout;
 		}
+
+		public ObservableCollection<string> MyCollection { get; set; }
 
 		void PopulateCollection()
 		{

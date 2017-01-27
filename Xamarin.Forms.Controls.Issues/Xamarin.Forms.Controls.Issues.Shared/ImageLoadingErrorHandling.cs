@@ -11,9 +11,10 @@ namespace Xamarin.Forms.Controls
 		protected override void Init()
 		{
 			Log.Listeners.Add(
-				new DelegateLogListener((c, m) => Device.BeginInvokeOnMainThread(() => DisplayAlert(c, m, "Cool, Thanks"))));
+				new DelegateLogListener(
+					(c, m) => Device.BeginInvokeOnMainThread(() => DisplayAlert(c, m, "Cool, Thanks"))));
 
-			var image = new Image() {BackgroundColor = Color.White};
+			var image = new Image() { BackgroundColor = Color.White };
 
 			Grid legit = CreateTest(() => image.Source = ImageSource.FromFile("coffee.png"),
 				"Valid Image",
@@ -32,8 +33,8 @@ namespace Xamarin.Forms.Controls
 			Grid fakeUri = CreateTest(() => image.Source = ImageSource.FromUri(new Uri("http://not.real")),
 				"Non-existent URI",
 				Device.RuntimePlatform == Device.Windows && Device.Idiom == TargetIdiom.Phone
-				? "Clicking this button should display an alert dialog. The error message should include the text 'NotFound'."
-				: "Clicking this button should display an alert dialog. The error message should include the text 'the server name or address could not be resolved'.");
+					? "Clicking this button should display an alert dialog. The error message should include the text 'NotFound'."
+					: "Clicking this button should display an alert dialog. The error message should include the text 'the server name or address could not be resolved'.");
 
 			// This used to crash the app with an uncatchable error; need to make sure it's not still doing that
 			Grid crashImage = CreateTest(() => image.Source = new FailImageSource(),
@@ -42,7 +43,12 @@ namespace Xamarin.Forms.Controls
 				Color.Silver);
 
 			Grid uriInvalidImageData =
-				CreateTest(() => image.Source = ImageSource.FromUri(new Uri("https://gist.githubusercontent.com/hartez/a2dda6b5c78852bcf4832af18f21a023/raw/39f4cd2e9fe8514694ac7fa0943017eb9308853d/corrupt.jpg")),
+				CreateTest(
+					() =>
+						image.Source =
+							ImageSource.FromUri(
+								new Uri(
+									"https://gist.githubusercontent.com/hartez/a2dda6b5c78852bcf4832af18f21a023/raw/39f4cd2e9fe8514694ac7fa0943017eb9308853d/corrupt.jpg")),
 					"Valid URI with invalid image file",
 					"Clicking this button should display an alert dialog. The error message should include the text 'UriImageSourceHandler could not load https://gist.githubusercontent.com/hartez/a2dda6b5c78852bcf4832af18f21a023/raw/39f4cd2e9fe8514694ac7fa0943017eb9308853d/corrupt.jpg'");
 
@@ -81,7 +87,12 @@ namespace Xamarin.Forms.Controls
 			var grid = new Grid
 			{
 				ColumnDefinitions =
-					new ColumnDefinitionCollection { new ColumnDefinition(), new ColumnDefinition(), new ColumnDefinition() },
+					new ColumnDefinitionCollection
+					{
+						new ColumnDefinition(),
+						new ColumnDefinition(),
+						new ColumnDefinition()
+					},
 				RowDefinitions = new RowDefinitionCollection { new RowDefinition { Height = 80 } }
 			};
 

@@ -75,7 +75,8 @@ namespace Xamarin.Forms.Controls
 
 			if (Device.Idiom == TargetIdiom.Phone)
 			{
-				heading.Text += " Rotating the phone between portrait and landscape mode should not cause the ellipsis to disappear from truncated text.";
+				heading.Text +=
+					" Rotating the phone between portrait and landscape mode should not cause the ellipsis to disappear from truncated text.";
 			}
 
 			var labelButton = new Button { Text = "Single Label" };

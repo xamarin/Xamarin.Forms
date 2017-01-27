@@ -9,12 +9,13 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 44338, "Tapping off of a cell with an open context action causes a crash in iOS 10", PlatformAffected.iOS)]
+	[Issue(IssueTracker.Bugzilla, 44338, "Tapping off of a cell with an open context action causes a crash in iOS 10",
+		PlatformAffected.iOS)]
 	public class Bugzilla44338 : TestContentPage
 	{
 		protected override void Init()
 		{
-			string[] items = new string[] { "A", "B", "C" };
+			var items = new string[] { "A", "B", "C" };
 			Content = new ListView
 			{
 				ItemsSource = items,
@@ -38,7 +39,7 @@ namespace Xamarin.Forms.Controls.Issues
 						Command = new Command(() => DisplayAlert("Alert", "Context Action Pressed", "Close"))
 					});
 					return view;
-				})	
+				})
 			};
 		}
 	}

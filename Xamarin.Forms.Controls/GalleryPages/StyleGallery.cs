@@ -1,35 +1,42 @@
-﻿using System;
-
-namespace Xamarin.Forms.Controls
+﻿namespace Xamarin.Forms.Controls
 {
-	public class StyleGallery:ContentPage
+	public class StyleGallery : ContentPage
 	{
-		public StyleGallery ()
+		public StyleGallery()
 		{
-			Content = new StackLayout {
-				Children = {
-					new Label {
+			Content = new StackLayout
+			{
+				Children =
+				{
+					new Label
+					{
 						Text = "This uses TitleStyle",
 						Style = Device.Styles.TitleStyle
 					},
-					new Label {
+					new Label
+					{
 						Text = "This uses SubtitleStyle",
 						Style = Device.Styles.SubtitleStyle
 					},
-					new Label {
+					new Label
+					{
 						Text = "This uses BodyStyle",
 						Style = Device.Styles.BodyStyle
 					},
-					new Label {
+					new Label
+					{
 						Text = "This uses CaptionStyle",
 						Style = Device.Styles.CaptionStyle
 					},
-					new Label {
+					new Label
+					{
 						Text = "This uses a custom style inherited dynamically from SubtitleStyle",
-						Style = new Style (typeof(Label)) {
+						Style = new Style(typeof(Label))
+						{
 							BaseResourceKey = Device.Styles.SubtitleStyleKey,
-							Setters = {
-								new Setter {Property = Label.TextColorProperty, Value = Color.Pink}
+							Setters =
+							{
+								new Setter { Property = Label.TextColorProperty, Value = Color.Pink }
 							}
 						}
 					},
@@ -38,4 +45,3 @@ namespace Xamarin.Forms.Controls
 		}
 	}
 }
-

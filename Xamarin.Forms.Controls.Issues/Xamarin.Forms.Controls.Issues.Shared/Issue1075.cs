@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Reflection;
+﻿using System.Reflection;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
@@ -14,15 +13,15 @@ namespace Xamarin.Forms.Controls
 	[Category(UITestCategories.BoxView)]
 #endif
 
-	[Preserve (AllMembers=true)]
-	[Issue (IssueTracker.Github, 1075, "Does not update Color", PlatformAffected.Android | PlatformAffected.WinPhone)]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 1075, "Does not update Color", PlatformAffected.Android | PlatformAffected.WinPhone)]
 	public class Issue1075 : ContentPage
 	{
 		// Issue1075
 		// BoxView doesn't update color
-		public Issue1075 ()
+		public Issue1075()
 		{
-			Label header = new Label
+			var header = new Label
 			{
 				Text = "Picker",
 #pragma warning disable 618
@@ -31,25 +30,25 @@ namespace Xamarin.Forms.Controls
 				HorizontalOptions = LayoutOptions.Center
 			};
 
-			Picker picker = new Picker
+			var picker = new Picker
 			{
 				Title = "Color",
 				VerticalOptions = LayoutOptions.CenterAndExpand
 			};
 
 			foreach (string color in new string[]
-				{
-					"Aqua", "Black", "Blue", "Fuschia",
-					"Gray", "Green", "Lime", "Maroon",
-					"Navy", "Olive", "Purple", "Red",
-					"Silver", "Teal", "White", "Yellow"
-				})
+			{
+				"Aqua", "Black", "Blue", "Fuschia",
+				"Gray", "Green", "Lime", "Maroon",
+				"Navy", "Olive", "Purple", "Red",
+				"Silver", "Teal", "White", "Yellow"
+			})
 			{
 				picker.Items.Add(color);
 			}
 
 			// Create BoxView for displaying pickedColor
-			BoxView boxView = new BoxView
+			var boxView = new BoxView
 			{
 				WidthRequest = 150,
 				HeightRequest = 150,
@@ -57,9 +56,10 @@ namespace Xamarin.Forms.Controls
 				VerticalOptions = LayoutOptions.CenterAndExpand
 			};
 
-			var button = new Button {
+			var button = new Button
+			{
 				Text = "Change to blue",
-				Command = new Command (() => boxView.BackgroundColor = Color.Aqua)
+				Command = new Command(() => boxView.BackgroundColor = Color.Aqua)
 			};
 
 			picker.SelectedIndexChanged += (sender, args) =>
@@ -82,7 +82,7 @@ namespace Xamarin.Forms.Controls
 			// Build the page.
 			Content = new StackLayout
 			{
-				Children = 
+				Children =
 				{
 					header,
 					picker,
@@ -92,5 +92,4 @@ namespace Xamarin.Forms.Controls
 			};
 		}
 	}
-		
 }

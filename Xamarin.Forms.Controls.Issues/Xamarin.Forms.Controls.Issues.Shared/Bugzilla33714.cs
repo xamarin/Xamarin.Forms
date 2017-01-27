@@ -1,38 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 using Xamarin.Forms.CustomAttributes;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-
-	[Issue (IssueTracker.Bugzilla, 33714, "[WP] Navigating Back Within MasterDetailPage.Detail Causes Crash", NavigationBehavior.PushModalAsync)]
-    public class Bugzilla33714 : MasterDetailPage
+	[Issue(IssueTracker.Bugzilla, 33714, "[WP] Navigating Back Within MasterDetailPage.Detail Causes Crash",
+		NavigationBehavior.PushModalAsync)]
+	public class Bugzilla33714 : MasterDetailPage
 	{
-		public Bugzilla33714 ()
+		public Bugzilla33714()
 		{
-            Master = new MasterPage (this);
-            Detail = new NavigationPage (new ContentPage
-            {
-                Title = "Home",
-                Content = new StackLayout
-                {
-                    Children = {
-                        new Label { Text = "This is the home detail page"}
-                    }
-                }
-            });
+			Master = new MasterPage(this);
+			Detail = new NavigationPage(new ContentPage
+			{
+				Title = "Home",
+				Content = new StackLayout
+				{
+					Children =
+					{
+						new Label { Text = "This is the home detail page" }
+					}
+				}
+			});
 		}
 
 		public class MoreDetail : ContentPage
 		{
-			public MoreDetail ()
+			public MoreDetail()
 			{
-				Content = new StackLayout {
-					Children = {
+				Content = new StackLayout
+				{
+					Children =
+					{
 						new Label { Text = "More details" },
-						new Button { Text = "Go to more detail page", Command = new Command(async () => await Navigation.PushAsync(new MoreDetail()))},
-						new Button { Text = "Go back", Command = new Command(async () => await Navigation.PopAsync())}
+						new Button
+						{
+							Text = "Go to more detail page",
+							Command = new Command(async () => await Navigation.PushAsync(new MoreDetail()))
+						},
+						new Button { Text = "Go back", Command = new Command(async () => await Navigation.PopAsync()) }
 					}
 				};
 			}
@@ -40,13 +45,19 @@ namespace Xamarin.Forms.Controls.Issues
 
 		public class DetailPage : ContentPage
 		{
-			public DetailPage ()
+			public DetailPage()
 			{
 				Title = "Detail";
-				Content = new StackLayout {
-					Children = {
+				Content = new StackLayout
+				{
+					Children =
+					{
 						new Label { Text = "This is a Detail ContentPage" },
-						new Button { Text = "Go to more detail page", Command = new Command(async () => await Navigation.PushAsync(new MoreDetail()))}
+						new Button
+						{
+							Text = "Go to more detail page",
+							Command = new Command(async () => await Navigation.PushAsync(new MoreDetail()))
+						}
 					}
 				};
 			}
@@ -57,12 +68,12 @@ namespace Xamarin.Forms.Controls.Issues
 			readonly MasterDetailPage _masterPage;
 			List<string> _items;
 
-			public MasterPage (MasterDetailPage masterPage)
+			public MasterPage(MasterDetailPage masterPage)
 			{
 				_masterPage = masterPage;
 				Title = "Menu";
 
-				for (int i = 0; i < 5; i++ )
+				for (var i = 0; i < 5; i++)
 				{
 					if (i == 0) _items = new List<string>();
 
@@ -82,5 +93,5 @@ namespace Xamarin.Forms.Controls.Issues
 				_masterPage.Detail = new NavigationPage(new DetailPage());
 			}
 		}
-    }
+	}
 }

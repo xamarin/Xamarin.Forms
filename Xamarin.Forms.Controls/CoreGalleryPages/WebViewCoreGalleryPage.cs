@@ -9,35 +9,32 @@ namespace Xamarin.Forms.Controls
 			get { return false; }
 		}
 
-		protected override void InitializeElement (WebView element)
+		protected override void Build(StackLayout stackLayout)
 		{
-			element.HeightRequest = 200;
+			base.Build(stackLayout);
 
-			element.Source = new UrlWebViewSource { Url = "http://xamarin.com/" };
-		}
-
-		protected override void Build (StackLayout stackLayout)
-		{
-			base.Build (stackLayout);
-
-			var urlWebViewSourceContainer = new ViewContainer<WebView> (Test.WebView.UrlWebViewSource, 
-				new WebView {
+			var urlWebViewSourceContainer = new ViewContainer<WebView>(Test.WebView.UrlWebViewSource,
+				new WebView
+				{
 					Source = new UrlWebViewSource { Url = "https://www.google.com/" },
 					HeightRequest = 200
 				}
 			);
 
 			const string html = "<html><div class=\"test\"><h2>I am raw html</h2></div></html>";
-			var htmlWebViewSourceContainer = new ViewContainer<WebView> (Test.WebView.HtmlWebViewSource, 
-				new WebView {
+			var htmlWebViewSourceContainer = new ViewContainer<WebView>(Test.WebView.HtmlWebViewSource,
+				new WebView
+				{
 					Source = new HtmlWebViewSource { Html = html },
 					HeightRequest = 200
 				}
 			);
 
-			var htmlFileWebSourceContainer = new ViewContainer<WebView> (Test.WebView.LoadHtml,
-				new WebView {
-					Source = new HtmlWebViewSource { 
+			var htmlFileWebSourceContainer = new ViewContainer<WebView>(Test.WebView.LoadHtml,
+				new WebView
+				{
+					Source = new HtmlWebViewSource
+					{
 						Html = @"<html>
 <head>
 <link rel=""stylesheet"" href=""default.css"">
@@ -54,9 +51,16 @@ namespace Xamarin.Forms.Controls
 				}
 			);
 
-			Add (urlWebViewSourceContainer);
-			Add (htmlWebViewSourceContainer);
-			Add (htmlFileWebSourceContainer);
+			Add(urlWebViewSourceContainer);
+			Add(htmlWebViewSourceContainer);
+			Add(htmlFileWebSourceContainer);
+		}
+
+		protected override void InitializeElement(WebView element)
+		{
+			element.HeightRequest = 200;
+
+			element.Source = new UrlWebViewSource { Url = "http://xamarin.com/" };
 		}
 	}
 }

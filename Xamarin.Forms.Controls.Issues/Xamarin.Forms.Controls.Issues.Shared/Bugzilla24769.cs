@@ -4,44 +4,53 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls
 {
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Bugzilla, 24769, "Layout cycle when Progress Bar is in a ListView", PlatformAffected.WinPhone | PlatformAffected.WinRT)]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Bugzilla, 24769, "Layout cycle when Progress Bar is in a ListView",
+		PlatformAffected.WinPhone | PlatformAffected.WinRT)]
 	public class Bugzilla24769 : TestContentPage
 	{
-		protected override void Init ()
+		protected override void Init()
 		{
-			var instructions = new Label () {
-				Text = @"Click the button labeled 'Progress++' three times. Each time, all four ProgressBar controls should increment. If they do not increment, the test has failed."
+			var instructions = new Label()
+			{
+				Text =
+					@"Click the button labeled 'Progress++' three times. Each time, all four ProgressBar controls should increment. If they do not increment, the test has failed."
 			};
 
-			var items = new List<ListItem> {
+			var items = new List<ListItem>
+			{
 				new ListItem { Name = "Item1" },
 				new ListItem { Name = "Item2" },
 				new ListItem { Name = "Item3" }
 			};
 
-			var btn = new Button {
+			var btn = new Button
+			{
 				Text = "Progress++"
 			};
 
 			var progressBar = new ProgressBar { Progress = 0.1 };
 
-			btn.Clicked += (sender, arg) => {
-				MessagingCenter.Send (this, "set_progress");
+			btn.Clicked += (sender, arg) =>
+			{
+				MessagingCenter.Send(this, "set_progress");
 				progressBar.Progress += 0.1;
 			};
 
-			var list = new ListView {
+			var list = new ListView
+			{
 				ItemsSource = items,
-				ItemTemplate = new DataTemplate (typeof(ListCell))
+				ItemTemplate = new DataTemplate(typeof(ListCell))
 			};
 
 			BackgroundColor = Color.Maroon;
 
-			Content = new StackLayout {
+			Content = new StackLayout
+			{
 				VerticalOptions = LayoutOptions.Fill,
 				HorizontalOptions = LayoutOptions.Fill,
-				Children = {
+				Children =
+				{
 					instructions,
 					btn,
 					progressBar,
@@ -53,20 +62,22 @@ namespace Xamarin.Forms.Controls
 
 	internal class ListCell : ViewCell
 	{
-		public ListCell ()
+		public ListCell()
 		{
-			var label = new Label ();
-			label.SetBinding (Label.TextProperty, "Name");
+			var label = new Label();
+			label.SetBinding(Label.TextProperty, "Name");
 
 			var progress = new ProgressBar { Progress = 0.1 };
 
-			MessagingCenter.Subscribe<Bugzilla24769> (this, "set_progress", sender => { progress.Progress += 0.1; });
+			MessagingCenter.Subscribe<Bugzilla24769>(this, "set_progress", sender => { progress.Progress += 0.1; });
 
 			View =
-				new StackLayout {
+				new StackLayout
+				{
 					HorizontalOptions = LayoutOptions.Fill,
 					BackgroundColor = Color.Gray,
-					Children = {
+					Children =
+					{
 						label,
 						progress
 					}

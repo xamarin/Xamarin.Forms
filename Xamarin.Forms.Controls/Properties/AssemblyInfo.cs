@@ -25,9 +25,10 @@ using System.Runtime.CompilerServices;
 //[assembly: AssemblyDelaySign(false)]
 //[assembly: AssemblyKeyFile("")]
 
-[assembly: InternalsVisibleTo ("Xamarin.Forms.Core.WP8")]
+[assembly: InternalsVisibleTo("Xamarin.Forms.Core.WP8")]
 
 // The control gallary needs to add code references to internals to prevent the linker from 
 // removing the references. Remove this once the [PreserveAttribute] can be applied at the class
 // and member level.
-[assembly: InternalsVisibleTo ("Xamarin.Forms.ControlGallery.Android")]
+
+[assembly: InternalsVisibleTo("Xamarin.Forms.ControlGallery.Android")]

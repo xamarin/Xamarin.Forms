@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
@@ -10,8 +9,8 @@ using Xamarin.UITest;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Bugzilla, 33612,
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Bugzilla, 33612,
 		"(A) Removing a page from the navigation stack causes an 'Object reference' exception in Android only",
 		PlatformAffected.Android)]
 	public class Bugzilla33612 : TestNavigationPage
@@ -25,7 +24,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 				Content = new StackLayout()
 				{
-					Children = {
+					Children =
+					{
 						new Label { Text = "This is Page 1 - the root page" },
 						button
 					}
@@ -39,7 +39,8 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				Content = new StackLayout()
 				{
-					Children = {
+					Children =
+					{
 						new Label { Text = "This is a fake page. It will never show up." }
 					}
 				};
@@ -55,7 +56,7 @@ namespace Xamarin.Forms.Controls.Issues
 				{
 					int numPagesToRemove = Navigation.NavigationStack.Count;
 
-					Page3 page3 = new Page3();
+					var page3 = new Page3();
 					await Navigation.PushAsync(page3);
 
 					var fake = new FakePage();
@@ -63,7 +64,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 					// Remove all the previous pages on the stack (i.e., Page 1)
 					// This should work fine
-					for (int i = 0; i < numPagesToRemove; i++)
+					for (var i = 0; i < numPagesToRemove; i++)
 					{
 						Page p = Navigation.NavigationStack.ElementAt(0);
 						Navigation.RemovePage(p);
@@ -72,7 +73,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 				Content = new StackLayout()
 				{
-					Children = {
+					Children =
+					{
 						new Label { Text = "This is Page 2" },
 						button
 					}
@@ -86,7 +88,8 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				Content = new StackLayout()
 				{
-					Children = {
+					Children =
+					{
 						new Label { Text = "If you're seeing this, nothing crashed. Yay!" }
 					}
 				};
@@ -107,7 +110,7 @@ namespace Xamarin.Forms.Controls.Issues
 					// was never actually run through SwitchContentAsync
 					// which means that it never had its renderer set.
 					// But now it should work just fine
-					for (int i = 0; i < numPagesToRemove - 1; i++)
+					for (var i = 0; i < numPagesToRemove - 1; i++)
 					{
 						Page p = Navigation.NavigationStack.ElementAt(0);
 						Navigation.RemovePage(p);
@@ -119,7 +122,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 				Content = new StackLayout()
 				{
-					Children = {
+					Children =
+					{
 						new Label { Text = "This is Page 3" },
 						button
 					}
@@ -127,11 +131,11 @@ namespace Xamarin.Forms.Controls.Issues
 			}
 		}
 
-		protected override void Init ()
+		protected override void Init()
 		{
-			var page1 = new Page1 ();
+			var page1 = new Page1();
 
-			PushAsync (page1);
+			PushAsync(page1);
 		}
 
 #if UITEST

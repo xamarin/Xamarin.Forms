@@ -15,7 +15,8 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 44453, "[UWP] ToolbarItem Text hard to see when BarTextColor is light", PlatformAffected.WinRT)]
+	[Issue(IssueTracker.Bugzilla, 44453, "[UWP] ToolbarItem Text hard to see when BarTextColor is light",
+		PlatformAffected.WinRT)]
 	public class Bugzilla44453 : TestMasterDetailPage
 	{
 		protected override void Init()
@@ -37,7 +38,7 @@ namespace Xamarin.Forms.Controls.Issues
 					}
 				}
 			};
-			
+
 			MasterBehavior = MasterBehavior.Popover;
 			Master = new ContentPage
 			{
@@ -49,7 +50,8 @@ namespace Xamarin.Forms.Controls.Issues
 				BarTextColor = Color.White
 			};
 
-			Detail.ToolbarItems.Add(new ToolbarItem("Test Secondary Item", null, delegate { }, ToolbarItemOrder.Secondary));
+			Detail.ToolbarItems.Add(new ToolbarItem("Test Secondary Item", null, delegate { },
+				ToolbarItemOrder.Secondary));
 		}
 	}
 }

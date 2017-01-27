@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -9,7 +8,9 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 47971, "UWP doesn't display list items when binding a CommandParameter to BindingContext in a DataTemplate and including a CanExecute method", PlatformAffected.WinRT)]
+	[Issue(IssueTracker.Bugzilla, 47971,
+		"UWP doesn't display list items when binding a CommandParameter to BindingContext in a DataTemplate and including a CanExecute method",
+		PlatformAffected.WinRT)]
 	public class Bugzilla47971 : TestContentPage
 	{
 		protected override void Init()
@@ -33,7 +34,11 @@ namespace Xamarin.Forms.Controls.Issues
 			});
 
 			var layout = new StackLayout { Spacing = 10 };
-			var instructions = new Label {Text = "The ListView below should display three items (Item1, Item2, and Item3). If it does not, this test has failed." };
+			var instructions = new Label
+			{
+				Text =
+					"The ListView below should display three items (Item1, Item2, and Item3). If it does not, this test has failed."
+			};
 
 			layout.Children.Add(instructions);
 			layout.Children.Add(lv);
@@ -44,9 +49,20 @@ namespace Xamarin.Forms.Controls.Issues
 		[Preserve(AllMembers = true)]
 		internal class _47971ViewModel : INotifyPropertyChanged
 		{
-			_47971ItemModel _selectedModel;
-			Command<_47971ItemModel> _modelSelectedCommand;
 			ObservableCollection<_47971ItemModel> _models;
+			Command<_47971ItemModel> _modelSelectedCommand;
+			_47971ItemModel _selectedModel;
+
+			public _47971ViewModel()
+			{
+				_models = new ObservableCollection<_47971ItemModel>(
+					new List<_47971ItemModel>()
+					{
+						new _47971ItemModel() { Name = "Item 1" },
+						new _47971ItemModel() { Name = "Item 2" },
+						new _47971ItemModel() { Name = "Item 3" }
+					});
+			}
 
 			public ObservableCollection<_47971ItemModel> Models
 			{
@@ -58,6 +74,11 @@ namespace Xamarin.Forms.Controls.Issues
 				}
 			}
 
+			public Command<_47971ItemModel> ModelSelectedCommand => _modelSelectedCommand ??
+																	(_modelSelectedCommand =
+																		new Command<_47971ItemModel>(
+																			ModelSelectedCommandExecute, CanExecute));
+
 			public _47971ItemModel SelectedModel
 			{
 				get { return _selectedModel; }
@@ -68,8 +89,12 @@ namespace Xamarin.Forms.Controls.Issues
 				}
 			}
 
-			public Command<_47971ItemModel> ModelSelectedCommand => _modelSelectedCommand ??
-				(_modelSelectedCommand = new Command<_47971ItemModel>(ModelSelectedCommandExecute, CanExecute));
+			public event PropertyChangedEventHandler PropertyChanged;
+
+			protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+			{
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+			}
 
 			bool CanExecute(_47971ItemModel itemModel)
 			{
@@ -79,24 +104,6 @@ namespace Xamarin.Forms.Controls.Issues
 			void ModelSelectedCommandExecute(_47971ItemModel model)
 			{
 				System.Diagnostics.Debug.WriteLine(model.Name);
-			}
-
-			public _47971ViewModel()
-			{
-				_models = new ObservableCollection<_47971ItemModel>(
-					new List<_47971ItemModel>()
-					{
-						new _47971ItemModel() { Name = "Item 1"},
-						new _47971ItemModel() { Name = "Item 2"},
-						new _47971ItemModel() { Name = "Item 3"}
-					});
-			}
-
-			public event PropertyChangedEventHandler PropertyChanged;
-
-			protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-			{
-				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 			}
 		}
 

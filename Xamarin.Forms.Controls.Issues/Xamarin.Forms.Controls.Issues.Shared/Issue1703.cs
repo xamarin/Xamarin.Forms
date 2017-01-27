@@ -1,39 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls
 {
-	[Preserve (AllMembers=true)]
-	[Issue (IssueTracker.Github, 1703, "Memory leak when navigating a page off of a navigation stack", PlatformAffected.Android | PlatformAffected.iOS | PlatformAffected.WinPhone)]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 1703, "Memory leak when navigating a page off of a navigation stack",
+		PlatformAffected.Android | PlatformAffected.iOS | PlatformAffected.WinPhone)]
 	public class Issue1703 : NavigationPage
 	{
 		static List<WeakReference> s_pageRefs = new List<WeakReference>();
 
-		public Issue1703 ()
+		public Issue1703()
 		{
-			Navigation.PushAsync (GetMainPage ());
+			Navigation.PushAsync(GetMainPage());
 		}
 
 		public static Page GetMainPage()
 		{
 			return CreateWeakReferencedPage();
-		}
-
-		static Page CreateWeakReferencedPage()
-		{
-			GC.Collect();
-			var result = CreatePage();
-			s_pageRefs.Add(new WeakReference(result));
-
-			// Add a second unreferenced page to prove that the problem only exists
-			// when pages are actually navigated to/from
-			s_pageRefs.Add(new WeakReference(CreatePage()));
-			GC.Collect();
-			return result;
 		}
 
 		static Page CreatePage()
@@ -59,6 +46,18 @@ namespace Xamarin.Forms.Controls
 			page.Content = contents;
 			return page;
 		}
+
+		static Page CreateWeakReferencedPage()
+		{
+			GC.Collect();
+			Page result = CreatePage();
+			s_pageRefs.Add(new WeakReference(result));
+
+			// Add a second unreferenced page to prove that the problem only exists
+			// when pages are actually navigated to/from
+			s_pageRefs.Add(new WeakReference(CreatePage()));
+			GC.Collect();
+			return result;
+		}
 	}
 }
-

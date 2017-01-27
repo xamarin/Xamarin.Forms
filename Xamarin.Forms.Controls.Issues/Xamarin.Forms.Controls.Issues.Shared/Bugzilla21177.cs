@@ -1,10 +1,7 @@
 ﻿using System;
-
 using Xamarin.Forms.CustomAttributes;
-using System.Collections;
-using System.Linq;
-using System.Collections.Generic;
 using Xamarin.Forms.Internals;
+
 #if UITEST
 using Xamarin.UITest.iOS;
 using Xamarin.UITest;
@@ -19,8 +16,6 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		public class CollectionView : View
 		{
-			public event EventHandler<int> ItemSelected;
-
 			public void InvokeItemSelected(int index)
 			{
 				if (ItemSelected != null)
@@ -28,6 +23,8 @@ namespace Xamarin.Forms.Controls.Issues
 					ItemSelected.Invoke(this, index);
 				}
 			}
+
+			public event EventHandler<int> ItemSelected;
 		}
 
 		protected override void Init()

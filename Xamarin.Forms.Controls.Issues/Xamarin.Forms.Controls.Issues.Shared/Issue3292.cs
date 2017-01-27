@@ -1,9 +1,7 @@
-﻿using System;
-
-using Xamarin.Forms.CustomAttributes;
-using System.Threading.Tasks;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 #if UITEST
@@ -13,28 +11,28 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Github, 3292, "TableSection.Title property binding fails in XAML")]
-	public class Issue3292 : TestContentPage 
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 3292, "TableSection.Title property binding fails in XAML")]
+	public class Issue3292 : TestContentPage
 	{
-		protected override void Init ()
+		protected override void Init()
 		{
-			var vm = new SomePageViewModel ();
+			var vm = new SomePageViewModel();
 			BindingContext = vm;
 
-			var tableview = new TableView ();
-			var section = new TableSection ();
-			section.SetBinding (TableSectionBase.TitleProperty, new Binding ("SectionTitle"));
-			var root = new TableRoot ();
-			root.Add (section);
+			var tableview = new TableView();
+			var section = new TableSection();
+			section.SetBinding(TableSectionBase.TitleProperty, new Binding("SectionTitle"));
+			var root = new TableRoot();
+			root.Add(section);
 			tableview.Root = root;
 
 			Content = tableview;
 
-			vm.Init ();
+			vm.Init();
 		}
 
-		[Preserve (AllMembers = true)]
+		[Preserve(AllMembers = true)]
 		public class SomePageViewModel : INotifyPropertyChanged
 		{
 			string _sectionTitle;
@@ -42,16 +40,6 @@ namespace Xamarin.Forms.Controls.Issues
 			public SomePageViewModel()
 			{
 				SectionTitle = "Hello World";
-			}
-
-			public void Init()
-			{
-				Task.Delay(1000).ContinueWith(t =>
-					{
-						Device.BeginInvokeOnMainThread(() => {
-							SectionTitle = "Hello World Changed";
-						});
-					});
 			}
 
 			public string SectionTitle
@@ -66,9 +54,16 @@ namespace Xamarin.Forms.Controls.Issues
 
 			public event PropertyChangedEventHandler PropertyChanged;
 
+			public void Init()
+			{
+				Task.Delay(1000)
+					.ContinueWith(
+						t => { Device.BeginInvokeOnMainThread(() => { SectionTitle = "Hello World Changed"; }); });
+			}
+
 			protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
 			{
-				var handler = PropertyChanged;
+				PropertyChangedEventHandler handler = PropertyChanged;
 				if (handler != null) handler(this, new PropertyChangedEventArgs(propertyName));
 			}
 		}

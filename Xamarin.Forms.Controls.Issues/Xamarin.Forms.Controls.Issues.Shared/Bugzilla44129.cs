@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
@@ -22,7 +21,7 @@ namespace Xamarin.Forms.Controls.Issues
 			viewModels.Add("Second");
 			var template = new DataTemplate(() =>
 			{
-				ContentPage page = new ContentPage();
+				var page = new ContentPage();
 				var crashMe = new Button { Text = "Crash Me" };
 				crashMe.Clicked += (sender, args) =>
 				{
@@ -31,7 +30,7 @@ namespace Xamarin.Forms.Controls.Issues
 				};
 
 				page.Content = crashMe;
-				page.SetBinding(ContentPage.TitleProperty, ".");
+				page.SetBinding(TitleProperty, ".");
 
 				return page;
 			});

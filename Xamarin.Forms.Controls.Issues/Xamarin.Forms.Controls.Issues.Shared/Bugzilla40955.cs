@@ -7,7 +7,8 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 40955, "Memory leak with FormsAppCompatActivity and NavigationPage", PlatformAffected.Android)]
+	[Issue(IssueTracker.Bugzilla, 40955, "Memory leak with FormsAppCompatActivity and NavigationPage",
+		PlatformAffected.Android)]
 	public class Bugzilla40955 : TestMasterDetailPage
 	{
 		const string DestructorMessage = "NavigationPageEx Destructor called";
@@ -49,7 +50,11 @@ namespace Xamarin.Forms.Controls.Issues
 			public MasterPage()
 			{
 				Title = "Menu";
-				ListView = new ListView { VerticalOptions = LayoutOptions.FillAndExpand, SeparatorVisibility = SeparatorVisibility.None };
+				ListView = new ListView
+				{
+					VerticalOptions = LayoutOptions.FillAndExpand,
+					SeparatorVisibility = SeparatorVisibility.None
+				};
 
 				ListView.ItemTemplate = new DataTemplate(() =>
 				{
@@ -105,7 +110,10 @@ namespace Xamarin.Forms.Controls.Issues
 			public _409555_Page1()
 			{
 				Title = Page1Title;
-				Content = new StackLayout { Children = { new Label { Text = "Open the drawer menu and select Page2" } } };
+				Content = new StackLayout
+				{
+					Children = { new Label { Text = "Open the drawer menu and select Page2" } }
+				};
 			}
 		}
 
@@ -115,7 +123,10 @@ namespace Xamarin.Forms.Controls.Issues
 			public _409555_Page2()
 			{
 				Title = Page2Title;
-				Content = new StackLayout { Children = { new Label { Text = "Open the drawer menu and select Page3" } } };
+				Content = new StackLayout
+				{
+					Children = { new Label { Text = "Open the drawer menu and select Page3" } }
+				};
 			}
 		}
 
@@ -125,7 +136,17 @@ namespace Xamarin.Forms.Controls.Issues
 			public _409555_Page3()
 			{
 				Title = Page3Title;
-				Content = new StackLayout { Children = { new Label { Text = $"The console should have displayed the text '{DestructorMessage}' at least once. If not, this test has failed." } } };
+				Content = new StackLayout
+				{
+					Children =
+					{
+						new Label
+						{
+							Text =
+								$"The console should have displayed the text '{DestructorMessage}' at least once. If not, this test has failed."
+						}
+					}
+				};
 			}
 
 			protected override void OnAppearing()

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.ObjectModel;
-using System.Threading;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
@@ -13,8 +12,9 @@ namespace Xamarin.Forms.Controls
 {
 	public class GenericValueConverter : IValueConverter
 	{
-		Func<object, object> _convert;
 		Func<object, object> _back;
+		Func<object, object> _convert;
+
 		public GenericValueConverter(Func<object, object> convert, Func<object, object> back = null)
 		{
 			_convert = convert;
@@ -26,7 +26,8 @@ namespace Xamarin.Forms.Controls
 			return _convert(value);
 		}
 
-		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		public object ConvertBack(object value, Type targetType, object parameter,
+			System.Globalization.CultureInfo culture)
 		{
 			return _back(value);
 		}
@@ -35,99 +36,104 @@ namespace Xamarin.Forms.Controls
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve (AllMembers = true)]
+	[Preserve(AllMembers = true)]
 	public class Expense
 	{
-		public string Name { get; private set; }
-		public decimal Amount { get; private set; }
-
-		public Expense (string name, decimal amount)
+		public Expense(string name, decimal amount)
 		{
 			Name = name;
 			Amount = amount;
 		}
+
+		public decimal Amount { get; private set; }
+
+		public string Name { get; private set; }
 	}
 
-	[Preserve (AllMembers = true)]
+	[Preserve(AllMembers = true)]
 	public class ExpenseListViewCell : ViewCell
 	{
-		public ExpenseListViewCell ()
+		public ExpenseListViewCell()
 		{
-			var expenseNameLabel = new Label ();
-			expenseNameLabel.SetBinding (Label.TextProperty, "Name");
+			var expenseNameLabel = new Label();
+			expenseNameLabel.SetBinding(Label.TextProperty, "Name");
 
-			var expenseAmountLabel = new Label ();
-			var expenseAmountToStringConverter = new GenericValueConverter (obj => string.Format ("{0:C}", ((decimal)obj)));
-			expenseAmountLabel.SetBinding (Label.TextProperty, new Binding ("Amount", converter: expenseAmountToStringConverter));
+			var expenseAmountLabel = new Label();
+			var expenseAmountToStringConverter = new GenericValueConverter(obj => string.Format("{0:C}", (decimal)obj));
+			expenseAmountLabel.SetBinding(Label.TextProperty,
+				new Binding("Amount", converter: expenseAmountToStringConverter));
 
-			var layout = new StackLayout ();
+			var layout = new StackLayout();
 
-			layout.Children.Add (expenseNameLabel);
-			layout.Children.Add (expenseAmountLabel);
+			layout.Children.Add(expenseNameLabel);
+			layout.Children.Add(expenseAmountLabel);
 
 			View = layout;
 		}
 
-		protected override void OnBindingContextChanged ()
+		protected override void OnBindingContextChanged()
 		{
 			// Fixme : this is happening because the View.Parent is getting 
 			// set after the Cell gets the binding context set on it. Then it is inheriting
 			// the parents binding context.
 			View.BindingContext = BindingContext;
-			base.OnBindingContextChanged ();
+			base.OnBindingContextChanged();
 		}
 	}
 
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.None, 0, "ListView ViewCell binding", PlatformAffected.All)]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.None, 0, "ListView ViewCell binding", PlatformAffected.All)]
 	public class ListViewViewCellBinding : TestContentPage
 	{
-
 		// Binding issue with view cells
 		public ObservableCollection<Expense> Expenses;
 
-		protected override void Init ()
+		protected override void Init()
 		{
 			//BindingContext = this;
 
-			Expenses = new ObservableCollection<Expense> {
-				new Expense ("1", 100.0m),
-				new Expense ("2", 200.0m),
-				new Expense ("3", 300.0m)
+			Expenses = new ObservableCollection<Expense>
+			{
+				new Expense("1", 100.0m),
+				new Expense("2", 200.0m),
+				new Expense("3", 300.0m)
 			};
 
-			var listView = new ListView ();
+			var listView = new ListView();
 
 			listView.ItemsSource = Expenses;
-			listView.ItemTemplate = new DataTemplate (typeof (ExpenseListViewCell));
+			listView.ItemTemplate = new DataTemplate(typeof(ExpenseListViewCell));
 
-			var layout = new StackLayout ();
-			int numberAdded = 3;
+			var layout = new StackLayout();
+			var numberAdded = 3;
 
-			var label = new Label {
+			var label = new Label
+			{
 				Text = numberAdded.ToString()
 			};
 
 			var removeBtn = new Button { Text = "Remove" };
-			removeBtn.Clicked += (s, e) => {
-				if (numberAdded > 0) {
+			removeBtn.Clicked += (s, e) =>
+			{
+				if (numberAdded > 0)
+				{
 					numberAdded--;
-					Expenses.RemoveAt (0);
-					label.Text = numberAdded.ToString ();
+					Expenses.RemoveAt(0);
+					label.Text = numberAdded.ToString();
 				}
 			};
 			var addBtn = new Button { Text = "Add" };
-			addBtn.Clicked += (s, e) => {
-				Expenses.Add (new Expense ("4", 400.0m));
+			addBtn.Clicked += (s, e) =>
+			{
+				Expenses.Add(new Expense("4", 400.0m));
 				numberAdded++;
-				label.Text = numberAdded.ToString ();
+				label.Text = numberAdded.ToString();
 			};
 
-			
-			layout.Children.Add (label);
-			layout.Children.Add (removeBtn);
-			layout.Children.Add (addBtn);
-			layout.Children.Add (listView);
+			layout.Children.Add(label);
+			layout.Children.Add(removeBtn);
+			layout.Children.Add(addBtn);
+			layout.Children.Add(listView);
 
 			Content = layout;
 		}
@@ -166,6 +172,5 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Screenshot ("List item removed");
 		}
 #endif
-
 	}
 }

@@ -4,7 +4,8 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms.Controls
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.None, 0, "[UWP] Modal NavigationPage ignores BarTextColor settings for icons", PlatformAffected.WinRT)]
+	[Issue(IssueTracker.None, 0, "[UWP] Modal NavigationPage ignores BarTextColor settings for icons",
+		PlatformAffected.WinRT)]
 	public class AppBarIconColors : TestNavigationPage
 	{
 		protected override void Init()
@@ -13,17 +14,24 @@ namespace Xamarin.Forms.Controls
 
 			var button = new Button { Text = "Push Modal Page" };
 
-			firstPage.Content = new StackLayout { Children = { new Label { Text = "Click the 'push modal page' button" }, button } };
+			firstPage.Content = new StackLayout
+			{
+				Children = { new Label { Text = "Click the 'push modal page' button" }, button }
+			};
 
 			var otherButton = new Button() { Text = "back" };
 			otherButton.Clicked += (sender, args) => Navigation.PopModalAsync();
 
-			var page = new ContentPage {
+			var page = new ContentPage
+			{
 				Title = "Page Two",
 				Content =
-					new StackLayout {
-						Children = {
-							new Label {
+					new StackLayout
+					{
+						Children =
+						{
+							new Label
+							{
 								Text =
 									"This is a modal page. The 'X' icon, the 'Done' label below it, and the '...' in the toolbar should all be white on UWP. If any of them are not white, this test has failed."
 							},

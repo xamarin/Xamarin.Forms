@@ -8,7 +8,6 @@ using Xamarin.UITest;
 using NUnit.Framework;
 #endif
 
-
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
@@ -45,9 +44,12 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			var result = new List<Task>();
 
-			for (int n = 0; n < 1000; n++)
+			for (var n = 0; n < 1000; n++)
 			{
-				result.Add(Task.Run(() => { var t = Device.IsInvokeRequired; } ));
+				result.Add(Task.Run(() =>
+				{
+					bool t = Device.IsInvokeRequired;
+				}));
 			}
 
 			return result;
@@ -61,6 +63,5 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement(q => q.Marked("successLabel"));
 		}
 #endif
-
 	}
 }

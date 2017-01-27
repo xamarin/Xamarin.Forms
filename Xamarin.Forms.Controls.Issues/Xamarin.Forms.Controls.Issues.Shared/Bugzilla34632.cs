@@ -10,56 +10,64 @@ using Xamarin.UITest.iOS;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Bugzilla, 34632, "Can't change IsPresented when setting SplitOnLandscape ")]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Bugzilla, 34632, "Can't change IsPresented when setting SplitOnLandscape ")]
 	public class Bugzilla34632 : TestMasterDetailPage
 	{
-		protected override void Init ()
+		protected override void Init()
 		{
 			if (Device.RuntimePlatform == Device.Windows)
 				MasterBehavior = MasterBehavior.Split;
 			else
 				MasterBehavior = MasterBehavior.SplitOnLandscape;
 
-			Master = new ContentPage { Title = "Main Page", 
-				Content = new Button { Text = "Master", AutomationId = "btnMaster", 
-					Command = new Command (() => {
+			Master = new ContentPage
+			{
+				Title = "Main Page",
+				Content = new Button
+				{
+					Text = "Master",
+					AutomationId = "btnMaster",
+					Command = new Command(() =>
+					{
 						//If we're in potrait toggle hide the menu on click
-						if (Width < Height || Device.Idiom == TargetIdiom.Phone) {
+						if (Width < Height || Device.Idiom == TargetIdiom.Phone)
+						{
 							IsPresented = false;
 						}
 					})
-				} 
+				}
 			};
 
-			Detail = new NavigationPage (new ModalRotationIssue ());
-			NavigationPage.SetHasBackButton (Detail, false);
+			Detail = new NavigationPage(new ModalRotationIssue());
+			NavigationPage.SetHasBackButton(Detail, false);
 		}
 
-		[Preserve (AllMembers = true)]
+		[Preserve(AllMembers = true)]
 		public class ModalRotationIssue : ContentPage
 		{
-			public ModalRotationIssue ()
+			public ModalRotationIssue()
 			{
-				var btn = new Button { Text = "Open Modal", AutomationId = "btnModal"  };
+				var btn = new Button { Text = "Open Modal", AutomationId = "btnModal" };
 				btn.Clicked += OnButtonClicked;
 				Content = btn;
 			}
 
-			async void OnButtonClicked (object sender, EventArgs e)
+			async void OnButtonClicked(object sender, EventArgs e)
 			{
 				var testButton = new Button { Text = "Rotate Before Clicking", AutomationId = "btnDismissModal" };
-				testButton.Clicked += (async (snd, args) => await Navigation.PopModalAsync ());
+				testButton.Clicked += async (snd, args) => await Navigation.PopModalAsync();
 
-				var testModal = new ContentPage () {
+				var testModal = new ContentPage()
+				{
 					Content = testButton
 				};
 
-				await Navigation.PushModalAsync (testModal);
+				await Navigation.PushModalAsync(testModal);
 			}
 		}
 
-		#if UITEST
+#if UITEST
 		[Test]
 		public void Bugzilla34632Test ()
 		{

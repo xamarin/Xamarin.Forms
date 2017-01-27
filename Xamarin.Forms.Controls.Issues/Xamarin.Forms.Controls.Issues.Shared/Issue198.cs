@@ -8,47 +8,55 @@ using Xamarin.UITest;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve (AllMembers=true)]
-	[Issue (IssueTracker.Github, 198, "TabbedPage shouldn't proxy content of NavigationPage", PlatformAffected.iOS)]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 198, "TabbedPage shouldn't proxy content of NavigationPage", PlatformAffected.iOS)]
 	public class Issue198 : TestTabbedPage
 	{
-		protected override void Init ()
+		protected override void Init()
 		{
 			Title = "Tabbed Navigation Page";
 
-			var leavePageBtn = new Button {
+			var leavePageBtn = new Button
+			{
 				Text = "Leave"
 			};
 
 			// Should work as expected, however, causes NRE
-			leavePageBtn.Clicked += (s, e) => Navigation.PopModalAsync ();
+			leavePageBtn.Clicked += (s, e) => Navigation.PopModalAsync();
 
-			var navigationPageOne = new NavigationPage (new ContentPage {
+			var navigationPageOne = new NavigationPage(new ContentPage
+			{
 				Icon = "calculator.png",
 				Content = leavePageBtn
-			}) {
+			})
+			{
 				Title = "Page One",
 			};
-			var navigationPageTwo = new NavigationPage (new ContentPage {
+			var navigationPageTwo = new NavigationPage(new ContentPage
+			{
 				Icon = "calculator.png",
-			}) {
+			})
+			{
 				Title = "Page Two",
 			};
-			var navigationPageThree = new NavigationPage (new ContentPage {
+			var navigationPageThree = new NavigationPage(new ContentPage
+			{
 				Title = "No Crash",
-			}) {
+			})
+			{
 				Title = "Page Three",
 				Icon = "calculator.png"
 			};
-			var navigationPageFour = new NavigationPage (new ContentPage ()) {
+			var navigationPageFour = new NavigationPage(new ContentPage())
+			{
 				Title = "Page Four",
 				Icon = "calculator.png"
 			};
 
-			Children.Add (navigationPageOne);
-			Children.Add (navigationPageTwo);
-			Children.Add (navigationPageThree);
-			Children.Add (navigationPageFour);
+			Children.Add(navigationPageOne);
+			Children.Add(navigationPageTwo);
+			Children.Add(navigationPageThree);
+			Children.Add(navigationPageFour);
 		}
 
 #if UITEST
@@ -78,6 +86,5 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Screenshot ("App did not crash");
 		}
 #endif
-
 	}
 }

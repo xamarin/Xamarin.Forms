@@ -1,5 +1,4 @@
-﻿using System;
-using Xamarin.Forms.CustomAttributes;
+﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 #if UITEST
@@ -11,7 +10,8 @@ using Xamarin.UITest;
 namespace Xamarin.Forms.Controls.TestCasesPages
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 33248, "Entry.Completed calling Editor.Focus() inserts new line to the focused Editor in iOS", PlatformAffected.iOS)]
+	[Issue(IssueTracker.Bugzilla, 33248,
+		"Entry.Completed calling Editor.Focus() inserts new line to the focused Editor in iOS", PlatformAffected.iOS)]
 	public class Bugzilla33248 : TestContentPage
 	{
 		protected override void Init()

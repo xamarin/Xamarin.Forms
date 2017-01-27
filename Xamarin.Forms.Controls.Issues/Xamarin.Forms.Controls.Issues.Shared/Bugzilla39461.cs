@@ -1,5 +1,5 @@
-﻿using Xamarin.Forms.CustomAttributes;
-using System.Text;
+﻿using System.Text;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 #if UITEST
@@ -15,13 +15,16 @@ namespace Xamarin.Forms.Controls
 	{
 		protected override void Init()
 		{
-			StringBuilder text = new StringBuilder();
-			for (int i = 0; i < 10000; i++)
+			var text = new StringBuilder();
+			for (var i = 0; i < 10000; i++)
 			{
 				text.Append("text ");
 			}
 
-			var top = new ScrollView { Content = new Label { FontSize = 12, TextColor = Color.Red, Text = text.ToString() } };
+			var top = new ScrollView
+			{
+				Content = new Label { FontSize = 12, TextColor = Color.Red, Text = text.ToString() }
+			};
 			AbsoluteLayout.SetLayoutFlags(top, AbsoluteLayoutFlags.All);
 			AbsoluteLayout.SetLayoutBounds(top, new Rectangle(0, 0, 1, 0.5));
 

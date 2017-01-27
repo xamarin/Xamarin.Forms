@@ -1,5 +1,4 @@
-﻿using System;
-using Xamarin.Forms.CustomAttributes;
+﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 #if UITEST
@@ -14,45 +13,40 @@ namespace Xamarin.Forms.Controls.Issues
 	[Category(UITestCategories.Cells)]
 #endif
 
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Bugzilla, 32040, "EntryCell.Tapped or SwitchCell.Tapped does not fire when within a TableView ")]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Bugzilla, 32040, "EntryCell.Tapped or SwitchCell.Tapped does not fire when within a TableView ")
+	]
 	public class Bugzilla32040 : TestContentPage // or TestMasterDetailPage, etc ...
 	{
-		protected override void Init ()
+		protected override void Init()
 		{
 			var switchCell = new SwitchCell { Text = "blahblah" };
-			switchCell.Tapped += (s, e) =>
-			{
-				switchCell.Text = "Tapped";
-			};
-			switchCell.OnChanged += (sender, e) => {
-				switchCell.Text = "Switched";
-			};
+			switchCell.Tapped += (s, e) => { switchCell.Text = "Tapped"; };
+			switchCell.OnChanged += (sender, e) => { switchCell.Text = "Switched"; };
 
 			var entryCell = new EntryCell { Text = "yaddayadda" };
 #pragma warning disable 618
 			entryCell.XAlign = TextAlignment.End;
 #pragma warning restore 618
 			entryCell.Label = "Click Here";
-			entryCell.Tapped += (s, e) =>
-			{
-				entryCell.Text = "Tapped";
-			};
-			entryCell.Completed += (sender, e) => {
-				entryCell.Text = "Completed";
-			};
+			entryCell.Tapped += (s, e) => { entryCell.Text = "Tapped"; };
+			entryCell.Completed += (sender, e) => { entryCell.Text = "Completed"; };
 
 			// The root page of your application
-			Content = new TableView {
+			Content = new TableView
+			{
 				Intent = TableIntent.Form,
-				Root = new TableRoot ("Table Title") {
-					new TableSection ("Section 1 Title") {
+				Root = new TableRoot("Table Title")
+				{
+					new TableSection("Section 1 Title")
+					{
 						switchCell,
 						entryCell
 					}
 				}
 			};
 		}
+
 #if UITEST
 		[Test]
 		public void TappedWorksForEntryAndSwithCellTest ()

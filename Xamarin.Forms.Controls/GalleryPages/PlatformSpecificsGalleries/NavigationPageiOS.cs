@@ -34,17 +34,25 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformSpecificsGalleries
 				{
 					VerticalOptions = LayoutOptions.Center,
 					HorizontalOptions = LayoutOptions.Center,
-					Children = { translucentToggleButton, restoreButton, togglePrefersStatusBarHiddenButton, togglePreferredStatusBarUpdateAnimationButton}
+					Children =
+					{
+						translucentToggleButton,
+						restoreButton,
+						togglePrefersStatusBarHiddenButton,
+						togglePreferredStatusBarUpdateAnimationButton
+					}
 				}
 			};
 
 			var navPage = new NavigationPageiOS(content, restore);
 
-			translucentToggleButton.Clicked += (sender, args) => navPage.On<iOS>().SetIsNavigationBarTranslucent(!navPage.On<iOS>().IsNavigationBarTranslucent());
+			translucentToggleButton.Clicked +=
+				(sender, args) =>
+					navPage.On<iOS>().SetIsNavigationBarTranslucent(!navPage.On<iOS>().IsNavigationBarTranslucent());
 
 			togglePrefersStatusBarHiddenButton.Command = new Command(() =>
 			{
-				var mode = navPage.CurrentPage.On<iOS>().PrefersStatusBarHidden();
+				StatusBarHiddenMode mode = navPage.CurrentPage.On<iOS>().PrefersStatusBarHidden();
 				if (mode == StatusBarHiddenMode.Default)
 					navPage.CurrentPage.On<iOS>().SetPrefersStatusBarHidden(StatusBarHiddenMode.True);
 				else if (mode == StatusBarHiddenMode.True)
@@ -55,7 +63,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformSpecificsGalleries
 
 			togglePreferredStatusBarUpdateAnimationButton.Command = new Command(() =>
 			{
-				var animation = navPage.On<iOS>().PreferredStatusBarUpdateAnimation();
+				UIStatusBarAnimation animation = navPage.On<iOS>().PreferredStatusBarUpdateAnimation();
 				if (animation == UIStatusBarAnimation.Fade)
 					navPage.On<iOS>().SetPreferredStatusBarUpdateAnimation(UIStatusBarAnimation.Slide);
 				else if (animation == UIStatusBarAnimation.Slide)

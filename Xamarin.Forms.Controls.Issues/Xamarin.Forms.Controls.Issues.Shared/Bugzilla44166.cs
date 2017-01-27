@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Threading;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-using System.Threading;
-using System.Diagnostics;
 
 #if UITEST
 using Xamarin.UITest;
@@ -122,7 +121,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			Master = new _44166Master();
 			Detail = new _44166Detail();
-        }
+		}
 
 		~_44166MDP()
 		{
@@ -142,7 +141,7 @@ namespace Xamarin.Forms.Controls.Issues
 			Debug.WriteLine($"++++++++ {nameof(_44166Master)} constructor, {Counter} allocated");
 
 			Title = "Master";
-			var goButton = new Button { Text = "Return", AutomationId = "Return"};
+			var goButton = new Button { Text = "Return", AutomationId = "Return" };
 			goButton.Clicked += (sender, args) => Application.Current.MainPage = new Bugzilla44166();
 
 			Content = new StackLayout
@@ -184,7 +183,7 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		public static int Counter;
 
-		public _44166NavContent ()
+		public _44166NavContent()
 		{
 			Interlocked.Increment(ref Counter);
 			Debug.WriteLine($"++++++++ {nameof(_44166NavContent)} constructor, {Counter} allocated");
@@ -198,7 +197,7 @@ namespace Xamarin.Forms.Controls.Issues
 			};
 		}
 
-		~_44166NavContent ()
+		~_44166NavContent()
 		{
 			Interlocked.Decrement(ref Counter);
 			Debug.WriteLine($"-------- {nameof(_44166NavContent)} destructor, {Counter} allocated");

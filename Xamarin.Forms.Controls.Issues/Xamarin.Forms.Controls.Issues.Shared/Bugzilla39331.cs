@@ -14,49 +14,53 @@ namespace Xamarin.Forms.Controls.Issues
 	[Category(UITestCategories.BoxView)]
 #endif
 
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Bugzilla, 39331, "[Android] BoxView Is InputTransparent Even When Set to False")]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Bugzilla, 39331, "[Android] BoxView Is InputTransparent Even When Set to False")]
 	public class Bugzilla39331 : TestContentPage
 	{
 		View _busyBackground;
 		Button _btnLogin;
 
-		protected override void Init ()
+		protected override void Init()
 		{
-			AbsoluteLayout layout = new AbsoluteLayout {
+			var layout = new AbsoluteLayout
+			{
 				HorizontalOptions = LayoutOptions.FillAndExpand,
 				VerticalOptions = LayoutOptions.FillAndExpand,
 			};
 
-			BackgroundColor = Color.FromUint (0xFFDBDBDB);
+			BackgroundColor = Color.FromUint(0xFFDBDBDB);
 
-			_btnLogin = new Button {
+			_btnLogin = new Button
+			{
 				HorizontalOptions = LayoutOptions.FillAndExpand,
-
 				Text = "Press me",
-				BackgroundColor = Color.FromUint (0xFF6E932D),
+				BackgroundColor = Color.FromUint(0xFF6E932D),
 				TextColor = Color.White,
 			};
 			_btnLogin.Clicked += BtnLogin_Clicked;
-			layout.Children.Add (_btnLogin, new Rectangle (0.5f, 0.5f, 0.25f, 0.25f), AbsoluteLayoutFlags.All);
+			layout.Children.Add(_btnLogin, new Rectangle(0.5f, 0.5f, 0.25f, 0.25f), AbsoluteLayoutFlags.All);
 
-			_busyBackground = new BoxView {
-				BackgroundColor = new Color (0, 0, 0, 0.5f),
+			_busyBackground = new BoxView
+			{
+				BackgroundColor = new Color(0, 0, 0, 0.5f),
 				IsVisible = false,
 				InputTransparent = false
 			};
-			layout.Children.Add (_busyBackground, new Rectangle (0, 0, 1, 1), AbsoluteLayoutFlags.SizeProportional);
+			layout.Children.Add(_busyBackground, new Rectangle(0, 0, 1, 1), AbsoluteLayoutFlags.SizeProportional);
 
 			Content = layout;
 		}
 
-		void BtnLogin_Clicked (object sender, EventArgs e)
+		void BtnLogin_Clicked(object sender, EventArgs e)
 		{
-			
-			if (!_busyBackground.IsVisible) {
+			if (!_busyBackground.IsVisible)
+			{
 				_btnLogin.Text = "Blocked?";
 				_busyBackground.IsVisible = true;
-			} else {
+			}
+			else
+			{
 				_btnLogin.Text = "Guess Not";
 				_busyBackground.IsVisible = false;
 			}

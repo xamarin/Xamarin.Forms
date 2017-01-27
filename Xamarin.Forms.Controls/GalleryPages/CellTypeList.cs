@@ -1,64 +1,64 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
-using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls
 {
 	internal class CellTypesListPage : ContentPage
 	{
-		public CellTypesListPage ()
+		public CellTypesListPage()
 		{
-			Content = new CellTypeList ();
+			Content = new CellTypeList();
 		}
 	}
 
-	[Preserve (AllMembers = true)]
+	[Preserve(AllMembers = true)]
 	public class CellNavigation
 	{
-		public string CellType { get; set; }
-		public ContentPage Page { get; set; }
-
-		public CellNavigation (string type, ContentPage page)
+		public CellNavigation(string type, ContentPage page)
 		{
 			CellType = type;
 			Page = page;
 		}
+
+		public string CellType { get; set; }
+
+		public ContentPage Page { get; set; }
 	}
 
 	public class CellTypeList : ListView
 	{
 		// TODO Add gallerys for ViewCell, ListView and TableView
-		public CellTypeList ()
+		public CellTypeList()
 		{
-			var itemList = new List<CellNavigation> {
-				new CellNavigation ("TextCell List", new TextCellListPage ()),
-				new CellNavigation ("TextCell Table", new TextCellTablePage ()),
-				new CellNavigation ("ImageCell List", new ImageCellListPage ()),
-				new CellNavigation ("ImageCell Url List", new UrlImageCellListPage()),
-				new CellNavigation ("ImageCell Table", new ImageCellTablePage ()),
-				new CellNavigation ("SwitchCell List", new SwitchCellListPage ()),
-				new CellNavigation ("SwitchCell Table", new SwitchCellTablePage ()),
-				new CellNavigation ("EntryCell List", new EntryCellListPage ()),
-				new CellNavigation ("EntryCell Table", new EntryCellTablePage ()),
-				new CellNavigation ("ViewCell Image url table", new UrlImageViewCellListPage())
+			var itemList = new List<CellNavigation>
+			{
+				new CellNavigation("TextCell List", new TextCellListPage()),
+				new CellNavigation("TextCell Table", new TextCellTablePage()),
+				new CellNavigation("ImageCell List", new ImageCellListPage()),
+				new CellNavigation("ImageCell Url List", new UrlImageCellListPage()),
+				new CellNavigation("ImageCell Table", new ImageCellTablePage()),
+				new CellNavigation("SwitchCell List", new SwitchCellListPage()),
+				new CellNavigation("SwitchCell Table", new SwitchCellTablePage()),
+				new CellNavigation("EntryCell List", new EntryCellListPage()),
+				new CellNavigation("EntryCell Table", new EntryCellTablePage()),
+				new CellNavigation("ViewCell Image url table", new UrlImageViewCellListPage())
 			};
-			
+
 			ItemsSource = itemList;
 
-			var template = new DataTemplate (typeof (TextCell));
-			template.SetBinding (TextCell.TextProperty, new Binding ("CellType"));
+			var template = new DataTemplate(typeof(TextCell));
+			template.SetBinding(TextCell.TextProperty, new Binding("CellType"));
 
 			ItemTemplate = template;
-			ItemSelected += (s, e) => {
+			ItemSelected += (s, e) =>
+			{
 				if (SelectedItem == null)
 					return;
 
-				var cellNav = (CellNavigation) e.SelectedItem;
-				Navigation.PushAsync (cellNav.Page);
+				var cellNav = (CellNavigation)e.SelectedItem;
+				Navigation.PushAsync(cellNav.Page);
 				SelectedItem = null;
 			};
-		}		
+		}
 	}
 }

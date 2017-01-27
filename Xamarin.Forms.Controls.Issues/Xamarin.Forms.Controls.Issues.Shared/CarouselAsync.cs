@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
@@ -12,41 +10,52 @@ using Xamarin.UITest;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve (AllMembers=true)]
-	[Issue (IssueTracker.None, 0, "Carousel Async Add Page Issue", PlatformAffected.All, NavigationBehavior.PushModalAsync)]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.None, 0, "Carousel Async Add Page Issue", PlatformAffected.All,
+		NavigationBehavior.PushModalAsync)]
 	public class CarouselAsync : TestCarouselPage
 	{
-		protected override void Init ()
+		protected override void Init()
 		{
-			Children.Add (new ContentPage {
+			Children.Add(new ContentPage
+			{
 				BackgroundColor = Color.Red,
-				Content = new Label {
+				Content = new Label
+				{
 					Text = "Page One"
 				}
 			});
-			Children.Add (new ContentPage {
+			Children.Add(new ContentPage
+			{
 				BackgroundColor = Color.Green,
-				Content = new Label {
+				Content = new Label
+				{
 					Text = "Page Two"
 				}
 			});
-			Update (this);
+			Update(this);
 		}
 
-		static void Update (CarouselPage page)
+		static void Update(CarouselPage page)
 		{
-			Device.StartTimer (TimeSpan.FromSeconds (1), () => {
-				page.Children.Remove (page.Children.Skip (1).First () as ContentPage);
-				Device.StartTimer (TimeSpan.FromSeconds (1), () => {
-					page.Children.Add (new ContentPage { 
+			Device.StartTimer(TimeSpan.FromSeconds(1), () =>
+			{
+				page.Children.Remove(page.Children.Skip(1).First() as ContentPage);
+				Device.StartTimer(TimeSpan.FromSeconds(1), () =>
+				{
+					page.Children.Add(new ContentPage
+					{
 						BackgroundColor = Color.Blue,
-						Content = new Label {
+						Content = new Label
+						{
 							Text = "Page Two - Added"
 						}
 					});
-					page.Children.Add (new ContentPage { 
+					page.Children.Add(new ContentPage
+					{
 						BackgroundColor = Color.Gray,
-						Content = new Label {
+						Content = new Label
+						{
 							Text = "Page Three - Added"
 						}
 					});

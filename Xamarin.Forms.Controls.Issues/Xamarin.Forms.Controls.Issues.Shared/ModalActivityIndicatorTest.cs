@@ -2,38 +2,37 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Xamarin.Forms.CustomAttributes;
-using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls
 {
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.None, 0, "Activity Indicator Does Not Show when set to default color")]
-	public class ModalActivityIndicatorTest : TestContentPage 
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.None, 0, "Activity Indicator Does Not Show when set to default color")]
+	public class ModalActivityIndicatorTest : TestContentPage
 	{
-		protected override void Init ()
+		protected override void Init()
 		{
-			var vm = new ModalActivityIndicatorModel () { IsBusy = false, BusyText = "Not busy" };
+			var vm = new ModalActivityIndicatorModel() { IsBusy = false, BusyText = "Not busy" };
 
-	 		var button = new Button () { Text = "Make Busy" };
-			var colorToggle = new Button() {Text = "Toggle Activity Indicator Color" };
+			var button = new Button() { Text = "Make Busy" };
+			var colorToggle = new Button() { Text = "Toggle Activity Indicator Color" };
 
-			button.Clicked += async (sender, args) => {
+			button.Clicked += async (sender, args) =>
+			{
 				vm.IsBusy = true;
 				vm.BusyText = "Busy";
-				await Task.Delay (1500);
+				await Task.Delay(1500);
 				vm.IsBusy = false;
 				vm.BusyText = "Not Busy";
 			};
-			
+
 			var activityIndicator = new ModalActivityIndicator();
 			activityIndicator.BindingContext = vm;
 
-			colorToggle.Clicked += (sender, args) => {
-				vm.Color = vm.Color.IsDefault ? Color.Green : Color.Default;
-			};
+			colorToggle.Clicked += (sender, args) => { vm.Color = vm.Color.IsDefault ? Color.Green : Color.Default; };
 
-			Content = new StackLayout() {
+			Content = new StackLayout()
+			{
 				Children = { button, colorToggle, activityIndicator }
 			};
 		}
@@ -41,23 +40,13 @@ namespace Xamarin.Forms.Controls
 		[Preserve(AllMembers = true)]
 		public class ModalActivityIndicatorModel : INotifyPropertyChanged
 		{
-			bool _isBusy;
 			string _busyText;
 			Color _color;
+			bool _isBusy;
 
-			public ModalActivityIndicatorModel ()
+			public ModalActivityIndicatorModel()
 			{
 				_color = Color.Default;
-			}
-
-			public bool IsBusy
-			{
-				get { return _isBusy; }
-				set
-				{
-					_isBusy = value; 
-					OnPropertyChanged();
-				}
 			}
 
 			public string BusyText
@@ -75,16 +64,26 @@ namespace Xamarin.Forms.Controls
 				get { return _color; }
 				set
 				{
-					_color = value; 
+					_color = value;
+					OnPropertyChanged();
+				}
+			}
+
+			public bool IsBusy
+			{
+				get { return _isBusy; }
+				set
+				{
+					_isBusy = value;
 					OnPropertyChanged();
 				}
 			}
 
 			public event PropertyChangedEventHandler PropertyChanged;
 
-			protected virtual void OnPropertyChanged ([CallerMemberName] string propertyName = null)
+			protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
 			{
-				PropertyChanged?.Invoke (this, new PropertyChangedEventArgs (propertyName));
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 			}
 		}
 
@@ -102,13 +101,9 @@ namespace Xamarin.Forms.Controls
 						Opacity = .4,
 						BackgroundColor = Color.FromHex("#ccc")
 					},
-					widthConstraint: Forms.Constraint.RelativeToParent((parent) => {
-						return parent.Width;
-					}),
-					heightConstraint: Forms.Constraint.RelativeToParent((parent) => {
-						return parent.Height;
-					})
-					);
+					widthConstraint: Forms.Constraint.RelativeToParent((parent) => { return parent.Width; }),
+					heightConstraint: Forms.Constraint.RelativeToParent((parent) => { return parent.Height; })
+				);
 
 				var content = new StackLayout
 				{
@@ -117,7 +112,7 @@ namespace Xamarin.Forms.Controls
 					Padding = new Thickness(
 						horizontalSize: 10,
 						verticalSize: 20
-						)
+					)
 				};
 
 				var activityIndicator = new ActivityIndicator { IsRunning = true };
@@ -133,19 +128,12 @@ namespace Xamarin.Forms.Controls
 
 				Children.Add(
 					view: content,
-					widthConstraint: Forms.Constraint.RelativeToParent((parent) => {
-						return parent.Width / 2;
-					}),
-					heightConstraint: Forms.Constraint.RelativeToParent((parent) => {
-						return parent.Width / 3;
-					}),
-					xConstraint: Forms.Constraint.RelativeToParent((parent) => {
-						return parent.Width / 4;
-					}),
-					yConstraint: Forms.Constraint.RelativeToParent((parent) => {
-						return (parent.Height / 2) - (parent.Width / 6);
-					})
-					);
+					widthConstraint: Forms.Constraint.RelativeToParent((parent) => { return parent.Width / 2; }),
+					heightConstraint: Forms.Constraint.RelativeToParent((parent) => { return parent.Width / 3; }),
+					xConstraint: Forms.Constraint.RelativeToParent((parent) => { return parent.Width / 4; }),
+					yConstraint:
+					Forms.Constraint.RelativeToParent((parent) => { return parent.Height / 2 - parent.Width / 6; })
+				);
 			}
 		}
 	}

@@ -1,5 +1,4 @@
 ﻿using System;
-
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
@@ -22,17 +21,17 @@ namespace Xamarin.Forms.Controls
 			Content = new StackLayout
 			{
 				VerticalOptions = LayoutOptions.Center,
-				Children = {
-					new Label {
+				Children =
+				{
+					new Label
+					{
 						HorizontalTextAlignment = TextAlignment.Center,
 						Text = label
 					},
-					NewButton ()
+					NewButton()
 				}
 			};
 		}
-
-
 
 		private Button NewButton()
 		{
@@ -45,7 +44,7 @@ namespace Xamarin.Forms.Controls
 
 		private ContentPage NewPage()
 		{
-			var label = Navigation != null ? "Page " + (Navigation.NavigationStack.Count - 1) : "Root Page";
+			string label = Navigation != null ? "Page " + (Navigation.NavigationStack.Count - 1) : "Root Page";
 
 			return new ContentPage
 			{
@@ -53,13 +52,15 @@ namespace Xamarin.Forms.Controls
 				Content = new StackLayout
 				{
 					VerticalOptions = LayoutOptions.Center,
-					Children = {
-					new Label {
-						HorizontalTextAlignment = TextAlignment.Center,
-						Text = label
-					},
-					NewButton ()
-				}
+					Children =
+					{
+						new Label
+						{
+							HorizontalTextAlignment = TextAlignment.Center,
+							Text = label
+						},
+						NewButton()
+					}
 				}
 			};
 		}

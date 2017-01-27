@@ -1,7 +1,6 @@
-﻿using Xamarin.Forms.CustomAttributes;
+﻿using System;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-using System;
-using System.Threading.Tasks;
 
 #if UITEST
 using Xamarin.UITest;
@@ -20,15 +19,10 @@ namespace Xamarin.Forms.Controls
 
 			button.Clicked += (sender, args) =>
 			{
-				Device.BeginInvokeOnMainThread(new Action(async () =>
-				{
-					await DisplayAlert("First", "Text", "Cancel");
-				}));
+				Device.BeginInvokeOnMainThread(new Action(async () => { await DisplayAlert("First", "Text", "Cancel"); }));
 
-				Device.BeginInvokeOnMainThread(new Action(async () =>
-				{
-					await DisplayAlert("Second", "Text", "Cancel");
-				}));
+				Device.BeginInvokeOnMainThread(
+					new Action(async () => { await DisplayAlert("Second", "Text", "Cancel"); }));
 			};
 
 			Content = button;

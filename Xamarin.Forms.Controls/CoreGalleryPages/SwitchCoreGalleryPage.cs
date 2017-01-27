@@ -14,12 +14,13 @@ namespace Xamarin.Forms.Controls
 			get { return false; }
 		}
 
-		protected override void Build (StackLayout stackLayout)
+		protected override void Build(StackLayout stackLayout)
 		{
-			base.Build (stackLayout);
+			base.Build(stackLayout);
 
-			var isToggledContainer = new ValueViewContainer<Switch> (Test.Switch.IsToggled, new Switch (), "IsToggled", value => value.ToString ());
-			Add (isToggledContainer);
+			var isToggledContainer = new ValueViewContainer<Switch>(Test.Switch.IsToggled, new Switch(), "IsToggled",
+				value => value.ToString());
+			Add(isToggledContainer);
 		}
 	}
 }

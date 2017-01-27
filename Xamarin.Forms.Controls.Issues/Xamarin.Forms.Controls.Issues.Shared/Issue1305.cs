@@ -1,15 +1,14 @@
-﻿using System;
-
-using Xamarin.Forms.CustomAttributes;
+﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls
 {
-	[Preserve (AllMembers=true)]
-	[Issue (IssueTracker.Github, 1305, "ToolbarItems on NavigationPage broken", PlatformAffected.Android, NavigationBehavior.PushModalAsync)]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 1305, "ToolbarItems on NavigationPage broken", PlatformAffected.Android,
+		NavigationBehavior.PushModalAsync)]
 	public class Issue1305 : ContentPage
 	{
-		public Issue1305 ()
+		public Issue1305()
 		{
 			var settings = new ToolbarItem
 			{
@@ -25,7 +24,6 @@ namespace Xamarin.Forms.Controls
 			Title = "Test Page";
 
 			Icon = "Icon.png";
-
 		}
 
 		async void ShowSettingsPage()
@@ -34,11 +32,11 @@ namespace Xamarin.Forms.Controls
 		}
 	}
 
-	[Preserve (AllMembers=true)]
-	[Issue (IssueTracker.Github, 1305, "ToolbarItems on NavigationPage broken", PlatformAffected.Android)]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 1305, "ToolbarItems on NavigationPage broken", PlatformAffected.Android)]
 	public class Issue13052 : ContentPage
 	{
-		public Issue13052 ()
+		public Issue13052()
 		{
 			Content = new ContentView { Content = new Label { Text = "Settings..." } };
 
@@ -48,4 +46,3 @@ namespace Xamarin.Forms.Controls
 		}
 	}
 }
-

@@ -5,21 +5,25 @@ using Xamarin.Forms.Internals;
 using Xamarin.UITest;
 using NUnit.Framework;
 #endif
+
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Bugzilla, 40911, "NRE with Facebook Login", PlatformAffected.iOS)]
-	public class Bugzilla40911 : TestContentPage 
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Bugzilla, 40911, "NRE with Facebook Login", PlatformAffected.iOS)]
+	public class Bugzilla40911 : TestContentPage
 	{
 		public StackLayout Layout { get; private set; }
 
 		public const string ReadyToSetUp40911Test = "ReadyToSetUp40911Test";
 
-		protected override void Init ()
+		protected override void Init()
 		{
 			Layout = new StackLayout();
 
-			Layout.Children.Add(new Label{Text = "This is an iOS-specific issue. If you're on another platform, you can ignore this." });
+			Layout.Children.Add(new Label
+			{
+				Text = "This is an iOS-specific issue. If you're on another platform, you can ignore this."
+			});
 
 			Content = Layout;
 

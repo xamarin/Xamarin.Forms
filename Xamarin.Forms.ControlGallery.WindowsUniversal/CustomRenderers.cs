@@ -3,7 +3,10 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
 using Xamarin.Forms.Platform.UWP;
 
-[assembly: ExportRenderer(typeof(Xamarin.Forms.Controls.Bugzilla42602.TextBoxView), typeof(Xamarin.Forms.ControlGallery.WindowsUniversal.TextBoxViewRenderer))]
+[assembly:
+	ExportRenderer(typeof(Xamarin.Forms.Controls.Bugzilla42602.TextBoxView),
+		typeof(Xamarin.Forms.ControlGallery.WindowsUniversal.TextBoxViewRenderer))]
+
 namespace Xamarin.Forms.ControlGallery.WindowsUniversal
 {
 	public class TextBoxViewRenderer : BoxViewRenderer
@@ -35,14 +38,13 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal
 				Width = 100,
 				Height = 100,
 				Fill = new SolidColorBrush(Windows.UI.Color.FromArgb(255, 255, 0, 0)),
-
 			};
 			Canvas.SetLeft(ellipse, 0);
 			Canvas.SetTop(ellipse, 0);
 			m_Canvas.Children.Add(ellipse);
 
 			//text
-			TextBlock text = new TextBlock()
+			var text = new TextBlock()
 			{
 				FontSize = 50,
 				FontWeight = Windows.UI.Text.FontWeights.Normal,

@@ -1,12 +1,12 @@
 ﻿using System;
-using Xamarin.Forms.CustomAttributes;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Collections.Generic;
-
+using System.Linq.Expressions;
+using System.Threading.Tasks;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
+
 #if UITEST
 using Xamarin.Forms.Core.UITests;
 using Xamarin.UITest;
@@ -19,15 +19,15 @@ namespace Xamarin.Forms.Controls.Issues
 	[Category(UITestCategories.ListView)]
 #endif
 
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Bugzilla, 32148, " Pull to refresh hides the first item on a list view")]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Bugzilla, 32148, " Pull to refresh hides the first item on a list view")]
 	public class Bugzilla32148 : TestContentPage // or TestMasterDetailPage, etc ...
 	{
 		Button _searchBtn;
 		ListView _contactsListView;
 		ObservableCollection<Grouping1<string, ContactViewModel1>> _listViewItemSource;
 
-		protected override void Init ()
+		protected override void Init()
 		{
 			Title = "Contacts";
 			Content = CreateContent();
@@ -51,20 +51,20 @@ namespace Xamarin.Forms.Controls.Issues
 
 			_contactsListView.Refreshing += contactsListView_Refreshing;
 			_searchBtn = new Button() { Text = "Search" };
-			_searchBtn.Clicked += (object sender, EventArgs e) => _contactsListView.BeginRefresh ();
+			_searchBtn.Clicked += (object sender, EventArgs e) => _contactsListView.BeginRefresh();
 
-			Grid grd = new Grid ();
-			grd.RowDefinitions.Add (new RowDefinition () { Height = GridLength.Auto } );
-			grd.RowDefinitions.Add (new RowDefinition ());
-			grd.Children.Add (_searchBtn);
-			grd.Children.Add (_contactsListView);
-			Grid.SetRow (_contactsListView, 1);
+			var grd = new Grid();
+			grd.RowDefinitions.Add(new RowDefinition() { Height = GridLength.Auto });
+			grd.RowDefinitions.Add(new RowDefinition());
+			grd.Children.Add(_searchBtn);
+			grd.Children.Add(_contactsListView);
+			Grid.SetRow(_contactsListView, 1);
 			return grd;
 		}
 
 		async void contactsListView_Refreshing(object sender, EventArgs e)
 		{
-			await Task.Delay (1000);
+			await Task.Delay(1000);
 			await LoadContactsAsync(true);
 		}
 
@@ -76,61 +76,60 @@ namespace Xamarin.Forms.Controls.Issues
 
 		async Task ReadFromDbAsync(Expression<Func<Contact1, bool>> searchExpression = null)
 		{
-				await Task.Run(() =>
+			await Task.Run(() =>
+			{
+				Device.BeginInvokeOnMainThread(() =>
 				{
-					Device.BeginInvokeOnMainThread(() =>
+					// If we want to filter the data, GetItems by expression
+					IList<Contact1> contactEntities = new List<Contact1>();
+					var data = new List<ContactViewModel1>();
+
+					if (contactEntities == null || contactEntities.Count == 0)
+					{
+						// Fill with dummy contacts
+						for (var i = 0; i < 20; i++)
 						{
-							// If we want to filter the data, GetItems by expression
-							IList<Contact1> contactEntities = new List<Contact1>();
-							List<ContactViewModel1> data = new List<ContactViewModel1>();
-
-							if (contactEntities == null || contactEntities.Count == 0)
+							var contact = new Contact1()
 							{
-								// Fill with dummy contacts
-								for (int i = 0; i < 20; i++)
-								{
-									Contact1 contact = new Contact1()
-									{
-										FirstName = "Contact" + i,
-										LastName = "LastName",
-										Company = "Company" + i
-									} ;
-									contactEntities.Add(contact);
-								}
-							}
+								FirstName = "Contact" + i,
+								LastName = "LastName",
+								Company = "Company" + i
+							};
+							contactEntities.Add(contact);
+						}
+					}
 
-							// Create Contact items for the listView
-							foreach (Contact1 contact in contactEntities)
-							{
-								ContactViewModel1 contactItem = new ContactViewModel1()
-								{
-									FirstName = contact.FirstName,
-									LastName = contact.LastName,
-									FullName = contact.FirstName + " " + contact.LastName,
-									Company = contact.Company,
-								} ;
+					// Create Contact items for the listView
+					foreach (Contact1 contact in contactEntities)
+					{
+						var contactItem = new ContactViewModel1()
+						{
+							FirstName = contact.FirstName,
+							LastName = contact.LastName,
+							FullName = contact.FirstName + " " + contact.LastName,
+							Company = contact.Company,
+						};
 
-								data.Add(contactItem);
-							}
+						data.Add(contactItem);
+					}
 
-							// Sort, order and group the contacts
-							var contacts = from contact in data
-								orderby contact.LastName, contact.FirstName
-							group contact by contact.FirstNameSort into contactGroup
-							select new Grouping1<string, ContactViewModel1>(contactGroup.Key, contactGroup);
+					// Sort, order and group the contacts
+					IEnumerable<Grouping1<string, ContactViewModel1>> contacts = from contact in data
+						orderby contact.LastName, contact.FirstName
+						group contact by contact.FirstNameSort
+						into contactGroup
+						select new Grouping1<string, ContactViewModel1>(contactGroup.Key, contactGroup);
 
-							// Create a new collection of groups
-							var grouppedContacts = new ObservableCollection<Grouping1<string, ContactViewModel1>>(contacts);
+					// Create a new collection of groups
+					var grouppedContacts = new ObservableCollection<Grouping1<string, ContactViewModel1>>(contacts);
 
-							_contactsListView.ItemsSource = grouppedContacts;
-						} );
-				} );
+					_contactsListView.ItemsSource = grouppedContacts;
+				});
+			});
 		}
 
 		public class Grouping1<K, T> : ObservableCollection<T>
 		{
-			public K Key { get; private set; }
-
 			public Grouping1(K key, IEnumerable<T> items)
 			{
 				Key = key;
@@ -139,16 +138,16 @@ namespace Xamarin.Forms.Controls.Issues
 					Items.Add(item);
 				}
 			}
+
+			public K Key { get; private set; }
 		}
 
-		[Preserve (AllMembers = true)]
+		[Preserve(AllMembers = true)]
 		public class ContactViewModel1
 		{
-			public string FirstName { get; set; }
-			public string LastName { get; set; }
-			public string FullName { get; set; }
 			public string Company { get; set; }
-			public ImageSource IconSource { get; set; }
+
+			public string FirstName { get; set; }
 
 			public string FirstNameSort
 			{
@@ -162,36 +161,52 @@ namespace Xamarin.Forms.Controls.Issues
 					return FirstName[0].ToString().ToUpper();
 				}
 			}
+
+			public string FullName { get; set; }
+
+			public ImageSource IconSource { get; set; }
+
+			public string LastName { get; set; }
 		}
 
-		[Preserve (AllMembers = true)]
+		[Preserve(AllMembers = true)]
 		public class Contact1
 		{
-			public string FirstName { get; set; }
-			public string LastName { get; set; }
-			public string Company { get; set; }
-			public byte[] ProfilePicture { get; set; }
-			public string Email { get; set; }
-			public string Mobile { get; set; }
-			public string RoomNumber { get; set; }
-			public string Street { get; set; }
-			public string Zip { get; set; }
 			public string City { get; set; }
+
+			public string Company { get; set; }
+
 			public string CountryCode { get; set; }
+
+			public string Email { get; set; }
+
+			public string FirstName { get; set; }
+
+			public string LastName { get; set; }
+
+			public string Mobile { get; set; }
+
+			public byte[] ProfilePicture { get; set; }
+
+			public string RoomNumber { get; set; }
+
+			public string Street { get; set; }
+
+			public string Zip { get; set; }
 		}
 
-		[Preserve (AllMembers = true)]
+		[Preserve(AllMembers = true)]
 		public class HeaderCell : ViewCell
 		{
 			public HeaderCell()
 			{
 				Height = 23;
 
-				Label title = new Label
+				var title = new Label
 				{
 					TextColor = Color.White,
 					VerticalOptions = LayoutOptions.Center
-				} ;
+				};
 
 				title.SetBinding(Label.TextProperty, "Key");
 
@@ -212,13 +227,12 @@ namespace Xamarin.Forms.Controls.Issues
 			}
 		}
 
-		[Preserve (AllMembers = true)]
+		[Preserve(AllMembers = true)]
 		public class ContactItemTemplate : ImageCell
 		{
 			public ContactItemTemplate()
 				: base()
 			{
-
 				SetBinding(TextProperty, new Binding("FullName"));
 				SetBinding(DetailProperty, new Binding("Company"));
 				SetBinding(ImageSourceProperty, new Binding("IconSource"));
@@ -227,7 +241,7 @@ namespace Xamarin.Forms.Controls.Issues
 			}
 		}
 
-		#if UITEST
+#if UITEST
 		[Test]
 		public void Bugzilla32148Test ()
 		{
@@ -238,5 +252,4 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 		#endif
 	}
-
 }

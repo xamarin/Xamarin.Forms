@@ -1,6 +1,4 @@
-﻿using System;
-
-using Xamarin.Forms.CustomAttributes;
+﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 #if UITEST
@@ -11,7 +9,8 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 31806, "[8.1/UWP] PopToRootAsync crashes due to not setting the current page correctly", PlatformAffected.WinRT)]
+	[Issue(IssueTracker.Bugzilla, 31806,
+		"[8.1/UWP] PopToRootAsync crashes due to not setting the current page correctly", PlatformAffected.WinRT)]
 	public class Bugzilla31806 : TestContentPage
 	{
 		protected override void Init()
@@ -33,15 +32,13 @@ namespace Xamarin.Forms.Controls.Issues
 									{
 										new Label
 										{
-											Text = "Pressing this button should let the navigation return to the repro list"
+											Text =
+												"Pressing this button should let the navigation return to the repro list"
 										},
 										new Button
 										{
 											Text = "Call PopToRootAsync()",
-											Command = new Command(() =>
-											{
-												Navigation.PopToRootAsync();
-											})
+											Command = new Command(() => { Navigation.PopToRootAsync(); })
 										}
 									}
 								}

@@ -1,6 +1,4 @@
-﻿using System;
-
-using Xamarin.Forms.CustomAttributes;
+﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 #if UITEST
@@ -11,7 +9,9 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 41842, "Set MasterDetailPage.Detail = New Page() twice will crash the application when set MasterBehavior = MasterBehavior.Split", PlatformAffected.WinRT)]
+	[Issue(IssueTracker.Bugzilla, 41842,
+		"Set MasterDetailPage.Detail = New Page() twice will crash the application when set MasterBehavior = MasterBehavior.Split",
+		PlatformAffected.WinRT)]
 	public class Bugzilla41842 : TestMasterDetailPage
 	{
 		protected override void Init()

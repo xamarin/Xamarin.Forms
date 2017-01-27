@@ -1,23 +1,22 @@
-﻿using System;
-
-using Xamarin.Forms.CustomAttributes;
+﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls
 {
-	[Preserve (AllMembers=true)]
-	[Issue (IssueTracker.Github, 1097, "Not resizing elements on rotation", PlatformAffected.iOS)]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 1097, "Not resizing elements on rotation", PlatformAffected.iOS)]
 	public class Issue1097 : ContentPage
 	{
-		public Issue1097 ()
+		public Issue1097()
 		{
-			Grid grid = new Grid {
+			var grid = new Grid
+			{
 				RowSpacing = 0,
 				ColumnSpacing = 0,
 			};
 
 			grid.AddRowDef(count: 2);
-			grid.AddColumnDef(count : 2);
+			grid.AddColumnDef(count: 2);
 
 			grid.Children.Add(new BoxView() { Color = Color.Red });
 
@@ -37,25 +36,31 @@ namespace Xamarin.Forms.Controls
 			Content = grid;
 		}
 	}
+
 	public static class GridExtensions
 	{
-		public static void AddRowDef(this Grid grid, double size = 1, GridUnitType type = GridUnitType.Star, int count = 1)
+		public static void AddColumnDef(this Grid grid, double size = 1, GridUnitType type = GridUnitType.Star,
+			int count = 1)
 		{
-			for (int i = 0; i < count; i++) {
-				grid.RowDefinitions.Add(new RowDefinition() {
-					Height = new GridLength(size, type)
+			for (var i = 0; i < count; i++)
+			{
+				grid.ColumnDefinitions.Add(new ColumnDefinition()
+				{
+					Width = new GridLength(size, type)
 				});
 			}
 		}
 
-		public static void AddColumnDef(this Grid grid, double size = 1, GridUnitType type = GridUnitType.Star, int count = 1)
+		public static void AddRowDef(this Grid grid, double size = 1, GridUnitType type = GridUnitType.Star,
+			int count = 1)
 		{
-			for (int i = 0; i < count; i++) {
-				grid.ColumnDefinitions.Add(new ColumnDefinition() {
-					Width = new GridLength(size, type)
+			for (var i = 0; i < count; i++)
+			{
+				grid.RowDefinitions.Add(new RowDefinition()
+				{
+					Height = new GridLength(size, type)
 				});
 			}
 		}
 	}
 }
-

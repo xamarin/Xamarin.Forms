@@ -16,7 +16,12 @@ namespace Xamarin.Forms.Controls
 
 			PushAsync(new ContentPage()
 			{
-				Content = new Label { Text = "If the status bar text is black, this test has passed. If it is unreadable (i.e., white text on white background), this test has failed." },
+				Content =
+					new Label
+					{
+						Text =
+							"If the status bar text is black, this test has passed. If it is unreadable (i.e., white text on white background), this test has failed."
+					},
 				Title = $"This should be GhostWhite on White."
 			});
 

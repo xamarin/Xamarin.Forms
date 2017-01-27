@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using Xamarin.Forms;
-using Xamarin.Forms.CustomAttributes;
+﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
+
 #if UITEST
 using Xamarin.UITest;
 using NUnit.Framework;
 #endif
-
 
 namespace Xamarin.Forms.Controls.Issues
 {
@@ -29,7 +26,10 @@ namespace Xamarin.Forms.Controls.Issues
 
 		class ImageController : ViewModelBase
 		{
-			
+			string _backgroundColor;
+			string _homeImage;
+			string _localBackgroundImage;
+
 			public ImageController()
 			{
 				HomeImage = "http://xamarin.com/content/images/pages/forms/example-app.png";
@@ -39,10 +39,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			public string BackgroundColor
 			{
-				get
-				{ 
-					return _backgroundColor;
-				}
+				get { return _backgroundColor; }
 
 				set
 				{
@@ -53,10 +50,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			public string HomeImage
 			{
-				get
-				{ 
-					return _homeImage;
-				}
+				get { return _homeImage; }
 
 				set
 				{
@@ -67,10 +61,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			public string LocalBackgroundImage
 			{
-				get
-				{ 
-					return _localBackgroundImage;
-				}
+				get { return _localBackgroundImage; }
 
 				set
 				{
@@ -78,11 +69,6 @@ namespace Xamarin.Forms.Controls.Issues
 					OnPropertyChanged();
 				}
 			}
-
-
-			string _backgroundColor;
-			string _homeImage;
-			string _localBackgroundImage;
 		}
 
 #if UITEST

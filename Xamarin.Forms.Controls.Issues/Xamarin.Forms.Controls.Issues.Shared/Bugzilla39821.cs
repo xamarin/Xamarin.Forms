@@ -14,13 +14,23 @@ namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 39821, "ViewExtension.TranslateTo cannot be invoked on Main thread")]
-	public class Bugzilla39821 : TestContentPage 
+	public class Bugzilla39821 : TestContentPage
 	{
 		protected override void Init()
 		{
-			var box = new BoxView { BackgroundColor = Color.Blue, WidthRequest = 50, HeightRequest = 50, HorizontalOptions = LayoutOptions.Center };
+			var box = new BoxView
+			{
+				BackgroundColor = Color.Blue,
+				WidthRequest = 50,
+				HeightRequest = 50,
+				HorizontalOptions = LayoutOptions.Center
+			};
 
-			var instructions = new Label { Text = "Click the 'Animate' button to run animation on the box. If the animations complete without crashing, this test has passed." };
+			var instructions = new Label
+			{
+				Text =
+					"Click the 'Animate' button to run animation on the box. If the animations complete without crashing, this test has passed."
+			};
 
 			var success = new Label { Text = "Success", IsVisible = false };
 
@@ -44,7 +54,8 @@ namespace Xamarin.Forms.Controls.Issues
 				}
 			};
 
-			button.Clicked += async (sender, args) => {
+			button.Clicked += async (sender, args) =>
+			{
 				// Run a bunch of animations from the thread pool 
 				await Task.WhenAll(
 					Task.Run(async () => await Translate(box)),
@@ -54,7 +65,7 @@ namespace Xamarin.Forms.Controls.Issues
 					Task.Run(async () => await Animate(box)),
 					Task.Run(async () => await Kinetic(box)),
 					Task.Run(async () => await Cancel(box))
-					);
+				);
 
 				success.IsVisible = true;
 			};
@@ -69,8 +80,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 		static async Task Translate(BoxView box)
 		{
-			var currentX = box.X;
-			var currentY = box.Y;
+			double currentX = box.X;
+			double currentY = box.Y;
 
 			await box.TranslateTo(currentX, currentY + 100);
 			await box.TranslateTo(currentX, currentY);

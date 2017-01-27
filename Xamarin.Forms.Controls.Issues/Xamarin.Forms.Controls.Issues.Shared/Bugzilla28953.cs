@@ -1,7 +1,7 @@
-﻿using Xamarin.Forms.CustomAttributes;
-using Xamarin.Forms.Internals;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
 
 #if UITEST
 using Xamarin.UITest;
@@ -11,7 +11,8 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 28953, "Device.StartTimer (still) behaves differently on different platforms", PlatformAffected.All)]
+	[Issue(IssueTracker.Bugzilla, 28953, "Device.StartTimer (still) behaves differently on different platforms",
+		PlatformAffected.All)]
 	public class Bugzilla28953 : TestContentPage // or TestMasterDetailPage, etc ...
 	{
 		int count = 0, count2 = 0;
@@ -29,7 +30,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var label1 = new Label
 			{
-				Text = "Click Start to start counting with a timer. Click Stop to reset. Both timers update text in UI thread."
+				Text =
+					"Click Start to start counting with a timer. Click Stop to reset. Both timers update text in UI thread."
 			};
 			stackLayout.Children.Add(label1);
 

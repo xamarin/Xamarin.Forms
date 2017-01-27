@@ -1,31 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Xamarin.Forms.CustomAttributes;
+﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls
 {
-	[Preserve (AllMembers=true)]
-	[Issue (IssueTracker.Github, 1769, "PushAsync with Switch produces NRE", PlatformAffected.Android)]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 1769, "PushAsync with Switch produces NRE", PlatformAffected.Android)]
 	public class Issue1769
 		: ContentPage
 	{
 		public Issue1769()
 		{
-			var button =  new Button()
-				{
-					Text = "Go To Page 2"
-				};
+			var button = new Button()
+			{
+				Text = "Go To Page 2"
+			};
 
 			var switchDemo = new SwitchDemoPage();
 
-			button.Clicked += async (sender, args) => {
-				await ((Button)sender).Navigation.PushAsync(switchDemo);
-			};
+			button.Clicked += async (sender, args) => { await ((Button)sender).Navigation.PushAsync(switchDemo); };
 
 			Content = button;
 		}
@@ -36,7 +28,7 @@ namespace Xamarin.Forms.Controls
 
 			public SwitchDemoPage()
 			{
-				Label header = new Label
+				var header = new Label
 				{
 					Text = "Switch",
 #pragma warning disable 618
@@ -45,7 +37,7 @@ namespace Xamarin.Forms.Controls
 					HorizontalOptions = LayoutOptions.Center
 				};
 
-				Switch switcher = new Switch
+				var switcher = new Switch
 				{
 					HorizontalOptions = LayoutOptions.Center,
 					VerticalOptions = LayoutOptions.CenterAndExpand
@@ -63,7 +55,9 @@ namespace Xamarin.Forms.Controls
 				};
 
 				// Accomodate iPhone status bar.
-				Padding = Device.RuntimePlatform == Device.iOS ? new Thickness(10, 20, 10, 5) : new Thickness(10, 0, 10, 5);
+				Padding = Device.RuntimePlatform == Device.iOS
+					? new Thickness(10, 20, 10, 5)
+					: new Thickness(10, 0, 10, 5);
 
 				// Build the page.
 				Content = new StackLayout

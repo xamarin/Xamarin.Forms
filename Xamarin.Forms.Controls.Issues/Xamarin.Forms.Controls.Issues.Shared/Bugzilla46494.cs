@@ -9,7 +9,9 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 46494, "Hardware/Software back button from MainPage of type MasterDetail causes crash 'java.lang.IllegalStateException: Activity has been destroyed'", PlatformAffected.Android)]
+	[Issue(IssueTracker.Bugzilla, 46494,
+		"Hardware/Software back button from MainPage of type MasterDetail causes crash 'java.lang.IllegalStateException: Activity has been destroyed'",
+		PlatformAffected.Android)]
 	public class Bugzilla46494 : TestMasterDetailPage
 	{
 		protected override void Init()
@@ -24,7 +26,8 @@ namespace Xamarin.Forms.Controls
 					{
 						Content = new Label
 						{
-							Text = "Hit Back button to destroy Activity. Disposing Fragment should not run into a race condition with Activity destroy.",
+							Text =
+								"Hit Back button to destroy Activity. Disposing Fragment should not run into a race condition with Activity destroy.",
 							HorizontalTextAlignment = TextAlignment.Center,
 							VerticalTextAlignment = TextAlignment.Center
 						}

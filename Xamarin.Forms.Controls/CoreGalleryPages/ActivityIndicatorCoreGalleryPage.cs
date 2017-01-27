@@ -9,31 +9,33 @@ namespace Xamarin.Forms.Controls
 			get { return true; }
 		}
 
-		protected override void InitializeElement (ActivityIndicator element)
+		protected override void Build(StackLayout stackLayout)
 		{
-			element.IsRunning = true;
+			base.Build(stackLayout);
+
+			var colorContainer = new ViewContainer<ActivityIndicator>(Test.ActivityIndicator.Color,
+				new ActivityIndicator
+				{
+					Color = Color.Lime,
+					IsRunning = true
+				});
+
+			var isRunningContainer = new StateViewContainer<ActivityIndicator>(Test.ActivityIndicator.IsRunning,
+				new ActivityIndicator
+				{
+					IsRunning = true
+				});
+
+			isRunningContainer.StateChangeButton.Clicked +=
+				(sender, args) => { isRunningContainer.View.IsRunning = !isRunningContainer.View.IsRunning; };
+
+			Add(colorContainer);
+			Add(isRunningContainer);
 		}
 
-		protected override void Build (StackLayout stackLayout)
+		protected override void InitializeElement(ActivityIndicator element)
 		{
-			base.Build (stackLayout);
-
-			var colorContainer = new ViewContainer<ActivityIndicator> (Test.ActivityIndicator.Color, new ActivityIndicator {
-				Color = Color.Lime,
-				IsRunning = true
-
-			});
-
-			var isRunningContainer = new StateViewContainer<ActivityIndicator> (Test.ActivityIndicator.IsRunning, new ActivityIndicator {
-				IsRunning = true
-			});
-
-			isRunningContainer.StateChangeButton.Clicked += (sender, args) => {
-				isRunningContainer.View.IsRunning = !isRunningContainer.View.IsRunning;
-			};
-
-			Add (colorContainer);
-			Add (isRunningContainer);
+			element.IsRunning = true;
 		}
 	}
 }

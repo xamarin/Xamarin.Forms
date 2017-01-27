@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-using Xamarin.Forms.CustomAttributes;
+﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 #if UITEST
@@ -10,47 +8,50 @@ using Xamarin.UITest;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve (AllMembers=true)]
-	[Issue (IssueTracker.Github, 889, "Assigning to MasterDetailPage.Detail after construction doesn't work", PlatformAffected.Android | PlatformAffected.iOS)]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 889, "Assigning to MasterDetailPage.Detail after construction doesn't work",
+		PlatformAffected.Android | PlatformAffected.iOS)]
 	public class Issue889 : TestMasterDetailPage
 	{
-		protected override void Init ()
+		protected override void Init()
 		{
-			var cells = new [] {
-				new NavPageNameObject ("Page 1"),
-				new NavPageNameObject ("Page 3"),
-				new NavPageNameObject ("Page 4"),
-				new NavPageNameObject ("Page 5"),
-				new NavPageNameObject ("Page 6"),
-				new NavPageNameObject ("Page 7"),
-				new NavPageNameObject ("Page 8"),
+			var cells = new[]
+			{
+				new NavPageNameObject("Page 1"),
+				new NavPageNameObject("Page 3"),
+				new NavPageNameObject("Page 4"),
+				new NavPageNameObject("Page 5"),
+				new NavPageNameObject("Page 6"),
+				new NavPageNameObject("Page 7"),
+				new NavPageNameObject("Page 8"),
 			};
 
-			var template = new DataTemplate (typeof (TextCell));
-			template.SetBinding (TextCell.TextProperty, "PageName");
+			var template = new DataTemplate(typeof(TextCell));
+			template.SetBinding(TextCell.TextProperty, "PageName");
 
-			var listView = new ListView { 
+			var listView = new ListView
+			{
 				ItemTemplate = template,
 				ItemsSource = cells
 			};
 
 			listView.BindingContext = cells;
 
-			listView.ItemTapped += (sender, e) => {
-				var cellName = ((NavPageNameObject)e.Item).PageName;
-				Detail = new CustomNavTabDetailPage (cellName);
+			listView.ItemTapped += (sender, e) =>
+			{
+				string cellName = ((NavPageNameObject)e.Item).PageName;
+				Detail = new CustomNavTabDetailPage(cellName);
 			};
 
-			var master = new ContentPage {
+			var master = new ContentPage
+			{
 				Title = "Master",
 				Icon = "bank.png",
 				Content = listView
 			};
 
-
-
 			Master = master;
-			Detail = new CustomNavTabDetailPage ("Initial Page");
+			Detail = new CustomNavTabDetailPage("Initial Page");
 		}
 
 		// Issue892
@@ -76,61 +77,72 @@ namespace Xamarin.Forms.Controls.Issues
 
 	public class CustomNavTabDetailPage : NavigationPage
 	{
-		public CustomNavTabDetailPage (string pageName)
+		public CustomNavTabDetailPage(string pageName)
 		{
-			PushAsync (new NestedNavTabPageRootView (pageName));
+			PushAsync(new NestedNavTabPageRootView(pageName));
 		}
 	}
 
 	public class NestedNavTabPageRootView : TabbedPage
 	{
-		public NestedNavTabPageRootView (string pageTitle)
+		public NestedNavTabPageRootView(string pageTitle)
 		{
 			Title = pageTitle;
 
-			var tabOne = new ContentPage {
+			var tabOne = new ContentPage
+			{
 				Title = "Tab 1 Title",
-				BackgroundColor = Color.FromHex ("#666"),
-				Content = new StackLayout {
-					Children = {
-						new Button {
+				BackgroundColor = Color.FromHex("#666"),
+				Content = new StackLayout
+				{
+					Children =
+					{
+						new Button
+						{
 							Text = "Push new page",
-							Command = new Command (() => Navigation.PushAsync (new NestedNavTabPageOneLevel ()))
+							Command = new Command(() => Navigation.PushAsync(new NestedNavTabPageOneLevel()))
 						}
 					}
 				}
 			};
 
-			var tabTwo = new ContentPage {
+			var tabTwo = new ContentPage
+			{
 				Title = "Tab 2 Title",
-				BackgroundColor = Color.FromHex ("#BBB"),
-				Content = new StackLayout {
-					Children = {
-						new Button {
+				BackgroundColor = Color.FromHex("#BBB"),
+				Content = new StackLayout
+				{
+					Children =
+					{
+						new Button
+						{
 							Text = "Push new page",
-							Command = new Command (() => Navigation.PushAsync (new NestedNavTabPageOneLevel ()))
+							Command = new Command(() => Navigation.PushAsync(new NestedNavTabPageOneLevel()))
 						}
 					}
 				}
 			};
 
-			tabOne.SetValue (IconProperty, "bank.png");
-			tabTwo.SetValue (IconProperty, "coffee.png");
-			Children.Add (tabOne);
-			Children.Add (tabTwo);
+			tabOne.SetValue(IconProperty, "bank.png");
+			tabTwo.SetValue(IconProperty, "coffee.png");
+			Children.Add(tabOne);
+			Children.Add(tabTwo);
 		}
 	}
 
 	public class NestedNavTabPageOneLevel : ContentPage
 	{
-		public NestedNavTabPageOneLevel ()
+		public NestedNavTabPageOneLevel()
 		{
 			Title = "One pushed";
 			BackgroundColor = Color.FromHex("#999");
 
-			Content = new StackLayout {
-				Children = {
-					new Label {
+			Content = new StackLayout
+			{
+				Children =
+				{
+					new Label
+					{
 						TextColor = Color.Red,
 						Text = "I have been pushed"
 					}

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
@@ -29,29 +28,32 @@ namespace Xamarin.Forms.Controls
 
 			public Page1()
 			{
-				Button btn = new Button() {
+				var btn = new Button()
+				{
 					Text = "Go to Page 2"
 				};
-				btn.Clicked += async (sender, e) => {
-					await Navigation.PushAsync(new Page2());
-				};
+				btn.Clicked += async (sender, e) => { await Navigation.PushAsync(new Page2()); };
 
-				Content = new StackLayout {
+				Content = new StackLayout
+				{
 					VerticalOptions = LayoutOptions.Center,
-					Children = {
-					new Label {
-						HorizontalTextAlignment = TextAlignment.Center,
-						Text = "Page 1"
-					},
-					btn
-				}
+					Children =
+					{
+						new Label
+						{
+							HorizontalTextAlignment = TextAlignment.Center,
+							Text = "Page 1"
+						},
+						btn
+					}
 				};
 			}
 
 			protected override void OnAppearing()
 			{
 				base.OnAppearing();
-				if(!pageInserted) {
+				if (!pageInserted)
+				{
 					Navigation.InsertPageBefore(new InsertedPage(), this);
 					pageInserted = true;
 				}
@@ -64,19 +66,21 @@ namespace Xamarin.Forms.Controls
 			}
 		}
 
-
 		public class InsertedPage : ContentPage
 		{
 			public InsertedPage()
 			{
-				Content = new StackLayout {
+				Content = new StackLayout
+				{
 					VerticalOptions = LayoutOptions.Center,
-					Children = {
-					new Label {
-						HorizontalTextAlignment = TextAlignment.Center,
-						Text = "Inserted page"
+					Children =
+					{
+						new Label
+						{
+							HorizontalTextAlignment = TextAlignment.Center,
+							Text = "Inserted page"
+						}
 					}
-				}
 				};
 			}
 
@@ -91,14 +95,17 @@ namespace Xamarin.Forms.Controls
 		{
 			public Page2()
 			{
-				Content = new StackLayout {
+				Content = new StackLayout
+				{
 					VerticalOptions = LayoutOptions.Center,
-					Children = {
-					new Label {
-						HorizontalTextAlignment = TextAlignment.Center,
-						Text = "Page 2"
+					Children =
+					{
+						new Label
+						{
+							HorizontalTextAlignment = TextAlignment.Center,
+							Text = "Page 2"
+						}
 					}
-				}
 				};
 			}
 

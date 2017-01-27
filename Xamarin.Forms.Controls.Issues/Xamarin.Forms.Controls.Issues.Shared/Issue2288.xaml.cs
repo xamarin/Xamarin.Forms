@@ -1,37 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-
-using Xamarin.Forms;
-using System.ComponentModel;
-using Xamarin.Forms.CustomAttributes;
+﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls
 {
 #if APP
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Github, 2288, "ToolbarItem.Text change", PlatformAffected.iOS | PlatformAffected.Android)]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 2288, "ToolbarItem.Text change", PlatformAffected.iOS | PlatformAffected.Android)]
 	public partial class Issue2288 : ContentPage
 	{
 		int _count = 0;
-		public Issue2288 ()
+
+		string _mainText;
+
+		public Issue2288()
 		{
-			InitializeComponent ();
+			InitializeComponent();
 			MainText = "initial";
-			MainTextCommand = new Command(o =>
-				{
-					MainText = "changed " + _count++;
-				});
+			MainTextCommand = new Command(o => { MainText = "changed " + _count++; });
 
 			BindingContext = this;
 		}
 
-		string _mainText;
-		public string MainText {
+		public string MainText
+		{
 			get { return _mainText; }
-			set {
+			set
+			{
 				_mainText = value;
-				OnPropertyChanged ();
+				OnPropertyChanged();
 			}
 		}
 

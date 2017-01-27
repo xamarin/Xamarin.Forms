@@ -1,7 +1,6 @@
-﻿using System;
-
-using Xamarin.Forms.CustomAttributes;
+﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
+
 #if UITEST
 using Xamarin.UITest;
 using NUnit.Framework;
@@ -9,11 +8,11 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Bugzilla, 25979, "https://bugzilla.xamarin.com/show_bug.cgi?id=25979")]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Bugzilla, 25979, "https://bugzilla.xamarin.com/show_bug.cgi?id=25979")]
 	public class Bugzilla25979 : TestNavigationPage // or TestMasterDetailPage, etc ...
 	{
-		[Preserve (AllMembers = true)]
+		[Preserve(AllMembers = true)]
 		internal sealed class MyPage : ContentPage
 		{
 			public MyPage()
@@ -21,25 +20,26 @@ namespace Xamarin.Forms.Controls.Issues
 				Title = "Page 1";
 				AutomationId = "PageOneId";
 
-				var b = new Button {
+				var b = new Button
+				{
 					AutomationId = "PageOneButtonId",
 					Text = "Next"
 				};
-				b.Clicked += async (sender, e) => {
-					await Navigation.PushAsync (new MyPage2());
-				};
-				
-				Content = new StackLayout { 
+				b.Clicked += async (sender, e) => { await Navigation.PushAsync(new MyPage2()); };
+
+				Content = new StackLayout
+				{
 					BackgroundColor = Color.Red,
-					Children = {
-						new Label { Text = "Page 1", FontSize=Device.GetNamedSize(NamedSize.Large, typeof(Label)) },
+					Children =
+					{
+						new Label { Text = "Page 1", FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)) },
 						b
 					}
 				};
 			}
 		}
 
-		[Preserve (AllMembers = true)]
+		[Preserve(AllMembers = true)]
 		internal sealed class MyPage2 : ContentPage
 		{
 			public MyPage2()
@@ -47,26 +47,30 @@ namespace Xamarin.Forms.Controls.Issues
 				Title = "Page 2";
 				AutomationId = "PageTwoId";
 
-				var b = new Button {
+				var b = new Button
+				{
 					AutomationId = "PageTwoButtonId",
 					Text = "Next"
 				};
-				b.Clicked += async (sender, e) => {
-					await Navigation.PushAsync (new MyPage3());
+				b.Clicked += async (sender, e) =>
+				{
+					await Navigation.PushAsync(new MyPage3());
 					Navigation.NavigationStack[0].BindingContext = null;
 					Navigation.RemovePage(Navigation.NavigationStack[0]);
 				};
-				
-				Content = new StackLayout { 
+
+				Content = new StackLayout
+				{
 					BackgroundColor = Color.Red,
-					Children = {
-						new Label { Text = "Page 2", FontSize=Device.GetNamedSize(NamedSize.Large, typeof(Label)) }, 
+					Children =
+					{
+						new Label { Text = "Page 2", FontSize = Device.GetNamedSize(NamedSize.Large, typeof(Label)) },
 						b
 					}
 				};
 			}
 
-			protected override void OnAppearing ()
+			protected override void OnAppearing()
 			{
 				base.OnAppearing();
 				Navigation.NavigationStack[0].BindingContext = null;
@@ -74,37 +78,42 @@ namespace Xamarin.Forms.Controls.Issues
 			}
 		}
 
-		[Preserve (AllMembers = true)]
+		[Preserve(AllMembers = true)]
 		internal sealed class MyPage3 : ContentPage
 		{
-			public MyPage3 ()
+			public MyPage3()
 			{
 				AutomationId = "PageThreeId";
 				Title = "PageThreeId";
 
 				var label = new Label { Text = "Page 3" };
 
-				Content = new StackLayout {
-					Children = {
+				Content = new StackLayout
+				{
+					Children =
+					{
 						label,
-						new Button { 
+						new Button
+						{
 							AutomationId = "PopButton",
 							Text = "Try to Pop",
 							Command = new Command(
-								async() => {
+								async () =>
+								{
 									await Navigation.PopAsync();
 									label.Text = "PopAttempted";
 								}
-							)}
+							)
 						}
+					}
 				};
 			}
 		}
 
-		protected override void Init ()
+		protected override void Init()
 		{
 			// Initialize ui here instead of ctor
-			Navigation.PushAsync (new MyPage () { Title="Navigation Stack" });
+			Navigation.PushAsync(new MyPage() { Title = "Navigation Stack" });
 		}
 
 #if UITEST

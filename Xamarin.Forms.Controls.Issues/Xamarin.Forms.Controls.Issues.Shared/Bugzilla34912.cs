@@ -1,7 +1,7 @@
 ﻿using System;
-using Xamarin.Forms.CustomAttributes;
 using System.Collections.ObjectModel;
 using System.Linq;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 #if UITEST
@@ -16,25 +16,25 @@ namespace Xamarin.Forms.Controls.Issues
 	[Category(UITestCategories.ListView)]
 #endif
 
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Bugzilla, 34912, "ListView.IsEnabled has no effect on iOS")]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Bugzilla, 34912, "ListView.IsEnabled has no effect on iOS")]
 	public class Bugzilla34912 : TestContentPage // or TestMasterDetailPage, etc ...
 	{
-		protected override void Init ()
+		protected override void Init()
 		{
-			Padding = new Thickness (0, 20, 0, 0);
+			Padding = new Thickness(0, 20, 0, 0);
 
-			var source = SetupList ();
+			ObservableCollection<Issue2777.ListItemCollection> source = SetupList();
 
 			var list = new ListView
 			{
 				ItemTemplate = new DataTemplate(typeof(TextCell))
 				{
-					Bindings = {
-						{ TextCell.TextProperty, new Binding ("Name") }
+					Bindings =
+					{
+						{ TextCell.TextProperty, new Binding("Name") }
 					}
 				},
-
 				GroupDisplayBinding = new Binding("LongTitle"),
 				GroupShortNameBinding = new Binding("Title"),
 				Header = "HEADER",
@@ -49,16 +49,20 @@ namespace Xamarin.Forms.Controls.Issues
 				DisplayAlert(listItem.Name, "You tapped " + listItem.Name, "OK", "Cancel");
 			};
 
-			var btnDisable = new Button () {
+			var btnDisable = new Button()
+			{
 				Text = "Disable ListView",
 				AutomationId = "btnDisable"
 			};
-			btnDisable.Clicked += (object sender, EventArgs e) => {
-				if (list.IsEnabled == true){
+			btnDisable.Clicked += (object sender, EventArgs e) =>
+			{
+				if (list.IsEnabled == true)
+				{
 					list.IsEnabled = false;
 					btnDisable.Text = "Enable ListView";
 				}
-				else {
+				else
+				{
 					list.IsEnabled = true;
 					btnDisable.Text = "Disable ListView";
 				}
@@ -75,10 +79,10 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			var allListItemGroups = new ObservableCollection<Issue2777.ListItemCollection>();
 
-			foreach (var item in Issue2777.ListItemCollection.GetSortedData())
+			foreach (Issue2777.ListItemValue item in Issue2777.ListItemCollection.GetSortedData())
 			{
 				// Attempt to find any existing groups where theg group title matches the first char of our ListItem's name.
-				var listItemGroup = allListItemGroups.FirstOrDefault(g => g.Title == item.Label);
+				Issue2777.ListItemCollection listItemGroup = allListItemGroups.FirstOrDefault(g => g.Title == item.Label);
 
 				// If the list group does not exist, we create it.
 				if (listItemGroup == null)
@@ -88,7 +92,8 @@ namespace Xamarin.Forms.Controls.Issues
 					allListItemGroups.Add(listItemGroup);
 				}
 				else
-				{ // If the group does exist, we simply add the demo to the existing group.
+				{
+					// If the group does exist, we simply add the demo to the existing group.
 					listItemGroup.Add(item);
 				}
 			}

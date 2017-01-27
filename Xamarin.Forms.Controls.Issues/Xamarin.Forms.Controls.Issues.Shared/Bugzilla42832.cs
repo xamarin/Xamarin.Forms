@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using Xamarin.Forms.Internals;
+﻿using System.Collections.Generic;
 using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
 
 #if UITEST
 using Xamarin.UITest;
@@ -15,40 +14,41 @@ namespace Xamarin.Forms.Controls.Issues
 	[Category(UITestCategories.ListView)]
 #endif
 
-    [Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 42832, "Scrolling a ListView with active ContextAction Items causes NRE", PlatformAffected.Android)]
-    public class Bugzilla42832 : TestContentPage
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Bugzilla, 42832, "Scrolling a ListView with active ContextAction Items causes NRE",
+		PlatformAffected.Android)]
+	public class Bugzilla42832 : TestContentPage
 	{
-        ListView listview;
+		ListView listview;
 
-        protected override void Init()
-        {
-            var items = new List<string>();
-            for(int i=0; i<20; i++)
-                items.Add($"Item #{i}");
+		protected override void Init()
+		{
+			var items = new List<string>();
+			for (var i = 0; i < 20; i++)
+				items.Add($"Item #{i}");
 
-            var template = new DataTemplate(typeof(TestCell));
-            template.SetBinding(TextCell.TextProperty, ".");
+			var template = new DataTemplate(typeof(TestCell));
+			template.SetBinding(TextCell.TextProperty, ".");
 
-            listview = new ListView(ListViewCachingStrategy.RetainElement)
-            {
-                AutomationId = "mainList",
-                ItemsSource = items,
-                ItemTemplate = template
-            };
+			listview = new ListView(ListViewCachingStrategy.RetainElement)
+			{
+				AutomationId = "mainList",
+				ItemsSource = items,
+				ItemTemplate = template
+			};
 
-            Content = listview;
-        }
+			Content = listview;
+		}
 
-        [Preserve(AllMembers = true)]
-        public class TestCell : TextCell
-        {
-            public TestCell()
-            {
-                var menuItem = new MenuItem { Text = "Test Item" };
-                ContextActions.Add(menuItem);
-            }
-        }
+		[Preserve(AllMembers = true)]
+		public class TestCell : TextCell
+		{
+			public TestCell()
+			{
+				var menuItem = new MenuItem { Text = "Test Item" };
+				ContextActions.Add(menuItem);
+			}
+		}
 
 #if UITEST && __ANDROID__
         [Test]
@@ -68,5 +68,5 @@ namespace Xamarin.Forms.Controls.Issues
             RunningApp.Screenshot("If the app did not crash, then the test has passed.");
         }
 #endif
-    }
+	}
 }

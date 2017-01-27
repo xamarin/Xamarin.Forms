@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using Xamarin.Forms;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
@@ -17,7 +11,7 @@ using Xamarin.UITest;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve (AllMembers = true)]
+	[Preserve(AllMembers = true)]
 	public class Issue2470ViewModelBase : INotifyPropertyChanged
 	{
 		public event PropertyChangedEventHandler PropertyChanged;
@@ -29,83 +23,96 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 	}
 
-	[Preserve (AllMembers = true)]
+	[Preserve(AllMembers = true)]
 	public class EntryViewModel : ViewModelBase
 	{
 		string _name;
+
+		bool _selected;
+
 		public string Name
 		{
 			get { return _name; }
-			set { _name = value; OnPropertyChanged (); }
+			set
+			{
+				_name = value;
+				OnPropertyChanged();
+			}
 		}
 
-		bool _selected;
 		public bool Selected
 		{
 			get { return _selected; }
-			set { _selected = value; OnPropertyChanged (); }
+			set
+			{
+				_selected = value;
+				OnPropertyChanged();
+			}
 		}
 	}
 
-	[Preserve (AllMembers = true)]
+	[Preserve(AllMembers = true)]
 	public class Issue2470MainViewModel : Issue2470ViewModelBase
 	{
-		public ObservableCollection<EntryViewModel> Entries { get; private set; }
-
 		double _desiredCount;
+
+		bool _twoOrFive;
+
+		public Issue2470MainViewModel()
+		{
+			Entries = new ObservableCollection<EntryViewModel>();
+			TwoOrFive = false; // prime
+		}
+
 		public double DesiredCount
 		{
 			get { return _desiredCount; }
 			set
 			{
 				_desiredCount = value;
-				OnPropertyChanged ();
-				GenerateEntries ();
+				OnPropertyChanged();
+				GenerateEntries();
 			}
 		}
 
-		bool _twoOrFive;
+		public ObservableCollection<EntryViewModel> Entries { get; private set; }
+
 		public bool TwoOrFive
 		{
 			get { return _twoOrFive; }
 			set
 			{
 				_twoOrFive = value;
-				OnPropertyChanged ();
+				OnPropertyChanged();
 				DesiredCount = _twoOrFive ? 5 : 2;
 			}
 		}
 
-		public Issue2470MainViewModel ()
+		void GenerateEntries()
 		{
-			Entries = new ObservableCollection<EntryViewModel> ();
-			TwoOrFive = false; // prime
-		}
-
-		void GenerateEntries ()
-		{
-			Entries.Clear ();
-			for (var i = 0; i < DesiredCount; i++) {
-				Entries.Add (new EntryViewModel { Name = "Entry " + i + " of " + DesiredCount });
+			Entries.Clear();
+			for (var i = 0; i < DesiredCount; i++)
+			{
+				Entries.Add(new EntryViewModel { Name = "Entry " + i + " of " + DesiredCount });
 			}
 		}
 	}
 
-	[Preserve (AllMembers=true)]
-	[Issue (IssueTracker.Github, 2470, "ObservableCollection changes do not update ListView", PlatformAffected.Android)]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 2470, "ObservableCollection changes do not update ListView", PlatformAffected.Android)]
 	public partial class Issue2470 : TestTabbedPage
 	{
-		protected override void Init ()
+		protected override void Init()
 		{
-			var mainViewModel = new Issue2470MainViewModel ();
+			var mainViewModel = new Issue2470MainViewModel();
 			BindingContext = mainViewModel;
 		}
 
 #if APP
-		[Preserve (AllMembers = true)]
-		public Issue2470 ()
+		[Preserve(AllMembers = true)]
+		public Issue2470()
 		{
-			InitializeComponent ();
+			InitializeComponent();
 		}
 #endif
 

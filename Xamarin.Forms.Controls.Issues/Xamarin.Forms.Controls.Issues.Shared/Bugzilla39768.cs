@@ -1,6 +1,6 @@
-﻿using Xamarin.Forms.CustomAttributes;
+﻿using System;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-using System;
 
 #if UITEST
 using Xamarin.UITest;
@@ -10,20 +10,52 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 39768, "PanGestureRecognizer sometimes won't fire completed event when dragging very slowly")]
+	[Issue(IssueTracker.Bugzilla, 39768,
+		"PanGestureRecognizer sometimes won't fire completed event when dragging very slowly")]
 	public class Bugzilla39768 : TestContentPage
 	{
+		const string ImageName = "image";
 		Image _Image;
 		Label _Label;
-		const string ImageName = "image";
+
+		protected override void Init()
+		{
+			_Image = new Image
+			{
+				Source = ImageSource.FromFile("crimson.jpg"),
+				WidthRequest = 350,
+				HeightRequest = 350,
+				AutomationId = ImageName
+			};
+			_Label = new Label
+			{
+				Text =
+					"Press and hold the image for 1 second without moving it, then attempt to drag the image. If the image does not move, this test has failed. If this label does not display 'Success' when you have finished the pan, this test has failed."
+			};
+
+			var panView = new PanContainer()
+			{
+				Content = _Image,
+				Panning = (s, e) => { _Label.Text = $"TotalX: {e.TotalX}, TotalY: {e.TotalY}"; },
+				PanningCompleted = (s, e) => { _Label.Text = "Success"; }
+			};
+
+			Content = new StackLayout
+			{
+				Children =
+				{
+					panView,
+					_Label
+				}
+			};
+		}
 
 		[Preserve(AllMembers = true)]
 		public class PanContainer : ContentView
 		{
-			double x, y;
-
 			public EventHandler<PanUpdatedEventArgs> Panning;
 			public EventHandler<PanUpdatedEventArgs> PanningCompleted;
+			double x, y;
 
 			public PanContainer()
 			{
@@ -54,34 +86,6 @@ namespace Xamarin.Forms.Controls
 						break;
 				}
 			}
-		}
-
-		protected override void Init()
-		{
-			_Image = new Image { Source = ImageSource.FromFile("crimson.jpg"), WidthRequest = 350, HeightRequest = 350, AutomationId = ImageName };
-			_Label = new Label { Text = "Press and hold the image for 1 second without moving it, then attempt to drag the image. If the image does not move, this test has failed. If this label does not display 'Success' when you have finished the pan, this test has failed." };
-
-			var panView = new PanContainer()
-			{
-				Content = _Image,
-				Panning = (s, e) =>
-				{
-					_Label.Text = $"TotalX: {e.TotalX}, TotalY: {e.TotalY}";
-				},
-				PanningCompleted = (s, e) =>
-				{
-					_Label.Text = "Success";
-				}
-			};
-
-			Content = new StackLayout
-			{
-				Children = {
-
-					panView,
-					_Label
-				}
-			};
 		}
 	}
 }

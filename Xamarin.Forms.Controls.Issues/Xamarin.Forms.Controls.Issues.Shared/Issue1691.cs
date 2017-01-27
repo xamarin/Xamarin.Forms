@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.ObjectModel;
-using System.Linq;
-
+﻿using System.Collections.ObjectModel;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
@@ -13,47 +10,52 @@ using System.Diagnostics;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Github, 1691, "CarouselPage iOS CurrentPage bug")]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 1691, "CarouselPage iOS CurrentPage bug")]
 	public class Issue1691 : TestCarouselPage
 	{
 		int _currentIndex;
 		int _page = 9;
 
-		protected override void Init ()
+		protected override void Init()
 		{
 			_currentIndex = 10;
 			ItemsSource = new ObservableCollection<int>() { _currentIndex };
 			SelectedItem = ((ObservableCollection<int>)ItemsSource)[0];
 		}
 
-		protected override ContentPage CreateDefault (object item)
+		protected override ContentPage CreateDefault(object item)
 		{
 			var currentInt = item as int?;
 
-			var label = new Label {
+			var label = new Label
+			{
 				Text = "Page " + currentInt,
-			}; 
+			};
 
-			return new ContentPage {
-				Content = new StackLayout {
-					Children = {
-						label, 
-						new Button {
+			return new ContentPage
+			{
+				Content = new StackLayout
+				{
+					Children =
+					{
+						label,
+						new Button
+						{
 							AutomationId = "CreatePreviousPage" + currentInt,
 							Text = "Create previous page",
-							Command = new Command (() => {
-								((ObservableCollection<int>)ItemsSource).Insert (0, _page);
+							Command = new Command(() =>
+							{
+								((ObservableCollection<int>)ItemsSource).Insert(0, _page);
 								_page--;
 								label.Text = "Page Created";
 							})
 						},
-						new Button {
+						new Button
+						{
 							AutomationId = "GoToPreviousPage" + currentInt,
 							Text = "Go to previous page",
-							Command = new Command (() => {
-								CurrentPage = Children[0];
-							})
+							Command = new Command(() => { CurrentPage = Children[0]; })
 						}
 					}
 				}

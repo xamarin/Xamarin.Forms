@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-using Xamarin.Forms.CustomAttributes;
+﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 #if UITEST
@@ -11,20 +9,25 @@ using Xamarin.UITest.iOS;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Github, 774, "ActionSheet won't dismiss after rotation to landscape", PlatformAffected.Android, NavigationBehavior.PushModalAsync)]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 774, "ActionSheet won't dismiss after rotation to landscape", PlatformAffected.Android,
+		NavigationBehavior.PushModalAsync)]
 	public class Issue774 : TestContentPage
 	{
-		protected override void Init ()
+		protected override void Init()
 		{
-			Content = new StackLayout {
-				Children = {
-					new Label {
+			Content = new StackLayout
+			{
+				Children =
+				{
+					new Label
+					{
 						Text = "Hi"
 					},
-					new Button {
+					new Button
+					{
 						Text = "Show ActionSheet",
-						Command = new Command (async () => await DisplayActionSheet ("What's up", "Dismiss", "Destroy"))
+						Command = new Command(async () => await DisplayActionSheet("What's up", "Dismiss", "Destroy"))
 					}
 				}
 			};
@@ -61,6 +64,5 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.SetOrientationPortrait();
 		}
 #endif
-
 	}
 }

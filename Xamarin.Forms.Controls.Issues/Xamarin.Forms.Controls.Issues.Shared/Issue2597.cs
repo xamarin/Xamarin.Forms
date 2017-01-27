@@ -1,24 +1,23 @@
-﻿using System;
-using Xamarin.Forms.CustomAttributes;
+﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls
 {
-	[Preserve (AllMembers=true)]
-	[Issue (IssueTracker.Github, 2597, "Stepper control .IsEnabled doesn't work", PlatformAffected.Android)]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 2597, "Stepper control .IsEnabled doesn't work", PlatformAffected.Android)]
 	public class Issue2597 : ContentPage
 	{
 		Label _label;
 
 		public Issue2597()
 		{
-			Label header = new Label
+			var header = new Label
 			{
 				Text = "Stepper",
 				HorizontalOptions = LayoutOptions.Center
 			};
 
-			Stepper stepper = new Stepper
+			var stepper = new Stepper
 			{
 				Minimum = 0,
 				Maximum = 10,
@@ -51,7 +50,7 @@ namespace Xamarin.Forms.Controls
 					stepper,
 					_label
 				}
-				};
+			};
 		}
 
 		void OnStepperValueChanged(object sender, ValueChangedEventArgs e)
@@ -60,4 +59,3 @@ namespace Xamarin.Forms.Controls
 		}
 	}
 }
-

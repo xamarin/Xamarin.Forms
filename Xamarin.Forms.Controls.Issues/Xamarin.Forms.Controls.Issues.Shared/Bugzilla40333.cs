@@ -1,6 +1,7 @@
 using System;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
+
 #if UITEST
 using NUnit.Framework;
 #endif
@@ -8,7 +9,8 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 40333, "[Android] IllegalStateException: Recursive entry to executePendingTransactions", PlatformAffected.Android)]
+	[Issue(IssueTracker.Bugzilla, 40333,
+		"[Android] IllegalStateException: Recursive entry to executePendingTransactions", PlatformAffected.Android)]
 	public class Bugzilla40333 : TestNavigationPage
 	{
 		const string StartNavPageTestId = "StartNavPageTest";
@@ -25,8 +27,10 @@ namespace Xamarin.Forms.Controls.Issues
 			var tabButton = new Button { Text = "Test With TabbedPage", AutomationId = StartTabPageTestId };
 			tabButton.Clicked += (sender, args) => { PushAsync(new _40333MDP(true)); };
 
-			var content = new ContentPage {
-				Content = new StackLayout {
+			var content = new ContentPage
+			{
+				Content = new StackLayout
+				{
 					Children = { navButton, tabButton }
 				}
 			};
@@ -54,7 +58,10 @@ namespace Xamarin.Forms.Controls.Issues
 				else
 				{
 					Master = new NavigationPage(new _40333NavPusher("Root")) { Title = "MasterNav" };
-					Detail = new NavigationPage(new _40333DetailPage("Detail") { Title = "DetailPage" }) { Title = "DetailNav" };
+					Detail = new NavigationPage(new _40333DetailPage("Detail") { Title = "DetailPage" })
+					{
+						Title = "DetailNav"
+					};
 				}
 			}
 
@@ -65,14 +72,16 @@ namespace Xamarin.Forms.Controls.Issues
 				{
 					Title = title;
 
-					var openMaster = new Button {
+					var openMaster = new Button
+					{
 						Text = "Open Master",
 						AutomationId = OpenMasterId
 					};
 
 					openMaster.Clicked += (sender, args) => ((MasterDetailPage)Parent.Parent).IsPresented = true;
 
-					Content = new StackLayout() {
+					Content = new StackLayout()
+					{
 						Children = { new Label { Text = "Detail Text" }, openMaster }
 					};
 				}
@@ -111,17 +120,10 @@ namespace Xamarin.Forms.Controls.Issues
 					_listView.ItemsSource = new[] { "1", ClickThisId, StillHereId };
 					_listView.ItemTapped += OnItemTapped;
 
-					Content = new StackLayout {
+					Content = new StackLayout
+					{
 						Children = { _listView }
 					};
-				}
-
-				async void OnItemTapped(object sender, EventArgs e)
-				{
-					var masterNav = ((MasterDetailPage)this.Parent.Parent).Master.Navigation;
-
-					var newTitle = $"{Title}.{_listView.SelectedItem}";
-					await masterNav.PushAsync(new _40333NavPusher(newTitle));
 				}
 
 				protected override async void OnAppearing()
@@ -130,10 +132,18 @@ namespace Xamarin.Forms.Controls.Issues
 
 					var newPage = new _40333DetailPage(Title);
 
-					var detailNav = ((MasterDetailPage)this.Parent.Parent).Detail.Navigation;
-					var currentRoot = detailNav.NavigationStack[0];
+					INavigation detailNav = ((MasterDetailPage)Parent.Parent).Detail.Navigation;
+					Page currentRoot = detailNav.NavigationStack[0];
 					detailNav.InsertPageBefore(newPage, currentRoot);
 					await detailNav.PopToRootAsync();
+				}
+
+				async void OnItemTapped(object sender, EventArgs e)
+				{
+					INavigation masterNav = ((MasterDetailPage)Parent.Parent).Master.Navigation;
+
+					string newTitle = $"{Title}.{_listView.SelectedItem}";
+					await masterNav.PushAsync(new _40333NavPusher(newTitle));
 				}
 			}
 
@@ -146,13 +156,16 @@ namespace Xamarin.Forms.Controls.Issues
 				{
 					Title = title;
 
-					_listView.ItemTemplate = new DataTemplate(() => {
+					_listView.ItemTemplate = new DataTemplate(() =>
+					{
 						var lbl = new Label();
 						lbl.SetBinding(Label.TextProperty, ".");
 						lbl.AutomationId = lbl.Text;
 
-						var result = new ViewCell {
-							View = new StackLayout {
+						var result = new ViewCell
+						{
+							View = new StackLayout
+							{
 								Orientation = StackOrientation.Horizontal,
 								Children =
 								{
@@ -167,17 +180,10 @@ namespace Xamarin.Forms.Controls.Issues
 					_listView.ItemsSource = new[] { "1", ClickThisId, StillHereId };
 					_listView.ItemTapped += OnItemTapped;
 
-					Content = new StackLayout {
+					Content = new StackLayout
+					{
 						Children = { _listView }
 					};
-				}
-
-				async void OnItemTapped(object sender, EventArgs e)
-				{
-					var masterNav = ((MasterDetailPage)this.Parent.Parent).Master.Navigation;
-
-					var newTitle = $"{Title}.{_listView.SelectedItem}";
-					await masterNav.PushAsync(new _40333TabPusher(newTitle));
 				}
 
 				protected override void OnAppearing()
@@ -186,10 +192,18 @@ namespace Xamarin.Forms.Controls.Issues
 
 					var newPage = new _40333DetailPage(Title);
 
-					var detailTab = (TabbedPage)((MasterDetailPage)this.Parent.Parent).Detail;
+					var detailTab = (TabbedPage)((MasterDetailPage)Parent.Parent).Detail;
 
 					detailTab.Children.Add(newPage);
 					detailTab.CurrentPage = newPage;
+				}
+
+				async void OnItemTapped(object sender, EventArgs e)
+				{
+					INavigation masterNav = ((MasterDetailPage)Parent.Parent).Master.Navigation;
+
+					string newTitle = $"{Title}.{_listView.SelectedItem}";
+					await masterNav.PushAsync(new _40333TabPusher(newTitle));
 				}
 			}
 		}

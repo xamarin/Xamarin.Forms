@@ -1,8 +1,6 @@
-﻿using System;
-
+﻿using System.Collections.Generic;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-using System.Collections.Generic;
 
 #if UITEST
 using Xamarin.UITest;
@@ -12,7 +10,8 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 40824, "ListView item's contextual action menu not being closed upon navigation in AppCompat")]
+	[Issue(IssueTracker.Bugzilla, 40824,
+		"ListView item's contextual action menu not being closed upon navigation in AppCompat")]
 	public class Bugzilla40824 : TestContentPage
 	{
 		protected override void Init()
@@ -47,7 +46,14 @@ namespace Xamarin.Forms.Controls.Issues
 					new Button
 					{
 						Text = "Go to next page",
-						Command = new Command(() => Navigation.PushAsync(new ContentPage { Title = "Next Page", Content = new Label { Text = "Here" } }))
+						Command =
+							new Command(
+								() =>
+									Navigation.PushAsync(new ContentPage
+									{
+										Title = "Next Page",
+										Content = new Label { Text = "Here" }
+									}))
 					},
 					list
 				}

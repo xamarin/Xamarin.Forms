@@ -14,7 +14,7 @@ namespace Xamarin.Forms.Controls
 			{
 				Text = @"
 Tap the first button once to turn the Entry background color to Green. Tap the Entry to focus it; the background should remain green; if it does not, the test has failed. 
-Tap the second button once to turn the Editor background color to Green. Tap the Editor to focus it; the background should remain green; if it does not, the test has failed." 
+Tap the second button once to turn the Editor background color to Green. Tap the Editor to focus it; the background should remain green; if it does not, the test has failed."
 			};
 
 			var entryButton = new Button { Text = "Toggle Entry Background (Green/Default)" };

@@ -1,6 +1,4 @@
-﻿using System;
-
-using Xamarin.Forms.CustomAttributes;
+﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 #if UITEST
@@ -11,7 +9,8 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 40998, "[UWP] Pressing escape with an awaited DisplayActionSheet doesn't return a result", PlatformAffected.WinRT)]
+	[Issue(IssueTracker.Bugzilla, 40998,
+		"[UWP] Pressing escape with an awaited DisplayActionSheet doesn't return a result", PlatformAffected.WinRT)]
 	public class Bugzilla40998 : TestContentPage
 	{
 		protected override void Init()
@@ -30,7 +29,8 @@ namespace Xamarin.Forms.Controls.Issues
 						Text = "Click to display ActionSheet",
 						Command = new Command(async () =>
 						{
-							var result = await DisplayActionSheet("Test ActionSheet", "Cancel", "Destroy", new string[] { "Test Button" });
+							string result = await DisplayActionSheet("Test ActionSheet", "Cancel", "Destroy",
+								new string[] { "Test Button" });
 							resultLabel.Text = result;
 						})
 					}

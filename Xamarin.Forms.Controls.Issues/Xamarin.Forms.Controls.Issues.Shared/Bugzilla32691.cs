@@ -1,5 +1,4 @@
-﻿using System;
-using Xamarin.Forms.CustomAttributes;
+﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 #if UITEST
@@ -11,53 +10,60 @@ namespace Xamarin.Forms.Controls
 {
 	public interface ICacheService
 	{
-		void ClearImageCache ();
+		void ClearImageCache();
 	}
 
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Bugzilla, 32691, "Clearing an image by setting Image.Source to null, while Image.IsLoading is true, doesn't work.")]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Bugzilla, 32691,
+		"Clearing an image by setting Image.Source to null, while Image.IsLoading is true, doesn't work.")]
 	public class Bugzilla32691 : TestContentPage
 	{
 		const string KSetImageSource = "SET IMAGE SOURCE";
 		const string KClearImageSource = "CLEAR IMAGE SOURCE";
 
-		protected override void Init ()
+		protected override void Init()
 		{
 #pragma warning disable 618
-			var label = new Label () { XAlign = TextAlignment.Center };
+			var label = new Label() { XAlign = TextAlignment.Center };
 #pragma warning restore 618
-			var image = new Image ();
+			var image = new Image();
 
-			image.PropertyChanged += (sender, e) => {
+			image.PropertyChanged += (sender, e) =>
+			{
 				if (e.PropertyName == "IsLoading")
 					label.Text = image.IsLoading ? "Loading" : "Done";
 			};
 
-			var btnSetOrClear = new Button () { Text = KSetImageSource, AutomationId = "btnLoad" };
+			var btnSetOrClear = new Button() { Text = KSetImageSource, AutomationId = "btnLoad" };
 
-			btnSetOrClear.Clicked += delegate {
-				if (btnSetOrClear.Text == KSetImageSource) {
-					ClearImageCache ();
+			btnSetOrClear.Clicked += delegate
+			{
+				if (btnSetOrClear.Text == KSetImageSource)
+				{
+					ClearImageCache();
 					image.Source =
 						"http://www.public-domain-image.com/free-images/miscellaneous/big-high-border-fence.jpg";
 					btnSetOrClear.Text = KClearImageSource;
-				} else {
+				}
+				else
+				{
 					image.Source = null;
 					btnSetOrClear.Text = KSetImageSource;
 				}
 			};
 
-			Content = new StackLayout {
-				Orientation = StackOrientation.Vertical, 
-				Padding = new Thickness (10),
+			Content = new StackLayout
+			{
+				Orientation = StackOrientation.Vertical,
+				Padding = new Thickness(10),
 				Children = { btnSetOrClear, image, label }
 			};
 		}
 
-		void ClearImageCache ()
+		void ClearImageCache()
 		{
-			var cacheService = DependencyService.Get<ICacheService> ();
-			cacheService?.ClearImageCache ();
+			var cacheService = DependencyService.Get<ICacheService>();
+			cacheService?.ClearImageCache();
 		}
 	}
 }

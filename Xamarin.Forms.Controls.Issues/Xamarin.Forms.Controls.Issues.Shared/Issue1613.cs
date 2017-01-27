@@ -1,33 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+﻿using System.Threading.Tasks;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Maps;
 
 namespace Xamarin.Forms.Controls.TestCasesPages
 {
-	[Preserve (AllMembers=true)]
-	[Issue (IssueTracker.Github, 1613, "Map.GetSizeRequest always returns map's current size", PlatformAffected.Android | PlatformAffected.iOS)]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 1613, "Map.GetSizeRequest always returns map's current size",
+		PlatformAffected.Android | PlatformAffected.iOS)]
 	public class Issue1613 : ContentPage
 	{
-		public Issue1613 ()
+		public Issue1613()
 		{
-			Build ();
+			Build();
 		}
 
-		async void Build ()
+		async void Build()
 		{
-			var image = new Image {
+			var image = new Image
+			{
 				Source = "http://www.califliving.com/title24-energy/images/sanfrancisco.jpg",
 				Aspect = Aspect.AspectFill,
 				Opacity = 0.5,
 			};
 
-			var name = new Label {
+			var name = new Label
+			{
 				Text = "Foo",
 #pragma warning disable 618
 				XAlign = TextAlignment.Center,
@@ -43,16 +41,19 @@ namespace Xamarin.Forms.Controls.TestCasesPages
 				TextColor = Color.White,
 			};
 
-			var nameView = new AbsoluteLayout {
+			var nameView = new AbsoluteLayout
+			{
 				HeightRequest = 170,
 				BackgroundColor = Color.Black,
-				Children = { 
-					{image, new Rectangle(0, 0, 1, 1), AbsoluteLayoutFlags.All},  
-					{name, new Rectangle(0, 0, 1, 1), AbsoluteLayoutFlags.All} 
+				Children =
+				{
+					{ image, new Rectangle(0, 0, 1, 1), AbsoluteLayoutFlags.All },
+					{ name, new Rectangle(0, 0, 1, 1), AbsoluteLayoutFlags.All }
 				},
 			};
-				
-			var addressLabel = new Label {
+
+			var addressLabel = new Label
+			{
 				Text = "Loading address…",
 #pragma warning disable 618
 				XAlign = TextAlignment.Center,
@@ -62,16 +63,18 @@ namespace Xamarin.Forms.Controls.TestCasesPages
 				YAlign = TextAlignment.Center,
 #pragma warning restore 618
 			};
-										
-			var map = new Map {
+
+			var map = new Map
+			{
 				VerticalOptions = LayoutOptions.FillAndExpand,
 			};
 
-			Content = new StackLayout {
+			Content = new StackLayout
+			{
 				Children = { nameView, addressLabel, map },
 			};
 
-			await Task.Delay (1000);
+			await Task.Delay(1000);
 			addressLabel.Text = "Updated with new\nmultiline\nlabel";
 		}
 	}

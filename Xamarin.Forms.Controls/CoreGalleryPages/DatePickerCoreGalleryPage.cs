@@ -14,10 +14,12 @@ namespace Xamarin.Forms.Controls
 			var dateContainer = new ViewContainer<DatePicker>(Test.DatePicker.Date,
 				new DatePicker { Date = new DateTime(1987, 9, 13) });
 
-			var dateSelectedContainer = new EventViewContainer<DatePicker>(Test.DatePicker.DateSelected, new DatePicker());
+			var dateSelectedContainer = new EventViewContainer<DatePicker>(Test.DatePicker.DateSelected,
+				new DatePicker());
 			dateSelectedContainer.View.DateSelected += (sender, args) => dateSelectedContainer.EventFired();
 
-			var formatDateContainer = new ViewContainer<DatePicker>(Test.DatePicker.Format, new DatePicker { Format = "ddd" });
+			var formatDateContainer = new ViewContainer<DatePicker>(Test.DatePicker.Format,
+				new DatePicker { Format = "ddd" });
 			var minimumDateContainer = new ViewContainer<DatePicker>(Test.DatePicker.MinimumDate,
 				new DatePicker { MinimumDate = new DateTime(1987, 9, 13) });
 			var maximumDateContainer = new ViewContainer<DatePicker>(Test.DatePicker.MaximumDate,

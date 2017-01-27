@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
@@ -11,19 +10,22 @@ using Xamarin.Forms.Core.UITests;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve (AllMembers=true)]
-	[Issue (IssueTracker.Github, 342, "NRE when Image is not assigned source", PlatformAffected.WinPhone)]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 342, "NRE when Image is not assigned source", PlatformAffected.WinPhone)]
 	public class Issue342NoSource : TestContentPage
 	{
-		protected override void Init ()
+		protected override void Init()
 		{
 			Title = "Issue 342";
-			Content = new StackLayout {
-				Children = {
-					new Label {
+			Content = new StackLayout
+			{
+				Children =
+				{
+					new Label
+					{
 						Text = "Uninitialized image"
 					},
-					new Image ()
+					new Image()
 				}
 			};
 		}
@@ -38,36 +40,40 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Screenshot ("All elements present");
 		}
 #endif
-    }
+	}
 
-	[Preserve (AllMembers=true)]
-	[Issue (IssueTracker.Github, 342, "NRE when Image is delayed source", PlatformAffected.WinPhone)]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 342, "NRE when Image is delayed source", PlatformAffected.WinPhone)]
 	public class Issue342DelayedSource : TestContentPage
 	{
-		protected override void Init ()
+		protected override void Init()
 		{
 			Title = "Issue 342";
 
-			_image = new Image ();
+			_image = new Image();
 
-			Content = new StackLayout {
-				Children = { 
-					new Label {
+			Content = new StackLayout
+			{
+				Children =
+				{
+					new Label
+					{
 						Text = "Delayed image"
 					},
-					_image 
+					_image
 				}
 			};
 
-			AddSourceAfterDelay ();
+			AddSourceAfterDelay();
 		}
 
 		// Should not throw exception when user does not include image
 		Image _image;
 
-		void AddSourceAfterDelay ()
+		void AddSourceAfterDelay()
 		{
-			Device.StartTimer (TimeSpan.FromSeconds (2), () => {
+			Device.StartTimer(TimeSpan.FromSeconds(2), () =>
+			{
 				_image.Source = "cover1.jpg";
 				return false;
 			});

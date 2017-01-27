@@ -1,7 +1,5 @@
-﻿using System;
-
+﻿using System.Collections.ObjectModel;
 using Xamarin.Forms.CustomAttributes;
-using System.Collections.ObjectModel;
 using Xamarin.Forms.Internals;
 
 #if UITEST
@@ -11,65 +9,78 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Github, 2953, "GroupHeaderCells disappear when item is removed from a group in ListView (iOS only) ")]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 2953,
+		"GroupHeaderCells disappear when item is removed from a group in ListView (iOS only) ")]
 	public class Issue2953 : TestContentPage
 	{
-		protected override void Init ()
+		protected override void Init()
 		{
-			var items = new ObservableCollection<GroupedItems> () {
-				new GroupedItems ("Header 1") { "1.1", "1.2", "1.3" },
-				new GroupedItems ("Header 2") { "2.1", "2.2", "2.3" },
-				new GroupedItems ("Header 3") { "3.1", "3.2", "3.3" },
-				new GroupedItems ("Header 4") { "4.1", "4.2", "4.3" },
+			var items = new ObservableCollection<GroupedItems>()
+			{
+				new GroupedItems("Header 1") { "1.1", "1.2", "1.3" },
+				new GroupedItems("Header 2") { "2.1", "2.2", "2.3" },
+				new GroupedItems("Header 3") { "3.1", "3.2", "3.3" },
+				new GroupedItems("Header 4") { "4.1", "4.2", "4.3" },
 			};
 
-			var listview = new ListView {
+			var listview = new ListView
+			{
 				HasUnevenRows = true,
 				IsGroupingEnabled = true
 			};
 
 			listview.GroupHeaderTemplate = new DataTemplate
 				(typeof(HeaderCell));
-			listview.ItemTemplate = new DataTemplate (typeof(ItemCell));
+			listview.ItemTemplate = new DataTemplate(typeof(ItemCell));
 			listview.ItemsSource = items;
 
-			var btnRemove = new Button () { Text = "Remove", AutomationId="btnRemove" };
-			btnRemove.Clicked += delegate {
-				if (items[1].Count > 0) {
+			var btnRemove = new Button() { Text = "Remove", AutomationId = "btnRemove" };
+			btnRemove.Clicked += delegate
+			{
+				if (items[1].Count > 0)
+				{
 					items[1].RemoveAt(0);
 				}
 			};
 
-			Content = new StackLayout {
+			Content = new StackLayout
+			{
 				Orientation = StackOrientation.Vertical,
 				Children = { listview, btnRemove }
 			};
 		}
 
-		[Preserve (AllMembers = true)]
-		internal class GroupedItems : ObservableCollection<string> {
-			public GroupedItems (string groupName) { GroupName = groupName; }
+		[Preserve(AllMembers = true)]
+		internal class GroupedItems : ObservableCollection<string>
+		{
+			public GroupedItems(string groupName)
+			{
+				GroupName = groupName;
+			}
+
 			public string GroupName { get; private set; }
 		}
 
-		[Preserve (AllMembers = true)]
+		[Preserve(AllMembers = true)]
 		internal class HeaderCell : ViewCell
 		{
-			public HeaderCell () {
+			public HeaderCell()
+			{
 				Height = 44;
 				var label = new Label { BackgroundColor = Color.Pink };
-				label.SetBinding (Label.TextProperty, "GroupName");
+				label.SetBinding(Label.TextProperty, "GroupName");
 				View = label;
 			}
 		}
 
-		[Preserve (AllMembers = true)]
+		[Preserve(AllMembers = true)]
 		internal class ItemCell : ViewCell
 		{
-			public ItemCell () {
+			public ItemCell()
+			{
 				var label = new Label { BackgroundColor = Color.Aqua };
-				label.SetBinding (Label.TextProperty, ".");
+				label.SetBinding(Label.TextProperty, ".");
 				View = label;
 			}
 		}

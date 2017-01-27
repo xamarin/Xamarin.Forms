@@ -7,27 +7,26 @@ namespace Xamarin.Forms.Controls
 {
 	public partial class TwitterPage : ContentPage
 	{
-
-		private TwitterViewModel ViewModel
-		{
-			get { return BindingContext as TwitterViewModel; }
-		}
 		public TwitterPage()
 		{
 			InitializeComponent();
 			BindingContext = new TwitterViewModel();
-
 
 			listView.ItemTapped += (sender, args) =>
 			{
 				if (listView.SelectedItem == null)
 					return;
 				var tweet = listView.SelectedItem as Tweet;
-				this.Navigation.PushAsync(new WebsiteView("http://m.twitter.com/shanselman/status/" + tweet.StatusID, tweet.Date));
+				Navigation.PushAsync(new WebsiteView("http://m.twitter.com/shanselman/status/" + tweet.StatusID,
+					tweet.Date));
 				listView.SelectedItem = null;
 			};
 		}
 
+		private TwitterViewModel ViewModel
+		{
+			get { return BindingContext as TwitterViewModel; }
+		}
 
 		protected override void OnAppearing()
 		{
@@ -41,33 +40,26 @@ namespace Xamarin.Forms.Controls
 
 	public class TwitterViewModel : HBaseViewModel
 	{
-
-		public ObservableCollection<Tweet> Tweets { get; set; }
+		private Command loadTweetsCommand;
 
 		public TwitterViewModel()
 		{
 			Title = "Twitter";
 			Icon = "slideout.png";
 			Tweets = new ObservableCollection<Tweet>();
-
 		}
-
-		private Command loadTweetsCommand;
 
 		public Command LoadTweetsCommand
 		{
 			get
 			{
 				return loadTweetsCommand ??
-				  (loadTweetsCommand = new Command(async () =>
-				  {
-					  await ExecuteLoadTweetsCommand();
-				  }, () =>
-				  {
-					  return !IsBusy;
-				  }));
+						(loadTweetsCommand =
+							new Command(async () => { await ExecuteLoadTweetsCommand(); }, () => { return !IsBusy; }));
 			}
 		}
+
+		public ObservableCollection<Tweet> Tweets { get; set; }
 
 		public async Task ExecuteLoadTweetsCommand()
 		{
@@ -79,7 +71,6 @@ namespace Xamarin.Forms.Controls
 			var error = false;
 			try
 			{
-
 				Tweets.Clear();
 				//var auth = new ApplicationOnlyAuthorizer()
 				//{
@@ -124,9 +115,6 @@ namespace Xamarin.Forms.Controls
 				//	// only does anything on iOS, for the Watch
 				//	//	DependencyService.Get<ITweetStore>().Save(tweets);
 				//}
-
-
-
 			}
 			catch
 			{
@@ -150,36 +138,34 @@ namespace Xamarin.Forms.Controls
 		{
 		}
 
+		public DateTime CreatedAt { get; set; }
 
-		public ulong StatusID { get; set; }
-
-		public string ScreenName { get; set; }
-
-		public string Text { get; set; }
+		public ulong CurrentUserRetweet { get; set; }
 
 		//[JsonIgnore]
-		public string Date { get { return CreatedAt.ToString("g"); } }
-		//[JsonIgnore]
-		public string RTCount { get { return CurrentUserRetweet == 0 ? string.Empty : CurrentUserRetweet + " RT"; } }
+		public string Date
+		{
+			get { return CreatedAt.ToString("g"); }
+		}
 
 		public string Image { get; set; }
 
-		public DateTime CreatedAt
+		//[JsonIgnore]
+		public string RTCount
 		{
-			get;
-			set;
+			get { return CurrentUserRetweet == 0 ? string.Empty : CurrentUserRetweet + " RT"; }
 		}
 
-		public ulong CurrentUserRetweet
-		{
-			get;
-			set;
-		}
+		public string ScreenName { get; set; }
+
+		public ulong StatusID { get; set; }
+
+		public string Text { get; set; }
 	}
 
 	public interface ITweetStore
 	{
-		void Save(System.Collections.Generic.List<Tweet> tweets);
+		void Save(List<Tweet> tweets);
 		//System.Collections.Generic.List<Hanselman.Shared.Tweet> Load ();
 	}
 }

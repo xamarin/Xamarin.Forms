@@ -9,19 +9,23 @@ using Xamarin.Forms.Core.UITests;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Github, 488, "Resizing the Label results in wrapped text being cropped on iOS", PlatformAffected.iOS)]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 488, "Resizing the Label results in wrapped text being cropped on iOS",
+		PlatformAffected.iOS)]
 	public class Issue488 : TestContentPage
 	{
-		protected override void Init ()
+		protected override void Init()
 		{
-			var layout = new RelativeLayout {
+			var layout = new RelativeLayout
+			{
 				BackgroundColor = Color.Gray
 			};
-			var label = new Label {
-				Text = "I am a long bit of text. I am a long bit of text. I am a long bit of text. I am a long bit of text. I am a long bit of text. I am a long bit of text. I am a long bit of text. I am a long bit of text. I am a long bit of text. I am a long bit of text. I am a long bit of text. I am a long bit of text. I am a long bit of text. I am a long bit of text. I am a long bit of text. I am a long bit of text. I am a long bit of text."
+			var label = new Label
+			{
+				Text =
+					"I am a long bit of text. I am a long bit of text. I am a long bit of text. I am a long bit of text. I am a long bit of text. I am a long bit of text. I am a long bit of text. I am a long bit of text. I am a long bit of text. I am a long bit of text. I am a long bit of text. I am a long bit of text. I am a long bit of text. I am a long bit of text. I am a long bit of text. I am a long bit of text. I am a long bit of text."
 			};
-			layout.Children.Add (label, () => new Rectangle(0, 0, 250, 400));
+			layout.Children.Add(label, () => new Rectangle(0, 0, 250, 400));
 			Content = layout;
 		}
 

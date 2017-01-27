@@ -6,37 +6,45 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.TestCasesPages
 {
-	[Preserve (AllMembers=true)]
-	[Issue (IssueTracker.Bugzilla, 22401, "MasterDetailPage detail width broken when landscape", PlatformAffected.iOS, NavigationBehavior.PushAsync)]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Bugzilla, 22401, "MasterDetailPage detail width broken when landscape", PlatformAffected.iOS,
+		NavigationBehavior.PushAsync)]
 	public class Bugzilla22401 : MasterDetailPage
 	{
 		public Bugzilla22401()
 		{
-			List<Person> people = GetDemoData ();
+			List<Person> people = GetDemoData();
 
 			// Create the ListView.
-			var listView = new ListView {
+			var listView = new ListView
+			{
 				// Source of data items.
 				ItemsSource = people,
 
 				// Define template for displaying each item.
 				// (Argument of DataTemplate constructor is called for 
 				//      each item; it must return a Cell derivative.)
-				ItemTemplate = new DataTemplate (() => {
+				ItemTemplate = new DataTemplate(() =>
+				{
 					// Create views with bindings for displaying each property.
-					Label nameLabel = new Label();
-					nameLabel.SetBinding (Label.TextProperty, "Name");
+					var nameLabel = new Label();
+					nameLabel.SetBinding(Label.TextProperty, "Name");
 
 					// Return an assembled ViewCell.
-					return new ViewCell {
-						View = new StackLayout {
+					return new ViewCell
+					{
+						View = new StackLayout
+						{
 							Padding = new Thickness(0, 5),
 							Orientation = StackOrientation.Horizontal,
-							Children = {
-								new StackLayout {
+							Children =
+							{
+								new StackLayout
+								{
 									VerticalOptions = LayoutOptions.Center,
 									Spacing = 0,
-									Children = {
+									Children =
+									{
 										nameLabel
 									}
 								}
@@ -48,23 +56,53 @@ namespace Xamarin.Forms.Controls.TestCasesPages
 
 			Master = new ContentPage { Title = "master", Icon = "menuIcon.png", Content = listView };
 
-			listView.ItemSelected += (sender, e) => {
-				Detail = CreateDetailPage (string.Format("Page {0}", (e.SelectedItem as Person).Name));
+			listView.ItemSelected += (sender, e) =>
+			{
+				Detail = CreateDetailPage(string.Format("Page {0}", (e.SelectedItem as Person).Name));
 				IsPresented = false;
 			};
-			listView.SelectedItem = people.First ();
+			listView.SelectedItem = people.First();
+		}
+
+		static Page CreateDetailPage(string text)
+		{
+			var page = new ContentPage
+			{
+				Title = text,
+				Content = new StackLayout
+				{
+					Children =
+					{
+						new Label
+						{
+							Text = text,
+							VerticalOptions = LayoutOptions.CenterAndExpand,
+							HorizontalOptions = LayoutOptions.CenterAndExpand,
+						}
+					}
+				}
+			};
+
+			var tbiBank = new ToolbarItem { Command = new Command(() => { }), Icon = "bank.png" };
+			var tbiCalc = new ToolbarItem { Command = new Command(() => { }), Icon = "calculator.png" };
+
+			page.ToolbarItems.Add(tbiBank);
+			page.ToolbarItems.Add(tbiCalc);
+
+			return new NavigationPage(page);
 		}
 
 		static List<Person> GetDemoData()
 		{
-			List<Person> people = new List<Person> {
+			var people = new List<Person>
+			{
 				new Person("Abigail"),
 				new Person("Bob"),
-				new Person("Cathy"), 
+				new Person("Cathy"),
 				new Person("David"),
 				new Person("Eugenie"),
 				new Person("Freddie"),
-				new Person("Greta"), 
+				new Person("Greta"),
 				new Person("Harold"),
 				new Person("Irene"),
 				new Person("Jonathan"),
@@ -86,30 +124,6 @@ namespace Xamarin.Forms.Controls.TestCasesPages
 				new Person("Zachary"),
 			};
 			return people;
-		}
-
-		static Page CreateDetailPage(string text)
-		{
-			var page = new ContentPage {
-				Title = text,
-				Content = new StackLayout {
-					Children = {
-						new Label { 
-							Text = text,
-							VerticalOptions = LayoutOptions.CenterAndExpand,
-							HorizontalOptions = LayoutOptions.CenterAndExpand,
-						}
-					}
-				}
-			};
-
-			var tbiBank = new ToolbarItem { Command = new Command (() => { }), Icon = "bank.png" };
-			var tbiCalc = new ToolbarItem { Command = new Command (() => { }), Icon = "calculator.png" };
-
-			page.ToolbarItems.Add (tbiBank);
-			page.ToolbarItems.Add (tbiCalc);
-
-			return new NavigationPage (page);
 		}
 	}
 }

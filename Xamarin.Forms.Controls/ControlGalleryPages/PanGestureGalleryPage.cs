@@ -1,26 +1,42 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Xamarin.Forms.Controls
 {
 	public class PanGestureGalleryPage : ContentPage
 	{
+		public PanGestureGalleryPage()
+		{
+			var box = new Image
+			{
+				BackgroundColor = Color.Gray,
+				WidthRequest = 2000,
+				HeightRequest = 2000,
+				VerticalOptions = LayoutOptions.Center,
+				HorizontalOptions = LayoutOptions.Center
+			};
+
+			var label = new Label { Text = "Use two fingers to pinch. Use one finger to pan." };
+
+			var panme = new PanContainer { Content = box };
+			panme.PanCompleted += (s, e) => { label.Text = e.Message; };
+
+			Content = new StackLayout { Children = { label, panme }, Padding = new Thickness(20) };
+		}
+
 		public class PanCompleteArgs : EventArgs
 		{
-			public PanCompleteArgs(string message) { Message = message; }
-			public string Message
+			public PanCompleteArgs(string message)
 			{
-				get; private set;
+				Message = message;
 			}
+
+			public string Message { get; private set; }
 		}
 
 		public class PanContainer : ContentView
 		{
-			double _x, _y;
 			double _currentScale = 1;
+			double _x, _y;
 
 			public EventHandler<PanCompleteArgs> PanCompleted;
 
@@ -63,7 +79,6 @@ namespace Xamarin.Forms.Controls
 
 				pinch.PinchUpdated += (sender, e) =>
 				{
-
 					if (e.Status == GestureStatus.Started)
 					{
 						startScale = Content.Scale;
@@ -75,18 +90,18 @@ namespace Xamarin.Forms.Controls
 						_currentScale += (e.Scale - 1) * startScale;
 						_currentScale = Math.Max(1, _currentScale);
 
-						var renderedX = Content.X + xOffset;
-						var deltaX = renderedX / Width;
-						var deltaWidth = Width / (Content.Width * startScale);
-						var originX = (e.ScaleOrigin.X - deltaX) * deltaWidth;
+						double renderedX = Content.X + xOffset;
+						double deltaX = renderedX / Width;
+						double deltaWidth = Width / (Content.Width * startScale);
+						double originX = (e.ScaleOrigin.X - deltaX) * deltaWidth;
 
-						var renderedY = Content.Y + yOffset;
-						var deltaY = renderedY / Height;
-						var deltaHeight = Height / (Content.Height * startScale);
-						var originY = (e.ScaleOrigin.Y - deltaY) * deltaHeight;
+						double renderedY = Content.Y + yOffset;
+						double deltaY = renderedY / Height;
+						double deltaHeight = Height / (Content.Height * startScale);
+						double originY = (e.ScaleOrigin.Y - deltaY) * deltaHeight;
 
-						double targetX = xOffset - (originX * Content.Width) * (_currentScale - startScale);
-						double targetY = yOffset - (originY * Content.Height) * (_currentScale - startScale);
+						double targetX = xOffset - originX * Content.Width * (_currentScale - startScale);
+						double targetY = yOffset - originY * Content.Height * (_currentScale - startScale);
 
 						Content.TranslationX = targetX.Clamp(-Content.Width * (_currentScale - 1), 0);
 						Content.TranslationY = targetY.Clamp(-Content.Height * (_currentScale - 1), 0);
@@ -102,28 +117,6 @@ namespace Xamarin.Forms.Controls
 				};
 				return pinch;
 			}
-		}
-
-		public PanGestureGalleryPage()
-		{
-			var box = new Image
-			{
-				BackgroundColor = Color.Gray,
-				WidthRequest = 2000,
-				HeightRequest = 2000,
-				VerticalOptions = LayoutOptions.Center,
-				HorizontalOptions = LayoutOptions.Center
-			};
-
-			var label = new Label { Text = "Use two fingers to pinch. Use one finger to pan." };
-
-			var panme = new PanContainer { Content = box };
-			panme.PanCompleted += (s, e) =>
-			{
-				label.Text = e.Message;
-			};
-
-			Content = new StackLayout { Children = { label, panme }, Padding = new Thickness(20) };
 		}
 	}
 }

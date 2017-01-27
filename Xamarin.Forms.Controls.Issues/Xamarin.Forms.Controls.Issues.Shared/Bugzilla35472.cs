@@ -12,60 +12,71 @@ using Xamarin.UITest;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Bugzilla, 35472, "PopAsync during ScrollToAsync throws NullReferenceException")]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Bugzilla, 35472, "PopAsync during ScrollToAsync throws NullReferenceException")]
 	public class Bugzilla35472 : TestNavigationPage
 	{
-		protected override void Init ()
+		protected override void Init()
 		{
 			// Set up the scroll viewer page
-			var scrollToButton = new Button () { Text = "Now push this button" };
+			var scrollToButton = new Button() { Text = "Now push this button" };
 
-			var stackLayout = new StackLayout ();
+			var stackLayout = new StackLayout();
 
-			stackLayout.Children.Add (scrollToButton);
+			stackLayout.Children.Add(scrollToButton);
 
-			for (int n = 0; n < 100; n++) {
-				stackLayout.Children.Add (new Label () { Text = n.ToString () });
+			for (var n = 0; n < 100; n++)
+			{
+				stackLayout.Children.Add(new Label() { Text = n.ToString() });
 			}
 
-			var scrollView = new ScrollView () {
+			var scrollView = new ScrollView()
+			{
 				Content = stackLayout
 			};
 
-			var pageWithScrollView = new ContentPage () {
+			var pageWithScrollView = new ContentPage()
+			{
 				Content = scrollView
 			};
 
 			// Set up the start page
-			var goButton = new Button () {
+			var goButton = new Button()
+			{
 				Text = "Push this button"
 			};
 
-			var successLabel = new Label () { Text = "The test has passed", IsVisible = false };
+			var successLabel = new Label() { Text = "The test has passed", IsVisible = false };
 
-			var startPage = new ContentPage () {
-				Content = new StackLayout {
+			var startPage = new ContentPage()
+			{
+				Content = new StackLayout
+				{
 					VerticalOptions = LayoutOptions.Center,
-					Children = {
+					Children =
+					{
 						goButton,
 						successLabel
 					}
 				}
 			};
 
-			PushAsync (startPage);
+			PushAsync(startPage);
 
-			goButton.Clicked += (sender, args) => Navigation.PushAsync (pageWithScrollView);
+			goButton.Clicked += (sender, args) => Navigation.PushAsync(pageWithScrollView);
 
-			scrollToButton.Clicked += async (sender, args) => {
-				try {
+			scrollToButton.Clicked += async (sender, args) =>
+			{
+				try
+				{
 					// Deliberately not awaited so we can simulate a user navigating back
-					scrollView.ScrollToAsync (0, 1500, true);
-					await Navigation.PopAsync ();
+					scrollView.ScrollToAsync(0, 1500, true);
+					await Navigation.PopAsync();
 					successLabel.IsVisible = true;
-				} catch (Exception ex) {
-					Debug.WriteLine (ex);
+				}
+				catch (Exception ex)
+				{
+					Debug.WriteLine(ex);
 				}
 			};
 		}

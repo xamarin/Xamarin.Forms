@@ -1,8 +1,6 @@
 ﻿using System;
-
-using Xamarin.Forms.CustomAttributes;
 using System.Collections.Generic;
-using System.Threading;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 #if UITEST
@@ -14,47 +12,52 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Github, 2948, "MasterDetailPage Detail is interactive even when Master is open when in Landscape")]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 2948,
+		"MasterDetailPage Detail is interactive even when Master is open when in Landscape")]
 	public class Issue2948 : TestMasterDetailPage
 	{
 		static MasterDetailPage s_mdp;
 
-		protected override void Init ()
+		protected override void Init()
 		{
 			s_mdp = this;
-			var menuPage = new MenuPage ();
+			var menuPage = new MenuPage();
 
-			menuPage.Menu.ItemSelected += (sender, e) => NavigateTo (e.SelectedItem as MenuItem);
+			menuPage.Menu.ItemSelected += (sender, e) => NavigateTo(e.SelectedItem as MenuItem);
 
 			Master = menuPage;
-			Detail = new NavigationPage (new ContractsPage ());
+			Detail = new NavigationPage(new ContractsPage());
 		}
 
-		[Preserve (AllMembers = true)]
+		[Preserve(AllMembers = true)]
 		public class MenuListData : List<MenuItem>
 		{
-			public MenuListData ()
+			public MenuListData()
 			{
-				Add (new MenuItem () { 
-					Title = "Contracts", 
-					IconSource = "bank.png", 
+				Add(new MenuItem()
+				{
+					Title = "Contracts",
+					IconSource = "bank.png",
 					TargetType = typeof(ContractsPage)
 				});
 
-				Add (new MenuItem () { 
-					Title = "Leads", 
-					IconSource = "bank.png", 
+				Add(new MenuItem()
+				{
+					Title = "Leads",
+					IconSource = "bank.png",
 					TargetType = typeof(ContractsPage)
 				});
 
-				Add (new MenuItem () { 
-					Title = "Accounts", 
-					IconSource = "bank.png", 
+				Add(new MenuItem()
+				{
+					Title = "Accounts",
+					IconSource = "bank.png",
 					TargetType = typeof(ContractsPage)
 				});
 
-				Add (new MenuItem () {
+				Add(new MenuItem()
+				{
 					Title = "Opportunities",
 					IconSource = "bank.png",
 					TargetType = typeof(ContractsPage)
@@ -62,10 +65,10 @@ namespace Xamarin.Forms.Controls.Issues
 			}
 		}
 
-		[Preserve (AllMembers = true)]
+		[Preserve(AllMembers = true)]
 		public class ContractsPage : ContentPage
 		{
-			public ContractsPage ()
+			public ContractsPage()
 			{
 				Title = "Contracts";
 				Icon = "bank.png";
@@ -74,128 +77,134 @@ namespace Xamarin.Forms.Controls.Issues
 				grid.ColumnDefinitions.Add(new ColumnDefinition());
 				grid.ColumnDefinitions.Add(new ColumnDefinition());
 
-				var btn = new Button {
+				var btn = new Button
+				{
 					HeightRequest = 300,
 					HorizontalOptions = LayoutOptions.End,
 					BackgroundColor = Color.Pink,
 					AutomationId = "btnOnDetail"
 				};
 
-				btn.Clicked+= (object sender, EventArgs e) => {
-					DisplayAlert("Clicked","I was clicked","Ok");
-				};
+				btn.Clicked += (object sender, EventArgs e) => { DisplayAlert("Clicked", "I was clicked", "Ok"); };
 
-				Grid.SetColumn(btn,1);
+				Grid.SetColumn(btn, 1);
 
 				grid.Children.Add(btn);
 
-				var showMasterButton = new Button {
+				var showMasterButton = new Button
+				{
 					AutomationId = "ShowMasterBtn",
 					Text = "Show Master"
 				};
-				showMasterButton.Clicked += (sender, e) => {
-					s_mdp.IsPresented = true;
-				};
+				showMasterButton.Clicked += (sender, e) => { s_mdp.IsPresented = true; };
 
-				Content = new ScrollView {
-
-					Content = new StackLayout {
-						Children = {
+				Content = new ScrollView
+				{
+					Content = new StackLayout
+					{
+						Children =
+						{
 							showMasterButton,
 							grid,
-							new BoxView {
+							new BoxView
+							{
 								HeightRequest = 100,
 								Color = Color.Red,
 							},
-							new BoxView {
+							new BoxView
+							{
 								HeightRequest = 200,
 								Color = Color.Green,
 							},
-							new BoxView {
+							new BoxView
+							{
 								HeightRequest = 300,
 								Color = Color.Red,
 							},
-							new BoxView {
+							new BoxView
+							{
 								HeightRequest = 400,
 								Color = Color.Green,
 							},
-							new BoxView {
+							new BoxView
+							{
 								HeightRequest = 500,
 								Color = Color.Red,
 							}
 						}
 					},
-
 				};
 			}
 		}
 
-		[Preserve (AllMembers = true)]
+		[Preserve(AllMembers = true)]
 		public class MenuListView : ListView
 		{
-			public MenuListView ()
+			public MenuListView()
 			{
-				List<MenuItem> data = new MenuListData ();
+				List<MenuItem> data = new MenuListData();
 
 				ItemsSource = data;
 				VerticalOptions = LayoutOptions.FillAndExpand;
 				BackgroundColor = Color.Transparent;
 
-				var cell = new DataTemplate (typeof(ImageCell));
-				cell.SetBinding (TextCell.TextProperty, "Title");
-				cell.SetBinding (ImageCell.ImageSourceProperty, "IconSource");
+				var cell = new DataTemplate(typeof(ImageCell));
+				cell.SetBinding(TextCell.TextProperty, "Title");
+				cell.SetBinding(ImageCell.ImageSourceProperty, "IconSource");
 
 				ItemTemplate = cell;
-				SelectedItem = data [0];
+				SelectedItem = data[0];
 			}
 		}
 
 		public class MenuPage : ContentPage
 		{
-			public ListView Menu { get; set; }
-
-			public MenuPage ()
+			public MenuPage()
 			{
 				Title = "Menu";
-				BackgroundColor = Color.FromHex ("333333");
+				BackgroundColor = Color.FromHex("333333");
 
-				Menu = new MenuListView ();
+				Menu = new MenuListView();
 
-				var menuLabel = new ContentView {
-					Padding = new Thickness (10, 36, 0, 5),
-					Content = new Label {
-						TextColor = Color.FromHex ("AAAAAA"),
-						Text = "MENU", 
+				var menuLabel = new ContentView
+				{
+					Padding = new Thickness(10, 36, 0, 5),
+					Content = new Label
+					{
+						TextColor = Color.FromHex("AAAAAA"),
+						Text = "MENU",
 					}
 				};
 
-				var layout = new StackLayout { 
-					Spacing = 0, 
+				var layout = new StackLayout
+				{
+					Spacing = 0,
 					VerticalOptions = LayoutOptions.FillAndExpand
 				};
-				layout.Children.Add (menuLabel);
-				layout.Children.Add (Menu);
+				layout.Children.Add(menuLabel);
+				layout.Children.Add(Menu);
 
 				Content = layout;
 			}
+
+			public ListView Menu { get; set; }
 		}
 
-		void NavigateTo (MenuItem menu)
+		void NavigateTo(MenuItem menu)
 		{
-			var displayPage = (Page)Activator.CreateInstance (menu.TargetType);
+			var displayPage = (Page)Activator.CreateInstance(menu.TargetType);
 
-			Detail = new NavigationPage (displayPage);
-
+			Detail = new NavigationPage(displayPage);
 		}
 
-		[Preserve (AllMembers = true)]
+		[Preserve(AllMembers = true)]
 		public class MenuItem
 		{
-			public string Title { get; set; }
-
 			public string IconSource { get; set; }
 
 			public Type TargetType { get; set; }
+
+			public string Title { get; set; }
 		}
 
 #if UITEST

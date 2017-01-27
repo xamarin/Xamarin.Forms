@@ -4,7 +4,8 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms.Controls
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 44461, "ScrollToPosition.Center works differently on Android and iOS", PlatformAffected.iOS)]
+	[Issue(IssueTracker.Bugzilla, 44461, "ScrollToPosition.Center works differently on Android and iOS",
+		PlatformAffected.iOS)]
 	public class Bugzilla44461 : TestContentPage
 	{
 		protected override void Init()
@@ -35,10 +36,8 @@ namespace Xamarin.Forms.Controls
 				{
 					Text = "Button" + i
 				};
-				button.Clicked += (sender, args) =>
-				{
-					scrollView.ScrollToAsync(sender as Button, ScrollToPosition.Center, true);
-				};
+				button.Clicked +=
+					(sender, args) => { scrollView.ScrollToAsync(sender as Button, ScrollToPosition.Center, true); };
 
 				stackLayout.Children.Add(button);
 			}

@@ -10,7 +10,8 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 35736, "[iOS] Editor does not update Text value from autocorrect when losing focus", PlatformAffected.iOS)]
+	[Issue(IssueTracker.Bugzilla, 35736, "[iOS] Editor does not update Text value from autocorrect when losing focus",
+		PlatformAffected.iOS)]
 	public class Bugzilla35736 : TestContentPage
 	{
 		protected override void Init()
@@ -40,7 +41,6 @@ namespace Xamarin.Forms.Controls.Issues
 				}
 			};
 		}
-
 
 #if UITEST && __IOS__
 		[Test]

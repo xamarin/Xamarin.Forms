@@ -1,6 +1,4 @@
-﻿using System;
-
-using Xamarin.Forms.CustomAttributes;
+﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 #if UITEST
@@ -10,32 +8,33 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-    [Preserve(AllMembers = true)]
-    [Issue(IssueTracker.Bugzilla, 42074, "[Android] Clicking cancel on a TimePicker does not cause it to unfocus", PlatformAffected.Android)]
-    public class Bugzilla42074 : TestContentPage
-    {
-        const string TimePicker = "TimePicker";
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Bugzilla, 42074, "[Android] Clicking cancel on a TimePicker does not cause it to unfocus",
+		PlatformAffected.Android)]
+	public class Bugzilla42074 : TestContentPage
+	{
+		const string TimePicker = "TimePicker";
 
-        protected override void Init()
-        {
-            var timePicker = new TimePicker
-            {
-                AutomationId = TimePicker
-            };
-            var timePickerFocusButton = new Button
-            {
-                Text = "Click to focus TimePicker",
-                Command = new Command(() => timePicker.Focus())
-            };
-            Content = new StackLayout
-            {
-                Children =
-                {
-                    timePicker,
-                    timePickerFocusButton
-                }
-            };
-        }
+		protected override void Init()
+		{
+			var timePicker = new TimePicker
+			{
+				AutomationId = TimePicker
+			};
+			var timePickerFocusButton = new Button
+			{
+				Text = "Click to focus TimePicker",
+				Command = new Command(() => timePicker.Focus())
+			};
+			Content = new StackLayout
+			{
+				Children =
+				{
+					timePicker,
+					timePickerFocusButton
+				}
+			};
+		}
 
 #if UITEST
 
@@ -57,5 +56,5 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 
 #endif
-    }
+	}
 }

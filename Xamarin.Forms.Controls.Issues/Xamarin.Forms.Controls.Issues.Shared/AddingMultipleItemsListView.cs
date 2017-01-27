@@ -1,14 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Windows.Input;
-
-using Xamarin.Forms;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
+
 #if UITEST
 using NUnit.Framework;
 using Xamarin.UITest;
@@ -20,32 +19,35 @@ namespace Xamarin.Forms.Controls
 	{
 		Dictionary<string, object> _properties = new Dictionary<string, object>();
 
+		public event PropertyChangedEventHandler PropertyChanged;
+
 		protected T GetProperty<T>([CallerMemberName] string name = null)
 		{
 			object value = null;
-			if (_properties.TryGetValue(name, out value)) {
+			if (_properties.TryGetValue(name, out value))
+			{
 				return value == null ? default(T) : (T)value;
 			}
 			return default(T);
 		}
 
+		protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+		{
+			PropertyChangedEventHandler handler = PropertyChanged;
+			if (handler != null)
+			{
+				handler(this, new PropertyChangedEventArgs(propertyName));
+			}
+		}
+
 		protected void SetProperty<T>(T value, [CallerMemberName] string name = null)
 		{
-			if (Equals(value, GetProperty<T>(name))) {
+			if (Equals(value, GetProperty<T>(name)))
+			{
 				return;
 			}
 			_properties[name] = value;
 			OnPropertyChanged(name);
-		}
-
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-		{
-			PropertyChangedEventHandler handler = PropertyChanged;
-			if (handler != null) {
-				handler(this, new PropertyChangedEventArgs(propertyName));
-			}
 		}
 	}
 
@@ -61,7 +63,8 @@ namespace Xamarin.Forms.Controls
 		public override bool Equals(object obj)
 		{
 			var error = obj as ViewModelError;
-			if (error == null) {
+			if (error == null)
+			{
 				return false;
 			}
 			return Text.Equals(error.Text);
@@ -80,54 +83,14 @@ namespace Xamarin.Forms.Controls
 
 	public class ViewModelBase : PropertyChangedBase
 	{
+		readonly List<ViewModelError> _errors;
+
+		bool _isBusy = false;
+
 		public ViewModelBase()
 		{
 			_errors = new List<ViewModelError>();
 			Validate();
-		}
-
-		readonly List<ViewModelError> _errors;
-
-		public virtual bool IsValid
-		{
-			get { return _errors.Count <= 0; }
-		}
-			
-		protected IEnumerable<ViewModelError> Errors
-		{
-			get { return _errors; }
-		}
-
-		public event EventHandler IsValidChanged;
-
-		public event EventHandler IsBusyChanged;
-
-		protected virtual void Validate()
-		{
-			OnPropertyChanged("IsValid");
-			OnPropertyChanged("Errors");
-
-			var callback = IsValidChanged;
-			if (callback != null) {
-				callback(this, EventArgs.Empty);
-			}
-
-			// Spit out errors for easier debugging.
-			if (_errors != null && _errors.Count > 0) {
-				Debug.WriteLine("Errors:");
-				foreach (var error in _errors) {
-					Debug.WriteLine(error);
-				}
-			}
-		}
-			
-		protected virtual void ValidateProperty(Func<bool> validate, ViewModelError error)
-		{
-			if (validate()) {
-				_errors.Remove(error);
-			} else if (!_errors.Contains(error)) {
-				_errors.Add(error);
-			}
 		}
 
 		public virtual bool IsBusy
@@ -135,7 +98,8 @@ namespace Xamarin.Forms.Controls
 			get { return _isBusy; }
 			set
 			{
-				if (_isBusy != value) {
+				if (_isBusy != value)
+				{
 					_isBusy = value;
 					OnPropertyChanged("IsBusy");
 					OnIsBusyChanged();
@@ -143,15 +107,61 @@ namespace Xamarin.Forms.Controls
 			}
 		}
 
-		bool _isBusy = false;
+		public virtual bool IsValid
+		{
+			get { return _errors.Count <= 0; }
+		}
+
+		protected IEnumerable<ViewModelError> Errors
+		{
+			get { return _errors; }
+		}
+
+		public event EventHandler IsBusyChanged;
+
+		public event EventHandler IsValidChanged;
 
 		protected virtual void OnIsBusyChanged()
 		{
 			// Some models might want to have a validation thet depends on the busy state.
 			Validate();
-			var method = IsBusyChanged;
+			EventHandler method = IsBusyChanged;
 			if (method != null)
 				IsBusyChanged(this, EventArgs.Empty);
+		}
+
+		protected virtual void Validate()
+		{
+			OnPropertyChanged("IsValid");
+			OnPropertyChanged("Errors");
+
+			EventHandler callback = IsValidChanged;
+			if (callback != null)
+			{
+				callback(this, EventArgs.Empty);
+			}
+
+			// Spit out errors for easier debugging.
+			if (_errors != null && _errors.Count > 0)
+			{
+				Debug.WriteLine("Errors:");
+				foreach (ViewModelError error in _errors)
+				{
+					Debug.WriteLine(error);
+				}
+			}
+		}
+
+		protected virtual void ValidateProperty(Func<bool> validate, ViewModelError error)
+		{
+			if (validate())
+			{
+				_errors.Remove(error);
+			}
+			else if (!_errors.Contains(error))
+			{
+				_errors.Add(error);
+			}
 		}
 	}
 
@@ -159,8 +169,6 @@ namespace Xamarin.Forms.Controls
 	{
 		readonly Predicate<object> _canExecute;
 		readonly Action<object> _execute;
-
-		public event EventHandler CanExecuteChanged;
 
 		public DelegateCommand(Action<object> execute)
 			: this(execute, null)
@@ -175,12 +183,15 @@ namespace Xamarin.Forms.Controls
 
 		public bool CanExecute(object parameter)
 		{
-			if (_canExecute == null) {
+			if (_canExecute == null)
+			{
 				return true;
 			}
 
 			return _canExecute(parameter);
 		}
+
+		public event EventHandler CanExecuteChanged;
 
 		public void Execute(object parameter)
 		{
@@ -189,19 +200,84 @@ namespace Xamarin.Forms.Controls
 
 		public void RaiseCanExecuteChanged()
 		{
-			var handler = CanExecuteChanged;
-			if (handler != null) {
+			EventHandler handler = CanExecuteChanged;
+			if (handler != null)
+			{
 				handler(this, EventArgs.Empty);
 			}
 		}
 	}
 
-	[Preserve (AllMembers = true)]
+	[Preserve(AllMembers = true)]
 	public class ExampleViewModel : ViewModelBase
 	{
-		[Preserve (AllMembers = true)]
+		ICommand _addOneCommand;
+
+		ICommand _addTwoCommand;
+
+		public ExampleViewModel()
+		{
+			Jobs = new ObservableCollection<Job>()
+			{
+				new Job() { JobId = "3672", JobName = "Big Job", Hours = 2 },
+				new Job() { JobId = "6289", JobName = "Smaller Job", Hours = 2 },
+				new Job() { JobId = "3672-41", JobName = "Add On Job", Hours = 23 },
+			};
+		}
+
+		public ICommand AddOneCommand
+		{
+			get
+			{
+				if (_addOneCommand == null)
+				{
+					_addOneCommand =
+						new DelegateCommand(
+							obj => { Jobs.Add(new Job() { JobId = "1234", JobName = "add one", Hours = 12 }); },
+							obj => !IsBusy);
+				}
+				return _addOneCommand;
+			}
+		}
+
+		public ICommand AddTwoCommand
+		{
+			get
+			{
+				if (_addTwoCommand == null)
+				{
+					_addTwoCommand = new DelegateCommand(obj =>
+					{
+						Jobs.Add(new Job() { JobId = "9999", JobName = "add two", Hours = 12 });
+						Jobs.Add(new Job() { JobId = "8888", JobName = "add two", Hours = 12 });
+					}, obj => !IsBusy);
+				}
+				return _addTwoCommand;
+			}
+		}
+
+		public ObservableCollection<Job> Jobs { get; set; }
+
+		public void GetHours()
+		{
+			var results = new ObservableCollection<Job>()
+			{
+				new Job() { JobId = "3672", JobName = "RADO", Hours = 2 },
+				new Job() { JobId = "6289", JobName = "MGA Life Cycle Flexible Test System", Hours = 2 },
+			};
+
+			foreach (Job x in results)
+				Jobs.Add(x);
+		}
+
+		[Preserve(AllMembers = true)]
 		public class Job : ViewModelBase
 		{
+			public double? Hours
+			{
+				get { return GetProperty<double?>(); }
+				set { SetProperty(value); }
+			}
 
 			public string JobId
 			{
@@ -215,77 +291,11 @@ namespace Xamarin.Forms.Controls
 				set { SetProperty(value); }
 			}
 
-			public double? Hours
-			{
-				get { return GetProperty<double?>(); }
-				set { SetProperty(value); }
-			}
-
 			public bool Locked
 			{
 				get { return GetProperty<bool>(); }
 				set { SetProperty(value); }
 			}
-		}
-				
-		public ExampleViewModel()
-		{
-
-			Jobs = new ObservableCollection<Job>()
-			{
-				new Job() { JobId = "3672", JobName = "Big Job", Hours = 2},
-				new Job() { JobId = "6289", JobName = "Smaller Job", Hours = 2},
-				new Job() { JobId = "3672-41", JobName = "Add On Job", Hours = 23},                
-			};            
-		}
-
-		public ObservableCollection<Job> Jobs { get; set; }
-
-
-		public ICommand AddOneCommand
-		{
-			get
-			{
-				if (_addOneCommand == null) {
-					_addOneCommand = new DelegateCommand(obj => {
-						Jobs.Add(new Job(){JobId = "1234", JobName = "add one", Hours = 12});                        
-						}, obj => !IsBusy);
-				}
-				return _addOneCommand;
-			}
-		}
-
-		ICommand _addOneCommand;
-
-		public ICommand AddTwoCommand
-		{
-			get
-			{
-				if (_addTwoCommand == null) {
-					_addTwoCommand = new DelegateCommand(obj => {
-							Jobs.Add(new Job() { JobId = "9999", JobName = "add two", Hours = 12 });
-							Jobs.Add(new Job() { JobId = "8888", JobName = "add two", Hours = 12 });
-						}, obj => !IsBusy);
-				}
-				return _addTwoCommand;
-			}
-		}
-
-		ICommand _addTwoCommand;
-
-		public void GetHours()
-		{
-		
-			var results = new ObservableCollection<Job>()
-			{
-				new Job() { JobId = "3672", JobName = "RADO", Hours = 2},
-				new Job() { JobId = "6289", JobName = "MGA Life Cycle Flexible Test System", Hours = 2},
-
-			};
-
-			foreach (var x in results)
-				Jobs.Add(x);
-
 		}
 	}
 
@@ -298,7 +308,8 @@ namespace Xamarin.Forms.Controls
 			return value.ToString();
 		}
 
-		public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+		public object ConvertBack(object value, Type targetType, object parameter,
+			System.Globalization.CultureInfo culture)
 		{
 			double? returnValue = null;
 			double convertResult;
@@ -310,8 +321,6 @@ namespace Xamarin.Forms.Controls
 			return returnValue;
 		}
 	}
-
-	
 }
 
 namespace Xamarin.Forms.Controls.Issues
@@ -352,7 +361,8 @@ namespace Xamarin.Forms.Controls.Issues
 				Orientation = StackOrientation.Vertical,
 				VerticalOptions = LayoutOptions.StartAndExpand,
 				Spacing = 15,
-				Children = {
+				Children =
+				{
 					listView,
 					addOneJobButton,
 					addTwoJobsButton
@@ -373,7 +383,6 @@ namespace Xamarin.Forms.Controls.Issues
 #pragma warning restore 618
 					WidthRequest = 105,
 					VerticalOptions = LayoutOptions.Center,
-
 					HorizontalOptions = LayoutOptions.StartAndExpand
 				};
 				jobId.SetBinding(Label.TextProperty, "JobId");
@@ -394,13 +403,14 @@ namespace Xamarin.Forms.Controls.Issues
 					XAlign = TextAlignment.End,
 #pragma warning restore 618
 					HorizontalOptions = LayoutOptions.EndAndExpand,
-
 				};
-				hours.SetBinding(Label.TextProperty, new Binding("Hours", BindingMode.OneWay, new DoubleStringConverter()));
+				hours.SetBinding(Label.TextProperty,
+					new Binding("Hours", BindingMode.OneWay, new DoubleStringConverter()));
 
 				var hlayout = new StackLayout
 				{
-					Children = {
+					Children =
+					{
 						jobId,
 						jobName,
 						hours

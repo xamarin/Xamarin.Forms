@@ -1,8 +1,5 @@
-﻿using System;
-
-using Xamarin.Forms.CustomAttributes;
+﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-
 
 namespace Xamarin.Forms.Controls
 {
@@ -16,11 +13,7 @@ namespace Xamarin.Forms.Controls
 			var lbl = new Label();
 			var slider = new Slider();
 			slider.HeightRequest = 50;
-			slider.ValueChanged += (object sender, ValueChangedEventArgs e) =>
-			{
-
-				lbl.Text = e.NewValue.ToString();
-			};
+			slider.ValueChanged += (object sender, ValueChangedEventArgs e) => { lbl.Text = e.NewValue.ToString(); };
 			layout.Children.Add(lbl);
 			layout.Children.Add(slider);
 

@@ -15,12 +15,16 @@ using Xamarin.Forms.Controls;
 using Xamarin.Forms.Maps.WP8;
 using Xamarin.Forms.Platform.WinPhone;
 
-[assembly: Dependency (typeof (StringProvider))]
+[assembly: Dependency(typeof(StringProvider))]
+
 namespace Xamarin.Forms.ControlGallery.WP8
 {
 	public class StringProvider : IStringProvider
 	{
-		public string CoreGalleryTitle { get { return "WP8 Core Gallery"; } }
+		public string CoreGalleryTitle
+		{
+			get { return "WP8 Core Gallery"; }
+		}
 	}
 
 #if PRE_APPLICATION_CLASS
@@ -56,20 +60,22 @@ namespace Xamarin.Forms.ControlGallery.WP8
 		{
 			InitializeComponent();
 
-			Forms.Init ();
-			FormsMaps.Init ();
+			Forms.Init();
+			FormsMaps.Init();
 
-			var app = new Controls.App ();
+			var app = new Controls.App();
 
 			// When the native control gallery loads up, it'll let us know so we can add the nested native controls
-			MessagingCenter.Subscribe<NestedNativeControlGalleryPage>(this, NestedNativeControlGalleryPage.ReadyForNativeControlsMessage, AddNativeControls);
+			MessagingCenter.Subscribe<NestedNativeControlGalleryPage>(this,
+				NestedNativeControlGalleryPage.ReadyForNativeControlsMessage, AddNativeControls);
 
-			LoadApplication (app);
+			LoadApplication(app);
 		}
 
-		void AddNativeControls (NestedNativeControlGalleryPage page)
+		void AddNativeControls(NestedNativeControlGalleryPage page)
 		{
-			if (page.NativeControlsAdded) {
+			if (page.NativeControlsAdded)
+			{
 				return;
 			}
 
@@ -77,49 +83,54 @@ namespace Xamarin.Forms.ControlGallery.WP8
 
 			// Create and add a native TextBlock
 			var originalText = "I am a native TextBlock";
-			var textBlock = new TextBlock {
+			var textBlock = new TextBlock
+			{
 				Text = originalText,
 				FontSize = 14,
-				FontFamily = new FontFamily ("HelveticaNeue")
+				FontFamily = new FontFamily("HelveticaNeue")
 			};
 
-			sl?.Children.Add (textBlock);
+			sl?.Children.Add(textBlock);
 
 			// Create and add a native Button 
 			var button = new System.Windows.Controls.Button { Content = "Click to toggle font size", Height = 80 };
 			button.Click += (sender, args) => { textBlock.FontSize = textBlock.FontSize == 14 ? 24 : 14; };
 
-			sl?.Children.Add (button.ToView ());
+			sl?.Children.Add(button.ToView());
 
 			// Create a control which we know doesn't behave correctly with regard to measurement
-			var difficultControl = new BrokenNativeControl {
+			var difficultControl = new BrokenNativeControl
+			{
 				Text = "Not Sized/Arranged Properly"
 			};
 
-			var difficultControl2 = new BrokenNativeControl {
+			var difficultControl2 = new BrokenNativeControl
+			{
 				Text = "Fixed"
 			};
 
 			// Add the misbehaving controls, one with a custom delegate for ArrangeOverride
-			sl?.Children.Add (difficultControl);
-			sl?.Children.Add (difficultControl2,
-				arrangeOverrideDelegate: (renderer, finalSize) => {
-					if (finalSize.Width <= 0 || double.IsInfinity (finalSize.Width)) {
+			sl?.Children.Add(difficultControl);
+			sl?.Children.Add(difficultControl2,
+				arrangeOverrideDelegate: (renderer, finalSize) =>
+				{
+					if (finalSize.Width <= 0 || double.IsInfinity(finalSize.Width))
+					{
 						return null;
 					}
 
 					FrameworkElement frameworkElement = renderer.Control;
 
-					frameworkElement.Measure (finalSize);
+					frameworkElement.Measure(finalSize);
 
 					// The broken control always sizes itself to be 600 wide
 					// We can re-center it by offsetting it during the Arrange call
 					double diff = (finalSize.Width - 600) / 2;
-					frameworkElement.Arrange (new Rect (diff, 0, finalSize.Width - diff, finalSize.Height));
+					frameworkElement.Arrange(new Rect(diff, 0, finalSize.Width - diff, finalSize.Height));
 
 					// Arranging the control to the left will make it show up past the edge of the stack layout
 					// We can fix that by clipping it manually
-					var clip = new RectangleGeometry { Rect = new Rect (-diff, 0, finalSize.Width, finalSize.Height) };
+					var clip = new RectangleGeometry { Rect = new Rect(-diff, 0, finalSize.Width, finalSize.Height) };
 					frameworkElement.Clip = clip;
 
 					return finalSize;

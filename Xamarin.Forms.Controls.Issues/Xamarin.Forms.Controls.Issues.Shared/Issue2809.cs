@@ -1,5 +1,4 @@
-﻿using System;
-using Xamarin.Forms.CustomAttributes;
+﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 #if UITEST
@@ -10,11 +9,12 @@ using Xamarin.UITest.Android;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve (AllMembers=true)]
-	[Issue (IssueTracker.Github, 2809, "Secondary ToolbarItems cause app to hang during PushAsync", PlatformAffected.iOS)]
-	public class Issue2809: TestContentPage
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 2809, "Secondary ToolbarItems cause app to hang during PushAsync", PlatformAffected.iOS)
+	]
+	public class Issue2809 : TestContentPage
 	{
-		protected override void Init ()
+		protected override void Init()
 		{
 			ToolbarItems.Add(new ToolbarItem("Item 1", string.Empty,
 				DummyAction, ToolbarItemOrder.Secondary));
@@ -45,7 +45,5 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #endif
-
-		}
+	}
 }
-

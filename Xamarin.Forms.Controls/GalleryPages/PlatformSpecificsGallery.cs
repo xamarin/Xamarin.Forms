@@ -19,22 +19,51 @@ namespace Xamarin.Forms.Controls
 			var tbAndroidButton = new Button { Text = "TabbedPage (Android)" };
 			var entryiOSButton = new Button() { Text = "Entry (iOS)" };
 
-			mdpiOSButton.Clicked += (sender, args) => { SetRoot(new MasterDetailPageiOS(new Command(RestoreOriginal))); };
-			mdpWindowsButton.Clicked += (sender, args) => { SetRoot(new MasterDetailPageWindows(new Command(RestoreOriginal))); };
-			npiOSButton.Clicked += (sender, args) => { SetRoot(NavigationPageiOS.Create(new Command(RestoreOriginal))); };
-			npWindowsButton.Clicked += (sender, args) => { SetRoot(new NavigationPageWindows(new Command(RestoreOriginal))); };
+			mdpiOSButton.Clicked +=
+				(sender, args) => { SetRoot(new MasterDetailPageiOS(new Command(RestoreOriginal))); };
+			mdpWindowsButton.Clicked +=
+				(sender, args) => { SetRoot(new MasterDetailPageWindows(new Command(RestoreOriginal))); };
+			npiOSButton.Clicked +=
+				(sender, args) => { SetRoot(NavigationPageiOS.Create(new Command(RestoreOriginal))); };
+			npWindowsButton.Clicked +=
+				(sender, args) => { SetRoot(new NavigationPageWindows(new Command(RestoreOriginal))); };
 			tbiOSButton.Clicked += (sender, args) => { SetRoot(new TabbedPageiOS(new Command(RestoreOriginal))); };
-			tbWindowsButton.Clicked += (sender, args) => { SetRoot(new TabbedPageWindows(new Command(RestoreOriginal))); };
-			viselemiOSButton.Clicked += (sender, args) => { SetRoot(new VisualElementiOS(new Command(RestoreOriginal))); };
-			appAndroidButton.Clicked += (sender, args) => { SetRoot(new ApplicationAndroid(new Command(RestoreOriginal))); };
-			tbAndroidButton.Clicked += (sender, args) => { SetRoot(new TabbedPageAndroid(new Command(RestoreOriginal))); };
+			tbWindowsButton.Clicked +=
+				(sender, args) => { SetRoot(new TabbedPageWindows(new Command(RestoreOriginal))); };
+			viselemiOSButton.Clicked +=
+				(sender, args) => { SetRoot(new VisualElementiOS(new Command(RestoreOriginal))); };
+			appAndroidButton.Clicked +=
+				(sender, args) => { SetRoot(new ApplicationAndroid(new Command(RestoreOriginal))); };
+			tbAndroidButton.Clicked +=
+				(sender, args) => { SetRoot(new TabbedPageAndroid(new Command(RestoreOriginal))); };
 			entryiOSButton.Clicked += (sender, args) => { Navigation.PushAsync(new EntryPageiOS()); };
-			
 
 			Content = new StackLayout
 			{
-				Children = { mdpiOSButton, mdpWindowsButton, npWindowsButton, tbiOSButton, tbWindowsButton, viselemiOSButton, appAndroidButton, tbAndroidButton, entryiOSButton }
+				Children =
+				{
+					mdpiOSButton,
+					mdpWindowsButton,
+					npWindowsButton,
+					tbiOSButton,
+					tbWindowsButton,
+					viselemiOSButton,
+					appAndroidButton,
+					tbAndroidButton,
+					entryiOSButton
+				}
 			};
+		}
+
+		void RestoreOriginal()
+		{
+			if (_originalRoot == null)
+			{
+				return;
+			}
+
+			var app = Application.Current as App;
+			app?.SetMainPage(_originalRoot);
 		}
 
 		void SetRoot(Page page)
@@ -47,17 +76,6 @@ namespace Xamarin.Forms.Controls
 
 			_originalRoot = app.MainPage;
 			app.SetMainPage(page);
-		}
-
-		void RestoreOriginal()
-		{
-			if (_originalRoot == null)
-			{
-				return;
-			}
-
-			var app = Application.Current as App;
-			app?.SetMainPage(_originalRoot);
 		}
 	}
 }

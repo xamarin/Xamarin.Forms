@@ -1,7 +1,7 @@
 ﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using Xamarin.Forms.PlatformConfiguration;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 
 #if UITEST
 using Xamarin.UITest;
@@ -26,7 +26,9 @@ namespace Xamarin.Forms.Controls.Issues
 						new Button
 						{
 							Text = "Click to Toggle Swipe Paging",
-							Command = new Command(() => On<Android>().SetIsSwipePagingEnabled(!On<Android>().IsSwipePagingEnabled()))
+							Command =
+								new Command(
+									() => On<Android>().SetIsSwipePagingEnabled(!On<Android>().IsSwipePagingEnabled()))
 						}
 					}
 				}

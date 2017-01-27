@@ -11,11 +11,16 @@ namespace Xamarin.Forms.Controls
 	{
 		const string ButtonText_Disable = "Disable Pause/Resume events";
 		const string ButtonText_Enable = "Enable Pause/Resume events";
-		const string Instructions_Disabled = "Sleep the device, then wake it. If \"Disappearing!\" and/or \"Appearing!\" is displayed on this screen, this test has failed.";
-		const string Instructions_Enabled = "Sleep the device, then wake it. If \"Disappearing!\" and/or \"Appearing!\" is NOT displayed on this screen, this test has failed.";
+
+		const string Instructions_Disabled =
+			"Sleep the device, then wake it. If \"Disappearing!\" and/or \"Appearing!\" is displayed on this screen, this test has failed.";
+
+		const string Instructions_Enabled =
+			"Sleep the device, then wake it. If \"Disappearing!\" and/or \"Appearing!\" is NOT displayed on this screen, this test has failed.";
+
+		bool _sendEvents = true;
 
 		Label _Target = new Label();
-		bool _sendEvents = true;
 
 		protected override void Init()
 		{
@@ -43,7 +48,6 @@ namespace Xamarin.Forms.Controls
 			Content = new StackLayout { Children = { instructions, button, _Target } };
 		}
 
-
 		protected override void OnAppearing()
 		{
 			base.OnAppearing();
@@ -61,8 +65,8 @@ namespace Xamarin.Forms.Controls
 		void ToggleEvents(bool value)
 		{
 			Application.Current.On<Android>()
-							.SendDisappearingEventOnPause(value)
-							.SendAppearingEventOnResume(value);
+				.SendDisappearingEventOnPause(value)
+				.SendAppearingEventOnResume(value);
 		}
 	}
 }

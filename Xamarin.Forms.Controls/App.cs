@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
-using Xamarin.Forms.PlatformConfiguration;
-using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 
 namespace Xamarin.Forms.Controls
 {
-
 	public class App : Application
 	{
 		public const string AppName = "XamarinFormsControls";
+
+		public const string DefaultMainPageId = "ControlGalleryMainPage";
 		static string s_insightsKey;
 
 		// ReSharper disable once InconsistentNaming
@@ -21,8 +20,6 @@ namespace Xamarin.Forms.Controls
 
 		static Dictionary<string, string> s_config;
 		readonly ITestCloudService _testCloudService;
-
-		public const string DefaultMainPageId = "ControlGalleryMainPage";
 
 		public App()
 		{
@@ -42,46 +39,6 @@ namespace Xamarin.Forms.Controls
 			//		Detail = newTabbedPage
 			//	};
 			//});
-		}
-
-		public Page CreateDefaultMainPage()
-		{
-			return new MasterDetailPage
-			{
-				AutomationId = DefaultMainPageId,
-				Master = new ContentPage { Title = "Master", BackgroundColor = Color.Red },
-				Detail = CoreGallery.GetMainPage()
-			};
-		}
-
-		protected override void OnAppLinkRequestReceived(Uri uri)
-		{
-			var appDomain = "http://" + AppName.ToLowerInvariant() + "/";
-
-			if (!uri.ToString().ToLowerInvariant().StartsWith(appDomain))
-				return;
-
-			var url = uri.ToString().Replace(appDomain, "");
-
-			var parts = url.Split('/');
-			if (parts.Length == 2)
-			{
-				var isPage = parts[0].Trim().ToLower() == "gallery";
-				if (isPage)
-				{
-					string page = parts[1].Trim();
-					var pageForms = Activator.CreateInstance(Type.GetType(page));
-
-					var appLinkPageGallery = pageForms as AppLinkPageGallery;
-					if (appLinkPageGallery != null)
-					{
-						appLinkPageGallery.ShowLabel = true;
-						(MainPage as MasterDetailPage)?.Detail.Navigation.PushAsync((pageForms as Page));
-					}
-				}
-			}
-
-			base.OnAppLinkRequestReceived(uri);
 		}
 
 		public static Dictionary<string, string> Config
@@ -111,9 +68,86 @@ namespace Xamarin.Forms.Controls
 
 		public static ContentPage MenuPage { get; set; }
 
+		public Page CreateDefaultMainPage()
+		{
+			return new MasterDetailPage
+			{
+				AutomationId = DefaultMainPageId,
+				Master = new ContentPage { Title = "Master", BackgroundColor = Color.Red },
+				Detail = CoreGallery.GetMainPage()
+			};
+		}
+
+		public bool NavigateToTestPage(string test)
+		{
+			try
+			{
+				// Create an instance of the main page
+				Page root = CreateDefaultMainPage();
+
+				// Set up a delegate to handle the navigation to the test page
+				EventHandler toTestPage = null;
+
+				toTestPage = delegate(object sender, EventArgs e)
+				{
+					Current.MainPage.Navigation.PushModalAsync(TestCases.GetTestCases());
+					TestCases.TestCaseScreen.PageToAction[test]();
+					Current.MainPage.Appearing -= toTestPage;
+				};
+
+				// And set that delegate to run once the main page appears
+				root.Appearing += toTestPage;
+
+				SetMainPage(root);
+
+				return true;
+			}
+			catch (Exception ex)
+			{
+				Log.Warning("UITests", $"Error attempting to navigate directly to {test}: {ex}");
+			}
+
+			return false;
+		}
+
+		public void Reset()
+		{
+			SetMainPage(CreateDefaultMainPage());
+		}
+
 		public void SetMainPage(Page rootPage)
 		{
 			MainPage = rootPage;
+		}
+
+		protected override void OnAppLinkRequestReceived(Uri uri)
+		{
+			string appDomain = "http://" + AppName.ToLowerInvariant() + "/";
+
+			if (!uri.ToString().ToLowerInvariant().StartsWith(appDomain))
+				return;
+
+			string url = uri.ToString().Replace(appDomain, "");
+
+			string[] parts = url.Split('/');
+			if (parts.Length == 2)
+			{
+				bool isPage = parts[0].Trim().ToLower() == "gallery";
+				if (isPage)
+				{
+					string page = parts[1].Trim();
+					object pageForms = Activator.CreateInstance(Type.GetType(page));
+
+					var appLinkPageGallery = pageForms as AppLinkPageGallery;
+					if (appLinkPageGallery != null)
+					{
+						appLinkPageGallery.ShowLabel = true;
+						(MainPage as MasterDetailPage)?.Detail.Navigation.PushAsync(pageForms as Page);
+					}
+				}
+			}
+
+			base.OnAppLinkRequestReceived(uri);
 		}
 
 		static Assembly GetAssembly(out string assemblystring)
@@ -129,7 +163,8 @@ namespace Xamarin.Forms.Controls
 			{
 				Insights.ForceDataTransmission = true;
 				if (_testCloudService != null && _testCloudService.IsOnTestCloud())
-					Insights.Identify(_testCloudService.GetTestCloudDevice(), "Name", _testCloudService.GetTestCloudDeviceName());
+					Insights.Identify(_testCloudService.GetTestCloudDevice(), "Name",
+						_testCloudService.GetTestCloudDeviceName());
 				else
 					Insights.Identify("DemoUser", "Name", "Demo User");
 			}
@@ -161,44 +196,6 @@ namespace Xamarin.Forms.Controls
 			using (var reader = new StreamReader(stream))
 				text = await reader.ReadToEndAsync();
 			return text;
-		}
-
-		public bool NavigateToTestPage(string test)
-		{
-			try
-			{
-				// Create an instance of the main page
-				var root = CreateDefaultMainPage();
-
-				// Set up a delegate to handle the navigation to the test page
-				EventHandler toTestPage = null;
-
-				toTestPage = delegate(object sender, EventArgs e) 
-				{
-					Current.MainPage.Navigation.PushModalAsync(TestCases.GetTestCases());
-					TestCases.TestCaseScreen.PageToAction[test]();
-					Current.MainPage.Appearing -= toTestPage;
-				};
-
-				// And set that delegate to run once the main page appears
-				root.Appearing += toTestPage;
-
-				SetMainPage(root);
-
-				return true;
-			}
-			catch (Exception ex) 
-			{
-				Log.Warning("UITests", $"Error attempting to navigate directly to {test}: {ex}");
-
-			}
-
-			return false;
-		}
-		
-		public void Reset()
-		{
-			SetMainPage(CreateDefaultMainPage());
 		}
 	}
 }

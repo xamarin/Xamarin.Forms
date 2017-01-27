@@ -4,7 +4,8 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 40073, "Toolbar items are not not functioning properly on UWP", PlatformAffected.WinRT)]
+	[Issue(IssueTracker.Bugzilla, 40073, "Toolbar items are not not functioning properly on UWP", PlatformAffected.WinRT
+	)]
 	public class Bugzilla40073 : TestNavigationPage
 	{
 		ContentPage _theContent;
@@ -16,8 +17,10 @@ namespace Xamarin.Forms.Controls.Issues
 				Content = new StackLayout
 				{
 					VerticalOptions = LayoutOptions.Center,
-					Children = {
-						new Label {
+					Children =
+					{
+						new Label
+						{
 							HorizontalTextAlignment = TextAlignment.Center,
 							Text = "This page should have a toolbar. If it does not, the test has failed."
 						}

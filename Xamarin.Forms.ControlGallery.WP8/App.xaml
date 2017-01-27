@@ -7,14 +7,14 @@
 
     <!--Application Resources-->
     <Application.Resources>
-        <local:LocalizedStrings xmlns:local="clr-namespace:Xamarin.Forms.ControlGallery.WP8" x:Key="LocalizedStrings"/>
+        <local:LocalizedStrings xmlns:local="clr-namespace:Xamarin.Forms.ControlGallery.WP8" x:Key="LocalizedStrings" />
     </Application.Resources>
 
     <Application.ApplicationLifetimeObjects>
         <!--Required object that handles lifetime events for the application-->
         <shell:PhoneApplicationService
             Launching="Application_Launching" Closing="Application_Closing"
-            Activated="Application_Activated" Deactivated="Application_Deactivated"/>
+            Activated="Application_Activated" Deactivated="Application_Deactivated" />
     </Application.ApplicationLifetimeObjects>
 
 </Application>

@@ -1,5 +1,4 @@
-﻿using System;
-using Xamarin.Forms.CustomAttributes;
+﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 #if UITEST
@@ -25,7 +24,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var label = new Label
 			{
-				Text = "Focus Entry or Editor and type characters. For every 3 characters, the keyboard type will change while keyboard is focused up to 12 characters."
+				Text =
+					"Focus Entry or Editor and type characters. For every 3 characters, the keyboard type will change while keyboard is focused up to 12 characters."
 			};
 			stackLayout.Children.Add(label);
 

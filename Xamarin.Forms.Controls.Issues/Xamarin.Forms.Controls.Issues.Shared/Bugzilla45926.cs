@@ -10,30 +10,34 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 45926, "MessagingCenter prevents subscriber from being collected", PlatformAffected.All)]
+	[Issue(IssueTracker.Bugzilla, 45926, "MessagingCenter prevents subscriber from being collected",
+		PlatformAffected.All)]
 	public class Bugzilla45926 : TestNavigationPage
 	{
 		protected override void Init()
 		{
 			Button createPage, sendMessage, doGC;
 
-			Label instanceCount = new Label();
-			Label messageCount = new Label();
+			var instanceCount = new Label();
+			var messageCount = new Label();
 
 			instanceCount.Text = $"Instances: {_45926SecondPage.InstanceCounter.ToString()}";
 			messageCount.Text = $"Messages: {_45926SecondPage.MessageCounter.ToString()}";
 
-			var content = new ContentPage {
+			var content = new ContentPage
+			{
 				Title = "Test",
-				Content = new StackLayout {
+				Content = new StackLayout
+				{
 					VerticalOptions = LayoutOptions.Center,
-					Children = {
+					Children =
+					{
 						(createPage = new Button { Text = "New Page" }),
 						(sendMessage = new Button { Text = "Send Message" }),
 						(doGC = new Button { Text = "Do GC" }),
-						instanceCount, messageCount
+						instanceCount,
+						messageCount
 					}
 				}
 			};
@@ -43,14 +47,12 @@ namespace Xamarin.Forms.Controls.Issues
 				PushAsync(new _45926IntermediatePage());
 				PushAsync(new _45926SecondPage());
 			};
-			
-			sendMessage.Clicked += (s, e) =>
-			{
-				MessagingCenter.Send (this, "Test");
-			};
 
-			doGC.Clicked += (sender, e) => {
-				GC.Collect ();
+			sendMessage.Clicked += (s, e) => { MessagingCenter.Send(this, "Test"); };
+
+			doGC.Clicked += (sender, e) =>
+			{
+				GC.Collect();
 				GC.WaitForPendingFinalizers();
 				instanceCount.Text = $"Instances: {_45926SecondPage.InstanceCounter.ToString()}";
 				messageCount.Text = $"Messages: {_45926SecondPage.MessageCounter.ToString()}";
@@ -89,34 +91,35 @@ namespace Xamarin.Forms.Controls.Issues
 		public static int InstanceCounter = 0;
 		public static int MessageCounter = 0;
 
-		public _45926SecondPage ()
+		public _45926SecondPage()
 		{
 			Interlocked.Increment(ref InstanceCounter);
 
-			Content = new Label {
+			Content = new Label
+			{
 				HorizontalOptions = LayoutOptions.Center,
 				VerticalOptions = LayoutOptions.Center,
-				Text = "Second Page #" + (InstanceCounter)
+				Text = "Second Page #" + InstanceCounter
 			};
 
-			MessagingCenter.Subscribe<Bugzilla45926> (this, "Test", OnMessage);
+			MessagingCenter.Subscribe<Bugzilla45926>(this, "Test", OnMessage);
 		}
 
-		protected override void OnDisappearing ()
+		protected override void OnDisappearing()
 		{
-			base.OnDisappearing ();
+			base.OnDisappearing();
 		}
 
-		void OnMessage (Bugzilla45926 app)
+		void OnMessage(Bugzilla45926 app)
 		{
-			System.Diagnostics.Debug.WriteLine ("Got Test message!");
+			System.Diagnostics.Debug.WriteLine("Got Test message!");
 			Interlocked.Increment(ref MessageCounter);
 		}
 
-		~_45926SecondPage ()
+		~_45926SecondPage()
 		{
 			Interlocked.Decrement(ref InstanceCounter);
-			System.Diagnostics.Debug.WriteLine ("~SecondPage: {0}", GetHashCode ());
+			System.Diagnostics.Debug.WriteLine("~SecondPage: {0}", GetHashCode());
 		}
 	}
 }

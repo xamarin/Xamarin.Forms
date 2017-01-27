@@ -10,9 +10,16 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal
 {
 	internal class BrokenNativeControl : Panel
 	{
-		public BrokenNativeControl ()
+		public static readonly DependencyProperty TextProperty = DependencyProperty.Register(
+			"Text", typeof(string), typeof(BrokenNativeControl),
+			new PropertyMetadata(default(string), PropertyChangedCallback));
+
+		readonly TextBlock _textBlock;
+
+		public BrokenNativeControl()
 		{
-			_textBlock = new TextBlock {
+			_textBlock = new TextBlock
+			{
 				MinHeight = 0,
 				MaxHeight = double.PositiveInfinity,
 				MinWidth = 0,
@@ -21,29 +28,22 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal
 				HorizontalAlignment = HorizontalAlignment.Center
 			};
 
-			Children.Add (_textBlock);
+			Children.Add(_textBlock);
 
 			Background =
-				new LinearGradientBrush (
-					new GradientStopCollection { new GradientStop { Color = Colors.Green, Offset = 0.5}, new GradientStop { Color = Colors.Blue, Offset = 1} }, 0);
-		}
-
-		public static readonly DependencyProperty TextProperty = DependencyProperty.Register (
-			"Text", typeof(string), typeof(BrokenNativeControl), new PropertyMetadata (default(string), PropertyChangedCallback));
-
-		static void PropertyChangedCallback (DependencyObject dependencyObject,
-			DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
-		{
-			((BrokenNativeControl)dependencyObject)._textBlock.Text = (string)dependencyPropertyChangedEventArgs.NewValue;
+				new LinearGradientBrush(
+					new GradientStopCollection
+					{
+						new GradientStop { Color = Colors.Green, Offset = 0.5 },
+						new GradientStop { Color = Colors.Blue, Offset = 1 }
+					}, 0);
 		}
 
 		public string Text
 		{
-			get { return (string)GetValue (TextProperty); }
-			set { SetValue (TextProperty, value); }
+			get { return (string)GetValue(TextProperty); }
+			set { SetValue(TextProperty, value); }
 		}
-
-		readonly TextBlock _textBlock;
 
 		protected override Windows.Foundation.Size ArrangeOverride(Windows.Foundation.Size finalSize)
 		{
@@ -51,17 +51,23 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal
 			return finalSize;
 		}
 
-
-		protected override Windows.Foundation.Size  MeasureOverride (Windows.Foundation.Size availableSize)
+		protected override Windows.Foundation.Size MeasureOverride(Windows.Foundation.Size availableSize)
 		{
-			_textBlock.Measure (availableSize);
+			_textBlock.Measure(availableSize);
 
 			// This deliberately does something wrong so we can demo fixing it
-			Rect bounds = ApplicationView.GetForCurrentView ().VisibleBounds;
-			double scaleFactor = DisplayInformation.GetForCurrentView ().RawPixelsPerViewPixel;
-			var size = new Size (bounds.Width * scaleFactor, bounds.Height * scaleFactor);
+			Rect bounds = ApplicationView.GetForCurrentView().VisibleBounds;
+			double scaleFactor = DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel;
+			var size = new Size(bounds.Width * scaleFactor, bounds.Height * scaleFactor);
 
-			return new Windows.Foundation.Size (size.Width, _textBlock.DesiredSize.Height);
+			return new Windows.Foundation.Size(size.Width, _textBlock.DesiredSize.Height);
+		}
+
+		static void PropertyChangedCallback(DependencyObject dependencyObject,
+			DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+		{
+			((BrokenNativeControl)dependencyObject)._textBlock.Text =
+				(string)dependencyPropertyChangedEventArgs.NewValue;
 		}
 	}
 }

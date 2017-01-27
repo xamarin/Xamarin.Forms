@@ -13,7 +13,6 @@ namespace Xamarin.Forms.Controls
 	{
 		public static int ItemCount = 20;
 		readonly ListView _listView;
-		protected abstract DataTemplate CellTemplate();
 
 		protected Bugzilla43313_Template()
 		{
@@ -51,7 +50,12 @@ namespace Xamarin.Forms.Controls
 			_listView.SetBinding(ListView.ItemsSourceProperty, new Binding("ListViewContent"));
 			_listView.ItemTapped += (sender, e) => ((ListView)sender).SelectedItem = null;
 
-			var instructions = new Label() { FontSize = 12, Text = "Tap the 'Add Item' button; a new item should be added to the bottom of the list and the list should scroll smoothly to display it. If the list scrolls back to the top before scrolling down to the new item, the test has failed." };
+			var instructions = new Label()
+			{
+				FontSize = 12,
+				Text =
+					"Tap the 'Add Item' button; a new item should be added to the bottom of the list and the list should scroll smoothly to display it. If the list scrolls back to the top before scrolling down to the new item, the test has failed."
+			};
 
 			Content = new StackLayout
 			{
@@ -64,6 +68,8 @@ namespace Xamarin.Forms.Controls
 				}
 			};
 		}
+
+		protected abstract DataTemplate CellTemplate();
 
 		void BtnAddOnClicked(object sender, EventArgs eventArgs)
 		{
@@ -95,7 +101,7 @@ namespace Xamarin.Forms.Controls
 			{
 				ListViewContent = new ObservableCollection<_43313Model>();
 
-				for (int n = 0; n < ItemCount; n++)
+				for (var n = 0; n < ItemCount; n++)
 				{
 					_listViewContent.Add(new _43313Model { Name = $"Item {n}" });
 				}
@@ -140,9 +146,9 @@ namespace Xamarin.Forms.Controls
 						Padding = new Thickness(0, 5, 0, 5),
 						BackgroundColor = Color.Transparent,
 						Children =
-							{
-								label
-							}
+						{
+							label
+						}
 					}
 				};
 			});
@@ -168,9 +174,9 @@ namespace Xamarin.Forms.Controls
 						Padding = new Thickness(0, 5, 0, 5),
 						BackgroundColor = Color.Transparent,
 						Children =
-							{
-								label
-							}
+						{
+							label
+						}
 					}
 				};
 			});
@@ -178,13 +184,15 @@ namespace Xamarin.Forms.Controls
 	}
 
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 43313, "Adding an item to ListView ItemSource has unexpected animation with different height rows and HasUnevenRows is true", PlatformAffected.iOS)]
+	[Issue(IssueTracker.Bugzilla, 43313,
+		"Adding an item to ListView ItemSource has unexpected animation with different height rows and HasUnevenRows is true",
+		PlatformAffected.iOS)]
 	public class Bugzilla43313 : TestNavigationPage
 	{
 		protected override void Init()
 		{
 			var root = new ContentPage();
-			
+
 			var layout = new StackLayout();
 
 			var knownHeightButton = new Button() { Text = "Known Height (original bug report test case)" };

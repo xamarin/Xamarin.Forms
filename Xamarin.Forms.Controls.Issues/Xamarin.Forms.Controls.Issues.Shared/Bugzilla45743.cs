@@ -9,7 +9,8 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 45743, "[iOS] Calling DisplayAlert via BeginInvokeOnMainThread blocking other calls on iOS", PlatformAffected.iOS)]
+	[Issue(IssueTracker.Bugzilla, 45743,
+		"[iOS] Calling DisplayAlert via BeginInvokeOnMainThread blocking other calls on iOS", PlatformAffected.iOS)]
 	public class Bugzilla45743 : TestNavigationPage
 	{
 		protected override void Init()
@@ -26,10 +27,7 @@ namespace Xamarin.Forms.Controls.Issues
 				}
 			});
 
-			Device.BeginInvokeOnMainThread(async () =>
-			{
-				await DisplayAlert("Title", "Message", "Accept", "Cancel");
-			});
+			Device.BeginInvokeOnMainThread(async () => { await DisplayAlert("Title", "Message", "Accept", "Cancel"); });
 
 			Device.BeginInvokeOnMainThread(async () =>
 			{
@@ -46,15 +44,10 @@ namespace Xamarin.Forms.Controls.Issues
 				});
 			});
 
-			Device.BeginInvokeOnMainThread(async () =>
-			{
-				await DisplayAlert("Title 2", "Message", "Accept", "Cancel");
-			});
+			Device.BeginInvokeOnMainThread(async () => { await DisplayAlert("Title 2", "Message", "Accept", "Cancel"); });
 
-			Device.BeginInvokeOnMainThread(async () =>
-			{
-				await DisplayActionSheet("ActionSheet Title", "Cancel", "Close", new string[] { "Test", "Test 2" });
-			});
+			Device.BeginInvokeOnMainThread(
+				async () => { await DisplayActionSheet("ActionSheet Title", "Cancel", "Close", new string[] { "Test", "Test 2" }); });
 		}
 
 #if UITEST

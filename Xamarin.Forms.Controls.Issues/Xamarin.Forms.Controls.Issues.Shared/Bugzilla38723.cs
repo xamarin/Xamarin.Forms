@@ -10,11 +10,12 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 38723, "Update Content in Picker's SelectedIndexChanged event causes NullReferenceException", PlatformAffected.iOS)]
+	[Issue(IssueTracker.Bugzilla, 38723,
+		"Update Content in Picker's SelectedIndexChanged event causes NullReferenceException", PlatformAffected.iOS)]
 	public class Bugzilla38723 : TestContentPage // or TestMasterDetailPage, etc ...
 	{
-		Picker _datePicker;
 		Label _dateLabel;
+		Picker _datePicker;
 
 		protected override void Init()
 		{

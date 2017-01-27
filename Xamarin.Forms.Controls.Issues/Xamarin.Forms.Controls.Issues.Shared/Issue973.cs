@@ -1,7 +1,5 @@
-﻿using System.Diagnostics;
-
+﻿using System;
 using Xamarin.Forms.CustomAttributes;
-using System;
 using Xamarin.Forms.Internals;
 
 #if UITEST
@@ -13,76 +11,81 @@ namespace Xamarin.Forms.Controls.Issues
 {
 	internal class PageNameObject
 	{
-		public string PageName { get; private set; }
-
-		public PageNameObject (string pageName)
+		public PageNameObject(string pageName)
 		{
 			PageName = pageName;
 		}
+
+		public string PageName { get; private set; }
 	}
 
-	[Preserve (AllMembers=true)]
-	[Issue (IssueTracker.Github, 973, "ActionBar doesn't immediately update when nested TabbedPage is changed", PlatformAffected.Android)]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 973, "ActionBar doesn't immediately update when nested TabbedPage is changed",
+		PlatformAffected.Android)]
 	public class Issue973 : TestMasterDetailPage
 	{
-		protected override void Init ()
+		protected override void Init()
 		{
-			var cells = new [] {
-				new PageNameObject ("Close Master"),
-				new PageNameObject ("Page 1"),
-				new PageNameObject ("Page 2"),
-				new PageNameObject ("Page 3"),
-				new PageNameObject ("Page 4"),
-				new PageNameObject ("Page 5"),
-				new PageNameObject ("Page 6"),
-				new PageNameObject ("Page 7"),
-				new PageNameObject ("Page 8"),
+			var cells = new[]
+			{
+				new PageNameObject("Close Master"),
+				new PageNameObject("Page 1"),
+				new PageNameObject("Page 2"),
+				new PageNameObject("Page 3"),
+				new PageNameObject("Page 4"),
+				new PageNameObject("Page 5"),
+				new PageNameObject("Page 6"),
+				new PageNameObject("Page 7"),
+				new PageNameObject("Page 8"),
 			};
 
-			var template = new DataTemplate (typeof (TextCell));
-			template.SetBinding (TextCell.TextProperty, "PageName");
+			var template = new DataTemplate(typeof(TextCell));
+			template.SetBinding(TextCell.TextProperty, "PageName");
 
-			var listView = new ListView { 
+			var listView = new ListView
+			{
 				ItemTemplate = template,
 				ItemsSource = cells
 			};
 
 			listView.BindingContext = cells;
 
-			listView.ItemTapped += (sender, e) => {
+			listView.ItemTapped += (sender, e) =>
+			{
+				string cellName = ((PageNameObject)e.Item).PageName;
 
-				var cellName = ((PageNameObject)e.Item).PageName;
-
-				if (cellName == "Close Master") {
+				if (cellName == "Close Master")
+				{
 					IsPresented = false;
-				} else {
-					var d = new CustomDetailPage (cellName) {
+				}
+				else
+				{
+					var d = new CustomDetailPage(cellName)
+					{
 						Title = "Detail"
 					};
 
-					d.PresentMaster += (s, args) => {
-						IsPresented = true;
-					};
+					d.PresentMaster += (s, args) => { IsPresented = true; };
 
 					Detail = d;
 				}
 			};
 
-			var master = new ContentPage {
-				Padding = new Thickness (0, 20, 0, 0),
+			var master = new ContentPage
+			{
+				Padding = new Thickness(0, 20, 0, 0),
 				Title = "Master",
 				Content = listView
 			};
 
 			Master = master;
 
-			var detail = new CustomDetailPage ("Initial Page") {
+			var detail = new CustomDetailPage("Initial Page")
+			{
 				Title = "Detail"
 			};
 
-			detail.PresentMaster += (sender, e) => {
-				IsPresented = true;
-			};
+			detail.PresentMaster += (sender, e) => { IsPresented = true; };
 
 			Detail = detail;
 		}
@@ -116,22 +119,23 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Screenshot ("Tab 2 showing");
 		}
 #endif
-
 	}
 
 	internal class CustomDetailPage : TabbedPage
 	{
-		public event EventHandler PresentMaster;
-
-		public CustomDetailPage (string pageName)
+		public CustomDetailPage(string pageName)
 		{
 			Title = pageName;
 
-			Children.Add (new ContentPage {
+			Children.Add(new ContentPage
+			{
 				Title = "Tab 1",
-				Content = new StackLayout {
-					Children = {
-						new Label {
+				Content = new StackLayout
+				{
+					Children =
+					{
+						new Label
+						{
 							VerticalOptions = LayoutOptions.Center,
 							HorizontalOptions = LayoutOptions.Start,
 							Text = pageName + " Left aligned"
@@ -140,19 +144,25 @@ namespace Xamarin.Forms.Controls.Issues
 				}
 			});
 
-			Children.Add (new ContentPage {
+			Children.Add(new ContentPage
+			{
 				Title = "Tab 2",
-				Content = new StackLayout {
-					Children = {
-						new Label {
+				Content = new StackLayout
+				{
+					Children =
+					{
+						new Label
+						{
 							VerticalOptions = LayoutOptions.Center,
 							HorizontalOptions = LayoutOptions.End,
 							Text = pageName + " Right aligned"
 						},
-						new Button {
+						new Button
+						{
 							Text = "Present Master",
-							Command = new Command (() => {
-								var handler = PresentMaster;
+							Command = new Command(() =>
+							{
+								EventHandler handler = PresentMaster;
 								if (handler != null)
 									handler(this, EventArgs.Empty);
 							})
@@ -161,5 +171,7 @@ namespace Xamarin.Forms.Controls.Issues
 				}
 			});
 		}
+
+		public event EventHandler PresentMaster;
 	}
 }

@@ -1,6 +1,6 @@
-﻿using Xamarin.Forms.CustomAttributes;
+﻿using System.Linq;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-using System.Linq;
 
 #if UITEST
 using Xamarin.UITest;
@@ -18,7 +18,8 @@ namespace Xamarin.Forms.Controls.Issues
 	public class Bugzilla41054NumericValidationBehavior : Behavior<Entry>
 	{
 		public static readonly BindableProperty AttachBehaviorProperty =
-			BindableProperty.CreateAttached("AttachBehavior", typeof(bool), typeof(Bugzilla41054NumericValidationBehavior), false, propertyChanged: OnAttachBehaviorChanged);
+			BindableProperty.CreateAttached("AttachBehavior", typeof(bool),
+				typeof(Bugzilla41054NumericValidationBehavior), false, propertyChanged: OnAttachBehaviorChanged);
 
 		public static bool GetAttachBehavior(BindableObject view)
 		{
@@ -28,29 +29,6 @@ namespace Xamarin.Forms.Controls.Issues
 		public static void SetAttachBehavior(BindableObject view, bool value)
 		{
 			view.SetValue(AttachBehaviorProperty, value);
-		}
-
-		static void OnAttachBehaviorChanged(BindableObject view, object oldValue, object newValue)
-		{
-			var entry = view as Entry;
-			if (entry == null)
-			{
-				return;
-			}
-
-			bool attachBehavior = (bool)newValue;
-			if (attachBehavior)
-			{
-				entry.Behaviors.Add(new Bugzilla41054NumericValidationBehavior());
-			}
-			else
-			{
-				var toRemove = entry.Behaviors.FirstOrDefault(b => b is Bugzilla41054NumericValidationBehavior);
-				if (toRemove != null)
-				{
-					entry.Behaviors.Remove(toRemove);
-				}
-			}
 		}
 
 		protected override void OnAttachedTo(Entry entry)
@@ -65,6 +43,29 @@ namespace Xamarin.Forms.Controls.Issues
 			base.OnDetachingFrom(entry);
 		}
 
+		static void OnAttachBehaviorChanged(BindableObject view, object oldValue, object newValue)
+		{
+			var entry = view as Entry;
+			if (entry == null)
+			{
+				return;
+			}
+
+			var attachBehavior = (bool)newValue;
+			if (attachBehavior)
+			{
+				entry.Behaviors.Add(new Bugzilla41054NumericValidationBehavior());
+			}
+			else
+			{
+				Behavior toRemove = entry.Behaviors.FirstOrDefault(b => b is Bugzilla41054NumericValidationBehavior);
+				if (toRemove != null)
+				{
+					entry.Behaviors.Remove(toRemove);
+				}
+			}
+		}
+
 		void OnEntryTextChanged(object sender, TextChangedEventArgs args)
 		{
 			double result;
@@ -74,7 +75,8 @@ namespace Xamarin.Forms.Controls.Issues
 	}
 
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 41054, "Cannot update Entry.Text from attached Behavior on UWP", PlatformAffected.Default)]
+	[Issue(IssueTracker.Bugzilla, 41054, "Cannot update Entry.Text from attached Behavior on UWP",
+		PlatformAffected.Default)]
 	public class Bugzilla41054 : TestContentPage
 	{
 		protected override void Init()
@@ -94,7 +96,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 			Content = new StackLayout
 			{
-				Children = {
+				Children =
+				{
 					entry,
 					entry2,
 					new Entry

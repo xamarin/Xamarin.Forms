@@ -13,28 +13,30 @@ namespace Xamarin.Forms.Controls.Issues
 	[Category(UITestCategories.Cells)]
 #endif
 
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Bugzilla, 25662, "Setting IsEnabled does not disable SwitchCell")]
-    public class Bugzilla25662 : TestContentPage
-    {
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Bugzilla, 25662, "Setting IsEnabled does not disable SwitchCell")]
+	public class Bugzilla25662 : TestContentPage
+	{
 		[Preserve(AllMembers = true)]
 		class MySwitch : SwitchCell
 		{
-			public MySwitch ()
+			public MySwitch()
 			{
 				IsEnabled = false;
-				SetBinding(SwitchCell.TextProperty, new Binding("."));
+				SetBinding(TextProperty, new Binding("."));
 				OnChanged += (sender, e) => Text = "FAIL";
 			}
 		}
 
-		protected override void Init ()
+		protected override void Init()
 		{
-			var list = new ListView {
-				ItemsSource = new[] {
+			var list = new ListView
+			{
+				ItemsSource = new[]
+				{
 					"One", "Two", "Three"
 				},
-				ItemTemplate = new DataTemplate (typeof (MySwitch))
+				ItemTemplate = new DataTemplate(typeof(MySwitch))
 			};
 
 			Content = list;

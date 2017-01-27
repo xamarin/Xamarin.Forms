@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using Xamarin.Forms.CustomAttributes;
+﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.Issues
@@ -10,9 +7,26 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Bugzilla, 41205, "UWP CreateDefault passes string instead of object")]
 	public class Bugzilla41205 : ContentPage
 	{
+		public Bugzilla41205()
+		{
+			var listView = new CustomListView
+			{
+				ItemsSource = new[]
+				{
+					new ViewModel(),
+					new ViewModel(),
+				}
+			};
+
+			Content = listView;
+		}
+
 		public class ViewModel
 		{
-			public string Text { get { return "Pass"; } }
+			public string Text
+			{
+				get { return "Pass"; }
+			}
 		}
 
 		public class CustomListView : ListView
@@ -28,20 +42,5 @@ namespace Xamarin.Forms.Controls.Issues
 				return base.CreateDefault("Fail");
 			}
 		}
-
-		public Bugzilla41205()
-		{
-			var listView = new CustomListView
-			{
-				ItemsSource = new []
-				{
-					new ViewModel(), 
-					new ViewModel(),
-				}
-			};
-
-			Content = listView;
-		}
-
 	}
 }

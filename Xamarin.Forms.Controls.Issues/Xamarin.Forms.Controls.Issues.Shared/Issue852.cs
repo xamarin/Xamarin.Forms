@@ -1,8 +1,4 @@
-using System;
-using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
-
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
@@ -13,8 +9,9 @@ using Xamarin.UITest;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve (AllMembers=true)]
-	[Issue (IssueTracker.Github, 852, "Async loading of Content causes UI element to be unclickable", PlatformAffected.Android | PlatformAffected.iOS)]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 852, "Async loading of Content causes UI element to be unclickable",
+		PlatformAffected.Android | PlatformAffected.iOS)]
 	public class Issue852 : ContentPage
 	{
 #if APP
@@ -22,7 +19,7 @@ namespace Xamarin.Forms.Controls.Issues
 		Button _loginButton;
 		ScrollView _loginScrollView;
 
-		public Issue852 ()
+		public Issue852()
 		{
 			var welcomeLabel = new Label()
 			{
@@ -53,16 +50,15 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			base.OnAppearing();
 
-			if (!(await AttemptLogin())) //try to log in, if login fails show login screen
+			if (!await AttemptLogin()) //try to log in, if login fails show login screen
 			{
-				Device.BeginInvokeOnMainThread (() => BuildLogin ());
+				Device.BeginInvokeOnMainThread(() => BuildLogin());
 			}
 			else
 			{
 				Navigation.PopModalAsync();
 			}
 			IsBusy = false;
-
 		}
 
 		void BuildLogin()
@@ -108,7 +104,6 @@ namespace Xamarin.Forms.Controls.Issues
 			loginStackLayout.Children.Add(usernameEntry);
 			loginStackLayout.Children.Add(passwordEntry);
 			loginStackLayout.Children.Add(_loginButton);
-
 
 			_loginScrollView = new ScrollView
 			{

@@ -1,10 +1,7 @@
 ﻿using System;
-
-using Xamarin.Forms.CustomAttributes;
-using System.Collections.ObjectModel;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.ComponentModel;
+using System.Collections.ObjectModel;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 #if UITEST
@@ -14,72 +11,73 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Github, 3276, "Crashing Unknown cell parent type on ContextAction Bindings")]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 3276, "Crashing Unknown cell parent type on ContextAction Bindings")]
 	public class Issue3276 : TestTabbedPage
 	{
-		protected override void Init ()
+		protected override void Init()
 		{
-			var listview = new ListView ();
-			listview.ItemTemplate = new DataTemplate (typeof(CaCell));
+			var listview = new ListView();
+			listview.ItemTemplate = new DataTemplate(typeof(CaCell));
 
-			listview.SetBinding (ListView.ItemsSourceProperty, new Binding ("SearchResults"));
+			listview.SetBinding(ListView.ItemsSourceProperty, new Binding("SearchResults"));
 
-			var page = new ContentPage {Title = "First", Content = listview, BindingContext = new VM () };
+			var page = new ContentPage { Title = "First", Content = listview, BindingContext = new VM() };
 
-			page.Appearing += (object sender, EventArgs e) => (page.BindingContext as VM).Load ();
+			page.Appearing += (object sender, EventArgs e) => (page.BindingContext as VM).Load();
 
-			Children.Add (page);
-			Children.Add (new ContentPage { Title = "Second" });
+			Children.Add(page);
+			Children.Add(new ContentPage { Title = "Second" });
 		}
 
-		[Preserve (AllMembers = true)]
+		[Preserve(AllMembers = true)]
 		public class VM : ViewModel
 		{
-			public void Load ()
-			{
-				var list = new List<string> ();
-				for (int i = 0; i < 20; i++) {
-					list.Add ("second " + i.ToString ());
-				}
-				SearchResults = new ObservableCollection<string> (list);
-			}
-
 			ObservableCollection<string> _list = null;
 
-			public ObservableCollection<string> SearchResults {
+			public ObservableCollection<string> SearchResults
+			{
 				get { return _list; }
 
-				set {
+				set
+				{
 					_list = value;
-					OnPropertyChanged ();
+					OnPropertyChanged();
 				}
 			}
 
+			public void Load()
+			{
+				var list = new List<string>();
+				for (var i = 0; i < 20; i++)
+				{
+					list.Add("second " + i.ToString());
+				}
+				SearchResults = new ObservableCollection<string>(list);
+			}
 		}
 
-		[Preserve (AllMembers = true)]
+		[Preserve(AllMembers = true)]
 		public class CaCell : ViewCell
 		{
-			public CaCell ()
+			public CaCell()
 			{
-				var label = new Label ();
-				label.SetBinding (Label.TextProperty, new Binding ("."));
+				var label = new Label();
+				label.SetBinding(Label.TextProperty, new Binding("."));
 				var menu = new MenuItem { Text = "Delete", IsDestructive = true };
-				menu.SetBinding (MenuItem.CommandParameterProperty, new Binding ("."));
-				var menu1 = new MenuItem { Text = "Settings"  };
-				menu1.SetBinding (MenuItem.CommandParameterProperty, new Binding ("."));
-				ContextActions.Add (menu);
-				ContextActions.Add (menu1);
+				menu.SetBinding(MenuItem.CommandParameterProperty, new Binding("."));
+				var menu1 = new MenuItem { Text = "Settings" };
+				menu1.SetBinding(MenuItem.CommandParameterProperty, new Binding("."));
+				ContextActions.Add(menu);
+				ContextActions.Add(menu1);
 
-				var stack = new StackLayout ();
-				stack.Children.Add (label);
+				var stack = new StackLayout();
+				stack.Children.Add(label);
 				View = stack;
 			}
 		}
 
-
-		#if UITEST
+#if UITEST
 		[Test]
 		public void Issue3276Test ()
 		{

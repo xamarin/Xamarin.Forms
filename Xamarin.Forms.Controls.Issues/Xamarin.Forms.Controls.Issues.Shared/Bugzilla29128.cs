@@ -1,7 +1,6 @@
-﻿using System;
-
-using Xamarin.Forms.CustomAttributes;
+﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
+
 #if UITEST
 using Xamarin.UITest;
 using NUnit.Framework;
@@ -9,13 +8,14 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Bugzilla, 29128, "Slider background lays out wrong Android")]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Bugzilla, 29128, "Slider background lays out wrong Android")]
 	public class Bugzilla29128 : TestContentPage
 	{
-		protected override void Init ()
+		protected override void Init()
 		{
-			Content = new Slider {
+			Content = new Slider
+			{
 				AutomationId = "SliderId",
 				BackgroundColor = Color.Blue,
 				Maximum = 255,

@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using Xamarin.Forms.Controls.Issues;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
@@ -17,16 +15,16 @@ namespace Xamarin.Forms.Controls
 	[Category(UITestCategories.ListView)]
 #endif
 
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Bugzilla, 42329, "ListView in Frame and FormsAppCompatActivity Memory Leak")]
-	public class Bugzilla42329 : TestMasterDetailPage 
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Bugzilla, 42329, "ListView in Frame and FormsAppCompatActivity Memory Leak")]
+	public class Bugzilla42329 : TestMasterDetailPage
 	{
 		const string DestructorMessage = "ContentPageEx Destructor called";
 		const string Page1Title = "Page1";
 		const string Page2Title = "Page2";
 		const string Page3Title = "Page3";
 
-		protected override void Init ()
+		protected override void Init()
 		{
 			var masterPage = new MasterPage();
 			Master = masterPage;
@@ -50,7 +48,11 @@ namespace Xamarin.Forms.Controls
 			public MasterPage()
 			{
 				Title = "Menu";
-				ListView = new ListView { VerticalOptions = LayoutOptions.FillAndExpand, SeparatorVisibility = SeparatorVisibility.None };
+				ListView = new ListView
+				{
+					VerticalOptions = LayoutOptions.FillAndExpand,
+					SeparatorVisibility = SeparatorVisibility.None
+				};
 
 				ListView.ItemTemplate = new DataTemplate(() =>
 				{
@@ -68,17 +70,17 @@ namespace Xamarin.Forms.Controls
 				masterPageItems.Add(new MasterPageItem
 				{
 					Title = Page1Title,
-					TargetType = typeof(Bugzilla42329._42329_FrameWithListView)
+					TargetType = typeof(_42329_FrameWithListView)
 				});
 				masterPageItems.Add(new MasterPageItem
 				{
 					Title = Page2Title,
-					TargetType = typeof(Bugzilla42329._42329_Page2)
+					TargetType = typeof(_42329_Page2)
 				});
 				masterPageItems.Add(new MasterPageItem
 				{
 					Title = Page3Title,
-					TargetType = typeof(Bugzilla42329._42329_Page3)
+					TargetType = typeof(_42329_Page3)
 				});
 
 				ListView.ItemsSource = masterPageItems;
@@ -129,7 +131,10 @@ namespace Xamarin.Forms.Controls
 			public _42329_Page2()
 			{
 				Title = Page2Title;
-				Content = new StackLayout { Children = { new Label { Text = "Open the drawer menu and select Page3" } } };
+				Content = new StackLayout
+				{
+					Children = { new Label { Text = "Open the drawer menu and select Page3" } }
+				};
 			}
 		}
 
@@ -139,7 +144,17 @@ namespace Xamarin.Forms.Controls
 			public _42329_Page3()
 			{
 				Title = Page3Title;
-				Content = new StackLayout { Children = { new Label { Text = $"The console should have displayed the text '{DestructorMessage}' at least once. If not, this test has failed." } } };
+				Content = new StackLayout
+				{
+					Children =
+					{
+						new Label
+						{
+							Text =
+								$"The console should have displayed the text '{DestructorMessage}' at least once. If not, this test has failed."
+						}
+					}
+				};
 			}
 
 			protected override void OnAppearing()

@@ -1,9 +1,8 @@
-using Xamarin.Forms.CustomAttributes;
-using Xamarin.Forms.Internals;
-using System.Threading;
 using System;
 using System.Diagnostics;
-using System.Threading.Tasks;
+using System.Threading;
+using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Maps;
 
 #if UITEST
@@ -18,7 +17,8 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST
 	[Category(UITestCategories.Maps)]
 #endif
-	[Issue(IssueTracker.Bugzilla, 39489, "Memory leak when using NavigationPage with Maps", PlatformAffected.Android | PlatformAffected.iOS)]
+	[Issue(IssueTracker.Bugzilla, 39489, "Memory leak when using NavigationPage with Maps",
+		PlatformAffected.Android | PlatformAffected.iOS)]
 	public class Bugzilla39489 : TestNavigationPage
 	{
 		protected override void Init()
@@ -89,17 +89,17 @@ namespace Xamarin.Forms.Controls.Issues
 			Content = new StackLayout { Children = { button, gcbutton, map } };
 		}
 
-		void GCbutton_Clicked(object sender, EventArgs e)
-		{
-			System.Diagnostics.Debug.WriteLine(">>>>>>>> Running Garbage Collection");
-			GC.Collect();
-			GC.WaitForPendingFinalizers();
-			System.Diagnostics.Debug.WriteLine($">>>>>>>> GC.GetTotalMemory = {GC.GetTotalMemory(true):n0}");
-		}
-
 		void Button_Clicked(object sender, EventArgs e)
 		{
 			Navigation.PushAsync(new Bz39489Content());
+		}
+
+		void GCbutton_Clicked(object sender, EventArgs e)
+		{
+			Debug.WriteLine(">>>>>>>> Running Garbage Collection");
+			GC.Collect();
+			GC.WaitForPendingFinalizers();
+			Debug.WriteLine($">>>>>>>> GC.GetTotalMemory = {GC.GetTotalMemory(true):n0}");
 		}
 
 		~Bz39489Content()

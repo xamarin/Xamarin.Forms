@@ -3,8 +3,8 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls
 {
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Bugzilla, 35294, "Certain pages do not align properly in RT Desktop")]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Bugzilla, 35294, "Certain pages do not align properly in RT Desktop")]
 	public class Bugzilla35294 : TestContentPage
 	{
 		public static Label LblMsg = new Label
@@ -15,9 +15,9 @@ namespace Xamarin.Forms.Controls
 			TextColor = Color.Black,
 		};
 
-		protected override void Init ()
+		protected override void Init()
 		{
-			Label header = new Label
+			var header = new Label
 			{
 				Text = "Should not see blue",
 #pragma warning disable 618
@@ -27,12 +27,11 @@ namespace Xamarin.Forms.Controls
 				TextColor = Color.Black
 			};
 
-			StackLayout stack = new StackLayout
+			var stack = new StackLayout
 			{
 				BackgroundColor = Color.White,
 				VerticalOptions = LayoutOptions.FillAndExpand,
 				Spacing = 10,
-
 				Children = { header, LblMsg, }
 			};
 

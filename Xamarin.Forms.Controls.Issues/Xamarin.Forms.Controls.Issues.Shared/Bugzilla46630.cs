@@ -16,7 +16,9 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 46630, "[Xamarin.Forms, Android] Context menu of the Editor control is not working in the ListView", PlatformAffected.Android)]
+	[Issue(IssueTracker.Bugzilla, 46630,
+		"[Xamarin.Forms, Android] Context menu of the Editor control is not working in the ListView",
+		PlatformAffected.Android)]
 	public class Bugzilla46630 : TestContentPage
 	{
 		protected override void Init()
@@ -30,8 +32,8 @@ namespace Xamarin.Forms.Controls.Issues
 					Height = 300,
 					ContextActions =
 					{
-						new MenuItem {Text = "Action1"},
-						new MenuItem {Text = "Action2"}
+						new MenuItem { Text = "Action1" },
+						new MenuItem { Text = "Action2" }
 					},
 					View = new StackLayout
 					{
@@ -41,11 +43,21 @@ namespace Xamarin.Forms.Controls.Issues
 						Padding = 10,
 						Children =
 						{
-							new Label { HeightRequest = 50, BackgroundColor = Color.Coral, Text = "Long click each cell. Input views should not display context actions."},
-							new Editor { HeightRequest = 50, BackgroundColor = Color.Bisque, Text = "Editor"},
-							new Entry { HeightRequest = 50, BackgroundColor = Color.Aqua, Text = "Entry"},
-							new SearchBar { HeightRequest = 50, BackgroundColor = Color.CornflowerBlue, Text = "SearchBar"},
-							new Grid { HeightRequest = 50, BackgroundColor = Color.PaleVioletRed}
+							new Label
+							{
+								HeightRequest = 50,
+								BackgroundColor = Color.Coral,
+								Text = "Long click each cell. Input views should not display context actions."
+							},
+							new Editor { HeightRequest = 50, BackgroundColor = Color.Bisque, Text = "Editor" },
+							new Entry { HeightRequest = 50, BackgroundColor = Color.Aqua, Text = "Entry" },
+							new SearchBar
+							{
+								HeightRequest = 50,
+								BackgroundColor = Color.CornflowerBlue,
+								Text = "SearchBar"
+							},
+							new Grid { HeightRequest = 50, BackgroundColor = Color.PaleVioletRed }
 						}
 					}
 				})

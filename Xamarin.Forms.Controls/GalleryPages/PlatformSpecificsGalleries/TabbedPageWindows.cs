@@ -40,16 +40,6 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformSpecificsGalleries
 			return page;
 		}
 
-		NavigationPage CreateThirdPage()
-		{
-			var content = CreateSecondPage();
-			content.Title = "Content in a Nav Page";
-			var navpage = new NavigationPage(content);
-			navpage.Title = "Nav Page";
-			WindowsPlatformSpecificsGalleryHelpers.AddToolBarItems(navpage);
-			return navpage;
-		}
-
 		static Page CreateSecondPage()
 		{
 			var cp = new ContentPage { Title = "Second Content Page" };
@@ -70,6 +60,16 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformSpecificsGalleries
 			cp.Content = content;
 
 			return cp;
+		}
+
+		NavigationPage CreateThirdPage()
+		{
+			Page content = CreateSecondPage();
+			content.Title = "Content in a Nav Page";
+			var navpage = new NavigationPage(content);
+			navpage.Title = "Nav Page";
+			WindowsPlatformSpecificsGalleryHelpers.AddToolBarItems(navpage);
+			return navpage;
 		}
 	}
 }

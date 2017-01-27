@@ -1,7 +1,4 @@
-﻿using System;
-
-using Xamarin.Forms;
-using Xamarin.Forms.CustomAttributes;
+﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 #if UITEST
@@ -11,11 +8,12 @@ using Xamarin.UITest.iOS;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Github, 2414, "NullReferenceException when swiping over Context Actions", PlatformAffected.WinPhone)]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 2414, "NullReferenceException when swiping over Context Actions",
+		PlatformAffected.WinPhone)]
 	public class Issue2414 : TestContentPage
 	{
-		protected override void Init ()
+		protected override void Init()
 		{
 			var tableView = new TableView
 			{
@@ -28,11 +26,13 @@ namespace Xamarin.Forms.Controls.Issues
 						{
 							Text = "Swipe ME",
 							Detail = "And I will crash!",
-							ContextActions = { 
+							ContextActions =
+							{
 								new MenuItem
 								{
 									Text = "Text0"
-								},new MenuItem
+								},
+								new MenuItem
 								{
 									Text = "Text1"
 								},
@@ -48,7 +48,8 @@ namespace Xamarin.Forms.Controls.Issues
 								{
 									Text = "Text4",
 									IsDestructive = true,
-								}}
+								}
+							}
 						},
 					}
 				}
@@ -104,8 +105,5 @@ namespace Xamarin.Forms.Controls.Issues
 
 		}
 #endif
-
 	}
 }
-
-

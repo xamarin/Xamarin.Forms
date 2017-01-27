@@ -1,6 +1,4 @@
-﻿using System;
-using System.Diagnostics;
-using System.Threading;
+﻿using System.Diagnostics;
 
 namespace Xamarin.Forms.Controls.Issues
 {
@@ -10,29 +8,27 @@ namespace Xamarin.Forms.Controls.Issues
 
 		public Bugzilla42069_Page()
 		{
-			#if APP
+#if APP
 			InitializeComponent();
-			
+
 			ImageWhichChanges = ImageSource.FromFile("oasissmall.jpg") as FileImageSource;
 
 			ChangingImage.SetBinding(Image.SourceProperty, nameof(ImageWhichChanges));
 
 			Button.Clicked += (sender, args) => Navigation.PopAsync(false);
 
-			Button2.Clicked += (sender, args) =>
-			{
-				ImageWhichChanges.File = ImageWhichChanges.File == "bank.png" ? "oasissmall.jpg" : "bank.png";
-			};
+			Button2.Clicked +=
+				(sender, args) => { ImageWhichChanges.File = ImageWhichChanges.File == "bank.png" ? "oasissmall.jpg" : "bank.png"; };
 
 			BindingContext = this;
-			#endif
+#endif
 		}
+
+		public FileImageSource ImageWhichChanges { get; set; }
 
 		~Bugzilla42069_Page()
 		{
 			Debug.WriteLine(DestructorMessage);
 		}
-
-		public FileImageSource ImageWhichChanges { get; set; }
 	}
 }

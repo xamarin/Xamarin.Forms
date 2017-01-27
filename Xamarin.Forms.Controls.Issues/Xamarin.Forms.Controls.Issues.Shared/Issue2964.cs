@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using System.Linq;
-
-using Xamarin.Forms.CustomAttributes;
+﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 #if UITEST
@@ -13,20 +8,22 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Github, 2964, "TabbedPage toolbar item crash")]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 2964, "TabbedPage toolbar item crash")]
 	public class Issue2964 : TestMasterDetailPage
 	{
 		public class ModalPage : ContentPage
 		{
-			public ModalPage ()
+			public ModalPage()
 			{
-				Content = new Button {
+				Content = new Button
+				{
 					AutomationId = "ModalPagePopButton",
-					Text ="Pop Me",
-					Command = new Command (async () => {
-						MessagingCenter.Send (this, "update");
-						await Navigation.PopModalAsync ();
+					Text = "Pop Me",
+					Command = new Command(async () =>
+					{
+						MessagingCenter.Send(this, "update");
+						await Navigation.PopModalAsync();
 					})
 				};
 			}
@@ -34,47 +31,50 @@ namespace Xamarin.Forms.Controls.Issues
 
 		public class Page1 : ContentPage
 		{
-			public Page1 ()
+			public Page1()
 			{
 				Title = "Testpage 1";
 
-				MessagingCenter.Subscribe<ModalPage> (this, "update", sender => {
-					BlowUp ();
-				});
+				MessagingCenter.Subscribe<ModalPage>(this, "update", sender => { BlowUp(); });
 
-				Content = new Button {
+				Content = new Button
+				{
 					AutomationId = "Page1PushModalButton",
 					Text = "press me",
-					Command = new Command (async () => await Navigation.PushModalAsync (new ModalPage ()))
+					Command = new Command(async () => await Navigation.PushModalAsync(new ModalPage()))
 				};
 			}
 
-			void BlowUp ()
+			void BlowUp()
 			{
-				Content = new Label { 
+				Content = new Label
+				{
 					AutomationId = "Page1Label",
-					Text = "Page1" 
+					Text = "Page1"
 				};
 			}
 		}
 
-		protected override void Init ()
+		protected override void Init()
 		{
 			Title = "Test";
 
-			Master = new ContentPage {
+			Master = new ContentPage
+			{
 				Title = "Master",
-				Content = new Button { 
+				Content = new Button
+				{
 					AutomationId = "MasterButton",
 					Text = "Make a new page",
-					Command= new Command(() => {
-						Detail = new Page1 ();
+					Command = new Command(() =>
+					{
+						Detail = new Page1();
 						IsPresented = false;
 					})
 				}
 			};
 
-			Detail = new Page1 ();
+			Detail = new Page1();
 
 			IsPresented = true;
 		}

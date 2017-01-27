@@ -1,6 +1,4 @@
-﻿using System;
-using System.ComponentModel;
-using Xamarin.Forms.Controls;
+﻿using System.ComponentModel;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
@@ -11,70 +9,76 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Github, 2927, "ListView item tapped not firing multiple times")]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 2927, "ListView item tapped not firing multiple times")]
 	public class Issue2927 : TestContentPage // or TestMasterDetailPage, etc .
 	{
-		[Preserve (AllMembers = true)]
+		[Preserve(AllMembers = true)]
 		public class Issue2927Cell : TextCell, INotifyPropertyChanged
 		{
+			string _cellId;
 			int _numberOfTimesTapped;
 			string _text;
-			string _cellId;
 
-			public Issue2927Cell (string id)
+			public Issue2927Cell(string id)
 			{
 				_cellId = id;
 				NumberOfTimesTapped = 0;
 			}
 
-			void OnPropertyChanged (string prop)
-			{
-				var handler = PropertyChanged;
-				if (handler != null) {
-					handler(this, new PropertyChangedEventArgs(prop));
-				}
-			}
-
 			public int NumberOfTimesTapped
 			{
 				get { return _numberOfTimesTapped; }
-				set { 
+				set
+				{
 					_numberOfTimesTapped = value;
-					Text = _cellId + " " + _numberOfTimesTapped.ToString ();
+					Text = _cellId + " " + _numberOfTimesTapped.ToString();
 				}
 			}
 
-			public string Text {
+			public string Text
+			{
 				get { return _text; }
-				set { 
+				set
+				{
 					_text = value;
-					OnPropertyChanged ("Text");
+					OnPropertyChanged("Text");
 				}
 			}
 
 			public event PropertyChangedEventHandler PropertyChanged;
 
+			void OnPropertyChanged(string prop)
+			{
+				PropertyChangedEventHandler handler = PropertyChanged;
+				if (handler != null)
+				{
+					handler(this, new PropertyChangedEventArgs(prop));
+				}
+			}
 		}
 
-		protected override void Init ()
+		protected override void Init()
 		{
-			var cells = new[] {
-				new Issue2927Cell ("Cell1"),
-				new Issue2927Cell ("Cell2"),
-				new Issue2927Cell ("Cell3"),
+			var cells = new[]
+			{
+				new Issue2927Cell("Cell1"),
+				new Issue2927Cell("Cell2"),
+				new Issue2927Cell("Cell3"),
 			};
 
 			BindingContext = cells;
-			var template = new DataTemplate (typeof (TextCell));
-			template.SetBinding (TextCell.TextProperty, "Text");
+			var template = new DataTemplate(typeof(TextCell));
+			template.SetBinding(TextCell.TextProperty, "Text");
 
-			var listView = new ListView {
+			var listView = new ListView
+			{
 				ItemTemplate = template,
 				ItemsSource = cells
 			};
 
-			listView.ItemTapped += (s, e) => {
+			listView.ItemTapped += (s, e) =>
+			{
 				var obj = (Issue2927Cell)e.Item;
 				obj.NumberOfTimesTapped += 1;
 			};

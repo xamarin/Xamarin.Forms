@@ -5,18 +5,41 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls
 {
-	[Preserve (AllMembers = true)]
+	[Preserve(AllMembers = true)]
 	public class CellForceUpdateSizeGalleryPage : TabbedPage
 	{
+		public CellForceUpdateSizeGalleryPage()
+		{
+			Children.Add(new ViewCellPage());
+			Children.Add(new ImageCellPage());
+			Children.Add(new TextCellPage());
+			Children.Add(new EntryCellPage());
+			Children.Add(new SwitchCellPage());
+		}
+
 		public class ViewCellPage : ContentPage
 		{
-			[Preserve (AllMembers = true)]
+			public ViewCellPage()
+			{
+				var listview = new ListView
+				{
+					HasUnevenRows = true,
+				};
+				IEnumerable<int> items = Enumerable.Range(0, 10);
+				listview.ItemsSource = items;
+				listview.ItemTemplate = new DataTemplate(typeof(MyViewCell));
+				Content = listview;
+				Title = "View Cell";
+			}
+
+			[Preserve(AllMembers = true)]
 			public class MyViewCell : ViewCell
 			{
-				public MyViewCell ()
+				public MyViewCell()
 				{
-					var image = new Image {
-						Source = ImageSource.FromFile ("crimson.jpg"),
+					var image = new Image
+					{
+						Source = ImageSource.FromFile("crimson.jpg"),
 						BackgroundColor = Color.Gray,
 						HeightRequest = 50,
 						VerticalOptions = LayoutOptions.Fill,
@@ -27,168 +50,152 @@ namespace Xamarin.Forms.Controls
 					button.Clicked += (object sender, EventArgs e) =>
 					{
 						image.HeightRequest = image.Height + 100;
-						ForceUpdateSize ();
+						ForceUpdateSize();
 					};
 
 					Tapped += (object sender, EventArgs e) =>
 					{
 						image.HeightRequest = image.Height - 100;
-						ForceUpdateSize ();
+						ForceUpdateSize();
 					};
 
 					View = new StackLayout { Orientation = StackOrientation.Horizontal, Children = { image, button } };
 				}
 			}
-
-			public ViewCellPage ()
-			{
-				var listview = new ListView {
-					HasUnevenRows = true,
-				};
-				var items = Enumerable.Range (0, 10);
-				listview.ItemsSource = items;
-				listview.ItemTemplate = new DataTemplate (typeof (MyViewCell));
-				Content = listview;
-				Title = "View Cell";
-			}
 		}
 
 		public class ImageCellPage : ContentPage
 		{
-			[Preserve (AllMembers = true)]
-			public class MyImageCell : ImageCell
+			public ImageCellPage()
 			{
-				public MyImageCell ()
+				var listview = new ListView
 				{
-					ImageSource = ImageSource.FromFile ("crimson.jpg");
-					Height = 20;
-					Command = new Command (() =>
-					{
-						Height += 20;
-						ForceUpdateSize ();
-					});
-				}
-			}
-			public ImageCellPage ()
-			{
-				var listview = new ListView {
 					HasUnevenRows = true,
 				};
-				var items = Enumerable.Range (0, 10);
+				IEnumerable<int> items = Enumerable.Range(0, 10);
 				listview.ItemsSource = items;
-				listview.ItemTemplate = new DataTemplate (typeof (MyImageCell));
+				listview.ItemTemplate = new DataTemplate(typeof(MyImageCell));
 				Content = listview;
 				Title = "Image Cell";
+			}
+
+			[Preserve(AllMembers = true)]
+			public class MyImageCell : ImageCell
+			{
+				public MyImageCell()
+				{
+					ImageSource = ImageSource.FromFile("crimson.jpg");
+					Height = 20;
+					Command = new Command(() =>
+					{
+						Height += 20;
+						ForceUpdateSize();
+					});
+				}
 			}
 		}
 
 		public class TextCellPage : ContentPage
 		{
-			[Preserve (AllMembers = true)]
+			public TextCellPage()
+			{
+				var listview = new ListView
+				{
+					HasUnevenRows = true,
+				};
+				IEnumerable<int> items = Enumerable.Range(0, 10);
+				listview.ItemsSource = items;
+				listview.ItemTemplate = new DataTemplate(typeof(MyTextCell));
+				Content = listview;
+				Title = "Text Cell";
+			}
+
+			[Preserve(AllMembers = true)]
 			public class MyTextCell : TextCell
 			{
-				public MyTextCell ()
+				public MyTextCell()
 				{
 					Text = "I am a TextCell, short and stout.";
 					Height = 20;
-					Command = new Command (() =>
+					Command = new Command(() =>
 					{
 						Height += 20;
-						ForceUpdateSize ();
+						ForceUpdateSize();
 					});
 				}
-			}
-
-			public TextCellPage ()
-			{
-				var listview = new ListView {
-					HasUnevenRows = true,
-				};
-				var items = Enumerable.Range (0, 10);
-				listview.ItemsSource = items;
-				listview.ItemTemplate = new DataTemplate (typeof (MyTextCell));
-				Content = listview;
-				Title = "Text Cell";
 			}
 		}
 
 		public class EntryCellPage : ContentPage
 		{
-			[Preserve (AllMembers = true)]
+			public EntryCellPage()
+			{
+				var listview = new ListView
+				{
+					HasUnevenRows = true,
+				};
+				IEnumerable<int> items = Enumerable.Range(0, 10);
+				listview.ItemsSource = items;
+				listview.ItemTemplate = new DataTemplate(typeof(MyEntryCell));
+				Content = listview;
+				Title = "Entry Cell";
+			}
+
+			[Preserve(AllMembers = true)]
 			public class MyEntryCell : EntryCell
 			{
-				public MyEntryCell ()
+				public MyEntryCell()
 				{
 					Text = "I am an EntryCell, short and stout.";
 					Height = 20;
 					Tapped += (object sender, EventArgs e) =>
 					{
 						Height += 20;
-						ForceUpdateSize ();
+						ForceUpdateSize();
 					};
 					Completed += (object sender, EventArgs e) =>
 					{
 						Height -= 20;
-						ForceUpdateSize ();
+						ForceUpdateSize();
 					};
 				}
-			}
-
-			public EntryCellPage ()
-			{
-				var listview = new ListView {
-					HasUnevenRows = true,
-				};
-				var items = Enumerable.Range (0, 10);
-				listview.ItemsSource = items;
-				listview.ItemTemplate = new DataTemplate (typeof (MyEntryCell));
-				Content = listview;
-				Title = "Entry Cell";
 			}
 		}
 
 		public class SwitchCellPage : ContentPage
 		{
-			[Preserve (AllMembers = true)]
+			public SwitchCellPage()
+			{
+				var listview = new ListView
+				{
+					HasUnevenRows = true,
+				};
+				IEnumerable<int> items = Enumerable.Range(0, 10);
+				listview.ItemsSource = items;
+				listview.ItemTemplate = new DataTemplate(typeof(MySwitchCell));
+				Content = listview;
+				Title = "Switch Cell";
+			}
+
+			[Preserve(AllMembers = true)]
 			public class MySwitchCell : SwitchCell
 			{
-				public MySwitchCell ()
+				public MySwitchCell()
 				{
 					Text = "I am a SwitchCell, short and stout.";
 					Height = 20;
 					Tapped += (object sender, EventArgs e) =>
 					{
 						Height += 20;
-						ForceUpdateSize ();
+						ForceUpdateSize();
 					};
 					OnChanged += (object sender, ToggledEventArgs e) =>
 					{
 						Height -= 20;
-						ForceUpdateSize ();
+						ForceUpdateSize();
 					};
 				}
 			}
-
-			public SwitchCellPage ()
-			{
-				var listview = new ListView {
-					HasUnevenRows = true,
-				};
-				var items = Enumerable.Range (0, 10);
-				listview.ItemsSource = items;
-				listview.ItemTemplate = new DataTemplate (typeof (MySwitchCell));
-				Content = listview;
-				Title = "Switch Cell";
-			}
-		}
-
-		public CellForceUpdateSizeGalleryPage ()
-		{
-			Children.Add (new ViewCellPage ());
-			Children.Add (new ImageCellPage ());
-			Children.Add (new TextCellPage ());
-			Children.Add (new EntryCellPage ());
-			Children.Add (new SwitchCellPage ());
 		}
 	}
 }

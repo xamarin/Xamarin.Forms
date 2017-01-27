@@ -1,8 +1,8 @@
-﻿using Xamarin.Forms.CustomAttributes;
-using Xamarin.Forms.Internals;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
 
 #if UITEST
 using Xamarin.UITest;
@@ -27,34 +27,29 @@ namespace Xamarin.Forms.Controls.Issues
 		[Preserve(AllMembers = true)]
 		class MyViewModel : INotifyPropertyChanged
 		{
-			string _toolBarItemText;
-			public string ToolbarItemText
-			{
-				get
-				{
-					return _toolBarItemText;
-				}
-				set
-				{
-					_toolBarItemText = value;
-					OnPropertyChanged();
-				}
-			}
-
 			ICommand _toolBarItemCommand;
+			string _toolBarItemText;
+
 			public ICommand ToolbarItemCommand
 			{
 				get
 				{
 					if (_toolBarItemCommand == null)
 					{
-						_toolBarItemCommand = new Command(() =>
-						{
-							ToolbarItemText = Success;
-						});
+						_toolBarItemCommand = new Command(() => { ToolbarItemText = Success; });
 					}
 
 					return _toolBarItemCommand;
+				}
+			}
+
+			public string ToolbarItemText
+			{
+				get { return _toolBarItemText; }
+				set
+				{
+					_toolBarItemText = value;
+					OnPropertyChanged();
 				}
 			}
 
@@ -70,8 +65,8 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			var page1 = new ContentPage { Content = new Label { Text = Tab1Content }, BindingContext = _Vm };
 			var toolBarItem = new ToolbarItem();
-			toolBarItem.SetBinding(ToolbarItem.CommandProperty, nameof(MyViewModel.ToolbarItemCommand));
-			toolBarItem.SetBinding(ToolbarItem.TextProperty, nameof(MyViewModel.ToolbarItemText));
+			toolBarItem.SetBinding(MenuItem.CommandProperty, nameof(MyViewModel.ToolbarItemCommand));
+			toolBarItem.SetBinding(MenuItem.TextProperty, nameof(MyViewModel.ToolbarItemText));
 			page1.ToolbarItems.Add(toolBarItem);
 			var page2 = new ContentPage();
 			var page3 = new ContentPage { Content = new Label { Text = Tab3Content } };

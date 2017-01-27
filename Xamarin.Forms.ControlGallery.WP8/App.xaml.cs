@@ -7,7 +7,6 @@ using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using Xamarin.Forms.ControlGallery.WP8.Resources;
-
 using Application = Xamarin.Forms.Application;
 
 namespace Xamarin.Forms.ControlGallery.WP8
@@ -24,9 +23,9 @@ namespace Xamarin.Forms.ControlGallery.WP8
 		/// Constructor for the Application object.
 		/// </summary>
 		public App()
-		{		
-			FormsMaps.Init (Controls.App.Config["WP8AppId"], Controls.App.Config["WP8AuthToken"]);
-			
+		{
+			FormsMaps.Init(Controls.App.Config["WP8AppId"], Controls.App.Config["WP8AuthToken"]);
+
 			// Global handler for uncaught exceptions.
 			UnhandledException += Application_UnhandledException;
 
@@ -58,35 +57,34 @@ namespace Xamarin.Forms.ControlGallery.WP8
 				// and consume battery power when the user is not using the phone.
 				PhoneApplicationService.Current.UserIdleDetectionMode = IdleDetectionMode.Disabled;
 			}
-
 		}
 
 		// Code to execute when the application is launching (eg, from Start)
 		// This code will not execute when the application is reactivated
 		void Application_Launching(object sender, LaunchingEventArgs e)
 		{
-			Debug.WriteLine ("Launching");
+			Debug.WriteLine("Launching");
 		}
 
 		// Code to execute when the application is activated (brought to foreground)
 		// This code will not execute when the application is first launched
 		void Application_Activated(object sender, ActivatedEventArgs e)
 		{
-			Debug.WriteLine ("Closing");
+			Debug.WriteLine("Closing");
 		}
 
 		// Code to execute when the application is deactivated (sent to background)
 		// This code will not execute when the application is closing
 		void Application_Deactivated(object sender, DeactivatedEventArgs e)
 		{
-			Debug.WriteLine ("Deactivated");
+			Debug.WriteLine("Deactivated");
 		}
 
 		// Code to execute when the application is closing (eg, user hit Back)
 		// This code will not execute when the application is deactivated
 		void Application_Closing(object sender, ClosingEventArgs e)
 		{
-			Debug.WriteLine ("Closing");
+			Debug.WriteLine("Closing");
 		}
 
 		// Code to execute if a navigation fails

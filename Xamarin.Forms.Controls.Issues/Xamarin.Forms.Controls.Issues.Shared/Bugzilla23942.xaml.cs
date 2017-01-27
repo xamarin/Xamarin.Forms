@@ -1,6 +1,6 @@
-﻿using Xamarin.Forms;
-using Xamarin.Forms.CustomAttributes;
+﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
+
 #if UITEST
 using Xamarin.UITest;
 using NUnit.Framework;
@@ -9,19 +9,18 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 23942, "Cannot bind properties in BindableObjects added to static resources in XAML", PlatformAffected.All)]
+	[Issue(IssueTracker.Bugzilla, 23942, "Cannot bind properties in BindableObjects added to static resources in XAML",
+		PlatformAffected.All)]
 	public partial class Bugzilla23942 : TestContentPage
 	{
 		[Preserve(AllMembers = true)]
 		public class TestViewModel : ViewModelBase
 		{
 			string _doesItWork;
+
 			public string DoesItWork
 			{
-				get
-				{
-					return _doesItWork;
-				}
+				get { return _doesItWork; }
 				set
 				{
 					_doesItWork = value;
@@ -39,7 +38,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		private void InitializeView()
 		{
-			TestViewModel vm = new TestViewModel() { DoesItWork = "initial binding works" };
+			var vm = new TestViewModel() { DoesItWork = "initial binding works" };
 			BindingContext = vm;
 			vm.DoesItWork = "success";
 		}
@@ -70,20 +69,14 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		public static readonly BindableProperty TextProperty =
 			BindableProperty.Create(propertyName: nameof(Text),
-									returnType: typeof(string),
-									declaringType: typeof(Bugzilla23942Options),
-									defaultValue: default(string));
+				returnType: typeof(string),
+				declaringType: typeof(Bugzilla23942Options),
+				defaultValue: default(string));
 
 		public string Text
 		{
-			get
-			{
-				return (string)GetValue(TextProperty);
-			}
-			set
-			{
-				SetValue(TextProperty, value);
-			}
+			get { return (string)GetValue(TextProperty); }
+			set { SetValue(TextProperty, value); }
 		}
 	}
 
@@ -92,20 +85,14 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		public static readonly BindableProperty OptionsProperty =
 			BindableProperty.Create(propertyName: nameof(Options),
-									returnType: typeof(Bugzilla23942Options),
-									declaringType: typeof(Bugzilla23942Label),
-									defaultValue: default(Bugzilla23942Options));
+				returnType: typeof(Bugzilla23942Options),
+				declaringType: typeof(Bugzilla23942Label),
+				defaultValue: default(Bugzilla23942Options));
 
 		public Bugzilla23942Options Options
 		{
-			get
-			{
-				return (Bugzilla23942Options)GetValue(OptionsProperty);
-			}
-			set
-			{
-				SetValue(OptionsProperty, value);
-			}
+			get { return (Bugzilla23942Options)GetValue(OptionsProperty); }
+			set { SetValue(OptionsProperty, value); }
 		}
 	}
 }

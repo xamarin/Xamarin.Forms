@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Xamarin.Forms.Controls
 {
@@ -19,21 +18,23 @@ namespace Xamarin.Forms.Controls
 		{
 			MenuType = HMenuType.About;
 		}
+
 		public string Icon { get; set; }
+
 		public HMenuType MenuType { get; set; }
 	}
 
 	public class BaseModel
 	{
-		public string Title { get; set; }
 		public string Details { get; set; }
+
 		public int Id { get; set; }
+
+		public string Title { get; set; }
 	}
 
 	public class RootPage : MasterDetailPage
 	{
-		public static bool IsUWPDesktop { get; set; }
-		Dictionary<HMenuType, NavigationPage> Pages { get; set; }
 		public RootPage()
 		{
 			Pages = new Dictionary<HMenuType, NavigationPage>();
@@ -46,6 +47,10 @@ namespace Xamarin.Forms.Controls
 			};
 			Navigate(HMenuType.About);
 		}
+
+		public static bool IsUWPDesktop { get; set; }
+
+		Dictionary<HMenuType, NavigationPage> Pages { get; set; }
 
 		public void Navigate(HMenuType id)
 		{
@@ -85,9 +90,10 @@ namespace Xamarin.Forms.Controls
 
 	public class MenuPage1 : ContentPage
 	{
-		RootPage mdp;
 		ListView ListViewMenu;
+		RootPage mdp;
 		List<HomeMenuItem> menuItems;
+
 		public MenuPage1(RootPage page)
 		{
 			Title = "Master";
@@ -99,26 +105,26 @@ namespace Xamarin.Forms.Controls
 				ItemTemplate = new DataTemplate(typeof(MenuViewCell))
 			};
 			ListViewMenu.ItemsSource = menuItems = new List<HomeMenuItem>
-				{
-					new HomeMenuItem { Title = "About", MenuType = HMenuType.About, Icon ="about.png" },
-					new HomeMenuItem { Title = "Blog", MenuType = HMenuType.Blog, Icon = "blog.png" },
-					new HomeMenuItem { Title = "Twitter", MenuType = HMenuType.Twitter, Icon = "twitternav.png" },
-					new HomeMenuItem { Title = "Hanselminues", MenuType = HMenuType.Hanselminutes, Icon = "hm.png" },
-					new HomeMenuItem { Title = "Ratchet", MenuType = HMenuType.Ratchet, Icon = "ratchet.png" },
-					new HomeMenuItem { Title = "Developers Life", MenuType = HMenuType.DeveloperLife, Icon = "tdl.png"},
-				};
+			{
+				new HomeMenuItem { Title = "About", MenuType = HMenuType.About, Icon = "about.png" },
+				new HomeMenuItem { Title = "Blog", MenuType = HMenuType.Blog, Icon = "blog.png" },
+				new HomeMenuItem { Title = "Twitter", MenuType = HMenuType.Twitter, Icon = "twitternav.png" },
+				new HomeMenuItem { Title = "Hanselminues", MenuType = HMenuType.Hanselminutes, Icon = "hm.png" },
+				new HomeMenuItem { Title = "Ratchet", MenuType = HMenuType.Ratchet, Icon = "ratchet.png" },
+				new HomeMenuItem { Title = "Developers Life", MenuType = HMenuType.DeveloperLife, Icon = "tdl.png" },
+			};
 
 			ListViewMenu.Header = GetHeader();
 
 			ListViewMenu.SelectedItem = menuItems[0];
 
 			ListViewMenu.ItemSelected += (sender, e) =>
-			   {
-				   if (ListViewMenu.SelectedItem == null)
-					   return;
+			{
+				if (ListViewMenu.SelectedItem == null)
+					return;
 
-				   mdp.Navigate(((HomeMenuItem)e.SelectedItem).MenuType);
-			   };
+				mdp.Navigate(((HomeMenuItem)e.SelectedItem).MenuType);
+			};
 			Content = ListViewMenu;
 		}
 

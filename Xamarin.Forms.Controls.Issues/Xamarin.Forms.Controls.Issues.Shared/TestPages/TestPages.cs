@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Reflection;
-
-using Xamarin.Forms.CustomAttributes;
-
+﻿
 #if UITEST
 using NUnit.Framework;
 using Xamarin.UITest;
@@ -14,13 +8,14 @@ using Xamarin.UITest;
 namespace Xamarin.Forms.Controls
 {
 	internal static class AppPaths
-    {
-        public static string ApkPath = "../../../Xamarin.Forms.ControlGallery.Android/bin/Debug/AndroidControlGallery.AndroidControlGallery-Signed.apk";
+	{
+		public static string ApkPath =
+			"../../../Xamarin.Forms.ControlGallery.Android/bin/Debug/AndroidControlGallery.AndroidControlGallery-Signed.apk";
 
 		// Have to continue using the old BundleId for now; Test Cloud doesn't like
 		// when you change the BundleId
-        public static string BundleId = "com.xamarin.quickui.controlgallery";
-    }
+		public static string BundleId = "com.xamarin.quickui.controlgallery";
+	}
 
 #if UITEST
 	internal static class AppSetup
@@ -233,10 +228,10 @@ namespace Xamarin.Forms.Controls
 		protected virtual bool Isolate => false;
 #endif
 
-		protected TestPage ()
+		protected TestPage()
 		{
 #if APP
-			Init ();
+			Init();
 #endif
 		}
 
@@ -267,9 +262,8 @@ namespace Xamarin.Forms.Controls
 		}
 #endif
 
-		protected abstract void Init ();
+		protected abstract void Init();
 	}
-
 
 	public abstract class TestContentPage : ContentPage
 	{
@@ -279,10 +273,10 @@ namespace Xamarin.Forms.Controls
 		protected virtual bool Isolate => false;
 #endif
 
-		protected TestContentPage ()
+		protected TestContentPage()
 		{
 #if APP
-			Init ();
+			Init();
 #endif
 		}
 
@@ -313,7 +307,7 @@ namespace Xamarin.Forms.Controls
 		}
 #endif
 
-		protected abstract void Init ();
+		protected abstract void Init();
 	}
 
 	public abstract class TestCarouselPage : CarouselPage
@@ -324,10 +318,10 @@ namespace Xamarin.Forms.Controls
 		protected virtual bool Isolate => false;
 #endif
 
-		protected TestCarouselPage ()
+		protected TestCarouselPage()
 		{
 #if APP
-			Init ();
+			Init();
 #endif
 		}
 
@@ -358,7 +352,7 @@ namespace Xamarin.Forms.Controls
 		}
 #endif
 
-		protected abstract void Init ();
+		protected abstract void Init();
 	}
 
 	public abstract class TestMasterDetailPage : MasterDetailPage
@@ -369,10 +363,10 @@ namespace Xamarin.Forms.Controls
 		protected virtual bool Isolate => false;
 #endif
 
-		protected TestMasterDetailPage ()
+		protected TestMasterDetailPage()
 		{
 #if APP
-			Init ();
+			Init();
 #endif
 		}
 
@@ -403,7 +397,7 @@ namespace Xamarin.Forms.Controls
 		}
 #endif
 
-		protected abstract void Init ();
+		protected abstract void Init();
 	}
 
 	public abstract class TestNavigationPage : NavigationPage
@@ -414,10 +408,10 @@ namespace Xamarin.Forms.Controls
 		protected virtual bool Isolate => false;
 #endif
 
-		protected TestNavigationPage ()
+		protected TestNavigationPage()
 		{
 #if APP
-			Init ();
+			Init();
 #endif
 		}
 
@@ -448,7 +442,7 @@ namespace Xamarin.Forms.Controls
 		}
 #endif
 
-		protected abstract void Init ();
+		protected abstract void Init();
 	}
 
 	public abstract class TestTabbedPage : TabbedPage
@@ -459,10 +453,10 @@ namespace Xamarin.Forms.Controls
 		protected virtual bool Isolate => false;
 #endif
 
-		protected TestTabbedPage ()
+		protected TestTabbedPage()
 		{
 #if APP
-			Init ();
+			Init();
 #endif
 		}
 
@@ -493,7 +487,7 @@ namespace Xamarin.Forms.Controls
 		}
 #endif
 
-		protected abstract void Init ();
+		protected abstract void Init();
 	}
 }
 

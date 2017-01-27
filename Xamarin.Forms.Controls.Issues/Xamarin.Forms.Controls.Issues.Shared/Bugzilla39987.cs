@@ -1,7 +1,6 @@
-﻿using System;
-
-using Xamarin.Forms.CustomAttributes;
+﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
+
 #if UITEST
 using Xamarin.UITest;
 using NUnit.Framework;
@@ -19,22 +18,18 @@ namespace Xamarin.Forms.Controls
 			Children.Add(new CustomMapPage(new CustomMapView(), "Teste 2"));
 			Children.Add(new CustomMapPage(new CustomMapView(), "Teste 3"));
 		}
-
 	}
 
 	public class CustomMapView : View
 	{
 		public CustomMapView()
 		{
-
 		}
-
 	}
 
 	public class CustomMapPage : ContentPage
 	{
 		private CustomMapView _customMapView;
-
 
 		public CustomMapPage(CustomMapView customMapView, string title)
 		{
@@ -44,6 +39,5 @@ namespace Xamarin.Forms.Controls
 			_customMapView.VerticalOptions = LayoutOptions.FillAndExpand;
 			Content = _customMapView;
 		}
-
 	}
 }

@@ -2,23 +2,16 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using System.Linq;
-using Xamarin.Forms;
 
 namespace Xamarin.Forms.Controls
 {
 	public partial class BlogPage : ContentPage
 	{
-
-		private BlogFeedViewModel ViewModel
-		{
-			get { return BindingContext as BlogFeedViewModel; }
-		}
-
 		public BlogPage()
 		{
 			InitializeComponent();
@@ -28,9 +21,14 @@ namespace Xamarin.Forms.Controls
 			{
 				if (listView.SelectedItem == null)
 					return;
-				this.Navigation.PushAsync(new BlogDetailsView(listView.SelectedItem as FeedItem));
+				Navigation.PushAsync(new BlogDetailsView(listView.SelectedItem as FeedItem));
 				listView.SelectedItem = null;
 			};
+		}
+
+		private BlogFeedViewModel ViewModel
+		{
+			get { return BindingContext as BlogFeedViewModel; }
 		}
 
 		protected override void OnAppearing()
@@ -42,7 +40,6 @@ namespace Xamarin.Forms.Controls
 			ViewModel.LoadItemsCommand.Execute(null);
 		}
 	}
-
 
 	public class BlogDetailsView : BaseView
 	{
@@ -61,9 +58,9 @@ namespace Xamarin.Forms.Controls
 			Content = new StackLayout
 			{
 				Children =
-		{
-		  webView
-		}
+				{
+					webView
+				}
 			};
 			var share = new ToolbarItem
 			{
@@ -77,16 +74,19 @@ namespace Xamarin.Forms.Controls
 		}
 	}
 
-
 	public class BlogFeedViewModel : HBaseViewModel
 	{
+		private ObservableCollection<FeedItem> feedItems = new ObservableCollection<FeedItem>();
+
+		private Command loadItemsCommand;
+
+		private FeedItem selectedFeedItem;
+
 		public BlogFeedViewModel()
 		{
 			Title = "Blog";
 			Icon = "blog.png";
 		}
-
-		private ObservableCollection<FeedItem> feedItems = new ObservableCollection<FeedItem>();
 
 		/// <summary>
 		/// gets or sets the feed items
@@ -94,10 +94,21 @@ namespace Xamarin.Forms.Controls
 		public ObservableCollection<FeedItem> FeedItems
 		{
 			get { return feedItems; }
-			set { feedItems = value; OnPropertyChanged(); }
+			set
+			{
+				feedItems = value;
+				OnPropertyChanged();
+			}
 		}
 
-		private FeedItem selectedFeedItem;
+		/// <summary>
+		/// Command to load/refresh items
+		/// </summary>
+		public Command LoadItemsCommand
+		{
+			get { return loadItemsCommand ?? (loadItemsCommand = new Command(async () => await ExecuteLoadItemsCommand())); }
+		}
+
 		/// <summary>
 		/// Gets or sets the selected feed item
 		/// </summary>
@@ -111,13 +122,14 @@ namespace Xamarin.Forms.Controls
 			}
 		}
 
-		private Command loadItemsCommand;
 		/// <summary>
-		/// Command to load/refresh items
+		/// Gets a specific feed item for an Id
 		/// </summary>
-		public Command LoadItemsCommand
+		/// <param name="id"></param>
+		/// <returns></returns>
+		public FeedItem GetFeedItem(int id)
 		{
-			get { return loadItemsCommand ?? (loadItemsCommand = new Command(async () => await ExecuteLoadItemsCommand())); }
+			return FeedItems.FirstOrDefault(i => i.Id == id);
 		}
 
 		private async Task ExecuteLoadItemsCommand()
@@ -129,7 +141,7 @@ namespace Xamarin.Forms.Controls
 			var error = false;
 			try
 			{
-				var responseString = string.Empty;
+				string responseString = string.Empty;
 				using (var httpClient = new HttpClient())
 				{
 					var feed = "http://feeds.hanselman.com/ScottHanselman";
@@ -137,8 +149,8 @@ namespace Xamarin.Forms.Controls
 				}
 
 				FeedItems.Clear();
-				var items = await ParseFeed(responseString);
-				foreach (var item in items)
+				List<FeedItem> items = await ParseFeed(responseString);
+				foreach (FeedItem item in items)
 				{
 					FeedItems.Add(item);
 				}
@@ -152,13 +164,10 @@ namespace Xamarin.Forms.Controls
 			{
 				var page = new ContentPage();
 				await page.DisplayAlert("Error", "Unable to load blog.", "OK");
-
 			}
 
 			IsBusy = false;
 		}
-
-
 
 		/// <summary>
 		/// Parse the RSS Feed
@@ -168,76 +177,39 @@ namespace Xamarin.Forms.Controls
 		private async Task<List<FeedItem>> ParseFeed(string rss)
 		{
 			return await Task.Run(() =>
-				{
-					var xdoc = XDocument.Parse(rss);
-					var id = 0;
-					return (from item in xdoc.Descendants("item")
-							select new FeedItem
-							{
-								Title = (string)item.Element("title"),
-								Description = (string)item.Element("description"),
-								Link = (string)item.Element("link"),
-								PublishDate = (string)item.Element("pubDate"),
-								Category = (string)item.Element("category"),
-								Id = id++
-							}).ToList();
-				});
-		}
-
-		/// <summary>
-		/// Gets a specific feed item for an Id
-		/// </summary>
-		/// <param name="id"></param>
-		/// <returns></returns>
-		public FeedItem GetFeedItem(int id)
-		{
-			return FeedItems.FirstOrDefault(i => i.Id == id);
+			{
+				XDocument xdoc = XDocument.Parse(rss);
+				var id = 0;
+				return (from item in xdoc.Descendants("item")
+					select new FeedItem
+					{
+						Title = (string)item.Element("title"),
+						Description = (string)item.Element("description"),
+						Link = (string)item.Element("link"),
+						PublishDate = (string)item.Element("pubDate"),
+						Category = (string)item.Element("category"),
+						Id = id++
+					}).ToList();
+			});
 		}
 	}
 
 	public class FeedItem : INotifyPropertyChanged
 	{
-
-
-
-		public string Description { get; set; }
-		public string Link { get; set; }
-		private string publishDate;
-		public string PublishDate
-		{
-			get { return publishDate; }
-			set
-			{
-				DateTime time;
-				if (DateTime.TryParse(value, out time))
-					publishDate = time.ToLocalTime().ToString("D");
-				else
-					publishDate = value;
-			}
-		}
-		public string Author { get; set; }
-		public string AuthorEmail { get; set; }
-		public int Id { get; set; }
-		public string CommentCount { get; set; }
-		public string Category { get; set; }
-
-		public string Mp3Url { get; set; }
-
-		private string title;
-		public string Title
-		{
-			get
-			{
-				return title;
-			}
-			set
-			{
-				title = value;
-
-			}
-		}
-
 		private string caption;
+
+		private string firstImage;
+
+		private string image =
+			@"https://secure.gravatar.com/avatar/70148d964bb389d42547834e1062c886?s=60&r=x&d=http%3a%2f%2fd1iqk4d73cu9hh.cloudfront.net%2fcomponents%2fimg%2fuser-icon.png";
+
+		private decimal progress = 0.0M;
+
+		private string publishDate;
+
+		public string Author { get; set; }
+
+		public string AuthorEmail { get; set; }
 
 		public string Caption
 		{
@@ -246,10 +218,8 @@ namespace Xamarin.Forms.Controls
 				if (!string.IsNullOrWhiteSpace(caption))
 					return caption;
 
-
 				//get rid of HTML tags
 				caption = Regex.Replace(Description, "<[^>]*>", string.Empty);
-
 
 				//get rid of multiple blank lines
 				caption = Regex.Replace(caption, @"^\s*$\n", string.Empty, RegexOptions.Multiline);
@@ -259,33 +229,12 @@ namespace Xamarin.Forms.Controls
 			}
 		}
 
-		public string Length { get; set; }
+		public string Category { get; set; }
 
-		private bool showImage = true;
+		public string CommentCount { get; set; }
 
-		public bool ShowImage
-		{
-			get { return showImage; }
-			set { showImage = value; }
-		}
+		public string Description { get; set; }
 
-		private string image = @"https://secure.gravatar.com/avatar/70148d964bb389d42547834e1062c886?s=60&r=x&d=http%3a%2f%2fd1iqk4d73cu9hh.cloudfront.net%2fcomponents%2fimg%2fuser-icon.png";
-
-		/// <summary>
-		/// When we set the image, mark show image as true
-		/// </summary>
-		public string Image
-		{
-			get { return image; }
-			set
-			{
-				image = value;
-				showImage = true;
-			}
-
-		}
-
-		private string firstImage;
 		public string FirstImage
 		{
 			get
@@ -293,9 +242,11 @@ namespace Xamarin.Forms.Controls
 				if (!string.IsNullOrWhiteSpace(firstImage))
 					return firstImage;
 
-
-				var regx = new Regex("http://([\\w+?\\.\\w+])+([a-zA-Z0-9\\~\\!\\@\\#\\$\\%\\^\\&amp;\\*\\(\\)_\\-\\=\\+\\\\\\/\\?\\.\\:\\;\\'\\,]*)?.(?:jpg|bmp|gif|png)", RegexOptions.IgnoreCase);
-				var matches = regx.Matches(Description);
+				var regx =
+					new Regex(
+						"http://([\\w+?\\.\\w+])+([a-zA-Z0-9\\~\\!\\@\\#\\$\\%\\^\\&amp;\\*\\(\\)_\\-\\=\\+\\\\\\/\\?\\.\\:\\;\\'\\,]*)?.(?:jpg|bmp|gif|png)",
+						RegexOptions.IgnoreCase);
+				MatchCollection matches = regx.Matches(Description);
 
 				if (matches.Count == 0)
 					firstImage = ScottHead;
@@ -310,22 +261,66 @@ namespace Xamarin.Forms.Controls
 		{
 			get
 			{
-				var image = FirstImage;
-				return UriImageSource.FromUri(new Uri(image));
+				string image = FirstImage;
+				return ImageSource.FromUri(new Uri(image));
 			}
 		}
 
-		public string ScottHead { get { return "http://www.hanselman.com/images/photo-scott-tall.jpg"; } }
+		public int Id { get; set; }
 
-		private decimal progress = 0.0M;
+		/// <summary>
+		/// When we set the image, mark show image as true
+		/// </summary>
+		public string Image
+		{
+			get { return image; }
+			set
+			{
+				image = value;
+				ShowImage = true;
+			}
+		}
+
+		public string Length { get; set; }
+
+		public string Link { get; set; }
+
+		public string Mp3Url { get; set; }
+
 		public decimal Progress
 		{
 			get { return progress; }
-			set { progress = value; OnPropertyChanged("Progress"); }
+			set
+			{
+				progress = value;
+				OnPropertyChanged("Progress");
+			}
 		}
 
+		public string PublishDate
+		{
+			get { return publishDate; }
+			set
+			{
+				DateTime time;
+				if (DateTime.TryParse(value, out time))
+					publishDate = time.ToLocalTime().ToString("D");
+				else
+					publishDate = value;
+			}
+		}
+
+		public string ScottHead
+		{
+			get { return "http://www.hanselman.com/images/photo-scott-tall.jpg"; }
+		}
+
+		public bool ShowImage { get; set; } = true;
+
+		public string Title { get; set; }
 
 		public event PropertyChangedEventHandler PropertyChanged;
+
 		private void OnPropertyChanged(string name)
 		{
 			if (PropertyChanged == null)

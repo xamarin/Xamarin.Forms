@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-using Xamarin.Forms.CustomAttributes;
+﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 #if UITEST
@@ -11,28 +8,32 @@ using Xamarin.UITest;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Github, 264, "PopModal NRE", PlatformAffected.Android | PlatformAffected.iOS)]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 264, "PopModal NRE", PlatformAffected.Android | PlatformAffected.iOS)]
 	public class Issue264 : TestContentPage
 	{
 		Page _current;
 
-		protected override void Init ()
+		protected override void Init()
 		{
-			var aboutBtn = new Button {
+			var aboutBtn = new Button
+			{
 				Text = "About"
 			};
 
-			aboutBtn.Clicked += (s, e) => Navigation.PushModalAsync (new AboutPage ());
+			aboutBtn.Clicked += (s, e) => Navigation.PushModalAsync(new AboutPage());
 
-			var popButton = new Button {
+			var popButton = new Button
+			{
 				Text = "Pop me",
-				Command = new Command (async () => await Navigation.PopAsync ())
+				Command = new Command(async () => await Navigation.PopAsync())
 			};
 
-			Content = new StackLayout {
-				Children = {
-					new Label {Text = "Home"},
+			Content = new StackLayout
+			{
+				Children =
+				{
+					new Label { Text = "Home" },
 					aboutBtn,
 					popButton
 				}
@@ -69,8 +70,7 @@ namespace Xamarin.Forms.Controls.Issues
 		public AboutPage()
 		{
 			BackgroundColor = Color.Black;
-			Content = new Button { Text = "Close", Command = new Command (() => Navigation.PopModalAsync ()) };
-
+			Content = new Button { Text = "Close", Command = new Command(() => Navigation.PopModalAsync()) };
 		}
 	}
 }

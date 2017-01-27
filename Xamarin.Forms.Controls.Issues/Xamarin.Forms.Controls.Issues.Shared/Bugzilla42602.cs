@@ -1,5 +1,4 @@
-﻿using System;
-using Xamarin.Forms.CustomAttributes;
+﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 #if UITEST
@@ -14,7 +13,8 @@ namespace Xamarin.Forms.Controls
 #endif
 
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 42602, "[Win] Custom BoxView Renderer Does Not Render All Its Children Elements", PlatformAffected.WinRT)]
+	[Issue(IssueTracker.Bugzilla, 42602, "[Win] Custom BoxView Renderer Does Not Render All Its Children Elements",
+		PlatformAffected.WinRT)]
 	public class Bugzilla42602 : TestContentPage
 	{
 		AbsoluteLayout content;
@@ -34,14 +34,15 @@ namespace Xamarin.Forms.Controls
 			//test TextBoxView 400 x 400, color gray, should have a red ellipse and a red "hello world"
 
 			var test = new TextBoxView() { WidthRequest = 300, HeightRequest = 300, BackgroundColor = Color.Blue };
-			content.Children.Add(test, new Point((content.WidthRequest - test.WidthRequest) / 2f, (content.HeightRequest - test.HeightRequest) / 2f));
+			content.Children.Add(test,
+				new Point((content.WidthRequest - test.WidthRequest) / 2f,
+					(content.HeightRequest - test.HeightRequest) / 2f));
 
 			Content = content;
 		}
 
 		public class TextBoxView : BoxView
 		{
-
 		}
 	}
 }

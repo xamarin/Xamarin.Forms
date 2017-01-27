@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls
 {
 #if APP
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Bugzilla, 22229, "ToolbarItems not clearing", PlatformAffected.iOS | PlatformAffected.WinPhone, NavigationBehavior.PushAsync)]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Bugzilla, 22229, "ToolbarItems not clearing", PlatformAffected.iOS | PlatformAffected.WinPhone,
+		NavigationBehavior.PushAsync)]
 	public partial class Bugzilla22229 : TabbedPage
 	{
 		string _prefix;
@@ -19,21 +15,21 @@ namespace Xamarin.Forms.Controls
 		public Bugzilla22229()
 		{
 			InitializeComponent();
-			switch (Device.RuntimePlatform) {
-			case Device.iOS:
-				_prefix = "Images/";
-				break;
-			case Device.Android:
-				_prefix = "";
-				break;
-			case Device.Windows:
-			case Device.WinPhone:
-				_prefix = "Assets/";
-				break;
+			switch (Device.RuntimePlatform)
+			{
+				case Device.iOS:
+					_prefix = "Images/";
+					break;
+				case Device.Android:
+					_prefix = "";
+					break;
+				case Device.Windows:
+				case Device.WinPhone:
+					_prefix = "Assets/";
+					break;
 			}
 			InitializeActionBar();
 		}
-
 
 		public void OnCurrentPageChanged(object sender, EventArgs e)
 		{
@@ -52,7 +48,6 @@ namespace Xamarin.Forms.Controls
 				ToolbarItems.Add(new ToolbarItem("Action 4", null, () => { }, ToolbarItemOrder.Secondary, 4));
 				ToolbarItems.Add(new ToolbarItem("Action 5", null, () => { }, ToolbarItemOrder.Secondary, 5));
 			}
-
 		}
 	}
 #endif

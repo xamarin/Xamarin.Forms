@@ -41,15 +41,18 @@ namespace Xamarin.Forms.Controls.Issues
 						{
 							Content = label,
 						},
-						ContextActions = { new MenuItem
+						ContextActions =
 						{
-							Text = "Action"
-						},
-						new MenuItem
-						{
-							Text = "Delete",
-							IsDestructive = true
-						} }
+							new MenuItem
+							{
+								Text = "Action"
+							},
+							new MenuItem
+							{
+								Text = "Delete",
+								IsDestructive = true
+							}
+						}
 					};
 				})
 			};

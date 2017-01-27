@@ -1,8 +1,7 @@
-﻿using System;
-
+﻿using System.Collections.Generic;
 using Xamarin.Forms.CustomAttributes;
-using System.Collections.Generic;
 using Xamarin.Forms.Internals;
+
 #if UITEST
 using Xamarin.UITest;
 using NUnit.Framework;
@@ -10,17 +9,23 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Bugzilla, 29257, "CarouselPage.CurrentPage Does Not Work Properly When Used Inside a NavigationPage ")]
-	public class Bugzilla29257 : TestContentPage 
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Bugzilla, 29257,
+		"CarouselPage.CurrentPage Does Not Work Properly When Used Inside a NavigationPage ")]
+	public class Bugzilla29257 : TestContentPage
 	{
-		List<string> _menuItems = new List<string> {
-			"Page 1", "Page 2", "Page 3", "Page 4", "Page 5"
+		List<string> _menuItems = new List<string>
+		{
+			"Page 1",
+			"Page 2",
+			"Page 3",
+			"Page 4",
+			"Page 5"
 		};
 
 		ListView _menu;
 
-		protected override void Init ()
+		protected override void Init()
 		{
 			_menu = new ListView { ItemsSource = _menuItems };
 
@@ -35,25 +40,25 @@ namespace Xamarin.Forms.Controls.Issues
 
 			switch (selection)
 			{
-			case "Page 1":
-				await Navigation.PushAsync(new TestPage(0));
-				break;
+				case "Page 1":
+					await Navigation.PushAsync(new TestPage(0));
+					break;
 
-			case "Page 2":
-				await Navigation.PushAsync(new TestPage(1));
-				break;
+				case "Page 2":
+					await Navigation.PushAsync(new TestPage(1));
+					break;
 
-			case "Page 3":
-				await Navigation.PushAsync(new TestPage(2));
-				break;
+				case "Page 3":
+					await Navigation.PushAsync(new TestPage(2));
+					break;
 
-			case "Page 4":
-				await Navigation.PushAsync(new TestPage(3));
-				break;
+				case "Page 4":
+					await Navigation.PushAsync(new TestPage(3));
+					break;
 
-			case "Page 5":
-				await Navigation.PushAsync(new TestPage(4));
-				break;
+				case "Page 5":
+					await Navigation.PushAsync(new TestPage(4));
+					break;
 			}
 			_menu.SelectedItem = null;
 		}
@@ -62,12 +67,26 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			public TestPage()
 			{
-				Children.Add(new ContentPage { Content = new Label { Text = "This is page 1" , BackgroundColor = Color.Red} });
-				Children.Add(new ContentPage { Content = new Label { Text = "This is page 2" , BackgroundColor = Color.Green} });
-				Children.Add(new ContentPage { Content = new Label { Text = "This is page 3" , BackgroundColor = Color.Blue} });
-				Children.Add(new ContentPage { Content = new Label { Text = "This is page 4" , BackgroundColor = Color.Pink} });
-				Children.Add(new ContentPage { Content = new Label { Text = "This is page 5" , BackgroundColor = Color.Yellow } });
-
+				Children.Add(new ContentPage
+				{
+					Content = new Label { Text = "This is page 1", BackgroundColor = Color.Red }
+				});
+				Children.Add(new ContentPage
+				{
+					Content = new Label { Text = "This is page 2", BackgroundColor = Color.Green }
+				});
+				Children.Add(new ContentPage
+				{
+					Content = new Label { Text = "This is page 3", BackgroundColor = Color.Blue }
+				});
+				Children.Add(new ContentPage
+				{
+					Content = new Label { Text = "This is page 4", BackgroundColor = Color.Pink }
+				});
+				Children.Add(new ContentPage
+				{
+					Content = new Label { Text = "This is page 5", BackgroundColor = Color.Yellow }
+				});
 			}
 
 			public TestPage(int page) : this()

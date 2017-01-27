@@ -1,7 +1,4 @@
-﻿using System;
-
-using Xamarin.Forms;
-using Xamarin.Forms.CustomAttributes;
+﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 #if UITEST
@@ -12,17 +9,20 @@ using Xamarin.UITest.Android;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Github, 2241, "ScrollView content can become stuck on orientation change (iOS)", PlatformAffected.iOS)]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 2241, "ScrollView content can become stuck on orientation change (iOS)",
+		PlatformAffected.iOS)]
 	public class Issue2241 : TestContentPage
 	{
-		protected override void Init ()
+		protected override void Init()
 		{
-			ScrollView scrollView = new ScrollView () {
+			var scrollView = new ScrollView()
+			{
 				HorizontalOptions = LayoutOptions.FillAndExpand,
 				VerticalOptions = LayoutOptions.FillAndExpand,
-				Padding = new Thickness (20),
-				Content = new BoxView () {
+				Padding = new Thickness(20),
+				Content = new BoxView()
+				{
 					Color = Color.Red,
 					HeightRequest = 400,
 					HorizontalOptions = LayoutOptions.FillAndExpand
@@ -59,5 +59,3 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	}
 }
-
-

@@ -1,5 +1,4 @@
 ﻿using System;
-
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
@@ -10,8 +9,8 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Bugzilla, 32230, "isPresentedChanged raises multiple times")]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Bugzilla, 32230, "isPresentedChanged raises multiple times")]
 	public class Bugzilla32230 : TestMasterDetailPage // or TestMasterDetailPage, etc ...
 	{
 		Label _lblCount;
@@ -19,27 +18,31 @@ namespace Xamarin.Forms.Controls.Issues
 		Button _btnClose;
 		int _count;
 
-		protected override void Init ()
+		protected override void Init()
 		{
-			_lblCount = new Label { Text = _count.ToString (), AutomationId = "lblCount" };
-			_btnOpen = new Button { Text = "Open", AutomationId = "btnOpen", 
-				Command = new Command (() => {
-					IsPresented = true;
-				})
+			_lblCount = new Label { Text = _count.ToString(), AutomationId = "lblCount" };
+			_btnOpen = new Button
+			{
+				Text = "Open",
+				AutomationId = "btnOpen",
+				Command = new Command(() => { IsPresented = true; })
 			};
-			_btnClose = new Button { Text = "Close", AutomationId = "btnClose", 
-				Command = new Command (() => {
-					IsPresented = false;
-				})
+			_btnClose = new Button
+			{
+				Text = "Close",
+				AutomationId = "btnClose",
+				Command = new Command(() => { IsPresented = false; })
 			};
 
-			Master = new ContentPage {
+			Master = new ContentPage
+			{
 				Title = "Master",
 				Content = new StackLayout { Children = { _lblCount, _btnClose } }
 			};
 
-			Detail = new NavigationPage (new ContentPage { Content = _btnOpen });
-			IsPresentedChanged += (object sender, EventArgs e) => {
+			Detail = new NavigationPage(new ContentPage { Content = _btnOpen });
+			IsPresentedChanged += (object sender, EventArgs e) =>
+			{
 				_count++;
 				_lblCount.Text = _count.ToString();
 			};

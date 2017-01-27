@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Text;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-using System.Text;
 
 #if UITEST
 using Xamarin.Forms.Core.UITests;
@@ -70,10 +70,10 @@ namespace Xamarin.Forms.Controls.Issues
 				var patients = new List<PatientViewModel>();
 				for (var j = 0; j < patientsNumber; j++)
 				{
-					var code = string.Format("{0}-{1}", i, j);
-					var length = random.Next(5, 100);
+					string code = string.Format("{0}-{1}", i, j);
+					int length = random.Next(5, 100);
 					var strBuilder = new StringBuilder();
-					for (int z = 0; z < length; z++)
+					for (var z = 0; z < length; z++)
 					{
 						strBuilder.Append(code);
 						if (z % 7 == 0)
@@ -89,7 +89,6 @@ namespace Xamarin.Forms.Controls.Issues
 				{
 					Title = "Menu - " + i.ToString()
 				});
-
 			}
 
 			listview.ItemsSource = patientGroups;
@@ -107,7 +106,13 @@ namespace Xamarin.Forms.Controls.Issues
 				tapGesture = new TapGestureRecognizer();
 				tapGesture.Tapped += HeaderCell_OnTapped;
 				grd.GestureRecognizers.Add(tapGesture);
-				var lbl = new Label { VerticalOptions = LayoutOptions.Center, HorizontalOptions = LayoutOptions.FillAndExpand, TextColor = Color.Black, FontSize = 16 };
+				var lbl = new Label
+				{
+					VerticalOptions = LayoutOptions.Center,
+					HorizontalOptions = LayoutOptions.FillAndExpand,
+					TextColor = Color.Black,
+					FontSize = 16
+				};
 				lbl.SetBinding(Label.TextProperty, new Binding("Title"));
 
 				grd.Children.Add(lbl);
@@ -131,9 +136,14 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			public ItemTestViewCell()
 			{
-
 				var grd = new Grid { BackgroundColor = Color.Yellow };
-				var lbl = new Label { HorizontalOptions = LayoutOptions.FillAndExpand, TextColor = Color.Black, FontSize = 16, LineBreakMode = LineBreakMode.WordWrap };
+				var lbl = new Label
+				{
+					HorizontalOptions = LayoutOptions.FillAndExpand,
+					TextColor = Color.Black,
+					FontSize = 16,
+					LineBreakMode = LineBreakMode.WordWrap
+				};
 				lbl.SetBinding(Label.TextProperty, new Binding("Description"));
 				grd.Children.Add(lbl);
 				View = grd;
@@ -145,12 +155,6 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			private bool _suppressNotification = false;
 
-			protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
-			{
-				if (!_suppressNotification)
-					base.OnCollectionChanged(e);
-			}
-
 			public void AddRange(IEnumerable<T> list)
 			{
 				if (list == null)
@@ -158,22 +162,24 @@ namespace Xamarin.Forms.Controls.Issues
 
 				_suppressNotification = true;
 
-				foreach (var item in list)
+				foreach (T item in list)
 				{
 					Add(item);
 				}
 				_suppressNotification = false;
 				OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 			}
+
+			protected override void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
+			{
+				if (!_suppressNotification)
+					base.OnCollectionChanged(e);
+			}
 		}
 
 		[Preserve(AllMembers = true)]
 		public class PatientsGroupViewModel : RangeObservableCollection<PatientViewModel>
 		{
-			public bool IsCollapsed { get; private set; }
-
-			public string Title { get; set; }
-
 			private readonly List<PatientViewModel> _patients;
 
 			public PatientsGroupViewModel(List<PatientViewModel> patients)
@@ -182,6 +188,10 @@ namespace Xamarin.Forms.Controls.Issues
 
 				UpdateCollection();
 			}
+
+			public bool IsCollapsed { get; private set; }
+
+			public string Title { get; set; }
 
 			public void Toggle()
 			{
@@ -215,7 +225,6 @@ namespace Xamarin.Forms.Controls.Issues
 
 			public string Description { get; set; }
 		}
-
 
 #if UITEST
 		[Test]

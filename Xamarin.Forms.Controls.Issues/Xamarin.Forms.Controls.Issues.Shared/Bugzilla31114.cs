@@ -1,6 +1,6 @@
 ﻿using System;
-using Xamarin.Forms.CustomAttributes;
 using System.Collections.ObjectModel;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 #if UITEST
@@ -16,9 +16,9 @@ namespace Xamarin.Forms.Controls.Issues
 	[Category(UITestCategories.ListView)]
 #endif
 
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Bugzilla, 31114, "iOS ContextAction leaves blank line after swiping in ListView")]
-	public class Bugzilla31114 : TestContentPage 
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Bugzilla, 31114, "iOS ContextAction leaves blank line after swiping in ListView")]
+	public class Bugzilla31114 : TestContentPage
 	{
 		ObservableCollection<ListItem> _items = new ObservableCollection<ListItem>();
 		ListView _listView;
@@ -26,9 +26,8 @@ namespace Xamarin.Forms.Controls.Issues
 		public Command RefreshListCommand;
 		bool _isBusy = false;
 
-		protected override void Init ()
+		protected override void Init()
 		{
-			
 			RefreshListCommand = new Command(LoadItemsFromCommand, CanRefreshList);
 			_listView = new ListView();
 			_listView.ItemsSource = _items;
@@ -42,19 +41,22 @@ namespace Xamarin.Forms.Controls.Issues
 
 			LoadItems();
 
-			Content = new StackLayout {
+			Content = new StackLayout
+			{
 				VerticalOptions = LayoutOptions.FillAndExpand,
 				HorizontalOptions = LayoutOptions.FillAndExpand,
-				Children = {
-					_listView,_btbLoad
+				Children =
+				{
+					_listView,
+					_btbLoad
 				}
 			};
 		}
 
-		protected override void OnDisappearing ()
+		protected override void OnDisappearing()
 		{
 			TaskItemTemplate.RefreshFromQuickComplete -= TaskListPageRefreshFromQuickComplete;
-			base.OnDisappearing ();
+			base.OnDisappearing();
 		}
 
 		bool CanRefreshList()
@@ -69,23 +71,20 @@ namespace Xamarin.Forms.Controls.Issues
 
 		void TaskListPageRefreshFromQuickComplete(object sender, ListItemEventArgs e)
 		{
-			Device.BeginInvokeOnMainThread(() =>
-				{
-					LoadItemsFromCommand();
-				});
+			Device.BeginInvokeOnMainThread(() => { LoadItemsFromCommand(); });
 		}
 
 		void LoadItems()
 		{
-			isBusy = true; 
+			isBusy = true;
 
-			Random random = new Random(DateTime.Now.Millisecond);
+			var random = new Random(DateTime.Now.Millisecond);
 
 			int count = random.Next(20, 30);
 
 			_items.Clear();
 
-			for (int i = 0; i < count - 1; i++)
+			for (var i = 0; i < count - 1; i++)
 			{
 				var newItem = new ListItem()
 				{
@@ -93,7 +92,7 @@ namespace Xamarin.Forms.Controls.Issues
 					EntityTypeId = 1350,
 					BackgroundColor = "00aa00",
 					TextColor = "FFFFFF",
-					PrimaryText = "PIPE #"+(i+1000).ToString(),
+					PrimaryText = "PIPE #" + (i + 1000).ToString(),
 					CircleColor = "0000aa",
 					Icon = "",
 					OtherText = random.Next(100, 200).ToString() + " ft",
@@ -105,7 +104,6 @@ namespace Xamarin.Forms.Controls.Issues
 
 				_items.Add(newItem);
 			}
-
 
 			isBusy = false;
 		}
@@ -120,45 +118,18 @@ namespace Xamarin.Forms.Controls.Issues
 			}
 		}
 
-		[Preserve (AllMembers = true)]
+		[Preserve(AllMembers = true)]
 		public class ListItem
 		{
-			public string Id { get; set; }
-
-			public string PrimaryText { get; set; }
-
-			public string SecondaryText { get; set; }
-
-			public string TertiaryText { get; set; }
-
-			public string OtherText { get; set; }
-
-			public string ListControl { get; set; }
-
-			public string Icon { get; set; }
-
-			public string Params { get; set; }
-
-			public string BackgroundColor { get; set; }
-
-			public string TextColor { get; set; }
-
-			public string CircleColor { get; set; }
-
-			public long EntityTypeId { get; set; }
-
-			public bool SupportsQuickComplete { get; set; }
-
-			public ListItem ()
+			public ListItem()
 			{
 			}
 
+			public string BackgroundColor { get; set; }
+
 			public string BackgroundColorColor
 			{
-				get
-				{
-					return BackgroundColor;
-				}
+				get { return BackgroundColor; }
 				set
 				{
 					if (BackgroundColor != value)
@@ -168,57 +139,69 @@ namespace Xamarin.Forms.Controls.Issues
 				}
 			}
 
-			public string PrimaryLabelText
-			{
-				get
-				{
-					return PrimaryText;
-				}
-			}
+			public string CircleColor { get; set; }
 
-			public string SecondaryLabelText
-			{
-				get
-				{
-					return SecondaryText;
-				}
-			}
+			public long EntityTypeId { get; set; }
+
+			public string Icon { get; set; }
+
+			public string Id { get; set; }
+
+			public string ListControl { get; set; }
 
 			public string OtherLabelText
 			{
-				get
-				{
-					return OtherText;
-				}
+				get { return OtherText; }
 			}
+
+			public string OtherText { get; set; }
+
+			public string Params { get; set; }
+
+			public string PrimaryLabelText
+			{
+				get { return PrimaryText; }
+			}
+
+			public string PrimaryText { get; set; }
+
+			public string SecondaryLabelText
+			{
+				get { return SecondaryText; }
+			}
+
+			public string SecondaryText { get; set; }
+
+			public bool SupportsQuickComplete { get; set; }
+
+			public string TertiaryText { get; set; }
+
+			public string TextColor { get; set; }
 		}
 
 		public class ListItemEventArgs : EventArgs
 		{
-			public ListItem ListItem { get; set; }
-
 			public ListItemEventArgs(ListItem item)
 			{
 				ListItem = item;
 			}
+
+			public ListItem ListItem { get; set; }
 		}
 
-		[Preserve (AllMembers = true)]
+		[Preserve(AllMembers = true)]
 		public class TaskItemTemplate : ViewCell
 		{
-			Image _photo;
-			Label _mainLabel;
-			Label _secondaryLabel;
 			Label _distanceLabel;
-			Label _statusCircle;
-			StackLayout _stackLayout;
-			StackLayout _primaryContent;
-			StackLayout _secondaryContent;
+			Label _mainLabel;
 			AbsoluteLayout _masterLayout;
-
+			Image _photo;
+			StackLayout _primaryContent;
 			MenuItem _quickCompleteMenu;
-
-			public static event EventHandler<ListItemEventArgs> RefreshFromQuickComplete;
+			StackLayout _secondaryContent;
+			Label _secondaryLabel;
+			StackLayout _stackLayout;
+			Label _statusCircle;
 
 			public TaskItemTemplate()
 			{
@@ -230,109 +213,7 @@ namespace Xamarin.Forms.Controls.Issues
 				Init(fast);
 			}
 
-			void Init(bool fast)
-			{
-				_photo = new Image
-				{
-					HeightRequest = 52,
-					WidthRequest = 52,                
-				};
-
-
-				_mainLabel = new Label() { HeightRequest = 40, FontSize = 24, TranslationY = 5, LineBreakMode = LineBreakMode.TailTruncation };
-				_mainLabel.SetBinding(Label.TextProperty, "PrimaryLabelText");
-
-				_secondaryLabel = new Label() { HeightRequest = 40, FontSize = 16, TranslationY = -5, LineBreakMode = LineBreakMode.TailTruncation };
-				_secondaryLabel.SetBinding(Label.TextProperty, "SecondaryLabelText");
-
-#pragma warning disable 618
-				_distanceLabel = new Label() { XAlign = TextAlignment.End, HorizontalOptions = LayoutOptions.EndAndExpand, FontSize = 11, LineBreakMode = LineBreakMode.NoWrap };
-#pragma warning restore 618
-				_distanceLabel.SetBinding(Label.TextProperty, "OtherLabelText");
-
-				_statusCircle = new Label()
-				{                
-					HorizontalOptions = LayoutOptions.EndAndExpand, 
-					FontSize = 30,
-					TranslationY = 0,
-				};
-
-				_primaryContent = new StackLayout()
-				{
-					HorizontalOptions = LayoutOptions.StartAndExpand,
-					Orientation = StackOrientation.Vertical,
-					Children =
-					{                            
-						_mainLabel,
-						_secondaryLabel,
-					},                    
-					Padding = new Thickness(12, 0, 0, 0),
-				};
-
-				_secondaryContent = new StackLayout()
-				{
-					MinimumWidthRequest = 50, 
-					HorizontalOptions = LayoutOptions.EndAndExpand,
-					Children =
-					{
-						_distanceLabel,
-						_statusCircle,
-					},
-					Padding = new Thickness(0, 5, 5, 0),
-				};
-
-				_stackLayout = new StackLayout
-				{
-					Orientation = StackOrientation.Horizontal,
-					Children =
-					{
-						_photo,
-						_primaryContent,
-						_secondaryContent,
-					},
-					Padding = new Thickness(5, 0, 0, 0) 
-				};
-
-				if (!fast)
-				{
-					View = _stackLayout;
-				}
-				else
-				{
-					_quickCompleteMenu = new MenuItem { Text = "Complete", IsDestructive = false };
-					_quickCompleteMenu.SetBinding(MenuItem.CommandParameterProperty, new Binding("."));
-
-					// Delete context menu action
-					_quickCompleteMenu.Clicked += (sender, e) =>
-					{
-						FastCompleteForCmd(sender);
-					};
-
-					// Add this action to the cell
-					ContextActions.Add(_quickCompleteMenu);
-
-					_masterLayout = new AbsoluteLayout();
-
-					_masterLayout.Children.Add(_stackLayout);
-
-					AbsoluteLayout.SetLayoutFlags(_stackLayout, AbsoluteLayoutFlags.All);
-					AbsoluteLayout.SetLayoutBounds(_stackLayout, new Rectangle(0.0, 0.0, 1.0f, 1.0f));
-
-					View = _masterLayout;
-				}
-			}
-
-
-			protected override void OnPropertyChanged(string propertyName = null)
-			{
-				base.OnPropertyChanged(propertyName);
-				if (propertyName == "BackgroundColor")
-				{
-					var item = BindingContext as ListItem;
-					if (item != null && !string.IsNullOrEmpty(item.BackgroundColor))
-						View.BackgroundColor = Color.FromHex(item.BackgroundColor);
-				}
-			}
+			public static event EventHandler<ListItemEventArgs> RefreshFromQuickComplete;
 
 			protected override void OnBindingContextChanged()
 			{
@@ -354,7 +235,8 @@ namespace Xamarin.Forms.Controls.Issues
 						}
 
 						if (string.IsNullOrEmpty(item.Icon))
-							item.Icon = "https://beehive.blob.core.windows.net/staticimages/FeatureImages/MutantLizard01.png";
+							item.Icon =
+								"https://beehive.blob.core.windows.net/staticimages/FeatureImages/MutantLizard01.png";
 
 						_photo.Source = new UriImageSource()
 						{
@@ -382,6 +264,122 @@ namespace Xamarin.Forms.Controls.Issues
 				}
 			}
 
+			protected override void OnPropertyChanged(string propertyName = null)
+			{
+				base.OnPropertyChanged(propertyName);
+				if (propertyName == "BackgroundColor")
+				{
+					var item = BindingContext as ListItem;
+					if (item != null && !string.IsNullOrEmpty(item.BackgroundColor))
+						View.BackgroundColor = Color.FromHex(item.BackgroundColor);
+				}
+			}
+
+			void Init(bool fast)
+			{
+				_photo = new Image
+				{
+					HeightRequest = 52,
+					WidthRequest = 52,
+				};
+
+				_mainLabel = new Label()
+				{
+					HeightRequest = 40,
+					FontSize = 24,
+					TranslationY = 5,
+					LineBreakMode = LineBreakMode.TailTruncation
+				};
+				_mainLabel.SetBinding(Label.TextProperty, "PrimaryLabelText");
+
+				_secondaryLabel = new Label()
+				{
+					HeightRequest = 40,
+					FontSize = 16,
+					TranslationY = -5,
+					LineBreakMode = LineBreakMode.TailTruncation
+				};
+				_secondaryLabel.SetBinding(Label.TextProperty, "SecondaryLabelText");
+
+#pragma warning disable 618
+				_distanceLabel = new Label()
+				{
+					XAlign = TextAlignment.End,
+					HorizontalOptions = LayoutOptions.EndAndExpand,
+					FontSize = 11,
+					LineBreakMode = LineBreakMode.NoWrap
+				};
+#pragma warning restore 618
+				_distanceLabel.SetBinding(Label.TextProperty, "OtherLabelText");
+
+				_statusCircle = new Label()
+				{
+					HorizontalOptions = LayoutOptions.EndAndExpand,
+					FontSize = 30,
+					TranslationY = 0,
+				};
+
+				_primaryContent = new StackLayout()
+				{
+					HorizontalOptions = LayoutOptions.StartAndExpand,
+					Orientation = StackOrientation.Vertical,
+					Children =
+					{
+						_mainLabel,
+						_secondaryLabel,
+					},
+					Padding = new Thickness(12, 0, 0, 0),
+				};
+
+				_secondaryContent = new StackLayout()
+				{
+					MinimumWidthRequest = 50,
+					HorizontalOptions = LayoutOptions.EndAndExpand,
+					Children =
+					{
+						_distanceLabel,
+						_statusCircle,
+					},
+					Padding = new Thickness(0, 5, 5, 0),
+				};
+
+				_stackLayout = new StackLayout
+				{
+					Orientation = StackOrientation.Horizontal,
+					Children =
+					{
+						_photo,
+						_primaryContent,
+						_secondaryContent,
+					},
+					Padding = new Thickness(5, 0, 0, 0)
+				};
+
+				if (!fast)
+				{
+					View = _stackLayout;
+				}
+				else
+				{
+					_quickCompleteMenu = new MenuItem { Text = "Complete", IsDestructive = false };
+					_quickCompleteMenu.SetBinding(MenuItem.CommandParameterProperty, new Binding("."));
+
+					// Delete context menu action
+					_quickCompleteMenu.Clicked += (sender, e) => { FastCompleteForCmd(sender); };
+
+					// Add this action to the cell
+					ContextActions.Add(_quickCompleteMenu);
+
+					_masterLayout = new AbsoluteLayout();
+
+					_masterLayout.Children.Add(_stackLayout);
+
+					AbsoluteLayout.SetLayoutFlags(_stackLayout, AbsoluteLayoutFlags.All);
+					AbsoluteLayout.SetLayoutBounds(_stackLayout, new Rectangle(0.0, 0.0, 1.0f, 1.0f));
+
+					View = _masterLayout;
+				}
+			}
 #pragma warning disable 1998 // considered for removal
 			async void FastCompleteForCmd(object sender)
 #pragma warning restore 1998
@@ -390,7 +388,7 @@ namespace Xamarin.Forms.Controls.Issues
 				{
 					{
 						var item = BindingContext as ListItem;
-						bool success = true; // await _taskListManager.FastComplete(item);
+						var success = true; // await _taskListManager.FastComplete(item);
 
 						if (success)
 							RefreshFromQuickComplete(this, new ListItemEventArgs(item));
@@ -398,10 +396,8 @@ namespace Xamarin.Forms.Controls.Issues
 				}
 				catch (Exception ex)
 				{
-
 				}
 			}
-
 		}
 
 #if UITEST && __IOS__

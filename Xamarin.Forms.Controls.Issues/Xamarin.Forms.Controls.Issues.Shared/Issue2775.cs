@@ -1,7 +1,5 @@
-﻿using System;
-
+﻿using System.Collections.Generic;
 using Xamarin.Forms.CustomAttributes;
-using System.Collections.Generic;
 using Xamarin.Forms.Internals;
 
 #if UITEST
@@ -11,50 +9,59 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve (AllMembers = true)]
-	[Issue (IssueTracker.Github, 2775, "ViewCell background conflicts with ListView Semi-Transparent and Transparent backgrounds")]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 2775,
+		"ViewCell background conflicts with ListView Semi-Transparent and Transparent backgrounds")]
 	public class Issue2775 : TestContentPage // or TestMasterDetailPage, etc ...
 	{
-		protected override void Init ()
+		protected override void Init()
 		{
-			var list  = new ListView {
-				ItemsSource = GetList ("Normal BG Blue"),
+			var list = new ListView
+			{
+				ItemsSource = GetList("Normal BG Blue"),
 				BackgroundColor = Color.Blue,
-				ItemTemplate = new DataTemplate (typeof(NormalCell))
+				ItemTemplate = new DataTemplate(typeof(NormalCell))
 			};
 
-			var listTransparent = new ListView {
-				ItemsSource = GetList ("Normal BG Transparent"),
+			var listTransparent = new ListView
+			{
+				ItemsSource = GetList("Normal BG Transparent"),
 				BackgroundColor = Color.Transparent,
-				ItemTemplate = new DataTemplate (typeof(NormalCell))
+				ItemTemplate = new DataTemplate(typeof(NormalCell))
 			};
 
-			var listSemiTransparent = new ListView {
-				ItemsSource = GetList ("Normal BG SEMI Transparent"),
+			var listSemiTransparent = new ListView
+			{
+				ItemsSource = GetList("Normal BG SEMI Transparent"),
 				BackgroundColor = Color.FromHex("#801B2A39"),
-				ItemTemplate = new DataTemplate (typeof(NormalCell))
+				ItemTemplate = new DataTemplate(typeof(NormalCell))
 			};
 
-			var listContextActions = new ListView {
-				ItemsSource = GetList ("ContextActions BG PINK"),
+			var listContextActions = new ListView
+			{
+				ItemsSource = GetList("ContextActions BG PINK"),
 				BackgroundColor = Color.Pink,
-				ItemTemplate = new DataTemplate (typeof(ContextActionsCell))
+				ItemTemplate = new DataTemplate(typeof(ContextActionsCell))
 			};
 
-			var listContextActionsTransparent = new ListView {
-				ItemsSource = GetList ("ContextActions BG Transparent"),
+			var listContextActionsTransparent = new ListView
+			{
+				ItemsSource = GetList("ContextActions BG Transparent"),
 				BackgroundColor = Color.Transparent,
-				ItemTemplate = new DataTemplate (typeof(ContextActionsCell))
+				ItemTemplate = new DataTemplate(typeof(ContextActionsCell))
 			};
 
-			var listContextActionsSemiTransparent = new ListView {
-				ItemsSource = GetList ("ContextActions BG Semi Transparent"),
+			var listContextActionsSemiTransparent = new ListView
+			{
+				ItemsSource = GetList("ContextActions BG Semi Transparent"),
 				BackgroundColor = Color.FromHex("#801B2A39"),
-				ItemTemplate = new DataTemplate (typeof(ContextActionsCell))
+				ItemTemplate = new DataTemplate(typeof(ContextActionsCell))
 			};
 
-			Content = new StackLayout {
-				Children = {
+			Content = new StackLayout
+			{
+				Children =
+				{
 					list,
 					listTransparent,
 					listSemiTransparent,
@@ -66,39 +73,40 @@ namespace Xamarin.Forms.Controls.Issues
 			};
 		}
 
-		[Preserve (AllMembers = true)]
+		[Preserve(AllMembers = true)]
 		internal class ContextActionsCell : ViewCell
 		{
-			public ContextActionsCell ()
+			public ContextActionsCell()
 			{
-				ContextActions.Add (new MenuItem{ Text = "action" });
-				var label = new Label ();
-				label.SetBinding (Label.TextProperty, "Name");
+				ContextActions.Add(new MenuItem { Text = "action" });
+				var label = new Label();
+				label.SetBinding(Label.TextProperty, "Name");
 				View = label;
 			}
 		}
 
-		[Preserve (AllMembers = true)]
+		[Preserve(AllMembers = true)]
 		internal class NormalCell : ViewCell
 		{
-			public NormalCell ()
+			public NormalCell()
 			{
-				var label = new Label ();
-				label.SetBinding (Label.TextProperty, "Name");
+				var label = new Label();
+				label.SetBinding(Label.TextProperty, "Name");
 				View = label;
 			}
 		}
 
-		List<ListItemViewModel> GetList (string description)
+		List<ListItemViewModel> GetList(string description)
 		{
-			var itemList = new List<ListItemViewModel> ();
-			for (var i = 1; i < 3; i++) {
-				itemList.Add (new ListItemViewModel () { Name = description });
+			var itemList = new List<ListItemViewModel>();
+			for (var i = 1; i < 3; i++)
+			{
+				itemList.Add(new ListItemViewModel() { Name = description });
 			}
 			return itemList;
 		}
-	
-		[Preserve (AllMembers = true)]
+
+		[Preserve(AllMembers = true)]
 		public class ListItemViewModel
 		{
 			public string Name { get; set; }

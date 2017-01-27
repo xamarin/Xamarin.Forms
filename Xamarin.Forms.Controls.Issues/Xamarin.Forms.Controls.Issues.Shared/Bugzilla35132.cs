@@ -14,7 +14,8 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 35132, "Pages are not collected when using a Navigationpage (FormsApplicationActivity)")]
+	[Issue(IssueTracker.Bugzilla, 35132,
+		"Pages are not collected when using a Navigationpage (FormsApplicationActivity)")]
 	public class Bugzilla35132 : TestNavigationPage
 	{
 		protected override void Init()
@@ -66,7 +67,7 @@ namespace Xamarin.Forms.Controls.Issues
 				GC.Collect();
 				GC.WaitForPendingFinalizers();
 
-				_items.Add((BugPage.Livecount).ToString());
+				_items.Add(BugPage.Livecount.ToString());
 				await Navigation.PushAsync(new BugPage(_items));
 			}
 		}

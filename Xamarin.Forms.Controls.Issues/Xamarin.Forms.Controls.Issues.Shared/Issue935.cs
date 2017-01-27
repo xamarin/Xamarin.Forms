@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Xamarin.Forms.CustomAttributes;
+﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 #if UITEST
@@ -9,31 +8,31 @@ using Xamarin.UITest;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	public class Person 
+	public class Person
 	{
-		public string Name { get; set; }
-
-		public Person (string name)
+		public Person(string name)
 		{
 			Name = name;
 		}
+
+		public string Name { get; set; }
 	}
 
-
-	public class CustomViewCell : ViewCell 
+	public class CustomViewCell : ViewCell
 	{
-
-		public CustomViewCell ()
+		public CustomViewCell()
 		{
-			int tapsFired = 0;
+			var tapsFired = 0;
 
 			Height = 50;
 
-			var label = new Label {
+			var label = new Label
+			{
 				Text = "I have been selected:"
 			};
 
-			Tapped += (s, e) => {
+			Tapped += (s, e) =>
+			{
 				tapsFired++;
 				label.Text = "I have been selected:" + tapsFired;
 			};
@@ -42,21 +41,24 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 	}
 
-	[Preserve (AllMembers=true)]
-	[Issue (IssueTracker.Github, 935, "ViewCell.ItemTapped only fires once for ListView.SelectedItem", PlatformAffected.Android)]
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 935, "ViewCell.ItemTapped only fires once for ListView.SelectedItem",
+		PlatformAffected.Android)]
 	public class Issue935 : TestContentPage
 	{
-		protected override void Init ()
+		protected override void Init()
 		{
 			Title = "List Page";
 
-			var items = new [] {
-				new CustomViewCell (),
+			var items = new[]
+			{
+				new CustomViewCell(),
 			};
-				
-			var cellTemplate = new DataTemplate (typeof(CustomViewCell));
 
-			var list = new ListView () {
+			var cellTemplate = new DataTemplate(typeof(CustomViewCell));
+
+			var list = new ListView()
+			{
 				ItemTemplate = cellTemplate,
 				ItemsSource = items
 			};
@@ -79,6 +81,5 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Screenshot ("Tapped Cell Twice");
 		}
 #endif
-
 	}
 }

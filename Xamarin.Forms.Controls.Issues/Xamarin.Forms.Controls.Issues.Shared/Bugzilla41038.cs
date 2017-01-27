@@ -1,5 +1,4 @@
 ﻿using System;
-
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
@@ -11,7 +10,8 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 41038, "MasterDetailPage loses menu icon on iOS after reusing NavigationPage as Detail")]
+	[Issue(IssueTracker.Bugzilla, 41038,
+		"MasterDetailPage loses menu icon on iOS after reusing NavigationPage as Detail")]
 	public class Bugzilla41038 : TestMasterDetailPage // or TestMasterDetailPage, etc ...
 	{
 		NavigationPage _navPage;
@@ -36,7 +36,6 @@ namespace Xamarin.Forms.Controls.Issues
 
 			Master = master;
 			Detail = _navPage;
-	
 		}
 
 		private async void Button_Clicked(object sender, EventArgs e)
@@ -53,11 +52,9 @@ namespace Xamarin.Forms.Controls.Issues
 			else
 				newRoot = new ViewB();
 
-				
 			await _navPage.Navigation.PushAsync(newRoot);
 			_navPage.Navigation.RemovePage(root);
 			IsPresented = false;
-
 		}
 
 		public class ViewA : ContentPage
@@ -78,7 +75,7 @@ namespace Xamarin.Forms.Controls.Issues
 			}
 		}
 
-		#if UITEST &&  __IOS__
+#if UITEST &&  __IOS__
 		[Test]
 		public void Bugzilla41038Test()
 		{
