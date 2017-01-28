@@ -112,15 +112,15 @@ namespace Xamarin.Forms.Core.UnitTests
 			bool fired = false;
 			nav.Pushed += (sender, e) => fired = true;
 
-			Assert.AreEqual(childRoot, nav.RootPage);
-			Assert.AreEqual(childRoot, nav.CurrentPage);
+			Assert.AreSame(childRoot, nav.RootPage);
+			Assert.AreSame(childRoot, nav.CurrentPage);
 
 			await nav.PushAsync (childRoot);
 			
 			Assert.False (fired);
-			Assert.AreEqual(childRoot, nav.RootPage);
-			Assert.AreEqual(childRoot, nav.CurrentPage);
-			Assert.AreEqual(nav.RootPage, nav.CurrentPage);
+			Assert.AreSame(childRoot, nav.RootPage);
+			Assert.AreSame(childRoot, nav.CurrentPage);
+			Assert.AreSame(nav.RootPage, nav.CurrentPage);
 		}
 
 		[Test]
@@ -205,9 +205,9 @@ namespace Xamarin.Forms.Core.UnitTests
 			nav.PopToRootAsync ();
 
 			Assert.True (signaled);
-			Assert.AreEqual (root, nav.RootPage);
-			Assert.AreEqual(root, nav.CurrentPage);
-			Assert.AreEqual(nav.RootPage, nav.CurrentPage);
+			Assert.AreSame (root, nav.RootPage);
+			Assert.AreSame(root, nav.CurrentPage);
+			Assert.AreSame(nav.RootPage, nav.CurrentPage);
 		}
 
 		[Test]
@@ -232,9 +232,9 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (2, poppedChildren.Count);
 			Assert.Contains (child1, poppedChildren);
 			Assert.Contains (child2, poppedChildren);
-			Assert.AreEqual(root, nav.RootPage);
-			Assert.AreEqual(root, nav.CurrentPage);
-			Assert.AreEqual(nav.RootPage, nav.CurrentPage);
+			Assert.AreSame(root, nav.RootPage);
+			Assert.AreSame(root, nav.CurrentPage);
+			Assert.AreSame(nav.RootPage, nav.CurrentPage);
 		}
 
 		[Test]

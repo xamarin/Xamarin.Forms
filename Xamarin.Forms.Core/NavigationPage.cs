@@ -313,8 +313,11 @@ namespace Xamarin.Forms
 
 		void InsertPageBefore(Page page, Page before)
 		{
-			if (page == null || before == null)
-				throw new ArgumentNullException($"Neither {nameof(page)} nor {nameof(before)} can be null.");
+			if (page == null)
+				throw new ArgumentNullException($"{nameof(page)} cannot be null.");
+
+			if (before == null)
+				throw new ArgumentNullException($"{nameof(before)} cannot be null.");
 
 			if (!PageController.InternalChildren.Contains(before))
 				throw new ArgumentException($"{nameof(before)} must be a child of the NavigationPage", nameof(before));
@@ -341,8 +344,8 @@ namespace Xamarin.Forms
 			if (((INavigationPageController)this).StackDepth == 1)
 				return;
 
-			var childrenToRemove = PageController.InternalChildren.ToArray().Where(c => c != RootPage);
-			foreach (var child in childrenToRemove)
+			Element[] childrenToRemove = PageController.InternalChildren.Skip(1).ToArray();
+			foreach (Element child in childrenToRemove)
 				PageController.InternalChildren.Remove(child);
 
 			CurrentPage = RootPage;
@@ -379,8 +382,7 @@ namespace Xamarin.Forms
 					await args.Task;
 			}
 
-			if (Pushed != null)
-				Pushed(this, args);
+			Pushed?.Invoke(this, args);
 		}
 
 		void PushPage(Page page)
@@ -411,8 +413,7 @@ namespace Xamarin.Forms
 				throw new ArgumentException("Page to remove must be contained on this Navigation Page");
 
 			EventHandler<NavigationRequestedEventArgs> handler = RemovePageRequestedInternal;
-			if (handler != null)
-				handler(this, new NavigationRequestedEventArgs(page, true));
+			handler?.Invoke(this, new NavigationRequestedEventArgs(page, true));
 
 			PageController.InternalChildren.Remove(page);
 			if (RootPage == page)
