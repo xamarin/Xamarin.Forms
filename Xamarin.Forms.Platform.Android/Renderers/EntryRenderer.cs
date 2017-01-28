@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using Android.Content.Res;
 using Android.Text;
+using Android.Text.Method;
 using Android.Util;
 using Android.Views;
 using Android.Views.InputMethods;
@@ -155,11 +156,14 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateInputType()
 		{
-			Entry model = Element;
-			_textView.InputType = model.Keyboard.ToInputType();
-			if (model.IsPassword && ((_textView.InputType & InputTypes.ClassText) == InputTypes.ClassText))
+			_textView.InputType = Element.Keyboard.ToInputType();
+
+			if (Element.Keyboard == Keyboard.Numeric)
+				Control.KeyListener = DigitsKeyListener.GetInstance("0123456789 ,.-");
+
+			if (Element.IsPassword && ((_textView.InputType & InputTypes.ClassText) == InputTypes.ClassText))
 				_textView.InputType = _textView.InputType | InputTypes.TextVariationPassword;
-			if (model.IsPassword && ((_textView.InputType & InputTypes.ClassNumber) == InputTypes.ClassNumber))
+			if (Element.IsPassword && ((_textView.InputType & InputTypes.ClassNumber) == InputTypes.ClassNumber))
 				_textView.InputType = _textView.InputType | InputTypes.NumberVariationPassword;
 		}
 
