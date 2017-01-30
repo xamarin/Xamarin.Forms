@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
@@ -14,28 +15,18 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				ItemsSource = new List<Color>
 				{
-					Color.Aqua,
-					Color.Black,
-					Color.Blue,
-					Color.Fuchsia,
-					Color.Gray,
-					Color.Green,
-					Color.Lime,
-					Color.Maroon,
-					Color.Navy,
-					Color.Olive,
-					Color.Pink,
-					Color.Purple,
-					Color.Red,
-					Color.Silver,
-					Color.Teal,
-					Color.White,
-					Color.Yellow
+					Color.Aqua
 				}
 			};
 
-			lv.BackgroundColor = Color.Black;
+			lv.BackgroundColor = Color.Gray;
 			lv.ItemTemplate = new DataTemplate(typeof(_40139ViewCell));
+
+			lv.ItemSelected += (sender, args) =>
+			{
+				Debug.WriteLine($">>>>> Bugzilla40139 Init 41: {lv.SelectedItem}");
+				lv.InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
+			};
 
 			Content = lv;
 		}
@@ -49,7 +40,30 @@ namespace Xamarin.Forms.Controls.Issues
 				label.Text = "abc";
 				label.VerticalOptions = LayoutOptions.Center;
 				label.TextColor = Color.White;
-				View = label;
+				label.FontFamily = "Consolas";
+				label.FontSize = 24;
+				//label.LineBreakMode = LineBreakMode.MiddleTruncation;
+				label.BackgroundColor = Color.Chartreuse;
+
+				var entry = new Entry();
+				entry.Placeholder = "Placeholder";
+				entry.TextColor = Color.Coral;
+
+				var button = new Button();
+				button.Text = "Button";
+				button.TextColor = Color.Coral;
+
+				var layout = new StackLayout();
+				layout.Children.Add(label);
+
+				layout.Children.Add(entry);
+				layout.Children.Add(button);
+
+				var image = new Image();
+				image.Source = "coffee.png";
+				layout.Children.Add(image);
+
+				View = layout;
 			}
 		}
 	}
