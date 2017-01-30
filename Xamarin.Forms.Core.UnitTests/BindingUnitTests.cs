@@ -1257,9 +1257,9 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		#if !WINDOWS_PHONE
 		[Test]
-		[SetUICulture ("pt-PT")]
 		public void ValueConverterCulture ()
 		{
+			System.Threading.Thread.CurrentThread.CurrentUICulture = new CultureInfo("pt-PT");
 			var converter = new TestConverterCulture ();
 			var vm = new MockViewModel ();
 			var property = BindableProperty.Create<MockBindable, string> (w=>w.Text, "Bar", BindingMode.OneWayToSource);

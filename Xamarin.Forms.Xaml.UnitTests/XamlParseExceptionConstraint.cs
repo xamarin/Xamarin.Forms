@@ -1,5 +1,6 @@
 using System;
 using NUnit.Framework.Constraints;
+using System.Text;
 
 namespace Xamarin.Forms.Xaml.UnitTests
 {	
@@ -13,7 +14,6 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		XamlParseExceptionConstraint (bool haslineinfo) : base (typeof (XamlParseException))
 		{
 			this.haslineinfo = haslineinfo;
-			DisplayName = "xamlparse";
 		}
 
 		public XamlParseExceptionConstraint () : this (false)
@@ -27,40 +27,62 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			this.messagePredicate = messagePredicate;
 		}
 
-		public override bool Matches (object actual)
+		public override string DisplayName {
+			get { return "XamlParse"; }
+		}
+
+		public override string Description {
+			get {
+				var sb = new StringBuilder(base.Description);
+				if (haslineinfo)
+					sb.Append($" Position {linenumber}:{lineposition}");
+				return sb.ToString();
+			}
+		}
+		public override ConstraintResult ApplyTo<TActual>(TActual actual)
 		{
-			this.actual = actual;
+			var ex = actual as XamlParseException;
+			if (actual != null && ex == null) {
+				throw new ArgumentException("Actual value must be an XamlParseException", nameof(actual));
+			}
+			this.actualType = ((actual == null) ? null : actual.GetType());
+			return new XamlParseExceptionConstraintResult(this, actual, this.actualType, this.Matches(actual));
+		}
+
+		protected override bool Matches (object actual)
+		{
+			var ex = actual as XamlParseException;
 			if (!base.Matches (actual))
 				return false;
-			var xmlInfo = ((XamlParseException)actual).XmlInfo;
 			if (!haslineinfo)
 				return true;
+			var xmlInfo = ex.XmlInfo;
 			if (xmlInfo == null || !xmlInfo.HasLineInfo ())
 				return false;
-			if (messagePredicate != null)
-				if (!messagePredicate (((XamlParseException)actual).UnformattedMessage))
-					return false;
+			if (messagePredicate != null && !messagePredicate (((XamlParseException)actual).UnformattedMessage))
+				return false;
 			return xmlInfo.LineNumber == linenumber && xmlInfo.LinePosition == lineposition;
 		}
 
-		public override void WriteDescriptionTo (MessageWriter writer)
+		class XamlParseExceptionConstraintResult : ConstraintResult
 		{
-			base.WriteDescriptionTo (writer);
-			if (haslineinfo)
-				writer.Write (string.Format (" line {0}, position {1}", linenumber, lineposition));
-		}
+			readonly object _caughtException;
 
-		public override void WriteActualValueTo (MessageWriter writer)
-		{
-			var ex = actual as XamlParseException;
-			writer.WriteActualValue ((actual == null) ? null : actual.GetType ());
-			if (ex != null) {
-				if (ex.XmlInfo != null && ex.XmlInfo.HasLineInfo ())
-					writer.Write (" line {0}, position {1}", ex.XmlInfo.LineNumber, ex.XmlInfo.LinePosition);
-				else 
-					writer.Write (" no line info");
-				writer.WriteLine (" ({0})", ex.Message);
-				writer.Write (ex.StackTrace);
+			public XamlParseExceptionConstraintResult(ExceptionTypeConstraint constraint, object caughtException, Type type, bool matches) : base(constraint, type, matches)
+			{
+				_caughtException = caughtException;
+			}
+
+			public override void WriteActualValueTo(MessageWriter writer)
+			{
+				if (Status == ConstraintStatus.Failure) {
+					var ex = _caughtException as XamlParseException;
+					if (ex == null) {
+						base.WriteActualValueTo(writer);
+						return;
+					}
+					writer.WriteActualValue(ex);
+				}
 			}
 		}
 	}

@@ -46,7 +46,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			}
 
 			[Test]
-			[Ignore]
+			[Ignore("We can not rely on timing on build machines")]
 			public void XamlCIs20TimesFasterThanXaml ()
 			{
 				var swXamlC = new Stopwatch ();
@@ -66,7 +66,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			}
 
 			[Test]
-			[Ignore]
+			[Ignore("We can not rely on timing on build machines")]
 			public void XamlCIsNotMuchSlowerThanCode ()
 			{
 				var swXamlC = new Stopwatch ();

@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using System;
+using System.Threading;
 
 namespace Xamarin.Forms.Core.UnitTests
 {
@@ -153,7 +154,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
-		public async void ForceUpdateSizeCallsAreRateLimited()
+		public void ForceUpdateSizeCallsAreRateLimited()
 		{
 			var lv = new ListView { HasUnevenRows = true };
 			var cell = new ViewCell { Parent = lv };
@@ -166,13 +167,13 @@ namespace Xamarin.Forms.Core.UnitTests
 			cell.ForceUpdateSize ();
 			cell.ForceUpdateSize ();
 
-			await System.Threading.Tasks.Task.Delay (TimeSpan.FromMilliseconds (150));
+			Thread.Sleep(150);
 
 			Assert.AreEqual (1, numberOfCalls);
 		}
 
 		[Test]
-		public async void ForceUpdateSizeWillNotBeCalledIfParentIsNotAListViewWithUnevenRows ()
+		public void ForceUpdateSizeWillNotBeCalledIfParentIsNotAListViewWithUnevenRows ()
 		{
 			var lv = new ListView { HasUnevenRows = false };
 			var cell = new ViewCell { Parent = lv };
@@ -182,7 +183,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			cell.ForceUpdateSize ();
 
-			await System.Threading.Tasks.Task.Delay (TimeSpan.FromMilliseconds (16));
+			Thread.Sleep(16);
 
 			Assert.AreEqual (0, numberOfCalls);
 		}

@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
+using System.Threading;
 
 namespace Xamarin.Forms.Core.UnitTests
 {
@@ -404,16 +405,29 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		[Test]
 		//https://bugzilla.xamarin.com/show_bug.cgi?id=31207
-		public async void StyleDontHoldStrongReferences ()
+		public void StyleDontHoldStrongReferences ()
 		{
-			var style = new Style (typeof(Label));
-			var label = new Label ();
-			var tracker = new WeakReference (label);
-			label.Style = style;
-			label = null;
+			WeakReference tracker = null;
+			var style = new Style(typeof(Label));
 
-			await Task.Delay (10);
+			int i = 0;
+			Action create = null;
+			create = () => {
+				if (i++ < 1024) {
+					create();
+					return;
+				}
+
+				var label = new Label();
+				label.Style = style;
+				tracker = new WeakReference(label);
+			};
+
+			create();
+
 			GC.Collect ();
+			GC.WaitForPendingFinalizers();
+			GC.Collect();
 
 			Assert.False (tracker.IsAlive);
 			Assert.NotNull (style);

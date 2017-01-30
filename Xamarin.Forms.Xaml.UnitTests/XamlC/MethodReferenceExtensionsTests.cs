@@ -18,7 +18,14 @@ namespace Xamarin.Forms.Xaml.XamlcUnitTests
 		[SetUp]
 		public void SetUp ()
 		{
-			module = ModuleDefinition.CreateModule ("foo", ModuleKind.Dll);
+			var resolver = new XamlCAssemblyResolver();
+			resolver.AddAssembly(Uri.UnescapeDataString((new UriBuilder(typeof(MethodReferenceExtensionsTests).Assembly.CodeBase)).Path));
+			resolver.AddAssembly(Uri.UnescapeDataString((new UriBuilder(typeof(BindableObject).Assembly.CodeBase)).Path));
+
+			module = ModuleDefinition.CreateModule("foo", new ModuleParameters {
+				AssemblyResolver = resolver,
+				Kind = ModuleKind.NetModule
+			});
 		}
 
 		[Test]
