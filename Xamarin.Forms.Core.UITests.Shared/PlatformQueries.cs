@@ -6,7 +6,7 @@ namespace Xamarin.Forms.Core.UITests
 {
 	internal static class PlatformMethodQueries
 	{
-#if __IOS__
+#if __IOS__ || __MACOS__
 		public static readonly Dictionary<BindableProperty, Tuple<string[], bool>> PropertyPlatformMethodDictionary = new Dictionary<BindableProperty, Tuple<string[], bool>> {
 			{ ActivityIndicator.ColorProperty, Tuple.Create (new[] { "color" }, false) },
 			{ ActivityIndicator.IsRunningProperty, Tuple.Create (new[] { "isAnimating" }, false) },
@@ -54,7 +54,7 @@ namespace Xamarin.Forms.Core.UITests
 
 	internal static class PlatformViews
 	{
-#if __IOS__
+#if __IOS__ || __MACOS__
 		public static readonly string ActivityIndicator = "UIActivityIndicatorView";
 		public static readonly string BoxView = "Xamarin_Forms_Platform_iOS_BoxRenderer";
 		public static readonly string Button = "UIButton";
@@ -101,7 +101,7 @@ namespace Xamarin.Forms.Core.UITests
 
 	internal static class PlatformQueries
 	{
-#if __IOS__
+#if __IOS__  || __MACOS__
 		public static readonly Func<AppQuery, AppQuery> Root = q => q.Class("UIWindow");
 		public static readonly Func<AppQuery, AppQuery> RootPageListView = q => q.Class("Xamarin_Forms_Platform_iOS_ListViewRenderer index:0");
 		public static readonly Func<AppQuery, AppQuery> GalleryListView = q => q.Class("Xamarin_Forms_Platform_iOS_ListViewRenderer index:1");
