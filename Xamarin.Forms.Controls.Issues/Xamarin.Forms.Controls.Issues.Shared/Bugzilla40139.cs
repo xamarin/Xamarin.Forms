@@ -1,13 +1,13 @@
 using System.Collections.Generic;
-using System.Diagnostics;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 40139, "Changing the Windows 10 System Theme Color causes ListView text to disappear.", PlatformAffected.WinRT)]
-	public class Bugzilla40139 : TestContentPage 
+	[Issue(IssueTracker.Bugzilla, 40139, "Changing the Windows 10 System Theme Color causes ListView text to disappear.",
+		PlatformAffected.WinRT)]
+	public class Bugzilla40139 : TestContentPage
 	{
 		protected override void Init()
 		{
@@ -15,20 +15,34 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				ItemsSource = new List<Color>
 				{
-					Color.Aqua
+					Color.Aqua,
+					Color.Black,
+					Color.Blue,
+					Color.Fuchsia,
+					Color.Gray,
+					Color.Green,
+					Color.Lime,
+					Color.Maroon,
+					Color.Navy
+				},
+				BackgroundColor = Color.Gray,
+				ItemTemplate = new DataTemplate(typeof(_40139ViewCell))
+			};
+
+			var layout = new StackLayout
+			{
+				Children =
+				{
+					new Label
+					{
+						Text =
+							"On your machine, go to Settings -> Personalization -> Colors and change the accent color for your system. If the text of the controls in the list disappears, this test has failed."
+					},
+					lv
 				}
 			};
 
-			lv.BackgroundColor = Color.Gray;
-			lv.ItemTemplate = new DataTemplate(typeof(_40139ViewCell));
-
-			lv.ItemSelected += (sender, args) =>
-			{
-				Debug.WriteLine($">>>>> Bugzilla40139 Init 41: {lv.SelectedItem}");
-				lv.InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
-			};
-
-			Content = lv;
+			Content = layout;
 		}
 
 		[Preserve(AllMembers = true)]
@@ -36,22 +50,27 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			public _40139ViewCell()
 			{
-				var label = new Label();
-				label.Text = "abc";
-				label.VerticalOptions = LayoutOptions.Center;
-				label.TextColor = Color.White;
-				label.FontFamily = "Consolas";
-				label.FontSize = 24;
-				//label.LineBreakMode = LineBreakMode.MiddleTruncation;
-				label.BackgroundColor = Color.Chartreuse;
+				var label = new Label
+				{
+					Text = "abc",
+					VerticalOptions = LayoutOptions.Center,
+					TextColor = Color.White,
+					FontFamily = "Consolas",
+					FontSize = 24,
+					BackgroundColor = Color.Chartreuse
+				};
 
-				var entry = new Entry();
-				entry.Placeholder = "Placeholder";
-				entry.TextColor = Color.Coral;
+				var entry = new Entry
+				{
+					Placeholder = "Placeholder",
+					TextColor = Color.Coral
+				};
 
-				var button = new Button();
-				button.Text = "Button";
-				button.TextColor = Color.Coral;
+				var button = new Button
+				{
+					Text = "Button",
+					TextColor = Color.Coral
+				};
 
 				var layout = new StackLayout();
 				layout.Children.Add(label);
@@ -59,8 +78,7 @@ namespace Xamarin.Forms.Controls.Issues
 				layout.Children.Add(entry);
 				layout.Children.Add(button);
 
-				var image = new Image();
-				image.Source = "coffee.png";
+				var image = new Image { Source = "coffee.png" };
 				layout.Children.Add(image);
 
 				View = layout;
