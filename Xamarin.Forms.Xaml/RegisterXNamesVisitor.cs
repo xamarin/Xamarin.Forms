@@ -12,20 +12,10 @@ namespace Xamarin.Forms.Xaml
 
 		Dictionary<INode, object> Values { get; }
 
-		public bool VisitChildrenFirst
-		{
-			get { return false; }
-		}
-
-		public bool StopOnDataTemplate
-		{
-			get { return true; }
-		}
-
-		public bool StopOnResourceDictionary
-		{
-			get { return false; }
-		}
+		public TreeVisitingMode VisitingMode => TreeVisitingMode.TopDown;
+		public bool StopOnDataTemplate => true;
+		public bool StopOnResourceDictionary => false;
+		public bool VisitNodeOnDataTemplate => false;
 
 		public void Visit(ValueNode node, INode parentNode)
 		{
@@ -39,8 +29,7 @@ namespace Xamarin.Forms.Xaml
 			{
 				if (ae.ParamName != "name")
 					throw ae;
-				throw new XamlParseException(
-					string.Format("An element with the name \"{0}\" already exists in this NameScope", (string)node.Value), node);
+				throw new XamlParseException($"An element with the name \"{(string)node.Value}\" already exists in this NameScope", node);
 			}
 		}
 

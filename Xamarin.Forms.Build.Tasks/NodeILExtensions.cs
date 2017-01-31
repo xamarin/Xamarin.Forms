@@ -70,7 +70,7 @@ namespace Xamarin.Forms.Build.Tasks
 			if (typeConverter != null)
 			{
 				var isExtendedConverter = typeConverter.ImplementsInterface(module.Import(typeof (IExtendedTypeConverter)));
-				var typeConverterCtor = typeConverter.Resolve().Methods.Single(md => md.IsConstructor && md.Parameters.Count == 0);
+				var typeConverterCtor = typeConverter.Resolve().Methods.Single(md => md.IsConstructor && md.Parameters.Count == 0 && !md.IsStatic);
 				var typeConverterCtorRef = module.Import(typeConverterCtor);
 				var convertFromInvariantStringDefinition = isExtendedConverter
 					? module.Import(typeof (IExtendedTypeConverter))
@@ -488,7 +488,7 @@ namespace Xamarin.Forms.Build.Tasks
 				yield return Instruction.Create(OpCodes.Dup); //Duplicate the namescopeProvider
 				var setNamescope = module.Import(typeof (NameScopeProvider).GetProperty("NameScope").GetSetMethod());
 
-				yield return Instruction.Create(OpCodes.Ldloc, context.Scopes[node]);
+				yield return Instruction.Create(OpCodes.Ldloc, context.Scopes[node].Item1);
 				yield return Instruction.Create(OpCodes.Callvirt, setNamescope);
 				yield return Instruction.Create(OpCodes.Callvirt, addService);
 			}

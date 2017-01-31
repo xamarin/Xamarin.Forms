@@ -120,7 +120,6 @@ namespace Xamarin.Forms
 			if (!IsInitialized)
 				Log.Listeners.Add(new DelegateLogListener((c, m) => Trace.WriteLine(m, c)));
 
-			Device.OS = TargetPlatform.Android;
 			Device.PlatformServices = new AndroidPlatformServices();
 
 			// use field and not property to avoid exception in getter
@@ -385,7 +384,14 @@ namespace Xamarin.Forms
 			{
 				using (var client = new HttpClient())
 				using (HttpResponseMessage response = await client.GetAsync(uri, cancellationToken))
+				{
+					if (!response.IsSuccessStatusCode)
+					{
+						Log.Warning("HTTP Request", $"Could not retrieve {uri}, status code {response.StatusCode}");
+						return null;
+					}
 					return await response.Content.ReadAsStreamAsync();
+				}
 			}
 
 			public IIsolatedStorageFile GetUserStoreForApplication()
@@ -401,6 +407,8 @@ namespace Xamarin.Forms
 				}
 			}
 
+			public string RuntimePlatform => Device.Android;
+
 			public void OpenUriAction(Uri uri)
 			{
 				global::Android.Net.Uri aUri = global::Android.Net.Uri.Parse(uri.ToString());
@@ -410,22 +418,15 @@ namespace Xamarin.Forms
 
 			public void StartTimer(TimeSpan interval, Func<bool> callback)
 			{
-				Timer timer = null;
-				bool invoking = false;
-				TimerCallback onTimeout = o =>
+				var handler = new Handler(Looper.MainLooper);
+				handler.PostDelayed(() =>
 				{
-					if (!invoking)
-					{
-						invoking = true;
-						BeginInvokeOnMainThread(() =>
-						{
-							if (!callback())
-								timer.Dispose();
-							invoking = false;
-						});
-					}
-				};
-				timer = new Timer(onTimeout, null, interval, interval);
+					if (callback())
+						StartTimer(interval, callback);
+
+					handler.Dispose();
+					handler = null;
+				}, (long)interval.TotalMilliseconds);
 			}
 
 			double ConvertTextAppearanceToSize(int themeDefault, int deviceDefault, double defaultValue)
@@ -470,36 +471,6 @@ namespace Xamarin.Forms
 					Log.Warning("Xamarin.Forms.Platform.Android.AndroidPlatformServices", "Error retrieving text appearance: {0}", ex);
 				}
 				return false;
-			}
-
-			public class _Timer : ITimer
-			{
-				readonly Timer _timer;
-
-				public _Timer(Timer timer)
-				{
-					_timer = timer;
-				}
-
-				public void Change(int dueTime, int period)
-				{
-					_timer.Change(dueTime, period);
-				}
-
-				public void Change(long dueTime, long period)
-				{
-					_timer.Change(dueTime, period);
-				}
-
-				public void Change(TimeSpan dueTime, TimeSpan period)
-				{
-					_timer.Change(dueTime, period);
-				}
-
-				public void Change(uint dueTime, uint period)
-				{
-					_timer.Change(dueTime, period);
-				}
 			}
 
 			public class _IsolatedStorageFile : IIsolatedStorageFile

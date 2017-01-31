@@ -154,7 +154,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			var toolbar = _secondaryToolbar;
 			// Use 0 if the NavBar is hidden or will be hidden
-			var toolbarY = NavigationBarHidden || !NavigationPage.GetHasNavigationBar(Current) ? 0 : navBarFrame.Bottom;
+			var toolbarY = NavigationBarHidden || NavigationBar.Translucent || !NavigationPage.GetHasNavigationBar(Current) ? 0 : navBarFrame.Bottom;
 			toolbar.Frame = new RectangleF(0, toolbarY, View.Frame.Width, toolbar.Frame.Height);
 
 			double trueBottom = toolbar.Hidden ? toolbarY : toolbar.Frame.Bottom;
@@ -211,7 +211,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateBarTextColor();
 
 			// If there is already stuff on the stack we need to push it
-			((INavigationPageController)navPage).StackCopy.Reverse().ForEach(async p => await PushPageAsync(p, false));
+			((INavigationPageController)navPage).Pages.ForEach(async p => await PushPageAsync(p, false));
 
 			_tracker = new VisualElementTracker(this);
 
@@ -617,7 +617,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (containerController == null)
 				return;
 			var currentChild = containerController.Child;
-			var firstPage = ((INavigationPageController)Element).StackCopy.LastOrDefault();
+			var firstPage = ((INavigationPageController)Element).Pages.FirstOrDefault(); 
 			if ((firstPage != pageBeingRemoved && currentChild != firstPage && NavigationPage.GetHasBackButton(currentChild)) || _parentMasterDetailPage == null)
 				return;
 
@@ -824,7 +824,13 @@ namespace Xamarin.Forms.Platform.iOS
 			public override void ViewWillAppear(bool animated)
 			{
 				UpdateNavigationBarVisibility(animated);
-				EdgesForExtendedLayout = UIRectEdge.None;
+
+				NavigationRenderer n;
+				var isTranslucent = false;
+				if (_navigation.TryGetTarget(out n))
+					isTranslucent = n.NavigationBar.Translucent;
+				EdgesForExtendedLayout = isTranslucent ? UIRectEdge.All : UIRectEdge.None;
+
 				base.ViewWillAppear(animated);
 			}
 
@@ -978,9 +984,7 @@ namespace Xamarin.Forms.Platform.iOS
 		
 		void IEffectControlProvider.RegisterEffect(Effect effect)
 		{
-			var platformEffect = effect as PlatformEffect;
-			if (platformEffect != null)
-				platformEffect.Container = View;
+			VisualElementRenderer<VisualElement>.RegisterEffect(effect, View);
 		}
 	}
 }
