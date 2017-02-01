@@ -151,16 +151,19 @@ namespace Xamarin.Forms.Build.Tasks
 
 						var initCompRuntime = typeDef.Methods.FirstOrDefault(md => md.Name == "__InitComponentRuntime");
 						if (initCompRuntime != null)
-							Logger.LogLine(2, "   __InitComponentRuntime already exists... not renaming");
+							Logger.LogLine(2, "   __InitComponentRuntime already exists... not creating");
 						else {
-							Logger.LogString(2, "   Renaming {0}.InitializeComponent () into {0}.__InitComponentRuntime ... ", typeDef.Name);
-							initCompRuntime = initComp;
-							initCompRuntime.Name = "__InitComponentRuntime";
+							Logger.LogString(2, "   Creating empty {0}.__InitComponentRuntime ...", typeDef.Name);
+							initCompRuntime = new MethodDefinition("__InitComponentRuntime", initComp.Attributes, initComp.ReturnType);
 							Logger.LogLine(2, "done.");
-							Logger.LogString(2, "   Recreating empty {0}.InitializeComponent ...", typeDef.Name);
-							initComp = new MethodDefinition("InitializeComponent", initComp.Attributes, initComp.ReturnType);
-							typeDef.Methods.Add(initComp);
-
+							Logger.LogString(2, "   Copying body of InitializeComponent to __InitComponentRuntime ...", typeDef.Name);
+							initCompRuntime.Body = new MethodBody(initCompRuntime);
+							var iCRIl = initCompRuntime.Body.GetILProcessor();
+							foreach (var instr in initComp.Body.Instructions)
+								iCRIl.Append(instr);
+							initComp.Body.Instructions.Clear();
+							initComp.Body.GetILProcessor().Emit(OpCodes.Ret);
+							typeDef.Methods.Add(initCompRuntime);
 							Logger.LogLine(2, "done.");
 						}
 
