@@ -64,7 +64,8 @@ namespace Xamarin.Forms.Xaml
 				DependencyPaths = paths,
 				ReferencePath = refs
 			};
-			xamlc.Execute(null);
+			IList<Exception> _;
+			xamlc.Execute(out _);
 		}
 
 		static void ShowHelp(OptionSet ops)

@@ -10,6 +10,7 @@ using Microsoft.Build.Utilities;
 using Mono.Cecil;
 
 using Xamarin.Forms.Xaml;
+using Mono.Cecil.Cil;
 
 namespace Xamarin.Forms.Build.Tasks
 {
@@ -31,15 +32,21 @@ namespace Xamarin.Forms.Build.Tasks
 		public override bool Execute()
 		{
 			Logger = new Logger(Log, Verbosity);
-			return Execute(null);
+			IList<Exception> _;
+			return Execute(out _);
 		}
 
-		public abstract bool Execute(IList<Exception> thrownExceptions);
+		public abstract bool Execute(out IList<Exception> thrownExceptions);
 
 		protected static MethodDefinition DuplicateMethodDef(TypeDefinition typeDef, MethodDefinition methodDef, string newName)
 		{
 			var dup = new MethodDefinition(newName, methodDef.Attributes, methodDef.ReturnType);
-			dup.Body = methodDef.Body;
+			dup.Body = new MethodBody(dup);
+			var il = dup.Body.GetILProcessor();
+			foreach (var instr in methodDef.Body.Instructions)
+				il.Append(instr);
+			if (methodDef.Body.HasVariables || methodDef.Body.HasExceptionHandlers)
+				throw new NotImplementedException();
 			typeDef.Methods.Add(dup);
 			return dup;
 		}
