@@ -157,10 +157,7 @@ namespace Xamarin.Forms.Build.Tasks
 			var typeDef = typeRef.Resolve();
 			if (TypeRefComparer.Default.Equals(typeDef, baseClass.Resolve()))
 				return true;
-			if (typeDef.Interfaces.Any(ir => {
-				ir = ir.InterfaceType.ResolveGenericParameters(typeRef);
-				return TypeRefComparer.Default.Equals(ir, baseClass);
-			}))
+			if (typeDef.Interfaces.Any(ir => TypeRefComparer.Default.Equals(ir.InterfaceType.ResolveGenericParameters(typeRef), baseClass)))
 				return true;
 			if (typeDef.BaseType == null)
 				return false;
