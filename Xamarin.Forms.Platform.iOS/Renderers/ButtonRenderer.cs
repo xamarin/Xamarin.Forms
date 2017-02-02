@@ -89,8 +89,23 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.PropertyName == Button.ImageProperty.PropertyName)
 				UpdateImage();
 		}
+    
+		protected override void SetAccessibilityLabel()
+		{
+			// If we have not specified an AccessibilityLabel and the AccessibiltyLabel is current bound to the Title,
+			// exit this method so we don't set the AccessibilityLabel value and break the binding.
+			// This may pose a problem for users who want to explicitly set the AccessibilityLabel to null, but this
+			// will prevent us from inadvertently breaking UI Tests that are using Query.Marked to get the dynamic Title 
+			// of the Button.
 
-		void SetControlPropertiesFromProxy()
+			var elemValue = (string)Element?.GetValue(Accessibility.NameProperty);
+			if (string.IsNullOrWhiteSpace(elemValue) && Control?.AccessibilityLabel == Control?.Title(UIControlState.Normal))
+				return;
+
+			base.SetAccessibilityLabel();
+		}
+    
+    void SetControlPropertiesFromProxy()
 		{
 			foreach (UIControlState uiControlState in s_controlStates)
 			{
@@ -98,7 +113,7 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.SetTitleShadowColor(UIButton.Appearance.TitleShadowColor(uiControlState), uiControlState);
 				Control.SetBackgroundImage(UIButton.Appearance.BackgroundImageForState(uiControlState), uiControlState);
 			}
-		}
+    }
 
 		void OnButtonTouchUpInside(object sender, EventArgs eventArgs)
 		{
