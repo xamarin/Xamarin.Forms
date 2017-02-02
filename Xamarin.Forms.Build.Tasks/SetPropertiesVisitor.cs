@@ -849,7 +849,7 @@ namespace Xamarin.Forms.Build.Tasks
 		{
 			var module = context.Body.Method.Module;
 			var varValue = context.Variables [elementNode];
-			var implicitOperator = varValue.VariableType.GetImplicitOperatorTo(module.Import(typeof(BindingBase)), module);
+			var implicitOperator = varValue.VariableType.GetImplicitOperatorTo(module.ImportReference(typeof(BindingBase)), module);
 
 			//TODO: check if parent is a BP
 			var setBinding = typeof(BindableObject).GetMethod("SetBinding", new [] { typeof(BindableProperty), typeof(BindingBase) });
