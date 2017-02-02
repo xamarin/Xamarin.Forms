@@ -7,12 +7,6 @@ using Xamarin.UITest;
 using NUnit.Framework;
 #endif
 
-// Apply the default category of "Issues" to all of the tests in this assembly
-// We use this as a catch-all for tests which haven't been individually categorized
-#if UITEST
-[assembly: NUnit.Framework.Category("Issues")]
-#endif
-
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
@@ -24,6 +18,19 @@ namespace Xamarin.Forms.Controls.Issues
 			var list = new List<int>();
 			for (var i = 0; i < 10; i++)
 				list.Add(i);
+
+			var stackLayout = new StackLayout
+			{
+				Orientation = StackOrientation.Vertical,
+				Children =
+				{
+					new Label
+					{
+						Text = "Long tap list items to display context menu. Double tapping each action rapidly should not crash.",
+						HorizontalTextAlignment = TextAlignment.Center
+					}
+				}
+			};
 
 			var listView = new ListView
 			{
@@ -51,8 +58,9 @@ namespace Xamarin.Forms.Controls.Issues
 					};
 				})
 			};
+			stackLayout.Children.Add(listView);
 
-			Content = listView;
+			Content = stackLayout;
 		}
 	}
 }
