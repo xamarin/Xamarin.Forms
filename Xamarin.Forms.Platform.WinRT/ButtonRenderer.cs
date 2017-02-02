@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 using Xamarin.Forms.Internals;
@@ -30,7 +31,7 @@ namespace Xamarin.Forms.Platform.WinRT
 				if (Control == null)
 				{
 					var button = new FormsButton();
-					button.Click += OnButtonClick;
+					button.Tapped += OnButtonTapped;
 					SetNativeControl(button);
 				}
 
@@ -97,11 +98,11 @@ namespace Xamarin.Forms.Platform.WinRT
 			return;
 		}
 
-		void OnButtonClick(object sender, RoutedEventArgs e)
+		void OnButtonTapped(object sender, TappedRoutedEventArgs args)
 		{
 			Button buttonView = Element;
-			if (buttonView != null)
-				((IButtonController)buttonView).SendClicked();
+			((IButtonController)buttonView)?.SendClicked();
+			args.Handled = true;
 		}
 
 		void UpdateBackground()
