@@ -6,28 +6,13 @@ using CoreGraphics;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
-	public class FormsNSImageView : NSView
-	{
-		bool _isOpaque;
-
-		public FormsNSImageView()
-		{
-			Layer = new CALayer();
-			WantsLayer = true;
-		}
-
-		public void SetIsOpaque(bool isOpaque)
-		{
-			_isOpaque = isOpaque;
-		}
-
-		public override bool IsOpaque => _isOpaque;
-	}
-
-
-	public class ImageRenderer : ViewRenderer<Image, FormsNSImageView>
+	public class ImageRenderer : VisualElementRenderer<Image>
 	{
 		bool _isDisposed;
+
+		bool _isOpaque;
+
+		public override bool IsOpaque => _isOpaque;
 
 		protected override void Dispose(bool disposing)
 		{
@@ -36,11 +21,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			if (disposing)
 			{
-				CGImage oldUIImage;
-				if (Control != null && (oldUIImage = Control.Layer.Contents) != null)
-				{
-					oldUIImage.Dispose();
-				}
+				DisposeImage();
 			}
 
 			_isDisposed = true;
@@ -48,16 +29,22 @@ namespace Xamarin.Forms.Platform.MacOS
 			base.Dispose(disposing);
 		}
 
+		void DisposeImage()
+		{
+			var cgimage = Layer.Contents as CGImage;
+			if (cgimage != null)
+			{
+				cgimage.Dispose();
+				Layer.Contents = null;
+			}
+		}
+
 		protected override void OnElementChanged(ElementChangedEventArgs<Image> e)
 		{
-			if (Control == null)
-			{
-				var imageView = new FormsNSImageView();
-				SetNativeControl(imageView);
-			}
-
 			if (e.NewElement != null)
 			{
+				WantsLayer = true;
+
 				SetAspect();
 				SetImage(e.OldElement);
 				SetOpacity();
@@ -82,14 +69,14 @@ namespace Xamarin.Forms.Platform.MacOS
 			switch (Element.Aspect)
 			{
 				case Aspect.AspectFill:
-					Control.Layer.ContentsGravity = CALayer.GravityResizeAspectFill;
+					Layer.ContentsGravity = CALayer.GravityResizeAspectFill;
 					break;
 				case Aspect.Fill:
-					Control.Layer.ContentsGravity = CALayer.GravityResize;
+					Layer.ContentsGravity = CALayer.GravityResize;
 					break;
 				case Aspect.AspectFit:
 				default:
-					Control.Layer.ContentsGravity = CALayer.GravityResizeAspect;
+					Layer.ContentsGravity = CALayer.GravityResizeAspect;
 					break;
 			}
 		}
@@ -108,7 +95,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				if (imageSource != null && source is FileImageSource && imageSource.File == ((FileImageSource)source).File)
 					return;
 
-				Control.Layer.Contents = null;
+				DisposeImage();
 			}
 
 			IImageSourceHandler handler;
@@ -127,17 +114,18 @@ namespace Xamarin.Forms.Platform.MacOS
 					nsImage = null;
 				}
 
-				var imageView = Control;
-				if (imageView != null)
-					imageView.Layer.Contents = nsImage != null ? nsImage.CGImage : null;
+				DisposeImage();
 				if (nsImage != null)
+				{
+					Layer.Contents = nsImage.CGImage;
 					nsImage.Dispose();
+				}
 
 				if (!_isDisposed)
 					((IVisualElementController)Element).NativeSizeChanged();
 			}
 			else
-				Control.Layer.Contents = null;
+				DisposeImage();
 
 			if (!_isDisposed)
 				((IImageController)Element).SetIsLoading(false);
@@ -145,7 +133,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void SetOpacity()
 		{
-			(Control as FormsNSImageView)?.SetIsOpaque(Element.IsOpaque);
+			_isOpaque = (Element.IsOpaque);
 		}
 	}
 }
