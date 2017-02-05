@@ -32,7 +32,7 @@
                                 <Border x:Name="TopCommandBarArea" HorizontalAlignment="Stretch" Background="{TemplateBinding ToolbarBackground}">
                                     <uwp:FormsCommandBar x:Name="CommandBar" Background="{TemplateBinding ToolbarBackground}" MinHeight="{ThemeResource TitleBarHeight}">
                                         <uwp:FormsCommandBar.Content>
-                                            <Border x:Name="TitleArea" Height="{ThemeResource TitleBarHeight}">
+										<Border x:Name="TitleArea" Height="{ThemeResource TitleBarHeight}" Visibility="{TemplateBinding DetailTitleVisibility}">
                                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Background="{TemplateBinding ToolbarBackground}" >
 
                                                     <Button Name="ContentTogglePane" Style="{ThemeResource PaneButton}" Foreground="{TemplateBinding ToolbarForeground}"  
