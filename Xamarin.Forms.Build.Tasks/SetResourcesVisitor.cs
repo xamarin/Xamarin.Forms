@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -20,26 +19,15 @@ namespace Xamarin.Forms.Build.Tasks
 
 		ModuleDefinition Module { get; }
 
-		public bool VisitChildrenFirst
-		{
-			get { return false; }
-		}
-
-		public bool StopOnDataTemplate
-		{
-			get { return true; }
-		}
-
-		public bool StopOnResourceDictionary
-		{
-			get { return false; }
-		}
+		public TreeVisitingMode VisitingMode => TreeVisitingMode.TopDown;
+		public bool StopOnDataTemplate => true;
+		public bool StopOnResourceDictionary => false;
+		public bool VisitNodeOnDataTemplate => false;
 
 		public void Visit(ValueNode node, INode parentNode)
 		{
 			XmlName propertyName;
-			if (!SetPropertiesVisitor.TryGetPropertyName(node, parentNode, out propertyName))
-			{
+			if (!SetPropertiesVisitor.TryGetPropertyName(node, parentNode, out propertyName)) {
 				if (!IsCollectionItem(node, parentNode))
 					return;
 				string contentProperty;
@@ -71,7 +59,7 @@ namespace Xamarin.Forms.Build.Tasks
 			{
 				// Collection element, implicit content, or implicit collection element.
 				var parentVar = Context.Variables[(IElementNode)parentNode];
-				if (parentVar.VariableType.ImplementsInterface(Module.Import(typeof (IEnumerable))))
+				if (parentVar.VariableType.ImplementsInterface(Module.ImportReference(typeof (IEnumerable))))
 				{
 					if ((parentVar.VariableType.FullName == "Xamarin.Forms.ResourceDictionary" ||
 						parentVar.VariableType.Resolve().BaseType.FullName == "Xamarin.Forms.ResourceDictionary") &&
@@ -96,8 +84,8 @@ namespace Xamarin.Forms.Build.Tasks
 						Context.IL.Emit(OpCodes.Ldloc, parentVar);
 						Context.IL.Emit(OpCodes.Ldloc, Context.Variables[node]);
 						Context.IL.Emit(OpCodes.Callvirt,
-							Module.Import(
-								Module.Import(typeof (ResourceDictionary))
+							Module.ImportReference(
+								Module.ImportReference(typeof (ResourceDictionary))
 									.Resolve()
 									.Methods.Single(md => md.Name == "Add" && md.Parameters.Count == 1)));
 					}
@@ -127,10 +115,10 @@ namespace Xamarin.Forms.Build.Tasks
 						var varDef = Context.Variables[node];
 						Context.IL.Emit(OpCodes.Ldloc, varDef);
 						if (varDef.VariableType.IsValueType)
-							Context.IL.Emit(OpCodes.Box, Module.Import(varDef.VariableType));
+							Context.IL.Emit(OpCodes.Box, Module.ImportReference(varDef.VariableType));
 						Context.IL.Emit(OpCodes.Callvirt,
-							Module.Import(
-								Module.Import(typeof (ResourceDictionary))
+							Module.ImportReference(
+								Module.ImportReference(typeof (ResourceDictionary))
 									.Resolve()
 									.Methods.Single(md => md.Name == "Add" && md.Parameters.Count == 2)));
 					}

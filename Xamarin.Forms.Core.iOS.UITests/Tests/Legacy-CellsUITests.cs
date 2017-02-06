@@ -12,6 +12,9 @@ using Xamarin.UITest.Queries;
 
 namespace Xamarin.Forms.Core.UITests
 {
+#if __MACOS__
+	[Ignore("Not tested on the MAC")]
+#endif
 	[TestFixture]
 	[Category(UITestCategories.Cells)]
 	internal class CellsGalleryTests : BaseTestFixture
@@ -96,6 +99,7 @@ namespace Xamarin.Forms.Core.UITests
 		}
 
 		[Test]
+		[Ignore("Ignore because is only failing on iOS10 at XTC")]
 		[Description("ListView with ImageCells, file access problems")]
 		[UiTest(typeof(ListView))]
 		[UiTest(typeof(ImageCell))]

@@ -11,7 +11,7 @@
     <projectUrl>http://xamarin.com/forms</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Build native UIs for iOS, Android, and Windows Phone from a single, shared C# codebase</description>
-    <copyright>Copyright 2013-2016</copyright>
+    <copyright>Copyright 2013-2017</copyright>
     <dependencies>
       <group targetFramework="WP80">
         <dependency id="WPtoolkit" version="4.2013.08.16"/>
@@ -22,6 +22,13 @@
         <dependency id="Xamarin.Android.Support.v7.AppCompat" version="[23.3.0]"/>
         <dependency id="Xamarin.Android.Support.v7.CardView" version="[23.3.0]"/>
         <dependency id="Xamarin.Android.Support.v7.MediaRouter" version="[23.3.0]"/>
+      </group>
+      <group targetFramework="MonoAndroid70">
+        <dependency id="Xamarin.Android.Support.v4" version="23.3.0"/>
+        <dependency id="Xamarin.Android.Support.Design" version="23.3.0"/>
+        <dependency id="Xamarin.Android.Support.v7.AppCompat" version="23.3.0"/>
+        <dependency id="Xamarin.Android.Support.v7.CardView" version="23.3.0"/>
+        <dependency id="Xamarin.Android.Support.v7.MediaRouter" version="23.3.0"/>
       </group>
     </dependencies>
     <references>
@@ -68,6 +75,12 @@
         <reference file="Xamarin.Forms.Platform.dll" />
         <reference file="Xamarin.Forms.Xaml.dll" />
         <reference file="Xamarin.Forms.Platform.WP8.dll" />
+      </group>
+	  <group targetFramework="Xamarin.Mac">
+		<reference file="Xamarin.Forms.Core.dll" />
+        <reference file="Xamarin.Forms.Platform.macOS.dll" />
+        <reference file="Xamarin.Forms.Platform.dll" />
+        <reference file="Xamarin.Forms.Xaml.dll" />
       </group>
     </references>
   </metadata>
@@ -212,10 +225,16 @@
 	<file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\PageControl.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
 	<file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\Resources.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
 	<file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\FormsTextBoxStyle.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
-	  <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\AutoSuggestStyle.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
+	<file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\AutoSuggestStyle.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
 	<file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\MasterDetailControlStyle.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
 	<file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\PageControlStyle.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
 	<file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\TabbedPageStyle.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
+	
+	 <!--Mac-->
+	<file src="..\Xamarin.Forms.Core\bin\$Configuration$\Xamarin.Forms.Core.dll" target="lib\Xamarin.Mac" />
+	<file src="..\Xamarin.Forms.Xaml\bin\$Configuration$\Xamarin.Forms.Xaml.dll" target="lib\Xamarin.Mac" />
+	<file src="..\Xamarin.Forms.Platform.MacOS\bin\$Configuration$\Xamarin.Forms.Platform.macOS.dll" target="lib\Xamarin.Mac" />
+	<file src="..\Xamarin.Forms.Platform.MacOS\bin\$Configuration$\Xamarin.Forms.Platform.dll" target="lib\Xamarin.Mac" />
 
     <file src="..\Xamarin.Forms.Core\bin\$Configuration$\Xamarin.Forms.Core.dll" target="lib\uap10.0" />
     <file src="..\docs\Xamarin.Forms.Core.xml" target="lib\uap10.0" />

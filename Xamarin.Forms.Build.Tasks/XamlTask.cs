@@ -10,6 +10,9 @@ using Microsoft.Build.Utilities;
 using Mono.Cecil;
 
 using Xamarin.Forms.Xaml;
+using Mono.Cecil.Cil;
+using Mono.Cecil.Pdb;
+using Mono.Cecil.Mdb;
 
 namespace Xamarin.Forms.Build.Tasks
 {
@@ -31,18 +34,11 @@ namespace Xamarin.Forms.Build.Tasks
 		public override bool Execute()
 		{
 			Logger = new Logger(Log, Verbosity);
-			return Execute(null);
+			IList<Exception> _;
+			return Execute(out _);
 		}
 
-		public abstract bool Execute(IList<Exception> thrownExceptions);
-
-		protected static MethodDefinition DuplicateMethodDef(TypeDefinition typeDef, MethodDefinition methodDef, string newName)
-		{
-			var dup = new MethodDefinition(newName, methodDef.Attributes, methodDef.ReturnType);
-			dup.Body = methodDef.Body;
-			typeDef.Methods.Add(dup);
-			return dup;
-		}
+		public abstract bool Execute(out IList<Exception> thrownExceptions);
 
 		internal static ILRootNode ParseXaml(Stream stream, TypeReference typeReference)
 		{
@@ -63,6 +59,56 @@ namespace Xamarin.Forms.Build.Tasks
 				}
 			}
 			return rootnode;
+		}
+
+		protected static ISymbolReaderProvider GetSymbolReaderProvider(string moduleFileName, bool debugSymbols)
+		{
+			if (!debugSymbols)
+				return null;
+
+			var pdb_name = GetPdbFileName(moduleFileName);
+			if (File.Exists(pdb_name)) {
+				// TODO: check mvid match
+				return new PdbReaderProvider();
+			}
+
+			var mdb_name = GetMdbFileName(moduleFileName);
+			if (File.Exists(mdb_name)) {
+				// TODO: check mvid match
+				return new MdbReaderProvider();
+			}
+
+			return null;
+		}
+
+		protected static ISymbolWriterProvider GetSymbolWriterProvider(string moduleFileName, bool debugSymbols)
+		{
+			if (!debugSymbols)
+				return null;
+
+			var pdb_name = GetPdbFileName(moduleFileName);
+			if (File.Exists(pdb_name)) {
+				// TODO: check mvid match
+				return new PdbWriterProvider();
+			}
+
+			var mdb_name = GetMdbFileName(moduleFileName);
+			if (File.Exists(mdb_name)) {
+				// TODO: check mvid match
+				return new MdbWriterProvider();
+			}
+
+			return null;
+		}
+
+		static string GetPdbFileName(string assemblyFileName)
+		{
+			return Path.ChangeExtension(assemblyFileName, ".pdb");
+		}
+
+		static string GetMdbFileName(string assemblyFileName)
+		{
+			return assemblyFileName + ".mdb";
 		}
 	}
 

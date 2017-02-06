@@ -35,15 +35,10 @@ namespace Xamarin.Forms.Xaml
 
 		HydratationContext Context { get; }
 
-		public bool VisitChildrenFirst {
-			get { return true; }
-		}
-
-		public bool StopOnDataTemplate {
-			get { return true; }
-		}
-
+		public TreeVisitingMode VisitingMode => TreeVisitingMode.BottomUp;
+		public bool StopOnDataTemplate => true;
 		public bool StopOnResourceDictionary { get; }
+		public bool VisitNodeOnDataTemplate => true;
 
 		public void Visit(ValueNode node, INode parentNode)
 		{
@@ -81,6 +76,15 @@ namespace Xamarin.Forms.Xaml
 
 		public void Visit(ElementNode node, INode parentNode)
 		{
+			var propertyName = XmlName.Empty;
+			if (TryGetPropertyName(node, parentNode, out propertyName) && propertyName == XmlName._CreateContent){
+				var s0 = Values[parentNode];
+				if (s0 is ElementTemplate) {
+					SetTemplate(s0 as ElementTemplate, node);
+					return;
+				}
+			}
+
 			var value = Values [node];
 			var parentElement = parentNode as IElementNode;
 			var markupExtension = value as IMarkupExtension;
@@ -96,7 +100,7 @@ namespace Xamarin.Forms.Xaml
 				value = valueProvider.ProvideValue(serviceProvider);
 			}
 
-			XmlName propertyName = XmlName.Empty;
+			propertyName = XmlName.Empty;
 
 			//Simplify ListNodes with single elements
 			var pList = parentNode as ListNode;
@@ -113,15 +117,11 @@ namespace Xamarin.Forms.Xaml
 					return;
 
 				var source = Values [parentNode];
-
-				if (propertyName == XmlName._CreateContent && source is ElementTemplate)
-					SetTemplate(source as ElementTemplate, node);
-				else
-					SetPropertyValue(source, propertyName, value, Context.RootElement, node, Context, node);
+				SetPropertyValue(source, propertyName, value, Context.RootElement, node, Context, node);
 			} else if (IsCollectionItem(node, parentNode) && parentNode is IElementNode) {
 				// Collection element, implicit content, or implicit collection element.
 				string contentProperty;
-				if (typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(Context.Types [parentElement].GetTypeInfo())) {
+				if (typeof(IEnumerable).GetTypeInfo().IsAssignableFrom(Context.Types [parentElement].GetTypeInfo()) && Context.Types[parentElement].GetRuntimeMethods().Any(mi => mi.Name == "Add" && mi.GetParameters().Length == 1)) {
 					var source = Values [parentNode];
 					if (!(typeof(ResourceDictionary).IsAssignableFrom(Context.Types [parentElement]))) {
 						var addMethod =
@@ -137,7 +137,8 @@ namespace Xamarin.Forms.Xaml
 
 					var source = Values [parentNode];
 					SetPropertyValue(source, name, value, Context.RootElement, node, Context, node);
-				}
+				} else
+					throw new XamlParseException($"Can not set the content of {((IElementNode)parentNode).XmlType.Name} as it doesn't have a ContentPropertyAttribute", node);
 			} else if (IsCollectionItem(node, parentNode) && parentNode is ListNode) {
 				var parentList = (ListNode)parentNode;
 				var source = Values [parentNode.Parent];
@@ -296,7 +297,7 @@ namespace Xamarin.Forms.Xaml
 				return;
 
 			//If we can assign that value to a normal property, let's do it
-			if (xpe == null && TrySetProperty(xamlelement, localName, value, lineInfo, serviceProvider, out xpe))
+			if (xpe == null && TrySetProperty(xamlelement, localName, value, lineInfo, serviceProvider, context, out xpe))
 				return;
 
 			//If it's an already initialized property, add to it
@@ -361,7 +362,7 @@ namespace Xamarin.Forms.Xaml
 			exception = null;
 
 			var elementType = element.GetType();
-			var binding = value as BindingBase;
+			var binding = value.ConvertTo(typeof(BindingBase),pinfoRetriever:null,serviceProvider:null) as BindingBase;
 			var bindable = element as BindableObject;
 			var nativeBindingService = DependencyService.Get<INativeBindingService>();
 
@@ -422,7 +423,7 @@ namespace Xamarin.Forms.Xaml
 			return false;
 		}
 
-		static bool TrySetProperty(object element, string localName, object value, IXmlLineInfo lineInfo, XamlServiceProvider serviceProvider, out Exception exception)
+		static bool TrySetProperty(object element, string localName, object value, IXmlLineInfo lineInfo, XamlServiceProvider serviceProvider, HydratationContext context, out Exception exception)
 		{
 			exception = null;
 
@@ -432,12 +433,28 @@ namespace Xamarin.Forms.Xaml
 			if (propertyInfo == null || !propertyInfo.CanWrite || (setter = propertyInfo.SetMethod) == null)
 				return false;
 
+			if (!IsVisibleFrom(setter, context.RootElement))
+				return false;
+
 			object convertedValue = value.ConvertTo(propertyInfo.PropertyType, () => propertyInfo, serviceProvider);
 			if (convertedValue != null && !propertyInfo.PropertyType.IsInstanceOfType(convertedValue))
 				return false;
 
 			setter.Invoke(element, new object [] { convertedValue });
 			return true;
+		}
+
+		static bool IsVisibleFrom(MethodInfo setter, object rootElement)
+		{
+			if (setter.IsPublic)
+				return true;
+			if (setter.IsPrivate && setter.DeclaringType == rootElement.GetType())
+				return true;
+			if ((setter.IsAssembly || setter.IsFamilyOrAssembly) && setter.DeclaringType.AssemblyQualifiedName == rootElement.GetType().AssemblyQualifiedName)
+				return true;
+			if (setter.IsFamily && setter.DeclaringType.IsAssignableFrom(rootElement.GetType()))
+				return true;
+			return false;
 		}
 
 		static bool TryAddToProperty(object element, string localName, object value, IXmlLineInfo lineInfo, XamlServiceProvider serviceProvider, out Exception exception)
