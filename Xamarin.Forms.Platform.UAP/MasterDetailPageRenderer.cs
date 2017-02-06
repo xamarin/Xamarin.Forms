@@ -112,6 +112,11 @@ namespace Xamarin.Forms.Platform.UWP
 			return new SizeRequest(new Size(size.Width, size.Height));
 		}
 
+		UIElement IVisualElementRenderer.GetNativeElement()
+		{
+			return Control;
+		}
+
 		public void SetElement(VisualElement element)
 		{
 			MasterDetailPage old = Element;
@@ -261,6 +266,9 @@ namespace Xamarin.Forms.Platform.UWP
 
 				IVisualElementRenderer renderer = _detail.GetOrCreateRenderer();
 				element = renderer.ContainerElement;
+
+				// Enforce consistency rules on toolbar (show toolbar if Detail is Navigation Page)
+				Control.ShouldShowToolbar = _detail is NavigationPage; 
 			}
 
 			Control.Detail = element;
@@ -297,6 +305,9 @@ namespace Xamarin.Forms.Platform.UWP
 
 			Control.Master = element;
 			Control.MasterTitle = _master?.Title;
+
+			// Enforce consistency rules on toolbar (show toolbar if Master is Navigation Page)
+			Control.ShouldShowToolbar = _master is NavigationPage;
 		}
 
 		void UpdateMode()

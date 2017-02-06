@@ -68,6 +68,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup Condition=" '$(OS)' != 'Unix' ">
+    <Compile Include="NavigationPageRendererWinRT.cs" />
+    <Compile Include="PlatformWinRT.cs" />
     <Compile Include="BrushHelpers.cs" />
     <Compile Include="NativeBindingExtensions.cs" />
     <Compile Include="NativeEventWrapper.cs" />
@@ -78,9 +80,6 @@
     <Compile Include="LayoutExtensions.cs" />
     <Compile Include="PlatformEffect.cs" />
     <Compile Include="FormsComboBox.cs" />
-    <Compile Include="IWrapperAware.cs" />
-    <Compile Include="FormsDatePicker.cs" />
-    <Compile Include="FormsTimePicker.cs" />
     <Compile Include="FormsTextBox.cs" />
     <Compile Include="ITitleProvider.cs" />
     <Compile Include="IToolbarProvider.cs" />

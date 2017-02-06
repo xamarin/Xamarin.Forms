@@ -113,6 +113,8 @@ namespace Xamarin.Forms
 			get { return !Deployment.Current.Dispatcher.CheckAccess(); }
 		}
 
+		public string RuntimePlatform => Device.WinPhone;
+
 		public void OpenUriAction(Uri uri)
 		{
 			Launcher.LaunchUriAsync(uri).WatchForError();
@@ -135,36 +137,6 @@ namespace Xamarin.Forms
 			if (v < 10)
 				return '0' + v;
 			return 'a' + v - 10;
-		}
-
-		public class _Timer : ITimer
-		{
-			readonly Timer _timer;
-
-			public _Timer(Timer timer)
-			{
-				_timer = timer;
-			}
-
-			public void Change(int dueTime, int period)
-			{
-				_timer.Change(dueTime, period);
-			}
-
-			public void Change(long dueTime, long period)
-			{
-				_timer.Change(dueTime, period);
-			}
-
-			public void Change(TimeSpan dueTime, TimeSpan period)
-			{
-				_timer.Change(dueTime, period);
-			}
-
-			public void Change(uint dueTime, uint period)
-			{
-				_timer.Change(dueTime, period);
-			}
 		}
 
 		public class _IsolatedStorageFile : IIsolatedStorageFile

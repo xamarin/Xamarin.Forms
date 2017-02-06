@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using Android.Support.V4.View;
 using Android.Views;
+using Xamarin.Forms.Internals;
 using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
@@ -22,6 +23,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		VisualElementRendererFlags _flags = VisualElementRendererFlags.AutoPackage | VisualElementRendererFlags.AutoTrack;
 
+		string _defaultContentDescription;
+		bool? _defaultFocusable;
+		string _defaultHint;
+		int? _defaultLabelFor;
 		InnerGestureListener _gestureListener;
 		VisualElementPackager _packager;
 		PropertyChangedEventHandler _propertyChangeHandler;
@@ -104,6 +109,12 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			_gestureListener?.OnTouchEvent(e);
+
+			if (_gestureDetector.IsValueCreated && _gestureDetector.Value.Handle == IntPtr.Zero)
+			{
+				// This gesture detector has already been disposed, probably because it's on a cell which is going away
+				return handled;
+			}
 
 			return _gestureDetector.Value.OnTouchEvent(e) || handled;
 		}
@@ -197,16 +208,13 @@ namespace Xamarin.Forms.Platform.Android
 			if (element != null)
 				SendVisualElementInitialized(element, this);
 
-			var controller = (IElementController)oldElement;
-			if (controller != null && controller.EffectControlProvider == this)
-				controller.EffectControlProvider = null;
-
-			controller = element;
-			if (controller != null)
-				controller.EffectControlProvider = this;
+			EffectUtilities.RegisterEffectControlProvider(this, oldElement, element);
 
 			if (element != null && !string.IsNullOrEmpty(element.AutomationId))
 				SetAutomationId(element.AutomationId);
+
+			SetContentDescription();
+			SetFocusable();
 
 			Performance.Stop();
 		}
@@ -301,6 +309,12 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateBackgroundColor();
 			else if (e.PropertyName == VisualElement.InputTransparentProperty.PropertyName)
 				InputTransparent = Element.InputTransparent;
+			else if (e.PropertyName == Accessibility.HintProperty.PropertyName)
+				SetContentDescription();
+			else if (e.PropertyName == Accessibility.NameProperty.PropertyName)
+				SetContentDescription();
+			else if (e.PropertyName == Accessibility.IsInAccessibleTreeProperty.PropertyName)
+				SetFocusable();
 		}
 
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)
@@ -330,6 +344,62 @@ namespace Xamarin.Forms.Platform.Android
 			ContentDescription = id;
 		}
 
+		protected virtual void SetContentDescription()
+		{
+			if (Element == null)
+				return;
+
+			if (SetHint())
+				return;
+
+			if (_defaultContentDescription == null)
+				_defaultContentDescription = ContentDescription;
+
+			var elemValue = string.Join(" ", (string)Element.GetValue(Accessibility.NameProperty), (string)Element.GetValue(Accessibility.HintProperty));
+
+			if (!string.IsNullOrWhiteSpace(elemValue))
+				ContentDescription = elemValue;
+			else
+				ContentDescription = _defaultContentDescription;
+		}
+
+		protected virtual void SetFocusable()
+		{
+			if (Element == null)
+				return;
+
+			if (!_defaultFocusable.HasValue)
+				_defaultFocusable = Focusable;
+
+			Focusable = (bool)((bool?)Element.GetValue(Accessibility.IsInAccessibleTreeProperty) ?? _defaultFocusable);
+		}
+
+		protected virtual bool SetHint()
+		{
+			if (Element == null)
+				return false;
+
+			var textView = this as global::Android.Widget.TextView;
+			if (textView == null)
+				return false;
+
+			// Let the specified Title/Placeholder take precedence, but don't set the ContentDescription (won't work anyway)
+			if (((Element as Picker)?.Title ?? (Element as Entry)?.Placeholder ?? (Element as EntryCell)?.Placeholder) != null)
+				return true;
+
+			if (_defaultHint == null)
+				_defaultHint = textView.Hint;
+
+			var elemValue = string.Join(". ", (string)Element.GetValue(Accessibility.NameProperty), (string)Element.GetValue(Accessibility.HintProperty));
+
+			if (!string.IsNullOrWhiteSpace(elemValue))
+				textView.Hint = elemValue;
+			else
+				textView.Hint = _defaultHint;
+
+			return true;
+		}
+
 		protected void SetPackager(VisualElementPackager packager)
 		{
 			_packager = packager;
@@ -354,6 +424,14 @@ namespace Xamarin.Forms.Platform.Android
 		void HandleGestureRecognizerCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
 		{
 			UpdateGestureRecognizers();
+		}
+
+		void IVisualElementRenderer.SetLabelFor(int? id)
+		{
+			if (_defaultLabelFor == null)
+				_defaultLabelFor = LabelFor;
+
+			LabelFor = (int)(id ?? _defaultLabelFor);
 		}
 
 		void SubscribeGestureRecognizers(VisualElement element)
