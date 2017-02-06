@@ -462,9 +462,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var swipeConfig = new SwipeConfig();
 			if (_tabSwipes.ContainsKey((int)SelectedIndex))
-			{
 				swipeConfig = isLeftSwipe ? _tabSwipes[(int)SelectedIndex].LeftSwipeConfig : _tabSwipes[(int)SelectedIndex].RightSwipeConfig;
-			}
 
 			return swipeConfig;
 		}
@@ -604,15 +602,12 @@ namespace Xamarin.Forms.Platform.iOS
 						_shouldPan = true;
 					}
 				);
+
 				while (!_shouldPan)
-				{
 					await Task.Delay(5);
-				}
 			}
 			else
-			{
 				SnapViewIntoPosition(_direction == Right ? rightSwipeConfig : leftSwipeConfig, fromView, viewSize, maxX, minX);
-			}
 		}
 
 		void SnapViewIntoPosition(SwipeConfig swipeConfig, UIView fromView, CGRect viewSize, nfloat maxX, nfloat minX)
@@ -622,26 +617,18 @@ namespace Xamarin.Forms.Platform.iOS
 				UIView toView = ViewControllers[SelectedIndex + 1].View;
 
 				if (fromView.Frame.X <= minX / 2)
-				{
 					AnimateSnapViewIntoPosition(swipeConfig, fromView, toView, viewSize, minX, 0, false, false);
-				}
 				else
-				{
 					AnimateSnapViewIntoPosition(swipeConfig, fromView, toView, viewSize, 0, maxX, true);
-				}
 			}
 			else if (fromView.Frame.X > 0)
 			{
 				UIView toView = ViewControllers[SelectedIndex - 1].View;
 
 				if (fromView.Frame.X >= maxX / 2)
-				{
 					AnimateSnapViewIntoPosition(swipeConfig, fromView, toView, viewSize, maxX, 0, false);
-				}
 				else
-				{
 					AnimateSnapViewIntoPosition(swipeConfig, fromView, toView, viewSize, 0, minX, true);
-				}
 			}
 
 			_startLocation = CGPoint.Empty;
@@ -674,9 +661,7 @@ namespace Xamarin.Forms.Platform.iOS
 			);
 
 			while (!didFinish)
-			{
 				await Task.Delay(5);
-			}
 		}
 
 		void IEffectControlProvider.RegisterEffect(Effect effect)
