@@ -8,5 +8,6 @@ namespace Xamarin.Forms.Platform.Android
 	public interface IImageSourceHandler : IRegisterable
 	{
 		Task<Bitmap> LoadImageAsync(ImageSource imagesource, Context context, CancellationToken cancelationToken = default(CancellationToken));
+		Task<Movie> LoadAnimatedImageAsync(ImageSource imagesource, Context context, CancellationToken cancelationToken = default(CancellationToken));
 	}
 }
