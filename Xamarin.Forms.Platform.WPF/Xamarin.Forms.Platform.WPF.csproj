@@ -1,0 +1,162 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{94DE5F97-8924-4DDA-BD26-0971402F51B9}</ProjectGuid>
+    <OutputType>library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Xamarin.Forms.Platform.WPF</RootNamespace>
+    <AssemblyName>Xamarin.Forms.Platform.WPF</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ActivityIndicatorRenderer.cs" />
+    <Compile Include="AlignmentExtensions.cs" />
+    <Compile Include="Animatable.cs" />
+    <Compile Include="AsyncValue.cs" />
+    <Compile Include="BoxViewRenderer.cs" />
+    <Compile Include="ButtonRenderer.cs" />
+    <Compile Include="CarouselPageRenderer.cs" />
+    <Compile Include="CellControl.cs" />
+    <Compile Include="CellTemplateSelector.cs" />
+    <Compile Include="CollapseWhenEmptyConverter.cs" />
+    <Compile Include="Converters\CaseConverter.cs" />
+    <Compile Include="Converters\ColorConverter.cs" />
+    <Compile Include="Converters\HorizontalTextAlignmentConverter.cs" />
+    <Compile Include="Converters\ImageConverter.cs" />
+    <Compile Include="Converters\KeyboardConverter.cs" />
+    <Compile Include="ConvertExtensions.cs" />
+    <Compile Include="CustomContextMenu.cs" />
+    <Compile Include="DataTemplateSelector.cs" />
+    <Compile Include="DatePickerRenderer.cs" />
+    <Compile Include="Deserializer.cs" />
+    <Compile Include="EditorRenderer.cs" />
+    <Compile Include="ElementChangedEventArgs.cs" />
+    <Compile Include="EntryRenderer.cs" />
+    <Compile Include="ExportCellAttribute.cs" />
+    <Compile Include="ExportImageSourceHandlerAttribute.cs" />
+    <Compile Include="ExportRendererAttribute.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="FontExtensions.cs" />
+    <Compile Include="Forms.cs" />
+    <Compile Include="FormsApplicationPage.cs" />
+    <Compile Include="FormsListPicker.cs" />
+    <Compile Include="FormsPhoneTextBox.cs" />
+    <Compile Include="FrameRenderer.cs" />
+    <Compile Include="FrameworkElementExtensions.cs" />
+    <Compile Include="Helpers\UiHelper.cs" />
+    <Compile Include="ICellRenderer.cs" />
+    <Compile Include="ImageRenderer.cs" />
+    <Compile Include="IVisualElementRenderer.cs" />
+    <Compile Include="LabelRenderer.cs" />
+    <Compile Include="LayoutExtensions.cs" />
+    <Compile Include="LayoutHelper.cs" />
+    <Compile Include="ListViewRenderer.cs" />
+    <Compile Include="MasterDetailRenderer.cs" />
+    <Compile Include="MD5.cs" />
+    <Compile Include="MD5CryptoServiceProvider.cs" />
+    <Compile Include="NativeViewWrapper.cs" />
+    <Compile Include="NativeViewWrapperRenderer.cs" />
+    <Compile Include="NavigationPageRenderer.cs" />
+    <Compile Include="PageRenderer.cs" />
+    <Compile Include="PageToRendererConverter.cs" />
+    <Compile Include="PickerRenderer.cs" />
+    <Compile Include="Platform.cs" />
+    <Compile Include="PlatformEffect.cs" />
+    <Compile Include="ProgressBarRenderer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="RendererFactory.cs" />
+    <Compile Include="ResourcesProvider.cs" />
+    <Compile Include="ScrollViewRenderer.cs" />
+    <Compile Include="SearchBarRenderer.cs" />
+    <Compile Include="SliderRenderer.cs" />
+    <Compile Include="StepperRenderer.cs" />
+    <Compile Include="SwitchRenderer.cs" />
+    <Compile Include="TableView.xaml.cs">
+      <DependentUpon>TableView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="TableViewRenderer.cs" />
+    <Compile Include="TaskExtensions.cs" />
+    <Compile Include="TextAlignmentToHorizontalAlignmentConverter.cs" />
+    <Compile Include="TextCellRenderer.cs" />
+    <Compile Include="ViewExtensions.cs" />
+    <Compile Include="ViewRenderer.cs" />
+    <Compile Include="ViewToRendererConverter.cs" />
+    <Compile Include="VisualElementPackager.cs" />
+    <Compile Include="VisualElementRenderer.cs" />
+    <Compile Include="VisualElementTracker.cs" />
+    <Compile Include="WebViewRenderer.cs" />
+    <Compile Include="WinPhoneTicker.cs" />
+    <Compile Include="WPFPlatformServices.cs" />
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="TableView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="WPFResources.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">
+      <Project>{57B8B73D-C3B5-4C42-869E-7B2F17D354AC}</Project>
+      <Name>Xamarin.Forms.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

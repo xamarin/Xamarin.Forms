@@ -1,0 +1,30 @@
+﻿<Grid x:Class="Xamarin.Forms.Platform.WPF.TableView"
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+	mc:Ignorable="d"
+	>
+	
+	<Grid.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary Source="WPFResources.xaml" />
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</Grid.Resources>
+
+	<Grid.RowDefinitions>
+		<RowDefinition Height="Auto" />
+		<RowDefinition />
+	</Grid.RowDefinitions>
+
+	<ListBox Grid.Row="1" ItemsSource="{Binding}">
+		<!--<ListBox.ItemContainerStyle>
+			<Style TargetType="ListBoxItem">
+				<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+			</Style>
+		</ListBox.ItemContainerStyle>-->
+	</ListBox>
+</Grid>
+

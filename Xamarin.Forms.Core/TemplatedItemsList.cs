@@ -267,12 +267,12 @@ namespace Xamarin.Forms
 
 		void IList.Clear()
 		{
-			throw new NotSupportedException();
+			ListProxy.Clear();
 		}
 
 		bool IList.Contains(object item)
 		{
-			throw new NotImplementedException();
+		    return ListProxy.Contains(item);
 		}
 
 		int IList.IndexOf(object item)
