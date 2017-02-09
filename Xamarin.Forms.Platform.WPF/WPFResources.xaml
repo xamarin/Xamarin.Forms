@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+					xmlns:system="clr-namespace:System;assembly=mscorlib"
+					xmlns:wpf="clr-namespace:Xamarin.Forms.Platform.WPF">
+
+    <system:Double x:Key="FontSizeSmall">18</system:Double>
+    <system:Double x:Key="FontSizeNormal">20</system:Double>
+    <system:Double x:Key="FontSizeMedium">22</system:Double>
+    <system:Double x:Key="FontSizeMediumLarge">25</system:Double>
+    <system:Double x:Key="FontSizeLarge">32</system:Double>
+    <system:Double x:Key="FontSizeExtraLarge">42</system:Double>
+    <system:Double x:Key="FontSizeExtraExtraLarge">72</system:Double>
+    <system:Double x:Key="FontSizeHuge">186</system:Double>
+    <FontFamily x:Key="FontFamilyNormal">Segoe UI</FontFamily>
+    <FontFamily x:Key="FontFamilySemiBold">Segoe UI</FontFamily>
+    <FontFamily x:Key="FontFamilySemiLight">Segoe UI</FontFamily>
+    <SolidColorBrush Color="#FF000000" x:Key="ForegroundBrush"></SolidColorBrush>
+    <SolidColorBrush Color="#FFFFFFFF" x:Key="BackgroundBrush"></SolidColorBrush>
+    <SolidColorBrush Color="#FFFFFFFF" x:Key="TextBoxBrush"></SolidColorBrush>
+
+
+    <wpf:CaseConverter x:Key="UpperConverter" ConvertToUpper="True" />
+    <wpf:CaseConverter x:Key="LowerConverter" ConvertToUpper="False" />
+    <wpf:ColorConverter x:Key="ColorConverter" />
+    <wpf:HeightConverter x:Key="HeightConverter" />
+    <wpf:HorizontalTextAlignmentConverter x:Key="HorizontalTextAlignmentConverter" />
+    <wpf:KeyboardConverter x:Key="KeyboardConverter"/>
+    <wpf:ImageConverter x:Key="ImageConverter" />
+    <wpf:ViewToRendererConverter x:Key="ViewToRenderer" />
+    <wpf:PageToRendererConverter x:Key="PageToRenderer" />
+    <wpf:CollapseWhenEmptyConverter x:Key="CollapseWhenEmpty" />
+    <wpf:EntryCellRendererCompleted x:Key="EntryCellRendererCompleted" />
+    
+    <!--<DataTemplate x:Key="CellTemplate">
+        <wpf:CellControl HorizontalContentAlignment="Stretch" Height="{Binding Cell.RenderHeight,RelativeSource={RelativeSource Mode=Self},Converter={StaticResource HeightConverter}}" />
+    </DataTemplate>-->
+
+    <DataTemplate x:Key="ViewCell">
+        <ContentPresenter Height="{Binding RenderHeight, Converter={StaticResource HeightConverter}}"  Content="{Binding View,Converter={StaticResource ViewToRenderer}}" />
+    </DataTemplate>
+
+    <DataTemplate x:Key="CellTemplate">
+        <Border Background="Transparent">
+            <wpf:CellControl Cell="{Binding}" HorizontalContentAlignment="Stretch" />
+        </Border>
+    </DataTemplate>
+    
+    <Style TargetType="TextBlock">
+        <Setter Property="FontSize" Value="14"/>
+    </Style>
+    
+</ResourceDictionary>
