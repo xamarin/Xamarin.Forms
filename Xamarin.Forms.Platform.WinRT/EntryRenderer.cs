@@ -111,6 +111,7 @@ namespace Xamarin.Forms.Platform.WinRT
 				return;
 
 			((IEntryController)Element).SendCompleted();
+			Control?.Unfocus();
 		}
 
 		void UpdateAlignment()
