@@ -10,8 +10,8 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.None, 0, "Are not last pages in NavigationStack were notified appearing event when NavigationPage was added to ui stack", NavigationBehavior.PushModalAsync)]
-	public class NavigationChildAppearing : TestPage
+	[Issue(IssueTracker.Bugzilla, 52458, "Children pages in NavigationPage were got `appearing events` even if they were not latest in navigation stack", NavigationBehavior.PushModalAsync)]
+	public class Bugzilla52458 : TestPage
 	{
 		NavigationPage _navPage;
 		ContentPage _appearingPage;
