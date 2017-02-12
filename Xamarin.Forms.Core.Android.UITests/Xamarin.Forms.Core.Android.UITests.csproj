@@ -57,8 +57,9 @@
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="Xamarin.UITest">
-      <HintPath>..\packages\Xamarin.UITest.2.0.0-beta05\lib\Xamarin.UITest.dll</HintPath>
+    <Reference Include="Xamarin.UITest, Version=2.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Xamarin.UITest.2.0.5\lib\Xamarin.UITest.dll</HintPath>
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -142,6 +143,9 @@
     </Compile>
     <Compile Include="..\Xamarin.Forms.Core.iOS.UITests\Tests\WebViewUITests.cs">
       <Link>Tests\WebViewUITests.cs</Link>
+    </Compile>
+    <Compile Include="..\Xamarin.Forms.Core.iOS.UITests\UITestCategories.cs">
+      <Link>UITestCategories.cs</Link>
     </Compile>
     <Compile Include="PlatformQueries.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

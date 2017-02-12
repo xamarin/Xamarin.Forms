@@ -7,7 +7,7 @@ using NUnit.Framework;
 using Xamarin.UITest;
 #endif
 
-namespace Xamarin.Forms.Controls.TestCasesPages
+namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve (AllMembers = true)]
 	public class FamilyViewModel
@@ -136,7 +136,7 @@ namespace Xamarin.Forms.Controls.TestCasesPages
 
 #if UITEST
 		[Test]
-		public void TestCellsShowAfterRefresh ()
+		public void TestCellsShowAfterRefresh()
 		{
 			RunningApp.Tap (q => q.Marked ("Refresh"));
 

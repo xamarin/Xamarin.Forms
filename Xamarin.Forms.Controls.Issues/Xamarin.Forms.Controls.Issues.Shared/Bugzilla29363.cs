@@ -3,13 +3,19 @@ using System.Collections.Generic;
 using System.Text;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
+
 #if UITEST
 using NUnit.Framework;
+using Xamarin.Forms.Core.UITests;
 #endif
 
 
-namespace Xamarin.Forms.Controls
+namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[Category(UITestCategories.LifeCycle)]
+#endif
+
 	[Preserve (AllMembers = true)]
 	[Issue (IssueTracker.Bugzilla, 29363, "PushModal followed immediate by PopModal crashes")]
     public class Bugzilla29363 : TestContentPage
@@ -40,8 +46,9 @@ namespace Xamarin.Forms.Controls
 		public void PushButton ()
 		{
 			RunningApp.Tap (q => q.Marked ("Modal Push Pop Test"));
-			System.Threading.Thread.Sleep (5);
+			System.Threading.Thread.Sleep (2000);
 			// if it didn't crash, yay
+			RunningApp.WaitForElement(q => q.Marked("Modal Push Pop Test"));
 		}
 #endif
     }

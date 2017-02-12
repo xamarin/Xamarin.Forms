@@ -33,7 +33,7 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty FontAttributesProperty = BindableProperty.Create("FontAttributes", typeof(FontAttributes), typeof(Button), FontAttributes.None,
 			propertyChanged: SpecificFontPropertyChanged);
 
-		public static readonly BindableProperty BorderWidthProperty = BindableProperty.Create("BorderWidth", typeof(double), typeof(Button), 0d);
+		public static readonly BindableProperty BorderWidthProperty = BindableProperty.Create("BorderWidth", typeof(double), typeof(Button), -1d);
 
 		public static readonly BindableProperty BorderColorProperty = BindableProperty.Create("BorderColor", typeof(Color), typeof(Button), Color.Default);
 
@@ -116,13 +116,18 @@ namespace Xamarin.Forms
 
 		void IButtonController.SendClicked()
 		{
-			ICommand cmd = Command;
-			if (cmd != null)
-				cmd.Execute(CommandParameter);
+			Command?.Execute(CommandParameter);
+			Clicked?.Invoke(this, EventArgs.Empty);
+		}
 
-			EventHandler handler = Clicked;
-			if (handler != null)
-				handler(this, EventArgs.Empty);
+		void IButtonController.SendPressed()
+		{
+			Pressed?.Invoke(this, EventArgs.Empty);
+		}
+
+		void IButtonController.SendReleased()
+		{
+			Released?.Invoke(this, EventArgs.Empty);
 		}
 
 		public FontAttributes FontAttributes
@@ -145,6 +150,10 @@ namespace Xamarin.Forms
 		}
 
 		public event EventHandler Clicked;
+
+		public event EventHandler Pressed;
+
+		public event EventHandler Released;
 
 		public Button()
 		{

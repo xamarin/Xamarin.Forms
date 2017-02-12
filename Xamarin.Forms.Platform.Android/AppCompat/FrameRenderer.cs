@@ -20,6 +20,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		readonly TapGestureHandler _tapGestureHandler;
 
 		float _defaultElevation = -1f;
+		float _defaultCornerRadius = -1f;
+		int? _defaultLabelFor;
 
 		bool _clickable;
 		bool _disposed;
@@ -105,6 +107,14 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				ContentDescription = Element.AutomationId;
 		}
 
+		void IVisualElementRenderer.SetLabelFor(int? id)
+		{
+			if (_defaultLabelFor == null)
+				_defaultLabelFor = LabelFor;
+
+			LabelFor = (int)(id ?? _defaultLabelFor);
+		}
+
 		VisualElementTracker IVisualElementRenderer.Tracker => _visualElementTracker;
 
 		void IVisualElementRenderer.UpdateLayout()
@@ -184,6 +194,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				e.NewElement.PropertyChanged += OnElementPropertyChanged;
 				UpdateShadow();
 				UpdateBackgroundColor();
+				UpdateCornerRadius();
 				SubscribeGestureRecognizers(e.NewElement);
 			}
 		}
@@ -215,6 +226,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				UpdateShadow();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor();
+			else if (e.PropertyName == Frame.CornerRadiusProperty.PropertyName)
+				UpdateCornerRadius();
 		}
 
 		void SubscribeGestureRecognizers(VisualElement element)
@@ -285,6 +298,23 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				CardElevation = elevation;
 			else
 				CardElevation = 0f;
+		}
+
+		void UpdateCornerRadius()
+		{
+			if (_defaultCornerRadius == -1f)
+			{
+				_defaultCornerRadius = Radius;
+			}
+
+			float cornerRadius = Element.CornerRadius;
+
+			if (cornerRadius == -1f)
+				cornerRadius = _defaultCornerRadius;
+			else
+				cornerRadius = Context.ToPixels(cornerRadius);
+
+			Radius = cornerRadius;
 		}
 	}
 }

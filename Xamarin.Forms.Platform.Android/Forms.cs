@@ -120,7 +120,6 @@ namespace Xamarin.Forms
 			if (!IsInitialized)
 				Log.Listeners.Add(new DelegateLogListener((c, m) => Trace.WriteLine(m, c)));
 
-			Device.OS = TargetPlatform.Android;
 			Device.PlatformServices = new AndroidPlatformServices();
 
 			// use field and not property to avoid exception in getter
@@ -130,10 +129,7 @@ namespace Xamarin.Forms
 				Device.info = null;
 			}
 
-			// probably could be done in a better way
-			var deviceInfoProvider = activity as IDeviceInfoProvider;
-			if (deviceInfoProvider != null)
-				Device.Info = new AndroidDeviceInfo(deviceInfoProvider);
+			Device.Info = new AndroidDeviceInfo(activity);
 
 			var ticker = Ticker.Default as AndroidTicker;
 			if (ticker != null)
@@ -190,17 +186,21 @@ namespace Xamarin.Forms
 
 		class AndroidDeviceInfo : DeviceInfo
 		{
-			readonly IDeviceInfoProvider _formsActivity;
+			bool disposed;
+			readonly Context _formsActivity;
 			readonly Size _pixelScreenSize;
 			readonly double _scalingFactor;
 
 			Orientation _previousOrientation = Orientation.Undefined;
 
-			public AndroidDeviceInfo(IDeviceInfoProvider formsActivity)
+			public AndroidDeviceInfo(Context formsActivity)
 			{
 				_formsActivity = formsActivity;
 				CheckOrientationChanged(_formsActivity.Resources.Configuration.Orientation);
-				formsActivity.ConfigurationChanged += ConfigurationChanged;
+				// This will not be an implementation of IDeviceInfoProvider when running inside the context
+				// of layoutlib, which is what the Android Designer does.
+				if (_formsActivity is IDeviceInfoProvider)
+					((IDeviceInfoProvider) _formsActivity).ConfigurationChanged += ConfigurationChanged;
 
 				using (DisplayMetrics display = formsActivity.Resources.DisplayMetrics)
 				{
@@ -224,7 +224,11 @@ namespace Xamarin.Forms
 
 			protected override void Dispose(bool disposing)
 			{
-				_formsActivity.ConfigurationChanged -= ConfigurationChanged;
+				if (disposing && !disposed) {
+					disposed = true;
+					if (_formsActivity is IDeviceInfoProvider)
+						((IDeviceInfoProvider) _formsActivity).ConfigurationChanged -= ConfigurationChanged;
+				}
 				base.Dispose(disposing);
 			}
 
@@ -380,7 +384,14 @@ namespace Xamarin.Forms
 			{
 				using (var client = new HttpClient())
 				using (HttpResponseMessage response = await client.GetAsync(uri, cancellationToken))
+				{
+					if (!response.IsSuccessStatusCode)
+					{
+						Log.Warning("HTTP Request", $"Could not retrieve {uri}, status code {response.StatusCode}");
+						return null;
+					}
 					return await response.Content.ReadAsStreamAsync();
+				}
 			}
 
 			public IIsolatedStorageFile GetUserStoreForApplication()
@@ -396,6 +407,8 @@ namespace Xamarin.Forms
 				}
 			}
 
+			public string RuntimePlatform => Device.Android;
+
 			public void OpenUriAction(Uri uri)
 			{
 				global::Android.Net.Uri aUri = global::Android.Net.Uri.Parse(uri.ToString());
@@ -405,22 +418,15 @@ namespace Xamarin.Forms
 
 			public void StartTimer(TimeSpan interval, Func<bool> callback)
 			{
-				Timer timer = null;
-				bool invoking = false;
-				TimerCallback onTimeout = o =>
+				var handler = new Handler(Looper.MainLooper);
+				handler.PostDelayed(() =>
 				{
-					if (!invoking)
-					{
-						invoking = true;
-						BeginInvokeOnMainThread(() =>
-						{
-							if (!callback())
-								timer.Dispose();
-							invoking = false;
-						});
-					}
-				};
-				timer = new Timer(onTimeout, null, interval, interval);
+					if (callback())
+						StartTimer(interval, callback);
+
+					handler.Dispose();
+					handler = null;
+				}, (long)interval.TotalMilliseconds);
 			}
 
 			double ConvertTextAppearanceToSize(int themeDefault, int deviceDefault, double defaultValue)
@@ -465,36 +471,6 @@ namespace Xamarin.Forms
 					Log.Warning("Xamarin.Forms.Platform.Android.AndroidPlatformServices", "Error retrieving text appearance: {0}", ex);
 				}
 				return false;
-			}
-
-			public class _Timer : ITimer
-			{
-				readonly Timer _timer;
-
-				public _Timer(Timer timer)
-				{
-					_timer = timer;
-				}
-
-				public void Change(int dueTime, int period)
-				{
-					_timer.Change(dueTime, period);
-				}
-
-				public void Change(long dueTime, long period)
-				{
-					_timer.Change(dueTime, period);
-				}
-
-				public void Change(TimeSpan dueTime, TimeSpan period)
-				{
-					_timer.Change(dueTime, period);
-				}
-
-				public void Change(uint dueTime, uint period)
-				{
-					_timer.Change(dueTime, period);
-				}
 			}
 
 			public class _IsolatedStorageFile : IIsolatedStorageFile

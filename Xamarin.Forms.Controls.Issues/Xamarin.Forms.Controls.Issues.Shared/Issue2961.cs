@@ -10,7 +10,7 @@ using NUnit.Framework;
 using Xamarin.UITest.iOS;
 #endif
 
-namespace Xamarin.Forms.Controls
+namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
 	[Ignore("This test is looking for an invalid behavior; the second tap *should* keep the drawer open.")] 
@@ -144,7 +144,7 @@ namespace Xamarin.Forms.Controls
 					Children = { logoImg }
 				};
 
-				var paddingTop = Device.OnPlatform (40, 2, 2);
+				var paddingTop = Device.RuntimePlatform == Device.iOS ? 40 : 2;
 				Content = new StackLayout {
 					Spacing = 0, 
 					BackgroundColor = Color.FromHex ("1e1e1e"),

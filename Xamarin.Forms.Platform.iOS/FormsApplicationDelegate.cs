@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Globalization;
 using CoreSpotlight;
 using Foundation;
 using UIKit;
@@ -54,6 +55,8 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_application != null && _isSuspended)
 			{
 				_isSuspended = false;
+				CultureInfo.CurrentCulture.ClearCachedData();
+				TimeZoneInfo.ClearCachedData();
 				_application.SendResume();
 			}
 		}
@@ -162,9 +165,11 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			var platformRenderer = (PlatformRenderer)_window.RootViewController;
-			_window.RootViewController = _application.MainPage.CreateViewController();
+
 			if (platformRenderer != null)
 				((IDisposable)platformRenderer.Platform).Dispose();
+
+			_window.RootViewController = _application.MainPage.CreateViewController();
 		}
 	}
 }

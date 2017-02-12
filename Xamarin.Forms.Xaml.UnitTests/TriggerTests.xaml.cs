@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Xamarin.Forms;
 using NUnit.Framework;
+using Xamarin.Forms.Core.UnitTests;
 
 namespace Xamarin.Forms.Xaml.UnitTests
 {	
@@ -20,6 +21,18 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		[TestFixture]
 		public class Tests 
 		{
+			[SetUp]
+			public void Setup()
+			{
+				Device.PlatformServices = new MockPlatformServices();
+			}
+
+			[TearDown]
+			public void TearDown()
+			{
+				Device.PlatformServices = null;
+			}
+
 			[TestCase (false)]
 			[TestCase (true)]
 			public void ValueIsConverted (bool useCompiledXaml)
@@ -33,6 +46,22 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				var pwTrigger = triggers [0] as Trigger;
 				Assert.AreEqual (Entry.IsPasswordProperty, pwTrigger.Property);
 				Assert.AreEqual (true, pwTrigger.Value);
+			}
+
+			[TestCase(false)]
+			[TestCase(true)]
+			public void ValueIsConvertedWithPropertyCondition(bool useCompiledXaml)
+			{
+				var layout = new TriggerTests(useCompiledXaml);
+				Entry entry = layout.entry1;
+				Assert.NotNull(entry);
+
+				var triggers = entry.Triggers;
+				Assert.IsNotEmpty(triggers);
+				var pwTrigger = triggers[0] as MultiTrigger;
+				var pwCondition = pwTrigger.Conditions[0] as PropertyCondition;
+				Assert.AreEqual(Entry.IsPasswordProperty, pwCondition.Property);
+				Assert.AreEqual(true, pwCondition.Value);
 			}
 		}
 	}

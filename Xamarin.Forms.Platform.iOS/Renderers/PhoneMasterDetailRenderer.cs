@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Linq;
 using UIKit;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using PointF = CoreGraphics.CGPoint;
 
 namespace Xamarin.Forms.Platform.iOS
@@ -27,8 +28,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public PhoneMasterDetailRenderer()
 		{
-			if (!Forms.IsiOS7OrNewer)
-				WantsFullScreenLayout = true;
 		}
 
 		IMasterDetailPageController MasterDetailPageController => Element as IMasterDetailPageController;
@@ -106,7 +105,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void ViewDidDisappear(bool animated)
 		{
 			base.ViewDidDisappear(animated);
-			PageController.SendDisappearing();
+			PageController?.SendDisappearing();
 		}
 
 		public override void ViewDidLayoutSubviews()
@@ -170,7 +169,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (_tapGesture != null)
 				{
-					if (_clickOffView != null && _clickOffView.GestureRecognizers.Contains(_panGesture))
+					if (_clickOffView != null && _clickOffView.GestureRecognizers.Contains(_tapGesture))
 					{
 						_clickOffView.GestureRecognizers.Remove(_tapGesture);
 						_clickOffView.Dispose();
@@ -318,8 +317,18 @@ namespace Xamarin.Forms.Platform.iOS
 
 			_detailController.View.AddSubview(detailRenderer.NativeView);
 			_detailController.AddChildViewController(detailRenderer.ViewController);
+
+			SetNeedsStatusBarAppearanceUpdate();
 		}
 
+		public override UIViewController ChildViewControllerForStatusBarHidden()
+		{
+			if (((MasterDetailPage)Element).Detail != null)
+				return (UIViewController)Platform.GetRenderer(((MasterDetailPage)Element).Detail);
+			else
+				return base.ChildViewControllerForStatusBarHidden();
+		}
+		
 		void UpdatePanGesture()
 		{
 			var model = (MasterDetailPage)Element;
@@ -392,9 +401,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void IEffectControlProvider.RegisterEffect(Effect effect)
 		{
-			var platformEffect = effect as PlatformEffect;
-			if (platformEffect != null)
-				platformEffect.Container = View;
+			VisualElementRenderer<VisualElement>.RegisterEffect(effect, View);
 		}
 	}
 }

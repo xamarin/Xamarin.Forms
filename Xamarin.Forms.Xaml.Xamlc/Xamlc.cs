@@ -16,9 +16,10 @@ namespace Xamarin.Forms.Xaml
 			int verbosity = 1;
 			bool keep = false;
 			bool optimize = false;
-			bool decompile = false;
 			string paths = null;
 			string refs = null;
+			List<string> extra = null;
+
 			var p = new OptionSet
 			{
 				{ "h|?|help", "Print this help message", v => help = true },
@@ -27,7 +28,6 @@ namespace Xamarin.Forms.Xaml
 				{ "keep", "do not strip compiled embedded xaml", v => keep = true },
 				{ "p=|paths=|dependencypaths=", "look for dependencies in (comma separated) list of paths", v => paths = v },
 				{ "r=", "referencepath", v => refs = v },
-				{ "d|decompile", v => decompile = true }
 			};
 
 			if (help || args.Length < 1)
@@ -35,7 +35,6 @@ namespace Xamarin.Forms.Xaml
 				ShowHelp(p);
 				Environment.Exit(0);
 			}
-			List<string> extra = null;
 			try
 			{
 				extra = p.Parse(args);
@@ -57,7 +56,17 @@ namespace Xamarin.Forms.Xaml
 			}
 
 			var assembly = extra[0];
-			XamlCTask.Compile(assembly, verbosity, keep, optimize, paths, refs, decompile);
+			var xamlc = new XamlCTask {
+				Assembly = assembly,
+				Verbosity = verbosity,
+				KeepXamlResources = keep,
+				OptimizeIL = optimize,
+				DependencyPaths = paths,
+				ReferencePath = refs,
+				DebugSymbols = true,
+			};
+			IList<Exception> _;
+			xamlc.Execute(out _);
 		}
 
 		static void ShowHelp(OptionSet ops)

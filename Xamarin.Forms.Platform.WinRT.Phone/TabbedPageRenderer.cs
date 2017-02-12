@@ -135,6 +135,11 @@ namespace Xamarin.Forms.Platform.WinRT
 			return new SizeRequest(result);
 		}
 
+		UIElement IVisualElementRenderer.GetNativeElement()
+		{
+			return null;
+		}
+
 		public void Dispose()
 		{
 			Dispose(true);
@@ -146,6 +151,8 @@ namespace Xamarin.Forms.Platform.WinRT
 				return;
 
 			_disposed = true;
+
+			PageController?.SendDisappearing();
 			SetElement(null);
 			Tracker = null;
 		}

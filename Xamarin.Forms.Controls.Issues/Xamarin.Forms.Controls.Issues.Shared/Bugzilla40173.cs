@@ -3,13 +3,18 @@ using Xamarin.Forms.Internals;
 
 #if UITEST
 using NUnit.Framework;
+using Xamarin.Forms.Core.UITests;
 #endif
 
-namespace Xamarin.Forms.Controls
+namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[Category(UITestCategories.BoxView)]
+#endif
+
     [Preserve(AllMembers = true)]
     [Issue(IssueTracker.Bugzilla, 40173, "Android BoxView/Frame not clickthrough in ListView")]
-    public class Bugzilla40173 : TestContentPage // or TestMasterDetailPage, etc ...
+	public class Bugzilla40173 : TestContentPage // or TestMasterDetailPage, etc ...
     {
         const string CantTouchButtonId = "CantTouchButtonId";
         const string CanTouchButtonId = "CanTouchButtonId";
@@ -27,9 +32,10 @@ namespace Xamarin.Forms.Controls
 
             RunningApp.Tap(q => q.All().Marked(CanTouchButtonId));
             RunningApp.WaitForElement(q => q.All().Text(CanTouchSuccessText));
-
+#if !__MACOS__
             RunningApp.Tap(q => q.All().Marked(ListTapTarget));
             RunningApp.WaitForElement(q => q.All().Text(ListTapSuccessText));
+#endif
         }
 #endif
 

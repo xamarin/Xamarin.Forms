@@ -17,7 +17,10 @@ using Xamarin.UITest.iOS;
 namespace Xamarin.Forms.Core.UITests
 {
 	[TestFixture]
-	[Category ("BoxView")]
+#if __MACOS__
+	[Ignore("Not tested on the MAC")]
+#endif
+	[Category(UITestCategories.BoxView)]
 	internal class BoxViewUITests : _ViewUITests
 	{
 		public BoxViewUITests ()

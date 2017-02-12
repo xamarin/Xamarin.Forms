@@ -7,12 +7,17 @@ using Xamarin.Forms.Internals;
 using System.Text;
 
 #if UITEST
+using Xamarin.Forms.Core.UITests;
 using Xamarin.UITest;
 using NUnit.Framework;
 #endif
 
-namespace Xamarin.Forms.Controls
+namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[Category(UITestCategories.ListView)]
+#endif
+
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 40704, "Strange duplication of listview headers when collapsing/expanding sections")]
 	public class Bugzilla40704 : TestContentPage // or TestMasterDetailPage, etc ...
@@ -219,6 +224,9 @@ namespace Xamarin.Forms.Controls
 			RunningApp.WaitForElement("Menu - 0");
 		}
 		[Test]
+#if __MACOS__
+		[Ignore("ScrollDownTo not implemented in UITest.Desktop")]
+#endif
 		public void Bugzilla40704Test()
 		{
 			RunningApp.ScrollDownTo("btnCollappse", "lstMain", ScrollStrategy.Gesture, 0.8, timeout: TimeSpan.FromMinutes(2));

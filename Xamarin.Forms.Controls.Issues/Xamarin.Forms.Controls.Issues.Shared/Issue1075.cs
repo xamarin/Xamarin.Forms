@@ -1,11 +1,19 @@
 ﻿using System.Diagnostics;
 using System.Reflection;
-
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
+#if UITEST
+using NUnit.Framework;
+using Xamarin.Forms.Core.UITests;
+#endif
+
 namespace Xamarin.Forms.Controls
 {
+#if UITEST
+	[Category(UITestCategories.BoxView)]
+#endif
+
 	[Preserve (AllMembers=true)]
 	[Issue (IssueTracker.Github, 1075, "Does not update Color", PlatformAffected.Android | PlatformAffected.WinPhone)]
 	public class Issue1075 : ContentPage
@@ -69,7 +77,7 @@ namespace Xamarin.Forms.Controls
 			};
 
 			// Accomodate iPhone status bar.
-			Padding = new Thickness(10, Device.OnPlatform(20, 0, 0), 10, 0);
+			Padding = Device.RuntimePlatform == Device.iOS ? new Thickness(10, 20, 10, 0) : new Thickness(10, 0);
 
 			// Build the page.
 			Content = new StackLayout

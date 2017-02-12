@@ -18,6 +18,58 @@ namespace Xamarin.Forms.Xaml.UnitTests
 	{ 
 		public UInt16 UShort { get; set; }
 		public decimal ADecimal { get; set; }
+		public SV_Foo Foo { get; set; }
+		public string Bar { get; set; }
+
+		public static readonly BindableProperty BPFooProperty =
+			BindableProperty.Create("BPFoo", typeof(SV_Foo), typeof(MockViewWithValues), default(SV_Foo));
+
+		public SV_Foo BPFoo {
+			get { throw new NotImplementedException(); }
+			set { throw new NotImplementedException(); }
+		}
+
+		public static readonly BindableProperty BPBarProperty =
+			BindableProperty.Create("BPBar", typeof(string), typeof(MockViewWithValues), default(string));
+
+		public string BPBar {
+			get { throw new NotImplementedException(); }
+			set { throw new NotImplementedException(); }
+		}
+	}
+
+	public class SV_Foo
+	{
+		public string Value { get; set; }
+		public static implicit operator SV_Foo(string value)
+		{
+			return new SV_Foo { Value = value };
+		}
+
+		public static implicit operator string(SV_Foo foo)
+		{
+			return foo.Value;
+		}
+	}
+
+	public enum IntEnum
+	{
+		Foo,
+		Bar,
+		Baz
+	}
+
+	public enum ByteEnum : byte
+	{
+		Foo,
+		Bar,
+		Baz
+	}
+
+	public class ViewWithEnums : View
+	{
+		public IntEnum IntEnum { get; set; }
+		public ByteEnum ByteEnum { get; set; }
 	}
 
 	public partial class SetValue : ContentPage
@@ -242,6 +294,45 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				var page = new SetValue(useCompiledXaml);
 				Assert.AreEqual((ushort)32, page.mockView0.UShort);
 				Assert.AreEqual((decimal)42, page.mockView0.ADecimal);
+			}
+
+			[TestCase(false)]
+			[TestCase(true)]
+			public void NonIntEnums(bool useCompiledXaml)
+			{
+				var page = new SetValue(useCompiledXaml);
+				Assert.AreEqual(IntEnum.Foo, page.enums.IntEnum);
+				Assert.AreEqual(ByteEnum.Bar, page.enums.ByteEnum);
+			}
+
+			public void SetValueWithImplicitOperatorOnSource(bool useCompiledXaml)
+			{
+				var page = new SetValue(useCompiledXaml);
+				Assert.AreEqual("Bar", page.implicit0.GetValue(MockViewWithValues.BPBarProperty));
+			}
+
+			[TestCase(false)]
+			[TestCase(true)]
+			public void SetValueWithImplicitOperatorOnTarget(bool useCompiledXaml)
+			{
+				var page = new SetValue(useCompiledXaml);
+				Assert.AreEqual("Foo", ((SV_Foo)page.implicit1.GetValue(MockViewWithValues.BPFooProperty)).Value);
+			}
+
+			[TestCase(false)]
+			[TestCase(true)]
+			public void SetWithImplicitOperatorOnSource(bool useCompiledXaml)
+			{
+				var page = new SetValue(useCompiledXaml);
+				Assert.AreEqual("Bar", page.implicit2.Bar);
+			}
+
+			[TestCase(false)]
+			[TestCase(true)]
+			public void SetWithImplicitOperatorOnTarget(bool useCompiledXaml)
+			{
+				var page = new SetValue(useCompiledXaml);
+				Assert.AreEqual("Foo", page.implicit3.Foo.Value);
 			}
 		}
 	}

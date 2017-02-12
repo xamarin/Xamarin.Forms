@@ -16,8 +16,11 @@ using Xamarin.UITest.iOS;
 
 namespace Xamarin.Forms.Core.UITests
 {
+#if __MACOS__
+	[Ignore("Not tested on the MAC")]
+#endif
 	[TestFixture]
-	[Category ("Frame")]
+	[Category(UITestCategories.Frame)]
 	internal class FrameUITests : _ViewUITests
 	{
 		public FrameUITests ()

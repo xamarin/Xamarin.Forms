@@ -17,7 +17,7 @@ using Xamarin.UITest.iOS;
 namespace Xamarin.Forms.Core.UITests
 {
 	[TestFixture]
-	[Category ("Button")]
+	[Category(UITestCategories.Button)]
 	internal class ButtonUITests : _ViewUITests
 	{
 		public ButtonUITests ()
@@ -127,6 +127,8 @@ namespace Xamarin.Forms.Core.UITests
 #if __ANDROID__
 			var isBold = remote.GetProperty<bool> (Button.FontProperty);
 			Assert.True (isBold);
+#elif __MACOS__
+			Assert.Inconclusive("needs testing");
 #else
 			var font = remote.GetProperty<Font> (Button.FontProperty);
 			Assert.True (font.FontAttributes.HasFlag (FontAttributes.Bold));

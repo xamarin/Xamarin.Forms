@@ -10,13 +10,12 @@ using Xamarin.UITest.Queries;
 namespace Xamarin.Forms.Core.UITests
 {
 	[TestFixture]
-	[Category ("Cells")]
+	[Category(UITestCategories.Cells)]
 	internal class ContextActionsListUITests : BaseTestFixture
 	{
 
 		public ContextActionsListUITests ()
 		{
-			ShouldResetPerFixture = false;
 		}
 
 		protected override void NavigateToGallery ()
@@ -32,7 +31,7 @@ namespace Xamarin.Forms.Core.UITests
 		const string mark = "Mark";
 
 
-#if __ANDROID__
+#if __ANDROID__ || __MACOS__
 		[Test]
 		public void ContextActionsShow ()
 		{
@@ -46,12 +45,12 @@ namespace Xamarin.Forms.Core.UITests
 		public void ContextActionsDelete ()
 		{
 			// mark is an icon on android
-			App.TouchAndHold (q => q.Marked (cell0));
+			App.TouchAndHold (q => q.Marked (cell1));
 			App.WaitForElement (q => q.Marked (delete));
 			App.Screenshot ("I have actions!");
 
 			App.Tap (q => q.Marked (delete));
-			App.WaitForNoElement (q => q.Marked (cell0));
+			App.WaitForNoElement (q => q.Marked (cell1));
 			App.Screenshot ("Deleted cell 0");
 		}
 #endif
@@ -82,14 +81,12 @@ namespace Xamarin.Forms.Core.UITests
 		}
 #endif
 	}
-
 	[TestFixture]
-	[Category ("Cells")]
+	[Category(UITestCategories.Cells)]
 	internal class ContextActionsTableUITests : BaseTestFixture
 	{
 		public ContextActionsTableUITests ()
 		{
-			ShouldResetPerFixture = false;
 		}
 
 		protected override void NavigateToGallery ()
@@ -105,7 +102,7 @@ namespace Xamarin.Forms.Core.UITests
 		const string mark = "Mark";
 		const string cellWithNoContextActions = "I have no ContextActions";
 
-#if __ANDROID__
+#if __ANDROID__ || __MACOS__
 		[Test]
 		public void ContextActionsShowAndReset ()
 		{

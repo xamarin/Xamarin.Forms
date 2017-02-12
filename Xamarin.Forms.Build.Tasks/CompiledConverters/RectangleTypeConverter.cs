@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
@@ -41,8 +40,8 @@ namespace Xamarin.Forms.Core.XamlC
 			yield return Instruction.Create(OpCodes.Ldc_R8, w);
 			yield return Instruction.Create(OpCodes.Ldc_R8, h);
 
-			var rectangleCtor = module.Import(typeof(Rectangle)).Resolve().Methods.FirstOrDefault(md => md.IsConstructor && md.Parameters.Count == 4);
-			var rectangleCtorRef = module.Import(rectangleCtor);
+			var rectangleCtor = module.ImportReference(typeof(Rectangle)).Resolve().Methods.FirstOrDefault(md => md.IsConstructor && md.Parameters.Count == 4);
+			var rectangleCtorRef = module.ImportReference(rectangleCtor);
 			yield return Instruction.Create(OpCodes.Newobj, rectangleCtorRef);
 		}
 	}

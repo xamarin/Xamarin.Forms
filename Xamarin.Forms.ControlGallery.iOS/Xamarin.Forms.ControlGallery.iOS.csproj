@@ -27,7 +27,8 @@
     <MtouchLink>None</MtouchLink>
     <MtouchDebug>True</MtouchDebug>
     <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
-    <MtouchSdkVersion></MtouchSdkVersion>
+    <MtouchSdkVersion>
+    </MtouchSdkVersion>
     <MtouchProfiling>False</MtouchProfiling>
     <MtouchFastDev>False</MtouchFastDev>
     <MtouchEnableGenericValueTypeSharing>True</MtouchEnableGenericValueTypeSharing>
@@ -60,7 +61,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\iPhone\Debug</OutputPath>
-    <DefineConstants>DEBUG</DefineConstants>
+    <DefineConstants>DEBUG;__UNIFIED__;__MOBILE__;__IOS__</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -69,7 +70,8 @@
     <MtouchDebug>True</MtouchDebug>
     <CodesignEntitlements>
     </CodesignEntitlements>
-    <MtouchSdkVersion></MtouchSdkVersion>
+    <MtouchSdkVersion>
+    </MtouchSdkVersion>
     <MtouchLink>SdkOnly</MtouchLink>
     <MtouchProfiling>False</MtouchProfiling>
     <MtouchExtraArgs />
@@ -199,6 +201,7 @@
     <Content Include="bank.png" />
     <Content Include="calculator%402x.png" />
     <Content Include="calculator.png" />
+    <BundleResource Include="caret_r.png" />
     <Content Include="cover1.jpg" />
     <Content Include="crimson.jpg" />
     <Content Include="Default-568h%402x.png" />
@@ -233,15 +236,71 @@
     <BundleResource Include="Images\Vegetables%402x.jpg" />
     <BundleResource Include="toolbar_close.png" />
     <BundleResource Include="test.jpg" />
+    <BundleResource Include="Resources\about.png" />
+    <BundleResource Include="Resources\about%402x.png" />
+    <BundleResource Include="Resources\blog.png" />
+    <BundleResource Include="Resources\blog%402x.png" />
+    <BundleResource Include="Resources\facebook.png" />
+    <BundleResource Include="Resources\facebook%402x.png" />
+    <BundleResource Include="Resources\favorite.png" />
+    <BundleResource Include="Resources\googleplus.png" />
+    <BundleResource Include="Resources\googleplus%402x.png" />
+    <BundleResource Include="Resources\hm_full.jpg" />
+    <BundleResource Include="Resources\hm.png" />
+    <BundleResource Include="Resources\hm%402x.png" />
+    <BundleResource Include="Resources\home.png" />
+    <BundleResource Include="Resources\ic_pause.png" />
+    <BundleResource Include="Resources\ic_pause%402x.png" />
+    <BundleResource Include="Resources\ic_play.png" />
+    <BundleResource Include="Resources\ic_play%402x.png" />
+    <BundleResource Include="Resources\ic_share.png" />
+    <BundleResource Include="Resources\ic_share%402x.png" />
+    <BundleResource Include="Resources\ic_stop.png" />
+    <BundleResource Include="Resources\ic_stop%402x.png" />
+    <BundleResource Include="Resources\Icon-60%402x.png" />
+    <BundleResource Include="Resources\Icon-Small-40%402x.png" />
+    <BundleResource Include="Resources\Icon-Small.png" />
+    <BundleResource Include="Resources\Icon-Small%402x.png" />
+    <BundleResource Include="Resources\Icon.png" />
+    <BundleResource Include="Resources\Icon%402x.png" />
+    <BundleResource Include="Resources\instagram.png" />
+    <BundleResource Include="Resources\instagram%402x.png" />
+    <BundleResource Include="Resources\lists.png" />
+    <BundleResource Include="Resources\messages.png" />
+    <BundleResource Include="Resources\notifications.png" />
+    <BundleResource Include="Resources\profile.png" />
+    <BundleResource Include="Resources\ratchet_full.jpg" />
+    <BundleResource Include="Resources\ratchet.png" />
+    <BundleResource Include="Resources\ratchet%402x.png" />
+    <BundleResource Include="Resources\refresh.png" />
+    <BundleResource Include="Resources\refresh%402x.png" />
+    <BundleResource Include="Resources\reply.png" />
+    <BundleResource Include="Resources\retweet.png" />
+    <BundleResource Include="Resources\rui.jpg" />
+    <BundleResource Include="Resources\scott.png" />
+    <BundleResource Include="Resources\scott159.png" />
+    <BundleResource Include="Resources\search.png" />
+    <BundleResource Include="Resources\slideout.png" />
+    <BundleResource Include="Resources\slideout%402x.png" />
+    <BundleResource Include="Resources\tdl_full.jpg" />
+    <BundleResource Include="Resources\tdl.png" />
+    <BundleResource Include="Resources\tdl%402x.png" />
+    <BundleResource Include="Resources\tweet.png" />
+    <BundleResource Include="Resources\twitter.png" />
+    <BundleResource Include="Resources\twitter%402x.png" />
+    <BundleResource Include="Resources\twitternav.png" />
+    <BundleResource Include="Resources\twitternav%402x.png" />
+    <BundleResource Include="Resources\xamarinlogo.png" />
+    <BundleResource Include="coffee.png" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="AdvancedColorPicker">
+      <HintPath>..\Components\advancedcolorpicker-2.0\lib\ios-unified\AdvancedColorPicker.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Xamarin.iOS" />
-    <Reference Include="AdvancedColorPicker">
-      <HintPath>..\Components\advancedcolorpicker-2.0\lib\ios-unified\AdvancedColorPicker.dll</HintPath>
-    </Reference>
     <Reference Include="PLCrashReporterUnifiedBinding">
       <HintPath>..\packages\Xamarin.Insights.1.12.3\lib\Xamarin.iOS10\PLCrashReporterUnifiedBinding.dll</HintPath>
     </Reference>
@@ -266,6 +325,9 @@
       <Version>2.0</Version>
       <Visible>False</Visible>
     </XamarinComponentReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\" />
   </ItemGroup>
   <Import Project="..\packages\Xamarin.Insights.1.12.3\build\Xamarin.iOS10\Xamarin.Insights.targets" Condition="Exists('..\packages\Xamarin.Insights.1.12.3\build\Xamarin.iOS10\Xamarin.Insights.targets')" />
 </Project>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls.Primitives;
 
 #if WINDOWS_UWP
@@ -23,16 +24,35 @@ namespace Xamarin.Forms.Platform.WinRT
 					var slider = new Windows.UI.Xaml.Controls.Slider();
 					SetNativeControl(slider);
 
-					slider.ValueChanged += OnNativeValueCHanged;
+					Control.Minimum = e.NewElement.Minimum;
+					Control.Maximum = e.NewElement.Maximum;
+					Control.Value = e.NewElement.Value;
+
+					slider.ValueChanged += OnNativeValueChanged;
+
+					// Even when using Center/CenterAndExpand, a Slider has an oddity where it looks
+					// off-center in its layout by a smidge. The default templates are slightly different
+					// between 8.1/UWP; the 8.1 rows are 17/Auto/32 and UWP are 18/Auto/18. The value of
+					// the hardcoded 8.1 rows adds up to 49 (when halved is 24.5) and UWP are 36 (18). Using
+					// a difference of about 6 pixels to correct this oddity seems to make them both center
+					// more correctly.
+					//
+					// The VerticalAlignment needs to be set as well since a control would not actually be
+					// centered if a larger HeightRequest is set.
+					if (Element.VerticalOptions.Alignment == LayoutAlignment.Center && Control.Orientation == Windows.UI.Xaml.Controls.Orientation.Horizontal)
+					{
+						Control.VerticalAlignment = VerticalAlignment.Center;
+#if WINDOWS_UWP
+						slider.Margin = new Windows.UI.Xaml.Thickness(0, 7, 0, 0);
+#else
+						slider.Margin = new Windows.UI.Xaml.Thickness(0, 13, 0, 0);
+#endif
+					}
 				}
 
 				double stepping = Math.Min((e.NewElement.Maximum - e.NewElement.Minimum) / 10, 1);
 				Control.StepFrequency = stepping;
 				Control.SmallChange = stepping;
-
-				Control.Minimum = e.NewElement.Minimum;
-				Control.Maximum = e.NewElement.Maximum;
-				Control.Value = e.NewElement.Value;
 			}
 		}
 
@@ -51,7 +71,7 @@ namespace Xamarin.Forms.Platform.WinRT
 			}
 		}
 
-		void OnNativeValueCHanged(object sender, RangeBaseValueChangedEventArgs e)
+		void OnNativeValueChanged(object sender, RangeBaseValueChangedEventArgs e)
 		{
 			((IElementController)Element).SetValueFromRenderer(Slider.ValueProperty, e.NewValue);
 		}

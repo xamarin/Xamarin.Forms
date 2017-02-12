@@ -116,7 +116,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				{
 					_detailLayout = new MasterDetailContainer(newElement, false, Context)
 					{
-						TopPadding = statusBarHeight,
+						TopPadding = HasAncestorNavigationPage(Element) ? 0 : statusBarHeight,
 						LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent)
 					};
 
@@ -163,6 +163,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			// Make sure to initialize this AFTER event is fired
 			if (_tracker == null)
 				_tracker = new VisualElementTracker(this);
+		}
+
+		void IVisualElementRenderer.SetLabelFor(int? id)
+		{
 		}
 
 		VisualElementTracker IVisualElementRenderer.Tracker => _tracker;
@@ -262,6 +266,16 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		}
 
 		event EventHandler<VisualElementChangedEventArgs> ElementChanged;
+
+		bool HasAncestorNavigationPage(Element element)
+		{
+			if (element.Parent == null)
+				return false;
+			else if (element.Parent is NavigationPage)
+				return true;
+			else
+				return HasAncestorNavigationPage(element.Parent);
+		}
 
 		void HandleMasterPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{

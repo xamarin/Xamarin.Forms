@@ -6,7 +6,7 @@ using RectangleF = CoreGraphics.CGRect;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class ScrollViewRenderer : UIScrollView, IVisualElementRenderer
+	public class ScrollViewRenderer : UIScrollView, IVisualElementRenderer, IEffectControlProvider
 	{
 		EventTracker _events;
 		KeyboardInsetTracker _insetTracker;
@@ -87,6 +87,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateBackgroundColor();
 
 				OnElementChanged(new VisualElementChangedEventArgs(oldElement, element));
+
+				EffectUtilities.RegisterEffectControlProvider(this, oldElement, element);
 
 				if (element != null)
 					element.SendViewInitialized(this);
@@ -196,6 +198,10 @@ namespace Xamarin.Forms.Platform.iOS
 			else
 			{
 				var positionOnScroll = Controller.GetScrollPositionForElement(e.Element as VisualElement, e.Position);
+
+				positionOnScroll.X = positionOnScroll.X.Clamp(0, ContentSize.Width - Bounds.Size.Width);
+				positionOnScroll.Y = positionOnScroll.Y.Clamp(0, ContentSize.Height - Bounds.Size.Height);
+
 				switch (ScrollView.Orientation)
 				{
 					case ScrollOrientation.Horizontal:
@@ -229,6 +235,11 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (ScrollView != null)
 				Controller.SetScrolledPosition(ContentOffset.X, ContentOffset.Y);
+		}
+
+		void IEffectControlProvider.RegisterEffect(Effect effect)
+		{
+			VisualElementRenderer<VisualElement>.RegisterEffect(effect, this, NativeView);
 		}
 	}
 }

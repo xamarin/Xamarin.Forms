@@ -331,7 +331,7 @@ View CreateLoginForm ()
       <Parameters />
       <Docs>
         <typeparam name="T">To be added.</typeparam>
-        <summary>To be added.</summary>
+        <summary>Returns the platform-specific instance of this <see cref="T:Xamarin.Forms.Entry" />, on which a platform-specific method may be called.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
@@ -536,7 +536,7 @@ View CreateLoginForm ()
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
+        <summary>This interface is for internal use by platform renderers.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
