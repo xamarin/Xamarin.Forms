@@ -40,7 +40,7 @@ namespace Xamarin.Forms.Platform.iOS
 			
 		}
 
-		private Page Current
+		Page Current
 		{
 			get { return _current; }
 			set
@@ -170,10 +170,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			var modelSize = _queuedSize.IsZero ? Element.Bounds.Size : _queuedSize;
 
-			ViewControllers
-				.Cast<ParentingViewController>()
-				.Select(vc => vc.Child)
-				.ForEach(UpdateInternalPadding);
+			foreach (ParentingViewController vc in ViewControllers)
+				UpdateInternalPadding(vc.Child);
 
 			PageController.ContainerArea =
 				new Rectangle(0, 0, modelSize.Width, modelSize.Height);
@@ -649,13 +647,11 @@ namespace Xamarin.Forms.Platform.iOS
 			var barTextColor = ((NavigationPage)Element).BarTextColor;
 			var barBackgroundColor = ((NavigationPage)Element).BarBackgroundColor;
 
-			ViewControllers
-				.Cast<ParentingViewController>()
-				.ForEach(pvc =>
-				{
-					pvc.Toolbar.TintColor = barTextColor == Color.Default ? UIColor.Black : barTextColor.ToUIColor();
-					pvc.Toolbar.BarTintColor = barBackgroundColor == Color.Default ? UIColor.White : barBackgroundColor.ToUIColor();
-				});
+			foreach (ParentingViewController vc in ViewControllers)
+			{
+				vc.Toolbar.TintColor = barTextColor == Color.Default ? UIColor.Black : barTextColor.ToUIColor();
+				vc.Toolbar.BarTintColor = barBackgroundColor == Color.Default ? UIColor.White : barBackgroundColor.ToUIColor();
+			}
 		}
 
 		void UpdateLeftBarButtonItem(ParentingViewController containerController, Page pageBeingRemoved = null)

@@ -185,7 +185,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		protected internal virtual void LayoutChild(VisualElement element, Rectangle area)
+		protected virtual void LayoutChild(VisualElement element, Rectangle area)
 		{
 			Forms.Layout.LayoutChildIntoBoundingRegion(element, area);
 		}

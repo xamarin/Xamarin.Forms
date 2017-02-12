@@ -204,8 +204,12 @@ namespace Xamarin.Forms
 
 		internal static void SetInternalPadding(Page page, Thickness bound)
 		{
-			if(!((Thickness)page.GetValue(InternalPaddingProperty)).Equals(bound))
-				page.SetValue(InternalPaddingProperty, bound);
+			page.SetValue(InternalPaddingProperty, bound);
+		}
+
+		internal static Thickness GetInternalPadding(Page page)
+		{
+			return (Thickness)page.GetValue(InternalPaddingProperty);
 		}
 
 		public static void SetBackButtonTitle(BindableObject page, string value)
@@ -244,16 +248,16 @@ namespace Xamarin.Forms
 			return base.OnBackButtonPressed();
 		}
 
-		protected internal override void LayoutChild(VisualElement element, Rectangle area)
+		protected override void LayoutChild(VisualElement element, Rectangle area)
 		{
-			var internalBound = (Thickness)element.GetValue(InternalPaddingProperty);
-			if (!internalBound.IsDefault)
+			var internalPadding = element is Page ? GetInternalPadding((Page) element) : new Thickness();
+			if (!internalPadding.IsDefault)
 			{
 				area = new Rectangle(
-					area.X + internalBound.Left,
-					area.Y + internalBound.Top,
-					area.Width - internalBound.Right,
-					area.Height - internalBound.Bottom);
+					area.X + internalPadding.Left,
+					area.Y + internalPadding.Top,
+					area.Width - internalPadding.Right,
+					area.Height - internalPadding.Bottom);
 			}
 
 			if (!element.Bounds.Equals(area))
