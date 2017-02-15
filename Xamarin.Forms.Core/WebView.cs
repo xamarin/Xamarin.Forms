@@ -5,7 +5,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_WebViewRenderer))]
-	public class WebView : View, IElementConfiguration<WebView>
+	public class WebView : View, IWebViewController, IElementConfiguration<WebView>
 	{
 		public static readonly BindableProperty SourceProperty = BindableProperty.Create("Source", typeof(WebViewSource), typeof(WebView), default(WebViewSource),
 			propertyChanging: (bindable, oldvalue, newvalue) =>
@@ -39,10 +39,20 @@ namespace Xamarin.Forms
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<WebView>>(() => new PlatformConfigurationRegistry<WebView>(this));
 		}
 
+		bool IWebViewController.CanGoBack {
+			get { return CanGoBack; }
+			set { CanGoBack = value; }
+		}
+
 		public bool CanGoBack
 		{
 			get { return (bool)GetValue(CanGoBackProperty); }
 			internal set { SetValue(CanGoBackPropertyKey, value); }
+		}
+
+		bool IWebViewController.CanGoForward {
+			get { return CanGoForward; }
+			set { CanGoForward = value; }
 		}
 
 		public bool CanGoForward
@@ -110,11 +120,28 @@ namespace Xamarin.Forms
 			OnPropertyChanged(SourceProperty.PropertyName);
 		}
 
+		event EventHandler<EvalRequested> IWebViewController.EvalRequested {
+			add { EvalRequested += value; }
+			remove { EvalRequested -= value; }
+		}
+
 		internal event EventHandler<EvalRequested> EvalRequested;
+
+		event EventHandler IWebViewController.GoBackRequested {
+			add { GoBackRequested += value; }
+			remove { GoBackRequested -= value; }
+		}
 
 		internal event EventHandler GoBackRequested;
 
+		event EventHandler IWebViewController.GoForwardRequested {
+			add { GoForwardRequested += value; }
+			remove { GoForwardRequested -= value; }
+		}
+
 		internal event EventHandler GoForwardRequested;
+
+		void IWebViewController.SendNavigated(WebNavigatedEventArgs args) => SendNavigated(args);
 
 		internal void SendNavigated(WebNavigatedEventArgs args)
 		{
@@ -122,6 +149,8 @@ namespace Xamarin.Forms
 			if (handler != null)
 				handler(this, args);
 		}
+
+		void IWebViewController.SendNavigating(WebNavigatingEventArgs args) => SendNavigating(args);
 
 		internal void SendNavigating(WebNavigatingEventArgs args)
 		{
