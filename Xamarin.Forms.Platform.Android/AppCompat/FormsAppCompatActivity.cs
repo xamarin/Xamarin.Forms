@@ -43,12 +43,14 @@ namespace Xamarin.Forms.Platform.Android
 
 		AndroidApplicationLifecycleState _previousState;
 
-		bool _renderersAdded, _isFullScreen;
+		bool _isFullScreen;
 		int _statusBarHeight = -1;
 		global::Android.Views.View _statusBarUnderlay;
 
 		// Override this if you want to handle the default Android behavior of restoring fragments on an application restart
 		protected virtual bool AllowFragmentRestore => false;
+
+		protected virtual bool ShouldUseDefaultHandlersForRenderers => true;
 
 		protected FormsAppCompatActivity()
 		{
@@ -107,25 +109,13 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected void LoadApplication(Application application)
 		{
-			if (!_renderersAdded)
-			{
-				RegisterHandlerForDefaultRenderer(typeof(NavigationPage), typeof(NavigationPageRenderer), typeof(NavigationRenderer));
-				RegisterHandlerForDefaultRenderer(typeof(TabbedPage), typeof(TabbedPageRenderer), typeof(TabbedRenderer));
-				RegisterHandlerForDefaultRenderer(typeof(MasterDetailPage), typeof(MasterDetailPageRenderer), typeof(MasterDetailRenderer));
-				RegisterHandlerForDefaultRenderer(typeof(Button), typeof(AppCompat.ButtonRenderer), typeof(ButtonRenderer));
-				RegisterHandlerForDefaultRenderer(typeof(Switch), typeof(AppCompat.SwitchRenderer), typeof(SwitchRenderer));
-				RegisterHandlerForDefaultRenderer(typeof(Picker), typeof(AppCompat.PickerRenderer), typeof(PickerRenderer));
-				RegisterHandlerForDefaultRenderer(typeof(Frame), typeof(AppCompat.FrameRenderer), typeof(FrameRenderer));
-				RegisterHandlerForDefaultRenderer(typeof(CarouselPage), typeof(AppCompat.CarouselPageRenderer), typeof(CarouselPageRenderer));
-
-				_renderersAdded = true;
-			}
+			RegisterAllDefaultHandlersForRenderers();
 
 			if (application == null)
-				throw new ArgumentNullException("application");
+				throw new ArgumentNullException(nameof(application));
 
 			_application = application;
-			(application as IApplicationController)?.SetAppIndexingProvider(new AndroidAppIndexProvider(this));
+			(application as IApplicationController).SetAppIndexingProvider(new AndroidAppIndexProvider(this));
 			Xamarin.Forms.Application.Current = application;
 
 			SetSoftInputMode();
@@ -446,6 +436,21 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 
 			Registrar.Registered.Register(target, handler);
+		}
+
+		protected virtual void RegisterAllDefaultHandlersForRenderers()
+		{
+			if (!ShouldUseDefaultHandlersForRenderers)
+				return;
+
+			RegisterHandlerForDefaultRenderer(typeof(NavigationPage), typeof(NavigationPageRenderer), typeof(NavigationRenderer));
+			RegisterHandlerForDefaultRenderer(typeof(TabbedPage), typeof(TabbedPageRenderer), typeof(TabbedRenderer));
+			RegisterHandlerForDefaultRenderer(typeof(MasterDetailPage), typeof(MasterDetailPageRenderer), typeof(MasterDetailRenderer));
+			RegisterHandlerForDefaultRenderer(typeof(Button), typeof(AppCompat.ButtonRenderer), typeof(ButtonRenderer));
+			RegisterHandlerForDefaultRenderer(typeof(Switch), typeof(AppCompat.SwitchRenderer), typeof(SwitchRenderer));
+			RegisterHandlerForDefaultRenderer(typeof(Picker), typeof(AppCompat.PickerRenderer), typeof(PickerRenderer));
+			RegisterHandlerForDefaultRenderer(typeof(Frame), typeof(AppCompat.FrameRenderer), typeof(FrameRenderer));
+			RegisterHandlerForDefaultRenderer(typeof(CarouselPage), typeof(AppCompat.CarouselPageRenderer), typeof(CarouselPageRenderer));
 		}
 
 		void SetMainPage()
