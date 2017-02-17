@@ -41,24 +41,22 @@ namespace Xamarin.Forms
 
 		bool IWebViewController.CanGoBack {
 			get { return CanGoBack; }
-			set { CanGoBack = value; }
+			set { SetValue(CanGoBackPropertyKey, value); }
 		}
 
 		public bool CanGoBack
 		{
 			get { return (bool)GetValue(CanGoBackProperty); }
-			internal set { SetValue(CanGoBackPropertyKey, value); }
 		}
 
 		bool IWebViewController.CanGoForward {
 			get { return CanGoForward; }
-			set { CanGoForward = value; }
+			set { SetValue(CanGoForwardPropertyKey, value); }
 		}
 
 		public bool CanGoForward
 		{
 			get { return (bool)GetValue(CanGoForwardProperty); }
-			internal set { SetValue(CanGoForwardPropertyKey, value); }
 		}
 
 		[TypeConverter(typeof(WebViewSourceTypeConverter))]
@@ -125,38 +123,30 @@ namespace Xamarin.Forms
 			remove { EvalRequested -= value; }
 		}
 
-		internal event EventHandler<EvalRequested> EvalRequested;
+		event EventHandler<EvalRequested> EvalRequested;
 
 		event EventHandler IWebViewController.GoBackRequested {
 			add { GoBackRequested += value; }
 			remove { GoBackRequested -= value; }
 		}
 
-		internal event EventHandler GoBackRequested;
+		event EventHandler GoBackRequested;
 
 		event EventHandler IWebViewController.GoForwardRequested {
 			add { GoForwardRequested += value; }
 			remove { GoForwardRequested -= value; }
 		}
 
-		internal event EventHandler GoForwardRequested;
+		event EventHandler GoForwardRequested;
 
-		void IWebViewController.SendNavigated(WebNavigatedEventArgs args) => SendNavigated(args);
-
-		internal void SendNavigated(WebNavigatedEventArgs args)
+		void IWebViewController.SendNavigated(WebNavigatedEventArgs args)
 		{
-			EventHandler<WebNavigatedEventArgs> handler = Navigated;
-			if (handler != null)
-				handler(this, args);
+			Navigated?.Invoke(this, args);
 		}
 
-		void IWebViewController.SendNavigating(WebNavigatingEventArgs args) => SendNavigating(args);
-
-		internal void SendNavigating(WebNavigatingEventArgs args)
+		void IWebViewController.SendNavigating(WebNavigatingEventArgs args)
 		{
-			EventHandler<WebNavigatingEventArgs> handler = Navigating;
-			if (handler != null)
-				handler(this, args);
+			Navigating?.Invoke(this, args);
 		}
 
 		public IPlatformElementConfiguration<T, WebView> On<T>() where T : IConfigPlatform
