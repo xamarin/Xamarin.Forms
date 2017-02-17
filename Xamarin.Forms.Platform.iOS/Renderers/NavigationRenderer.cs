@@ -17,14 +17,15 @@ namespace Xamarin.Forms.Platform.iOS
 	public class NavigationRenderer : UINavigationController, IVisualElementRenderer, IEffectControlProvider
 	{
 		internal const string UpdateToolbarButtons = "Xamarin.UpdateToolbarButtons";
+		internal const int ToolbarHeight = 44;
 		bool _appeared;
 		bool _ignorePopCall;
 		bool _loaded;
 		MasterDetailPage _parentMasterDetailPage;
 		Size _queuedSize;
 		UIViewController[] _removeControllers;
-		UIToolbar _secondaryToolbar;
 		VisualElementTracker _tracker;
+		private Page _current;
 
 		public NavigationRenderer()
 		{
@@ -37,7 +38,25 @@ namespace Xamarin.Forms.Platform.iOS
 			});
 		}
 
-		Page Current { get; set; }
+		Page Current
+		{
+			get { return _current; }
+			set
+			{
+				if (_current == value)
+					return;
+
+				if (_current != null)
+					_current.PropertyChanged -= CurrentOnPropertyChanged;
+
+				_current = value;
+
+				if (_current != null)
+				{
+					_current.PropertyChanged += CurrentOnPropertyChanged;
+				}
+			}
+		}
 
 		IPageController PageController => Element as IPageController;
 
@@ -146,19 +165,14 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void ViewDidLayoutSubviews()
 		{
 			base.ViewDidLayoutSubviews();
-			UpdateToolBarVisible();
 
-			var navBarFrame = NavigationBar.Frame;
-
-			var toolbar = _secondaryToolbar;
-			// Use 0 if the NavBar is hidden or will be hidden
-			var toolbarY = NavigationBarHidden || NavigationBar.Translucent || !NavigationPage.GetHasNavigationBar(Current) ? 0 : navBarFrame.Bottom;
-			toolbar.Frame = new RectangleF(0, toolbarY, View.Frame.Width, toolbar.Frame.Height);
-
-			double trueBottom = toolbar.Hidden ? toolbarY : toolbar.Frame.Bottom;
 			var modelSize = _queuedSize.IsZero ? Element.Bounds.Size : _queuedSize;
-			PageController.ContainerArea = 
-				new Rectangle(0, toolbar.Hidden ? 0 : toolbar.Frame.Height, modelSize.Width, modelSize.Height - trueBottom);
+
+			foreach (ParentingViewController vc in ViewControllers)
+				UpdateInternalPadding(vc.Child);
+
+			PageController.ContainerArea =
+				new Rectangle(0, 0, modelSize.Width, modelSize.Height);
 
 			if (!_queuedSize.IsZero)
 			{
@@ -170,7 +184,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			foreach (var view in View.Subviews)
 			{
-				if (view == NavigationBar || view == _secondaryToolbar)
+				if (view == NavigationBar)
 					continue;
 				view.Frame = View.Bounds;
 			}
@@ -181,10 +195,6 @@ namespace Xamarin.Forms.Platform.iOS
 			base.ViewDidLoad();
 
 			UpdateTranslucent();
-
-			_secondaryToolbar = new SecondaryToolbar { Frame = new RectangleF(0, 0, 320, 44) };
-			View.Add(_secondaryToolbar);
-			_secondaryToolbar.Hidden = true;
 
 			FindParentMasterDetail();
 
@@ -215,7 +225,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			Element.PropertyChanged += HandlePropertyChanged;
 
-			UpdateToolBarVisible();
 			UpdateBackgroundColor();
 			Current = navPage.CurrentPage;
 		}
@@ -231,10 +240,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (_tracker != null)
 					_tracker.Dispose();
-
-				_secondaryToolbar.RemoveFromSuperview();
-				_secondaryToolbar.Dispose();
-				_secondaryToolbar = null;
 
 				_parentMasterDetailPage = null;
 				Current = null; // unhooks events
@@ -280,7 +285,6 @@ namespace Xamarin.Forms.Platform.iOS
 			_ignorePopCall = false;
 			var success = !await task;
 
-			UpdateToolBarVisible();
 			return success;
 		}
 
@@ -316,7 +320,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			poppedViewController.Dispose();
 
-			UpdateToolBarVisible();
 			return actuallyRemoved;
 		}
 
@@ -325,10 +328,13 @@ namespace Xamarin.Forms.Platform.iOS
 			var pack = CreateViewControllerForPage(page);
 			var task = GetAppearedOrDisappearedTask(page);
 
+			UpdateInternalPadding(page);
+
 			PushViewController(pack, animated);
 
+			UpdateToolbarColors();
+
 			var shown = await task;
-			UpdateToolBarVisible();
 			return shown;
 		}
 
@@ -337,9 +343,20 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Platform.GetRenderer(page) == null)
 				Platform.SetRenderer(page, Platform.CreateRenderer(page));
 
+			var toolbar = new SecondaryToolbar
+			{
+				Translucent = false,
+				Frame = new RectangleF(0, 0, 0, ToolbarHeight)
+			};
+			toolbar.Hidden = true;
+
 			// must pack into container so padding can work
 			// otherwise the view controller is forced to 0,0
-			var pack = new ParentingViewController(this) { Child = page };
+			var pack = new ParentingViewController(this)
+			{
+				Child = page,
+				Toolbar = toolbar
+			};
 			if (!string.IsNullOrWhiteSpace(page.Title))
 				pack.NavigationItem.Title = page.Title;
 
@@ -372,6 +389,8 @@ namespace Xamarin.Forms.Platform.iOS
 			pack.View.AddSubview(pageRenderer.ViewController.View);
 			pack.AddChildViewController(pageRenderer.ViewController);
 			pageRenderer.ViewController.DidMoveToParentViewController(pack);
+
+			pack.View.AddSubview(toolbar);
 
 			return pack;
 		}
@@ -434,6 +453,12 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateTranslucent();
 			else if (e.PropertyName == PreferredStatusBarUpdateAnimationProperty.PropertyName)
 				UpdateCurrentPagePreferredStatusBarUpdateAnimation();
+		}
+
+		private void CurrentOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == NavigationPage.InternalPaddingProperty.PropertyName)
+				ElementForceLayout();
 		}
 
 		void UpdateCurrentPagePreferredStatusBarUpdateAnimation()
@@ -557,6 +582,9 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateBarBackgroundColor()
 		{
 			var barBackgroundColor = ((NavigationPage)Element).BarBackgroundColor;
+
+			UpdateToolbarColors();
+
 			// Set navigation bar background color
 			NavigationBar.BarTintColor = barBackgroundColor == Color.Default
 				? UINavigationBar.Appearance.BarTintColor
@@ -568,6 +596,8 @@ namespace Xamarin.Forms.Platform.iOS
 			var barTextColor = ((NavigationPage)Element).BarTextColor;
 
 			var globalAttributes = UINavigationBar.Appearance.GetTitleTextAttributes();
+
+			UpdateToolbarColors();
 
 			if (barTextColor == Color.Default)
 			{
@@ -610,6 +640,18 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		void UpdateToolbarColors()
+		{
+			var barTextColor = ((NavigationPage)Element).BarTextColor;
+			var barBackgroundColor = ((NavigationPage)Element).BarBackgroundColor;
+
+			foreach (ParentingViewController vc in ViewControllers)
+			{
+				vc.Toolbar.TintColor = barTextColor == Color.Default ? UIColor.Black : barTextColor.ToUIColor();
+				vc.Toolbar.BarTintColor = barBackgroundColor == Color.Default ? UIColor.White : barBackgroundColor.ToUIColor();
+			}
+		}
+
 		void UpdateLeftBarButtonItem(ParentingViewController containerController, Page pageBeingRemoved = null)
 		{
 			if (containerController == null)
@@ -636,19 +678,69 @@ namespace Xamarin.Forms.Platform.iOS
 				NavigationBar.TintColor = tintColor.Luminosity > 0.5 ? UIColor.Black : UIColor.White;
 		}
 
-		void UpdateToolBarVisible()
+		bool IsToolbarVisible(Page page)
 		{
-			if (_secondaryToolbar == null)
-				return;
-			if (TopViewController != null && TopViewController.ToolbarItems != null && TopViewController.ToolbarItems.Any())
+			var topViewController = (ParentingViewController)ViewControllers
+				.FirstOrDefault(vc => ((ParentingViewController)vc).Child == page);
+
+			return !topViewController?.Toolbar.Hidden ?? false;
+		}
+
+		void UpdateInternalPadding(Page page)
+		{
+			// The below is done to get a proper difference to take away from the ContainerArea height
+			// in a similar way to ViewDidLayoutSubviews. Transitioning between a page without the
+			// NavBar to one with it can have different values on the Y after navigating back and forth.
+			var navBarFrame = NavigationBar.Frame;
+			nfloat trueBottom = 0;
+			nfloat topOffset = 0;
+			if (navBarFrame.Y != 0)
 			{
-				_secondaryToolbar.Hidden = false;
-				_secondaryToolbar.Items = TopViewController.ToolbarItems;
+				if (navBarFrame.Y > 0)
+					trueBottom = navBarFrame.Y + navBarFrame.Height;
+				else
+					trueBottom = -(navBarFrame.Y);
 			}
 			else
 			{
-				_secondaryToolbar.Hidden = true;
-				//secondaryToolbar.Items = null;
+				trueBottom = navBarFrame.Height;
+			}
+
+			if (IsToolbarVisible(page))
+				topOffset += ToolbarHeight;
+
+			trueBottom += topOffset;
+
+			Thickness area;
+
+			if (NavigationPage.GetHasNavigationBar(page))
+				area = new Thickness(0, topOffset, 0, trueBottom);
+			else
+				area = new Thickness(0, topOffset, 0, topOffset);
+
+			NavigationPage.SetInternalPadding(page, area);
+		}
+
+		void ElementForceLayout()
+		{
+			var isNavBarAnimate = NavigationBar.Layer.AnimationKeys?.Any() ?? false;
+			var isCurrentAnimate = ((ParentingViewController)TopViewController).View?.Layer.AnimationKeys?.Any() ?? false;
+
+			if (isNavBarAnimate && isCurrentAnimate)
+			{
+				UIView.Animate(
+					duration: HideShowBarDuration,
+					delay: 0,
+					animation: () =>
+					{
+						((NavigationPage)Element).ForceLayout();
+					},
+					completion: null,
+					options: UIViewAnimationOptions.CurveLinear);
+			}
+			else
+			{
+				((NavigationPage)Element).ForceLayout();
 			}
 		}
 
@@ -685,10 +777,18 @@ namespace Xamarin.Forms.Platform.iOS
 		class SecondaryToolbar : UIToolbar
 		{
 			readonly List<UIView> _lines = new List<UIView>();
+			private UIColor _tintColor;
 
-			public SecondaryToolbar()
+			public override UIColor TintColor
 			{
-				TintColor = UIColor.White;
+				get { return _tintColor; }
+				set
+				{
+					if(_tintColor == value)
+						return;
+					_tintColor = value;
+					UpdateTintColor();
+				}
 			}
 
 			public override UIBarButtonItem[] Items
@@ -698,6 +798,7 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					base.Items = value;
 					SetupLines();
+					UpdateTintColor();
 				}
 			}
 
@@ -733,16 +834,24 @@ namespace Xamarin.Forms.Platform.iOS
 					return;
 				for (var i = 1; i < Items.Length; i++)
 				{
-					var l = new UIView(new RectangleF(0, 0, 1, 24)) { BackgroundColor = new UIColor(0, 0, 0, 0.2f) };
+					var l = new UIView(new RectangleF(0, 0, 1, 24)) { BackgroundColor = TintColor };
 					AddSubview(l);
 					_lines.Add(l);
 				}
+			}
+
+			void UpdateTintColor()
+			{
+				Items?.ForEach(item => item.TintColor = TintColor);
+				_lines?.ForEach(line => line.BackgroundColor = TintColor);
 			}
 		}
 
 		class ParentingViewController : UIViewController
 		{
 			readonly WeakReference<NavigationRenderer> _navigation;
+
+			public SecondaryToolbar Toolbar { get; set; }
 
 			Page _child;
 			ToolbarTracker _tracker = new ToolbarTracker();
@@ -807,7 +916,11 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				IVisualElementRenderer childRenderer;
 				if (Child != null && (childRenderer = Platform.GetRenderer(Child)) != null)
+				{
 					childRenderer.NativeView.Frame = Child.Bounds.ToRectangleF();
+					Toolbar.Frame = new CGRect(Toolbar.Frame.X, Toolbar.Frame.Y, Child.Bounds.Width, Toolbar.Frame.Height);
+				}
+
 				base.ViewDidLayoutSubviews();
 			}
 
@@ -908,6 +1021,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (NavigationController.NavigationBarHidden == hasNavBar)
 					NavigationController.SetNavigationBarHidden(!hasNavBar, animated);
+
+				if(!hasNavBar)
+					NavigationController.ViewDidLayoutSubviews();
 			}
 
 			void UpdateToolbarItems()
@@ -935,12 +1051,20 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (primaries != null)
 					primaries.Reverse();
-				NavigationItem.SetRightBarButtonItems(primaries == null ? new UIBarButtonItem[0] : primaries.ToArray(), false);
-				ToolbarItems = secondaries == null ? new UIBarButtonItem[0] : secondaries.ToArray();
+				NavigationItem.SetRightBarButtonItems(primaries?.ToArray() ?? new UIBarButtonItem[0], false);
+				var toolbarItems = secondaries?.ToArray() ?? new UIBarButtonItem[0];
 
-				NavigationRenderer n;
-				if (_navigation.TryGetTarget(out n))
-					n.UpdateToolBarVisible();
+				if (Toolbar != null)
+				{
+					var isHidden = !toolbarItems.Any();
+					var childNeedLayout = Toolbar.Hidden != isHidden;
+					Toolbar.Items = toolbarItems;
+					Toolbar.Hidden = isHidden;
+
+					NavigationRenderer n;
+					if (_navigation.TryGetTarget(out n) && childNeedLayout)
+						n.ViewDidLayoutSubviews();
+				}
 			}
 
 			public override UIInterfaceOrientationMask GetSupportedInterfaceOrientations()

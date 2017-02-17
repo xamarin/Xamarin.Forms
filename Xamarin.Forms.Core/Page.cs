@@ -175,11 +175,21 @@ namespace Xamarin.Forms
 					continue;
 				var page = child as Page;
 				if (page != null && ((IPageController)page).IgnoresContainerArea)
-					Forms.Layout.LayoutChildIntoBoundingRegion(child, originalArea);
+				{
+					LayoutChild(child, originalArea);
+				}
 				else
-					Forms.Layout.LayoutChildIntoBoundingRegion(child, area);
+				{
+					LayoutChild(child, area);
+				}
 			}
 		}
+
+		protected virtual void LayoutChild(VisualElement element, Rectangle area)
+		{
+			Forms.Layout.LayoutChildIntoBoundingRegion(element, area);
+		}
+
 
 		protected virtual void OnAppearing()
 		{

@@ -89,7 +89,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				if (_toolbarVisible == value)
 					return;
 				_toolbarVisible = value;
-				RequestLayout();
+				UpdateInternalPadding(Current);
 			}
 		}
 
@@ -304,33 +304,28 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			bar.Measure(MeasureSpecFactory.MakeMeasureSpec(r - l, MeasureSpecMode.Exactly), MeasureSpecFactory.MakeMeasureSpec(barHeight, MeasureSpecMode.Exactly));
 
-			int internalHeight = b - t - barHeight;
-			int containerHeight = ToolbarVisible ? internalHeight : b - t;
-			containerHeight -= ContainerPadding;
+			int containerHeight = b - t - ContainerPadding;
 
 			PageController.ContainerArea = new Rectangle(0, 0, Context.FromPixels(r - l), Context.FromPixels(containerHeight));
-			// Potential for optimization here, the exact conditions by which you don't need to do this are complex
-			// and the cost of doing when it's not needed is moderate to low since the layout will short circuit pretty fast
-			Element.ForceLayout();
 
 			for (var i = 0; i < ChildCount; i++)
 			{
 				AView child = GetChildAt(i);
 				bool isBar = JNIEnv.IsSameObject(child.Handle, bar.Handle);
 
-				if (ToolbarVisible)
+				if (isBar)
 				{
-					if (isBar)
+					if (ToolbarVisible)
 						bar.Layout(0, 0, r - l, barHeight);
 					else
-						child.Layout(0, barHeight + ContainerPadding, r, b);
+						bar.Layout(0, -1000, r, barHeight - 1000);
 				}
 				else
 				{
-					if (isBar)
-						bar.Layout(0, -1000, r, barHeight - 1000);
-					else
-						child.Layout(0, ContainerPadding, r, b);
+					var pageContainer = (PageContainer)child;
+
+					UpdateInternalPadding((Page)pageContainer.Child.Element);
+					child.Layout(0, ContainerPadding, r, b);
 				}
 			}
 		}
@@ -400,6 +395,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void CurrentOnPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if(e.PropertyName == NavigationPage.InternalPaddingProperty.PropertyName)
+				Element.ForceLayout();
 			if (e.PropertyName == NavigationPage.HasNavigationBarProperty.PropertyName)
 				ToolbarVisible = NavigationPage.GetHasNavigationBar(Current);
 			else if (e.PropertyName == Page.TitleProperty.PropertyName)
@@ -824,6 +821,21 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				bar.SetTitleTextColor(textColor.ToAndroid().ToArgb());
 
 			bar.Title = Element.CurrentPage.Title ?? "";
+		}
+
+		void UpdateInternalPadding(Page page)
+		{
+			var barHeight = _lastActionBarHeight;
+			var topOffset = Context.FromPixels(barHeight);
+
+			Thickness area;
+
+			if (NavigationPage.GetHasNavigationBar(page))
+				area = new Thickness(0, topOffset, 0, topOffset);
+			else
+				area = new Thickness(0, 0, 0, 0);
+
+			NavigationPage.SetInternalPadding(page, area);
 		}
 
 		class ClickListener : Object, IOnClickListener

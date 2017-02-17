@@ -144,6 +144,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla43313.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla43469.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla43516.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla43955.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla44047.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla43941.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla43663.cs" />
@@ -229,6 +230,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla43161.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla39768.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla41271.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TollbarHideAppCompat.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla40722.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla41153.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla44129.cs" />
