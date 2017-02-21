@@ -429,25 +429,11 @@ namespace Xamarin.Forms.Platform.WinRT
 			var control = Control as Control;
 			if (control != null)
 			{
-				if (!backgroundColor.IsDefault)
-				{
-					control.Background = backgroundColor.ToBrush();
-				}
-				else
-				{
-					control.ClearValue(Windows.UI.Xaml.Controls.Control.BackgroundProperty);
-				}
+				control.Background = !backgroundColor.IsDefault ? backgroundColor.ToBrush() : Color.Default.ToBrush();
 			}
 			else
 			{
-				if (!backgroundColor.IsDefault)
-				{
-					Background = backgroundColor.ToBrush();
-				}
-				else
-				{
-					ClearValue(BackgroundProperty);
-				}
+				Background = !backgroundColor.IsDefault ?  backgroundColor.ToBrush() : Color.Default.ToBrush();
 			}
 		}
 
