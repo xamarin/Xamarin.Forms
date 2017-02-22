@@ -14,7 +14,9 @@ namespace Xamarin.Forms.Core.XamlC
 		public IEnumerable<Instruction> ProvideValue(VariableDefinitionReference vardefref, ModuleDefinition module, BaseNode node, ILContext context)
 		{
 			INode valueNode = null;
-			if (!((IElementNode)node).Properties.TryGetValue(new XmlName("", "Value"), out valueNode) && ((IElementNode)node).CollectionItems.Count == 1)
+			if (!((IElementNode)node).Properties.TryGetValue(new XmlName("", "Value"), out valueNode) &&
+				!((IElementNode)node).Properties.TryGetValue(new XmlName("http://xamarin.com/schemas/2014/forms", "Value"), out valueNode) &&
+				((IElementNode)node).CollectionItems.Count == 1)
 				valueNode = ((IElementNode)node).CollectionItems[0];
 
 			if (valueNode == null)
@@ -29,7 +31,7 @@ namespace Xamarin.Forms.Core.XamlC
 			var bpRef = (new BindablePropertyConverter()).GetBindablePropertyFieldReference((string)bpNode.Value, module, bpNode);
 
 			TypeReference _;
-			var setValueRef = module.Import(module.Import(typeof(Trigger)).GetProperty(p => p.Name == "Value", out _).SetMethod);
+			var setValueRef = module.ImportReference(module.ImportReference(typeof(Trigger)).GetProperty(p => p.Name == "Value", out _).SetMethod);
 
 			//push the setter
 			yield return Instruction.Create(OpCodes.Ldloc, vardefref.VariableDefinition);

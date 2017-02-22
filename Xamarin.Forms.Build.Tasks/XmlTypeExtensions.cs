@@ -10,11 +10,6 @@ namespace Xamarin.Forms.Build.Tasks
 {
 	static class XmlTypeExtensions
 	{
- 		public static TypeReference GetTypeReference (string namespaceURI, string typename, ModuleDefinition module, IXmlLineInfo xmlInfo)
- 		{
- 			return new XmlType (namespaceURI, typename, null).GetTypeReference (module, xmlInfo);
- 		}
-
 		static IList<XmlnsDefinitionAttribute> s_xmlnsDefinitions;
 
 		static void GatherXmlnsDefinitionAttributes()
@@ -32,6 +27,29 @@ namespace Xamarin.Forms.Build.Tasks
 					s_xmlnsDefinitions.Add(attribute);
 					attribute.AssemblyName = attribute.AssemblyName ?? assembly.FullName;
 				}
+		}
+
+		public static TypeReference GetTypeReference(string xmlType, ModuleDefinition module, BaseNode node)
+		{
+			var split = xmlType.Split(':');
+			if (split.Length > 2)
+				throw new XamlParseException($"Type \"{xmlType}\" is invalid", node as IXmlLineInfo);
+
+			string prefix, name;
+			if (split.Length == 2) {
+				prefix = split[0];
+				name = split[1];
+			} else {
+				prefix = "";
+				name = split[0];
+			}
+			var namespaceuri = node.NamespaceResolver.LookupNamespace(prefix) ?? "";
+			return GetTypeReference(new XmlType(namespaceuri, name, null), module, node as IXmlLineInfo);
+		}
+
+		public static TypeReference GetTypeReference(string namespaceURI, string typename, ModuleDefinition module, IXmlLineInfo xmlInfo)
+		{
+			return new XmlType(namespaceURI, typename, null).GetTypeReference(module, xmlInfo);
 		}
 
 		public static TypeReference GetTypeReference(this XmlType xmlType, ModuleDefinition module, IXmlLineInfo xmlInfo)
@@ -91,7 +109,7 @@ namespace Xamarin.Forms.Build.Tasks
 
 					var assemblydefinition = module.Assembly.Name.Name == asm.AssemblyName ?
 												module.Assembly :
-												module.AssemblyResolver.Resolve(asm.AssemblyName);
+												module.AssemblyResolver.Resolve(AssemblyNameReference.Parse(asm.AssemblyName));
 
 					type = assemblydefinition.MainModule.GetType(asm.ClrNamespace, name);
 					if (type == null)
@@ -108,14 +126,14 @@ namespace Xamarin.Forms.Build.Tasks
 			if (type != null && typeArguments != null && type.HasGenericParameters)
 			{
 				type =
-					module.Import(type)
+					module.ImportReference(type)
 						.MakeGenericInstanceType(typeArguments.Select(x => GetTypeReference(x, module, xmlInfo)).ToArray());
 			}
 
 			if (type == null)
 				throw new XamlParseException(string.Format("Type {0} not found in xmlns {1}", elementName, namespaceURI), xmlInfo);
 
-			return module.Import(type);
+			return module.ImportReference(type);
 		}
 	}
 }

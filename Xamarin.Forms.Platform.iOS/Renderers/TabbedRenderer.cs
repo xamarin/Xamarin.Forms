@@ -171,7 +171,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnPagePropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == Page.TitleProperty.PropertyName)
+			// Setting TabBarItem.Title in iOS 10 causes rendering bugs
+			// Work around this by creating a new UITabBarItem on each change
+			if (e.PropertyName == Page.TitleProperty.PropertyName && !Forms.IsiOS10OrNewer)
 			{
 				var page = (Page)sender;
 				var renderer = Platform.GetRenderer(page);
@@ -181,7 +183,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (renderer.ViewController.TabBarItem != null)
 					renderer.ViewController.TabBarItem.Title = page.Title;
 			}
-			else if (e.PropertyName == Page.IconProperty.PropertyName)
+			else if (e.PropertyName == Page.IconProperty.PropertyName || e.PropertyName == Page.TitleProperty.PropertyName && Forms.IsiOS10OrNewer)
 			{
 				var page = (Page)sender;
 
@@ -370,7 +372,8 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateCurrentPage()
 		{
 			var count = ((IPageController)Tabbed).InternalChildren.Count;
-			((TabbedPage)Element).CurrentPage = SelectedIndex >= 0 && SelectedIndex < count ? Tabbed.GetPageByIndex((int)SelectedIndex) : null;
+			var index = (int)SelectedIndex;
+			((TabbedPage)Element).CurrentPage = index >= 0 && index < count ? Tabbed.GetPageByIndex(index) : null;
 		}
 
 		void IEffectControlProvider.RegisterEffect(Effect effect)
@@ -384,17 +387,32 @@ namespace Xamarin.Forms.Platform.iOS
 			if(page == null)
 				throw new InvalidCastException($"{nameof(renderer)} must be a {nameof(Page)} renderer.");
 
-			UIImage icon = null;
-			if (!string.IsNullOrEmpty(page.Icon))
-				icon = new UIImage(page.Icon);
-
-			renderer.ViewController.TabBarItem = new UITabBarItem(page.Title, icon, 0)
+			var icons = GetIcon(page);
+			renderer.ViewController.TabBarItem = new UITabBarItem(page.Title, icons?.Item1, icons?.Item2)
 			{
 				Tag = Tabbed.Children.IndexOf(page),
 				AccessibilityIdentifier = page.AutomationId
 			};
-
-			icon?.Dispose();
+			icons?.Item1?.Dispose();
+			icons?.Item2?.Dispose();
+		}
+		
+		/// <summary>
+		/// Get the icon for the tab bar item of this page
+		/// </summary>
+		/// <returns>
+		/// A tuple containing as item1: the unselected version of the icon, item2: the selected version of the icon (item2 can be null),
+		/// or null if no icon should be set.
+		/// </returns>
+		protected virtual Tuple<UIImage, UIImage> GetIcon(Page page)
+		{
+		    if (!string.IsNullOrEmpty(page.Icon))
+		    {
+		        var icon = new UIImage(page.Icon);
+		        return Tuple.Create(icon, (UIImage)null);
+		    }
+		
+		    return null;
 		}
 	}
 }
