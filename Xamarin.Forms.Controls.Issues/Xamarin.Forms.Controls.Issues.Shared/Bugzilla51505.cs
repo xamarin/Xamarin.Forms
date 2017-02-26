@@ -49,7 +49,6 @@ namespace Xamarin.Forms.Controls.Issues
 		public void Bugzilla51505Test()
 		{
 			RunningApp.WaitForElement(q => q.Marked(ButtonId));
-			RunningApp.Tap(q => q.Marked(ButtonId));
 			Assert.DoesNotThrow(() => RunningApp.Tap(q => q.Marked(ButtonId)), "Accessing the Control when an Effect is detached should not throw");
 		}
 #endif
