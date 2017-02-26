@@ -87,7 +87,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.LayoutSubviews();
 
-			if (_scroller == null || (_scroller != null && _scroller.Frame.Width == ContentView.Bounds.Width))
+			if (_scroller == null)
 				return;
 
 			Update(_tableView, _cell, ContentCell);
