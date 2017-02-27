@@ -1,0 +1,14 @@
+<FileList
+	DisplayName="Bing Maps for C#, C++, or Visual Basic"
+	TargetFramework=".NETCore, version=v4.5"
+  DependsOn="Microsoft.VCLibs, version=12.0"
+	MinVSVersion="11.0"
+  SupportedArchitectures="x86;x64;ARM"
+  AppliesTo="WindowsAppContainer + ( Managed | Native )"
+  Help="http://go.microsoft.com/fwlink/?LinkId=242407">
+
+  <File Reference = "Bing.Maps.winmd" Implementation = "Bing.Maps.dll">
+    <ToolboxItems VSCategory = "Bing Maps" BlendCategory="Bing Maps" />
+  </File>
+
+</FileList>

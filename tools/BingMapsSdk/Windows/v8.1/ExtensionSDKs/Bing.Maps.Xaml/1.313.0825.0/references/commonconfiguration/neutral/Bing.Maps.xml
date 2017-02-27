@@ -1,0 +1,4505 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<doc>
+  <assembly>
+    <name>Bing.Maps</name>
+  </assembly>
+  <members>
+    <member name="N:Bing.Maps">
+      <summary>The Bing.Maps namespace contains the most commonly used classes of the Bing Maps API.</summary>
+    </member>
+    <member name="T:Bing.Maps.CopyrightChangedEventArgs">
+      <summary>
+        Contains the arguments for the CopyrightChanged event of the <see cref="T:Bing.Maps.Map"></see> class.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.CopyrightChangedEventArgs.#ctor">
+      <summary>
+        Initializes a new instance of the <see cref="T:Bing.Maps.CopyrightChangedEventArgs"></see> class.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.GetTileUriEventArgs">
+      <summary>
+        Contains the arguments for the GetTileUri event of the MapTileLayer Class.
+      </summary>
+    </member>
+
+    <member name="P:Bing.Maps.GetTileUriEventArgs.LevelOfDetail">
+      <summary>
+        Gets the level of detail of the map tile.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.GetTileUriEventArgs.Uri">
+      <summary>
+        Gets the Uri of the map tile.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.GetTileUriEventArgs.X">
+      <summary>
+        Gets the X coordinate of the map tile.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.GetTileUriEventArgs.Y">
+      <summary>
+        Gets the Y coordinate of the map tile.
+      </summary>
+    </member>
+
+
+    <member name="T:Bing.Maps.Landmark">
+      <summary>
+        Represents a landmark.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Landmark.Name">
+      <summary>
+        Gets the name of the landmark.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Landmark.Type">
+      <summary>
+        Gets the type of landmark.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Landmark.Location">
+      <summary>
+        Gets the geographical coordinates of the landmark.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.LandmarkCollection">
+      <summary>
+        Contains a collection of <see cref="T:Bing.Maps.Landmark"></see> objects.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.LandmarkSource">
+      <summary>
+        Defines the source type from which landmark data is retrieved.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.LandmarkSource.Business">
+      <summary>
+        The landmark data is from a business source.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.LandmarkSource.Transit">
+      <summary>
+        The landmark data is from a transit source.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.LandmarkTappedEventArgs">
+      <summary>
+        Contains the arguments for the LandmarkTapped event.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.LandmarkTappedEventArgs.Handled">
+      <summary>
+        Gets or sets whether the event was handled.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.LandmarkTappedEventArgs.Landmarks">
+      <summary>
+        Gets the landmark collection.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.LandmarkTappedEventArgs.#ctor(Bing.Maps.LandmarkCollection)">
+      <summary>
+        Initializes a new instance of the LandmarkTappedEventArgs class for a collection of landmarks.
+      </summary>
+    </member>
+    <member name="T:Bing.Maps.LandmarkType">
+      <summary>
+        Defines types of landmarks.
+      </summary>
+    </member>
+
+
+
+    <member name="T:Bing.Maps.Location">
+      <summary>Contains the coordinate values of a location on the map.</summary>
+    </member>
+    <member name="M:Bing.Maps.Location.#ctor">
+      <summary>
+        Initializes a new instance of the <see cref="T:Bing.Maps.Location"></see> class with latitude and longitude values set to 0,0.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.Location.#ctor(System.Double,System.Double)">
+      <summary>
+        Initializes a new instance of the <see cref="T:Bing.Maps.Location"></see> class using the specified latitude and longitude values.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.Location.#ctor(Bing.Maps.Location)">
+      <summary>
+        Creates a copy of the specified <see cref="T:Bing.Maps.Location"></see>.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Location.Latitude">
+      <summary>
+        Gets or sets the latitude of the location as degrees of latitude.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Location.Longitude">
+      <summary>
+        Gets or sets the longitude of the location as degrees of longitude.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.Location.NormalizeLongitude(System.Double)">
+      <summary>
+        Converts a longitude value in degrees to be in the range [-180,180].
+      </summary>
+      <returns>
+        Returns <see cref="T:System.String"></see>.
+      </returns>
+    </member>
+    <member name="T:Bing.Maps.LocationCollection">
+      <summary>
+        Contains a collection of <see cref="T:Bing.Maps.Location"></see> objects.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.LocationCollection.#ctor">
+      <summary>
+        Initializes a new instance of the <see cref="T:Bing.Maps.LocationCollection"></see> class.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.LocationCollection.Size">
+      <summary>Gets the number of elements in the collection.</summary>
+    </member>
+    <member name="M:Bing.Maps.LocationCollection.Append(Bing.Maps.Location)">
+      <summary>
+        Appends the specified location to the end of the collection.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.LocationCollection.Clear">
+      <summary>
+        Clears all locations from the collection.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.LocationCollection.First">
+      <summary>
+        Returns the first location in the collection.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.LocationCollection.GetAt(default.uint32)">
+      <summary>
+        Returns the location at the specified index in the collection.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.LocationCollection.GetMany(System.uint32,System.Array)">
+      <summary>
+        Populates items with LocationCollection elements starting at the specified index. Returns the number of items.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.LocationCollection.GetView">
+      <summary>
+        Returns a view of the collection.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.LocationCollection.IndexOf(Bing.Maps.Location,default.uint32)">
+      <summary>
+        Populates index with the index of the specified location within the collection.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.LocationCollection.InsertAt(default.uint32,Bing.Maps.Location)">
+      <summary>
+        Inserts the specified location at the given index.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.LocationCollection.RemoveAt(default.uint32)">
+      <summary>
+        Removes the location found at the specified index in the collection.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.LocationCollection.RemoveAtEnd">
+      <summary>
+        Removes the last location in the collection.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.LocationCollection.ReplaceAll(System.Collections.Generic.IList&lt;T&gt;)">
+      <summary>
+        Replaces the locations in the collection with the specified items.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.LocationCollection.SetAt(default.uint32,Bing.Maps.Location)">
+      <summary>
+        Set the location to the specified index.
+      </summary>
+    </member>
+    <!--C# Collection Classes-->
+    <member name="M:Bing.Maps.LocationCollection.Add">
+      <summary>
+        Adds a location to the collection.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.LocationCollection.Clear">
+      <summary>
+        Clears the locations in the collection.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.LocationCollection.Contains(Bing.Maps.Location)">
+      <summary>
+        Determines whether the collection contains a specific location.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.LocationCollection.CopyTo(System.Array,System.Int32)">
+      <summary>
+        Copies the locations of a collection to an array, starting at a particular array index.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.LocationCollection.IndexOf(Bing.Maps.Location)">
+      <summary>
+        Determines the index of a specific location in the collection.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.LocationCollection.Insert(System.Int32,Bing.Maps.Location)">
+      <summary>
+        Inserts a location into the collection at the specified index.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.LocationCollection.Remove(Bing.Maps.Location)">
+      <summary>
+        Removes the first occurence of a specific location from the collection.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.LocationCollection.RemoveAt(System.Int32)">
+      <summary>
+        Removes the location at a specified index.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.LocationCollection.Count">
+      <summary>
+        Gets the number of locations contained in the collection.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.LocationCollection.IsReadOnly">
+      <summary>
+        Gets a value that determines whether the collection is read-only.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.LocationCollection.this(System.Int32)">
+      <summary>
+        Gets or sets a location in the collection by accessing its zero-based index.
+      </summary>
+    </member>
+    <!--End C# Collection Classes-->
+
+    <member name="T:Bing.Maps.LocationRect">
+      <summary>
+        Represents a rectangular geographical region.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.LocationRect.Center">
+      <summary>
+        Gets or sets the center location of the location rectangle.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.LocationRect.East">
+      <summary>
+        Gets the longitude of the eastern border of the rectangle.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.LocationRect.Height">
+      <summary>
+        Gets or sets the height location of the rectangle.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.LocationRect.North">
+      <summary>
+        Gets the latitude of the northern border of the rectangle.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.LocationRect.Northwest">
+      <summary>
+        Gets the location of the northwest corner of the rectangle.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.LocationRect.South">
+      <summary>
+        Gets the latitude of the southern border of the rectangle.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.LocationRect.Southeast">
+      <summary>
+        Gets the location of the southeast corner of the rectangle.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.LocationRect.West">
+      <summary>
+        Gets the longitude of the western border of the rectangle.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.LocationRect.Width">
+      <summary>
+        Gets or sets the width of the rectangle, in degrees.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.LocationRect.Contains(Bing.Maps.Location)">
+      <summary>
+        Returns a bool indicating whether the current location rectangle contains the specified location.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.LocationRect.Intersects(Bing.Maps.LocationRect)">
+      <summary>
+        Returns a bool indicating whether the current location rectangle intersects with the specified location rectangle.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.LocationRect.#ctor(Bing.Maps.Location,System.Double,System.Double)">
+      <summary>
+        Initializes a new instance of the <see cref="T:Bing.Maps.LocationRect"></see> class by specifying a center point and a width and height in degrees.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.LocationRect.#ctor(Bing.Maps.Location,Bing.Maps.Location)">
+      <summary>
+        Initializes a new instance of the <see cref="T:Bing.Maps.LocationRect"></see> class by specifying the northwest and southeast coordinates.
+        .
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.LocationRect.#ctor(Bing.Maps.LocationRect)">
+      <summary>
+        Makes a copy of an existing <see cref="T:Bing.Maps.LocationRect"></see> object.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.LocationRect.#ctor(Bing.Maps.LocationCollection)">
+      <summary>
+        Initializes a new instance of the LocationRect class defined by the locations in the collection.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.LocationRect.#ctor">
+      <summary>
+        Initializes a new instance of the <see cref="T:Bing.Maps.LocationRect"></see> class.
+      </summary>
+    </member>
+    <member name="T:Bing.Maps.LocationRectCollection">
+      <summary>Contains a collection of LocationRect objects.</summary>
+    </member>
+    <member name="T:Bing.Maps.Map">
+      <summary>Represents a map. This class inherits from the Windows.UI.Xaml.Controls.Control class.</summary>
+    </member>
+    <member name="M:Bing.Maps.Map.#ctor">
+      <summary>
+        Initializes a new instance of the <see cref="T:Bing.Maps.Map"></see> class.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Map.Bounds">
+      <summary>
+        Gets a rectangle that defines the map view.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Map.Center">
+      <summary>
+        Gets or sets the location of the center of the map.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Map.Children">
+      <summary>
+        Gets any UI elements that are children of the map control element.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Map.CopyrightPosition">
+      <summary>
+        Gets or sets the position of the map copyright string.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Map.Culture">
+      <summary>
+        Gets or sets the culture code to use.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Map.Credentials">
+      <summary>
+        Gets or sets the map credentials used to authenticate the map.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Map.DirectionsManager">
+      <summary>
+        Gets the directions manager for the map.
+      </summary>
+    </member>
+
+    <member name="P:Bing.Maps.Map.DirectionsRenderOptions">
+      <summary>
+        Gets or sets the options for rendering route directions.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Map.DirectionsUIEventManager">
+      <summary>
+        Gets or sets the DirectionsUIEventManager object.
+      </summary>
+    </member>
+
+    <member name="P:Bing.Maps.Map.Heading">
+      <summary>
+        Gets or sets the directional heading of the map. The heading is represented in geometric degrees with 0 or 360 = North, 90 = East, 180 = South, and 270 = West. You can set the heading by using the SetHeading method.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Map.HomeRegion">
+      <summary>
+        Gets or sets the home region of the map.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Map.IsTransitDirectionsEnable">
+      <summary>
+        Gets whether transit directions are enabled.
+      </summary>
+    </member>
+
+    <member name="P:Bing.Maps.Map.MapType">
+      <summary>
+        Gets or sets the map type, or style.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Map.LogoPosition">
+      <summary>
+        Gets or sets the location of the Bing Maps logo.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Map.MaxZoomLevel">
+      <summary>
+        Gets the maximum zoom level for the map.
+      </summary>
+    </member>
+
+    <member name="P:Bing.Maps.Map.MetersPerPixel">
+      <summary>
+        Gets the current scale in meters per pixel of the center of the current map view.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Map.MinZoomLevel">
+      <summary>
+        Gets the minimum zoom level for the map.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Map.PreloadArea">
+      <summary>
+        Gets or sets how much map data beyond the current view to preload. On clients with limited bandwidth, this should be set to None.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Map.RotationEnabled">
+      <summary>
+        Gets whether map view rotation is enabled.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Map.ScaleBarPosition">
+      <summary>
+        Gets or sets the location of the scale bar.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Map.SearchManager">
+      <summary>
+        Gets the search manager for the map.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Map.ShapeLayers">
+      <summary>
+        Gets a collection of the map’s shape layers.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Map.ShowBreadcrumb">
+      <summary>
+        Gets or sets whether to show a breadcrumb control. The breadcrumb control shows the current center location’s geography hierarchy. For example, if the location center is Seattle, the breadcrumb control displays “World . United States . WA”. The default value is false.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Map.ShowBuildings">
+      <summary>
+        Gets or sets whether to display building footprints.
+
+        The default value is true.
+
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Map.ShowScaleBar">
+      <summary>
+        Gets or sets whether the scale bar is visible.
+
+        Default value: true
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Map.ShowTraffic">
+      <summary>
+        Gets or sets whether to display traffic on the map. The default value is false.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Map.ShowNavigationBar">
+      <summary>
+        Gets or sets whether to display map navigation controls.
+
+        The default value is true.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Map.SuppressNetworkRequests">
+      <summary>
+        Gets or sets whether to suppress network requests.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Map.TargetBounds">
+      <summary>
+        Gets the rectangle that defines the boundaries of the view to which the map is navigating.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Map.TargetCenter">
+      <summary>
+        Gets the location of the center of the view to which the map is navigating.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Map.TargetHeading">
+      <summary>
+        Gets the directional heading of the view to which the map is navigating.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Map.TargetZoomLevel">
+      <summary>
+        Gets the zoom level of the view to which the map is navigating.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Map.TileLayers">
+      <summary>
+        Gets a collection of the map’s tile layers.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Map.TrafficIncidentPushpinOptions">
+      <summary>
+        Get the options to use for the pushpin that identifies traffic incidents.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Map.TrafficManager">
+      <summary>
+        Gets the traffic manager for the map.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Map.VenueManager">
+      <summary>
+        Gets the venue manager for the map.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Map.ViewRestriction">
+      <summary>
+        Gets or sets the restrictions for changing the map view. The default value is ZoomOutToWholeWorld.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Map.ZoomLevel">
+      <summary>
+        Gets or sets the zoom level of the map.
+      </summary>
+    </member>
+
+    <member name="M:Bing.Maps.Map.GetCopyrightAsync">
+      <summary>
+        Begins an asynchronous operation to get the copyright string for the current view. The copyright string contains one or more lines of text separated by a carriage return and line feed.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.Map.GetSessionIdAsync">
+      <summary>
+        Begins an asynchronous operation to get the session ID.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.Map.SetHeading(System.Double)">
+      <summary>
+        Sets the directional heading of the map. The heading is represented in geometric degrees with 0 or 360 = North, 90 = East, 180 = South, and 270 = West.
+
+        Make sure the RotateEnabled is set to true before trying to change the map heading.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.Map.SetHeading(System.Double,System.TimeSpan)">
+      <summary>
+        Sets the directional heading of the map as well as the animation duration. If you do not want the view change to animate, set the animation duration to MapAnimationDuration.None.
+
+        Make sure the RotateEnabled is set to true before trying to change the map heading.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.Map.SetView(Bing.Maps.Location)">
+      <summary>
+        Sets the map view using the specified center location. The view change will be animated.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.Map.SetView(Bing.Maps.Location,System.Double)">
+      <summary>
+        Sets the map view using the specified center location and zoom level. The view change will be animated.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.Map.SetView(Bing.Maps.Location,System.Double,System.Double)">
+      <summary>
+        Sets the map view using the specified center location, zoom level, and heading. The view change will be animated.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.Map.SetView(Bing.Maps.Location,System.Double,System.Double,System.TimeSpan)">
+      <summary>
+        Sets the map view using the specified center location, zoom level, heading, and animation time. If you do not want the view change to animate, set the animation duration to MapAnimationDuration.None..
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.Map.SetView(Bing.Maps.Location,System.Double,System.TimeSpan)">
+      <summary>
+        Sets the map view using the specified center location, zoom level, and animation duration. If you do not want the view change to animate, set the animation duration to MapAnimationDuration.None.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.Map.SetView(Bing.Maps.Location,System.TimeSpan)">
+      <summary>
+        Sets the map view using the specified center location, and specifies the animation duration. If you do not want the view change to animate, set the animation duration to MapAnimationDuration.None.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.Map.SetView(Bing.Maps.LocationRect)">
+      <summary>
+        Sets the map view using the specified geographical region.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.Map.SetView(Bing.Maps.LocationRect,System.TimeSpan)">
+      <summary>
+        Sets the map view using the specified geographical region and animation duration. If you do not want the view change to animate, set the animation duration to MapAnimationDuration.None.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.Map.SetZoomLevel(System.Double)">
+      <summary>
+        Sets the zoom level of the map view to the specified value.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.Map.SetZoomLevel(System.Double,System.TimeSpan)">
+      <summary>
+        Sets the zoom level of the map view and the animation time. If you do not want the view change to animate, set the animation duration to MapAnimationDuration.None.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.Map.SetZoomLevelAroundPoint(System.Double,Windows.Foundation.Point,System.TimeSpan)">
+      <summary>
+        Sets the zoom level of the map view to the specified value while maintaining the screen position of the given point. You can also specify an animation time for the view change. If you do not want the view change to animate, set the animation duration to MapAnimationDuration.None. If you want to use the default animation time, set the animation duration to MapAnimationDuration.Default.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.Map.TryLocationsToPixels(Bing.Maps.LocationCollection,System.Collections.Generic.IList&lt;Windows.Foundation.Point&gt;)">
+      <summary>
+        Returns a bool indicating whether the specified locations were successfully converted to map screen pixels. The pixels are provided for a single world map. If multiple world maps are displayed, the first location in the collection that is closest to the center of the map determines which world map to use. This method will work on locations that are not currently in view and will return values outside of the visible map area in the range (0,0) to (ActualWidth,ActualHeight).
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.Map.TryLocationToPixel(Bing.Maps.Location,Windows.Foundation.Point@)">
+      <summary>
+        Returns a bool indicating whether the specified location was successfully converted to a map screen pixel. This method will work on locations that are not currently in view and will return values outside of the visible map area in the range (0,0) to (ActualWidth,ActualHeight).
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.Map.TryPixelToLocation(Windows.Foundation.Point,Bing.Maps.Location@)">
+      <summary>
+        Returns a bool indicating whether the specified point was successfully converted to a location. This method will work on locations that are not currently in view.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.Map.CopyrightChanged">
+      <summary>
+        Occurs when the copyright of the map changes.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.Map.PropertyChanged">
+      <summary>
+        Occurs when a map property changes.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.Map.LandmarkTapped">
+      <summary>
+        Occurs when a landmark is tapped.
+      </summary>
+    </member>
+
+    <member name="E:Bing.Maps.Map.TargetViewChanged">
+      <summary>
+        Occurs when the view towards which the map is navigating changes.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.Map.TileDownloadCompleted">
+      <summary>
+        Occurs when all of the map tiles of the map view have downloaded.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.Map.TileServersAvailabilityChanged">
+      <summary>
+        Occurs when the connection to the tile servers is lost or restored.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.Map.ViewChanged">
+      <summary>
+        Occurs when the map view changes. This event is raised for every frame of the map view change.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.Map.MapStyleChanged">
+      <summary>
+        Occurs when the map style changes. This event is raised for every frame of the map view change.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.Map.ViewChangeEnded">
+      <summary>
+        Occurs when the map view is done changing. This event occurs when a view is the same for one frame of a map view change.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.Map.ViewChangeStarted">
+      <summary>
+        Occurs when the map view starts changing.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.Map.DoubleTappedOverride">
+      <summary>
+        Occurs when an otherwise unhandled DoubleTap interaction occurs over the hit test area of the map.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.Map.KeyDownOverride">
+      <summary>
+        Occurs when a keyboard key is pressed while the map has focus.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.Map.KeyUpOverride">
+      <summary>
+        Occurs when a keyboard key is released while the map has focus.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.Map.PointerCanceledOverride">
+      <summary>
+        Occurs when a pointer that made contact abnormally loses contact.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.Map.PointerCaptureLostOverride">
+      <summary>
+        Occurs when the map view starts changing.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.Map.PointerEnteredOverride">
+      <summary>
+        Occurs when a pointer enters the hit test area of the map.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.Map.PointerExitedOverride">
+      <summary>
+        Occurs when a pointer leaves the hit test area of the map.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.Map.PointerMovedOverride">
+      <summary>
+        Occurs when a pointer moves while the pointer remains within the hit test area of the map.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.Map.PointerPressedOverride">
+      <summary>
+        Occurs when the pointer device initiates a Press action within the map.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.Map.PointerReleasedOverride">
+      <summary>
+        Occurs when the pointer device that previously initiated a Press action is released, while within the map.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.Map.PointerWheelChangedOverride">
+      <summary>
+        Occurs when the delta value of a pointer wheel changes.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.Map.TappedOverride">
+      <summary>
+        Occurs when an otherwise unhandled Tap interaction occurs over the hit test area of the map.
+
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.MapAddress">
+      <summary>
+        Represents an address on the map.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.MapAddress.AddressLine">
+      <summary>
+        Gets the official street line of an address relative to the area, as specified by the Locality, or PostalCode, properties. Typical use of this element would be to provide a street address or any official address.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.MapAddress.AdminDistrict">
+      <summary>
+        Gets a string specifying the subdivision name in the country or region for an address. This element is typically treated as the first order administrative subdivision, but in some cases it is the second, third, or fourth order subdivision in a country, dependency, or region.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.MapAddress.AdminDistrict2">
+      <summary>
+        Gets a string specifying the subdivision name in the country or region for an address. This element is used when there is another level of subdivision information for a location, such as the county.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.MapAddress.CountryRegion">
+      <summary>
+        Gets a string specifying the country or region name of an address.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.MapAddress.CountryRegionCode">
+      <summary>
+        Gets the ISO 3166-1 Alpha-2 country code for the country.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.MapAddress.Locality">
+      <summary>
+        Gets a string specifying the populated place for the address. This typically refers to a city, but may refer to a suburb or a neighborhood in certain countries.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.MapAddress.PostalCode">
+      <summary>
+        Gets a string specifying the post code, postal code, or ZIP Code of an address.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.MapAnimationDuration">
+      <summary>Represents the duration of the animation of a map.</summary>
+    </member>
+    <member name="P:Bing.Maps.MapAnimationDuration.Default">
+      <summary>
+        Use to specify the default animation time.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.MapAnimationDuration.#ctor">
+      <summary>
+        Initializes a new instance of the <see cref="T:Bing.Maps.MapAnimationDuration"></see> class.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.MapAnimationDuration.None">
+      <summary>
+        Use to specify an animation time of zero (0).
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.PushpinAutomationPeer">
+      <summary>
+        Exposes a Pushpin control instance to UI automation.
+      </summary>
+    </member>
+    <member name="T:Bing.Maps.MapAutomationPeer">
+      <summary>
+        Exposes a Map control instance to UI automation.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.MapForegroundPosition">
+      <summary>
+        Defines a position on the map.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.MapForegroundPosition.BottomLeft">
+      <summary>
+        The bottom-left corner of the map.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.MapForegroundPosition.BottomRight">
+      <summary>
+        The bottom-right corner of the map.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.MapForegroundPosition.TopLeft">
+      <summary>
+        The top-left corner of the map.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.MapForegroundPosition.TopRight">
+      <summary>
+        The top-right corner of the map.
+      </summary>
+    </member>
+    <member name="T:Bing.Maps.MapItemsControl">
+      <summary>Represents a control to manage data-binding.</summary>
+    </member>
+    <member name="M:Bing.Maps.MapItemsControl.#ctor">
+      <summary>
+        Initializes a new instance of the MapItemsControl class.
+      </summary>
+    </member>
+    <member name="T:Bing.Maps.MapLayer">
+      <summary>Represents a map layer, which can contain elements positioned on the map. Map layers can be nested. This class inherits from Windows.UI.Xaml.Controls.Control.Panel.</summary>
+    </member>
+    <member name="M:Bing.Maps.MapLayer.#ctor">
+      <summary>
+        Initializes a new instance of the <see cref="T:Bing.Maps.MapLayer"></see> class.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.MapLayer.PositionAnchorProperty">
+      <summary>
+        Gets the PositionAnchor dependency property.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.MapLayer.PositionProperty">
+      <summary>
+        Gets the Position dependency property.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.MapLayer.GetPosition(Windows.UI.Xaml.DependencyObject)">
+      <summary>
+        Returns the position of a dependency object. This value is used to position a UIElement when it is a child of a Map or a MapLayer within a Map.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.MapLayer.GetPositionAnchor(Windows.UI.Xaml.DependencyObject)">
+      <summary>
+        Returns the position anchor of a dependency object.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.MapLayer.SetPosition(Windows.UI.Xaml.DependencyObject,Bing.Maps.Location)">
+      <summary>
+        Sets the position of a specified dependency object. This value is used to position a UIElement that is a child of a Map or a MapLayer within a Map.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.MapLayer.SetPositionAnchor(Windows.UI.Xaml.DependencyObject,Windows.Foundation.Point)">
+      <summary>
+        Sets the position anchor of a dependency object. This attached property is then used to position the element in a Map or MapLayer that is a child of a Map. The position anchor defaults to 0,0 which means the element will have its top-left position aligned with the Position value. For a round pushpin this should be set to (Width / 2, Height / 2) to center the element over its Position.
+      </summary>
+    </member>
+    <member name="T:Bing.Maps.MapMultiPoint">
+      <summary>
+        Do not instantiate or inherit from this class directly. Use the derived <see cref="T:Bing.Maps.MapPolygon"></see> and <see cref="T:Bing.Maps.MapPolyline"></see> classes.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.MapMultiPoint.Locations">
+      <summary>
+        Gets or sets the locations that define the shape.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.MapMultiPoint.#ctor">
+      <summary>
+        Do not instantiate or inherit from this class directly. Use the derived <see cref="T:Bing.Maps.MapPolygon"></see> and <see cref="T:Bing.Maps.MapPolyline"></see> classes.
+      </summary>
+    </member>
+    <member name="T:Bing.Maps.MapPolygon">
+      <summary>
+        Represents a polygon on the map. This class inherits from <see cref="T:Bing.Maps.MapMultiPoint"></see>.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.MapPolygon.#ctor">
+      <summary>
+        Initializes a new instance of the <see cref="T:Bing.Maps.MapPolygon"></see> class.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.MapPolygon.FillColor">
+      <summary>
+        Gets or sets the color to use to fill the polygon.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.MapPolygon.Locations">
+      <summary>
+        Gets or sets the locations that define the shape.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.MapPolygon.Visible">
+      <summary>
+        Gets or sets whether the shape is shown on the map. To hide the shape, set this property to false.
+      </summary>
+    </member>
+    <member name="T:Bing.Maps.MapPolyline">
+      <summary>
+        Represents a polyline on the map. This class inherits from <see cref="T:Bing.Maps.MapMultiPoint"></see>.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.MapPolyline.Color">
+      <summary>
+        Gets or sets the color to use to fill the polyline.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.MapPolyline.Locations">
+      <summary>
+        Gets or sets the locations that define the shape.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.MapPolyline.Visible">
+      <summary>
+        Gets or sets whether the shape is shown on the map. To hide the shape, set this property to false.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.MapPolyline.Width">
+      <summary>
+        Gets or sets the width of the polyline, in pixels.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.MapShape.PointerExited">
+      <summary>
+        Occurs when the pointer exits the shape.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.MapShape.PointerEntered">
+      <summary>
+        Occurs when the pointer enters the shape.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.MapShape.PointerMoved">
+      <summary>
+        Occurs when the pointer moves over the shape.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.MapShape.Tapped">
+      <summary>
+        Occurs when an otherwise unhandled Tap action occurs over a hit test area of this shape.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.MapPolyline.#ctor">
+      <summary>
+        Initializes a new instance of the <see cref="T:Bing.Maps.MapPolyline"></see> class.
+      </summary>
+    </member>
+    <member name="T:Bing.Maps.MapShape">
+      <summary>
+        Do not instantiate or inherit from this class directly. Use the derived <see cref="T:Bing.Maps.MapPolygon"></see> and <see cref="T:Bing.Maps.MapPolyline"></see> classes.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.MapShape.#ctor">
+      <summary>
+        Do not instantiate or inherit from this class directly. Use the derived <see cref="T:Bing.Maps.MapPolygon"></see> and <see cref="T:Bing.Maps.MapPolyline"></see> classes.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.MapShape.Visible">
+      <summary>
+        Gets or sets whether the shape is shown on the map. To hide the shape, set this property to false.
+      </summary>
+    </member>
+    <member name="T:Bing.Maps.MapShapeCollection">
+      <summary>
+        Contains a collection of map shapes, such as <see cref="T:Bing.Maps.MapPolygon"></see> and <see cref="T:Bing.Maps.MapPolyline"></see>.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.MapShapeCollection.#ctor">
+      <summary>
+        Initializes a new instance of the <see cref="T:Bing.Maps.MapShapeCollection"></see> class.
+      </summary>
+    </member>
+    <member name="T:Bing.Maps.MapShapeLayer">
+      <summary>
+        Represents a layer that contains shapes, such as<see cref="T:Bing.Maps.MapPolygon"></see> and
+        <see cref="T:Bing.Maps.MapPolyline"></see>.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.MapShapeLayer.#ctor">
+      <summary>
+        Initializes a new instance of the <see cref="T:Bing.Maps.MapShapeLayer"></see> class.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.MapShapeLayer.Shapes">
+      <summary>
+        Gets or sets the collection of shapes within the layer.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.MapShapeLayer.Visible">
+      <summary>
+        Gets or sets whether the shapes in the layer are shown on the map.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.MapShapeLayer.ZIndex">
+      <summary>
+        Gets or sets the z-index of the shape layer.
+      </summary>
+    </member>
+    <member name="T:Bing.Maps.MapShapeLayerCollection">
+      <summary>Defines the type of a map shape.</summary>
+    </member>
+    <member name="M:Bing.Maps.MapShapeLayerCollection.#ctor">
+      <summary>
+        Initializes a new instance of the <see cref="T:Bing.Maps.MapShapeLayerCollection"></see> class.
+      </summary>
+    </member>
+    <member name="T:Bing.Maps.MapStyleChangedEventArgs">
+      <summary>
+        Contains the arguments for the MapStyleChanged event of the <see cref="T:Bing.Maps.Map"></see> class.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.MapStyleChangedEventArgs.#ctor">
+      <summary>
+        Initializes a new instance of the <see cref="T:Bing.Maps.MapShapeLayerCollection"></see> class.
+      </summary>
+    </member>
+    <member name="T:Bing.Maps.MapTileLayer">
+      <summary>Represents a map tile layer.</summary>
+    </member>
+    <member name="M:Bing.Maps.MapTileLayer.#ctor">
+      <summary>
+        Initializes a new instance of the <see cref="T:Bing.Maps.MapTileLayer"></see> class.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.MapTileLayer.Bounds">
+      <summary>
+        Gets or sets the areas on the tile layer that are visible.
+
+        An empty collection (default) displays the tile layer everywhere.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.MapTileLayer.FillMissingTiles">
+      <summary>
+        Gets or sets whether tiles that are not available at the requested zoom level are displayed using the nearest zoom level available.
+      </summary>
+    </member>
+
+    <member name="P:Bing.Maps.MapTileLayer.MinZoomLevel">
+      <summary>
+        Gets or sets the minimum zoom level to display in the tile layer.
+
+        The default value is 1.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.MapTileLayer.MaxZoomLevel">
+      <summary>
+        Gets or sets the maximum zoom level to display in the tile layer.
+
+        The default value is 20.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.MapTileLayer.Opacity">
+      <summary>
+        Gets or sets the opacity of the tile layer, defined by a double between 0 (not visible) and 1.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.MapTileLayer.TileSource">
+      <summary>
+        Gets or sets the URL that defines the source of the tiles.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.MapTileLayer.Visible">
+      <summary>
+        Gets or sets whether the tile layer is shown.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.MapTileLayer.ZIndex">
+      <summary>
+        Gets or sets the z-index of the tile layer with respect to other items on the map.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.MapTileLayer.GetTileUri">
+      <summary>
+        Occurs when a map tile is requested and returns the map tile URL.
+
+        Do not use this callback event function if you are using the TileSource property.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.MapTileLayer.TileDownloadCompleted">
+      <summary>
+        Occurs when the all map tiles for the current view are downloaded.
+      </summary>
+    </member>
+    <member name="T:Bing.Maps.MapTileLayerCollection">
+      <summary>
+        Contains a collection of <see cref="T:Bing.Maps.MapTileLayer"></see> objects.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.MapTileLayerCollection.#ctor">
+      <summary>
+        Initializes a new instance of the <see cref="T:Bing.Maps.MapTileLayerCollection"></see> class.
+      </summary>
+    </member>
+    <member name="T:Bing.Maps.MapViewRestriction">
+      <summary>
+        Defines restrictions on the map view.
+
+        When the map is zoomed out to a high level, it is possible to see more than one instance of the world map unless you restrict the view to one world map.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.MapViewRestriction.MapOnly">
+      <summary>
+        The map view can display multiple world maps.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.MapViewRestriction.None">
+      <summary>
+        The map view has no restrictions.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.MapViewRestriction.OneWorldOnly">
+      <summary>
+        The map view can only display one world map.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.MapViewRestriction.ZoomOutToWholeWorld">
+      <summary>
+        The map view can be zoomed out to display one or more world maps.
+      </summary>
+    </member>
+    <member name="T:Bing.Maps.MapType">
+      <summary>Defines the type or style of the map.</summary>
+    </member>
+    <member name="F:Bing.Maps.MapType.Road">
+      <summary>The map displays road imagery.</summary>
+    </member>
+    <member name="F:Bing.Maps.MapType.Aerial">
+      <summary>The map displays aerial imagery.</summary>
+    </member>
+    <member name="F:Bing.Maps.MapType.Birdseye">
+      <summary>The map displays bird's eye imagery.</summary>
+    </member>
+    <member name="F:Bing.Maps.MapType.Empty">
+      <summary>
+        The map does not display any imagery. Use this option if you want to display custom imagery instead of Bing Maps imagery.
+      </summary>
+    </member>
+    <member name="T:Bing.Maps.MapUIElementCollection">
+      <summary>
+        Contains a collection of <see cref="T:Windows.UI.Xaml.UIElement"></see> objects.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.MapUIElementCollection.#ctor">
+      <summary>
+        Initializes a new instance of the <see cref="T:Bing.Maps.MapUIElementCollection"></see> class.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.PanelBase">
+      <summary>
+        Do not instantiate or inherit from this class directly. Use the derived VenueDirectoryPanel class.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.PreloadArea">
+      <summary>Defines how much map data beyond the current view to preload.</summary>
+    </member>
+    <member name="F:Bing.Maps.PreloadArea.None">
+      <summary>
+        Do not preload any data.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.PreloadArea.Small">
+      <summary>
+        Preload a small amount of data.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.PreloadArea.Medium">
+      <summary>
+        Preload a medium amount of data.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.PreloadArea.Large">
+      <summary>
+        Preload a large amount of data.
+      </summary>
+    </member>
+    <member name="T:Bing.Maps.Pushpin">
+      <summary>Represents a pushpin on the map. Inherits from Windows.UI.Xaml.Controls.Control.</summary>
+    </member>
+    <member name="M:Bing.Maps.Pushpin.#ctor">
+      <summary>
+        Initializes a new instance of the <see cref="T:Bing.Maps.Pushpin"></see> class.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Pushpin.Text">
+      <summary>
+        Gets or sets the text for a pushpin.
+      </summary>
+    </member>
+    <member name="T:Bing.Maps.PushpinOffset">
+      <summary>
+        Describes the offset of a rendered pushpin from its location.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.PushpinOffset.BottomCenter">
+      <summary>
+        The pushpin is rendered directly below its location.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.PushpinOffset.BottomLeft">
+      <summary>
+        The pushpin is rendered below and to the left of its location.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.PushpinOffset.BottomRight">
+      <summary>
+        The pushpin is rendered below and to the right of its location.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.PushpinOffset.Center">
+      <summary>
+        The pushpin is rendered at its location.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.PushpinOffset.CenterLeft">
+      <summary>
+        The pushpin is rendered directly to the left of its location.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.PushpinOffset.CenterRight">
+      <summary>
+        The pushpin is rendered directly to the right of its location
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.PushpinOffset.TopCenter">
+      <summary>
+        The pushpin is rendered directly above its location.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.PushpinOffset.TopLeft">
+      <summary>
+        The pushpin is rendered above and to the left of its location.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.PushpinOffset.TopRight">
+      <summary>
+        The pushpin is rendered above and to the right of its location.
+      </summary>
+    </member>
+
+
+    <member name="T:Bing.Maps.StringToLocationConverter">
+      <summary>
+        Implements an interface that converts string values to Location objects for data binding. This class implements Windows.UI.Xaml.Data.IValueConverter.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.StringToLocationConverter.#ctor">
+      <summary>
+        Initializes a new instance of the StringToLocationConverter class.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.StringToLocationConverter.Convert(System.Object,System.Type,System.Object,System.String)">
+      <summary>
+        Converts a Location object to a string.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.StringToLocationConverter.ConvertBack(System.Object,System.Type,System.Object,System.String)">
+      <summary>
+        Converts a string to a Location object.
+      </summary>
+    </member>
+    <member name="T:Bing.Maps.TargetViewChangedEventArgs">
+      <summary>
+        Contains the arguments for the TargetViewChanged event of the <see cref="T:Bing.Maps.Map"></see> Class.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.TargetViewChangedEventArgs.#ctor">
+      <summary>
+        Initializes a new instance of the <see cref="T:Bing.Maps.TargetViewChangedEventArgs"></see> class.
+      </summary>
+    </member>
+    <member name="T:Bing.Maps.TileDownloadCompletedEventArgs">
+      <summary>
+        Contains the arguments for the TileDownloadCompleted event of the <see cref="T:Bing.Maps.Map"></see> Class.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.TileDownloadCompletedEventArgs.#ctor">
+      <summary>
+        Initializes a new instance of the <see cref="T:Bing.Maps.TileDownloadCompletedEventArgs"></see> class.
+      </summary>
+    </member>
+    <member name="T:Bing.Maps.TileServersAvailabilityChangedEventArgs">
+      <summary>
+        Contains the arguments for the TileServersAvailabilityChanged event of the <see cref="T:Bing.Maps.Map"></see> Class.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.TileServersAvailabilityChangedEventArgs.#ctor(System.Boolean)">
+      <summary>
+        Initializes a new instance of the <see cref="T:Bing.Maps.TileServersAvailabilityChangedEventArgs"></see> class by specifying whether the tile servers are available.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.TileServersAvailabilityChangedEventArgs.ServersAvailable">
+      <summary>
+        Gets whether the tile servers are available. If set to true, the tile servers are available. If set to false, the connection to the server is lost and map tiles cannot be downloaded.
+      </summary>
+    </member>
+    <member name="T:Bing.Maps.Venue">
+      <summary>
+        Represents a venue. This class is used by VenueEventArgs to return venue information when a venue is selected by a pointer device.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.ViewChangedEventArgs">
+      <summary>
+        Contains the arguments for the ViewChanged event of the <see cref="T:Bing.Maps.Map"></see> Class.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.ViewChangedEventArgs.#ctor">
+      <summary>
+        Initializes a new instance of the <see cref="T:Bing.Maps.ViewChangedEventArgs"></see> class.
+      </summary>
+    </member>
+    <member name="T:Bing.Maps.ViewChangeEndedEventArgs">
+      <summary>
+        Contains the arguments for the ViewChangeEnded event of the <see cref="T:Bing.Maps.Map"></see> Class.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.ViewChangeEndedEventArgs.#ctor">
+      <summary>
+        Initializes a new instance of the <see cref="T:Bing.Maps.ViewChangedEndedEventArgs"></see> class.
+      </summary>
+    </member>
+    <member name="T:Bing.Maps.ViewChangeStartedEventArgs">
+      <summary>
+        Contains the arguments for the ViewChangeStarted event of the <see cref="T:Bing.Maps.Map"></see> Class.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.ViewChangeStartedEventArgs.#ctor">
+      <summary>
+        Initializes a new instance of the <see cref="T:Bing.Maps.ViewChangeStartedEventArgs"></see> class.
+      </summary>
+    </member>
+
+
+
+    <member name="N:Bing.Maps.Directions">
+      <summary>The Bing.Maps.Directions namespace contains classes and enumerations that provide functionality to calculate route directions and display a route on a Bing Map.</summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.AvoidOption">
+      <summary>
+        Defines areas to avoid when calculating a route.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.AvoidOption.Airline">
+      <summary>
+        When calculating the route, avoid the use of airplanes.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.AvoidOption.BulletTrain">
+      <summary>
+        When calculating the route, avoid the use of bullet trains.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.AvoidOption.ExpressTrain">
+      <summary>
+        When calculating the route, avoid the use of express trains.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.AvoidOption.Highways">
+      <summary>
+        When calculating the route, avoid driving on highways.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.AvoidOption.MinimizeHighways">
+      <summary>
+        When calculating the route, minimize driving on highways.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.AvoidOption.MinimizeTolls">
+      <summary>
+         When calculating the route, minimize driving on toll roads.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.AvoidOption.None">
+      <summary>
+        When calculating the route, use all transportation options available.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.AvoidOption.Tolls">
+      <summary>
+        When calculating the route, avoid toll roads completely.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.DirectionsContainerSelector">
+      <summary>
+        Represents the style selector used on the container for direction items. This class inherits from the StyleSelector class.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsContainerSelector.SelectableStyle">
+      <summary>
+        Gets or sets the style of a container that contains an item that is selectable. 
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsContainerSelector.UnselectableStyle">
+      <summary>
+        Gets or sets the style of a container that contains an item that is not selectable.
+      </summary>
+    </member>
+
+
+    <member name="T:Bing.Maps.Directions.DirectionsEventArgs">
+      <summary>
+        Contains the event arguments for a directions event.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsEventArgs.Handled">
+      <summary>
+        Gets or sets a bool indicating whether the directions event is handled.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsEventArgs.Route">
+      <summary>
+        Gets the route.
+      </summary>
+    </member>
+
+
+    <member name="T:Bing.Maps.Directions.DirectionsInput">
+      <summary>
+        Represents the control used to input route request options. This class inherits from Control.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.Directions.DirectionsInput.OnApplyTemplate">
+      <summary>
+        Executes when a template is applied.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.DirectionsInputEventArgs">
+      <summary>
+        Contains arguments for events related to the directions input panel, which is the control used to set directions request options.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsInputEventArgs.EndLocation">
+      <summary>
+        Gets the end location of the route.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsInputEventArgs.Handled">
+      <summary>
+        Gets or sets a bool indicating whether the event is handled.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsInputEventArgs.RequestOptions">
+      <summary>
+        Gets the directions request options.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsInputEventArgs.StartLocation">
+      <summary>
+        Gets the start location of the route.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.DirectionsManager">
+      <summary>
+        Contains methods and properties for calculating and displaying route directions.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.Directions.DirectionsManager.CalculateDirectionsAsync">
+      <summary>
+        Makes an asynchronous request for route directions based on the set directions request and directions render options.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.Directions.DirectionsManager.ClearActiveRoute">
+      <summary>
+        Clears the current route.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.Directions.DirectionsManager.GetManeuverSymbol(System.String)">
+      <summary>
+        Returns a description of the symbol used to represent the specified maneuver type.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.Directions.DirectionsManager.GetMap">
+      <summary>
+        Returns the map on which to display the route.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.Directions.DirectionsManager.HideRoutePath(Bing.Maps.Directions.Route)">
+      <summary>
+        Hides the specified route.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.Directions.DirectionsManager.ShowDisambiguationPushpins">
+      <summary>
+        Displays disambiguation pushpins for the route stops on the map. If there is more than one disambiguated waypoint, show pushpins for the first waypoint.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.Directions.DirectionsManager.ShowRoutePath(Bing.Maps.Directions.Route)">
+      <summary>
+        Displays the specified route on the map.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsManager.ActiveItineraryItem">
+      <summary>
+        Gets or sets the active itinerary item.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsManager.ActiveRoute">
+      <summary>
+        Gets or sets the active route.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsManager.DirectionsInputView">
+      <summary>
+        Gets or sets the directions input panel, which is used to set the directions request options.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsManager.RenderOptions">
+      <summary>
+        Gets or sets the options used to specify how to display the route on the map.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsManager.RequestOptions">
+      <summary>
+        Gets or sets the route calculation request options.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsManager.RouteResult">
+      <summary>
+        Gets the result of the current route calculation request.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsManager.RouteSummaryView">
+      <summary>
+        Gets the route summary.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsManager.UIEventManager">
+      <summary>
+        Gets or sets the event manager for the directions UI.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsManager.Waypoints">
+      <summary>
+        Gets or sets a collection containing the route waypoints, which includes the route start point, the route end point, and any stops in between.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.Directions.DirectionsManager.ActiveRouteChanged">
+      <summary>
+        Occurs when the active route changes.
+     </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.DirectionsPolylineRenderOptions">
+      <summary>
+        Contains the options used to render the polyline that represents the route on the map. This class inherits from DependencyObject.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsPolylineRenderOptions.LineColor">
+      <summary>
+        Gets or sets the color of the polyline representing the route on the map.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsPolylineRenderOptions.LineWidth">
+      <summary>
+        Gets or sets the width of the polyline representing the route on the map.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsPolylineRenderOptions.Visible">
+      <summary>
+        Gets or sets a bool indicating whether the polyline representing the route on the map is visible.
+      </summary>
+    </member>
+
+
+    <member name="T:Bing.Maps.Directions.DirectionsPushpinRenderOptions">
+      <summary>
+        Contains options for rendering the pushpins the represent the route waypoints on the map. This class inherits from DependencyObject.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsPushpinRenderOptions.Offset">
+      <summary>
+        Gets or sets the pushpin offset to use for the pushpin that represents a route waypoint.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsPushpinRenderOptions.PushpinTemplate">
+      <summary>
+        Gets or sets the template to use for the pushpin.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsPushpinRenderOptions.Visible">
+      <summary>
+        Gets or sets a bool indicating whether to show the pushpin that represents the route waypoint.
+      </summary>
+    </member>
+
+
+    <member name="T:Bing.Maps.Directions.DirectionsRenderOptions">
+      <summary>
+        Represents the option for rendering a route on a map. This class inherits from DependencyObject.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.Directions.DirectionsRenderOptions.GetPolylineRenderOptions(Bing.Maps.Directions.RouteMode)">
+      <summary>
+        Returns the polyline render options for the specified route mode.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsRenderOptions.ActiveRoutePolylineOptions">
+      <summary>
+        Gets or sets the options used to render the route line for the active route.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsRenderOptions.AutoDisplayDisambiguation">
+      <summary>
+        Gets or sets a bool indicating whether to automatically display a disambiguation options for waypoint locations that need to be disambiguated. The default value is true. If this value is set to true, a DirectionsError event caused by waypoint disambiguation is not thrown.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsRenderOptions.AutoSetActiveRoute">
+      <summary>
+        Gets or sets a bool indicating whether to automatically set the active route to a returned route response.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsRenderOptions.AutoUpdateMapView">
+      <summary>
+        Gets or set a bool indicating whether to automatically set the map view to the best map view of the route. The default value is true.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsRenderOptions.DisambiguationPushpinOptions">
+      <summary>
+        Gets or sets the options used to render the pushpins that represent waypoints that need to be disambiguated.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsRenderOptions.DisplayDisclaimer">
+      <summary>
+        Gets or sets a bool indicating whether to display a route accuracy disclaimer. The default value is false.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsRenderOptions.DisplayItineraryItemHints">
+      <summary>
+        Gets or sets a bool indicating whether to display route hints in the itinerary. Route hints provide additional information about following the route. The default value is true.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsRenderOptions.DisplayManeuverIcons">
+      <summary>
+        Gets or sets a bool indicating whether to display icons for each direction maneuver. The default value is true.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsRenderOptions.DisplayStepWarnings">
+      <summary>
+        Gets or sets a bool indicating whether to display available warnings for route directions. The default value is true.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsRenderOptions.DisplayTransitIcons">
+      <summary>
+        Gets or sets a bool indicating whether to display icons representing transit for each direction. The default value is true.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsRenderOptions.DrivingPolylineOptions">
+      <summary>
+        Gets or sets the options used to render the polyline that represents a driving route on the map.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsRenderOptions.EndWaypointColorBrush">
+      <summary>
+        Gets or sets the color brush used to render the end waypoint of the route.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsRenderOptions.MiddleWaypointColorBrush">
+      <summary>
+        Gets or sets the color brush used to render stops along the route.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsRenderOptions.StartWaypointColorBrush">
+      <summary>
+        Gets or sets the color brush used to render the start waypoint of the route.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsRenderOptions.StepPushpinOptions">
+      <summary>
+        Gets or sets the options used to render the pushpins that represent directions along the route.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsRenderOptions.TransitPolylineOptions">
+      <summary>
+        Gets or sets the options used to render the polyline that represents a transit route.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsRenderOptions.UseDefaultPushpins">
+      <summary>
+        Gets or sets a bool indicating whether to use default pushpin options for the route.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsRenderOptions.WalkingPolylineOptions">
+      <summary>
+        Gets or sets the options used to render the polyline that represents a walking route.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsRenderOptions.WaypointPushpinOptions">
+      <summary>
+        Gets or sets the options used to render the pushpins that represent waypoints.
+      </summary>
+    </member>
+
+
+    <member name="T:Bing.Maps.Directions.DirectionsRequestOptions">
+      <summary>
+        Contains options for a route calculation request.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsRequestOptions.Avoid">
+      <summary>
+        Gets or sets transportation features to avoid when calculating driving directions.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsRequestOptions.DistanceUnit">
+      <summary>
+        Gets or sets the distance unit to use when returning route distances.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsRequestOptions.FormattedInstruction">
+      <summary>
+        Gets or sets a bool indicating whether to include formatted instructions in the route. Formatted instructions make it easier to display directions within a web page. The default value is false.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsRequestOptions.MaxSolutions">
+      <summary>
+        Gets or sets the maximum number of transit or driving routes to return. This property is supported for the driving and transit routes between two waypoints in the United States, Canada, Mexico, United Kingdom, Australia and India.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsRequestOptions.MetadataForAlternates">
+      <summary>
+        Gets or sets a bool indicating whether to use metadata for alternate routes. When this property is set to true, alternate route information is not downloaded and performance may be improved.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsRequestOptions.Optimize">
+      <summary>
+        Gets or sets how the route calculation is optimized.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsRequestOptions.RouteIndex">
+      <summary>
+        Gets or sets the default route index to use when more than one route is returned in the response.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsRequestOptions.RouteMode">
+      <summary>
+        Gets or sets whether the mode of travel for the route is driving, walking, or transit.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsRequestOptions.TimeType">
+      <summary>
+        Gets or sets how to interpret the date and transit time value that is specified by the DateTime parameter. This property is required when the travel mode is transit.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.DirectionsRequestOptions.TransitType">
+      <summary>
+        Gets or sets the arrival or departure time to use when requesting a transit route. This property is required when the travel mode is transit.
+      </summary>
+    </member>
+
+    
+    <member name="T:Bing.Maps.Directions.DirectionsUIEventManager">
+      <summary>
+        Contains methods used to set the event handler for the default route direction user interface. This class inherits from DependencyObject.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.Directions.DirectionsUIEventManager.DisambiguationPushpinTapped">
+      <summary>
+        Occurs when a disambiguation pushpin is tapped.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.Directions.DirectionsUIEventManager.GetDirectionsTapped">
+      <summary>
+        Occurs when the get directions button on the directions input panel is tapped.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.Directions.DirectionsUIEventManager.ItineraryItemSelectionChanged">
+      <summary>
+        Occurs when the item selected in the route itinerary changes.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.Directions.DirectionsUIEventManager.SwapLocationsTapped">
+      <summary>
+        Occurs when the swap locations button on the directions input panel is tapped.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.Directions.DirectionsUIEventManager.WaypointPushpinTapped">
+      <summary>
+        Occurs when a waypoint pushpin is tapped.
+      </summary>
+    </member>
+
+
+    <member name="T:Bing.Maps.Directions.DistanceUnitOption">
+      <summary>
+        Defines the unit to use for calculated route distances.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.DistanceUnitOption.Kilometer">
+      <summary>
+        Use kilometers for route distances.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.DistanceUnitOption.Miles">
+      <summary>
+        Use miles for route distances.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.DistanceUnitOption.Unknown">
+      <summary>
+        The distance unit is not known.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.Hint">
+      <summary>
+        Represents a route hint, which provides additional information for correctly following the route.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.Hint.Text">
+      <summary>
+         Gets the text of the route hint.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.Hint.Type">
+      <summary>
+        Gets a description of the type of the route hint.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.HintCollection">
+      <summary>
+        Provides access to a collection of Hint objects.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.Instruction">
+      <summary>
+        Represents a route direction instruction.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.Instruction.FormattedText">
+      <summary>
+        Gets the route instruction with formatting. The formatted instruction is easier to display in a web page. Note that the formatted instruction is not returned unless the DirectionsRequestOptions.FormattedInstruction property is set to true.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.Instruction.Text">
+      <summary>
+        Gets the route instruction.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.Instruction.Type">
+      <summary>
+        Gets a brief description of the instruction type.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.ItineraryItem">
+      <summary>
+        Represents a route itinerary item.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItem.ChildItineraryItem">
+      <summary>
+        Gets the collection of itinerary items that belong to this itinerary item.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItem.CompassDirection">
+      <summary>
+        Gets the heading of travel associated with the maneuver of this item, such as “south”. This property is not available for transit routes.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItem.Exit">
+      <summary>
+        Gets the name or number of the exit associated with this itinerary item, if one exists.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItem.Hints">
+      <summary>
+        Gets a collection of hints associated with this itinerary item.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItem.IconType">
+      <summary>
+        Gets the type of icon to use for this itinerary item.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItem.Instruction">
+      <summary>
+        Gets the route instruction for this item.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItem.ItineraryItemDetails">
+      <summary>
+        Gets details associated with one of the maneuvers of this itinerary item. An itinerary item can contain more than one details collections.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItem.ManeuverLocation">
+      <summary>
+        Gets the exact location at which the maneuver for this itinerary item needs to be made.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItem.RouteMode">
+      <summary>
+        Gets the mode of travel for this itinerary item.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItem.SideOfStreet">
+      <summary>
+        Gets the side of street where the destination is found based on the arrival direction. This property applies to the last itinerary item only.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItem.Signs">
+      <summary>
+        Gets the signs associated with this itinerary item.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItem.Time">
+      <summary>
+        Gets the arrival or departure time for the transit itinerary item.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItem.TollZone">
+      <summary>
+        Gets a description of the toll zone.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItem.TowardsRoadName">
+      <summary>
+        Gets the name of the road towards which this itinerary item is heading.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItem.TransitLines">
+      <summary>
+        Gets the transit lines associated with this itinerary item.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItem.TransitStopId">
+      <summary>
+        Gets the ID of the transit stop associated with this itinerary item.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItem.TransitTerminus">
+      <summary>
+        Gets the end destination of the transit line associated with this itinerary item.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItem.TravelDistance">
+      <summary>
+        Gets the distance of travel for this itinerary item. This property is only supported for driving and walking routes.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItem.TravelDuration">
+      <summary>
+        Gets the travel time, in seconds, for this itinerary item.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItem.Warnings">
+      <summary>
+         Gets the warnings associated with this itinerary item.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.ItineraryItemCollection">
+      <summary>
+        Provides access to a collection of ItineraryItem objects.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.ItineraryItemDataSource">
+      <summary>
+        Represents an itinerary item data source.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItemDataSource.AutomationName">
+      <summary>
+        Gets or sets the automation name.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItemDataSource.DisplayIndex">
+      <summary>
+        Gets or sets the index to display.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItemDataSource.Distance">
+      <summary>
+        Gets or sets the distance.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItemDataSource.Hint">
+      <summary>
+        Gets or sets the hint.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItemDataSource.Icon">
+      <summary>
+        Gets or sets the icon.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItemDataSource.IconColor">
+      <summary>
+        Gets or sets the color of the icon.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItemDataSource.Index">
+      <summary>
+        Gets or sets the index.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItemDataSource.Instruction">
+      <summary>
+        Gets or sets the instruction.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItemDataSource.RouteLegIndex">
+      <summary>
+        Gets or sets the route leg index.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItemDataSource.TransitArrivalInstruction">
+      <summary>
+        Gets or sets the transit arrival instruction.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItemDataSource.TransitArrivalInstructionHeader">
+      <summary>
+        Gets or sets the header of the transit arrival instruction.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItemDataSource.TransitArrivalTime">
+      <summary>
+        Gets or sets the transit arrival time.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItemDataSource.TransitDepartureTime">
+      <summary>
+         Gets or sets the transit departure time.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItemDataSource.TransitInstructionHeader">
+      <summary>
+        Gets or sets the header of the transit instruction.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItemDataSource.TransitStop">
+      <summary>
+        Gets or sets the transit stop.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItemDataSource.Warnings">
+      <summary>
+        Gets or sets the warnings.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.ItineraryItemDetails">
+      <summary>
+        Contains extra details of an itinerary item.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItemDetails.CompassDegrees">
+      <summary>
+        Gets the compass heading, in degrees of the itinerary item. This property is not supported for transit routes.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItemDetails.EndPathIndex">
+      <summary>
+        Gets the index value for the end route path point of the itinerary item, if the route path is requested to be returned in the response. The StartPathIndex and EndPathIndex properties define a range of route path points that correspond to this itinerary item.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItemDetails.LocationCode">
+      <summary>
+        Gets a traffic location code. A location code provides traffic incident information for predefined road segments.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItemDetails.ManeuverType">
+      <summary>
+        Gets more information about the type of maneuver described by this itinerary item. For example the type of an instruction may be TurnLeftThenTurnRight, and this property will provide specifics about the TurnLeft and TurnRight maneuvers.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItemDetails.Names">
+      <summary>
+        Gets the name of a street, highway or intersection where the itinerary item maneuver occurs. If the maneuver is complex, there may be more than one name provided. The name field may also have no value. This can occur if the name is not known or if a street, highway or intersection does not have a name. This property is not supported for transit routes.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItemDetails.RoadShieldUrl">
+      <summary>
+        Gets the URL for the road shield for the road of this itinerary item.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItemDetails.RoadType">
+      <summary>
+        Gets the road type for this itinerary item.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItemDetails.RouteMode">
+      <summary>
+        Gets the mode of travel for the route.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ItineraryItemDetails.StartPathIndex">
+      <summary>
+        Gets the index value for the start route path point of the itinerary item, if the route path is requested to be returned in the response. The StartPathIndex and EndPathIndex properties define a range of route path points that correspond to this itinerary item.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.ItineraryItemDetailsCollection">
+      <summary>
+        Provides access to a collection of ItineraryItemDetails objects.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.ItineraryItemIconType">
+      <summary>
+        Defines the type of icon to display for the itinerary item.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.ItineraryItemIconType.Airline">
+      <summary>
+        Display an airline icon.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.ItineraryItemIconType.Auto">
+      <summary>
+        Display an automobile icon.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.ItineraryItemIconType.Bus">
+      <summary>
+        Display a bus icon.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.ItineraryItemIconType.Ferry">
+      <summary>
+        Display a ferry icon.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.ItineraryItemIconType.None">
+      <summary>
+        Do not display an icon.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.ItineraryItemIconType.Train">
+      <summary>
+         Display a train icon.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.ItineraryItemIconType.Walk">
+      <summary>
+        Display a walking icon.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.ItineraryItemIconType.Other">
+      <summary>
+        Display another kind of icon.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.ItineraryItemSideOfStreet">
+      <summary>
+        Defines the side of the street where the destination is found based on the arrival direction. This field applies to the last itinerary item only.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.ItineraryItemSideOfStreet.Left">
+      <summary>
+        The destination is on the left side of the street.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.ItineraryItemSideOfStreet.Right">
+      <summary>
+        The destination is on the right side of the street.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.ItineraryItemSideOfStreet.Unknown">
+      <summary>
+        It is unknown which side of the street the destination can be found.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.LocationDisambiguation">
+      <summary>
+        Contains a possible geocoding match for a waypoint address or location.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.LocationDisambiguation.Bounds">
+      <summary>
+        Gets the location rectangle that defines the area used to geocode.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.LocationDisambiguation.Confidence">
+      <summary>
+        Gets the confidence of the match.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.LocationDisambiguation.Location">
+      <summary>
+        Gets the coordinates of the possible geocoding match.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.LocationDisambiguation.MatchCodes">
+      <summary>
+        Gets the geocoding level of the match.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.LocationDisambiguation.Name">
+      <summary>
+        Gets the name of the suggested match.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.LocationDisambiguation.Waypoint">
+      <summary>
+        Gets the waypoint associated with this geocoding match.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.LocationDisambiguationCollection">
+      <summary>
+        Provides access to a collection of LocationDisambiguation objects.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.MaxSolutionsOption">
+      <summary>
+        Defines the maximum number of possible transit or driving routes to return in the response.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.MaxSolutionsOption.One">
+      <summary>
+        Return one route.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.MaxSolutionsOption.Two">
+      <summary>
+        Return two possible routes.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.MaxSolutionsOption.Three">
+      <summary>
+        Return three possible routes.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.NamesCollection">
+      <summary>
+        Provides access to a collection of string objects.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.OptimizeOption">
+      <summary>
+        Defines options for optimizing a route calculation.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.OptimizeOption.Distance">
+      <summary>
+        Calculate a route with the shortest distance.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.OptimizeOption.Money">
+      <summary>
+        Calculate a route with the smallest cost. This option is only available for transit routes.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.OptimizeOption.Time">
+      <summary>
+        Calculate a route with the shortest time.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.OptimizeOption.TimeWithTraffic">
+      <summary>
+        Calculate a route with the shortest time, given the current traffic conditions. This option is only available for driving routes.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.OptimizeOption.Transfers">
+      <summary>
+        Calculate a route that minimizes transfers. This option is only available for transit routes.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.OptimizeOption.Walking">
+      <summary>
+        Calculate that minimizes walking. This option is only available for transit routes.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.ResetDirectionsOptions">
+      <summary>
+        Contains options for what to do when the route is reset.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ResetDirectionsOptions.RemoveAllWaypoints">
+      <summary>
+        Gets or sets a bool indicating whether to remove all waypoints when the route is reset.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ResetDirectionsOptions.ResetRenderOptions">
+      <summary>
+        Gets or sets a bool indicating whether to reset render options when the route is reset.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.ResetDirectionsOptions.ResetRequestOptions">
+      <summary>
+        Gets or sets a bool indicating whether to reset the request options when the route is reset.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.Route">
+      <summary>
+        Represents a route.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.Route.Bounds">
+      <summary>
+        Gets the location rectangle that contains the route. This can be used to set the map view for the route.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.Route.DistanceUnit">
+      <summary>
+        Gets the distance unit used for distance measurements in the route.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.Route.DurationUnit">
+      <summary>
+        Gets the time unit used for durations in the route.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.Route.Id">
+      <summary>
+        Gets the ID of the route.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.Route.RouteLegs">
+      <summary>
+        Gets a collection of route legs representing the route. A route leg is the section of a route between two waypoints.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.Route.RouteMode">
+      <summary>
+        Gets the mode of travel for the route.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.Route.RoutePath">
+      <summary>
+        Gets the route path of the route, if requested.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.Route.TravelDistance">
+      <summary>
+        Gets the total travel distance of the route. This property is not supported for transit routes.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.Route.TravelTime">
+      <summary>
+        Gets the total travel time of the route, in seconds.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.RouteCollection">
+      <summary>
+        Provides access to a collection of Route objects.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.RouteLeg">
+      <summary>
+        Represents the section of a route between two waypoints.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.RouteLeg.ActualEnd">
+      <summary>
+        Gets the location that was used as the end location for the route leg. In most cases, the actual end location is the same as the requested waypoint location. However, if a waypoint is not close to a road, a new location is chosen on the nearest road, which becomes the actual end location.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.RouteLeg.ActualStart">
+      <summary>
+        Gets the location that was used as the start location for the route leg. In most cases, the actual start location is the same as the requested waypoint location. However, if a waypoint is not close to a road, a new location is chosen on the nearest road, which becomes the actual start location. 
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.RouteLeg.AlternateVias">
+      <summary>
+        Gets alternate via points for requesting alternate routes with the original start and end points.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.RouteLeg.Cost">
+      <summary>
+       Gets the cost of the route leg.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.RouteLeg.Description">
+      <summary>
+        Gets a description of the route leg.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.RouteLeg.EndLocation">
+      <summary>
+        Gets the location of the end waypoint for the route leg. This property is only available if the waypoint is a landmark or an address.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.RouteLeg.EndTime">
+      <summary>
+        Gets the end time of the route leg.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.RouteLeg.ItineraryItems">
+      <summary>
+        Gets the itinerary items that belong to this route leg.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.RouteLeg.ResultContainsEndTime">
+      <summary>
+        Gets a bool indicating whether the end time is included in the route result.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.RouteLeg.ResultContainsStartTime">
+      <summary>
+        Gets a bool indicating whether the start time is included in the route result.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.RouteLeg.StartLocation">
+      <summary>
+        Gets the location of the start waypoint for the route leg. This property is only available if the waypoint is a landmark or an address.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.RouteLeg.StartTime">
+      <summary>
+        Gets the start time of the route leg.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.RouteLeg.TravelDistance">
+      <summary>
+        Gets the total travel distance of the route leg.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.RouteLeg.TravelDuration">
+      <summary>
+        Gets the total travel time of the route leg, in seconds.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.RouteLegCollection">
+      <summary>
+        Provides access to a collection of RouteLeg objects.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.RouteLegDataSource">
+      <summary>
+        Represents a route leg data source.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.RouteLegDataSource.AutomationName">
+      <summary>
+        Gets or sets the automation name.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.RouteLegDataSource.Header">
+      <summary>
+        Gets or sets the header.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.RouteLegDataSource.Items">
+      <summary>
+        Gets or sets the route leg data source items.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.RouteLegDataTemplateSelector">
+      <summary>
+        Contains templates for itinerary items in the route itinerary item selector.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.RouteLegDataTemplateSelector.GroupRouteLegHeaderItemTemplate">
+      <summary>
+        Gets or sets the template to use for the header of a route leg, when the itinerary items are grouped.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.RouteLegDataTemplateSelector.ItineraryItemTemplate">
+      <summary>
+        Gets or sets the template to use for driving or walking itinerary items.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.RouteLegDataTemplateSelector.RouteLegHeaderItemTemplate">
+      <summary>
+        Gets or sets the template to use for the header of a route leg, when there are no itinerary items for this route leg.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.RouteLegDataTemplateSelector.TransitItineraryItemTemplate">
+      <summary>
+        Gets or sets the template to use for transit itinerary items.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.RouteLegDataTemplateSelector.TransitWaypointTemplate">
+      <summary>
+        Gets or sets the template to use for transit waypoint (bus or train stops) itinerary items.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.RouteLegDataTemplateSelector.WalkItineraryItemTemplate">
+      <summary>
+        Gets or sets the template to use for walking route itinerary items.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.RouteLegDataTemplateSelector.WaypointTemplate">
+      <summary>
+        Gets or sets the template to use for DepartStart, DepartIntermediateStop, and ArriveFinish itinerary items.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.RouteModeOption">
+      <summary>
+        Defines the type of route directions to calculate.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.RouteModeOption.Driving">
+      <summary>
+        Calculate a route with driving directions.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.RouteModeOption.Transit">
+      <summary>
+        Calculate a route with transit directions.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.RouteModeOption.Walking">
+      <summary>
+        Calculate a route with walking directions.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.RoutePath">
+      <summary>
+        Represents a route path. The route path is the set of points that, when connected, form the line that represents the route on the map.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.RoutePath.LineColor">
+      <summary>
+        Gets or sets the color of the route line.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.RoutePath.LineWidth">
+      <summary>
+        Gets or sets the width of the route line.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.RoutePath.PathPoints">
+      <summary>
+        Gets the collection of locations that represent the route line.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.RoutePath.Visible">
+      <summary>
+        Gets a bool indicating whether the route line is visible.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.RoutePathOutputOption">
+      <summary>
+        Defines the type of route path to return in the response. A route path is a set of points that define the shape of a route line on the map.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.RoutePathOutputOption.None">
+      <summary>
+        Do not return a route path.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.RoutePathOutputOption.Points">
+      <summary>
+        Return the points that define the route path.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.RouteResponse">
+      <summary>
+        Contains the response to a route calculation request.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.RouteResponse.ErrorMessage">
+      <summary>
+        Gets the error message, if any, that was returned from the route request.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.RouteResponse.HasError">
+      <summary>
+        Gets a bool indicating whether an error was returned with the route request.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.RouteResponse.ResponseCode">
+      <summary>
+       Gets a response code that represents the type of result that was returned.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.RouteResponse.Routes">
+      <summary>
+        Gets a collection containing the route results of the request.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.RouteResponseCode">
+      <summary>
+        Defines the type of response returned for a route calculation request.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.RouteResponseCode.DataSourceNotFound">
+      <summary>
+        There is no route data for the specified waypoints.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.RouteResponseCode.InvalidCredentials">
+      <summary>
+        The credentials provided with the route calculation request are invalid.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.RouteResponseCode.ParseError">
+      <summary>
+        The request succeeded, but the response contains invalid data.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.RouteResponseCode.ServerError">
+      <summary>
+        The request failed with an internal server error. There is no additional error information.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.RouteResponseCode.Success">
+      <summary>
+        The route was successfully calculated.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.RouteResponseCode.UnknownError">
+      <summary>
+        An unknown error occurred during the route calculation.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.RouteResponseCode.WaypointDisambiguation">
+      <summary>
+        One or more waypoint locations need to be disambiguated.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.RouteSummary">
+      <summary>
+        Represents the panel to display route summary information. This class inherits from PanelBase.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.Directions.RouteSummary.OnApplyTemplate">
+      <summary>
+        Executes when apply template is called. 
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.SignCollection">
+      <summary>
+        Provides access to a collection of string objects, each representing a road sign.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.TimeTypeOption">
+      <summary>
+        Defines the time type of the given time.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.TimeTypeOption.Arrival">
+      <summary>
+        The time is an arrival time.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.TimeTypeOption.Departure">
+      <summary>
+        The time is a departure time. 
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.TimeTypeOption.LastAvailable">
+      <summary>
+        The time is the last available time.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.TransitLine">
+      <summary>
+        Contains transit line data.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.TransitLine.AbbreviatedName">
+      <summary>
+        Gets the abbreviated name of the transit line.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.TransitLine.AgencyId">
+      <summary>
+        Gets the ID of the agency that owns the transit line.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.TransitLine.AgencyName">
+      <summary>
+        Gets the name of the agency that owns the transit line.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.TransitLine.LineColor">
+      <summary>
+        Gets the color of the transit line on the map.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.TransitLine.LineTextColor">
+      <summary>
+        Gets the color of text associated with the transit line on the map.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.TransitLine.PhoneNumber">
+      <summary>
+        Gets the phone number of the transit agency.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.TransitLine.ProviderInfo">
+      <summary>
+        Gets information about the provider of the transit data.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.TransitLine.Uri">
+      <summary>
+        Gets a URL to the transit agency web site.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.TransitLine.VerboseName">
+      <summary>
+        Gets the full name of the transit line.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.TransitLineCollection">
+      <summary>
+        Provides access to a collection of TransitLine objects.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.TransitRouteDataSource">
+      <summary>
+        Represents a transit route data source.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.TransitRouteDataSource.AutomationName">
+      <summary>
+        Gets or sets the automation name.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.TransitRouteDataSource.Icon">
+      <summary>
+        Gets or sets the icon for the data source.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.TransitRouteDataSource.Summary">
+      <summary>
+        Gets or sets a summary description of the data source.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.Warning">
+      <summary>
+        Represents a route warning. A route warning provides information about a condition that may affect a specific step in the route, such as traffic incident information or a blocked road report.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.Warning.Message">
+      <summary>
+        Gets the warning message.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.Warning.Severity">
+      <summary>
+        Gets the severity of the warning.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.Warning.Type">
+      <summary>
+        Gets the warning type.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.WarningCollection">
+      <summary>
+        Provides access to a collection of Warning objects.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.WarningSeverity">
+      <summary>
+        Defines the type of icon to display, based on the severity of the warning.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningSeverity.LowImpact">
+      <summary>
+        The warning has low impact on the route.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningSeverity.Minor">
+      <summary>
+        The warning has a minor impact on the route.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningSeverity.Moderate">
+      <summary>
+        The warning has a moderate impact on the route.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningSeverity.None">
+      <summary>
+        The warning has no impact on the route.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningSeverity.Serious">
+      <summary>
+       The warning has a high impact on the route.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.WarningType">
+      <summary>
+        Defines the directions step warning type.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningType.Accident">
+      <summary>
+       There is a traffic accident at this direction.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningType.AdminDivisionChange">
+      <summary>
+        At this direction, the route has left one administrative division and entered another.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningType.BlockedRoad">
+      <summary>
+       The road for this direction is closed or blocked.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningType.CheckTimetable">
+      <summary>
+        Check a timetable at this direction. For example, a ferry schedule may need to be checked.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningType.Congestion">
+      <summary>
+       The traffic at this direction is slow.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningType.CountryRegionChange">
+      <summary>
+        At this direction, the route has left one country or region and entered another country or region.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningType.DisabledVehicle">
+      <summary>
+        There is a disabled vehicle at this direction.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningType.GateAccess">
+      <summary>
+        A gate blocks the road at this direction and access is required to continue along the route.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningType.GetOffTransit">
+      <summary>
+       Get off transit at this direction.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningType.GetOnTransit">
+      <summary>
+        Get on transit at this direction.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningType.IllegalUTurn">
+      <summary>
+        A U-turn is illegal at this direction.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningType.MassTransit">
+      <summary>
+       There is a mass transit incident at this direction.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningType.Miscellaneous">
+      <summary>
+        A miscellaneous warning is available at this direction.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningType.NoIncident">
+      <summary>
+       There is no incident at this direction.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningType.None">
+      <summary>
+       There is no warning for this direction.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningType.Other">
+      <summary>
+       There is a warning for this direction that cannot be classified as any other type of warning.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningType.OtherNews">
+      <summary>
+        There is additional traffic incident information for this direction.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningType.OtherTrafficIncidents">
+      <summary>
+       There are other traffic incidents at this direction.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningType.PlannedEvents">
+      <summary>
+       There are scheduled events that may impact this direction.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningType.PrivateRoad">
+      <summary>
+        The road being travelled on at this direction is a privately owned road.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningType.RestrictedTurn">
+      <summary>
+        The turn for this direction may be restricted.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningType.RoadClosures">
+      <summary>
+       There are road closures at this direction.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningType.RoadHazard">
+      <summary>
+        There is a road hazard at this direction.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningType.ScheduledConstruction">
+      <summary>
+        There is construction along the route. This value is used for any type of construction and not just construction that has specific start and end dates.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningType.SeasonalClosures">
+      <summary>
+        A seasonal closure occurs at this direction.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningType.Tollbooth">
+      <summary>
+        A toll is required at this direction to continue along the route.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningType.TollZoneEnter">
+      <summary>
+       The entrance to a toll road is at this direction.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningType.TollZoneExit">
+      <summary>
+        The exit to a toll road is at this direction.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningType.TrafficFlow">
+      <summary>
+        There is a warning about traffic flow at this direction.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningType.TransitLineChange">
+      <summary>
+       There is a transit line change at this direction, but a change of vehicle is not required.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningType.UnpavedRoad">
+      <summary>
+        The road for this direction is unpaved.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningType.WarningTypeTollRoad">
+      <summary>
+        The road being travelled on for this direction is a toll road.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WarningType.Weather">
+      <summary>
+          There is significant weather at this direction
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.Waypoint">
+      <summary>
+        Represents a route waypoint.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.Waypoint.Address">
+      <summary>
+       Gets the address string for the waypoint.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.Waypoint.DisambiguationResult">
+      <summary>
+        Gets a collection of disambiguation results from the geocode of the waypoint address.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.Waypoint.IsViaPoint">
+      <summary>
+       Gets a bool indicating whether the waypoint is a via point.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.Waypoint.Location">
+      <summary>
+        Gets the location of the waypoint.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.Waypoint.Type">
+      <summary>
+       Gets the waypoint type.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.WaypointCollection">
+      <summary>
+        Provides access to a collection of Waypoint objects.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.WaypointCollectionEventArgs">
+      <summary>
+        Contains the event arguments for waypoint events.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.WaypointCollectionEventArgs.Handled">
+      <summary>
+        Gets or sets a bool indicating whether the waypoint event is handled.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Directions.WaypointCollectionEventArgs.VectorChangedEventArgs">
+      <summary>
+        Gets the event arguments.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Directions.WaypointType">
+      <summary>
+        Defines the type of the waypoint location information.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WaypointType.WaypointTypeAddress">
+      <summary>
+         The waypoint location is in the form of an address.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Directions.WaypointType.WaypointTypeLocation">
+      <summary>
+        The waypoint location is in the form of a latitude and longitude coordinate.
+      </summary>
+    </member>
+
+    <member name="N:Bing.Maps.Search">
+      <summary>The Bing.Maps.Search namespace contains classes and enumerations that provide search functionality.</summary>
+    </member>
+
+    <member name="T:Bing.Maps.Search.GeocodeAddress">
+      <summary>
+        Represents an address for a geocode result. Geocoding is the process of matching a string to an address or place. This class inherits from the MapAddress class.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Search.GeocodeAddress.FormattedAddress">
+      <summary>
+        Gets the string containing the complete address. For example, “1 Microsoft Way, Redmond, WA 98052-8300”.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Search.GeocodeAddress.Landmark">
+      <summary>
+        Gets the name of the landmark associated with an address, if there is one. For example, “Eiffel Tower”. 
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Search.GeocodeAddress.Neighborhood">
+      <summary>
+        Gets the neighborhood associated with an address.
+      </summary>
+    </member>
+
+
+    <member name="T:Bing.Maps.Search.GeocodeConfidence">
+      <summary>
+        Defines the confidence of the location result found by the geocoder.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Search.GeocodeConfidence.High">
+      <summary>
+        There is high confidence in the geocode result.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Search.GeocodeConfidence.Low">
+      <summary>
+        There is low confidence in the geocode result.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Search.GeocodeConfidence.Medium">
+      <summary>
+        There is medium confidence in the geocode result.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Search.GeocodeConfidence.Unknown">
+      <summary>
+        The confidence in the geocode result is unknown.
+      </summary>
+    </member>
+
+
+    <member name="T:Bing.Maps.Search.GeocodeLocation">
+      <summary>
+        Represents a geocoded location.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Search.GeocodeLocation.Address">
+      <summary>
+        Gets the postal address of the geocoded location.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Search.GeocodeLocation.Bounds">
+      <summary>
+        Gets the location rectangle that defines the search area.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Search.GeocodeLocation.Confidence">
+      <summary>
+        Gets the confidence of the location match.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Search.GeocodeLocation.EntityType">
+      <summary>
+        Gets the entity type of the location. For example, “Populated Place” or “Monument”.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Search.GeocodeLocation.GeocodeLocations">
+      <summary>
+        Gets the results of the geocode. This collection contains results returned from geocoding using different calculation methods and intended for different uses.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Search.GeocodeLocation.Location">
+      <summary>
+        Gets the coordinates (latitude and longitude) of the point on the Earth that represents the geocoded location.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Search.GeocodeLocation.MatchCodes">
+      <summary>
+        Gets the geocoding level for each location in the response.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Search.GeocodeLocation.Name">
+      <summary>
+        Gets the name of the geocode location. For example, “San Francisco, CA”.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Search.GeocodeLocation.QueryParseValues">
+      <summary>
+        Gets the parsed query string used to search for a location match.
+      </summary>
+    </member>
+
+
+    <member name="T:Bing.Maps.Search.GeocodeLocationCalculationMethod">
+      <summary>
+        Defines the calculation method used to geocode a location.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Search.GeocodeLocationCalculationMethod.Interpolation">
+      <summary>
+        Interpolation was used to geocode. Interpolation matches the location to a point along a road.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Search.GeocodeLocationCalculationMethod.InterpolationOffset">
+      <summary>
+        Interpolation with an offset was used to geocode. The location was matched to a point along a road with an additional offset to shift the point to the side of the street.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Search.GeocodeLocationCalculationMethod.ParcelCentroid">
+      <summary>
+       The geocode matched the location to the center of a parcel.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Search.GeocodeLocationCalculationMethod.Rooftop">
+      <summary>
+        Rooftop geocoding was used to geocode. The geocode matched the location to the rooftop of a building.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Search.GeocodeLocationCalculationMethod.Unknown">
+      <summary>
+        The calculation method is not known.
+      </summary>
+    </member>
+
+
+    <member name="T:Bing.Maps.Search.GeocodeLocationCollection">
+      <summary>
+        Provides access to a collection of GeocodeLocation objects.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Search.GeocodeLocationUsageType">
+      <summary>
+        Defines the best use for a geocoded location.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Search.GeocodeLocationUsageType.Both">
+      <summary>
+        The geocode location can be displayed on the map and used in a route.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Search.GeocodeLocationUsageType.Display">
+      <summary>
+        Use the geocode location to display the location on the map.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Search.GeocodeLocationUsageType.Route">
+      <summary>
+        Use the geocode location when creating a route to the location.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Search.GeocodeLocationUsageType.Unknown">
+      <summary>
+        The best use type is not known.
+      </summary>
+    </member>
+
+
+    <member name="T:Bing.Maps.Search.GeocodeMatchCode">
+      <summary>
+        Defines the geocoding level of the location match found by the geocode.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Search.GeocodeMatchCode.Ambiguous">
+      <summary>
+        The match was ambiguous, so the location is one of a set of possible matches. For example, when you query for the street address 128 Main St., the response may return two locations for 128 North Main St. and 128 South Main St. because there is not enough information to determine which option to choose.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Search.GeocodeMatchCode.Good">
+      <summary>
+        There was one good match.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Search.GeocodeMatchCode.Unknown">
+      <summary>
+        The match code is not known.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Search.GeocodeMatchCode.UpHierarchy">
+      <summary>
+        The match was found by a move up the geographic hierarchy. This occurs when a match for the location request was not found, so a less precise result is returned. For example, if a match for the requested address cannot be found, then a match code of UpHierarchy with a postal code may be returned.
+      </summary>
+    </member>
+
+
+    <member name="T:Bing.Maps.Search.GeocodePoint">
+      <summary>
+        Represents a geocoded location point.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Search.GeocodePoint.CalculationMethod">
+      <summary>
+        Gets the geocode method used to calculate this point.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Search.GeocodePoint.Location">
+      <summary>
+        Gets the map coordinate (latitude and longitude) for this point. 
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Search.GeocodePoint.UsageType">
+      <summary>
+        Gets the usage type for this geocoded point.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Search.GeocodePointCollection">
+      <summary>
+        Provides access to a collection of GeocodePoint objects.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Search.GeocodeRequestOptions">
+      <summary>
+        Defines geocode request options.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Search.GeocodeRequestOptions.Bounds">
+      <summary>
+        Gets or sets the location rectangle that defines the area to search for a location match.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Search.GeocodeRequestOptions.IncludeNeighborhood">
+      <summary>
+        Gets or sets a bool indicating whether to include neighborhood in the response, if it is available. The default value is false.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Search.GeocodeRequestOptions.IncludeQueryParse">
+      <summary>
+        Gets or sets a bool indicating whether to include information about how the QueryString was parsed. The default value is false. 
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Search.GeocodeRequestOptions.MaxResults">
+      <summary>
+        Gets or sets the maximum number of results to return. The valid range is between 1 and 20. The default value is 5.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Search.GeocodeRequestOptions.QueryString">
+      <summary>
+        Gets or sets the query string to geocode.
+      </summary>
+    </member>
+
+
+    <member name="T:Bing.Maps.Search.LocationDataResponse">
+      <summary>
+        Contains the response to a geocode or reverse geocode request.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Search.LocationDataResponse.ErrorMessage">
+      <summary>
+        Gets the error message, if any, that was returned from the geocode or reverse geocode request.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Search.LocationDataResponse.HasError">
+      <summary>
+        Gets a bool indicating whether an error was returned with the geocode or reverse geocode request.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Search.LocationDataResponse.LocationData">
+      <summary>
+        Gets a collection containing the geocode or reverse geocode results of the request.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Search.ReverseGeocodeEntityType">
+      <summary>
+        Defines the entity type of the reverse geocode results to return. Reverse geocoding is the process of matching a coordinate on the map to an address or place.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Search.ReverseGeocodeEntityType.Address">
+      <summary>
+        The reverse geocode should return an address.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Search.ReverseGeocodeEntityType.AdminDivision">
+      <summary>
+        The reverse geocode should return a first-level administrative division, such as a state or province.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Search.ReverseGeocodeEntityType.AdminDivision2">
+      <summary>
+        The reverse geocode should return a second level administrative division, such as a county.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Search.ReverseGeocodeEntityType.CountryRegion">
+      <summary>
+        The reverse geocode should return a country or region.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Search.ReverseGeocodeEntityType.Neighborhood">
+      <summary>
+        The reverse geocode should return a neighborhood.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Search.ReverseGeocodeEntityType.PopulatedPlace">
+      <summary>
+        The reverse geocode should return a populated place, such as a city.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Search.ReverseGeocodeEntityType.Postcode">
+      <summary>
+        The reverse geocode should return a postcode, such as ZIP code or postal code.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Search.ReverseGeocodeEntityType.Unknown">
+      <summary>
+        The entity types of the reverse geocode results are not known.
+      </summary>
+    </member>
+
+
+    <member name="T:Bing.Maps.Search.ReverseGeocodeRequestOptions">
+      <summary>
+        Defines reverse geocode request options. Reverse geocoding is the process of matching a coordinate (latitude and longitude) to an address or place on the map.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Search.ReverseGeocodeRequestOptions.IncludeEntityTypeFlags">
+      <summary>
+        Gets or sets the entity types to match to the specified location. Only the type specified will be returned in the response. If the point cannot be mapped to the entity types specified, no location information is returned in the response.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Search.ReverseGeocodeRequestOptions.IncludeNeighborhood">
+      <summary>
+        Gets or sets a bool indicating whether to include neighborhoods in the reverse geocode results. The default value is false.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Search.ReverseGeocodeRequestOptions.Location">
+      <summary>
+        Gets or sets the location to reverse geocode.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Search.SearchManager">
+      <summary>
+        Contains methods for managing geocode and reverse geocode requests.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.Search.SearchManager.GeocodeAsync(Bing.Maps.Search.GeocodeRequestionOptions)">
+      <summary>
+        Makes an asynchronous geocode request based on the specified request options.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.Search.SearchManager.ReverseGeocodeAsync(Bing.Maps.Search.ReverseGeocodeRequestionOptions)">
+      <summary>
+        Makes an asynchronous reverse geocode request based on the specified request options.
+      </summary>
+    </member>
+
+    <member name="N:Bing.Maps.Traffic">
+      <summary>The Bing.Maps.Traffic namespace contains classes and enumerations that allow traffic data to be displayed on a Bing Map.</summary>
+    </member>
+
+    <member name="T:Bing.Maps.Traffic.IncidentSeverity">
+      <summary>
+        Defines the severity of a traffic incident.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Traffic.IncidentSeverity.LowImpact">
+      <summary>
+        The incident has low impact on traffic.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Traffic.IncidentSeverity.Minor">
+      <summary>
+        The incident has a minor impact on traffic.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Traffic.IncidentSeverity.Moderate">
+      <summary>
+        The incident has a moderate impact on traffic.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Traffic.IncidentSeverity.Serious">
+      <summary>
+      The incident has a serious impact on traffic.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Traffic.IncidentSeverity.Unknown">
+      <summary>
+        The impact of the incident on traffic is not known.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Traffic.IncidentType">
+      <summary>
+        Defines the traffic incident type.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Traffic.IncidentType.Accident">
+      <summary>
+        The traffic incident is a traffic accident.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Traffic.IncidentType.Alert">
+      <summary>
+        There is a traffic alert.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Traffic.IncidentType.Congestion">
+      <summary>
+        The traffic is congested.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Traffic.IncidentType.Construction">
+      <summary>
+        There is construction causing traffic.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Traffic.IncidentType.DisabledVehicle">
+      <summary>
+        There is a disabled vehicle causing traffic.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Traffic.IncidentType.MassTransit">
+      <summary>
+        The traffic incident is related to mass transit.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Traffic.IncidentType.Miscellaneous">
+      <summary>
+        The traffic incident is a miscellaneous event.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Traffic.IncidentType.OtherNews">
+      <summary>
+        There is news related to traffic.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Traffic.IncidentType.PlannedEvent">
+      <summary>
+        There is a planned event causing traffic.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Traffic.IncidentType.RoadHazard">
+      <summary>
+        There is a road hazard causing traffic.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Traffic.IncidentType.Unknown">
+      <summary>
+        The traffic incident type is unknown.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.Traffic.IncidentType.Weather">
+      <summary>
+        A weather event is causing traffic.
+      </summary>
+    </member>
+
+
+    <member name="T:Bing.Maps.Traffic.TrafficIncident">
+      <summary>
+        Represents a traffic incident.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Traffic.TrafficIncident.Congestion">
+      <summary>
+        Gets a description of the degree of traffic congestion.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Traffic.TrafficIncident.Description">
+      <summary>
+        Gets a description of the traffic incident.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Traffic.TrafficIncident.Detour">
+      <summary>
+        Gets information about a detour around the incident, if available.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Traffic.TrafficIncident.EndTime">
+      <summary>
+        Gets the end time of the traffic incident.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Traffic.TrafficIncident.Id">
+      <summary>
+        Gets the unique ID of the traffic incident.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Traffic.TrafficIncident.Lane">
+      <summary>
+        Gets information about road lanes affected by the traffic incident.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Traffic.TrafficIncident.LastModified">
+      <summary>
+        Gets the date when the traffic incident was last updated.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Traffic.TrafficIncident.Location">
+      <summary>
+        Gets the location of the traffic incident.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Traffic.TrafficIncident.LocationCodes">
+      <summary>
+        Gets a list of codes representing the traffic incident locations.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Traffic.TrafficIncident.RoadClosed">
+      <summary>
+        Gets a bool indicating whether there are road closures related to the traffic incident.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Traffic.TrafficIncident.Severity">
+      <summary>
+        Gets the severity of the traffic incident.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Traffic.TrafficIncident.StartTime">
+      <summary>
+        Gets the start time of the traffic incident.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Traffic.TrafficIncident.ToPoint">
+      <summary>
+        Gets the location at which the traffic related to the incident ends.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Traffic.TrafficIncident.Type">
+      <summary>
+        Gets the traffic incident type.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Traffic.TrafficIncident.Verified">
+      <summary>
+        Gets a bool indicating whether the incident has been visually verified or officially confirmed by a source such as the local police department.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Traffic.TrafficIncidentCollection">
+      <summary>
+        Provides access to a collection of TrafficIncident objects.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Traffic.TrafficIncidentPushpinOptions">
+      <summary>
+         Represent the pushpin options to use to display traffic incidents on the map. This class inherits from DependencyObject.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.Traffic.TrafficIncidentPushpinOptions.Tapped">
+      <summary>
+        Occurs when a pushpin representing a traffic incident is tapped.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Traffic.TrafficIncidentPushpinOptions.AccidentPushpinTemplate">
+      <summary>
+        Gets or sets the template to use for pushpins that represent traffic accidents.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Traffic.TrafficIncidentPushpinOptions.AlertPushpinTemplate">
+      <summary>
+       Gets or sets the template to use for pushpins that represent traffic alerts.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Traffic.TrafficIncidentPushpinOptions.CongestionPushpinTemplate">
+      <summary>
+        Gets or sets the template to use for pushpins that represent traffic congestion.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Traffic.TrafficIncidentPushpinOptions.ConstructionPushpinTemplate">
+      <summary>
+        Gets or sets the template to use for pushpins that represent road construction.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Traffic.TrafficIncidentPushpinOptions.DisabledVehiclePushpinTemplate">
+      <summary>
+        Gets or sets the template to use for pushpins that represent disabled vehicles on the road.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Traffic.TrafficIncidentPushpinOptions.MassTransitPushpinTemplate">
+      <summary>
+        Gets or sets the template to use for pushpins that represent mass transit.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Traffic.TrafficIncidentPushpinOptions.MiscellaneousPushpinTemplate">
+      <summary>
+        Gets or sets the template to use for pushpins that represent miscellaneous traffic incidents.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Traffic.TrafficIncidentPushpinOptions.OtherNewsPushpinTemplate">
+      <summary>
+        Gets or sets the template to use for pushpins that represent other news related to traffic.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Traffic.TrafficIncidentPushpinOptions.PlannedEventPushpinTemplate">
+      <summary>
+        Gets or sets the template to use for pushpins that represent planned events related to traffic.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Traffic.TrafficIncidentPushpinOptions.RoadHazardPushpinTemplate">
+      <summary>
+         Gets or sets the template to use for pushpins that represent a hazard on the road.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Traffic.TrafficIncidentPushpinOptions.WeatherPushpinTemplate">
+      <summary>
+        Gets or sets the template to use for pushpins that represent a weather event related to traffic.
+      </summary>
+    </member>
+
+
+    <member name="T:Bing.Maps.Traffic.TrafficIncidentRequestOptions">
+      <summary>
+        Represents traffic incident request options.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Traffic.TrafficIncidentRequestOptions.Bounds">
+      <summary>
+        Gets or sets the area in which to search for traffic incidents.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Traffic.TrafficIncidentRequestOptions.IncludeLocationCodes">
+      <summary>
+        Gets or sets a bool indicating whether location codes should be included in the traffic incident response. The default value is false.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Traffic.TrafficIncidentRequestOptions.SeverityFlags">
+      <summary>
+        Gets or sets the severity of traffic incidents to return. The default is to return all incidents.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Traffic.TrafficIncidentRequestOptions.TypeFlags">
+      <summary>
+        Gets or sets the traffic incident types to return. The default is to return all incidents.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.Traffic.TrafficIncidentResponse">
+      <summary>
+        Contains the response to a request for traffic incident information.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Traffic.TrafficIncidentResponse.ErrorMessage">
+      <summary>
+        Gets the error message, if any, that was returned from the traffic incident request.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Traffic.TrafficIncidentResponse.HasError">
+      <summary>
+        Gets a bool indicating whether an error was returned with the traffic incident request.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Traffic.TrafficIncidentResponse.TrafficIncidents">
+      <summary>
+        Gets a collection containing the traffic incidents for the specified incident request.
+      </summary>
+    </member>
+
+
+    <member name="T:Bing.Maps.Traffic.TrafficManager">
+      <summary>
+        Contains methods for managing traffic incidents.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.Traffic.TrafficManager.ClearTrafficIncident">
+      <summary>
+        Clears all traffic incident pushpins from the map.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.Traffic.TrafficManager.GetIncidentSymbol(Bing.Maps.Traffic.IncidentType)">
+      <summary>
+        Returns a description of the symbol used for the specified traffic incident type.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.Traffic.TrafficManager.GetTrafficIncidentsAsync(Bing.Maps.Traffic.TrafficIncidentRequestOptions)">
+      <summary>
+       Makes an asynchronous request for traffic incidents based on the specified request options.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.Traffic.TrafficManager.ShowTrafficIncidents(Bing.Maps.Traffic.TrafficIncidentCollection)">
+      <summary>
+        Adds pushpins to the map representing the traffic incidents in the specified collection. 
+      </summary>
+    </member>
+
+    <member name="N:Bing.Maps.VenueMaps">
+      <summary>The Bing.Maps.Venue namespace contains classes and enumerations that allow venue maps to be displayed on a Bing Map.</summary>
+    </member>
+
+    <member name="T:Bing.Maps.VenueMaps.VenueAddress">
+      <summary>
+        Represents an address on the map.
+      </summary>
+    </member>
+
+    <member name="P:Bing.Maps.VenueMaps.VenueAddress.CountryRegionCode">
+      <summary>
+        Gets a string specifying the the ISO 3166-1 Alpha-2 country code for the country or region.
+      </summary>
+    </member>
+
+    <member name="P:Bing.Maps.VenueMaps.VenueAddress.Suite">
+      <summary>
+        Gets the suite number of the venue.
+      </summary>
+    </member>
+
+
+    <member name="T:Bing.Maps.Venue">
+      <summary>
+        Represents a venue. This class is used by VenueEventArgs to return venue information when a venue is selected by a pointer device.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Venue.Id">
+      <summary>
+        Gets the ID of the venue.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Venue.Name">
+      <summary>
+        Gets the name of the venue.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.Venue.Polygons">
+      <summary>
+        Gets polygons that represent the venue on the map.
+      </summary>
+    </member>
+
+
+    <member name="T:Bing.Maps.VenueMaps.ActiveFloorChangedEventArgs">
+      <summary>
+        Contains the arguments for the ActiveFloorChanged event of the VenueMap.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.VenueMaps.ActiveFloorChangedEventArgs.#ctor">
+      <summary>
+        Initializes a new instance of the ActiveVenueChangedEventArgs class.
+
+      </summary>
+    </member>
+
+
+    <member name="T:Bing.Maps.VenueMaps.ActiveVenueChangedEventArgs">
+      <summary>
+        Contains the arguments for the ActiveVenueChanged event of the VenueManager.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.VenueMaps.ActiveVenueChangedEventArgs.#ctor">
+      <summary>
+        Initializes a new instance of the ActiveVenueChangedEventArgs class.
+      </summary>
+    </member>
+
+
+    <member name="T:Bing.Maps.VenueMaps.Floor">
+      <summary>
+        Represents one floor of a venue map.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.Floor.DisplayName">
+      <summary>
+        Gets the localized name of the floor.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.Floor.Index">
+      <summary>
+        Gets the index of the floor in the FloorCollection.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.Floor.Name">
+      <summary>
+        Gets the name of the floor.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.Floor.VenueEntities">
+      <summary>
+        Gets the collection of venue entities on the floor.
+      </summary>
+    </member>
+    <member name="T:Bing.Maps.VenueMaps.FloorCollection">
+      <summary>
+        Contains a collection of Floor objects.
+      </summary>
+    </member>
+
+
+    <member name="T:Bing.Maps.VenueMaps.Metadata">
+      <summary>
+        Contains venue metadata.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.Metadata.BusinessId">
+      <summary>
+        Gets the Business ID of the venue.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.Metadata.Center">
+      <summary>
+        Gets the center location of the venue.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.Metadata.DefaultFloor">
+      <summary>
+        Gets the ID of the default floor for the venue.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.Metadata.FloorHeader">
+      <summary>
+        Gets the text displayed in the floor bar.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.Metadata.VenueId">
+      <summary>
+        Gets the unique ID for the venue.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.Metadata.VenueType">
+      <summary>
+        Gets the type of venue.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.Metadata.Name">
+      <summary>
+        Gets the name of the venue.
+      </summary>
+    </member>
+
+
+    <member name="T:Bing.Maps.VenueMaps.NearbyVenue">
+      <summary>
+        Represents a venue found in a search for nearby venues.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.NearbyVenue.Distance">
+      <summary>
+        Gets the distance of the venue from the search point.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.NearbyVenue.Metadata">
+      <summary>
+        Gets information about the venue.
+      </summary>
+    </member>
+
+
+    <member name="T:Bing.Maps.VenueMaps.NearbyVenueCollection">
+      <summary>
+        Contains a collection of NearbyVenue objects.
+      </summary>
+    </member>
+
+
+
+    <member name="T:Bing.Maps.VenueMaps.NearbyVenueOptions">
+      <summary>
+        Represents the options for searching for nearby venues.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.VenueMaps.NearbyVenueOptions.#ctor">
+      <summary>
+        Initializes a new instance of the NearbyVenueOptions class. The default center coordinates are (0,0) and the default radius is 1500 meters.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.VenueMaps.NearbyVenueOptions.#ctor(Bing.Maps.Location,System.Double)">
+      <summary>
+        Initializes a new instance of the NearbyVenueOptions class by specifying a center point and radius.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.NearbyVenueOptions.Center">
+      <summary>
+        Gets or sets the center point of the radial search.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.NearbyVenueOptions.Radius">
+      <summary>
+        Gets or sets the distance to search in meters.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.VenueMaps.SortVenueBy">
+      <summary>
+        Defines how venues are sorted.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.VenueMaps.SortVenueBy.Name">
+      <summary>
+        Venues are sorted by the venue name.
+      </summary>
+    </member>
+    <member name="F:Bing.Maps.VenueMaps.SortVenueBy.CountryRegionCode">
+      <summary>
+        Venues are sorted by the ISO 3166-1 Alpha-2 region/country code, such as US.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.VenueMaps.VenueByCountry">
+      <summary>
+        Represents a venue and includes a subset of venue properties including the country or region and city or populated place where the venue is located.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueByCountry.CountryRegionCode">
+      <summary>
+        Gets the ISO 3166-1 Alpha-2 country code for the country or region.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueByCountry.Id">
+      <summary>
+        Gets the venue ID.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueByCountry.Locality">
+      <summary>
+        Gets the populated place for the address. This typically refers to a city, but may refer to a suburb or a neighborhood in certain countries.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueByCountry.Name">
+      <summary>
+        Gets the name of the venue.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueByCountry.Type">
+      <summary>
+        Gets a string representing the VenueType.
+      </summary>
+    </member>
+
+
+    <member name="T:Bing.Maps.VenueMaps.VenueByCountryOptions">
+      <summary>
+        Contains the options for searching for venues by country.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.VenueMaps.VenueByCountryOptions.#ctor">
+      <summary>
+        Initializes a new instance of the VenueByCountryOptions class for the country-region code US and sorted by venue name.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.VenueMaps.VenueByCountryOptions.#ctor(System.String)">
+      <summary>
+        Initializes a new instance of the VenueByCountryOptions class for the country-region code US.
+
+        The countryRegionCode is case-sensitive and must be all uppercase.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.VenueMaps.VenueByCountryOptions.#ctor(System.String,Bing.Maps.VenueMaps.SortVenueBy)">
+      <summary>
+        Initializes a new instance of the VenueByCountryOptions class.
+
+        The countryRegionCode is case-sensitive and must be all uppercase.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueByCountryOptions.CountryRegionCode">
+      <summary>
+        Gets or sets the ISO 3166-1 Alpha-2 country code for the country.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueByCountryOptions.SortBy">
+      <summary>
+        Gets or sets how the venues are sorted.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.VenueMaps.VenueByCountryCollection">
+      <summary>
+        Contains a collection of VenueByCountry objects.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.VenueMaps.VenueCountry">
+      <summary>
+        Represents a country or region.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueCountry.CountryRegionCode">
+      <summary>
+        Gets the ISO 3166-1 Alpha-2 country code for the country.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueCountry.Name">
+      <summary>
+        Gets the country or region name.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.VenueMaps.VenueCountryCollection">
+      <summary>
+        Contains a collection of VenueCountry objects.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.VenueMaps.VenueDirectoryPanel">
+      <summary>
+        Represents a panel that displays directory information for a venue. This class inherits from PanelBase.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.VenueMaps.VenueDirectoryPanel.CloseTapped">
+      <summary>
+        Occurs when the button to close the directory panel is tapped.
+      </summary>
+    </member>
+
+
+    <member name="T:Bing.Maps.VenueMaps.VenueEntity">
+      <summary>
+        Represents an entity in a venue.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueEntity.Address">
+      <summary>
+        Gets the venue address of the entity.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueEntity.BusinessId">
+      <summary>
+        Gets the Yellow Pages business ID of the entity.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueEntity.CategoryId">
+      <summary>
+        Gets the Yellow Pages business category ID of the entity.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueEntity.CategoryName">
+      <summary>
+        Gets the Yellow Pages business category name associated with the category ID.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueEntity.Description">
+      <summary>
+        Gets the entity description.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueEntity.FillColor">
+      <summary>
+        Gets or sets the fill color for the entity polygon on the map.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueEntity.Floor">
+      <summary>
+        Gets the floor where the entity is located.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueEntity.FloorName">
+      <summary>
+        Gets the localized name of the floor where the entity is located.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueEntity.HighlightColor">
+      <summary>
+        Gets or sets the fill color for the entity polygon when it is in a highlighted state.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueEntity.Highlighted">
+      <summary>
+        Gets whether the entity is in a highlighted state.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueEntity.Id">
+      <summary>
+        Gets the entity ID.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueEntity.LineColor">
+      <summary>
+        Gets or sets the line color if the entity is a line or the outline color if the entity is a polygon.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueEntity.LineWidth">
+      <summary>
+        Gets or sets line width.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueEntity.Location">
+      <summary>
+        Gets or sets the geographical coordinates of the entity.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueEntity.Name">
+      <summary>
+        Gets the name of the entity.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueEntity.Outline">
+      <summary>
+        Gets the coordinates of the vertices of the entity.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueEntity.PhoneNumber">
+      <summary>
+        Gets the phone number of the entity.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueEntity.Type">
+      <summary>
+        Gets the entity type.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.VenueMaps.VenueEntity.Highlight">
+      <summary>
+        Highlights the entity.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.VenueMaps.VenueEntity.Unhighlight">
+      <summary>
+        Removes the highlighting from the entity.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.VenueMaps.VenueEntity.ShowOutline">
+      <summary>
+        Shows the outline of the entity polygon.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.VenueMaps.VenueEntity.HideOutline">
+      <summary>
+        Removes the outline from the entity polygon.
+      </summary>
+    </member>
+    <member name="T:Bing.Maps.VenueMaps.VenueEventArgs">
+      <summary>
+        Contains the arguments for the VenueTapped, PointerEnteredVenue, PionterExitedVenue, PointerOverVenue events of the VenueManager class.
+      </summary>
+    </member>
+    <member name="T:Bing.Maps.VenueMaps.VenueEventArgs.#ctor">
+      <summary>
+        Initializes a new instance of the VenueEventArgs class.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueEventArgs.Handled">
+      <summary>
+        Gets or sets whether the event is handled.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueEventArgs.PointerDeviceType">
+      <summary>
+        Gets the type of pointer device that caused the event.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueEventArgs.PointerLocation">
+      <summary>
+        Gets the location in the venue where the event occurred.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueEventArgs.Venue">
+      <summary>
+        Gets the venue where the event occurred.
+      </summary>
+    </member>
+    <member name="T:Bing.Maps.VenueMaps.VenueEntityCollection">
+      <summary>
+        Contains a collection of VenueEntity objects.
+      </summary>
+    </member>
+    <member name="T:Bing.Maps.VenueMaps.VenueEntityEventArgs">
+      <summary>
+        Contains the arguments for the VenueEntityTapped, PointerEnteredVenueEntity, and PionterExitedVenueEntity events of the VenueManager class.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueEntityEventArgs.Handled">
+      <summary>
+        Gets or sets whether the event is handled.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueEntityEventArgs.PointerDeviceType">
+      <summary>
+        Gets the type of pointer device that caused the event.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueEntityEventArgs.VenueEntity">
+      <summary>
+        Gets the venue entity where the event occurred.
+      </summary>
+    </member>
+    <member name="T:Bing.Maps.VenueMaps.VenueEntityType">
+      <summary>
+        Defines the type of venue entity.
+      </summary>
+    </member>
+    <member name="T:Bing.Maps.VenueMaps.VenueFloorDataSource">
+      <summary>
+        Represents a data source that contains venue floor information.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.VenueMaps.VenueFloorDataSource.#ctor">
+      <summary>
+        Initializes a new instance of the VenueFloorDataSource class.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueFloorDataSource.Items">
+      <summary>
+        Gets the items in the data source.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueFloorDataSource.Name">
+      <summary>
+        Gets or sets the name of the data source.
+      </summary>
+    </member>
+    <member name="T:Bing.Maps.VenueMaps.VenueManager">
+      <summary>
+        Contains methods for performing venue map related functions.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueManager.ActiveVenue">
+      <summary>
+        Gets or sets the venue that is active on the map.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueManager.ShowFloorControl">
+      <summary>
+        Gets or sets whether to show the floor control.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueManager.UseDefaultVenueOutline">
+      <summary>
+        Gets or sets whether a venue outline displays when the mouse moves over the venue or clicks on venue.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueManager.UseDefaultVenueTooltip">
+      <summary>
+        Gets or sets whether a tooltip displays when the mouse moves over the venue or clicks on venue.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.VenueMaps.VenueManager.ClearActiveVenue">
+      <summary>
+        Clears the active venue.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.VenueMaps.VenueManager.CreateVenueMapAsync(System.String)">
+      <summary>
+        Creates a venue map.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.VenueMaps.VenueManager.GetNearbyVenuesAsync(Bing.Maps.VenueMaps.NearbyVenueOptions)">
+      <summary>
+        Returns nearby venues.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.VenueMaps.VenueManager.GetAllCountriesAsync">
+      <summary>
+        Returns countries that have venue maps.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.VenueMaps.VenueManager.GetAllVenuesByCountryAsync(Bing.Maps.VenueMaps.VenueByCountryOptions)">
+      <summary>
+        Returns all the venues in the specified country.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.VenueMaps.VenueManager.GetDirectoryPanel">
+      <summary>
+        Returns the directory panel.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.VenueMaps.VenueManager.ActiveVenueChanged">
+      <summary>
+        Occurs when the active venue changes.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.VenueMaps.VenueManager.PointerEnteredVenue">
+      <summary>
+        Occurs when the mouse moves over the venue.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.VenueMaps.VenueManager.PointerEnteredVenueEntity">
+      <summary>
+        Occurs when the mouse moves over the venue entity.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.VenueMaps.VenueManager.PointerExitedVenue">
+      <summary>
+        Occurs when the mouse moves out of the venue.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.VenueMaps.VenueManager.PointerExitedVenueEntity">
+      <summary>
+        Occurs when the mouse moves out of the venue entity.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.VenueMaps.VenueManager.PointerOverVenue">
+      <summary>
+        Occurs when the mouse is on the venue.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.VenueMaps.VenueManager.VenueEntityTapped">
+      <summary>
+        Occurs when a venue entity is tapped.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.VenueMaps.VenueManager.VenueTapped">
+      <summary>
+        Occurs when a venue is tapped.
+      </summary>
+    </member>
+    <member name="T:Bing.Maps.VenueMaps.VenueMap">
+      <summary>
+        Represents a venue map.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueMap.ActiveFloor">
+      <summary>
+        Gets and sets the active venue floor index.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueMap.Address">
+      <summary>
+        Gets the full address of the venue.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueMap.Bounds">
+      <summary>
+        Gets the best map view of the venue map.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueMap.BusinessId">
+      <summary>
+        Gets the Yellow Pages ID for the venue map.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueMap.Location">
+      <summary>
+        Gets the location of the center of the venue map.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueMap.DefaultFloor">
+      <summary>
+        Gets the index of the floor to display as default.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueMap.Floors">
+      <summary>
+        Gets an array, where each element represents a floor of the venue.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueMap.Id">
+      <summary>
+        Gets the unique venue map ID.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueMap.Name">
+      <summary>
+        Gets the name of the venue represented by the venue map.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueMap.PhoneNumber">
+      <summary>
+        Gets the phone number for the venue represented by the venue map.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueMap.Type">
+      <summary>
+        Gets the venue map type, such as Mall.
+      </summary>
+    </member>
+    <member name="P:Bing.Maps.VenueMaps.VenueMap.Visible">
+      <summary>
+        Gets whether the active venue map is currently visible.
+      </summary>
+    </member>
+    <member name="M:Bing.Maps.VenueMaps.VenueMap.SetActiveFloor(System.String)">
+      <summary>
+        Sets the active floor using a localized floor name.
+      </summary>
+    </member>
+    <member name="E:Bing.Maps.VenueMaps.VenueMap.ActiveFloorChanged">
+      <summary>
+        Occurs when the active floor for the venue is changed.
+      </summary>
+    </member>
+
+    <member name="T:Bing.Maps.VenueMaps.VenueType">
+      <summary>
+        Defines the type of venues.
+      </summary>
+    </member>
+
+  </members>
+</doc>
