@@ -477,51 +477,5 @@ namespace Xamarin.Forms.Platform.Android
 
 			UpdateClickable(forceClick);
 		}
-
-		[SuppressMessage("ReSharper", "CompareOfFloatsByEqualityOperator")]
-		public override ViewStates Visibility
-		{
-			get { return base.Visibility; }
-			set
-			{
-				if (Alpha == 0 || Alpha == 1)
-				{
-					// Business as usual
-					base.Visibility = value;
-				}
-				else
-				{
-					// For some reason, restoring the visibility of Views which have an 
-					// Alpha value between 0 and 1 causes a crash. We can avoid the problem
-					// by forcing the Alpha value to 0 while we restore the visibility, then
-					// restoring the original value. This solution should be removed as soon
-					// as we can figure out the underlying renderer error
-
-					// Track the current alpha setting
-					var alpha = Alpha;
-
-					var currentVisibility = base.Visibility;
-
-					// Are we making this visible?
-					if ((currentVisibility == ViewStates.Invisible || currentVisibility == ViewStates.Gone) &&
-					    value == ViewStates.Visible)
-					{
-						// Set the alpha to zero so we don't get a mysterious rendering crash
-						Alpha = 0;
-					}
-
-					base.Visibility = value;
-
-					// Queue up the restoration of the alpha setting
-					// ReSharper disable once CompareOfFloatsByEqualityOperator
-					if (Alpha != alpha)
-					{
-						Looper looper = Context.MainLooper;
-						var handler = new Handler(looper);
-						handler.Post(() => { Alpha = alpha; });
-					}
-				}
-			}
-		}
 	}
 }
