@@ -84,6 +84,10 @@ namespace Xamarin.Forms.Platform.WinRT
 				UpdateAlignment();
 			else if (e.PropertyName == Entry.PlaceholderColorProperty.PropertyName)
 				UpdatePlaceholderColor();
+#if WINDOWS_UWP
+			else if (e.PropertyName == VisualElement.IsFocusedProperty.PropertyName)
+				UpdateFocus();
+#endif
 		}
 
 		protected override void UpdateBackgroundColor()
@@ -117,6 +121,16 @@ namespace Xamarin.Forms.Platform.WinRT
 		{
 			Control.TextAlignment = Element.HorizontalTextAlignment.ToNativeTextAlignment();
 		}
+
+#if WINDOWS_UWP
+		void UpdateFocus()
+		{
+			if (Element.IsFocused)
+				Windows.UI.ViewManagement.InputPane.GetForCurrentView().TryShow();
+			else
+				Windows.UI.ViewManagement.InputPane.GetForCurrentView().TryHide();
+		}
+#endif
 
 		void UpdateFont()
 		{
