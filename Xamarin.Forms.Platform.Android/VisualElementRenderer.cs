@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
-using Android.OS;
 using Android.Support.V4.View;
 using Android.Views;
 using Xamarin.Forms.Internals;
