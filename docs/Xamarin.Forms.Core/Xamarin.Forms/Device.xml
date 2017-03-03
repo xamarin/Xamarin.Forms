@@ -32,7 +32,7 @@
         <ReturnType>System.String</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
+        <summary>The string "Android", representing the Android operating system.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -155,7 +155,7 @@ Device.BeginInvokeOnMainThread (() => {
         <ReturnType>System.String</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
+        <summary>The string "iOS", representing the iOS operating system.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -170,7 +170,7 @@ Device.BeginInvokeOnMainThread (() => {
         <ReturnType>System.String</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
+        <summary>The string "macOS", representing the macOS operating system.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -329,7 +329,7 @@ button.HeightRequest = Device.OnPlatform (20,30,30);
         <ReturnType>System.String</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
+        <summary>Gets the kind of device that Xamarin.Forms is currently working on.</summary>
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
@@ -361,9 +361,9 @@ button.HeightRequest = Device.OnPlatform (20,30,30);
         <remarks>While the callback returns <see langword="true" />, the timer will keep recurring.</remarks>
       </Docs>
     </Member>
-    <Member MemberName="Windows">
-      <MemberSignature Language="C#" Value="public const string Windows;" />
-      <MemberSignature Language="ILAsm" Value=".field public static literal string Windows" />
+    <Member MemberName="UWP">
+      <MemberSignature Language="C#" Value="public const string UWP;" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal string UWP" />
       <MemberType>Field</MemberType>
       <AssemblyInfo>
         <AssemblyVersion>2.0.0.0</AssemblyVersion>
@@ -372,13 +372,28 @@ button.HeightRequest = Device.OnPlatform (20,30,30);
         <ReturnType>System.String</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
+        <summary>The string "Windows", representing the Windows operating system.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
     <Member MemberName="WinPhone">
       <MemberSignature Language="C#" Value="public const string WinPhone;" />
       <MemberSignature Language="ILAsm" Value=".field public static literal string WinPhone" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>The string "WinPhone", representing the Windows Mobile operating system.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="WinRT">
+      <MemberSignature Language="C#" Value="public const string WinRT;" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal string WinRT" />
       <MemberType>Field</MemberType>
       <AssemblyInfo>
         <AssemblyVersion>2.0.0.0</AssemblyVersion>

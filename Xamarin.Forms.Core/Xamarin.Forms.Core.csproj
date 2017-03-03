@@ -87,6 +87,7 @@
     <Compile Include="DataTemplateSelector.cs" />
     <Compile Include="DateChangedEventArgs.cs" />
     <Compile Include="DelegateLogListener.cs" />
+    <Compile Include="IEditorController.cs" />
     <Compile Include="Internals\EffectUtilities.cs" />
     <Compile Include="EnumerableExtensions.cs" />
     <Compile Include="PlatformConfiguration\AndroidSpecific\AppCompat\Application.cs" />
@@ -448,6 +449,7 @@
     <Compile Include="XmlnsDefinitionAttribute.cs" />
     <Compile Include="PlatformConfiguration\macOSSpecific\TabbedPage.cs" />
     <Compile Include="PlatformConfiguration\macOSSpecific\TabsStyle.cs" />
+    <Compile Include="FontElement.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>
