@@ -450,6 +450,7 @@
     <Compile Include="PlatformConfiguration\macOSSpecific\TabbedPage.cs" />
     <Compile Include="PlatformConfiguration\macOSSpecific\TabsStyle.cs" />
     <Compile Include="FontElement.cs" />
+    <Compile Include="PlatformConfiguration\AndroidSpecific\ListView.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>
