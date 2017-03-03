@@ -4,9 +4,7 @@
 
 	public static class ListView
 	{
-		public static readonly BindableProperty IsFastScrollEnabledProperty =
-				BindableProperty.Create("IsFastScrollEnabled", typeof(bool),
-				typeof(ListView), true);
+		public static readonly BindableProperty IsFastScrollEnabledProperty = BindableProperty.Create("IsFastScrollEnabled", typeof(bool), typeof(ListView), false);
 
 		public static bool GetIsFastScrollEnabled(BindableObject element)
 		{
