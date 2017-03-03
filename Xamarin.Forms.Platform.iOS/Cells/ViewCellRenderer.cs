@@ -48,8 +48,11 @@ namespace Xamarin.Forms.Platform.iOS
 		internal class ViewTableCell : UITableViewCell, INativeElementView
 		{
 			WeakReference<IVisualElementRenderer> _rendererRef;
-
 			ViewCell _viewCell;
+
+			Element INativeElementView.Element => ViewCell;
+			internal bool SupressSeparator { get; set; }
+			bool _disposed;
 
 			public ViewTableCell(string key) : base(UITableViewCellStyle.Default, key)
 			{
@@ -65,10 +68,6 @@ namespace Xamarin.Forms.Platform.iOS
 					UpdateCell(value);
 				}
 			}
-
-			Element INativeElementView.Element => ViewCell;
-
-			internal bool SupressSeparator { get; set; }
 
 			public override void LayoutSubviews()
 			{
@@ -115,6 +114,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 			protected override void Dispose(bool disposing)
 			{
+				if (_disposed)
+					return;
+
 				if (disposing)
 				{
 					IVisualElementRenderer renderer;
@@ -126,13 +128,20 @@ namespace Xamarin.Forms.Platform.iOS
 
 						_rendererRef = null;
 					}
+
+					_viewCell = null;
 				}
+
+				_disposed = true;
 
 				base.Dispose(disposing);
 			}
 
 			IVisualElementRenderer GetNewRenderer()
 			{
+				if (_viewCell.View == null)
+					throw new InvalidOperationException($"ViewCell must have a {nameof(_viewCell.View)}");
+
 				var newRenderer = Platform.CreateRenderer(_viewCell.View);
 				_rendererRef = new WeakReference<IVisualElementRenderer>(newRenderer);
 				ContentView.AddSubview(newRenderer.NativeView);

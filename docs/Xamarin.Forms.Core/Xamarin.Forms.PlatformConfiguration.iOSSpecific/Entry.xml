@@ -10,10 +10,32 @@
   </Base>
   <Interfaces />
   <Docs>
-    <summary>To be added.</summary>
-    <remarks>To be added.</remarks>
+    <summary>The entry instance that Xamarin.Forms created on the iOS platform.</summary>
+    <remarks>
+      <para>Developers can use this platform-specific instance to control whether text in the entry instance will be resized to fit the available width. If font size adjustment is turned on, the control will progressively reduce the font sized down to a minimum value as the user enters text.</para>
+    </remarks>
   </Docs>
   <Members>
+    <Member MemberName="AdjustsFontSizeToFitWidth">
+      <MemberSignature Language="C#" Value="public static bool AdjustsFontSizeToFitWidth (this Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.iOS,Xamarin.Forms.Entry&gt; config);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig bool AdjustsFontSizeToFitWidth(class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.iOS, class Xamarin.Forms.Entry&gt; config) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="config" Type="Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.iOS,Xamarin.Forms.Entry&gt;" RefType="this" />
+      </Parameters>
+      <Docs>
+        <param name="config">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
     <Member MemberName="AdjustsFontSizeToFitWidthProperty">
       <MemberSignature Language="C#" Value="public static readonly Xamarin.Forms.BindableProperty AdjustsFontSizeToFitWidthProperty;" />
       <MemberSignature Language="ILAsm" Value=".field public static initonly class Xamarin.Forms.BindableProperty AdjustsFontSizeToFitWidthProperty" />
@@ -25,7 +47,7 @@
         <ReturnType>Xamarin.Forms.BindableProperty</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
+        <summary>Backing store for the attached property that controls whether the entry control automatically adjusts the font size.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -43,9 +65,9 @@
         <Parameter Name="config" Type="Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.iOS,Xamarin.Forms.Entry&gt;" RefType="this" />
       </Parameters>
       <Docs>
-        <param name="config">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
+        <param name="config">The platform specific configuration that contains the element on which to perform the operation.</param>
+        <summary>Disables automatic font size adjustment on the platform-specific element.</summary>
+        <returns>The updated configuration object on which developers can make successive method calls.</returns>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -63,9 +85,9 @@
         <Parameter Name="config" Type="Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.iOS,Xamarin.Forms.Entry&gt;" RefType="this" />
       </Parameters>
       <Docs>
-        <param name="config">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
+        <param name="config">The platform specific configuration that contains the element on which to perform the operation.</param>
+        <summary>Enables automatic font size adjustment on the platform-specific element.</summary>
+        <returns>The updated configuration object on which developers can make successive method calls.</returns>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -83,29 +105,9 @@
         <Parameter Name="element" Type="Xamarin.Forms.BindableObject" />
       </Parameters>
       <Docs>
-        <param name="element">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
-    <Member MemberName="IsAdjustsFontSizeToFitWidthEnabled">
-      <MemberSignature Language="C#" Value="public static bool IsAdjustsFontSizeToFitWidthEnabled (this Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.iOS,Xamarin.Forms.Entry&gt; config);" />
-      <MemberSignature Language="ILAsm" Value=".method public static hidebysig bool IsAdjustsFontSizeToFitWidthEnabled(class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.iOS, class Xamarin.Forms.Entry&gt; config) cil managed" />
-      <MemberType>Method</MemberType>
-      <AssemblyInfo>
-        <AssemblyVersion>2.0.0.0</AssemblyVersion>
-      </AssemblyInfo>
-      <ReturnValue>
-        <ReturnType>System.Boolean</ReturnType>
-      </ReturnValue>
-      <Parameters>
-        <Parameter Name="config" Type="Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.iOS,Xamarin.Forms.Entry&gt;" RefType="this" />
-      </Parameters>
-      <Docs>
-        <param name="config">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
+        <param name="element">The platform specific element on which to perform the operation.</param>
+        <summary>Returns a Boolean value that tells whether the entry control automatically adjusts the font size of text that the user enters.</summary>
+        <returns>A Boolean value that tells whether the entry control automatically adjusts the font size of text that the user enters.</returns>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -124,15 +126,15 @@
         <Parameter Name="value" Type="System.Boolean" />
       </Parameters>
       <Docs>
-        <param name="element">To be added.</param>
-        <param name="value">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="element">The platform specific element on which to perform the operation.</param>
+        <param name="value">The new property value to assign.</param>
+        <summary>Sets a Boolean value that tells whether the entry control automatically adjusts the font size of text that the user enters.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-    <Member MemberName="SetAdjustsFontSizeToFitWidthEnabled">
-      <MemberSignature Language="C#" Value="public static Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.iOS,Xamarin.Forms.Entry&gt; SetAdjustsFontSizeToFitWidthEnabled (this Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.iOS,Xamarin.Forms.Entry&gt; config, bool value);" />
-      <MemberSignature Language="ILAsm" Value=".method public static hidebysig class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.iOS, class Xamarin.Forms.Entry&gt; SetAdjustsFontSizeToFitWidthEnabled(class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.iOS, class Xamarin.Forms.Entry&gt; config, bool value) cil managed" />
+    <Member MemberName="SetAdjustsFontSizeToFitWidth">
+      <MemberSignature Language="C#" Value="public static Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.iOS,Xamarin.Forms.Entry&gt; SetAdjustsFontSizeToFitWidth (this Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.iOS,Xamarin.Forms.Entry&gt; config, bool value);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.iOS, class Xamarin.Forms.Entry&gt; SetAdjustsFontSizeToFitWidth(class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.iOS, class Xamarin.Forms.Entry&gt; config, bool value) cil managed" />
       <MemberType>Method</MemberType>
       <AssemblyInfo>
         <AssemblyVersion>2.0.0.0</AssemblyVersion>
@@ -145,10 +147,10 @@
         <Parameter Name="value" Type="System.Boolean" />
       </Parameters>
       <Docs>
-        <param name="config">To be added.</param>
-        <param name="value">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
+        <param name="config">The platform specific configuration that contains the element on which to perform the operation.</param>
+        <param name="value">The new property value to assign.</param>
+        <summary>Sets a Boolean value that tells whether automatic font size adjusmtent is enabled on the element.</summary>
+        <returns>The updated configuration object on which developers can make successive method calls.</returns>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>

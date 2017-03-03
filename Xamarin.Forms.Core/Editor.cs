@@ -4,7 +4,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_EditorRenderer))]
-	public class Editor : InputView, IFontElement, IElementConfiguration<Editor>
+	public class Editor : InputView, IEditorController, IFontElement, IElementConfiguration<Editor>
 	{
 		public static readonly BindableProperty TextProperty = BindableProperty.Create("Text", typeof(string), typeof(Editor), null, BindingMode.TwoWay, propertyChanged: (bindable, oldValue, newValue) =>
 		{
@@ -13,12 +13,11 @@ namespace Xamarin.Forms
 				editor.TextChanged(editor, new TextChangedEventArgs((string)oldValue, (string)newValue));
 		});
 
-		public static readonly BindableProperty FontFamilyProperty = BindableProperty.Create("FontFamily", typeof(string), typeof(Editor), default(string));
+		public static readonly BindableProperty FontFamilyProperty = FontElement.FontFamilyProperty;
 
-		public static readonly BindableProperty FontSizeProperty = BindableProperty.Create("FontSize", typeof(double), typeof(Editor), -1.0,
-			defaultValueCreator: bindable => Device.GetNamedSize(NamedSize.Default, (Editor)bindable));
+		public static readonly BindableProperty FontSizeProperty = FontElement.FontSizeProperty;
 
-		public static readonly BindableProperty FontAttributesProperty = BindableProperty.Create("FontAttributes", typeof(FontAttributes), typeof(Editor), FontAttributes.None);
+		public static readonly BindableProperty FontAttributesProperty = FontElement.FontAttributesProperty;
 
 		public static readonly BindableProperty TextColorProperty = BindableProperty.Create("TextColor", typeof(Color), typeof(Editor), Color.Default);
 		readonly Lazy<PlatformConfigurationRegistry<Editor>> _platformConfigurationRegistry;
@@ -54,6 +53,25 @@ namespace Xamarin.Forms
 			set { SetValue(FontSizeProperty, value); }
 		}
 
+		void IFontElement.OnFontFamilyChanged(string oldValue, string newValue)
+		{
+		}
+
+		void IFontElement.OnFontSizeChanged(double oldValue, double newValue)
+		{
+		}
+
+		void IFontElement.OnFontChanged(Font oldValue, Font newValue)
+		{
+		}
+
+		double IFontElement.FontSizeDefaultValueCreator() =>
+			Device.GetNamedSize(NamedSize.Default, (Editor)this);
+
+		void IFontElement.OnFontAttributesChanged(FontAttributes oldValue, FontAttributes newValue)
+		{
+		}
+
 		public event EventHandler Completed;
 
 		public event EventHandler<TextChangedEventArgs> TextChanged;
@@ -68,7 +86,7 @@ namespace Xamarin.Forms
 			return _platformConfigurationRegistry.Value.On<T>();
 		}
 
-		internal void SendCompleted()
+		void IEditorController.SendCompleted()
 		{
 			EventHandler handler = Completed;
 			if (handler != null)
