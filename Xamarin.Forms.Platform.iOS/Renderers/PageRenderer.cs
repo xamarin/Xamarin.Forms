@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using UIKit;
 using PageUIStatusBarAnimation = Xamarin.Forms.PlatformConfiguration.iOSSpecific.UIStatusBarAnimation;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
@@ -85,6 +86,20 @@ namespace Xamarin.Forms.Platform.iOS
 
 			_appeared = false;
 			PageController.SendDisappearing();
+
+			var navigationPage = Element.Parent as NavigationPage;
+			if (navigationPage == null)
+				return;
+
+			int managedStackCount = navigationPage.Navigation.NavigationStack.Count;
+			IVisualElementRenderer renderer = Platform.GetRenderer(navigationPage);
+
+			var navigationController = renderer as UINavigationController;
+			if (navigationController != null && managedStackCount > navigationController.ViewControllers.Length)
+			{
+				Task<Page> task = ((INavigationPageController)renderer.Element).PopAsyncInner(animated, true);
+				Task.WaitAll(task);
+			}
 		}
 
 		public override void ViewDidLoad()
