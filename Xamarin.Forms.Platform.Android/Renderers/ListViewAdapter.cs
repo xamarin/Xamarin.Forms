@@ -395,7 +395,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				for (var x = 0; x < take; x++)
 				{
-					if (position + x >= templatedItems.Count)
+					if (position + x >= _listCount)
 						return cells;
 
 					cells.Add(templatedItems[x + position]);
@@ -406,7 +406,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			var i = 0;
 			var global = 0;
-			for (; i < templatedItems.Count; i++)
+			for (; i < _listCount; i++)
 			{
 				var group = templatedItems.GetGroup(i);
 
