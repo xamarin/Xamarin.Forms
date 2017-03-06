@@ -316,6 +316,7 @@
       <Type Name="IViewContainer`1" DisplayName="IViewContainer&lt;T&gt;" Kind="Interface" />
       <Type Name="IViewController" Kind="Interface" />
       <Type Name="IVisualElementController" Kind="Interface" />
+      <Type Name="IWebViewController" Kind="Interface" />
       <Type Name="IWebViewDelegate" Kind="Interface" />
       <Type Name="Keyboard" Kind="Class" />
       <Type Name="KeyboardFlags" Kind="Enumeration" />
