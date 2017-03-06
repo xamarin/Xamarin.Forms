@@ -11,6 +11,8 @@ using Mono.Cecil;
 
 using Xamarin.Forms.Xaml;
 using Mono.Cecil.Cil;
+using Mono.Cecil.Pdb;
+using Mono.Cecil.Mdb;
 
 namespace Xamarin.Forms.Build.Tasks
 {

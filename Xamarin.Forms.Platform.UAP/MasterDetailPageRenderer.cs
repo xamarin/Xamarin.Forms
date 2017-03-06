@@ -161,7 +161,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == MasterDetailPage.IsPresentedProperty.PropertyName)
+			if (e.PropertyName == MasterDetailPage.IsPresentedProperty.PropertyName || e.PropertyName == MasterDetailPage.MasterBehaviorProperty.PropertyName)
 				UpdateIsPresented();
 			else if (e.PropertyName == "Master")
 				UpdateMaster();
@@ -283,6 +283,11 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateIsPresented()
 		{
+			// Ignore the IsPresented value being set to false for Split mode on desktop and allow the master
+			// view to be made initially visible
+			if (Device.Idiom == TargetIdiom.Desktop && Control.IsPaneOpen && Element.MasterBehavior != MasterBehavior.Popover)
+				return;
+
 			Control.IsPaneOpen = Element.IsPresented;
 		}
 

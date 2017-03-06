@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using Android.Content.Res;
 using Android.Text;
+using Android.Text.Method;
 using Android.Util;
 using Android.Views;
 using Java.Lang;
@@ -15,6 +16,8 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			AutoPackage = false;
 		}
+
+        IEditorController ElementController => Element;
 
 		void ITextWatcher.AfterTextChanged(IEditable s)
 		{
@@ -53,7 +56,7 @@ namespace Xamarin.Forms.Platform.Android
 				edit.AddTextChangedListener(this);
 				edit.OnBackKeyboardPressed += (sender, args) =>
 				{
-					Element.SendCompleted();
+                    ElementController.SendCompleted();
 					edit.ClearFocus();
 				};
 			}
@@ -86,10 +89,18 @@ namespace Xamarin.Forms.Platform.Android
 			base.OnElementPropertyChanged(sender, e);
 		}
 
+		protected virtual NumberKeyListener GetDigitsKeyListener(InputTypes inputTypes)
+		{
+			// Override this in a custom renderer to use a different NumberKeyListener 
+			// or to filter out input types you don't want to allow 
+			// (e.g., inputTypes &= ~InputTypes.NumberFlagSigned to disallow the sign)
+			return LocalizedDigitsKeyListener.Create(inputTypes);
+		}
+
 		internal override void OnNativeFocusChanged(bool hasFocus)
 		{
 			if (Element.IsFocused && !hasFocus) // Editor has requested an unfocus, fire completed event
-				Element.SendCompleted();
+                ElementController.SendCompleted();
 		}
 
 		void UpdateFont()
@@ -102,7 +113,14 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			Editor model = Element;
 			EditorEditText edit = Control;
-			edit.InputType = model.Keyboard.ToInputType() | InputTypes.TextFlagMultiLine;
+			var keyboard = model.Keyboard;
+
+			edit.InputType = keyboard.ToInputType() | InputTypes.TextFlagMultiLine;
+
+			if (keyboard == Keyboard.Numeric)
+			{
+				edit.KeyListener = GetDigitsKeyListener(edit.InputType);
+			}
 		}
 
 		void UpdateText()

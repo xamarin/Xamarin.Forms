@@ -1,16 +1,18 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_PickerRenderer))]
-	public class Picker : View, IElementConfiguration<Picker>
+	public class Picker : View, ITextElement, IElementConfiguration<Picker>
 	{
-		public static readonly BindableProperty TextColorProperty =
-			BindableProperty.Create(nameof(TextColor), typeof(Color), typeof(Picker), Color.Default);
+		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
 
 		public static readonly BindableProperty TitleProperty =
 			BindableProperty.Create(nameof(Title), typeof(string), typeof(Picker), default(string));
@@ -56,8 +58,8 @@ namespace Xamarin.Forms
 		}
 
 		public Color TextColor {
-			get { return (Color)GetValue(TextColorProperty); }
-			set { SetValue(TextColorProperty, value); }
+			get { return (Color)GetValue(TextElement.TextColorProperty); }
+			set { SetValue(TextElement.TextColorProperty, value); }
 		}
 
 		public string Title {
@@ -178,8 +180,8 @@ namespace Xamarin.Forms
 		static void OnSelectedIndexChanged(object bindable, object oldValue, object newValue)
 		{
 			var picker = (Picker)bindable;
-			picker.SelectedIndexChanged?.Invoke(bindable, EventArgs.Empty);
 			picker.UpdateSelectedItem();
+			picker.SelectedIndexChanged?.Invoke(bindable, EventArgs.Empty);
 		}
 
 		static void OnSelectedItemChanged(BindableObject bindable, object oldValue, object newValue)
@@ -217,23 +219,33 @@ namespace Xamarin.Forms
 			return _platformConfigurationRegistry.Value.On<T>();
 		}
 
-		class LockableObservableListWrapper : INotifyCollectionChanged, IList<string>
+		void ITextElement.OnTextColorPropertyChanged(Color oldValue, Color newValue)
 		{
-			readonly ObservableList<string> _list = new ObservableList<string>();
+		}
+
+		internal class LockableObservableListWrapper : IList<string>, ICollection<string>, INotifyCollectionChanged, INotifyPropertyChanged, IReadOnlyList<string>, IReadOnlyCollection<string>, IEnumerable<string>, IEnumerable
+		{
+			internal readonly ObservableCollection<string> _list = new ObservableCollection<string>();
+
+			event NotifyCollectionChangedEventHandler INotifyCollectionChanged.CollectionChanged
+			{
+				add { ((INotifyCollectionChanged)_list).CollectionChanged += value; }
+				remove { ((INotifyCollectionChanged)_list).CollectionChanged -= value; }
+			}
+
+			event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged {
+				add { ((INotifyPropertyChanged)_list).PropertyChanged += value; }
+				remove { ((INotifyPropertyChanged)_list).PropertyChanged -= value; }
+			}
 
 			public bool IsLocked { get; set; }
-
-			event NotifyCollectionChangedEventHandler INotifyCollectionChanged.CollectionChanged {
-				add { _list.CollectionChanged += value; }
-				remove { _list.CollectionChanged -= value; }
-			}
 
 			void ThrowOnLocked()
 			{
 				if (IsLocked)
 					throw new InvalidOperationException("The Items list can not be manipulated if the ItemsSource property is set");
-			
 			}
+
 			public string this [int index] {
 				get { return _list [index]; }
 				set {
