@@ -291,6 +291,7 @@
       <Type Name="IMessagingCenter" Kind="Interface" />
       <Type Name="INativeElementView" Kind="Interface" />
       <Type Name="INavigation" Kind="Interface" />
+      <Type Name="INavigationMenuController" Kind="Interface" />
       <Type Name="INavigationPageController" Kind="Interface" />
       <Type Name="InputView" Kind="Class" />
       <Type Name="IOpenGlViewController" Kind="Interface" />
