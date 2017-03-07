@@ -58,6 +58,7 @@ namespace Xamarin.Forms.Platform.Android
 				MessagingCenter.Subscribe<AppCompat.Platform>(this, AppCompat.Platform.CloseContextActionsSignalName, p => CloseContextActions());
 			else
 				MessagingCenter.Subscribe<Platform>(this, Platform.CloseContextActionsSignalName, p => CloseContextActions());
+			InvalidateCount();
 		}
 
 		public override int Count
@@ -391,11 +392,12 @@ namespace Xamarin.Forms.Platform.Android
 				return cells;
 
 			var templatedItems = TemplatedItemsView.TemplatedItems;
+			var templatedItemsCount = templatedItems.Count;
 			if (!_listView.IsGroupingEnabled)
 			{
 				for (var x = 0; x < take; x++)
 				{
-					if (position + x >= _listCount)
+					if (position + x >= templatedItemsCount)
 						return cells;
 
 					cells.Add(templatedItems[x + position]);
@@ -406,7 +408,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			var i = 0;
 			var global = 0;
-			for (; i < _listCount; i++)
+			for (; i < templatedItemsCount; i++)
 			{
 				var group = templatedItems.GetGroup(i);
 
