@@ -5,8 +5,6 @@ using System.Linq;
 
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using Mono.Cecil.Mdb;
-using Mono.Cecil.Pdb;
 
 using Xamarin.Forms.Xaml;
 
@@ -74,7 +72,6 @@ namespace Xamarin.Forms.Build.Tasks
 				AssemblyResolver = resolver,
 				ReadWrite = !ReadOnly,
 				ReadSymbols = DebugSymbols,
-				SymbolReaderProvider = DebugSymbols ? (System.Type.GetType("Mono.Runtime") != null ? ((ISymbolReaderProvider)(new MdbReaderProvider())) : ((ISymbolReaderProvider)new PdbReaderProvider())) : null,
 			};
 
 			using (var assemblyDefinition = AssemblyDefinition.ReadAssembly(Path.GetFullPath(Assembly),readerParameters)) {
@@ -228,7 +225,6 @@ namespace Xamarin.Forms.Build.Tasks
 				try {
 					assemblyDefinition.Write(new WriterParameters {
 						WriteSymbols = DebugSymbols,
-						SymbolWriterProvider = DebugSymbols ? (System.Type.GetType("Mono.Runtime") != null ? ((ISymbolWriterProvider)(new MdbWriterProvider())) : ((ISymbolWriterProvider)new MdbWriterProvider())): null,
 					});
 					Logger.LogLine(1, "done.");
 				} catch (Exception e) {

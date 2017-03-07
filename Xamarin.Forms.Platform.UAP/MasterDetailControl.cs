@@ -96,7 +96,7 @@ namespace Xamarin.Forms.Platform.UWP
 						width -= _masterPresenter.ActualWidth;
 				}
 
-				return new Windows.Foundation.Size(width, height);
+				return new Windows.Foundation.Size(width >= 0 ? width : 0, height);
 			}
 		}
 
@@ -294,6 +294,9 @@ namespace Xamarin.Forms.Platform.UWP
 			ContentTogglePaneButtonVisibility = _split.DisplayMode == SplitViewDisplayMode.Overlay 
 				? Visibility.Visible 
 				: Visibility.Collapsed;
+
+			if (ContentTogglePaneButtonVisibility == Visibility.Visible)
+				DetailTitleVisibility = Visibility.Visible;
 		}
 	}
 }
