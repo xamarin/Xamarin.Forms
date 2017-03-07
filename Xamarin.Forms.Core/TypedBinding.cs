@@ -135,6 +135,8 @@ namespace Xamarin.Forms.Internals
 				StringFormat = StringFormat,
 				Source = Source,
 				UpdateSourceEventName = UpdateSourceEventName,
+				TargetNullValue = TargetNullValue,
+				FallbackValue = FallbackValue,
 			};
 		}
 

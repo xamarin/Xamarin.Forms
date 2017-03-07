@@ -10,6 +10,8 @@ namespace Xamarin.Forms
 
 		BindingMode _mode = BindingMode.Default;
 		string _stringFormat;
+		object _targetNullValue;
+		object _fallbackValue;
 
 		internal BindingBase()
 		{
@@ -37,6 +39,28 @@ namespace Xamarin.Forms
 				ThrowIfApplied();
 
 				_stringFormat = value;
+			}
+		}
+
+		public object TargetNullValue
+		{
+			get { return _targetNullValue; }
+			set
+			{
+				ThrowIfApplied();
+
+				_targetNullValue = value;
+			}
+		}
+
+		public object FallbackValue
+		{
+			get { return _fallbackValue; }
+			set
+			{
+				ThrowIfApplied();
+
+				_fallbackValue = value;
 			}
 		}
 

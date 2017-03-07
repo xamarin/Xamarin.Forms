@@ -82,9 +82,11 @@ namespace Xamarin.Forms
 			}
 		}
 
-		internal string UpdateSourceEventName {
+		internal string UpdateSourceEventName
+		{
 			get { return _updateSourceEventName; }
-			set {
+			set
+			{
 				ThrowIfApplied();
 				_updateSourceEventName = value;
 			}
@@ -125,7 +127,7 @@ namespace Xamarin.Forms
 
 		internal override BindingBase Clone()
 		{
-			return new Binding(Path, Mode) { Converter = Converter, ConverterParameter = ConverterParameter, StringFormat = StringFormat, Source = Source, UpdateSourceEventName = UpdateSourceEventName };
+			return new Binding(Path, Mode) { Converter = Converter, ConverterParameter = ConverterParameter, StringFormat = StringFormat, Source = Source, UpdateSourceEventName = UpdateSourceEventName, TargetNullValue = TargetNullValue, FallbackValue = FallbackValue };
 		}
 
 		internal override object GetSourceValue(object value, Type targetPropertyType)

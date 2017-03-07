@@ -89,7 +89,7 @@ namespace Xamarin.Forms
 
 		internal override BindingBase Clone()
 		{
-			return new TemplateBinding(Path, Mode) { Converter = Converter, ConverterParameter = ConverterParameter, StringFormat = StringFormat };
+			return new TemplateBinding(Path, Mode) { Converter = Converter, ConverterParameter = ConverterParameter, StringFormat = StringFormat, TargetNullValue = TargetNullValue, FallbackValue = FallbackValue };
 		}
 
 		internal override object GetSourceValue(object value, Type targetPropertyType)
