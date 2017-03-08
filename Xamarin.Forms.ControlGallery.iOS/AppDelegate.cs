@@ -9,6 +9,7 @@ using UIKit;
 using Xamarin.Forms;
 using Xamarin.Forms.ControlGallery.iOS;
 using Xamarin.Forms.Controls;
+using Xamarin.Forms.Controls.Issues;
 using Xamarin.Forms.Platform.iOS;
 
 [assembly: Dependency(typeof(TestCloudService))]
@@ -16,8 +17,22 @@ using Xamarin.Forms.Platform.iOS;
 [assembly: Dependency(typeof(CacheService))]
 [assembly: ExportRenderer(typeof(DisposePage), typeof(DisposePageRenderer))]
 [assembly: ExportRenderer(typeof(DisposeLabel), typeof(DisposeLabelRenderer))]
+[assembly: ExportEffect(typeof(BorderEffect), "BorderEffect")]
 namespace Xamarin.Forms.ControlGallery.iOS
 {
+	public class BorderEffect : PlatformEffect
+	{
+		protected override void OnAttached()
+		{
+			Control.BackgroundColor = UIColor.Blue;
+		}
+
+		protected override void OnDetached()
+		{
+			Control.BackgroundColor = UIColor.Brown;
+		}
+	}
+
 	public class CacheService : ICacheService
 	{
 		public void ClearImageCache()
@@ -132,6 +147,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
 	[Register("AppDelegate")]
 	public partial class AppDelegate : FormsApplicationDelegate
 	{
+		App _app;
 
 		public override bool FinishedLaunching(UIApplication uiApplication, NSDictionary launchOptions)
 		{
@@ -150,6 +166,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			};
 
 			var app = new App();
+			_app = app;
 
 			// When the native control gallery loads up, it'll let us know so we can add the nested native controls
 			MessagingCenter.Subscribe<NestedNativeControlGalleryPage>(this, NestedNativeControlGalleryPage.ReadyForNativeControlsMessage, AddNativeControls);
@@ -352,6 +369,21 @@ namespace Xamarin.Forms.ControlGallery.iOS
 		}
 
 		#endregion
+
+		[Export("navigateToTest:")]
+		public string NavigateToTest(string test)
+		{
+			// According to https://developer.xamarin.com/guides/testcloud/uitest/working-with/backdoors/
+			// this method has to return a string
+			return _app.NavigateToTestPage(test).ToString();
+		}
+
+		[Export("reset:")]
+		public string Reset(string str)
+		{
+			_app.Reset();
+			return String.Empty;
+		}
 	}
 
 	[Register("KVOUISlider")]

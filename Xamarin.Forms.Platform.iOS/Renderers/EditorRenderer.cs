@@ -7,27 +7,24 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class EditorRenderer : ViewRenderer<Editor, UITextView>
 	{
-		UIToolbar _accessoryView;
+		bool _disposed;
+        IEditorController ElementController => Element;
 
-		IElementController ElementController => Element as IElementController;
-
-		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
+        protected override void Dispose(bool disposing)
 		{
-			if (!Forms.IsiOS7OrNewer)
-			{
-				// Avoid crash iOS 6. iOS 6, I hate you. Why you no like Infinite size?
-				return base.GetDesiredSize(Math.Min(widthConstraint, 2000), Math.Min(heightConstraint, 2000));
-			}
-			return base.GetDesiredSize(widthConstraint, heightConstraint);
-		}
+			if (_disposed)
+				return;
 
-		protected override void Dispose(bool disposing)
-		{
+			_disposed = true;
+
 			if (disposing)
 			{
-				Control.Changed -= HandleChanged;
-				Control.Started -= OnStarted;
-				Control.Ended -= OnEnded;
+				if (Control != null)
+				{
+					Control.Changed -= HandleChanged;
+					Control.Started -= OnStarted;
+					Control.Ended -= OnEnded;
+				}
 			}
 
 			base.Dispose(disposing);
@@ -37,6 +34,9 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.OnElementChanged(e);
 
+			if (e.NewElement == null)
+				return;
+
 			if (Control == null)
 			{
 				SetNativeControl(new UITextView(RectangleF.Empty));
@@ -45,16 +45,16 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					// iPhone does not have a dismiss keyboard button
 					var keyboardWidth = UIScreen.MainScreen.Bounds.Width;
-					_accessoryView = new UIToolbar(new RectangleF(0, 0, keyboardWidth, 44)) { BarStyle = UIBarStyle.Default, Translucent = true };
+					var accessoryView = new UIToolbar(new RectangleF(0, 0, keyboardWidth, 44)) { BarStyle = UIBarStyle.Default, Translucent = true };
 
 					var spacer = new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace);
 					var doneButton = new UIBarButtonItem(UIBarButtonSystemItem.Done, (o, a) =>
 					{
 						Control.ResignFirstResponder();
-						Element.SendCompleted();
+                        ElementController.SendCompleted();
 					});
-					_accessoryView.SetItems(new[] { spacer, doneButton }, false);
-					Control.InputAccessoryView = _accessoryView;
+					accessoryView.SetItems(new[] { spacer, doneButton }, false);
+					Control.InputAccessoryView = accessoryView;
 				}
 
 				Control.Changed += HandleChanged;
@@ -62,14 +62,11 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.Ended += OnEnded;
 			}
 
-			if (e.NewElement != null)
-			{
-				UpdateText();
-				UpdateFont();
-				UpdateTextColor();
-				UpdateKeyboard();
-				UpdateEditable();
-			}
+			UpdateText();
+			UpdateFont();
+			UpdateTextColor();
+			UpdateKeyboard();
+			UpdateEditable();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -99,8 +96,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnEnded(object sender, EventArgs eventArgs)
 		{
+			if (Control.Text != Element.Text)
+				ElementController.SetValueFromRenderer(Editor.TextProperty, Control.Text);
+
 			Element.SetValue(VisualElement.IsFocusedPropertyKey, false);
-			Element.SendCompleted();
+			ElementController.SendCompleted();
 		}
 
 		void OnStarted(object sender, EventArgs eventArgs)
@@ -125,6 +125,7 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateKeyboard()
 		{
 			Control.ApplyKeyboard(Element.Keyboard);
+			Control.ReloadInputViews();
 		}
 
 		void UpdateText()

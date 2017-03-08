@@ -46,19 +46,18 @@ namespace Xamarin.Forms
 
 			var accent = System.Windows.Application.Current.Resources["PhoneAccentBrush"] as SolidColorBrush;
 			System.Windows.Media.Color color = accent.Color;
-			Color.Accent = Color.FromRgba(color.R, color.G, color.B, color.A);
+			Color.SetAccent(Color.FromRgba(color.R, color.G, color.B, color.A));
 
 			Log.Listeners.Add(new DelegateLogListener((c, m) => Console.WriteLine("[{0}] {1}", m, c)));
 
-			Device.OS = TargetPlatform.WinPhone;
 			Device.PlatformServices = new WP8PlatformServices();
 			Device.Info = new WP8DeviceInfo();
 
 			Registrar.RegisterAll(new[] { typeof(ExportRendererAttribute), typeof(ExportCellAttribute), typeof(ExportImageSourceHandlerAttribute) });
 
-			Ticker.Default = new WinPhoneTicker();
+			Ticker.SetDefault(new WinPhoneTicker());
 
-			Device.Idiom = TargetIdiom.Phone;
+			Device.SetIdiom(TargetIdiom.Phone);
 
 			ExpressionSearch.Default = new WinPhoneExpressionSearch();
 

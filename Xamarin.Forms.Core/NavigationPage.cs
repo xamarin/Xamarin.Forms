@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
@@ -27,7 +28,10 @@ namespace Xamarin.Forms
 
 		static readonly BindablePropertyKey CurrentPagePropertyKey = BindableProperty.CreateReadOnly("CurrentPage", typeof(Page), typeof(NavigationPage), null);
 		public static readonly BindableProperty CurrentPageProperty = CurrentPagePropertyKey.BindableProperty;
-		
+
+		static readonly BindablePropertyKey RootPagePropertyKey = BindableProperty.CreateReadOnly(nameof(RootPage), typeof(Page), typeof(NavigationPage), null);
+		public static readonly BindableProperty RootPageProperty = RootPagePropertyKey.BindableProperty;
+
 		public NavigationPage()
 		{
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<NavigationPage>>(() => new PlatformConfigurationRegistry<NavigationPage>(this));
@@ -61,16 +65,22 @@ namespace Xamarin.Forms
 
 		internal Task CurrentNavigationTask { get; set; }
 
-		Stack<Page> INavigationPageController.StackCopy
+		Page INavigationPageController.Peek(int depth)
 		{
-			get
+			if (depth < 0)
 			{
-				var result = new Stack<Page>(PageController.InternalChildren.Count);
-				foreach (Page page in PageController.InternalChildren)
-					result.Push(page);
-				return result;
+				return null;
 			}
+
+			if (PageController.InternalChildren.Count <= depth)
+			{
+				return null;
+			}
+
+			return (Page)PageController.InternalChildren[PageController.InternalChildren.Count - depth - 1];
 		}
+
+		IEnumerable<Page> INavigationPageController.Pages => PageController.InternalChildren.Cast<Page>();
 
 		int INavigationPageController.StackDepth
 		{
@@ -83,6 +93,12 @@ namespace Xamarin.Forms
 		{
 			get { return (Page)GetValue(CurrentPageProperty); }
 			private set { SetValue(CurrentPagePropertyKey, value); }
+		}
+
+		public Page RootPage
+		{
+			get { return (Page)GetValue(RootPageProperty); }
+			private set { SetValue(RootPagePropertyKey, value); }
 		}
 
 		public static string GetBackButtonTitle(BindableObject page)
@@ -297,8 +313,14 @@ namespace Xamarin.Forms
 
 		void InsertPageBefore(Page page, Page before)
 		{
+			if (page == null)
+				throw new ArgumentNullException($"{nameof(page)} cannot be null.");
+
+			if (before == null)
+				throw new ArgumentNullException($"{nameof(before)} cannot be null.");
+
 			if (!PageController.InternalChildren.Contains(before))
-				throw new ArgumentException("before must be a child of the NavigationPage", "before");
+				throw new ArgumentException($"{nameof(before)} must be a child of the NavigationPage", nameof(before));
 
 			if (PageController.InternalChildren.Contains(page))
 				throw new ArgumentException("Cannot insert page which is already in the navigation stack");
@@ -308,6 +330,9 @@ namespace Xamarin.Forms
 
 			int index = PageController.InternalChildren.IndexOf(before);
 			PageController.InternalChildren.Insert(index, page);
+
+			if (index == 0)
+				RootPage = page;
 
 			// Shouldn't be required?
 			if (Width > 0 && Height > 0)
@@ -319,15 +344,13 @@ namespace Xamarin.Forms
 			if (((INavigationPageController)this).StackDepth == 1)
 				return;
 
-			var root = (Page)PageController.InternalChildren.First();
-
-			var childrenToRemove = PageController.InternalChildren.ToArray().Where(c => c != root);
-			foreach (var child in childrenToRemove)
+			Element[] childrenToRemove = PageController.InternalChildren.Skip(1).ToArray();
+			foreach (Element child in childrenToRemove)
 				PageController.InternalChildren.Remove(child);
 
-			CurrentPage = root;
+			CurrentPage = RootPage;
 
-			var args = new NavigationRequestedEventArgs(root, animated);
+			var args = new NavigationRequestedEventArgs(RootPage, animated);
 
 			EventHandler<NavigationRequestedEventArgs> requestPopToRoot = PopToRootRequestedInternal;
 			if (requestPopToRoot != null)
@@ -338,8 +361,7 @@ namespace Xamarin.Forms
 					await args.Task;
 			}
 
-			if (PoppedToRoot != null)
-				PoppedToRoot(this, new PoppedToRootEventArgs(root, childrenToRemove.OfType<Page>().ToList()));
+			PoppedToRoot?.Invoke(this, new PoppedToRootEventArgs(RootPage, childrenToRemove.OfType<Page>().ToList()));
 		}
 
 		async Task PushAsyncInner(Page page, bool animated)
@@ -360,24 +382,29 @@ namespace Xamarin.Forms
 					await args.Task;
 			}
 
-			if (Pushed != null)
-				Pushed(this, args);
+			Pushed?.Invoke(this, args);
 		}
 
 		void PushPage(Page page)
 		{
 			PageController.InternalChildren.Add(page);
 
+			if (PageController.InternalChildren.Count == 1)
+				RootPage = page;
+
 			CurrentPage = page;
 		}
 
 		void RemovePage(Page page)
 		{
-			if (page == CurrentPage && ((INavigationPageController)this).StackDepth <= 1)
+			if (page == null)
+				throw new ArgumentNullException($"{nameof(page)} cannot be null.");
+
+			if (page == CurrentPage && CurrentPage == RootPage)
 				throw new InvalidOperationException("Cannot remove root page when it is also the currently displayed page.");
 			if (page == CurrentPage)
 			{
-				Log.Warning("NavigationPage", "RemovePage called for CurrentPage object. This can result in undesired behavior, consider called PopAsync instead.");
+				Log.Warning("NavigationPage", "RemovePage called for CurrentPage object. This can result in undesired behavior, consider calling PopAsync instead.");
 				PopAsync();
 				return;
 			}
@@ -386,10 +413,11 @@ namespace Xamarin.Forms
 				throw new ArgumentException("Page to remove must be contained on this Navigation Page");
 
 			EventHandler<NavigationRequestedEventArgs> handler = RemovePageRequestedInternal;
-			if (handler != null)
-				handler(this, new NavigationRequestedEventArgs(page, true));
+			handler?.Invoke(this, new NavigationRequestedEventArgs(page, true));
 
 			PageController.InternalChildren.Remove(page);
+			if (RootPage == page)
+				RootPage = (Page)PageController.InternalChildren.First();
 		}
 
 		void SafePop()

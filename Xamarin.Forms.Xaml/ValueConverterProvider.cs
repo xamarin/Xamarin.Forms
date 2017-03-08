@@ -1,9 +1,14 @@
 using System;
 using System.Reflection;
 
+using Xamarin.Forms;
+using Xamarin.Forms.Xaml;
+
+[assembly:Dependency(typeof(ValueConverterProvider))]
+
 namespace Xamarin.Forms.Xaml
 {
-	internal class ValueConverterProvider : IValueConverterProvider
+	class ValueConverterProvider : IValueConverterProvider
 	{
 		public object Convert(object value, Type toType, Func<MemberInfo> minfoRetriever, IServiceProvider serviceProvider)
 		{

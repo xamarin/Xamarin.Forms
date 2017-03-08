@@ -38,7 +38,10 @@ namespace Xamarin.Forms.Platform.iOS
 		protected override void Dispose(bool disposing)
 		{
 			if (Control != null)
+			{
 				Control.TouchUpInside -= OnButtonTouchUpInside;
+				Control.TouchDown -= OnButtonTouchDown;
+			}
 
 			base.Dispose(disposing);
 		}
@@ -60,6 +63,7 @@ namespace Xamarin.Forms.Platform.iOS
 					_buttonTextColorDefaultDisabled = Control.TitleColor(UIControlState.Disabled);
 
 					Control.TouchUpInside += OnButtonTouchUpInside;
+					Control.TouchDown += OnButtonTouchDown;
 				}
 
 				UpdateText();
@@ -82,27 +86,34 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateFont();
 			else if (e.PropertyName == Button.BorderWidthProperty.PropertyName || e.PropertyName == Button.BorderRadiusProperty.PropertyName || e.PropertyName == Button.BorderColorProperty.PropertyName)
 				UpdateBorder();
-			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
-				UpdateBackgroundVisibility();
 			else if (e.PropertyName == Button.ImageProperty.PropertyName)
 				UpdateImage();
 		}
 
+		protected override void SetAccessibilityLabel()
+		{
+			// If we have not specified an AccessibilityLabel and the AccessibiltyLabel is current bound to the Title,
+			// exit this method so we don't set the AccessibilityLabel value and break the binding.
+			// This may pose a problem for users who want to explicitly set the AccessibilityLabel to null, but this
+			// will prevent us from inadvertently breaking UI Tests that are using Query.Marked to get the dynamic Title 
+			// of the Button.
+
+			var elemValue = (string)Element?.GetValue(Accessibility.NameProperty);
+			if (string.IsNullOrWhiteSpace(elemValue) && Control?.AccessibilityLabel == Control?.Title(UIControlState.Normal))
+				return;
+
+			base.SetAccessibilityLabel();
+		}
+
 		void OnButtonTouchUpInside(object sender, EventArgs eventArgs)
 		{
+			((IButtonController)Element)?.SendReleased();
 			((IButtonController)Element)?.SendClicked();
 		}
 
-		void UpdateBackgroundVisibility()
+		void OnButtonTouchDown(object sender, EventArgs eventArgs)
 		{
-			if (Forms.IsiOS7OrNewer)
-				return;
-
-			var model = Element;
-			var shouldDrawImage = model.BackgroundColor == Color.Default;
-
-			foreach (var control in Control.Subviews.Where(sv => !(sv is UILabel)))
-				control.Alpha = shouldDrawImage ? 1.0f : 0.0f;
+			((IButtonController)Element)?.SendPressed();
 		}
 
 		void UpdateBorder()
@@ -113,10 +124,8 @@ namespace Xamarin.Forms.Platform.iOS
 			if (button.BorderColor != Color.Default)
 				uiButton.Layer.BorderColor = button.BorderColor.ToCGColor();
 
-			uiButton.Layer.BorderWidth = (float)button.BorderWidth;
+			uiButton.Layer.BorderWidth = Math.Max(0f, (float)button.BorderWidth);
 			uiButton.Layer.CornerRadius = button.BorderRadius;
-
-			UpdateBackgroundVisibility();
 		}
 
 		void UpdateFont()
@@ -128,7 +137,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			IImageSourceHandler handler;
 			FileImageSource source = Element.Image;
-			if (source != null && (handler = Registrar.Registered.GetHandler<IImageSourceHandler>(source.GetType())) != null)
+			if (source != null && (handler = Internals.Registrar.Registered.GetHandler<IImageSourceHandler>(source.GetType())) != null)
 			{
 				UIImage uiimage;
 				try
@@ -142,10 +151,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UIButton button = Control;
 				if (button != null && uiimage != null)
 				{
-					if (Forms.IsiOS7OrNewer)
-						button.SetImage(uiimage.ImageWithRenderingMode(UIImageRenderingMode.AlwaysOriginal), UIControlState.Normal);
-					else
-						button.SetImage(uiimage, UIControlState.Normal);
+					button.SetImage(uiimage.ImageWithRenderingMode(UIImageRenderingMode.AlwaysOriginal), UIControlState.Normal);
 
 					button.ImageView.ContentMode = UIViewContentMode.ScaleAspectFit;
 
@@ -184,9 +190,8 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.SetTitleColor(Element.TextColor.ToUIColor(), UIControlState.Normal);
 				Control.SetTitleColor(Element.TextColor.ToUIColor(), UIControlState.Highlighted);
 				Control.SetTitleColor(_buttonTextColorDefaultDisabled, UIControlState.Disabled);
-
-				if (Forms.IsiOS7OrNewer)
-					Control.TintColor = Element.TextColor.ToUIColor();
+				
+				Control.TintColor = Element.TextColor.ToUIColor();
 			}
 		}
 

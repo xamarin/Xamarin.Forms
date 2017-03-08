@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml.Internals;
 
 namespace Xamarin.Forms.Xaml
@@ -20,20 +21,10 @@ namespace Xamarin.Forms.Xaml
 			get { return Context.Values; }
 		}
 
-		public bool VisitChildrenFirst
-		{
-			get { return false; }
-		}
-
-		public bool StopOnDataTemplate
-		{
-			get { return true; }
-		}
-
-		public bool StopOnResourceDictionary
-		{
-			get { return false; }
-		}
+		public TreeVisitingMode VisitingMode => TreeVisitingMode.TopDown;
+		public bool StopOnDataTemplate => true;
+		public bool StopOnResourceDictionary => false;
+		public bool VisitNodeOnDataTemplate => false;
 
 		public void Visit(ValueNode node, INode parentNode)
 		{

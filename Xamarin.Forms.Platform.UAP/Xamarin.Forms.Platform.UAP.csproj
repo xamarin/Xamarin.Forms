@@ -140,12 +140,6 @@
     <Compile Include="..\Xamarin.Forms.Platform.WinRT\FormsComboBox.cs">
       <Link>FormsComboBox.cs</Link>
     </Compile>
-    <Compile Include="..\Xamarin.Forms.Platform.WinRT\FormsDatePicker.cs">
-      <Link>FormsDatePicker.cs</Link>
-    </Compile>
-    <Compile Include="..\Xamarin.Forms.Platform.WinRT\FormsTimePicker.cs">
-      <Link>FormsTimePicker.cs</Link>
-    </Compile>
     <Compile Include="..\Xamarin.Forms.Platform.WinRT\HorizontalTextAlignmentConverter.cs">
       <Link>HorizontalTextAlignmentConverter.cs</Link>
     </Compile>
@@ -154,9 +148,6 @@
     </Compile>
     <Compile Include="..\Xamarin.Forms.Platform.WinRT\IToolbarProvider.cs">
       <Link>IToolbarProvider.cs</Link>
-    </Compile>
-    <Compile Include="..\Xamarin.Forms.Platform.WinRT\IWrapperAware.cs">
-      <Link>IWrapperAware.cs</Link>
     </Compile>
     <Compile Include="..\Xamarin.Forms.Platform.WinRT\NativeBindingExtensions.cs">
       <Link>NativeBindingExtensions.cs</Link>
@@ -188,9 +179,12 @@
     <Compile Include="..\Xamarin.Forms.Platform.WinRT\LayoutExtensions.cs">
       <Link>LayoutExtensions.cs</Link>
     </Compile>
+    <Compile Include="FormsPresenter.cs" />
     <Compile Include="IToolBarForegroundBinder.cs" />
     <Compile Include="NativeBindingService.cs" />
     <Compile Include="NativeValueConverterService.cs" />
+    <Compile Include="NavigationPageRendererUWP.cs" />
+    <Compile Include="PlatformUWP.cs" />
     <Compile Include="SearchBarRenderer.cs" />
     <Compile Include="..\Xamarin.Forms.Platform.WinRT\TextAlignmentToHorizontalAlignmentConverter.cs">
       <Link>TextAlignmentToHorizontalAlignmentConverter.cs</Link>
@@ -442,6 +436,11 @@
     <Page Include="AutoSuggestStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="FormsCommandBarStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Page>
     <Page Include="FormsTextBoxStyle.xaml">
       <SubType>Designer</SubType>

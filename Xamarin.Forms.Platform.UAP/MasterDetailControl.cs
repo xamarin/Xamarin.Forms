@@ -49,8 +49,13 @@ namespace Xamarin.Forms.Platform.UWP
 			new PropertyMetadata(default(Visibility)));
 		
 		CommandBar _commandBar;
-		Border _bottomCommandBarArea;
-		Border _topCommandBarArea;
+		readonly ToolbarPlacementHelper _toolbarPlacementHelper = new ToolbarPlacementHelper();
+
+		public bool ShouldShowToolbar
+		{
+			get { return _toolbarPlacementHelper.ShouldShowToolBar; }
+			set { _toolbarPlacementHelper.ShouldShowToolBar = value; }
+		}
 
 		TaskCompletionSource<CommandBar> _commandBarTcs;
 		FrameworkElement _masterPresenter;
@@ -91,7 +96,7 @@ namespace Xamarin.Forms.Platform.UWP
 						width -= _masterPresenter.ActualWidth;
 				}
 
-				return new Windows.Foundation.Size(width, height);
+				return new Windows.Foundation.Size(width >= 0 ? width : 0, height);
 			}
 		}
 
@@ -174,7 +179,7 @@ namespace Xamarin.Forms.Platform.UWP
 	        set
 	        {
 	            _toolbarPlacement = value;
-	            UpdateToolbarPlacement();
+	            _toolbarPlacementHelper.UpdateToolbarPlacement();
 	        }
 	    }
 
@@ -236,17 +241,8 @@ namespace Xamarin.Forms.Platform.UWP
 			_detailPresenter = GetTemplateChild("DetailPresenter") as FrameworkElement;
 
 			_commandBar = GetTemplateChild("CommandBar") as CommandBar;
-			_bottomCommandBarArea = GetTemplateChild("BottomCommandBarArea") as Border;
-			_topCommandBarArea = GetTemplateChild("TopCommandBarArea") as Border;
-
-			if (_commandBar != null && _bottomCommandBarArea != null && _topCommandBarArea != null)
-			{
-				// We have to wait for the command bar to load so that it'll be in the control hierarchy
-				// otherwise we can't properly move it to wherever the toolbar is supposed to be
-				_commandBar.Loaded += (sender, args) => UpdateToolbarPlacement();
-			} 
-
-			UpdateToolbarPlacement();
+			_toolbarPlacementHelper.Initialize(_commandBar, () => ToolbarPlacement, GetTemplateChild);
+			
 			UpdateMode(); 
 
 			if (_commandBarTcs != null)
@@ -261,11 +257,6 @@ namespace Xamarin.Forms.Platform.UWP
 		static void CollapseStyleChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
 		{
 			((MasterDetailControl)dependencyObject).UpdateMode();
-		}
-
-		static void ToolbarPlacementChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs args)
-		{
-			((MasterDetailControl)dependencyObject).UpdateToolbarPlacement();
 		}
 
 		static void CollapsedPaneWidthChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
@@ -303,11 +294,9 @@ namespace Xamarin.Forms.Platform.UWP
 			ContentTogglePaneButtonVisibility = _split.DisplayMode == SplitViewDisplayMode.Overlay 
 				? Visibility.Visible 
 				: Visibility.Collapsed;
-		}
 
-		void UpdateToolbarPlacement()
-		{
-			ToolbarPlacementHelper.UpdateToolbarPlacement(_commandBar, ToolbarPlacement, _bottomCommandBarArea, _topCommandBarArea);
+			if (ContentTogglePaneButtonVisibility == Visibility.Visible)
+				DetailTitleVisibility = Visibility.Visible;
 		}
 	}
 }

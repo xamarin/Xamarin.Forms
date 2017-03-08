@@ -12,35 +12,6 @@ using WGrid = Windows.UI.Xaml.Controls.Grid;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	internal class TabbedPagePresenter : Windows.UI.Xaml.Controls.ContentPresenter
-	{
-		public TabbedPagePresenter()
-		{
-			Loaded += TabbedPagePresenter_Loaded;
-			Unloaded += TabbedPagePresenter_Unloaded;
-			SizeChanged += (s, e) =>
-			{
-				if (ActualWidth > 0 && ActualHeight > 0)
-				{
-					var tab = (Page)DataContext;
-					((IPageController)tab.RealParent).ContainerArea = new Rectangle(0, 0, ActualWidth, ActualHeight);
-				}
-			};
-		}
-
-		void TabbedPagePresenter_Loaded(object sender, RoutedEventArgs e)
-		{
-			var tab = (IPageController)DataContext;
-			tab.SendAppearing();
-		}
-
-		void TabbedPagePresenter_Unloaded(object sender, RoutedEventArgs e)
-		{
-			var tab = (IPageController)DataContext;
-			tab.SendDisappearing();
-		}
-	}
-
     public class TabbedPageRenderer : IVisualElementRenderer, ITitleProvider, IToolbarProvider
     {
         const string TabBarHeaderTextBlockName = "TabbedPageHeaderTextBlock";
@@ -151,7 +122,12 @@ namespace Xamarin.Forms.Platform.UWP
             return new SizeRequest(result);
         }
 
-        public void SetElement(VisualElement element)
+		UIElement IVisualElementRenderer.GetNativeElement()
+		{
+			return Control;
+		}
+
+		public void SetElement(VisualElement element)
         {
             if (element != null && !(element is TabbedPage))
                 throw new ArgumentException("Element must be a TabbedPage", "element");
@@ -345,6 +321,9 @@ namespace Xamarin.Forms.Platform.UWP
 
             var nav = page as NavigationPage;
             TitleProvider.ShowTitle = nav != null;
+
+			// Enforce consistency rules on toolbar (show toolbar if visible Tab is Navigation Page)
+			Control.ShouldShowToolbar = nav != null;
 
             if (page == null)
                 return;

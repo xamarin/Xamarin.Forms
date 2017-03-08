@@ -10,7 +10,7 @@
   </Base>
   <Interfaces />
   <Docs>
-    <summary>To be added.</summary>
+    <summary>The navigation page instance that Xamarin.Forms created on the iOS platform.</summary>
     <remarks>To be added.</remarks>
   </Docs>
   <Members>
@@ -28,9 +28,9 @@
         <Parameter Name="config" Type="Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.iOS,Xamarin.Forms.NavigationPage&gt;" RefType="this" />
       </Parameters>
       <Docs>
-        <param name="config">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
+        <param name="config">The platform specific configuration that contains the element on which to perform the operation.</param>
+        <summary>Makes the navigation bar opaque on the platform-specific element.</summary>
+        <returns>The updated configuration object on which developers can make successive method calls.</returns>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -48,9 +48,9 @@
         <Parameter Name="config" Type="Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.iOS,Xamarin.Forms.NavigationPage&gt;" RefType="this" />
       </Parameters>
       <Docs>
-        <param name="config">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
+        <param name="config">The platform specific configuration that contains the element on which to perform the operation.</param>
+        <summary>Makes the navigation bar translucent on the platform-specific element.</summary>
+        <returns>The updated configuration object on which developers can make successive method calls.</returns>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -68,9 +68,49 @@
         <Parameter Name="element" Type="Xamarin.Forms.BindableObject" />
       </Parameters>
       <Docs>
-        <param name="element">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
+        <param name="element">The platform specific element on which to perform the operation.</param>
+        <summary>Returns a Boolean value that tells whether the navigation bar on the platform-specific navigation page is translucent.</summary>
+        <returns>A Boolean value that tells whether the navigation bar on the platform-specific navigation page is translucent.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetStatusBarTextColorMode">
+      <MemberSignature Language="C#" Value="public static Xamarin.Forms.PlatformConfiguration.iOSSpecific.StatusBarTextColorMode GetStatusBarTextColorMode (Xamarin.Forms.BindableObject element);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig valuetype Xamarin.Forms.PlatformConfiguration.iOSSpecific.StatusBarTextColorMode GetStatusBarTextColorMode(class Xamarin.Forms.BindableObject element) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>Xamarin.Forms.PlatformConfiguration.iOSSpecific.StatusBarTextColorMode</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="element" Type="Xamarin.Forms.BindableObject" />
+      </Parameters>
+      <Docs>
+        <param name="element">The platform specific element on which to perform the operation.</param>
+        <summary>Returns a value that controls whether the status bar text color is adjusted to match the luminosity of the navigation bar for the platform-specific navigation page.</summary>
+        <returns>A value that controls whether the status bar text color is adjusted to match the luminosity of the navigation bar for the platform-specific navigation page.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="GetStatusBarTextColorMode">
+      <MemberSignature Language="C#" Value="public static Xamarin.Forms.PlatformConfiguration.iOSSpecific.StatusBarTextColorMode GetStatusBarTextColorMode (this Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.iOS,Xamarin.Forms.NavigationPage&gt; config);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig valuetype Xamarin.Forms.PlatformConfiguration.iOSSpecific.StatusBarTextColorMode GetStatusBarTextColorMode(class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.iOS, class Xamarin.Forms.NavigationPage&gt; config) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>Xamarin.Forms.PlatformConfiguration.iOSSpecific.StatusBarTextColorMode</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="config" Type="Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.iOS,Xamarin.Forms.NavigationPage&gt;" RefType="this" />
+      </Parameters>
+      <Docs>
+        <param name="config">The platform specific configuration that contains the element on which to perform the operation.</param>
+        <summary>Returns a value that controls whether the status bar text color is adjusted to match the luminosity of the navigation bar for the platform-specific navigation page.</summary>
+        <returns>A value that controls whether the status bar text color is adjusted to match the luminosity of the navigation bar for the platform-specific navigation page.</returns>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -88,9 +128,9 @@
         <Parameter Name="config" Type="Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.iOS,Xamarin.Forms.NavigationPage&gt;" RefType="this" />
       </Parameters>
       <Docs>
-        <param name="config">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
+        <param name="config">The platform specific configuration that contains the element on which to perform the operation.</param>
+        <summary>Returns a Boolean value that tells whether the navigation bar on the platform-specific navigation page is translucent.</summary>
+        <returns>A Boolean value that tells whether the navigation bar on the platform-specific navigation page is translucent.</returns>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -105,7 +145,7 @@
         <ReturnType>Xamarin.Forms.BindableProperty</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
+        <summary>Backing store for the <see cref="P:Xamarin.Forms.PlatformConfiguration.iOSSpecific.NavigationPage.IsNavigationBarTranslucent" /> property</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -124,9 +164,9 @@
         <Parameter Name="value" Type="System.Boolean" />
       </Parameters>
       <Docs>
-        <param name="element">To be added.</param>
-        <param name="value">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="element">The platform specific element on which to perform the operation.</param>
+        <param name="value">The new property value to assign.</param>
+        <summary>Sets a Boolean value that controls whether the navigation bar on the platform-specific navigation page is translucent.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -145,10 +185,68 @@
         <Parameter Name="value" Type="System.Boolean" />
       </Parameters>
       <Docs>
-        <param name="config">To be added.</param>
-        <param name="value">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
+        <param name="config">The platform specific configuration that contains the element on which to perform the operation.</param>
+        <param name="value">The new property value to assign.</param>
+        <summary>Sets a Boolean value that controls whether the navigation bar on the platform-specific navigation page is translucent.</summary>
+        <returns>The updated configuration object on which developers can make successive method calls.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SetStatusBarTextColorMode">
+      <MemberSignature Language="C#" Value="public static void SetStatusBarTextColorMode (Xamarin.Forms.BindableObject element, Xamarin.Forms.PlatformConfiguration.iOSSpecific.StatusBarTextColorMode value);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void SetStatusBarTextColorMode(class Xamarin.Forms.BindableObject element, valuetype Xamarin.Forms.PlatformConfiguration.iOSSpecific.StatusBarTextColorMode value) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="element" Type="Xamarin.Forms.BindableObject" />
+        <Parameter Name="value" Type="Xamarin.Forms.PlatformConfiguration.iOSSpecific.StatusBarTextColorMode" />
+      </Parameters>
+      <Docs>
+        <param name="element">The platform specific element on which to perform the operation.</param>
+        <param name="value">The new property value to assign.</param>
+        <summary>Sets a value that controls whether the status bar text color is adjusted to match the luminosity of the navigation bar for the platform-specific navigation page.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SetStatusBarTextColorMode">
+      <MemberSignature Language="C#" Value="public static Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.iOS,Xamarin.Forms.NavigationPage&gt; SetStatusBarTextColorMode (this Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.iOS,Xamarin.Forms.NavigationPage&gt; config, Xamarin.Forms.PlatformConfiguration.iOSSpecific.StatusBarTextColorMode value);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.iOS, class Xamarin.Forms.NavigationPage&gt; SetStatusBarTextColorMode(class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.iOS, class Xamarin.Forms.NavigationPage&gt; config, valuetype Xamarin.Forms.PlatformConfiguration.iOSSpecific.StatusBarTextColorMode value) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.iOS,Xamarin.Forms.NavigationPage&gt;</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="config" Type="Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.iOS,Xamarin.Forms.NavigationPage&gt;" RefType="this" />
+        <Parameter Name="value" Type="Xamarin.Forms.PlatformConfiguration.iOSSpecific.StatusBarTextColorMode" />
+      </Parameters>
+      <Docs>
+        <param name="config">The platform specific configuration that contains the element on which to perform the operation.</param>
+        <param name="value">The new property value to assign.</param>
+        <summary>Returns a value that controls whether the status bar text color is adjusted to match the luminosity of the navigation bar for the platform-specific navigation page.</summary>
+        <returns>The updated configuration object on which developers can make successive method calls.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="StatusBarTextColorModeProperty">
+      <MemberSignature Language="C#" Value="public static readonly Xamarin.Forms.BindableProperty StatusBarTextColorModeProperty;" />
+      <MemberSignature Language="ILAsm" Value=".field public static initonly class Xamarin.Forms.BindableProperty StatusBarTextColorModeProperty" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>Xamarin.Forms.BindableProperty</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Backing store for the attached property that controls whether the status bar text color is adjusted to match the luminosity of the navigation bar for the platform-specific navigation page.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>

@@ -1,6 +1,6 @@
 <Type Name="Button" FullName="Xamarin.Forms.Button">
-  <TypeSignature Language="C#" Value="public class Button : Xamarin.Forms.View, Xamarin.Forms.IButtonController, Xamarin.Forms.IElementConfiguration&lt;Xamarin.Forms.Button&gt;" />
-  <TypeSignature Language="ILAsm" Value=".class public auto ansi beforefieldinit Button extends Xamarin.Forms.View implements class Xamarin.Forms.IButtonController, class Xamarin.Forms.IElementConfiguration`1&lt;class Xamarin.Forms.Button&gt;, class Xamarin.Forms.IElementController, class Xamarin.Forms.IViewController, class Xamarin.Forms.IVisualElementController" />
+  <TypeSignature Language="C#" Value="public class Button : Xamarin.Forms.View, Xamarin.Forms.IButtonController, Xamarin.Forms.IElementConfiguration&lt;Xamarin.Forms.Button&gt;, Xamarin.Forms.Internals.IFontElement" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi beforefieldinit Button extends Xamarin.Forms.View implements class Xamarin.Forms.IButtonController, class Xamarin.Forms.IElementConfiguration`1&lt;class Xamarin.Forms.Button&gt;, class Xamarin.Forms.IElementController, class Xamarin.Forms.Internals.IFontElement, class Xamarin.Forms.IViewController, class Xamarin.Forms.IVisualElementController" />
   <AssemblyInfo>
     <AssemblyName>Xamarin.Forms.Core</AssemblyName>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
@@ -20,6 +20,9 @@
     </Interface>
     <Interface>
       <InterfaceName>Xamarin.Forms.IElementConfiguration&lt;Xamarin.Forms.Button&gt;</InterfaceName>
+    </Interface>
+    <Interface>
+      <InterfaceName>Xamarin.Forms.Internals.IFontElement</InterfaceName>
     </Interface>
   </Interfaces>
   <Attributes>
@@ -375,7 +378,7 @@ namespace FormsGallery
         <ReturnType>Xamarin.Forms.Button+ButtonContentLayout</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
+        <summary>Gets or sets an object that controls the position of the button image and the spacing between the button's image and the button's text.</summary>
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
@@ -391,7 +394,7 @@ namespace FormsGallery
         <ReturnType>Xamarin.Forms.BindableProperty</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
+        <summary>Backing store for the <see cref="T:Xamarin.Forms.Button.ContentLayout" /> property.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -669,6 +672,37 @@ namespace FormsGallery
         <remarks>A Button triggers this by itself. An inheritor only need to call this for properties without BindableProperty as backend store.</remarks>
       </Docs>
     </Member>
+    <Member MemberName="Pressed">
+      <MemberSignature Language="C#" Value="public event EventHandler Pressed;" />
+      <MemberSignature Language="ILAsm" Value=".event class System.EventHandler Pressed" />
+      <MemberType>Event</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.EventHandler</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Occurs when the Button is pressed.</summary>
+        <remarks>
+        </remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Released">
+      <MemberSignature Language="C#" Value="public event EventHandler Released;" />
+      <MemberSignature Language="ILAsm" Value=".event class System.EventHandler Released" />
+      <MemberType>Event</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.EventHandler</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Occurs when the Button is released.</summary>
+        <remarks>The released event always occur before the clicked event.</remarks>
+      </Docs>
+    </Member>
     <Member MemberName="Text">
       <MemberSignature Language="C#" Value="public string Text { get; set; }" />
       <MemberSignature Language="ILAsm" Value=".property instance string Text" />
@@ -774,6 +808,139 @@ namespace FormsGallery
       <Parameters />
       <Docs>
         <summary>Sends a click event.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Xamarin.Forms.IButtonController.SendPressed">
+      <MemberSignature Language="C#" Value="void IButtonController.SendPressed ();" />
+      <MemberSignature Language="ILAsm" Value=".method hidebysig newslot virtual instance void Xamarin.Forms.IButtonController.SendPressed() cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Sends a press event.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Xamarin.Forms.IButtonController.SendReleased">
+      <MemberSignature Language="C#" Value="void IButtonController.SendReleased ();" />
+      <MemberSignature Language="ILAsm" Value=".method hidebysig newslot virtual instance void Xamarin.Forms.IButtonController.SendReleased() cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>Sends a release event.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Xamarin.Forms.Internals.IFontElement.FontSizeDefaultValueCreator">
+      <MemberSignature Language="C#" Value="double IFontElement.FontSizeDefaultValueCreator ();" />
+      <MemberSignature Language="ILAsm" Value=".method hidebysig newslot virtual instance float64 Xamarin.Forms.Internals.IFontElement.FontSizeDefaultValueCreator() cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Double</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Xamarin.Forms.Internals.IFontElement.OnFontAttributesChanged">
+      <MemberSignature Language="C#" Value="void IFontElement.OnFontAttributesChanged (Xamarin.Forms.FontAttributes oldValue, Xamarin.Forms.FontAttributes newValue);" />
+      <MemberSignature Language="ILAsm" Value=".method hidebysig newslot virtual instance void Xamarin.Forms.Internals.IFontElement.OnFontAttributesChanged(valuetype Xamarin.Forms.FontAttributes oldValue, valuetype Xamarin.Forms.FontAttributes newValue) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="oldValue" Type="Xamarin.Forms.FontAttributes" />
+        <Parameter Name="newValue" Type="Xamarin.Forms.FontAttributes" />
+      </Parameters>
+      <Docs>
+        <param name="oldValue">To be added.</param>
+        <param name="newValue">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Xamarin.Forms.Internals.IFontElement.OnFontChanged">
+      <MemberSignature Language="C#" Value="void IFontElement.OnFontChanged (Xamarin.Forms.Font oldValue, Xamarin.Forms.Font newValue);" />
+      <MemberSignature Language="ILAsm" Value=".method hidebysig newslot virtual instance void Xamarin.Forms.Internals.IFontElement.OnFontChanged(valuetype Xamarin.Forms.Font oldValue, valuetype Xamarin.Forms.Font newValue) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="oldValue" Type="Xamarin.Forms.Font" />
+        <Parameter Name="newValue" Type="Xamarin.Forms.Font" />
+      </Parameters>
+      <Docs>
+        <param name="oldValue">To be added.</param>
+        <param name="newValue">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Xamarin.Forms.Internals.IFontElement.OnFontFamilyChanged">
+      <MemberSignature Language="C#" Value="void IFontElement.OnFontFamilyChanged (string oldValue, string newValue);" />
+      <MemberSignature Language="ILAsm" Value=".method hidebysig newslot virtual instance void Xamarin.Forms.Internals.IFontElement.OnFontFamilyChanged(string oldValue, string newValue) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="oldValue" Type="System.String" />
+        <Parameter Name="newValue" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="oldValue">To be added.</param>
+        <param name="newValue">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Xamarin.Forms.Internals.IFontElement.OnFontSizeChanged">
+      <MemberSignature Language="C#" Value="void IFontElement.OnFontSizeChanged (double oldValue, double newValue);" />
+      <MemberSignature Language="ILAsm" Value=".method hidebysig newslot virtual instance void Xamarin.Forms.Internals.IFontElement.OnFontSizeChanged(float64 oldValue, float64 newValue) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="oldValue" Type="System.Double" />
+        <Parameter Name="newValue" Type="System.Double" />
+      </Parameters>
+      <Docs>
+        <param name="oldValue">To be added.</param>
+        <param name="newValue">To be added.</param>
+        <summary>To be added.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>

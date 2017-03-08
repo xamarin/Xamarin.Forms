@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Xamarin.Forms.Internals;
 using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
@@ -52,10 +53,13 @@ namespace Xamarin.Forms.Platform.Android
 					_childViews = null;
 				}
 
-				_renderer.Element.ChildAdded -= _childAddedHandler;
-				_renderer.Element.ChildRemoved -= _childRemovedHandler;
+				if (_renderer.Element != null)
+				{
+					_renderer.Element.ChildAdded -= _childAddedHandler;
+					_renderer.Element.ChildRemoved -= _childRemovedHandler;
 
-				_renderer.Element.ChildrenReordered -= _childReorderedHandler;
+					_renderer.Element.ChildrenReordered -= _childReorderedHandler;
+				}
 				_renderer = null;
 			}
 		}

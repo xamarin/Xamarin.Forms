@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using UIKit;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using RectangleF = CoreGraphics.CGRect;
 
 namespace Xamarin.Forms.Platform.iOS
@@ -9,13 +11,14 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		UIPickerView _picker;
 		UIColor _defaultTextColor;
+		bool _disposed;
 
 		IElementController ElementController => Element as IElementController;
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Picker> e)
 		{
 			if (e.OldElement != null)
-				((ObservableList<string>)e.OldElement.Items).CollectionChanged -= RowsCollectionChanged;
+				((INotifyCollectionChanged)e.OldElement.Items).CollectionChanged -= RowsCollectionChanged;
 
 			if (e.NewElement != null)
 			{
@@ -55,7 +58,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdatePicker();
 				UpdateTextColor();
 
-				((ObservableList<string>)e.NewElement.Items).CollectionChanged += RowsCollectionChanged;
+				((INotifyCollectionChanged)e.NewElement.Items).CollectionChanged += RowsCollectionChanged;
 			}
 
 			base.OnElementChanged(e);
@@ -107,9 +110,9 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Element != null)
 			{
 				var oldText = Control.Text;
-				ElementController.SetValueFromRenderer(Picker.SelectedIndexProperty, s.SelectedIndex);
 				Control.Text = s.SelectedItem;
 				UpdatePickerNativeSize(oldText);
+				ElementController.SetValueFromRenderer(Picker.SelectedIndexProperty, s.SelectedIndex);
 			}
 		}
 
@@ -137,13 +140,51 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.TextColor = textColor.ToUIColor();
 		}
 
+		protected override void Dispose(bool disposing)
+		{
+			if (_disposed)
+				return;
+
+			_disposed = true;
+
+			if (disposing)
+			{
+				_defaultTextColor = null;
+
+				if (_picker != null)
+				{
+					if (_picker.Model != null)
+					{
+						_picker.Model.Dispose();
+						_picker.Model = null;
+					}
+
+					_picker.RemoveFromSuperview();
+					_picker.Dispose();
+					_picker = null;
+				}
+
+				if (Control != null)
+				{
+					Control.EditingDidBegin -= OnStarted;
+					Control.EditingDidEnd -= OnEnded;
+				}
+
+				if(Element != null)
+					((INotifyCollectionChanged)Element.Items).CollectionChanged -= RowsCollectionChanged;
+			}
+
+			base.Dispose(disposing);
+		}
+
 		class PickerSource : UIPickerViewModel
 		{
-			readonly PickerRenderer _renderer;
+			PickerRenderer _renderer;
+			bool _disposed;
 
-			public PickerSource(PickerRenderer model)
+			public PickerSource(PickerRenderer renderer)
 			{
-				_renderer = model;
+				_renderer = renderer;
 			}
 
 			public int SelectedIndex { get; internal set; }
@@ -177,7 +218,22 @@ namespace Xamarin.Forms.Platform.iOS
 					SelectedItem = _renderer.Element.Items[(int)row];
 					SelectedIndex = (int)row;
 				}
-				_renderer.UpdatePickerFromModel(this);
+
+				if(_renderer.Element.On<PlatformConfiguration.iOS>().UpdateMode() == UpdateMode.Immediately)
+					_renderer.UpdatePickerFromModel(this);
+			}
+
+			protected override void Dispose(bool disposing)
+			{
+				if (_disposed)
+					return;
+
+				_disposed = true;
+
+				if (disposing)
+					_renderer = null;
+
+				base.Dispose(disposing);
 			}
 		}
 	}

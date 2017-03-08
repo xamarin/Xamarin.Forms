@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
+using Xamarin.Forms.Internals;
 using WBinding = Windows.UI.Xaml.Data.Binding;
 using WBindingExpression = Windows.UI.Xaml.Data.BindingExpression;
 
@@ -116,7 +118,7 @@ namespace Xamarin.Forms.Platform.WinRT
 			DependencyProperty foregroundProperty;
 			if (!ForegroundProperties.Value.TryGetValue(type, out foregroundProperty))
 			{
-				FieldInfo field = type.GetFields().FirstOrDefault(f => f.Name == "ForegroundProperty");
+				FieldInfo field = ReflectionExtensions.GetFields(type).FirstOrDefault(f => f.Name == "ForegroundProperty");
 				if (field == null)
 					throw new ArgumentException("type is not a Foregroundable type");
 

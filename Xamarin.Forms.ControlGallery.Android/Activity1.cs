@@ -21,7 +21,8 @@ using System.IO.IsolatedStorage;
 
 using Droid = Android;
 using System.Globalization;
-
+using Java.Interop;
+using Xamarin.Forms.Controls.Issues;
 
 [assembly: Dependency (typeof (CacheService))]
 [assembly: Dependency (typeof (TestCloudService))]
@@ -42,6 +43,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 
 		protected override void OnDetached ()
 		{
+			Control.SetBackgroundColor(global::Android.Graphics.Color.Beige);
 		}
 
 		protected override void OnElementPropertyChanged (PropertyChangedEventArgs args)
@@ -274,6 +276,12 @@ namespace Xamarin.Forms.ControlGallery.Android
 		{
 			base.OnDestroy();
 		}
+
+		[Export("NavigateToTest")]
+		public bool NavigateToTest(string test)
+		{
+			return _app.NavigateToTestPage(test);
+		}
 	}
 #else
 
@@ -297,6 +305,8 @@ namespace Xamarin.Forms.ControlGallery.Android
 	]
 	public class Activity1 : FormsAppCompatActivity
 	{
+		App _app;
+
 		protected override void OnCreate (Bundle bundle)
 		{
 			ToolbarResource = Resource.Layout.Toolbar;
@@ -319,6 +329,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 			//Forms.SetTitleBarVisibility (AndroidTitleBarVisibility.Never);
 
 			var app = new App();
+			_app = app;
 
 			// When the native control gallery loads up, it'll let us know so we can add the nested native controls
 			MessagingCenter.Subscribe<NestedNativeControlGalleryPage>(this, NestedNativeControlGalleryPage.ReadyForNativeControlsMessage, AddNativeControls);
@@ -445,6 +456,18 @@ namespace Xamarin.Forms.ControlGallery.Android
 
 				return null;
 			}
+		}
+
+		[Export("NavigateToTest")]
+		public bool NavigateToTest(string test)
+		{
+			return _app.NavigateToTestPage(test);
+		}
+
+		[Export("Reset")]
+		public void Reset()
+		{
+			_app.Reset();
 		}
 	}
 #endif

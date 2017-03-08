@@ -19,6 +19,9 @@
     <Attribute>
       <AttributeName>Xamarin.Forms.ContentProperty("Path")</AttributeName>
     </Attribute>
+    <Attribute>
+      <AttributeName>Xamarin.Forms.Xaml.AcceptEmptyServiceProvider</AttributeName>
+    </Attribute>
   </Attributes>
   <Docs>
     <summary>For internal use by the XAML infrastructure.</summary>
@@ -159,7 +162,7 @@
         <ReturnType>Xamarin.Forms.Internals.TypedBindingBase</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
+        <summary>For internal use by the XAML infrastructure.</summary>
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
@@ -175,7 +178,7 @@
         <ReturnType>System.String</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
+        <summary>For internal use by the XAML infrastructure.</summary>
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>

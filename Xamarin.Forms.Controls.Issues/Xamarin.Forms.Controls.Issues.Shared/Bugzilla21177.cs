@@ -11,7 +11,7 @@ using Xamarin.UITest;
 using NUnit.Framework;
 #endif
 
-namespace Xamarin.Forms.Controls
+namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 21177, "Using a UICollectionView in a ViewRenderer results in issues with selection")]
@@ -49,6 +49,7 @@ namespace Xamarin.Forms.Controls
 			RunningApp.WaitForElement(q => q.Marked("#1"));
 			RunningApp.Tap(q => q.Marked("#1"));
 			RunningApp.WaitForElement(q => q.Marked("Success"));
+			RunningApp.Tap(q => q.Marked("Cancel"));
 		}
 #endif
 	}

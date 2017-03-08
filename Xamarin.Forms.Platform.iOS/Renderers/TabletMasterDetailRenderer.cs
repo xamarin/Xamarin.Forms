@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using UIKit;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -172,7 +173,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void ViewDidDisappear(bool animated)
 		{
 			base.ViewDidDisappear(animated);
-			PageController.SendDisappearing();
+			PageController?.SendDisappearing();
 		}
 
 		public override void ViewDidLayoutSubviews()
@@ -222,16 +223,21 @@ namespace Xamarin.Forms.Platform.iOS
 			if (!MasterDetailPageController.ShouldShowSplitMode && _masterVisible)
 			{
 				MasterDetailPageController.CanChangeIsPresented = true;
-				if (Forms.IsiOS8OrNewer)
-				{
-					PreferredDisplayMode = UISplitViewControllerDisplayMode.PrimaryHidden;
-					PreferredDisplayMode = UISplitViewControllerDisplayMode.Automatic;
-				}
+				PreferredDisplayMode = UISplitViewControllerDisplayMode.PrimaryHidden;
+				PreferredDisplayMode = UISplitViewControllerDisplayMode.Automatic;
 			}
 
 			MasterDetailPageController.UpdateMasterBehavior();
 			MessagingCenter.Send<IVisualElementRenderer>(this, NavigationRenderer.UpdateToolbarButtons);
 			base.WillRotate(toInterfaceOrientation, duration);
+		}
+
+		public override UIViewController ChildViewControllerForStatusBarHidden()
+		{
+			if (((MasterDetailPage)Element).Detail != null)
+				return (UIViewController)Platform.GetRenderer(((MasterDetailPage)Element).Detail);
+			else
+				return base.ChildViewControllerForStatusBarHidden();
 		}
 
 		protected virtual void OnElementChanged(VisualElementChangedEventArgs e)
@@ -298,10 +304,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void PerformButtonSelector()
 		{
-			if (Forms.IsiOS8OrNewer)
-				DisplayModeButtonItem.Target.PerformSelector(DisplayModeButtonItem.Action, DisplayModeButtonItem, 0);
-			else
-				PresentButton.Target.PerformSelector(PresentButton.Action, PresentButton, 0);
+			DisplayModeButtonItem.Target.PerformSelector(DisplayModeButtonItem.Action, DisplayModeButtonItem, 0);
 		}
 
 		void ToggleMaster()
@@ -385,9 +388,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void IEffectControlProvider.RegisterEffect(Effect effect)
 		{
-			var platformEffect = effect as PlatformEffect;
-			if (platformEffect != null)
-				platformEffect.Container = View;
+			VisualElementRenderer<VisualElement>.RegisterEffect(effect, View);
 		}
 	}
 }

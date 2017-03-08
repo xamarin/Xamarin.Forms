@@ -12,7 +12,7 @@ using Xamarin.UITest;
 using NUnit.Framework;
 #endif
 
-namespace Xamarin.Forms.Controls
+namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
 	[Category(UITestCategories.ListView)]
@@ -224,6 +224,9 @@ namespace Xamarin.Forms.Controls
 			RunningApp.WaitForElement("Menu - 0");
 		}
 		[Test]
+#if __MACOS__
+		[Ignore("ScrollDownTo not implemented in UITest.Desktop")]
+#endif
 		public void Bugzilla40704Test()
 		{
 			RunningApp.ScrollDownTo("btnCollappse", "lstMain", ScrollStrategy.Gesture, 0.8, timeout: TimeSpan.FromMinutes(2));

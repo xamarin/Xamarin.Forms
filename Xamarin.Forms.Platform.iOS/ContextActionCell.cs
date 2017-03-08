@@ -87,13 +87,10 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.LayoutSubviews();
 
-			if (_scroller == null || (_scroller != null && _scroller.Frame == Bounds))
+			if (_scroller == null || (_scroller != null && _scroller.Frame.Width == ContentView.Bounds.Width))
 				return;
 
 			Update(_tableView, _cell, ContentCell);
-
-			_scroller.Frame = Bounds;
-			ContentCell.Frame = Bounds;
 
 			if (ContentCell is ViewCellRenderer.ViewTableCell && ContentCell.Subviews.Length > 0 && Math.Abs(ContentCell.Subviews[0].Frame.Height - Bounds.Height) > 1)
 			{
@@ -130,7 +127,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			var height = Frame.Height;
-			var width = tableView.Frame.Width;
+			var width = ContentView.Frame.Width;
 
 			nativeCell.Frame = new RectangleF(0, 0, width, height);
 			nativeCell.SetNeedsLayout();
@@ -172,9 +169,8 @@ namespace Xamarin.Forms.Platform.iOS
 				_scroller = new UIScrollView(new RectangleF(0, 0, width, height));
 				_scroller.ScrollsToTop = false;
 				_scroller.ShowsHorizontalScrollIndicator = false;
-
-				if (Forms.IsiOS8OrNewer)
-					_scroller.PreservesSuperviewLayoutMargins = true;
+				
+				_scroller.PreservesSuperviewLayoutMargins = true;
 
 				ContentView.AddSubview(_scroller);
 			}
@@ -302,11 +298,6 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			var frame = _moreButton.Frame;
-			if (!Forms.IsiOS8OrNewer)
-			{
-				var container = _moreButton.Superview;
-				frame = new RectangleF(container.Frame.X, 0, frame.Width, frame.Height);
-			}
 
 			var x = frame.X - _scroller.ContentOffset.X;
 
@@ -356,7 +347,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				var d = new MoreActionSheetDelegate { Scroller = _scroller, Items = new List<MenuItem>() };
 
-				var actionSheet = new UIActionSheet(null, d);
+				var actionSheet = new UIActionSheet(null, (IUIActionSheetDelegate)d);
 
 				for (var i = 0; i < _cell.ContextActions.Count; i++)
 				{

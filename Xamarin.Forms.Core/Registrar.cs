@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 
-namespace Xamarin.Forms
+
+namespace Xamarin.Forms.Internals
 {
-	internal class Registrar<TRegistrable> where TRegistrable : class
+	public class Registrar<TRegistrable> where TRegistrable : class
 	{
 		readonly Dictionary<Type, Type> _handlers = new Dictionary<Type, Type>();
 
@@ -24,22 +26,27 @@ namespace Xamarin.Forms
 			return (TRegistrable)handler;
 		}
 
-		internal TOut GetHandler<TOut>(Type type) where TOut : TRegistrable
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public TOut GetHandler<TOut>(Type type) where TOut : TRegistrable
 		{
 			return (TOut)GetHandler(type);
 		}
 
-		internal Type GetHandlerType(Type viewType)
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public Type GetHandlerType(Type viewType)
 		{
-			Type type = LookupHandlerType(viewType);
-			if (type != null)
+			Type type;
+			if (LookupHandlerType(viewType, out type))
 				return type;
 
 			// lazy load render-view association with RenderWithAttribute (as opposed to using ExportRenderer)
-			// TODO: change Registrar to a LazyImmutableDictionary and pass this logic to ctor as a delegate.
 			var attribute = viewType.GetTypeInfo().GetCustomAttribute<RenderWithAttribute>();
 			if (attribute == null)
+			{
+				Register(viewType, null); // Cache this result so we don't have to do GetCustomAttribute again
 				return null;
+			}
+
 			type = attribute.Type;
 
 			if (type.Name.StartsWith("_"))
@@ -51,34 +58,37 @@ namespace Xamarin.Forms
 
 				if (type.Name.StartsWith("_"))
 				{
-					//var attrs = type.GetTypeInfo ().GetCustomAttributes ().ToArray ();
+					Register(viewType, null); // Cache this result so we don't work through this chain again
 					return null;
 				}
 			}
 
-			Register(viewType, type);
-			return LookupHandlerType(viewType);
+			Register(viewType, type); // Register this so we don't have to look for the RenderWith Attibute again in the future
+
+			return type;
 		}
 
-		Type LookupHandlerType(Type viewType)
+		bool LookupHandlerType(Type viewType, out Type handlerType)
 		{
 			Type type = viewType;
 
-			while (true)
+			while (type != null)
 			{
 				if (_handlers.ContainsKey(type))
-					return _handlers[type];
+				{
+					handlerType = _handlers[type];
+					return true;
+				}
 
 				type = type.GetTypeInfo().BaseType;
-				if (type == null)
-					break;
 			}
 
-			return null;
+			handlerType = null;
+			return false;
 		}
 	}
 
-	internal static class Registrar
+	public static class Registrar
 	{
 		static Registrar()
 		{
@@ -87,11 +97,14 @@ namespace Xamarin.Forms
 
 		internal static Dictionary<string, Type> Effects { get; } = new Dictionary<string, Type>();
 
-		internal static IEnumerable<Assembly> ExtraAssemblies { get; set; }
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static IEnumerable<Assembly> ExtraAssemblies { get; set; }
 
-		internal static Registrar<IRegisterable> Registered { get; }
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static Registrar<IRegisterable> Registered { get; }
 
-		internal static void RegisterAll(Type[] attrTypes)
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static void RegisterAll(Type[] attrTypes)
 		{
 			Assembly[] assemblies = Device.GetAssemblies();
 			if (ExtraAssemblies != null)
@@ -126,15 +139,16 @@ namespace Xamarin.Forms
 				}
 
 				string resolutionName = assembly.FullName;
-				var resolutionNameAttribute = (ResolutionGroupNameAttribute)assembly.GetCustomAttribute(typeof(ResolutionGroupNameAttribute));
-				if (resolutionNameAttribute != null)
-				{
-					resolutionName = resolutionNameAttribute.ShortName;
-				}
 
 				Attribute[] effectAttributes = assembly.GetCustomAttributes(typeof(ExportEffectAttribute)).ToArray();
 				if (effectAttributes.Length > 0)
 				{
+					var resolutionNameAttribute = (ResolutionGroupNameAttribute)assembly.GetCustomAttribute(typeof(ResolutionGroupNameAttribute));
+					if (resolutionNameAttribute != null)
+					{
+						resolutionName = resolutionNameAttribute.ShortName;
+					}
+
 					foreach (Attribute attribute in effectAttributes)
 					{
 						var effect = (ExportEffectAttribute)attribute;
@@ -142,6 +156,8 @@ namespace Xamarin.Forms
 					}
 				}
 			}
+
+			DependencyService.Initialize(assemblies);
 		}
 	}
 }

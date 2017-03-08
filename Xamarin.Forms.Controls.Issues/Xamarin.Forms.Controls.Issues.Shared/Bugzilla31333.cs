@@ -12,7 +12,7 @@ using Xamarin.UITest;
 
 #endif
 
-namespace Xamarin.Forms.Controls.TestCasesPages
+namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve (AllMembers=true)]
 	[Issue (IssueTracker.Bugzilla, 31333,
@@ -210,6 +210,9 @@ namespace Xamarin.Forms.Controls.TestCasesPages
 
 #if UITEST
 		[Test]
+#if __MACOS__
+		[Ignore("EnterText on UITest.Desktop not implemented")]
+#endif
 		[UiTest (typeof(NavigationPage))]
 		public void Issue31333FocusEntryInListViewCell ()
 		{
@@ -218,9 +221,13 @@ namespace Xamarin.Forms.Controls.TestCasesPages
 			RunningApp.EnterText ("Entry in ListView Success");
 			Assert.True(RunningApp.Query(query => query.Text("Entry in ListView Success")).Length > 0);
 			RunningApp.Screenshot ("Entry in ListView Success");
+			RunningApp.Tap(q => q.Marked("Focus Entry in ListView"));
 		}
 
 		[Test]
+#if __MACOS__
+		[Ignore("EnterText on UITest.Desktop not implemented")]
+#endif
 		[UiTest (typeof(NavigationPage))]
 		public void Issue31333FocusEditorInListViewCell ()
 		{
@@ -229,10 +236,14 @@ namespace Xamarin.Forms.Controls.TestCasesPages
 			RunningApp.EnterText ("Editor in ListView Success");
 			Assert.True(RunningApp.Query(query => query.Text("Editor in ListView Success")).Length > 0);
 			RunningApp.Screenshot ("Editor in ListView Success");
+			RunningApp.Tap(q => q.Marked("Focus Editor in ListView"));
 		}
 
 		
 		[Test]
+#if __MACOS__
+		[Ignore("EnterText on UITest.Desktop not implemented")]
+#endif
 		[UiTest (typeof(NavigationPage))]
 		public void Issue31333FocusEntryInTableViewCell ()
 		{
@@ -241,9 +252,13 @@ namespace Xamarin.Forms.Controls.TestCasesPages
 			RunningApp.EnterText ("Entry in TableView Success");
 			Assert.True(RunningApp.Query(query => query.Text("Entry in TableView Success")).Length > 0);
 			RunningApp.Screenshot ("Entry in TableView Success");
+			RunningApp.Tap(q => q.Marked("Focus Entry in Table"));
 		}
 
 		[Test]
+#if __MACOS__
+		[Ignore("EnterText on UITest.Desktop not implemented")]
+#endif
 		[UiTest (typeof(NavigationPage))]
 		public void Issue31333FocusEditorInTableViewCell ()
 		{
@@ -252,6 +267,7 @@ namespace Xamarin.Forms.Controls.TestCasesPages
 			RunningApp.EnterText ("Editor in TableView Success");
 			Assert.True(RunningApp.Query(query => query.Text("Editor in TableView Success")).Length > 0);
 			RunningApp.Screenshot ("Editor in TableView Success");
+			RunningApp.Tap(q => q.Marked("Focus Editor in Table"));
 		}
 #endif
 	}

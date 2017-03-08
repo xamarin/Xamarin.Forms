@@ -1,6 +1,7 @@
 #region
 
 using System;
+using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Linq;
 using Android.App;
@@ -20,6 +21,7 @@ using AToolbar = Android.Support.V7.Widget.Toolbar;
 using AColor = Android.Graphics.Color;
 using AlertDialog = Android.Support.V7.App.AlertDialog;
 using ARelativeLayout = Android.Widget.RelativeLayout;
+using Xamarin.Forms.Internals;
 
 #endregion
 
@@ -54,6 +56,8 @@ namespace Xamarin.Forms.Platform.Android
 			_previousState = AndroidApplicationLifecycleState.Uninitialized;
 			_currentState = AndroidApplicationLifecycleState.Uninitialized;
 		}
+
+		IApplicationController Controller => _application;
 
 		public event EventHandler ConfigurationChanged;
 
@@ -125,7 +129,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			_application = application;
 			(application as IApplicationController)?.SetAppIndexingProvider(new AndroidAppIndexProvider(this));
-			Xamarin.Forms.Application.Current = application;
+			Xamarin.Forms.Application.SetCurrentApplication(application);
 
 			SetSoftInputMode();
 
@@ -185,15 +189,14 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void OnDestroy()
 		{
-			// may never be called
-			base.OnDestroy();
-
 			MessagingCenter.Unsubscribe<Page, AlertArguments>(this, Page.AlertSignalName);
 			MessagingCenter.Unsubscribe<Page, bool>(this, Page.BusySetSignalName);
 			MessagingCenter.Unsubscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName);
 
-			if (_platform != null)
-				_platform.Dispose();
+			_platform?.Dispose();
+
+			// call at the end to avoid race conditions with Platform dispose
+			base.OnDestroy();
 		}
 
 		protected override void OnNewIntent(Intent intent)
@@ -354,7 +357,7 @@ namespace Xamarin.Forms.Platform.Android
 				}
 				catch (Exception ex)
 				{
-					Log.Warning("Xamarin.Forms.Platform.Android.FormsAppCompatActivity", "Error retrieving color resource: {0}", ex);
+					Internals.Log.Warning("Xamarin.Forms.Platform.Android.FormsAppCompatActivity", "Error retrieving color resource: {0}", ex);
 				}
 
 				return -1;

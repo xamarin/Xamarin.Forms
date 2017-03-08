@@ -1,3 +1,4 @@
+<img src="banner.png" alt="Xamarin.Forms banner" height="145" >
 # Xamarin.Forms #
 
 Xamarin.Forms provides a way to quickly build native apps for iOS, Android, and Windows, completely in C#.
@@ -12,9 +13,11 @@ Read more about the platform at https://www.xamarin.com/forms.
 
 ![alt text](https://img.shields.io/teamcity/https/teamcity.xamarin.com/e/XamarinForms_Debug_Cycle8ezTest_UiTests_OsxTestCloudPackageRunAndroid601.svg?style=flat&label=UITest%20Android "Android UI Tests")
 
+![alt text](https://img.shields.io/teamcity/https/teamcity.xamarin.com/e/XamarinForms_Debug_Cycle8ezTest_UiTests_OsxTestCloudPackageRunIOSUnifiedIOS8.svg?style=flat&label=UITest%20iOS8%20%20%20%20 "iOS8 UI Tests")  
+
 ![alt text](https://img.shields.io/teamcity/https/teamcity.xamarin.com/e/XamarinForms_Debug_Cycle8ezTest_UiTests_OsxTestCloudPackageRunIOSUnifiedIOS9.svg?style=flat&label=UITest%20iOS9%20%20%20%20 "iOS9 UI Tests")  
 
-![alt text](https://img.shields.io/teamcity/https/teamcity.xamarin.com/e/XamarinForms_Debug_Cycle9ezTest_UiTests_OsxTestCloudPackageRunIOSUnifiedIOS10.svg?style=flat&label=UITest%20iOS10%20%20 "iOS10 UI Tests") 
+![alt text](https://img.shields.io/teamcity/https/teamcity.xamarin.com/e/XamarinForms_Debug_Cycle8ezTest_UiTests_OsxTestCloudPackageRunIOSUnifiedIOS10.svg?style=flat&label=UITest%20iOS10%20%20 "iOS10 UI Tests") 
 
 ## Getting Started ##
 
@@ -67,9 +70,9 @@ We follow the style used by the [.NET Foundation](https://github.com/dotnet/core
 
 - [How to Contribute](https://github.com/xamarin/xamarin.forms/wiki/Contributing-Code)
 
-### Mailing Lists
+### Xamarin.Forms Evolution
 
-To discuss this project, and participate in the design, we use the [forms-devel@lists.xamarin.com](http://lists.xamarin.com/mailman/listinfo/forms-devel) mailing list.   
+To discuss this project and participate in the design, we use the [Xamarin.Forms Evolution](https://forums.xamarin.com/categories/xamarin-forms-evolution) discussion board.   
 
 ### Reporting Bugs
 

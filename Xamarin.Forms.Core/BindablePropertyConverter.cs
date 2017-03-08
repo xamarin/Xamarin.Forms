@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Xml;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
 
 namespace Xamarin.Forms
@@ -50,6 +51,8 @@ namespace Xamarin.Forms
 				}
 				else if (parentValuesProvider.TargetObject is Trigger)
 					type = (parentValuesProvider.TargetObject as Trigger).TargetType;
+				else if (parentValuesProvider.TargetObject is PropertyCondition && (parent as TriggerBase) != null)
+					type = (parent as TriggerBase).TargetType;
 
 				if (type == null)
 					throw new XamlParseException($"Can't resolve {parts [0]}", lineinfo);

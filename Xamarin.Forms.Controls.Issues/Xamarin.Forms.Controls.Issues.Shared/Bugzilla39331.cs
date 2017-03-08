@@ -8,7 +8,7 @@ using NUnit.Framework;
 using Xamarin.Forms.Core.UITests;
 #endif
 
-namespace Xamarin.Forms.Controls
+namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
 	[Category(UITestCategories.BoxView)]
@@ -64,7 +64,7 @@ namespace Xamarin.Forms.Controls
 
 #if UITEST
 		[Test]
-		public void Bugzilla34912Test ()
+		public void Bugzilla39331Test()
 		{
 			RunningApp.Tap (q => q.Marked ("Press me"));
 			RunningApp.WaitForElement (q => q.Marked ("Blocked?"));

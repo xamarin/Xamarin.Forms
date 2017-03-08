@@ -8,7 +8,7 @@ using Xamarin.UITest.Queries;
 #endif
 
 
-namespace Xamarin.Forms.Controls
+namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve (AllMembers=true)]
 	[Issue (IssueTracker.Github, 773, "Horizontal ScrollView locks after rotation", PlatformAffected.iOS)]
@@ -162,10 +162,10 @@ namespace Xamarin.Forms.Controls
 
 			layout.Children.Add (label);
 
-			layout.Children.Add (new ScrollView {
+			layout.Children.Add(new ScrollView {
 				BackgroundColor = Color.Aqua,
 				Orientation = ScrollOrientation.Horizontal,
-				HeightRequest = Device.OnPlatform (44, 44, 80),
+				HeightRequest = Device.RuntimePlatform == Device.WinRT || Device.RuntimePlatform == Device.UWP || Device.RuntimePlatform == Device.WinPhone ? 80 : 44,
 				Content = buttonStack
 			});
 

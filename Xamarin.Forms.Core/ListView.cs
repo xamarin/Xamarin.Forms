@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Windows.Input;
-using Xamarin.Forms.Platform;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
 {
@@ -71,7 +73,7 @@ namespace Xamarin.Forms
 
 		public ListView([Parameter("CachingStrategy")] ListViewCachingStrategy cachingStrategy) : this()
 		{
-			if (Device.OS == TargetPlatform.Android || Device.OS == TargetPlatform.iOS)
+			if (Device.RuntimePlatform == Device.Android || Device.RuntimePlatform == Device.iOS || Device.RuntimePlatform == Device.macOS)
 				CachingStrategy = cachingStrategy;
 		}
 
@@ -210,7 +212,8 @@ namespace Xamarin.Forms
 			set { SetValue(SeparatorVisibilityProperty, value); }
 		}
 
-		internal ListViewCachingStrategy CachingStrategy { get; private set; }
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public ListViewCachingStrategy CachingStrategy { get; private set; }
 		ListViewCachingStrategy IListViewController.CachingStrategy
 		{
 			get
@@ -409,7 +412,7 @@ namespace Xamarin.Forms
 
 			cell.OnTapped();
 
-			ItemTapped?.Invoke(this, new ItemTappedEventArgs(group, cell.BindingContext));
+			ItemTapped?.Invoke(this, new ItemTappedEventArgs(ItemsSource.Cast<object>().ElementAt(groupIndex), cell.BindingContext));
 		}
 
 		internal void NotifyRowTapped(int index, Cell cell = null)

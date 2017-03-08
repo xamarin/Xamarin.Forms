@@ -9,7 +9,7 @@ using Xamarin.UITest;
 using Xamarin.Forms.Core.UITests;
 #endif
 
-namespace Xamarin.Forms.Controls
+namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve (AllMembers=true)]
 	[Issue (IssueTracker.Github, 342, "NRE when Image is not assigned source", PlatformAffected.WinPhone)]
@@ -79,7 +79,6 @@ namespace Xamarin.Forms.Controls
 		public void Issue342DelayedLoadTestsImageLoads ()
 		{
 			RunningApp.Screenshot ("Should not crash");
-			Assert.Inconclusive ("Manual review");
 		}
 #endif
 	}

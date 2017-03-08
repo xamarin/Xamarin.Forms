@@ -31,8 +31,22 @@ namespace Xamarin.Forms.Controls
 			var click = new Button { Text = "Click Button" };
 			var rotate = new Button { Text = "Rotate Button" };
 			var transparent = new Button { Text = "Transparent Button" };
+			string fontName;
+			switch (Device.RuntimePlatform) {
+			default:
+			case Device.iOS:
+				fontName = "Georgia";
+				break;
+			case Device.Android:
+				fontName = "sans-serif-light";
+				break;
+			case Device.WinPhone:
+			case Device.WinRT:
+			case Device.UWP:
+				fontName = "Comic Sans MS";
+				break;
+			}
 
-			var fontName = Device.OnPlatform ("Georgia", "sans-serif-light", "Comic Sans MS");
 			var font = Font.OfSize (fontName, NamedSize.Medium);
 
 			var themedButton = new Button {
@@ -101,6 +115,7 @@ namespace Xamarin.Forms.Controls
 						borderButton,
 						new Button {Text = "Thin Border", BorderWidth = 1, BackgroundColor=Color.White, BorderColor = Color.Black, TextColor = Color.Black},
 						new Button {Text = "Thinner Border", BorderWidth = .5, BackgroundColor=Color.White, BorderColor = Color.Black, TextColor = Color.Black},
+						new Button {Text = "BorderWidth == 0", BorderWidth = 0, BackgroundColor=Color.White, BorderColor = Color.Black, TextColor = Color.Black},
 						timer,
 						busy,
 						alert,

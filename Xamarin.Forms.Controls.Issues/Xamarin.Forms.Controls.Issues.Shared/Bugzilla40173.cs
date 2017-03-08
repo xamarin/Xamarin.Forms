@@ -6,7 +6,7 @@ using NUnit.Framework;
 using Xamarin.Forms.Core.UITests;
 #endif
 
-namespace Xamarin.Forms.Controls
+namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
 	[Category(UITestCategories.BoxView)]
@@ -32,9 +32,10 @@ namespace Xamarin.Forms.Controls
 
             RunningApp.Tap(q => q.All().Marked(CanTouchButtonId));
             RunningApp.WaitForElement(q => q.All().Text(CanTouchSuccessText));
-
+#if !__MACOS__
             RunningApp.Tap(q => q.All().Marked(ListTapTarget));
             RunningApp.WaitForElement(q => q.All().Text(ListTapSuccessText));
+#endif
         }
 #endif
 

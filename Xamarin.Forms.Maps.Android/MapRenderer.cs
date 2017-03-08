@@ -9,6 +9,7 @@ using Android.Gms.Maps;
 using Android.Gms.Maps.Model;
 using Android.OS;
 using Java.Lang;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android;
 using Math = System.Math;
 
@@ -186,6 +187,7 @@ namespace Xamarin.Forms.Maps.Android
 			else if (changed)
 			{
 				UpdateVisibleRegion(NativeMap.CameraPosition.Target);
+				MoveToRegion(Element.LastMoveToRegion, false);
 			}
 		}
 

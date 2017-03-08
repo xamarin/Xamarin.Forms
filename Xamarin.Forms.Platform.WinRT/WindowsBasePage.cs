@@ -14,8 +14,11 @@ namespace Xamarin.Forms.Platform.WinRT
 	{
 		public WindowsBasePage()
 		{
-			Windows.UI.Xaml.Application.Current.Suspending += OnApplicationSuspending;
-			Windows.UI.Xaml.Application.Current.Resuming += OnApplicationResuming;
+			if (!DesignMode.DesignModeEnabled)
+			{
+				Windows.UI.Xaml.Application.Current.Suspending += OnApplicationSuspending;
+				Windows.UI.Xaml.Application.Current.Resuming += OnApplicationResuming;
+			}
 		}
 
 		protected Platform Platform { get; private set; }
@@ -27,7 +30,7 @@ namespace Xamarin.Forms.Platform.WinRT
 			if (application == null)
 				throw new ArgumentNullException("application");
 
-			Application.Current = application;
+			Application.SetCurrentApplication(application);
 			Platform = CreatePlatform();
 			Platform.SetPage(Application.Current.MainPage);
 			application.PropertyChanged += OnApplicationPropertyChanged;

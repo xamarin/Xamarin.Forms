@@ -10,6 +10,7 @@ namespace Xamarin.Forms.Platform.iOS
 	public class EntryRenderer : ViewRenderer<Entry, UITextField>
 	{
 		UIColor _defaultTextColor;
+		bool _disposed;
 
 		public EntryRenderer()
 		{
@@ -20,8 +21,15 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void Dispose(bool disposing)
 		{
+			if (_disposed)
+				return;
+
+			_disposed = true;
+
 			if (disposing)
 			{
+				_defaultTextColor = null;
+
 				if (Control != null)
 				{
 					Control.EditingDidBegin -= OnEditingBegan;
@@ -37,14 +45,17 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.OnElementChanged(e);
 
-			var textField = Control;
+			if (e.NewElement == null)
+				return;
 
 			if (Control == null)
 			{
-				SetNativeControl(textField = new UITextField(RectangleF.Empty));
+				var textField = new UITextField(RectangleF.Empty);
+				SetNativeControl(textField);
 
 				_defaultTextColor = textField.TextColor;
 				textField.BorderStyle = UITextBorderStyle.RoundedRect;
+				textField.ClipsToBounds = true;
 
 				textField.EditingChanged += OnEditingChanged;
 
@@ -54,17 +65,14 @@ namespace Xamarin.Forms.Platform.iOS
 				textField.EditingDidEnd += OnEditingEnded;
 			}
 
-			if (e.NewElement != null)
-			{
-				UpdatePlaceholder();
-				UpdatePassword();
-				UpdateText();
-				UpdateColor();
-				UpdateFont();
-				UpdateKeyboard();
-				UpdateAlignment();
-				UpdateAdjustsFontSizeToFitWidth();
-			}
+			UpdatePlaceholder();
+			UpdatePassword();
+			UpdateText();
+			UpdateColor();
+			UpdateFont();
+			UpdateKeyboard();
+			UpdateAlignment();
+			UpdateAdjustsFontSizeToFitWidth();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -123,7 +131,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			Control.ResignFirstResponder();
 			((IEntryController)Element).SendCompleted();
-			return true;
+			return false;
 		}
 
 		void UpdateAlignment()
@@ -154,6 +162,7 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateKeyboard()
 		{
 			Control.ApplyKeyboard(Element.Keyboard);
+			Control.ReloadInputViews();
 		}
 
 		void UpdatePassword()

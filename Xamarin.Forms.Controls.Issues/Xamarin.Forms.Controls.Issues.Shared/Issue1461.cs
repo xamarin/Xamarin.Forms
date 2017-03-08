@@ -12,7 +12,7 @@ using Xamarin.UITest;
 using Xamarin.UITest.iOS;
 #endif
 
-namespace Xamarin.Forms.Controls
+namespace Xamarin.Forms.Controls.Issues
 {
 
 #if UITEST
@@ -220,7 +220,7 @@ namespace Xamarin.Forms.Controls
 			Master = new ContentPage {
 				Title = string.Format ("Master sample for {0}", state),
 				Icon = "bank.png",
-				Padding = Device.OnPlatform (new Thickness (5, 60, 5, 5), 5, 5),
+				Padding = Device.RuntimePlatform == Device.iOS ? new Thickness(5, 60, 5, 5) : new Thickness(5),
 				Content = 
 					new StackLayout { Children = {
 						new Label {

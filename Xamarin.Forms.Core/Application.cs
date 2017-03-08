@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Threading.Tasks;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
@@ -9,7 +11,7 @@ namespace Xamarin.Forms
 	public class Application : Element, IResourcesProvider, IApplicationController, IElementConfiguration<Application>
 	{
 		static Application s_current;
-		readonly Task<IDictionary<string, object>> _propertiesTask;
+		Task<IDictionary<string, object>> _propertiesTask;
 		readonly Lazy<PlatformConfigurationRegistry<Application>> _platformConfigurationRegistry;
 
 		IAppIndexingProvider _appIndexProvider;
@@ -28,8 +30,7 @@ namespace Xamarin.Forms
 			if (f)
 				Loader.Load();
 			NavigationProxy = new NavigationImpl(this);
-			Current = this;
-			_propertiesTask = GetPropertiesAsync();
+			SetCurrentApplication(this);
 
 			SystemResources = DependencyService.Get<ISystemResourcesProvider>().GetSystemResources();
 			SystemResources.ValuesChanged += OnParentResourcesChanged;
@@ -48,10 +49,13 @@ namespace Xamarin.Forms
 			}
 		}
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static void SetCurrentApplication(Application value) => Current = value;
+
 		public static Application Current
 		{
 			get { return s_current; }
-			internal set
+			set 
 			{
 				if (s_current == value)
 					return;
@@ -93,7 +97,15 @@ namespace Xamarin.Forms
 
 		public IDictionary<string, object> Properties
 		{
-			get { return _propertiesTask.Result; }
+			get
+			{
+				if (_propertiesTask == null)
+				{
+					_propertiesTask = GetPropertiesAsync();
+				}
+
+				return _propertiesTask.Result;
+			}
 		}
 
 		internal override ReadOnlyCollection<Element> LogicalChildrenInternal
@@ -101,9 +113,11 @@ namespace Xamarin.Forms
 			get { return _logicalChildren ?? (_logicalChildren = new ReadOnlyCollection<Element>(InternalChildren)); }
 		}
 
-		internal NavigationProxy NavigationProxy { get; }
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public NavigationProxy NavigationProxy { get; }
 
-		internal int PanGestureId { get; set; }
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public int PanGestureId { get; set; }
 
 		internal IResourceDictionary SystemResources { get; }
 
@@ -174,12 +188,14 @@ namespace Xamarin.Forms
 		{
 		}
 
-		internal static void ClearCurrent()
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static void ClearCurrent()
 		{
 			s_current = null;
 		}
 
-		internal static bool IsApplicationOrNull(Element element)
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static bool IsApplicationOrNull(Element element)
 		{
 			return element == null || element is Application;
 		}
@@ -206,24 +222,28 @@ namespace Xamarin.Forms
 
 		internal event EventHandler PopCanceled;
 
-		internal void SendOnAppLinkRequestReceived(Uri uri)
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void SendOnAppLinkRequestReceived(Uri uri)
 		{
 			OnAppLinkRequestReceived(uri);
 		}
 
-		internal void SendResume()
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void SendResume()
 		{
 			s_current = this;
 			OnResume();
 		}
 
-		internal Task SendSleepAsync()
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public Task SendSleepAsync()
 		{
 			OnSleep();
 			return SavePropertiesAsync();
 		}
 
-		internal void SendStart()
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void SendStart()
 		{
 			OnStart();
 		}

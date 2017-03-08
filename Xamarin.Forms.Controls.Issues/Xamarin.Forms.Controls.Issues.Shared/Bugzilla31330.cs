@@ -11,7 +11,7 @@ using Xamarin.UITest;
 using NUnit.Framework;
 #endif
 
-namespace Xamarin.Forms.Controls
+namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve (AllMembers = true)]
 	[Issue (IssueTracker.Bugzilla, 31330, "Disabled context actions appear enabled")]
@@ -127,10 +127,11 @@ namespace Xamarin.Forms.Controls
 			}
 		}
 
-		#if UITEST
+#if UITEST
 		[Test]
 		public void Bugzilla31330Test ()
 		{
+			RunningApp.WaitForElement (c => c.Marked ("Something 2"));
 			var screenBounds = RunningApp.Query (q => q.Raw ("* index:0"))[0].Rect;
 
 			var cell = RunningApp.Query (c => c.Marked ("Something 1")) [0];

@@ -7,8 +7,8 @@ namespace Xamarin.Forms.Platform.iOS
 	public class CellTableViewCell : UITableViewCell, INativeElementView
 	{
 		Cell _cell;
-
 		public Action<object, PropertyChangedEventArgs> PropertyChanged;
+		bool _disposed;
 
 		public CellTableViewCell(UITableViewCellStyle style, string key) : base(style, key)
 		{
@@ -47,7 +47,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var id = cell.GetType().FullName;
 
-			var renderer = (CellRenderer)Registrar.Registered.GetHandler(cell.GetType());
+			var renderer = (CellRenderer)Internals.Registrar.Registered.GetHandler<IRegisterable>(cell.GetType());
 
 			ContextActionsCell contextCell = null;
 			UITableViewCell reusableCell = null;
@@ -94,6 +94,22 @@ namespace Xamarin.Forms.Platform.iOS
 				cellWithContent.LayoutSubviews();
 
 			return nativeCell;
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (_disposed)
+				return;
+
+			if (disposing)
+			{
+				PropertyChanged = null;
+				_cell = null;
+			}
+
+			_disposed = true;
+
+			base.Dispose(disposing);
 		}
 	}
 }

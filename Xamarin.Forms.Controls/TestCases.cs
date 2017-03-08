@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Xamarin.Forms.Controls.TestCasesPages;
 using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls
 {
@@ -204,9 +205,20 @@ namespace Xamarin.Forms.Controls
 			rootLayout.Children.Add (searchButton);
 			rootLayout.Children.Add (new TestCaseScreen ());
 
-			return new NavigationPage (testCasesRoot) {
-				Title = Device.OnPlatform ("Test Cases", "Test Cases", "Tests")
-			};
+			var page = new NavigationPage(testCasesRoot);
+			switch (Device.RuntimePlatform) {
+			case Device.iOS:
+			case Device.Android:
+			default:
+				page.Title = "Test Cases";
+				break;
+			case Device.WinPhone:
+			case Device.UWP:
+			case Device.WinRT:
+				page.Title = "Tests";
+				break;
+			}
+			return page;
 		}
 	}
 

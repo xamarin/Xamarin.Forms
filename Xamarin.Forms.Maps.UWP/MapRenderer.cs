@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.Devices.Geolocation;
 using Windows.UI;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls.Maps;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Shapes;
@@ -46,8 +47,8 @@ namespace Xamarin.Forms.Maps.WinRT
 				{
 					SetNativeControl(new MapControl());
 					Control.MapServiceToken = FormsMaps.AuthenticationToken;
-					Control.ZoomLevelChanged += async (s, a) => await UpdateVisibleRegion();
-					Control.CenterChanged += async (s, a) => await UpdateVisibleRegion();
+					Control.ZoomLevelChanged += (s, a) => UpdateVisibleRegion();
+					Control.CenterChanged += (s, a) => UpdateVisibleRegion();
 				}
 
 				MessagingCenter.Subscribe<Map, MapSpan>(this, "MapMoveToRegion", async (s, a) => await MoveToRegion(a), mapModel);
@@ -62,7 +63,8 @@ namespace Xamarin.Forms.Maps.WinRT
 					LoadPins();
 
 				await UpdateIsShowingUser();
-			}
+				await Control.Dispatcher.RunIdleAsync(async (i) => await MoveToRegion(mapModel.LastMoveToRegion, MapAnimationKind.None));
+            }
 		}
 
 		protected override async void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -85,6 +87,9 @@ namespace Xamarin.Forms.Maps.WinRT
 			{
 				_disposed = true;
 
+				_timer?.Stop();
+				_timer = null;
+
 				MessagingCenter.Unsubscribe<Map, MapSpan>(this, "MapMoveToRegion");
 
 				if (Element != null)
@@ -94,8 +99,8 @@ namespace Xamarin.Forms.Maps.WinRT
 		}
 
 		bool _disposed;
-		bool _firstZoomLevelChangeFired;
 		Ellipse _userPositionCircle;
+		DispatcherTimer _timer;
 
 		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
@@ -155,8 +160,9 @@ namespace Xamarin.Forms.Maps.WinRT
 			Control.Children.Add(new PushPin(pin));
 		}
 
-		async Task UpdateIsShowingUser()
+		async Task UpdateIsShowingUser(bool moveToLocation = true)
 		{
+			
 			if (Element.IsShowingUser)
 			{
 				var myGeolocator = new Geolocator();
@@ -165,11 +171,24 @@ namespace Xamarin.Forms.Maps.WinRT
 				{
 					var userPosition = await myGeolocator.GetGeopositionAsync();
 					if (userPosition?.Coordinate != null)
-						LoadUserPosition(userPosition.Coordinate, true);
+						LoadUserPosition(userPosition.Coordinate, moveToLocation);
 				}
+
+				if (_timer == null)
+				{
+					_timer = new DispatcherTimer();
+					_timer.Tick += async (s, o) => await UpdateIsShowingUser(moveToLocation: false);
+					_timer.Interval = TimeSpan.FromSeconds(15);
+				}
+				
+				if (!_timer.IsEnabled)
+					_timer.Start();
 			}
 			else if (_userPositionCircle != null && Control.Children.Contains(_userPositionCircle))
+			{
+				_timer?.Stop();
 				Control.Children.Remove(_userPositionCircle);
+			}
 		}
 
 		async Task MoveToRegion(MapSpan span, MapAnimationKind animation = MapAnimationKind.Bow)
@@ -188,35 +207,29 @@ namespace Xamarin.Forms.Maps.WinRT
 			await Control.TrySetViewBoundsAsync(boundingBox, null, animation);
 		}
 
-		async Task UpdateVisibleRegion()
+		void UpdateVisibleRegion()
 		{
 			if (Control == null || Element == null)
 				return;
-
-			if (!_firstZoomLevelChangeFired)
-			{
-				await MoveToRegion(Element.LastMoveToRegion, MapAnimationKind.None);
-				_firstZoomLevelChangeFired = true;
-				return;
-			}
-			Geopoint nw, se = null;
+		
 			try
 			{
+				Geopoint nw, se = null;
 				Control.GetLocationFromOffset(new Windows.Foundation.Point(0, 0), out nw);
 				Control.GetLocationFromOffset(new Windows.Foundation.Point(Control.ActualWidth, Control.ActualHeight), out se);
-			}
+
+				if (nw != null && se != null)
+				{
+					var boundingBox = new GeoboundingBox(nw.Position, se.Position);
+					var center = new Position(boundingBox.Center.Latitude, boundingBox.Center.Longitude);
+					var latitudeDelta = Math.Abs(nw.Position.Latitude - se.Position.Latitude);
+					var longitudeDelta = Math.Abs(nw.Position.Longitude - se.Position.Longitude);
+					Element.VisibleRegion = new MapSpan(center, latitudeDelta, longitudeDelta);
+				}
+            }
 			catch (Exception)
 			{
 				return;
-			}
-
-			if (nw != null && se != null)
-			{
-				var boundingBox = new GeoboundingBox(nw.Position, se.Position);
-				var center = new Position(boundingBox.Center.Latitude, boundingBox.Center.Longitude);
-				var latitudeDelta = Math.Abs(center.Latitude - boundingBox.NorthwestCorner.Latitude);
-				var longitudeDelta = Math.Abs(center.Longitude - boundingBox.NorthwestCorner.Longitude);
-				Element.VisibleRegion = new MapSpan(center, latitudeDelta, longitudeDelta);
 			}
 		}
 

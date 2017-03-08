@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using NUnit.Framework;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Core.UnitTests
 {
@@ -108,6 +109,90 @@ namespace Xamarin.Forms.Core.UnitTests
 			mock.BindingContext = new object();
 
 			Assert.Fail ("The BindingContextChanged event was not fired.");
+		}
+
+		[Test]
+		public void BindingContextChangedOnce()
+		{
+			var count = 0;
+
+			var mock = new MockBindable();
+			mock.BindingContextChanged += (sender, args) => ++count;
+
+			mock.BindingContext = new object();
+			Assert.AreEqual(count, 1);
+		}
+
+		[Test]
+		public void ParentAndChildBindingContextChanged()
+		{
+			int parentCount = 0, childCount = 0;
+
+			var didNotChange = " BindingContext did not change.";
+			var changedMoreThanOnce = " BindingContext changed more than once.";
+			var changedWhenNoChange = " BindingContext was changed when there was no change in context.";
+
+			var parent = new MockBindable();
+			parent.BindingContextChanged += (sender, args) => { ++parentCount; };
+
+			var child = new MockBindable();
+			child.BindingContextChanged += (sender, args) => { ++childCount; };
+
+			child.Parent = parent;
+			Assert.AreEqual(parentCount, 0, "Parent BindingContext was changed while parenting a child.");
+			Assert.AreEqual(childCount, 0, "Child" + changedWhenNoChange);
+
+			child.BindingContext = new object(); // set manually
+			Assert.GreaterOrEqual(childCount, 1, "Child" + didNotChange);
+			Assert.AreEqual(childCount, 1, "Child" + changedMoreThanOnce);
+			Assert.AreEqual(parentCount, 0, "Parent" + changedWhenNoChange);
+
+			parent.BindingContext = new object();
+			Assert.GreaterOrEqual(parentCount, 1, "Parent" + didNotChange);
+			Assert.AreEqual(parentCount, 1, "Parent" + changedMoreThanOnce);
+			Assert.AreEqual(childCount, 1, "Child" + changedWhenNoChange);
+
+			child.BindingContext = new object();
+			Assert.GreaterOrEqual(childCount, 2, "Child" + didNotChange);
+			Assert.AreEqual(childCount, 2, "Child" + changedMoreThanOnce);
+			Assert.AreEqual(parentCount, 1, "Parent" + changedWhenNoChange);
+		}
+
+		[Test]
+		public void ParentSetOnNullChildBindingContext()
+		{
+			var parent = new MockBindable();
+
+			var child = new MockBindable();
+			child.BindingContextChanged += (sender, args) => { Assert.Fail("Child BindingContext was changed when there was no change in context."); };
+
+			child.Parent = parent; // this should not trigger binding context change on child since there is no change
+			parent.BindingContext = new object();
+			parent.BindingContext = new object();
+		}
+
+		[Test]
+		public void ParentSetOnNonNullChildBindingContext()
+		{
+			var count = 0;
+
+			var parent = new MockBindable();
+			parent.BindingContextChanged += (sender, args) => { ++count; };
+
+			var child = new MockBindable();
+			child.BindingContextChanged += (sender, args) => { ++count; };
+
+			child.BindingContext = new object(); // set manually
+			Assert.AreEqual(count, 1);
+
+			child.Parent = parent; // this should not trigger binding context change because child binding was set manually
+			Assert.AreEqual(count, 1);
+
+			parent.BindingContext = new object();
+			Assert.AreEqual(count, 2);
+
+			child.BindingContext = new object();
+			Assert.AreEqual(count, 3);
 		}
 
 		[Test]
@@ -510,7 +595,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			};
 
 			mock.SetValueCore (MockBindable.TextProperty, foo, 
-				BindableObject.SetValueFlags.ClearOneWayBindings | BindableObject.SetValueFlags.ClearDynamicResource | BindableObject.SetValueFlags.RaiseOnEqual);
+				SetValueFlags.ClearOneWayBindings | SetValueFlags.ClearDynamicResource | SetValueFlags.RaiseOnEqual);
 
 			Assert.That (changing, Is.True, "PropertyChanging event did not fire");
 			Assert.That (changed, Is.True, "PropertyChanged event did not fire");

@@ -7,7 +7,7 @@ using NUnit.Framework;
 using Xamarin.UITest.Queries;
 #endif
 
-namespace Xamarin.Forms.Controls
+namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve (AllMembers = true)]
 	[Issue (IssueTracker.Bugzilla, 36171, "WinRT Entry UI not updating on TextChanged",
@@ -67,6 +67,9 @@ namespace Xamarin.Forms.Controls
 
 #if UITEST
 		[Test]
+#if __MACOS__
+		[Ignore("Missing UITest for focus")]
+#endif
 		public void EntryTextDoesNotDisplayNonnumericInput ()
 		{
 			RunningApp.WaitForElement ("Start Entry");
