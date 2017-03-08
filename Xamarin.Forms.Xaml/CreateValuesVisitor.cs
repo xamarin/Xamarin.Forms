@@ -42,7 +42,7 @@ namespace Xamarin.Forms.Xaml
 			object value = null;
 
 			XamlParseException xpe;
-			var type = XamlParser.GetElementType(node.XmlType, node, Context.RootElement?.GetType().GetTypeInfo().Assembly,
+			var type = XamlParser.GetElementType(node.XmlType, node, Context.CurrentAssembly ?? Context.RootElement?.GetType().GetTypeInfo().Assembly,
 				out xpe);
 			if (xpe != null)
 				throw xpe;

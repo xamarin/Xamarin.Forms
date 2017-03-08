@@ -241,7 +241,7 @@ namespace Xamarin.Forms.Xaml
 				localname = localname.Substring(dotIdx + 1);
 				XamlParseException xpe;
 				elementType = XamlParser.GetElementType(new XmlType(namespaceURI, typename, null), lineInfo,
-					context.RootElement.GetType().GetTypeInfo().Assembly, out xpe);
+					context.CurrentAssembly ?? context.RootElement.GetType().GetTypeInfo().Assembly, out xpe);
 				if (xpe != null)
 					throw xpe;
 				return true;
