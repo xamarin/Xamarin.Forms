@@ -53,7 +53,7 @@ namespace Xamarin.Forms.Platform.WinRT
 					Control.Loaded += ControlOnLoaded;
 				}
 
-				Control.ItemsSource = Element.Items;
+				Control.ItemsSource = ((LockableObservableListWrapper)Element.Items)._list;
 
 				UpdateTitle();
 				UpdateSelectedIndex();

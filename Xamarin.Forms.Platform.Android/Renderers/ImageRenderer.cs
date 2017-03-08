@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Android.Graphics;
 using AImageView = Android.Widget.ImageView;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -68,23 +69,21 @@ namespace Xamarin.Forms.Platform.Android
 			if (Device.IsInvokeRequired)
 				throw new InvalidOperationException("Image Bitmap must not be updated from background thread");
 
-			Bitmap bitmap = null;
-
-			ImageSource source = Element.Source;
-			IImageSourceHandler handler;
-
 			if (previous != null && Equals(previous.Source, Element.Source))
 				return;
 
 			((IImageController)Element).SetIsLoading(true);
 
 			var formsImageView = Control as FormsImageView;
-			if (formsImageView != null)
-				formsImageView.SkipInvalidate();
+			formsImageView?.SkipInvalidate();
 
 			Control.SetImageResource(global::Android.Resource.Color.Transparent);
 
-			if (source != null && (handler = Registrar.Registered.GetHandler<IImageSourceHandler>(source.GetType())) != null)
+			ImageSource source = Element.Source;
+			Bitmap bitmap = null;
+			IImageSourceHandler handler;
+
+			if (source != null && (handler = Internals.Registrar.Registered.GetHandler<IImageSourceHandler>(source.GetType())) != null)
 			{
 				try
 				{
@@ -100,11 +99,18 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			if (Element == null || !Equals(Element.Source, source))
+			{
+				bitmap?.Dispose();
 				return;
+			}
 
 			if (!_isDisposed)
 			{
-				Control.SetImageBitmap(bitmap);
+				if (bitmap == null && source is FileImageSource)
+					Control.SetImageResource(ResourceManager.GetDrawableByName(((FileImageSource)source).File));
+				else
+					Control.SetImageBitmap(bitmap);
+
 				bitmap?.Dispose();
 
 				((IImageController)Element).SetIsLoading(false);

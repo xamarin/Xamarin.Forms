@@ -87,8 +87,14 @@
     <Compile Include="DataTemplateSelector.cs" />
     <Compile Include="DateChangedEventArgs.cs" />
     <Compile Include="DelegateLogListener.cs" />
+    <Compile Include="IEditorController.cs" />
+    <Compile Include="IGridController.cs" />
+    <Compile Include="IWebViewController.cs" />
+    <Compile Include="INavigationMenuController.cs" />
     <Compile Include="Internals\EffectUtilities.cs" />
     <Compile Include="EnumerableExtensions.cs" />
+    <Compile Include="IMultiPageController.cs" />
+    <Compile Include="LockableObservableListWrapper.cs" />
     <Compile Include="PlatformConfiguration\AndroidSpecific\AppCompat\Application.cs" />
     <Compile Include="PlatformConfiguration\AndroidSpecific\Application.cs" />
     <Compile Include="PlatformConfiguration\AndroidSpecific\TabbedPage.cs" />
@@ -448,6 +454,9 @@
     <Compile Include="XmlnsDefinitionAttribute.cs" />
     <Compile Include="PlatformConfiguration\macOSSpecific\TabbedPage.cs" />
     <Compile Include="PlatformConfiguration\macOSSpecific\TabsStyle.cs" />
+    <Compile Include="FontElement.cs" />
+    <Compile Include="ITextElement.cs" />
+    <Compile Include="TextElement.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>
@@ -462,7 +471,5 @@
     </PostBuildEvent>
   </PropertyGroup>
   <ItemGroup />
-  <ItemGroup>
-    <Folder Include="PlatformConfiguration\macOSSpecific\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>
