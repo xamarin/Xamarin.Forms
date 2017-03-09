@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
@@ -84,9 +85,11 @@ namespace Xamarin.Forms
 			{
 				if (_fontAttributes == value)
 					return;
+				var oldValue = _fontAttributes;
 				_fontAttributes = value;
 				OnPropertyChanged();
-				UpdateStructFromFontProperties();
+
+				((IFontElement)this).OnFontAttributesChanged(oldValue, value);
 			}
 		}
 
@@ -97,9 +100,10 @@ namespace Xamarin.Forms
 			{
 				if (_fontFamily == value)
 					return;
+				var oldValue = _fontFamily;
 				_fontFamily = value;
 				OnPropertyChanged();
-				UpdateStructFromFontProperties();
+				((IFontElement)this).OnFontFamilyChanged(oldValue, value);
 			}
 		}
 
@@ -111,9 +115,10 @@ namespace Xamarin.Forms
 			{
 				if (_fontSize == value)
 					return;
+				var oldValue = _fontSize;
 				_fontSize = value;
 				OnPropertyChanged();
-				UpdateStructFromFontProperties();
+				((IFontElement)this).OnFontSizeChanged(oldValue, value);
 			}
 		}
 
@@ -149,23 +154,48 @@ namespace Xamarin.Forms
 			_inUpdate = false;
 		}
 
-		void UpdateStructFromFontProperties()
+		void OnSomeFontPropertyChanged()
 		{
-			if (_inUpdate)
-				return;
-			_inUpdate = true;
-
-			if (FontFamily != null)
 			{
-				Font = Font.OfSize(FontFamily, FontSize).WithAttributes(FontAttributes);
-			}
-			else
-			{
-				Font = Font.SystemFontOfSize(FontSize).WithAttributes(FontAttributes);
-			}
+				if (_inUpdate)
+					return;
+				_inUpdate = true;
 
-			_inUpdate = false;
+				if (FontFamily != null)
+					Font = Font.OfSize(FontFamily, FontSize).WithAttributes(FontAttributes);
+				else
+					Font = Font.SystemFontOfSize(FontSize).WithAttributes(FontAttributes);
+
+				_inUpdate = false;
+			}
+		}
+
+#pragma warning restore
+
+		//Those 4 methods are never used as Span isn't a BO, and doesn't compose with FontElement
+		void IFontElement.OnFontFamilyChanged(string oldValue, string newValue)
+		{
+			throw new NotImplementedException();
+		}
+
+		void IFontElement.OnFontSizeChanged(double oldValue, double newValue)
+		{
+			throw new NotImplementedException();
+		}
+
+		double IFontElement.FontSizeDefaultValueCreator()
+		{
+			throw new NotImplementedException();
+		}
+
+		void IFontElement.OnFontAttributesChanged(FontAttributes oldValue, FontAttributes newValue)
+		{
+			throw new NotImplementedException();
+		}
+
+		void IFontElement.OnFontChanged(Font oldValue, Font newValue)
+		{
+			throw new NotImplementedException();
 		}
 	}
-#pragma warning restore
 }

@@ -1,6 +1,9 @@
-namespace Xamarin.Forms
+using System.ComponentModel;
+
+namespace Xamarin.Forms.Internals
 {
-	internal abstract class LogListener
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	public abstract class LogListener
 	{
 		public abstract void Warning(string category, string message);
 	}

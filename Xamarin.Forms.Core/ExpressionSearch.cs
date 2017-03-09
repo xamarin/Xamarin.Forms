@@ -1,7 +1,10 @@
-namespace Xamarin.Forms
+using System.ComponentModel;
+
+namespace Xamarin.Forms.Internals
 {
-	internal abstract class ExpressionSearch
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	public abstract class ExpressionSearch
 	{
-		internal static IExpressionSearch Default { get; set; }
+		public static IExpressionSearch Default { get; set; }
 	}
 }

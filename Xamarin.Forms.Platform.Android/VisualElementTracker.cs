@@ -6,6 +6,7 @@ using Android.OS;
 using Android.Views;
 using AView = Android.Views.View;
 using Object = Java.Lang.Object;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -79,8 +80,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			var x = (int)_context.ToPixels(view.X);
 			var y = (int)_context.ToPixels(view.Y);
-			var width = (int)_context.ToPixels(view.Width);
-			var height = (int)_context.ToPixels(view.Height);
+			var width = Math.Max(0, (int)_context.ToPixels(view.Width));
+			var height = Math.Max(0, (int)_context.ToPixels(view.Height));
 
 			var formsViewGroup = aview as FormsViewGroup;
 			if (formsViewGroup == null)
