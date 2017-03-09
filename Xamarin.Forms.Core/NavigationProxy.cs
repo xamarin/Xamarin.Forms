@@ -1,11 +1,13 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Xamarin.Forms
+namespace Xamarin.Forms.Internals
 {
-	internal class NavigationProxy : INavigation
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	public class NavigationProxy : INavigation
 	{
 		INavigation _inner;
 		Lazy<List<Page>> _modalStack = new Lazy<List<Page>>(() => new List<Page>());

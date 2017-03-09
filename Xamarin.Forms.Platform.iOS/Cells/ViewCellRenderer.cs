@@ -139,6 +139,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 			IVisualElementRenderer GetNewRenderer()
 			{
+				if (_viewCell.View == null)
+					throw new InvalidOperationException($"ViewCell must have a {nameof(_viewCell.View)}");
+
 				var newRenderer = Platform.CreateRenderer(_viewCell.View);
 				_rendererRef = new WeakReference<IVisualElementRenderer>(newRenderer);
 				ContentView.AddSubview(newRenderer.NativeView);
@@ -164,7 +167,7 @@ namespace Xamarin.Forms.Platform.iOS
 					if (renderer.Element != null && renderer == Platform.GetRenderer(renderer.Element))
 						renderer.Element.ClearValue(Platform.RendererProperty);
 
-					var type = Registrar.Registered.GetHandlerType(_viewCell.View.GetType());
+					var type = Internals.Registrar.Registered.GetHandlerType(_viewCell.View.GetType());
 					if (renderer.GetType() == type || (renderer is Platform.DefaultRenderer && type == null))
 						renderer.SetElement(_viewCell.View);
 					else

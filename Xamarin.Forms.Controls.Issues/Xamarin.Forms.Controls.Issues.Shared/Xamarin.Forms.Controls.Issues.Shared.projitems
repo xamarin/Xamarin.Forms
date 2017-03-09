@@ -146,6 +146,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla43313.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla43469.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla43516.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla43519.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla43527.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla44047.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla43941.cs" />
@@ -164,6 +165,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla44338.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla45027.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla45330.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla44955.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla45743.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla46494.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla44476.cs" />
@@ -171,6 +173,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla47923.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla48236.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla47971.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla51553.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla51802.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla51236.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla51238.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla51642.xaml.cs">
       <DependentUpon>Bugzilla51642.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -245,6 +251,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla37431.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla44777.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla51503.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla51505.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla52533.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)_Template.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1028.cs" />

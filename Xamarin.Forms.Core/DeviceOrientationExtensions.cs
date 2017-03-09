@@ -1,6 +1,9 @@
-namespace Xamarin.Forms
+using System.ComponentModel;
+
+namespace Xamarin.Forms.Internals
 {
-	internal static class DeviceOrientationExtensions
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	public static class DeviceOrientationExtensions
 	{
 		public static bool IsLandscape(this DeviceOrientation orientation)
 		{

@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 
-namespace Xamarin.Forms
+namespace Xamarin.Forms.Internals
 {
-	internal static class ReflectionExtensions
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	public static class ReflectionExtensions
 	{
 		public static FieldInfo GetField(this Type type, Func<FieldInfo, bool> predicate)
 		{
