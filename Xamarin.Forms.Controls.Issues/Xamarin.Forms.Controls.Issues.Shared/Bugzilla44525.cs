@@ -11,17 +11,17 @@ namespace Xamarin.Forms.Controls.Issues
 		protected override void Init()
 		{
 			const string InstructionsLong = "On iOS, all the list items below will have different height defined by this text, the text " +
-			                            "should be wrapped and take all cell space. If this text is not wrapped and there is a lot of " +
-			                            "whitespace in the cell then this test has failed. This error was happening to ListView with RecycleElement mode " +
-			                            "or when cell has context actions.";
+										"should be wrapped and take all cell space. If this text is not wrapped and there is a lot of " +
+										"whitespace in the cell then this test has failed. This error was happening to ListView with RecycleElement mode " +
+										"or when cell has context actions.";
 
 			const string InstructionsShort = "On iOS, all the list items below will have different height defined by this text.";
 
 			var listItems = Enumerable.Range(1, 100).Select(i => new ItemViewModel
-			                                                     {
-				                                                     Name = "Item" + i,
-				                                                     Description = i % 2 == 0 ? (InstructionsLong + i) : (InstructionsShort + i)
-			                                                     }).ToArray();
+																 {
+																	 Name = "Item" + i,
+																	 Description = i % 2 == 0 ? (InstructionsLong + i) : (InstructionsShort + i)
+																 }).ToArray();
 
 			var listView = new ListView(ListViewCachingStrategy.RecycleElement)
 			{
