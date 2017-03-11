@@ -5,8 +5,8 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 44525, "[iOS] Xamarin.Forms ListView Row Height Does Not Adapt")]
-	public class Bugzilla44525 : TestContentPage
+	[Issue(IssueTracker.Bugzilla, 51536, "[iOS] Xamarin.Forms ListView Row Height Does Not Adapt")]
+	public class Bugzilla51536 : TestContentPage
 	{
 		protected override void Init()
 		{
