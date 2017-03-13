@@ -44,7 +44,7 @@ namespace Xamarin.Forms.Xaml.Internals
 
 namespace Xamarin.Forms.Xaml
 {
-	internal static class XamlLoader
+	static class XamlLoader
 	{
 		static readonly Dictionary<Type, string> XamlResources = new Dictionary<Type, string>();
 
@@ -127,10 +127,9 @@ namespace Xamarin.Forms.Xaml
 
 		static string GetXamlForType(Type type)
 		{
-			string xaml = null;
-
 			//the Previewer might want to provide it's own xaml for this... let them do that
-			if (Xamarin.Forms.Xaml.Internals.XamlLoader.XamlFileProvider != null && (xaml = Xamarin.Forms.Xaml.Internals.XamlLoader.XamlFileProvider(type)) != null)
+			var xaml = Internals.XamlLoader.XamlFileProvider?.Invoke(type);
+			if (xaml != null)
 				return xaml;
 
 			var assembly = type.GetTypeInfo().Assembly;
