@@ -62,10 +62,10 @@ namespace Xamarin.Forms.Maps.WinRT
 				if (mapModel.Pins.Any())
 					LoadPins();
 
-                if (Control != null)
-                    await Control.Dispatcher.RunIdleAsync(async (i) => await MoveToRegion(mapModel.LastMoveToRegion, MapAnimationKind.None));
+                if (Control == null) return;
 
-                await UpdateIsShowingUser();
+				await Control.Dispatcher.RunIdleAsync(async (i) => await MoveToRegion(mapModel.LastMoveToRegion, MapAnimationKind.None));
+				await UpdateIsShowingUser();
             }
 		}
 
@@ -162,37 +162,38 @@ namespace Xamarin.Forms.Maps.WinRT
 			Control.Children.Add(new PushPin(pin));
 		}
 
-        async Task UpdateIsShowingUser(bool moveToLocation = true)
-        {
-            if (Element?.IsShowingUser == true)
-            {
-                var myGeolocator = new Geolocator();
-                if (myGeolocator.LocationStatus != PositionStatus.NotAvailable &&
-                     myGeolocator.LocationStatus != PositionStatus.Disabled)
-                {
-                    var userPosition = await myGeolocator.GetGeopositionAsync();
-                    if (userPosition?.Coordinate != null)
-                        LoadUserPosition(userPosition.Coordinate, moveToLocation);
-                }
+		async Task UpdateIsShowingUser(bool moveToLocation = true)
+		{
+			
+			if (Element?.IsShowingUser == true)
+			{
+				var myGeolocator = new Geolocator();
+				if (myGeolocator.LocationStatus != PositionStatus.NotAvailable &&
+				    myGeolocator.LocationStatus != PositionStatus.Disabled)
+				{
+					var userPosition = await myGeolocator.GetGeopositionAsync();
+					if (userPosition?.Coordinate != null)
+						LoadUserPosition(userPosition.Coordinate, moveToLocation);
+				}
 
-                if (_timer == null)
-                {
-                    _timer = new DispatcherTimer();
-                    _timer.Tick += async (s, o) => await UpdateIsShowingUser(moveToLocation: false);
-                    _timer.Interval = TimeSpan.FromSeconds(15);
-                }
+				if (_timer == null)
+				{
+					_timer = new DispatcherTimer();
+					_timer.Tick += async (s, o) => await UpdateIsShowingUser(moveToLocation: false);
+					_timer.Interval = TimeSpan.FromSeconds(15);
+				}
+				
+				if (_timer?.IsEnabled == false)
+					_timer?.Start();
+			}
+			else if (_userPositionCircle != null && Control?.Children?.Contains(_userPositionCircle) == true)
+			{
+				_timer?.Stop();
+				Control?.Children?.Remove(_userPositionCircle);
+			}
+		}
 
-                if (_timer?.IsEnabled == false)
-                    _timer?.Start();
-            }
-            else if (_userPositionCircle != null && Control?.Children?.Contains(_userPositionCircle) == true)
-            {
-                _timer?.Stop();
-                Control?.Children?.Remove(_userPositionCircle);
-            }
-        }
-
-        async Task MoveToRegion(MapSpan span, MapAnimationKind animation = MapAnimationKind.Bow)
+		async Task MoveToRegion(MapSpan span, MapAnimationKind animation = MapAnimationKind.Bow)
 		{
 			var nw = new BasicGeoposition
 			{
@@ -227,7 +228,7 @@ namespace Xamarin.Forms.Maps.WinRT
 					var longitudeDelta = Math.Abs(nw.Position.Longitude - se.Position.Longitude);
                     await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
                     {
-                        Element.VisibleRegion = new MapSpan(center, latitudeDelta, longitudeDelta);
+					    Element.VisibleRegion = new MapSpan(center, latitudeDelta, longitudeDelta);
                     });
 				}
             }
@@ -237,45 +238,45 @@ namespace Xamarin.Forms.Maps.WinRT
 			}
 		}
 
-        void LoadUserPosition(Geocoordinate userCoordinate, bool center)
-        {
-            var userPosition = new BasicGeoposition
-            {
-                Latitude = userCoordinate.Point.Position.Latitude,
-                Longitude = userCoordinate.Point.Position.Longitude
-            };
+		void LoadUserPosition(Geocoordinate userCoordinate, bool center)
+		{
+			var userPosition = new BasicGeoposition
+			{
+				Latitude = userCoordinate.Point.Position.Latitude,
+				Longitude = userCoordinate.Point.Position.Longitude
+			};
 
-            var point = new Geopoint(userPosition);
+			var point = new Geopoint(userPosition);
 
-            if (_userPositionCircle == null)
-            {
-                _userPositionCircle = new Ellipse
-                {
-                    Stroke = new SolidColorBrush(Colors.White),
-                    Fill = new SolidColorBrush(Colors.Blue),
-                    StrokeThickness = 2,
-                    Height = 20,
-                    Width = 20,
-                    Opacity = 50
-                };
-            }
+			if (_userPositionCircle == null)
+			{
+				_userPositionCircle = new Ellipse
+				{
+					Stroke = new SolidColorBrush(Colors.White),
+					Fill = new SolidColorBrush(Colors.Blue),
+					StrokeThickness = 2,
+					Height = 20,
+					Width = 20,
+					Opacity = 50
+				};
+			}
 
-            if (Control?.Children?.Contains(_userPositionCircle) == true)
-                Control.Children.Remove(_userPositionCircle);
+			if (Control?.Children?.Contains(_userPositionCircle) == true)
+				Control.Children.Remove(_userPositionCircle);
 
-            MapControl.SetLocation(_userPositionCircle, point);
-            MapControl.SetNormalizedAnchorPoint(_userPositionCircle, new Windows.Foundation.Point(0.5, 0.5));
+			MapControl.SetLocation(_userPositionCircle, point);
+			MapControl.SetNormalizedAnchorPoint(_userPositionCircle, new Windows.Foundation.Point(0.5, 0.5));
 
-            Control?.Children?.Add(_userPositionCircle);
+			Control?.Children?.Add(_userPositionCircle);
 
-            if (center && Control != null)
-            {
-                Control.Center = point;
-                Control.ZoomLevel = 13;
-            }
-        }
+			if (center && Control != null)
+			{
+				Control.Center = point;
+				Control.ZoomLevel = 13;
+			}
+		}
 
-        void UpdateMapType()
+		void UpdateMapType()
 		{
 			switch (Element.MapType)
 			{
