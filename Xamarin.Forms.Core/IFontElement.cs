@@ -1,6 +1,9 @@
-namespace Xamarin.Forms
+using System.ComponentModel;
+
+namespace Xamarin.Forms.Internals
 {
-	interface IFontElement
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	public interface IFontElement
 	{
 		//note to implementor: implement the properties publicly
 		FontAttributes FontAttributes { get; }
