@@ -240,6 +240,8 @@ namespace Xamarin.Forms.Maps.WinRT
 
 		void LoadUserPosition(Geocoordinate userCoordinate, bool center)
 		{
+			if (Control == null || Element == null) return;
+
 			var userPosition = new BasicGeoposition
 			{
 				Latitude = userCoordinate.Point.Position.Latitude,
@@ -261,15 +263,15 @@ namespace Xamarin.Forms.Maps.WinRT
 				};
 			}
 
-			if (Control?.Children?.Contains(_userPositionCircle) == true)
+			if (Control.Children.Contains(_userPositionCircle))
 				Control.Children.Remove(_userPositionCircle);
 
 			MapControl.SetLocation(_userPositionCircle, point);
 			MapControl.SetNormalizedAnchorPoint(_userPositionCircle, new Windows.Foundation.Point(0.5, 0.5));
 
-			Control?.Children?.Add(_userPositionCircle);
+			Control.Children.Add(_userPositionCircle);
 
-			if (center && Control != null)
+			if (center)
 			{
 				Control.Center = point;
 				Control.ZoomLevel = 13;
