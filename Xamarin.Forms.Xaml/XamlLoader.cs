@@ -138,7 +138,7 @@ namespace Xamarin.Forms.Xaml
 			var xaml = Internals.XamlLoader.XamlFileProvider?.Invoke(type);
 #pragma warning restore 0618
 
-			if (xaml != null && ResourceLoader.ResourceProvider != null)
+			if (xaml != null && ResourceLoader.ResourceProvider == null)
 				return xaml;
 
 			var assembly = type.GetTypeInfo().Assembly;
