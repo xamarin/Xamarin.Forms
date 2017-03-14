@@ -62,11 +62,11 @@ namespace Xamarin.Forms.Maps.WinRT
 				if (mapModel.Pins.Any())
 					LoadPins();
 
-                if (Control == null) return;
+                		if (Control == null) return;
 
 				await Control.Dispatcher.RunIdleAsync(async (i) => await MoveToRegion(mapModel.LastMoveToRegion, MapAnimationKind.None));
 				await UpdateIsShowingUser();
-            }
+            		}
 		}
 
 		protected override async void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
