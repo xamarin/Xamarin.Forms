@@ -83,6 +83,7 @@
     <Compile Include="Issues\Bz41296.xaml.cs">
       <DependentUpon>Bz41296.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Issues\Bz53275.cs" />
     <Compile Include="LoaderTests.cs" />
     <Compile Include="PlatformSpecifics.xaml.cs">
       <DependentUpon>PlatformSpecifics.xaml</DependentUpon>

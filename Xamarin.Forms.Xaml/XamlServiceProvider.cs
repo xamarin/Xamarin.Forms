@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Xml;
 using Xamarin.Forms.Internals;
+using System.Linq;
 
 namespace Xamarin.Forms.Xaml.Internals
 {
@@ -91,19 +92,63 @@ namespace Xamarin.Forms.Xaml.Internals
 
 	class XamlValueTargetProvider : IProvideParentValues, IProvideValueTarget
 	{
+		
+		Lazy<object> targetProperty;
 		public XamlValueTargetProvider(object targetObject, INode node, HydratationContext context, object targetProperty)
 		{
 			Context = context;
 			Node = node;
 			TargetObject = targetObject;
-			TargetProperty = targetProperty;
+			this.targetProperty = new Lazy<object>(() =>
+				{
+					XmlName propertyName;
+					if (ReferenceEquals(TargetObject, null) == false 
+						&& ReferenceEquals(targetProperty, null)
+						&& TryGetProperyName(node,node.Parent,out propertyName))
+					{
+						var fieldInfo = targetObject.GetType().GetRuntimeField(propertyName.LocalName + "Property");
+						if (fieldInfo != null 
+							&& fieldInfo.IsStatic 
+							&& fieldInfo.FieldType == typeof(BindableProperty))
+						{
+							targetProperty = fieldInfo.GetValue(null);
+						}
+						else
+						{
+							var elementType = targetObject.GetType();
+							var localname = propertyName.LocalName;
+							PropertyInfo propertyInfo = null;
+							try
+							{
+								propertyInfo = elementType.GetRuntimeProperty(localname);
+							}
+							catch (AmbiguousMatchException)
+							{
+								// Get most derived instance of property
+								foreach (var property in elementType.GetRuntimeProperties().Where(prop => prop.Name == localname))
+								{
+									if (propertyInfo == null || propertyInfo.DeclaringType.IsAssignableFrom(property.DeclaringType))
+										propertyInfo = property;
+								}
+							}
+							targetProperty = propertyInfo;
+						}
+					}
+					return targetProperty;
+				});
 		}
 
 		INode Node { get; }
 
 		HydratationContext Context { get; }
 		public object TargetObject { get; }
-		public object TargetProperty { get; } = null;
+		public object TargetProperty
+		{
+			get
+			{
+				return targetProperty.Value;
+			}
+		}
 
 		IEnumerable<object> IProvideParentValues.ParentObjects
 		{
@@ -129,6 +174,22 @@ namespace Xamarin.Forms.Xaml.Internals
 					n = n.Parent;
 				}
 			}
+		}
+
+		public static bool TryGetProperyName(INode node, INode parentNode, out XmlName name)
+		{
+			name = default(XmlName);
+			var parentElement = parentNode as IElementNode;
+			if (parentElement == null)
+				return false;
+			foreach (var kvp in parentElement.Properties)
+			{
+				if (kvp.Value != node)
+					continue;
+				name = kvp.Key;
+				return true;
+			}
+			return false;
 		}
 	}
 
