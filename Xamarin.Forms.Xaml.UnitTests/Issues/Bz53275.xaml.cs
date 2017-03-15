@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using System.Xml;
 
 using Xamarin.Forms.Core.UnitTests;
 using System.Reflection;
+
+using Xamarin.Forms;
+using Xamarin.Forms.Xaml;
 
 namespace Xamarin.Forms.Xaml.UnitTests.Issues
 {
@@ -37,35 +39,28 @@ namespace Xamarin.Forms.Xaml.UnitTests.Issues
 		}
 	}
 
-	[TestFixture]
-	class Bz53275:BaseTestFixture
+	public partial class Bz53275 : ContentPage
 	{
-		IXamlTypeResolver typeResolver;
-
-		[SetUp]
-		public override void Setup()
+		public Bz53275()
 		{
-			base.Setup();
-			var nsManager = new XmlNamespaceManager(new NameTable());
-			nsManager.AddNamespace("local", "clr-namespace:Xamarin.Forms.Xaml.UnitTests.Issues;assembly=Xamarin.Forms.Xaml.UnitTests");
-			nsManager.AddNamespace("x", "http://schemas.microsoft.com/winfx/2006/xaml");
-
-			typeResolver = new Internals.XamlTypeResolver(nsManager, XamlParser.GetElementType, Assembly.GetCallingAssembly());
+			InitializeComponent();
 		}
 
-		[Test]
-		public void TestGetTargetProperty()
+		public Bz53275(bool useCompiledXaml)
 		{
-			var xaml = @"
-			<Label 
-				xmlns=""http://xamarin.com/schemas/2014/forms""
-				xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-				xmlns:local=""clr-namespace:Xamarin.Forms.Xaml.UnitTests.Issues;assembly=Xamarin.Forms.Xaml.UnitTests""
-				Text=""{local:GetTargetPropertyName}""
-			/>";
 
-			var label = new Label();
-			label.LoadFromXaml(xaml);
+		}
+	}
+
+	[TestFixture]
+	class Bz53275Test:BaseTestFixture
+	{
+		[Test]
+		[TestCase(true)]
+		[TestCase(false)]
+		public void TestGetTargetProperty(bool useCompiledXaml)
+		{
+			var label = (new Bz53275(useCompiledXaml)).FindByName<Label>("label");
 			Assert.AreEqual("Text", label.Text.ToString());
 		}
 	}
