@@ -1093,10 +1093,8 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 				else
 				{
-					foreach (Element childElement in element.LogicalChildrenInternal)
-					{
+					foreach (Element childElement in (element as IElementController).LogicalChildren)
 						PreserveActivityIndicatorState(childElement);
-					}
 				}
 			}
 		}
