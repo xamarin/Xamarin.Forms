@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Core.UnitTests
             internalChildren.Add(new VisualElement());
             internalChildren.Add(new VisualElement());
 
-            sut.ControlTemplate = new ControlTemplate();
+            sut.ControlTemplate = new ControlTemplate(typeof(View));
 
             Assert.AreEqual(1, internalChildren.Count);
         }
