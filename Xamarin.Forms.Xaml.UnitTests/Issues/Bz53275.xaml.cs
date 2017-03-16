@@ -50,18 +50,21 @@ namespace Xamarin.Forms.Xaml.UnitTests.Issues
 		{
 
 		}
-	}
 
-	[TestFixture]
-	class Bz53275Test:BaseTestFixture
-	{
-		[Test]
-		[TestCase(true)]
-		[TestCase(false)]
-		public void TestGetTargetProperty(bool useCompiledXaml)
+		[TestFixture]
+		class Test : BaseTestFixture
 		{
-			var label = (new Bz53275(useCompiledXaml)).FindByName<Label>("label");
-			Assert.AreEqual("Text", label.Text.ToString());
+			[Test]
+			[TestCase(true)]
+			[TestCase(false)]
+			public void TestGetTargetProperty(bool useCompiledXaml)
+			{
+				var page = new Bz53275(useCompiledXaml);
+				var label = page.label;
+				Assert.AreEqual("Text", label.Text.ToString());
+			}
 		}
 	}
+
+
 }
