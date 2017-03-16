@@ -60,7 +60,7 @@ namespace Xamarin.Forms
 			{
 				while (self.InternalChildren.Count > 0)
 				{
-					self.InternalChildren.RemoveAt(0);
+					self.InternalChildren.RemoveAt(self.InternalChildren.Count - 1);
 				}
 
 				if (newValue != null)
@@ -106,7 +106,7 @@ namespace Xamarin.Forms
 			// Now remove all remnants of any other children just to be sure
 			while (self.InternalChildren.Count > 0)
 			{
-				self.InternalChildren.RemoveAt(0);
+				self.InternalChildren.RemoveAt(self.InternalChildren.Count - 1);
 			}
 
 			ControlTemplate template = self.ControlTemplate;
