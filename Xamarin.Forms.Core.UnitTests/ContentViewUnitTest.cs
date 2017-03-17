@@ -390,7 +390,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
         [Test]
-        public void ContentView_should_have_the_InternalChildren_correctly_when_content_changed()
+        public void ContentView_should_have_the_InternalChildren_correctly_when_Content_changed()
         {
             var sut = new ContentView();
             IList<Element> internalChildren = ((IControlTemplated)sut).InternalChildren;

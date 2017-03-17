@@ -67,7 +67,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
         [Test]
-        public void ContentPage_should_have_the_InternalChildren_correctly_when_content_changed()
+        public void ContentPage_should_have_the_InternalChildren_correctly_when_Content_changed()
         {
             var sut = new ContentPage();
             IList<Element> internalChildren = ((IControlTemplated)sut).InternalChildren;
