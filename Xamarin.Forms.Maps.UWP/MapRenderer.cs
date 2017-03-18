@@ -164,8 +164,9 @@ namespace Xamarin.Forms.Maps.WinRT
 
 		async Task UpdateIsShowingUser(bool moveToLocation = true)
 		{
-			
-			if (Element?.IsShowingUser == true)
+			if (Control == null || Element == null) return;
+
+			if (Element.IsShowingUser)
 			{
 				var myGeolocator = new Geolocator();
 				if (myGeolocator.LocationStatus != PositionStatus.NotAvailable &&
@@ -176,6 +177,8 @@ namespace Xamarin.Forms.Maps.WinRT
 						LoadUserPosition(userPosition.Coordinate, moveToLocation);
 				}
 
+				if (Control == null || Element == null) return;
+
 				if (_timer == null)
 				{
 					_timer = new DispatcherTimer();
@@ -183,13 +186,13 @@ namespace Xamarin.Forms.Maps.WinRT
 					_timer.Interval = TimeSpan.FromSeconds(15);
 				}
 				
-				if (_timer?.IsEnabled == false)
-					_timer?.Start();
+				if (!_timer.IsEnabled)
+					_timer.Start();
 			}
-			else if (_userPositionCircle != null && Control?.Children?.Contains(_userPositionCircle) == true)
+			else if (_userPositionCircle != null && Control.Children.Contains(_userPositionCircle))
 			{
-				_timer?.Stop();
-				Control?.Children?.Remove(_userPositionCircle);
+				_timer.Stop();
+				Control.Children.Remove(_userPositionCircle);
 			}
 		}
 
