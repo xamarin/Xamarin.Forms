@@ -37,11 +37,15 @@ namespace Xamarin.Forms.Controls.Issues
 					Placeholder = "Username"
 				};
 
+				username.SetValue(Accessibility.LabeledByProperty, instructions1);
+
 				var password = new Entry
 				{
 					Placeholder = "Password",
 					IsPassword = true
 				};
+
+				password.SetValue(Accessibility.LabeledByProperty, instructions2);
 
 				var button = new Button { Text = "Submit", IsEnabled = false };
 
@@ -58,13 +62,13 @@ namespace Xamarin.Forms.Controls.Issues
 				Content = new StackLayout
 				{
 					Children =
-				{
-					instructions1,
-					username,
-					instructions2,
-					password,
-					button
-				}
+					{
+						instructions1,
+						username,
+						instructions2,
+						password,
+						button
+					}
 				};
 			}
 		}
