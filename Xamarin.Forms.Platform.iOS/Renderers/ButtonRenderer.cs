@@ -104,8 +104,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			base.SetAccessibilityLabel();
 		}
-    
-    		void SetControlPropertiesFromProxy()
+		
+		void SetControlPropertiesFromProxy()
 		{
 			foreach (UIControlState uiControlState in s_controlStates)
 			{
@@ -113,7 +113,7 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.SetTitleShadowColor(UIButton.Appearance.TitleShadowColor(uiControlState), uiControlState);
 				Control.SetBackgroundImage(UIButton.Appearance.BackgroundImageForState(uiControlState), uiControlState);
 			}
-    		}
+		}
 
 		void OnButtonTouchUpInside(object sender, EventArgs eventArgs)
 		{
