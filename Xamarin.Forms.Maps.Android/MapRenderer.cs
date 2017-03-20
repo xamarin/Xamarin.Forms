@@ -165,13 +165,19 @@ namespace Xamarin.Forms.Maps.Android
 
 			if (_init)
 			{
-				MoveToRegion(Element.LastMoveToRegion, false);
-				OnCollectionChanged(Element.Pins, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
-				_init = false;
+				if (NativeMap != null)
+				{
+					MoveToRegion(Element.LastMoveToRegion, false);
+					OnCollectionChanged(Element.Pins, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+					_init = false;
+				}
 			}
 			else if (changed)
 			{
-				UpdateVisibleRegion(NativeMap.CameraPosition.Target);
+				if (NativeMap != null)
+				{
+					UpdateVisibleRegion(NativeMap.CameraPosition.Target);
+				}
 				MoveToRegion(Element.LastMoveToRegion, false);
 			}
 		}
