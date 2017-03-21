@@ -26,7 +26,6 @@
     <MtouchArch>Default, i386, x86_64</MtouchArch>
     <MtouchLink>SdkOnly</MtouchLink>
     <MtouchDebug>True</MtouchDebug>
-    <CodesignEntitlements>Entitlements.plist</CodesignEntitlements>
     <MtouchSdkVersion>7.0</MtouchSdkVersion>
     <MtouchProfiling>False</MtouchProfiling>
     <MtouchFastDev>False</MtouchFastDev>
@@ -38,6 +37,7 @@
     <MtouchOptimizePNGs>False</MtouchOptimizePNGs>
     <MtouchI18n />
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <CodesignKey>iPhone Developer</CodesignKey>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
     <DebugType>none</DebugType>
