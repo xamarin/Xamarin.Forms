@@ -2,10 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
+using System.Threading.Tasks;
+using CoreGraphics;
 using UIKit;
 using Xamarin.Forms.Internals;
 using static Xamarin.Forms.PlatformConfiguration.iOSSpecific.Page;
 using PageUIStatusBarAnimation = Xamarin.Forms.PlatformConfiguration.iOSSpecific.UIStatusBarAnimation;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -19,6 +23,13 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _defaultBarColorSet;
 		bool _loaded;
 		Size _queuedSize;
+
+		Dictionary<int, TabSwipe> _tabSwipes;
+		UIPanGestureRecognizer _uiPanGestureRecognizer;
+		CGPoint _startLocation = CGPoint.Empty;
+		string _direction = string.Empty;
+		bool _shouldSelect = true, _shouldPan = true;
+		const string Right = "Right", Left = "Left";
 
 		IPageController PageController => Element as IPageController;
 		IElementController ElementController => Element as IElementController;
@@ -73,6 +84,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			UpdateBarBackgroundColor();
 			UpdateBarTextColor();
+			UpdateTabSwipes();
 
 			EffectUtilities.RegisterEffectControlProvider(this, oldElement, element);
 		}
@@ -231,6 +243,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdatePrefersStatusBarHiddenOnPages();
 			else if (e.PropertyName == PreferredStatusBarUpdateAnimationProperty.PropertyName)
 				UpdateCurrentPagePreferredStatusBarUpdateAnimation();
+			else if (e.PropertyName == PlatformConfiguration.iOSSpecific.TabbedPage.TabSwipesProperty.PropertyName)
+				UpdateTabSwipes();
 		}
 
 		public override UIViewController ChildViewControllerForStatusBarHidden()
@@ -378,6 +392,282 @@ namespace Xamarin.Forms.Platform.iOS
 			var count = ((IPageController)Tabbed).InternalChildren.Count;
 			var index = (int)SelectedIndex;
 			((TabbedPage)Element).CurrentPage = index >= 0 && index < count ? Tabbed.GetPageByIndex(index) : null;
+		}
+
+		void UpdateTabSwipes()
+		{
+			_tabSwipes = ((TabbedPage)Element).OnThisPlatform().TabSwipes();
+
+			if (_tabSwipes == null || _tabSwipes.Count == 0)
+			{
+				ShouldSelectViewController = null;
+
+				if (_uiPanGestureRecognizer == null)
+					return;
+
+				if(View.GestureRecognizers.Contains(_uiPanGestureRecognizer))
+					View.GestureRecognizers.Remove(_uiPanGestureRecognizer);
+
+				_uiPanGestureRecognizer.Dispose();
+				_uiPanGestureRecognizer = null;
+			}
+			else
+			{
+				ShouldSelectViewController = (tabController, controller) =>
+				{
+					if (SelectedViewController == null || ReferenceEquals(controller, SelectedViewController))
+						return true;
+
+					if (!_shouldSelect)
+						return false;
+
+					_shouldSelect = false;
+					_shouldPan = false;
+
+					UIView fromView = SelectedViewController.View;
+					UIView toView = controller.View;
+					int newTabIndex = ViewController.ChildViewControllers.IndexOf(controller);
+					CGRect viewSize = fromView.Frame;
+					nfloat maxX = viewSize.Width;
+					nfloat minX = -1 * viewSize.Width;
+					SwipeConfig swipeConfig = GetSwipeConfig(SelectedIndex < newTabIndex) ?? new SwipeConfig();
+
+					if (!fromView.Superview.Subviews.Contains(toView))
+					{
+						fromView.Superview.AddSubview(toView);
+						toView.Frame = new CGRect(newTabIndex < SelectedIndex ? minX : maxX, viewSize.Y, viewSize.Width, viewSize.Height);
+					}
+
+					UIView.Animate(swipeConfig.Duration,
+						() =>
+						{
+							fromView.Frame = new CGRect(newTabIndex < SelectedIndex ? maxX : minX, viewSize.Y, viewSize.Width, viewSize.Height);
+							toView.Frame = new CGRect(0, viewSize.Y, viewSize.Width, viewSize.Height);
+						},
+						() =>
+						{
+							fromView.RemoveFromSuperview();
+							SelectedIndex = newTabIndex;
+							_shouldSelect = true;
+							_shouldPan = true;
+						}
+					);
+					
+					return _shouldSelect;
+				};
+
+				if (_uiPanGestureRecognizer != null)
+					return;
+
+				_uiPanGestureRecognizer = new UIPanGestureRecognizer(HandlePanGesture);
+				View.AddGestureRecognizer(_uiPanGestureRecognizer);
+			}
+		}
+
+		SwipeConfig GetSwipeConfig(bool isLeftSwipe)
+		{
+			var swipeConfig = new SwipeConfig();
+			if (_tabSwipes.ContainsKey((int)SelectedIndex))
+				swipeConfig = isLeftSwipe ? _tabSwipes[(int)SelectedIndex].LeftSwipeConfig : _tabSwipes[(int)SelectedIndex].RightSwipeConfig;
+
+			return swipeConfig;
+		}
+
+		void HandlePanGesture(UIPanGestureRecognizer gestureRecognizer)
+		{
+			// Handler seems to be getting hit even when the owner is null
+			if (_uiPanGestureRecognizer == null || !_shouldPan)
+				return;
+
+			_shouldSelect = false;
+			// Don't set _shouldPan to false here because we need the handler with each movement
+
+			UIView fromView = SelectedViewController.View;
+			CGRect viewSize = fromView.Frame;
+			nfloat minX = -1 * viewSize.Width;
+			nfloat maxX = viewSize.Width;
+			CGPoint currentVelocity = gestureRecognizer.VelocityInView(NativeView);
+			CGPoint currentLocation = gestureRecognizer.TranslationInView(NativeView);
+			nfloat dX = _startLocation.X - currentLocation.X;
+
+			if (dX < 0)
+			{
+				SwipeConfig rightSwipeConfig = GetSwipeConfig(false);
+
+				if (rightSwipeConfig == null || !rightSwipeConfig.IsEnabled)
+				{
+					_shouldSelect = true;
+					return;
+				}
+			}
+			else if (dX > 0)
+			{
+				SwipeConfig leftSwipeConfig = GetSwipeConfig(true);
+
+				if (leftSwipeConfig == null || !leftSwipeConfig.IsEnabled)
+				{
+					_shouldSelect = true;
+					return;
+				}
+			}
+
+			switch (gestureRecognizer.State)
+			{
+				case UIGestureRecognizerState.Began:
+					_startLocation = gestureRecognizer.TranslationInView(NativeView);
+					break;
+				case UIGestureRecognizerState.Changed:
+					HandleGestureRecognizerStateChanged(fromView, dX, viewSize, maxX, minX, currentLocation);
+					break;
+				default:
+					HandleGestureRecognizerStateOther(currentVelocity, fromView, viewSize, maxX, minX);
+					break;
+			}
+		}
+
+		void HandleGestureRecognizerStateChanged(UIView fromView, nfloat dX, CGRect viewSize, nfloat maxX, nfloat minX, CGPoint currentLocation)
+		{
+			if ((SelectedIndex == 0 && fromView.Frame.X - dX > 0) || (SelectedIndex == (Element as TabbedPage).Children.Count - 1 && fromView.Frame.X - dX < 0))
+			{
+				_shouldSelect = true;
+				return;
+			}
+
+			if (_direction == string.Empty)
+			{
+				_direction = dX < 0 ? Right : _direction;
+				_direction = dX > 0 ? Left : _direction;
+			}
+
+			UIView toView;
+			switch (_direction)
+			{
+				case Right:
+					toView = ViewControllers[SelectedIndex - 1].View;
+
+					if (!fromView.Superview.Subviews.Contains(toView))
+					{
+						fromView.Superview.AddSubview(toView);
+						toView.Frame = new CGRect(minX, viewSize.Y, viewSize.Width, viewSize.Height);
+					}
+					break;
+				case Left:
+					toView = ViewControllers[SelectedIndex + 1].View;
+
+					if (!fromView.Superview.Subviews.Contains(toView))
+					{
+						fromView.Superview.AddSubview(toView);
+						toView.Frame = new CGRect(maxX, viewSize.Y, viewSize.Width, viewSize.Height);
+					}
+					break;
+				default:
+					_shouldSelect = true;
+					return;
+			}
+
+			fromView.Frame = new CGRect(((double)(fromView.Frame.X - dX)).Clamp(_direction == Right ? 0 : minX, _direction == Right ? maxX : 0), viewSize.Y, viewSize.Width, viewSize.Height);
+			toView.Frame = new CGRect(((double)(toView.Frame.X - dX)).Clamp(_direction == Right ? minX : 0, _direction == Right ? 0 : maxX), viewSize.Y, viewSize.Width, viewSize.Height);
+
+			_startLocation = currentLocation;
+		}
+
+		async void HandleGestureRecognizerStateOther(CGPoint currentVelocity, UIView fromView, CGRect viewSize, nfloat maxX, nfloat minX)
+		{
+			SwipeConfig rightSwipeConfig = GetSwipeConfig(false);
+			SwipeConfig leftSwipeConfig = GetSwipeConfig(true);
+			UIView toView = null;
+			var shouldRunToCompletion = false;
+			switch (_direction)
+			{
+				case Right:
+					toView = ViewControllers[SelectedIndex - 1].View;
+					shouldRunToCompletion = Math.Abs(currentVelocity.X) >= rightSwipeConfig.Velocity;
+					break;
+				case Left:
+					toView = ViewControllers[SelectedIndex + 1].View;
+					shouldRunToCompletion = Math.Abs(currentVelocity.X) >= leftSwipeConfig.Velocity;
+					break;
+			}
+
+			if (shouldRunToCompletion)
+			{
+				_shouldPan = false;
+				UIView.Animate(_direction == Right ? rightSwipeConfig.Duration : leftSwipeConfig.Duration,
+					() =>
+					{
+						fromView.Frame = new CGRect(_direction == Right ? maxX : minX, viewSize.Y, viewSize.Width, viewSize.Height);
+						toView.Frame = new CGRect(0, viewSize.Y, viewSize.Width, viewSize.Height);
+					},
+					() =>
+					{
+						fromView.RemoveFromSuperview();
+						SelectedIndex = _direction == Right ? SelectedIndex - 1 : SelectedIndex + 1;
+						_startLocation = CGPoint.Empty;
+						_direction = string.Empty;
+						_shouldSelect = true;
+						_shouldPan = true;
+					}
+				);
+
+				while (!_shouldPan)
+					await Task.Delay(5);
+			}
+			else
+				SnapViewIntoPosition(_direction == Right ? rightSwipeConfig : leftSwipeConfig, fromView, viewSize, maxX, minX);
+		}
+
+		void SnapViewIntoPosition(SwipeConfig swipeConfig, UIView fromView, CGRect viewSize, nfloat maxX, nfloat minX)
+		{
+			if (fromView.Frame.X < 0)
+			{
+				UIView toView = ViewControllers[SelectedIndex + 1].View;
+
+				if (fromView.Frame.X <= minX / 2)
+					AnimateSnapViewIntoPosition(swipeConfig, fromView, toView, viewSize, minX, 0, false, false);
+				else
+					AnimateSnapViewIntoPosition(swipeConfig, fromView, toView, viewSize, 0, maxX, true);
+			}
+			else if (fromView.Frame.X > 0)
+			{
+				UIView toView = ViewControllers[SelectedIndex - 1].View;
+
+				if (fromView.Frame.X >= maxX / 2)
+					AnimateSnapViewIntoPosition(swipeConfig, fromView, toView, viewSize, maxX, 0, false);
+				else
+					AnimateSnapViewIntoPosition(swipeConfig, fromView, toView, viewSize, 0, minX, true);
+			}
+
+			_startLocation = CGPoint.Empty;
+			_direction = string.Empty;
+			_shouldSelect = true;
+		}
+
+		async void AnimateSnapViewIntoPosition(SwipeConfig swipeConfig, UIView fromView, UIView toView, CGRect viewSize, nfloat fromViewX, nfloat toViewX, bool shouldRemoveToViewInstead, bool shouldDecrementSelectedIndex = true)
+		{
+			var didFinish = false;
+
+			UIView.Animate(swipeConfig.Duration,
+				() =>
+				{
+					fromView.Frame = new CGRect(fromViewX, viewSize.Y, viewSize.Width, viewSize.Height);
+					toView.Frame = new CGRect(toViewX, viewSize.Y, viewSize.Width, viewSize.Height);
+				},
+				() =>
+				{
+					if(!shouldRemoveToViewInstead)
+						fromView.RemoveFromSuperview();
+					else
+						toView.RemoveFromSuperview();
+
+					if (!shouldRemoveToViewInstead)
+						SelectedIndex = shouldDecrementSelectedIndex ? SelectedIndex - 1 : SelectedIndex + 1;
+
+					didFinish = true;
+				}
+			);
+
+			while (!didFinish)
+				await Task.Delay(5);
 		}
 
 		void IEffectControlProvider.RegisterEffect(Effect effect)
