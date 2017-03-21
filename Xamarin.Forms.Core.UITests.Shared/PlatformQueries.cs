@@ -75,7 +75,7 @@ namespace Xamarin.Forms.Core.UITests
 		public static readonly string TableView = "UITableView";
 		public static readonly string TimePicker = "UITextField";
 		public static readonly string WebView = "UIWebView";
-#elif __ANDROID__  || __WINDOWS__
+#elif __ANDROID__ || __WINDOWS__
 		public static readonly string ActivityIndicator = "android.widget.ProgressBar";
 		public static readonly string BoxView = "xamarin.forms.platform.android.BoxRenderer";
 		public static readonly string Button = "android.widget.Button";
@@ -101,14 +101,14 @@ namespace Xamarin.Forms.Core.UITests
 
 	internal static class PlatformQueries
 	{
-#if __IOS__  || __MACOS__
+#if __IOS__ || __MACOS__
 		public static readonly Func<AppQuery, AppQuery> Root = q => q.Class("UIWindow");
 		public static readonly Func<AppQuery, AppQuery> RootPageListView = q => q.Class("Xamarin_Forms_Platform_iOS_ListViewRenderer index:0");
 		public static readonly Func<AppQuery, AppQuery> GalleryListView = q => q.Class("Xamarin_Forms_Platform_iOS_ListViewRenderer index:1");
 		public static readonly Func<AppQuery, AppQuery> PageWithoutNavigationBar = q => q.Raw("*").Index(7);
 		public static readonly Func<AppQuery, AppQuery> NavigationBarBackButton = q => q.Class("UINavigationItemButtonView");
 
-#elif __ANDROID__  || __WINDOWS__
+#elif __ANDROID__ || __WINDOWS__
 		public static readonly Func<AppQuery, AppQuery> Root = q => q.Id("content");
 		public static readonly Func<AppQuery, AppQuery> RootPageListView = q => q.Raw("ListViewRenderer index:0");
 		public static readonly Func<AppQuery, AppQuery> GalleryListView = q => q.Raw("ListViewRenderer index:1");
@@ -122,6 +122,82 @@ namespace Xamarin.Forms.Core.UITests
 		public static readonly Func<AppQuery, AppQuery> ActivityIndicator = q => q.ClassFull(PlatformViews.ActivityIndicator);
 		public static readonly Func<AppQuery, AppQuery> Button = q => q.ClassFull(PlatformViews.Button);
 
+#if __ANDROID__
+		public static Func<AppQuery, AppQuery> EntryWithPlaceholder(string text)
+		{
+			return q => q.Raw(string.Format("EntryEditText hint:'{0}'", text));
+		}
+		public static Func<AppQuery, AppQuery> EntryCellWithPlaceholder(string text)
+		{
+			return q => q.Raw(string.Format("EntryCellEditText hint:'{0}'", text));
+		}
+
+		public static Func<AppQuery, AppQuery> EntryWithText(string text)
+		{
+			return q => q.Raw(string.Format("EntryEditText text:'{0}'", text));
+		}
+
+		public static Func<AppQuery, AppQuery> EntryCellWithText(string text)
+		{
+			return q => q.Raw(string.Format("EntryCellEditText text:'{0}'", text));
+		}
+
+		public static Func<AppQuery, AppQuery> EditorsWithText(string text)
+		{
+			return q => q.Raw(string.Format("EditorEditText text:'{0}'", text));
+		}
+
+		public static Func<AppQuery, AppQuery> EntryWithIndex(int index)
+		{
+			return q => q.Raw(string.Format("EntryEditText index:{0}", index));
+		}
+
+		public static Func<AppQuery, AppQuery> SearchBarWithIndex(int index)
+		{
+			return q => q.Raw(string.Format("SearchView index:{0}", index));
+		}
+
+		public static Func<AppQuery, AppQuery> LabelWithIndex(int index)
+		{
+			return q => q.Raw(string.Format("TextView index:{0}", index));
+		}
+
+		public static Func<AppQuery, AppQuery> LabelWithText(string text)
+		{
+			return q => q.Raw(string.Format("TextView text:'{0}'", text));
+		}
+
+		public static Func<AppQuery, AppQuery> LabelWithId(string id)
+		{
+			return q => q.Raw(string.Format("TextView id:'{0}'", id));
+		}
+
+		public static Func<AppQuery, AppQuery> PickerEntryWithIndex(int index)
+		{
+			return q => q.Raw(string.Format("EditText index:{0}", index));
+		}
+
+		public static Func<AppQuery, AppQuery> PickerEntryWithPlaceholder(string placeholder)
+		{
+			return q => q.Raw(string.Format("EditText hint:'{0}'", placeholder));
+		}
+
+		public static Func<AppQuery, AppQuery> PickerEntryWithText(string text)
+		{
+			return q => q.Raw(string.Format("EditText text:'{0}'", text));
+		}
+
+		public static Func<AppQuery, AppQuery> SwitchWithIndex(int index)
+		{
+			return q => q.Raw(string.Format("Switch index:{0}", index));
+		}
+
+		public static Func<AppQuery, AppQuery> StepperWithIndex(int index)
+		{
+			return q => q.Raw(string.Format("button marked:'+' index:{0}", index));
+		}
+
+#else
 		public static Func<AppQuery, AppQuery> EntryWithPlaceholder(string text)
 		{
 			return q => q.Raw(string.Format("TextField placeholder:'{0}'", text));
@@ -196,5 +272,7 @@ namespace Xamarin.Forms.Core.UITests
 		{
 			return q => q.Raw(string.Format("Stepper index:{0}", index));
 		}
+#endif
+
 	}
 }
