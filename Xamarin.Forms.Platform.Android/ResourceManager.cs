@@ -85,10 +85,10 @@ namespace Xamarin.Forms.Platform.Android
 			return id;
 		}
 
-		static int GetId(Type type, string propertyName)
+		static int GetId(Type type, string memberName)
 		{
-		    object value = type.GetFields().FirstOrDefault(p => p.Name == propertyName)?.GetValue(type)
-				?? type.GetProperties().FirstOrDefault(p => p.Name == propertyName)?.GetValue(type);
+			object value = type.GetFields().FirstOrDefault(p => p.Name == memberName)?.GetValue(type)
+				?? type.GetProperties().FirstOrDefault(p => p.Name == memberName)?.GetValue(type);
 			if (value != null)
 				return (int)value;
 			return 0;
