@@ -116,6 +116,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla40173.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla39821.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla40185.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla40251.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla40333.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla31806.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla40408.cs" />
@@ -165,6 +166,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla44044.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla44338.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla44980.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla45067.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla45027.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla45330.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla44955.cs" />
@@ -185,6 +187,7 @@
       <DependentUpon>Bugzilla51642.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla52266.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CarouselAsync.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla34561.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla34727.cs" />
@@ -259,6 +262,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla51503.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla51505.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla52533.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla53362.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)_Template.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1028.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1075.cs" />
