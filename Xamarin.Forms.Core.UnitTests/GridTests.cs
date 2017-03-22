@@ -1370,57 +1370,56 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new SizeRequest (new Size (50, 60), new Size (0, 60)), widthBoundRequest);
 		}
 
-        [Test]
-        //https://bugzilla.xamarin.com/show_bug.cgi?id=53561
-        public void TestGridSpansMeasureAllElements()
-        {
-            Grid grid = new Grid
-            {
-                ColumnDefinitions = {
-                    new ColumnDefinition { Width = GridLength.Auto },
-                    new ColumnDefinition { Width = GridLength.Star }
-                },
-                RowDefinitions = {
-                    new RowDefinition { Height = GridLength.Auto },
-                    new RowDefinition { Height = GridLength.Auto },
-                },
-                Platform = new UnitPlatform(),
-                IsPlatformEnabled = true,
-                RowSpacing = 0,
-                ColumnSpacing = 0,
-                HorizontalOptions = LayoutOptions.Fill,
-                VerticalOptions = LayoutOptions.Start
-            };
+		[Test]
+		//https://bugzilla.xamarin.com/show_bug.cgi?id=53561
+		public void TestGridSpansMeasureAllElements()
+		{
+			Grid grid = new Grid
+			{
+				ColumnDefinitions = {
+				new ColumnDefinition { Width = GridLength.Auto },
+				new ColumnDefinition { Width = GridLength.Star }
+				},
+				RowDefinitions = {
+				new RowDefinition { Height = GridLength.Auto },
+				new RowDefinition { Height = GridLength.Auto },
+				},
+				Platform = new UnitPlatform(),
+				IsPlatformEnabled = true,
+				RowSpacing = 0,
+				ColumnSpacing = 0,
+				HorizontalOptions = LayoutOptions.Fill,
+				VerticalOptions = LayoutOptions.Start
+			};
 
-            Label smallLabel = new Label
-            {
-                IsPlatformEnabled = true,
-                HorizontalOptions = LayoutOptions.Start,
-                VerticalOptions = LayoutOptions.Center,
-                HorizontalTextAlignment = TextAlignment.Start,
-                LineBreakMode = LineBreakMode.NoWrap,
-                Text = "Short text"
-            };
+			Label smallLabel = new Label
+			{
+				IsPlatformEnabled = true,
+				HorizontalOptions = LayoutOptions.Start,
+				VerticalOptions = LayoutOptions.Center,
+				HorizontalTextAlignment = TextAlignment.Start,
+				LineBreakMode = LineBreakMode.NoWrap,
+				Text = "Short text"
+			};
             
-            Label largeLabel = new Label
-            {
-                IsPlatformEnabled = true,
-                HorizontalOptions = LayoutOptions.Fill,
-                VerticalOptions = LayoutOptions.Center,
-                HorizontalTextAlignment = TextAlignment.Start,
-                LineBreakMode = LineBreakMode.WordWrap,
-                Text = "This is a really long text that should not wrap around"
-            };
+			Label largeLabel = new Label
+			{
+				IsPlatformEnabled = true,
+				HorizontalOptions = LayoutOptions.Fill,
+				VerticalOptions = LayoutOptions.Center,
+				HorizontalTextAlignment = TextAlignment.Start,
+				LineBreakMode = LineBreakMode.WordWrap,
+				Text = "This is a really long text that should not wrap around"
+			};
 
-            grid.Children.Add(smallLabel, 1, 0);
-            grid.Children.Add(largeLabel, 0, 1, 1, 2);
+			grid.Children.Add(smallLabel, 1, 0);
+			grid.Children.Add(largeLabel, 0, 1, 1, 2);
             
-            SizeRequest request = grid.GetSizeRequest(double.PositiveInfinity, double.PositiveInfinity);
-            SizeRequest smallRequest = smallLabel.GetSizeRequest(double.PositiveInfinity, double.PositiveInfinity);
-            SizeRequest largeRequest = largeLabel.GetSizeRequest(double.PositiveInfinity, double.PositiveInfinity);
-            Assert.AreEqual(request.Request.Height, smallRequest.Request.Height + largeRequest.Request.Height);
-        }
-
+			SizeRequest request = grid.GetSizeRequest(double.PositiveInfinity, double.PositiveInfinity);
+			SizeRequest smallRequest = smallLabel.GetSizeRequest(double.PositiveInfinity, double.PositiveInfinity);
+			SizeRequest largeRequest = largeLabel.GetSizeRequest(double.PositiveInfinity, double.PositiveInfinity);
+			Assert.AreEqual(request.Request.Height, smallRequest.Request.Height + largeRequest.Request.Height);
+		}
 
         [Test]
 		//https://bugzilla.xamarin.com/show_bug.cgi?id=31608
