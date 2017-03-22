@@ -83,9 +83,6 @@
     <Compile Include="Issues\Bz41296.xaml.cs">
       <DependentUpon>Bz41296.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Issues\Bz53561.xaml.cs">
-      <DependentUpon>Bz53561.xaml</DependentUpon>
-    </Compile>
     <Compile Include="LoaderTests.cs" />
     <Compile Include="PlatformSpecifics.xaml.cs">
       <DependentUpon>PlatformSpecifics.xaml</DependentUpon>
@@ -390,19 +387,19 @@
     <Compile Include="Issues\Bz47703.xaml.cs">
       <DependentUpon>Bz47703.xaml</DependentUpon>
     </Compile>
-     <Compile Include="FactoryMethodMissingCtor.xaml.cs">
-       <DependentUpon>FactoryMethodMissingCtor.xaml</DependentUpon>
-     </Compile>
-     <Compile Include="FactoryMethodMissingMethod.xaml.cs">
-       <DependentUpon>FactoryMethodMissingMethod.xaml</DependentUpon>
-     </Compile>
+    <Compile Include="FactoryMethodMissingCtor.xaml.cs">
+      <DependentUpon>FactoryMethodMissingCtor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FactoryMethodMissingMethod.xaml.cs">
+      <DependentUpon>FactoryMethodMissingMethod.xaml</DependentUpon>
+    </Compile>
     <Compile Include="XamlC\TypeReferenceExtensionsTests.cs" />
     <Compile Include="Issues\Bz46921.xaml.cs">
       <DependentUpon>Bz46921.xaml</DependentUpon>
     </Compile>
-     <Compile Include="I8.xaml.cs">
-       <DependentUpon>I8.xaml</DependentUpon>
-     </Compile>
+    <Compile Include="I8.xaml.cs">
+      <DependentUpon>I8.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Issues\Bz49307.xaml.cs">
       <DependentUpon>Bz49307.xaml</DependentUpon>
     </Compile>
@@ -872,11 +869,6 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Issues\Bz43450.xaml">
-      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Issues\Bz53561.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
   </ItemGroup>
