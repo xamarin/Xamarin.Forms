@@ -308,7 +308,8 @@ namespace Xamarin.Forms
 				handler(this, EventArgs.Empty);
 
 			var pageContainer = this as IPageContainer<Page>;
-			((IPageController)pageContainer?.CurrentPage)?.SendAppearing();
+			if (!(this is TabbedPage))
+				((IPageController)pageContainer?.CurrentPage)?.SendAppearing();
 		}
 
 		void IPageController.SendDisappearing()
