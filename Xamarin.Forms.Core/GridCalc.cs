@@ -113,8 +113,6 @@ namespace Xamarin.Forms
 						RowDefinition row = _rows[i];
 						if (!row.Height.IsAuto)
 							continue;
-						if (row.ActualHeight >= 0) // if Actual is already set (by a smaller span), skip till pass 3
-							continue;
 
 						double actualHeight = row.ActualHeight;
 						double minimumHeight = row.MinimumHeight;
@@ -132,7 +130,8 @@ namespace Xamarin.Forms
 							actualHeight = Math.Max(actualHeight, sizeRequest.Request.Height - assignedHeight - RowSpacing * (GetRowSpan(child) - 1));
 							minimumHeight = Math.Max(minimumHeight, sizeRequest.Minimum.Height - assignedHeight - RowSpacing * (GetRowSpan(child) - 1));
 						}
-						if (actualHeight >= 0)
+
+						if (actualHeight > row.ActualHeight)
 							row.ActualHeight = actualHeight;
 						if (minimumHeight >= 0)
 							row.MinimumHeight = minimumHeight;
@@ -145,8 +144,6 @@ namespace Xamarin.Forms
 					{
 						ColumnDefinition col = _columns[i];
 						if (!col.Width.IsAuto)
-							continue;
-						if (col.ActualWidth >= 0) // if Actual is already set (by a smaller span), skip
 							continue;
 
 						double actualWidth = col.ActualWidth;
@@ -165,7 +162,8 @@ namespace Xamarin.Forms
 							actualWidth = Math.Max(actualWidth, sizeRequest.Request.Width - assignedWidth - (GetColumnSpan(child) - 1) * ColumnSpacing);
 							minimumWidth = Math.Max(minimumWidth, sizeRequest.Minimum.Width - assignedWidth - (GetColumnSpan(child) - 1) * ColumnSpacing);
 						}
-						if (actualWidth >= 0)
+
+						if (actualWidth > col.ActualWidth)
 							col.ActualWidth = actualWidth;
 						if (minimumWidth >= 0)
 							col.MinimumWidth = actualWidth;
@@ -451,7 +449,7 @@ namespace Xamarin.Forms
 							minimumWidth = Math.Max(minimumWidth, sizeRequest.Minimum.Width - assignedWidth - (GetColumnSpan(child) - 1) * ColumnSpacing);
 						}
 
-						if (actualWidth >= col.ActualWidth)
+						if (actualWidth > col.ActualWidth)
 							col.ActualWidth = actualWidth;
 						if (minimumWidth >= 0)
 							col.MinimumWidth = minimumWidth;
@@ -546,7 +544,7 @@ namespace Xamarin.Forms
 							minimumHeight = Math.Max(minimumHeight, sizeRequest.Minimum.Height - assignedHeight - RowSpacing * (GetRowSpan(child) - 1));
 						}
 
-						if (actualHeight >= row.ActualHeight)
+						if (actualHeight > row.ActualHeight)
 							row.ActualHeight = actualHeight;
 						if (minimumHeight >= 0)
 							row.MinimumHeight = minimumHeight;
