@@ -92,14 +92,20 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override bool OnInterceptTouchEvent(MotionEvent ev)
 		{
-			if (Element.InputTransparent && Element.IsEnabled)
-				return false;
+			if (!Element.IsEnabled || Element.InputTransparent)
+				return true;
 
 			return base.OnInterceptTouchEvent(ev);
 		}
 
 		bool AView.IOnTouchListener.OnTouch(AView v, MotionEvent e)
 		{
+			if (!Element.IsEnabled)
+				return true;
+
+			if (Element.InputTransparent)
+				return false;
+
 			var handled = false;
 			if (_pinchGestureHandler.IsPinchSupported)
 			{
