@@ -744,8 +744,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					FileImageSource icon = item.Icon;
 					if (!string.IsNullOrEmpty(icon))
 					{
-                        Drawable iconBitmap = context.Resources.GetDrawable(icon) ?? new BitmapDrawable(context.Resources, ResourceManager.GetBitmap(context.Resources, icon));
-                        if (iconBitmap != null)
+						Drawable iconBitmap = context.Resources.GetDrawable(icon) ?? new BitmapDrawable(context.Resources, ResourceManager.GetBitmap(context.Resources, icon));
+						if (iconBitmap != null)
 							menuItem.SetIcon(iconBitmap);
 					}
 					menuItem.SetEnabled(controller.IsEnabled);
