@@ -194,7 +194,7 @@ namespace Xamarin.Forms.Platform.Android
 				IMenuItem item = menu.Add(Menu.None, i, Menu.None, action.Text);
 
 				var icon = action.Icon;
-				if (action.Icon != null)
+				if (icon != null)
 				{
 					Drawable iconDrawable = _context.Resources.GetFormsDrawable(icon);
 					if (iconDrawable != null)
