@@ -1,8 +1,10 @@
 using System;
+using System.ComponentModel;
 
-namespace Xamarin.Forms
+namespace Xamarin.Forms.Internals
 {
-	internal class EventArg<T> : EventArgs
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	public class EventArg<T> : EventArgs
 	{
 		// Property variable
 

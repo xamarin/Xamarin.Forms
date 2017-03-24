@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 
-namespace Xamarin.Forms
+namespace Xamarin.Forms.Internals
 {
-	internal static class EnumerableExtensions
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	public static class EnumerableExtensions
 	{
 		public static IEnumerable<T> GetGesturesFor<T>(this IEnumerable<IGestureRecognizer> gestures, Func<T, bool> predicate = null) where T : GestureRecognizer
 		{
@@ -31,7 +33,7 @@ namespace Xamarin.Forms
 			yield return item;
 		}
 
-		internal static void ForEach<T>(this IEnumerable<T> enumeration, Action<T> action)
+		public static void ForEach<T>(this IEnumerable<T> enumeration, Action<T> action)
 		{
 			foreach (T item in enumeration)
 			{
@@ -39,7 +41,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		internal static int IndexOf<T>(this IEnumerable<T> enumerable, T item)
+		public static int IndexOf<T>(this IEnumerable<T> enumerable, T item)
 		{
 			if (enumerable == null)
 				throw new ArgumentNullException("enumerable");
@@ -56,7 +58,7 @@ namespace Xamarin.Forms
 			return -1;
 		}
 
-		internal static int IndexOf<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate)
+		public static int IndexOf<T>(this IEnumerable<T> enumerable, Func<T, bool> predicate)
 		{
 			var i = 0;
 			foreach (T element in enumerable)
@@ -70,7 +72,7 @@ namespace Xamarin.Forms
 			return -1;
 		}
 
-		internal static IEnumerable<T> Prepend<T>(this IEnumerable<T> enumerable, T item)
+		public static IEnumerable<T> Prepend<T>(this IEnumerable<T> enumerable, T item)
 		{
 			yield return item;
 

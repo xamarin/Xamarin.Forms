@@ -3,15 +3,16 @@ using System.ComponentModel;
 using System.IO;
 using System.Threading.Tasks;
 using Android.Graphics;
+using Android.Views;
 using AImageView = Android.Widget.ImageView;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android
 {
 	public class ImageRenderer : ViewRenderer<Image, AImageView>
 	{
 		bool _isDisposed;
-
-		IElementController ElementController => Element as IElementController;
+		readonly MotionEventHelper _motionEventHelper = new MotionEventHelper();
 
 		public ImageRenderer()
 		{
@@ -43,6 +44,8 @@ namespace Xamarin.Forms.Platform.Android
 				SetNativeControl(view);
 			}
 
+			_motionEventHelper.UpdateElement(e.NewElement);
+
 			UpdateBitmap(e.OldElement);
 			UpdateAspect();
 		}
@@ -68,23 +71,21 @@ namespace Xamarin.Forms.Platform.Android
 			if (Device.IsInvokeRequired)
 				throw new InvalidOperationException("Image Bitmap must not be updated from background thread");
 
-			Bitmap bitmap = null;
-
-			ImageSource source = Element.Source;
-			IImageSourceHandler handler;
-
 			if (previous != null && Equals(previous.Source, Element.Source))
 				return;
 
 			((IImageController)Element).SetIsLoading(true);
 
 			var formsImageView = Control as FormsImageView;
-			if (formsImageView != null)
-				formsImageView.SkipInvalidate();
+			formsImageView?.SkipInvalidate();
 
 			Control.SetImageResource(global::Android.Resource.Color.Transparent);
 
-			if (source != null && (handler = Registrar.Registered.GetHandler<IImageSourceHandler>(source.GetType())) != null)
+			ImageSource source = Element.Source;
+			Bitmap bitmap = null;
+			IImageSourceHandler handler;
+
+			if (source != null && (handler = Internals.Registrar.Registered.GetHandler<IImageSourceHandler>(source.GetType())) != null)
 			{
 				try
 				{
@@ -100,16 +101,31 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			if (Element == null || !Equals(Element.Source, source))
+			{
+				bitmap?.Dispose();
 				return;
+			}
 
 			if (!_isDisposed)
 			{
-				Control.SetImageBitmap(bitmap);
+				if (bitmap == null && source is FileImageSource)
+					Control.SetImageResource(ResourceManager.GetDrawableByName(((FileImageSource)source).File));
+				else
+					Control.SetImageBitmap(bitmap);
+
 				bitmap?.Dispose();
 
 				((IImageController)Element).SetIsLoading(false);
 				((IVisualElementController)Element).NativeSizeChanged();
 			}
+		}
+
+		public override bool OnTouchEvent(MotionEvent e)
+		{
+			if (base.OnTouchEvent(e))
+				return true;
+
+			return _motionEventHelper.HandleMotionEvent(Parent);
 		}
 	}
 }

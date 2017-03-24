@@ -7,7 +7,7 @@ namespace Xamarin.Forms
 {
 	[ContentProperty("Text")]
 	[RenderWith(typeof(_LabelRenderer))]
-	public class Label : View, IFontElement, IElementConfiguration<Label>
+	public class Label : View, IFontElement, ITextElement, IElementConfiguration<Label>
 	{
 		public static readonly BindableProperty HorizontalTextAlignmentProperty = BindableProperty.Create("HorizontalTextAlignment", typeof(TextAlignment), typeof(Label), TextAlignment.Start,
 			propertyChanged: OnHorizontalTextAlignmentPropertyChanged);
@@ -21,19 +21,17 @@ namespace Xamarin.Forms
 		[Obsolete("YAlignProperty is obsolete. Please use VerticalTextAlignmentProperty instead.")]
 		public static readonly BindableProperty YAlignProperty = VerticalTextAlignmentProperty;
 
-		public static readonly BindableProperty TextColorProperty = BindableProperty.Create("TextColor", typeof(Color), typeof(Label), Color.Default);
+		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
 
-		public static readonly BindableProperty FontProperty = BindableProperty.Create("Font", typeof(Font), typeof(Label), default(Font), propertyChanged: FontStructPropertyChanged);
+		public static readonly BindableProperty FontProperty = FontElement.FontProperty;
 
 		public static readonly BindableProperty TextProperty = BindableProperty.Create("Text", typeof(string), typeof(Label), default(string), propertyChanged: OnTextPropertyChanged);
 
-		public static readonly BindableProperty FontFamilyProperty = BindableProperty.Create("FontFamily", typeof(string), typeof(Label), default(string), propertyChanged: OnFontFamilyChanged);
+		public static readonly BindableProperty FontFamilyProperty = FontElement.FontFamilyProperty;
 
-		public static readonly BindableProperty FontSizeProperty = BindableProperty.Create("FontSize", typeof(double), typeof(Label), -1.0, propertyChanged: OnFontSizeChanged,
-			defaultValueCreator: bindable => Device.GetNamedSize(NamedSize.Default, (Label)bindable));
+		public static readonly BindableProperty FontSizeProperty = FontElement.FontSizeProperty;
 
-		public static readonly BindableProperty FontAttributesProperty = BindableProperty.Create("FontAttributes", typeof(FontAttributes), typeof(Label), FontAttributes.None,
-			propertyChanged: OnFontAttributesChanged);
+		public static readonly BindableProperty FontAttributesProperty = FontElement.FontAttributesProperty;
 
 		public static readonly BindableProperty FormattedTextProperty = BindableProperty.Create("FormattedText", typeof(FormattedString), typeof(Label), default(FormattedString),
 			propertyChanging: (bindable, oldvalue, newvalue) =>
@@ -58,8 +56,6 @@ namespace Xamarin.Forms
 		{
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Label>>(() => new PlatformConfigurationRegistry<Label>(this));
 		}
-
-		bool _cancelEvents;
 
 		[Obsolete("Please use the Font attributes which are on the class itself. Obsoleted in v1.3.0")]
 		public Font Font
@@ -94,8 +90,8 @@ namespace Xamarin.Forms
 
 		public Color TextColor
 		{
-			get { return (Color)GetValue(TextColorProperty); }
-			set { SetValue(TextColorProperty, value); }
+			get { return (Color)GetValue(TextElement.TextColorProperty); }
+			set { SetValue(TextElement.TextColorProperty, value); }
 		}
 
 		public TextAlignment VerticalTextAlignment
@@ -137,128 +133,20 @@ namespace Xamarin.Forms
 			set { SetValue(FontSizeProperty, value); }
 		}
 
-		static void FontStructPropertyChanged(BindableObject bindable, object oldValue, object newValue)
-		{
-			var label = (Label)bindable;
-			if (label._cancelEvents)
-				return;
+		double IFontElement.FontSizeDefaultValueCreator() =>
+			Device.GetNamedSize(NamedSize.Default, (Label)this);
 
-			label._cancelEvents = true;
+		void IFontElement.OnFontAttributesChanged(FontAttributes oldValue, FontAttributes newValue) =>
+			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 
-			var font = (Font)newValue;
-			if (font == Font.Default)
-			{
-				label.FontFamily = null;
-				label.FontSize = Device.GetNamedSize(NamedSize.Default, label);
-				label.FontAttributes = FontAttributes.None;
-			}
-			else
-			{
-				label.FontFamily = font.FontFamily;
-				if (font.UseNamedSize)
-				{
-					label.FontSize = Device.GetNamedSize(font.NamedSize, label.GetType(), true);
-				}
-				else
-				{
-					label.FontSize = font.FontSize;
-				}
-				label.FontAttributes = font.FontAttributes;
-			}
+		void IFontElement.OnFontFamilyChanged(string oldValue, string newValue) =>
+			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 
-			label._cancelEvents = false;
+		void IFontElement.OnFontSizeChanged(double oldValue, double newValue) =>
+			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 
-			label.InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
-		}
-
-		static void OnFontAttributesChanged(BindableObject bindable, object oldValue, object newValue)
-		{
-			var label = (Label)bindable;
-
-			if (label._cancelEvents)
-				return;
-
-			label._cancelEvents = true;
-
-			var attributes = (FontAttributes)newValue;
-
-			object[] values = label.GetValues(FontFamilyProperty, FontSizeProperty);
-			var family = (string)values[0];
-			if (family != null)
-			{
-#pragma warning disable 0618 // retain until Font removed
-				label.Font = Font.OfSize(family, (double)values[1]).WithAttributes(attributes);
-#pragma warning restore 0618
-			}
-			else
-			{
-#pragma warning disable 0618 // retain until Font removed
-				label.Font = Font.SystemFontOfSize((double)values[1], attributes);
-#pragma warning restore 0618
-			}
-
-			label._cancelEvents = false;
-
-			label.InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
-		}
-
-		static void OnFontFamilyChanged(BindableObject bindable, object oldValue, object newValue)
-		{
-			var label = (Label)bindable;
-			if (label._cancelEvents)
-				return;
-
-			label._cancelEvents = true;
-
-			object[] values = label.GetValues(FontSizeProperty, FontAttributesProperty);
-
-			var family = (string)newValue;
-			if (family != null)
-			{
-#pragma warning disable 0618 // retain until Font removed
-				label.Font = Font.OfSize(family, (double)values[0]).WithAttributes((FontAttributes)values[1]);
-#pragma warning restore 0618
-			}
-			else
-			{
-#pragma warning disable 0618 // retain until Font removed
-				label.Font = Font.SystemFontOfSize((double)values[0], (FontAttributes)values[1]);
-#pragma warning restore 0618
-			}
-
-			label._cancelEvents = false;
-			label.InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
-		}
-
-		static void OnFontSizeChanged(BindableObject bindable, object oldValue, object newValue)
-		{
-			var label = (Label)bindable;
-			if (label._cancelEvents)
-				return;
-
-			label._cancelEvents = true;
-
-			object[] values = label.GetValues(FontFamilyProperty, FontAttributesProperty);
-
-			var size = (double)newValue;
-			var family = (string)values[0];
-			if (family != null)
-			{
-#pragma warning disable 0618 // retain until Font removed
-				label.Font = Font.OfSize(family, size).WithAttributes((FontAttributes)values[1]);
-#pragma warning restore 0618
-			}
-			else
-			{
-#pragma warning disable 0618 // retain until Font removed
-				label.Font = Font.SystemFontOfSize(size, (FontAttributes)values[1]);
-#pragma warning restore 0618
-			}
-
-			label._cancelEvents = false;
-
-			label.InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
-		}
+		void IFontElement.OnFontChanged(Font oldValue, Font newValue) =>
+			 InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 
 		void OnFormattedTextChanged(object sender, PropertyChangedEventArgs e)
 		{
@@ -297,6 +185,10 @@ namespace Xamarin.Forms
 		public IPlatformElementConfiguration<T, Label> On<T>() where T : IConfigPlatform
 		{
 			return _platformConfigurationRegistry.Value.On<T>();
+		}
+
+		void ITextElement.OnTextColorPropertyChanged(Color oldValue, Color newValue)
+		{
 		}
 	}
 }

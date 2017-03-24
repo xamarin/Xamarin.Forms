@@ -51,6 +51,12 @@ namespace Xamarin.Forms.Platform.UWP
 		CommandBar _commandBar;
 		readonly ToolbarPlacementHelper _toolbarPlacementHelper = new ToolbarPlacementHelper();
 
+		public bool ShouldShowToolbar
+		{
+			get { return _toolbarPlacementHelper.ShouldShowToolBar; }
+			set { _toolbarPlacementHelper.ShouldShowToolBar = value; }
+		}
+
 		TaskCompletionSource<CommandBar> _commandBarTcs;
 		FrameworkElement _masterPresenter;
 		FrameworkElement _detailPresenter;
@@ -90,7 +96,7 @@ namespace Xamarin.Forms.Platform.UWP
 						width -= _masterPresenter.ActualWidth;
 				}
 
-				return new Windows.Foundation.Size(width, height);
+				return new Windows.Foundation.Size(width >= 0 ? width : 0, height);
 			}
 		}
 
@@ -288,6 +294,9 @@ namespace Xamarin.Forms.Platform.UWP
 			ContentTogglePaneButtonVisibility = _split.DisplayMode == SplitViewDisplayMode.Overlay 
 				? Visibility.Visible 
 				: Visibility.Collapsed;
+
+			if (ContentTogglePaneButtonVisibility == Visibility.Visible)
+				DetailTitleVisibility = Visibility.Visible;
 		}
 	}
 }

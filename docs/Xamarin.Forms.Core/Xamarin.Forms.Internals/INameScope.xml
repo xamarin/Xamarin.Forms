@@ -7,8 +7,13 @@
     <AssemblyVersion>2.0.0.0</AssemblyVersion>
   </AssemblyInfo>
   <Interfaces />
+  <Attributes>
+    <Attribute>
+      <AttributeName>System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)</AttributeName>
+    </Attribute>
+  </Attributes>
   <Docs>
-    <summary>To be added.</summary>
+    <summary>For internal use by platform renderers.</summary>
     <remarks>To be added.</remarks>
   </Docs>
   <Members>
@@ -28,7 +33,7 @@
       </Parameters>
       <Docs>
         <param name="name">To be added.</param>
-        <summary>To be added.</summary>
+        <summary>For internal use by platform renderers.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
@@ -51,7 +56,7 @@
       <Docs>
         <param name="name">To be added.</param>
         <param name="scopedElement">To be added.</param>
-        <summary>To be added.</summary>
+        <summary>For internal use by platform renderers.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -63,6 +68,11 @@
         <AssemblyVersion>1.5.0.0</AssemblyVersion>
         <AssemblyVersion>2.0.0.0</AssemblyVersion>
       </AssemblyInfo>
+      <Attributes>
+        <Attribute>
+          <AttributeName>System.Obsolete</AttributeName>
+        </Attribute>
+      </Attributes>
       <ReturnValue>
         <ReturnType>System.Void</ReturnType>
       </ReturnValue>
@@ -75,7 +85,7 @@
         <param name="name">To be added.</param>
         <param name="scopedElement">To be added.</param>
         <param name="xmlLineInfo">To be added.</param>
-        <summary>To be added.</summary>
+        <summary>For internal use by platform renderers.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -95,7 +105,7 @@
       </Parameters>
       <Docs>
         <param name="name">To be added.</param>
-        <summary>To be added.</summary>
+        <summary>For internal use by platform renderers.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.WinPhone
 {
@@ -274,6 +275,7 @@ namespace Xamarin.Forms.Platform.WinPhone
 		{
 			if (Model.IsInNativeLayout)
 				return;
+
 			var parent = (FrameworkElement)Element.Parent;
 			parent?.InvalidateMeasure();
 			Element.InvalidateMeasure();

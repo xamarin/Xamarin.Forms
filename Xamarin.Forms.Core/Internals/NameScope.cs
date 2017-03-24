@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Xml;
 using Xamarin.Forms.Xaml;
 
 namespace Xamarin.Forms.Internals
 {
+	[EditorBrowsable(EditorBrowsableState.Never)]
 	public class NameScope : INameScope
 	{
 		public static readonly BindableProperty NameScopeProperty = BindableProperty.CreateAttached("NameScope", typeof(INameScope), typeof(NameScope), default(INameScope));
@@ -26,6 +28,7 @@ namespace Xamarin.Forms.Internals
 			_names[name] = scopedElement;
 		}
 
+		[Obsolete]
 		void INameScope.RegisterName(string name, object scopedElement, IXmlLineInfo xmlLineInfo)
 		{
 			try

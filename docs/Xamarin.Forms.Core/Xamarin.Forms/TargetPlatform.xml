@@ -14,6 +14,11 @@
   <Base>
     <BaseTypeName>System.Enum</BaseTypeName>
   </Base>
+  <Attributes>
+    <Attribute>
+      <AttributeName>System.Obsolete</AttributeName>
+    </Attribute>
+  </Attributes>
   <Docs>
     <summary>Indicates the kind of OS Forms is currently working on.</summary>
     <remarks>

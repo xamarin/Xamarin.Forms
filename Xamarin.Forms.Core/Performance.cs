@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace Xamarin.Forms
+namespace Xamarin.Forms.Internals
 {
-	internal static class Performance
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	public static class Performance
 	{
 		static readonly Dictionary<string, Stats> Statistics = new Dictionary<string, Stats>();
 

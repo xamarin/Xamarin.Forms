@@ -81,6 +81,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public bool OnActionItemClicked(ActionMode mode, IMenuItem item)
 		{
+			mode.Menu.Clear();
 			OnActionItemClickedImpl(item);
 			_actionMode?.Finish();
 			return true;
@@ -88,8 +89,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		bool global::Android.Support.V7.View.ActionMode.ICallback.OnActionItemClicked(global::Android.Support.V7.View.ActionMode mode, IMenuItem item)
 		{
+			mode.Menu.Clear();
 			OnActionItemClickedImpl(item);
-
 			_supportActionMode?.Finish();
 			return true;
 		}
@@ -174,12 +175,10 @@ namespace Xamarin.Forms.Platform.Android
 			view.SetBackgroundResource(0);
 		}
 
-		internal void CloseContextAction()
+		internal void CloseContextActions()
 		{
-			if (_actionMode != null)
-				_actionMode.Finish();
-			if (_supportActionMode != null)
-				_supportActionMode.Finish();
+			_actionMode?.Finish();
+			_supportActionMode?.Finish();
 		}
 
 		void CreateContextMenu(IMenu menu)
@@ -196,9 +195,9 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (action.Icon != null)
 				{
-					var iconBitmap = new BitmapDrawable(_context.Resources, ResourceManager.GetBitmap(_context.Resources, action.Icon));
-					if (iconBitmap != null && iconBitmap.Bitmap != null)
-						item.SetIcon(_context.Resources.GetDrawable(action.Icon));
+					Drawable iconBitmap = _context.Resources.GetDrawable(action.Icon) ?? new BitmapDrawable(_context.Resources, ResourceManager.GetBitmap(_context.Resources, action.Icon));
+					if (iconBitmap != null)
+						item.SetIcon(iconBitmap);
 				}
 
 				action.PropertyChanged += changed;
@@ -226,8 +225,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (!cell.HasContextActions)
 				{
-					_actionMode?.Finish();
-					_supportActionMode?.Finish();
+					CloseContextActions();
 					return false;
 				}
 

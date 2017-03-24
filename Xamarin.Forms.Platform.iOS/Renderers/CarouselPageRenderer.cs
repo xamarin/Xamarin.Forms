@@ -22,8 +22,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public CarouselPageRenderer()
 		{
-			if (!Forms.IsiOS7OrNewer)
-				WantsFullScreenLayout = true;
 		}
 
 		IElementController ElementController => Element as IElementController;
@@ -383,6 +381,11 @@ namespace Xamarin.Forms.Platform.iOS
 				if (Subviews.Length > 0)
 					Subviews[0].Frame = new RectangleF(0, 0, (float)Element.Width, (float)Element.Height);
 			}
+		}
+
+		public void RegisterEffect(Effect effect)
+		{
+			VisualElementRenderer<VisualElement>.RegisterEffect(effect, View);
 		}
 	}
 }

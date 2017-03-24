@@ -3,6 +3,8 @@ using Xamarin.Forms.Xaml;
 
 namespace Xamarin.Forms
 {
+	[ProvideCompiled("Xamarin.Forms.Core.XamlC.PassthroughValueProvider")]
+	[AcceptEmptyServiceProvider]
 	public sealed class BindingCondition : Condition, IValueProvider
 	{
 		readonly BindableProperty _boundProperty;
@@ -12,7 +14,7 @@ namespace Xamarin.Forms
 
 		public BindingCondition()
 		{
-			_boundProperty = BindableProperty.CreateAttached("Bound", typeof(object), typeof(DataTrigger), null, propertyChanged: OnBoundPropertyChanged);
+			_boundProperty = BindableProperty.CreateAttached("Bound", typeof(object), typeof(BindingCondition), null, propertyChanged: OnBoundPropertyChanged);
 		}
 
 		public BindingBase Binding
@@ -23,7 +25,7 @@ namespace Xamarin.Forms
 				if (_binding == value)
 					return;
 				if (IsSealed)
-					throw new InvalidOperationException("Can not change Binding once the Trigger has been applied.");
+					throw new InvalidOperationException("Can not change Binding once the Condition has been applied.");
 				_binding = value;
 			}
 		}
@@ -36,20 +38,14 @@ namespace Xamarin.Forms
 				if (_triggerValue == value)
 					return;
 				if (IsSealed)
-					throw new InvalidOperationException("Can not change Value once the Trigger has been applied.");
+					throw new InvalidOperationException("Can not change Value once the Condition has been applied.");
 				_triggerValue = value;
 			}
 		}
 
-		internal IServiceProvider ServiceProvider { get; set; }
-
-		internal IValueConverterProvider ValueConverter { get; set; }
-
 		object IValueProvider.ProvideValue(IServiceProvider serviceProvider)
 		{
-			ValueConverter = serviceProvider.GetService(typeof(IValueConverterProvider)) as IValueConverterProvider;
-			ServiceProvider = serviceProvider;
-
+			//This is no longer required
 			return this;
 		}
 
@@ -71,14 +67,16 @@ namespace Xamarin.Forms
 			bindable.ClearValue(_boundProperty);
 		}
 
+		static IValueConverterProvider s_valueConverter = DependencyService.Get<IValueConverterProvider>();
+
 		bool EqualsToValue(object other)
 		{
 			if ((other == Value) || (other != null && other.Equals(Value)))
 				return true;
 
 			object converted = null;
-			if (ValueConverter != null)
-				converted = ValueConverter.Convert(Value, other != null ? other.GetType() : typeof(object), null, ServiceProvider);
+			if (s_valueConverter != null)
+				converted = s_valueConverter.Convert(Value, other != null ? other.GetType() : typeof(object), null, null);
 			else
 				return false;
 

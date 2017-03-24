@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Xamarin.Forms.Internals;
 using UIKit;
 using PageUIStatusBarAnimation = Xamarin.Forms.PlatformConfiguration.iOSSpecific.UIStatusBarAnimation;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
@@ -19,15 +20,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public PageRenderer()
 		{
-			if (!Forms.IsiOS7OrNewer)
-				WantsFullScreenLayout = true;
 		}
 
 		void IEffectControlProvider.RegisterEffect(Effect effect)
 		{
-			var platformEffect = effect as PlatformEffect;
-			if (platformEffect != null)
-				platformEffect.Container = View;
+			VisualElementRenderer<VisualElement>.RegisterEffect(effect, View);
 		}
 
 		public VisualElement Element { get; private set; }
@@ -232,12 +229,7 @@ namespace Xamarin.Forms.Platform.iOS
 					return false;
 				case (StatusBarHiddenMode.Default):
 				default:
-					{
-						if (Device.info.CurrentOrientation.IsLandscape())
-							return true;
-						else
-							return false;
-					}
+					return base.PrefersStatusBarHidden();
 			}
 		}
 

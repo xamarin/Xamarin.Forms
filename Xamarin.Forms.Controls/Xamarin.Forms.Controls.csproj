@@ -85,6 +85,7 @@
     <Compile Include="App.cs" />
     <Compile Include="AppLifeCycle.cs" />
     <Compile Include="Bugzilla44596SplashPage.cs" />
+    <Compile Include="ControlGalleryPages\AccessibilityGallery.cs" />
     <Compile Include="ControlGalleryPages\CellForceUpdateSizeGalleryPage.cs" />
     <Compile Include="ControlGalleryPages\LayoutAddPerformance.xaml.cs">
       <DependentUpon>LayoutAddPerformance.xaml</DependentUpon>
@@ -244,6 +245,22 @@
     <Compile Include="GalleryPages\XamlNativeViews.xaml.cs">
       <DependentUpon>XamlNativeViews.xaml</DependentUpon>
     </Compile>
+    <Compile Include="HanselForms\BaseView.cs" />
+    <Compile Include="HanselForms\HBaseViewModel.cs" />
+    <Compile Include="HanselForms\RootPage.cs" />
+    <Compile Include="HanselForms\WebsiteView.cs" />
+    <Compile Include="HanselForms\BlogPage.xaml.cs">
+      <DependentUpon>BlogPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="HanselForms\MyAbout.xaml.cs">
+      <DependentUpon>MyAbout.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="HanselForms\TwitterPage.xaml.cs">
+      <DependentUpon>TwitterPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="GalleryPages\MacTwitterDemo.xaml.cs">
+      <DependentUpon>MacTwitterDemo.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Import Project="..\.nuspec\Xamarin.Forms.targets" />
@@ -266,6 +283,18 @@
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="GalleryPages\XamlNativeViews.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="GalleryPages\MacTwitterDemo.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HanselForms\MyAbout.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HanselForms\BlogPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HanselForms\TwitterPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
   </ItemGroup>
@@ -316,6 +345,15 @@
     </Reference>
     <Reference Include="Xamarin.Insights">
       <HintPath>..\packages\Xamarin.Insights.1.12.3\lib\portable-win+net45+wp80+windows8+wpa+MonoAndroid10+MonoTouch10\Xamarin.Insights.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\portable-net40+sl4+win8+wp71+wpa81\System.Net.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Extensions">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\portable-net40+sl4+win8+wp71+wpa81\System.Net.Http.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.Http.Primitives">
+      <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\portable-net40+sl4+win8+wp71+wpa81\System.Net.Http.Primitives.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Target Name="BeforeBuild">

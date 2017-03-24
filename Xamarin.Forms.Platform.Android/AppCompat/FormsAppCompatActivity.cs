@@ -1,6 +1,7 @@
 #region
 
 using System;
+using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Linq;
 using Android.App;
@@ -20,6 +21,7 @@ using AToolbar = Android.Support.V7.Widget.Toolbar;
 using AColor = Android.Graphics.Color;
 using AlertDialog = Android.Support.V7.App.AlertDialog;
 using ARelativeLayout = Android.Widget.RelativeLayout;
+using Xamarin.Forms.Internals;
 
 #endregion
 
@@ -54,6 +56,8 @@ namespace Xamarin.Forms.Platform.Android
 			_previousState = AndroidApplicationLifecycleState.Uninitialized;
 			_currentState = AndroidApplicationLifecycleState.Uninitialized;
 		}
+
+		IApplicationController Controller => _application;
 
 		public event EventHandler ConfigurationChanged;
 
@@ -125,7 +129,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			_application = application;
 			(application as IApplicationController)?.SetAppIndexingProvider(new AndroidAppIndexProvider(this));
-			Xamarin.Forms.Application.Current = application;
+			Xamarin.Forms.Application.SetCurrentApplication(application);
 
 			SetSoftInputMode();
 
@@ -359,7 +363,7 @@ namespace Xamarin.Forms.Platform.Android
 				}
 				catch (Exception ex)
 				{
-					Log.Warning("Xamarin.Forms.Platform.Android.FormsAppCompatActivity", "Error retrieving color resource: {0}", ex);
+					Internals.Log.Warning("Xamarin.Forms.Platform.Android.FormsAppCompatActivity", "Error retrieving color resource: {0}", ex);
 				}
 
 				return -1;

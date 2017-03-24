@@ -18,14 +18,20 @@ namespace Xamarin.Forms.Core.XamlC
 				yield return Instruction.Create(OpCodes.Ldnull);
 				yield break;
 			}
+			var bpRef = GetBindablePropertyFieldReference(value, module, node);
+			yield return Instruction.Create(OpCodes.Ldsfld, bpRef);
+		}
 
+		public FieldReference GetBindablePropertyFieldReference(string value, ModuleDefinition module, BaseNode node)
+		{
 			FieldReference bpRef = null;
 			string typeName = null, propertyName = null;
 
 			var parts = value.Split('.');
 			if (parts.Length == 1) {
 				var parent = node.Parent?.Parent as IElementNode;
-				if ((node.Parent as ElementNode)?.XmlType.NamespaceUri == "http://xamarin.com/schemas/2014/forms" && (node.Parent as ElementNode)?.XmlType.Name == "Setter") {
+				if ((node.Parent as ElementNode)?.XmlType.NamespaceUri == "http://xamarin.com/schemas/2014/forms" &&
+				    ((node.Parent as ElementNode)?.XmlType.Name == "Setter" || (node.Parent as ElementNode)?.XmlType.Name == "PropertyCondition")) {
 					if (parent.XmlType.NamespaceUri == "http://xamarin.com/schemas/2014/forms" &&
 						(parent.XmlType.Name == "Trigger" || parent.XmlType.Name == "DataTrigger" || parent.XmlType.Name == "MultiTrigger" || parent.XmlType.Name == "Style")) {
 						var ttnode = (parent as ElementNode).Properties [new XmlName("", "TargetType")];
@@ -43,31 +49,16 @@ namespace Xamarin.Forms.Core.XamlC
 			} else
 				throw new XamlParseException($"Cannot convert \"{value}\" into {typeof(BindableProperty)}", node);
 
-			var typeRef = GetTypeReference(typeName, module, node);
+			if (typeName == null || propertyName == null)
+				throw new XamlParseException($"Cannot convert \"{value}\" into {typeof(BindableProperty)}", node);
+
+			var typeRef = XmlTypeExtensions.GetTypeReference(typeName, module, node);
 			if (typeRef == null)
 				throw new XamlParseException($"Can't resolve {typeName}", node);
 			bpRef = GetBindablePropertyFieldReference(typeRef, propertyName, module);
 			if (bpRef == null)
 				throw new XamlParseException($"Can't resolve {propertyName} on {typeRef.Name}", node);
-			yield return Instruction.Create(OpCodes.Ldsfld, bpRef);
-		}
-
-		public static TypeReference GetTypeReference(string xmlType, ModuleDefinition module, BaseNode iNode)
-		{
-			var split = xmlType.Split(':');
-			if (split.Length > 2)
-				throw new XamlParseException($"Type \"{xmlType}\" is invalid", iNode);
-
-			string prefix, name;
-			if (split.Length == 2) {
-				prefix = split [0];
-				name = split [1];
-			} else {
-				prefix = "";
-				name = split [0];
-			}
-			var namespaceuri = iNode.NamespaceResolver.LookupNamespace(prefix) ?? "";
-			return XmlTypeExtensions.GetTypeReference(namespaceuri, name, module, iNode);
+			return bpRef;
 		}
 
 		public static FieldReference GetBindablePropertyFieldReference(TypeReference typeRef, string propertyName, ModuleDefinition module)
@@ -75,8 +66,8 @@ namespace Xamarin.Forms.Core.XamlC
 			TypeReference declaringTypeReference;
 			FieldReference bpRef = typeRef.GetField(fd => fd.Name == $"{propertyName}Property" && fd.IsStatic && fd.IsPublic, out declaringTypeReference);
 			if (bpRef != null) {
-				bpRef = module.Import(bpRef.ResolveGenericParameters(declaringTypeReference));
-				bpRef.FieldType = module.Import(bpRef.FieldType);
+				bpRef = module.ImportReference(bpRef.ResolveGenericParameters(declaringTypeReference));
+				bpRef.FieldType = module.ImportReference(bpRef.FieldType);
 			}
 			return bpRef;
 		}

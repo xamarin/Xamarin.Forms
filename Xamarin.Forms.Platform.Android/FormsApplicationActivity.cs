@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Linq;
 using Android.App;
@@ -8,6 +9,7 @@ using Android.OS;
 using Android.Views;
 using Android.Widget;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -104,7 +106,7 @@ namespace Xamarin.Forms.Platform.Android
 			(application as IApplicationController)?.SetAppIndexingProvider(new AndroidAppIndexProvider(this));
 
 			_application = application;
-			Xamarin.Forms.Application.Current = application;
+			Xamarin.Forms.Application.SetCurrentApplication(application);
 
 			SetSoftInputMode();
 

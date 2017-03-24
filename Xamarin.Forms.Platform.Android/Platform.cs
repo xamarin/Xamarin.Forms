@@ -359,10 +359,11 @@ namespace Xamarin.Forms.Platform.Android
 				else
 				{
 					IMenuItem menuItem = menu.Add(item.Text);
-					if (!string.IsNullOrEmpty(item.Icon))
+					var icon = item.Icon;
+					if (!string.IsNullOrEmpty(icon))
 					{
-						var iconBitmap = new BitmapDrawable(_context.Resources, ResourceManager.GetBitmap(_context.Resources, item.Icon));
-						if (iconBitmap != null && iconBitmap.Bitmap != null)
+						Drawable iconBitmap = _context.Resources.GetDrawable(icon) ?? new BitmapDrawable(_context.Resources, ResourceManager.GetBitmap(_context.Resources, icon));
+						if (iconBitmap != null)
 							menuItem.SetIcon(iconBitmap);
 					}
 					menuItem.SetEnabled(controller.IsEnabled);
@@ -846,9 +847,21 @@ namespace Xamarin.Forms.Platform.Android
 			Color navigationBarTextColor = CurrentNavigationPage == null ? Color.Default : CurrentNavigationPage.BarTextColor;
 			TextView actionBarTitleTextView = null;
 
-			int actionBarTitleId = _context.Resources.GetIdentifier("action_bar_title", "id", "android");
-			if (actionBarTitleId > 0)
-				actionBarTitleTextView = ((Activity)_context).FindViewById<TextView>(actionBarTitleId);
+			if(Forms.IsLollipopOrNewer)
+			{
+				int actionbarId = _context.Resources.GetIdentifier("action_bar", "id", "android");
+				if(actionbarId > 0)
+				{
+					var toolbar = (Toolbar)((Activity)_context).FindViewById(actionbarId);
+					actionBarTitleTextView = (TextView)toolbar.GetChildAt(0);
+				}
+			}
+			else
+			{
+				int actionBarTitleId = _context.Resources.GetIdentifier("action_bar_title", "id", "android");
+				if (actionBarTitleId > 0)
+					actionBarTitleTextView = ((Activity)_context).FindViewById<TextView>(actionBarTitleId);
+			}
 
 			if (actionBarTitleTextView != null && navigationBarTextColor != Color.Default)
 				actionBarTitleTextView.SetTextColor(navigationBarTextColor.ToAndroid());
@@ -1012,6 +1025,50 @@ namespace Xamarin.Forms.Platform.Android
 
 		internal class DefaultRenderer : VisualElementRenderer<View>
 		{
+			bool _notReallyHandled;
+			internal void NotifyFakeHandling()
+			{
+				_notReallyHandled = true;
+			}
+
+			public override bool DispatchTouchEvent(MotionEvent e)
+			{
+				#region
+				// Normally dispatchTouchEvent feeds the touch events to its children one at a time, top child first,
+				// (and only to the children in the hit-test area of the event) stopping as soon as one of them has handled
+				// the event. 
+
+				// But to be consistent across the platforms, we don't want this behavior; if an element is not input transparent
+				// we don't want an event to "pass through it" and be handled by an element "behind/under" it. We just want the processing
+				// to end after the first non-transparent child, regardless of whether the event has been handled.
+
+				// This is only an issue for a couple of controls; the interactive controls (switch, button, slider, etc) already "handle" their touches 
+				// and the events don't propagate to other child controls. But for image, label, and box that doesn't happen. We can't have those controls 
+				// lie about their events being handled because then the events won't propagate to *parent* controls (e.g., a frame with a label in it would
+				// never get a tap gesture from the label). In other words, we *want* parent propagation, but *do not want* sibling propagation. So we need to short-circuit 
+				// base.DispatchTouchEvent here, but still return "false".
+
+				// Duplicating the logic of ViewGroup.dispatchTouchEvent and modifying it slightly for our purposes is a non-starter; the method is too
+				// complex and does a lot of micro-optimization. Instead, we provide a signalling mechanism for the controls which don't already "handle" touch
+				// events to tell us that they will be lying about handling their event; they then return "true" to short-circuit base.DispatchTouchEvent.
+
+				// The container gets this message and after it gets the "handled" result from dispatchTouchEvent, 
+				// it then knows to ignore that result and return false/unhandled. This allows the event to propagate up the tree.
+				#endregion
+
+				_notReallyHandled = false;
+
+				var result = base.DispatchTouchEvent(e);
+
+				if (result && _notReallyHandled)
+				{
+					// If the child control returned true from its touch event handler but signalled that it was a fake "true", leave the event unhandled
+					// so parent controls have the opportunity
+					return false;
+				}
+
+				return result;
+			}
 		}
 
 		#region IPlatformEngine implementation

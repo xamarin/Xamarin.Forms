@@ -113,6 +113,8 @@ namespace Xamarin.Forms
 			get { return !Deployment.Current.Dispatcher.CheckAccess(); }
 		}
 
+		public string RuntimePlatform => Device.WinPhone;
+
 		public void OpenUriAction(Uri uri)
 		{
 			Launcher.LaunchUriAsync(uri).WatchForError();
@@ -135,36 +137,6 @@ namespace Xamarin.Forms
 			if (v < 10)
 				return '0' + v;
 			return 'a' + v - 10;
-		}
-
-		public class _Timer : ITimer
-		{
-			readonly Timer _timer;
-
-			public _Timer(Timer timer)
-			{
-				_timer = timer;
-			}
-
-			public void Change(int dueTime, int period)
-			{
-				_timer.Change(dueTime, period);
-			}
-
-			public void Change(long dueTime, long period)
-			{
-				_timer.Change(dueTime, period);
-			}
-
-			public void Change(TimeSpan dueTime, TimeSpan period)
-			{
-				_timer.Change(dueTime, period);
-			}
-
-			public void Change(uint dueTime, uint period)
-			{
-				_timer.Change(dueTime, period);
-			}
 		}
 
 		public class _IsolatedStorageFile : IIsolatedStorageFile
@@ -197,13 +169,13 @@ namespace Xamarin.Forms
 				return Task.FromResult(_isolatedStorageFile.GetLastWriteTime(path));
 			}
 
-			public Task<Stream> OpenFileAsync(string path, FileMode mode, FileAccess access)
+			public Task<Stream> OpenFileAsync(string path, Internals.FileMode mode, Internals.FileAccess access)
 			{
 				Stream stream = _isolatedStorageFile.OpenFile(path, (System.IO.FileMode)mode, (System.IO.FileAccess)access);
 				return Task.FromResult(stream);
 			}
 
-			public Task<Stream> OpenFileAsync(string path, FileMode mode, FileAccess access, FileShare share)
+			public Task<Stream> OpenFileAsync(string path, Internals.FileMode mode, Internals.FileAccess access, Internals.FileShare share)
 			{
 				Stream stream = _isolatedStorageFile.OpenFile(path, (System.IO.FileMode)mode, (System.IO.FileAccess)access, (System.IO.FileShare)share);
 				return Task.FromResult(stream);

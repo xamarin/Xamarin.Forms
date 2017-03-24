@@ -11,7 +11,7 @@
     <projectUrl>http://xamarin.com/forms</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Build native UIs for iOS, Android, and Windows Phone from a single, shared C# codebase</description>
-    <copyright>Copyright 2013-2016</copyright>
+    <copyright>Copyright 2013-2017</copyright>
     <dependencies>
       <group targetFramework="WP80">
         <dependency id="WPtoolkit" version="4.2013.08.16"/>
@@ -22,6 +22,13 @@
         <dependency id="Xamarin.Android.Support.v7.AppCompat" version="[23.3.0]"/>
         <dependency id="Xamarin.Android.Support.v7.CardView" version="[23.3.0]"/>
         <dependency id="Xamarin.Android.Support.v7.MediaRouter" version="[23.3.0]"/>
+      </group>
+      <group targetFramework="MonoAndroid70">
+        <dependency id="Xamarin.Android.Support.v4" version="23.3.0"/>
+        <dependency id="Xamarin.Android.Support.Design" version="23.3.0"/>
+        <dependency id="Xamarin.Android.Support.v7.AppCompat" version="23.3.0"/>
+        <dependency id="Xamarin.Android.Support.v7.CardView" version="23.3.0"/>
+        <dependency id="Xamarin.Android.Support.v7.MediaRouter" version="23.3.0"/>
       </group>
     </dependencies>
     <references>
@@ -68,6 +75,12 @@
         <reference file="Xamarin.Forms.Platform.dll" />
         <reference file="Xamarin.Forms.Xaml.dll" />
         <reference file="Xamarin.Forms.Platform.WP8.dll" />
+      </group>
+	  <group targetFramework="Xamarin.Mac">
+		<reference file="Xamarin.Forms.Core.dll" />
+        <reference file="Xamarin.Forms.Platform.macOS.dll" />
+        <reference file="Xamarin.Forms.Platform.dll" />
+        <reference file="Xamarin.Forms.Xaml.dll" />
       </group>
     </references>
   </metadata>
@@ -170,6 +183,7 @@
     <file src="..\Xamarin.Forms.Platform.WinRT\bin\$Configuration$\StepperControl.xbf" target="lib\wpa81\Xamarin.Forms.Platform.WinRT" />
 
     <file src="..\Xamarin.Forms.Platform.WinRT.Phone\bin\$Configuration$\PhoneResources.xbf" target="lib\wpa81\Xamarin.Forms.Platform.WinRT.Phone" />
+    <file src="..\Xamarin.Forms.Platform.WinRT.Phone\bin\$Configuration$\FormsProgressBarStyle.xbf" target="lib\wpa81\Xamarin.Forms.Platform.WinRT.Phone" />
     <file src="..\Xamarin.Forms.Platform.WinRT.Phone\bin\$Configuration$\FormsTextBoxStyle.xbf" target="lib\wpa81\Xamarin.Forms.Platform.WinRT.Phone" />
     <file src="..\Xamarin.Forms.Platform.WinRT.Phone\bin\$Configuration$\Resources.xbf" target="lib\wpa81\Xamarin.Forms.Platform.WinRT.Phone" />
     <file src="..\Xamarin.Forms.Platform.WinRT.Phone\bin\$Configuration$\SearchBox.xbf" target="lib\wpa81\Xamarin.Forms.Platform.WinRT.Phone" />
@@ -194,6 +208,7 @@
     <file src="..\Xamarin.Forms.Platform.WinRT.Tablet\bin\$Configuration$\Resources.xbf" target="lib\win81\Xamarin.Forms.Platform.WinRT.Tablet" />
     <file src="..\Xamarin.Forms.Platform.WinRT.Tablet\bin\$Configuration$\TabletResources.xbf" target="lib\win81\Xamarin.Forms.Platform.WinRT.Tablet" />
     <file src="..\Xamarin.Forms.Platform.WinRT.Tablet\bin\$Configuration$\FormsTextBoxStyle.xbf" target="lib\win81\Xamarin.Forms.Platform.WinRT.Tablet" />
+    <file src="..\Xamarin.Forms.Platform.WinRT.Tablet\bin\$Configuration$\FormsProgressBarStyle.xbf" target="lib\win81\Xamarin.Forms.Platform.WinRT.Tablet" />
 
     <file src="..\Xamarin.Forms.Core\bin\$Configuration$\Xamarin.Forms.Core.dll" target="lib\win81" />
     <file src="..\docs\Xamarin.Forms.Core.xml" target="lib\win81" />
@@ -209,13 +224,20 @@
     <file src="..\Xamarin.Forms.Platform.UAP\Properties\Xamarin.Forms.Platform.UAP.rd.xml" target="lib\uap10.0\Xamarin.Forms.Platform.UAP\Properties" />
 
     <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\FormsCommandBarStyle.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
+    <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\FormsProgressBarStyle.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
 	<file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\PageControl.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
 	<file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\Resources.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
 	<file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\FormsTextBoxStyle.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
-	  <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\AutoSuggestStyle.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
+	<file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\AutoSuggestStyle.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
 	<file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\MasterDetailControlStyle.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
 	<file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\PageControlStyle.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
 	<file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\TabbedPageStyle.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
+	
+	 <!--Mac-->
+	<file src="..\Xamarin.Forms.Core\bin\$Configuration$\Xamarin.Forms.Core.dll" target="lib\Xamarin.Mac" />
+	<file src="..\Xamarin.Forms.Xaml\bin\$Configuration$\Xamarin.Forms.Xaml.dll" target="lib\Xamarin.Mac" />
+	<file src="..\Xamarin.Forms.Platform.MacOS\bin\$Configuration$\Xamarin.Forms.Platform.macOS.dll" target="lib\Xamarin.Mac" />
+	<file src="..\Xamarin.Forms.Platform.MacOS\bin\$Configuration$\Xamarin.Forms.Platform.dll" target="lib\Xamarin.Mac" />
 
     <file src="..\Xamarin.Forms.Core\bin\$Configuration$\Xamarin.Forms.Core.dll" target="lib\uap10.0" />
     <file src="..\docs\Xamarin.Forms.Core.xml" target="lib\uap10.0" />
