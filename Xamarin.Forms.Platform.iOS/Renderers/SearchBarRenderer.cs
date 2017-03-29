@@ -158,8 +158,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateCancelButton()
 		{
-			Control.ShowsCancelButton = !string.IsNullOrEmpty(Control.Text);
-
 			// We can't cache the cancel button reference because iOS drops it when it's not displayed
 			// and creates a brand new one when necessary, so we have to look for it each time
 			var cancelButton = Control.FindDescendantView<UIButton>();
