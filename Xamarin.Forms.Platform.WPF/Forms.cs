@@ -7,7 +7,7 @@ using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
 using Xamarin.Forms.Internals;
-
+using Xamarin.Forms.Platform.WPF;
 using Expression = System.Linq.Expressions.Expression;
 
 
@@ -17,11 +17,11 @@ namespace Xamarin.Forms
 	{
 		static bool s_isInitialized;
 
-		public static UIElement ConvertPageToUIElement(this Page page, PhoneApplicationPage applicationPage)
+		public static UIElement ConvertPageToUIElement(this Page page, RootPage applicationPage)
 		{
 			var application = new DefaultApplication();
 			application.MainPage = page;
-			var result = new Platform.WinPhone.Platform(applicationPage);
+			var result = new Platform.WPF.Platform(applicationPage);
 			result.SetPage(page);
 			return result.GetCanvas();
 		}
@@ -49,12 +49,12 @@ namespace Xamarin.Forms
 			Log.Listeners.Add(new DelegateLogListener((c, m) => Console.WriteLine("[{0}] {1}", m, c)));
 
 			Device.OS = TargetPlatform.WinPhone;
-			Device.PlatformServices = new WP8PlatformServices();
-			Device.Info = new WP8DeviceInfo();
+			Device.PlatformServices = new WPFPlatformServices();
+			Device.Info = new WPFDeviceInfo();
 
 			Registrar.RegisterAll(new[] { typeof(ExportRendererAttribute), typeof(ExportCellAttribute), typeof(ExportImageSourceHandlerAttribute) });
 
-			Ticker.Default = new WinPhoneTicker();
+			Ticker.Default = new WPFTicker();
 
 			Device.Idiom = TargetIdiom.Phone;
 
@@ -67,12 +67,12 @@ namespace Xamarin.Forms
 		{
 		}
 
-		internal class WP8DeviceInfo : DeviceInfo
+		internal class WPFDeviceInfo : DeviceInfo
 		{
 			internal const string BWPorientationChangedName = "Xamarin.WP8.OrientationChanged";
 			readonly double _scalingFactor;
 
-			public WP8DeviceInfo()
+			public WPFDeviceInfo()
 			{
 				MessagingCenter.Subscribe(this, BWPorientationChangedName, (FormsApplicationPage page, DeviceOrientation orientation) => { CurrentOrientation = orientation; });
 

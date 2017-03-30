@@ -7,7 +7,7 @@ using System.Windows;
 using System.Windows.Controls;
 using Xamarin.Forms.Internals;
 
-namespace Xamarin.Forms.Platform.WinPhone
+namespace Xamarin.Forms.Platform.WPF
 {
 	// from mono 
 	public class Platform : BindableObject, IPlatform, INavigation
@@ -24,7 +24,7 @@ namespace Xamarin.Forms.Platform.WinPhone
 
 		readonly NavigationModel _navModel = new NavigationModel();
 
-		readonly PhoneApplicationPage _page;
+		readonly WinPage _page;
 
 		readonly Canvas _renderer;
 		readonly ToolbarTracker _tracker = new ToolbarTracker();
@@ -32,7 +32,7 @@ namespace Xamarin.Forms.Platform.WinPhone
 		Page _currentDisplayedPage;
 		CustomMessageBox _visibleMessageBox;
 
-		internal Platform(PhoneApplicationPage page)
+		internal Platform(WinPage page)
 		{
 			_tracker.SeparateMasterDetail = true;
 

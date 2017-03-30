@@ -69,9 +69,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ElementChangedEventArgs.cs" />
+    <Compile Include="FormsApplicationPage.cs" />
+    <Compile Include="IVisualElementRenderer.cs" />
+    <Compile Include="VisualElementChangedEventArgs.cs" />
+    <Compile Include="WPFPlatformServices.cs" />
     <Compile Include="Forms.cs" />
     <Compile Include="Platform.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WinPage.cs" />
+    <Compile Include="WPFTicker.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -81,6 +88,12 @@
       <Project>{57b8b73d-c3b5-4c42-869e-7b2f17d354ac}</Project>
       <Name>Xamarin.Forms.Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="WPFResources.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
