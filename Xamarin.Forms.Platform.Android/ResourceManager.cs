@@ -89,7 +89,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			object value = type.GetFields().FirstOrDefault(p => p.Name == memberName)?.GetValue(type)
 				?? type.GetProperties().FirstOrDefault(p => p.Name == memberName)?.GetValue(type);
-			if (value != null)
+			if (value is int)
 				return (int)value;
 			return 0;
 		}
