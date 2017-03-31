@@ -12,7 +12,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	internal sealed class ListViewAdapter : CellAdapter
+	internal class ListViewAdapter : CellAdapter
 	{
 		const int DefaultGroupHeaderTemplateId = 0;
 		const int DefaultItemTemplateId = 1;
@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Platform.Android
 		internal static readonly BindableProperty IsSelectedProperty = BindableProperty.CreateAttached("IsSelected", typeof(bool), typeof(Cell), false);
 
 		readonly Context _context;
-		readonly ListView _listView;
+		protected readonly ListView _listView;
 		readonly AListView _realListView;
 		readonly Dictionary<DataTemplate, int> _templateToId = new Dictionary<DataTemplate, int>();
 		int _dataTemplateIncrementer = 2; // lets start at not 0 because
@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Platform.Android
 		WeakReference<Cell> _selectedCell;
 
 		IListViewController Controller => _listView;
-		ITemplatedItemsView<Cell> TemplatedItemsView => _listView;
+		protected ITemplatedItemsView<Cell> TemplatedItemsView => _listView;
 
 		public ListViewAdapter(Context context, AListView realListView, ListView listView) : base(context)
 		{
@@ -595,9 +595,78 @@ namespace Xamarin.Forms.Platform.Android
 			Header
 		}
 
-		void InvalidateCount()
+		protected virtual void InvalidateCount()
 		{
 			_listCount = -1;
+		}
+	}
+
+	internal class GroupedListViewAdapter : ListViewAdapter, ISectionIndexer
+	{
+		class SectionData
+		{
+			public int Index { get; set; }
+			public int Length { get; set; }
+			public int Start { get; set; }
+			public int End => Start + Length;
+		}
+		public GroupedListViewAdapter (Context context, AListView realListView, ListView listView) : base (context, realListView, listView)
+		{
+
+		}
+		bool sectionDataValid = false;
+
+		SectionData [] Sections;
+		Java.Lang.Object [] nativeSections;
+		public int GetPositionForSection (int sectionIndex)
+		{
+			Setup ();
+			return Sections [sectionIndex].Start;
+		}
+
+		public int GetSectionForPosition (int position)
+		{
+			Setup ();
+			foreach (var section in Sections) {
+				if (section.Start >= position && section.End <= position)
+					return section.Index;
+			}
+			return 0;
+		}
+
+		public Java.Lang.Object [] GetSections ()
+		{
+			Setup ();
+			return nativeSections;
+		}
+
+		void Setup ()
+		{
+			if (sectionDataValid)
+				return;
+
+			var templatedItems = TemplatedItemsView.TemplatedItems;
+			int count = 0;
+
+			var sectionData = new List<SectionData> ();
+			for (var i = 0; i < templatedItems.Count; i++) {
+				var groupCount = templatedItems.GetGroup (i).Count;
+				sectionData.Add (new SectionData { Index = i, Length = groupCount, Start = count });
+				count += groupCount;
+			}
+			Sections = sectionData.ToArray ();
+
+			var shortNames = templatedItems.ShortNames;
+			if (shortNames != null) {
+				nativeSections = shortNames.Select (x => new Java.Lang.String (x)).ToArray ();
+			}
+			sectionDataValid = true;
+		}
+
+		protected override void InvalidateCount ()
+		{
+			base.InvalidateCount ();
+			sectionDataValid = false;
 		}
 	}
 }
