@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using WPFCustomMessageBox;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.WPF
@@ -21,7 +22,7 @@ namespace Xamarin.Forms.Platform.WPF
 		readonly ToolbarTracker _tracker = new ToolbarTracker();
 
 		Page _currentDisplayedPage;
-		CustomMessageBox _visibleMessageBox;
+
 
 		internal Platform(WPFPage page)
 		{
@@ -41,48 +42,16 @@ namespace Xamarin.Forms.Platform.WPF
 				busyCount = Math.Max(0, enabled ? busyCount + 1 : busyCount - 1);
 				SetProgressIndicator(busyCount > 0);
 			});
-
+			
 			MessagingCenter.Subscribe(this, Page.AlertSignalName, (Page sender, AlertArguments arguments) =>
 			{
-				var messageBox = new CustomMessageBox { Title = arguments.Title, Message = arguments.Message };
-				if (arguments.Accept != null)
-					messageBox.LeftButtonContent = arguments.Accept;
-				messageBox.RightButtonContent = arguments.Cancel;
-				messageBox.Show();
-				_visibleMessageBox = messageBox;
-				messageBox.Dismissed += (o, args) =>
-				{
-					arguments.SetResult(args.Result == CustomMessageBoxResult.LeftButton);
-					_visibleMessageBox = null;
-				};
+			    var result = CustomMessageBox.ShowOKCancel(arguments.Message, arguments.Title, arguments.Accept, arguments.Cancel);
+				arguments.SetResult(result==MessageBoxResult.OK);
 			});
 
 			MessagingCenter.Subscribe(this, Page.ActionSheetSignalName, (Page sender, ActionSheetArguments arguments) =>
 			{
-				var messageBox = new CustomMessageBox { Title = arguments.Title };
-
-				var listBox = new ListBox { FontSize = 36, Margin = new System.Windows.Thickness(12) };
-				var itemSource = new List<string>();
-
-				if (!string.IsNullOrWhiteSpace(arguments.Destruction))
-					itemSource.Add(arguments.Destruction);
-				itemSource.AddRange(arguments.Buttons);
-				if (!string.IsNullOrWhiteSpace(arguments.Cancel))
-					itemSource.Add(arguments.Cancel);
-
-				listBox.ItemsSource = itemSource.Select(s => new TextBlock { Text = s, Margin = new System.Windows.Thickness(0, 12, 0, 12) });
-				messageBox.Content = listBox;
-
-				listBox.SelectionChanged += (o, args) => messageBox.Dismiss();
-				messageBox.Dismissed += (o, args) =>
-				{
-					string result = listBox.SelectedItem != null ? ((TextBlock)listBox.SelectedItem).Text : null;
-					arguments.SetResult(result);
-					_visibleMessageBox = null;
-				};
-
-				messageBox.Show();
-				_visibleMessageBox = messageBox;
+				//TODO: action sheet signal;
 			});
 		}
 
@@ -355,13 +324,6 @@ namespace Xamarin.Forms.Platform.WPF
 
 		void OnBackKeyPress(object sender, CancelEventArgs e)
 		{
-			if (_visibleMessageBox != null)
-			{
-				_visibleMessageBox.Dismiss();
-				e.Cancel = true;
-				return;
-			}
-
 			Page lastRoot = _navModel.Roots.Last();
 
 			bool handled = lastRoot.SendBackButtonPressed();
