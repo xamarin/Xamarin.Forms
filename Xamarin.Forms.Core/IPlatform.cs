@@ -1,6 +1,9 @@
-namespace Xamarin.Forms
+using System.ComponentModel;
+
+namespace Xamarin.Forms.Internals
 {
-	internal interface IPlatform
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	public interface IPlatform
 	{
 		SizeRequest GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint);
 	}

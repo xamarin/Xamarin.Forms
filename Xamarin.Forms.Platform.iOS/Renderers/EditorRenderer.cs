@@ -7,17 +7,24 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class EditorRenderer : ViewRenderer<Editor, UITextView>
 	{
-		UIToolbar _accessoryView;
+		bool _disposed;
+        IEditorController ElementController => Element;
 
-		IElementController ElementController => Element as IElementController;
-
-		protected override void Dispose(bool disposing)
+        protected override void Dispose(bool disposing)
 		{
+			if (_disposed)
+				return;
+
+			_disposed = true;
+
 			if (disposing)
 			{
-				Control.Changed -= HandleChanged;
-				Control.Started -= OnStarted;
-				Control.Ended -= OnEnded;
+				if (Control != null)
+				{
+					Control.Changed -= HandleChanged;
+					Control.Started -= OnStarted;
+					Control.Ended -= OnEnded;
+				}
 			}
 
 			base.Dispose(disposing);
@@ -27,6 +34,9 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.OnElementChanged(e);
 
+			if (e.NewElement == null)
+				return;
+
 			if (Control == null)
 			{
 				SetNativeControl(new UITextView(RectangleF.Empty));
@@ -35,16 +45,16 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					// iPhone does not have a dismiss keyboard button
 					var keyboardWidth = UIScreen.MainScreen.Bounds.Width;
-					_accessoryView = new UIToolbar(new RectangleF(0, 0, keyboardWidth, 44)) { BarStyle = UIBarStyle.Default, Translucent = true };
+					var accessoryView = new UIToolbar(new RectangleF(0, 0, keyboardWidth, 44)) { BarStyle = UIBarStyle.Default, Translucent = true };
 
 					var spacer = new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace);
 					var doneButton = new UIBarButtonItem(UIBarButtonSystemItem.Done, (o, a) =>
 					{
 						Control.ResignFirstResponder();
-						Element.SendCompleted();
+                        ElementController.SendCompleted();
 					});
-					_accessoryView.SetItems(new[] { spacer, doneButton }, false);
-					Control.InputAccessoryView = _accessoryView;
+					accessoryView.SetItems(new[] { spacer, doneButton }, false);
+					Control.InputAccessoryView = accessoryView;
 				}
 
 				Control.Changed += HandleChanged;
@@ -52,14 +62,11 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.Ended += OnEnded;
 			}
 
-			if (e.NewElement != null)
-			{
-				UpdateText();
-				UpdateFont();
-				UpdateTextColor();
-				UpdateKeyboard();
-				UpdateEditable();
-			}
+			UpdateText();
+			UpdateFont();
+			UpdateTextColor();
+			UpdateKeyboard();
+			UpdateEditable();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -93,7 +100,7 @@ namespace Xamarin.Forms.Platform.iOS
 				ElementController.SetValueFromRenderer(Editor.TextProperty, Control.Text);
 
 			Element.SetValue(VisualElement.IsFocusedPropertyKey, false);
-			Element.SendCompleted();
+			ElementController.SendCompleted();
 		}
 
 		void OnStarted(object sender, EventArgs eventArgs)

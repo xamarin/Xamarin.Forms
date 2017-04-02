@@ -2,6 +2,7 @@
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
+using Xamarin.Forms.Internals;
 
 #if WINDOWS_UWP
 
@@ -16,7 +17,9 @@ namespace Xamarin.Forms.Platform.WinRT
 		bool _fontApplied;
 		Brush _backgroundColorFocusedDefaultBrush;
 
-		protected override void OnElementChanged(ElementChangedEventArgs<Editor> e)
+        IEditorController ElementController => Element;
+
+        protected override void OnElementChanged(ElementChangedEventArgs<Editor> e)
 		{
 			if (e.NewElement != null)
 			{
@@ -83,7 +86,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		void OnLostFocus(object sender, RoutedEventArgs e)
 		{
-			Element.SendCompleted();
+            ElementController.SendCompleted();
 		}
 
 		protected override void UpdateBackgroundColor()

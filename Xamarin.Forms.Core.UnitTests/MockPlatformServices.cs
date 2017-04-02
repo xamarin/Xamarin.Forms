@@ -82,6 +82,8 @@ namespace Xamarin.Forms.Core.UnitTests
 			get { return false; }
 		}
 
+		public string RuntimePlatform { get; set; }
+
 		public void BeginInvokeOnMainThread (Action action) 
 		{
 			if (invokeOnMainThread == null)
@@ -119,57 +121,6 @@ namespace Xamarin.Forms.Core.UnitTests
 			return AppDomain.CurrentDomain.GetAssemblies ();
 		}
 
-		public ITimer CreateTimer (Action<object> callback)
-		{
-			return new MockTimer (new Timer (o => callback(o)));
-		}
-
-		public ITimer CreateTimer (Action<object> callback, object state, int dueTime, int period)
-		{
-			return new MockTimer (new Timer (o => callback(o), state, dueTime, period));
-		}
-
-		public ITimer CreateTimer (Action<object> callback, object state, long dueTime, long period)
-		{
-			return new MockTimer (new Timer (o => callback(o), state, dueTime, period));
-		}
-
-		public ITimer CreateTimer (Action<object> callback, object state, TimeSpan dueTime, TimeSpan period)
-		{
-			return new MockTimer (new Timer (o => callback(o), state, dueTime, period));
-		}
-
-		public ITimer CreateTimer (Action<object> callback, object state, uint dueTime, uint period)
-		{
-			return new MockTimer (new Timer (o => callback(o), state, dueTime, period));
-		}
-
-		public class MockTimer : ITimer
-		{
-			readonly Timer timer;
-			public MockTimer (Timer timer)
-			{
-				this.timer = timer;
-			}
-
-			public void Change (int dueTime, int period)
-			{
-				timer.Change (dueTime, period);
-			}
-			public void Change (long dueTime, long period)
-			{
-				timer.Change (dueTime, period);
-			}
-			public void Change (TimeSpan dueTime, TimeSpan period)
-			{
-				timer.Change (dueTime, period);
-			}
-			public void Change (uint dueTime, uint period)
-			{
-				timer.Change (dueTime, period);
-			}
-		}
-
 		public IIsolatedStorageFile GetUserStoreForApplication ()
 		{
 #if WINDOWS_PHONE
@@ -198,13 +149,13 @@ namespace Xamarin.Forms.Core.UnitTests
 				return Task.FromResult (true);
 			}
 
-			public Task<Stream> OpenFileAsync (string path, FileMode mode, FileAccess access)
+			public Task<Stream> OpenFileAsync (string path, Internals.FileMode mode, Internals.FileAccess access)
 			{
 				Stream stream = isolatedStorageFile.OpenFile (path, (System.IO.FileMode)mode, (System.IO.FileAccess)access);
 				return Task.FromResult (stream);
 			}
 
-			public Task<Stream> OpenFileAsync (string path, FileMode mode, FileAccess access, FileShare share)
+			public Task<Stream> OpenFileAsync (string path, Internals.FileMode mode, Internals.FileAccess access, Internals.FileShare share)
 			{
 				Stream stream = isolatedStorageFile.OpenFile (path, (System.IO.FileMode)mode, (System.IO.FileAccess)access, (System.IO.FileShare)share);
 				return Task.FromResult (stream);

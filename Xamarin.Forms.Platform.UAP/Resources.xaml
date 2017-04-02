@@ -7,6 +7,7 @@
 	<ResourceDictionary.MergedDictionaries>
         <ResourceDictionary Source="FormsCommandBarStyle.xaml" />
 		<ResourceDictionary Source="PageControlStyle.xaml" />
+		<ResourceDictionary Source="FormsProgressBarStyle.xaml" />
 		<ResourceDictionary Source="FormsTextBoxStyle.xaml" />
 		<ResourceDictionary Source="AutoSuggestStyle.xaml" />
 		<ResourceDictionary Source="MasterDetailControlStyle.xaml" />
@@ -423,7 +424,7 @@
         <uwp:EntryCellTextBox IsEnabled="{Binding IsEnabled}" Header="{Binding}" Text="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="{Binding HorizontalTextAlignment,Converter={StaticResource HorizontalTextAlignmentConverter}}" PlaceholderText="{Binding Placeholder}"  InputScope="{Binding Keyboard,Converter={StaticResource KeyboardConverter}}" HorizontalAlignment="Stretch">
 			<uwp:EntryCellTextBox.HeaderTemplate>
 				<DataTemplate>
-					<TextBlock Text="{Binding Label}" Style="{ThemeResource BaseTextBlockStyle}" Foreground="{Binding LabelColor, Converter={StaticResource ColorConverter}, ConverterParameter=SystemControlBackgroundChromeMediumLowBrush}" />
+					<TextBlock Text="{Binding Label}" Style="{ThemeResource BaseTextBlockStyle}" Foreground="{Binding LabelColor, Converter={StaticResource ColorConverter}, ConverterParameter=DefaultTextForegroundThemeBrush}" />
 				</DataTemplate>
 			</uwp:EntryCellTextBox.HeaderTemplate>
 		</uwp:EntryCellTextBox>

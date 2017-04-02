@@ -3,6 +3,7 @@ using Windows.UI.Text;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
 using Windows.UI.Xaml.Media;
+using Xamarin.Forms.Internals;
 using WApplication = Windows.UI.Xaml.Application;
 
 #if WINDOWS_UWP
@@ -31,7 +32,7 @@ namespace Xamarin.Forms.Platform.WinRT
 			self.FontWeight = font.FontAttributes.HasFlag(FontAttributes.Bold) ? FontWeights.Bold : FontWeights.Normal;
 		}
 
-		public static void ApplyFont(this TextElement self, Font font)
+		public static void ApplyFont(this Windows.UI.Xaml.Documents.TextElement self, Font font)
 		{
 			self.FontSize = font.UseNamedSize ? font.NamedSize.GetFontSize() : font.FontSize;
 			self.FontFamily = !string.IsNullOrEmpty(font.FontFamily) ? new FontFamily(font.FontFamily) : (FontFamily)WApplication.Current.Resources["ContentControlThemeFontFamily"];

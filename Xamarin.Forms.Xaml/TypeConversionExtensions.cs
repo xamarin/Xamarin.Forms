@@ -30,6 +30,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using Xamarin.Forms.Internals;
+using Xamarin.Forms.Xaml.Internals;
 
 namespace Xamarin.Forms.Xaml
 {
@@ -176,7 +178,7 @@ namespace Xamarin.Forms.Xaml
 					if (!mi.IsSpecialName) continue;
 					if (mi.Name != "op_Implicit") continue;
 					if (!mi.IsPublic) continue;
-					if (mi.ReturnType != toType) continue;
+					if (!toType.IsAssignableFrom(mi.ReturnType)) continue;
 					var parameters = mi.GetParameters();
 					if (parameters.Length != 1) continue;
 					if (parameters[0].ParameterType != value.GetType()) continue;
@@ -188,7 +190,7 @@ namespace Xamarin.Forms.Xaml
 						if (!mi.IsSpecialName) continue;
 						if (mi.Name != "op_Implicit") continue;
 						if (!mi.IsPublic) continue;
-						if (mi.ReturnType != toType) continue;
+						if (!toType.IsAssignableFrom(mi.ReturnType)) continue;
 						var parameters = mi.GetParameters();
 						if (parameters.Length != 1) continue;
 						if (parameters[0].ParameterType != value.GetType()) continue;

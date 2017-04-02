@@ -87,7 +87,8 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.LayoutSubviews();
 
-			if (_scroller == null || (_scroller != null && _scroller.Frame.Width == ContentView.Bounds.Width))
+			// Leave room for 1px of play because the border is 1 or .5px and must be accounted for.
+			if (_scroller == null || (_scroller.Frame.Width == ContentView.Bounds.Width && Math.Abs(_scroller.Frame.Height - ContentView.Bounds.Height) < 1))
 				return;
 
 			Update(_tableView, _cell, ContentCell);
@@ -347,7 +348,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				var d = new MoreActionSheetDelegate { Scroller = _scroller, Items = new List<MenuItem>() };
 
-				var actionSheet = new UIActionSheet(null, d);
+				var actionSheet = new UIActionSheet(null, (IUIActionSheetDelegate)d);
 
 				for (var i = 0; i < _cell.ContextActions.Count; i++)
 				{

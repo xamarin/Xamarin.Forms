@@ -7,13 +7,17 @@ using Android.Graphics.Drawables;
 using Android.Support.V4.Content;
 using Android.Support.V7.Widget;
 using Android.Util;
+using Xamarin.Forms.Internals;
 using GlobalResource = Android.Resource;
 using Object = Java.Lang.Object;
+using AView = Android.Views.View;
+using AMotionEvent = Android.Views.MotionEvent;
+using AMotionEventActions = Android.Views.MotionEventActions;
 using static System.String;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
-	public class ButtonRenderer : ViewRenderer<Button, AppCompatButton>, global::Android.Views.View.IOnAttachStateChangeListener
+	public class ButtonRenderer : ViewRenderer<Button, AppCompatButton>, AView.IOnAttachStateChangeListener
 	{
 		TextColorSwitcher _textColorSwitcher;
 		float _defaultFontSize;
@@ -28,12 +32,12 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		global::Android.Widget.Button NativeButton => Control;
 
-		void IOnAttachStateChangeListener.OnViewAttachedToWindow(global::Android.Views.View attachedView)
+		void AView.IOnAttachStateChangeListener.OnViewAttachedToWindow(AView attachedView)
 		{
 			UpdateText();
 		}
 
-		void IOnAttachStateChangeListener.OnViewDetachedFromWindow(global::Android.Views.View detachedView)
+		void AView.IOnAttachStateChangeListener.OnViewDetachedFromWindow(AView detachedView)
 		{
 		}
 
@@ -74,6 +78,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				if (Control != null)
 				{
 					Control.SetOnClickListener(null);
+					Control.SetOnTouchListener(null);
 					Control.RemoveOnAttachStateChangeListener(this);
 					Control.Tag = null;
 					_textColorSwitcher = null;
@@ -98,6 +103,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					AppCompatButton button = CreateNativeControl();
 
 					button.SetOnClickListener(ButtonClickListener.Instance.Value);
+					button.SetOnTouchListener(ButtonTouchListener.Instance.Value);
 					button.Tag = this;
 					_textColorSwitcher = new TextColorSwitcher(button.TextColors);  
 					SetNativeControl(button);
@@ -156,7 +162,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 							}
 							catch (Exception ex)
 							{
-								Log.Warning("Xamarin.Forms.Platform.Android.ButtonRenderer", "Could not retrieve button background resource: {0}", ex);
+								Internals.Log.Warning("Xamarin.Forms.Platform.Android.ButtonRenderer", "Could not retrieve button background resource: {0}", ex);
 								Control.SupportBackgroundTintList = new ColorStateList(ColorExtensions.States, new[] { (int)0xffd7d6d6, 0x7fd7d6d6 });
 							}
 						}
@@ -284,7 +290,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			_textColorSwitcher?.UpdateTextColor(Control, Element.TextColor);
 		}
 
-		class ButtonClickListener : Object, IOnClickListener
+		class ButtonClickListener : Object, AView.IOnClickListener
 		{
 			#region Statics
 
@@ -292,10 +298,33 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			#endregion
 
-			public void OnClick(global::Android.Views.View v)
+			public void OnClick(AView v)
 			{
 				var renderer = v.Tag as ButtonRenderer;
 				((IButtonController)renderer?.Element)?.SendClicked();
+			}
+		}
+
+		class ButtonTouchListener : Object, AView.IOnTouchListener
+		{
+			public static readonly Lazy<ButtonTouchListener> Instance = new Lazy<ButtonTouchListener>(() => new ButtonTouchListener());
+
+			public bool OnTouch(AView v, AMotionEvent e)
+			{
+				var renderer = v.Tag as ButtonRenderer;
+				if (renderer != null)
+				{
+					var buttonController = renderer.Element as IButtonController;
+					if (e.Action == AMotionEventActions.Down)
+					{
+						buttonController?.SendPressed();
+					}
+					else if (e.Action == AMotionEventActions.Up)
+					{
+						buttonController?.SendReleased();
+					}
+				}
+				return false;
 			}
 		}
 	}

@@ -50,6 +50,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AbsoluteLayoutFlags.cs" />
+    <Compile Include="Accessibility.cs" />
     <Compile Include="ActionSheetArguments.cs" />
     <Compile Include="AlertArguments.cs" />
     <Compile Include="AnimatableKey.cs" />
@@ -86,7 +87,14 @@
     <Compile Include="DataTemplateSelector.cs" />
     <Compile Include="DateChangedEventArgs.cs" />
     <Compile Include="DelegateLogListener.cs" />
+    <Compile Include="IEditorController.cs" />
+    <Compile Include="IGridController.cs" />
+    <Compile Include="IWebViewController.cs" />
+    <Compile Include="INavigationMenuController.cs" />
+    <Compile Include="Internals\EffectUtilities.cs" />
     <Compile Include="EnumerableExtensions.cs" />
+    <Compile Include="IMultiPageController.cs" />
+    <Compile Include="LockableObservableListWrapper.cs" />
     <Compile Include="PlatformConfiguration\AndroidSpecific\AppCompat\Application.cs" />
     <Compile Include="PlatformConfiguration\AndroidSpecific\Application.cs" />
     <Compile Include="PlatformConfiguration\AndroidSpecific\TabbedPage.cs" />
@@ -94,6 +102,7 @@
     <Compile Include="PlatformConfiguration\iOSSpecific\BlurEffectStyle.cs" />
     <Compile Include="PlatformConfiguration\iOSSpecific\Entry.cs" />
     <Compile Include="PlatformConfiguration\iOSSpecific\NavigationPage.cs" />
+    <Compile Include="PlatformConfiguration\iOSSpecific\ScrollView.cs" />
     <Compile Include="PlatformConfiguration\iOSSpecific\Picker.cs" />
     <Compile Include="PlatformConfiguration\iOSSpecific\StatusBarTextColorMode.cs" />
     <Compile Include="PlatformConfiguration\iOSSpecific\Page.cs" />
@@ -233,7 +242,6 @@
     <Compile Include="Properties\GlobalAssemblyInfo.cs" />
     <Compile Include="PropertyChangingEventArgs.cs" />
     <Compile Include="IValueConverter.cs" />
-    <Compile Include="ConcurrentDictionary.cs" />
     <Compile Include="PropertyChangingEventHandler.cs" />
     <Compile Include="ReadOnlyCastingList.cs" />
     <Compile Include="ReadOnlyListAdapter.cs" />
@@ -256,7 +264,6 @@
     <Compile Include="SeparatorVisibility.cs" />
     <Compile Include="SizeRequest.cs" />
     <Compile Include="Span.cs" />
-    <Compile Include="SplitOrderedList.cs" />
     <Compile Include="StackOrientation.cs" />
     <Compile Include="StreamWrapper.cs" />
     <Compile Include="SynchronizedList.cs" />
@@ -369,7 +376,6 @@
     <Compile Include="Tweener.cs" />
     <Compile Include="IPlatformServices.cs" />
     <Compile Include="UriTypeConverter.cs" />
-    <Compile Include="ITimer.cs" />
     <Compile Include="IIsolatedStorageFile.cs" />
     <Compile Include="Grid.cs" />
     <Compile Include="GridCalc.cs" />
@@ -448,6 +454,13 @@
     <Compile Include="ProvideCompiledAttribute.cs" />
     <Compile Include="TypedBinding.cs" />
     <Compile Include="XmlnsDefinitionAttribute.cs" />
+    <Compile Include="PlatformConfiguration\macOSSpecific\TabbedPage.cs" />
+    <Compile Include="PlatformConfiguration\macOSSpecific\TabsStyle.cs" />
+    <Compile Include="FontElement.cs" />
+    <Compile Include="PlatformConfiguration\AndroidSpecific\ListView.cs" />
+    <Compile Include="ITextElement.cs" />
+    <Compile Include="TextElement.cs" />
+    <Compile Include="Internals\ResourceLoader.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>
@@ -456,9 +469,11 @@
       <Name>Xamarin.Forms.Platform</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
+  <ItemGroup />
   <ItemGroup />
 </Project>

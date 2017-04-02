@@ -5,11 +5,12 @@ using Android.Animation;
 using Android.Graphics;
 using Android.Views;
 using Android.Widget;
+using Xamarin.Forms.Internals;
 using AScrollView = Android.Widget.ScrollView;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class ScrollViewRenderer : AScrollView, IVisualElementRenderer
+	public class ScrollViewRenderer : AScrollView, IVisualElementRenderer, IEffectControlProvider
 	{
 		ScrollViewContainer _container;
 		HorizontalScrollView _hScrollView;
@@ -77,6 +78,8 @@ namespace Xamarin.Forms.Platform.Android
 				if (!string.IsNullOrEmpty(element.AutomationId))
 					ContentDescription = element.AutomationId;
 			}
+
+			EffectUtilities.RegisterEffectControlProvider(this, oldElement, element);
 		}
 
 		public VisualElementTracker Tracker { get; private set; }
@@ -216,6 +219,19 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
+		void IEffectControlProvider.RegisterEffect(Effect effect)
+		{
+			var platformEffect = effect as PlatformEffect;
+			if (platformEffect != null)
+				OnRegisterEffect(platformEffect);
+		}
+
+		void OnRegisterEffect(PlatformEffect effect)
+		{
+			effect.SetContainer(this);
+			effect.SetControl(this);
+		}
+
 		static int GetDistance(double start, double position, double v)
 		{
 			return (int)(start + (position - start) * v);
@@ -326,6 +342,10 @@ namespace Xamarin.Forms.Platform.Android
 				}
 				Controller.SendScrollFinished();
 			}
+		}
+
+		void IVisualElementRenderer.SetLabelFor(int? id)
+		{
 		}
 
 		void UpdateBackgroundColor()

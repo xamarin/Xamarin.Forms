@@ -2,6 +2,7 @@
 using System.Linq;
 using NUnit.Framework;
 using System.Collections.Generic;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Core.UnitTests
 {
@@ -291,6 +292,20 @@ namespace Xamarin.Forms.Core.UnitTests
 			object _;
 			Assert.True(rd0.TryGetMergedValue("foo", out _));
 			Assert.AreEqual("Foo", _);
+		}
+
+		[Test]
+		public void ThrowOnDuplicateKey()
+		{
+			var rd0 = new ResourceDictionary();
+			rd0.Add("foo", "Foo");
+			try {
+				rd0.Add("foo", "Bar");
+			} catch (ArgumentException ae) {
+				Assert.AreEqual("A resource with the key 'foo' is already present in the ResourceDictionary.", ae.Message);
+				Assert.Pass();
+			}
+			Assert.Fail();
 		}
 	}
 }

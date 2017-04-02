@@ -11,11 +11,18 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using CoreFoundation;
-using Foundation;
-using UIKit;
 using Xamarin.Forms.Internals;
+using Foundation;
+#if __MOBILE__
+using UIKit;
 using Xamarin.Forms.Platform.iOS;
+using TNativeView = UIKit.UIView;
+#else
+using AppKit;
+using Xamarin.Forms.Platform.MacOS;
+using TNativeView = AppKit.NSView;
+
+#endif
 
 namespace Xamarin.Forms
 {
@@ -24,16 +31,19 @@ namespace Xamarin.Forms
 		//Preserve GetCallingAssembly
 		static readonly bool nevertrue = false;
 
-		static bool? s_isiOS9OrNewer;
+		public static bool IsInitialized { get; private set; }
 
+#if __MOBILE__
+		static bool? s_isiOS9OrNewer;
+		static bool? s_isiOS10OrNewer;
+#endif
 		static Forms()
 		{
 			if (nevertrue)
 				Assembly.GetCallingAssembly();
 		}
 
-		public static bool IsInitialized { get; private set; }
-
+#if __MOBILE__
 		internal static bool IsiOS9OrNewer
 		{
 			get
@@ -44,33 +54,45 @@ namespace Xamarin.Forms
 			}
 		}
 
+
+		internal static bool IsiOS10OrNewer
+		{
+			get
+			{
+				if (!s_isiOS10OrNewer.HasValue)
+					s_isiOS10OrNewer = UIDevice.CurrentDevice.CheckSystemVersion(10, 0);
+				return s_isiOS10OrNewer.Value;
+			}
+		}
+#endif
+
 		public static void Init()
 		{
 			if (IsInitialized)
 				return;
 			IsInitialized = true;
-			Color.Accent = Color.FromRgba(50, 79, 133, 255);
+			Color.SetAccent(Color.FromRgba(50, 79, 133, 255));
 
 			Log.Listeners.Add(new DelegateLogListener((c, m) => Trace.WriteLine(m, c)));
 
-			Device.OS = TargetPlatform.iOS;
+#if __MOBILE__
+			Device.SetIdiom(UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad ? TargetIdiom.Tablet : TargetIdiom.Phone);
+#else
+			Device.SetIdiom(TargetIdiom.Desktop);
+#endif
 			Device.PlatformServices = new IOSPlatformServices();
 			Device.Info = new IOSDeviceInfo();
 
-			Registrar.RegisterAll(new[] { typeof(ExportRendererAttribute), typeof(ExportCellAttribute), typeof(ExportImageSourceHandlerAttribute) });
-
-			Device.Idiom = UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad ? TargetIdiom.Tablet : TargetIdiom.Phone;
-
+			Internals.Registrar.RegisterAll(new[]
+				{ typeof(ExportRendererAttribute), typeof(ExportCellAttribute), typeof(ExportImageSourceHandlerAttribute) });
 			ExpressionSearch.Default = new iOSExpressionSearch();
 		}
 
 		public static event EventHandler<ViewInitializedEventArgs> ViewInitialized;
 
-		internal static void SendViewInitialized(this VisualElement self, UIView nativeView)
+		internal static void SendViewInitialized(this VisualElement self, TNativeView nativeView)
 		{
-			var viewInitialized = ViewInitialized;
-			if (viewInitialized != null)
-				viewInitialized(self, new ViewInitializedEventArgs { View = self, NativeView = nativeView });
+			ViewInitialized?.Invoke(self, new ViewInitializedEventArgs { View = self, NativeView = nativeView });
 		}
 
 		class iOSExpressionSearch : ExpressionVisitor, IExpressionSearch
@@ -102,41 +124,43 @@ namespace Xamarin.Forms
 
 		internal class IOSDeviceInfo : DeviceInfo
 		{
+#if __MOBILE__
 			readonly NSObject _notification;
+#endif
 			readonly Size _scaledScreenSize;
 			readonly double _scalingFactor;
 
 			public IOSDeviceInfo()
 			{
+#if __MOBILE__
 				_notification = UIDevice.Notifications.ObserveOrientationDidChange((sender, args) => CurrentOrientation = UIDevice.CurrentDevice.Orientation.ToDeviceOrientation());
-
 				_scalingFactor = UIScreen.MainScreen.Scale;
 				_scaledScreenSize = new Size(UIScreen.MainScreen.Bounds.Width, UIScreen.MainScreen.Bounds.Height);
+#else
+				_scalingFactor = NSScreen.MainScreen.BackingScaleFactor;
+				_scaledScreenSize = new Size(NSScreen.MainScreen.Frame.Width, NSScreen.MainScreen.Frame.Height);
+#endif
 				PixelScreenSize = new Size(_scaledScreenSize.Width * _scalingFactor, _scaledScreenSize.Height * _scalingFactor);
 			}
 
 			public override Size PixelScreenSize { get; }
 
-			public override Size ScaledScreenSize
-			{
-				get { return _scaledScreenSize; }
-			}
+			public override Size ScaledScreenSize => _scaledScreenSize;
 
-			public override double ScalingFactor
-			{
-				get { return _scalingFactor; }
-			}
+			public override double ScalingFactor => _scalingFactor;
 
 			protected override void Dispose(bool disposing)
 			{
+#if __MOBILE__
 				_notification.Dispose();
+#endif
 				base.Dispose(disposing);
 			}
 		}
 
 		class IOSPlatformServices : IPlatformServices
 		{
-			static readonly MD5CryptoServiceProvider Checksum = new MD5CryptoServiceProvider();
+			static readonly MD5CryptoServiceProvider s_checksum = new MD5CryptoServiceProvider();
 
 			public void BeginInvokeOnMainThread(Action action)
 			{
@@ -155,7 +179,7 @@ namespace Xamarin.Forms
 
 			public string GetMD5Hash(string input)
 			{
-				var bytes = Checksum.ComputeHash(Encoding.UTF8.GetBytes(input));
+				var bytes = s_checksum.ComputeHash(Encoding.UTF8.GetBytes(input));
 				var ret = new char[32];
 				for (var i = 0; i < 16; i++)
 				{
@@ -190,7 +214,14 @@ namespace Xamarin.Forms
 			{
 				using (var client = GetHttpClient())
 				using (var response = await client.GetAsync(uri, cancellationToken))
+				{
+					if (!response.IsSuccessStatusCode)
+					{
+						Log.Warning("HTTP Request", $"Could not retrieve {uri}, status code {response.StatusCode}");
+						return null;
+					}
 					return await response.Content.ReadAsStreamAsync();
+				}
 			}
 
 			public IIsolatedStorageFile GetUserStoreForApplication()
@@ -198,20 +229,27 @@ namespace Xamarin.Forms
 				return new _IsolatedStorageFile(IsolatedStorageFile.GetUserStoreForApplication());
 			}
 
-			public bool IsInvokeRequired
-			{
-				get { return !NSThread.IsMain; }
-			}
+			public bool IsInvokeRequired => !NSThread.IsMain;
+
+#if __MOBILE__
+			public string RuntimePlatform => Device.iOS;
+#else
+			public string RuntimePlatform => Device.macOS;
+#endif
 
 			public void OpenUriAction(Uri uri)
 			{
-				UIApplication.SharedApplication.OpenUrl(new NSUrl(uri.AbsoluteUri));
+				var url = NSUrl.FromString(uri.ToString()) ?? new NSUrl(uri.Scheme, uri.Host, uri.LocalPath);
+#if __MOBILE__
+				UIApplication.SharedApplication.OpenUrl(url);
+#else
+				NSWorkspace.SharedWorkspace.OpenUrl(url);
+#endif
 			}
 
 			public void StartTimer(TimeSpan interval, Func<bool> callback)
 			{
-				NSTimer timer = null;
-				timer = NSTimer.CreateRepeatingScheduledTimer(interval, t =>
+				NSTimer timer = NSTimer.CreateRepeatingTimer(interval, t =>
 				{
 					if (!callback())
 						t.Invalidate();
@@ -221,11 +259,11 @@ namespace Xamarin.Forms
 
 			HttpClient GetHttpClient()
 			{
-				var proxy = CFNetwork.GetSystemProxySettings();
+				var proxy = CoreFoundation.CFNetwork.GetSystemProxySettings();
 				var handler = new HttpClientHandler();
 				if (!string.IsNullOrEmpty(proxy.HTTPProxy))
 				{
-					handler.Proxy = CFNetwork.GetDefaultProxy();
+					handler.Proxy = CoreFoundation.CFNetwork.GetDefaultProxy();
 					handler.UseProxy = true;
 				}
 				return new HttpClient(handler);
@@ -236,36 +274,6 @@ namespace Xamarin.Forms
 				if (v < 10)
 					return '0' + v;
 				return 'a' + v - 10;
-			}
-
-			public class _Timer : ITimer
-			{
-				readonly Timer _timer;
-
-				public _Timer(Timer timer)
-				{
-					_timer = timer;
-				}
-
-				public void Change(int dueTime, int period)
-				{
-					_timer.Change(dueTime, period);
-				}
-
-				public void Change(long dueTime, long period)
-				{
-					_timer.Change(dueTime, period);
-				}
-
-				public void Change(TimeSpan dueTime, TimeSpan period)
-				{
-					_timer.Change(dueTime, period);
-				}
-
-				public void Change(uint dueTime, uint period)
-				{
-					_timer.Change(dueTime, period);
-				}
 			}
 
 			public class _IsolatedStorageFile : IIsolatedStorageFile
@@ -298,15 +306,16 @@ namespace Xamarin.Forms
 					return Task.FromResult(_isolatedStorageFile.GetLastWriteTime(path));
 				}
 
-				public Task<Stream> OpenFileAsync(string path, FileMode mode, FileAccess access)
+				public Task<Stream> OpenFileAsync(string path, Internals.FileMode mode, Internals.FileAccess access)
 				{
 					Stream stream = _isolatedStorageFile.OpenFile(path, (System.IO.FileMode)mode, (System.IO.FileAccess)access);
 					return Task.FromResult(stream);
 				}
 
-				public Task<Stream> OpenFileAsync(string path, FileMode mode, FileAccess access, FileShare share)
+				public Task<Stream> OpenFileAsync(string path, Internals.FileMode mode, Internals.FileAccess access, Internals.FileShare share)
 				{
-					Stream stream = _isolatedStorageFile.OpenFile(path, (System.IO.FileMode)mode, (System.IO.FileAccess)access, (System.IO.FileShare)share);
+					Stream stream = _isolatedStorageFile.OpenFile(path, (System.IO.FileMode)mode, (System.IO.FileAccess)access,
+						(System.IO.FileShare)share);
 					return Task.FromResult(stream);
 				}
 			}

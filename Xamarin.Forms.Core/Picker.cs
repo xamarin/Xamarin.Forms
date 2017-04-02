@@ -1,16 +1,19 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_PickerRenderer))]
-	public class Picker : View, IElementConfiguration<Picker>
+	public class Picker : View, ITextElement, IElementConfiguration<Picker>
 	{
-		public static readonly BindableProperty TextColorProperty =
-			BindableProperty.Create(nameof(TextColor), typeof(Color), typeof(Picker), Color.Default);
+		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
 
 		public static readonly BindableProperty TitleProperty =
 			BindableProperty.Create(nameof(Title), typeof(string), typeof(Picker), default(string));
@@ -56,8 +59,8 @@ namespace Xamarin.Forms
 		}
 
 		public Color TextColor {
-			get { return (Color)GetValue(TextColorProperty); }
-			set { SetValue(TextColorProperty, value); }
+			get { return (Color)GetValue(TextElement.TextColorProperty); }
+			set { SetValue(TextElement.TextColorProperty, value); }
 		}
 
 		public string Title {
@@ -178,8 +181,8 @@ namespace Xamarin.Forms
 		static void OnSelectedIndexChanged(object bindable, object oldValue, object newValue)
 		{
 			var picker = (Picker)bindable;
-			picker.SelectedIndexChanged?.Invoke(bindable, EventArgs.Empty);
 			picker.UpdateSelectedItem();
+			picker.SelectedIndexChanged?.Invoke(bindable, EventArgs.Empty);
 		}
 
 		static void OnSelectedItemChanged(BindableObject bindable, object oldValue, object newValue)
@@ -217,117 +220,8 @@ namespace Xamarin.Forms
 			return _platformConfigurationRegistry.Value.On<T>();
 		}
 
-		class LockableObservableListWrapper : INotifyCollectionChanged, IList<string>
+		void ITextElement.OnTextColorPropertyChanged(Color oldValue, Color newValue)
 		{
-			readonly ObservableList<string> _list = new ObservableList<string>();
-
-			public bool IsLocked { get; set; }
-
-			event NotifyCollectionChangedEventHandler INotifyCollectionChanged.CollectionChanged {
-				add { _list.CollectionChanged += value; }
-				remove { _list.CollectionChanged -= value; }
-			}
-
-			void ThrowOnLocked()
-			{
-				if (IsLocked)
-					throw new InvalidOperationException("The Items list can not be manipulated if the ItemsSource property is set");
-			
-			}
-			public string this [int index] {
-				get { return _list [index]; }
-				set {
-					ThrowOnLocked();
-					_list [index] = value; }
-			}
-
-			public int Count {
-				get { return _list.Count; }
-			}
-
-			public bool IsReadOnly {
-				get { return ((IList<string>)_list).IsReadOnly; }
-			}
-
-			public void InternalAdd(string item)
-			{
-				_list.Add(item);
-			}
-
-			public void Add(string item)
-			{
-				ThrowOnLocked();
-				InternalAdd(item);
-			}
-
-			public void InternalClear()
-			{ 
-				_list.Clear();
-			}
-
-			public void Clear()
-			{
-				ThrowOnLocked();
-				InternalClear();
-			}
-
-			public bool Contains(string item)
-			{
-				return _list.Contains(item);
-			}
-
-			public void CopyTo(string [] array, int arrayIndex)
-			{
-				_list.CopyTo(array, arrayIndex);
-			}
-
-			public IEnumerator<string> GetEnumerator()
-			{
-				return _list.GetEnumerator();
-			}
-
-			public int IndexOf(string item)
-			{
-				return _list.IndexOf(item);
-			}
-
-			public void InternalInsert(int index, string item)
-			{
-				_list.Insert(index, item);
-			}
-
-			public void Insert(int index, string item)
-			{
-				ThrowOnLocked();
-				InternalInsert(index, item);
-			}
-
-			public bool InternalRemove(string item)
-			{
-				return _list.Remove(item);
-			}
-
-			public bool Remove(string item)
-			{
-				ThrowOnLocked();
-				return InternalRemove(item);
-			}
-
-			public void InternalRemoveAt(int index)
-			{
-				_list.RemoveAt(index);
-			}
-
-			public void RemoveAt(int index)
-			{
-				ThrowOnLocked();
-				InternalRemoveAt(index);
-			}
-
-			IEnumerator IEnumerable.GetEnumerator()
-			{
-				return ((IEnumerable)_list).GetEnumerator();
-			}
 		}
 	}
 }

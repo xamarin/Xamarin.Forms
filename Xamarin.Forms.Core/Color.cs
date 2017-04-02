@@ -1,6 +1,8 @@
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
@@ -22,11 +24,14 @@ namespace Xamarin.Forms
 			get { return new Color(-1d, -1d, -1d, -1d, Mode.Default); }
 		}
 
-		internal bool IsDefault
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public bool IsDefault
 		{
 			get { return _mode == Mode.Default; }
 		}
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static void SetAccent(Color value) => Accent = value;
 		public static Color Accent { get; internal set; }
 
 		readonly float _a;
@@ -299,17 +304,20 @@ namespace Xamarin.Forms
 		public static Color FromHex(string hex)
 		{
 			hex = hex.Replace("#", "");
-			switch (hex.Length)
-			{
-				case 3: //#rgb => ffrrggbb
-					hex = string.Format("ff{0}{1}{2}{3}{4}{5}", hex[0], hex[0], hex[1], hex[1], hex[2], hex[2]);
-					break;
-				case 4: //#argb => aarrggbb
-					hex = string.Format("{0}{1}{2}{3}{4}{5}{6}{7}", hex[0], hex[0], hex[1], hex[1], hex[2], hex[2], hex[3], hex[3]);
-					break;
-				case 6: //#rrggbb => ffrrggbb
-					hex = string.Format("ff{0}", hex);
-					break;
+			switch (hex.Length) {
+			case 3: //#rgb => ffrrggbb
+				hex = string.Format("ff{0}{1}{2}{3}{4}{5}", hex[0], hex[0], hex[1], hex[1], hex[2], hex[2]);
+				break;
+			case 4: //#argb => aarrggbb
+				hex = string.Format("{0}{1}{2}{3}{4}{5}{6}{7}", hex[0], hex[0], hex[1], hex[1], hex[2], hex[2], hex[3], hex[3]);
+				break;
+			case 6: //#rrggbb => ffrrggbb
+				hex = string.Format("ff{0}", hex);
+				break;
+			case 8: //#aarrggbb
+				break;
+			default: //everything else will result in unexpected results
+				return Default;
 			}
 			return FromUint(Convert.ToUInt32(hex, 16));
 		}

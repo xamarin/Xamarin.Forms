@@ -1,6 +1,9 @@
-namespace Xamarin.Forms
+using System.ComponentModel;
+
+namespace Xamarin.Forms.Internals
 {
-	internal interface ISystemResourcesProvider
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	public interface ISystemResourcesProvider
 	{
 		IResourceDictionary GetSystemResources();
 	}

@@ -351,6 +351,9 @@ namespace Xamarin.Forms.Platform.UWP
             {
                 ContentTogglePaneButtonVisibility = Visibility.Visible;
             }
+
+            if (ContentTogglePaneButtonVisibility == Visibility.Visible)
+                DetailTitleVisibility = Visibility.Visible;
         }
     }
 }

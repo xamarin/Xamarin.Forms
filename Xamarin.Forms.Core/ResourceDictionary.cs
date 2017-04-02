@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Linq;
 using System.Reflection;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
@@ -72,6 +73,8 @@ namespace Xamarin.Forms
 
 		public void Add(string key, object value)
 		{
+			if (ContainsKey(key))
+				throw new ArgumentException($"A resource with the key '{key}' is already present in the ResourceDictionary.");
 			_innerDictionary.Add(key, value);
 			OnValueChanged(key, value);
 		}

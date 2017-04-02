@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.ComponentModel;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -8,6 +8,7 @@ using Xamarin.Forms.Internals;
 using WThickness = Windows.UI.Xaml.Thickness;
 using WButton = Windows.UI.Xaml.Controls.Button;
 using WImage = Windows.UI.Xaml.Controls.Image;
+using Windows.UI.Xaml.Input;
 
 #if WINDOWS_UWP
 
@@ -31,6 +32,7 @@ namespace Xamarin.Forms.Platform.WinRT
 				{
 					var button = new FormsButton();
 					button.Click += OnButtonClick;
+					button.AddHandler(PointerPressedEvent, new PointerEventHandler(OnPointerPressed), true);
 					SetNativeControl(button);
 				}
 
@@ -97,14 +99,20 @@ namespace Xamarin.Forms.Platform.WinRT
 			return;
 		}
 
+		protected override bool PreventGestureBubbling { get; set; } = true;
+
 		void OnButtonClick(object sender, RoutedEventArgs e)
 		{
-			Button buttonView = Element;
-			if (buttonView != null)
-				((IButtonController)buttonView).SendClicked();
+			((IButtonController)Element)?.SendReleased();
+			((IButtonController)Element)?.SendClicked();
 		}
 
-		void UpdateBackground()
+		void OnPointerPressed(object sender, RoutedEventArgs e)
+		{
+			((IButtonController)Element)?.SendPressed();
+		}
+
+			void UpdateBackground()
 		{
 			Control.BackgroundColor = Element.BackgroundColor != Color.Default ? Element.BackgroundColor.ToBrush() : (Brush)Windows.UI.Xaml.Application.Current.Resources["ButtonBackgroundThemeBrush"];
 		}
@@ -149,7 +157,7 @@ namespace Xamarin.Forms.Platform.WinRT
 			bmp.ImageOpened += (sender, args) => {
 				image.Width = bmp.PixelWidth;
 				image.Height = bmp.PixelHeight;
-				Element.InvalidateMeasureInternal(InvalidationTrigger.RendererReady);
+				Element.InvalidateMeasureNonVirtual(InvalidationTrigger.RendererReady);
 			};
 
 			// No text, just the image
