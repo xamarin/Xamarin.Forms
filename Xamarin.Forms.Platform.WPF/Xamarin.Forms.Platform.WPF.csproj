@@ -100,7 +100,7 @@
     <Compile Include="Forms.cs" />
     <Compile Include="Platform.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WinPage.cs" />
+    <Compile Include="WPFPage.cs" />
     <Compile Include="WPFTicker.cs" />
   </ItemGroup>
   <ItemGroup>

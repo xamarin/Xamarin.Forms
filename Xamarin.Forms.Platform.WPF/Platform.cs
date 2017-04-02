@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Platform.WPF
 		
 		readonly NavigationModel _navModel = new NavigationModel();
 
-		readonly WinPage _page;
+		readonly WPFPage _page;
 
 		readonly Canvas _renderer;
 		readonly ToolbarTracker _tracker = new ToolbarTracker();
@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Platform.WPF
 		Page _currentDisplayedPage;
 		CustomMessageBox _visibleMessageBox;
 
-		internal Platform(WinPage page)
+		internal Platform(WPFPage page)
 		{
 			_tracker.SeparateMasterDetail = true;
 
@@ -32,8 +32,6 @@ namespace Xamarin.Forms.Platform.WPF
 
 			_renderer = new Canvas();
 			_renderer.SizeChanged += RendererSizeChanged;
-
-			_tracker.CollectionChanged += (sender, args) => UpdateToolbarItems();
 			
 			SetProgressIndicator(false);
 
@@ -400,149 +398,11 @@ namespace Xamarin.Forms.Platform.WPF
 			}
 		}
 		
-		void UpdateToolbarItems()
-		{
-			if (_page.ApplicationBar == null)
-				_page.ApplicationBar = new ApplicationBar();
-
-			ToolbarItem[] items = _tracker.ToolbarItems.ToArray();
-			MasterDetailPage masterDetail = _tracker.Target.Descendants().Prepend(_tracker.Target).OfType<MasterDetailPage>().FirstOrDefault();
-
-			TaggedAppBarButton oldMasterDetailButton = _page.ApplicationBar.Buttons.OfType<TaggedAppBarButton>().FirstOrDefault(b => b.Tag is MasterDetailPage && b.Tag != masterDetail);
-
-			if (oldMasterDetailButton != null)
-				_page.ApplicationBar.Buttons.Remove(oldMasterDetailButton);
-
-			if (masterDetail != null)
-			{
-				if (masterDetail.ShouldShowToolbarButton())
-				{
-					if (_page.ApplicationBar.Buttons.OfType<TaggedAppBarButton>().All(b => b.Tag != masterDetail))
-					{
-						var button = new TaggedAppBarButton
-						{
-							IconUri = new Uri(masterDetail.Master.Icon ?? "ApplicationIcon.jpg", UriKind.Relative),
-							Text = masterDetail.Master.Title,
-							IsEnabled = true,
-							Tag = masterDetail
-						};
-						button.Click += (sender, args) =>
-						{
-							var masterDetailRenderer = GetRenderer(masterDetail) as MasterDetailRenderer;
-
-							if (masterDetailRenderer != null)
-								masterDetailRenderer.Toggle();
-						};
-						_page.ApplicationBar.Buttons.Add(button);
-					}
-				}
-			}
-
-			var buttonsToAdd = new List<TaggedAppBarButton>();
-			foreach (ToolbarItem item in items.Where(i => i.Order != ToolbarItemOrder.Secondary))
-			{
-				IMenuItemController controller = item;
-				if (_page.ApplicationBar.Buttons.OfType<TaggedAppBarButton>().Any(b => b.Tag == item))
-					continue;
-
-				var button = new TaggedAppBarButton
-				{
-					IconUri = new Uri(item.Icon ?? "ApplicationIcon.jpg", UriKind.Relative),
-					Text = !string.IsNullOrWhiteSpace(item.Text) ? item.Text : (string)item.Icon ?? "ApplicationIcon.jpg",
-					IsEnabled = controller.IsEnabled,
-					Tag = item
-				};
-				button.Click += (sender, args) => controller.Activate();
-				buttonsToAdd.Add(button);
-			}
-
-			var menuItemsToAdd = new List<TaggedAppBarMenuItem>();
-			foreach (ToolbarItem item in items.Where(i => i.Order == ToolbarItemOrder.Secondary))
-			{
-				if (_page.ApplicationBar.MenuItems.OfType<TaggedAppBarMenuItem>().Any(b => b.Tag == item))
-					continue;
-
-				var button = new TaggedAppBarMenuItem { Text = !string.IsNullOrWhiteSpace(item.Text) ? item.Text : (string)item.Icon ?? "MenuItem", IsEnabled = true, Tag = item };
-				button.Click += (sender, args) => ((IMenuItemController)item).Activate();
-				menuItemsToAdd.Add(button);
-			}
-
-			TaggedAppBarButton[] deadButtons = _page.ApplicationBar.Buttons.OfType<TaggedAppBarButton>().Where(b => b.Tag is ToolbarItem && !items.Contains(b.Tag)).ToArray();
-
-			TaggedAppBarMenuItem[] deadMenuItems = _page.ApplicationBar.MenuItems.OfType<TaggedAppBarMenuItem>().Where(b => b.Tag is ToolbarItem && !items.Contains(b.Tag)).ToArray();
-
-			// we must remove the dead buttons before adding the new ones so we don't accidentally go over the limit during the transition
-			foreach (TaggedAppBarButton deadButton in deadButtons)
-			{
-				deadButton.Dispose();
-				_page.ApplicationBar.Buttons.Remove(deadButton);
-			}
-
-			foreach (TaggedAppBarMenuItem deadMenuItem in deadMenuItems)
-				_page.ApplicationBar.MenuItems.Remove(deadMenuItem);
-
-			// fixme, insert in order
-			foreach (TaggedAppBarButton newButton in buttonsToAdd)
-				_page.ApplicationBar.Buttons.Add(newButton);
-
-			foreach (TaggedAppBarMenuItem newMenuItem in menuItemsToAdd)
-				_page.ApplicationBar.MenuItems.Add(newMenuItem);
-
-			_page.ApplicationBar.IsVisible = _page.ApplicationBar.Buttons.Count > 0 || _page.ApplicationBar.MenuItems.Count > 0;
-		}
-
 		void UpdateToolbarTracker()
 		{
 			if (_navModel.Roots.Last() != null)
 				_tracker.Target = _navModel.Roots.Last();
 		}
-
-		class TaggedAppBarButton : ApplicationBarIconButton, IDisposable
-		{
-			bool _disposed;
-			object _tag;
-
-			public object Tag
-			{
-				get { return _tag; }
-				set
-				{
-					if (_tag == null && value is ToolbarItem)
-						(value as ToolbarItem).PropertyChanged += TaggedAppBarButton_PropertyChanged;
-					_tag = value;
-				}
-			}
-
-			public void Dispose()
-			{
-				if (_disposed)
-					return;
-				_disposed = true;
-
-				if (Tag != null && Tag is ToolbarItem)
-					(Tag as ToolbarItem).PropertyChanged -= TaggedAppBarButton_PropertyChanged;
-			}
-
-			void TaggedAppBarButton_PropertyChanged(object sender, PropertyChangedEventArgs e)
-			{
-				var item = Tag as ToolbarItem;
-				if (item == null)
-					return;
-
-				IMenuItemController controller = item;
-
-				if (e.PropertyName == controller.IsEnabledPropertyName)
-					IsEnabled = controller.IsEnabled;
-				else if (e.PropertyName == MenuItem.TextProperty.PropertyName)
-					Text = !string.IsNullOrWhiteSpace(item.Text) ? item.Text : (string)item.Icon ?? "ApplicationIcon.jpg";
-				else if (e.PropertyName == MenuItem.IconProperty.PropertyName)
-					IconUri = new Uri(item.Icon ?? "ApplicationIcon.jpg", UriKind.Relative);
-			}
-		}
-
-		class TaggedAppBarMenuItem : ApplicationBarMenuItem
-		{
-			public object Tag { get; set; }
-		}
+		
 	}
 }

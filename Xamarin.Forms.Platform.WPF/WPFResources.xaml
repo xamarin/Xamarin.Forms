@@ -9,7 +9,7 @@
 	<formsc:CaseConverter x:Key="UpperConverter" ConvertToUpper="True" />
 	<formsc:CaseConverter x:Key="LowerConverter" ConvertToUpper="False" />
 	<formsc:ColorConverter x:Key="ColorConverter" />
-	<formsc:HeightConverter x:Key="HeightConverter" />
+	<forms:HeightConverter x:Key="HeightConverter" />
 	<formsc:HorizontalTextAlignmentConverter x:Key="HorizontalTextAlignmentConverter" />
 	<formsc:KeyboardConverter x:Key="KeyboardConverter"/>
 	<formsc:ImageConverter x:Key="ImageConverter" />

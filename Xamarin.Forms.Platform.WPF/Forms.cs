@@ -17,7 +17,7 @@ namespace Xamarin.Forms
 	{
 		static bool s_isInitialized;
 
-		public static UIElement ConvertPageToUIElement(this Page page, RootPage applicationPage)
+		public static UIElement ConvertPageToUIElement(this Page page, WPFPage applicationPage)
 		{
 			var application = new DefaultApplication();
 			application.MainPage = page;
@@ -39,7 +39,7 @@ namespace Xamarin.Forms
 
 			System.Windows.Application.Current.Resources.MergedDictionaries.Add(new System.Windows.ResourceDictionary
 			{
-				Source = new Uri(string.Format("/{0};component/WPResources.xaml", assemblyName), UriKind.Relative)
+				Source = new Uri(string.Format("/{0};component/WPFResources.xaml", assemblyName), UriKind.Relative)
 			});
 
 			var accent = System.Windows.Application.Current.Resources["PhoneAccentBrush"] as SolidColorBrush;
