@@ -1,17 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?> 
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
 					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-					xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
-                    xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
-					xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity">
+					xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+					xmlns:forms="clr-namespace:Xamarin.Forms.Platform.WPF"
+					xmlns:formsc="clr-namespace:Xamarin.Forms.Platform.WPF.Converters"
+					>
 
-    <forms:CaseConverter x:Key="UpperConverter" ConvertToUpper="True" />
-	<forms:CaseConverter x:Key="LowerConverter" ConvertToUpper="False" />
-	<forms:ColorConverter x:Key="ColorConverter" />
-	<forms:HeightConverter x:Key="HeightConverter" />
-    <forms:HorizontalTextAlignmentConverter x:Key="HorizontalTextAlignmentConverter" />
-	<forms:KeyboardConverter x:Key="KeyboardConverter"/>
-	<forms:ImageConverter x:Key="ImageConverter" />
+	<formsc:CaseConverter x:Key="UpperConverter" ConvertToUpper="True" />
+	<formsc:CaseConverter x:Key="LowerConverter" ConvertToUpper="False" />
+	<formsc:ColorConverter x:Key="ColorConverter" />
+	<formsc:HeightConverter x:Key="HeightConverter" />
+	<formsc:HorizontalTextAlignmentConverter x:Key="HorizontalTextAlignmentConverter" />
+	<formsc:KeyboardConverter x:Key="KeyboardConverter"/>
+	<formsc:ImageConverter x:Key="ImageConverter" />
 	<forms:ViewToRendererConverter x:Key="ViewToRenderer" />
 	<forms:PageToRendererConverter x:Key="PageToRenderer" />
 	<forms:CollapseWhenEmptyConverter x:Key="CollapseWhenEmpty" />

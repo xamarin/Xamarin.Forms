@@ -6,7 +6,6 @@ namespace Xamarin.Forms.Platform.WPF
 	{
 	    public WinPage()
 	    {
-			
 	        var grid=new Grid();
 			grid.RowDefinitions.Add(new RowDefinition()
 			{

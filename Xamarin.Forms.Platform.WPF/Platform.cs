@@ -9,19 +9,10 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.WPF
 {
-	// from mono 
 	public class Platform : BindableObject, IPlatform, INavigation
 	{
 		internal static readonly BindableProperty RendererProperty = BindableProperty.CreateAttached("Renderer", typeof(IVisualElementRenderer), typeof(Platform), default(IVisualElementRenderer));
-
-		readonly TurnstileTransition _backwardInTransition = new TurnstileTransition { Mode = TurnstileTransitionMode.BackwardIn };
-
-		readonly TurnstileTransition _backwardOutTransition = new TurnstileTransition { Mode = TurnstileTransitionMode.BackwardOut };
-
-		readonly TurnstileTransition _forwardInTransition = new TurnstileTransition { Mode = TurnstileTransitionMode.ForwardIn };
-
-		readonly TurnstileTransition _forwardOutTransition = new TurnstileTransition { Mode = TurnstileTransitionMode.ForwardOut };
-
+		
 		readonly NavigationModel _navModel = new NavigationModel();
 
 		readonly WinPage _page;
@@ -41,18 +32,16 @@ namespace Xamarin.Forms.Platform.WPF
 
 			_renderer = new Canvas();
 			_renderer.SizeChanged += RendererSizeChanged;
-			_renderer.Loaded += (sender, args) => UpdateSystemTray();
 
 			_tracker.CollectionChanged += (sender, args) => UpdateToolbarItems();
-
-			ProgressIndicator indicator;
-			SystemTray.SetProgressIndicator(page, indicator = new ProgressIndicator { IsVisible = false, IsIndeterminate = true });
+			
+			SetProgressIndicator(false);
 
 			var busyCount = 0;
 			MessagingCenter.Subscribe(this, Page.BusySetSignalName, (Page sender, bool enabled) =>
 			{
 				busyCount = Math.Max(0, enabled ? busyCount + 1 : busyCount - 1);
-				indicator.IsVisible = busyCount > 0;
+				SetProgressIndicator(busyCount > 0);
 			});
 
 			MessagingCenter.Subscribe(this, Page.AlertSignalName, (Page sender, AlertArguments arguments) =>
@@ -99,7 +88,12 @@ namespace Xamarin.Forms.Platform.WPF
 			});
 		}
 
-		internal Size Size
+	    void SetProgressIndicator(bool isVisible)
+	    {
+	        //TODO: implement progress indicator;
+	    }
+
+	    internal Size Size
 		{
 			get { return new Size(_renderer.ActualWidth, _renderer.ActualHeight); }
 		}
@@ -312,112 +306,33 @@ namespace Xamarin.Forms.Platform.WPF
 			if (current != null)
 				currentElement = (UIElement)GetRenderer(current);
 
+			//TODO: implement animation
+
 			if (popping)
 			{
-				ITransition transitionOut = null;
 				if (current != null)
 				{
-					if (animated)
-						transitionOut = _backwardOutTransition.GetTransition(currentElement);
-					else
-						_renderer.Children.Remove(currentElement);
+					_renderer.Children.Remove(currentElement);
 				}
 
 				var pageElement = (UIElement)GetRenderer(page);
-
-				if (animated)
-				{
-					transitionOut.Completed += (s, e) =>
-					{
-						transitionOut.Stop();
-						_renderer.Children.Remove(currentElement);
-						UpdateToolbarTracker();
-
-						_renderer.Children.Add(pageElement);
-
-						ITransition transitionIn = _backwardInTransition.GetTransition(pageElement);
-						transitionIn.Completed += (si, ei) =>
-						{
-							transitionIn.Stop();
-							if (completedCallback != null)
-								completedCallback();
-
-							tcs.SetResult(true);
-						};
-						transitionIn.Begin();
-					};
-
-					transitionOut.Begin();
-				}
-				else
-				{
-					UpdateToolbarTracker();
-					_renderer.Children.Add(pageElement);
-					if (completedCallback != null)
-						completedCallback();
-				}
+				
+				UpdateToolbarTracker();
+				_renderer.Children.Add(pageElement);
+				if (completedCallback != null)
+					completedCallback();
 			}
 			else
 			{
-				ITransition transitionOut = null;
 				if (current != null)
 				{
-					if (animated)
-						transitionOut = _forwardOutTransition.GetTransition(currentElement);
-					else
-						_renderer.Children.Remove(currentElement);
+					_renderer.Children.Remove(currentElement);
 				}
-
-				if (animated)
-				{
-					if (transitionOut != null)
-					{
-						transitionOut.Completed += (o, e) =>
-						{
-							_renderer.Children.Remove(currentElement);
-							transitionOut.Stop();
-
-							UpdateToolbarTracker();
-
-							var element = (UIElement)GetRenderer(page);
-							_renderer.Children.Add(element);
-							ITransition transitionIn = _forwardInTransition.GetTransition(element);
-							transitionIn.Completed += (s, ie) =>
-							{
-								transitionIn.Stop();
-								if (completedCallback != null)
-									completedCallback();
-								tcs.SetResult(true);
-							};
-							transitionIn.Begin();
-						};
-
-						transitionOut.Begin();
-					}
-					else
-					{
-						UpdateToolbarTracker();
-
-						_renderer.Children.Add((UIElement)GetRenderer(page));
-						ITransition transitionIn = _forwardInTransition.GetTransition((UIElement)GetRenderer(page));
-						transitionIn.Completed += (s, e) =>
-						{
-							transitionIn.Stop();
-							if (completedCallback != null)
-								completedCallback();
-
-							tcs.SetResult(true);
-						};
-						transitionIn.Begin();
-					}
-				}
-				else
-				{
-					_renderer.Children.Add((UIElement)GetRenderer(page));
-					UpdateToolbarTracker();
-					if (completedCallback != null)
-						completedCallback();
-				}
+				
+				_renderer.Children.Add((UIElement)GetRenderer(page));
+				UpdateToolbarTracker();
+				if (completedCallback != null)
+					completedCallback();
 			}
 
 			_currentDisplayedPage = page;
@@ -484,16 +399,7 @@ namespace Xamarin.Forms.Platform.WPF
 				}
 			}
 		}
-
-		void UpdateSystemTray()
-		{
-			var lightThemeVisibility = (Visibility)System.Windows.Application.Current.Resources["PhoneLightThemeVisibility"];
-			if (lightThemeVisibility == Visibility.Visible && SystemTray.BackgroundColor == System.Windows.Media.Color.FromArgb(0, 0, 0, 0))
-			{
-				SystemTray.BackgroundColor = System.Windows.Media.Color.FromArgb(1, 255, 255, 255);
-			}
-		}
-
+		
 		void UpdateToolbarItems()
 		{
 			if (_page.ApplicationBar == null)

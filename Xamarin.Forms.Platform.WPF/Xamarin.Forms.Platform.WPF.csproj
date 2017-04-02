@@ -69,10 +69,33 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AlignmentExtensions.cs" />
+    <Compile Include="AsyncValue.cs" />
+    <Compile Include="BrushHelpers.cs" />
+    <Compile Include="CellTemplateSelector.cs" />
+    <Compile Include="Converters\CaseConverter.cs" />
+    <Compile Include="Converters\ColorConverter.cs" />
+    <Compile Include="Converters\HorizontalTextAlignmentConverter.cs" />
+    <Compile Include="Converters\ImageConverter.cs" />
+    <Compile Include="Converters\KeyboardConverter.cs" />
+    <Compile Include="ConvertExtensions.cs" />
+    <Compile Include="CustomControls\BindingExtension.cs" />
+    <Compile Include="CustomControls\EntryBox.cs" />
+    <Compile Include="DataTemplateSelector.cs" />
     <Compile Include="ElementChangedEventArgs.cs" />
+    <Compile Include="EntryRenderer.cs" />
+    <Compile Include="FontExtensions.cs" />
     <Compile Include="FormsApplicationPage.cs" />
+    <Compile Include="ICellRenderer.cs" />
+    <Compile Include="ImageRenderer.cs" />
     <Compile Include="IVisualElementRenderer.cs" />
+    <Compile Include="PlatformEffect.cs" />
+    <Compile Include="ViewExtensions.cs" />
+    <Compile Include="ViewRenderer.cs" />
     <Compile Include="VisualElementChangedEventArgs.cs" />
+    <Compile Include="VisualElementPackager.cs" />
+    <Compile Include="VisualElementRenderer.cs" />
+    <Compile Include="VisualElementTracker.cs" />
     <Compile Include="WPFPlatformServices.cs" />
     <Compile Include="Forms.cs" />
     <Compile Include="Platform.cs" />
