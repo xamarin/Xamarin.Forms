@@ -1,24 +1,22 @@
+using System;
 using System.ComponentModel;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace Xamarin.Forms.Platform.WPF
 {
-	public class FormsApplicationPage : WinPage
+	public class FormsApplicationPage : WPFPage
 	{
 		Application _application;
 		WPF.Platform _platform;
 
 		protected FormsApplicationPage()
 		{
-			PhoneApplicationService.Current.Launching += OnLaunching;
-			PhoneApplicationService.Current.Activated += OnActivated;
-			PhoneApplicationService.Current.Deactivated += OnDeactivated;
-			PhoneApplicationService.Current.Closing += OnClosing;
-
-			MessagingCenter.Send(this, Forms.WP8DeviceInfo.BWPorientationChangedName, Orientation.ToDeviceOrientation());
-			OrientationChanged += OnOrientationChanged;
-			//DeserializePropertyStore ();
 			
+			System.Windows.Application.Current.Startup += OnStartup;
+			System.Windows.Application.Current.Activated += OnActivated;
+			System.Windows.Application.Current.Deactivated += OnDeactivated;
+			System.Windows.Application.Current.Exit += OnExit;			
 		}
 
 		protected void LoadApplication(Application application)
@@ -39,7 +37,7 @@ namespace Xamarin.Forms.Platform.WPF
 				SetMainPage();
 		}
 
-		void OnActivated(object sender, ActivatedEventArgs e)
+		void OnActivated(object sender, EventArgs e)
 		{
 			// TODO : figure out consistency of get this to fire
 			// Check whether tombstoned (terminated, but OS retains information about navigation state and state dictionarys) or dormant
@@ -47,31 +45,26 @@ namespace Xamarin.Forms.Platform.WPF
 		}
 
 		// when app gets tombstoned, user press back past first page
-		async void OnClosing(object sender, ClosingEventArgs e)
+		async void OnExit(object sender, ExitEventArgs e)
 		{
 			// populate isolated storage.
 			//SerializePropertyStore ();
 			await _application.SendSleepAsync();
 		}
 
-		async void OnDeactivated(object sender, DeactivatedEventArgs e)
+		async void OnDeactivated(object sender, EventArgs e)
 		{
 			// populate state dictionaries, properties
 			//SerializePropertyStore ();
 			await _application.SendSleepAsync();
 		}
 
-		void OnLaunching(object sender, LaunchingEventArgs e)
+		void OnStartup(object sender, StartupEventArgs e)
 		{
 			// TODO : not currently firing, is fired before MainPage ctor is called
 			_application.SendStart();
 		}
-
-		void OnOrientationChanged(object sender, OrientationChangedEventArgs e)
-		{
-			MessagingCenter.Send(this, Forms.WPFDeviceInfo.BWPorientationChangedName, e.Orientation.ToDeviceOrientation());
-		}
-
+		
 		void SetMainPage()
 		{
 			if (_platform == null)

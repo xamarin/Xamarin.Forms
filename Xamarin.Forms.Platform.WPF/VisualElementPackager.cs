@@ -43,7 +43,7 @@ namespace Xamarin.Forms.Platform.WPF
 			for (var index = 0; index < ElementController.LogicalChildren.Count; index++)
 			{
 				var child = (VisualElement)ElementController.LogicalChildren[index];
-				IVisualElementRenderer r = Xamarin.Forms.Platform.GetRenderer(child);
+				IVisualElementRenderer r = Platform.GetRenderer(child);
 				if (r == null)
 					continue;
 				// Even though this attached property is defined on Canvas, it actually works on all Panels
@@ -60,7 +60,7 @@ namespace Xamarin.Forms.Platform.WPF
 				return;
 
 			IVisualElementRenderer renderer;
-			Xamarin.Forms.Platform.SetRenderer(view, renderer = Xamarin.Forms.Platform.CreateRenderer(view));
+			Platform.SetRenderer(view, renderer = Platform.CreateRenderer(view));
 
 			_panel.Children.Add(renderer.ContainerElement);
 
@@ -74,7 +74,7 @@ namespace Xamarin.Forms.Platform.WPF
 			if (view == null)
 				return;
 
-			var renderer = Xamarin.Forms.Platform.GetRenderer(view) as UIElement;
+			var renderer = Platform.GetRenderer(view) as UIElement;
 
 			if (renderer != null)
 				_panel.Children.Remove(renderer);

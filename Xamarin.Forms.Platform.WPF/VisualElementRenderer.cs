@@ -146,7 +146,7 @@ namespace Xamarin.Forms.Platform.WPF
 				var child = ElementController.LogicalChildren[i] as VisualElement;
 				if (child == null)
 					continue;
-				IVisualElementRenderer renderer = Xamarin.Forms.Platform.GetRenderer(child);
+				IVisualElementRenderer renderer = Platform.GetRenderer(child);
 				if (renderer == null)
 					continue;
 				Rectangle bounds = child.Bounds;
@@ -171,7 +171,7 @@ namespace Xamarin.Forms.Platform.WPF
 				var child = ElementController.LogicalChildren[i] as VisualElement;
 				if (child == null)
 					continue;
-				IVisualElementRenderer renderer = Xamarin.Forms.Platform.GetRenderer(child);
+				IVisualElementRenderer renderer = Platform.GetRenderer(child);
 				if (renderer == null)
 					continue;
 

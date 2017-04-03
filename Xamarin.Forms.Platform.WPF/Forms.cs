@@ -69,25 +69,23 @@ namespace Xamarin.Forms
 
 		internal class WPFDeviceInfo : DeviceInfo
 		{
-			internal const string BWPorientationChangedName = "Xamarin.WP8.OrientationChanged";
+			internal const string BWPorientationChangedName = "Xamarin.WPF.OrientationChanged";
 			readonly double _scalingFactor;
 
 			public WPFDeviceInfo()
 			{
 				MessagingCenter.Subscribe(this, BWPorientationChangedName, (FormsApplicationPage page, DeviceOrientation orientation) => { CurrentOrientation = orientation; });
-
-				Content content = System.Windows.Application.Current.Host.Content;
-
+				
 				// Scaling Factor for Windows Phone 8 is relative to WVGA: https://msdn.microsoft.com/en-us/library/windows/apps/jj206974(v=vs.105).aspx
-				_scalingFactor = content.ScaleFactor / 100d;
-
-				PixelScreenSize = new Size(content.ActualWidth * _scalingFactor, content.ActualHeight * _scalingFactor);
-				ScaledScreenSize = new Size(content.ActualWidth, content.ActualHeight);
+			    _scalingFactor = 1;
 			}
 
-			public override Size PixelScreenSize { get; }
+		    public override Size PixelScreenSize => new Size(System.Windows.Application.Current.MainWindow.ActualWidth,
+		        System.Windows.Application.Current.MainWindow.Height);
 
-			public override Size ScaledScreenSize { get; }
+
+			public override Size ScaledScreenSize => new Size(System.Windows.Application.Current.MainWindow.ActualWidth,
+				System.Windows.Application.Current.MainWindow.Height);
 
 			public override double ScalingFactor
 			{

@@ -4,7 +4,7 @@
 					xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
 					xmlns:forms="clr-namespace:Xamarin.Forms.Platform.WPF"
 					xmlns:formsc="clr-namespace:Xamarin.Forms.Platform.WPF.Converters"
-					>
+					xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls">
 
 	<formsc:CaseConverter x:Key="UpperConverter" ConvertToUpper="True" />
 	<formsc:CaseConverter x:Key="LowerConverter" ConvertToUpper="False" />
@@ -276,7 +276,7 @@
 	</DataTemplate>
 
 	<DataTemplate x:Key="SwitchCell">
-		<toolkit:ToggleSwitch Content="{Binding Text}" Height="{Binding RenderHeight, Converter={StaticResource HeightConverter}}" 
+		<controls:ToggleSwitch Content="{Binding Text}" Height="{Binding RenderHeight, Converter={StaticResource HeightConverter}}" 
 								  IsChecked="{Binding On, Mode=TwoWay}" IsEnabled="{Binding IsEnabled}" FontFamily="{StaticResource PhoneFontFamilyNormal}" />
 	</DataTemplate>
 

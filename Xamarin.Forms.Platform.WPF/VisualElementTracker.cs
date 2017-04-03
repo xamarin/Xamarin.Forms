@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using Xamarin.Forms.Platform.WPF.CustomControls;
 
 namespace Xamarin.Forms.Platform.WPF
 {
@@ -38,7 +39,9 @@ namespace Xamarin.Forms.Platform.WPF
 		bool _touchFrameReportedEventSet;
 		int _touchPoints = 1;
 
-		public override FrameworkElement Child
+	    
+
+	    public override FrameworkElement Child
 		{
 			get { return _child; }
 			set
@@ -50,6 +53,8 @@ namespace Xamarin.Forms.Platform.WPF
 			}
 		}
 
+		TapExtensions tapExtensions=new TapExtensions();
+
 		public TElement Element
 		{
 			get { return _element; }
@@ -60,8 +65,7 @@ namespace Xamarin.Forms.Platform.WPF
 
 				if (_element != null)
 				{
-					_element.Tap -= ElementOnTap;
-					_element.DoubleTap -= ElementOnDoubleTap;
+					tapExtensions.Unsubscribe(_element,ElementOnTap,ElementOnDoubleTap);
 					_element.ManipulationDelta -= OnManipulationDelta;
 					_element.ManipulationCompleted -= OnManipulationCompleted;
 				}
@@ -70,8 +74,7 @@ namespace Xamarin.Forms.Platform.WPF
 
 				if (_element != null)
 				{
-					_element.Tap += ElementOnTap;
-					_element.DoubleTap += ElementOnDoubleTap;
+					tapExtensions.Subscribe(_element, ElementOnTap, ElementOnDoubleTap);
 					_element.ManipulationDelta += OnManipulationDelta;
 					_element.ManipulationCompleted += OnManipulationCompleted;
 				}
@@ -114,8 +117,7 @@ namespace Xamarin.Forms.Platform.WPF
 
 			if (_element != null)
 			{
-				_element.Tap -= ElementOnTap;
-				_element.DoubleTap -= ElementOnDoubleTap;
+				tapExtensions.Unsubscribe(_element, ElementOnTap, ElementOnDoubleTap);
 				_element.ManipulationDelta -= OnManipulationDelta;
 				_element.ManipulationCompleted -= OnManipulationCompleted;
 			}
@@ -177,7 +179,7 @@ namespace Xamarin.Forms.Platform.WPF
 			OnUpdated();
 		}
 
-		void ElementOnDoubleTap(object sender, GestureEventArgs gestureEventArgs)
+		void ElementOnDoubleTap(object sender, TapEventArgs eventArgs)
 		{
 			var view = Model as View;
 			if (view == null)
@@ -187,11 +189,11 @@ namespace Xamarin.Forms.Platform.WPF
 				view.GestureRecognizers.OfType<TapGestureRecognizer>().Where(g => g.NumberOfTapsRequired == 2))
 			{
 				gestureRecognizer.SendTapped(view);
-				gestureEventArgs.Handled = true;
+				eventArgs.Handled = true;
 			}
 		}
 
-		void ElementOnTap(object sender, GestureEventArgs gestureEventArgs)
+		void ElementOnTap(object sender, TapEventArgs eventArgs)
 		{
 			var view = Model as View;
 			if (view == null)
@@ -201,54 +203,18 @@ namespace Xamarin.Forms.Platform.WPF
 				view.GestureRecognizers.OfType<TapGestureRecognizer>().Where(g => g.NumberOfTapsRequired == 1))
 			{
 				gestureRecognizer.SendTapped(view);
-				gestureEventArgs.Handled = true;
+				eventArgs.Handled = true;
 			}
 		}
 
 		void HandlePan(ManipulationDeltaEventArgs e, View view)
 		{
-			foreach (PanGestureRecognizer recognizer in
-				view.GestureRecognizers.GetGesturesFor<PanGestureRecognizer>().Where(g => g.TouchPoints == _touchPoints))
-			{
-				if (!_isPanning)
-					((IPanGestureController)recognizer).SendPanStarted(view, Application.Current.PanGestureId);
-
-				double totalX = 0;
-				double totalY = 0;
-
-				// Translation and CumulativeManipulation will be 0 if we have more than one touch point because it thinks we're pinching,
-				// so we'll just go ahead and use the center point of the pinch gesture to figure out how much we're panning.
-				if (_touchPoints > 1 && e.PinchManipulation != null)
-				{
-					totalX = e.PinchManipulation.Current.Center.X - e.PinchManipulation.Original.Center.X;
-					totalY = e.PinchManipulation.Current.Center.Y - e.PinchManipulation.Original.Center.Y;
-				}
-				else
-				{
-					totalX = e.DeltaManipulation.Translation.X + e.CumulativeManipulation.Translation.X;
-					totalY = e.DeltaManipulation.Translation.Y + e.CumulativeManipulation.Translation.Y;
-				}
-
-				((IPanGestureController)recognizer).SendPan(view, totalX, totalY, Application.Current.PanGestureId);
-				_isPanning = true;
-			}
+			//TODO: Handle pan manipulation
 		}
 
 		void HandlePinch(ManipulationDeltaEventArgs e, View view)
 		{
-			if (e.PinchManipulation == null)
-				return;
-
-			IEnumerable<PinchGestureRecognizer> pinchGestures = view.GestureRecognizers.GetGesturesFor<PinchGestureRecognizer>();
-			System.Windows.Point translationPoint = e.ManipulationContainer.TransformToVisual(Element).Transform(e.PinchManipulation.Current.Center);
-			var scaleOriginPoint = new Point(translationPoint.X / view.Width, translationPoint.Y / view.Height);
-			foreach (var recognizer in pinchGestures)
-			{
-				if (!_isPinching)
-					((IPinchGestureController)recognizer).SendPinchStarted(view, scaleOriginPoint);
-				((IPinchGestureController)recognizer).SendPinch(view, e.PinchManipulation.DeltaScale, scaleOriginPoint);
-			}
-			_isPinching = true;
+			//TODO: Handle ping manipulation
 		}
 
 		void HandleRedrawNeeded(object sender, EventArgs e)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -137,8 +138,18 @@ namespace Xamarin.Forms.Platform.WPF
 			{
 				using (Stream stream = await ((IStreamImageSource)streamsource).GetStreamAsync(cancelationToken))
 				{
-					bitmapimage = new BitmapImage();
-					bitmapimage.SetSource(stream);
+				    try
+				    {
+						bitmapimage = new BitmapImage();
+						bitmapimage.BeginInit();
+						bitmapimage.StreamSource = stream;
+						bitmapimage.EndInit();
+					}
+				    catch (Exception e)
+				    {
+				        Debug.WriteLine(e.Message);
+				    }
+					
 				}
 			}
 			return (System.Windows.Media.ImageSource)bitmapimage;
@@ -157,8 +168,18 @@ namespace Xamarin.Forms.Platform.WPF
 				{
 					if (streamimage != null && streamimage.CanRead)
 					{
-						bitmapimage = new BitmapImage();
-						bitmapimage.SetSource(streamimage);
+						try
+						{
+							bitmapimage = new BitmapImage();
+							bitmapimage.BeginInit();
+							bitmapimage.StreamSource = streamimage;
+							bitmapimage.EndInit();
+						}
+						catch (Exception e)
+						{
+							Debug.WriteLine(e.Message);
+						}
+
 					}
 				}
 			}
