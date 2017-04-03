@@ -298,7 +298,7 @@ namespace Xamarin.Forms.Platform.WinRT
                 if (this._currentPage.GetRetainsRendererValue())
                 {
                     if (_parentMasterDetailPage.Detail == _currentPage)
-                        UpdateTitleOnParents();
+                        UpdateTitleOnParents(); 
                 }
                 else
                 {
