@@ -292,8 +292,19 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		void MultiPagePropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == "CurrentPage" || e.PropertyName == "Detail")
-				UpdateTitleOnParents();
+            if (e.PropertyName == "CurrentPage" || e.PropertyName == "Detail")
+            {
+                // In the RetainsRenderer mode, should avoid all page fire the event(that will cause the title bar don't show up, because history page != currentPage)
+                if (this._currentPage.GetRetainsRendererValue())
+                {
+                    if (_parentMasterDetailPage.Detail == _currentPage)
+                        UpdateTitleOnParents();
+                }
+                else
+                {
+                    UpdateTitleOnParents();
+                }
+            }
 		}
 
 		async void OnBackClicked(object sender, RoutedEventArgs e)
