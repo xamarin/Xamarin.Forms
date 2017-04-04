@@ -224,6 +224,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					tabsHeight = Math.Min(height, tabs.MeasuredHeight);
 			}
 
+			// Sets UserVisibleHint to false
 			pager.Measure(MeasureSpecFactory.MakeMeasureSpec(width, MeasureSpecMode.AtMost), MeasureSpecFactory.MakeMeasureSpec(height, MeasureSpecMode.AtMost));
 
 			if (width > 0 && height > 0)

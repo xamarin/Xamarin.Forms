@@ -308,7 +308,16 @@ namespace Xamarin.Forms
 				handler(this, EventArgs.Empty);
 
 			var pageContainer = this as IPageContainer<Page>;
-			((IPageController)pageContainer?.CurrentPage)?.SendAppearing();
+
+			// hack for Android
+			if (Device.OS == TargetPlatform.Android)
+			{
+				if (pageContainer != null && pageContainer.GetType() != typeof(TabbedPage))
+					((IPageController)pageContainer.CurrentPage)?.SendAppearing();
+			}
+			else
+				// original calls
+				((IPageController)pageContainer?.CurrentPage)?.SendAppearing();
 		}
 
 		void IPageController.SendDisappearing()
