@@ -464,7 +464,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		internal void UpdateActionBarBackgroundColor()
 		{
-			if (!((Activity)_context).ActionBar.IsShowing)
+			if (((Activity)_context).ActionBar == mull || !((Activity)_context).ActionBar.IsShowing)//ActionBar may be null
 				return;
 			Color colorToUse = Color.Default;
 			if (CurrentNavigationPage != null)
