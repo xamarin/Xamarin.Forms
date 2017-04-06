@@ -780,12 +780,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 			public override UITableViewCell GetCell(UITableView tableView, NSIndexPath indexPath)
 			{
-				UITableViewCell nativeCell = null;
+				Cell cell;
+				UITableViewCell nativeCell;
 
 				var cachingStrategy = Controller.CachingStrategy;
 				if (cachingStrategy == ListViewCachingStrategy.RetainElement)
 				{
-					var cell = GetCellForPath(indexPath);
+					cell = GetCellForPath(indexPath);
 					nativeCell = CellTableViewCell.GetNativeCell(tableView, cell);
 				}
 				else if (cachingStrategy == ListViewCachingStrategy.RecycleElement)
@@ -794,13 +795,13 @@ namespace Xamarin.Forms.Platform.iOS
 					nativeCell = tableView.DequeueReusableCell(ContextActionsCell.Key + id);
 					if (nativeCell == null)
 					{
-						var cell = GetCellForPath(indexPath);
+						cell = GetCellForPath(indexPath);
 						nativeCell = CellTableViewCell.GetNativeCell(tableView, cell, true, id.ToString());
 					}
 					else
 					{
 						var templatedList = TemplatedItemsView.TemplatedItems.GetGroup(indexPath.Section);
-						var cell = (Cell)((INativeElementView)nativeCell).Element;
+						cell = (Cell)((INativeElementView)nativeCell).Element;
 						ICellController controller = cell;
 						controller.SendDisappearing();
 						templatedList.UpdateContent(cell, indexPath.Row);
@@ -813,10 +814,10 @@ namespace Xamarin.Forms.Platform.iOS
 				var bgColor = tableView.IndexPathForSelectedRow != null && tableView.IndexPathForSelectedRow.Equals(indexPath) ? UIColor.Clear : DefaultBackgroundColor;
 
 				SetCellBackgroundColor(nativeCell, bgColor);
-
+				PreserveActivityIndicatorState(cell);
 				return nativeCell;
 			}
-
+		
 			public override nfloat GetHeightForHeader(UITableView tableView, nint section)
 			{
 				if (List.IsGroupingEnabled)
@@ -1079,6 +1080,24 @@ namespace Xamarin.Forms.Platform.iOS
 
 				base.Dispose(disposing);
 			}
+
+			void PreserveActivityIndicatorState(Element element)
+			{
+				if (element == null)
+					return;
+
+				var activityIndicator = element as ActivityIndicator;
+				if (activityIndicator != null)
+				{
+					var renderer = Platform.GetRenderer(activityIndicator) as ActivityIndicatorRenderer;
+					renderer?.PreserveState();
+				}
+				else
+				{
+					foreach (Element childElement in (element as IElementController).LogicalChildren)
+						PreserveActivityIndicatorState(childElement);
+				}
+			}
 		}
 	}
 
@@ -1149,14 +1168,15 @@ namespace Xamarin.Forms.Platform.iOS
 					RefreshControl = _refresh;
 				}
 			}
-			else if (_refreshAdded)
-			{
-				if (_refresh.Refreshing)
-					_refresh.EndRefreshing();
-
-				RefreshControl = null;
-				_refreshAdded = false;
-			}
+			// https://bugzilla.xamarin.com/show_bug.cgi?id=52962
+			// just because pullToRefresh is being disabled does not mean we should kill an in progress refresh. 
+			// Consider the case where:
+			//   1. User pulls to refresh
+			//   2. App RefreshCommand fires (at this point _refresh.Refreshing is true)
+			//   3. RefreshCommand disables itself via a call to ChangeCanExecute which returns false
+			//			(maybe the command it's attached to a button the app wants disabled)
+			//   4. OnCommandCanExecuteChanged handler sets RefreshAllowed to false because the RefreshCommand is disabled
+			//   5. We end up here; A refresh is in progress while being asked to disable pullToRefresh
 		}
 
 		public void UpdateShowHideRefresh(bool shouldHide)
