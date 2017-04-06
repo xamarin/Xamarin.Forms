@@ -27,13 +27,13 @@ namespace Xamarin.Forms.Platform.Android
 		Java.Lang.Object[] nativeSections;
 		public int GetPositionForSection(int sectionIndex)
 		{
-			Setup();
+			ValidateSectionData();
 			return Sections[sectionIndex].Start;
 		}
 
 		public int GetSectionForPosition(int position)
 		{
-			Setup();
+			ValidateSectionData();
 			foreach (var section in Sections)
 			{
 				if (section.Start >= position && section.End <= position)
@@ -44,11 +44,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		public Java.Lang.Object[] GetSections()
 		{
-			Setup();
+			ValidateSectionData();
 			return nativeSections;
 		}
 
-		void Setup()
+		void ValidateSectionData()
 		{
 			if (sectionDataValid)
 				return;
