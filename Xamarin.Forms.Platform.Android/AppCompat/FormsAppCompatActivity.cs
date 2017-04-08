@@ -115,8 +115,8 @@ namespace Xamarin.Forms.Platform.Android
 				RegisterHandlerForDefaultRenderer(typeof(NavigationPage), typeof(NavigationPageRenderer), typeof(NavigationRenderer));
 				RegisterHandlerForDefaultRenderer(typeof(TabbedPage), typeof(TabbedPageRenderer), typeof(TabbedRenderer));
 				RegisterHandlerForDefaultRenderer(typeof(MasterDetailPage), typeof(MasterDetailPageRenderer), typeof(MasterDetailRenderer));
-				RegisterHandlerForDefaultRenderer(typeof(Button), typeof(AppCompat.ButtonRenderer), typeof(ButtonRenderer));
-				RegisterHandlerForDefaultRenderer(typeof(Switch), typeof(AppCompat.SwitchRenderer), typeof(SwitchRenderer));
+				RegisterHandlerForDefaultRenderer(typeof(Button), typeof(FastRenderers.ButtonRenderer), typeof(ButtonRenderer));
+                RegisterHandlerForDefaultRenderer(typeof(Switch), typeof(AppCompat.SwitchRenderer), typeof(SwitchRenderer));
 				RegisterHandlerForDefaultRenderer(typeof(Picker), typeof(AppCompat.PickerRenderer), typeof(PickerRenderer));
 				RegisterHandlerForDefaultRenderer(typeof(Frame), typeof(AppCompat.FrameRenderer), typeof(FrameRenderer));
 				RegisterHandlerForDefaultRenderer(typeof(CarouselPage), typeof(AppCompat.CarouselPageRenderer), typeof(CarouselPageRenderer));
@@ -236,7 +236,7 @@ namespace Xamarin.Forms.Platform.Android
 			// counterpart to OnPause
 			base.OnResume();
 
-			if (_application.OnThisPlatform().GetShouldPreserveKeyboardOnResume())
+			if (_application != null && _application.OnThisPlatform().GetShouldPreserveKeyboardOnResume())
 			{
 				if (CurrentFocus != null && (CurrentFocus is EditText || CurrentFocus is TextView || CurrentFocus is SearchView))
 				{
