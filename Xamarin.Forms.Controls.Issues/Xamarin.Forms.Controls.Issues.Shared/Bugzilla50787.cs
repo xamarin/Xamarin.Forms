@@ -43,6 +43,11 @@ namespace Xamarin.Forms.Controls.Issues
 				VerticalOptions = LayoutOptions.Center,
 				Children =
 				{
+					new Label
+					{
+						Text = "Take note of the background color of the root page. As you push, a new page should slide in from the right. If you hit the back button, it should be the reverse. Popping to root should slide in only the root page.",
+						TextColor = Color.White
+					},
 					b,
 					b2
 				}
