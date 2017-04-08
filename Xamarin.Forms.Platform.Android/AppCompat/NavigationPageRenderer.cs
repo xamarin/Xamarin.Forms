@@ -624,10 +624,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					while (_fragmentStack.Count > 1 && popPage)
 					{
 						Fragment currentToRemove = _fragmentStack.Last();
-                        _fragmentStack.RemoveAt(_fragmentStack.Count - 1);
-                        transaction.Hide(currentToRemove);
-                        fragmentsToRemove.Add(currentToRemove);
-                        popPage = popToRoot;
+						_fragmentStack.RemoveAt(_fragmentStack.Count - 1);
+						transaction.Hide(currentToRemove);
+						fragmentsToRemove.Add(currentToRemove);
+						popPage = popToRoot;
 					}
 					
 					Fragment toShow = _fragmentStack.Last();
