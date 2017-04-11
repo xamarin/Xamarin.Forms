@@ -801,7 +801,7 @@ namespace Xamarin.Forms.Platform.iOS
 					{
 						var templatedList = TemplatedItemsView.TemplatedItems.GetGroup(indexPath.Section);
 
-						var cell = (Cell)((INativeElementView)nativeCell).Element;
+						cell = (Cell)((INativeElementView)nativeCell).Element;
 						cell.SendDisappearing();
 
 						templatedList.UpdateContent(cell, indexPath.Row);
