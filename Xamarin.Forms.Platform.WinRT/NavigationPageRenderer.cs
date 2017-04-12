@@ -76,8 +76,6 @@ namespace Xamarin.Forms.Platform.WinRT
 			}
 		}
 
-		IPageController PageController => Element as IPageController;
-
 		bool ITitleProvider.ShowTitle
 		{
 			get { return _showTitle; }
@@ -152,10 +150,10 @@ namespace Xamarin.Forms.Platform.WinRT
 
 			if (oldElement != null)
 			{
-				((INavigationPageController)oldElement).PushRequested -= OnPushRequested;
-				((INavigationPageController)oldElement).PopRequested -= OnPopRequested;
-				((INavigationPageController)oldElement).PopToRootRequested -= OnPopToRootRequested;
-				((IPageController)oldElement).InternalChildren.CollectionChanged -= OnChildrenChanged;
+				oldElement.PushRequested -= OnPushRequested;
+				oldElement.PopRequested -= OnPopRequested;
+				oldElement.PopToRootRequested -= OnPopToRootRequested;
+				oldElement.InternalChildren.CollectionChanged -= OnChildrenChanged;
 				oldElement.PropertyChanged -= OnElementPropertyChanged;
 			}
 
@@ -190,10 +188,10 @@ namespace Xamarin.Forms.Platform.WinRT
 #endif
 
 				Element.PropertyChanged += OnElementPropertyChanged;
-				((INavigationPageController)Element).PushRequested += OnPushRequested;
-				((INavigationPageController)Element).PopRequested += OnPopRequested;
-				((INavigationPageController)Element).PopToRootRequested += OnPopToRootRequested;
-				PageController.InternalChildren.CollectionChanged += OnChildrenChanged;
+				Element.PushRequested += OnPushRequested;
+				Element.PopRequested += OnPopRequested;
+				Element.PopToRootRequested += OnPopToRootRequested;
+				Element.InternalChildren.CollectionChanged += OnChildrenChanged;
 
 				if (!string.IsNullOrEmpty(Element.AutomationId))
 					_container.SetValue(AutomationProperties.AutomationIdProperty, Element.AutomationId);
@@ -211,7 +209,7 @@ namespace Xamarin.Forms.Platform.WinRT
 				return;
 			}
 
-			PageController?.SendDisappearing();
+			Element?.SendDisappearing();
 			_disposed = true;
 
 			_container.PointerPressed -= OnPointerPressed;
@@ -351,7 +349,7 @@ namespace Xamarin.Forms.Platform.WinRT
 #if WINDOWS_UWP
 			_navManager = SystemNavigationManager.GetForCurrentView();
 #endif
-			PageController.SendAppearing();
+			Element.SendAppearing();
 			UpdateBackButton();
 			UpdateTitleOnParents();
 		}
@@ -382,7 +380,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		void OnPopRequested(object sender, NavigationRequestedEventArgs e)
 		{
-			var newCurrent = ((INavigationPageController)Element).Peek(1);
+			var newCurrent = Element.Peek(1);
 			SetPage(newCurrent, e.Animated, true);
 		}
 
@@ -398,12 +396,12 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		void OnUnloaded(object sender, RoutedEventArgs args)
 		{
-			PageController?.SendDisappearing();
+			Element?.SendDisappearing();
 		}
 
 		void PushExistingNavigationStack()
 		{
-			foreach (var page in ((INavigationPageController)Element).Pages)
+			foreach (var page in Element.Pages)
 			{
 				SetPage(page, false, false);
 			}
@@ -488,7 +486,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
         void UpdateContainerArea()
         {
-            PageController.ContainerArea = new Rectangle(0, 0, _container.ContentWidth, _container.ContentHeight);
+			Element.ContainerArea = new Rectangle(0, 0, _container.ContentWidth, _container.ContentHeight);
             
             // Resize the inside pages
             RefreshInsidePagesSize();
@@ -506,7 +504,7 @@ namespace Xamarin.Forms.Platform.WinRT
             }
         }
 
-        void UpdateNavigationBarBackground()
+		void UpdateNavigationBarBackground()
 		{
 			(this as ITitleProvider).BarBackgroundBrush = GetBarBackgroundBrush();
 		}
