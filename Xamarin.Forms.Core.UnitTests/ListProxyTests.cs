@@ -425,7 +425,9 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		// Need a member to keep this reference around, otherwise it gets optimized
 		// out early in Release mode during the WeakToWeak test
-		ListProxy _proxyForWeakToWeakTest; 
+#pragma warning disable 0414 // Never accessed, it's just here to prevent GC
+		ListProxy _proxyForWeakToWeakTest;
+#pragma warning restore 0414
 
 		[Test]
 		public void WeakToWeak()
