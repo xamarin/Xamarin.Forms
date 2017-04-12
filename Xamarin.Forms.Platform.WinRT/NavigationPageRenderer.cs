@@ -497,12 +497,12 @@ namespace Xamarin.Forms.Platform.WinRT
         }
 
         private void RefreshInsidePagesSize() {
-            foreach (IPageController item in PageController.InternalChildren)
-            {
-                if (item == _currentPage)
-                    item.ContainerArea = new Rectangle(0, 0, _container.ContentWidth, _container.ContentHeight);
-            }
-        }
+			foreach (var item in Element.Pages)
+			{
+				if (item == _currentPage)
+					item.ContainerArea = new Rectangle(0, 0, _container.ContentWidth, _container.ContentHeight);
+			}
+		}
 
 		void UpdateNavigationBarBackground()
 		{
