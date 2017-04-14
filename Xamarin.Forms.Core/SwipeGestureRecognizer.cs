@@ -3,8 +3,10 @@ using System.Windows.Input;
 
 namespace Xamarin.Forms
 {
-	public sealed class SwipeGestureRecognizer : GestureRecognizer
+	public sealed class SwipeGestureRecognizer : GestureRecognizer, ISwipeGestureController
 	{
+		private double _totalX, _totalY;
+
 		public static readonly BindableProperty CommandProperty = BindableProperty.Create("Command", typeof(ICommand), typeof(SwipeGestureRecognizer), null);
 
 		public static readonly BindableProperty CommandParameterProperty = BindableProperty.Create("CommandParameter", typeof(object), typeof(SwipeGestureRecognizer), null);
@@ -30,6 +32,44 @@ namespace Xamarin.Forms
 		}
 
         public event EventHandler<SwipedEventArgs> Swiped;
+
+		void ISwipeGestureController.SendSwipe(Element sender, double totalX, double totalY, int gestureId)
+		{
+			_totalX = totalX;
+			_totalY = totalY;
+		}
+
+		void ISwipeGestureController.SendSwipeCanceled(Element sender, int gestureId)
+		{
+		}
+
+		void ISwipeGestureController.SendSwipeCompleted(Element sender, int gestureId)
+		{
+			var detected = false;
+
+			switch (Direction)
+			{
+				case SwipeDirection.Left:
+					detected = _totalX < -100;
+					break;
+				case SwipeDirection.Right:
+					detected = _totalX > 100;
+					break;
+				case SwipeDirection.Down:
+					detected = _totalY > 100;
+					break;
+				case SwipeDirection.Up:
+					detected = _totalY < -100;
+					break;
+			}
+
+			if (detected)
+				SendSwiped(sender as View, Direction);
+		}
+
+		void ISwipeGestureController.SendSwipeStarted(Element sender, int gestureId)
+		{
+		}
 
 		public void SendSwiped(View sender, SwipeDirection direction)
 		{
