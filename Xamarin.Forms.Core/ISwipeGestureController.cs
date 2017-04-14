@@ -2,12 +2,8 @@
 {
 	public interface ISwipeGestureController
 	{
-		void SendSwipe(Element sender, double totalX, double totalY, int gestureId);
-
-		void SendSwipeCanceled(Element sender, int gestureId);
-
-		void SendSwipeCompleted(Element sender, int gestureId);
-
-		void SendSwipeStarted(Element sender, int gestureId);
+		double TotalX { get; }
+		double TotalY { get; }
+		void SendSwipe(Element sender, double totalX, double totalY);
 	}
 }

@@ -117,9 +117,6 @@ namespace Xamarin.Forms
 		public NavigationProxy NavigationProxy { get; }
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public int SwipeGestureId { get; set; }
-
-		[EditorBrowsable(EditorBrowsableState.Never)]
 		public int PanGestureId { get; set; }
 
 		internal IResourceDictionary SystemResources { get; }

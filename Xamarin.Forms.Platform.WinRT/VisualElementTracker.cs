@@ -19,6 +19,9 @@ namespace Xamarin.Forms.Platform.WinRT
 {
 	public class VisualElementTracker<TElement, TNativeElement> : IDisposable where TElement : VisualElement where TNativeElement : FrameworkElement
 	{
+		// Threshold in pixels before a swipe is detected.
+		const double SwipeThreshold = 100;
+
 		readonly NotifyCollectionChangedEventHandler _collectionChangedHandler;
 		readonly List<uint> _fingers = new List<uint>();
 		FrameworkElement _container;
@@ -31,7 +34,6 @@ namespace Xamarin.Forms.Platform.WinRT
 		bool _isSwiping;
 		bool _isPanning;
 		bool _isPinching;
-		bool _wasSwipeGestureStartedSent;
 		bool _wasPanGestureStartedSent;
 		bool _wasPinchGestureStartedSent;
 
@@ -261,13 +263,8 @@ namespace Xamarin.Forms.Platform.WinRT
 
 			foreach (SwipeGestureRecognizer recognizer in view.GestureRecognizers.GetGesturesFor<SwipeGestureRecognizer>())
 			{
-				if (!_wasSwipeGestureStartedSent)
-				{
-					((ISwipeGestureController)recognizer).SendSwipeStarted(view, Application.Current.SwipeGestureId);
-				}
-				((ISwipeGestureController)recognizer).SendSwipe(view, e.Delta.Translation.X + e.Cumulative.Translation.X, e.Delta.Translation.Y + e.Cumulative.Translation.Y, Application.Current.SwipeGestureId);
+				((ISwipeGestureController)recognizer).SendSwipe(view, e.Delta.Translation.X + e.Cumulative.Translation.X, e.Delta.Translation.Y + e.Cumulative.Translation.Y);
 			}
-			_wasSwipeGestureStartedSent = true;
 		}
 
 		void HandlePan(ManipulationDeltaRoutedEventArgs e, View view)
@@ -360,7 +357,6 @@ namespace Xamarin.Forms.Platform.WinRT
 			if (view == null)
 				return;
 
-			_wasSwipeGestureStartedSent = false;
 			_wasPinchGestureStartedSent = false;
 			_wasPanGestureStartedSent = false;
 		}
@@ -440,15 +436,31 @@ namespace Xamarin.Forms.Platform.WinRT
 			{
 				if (success)
 				{
-					((ISwipeGestureController)recognizer).SendSwipeCompleted(view, Application.Current.SwipeGestureId);
-				}
-				else
-				{
-					((ISwipeGestureController)recognizer).SendSwipeCanceled(view, Application.Current.SwipeGestureId);
+					var detected = false;
+					var direction = recognizer.Direction;
+					switch (direction)
+					{
+						case SwipeDirection.Left:
+							detected = ((ISwipeGestureController)recognizer).TotalX < -SwipeThreshold;
+							break;
+						case SwipeDirection.Right:
+							detected = ((ISwipeGestureController)recognizer).TotalX > SwipeThreshold;
+							break;
+						case SwipeDirection.Down:
+							detected = ((ISwipeGestureController)recognizer).TotalY > SwipeThreshold;
+							break;
+						case SwipeDirection.Up:
+							detected = ((ISwipeGestureController)recognizer).TotalY < -SwipeThreshold;
+							break;
+					}
+
+					if (detected)
+					{
+						recognizer.SendSwiped(view, direction);
+					}
 				}
 			}
-
-			Application.Current.SwipeGestureId++;
+			
 			_isSwiping = false;
 		}
 

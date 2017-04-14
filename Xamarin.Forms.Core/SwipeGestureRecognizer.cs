@@ -33,42 +33,13 @@ namespace Xamarin.Forms
 
         public event EventHandler<SwipedEventArgs> Swiped;
 
-		void ISwipeGestureController.SendSwipe(Element sender, double totalX, double totalY, int gestureId)
+		double ISwipeGestureController.TotalX => _totalX;
+		double ISwipeGestureController.TotalY => _totalY;
+
+		void ISwipeGestureController.SendSwipe(Element sender, double totalX, double totalY)
 		{
 			_totalX = totalX;
 			_totalY = totalY;
-		}
-
-		void ISwipeGestureController.SendSwipeCanceled(Element sender, int gestureId)
-		{
-		}
-
-		void ISwipeGestureController.SendSwipeCompleted(Element sender, int gestureId)
-		{
-			var detected = false;
-
-			switch (Direction)
-			{
-				case SwipeDirection.Left:
-					detected = _totalX < -100;
-					break;
-				case SwipeDirection.Right:
-					detected = _totalX > 100;
-					break;
-				case SwipeDirection.Down:
-					detected = _totalY > 100;
-					break;
-				case SwipeDirection.Up:
-					detected = _totalY < -100;
-					break;
-			}
-
-			if (detected)
-				SendSwiped(sender as View, Direction);
-		}
-
-		void ISwipeGestureController.SendSwipeStarted(Element sender, int gestureId)
-		{
 		}
 
 		public void SendSwiped(View sender, SwipeDirection direction)
