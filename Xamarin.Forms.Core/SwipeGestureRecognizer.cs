@@ -3,16 +3,13 @@ using System.Windows.Input;
 
 namespace Xamarin.Forms
 {
-	public class SwipeGestureRecognizer : GestureRecognizer
+	public sealed class SwipeGestureRecognizer : GestureRecognizer
 	{
 		public static readonly BindableProperty CommandProperty = BindableProperty.Create("Command", typeof(ICommand), typeof(SwipeGestureRecognizer), null);
 
 		public static readonly BindableProperty CommandParameterProperty = BindableProperty.Create("CommandParameter", typeof(object), typeof(SwipeGestureRecognizer), null);
 
-		public SwipeGestureRecognizer()
-		{
-
-		}
+		public static readonly BindableProperty DirectionProperty = BindableProperty.Create("Direction", typeof(SwipeDirection), typeof(SwipeGestureRecognizer), default(SwipeDirection));
 
 		public ICommand Command
 		{
@@ -26,58 +23,21 @@ namespace Xamarin.Forms
 			set { SetValue(CommandParameterProperty, value); }
 		}
 
+		public SwipeDirection Direction
+		{
+			get { return (SwipeDirection)GetValue(DirectionProperty); }
+			set { SetValue(DirectionProperty, value); }
+		}
 
-		public event EventHandler SwipeLeft;
+        public event EventHandler<SwipedEventArgs> Swiped;
 
-		public event EventHandler SwipeRight;
-
-		public event EventHandler SwipeDown;
-
-		public event EventHandler SwipeUp;
-
-		public void HandleRightSwipe(View sender)
+		public void SendSwiped(View sender, SwipeDirection direction)
 		{
 			ICommand cmd = Command;
 			if (cmd != null && cmd.CanExecute(CommandParameter))
 				cmd.Execute(CommandParameter);
 
-			EventHandler handler = SwipeRight;
-			if (handler != null)
-				handler(sender, new SwipeEventArgs(CommandParameter, SwipeDirection.Right));
+            Swiped?.Invoke(sender, new SwipedEventArgs(CommandParameter, direction));
 		}
-
-		public void HandleLeftSwipe(View sender)
-		{
-			ICommand cmd = Command;
-			if (cmd != null && cmd.CanExecute(CommandParameter))
-				cmd.Execute(CommandParameter);
-
-			EventHandler handler = SwipeLeft;
-			if (handler != null)
-				handler(sender, new SwipeEventArgs(CommandParameter, SwipeDirection.Left));
-		}
-
-		public void HandleDownSwipe(View sender)
-		{
-			ICommand cmd = Command;
-			if (cmd != null && cmd.CanExecute(CommandParameter))
-				cmd.Execute(CommandParameter);
-
-			EventHandler handler = SwipeDown;
-			if (handler != null)
-				handler(sender, new SwipeEventArgs(CommandParameter, SwipeDirection.Down));
-		}
-
-		public void HandleUpSwipe(View sender)
-		{
-			ICommand cmd = Command;
-			if (cmd != null && cmd.CanExecute(CommandParameter))
-				cmd.Execute(CommandParameter);
-
-			EventHandler handler = SwipeUp;
-			if (handler != null)
-				handler(sender, new SwipeEventArgs(CommandParameter, SwipeDirection.Up));
-		}
-
 	}
 }

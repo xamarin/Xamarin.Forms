@@ -460,8 +460,9 @@
     <Compile Include="ITextElement.cs" />
     <Compile Include="TextElement.cs" />
     <Compile Include="Internals\ResourceLoader.cs" />
+    <Compile Include="SwipeDirection.cs" />
     <Compile Include="SwipeGestureRecognizer.cs" />
-    <Compile Include="SwipeEventArgs.cs" />
+    <Compile Include="SwipedEventArgs.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>

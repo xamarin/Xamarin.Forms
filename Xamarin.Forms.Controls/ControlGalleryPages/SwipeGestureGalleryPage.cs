@@ -1,33 +1,77 @@
 ﻿using System;
-using System.Diagnostics;
 
 namespace Xamarin.Forms.Controls
 {
 	public class SwipeGestureGalleryPage : ContentPage
 	{
+		public class SwipeContainer : ContentView
+		{
+			public EventHandler SwipeLeft;
+			public EventHandler SwipeRight;
+			public EventHandler SwipeUp;
+			public EventHandler SwipeDown;
+
+			public SwipeContainer()
+			{
+				GestureRecognizers.Add(GetSwipeLeft());
+				GestureRecognizers.Add(GetSwipeRight());
+				GestureRecognizers.Add(GetSwipeUp());
+				GestureRecognizers.Add(GetSwipeDown());
+			}
+
+			SwipeGestureRecognizer GetSwipeLeft()
+			{
+				var swipe = new SwipeGestureRecognizer();
+				swipe.Direction = SwipeDirection.Left;
+				swipe.Swiped += (sender, args) => SwipeLeft?.Invoke(this, new EventArgs());
+				return swipe;
+			}
+
+			SwipeGestureRecognizer GetSwipeRight()
+			{
+				var swipe = new SwipeGestureRecognizer();
+				swipe.Direction = SwipeDirection.Right;
+				swipe.Swiped += (sender, args) => SwipeRight?.Invoke(this, new EventArgs());
+				return swipe;
+			}
+
+			SwipeGestureRecognizer GetSwipeUp()
+			{
+				var swipe = new SwipeGestureRecognizer();
+				swipe.Direction = SwipeDirection.Up;
+				swipe.Swiped += (sender, args) => SwipeUp?.Invoke(this, new EventArgs());
+				return swipe;
+			}
+
+			SwipeGestureRecognizer GetSwipeDown()
+			{
+				var swipe = new SwipeGestureRecognizer();
+				swipe.Direction = SwipeDirection.Down;
+				swipe.Swiped += (sender, args) => SwipeDown?.Invoke(this, new EventArgs());
+				return swipe;
+			}
+		}
 
 		public SwipeGestureGalleryPage()
 		{
-			BoxView bv = new BoxView
+			var box = new Image
 			{
-				BackgroundColor = Color.Red,
-				HeightRequest = 150
+				BackgroundColor = Color.Gray,
+				WidthRequest = 500,
+				HeightRequest = 500,
+				VerticalOptions = LayoutOptions.Center,
+				HorizontalOptions = LayoutOptions.Center
 			};
 
 			var label = new Label { Text = "Use one finger and swipe inside the gray box." };
 
-			SwipeGestureRecognizer swipeG = new SwipeGestureRecognizer();
-			swipeG.SwipeLeft += (sender, e) =>
-			{
-				label.Text = "test";
-			};
-			swipeG.SwipeRight += (sender, args) => label.Text = "You swiped right.";
-			swipeG.SwipeUp += (sender, args) => label.Text = "You swiped up.";
-			swipeG.SwipeDown += (sender, args) => label.Text = "You swiped down.";
+			var swipeme = new SwipeContainer { Content = box };
+			swipeme.SwipeLeft += (sender, args) => label.Text = "You swiped left.";
+			swipeme.SwipeRight += (sender, args) => label.Text = "You swiped right.";
+			swipeme.SwipeUp += (sender, args) => label.Text = "You swiped up.";
+			swipeme.SwipeDown += (sender, args) => label.Text = "You swiped down.";
 
-			bv.GestureRecognizers.Add(swipeG);
-
-			Content = new StackLayout { Children = { label, bv }, Padding = new Thickness(20) };
+			Content = new StackLayout { Children = { label, swipeme }, Padding = new Thickness(20) };
 		}
 	}
 }
