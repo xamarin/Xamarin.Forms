@@ -19,30 +19,32 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		protected override void Dispose(bool disposing)
 		{
-			base.Dispose(disposing);
-
 			if (_disposed)
 				return;
 
 			_disposed = true;
 
-			if (!disposing)
-				return;
-
-			if (_visualElementTracker != null)
+			if (disposing)
 			{
-				_visualElementTracker.Dispose();
-				_visualElementTracker = null;
+				if (_visualElementTracker != null)
+				{
+					_visualElementTracker.Dispose();
+					_visualElementTracker = null;
+				}
+
+				if (_visualElementRenderer != null)
+				{
+					_visualElementRenderer.Dispose();
+					_visualElementRenderer = null;
+				}
+
+				if (_element != null)
+				{
+					_element.PropertyChanged -= OnElementPropertyChanged;
+				}
 			}
 
-			if (_visualElementRenderer != null)
-			{
-				_visualElementRenderer.Dispose();
-				_visualElementRenderer = null;
-			}
-
-			if (_element != null)
-				_element.PropertyChanged -= OnElementPropertyChanged;
+			base.Dispose(disposing);
 		}
 
 		public override void Invalidate()
@@ -116,7 +118,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			_element?.SendViewInitialized(Control);
 		}
-
+		
 		void IVisualElementRenderer.SetLabelFor(int? id)
 		{
 			if (_defaultLabelFor == null)
@@ -178,11 +180,21 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		protected async Task UpdateBitmap(Image previous = null)
 		{
+			if (_element == null || this.IsJavaDisposed())
+			{
+				return;
+			}
+
 			await Control.UpdateBitmap(_element, previous);
 		}
 
 		void UpdateAspect()
 		{
+			if (_element == null || this.IsJavaDisposed())
+			{
+				return;
+			}
+
 			ScaleType type = _element.Aspect.ToScaleType();
 			SetScaleType(type);
 		}

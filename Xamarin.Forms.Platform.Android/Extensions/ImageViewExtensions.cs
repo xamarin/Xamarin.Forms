@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Android.Graphics;
-using Java.IO;
 using AImageView = Android.Widget.ImageView;
 
 namespace Xamarin.Forms.Platform.Android
@@ -11,6 +10,9 @@ namespace Xamarin.Forms.Platform.Android
 		// TODO hartez 2017/04/07 09:33:03 Review this again, not sure it's handling the transition from previousImage to 'null' newImage correctly
 		public static async Task UpdateBitmap(this AImageView imageView, Image newImage, Image previousImage = null)
 		{
+			if (imageView.IsJavaDisposed())
+				return;
+
 			if (Device.IsInvokeRequired)
 				throw new InvalidOperationException("Image Bitmap must not be updated from background thread");
 
@@ -45,10 +47,15 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			if (bitmap == null && source is FileImageSource)
-				imageView.SetImageResource(ResourceManager.GetDrawableByName(((FileImageSource)source).File));
-			else
-				imageView.SetImageBitmap(bitmap);
+			if (!imageView.IsJavaDisposed())
+			{
+				if (bitmap == null && source is FileImageSource)
+					imageView.SetImageResource(ResourceManager.GetDrawableByName(((FileImageSource)source).File));
+				else
+				{
+					imageView.SetImageBitmap(bitmap);
+				}
+			}
 
 			bitmap?.Dispose();
 
