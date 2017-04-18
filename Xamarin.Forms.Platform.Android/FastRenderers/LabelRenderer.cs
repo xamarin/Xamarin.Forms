@@ -132,8 +132,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			if (disposing)
 			{
-				_disposed = true;
-
 				if (_visualElementTracker != null)
 				{
 					_visualElementTracker.Dispose();
@@ -191,7 +189,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			}
 		}
 
-		void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			ElementPropertyChanged?.Invoke(this, e);
 
