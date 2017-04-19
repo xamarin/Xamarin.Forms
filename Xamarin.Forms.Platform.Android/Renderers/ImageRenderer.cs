@@ -67,6 +67,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateAspect()
 		{
+			if (Element == null || Control.IsJavaDisposed())
+			{
+				return;
+			}
+
 			AImageView.ScaleType type = Element.Aspect.ToScaleType();
 			Control.SetScaleType(type);
 		}
@@ -87,12 +92,17 @@ namespace Xamarin.Forms.Platform.Android
 			}
 			finally
 			{
-				((IImageController)Element).SetIsLoading(false);
+				((IImageController)Element)?.SetIsLoading(false);
 			}
 		}
 
 		protected async Task UpdateBitmap(Image previous = null)
 		{
+			if (Element == null || Control.IsJavaDisposed())
+			{
+				return;
+			}
+
 			await Control.UpdateBitmap(Element, previous);
 		}
 

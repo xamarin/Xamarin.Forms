@@ -174,7 +174,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			}
 			finally
 			{
-				((IImageController)_element).SetIsLoading(false);
+				((IImageController)_element)?.SetIsLoading(false);
 			}
 		}
 
