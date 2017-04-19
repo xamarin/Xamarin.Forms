@@ -10,7 +10,7 @@ namespace Xamarin.Forms.Platform.Android
 		// TODO hartez 2017/04/07 09:33:03 Review this again, not sure it's handling the transition from previousImage to 'null' newImage correctly
 		public static async Task UpdateBitmap(this AImageView imageView, Image newImage, Image previousImage = null)
 		{
-			if (imageView.IsJavaDisposed())
+			if (imageView == null || imageView.IsDisposed())
 				return;
 
 			if (Device.IsInvokeRequired)
@@ -47,7 +47,7 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			if (!imageView.IsJavaDisposed())
+			if (!imageView.IsDisposed())
 			{
 				if (bitmap == null && source is FileImageSource)
 					imageView.SetImageResource(ResourceManager.GetDrawableByName(((FileImageSource)source).File));

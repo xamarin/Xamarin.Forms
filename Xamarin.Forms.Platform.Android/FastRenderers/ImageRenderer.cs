@@ -81,6 +81,11 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		SizeRequest IVisualElementRenderer.GetDesiredSize(int widthConstraint, int heightConstraint)
 		{
+			if (_disposed)
+			{
+				return new SizeRequest();
+			}
+
 			Measure(widthConstraint, heightConstraint);
 			return new SizeRequest(new Size(MeasuredWidth, MeasuredHeight), MinimumSize());
 		}
@@ -180,7 +185,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		protected async Task UpdateBitmap(Image previous = null)
 		{
-			if (_element == null || this.IsJavaDisposed())
+			if (_element == null || _disposed)
 			{
 				return;
 			}
@@ -190,7 +195,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		void UpdateAspect()
 		{
-			if (_element == null || this.IsJavaDisposed())
+			if (_element == null || _disposed)
 			{
 				return;
 			}

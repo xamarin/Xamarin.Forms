@@ -67,7 +67,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateAspect()
 		{
-			if (Element == null || Control.IsJavaDisposed())
+			if (Element == null || Control == null || Control.IsDisposed())
 			{
 				return;
 			}
@@ -98,7 +98,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected async Task UpdateBitmap(Image previous = null)
 		{
-			if (Element == null || Control.IsJavaDisposed())
+			if (Element == null || Control == null || Control.IsDisposed())
 			{
 				return;
 			}
