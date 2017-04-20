@@ -17,6 +17,7 @@ namespace Xamarin.Forms.Platform.WinRT
 	public class ImageRenderer : ViewRenderer<Image, Windows.UI.Xaml.Controls.Image>
 	{
 		bool _measured;
+		bool _disposed;
 
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
@@ -32,10 +33,20 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		protected override void Dispose(bool disposing)
 		{
-			if (Control != null)
+			if (_disposed)
 			{
-				Control.ImageOpened -= OnImageOpened;
-				Control.ImageFailed -= OnImageFailed;
+				return;
+			}
+
+			_disposed = true;
+
+			if (disposing)
+			{
+				if (Control != null)
+				{
+					Control.ImageOpened -= OnImageOpened;
+					Control.ImageFailed -= OnImageFailed;
+				}
 			}
 
 			base.Dispose(disposing);
@@ -107,6 +118,11 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		void UpdateAspect()
 		{
+			if (_disposed || Element == null || Control == null)
+			{
+				return;
+			}
+
 			Control.Stretch = GetStretch(Element.Aspect);
 			if (Element.Aspect == Aspect.AspectFill) // Then Center Crop
 			{
@@ -136,19 +152,24 @@ namespace Xamarin.Forms.Platform.WinRT
 			}
 			finally
 			{
-				((IImageController)Element).SetIsLoading(false);
+				((IImageController)Element)?.SetIsLoading(false);
 			}
 		}
 
 		protected async Task UpdateSource()
 		{
+			if (_disposed || Element == null || Control == null)
+			{
+				return;
+			}
+
 			Element.SetIsLoading(true);
 
 			ImageSource source = Element.Source;
 			IImageSourceHandler handler;
 			if (source != null && (handler = Registrar.Registered.GetHandler<IImageSourceHandler>(source.GetType())) != null)
 			{
-				Windows.UI.Xaml.Media.ImageSource imagesource = null;
+				Windows.UI.Xaml.Media.ImageSource imagesource;
 
 				try
 				{
@@ -171,7 +192,7 @@ namespace Xamarin.Forms.Platform.WinRT
 			else
 			{
 				Control.Source = null;
-				Element?.SetIsLoading(false);
+				Element.SetIsLoading(false);
 			}
 		}
 	}
