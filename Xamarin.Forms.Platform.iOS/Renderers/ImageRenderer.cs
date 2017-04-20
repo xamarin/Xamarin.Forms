@@ -42,7 +42,6 @@ namespace Xamarin.Forms.Platform.iOS
 				if (Control != null && (oldUIImage = Control.Image) != null)
 				{
 					oldUIImage.Dispose();
-					oldUIImage = null;
 				}
 			}
 
@@ -84,6 +83,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void SetAspect()
 		{
+			if (_isDisposed || Element == null || Control == null)
+			{
+				return;
+			}
+
 			Control.ContentMode = Element.Aspect.ToUIViewContentMode();
 		}
 
@@ -103,12 +107,17 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			finally
 			{
-				((IImageController)Element).SetIsLoading(false);
+				((IImageController)Element)?.SetIsLoading(false);
 			}
 		}
 
 		protected async Task SetImage(Image oldElement = null)
 		{
+			if (_isDisposed || Element == null || Control == null)
+			{
+				return;
+			}
+
 			var source = Element.Source;
 
 			if (oldElement != null)
@@ -127,7 +136,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			Element.SetIsLoading(true);
 
-			if (source != null && (handler = Internals.Registrar.Registered.GetHandler<IImageSourceHandler>(source.GetType())) != null)
+			if (source != null &&
+			    (handler = Internals.Registrar.Registered.GetHandler<IImageSourceHandler>(source.GetType())) != null)
 			{
 				UIImage uiimage;
 				try
@@ -139,22 +149,30 @@ namespace Xamarin.Forms.Platform.iOS
 					uiimage = null;
 				}
 
+				if (_isDisposed)
+					return;
+
 				var imageView = Control;
 				if (imageView != null)
 					imageView.Image = uiimage;
 
-				if (!_isDisposed)
-					((IVisualElementController)Element).NativeSizeChanged();
+				((IVisualElementController)Element).NativeSizeChanged();
 			}
 			else
+			{
 				Control.Image = null;
+			}
 
-			if (!_isDisposed)
-				Element.SetIsLoading(false);
+			Element.SetIsLoading(false);
 		}
 
 		void SetOpacity()
 		{
+			if (_isDisposed || Element == null || Control == null)
+			{
+				return;
+			}
+
 			Control.Opaque = Element.IsOpaque;
 		}
 	}
