@@ -15,6 +15,7 @@ namespace Xamarin.Forms.Platform.Android
 		readonly List<EventHandler<VisualElementChangedEventArgs>> _elementChangedHandlers = new List<EventHandler<VisualElementChangedEventArgs>>();
 
 		readonly Lazy<GestureDetector> _gestureDetector;
+        readonly SwipeGestureHandler _swipeGestureHandler;
 		readonly PanGestureHandler _panGestureHandler;
 		readonly PinchGestureHandler _pinchGestureHandler;
 		readonly TapGestureHandler _tapGestureHandler;
@@ -35,6 +36,7 @@ namespace Xamarin.Forms.Platform.Android
 		protected VisualElementRenderer() : base(Forms.Context)
 		{
 			_tapGestureHandler = new TapGestureHandler(() => View);
+            _swipeGestureHandler = new SwipeGestureHandler(() => View, Context.FromPixels);
 			_panGestureHandler = new PanGestureHandler(() => View, Context.FromPixels);
 			_pinchGestureHandler = new PinchGestureHandler(() => View);
 
@@ -43,14 +45,19 @@ namespace Xamarin.Forms.Platform.Android
 					() =>
 					new GestureDetector(
 						_gestureListener =
-						new InnerGestureListener(_tapGestureHandler.OnTap, _tapGestureHandler.TapGestureRecognizers, _panGestureHandler.OnPan, _panGestureHandler.OnPanStarted, _panGestureHandler.OnPanComplete)));
-
+                            new InnerGestureListener(
+                                _tapGestureHandler.OnTap,
+                                _tapGestureHandler.TapGestureRecognizers,
+                                OnScrollHandler,
+                                OnScrollStartedHandler,
+                                OnScrollCompletedHandler)));
+            
 			_scaleDetector = new Lazy<ScaleGestureDetector>(
 					() => new ScaleGestureDetector(Context, new InnerScaleListener(_pinchGestureHandler.OnPinch, _pinchGestureHandler.OnPinchStarted, _pinchGestureHandler.OnPinchEnded))
 					);
 		}
 
-		public TElement Element { get; private set; }
+        public TElement Element { get; private set; }
 
 		protected bool AutoPackage
 		{
@@ -489,7 +496,28 @@ namespace Xamarin.Forms.Platform.Android
 			if (View == null)
 				return;
 
-			UpdateClickable(forceClick);
+            UpdateClickable(forceClick);
 		}
+
+        bool OnScrollHandler(float x, float y, int pointerCount)
+        {
+            var onSwipe = _swipeGestureHandler.OnSwipe(x, y);
+            var onPan = _panGestureHandler.OnPan(x, y, pointerCount);
+
+            return onSwipe || onPan;
+        }
+
+        bool OnScrollStartedHandler(int pointerCount)
+        {
+            return _panGestureHandler.OnPanStarted(pointerCount);
+        }
+
+        bool OnScrollCompletedHandler()
+        {
+            var onSwipeComplete = _swipeGestureHandler.OnSwipeComplete();
+            var onPanComplete = _panGestureHandler.OnPanComplete();
+
+            return onSwipeComplete || onPanComplete;
+        }
 	}
 }
