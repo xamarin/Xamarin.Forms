@@ -60,7 +60,7 @@ namespace Xamarin.Forms.Build.Tasks
 		}
 
 		internal static void ParseXaml(TextReader xaml, out string rootType, out string rootNs, out CodeTypeReference baseType,
-			out IDictionary<string, CodeTypeReference> namesAndTypes)
+			out IEnumerable<CodeMemberField> namedFields)
 		{
 			var xmlDoc = new XmlDocument();
 			xmlDoc.Load(xaml);
@@ -76,7 +76,7 @@ namespace Xamarin.Forms.Build.Tasks
 				rootType = null;
 				rootNs = null;
 				baseType = null;
-				namesAndTypes = null;
+				namedFields = null;
 				return;
 			}
 
@@ -96,13 +96,13 @@ namespace Xamarin.Forms.Build.Tasks
 				rootType = null;
 				rootNs = null;
 				baseType = null;
-				namesAndTypes = null;
+				namedFields = null;
 				return;
 			}
 
 			string rootAsm, targetPlatform;
 			XmlnsHelper.ParseXmlns(rootClass.Value, out rootType, out rootNs, out rootAsm, out targetPlatform);
-			namesAndTypes = GetNamesAndTypes(root, nsmgr);
+			namedFields = GetCodeMemberFields(root, nsmgr);
 
 			var typeArgsAttr = root.Attributes["TypeArguments", XAML2006]
 							?? root.Attributes["TypeArguments", XAML2009];
@@ -117,7 +117,7 @@ namespace Xamarin.Forms.Build.Tasks
 						new CodeAttributeArgument(new CodePrimitiveExpression("0.0.0.0")));
 
 		internal static void GenerateCode(string rootType, string rootNs, CodeTypeReference baseType,
-			IDictionary<string, CodeTypeReference> namesAndTypes, string xamlFile, string outFile)
+		                                  IEnumerable<CodeMemberField> namedFields, string xamlFile, string outFile)
 		{
 			if (rootType == null)
 			{
@@ -151,28 +151,18 @@ namespace Xamarin.Forms.Build.Tasks
 				new CodeTypeReferenceExpression(new CodeTypeReference($"global::{typeof(Extensions).FullName}")),
 				"LoadFromXaml", new CodeThisReferenceExpression(), new CodeTypeOfExpression(declType.Name)));
 
-			foreach (var entry in namesAndTypes)
+			foreach (var namedField in namedFields)
 			{
-				string name = entry.Key;
-				var type = entry.Value;
-
-				var field = new CodeMemberField
-				{
-					Name = name,
-					Type = type,
-					CustomAttributes = { GeneratedCodeAttrDecl }
-				};
-
-				declType.Members.Add(field);
+				declType.Members.Add(namedField);
 
 				var find_invoke = new CodeMethodInvokeExpression(
 					new CodeMethodReferenceExpression(
 						new CodeTypeReferenceExpression(new CodeTypeReference($"global::{typeof(NameScopeExtensions).FullName}")),
-						"FindByName", type),
-					new CodeThisReferenceExpression(), new CodePrimitiveExpression(name));
+						"FindByName", namedField.Type),
+					new CodeThisReferenceExpression(), new CodePrimitiveExpression(namedField.Name));
 
 				CodeAssignStatement assign = new CodeAssignStatement(
-					new CodeVariableReferenceExpression(name), find_invoke);
+					new CodeVariableReferenceExpression(namedField.Name), find_invoke);
 
 				initcomp.Statements.Add(assign);
 			}
@@ -185,21 +175,19 @@ namespace Xamarin.Forms.Build.Tasks
 		{
 			string rootType, rootNs;
 			CodeTypeReference baseType;
-			IDictionary<string, CodeTypeReference> namesAndTypes;
+			IEnumerable<CodeMemberField> namedFields;
 
 			using (StreamReader reader = File.OpenText(xamlFile))
-				ParseXaml(reader, out rootType, out rootNs, out baseType, out namesAndTypes);
+				ParseXaml(reader, out rootType, out rootNs, out baseType, out namedFields);
 
-			GenerateCode(rootType, rootNs, baseType, namesAndTypes, Path.GetFullPath(xamlFile), outFile);
+			GenerateCode(rootType, rootNs, baseType, namedFields, Path.GetFullPath(xamlFile), outFile);
 		}
 
-		static Dictionary<string, CodeTypeReference> GetNamesAndTypes(XmlNode root, XmlNamespaceManager nsmgr)
+		static IEnumerable<CodeMemberField> GetCodeMemberFields(XmlNode root, XmlNamespaceManager nsmgr)
 		{
-			var res = new Dictionary<string, CodeTypeReference>();
-
 			var xPrefix = nsmgr.LookupPrefix(XAML2006) ?? nsmgr.LookupPrefix(XAML2009);
 			if (xPrefix == null)
-				return null;
+				yield break;
 
 			XmlNodeList names =
 				root.SelectNodes(
@@ -215,15 +203,26 @@ namespace Xamarin.Forms.Build.Tasks
 								 ?? node.Attributes["Name", XAML2009];
 				XmlAttribute typeArgsAttr = node.Attributes["TypeArguments", XAML2006]
 										 ?? node.Attributes["TypeArguments", XAML2009];
+				XmlAttribute fieldModifierAttr =    node.Attributes["FieldModifier", XAML2006]
+												 ?? node.Attributes["FieldModifier", XAML2009];
 				var xmlType = new XmlType(node.NamespaceURI, node.LocalName,
 										  typeArgsAttr != null
 										  ? TypeArgumentsParser.ParseExpression(typeArgsAttr.Value, nsmgr, null)
 										  : null);
 
-				res[attr.Value] = GetType(xmlType, node.GetNamespaceOfPrefix);
-			}
+				var access = MemberAttributes.Private;
+				if (fieldModifierAttr != null && fieldModifierAttr.Value == "NotPublic")
+					access = MemberAttributes.Assembly;
+				if (fieldModifierAttr != null && fieldModifierAttr.Value == "Public")
+					access = MemberAttributes.Public;
 
-			return res;
+				yield return new CodeMemberField {
+					Name = attr.Value,
+					Type = GetType(xmlType, node.GetNamespaceOfPrefix),
+					Attributes = access,
+					CustomAttributes = { GeneratedCodeAttrDecl }
+				};
+			}
 		}
 
 		static CodeTypeReference GetType(XmlType xmlType,
