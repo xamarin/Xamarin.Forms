@@ -19,9 +19,6 @@ namespace Xamarin.Forms.Platform.WinRT
 {
 	public class VisualElementTracker<TElement, TNativeElement> : IDisposable where TElement : VisualElement where TNativeElement : FrameworkElement
 	{
-		// Threshold in pixels before a swipe is detected.
-		const double SwipeThreshold = 100;
-
 		readonly NotifyCollectionChangedEventHandler _collectionChangedHandler;
 		readonly List<uint> _fingers = new List<uint>();
 		FrameworkElement _container;
@@ -438,19 +435,21 @@ namespace Xamarin.Forms.Platform.WinRT
 				{
 					var detected = false;
 					var direction = recognizer.Direction;
+                    var threshold = recognizer.Threshold;
+
 					switch (direction)
 					{
 						case SwipeDirection.Left:
-							detected = ((ISwipeGestureController)recognizer).TotalX < -SwipeThreshold;
+							detected = ((ISwipeGestureController)recognizer).TotalX < -threshold;
 							break;
 						case SwipeDirection.Right:
-							detected = ((ISwipeGestureController)recognizer).TotalX > SwipeThreshold;
+							detected = ((ISwipeGestureController)recognizer).TotalX > threshold;
 							break;
 						case SwipeDirection.Down:
-							detected = ((ISwipeGestureController)recognizer).TotalY > SwipeThreshold;
+							detected = ((ISwipeGestureController)recognizer).TotalY > threshold;
 							break;
 						case SwipeDirection.Up:
-							detected = ((ISwipeGestureController)recognizer).TotalY < -SwipeThreshold;
+							detected = ((ISwipeGestureController)recognizer).TotalY < -threshold;
 							break;
 					}
 

@@ -5,9 +5,6 @@ namespace Xamarin.Forms.Platform.Android
 {
 	internal class SwipeGestureHandler
 	{
-        // Threshold in pixels before a swipe is detected.
-        const double SwipeThreshold = 100;
-
 		readonly Func<double, double> _pixelTranslation;
 
         public SwipeGestureHandler(Func<View> getView, Func<double, double> pixelTranslation)
@@ -48,27 +45,29 @@ namespace Xamarin.Forms.Platform.Android
 			{
                 var detected = false;
                 var direction = swipeGesture.Direction;
-                    switch (direction)
-                    {
-                        case SwipeDirection.Left:
-                            detected = ((ISwipeGestureController)swipeGesture).TotalX< -SwipeThreshold;
-                            break;
-                        case SwipeDirection.Right:
-                            detected = ((ISwipeGestureController)swipeGesture).TotalX > SwipeThreshold;
-                            break;
-                        case SwipeDirection.Down:
-                            detected = ((ISwipeGestureController)swipeGesture).TotalY > SwipeThreshold;
-                            break;
-                        case SwipeDirection.Up:
-                            detected = ((ISwipeGestureController)swipeGesture).TotalY< -SwipeThreshold;
-                            break;
-                    }
+                var threshold = swipeGesture.Threshold;
 
-                    if (detected)
-                    {
-                        swipeGesture.SendSwiped(view, direction);
-                        result = true;
-                    }
+                switch (direction)
+                {
+                    case SwipeDirection.Left:
+                        detected = ((ISwipeGestureController)swipeGesture).TotalX< -threshold;
+                        break;
+                    case SwipeDirection.Right:
+                        detected = ((ISwipeGestureController)swipeGesture).TotalX > threshold;
+                        break;
+                    case SwipeDirection.Down:
+                        detected = ((ISwipeGestureController)swipeGesture).TotalY > threshold;
+                        break;
+                    case SwipeDirection.Up:
+                        detected = ((ISwipeGestureController)swipeGesture).TotalY< -threshold;
+                        break;
+                }
+
+                if (detected)
+                {
+                    swipeGesture.SendSwiped(view, direction);
+                    result = true;
+                }
 			}
 
 			return result;
