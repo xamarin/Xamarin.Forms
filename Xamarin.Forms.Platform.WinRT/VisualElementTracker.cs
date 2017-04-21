@@ -435,7 +435,7 @@ namespace Xamarin.Forms.Platform.WinRT
 				{
 					var detected = false;
 					var direction = recognizer.Direction;
-                    var threshold = recognizer.Threshold;
+					var threshold = recognizer.Threshold;
 
 					switch (direction)
 					{
@@ -459,7 +459,7 @@ namespace Xamarin.Forms.Platform.WinRT
 					}
 				}
 			}
-			
+
 			_isSwiping = false;
 		}
 

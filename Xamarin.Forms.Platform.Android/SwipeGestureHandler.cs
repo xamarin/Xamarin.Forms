@@ -7,7 +7,7 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		readonly Func<double, double> _pixelTranslation;
 
-        public SwipeGestureHandler(Func<View> getView, Func<double, double> pixelTranslation)
+		public SwipeGestureHandler(Func<View> getView, Func<double, double> pixelTranslation)
 		{
 			_pixelTranslation = pixelTranslation;
 			GetView = getView;
@@ -23,10 +23,10 @@ namespace Xamarin.Forms.Platform.Android
 				return false;
 
 			var result = false;
-            foreach (SwipeGestureRecognizer swipeGesture in
-                     view.GestureRecognizers.GetGesturesFor<SwipeGestureRecognizer>())
+			foreach (SwipeGestureRecognizer swipeGesture in
+					 view.GestureRecognizers.GetGesturesFor<SwipeGestureRecognizer>())
 			{
-                ((ISwipeGestureController)swipeGesture).SendSwipe(view, _pixelTranslation(x), _pixelTranslation(y));
+				((ISwipeGestureController)swipeGesture).SendSwipe(view, _pixelTranslation(x), _pixelTranslation(y));
 				result = true;
 			}
 
@@ -41,33 +41,33 @@ namespace Xamarin.Forms.Platform.Android
 				return false;
 
 			var result = false;
-            foreach (SwipeGestureRecognizer swipeGesture in view.GestureRecognizers.GetGesturesFor<SwipeGestureRecognizer>())
+			foreach (SwipeGestureRecognizer swipeGesture in view.GestureRecognizers.GetGesturesFor<SwipeGestureRecognizer>())
 			{
-                var detected = false;
-                var direction = swipeGesture.Direction;
-                var threshold = swipeGesture.Threshold;
+				var detected = false;
+				var direction = swipeGesture.Direction;
+				var threshold = swipeGesture.Threshold;
 
-                switch (direction)
-                {
-                    case SwipeDirection.Left:
-                        detected = ((ISwipeGestureController)swipeGesture).TotalX< -threshold;
-                        break;
-                    case SwipeDirection.Right:
-                        detected = ((ISwipeGestureController)swipeGesture).TotalX > threshold;
-                        break;
-                    case SwipeDirection.Down:
-                        detected = ((ISwipeGestureController)swipeGesture).TotalY > threshold;
-                        break;
-                    case SwipeDirection.Up:
-                        detected = ((ISwipeGestureController)swipeGesture).TotalY< -threshold;
-                        break;
-                }
+				switch (direction)
+				{
+					case SwipeDirection.Left:
+						detected = ((ISwipeGestureController)swipeGesture).TotalX < -threshold;
+						break;
+					case SwipeDirection.Right:
+						detected = ((ISwipeGestureController)swipeGesture).TotalX > threshold;
+						break;
+					case SwipeDirection.Down:
+						detected = ((ISwipeGestureController)swipeGesture).TotalY > threshold;
+						break;
+					case SwipeDirection.Up:
+						detected = ((ISwipeGestureController)swipeGesture).TotalY < -threshold;
+						break;
+				}
 
-                if (detected)
-                {
-                    swipeGesture.SendSwiped(view, direction);
-                    result = true;
-                }
+				if (detected)
+				{
+					swipeGesture.SendSwiped(view, direction);
+					result = true;
+				}
 			}
 
 			return result;

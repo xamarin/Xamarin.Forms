@@ -5,8 +5,8 @@ namespace Xamarin.Forms
 {
 	public sealed class SwipeGestureRecognizer : GestureRecognizer, ISwipeGestureController
 	{
-        // Default threshold in pixels before a swipe is detected.
-        const double DefaultSwipeThreshold = 100;
+		// Default threshold in pixels before a swipe is detected.
+		const double DefaultSwipeThreshold = 100;
 
 		private double _totalX, _totalY;
 
@@ -16,7 +16,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty DirectionProperty = BindableProperty.Create("Direction", typeof(SwipeDirection), typeof(SwipeGestureRecognizer), default(SwipeDirection));
 
-        public static readonly BindableProperty ThresholdProperty = BindableProperty.Create("Threshold", typeof(double), typeof(SwipeGestureRecognizer), DefaultSwipeThreshold);
+		public static readonly BindableProperty ThresholdProperty = BindableProperty.Create("Threshold", typeof(double), typeof(SwipeGestureRecognizer), DefaultSwipeThreshold);
 
 		public ICommand Command
 		{
@@ -36,13 +36,13 @@ namespace Xamarin.Forms
 			set { SetValue(DirectionProperty, value); }
 		}
 
-        public double Threshold
-        {
-            get { return (double)GetValue(ThresholdProperty); }
-            set { SetValue(ThresholdProperty, value); }
-        }
+		public double Threshold
+		{
+			get { return (double)GetValue(ThresholdProperty); }
+			set { SetValue(ThresholdProperty, value); }
+		}
 
-        public event EventHandler<SwipedEventArgs> Swiped;
+		public event EventHandler<SwipedEventArgs> Swiped;
 
 		double ISwipeGestureController.TotalX => _totalX;
 		double ISwipeGestureController.TotalY => _totalY;
@@ -59,7 +59,7 @@ namespace Xamarin.Forms
 			if (cmd != null && cmd.CanExecute(CommandParameter))
 				cmd.Execute(CommandParameter);
 
-            Swiped?.Invoke(sender, new SwipedEventArgs(CommandParameter, direction));
+			Swiped?.Invoke(sender, new SwipedEventArgs(CommandParameter, direction));
 		}
 	}
 }

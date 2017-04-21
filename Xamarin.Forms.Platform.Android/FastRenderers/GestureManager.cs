@@ -12,18 +12,18 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 	{
 		IVisualElementRenderer _renderer;
 		readonly Lazy<GestureDetector> _gestureDetector;
-        readonly SwipeGestureHandler _swipeGestureHandler;
+		readonly SwipeGestureHandler _swipeGestureHandler;
 		readonly PanGestureHandler _panGestureHandler;
 		readonly PinchGestureHandler _pinchGestureHandler;
 		readonly Lazy<ScaleGestureDetector> _scaleDetector;
 		readonly TapGestureHandler _tapGestureHandler;
-        readonly MotionEventHelper _motionEventHelper = new MotionEventHelper();
-        InnerGestureListener _gestureListener;
+		readonly MotionEventHelper _motionEventHelper = new MotionEventHelper();
+		InnerGestureListener _gestureListener;
 
 		bool _clickable;
 		bool _disposed;
 		bool _inputTransparent;
-	    bool _isEnabled;
+		bool _isEnabled;
 
 		NotifyCollectionChangedEventHandler _collectionChangeHandler;
 
@@ -39,7 +39,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			_renderer.ElementChanged += OnElementChanged;
 
 			_tapGestureHandler = new TapGestureHandler(() => View);
-            _swipeGestureHandler = new SwipeGestureHandler(() => View, Control.Context.FromPixels);
+			_swipeGestureHandler = new SwipeGestureHandler(() => View, Control.Context.FromPixels);
 			_panGestureHandler = new PanGestureHandler(() => View, Control.Context.FromPixels);
 			_pinchGestureHandler = new PinchGestureHandler(() => View);
 			_gestureDetector =
@@ -47,12 +47,12 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					() =>
 						new GestureDetector(
 							_gestureListener =
-                                new InnerGestureListener(
-                                    _tapGestureHandler.OnTap, 
-                                    _tapGestureHandler.TapGestureRecognizers, 
-                                    OnScrollHandler, 
-                                    OnScrollStartedHandler, 
-                                    OnScrollCompletedHandler)));
+								new InnerGestureListener(
+									_tapGestureHandler.OnTap,
+									_tapGestureHandler.TapGestureRecognizers,
+									OnScrollHandler,
+									OnScrollStartedHandler,
+									OnScrollCompletedHandler)));
 
 			_scaleDetector =
 				new Lazy<ScaleGestureDetector>(
@@ -95,21 +95,21 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			{
 				UpdateGestureRecognizers(true);
 				SubscribeGestureRecognizers(e.NewElement);
-                _motionEventHelper.UpdateElement(e.NewElement);
-                e.NewElement.PropertyChanged += OnElementPropertyChanged;
+				_motionEventHelper.UpdateElement(e.NewElement);
+				e.NewElement.PropertyChanged += OnElementPropertyChanged;
 			}
 
 			UpdateInputTransparent();
-            UpdateIsEnabled();
+			UpdateIsEnabled();
 		}
 
 		void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == VisualElement.InputTransparentProperty.PropertyName)
 				UpdateInputTransparent();
-            else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
-                UpdateIsEnabled();
-        }
+			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
+				UpdateIsEnabled();
+		}
 
 		protected override void Dispose(bool disposing)
 		{
@@ -154,13 +154,13 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		bool global::Android.Views.View.IOnTouchListener.OnTouch(global::Android.Views.View v, MotionEvent e)
 		{
-            if (!_isEnabled)
-                return true;
+			if (!_isEnabled)
+				return true;
 
-            if (_inputTransparent)
-                return false;
+			if (_inputTransparent)
+				return false;
 
-            var handled = false;
+			var handled = false;
 			if (_pinchGestureHandler.IsPinchSupported)
 			{
 				if (!_scaleDetector.IsValueCreated)
@@ -256,35 +256,35 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			_inputTransparent = Element.InputTransparent;
 		}
 
-        void UpdateIsEnabled()
-        {
-            if (Element == null)
-            {
-                return;
-            }
+		void UpdateIsEnabled()
+		{
+			if (Element == null)
+			{
+				return;
+			}
 
-            _isEnabled = Element.IsEnabled;
-        }
+			_isEnabled = Element.IsEnabled;
+		}
 
-        bool OnScrollHandler(float x, float y, int pointerCount)
-        {
-            var onSwipe = _swipeGestureHandler.OnSwipe(x, y);
-            var onPan = _panGestureHandler.OnPan(x, y, pointerCount);
+		bool OnScrollHandler(float x, float y, int pointerCount)
+		{
+			var onSwipe = _swipeGestureHandler.OnSwipe(x, y);
+			var onPan = _panGestureHandler.OnPan(x, y, pointerCount);
 
-            return onSwipe || onPan;
-        }
+			return onSwipe || onPan;
+		}
 
-        bool OnScrollStartedHandler(int pointerCount)
-        {
-            return _panGestureHandler.OnPanStarted(pointerCount);
-        }
+		bool OnScrollStartedHandler(int pointerCount)
+		{
+			return _panGestureHandler.OnPanStarted(pointerCount);
+		}
 
-        bool OnScrollCompletedHandler()
-        {
-            var onSwipeComplete = _swipeGestureHandler.OnSwipeComplete();
-            var onPanComplete = _panGestureHandler.OnPanComplete();
+		bool OnScrollCompletedHandler()
+		{
+			var onSwipeComplete = _swipeGestureHandler.OnSwipeComplete();
+			var onPanComplete = _panGestureHandler.OnPanComplete();
 
-            return onSwipeComplete || onPanComplete;
-        }
-    }
+			return onSwipeComplete || onPanComplete;
+		}
+	}
 }
