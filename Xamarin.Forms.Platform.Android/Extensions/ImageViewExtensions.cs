@@ -19,7 +19,9 @@ namespace Xamarin.Forms.Platform.Android
 			if (previousImage != null && Equals(previousImage.Source, newImage.Source))
 				return;
 
-			((IImageController)newImage)?.SetIsLoading(true);
+			var imageController = newImage as IImageController;
+
+			imageController?.SetIsLoading(true);
 
 			(imageView as IImageRendererController)?.SkipInvalidate();
 
@@ -37,7 +39,7 @@ namespace Xamarin.Forms.Platform.Android
 				}
 				catch (TaskCanceledException)
 				{
-					((IImageController)newImage).SetIsLoading(false);
+					imageController?.SetIsLoading(false);
 				}
 			}
 
@@ -59,7 +61,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			bitmap?.Dispose();
 
-			((IImageController)newImage).SetIsLoading(false);
+			imageController?.SetIsLoading(false);
 			((IVisualElementController)newImage).NativeSizeChanged();
 		}
 	}
