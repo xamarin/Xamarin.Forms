@@ -429,34 +429,11 @@ namespace Xamarin.Forms.Platform.WinRT
 			if (view == null || !_isSwiping)
 				return;
 
-			foreach (SwipeGestureRecognizer recognizer in view.GestureRecognizers.GetGesturesFor<SwipeGestureRecognizer>())
+			if (success)
 			{
-				if (success)
+				foreach (SwipeGestureRecognizer recognizer in view.GestureRecognizers.GetGesturesFor<SwipeGestureRecognizer>())
 				{
-					var detected = false;
-					var direction = recognizer.Direction;
-					var threshold = recognizer.Threshold;
-
-					switch (direction)
-					{
-						case SwipeDirection.Left:
-							detected = ((ISwipeGestureController)recognizer).TotalX < -threshold;
-							break;
-						case SwipeDirection.Right:
-							detected = ((ISwipeGestureController)recognizer).TotalX > threshold;
-							break;
-						case SwipeDirection.Down:
-							detected = ((ISwipeGestureController)recognizer).TotalY > threshold;
-							break;
-						case SwipeDirection.Up:
-							detected = ((ISwipeGestureController)recognizer).TotalY < -threshold;
-							break;
-					}
-
-					if (detected)
-					{
-						recognizer.SendSwiped(view, direction);
-					}
+					((ISwipeGestureController)recognizer).DetectSwipe(view, recognizer.Direction);
 				}
 			}
 

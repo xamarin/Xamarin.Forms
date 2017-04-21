@@ -43,29 +43,9 @@ namespace Xamarin.Forms.Platform.Android
 			var result = false;
 			foreach (SwipeGestureRecognizer swipeGesture in view.GestureRecognizers.GetGesturesFor<SwipeGestureRecognizer>())
 			{
-				var detected = false;
-				var direction = swipeGesture.Direction;
-				var threshold = swipeGesture.Threshold;
-
-				switch (direction)
-				{
-					case SwipeDirection.Left:
-						detected = ((ISwipeGestureController)swipeGesture).TotalX < -threshold;
-						break;
-					case SwipeDirection.Right:
-						detected = ((ISwipeGestureController)swipeGesture).TotalX > threshold;
-						break;
-					case SwipeDirection.Down:
-						detected = ((ISwipeGestureController)swipeGesture).TotalY > threshold;
-						break;
-					case SwipeDirection.Up:
-						detected = ((ISwipeGestureController)swipeGesture).TotalY < -threshold;
-						break;
-				}
-
+				var detected = ((ISwipeGestureController)swipeGesture).DetectSwipe(view, swipeGesture.Direction);
 				if (detected)
 				{
-					swipeGesture.SendSwiped(view, direction);
 					result = true;
 				}
 			}

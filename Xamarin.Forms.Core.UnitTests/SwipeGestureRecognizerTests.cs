@@ -43,10 +43,8 @@ namespace Xamarin.Forms.Core.UnitTests
 			};
 
 			((ISwipeGestureController)swipe).SendSwipe(view, totalX: -150, totalY: 10);
+			((ISwipeGestureController)swipe).DetectSwipe(view, SwipeDirection.Left);
 			Assert.AreEqual(SwipeDirection.Left, direction);
-
-			((ISwipeGestureController)swipe).SendSwipe(view, totalX: 150, totalY: 10);
-			Assert.AreEqual(SwipeDirection.Right, direction);
 		}
 
 		[Test]
@@ -62,10 +60,28 @@ namespace Xamarin.Forms.Core.UnitTests
 			};
 
 			((ISwipeGestureController)swipe).SendSwipe(view, totalX: 10, totalY: -150);
+			((ISwipeGestureController)swipe).DetectSwipe(view, SwipeDirection.Up);
 			Assert.AreEqual(SwipeDirection.Up, direction);
+		}
 
-			((ISwipeGestureController)swipe).SendSwipe(view, totalX: 10, totalY: 150);
-			Assert.AreEqual(SwipeDirection.Down, direction);
+		[Test]
+		public void SwipeIgnoredIfBelowThresholdTest()
+		{
+			var view = new View();
+			var swipe = new SwipeGestureRecognizer();
+
+			// Specify a custom threshold for the test.
+			swipe.Threshold = 200;
+
+			bool detected = false;
+			swipe.Swiped += (object sender, SwipedEventArgs e) =>
+			{
+				detected = true;
+			};
+
+			((ISwipeGestureController)swipe).SendSwipe(view, totalX: 0, totalY: -175);
+			((ISwipeGestureController)swipe).DetectSwipe(view, SwipeDirection.Up);
+			Assert.IsFalse(detected);
 		}
 	}
 }
