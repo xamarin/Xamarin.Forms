@@ -104,10 +104,8 @@ namespace Xamarin.Forms.Build.Tasks
 			XmlnsHelper.ParseXmlns(rootClass.Value, out rootType, out rootNs, out rootAsm, out targetPlatform);
 			namedFields = GetCodeMemberFields(root, nsmgr);
 
-			var typeArgsAttr = root.Attributes["TypeArguments", XAML2006]
-							?? root.Attributes["TypeArguments", XAML2009];
-
-			var xmlType = new XmlType(root.NamespaceURI, root.LocalName, typeArgsAttr != null ? TypeArgumentsParser.ParseExpression(typeArgsAttr.Value, nsmgr, null): null);
+			var typeArguments = GetAttributeValue(root, "TypeArguments", XAML2006, XAML2009);
+			var xmlType = new XmlType(root.NamespaceURI, root.LocalName, typeArguments != null ? TypeArgumentsParser.ParseExpression(typeArguments, nsmgr, null): null);
 			baseType = GetType(xmlType, root.GetNamespaceOfPrefix);
 		}
 
@@ -198,26 +196,37 @@ namespace Xamarin.Forms.Build.Tasks
 				// Don't take the root canvas
 				if (node == root)
 					continue;
+				var name = GetAttributeValue(node, "Name", XAML2006, XAML2009);
+				var typeArguments = GetAttributeValue(node, "TypeArguments", XAML2006, XAML2009);
+				var fieldModifier = GetAttributeValue(node, "FieldModifier", XAML2006, XAML2009);
 
-				XmlAttribute attr = node.Attributes["Name", XAML2006]
-								 ?? node.Attributes["Name", XAML2009];
-				XmlAttribute typeArgsAttr = node.Attributes["TypeArguments", XAML2006]
-										 ?? node.Attributes["TypeArguments", XAML2009];
-				XmlAttribute fieldModifierAttr =    node.Attributes["FieldModifier", XAML2006]
-												 ?? node.Attributes["FieldModifier", XAML2009];
 				var xmlType = new XmlType(node.NamespaceURI, node.LocalName,
-										  typeArgsAttr != null
-										  ? TypeArgumentsParser.ParseExpression(typeArgsAttr.Value, nsmgr, null)
+										  typeArguments != null
+										  ? TypeArgumentsParser.ParseExpression(typeArguments, nsmgr, null)
 										  : null);
 
 				var access = MemberAttributes.Private;
-				if (fieldModifierAttr != null && fieldModifierAttr.Value == "NotPublic")
-					access = MemberAttributes.Assembly;
-				if (fieldModifierAttr != null && fieldModifierAttr.Value == "Public")
-					access = MemberAttributes.Public;
+				if (fieldModifier!=null) {
+					switch (fieldModifier.ToLowerInvariant()){
+					default:
+					case "private":
+						access = MemberAttributes.Private;
+						break;
+					case "public":
+						access = MemberAttributes.Public;
+						break;
+					case "protected":
+						access = MemberAttributes.Family;
+						break;
+					case "internal":
+					case "notpublic": //WPF syntax
+						access = MemberAttributes.Assembly;
+						break;
+					}
+				}
 
 				yield return new CodeMemberField {
-					Name = attr.Value,
+					Name = name,
 					Type = GetType(xmlType, node.GetNamespaceOfPrefix),
 					Attributes = access,
 					CustomAttributes = { GeneratedCodeAttrDecl }
@@ -256,6 +265,23 @@ namespace Xamarin.Forms.Build.Tasks
 			if (namespaceuri != XAML2006 && !namespaceuri.Contains("clr-namespace"))
 				throw new Exception($"Can't load types from xmlns {namespaceuri}");
 			return XmlnsHelper.ParseNamespaceFromXmlns(namespaceuri);
+		}
+
+		static string GetAttributeValue(XmlNode node, string localName, params string[] namespaceURIs)
+		{
+			if (node == null)
+				throw new ArgumentNullException(nameof(node));
+			if (localName == null)
+				throw new ArgumentNullException(nameof(localName));
+			if (namespaceURIs == null)
+				throw new ArgumentNullException(nameof(namespaceURIs));
+			foreach (var namespaceURI in namespaceURIs) {
+				var attr = node.Attributes[localName, namespaceURI];
+				if (attr == null)
+					continue;
+				return attr.Value;
+			}
+			return null;
 		}
 	}
 }
