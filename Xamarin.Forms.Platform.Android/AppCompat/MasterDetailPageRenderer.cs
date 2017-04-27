@@ -277,14 +277,13 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		event EventHandler<VisualElementChangedEventArgs> ElementChanged;
 		event EventHandler<PropertyChangedEventArgs> ElementPropertyChanged;
 
-		bool HasAncestorNavigationPage(Element element)
+		internal bool HasAncestorNavigationPage(IElement element)
 		{
 			if (element.Parent == null)
 				return false;
-			else if (element.Parent is NavigationPage)
+			if (element.Parent is NavigationPage)
 				return true;
-			else
-				return HasAncestorNavigationPage(element.Parent);
+			return HasAncestorNavigationPage(element.Parent);
 		}
 
 		void HandleMasterPropertyChanged(object sender, PropertyChangedEventArgs e)

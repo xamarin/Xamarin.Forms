@@ -286,11 +286,33 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		internal static void LayoutRootPage(FormsAppCompatActivity activity, Page page, int width, int height)
 		{
-			int statusBarHeight = Forms.IsLollipopOrNewer ? activity.GetStatusBarHeight() : 0;
-			statusBarHeight = activity.Window.Attributes.Flags.HasFlag(WindowManagerFlags.Fullscreen) || Forms.TitleBarVisibility == AndroidTitleBarVisibility.Never ? 0 : statusBarHeight;
+			int statusBarHeight = !Forms.IsLollipopOrNewer || activity.Window.Attributes.Flags.HasFlag(WindowManagerFlags.Fullscreen) || Forms.TitleBarVisibility == AndroidTitleBarVisibility.Never ? 0 : activity.GetStatusBarHeight();
 
-			if (page is MasterDetailPage)
-				page.Layout(new Rectangle(0, 0, activity.FromPixels(width), activity.FromPixels(height)));
+			var masterDetailPage = page as MasterDetailPage;
+			if (masterDetailPage != null)
+			{
+				var renderer = (MasterDetailPageRenderer)Android.Platform.GetRenderer(page);
+				var detailContainer = renderer.GetChildAt(0) as MasterDetailContainer;
+				Page detail = masterDetailPage.Detail;
+
+				detailContainer.TopPadding = renderer.HasAncestorNavigationPage(masterDetailPage) ? 0 : statusBarHeight;
+				((IMasterDetailPageController)page).DetailBounds = detailContainer.GetBounds(false, 0, 0, width, height);
+				detailContainer.PageContainer?.Child.UpdateLayout();
+				detail.Layout(new Rectangle(0, 0, width, height));
+
+				if (((IMasterDetailPageController)page).ShouldShowSplitMode)
+				{
+					var masterContainer = renderer.GetChildAt(1) as MasterDetailContainer;
+					Page master = masterDetailPage.Master;
+
+					masterContainer.TopPadding = statusBarHeight;
+					((IMasterDetailPageController)page).MasterBounds = masterContainer.GetBounds(true, 0, 0, width, height);
+					masterContainer.PageContainer?.Child.UpdateLayout();
+					master.Layout(new Rectangle(0, 0, width, height));
+				}
+
+				masterDetailPage.Layout(new Rectangle(0, 0, activity.FromPixels(width), activity.FromPixels(height)));
+			}
 			else
 			{
 				page.Layout(new Rectangle(0, activity.FromPixels(statusBarHeight), activity.FromPixels(width), activity.FromPixels(height - statusBarHeight)));
