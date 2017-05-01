@@ -62,6 +62,11 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		SizeRequest IVisualElementRenderer.GetDesiredSize(int widthConstraint, int heightConstraint)
 		{
+		 	if (_disposed)
+ 			{
+ 				return new SizeRequest();
+ 			}
+		
 			if (_lastSizeRequest.HasValue)
 			{
 				// if we are measuring the same thing, no need to waste the time
@@ -132,8 +137,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			if (disposing)
 			{
-				_disposed = true;
-
 				if (_visualElementTracker != null)
 				{
 					_visualElementTracker.Dispose();
@@ -191,7 +194,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			}
 		}
 
-		void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			ElementPropertyChanged?.Invoke(this, e);
 

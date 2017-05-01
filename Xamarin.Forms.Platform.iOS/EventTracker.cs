@@ -135,7 +135,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				double startingScale = 1;
 				var uiRecognizer = CreatePinchRecognizer(r =>
 				{
-					var pinchGestureRecognizer = weakRecognizer.Target as IPinchGestureController;
+					var pinchGestureRecognizer = weakRecognizer.Target as PinchGestureRecognizer;
 					var eventTracker = weakEventTracker.Target as EventTracker;
 					var view = eventTracker?._renderer?.Element as View;
 
@@ -206,7 +206,7 @@ namespace Xamarin.Forms.Platform.MacOS
 					var eventTracker = weakEventTracker.Target as EventTracker;
 					var view = eventTracker?._renderer?.Element as View;
 
-					var panGestureRecognizer = weakRecognizer.Target as IPanGestureController;
+					var panGestureRecognizer = weakRecognizer.Target as PanGestureRecognizer;
 					if (panGestureRecognizer != null && view != null)
 					{
 						switch (r.State)

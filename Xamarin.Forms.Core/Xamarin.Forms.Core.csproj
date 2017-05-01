@@ -464,6 +464,8 @@
     <Compile Include="SwipeDirection.cs" />
     <Compile Include="SwipeGestureRecognizer.cs" />
     <Compile Include="SwipedEventArgs.cs" />
+    <Compile Include="Xaml\TypeConversionExtensions.cs" />
+    <Compile Include="Xaml\ValueConverterProvider.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>
@@ -472,11 +474,11 @@
       <Name>Xamarin.Forms.Platform</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <PropertyGroup>
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
-  <ItemGroup />
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Xaml\" />
+  </ItemGroup>
 </Project>
