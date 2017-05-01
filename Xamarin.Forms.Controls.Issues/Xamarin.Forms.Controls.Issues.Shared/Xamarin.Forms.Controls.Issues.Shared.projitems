@@ -10,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)AddingMultipleItemsListView.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AndroidStatusBarColor.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AppBarIconColors.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla21368.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla21501.cs" />

@@ -46,7 +46,6 @@ namespace Xamarin.Forms.Platform.Android
 
 		bool _renderersAdded, _isFullScreen;
 		int _statusBarHeight = -1;
-		global::Android.Views.View _statusBarUnderlay;
 
 		// Override this if you want to handle the default Android behavior of restoring fragments on an application restart
 		protected virtual bool AllowFragmentRestore => false;
@@ -105,7 +104,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void SetStatusBarColor(AColor color)
 		{
-			_statusBarUnderlay.SetBackgroundColor(color);
+			if (Forms.IsLollipopOrNewer)
+			{
+				Window.SetStatusBarColor(color);
+			}
 		}
 
 		protected void LoadApplication(Application application)
@@ -171,7 +173,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 			else
 				bar = new AToolbar(this);
-
+			
 			SetSupportActionBar(bar);
 
 			_layout = new ARelativeLayout(BaseContext);
@@ -184,7 +186,11 @@ namespace Xamarin.Forms.Platform.Android
 
 			OnStateChanged();
 
-			AddStatusBarUnderlay();
+			if (Forms.IsLollipopOrNewer)
+			{
+				// Allow for the status bar color to be changed
+				Window.AddFlags(WindowManagerFlags.DrawsSystemBarBackgrounds);
+			}
 		}
 
 		protected override void OnDestroy()
@@ -292,33 +298,6 @@ namespace Xamarin.Forms.Platform.Android
 			return _statusBarHeight = result;
 		}
 
-		void AddStatusBarUnderlay()
-		{
-			_statusBarUnderlay = new global::Android.Views.View(this);
-
-			var layoutParameters = new ARelativeLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, GetStatusBarHeight()) { AlignWithParent = true };
-			layoutParameters.AddRule(LayoutRules.AlignTop);
-			_statusBarUnderlay.LayoutParameters = layoutParameters;
-			_layout.AddView(_statusBarUnderlay);
-
-			if (Forms.IsLollipopOrNewer)
-			{
-				Window.AddFlags(WindowManagerFlags.DrawsSystemBarBackgrounds);
-				Window.SetStatusBarColor(AColor.Transparent);
-
-				int primaryColorDark = GetColorPrimaryDark();
-
-				if (primaryColorDark != 0)
-				{
-					int r = AColor.GetRedComponent(primaryColorDark);
-					int g = AColor.GetGreenComponent(primaryColorDark);
-					int b = AColor.GetBlueComponent(primaryColorDark);
-					int a = AColor.GetAlphaComponent(primaryColorDark);
-					SetStatusBarColor(AColor.Argb(a, r, g, b));
-				}
-			}
-		}
-
 		void AppOnPropertyChanged(object sender, PropertyChangedEventArgs args)
 		{
 			if (args.PropertyName == "MainPage")
@@ -336,32 +315,6 @@ namespace Xamarin.Forms.Platform.Android
 
 			var link = new Uri(strLink);
 			_application?.SendOnAppLinkRequestReceived(link);
-		}
-
-		int GetColorPrimaryDark()
-		{
-			FormsAppCompatActivity context = this;
-			int id = global::Android.Resource.Attribute.ColorPrimaryDark;
-			using (var value = new TypedValue())
-			{
-				try
-				{
-					Resources.Theme theme = context.Theme;
-					if (theme != null && theme.ResolveAttribute(id, value, true))
-					{
-						if (value.Type >= DataType.FirstInt && value.Type <= DataType.LastInt)
-							return value.Data;
-						if (value.Type == DataType.String)
-							return ContextCompat.GetColor(context, value.ResourceId);
-					}
-				}
-				catch (Exception ex)
-				{
-					Internals.Log.Warning("Xamarin.Forms.Platform.Android.FormsAppCompatActivity", "Error retrieving color resource: {0}", ex);
-				}
-
-				return -1;
-			}
 		}
 
 		void InternalSetPage(Page page)
