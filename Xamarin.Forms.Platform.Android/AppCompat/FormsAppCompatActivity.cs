@@ -45,7 +45,6 @@ namespace Xamarin.Forms.Platform.Android
 		AndroidApplicationLifecycleState _previousState;
 
 		bool _renderersAdded, _isFullScreen;
-		int _statusBarHeight = -1;
 
 		// Override this if you want to handle the default Android behavior of restoring fragments on an application restart
 		protected virtual bool AllowFragmentRestore => false;
@@ -286,18 +285,6 @@ namespace Xamarin.Forms.Platform.Android
 			OnStateChanged();
 		}
 
-		internal int GetStatusBarHeight()
-		{
-			if (_statusBarHeight >= 0)
-				return _statusBarHeight;
-
-			var result = 0;
-			int resourceId = Resources.GetIdentifier("status_bar_height", "dimen", "android");
-			if (resourceId > 0)
-				result = Resources.GetDimensionPixelSize(resourceId);
-			return _statusBarHeight = result;
-		}
-
 		void AppOnPropertyChanged(object sender, PropertyChangedEventArgs args)
 		{
 			if (args.PropertyName == "MainPage")
@@ -430,7 +417,6 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			Window.SetSoftInputMode(adjust);
-			SetStatusBarVisibility(adjust);
 		}
 
 		public override void OnWindowAttributesChanged(WindowManagerLayoutParams @params)
@@ -463,21 +449,6 @@ namespace Xamarin.Forms.Platform.Android
 			var width = displayMetrics.WidthPixels;
 			var height = displayMetrics.HeightPixels;
 			AppCompat.Platform.LayoutRootPage(this, Xamarin.Forms.Application.Current.MainPage, width, height);
-		}
-
-		void SetStatusBarVisibility(SoftInput mode)
-		{
-			if (!Forms.IsLollipopOrNewer)
-				return;
-
-			if (mode == SoftInput.AdjustResize)
-			{
-				Window.DecorView.SystemUiVisibility = (StatusBarVisibility)(SystemUiFlags.Immersive);
-			}
-			else
-				Window.DecorView.SystemUiVisibility = (StatusBarVisibility)(SystemUiFlags.LayoutFullscreen | SystemUiFlags.LayoutStable);
-
-			_layout?.Invalidate();
 		}
 
 		void UpdateProgressBarVisibility(bool isBusy)

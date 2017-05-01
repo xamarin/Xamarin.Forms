@@ -15,6 +15,7 @@ using Xamarin.Forms.Controls.Issues;
 using Xamarin.Forms.Platform.Android;
 using Xamarin.Forms.Platform.Android.AppLinks;
 using Android.Content;
+using Android.Views;
 using AColor = Android.Graphics.Color;
 
 [assembly: Dependency (typeof (CacheService))]
@@ -286,6 +287,9 @@ namespace Xamarin.Forms.ControlGallery.Android
 		{
 			ToolbarResource = Resource.Layout.Toolbar;
 			TabLayoutResource = Resource.Layout.Tabbar;
+
+			// Uncomment the next line to run this as a full screen app (no status bar)
+			//Window.AddFlags(WindowManagerFlags.Fullscreen | WindowManagerFlags.TurnScreenOn);
 
 			base.OnCreate (bundle);
 
