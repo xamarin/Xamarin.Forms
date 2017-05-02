@@ -23,10 +23,7 @@ namespace Xamarin.Forms.Maps.MacOS
 	public class MapDelegate : MKMapViewDelegate
 	{
 		protected Map _map;
-
-		// keep references alive, removing this will cause a segfault
-		readonly List<object> List = new List<object>();
-
+		
 		object _lastTouchedView;
 		bool _disposed;
 
@@ -77,13 +74,14 @@ namespace Xamarin.Forms.Maps.MacOS
 			}
 
 			Action<UITapGestureRecognizer> action = g => OnClick(annotation, g);
-			var recognizer = new UITapGestureRecognizer(action) { ShouldReceiveTouch = (gestureRecognizer, touch) =>
-			{
-				_lastTouchedView = touch.View;
-				return true;
-			} };
-			List.Add(action);
-			List.Add(recognizer);
+			var recognizer = new UITapGestureRecognizer(action) 
+			{ 
+				ShouldReceiveTouch = (gestureRecognizer, touch) =>
+				{
+					_lastTouchedView = touch.View;
+					return true;
+				} 
+			};
 			mapPin.AddGestureRecognizer(recognizer);
 		}
 #else
@@ -98,11 +96,8 @@ namespace Xamarin.Forms.Maps.MacOS
 					mapPin.RemoveGestureRecognizer(r);
 				}
 			}
-
-			Action<NSClickGestureRecognizer> action = g => OnClick(annotation, g);
-			var recognizer = new NSClickGestureRecognizer(action);
-			List.Add(action);
-			List.Add(recognizer);
+			
+			var recognizer = new NSClickGestureRecognizer(g => OnClick(annotation, g));
 			mapPin.AddGestureRecognizer(recognizer);
 		}
 #endif
