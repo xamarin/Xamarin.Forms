@@ -20,22 +20,29 @@ using Xamarin.Forms.Platform.MacOS;
 namespace Xamarin.Forms.Maps.MacOS
 #endif
 {
-	internal class MapDelegate : MKMapViewDelegate
+	public class MapDelegate : MKMapViewDelegate
 	{
+		protected Map _map;
+
 		// keep references alive, removing this will cause a segfault
 		readonly List<object> List = new List<object>();
-		Map _map;
+
 		object _lastTouchedView;
 		bool _disposed;
 
-		internal MapDelegate(Map map)
+		public MapDelegate(Map map)
 		{
 			_map = map;
 		}
 
+		public override void RegionChanged(MKMapView mapView, bool animated)
+		{
+			_map.VisibleRegion = new MapSpan(new Position(mapView.Region.Center.Latitude, mapView.Region.Center.Longitude), mapView.Region.Span.LatitudeDelta, mapView.Region.Span.LongitudeDelta);
+		}
+
 		public override MKAnnotationView GetViewForAnnotation(MKMapView mapView, IMKAnnotation annotation)
 		{
-			MKPinAnnotationView mapPin = null;
+			MKAnnotationView mapPin = null;
 
 			// https://bugzilla.xamarin.com/show_bug.cgi?id=26416
 			var userLocationAnnotation = Runtime.GetNSObject(annotation.Handle) as MKUserLocation;
@@ -43,7 +50,7 @@ namespace Xamarin.Forms.Maps.MacOS
 				return null;
 
 			const string defaultPinId = "defaultPin";
-			mapPin = (MKPinAnnotationView)mapView.DequeueReusableAnnotation(defaultPinId);
+			mapPin = mapView.DequeueReusableAnnotation(defaultPinId);
 			if (mapPin == null)
 			{
 				mapPin = new MKPinAnnotationView(annotation, defaultPinId);
@@ -56,7 +63,7 @@ namespace Xamarin.Forms.Maps.MacOS
 			return mapPin;
 		}
 #if __MOBILE__
-		void AttachGestureToPin(MKPinAnnotationView mapPin, IMKAnnotation annotation)
+		protected void AttachGestureToPin(MKAnnotationView mapPin, IMKAnnotation annotation)
 		{
 
 			UIGestureRecognizer[] recognizers = mapPin.GestureRecognizers;
@@ -78,9 +85,9 @@ namespace Xamarin.Forms.Maps.MacOS
 			List.Add(action);
 			List.Add(recognizer);
 			mapPin.AddGestureRecognizer(recognizer);
-			}
+		}
 #else
-		void AttachGestureToPin(MKPinAnnotationView mapPin, IMKAnnotation annotation)
+		protected void AttachGestureToPin(MKAnnotationView mapPin, IMKAnnotation annotation)
 		{
 			NSGestureRecognizer[] recognizers = mapPin.GestureRecognizers;
 
@@ -97,7 +104,6 @@ namespace Xamarin.Forms.Maps.MacOS
 			List.Add(action);
 			List.Add(recognizer);
 			mapPin.AddGestureRecognizer(recognizer);
-
 		}
 #endif
 #if __MOBILE__
@@ -259,9 +265,7 @@ namespace Xamarin.Forms.Maps.MacOS
 					SetNativeControl(mapView);
 
 					var mkMapView = (MKMapView)Control;
-					var mapDelegate = new MapDelegate(mapModel);
-					mkMapView.GetViewForAnnotation = mapDelegate.GetViewForAnnotation;
-					mkMapView.RegionChanged += MkMapViewOnRegionChanged;
+					mkMapView.Delegate = new MapDelegate(mapModel);
 				}
 
 				MessagingCenter.Subscribe<Map, MapSpan>(this, MoveMessageName, (s, a) => MoveToRegion(a), mapModel);
@@ -336,17 +340,6 @@ namespace Xamarin.Forms.Maps.MacOS
 				pin.Id = annotation;
 				((MKMapView)Control).AddAnnotation(annotation);
 			}
-		}
-
-		void MkMapViewOnRegionChanged(object sender, MKMapViewChangeEventArgs mkMapViewChangeEventArgs)
-		{
-			if (Element == null)
-				return;
-
-			var mapModel = (Map)Element;
-			var mkMapView = (MKMapView)Control;
-
-			mapModel.VisibleRegion = new MapSpan(new Position(mkMapView.Region.Center.Latitude, mkMapView.Region.Center.Longitude), mkMapView.Region.Span.LatitudeDelta, mkMapView.Region.Span.LongitudeDelta);
 		}
 
 		void MoveToRegion(MapSpan mapSpan, bool animated = true)
