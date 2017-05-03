@@ -188,14 +188,17 @@ namespace Xamarin.Forms.Platform.Android
 					e.PropertyName == Frame.OutlineColorProperty.PropertyName ||
 					e.PropertyName == Frame.CornerRadiusProperty.PropertyName)
 				{
-					using (var canvas = new ACanvas(_normalBitmap))
+					if (_normalBitmap != null)
 					{
-						int width = Bounds.Width();
-						int height = Bounds.Height();
-						canvas.DrawColor(global::Android.Graphics.Color.Black, PorterDuff.Mode.Clear);
-						DrawCanvas(canvas, width, height, false);
+						using (var canvas = new ACanvas(_normalBitmap))
+						{
+							int width = Bounds.Width();
+							int height = Bounds.Height();
+							canvas.DrawColor(global::Android.Graphics.Color.Black, PorterDuff.Mode.Clear);
+							DrawCanvas(canvas, width, height, false);
+						}
+						InvalidateSelf();
 					}
-					InvalidateSelf();
 				}
 			}
 
