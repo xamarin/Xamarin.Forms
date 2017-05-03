@@ -104,8 +104,8 @@ namespace Xamarin.Forms.Platform.WPF
 		}
 
 		public IIsolatedStorageFile GetUserStoreForApplication()
-		{
-			return new _IsolatedStorageFile(IsolatedStorageFile.GetUserStoreForApplication());
+		{	
+			return new _IsolatedStorageFile(IsolatedStorageFile.GetUserStoreForAssembly());
 		}
 		public bool IsInvokeRequired => Dispatcher.CurrentDispatcher.CheckAccess();
 
