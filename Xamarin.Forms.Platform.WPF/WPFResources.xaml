@@ -1,0 +1,374 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+					xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+					xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+					xmlns:forms="clr-namespace:Xamarin.Forms.Platform.WPF"
+					xmlns:formsc="clr-namespace:Xamarin.Forms.Platform.WPF.Converters"
+					xmlns:controls="http://metro.mahapps.com/winfx/xaml/controls"
+					xmlns:toolkit="clr-namespace:Xamarin.Forms.Platform.WPF.Toolkit"
+					xmlns:system="clr-namespace:System;assembly=mscorlib">
+
+	<formsc:CaseConverter x:Key="UpperConverter" ConvertToUpper="True" />
+	<formsc:CaseConverter x:Key="LowerConverter" ConvertToUpper="False" />
+	<formsc:ColorConverter x:Key="ColorConverter" />
+	<forms:HeightConverter x:Key="HeightConverter" />
+	<formsc:HorizontalTextAlignmentConverter x:Key="HorizontalTextAlignmentConverter" />
+	<formsc:KeyboardConverter x:Key="KeyboardConverter"/>
+	<formsc:ImageConverter x:Key="ImageConverter" />
+	<forms:ViewToRendererConverter x:Key="ViewToRenderer" />
+	<forms:PageToRendererConverter x:Key="PageToRenderer" />
+	<forms:CollapseWhenEmptyConverter x:Key="CollapseWhenEmpty" />
+	<forms:EntryCellRendererCompleted x:Key="EntryCellRendererCompleted" />
+
+	<FontFamily x:Key="FontFamilyNormal">Segoe UI</FontFamily>
+	<FontFamily x:Key="FontFamilyLight">Segoe UI Light</FontFamily>
+	<FontFamily x:Key="FontFamilySemiLight">Segoe UI Light</FontFamily>
+	<FontFamily x:Key="FontFamilySemiBold">Segoe UI Semibold</FontFamily>
+
+	<system:Double x:Key="FontSizeSmall">18.667</system:Double>
+	<system:Double x:Key="FontSizeNormal">20</system:Double>
+	<system:Double x:Key="FontSizeMedium">22.667</system:Double>
+	<system:Double x:Key="FontSizeMediumLarge">25.333</system:Double>
+	<system:Double x:Key="FontSizeLarge">32</system:Double>
+	<system:Double x:Key="FontSizeExtraLarge">42.667</system:Double>
+	<system:Double x:Key="FontSizeExtraExtraLarge">72</system:Double>
+	<system:Double x:Key="FontSizeHuge">186.667</system:Double>
+
+	<SolidColorBrush x:Key="ForegroundBrush">Black</SolidColorBrush>
+	<SolidColorBrush x:Key="AccentBrush">Green</SolidColorBrush>
+
+	<Style x:Key="TextBlockBase" TargetType="TextBlock">
+		<Style.Setters>
+			<Setter Property="FontFamily" Value="{StaticResource FontFamilyNormal}"></Setter>
+			<Setter Property="FontSize" Value="{StaticResource FontSizeNormal}"></Setter>
+			<Setter Property="Foreground" Value="{StaticResource ForegroundBrush}"></Setter>
+		</Style.Setters>
+	</Style>
+	<Style x:Key="TextGroupHeaderStyle" BasedOn="{StaticResource TextBlockBase}" TargetType="TextBlock">
+		<Style.Setters>
+			<Setter Property="FontFamily" Value="{StaticResource FontFamilySemiLight}"></Setter>
+			<Setter Property="FontSize" Value="{StaticResource FontSizeLarge}"></Setter>
+		</Style.Setters>
+	</Style>
+	<Style x:Key="TextLargeStyle" BasedOn="{StaticResource TextBlockBase}" TargetType="TextBlock">
+		<Style.Setters>
+			<Setter Property="FontFamily" Value="{StaticResource FontFamilySemiLight}"></Setter>
+			<Setter Property="FontSize" Value="{StaticResource FontSizeLarge}"></Setter>
+		</Style.Setters>
+	</Style>
+	<Style x:Key="TextAccentStyle" BasedOn="{StaticResource TextBlockBase}" TargetType="TextBlock">
+		<Style.Setters>
+			<Setter Property="FontFamily" Value="{StaticResource FontFamilySemiBold}"></Setter>
+			<Setter Property="Foreground" Value="{StaticResource AccentBrush}"></Setter>
+		</Style.Setters>
+	</Style>
+	<DataTemplate x:Key="CellTemplate">
+		<Border Background="Transparent">
+			<forms:CellControl Cell="{Binding}" HorizontalContentAlignment="Stretch" />
+		</Border>
+	</DataTemplate>
+
+
+	<DataTemplate x:Key="TableGroup">
+		<StackPanel Margin="0,20,0,0">
+			<TextBlock Text="{Binding Title,Converter={StaticResource LowerConverter}}" Style="{StaticResource TextGroupHeaderStyle}" />
+			<ItemsControl ItemsSource="{Binding}" ItemTemplate="{StaticResource CellTemplate}" />
+		</StackPanel>
+	</DataTemplate>
+
+	<DataTemplate x:Key="ViewCell">
+		<ContentPresenter Height="{Binding RenderHeight, Converter={StaticResource HeightConverter}}"  Content="{Binding View,Converter={StaticResource ViewToRenderer}}" />
+	</DataTemplate>
+
+	<DataTemplate x:Key="View">
+		<ContentPresenter Content="{Binding Path=.,Converter={StaticResource ViewToRenderer}}" />
+	</DataTemplate>
+
+	<DataTemplate x:Key="ListViewHeader">
+		<forms:CellControl Cell="{Binding HeaderContent}" HorizontalContentAlignment="Left" ShowContextActions="False" />
+	</DataTemplate>
+
+	<DataTemplate x:Key="ListViewHeaderTextCell">
+		<Border Background="{StaticResource AccentBrush}" Height="{Binding RenderHeight, Converter={StaticResource HeightConverter}}" Margin="5" MinWidth="62" MinHeight="62">
+			<StackPanel Margin="6">
+				<StackPanel.Resources>
+					<Style TargetType="TextBlock">
+						<Setter Property="FontFamily" Value="{StaticResource FontFamilySemiLight}" />
+					</Style>
+				</StackPanel.Resources>
+
+				<TextBlock FontSize="48"
+						   Text="{Binding Text, Converter={StaticResource LowerConverter}}"
+						   Visibility="{Binding Text,RelativeSource={RelativeSource Self}, Converter={StaticResource CollapseWhenEmpty}}"
+						   Foreground="{Binding TextColor,Converter={StaticResource ColorConverter},ConverterParameter=ForegroundBrush}" />
+
+				<TextBlock FontSize="32"
+						   Text="{Binding Detail}"
+						   Visibility="{Binding Text,RelativeSource={RelativeSource Self}, Converter={StaticResource CollapseWhenEmpty}}"
+						   Foreground="{Binding DetailColor,Converter={StaticResource ColorConverter},ConverterParameter=AccentBrush}" />
+			</StackPanel>
+		</Border>
+	</DataTemplate>
+
+	<DataTemplate x:Key="TextCell">
+		<Button Name="button" Margin="0,10,0,0" Height="{Binding RenderHeight, Converter={StaticResource HeightConverter}}"  IsEnabled="{Binding IsEnabled}">
+			<Button.Template>
+				<ControlTemplate>
+					<Grid Background="{Binding Background,RelativeSource={RelativeSource TemplatedParent}}">
+						<ContentPresenter />
+					</Grid>
+				</ControlTemplate>
+			</Button.Template>
+			<Button.Content>
+				<StackPanel>
+					<TextBlock
+						Style="{StaticResource TextExtraLargeStyle}"
+						Text="{Binding Text,Converter={StaticResource LowerConverter}}"
+						Foreground="{Binding TextColor,Converter={StaticResource ColorConverter},ConverterParameter=ForegroundBrush}"
+						Visibility="{Binding Text,RelativeSource={RelativeSource Self}, Converter={StaticResource CollapseWhenEmpty}}"
+						toolkit:TiltEffect.IsTiltEnabled="True"
+					/>
+
+					<TextBlock
+						Style="{StaticResource TextAccentStyle}"
+						Text="{Binding Detail}"
+						Foreground="{Binding DetailColor,Converter={StaticResource ColorConverter},ConverterParameter=AccentBrush}"
+						Visibility="{Binding Text,RelativeSource={RelativeSource Self}, Converter={StaticResource CollapseWhenEmpty}}"
+						toolkit:TiltEffect.IsTiltEnabled="True"
+					/>
+				</StackPanel>
+			</Button.Content>
+		</Button>
+	</DataTemplate>
+
+	<DataTemplate x:Key="ImageCell">
+		<Button Name="button" Margin="0,10,0,0" Height="{Binding RenderHeight, Converter={StaticResource HeightConverter}}"  IsEnabled="{Binding IsEnabled}">
+			<Button.Template>
+				<ControlTemplate>
+					<Grid Background="{Binding Background,RelativeSource={RelativeSource TemplatedParent}}">
+						<ContentPresenter />
+					</Grid>
+				</ControlTemplate>
+			</Button.Template>
+			<Button.Content>
+				<Grid Margin="10, 0, 0, 0">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="80"/>
+						<ColumnDefinition Width="*" />
+					</Grid.ColumnDefinitions>
+
+					<Image 
+						Grid.Column="0"
+						DataContext="{Binding ImageSource, Converter={StaticResource ImageConverter}}"
+						Source="{Binding Value}" 
+						VerticalAlignment="Center"
+					/>
+
+					<StackPanel Grid.Column="1">
+						<TextBlock
+							Style="{StaticResource TextExtraLargeStyle}"
+							Text="{Binding Text,Converter={StaticResource LowerConverter}}"
+							Foreground="{Binding TextColor,Converter={StaticResource ColorConverter},ConverterParameter=ForegroundBrush}"
+							Visibility="{Binding Text,RelativeSource={RelativeSource Self}, Converter={StaticResource CollapseWhenEmpty}}"
+							toolkit:TiltEffect.IsTiltEnabled="True"
+						/>
+
+						<TextBlock
+							Style="{StaticResource TextAccentStyle}"
+							Text="{Binding Detail}"
+							Foreground="{Binding DetailColor,Converter={StaticResource ColorConverter},ConverterParameter=AccentBrush}"
+							Visibility="{Binding Text,RelativeSource={RelativeSource Self}, Converter={StaticResource CollapseWhenEmpty}}"
+							toolkit:TiltEffect.IsTiltEnabled="True"
+						/>
+					</StackPanel>
+				</Grid>
+			</Button.Content>
+		</Button>
+	</DataTemplate>
+
+	<DataTemplate x:Key="ListImageCell">
+		<Button Margin="0,10,0,0" Height="{Binding RenderHeight, Converter={StaticResource HeightConverter}}" IsEnabled="{Binding IsEnabled}">
+			<Button.Template>
+				<ControlTemplate>
+					<Grid Background="{Binding Background,RelativeSource={RelativeSource TemplatedParent}}">
+						<ContentPresenter />
+					</Grid>
+				</ControlTemplate>
+			</Button.Template>
+			<Button.Content>
+				<Grid Margin="10, 0, 0, 0">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="80"/>
+						<ColumnDefinition Width="*" />
+					</Grid.ColumnDefinitions>
+
+					<Image 
+						Grid.Column="0"
+						DataContext="{Binding ImageSource, Converter={StaticResource ImageConverter}}"
+						Source="{Binding Value}"
+						VerticalAlignment="Center"
+					/>
+
+					<StackPanel Grid.Column="1">
+						<TextBlock
+							Style="{StaticResource TextLargeStyle}"
+							Text="{Binding Text}"
+							Foreground="{Binding TextColor,Converter={StaticResource ColorConverter},ConverterParameter=ForegroundBrush}"
+							Visibility="{Binding Text,RelativeSource={RelativeSource Self}, Converter={StaticResource CollapseWhenEmpty}}"
+							toolkit:TiltEffect.IsTiltEnabled="True"
+							forms:ListViewRenderer.HighlightWhenSelected="True"
+						/>
+
+						<TextBlock
+							Style="{StaticResource TextAccentStyle}"
+							Text="{Binding Detail}"
+							Foreground="{Binding DetailColor,Converter={StaticResource ColorConverter},ConverterParameter=AccentBrush}"
+							Visibility="{Binding Text,RelativeSource={RelativeSource Self}, Converter={StaticResource CollapseWhenEmpty}}"
+							toolkit:TiltEffect.IsTiltEnabled="True"
+							forms:ListViewRenderer.HighlightWhenSelected="True"
+						/>
+					</StackPanel>
+				</Grid>
+			</Button.Content>
+		</Button>
+	</DataTemplate>
+
+	<DataTemplate x:Key="ListViewTextCell">
+		<Grid Height="{Binding RenderHeight, Converter={StaticResource HeightConverter}}" IsEnabled="{Binding IsEnabled}">
+			<StackPanel>
+				<TextBlock
+						Style="{StaticResource TextLargeStyle}"
+						Text="{Binding Text}"
+						Foreground="{Binding TextColor,Converter={StaticResource ColorConverter},ConverterParameter=ForegroundBrush}"
+						Visibility="{Binding Text,RelativeSource={RelativeSource Self}, Converter={StaticResource CollapseWhenEmpty}}"
+						toolkit:TiltEffect.IsTiltEnabled="True"
+						forms:ListViewRenderer.HighlightWhenSelected="True"
+					/>
+
+				<TextBlock
+						Style="{StaticResource TextAccentStyle}"
+						Text="{Binding Detail}"
+						Foreground="{Binding DetailColor,Converter={StaticResource ColorConverter},ConverterParameter=AccentBrush}"
+						Visibility="{Binding Text,RelativeSource={RelativeSource Self}, Converter={StaticResource CollapseWhenEmpty}}"
+						toolkit:TiltEffect.IsTiltEnabled="True"
+						forms:ListViewRenderer.HighlightWhenSelected="True"
+					/>
+			</StackPanel>
+		</Grid>
+	</DataTemplate>
+
+	<DataTemplate x:Key="EntryCell">
+		<Grid HorizontalAlignment="Stretch">
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="Auto"/>
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
+
+			<Grid.Children>
+				<TextBlock forms:ListViewRenderer.HighlightWhenSelected="True" Style="{StaticResource TextLargeStyle}"
+							Text="{Binding Label}"
+							Foreground="{Binding LabelColor,Converter={StaticResource ColorConverter},ConverterParameter=ForegroundBrush}"
+							Visibility="{Binding Text,RelativeSource={RelativeSource Self}, Converter={StaticResource CollapseWhenEmpty}}"
+							VerticalAlignment="Center"
+							Grid.Column="0"
+				/>
+				<forms:EntryCellTextBox
+							IsEnabled="{Binding IsEnabled}"
+							Placeholder="{Binding Placeholder}"
+							Text="{Binding Text, Mode=TwoWay}"
+							InputScope="{Binding Keyboard, Converter={StaticResource KeyboardConverter}}"
+							VerticalAlignment="Center"
+							TextAlignment="{Binding HorizontalTextAlignment, Converter={StaticResource HorizontalTextAlignmentConverter}}"
+							Grid.Column="1"
+				>
+					<i:Interaction.Triggers>
+						<i:EventTrigger EventName="KeyboardReturnPressed">
+							<i:InvokeCommandAction Command="{StaticResource EntryCellRendererCompleted}" CommandParameter="{Binding}" />
+						</i:EventTrigger>
+					</i:Interaction.Triggers>
+				</forms:EntryCellTextBox>
+			</Grid.Children>
+		</Grid>
+	</DataTemplate>
+
+	<DataTemplate x:Key="SwitchCell">
+		<controls:ToggleSwitch Content="{Binding Text}" Height="{Binding RenderHeight, Converter={StaticResource HeightConverter}}" 
+								  IsChecked="{Binding On, Mode=TwoWay}" IsEnabled="{Binding IsEnabled}" FontFamily="{StaticResource FontFamilyNormal}" />
+	</DataTemplate>
+
+	<DataTemplate x:Key="TabbedPage">
+		<forms:TabbedPagePresenter Content="{Binding Converter={StaticResource PageToRenderer}}" />
+	</DataTemplate>
+
+	<DataTemplate x:Key="TabbedPageHeader">
+		<TextBlock Text="{Binding Title, Converter={StaticResource LowerConverter}}" />
+	</DataTemplate>
+
+	<DataTemplate x:Key="CarouselPage">
+		<forms:CarouselPagePresenter Content="{Binding Converter={StaticResource PageToRenderer}}" />
+	</DataTemplate>
+
+	<DataTemplate x:Key="PickerItemTemplate">
+		<StackPanel>
+			<TextBlock Text="{Binding Data}" Opacity="{Binding Opacity}"/>
+		</StackPanel>
+	</DataTemplate>
+
+	<DataTemplate x:Key="PickerFullItemTemplate">
+		<StackPanel MaxHeight="{Binding MaxHeight}">
+			<TextBlock Text="{Binding Data}" FontSize="43" />
+		</StackPanel>
+	</DataTemplate>
+
+	<forms:TextAlignmentToHorizontalAlignmentConverter x:Key="AlignmentConverter" />
+
+	<!-- Usage -->
+
+	<!-- Style definition -->
+	<Style x:Key="BaseTextBlockStyle" TargetType="TextBlock">
+		<Setter Property="FontFamily" Value="Segoe UI"/>
+		<Setter Property="FontWeight" Value="SemiBold"/>
+		<Setter Property="FontSize" Value="15"/>
+		<Setter Property="TextTrimming" Value="None"/>
+		<Setter Property="TextWrapping" Value="Wrap"/>
+		<Setter Property="LineStackingStrategy" Value="MaxHeight"/>
+		<Setter Property="BaselineOffset" Value="0"/>
+	</Style>
+
+	<Style x:Key="HeaderTextBlockStyle" TargetType="TextBlock"
+       BasedOn="{StaticResource BaseTextBlockStyle}">
+		<Setter Property="FontSize" Value="46"/>
+		<Setter Property="FontWeight" Value="Light"/>
+	</Style>
+
+	<Style x:Key="SubheaderTextBlockStyle" TargetType="TextBlock" 
+       BasedOn="{StaticResource BaseTextBlockStyle}">
+		<Setter Property="FontSize" Value="34"/>
+		<Setter Property="FontWeight" Value="Light"/>
+	</Style>
+
+	<Style x:Key="TitleTextBlockStyle" TargetType="TextBlock" 
+       BasedOn="{StaticResource BaseTextBlockStyle}">
+		<Setter Property="FontWeight" Value="SemiBold"/>
+		<Setter Property="FontSize" Value="24"/>
+	</Style>
+
+	<Style x:Key="SubtitleTextBlockStyle" TargetType="TextBlock" 
+       BasedOn="{StaticResource BaseTextBlockStyle}">
+		<Setter Property="FontWeight" Value="Normal"/>
+		<Setter Property="FontSize" Value="20"/>
+	</Style>
+
+	<Style x:Key="BodyTextBlockStyle" TargetType="TextBlock" 
+       BasedOn="{StaticResource BaseTextBlockStyle}">
+		<Setter Property="FontWeight" Value="Normal"/>
+		<Setter Property="FontSize" Value="15"/>
+	</Style>
+
+	<Style x:Key="CaptionTextBlockStyle" TargetType="TextBlock" 
+       BasedOn="{StaticResource BaseTextBlockStyle}">
+		<Setter Property="FontSize" Value="12"/>
+		<Setter Property="FontWeight" Value="Normal"/>
+	</Style>
+
+</ResourceDictionary>

@@ -19,6 +19,8 @@ namespace Xamarin.Forms
 
 		public const string ActionSheetSignalName = "Xamarin.ShowActionSheet";
 
+		public const string NavigatedSignalName = "Xamarin.NavigatedSignalName";
+		
 		internal static readonly BindableProperty IgnoresContainerAreaProperty = BindableProperty.Create("IgnoresContainerArea", typeof(bool), typeof(Page), false);
 
 		public static readonly BindableProperty BackgroundImageProperty = BindableProperty.Create("BackgroundImage", typeof(string), typeof(Page), default(string));
@@ -171,13 +173,9 @@ namespace Xamarin.Forms
 					continue;
 				var page = child as Page;
 				if (page != null && ((IPageController)page).IgnoresContainerArea)
-				{
 					Forms.Layout.LayoutChildIntoBoundingRegion(child, originalArea);
-				}
 				else
-				{
 					Forms.Layout.LayoutChildIntoBoundingRegion(child, area);
-				}
 			}
 		}
 

@@ -152,18 +152,33 @@ namespace Xamarin.Forms
 			{
 				currentInner.InsertPageBefore(page, before);
 			}
+			MessagingCenter.Send(page, Page.NavigatedSignalName);
 		}
 
 		protected virtual Task<Page> OnPopAsync(bool animated)
 		{
+		    var task = OnPopTask(animated);
+		    task.ContinueWith(p => MessagingCenter.Send(p.Result, Page.NavigatedSignalName));
+		    return task;   
+		}
+
+		Task<Page> OnPopTask(bool animatedPop)
+		{
 			INavigation inner = Inner;
-			return inner == null ? Task.FromResult(Pop()) : inner.PopAsync(animated);
+			return inner == null ? Task.FromResult(Pop()) : inner.PopAsync(animatedPop);
 		}
 
 		protected virtual Task<Page> OnPopModal(bool animated)
 		{
+			var task = OnPopModalTask(animated);
+			task.ContinueWith(p => MessagingCenter.Send(p.Result, Page.NavigatedSignalName));
+			return task;
+		}
+
+		Task<Page> OnPopModalTask(bool animatedPop)
+		{
 			INavigation innerNav = Inner;
-			return innerNav == null ? Task.FromResult(PopModal()) : innerNav.PopModalAsync(animated);
+			return innerNav == null ? Task.FromResult(PopModal()) : innerNav.PopModalAsync(animatedPop);
 		}
 
 		protected virtual Task OnPopToRootAsync(bool animated)
@@ -181,13 +196,24 @@ namespace Xamarin.Forms
 
 		protected virtual Task OnPushAsync(Page page, bool animated)
 		{
+		    Task task = OnPushTask(page, animated);
+			task.ContinueWith(obj =>
+			{
+			    MessagingCenter.Send(page, Page.NavigatedSignalName);
+			});
+
+			return task;
+		}
+
+		Task OnPushTask(Page pushPage, bool animated)
+		{
 			INavigation currentInner = Inner;
 			if (currentInner == null)
 			{
-				_pushStack.Value.Add(page);
-				return Task.FromResult(page);
+				_pushStack.Value.Add(pushPage);
+				return Task.FromResult(pushPage);
 			}
-			return currentInner.PushAsync(page, animated);
+			return currentInner.PushAsync(pushPage, animated);
 		}
 
 		protected virtual Task OnPushModal(Page modal, bool animated)

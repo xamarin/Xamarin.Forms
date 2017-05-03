@@ -262,17 +262,17 @@ namespace Xamarin.Forms
 
 		int IList.Add(object item)
 		{
-			throw new NotSupportedException();
+		    return ListProxy.Add(item);
 		}
 
 		void IList.Clear()
 		{
-			throw new NotSupportedException();
+		    ListProxy.Clear();
 		}
 
 		bool IList.Contains(object item)
 		{
-			throw new NotImplementedException();
+		    return ListProxy.Contains(item);
 		}
 
 		int IList.IndexOf(object item)
@@ -289,7 +289,7 @@ namespace Xamarin.Forms
 
 		void IList.Insert(int index, object item)
 		{
-			throw new NotSupportedException();
+			ListProxy.Insert(index,item);
 		}
 
 		bool IList.IsFixedSize
@@ -316,12 +316,12 @@ namespace Xamarin.Forms
 
 		void IList.Remove(object item)
 		{
-			throw new NotSupportedException();
+			ListProxy.Remove(item);
 		}
 
 		void IList.RemoveAt(int index)
 		{
-			throw new NotSupportedException();
+		    ListProxy.RemoveAt(index);
 		}
 
 		public event NotifyCollectionChangedEventHandler CollectionChanged;
