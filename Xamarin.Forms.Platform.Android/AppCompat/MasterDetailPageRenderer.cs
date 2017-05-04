@@ -113,9 +113,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				oldElement.Disappearing -= MasterDetailPageDisappearing;
 			}
 
-			var statusBarHeight = 0;
-			if (Forms.IsLollipopOrNewer)
-				statusBarHeight = ((FormsAppCompatActivity)Context).GetStatusBarHeight();
+			int statusBarUnderlayHeight = ((FormsAppCompatActivity)Context).GetStatusBarUnderlayHeight();
 
 			if (newElement != null)
 			{
@@ -123,13 +121,13 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				{
 					_detailLayout = new MasterDetailContainer(newElement, false, Context)
 					{
-						TopPadding = HasAncestorNavigationPage(Element) ? 0 : statusBarHeight,
+						TopPadding = HasAncestorNavigationPage(Element) ? 0 : statusBarUnderlayHeight,
 						LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent)
 					};
 
 					_masterLayout = new MasterDetailContainer(newElement, true, Context)
 					{
-						TopPadding = ((IMasterDetailPageController)newElement).ShouldShowSplitMode ? statusBarHeight : 0,
+						TopPadding = ((IMasterDetailPageController)newElement).ShouldShowSplitMode ? statusBarUnderlayHeight : 0,
 						LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.WrapContent, ViewGroup.LayoutParams.WrapContent) { Gravity = (int)GravityFlags.Start }
 					};
 
