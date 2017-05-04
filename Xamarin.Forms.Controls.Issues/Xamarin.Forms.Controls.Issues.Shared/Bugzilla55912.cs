@@ -2,9 +2,9 @@ using System;
 using System.Diagnostics;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-
 #if UITEST
 using NUnit.Framework;
+
 #endif
 
 namespace Xamarin.Forms.Controls.Issues
@@ -14,12 +14,9 @@ namespace Xamarin.Forms.Controls.Issues
 		PlatformAffected.Android)]
 	public class Bugzilla55912 : TestContentPage
 	{
-#if UITEST
-		[Test]
-		public void GestureBubblingInLayouts()
-		{
-		}
-#endif
+		const string Success = "Success";
+		const string GridLabelId = "GridLabel";
+		const string StackLabelId = "StackLabel";
 
 		protected override void Init()
 		{
@@ -27,14 +24,28 @@ namespace Xamarin.Forms.Controls.Issues
 
 			layout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star });
 			layout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star });
+			layout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star });
 
 			var testGrid = new Grid { BackgroundColor = Color.Red };
-			var gridLabel = new Label { Text = "This is a Grid with a TapGesture", FontSize = 24, BackgroundColor = Color.Green };
+			var gridLabel = new Label
+			{
+				AutomationId = GridLabelId,
+				Text = "This is a Grid with a TapGesture",
+				FontSize = 24,
+				BackgroundColor = Color.Green
+			};
+			Grid.SetRow(testGrid, 1);
 			testGrid.Children.Add(gridLabel);
 
-			var testStack = new StackLayout { BackgroundColor = Color.Aqua };
-			var stackLabel = new Label { Text = "This StackLayout also has a TapGesture", FontSize = 24, BackgroundColor = Color.Green };
-			Grid.SetRow(testStack, 1);
+			var testStack = new StackLayout { BackgroundColor = Color.Default };
+			var stackLabel = new Label
+			{
+				AutomationId = StackLabelId,
+				Text = "This StackLayout also has a TapGesture",
+				FontSize = 24,
+				BackgroundColor = Color.Green
+			};
+			Grid.SetRow(testStack, 2);
 			testStack.Children.Add(stackLabel);
 
 			layout.Children.Add(testGrid);
@@ -48,6 +59,7 @@ namespace Xamarin.Forms.Controls.Issues
 				Command = new Command(() =>
 				{
 					Debug.WriteLine($"***** TestGrid Tapped: {DateTime.Now} *****");
+					layout.Children.Add(new Label { AutomationId = Success, Text = Success });
 				})
 			});
 
@@ -57,8 +69,27 @@ namespace Xamarin.Forms.Controls.Issues
 				Command = new Command(() =>
 				{
 					Debug.WriteLine($"***** TestStack Tapped: {DateTime.Now} *****");
+					layout.Children.Add(new Label { AutomationId = Success, Text = Success });
 				})
 			});
 		}
+
+#if UITEST
+		[Test]
+		public void GestureBubblingInStackLayout()
+		{
+			RunningApp.WaitForElement(StackLabelId);
+			RunningApp.Tap(StackLabelId);
+			RunningApp.WaitForElement(Success);
+		}
+
+		[Test]
+		public void GestureBubblingInGrid()
+		{
+			RunningApp.WaitForElement(GridLabelId);
+			RunningApp.Tap(GridLabelId);
+			RunningApp.WaitForElement(Success);
+		}
+#endif
 	}
 }
