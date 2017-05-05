@@ -20,6 +20,8 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 		}
 
+		WebView WebView => Element as WebView;
+
 		public VisualElement Element { get; private set; }
 
 		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
@@ -34,9 +36,9 @@ namespace Xamarin.Forms.Platform.iOS
 			var oldElement = Element;
 			Element = element;
 			Element.PropertyChanged += HandlePropertyChanged;
-			((WebView)Element).EvalRequested += OnEvalRequested;
-			((WebView)Element).GoBackRequested += OnGoBackRequested;
-			((WebView)Element).GoForwardRequested += OnGoForwardRequested;
+			WebView.EvalRequested += OnEvalRequested;
+			WebView.GoBackRequested += OnGoBackRequested;
+			WebView.GoForwardRequested += OnGoForwardRequested;
 			Delegate = new CustomWebViewDelegate(this);
 
 			BackgroundColor = UIColor.Clear;
@@ -96,9 +98,9 @@ namespace Xamarin.Forms.Platform.iOS
 					StopLoading();
 
 				Element.PropertyChanged -= HandlePropertyChanged;
-				((WebView)Element).EvalRequested -= OnEvalRequested;
-				((WebView)Element).GoBackRequested -= OnGoBackRequested;
-				((WebView)Element).GoForwardRequested -= OnGoForwardRequested;
+				WebView.EvalRequested -= OnEvalRequested;
+				WebView.GoBackRequested -= OnGoBackRequested;
+				WebView.GoForwardRequested -= OnGoForwardRequested;
 
 				_tracker?.Dispose();
 				_packager?.Dispose();
@@ -160,8 +162,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateCanGoBackForward()
 		{
-			((WebView)Element).CanGoBack = CanGoBack;
-			((WebView)Element).CanGoForward = CanGoForward;
+			((IWebViewController)WebView).CanGoBack = CanGoBack;
+			((IWebViewController)WebView).CanGoForward = CanGoForward;
 		}
 
 		class CustomWebViewDelegate : UIWebViewDelegate
@@ -196,7 +198,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				_renderer._ignoreSourceChanges = true;
 				var url = GetCurrentUrl();
-				((IElementController)WebView).SetValueFromRenderer(WebView.SourceProperty, new UrlWebViewSource { Url = url });
+				WebView.SetValueFromRenderer(WebView.SourceProperty, new UrlWebViewSource { Url = url });
 				_renderer._ignoreSourceChanges = false;
 
 				var args = new WebNavigatedEventArgs(_lastEvent, WebView.Source, url, WebNavigationResult.Success);

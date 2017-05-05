@@ -1,8 +1,10 @@
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
@@ -11,16 +13,23 @@ namespace Xamarin.Forms
 		public const string iOS = "iOS";
 		public const string Android = "Android";
 		public const string WinPhone = "WinPhone";
-		public const string Windows = "Windows";
+		public const string UWP = "UWP";
+		public const string WinRT = "WinRT";
 		public const string macOS = "macOS";
 
-		internal static DeviceInfo info;
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static DeviceInfo info;
 
 		static IPlatformServices s_platformServices;
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static void SetIdiom(TargetIdiom value) => Idiom = value;
 		public static TargetIdiom Idiom { get; internal set; }
 
-		[Obsolete("Use RuntimePlatform instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static void SetTargetIdiom(TargetIdiom value) => Idiom = value;
+
+		[Obsolete("TargetPlatform is obsolete as of version 2.3.4. Please use RuntimePlatform instead.")]
 #pragma warning disable 0618
 		public static TargetPlatform OS
 		{
@@ -29,6 +38,13 @@ namespace Xamarin.Forms
 				TargetPlatform platform;
 				if (Enum.TryParse(RuntimePlatform, out platform))
 					return platform;
+
+				// In the old TargetPlatform, there was no distinction between WinRT/UWP
+				if (RuntimePlatform == UWP || RuntimePlatform == WinRT)
+				{
+					return TargetPlatform.Windows;
+				}
+
 				return TargetPlatform.Other;
 			}
 		}
@@ -36,7 +52,8 @@ namespace Xamarin.Forms
 
 		public static string RuntimePlatform => PlatformServices.RuntimePlatform;
 
-		internal static DeviceInfo Info
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static DeviceInfo Info
 		{
 			get
 			{
@@ -47,12 +64,14 @@ namespace Xamarin.Forms
 			set { info = value; }
 		}
 
-		internal static bool IsInvokeRequired
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static bool IsInvokeRequired
 		{
 			get { return PlatformServices.IsInvokeRequired; }
 		}
 
-		internal static IPlatformServices PlatformServices
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static IPlatformServices PlatformServices
 		{
 			get
 			{
@@ -78,7 +97,7 @@ namespace Xamarin.Forms
 			return GetNamedSize(size, targetElementType, false);
 		}
 
-		[Obsolete("Use switch(RuntimePlatform) instead.")]
+		[Obsolete("OnPlatform is obsolete as of version 2.3.4. Please use switch(RuntimePlatform) instead.")]
 		public static void OnPlatform(Action iOS = null, Action Android = null, Action WinPhone = null, Action Default = null)
 		{
 			switch (OS)
@@ -109,7 +128,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		[Obsolete("Use switch(RuntimePlatform) instead.")]
+		[Obsolete("OnPlatform<> (generic) is obsolete as of version 2.3.4. Please use switch(RuntimePlatform) instead.")]
 		public static T OnPlatform<T>(T iOS, T Android, T WinPhone)
 		{
 			switch (OS)
@@ -136,12 +155,14 @@ namespace Xamarin.Forms
 			PlatformServices.StartTimer(interval, callback);
 		}
 
-		internal static Assembly[] GetAssemblies()
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static Assembly[] GetAssemblies()
 		{
 			return PlatformServices.GetAssemblies();
 		}
 
-		internal static double GetNamedSize(NamedSize size, Type targetElementType, bool useOldSizes)
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static double GetNamedSize(NamedSize size, Type targetElementType, bool useOldSizes)
 		{
 			return PlatformServices.GetNamedSize(size, targetElementType, useOldSizes);
 		}

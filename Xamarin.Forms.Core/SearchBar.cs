@@ -1,11 +1,13 @@
 using System;
+using System.ComponentModel;
 using System.Windows.Input;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_SearchBarRenderer))]
-	public class SearchBar : View, IFontElement, ISearchBarController, IElementConfiguration<SearchBar>
+	public class SearchBar : View, IFontElement, ITextElement, ISearchBarController, IElementConfiguration<SearchBar>
 	{
 		public static readonly BindableProperty SearchCommandProperty = BindableProperty.Create("SearchCommand", typeof(ICommand), typeof(SearchBar), null, propertyChanged: OnCommandChanged);
 
@@ -24,16 +26,15 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty PlaceholderProperty = BindableProperty.Create("Placeholder", typeof(string), typeof(SearchBar), null);
 
-		public static readonly BindableProperty FontFamilyProperty = BindableProperty.Create("FontFamily", typeof(string), typeof(SearchBar), default(string));
+		public static readonly BindableProperty FontFamilyProperty = FontElement.FontFamilyProperty;
 
-		public static readonly BindableProperty FontSizeProperty = BindableProperty.Create("FontSize", typeof(double), typeof(SearchBar), -1.0,
-			defaultValueCreator: bindable => Device.GetNamedSize(NamedSize.Default, (SearchBar)bindable));
+		public static readonly BindableProperty FontSizeProperty = FontElement.FontSizeProperty;
 
-		public static readonly BindableProperty FontAttributesProperty = BindableProperty.Create("FontAttributes", typeof(FontAttributes), typeof(SearchBar), FontAttributes.None);
+		public static readonly BindableProperty FontAttributesProperty = FontElement.FontAttributesProperty;
 
 		public static readonly BindableProperty HorizontalTextAlignmentProperty = BindableProperty.Create("HorizontalTextAlignment", typeof(TextAlignment), typeof(SearchBar), TextAlignment.Start);
 
-		public static readonly BindableProperty TextColorProperty = BindableProperty.Create("TextColor", typeof(Color), typeof(SearchBar), Color.Default);
+		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
 
 		public static readonly BindableProperty PlaceholderColorProperty = BindableProperty.Create("PlaceholderColor", typeof(Color), typeof(SearchBar), Color.Default);
 
@@ -83,8 +84,8 @@ namespace Xamarin.Forms
 
 		public Color TextColor
 		{
-			get { return (Color)GetValue(TextColorProperty); }
-			set { SetValue(TextColorProperty, value); }
+			get { return (Color)GetValue(TextElement.TextColorProperty); }
+			set { SetValue(TextElement.TextColorProperty, value); }
 		}
 
 		bool IsEnabledCore
@@ -111,6 +112,25 @@ namespace Xamarin.Forms
 			set { SetValue(FontSizeProperty, value); }
 		}
 
+		void IFontElement.OnFontFamilyChanged(string oldValue, string newValue)
+		{
+		}
+
+		void IFontElement.OnFontSizeChanged(double oldValue, double newValue)
+		{
+		}
+
+		double IFontElement.FontSizeDefaultValueCreator() =>
+			Device.GetNamedSize(NamedSize.Default, (SearchBar)this);
+
+		void IFontElement.OnFontAttributesChanged(FontAttributes oldValue, FontAttributes newValue)
+		{
+		}
+
+		void IFontElement.OnFontChanged(Font oldValue, Font newValue)
+		{
+		}
+
 		public event EventHandler SearchButtonPressed;
 
 		public event EventHandler<TextChangedEventArgs> TextChanged;
@@ -120,7 +140,8 @@ namespace Xamarin.Forms
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<SearchBar>>(() => new PlatformConfigurationRegistry<SearchBar>(this));
 		}
 
-		void ISearchBarController.OnSearchButtonPressed()
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void OnSearchButtonPressed()
 		{
 			ICommand cmd = SearchCommand;
 
@@ -163,6 +184,10 @@ namespace Xamarin.Forms
 		public IPlatformElementConfiguration<T, SearchBar> On<T>() where T : IConfigPlatform
 		{
 			return _platformConfigurationRegistry.Value.On<T>();
+		}
+
+		void ITextElement.OnTextColorPropertyChanged(Color oldValue, Color newValue)
+		{
 		}
 	}
 }

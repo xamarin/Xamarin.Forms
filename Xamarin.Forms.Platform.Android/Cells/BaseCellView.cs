@@ -179,12 +179,6 @@ namespace Xamarin.Forms.Platform.Android
 			LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, (int)(height == -1 ? ViewGroup.LayoutParams.WrapContent : height));
 		}
 
-		protected override void OnDetachedFromWindow()
-		{
-			base.OnDetachedFromWindow();
-			_cell = null;
-		}
-
 		async void UpdateBitmap(ImageSource source, ImageSource previousSource = null)
 		{
 			if (Equals(source, previousSource))
@@ -193,7 +187,6 @@ namespace Xamarin.Forms.Platform.Android
 			_imageView.SetImageResource(global::Android.Resource.Color.Transparent);
 
 			Bitmap bitmap = null;
-
 			IImageSourceHandler handler;
 
 			if (source != null && (handler = Registrar.Registered.GetHandler<IImageSourceHandler>(source.GetType())) != null)
@@ -211,9 +204,12 @@ namespace Xamarin.Forms.Platform.Android
 				}
 			}
 
-			_imageView.SetImageBitmap(bitmap);
-			if (bitmap != null)
-				bitmap.Dispose();
+			if (bitmap == null && source is FileImageSource)
+				_imageView.SetImageResource(ResourceManager.GetDrawableByName(((FileImageSource)source).File));
+			else
+				_imageView.SetImageBitmap(bitmap);
+
+			bitmap?.Dispose();
 		}
 	}
 }

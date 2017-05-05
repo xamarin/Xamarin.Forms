@@ -32,7 +32,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public TNativeView Control { get; private set; }
 
-		void IOnFocusChangeListener.OnFocusChange(AView v, bool hasFocus)
+		void AView.IOnFocusChangeListener.OnFocusChange(AView v, bool hasFocus)
 		{
 			if (Element is Entry || Element is SearchBar || Element is Editor)
 			{
@@ -146,7 +146,7 @@ namespace Xamarin.Forms.Platform.Android
 		protected override void OnRegisterEffect(PlatformEffect effect)
 		{
 			base.OnRegisterEffect(effect);
-			effect.Control = Control;
+			effect.SetControl(Control);
 		}
 
 		protected override void SetAutomationId(string id)
@@ -223,7 +223,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (_defaultHint == null)
 				_defaultHint = textView.Hint;
 
-			var elemValue = string.Join(". ", (string)Element.GetValue(Accessibility.NameProperty), (string)Element.GetValue(Accessibility.HintProperty));
+			var elemValue = string.Join((String.IsNullOrWhiteSpace((string)(Element.GetValue(Accessibility.NameProperty))) || String.IsNullOrWhiteSpace((string)(Element.GetValue(Accessibility.HintProperty)))) ? "" : ". ", (string)Element.GetValue(Accessibility.NameProperty), (string)Element.GetValue(Accessibility.HintProperty));
 
 			if (!string.IsNullOrWhiteSpace(elemValue))
 				textView.Hint = elemValue;

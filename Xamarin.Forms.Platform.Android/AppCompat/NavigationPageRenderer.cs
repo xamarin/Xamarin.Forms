@@ -530,7 +530,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		void RemovePage(Page page)
 		{
 			IVisualElementRenderer rendererToRemove = Android.Platform.GetRenderer(page);
-			var containerToRemove = (PageContainer)rendererToRemove?.ViewGroup.Parent;
+			var containerToRemove = (PageContainer)rendererToRemove?.View.Parent;
 
 			// Also remove this page from the fragmentStack
 			FilterPageFragment(page);
@@ -538,7 +538,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			containerToRemove.RemoveFromParent();
 			if (rendererToRemove != null)
 			{
-				rendererToRemove.ViewGroup.RemoveFromParent();
+				rendererToRemove.View.RemoveFromParent();
 				rendererToRemove.Dispose();
 			}
 			containerToRemove?.Dispose();
@@ -780,9 +780,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					FileImageSource icon = item.Icon;
 					if (!string.IsNullOrEmpty(icon))
 					{
-						var iconBitmap = new BitmapDrawable(context.Resources, ResourceManager.GetBitmap(context.Resources, icon));
-						if (iconBitmap != null && iconBitmap.Bitmap != null)
-							menuItem.SetIcon(iconBitmap);
+						Drawable iconDrawable = context.Resources.GetFormsDrawable(icon);
+						if (iconDrawable != null)
+							menuItem.SetIcon(iconDrawable);
 					}
 					menuItem.SetEnabled(controller.IsEnabled);
 					menuItem.SetShowAsAction(ShowAsAction.Always);

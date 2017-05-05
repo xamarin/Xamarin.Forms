@@ -1,6 +1,9 @@
-namespace Xamarin.Forms
+using System.ComponentModel;
+
+namespace Xamarin.Forms.Internals
 {
-	internal enum FileMode
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	public enum FileMode
 	{
 		CreateNew = 1,
 		Create = 2,

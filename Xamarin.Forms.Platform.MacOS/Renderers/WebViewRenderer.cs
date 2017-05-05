@@ -13,8 +13,6 @@ namespace Xamarin.Forms.Platform.MacOS
 		WebNavigationEvent _lastBackForwardEvent;
 		WebNavigationEvent _lastEvent;
 
-		IElementController ElementController => Element;
-
 		void IWebViewDelegate.LoadHtml(string html, string baseUrl)
 		{
 			if (html != null)
@@ -90,8 +88,8 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			if (Element == null)
 				return;
-			Element.CanGoBack = Control.CanGoBack();
-			Element.CanGoForward = Control.CanGoForward();
+			((IWebViewController)Element).CanGoBack = Control.CanGoBack();
+			((IWebViewController)Element).CanGoForward = Control.CanGoForward();
 		}
 
 		void OnEvalRequested(object sender, EvalRequested eventArg)
@@ -136,7 +134,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				return;
 
 			_ignoreSourceChanges = true;
-			ElementController?.SetValueFromRenderer(WebView.SourceProperty, new UrlWebViewSource { Url = Control.MainFrameUrl });
+			Element?.SetValueFromRenderer(WebView.SourceProperty, new UrlWebViewSource { Url = Control.MainFrameUrl });
 			_ignoreSourceChanges = false;
 
 			_lastEvent = _lastBackForwardEvent;

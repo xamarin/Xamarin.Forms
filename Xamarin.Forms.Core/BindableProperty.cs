@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Reflection;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
@@ -114,7 +115,7 @@ namespace Xamarin.Forms
 
 		internal ValidateValueDelegate ValidateValue { get; private set; }
 
-		[Obsolete("Generic versions of Create () are no longer supported and deprecated. They will be removed soon.")]
+		[Obsolete("Create<> (generic) is obsolete as of version 2.1.0 and is no longer supported.")]
 		public static BindableProperty Create<TDeclarer, TPropertyType>(Expression<Func<TDeclarer, TPropertyType>> getter, TPropertyType defaultValue, BindingMode defaultBindingMode = BindingMode.OneWay,
 																		ValidateValueDelegate<TPropertyType> validateValue = null, BindingPropertyChangedDelegate<TPropertyType> propertyChanged = null,
 																		BindingPropertyChangingDelegate<TPropertyType> propertyChanging = null, CoerceValueDelegate<TPropertyType> coerceValue = null,
@@ -131,7 +132,7 @@ namespace Xamarin.Forms
 				defaultValueCreator: defaultValueCreator);
 		}
 
-		[Obsolete("Generic versions of Create () are no longer supported and deprecated. They will be removed soon.")]
+		[Obsolete("CreateAttached<> (generic) is obsolete as of version 2.1.0 and is no longer supported.")]
 		public static BindableProperty CreateAttached<TDeclarer, TPropertyType>(Expression<Func<BindableObject, TPropertyType>> staticgetter, TPropertyType defaultValue,
 																				BindingMode defaultBindingMode = BindingMode.OneWay, ValidateValueDelegate<TPropertyType> validateValue = null, BindingPropertyChangedDelegate<TPropertyType> propertyChanged = null,
 																				BindingPropertyChangingDelegate<TPropertyType> propertyChanging = null, CoerceValueDelegate<TPropertyType> coerceValue = null,
@@ -148,7 +149,7 @@ namespace Xamarin.Forms
 			return CreateAttached(propertyName, returnType, declaringType, defaultValue, defaultBindingMode, validateValue, propertyChanged, propertyChanging, coerceValue, null, false, defaultValueCreator);
 		}
 
-		[Obsolete("Generic versions of Create () are no longer supported and deprecated. They will be removed soon.")]
+		[Obsolete("CreateAttachedReadOnly<> (generic) is obsolete as of version 2.1.0 and is no longer supported.")]
 		public static BindablePropertyKey CreateAttachedReadOnly<TDeclarer, TPropertyType>(Expression<Func<BindableObject, TPropertyType>> staticgetter, TPropertyType defaultValue,
 																						   BindingMode defaultBindingMode = BindingMode.OneWayToSource, ValidateValueDelegate<TPropertyType> validateValue = null,
 																						   BindingPropertyChangedDelegate<TPropertyType> propertyChanged = null, BindingPropertyChangingDelegate<TPropertyType> propertyChanging = null,
@@ -169,7 +170,7 @@ namespace Xamarin.Forms
 					defaultValueCreator));
 		}
 
-		[Obsolete("Generic versions of Create () are no longer supported and deprecated. They will be removed soon.")]
+		[Obsolete("CreateReadOnly<> (generic) is obsolete as of version 2.1.0 and is no longer supported.")]
 		public static BindablePropertyKey CreateReadOnly<TDeclarer, TPropertyType>(Expression<Func<TDeclarer, TPropertyType>> getter, TPropertyType defaultValue,
 																				   BindingMode defaultBindingMode = BindingMode.OneWayToSource, ValidateValueDelegate<TPropertyType> validateValue = null,
 																				   BindingPropertyChangedDelegate<TPropertyType> propertyChanged = null, BindingPropertyChangingDelegate<TPropertyType> propertyChanging = null,
@@ -187,7 +188,7 @@ namespace Xamarin.Forms
 					isReadOnly: true, defaultValueCreator: defaultValueCreator));
 		}
 
-		[Obsolete("Generic versions of Create () are no longer supported and deprecated. They will be removed soon.")]
+		[Obsolete("Create<> (generic) is obsolete as of version 2.1.0 and is no longer supported.")]
 		internal static BindableProperty Create<TDeclarer, TPropertyType>(Expression<Func<TDeclarer, TPropertyType>> getter, TPropertyType defaultValue, BindingMode defaultBindingMode,
 																		  ValidateValueDelegate<TPropertyType> validateValue, BindingPropertyChangedDelegate<TPropertyType> propertyChanged, BindingPropertyChangingDelegate<TPropertyType> propertyChanging,
 																		  CoerceValueDelegate<TPropertyType> coerceValue, BindablePropertyBindingChanging bindingChanging, bool isReadOnly = false,
@@ -236,7 +237,7 @@ namespace Xamarin.Forms
 				defaultValueCreator: defaultValueCreator);
 		}
 
-		[Obsolete("Generic versions of Create () are no longer supported and deprecated. They will be removed soon.")]
+		[Obsolete("CreateAttached<> (generic) is obsolete as of version 2.1.0 and is no longer supported.")]
 		internal static BindableProperty CreateAttached<TDeclarer, TPropertyType>(Expression<Func<BindableObject, TPropertyType>> staticgetter, TPropertyType defaultValue, BindingMode defaultBindingMode,
 																				  ValidateValueDelegate<TPropertyType> validateValue, BindingPropertyChangedDelegate<TPropertyType> propertyChanged, BindingPropertyChangingDelegate<TPropertyType> propertyChanging,
 																				  CoerceValueDelegate<TPropertyType> coerceValue, BindablePropertyBindingChanging bindingChanging, bool isReadOnly = false,

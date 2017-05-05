@@ -105,8 +105,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (platformEffect == null)
 				return;
 
-			platformEffect.Container = container;
-			platformEffect.Control = control;
+			platformEffect.SetContainer(container);
+			platformEffect.SetControl(control);
 		}
 
 		void IEffectControlProvider.RegisterEffect(Effect effect)
@@ -251,9 +251,13 @@ namespace Xamarin.Forms.Platform.MacOS
 					_packager = null;
 				}
 
-				Platform.SetRenderer(Element, null);
-				SetElement(null);
-				Element = null;
+				// The ListView can create renderers and unhook them from the Element before Dispose is called.
+				// Thus, it is possible that this work is already completed.
+				if (Element != null)
+				{
+					Platform.SetRenderer(Element, null);
+					SetElement(null);
+				}
 			}
 			base.Dispose(disposing);
 		}
@@ -291,7 +295,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected virtual void OnRegisterEffect(PlatformEffect effect)
 		{
-			effect.Container = this;
+			effect.SetContainer(this);
 		}
 
 #if __MOBILE__

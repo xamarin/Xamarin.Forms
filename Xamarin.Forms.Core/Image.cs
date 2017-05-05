@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Reflection;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform;
@@ -59,7 +60,7 @@ namespace Xamarin.Forms
 			base.OnBindingContextChanged();
 		}
 
-		[Obsolete("Use OnMeasure")]
+		[Obsolete("OnSizeRequest is obsolete as of version 2.2.0. Please use OnMeasure instead.")]
 		protected override SizeRequest OnSizeRequest(double widthConstraint, double heightConstraint)
 		{
 			SizeRequest desiredSize = base.OnSizeRequest(double.PositiveInfinity, double.PositiveInfinity);
@@ -160,7 +161,8 @@ namespace Xamarin.Forms
 			}
 		}
 
-		void IImageController.SetIsLoading(bool isLoading)
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void SetIsLoading(bool isLoading)
 		{
 			SetValue(IsLoadingPropertyKey, isLoading);
 		}

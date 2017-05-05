@@ -13,13 +13,13 @@ namespace Xamarin.Forms.Platform.MacOS
 		VisualElementTracker _tracker;
 		MasterDetailPage _masterDetailPage;
 
-		IPageController PageController => Element as IPageController;
+		Page Page => Element as Page;
 
 		void IEffectControlProvider.RegisterEffect(Effect effect)
 		{
 			var platformEffect = effect as PlatformEffect;
 			if (platformEffect != null)
-				platformEffect.Container = View;
+				platformEffect.SetContainer(View);
 		}
 
 		protected MasterDetailPage MasterDetailPage => _masterDetailPage ?? (_masterDetailPage = (MasterDetailPage)Element);
@@ -28,7 +28,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			if (!_disposed && disposing)
 			{
-				PageController?.SendDisappearing();
+				Page?.SendDisappearing();
 
 				if (Element != null)
 				{

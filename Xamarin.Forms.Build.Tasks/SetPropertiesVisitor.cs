@@ -480,6 +480,7 @@ namespace Xamarin.Forms.Build.Tasks
 					new CustomAttribute (context.Module.ImportReference(compilerGeneratedCtor))
 				}
 			};
+			getter.Body.InitLocals = true;
 			var il = getter.Body.GetILProcessor();
 
 			il.Emit(OpCodes.Ldarg_0);
@@ -550,6 +551,7 @@ namespace Xamarin.Forms.Build.Tasks
 					new CustomAttribute (module.ImportReference(compilerGeneratedCtor))
 				}
 			};
+			setter.Body.InitLocals = true;
 
 			var il = setter.Body.GetILProcessor();
 			var lastProperty = properties.LastOrDefault();
@@ -640,6 +642,7 @@ namespace Xamarin.Forms.Build.Tasks
 						new CustomAttribute (context.Module.ImportReference(compilerGeneratedCtor))
 					}
 				};
+				partGetter.Body.InitLocals = true;
 				var il = partGetter.Body.GetILProcessor();
 				il.Emit(OpCodes.Ldarg_0);
 				for (int j = 0; j < i; j++) {
@@ -903,6 +906,10 @@ namespace Xamarin.Forms.Build.Tasks
 			if (implicitOperator != null)
 				return true;
 
+			//as we're in the SetValue Scenario, we can accept value types, they'll be boxed
+			if (varValue.VariableType.IsValueType && bpTypeRef.FullName == "System.Object")
+				return true;
+
 			return varValue.VariableType.InheritsFromOrImplements(bpTypeRef);
 		}
 
@@ -1138,6 +1145,7 @@ namespace Xamarin.Forms.Build.Tasks
 			var loadTemplate = new MethodDefinition("LoadDataTemplate",
 				MethodAttributes.Assembly | MethodAttributes.HideBySig,
 				module.TypeSystem.Object);
+			loadTemplate.Body.InitLocals = true;
 			anonType.Methods.Add(loadTemplate);
 
 			var parentValues = new FieldDefinition("parentValues", FieldAttributes.Assembly, module.ImportReference(typeof (object[])));

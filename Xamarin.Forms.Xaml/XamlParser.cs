@@ -213,12 +213,13 @@ namespace Xamarin.Forms.Xaml
 						propertyName = XmlName.xName;
 						break;
 					case "x:Class":
+					case "x:FieldModifier":
 						continue;
 					default:
 						Debug.WriteLine("Unhandled attribute {0}", reader.Name);
 						continue;
 					}
-				}
+                }
 
 				if (reader.NamespaceURI == "http://schemas.microsoft.com/winfx/2009/xaml")
 				{
@@ -237,6 +238,7 @@ namespace Xamarin.Forms.Xaml
 						propertyName = XmlName.xDataType;
 						break;
 					case "x:Class":
+					case "x:FieldModifier":
 						continue;
 					case "x:FactoryMethod":
 						propertyName = XmlName.xFactoryMethod;
@@ -269,7 +271,14 @@ namespace Xamarin.Forms.Xaml
 					continue;
 				try {
 					if (targetPlatform != Device.RuntimePlatform)
+					{
+						// Special case for Windows backward compatibility
+						if (targetPlatform == "Windows" &&
+						    (Device.RuntimePlatform == Device.UWP || Device.RuntimePlatform == Device.WinRT))
+							continue;
+						
 						prefixes.Add(prefix);
+					}
 				} catch (InvalidOperationException) {
 					prefixes.Add(prefix);
 				}

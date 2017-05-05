@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">iPhoneSimulator</Platform>
     <ProjectGuid>{C7131F14-274F-4B55-ACA9-E81731AD012F}</ProjectGuid>
     <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
@@ -159,7 +159,9 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="BrokenImageSourceHandler.cs" />
     <Compile Include="BrokenNativeControl.cs" />
+    <Compile Include="CustomRenderer40251.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
     <None Include="app.config" />
@@ -169,10 +171,6 @@
     <Compile Include="CustomRenderers.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Stubs\Xamarin.Forms.Platform.iOS\Xamarin.Forms.Platform.iOS %28Forwarders%29.csproj">
-      <Project>{39b3457f-01d8-43d0-8e84-d8c4f73cf48d}</Project>
-      <Name>Xamarin.Forms.Platform.iOS %28Forwarders%29</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Xamarin.Forms.Controls\Xamarin.Forms.Controls.csproj">
       <Project>{cb9c96ce-125c-4a68-b6a1-c3ff1fbf93e1}</Project>
       <Name>Xamarin.Forms.Controls</Name>
@@ -194,6 +192,10 @@
       <Project>{271193c1-6e7c-429c-a36d-3f1be5267231}</Project>
       <Name>Xamarin.Forms.Platform.iOS</Name>
       <IsAppExtension>false</IsAppExtension>
+    </ProjectReference>
+    <ProjectReference Include="..\Stubs\Xamarin.Forms.Platform.iOS\Xamarin.Forms.Platform.iOS %28Forwarders%29.csproj">
+      <Project>{39b3457f-01d8-43d0-8e84-d8c4f73cf48d}</Project>
+      <Name>Xamarin.Forms.Platform.iOS (Forwarders)</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -217,6 +219,7 @@
     <Content Include="oasis.jpg" />
     <BundleResource Include="oasissmall.jpg" />
     <Content Include="coffee%402x.png" />
+    <BundleResource Include="Resources\invalidimage.jpg" />
     <Content Include="settings%402x.png" />
     <Content Include="menuIcon%402x.png" />
     <Content Include="crimsonsmall.jpg" />
@@ -294,8 +297,9 @@
     <BundleResource Include="coffee.png" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="AdvancedColorPicker">
-      <HintPath>..\Components\advancedcolorpicker-2.0\lib\ios-unified\AdvancedColorPicker.dll</HintPath>
+    <Reference Include="AdvancedColorPicker, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\AdvancedColorPicker.2.0.1\lib\Xamarin.iOS\AdvancedColorPicker.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
@@ -320,14 +324,5 @@
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
   <ItemGroup />
-  <ItemGroup>
-    <XamarinComponentReference Include="advancedcolorpicker">
-      <Version>2.0</Version>
-      <Visible>False</Visible>
-    </XamarinComponentReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\" />
-  </ItemGroup>
   <Import Project="..\packages\Xamarin.Insights.1.12.3\build\Xamarin.iOS10\Xamarin.Insights.targets" Condition="Exists('..\packages\Xamarin.Insights.1.12.3\build\Xamarin.iOS10\Xamarin.Insights.targets')" />
 </Project>

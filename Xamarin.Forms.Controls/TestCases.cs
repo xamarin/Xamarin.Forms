@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Xamarin.Forms.Controls.TestCasesPages;
 using Xamarin.Forms.CustomAttributes;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls
 {
@@ -212,7 +213,8 @@ namespace Xamarin.Forms.Controls
 				page.Title = "Test Cases";
 				break;
 			case Device.WinPhone:
-			case Device.Windows:
+			case Device.UWP:
+			case Device.WinRT:
 				page.Title = "Tests";
 				break;
 			}

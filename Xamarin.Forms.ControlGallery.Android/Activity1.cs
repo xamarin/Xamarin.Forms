@@ -1,28 +1,22 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.Reflection;
-
+using System.Globalization;
+using System.IO;
+using System.IO.IsolatedStorage;
 using Android.App;
-using Android.Content;
 using Android.Content.PM;
-using Android.Runtime;
-using Android.Views;
-using Android.Widget;
 using Android.OS;
+using Android.Widget;
+using Java.Interop;
 using Xamarin.Forms;
 using Xamarin.Forms.ControlGallery.Android;
 using Xamarin.Forms.Controls;
-using Xamarin.Forms.Maps.Android;
+using Xamarin.Forms.Controls.Issues;
 using Xamarin.Forms.Platform.Android;
 using Xamarin.Forms.Platform.Android.AppLinks;
-using System.IO;
-using System.IO.IsolatedStorage;
-
-using Droid = Android;
-using System.Globalization;
-using Java.Interop;
-using Xamarin.Forms.Controls.Issues;
+using Android.Content;
+using Android.Views;
+using AColor = Android.Graphics.Color;
 
 [assembly: Dependency (typeof (CacheService))]
 [assembly: Dependency (typeof (TestCloudService))]
@@ -34,24 +28,7 @@ using Xamarin.Forms.Controls.Issues;
 
 namespace Xamarin.Forms.ControlGallery.Android
 {
-	public class BorderEffect : PlatformEffect
-	{
-		protected override void OnAttached ()
-		{
-			Control.SetBackgroundColor (global::Android.Graphics.Color.Aqua);
-		}
-
-		protected override void OnDetached ()
-		{
-		}
-
-		protected override void OnElementPropertyChanged (PropertyChangedEventArgs args)
-		{
-			base.OnElementPropertyChanged (args);
-		}
-	}
-
-	public class CacheService : ICacheService
+    public class CacheService : ICacheService
 	{
 		public void ClearImageCache ()
 		{
@@ -311,6 +288,9 @@ namespace Xamarin.Forms.ControlGallery.Android
 			ToolbarResource = Resource.Layout.Toolbar;
 			TabLayoutResource = Resource.Layout.Tabbar;
 
+			// Uncomment the next line to run this as a full screen app (no status bar)
+			//Window.AddFlags(WindowManagerFlags.Fullscreen | WindowManagerFlags.TurnScreenOn);
+
 			base.OnCreate (bundle);
 
 			if (!Debugger.IsAttached)
@@ -335,6 +315,9 @@ namespace Xamarin.Forms.ControlGallery.Android
 
 			// When the native binding gallery loads up, it'll let us know so we can set up the native bindings
 			MessagingCenter.Subscribe<NativeBindingGalleryPage >(this, NativeBindingGalleryPage.ReadyForNativeBindingsMessage, AddNativeBindings);
+
+			// Listen for the message from the status bar color toggle test
+			MessagingCenter.Subscribe<AndroidStatusBarColor>(this, AndroidStatusBarColor.Message, color => SetStatusBarColor(AColor.Red));
 
 			LoadApplication(app);
 		}

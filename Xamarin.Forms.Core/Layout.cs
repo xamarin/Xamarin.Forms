@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using Xamarin.Forms.Internals;
 
@@ -17,7 +18,7 @@ namespace Xamarin.Forms
 			_children = new ElementCollection<T>(InternalChildren);
 		}
 
-		public IList<T> Children
+		public new IList<T> Children
 		{
 			get { return _children; }
 		}
@@ -70,6 +71,10 @@ namespace Xamarin.Forms
 
 		protected Layout()
 		{
+			//if things were added in base ctor (through implicit styles), the items added aren't properly parented
+			if (InternalChildren.Count > 0)
+				InternalChildrenOnCollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, InternalChildren));
+
 			InternalChildren.CollectionChanged += InternalChildrenOnCollectionChanged;
 		}
 
@@ -94,7 +99,8 @@ namespace Xamarin.Forms
 
 		public event EventHandler LayoutChanged;
 
-		IReadOnlyList<Element> ILayoutController.Children
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public IReadOnlyList<Element> Children
 		{
 			get { return InternalChildren; }
 		}
@@ -104,7 +110,7 @@ namespace Xamarin.Forms
 			SizeAllocated(Width, Height);
 		}
 
-		[Obsolete("Use Measure")]
+		[Obsolete("OnSizeRequest is obsolete as of version 2.2.0. Please use OnMeasure instead.")]
 		public sealed override SizeRequest GetSizeRequest(double widthConstraint, double heightConstraint)
 		{
 			SizeRequest size = base.GetSizeRequest(widthConstraint - Padding.HorizontalThickness, heightConstraint - Padding.VerticalThickness);

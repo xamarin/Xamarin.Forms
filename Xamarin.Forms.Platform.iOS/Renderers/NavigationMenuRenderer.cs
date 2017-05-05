@@ -4,6 +4,7 @@ using Foundation;
 using UIKit;
 using RectangleF = CoreGraphics.CGRect;
 using SizeF = CoreGraphics.CGSize;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -117,7 +118,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (target != null)
 				{
 					cell.Name = target.Title;
-					cell.Icon = target.Icon;
+					cell.Icon = target.Icon?.File;
 					cell.Selected = () => _menu.SendTargetSelected(target);
 				}
 				else

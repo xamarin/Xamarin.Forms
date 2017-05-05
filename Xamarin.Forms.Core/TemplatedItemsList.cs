@@ -8,10 +8,11 @@ using System.Threading.Tasks;
 using Cadenza.Collections;
 using Xamarin.Forms.Internals;
 
-namespace Xamarin.Forms
+namespace Xamarin.Forms.Internals
 {
 
-	internal sealed class TemplatedItemsList<TView, TItem> : BindableObject, ITemplatedItemsList<TItem>, IList, IDisposable
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	public sealed class TemplatedItemsList<TView, TItem> : BindableObject, ITemplatedItemsList<TItem>, IList, IDisposable
 												where TView : BindableObject, IItemsView<TItem>
 												where TItem : BindableObject
 	{
@@ -522,7 +523,7 @@ namespace Xamarin.Forms
 			return GetIndex(item);
 		}
 
-		internal TItem CreateContent(int index, object item, bool insert = false)
+		public TItem CreateContent(int index, object item, bool insert = false)
 		{
 			TItem content = ItemTemplate != null ? (TItem)ItemTemplate.CreateContent(item, _itemsView) : _itemsView.CreateDefault(item);
 

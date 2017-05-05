@@ -76,7 +76,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		[Obsolete("Use Parent")]
+		[Obsolete("ParentView is obsolete as of version 2.1.0. Please use Parent instead.")]
 		public VisualElement ParentView
 		{
 			get
@@ -109,7 +109,8 @@ namespace Xamarin.Forms
 
 		internal virtual ReadOnlyCollection<Element> LogicalChildrenInternal => EmptyChildren;
 
-		ReadOnlyCollection<Element> IElementController.LogicalChildren => LogicalChildrenInternal;
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public ReadOnlyCollection<Element> LogicalChildren => LogicalChildrenInternal;
 
 		internal bool Owned { get; set; }
 
@@ -133,7 +134,8 @@ namespace Xamarin.Forms
 			}
 		}
 
-		internal IPlatform Platform
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public IPlatform Platform
 		{
 			get
 			{
@@ -158,7 +160,8 @@ namespace Xamarin.Forms
 		}
 
 		// you're not my real dad
-		internal Element RealParent { get; private set; }
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public Element RealParent { get; private set; }
 
 		List<KeyValuePair<string, BindableProperty>> DynamicResources
 		{
@@ -220,7 +223,8 @@ namespace Xamarin.Forms
 			_changeHandlers.Remove(onchanged);
 		}
 
-		IEffectControlProvider IElementController.EffectControlProvider
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public IEffectControlProvider EffectControlProvider
 		{
 			get { return _effectControlProvider; }
 			set
@@ -244,17 +248,21 @@ namespace Xamarin.Forms
 			}
 		}
 
-		void IElementController.SetValueFromRenderer(BindableProperty property, object value)
+		void IElementController.SetValueFromRenderer(BindableProperty property, object value) => SetValueFromRenderer(property, value);
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void SetValueFromRenderer(BindableProperty property, object value)
 		{
 			SetValueCore(property, value);
 		}
 
-		void IElementController.SetValueFromRenderer(BindablePropertyKey property, object value)
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void SetValueFromRenderer(BindablePropertyKey property, object value)
 		{
 			SetValueCore(property, value);
 		}
 
-		bool IElementController.EffectIsAttached(string name)
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public bool EffectIsAttached(string name)
 		{
 			foreach (var effect in Effects)
 			{
@@ -389,7 +397,8 @@ namespace Xamarin.Forms
 			}
 		}
 
-		internal IEnumerable<Element> Descendants()
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public IEnumerable<Element> Descendants()
 		{
 			var queue = new Queue<Element>(16);
 			queue.Enqueue(this);
@@ -476,7 +485,8 @@ namespace Xamarin.Forms
 
 		internal event EventHandler ParentSet;
 
-		internal event EventHandler PlatformSet;
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public event EventHandler PlatformSet;
 
 		internal virtual void SetChildInheritedBindingContext(Element child, object context)
 		{
@@ -521,7 +531,7 @@ namespace Xamarin.Forms
 		{
 			foreach (Effect effect in _effects)
 			{
-				effect.ClearEffect();
+				effect?.ClearEffect();
 			}
 		}
 
