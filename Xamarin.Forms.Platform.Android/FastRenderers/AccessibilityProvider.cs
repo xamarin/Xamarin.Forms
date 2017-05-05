@@ -145,8 +145,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			string value = hint;
 			if (value == GetFromElement)
 			{
-				value = string.Join(". ", (string)Element.GetValue(Accessibility.NameProperty),
-					(string)Element.GetValue(Accessibility.HintProperty));
+				value = string.Join((String.IsNullOrWhiteSpace((string)(Element.GetValue(Accessibility.NameProperty))) || String.IsNullOrWhiteSpace((string)(Element.GetValue(Accessibility.HintProperty)))) ? "" : ". ", (string)Element.GetValue(Accessibility.NameProperty), (string)Element.GetValue(Accessibility.HintProperty));
 			}
 
 			textView.Hint = !string.IsNullOrWhiteSpace(value) ? value : _defaultHint;
