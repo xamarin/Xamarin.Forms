@@ -127,7 +127,7 @@ namespace Xamarin.Forms.Platform.iOS
 			ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
 		}
 
-		protected bool OnShouldReturn(UITextField view)
+		protected virtual bool OnShouldReturn(UITextField view)
 		{
 			Control.ResignFirstResponder();
 			((IEntryController)Element).SendCompleted();
