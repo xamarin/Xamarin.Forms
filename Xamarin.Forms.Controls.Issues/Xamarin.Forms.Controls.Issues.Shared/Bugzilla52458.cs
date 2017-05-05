@@ -14,7 +14,6 @@ namespace Xamarin.Forms.Controls.Issues
 	public class Bugzilla52458 : TestPage
 	{
 		NavigationPage _navPage;
-		ContentPage _appearingPage;
 		ContentPage _page2, _page3;
 		Label _checkIsAppearingLabel;
 
@@ -93,7 +92,6 @@ namespace Xamarin.Forms.Controls.Issues
 			navPage = new NavigationPage(appearingPage);
 
 			_navPage = navPage;
-			_appearingPage = appearingPage;
 			_checkIsAppearingLabel = appearingLabel;
 			_page2 = page2;
 			_page3 = page3;
