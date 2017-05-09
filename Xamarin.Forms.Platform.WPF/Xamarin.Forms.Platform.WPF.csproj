@@ -119,6 +119,7 @@
     <Compile Include="PlatformEffect.cs" />
     <Compile Include="ProgressBarRenderer.cs" />
     <Compile Include="ScrollViewRenderer.cs" />
+    <Compile Include="SearchBarRenderer.cs" />
     <Compile Include="SliderRenderer.cs" />
     <Compile Include="SwitchRenderer.cs" />
     <Compile Include="TabbedPageRenderer.cs" />
