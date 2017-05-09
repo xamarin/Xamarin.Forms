@@ -74,6 +74,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActivityIndicatorRenderer.cs" />
     <Compile Include="AlignmentExtensions.cs" />
     <Compile Include="Animatable.cs" />
     <Compile Include="AsyncValue.cs" />
