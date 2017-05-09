@@ -121,6 +121,7 @@
     <Compile Include="ScrollViewRenderer.cs" />
     <Compile Include="SearchBarRenderer.cs" />
     <Compile Include="SliderRenderer.cs" />
+    <Compile Include="StepperRenderer.cs" />
     <Compile Include="SwitchRenderer.cs" />
     <Compile Include="TabbedPageRenderer.cs" />
     <Compile Include="TextAlignmentToHorizontalAlignmentConverter.cs" />
