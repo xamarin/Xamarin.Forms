@@ -11,7 +11,6 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty NameProperty = BindableProperty.Create("Name", typeof(string), typeof(Element), default(string));
 
-
 		public static string GetHint(BindableObject bindable)
 		{
 			return (string)bindable.GetValue(HintProperty);
