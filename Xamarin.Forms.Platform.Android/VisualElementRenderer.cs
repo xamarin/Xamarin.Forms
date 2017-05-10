@@ -366,7 +366,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (_defaultContentDescription == null)
 				_defaultContentDescription = ContentDescription;
 
-			var elemValue = string.Join(" ", (string)Element.GetValue(AutomationProperties.NameProperty), (string)Element.GetValue(AutomationProperties.HelpTextProperty));
+			var elemValue = ConcatenateNameAndHelpText(Element);
 
 			if (!string.IsNullOrWhiteSpace(elemValue))
 				ContentDescription = elemValue;
@@ -401,7 +401,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (_defaultHint == null)
 				_defaultHint = textView.Hint;
 
-			var elemValue = string.Join((String.IsNullOrWhiteSpace((string)(Element.GetValue(AutomationProperties.NameProperty))) || String.IsNullOrWhiteSpace((string)(Element.GetValue(AutomationProperties.HelpTextProperty)))) ? "" : ". ", (string)Element.GetValue(AutomationProperties.NameProperty), (string)Element.GetValue(AutomationProperties.HelpTextProperty));
+			var elemValue = ConcatenateNameAndHelpText(Element);
 
 			if (!string.IsNullOrWhiteSpace(elemValue))
 				textView.Hint = elemValue;
@@ -409,6 +409,20 @@ namespace Xamarin.Forms.Platform.Android
 				textView.Hint = _defaultHint;
 
 			return true;
+		}
+
+		static string ConcatenateNameAndHelpText(Element Element)
+		{
+			string separator;
+			var name = (string)Element.GetValue(AutomationProperties.NameProperty);
+			var helpText = (string)Element.GetValue(AutomationProperties.HelpTextProperty);
+
+			if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(helpText))
+				separator = "";
+			else
+				separator = ". ";
+
+			return $"{name}{separator}{helpText}";
 		}
 
 		void UpdateInputTransparent()
