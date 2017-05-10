@@ -144,7 +144,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				return true;
 			}
 
-			textView.Hint = string.Join(". ", accessibilityName, accessibilityHint);
+		        textView.Hint =  accessibilityName + ". " + accessibilityHint;
 
 			return true;
 		}
