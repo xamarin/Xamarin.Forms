@@ -8,8 +8,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 	{
 		const string GetFromElement = "GetValueFromElement";
 		string _defaultContentDescription;
-		bool? _defaultFocusable;
-		string _defaultHint;
+		bool? _defaultFocusable;		
 		bool _disposed;
 
 		IVisualElementRenderer _renderer;
@@ -117,9 +116,9 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			Control.Focusable =
 				(bool)(value ?? (bool?)Element.GetValue(Accessibility.IsInAccessibleTreeProperty) ?? _defaultFocusable);
 		}
-
-		bool SetHint(string hint = GetFromElement)
-		{
+				
+		 bool SetHint()
+		 {
 			if (Element == null || Control == null)
 			{
 				return false;
@@ -137,19 +136,17 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				return true;
 			}
 
-			if (_defaultHint == null)
+			string accessibilityName = (string)Element.GetValue(Accessibility.NameProperty);
+			string accessibilityHint = (string)Element.GetValue(Accessibility.HintProperty);
+
+			if (string.IsNullOrWhiteSpace(accessibilityName) && string.IsNullOrWhiteSpace(accessibilityHint))
 			{
-				_defaultHint = textView.Hint;
+				return true;
 			}
 
-			string value = hint;
-			if (value == GetFromElement)
-			{
-				value = string.Join(". ", (string)Element.GetValue(Accessibility.NameProperty),
-					(string)Element.GetValue(Accessibility.HintProperty));
-			}
+		        string divider = string.IsNullOrWhiteSpace(accessibilityName) || string.IsNullOrWhiteSpace(accessibilityHint) ? "" : ". ";	
 
-			textView.Hint = !string.IsNullOrWhiteSpace(value) ? value : _defaultHint;
+			textView.Hint =  accessibilityName + divider + accessibilityHint;
 
 			return true;
 		}
