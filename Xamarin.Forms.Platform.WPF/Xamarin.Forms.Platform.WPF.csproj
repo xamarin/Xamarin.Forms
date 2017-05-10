@@ -108,6 +108,7 @@
     <Compile Include="FrameworkElementExtensions.cs" />
     <Compile Include="Helpers\ApplicationData.cs" />
     <Compile Include="Helpers\IThemeProvider.cs" />
+    <Compile Include="Helpers\TapExtensions.cs" />
     <Compile Include="Helpers\ThemeHelper.cs" />
     <Compile Include="ICellRenderer.cs" />
     <Compile Include="ImageRenderer.cs" />
@@ -115,6 +116,7 @@
     <Compile Include="LabelRenderer.cs" />
     <Compile Include="ListViewRenderer.cs" />
     <Compile Include="MasterDetailRenderer.cs" />
+    <Compile Include="NavigationMenuRenderer.cs" />
     <Compile Include="PageRenderer.cs" />
     <Compile Include="PageToRendererConverter.cs" />
     <Compile Include="PlatformEffect.cs" />
@@ -127,6 +129,7 @@
     <Compile Include="TabbedPageRenderer.cs" />
     <Compile Include="TextAlignmentToHorizontalAlignmentConverter.cs" />
     <Compile Include="TextCellRenderer.cs" />
+    <Compile Include="Toolkit\TileSize.cs" />
     <Compile Include="Toolkit\TiltEffect.cs" />
     <Compile Include="ViewExtensions.cs" />
     <Compile Include="ViewRenderer.cs" />
