@@ -125,6 +125,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			CheckForAppLink(Intent);
 
+			// Make sure this event is wired AFTER window soft input mode is set above.
 			application.PropertyChanged += AppOnPropertyChanged;
 
 			if (application?.MainPage != null)
