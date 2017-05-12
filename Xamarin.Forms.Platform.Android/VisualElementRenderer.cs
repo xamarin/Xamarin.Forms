@@ -366,7 +366,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (_defaultContentDescription == null)
 				_defaultContentDescription = ContentDescription;
 
-			var elemValue = ConcatenateNameAndHelpText(Element);
+			var elemValue = FastRenderers.AutomationPropertiesProvider.ConcatenateNameAndHelpText(Element);
 
 			if (!string.IsNullOrWhiteSpace(elemValue))
 				ContentDescription = elemValue;
