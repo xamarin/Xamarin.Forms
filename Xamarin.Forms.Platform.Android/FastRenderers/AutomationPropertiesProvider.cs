@@ -139,18 +139,17 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			return true;
 		}
 
-		static string ConcatenateNameAndHelpText(Element Element)
+		internal static string ConcatenateNameAndHelpText(Element Element)
 		{
-			string separator;
 			var name = (string)Element.GetValue(AutomationProperties.NameProperty);
 			var helpText = (string)Element.GetValue(AutomationProperties.HelpTextProperty);
 
-			if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(helpText))
-				separator = "";
-			else
-				separator = ". ";
+			if (string.IsNullOrWhiteSpace(name))
+				return helpText;
+			if (string.IsNullOrWhiteSpace(helpText))
+				return name;
 
-			return $"{name}{separator}{helpText}";
+			return $"{name}. {helpText}";
 		}
 
 		void SetLabeledBy()

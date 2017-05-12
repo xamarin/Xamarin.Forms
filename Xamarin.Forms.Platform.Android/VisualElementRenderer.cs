@@ -401,7 +401,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (_defaultHint == null)
 				_defaultHint = textView.Hint;
 
-			var elemValue = ConcatenateNameAndHelpText(Element);
+			var elemValue = FastRenderers.AutomationPropertiesProvider.ConcatenateNameAndHelpText(Element);
 
 			if (!string.IsNullOrWhiteSpace(elemValue))
 				textView.Hint = elemValue;
@@ -409,20 +409,6 @@ namespace Xamarin.Forms.Platform.Android
 				textView.Hint = _defaultHint;
 
 			return true;
-		}
-
-		static string ConcatenateNameAndHelpText(Element Element)
-		{
-			string separator;
-			var name = (string)Element.GetValue(AutomationProperties.NameProperty);
-			var helpText = (string)Element.GetValue(AutomationProperties.HelpTextProperty);
-
-			if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(helpText))
-				separator = "";
-			else
-				separator = ". ";
-
-			return $"{name}{separator}{helpText}";
 		}
 
 		void UpdateInputTransparent()
