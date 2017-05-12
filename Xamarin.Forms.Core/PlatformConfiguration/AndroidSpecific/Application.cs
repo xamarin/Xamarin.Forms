@@ -50,5 +50,11 @@
 		{
 			return GetShouldSetWindowSoftInputModeAtStartup(config.Element);
 		}
+
+		public static IPlatformElementConfiguration<Android, FormsElement> SetShouldSetWindowSoftInputModeAtStartup(this IPlatformElementConfiguration<Android, FormsElement> config, bool value)
+		{
+			SetShouldSetWindowSoftInputModeAtStartup(config.Element, value);
+			return config;
+		}
 	}
 }
