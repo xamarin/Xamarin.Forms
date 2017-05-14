@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Platform.Android
 			get
 			{
 				View view = GetView();
-				return view != null && view.GestureRecognizers.GetGesturesFor<PinchGestureRecognizer>().Any();
+				return view != null && view.GestureRecognizers.OfType<PinchGestureRecognizer>().Any();
 			}
 		}
 
@@ -39,7 +39,7 @@ namespace Xamarin.Forms.Platform.Android
 				return true;
 
 			var scalePointTransformed = new Point(scalePoint.X / view.Width, scalePoint.Y / view.Height);
-			((IPinchGestureController)pinchGesture).SendPinch(view, 1 + (scale - 1) * _pinchStartingScale, scalePointTransformed);
+			pinchGesture.SendPinch(view, 1 + (scale - 1) * _pinchStartingScale, scalePointTransformed);
 
 			return true;
 		}
@@ -52,7 +52,7 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 
 			PinchGestureRecognizer pinchGesture = PinchGesture;
-			((IPinchGestureController)pinchGesture)?.SendPinchEnded(view);
+			pinchGesture?.SendPinchEnded(view);
 		}
 
 		public bool OnPinchStarted(Point scalePoint)
@@ -70,7 +70,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			var scalePointTransformed = new Point(scalePoint.X / view.Width, scalePoint.Y / view.Height);
 
-			((IPinchGestureController)pinchGesture).SendPinchStarted(view, scalePointTransformed);
+			pinchGesture.SendPinchStarted(view, scalePointTransformed);
 			return true;
 		}
 	}
