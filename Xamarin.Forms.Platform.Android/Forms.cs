@@ -115,8 +115,6 @@ namespace Xamarin.Forms
 
 			ResourceManager.Init(resourceAssembly);
 
-			Color.SetAccent(GetAccentColor());
-
 			if (!IsInitialized)
 				Internals.Log.Listeners.Add(new DelegateLogListener((c, m) => Trace.WriteLine(m, c)));
 
@@ -151,7 +149,7 @@ namespace Xamarin.Forms
 			IsInitialized = true;
 		}
 
-		static Color GetAccentColor()
+		public static Color GetAccentColor()
 		{
 			Color rc;
 			using (var value = new TypedValue())

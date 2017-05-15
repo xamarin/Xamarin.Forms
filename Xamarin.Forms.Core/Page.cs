@@ -20,6 +20,8 @@ namespace Xamarin.Forms
 
 		public const string ActionSheetSignalName = "Xamarin.ShowActionSheet";
 
+		public const string AccentColorSignalName = "Xamarin.AccentColor";
+
 		internal static readonly BindableProperty IgnoresContainerAreaProperty = BindableProperty.Create("IgnoresContainerArea", typeof(bool), typeof(Page), false);
 
 		public static readonly BindableProperty BackgroundImageProperty = BindableProperty.Create("BackgroundImage", typeof(string), typeof(Page), default(string));
