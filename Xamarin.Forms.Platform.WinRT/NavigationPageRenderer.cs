@@ -185,6 +185,8 @@ namespace Xamarin.Forms.Platform.WinRT
 #if WINDOWS_UWP
 				// Enforce consistency rules on toolbar (show toolbar if top-level page is Navigation Page)
 				_container.ShouldShowToolbar = _parentMasterDetailPage == null && _parentTabbedPage == null;
+				if (_parentTabbedPage != null)
+					Element.Appearing += OnElementAppearing;
 #endif
 
 				Element.PropertyChanged += OnElementPropertyChanged;
@@ -194,7 +196,7 @@ namespace Xamarin.Forms.Platform.WinRT
 				Element.InternalChildren.CollectionChanged += OnChildrenChanged;
 
 				if (!string.IsNullOrEmpty(Element.AutomationId))
-					_container.SetValue(AutomationProperties.AutomationIdProperty, Element.AutomationId);
+					_container.SetValue(Windows.UI.Xaml.Automation.AutomationProperties.AutomationIdProperty, Element.AutomationId);
 
 				PushExistingNavigationStack();
 			}
@@ -227,6 +229,9 @@ namespace Xamarin.Forms.Platform.WinRT
 				_parentMasterDetailPage.PropertyChanged -= MultiPagePropertyChanged;
 
 #if WINDOWS_UWP
+			if (_parentTabbedPage != null)
+				Element.Appearing -= OnElementAppearing;
+
 			if (_navManager != null)
 			{
 				_navManager.AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
@@ -325,6 +330,11 @@ namespace Xamarin.Forms.Platform.WinRT
 				UpdateTitleVisible();
 			else if (e.PropertyName == Page.TitleProperty.PropertyName)
 				UpdateTitleOnParents();
+		}
+
+		void OnElementAppearing(object sender, EventArgs e)
+		{
+			UpdateTitleVisible();
 		}
 
 		void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
