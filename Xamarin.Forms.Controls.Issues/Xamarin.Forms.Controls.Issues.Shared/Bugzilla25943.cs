@@ -1,62 +1,102 @@
-using System.Diagnostics;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
+#if UITEST
+using Xamarin.UITest;
+using NUnit.Framework;
+#endif
+
 namespace Xamarin.Forms.Controls.Issues
 {
-	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 25943, "[Android] TapGestureRecognizer does not work with a nested StackLayout", PlatformAffected.Android)]
-	public class Bugzilla25943 : TestContentPage 
-	{
-		protected override void Init()
-		{
-			StackLayout layout = GetNestedStackLayout();
+#if UITEST
+    [Category(UITestCategories.InputTransparent)]
+#endif
+    [Preserve(AllMembers = true)]
+    [Issue(IssueTracker.Bugzilla, 25943, "[Android] TapGestureRecognizer does not work with a nested StackLayout", PlatformAffected.Android)]
+    public class Bugzilla25943 : TestContentPage
+    {
+        Label _result;
+        int _taps;
+        const string InnerLayout = "innerlayout";
+        const string OuterLayout = "outerlayout";
+        const string Success = "Success";
 
-			var tapGestureRecognizer = new TapGestureRecognizer();
-			tapGestureRecognizer.Tapped += (sender, e) => Debug.WriteLine(">>>>>>>> foo");
-			layout.GestureRecognizers.Add(tapGestureRecognizer);
+        protected override void Init()
+        {
+            StackLayout layout = GetNestedStackLayout();
 
-			Content = layout;
-		}
+            var tapGestureRecognizer = new TapGestureRecognizer();
+            tapGestureRecognizer.Tapped += (sender, e) =>
+            {
+                _taps = _taps + 1;
+                if (_taps == 2)
+                {
+                    _result.Text = Success;
+                }
+            };
+            layout.GestureRecognizers.Add(tapGestureRecognizer);
 
-		public StackLayout GetNestedStackLayout()
-		{
-			var innerLayout = new StackLayout
-			{
-				AutomationId = "innerlayout",
-				HeightRequest = 100,
-				Orientation = StackOrientation.Horizontal,
-				BackgroundColor = Color.Transparent,
-				Children =
-						{
-							new Label
-							{
-								Text = "inner label",
-								FontSize = 20,
-								HorizontalOptions = LayoutOptions.Center,
-								VerticalOptions = LayoutOptions.CenterAndExpand
-							}
-						}
-			};
+            Content = layout;
+        }
 
-			var outerLayout = new StackLayout
-			{
-				AutomationId = "outerlayout",
-				Orientation = StackOrientation.Vertical,
-				BackgroundColor = Color.Blue,
-				Children =
-						{
-							innerLayout,
-							new Label
-							{
-								Text = "outer label",
-								FontSize = 20,
-								HorizontalOptions = LayoutOptions.Center,
-							}
-						}
-			};
+        public StackLayout GetNestedStackLayout()
+        {
+            _result = new Label();
 
-			return outerLayout;
-		}
-	}
+            var innerLayout = new StackLayout
+            {
+                AutomationId = InnerLayout,
+                HeightRequest = 100,
+                Orientation = StackOrientation.Horizontal,
+                HorizontalOptions = LayoutOptions.Fill,
+                BackgroundColor = Color.AntiqueWhite,
+                Children =
+                {
+                    new Label
+                    {
+                        Text = "inner label",
+                        FontSize = 20,
+                        HorizontalOptions = LayoutOptions.Center,
+                        VerticalOptions = LayoutOptions.CenterAndExpand
+                    }
+                }
+            };
+
+            var outerLayout = new StackLayout
+            {
+                AutomationId = OuterLayout,
+                Orientation = StackOrientation.Vertical,
+                BackgroundColor = Color.Brown,
+                Children =
+                {
+                    _result,
+                    innerLayout,
+                    new Label
+                    {
+                        Text = "outer label",
+                        FontSize = 20,
+                        HorizontalOptions = LayoutOptions.Center,
+                    }
+                }
+            };
+
+            return outerLayout;
+        }
+
+
+#if UITEST
+        [Test]
+        public void VerifyNestedStacklayoutTapsBubble(TestPoint test)
+        {
+            RunningApp.WaitForElement(q => q.Marked(InnerLayout));
+            RunningApp.Tap(InnerLayout);
+
+            RunningApp.WaitForElement(q => q.Marked(OuterLayout));
+            RunningApp.Tap(OuterLayout);
+
+            RunningApp.WaitForElement(Success);
+        }
+#endif
+
+    }
 }

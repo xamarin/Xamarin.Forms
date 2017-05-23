@@ -97,7 +97,9 @@ namespace Xamarin.Forms.Controls.Issues
 			double opacity = test.Opacity ? _transparentOpacity : _nonTransparentOpacity;
 			bool inputTransparent = test.InputTransparent;
 
-			var grid = new Grid() {
+            var grid = new Grid
+            {
+                AutomationId = "testgrid",
 				HorizontalOptions = LayoutOptions.Fill,
 				VerticalOptions = LayoutOptions.Fill
 			};
@@ -131,6 +133,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var layout = new StackLayout
 			{
+                AutomationId = "overlay",
 				HorizontalOptions = LayoutOptions.Fill,
 				VerticalOptions = LayoutOptions.Fill,
 				BackgroundColor = backgroundColor,
