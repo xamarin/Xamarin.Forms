@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -27,21 +26,6 @@ namespace Xamarin.Forms.Platform.Android
             }
 
             return false;
-		}
-
-		static bool IsInViewCell(this View view)
-		{
-			Element parent = view.RealParent;
-			while (parent != null)
-			{
-				if (parent is ViewCell)
-				{
-					return true;
-				}
-				parent = parent.RealParent;
-			}
-
-			return false;
 		}
 	}
 }
