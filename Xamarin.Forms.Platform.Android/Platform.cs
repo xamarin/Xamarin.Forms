@@ -1094,7 +1094,7 @@ namespace Xamarin.Forms.Platform.Android
 					return OnTouchEvent(e);
 				}
 
-                return result;
+				return result;
 			}
 		}
 
