@@ -65,12 +65,12 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				AutomationId = $"transparenttest{i}";
 
-				// TODO hartez 2017/05/22 15:45:12 Update this with real values	
-				ShouldBeTransparent = true;
-
 				Opacity = (i & (1 << 0)) == 0;
 				InputTransparent = (i & (1 << 1)) == 0;
 				BackgroundColor = (i & (1 << 2)) == 0;
+
+				// Layouts should be input transparent _only_ if they were explicitly told to be
+				ShouldBeTransparent = InputTransparent;
 			}
 
 			internal string AutomationId { get; set; }
@@ -157,14 +157,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement(DefaultButtonText);
 			RunningApp.Tap(DefaultButtonText);
 
-			if (test.ShouldBeTransparent)
-			{
-				RunningApp.WaitForElement(Success);
-			}
-			else
-			{
-				RunningApp.WaitForElement(DefaultButtonText);
-			}
+			RunningApp.WaitForElement(test.ShouldBeTransparent ? Success : DefaultButtonText);
 		}
 #endif
 
