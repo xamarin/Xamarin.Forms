@@ -27,28 +27,27 @@ namespace Xamarin.Forms.Platform.Android
 				}
 			}
 
-			// do some evil
-			// This is required so that a layout only absorbs click events if it is not fully transparent
-			// However this is not desirable behavior in a ViewCell because it prevents the ViewCell from activating
-			if (view is Layout && view.BackgroundColor != Color.Transparent && view.BackgroundColor != Color.Default)
+			// Most layouts should be clickable, but not if they're in a ViewCell because that
+			// interferes with the ViewCell's handlers
+			if (!(view is Layout))
 			{
-				Element parent = view.RealParent;
-				var skip = false;
-				while (parent != null)
-				{
-					if (parent is ViewCell)
-					{
-						skip = true;
-						break;
-					}
-					parent = parent.RealParent;
-				}
-
-				if (!skip)
-					shouldBeClickable = true;
+				return shouldBeClickable;
 			}
 
-			return shouldBeClickable;
+			// Walk up the view tree to ensure we aren't in a ViewCell
+			Element parent = view.RealParent;
+			while (parent != null)
+			{
+				if (parent is ViewCell)
+				{
+					// We're in a ViewCell, so clickable should be false
+					return false;
+				}
+				parent = parent.RealParent;
+			}
+
+			// If we're not, we can be clickable
+			return true;
 		}
 	}
 }
