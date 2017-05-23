@@ -548,7 +548,7 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla54977.xaml.cs">
       <DependentUpon>Bugzilla54977.xaml</DependentUpon>
-    </Compile>\
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla49069.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla42956.cs" />
   </ItemGroup>
