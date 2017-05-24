@@ -151,18 +151,25 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test, TestCaseSource(nameof(GenerateTests))]
-		public void VerifyInputTransparent(TestPoint test)
-		{
-			RunningApp.WaitForElement(q => q.Marked(test.AutomationId));
-			RunningApp.Tap(test.AutomationId);
+        [Test, TestCaseSource(nameof(GenerateTests))]
+        public void VerifyInputTransparent(TestPoint test)
+        {
+            RunningApp.WaitForElement(q => q.Marked(test.AutomationId));
+            RunningApp.Tap(test.AutomationId);
 
-			RunningApp.WaitForElement(DefaultButtonText);
-			RunningApp.Tap(DefaultButtonText);
+            var button = RunningApp.WaitForElement(DefaultButtonText);
 
-			RunningApp.WaitForElement(test.ShouldBeTransparent ? Success : DefaultButtonText);
+#if __IOS__
+            // For the tests where the overlay is not input transparent, the UI tests on 
+            // iOS can 'see' the button with WaitForElement but not with Tap. So we'll
+            // just tap the coordinates of the button's center blindly instead
+            RunningApp.TapCoordinates(button[0].Rect.CenterX, button[0].Rect.CenterY);
+#else
+            RunningApp.Tap(DefaultButtonText);
+#endif
+            RunningApp.WaitForElement(test.ShouldBeTransparent ? Success : DefaultButtonText);
 		}
 #endif
 
-	}
+        }
 }
