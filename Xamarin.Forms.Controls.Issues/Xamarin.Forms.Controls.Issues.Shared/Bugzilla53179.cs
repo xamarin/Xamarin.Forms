@@ -6,16 +6,10 @@ using Xamarin.UITest;
 using NUnit.Framework;
 #endif
 
-// Apply the default category of "Issues" to all of the tests in this assembly
-// We use this as a catch-all for tests which haven't been individually categorized
-#if UITEST
-[assembly: NUnit.Framework.Category("Issues")]
-#endif
-
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 9953179, "PopAsync crashing after RemovePage when support packages are updated to 25.1.1", PlatformAffected.Android)]
+	[Issue(IssueTracker.Bugzilla, 53179, "PopAsync crashing after RemovePage when support packages are updated to 25.1.1", PlatformAffected.Android)]
 	public class Bugzilla53179 : TestNavigationPage
 	{
 		class TestPage : ContentPage
