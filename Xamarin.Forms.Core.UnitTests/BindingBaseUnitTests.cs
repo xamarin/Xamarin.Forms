@@ -172,10 +172,20 @@ namespace Xamarin.Forms.Core.UnitTests
 			var bo = new MockBindable { BindingContext = vm };
 			bo.SetBinding(property, binding);
 
-			if (System.Threading.Thread.CurrentThread.CurrentCulture.Name == "tr-TR")
-				Assert.That(bo.GetValue(property), Is.EqualTo("%95,00"));
-			else
-				Assert.That(bo.GetValue(property), Is.EqualTo("95.00 %"));
+            switch (System.Threading.Thread.CurrentThread.CurrentCulture.Name)
+            {
+                case "tr-TR":
+                    Assert.That(bo.GetValue(property), Is.EqualTo("%95,00"));
+                    break;
+
+                case "ja-JP":
+                    Assert.That(bo.GetValue(property), Is.EqualTo("95.00%"));
+                    break;
+
+                default:
+                    Assert.That(bo.GetValue(property), Is.EqualTo("95.00 %"));
+                    break;
+            }
 		}
 
 		[Test]
