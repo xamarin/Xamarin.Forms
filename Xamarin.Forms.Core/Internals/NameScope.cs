@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Internals
 		void INameScope.RegisterName(string name, object scopedElement)
 		{
 			if (_names.ContainsKey(name))
-				throw new ArgumentException("An element with the same key already exists in NameScope", "name");
+				throw new ArgumentException($"An element with the same key '{name}' already exists in NameScope", name);
 
 			_names[name] = scopedElement;
 		}
