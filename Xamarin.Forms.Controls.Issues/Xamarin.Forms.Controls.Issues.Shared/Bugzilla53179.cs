@@ -72,9 +72,17 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void Bugzilla53179Test()
 		{
-			RunningApp.Screenshot ("I am at Issue 1");
-			RunningApp.WaitForElement (q => q.Marked ("IssuePageLabel"));
-			RunningApp.Screenshot ("I see the Label");
+			RunningApp.WaitForElement(q => q.Marked("Next Page"));
+			RunningApp.Tap(q => q.Marked("Next Page"));
+
+			RunningApp.WaitForElement(q => q.Marked("Next Page"));
+			RunningApp.Tap(q => q.Marked("Next Page"));
+
+			RunningApp.WaitForElement(q => q.Marked("Remove previous page"));
+			RunningApp.Tap(q => q.Marked("Remove previous page"));
+
+			RunningApp.WaitForElement(q => q.Marked("Back"));
+			RunningApp.Tap(q => q.Marked("Back"));
 		}
 #endif
 	}
