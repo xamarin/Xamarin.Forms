@@ -143,10 +143,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var textColor = Element.TextColor;
 
-			if (textColor.IsDefault || !Element.IsEnabled)
-				Control.TextColor = _defaultTextColor;
-			else
-				Control.TextColor = textColor.ToUIColor();
+			Control.TextColor = textColor.IsDefault ? _defaultTextColor : textColor.ToUIColor();
 		}
 
 		void UpdateAdjustsFontSizeToFitWidth()
@@ -188,9 +185,9 @@ namespace Xamarin.Forms.Platform.iOS
 			var targetColor = Element.PlaceholderColor;
 
 			// Placeholder default color is 70% gray
-			// https://developer.apple.com/library/prerelease/ios/documentation/UIKit/Reference/UITextField_Class/index.html#//apple_ref/occ/instp/UITextField/placeholder
+			// https://developer.apple.com/reference/uikit/uitextfield/1619621-placeholder
 
-			var color = Element.IsEnabled && !targetColor.IsDefault ? targetColor : ColorExtensions.SeventyPercentGrey.ToColor();
+			var color = !targetColor.IsDefault ? targetColor : ColorExtensions.SeventyPercentGrey.ToColor();
 
 			Control.AttributedPlaceholder = formatted.ToAttributed(Element, color);
 		}
