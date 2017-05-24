@@ -363,33 +363,37 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 
 		void PresentAlert(AlertArguments arguments)
+        {
+            var window = GetNewUIWindow();
+          
+            var alert = UIAlertController.Create(arguments.Title, arguments.Message, UIAlertControllerStyle.Alert);
+            SetAppearence(alert);
+
+            var oldFrame = alert.View.Frame;       
+            alert.View.Frame = new RectangleF(oldFrame.X, oldFrame.Y, oldFrame.Width, oldFrame.Height - _alertPadding * 2);
+
+            if (arguments.Cancel != null)
+            {
+                alert.AddAction(CreateActionWithWindowHide(arguments.Cancel, UIAlertActionStyle.Cancel,
+                    () => arguments.SetResult(false), window));
+            }
+
+            if (arguments.Accept != null)
+            {
+                alert.AddAction(CreateActionWithWindowHide(arguments.Accept, UIAlertActionStyle.Default,
+                    () => arguments.SetResult(true), window));
+            }
+
+            PresentPopUp(window, alert);
+        }
+
+        void PresentActionSheet(ActionSheetArguments arguments)
 		{
-			var window = new UIWindow { BackgroundColor = Color.Transparent.ToUIColor() };
+            var window = GetNewUIWindow();
 
-			var alert = UIAlertController.Create(arguments.Title, arguments.Message, UIAlertControllerStyle.Alert);
-			var oldFrame = alert.View.Frame;
-			alert.View.Frame = new RectangleF(oldFrame.X, oldFrame.Y, oldFrame.Width, oldFrame.Height - _alertPadding * 2);
-
-			if (arguments.Cancel != null)
-			{
-				alert.AddAction(CreateActionWithWindowHide(arguments.Cancel, UIAlertActionStyle.Cancel,
-					() => arguments.SetResult(false), window));
-			}
-
-			if (arguments.Accept != null)
-			{
-				alert.AddAction(CreateActionWithWindowHide(arguments.Accept, UIAlertActionStyle.Default,
-					() => arguments.SetResult(true), window));
-			}
-
-			PresentPopUp(window, alert);
-		}
-
-		void PresentActionSheet(ActionSheetArguments arguments)
-		{
-			var alert = UIAlertController.Create(arguments.Title, null, UIAlertControllerStyle.ActionSheet);
-			var window = new UIWindow { BackgroundColor = Color.Transparent.ToUIColor() };
-
+            var alert = UIAlertController.Create(arguments.Title, null, UIAlertControllerStyle.ActionSheet);
+            SetAppearence(alert);
+            
 			if (arguments.Cancel != null)
 			{
 				alert.AddAction(CreateActionWithWindowHide(arguments.Cancel, UIAlertActionStyle.Cancel, () => arguments.SetResult(arguments.Cancel), window));
@@ -413,7 +417,20 @@ namespace Xamarin.Forms.Platform.iOS
 			PresentPopUp(window, alert, arguments);
 		}
 
-		static void PresentPopUp(UIWindow window, UIAlertController alert, ActionSheetArguments arguments = null)
+        static UIWindow GetNewUIWindow()
+        {
+            var window = new UIWindow { BackgroundColor = Color.Transparent.ToUIColor() };
+            window.TintColor = UIWindow.Appearance.TintColor;
+            return window;
+        }
+
+        static void SetAppearence(UIAlertController alert)
+        {
+            alert.View.TintColor = UIAlertView.Appearance.TintColor;
+            alert.View.BackgroundColor = UIAlertView.Appearance.BackgroundColor;
+        }
+
+        static void PresentPopUp(UIWindow window, UIAlertController alert, ActionSheetArguments arguments = null)
 		{
 			window.RootViewController = new UIViewController();
 			window.RootViewController.View.BackgroundColor = Color.Transparent.ToUIColor();
