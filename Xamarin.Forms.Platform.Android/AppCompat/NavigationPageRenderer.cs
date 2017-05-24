@@ -543,6 +543,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 				rendererToRemove?.Dispose();
 
+				// This causes a NullPointerException in API 25.1+ when we later call ExecutePendingTransactions();
+				// We may want to remove this in the future if it is resolved in the Android SDK.
 				if ((int)Build.VERSION.SdkInt < 25)
 				{
 					containerToRemove?.RemoveFromParent();
