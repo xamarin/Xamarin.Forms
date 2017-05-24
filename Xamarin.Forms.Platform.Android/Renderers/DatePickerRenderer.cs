@@ -17,7 +17,8 @@ namespace Xamarin.Forms.Platform.Android
 		public DatePickerRenderer()
 		{
 			AutoPackage = false;
-			if (Forms.IsLollipopOrNewer)
+			// Device.Info will be null in the context of the Android Designer
+			if (Forms.IsLollipopOrNewer && Device.Info != null)
 				Device.Info.PropertyChanged += DeviceInfoPropertyChanged;
 		}
 
@@ -25,7 +26,8 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (disposing && !_disposed)
 			{
-				if (Forms.IsLollipopOrNewer)
+				// Device.Info will be null in the context of the Android Designer
+				if (Forms.IsLollipopOrNewer && Device.Info)
 					Device.Info.PropertyChanged -= DeviceInfoPropertyChanged;
 
 				_disposed = true;
