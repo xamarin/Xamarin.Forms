@@ -455,6 +455,10 @@ namespace Xamarin.Forms
 				List<BindableProperty> changedResources = null;
 				foreach (KeyValuePair<BindableProperty, string> dynR in DynamicResources)
 				{
+					// when the DynamicResource bound to a BindableProperty is
+					// changing then the BindableProperty needs to be refreshed;
+					// The .Value is the name of DynamicResouce to which the BindableProperty is bound.
+					// The .Key is the name of the DynamicResource whose value is changing.
 					if (dynR.Value != value.Key)
 						continue;
 					changedResources = changedResources ?? new List<BindableProperty>();
