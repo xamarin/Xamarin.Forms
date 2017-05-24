@@ -33,7 +33,7 @@ namespace Xamarin.Forms
 				return;
 			}
 
-			if (width == _layoutInformation.Constraint.Width && height == _layoutInformation.Constraint.Height)
+			if (width == _layoutInformation.Constraint.Width && height == _layoutInformation.Constraint.Height && _layoutInformation.Plots != null)
 			{
 				StackOrientation orientation = Orientation;
 
@@ -45,7 +45,7 @@ namespace Xamarin.Forms
 				CalculateLayout(_layoutInformation, x, y, width, height, true);
 			}
 
-			LayoutInformation layoutInformationCopy = _layoutInformation;
+			LayoutInformation layoutInformationCopy = new LayoutInformation(_layoutInformation);
 
 			for (var i = 0; i < LogicalChildrenInternal.Count; i++)
 			{
@@ -457,6 +457,27 @@ namespace Xamarin.Forms
 			public Size MinimumSize;
 			public Rectangle[] Plots;
 			public SizeRequest[] Requests;
+
+			public LayoutInformation() { }
+
+			public LayoutInformation(LayoutInformation layoutInformation)
+			{
+				Bounds = layoutInformation.Bounds;
+				CompressionSpace = layoutInformation.CompressionSpace;
+				Constraint = layoutInformation.Constraint;
+				Expanders = layoutInformation.Expanders;
+				MinimumSize = layoutInformation.MinimumSize;
+				if (layoutInformation.Plots != null)
+				{
+					Plots = new Rectangle[layoutInformation.Plots.Length];
+					Array.Copy(layoutInformation.Plots, Plots, layoutInformation.Plots.Length);
+				}
+				if (layoutInformation.Requests != null)
+				{
+					Requests = new SizeRequest[layoutInformation.Requests.Length];
+					Array.Copy(layoutInformation.Requests, Requests, layoutInformation.Requests.Length);
+				}
+			}
 		}
 	}
 }
