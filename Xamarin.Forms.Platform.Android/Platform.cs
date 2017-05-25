@@ -1046,7 +1046,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (base.OnTouchEvent(e))
 					return true;
 
-				return _motionEventHelper.HandleMotionEvent(Parent);
+				return _motionEventHelper.HandleMotionEvent(Parent, e);
 			}
 
 			protected override void OnElementChanged(ElementChangedEventArgs<View> e)
@@ -1058,7 +1058,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			public override bool DispatchTouchEvent(MotionEvent e)
 			{
-				#region
+				#region Excessive explanation
 				// Normally dispatchTouchEvent feeds the touch events to its children one at a time, top child first,
 				// (and only to the children in the hit-test area of the event) stopping as soon as one of them has handled
 				// the event. 
