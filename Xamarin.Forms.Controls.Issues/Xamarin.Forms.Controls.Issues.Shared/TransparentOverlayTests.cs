@@ -29,6 +29,7 @@ namespace Xamarin.Forms.Controls.Issues
 		const string Success = "Success";
 		const string Failure = "Failure";
 		const string DefaultButtonText = "Button";
+		const string Overlay = "overlay";
 
 		protected override void Init()
 		{
@@ -133,7 +134,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var layout = new StackLayout
 			{
-                AutomationId = "overlay",
+                AutomationId = Overlay,
 				HorizontalOptions = LayoutOptions.Fill,
 				VerticalOptions = LayoutOptions.Fill,
 				BackgroundColor = backgroundColor,
@@ -157,15 +158,16 @@ namespace Xamarin.Forms.Controls.Issues
             RunningApp.WaitForElement(q => q.Marked(test.AutomationId));
             RunningApp.Tap(test.AutomationId);
 
-            var button = RunningApp.WaitForElement(DefaultButtonText);
+
 
 #if __IOS__
-            // For the tests where the overlay is not input transparent, the UI tests on 
-            // iOS can 'see' the button with WaitForElement but not with Tap. So we'll
-            // just tap the coordinates of the button's center blindly instead
-            RunningApp.TapCoordinates(button[0].Rect.CenterX, button[0].Rect.CenterY);
+			// For the tests where the overlay is not input transparent, the UI tests on 
+			// iOS can't find the button. So we'll just tap the coordinates of the layout's center blindly instead
+			var overlay = RunningApp.WaitForElement(Overlay);
+			RunningApp.TapCoordinates(overlay[0].Rect.CenterX, overlay[0].Rect.CenterY);
 #else
-            RunningApp.Tap(DefaultButtonText);
+			var button = RunningApp.WaitForElement(DefaultButtonText);
+			RunningApp.Tap(DefaultButtonText);
 #endif
             RunningApp.WaitForElement(test.ShouldBeTransparent ? Success : DefaultButtonText);
 		}
