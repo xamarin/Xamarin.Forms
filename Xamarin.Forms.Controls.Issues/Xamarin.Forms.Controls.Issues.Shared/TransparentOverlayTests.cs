@@ -158,8 +158,6 @@ namespace Xamarin.Forms.Controls.Issues
             RunningApp.WaitForElement(q => q.Marked(test.AutomationId));
             RunningApp.Tap(test.AutomationId);
 
-
-
 #if __IOS__
 			// For the tests where the overlay is not input transparent, the UI tests on 
 			// iOS can't find the button. So we'll just tap the coordinates of the layout's center blindly instead
