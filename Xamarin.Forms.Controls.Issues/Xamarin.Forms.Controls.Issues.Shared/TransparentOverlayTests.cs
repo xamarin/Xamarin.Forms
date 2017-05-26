@@ -26,8 +26,9 @@ namespace Xamarin.Forms.Controls.Issues
 		double _transparentOpacity = 0;
 		double _nonTransparentOpacity = 0.2;
 
+        const string Running = "Running...";
 		const string Success = "Success";
-		const string Failure = "Failure";
+        const string Failure = "Failure";
 		const string DefaultButtonText = "Button";
 		const string Overlay = "overlay";
 
@@ -106,6 +107,7 @@ namespace Xamarin.Forms.Controls.Issues
 			};
 
 			grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 			grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star });
 
 			var instructions = new Label
@@ -114,11 +116,21 @@ namespace Xamarin.Forms.Controls.Issues
 				HorizontalTextAlignment = TextAlignment.Center,
 				Text = $"Tap the button below."
 				       + (test.ShouldBeTransparent
-					       ? $" If the button's text changes to {Success} the test has passed."
-					       : " If the button's text remains unchanged, the test has passed.")
+					       ? $" If the label below's text changes to {Success} the test has passed."
+					       : " If the label below's text remains unchanged, the test has passed.")
 			};
 
 			grid.Children.Add(instructions);
+
+            var results = new Label 
+            { 
+                HorizontalOptions = LayoutOptions.Fill,
+                HorizontalTextAlignment = TextAlignment.Center, 
+                Text = Running 
+            };
+
+            grid.Children.Add(results);
+            Grid.SetRow(results, 1);
 
 			var button = new Button
 			{
@@ -129,7 +141,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			button.Clicked += (sender, args) =>
 			{
-				button.Text = test.ShouldBeTransparent ? Success : Failure;
+				results.Text = test.ShouldBeTransparent ? Success : Failure;
 			};
 
 			var layout = new StackLayout
@@ -143,10 +155,10 @@ namespace Xamarin.Forms.Controls.Issues
 			};
 
 			grid.Children.Add(button);
-			Grid.SetRow(button, 1);
+			Grid.SetRow(button, 2);
 			
 			grid.Children.Add(layout);
-			Grid.SetRow(layout, 1);
+			Grid.SetRow(layout, 2);
 
 			return new ContentPage { Content = grid, Title = test.ToString()};
 		}
@@ -159,17 +171,28 @@ namespace Xamarin.Forms.Controls.Issues
             RunningApp.Tap(test.AutomationId);
 
 #if __IOS__
-			// For the tests where the overlay is not input transparent, the UI tests on 
-			// iOS can't find the button. So we'll just tap the coordinates of the layout's center blindly instead
-			var overlay = RunningApp.WaitForElement(Overlay);
-			RunningApp.TapCoordinates(overlay[0].Rect.CenterX, overlay[0].Rect.CenterY);
+			if(test.Opacity) 
+			{
+				// The UI Tests on iOS can find the button if the overlay is 
+				// visually transparent (but they can't find the overlay itself)
+				var button = RunningApp.WaitForElement(DefaultButtonText);
+				RunningApp.TapCoordinates(button[0].Rect.CenterX, button[0].Rect.CenterY);
+			}
+			else
+			{
+				// For the tests where the overlay is not visually transparent, the UI tests on 
+				// iOS can't find the button, but they *can* find the overlay.
+				// So we'll just blindly tap the coordinates of the overlay's center
+				var overlay = RunningApp.WaitForElement(Overlay);
+				RunningApp.TapCoordinates(overlay[0].Rect.CenterX, overlay[0].Rect.CenterY);
+			}
 #else
 			var button = RunningApp.WaitForElement(DefaultButtonText);
-			RunningApp.Tap(DefaultButtonText);
+            RunningApp.Tap(DefaultButtonText);
 #endif
-            RunningApp.WaitForElement(test.ShouldBeTransparent ? Success : DefaultButtonText);
+            RunningApp.WaitForElement(test.ShouldBeTransparent ? Success : Running); 
 		}
 #endif
 
-        }
+	}
 }
