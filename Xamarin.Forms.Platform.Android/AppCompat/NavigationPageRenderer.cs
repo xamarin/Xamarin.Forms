@@ -771,6 +771,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			bool isNavigated = ((INavigationPageController)Element).StackDepth > 1;
 			bar.NavigationIcon = null;
 
+			activity.SetSupportActionBar(bar);
+			activity.SupportActionBar.SetHomeButtonEnabled(true);
+			activity.SupportActionBar.SetDisplayHomeAsUpEnabled(true);
+
 			if (isNavigated)
 			{
 				if (toggle != null)
