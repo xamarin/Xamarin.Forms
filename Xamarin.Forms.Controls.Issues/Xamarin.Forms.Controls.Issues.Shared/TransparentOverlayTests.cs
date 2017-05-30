@@ -31,6 +31,7 @@ namespace Xamarin.Forms.Controls.Issues
         const string Failure = "Failure";
 		const string DefaultButtonText = "Button";
 		const string Overlay = "overlay";
+		const string AddOverlay = "Add Overlay";
 
 		protected override void Init()
 		{
@@ -108,13 +109,14 @@ namespace Xamarin.Forms.Controls.Issues
 
 			grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+			grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 			grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star });
 
 			var instructions = new Label
 			{
 				HorizontalOptions = LayoutOptions.Fill,
 				HorizontalTextAlignment = TextAlignment.Center,
-				Text = $"Tap the button below."
+				Text = $"Tap the 'Add Overlay' button, then tap the button labeled 'Button'."
 				       + (test.ShouldBeTransparent
 					       ? $" If the label below's text changes to {Success} the test has passed."
 					       : " If the label below's text remains unchanged, the test has passed.")
@@ -155,10 +157,17 @@ namespace Xamarin.Forms.Controls.Issues
 			};
 
 			grid.Children.Add(button);
-			Grid.SetRow(button, 2);
-			
-			grid.Children.Add(layout);
-			Grid.SetRow(layout, 2);
+			Grid.SetRow(button, 3);
+
+			var addOverlayButton = new Button() { Text = AddOverlay };
+			addOverlayButton.Clicked += (sender, args) =>
+			{
+				grid.Children.Add(layout);
+				Grid.SetRow(layout, 3);
+			};
+
+			grid.Children.Add(addOverlayButton);
+			Grid.SetRow(addOverlayButton, 2);
 
 			return new ContentPage { Content = grid, Title = test.ToString()};
 		}
@@ -170,26 +179,20 @@ namespace Xamarin.Forms.Controls.Issues
             RunningApp.WaitForElement(q => q.Marked(test.AutomationId));
             RunningApp.Tap(test.AutomationId);
 
-#if __IOS__
-			if(test.Opacity) 
-			{
-				// The UI Tests on iOS can find the button if the overlay is 
-				// visually transparent (but they can't find the overlay itself)
-				var button = RunningApp.WaitForElement(DefaultButtonText);
-				RunningApp.TapCoordinates(button[0].Rect.CenterX, button[0].Rect.CenterY);
-			}
-			else
-			{
-				// For the tests where the overlay is not visually transparent, the UI tests on 
-				// iOS can't find the button, but they *can* find the overlay.
-				// So we'll just blindly tap the coordinates of the overlay's center
-				var overlay = RunningApp.WaitForElement(Overlay);
-				RunningApp.TapCoordinates(overlay[0].Rect.CenterX, overlay[0].Rect.CenterY);
-			}
-#else
+			// Determine the location of the button; we have to do this before adding the overlay because
+			// otherwise the iOS UI tests won't be able to find it consistently
 			var button = RunningApp.WaitForElement(DefaultButtonText);
-            RunningApp.Tap(DefaultButtonText);
-#endif
+			var coords = new Tuple<float, float>(button[0].Rect.CenterX, button[0].Rect.CenterY);
+
+			// Add the overlay 
+			RunningApp.WaitForElement(AddOverlay);
+			RunningApp.Tap(AddOverlay);
+
+			// Now tap the screen at the Button's location
+			// We can't do RunningApp.Tap(DefaultButtonText) because the UI tests on iOS can't see it
+			RunningApp.TapCoordinates(coords.Item1, coords.Item2);
+
+			// Check the results
             RunningApp.WaitForElement(test.ShouldBeTransparent ? Success : Running); 
 		}
 #endif
