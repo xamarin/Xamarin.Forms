@@ -126,22 +126,22 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			if (e.PropertyName == "Master" || e.PropertyName == "Detail")
 				UpdateControllers();
-			else if( e.PropertyName == Xamarin.Forms.MasterDetailPage.IsPresentedProperty.PropertyName )
-				UpdateIsPresented( );
+			else if (e.PropertyName == Xamarin.Forms.MasterDetailPage.IsPresentedProperty.PropertyName)
+				UpdateIsPresented();
 		}
 
-		void UpdateIsPresented( )
+		void UpdateIsPresented()
 		{
-			if( MasterDetailPage == null || SplitView == null )
+			if (MasterDetailPage == null || SplitView == null)
 				return;
 
-			NSView view = SplitView.Subviews.FirstOrDefault( );
-			if( view == null )
+			NSView view = SplitView.Subviews.FirstOrDefault();
+			if (view == null)
 				return;
 
-			if( MasterDetailPage.IsPresented && view.Hidden )
+			if (MasterDetailPage.IsPresented && view.Hidden)
 				view.Hidden = false;
-			else if( !MasterDetailPage.IsPresented && !view.Hidden )
+			else if (!MasterDetailPage.IsPresented && !view.Hidden)
 				view.Hidden = true;
 		}
 
@@ -149,11 +149,11 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			ClearControllers();
 
-			ClearControllers( );
+			ClearControllers();
 
-			if( Platform.GetRenderer(MasterDetailPage.Master) == null )
+			if (Platform.GetRenderer(MasterDetailPage.Master) == null)
 				Platform.SetRenderer(MasterDetailPage.Master, Platform.CreateRenderer(MasterDetailPage.Master));
-			if( Platform.GetRenderer(MasterDetailPage.Detail) == null )
+			if (Platform.GetRenderer(MasterDetailPage.Detail) == null)
 				Platform.SetRenderer(MasterDetailPage.Detail, Platform.CreateRenderer(MasterDetailPage.Detail));
 
 			ViewControllerWrapper masterController = new ViewControllerWrapper(Platform.GetRenderer(MasterDetailPage.Master));
@@ -172,8 +172,8 @@ namespace Xamarin.Forms.Platform.MacOS
 				ViewController = detailController
 			});
 
-			UpdateChildrenLayout( );
-			UpdateIsPresented( );
+			UpdateChildrenLayout();
+			UpdateIsPresented();
 		}
 
 		void ClearControllers()
@@ -200,21 +200,21 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 		}
 
-		private void MasterController_WillDisappear( object sender, EventArgs e )
+		private void MasterController_WillDisappear(object sender, EventArgs e)
 		{
 			if (Element == null || MasterDetailPage == null)
 				return;
 
-			if( MasterDetailPage.CanChangeIsPresented && MasterDetailPage.IsPresented )
+			if (MasterDetailPage.CanChangeIsPresented && MasterDetailPage.IsPresented)
 				Element.SetValueFromRenderer(MasterDetailPage.IsPresentedProperty, false);
 		}
 
-		private void MasterController_WillAppear( object sender, EventArgs e )
+		private void MasterController_WillAppear(object sender, EventArgs e)
 		{
 			if (Element == null || MasterDetailPage == null)
 				return;
 
-			if( MasterDetailPage.CanChangeIsPresented && !MasterDetailPage.IsPresented )
+			if (MasterDetailPage.CanChangeIsPresented && !MasterDetailPage.IsPresented)
 				Element.SetValueFromRenderer(MasterDetailPage.IsPresentedProperty, true);
 		}
 
@@ -240,17 +240,17 @@ namespace Xamarin.Forms.Platform.MacOS
 				base.ViewWillLayout();
 			}
 
-			public override void ViewWillAppear( )
+			public override void ViewWillAppear()
 			{
-				base.ViewWillAppear( );
-				if( WillAppear != null )
+				base.ViewWillAppear();
+				if (WillAppear != null)
 					WillAppear(this, EventArgs.Empty);
 			}
 
-			public override void ViewWillDisappear( )
+			public override void ViewWillDisappear()
 			{
-				base.ViewWillDisappear( );
-				if( WillDisappear != null )
+				base.ViewWillDisappear();
+				if (WillDisappear != null)
 					WillDisappear(this, EventArgs.Empty);
 			}
 
