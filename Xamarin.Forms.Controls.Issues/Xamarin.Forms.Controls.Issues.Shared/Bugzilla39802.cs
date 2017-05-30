@@ -10,18 +10,26 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		protected override void Init()
 		{
+			BackgroundColor = Color.Yellow;
 
 			var list = new ObservableCollection<MyItem>();
-			for (int i = 0; i < 2; i++)
+			for (int i = 0; i < 100; i++)
 			{
-				list.Add(new MyItem { Title = "List item: " + (i + 1) });
+				var item = new MyItem { Title = "List item: " + (i + 1) , Color = Color.Red};
+				list.Add(item);
+				if (i % 2 == 0)
+				{
+					item.Color = Color.Blue;
+				}
+
 			}
 			ListItems = list;
 
 			BindingContext = this;
 			var lst = new ListView(ListViewCachingStrategy.RecycleElement)
 			{
-				ItemTemplate =  new DataTemplate(typeof(ItemTemplate))
+				BackgroundColor = Color.Transparent,
+				ItemTemplate = new DataTemplate(typeof(ItemTemplate))
 			};
 			lst.SeparatorVisibility = SeparatorVisibility.None;
 			lst.SetBinding(ListView.ItemsSourceProperty, nameof(ListItems));
@@ -34,12 +42,12 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				var stk = new StackLayout
 				{
-					BackgroundColor = Color.Blue,
-					Padding = new Thickness(15,0,0,0)
+					Padding = new Thickness(15, 0, 0, 0)
 				};
+				stk.SetBinding(VisualElement.BackgroundColorProperty, nameof(MyItem.Color));
 				var lbl = new Label
 				{
-					TextColor = Color.White,
+					TextColor = Color.Yellow,
 					VerticalOptions = LayoutOptions.CenterAndExpand
 				};
 				lbl.SetBinding(Label.TextProperty, nameof(MyItem.Title));
@@ -52,6 +60,8 @@ namespace Xamarin.Forms.Controls.Issues
 		public class MyItem
 		{
 			public string Title { get; set; }
+
+			public Color Color { get; set; }
 		}
 	}
 }
