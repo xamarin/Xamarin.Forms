@@ -123,6 +123,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			if (_backgroundTracker == null)
 				_backgroundTracker = new ButtonBackgroundTracker(Button, this);
+			else
+				_backgroundTracker.Button = Button;
 
 			Color currentColor = oldElement?.BackgroundColor ?? Color.Default;
 			if (element.BackgroundColor != currentColor)

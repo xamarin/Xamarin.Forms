@@ -96,11 +96,15 @@ namespace Xamarin.Forms.Platform.Android
 					SetNativeControl(button);
 					_textColorSwitcher = new TextColorSwitcher(button.TextColors);
 					button.AddOnAttachStateChangeListener(this);
-					if (_backgroundTracker == null)
-						_backgroundTracker = new ButtonBackgroundTracker(Element, Control);
 				}
+				if (_backgroundTracker == null)
+					_backgroundTracker = new ButtonBackgroundTracker(Element, Control);
 			}
-			
+			else
+			{
+				_backgroundTracker.Button = e.NewElement;
+			}
+
 			UpdateAll();
 		}
 
@@ -114,8 +118,6 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateEnabled();
 			else if (e.PropertyName == Button.FontProperty.PropertyName)
 				UpdateFont();
-			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
-				UpdateDrawable();
 			else if (e.PropertyName == Button.ImageProperty.PropertyName)
 				UpdateBitmap();
 			else if (e.PropertyName == VisualElement.IsVisibleProperty.PropertyName)

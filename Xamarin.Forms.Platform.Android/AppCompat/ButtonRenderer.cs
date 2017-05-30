@@ -111,6 +111,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 				if (_backgroundTracker == null)
 					_backgroundTracker = new ButtonBackgroundTracker(Element, Control);
+				else
+					_backgroundTracker.Button = e.NewElement;
 
 				UpdateAll();
 			}

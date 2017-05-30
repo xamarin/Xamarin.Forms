@@ -12,13 +12,26 @@ namespace Xamarin.Forms.Platform.Android
 		Button _button;
 		AButton _nativeButton;
 		bool _drawableEnabled;
-		bool disposedValue;
+		bool _disposed;
 
 		public ButtonBackgroundTracker(Button button, AButton nativeButton)
 		{
-			_button = button;
+			Button = button;
 			_nativeButton = nativeButton;
-			_button.PropertyChanged += ButtonPropertyChanged;
+		}
+
+		public Button Button
+		{
+			get { return _button; }
+			set
+			{
+				if (_button == value)
+					return;
+				if (_button != null)
+					_button.PropertyChanged -= ButtonPropertyChanged;
+				_button = value;
+				_button.PropertyChanged += ButtonPropertyChanged;
+			}
 		}
 
 		public void UpdateDrawable()
@@ -66,12 +79,10 @@ namespace Xamarin.Forms.Platform.Android
 		public void UpdateBackgroundColor()
 		{
 			if (_button == null)
-			{
 				return;
-			}
 			UpdateDrawable();
 		}
-		
+
 		public void Dispose()
 		{
 			Dispose(true);
@@ -79,7 +90,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void Dispose(bool disposing)
 		{
-			if (!disposedValue)
+			if (!_disposed)
 			{
 				if (disposing)
 				{
@@ -94,7 +105,7 @@ namespace Xamarin.Forms.Platform.Android
 					}
 					_nativeButton = null;
 				}
-				disposedValue = true;
+				_disposed = true;
 			}
 		}
 
