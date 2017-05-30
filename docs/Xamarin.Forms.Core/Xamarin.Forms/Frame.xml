@@ -122,6 +122,23 @@ MainPage = new ContentPage () {
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
+    <Member MemberName="CreateDefaultPadding">
+      <MemberSignature Language="C#" Value="protected override Xamarin.Forms.Thickness CreateDefaultPadding ();" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance valuetype Xamarin.Forms.Thickness CreateDefaultPadding() cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>Xamarin.Forms.Thickness</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
     <Member MemberName="HasShadow">
       <MemberSignature Language="C#" Value="public bool HasShadow { get; set; }" />
       <MemberSignature Language="ILAsm" Value=".property instance bool HasShadow" />
