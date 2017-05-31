@@ -29,6 +29,10 @@ namespace Xamarin.Forms.Platform.iOS
 			set
 			{
 				base.SelectedViewController = value;
+
+				if (value == MoreNavigationController)
+					return;
+
 				UpdateCurrentPage();
 			}
 		}
