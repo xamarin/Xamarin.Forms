@@ -1,6 +1,7 @@
 ﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 using System.Collections.ObjectModel;
+using System.Collections.Generic;
 
 namespace Xamarin.Forms.Controls.Issues
 {
@@ -12,24 +13,32 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			BackgroundColor = Color.Yellow;
 
-			var list = new ObservableCollection<MyItem>();
-			for (int i = 0; i < 100; i++)
-			{
-				var item = new MyItem { Title = "List item: " + (i + 1) , Color = Color.Red};
-				list.Add(item);
-				if (i % 2 == 0)
-				{
-					item.Color = Color.Blue;
-				}
+			var list = new ObservableCollection<GroupedData>();
 
+			for (int i = 1; i <= 2; i++)
+			{
+				var group = new GroupedData { GroupName = $"Group #{i}" };
+
+				for (int j = 1; j < 30; j++)
+				{
+					var item = new MyItem { Title = $"Item: #{i}-{j}", Color = (j % 2 == 0) ? Color.Blue : Color.Red };
+
+					group.Add(item);
+				}
+				list.Add(group);
 			}
+
 			ListItems = list;
 
 			BindingContext = this;
 			var lst = new ListView(ListViewCachingStrategy.RecycleElement)
 			{
 				BackgroundColor = Color.Transparent,
-				ItemTemplate = new DataTemplate(typeof(ItemTemplate))
+				ItemTemplate = new DataTemplate(typeof(ItemTemplate)),
+				GroupHeaderTemplate = new DataTemplate(typeof(GroupHeaderTemplate)),
+				IsGroupingEnabled = true,
+				GroupDisplayBinding = new Binding(nameof(GroupedData.GroupName)),
+				GroupShortNameBinding = new Binding(nameof(GroupedData.GroupName)),
 			};
 			lst.SeparatorVisibility = SeparatorVisibility.None;
 			lst.SetBinding(ListView.ItemsSourceProperty, nameof(ListItems));
@@ -55,13 +64,36 @@ namespace Xamarin.Forms.Controls.Issues
 				View = stk;
 			}
 		}
+		public class GroupHeaderTemplate : ViewCell
+		{
+			public GroupHeaderTemplate()
+			{
+				var title = new Label { TextColor = Color.White, FontSize = 16 };
+				title.SetBinding(Label.TextProperty, new Binding(nameof(GroupedData.GroupName), BindingMode.OneWay));
 
-		public ObservableCollection<MyItem> ListItems { get; set; }
+				View = new StackLayout
+				{
+					Padding = new Thickness(8, 0),
+					VerticalOptions = LayoutOptions.StartAndExpand,
+					BackgroundColor = Color.Pink,
+					Orientation = StackOrientation.Horizontal,
+					Children = { title },
+				};
+			}
+		}
+
+		public ObservableCollection<GroupedData> ListItems { get; set; }
 		public class MyItem
 		{
 			public string Title { get; set; }
 
 			public Color Color { get; set; }
+		}
+
+		[Preserve(AllMembers = true)]
+		public class GroupedData : List<MyItem>
+		{
+			public string GroupName { get; set; }
 		}
 	}
 }
