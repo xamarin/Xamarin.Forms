@@ -19,7 +19,6 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public ScrollViewRenderer() : base(RectangleF.Empty)
 		{
-			DrawsBackground = false;
 			ContentView.PostsBoundsChangedNotifications = true;
 			NSNotificationCenter.DefaultCenter.AddObserver(this, new Selector(nameof(UpdateScrollPosition)),
 				BoundsChangedNotification, ContentView);
