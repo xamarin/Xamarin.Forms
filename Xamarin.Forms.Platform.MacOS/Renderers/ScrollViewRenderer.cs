@@ -19,6 +19,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public ScrollViewRenderer() : base(RectangleF.Empty)
 		{
+			DrawsBackground = false;
 			ContentView.PostsBoundsChangedNotifications = true;
 			NSNotificationCenter.DefaultCenter.AddObserver(this, new Selector(nameof(UpdateScrollPosition)),
 				BoundsChangedNotification, ContentView);
@@ -183,7 +184,18 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateBackgroundColor()
 		{
-			BackgroundColor = Element.BackgroundColor.ToNSColor(Color.Transparent);
+			if (Element.BackgroundColor == Color.Default)
+			{
+				if (DrawsBackground)
+					DrawsBackground = false;
+				if (BackgroundColor != NSColor.Clear)
+					BackgroundColor = NSColor.Clear;
+			}
+			else
+			{
+				DrawsBackground = true;
+				BackgroundColor = Element.BackgroundColor.ToNSColor();
+			}
 		}
 
 		void UpdateContentSize()
