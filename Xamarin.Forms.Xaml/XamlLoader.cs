@@ -46,7 +46,7 @@ namespace Xamarin.Forms.Xaml.Internals
 			internal set {
 				xamlFileProvider = value;
 				//¯\_(ツ)_/¯ the previewer forgot to set that bool
-				DoNotThrowOnExceptions = true;
+				DoNotThrowOnExceptions = value != null;
 			}
 		}
 
