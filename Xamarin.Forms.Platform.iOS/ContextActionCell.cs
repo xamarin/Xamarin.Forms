@@ -657,9 +657,33 @@ namespace Xamarin.Forms.Platform.iOS
 					return;
 
 				var table = (UITableView)recognizer.View;
-				if (!selector._lastPath.Equals(table.IndexPathForSelectedRow))
+				var isRowSelected = false;
+
+				if (table.IndexPathsForSelectedRows != null)
+				{
+					foreach (NSIndexPath indexPath in table.IndexPathsForSelectedRows)
+					{
+						if (indexPath != selector._lastPath)
+							continue;
+
+						isRowSelected = true;
+						break;
+					}
+				}
+
+				if (isRowSelected)
+				{
+					if (!table.AllowsMultipleSelectionDuringEditing || !table.Editing)
+						return;
+
+					table.DeselectRow(selector._lastPath, false);
+					table.Source.RowDeselected(table, selector._lastPath);
+				}
+				else
+				{
 					table.SelectRow(selector._lastPath, false, UITableViewScrollPosition.None);
-				table.Source.RowSelected(table, selector._lastPath);
+					table.Source.RowSelected(table, selector._lastPath);
+				}
 			}
 		}
 
