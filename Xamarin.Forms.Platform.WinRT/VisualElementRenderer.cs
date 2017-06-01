@@ -124,6 +124,9 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		public void SetElement(VisualElement element)
 		{
+			if (ReferenceEquals(Element, element))
+				return;
+
 			TElement oldElement = Element;
 			Element = (TElement)element;
 

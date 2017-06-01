@@ -168,6 +168,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void SetElement(TElement element)
 		{
+			if (ReferenceEquals(Element, element))
+				return;
+
 			if (element == null)
 				throw new ArgumentNullException(nameof(element));
 

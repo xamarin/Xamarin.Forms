@@ -150,6 +150,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public void SetElement(TElement element)
 		{
+			if (ReferenceEquals(Element, element))
+				return;
+
 			var oldElement = Element;
 			Element = element;
 

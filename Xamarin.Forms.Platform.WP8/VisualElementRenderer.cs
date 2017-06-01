@@ -87,6 +87,9 @@ namespace Xamarin.Forms.Platform.WinPhone
 
 		public void SetElement(VisualElement element)
 		{
+			if (ReferenceEquals(Element, element))
+				return;
+
 			TElement oldElement = Element;
 			Element = (TElement)element;
 
