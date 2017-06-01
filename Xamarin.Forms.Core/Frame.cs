@@ -21,7 +21,7 @@ namespace Xamarin.Forms
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Frame>>(() => new PlatformConfigurationRegistry<Frame>(this));
 		}
 
-		protected override Thickness CreateDefaultPadding()
+		internal override Thickness CreateDefaultPadding()
 		{
 			return 20d;
 		}

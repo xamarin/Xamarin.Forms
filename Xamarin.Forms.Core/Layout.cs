@@ -90,7 +90,7 @@ namespace Xamarin.Forms
 			set { SetValue(PaddingProperty, value); }
 		}
 
-		protected virtual Thickness CreateDefaultPadding()
+		internal virtual Thickness CreateDefaultPadding()
 		{
 			return default(Thickness);
 		}
