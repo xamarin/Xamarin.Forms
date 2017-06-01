@@ -7,6 +7,7 @@ using System.Linq;
 using Foundation;
 using UIKit;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using RectangleF = CoreGraphics.CGRect;
 using SizeF = CoreGraphics.CGSize;
 
@@ -231,6 +232,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateIsRefreshing();
 				UpdateSeparatorColor();
 				UpdateSeparatorVisibility();
+				UpdateIsBounceEnabled();
 
 				var selected = e.NewElement.SelectedItem;
 				if (selected != null)
@@ -266,6 +268,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateFooter();
 			else if (e.PropertyName == "RefreshAllowed")
 				UpdatePullToRefreshEnabled();
+			else if (e.PropertyName == PlatformConfiguration.iOSSpecific.ListView.IsBounceEnabledProperty.PropertyName)
+				UpdateIsBounceEnabled();
 		}
 
 		NSIndexPath[] GetPaths(int section, int index, int count)
@@ -612,6 +616,11 @@ namespace Xamarin.Forms.Platform.iOS
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
+		}
+
+		void UpdateIsBounceEnabled()
+		{
+			Control.Bounces = Element.OnThisPlatform().IsBounceEnabled();
 		}
 
 		internal class UnevenListViewDataSource : ListViewDataSource
