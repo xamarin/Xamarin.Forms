@@ -41,6 +41,7 @@ namespace Xamarin.Forms.Controls.Issues
 				GroupShortNameBinding = new Binding(nameof(GroupedData.GroupName)),
 			};
 			lst.SeparatorVisibility = SeparatorVisibility.None;
+			lst.SeparatorColor = Color.Green;
 			lst.SetBinding(ListView.ItemsSourceProperty, nameof(ListItems));
 			Content = lst;
 		}
