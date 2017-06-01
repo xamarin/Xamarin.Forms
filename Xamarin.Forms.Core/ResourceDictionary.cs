@@ -82,7 +82,7 @@ namespace Xamarin.Forms
 
 		public bool ContainsKey(string key)
 		{
-			return _innerDictionary.ContainsKey(key);
+			return _innerDictionary.ContainsKey(key) || (_mergedInstance != null && _mergedInstance.ContainsKey(key));
 		}
 
 		[IndexerName("Item")]
@@ -105,7 +105,20 @@ namespace Xamarin.Forms
 
 		public ICollection<string> Keys
 		{
-			get { return _innerDictionary.Keys; }
+			get
+            {
+                ICollection<string> result = new List<string>(_innerDictionary.Keys);
+
+                if (_mergedInstance != null)
+                {
+                    foreach (string keysNot in _mergedInstance.Keys.Where((key) => !_innerDictionary.ContainsKey(key)))
+                    {
+                        result.Add(keysNot);
+                    } 
+                }
+
+                return result;
+            }
 		}
 
 		public bool Remove(string key)
@@ -115,7 +128,20 @@ namespace Xamarin.Forms
 
 		public ICollection<object> Values
 		{
-			get { return _innerDictionary.Values; }
+			get
+            {
+                ICollection<object> result = new List<object>(_innerDictionary.Values);
+
+                if (_mergedInstance != null)
+                {
+                    foreach (string keysNot in _mergedInstance.Keys.Where((key) => !_innerDictionary.ContainsKey(key)))
+                    {
+                        result.Add(_mergedInstance[keysNot]);
+                    }
+                }
+
+                return result;
+            }
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()
