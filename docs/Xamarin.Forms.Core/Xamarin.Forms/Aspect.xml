@@ -16,7 +16,7 @@
   </Base>
   <Docs>
     <summary>Defines how an image is displayed.</summary>
-        <remarks>To be added.</remarks>
+    <remarks>To be added.</remarks>
   </Docs>
   <Members>
     <Member MemberName="AspectFill">
