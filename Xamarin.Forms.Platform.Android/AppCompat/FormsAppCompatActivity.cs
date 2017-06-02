@@ -195,7 +195,9 @@ namespace Xamarin.Forms.Platform.Android
 		protected override void OnDestroy()
 		{
 			MessagingCenter.Unsubscribe<Page, AlertArguments>(this, Page.AlertSignalName);
+#pragma warning disable 612
 			MessagingCenter.Unsubscribe<Page, bool>(this, Page.BusySetSignalName);
+#pragma warning restore 612
 			MessagingCenter.Unsubscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName);
 
 			_platform?.Dispose();
@@ -315,8 +317,10 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
+#pragma warning disable 612
 			_busyCount = 0;
 			MessagingCenter.Subscribe<Page, bool>(this, Page.BusySetSignalName, OnPageBusy);
+#pragma warning restore 612
 			MessagingCenter.Subscribe<Page, AlertArguments>(this, Page.AlertSignalName, OnAlertRequested);
 			MessagingCenter.Subscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName, OnActionSheetRequested);
 

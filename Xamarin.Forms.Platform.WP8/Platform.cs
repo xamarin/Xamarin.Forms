@@ -50,12 +50,14 @@ namespace Xamarin.Forms.Platform.WinPhone
 			ProgressIndicator indicator;
 			SystemTray.SetProgressIndicator(page, indicator = new ProgressIndicator { IsVisible = false, IsIndeterminate = true });
 
+#pragma warning disable 612
 			var busyCount = 0;
 			MessagingCenter.Subscribe(this, Page.BusySetSignalName, (Page sender, bool enabled) =>
 			{
 				busyCount = Math.Max(0, enabled ? busyCount + 1 : busyCount - 1);
 				indicator.IsVisible = busyCount > 0;
 			});
+#pragma warning restore 612
 
 			MessagingCenter.Subscribe(this, Page.AlertSignalName, (Page sender, AlertArguments arguments) =>
 			{

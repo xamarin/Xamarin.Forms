@@ -148,7 +148,9 @@ namespace Xamarin.Forms.Platform.Android
 			base.OnDestroy();
 
 			MessagingCenter.Unsubscribe<Page, AlertArguments>(this, Page.AlertSignalName);
+#pragma warning disable 612
 			MessagingCenter.Unsubscribe<Page, bool>(this, Page.BusySetSignalName);
+#pragma warning restore 612
 			MessagingCenter.Unsubscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName);
 
 			if (_canvas != null)
@@ -241,12 +243,14 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
+#pragma warning disable 612
 			var busyCount = 0;
 			MessagingCenter.Subscribe(this, Page.BusySetSignalName, (Page sender, bool enabled) =>
 			{
 				busyCount = Math.Max(0, enabled ? busyCount + 1 : busyCount - 1);
 				UpdateProgressBarVisibility(busyCount > 0);
 			});
+#pragma warning restore 612
 
 			UpdateProgressBarVisibility(busyCount > 0);
 

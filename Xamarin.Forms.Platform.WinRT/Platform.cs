@@ -57,11 +57,13 @@ namespace Xamarin.Forms.Platform.WinRT
 
 			_container.SizeChanged += OnRendererSizeChanged;
 
+#pragma warning disable 612
 			MessagingCenter.Subscribe(this, Page.BusySetSignalName, (Page sender, bool enabled) =>
 			{
 				Windows.UI.Xaml.Controls.ProgressBar indicator = GetBusyIndicator();
 				indicator.Visibility = enabled ? Visibility.Visible : Visibility.Collapsed;
 			});
+#pragma warning restore 612
 
 			_toolbarTracker.CollectionChanged += OnToolbarItemsChanged;
 
