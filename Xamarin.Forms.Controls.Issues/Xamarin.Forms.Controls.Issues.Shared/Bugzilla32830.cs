@@ -1,5 +1,6 @@
 ﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
+using System;
 
 #if UITEST
 using Xamarin.UITest;
@@ -14,9 +15,20 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+	// Uses a custom renderer on Android to override SetupPageTransition.
+	// While these transitions are often desired, they can appear to cause the "flash"
+	// at the top and bottom of the screen that could be confused with the bug we're fixing.
+	public class NoFlashTestNavigationPage : TestNavigationPage
+	{
+		protected override void Init()
+		{
+
+		}
+	}
+
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 932830, "Hiding navigation bar causes layouts to shift during navigation", PlatformAffected.iOS)]
-	public class Bugzilla32830 : TestNavigationPage
+	public class Bugzilla32830 : NoFlashTestNavigationPage
 	{
 		const string Button1 = "button1";
 		const string Button2 = "button2";
