@@ -56,7 +56,6 @@ namespace Xamarin.Forms.Controls.Issues
 						new Button {
 							Text = "Toggle Nav Bar",
 							Command = new Command(() => NavigationPage.SetHasNavigationBar(this, !NavigationPage.GetHasNavigationBar(this))),
-							AutomationId = Button2,
 							TextColor = Color.White
 						}
 					}
@@ -92,8 +91,9 @@ namespace Xamarin.Forms.Controls.Issues
 									TextColor = Color.White
 							},
 							new Button {
-								Text = "Go to page 1",
-								Command = new Command(async () => await Navigation.PushAsync(new Page1())),
+								Text = "Go to tabs",
+								AutomationId = Button2,
+								Command = new Command(async () => await Navigation.PushAsync(new MyTabs())),
 								TextColor = Color.White
 							},
 							new Button {
@@ -111,6 +111,15 @@ namespace Xamarin.Forms.Controls.Issues
 				}, yConstraint: Xamarin.Forms.Constraint.RelativeToParent(parent => { return parent.Height - 30; }));
 
 				Content = relativeLayout;
+			}
+		}
+
+		class MyTabs : TabbedPage
+		{
+			public MyTabs()
+			{
+				Children.Add(new NavigationPage(new Page1()));
+				Children.Add(new Page2());
 			}
 		}
 
