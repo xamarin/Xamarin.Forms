@@ -284,6 +284,11 @@ namespace Xamarin.Forms.Platform.MacOS
 				return false;
 			}
 
+			if (!Equals(tap.View, otherTap.View))
+			{
+				return false;
+			}
+
 			if (tap.NumberOfTapsRequired != otherTap.NumberOfTapsRequired)
 			{
 				return false;
