@@ -27,7 +27,10 @@ namespace Xamarin.Forms.ControlGallery.Windows
 				new LinearGradientBrush (
 					new GradientStopCollection { new GradientStop { Color = Colors.Green, Offset = 0.5}, new GradientStop { Color = Colors.Blue, Offset = 1} }, 0);
 		}
-
+		internal static void Fake()
+		{
+			System.Diagnostics.Debug.WriteLine("");
+		}
 		public static readonly DependencyProperty TextProperty = DependencyProperty.Register (
 			"Text", typeof(string), typeof(BrokenNativeControl), new PropertyMetadata (default(string), PropertyChangedCallback));
 

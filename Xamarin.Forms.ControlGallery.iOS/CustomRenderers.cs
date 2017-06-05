@@ -25,7 +25,10 @@ namespace Xamarin.Forms.ControlGallery.iOS
 	public class CustomIOSMapRenderer : ViewRenderer<CustomMapView, MKMapView>
 	{
 		private MKMapView _mapView;
-
+		internal static void Fake()
+		{
+			System.Diagnostics.Debug.WriteLine("");
+		}
 		protected override void OnElementChanged(ElementChangedEventArgs<CustomMapView> e)
 		{
 			base.OnElementChanged(e);

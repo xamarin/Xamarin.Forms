@@ -18,7 +18,10 @@ namespace Xamarin.Forms.Maps.WinRT
 		bool _disposed;
 		bool _firstZoomLevelChangeFired;
 		Ellipse _userPositionCircle;
-
+		internal static void Fake()
+		{
+			System.Diagnostics.Debug.WriteLine("");
+		}
 		protected override async void OnElementChanged(ElementChangedEventArgs<Map> e)
 		{
 			base.OnElementChanged(e);

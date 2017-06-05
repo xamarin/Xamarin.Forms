@@ -19,7 +19,10 @@ namespace Xamarin.Forms.Maps.WinRT
 			Geocoder.GetPositionsForAddressAsyncFunc = GetPositionsForAddress;
 			Geocoder.GetAddressesForPositionFuncAsync = GetAddressesForPositionAsync;
 		}
-
+		internal static void Fake()
+		{
+			System.Diagnostics.Debug.WriteLine("");
+		}
 		static string AddressToString(MapAddress address)
 		{
 			string building = "", house = "", city = "", country = "";

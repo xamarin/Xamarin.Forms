@@ -12,5 +12,10 @@ namespace Xamarin.Forms.ControlGallery.iOS
 				Insights.Initialize(App.InsightsApiKey);
 			UIApplication.Main(args, null, "AppDelegate");
 		}
+		
+		internal static void Fake()
+		{
+			System.Diagnostics.Debug.WriteLine("");
+		}
 	}
 }

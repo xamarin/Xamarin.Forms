@@ -19,6 +19,11 @@ namespace Xamarin.Forms
 
 		readonly ObservableCollection<IGestureRecognizer> _gestureRecognizers = new ObservableCollection<IGestureRecognizer>();
 
+		internal static void Fake()
+		{
+			System.Diagnostics.Debug.WriteLine("");
+		}
+		
 		protected internal View()
 		{
 			_gestureRecognizers.CollectionChanged += (sender, args) =>

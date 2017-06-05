@@ -22,6 +22,11 @@ namespace Xamarin.Forms.ControlGallery.WP8
 			Background = new RadialGradientBrush (Colors.Green, Colors.Blue);
 		}
 
+		internal static void Fake()
+		{
+			System.Diagnostics.Debug.WriteLine("");
+		}
+		
 		public static readonly DependencyProperty TextProperty = DependencyProperty.Register (
 			"Text", typeof(string), typeof(BrokenNativeControl), new PropertyMetadata (default(string), PropertyChangedCallback));
 

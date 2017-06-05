@@ -9,7 +9,10 @@ namespace Xamarin.Forms.ControlGallery.WindowsPhone
 	public class TextBoxViewRenderer : BoxViewRenderer
 	{
 		Canvas m_Canvas;
-
+		internal static void Fake()
+		{
+			System.Diagnostics.Debug.WriteLine("");
+		}
 		protected override void OnElementChanged(ElementChangedEventArgs<BoxView> e)
 		{
 			base.OnElementChanged(e);
