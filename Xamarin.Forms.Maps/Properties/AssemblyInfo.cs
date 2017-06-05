@@ -21,6 +21,7 @@ using Xamarin.Forms.Internals;
 [assembly: InternalsVisibleTo("Xamarin.Forms.Maps.UWP")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.Maps.WinRT.Phone")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.Maps.WinRT.Tablet")]
+[assembly: InternalsVisibleTo("Xamarin.Forms.Maps.Tizen")]
 [assembly: InternalsVisibleTo("iOSUnitTests")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.Core.UnitTests")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.Core.Android.UnitTests")]

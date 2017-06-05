@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26430.6
+VisualStudioVersion = 15.0.26430.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Xamarin.Forms", "Xamarin.Forms", "{9AD757F5-E57A-459D-A0A7-E0675E045B84}"
 EndProject
@@ -153,6 +153,8 @@ EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Xamarin.Forms.Core.UITests.Shared", "Xamarin.Forms.Core.UITests.Shared\Xamarin.Forms.Core.UITests.Shared.shproj", "{E175485B-3C8C-47D7-8DD5-F7FED627EB25}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xamarin.Forms.Platform.Tizen", "Xamarin.Forms.Platform.Tizen\Xamarin.Forms.Platform.Tizen.csproj", "{9D325D84-5C32-470E-A68F-B093E0F6B59B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xamarin.Forms.Maps.Tizen", "Xamarin.Forms.Maps.Tizen\Xamarin.Forms.Maps.Tizen.csproj", "{FB045907-E395-4E34-958F-AE0A1CDE5C7B}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -1651,6 +1653,34 @@ Global
 		{9D325D84-5C32-470E-A68F-B093E0F6B59B}.Release|x64.Build.0 = Release|Any CPU
 		{9D325D84-5C32-470E-A68F-B093E0F6B59B}.Release|x86.ActiveCfg = Release|Any CPU
 		{9D325D84-5C32-470E-A68F-B093E0F6B59B}.Release|x86.Build.0 = Release|Any CPU
+		{FB045907-E395-4E34-958F-AE0A1CDE5C7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB045907-E395-4E34-958F-AE0A1CDE5C7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB045907-E395-4E34-958F-AE0A1CDE5C7B}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{FB045907-E395-4E34-958F-AE0A1CDE5C7B}.Debug|ARM.Build.0 = Debug|Any CPU
+		{FB045907-E395-4E34-958F-AE0A1CDE5C7B}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{FB045907-E395-4E34-958F-AE0A1CDE5C7B}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{FB045907-E395-4E34-958F-AE0A1CDE5C7B}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{FB045907-E395-4E34-958F-AE0A1CDE5C7B}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{FB045907-E395-4E34-958F-AE0A1CDE5C7B}.Debug|Templates.ActiveCfg = Debug|Any CPU
+		{FB045907-E395-4E34-958F-AE0A1CDE5C7B}.Debug|Templates.Build.0 = Debug|Any CPU
+		{FB045907-E395-4E34-958F-AE0A1CDE5C7B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FB045907-E395-4E34-958F-AE0A1CDE5C7B}.Debug|x64.Build.0 = Debug|Any CPU
+		{FB045907-E395-4E34-958F-AE0A1CDE5C7B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FB045907-E395-4E34-958F-AE0A1CDE5C7B}.Debug|x86.Build.0 = Debug|Any CPU
+		{FB045907-E395-4E34-958F-AE0A1CDE5C7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB045907-E395-4E34-958F-AE0A1CDE5C7B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB045907-E395-4E34-958F-AE0A1CDE5C7B}.Release|ARM.ActiveCfg = Release|Any CPU
+		{FB045907-E395-4E34-958F-AE0A1CDE5C7B}.Release|ARM.Build.0 = Release|Any CPU
+		{FB045907-E395-4E34-958F-AE0A1CDE5C7B}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{FB045907-E395-4E34-958F-AE0A1CDE5C7B}.Release|iPhone.Build.0 = Release|Any CPU
+		{FB045907-E395-4E34-958F-AE0A1CDE5C7B}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{FB045907-E395-4E34-958F-AE0A1CDE5C7B}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{FB045907-E395-4E34-958F-AE0A1CDE5C7B}.Release|Templates.ActiveCfg = Release|Any CPU
+		{FB045907-E395-4E34-958F-AE0A1CDE5C7B}.Release|Templates.Build.0 = Release|Any CPU
+		{FB045907-E395-4E34-958F-AE0A1CDE5C7B}.Release|x64.ActiveCfg = Release|Any CPU
+		{FB045907-E395-4E34-958F-AE0A1CDE5C7B}.Release|x64.Build.0 = Release|Any CPU
+		{FB045907-E395-4E34-958F-AE0A1CDE5C7B}.Release|x86.ActiveCfg = Release|Any CPU
+		{FB045907-E395-4E34-958F-AE0A1CDE5C7B}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1714,5 +1744,6 @@ Global
 		{9DB0CABB-24CC-4538-88EC-6E0A0FE40248} = {D4D57221-71D6-4031-A6F4-EC66AF0929D9}
 		{E175485B-3C8C-47D7-8DD5-F7FED627EB25} = {D4D57221-71D6-4031-A6F4-EC66AF0929D9}
 		{9D325D84-5C32-470E-A68F-B093E0F6B59B} = {29AC50BF-B4FB-450B-9386-0C5AD4B84226}
+		{FB045907-E395-4E34-958F-AE0A1CDE5C7B} = {132FB9A4-613F-44CE-95D5-758D32D231DD}
 	EndGlobalSection
 EndGlobal
