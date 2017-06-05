@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 936703, "TapGestureRecognizer inside initially disable Image will never fire Tapped event", PlatformAffected.All)]
+	[Issue(IssueTracker.Bugzilla, 36703, "TapGestureRecognizer inside initially disable Image will never fire Tapped event", PlatformAffected.All)]
 	public class Bugzilla36703 : TestContentPage
 	{
 		const string TestImage = "testimage";
