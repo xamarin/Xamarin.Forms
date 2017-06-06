@@ -961,7 +961,9 @@
         <param name="flags">A value that controls whether margins are included in the returned size.</param>
         <summary>Returns the minimum size that a visual element needs in order to be displayed on the device.</summary>
         <returns>The minimum size that a visual element needs in order to be displayed on the device.</returns>
-        <remarks><para>If the minimum sized that the visual element needs in order to be displayed on the device is larger than can be accommodated by <paramref name="widthConstraint" /> and <paramref name="heightConstraint" />, the return value may represent a rectangle that is larger in either or both of those parameters.</para></remarks>
+        <remarks>
+          <para>If the minimum sized that the visual element needs in order to be displayed on the device is larger than can be accommodated by <paramref name="widthConstraint" /> and <paramref name="heightConstraint" />, the return value may represent a rectangle that is larger in either or both of those parameters.</para>
+        </remarks>
       </Docs>
     </Member>
     <Member MemberName="MeasureInvalidated">
