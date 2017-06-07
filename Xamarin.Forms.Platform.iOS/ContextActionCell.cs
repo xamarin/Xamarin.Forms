@@ -59,6 +59,23 @@ namespace Xamarin.Forms.Platform.iOS
 			get { return ScrollDelegate.IsOpen; }
 		}
 
+		public bool IsTouchInDisabledButton(PointF pointf)
+		{
+			var totalButtonWidth = 0.0;
+			foreach (UIButton uiButton in _buttons)
+			{
+				totalButtonWidth += uiButton.Frame.Width;
+			}
+
+			foreach (UIButton uiButton in _buttons)
+			{
+				if (!uiButton.Enabled && pointf.X >= uiButton.Frame.X - totalButtonWidth && pointf.X <= uiButton.Frame.X)
+					return true;
+			}
+
+			return false;
+		}
+
 		ContextScrollViewDelegate ScrollDelegate
 		{
 			get { return (ContextScrollViewDelegate)_scroller.Delegate; }
@@ -645,7 +662,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 					var cell = table.CellAt(_lastPath) as ContextActionsCell;
 
-					return cell != null;
+					return cell != null && (!cell.IsOpen || !cell.IsTouchInDisabledButton(pos));
 				};
 			}
 
