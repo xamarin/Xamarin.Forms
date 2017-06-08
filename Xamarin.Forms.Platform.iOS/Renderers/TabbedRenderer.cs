@@ -28,7 +28,24 @@ namespace Xamarin.Forms.Platform.iOS
 			get { return base.SelectedViewController; }
 			set
 			{
+				if (ReferenceEquals(value, MoreNavigationController))
+				{
+					if(CustomizableViewControllers != null)
+						throw new NotSupportedException("Editing the order of tab items under the More button is not supported.");
+
+					for(int i=TabBar.Items.Length - 1; i<PageController.InternalChildren.Count; i++)
+					{
+						if(!(PageController.InternalChildren[i] is ContentPage))
+							throw new NotSupportedException($"Nesting pages other than {nameof(ContentPage)} under the More button is not supported.");
+					}
+
+					base.SelectedViewController = value;
+
+					return;
+				}
+
 				base.SelectedViewController = value;
+
 				UpdateCurrentPage();
 			}
 		}
@@ -68,7 +85,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (element != null)
 				element.SendViewInitialized(NativeView);
 
-			//disable edit/reorder of tabs
+			//disable edit/reorder of tabs so that unsupported page types cannot be moved under the More button
 			CustomizableViewControllers = null;
 
 			UpdateBarBackgroundColor();
