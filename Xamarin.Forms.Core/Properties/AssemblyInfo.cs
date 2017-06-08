@@ -29,6 +29,7 @@ using Xamarin.Forms.Internals;
 //[assembly: InternalsVisibleTo("Xamarin.Forms.Platform.WinRT.Phone")]
 //[assembly: InternalsVisibleTo("Xamarin.Forms.Platform.WP8")]
 //[assembly: InternalsVisibleTo("Xamarin.Forms.Platform.macOS")]
+//[assembly: InternalsVisibleTo("Xamarin.Forms.Platform.Tizen")]
 [assembly: InternalsVisibleTo("iOSUnitTests")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.Controls")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.Core.Design")]

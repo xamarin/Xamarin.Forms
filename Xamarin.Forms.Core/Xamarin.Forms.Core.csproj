@@ -110,6 +110,16 @@
     <Compile Include="PlatformConfiguration\iOSSpecific\UIStatusBarAnimation.cs" />
     <Compile Include="PlatformConfiguration\iOSSpecific\UpdateMode.cs" />
     <Compile Include="PlatformConfiguration\iOSSpecific\VisualElement.cs" />
+    <Compile Include="PlatformConfiguration\TizenSpecific\Entry.cs" />
+    <Compile Include="PlatformConfiguration\TizenSpecific\FocusDirection.cs" />
+    <Compile Include="PlatformConfiguration\TizenSpecific\FontWeight.cs" />
+    <Compile Include="PlatformConfiguration\TizenSpecific\Image.cs" />
+    <Compile Include="PlatformConfiguration\TizenSpecific\Label.cs" />
+    <Compile Include="PlatformConfiguration\TizenSpecific\NavigationPage.cs" />
+    <Compile Include="PlatformConfiguration\TizenSpecific\Page.cs" />
+    <Compile Include="PlatformConfiguration\TizenSpecific\ProgressBar.cs" />
+    <Compile Include="PlatformConfiguration\TizenSpecific\StyleValues.cs" />
+    <Compile Include="PlatformConfiguration\TizenSpecific\VisualElement.cs" />
     <Compile Include="PlatformConfiguration\WindowsSpecific\MasterDetailPage.cs" />
     <Compile Include="PlatformConfiguration\WindowsSpecific\CollapseStyle.cs" />
     <Compile Include="Configuration.cs" />
