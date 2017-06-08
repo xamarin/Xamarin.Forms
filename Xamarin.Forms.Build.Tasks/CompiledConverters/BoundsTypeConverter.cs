@@ -12,7 +12,7 @@ namespace Xamarin.Forms.Core.XamlC
 {
 	class BoundsTypeConverter : ICompiledTypeConverter
 	{
-		IEnumerable<Instruction> ICompiledTypeConverter.ConvertFromString(string value, ModuleDefinition module, BaseNode node)
+		public IEnumerable<Instruction> ConvertFromString(string value, ModuleDefinition module, BaseNode node)
 		{
 			if (string.IsNullOrEmpty(value))
 				throw new XamlParseException($"Cannot convert \"{value}\" into {typeof(Rectangle)}", node);

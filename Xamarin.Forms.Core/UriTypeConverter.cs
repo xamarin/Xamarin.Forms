@@ -2,6 +2,7 @@
 
 namespace Xamarin.Forms
 {
+	[Xaml.TypeConversion(typeof(Uri))]
 	public class UriTypeConverter : TypeConverter
 	{
 		public override object ConvertFromInvariantString(string value)
