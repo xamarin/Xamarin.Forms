@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
@@ -12,11 +11,20 @@ namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 946363, "TapGestureRecognizer blocks List View Context Actions", PlatformAffected.Android)]
-	public class Bugzilla46363 : TestContentPage 
+	public class Bugzilla46363 : TestContentPage
 	{
+		const string Target = "Two";
+		const string ContextAction = "Context Action";
+		const string TapSuccess = "Tap Success";
+		const string ContextSuccess = "Context Menu Success";
+		const string Testing = "Testing";
+
+		static Command s_tapCommand;
+		static Command s_contextCommand;
+
 		protected override void Init()
 		{
-			var list = new List<string> { "one", "two", "three" };
+			var list = new List<string> { "One", Target, "Two", "Three" };
 
 			var lv = new ListView
 			{
@@ -24,7 +32,26 @@ namespace Xamarin.Forms.Controls.Issues
 				ItemTemplate = new DataTemplate(typeof(_46363Template))
 			};
 
-			Content = lv;
+			var instructions = new Label();
+			var result = new Label { Text = Testing };
+
+			s_tapCommand = new Command(() =>
+			{
+				result.Text = TapSuccess;
+			});
+
+			s_contextCommand = new Command(() =>
+			{
+				result.Text = ContextSuccess;
+			});
+
+			var layout = new StackLayout { VerticalOptions = LayoutOptions.Fill, HorizontalOptions = LayoutOptions.Fill };
+
+			layout.Children.Add(instructions);
+			layout.Children.Add(result);
+			layout.Children.Add(lv);
+
+			Content = layout;
 		}
 
 		[Preserve(AllMembers = true)]
@@ -38,21 +65,39 @@ namespace Xamarin.Forms.Controls.Issues
 
 				ContextActions.Add(new MenuItem
 				{
-					Text = "Context Action",
-					Command = new Command(() => { Debug.WriteLine($">>>>> _46363Template _46363Template 39: Context Action"); })
+					Text = ContextAction,
+					Command = s_contextCommand
 				});
 
-				//View.GestureRecognizers.Add(new TapGestureRecognizer
-				//{ Command = new Command(() => { Debug.WriteLine($">>>>> _46363Template _46363Template 47: Tap Gesture"); }) });
+				View.GestureRecognizers.Add(new TapGestureRecognizer
+				{
+					Command = s_tapCommand
+				});
 			}
 		}
 
 #if UITEST
-		//[Test]
-		//public void _46363Test()
-		//{
-		//	//RunningApp.WaitForElement(q => q.Marked(""));
-		//}
+		[Test]
+		public void _46363_Tap_Succeeds()
+		{
+			RunningApp.WaitForElement(Testing);
+			RunningApp.Tap(Target);
+			RunningApp.WaitForElement(TapSuccess);
+
+			// First run at fixing this caused the context menu to open on a regular tap
+			// So this check is to ensure that doesn't happen again
+			RunningApp.WaitForNoElement(ContextAction);
+		}
+
+		[Test]
+		public void _46363_ContextAction_Succeeds()
+		{
+			RunningApp.WaitForElement(Testing);
+			RunningApp.TouchAndHold(Target);
+			RunningApp.WaitForElement(ContextAction);
+			RunningApp.Tap(ContextAction);
+			RunningApp.WaitForElement(ContextSuccess);
+		}
 #endif
 	}
 }
