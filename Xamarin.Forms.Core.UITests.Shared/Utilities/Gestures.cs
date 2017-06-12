@@ -105,5 +105,21 @@ namespace Xamarin.Forms.Core.UITests
 		{
 			app.DragCoordinates (drag.XStart, drag.YStart, drag.XEnd, drag.YEnd);
 		}
+
+		public static void ActivateContextMenu(this IApp app, string target)
+		{
+#if __IOS__
+			var element = app.WaitForElement(target);
+			var rect = element[0].Rect;
+
+			app.DragCoordinates(rect.X + (0.85f * rect.Width), 
+				rect.CenterY, 
+				rect.X + (0.25f * rect.Width),
+				rect.CenterY);
+#else
+			app.TouchAndHold(target);
+#endif
+
+		}
 	}
 }

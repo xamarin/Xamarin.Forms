@@ -3,6 +3,7 @@ using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 #if UITEST
+using Xamarin.Forms.Core.UITests;
 using Xamarin.UITest;
 using NUnit.Framework;
 #endif
@@ -10,7 +11,7 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 946363, "TapGestureRecognizer blocks List View Context Actions", PlatformAffected.Android)]
+	[Issue(IssueTracker.Bugzilla, 46363, "TapGestureRecognizer blocks List View Context Actions", PlatformAffected.Android)]
 	public class Bugzilla46363 : TestContentPage
 	{
 		const string Target = "Two";
@@ -93,7 +94,7 @@ namespace Xamarin.Forms.Controls.Issues
 		public void _46363_ContextAction_Succeeds()
 		{
 			RunningApp.WaitForElement(Testing);
-			RunningApp.TouchAndHold(Target);
+			RunningApp.ActivateContextMenu(Target);
 			RunningApp.WaitForElement(ContextAction);
 			RunningApp.Tap(ContextAction);
 			RunningApp.WaitForElement(ContextSuccess);
