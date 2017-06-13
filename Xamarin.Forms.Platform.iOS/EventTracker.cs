@@ -32,7 +32,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		NativeView _handler;
 
 		double _previousScale = 1.0;
+#if __MOBILE__
 		UITouchEventArgs _shouldReceiveTouch;
+#endif
 
 		public EventTracker(IVisualElementRenderer renderer)
 		{
@@ -278,19 +280,18 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 #endif
 
-#if __MOBILE__
-		
-#endif
 		void LoadRecognizers()
 		{
 			if (ElementGestureRecognizers == null)
 				return;
 
+#if __MOBILE__
 			if (_shouldReceiveTouch == null)
 			{
 				// Cache this so we don't create a new UITouchEventArgs instance for every recognizer
 				_shouldReceiveTouch = ShouldReceiveTouch;
 			}
+#endif
 
 			foreach (var recognizer in ElementGestureRecognizers)
 			{
@@ -320,6 +321,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 		}
 
+#if __MOBILE__
 		bool ShouldReceiveTouch(UIGestureRecognizer recognizer, UITouch touch)
 		{
 			if (touch.View is IVisualElementRenderer)
@@ -342,6 +344,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			return false;
 		}
+#endif
 
 		void ModelGestureRecognizersOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
 		{
