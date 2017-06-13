@@ -27,10 +27,10 @@
   <Docs>
     <summary>Class that represents a condition on an arbitrary binding, along with a list of <see cref="T:Xamarin.Forms.Setter" /> objects that will be applied when the condition is met.</summary>
     <remarks>
-        <para>The <see cref="T:Xamarin.Forms.DataTrigger" /> class is suitable for checking values on other controls, as well as any property on the control to which it has been added. That is, its default binding context is the control to which it has been added.</para>
-        <example>
-            <para>The XML example below prompts the user to type in the secret, which is, "The text color is green". When the user has typed "The", the Entry text changes color to red. When the user completes the secret, the Label text turns green. The code is turned back to the default color if the user then edits the secret. This example shows how to bind to the enclosing control (Entry from Entry), and to an arbitary control (Entry from Label)</para>
-          <code lang="XML"><![CDATA[
+      <para>The <see cref="T:Xamarin.Forms.DataTrigger" /> class is suitable for checking values on other controls, as well as any property on the control to which it has been added. That is, its default binding context is the control to which it has been added.</para>
+      <example>
+        <para>The XML example below prompts the user to type in the secret, which is, "The text color is green". When the user has typed "The", the Entry text changes color to red. When the user completes the secret, the Label text turns green. The code is turned back to the default color if the user then edits the secret. This example shows how to bind to the enclosing control (Entry from Entry), and to an arbitary control (Entry from Label)</para>
+        <code lang="XML"><![CDATA[
               <?xml version="1.0" encoding="utf-8"?>
               <ContentPage    xmlns="http://xamarin.com/schemas/2014/forms"
                               xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
@@ -58,9 +58,8 @@
                       </Entry>
                   </StackLayout>
               </ContentPage>
-]]>
-          </code>
-        </example>
+]]></code>
+      </example>
     </remarks>
   </Docs>
   <Members>

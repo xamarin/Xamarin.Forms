@@ -24,10 +24,10 @@
   <Docs>
     <summary>Class that represents a value comparison against a property on the control that contains the enclosing <see cref="T:Xamarin.Forms.MultiTrigger" />.</summary>
     <remarks>
-        <para>The <see cref="T:Xamarin.Forms.PropertyCondition" /> class is suitable for checking property values on the control that contains the <see cref="T:Xamarin.Forms.MultiTrigger" /> that contains it. To check values on other controls, developers can use the <see cref="T:Xamarin.Forms.BindingCondition" /> class, in addition to any property conditions in the trigger list.</para>
-        <example>
-            <para>The XML example below creates a property condition within a surrounding <see cref="T:Xamarin.Forms.MultiTrigger" /> within a <see cref="T:Xamarin.Forms.TextCell" /> that turns the text green when the secret is typed. The code is turned back to the default color if the user then edits the secret. (Typically, a <see cref="T:Xamarin.Forms.MultiTrigger" /> would have more than one condition; this example is simplified for clarity.)</para>
-          <code lang="XML"><![CDATA[
+      <para>The <see cref="T:Xamarin.Forms.PropertyCondition" /> class is suitable for checking property values on the control that contains the <see cref="T:Xamarin.Forms.MultiTrigger" /> that contains it. To check values on other controls, developers can use the <see cref="T:Xamarin.Forms.BindingCondition" /> class, in addition to any property conditions in the trigger list.</para>
+      <example>
+        <para>The XML example below creates a property condition within a surrounding <see cref="T:Xamarin.Forms.MultiTrigger" /> within a <see cref="T:Xamarin.Forms.TextCell" /> that turns the text green when the secret is typed. The code is turned back to the default color if the user then edits the secret. (Typically, a <see cref="T:Xamarin.Forms.MultiTrigger" /> would have more than one condition; this example is simplified for clarity.)</para>
+        <code lang="XML"><![CDATA[
 <Entry Placeholder="Type the secret!"
        VerticalOptions="Center"
        HorizontalOptions="Center">
@@ -41,9 +41,8 @@
                   Value="Color.Green" />
           </MultiTrigger>
       </Entry.Triggers>
-</Entry>]]>
-          </code>
-        </example>
+</Entry>]]></code>
+      </example>
     </remarks>
     <altmember cref="T:Xamarin.Forms.MultiTrigger" />
     <altmember cref="T:Xamarin.Forms.BindingCondition" />

@@ -60,8 +60,10 @@
       <Docs>
         <param name="sourceType">The source type of the object to check.</param>
         <summary>Returns a Boolean value that indicates whether this <see cref="T:Xamarin.Forms.BindingTypeConverter" /> can convert <paramref name="sourceType" /> to <see cref="T:Xamarin.Forms.Binding" />.</summary>
-        <returns><see langword="true" /> if <paramref name="sourceType" /> represents a string. Otherwise, <see langword="false" />.</returns>
-        <remarks><see cref="T:Xamarin.Forms.TypeConverter" /> objects can only convert strings.</remarks>
+        <returns>
+          <see langword="true" /> if <paramref name="sourceType" /> represents a string. Otherwise, <see langword="false" />.</returns>
+        <remarks>
+          <see cref="T:Xamarin.Forms.TypeConverter" /> objects can only convert strings.</remarks>
       </Docs>
     </Member>
     <Member MemberName="ConvertFrom">
@@ -88,7 +90,8 @@
         <param name="value">The object to convert.</param>
         <summary>Converts <paramref name="value" /> to <see cref="T:Xamarin.Forms.Binding" /> by using <paramref name="culture" />.</summary>
         <returns>Returns a new <see cref="T:Xamarin.Forms.Binding" /> object for the provided string.</returns>
-        <remarks><paramref name="value" /> must be a string.</remarks>
+        <remarks>
+          <paramref name="value" /> must be a string.</remarks>
       </Docs>
     </Member>
     <Member MemberName="ConvertFromInvariantString">
@@ -108,7 +111,8 @@
         <param name="value">The path of the resulting binding.</param>
         <summary>Converts a property path to a binding.</summary>
         <returns>A binding, with the default binding mode, that binds to the path that was specified with <paramref name="value" />.</returns>
-        <remarks><paramref name="value" /> must be a string.</remarks>
+        <remarks>
+          <paramref name="value" /> must be a string.</remarks>
       </Docs>
     </Member>
   </Members>
