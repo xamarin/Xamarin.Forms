@@ -32,9 +32,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		NativeView _handler;
 
 		double _previousScale = 1.0;
-#if __MOBILE__
-		UITouchEventArgs _shouldReceive;
-#endif
+		UITouchEventArgs _shouldReceiveTouch;
 
 		public EventTracker(IVisualElementRenderer renderer)
 		{
@@ -82,9 +80,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			if (_disposed)
 				throw new ObjectDisposedException(null);
-#if __MOBILE__
-			_shouldReceive = (r, t) => t.View is IVisualElementRenderer;
-#endif
+
 			_handler = handler;
 			OnElementChanged(this, new VisualElementChangedEventArgs(null, _renderer.Element));
 		}
@@ -281,10 +277,19 @@ namespace Xamarin.Forms.Platform.MacOS
 			return result;
 		}
 #endif
+
+#if __MOBILE__
+		
+#endif
 		void LoadRecognizers()
 		{
 			if (ElementGestureRecognizers == null)
 				return;
+
+			if (_shouldReceiveTouch == null)
+			{
+				_shouldReceiveTouch = ShouldReceiveTouch;
+			}
 
 			foreach (var recognizer in ElementGestureRecognizers)
 			{
@@ -295,7 +300,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				if (nativeRecognizer != null)
 				{
 #if __MOBILE__
-					nativeRecognizer.ShouldReceiveTouch = _shouldReceive;
+					nativeRecognizer.ShouldReceiveTouch = _shouldReceiveTouch;
 #endif
 					_handler.AddGestureRecognizer(nativeRecognizer);
 
@@ -312,6 +317,29 @@ namespace Xamarin.Forms.Platform.MacOS
 				_handler.RemoveGestureRecognizer(uiRecognizer);
 				uiRecognizer.Dispose();
 			}
+		}
+
+		bool ShouldReceiveTouch(UIGestureRecognizer recognizer, UITouch touch)
+		{
+			if (touch.View is IVisualElementRenderer)
+			{
+				return true;
+			}
+
+			// If the touch is coming from the UIView our renderer is wrapping (e.g., if it's  
+			// wrapping a UIView which already has a gesture recognizer), then we should let it through
+			// (This goes for children of that control as well)
+			if (_renderer?.NativeView == null)
+			{
+				return false;
+			}
+			
+			if (touch.View.IsDescendantOfView(_renderer.NativeView))
+			{
+				return true;
+			}
+
+			return false;
 		}
 
 		void ModelGestureRecognizersOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
