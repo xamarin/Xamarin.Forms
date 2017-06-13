@@ -96,8 +96,6 @@ namespace Xamarin.Forms.Controls.Issues
 		public class _57114View : View
 		{
 		}
-		
-		// TODO hartez 2017/06/13 10:41:47 Add a custom renderer for UWP and test it	
 
 #if UITEST
 		[Test]
