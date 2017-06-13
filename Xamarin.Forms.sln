@@ -159,6 +159,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xamarin.Forms.Platform.Tize
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xamarin.Forms.Maps.Tizen", "Xamarin.Forms.Maps.Tizen\Xamarin.Forms.Maps.Tizen.csproj", "{3AD33CC8-A506-4254-B3CA-3123A25B3383}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PagesGallery.Tizen", "PagesGallery\PagesGallery.Tizen\PagesGallery.Tizen.csproj", "{46A8E107-7DE3-430F-84D0-A6F11E315855}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Xamarin.Forms.Controls.Issues\Xamarin.Forms.Controls.Issues.Shared\Xamarin.Forms.Controls.Issues.Shared.projitems*{0a39a74b-6f7a-4d41-84f2-b0ccdce899df}*SharedItemsImports = 4
@@ -2477,6 +2479,48 @@ Global
 		{3AD33CC8-A506-4254-B3CA-3123A25B3383}.Turkey|x64.Build.0 = Turkey|Any CPU
 		{3AD33CC8-A506-4254-B3CA-3123A25B3383}.Turkey|x86.ActiveCfg = Turkey|Any CPU
 		{3AD33CC8-A506-4254-B3CA-3123A25B3383}.Turkey|x86.Build.0 = Turkey|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Debug|ARM.Build.0 = Debug|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Debug|iPhone.ActiveCfg = Debug|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Debug|iPhone.Build.0 = Debug|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Debug|iPhoneSimulator.ActiveCfg = Debug|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Debug|iPhoneSimulator.Build.0 = Debug|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Debug|Templates.ActiveCfg = Debug|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Debug|Templates.Build.0 = Debug|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Debug|x64.Build.0 = Debug|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Debug|x86.Build.0 = Debug|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Release|Any CPU.Build.0 = Release|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Release|ARM.ActiveCfg = Release|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Release|ARM.Build.0 = Release|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Release|iPhone.ActiveCfg = Release|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Release|iPhone.Build.0 = Release|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Release|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Release|iPhoneSimulator.Build.0 = Release|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Release|Templates.ActiveCfg = Release|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Release|Templates.Build.0 = Release|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Release|x64.ActiveCfg = Release|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Release|x64.Build.0 = Release|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Release|x86.ActiveCfg = Release|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Release|x86.Build.0 = Release|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Turkey|Any CPU.ActiveCfg = Release|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Turkey|Any CPU.Build.0 = Release|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Turkey|ARM.ActiveCfg = Release|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Turkey|ARM.Build.0 = Release|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Turkey|iPhone.ActiveCfg = Release|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Turkey|iPhone.Build.0 = Release|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Turkey|iPhoneSimulator.ActiveCfg = Release|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Turkey|iPhoneSimulator.Build.0 = Release|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Turkey|Templates.ActiveCfg = Release|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Turkey|Templates.Build.0 = Release|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Turkey|x64.ActiveCfg = Release|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Turkey|x64.Build.0 = Release|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Turkey|x86.ActiveCfg = Release|Any CPU
+		{46A8E107-7DE3-430F-84D0-A6F11E315855}.Turkey|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2541,5 +2585,6 @@ Global
 		{E175485B-3C8C-47D7-8DD5-F7FED627EB25} = {D4D57221-71D6-4031-A6F4-EC66AF0929D9}
 		{227D2CC5-26A1-4CE7-AE25-1B18AF625B9C} = {29AC50BF-B4FB-450B-9386-0C5AD4B84226}
 		{3AD33CC8-A506-4254-B3CA-3123A25B3383} = {132FB9A4-613F-44CE-95D5-758D32D231DD}
+		{46A8E107-7DE3-430F-84D0-A6F11E315855} = {80BAC3FB-357A-4D05-A050-9F234DF49C97}
 	EndGlobalSection
 EndGlobal
