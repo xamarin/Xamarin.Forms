@@ -288,6 +288,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			if (_shouldReceiveTouch == null)
 			{
+				// Cache this so we don't create a new UITouchEventArgs instance for every recognizer
 				_shouldReceiveTouch = ShouldReceiveTouch;
 			}
 
