@@ -22,9 +22,9 @@
     <summary>Class that represents a triggering event and a list of <see cref="T:Xamarin.Forms.TriggerAction" /> objects that will be invoked when the event is raised.</summary>
     <remarks>
       <example>
-          <para>The example below shows how developers can use an event trigger to respond to events and update the value of a control property.</para>
-          <para>With the <c>ColorTriggerAction</c> class below defined in the <c>TriggerDemo</c> namespace:</para>
-          <code lang="C#"><![CDATA[public class ColorTriggerAction : TriggerAction<Entry>
+        <para>The example below shows how developers can use an event trigger to respond to events and update the value of a control property.</para>
+        <para>With the <c>ColorTriggerAction</c> class below defined in the <c>TriggerDemo</c> namespace:</para>
+        <code lang="C#"><![CDATA[public class ColorTriggerAction : TriggerAction<Entry>
 {
   protected override void Invoke(Entry sender)
   {
@@ -39,7 +39,7 @@
   }
 }]]></code>
         <para>the developer can use the XAML below to create a page that cycles the colors of a <see cref="T:Xamarin.Forms.Entry" /> text area through the colors of the rainbow as the user enters text.</para>
-          <code lang="XAML"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+        <code lang="XAML"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <ContentPage    xmlns="http://xamarin.com/schemas/2014/forms"
               xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
               xmlns:local="clr-namespace:TriggerDemo"
@@ -59,8 +59,7 @@
           </Entry.Triggers>
       </Entry>
   </StackLayout>
-</ContentPage>]]>
-          </code>
+</ContentPage>]]></code>
       </example>
     </remarks>
     <altmember cref="T:Xamarin.Forms.Setter" />

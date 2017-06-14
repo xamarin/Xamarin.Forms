@@ -27,10 +27,10 @@
   <Docs>
     <summary>Class that represents a property condition and an action that is performed when the condition is met.</summary>
     <remarks>
-        <para>The <see cref="T:Xamarin.Forms.Trigger" /> class is suitable for checking the values of any property on the control to which it has been added. That is, its default binding context is the control to which it has been added. To bind on controls other than the parent, developers should use the <see cref="T:Xamarin.Forms.DataTrigger" /> class, instead.</para>
-        <example>
-            <para>The XML example below prompts the user to type in the secret, which is, "The text color is red". When the user has typed the secret, the Entry text changes color to red. The code is turned back to the default color if the user then edits the text to differ from the secret. This example shows how to bind to the enclosing control with a trigger.</para>
-            <code lang="XML"><![CDATA[
+      <para>The <see cref="T:Xamarin.Forms.Trigger" /> class is suitable for checking the values of any property on the control to which it has been added. That is, its default binding context is the control to which it has been added. To bind on controls other than the parent, developers should use the <see cref="T:Xamarin.Forms.DataTrigger" /> class, instead.</para>
+      <example>
+        <para>The XML example below prompts the user to type in the secret, which is, "The text color is red". When the user has typed the secret, the Entry text changes color to red. The code is turned back to the default color if the user then edits the text to differ from the secret. This example shows how to bind to the enclosing control with a trigger.</para>
+        <code lang="XML"><![CDATA[
 <?xml version="1.0" encoding="utf-8"?>
 <ContentPage    xmlns="http://xamarin.com/schemas/2014/forms"
                 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
@@ -55,19 +55,19 @@
 </ContentPage>
 
 ]]></code>
-        </example>
-        <example>
-            <para>The example below shows how developers can use a trigger to respond to events and update the value of a control property by using <see cref="T:Xamarin.Forms.TriggerAction{T}" /> classes. The example prompts the user to answer a question about the color of the text, and then calls <c>ColorTriggerAction</c> to turn the text red when the user types "The text color is red". Developers should note that, while this example does not change the text back to the default color when the user continues to edit the string, the developer could additionally implement and specify an exit action to obtain that result.</para>
-            <para>With the ColorTriggerAction class below defined in the <c>TriggerDemo</c> namespace:</para>
-            <code lang="C#"><![CDATA[public class ColorTriggerAction : TriggerAction<Entry>
+      </example>
+      <example>
+        <para>The example below shows how developers can use a trigger to respond to events and update the value of a control property by using <see cref="T:Xamarin.Forms.TriggerAction{T}" /> classes. The example prompts the user to answer a question about the color of the text, and then calls <c>ColorTriggerAction</c> to turn the text red when the user types "The text color is red". Developers should note that, while this example does not change the text back to the default color when the user continues to edit the string, the developer could additionally implement and specify an exit action to obtain that result.</para>
+        <para>With the ColorTriggerAction class below defined in the <c>TriggerDemo</c> namespace:</para>
+        <code lang="C#"><![CDATA[public class ColorTriggerAction : TriggerAction<Entry>
 {
     protected override void Invoke(Entry sender)
     {
         sender.TextColor = Color.Red;
     }
 }]]></code>
-          <para>the developer can use the XAML below to create the page that responds to the secret string by changing the color of the <see cref="T:Xamarin.Forms.Entry" /> text area to red.</para>
-            <code lang="XAML"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
+        <para>the developer can use the XAML below to create the page that responds to the secret string by changing the color of the <see cref="T:Xamarin.Forms.Entry" /> text area to red.</para>
+        <code lang="XAML"><![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <ContentPage    xmlns="http://xamarin.com/schemas/2014/forms"
                 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                 xmlns:local="clr-namespace:TriggerDemo"
@@ -92,9 +92,8 @@
         </Entry>
     </StackLayout>
 </ContentPage>
-]]>
-            </code>
-        </example>
+]]></code>
+      </example>
     </remarks>
     <altmember cref="T:Xamarin.Forms.Setter" />
     <altmember cref="T:Xamarin.Forms.PropertyCondition" />
