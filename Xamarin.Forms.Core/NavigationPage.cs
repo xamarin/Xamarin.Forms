@@ -339,7 +339,7 @@ namespace Xamarin.Forms
 					await args.Task;
 			}
 
-			PoppedToRoot?.Invoke(this, new PoppedToRootEventArgs(RootPage, childrenToRemove.OfType<Page>().ToList()));
+			PoppedToRoot?.Invoke(this, new PoppedToRootEventArgs(childrenToRemove.OfType<Page>().ToList()));
 		}
 
 		async Task PushAsyncInner(Page page, bool animated)
