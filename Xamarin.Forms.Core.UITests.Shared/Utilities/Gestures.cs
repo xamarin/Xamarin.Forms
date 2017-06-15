@@ -111,8 +111,9 @@ namespace Xamarin.Forms.Core.UITests
 #if __IOS__
 			var element = app.WaitForElement(target);
 			var rect = element[0].Rect;
+			var appRect = app.RootViewRect();
 
-			app.DragCoordinates(rect.X + (0.85f * rect.Width), 
+			app.DragCoordinates(rect.X + (0.85f * appRect.Width), 
 				rect.CenterY, 
 				rect.X + (0.25f * rect.Width),
 				rect.CenterY);
