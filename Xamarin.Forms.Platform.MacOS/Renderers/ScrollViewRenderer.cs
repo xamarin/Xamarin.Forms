@@ -215,53 +215,28 @@ namespace Xamarin.Forms.Platform.MacOS
 		[Export(nameof(UpdateScrollPosition))]
 		void UpdateScrollPosition()
 		{
-            if (ScrollView == null)
-                return;
+			if (ScrollView == null)
+				return;
             
-            if (ScrollView.ContentSize.Height >= ScrollView.Height)
-            {
-                RectangleF visibleRect = ContentView.DocumentVisibleRect();
-                if (visibleRect.Location.Y > -1)
-                    ScrollView.SetScrolledPosition(Math.Max(0, visibleRect.Location.X), Math.Max(0, ContentView.Frame.Height - visibleRect.Location.Y));
-            }
-            else
-                ResetNativeNonScroll();            
+			if (ScrollView.ContentSize.Height >= ScrollView.Height)
+			{
+				CoreGraphics.CGPoint location = ContentView.DocumentVisibleRect().Location;
+
+				if (location.Y > -1)
+					ScrollView.SetScrolledPosition(Math.Max(0, location.X), Math.Max(0, ContentView.Frame.Height - location.Y));
+			}
+			else
+				ResetNativeNonScroll();
 		}
 
 		void ClearContentRenderer()
 		{
-            if ((ContentView as FlippedClipView) != null)
-                (ContentView as FlippedClipView).ContentRenderer = null;
+			if ((ContentView as FlippedClipView) != null)
+				(ContentView as FlippedClipView).ContentRenderer = null;
             
 			_contentRenderer?.NativeView?.RemoveFromSuperview();
 			_contentRenderer?.Dispose();
 			_contentRenderer = null;
-		}
-
-		private sealed class FlippedClipView : NSClipView
-		{
-			public override bool IsFlipped
-			{
-				get
-				{
-                    return true;
-				}
-			}
-
-			public IVisualElementRenderer ContentRenderer { get; set; }
-
-			public override RectangleF ConstrainBoundsRect(RectangleF proposedBounds)
-			{
-				RectangleF ret = base.ConstrainBoundsRect(proposedBounds);
-
-                if (ContentRenderer == null || ContentRenderer.Element == null)
-                    return ret;
-
-				if (Frame.Height > ContentRenderer.Element.Height)
-					ret.Y = (float)(Frame.Height - ContentRenderer.Element.Height - ContentRenderer.Element.Y - ContentRenderer.Element.Y);
-
-                return ret;
-			}
 		}
 	}
 }
