@@ -20,146 +20,11 @@ using Xamarin.Forms.Platform.MacOS;
 namespace Xamarin.Forms.Maps.MacOS
 #endif
 {
-	public class MapDelegate : MKMapViewDelegate
-	{
-		protected Map _map;
-		
-		object _lastTouchedView;
-		bool _disposed;
-
-		public MapDelegate(Map map)
-		{
-			_map = map;
-		}
-
-		public override void RegionChanged(MKMapView mapView, bool animated)
-		{
-			_map.VisibleRegion = new MapSpan(new Position(mapView.Region.Center.Latitude, mapView.Region.Center.Longitude), mapView.Region.Span.LatitudeDelta, mapView.Region.Span.LongitudeDelta);
-		}
-
-		public override MKAnnotationView GetViewForAnnotation(MKMapView mapView, IMKAnnotation annotation)
-		{
-			MKAnnotationView mapPin = null;
-
-			// https://bugzilla.xamarin.com/show_bug.cgi?id=26416
-			var userLocationAnnotation = Runtime.GetNSObject(annotation.Handle) as MKUserLocation;
-			if (userLocationAnnotation != null)
-				return null;
-
-			const string defaultPinId = "defaultPin";
-			mapPin = mapView.DequeueReusableAnnotation(defaultPinId);
-			if (mapPin == null)
-			{
-				mapPin = new MKPinAnnotationView(annotation, defaultPinId);
-				mapPin.CanShowCallout = true;
-			}
-
-			mapPin.Annotation = annotation;
-			AttachGestureToPin(mapPin, annotation);
-
-			return mapPin;
-		}
-#if __MOBILE__
-		protected void AttachGestureToPin(MKAnnotationView mapPin, IMKAnnotation annotation)
-		{
-
-			UIGestureRecognizer[] recognizers = mapPin.GestureRecognizers;
-
-			if (recognizers != null)
-			{
-				foreach (UIGestureRecognizer r in recognizers)
-				{
-					mapPin.RemoveGestureRecognizer(r);
-				}
-			}
-
-			Action<UITapGestureRecognizer> action = g => OnClick(annotation, g);
-			var recognizer = new UITapGestureRecognizer(action) 
-			{ 
-				ShouldReceiveTouch = (gestureRecognizer, touch) =>
-				{
-					_lastTouchedView = touch.View;
-					return true;
-				} 
-			};
-			mapPin.AddGestureRecognizer(recognizer);
-		}
-#else
-		protected void AttachGestureToPin(MKAnnotationView mapPin, IMKAnnotation annotation)
-		{
-			NSGestureRecognizer[] recognizers = mapPin.GestureRecognizers;
-
-			if (recognizers != null)
-			{
-				foreach (NSGestureRecognizer r in recognizers)
-				{
-					mapPin.RemoveGestureRecognizer(r);
-				}
-			}
-			
-			var recognizer = new NSClickGestureRecognizer(g => OnClick(annotation, g));
-			mapPin.AddGestureRecognizer(recognizer);
-		}
-#endif
-#if __MOBILE__
-		void OnClick(object annotationObject, UITapGestureRecognizer recognizer)
-#else
-		void OnClick(object annotationObject, NSClickGestureRecognizer recognizer)
-#endif
-		{
-			// https://bugzilla.xamarin.com/show_bug.cgi?id=26416
-			NSObject annotation = Runtime.GetNSObject(((IMKAnnotation)annotationObject).Handle);
-			if (annotation == null)
-				return;
-
-			// lookup pin
-			Pin targetPin = null;
-			for (var i = 0; i < _map.Pins.Count; i++)
-			{
-				Pin pin = _map.Pins[i];
-				object target = pin.Id;
-				if (target != annotation)
-					continue;
-
-				targetPin = pin;
-				break;
-			}
-
-			// pin not found. Must have been activated outside of forms
-			if (targetPin == null)
-				return;
-
-			// if the tap happened on the annotation view itself, skip because this is what happens when the callout is showing
-			// when the callout is already visible the tap comes in on a different view
-			if (_lastTouchedView is MKAnnotationView)
-				return;
-
-			targetPin.SendTap();
-		}
-
-		protected override void Dispose(bool disposing)
-		{
-			if (_disposed)
-			{
-				return;
-			}
-
-			_disposed = true;
-
-			if (disposing)
-			{
-				_map = null;
-				_lastTouchedView = null;
-			}
-
-			base.Dispose(disposing);
-		}
-	}
-
 	public class MapRenderer : ViewRenderer<Map, MKMapView>
 	{
 		CLLocationManager _locationManager;
 		bool _shouldUpdateRegion;
+		object _lastTouchedView;
 		bool _disposed;
 
 		const string MoveMessageName = "MapMoveToRegion";
@@ -220,6 +85,8 @@ namespace Xamarin.Forms.Maps.MacOS
 					_locationManager.Dispose();
 					_locationManager = null;
 				}
+
+				_lastTouchedView = null;
 			}
 
 			base.Dispose(disposing);
@@ -256,9 +123,10 @@ namespace Xamarin.Forms.Maps.MacOS
 						mapView = new MKMapView(RectangleF.Empty);
 					}
 
-					mapView.Delegate = new MapDelegate(mapModel);
-
 					SetNativeControl(mapView);
+
+					Control.GetViewForAnnotation = GetViewForAnnotation;
+					Control.RegionChanged += MkMapViewOnRegionChanged;
 				}
 
 				MessagingCenter.Subscribe<Map, MapSpan>(this, MoveMessageName, (s, a) => MoveToRegion(a), mapModel);
@@ -316,6 +184,91 @@ namespace Xamarin.Forms.Maps.MacOS
 			};
 		}
 
+		protected virtual MKAnnotationView GetViewForAnnotation(MKMapView mapView, IMKAnnotation annotation)
+		{
+			MKAnnotationView mapPin = null;
+
+			// https://bugzilla.xamarin.com/show_bug.cgi?id=26416
+			var userLocationAnnotation = Runtime.GetNSObject(annotation.Handle) as MKUserLocation;
+			if (userLocationAnnotation != null)
+				return null;
+
+			const string defaultPinId = "defaultPin";
+			mapPin = mapView.DequeueReusableAnnotation(defaultPinId);
+			if (mapPin == null)
+			{
+				mapPin = new MKPinAnnotationView(annotation, defaultPinId);
+				mapPin.CanShowCallout = true;
+			}
+
+			mapPin.Annotation = annotation;
+			AttachGestureToPin(mapPin, annotation);
+
+			return mapPin;
+		}
+
+		protected void AttachGestureToPin(MKAnnotationView mapPin, IMKAnnotation annotation)
+		{
+			var recognizers = mapPin.GestureRecognizers;
+
+			if (recognizers != null)
+			{
+				foreach (var r in recognizers)
+				{
+					mapPin.RemoveGestureRecognizer(r);
+				}
+			}
+
+#if __MOBILE__
+			var recognizer = new UITapGestureRecognizer(g => OnClick(annotation, g))
+			{
+				ShouldReceiveTouch = (gestureRecognizer, touch) =>
+				{
+					_lastTouchedView = touch.View;
+					return true;
+				}
+			};
+#else
+			var recognizer = new NSClickGestureRecognizer(g => OnClick(annotation, g));
+#endif
+			mapPin.AddGestureRecognizer(recognizer);
+		}
+
+#if __MOBILE__
+		void OnClick(object annotationObject, UITapGestureRecognizer recognizer)
+#else
+		void OnClick(object annotationObject, NSClickGestureRecognizer recognizer)
+#endif
+		{
+			// https://bugzilla.xamarin.com/show_bug.cgi?id=26416
+			NSObject annotation = Runtime.GetNSObject(((IMKAnnotation)annotationObject).Handle);
+			if (annotation == null)
+				return;
+
+			// lookup pin
+			Pin targetPin = null;
+			foreach (Pin pin in Element.Pins)
+			{
+				object target = pin.Id;
+				if (target != annotation)
+					continue;
+
+				targetPin = pin;
+				break;
+			}
+
+			// pin not found. Must have been activated outside of forms
+			if (targetPin == null)
+				return;
+
+			// if the tap happened on the annotation view itself, skip because this is what happens when the callout is showing
+			// when the callout is already visible the tap comes in on a different view
+			if (_lastTouchedView is MKAnnotationView)
+				return;
+
+			targetPin.SendTap();
+		}
+
 		void UpdateRegion()
 		{
 			if (_shouldUpdateRegion)
@@ -333,6 +286,12 @@ namespace Xamarin.Forms.Maps.MacOS
 				pin.Id = annotation;
 				Control.AddAnnotation(annotation);
 			}
+		}
+
+		void MkMapViewOnRegionChanged(object sender, MKMapViewChangeEventArgs e)
+		{
+			MKCoordinateRegion region = Control.Region;
+			Element.VisibleRegion = new MapSpan(new Position(region.Center.Latitude, region.Center.Longitude), region.Span.LatitudeDelta, region.Span.LongitudeDelta);
 		}
 
 		void MoveToRegion(MapSpan mapSpan, bool animated = true)
