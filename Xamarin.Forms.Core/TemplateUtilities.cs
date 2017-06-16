@@ -123,7 +123,7 @@ namespace Xamarin.Forms
 				}
 
 				self.InternalChildren.Add(content);
-				((TemplatedView)bindable).OnControlTemplateChanged((ControlTemplate)oldValue, (ControlTemplate)newValue);
+				((IControlTemplated)bindable).OnControlTemplateChanged((ControlTemplate)oldValue, (ControlTemplate)newValue);
 			}
 		}
 	}
