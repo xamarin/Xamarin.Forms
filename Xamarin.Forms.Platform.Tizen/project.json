@@ -1,0 +1,16 @@
+﻿{
+  "dependencies": {
+    "NETStandard.Library": "1.6.1",
+    "System.Runtime.Serialization.Xml": "4.3.0",
+    "ElmSharp": "1.2.1",
+    "Tizen.Applications.Common": "1.5.8",
+    "Tizen.Applications.UI": "1.5.8",
+    "Tizen.System.Information": "1.0.4",
+    "Tizen.WebView": "1.0.1"
+  },
+  "frameworks": {
+    "netstandard1.6": {
+      "imports": "portable-net45+win8+wpa81+wp8"
+    }
+  }
+}

@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Xamarin.Forms.Maps.Tizen</id>
+    <version>$version$</version>
+    <authors>Xamarin Inc.</authors>
+    <owners>Xamarin Inc.</owners>
+    <tags>xamarin forms maps xamarinforms xamarinformsmaps xamarin.forms.maps tizen tizen.net</tags>
+    <licenseUrl>http://aka.ms/xamarin-forms-license</licenseUrl>
+    <iconUrl>http://xamarin.com/content/images/nuget/xamarin.png</iconUrl>
+    <projectUrl>http://xamarin.com/forms</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Xamarin.Forms.Maps Renderer for Tizen .NET</description>
+    <copyright>Copyright 2013-2017</copyright>
+    <dependencies>
+      <dependency id="Xamarin.Forms.Maps$IdAppend$" version="$version$" />
+      <dependency id="ElmSharp" version="1.2.1" />
+      <dependency id="Tizen.Location" version="1.0.8" />
+      <dependency id="Tizen.Maps" version="1.0.11" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="..\Xamarin.Forms.Maps.Tizen\bin\$Configuration$\Xamarin.Forms.Maps.Tizen.dll" target="lib\netstandard1.6"/>
+    <file src="..\Xamarin.Forms.Maps.Tizen\bin\$Configuration$\Xamarin.Forms.Maps.Tizen.*pdb" target="lib\netstandard1.6"/>
+  </files>
+</package>

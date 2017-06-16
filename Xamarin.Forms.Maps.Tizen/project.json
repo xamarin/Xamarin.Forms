@@ -1,0 +1,13 @@
+{
+  "dependencies": {
+    "NETStandard.Library": "1.6.1",
+    "ElmSharp": "1.2.0",
+    "Tizen.Location": "1.0.7",
+    "Tizen.Maps": "1.0.9"
+  },
+  "frameworks": {
+    "netstandard1.6": {
+      "imports": "portable-net45+win8+wpa81+wp8"
+    }
+  }
+}

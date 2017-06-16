@@ -1,5 +1,14 @@
+using System.Reflection;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Tizen;
+
+[assembly: AssemblyTitle("Xamarin.Forms.Platform.Tizen")]
+[assembly: AssemblyDescription("Tizen Backend for Xamarin.Forms")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCulture("")]
+
+//[assembly: AssemblyDelaySign(false)]
+//[assembly: AssemblyKeyFile("")]
 
 [assembly: Dependency(typeof(ResourcesProvider))]
 [assembly: Dependency(typeof(Deserializer))]

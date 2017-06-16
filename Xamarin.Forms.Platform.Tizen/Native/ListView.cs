@@ -266,7 +266,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			{
 				_headerContext = new ItemContext();
 				_headerContext.Item = _itemContextList.Count > 0 ? InsertBefore(headerTemplate, header, FirstItem) : Append(headerTemplate, header);
-				(_headerContext.Item as GenListItem).SelectionMode = GenListSelectionMode.None;
+				(_headerContext.Item as GenListItem).SelectionMode = GenItemSelectionMode.None;
 				_headerContext.Item.Deleted += HeaderDeletedHandler;
 				_itemContextList.Insert(0, _headerContext);
 			}
@@ -298,7 +298,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			{
 				_footerContext = new ItemContext();
 				_footerContext.Item = Append(footerTemplate, footer);
-				(_footerContext.Item as GenListItem).SelectionMode = GenListSelectionMode.None;
+				(_footerContext.Item as GenListItem).SelectionMode = GenItemSelectionMode.None;
 				_footerContext.Item.Deleted += FooterDeletedHandler;
 				_itemContextList.Add(_footerContext);
 			}
@@ -482,7 +482,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				groupItemContext.Item = Append(groupRenderer.Class, groupItemContext, GenListItemType.Group);
 			}
 
-			(groupItemContext.Item as GenListItem).SelectionMode = GenListSelectionMode.None;
+			(groupItemContext.Item as GenListItem).SelectionMode = GenItemSelectionMode.None;
 			groupItemContext.Item.IsEnabled = groupCell.IsEnabled;
 			groupItemContext.Item.Deleted += ItemDeletedHandler;
 
@@ -523,7 +523,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				itemContext.Item = Append(renderer.Class, itemContext, GenListItemType.Normal, parentItem);
 			}
 
-			(itemContext.Item as GenListItem).SelectionMode = GenListSelectionMode.Always;
+			(itemContext.Item as GenListItem).SelectionMode = GenItemSelectionMode.Always;
 			itemContext.Item.IsEnabled = cell.IsEnabled;
 			itemContext.Item.Deleted += ItemDeletedHandler;
 

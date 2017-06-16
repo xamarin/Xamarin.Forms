@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Xamarin.Forms.Platform.Tizen</id>
+    <version>$version$</version>
+    <authors>Xamarin Inc.</authors>
+    <owners>Xamarin Inc.</owners>
+    <tags>xamarin forms xamarinforms xamarin.forms tizen tizen.net</tags>
+    <licenseUrl>http://aka.ms/xamarin-forms-license</licenseUrl>
+    <iconUrl>http://xamarin.com/content/images/nuget/xamarin.png</iconUrl>
+    <projectUrl>http://xamarin.com/forms</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Xamarin Forms Renderer to build native UIs for Tizen .NET</description>
+    <copyright>Copyright 2013-2017</copyright>
+    <dependencies>
+      <dependency id="Xamarin.Forms$IdAppend$" version="$version$" />
+      <dependency id="ElmSharp" version="1.2.1" />
+      <dependency id="Tizen.Applications.Common" version="1.5.8" />
+      <dependency id="Tizen.Applications.UI" version="1.5.8" />
+      <dependency id="Tizen.System.Information" version="1.0.4" />
+      <dependency id="Tizen.WebView" version="1.0.1" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="..\Xamarin.Forms.Platform.Tizen\bin\$Configuration$\Xamarin.Forms.Platform.Tizen.dll" target="lib\netstandard1.6"/>
+    <file src="..\Xamarin.Forms.Platform.Tizen\bin\$Configuration$\Xamarin.Forms.Platform.Tizen.*pdb" target="lib\netstandard1.6"/>
+  </files>
+</package>
