@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Build.Tasks
 				throw new XamlParseException($"The name of the bindable property {bpRef.Name} does not ends with \"Property\". This is the kind of convention the world is build upon, a bit like Planck's constant.", iXmlLineInfo);
 			var bpName = bpRef.Name.Substring(0, bpRef.Name.Length - 8);
 			var owner = bpRef.DeclaringType;
-			TypeReference declaringTypeRef;
+			TypeReference declaringTypeRef = null;
 
 			var getter = owner.GetProperty(pd => pd.Name == bpName, out declaringTypeRef)?.GetMethod;
 			if (getter == null || getter.IsStatic || !getter.IsPublic)
