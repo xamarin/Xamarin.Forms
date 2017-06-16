@@ -156,7 +156,7 @@ namespace Xamarin.Forms.Maps.MacOS
 		}
 	}
 
-	public class MapRenderer : ViewRenderer
+	public class MapRenderer : ViewRenderer<Map, MKMapView>
 	{
 		CLLocationManager _locationManager;
 		bool _shouldUpdateRegion;
@@ -191,26 +191,26 @@ namespace Xamarin.Forms.Maps.MacOS
 			{
 				if (Element != null)
 				{
-					var mapModel = (Map)Element;
 					MessagingCenter.Unsubscribe<Map, MapSpan>(this, MoveMessageName);
-					((ObservableCollection<Pin>)mapModel.Pins).CollectionChanged -= OnCollectionChanged;
+					((ObservableCollection<Pin>)Element.Pins).CollectionChanged -= OnCollectionChanged;
 				}
 
-				var mkMapView = (MKMapView)Control;
-				mkMapView.RegionChanged -= MkMapViewOnRegionChanged;
-				mkMapView.GetViewForAnnotation = null;
-				if (mkMapView.Delegate != null)
+				Control.RegionChanged -= MkMapViewOnRegionChanged;
+				Control.GetViewForAnnotation = null;
+
+				if (Control.Delegate != null)
 				{
-					mkMapView.Delegate.Dispose();
-					mkMapView.Delegate = null;
+					Control.Delegate.Dispose();
+					Control.Delegate = null;
 				}
-				mkMapView.RemoveFromSuperview();
+
+				Control.RemoveFromSuperview();
 #if __MOBILE__
 				if (FormsMaps.IsiOs9OrNewer)
 				{
 					// This renderer is done with the MKMapView; we can put it in the pool
 					// for other rendererers to use in the future
-					MapPool.Add(mkMapView);
+					MapPool.Add(Control);
 				}
 #endif
 				// For iOS versions < 9, the MKMapView will be disposed in ViewRenderer's Dispose method
@@ -225,20 +225,19 @@ namespace Xamarin.Forms.Maps.MacOS
 			base.Dispose(disposing);
 		}
 
-		protected override void OnElementChanged(ElementChangedEventArgs<View> e)
+		protected override void OnElementChanged(ElementChangedEventArgs<Map> e)
 		{
 			base.OnElementChanged(e);
 
 			if (e.OldElement != null)
 			{
-				var mapModel = (Map)e.OldElement;
 				MessagingCenter.Unsubscribe<Map, MapSpan>(this, MoveMessageName);
-				((ObservableCollection<Pin>)mapModel.Pins).CollectionChanged -= OnCollectionChanged;
+				((ObservableCollection<Pin>)e.OldElement.Pins).CollectionChanged -= OnCollectionChanged;
 			}
 
 			if (e.NewElement != null)
 			{
-				var mapModel = (Map)e.NewElement;
+				var mapModel = e.NewElement;
 
 				if (Control == null)
 				{
@@ -257,10 +256,9 @@ namespace Xamarin.Forms.Maps.MacOS
 						mapView = new MKMapView(RectangleF.Empty);
 					}
 
-					SetNativeControl(mapView);
+					mapView.Delegate = new MapDelegate(mapModel);
 
-					var mkMapView = (MKMapView)Control;
-					mkMapView.Delegate = new MapDelegate(mapModel);
+					SetNativeControl(mapView);
 				}
 
 				MessagingCenter.Subscribe<Map, MapSpan>(this, MoveMessageName, (s, a) => MoveToRegion(a), mapModel);
@@ -274,7 +272,7 @@ namespace Xamarin.Forms.Maps.MacOS
 
 				((ObservableCollection<Pin>)mapModel.Pins).CollectionChanged += OnCollectionChanged;
 
-				OnCollectionChanged(((Map)Element).Pins, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+				OnCollectionChanged(mapModel.Pins, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 			}
 		}
 
@@ -290,7 +288,7 @@ namespace Xamarin.Forms.Maps.MacOS
 				UpdateHasScrollEnabled();
 			else if (e.PropertyName == Map.HasZoomEnabledProperty.PropertyName)
 				UpdateHasZoomEnabled();
-			else if (e.PropertyName == VisualElement.HeightProperty.PropertyName && ((Map)Element).LastMoveToRegion != null)
+			else if (e.PropertyName == VisualElement.HeightProperty.PropertyName && Element.LastMoveToRegion != null)
 				_shouldUpdateRegion = true;
 		}
 
@@ -322,7 +320,7 @@ namespace Xamarin.Forms.Maps.MacOS
 		{
 			if (_shouldUpdateRegion)
 			{
-				MoveToRegion(((Map)Element).LastMoveToRegion, false);
+				MoveToRegion(Element.LastMoveToRegion, false);
 				_shouldUpdateRegion = false;
 			}
 		}
@@ -333,7 +331,7 @@ namespace Xamarin.Forms.Maps.MacOS
 			{
 				var annotation = CreateAnnotation(pin);
 				pin.Id = annotation;
-				((MKMapView)Control).AddAnnotation(annotation);
+				Control.AddAnnotation(annotation);
 			}
 		}
 
@@ -341,7 +339,7 @@ namespace Xamarin.Forms.Maps.MacOS
 		{
 			Position center = mapSpan.Center;
 			var mapRegion = new MKCoordinateRegion(new CLLocationCoordinate2D(center.Latitude, center.Longitude), new MKCoordinateSpan(mapSpan.LatitudeDegrees, mapSpan.LongitudeDegrees));
-			((MKMapView)Control).SetRegion(mapRegion, animated);
+			Control.SetRegion(mapRegion, animated);
 		}
 
 		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
@@ -359,9 +357,9 @@ namespace Xamarin.Forms.Maps.MacOS
 					AddPins(notifyCollectionChangedEventArgs.NewItems);
 					break;
 				case NotifyCollectionChangedAction.Reset:
-					var mapView = (MKMapView)Control;
+					var mapView = Control;
 					mapView.RemoveAnnotations(mapView.Annotations);
-					AddPins((IList)(Element as Map).Pins);
+					AddPins((IList)Element.Pins);
 					break;
 				case NotifyCollectionChangedAction.Move:
 					//do nothing
@@ -372,43 +370,43 @@ namespace Xamarin.Forms.Maps.MacOS
 		void RemovePins(IList pins)
 		{
 			foreach (object pin in pins)
-				((MKMapView)Control).RemoveAnnotation((IMKAnnotation)((Pin)pin).Id);
+				Control.RemoveAnnotation((IMKAnnotation)((Pin)pin).Id);
 		}
 
 		void UpdateHasScrollEnabled()
 		{
-			((MKMapView)Control).ScrollEnabled = ((Map)Element).HasScrollEnabled;
+			Control.ScrollEnabled = Element.HasScrollEnabled;
 		}
 
 		void UpdateHasZoomEnabled()
 		{
-			((MKMapView)Control).ZoomEnabled = ((Map)Element).HasZoomEnabled;
+			Control.ZoomEnabled = Element.HasZoomEnabled;
 		}
 
 		void UpdateIsShowingUser()
 		{
 #if __MOBILE__
-			if (FormsMaps.IsiOs8OrNewer && ((Map)Element).IsShowingUser)
+			if (FormsMaps.IsiOs8OrNewer && Element.IsShowingUser)
 			{
 				_locationManager = new CLLocationManager();
 				_locationManager.RequestWhenInUseAuthorization();
 			}
 #endif
-			((MKMapView)Control).ShowsUserLocation = ((Map)Element).IsShowingUser;
+			Control.ShowsUserLocation = Element.IsShowingUser;
 		}
 
 		void UpdateMapType()
 		{
-			switch (((Map)Element).MapType)
+			switch (Element.MapType)
 			{
 				case MapType.Street:
-					((MKMapView)Control).MapType = MKMapType.Standard;
+					Control.MapType = MKMapType.Standard;
 					break;
 				case MapType.Satellite:
-					((MKMapView)Control).MapType = MKMapType.Satellite;
+					Control.MapType = MKMapType.Satellite;
 					break;
 				case MapType.Hybrid:
-					((MKMapView)Control).MapType = MKMapType.Hybrid;
+					Control.MapType = MKMapType.Hybrid;
 					break;
 			}
 		}
