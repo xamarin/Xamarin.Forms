@@ -64,5 +64,9 @@ namespace Xamarin.Forms
 			if (ControlTemplate == null)
 				base.SetChildInheritedBindingContext(child, context);
 		}
+
+		internal virtual void OnControlTemplateChanged(ControlTemplate oldValue, ControlTemplate newValue)
+		{
+		}
 	}
 }
