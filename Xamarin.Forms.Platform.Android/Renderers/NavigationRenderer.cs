@@ -3,8 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Android.Views;
 using Xamarin.Forms.Internals;
-using AButton = Android.Widget.Button;
-using AView = Android.Views.View;
 using AndroidAnimation = Android.Animation;
 
 namespace Xamarin.Forms.Platform.Android
