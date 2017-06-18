@@ -48,7 +48,6 @@ namespace Xamarin.Forms.Build.Tasks
 			if (!self.ReturnType.IsGenericParameter)
 				return self.ReturnType;
 
-
 			var t = ((GenericInstanceType)declaringTypeRef).GenericArguments[((GenericParameter)self.ReturnType).Position];
 			return t;
 		}
