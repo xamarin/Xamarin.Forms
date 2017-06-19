@@ -320,7 +320,7 @@ namespace Xamarin.Forms.Platform.iOS
 		protected virtual async Task<bool> OnPushAsync(Page page, bool animated)
 		{
 			if(page is MasterDetailPage)
-				System.Diagnostics.Debug.WriteLine($"Pushing a {nameof(MasterDetailPage)} onto a {nameof(NavigationPage)} is not a supported UI pattern on iOS. " +
+				System.Diagnostics.Trace.WriteLine($"Pushing a {nameof(MasterDetailPage)} onto a {nameof(NavigationPage)} is not a supported UI pattern on iOS. " +
 					"Please see https://developer.apple.com/documentation/uikit/uisplitviewcontroller for more details.");
 
 			var pack = CreateViewControllerForPage(page);
