@@ -591,8 +591,8 @@ namespace Xamarin.Forms.ControlGallery.iOS
 		{
 			var cell = base.GetCell(item, reusableCell, tv);
 
-            // remove highlight on selected cell
-            cell.SelectionStyle = UITableViewCellSelectionStyle.None;
+			// remove highlight on selected cell
+			cell.SelectionStyle = UITableViewCellSelectionStyle.None;
 
 			return cell;
 		}

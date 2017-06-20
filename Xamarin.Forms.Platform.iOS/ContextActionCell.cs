@@ -252,10 +252,10 @@ namespace Xamarin.Forms.Platform.iOS
 			else
 				_scroller.SetContentOffset(new PointF(0, 0), false);
 
-            if (ContentCell != null)
-            {
-                SelectionStyle = ContentCell.SelectionStyle;
-            }
+			if (ContentCell != null)
+			{
+				SelectionStyle = ContentCell.SelectionStyle;
+			}
 		}
 
 		protected override void Dispose(bool disposing)
