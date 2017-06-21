@@ -19,9 +19,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public ScrollViewRenderer() : base(RectangleF.Empty)
 		{
-            ContentView = new FlippedClipView();
+			ContentView = new FlippedClipView();
 			DrawsBackground = false;
-            ContentView.PostsBoundsChangedNotifications = false;
+			ContentView.PostsBoundsChangedNotifications = false;
 			NSNotificationCenter.DefaultCenter.AddObserver(this, new Selector(nameof(UpdateScrollPosition)), BoundsChangedNotification, ContentView);
 			HasVerticalScroller = true;
 		}
@@ -128,10 +128,10 @@ namespace Xamarin.Forms.Platform.MacOS
 				Platform.SetRenderer(content, Platform.CreateRenderer(content));
 
 			_contentRenderer = Platform.GetRenderer(content);
-            (ContentView as FlippedClipView).ContentRenderer = _contentRenderer;
+			(ContentView as FlippedClipView).ContentRenderer = _contentRenderer;
 			DocumentView = _contentRenderer.NativeView;
 
-            ContentView.PostsBoundsChangedNotifications = true;
+			ContentView.PostsBoundsChangedNotifications = true;
 		}
 
 		void LayoutSubviews()
@@ -169,7 +169,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				? new Point(e.ScrollX, Element.Height - e.ScrollY)
 				: ScrollView.GetScrollPositionForElement(e.Element as VisualElement, e.Position);
 
-            ContentView.ScrollToPoint(scrollPoint.ToPointF());
+			ContentView.ScrollToPoint(scrollPoint.ToPointF());
 			ScrollView.SendScrollFinished();
 		}
 
@@ -194,30 +194,30 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (ContentView == null || ScrollView == null)
 				return;
 
-            ContentView.Frame = new RectangleF(ContentView.Frame.X, ContentView.Frame.Y, Frame.Width, Frame.Height);
-            ResetNativeNonScroll();
+			ContentView.Frame = new RectangleF(ContentView.Frame.X, ContentView.Frame.Y, Frame.Width, Frame.Height);
+			ResetNativeNonScroll();
 		}
 
-        private bool ResetNativeNonScroll( )
-        {
-            if (ScrollView == null || ContentView == null)
-                return false;
+		private bool ResetNativeNonScroll( )
+		{
+			if (ScrollView == null || ContentView == null)
+				return false;
 
-            if (ScrollView.ScrollY <= 0.0f && ContentView.DocumentVisibleRect().Location.Y > 0.0f)
-            {
-                ContentView.ScrollToPoint(new CoreGraphics.CGPoint(0, 0));
-                return true;
-            }
+			if (ScrollView.ScrollY <= 0.0f && ContentView.DocumentVisibleRect().Location.Y > 0.0f)
+			{
+				ContentView.ScrollToPoint(new CoreGraphics.CGPoint(0, 0));
+				return true;
+			}
 
-            return false;
-        }
+			return false;
+		}
 
 		[Export(nameof(UpdateScrollPosition))]
 		void UpdateScrollPosition()
 		{
 			if (ScrollView == null)
 				return;
-            
+
 			if (ScrollView.ContentSize.Height >= ScrollView.Height)
 			{
 				CoreGraphics.CGPoint location = ContentView.DocumentVisibleRect().Location;
@@ -233,7 +233,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			if ((ContentView as FlippedClipView) != null)
 				(ContentView as FlippedClipView).ContentRenderer = null;
-            
+
 			_contentRenderer?.NativeView?.RemoveFromSuperview();
 			_contentRenderer?.Dispose();
 			_contentRenderer = null;
