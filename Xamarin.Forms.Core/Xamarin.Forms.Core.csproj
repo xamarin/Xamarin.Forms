@@ -89,6 +89,7 @@
     <Compile Include="DelegateLogListener.cs" />
     <Compile Include="IEditorController.cs" />
     <Compile Include="IGridController.cs" />
+    <Compile Include="ISwipeGestureController.cs" />
     <Compile Include="IWebViewController.cs" />
     <Compile Include="INavigationMenuController.cs" />
     <Compile Include="Internals\EffectUtilities.cs" />
@@ -460,6 +461,9 @@
     <Compile Include="ITextElement.cs" />
     <Compile Include="TextElement.cs" />
     <Compile Include="Internals\ResourceLoader.cs" />
+    <Compile Include="SwipeDirection.cs" />
+    <Compile Include="SwipeGestureRecognizer.cs" />
+    <Compile Include="SwipedEventArgs.cs" />
     <Compile Include="Xaml\TypeConversionExtensions.cs" />
     <Compile Include="Xaml\ValueConverterProvider.cs" />
   </ItemGroup>
@@ -470,13 +474,10 @@
       <Name>Xamarin.Forms.Platform</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <PropertyGroup>
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
-  <ItemGroup />
-  <ItemGroup />
   <ItemGroup>
     <Folder Include="Xaml\" />
   </ItemGroup>

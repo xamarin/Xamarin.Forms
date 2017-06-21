@@ -28,6 +28,7 @@ namespace Xamarin.Forms.Platform.WinRT
 		bool _invalidateArrangeNeeded;
 
 		bool _isDisposed;
+		bool _isSwiping;
 		bool _isPanning;
 		bool _isPinching;
 		bool _wasPanGestureStartedSent;
@@ -250,6 +251,19 @@ namespace Xamarin.Forms.Platform.WinRT
 			OnUpdated();
 		}
 
+		void HandleSwipe(ManipulationDeltaRoutedEventArgs e, View view)
+		{
+			if (_fingers.Count > 1 || view == null)
+				return;
+
+			_isSwiping = true;
+
+			foreach (SwipeGestureRecognizer recognizer in view.GestureRecognizers.GetGesturesFor<SwipeGestureRecognizer>())
+			{
+				((ISwipeGestureController)recognizer).SendSwipe(view, e.Delta.Translation.X + e.Cumulative.Translation.X, e.Delta.Translation.Y + e.Cumulative.Translation.Y);
+			}
+		}
+
 		void HandlePan(ManipulationDeltaRoutedEventArgs e, View view)
 		{
 			if (view == null)
@@ -318,6 +332,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		void OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
 		{
+			SwipeComplete(true);
 			PinchComplete(true);
 			PanComplete(true);
 		}
@@ -328,6 +343,7 @@ namespace Xamarin.Forms.Platform.WinRT
 			if (view == null)
 				return;
 
+			HandleSwipe(e, view);
 			HandlePinch(e, view);
 			HandlePan(e, view);
 		}
@@ -337,6 +353,7 @@ namespace Xamarin.Forms.Platform.WinRT
 			var view = Element as View;
 			if (view == null)
 				return;
+
 			_wasPinchGestureStartedSent = false;
 			_wasPanGestureStartedSent = false;
 		}
@@ -347,6 +364,7 @@ namespace Xamarin.Forms.Platform.WinRT
 			if (_fingers.Contains(id))
 				_fingers.Remove(id);
 
+			SwipeComplete(false);
 			PinchComplete(false);
 			PanComplete(false);
 		}
@@ -357,6 +375,7 @@ namespace Xamarin.Forms.Platform.WinRT
 			if (_fingers.Contains(id))
 				_fingers.Remove(id);
 
+			SwipeComplete(true);
 			PinchComplete(true);
 			PanComplete(true);
 		}
@@ -374,6 +393,7 @@ namespace Xamarin.Forms.Platform.WinRT
 			if (_fingers.Contains(id))
 				_fingers.Remove(id);
 
+			SwipeComplete(true);
 			PinchComplete(true);
 			PanComplete(true);
 		}
@@ -401,6 +421,23 @@ namespace Xamarin.Forms.Platform.WinRT
 		{
 			if (Updated != null)
 				Updated(this, EventArgs.Empty);
+		}
+
+		void SwipeComplete(bool success)
+		{
+			var view = Element as View;
+			if (view == null || !_isSwiping)
+				return;
+
+			if (success)
+			{
+				foreach (SwipeGestureRecognizer recognizer in view.GestureRecognizers.GetGesturesFor<SwipeGestureRecognizer>())
+				{
+					((ISwipeGestureController)recognizer).DetectSwipe(view, recognizer.Direction);
+				}
+			}
+
+			_isSwiping = false;
 		}
 
 		void PanComplete(bool success)
@@ -545,9 +582,10 @@ namespace Xamarin.Forms.Platform.WinRT
 				}
 			}
 
+			bool hasSwipeGesture = gestures.GetGesturesFor<SwipeGestureRecognizer>().GetEnumerator().MoveNext();
 			bool hasPinchGesture = gestures.GetGesturesFor<PinchGestureRecognizer>().GetEnumerator().MoveNext();
 			bool hasPanGesture = gestures.GetGesturesFor<PanGestureRecognizer>().GetEnumerator().MoveNext();
-			if (!hasPinchGesture && !hasPanGesture)
+			if (!hasSwipeGesture && !hasPinchGesture && !hasPanGesture)
 				return;
 
 			//We can't handle ManipulationMode.Scale and System , so we don't support pinch/pan on a scrollview 
