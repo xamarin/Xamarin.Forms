@@ -19,6 +19,10 @@ namespace Xamarin.Forms.Build.Tasks
 		[Obsolete("OutputGeneratedILAsCode is obsolete as of version 2.3.4. This option is no longer available.")]
 		public bool OutputGeneratedILAsCode { get; set; }
 
+		public bool CompileByDefault { get; set; }
+
+		public IAssemblyResolver DefaultAssemblyResolver { get; set; }
+
 		internal string Type { get; set; }
 		internal MethodDefinition InitCompForType { get; private set; }
 		internal bool ReadOnly { get; set; }
@@ -35,7 +39,7 @@ namespace Xamarin.Forms.Build.Tasks
 				Logger.LogLine(1, "ReferencePath: \t{0}", ReferencePath.Replace("//", "/"));
 			Logger.LogLine(3, "DebugSymbols:\"{0}\"", DebugSymbols);
 			Logger.LogLine(3, "DebugType:\"{0}\"", DebugType);
-			var skipassembly = true; //change this to false to enable XamlC by default
+			var skipassembly = !CompileByDefault;
 			bool success = true;
 
 			if (!File.Exists(Assembly))
@@ -44,24 +48,29 @@ namespace Xamarin.Forms.Build.Tasks
 				return true;
 			}
 
-			var resolver = new XamlCAssemblyResolver();
-			if (!string.IsNullOrEmpty(DependencyPaths))
-			{
-				foreach (var dep in DependencyPaths.Split(';'))
-				{
-					Logger.LogLine(3, "Adding searchpath {0}", dep);
-					resolver.AddSearchDirectory(dep);
-				}
-			}
+			var resolver = DefaultAssemblyResolver ?? new XamlCAssemblyResolver();
+			var xamlCResolver = resolver as XamlCAssemblyResolver;
 
-			if (!string.IsNullOrEmpty(ReferencePath))
+			if (xamlCResolver != null)
 			{
-				var paths = ReferencePath.Replace("//", "/").Split(';');
-				foreach (var p in paths)
+				if (!string.IsNullOrEmpty(DependencyPaths))
 				{
-					var searchpath = Path.GetDirectoryName(p);
-					Logger.LogLine(3, "Adding searchpath {0}", searchpath);
-					resolver.AddSearchDirectory(searchpath);
+					foreach (var dep in DependencyPaths.Split(';'))
+					{
+						Logger.LogLine(3, "Adding searchpath {0}", dep);
+						xamlCResolver.AddSearchDirectory(dep);
+					}
+				}
+
+				if (!string.IsNullOrEmpty(ReferencePath))
+				{
+					var paths = ReferencePath.Replace("//", "/").Split(';');
+					foreach (var p in paths)
+					{
+						var searchpath = Path.GetDirectoryName(p);
+						Logger.LogLine(3, "Adding searchpath {0}", searchpath);
+						xamlCResolver.AddSearchDirectory(searchpath);
+					}
 				}
 			}
 
