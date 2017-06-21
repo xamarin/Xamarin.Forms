@@ -63,6 +63,11 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			await TryUpdateBitmap(e.OldElement);
 			UpdateAspect();
 
+			if (Id == NoId)
+			{
+				Id = Platform.GenerateViewId();
+			}
+
 			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(e.OldElement, e.NewElement));
 		}
 

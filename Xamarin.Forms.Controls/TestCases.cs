@@ -141,9 +141,10 @@ namespace Xamarin.Forms.Controls
 				var untrackedIssueCells = 
 					from issueModel in issueModels
 					where issueModel.IssueTracker == IssueTracker.None
-					orderby issueModel.Description 
+					orderby issueModel.IssueNumber descending, issueModel.Description 
 					select MakeIssueCell (issueModel.Name, issueModel.Description, issueModel.Action);
 
+				// TODO hartez 2017/06/21 09:12:51 Restore the original order	
 				var issueCells = bugzillaIssueCells.Concat (githubIssueCells).Concat (untrackedIssueCells);
 
 				foreach (var issueCell in issueCells) {
