@@ -176,7 +176,7 @@
     <Compile Include="BorderEffect.cs" />
     <Compile Include="BrokenNativeControl.cs" />
     <Compile Include="CacheService.cs" />
-    <Compile Include="Control Gallery\Xamarin.Forms.ControlGallery.Android\FormsApplicationActivity.cs" />
+    <Compile Include="FormsApplicationActivity.cs" />
     <Compile Include="DisposeLabelRenderer.cs" />
     <Compile Include="DisposePageRenderer.cs" />
     <Compile Include="FormsAppCompatActivity.cs" />

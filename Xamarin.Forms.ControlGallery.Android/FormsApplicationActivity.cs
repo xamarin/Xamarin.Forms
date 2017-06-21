@@ -15,13 +15,12 @@ namespace Xamarin.Forms.ControlGallery.Android
 		HardwareAccelerated = true, ConfigurationChanges = ConfigChanges.ScreenSize | ConfigChanges.Orientation)]
 	public partial class Activity1 : FormsApplicationActivity
 	{
-		
 		protected override void OnCreate(Bundle bundle)
 		{
 			base.OnCreate(bundle);
 
 			if (!Debugger.IsAttached)
-				Insights.Initialize(App.Config["InsightsApiKey"], ApplicationContext);
+				Insights.Initialize(App.InsightsApiKey, ApplicationContext);
 
 			Forms.Init(this, bundle);
 			FormsMaps.Init(this, bundle);
