@@ -8,30 +8,30 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	internal class IOSAppLinks : IAppLinks
 	{
-		public async void DeregisterLink(IAppLinkEntry appLink)
+		public Task DeregisterLink(IAppLinkEntry appLink)
 		{
 			if (string.IsNullOrWhiteSpace(appLink.AppLinkUri?.ToString()))
 				throw new ArgumentNullException("AppLinkUri");
-			await RemoveLinkAsync(appLink.AppLinkUri?.ToString());
+			return RemoveLinkAsync(appLink.AppLinkUri?.ToString());
 		}
 
-		public async void DeregisterLink(Uri uri)
+		public Task DeregisterLink(Uri uri)
 		{
 			if (string.IsNullOrWhiteSpace(uri?.ToString()))
 				throw new ArgumentNullException(nameof(uri));
-			await RemoveLinkAsync(uri.ToString());
+			return RemoveLinkAsync(uri.ToString());
 		}
 
-		public async void RegisterLink(IAppLinkEntry appLink)
+		public Task RegisterLink(IAppLinkEntry appLink)
 		{
 			if (string.IsNullOrWhiteSpace(appLink.AppLinkUri?.ToString()))
 				throw new ArgumentNullException("AppLinkUri");
-			await AddLinkAsync(appLink);
+			return AddLinkAsync(appLink);
 		}
 
-		public async void DeregisterAll()
+		public Task DeregisterAll()
 		{
-			await ClearIndexedDataAsync();
+			return ClearIndexedDataAsync();
 		}
 
 		static async Task AddLinkAsync(IAppLinkEntry deepLinkUri)

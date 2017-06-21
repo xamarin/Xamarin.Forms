@@ -35,19 +35,21 @@ namespace Xamarin.Forms.Platform.Android.AppLinks
 			_client.Connect();
 		}
 
-		public void DeregisterLink(IAppLinkEntry appLink)
+		public Task DeregisterLink(IAppLinkEntry appLink)
 		{
 			RemoveFromIndexItemAsync(appLink.AppLinkUri.ToString());
+			return Task.FromResult<object>(null);
 		}
 
-		public void DeregisterLink(Uri appLinkUri)
+		public Task DeregisterLink(Uri appLinkUri)
 		{
 			RemoveFromIndexItemAsync(appLinkUri.ToString());
+			return Task.FromResult<object>(null);
 		}
 
-		public async void RegisterLink(IAppLinkEntry appLink)
+		public Task RegisterLink(IAppLinkEntry appLink)
 		{
-			await IndexItemAsync(appLink);
+			return IndexItemAsync(appLink);
 		}
 
 		public void Dispose()
