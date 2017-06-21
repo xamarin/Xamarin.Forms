@@ -852,7 +852,7 @@ namespace Xamarin.Forms.Platform.Android
 				int actionbarId = _context.Resources.GetIdentifier("action_bar", "id", "android");
 				if (actionbarId > 0)
 				{
-					var toolbar = (ViewGroup)((Activity)_context).FindViewById(actionbarId);
+					var toolbar = ((Activity)_context).FindViewById(actionbarId) as ViewGroup;
 					if (toolbar != null)
 					{
 						for (int i = 0; i < toolbar.ChildCount; i++)
