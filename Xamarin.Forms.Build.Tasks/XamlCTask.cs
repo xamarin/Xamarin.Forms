@@ -20,6 +20,7 @@ namespace Xamarin.Forms.Build.Tasks
 		public bool OutputGeneratedILAsCode { get; set; }
 
 		public bool CompileByDefault { get; set; }
+		public bool ForceCompile { get; set; }
 
 		public IAssemblyResolver DefaultAssemblyResolver { get; set; }
 
@@ -72,6 +73,9 @@ namespace Xamarin.Forms.Build.Tasks
 						xamlCResolver.AddSearchDirectory(searchpath);
 					}
 				}
+			}
+			else {
+				Logger.LogLine(3, "Ignoring dependency and reference paths due to an unsupported resolver");
 			}
 
 			var debug = DebugSymbols || (!string.IsNullOrEmpty(DebugType) && DebugType.ToLowerInvariant() != "none");
@@ -137,7 +141,7 @@ namespace Xamarin.Forms.Build.Tasks
 						if (Type != null)
 							skiptype = !(Type == classname);
 
-						if (skiptype) {
+						if (skiptype && !ForceCompile) {
 							Logger.LogLine(2, "Has XamlCompilationAttribute set to Skip and not Compile... skipped");
 							continue;
 						}
