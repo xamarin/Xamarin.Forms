@@ -373,7 +373,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				// We want to make sure we reset the cached defined row heights whenever this is called.
 				// Failing to do this will regress Bugzilla 43313 (strange animation when adding rows with uneven heights)
-				source.CacheDefinedRowHeights();
+				source?.CacheDefinedRowHeights();
 
 				if (_shouldEstimateRowHeight && !_estimatedRowHeight)
 				{
