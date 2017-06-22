@@ -113,6 +113,22 @@ namespace Xamarin.Forms.Platform.MacOS
 				return uiRecognizer;
 			}
 
+			var swipeRecognizer = recognizer as SwipeGestureRecognizer;
+			if (swipeRecognizer != null)
+			{
+				var returnAction = new Action<SwipeDirection>((direction) =>
+				{
+					var swipeGestureRecognizer = weakRecognizer.Target as SwipeGestureRecognizer;
+					var eventTracker = weakEventTracker.Target as EventTracker;
+					var view = eventTracker?._renderer.Element as View;
+
+					if (swipeGestureRecognizer != null && view != null)
+						swipeGestureRecognizer.SendSwiped(view, direction);
+				});
+				var uiRecognizer = CreateSwipeRecognizer(swipeRecognizer.Direction, returnAction, 1);
+				return uiRecognizer;
+			}
+
 			var pinchRecognizer = recognizer as PinchGestureRecognizer;
 			if (pinchRecognizer != null)
 			{
@@ -259,6 +275,15 @@ namespace Xamarin.Forms.Platform.MacOS
 			var result = new UITapGestureRecognizer(action);
 			result.NumberOfTouchesRequired = (uint)numFingers;
 			result.NumberOfTapsRequired = (uint)numTaps;
+			return result;
+		}
+
+		UISwipeGestureRecognizer CreateSwipeRecognizer(SwipeDirection direction, Action<SwipeDirection> action, int numFingers = 1)
+		{
+			var result = new UISwipeGestureRecognizer();
+			result.NumberOfTouchesRequired = (uint)numFingers;
+			result.Direction = (UISwipeGestureRecognizerDirection)direction;
+			result.AddTarget(() => action(direction));
 			return result;
 		}
 #else
