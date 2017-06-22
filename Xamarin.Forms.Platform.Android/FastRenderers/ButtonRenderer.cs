@@ -216,10 +216,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			}
 			if (e.NewElement != null && !_isDisposed)
 			{
-				if (Id == NoId)
-				{
-					Id = Platform.GenerateViewId();
-				}
+				this.EnsureId();
 
 				UpdateFont();
 				UpdateText();

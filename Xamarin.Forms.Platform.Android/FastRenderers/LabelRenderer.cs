@@ -177,10 +177,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			if (e.NewElement != null)
 			{
-				if (Id == NoId)
-				{
-					Id = Platform.GenerateViewId();
-				}
+				this.EnsureId();
 
 				if (_visualElementTracker == null)
 				{

@@ -62,16 +62,12 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		{
 			await TryUpdateBitmap(e.OldElement);
 			UpdateAspect();
-
-			if (Id == NoId)
-			{
-				Id = Platform.GenerateViewId();
-			}
+			this.EnsureId();
 
 			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(e.OldElement, e.NewElement));
 		}
 
-        public override bool OnTouchEvent(MotionEvent e)
+		public override bool OnTouchEvent(MotionEvent e)
         {
             bool handled;
             var result = _visualElementRenderer.OnTouchEvent(e, Parent, out handled);
@@ -79,7 +75,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
             return handled ? result : base.OnTouchEvent(e);
         }
 
-        protected virtual Size MinimumSize()
+		protected virtual Size MinimumSize()
 		{
 			return new Size();
 		}
