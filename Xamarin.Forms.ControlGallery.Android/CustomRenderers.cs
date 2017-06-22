@@ -32,6 +32,8 @@ using Xamarin.Forms.Controls.Issues;
 [assembly: ExportRenderer(typeof(Bugzilla42000._42000NumericEntryNoNegative), typeof(EntryRendererNoNegative))]
 [assembly: ExportRenderer(typeof(AndroidHelpText.HintLabel), typeof(HintLabel))]
 
+[assembly: ExportRenderer(typeof(Xamarin.Forms.Controls.Issues.NoFlashTestNavigationPage), typeof(Xamarin.Forms.ControlGallery.Android.NoFlashTestNavigationPage))]
+
 #if PRE_APPLICATION_CLASS
 #elif FORMS_APPLICATION_ACTIVITY
 #else
@@ -521,12 +523,21 @@ namespace Xamarin.Forms.ControlGallery.Android
 		}
 	}
 
+
 	public class HintLabel : Xamarin.Forms.Platform.Android.FastRenderers.LabelRenderer
 	{
 		public HintLabel()
 		{
 			Hint = AndroidHelpText.HintLabel.Success;
-		}	
+		}
+  }
+
+	public class NoFlashTestNavigationPage : Xamarin.Forms.Platform.Android.AppCompat.NavigationPageRenderer
+	{
+		protected override void SetupPageTransition(global::Android.Support.V4.App.FragmentTransaction transaction, bool isPush)
+		{
+			transaction.SetTransition((int)FragmentTransit.None);
+		}
 	}
 }
 

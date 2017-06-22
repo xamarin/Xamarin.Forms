@@ -415,6 +415,11 @@ namespace Xamarin.Forms.Platform.WinRT
 
 			Children.Add(control);
 
+			if (Element == null)
+				throw new InvalidOperationException(
+					"Cannot assign a native control without an Element; Renderer unbound and/or disposed. " +
+					"Please consult Xamarin.Forms renderers for reference implementation of OnElementChanged.");
+
 			Element.IsNativeStateConsistent = false;
 			control.Loaded += OnControlLoaded;
 
@@ -543,7 +548,7 @@ namespace Xamarin.Forms.Platform.WinRT
 			if (control != null)
 				control.IsEnabled = Element.IsEnabled;
 			else
-				IsHitTestVisible = Element.IsEnabled;
+				IsHitTestVisible = Element.IsEnabled && !Element.InputTransparent;
 		}
 
 		void UpdateTracker()

@@ -127,7 +127,7 @@ namespace Xamarin.Forms.Platform.iOS
 				((INotifyCollectionChanged)cell.ContextActions).CollectionChanged += OnContextItemsChanged;
 			}
 
-			var height = Frame.Height;
+			var height = Frame.Height + (parentListView != null && parentListView.SeparatorVisibility == SeparatorVisibility.None ? 0.5f : 0f);
 			var width = ContentView.Frame.Width;
 
 			nativeCell.Frame = new RectangleF(0, 0, width, height);
@@ -251,6 +251,11 @@ namespace Xamarin.Forms.Platform.iOS
 				_scroller.SetContentOffset(new PointF(ScrollDelegate.ButtonsWidth, 0), false);
 			else
 				_scroller.SetContentOffset(new PointF(0, 0), false);
+
+			if (ContentCell != null)
+			{
+				SelectionStyle = ContentCell.SelectionStyle;
+			}
 		}
 
 		protected override void Dispose(bool disposing)
@@ -273,6 +278,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 				for (var i = 0; i < _buttons.Count; i++)
 					_buttons[i].Dispose();
+
+				var handler = new PropertyChangedEventHandler(OnMenuItemPropertyChanged);
+
+				foreach (var item in _menuItems)
+					item.PropertyChanged -= handler;
 
 				_buttons.Clear();
 				_menuItems.Clear();

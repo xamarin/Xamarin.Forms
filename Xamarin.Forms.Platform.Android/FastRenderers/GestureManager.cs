@@ -70,7 +70,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			if (View.GestureRecognizers.Count == 0)
 			{
 				handled = true;
-				return _motionEventHelper.HandleMotionEvent(parent);
+				return _motionEventHelper.HandleMotionEvent(parent, e);
 			}
 
 			handled = false;
@@ -170,7 +170,11 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			// It's very important that the gesture detection happen first here
 			// if we check handled first, we might short-circuit and never check for tap/pan
-			return _gestureDetector.Value.OnTouchEvent(e) || handled;
+			handled = _gestureDetector.Value.OnTouchEvent(e) || handled;
+
+			v.EnsureLongClickCancellation(e, handled, Element);
+
+			return handled;
 		}
 
 		void HandleGestureRecognizerCollectionChanged(object sender,

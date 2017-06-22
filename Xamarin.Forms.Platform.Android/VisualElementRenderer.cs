@@ -93,7 +93,9 @@ namespace Xamarin.Forms.Platform.Android
 		public override bool OnInterceptTouchEvent(MotionEvent ev)
 		{
 			if (!Element.IsEnabled || (Element.InputTransparent && Element.IsEnabled))
+			{
 				return true;
+			}
 
 			return base.OnInterceptTouchEvent(ev);
 		}
@@ -125,6 +127,8 @@ namespace Xamarin.Forms.Platform.Android
 			// It's very important that the gesture detection happen first here
 			// if we check handled first, we might short-circuit and never check for tap/pan
 			handled = _gestureDetector.Value.OnTouchEvent(e) || handled;
+
+			v.EnsureLongClickCancellation(e, handled, Element);
 
 			return handled;
 		}
