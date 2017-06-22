@@ -857,7 +857,8 @@ namespace Xamarin.Forms.Platform.Android
 					{
 						for (int i = 0; i < toolbar.ChildCount; i++)
 						{
-							if (toolbar.GetChildAt(i) is TextView textView)
+							var textView = toolbar.GetChildAt(i) as TextView;
+							if (textView != null)
 							{
 								actionBarTitleTextView = textView;
 								break;
