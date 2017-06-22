@@ -141,7 +141,7 @@ namespace Xamarin.Forms.Platform.Android
 				Performance.Start();
 
 				var renderer = GetChildAt(0) as IVisualElementRenderer;
-				var viewHandlerType = Registrar.Registered.GetHandlerType(cell.View.GetType()) ?? typeof(Platform.DefaultRenderer);
+				var viewHandlerType = Registrar.Registered.GetHandlerTypeForObject(cell.View) ?? typeof(Platform.DefaultRenderer);
 				if (renderer != null && renderer.GetType() == viewHandlerType)
 				{
 					Performance.Start("Reuse");
