@@ -167,7 +167,9 @@ namespace Xamarin.Forms.Platform.iOS
 						renderer.Element.ClearValue(Platform.RendererProperty);
 
 					var type = Internals.Registrar.Registered.GetHandlerTypeForObject(this._viewCell.View);
-					if (renderer.GetType() == type || (renderer is Platform.DefaultRenderer && type == null))
+					var reflectableType = renderer as System.Reflection.IReflectableType;
+					var rendererType = reflectableType != null ? reflectableType.GetTypeInfo().AsType() : renderer.GetType();
+					if (rendererType == type || (renderer is Platform.DefaultRenderer && type == null))
 						renderer.SetElement(this._viewCell.View);
 					else
 					{

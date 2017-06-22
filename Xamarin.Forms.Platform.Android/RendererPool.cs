@@ -79,7 +79,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		void PushRenderer(IVisualElementRenderer renderer)
 		{
-			Type rendererType = renderer.GetType();
+			var reflectableType = renderer as System.Reflection.IReflectableType;
+			var rendererType = reflectableType != null ? reflectableType.GetTypeInfo().AsType() : renderer.GetType();
 
 			Stack<IVisualElementRenderer> renderers;
 			if (!_freeRenderers.TryGetValue(rendererType, out renderers))

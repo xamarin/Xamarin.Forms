@@ -122,7 +122,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void PushRenderer(IVisualElementRenderer renderer)
 		{
-			var rendererType = renderer.GetType();
+			var reflectableType = renderer as System.Reflection.IReflectableType;
+			var rendererType = reflectableType != null ? reflectableType.GetTypeInfo().AsType() : renderer.GetType();
 
 			Stack<IVisualElementRenderer> renderers;
 			if (!_freeRenderers.TryGetValue(rendererType, out renderers))
