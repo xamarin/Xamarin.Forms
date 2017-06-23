@@ -2335,8 +2335,8 @@
         <Parameter Name="color2" Type="Xamarin.Forms.Color" />
       </Parameters>
       <Docs>
-          <param name="color1">The first color in the comparison.</param>
-          <param name="color2">The second color in the comparison.</param>
+        <param name="color1">The first color in the comparison.</param>
+        <param name="color2">The second color in the comparison.</param>
         <summary>Returns <see langword="true" /> if <paramref name="color1" /> does not represent the same color as <paramref name="color1" />.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>

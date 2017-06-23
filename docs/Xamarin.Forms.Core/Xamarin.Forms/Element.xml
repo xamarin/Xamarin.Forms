@@ -856,9 +856,9 @@
         <Parameter Name="value" Type="System.Object" />
       </Parameters>
       <Docs>
-          <param name="property">For internal use by the Xamarin.Forms platform.</param>
-          <param name="value">For internal use by the Xamarin.Forms platform.</param>
-          <summary>For internal use by the Xamarin.Forms platform.</summary>
+        <param name="property">For internal use by the Xamarin.Forms platform.</param>
+        <param name="value">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>

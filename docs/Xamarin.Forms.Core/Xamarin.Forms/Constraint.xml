@@ -125,7 +125,9 @@
       </Parameters>
       <Docs>
         <param name="view">The view for which to compute the constraint.</param>
-        <param name="measure"><param name="measure">A function that returns a <see langword="double" /> when passed a relative layout and a view.</param></param>
+        <param name="measure">
+          <param name="measure">A function that returns a <see langword="double" /> when passed a relative layout and a view.</param>
+        </param>
         <summary>Returns a <see cref="T:Xamarin.Forms.Constraint" /> object that constrains an element relative to the <paramref name="view" /> parameter.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>

@@ -622,8 +622,8 @@ View CreateLoginForm ()
         <Parameter Name="newValue" Type="System.String" />
       </Parameters>
       <Docs>
-          <param name="oldValue">For internal use by the Xamarin.Forms platform.</param>
-          <param name="newValue">For internal use by the Xamarin.Forms platform.</param>
+        <param name="oldValue">For internal use by the Xamarin.Forms platform.</param>
+        <param name="newValue">For internal use by the Xamarin.Forms platform.</param>
         <summary>For internal use by the Xamarin.Forms platform.</summary>
         <remarks>To be added.</remarks>
       </Docs>
@@ -643,8 +643,8 @@ View CreateLoginForm ()
         <Parameter Name="newValue" Type="System.Double" />
       </Parameters>
       <Docs>
-          <param name="oldValue">For internal use by the Xamarin.Forms platform.</param>
-          <param name="newValue">For internal use by the Xamarin.Forms platform.</param>
+        <param name="oldValue">For internal use by the Xamarin.Forms platform.</param>
+        <param name="newValue">For internal use by the Xamarin.Forms platform.</param>
         <summary>For internal use by the Xamarin.Forms platform.</summary>
         <remarks>To be added.</remarks>
       </Docs>
