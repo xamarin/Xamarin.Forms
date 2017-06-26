@@ -35,7 +35,7 @@
       <Docs>
         <param name="navigationEvent">The navigation event that was raised.</param>
         <param name="source">The web view source that originated the event.</param>
-        <param name="url">To be added.</param>
+        <param name="url">The URL of the navigation event.</param>
         <summary>Initializes a new <see cref="T:Xamarin.Forms.WebNavigationEventArgs" /> instance.</summary>
         <remarks>To be added.</remarks>
       </Docs>
