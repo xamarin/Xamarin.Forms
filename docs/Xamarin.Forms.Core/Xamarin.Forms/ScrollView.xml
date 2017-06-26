@@ -595,8 +595,8 @@ MainPage = new ContentPage
         <Parameter Name="y" Type="System.Double" />
       </Parameters>
       <Docs>
-          <param name="x">For internal use by the Xamarin.Forms platform.</param>
-          <param name="y">For internal use by the Xamarin.Forms platform.</param>
+        <param name="x">For internal use by the Xamarin.Forms platform.</param>
+        <param name="y">For internal use by the Xamarin.Forms platform.</param>
         <summary>For internal use by the Xamarin.Forms platform.</summary>
         <remarks>To be added.</remarks>
       </Docs>

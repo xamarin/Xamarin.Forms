@@ -127,8 +127,8 @@
         <Parameter Name="value" Type="System.Object" />
       </Parameters>
       <Docs>
-          <param name="culture">The culture information to use when performing the conversion.</param>
-          <param name="o">The object to convert.</param>
+        <param name="culture">The culture information to use when performing the conversion.</param>
+        <param name="o">The object to convert.</param>
         <summary>When implemented in a derived class, converts an object that is a version of <paramref name="value" /> and that can be cast to the target type.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>

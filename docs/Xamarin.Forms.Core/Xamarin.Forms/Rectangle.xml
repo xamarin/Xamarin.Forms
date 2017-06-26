@@ -290,7 +290,8 @@
       </Parameters>
       <Docs>
         <param name="left">The X coordinate of the left side.</param>
-        <param name="top"></param>
+        <param name="top">
+        </param>
         <param name="right">The X coordinate of the right side.</param>
         <param name="bottom">The Y coordinate of the bottom side.</param>
         <summary>Factory method to create a <see cref="T:Xamarin.Forms.Rectangle" /> from <paramref name="left" />, <paramref name="top" />, <paramref name="right" />, and <paramref name="bottom" />.</summary>

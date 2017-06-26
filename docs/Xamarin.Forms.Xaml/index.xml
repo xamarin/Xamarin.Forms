@@ -125,7 +125,7 @@
           <Parameter Name="callingType" Type="System.Type" />
         </Parameters>
         <Docs>
-          <typeparam name="TXaml">For internal use by the XAML infrastructure.</typeparam>
+          <typeparam name="TXaml">To be added.</typeparam>
           <param name="view">For internal use by the XAML infrastructure.</param>
           <param name="callingType">For internal use by the XAML infrastructure.</param>
           <summary>For internal use by the XAML infrastructure.</summary>
