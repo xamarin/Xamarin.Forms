@@ -254,6 +254,7 @@
     <file src="..\Xamarin.Forms.Platform\bin\$Configuration$\Xamarin.Forms.Platform.dll" target="lib\uap10.0" />
 
     <file src="..\Xamarin.Forms.Platform.UAP\Properties\Xamarin.Forms.Platform.UAP.rd.xml" target="lib\uap10.0\Xamarin.Forms.Platform.UAP\Properties" />
+    <file src="..\Xamarin.Forms.Xaml\Properties\Xamarin.Forms.Xaml.rd.xml" target="lib\uap10.0\Xamarin.Forms.Xaml\Properties" />
 
     <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\FormsCommandBarStyle.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
     <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\FormsProgressBarStyle.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />

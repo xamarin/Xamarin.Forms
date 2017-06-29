@@ -1,0 +1,5 @@
+﻿<Directives xmlns="http://schemas.microsoft.com/netfx/2013/01/metadata">  
+  <Application>
+    <Namespace Name="Xamarin.Forms.Xaml" Dynamic="Required All" />
+  </Application>  
+</Directives>  

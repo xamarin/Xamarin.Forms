@@ -90,4 +90,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Xamarin.Forms.Xaml.rd.xml" />
+  </ItemGroup>
 </Project>
