@@ -110,6 +110,22 @@ namespace Xamarin.Forms.Platform.Android
 
 		void EnsureChildOrder()
 		{
+			if (Forms.IsLollipopOrNewer)
+			{
+				for (var i = ElementController.LogicalChildren.Count - 1; i > -1; i--)
+				{
+					Element child = ElementController.LogicalChildren[i];
+					var element = (VisualElement)child;
+					if (element != null)
+					{
+						IVisualElementRenderer r = Platform.GetRenderer(element);
+						r.View.Elevation = i * 10;
+					}
+				}
+
+				return;
+			}
+
 			for (var i = 0; i < ElementController.LogicalChildren.Count; i++)
 			{
 				Element child = ElementController.LogicalChildren[i];
@@ -223,6 +239,7 @@ namespace Xamarin.Forms.Platform.Android
 				//if (renderer.Element.LogicalChildren.Any() && renderer.ViewGroup.ChildCount != renderer.Element.LogicalChildren.Count)
 				//	throw new InvalidOperationException ("SetElement did not create the correct number of children");
 #endif
+				EnsureChildOrder();
 				Performance.Stop("Setup");
 			}
 
