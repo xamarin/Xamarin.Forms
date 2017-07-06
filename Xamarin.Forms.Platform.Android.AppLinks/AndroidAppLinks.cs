@@ -87,17 +87,14 @@ namespace Xamarin.Forms.Platform.Android.AppLinks
 		}
 
         IIndexable GetIndexable(IAppLinkEntry appLink, string url){
-			//var url = global::Android.Net.Uri.Parse(appLink.AppLinkUri.AbsoluteUri).ToString();
 			var indexableBuilder = new IndexableBuilder();
 			indexableBuilder.SetName(appLink.Title);
 			indexableBuilder.SetUrl(url);
 			indexableBuilder.SetDescription(appLink.Description);
             return indexableBuilder.Build();
-			//FirebaseAppIndex.Instance.Update(indexableBuilder.Build());
         }
 
         IndexingAction GetAction(IAppLinkEntry applink, string url){
-            //var url = global::Android.Net.Uri.Parse(appLink.AppLinkUri.AbsoluteUri).ToString();
             return Actions.NewView(applink.Title,url);
         }
 
@@ -145,7 +142,8 @@ namespace Xamarin.Forms.Platform.Android.AppLinks
 
             public void OnFailure(Java.Lang.Exception e)
             {
-                throw new NotImplementedException();
+                System.Diagnostics.Debug.WriteLine($" [{DateTime.Now}] - [AndroidAppLinks Failure] - {e.Message}");
+                throw e;
             }
         }
     }
