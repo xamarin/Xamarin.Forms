@@ -247,6 +247,7 @@ namespace Xamarin.Forms.Controls.Issues
 		void RunTest()
 		{
 			RunningApp.WaitForElement (q => q.Marked (AppearingLabelId));
+			RunningApp.WaitForElement (q => q.Marked (DisappearingLabelId));
 
 			RunningApp.Screenshot ("There should be appearing and disappearing events for the Groups and Items.");
 			var appearing = int.Parse(RunningApp.Query(q => q.Marked(AppearingLabelId))[0].Text);
