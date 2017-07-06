@@ -294,7 +294,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		void UpdateBackgroundColor()
 		{
-			_backgroundTracker.UpdateBackgroundColor();
+			_backgroundTracker?.UpdateBackgroundColor();
 		}
 
 		internal void OnNativeFocusChanged(bool hasFocus)
