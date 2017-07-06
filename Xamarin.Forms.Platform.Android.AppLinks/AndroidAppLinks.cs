@@ -101,7 +101,7 @@ namespace Xamarin.Forms.Platform.Android.AppLinks
             return Actions.NewView(applink.Title,url);
         }
 
-        class AndroidActionSuccessListener : Java.Lang.Object, IOnSuccessListener
+        internal class AndroidActionSuccessListener : Java.Lang.Object, IOnSuccessListener
         {
             readonly AppLinkEntry appLink;
             readonly IndexingAction indexAction;
@@ -132,7 +132,7 @@ namespace Xamarin.Forms.Platform.Android.AppLinks
 				}
             }
         }
-        class AndroidActionFailureListener : Java.Lang.Object, IOnFailureListener
+        internal class AndroidActionFailureListener : Java.Lang.Object, IOnFailureListener
         {
 			readonly AppLinkEntry appLink;
 			readonly IndexingAction indexAction;
