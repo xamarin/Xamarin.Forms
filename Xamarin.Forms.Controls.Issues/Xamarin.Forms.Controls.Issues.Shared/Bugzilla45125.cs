@@ -87,15 +87,16 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
 		{
-			_status.Text = _groupsAppearing.Text = _groupsDisappearing.Text = "";
-			_Appearing = _Disappearing = 0;
-			_scroll.SetScrolledPosition(0, 0);
-
 			InitTest(ListViewCachingStrategy.RecycleElement, true);
 		}
 
 		void InitTest(ListViewCachingStrategy cachingStrategy, bool useTemplate)
 		{
+			_scroll.SetScrolledPosition(0, 0);
+
+			_status.Text = _groupsAppearing.Text = _groupsDisappearing.Text = "";
+			_Appearing = _Disappearing = 0;
+
 			List<GroupedData> groups = GetGroups();
 
 			var listView = new ListView(cachingStrategy)
@@ -146,10 +147,6 @@ namespace Xamarin.Forms.Controls.Issues
 
 		void NextButton_Clicked(object sender, EventArgs e)
 		{
-			_status.Text = _groupsAppearing.Text = _groupsDisappearing.Text = "";
-			_scroll.SetScrolledPosition(0, 0);
-			_Appearing = _Disappearing = 0;
-
 			switch (_TestNumber)
 			{
 				default:
