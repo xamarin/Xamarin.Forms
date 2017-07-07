@@ -22,7 +22,6 @@ using AColor = Android.Graphics.Color;
 using AlertDialog = Android.Support.V7.App.AlertDialog;
 using ARelativeLayout = Android.Widget.RelativeLayout;
 using Xamarin.Forms.Internals;
-using Debug = System.Diagnostics.Debug;
 
 #endregion
 
