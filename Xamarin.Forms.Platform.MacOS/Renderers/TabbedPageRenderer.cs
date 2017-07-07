@@ -101,13 +101,13 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (!Element.Bounds.IsEmpty)
 				View.Frame = new System.Drawing.RectangleF((float)Element.X, (float)Element.Y, (float)Element.Width, (float)Element.Height);
 
-            var topOffset = TabHolderHeight;
+			var topOffset = TabHolderHeight;
 			var tabStyle = Tabbed.OnThisPlatform().GetTabsStyle();
-            if (tabStyle == TabsStyle.Hidden || tabStyle == TabsStyle.OnNavigation)
-                topOffset = 0;
+			if (tabStyle == TabsStyle.Hidden || tabStyle == TabsStyle.OnNavigation)
+				topOffset = 0;
 
 			var frame = View.Frame;
-            Page.ContainerArea = new Rectangle(0, 0, frame.Width, frame.Height - topOffset);
+			Page.ContainerArea = new Rectangle(0, 0, frame.Width, frame.Height - topOffset);
 
 			if (!_queuedSize.IsZero)
 			{
