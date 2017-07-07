@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Globalization;
 using System.IO;
-using AdvancedColorPicker;
 using CoreGraphics;
 using Foundation;
 using UIKit;
@@ -17,8 +16,26 @@ using Xamarin.Forms.Platform.iOS;
 [assembly: Dependency(typeof(CacheService))]
 [assembly: ExportRenderer(typeof(DisposePage), typeof(DisposePageRenderer))]
 [assembly: ExportRenderer(typeof(DisposeLabel), typeof(DisposeLabelRenderer))]
+[assembly: ExportEffect(typeof(BorderEffect), "BorderEffect")]
 namespace Xamarin.Forms.ControlGallery.iOS
 {
+	public class BorderEffect : PlatformEffect
+	{
+		protected override void OnAttached()
+		{
+			Control.BackgroundColor = UIColor.Blue;
+
+			var childLabel = (Element as ScrollView)?.Content as Label;
+			if (childLabel != null)
+				childLabel.Text = "Success";
+		}
+
+		protected override void OnDetached()
+		{
+			Control.BackgroundColor = UIColor.Brown;
+		}
+	}
+
 	public class CacheService : ICacheService
 	{
 		public void ClearImageCache()
@@ -191,7 +208,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			sl?.Children.Add(uilabel);
 
 			// Create and add a native Button 
-			var uibutton = new UIButton(UIButtonType.RoundedRect);
+			var uibutton = new UIButton(UIButtonType.System);
 			uibutton.SetTitle("Toggle Text Amount", UIControlState.Normal);
 			uibutton.Font = UIFont.FromName("Helvetica", 14f);
 
@@ -290,7 +307,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
 				Text = "DefaultText"
 			};
 
-			var uibuttonColor = new UIButton(UIButtonType.RoundedRect);
+			var uibuttonColor = new UIButton(UIButtonType.System);
 			uibuttonColor.SetTitle("Toggle Text Color Binding", UIControlState.Normal);
 			uibuttonColor.Font = UIFont.FromName("Helvetica", 14f);
 			uibuttonColor.TouchUpInside += (sender, args) => uilabel.TextColor = UIColor.Blue;
@@ -310,7 +327,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			uiView.Add(uilabel);
 			sl?.Children.Add(uiView);
 			sl?.Children.Add(uibuttonColor.ToView());
-			var colorPicker = new ColorPickerView(new CGRect(0, 0, width, 300));
+			var colorPicker = new AdvancedColorPicker.ColorPickerView(new CGRect(0, 0, width, 300));
 			colorPicker.SetBinding("SelectedColor", new Binding("NativeLabelColor", BindingMode.TwoWay, nativeColorConverter), "ColorPicked");
 			sl?.Children.Add(colorPicker);
 			page.NativeControlsAdded = true;
@@ -333,7 +350,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
 		public void StartPressed40911()
 		{
 			var loginViewController = new UIViewController { View = { BackgroundColor = UIColor.White } };
-			var button = UIButton.FromType(UIButtonType.RoundedRect);
+			var button = UIButton.FromType(UIButtonType.System);
 			button.SetTitle("Login", UIControlState.Normal);
 			button.Frame = new CGRect(20, 100, 200, 44);
 			loginViewController.View.AddSubview(button);

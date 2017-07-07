@@ -11,6 +11,8 @@ using Mono.Cecil;
 
 using Xamarin.Forms.Xaml;
 using Mono.Cecil.Cil;
+using Mono.Cecil.Pdb;
+using Mono.Cecil.Mdb;
 
 namespace Xamarin.Forms.Build.Tasks
 {
@@ -22,6 +24,7 @@ namespace Xamarin.Forms.Build.Tasks
 		public string ReferencePath { get; set; }
 		public int Verbosity { get; set; }
 		public bool DebugSymbols { get; set; }
+		public string DebugType { get; set; }
 
 		internal XamlTask()
 		{

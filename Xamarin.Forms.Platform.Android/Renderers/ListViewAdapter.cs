@@ -12,7 +12,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	internal sealed class ListViewAdapter : CellAdapter
+	internal class ListViewAdapter : CellAdapter
 	{
 		const int DefaultGroupHeaderTemplateId = 0;
 		const int DefaultItemTemplateId = 1;
@@ -22,10 +22,16 @@ namespace Xamarin.Forms.Platform.Android
 		internal static readonly BindableProperty IsSelectedProperty = BindableProperty.CreateAttached("IsSelected", typeof(bool), typeof(Cell), false);
 
 		readonly Context _context;
-		readonly ListView _listView;
+		protected readonly ListView _listView;
 		readonly AListView _realListView;
 		readonly Dictionary<DataTemplate, int> _templateToId = new Dictionary<DataTemplate, int>();
-		int _dataTemplateIncrementer = 2; // lets start at not 0 because
+		int _dataTemplateIncrementer = 2; // lets start at not 0 because ... 
+
+		// We will use _dataTemplateIncrementer to get the proper ViewType key for the item's DataTemplate and store these keys in  _templateToId.
+		// If an item does _not_ use a DataTemplate, then the ViewType key will be DefaultItemTemplateId (1) or DefaultGroupHeaderTemplateId (0).
+		// To prevent a conflict in the event that a ListView supports both templates and non-templates, we will start the DataTemplate key at 2.
+
+		int _listCount = -1; // -1 we need to get count from the list
 		Cell _enabledCheckCell;
 
 		bool _fromNative;
@@ -33,7 +39,7 @@ namespace Xamarin.Forms.Platform.Android
 		WeakReference<Cell> _selectedCell;
 
 		IListViewController Controller => _listView;
-		ITemplatedItemsView<Cell> TemplatedItemsView => _listView;
+		protected ITemplatedItemsView<Cell> TemplatedItemsView => _listView;
 
 		public ListViewAdapter(Context context, AListView realListView, ListView listView) : base(context)
 		{
@@ -57,22 +63,27 @@ namespace Xamarin.Forms.Platform.Android
 				MessagingCenter.Subscribe<AppCompat.Platform>(this, AppCompat.Platform.CloseContextActionsSignalName, p => CloseContextActions());
 			else
 				MessagingCenter.Subscribe<Platform>(this, Platform.CloseContextActionsSignalName, p => CloseContextActions());
+			InvalidateCount();
 		}
 
 		public override int Count
 		{
 			get
 			{
-				var templatedItems = TemplatedItemsView.TemplatedItems;
-				int count = templatedItems.Count;
-
-				if (_listView.IsGroupingEnabled)
+				if (_listCount == -1)
 				{
-					for (var i = 0; i < templatedItems.Count; i++)
-						count += templatedItems.GetGroup(i).Count;
-				}
+					var templatedItems = TemplatedItemsView.TemplatedItems;
+					int count = templatedItems.Count;
 
-				return count;
+					if (_listView.IsGroupingEnabled)
+					{
+						for (var i = 0; i < templatedItems.Count; i++)
+							count += templatedItems.GetGroup(i).Count;
+					}
+
+					_listCount = count;
+				}
+				return _listCount;
 			}
 		}
 
@@ -103,7 +114,13 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override int ViewTypeCount
 		{
-			get { return 20; }
+			get
+			{
+				// We have a documented limit of 20 templates on Android.
+				// ViewTypes are selected on a zero-based index, so this count must be at least 20 + 1.
+				// Plus, we arbitrarily increased the index of the DataTemplate index by 2 (see _dataTemplateIncrementer).
+				return 23;
+			}
 		}
 
 		public override bool AreAllItemsEnabled()
@@ -371,8 +388,9 @@ namespace Xamarin.Forms.Platform.Android
 			if (position < 0 || position >= Count)
 				return;
 
+			if (_lastSelected != view)
+				_fromNative = true;
 			Select(position, view);
-			_fromNative = true;
 			Controller.NotifyRowTapped(position, cell);
 		}
 
@@ -385,11 +403,12 @@ namespace Xamarin.Forms.Platform.Android
 				return cells;
 
 			var templatedItems = TemplatedItemsView.TemplatedItems;
+			var templatedItemsCount = templatedItems.Count;
 			if (!_listView.IsGroupingEnabled)
 			{
 				for (var x = 0; x < take; x++)
 				{
-					if (position + x >= templatedItems.Count)
+					if (position + x >= templatedItemsCount)
 						return cells;
 
 					cells.Add(templatedItems[x + position]);
@@ -400,7 +419,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			var i = 0;
 			var global = 0;
-			for (; i < templatedItems.Count; i++)
+			for (; i < templatedItemsCount; i++)
 			{
 				var group = templatedItems.GetGroup(i);
 
@@ -445,6 +464,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void OnDataChanged()
 		{
+			InvalidateCount();
 			if (ActionModeContext != null && !TemplatedItemsView.TemplatedItems.Contains(ActionModeContext))
 				CloseContextActions();
 
@@ -505,6 +525,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		void SelectItem(object item)
 		{
+			if (_listView == null)
+				return;
+
 			int position = TemplatedItemsView.TemplatedItems.GetGlobalIndexOfItem(item);
 			AView view = null;
 			if (position != -1)
@@ -518,7 +541,8 @@ namespace Xamarin.Forms.Platform.Android
 			bline = null;
 			if (cellIsBeingReused)
 				return;
-			var makeBline = _listView.SeparatorVisibility == SeparatorVisibility.Default || isHeader && !nextCellIsHeader;
+			bool isSeparatorVisible = _listView.SeparatorVisibility == SeparatorVisibility.Default;
+			var makeBline = isSeparatorVisible || isHeader && isSeparatorVisible && !nextCellIsHeader;
 			if (makeBline)
 			{
 				bline = new AView(_context) { LayoutParameters = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, 1) };
@@ -585,5 +609,11 @@ namespace Xamarin.Forms.Platform.Android
 			Row,
 			Header
 		}
+
+		protected virtual void InvalidateCount()
+		{
+			_listCount = -1;
+		}
 	}
+
 }

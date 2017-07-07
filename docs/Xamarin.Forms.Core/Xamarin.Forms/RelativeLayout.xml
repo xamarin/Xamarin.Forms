@@ -401,7 +401,7 @@ public class RelativeLayoutExample : ContentPage
       </AssemblyInfo>
       <Attributes>
         <Attribute>
-          <AttributeName>System.Obsolete("Use OnMeasure")</AttributeName>
+          <AttributeName>System.Obsolete("OnSizeRequest is obsolete as of version 2.2.0. Please use OnMeasure instead.")</AttributeName>
         </Attribute>
       </Attributes>
       <ReturnValue>
@@ -412,8 +412,8 @@ public class RelativeLayoutExample : ContentPage
         <Parameter Name="heightConstraint" Type="System.Double" />
       </Parameters>
       <Docs>
-        <param name="widthConstraint">To be added.</param>
-        <param name="heightConstraint">To be added.</param>
+        <param name="widthConstraint">The width constraint.</param>
+        <param name="heightConstraint">The height constraint.</param>
         <summary>Called when this <see cref="T:Xamarin.Forms.RelativeLayout" /> has received a size request.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>

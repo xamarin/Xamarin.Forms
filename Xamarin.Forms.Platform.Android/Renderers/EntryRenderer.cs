@@ -1,19 +1,23 @@
+using System;
 using System.ComponentModel;
 using Android.Content.Res;
 using Android.Text;
+using Android.Text.Method;
 using Android.Util;
 using Android.Views;
 using Android.Views.InputMethods;
 using Android.Widget;
 using Java.Lang;
+using Xamarin.Forms.Internals;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class EntryRenderer : ViewRenderer<Entry, EntryEditText>, ITextWatcher, TextView.IOnEditorActionListener
+	public class EntryRenderer : ViewRenderer<Entry, FormsEditText>, ITextWatcher, TextView.IOnEditorActionListener
 	{
 		ColorStateList _hintTextColorDefault;
 		ColorStateList _textColorDefault;
-		EntryEditText _textView;
+		bool _disposed;
 
 		public EntryRenderer()
 		{
@@ -49,9 +53,9 @@ namespace Xamarin.Forms.Platform.Android
 			((IElementController)Element).SetValueFromRenderer(Entry.TextProperty, s.ToString());
 		}
 
-		protected override EntryEditText CreateNativeControl()
+		protected override FormsEditText CreateNativeControl()
 		{
-			return new EntryEditText(Context);
+			return new FormsEditText(Context);
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Entry> e)
@@ -62,16 +66,16 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (e.OldElement == null)
 			{
-				_textView = CreateNativeControl();
-				_textView.ImeOptions = ImeAction.Done;
-				_textView.AddTextChangedListener(this);
-				_textView.SetOnEditorActionListener(this);
-				_textView.OnKeyboardBackPressed += (sender, args) => _textView.ClearFocus();
-				SetNativeControl(_textView);
+				var textView = CreateNativeControl();
+				textView.ImeOptions = ImeAction.Done;
+				textView.AddTextChangedListener(this);
+				textView.SetOnEditorActionListener(this);
+				textView.OnKeyboardBackPressed += OnKeyboardBackPressed;
+				SetNativeControl(textView);
 			}
 
-			_textView.Hint = Element.Placeholder;
-			_textView.Text = Element.Text;
+			Control.Hint = Element.Placeholder;
+			Control.Text = Element.Text;
 			UpdateInputType();
 
 			UpdateColor();
@@ -80,6 +84,26 @@ namespace Xamarin.Forms.Platform.Android
 			UpdatePlaceholderColor();
 		}
 
+		protected override void Dispose(bool disposing)
+		{
+			if (_disposed)
+			{
+				return;
+			}
+
+			_disposed = true;
+
+			if (disposing)
+			{
+				if (Control != null)
+				{
+					Control.OnKeyboardBackPressed -= OnKeyboardBackPressed;
+				}
+			}
+
+			base.Dispose(disposing);
+		}
+		
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == Entry.PlaceholderProperty.PropertyName)
@@ -114,6 +138,14 @@ namespace Xamarin.Forms.Platform.Android
 				UpdatePlaceholderColor();
 
 			base.OnElementPropertyChanged(sender, e);
+		}
+
+		protected virtual NumberKeyListener GetDigitsKeyListener(InputTypes inputTypes)
+		{
+			// Override this in a custom renderer to use a different NumberKeyListener 
+			// or to filter out input types you don't want to allow 
+			// (e.g., inputTypes &= ~InputTypes.NumberFlagSigned to disallow the sign)
+			return LocalizedDigitsKeyListener.Create(inputTypes);
 		}
 
 		void UpdateAlignment()
@@ -156,11 +188,19 @@ namespace Xamarin.Forms.Platform.Android
 		void UpdateInputType()
 		{
 			Entry model = Element;
-			_textView.InputType = model.Keyboard.ToInputType();
-			if (model.IsPassword && ((_textView.InputType & InputTypes.ClassText) == InputTypes.ClassText))
-				_textView.InputType = _textView.InputType | InputTypes.TextVariationPassword;
-			if (model.IsPassword && ((_textView.InputType & InputTypes.ClassNumber) == InputTypes.ClassNumber))
-				_textView.InputType = _textView.InputType | InputTypes.NumberVariationPassword;
+			var keyboard = model.Keyboard;
+
+			Control.InputType = keyboard.ToInputType();
+
+			if (keyboard == Keyboard.Numeric)
+			{
+				Control.KeyListener = GetDigitsKeyListener(Control.InputType);
+			}
+
+			if (model.IsPassword && ((Control.InputType & InputTypes.ClassText) == InputTypes.ClassText))
+				Control.InputType = Control.InputType | InputTypes.TextVariationPassword;
+			if (model.IsPassword && ((Control.InputType & InputTypes.ClassNumber) == InputTypes.ClassNumber))
+				Control.InputType = Control.InputType | InputTypes.NumberVariationPassword;
 		}
 
 		void UpdatePlaceholderColor()
@@ -189,6 +229,11 @@ namespace Xamarin.Forms.Platform.Android
 
 				Control.SetHintTextColor(placeholderColor.ToAndroidPreserveDisabled(_hintTextColorDefault));
 			}
+		}
+
+		void OnKeyboardBackPressed(object sender, EventArgs eventArgs)
+		{
+			Control?.ClearFocus();
 		}
 	}
 }

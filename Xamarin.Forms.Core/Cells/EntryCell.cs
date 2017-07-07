@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 
 namespace Xamarin.Forms
 {
@@ -17,7 +18,8 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty HorizontalTextAlignmentProperty = BindableProperty.Create("HorizontalTextAlignment", typeof(TextAlignment), typeof(EntryCell), TextAlignment.Start,
 			propertyChanged: OnHorizontalTextAlignmentPropertyChanged);
 
-		[Obsolete("XAlignProperty is obsolete. Please use HorizontalTextAlignmentProperty instead.")] public static readonly BindableProperty XAlignProperty = HorizontalTextAlignmentProperty;
+		[Obsolete("XAlignProperty is obsolete as of version 2.0.0. Please use HorizontalTextAlignmentProperty instead.")] 
+		public static readonly BindableProperty XAlignProperty = HorizontalTextAlignmentProperty;
 
 		public TextAlignment HorizontalTextAlignment
 		{
@@ -55,7 +57,7 @@ namespace Xamarin.Forms
 			set { SetValue(TextProperty, value); }
 		}
 
-		[Obsolete("XAlign is obsolete. Please use HorizontalTextAlignment instead.")]
+		[Obsolete("XAlign is obsolete as of version 2.0.0. Please use HorizontalTextAlignment instead.")] 
 		public TextAlignment XAlign
 		{
 			get { return (TextAlignment)GetValue(XAlignProperty); }
@@ -64,7 +66,8 @@ namespace Xamarin.Forms
 
 		public event EventHandler Completed;
 
-		void IEntryCellController.SendCompleted()
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void SendCompleted()
 		{
 			EventHandler handler = Completed;
 			if (handler != null)

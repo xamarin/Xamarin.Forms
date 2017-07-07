@@ -100,9 +100,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			IImageSourceHandler handler;
 
-			((IImageController)Element).SetIsLoading(true);
+			Element.SetIsLoading(true);
 
-			if (source != null && (handler = Registrar.Registered.GetHandler<IImageSourceHandler>(source.GetType())) != null)
+			if (source != null && (handler = Internals.Registrar.Registered.GetHandler<IImageSourceHandler>(source.GetType())) != null)
 			{
 				NSImage nsImage;
 				try
@@ -128,7 +128,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				DisposeImage();
 
 			if (!_isDisposed)
-				((IImageController)Element).SetIsLoading(false);
+				Element.SetIsLoading(false);
 		}
 
 		void SetOpacity()

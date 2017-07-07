@@ -2,6 +2,7 @@ using Android.Content;
 using Android.Views;
 using AView = Android.Views.View;
 using Xamarin.Forms.Internals;
+using System;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -32,6 +33,9 @@ namespace Xamarin.Forms.Platform.Android
 				rowHeight = ListView.RowHeightProperty;
 			}
 
+			if (cell.View == null)
+				throw new InvalidOperationException($"ViewCell must have a {nameof(cell.View)}");
+
 			IVisualElementRenderer view = Platform.CreateRenderer(cell.View);
 			Platform.SetRenderer(cell.View, view);
 			cell.View.IsPlatformEnabled = true;
@@ -57,8 +61,9 @@ namespace Xamarin.Forms.Platform.Android
 				_unevenRows = unevenRows;
 				_rowHeight = rowHeight;
 				_viewCell = viewCell;
-				AddView(view.ViewGroup);
+				AddView(view.View);
 				UpdateIsEnabled();
+				UpdateLongClickable();
 			}
 
 			protected bool ParentHasUnevenRows
@@ -80,6 +85,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (!Enabled)
 					return true;
+
 				return base.OnInterceptTouchEvent(ev);
 			}
 
@@ -119,18 +125,19 @@ namespace Xamarin.Forms.Platform.Android
 					return;
 				}
 
-				RemoveView(_view.ViewGroup);
+				RemoveView(_view.View);
 				Platform.SetRenderer(_viewCell.View, null);
 				_viewCell.View.IsPlatformEnabled = false;
-				_view.ViewGroup.Dispose();
+				_view.View.Dispose();
 
 				_viewCell = cell;
 				_view = Platform.CreateRenderer(_viewCell.View);
 
 				Platform.SetRenderer(_viewCell.View, _view);
-				AddView(_view.ViewGroup);
+				AddView(_view.View);
 
 				UpdateIsEnabled();
+				UpdateLongClickable();
 
 				Performance.Stop();
 			}
@@ -173,6 +180,14 @@ namespace Xamarin.Forms.Platform.Android
 				SetMeasuredDimension(width, height);
 
 				Performance.Stop();
+			}
+
+			void UpdateLongClickable()
+			{
+				// In order for context menu long presses/clicks to work on ViewCells which have 
+				// and Clickable content, we have to make the container view LongClickable
+				// If we don't have a context menu, we don't have to worry about it
+				_view.View.LongClickable = _viewCell.ContextActions.Count > 0;
 			}
 		}
 	}

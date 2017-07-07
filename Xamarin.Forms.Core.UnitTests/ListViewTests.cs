@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using NUnit.Framework;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Core.UnitTests
 {
@@ -1474,7 +1475,8 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		[TestCase (Device.Android, ListViewCachingStrategy.RecycleElement)]
 		[TestCase (Device.iOS, ListViewCachingStrategy.RecycleElement)]
-		[TestCase (Device.Windows, ListViewCachingStrategy.RetainElement)]
+		[TestCase (Device.WinRT, ListViewCachingStrategy.RetainElement)]
+		[TestCase(Device.UWP, ListViewCachingStrategy.RetainElement)]
 		[TestCase ("Other", ListViewCachingStrategy.RetainElement)]
 		[TestCase (Device.WinPhone, ListViewCachingStrategy.RetainElement)]
 		public void EnforcesCachingStrategy (string platform, ListViewCachingStrategy expected)

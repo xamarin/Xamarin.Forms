@@ -279,6 +279,7 @@ namespace Xamarin.Forms.Build.Tasks
 			else if (vardefref.VariableDefinition.VariableType.ImplementsGenericInterface("Xamarin.Forms.Xaml.IMarkupExtension`1",
 				out markupExtension, out genericArguments))
 			{
+				var acceptEmptyServiceProvider = vardefref.VariableDefinition.VariableType.GetCustomAttribute(module.ImportReference(typeof(AcceptEmptyServiceProviderAttribute))) != null;
 				if (vardefref.VariableDefinition.VariableType.FullName == "Xamarin.Forms.Xaml.BindingExtension")
 					foreach (var instruction in CompileBindingPath(node, context, vardefref.VariableDefinition))
 						yield return instruction;
@@ -291,26 +292,34 @@ namespace Xamarin.Forms.Build.Tasks
 
 				vardefref.VariableDefinition = new VariableDefinition(module.ImportReference(genericArguments.First()));
 				yield return Instruction.Create(OpCodes.Ldloc, context.Variables[node]);
-				foreach (var instruction in node.PushServiceProvider(context, bpRef, propertyRef, propertyDeclaringTypeRef))
-					yield return instruction;
+				if (acceptEmptyServiceProvider)
+					yield return Instruction.Create(OpCodes.Ldnull);
+				else
+					foreach (var instruction in node.PushServiceProvider(context, bpRef, propertyRef, propertyDeclaringTypeRef))
+						yield return instruction;
 				yield return Instruction.Create(OpCodes.Callvirt, provideValue);
 				yield return Instruction.Create(OpCodes.Stloc, vardefref.VariableDefinition);
 			}
 			else if (context.Variables[node].VariableType.ImplementsInterface(module.ImportReference(typeof (IMarkupExtension))))
 			{
+				var acceptEmptyServiceProvider = context.Variables[node].VariableType.GetCustomAttribute(module.ImportReference(typeof(AcceptEmptyServiceProviderAttribute))) != null;
 				var markExt = module.ImportReference(typeof (IMarkupExtension)).Resolve();
 				var provideValueInfo = markExt.Methods.First(md => md.Name == "ProvideValue");
 				var provideValue = module.ImportReference(provideValueInfo);
 
 				vardefref.VariableDefinition = new VariableDefinition(module.TypeSystem.Object);
 				yield return Instruction.Create(OpCodes.Ldloc, context.Variables[node]);
-				foreach (var instruction in node.PushServiceProvider(context, bpRef, propertyRef, propertyDeclaringTypeRef))
-					yield return instruction;
+				if (acceptEmptyServiceProvider)
+					yield return Instruction.Create(OpCodes.Ldnull);
+				else
+					foreach (var instruction in node.PushServiceProvider(context, bpRef, propertyRef, propertyDeclaringTypeRef))
+						yield return instruction;
 				yield return Instruction.Create(OpCodes.Callvirt, provideValue);
 				yield return Instruction.Create(OpCodes.Stloc, vardefref.VariableDefinition);
 			}
 			else if (context.Variables[node].VariableType.ImplementsInterface(module.ImportReference(typeof (IValueProvider))))
 			{
+				var acceptEmptyServiceProvider = context.Variables[node].VariableType.GetCustomAttribute(module.ImportReference(typeof(AcceptEmptyServiceProviderAttribute))) != null;
 				var valueProviderType = context.Variables[node].VariableType;
 				//If the IValueProvider has a ProvideCompiledAttribute that can be resolved, shortcut this
 				var compiledValueProviderName = valueProviderType?.GetCustomAttribute(module.ImportReference(typeof(ProvideCompiledAttribute)))?.ConstructorArguments?[0].Value as string;
@@ -334,8 +343,11 @@ namespace Xamarin.Forms.Build.Tasks
 
 				vardefref.VariableDefinition = new VariableDefinition(module.TypeSystem.Object);
 				yield return Instruction.Create(OpCodes.Ldloc, context.Variables[node]);
-				foreach (var instruction in node.PushServiceProvider(context, bpRef, propertyRef, propertyDeclaringTypeRef))
-					yield return instruction;
+				if (acceptEmptyServiceProvider)
+					yield return Instruction.Create(OpCodes.Ldnull);
+				else
+					foreach (var instruction in node.PushServiceProvider(context, bpRef, propertyRef, propertyDeclaringTypeRef))
+						yield return instruction;
 				yield return Instruction.Create(OpCodes.Callvirt, provideValue);
 				yield return Instruction.Create(OpCodes.Stloc, vardefref.VariableDefinition);
 			}
@@ -468,6 +480,7 @@ namespace Xamarin.Forms.Build.Tasks
 					new CustomAttribute (context.Module.ImportReference(compilerGeneratedCtor))
 				}
 			};
+			getter.Body.InitLocals = true;
 			var il = getter.Body.GetILProcessor();
 
 			il.Emit(OpCodes.Ldarg_0);
@@ -538,6 +551,7 @@ namespace Xamarin.Forms.Build.Tasks
 					new CustomAttribute (module.ImportReference(compilerGeneratedCtor))
 				}
 			};
+			setter.Body.InitLocals = true;
 
 			var il = setter.Body.GetILProcessor();
 			var lastProperty = properties.LastOrDefault();
@@ -628,6 +642,7 @@ namespace Xamarin.Forms.Build.Tasks
 						new CustomAttribute (context.Module.ImportReference(compilerGeneratedCtor))
 					}
 				};
+				partGetter.Body.InitLocals = true;
 				var il = partGetter.Body.GetILProcessor();
 				il.Emit(OpCodes.Ldarg_0);
 				for (int j = 0; j < i; j++) {
@@ -891,6 +906,10 @@ namespace Xamarin.Forms.Build.Tasks
 			if (implicitOperator != null)
 				return true;
 
+			//as we're in the SetValue Scenario, we can accept value types, they'll be boxed
+			if (varValue.VariableType.IsValueType && bpTypeRef.FullName == "System.Object")
+				return true;
+
 			return varValue.VariableType.InheritsFromOrImplements(bpTypeRef);
 		}
 
@@ -948,7 +967,7 @@ namespace Xamarin.Forms.Build.Tasks
 				return false;
 
 			var vardef = context.Variables [elementNode];
-			var propertyType = property.ResolveGenericPropertyType(declaringTypeReference);
+			var propertyType = property.ResolveGenericPropertyType(declaringTypeReference, module);
 			var implicitOperator = vardef.VariableType.GetImplicitOperatorTo(propertyType, module);
 
 			if (implicitOperator != null)
@@ -979,7 +998,7 @@ namespace Xamarin.Forms.Build.Tasks
 			module.ImportReference(parent.VariableType.Resolve());
 			var propertySetterRef = module.ImportReference(module.ImportReference(propertySetter).ResolveGenericParameters(declaringTypeReference, module));
 			propertySetterRef.ImportTypes(module);
-			var propertyType = property.ResolveGenericPropertyType(declaringTypeReference);
+			var propertyType = property.ResolveGenericPropertyType(declaringTypeReference, module);
 			var valueNode = node as ValueNode;
 			var elementNode = node as IElementNode;
 
@@ -1126,6 +1145,7 @@ namespace Xamarin.Forms.Build.Tasks
 			var loadTemplate = new MethodDefinition("LoadDataTemplate",
 				MethodAttributes.Assembly | MethodAttributes.HideBySig,
 				module.TypeSystem.Object);
+			loadTemplate.Body.InitLocals = true;
 			anonType.Methods.Add(loadTemplate);
 
 			var parentValues = new FieldDefinition("parentValues", FieldAttributes.Assembly, module.ImportReference(typeof (object[])));

@@ -6,12 +6,14 @@ using SizeF = CoreGraphics.CGSize;
 #if __MOBILE__
 using UIKit;
 using NativeLabel = UIKit.UILabel;
-
-namespace Xamarin.Forms.Platform.iOS
 #else
 using AppKit;
 using NativeLabel = AppKit.NSTextField;
+#endif
 
+#if __MOBILE__
+namespace Xamarin.Forms.Platform.iOS
+#else
 namespace Xamarin.Forms.Platform.MacOS
 #endif
 {
@@ -30,15 +32,31 @@ namespace Xamarin.Forms.Platform.MacOS
 				_perfectSizeValid = true;
 			}
 
-			if (widthConstraint >= _perfectSize.Request.Width && heightConstraint >= _perfectSize.Request.Height)
+			var widthFits = widthConstraint >= _perfectSize.Request.Width;
+			var heightFits = heightConstraint >= _perfectSize.Request.Height;
+
+			if (widthFits && heightFits)
 				return _perfectSize;
 
 			var result = base.GetDesiredSize(widthConstraint, heightConstraint);
-			result.Minimum = new Size(Math.Min(10, result.Request.Width), result.Request.Height);
-			if (Element.LineBreakMode != LineBreakMode.NoWrap)
+			var tinyWidth = Math.Min(10, result.Request.Width);
+			result.Minimum = new Size(tinyWidth, result.Request.Height);
+
+			if (widthFits || Element.LineBreakMode == LineBreakMode.NoWrap)
+				return result;
+
+			bool containerIsNotInfinitelyWide = !double.IsInfinity(widthConstraint);
+
+			if (containerIsNotInfinitelyWide)
 			{
-				if (result.Request.Width > widthConstraint || Element.LineBreakMode == LineBreakMode.WordWrap || Element.LineBreakMode == LineBreakMode.CharacterWrap)
-					result.Request = new Size(Math.Max(result.Minimum.Width, widthConstraint), result.Request.Height);
+				bool textCouldHaveWrapped = Element.LineBreakMode == LineBreakMode.WordWrap || Element.LineBreakMode == LineBreakMode.CharacterWrap;
+				bool textExceedsContainer = result.Request.Width > widthConstraint;
+
+				if (textExceedsContainer || textCouldHaveWrapped)
+				{
+					var expandedWidth = Math.Max(tinyWidth, widthConstraint);
+					result.Request = new Size(expandedWidth, result.Request.Height);
+				}
 			}
 
 			return result;
@@ -94,6 +112,9 @@ namespace Xamarin.Forms.Platform.MacOS
 				}
 
 				UpdateText();
+				UpdateTextColor();
+				UpdateFont();
+
 				UpdateLineBreakMode();
 				UpdateAlignment();
 			}
@@ -110,9 +131,9 @@ namespace Xamarin.Forms.Platform.MacOS
 			else if (e.PropertyName == Label.VerticalTextAlignmentProperty.PropertyName)
 				UpdateLayout();
 			else if (e.PropertyName == Label.TextColorProperty.PropertyName)
-				UpdateText();
+				UpdateTextColor();
 			else if (e.PropertyName == Label.FontProperty.PropertyName)
-				UpdateText();
+				UpdateFont();
 			else if (e.PropertyName == Label.TextProperty.PropertyName)
 				UpdateText();
 			else if (e.PropertyName == Label.FormattedTextProperty.PropertyName)
@@ -130,7 +151,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			// will prevent us from inadvertently breaking UI Tests that are using Query.Marked to get the dynamic Text 
 			// of the Label.
 
-			var elemValue = (string)Element?.GetValue(Accessibility.NameProperty);
+			var elemValue = (string)Element?.GetValue(AutomationProperties.NameProperty);
 			if (string.IsNullOrWhiteSpace(elemValue) && Control?.AccessibilityLabel == Control?.Text)
 				return;
 
@@ -225,6 +246,7 @@ namespace Xamarin.Forms.Platform.MacOS
 #endif
 		}
 
+		bool isTextFormatted;
 		void UpdateText()
 		{
 			_perfectSizeValid = false;
@@ -235,26 +257,57 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 #if __MOBILE__
 				Control.AttributedText = formatted.ToAttributed(Element, (Color)values[2]);
-			}
-			else
-			{
-				Control.Text = (string)values[1];
-				// default value of color documented to be black in iOS docs
-				Control.Font = Element.ToUIFont();
-				Control.TextColor = ((Color)values[2]).ToUIColor(ColorExtensions.Black);
-			}
 #else
 				Control.AttributedStringValue = formatted.ToAttributed(Element, (Color)values[2]);
+#endif
+				isTextFormatted = true;
 			}
 			else
 			{
+				if (isTextFormatted)
+				{
+					UpdateFont();
+					UpdateTextColor();
+				}
+#if __MOBILE__
+				Control.Text = (string)values[1];
+#else
 				Control.StringValue = (string)values[1] ?? "";
-				// default value of color documented to be black in iOS docs
-				Control.Font = Element.ToNSFont();
-				Control.TextColor = ((Color)values[2]).ToNSColor(ColorExtensions.Black);
-			}
 #endif
+				isTextFormatted = false;
+			}
+			UpdateLayout();
+		}
 
+		void UpdateFont()
+		{
+			if(isTextFormatted)
+				return;
+			_perfectSizeValid = false;
+
+#if __MOBILE__
+			Control.Font = Element.ToUIFont();
+#else
+			Control.Font = Element.ToNSFont();
+#endif
+			UpdateLayout();
+		}
+
+		void UpdateTextColor()
+		{
+			if (isTextFormatted)
+				return;
+			
+			_perfectSizeValid = false;
+
+			var textColor = (Color)Element.GetValue(Label.TextColorProperty);
+
+			// default value of color documented to be black in iOS docs
+#if __MOBILE__
+			Control.TextColor = textColor.ToUIColor(ColorExtensions.Black);
+#else
+			Control.TextColor = textColor.ToNSColor(ColorExtensions.Black);
+#endif
 			UpdateLayout();
 		}
 

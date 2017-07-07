@@ -10,6 +10,7 @@ using AView = Android.Views.View;
 using AColor = Android.Graphics.Color;
 using AColorDraw = Android.Graphics.Drawables.ColorDrawable;
 using Xamarin.Forms.Internals;
+using Android.Support.V4.Widget;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -57,7 +58,7 @@ namespace Xamarin.Forms.Platform.Android
 			_mainText.SetSingleLine(true);
 			_mainText.Ellipsize = TextUtils.TruncateAt.End;
 			_mainText.SetPadding((int)context.ToPixels(15), padding, padding, padding);
-			_mainText.SetTextAppearanceCompat(context, global::Android.Resource.Style.TextAppearanceSmall);
+			TextViewCompat.SetTextAppearance(_mainText, global::Android.Resource.Style.TextAppearanceSmall);
 
 			using (var lp = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent))
 				textLayout.AddView(_mainText, lp);
@@ -67,7 +68,7 @@ namespace Xamarin.Forms.Platform.Android
 			_detailText.Ellipsize = TextUtils.TruncateAt.End;
 			_detailText.SetPadding((int)context.ToPixels(15), padding, padding, padding);
 			_detailText.Visibility = ViewStates.Gone;
-			_detailText.SetTextAppearanceCompat(context, global::Android.Resource.Style.TextAppearanceSmall);
+			TextViewCompat.SetTextAppearance(_detailText, global::Android.Resource.Style.TextAppearanceSmall);
 
 			using (var lp = new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent))
 				textLayout.AddView(_detailText, lp);
@@ -179,12 +180,6 @@ namespace Xamarin.Forms.Platform.Android
 			LayoutParameters = new LayoutParams(ViewGroup.LayoutParams.MatchParent, (int)(height == -1 ? ViewGroup.LayoutParams.WrapContent : height));
 		}
 
-		protected override void OnDetachedFromWindow()
-		{
-			base.OnDetachedFromWindow();
-			_cell = null;
-		}
-
 		async void UpdateBitmap(ImageSource source, ImageSource previousSource = null)
 		{
 			if (Equals(source, previousSource))
@@ -193,7 +188,6 @@ namespace Xamarin.Forms.Platform.Android
 			_imageView.SetImageResource(global::Android.Resource.Color.Transparent);
 
 			Bitmap bitmap = null;
-
 			IImageSourceHandler handler;
 
 			if (source != null && (handler = Registrar.Registered.GetHandler<IImageSourceHandler>(source.GetType())) != null)
@@ -211,9 +205,12 @@ namespace Xamarin.Forms.Platform.Android
 				}
 			}
 
-			_imageView.SetImageBitmap(bitmap);
-			if (bitmap != null)
-				bitmap.Dispose();
+			if (bitmap == null && source is FileImageSource)
+				_imageView.SetImageResource(ResourceManager.GetDrawableByName(((FileImageSource)source).File));
+			else
+				_imageView.SetImageBitmap(bitmap);
+
+			bitmap?.Dispose();
 		}
 	}
 }

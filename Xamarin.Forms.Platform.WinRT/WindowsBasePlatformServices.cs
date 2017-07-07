@@ -78,6 +78,10 @@ namespace Xamarin.Forms.Platform.WinRT
 			if (!assemblies.Contains(thisAssembly))
 				assemblies.Add(thisAssembly);
 
+			Assembly xamlAssembly = typeof(Xamarin.Forms.Xaml.IMarkupExtension).GetTypeInfo().Assembly;
+			if (!assemblies.Contains(xamlAssembly))
+				assemblies.Add(xamlAssembly);
+
 			return assemblies.ToArray();
 		}
 
@@ -116,7 +120,11 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		public bool IsInvokeRequired => !CoreApplication.MainView.CoreWindow.Dispatcher.HasThreadAccess;
 
-		public string RuntimePlatform => Device.Windows;
+#if WINDOWS_UWP
+		public string RuntimePlatform => Device.UWP;
+#else
+		public string RuntimePlatform => Device.WinRT;
+#endif
 
 		public void OpenUriAction(Uri uri)
 		{

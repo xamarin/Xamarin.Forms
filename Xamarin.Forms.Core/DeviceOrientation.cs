@@ -1,6 +1,9 @@
-namespace Xamarin.Forms
+using System.ComponentModel;
+
+namespace Xamarin.Forms.Internals
 {
-	internal enum DeviceOrientation
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	public enum DeviceOrientation
 	{
 		Portrait,
 		Landscape,

@@ -80,6 +80,8 @@
     <Compile Include="ColorUnitTests.cs" />
     <Compile Include="CommandSourceTests.cs" />
     <Compile Include="CommandTests.cs" />
+    <Compile Include="TemplatedViewUnitTests.cs" />
+    <Compile Include="TemplatedPageUnitTests.cs" />
     <Compile Include="ContentFormUnitTests.cs" />
     <Compile Include="ContraintTypeConverterTests.cs" />
     <Compile Include="ControlTemplateTests.cs" />
@@ -181,6 +183,7 @@
     <Compile Include="AppLinkEntryTests.cs" />
     <Compile Include="NativeBindingTests.cs" />
     <Compile Include="TypedBindingUnitTests.cs" />
+    <Compile Include="AnimationTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">

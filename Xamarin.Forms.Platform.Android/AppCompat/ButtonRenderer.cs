@@ -1,13 +1,9 @@
 using System;
 using System.ComponentModel;
 using Android.Content;
-using Android.Content.Res;
 using Android.Graphics;
-using Android.Graphics.Drawables;
-using Android.Support.V4.Content;
 using Android.Support.V7.Widget;
 using Android.Util;
-using GlobalResource = Android.Resource;
 using Object = Java.Lang.Object;
 using AView = Android.Views.View;
 using AMotionEvent = Android.Views.MotionEvent;
@@ -16,8 +12,9 @@ using static System.String;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
-	public class ButtonRenderer : ViewRenderer<Button, AppCompatButton>, AView.IOnAttachStateChangeListener
+    public class ButtonRenderer : ViewRenderer<Button, AppCompatButton>, AView.IOnAttachStateChangeListener
 	{
+		ButtonBackgroundTracker _backgroundTracker;
 		TextColorSwitcher _textColorSwitcher;
 		float _defaultFontSize;
 		Typeface _defaultTypeface;
@@ -31,12 +28,12 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		global::Android.Widget.Button NativeButton => Control;
 
-		void IOnAttachStateChangeListener.OnViewAttachedToWindow(AView attachedView)
+		void AView.IOnAttachStateChangeListener.OnViewAttachedToWindow(AView attachedView)
 		{
 			UpdateText();
 		}
 
-		void IOnAttachStateChangeListener.OnViewDetachedFromWindow(AView detachedView)
+		void AView.IOnAttachStateChangeListener.OnViewDetachedFromWindow(AView detachedView)
 		{
 		}
 
@@ -82,6 +79,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					Control.Tag = null;
 					_textColorSwitcher = null;
 				}
+				_backgroundTracker?.Dispose();
 			}
 
 			base.Dispose(disposing);
@@ -110,8 +108,12 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					button.AddOnAttachStateChangeListener(this);
 				}
 
+				if (_backgroundTracker == null)
+					_backgroundTracker = new ButtonBackgroundTracker(Element, Control);
+				else
+					_backgroundTracker.Button = e.NewElement;
+
 				UpdateAll();
-				UpdateBackgroundColor();
 			}
 		}
 
@@ -138,42 +140,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			if (Element == null || Control == null)
 				return;
 
-			Color backgroundColor = Element.BackgroundColor;
-			if (backgroundColor.IsDefault)
-			{
-				if (Control.SupportBackgroundTintList != null)
-				{
-					Context context = Context;
-					int id = GlobalResource.Attribute.ButtonTint;
-					unchecked
-					{
-						using (var value = new TypedValue())
-						{
-							try
-							{
-								Resources.Theme theme = context.Theme;
-								if (theme != null && theme.ResolveAttribute(id, value, true))
-#pragma warning disable 618
-									Control.SupportBackgroundTintList = Resources.GetColorStateList(value.Data);
-#pragma warning restore 618
-								else
-									Control.SupportBackgroundTintList = new ColorStateList(ColorExtensions.States, new[] { (int)0xffd7d6d6, 0x7fd7d6d6 });
-							}
-							catch (Exception ex)
-							{
-								Log.Warning("Xamarin.Forms.Platform.Android.ButtonRenderer", "Could not retrieve button background resource: {0}", ex);
-								Control.SupportBackgroundTintList = new ColorStateList(ColorExtensions.States, new[] { (int)0xffd7d6d6, 0x7fd7d6d6 });
-							}
-						}
-					}
-				}
-			}
-			else
-			{
-				int intColor = backgroundColor.ToAndroid().ToArgb();
-				int disableColor = backgroundColor.MultiplyAlpha(0.5).ToAndroid().ToArgb();
-				Control.SupportBackgroundTintList = new ColorStateList(ColorExtensions.States, new[] { intColor, disableColor });
-			}
+			_backgroundTracker?.UpdateBackgroundColor();
 		}
 
 		void UpdateAll()
@@ -183,6 +150,16 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			UpdateBitmap();
 			UpdateTextColor();
 			UpdateEnabled();
+			UpdateBackgroundColor();
+			UpdateDrawable();
+		}
+
+		void UpdateDrawable()
+		{
+			if (Element == null || Control == null)
+				return;
+
+			_backgroundTracker?.UpdateDrawable();
 		}
 
 		void UpdateBitmap()
@@ -289,7 +266,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			_textColorSwitcher?.UpdateTextColor(Control, Element.TextColor);
 		}
 
-		class ButtonClickListener : Object, IOnClickListener
+		class ButtonClickListener : Object, AView.IOnClickListener
 		{
 			#region Statics
 
@@ -304,7 +281,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			}
 		}
 
-		class ButtonTouchListener : Object, IOnTouchListener
+		class ButtonTouchListener : Object, AView.IOnTouchListener
 		{
 			public static readonly Lazy<ButtonTouchListener> Instance = new Lazy<ButtonTouchListener>(() => new ButtonTouchListener());
 

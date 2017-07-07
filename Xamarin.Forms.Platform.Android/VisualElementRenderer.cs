@@ -85,21 +85,29 @@ namespace Xamarin.Forms.Platform.Android
 				OnRegisterEffect(platformEffect);
 		}
 
-		void IOnClickListener.OnClick(AView v)
+		void AView.IOnClickListener.OnClick(AView v)
 		{
 			_tapGestureHandler.OnSingleClick();
 		}
 
 		public override bool OnInterceptTouchEvent(MotionEvent ev)
 		{
-			if (Element.InputTransparent && Element.IsEnabled)
-				return false;
+			if (!Element.IsEnabled || (Element.InputTransparent && Element.IsEnabled))
+			{
+				return true;
+			}
 
 			return base.OnInterceptTouchEvent(ev);
 		}
 
-		bool IOnTouchListener.OnTouch(AView v, MotionEvent e)
+		bool AView.IOnTouchListener.OnTouch(AView v, MotionEvent e)
 		{
+			if (!Element.IsEnabled)
+				return true;
+
+			if (Element.InputTransparent)
+				return false;
+
 			var handled = false;
 			if (_pinchGestureHandler.IsPinchSupported)
 			{
@@ -116,7 +124,13 @@ namespace Xamarin.Forms.Platform.Android
 				return handled;
 			}
 
-			return _gestureDetector.Value.OnTouchEvent(e) || handled;
+			// It's very important that the gesture detection happen first here
+			// if we check handled first, we might short-circuit and never check for tap/pan
+			handled = _gestureDetector.Value.OnTouchEvent(e) || handled;
+
+			v.EnsureLongClickCancellation(e, handled, Element);
+
+			return handled;
 		}
 
 		VisualElement IVisualElementRenderer.Element => Element;
@@ -151,8 +165,10 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		public ViewGroup ViewGroup => this;
+		AView IVisualElementRenderer.View => this;
 
 		public event EventHandler<ElementChangedEventArgs<TElement>> ElementChanged;
+		public event EventHandler<PropertyChangedEventArgs> ElementPropertyChanged;
 
 		public void SetElement(TElement element)
 		{
@@ -191,8 +207,6 @@ namespace Xamarin.Forms.Platform.Android
 				SoundEffectsEnabled = false;
 			}
 
-			InputTransparent = Element.InputTransparent;
-
 			// must be updated AFTER SetOnClickListener is called
 			// SetOnClickListener implicitly calls Clickable = true
 			UpdateGestureRecognizers(true);
@@ -215,6 +229,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			SetContentDescription();
 			SetFocusable();
+			UpdateInputTransparent();
 
 			Performance.Stop();
 		}
@@ -280,8 +295,6 @@ namespace Xamarin.Forms.Platform.Android
 					if (Platform.GetRenderer(Element) == this)
 						Platform.SetRenderer(Element, null);
 
-					(Element as IElementController).EffectControlProvider = null;
-
 					Element = null;
 				}
 			}
@@ -307,14 +320,16 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor();
-			else if (e.PropertyName == VisualElement.InputTransparentProperty.PropertyName)
-				InputTransparent = Element.InputTransparent;
-			else if (e.PropertyName == Accessibility.HintProperty.PropertyName)
+			else if (e.PropertyName == AutomationProperties.HelpTextProperty.PropertyName)
 				SetContentDescription();
-			else if (e.PropertyName == Accessibility.NameProperty.PropertyName)
+			else if (e.PropertyName == AutomationProperties.NameProperty.PropertyName)
 				SetContentDescription();
-			else if (e.PropertyName == Accessibility.IsInAccessibleTreeProperty.PropertyName)
+			else if (e.PropertyName == AutomationProperties.IsInAccessibleTreeProperty.PropertyName)
 				SetFocusable();
+			else if (e.PropertyName == VisualElement.InputTransparentProperty.PropertyName)
+				UpdateInputTransparent();
+
+			ElementPropertyChanged?.Invoke(this, e);
 		}
 
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)
@@ -336,7 +351,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void OnRegisterEffect(PlatformEffect effect)
 		{
-			effect.Container = this;
+			effect.SetContainer(this);
 		}
 
 		protected virtual void SetAutomationId(string id)
@@ -355,7 +370,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (_defaultContentDescription == null)
 				_defaultContentDescription = ContentDescription;
 
-			var elemValue = string.Join(" ", (string)Element.GetValue(Accessibility.NameProperty), (string)Element.GetValue(Accessibility.HintProperty));
+			var elemValue = FastRenderers.AutomationPropertiesProvider.ConcatenateNameAndHelpText(Element);
 
 			if (!string.IsNullOrWhiteSpace(elemValue))
 				ContentDescription = elemValue;
@@ -371,7 +386,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (!_defaultFocusable.HasValue)
 				_defaultFocusable = Focusable;
 
-			Focusable = (bool)((bool?)Element.GetValue(Accessibility.IsInAccessibleTreeProperty) ?? _defaultFocusable);
+			Focusable = (bool)((bool?)Element.GetValue(AutomationProperties.IsInAccessibleTreeProperty) ?? _defaultFocusable);
 		}
 
 		protected virtual bool SetHint()
@@ -390,7 +405,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (_defaultHint == null)
 				_defaultHint = textView.Hint;
 
-			var elemValue = string.Join(". ", (string)Element.GetValue(Accessibility.NameProperty), (string)Element.GetValue(Accessibility.HintProperty));
+			var elemValue = FastRenderers.AutomationPropertiesProvider.ConcatenateNameAndHelpText(Element);
 
 			if (!string.IsNullOrWhiteSpace(elemValue))
 				textView.Hint = elemValue;
@@ -398,6 +413,11 @@ namespace Xamarin.Forms.Platform.Android
 				textView.Hint = _defaultHint;
 
 			return true;
+		}
+
+		void UpdateInputTransparent()
+		{
+			InputTransparent = Element.InputTransparent;
 		}
 
 		protected void SetPackager(VisualElementPackager packager)

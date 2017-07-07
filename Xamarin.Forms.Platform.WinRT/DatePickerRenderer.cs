@@ -13,23 +13,14 @@ namespace Xamarin.Forms.Platform.UWP
 namespace Xamarin.Forms.Platform.WinRT
 #endif
 {
-	public class DatePickerRenderer : ViewRenderer<DatePicker, FormsDatePicker>, IWrapperAware
+	public class DatePickerRenderer : ViewRenderer<DatePicker, Windows.UI.Xaml.Controls.DatePicker>
 	{
 		Brush _defaultBrush;
-
-		public void NotifyWrapped()
-		{
-			if (Control != null)
-			{
-				Control.ForceInvalidate += PickerOnForceInvalidate;
-			}
-		}
 
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing && Control != null)
 			{
-				Control.ForceInvalidate -= PickerOnForceInvalidate;
 				Control.DateChanged -= OnControlDateChanged;
 				Control.Loaded -= ControlOnLoaded;
 			}
@@ -43,7 +34,7 @@ namespace Xamarin.Forms.Platform.WinRT
 			{
 				if (Control == null)
 				{
-					var picker = new FormsDatePicker();
+					var picker = new Windows.UI.Xaml.Controls.DatePicker();
 					SetNativeControl(picker);
 					Control.Loaded += ControlOnLoaded;
 					Control.DateChanged += OnControlDateChanged;
@@ -79,6 +70,8 @@ namespace Xamarin.Forms.Platform.WinRT
 				UpdateTextColor();
 		}
 
+		protected override bool PreventGestureBubbling { get; set; } = true;
+
 		void OnControlDateChanged(object sender, DatePickerValueChangedEventArgs e)
 		{
 			Element.Date = e.NewDate.Date;
@@ -87,11 +80,6 @@ namespace Xamarin.Forms.Platform.WinRT
 				UpdateDate(currentDate);
 
 			((IVisualElementController)Element).InvalidateMeasure(InvalidationTrigger.SizeRequestChanged);
-		}
-
-		void PickerOnForceInvalidate(object sender, EventArgs eventArgs)
-		{
-			((IVisualElementController)Element)?.InvalidateMeasure(InvalidationTrigger.SizeRequestChanged);
 		}
 
 		void UpdateDate(DateTime date)

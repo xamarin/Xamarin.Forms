@@ -1,8 +1,10 @@
+using System.ComponentModel;
 using System.Threading.Tasks;
 
-namespace Xamarin.Forms
+namespace Xamarin.Forms.Internals
 {
-	internal class AlertArguments
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	public class AlertArguments
 	{
 		public AlertArguments(string title, string message, string accept, string cancel)
 		{

@@ -1,9 +1,11 @@
 using System;
+using System.ComponentModel;
 
-namespace Xamarin.Forms
+namespace Xamarin.Forms.Internals
 {
 	[Flags]
-	internal enum FileShare
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	public enum FileShare
 	{
 		None = 0,
 		Read = 1,

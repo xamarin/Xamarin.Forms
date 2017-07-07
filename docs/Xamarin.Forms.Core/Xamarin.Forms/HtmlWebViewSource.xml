@@ -121,7 +121,31 @@
         <ReturnType>Xamarin.Forms.BindableProperty</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>Backing store for the <see cref="P:Xamarin.Forms.BaseUrl" /> property.</summary>
+        <summary>Backing store for the <see cref="P:Xamarin.Forms.Html" /> property.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Load">
+      <MemberSignature Language="C#" Value="public override void Load (Xamarin.Forms.IWebViewDelegate renderer);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig virtual instance void Load(class Xamarin.Forms.IWebViewDelegate renderer) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute>
+          <AttributeName>System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="renderer" Type="Xamarin.Forms.IWebViewDelegate" />
+      </Parameters>
+      <Docs>
+        <param name="renderer">The renderer into which to load html content.</param>
+        <summary>Loads the specified <paramref name="renderer" /> with the current base URL and HTML.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>

@@ -1,16 +1,29 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 
 namespace Xamarin.Forms
 {
-	internal class Registrar<TRegistrable> where TRegistrable : class
+	// Previewer uses reflection to bind to this method; Removal or modification of visibility will break previewer.
+	internal static class Registrar
+	{
+		internal static void RegisterAll(Type[] attrTypes) => Internals.Registrar.RegisterAll(attrTypes);
+	}
+}
+namespace Xamarin.Forms.Internals
+{
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	public class Registrar<TRegistrable> where TRegistrable : class
 	{
 		readonly Dictionary<Type, Type> _handlers = new Dictionary<Type, Type>();
 
 		public void Register(Type tview, Type trender)
 		{
+			//avoid caching null renderers
+			if (trender == null)
+				return;
 			_handlers[tview] = trender;
 		}
 
@@ -24,15 +37,15 @@ namespace Xamarin.Forms
 			return (TRegistrable)handler;
 		}
 
-		internal TOut GetHandler<TOut>(Type type) where TOut : TRegistrable
+		public TOut GetHandler<TOut>(Type type) where TOut : TRegistrable
 		{
 			return (TOut)GetHandler(type);
 		}
 
-		internal Type GetHandlerType(Type viewType)
+		public Type GetHandlerType(Type viewType)
 		{
 			Type type;
-			if(LookupHandlerType(viewType, out type))
+			if (LookupHandlerType(viewType, out type))
 				return type;
 
 			// lazy load render-view association with RenderWithAttribute (as opposed to using ExportRenderer)
@@ -84,7 +97,8 @@ namespace Xamarin.Forms
 		}
 	}
 
-	internal static class Registrar
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	public static class Registrar
 	{
 		static Registrar()
 		{
@@ -93,11 +107,11 @@ namespace Xamarin.Forms
 
 		internal static Dictionary<string, Type> Effects { get; } = new Dictionary<string, Type>();
 
-		internal static IEnumerable<Assembly> ExtraAssemblies { get; set; }
+		public static IEnumerable<Assembly> ExtraAssemblies { get; set; }
 
-		internal static Registrar<IRegisterable> Registered { get; }
+		public static Registrar<IRegisterable> Registered { get; }
 
-		internal static void RegisterAll(Type[] attrTypes)
+		public static void RegisterAll(Type[] attrTypes)
 		{
 			Assembly[] assemblies = Device.GetAssemblies();
 			if (ExtraAssemblies != null)
@@ -145,7 +159,7 @@ namespace Xamarin.Forms
 					foreach (Attribute attribute in effectAttributes)
 					{
 						var effect = (ExportEffectAttribute)attribute;
-						Effects [resolutionName + "." + effect.Id] = effect.Type;
+						Effects[resolutionName + "." + effect.Id] = effect.Type;
 					}
 				}
 			}

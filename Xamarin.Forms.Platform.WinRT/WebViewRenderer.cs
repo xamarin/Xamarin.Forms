@@ -31,7 +31,6 @@ var bases = head.getElementsByTagName('base');
 if(bases.length == 0){
     head.innerHTML = 'baseTag' + head.innerHTML;
 }";
-
 		public void LoadHtml(string html, string baseUrl)
 		{
 			if (IsNullOrEmpty(baseUrl))
@@ -98,9 +97,10 @@ if(bases.length == 0){
 
 			if (e.OldElement != null)
 			{
-				e.OldElement.EvalRequested -= OnEvalRequested;
-				e.OldElement.GoBackRequested -= OnGoBackRequested;
-				e.OldElement.GoForwardRequested -= OnGoForwardRequested;
+				var oldElement = e.OldElement;
+				oldElement.EvalRequested -= OnEvalRequested;
+				oldElement.GoBackRequested -= OnGoBackRequested;
+				oldElement.GoForwardRequested -= OnGoForwardRequested;
 			}
 
 			if (e.NewElement != null)
@@ -114,9 +114,10 @@ if(bases.length == 0){
 					SetNativeControl(webView);
 				}
 
-				e.NewElement.EvalRequested += OnEvalRequested;
-				e.NewElement.GoForwardRequested += OnGoForwardRequested;
-				e.NewElement.GoBackRequested += OnGoBackRequested;
+				var newElement = e.NewElement;
+				newElement.EvalRequested += OnEvalRequested;
+				newElement.GoForwardRequested += OnGoForwardRequested;
+				newElement.GoBackRequested += OnGoBackRequested;
 
 				Load();
 			}
@@ -213,8 +214,8 @@ if(bases.length == 0){
 
 		void UpdateCanGoBackForward()
 		{
-			Element.CanGoBack = Control.CanGoBack;
-			Element.CanGoForward = Control.CanGoForward;
+			((IWebViewController)Element).CanGoBack = Control.CanGoBack;
+			((IWebViewController)Element).CanGoForward = Control.CanGoForward;
 		}
 	}
 }

@@ -271,7 +271,7 @@ public class PersonViewModel
 
 var label = new Label ();
 PersonViewModel person;
-label.BindingContext = person = new PersonViewModel { Name = "John Doe", Company= "Xamarin" };
+label.BindingContext = person = new PersonViewModel { Name = "John Doe", Company = "Microsoft" };
 label.SetBinding (Label.TextProperty, Binding.Create<PersonViewModel> (vm => vm.Name));
 Debug.WriteLine (label.Text); //prints "John Doe".
         ]]></code>
@@ -319,6 +319,27 @@ Debug.WriteLine (label.Text); //prints "John Doe".
         <summary>Gets or sets the source of the binding.</summary>
         <value>An object used as the binding source.</value>
         <remarks>If the Source is not null, the BindingContext is ignored, and the Source is used instead. This allows to set a source for a single Binding, and not for all the Bindings applied to the BindableObject.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="UpdateSourceEventName">
+      <MemberSignature Language="C#" Value="public string UpdateSourceEventName { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string UpdateSourceEventName" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute>
+          <AttributeName>System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
       </Docs>
     </Member>
   </Members>

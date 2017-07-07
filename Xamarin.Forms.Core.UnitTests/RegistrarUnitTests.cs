@@ -29,7 +29,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			base.Setup ();
 			Device.PlatformServices = new MockPlatformServices ();
-			Registrar.RegisterAll (new [] {
+			Internals.Registrar.RegisterAll (new [] {
 				typeof (TestHandlerAttribute)
 			});
 
@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public void GetButtonHandler ()
 		{
-			var buttonTarget = Registrar.Registered.GetHandler<ButtonTarget> (typeof (Button));
+			var buttonTarget = Internals.Registrar.Registered.GetHandler<ButtonTarget> (typeof (Button));
 			Assert.IsNotNull (buttonTarget);
 			Assert.That (buttonTarget, Is.InstanceOf<ButtonTarget>());
 		}
@@ -53,7 +53,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public void GetSliderHandler()
 		{
-			var sliderTarget = Registrar.Registered.GetHandler<SliderTarget> (typeof (Slider));
+			var sliderTarget = Internals.Registrar.Registered.GetHandler<SliderTarget> (typeof (Slider));
 			Assert.IsNotNull (sliderTarget);
 			Assert.That (sliderTarget, Is.InstanceOf<SliderTarget> ());
 		}
@@ -76,7 +76,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public void TestConstructor ()
 		{
-			var registrar = new Registrar<MockRenderer> ();
+			var registrar = new Internals.Registrar<MockRenderer> ();
 
 			var renderer = registrar.GetHandler (typeof (Button));
 
@@ -86,7 +86,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public void TestGetRendererForKnownClass ()
 		{
-			var registrar = new Registrar<MockRenderer> ();
+			var registrar = new Internals.Registrar<MockRenderer> ();
 
 			registrar.Register (typeof(View), typeof(MockRenderer));
 
@@ -98,7 +98,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public void TestGetRendererForUnknownSubclass ()
 		{
-			var registrar = new Registrar<MockRenderer> ();
+			var registrar = new Internals.Registrar<MockRenderer> ();
 
 			registrar.Register (typeof (View), typeof (MockRenderer));
 
@@ -110,7 +110,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public void TestGetRendererWithRegisteredSubclass ()
 		{
-			var registrar = new Registrar<MockRenderer> ();
+			var registrar = new Internals.Registrar<MockRenderer> ();
 
 			registrar.Register (typeof (View), typeof (MockRenderer));
 			registrar.Register (typeof (Button), typeof (ButtonMockRenderer));
@@ -126,7 +126,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public void TestReplaceRenderer ()
 		{
-			var registrar = new Registrar<MockRenderer> ();
+			var registrar = new Internals.Registrar<MockRenderer> ();
 
 			registrar.Register (typeof (View), typeof (MockRenderer));
 			registrar.Register (typeof (Button), typeof (ButtonMockRenderer));
@@ -140,10 +140,27 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public void GetHandlerType()
 		{
-			var registrar = new Registrar<MockRenderer>();
+			var registrar = new Internals.Registrar<MockRenderer>();
 			registrar.Register (typeof (View), typeof (MockRenderer));
 
 			Assert.AreEqual (typeof (MockRenderer), registrar.GetHandlerType (typeof (View)));
 		}
+
+		[Test]
+		public void TestGetRendererNullViewRenderer()
+		{
+			var registrar = new Internals.Registrar<MockRenderer>();
+
+			//let's say that we are now registering the view of a viewcell
+			registrar.Register(typeof(View), typeof(MockRenderer));
+			//later we had a view that was registered with null because there's
+			//no default renderer for View
+			registrar.Register(typeof(View), null);
+
+			var renderer = registrar.GetHandler(typeof(View));
+
+			Assert.That(renderer, Is.InstanceOf<MockRenderer>());
+		}
+
 	}
 }

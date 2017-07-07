@@ -28,7 +28,7 @@ namespace Xamarin.Forms.Platform.iOS
 				_displayLink = null;
 
 				if (Element != null)
-					((IOpenGlViewController)Element).DisplayRequested -= Display;
+					Element.DisplayRequested -= Display;
 			}
 
 			base.Dispose(disposing);
@@ -37,7 +37,7 @@ namespace Xamarin.Forms.Platform.iOS
 		protected override void OnElementChanged(ElementChangedEventArgs<OpenGLView> e)
 		{
 			if (e.OldElement != null)
-				((IOpenGlViewController)e.OldElement).DisplayRequested -= Display;
+				e.OldElement.DisplayRequested -= Display;
 
 			if (e.NewElement != null)
 			{
@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Platform.iOS
 				var glkView = new GLKView(RectangleF.Empty) { Context = context, DrawableDepthFormat = GLKViewDrawableDepthFormat.Format24, Delegate = new Delegate(e.NewElement) };
 				SetNativeControl(glkView);
 
-				((IOpenGlViewController)e.NewElement).DisplayRequested += Display;
+				e.NewElement.DisplayRequested += Display;
 
 				SetupRenderLoop(false);
 			}
@@ -76,12 +76,12 @@ namespace Xamarin.Forms.Platform.iOS
 					control.Display();
 				if (control == null || model == null || !model.HasRenderLoop)
 				{
-					_displayLink.Invalidate();
-					_displayLink.Dispose();
+					_displayLink?.Invalidate();
+					_displayLink?.Dispose();
 					_displayLink = null;
 				}
 			});
-			_displayLink.AddToRunLoop(NSRunLoop.Current, NSRunLoop.NSDefaultRunLoopMode);
+			_displayLink.AddToRunLoop(NSRunLoop.Current, NSRunLoop.NSRunLoopCommonModes);
 		}
 
 		class Delegate : GLKViewDelegate

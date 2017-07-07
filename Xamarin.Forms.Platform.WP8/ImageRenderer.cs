@@ -78,11 +78,11 @@ namespace Xamarin.Forms.Platform.WinPhone
 
 		async void SetSource(System.Windows.Controls.Image image)
 		{
-			((IImageController)Element).SetIsLoading(true);
+			Element.SetIsLoading(true);
 
 			ImageSource source = Element.Source;
 			IImageSourceHandler handler;
-			if (source != null && (handler = Registrar.Registered.GetHandler<IImageSourceHandler>(source.GetType())) != null)
+			if (source != null && (handler = Internals.Registrar.Registered.GetHandler<IImageSourceHandler>(source.GetType())) != null)
 			{
 				System.Windows.Media.ImageSource imagesource;
 				try
@@ -102,7 +102,7 @@ namespace Xamarin.Forms.Platform.WinPhone
 			else
 				image.Source = null;
 
-			((IImageController)Element).SetIsLoading(false);
+			Element.SetIsLoading(false);
 		}
 	}
 

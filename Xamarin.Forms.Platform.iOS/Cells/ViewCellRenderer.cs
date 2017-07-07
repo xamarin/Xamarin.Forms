@@ -139,6 +139,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 			IVisualElementRenderer GetNewRenderer()
 			{
+				if (_viewCell.View == null)
+					throw new InvalidOperationException($"ViewCell must have a {nameof(_viewCell.View)}");
+
 				var newRenderer = Platform.CreateRenderer(_viewCell.View);
 				_rendererRef = new WeakReference<IVisualElementRenderer>(newRenderer);
 				ContentView.AddSubview(newRenderer.NativeView);
@@ -147,14 +150,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 			void UpdateCell(ViewCell cell)
 			{
-				ICellController cellController = _viewCell;
-				if (cellController != null)
-					Device.BeginInvokeOnMainThread(cellController.SendDisappearing);
+				if (_viewCell != null)
+					Device.BeginInvokeOnMainThread(_viewCell.SendDisappearing);
 
+				this._viewCell = cell;
 				_viewCell = cell;
-				cellController = cell;
 
-				Device.BeginInvokeOnMainThread(cellController.SendAppearing);
+				Device.BeginInvokeOnMainThread(_viewCell.SendAppearing);
 
 				IVisualElementRenderer renderer;
 				if (_rendererRef == null || !_rendererRef.TryGetTarget(out renderer))
@@ -164,9 +166,9 @@ namespace Xamarin.Forms.Platform.iOS
 					if (renderer.Element != null && renderer == Platform.GetRenderer(renderer.Element))
 						renderer.Element.ClearValue(Platform.RendererProperty);
 
-					var type = Registrar.Registered.GetHandlerType(_viewCell.View.GetType());
+					var type = Internals.Registrar.Registered.GetHandlerType(this._viewCell.View.GetType());
 					if (renderer.GetType() == type || (renderer is Platform.DefaultRenderer && type == null))
-						renderer.SetElement(_viewCell.View);
+						renderer.SetElement(this._viewCell.View);
 					else
 					{
 						//when cells are getting reused the element could be already set to another cell
@@ -177,7 +179,7 @@ namespace Xamarin.Forms.Platform.iOS
 					}
 				}
 
-				Platform.SetRenderer(_viewCell.View, renderer);
+				Platform.SetRenderer(this._viewCell.View, renderer);
 			}
 		}
 	}

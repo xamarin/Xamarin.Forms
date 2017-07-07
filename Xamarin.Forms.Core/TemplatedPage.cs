@@ -13,7 +13,7 @@ namespace Xamarin.Forms
 			set { SetValue(ControlTemplateProperty, value); }
 		}
 
-		IList<Element> IControlTemplated.InternalChildren => ((IPageController)this).InternalChildren;
+		IList<Element> IControlTemplated.InternalChildren => InternalChildren;
 
 		internal override void ComputeConstraintForView(View view)
 		{
@@ -33,6 +33,15 @@ namespace Xamarin.Forms
 		{
 			if (ControlTemplate == null)
 				base.SetChildInheritedBindingContext(child, context);
+		}
+
+		void IControlTemplated.OnControlTemplateChanged(ControlTemplate oldValue, ControlTemplate newValue)
+		{
+			OnControlTemplateChanged(oldValue, newValue);
+		}
+
+		internal virtual void OnControlTemplateChanged(ControlTemplate oldValue, ControlTemplate newValue)
+		{
 		}
 	}
 }

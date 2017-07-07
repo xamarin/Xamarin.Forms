@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Windows.Media.Imaging;
 using Microsoft.Phone.Controls;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.WinPhone
 {

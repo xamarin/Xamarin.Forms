@@ -92,7 +92,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			IImageSourceHandler handler;
 			FileImageSource source = Element.Image;
-			if (source != null && (handler = Registrar.Registered.GetHandler<IImageSourceHandler>(source.GetType())) != null)
+			if (source != null && (handler = Internals.Registrar.Registered.GetHandler<IImageSourceHandler>(source.GetType())) != null)
 			{
 				NSImage uiimage;
 				try
@@ -123,7 +123,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 			else
 			{
-				var textWithColor = new NSAttributedString(Element.Text ?? "", foregroundColor: color.ToNSColor());
+				var textWithColor = new NSAttributedString(Element.Text ?? "", font: Element.Font.ToNSFont(), foregroundColor: color.ToNSColor( ), paragraphStyle: new NSMutableParagraphStyle( ) { Alignment = NSTextAlignment.Center });
 				Control.AttributedTitle = textWithColor;
 			}
 		}

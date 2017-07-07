@@ -10,11 +10,6 @@ namespace Xamarin.Forms.Build.Tasks
 {
 	static class XmlTypeExtensions
 	{
- 		public static TypeReference GetTypeReference (string namespaceURI, string typename, ModuleDefinition module, IXmlLineInfo xmlInfo)
- 		{
- 			return new XmlType (namespaceURI, typename, null).GetTypeReference (module, xmlInfo);
- 		}
-
 		static IList<XmlnsDefinitionAttribute> s_xmlnsDefinitions;
 
 		static void GatherXmlnsDefinitionAttributes()
@@ -32,6 +27,29 @@ namespace Xamarin.Forms.Build.Tasks
 					s_xmlnsDefinitions.Add(attribute);
 					attribute.AssemblyName = attribute.AssemblyName ?? assembly.FullName;
 				}
+		}
+
+		public static TypeReference GetTypeReference(string xmlType, ModuleDefinition module, BaseNode node)
+		{
+			var split = xmlType.Split(':');
+			if (split.Length > 2)
+				throw new XamlParseException($"Type \"{xmlType}\" is invalid", node as IXmlLineInfo);
+
+			string prefix, name;
+			if (split.Length == 2) {
+				prefix = split[0];
+				name = split[1];
+			} else {
+				prefix = "";
+				name = split[0];
+			}
+			var namespaceuri = node.NamespaceResolver.LookupNamespace(prefix) ?? "";
+			return GetTypeReference(new XmlType(namespaceuri, name, null), module, node as IXmlLineInfo);
+		}
+
+		public static TypeReference GetTypeReference(string namespaceURI, string typename, ModuleDefinition module, IXmlLineInfo xmlInfo)
+		{
+			return new XmlType(namespaceURI, typename, null).GetTypeReference(module, xmlInfo);
 		}
 
 		public static TypeReference GetTypeReference(this XmlType xmlType, ModuleDefinition module, IXmlLineInfo xmlInfo)
@@ -89,16 +107,23 @@ namespace Xamarin.Forms.Build.Tasks
 					if (type != null)
 						break;
 
+					var clrNamespace = asm.ClrNamespace;
+					var typeName = name.Replace('+', '/'); //Nested types
+					var idx = typeName.LastIndexOf('.');
+					if (idx >= 0) {
+						clrNamespace += '.' + typeName.Substring(0, typeName.LastIndexOf('.'));
+						typeName = typeName.Substring(typeName.LastIndexOf('.') + 1);
+					}
 					var assemblydefinition = module.Assembly.Name.Name == asm.AssemblyName ?
 												module.Assembly :
 												module.AssemblyResolver.Resolve(AssemblyNameReference.Parse(asm.AssemblyName));
 
-					type = assemblydefinition.MainModule.GetType(asm.ClrNamespace, name);
+					type = assemblydefinition.MainModule.GetType(clrNamespace + "." + typeName);
 					if (type == null)
 					{
 						var exportedtype =
 							assemblydefinition.MainModule.ExportedTypes.FirstOrDefault(
-								(ExportedType arg) => arg.IsForwarder && arg.Namespace == asm.ClrNamespace && arg.Name == name);
+								(ExportedType arg) => arg.IsForwarder && arg.Namespace == clrNamespace && arg.Name == typeName);
 						if (exportedtype != null)
 							type = exportedtype.Resolve();
 					}

@@ -1,6 +1,6 @@
 <Type Name="ResourceDictionary" FullName="Xamarin.Forms.ResourceDictionary">
-  <TypeSignature Language="C#" Value="public class ResourceDictionary : System.Collections.Generic.ICollection&lt;System.Collections.Generic.KeyValuePair&lt;string,object&gt;&gt;, System.Collections.Generic.IDictionary&lt;string,object&gt;, System.Collections.Generic.IEnumerable&lt;System.Collections.Generic.KeyValuePair&lt;string,object&gt;&gt;" />
-  <TypeSignature Language="ILAsm" Value=".class public auto ansi beforefieldinit ResourceDictionary extends System.Object implements class System.Collections.Generic.ICollection`1&lt;valuetype System.Collections.Generic.KeyValuePair`2&lt;string, object&gt;&gt;, class System.Collections.Generic.IDictionary`2&lt;string, object&gt;, class System.Collections.Generic.IEnumerable`1&lt;valuetype System.Collections.Generic.KeyValuePair`2&lt;string, object&gt;&gt;, class System.Collections.IEnumerable" />
+  <TypeSignature Language="C#" Value="public class ResourceDictionary : System.Collections.Generic.ICollection&lt;System.Collections.Generic.KeyValuePair&lt;string,object&gt;&gt;, System.Collections.Generic.IDictionary&lt;string,object&gt;, System.Collections.Generic.IEnumerable&lt;System.Collections.Generic.KeyValuePair&lt;string,object&gt;&gt;, Xamarin.Forms.Internals.IResourceDictionary" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi beforefieldinit ResourceDictionary extends System.Object implements class System.Collections.Generic.ICollection`1&lt;valuetype System.Collections.Generic.KeyValuePair`2&lt;string, object&gt;&gt;, class System.Collections.Generic.IDictionary`2&lt;string, object&gt;, class System.Collections.Generic.IEnumerable`1&lt;valuetype System.Collections.Generic.KeyValuePair`2&lt;string, object&gt;&gt;, class System.Collections.IEnumerable, class Xamarin.Forms.Internals.IResourceDictionary" />
   <AssemblyInfo>
     <AssemblyName>Xamarin.Forms.Core</AssemblyName>
     <AssemblyVersion>1.0.0.0</AssemblyVersion>
@@ -23,6 +23,9 @@
     </Interface>
     <Interface>
       <InterfaceName>System.Collections.Generic.IEnumerable&lt;System.Collections.Generic.KeyValuePair&lt;System.String,System.Object&gt;&gt;</InterfaceName>
+    </Interface>
+    <Interface>
+      <InterfaceName>Xamarin.Forms.Internals.IResourceDictionary</InterfaceName>
     </Interface>
   </Interfaces>
   <Docs>
@@ -66,7 +69,7 @@
         <Parameter Name="implicitStyle" Type="Xamarin.Forms.Style" />
       </Parameters>
       <Docs>
-        <param name="style">To be added.</param>
+        <param name="style">The implicit style to add.</param>
         <summary>
           <para>Add an implicit Style to the ResourceDictionary. Implicit Styles are applied to all VisualElements matching TargetType in the descendants of this ResourceDictionary owner, unless a Style is explicitely applied to the Element.</para>
           <para />
@@ -259,8 +262,8 @@
         <ReturnType>System.Type</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
+        <summary>Gets or sets the type of object with which the resource dictionary is merged.</summary>
+        <value>The type of object with which the resource dictionary is merged, or null if the dictionary is not merged with another.</value>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -311,7 +314,7 @@
         <Parameter Name="item" Type="System.Collections.Generic.KeyValuePair&lt;System.String,System.Object&gt;" />
       </Parameters>
       <Docs>
-        <param name="item">To be added.</param>
+        <param name="item">The item to add.</param>
         <summary>Adds an item to the collection.</summary>
         <remarks>To be added.</remarks>
       </Docs>
@@ -336,7 +339,7 @@
         <Parameter Name="item" Type="System.Collections.Generic.KeyValuePair&lt;System.String,System.Object&gt;" />
       </Parameters>
       <Docs>
-        <param name="item">To be added.</param>
+        <param name="item">The item to add.</param>
         <summary>Returns a value that indicates whether the dictionary contains the value in <paramref name="item" />, indexed by the key in <paramref name="item" />.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
@@ -363,9 +366,9 @@
         <Parameter Name="arrayIndex" Type="System.Int32" />
       </Parameters>
       <Docs>
-        <param name="array">To be added.</param>
-        <param name="arrayIndex">To be added.</param>
-        <summary>Copies the values in the dictionary to <paramref name="array" />, starting at position <paramref name="arrayIndex" /> in <paramref name="array" />.</summary>
+        <param name="array">For internal use by the Xamarin.Forms platform.</param>
+        <param name="arrayIndex">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -411,8 +414,8 @@
         <Parameter Name="item" Type="System.Collections.Generic.KeyValuePair&lt;System.String,System.Object&gt;" />
       </Parameters>
       <Docs>
-        <param name="item">To be added.</param>
-        <summary>Removes the value in <paramref name="item" />, indexed by the key in <paramref name="item" />, from the dictionary, if present.</summary>
+        <param name="item">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
@@ -435,8 +438,8 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>Returns a <see cref="T:System.Collections.IEnumerator" /> of the <see cref="T:Xamarin.Forms.ResourceDictionary" />'s <see cref="T:System.Collections.Generic.KeyValuePair`1" />s.</summary>
-        <returns>An <see cref="T:System.Collections.IEnumerator" /> of the <see cref="T:Xamarin.Forms.ResourceDictionary" />'s <see cref="T:System.Collections.Generic.KeyValuePair`1" />s.</returns>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
+        <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 
@@ -49,7 +50,7 @@ namespace Xamarin.Forms.Controls
 			return new MasterDetailPage
 			{
 				AutomationId = DefaultMainPageId,
-				Master = new ContentPage { Title = "Master", BackgroundColor = Color.Red },
+				Master = new ContentPage { Title = "Master", Content = new View { BackgroundColor = Color.Red } },
 				Detail = CoreGallery.GetMainPage()
 			};
 		}

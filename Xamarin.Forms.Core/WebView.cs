@@ -1,11 +1,12 @@
 using System;
+using System.ComponentModel;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_WebViewRenderer))]
-	public class WebView : View, IElementConfiguration<WebView>
+	public class WebView : View, IWebViewController, IElementConfiguration<WebView>
 	{
 		public static readonly BindableProperty SourceProperty = BindableProperty.Create("Source", typeof(WebViewSource), typeof(WebView), default(WebViewSource),
 			propertyChanging: (bindable, oldvalue, newvalue) =>
@@ -39,16 +40,28 @@ namespace Xamarin.Forms
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<WebView>>(() => new PlatformConfigurationRegistry<WebView>(this));
 		}
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		bool IWebViewController.CanGoBack 
+		{
+			get { return CanGoBack; }
+			set { SetValue(CanGoBackPropertyKey, value); }
+		}
+
 		public bool CanGoBack
 		{
 			get { return (bool)GetValue(CanGoBackProperty); }
-			internal set { SetValue(CanGoBackPropertyKey, value); }
+		}
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		bool IWebViewController.CanGoForward 
+		{
+			get { return CanGoForward; }
+			set { SetValue(CanGoForwardPropertyKey, value); }
 		}
 
 		public bool CanGoForward
 		{
 			get { return (bool)GetValue(CanGoForwardProperty); }
-			internal set { SetValue(CanGoForwardPropertyKey, value); }
 		}
 
 		[TypeConverter(typeof(WebViewSourceTypeConverter))]
@@ -110,24 +123,30 @@ namespace Xamarin.Forms
 			OnPropertyChanged(SourceProperty.PropertyName);
 		}
 
-		internal event EventHandler<EvalRequested> EvalRequested;
-
-		internal event EventHandler GoBackRequested;
-
-		internal event EventHandler GoForwardRequested;
-
-		internal void SendNavigated(WebNavigatedEventArgs args)
-		{
-			EventHandler<WebNavigatedEventArgs> handler = Navigated;
-			if (handler != null)
-				handler(this, args);
+		event EventHandler<EvalRequested> IWebViewController.EvalRequested {
+			add { EvalRequested += value; }
+			remove { EvalRequested -= value; }
 		}
 
-		internal void SendNavigating(WebNavigatingEventArgs args)
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public event EventHandler<EvalRequested> EvalRequested;
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public event EventHandler GoBackRequested;
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public event EventHandler GoForwardRequested;
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void SendNavigated(WebNavigatedEventArgs args)
 		{
-			EventHandler<WebNavigatingEventArgs> handler = Navigating;
-			if (handler != null)
-				handler(this, args);
+			Navigated?.Invoke(this, args);
+		}
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void SendNavigating(WebNavigatingEventArgs args)
+		{
+			Navigating?.Invoke(this, args);
 		}
 
 		public IPlatformElementConfiguration<T, WebView> On<T>() where T : IConfigPlatform

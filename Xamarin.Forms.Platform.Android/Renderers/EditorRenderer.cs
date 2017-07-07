@@ -1,20 +1,27 @@
+using System;
 using System.ComponentModel;
 using Android.Content.Res;
 using Android.Text;
+using Android.Text.Method;
 using Android.Util;
 using Android.Views;
 using Java.Lang;
+using Xamarin.Forms.Internals;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class EditorRenderer : ViewRenderer<Editor, EditorEditText>, ITextWatcher
+	public class EditorRenderer : ViewRenderer<Editor, FormsEditText>, ITextWatcher
 	{
 		ColorStateList _defaultColors;
+		bool _disposed;
 
 		public EditorRenderer()
 		{
 			AutoPackage = false;
 		}
+
+        IEditorController ElementController => Element;
 
 		void ITextWatcher.AfterTextChanged(IEditable s)
 		{
@@ -33,9 +40,9 @@ namespace Xamarin.Forms.Platform.Android
 				((IElementController)Element).SetValueFromRenderer(Editor.TextProperty, s.ToString());
 		}
 
-		protected override EditorEditText CreateNativeControl()
+		protected override FormsEditText CreateNativeControl()
 		{
-			return new EditorEditText(Context);
+			return new FormsEditText(Context);
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Editor> e)
@@ -44,18 +51,14 @@ namespace Xamarin.Forms.Platform.Android
 
 			HandleKeyboardOnFocus = true;
 
-			EditorEditText edit = Control;
+			FormsEditText edit = Control;
 			if (edit == null)
 			{
 				edit = CreateNativeControl();
 
 				SetNativeControl(edit);
 				edit.AddTextChangedListener(this);
-				edit.OnBackKeyboardPressed += (sender, args) =>
-				{
-					Element.SendCompleted();
-					edit.ClearFocus();
-				};
+				edit.OnKeyboardBackPressed += OnKeyboardBackPressed;
 			}
 
 			edit.SetSingleLine(false);
@@ -86,10 +89,38 @@ namespace Xamarin.Forms.Platform.Android
 			base.OnElementPropertyChanged(sender, e);
 		}
 
+		protected override void Dispose(bool disposing)
+		{
+			if (_disposed)
+			{
+				return;
+			}
+
+			_disposed = true;
+
+			if (disposing)
+			{
+				if (Control != null)
+				{
+					Control.OnKeyboardBackPressed -= OnKeyboardBackPressed;
+				}
+			}
+
+			base.Dispose(disposing);
+		}
+
+		protected virtual NumberKeyListener GetDigitsKeyListener(InputTypes inputTypes)
+		{
+			// Override this in a custom renderer to use a different NumberKeyListener 
+			// or to filter out input types you don't want to allow 
+			// (e.g., inputTypes &= ~InputTypes.NumberFlagSigned to disallow the sign)
+			return LocalizedDigitsKeyListener.Create(inputTypes);
+		}
+
 		internal override void OnNativeFocusChanged(bool hasFocus)
 		{
 			if (Element.IsFocused && !hasFocus) // Editor has requested an unfocus, fire completed event
-				Element.SendCompleted();
+                ElementController.SendCompleted();
 		}
 
 		void UpdateFont()
@@ -101,8 +132,15 @@ namespace Xamarin.Forms.Platform.Android
 		void UpdateInputType()
 		{
 			Editor model = Element;
-			EditorEditText edit = Control;
-			edit.InputType = model.Keyboard.ToInputType() | InputTypes.TextFlagMultiLine;
+			FormsEditText edit = Control;
+			var keyboard = model.Keyboard;
+
+			edit.InputType = keyboard.ToInputType() | InputTypes.TextFlagMultiLine;
+
+			if (keyboard == Keyboard.Numeric)
+			{
+				edit.KeyListener = GetDigitsKeyListener(edit.InputType);
+			}
 		}
 
 		void UpdateText()
@@ -140,6 +178,12 @@ namespace Xamarin.Forms.Platform.Android
 
 				Control.SetTextColor(Element.TextColor.ToAndroidPreserveDisabled(_defaultColors));
 			}
+		}
+
+		void OnKeyboardBackPressed(object sender, EventArgs eventArgs)
+		{
+			ElementController?.SendCompleted();
+			Control?.ClearFocus();
 		}
 	}
 }

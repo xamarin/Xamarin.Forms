@@ -2,6 +2,7 @@
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
+using Xamarin.Forms.Internals;
 
 #if WINDOWS_UWP
 
@@ -15,6 +16,10 @@ namespace Xamarin.Forms.Platform.WinRT
 	{
 		bool _fontApplied;
 		Brush _backgroundColorFocusedDefaultBrush;
+		Brush _textDefaultBrush;
+		Brush _defaultTextColorFocusBrush;
+
+		IEditorController ElementController => Element;
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Editor> e)
 		{
@@ -83,7 +88,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		void OnLostFocus(object sender, RoutedEventArgs e)
 		{
-			Element.SendCompleted();
+			ElementController.SendCompleted();
 		}
 
 		protected override void UpdateBackgroundColor()
@@ -173,15 +178,11 @@ namespace Xamarin.Forms.Platform.WinRT
 		{
 			Color textColor = Element.TextColor;
 
-			if (textColor.IsDefault || !Element.IsEnabled)
-			{
-				// ReSharper disable once AccessToStaticMemberViaDerivedType
-				Control.ClearValue(TextBox.ForegroundProperty);
-			}
-			else
-			{
-				Control.Foreground = textColor.ToBrush();
-			}
+			BrushHelpers.UpdateColor(textColor, ref _textDefaultBrush,
+				() => Control.Foreground, brush => Control.Foreground = brush);
+
+			BrushHelpers.UpdateColor(textColor, ref _defaultTextColorFocusBrush,
+				() => Control.ForegroundFocusBrush, brush => Control.ForegroundFocusBrush = brush);
 		}
 	}
 }

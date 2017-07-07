@@ -35,8 +35,6 @@ namespace Xamarin.Forms.Platform.iOS
 				var parentingViewController = (ParentingViewController)ViewControllers.Last();
 				UpdateLeftBarButtonItem(parentingViewController);
 			});
-
-			
 		}
 
 		Page Current { get; set; }
@@ -198,20 +196,18 @@ namespace Xamarin.Forms.Platform.iOS
 					"NavigationPage must have a root Page before being used. Either call PushAsync with a valid Page, or pass a Page to the constructor before usage.");
 			}
 
-			var navController = ((INavigationPageController)navPage);
-
-			navController.PushRequested += OnPushRequested;
-			navController.PopRequested += OnPopRequested;
-			navController.PopToRootRequested += OnPopToRootRequested;
-			navController.RemovePageRequested += OnRemovedPageRequested;
-			navController.InsertPageBeforeRequested += OnInsertPageBeforeRequested;
+			navPage.PushRequested += OnPushRequested;
+			navPage.PopRequested += OnPopRequested;
+			navPage.PopToRootRequested += OnPopToRootRequested;
+			navPage.RemovePageRequested += OnRemovedPageRequested;
+			navPage.InsertPageBeforeRequested += OnInsertPageBeforeRequested;
 
 			UpdateTint();
 			UpdateBarBackgroundColor();
 			UpdateBarTextColor();
 
 			// If there is already stuff on the stack we need to push it
-			((INavigationPageController)navPage).Pages.ForEach(async p => await PushPageAsync(p, false));
+			navPage.Pages.ForEach(async p => await PushPageAsync(p, false));
 
 			_tracker = new VisualElementTracker(this);
 
@@ -244,12 +240,11 @@ namespace Xamarin.Forms.Platform.iOS
 				var navPage = (NavigationPage)Element;
 				navPage.PropertyChanged -= HandlePropertyChanged;
 
-				var navController = ((INavigationPageController)navPage);
-				navController.PushRequested -= OnPushRequested;
-				navController.PopRequested -= OnPopRequested;
-				navController.PopToRootRequested -= OnPopToRootRequested;
-				navController.RemovePageRequested -= OnRemovedPageRequested;
-				navController.InsertPageBeforeRequested -= OnInsertPageBeforeRequested;
+				navPage.PushRequested -= OnPushRequested;
+				navPage.PopRequested -= OnPopRequested;
+				navPage.PopToRootRequested -= OnPopToRootRequested;
+				navPage.RemovePageRequested -= OnRemovedPageRequested;
+				navPage.InsertPageBeforeRequested -= OnInsertPageBeforeRequested;
 			}
 
 			base.Dispose(disposing);
@@ -324,6 +319,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual async Task<bool> OnPushAsync(Page page, bool animated)
 		{
+			if(page is MasterDetailPage)
+				System.Diagnostics.Trace.WriteLine($"Pushing a {nameof(MasterDetailPage)} onto a {nameof(NavigationPage)} is not a supported UI pattern on iOS. " +
+					"Please see https://developer.apple.com/documentation/uikit/uisplitviewcontroller for more details.");
+
 			var pack = CreateViewControllerForPage(page);
 			var task = GetAppearedOrDisappearedTask(page);
 
@@ -351,12 +350,11 @@ namespace Xamarin.Forms.Platform.iOS
 			//var pack = Platform.GetRenderer (view).ViewController;
 
 			var titleIcon = NavigationPage.GetTitleIcon(page);
-			if (!string.IsNullOrEmpty(titleIcon))
+			if (!string.IsNullOrEmpty(titleIcon?.File))
 			{
 				try
 				{
-					//UIImage ctor throws on file not found if MonoTouch.ObjCRuntime.Class.ThrowOnInitFailure is true;
-					pack.NavigationItem.TitleView = new UIImageView(new UIImage(titleIcon));
+					setTitleImage(pack,titleIcon);
 				}
 				catch
 				{
@@ -366,8 +364,8 @@ namespace Xamarin.Forms.Platform.iOS
 			var titleText = NavigationPage.GetBackButtonTitle(page);
 			if (titleText != null)
 			{
-				pack.NavigationItem.BackBarButtonItem = 
-					new UIBarButtonItem(titleText, UIBarButtonItemStyle.Plain, async (o, e) => await PopViewAsync(page));
+				// adding a custom event handler to UIBarButtonItem for navigating back seems to be ignored.
+				pack.NavigationItem.BackBarButtonItem = new UIBarButtonItem { Title = titleText, Style = UIBarButtonItemStyle.Plain };
 			}
 
 			var pageRenderer = Platform.GetRenderer(page);
@@ -376,6 +374,14 @@ namespace Xamarin.Forms.Platform.iOS
 			pageRenderer.ViewController.DidMoveToParentViewController(pack);
 
 			return pack;
+		}
+
+		async void setTitleImage(ParentingViewController pack, FileImageSource titleIcon)
+		{
+			var source = Internals.Registrar.Registered.GetHandler<IImageSourceHandler>(titleIcon.GetType());
+			var image = await source.LoadImageAsync(titleIcon);
+			//UIImage ctor throws on file not found if MonoTouch.ObjCRuntime.Class.ThrowOnInitFailure is true;
+			pack.NavigationItem.TitleView = new UIImageView(image);
 		}
 
 		void FindParentMasterDetail()
@@ -523,7 +529,7 @@ namespace Xamarin.Forms.Platform.iOS
 		void RemoveViewControllers(bool animated)
 		{
 			var controller = TopViewController as ParentingViewController;
-			if (controller == null || controller.Child == null)
+			if (controller == null || controller.Child == null || Platform.GetRenderer(controller.Child) == null)
 				return;
 
 			// Gesture in progress, lets not be proactive and just wait for it to finish
@@ -542,7 +548,7 @@ namespace Xamarin.Forms.Platform.iOS
 				for (var i = 0; i < removed; i++)
 				{
 					// lets just pop these suckers off, do not await, the true is there to make this fast
-					await ((INavigationPageController)Element).PopAsyncInner(animated, true);
+					await ((NavigationPage)Element).PopAsyncInner(animated, true);
 				}
 				// because we skip the normal pop process we need to dispose ourselves
 				controller.Dispose();
@@ -617,38 +623,11 @@ namespace Xamarin.Forms.Platform.iOS
 			if (containerController == null)
 				return;
 			var currentChild = containerController.Child;
-			var firstPage = ((INavigationPageController)Element).Pages.FirstOrDefault(); 
+			var firstPage = ((NavigationPage)Element).Pages.FirstOrDefault(); 
 			if ((firstPage != pageBeingRemoved && currentChild != firstPage && NavigationPage.GetHasBackButton(currentChild)) || _parentMasterDetailPage == null)
 				return;
 
-			if (!_parentMasterDetailPage.ShouldShowToolbarButton())
-			{
-				containerController.NavigationItem.LeftBarButtonItem = null;
-				return;
-			}
-
-			var shouldUseIcon = _parentMasterDetailPage.Master.Icon != null;
-			if (shouldUseIcon)
-			{
-				try
-				{
-					containerController.NavigationItem.LeftBarButtonItem =
-						new UIBarButtonItem(new UIImage(_parentMasterDetailPage.Master.Icon), UIBarButtonItemStyle.Plain,
-						(o, e) => _parentMasterDetailPage.IsPresented = !_parentMasterDetailPage.IsPresented);
-				}
-				catch (Exception)
-				{
-					// Throws Exception otherwise would catch more specific exception type
-					shouldUseIcon = false;
-				}
-			}
-
-			if (!shouldUseIcon)
-			{
-				containerController.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(_parentMasterDetailPage.Master.Title,
-					UIBarButtonItemStyle.Plain,
-					(o, e) => _parentMasterDetailPage.IsPresented = !_parentMasterDetailPage.IsPresented);
-			}
+			SetMasterLeftBarButton(containerController, _parentMasterDetailPage);
 		}
 
 		void UpdateTint()
@@ -678,6 +657,39 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				_secondaryToolbar.Hidden = true;
 				//secondaryToolbar.Items = null;
+			}
+		}
+
+		internal static async void SetMasterLeftBarButton(UIViewController containerController, MasterDetailPage masterDetailPage)
+		{
+			if (!masterDetailPage.ShouldShowToolbarButton())
+			{
+				containerController.NavigationItem.LeftBarButtonItem = null;
+				return;
+			}
+
+			EventHandler handler = (o, e) => masterDetailPage.IsPresented = !masterDetailPage.IsPresented;
+
+			bool shouldUseIcon = masterDetailPage.Master.Icon != null;
+			if (shouldUseIcon)
+			{
+				try
+				{
+
+					var source = Internals.Registrar.Registered.GetHandler<IImageSourceHandler>(masterDetailPage.Master.Icon.GetType());
+					var icon = await source.LoadImageAsync(masterDetailPage.Master.Icon);
+					containerController.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(icon, UIBarButtonItemStyle.Plain, handler);
+				}
+				catch (Exception)
+				{
+					// Throws Exception otherwise would catch more specific exception type
+					shouldUseIcon = false;
+				}
+			}
+
+			if (!shouldUseIcon)
+			{
+				containerController.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(masterDetailPage.Master.Title, UIBarButtonItemStyle.Plain, handler);
 			}
 		}
 
@@ -838,7 +850,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (disposing)
 				{
-					((IPageController)Child).SendDisappearing();
+					Child.SendDisappearing();
 
 					if (Child != null)
 					{
@@ -906,7 +918,11 @@ namespace Xamarin.Forms.Platform.iOS
 				var hasNavBar = NavigationPage.GetHasNavigationBar(current);
 
 				if (NavigationController.NavigationBarHidden == hasNavBar)
+				{
+					// prevent bottom content "jumping"
+					current.IgnoresContainerArea = !hasNavBar;
 					NavigationController.SetNavigationBarHidden(!hasNavBar, animated);
+				}
 			}
 
 			void UpdateToolbarItems()

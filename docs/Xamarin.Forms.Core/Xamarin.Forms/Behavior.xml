@@ -17,6 +17,7 @@
   <Docs>
     <summary>Base class for generalized user-defined behaviors that can respond to arbitrary conditions and events.</summary>
     <remarks>Application developers should specialize the <see cref="T:Xamarin.Forms.Behavior`1" /> generic class, instead of directly using <see cref="T:Xamarin.Forms.Behavior" />.</remarks>
+    <related type="article" href="https://developer.xamarin.com/guides/xamarin-forms/application-fundamentals/behaviors/creating/">Xamarin.Forms Behaviors</related>
   </Docs>
   <Members>
     <Member MemberName="AssociatedType">
@@ -55,7 +56,7 @@
         <Parameter Name="bindable" Type="Xamarin.Forms.BindableObject" />
       </Parameters>
       <Docs>
-        <param name="bindable">To be added.</param>
+        <param name="bindable">The bindable object to which the behavior was attached.</param>
         <summary>Application developers override this method to implement the behaviors that will be associated with <paramref name="bindable" />.</summary>
         <remarks>To be added.</remarks>
       </Docs>
@@ -77,7 +78,7 @@
         <Parameter Name="bindable" Type="Xamarin.Forms.BindableObject" />
       </Parameters>
       <Docs>
-        <param name="bindable">To be added.</param>
+        <param name="bindable">The bindable object from which the behavior was detached.</param>
         <summary>Application developers override this method to remove the behaviors from <paramref name="bindable" /> that were implemented in a previous call to the <see cref="M:Xamarin.Forms.Behavior.OnAttachedTo" /> method.</summary>
         <remarks>To be added.</remarks>
       </Docs>
@@ -99,8 +100,8 @@
         <Parameter Name="bindable" Type="Xamarin.Forms.BindableObject" />
       </Parameters>
       <Docs>
-        <param name="bindable">To be added.</param>
-        <summary>Attempts to attach to <paramref name="bindable" />. If successful, calls the <see cref="M:Xamarin.Forms.Behavior.OnAttachedTo" /> method.</summary>
+        <param name="bindable">For internal use by the Xamarin.Forms platform.</param>
+        <summary>AFor internal use by the Xamarin.Forms platform.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -121,8 +122,8 @@
         <Parameter Name="bindable" Type="Xamarin.Forms.BindableObject" />
       </Parameters>
       <Docs>
-        <param name="bindable">To be added.</param>
-        <summary>Detaches from <paramref name="bindable" />. Calls the <see cref="M:Xamarin.Forms.Behavior.OnDetachedFrom" /> method.</summary>
+        <param name="bindable">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>

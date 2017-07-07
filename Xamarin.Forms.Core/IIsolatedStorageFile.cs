@@ -1,10 +1,12 @@
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Xamarin.Forms
+namespace Xamarin.Forms.Internals
 {
-	internal interface IIsolatedStorageFile
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	public interface IIsolatedStorageFile
 	{
 		Task CreateDirectoryAsync(string path);
 		Task<bool> GetDirectoryExistsAsync(string path);

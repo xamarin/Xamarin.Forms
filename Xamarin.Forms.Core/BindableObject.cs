@@ -91,7 +91,8 @@ namespace Xamarin.Forms
 			SetValue(propertyKey.BindableProperty, value, false, false);
 		}
 
-		protected internal static void SetInheritedBindingContext(BindableObject bindable, object value)
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static void SetInheritedBindingContext(BindableObject bindable, object value)
 		{
 			BindablePropertyContext bpContext = bindable.GetContext(BindingContextProperty);
 			if (bpContext != null && ((bpContext.Attributes & BindableContextAttributes.IsManuallySet) != 0))
@@ -171,7 +172,8 @@ namespace Xamarin.Forms
 			return GetContext(targetProperty) == null;
 		}
 
-		internal object[] GetValues(BindableProperty property0, BindableProperty property1)
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public object[] GetValues(BindableProperty property0, BindableProperty property1)
 		{
 			var values = new object[2];
 
@@ -202,7 +204,8 @@ namespace Xamarin.Forms
 			return values;
 		}
 
-		internal object[] GetValues(BindableProperty property0, BindableProperty property1, BindableProperty property2)
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public object[] GetValues(BindableProperty property0, BindableProperty property1, BindableProperty property2)
 		{
 			var values = new object[3];
 
@@ -296,9 +299,9 @@ namespace Xamarin.Forms
 		internal void SetDynamicResource(BindableProperty property, string key, bool fromStyle)
 		{
 			if (property == null)
-				throw new ArgumentNullException("property");
+				throw new ArgumentNullException(nameof(property));
 			if (string.IsNullOrEmpty(key))
-				throw new ArgumentNullException("key");
+				throw new ArgumentNullException(nameof(key));
 
 			BindablePropertyContext context = null;
 			if (fromStyle && (context = GetContext(property)) != null && (context.Attributes & BindableContextAttributes.IsDefaultValue) == 0 &&
@@ -326,7 +329,8 @@ namespace Xamarin.Forms
 			SetValueCore(propertyKey.BindableProperty, value, attributes, SetValuePrivateFlags.None);
 		}
 
-		internal void SetValueCore(BindableProperty property, object value, SetValueFlags attributes = SetValueFlags.None)
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void SetValueCore(BindableProperty property, object value, SetValueFlags attributes = SetValueFlags.None)
 		{
 			SetValueCore(property, value, attributes, SetValuePrivateFlags.Default);
 		}
@@ -360,9 +364,10 @@ namespace Xamarin.Forms
 				value = property.CoerceValue(this, value);
 
 			BindablePropertyContext context = GetOrCreateContext(property);
-			if (manuallySet)
+			if (manuallySet) {
 				context.Attributes |= BindableContextAttributes.IsManuallySet;
-			else
+				context.Attributes &= ~BindableContextAttributes.IsSetFromStyle;
+			} else
 				context.Attributes &= ~BindableContextAttributes.IsManuallySet;
 
 			if (fromStyle)
@@ -612,16 +617,6 @@ namespace Xamarin.Forms
 		}
 
 		[Flags]
-		internal enum SetValueFlags
-		{
-			None = 0,
-			ClearOneWayBindings = 1 << 0,
-			ClearTwoWayBindings = 1 << 1,
-			ClearDynamicResource = 1 << 2,
-			RaiseOnEqual = 1 << 3
-		}
-
-		[Flags]
 		internal enum SetValuePrivateFlags
 		{
 			None = 0,
@@ -649,6 +644,20 @@ namespace Xamarin.Forms
 				CurrentlyApplying = currentlyApplying;
 				Attributes = attributes;
 			}
+		}
+	}
+
+	namespace Internals
+	{
+		[Flags]
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public enum SetValueFlags
+		{
+			None = 0,
+			ClearOneWayBindings = 1 << 0,
+			ClearTwoWayBindings = 1 << 1,
+			ClearDynamicResource = 1 << 2,
+			RaiseOnEqual = 1 << 3
 		}
 	}
 }

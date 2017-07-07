@@ -17,6 +17,18 @@ namespace Xamarin.Forms.Platform.iOS
 			Frame = new RectangleF(0, 20, 320, 40);
 		}
 
+		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
+		{
+			//with borderStyle set to RoundedRect, iOS always returns a height of 30
+			//https://stackoverflow.com/a/36569247/1063783
+			//we get the current value, and restor it, to allow custom renderers to change the border style
+			var borderStyle = Control.BorderStyle;
+			Control.BorderStyle = UITextBorderStyle.None;
+			var size = Control.GetSizeRequest(widthConstraint, double.PositiveInfinity);
+			Control.BorderStyle = borderStyle;
+			return size;
+		}
+
 		IElementController ElementController => Element as IElementController;
 
 		protected override void Dispose(bool disposing)
@@ -127,7 +139,7 @@ namespace Xamarin.Forms.Platform.iOS
 			ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
 		}
 
-		bool OnShouldReturn(UITextField view)
+		protected virtual bool OnShouldReturn(UITextField view)
 		{
 			Control.ResignFirstResponder();
 			((IEntryController)Element).SendCompleted();

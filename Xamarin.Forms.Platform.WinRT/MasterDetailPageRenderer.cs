@@ -57,8 +57,6 @@ namespace Xamarin.Forms.Platform.WinRT
 			set { _container.ToolbarForeground = value; }
 		}
 
-		IMasterDetailPageController MasterDetailPageController => Element as IMasterDetailPageController;
-
 		bool ITitleProvider.ShowTitle
 		{
 			get { return _showTitle; }
@@ -168,7 +166,10 @@ namespace Xamarin.Forms.Platform.WinRT
 			else if (e.PropertyName == MasterDetailPage.IsPresentedProperty.PropertyName)
 				UpdateIsPresented();
 			else if (e.PropertyName == MasterDetailPage.MasterBehaviorProperty.PropertyName)
+			{
 				UpdateBehavior();
+				UpdateIsPresented();
+			}
 			else if (e.PropertyName == Page.TitleProperty.PropertyName)
 				UpdateTitle();
 		}
@@ -176,7 +177,7 @@ namespace Xamarin.Forms.Platform.WinRT
 		bool GetIsMasterAPopover()
 		{
 			// TODO: Support tablet being shrunk to a very small size
-			return !MasterDetailPageController.ShouldShowSplitMode;
+			return !Element.ShouldShowSplitMode;
 		}
 
 		void OnLoaded(object sender, RoutedEventArgs args)
@@ -270,12 +271,17 @@ namespace Xamarin.Forms.Platform.WinRT
 			if (!isPopover)
 				detailWidth -= masterWidth;
 
-			MasterDetailPageController.MasterBounds = new Rectangle(0, 0, masterWidth, constraint.Height);
-			MasterDetailPageController.DetailBounds = new Rectangle(0, 0, detailWidth, constraint.Height);
+			Element.MasterBounds = new Rectangle(0, 0, masterWidth, constraint.Height);
+			Element.DetailBounds = new Rectangle(0, 0, detailWidth, constraint.Height);
 		}
 
 		void UpdateIsPresented()
 		{
+			// Ignore the IsPresented value being set to false for Split mode on desktop and allow the master
+			// view to be made initially visible
+			if ((Device.Idiom == TargetIdiom.Desktop || Device.Idiom == TargetIdiom.Tablet) && _container.IsMasterVisible && !Element.IsPresented && Element.MasterBehavior != MasterBehavior.Popover)
+				return;
+
 			UpdateBehavior();
 
 			bool isPresented = !GetIsMasterAPopover() || Element.IsPresented;

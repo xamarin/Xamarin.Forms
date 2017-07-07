@@ -422,5 +422,102 @@ namespace Xamarin.Forms.Core.UnitTests
 				return Items.GetEnumerator ();
 			}
 		}
+
+		// Need a member to keep this reference around, otherwise it gets optimized
+		// out early in Release mode during the WeakToWeak test
+#pragma warning disable 0414 // Never accessed, it's just here to prevent GC
+		ListProxy _proxyForWeakToWeakTest;
+#pragma warning restore 0414
+
+		[Test]
+		public void WeakToWeak()
+		{
+			WeakCollectionChangedList list = new WeakCollectionChangedList();
+			_proxyForWeakToWeakTest = new ListProxy(list);
+
+			Assert.True(list.AddObject(), "GC hasn't run");
+
+			GC.Collect();
+			GC.WaitForPendingFinalizers();
+
+			Assert.IsTrue(list.AddObject(), "GC run, but proxy should still hold a reference");
+
+			_proxyForWeakToWeakTest = null;
+
+			GC.Collect();
+			GC.WaitForPendingFinalizers();
+
+			Assert.IsFalse(list.AddObject(), "Proxy is gone and GC has run");
+		}
+
+		public class WeakCollectionChangedList : List<object>, INotifyCollectionChanged
+		{
+			List<WeakHandler> handlers = new List<WeakHandler>();
+
+			public WeakCollectionChangedList()
+			{
+
+			}
+			public event NotifyCollectionChangedEventHandler CollectionChanged
+			{
+				add { handlers.Add(new WeakHandler(this, value)); }
+				remove { throw new NotImplementedException(); }
+			}
+
+
+			public bool AddObject()
+			{
+				bool invoked = false;
+				var me = new object();
+				Console.WriteLine($"Handler count is {handlers.Count}");
+				foreach (var handler in handlers.ToList())
+				{
+					if (handler.IsActive)
+					{
+						invoked = true;
+						handler.Handler.DynamicInvoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, me));
+					}
+					else
+					{
+						Console.WriteLine($"Handler is inactive");
+						handlers.Remove(handler);
+					}
+				}
+
+				return invoked;
+			}
+
+			class WeakHandler
+			{
+				WeakReference source;
+				WeakReference originalHandler;
+
+				public bool IsActive
+				{
+					get { return this.source != null && this.source.IsAlive && this.originalHandler != null && this.originalHandler.IsAlive; }
+				}
+
+				public NotifyCollectionChangedEventHandler Handler
+				{
+					get
+					{
+						if (this.originalHandler == null)
+						{
+							return default(NotifyCollectionChangedEventHandler);
+						}
+						else
+						{
+							return (NotifyCollectionChangedEventHandler)this.originalHandler.Target;
+						}
+					}
+				}
+
+				public WeakHandler(object source, NotifyCollectionChangedEventHandler originalHandler)
+				{
+					this.source = new WeakReference(source);
+					this.originalHandler = new WeakReference(originalHandler);
+				}
+			}
+		}
 	}
 }

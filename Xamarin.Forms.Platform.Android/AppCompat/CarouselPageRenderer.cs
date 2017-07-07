@@ -42,7 +42,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					IVisualElementRenderer pageRenderer = Android.Platform.GetRenderer(pageToRemove);
 					if (pageRenderer != null)
 					{
-						pageRenderer.ViewGroup.RemoveFromParent();
+						pageRenderer.View.RemoveFromParent();
 						pageRenderer.Dispose();
 					}
 					pageToRemove.ClearValue(Android.Platform.RendererProperty);
@@ -91,13 +91,13 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					{
 						OverScrollMode = OverScrollMode.Never,
 						EnableGesture = true,
-						LayoutParameters = new LayoutParams(LayoutParams.MatchParent, LayoutParams.MatchParent),
+						LayoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent),
 						Adapter = new FormsFragmentPagerAdapter<ContentPage>(e.NewElement, activity.SupportFragmentManager) { CountOverride = e.NewElement.Children.Count }
 					};
-				pager.Id = FormsAppCompatActivity.GetUniqueId();
+				pager.Id = Platform.GenerateViewId();
 				pager.AddOnPageChangeListener(this);
 
-				AddView(pager);
+				ViewGroup.AddView(pager);
 				CarouselPage carouselPage = e.NewElement;
 				if (carouselPage.CurrentPage != null)
 					ScrollToCurrentPage();

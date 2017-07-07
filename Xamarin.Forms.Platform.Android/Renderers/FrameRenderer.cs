@@ -188,6 +188,9 @@ namespace Xamarin.Forms.Platform.Android
 					e.PropertyName == Frame.OutlineColorProperty.PropertyName ||
 					e.PropertyName == Frame.CornerRadiusProperty.PropertyName)
 				{
+					if(_normalBitmap == null)
+						return;
+						
 					using (var canvas = new ACanvas(_normalBitmap))
 					{
 						int width = Bounds.Width();
@@ -205,8 +208,6 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (cornerRadius == -1f)
 					cornerRadius = 5f; // default corner radius
-				else
-					cornerRadius = Forms.Context.ToPixels(cornerRadius);
 
 				DrawBackground(canvas, width, height, cornerRadius, pressed);
 				DrawOutline(canvas, width, height, cornerRadius);
