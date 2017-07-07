@@ -1,4 +1,5 @@
 ﻿using System;
+using Android.Util;
 using Android.App;
 using Android.Content;
 using Android.Gms.Tasks;
@@ -142,7 +143,7 @@ namespace Xamarin.Forms.Platform.Android.AppLinks
 
             public void OnFailure(Java.Lang.Exception e)
             {
-                System.Diagnostics.Debug.WriteLine($" [{DateTime.Now}] - [AndroidAppLinks Failure] - {e.Message}");
+                Log.Error(this.Class.Name, e, $" [{DateTime.Now}] - [AndroidAppLinks Failure] - {e.Message}");
                 throw e;
             }
         }
