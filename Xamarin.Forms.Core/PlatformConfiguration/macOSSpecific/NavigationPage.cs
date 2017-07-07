@@ -41,15 +41,15 @@
 		}
 		#endregion
 
-		public static void SetShowNavigationTransitionStyle(BindableObject element, NavigationTransitionStyle pushStyle, NavigationTransitionStyle popStyle)
+		public static void SetNavigationTransitionStyle(BindableObject element, NavigationTransitionStyle pushStyle, NavigationTransitionStyle popStyle)
 		{
 			SetNavigationTransitionPushStyle(element, pushStyle);
 			SetNavigationTransitionPopStyle(element, popStyle);
 		}
 
-		public static IPlatformElementConfiguration<macOS, FormsElement> SetShowNavigationTransitionStyle(this IPlatformElementConfiguration<macOS, FormsElement> config, NavigationTransitionStyle pushStyle, NavigationTransitionStyle popStyle)
+        public static IPlatformElementConfiguration<macOS, FormsElement> SetNavigationTransitionStyle(this IPlatformElementConfiguration<macOS, FormsElement> config, NavigationTransitionStyle pushStyle, NavigationTransitionStyle popStyle)
 		{
-            SetShowNavigationTransitionStyle(config.Element, pushStyle, popStyle);
+            SetNavigationTransitionStyle(config.Element, pushStyle, popStyle);
             return config;
 		}
 	}
