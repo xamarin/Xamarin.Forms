@@ -1,11 +1,11 @@
 ﻿namespace Xamarin.Forms.PlatformConfiguration.macOSSpecific
 {
-    using FormsElement = Forms.NavigationPage;
+	using FormsElement = Forms.NavigationPage;
 
 	public static class NavigationPage
 	{
-        public static readonly BindableProperty NavigationTransitionPushStyleProperty = BindableProperty.Create("NavigationTransitionPushStyle", typeof(NavigationTransitionStyle), typeof(NavigationPage), NavigationTransitionStyle.SlideForward);
-        public static readonly BindableProperty NavigationTransitionPopStyleProperty = BindableProperty.Create("NavigationTransitionPopStyle", typeof(NavigationTransitionStyle), typeof(NavigationPage), NavigationTransitionStyle.SlideBackward);
+		public static readonly BindableProperty NavigationTransitionPushStyleProperty = BindableProperty.Create("NavigationTransitionPushStyle", typeof(NavigationTransitionStyle), typeof(NavigationPage), NavigationTransitionStyle.SlideForward);
+		public static readonly BindableProperty NavigationTransitionPopStyleProperty = BindableProperty.Create("NavigationTransitionPopStyle", typeof(NavigationTransitionStyle), typeof(NavigationPage), NavigationTransitionStyle.SlideBackward);
 
 		#region PushStyle
 		public static NavigationTransitionStyle GetNavigationTransitionPushStyle(BindableObject element)
@@ -47,10 +47,10 @@
 			SetNavigationTransitionPopStyle(element, popStyle);
 		}
 
-        public static IPlatformElementConfiguration<macOS, FormsElement> SetNavigationTransitionStyle(this IPlatformElementConfiguration<macOS, FormsElement> config, NavigationTransitionStyle pushStyle, NavigationTransitionStyle popStyle)
+		public static IPlatformElementConfiguration<macOS, FormsElement> SetNavigationTransitionStyle(this IPlatformElementConfiguration<macOS, FormsElement> config, NavigationTransitionStyle pushStyle, NavigationTransitionStyle popStyle)
 		{
-            SetNavigationTransitionStyle(config.Element, pushStyle, popStyle);
-            return config;
+			SetNavigationTransitionStyle(config.Element, pushStyle, popStyle);
+			return config;
 		}
 	}
 }

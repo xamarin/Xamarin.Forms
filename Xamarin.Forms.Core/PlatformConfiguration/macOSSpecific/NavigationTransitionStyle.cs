@@ -1,7 +1,7 @@
 ﻿namespace Xamarin.Forms.PlatformConfiguration.macOSSpecific
 {
-    public enum NavigationTransitionStyle
-    {
+	public enum NavigationTransitionStyle
+	{
 		None,
 		Crossfade,
 		SlideUp,
@@ -10,5 +10,5 @@
 		SlideRight,
 		SlideForward,
 		SlideBackward
-    }
+	}
 }
