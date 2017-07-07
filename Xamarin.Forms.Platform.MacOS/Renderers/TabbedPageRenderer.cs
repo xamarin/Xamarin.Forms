@@ -101,13 +101,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (!Element.Bounds.IsEmpty)
 				View.Frame = new System.Drawing.RectangleF((float)Element.X, (float)Element.Y, (float)Element.Width, (float)Element.Height);
 
-            var topOffset = TabHolderHeight;
-			var tabStyle = Tabbed.OnThisPlatform().GetTabsStyle();
-            if (tabStyle == TabsStyle.Hidden || tabStyle == TabsStyle.OnNavigation)
-                topOffset = 0;
-
 			var frame = View.Frame;
-            Page.ContainerArea = new Rectangle(0, 0, frame.Width, frame.Height - topOffset);
+			Page.ContainerArea = new Rectangle(0, 0, frame.Width, frame.Height - TabHolderHeight);
 
 			if (!_queuedSize.IsZero)
 			{
@@ -195,8 +190,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		protected virtual NSTabViewItem GetTabViewItem(Page page, IVisualElementRenderer pageRenderer)
 		{
 			var tvi = new NSTabViewItem { ViewController = pageRenderer.ViewController, Label = page.Title ?? "" };
-			if (!string.IsNullOrEmpty (page.Icon)) {
-				var image = GetTabViewItemIcon (page.Icon);
+			if (!string.IsNullOrEmpty(page.Icon))
+			{
+				var image = GetTabViewItemIcon(page.Icon);
 				if (image != null)
 					tvi.Image = image;
 			}
@@ -205,9 +201,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected virtual NSImage GetTabViewItemIcon(string imageName)
 		{
-			var image = NSImage.ImageNamed (imageName);
-			if(image == null)
-				image = new NSImage (imageName);
+			var image = NSImage.ImageNamed(imageName);
+			if (image == null)
+				image = new NSImage(imageName);
 
 			if (image == null)
 				return null;
@@ -395,7 +391,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			if (!_defaultBarTextColorSet)
 			{
-				//	_defaultBarTextColor = TabBar.TintColor;
+				//  _defaultBarTextColor = TabBar.TintColor;
 				_defaultBarTextColorSet = true;
 			}
 
