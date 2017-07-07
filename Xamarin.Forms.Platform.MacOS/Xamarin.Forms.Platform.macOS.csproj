@@ -102,7 +102,6 @@
     <Compile Include="Renderers\EntryRenderer.cs" />
     <Compile Include="Renderers\EditorRenderer.cs" />
     <Compile Include="Renderers\FrameRenderer.cs" />
-    <Compile Include="Controls\FormsImageView.cs" />
     <Compile Include="Renderers\ImageRenderer.cs" />
     <Compile Include="Renderers\OpenGLViewRenderer.cs" />
     <Compile Include="Controls\MacOSOpenGLView.cs" />
@@ -224,6 +223,7 @@
     <Compile Include="..\Xamarin.Forms.Platform.iOS\VisualElementRenderer.cs">
       <Link>VisualElementRenderer.cs</Link>
     </Compile>
+    <Compile Include="Controls\FormsNSImageView.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj">
