@@ -42,7 +42,7 @@ namespace Xamarin.Forms.Controls.Issues
 			var scrollViewContents = new StackLayout();
 			for (int n = 0; n < 100; n++)
 			{
-				scrollViewContents.Children.Add(new Label() { Text = n.ToString() });
+				scrollViewContents.Children.Add(new Label { Text = n.ToString() });
 			}
 
 			var sv = new ScrollView { Content = scrollViewContents, IsEnabled = initiallyEnabled, AutomationId = ScrollView };
@@ -123,7 +123,7 @@ Use the toggle button to check both values of 'IsEnabled'."
 			RunningApp.WaitForElement("1");
 			RunningApp.WaitForElement(ScrollView);
 			RunningApp.ScrollDown(ScrollView, ScrollStrategy.Gesture);
-			RunningApp.WaitForElement("1"); // Should not have scrolled off screen
+			RunningApp.WaitForNoElement("1"); // Should not have scrolled off screen
 		}
 #endif
 	}
