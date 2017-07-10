@@ -14,7 +14,7 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 999999, "ScrollView set to disabled will still allow scrolling", PlatformAffected.All)]
+	[Issue(IssueTracker.None, 0112358, "ScrollView set to disabled will still allow scrolling", PlatformAffected.All)]
 	public class ScrollViewIsEnabled : TestNavigationPage
 	{
 		const string InitiallyEnabled = "Initially Enabled";
