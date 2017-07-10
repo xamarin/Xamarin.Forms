@@ -19,6 +19,8 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		const string InitiallyEnabled = "Initially Enabled";
 		const string InitiallyNotEnabled = "Initially Not Enabled";
+		const string ToggleButton = "ToggleButton";
+		const string ScrollView = "TheScrollView";
 
 		protected override void Init()
 		{
@@ -43,10 +45,10 @@ namespace Xamarin.Forms.Controls.Issues
 				scrollViewContents.Children.Add(new Label() { Text = n.ToString() });
 			}
 
-			var sv = new ScrollView { Content = scrollViewContents, IsEnabled = initiallyEnabled };
+			var sv = new ScrollView { Content = scrollViewContents, IsEnabled = initiallyEnabled, AutomationId = ScrollView };
 			var layout = new StackLayout { Margin = new Thickness(5, 40, 5, 0) };
 
-			var toggleButton = new Button { Text = $"Toggle IsEnabled (currently {sv.IsEnabled})" };
+			var toggleButton = new Button { Text = $"Toggle IsEnabled (currently {sv.IsEnabled})", AutomationId = ToggleButton };
 
 			toggleButton.Clicked += (sender, args) =>
 			{
@@ -69,12 +71,60 @@ Use the toggle button to check both values of 'IsEnabled'."
 			return new ContentPage { Content = layout };
 		}
 
-		//#if UITEST
-//		[Test]
-//		public void _$BZ$Test()
-//		{
-//			//RunningApp.WaitForElement(q => q.Marked(""));
-//		}
-//#endif
+#if UITEST
+		[Test]
+		public void ScrollViewInitiallyEnabled()
+		{
+			RunningApp.WaitForElement(InitiallyEnabled);
+			RunningApp.Tap(InitiallyEnabled);
+			RunningApp.WaitForElement("1");
+			RunningApp.WaitForElement(ScrollView);
+			RunningApp.ScrollDown(ScrollView, ScrollStrategy.Gesture);
+			RunningApp.WaitForNoElement("1"); // Should have scrolled off screen
+		}
+
+		[Test]
+		public void ScrollViewInitiallyEnabledThenDisabled()
+		{
+			RunningApp.WaitForElement(InitiallyEnabled);
+			RunningApp.Tap(InitiallyEnabled);
+			RunningApp.WaitForElement(ToggleButton);
+			RunningApp.Tap(ToggleButton);
+			
+			// Scrolling should now be IsEnabled = false
+
+			RunningApp.WaitForElement("1");
+			RunningApp.WaitForElement(ScrollView);
+			RunningApp.ScrollDown(ScrollView, ScrollStrategy.Gesture);
+			RunningApp.WaitForElement("1"); // Should not have scrolled off screen
+		}
+
+		[Test]
+		public void ScrollViewInitiallyNotEnabled()
+		{
+			RunningApp.WaitForElement(InitiallyNotEnabled);
+			RunningApp.Tap(InitiallyNotEnabled);
+			RunningApp.WaitForElement("1");
+			RunningApp.WaitForElement(ScrollView);
+			RunningApp.ScrollDown(ScrollView, ScrollStrategy.Gesture);
+			RunningApp.WaitForElement("1"); // Should not have scrolled off screen
+		}
+
+		[Test]
+		public void ScrollViewInitiallyNotEnabledThenEnabled()
+		{
+			RunningApp.WaitForElement(InitiallyNotEnabled);
+			RunningApp.Tap(InitiallyNotEnabled);
+			RunningApp.WaitForElement(ToggleButton);
+			RunningApp.Tap(ToggleButton);
+
+			// Scrolling should now be IsEnabled = true
+
+			RunningApp.WaitForElement("1");
+			RunningApp.WaitForElement(ScrollView);
+			RunningApp.ScrollDown(ScrollView, ScrollStrategy.Gesture);
+			RunningApp.WaitForElement("1"); // Should not have scrolled off screen
+		}
+#endif
 	}
 }
