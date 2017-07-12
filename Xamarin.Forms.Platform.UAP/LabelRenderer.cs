@@ -1,5 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Threading;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
@@ -28,6 +30,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 	public class LabelRenderer : ViewRenderer<Label, TextBlock>
 	{
+		static int s_count;
+
 		bool _fontApplied;
 		bool _isInitiallyDefault;
 		SizeRequest _perfectSize;
@@ -42,6 +46,11 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 
 			return new FrameworkElementAutomationPeer(Control);
+		}
+		
+		public LabelRenderer()
+		{
+			Debug.WriteLine($">>>>> LabelRenderer count is: {Interlocked.Increment(ref s_count)}");
 		}
 
 		protected override Windows.Foundation.Size ArrangeOverride(Windows.Foundation.Size finalSize)
@@ -114,6 +123,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (e.NewElement != null)
 			{
+				Debug.WriteLine($">>>>> LabelRenderer OnElementChanged 112: Element = {e.NewElement.Text}");
+
 				if (Control == null)
 				{
 					SetNativeControl(new TextBlock());
@@ -239,6 +250,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateText(TextBlock textBlock)
 		{
+			Debug.WriteLine($">>>>> LabelRenderer UpdateText, count is: {s_count}");
+
 			_perfectSizeValid = false;
 
 			if (textBlock == null)
@@ -264,6 +277,18 @@ namespace Xamarin.Forms.Platform.UWP
 					}
 				}
 			}
+		}
+
+		//~LabelRenderer()
+		//{
+		//	Debug.WriteLine($">>>>> LabelRenderer ~LabelRenderer, count is: {Interlocked.Decrement(ref s_count)}");
+		//}
+
+		// TODO hartez 2017/07/11 18:42:34 Dispose is *not* being called on label renderers in ViewCells	
+		protected override void Dispose(bool disposing)
+		{
+			Debug.WriteLine($">>>>> LabelRenderer Dispose, count is: {Interlocked.Decrement(ref s_count)}");
+			base.Dispose(disposing);
 		}
 	}
 }

@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 
 namespace Xamarin.Forms
 {
+	// TODO hartez 2017/07/11 20:24:59 Get a count going on this thing, see if maybe it's holding up CellControl or vice versa	(check for roots)
 	[ContentProperty("View")]
 	public class ViewCell : Cell
 	{

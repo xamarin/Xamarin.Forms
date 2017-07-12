@@ -220,6 +220,7 @@ namespace Xamarin.Forms.Platform.UWP
 			return finalSize;
 		}
 
+		// TODO hartez 2017/07/11 18:41:54 Need suppress finalize	
 		protected virtual void Dispose(bool disposing)
 		{
 			if (!disposing || _disposed)
