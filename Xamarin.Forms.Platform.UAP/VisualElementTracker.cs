@@ -127,10 +127,10 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		// TODO hartez 2017/07/11 18:41:38 Need suppress finalize	
 		public void Dispose()
 		{
 			Dispose(true);
+			GC.SuppressFinalize(this);
 		}
 
 		public event EventHandler Updated;
