@@ -10,11 +10,11 @@ using Xamarin.Forms.Core.UITests;
 namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
-	//[Category(UITestCategories.)]
+	[Category(UITestCategories.Navigation)]
 #endif
 
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 999999, "PopAsync crashing after RemovePage when support packages are updated to 25.1.1", PlatformAffected.Android)]
+	[Issue(IssueTracker.None, 0101100101, "PopAsync crashing after RemovePage when support packages are updated to 25.1.1", PlatformAffected.Android)]
 	public class Bugzilla999999 : TestNavigationPage
 	{
 		ContentPage _intermediate1;
@@ -32,22 +32,25 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 		const string StartTest = "Start Test";
+		const string RootLabel = "Root";
 
 		ContentPage Last()
 		{
 			var test = new Button { Text = StartTest };
 
+			var instructions = new Label {Text = $"Tap the button labeled '{StartTest}'. The app should navigate to a page displaying the label '{RootLabel}'. If the application crashes, the test has failed." };
+
 			var layout = new StackLayout();
 
-			layout.Children.Add(new Label{Text = "Last"});
+			layout.Children.Add(instructions);
 			layout.Children.Add(test);
 
 			test.Clicked += (sender, args) =>
 			{
-				// TODO hartez 2017/07/11 20:51:46 Need to check both orders for intermediate pages, and also animated/not	
-				Navigation.RemovePage(_intermediate1);
 				Navigation.RemovePage(_intermediate2);
-				Navigation.PopAsync();
+				Navigation.RemovePage(_intermediate1);
+				
+				Navigation.PopAsync(true);
 			};
 
 			return new ContentPage { Content = layout };
@@ -55,7 +58,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		static ContentPage Root()
 		{
-			return new ContentPage { Content = new Label { Text = "Root" } };
+			return new ContentPage { Content = new Label { Text = RootLabel } };
 		}
 
 		static ContentPage Intermediate()
@@ -64,11 +67,13 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		//[Test]
-		//public void _999999Test()
-		//{
-		//	//RunningApp.WaitForElement(q => q.Marked(""));
-		//}
+		[Test]
+		public void PopAsyncAfterRemovePageDoesNotCrash()
+		{
+			RunningApp.WaitForElement(StartTest);
+			RunningApp.Tap(StartTest);
+			RunningApp.WaitForElement(RootLabel);
+		}
 #endif
 	}
 }
