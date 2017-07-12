@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.None, 0101100101, "PopAsync crashing after RemovePage when support packages are updated to 25.1.1", PlatformAffected.Android)]
-	public class Bugzilla999999 : TestNavigationPage
+	public class PopAfterRemove : TestNavigationPage
 	{
 		ContentPage _intermediate1;
 		ContentPage _intermediate2;
