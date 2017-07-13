@@ -16,25 +16,25 @@ using Xamarin.Forms.Core.UITests;
 namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
-	//[Category(UITestCategories.)]
+	[Category(UITestCategories.ListView)]
 #endif
 
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 945722, "Memory leak in Xamarin Forms ListView", PlatformAffected.All)]
-	public class Bugzilla45722 : TestContentPage 
+	public class Bugzilla45722 : TestNavigationPage 
 	{
 		IEnumerable<string> CreateItems()
 		{
 			var r = new Random(DateTime.Now.Millisecond);
-			for (int n = 0; n < 3; n++)
+			for (int n = 0; n < 30; n++)
 			{
 				yield return r.NextDouble().ToString(CultureInfo.InvariantCulture);
 			}
 		}
 
-		protected override void Init()
+		ContentPage ListPage()
 		{
-			var lv = new ListView(ListViewCachingStrategy.RetainElement) {};
+			var lv = new ListView(ListViewCachingStrategy.RetainElement) { };
 
 			var items = new ObservableCollection<string>();
 
@@ -47,18 +47,16 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				var label = new _45722Label();
 
-				//Debug.WriteLine($">>>>> Bugzilla45722 DataTemplate created new Label {label.Id}");
+				Debug.WriteLine($">>>>> Bugzilla45722 DataTemplate created new Label {label.Id}");
 
 				label.SetBinding(Label.TextProperty, new Binding("."));
-				return 	new ViewCell { View = label };
+				return new ViewCell { View = label };
 			});
 
 			lv.ItemsSource = items;
 			lv.ItemTemplate = dt;
 
 			var button = new Button { Text = "Update List" };
-			var gc = new Button { Text = "GC" };
-
 			button.Clicked += (sender, args) =>
 			{
 				items.Clear();
@@ -68,24 +66,63 @@ namespace Xamarin.Forms.Controls.Issues
 				}
 			};
 
+			return new ContentPage
+			{
+				Content = new StackLayout
+				{
+					Padding = new Thickness(0, 20, 0, 0),
+					Children =
+					{
+						button,
+						lv
+					}
+				}
+			};
+		}
+
+		Label _currentLabelCount;
+
+		ContentPage Root()
+		{
+			var button = new Button { Text = "Push List Page" };
+			var gc = new Button { Text = "GC" };
+
+			button.Clicked += async (sender, args) =>
+			{
+				await Navigation.PushAsync(Intermediate());
+				await Navigation.PushAsync(ListPage());
+			};
+
+
 			gc.Clicked += (sender, args) =>
 			{
 				GC.Collect();
 				GC.WaitForPendingFinalizers();
 			};
 
-			Content = new StackLayout
-			{
-				Padding = new Thickness(0, 20, 0, 0),
-				Children =
-				{
-					button, gc, lv
-				}
-			};
+			return new ContentPage { Content = new StackLayout { Children = { _currentLabelCount, button, gc } } };
 		}
 
-		// TODO hartez 2017/07/10 18:33:50 For starters, these never seem to be collected, even if you clear out the list and add new stuff	
-		// We need to drop some debug messages into labelrenderer and see if those ever get disposed; my sense is they do not
+		ContentPage Intermediate()
+		{
+			return new ContentPage() { Content = new Label() {Text = "Nothing to see here"} };
+			
+		}
+
+		protected override void Init()
+		{
+			_currentLabelCount = new Label();
+			
+			Log.Listeners.Add(new DelegateLogListener((c, m) =>
+			{
+				if (c == nameof(_45722Label))
+				{
+					Device.BeginInvokeOnMainThread(() => _currentLabelCount.Text = m);
+				}
+			}));
+
+			PushAsync(Root());
+		}
 
 		class _45722Label : Label
 		{
@@ -98,12 +135,14 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				Id = s_id;
 				Debug.WriteLine($">>>>> _45722Label constructor for {Id} - instance count is: {Interlocked.Increment(ref s_count)}");
+				Log.Warning(nameof(_45722Label), $"{s_count}");
 				s_id += 1;
 			}
 
 			~_45722Label()
 			{
 				Debug.WriteLine($">>>>> _45722Label finalizer for {Id} - instance count is: {Interlocked.Decrement(ref s_count)}");
+				Log.Warning(nameof(_45722Label), $"{s_count}");
 			}
 
 			public override string ToString()
