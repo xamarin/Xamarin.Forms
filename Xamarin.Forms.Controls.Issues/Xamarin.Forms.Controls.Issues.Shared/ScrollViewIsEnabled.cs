@@ -21,6 +21,7 @@ namespace Xamarin.Forms.Controls.Issues
 		const string InitiallyNotEnabled = "Initially Not Enabled";
 		const string ToggleButton = "ToggleButton";
 		const string ScrollView = "TheScrollView";
+		const string FirstItem = "FirstItem";
 
 		protected override void Init()
 		{
@@ -40,6 +41,7 @@ namespace Xamarin.Forms.Controls.Issues
 		static ContentPage ScrollViewTestPage(bool initiallyEnabled)
 		{
 			var scrollViewContents = new StackLayout();
+			scrollViewContents.Children.Add(new Label { Text = FirstItem });
 			for (int n = 0; n < 100; n++)
 			{
 				scrollViewContents.Children.Add(new Label { Text = n.ToString() });
@@ -77,10 +79,10 @@ Use the toggle button to check both values of 'IsEnabled'."
 		{
 			RunningApp.WaitForElement(InitiallyEnabled);
 			RunningApp.Tap(InitiallyEnabled);
-			RunningApp.WaitForElement("1");
+			RunningApp.WaitForElement(FirstItem);
 			RunningApp.WaitForElement(ScrollView);
 			RunningApp.ScrollDown(ScrollView, ScrollStrategy.Gesture);
-			RunningApp.WaitForNoElement("1"); // Should have scrolled off screen
+			RunningApp.WaitForNoElement(FirstItem); // Should have scrolled off screen
 		}
 
 		[Test]
@@ -93,10 +95,10 @@ Use the toggle button to check both values of 'IsEnabled'."
 			
 			// Scrolling should now be IsEnabled = false
 
-			RunningApp.WaitForElement("1");
+			RunningApp.WaitForElement(FirstItem);
 			RunningApp.WaitForElement(ScrollView);
 			RunningApp.ScrollDown(ScrollView, ScrollStrategy.Gesture);
-			RunningApp.WaitForElement("1"); // Should not have scrolled off screen
+			RunningApp.WaitForElement(FirstItem); // Should not have scrolled off screen
 		}
 
 		[Test]
@@ -104,10 +106,10 @@ Use the toggle button to check both values of 'IsEnabled'."
 		{
 			RunningApp.WaitForElement(InitiallyNotEnabled);
 			RunningApp.Tap(InitiallyNotEnabled);
-			RunningApp.WaitForElement("1");
+			RunningApp.WaitForElement(FirstItem);
 			RunningApp.WaitForElement(ScrollView);
 			RunningApp.ScrollDown(ScrollView, ScrollStrategy.Gesture);
-			RunningApp.WaitForElement("1"); // Should not have scrolled off screen
+			RunningApp.WaitForElement(FirstItem); // Should not have scrolled off screen
 		}
 
 		[Test]
@@ -120,10 +122,10 @@ Use the toggle button to check both values of 'IsEnabled'."
 
 			// Scrolling should now be IsEnabled = true
 
-			RunningApp.WaitForElement("1");
+			RunningApp.WaitForElement(FirstItem);
 			RunningApp.WaitForElement(ScrollView);
 			RunningApp.ScrollDown(ScrollView, ScrollStrategy.Gesture);
-			RunningApp.WaitForNoElement("1"); // Should not have scrolled off screen
+			RunningApp.WaitForNoElement(FirstItem); // Should not have scrolled off screen
 		}
 #endif
 	}
