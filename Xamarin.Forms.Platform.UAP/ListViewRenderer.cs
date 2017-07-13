@@ -61,7 +61,7 @@ namespace Xamarin.Forms.Platform.UWP
 				}
 
 				// WinRT throws an exception if you set ItemsSource directly to a CVS, so bind it.
-				List.DataContext = new CollectionViewSource { Source = Element.ItemsSource, IsSourceGrouped = Element.IsGroupingEnabled };
+				List.DataContext = new CollectionViewSource { Source = TemplatedItemsView.TemplatedItems, IsSourceGrouped = Element.IsGroupingEnabled };
 
 				UpdateGrouping();
 				UpdateHeader();
@@ -125,8 +125,6 @@ namespace Xamarin.Forms.Platform.UWP
 					List.ItemClick -= OnListItemClicked;
 				}
 				List.SelectionChanged -= OnControlSelectionChanged;
-
-				Debug.WriteLine($">>>>> ListViewRenderer Dispose 142: Setting the list datacontext to null");
 				List.DataContext = null;
 				List = null;
 			}

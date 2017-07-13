@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Threading;
 using Windows.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
@@ -168,7 +166,7 @@ namespace Xamarin.Forms.Platform.UWP
 			// set on MeasureOverrideDelegate. However, if the parent is a TableView, we'll already 
 			// have a complete Cell object to work with, so we can move ahead.
 			if (_isListViewRealized || args.NewValue is Cell)
-					SetCell(args.NewValue, sender as CellControl);
+				SetCell(args.NewValue, sender as CellControl);
 			else if (args.NewValue != null)
 				_newValue = args.NewValue;
 		}
@@ -198,6 +196,12 @@ namespace Xamarin.Forms.Platform.UWP
 		void SetCell(object newContext, CellControl cellControl = null)
 		{
 			var cell = newContext as Cell;
+
+			if (cell != null)
+			{
+				Cell = cell;
+				return;
+			}
 
 			if (ReferenceEquals(Cell?.BindingContext, newContext))
 				return;

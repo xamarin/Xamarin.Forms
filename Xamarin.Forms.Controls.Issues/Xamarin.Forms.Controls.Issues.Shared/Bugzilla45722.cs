@@ -20,10 +20,19 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 945722, "Memory leak in Xamarin Forms ListView", PlatformAffected.All)]
-	public class Bugzilla45722 : TestNavigationPage 
+	[Issue(IssueTracker.Bugzilla, 45722, "Memory leak in Xamarin Forms ListView", PlatformAffected.UWP)]
+	public class Bugzilla45722 : TestNavigationPage
 	{
-		IEnumerable<string> CreateItems()
+		const string Success = "Success";
+		const string Running = "Running...";
+		const string Push = "Push List Page";
+		const string GarbageCollect = "GC";
+		const string Update = "Update List";
+
+		Label _currentLabelCount;
+		Label _statusLabel;
+
+		static IEnumerable<string> CreateItems()
 		{
 			var r = new Random(DateTime.Now.Millisecond);
 			for (int n = 0; n < 30; n++)
@@ -32,7 +41,7 @@ namespace Xamarin.Forms.Controls.Issues
 			}
 		}
 
-		ContentPage ListPage()
+		static ContentPage ListPage()
 		{
 			var lv = new ListView(ListViewCachingStrategy.RetainElement) { };
 
@@ -46,9 +55,6 @@ namespace Xamarin.Forms.Controls.Issues
 			var dt = new DataTemplate(() =>
 			{
 				var label = new _45722Label();
-
-				Debug.WriteLine($">>>>> Bugzilla45722 DataTemplate created new Label {label.Id}");
-
 				label.SetBinding(Label.TextProperty, new Binding("."));
 				return new ViewCell { View = label };
 			});
@@ -56,7 +62,7 @@ namespace Xamarin.Forms.Controls.Issues
 			lv.ItemsSource = items;
 			lv.ItemTemplate = dt;
 
-			var button = new Button { Text = "Update List" };
+			var button = new Button { Text = Update };
 			button.Clicked += (sender, args) =>
 			{
 				items.Clear();
@@ -71,21 +77,15 @@ namespace Xamarin.Forms.Controls.Issues
 				Content = new StackLayout
 				{
 					Padding = new Thickness(0, 20, 0, 0),
-					Children =
-					{
-						button,
-						lv
-					}
+					Children = { button, lv }
 				}
 			};
 		}
 
-		Label _currentLabelCount;
-
 		ContentPage Root()
 		{
-			var button = new Button { Text = "Push List Page" };
-			var gc = new Button { Text = "GC" };
+			var button = new Button { Text = Push  };
+			var gc = new Button { Text = GarbageCollect };
 
 			button.Clicked += async (sender, args) =>
 			{
@@ -93,31 +93,44 @@ namespace Xamarin.Forms.Controls.Issues
 				await Navigation.PushAsync(ListPage());
 			};
 
-
 			gc.Clicked += (sender, args) =>
 			{
 				GC.Collect();
 				GC.WaitForPendingFinalizers();
 			};
 
-			return new ContentPage { Content = new StackLayout { Children = { _currentLabelCount, button, gc } } };
+			return new ContentPage { Content = new StackLayout
+			{
+				Children = { _currentLabelCount, _statusLabel, button, gc }
+			} };
 		}
 
-		ContentPage Intermediate()
+		static ContentPage Intermediate()
 		{
-			return new ContentPage() { Content = new Label() {Text = "Nothing to see here"} };
-			
+			return new ContentPage { Content = new Label { Text = "Nothing to see here" } };
 		}
 
 		protected override void Init()
 		{
 			_currentLabelCount = new Label();
+			_statusLabel = new Label { Text = Running };
 			
 			Log.Listeners.Add(new DelegateLogListener((c, m) =>
 			{
 				if (c == nameof(_45722Label))
 				{
-					Device.BeginInvokeOnMainThread(() => _currentLabelCount.Text = m);
+					Device.BeginInvokeOnMainThread(() =>
+					{
+						_currentLabelCount.Text = m;
+						if (int.Parse(m) == 0)
+						{
+							_statusLabel.Text = Success;
+						}
+						else
+						{
+							_statusLabel.Text = Running;
+						}
+					});
 				}
 			}));
 
@@ -129,34 +142,46 @@ namespace Xamarin.Forms.Controls.Issues
 			static int s_id;
 			static int s_count;
 
-			public int Id { get; }
+			int Id { get; }
 
 			public _45722Label()
 			{
 				Id = s_id;
-				Debug.WriteLine($">>>>> _45722Label constructor for {Id} - instance count is: {Interlocked.Increment(ref s_count)}");
+				Interlocked.Increment(ref s_count);
 				Log.Warning(nameof(_45722Label), $"{s_count}");
 				s_id += 1;
 			}
 
 			~_45722Label()
 			{
-				Debug.WriteLine($">>>>> _45722Label finalizer for {Id} - instance count is: {Interlocked.Decrement(ref s_count)}");
+				Interlocked.Decrement(ref s_count);
 				Log.Warning(nameof(_45722Label), $"{s_count}");
 			}
 
 			public override string ToString()
 			{
-				return $"_45722Label: {nameof(Id)}: {Id}";
+				return $"{nameof(_45722Label)}: {nameof(Id)}: {Id}";
 			}
 		}
 
 #if UITEST
-		//[Test]
-		//public void _45722Test()
-		//{
-		//	//RunningApp.WaitForElement(q => q.Marked(""));
-		//}
+		[Test]
+		public void LabelsInListViewTemplatesShouldBeCollected()
+		{
+			RunningApp.WaitForElement(Push);
+			RunningApp.Tap(Push);
+
+			for(int n = 0; n < 10; n++)
+			{
+				RunningApp.Tap(Update);
+			}
+
+			RunningApp.Back();
+			RunningApp.Back();
+
+			RunningApp.Tap(GarbageCollect);
+			RunningApp.WaitForElement(Success);
+		}
 #endif
 	}
 }
