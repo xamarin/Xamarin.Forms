@@ -9,9 +9,7 @@ using Android.Content;
 using Android.Content.Res;
 using Android.OS;
 using Android.Runtime;
-using Android.Support.V4.Content;
 using Android.Support.V7.App;
-using Android.Util;
 using Android.Views;
 using Android.Widget;
 using Xamarin.Forms.Platform.Android.AppCompat;
@@ -197,6 +195,7 @@ namespace Xamarin.Forms.Platform.Android
 			MessagingCenter.Unsubscribe<Page, AlertArguments>(this, Page.AlertSignalName);
 			MessagingCenter.Unsubscribe<Page, bool>(this, Page.BusySetSignalName);
 			MessagingCenter.Unsubscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName);
+			MessagingCenter.Unsubscribe<Page>(this, Page.AccentColorSignalName);
 
 			_platform?.Dispose();
 
@@ -319,6 +318,7 @@ namespace Xamarin.Forms.Platform.Android
 			MessagingCenter.Subscribe<Page, bool>(this, Page.BusySetSignalName, OnPageBusy);
 			MessagingCenter.Subscribe<Page, AlertArguments>(this, Page.AlertSignalName, OnAlertRequested);
 			MessagingCenter.Subscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName, OnActionSheetRequested);
+			MessagingCenter.Subscribe<Page>(this, Page.AccentColorSignalName, OnAccentColorRequested);
 
 			_platform = new AppCompat.Platform(this);
 			if (_application != null)
@@ -326,6 +326,11 @@ namespace Xamarin.Forms.Platform.Android
 			_platform.SetPage(page);
 			_layout.AddView(_platform);
 			_layout.BringToFront();
+		}
+
+		void OnAccentColorRequested(Page sender)
+		{
+			Color.SetAccent(Forms.GetAccentColor());
 		}
 
 		void OnActionSheetRequested(Page sender, ActionSheetArguments arguments)

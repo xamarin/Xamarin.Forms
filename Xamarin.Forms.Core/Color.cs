@@ -31,8 +31,19 @@ namespace Xamarin.Forms
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public static void SetAccent(Color value) => Accent = value;
-		public static Color Accent { get; internal set; }
+		public static void SetAccent(Color value) => s_accent = value;
+
+		static Color s_accent;
+		public static Color Accent
+		{
+			get
+			{
+				if (Device.RuntimePlatform == Device.Android && s_accent.IsDefault)
+					MessagingCenter.Send(Application.Current.MainPage, Page.AccentColorSignalName);
+
+				return s_accent;
+			}
+		}
 
 		readonly float _a;
 

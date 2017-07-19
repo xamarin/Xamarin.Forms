@@ -115,8 +115,6 @@ namespace Xamarin.Forms
 
 			ResourceManager.Init(resourceAssembly);
 
-			Color.SetAccent(GetAccentColor());
-
 			if (!IsInitialized)
 				Internals.Log.Listeners.Add(new DelegateLogListener((c, m) => Trace.WriteLine(m, c)));
 
@@ -151,18 +149,18 @@ namespace Xamarin.Forms
 			IsInitialized = true;
 		}
 
-		static Color GetAccentColor()
+		public static Color GetAccentColor()
 		{
-			Color rc;
+			Color accentColor;
 			using (var value = new TypedValue())
 			{
 				if (Context.Theme.ResolveAttribute(global::Android.Resource.Attribute.ColorAccent, value, true) && Forms.IsLollipopOrNewer)	// Android 5.0+
 				{
-					rc = Color.FromUint((uint)value.Data);
+					accentColor = Color.FromUint((uint)value.Data);
 				}
 				else if(Context.Theme.ResolveAttribute(Context.Resources.GetIdentifier("colorAccent", "attr", Context.PackageName), value, true))	// < Android 5.0
 				{
-					rc = Color.FromUint((uint)value.Data);
+					accentColor = Color.FromUint((uint)value.Data);
 				}
 				else                    // fallback to old code if nothing works (don't know if that ever happens)
 				{
@@ -172,16 +170,16 @@ namespace Xamarin.Forms
 					if (sdkVersion <= 10)
 					{
 						// legacy theme button pressed color
-						rc = Color.FromHex("#fffeaa0c");
+						accentColor = Color.FromHex("#fffeaa0c");
 					}
 					else
 					{
 						// Holo dark light blue
-						rc = Color.FromHex("#ff33b5e5");
+						accentColor = Color.FromHex("#ff33b5e5");
 					}
 				}
 			}
-			return rc;
+			return accentColor;
 		}
 
 		class AndroidDeviceInfo : DeviceInfo
