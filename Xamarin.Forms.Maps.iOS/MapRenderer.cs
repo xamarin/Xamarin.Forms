@@ -20,145 +20,11 @@ using Xamarin.Forms.Platform.MacOS;
 namespace Xamarin.Forms.Maps.MacOS
 #endif
 {
-	internal class MapDelegate : MKMapViewDelegate
-	{
-		// keep references alive, removing this will cause a segfault
-		readonly List<object> List = new List<object>();
-		Map _map;
-		object _lastTouchedView;
-		bool _disposed;
-
-		internal MapDelegate(Map map)
-		{
-			_map = map;
-		}
-
-		public override MKAnnotationView GetViewForAnnotation(MKMapView mapView, IMKAnnotation annotation)
-		{
-			MKPinAnnotationView mapPin = null;
-
-			// https://bugzilla.xamarin.com/show_bug.cgi?id=26416
-			var userLocationAnnotation = Runtime.GetNSObject(annotation.Handle) as MKUserLocation;
-			if (userLocationAnnotation != null)
-				return null;
-
-			const string defaultPinId = "defaultPin";
-			mapPin = (MKPinAnnotationView)mapView.DequeueReusableAnnotation(defaultPinId);
-			if (mapPin == null)
-			{
-				mapPin = new MKPinAnnotationView(annotation, defaultPinId);
-				mapPin.CanShowCallout = true;
-			}
-
-			mapPin.Annotation = annotation;
-			AttachGestureToPin(mapPin, annotation);
-
-			return mapPin;
-		}
-#if __MOBILE__
-		void AttachGestureToPin(MKPinAnnotationView mapPin, IMKAnnotation annotation)
-		{
-
-			UIGestureRecognizer[] recognizers = mapPin.GestureRecognizers;
-
-			if (recognizers != null)
-			{
-				foreach (UIGestureRecognizer r in recognizers)
-				{
-					mapPin.RemoveGestureRecognizer(r);
-				}
-			}
-
-			Action<UITapGestureRecognizer> action = g => OnClick(annotation, g);
-			var recognizer = new UITapGestureRecognizer(action) { ShouldReceiveTouch = (gestureRecognizer, touch) =>
-			{
-				_lastTouchedView = touch.View;
-				return true;
-			} };
-			List.Add(action);
-			List.Add(recognizer);
-			mapPin.AddGestureRecognizer(recognizer);
-			}
-#else
-		void AttachGestureToPin(MKPinAnnotationView mapPin, IMKAnnotation annotation)
-		{
-			NSGestureRecognizer[] recognizers = mapPin.GestureRecognizers;
-
-			if (recognizers != null)
-			{
-				foreach (NSGestureRecognizer r in recognizers)
-				{
-					mapPin.RemoveGestureRecognizer(r);
-				}
-			}
-
-			Action<NSClickGestureRecognizer> action = g => OnClick(annotation, g);
-			var recognizer = new NSClickGestureRecognizer(action);
-			List.Add(action);
-			List.Add(recognizer);
-			mapPin.AddGestureRecognizer(recognizer);
-
-		}
-#endif
-#if __MOBILE__
-		void OnClick(object annotationObject, UITapGestureRecognizer recognizer)
-#else
-		void OnClick(object annotationObject, NSClickGestureRecognizer recognizer)
-#endif
-		{
-			// https://bugzilla.xamarin.com/show_bug.cgi?id=26416
-			NSObject annotation = Runtime.GetNSObject(((IMKAnnotation)annotationObject).Handle);
-			if (annotation == null)
-				return;
-
-			// lookup pin
-			Pin targetPin = null;
-			for (var i = 0; i < _map.Pins.Count; i++)
-			{
-				Pin pin = _map.Pins[i];
-				object target = pin.Id;
-				if (target != annotation)
-					continue;
-
-				targetPin = pin;
-				break;
-			}
-
-			// pin not found. Must have been activated outside of forms
-			if (targetPin == null)
-				return;
-
-			// if the tap happened on the annotation view itself, skip because this is what happens when the callout is showing
-			// when the callout is already visible the tap comes in on a different view
-			if (_lastTouchedView is MKAnnotationView)
-				return;
-
-			targetPin.SendTap();
-		}
-
-		protected override void Dispose(bool disposing)
-		{
-			if (_disposed)
-			{
-				return;
-			}
-
-			_disposed = true;
-
-			if (disposing)
-			{
-				_map = null;
-				_lastTouchedView = null;
-			}
-
-			base.Dispose(disposing);
-		}
-	}
-
-	public class MapRenderer : ViewRenderer
+	public class MapRenderer : ViewRenderer<Map, MKMapView>
 	{
 		CLLocationManager _locationManager;
 		bool _shouldUpdateRegion;
+		object _lastTouchedView;
 		bool _disposed;
 
 		const string MoveMessageName = "MapMoveToRegion";
@@ -190,26 +56,26 @@ namespace Xamarin.Forms.Maps.MacOS
 			{
 				if (Element != null)
 				{
-					var mapModel = (Map)Element;
 					MessagingCenter.Unsubscribe<Map, MapSpan>(this, MoveMessageName);
-					((ObservableCollection<Pin>)mapModel.Pins).CollectionChanged -= OnCollectionChanged;
+					((ObservableCollection<Pin>)Element.Pins).CollectionChanged -= OnCollectionChanged;
 				}
 
-				var mkMapView = (MKMapView)Control;
-				mkMapView.RegionChanged -= MkMapViewOnRegionChanged;
-				mkMapView.GetViewForAnnotation = null;
-				if (mkMapView.Delegate != null)
+				Control.RegionChanged -= MkMapViewOnRegionChanged;
+				Control.GetViewForAnnotation = null;
+
+				if (Control.Delegate != null)
 				{
-					mkMapView.Delegate.Dispose();
-					mkMapView.Delegate = null;
+					Control.Delegate.Dispose();
+					Control.Delegate = null;
 				}
-				mkMapView.RemoveFromSuperview();
+
+				Control.RemoveFromSuperview();
 #if __MOBILE__
 				if (FormsMaps.IsiOs9OrNewer)
 				{
 					// This renderer is done with the MKMapView; we can put it in the pool
 					// for other rendererers to use in the future
-					MapPool.Add(mkMapView);
+					MapPool.Add(Control);
 				}
 #endif
 				// For iOS versions < 9, the MKMapView will be disposed in ViewRenderer's Dispose method
@@ -219,25 +85,26 @@ namespace Xamarin.Forms.Maps.MacOS
 					_locationManager.Dispose();
 					_locationManager = null;
 				}
+
+				_lastTouchedView = null;
 			}
 
 			base.Dispose(disposing);
 		}
 
-		protected override void OnElementChanged(ElementChangedEventArgs<View> e)
+		protected override void OnElementChanged(ElementChangedEventArgs<Map> e)
 		{
 			base.OnElementChanged(e);
 
 			if (e.OldElement != null)
 			{
-				var mapModel = (Map)e.OldElement;
 				MessagingCenter.Unsubscribe<Map, MapSpan>(this, MoveMessageName);
-				((ObservableCollection<Pin>)mapModel.Pins).CollectionChanged -= OnCollectionChanged;
+				((ObservableCollection<Pin>)e.OldElement.Pins).CollectionChanged -= OnCollectionChanged;
 			}
 
 			if (e.NewElement != null)
 			{
-				var mapModel = (Map)e.NewElement;
+				var mapModel = e.NewElement;
 
 				if (Control == null)
 				{
@@ -258,10 +125,8 @@ namespace Xamarin.Forms.Maps.MacOS
 
 					SetNativeControl(mapView);
 
-					var mkMapView = (MKMapView)Control;
-					var mapDelegate = new MapDelegate(mapModel);
-					mkMapView.GetViewForAnnotation = mapDelegate.GetViewForAnnotation;
-					mkMapView.RegionChanged += MkMapViewOnRegionChanged;
+					Control.GetViewForAnnotation = GetViewForAnnotation;
+					Control.RegionChanged += MkMapViewOnRegionChanged;
 				}
 
 				MessagingCenter.Subscribe<Map, MapSpan>(this, MoveMessageName, (s, a) => MoveToRegion(a), mapModel);
@@ -275,7 +140,7 @@ namespace Xamarin.Forms.Maps.MacOS
 
 				((ObservableCollection<Pin>)mapModel.Pins).CollectionChanged += OnCollectionChanged;
 
-				OnCollectionChanged(((Map)Element).Pins, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+				OnCollectionChanged(mapModel.Pins, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 			}
 		}
 
@@ -291,7 +156,7 @@ namespace Xamarin.Forms.Maps.MacOS
 				UpdateHasScrollEnabled();
 			else if (e.PropertyName == Map.HasZoomEnabledProperty.PropertyName)
 				UpdateHasZoomEnabled();
-			else if (e.PropertyName == VisualElement.HeightProperty.PropertyName && ((Map)Element).LastMoveToRegion != null)
+			else if (e.PropertyName == VisualElement.HeightProperty.PropertyName && Element.LastMoveToRegion != null)
 				_shouldUpdateRegion = true;
 		}
 
@@ -319,11 +184,96 @@ namespace Xamarin.Forms.Maps.MacOS
 			};
 		}
 
+		protected virtual MKAnnotationView GetViewForAnnotation(MKMapView mapView, IMKAnnotation annotation)
+		{
+			MKAnnotationView mapPin = null;
+
+			// https://bugzilla.xamarin.com/show_bug.cgi?id=26416
+			var userLocationAnnotation = Runtime.GetNSObject(annotation.Handle) as MKUserLocation;
+			if (userLocationAnnotation != null)
+				return null;
+
+			const string defaultPinId = "defaultPin";
+			mapPin = mapView.DequeueReusableAnnotation(defaultPinId);
+			if (mapPin == null)
+			{
+				mapPin = new MKPinAnnotationView(annotation, defaultPinId);
+				mapPin.CanShowCallout = true;
+			}
+
+			mapPin.Annotation = annotation;
+			AttachGestureToPin(mapPin, annotation);
+
+			return mapPin;
+		}
+
+		protected void AttachGestureToPin(MKAnnotationView mapPin, IMKAnnotation annotation)
+		{
+			var recognizers = mapPin.GestureRecognizers;
+
+			if (recognizers != null)
+			{
+				foreach (var r in recognizers)
+				{
+					mapPin.RemoveGestureRecognizer(r);
+				}
+			}
+
+#if __MOBILE__
+			var recognizer = new UITapGestureRecognizer(g => OnClick(annotation, g))
+			{
+				ShouldReceiveTouch = (gestureRecognizer, touch) =>
+				{
+					_lastTouchedView = touch.View;
+					return true;
+				}
+			};
+#else
+			var recognizer = new NSClickGestureRecognizer(g => OnClick(annotation, g));
+#endif
+			mapPin.AddGestureRecognizer(recognizer);
+		}
+
+#if __MOBILE__
+		void OnClick(object annotationObject, UITapGestureRecognizer recognizer)
+#else
+		void OnClick(object annotationObject, NSClickGestureRecognizer recognizer)
+#endif
+		{
+			// https://bugzilla.xamarin.com/show_bug.cgi?id=26416
+			NSObject annotation = Runtime.GetNSObject(((IMKAnnotation)annotationObject).Handle);
+			if (annotation == null)
+				return;
+
+			// lookup pin
+			Pin targetPin = null;
+			foreach (Pin pin in Element.Pins)
+			{
+				object target = pin.Id;
+				if (target != annotation)
+					continue;
+
+				targetPin = pin;
+				break;
+			}
+
+			// pin not found. Must have been activated outside of forms
+			if (targetPin == null)
+				return;
+
+			// if the tap happened on the annotation view itself, skip because this is what happens when the callout is showing
+			// when the callout is already visible the tap comes in on a different view
+			if (_lastTouchedView is MKAnnotationView)
+				return;
+
+			targetPin.SendTap();
+		}
+
 		void UpdateRegion()
 		{
 			if (_shouldUpdateRegion)
 			{
-				MoveToRegion(((Map)Element).LastMoveToRegion, false);
+				MoveToRegion(Element.LastMoveToRegion, false);
 				_shouldUpdateRegion = false;
 			}
 		}
@@ -334,26 +284,21 @@ namespace Xamarin.Forms.Maps.MacOS
 			{
 				var annotation = CreateAnnotation(pin);
 				pin.Id = annotation;
-				((MKMapView)Control).AddAnnotation(annotation);
+				Control.AddAnnotation(annotation);
 			}
 		}
 
-		void MkMapViewOnRegionChanged(object sender, MKMapViewChangeEventArgs mkMapViewChangeEventArgs)
+		void MkMapViewOnRegionChanged(object sender, MKMapViewChangeEventArgs e)
 		{
-			if (Element == null)
-				return;
-
-			var mapModel = (Map)Element;
-			var mkMapView = (MKMapView)Control;
-
-			mapModel.VisibleRegion = new MapSpan(new Position(mkMapView.Region.Center.Latitude, mkMapView.Region.Center.Longitude), mkMapView.Region.Span.LatitudeDelta, mkMapView.Region.Span.LongitudeDelta);
+			MKCoordinateRegion region = Control.Region;
+			Element.VisibleRegion = new MapSpan(new Position(region.Center.Latitude, region.Center.Longitude), region.Span.LatitudeDelta, region.Span.LongitudeDelta);
 		}
 
 		void MoveToRegion(MapSpan mapSpan, bool animated = true)
 		{
 			Position center = mapSpan.Center;
 			var mapRegion = new MKCoordinateRegion(new CLLocationCoordinate2D(center.Latitude, center.Longitude), new MKCoordinateSpan(mapSpan.LatitudeDegrees, mapSpan.LongitudeDegrees));
-			((MKMapView)Control).SetRegion(mapRegion, animated);
+			Control.SetRegion(mapRegion, animated);
 		}
 
 		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
@@ -371,9 +316,9 @@ namespace Xamarin.Forms.Maps.MacOS
 					AddPins(notifyCollectionChangedEventArgs.NewItems);
 					break;
 				case NotifyCollectionChangedAction.Reset:
-					var mapView = (MKMapView)Control;
+					var mapView = Control;
 					mapView.RemoveAnnotations(mapView.Annotations);
-					AddPins((IList)(Element as Map).Pins);
+					AddPins((IList)Element.Pins);
 					break;
 				case NotifyCollectionChangedAction.Move:
 					//do nothing
@@ -384,43 +329,43 @@ namespace Xamarin.Forms.Maps.MacOS
 		void RemovePins(IList pins)
 		{
 			foreach (object pin in pins)
-				((MKMapView)Control).RemoveAnnotation((IMKAnnotation)((Pin)pin).Id);
+				Control.RemoveAnnotation((IMKAnnotation)((Pin)pin).Id);
 		}
 
 		void UpdateHasScrollEnabled()
 		{
-			((MKMapView)Control).ScrollEnabled = ((Map)Element).HasScrollEnabled;
+			Control.ScrollEnabled = Element.HasScrollEnabled;
 		}
 
 		void UpdateHasZoomEnabled()
 		{
-			((MKMapView)Control).ZoomEnabled = ((Map)Element).HasZoomEnabled;
+			Control.ZoomEnabled = Element.HasZoomEnabled;
 		}
 
 		void UpdateIsShowingUser()
 		{
 #if __MOBILE__
-			if (FormsMaps.IsiOs8OrNewer && ((Map)Element).IsShowingUser)
+			if (FormsMaps.IsiOs8OrNewer && Element.IsShowingUser)
 			{
 				_locationManager = new CLLocationManager();
 				_locationManager.RequestWhenInUseAuthorization();
 			}
 #endif
-			((MKMapView)Control).ShowsUserLocation = ((Map)Element).IsShowingUser;
+			Control.ShowsUserLocation = Element.IsShowingUser;
 		}
 
 		void UpdateMapType()
 		{
-			switch (((Map)Element).MapType)
+			switch (Element.MapType)
 			{
 				case MapType.Street:
-					((MKMapView)Control).MapType = MKMapType.Standard;
+					Control.MapType = MKMapType.Standard;
 					break;
 				case MapType.Satellite:
-					((MKMapView)Control).MapType = MKMapType.Satellite;
+					Control.MapType = MKMapType.Satellite;
 					break;
 				case MapType.Hybrid:
-					((MKMapView)Control).MapType = MKMapType.Hybrid;
+					Control.MapType = MKMapType.Hybrid;
 					break;
 			}
 		}
