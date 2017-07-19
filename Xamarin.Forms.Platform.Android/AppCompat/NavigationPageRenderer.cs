@@ -267,11 +267,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				navController.InsertPageBeforeRequested += OnInsertPageBeforeRequested;
 				navController.RemovePageRequested += OnRemovePageRequested;
 
-				// If there is already stuff on the stack we need to push it
-				foreach (Page page in navController.Pages)
-				{
-					PushViewAsync(page, false);
-				}
+				InsertPages(navController.Pages);
 			}
 		}
 
@@ -631,6 +627,46 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			AddView(bar);
 			_toolbar = bar;
+		}
+
+		void InsertPages(IEnumerable<Page> pages)
+		{
+			_fragmentStack.Clear();
+
+			if (pages == null)
+				return;
+
+			var pagesCount = pages.Count();
+
+			for (int i = 0; i < pagesCount; i++)
+			{
+				var page = pages.ElementAt(i);
+				Fragment fragment = GetFragment(page, false, false);
+				_fragmentStack.Add(fragment);
+
+				if (i == pagesCount - 1)
+				{
+					((Platform)Element.Platform).NavAnimationInProgress = true;
+					FragmentTransaction transaction = FragmentManager.BeginTransaction();
+
+					Current = page;
+
+					transaction.DisallowAddToBackStack();
+					transaction.Add(Id, fragment);
+					transaction.Show(fragment);
+					transaction.CommitAllowingStateLoss();
+
+					Device.StartTimer(TimeSpan.FromMilliseconds(1), () =>
+					{
+						fragment.UserVisibleHint = true;
+						UpdateToolbar();
+						return false;
+					});
+
+					Context.HideKeyboard(this);
+					((Platform)Element.Platform).NavAnimationInProgress = false;
+				}
+			}
 		}
 
 		Task<bool> SwitchContentAsync(Page page, bool animated, bool removed = false, bool popToRoot = false)
