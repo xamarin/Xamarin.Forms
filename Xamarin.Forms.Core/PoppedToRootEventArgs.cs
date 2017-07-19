@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Xamarin.Forms
 {
 	public class PoppedToRootEventArgs : NavigationEventArgs
 	{
-		public PoppedToRootEventArgs(Page page, IEnumerable<Page> poppedPages) : base(page)
+		public PoppedToRootEventArgs(IEnumerable<Page> poppedPages) : base(poppedPages.Last())
 		{
 			if (poppedPages == null)
 				throw new ArgumentNullException(nameof(poppedPages));
