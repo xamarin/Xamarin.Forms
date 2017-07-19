@@ -282,7 +282,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			var view = new View {IsPlatformEnabled = true, Platform = new UnitPlatform ()};
 			Ticker.Default = new BlockingTicker ();
 
-			view.FadeTo (0.1);
+            view.FadeTo (0.1, finished:() => Console.WriteLine("TestFadeTo.Finished"));
 
 			Assert.True (Math.Abs (0.1 - view.Opacity) < 0.001);
 		}
