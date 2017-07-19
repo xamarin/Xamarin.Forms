@@ -22,6 +22,7 @@ namespace Xamarin.Forms.Controls.Issues
 		const string ToggleButton = "ToggleButton";
 		const string ScrollView = "TheScrollView";
 		const string FirstItem = "FirstItem";
+		const string Success = "Success";
 
 		protected override void Init()
 		{
@@ -66,9 +67,14 @@ If 'IsEnabled' is true and the ScrollView does not scroll, this test has failed.
 Use the toggle button to check both values of 'IsEnabled'."
 			};
 
+			var success = new Label();
+
 			layout.Children.Add(instructions);
 			layout.Children.Add(toggleButton);
+			layout.Children.Add(success);
 			layout.Children.Add(sv);
+
+			sv.Scrolled += (sender, args) => success.Text = Success;
 
 			return new ContentPage { Content = layout };
 		}
@@ -82,7 +88,7 @@ Use the toggle button to check both values of 'IsEnabled'."
 			RunningApp.WaitForElement(FirstItem);
 			RunningApp.WaitForElement(ScrollView);
 			RunningApp.ScrollDown(ScrollView, ScrollStrategy.Gesture);
-			RunningApp.WaitForNoElement(FirstItem); // Should have scrolled off screen
+			RunningApp.WaitForElement(Success); // If the ScrollView scrolled, the success label should be displayed
 		}
 
 		[Test]
@@ -98,7 +104,7 @@ Use the toggle button to check both values of 'IsEnabled'."
 			RunningApp.WaitForElement(FirstItem);
 			RunningApp.WaitForElement(ScrollView);
 			RunningApp.ScrollDown(ScrollView, ScrollStrategy.Gesture);
-			RunningApp.WaitForElement(FirstItem); // Should not have scrolled off screen
+			RunningApp.WaitForNoElement(Success); // Shouldn't have scrolled, so no success label should be displayed
 		}
 
 		[Test]
@@ -109,7 +115,7 @@ Use the toggle button to check both values of 'IsEnabled'."
 			RunningApp.WaitForElement(FirstItem);
 			RunningApp.WaitForElement(ScrollView);
 			RunningApp.ScrollDown(ScrollView, ScrollStrategy.Gesture);
-			RunningApp.WaitForElement(FirstItem); // Should not have scrolled off screen
+			RunningApp.WaitForNoElement(Success); // Shouldn't have scrolled, so no success label should be displayed
 		}
 
 		[Test]
@@ -125,7 +131,7 @@ Use the toggle button to check both values of 'IsEnabled'."
 			RunningApp.WaitForElement(FirstItem);
 			RunningApp.WaitForElement(ScrollView);
 			RunningApp.ScrollDown(ScrollView, ScrollStrategy.Gesture);
-			RunningApp.WaitForNoElement(FirstItem); // Should not have scrolled off screen
+			RunningApp.WaitForElement(Success); // If the ScrollView scrolled, the success label should be displayed
 		}
 #endif
 	}
