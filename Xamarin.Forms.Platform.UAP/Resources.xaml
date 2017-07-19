@@ -376,7 +376,7 @@
 	</DataTemplate>
 
 	<DataTemplate x:Key="ImageCell">
-		<Grid>
+		<Grid Margin="10,0,10,1">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="Auto" />
 				<ColumnDefinition />
@@ -390,9 +390,12 @@
 			<Image Grid.Column="0" Grid.RowSpan="2"
 				DataContext="{Binding ImageSource, Converter={StaticResource ImageConverter}}"
 				Source="{Binding Value}"
-				VerticalAlignment="Center" />
+				VerticalAlignment="Center" 
+				Height="60"
+				Margin="0,0,20,0"/>
 
 			<TextBlock Grid.Column="1" Grid.Row="0"
+				Margin="0,10,0,0"
 				Text="{Binding Text}"
 				Style="{ThemeResource BaseTextBlockStyle}"
 				Visibility="{Binding Text,RelativeSource={RelativeSource Self}, Converter={StaticResource CollapseWhenEmpty}}"
