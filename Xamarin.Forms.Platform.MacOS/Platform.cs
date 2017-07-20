@@ -31,8 +31,11 @@ namespace Xamarin.Forms.Platform.MacOS
 			MessagingCenter.Subscribe(this, Page.AlertSignalName, (Page sender, AlertArguments arguments) =>
 			{
 				var alert = NSAlert.WithMessage(arguments.Title, arguments.Cancel, arguments.Accept, null, arguments.Message);
-				var result = alert.RunModal();
-				arguments.SetResult(result == 1);
+				var result = alert.RunSheetModal(NSApplication.SharedApplication.MainWindow);
+				if (arguments.Accept == null)
+					arguments.SetResult(result == 1);
+				else
+					arguments.SetResult(result == 0);
 			});
 
 			MessagingCenter.Subscribe(this, Page.ActionSheetSignalName, (Page sender, ActionSheetArguments arguments) =>
