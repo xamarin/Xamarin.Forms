@@ -185,11 +185,12 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		NSView GetNativeControl(VisualElement visualElement)
 		{
-			var subViews = Platform.GetRenderer(visualElement)?.NativeView?.Subviews;
+			var nativeView = Platform.GetRenderer(visualElement)?.NativeView;
+			var subViews = nativeView?.Subviews;
 			if (subViews != null && subViews.Length > 0)
 				return subViews[0];
 
-			return null;
+			return nativeView;
 		}
 
 		void UpdateTabOrder()
