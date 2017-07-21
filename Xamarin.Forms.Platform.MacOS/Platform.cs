@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			MessagingCenter.Subscribe(this, Page.AlertSignalName, (Page sender, AlertArguments arguments) =>
 			{
 				var alert = NSAlert.WithMessage(arguments.Title, arguments.Cancel, arguments.Accept, null, arguments.Message);
-				var result = alert.RunSheetModal(NSApplication.SharedApplication.MainWindow);
+				var result = alert.RunSheetModal(PlatformRenderer.View.Window);
 				if (arguments.Accept == null)
 					arguments.SetResult(result == 1);
 				else
@@ -47,7 +47,7 @@ namespace Xamarin.Forms.Platform.MacOS
 					alert.Layout();
 				}
 
-				var result = (int)alert.RunSheetModal(NSApplication.SharedApplication.MainWindow);
+				var result = (int)alert.RunSheetModal(PlatformRenderer.View.Window);
 				var titleResult = string.Empty;
 				if (result == 1)
 					titleResult = arguments.Cancel;
