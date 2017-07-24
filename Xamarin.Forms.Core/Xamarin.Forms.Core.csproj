@@ -462,6 +462,8 @@
     <Compile Include="Internals\ResourceLoader.cs" />
     <Compile Include="Xaml\TypeConversionExtensions.cs" />
     <Compile Include="Xaml\ValueConverterProvider.cs" />
+    <Compile Include="PlatformConfiguration\macOSSpecific\NavigationTransitionStyle.cs" />
+    <Compile Include="PlatformConfiguration\macOSSpecific\NavigationPage.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup>
