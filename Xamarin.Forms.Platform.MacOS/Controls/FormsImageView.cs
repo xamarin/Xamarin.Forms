@@ -4,7 +4,7 @@ using CoreAnimation;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
-	public class FormsNSImageView : NSView
+	internal class FormsNSImageView : NSView
 	{
 		bool _isOpaque;
 
