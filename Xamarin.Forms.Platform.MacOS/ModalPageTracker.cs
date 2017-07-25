@@ -43,6 +43,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		internal void LayoutSubviews()
 		{
+			if (_renderer == null || _renderer.View == null)
+				return;
+			
 			foreach(var modal in _modals)
 			{
 				var modalRenderer = Platform.GetRenderer(modal);
