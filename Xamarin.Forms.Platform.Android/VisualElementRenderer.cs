@@ -363,33 +363,16 @@ namespace Xamarin.Forms.Platform.Android
 			if (SetHint())
 				return;
 
-			if (_defaultContentDescription == null)
-				_defaultContentDescription = ContentDescription;
-
-			var elemValue = string.Join(" ", (string)Element.GetValue(AutomationProperties.NameProperty), (string)Element.GetValue(AutomationProperties.HelpTextProperty));
-
-			if (!string.IsNullOrWhiteSpace(elemValue))
-				ContentDescription = elemValue;
-			else
-				ContentDescription = _defaultContentDescription;
+			_defaultContentDescription = this.SetContentDescription(Element, _defaultContentDescription);
 		}
 
 		protected virtual void SetFocusable()
 		{
-			if (Element == null)
-				return;
-
-			if (!_defaultFocusable.HasValue)
-				_defaultFocusable = Focusable;
-
-			Focusable = (bool)((bool?)Element.GetValue(AutomationProperties.IsInAccessibleTreeProperty) ?? _defaultFocusable);
+			_defaultFocusable = this.SetFocusable(Element, _defaultFocusable);
 		}
 
 		protected virtual bool SetHint()
 		{
-			if (Element == null)
-				return false;
-
 			var textView = this as global::Android.Widget.TextView;
 			if (textView == null)
 				return false;
@@ -398,15 +381,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (((Element as Picker)?.Title ?? (Element as Entry)?.Placeholder ?? (Element as EntryCell)?.Placeholder) != null)
 				return true;
 
-			if (_defaultHint == null)
-				_defaultHint = textView.Hint;
-
-			var elemValue = string.Join((String.IsNullOrWhiteSpace((string)(Element.GetValue(AutomationProperties.NameProperty))) || String.IsNullOrWhiteSpace((string)(Element.GetValue(AutomationProperties.HelpTextProperty)))) ? "" : ". ", (string)Element.GetValue(AutomationProperties.NameProperty), (string)Element.GetValue(AutomationProperties.HelpTextProperty));
-
-			if (!string.IsNullOrWhiteSpace(elemValue))
-				textView.Hint = elemValue;
-			else
-				textView.Hint = _defaultHint;
+			_defaultHint = textView.SetHint(Element, _defaultHint);
 
 			return true;
 		}
@@ -444,10 +419,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void IVisualElementRenderer.SetLabelFor(int? id)
 		{
-			if (_defaultLabelFor == null)
-				_defaultLabelFor = LabelFor;
-
-			LabelFor = (int)(id ?? _defaultLabelFor);
+			_defaultLabelFor = this.SetLabelFor(id, _defaultLabelFor);
 		}
 
 		void SubscribeGestureRecognizers(VisualElement element)

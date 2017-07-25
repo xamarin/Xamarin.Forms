@@ -51,7 +51,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		void SetAutomationId(string id = GetFromElement)
 		{
-			if (Element == null || Control == null)
+			if (Control == null)
 			{
 				return;
 			}
@@ -68,9 +68,9 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			}
 		}
 
-		void SetContentDescription(string contentDescription = GetFromElement)
+		void SetContentDescription()
 		{
-			if (Element == null || Control == null)
+			if (Control == null)
 			{
 				return;
 			}
@@ -80,45 +80,20 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				return;
 			}
 
-			if (_defaultContentDescription == null)
-			{
-				_defaultContentDescription = Control.ContentDescription;
-			}
-
-			string value = contentDescription;
-			if (value == GetFromElement)
-			{
-				value = string.Join(" ", (string)Element.GetValue(AutomationProperties.NameProperty),
-					(string)Element.GetValue(AutomationProperties.HelpTextProperty));
-			}
-
-			if (!string.IsNullOrWhiteSpace(value))
-			{
-				Control.ContentDescription = value;
-			}
-			else
-			{
-				Control.ContentDescription = _defaultContentDescription;
-			}
+			_defaultContentDescription = Control.SetContentDescription(Element, _defaultContentDescription);
 		}
 
 		void SetFocusable(bool? value = null)
 		{
-			if (Element == null || Control == null)
+			if ( Control == null)
 			{
 				return;
 			}
 
-			if (!_defaultFocusable.HasValue)
-			{
-				_defaultFocusable = Control.Focusable;
-			}
-
-			Control.Focusable =
-				(bool)(value ?? (bool?)Element.GetValue(AutomationProperties.IsInAccessibleTreeProperty) ?? _defaultFocusable);
+			_defaultFocusable = Control.SetFocusable(Element, _defaultFocusable);
 		}
 
-		bool SetHint(string hint = GetFromElement)
+		bool SetHint()
 		{
 			if (Element == null || Control == null)
 			{
@@ -137,39 +112,17 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				return true;
 			}
 
-			if (_defaultHint == null)
-			{
-				_defaultHint = textView.Hint;
-			}
-
-			string value = hint;
-			if (value == GetFromElement)
-			{
-				value = string.Join(". ", (string)Element.GetValue(AutomationProperties.NameProperty),
-					(string)Element.GetValue(AutomationProperties.HelpTextProperty));
-			}
-
-			textView.Hint = !string.IsNullOrWhiteSpace(value) ? value : _defaultHint;
+			_defaultHint = textView.SetHint(Element, _defaultHint);
 
 			return true;
 		}
 
 		void SetLabeledBy()
 		{
-			if (Element == null || Control == null)
+			if (Control == null)
 				return;
 
-			var elemValue = (VisualElement)Element.GetValue(AutomationProperties.LabeledByProperty);
-
-			if (elemValue != null)
-			{
-				var id = Control.Id;
-				if (id == -1)
-					id = Control.Id = FormsAppCompatActivity.GetUniqueId();
-
-				var renderer = elemValue?.GetRenderer();
-				renderer?.SetLabelFor(id);
-			}
+			Control.SetLabeledBy(Element);
 		}
 
 		void OnElementChanged(object sender, VisualElementChangedEventArgs e)

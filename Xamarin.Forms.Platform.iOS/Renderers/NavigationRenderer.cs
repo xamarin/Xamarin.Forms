@@ -361,7 +361,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (titleText != null)
 			{
 				// adding a custom event handler to UIBarButtonItem for navigating back seems to be ignored.
-				pack.NavigationItem.BackBarButtonItem = new UIBarButtonItem { Title = titleText, Style = UIBarButtonItemStyle.Plain };
+				pack.NavigationItem.BackBarButtonItem = new UIBarButtonItem(titleText, UIBarButtonItemStyle.Plain, null);
 			}
 
 			var pageRenderer = Platform.GetRenderer(page);
@@ -525,7 +525,7 @@ namespace Xamarin.Forms.Platform.iOS
 		void RemoveViewControllers(bool animated)
 		{
 			var controller = TopViewController as ParentingViewController;
-			if (controller == null || controller.Child == null)
+			if (controller == null || controller.Child == null || Platform.GetRenderer(controller.Child) == null)
 				return;
 
 			// Gesture in progress, lets not be proactive and just wait for it to finish
@@ -687,6 +687,9 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				containerController.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(masterDetailPage.Master.Title, UIBarButtonItemStyle.Plain, handler);
 			}
+
+			containerController.NavigationItem.LeftBarButtonItem.SetAccessibilityHint(masterDetailPage);
+			containerController.NavigationItem.LeftBarButtonItem.SetAccessibilityLabel(masterDetailPage);
 		}
 
 		class SecondaryToolbar : UIToolbar

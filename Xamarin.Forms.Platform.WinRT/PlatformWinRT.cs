@@ -3,6 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Windows.UI;
 using Windows.UI.Xaml;
+using WAutomationProperties = Windows.UI.Xaml.Automation.AutomationProperties;
+using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Media;
@@ -197,6 +199,11 @@ namespace Xamarin.Forms.Platform.WinRT
 				button.SetBinding(AppBarButton.IconProperty, "Icon", _fileImageSourcePathConverter);
 				button.Command = new MenuItemCommand(item);
 				button.DataContext = item;
+				button.SetValue(WAutomationProperties.AutomationIdProperty, item.AutomationId);
+				button.SetAutomationPropertiesName(item);
+				button.SetAutomationPropertiesAccessibilityView(item);
+				button.SetAutomationPropertiesHelpText(item);
+				button.SetAutomationPropertiesLabeledBy(item);
 
 				ToolbarItemOrder order = item.Order == ToolbarItemOrder.Default ? ToolbarItemOrder.Primary : item.Order;
 				if (order == ToolbarItemOrder.Primary)

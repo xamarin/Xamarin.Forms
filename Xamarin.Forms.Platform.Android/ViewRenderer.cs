@@ -174,15 +174,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (SetHint())
 				return;
 
-			if (_defaultContentDescription == null)
-				_defaultContentDescription = Control.ContentDescription;
-
-			var elemValue = string.Join(" ", (string)Element.GetValue(AutomationProperties.NameProperty), (string)Element.GetValue(AutomationProperties.HelpTextProperty));
-
-			if (!string.IsNullOrWhiteSpace(elemValue))
-				Control.ContentDescription = elemValue;
-			else
-				Control.ContentDescription = _defaultContentDescription;
+			_defaultContentDescription = Control.SetContentDescription(Element, _defaultContentDescription);
 		}
 
 		protected override void SetFocusable()
@@ -193,13 +185,7 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			if (Element == null)
-				return;
-
-			if (!_defaultFocusable.HasValue)
-				_defaultFocusable = Control.Focusable;
-
-			Control.Focusable = (bool)((bool?)Element.GetValue(AutomationProperties.IsInAccessibleTreeProperty) ?? _defaultFocusable);
+			_defaultFocusable = Control.SetFocusable(Element, _defaultFocusable);
 		}
 
 		protected override bool SetHint()
@@ -220,15 +206,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (((Element as Picker)?.Title ?? (Element as Entry)?.Placeholder ?? (Element as EntryCell)?.Placeholder) != null)
 				return true;
 
-			if (_defaultHint == null)
-				_defaultHint = textView.Hint;
-
-			var elemValue = string.Join((String.IsNullOrWhiteSpace((string)(Element.GetValue(AutomationProperties.NameProperty))) || String.IsNullOrWhiteSpace((string)(Element.GetValue(AutomationProperties.HelpTextProperty)))) ? "" : ". ", (string)Element.GetValue(AutomationProperties.NameProperty), (string)Element.GetValue(AutomationProperties.HelpTextProperty));
-
-			if (!string.IsNullOrWhiteSpace(elemValue))
-				textView.Hint = elemValue;
-			else
-				textView.Hint = _defaultHint;
+			_defaultHint = textView.SetHint(Element, _defaultHint);
 
 			return true;
 		}
@@ -302,20 +280,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		void SetLabeledBy()
 		{
-			if (Element == null || Control == null)
+			if (Control == null)
 				return;
 
-			var elemValue = (VisualElement)Element.GetValue(AutomationProperties.LabeledByProperty);
-
-			if (elemValue != null)
-			{
-				var id = Control.Id;
-				if (id == -1)
-					id = Control.Id = FormsAppCompatActivity.GetUniqueId();
-
-				var renderer = elemValue?.GetRenderer();
-				renderer?.SetLabelFor(id);
-			}
+			Control.SetLabeledBy(Element);
 		}
 
 		void UpdateIsEnabled()

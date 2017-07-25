@@ -131,6 +131,9 @@
     <Compile Include="..\Xamarin.Forms.Platform.WinRT\AlignmentExtensions.cs">
       <Link>AlignmentExtensions.cs</Link>
     </Compile>
+    <Compile Include="..\Xamarin.Forms.Platform.WinRT\AutomationPropertiesExtensions.cs">
+      <Link>AutomationPropertiesExtensions.cs</Link>
+    </Compile>
     <Compile Include="..\Xamarin.Forms.Platform.WinRT\BrushHelpers.cs">
       <Link>BrushHelpers.cs</Link>
     </Compile>

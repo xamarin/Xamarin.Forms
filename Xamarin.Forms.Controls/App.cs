@@ -47,12 +47,23 @@ namespace Xamarin.Forms.Controls
 
 		public Page CreateDefaultMainPage()
 		{
-			return new MasterDetailPage
+			var master = new MasterDetailPage
 			{
 				AutomationId = DefaultMainPageId,
 				Master = new ContentPage { Title = "Master", Content = new View { BackgroundColor = Color.Red } },
 				Detail = CoreGallery.GetMainPage()
 			};
+
+			// Sets the accessibility settings for the master page's back button 
+			// IMPORTANT: Android will not respect these settings. You must add string 
+			// resources to set the accessibility name for the MasterDetailPage toggle.
+			// Example:
+			// 	<string name="mdp_open_a11y_name">Show Master Page</string>
+			//  <string name="mdp_close_a11y_name">Hide Master Page</string>
+			master.SetAutomationPropertiesName("Master Page Toggle");
+			master.SetAutomationPropertiesHelpText("Shows and hides the Master Page");
+
+			return master;
 		}
 
 		protected override void OnAppLinkRequestReceived(Uri uri)

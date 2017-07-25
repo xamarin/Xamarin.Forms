@@ -125,14 +125,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				return;
 			}
 
-			if (Element == null)
-				return;
-
-			if (_defaultAccessibilityHint == null)
-				_defaultAccessibilityHint = Control.AccessibilityHint;
-
-			Control.AccessibilityHint = (string)Element.GetValue(AutomationProperties.HelpTextProperty) ?? _defaultAccessibilityHint;
-
+			_defaultAccessibilityHint = Control.SetAccessibilityHint(Element, _defaultAccessibilityHint);
 		}
 
 		protected override void SetAccessibilityLabel()
@@ -143,13 +136,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				return;
 			}
 
-			if (Element == null)
-				return;
-
-			if (_defaultAccessibilityLabel == null)
-				_defaultAccessibilityLabel = Control.AccessibilityLabel;
-
-			Control.AccessibilityLabel = (string)Element.GetValue(AutomationProperties.NameProperty) ?? _defaultAccessibilityLabel;
+			_defaultAccessibilityLabel = Control.SetAccessibilityLabel(Element, _defaultAccessibilityLabel);
 		}
 
 		protected override void SetIsAccessibilityElement()
@@ -160,13 +147,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				return;
 			}
 
-			if (Element == null)
-				return;
-
-			if (!_defaultIsAccessibilityElement.HasValue)
-				_defaultIsAccessibilityElement = Control.IsAccessibilityElement;
-
-			Control.IsAccessibilityElement = (bool)((bool?)Element.GetValue(AutomationProperties.IsInAccessibleTreeProperty) ?? _defaultIsAccessibilityElement);
+			_defaultIsAccessibilityElement = Control.SetIsAccessibilityElement(Element, _defaultIsAccessibilityElement);
 		}
 #endif
 		protected override void SetAutomationId(string id)

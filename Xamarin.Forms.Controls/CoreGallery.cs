@@ -425,6 +425,9 @@ namespace Xamarin.Forms.Controls
 
 			Title = stringProvider.CoreGalleryTitle;
 
+			this.SetAutomationPropertiesName("Gallery");
+			this.SetAutomationPropertiesHelpText("Lists all gallery pages");
+
 			var corePageView = new CorePageView (rootPage, navigationBehavior);
 
 			var searchBar = new SearchBar () {

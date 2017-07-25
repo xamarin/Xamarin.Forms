@@ -373,6 +373,7 @@ namespace Xamarin.Forms.Platform.Android
 					IMenuItem menuItem = menu.Add(item.Text);
 					menuItem.SetEnabled(controller.IsEnabled);
 					menuItem.SetOnMenuItemClickListener(new GenericMenuClickListener(controller.Activate));
+					menuItem.SetTitleOrContentDescription(item);
 				}
 				else
 				{

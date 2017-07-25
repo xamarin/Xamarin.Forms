@@ -116,10 +116,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		void IVisualElementRenderer.SetLabelFor(int? id)
 		{
-			if (_defaultLabelFor == null)
-				_defaultLabelFor = LabelFor;
-
-			LabelFor = (int)(id ?? _defaultLabelFor);
+			_defaultLabelFor = this.SetLabelFor(id, _defaultLabelFor);
 		}
 
 		void IVisualElementRenderer.UpdateLayout()
@@ -255,34 +252,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		void UpdateLineBreakMode()
 		{
-			SetSingleLine(false);
-			switch (Element.LineBreakMode)
-			{
-				case LineBreakMode.NoWrap:
-					SetMaxLines(1);
-					Ellipsize = null;
-					break;
-				case LineBreakMode.WordWrap:
-					Ellipsize = null;
-					SetMaxLines(100);
-					break;
-				case LineBreakMode.CharacterWrap:
-					Ellipsize = null;
-					SetMaxLines(100);
-					break;
-				case LineBreakMode.HeadTruncation:
-					SetMaxLines(1);
-					Ellipsize = TextUtils.TruncateAt.Start;
-					break;
-				case LineBreakMode.TailTruncation:
-					SetMaxLines(1);
-					Ellipsize = TextUtils.TruncateAt.End;
-					break;
-				case LineBreakMode.MiddleTruncation:
-					SetMaxLines(1);
-					Ellipsize = TextUtils.TruncateAt.Middle;
-					break;
-			}
+			this.SetLineBreakMode(Element.LineBreakMode);
 			_lastSizeRequest = null;
 		}
 

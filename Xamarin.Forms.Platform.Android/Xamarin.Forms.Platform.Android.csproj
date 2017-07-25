@@ -100,9 +100,11 @@
     <Compile Include="..\Xamarin.Forms.Core\Properties\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Extensions\AutomationPropertiesExtensions.cs" />
     <Compile Include="AndroidApplicationLifecycleState.cs" />
     <Compile Include="AndroidTitleBarVisibility.cs" />
     <Compile Include="AppCompat\FrameRenderer.cs" />
+    <Compile Include="ButtonBackgroundTracker.cs" />
     <Compile Include="AppCompat\PageExtensions.cs" />
     <Compile Include="Extensions\JavaObjectExtensions.cs" />
     <Compile Include="FastRenderers\AutomationPropertiesProvider.cs" />
@@ -167,8 +169,7 @@
     <Compile Include="IStartActivityForResult.cs" />
     <Compile Include="Renderers\ConditionalFocusLayout.cs" />
     <Compile Include="Renderers\DescendantFocusToggler.cs" />
-    <Compile Include="Renderers\EditorEditText.cs" />
-    <Compile Include="Renderers\EntryEditText.cs" />
+    <Compile Include="Renderers\FormsEditText.cs" />
     <Compile Include="Renderers\FileImageSourceHandler.cs" />
     <Compile Include="Renderers\FormattedStringExtensions.cs" />
     <Compile Include="Renderers\FormsImageView.cs" />
@@ -259,6 +260,7 @@
     <Compile Include="Renderers\GroupedListViewAdapter.cs" />
     <Compile Include="FastRenderers\ImageRenderer.cs" />
     <Compile Include="Extensions\ImageViewExtensions.cs" />
+    <Compile Include="Extensions\TextViewExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

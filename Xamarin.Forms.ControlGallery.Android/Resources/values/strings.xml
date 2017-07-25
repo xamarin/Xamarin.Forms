@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<resources>
+	<string name="mdp_open_a11y_name">Show Master Page</string>
+	<string name="mdp_close_a11y_name">Hide Master Page</string>
+</resources>

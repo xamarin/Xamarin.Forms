@@ -75,10 +75,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		void IVisualElementRenderer.SetLabelFor(int? id)
 		{
-			if (_defaultLabelFor == null)
-				_defaultLabelFor = LabelFor;
-
-			LabelFor = (int)(id ?? _defaultLabelFor);
+			_defaultLabelFor = this.SetLabelFor(id, _defaultLabelFor);
 		}
 
 		VisualElementTracker IVisualElementRenderer.Tracker => _visualElementTracker;

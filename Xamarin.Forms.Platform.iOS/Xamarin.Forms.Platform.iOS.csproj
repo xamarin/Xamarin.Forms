@@ -132,6 +132,7 @@
     <Compile Include="ExportCellAttribute.cs" />
     <Compile Include="ExportImageSourceHandlerAttribute.cs" />
     <Compile Include="ExportRendererAttribute.cs" />
+    <Compile Include="Extensions\AutomationPropertiesExtensions.cs" />
     <Compile Include="Extensions\ArrayExtensions.cs" />
     <Compile Include="Extensions\PlatformConfigurationExtensions.cs" />
     <Compile Include="NativeViewWrapper.cs" />
