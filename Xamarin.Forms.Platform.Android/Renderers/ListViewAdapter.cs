@@ -401,7 +401,11 @@ namespace Xamarin.Forms.Platform.Android
 			var cellCount = _realListView?.ChildCount ?? 0;
 			for (int i = 0; i < cellCount; i++)
 			{
-				var layout = _realListView.GetChildAt(i) as ViewGroup;
+				var layout = _realListView.GetChildAt(i) as ConditionalFocusLayout;
+
+				// Headers and footers will be skipped. They are disposed elsewhere.
+				if (layout == null || layout.IsDisposed())
+					continue;
 
 				var renderedView = layout?.GetChildAt(0);
 
