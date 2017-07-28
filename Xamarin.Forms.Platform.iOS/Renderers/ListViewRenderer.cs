@@ -1030,6 +1030,12 @@ namespace Xamarin.Forms.Platform.iOS
 				return sl.Name;
 			}
 
+			public void Cleanup()
+			{
+				_selectionFromNative = false;
+				_isDragging = false;
+			}
+
 			public void UpdateGrouping()
 			{
 				UpdateShortNameListener();
@@ -1252,6 +1258,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewWillAppear(bool animated)
 		{
+			(TableView?.Source as ListViewRenderer.ListViewDataSource)?.Cleanup();
 			if (!_list.IsRefreshing || !_refresh.Refreshing) return;
 
 			// Restart the refreshing to get the animation to trigger
