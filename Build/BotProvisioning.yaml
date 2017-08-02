@@ -1,0 +1,51 @@
+macOS:
+
+  Command Line Tools (macOS Sierra version 10.12) for Xcode-8.3:
+    action: exec('softwareupdate', '--verbose', '-i', key(@))
+  
+  Java:
+    version: 1.8.0_144
+    downloadUrl: http://www.oracle.com/technetwork/java/javase/downloads/jdk8-downloads-2133151.html
+    actions:
+      - exec('open', downloadUrl)
+      - error('JDK {version} is not installed but cannot be downloaded automatically for legal reasons. Download and install from {downloadUrl}')
+    condition: exec('java', '-version')[1] != 'Java(TM) SE Runtime Environment (build {version})'
+
+  Node.js:
+    version: v6.11.1
+    source: https://nodejs.org/dist/{version}/node-{version}.pkg
+    condition: exec('node', '--version')[0] != version
+
+  .NET Core:
+    # always update this in global.json!
+    version: ${json('../global.json').sdk.version}
+    source: https://dotnetcli.blob.core.windows.net/dotnet/Sdk/{version}/dotnet-sdk-{version}-osx-x64.pkg
+    condition: isDir('/usr/local/share/dotnet/sdk', version)
+
+  Mono:
+    version: 5.2.0.213
+    source: https://dl.xamarin.com/MonoFrameworkMDK/Macx86/MonoFramework-MDK-{version}.macos10.xamarin.universal.pkg
+    condition: fxVersionCompare(key(@), version) != `0`
+
+  Xamarin.iOS:
+    version: 10.12.0.14
+    source: https://dl.xamarin.com/MonoTouch/Mac/xamarin.ios-{version}.pkg
+    condition: fxVersionCompare(key(@), version) != `0`
+
+  Xamarin.Mac:
+    version: 3.6.0.13
+    source: https://dl.xamarin.com/XamarinforMac/Mac/xamarin.mac-{version}.pkg
+    condition: fxVersionCompare(key(@), version) != `0`
+
+  Xamarin.Android:
+    version: 7.4.0-17
+    source: https://dl.xamarin.com/MonoforAndroid/Mac/xamarin.android-{version}.pkg
+    condition: fxVersionCompare(key(@), version) != `0`
+
+  Visual Studio for Mac:
+    version: 7.1.0.1289
+    source: https://dl.xamarin.com/VsMac/VisualStudioForMac-Preview-{version}.dmg
+    target: /Applications
+    condition: versionCompare(plist('${target}/Visual Studio.app').CFBundleVersion, version) != `0`
+    Visual Studio.app:
+      source: Visual Studio.app
