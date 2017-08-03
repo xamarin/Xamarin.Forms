@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26724.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "VSTS", "VSTS", "{E5FE81C8-CEF0-4102-AFC1-1F2A4B12F026}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TriggerVSTS", "TriggerVSTS\TriggerVSTS\TriggerVSTS.csproj", "{85854338-B998-457C-8298-7F9212A99FC0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TriggerVSTS.Test", "TriggerVSTS\TriggerVSTS.Test\TriggerVSTS.Test.csproj", "{2DBB9420-2411-4B8C-B4C0-4B62ABB2AE01}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{85854338-B998-457C-8298-7F9212A99FC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{85854338-B998-457C-8298-7F9212A99FC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{85854338-B998-457C-8298-7F9212A99FC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{85854338-B998-457C-8298-7F9212A99FC0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DBB9420-2411-4B8C-B4C0-4B62ABB2AE01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DBB9420-2411-4B8C-B4C0-4B62ABB2AE01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DBB9420-2411-4B8C-B4C0-4B62ABB2AE01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DBB9420-2411-4B8C-B4C0-4B62ABB2AE01}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{85854338-B998-457C-8298-7F9212A99FC0} = {E5FE81C8-CEF0-4102-AFC1-1F2A4B12F026}
+		{2DBB9420-2411-4B8C-B4C0-4B62ABB2AE01} = {E5FE81C8-CEF0-4102-AFC1-1F2A4B12F026}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B039CFE3-D98C-420F-AC88-225B155D22B1}
+	EndGlobalSection
+EndGlobal

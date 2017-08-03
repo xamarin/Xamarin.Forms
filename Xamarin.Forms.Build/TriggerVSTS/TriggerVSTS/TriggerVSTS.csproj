@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net47</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="GitInfo" Version="1.1.71" />
+    <PackageReference Include="Microsoft.Azure.WebJobs" Version="2.1.0-beta1" />
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions" Version="2.1.0-beta1" />
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.Http" Version="1.0.0-beta1" />
+    <PackageReference Include="Microsoft.Azure.WebJobs.ServiceBus" Version="2.1.0-beta1" />
+    <PackageReference Include="Microsoft.TeamFoundationServer.Client" Version="15.112.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Services.Client" Version="15.112.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
+    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.0-alpha3" />
+    <PackageReference Include="Octokit" Version="0.24.0" />
+    <PackageReference Include="System.ValueTuple" Version="4.4.0-preview2-25405-01" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="host.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="local.settings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>
