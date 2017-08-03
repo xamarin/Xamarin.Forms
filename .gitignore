@@ -53,3 +53,4 @@ AndroidNative/build/
 AndroidNative/.gradle/
 AndroidNative/gradlew
 AndroidNative/gradlew.bat
+Xamarin.Forms.Build/packages/
