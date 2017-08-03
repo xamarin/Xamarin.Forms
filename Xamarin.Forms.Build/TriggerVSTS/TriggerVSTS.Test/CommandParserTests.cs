@@ -37,6 +37,27 @@ namespace TriggerVSTS.Test
 		}
 
 		[TestMethod]
+		public void TestParseAllCommandsBuildsIDS()
+		{
+			var parser = new CommandParser();
+			var command1 = "[build]:7022";
+			var buidId1 = 7022;
+			var buidId2 = 6766;
+			var command2 = $"[uitests android]:{buidId1};{buidId2}";
+			var buildCommands = $"{command1}|{command2}";
+
+			var getCommands = parser.ParseAllCommands(buildCommands);
+			Assert.AreEqual(2, getCommands.Count);
+			Assert.AreEqual(command1, getCommands[0].ToString());
+			Assert.AreEqual(command2, getCommands[1].ToString());
+			Assert.AreEqual(buidId1, getCommands[0].AssociatedBuilds[0]);
+			Assert.AreEqual(buidId1, getCommands[1].AssociatedBuilds[0]);
+			Assert.AreEqual(buidId2, getCommands[1].AssociatedBuilds[1]);
+
+			Assert.AreEqual(2, getCommands[1].AssociatedBuilds.Count);
+		}
+
+		[TestMethod]
 		public void TestParseAllCommandsEmptystringDoesntThrow ()
 		{
 			var parser = new CommandParser ();
