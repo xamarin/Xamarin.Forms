@@ -230,7 +230,7 @@ namespace Xamarin.Forms.Xaml
 				var propName = GetContentPropertyName(typeInfo.CustomAttributes);
 				if (propName != null)
 					return propName;
-				typeInfo = typeInfo?.BaseType?.GetTypeInfo();
+				typeInfo = typeInfo.BaseType?.GetTypeInfo();
 			}
 			return null;
 		}

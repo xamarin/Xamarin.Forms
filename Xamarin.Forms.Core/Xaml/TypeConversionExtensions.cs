@@ -172,9 +172,20 @@ namespace Xamarin.Forms.Xaml
 			}
 
 			//if there's an implicit conversion, convert
-			if (value != null) {
-				MethodInfo opImplicit = null;
-				foreach (var mi in value.GetType().GetRuntimeMethods()) {
+			MethodInfo opImplicit = null;
+			foreach (var mi in value.GetType().GetRuntimeMethods()) {
+				if (!mi.IsSpecialName) continue;
+				if (mi.Name != "op_Implicit") continue;
+				if (!mi.IsPublic) continue;
+				if (!toType.IsAssignableFrom(mi.ReturnType)) continue;
+				var parameters = mi.GetParameters();
+				if (parameters.Length != 1) continue;
+				if (parameters[0].ParameterType != value.GetType()) continue;
+				opImplicit = mi;
+				break;
+			}
+			if (opImplicit == null) {
+				foreach (var mi in toType.GetRuntimeMethods()) {
 					if (!mi.IsSpecialName) continue;
 					if (mi.Name != "op_Implicit") continue;
 					if (!mi.IsPublic) continue;
@@ -185,23 +196,10 @@ namespace Xamarin.Forms.Xaml
 					opImplicit = mi;
 					break;
 				}
-				if (opImplicit == null) {
-					foreach (var mi in toType.GetRuntimeMethods()) {
-						if (!mi.IsSpecialName) continue;
-						if (mi.Name != "op_Implicit") continue;
-						if (!mi.IsPublic) continue;
-						if (!toType.IsAssignableFrom(mi.ReturnType)) continue;
-						var parameters = mi.GetParameters();
-						if (parameters.Length != 1) continue;
-						if (parameters[0].ParameterType != value.GetType()) continue;
-						opImplicit = mi;
-						break;
-					}
-				}
-				if (opImplicit != null) {
-					value = opImplicit.Invoke(null, new[] { value });
-					return value;
-				}
+			}
+			if (opImplicit != null) {
+				value = opImplicit.Invoke(null, new[] { value });
+				return value;
 			}
 
 			var nativeValueConverterService = DependencyService.Get<INativeValueConverterService>();
