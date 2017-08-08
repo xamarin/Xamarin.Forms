@@ -1,9 +1,7 @@
-﻿using System;
-using Windows.Foundation.Collections;
+﻿using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Media;
 
 namespace Xamarin.Forms.Platform.UWP
 {

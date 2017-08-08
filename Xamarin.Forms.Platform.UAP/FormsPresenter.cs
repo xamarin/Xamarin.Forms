@@ -1,6 +1,4 @@
-﻿using System;
-using Windows.UI.Xaml;
-using Xamarin.Forms;
+﻿using Windows.UI.Xaml;
 
 namespace Xamarin.Forms.Platform.UWP
 {
