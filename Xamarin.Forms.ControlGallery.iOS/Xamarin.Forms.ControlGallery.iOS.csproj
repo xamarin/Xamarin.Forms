@@ -79,7 +79,7 @@
     <MtouchUseThumb>False</MtouchUseThumb>
     <MtouchOptimizePNGs>True</MtouchOptimizePNGs>
     <MtouchI18n />
-    <BuildIpa>true</BuildIpa>
+    <BuildIpa>True</BuildIpa>
     <IpaMetadata />
     <IpaPackageName />
     <CodesignProvision>xamarinWild</CodesignProvision>
