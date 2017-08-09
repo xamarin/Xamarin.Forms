@@ -82,7 +82,7 @@
     <BuildIpa>True</BuildIpa>
     <IpaMetadata />
     <IpaPackageName />
-    <CodesignProvision>xamarinWild</CodesignProvision>
+    <CodesignProvision />
     <CodesignResourceRules />
     <CodesignExtraArgs />
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
