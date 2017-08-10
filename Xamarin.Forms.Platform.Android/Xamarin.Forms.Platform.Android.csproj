@@ -127,6 +127,7 @@
     <Compile Include="ExportRendererAttribute.cs" />
     <Compile Include="FastRenderers\GestureManager.cs" />
     <Compile Include="FastRenderers\LabelRenderer.cs" />
+    <Compile Include="FastRenderers\SliderRenderer.cs" />
     <Compile Include="FastRenderers\VisualElementRenderer.cs" />
     <Compile Include="FormsApplicationActivity.cs" />
     <Compile Include="AndroidActivity.cs" />

@@ -7,6 +7,7 @@ using Android.Content.PM;
 using Android.OS;
 using Xamarin.Forms.Controls;
 using Xamarin.Forms.Controls.Issues;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android;
 using Xamarin.Forms.Platform.Android.AppLinks;
 
@@ -66,6 +67,15 @@ namespace Xamarin.Forms.ControlGallery.Android
 			MessagingCenter.Subscribe<AndroidStatusBarColor>(this, AndroidStatusBarColor.Message, color => SetStatusBarColor(global::Android.Graphics.Color.Red));
 
 			LoadApplication(_app);
+
+#if TEST_LEGACY_RENDERERS
+			Registrar.Registered.Register(typeof(Button), typeof(Xamarin.Forms.Platform.Android.AppCompat.ButtonRenderer));
+			Registrar.Registered.Register(typeof(Image), typeof(Xamarin.Forms.Platform.Android.ImageRenderer));
+			Registrar.Registered.Register(typeof(Label), typeof(Xamarin.Forms.Platform.Android.LabelRenderer));
+			Registrar.Registered.Register(typeof(Slider), typeof(Xamarin.Forms.Platform.Android.SliderRenderer));
+			Registrar.Registered.Register(typeof(Frame), typeof(Xamarin.Forms.Platform.Android.AppCompat.FrameRenderer));
+#endif
+			
 		}
 
 	}
