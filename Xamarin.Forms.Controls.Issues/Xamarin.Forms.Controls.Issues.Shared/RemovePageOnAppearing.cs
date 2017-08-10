@@ -15,16 +15,21 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 
 	[Preserve(AllMembers = true)]
+	// TODO hartez 2017/08/10 09:02:49 Don't forget to adjust the issue tracker and number	
 	[Issue(IssueTracker.Bugzilla, 9991134, "Removing page during OnAppearing throws exception", PlatformAffected.Android)]
-	public class RemovePageOnAppearing : TestNavigationPage
+	public class RemovePageOnAppearing : TestContentPage
 	{
 		const string Success = "Success";
 
-		protected override async void Init()
+		protected override void Init()
 		{
-			await PushAsync(Root());
-			await PushAsync(Intermediate());
-			await PushAsync(new PageWhichRemovesAnEarlierPageOnAppearing());
+			Appearing += async (sender, args) =>
+			{
+				var nav = new NavigationPage(Root());
+				Application.Current.MainPage = nav;
+				await nav.PushAsync(Intermediate());
+				await nav.PushAsync(new PageWhichRemovesAnEarlierPageOnAppearing());	
+			};
 		}
 
 		static ContentPage Root()
@@ -44,7 +49,7 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				var instructions = new Label { Text = "If you can see this, the test has passed" };
 
-				Content = new StackLayout() { Children = { instructions, new Label {Text = Success}  }};
+				Content = new StackLayout { Children = { instructions, new Label { Text = Success } } };
 			}
 
 			protected override void OnAppearing()
