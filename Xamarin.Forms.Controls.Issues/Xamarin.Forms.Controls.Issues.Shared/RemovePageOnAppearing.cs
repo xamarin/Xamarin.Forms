@@ -15,8 +15,7 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 
 	[Preserve(AllMembers = true)]
-	// TODO hartez 2017/08/10 09:02:49 Don't forget to adjust the issue tracker and number	
-	[Issue(IssueTracker.Bugzilla, 9991134, "Removing page during OnAppearing throws exception", PlatformAffected.Android)]
+	[Issue(IssueTracker.None, 1134, "Removing page during OnAppearing throws exception", PlatformAffected.Android)]
 	public class RemovePageOnAppearing : TestContentPage
 	{
 		const string Success = "Success";
