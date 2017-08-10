@@ -40,6 +40,11 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (disposing)
 			{
+				if (Element != null)
+				{
+					Element.ItemsSource = null;
+				}
+
 				if (_headerView == null)
 					return;
 
