@@ -166,17 +166,25 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public void StringFormatNonStringType()
 		{
-			var property = BindableProperty.Create("Foo", typeof(string), typeof(MockBindable));
-			var binding = new Binding("Value", stringFormat: "{0:P2}");
+			var currentCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
+			try
+			{
+				System.Threading.Thread.CurrentThread.CurrentCulture
+					= System.Globalization.CultureInfo.InvariantCulture;
 
-			var vm = new  { Value = 0.95d };
-			var bo = new MockBindable { BindingContext = vm };
-			bo.SetBinding(property, binding);
+				var property = BindableProperty.Create("Foo", typeof(string), typeof(MockBindable));
+				var binding = new Binding("Value", stringFormat: "{0:P2}");
 
-			if (System.Threading.Thread.CurrentThread.CurrentCulture.Name == "tr-TR")
-				Assert.That(bo.GetValue(property), Is.EqualTo("%95,00"));
-			else
+				var vm = new { Value = 0.95d };
+				var bo = new MockBindable { BindingContext = vm };
+				bo.SetBinding(property, binding);
+
 				Assert.That(bo.GetValue(property), Is.EqualTo("95.00 %"));
+			}
+			finally
+			{
+				System.Threading.Thread.CurrentThread.CurrentCulture = currentCulture;
+			}
 		}
 
 		[Test]
