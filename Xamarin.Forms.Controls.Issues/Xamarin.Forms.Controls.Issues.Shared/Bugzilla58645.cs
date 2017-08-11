@@ -13,6 +13,7 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Bugzilla, 58645, "[iOS] NRE Thrown When ListView Items Are Replaced By Items With a Different Template", PlatformAffected.iOS)]
 	public class Bugzilla58645 : TestContentPage
 	{
+		const string ButtonId = "button";
 		ObservableCollection<string> Items { get; set; }
 
 		protected override void Init()
@@ -33,6 +34,7 @@ namespace Xamarin.Forms.Controls.Issues
 			var switchBtn = new Button
 			{
 				Text = "Switch Items",
+				AutomationId = ButtonId,
 				Command = new Command(() =>
 				{
 					Items.Clear();
@@ -44,6 +46,7 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				Children =
 				{
+					new Label { Text = "Tap the 'Switch Items' button. If the app does not crash, this test has passed." },
 					switchBtn,
 					myListView
 				}
@@ -129,9 +132,8 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void Bugzilla58645Test()
 		{
-			//RunningApp.Screenshot ("I am at Issue 1");
-			//RunningApp.WaitForElement (q => q.Marked ("IssuePageLabel"));
-			//RunningApp.Screenshot ("I see the Label");
+			RunningApp.WaitForElement(q => q.Marked(ButtonId));
+			RunningApp.Tap(q => q.Marked(ButtonId));
 		}
 #endif
 	}
