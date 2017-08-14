@@ -7,7 +7,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
-	internal class ListViewDataSource : NSTableViewSource
+	public class ListViewDataSource : NSTableViewSource
 	{
 		IVisualElementRenderer _prototype;
 		const int DefaultItemTemplateId = 1;
