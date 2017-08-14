@@ -866,7 +866,7 @@ namespace Xamarin.Forms.Platform.Android
 						}
 					}
 				}
-			}			
+			}
 
 			if (actionBarTitleTextView == null)
 			{
@@ -1133,10 +1133,10 @@ namespace Xamarin.Forms.Platform.Android
 			protected override int GetChildDrawingOrder(int childCount, int i)
 			{
 				//On Material design the button states use Elevation property, we need to make sure
-				//we nupdate the elevation of other controls to be over the previous one
-				if(!_minimumElevation.ContainsKey(i))
+				//we update the elevation of other controls to be over the previous one
+				if (!_minimumElevation.ContainsKey(i))
 					_minimumElevation[i] = GetChildAt(i).Elevation;
-				for (int j = 0; j < _minimumElevation.Count() -1; j++)
+				for (int j = 0; j < _minimumElevation.Count() - 1; j++)
 				{
 					while (_minimumElevation[j] > _minimumElevation[j + 1])
 					{
