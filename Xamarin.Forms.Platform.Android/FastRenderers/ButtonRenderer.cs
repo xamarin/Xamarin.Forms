@@ -91,6 +91,11 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		SizeRequest IVisualElementRenderer.GetDesiredSize(int widthConstraint, int heightConstraint)
 		{
+			if (_isDisposed)
+			{
+				return new SizeRequest();
+			}
+		
 			UpdateText();
 
 			AView view = this;
