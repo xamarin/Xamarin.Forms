@@ -739,14 +739,8 @@ namespace Xamarin.Forms.Platform.iOS
 						// Clear renderer from descendent; this will not happen in Dispose as normal because we need to
 						// unhook the Element from the renderer before disposing it.
 						descendant.ClearValue(Platform.RendererProperty);
-
-						if (renderer != null)
-						{
-							// Unhook Element (descendant) from renderer before Disposing so we don't set the Element to null
-							renderer.SetElement(null);
-							renderer.Dispose();
-							renderer = null;
-						}
+						renderer?.Dispose();
+						renderer = null;
 					}
 
 					// Let the EstimatedHeight method know to use this value.
@@ -977,8 +971,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				SetCellBackgroundColor(cell, UIColor.Clear);
 
-				if (!cell.Selected)
-					_selectionFromNative = true;
+				_selectionFromNative = true;
 
 				tableView.EndEditing(true);
 				List.NotifyRowTapped(indexPath.Section, indexPath.Row, formsCell);
@@ -1028,6 +1021,12 @@ namespace Xamarin.Forms.Platform.iOS
 				sl.PropertyChanged += OnSectionPropertyChanged;
 
 				return sl.Name;
+			}
+
+			public void Cleanup()
+			{
+				_selectionFromNative = false;
+				_isDragging = false;
 			}
 
 			public void UpdateGrouping()
@@ -1252,6 +1251,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewWillAppear(bool animated)
 		{
+			(TableView?.Source as ListViewRenderer.ListViewDataSource)?.Cleanup();
 			if (!_list.IsRefreshing || !_refresh.Refreshing) return;
 
 			// Restart the refreshing to get the animation to trigger

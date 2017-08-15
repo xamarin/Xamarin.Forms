@@ -34,8 +34,6 @@
     <MtouchEnableGenericValueTypeSharing>True</MtouchEnableGenericValueTypeSharing>
     <MtouchUseLlvm>False</MtouchUseLlvm>
     <MtouchUseThumb>False</MtouchUseThumb>
-    <MtouchUseSGen>False</MtouchUseSGen>
-    <MtouchUseRefCounting>False</MtouchUseRefCounting>
     <MtouchOptimizePNGs>False</MtouchOptimizePNGs>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <MtouchEnableBitcode>False</MtouchEnableBitcode>
@@ -79,14 +77,12 @@
     <MtouchEnableGenericValueTypeSharing>True</MtouchEnableGenericValueTypeSharing>
     <MtouchUseLlvm>False</MtouchUseLlvm>
     <MtouchUseThumb>False</MtouchUseThumb>
-    <MtouchUseSGen>False</MtouchUseSGen>
-    <MtouchUseRefCounting>False</MtouchUseRefCounting>
     <MtouchOptimizePNGs>True</MtouchOptimizePNGs>
     <MtouchI18n />
     <BuildIpa>True</BuildIpa>
     <IpaMetadata />
     <IpaPackageName />
-    <CodesignProvision />
+    <CodesignProvision>Automatic</CodesignProvision>
     <CodesignResourceRules />
     <CodesignExtraArgs />
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -165,6 +161,7 @@
     <Compile Include="Main.cs" />
     <Compile Include="AppDelegate.cs" />
     <Compile Include="_57114Renderer.cs" />
+    <Compile Include="_58406EffectRenderer.cs" />
     <None Include="app.config" />
     <None Include="Info.plist" />
     <Compile Include="Properties\AssemblyInfo.cs" />
