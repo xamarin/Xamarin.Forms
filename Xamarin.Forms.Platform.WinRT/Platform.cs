@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
@@ -30,10 +31,32 @@ namespace Xamarin.Forms.Platform.WinRT
 			element.IsPlatformEnabled = value != null;
 		}
 
+		public static IPlatformRenderer CreatePlatformRenderer(VisualElement element)
+		{
+			var type = element.GetType();
+			var typeInfo = type.GetTypeInfo();
+
+			var attribute = typeInfo.GetCustomAttribute<VisualElementAttribute>();
+			if (attribute == null)
+				throw new NotImplementedException();
+
+			var platformType = typeof(Platform);
+			var platformTypeInfo = platformType.GetTypeInfo();
+			var platformRendererTypeName = $"{platformTypeInfo.Namespace}.{type.Name}Renderer";
+			var platformRendererType = platformTypeInfo.Assembly.GetType(platformRendererTypeName);
+			var platformRenderer = (IPlatformRenderer)Activator.CreateInstance(platformRendererType);
+			platformRenderer.SetElement(element);
+			return platformRenderer;
+		}
 		public static IVisualElementRenderer CreateRenderer(VisualElement element)
 		{
 			if (element == null)
 				throw new ArgumentNullException(nameof(element));
+
+			var type = element.GetType();
+			var typeInfo = type.GetTypeInfo();
+			if (typeInfo.IsDefined(typeof(VisualElementAttribute)))
+				return new VisualElementRenderer(CreatePlatformRenderer(element));
 
 			IVisualElementRenderer renderer = Registrar.Registered.GetHandler<IVisualElementRenderer>(element.GetType()) ??
 			                                  new DefaultRenderer();

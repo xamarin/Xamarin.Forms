@@ -191,4 +191,7 @@ namespace Xamarin.Forms
 		{
 		}
 	}
+
+	[VisualElement]
+	public class PR_Label : Label { }
 }

@@ -229,6 +229,7 @@
     <Compile Include="PlatformConfiguration\WindowsSpecific\Page.cs" />
     <Compile Include="PlatformConfiguration\WindowsSpecific\ToolbarPlacement.cs" />
     <Compile Include="PlatformEffect.cs" />
+    <Compile Include="IPlatformRenderer.cs" />
     <Compile Include="PointTypeConverter.cs" />
     <Compile Include="Internals\PreserveAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -478,7 +479,5 @@
   </PropertyGroup>
   <ItemGroup />
   <ItemGroup />
-  <ItemGroup>
-    <Folder Include="Xaml\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>
