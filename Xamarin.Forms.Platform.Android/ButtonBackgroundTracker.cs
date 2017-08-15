@@ -51,9 +51,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 			else
 			{
-				if (_backgroundDrawable == null)
-					_backgroundDrawable = new ButtonDrawable();
-
+				_backgroundDrawable = new ButtonDrawable();
 				_backgroundDrawable.Button = _button;
 
 				if (_drawableEnabled)
