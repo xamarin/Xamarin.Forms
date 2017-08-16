@@ -35,7 +35,8 @@ namespace Xamarin.Forms.Controls.Issues
 		public void TestButtonUsingElevation ()
 		{
 			RunningApp.WaitForElement(Running);
-			RunningApp.Tap(btnId);
+			if (RunningApp.Query(c => c.Marked(btnId)).Length > 0)
+				RunningApp.Tap(btnId);
 			RunningApp.WaitForNoElement(Success);
 		}
 #endif
