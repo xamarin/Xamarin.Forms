@@ -15,7 +15,7 @@
     </Attribute>
   </Attributes>
   <Docs>
-    <summary>To be added.</summary>
+    <summary>For internal use by the Xamarin.Forms platform.</summary>
     <remarks>To be added.</remarks>
   </Docs>
   <Members>
@@ -36,7 +36,7 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -68,10 +68,10 @@
         </Parameter>
       </Parameters>
       <Docs>
-        <param name="tag">To be added.</param>
-        <param name="path">To be added.</param>
-        <param name="member">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="tag">For internal use by the Xamarin.Forms platform.</param>
+        <param name="path">For internal use by the Xamarin.Forms platform.</param>
+        <param name="member">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -92,7 +92,7 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -108,7 +108,7 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
@@ -146,10 +146,10 @@
         </Parameter>
       </Parameters>
       <Docs>
-        <param name="tag">To be added.</param>
-        <param name="path">To be added.</param>
-        <param name="member">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="tag">For internal use by the Xamarin.Forms platform.</param>
+        <param name="path">For internal use by the Xamarin.Forms platform.</param>
+        <param name="member">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -186,10 +186,10 @@
         </Parameter>
       </Parameters>
       <Docs>
-        <param name="tag">To be added.</param>
-        <param name="path">To be added.</param>
-        <param name="member">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="tag">For internal use by the Xamarin.Forms platform.</param>
+        <param name="path">For internal use by the Xamarin.Forms platform.</param>
+        <param name="member">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>

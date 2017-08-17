@@ -7,9 +7,10 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		public PageContainer(Context context, IVisualElementRenderer child, bool inFragment = false) : base(context)
 		{
-			AddView(child.ViewGroup);
+			AddView(child.View);
 			Child = child;
 			IsInFragment = inFragment;
+			Id = Platform.GenerateViewId();
 		}
 
 		public IVisualElementRenderer Child { get; set; }
@@ -23,8 +24,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
 		{
-			Child.ViewGroup.Measure(widthMeasureSpec, heightMeasureSpec);
-			SetMeasuredDimension(Child.ViewGroup.MeasuredWidth, Child.ViewGroup.MeasuredHeight);
+			Child.View.Measure(widthMeasureSpec, heightMeasureSpec);
+			SetMeasuredDimension(Child.View.MeasuredWidth, Child.View.MeasuredHeight);
 		}
 	}
 }

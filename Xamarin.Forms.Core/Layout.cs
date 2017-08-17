@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
 using Xamarin.Forms.Internals;
 
@@ -17,7 +18,7 @@ namespace Xamarin.Forms
 			_children = new ElementCollection<T>(InternalChildren);
 		}
 
-		public IList<T> Children
+		public new IList<T> Children
 		{
 			get { return _children; }
 		}
@@ -53,11 +54,11 @@ namespace Xamarin.Forms
 	{
 		public static readonly BindableProperty IsClippedToBoundsProperty = BindableProperty.Create("IsClippedToBounds", typeof(bool), typeof(Layout), false);
 
-		public static readonly BindableProperty PaddingProperty = BindableProperty.Create("Padding", typeof(Thickness), typeof(Layout), default(Thickness), propertyChanged: (bindable, old, newValue) =>
-		{
-			var layout = (Layout)bindable;
-			layout.UpdateChildrenLayout();
-		});
+		public static readonly BindableProperty PaddingProperty = BindableProperty.Create("Padding", typeof(Thickness), typeof(Layout), default(Thickness),
+									propertyChanged: (bindable, old, newValue) => {
+										var layout = (Layout)bindable;
+										layout.UpdateChildrenLayout();
+									}, defaultValueCreator: (bindable) => ((Layout)bindable).CreateDefaultPadding());
 
 		static IList<KeyValuePair<Layout, int>> s_resolutionList = new List<KeyValuePair<Layout, int>>();
 		static bool s_relayoutInProgress;
@@ -89,6 +90,11 @@ namespace Xamarin.Forms
 			set { SetValue(PaddingProperty, value); }
 		}
 
+		internal virtual Thickness CreateDefaultPadding()
+		{
+			return default(Thickness);
+		}
+
 		internal ObservableCollection<Element> InternalChildren { get; } = new ObservableCollection<Element>();
 
 		internal override ReadOnlyCollection<Element> LogicalChildrenInternal
@@ -98,7 +104,8 @@ namespace Xamarin.Forms
 
 		public event EventHandler LayoutChanged;
 
-		IReadOnlyList<Element> ILayoutController.Children
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public IReadOnlyList<Element> Children
 		{
 			get { return InternalChildren; }
 		}
@@ -108,7 +115,7 @@ namespace Xamarin.Forms
 			SizeAllocated(Width, Height);
 		}
 
-		[Obsolete("Use Measure")]
+		[Obsolete("OnSizeRequest is obsolete as of version 2.2.0. Please use OnMeasure instead.")]
 		public sealed override SizeRequest GetSizeRequest(double widthConstraint, double heightConstraint)
 		{
 			SizeRequest size = base.GetSizeRequest(widthConstraint - Padding.HorizontalThickness, heightConstraint - Padding.VerticalThickness);

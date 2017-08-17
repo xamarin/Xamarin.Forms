@@ -7,7 +7,7 @@
   </AssemblyInfo>
   <Interfaces />
   <Docs>
-    <summary>To be added.</summary>
+    <summary>For internal use by platform renderers.</summary>
     <remarks>To be added.</remarks>
   </Docs>
   <Members>
@@ -22,7 +22,7 @@
         <ReturnType>System.Boolean</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
+        <summary>For internal use by platform renderers.</summary>
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
@@ -43,10 +43,10 @@
         <Parameter Name="currentScalePoint" Type="Xamarin.Forms.Point" />
       </Parameters>
       <Docs>
-        <param name="sender">To be added.</param>
-        <param name="scale">To be added.</param>
-        <param name="currentScalePoint">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="sender">For internal use by the Xamarin.Forms platform.</param>
+        <param name="scale">For internal use by the Xamarin.Forms platform.</param>
+        <param name="currentScalePoint">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by platform renderers.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -64,8 +64,8 @@
         <Parameter Name="sender" Type="Xamarin.Forms.Element" />
       </Parameters>
       <Docs>
-        <param name="sender">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="sender">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by platform renderers.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -83,8 +83,8 @@
         <Parameter Name="sender" Type="Xamarin.Forms.Element" />
       </Parameters>
       <Docs>
-        <param name="sender">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="sender">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by platform renderers.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -103,9 +103,9 @@
         <Parameter Name="intialScalePoint" Type="Xamarin.Forms.Point" />
       </Parameters>
       <Docs>
-        <param name="sender">To be added.</param>
-        <param name="intialScalePoint">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="sender">For internal use by the Xamarin.Forms platform.</param>
+        <param name="intialScalePoint">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by platform renderers.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>

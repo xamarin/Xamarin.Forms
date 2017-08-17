@@ -39,7 +39,17 @@ namespace Xamarin.Forms.Xaml.Internals
 	[Obsolete ("Replaced by ResourceLoader")]
 	public static class XamlLoader
 	{
-		public static Func<Type, string> XamlFileProvider { get; internal set; }
+		static Func<Type, string> xamlFileProvider;
+
+		public static Func<Type, string> XamlFileProvider {
+			get { return xamlFileProvider; }
+			internal set {
+				xamlFileProvider = value;
+				//¯\_(ツ)_/¯ the previewer forgot to set that bool
+				DoNotThrowOnExceptions = value != null;
+			}
+		}
+
 		internal static bool DoNotThrowOnExceptions { get; set; }
 	}
 }
@@ -60,7 +70,8 @@ namespace Xamarin.Forms.Xaml
 
 		public static void Load(object view, string xaml)
 		{
-			using (var reader = XmlReader.Create(new StringReader(xaml)))
+			using (var textReader = new StringReader(xaml))
+			using (var reader = XmlReader.Create(textReader))
 			{
 				while (reader.Read())
 				{
@@ -90,7 +101,8 @@ namespace Xamarin.Forms.Xaml
 		public static object Create (string xaml, bool doNotThrow = false)
 		{
 			object inflatedView = null;
-			using (var reader = XmlReader.Create (new StringReader (xaml))) {
+			using (var textreader = new StringReader(xaml))
+			using (var reader = XmlReader.Create (textreader)) {
 				while (reader.Read ()) {
 					//Skip until element
 					if (reader.NodeType == XmlNodeType.Whitespace)

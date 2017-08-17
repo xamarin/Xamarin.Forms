@@ -43,9 +43,12 @@ namespace Xamarin.Forms.Build.Tasks
 					//					resolver.AddAssembly (p);
 				}
 			}
+
+			var debug = DebugSymbols || (!string.IsNullOrEmpty(DebugType) && DebugType.ToLowerInvariant() != "none");
+
 			using (var assemblyDefinition = AssemblyDefinition.ReadAssembly(Assembly, new ReaderParameters {
 				ReadWrite = true,
-				ReadSymbols = DebugSymbols,
+				ReadSymbols = debug,
 				AssemblyResolver = resolver
 			})) {
 				foreach (var module in assemblyDefinition.Modules) {
@@ -73,6 +76,7 @@ namespace Xamarin.Forms.Build.Tasks
 						if (initCompRuntime == null) {
 							Logger.LogString(2, "   Creating empty {0}.__InitComponentRuntime ...", typeDef.Name);
 							initCompRuntime = new MethodDefinition("__InitComponentRuntime", initComp.Attributes, initComp.ReturnType);
+							initCompRuntime.Body.InitLocals = true;
 							Logger.LogLine(2, "done.");
 							Logger.LogString(2, "   Copying body of InitializeComponent to __InitComponentRuntime ...", typeDef.Name);
 							initCompRuntime.Body = new MethodBody(initCompRuntime);
@@ -116,6 +120,7 @@ namespace Xamarin.Forms.Build.Tasks
 						}
 
 						var body = new MethodBody(altCtor);
+						body.InitLocals = true;
 						var il = body.GetILProcessor();
 						var br2 = Instruction.Create(OpCodes.Ldarg_0);
 						var ret = Instruction.Create(OpCodes.Ret);
@@ -145,7 +150,7 @@ namespace Xamarin.Forms.Build.Tasks
 				}
 				Logger.LogString(1, "Writing the assembly... ");
 				assemblyDefinition.Write(new WriterParameters {
-					WriteSymbols = DebugSymbols
+					WriteSymbols = debug
 				});
 			}
 			Logger.LogLine(1, "done.");

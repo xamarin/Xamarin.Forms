@@ -151,12 +151,25 @@ namespace Xamarin.Forms
 			IsInitialized = true;
 		}
 
+		static IReadOnlyList<string> s_flags;
+		public static IReadOnlyList<string> Flags => s_flags ?? (s_flags = new List<string>().AsReadOnly());
+
+		public static void SetFlags(params string[] flags)
+		{
+			if (IsInitialized)
+			{
+				throw new InvalidOperationException($"{nameof(SetFlags)} must be called before {nameof(Init)}");
+			}
+
+			s_flags = flags.ToList().AsReadOnly();
+		}
+
 		static Color GetAccentColor()
 		{
 			Color rc;
 			using (var value = new TypedValue())
 			{
-				if (Context.Theme.ResolveAttribute(global::Android.Resource.Attribute.ColorAccent, value, true))	// Android 5.0+
+				if (Context.Theme.ResolveAttribute(global::Android.Resource.Attribute.ColorAccent, value, true) && Forms.IsLollipopOrNewer)	// Android 5.0+
 				{
 					rc = Color.FromUint((uint)value.Data);
 				}

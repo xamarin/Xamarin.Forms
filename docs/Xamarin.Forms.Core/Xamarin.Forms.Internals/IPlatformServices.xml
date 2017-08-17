@@ -12,7 +12,7 @@
     </Attribute>
   </Attributes>
   <Docs>
-    <summary>To be added.</summary>
+    <summary>For internal use by the Xamarin.Forms platform.</summary>
     <remarks>To be added.</remarks>
   </Docs>
   <Members>
@@ -30,8 +30,8 @@
         <Parameter Name="action" Type="System.Action" />
       </Parameters>
       <Docs>
-        <param name="action">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="action">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -47,7 +47,7 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
@@ -64,7 +64,7 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
@@ -83,8 +83,8 @@
         <Parameter Name="input" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="input">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="input">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
@@ -105,10 +105,10 @@
         <Parameter Name="useOldSizes" Type="System.Boolean" />
       </Parameters>
       <Docs>
-        <param name="size">To be added.</param>
-        <param name="targetElementType">To be added.</param>
-        <param name="useOldSizes">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="size">For internal use by the Xamarin.Forms platform.</param>
+        <param name="targetElementType">For internal use by the Xamarin.Forms platform.</param>
+        <param name="useOldSizes">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
@@ -128,9 +128,9 @@
         <Parameter Name="cancellationToken" Type="System.Threading.CancellationToken" />
       </Parameters>
       <Docs>
-        <param name="uri">To be added.</param>
-        <param name="cancellationToken">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="uri">For internal use by the Xamarin.Forms platform.</param>
+        <param name="cancellationToken">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
@@ -147,7 +147,7 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
@@ -163,7 +163,7 @@
         <ReturnType>System.Boolean</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
@@ -182,8 +182,8 @@
         <Parameter Name="uri" Type="System.Uri" />
       </Parameters>
       <Docs>
-        <param name="uri">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="uri">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -198,7 +198,7 @@
         <ReturnType>System.String</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
@@ -218,9 +218,9 @@
         <Parameter Name="callback" Type="System.Func&lt;System.Boolean&gt;" />
       </Parameters>
       <Docs>
-        <param name="interval">To be added.</param>
-        <param name="callback">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="interval">For internal use by the Xamarin.Forms platform.</param>
+        <param name="callback">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>

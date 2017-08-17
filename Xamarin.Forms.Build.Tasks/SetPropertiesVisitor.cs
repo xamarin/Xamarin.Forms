@@ -480,6 +480,7 @@ namespace Xamarin.Forms.Build.Tasks
 					new CustomAttribute (context.Module.ImportReference(compilerGeneratedCtor))
 				}
 			};
+			getter.Body.InitLocals = true;
 			var il = getter.Body.GetILProcessor();
 
 			il.Emit(OpCodes.Ldarg_0);
@@ -550,6 +551,7 @@ namespace Xamarin.Forms.Build.Tasks
 					new CustomAttribute (module.ImportReference(compilerGeneratedCtor))
 				}
 			};
+			setter.Body.InitLocals = true;
 
 			var il = setter.Body.GetILProcessor();
 			var lastProperty = properties.LastOrDefault();
@@ -640,6 +642,7 @@ namespace Xamarin.Forms.Build.Tasks
 						new CustomAttribute (context.Module.ImportReference(compilerGeneratedCtor))
 					}
 				};
+				partGetter.Body.InitLocals = true;
 				var il = partGetter.Body.GetILProcessor();
 				il.Emit(OpCodes.Ldarg_0);
 				for (int j = 0; j < i; j++) {
@@ -761,14 +764,16 @@ namespace Xamarin.Forms.Build.Tasks
 
 		static bool CanConnectEvent(VariableDefinition parent, string localName)
 		{
-			return parent.VariableType.GetEvent(ed => ed.Name == localName) != null;
+			TypeReference _;
+			return parent.VariableType.GetEvent(ed => ed.Name == localName, out _) != null;
 		}
 
 		static IEnumerable<Instruction> ConnectEvent(VariableDefinition parent, string localName, INode valueNode, IXmlLineInfo iXmlLineInfo, ILContext context)
 		{
 			var elementType = parent.VariableType;
 			var module = context.Body.Method.Module;
-			var eventinfo = elementType.GetEvent(ed => ed.Name == localName);
+			TypeReference eventDeclaringTypeRef;
+			var eventinfo = elementType.GetEvent(ed => ed.Name == localName, out eventDeclaringTypeRef);
 
 //			IL_0007:  ldloc.0 
 //			IL_0008:  ldarg.0 
@@ -807,7 +812,9 @@ namespace Xamarin.Forms.Build.Tasks
 			var ctor = module.ImportReference(eventinfo.EventType.Resolve().GetConstructors().First());
 			ctor = ctor.ResolveGenericParameters(eventinfo.EventType, module);
 			yield return Instruction.Create(OpCodes.Newobj, module.ImportReference(ctor));
-			yield return Instruction.Create(OpCodes.Callvirt, module.ImportReference(eventinfo.AddMethod));
+			var adder = module.ImportReference(eventinfo.AddMethod);
+			adder = adder.ResolveGenericParameters(eventDeclaringTypeRef, module);
+			yield return Instruction.Create(OpCodes.Callvirt, module.ImportReference(adder));
 		}
 
 		static bool CanSetDynamicResource(FieldReference bpRef, INode valueNode, ILContext context)
@@ -964,7 +971,7 @@ namespace Xamarin.Forms.Build.Tasks
 				return false;
 
 			var vardef = context.Variables [elementNode];
-			var propertyType = property.ResolveGenericPropertyType(declaringTypeReference);
+			var propertyType = property.ResolveGenericPropertyType(declaringTypeReference, module);
 			var implicitOperator = vardef.VariableType.GetImplicitOperatorTo(propertyType, module);
 
 			if (implicitOperator != null)
@@ -995,7 +1002,7 @@ namespace Xamarin.Forms.Build.Tasks
 			module.ImportReference(parent.VariableType.Resolve());
 			var propertySetterRef = module.ImportReference(module.ImportReference(propertySetter).ResolveGenericParameters(declaringTypeReference, module));
 			propertySetterRef.ImportTypes(module);
-			var propertyType = property.ResolveGenericPropertyType(declaringTypeReference);
+			var propertyType = property.ResolveGenericPropertyType(declaringTypeReference, module);
 			var valueNode = node as ValueNode;
 			var elementNode = node as IElementNode;
 
@@ -1142,6 +1149,7 @@ namespace Xamarin.Forms.Build.Tasks
 			var loadTemplate = new MethodDefinition("LoadDataTemplate",
 				MethodAttributes.Assembly | MethodAttributes.HideBySig,
 				module.TypeSystem.Object);
+			loadTemplate.Body.InitLocals = true;
 			anonType.Methods.Add(loadTemplate);
 
 			var parentValues = new FieldDefinition("parentValues", FieldAttributes.Assembly, module.ImportReference(typeof (object[])));

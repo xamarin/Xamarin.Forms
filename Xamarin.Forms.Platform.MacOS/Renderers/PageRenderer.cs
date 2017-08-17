@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using AppKit;
+using Xamarin.Forms.PlatformConfiguration.macOSSpecific;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
@@ -13,7 +14,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		VisualElementPackager _packager;
 		VisualElementTracker _tracker;
 
-		IPageController PageController => Element as IPageController;
+		Page Page => Element as Page;
 
 		public PageRenderer()
 		{
@@ -67,7 +68,8 @@ namespace Xamarin.Forms.Platform.MacOS
 				return;
 
 			_appeared = true;
-			PageController.SendAppearing();
+			UpdateTabOrder();
+			Page.SendAppearing();
 		}
 
 		public override void ViewDidDisappear()
@@ -78,7 +80,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				return;
 
 			_appeared = false;
-			PageController.SendDisappearing();
+			Page.SendDisappearing();
 		}
 
 		public override void ViewWillAppear()
@@ -94,7 +96,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				Element.PropertyChanged -= OnHandlePropertyChanged;
 				Platform.SetRenderer(Element, null);
 				if (_appeared)
-					PageController.SendDisappearing();
+					Page.SendDisappearing();
 
 				_appeared = false;
 
@@ -159,6 +161,8 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateBackground();
 			else if (e.PropertyName == Page.TitleProperty.PropertyName)
 				UpdateTitle();
+			else if (e.PropertyName == PlatformConfiguration.macOSSpecific.Page.TabOrderProperty.PropertyName)
+				UpdateTabOrder();
 		}
 
 		void UpdateBackground()
@@ -177,6 +181,45 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			if (!string.IsNullOrWhiteSpace(((Page)Element).Title))
 				Title = ((Page)Element).Title;
+		}
+
+		NSView GetNativeControl(VisualElement visualElement)
+		{
+			var nativeView = Platform.GetRenderer(visualElement)?.NativeView;
+			var subViews = nativeView?.Subviews;
+			if (subViews != null && subViews.Length > 0)
+				return subViews[0];
+
+			return nativeView;
+		}
+
+		void UpdateTabOrder()
+		{
+			var tabOrderElements = ((Page)Element).OnThisPlatform().GetTabOrder();
+			if(tabOrderElements != null && tabOrderElements.Length > 0)
+			{
+				var count = tabOrderElements.Length;
+
+				var first = GetNativeControl(tabOrderElements[0]);
+				var last = GetNativeControl(tabOrderElements[count - 1]);
+
+				if (first != null && last != null)
+				{
+					var previous = first;
+					for (int i = 1; i < count; i++)
+					{
+						var control = GetNativeControl(tabOrderElements[i]);
+						if (control != null)
+						{
+							previous.NextKeyView = control;
+							previous = control;
+						}
+					}
+
+					last.NextKeyView = first;
+					first.Window?.MakeFirstResponder(first);
+				}
+			}
 		}
 	}
 }

@@ -48,9 +48,6 @@
           <AttributeName>System.Runtime.Versioning.TargetFramework(".NETPortable,Version=v4.5,Profile=Profile259", FrameworkDisplayName=".NET Portable Subset")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>Xamarin.Forms.Dependency(typeof(Xamarin.Forms.Xaml.ValueConverterProvider))</AttributeName>
-        </Attribute>
-        <Attribute>
           <AttributeName>Xamarin.Forms.Internals.Preserve</AttributeName>
         </Attribute>
         <Attribute>
@@ -129,8 +126,8 @@
         </Parameters>
         <Docs>
           <typeparam name="TXaml">To be added.</typeparam>
-          <param name="view">To be added.</param>
-          <param name="callingType">To be added.</param>
+          <param name="view">For internal use by the XAML infrastructure.</param>
+          <param name="callingType">For internal use by the XAML infrastructure.</param>
           <summary>For internal use by the XAML infrastructure.</summary>
         </Docs>
         <Link Type="Xamarin.Forms.Xaml.Extensions" Member="M:Xamarin.Forms.Xaml.Extensions.LoadFromXaml``1(``0,System.Type)" />

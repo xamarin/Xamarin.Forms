@@ -93,7 +93,9 @@ namespace Xamarin.Forms.Platform.Android
 		public override bool OnInterceptTouchEvent(MotionEvent ev)
 		{
 			if (!Element.IsEnabled || (Element.InputTransparent && Element.IsEnabled))
+			{
 				return true;
+			}
 
 			return base.OnInterceptTouchEvent(ev);
 		}
@@ -125,6 +127,8 @@ namespace Xamarin.Forms.Platform.Android
 			// It's very important that the gesture detection happen first here
 			// if we check handled first, we might short-circuit and never check for tap/pan
 			handled = _gestureDetector.Value.OnTouchEvent(e) || handled;
+
+			v.EnsureLongClickCancellation(e, handled, Element);
 
 			return handled;
 		}
@@ -161,8 +165,10 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		public ViewGroup ViewGroup => this;
+		AView IVisualElementRenderer.View => this;
 
 		public event EventHandler<ElementChangedEventArgs<TElement>> ElementChanged;
+		public event EventHandler<PropertyChangedEventArgs> ElementPropertyChanged;
 
 		public void SetElement(TElement element)
 		{
@@ -314,14 +320,16 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor();
-			else if (e.PropertyName == Accessibility.HintProperty.PropertyName)
+			else if (e.PropertyName == AutomationProperties.HelpTextProperty.PropertyName)
 				SetContentDescription();
-			else if (e.PropertyName == Accessibility.NameProperty.PropertyName)
+			else if (e.PropertyName == AutomationProperties.NameProperty.PropertyName)
 				SetContentDescription();
-			else if (e.PropertyName == Accessibility.IsInAccessibleTreeProperty.PropertyName)
+			else if (e.PropertyName == AutomationProperties.IsInAccessibleTreeProperty.PropertyName)
 				SetFocusable();
 			else if (e.PropertyName == VisualElement.InputTransparentProperty.PropertyName)
 				UpdateInputTransparent();
+
+			ElementPropertyChanged?.Invoke(this, e);
 		}
 
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)
@@ -362,7 +370,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (_defaultContentDescription == null)
 				_defaultContentDescription = ContentDescription;
 
-			var elemValue = string.Join(" ", (string)Element.GetValue(Accessibility.NameProperty), (string)Element.GetValue(Accessibility.HintProperty));
+			var elemValue = FastRenderers.AutomationPropertiesProvider.ConcatenateNameAndHelpText(Element);
 
 			if (!string.IsNullOrWhiteSpace(elemValue))
 				ContentDescription = elemValue;
@@ -378,7 +386,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (!_defaultFocusable.HasValue)
 				_defaultFocusable = Focusable;
 
-			Focusable = (bool)((bool?)Element.GetValue(Accessibility.IsInAccessibleTreeProperty) ?? _defaultFocusable);
+			Focusable = (bool)((bool?)Element.GetValue(AutomationProperties.IsInAccessibleTreeProperty) ?? _defaultFocusable);
 		}
 
 		protected virtual bool SetHint()
@@ -397,7 +405,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (_defaultHint == null)
 				_defaultHint = textView.Hint;
 
-			var elemValue = string.Join((String.IsNullOrWhiteSpace((string)(Element.GetValue(Accessibility.NameProperty))) || String.IsNullOrWhiteSpace((string)(Element.GetValue(Accessibility.HintProperty)))) ? "" : ". ", (string)Element.GetValue(Accessibility.NameProperty), (string)Element.GetValue(Accessibility.HintProperty));
+			var elemValue = FastRenderers.AutomationPropertiesProvider.ConcatenateNameAndHelpText(Element);
 
 			if (!string.IsNullOrWhiteSpace(elemValue))
 				textView.Hint = elemValue;

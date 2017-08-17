@@ -172,7 +172,8 @@ namespace Xamarin.Forms
 			return GetContext(targetProperty) == null;
 		}
 
-		internal object[] GetValues(BindableProperty property0, BindableProperty property1)
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public object[] GetValues(BindableProperty property0, BindableProperty property1)
 		{
 			var values = new object[2];
 
@@ -298,9 +299,9 @@ namespace Xamarin.Forms
 		internal void SetDynamicResource(BindableProperty property, string key, bool fromStyle)
 		{
 			if (property == null)
-				throw new ArgumentNullException("property");
+				throw new ArgumentNullException(nameof(property));
 			if (string.IsNullOrEmpty(key))
-				throw new ArgumentNullException("key");
+				throw new ArgumentNullException(nameof(key));
 
 			BindablePropertyContext context = null;
 			if (fromStyle && (context = GetContext(property)) != null && (context.Attributes & BindableContextAttributes.IsDefaultValue) == 0 &&
@@ -363,9 +364,10 @@ namespace Xamarin.Forms
 				value = property.CoerceValue(this, value);
 
 			BindablePropertyContext context = GetOrCreateContext(property);
-			if (manuallySet)
+			if (manuallySet) {
 				context.Attributes |= BindableContextAttributes.IsManuallySet;
-			else
+				context.Attributes &= ~BindableContextAttributes.IsSetFromStyle;
+			} else
 				context.Attributes &= ~BindableContextAttributes.IsManuallySet;
 
 			if (fromStyle)

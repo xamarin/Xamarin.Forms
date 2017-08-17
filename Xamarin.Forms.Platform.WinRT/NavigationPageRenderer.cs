@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Platform.WinRT
 		TabbedPage _parentTabbedPage;
 		bool _showTitle = true;
 		VisualElementTracker<Page, PageControl> _tracker;
-		ContentThemeTransition _transition;
+		EntranceThemeTransition _transition;
 
 		public NavigationPage Element { get; private set; }
 
@@ -75,8 +75,6 @@ namespace Xamarin.Forms.Platform.WinRT
 				UpdateTitleOnParents();
 			}
 		}
-
-		IPageController PageController => Element as IPageController;
 
 		bool ITitleProvider.ShowTitle
 		{
@@ -152,10 +150,10 @@ namespace Xamarin.Forms.Platform.WinRT
 
 			if (oldElement != null)
 			{
-				((INavigationPageController)oldElement).PushRequested -= OnPushRequested;
-				((INavigationPageController)oldElement).PopRequested -= OnPopRequested;
-				((INavigationPageController)oldElement).PopToRootRequested -= OnPopToRootRequested;
-				((IPageController)oldElement).InternalChildren.CollectionChanged -= OnChildrenChanged;
+				oldElement.PushRequested -= OnPushRequested;
+				oldElement.PopRequested -= OnPopRequested;
+				oldElement.PopToRootRequested -= OnPopToRootRequested;
+				oldElement.InternalChildren.CollectionChanged -= OnChildrenChanged;
 				oldElement.PropertyChanged -= OnElementPropertyChanged;
 			}
 
@@ -187,16 +185,18 @@ namespace Xamarin.Forms.Platform.WinRT
 #if WINDOWS_UWP
 				// Enforce consistency rules on toolbar (show toolbar if top-level page is Navigation Page)
 				_container.ShouldShowToolbar = _parentMasterDetailPage == null && _parentTabbedPage == null;
+				if (_parentTabbedPage != null)
+					Element.Appearing += OnElementAppearing;
 #endif
 
 				Element.PropertyChanged += OnElementPropertyChanged;
-				((INavigationPageController)Element).PushRequested += OnPushRequested;
-				((INavigationPageController)Element).PopRequested += OnPopRequested;
-				((INavigationPageController)Element).PopToRootRequested += OnPopToRootRequested;
-				PageController.InternalChildren.CollectionChanged += OnChildrenChanged;
+				Element.PushRequested += OnPushRequested;
+				Element.PopRequested += OnPopRequested;
+				Element.PopToRootRequested += OnPopToRootRequested;
+				Element.InternalChildren.CollectionChanged += OnChildrenChanged;
 
 				if (!string.IsNullOrEmpty(Element.AutomationId))
-					_container.SetValue(AutomationProperties.AutomationIdProperty, Element.AutomationId);
+					_container.SetValue(Windows.UI.Xaml.Automation.AutomationProperties.AutomationIdProperty, Element.AutomationId);
 
 				PushExistingNavigationStack();
 			}
@@ -211,12 +211,17 @@ namespace Xamarin.Forms.Platform.WinRT
 				return;
 			}
 
-			PageController?.SendDisappearing();
+			Element?.SendDisappearing();
 			_disposed = true;
 
 			_container.PointerPressed -= OnPointerPressed;
 			_container.SizeChanged -= OnNativeSizeChanged;
 			_container.BackClicked -= OnBackClicked;
+
+#if WINDOWS_UWP
+			if (_parentTabbedPage != null)
+				Element.Appearing -= OnElementAppearing;
+#endif
 
 			SetElement(null);
 			SetPage(null, false, true);
@@ -318,6 +323,12 @@ namespace Xamarin.Forms.Platform.WinRT
 				UpdateTitleOnParents();
 		}
 
+		void OnElementAppearing(object sender, EventArgs e)
+		{
+			UpdateTitleVisible();
+			UpdateBackButton();
+		}
+
 		void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == NavigationPage.BarTextColorProperty.PropertyName)
@@ -340,7 +351,7 @@ namespace Xamarin.Forms.Platform.WinRT
 #if WINDOWS_UWP
 			_navManager = SystemNavigationManager.GetForCurrentView();
 #endif
-			PageController.SendAppearing();
+			Element.SendAppearing();
 			UpdateBackButton();
 			UpdateTitleOnParents();
 		}
@@ -371,7 +382,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		void OnPopRequested(object sender, NavigationRequestedEventArgs e)
 		{
-			var newCurrent = ((INavigationPageController)Element).Peek(1);
+			var newCurrent = Element.Peek(1);
 			SetPage(newCurrent, e.Animated, true);
 		}
 
@@ -387,12 +398,12 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		void OnUnloaded(object sender, RoutedEventArgs args)
 		{
-			PageController?.SendDisappearing();
+			Element?.SendDisappearing();
 		}
 
 		void PushExistingNavigationStack()
 		{
-			foreach (var page in ((INavigationPageController)Element).Pages)
+			foreach (var page in Element.Pages)
 			{
 				SetPage(page, false, false);
 			}
@@ -430,7 +441,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 			if (isAnimated && _transition == null)
 			{
-				_transition = new ContentThemeTransition();
+				_transition = new EntranceThemeTransition();
 				_container.ContentTransitions = new TransitionCollection();
 			}
 
@@ -454,7 +465,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		void UpdateContainerArea()
 		{
-			PageController.ContainerArea = new Rectangle(0, 0, _container.ContentWidth, _container.ContentHeight);
+			Element.ContainerArea = new Rectangle(0, 0, _container.ContentWidth, _container.ContentHeight);
 		}
 
 		void UpdateNavigationBarBackground()

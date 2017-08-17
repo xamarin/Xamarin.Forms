@@ -6,6 +6,9 @@ using Xamarin.Forms.CustomAttributes;
 using NUnit.Framework;
 using Xamarin.UITest;
 
+// Apply the default category of "Issues" to all of the tests in this assembly
+// We use this as a catch-all for tests which haven't been individually categorized
+[assembly: Category("Issues")]
 #endif
 
 namespace Xamarin.Forms.Controls
@@ -53,8 +56,17 @@ namespace Xamarin.Forms.Controls
 #if __ANDROID__
 		static IApp InitializeAndroidApp()
 		{
-			return ConfigureApp.Android.ApkFile(AppPaths.ApkPath).Debug().StartApp();
+			var app = ConfigureApp.Android.ApkFile(AppPaths.ApkPath).Debug().StartApp();
+
+			if (bool.Parse((string)app.Invoke("IsPreAppCompat")))
+			{
+				IsFormsApplicationActivity = true;
+			}
+
+			return app;
 		}
+
+		public static bool IsFormsApplicationActivity { get; private set; }
 #endif
 
 #if __IOS__
@@ -387,6 +399,9 @@ namespace Xamarin.Forms.Controls
 		protected abstract void Init();
 	}
 
+#if UITEST
+	[Category(Core.UITests.UITestCategories.MasterDetailPage)]
+#endif
 	public abstract class TestMasterDetailPage : MasterDetailPage
 	{
 #if UITEST

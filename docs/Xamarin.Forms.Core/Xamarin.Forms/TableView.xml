@@ -144,7 +144,7 @@ public class App : Application
         <Parameter Name="root" Type="Xamarin.Forms.TableRoot" />
       </Parameters>
       <Docs>
-        <param name="root">To be added.</param>
+        <param name="root">The root of the table view.</param>
         <summary>Initializes a new <see cref="T:Xamarin.Forms.TableView" /> instance.</summary>
         <remarks>To be added.</remarks>
       </Docs>
@@ -235,8 +235,28 @@ public class App : Application
         <ReturnType>Xamarin.Forms.Internals.TableModel</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ModelChanged">
+      <MemberSignature Language="C#" Value="public event EventHandler ModelChanged;" />
+      <MemberSignature Language="ILAsm" Value=".event class System.EventHandler ModelChanged" />
+      <MemberType>Event</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute>
+          <AttributeName>System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.EventHandler</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -321,7 +341,7 @@ public class App : Application
       </AssemblyInfo>
       <Attributes>
         <Attribute>
-          <AttributeName>System.Obsolete("Use OnMeasure")</AttributeName>
+          <AttributeName>System.Obsolete("OnSizeRequest is obsolete as of version 2.2.0. Please use OnMeasure instead.")</AttributeName>
         </Attribute>
       </Attributes>
       <ReturnValue>
@@ -332,8 +352,8 @@ public class App : Application
         <Parameter Name="heightConstraint" Type="System.Double" />
       </Parameters>
       <Docs>
-        <param name="widthConstraint">To be added.</param>
-        <param name="heightConstraint">To be added.</param>
+        <param name="widthConstraint">The width constraint of the size request.</param>
+        <param name="heightConstraint">The height constraint of the size request.</param>
         <summary>Method that is called when a size request is made.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>

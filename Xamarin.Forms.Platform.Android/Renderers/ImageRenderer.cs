@@ -1,6 +1,5 @@
 using System;
 using System.ComponentModel;
-using System.IO;
 using System.Threading.Tasks;
 using Android.Graphics;
 using Android.Views;
@@ -9,6 +8,11 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android
 {
+	internal interface IImageRendererController
+	{
+		void SkipInvalidate();
+	}
+
 	public class ImageRenderer : ViewRenderer<Image, AImageView>
 	{
 		bool _isDisposed;
@@ -34,7 +38,7 @@ namespace Xamarin.Forms.Platform.Android
 			return new FormsImageView(Context);
 		}
 
-		protected override void OnElementChanged(ElementChangedEventArgs<Image> e)
+		protected override async void OnElementChanged(ElementChangedEventArgs<Image> e)
 		{
 			base.OnElementChanged(e);
 
@@ -46,86 +50,68 @@ namespace Xamarin.Forms.Platform.Android
 
 			_motionEventHelper.UpdateElement(e.NewElement);
 
-			UpdateBitmap(e.OldElement);
+			await TryUpdateBitmap(e.OldElement);
+
 			UpdateAspect();
 		}
 
-		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		protected override async void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);
 
 			if (e.PropertyName == Image.SourceProperty.PropertyName)
-				UpdateBitmap();
+				await TryUpdateBitmap();
 			else if (e.PropertyName == Image.AspectProperty.PropertyName)
 				UpdateAspect();
 		}
 
 		void UpdateAspect()
 		{
+			if (Element == null || Control == null || Control.IsDisposed())
+			{
+				return;
+			}
+
 			AImageView.ScaleType type = Element.Aspect.ToScaleType();
 			Control.SetScaleType(type);
 		}
 
-		async void UpdateBitmap(Image previous = null)
+		protected virtual async Task TryUpdateBitmap(Image previous = null)
 		{
-			if (Device.IsInvokeRequired)
-				throw new InvalidOperationException("Image Bitmap must not be updated from background thread");
+			// By default we'll just catch and log any exceptions thrown by UpdateBitmap so they don't bring down
+			// the application; a custom renderer can override this method and handle exceptions from
+			// UpdateBitmap differently if it wants to
 
-			if (previous != null && Equals(previous.Source, Element.Source))
-				return;
-
-			((IImageController)Element).SetIsLoading(true);
-
-			var formsImageView = Control as FormsImageView;
-			formsImageView?.SkipInvalidate();
-
-			Control.SetImageResource(global::Android.Resource.Color.Transparent);
-
-			ImageSource source = Element.Source;
-			Bitmap bitmap = null;
-			IImageSourceHandler handler;
-
-			if (source != null && (handler = Internals.Registrar.Registered.GetHandler<IImageSourceHandler>(source.GetType())) != null)
+			try
 			{
-				try
-				{
-					bitmap = await handler.LoadImageAsync(source, Context);
-				}
-				catch (TaskCanceledException)
-				{
-				}
-				catch (IOException ex)
-				{
-					Log.Warning("Xamarin.Forms.Platform.Android.ImageRenderer", "Error updating bitmap: {0}", ex);
-				}
+				await UpdateBitmap(previous);
 			}
-
-			if (Element == null || !Equals(Element.Source, source))
+			catch (Exception ex)
 			{
-				bitmap?.Dispose();
-				return;
+				Log.Warning(nameof(ImageRenderer), "Error loading image: {0}", ex);
 			}
-
-			if (!_isDisposed)
+			finally
 			{
-				if (bitmap == null && source is FileImageSource)
-					Control.SetImageResource(ResourceManager.GetDrawableByName(((FileImageSource)source).File));
-				else
-					Control.SetImageBitmap(bitmap);
-
-				bitmap?.Dispose();
-
-				((IImageController)Element).SetIsLoading(false);
-				((IVisualElementController)Element).NativeSizeChanged();
+				((IImageController)Element)?.SetIsLoading(false);
 			}
 		}
 
-		public override bool OnTouchEvent(MotionEvent e)
+		protected async Task UpdateBitmap(Image previous = null)
 		{
-			if (base.OnTouchEvent(e))
-				return true;
+			if (Element == null || Control == null || Control.IsDisposed())
+			{
+				return;
+			}
 
-			return _motionEventHelper.HandleMotionEvent(Parent);
+			await Control.UpdateBitmap(Element, previous);
 		}
-	}
+
+        public override bool OnTouchEvent(MotionEvent e)
+        {
+            if (base.OnTouchEvent(e))
+                return true;
+
+            return _motionEventHelper.HandleMotionEvent(Parent, e);
+        }
+    }
 }

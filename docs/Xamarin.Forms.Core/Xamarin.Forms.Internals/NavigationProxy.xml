@@ -19,7 +19,7 @@
     </Attribute>
   </Attributes>
   <Docs>
-    <summary>To be added.</summary>
+    <summary>For internal use by the Xamarin.Forms platform.</summary>
     <remarks>To be added.</remarks>
   </Docs>
   <Members>
@@ -32,7 +32,7 @@
       </AssemblyInfo>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -48,7 +48,7 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
@@ -65,7 +65,7 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
@@ -81,7 +81,7 @@
         <ReturnType>Xamarin.Forms.INavigation</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
@@ -101,9 +101,9 @@
         <Parameter Name="before" Type="Xamarin.Forms.Page" />
       </Parameters>
       <Docs>
-        <param name="page">To be added.</param>
-        <param name="before">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="page">For internal use by the Xamarin.Forms platform.</param>
+        <param name="before">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -118,7 +118,7 @@
         <ReturnType>System.Collections.Generic.IReadOnlyList&lt;Xamarin.Forms.Page&gt;</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
@@ -134,7 +134,7 @@
         <ReturnType>System.Collections.Generic.IReadOnlyList&lt;Xamarin.Forms.Page&gt;</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
@@ -154,9 +154,9 @@
         <Parameter Name="before" Type="Xamarin.Forms.Page" />
       </Parameters>
       <Docs>
-        <param name="page">To be added.</param>
-        <param name="before">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="page">For internal use by the Xamarin.Forms platform.</param>
+        <param name="before">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -174,8 +174,8 @@
         <Parameter Name="animated" Type="System.Boolean" />
       </Parameters>
       <Docs>
-        <param name="animated">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="animated">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
@@ -194,8 +194,8 @@
         <Parameter Name="animated" Type="System.Boolean" />
       </Parameters>
       <Docs>
-        <param name="animated">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="animated">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
@@ -214,8 +214,8 @@
         <Parameter Name="animated" Type="System.Boolean" />
       </Parameters>
       <Docs>
-        <param name="animated">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="animated">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
@@ -235,9 +235,9 @@
         <Parameter Name="animated" Type="System.Boolean" />
       </Parameters>
       <Docs>
-        <param name="page">To be added.</param>
-        <param name="animated">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="page">For internal use by the Xamarin.Forms platform.</param>
+        <param name="animated">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
@@ -257,9 +257,9 @@
         <Parameter Name="animated" Type="System.Boolean" />
       </Parameters>
       <Docs>
-        <param name="modal">To be added.</param>
-        <param name="animated">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="modal">For internal use by the Xamarin.Forms platform.</param>
+        <param name="animated">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
@@ -278,8 +278,8 @@
         <Parameter Name="page" Type="Xamarin.Forms.Page" />
       </Parameters>
       <Docs>
-        <param name="page">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="page">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -295,7 +295,7 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
@@ -314,8 +314,8 @@
         <Parameter Name="animated" Type="System.Boolean" />
       </Parameters>
       <Docs>
-        <param name="animated">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="animated">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
@@ -332,7 +332,7 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
@@ -351,8 +351,8 @@
         <Parameter Name="animated" Type="System.Boolean" />
       </Parameters>
       <Docs>
-        <param name="animated">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="animated">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
@@ -369,7 +369,7 @@
       </ReturnValue>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
@@ -388,8 +388,8 @@
         <Parameter Name="animated" Type="System.Boolean" />
       </Parameters>
       <Docs>
-        <param name="animated">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="animated">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
@@ -408,8 +408,8 @@
         <Parameter Name="root" Type="Xamarin.Forms.Page" />
       </Parameters>
       <Docs>
-        <param name="root">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="root">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
@@ -429,9 +429,9 @@
         <Parameter Name="animated" Type="System.Boolean" />
       </Parameters>
       <Docs>
-        <param name="root">To be added.</param>
-        <param name="animated">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="root">For internal use by the Xamarin.Forms platform.</param>
+        <param name="animated">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
@@ -450,8 +450,8 @@
         <Parameter Name="modal" Type="Xamarin.Forms.Page" />
       </Parameters>
       <Docs>
-        <param name="modal">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="modal">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
@@ -471,9 +471,9 @@
         <Parameter Name="animated" Type="System.Boolean" />
       </Parameters>
       <Docs>
-        <param name="modal">To be added.</param>
-        <param name="animated">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="modal">For internal use by the Xamarin.Forms platform.</param>
+        <param name="animated">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
@@ -492,8 +492,8 @@
         <Parameter Name="page" Type="Xamarin.Forms.Page" />
       </Parameters>
       <Docs>
-        <param name="page">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="page">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>

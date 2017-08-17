@@ -434,7 +434,8 @@ namespace Xamarin.Forms
 			}
 		}
 
-		void IVisualElementController.NativeSizeChanged()
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void NativeSizeChanged()
 		{
 			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 		}
@@ -456,7 +457,7 @@ namespace Xamarin.Forms
 
 		public event EventHandler<FocusEventArgs> Focused;
 
-		[Obsolete("Use Measure")]
+		[Obsolete("OnSizeRequest is obsolete as of version 2.2.0. Please use OnMeasure instead.")]
 		public virtual SizeRequest GetSizeRequest(double widthConstraint, double heightConstraint)
 		{
 			SizeRequest cachedResult;
@@ -621,7 +622,7 @@ namespace Xamarin.Forms
 		{
 		}
 
-		[Obsolete("Use OnMeasure")]
+		[Obsolete("OnSizeRequest is obsolete as of version 2.2.0. Please use OnMeasure instead.")]
 		protected virtual SizeRequest OnSizeRequest(double widthConstraint, double heightConstraint)
 		{
 			if (Platform == null || !IsPlatformEnabled)
@@ -794,19 +795,6 @@ namespace Xamarin.Forms
 			public bool Focus { get; set; }
 
 			public bool Result { get; set; }
-		}
-
-		~VisualElement()
-		{
-			if (!GetIsDefault(BehaviorsProperty)) {
-				var behaviors = GetValue(BehaviorsProperty) as AttachedCollection<Behavior>;
-				behaviors.DetachFrom(this);
-			}
-
-			if (!GetIsDefault(TriggersProperty)) {
-				var triggers = GetValue(TriggersProperty) as AttachedCollection<TriggerBase>;
-				triggers.DetachFrom(this);
-			}
 		}
 	}
 }

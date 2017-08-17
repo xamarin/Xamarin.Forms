@@ -12,7 +12,7 @@
     </Attribute>
   </Attributes>
   <Docs>
-    <summary>To be added.</summary>
+    <summary>For internal use by the Xamarin.Forms platform.</summary>
     <remarks>To be added.</remarks>
   </Docs>
   <Members>
@@ -38,8 +38,8 @@
       </Parameters>
       <Docs>
         <typeparam name="T">To be added.</typeparam>
-        <param name="expression">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="expression">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>

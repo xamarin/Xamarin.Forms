@@ -27,7 +27,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		[Obsolete("Use OnMeasure")]
+		[Obsolete("OnSizeRequest is obsolete as of version 2.2.0. Please use OnMeasure instead.")]
 		protected override SizeRequest OnSizeRequest(double widthConstraint, double heightConstraint)
 		{
 			double widthRequest = WidthRequest;
@@ -63,6 +63,15 @@ namespace Xamarin.Forms
 		{
 			if (ControlTemplate == null)
 				base.SetChildInheritedBindingContext(child, context);
+		}
+
+		void IControlTemplated.OnControlTemplateChanged(ControlTemplate oldValue, ControlTemplate newValue)
+		{
+			OnControlTemplateChanged(oldValue, newValue);
+		}
+
+		internal virtual void OnControlTemplateChanged(ControlTemplate oldValue, ControlTemplate newValue)
+		{
 		}
 	}
 }
