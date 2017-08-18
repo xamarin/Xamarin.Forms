@@ -19,14 +19,14 @@ namespace Xamarin.Forms.Controls.Issues
 			public TestPage(int index)
 			{
 				nextBtn = new Button { Text = "Next Page" };
-				rmBtn = new Button { Text = "Remove previous page" };
+				rmBtn = new Button { Text = "Remove previous pages" };
 				popBtn = new Button { Text = "Back" };
 
 				nextBtn.Clicked += async (sender, e) => await Navigation.PushAsync(new TestPage(index + 1));
 				rmBtn.Clicked += (sender, e) =>
 				{
 					var stackSize = Navigation.NavigationStack.Count;
-					Navigation.RemovePage(Navigation.NavigationStack[stackSize - 2])
+					Navigation.RemovePage(Navigation.NavigationStack[stackSize - 2]);
 
 					stackSize = Navigation.NavigationStack.Count;
 					Navigation.RemovePage(Navigation.NavigationStack[stackSize - 2]);
@@ -76,8 +76,11 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement(q => q.Marked("Next Page"));
 			RunningApp.Tap(q => q.Marked("Next Page"));
 
-			RunningApp.WaitForElement(q => q.Marked("Remove previous page"));
-			RunningApp.Tap(q => q.Marked("Remove previous page"));
+			RunningApp.WaitForElement(q => q.Marked("Next Page"));
+			RunningApp.Tap(q => q.Marked("Next Page"));
+
+			RunningApp.WaitForElement(q => q.Marked("Remove previous pages"));
+			RunningApp.Tap(q => q.Marked("Remove previous pages"));
 
 			RunningApp.WaitForElement(q => q.Marked("Back"));
 			RunningApp.Tap(q => q.Marked("Back"));
