@@ -26,7 +26,11 @@ namespace Xamarin.Forms.Controls.Issues
 				rmBtn.Clicked += (sender, e) =>
 				{
 					var stackSize = Navigation.NavigationStack.Count;
+					Navigation.RemovePage(Navigation.NavigationStack[stackSize - 2])
+
+					stackSize = Navigation.NavigationStack.Count;
 					Navigation.RemovePage(Navigation.NavigationStack[stackSize - 2]);
+
 					popBtn.IsVisible = true;
 					rmBtn.IsVisible = false;
 				};
@@ -34,7 +38,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 				switch (index)
 				{
-					case 3:
+					case 4:
 						nextBtn.IsVisible = false;
 						popBtn.IsVisible = false;
 						break;
