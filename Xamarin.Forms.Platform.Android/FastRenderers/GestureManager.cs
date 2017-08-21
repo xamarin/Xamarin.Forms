@@ -12,6 +12,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 	{
 		IVisualElementRenderer _renderer;
 		readonly Lazy<GestureDetector> _gestureDetector;
+        readonly SwipeGestureHandler _swipeGestureHandler;
 		readonly PanGestureHandler _panGestureHandler;
 		readonly PinchGestureHandler _pinchGestureHandler;
 		readonly Lazy<ScaleGestureDetector> _scaleDetector;
@@ -38,6 +39,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			_renderer.ElementChanged += OnElementChanged;
 
 			_tapGestureHandler = new TapGestureHandler(() => View);
+            _swipeGestureHandler = new SwipeGestureHandler(() => View, Control.Context.FromPixels);
 			_panGestureHandler = new PanGestureHandler(() => View, Control.Context.FromPixels);
 			_pinchGestureHandler = new PinchGestureHandler(() => View);
 			_gestureDetector =
@@ -45,8 +47,12 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					() =>
 						new GestureDetector(
 							_gestureListener =
-								new InnerGestureListener(_tapGestureHandler.OnTap, _tapGestureHandler.TapGestureRecognizers,
-									_panGestureHandler.OnPan, _panGestureHandler.OnPanStarted, _panGestureHandler.OnPanComplete)));
+								new InnerGestureListener(
+									_tapGestureHandler.OnTap,
+									_tapGestureHandler.TapGestureRecognizers,
+									OnScrollHandler,
+									OnScrollStartedHandler,
+									OnScrollCompletedHandler)));
 
 			_scaleDetector =
 				new Lazy<ScaleGestureDetector>(
@@ -250,14 +256,35 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			_inputTransparent = Element.InputTransparent;
 		}
 
-        void UpdateIsEnabled()
-        {
-            if (Element == null)
-            {
-                return;
-            }
+		void UpdateIsEnabled()
+		{
+			if (Element == null)
+			{
+				return;
+			}
 
-            _isEnabled = Element.IsEnabled;
-        }
+			_isEnabled = Element.IsEnabled;
+		}
+
+		bool OnScrollHandler(float x, float y, int pointerCount)
+		{
+			var onSwipe = _swipeGestureHandler.OnSwipe(x, y);
+			var onPan = _panGestureHandler.OnPan(x, y, pointerCount);
+
+			return onSwipe || onPan;
+		}
+
+		bool OnScrollStartedHandler(int pointerCount)
+		{
+			return _panGestureHandler.OnPanStarted(pointerCount);
+		}
+
+		bool OnScrollCompletedHandler()
+		{
+			var onSwipeComplete = _swipeGestureHandler.OnSwipeComplete();
+			var onPanComplete = _panGestureHandler.OnPanComplete();
+
+			return onSwipeComplete || onPanComplete;
+		}
     }
 }
