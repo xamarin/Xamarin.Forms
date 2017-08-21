@@ -12,7 +12,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	internal class ListViewAdapter : CellAdapter
+	public class ListViewAdapter : CellAdapter
 	{
 		const int DefaultGroupHeaderTemplateId = 0;
 		const int DefaultItemTemplateId = 1;
