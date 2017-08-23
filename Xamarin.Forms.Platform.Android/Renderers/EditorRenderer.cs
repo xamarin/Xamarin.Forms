@@ -39,7 +39,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (Element.Text != s.ToString())
 				((IElementController)Element).SetValueFromRenderer(Editor.TextProperty, s.ToString());
 		}
-	
+
 		protected override FormsEditText CreateNativeControl()
 		{
 			return new FormsEditText(Context);

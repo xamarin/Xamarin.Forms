@@ -42,7 +42,7 @@ namespace Xamarin.Forms.Platform.Android
 		internal event EventHandler OnKeyboardBackPressed;
 	}
 
-	[Obsolete("As of 2.4 this class has been replaced with Xamarin.Forms.Platform.Android.FormsEditText")]
+	[Obsolete("EntryEditText is obsolete as of version 2.4.0. Please use Xamarin.Forms.Platform.Android.FormsEditText instead.")]
 	public class EntryEditText : FormsEditText
 	{
 		internal EntryEditText(Context context) : base(context)
@@ -50,7 +50,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 	}
 
-	[Obsolete("As of 2.4 this class has been replaced with Xamarin.Forms.Platform.Android.FormsEditText")]
+	[Obsolete("EditorEditText is obsolete as of version 2.4.0. Please use Xamarin.Forms.Platform.Android.FormsEditText instead.")]
 	public class EditorEditText : FormsEditText
 	{
 		internal EditorEditText(Context context) : base(context)
