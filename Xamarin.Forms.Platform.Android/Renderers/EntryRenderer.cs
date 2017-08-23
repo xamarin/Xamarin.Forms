@@ -13,7 +13,9 @@ using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class EntryRenderer : ViewRenderer<Entry, FormsEditText>, ITextWatcher, TextView.IOnEditorActionListener
+#pragma warning disable 618 // Have to continue using EntryEditText for now because third-party code may depend on it
+	public class EntryRenderer : ViewRenderer<Entry, EntryEditText>, ITextWatcher, TextView.IOnEditorActionListener
+#pragma warning restore 618
 	{
 		ColorStateList _hintTextColorDefault;
 		ColorStateList _textColorDefault;
@@ -53,10 +55,12 @@ namespace Xamarin.Forms.Platform.Android
 			((IElementController)Element).SetValueFromRenderer(Entry.TextProperty, s.ToString());
 		}
 
-		protected override FormsEditText CreateNativeControl()
+#pragma warning disable 618 // Have to continue using EntryEditText for now because third-party code may depend on it
+		protected override EntryEditText CreateNativeControl()
 		{
-			return new FormsEditText(Context);
+			return new EntryEditText(Context);
 		}
+#pragma warning restore 618
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Entry> e)
 		{
