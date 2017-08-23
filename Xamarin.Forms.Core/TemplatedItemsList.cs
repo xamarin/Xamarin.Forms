@@ -523,6 +523,12 @@ namespace Xamarin.Forms.Internals
 			return GetIndex(item);
 		}
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public DataTemplate SelectDataTemplate(object item)
+		{
+			return ItemTemplate.SelectDataTemplate(item, _itemsView);
+		}
+
 		public TItem CreateContent(int index, object item, bool insert = false)
 		{
 			TItem content = ItemTemplate != null ? (TItem)ItemTemplate.CreateContent(item, _itemsView) : _itemsView.CreateDefault(item);
@@ -598,7 +604,8 @@ namespace Xamarin.Forms.Internals
 
 		internal TItem UpdateContent(TItem content, int index, object item)
 		{
-			content.BindingContext = item;
+			if (content.BindingContext != item)
+				content.BindingContext = item;
 
 			if (Parent != null)
 				SetGroup(content, this);

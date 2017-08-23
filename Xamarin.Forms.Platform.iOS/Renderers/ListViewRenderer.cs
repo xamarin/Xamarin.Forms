@@ -497,8 +497,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateItems(NotifyCollectionChangedEventArgs e, int section, bool resetWhenGrouped)
 		{
-			_dataSource.InvalidatePrototypicalCellCache();
-
 			var exArgs = e as NotifyCollectionChangedEventArgsEx;
 			if (exArgs != null)
 				_dataSource.Counts[section] = exArgs.Count;
@@ -628,8 +626,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			IVisualElementRenderer _prototype;
 			bool _disposed;
-			Dictionary<Type, Cell> _cellByType = new Dictionary<Type, Cell>();
-			Dictionary<NSIndexPath, Cell> _cellByIndex = new Dictionary<NSIndexPath, Cell>();
+			Dictionary<object, Cell> _prototypicalCellByTypeOrDataTemplate = new Dictionary<object, Cell>();
 			//bool _useEstimatedRowHeight;
 
 			ConcurrentDictionary<NSIndexPath, nfloat> _rowHeights = new ConcurrentDictionary<NSIndexPath, nfloat>();
@@ -692,7 +689,8 @@ namespace Xamarin.Forms.Platform.iOS
 					return 0;
 				}
 
-				return CalculateHeightForCell(table, firstCell);
+				return 0;
+				//return CalculateHeightForCell(table, firstCell);
 			}
 
 			//public override nfloat EstimatedHeight(UITableView tableView, NSIndexPath indexPath)
@@ -712,30 +710,31 @@ namespace Xamarin.Forms.Platform.iOS
 
 			internal override void InvalidatePrototypicalCellCache()
 			{
-				_cellByIndex.Clear();
-				_cellByType.Clear();
+				_prototypicalCellByTypeOrDataTemplate.Clear();
 			}
 
 			internal Cell GetPrototypicalCell(NSIndexPath indexPath)
 			{
+				var itemTypeOrDataTemplate = default(object);
+
 				var cachingStrategy = List.CachingStrategy;
-				if ((cachingStrategy & ListViewCachingStrategy.RecycleElementAndDataTemplate) !=
-					ListViewCachingStrategy.RecycleElementAndDataTemplate)
+				if (cachingStrategy == ListViewCachingStrategy.RecycleElement)
+					itemTypeOrDataTemplate = GetDataTemplateForPath(indexPath);
+
+				else if (cachingStrategy == ListViewCachingStrategy.RecycleElementAndDataTemplate)
+					itemTypeOrDataTemplate = GetItemTypeForPath(indexPath);
+
+				else // ListViewCachingStrategy.RetainElement
 					return GetCellForPath(indexPath);
 
-				Cell protoCell;
-				if (!_cellByIndex.TryGetValue(indexPath, out protoCell))
-				{
-					var itemType = GetItemTypeForPath(indexPath);
-					if (!_cellByType.TryGetValue(itemType, out protoCell))
-					{
-						// cache prototypical cell by item type; Items of the same Type share
-						// the same DataTemplate (this is enforced by RecycleElementAndDataTemplate)
-						protoCell = GetCellForPath(indexPath);
-						_cellByType[itemType] = protoCell;
-					}
 
-					_cellByIndex[indexPath] = protoCell;
+				Cell protoCell;
+				if (!_prototypicalCellByTypeOrDataTemplate.TryGetValue(itemTypeOrDataTemplate, out protoCell))
+				{
+					// cache prototypical cell by item type; Items of the same Type share
+					// the same DataTemplate (this is enforced by RecycleElementAndDataTemplate)
+					protoCell = GetCellForPath(indexPath);
+					_prototypicalCellByTypeOrDataTemplate[itemTypeOrDataTemplate] = protoCell;
 				}
 
 				var templatedItems = GetTemplatedItemsListForPath(indexPath);
@@ -1090,6 +1089,13 @@ namespace Xamarin.Forms.Platform.iOS
 					templatedItems = (ITemplatedItemsList<Cell>)((IList)templatedItems)[indexPath.Section];
 
 				return templatedItems;
+			}
+
+			protected DataTemplate GetDataTemplateForPath(NSIndexPath indexPath)
+			{
+				var templatedList = GetTemplatedItemsListForPath(indexPath);
+				var item = templatedList.ListProxy[indexPath.Row];
+				return templatedList.SelectDataTemplate(item);
 			}
 
 			protected Type GetItemTypeForPath(NSIndexPath indexPath)
