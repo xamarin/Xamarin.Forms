@@ -11,9 +11,7 @@ using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 
 namespace Xamarin.Forms.Platform.Android
 {
-#pragma warning disable 618 // Have to continue using EditorEditText for now because third-party code may depend on it
-	public class EditorRenderer : ViewRenderer<Editor, EditorEditText>, ITextWatcher
-#pragma warning restore 618
+	public class EditorRenderer : ViewRenderer<Editor, FormsEditText>, ITextWatcher
 	{
 		ColorStateList _defaultColors;
 		bool _disposed;
@@ -42,12 +40,10 @@ namespace Xamarin.Forms.Platform.Android
 				((IElementController)Element).SetValueFromRenderer(Editor.TextProperty, s.ToString());
 		}
 	
-#pragma warning disable 618 // Have to continue using EditorEditText for now because third-party code may depend on it
-		protected override EditorEditText CreateNativeControl()
+		protected override FormsEditText CreateNativeControl()
 		{
-			return new EditorEditText(Context);
+			return new FormsEditText(Context);
 		}
-#pragma warning restore 618
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Editor> e)
 		{
