@@ -48,6 +48,7 @@ namespace Xamarin.Forms.Platform.MacOS
 						NSScrollView scrollView = new NSScrollView();
 						scrollView.Frame = new RectangleF(0, 0, extraButtons.Frame.Width, 400);
 						scrollView.DocumentView = extraButtons;
+						scrollView.HasVerticalScroller = true;
 						alert.AccessoryView = scrollView;
 					} else {
 						alert.AccessoryView = extraButtons;
