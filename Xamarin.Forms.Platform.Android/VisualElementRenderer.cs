@@ -100,6 +100,11 @@ namespace Xamarin.Forms.Platform.Android
 			return base.OnInterceptTouchEvent(ev);
 		}
 
+		public override bool OnTouchEvent(MotionEvent e)
+		{
+			return (this as IOnTouchListener).OnTouch(this,e);
+		}
+
 		bool AView.IOnTouchListener.OnTouch(AView v, MotionEvent e)
 		{
 			if (!Element.IsEnabled)
