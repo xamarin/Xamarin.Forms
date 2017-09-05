@@ -7,8 +7,8 @@ namespace Xamarin.Forms
 	[Flags]
 	public enum ButtonsMask
 	{
-		Primary = 1,
-		Secondary = 2
+		Primary = 1 << 0,
+		Secondary = 1 << 1
 	}
 
 	public sealed class ClickGestureRecognizer : GestureRecognizer
@@ -55,10 +55,11 @@ namespace Xamarin.Forms
 		public void SendClicked(View sender, ButtonsMask buttons)
 		{
 			ICommand cmd = Command;
-			if (cmd != null && cmd.CanExecute(CommandParameter))
-				cmd.Execute(CommandParameter);
+			object parameter = CommandParameter;
+			if (cmd != null && cmd.CanExecute(parameter))
+				cmd.Execute(parameter);
 
-			Clicked?.Invoke(sender, new ClickedEventArgs(buttons, CommandParameter));
+			Clicked?.Invoke(sender, new ClickedEventArgs(buttons, parameter));
 
 		}
 	}
