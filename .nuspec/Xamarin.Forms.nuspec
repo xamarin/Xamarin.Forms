@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Xamarin.Forms$IdAppend$</id>
-    <version>1.0.0</version>
+    <version>$version$</version>
     <authors>Xamarin Inc.</authors>
     <owners>Xamarin Inc.</owners>
     <tags>xamarin forms xamarinforms xamarin.forms</tags>
@@ -124,6 +124,9 @@
 
     <!--Xaml netstandard Stuff-->
     <file src="Xamarin.Forms.targets" target="build\netstandard1.0\Xamarin.Forms$IdAppend$.targets" />
+    <file src="Xamarin.Forms.DefaultItems.targets" target="build\netstandard1.0\Xamarin.Forms.DefaultItems.targets" />
+    <file src="Xamarin.Forms.props" target="build\netstandard1.0\Xamarin.Forms$IdAppend$.props" />
+    <file src="Xamarin.Forms.DefaultItems.props" target="build\netstandard1.0\Xamarin.Forms.DefaultItems.props" />
     <file src="..\Xamarin.Forms.Build.Tasks\bin\$Configuration$\Xamarin.Forms.Build.Tasks.dll" target="build\netstandard1.0" />
     <file src="..\Xamarin.Forms.Build.Tasks\bin\$Configuration$\Xamarin.Forms.Core.dll" target="build\netstandard1.0" />
     <file src="..\Xamarin.Forms.Build.Tasks\bin\$Configuration$\Xamarin.Forms.Xaml.dll" target="build\netstandard1.0" />

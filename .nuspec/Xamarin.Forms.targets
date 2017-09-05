@@ -2,7 +2,14 @@
 	<UsingTask TaskName="Xamarin.Forms.Build.Tasks.XamlGTask" AssemblyFile="Xamarin.Forms.Build.Tasks.dll"/>
 	<UsingTask TaskName="Xamarin.Forms.Build.Tasks.FixedCreateCSharpManifestResourceName" AssemblyFile="Xamarin.Forms.Build.Tasks.dll"/>
 	<UsingTask TaskName="Xamarin.Forms.Build.Tasks.XamlCTask" AssemblyFile="Xamarin.Forms.Build.Tasks.dll"/>
-  
+
+	<PropertyGroup>
+		<EnableDefaultXamlItems Condition="'$(EnableDefaultXamlItems)'==''">True</EnableDefaultXamlItems>
+		<_DefaultXamlItemsEnabled>False</_DefaultXamlItemsEnabled>
+	</PropertyGroup>
+
+	<Import Project="$(MSBuildThisFileDirectory)Xamarin.Forms.DefaultItems.targets" Condition="'$(MSBuildSDKsPath)'!=''" />
+
 	<PropertyGroup>
 		<CoreCompileDependsOn>
 			XamlG;

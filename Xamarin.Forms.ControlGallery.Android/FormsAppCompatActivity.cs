@@ -5,6 +5,7 @@ using Android.App;
 using Android.Content;
 using Android.Content.PM;
 using Android.OS;
+using Java.Interop;
 using Xamarin.Forms.Controls;
 using Xamarin.Forms.Controls.Issues;
 using Xamarin.Forms.Platform.Android;
@@ -42,7 +43,12 @@ namespace Xamarin.Forms.ControlGallery.Android
 			if (!Debugger.IsAttached)
 				Insights.Initialize(App.InsightsApiKey, ApplicationContext);
 
+#if TEST_EXPERIMENTAL_RENDERERS
+			Forms.SetFlags("FastRenderers_Experimental");
+#endif
+
 			Forms.Init(this, bundle);
+
 			FormsMaps.Init(this, bundle);
 			AndroidAppLinks.Init(this);
 			Forms.ViewInitialized += (sender, e) => {
@@ -68,6 +74,12 @@ namespace Xamarin.Forms.ControlGallery.Android
 			LoadApplication(_app);
 		}
 
+		
+		[Export("IsPreAppCompat")]
+		public bool IsPreAppCompat()
+		{
+			return false;
+		}
 	}
 }
 
