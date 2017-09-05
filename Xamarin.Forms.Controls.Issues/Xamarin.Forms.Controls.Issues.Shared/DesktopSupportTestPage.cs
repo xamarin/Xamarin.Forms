@@ -129,7 +129,7 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			var layout = new StackLayout();
 			var label = new Label { Text = "Adding menus" };
-			var btn = new Button { Text = "Clear", Command = new Command(() => Application.Current.MainMenu.Clear()) };
+			var btn = new Button { Text = "Clear", Command = new Command(() => GetMenu(Application.Current).Clear()) };
 			var btnAdd = new Button { Text = "Add Menu Hello", Command = new Command(() => AddMenu(1)) };
 			var btnAdd3 = new Button { Text = "Add 3 Menu Hello", Command = new Command(() => AddMenu(3)) };
 			var btnAdd3Add2 = new Button { Text = "Add Menu Hello with 2 Subitems", Command = new Command(() => AddMenu(3, true, 2)) };
@@ -142,8 +142,9 @@ namespace Xamarin.Forms.Controls.Issues
 						{
 							AddMenu(1, true);
 							await Task.Delay(3000);
-							Application.Current.MainMenu[0].Items[0].Text = "hello changed";
-							Application.Current.MainMenu[0].Items[0].IsEnabled = false;
+							var mainMenu = GetMenu(Application.Current);
+							mainMenu[0].Items[0].Text = "hello changed";
+							mainMenu[0].Items[0].IsEnabled = false;
 						})
 			};
 			var btnAddSubmenusWithShortcut = new Button { Text = "Add Menu Hello With submenu And shortcut", Command = new Command(() => AddMenu(1, true, 7, false, null, true, true)) };
@@ -204,7 +205,13 @@ namespace Xamarin.Forms.Controls.Issues
 					menu.Add(submenu);
 				}
 				if (menuHolder == null)
-					menuHolder = Application.Current.MainMenu;
+				{
+					var mainMenu = new Menu();
+					SetMenu(Application.Current, mainMenu);
+;					menuHolder = GetMenu(Application.Current);
+
+				}
+					
 				menuHolder.Add(menu);
 			}
 		}

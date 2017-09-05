@@ -9,7 +9,7 @@ namespace Xamarin.Forms
 	{
 		readonly ObservableCollection<Menu> _menus = new ObservableCollection<Menu>();
 
-		ObservableCollection<MenuItem> _items = new ObservableCollection<MenuItem>();
+		readonly ObservableCollection<MenuItem> _items = new ObservableCollection<MenuItem>();
 
 		public Menu()
 		{

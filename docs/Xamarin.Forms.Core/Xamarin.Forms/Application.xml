@@ -125,22 +125,6 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-    <Member MemberName="MainMenu">
-      <MemberSignature Language="C#" Value="public Xamarin.Forms.Menu MainMenu { get; }" />
-      <MemberSignature Language="ILAsm" Value=".property instance class Xamarin.Forms.Menu MainMenu" />
-      <MemberType>Property</MemberType>
-      <AssemblyInfo>
-        <AssemblyVersion>2.0.0.0</AssemblyVersion>
-      </AssemblyInfo>
-      <ReturnValue>
-        <ReturnType>Xamarin.Forms.Menu</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <value>To be added.</value>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
     <Member MemberName="MainPage">
       <MemberSignature Language="C#" Value="public Xamarin.Forms.Page MainPage { get; set; }" />
       <MemberSignature Language="ILAsm" Value=".property instance class Xamarin.Forms.Page MainPage" />
@@ -471,7 +455,7 @@
           <AttributeName>System.Diagnostics.DebuggerStepThrough</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Runtime.CompilerServices.AsyncStateMachine(typeof(Xamarin.Forms.Application/&lt;SavePropertiesAsync&gt;d__56))</AttributeName>
+          <AttributeName>System.Runtime.CompilerServices.AsyncStateMachine(typeof(Xamarin.Forms.Application/&lt;SavePropertiesAsync&gt;d__53))</AttributeName>
         </Attribute>
       </Attributes>
       <ReturnValue>

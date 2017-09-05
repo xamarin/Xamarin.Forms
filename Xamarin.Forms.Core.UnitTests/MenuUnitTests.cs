@@ -54,8 +54,8 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			var item = new MenuItem();
 			var menu = new Menu { Text = "Hello" };
-			Application.Current.MainMenu.Add(menu);
-			Assert.GreaterOrEqual(1, Application.Current.MainMenu.Count);
+			Element.SetMenu(Application.Current, menu);
+			Assert.GreaterOrEqual(1, Element.GetMenu(Application.Current).Count);
 		}
 
 		[Test]
