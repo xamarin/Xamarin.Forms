@@ -164,22 +164,24 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
-		public void StringFormatNonStringType()
+		[TestCase("en-US", "{0:P2}", 0.95d, ExpectedResult = "95.00 %")]
+		[TestCase("tr-TR", "{0:P2}", 0.95d, ExpectedResult = "%95,00" )]
+		public string StringFormatNonStringType(string culture, string format, object value)
 		{
 			var currentCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
 			try
 			{
 				System.Threading.Thread.CurrentThread.CurrentCulture
-					= System.Globalization.CultureInfo.InvariantCulture;
+					= System.Globalization.CultureInfo.GetCultureInfo(culture);
 
 				var property = BindableProperty.Create("Foo", typeof(string), typeof(MockBindable));
-				var binding = new Binding("Value", stringFormat: "{0:P2}");
+				var binding = new Binding("Value", stringFormat: format);
 
-				var vm = new { Value = 0.95d };
+				var vm = new { Value = value };
 				var bo = new MockBindable { BindingContext = vm };
 				bo.SetBinding(property, binding);
 
-				Assert.That(bo.GetValue(property), Is.EqualTo("95.00 %"));
+				return (string)bo.GetValue(property);
 			}
 			finally
 			{
