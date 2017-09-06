@@ -61,5 +61,25 @@ namespace Xamarin.Forms
 		{
 			return _text;
 		}
+
+		public override bool Equals(object obj)
+		{
+			return obj != null && obj is Accelerator && Equals((Accelerator)obj);
+		}
+
+		bool Equals(Accelerator other)
+		{
+			return other.ToString() == ToString();
+		}
+
+		public override int GetHashCode()
+		{
+			return ToString().GetHashCode();
+		}
+
+		public static implicit operator Accelerator(string accelerator)
+		{
+			return FromString(accelerator);
+		}
 	}
 }

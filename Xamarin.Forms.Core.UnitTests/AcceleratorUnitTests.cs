@@ -1,6 +1,8 @@
 ﻿using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Core.UnitTests
 {
@@ -39,18 +41,17 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(accelerator.Keys.ElementAt(0), shourtCutKeyBinding);
 		}
 
-		[Test]
-		public void AcceleratorFromLetterAndModifier()
+		[Test TestCaseSource(nameof(GenerateTests))]
+		public void AcceleratorFromLetterAndModifier(TestShortcut shourtcut)
 		{
-			string modifier = "ctrl";
-			string key = "A";
-			string shourtCutKeyBinding = $"{modifier}+{key}";
-			var accelerator = Accelerator.FromString(shourtCutKeyBinding);
+			string modifier = shourtcut.Modifier;
+			string key = shourtcut.Key;
+			var accelerator = Accelerator.FromString(shourtcut.ToString());
 
 			Assert.AreEqual(accelerator.Keys.Count(), 1);
 			Assert.AreEqual(accelerator.Modififiers.Count(), 1);
-			Assert.AreEqual(accelerator.Keys.ElementAt(0), key);
-			Assert.AreEqual(accelerator.Modififiers.ElementAt(0), modifier);
+			Assert.AreEqual(accelerator.Keys.ElementAt(0), shourtcut.Key);
+			Assert.AreEqual(accelerator.Modififiers.ElementAt(0), shourtcut.Modifier);
 		}
 
 
@@ -58,7 +59,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		public void AcceleratorFromLetterAnd2Modifier()
 		{
 			string modifier = "ctrl";
-			string modifier1Alt= "alt";
+			string modifier1Alt = "alt";
 			string key = "A";
 			string shourtCutKeyBinding = $"{modifier}+{modifier1Alt}+{key}";
 			var accelerator = Accelerator.FromString(shourtCutKeyBinding);
@@ -68,6 +69,30 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(accelerator.Keys.ElementAt(0), key);
 			Assert.AreEqual(accelerator.Modififiers.ElementAt(0), modifier);
 			Assert.AreEqual(accelerator.Modififiers.ElementAt(1), modifier1Alt);
+		}
+
+
+		[Preserve(AllMembers = true)]
+		public struct TestShortcut
+		{
+			internal TestShortcut(string modifier)
+			{
+				Modifier = modifier;
+				Key = modifier[0].ToString();
+			}
+
+			internal string Modifier { get; set; }
+			internal string Key { get; set; }
+
+			public override string ToString()
+			{
+				return $"{Modifier}+{Key}";
+			}
+		}
+
+		static IEnumerable<TestShortcut> GenerateTests
+		{
+			get { return new string[] { "ctrl", "cmd", "alt", "shift", "fn" }.Select(str => new TestShortcut(str)); }
 		}
 	}
 }
