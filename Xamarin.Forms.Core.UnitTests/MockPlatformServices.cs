@@ -172,7 +172,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		public void QuitApp()
+		public void QuitApplication()
 		{
 
 		}

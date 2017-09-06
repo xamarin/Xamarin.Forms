@@ -333,7 +333,7 @@ namespace Xamarin.Forms
 				}
 			}
 
-			public void QuitApp()
+			public void QuitApplication()
 			{
 #if __MOBILE__
 				Log.Warning(nameof(IOSPlatformServices), "Platform doesn't implement QuitApp");

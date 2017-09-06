@@ -39,7 +39,7 @@ namespace Xamarin.Forms
 
 		public void Quit()
 		{
-			Device.PlatformServices?.QuitApp();
+			Device.PlatformServices?.QuitApplication();
 		}
 
 		public IAppLinks AppLinks

@@ -486,7 +486,7 @@ namespace Xamarin.Forms
 				return false;
 			}
 
-			public void QuitApp()
+			public void QuitApplication()
 			{
 				Internals.Log.Warning(nameof(AndroidPlatformServices), "Platform doesn't implement QuitApp");
 			}

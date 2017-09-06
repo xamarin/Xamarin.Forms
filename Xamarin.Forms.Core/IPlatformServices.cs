@@ -33,6 +33,6 @@ namespace Xamarin.Forms.Internals
 
 		string RuntimePlatform { get; }
 
-		void QuitApp();
+		void QuitApplication();
 	}
 }
