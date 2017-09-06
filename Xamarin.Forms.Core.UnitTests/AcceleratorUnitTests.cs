@@ -92,7 +92,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		static IEnumerable<TestShortcut> GenerateTests
 		{
-			get { return new string[] { "ctrl", "cmd", "alt", "shift", "fn" }.Select(str => new TestShortcut(str)); }
+			get { return new string[] { "ctrl", "cmd", "alt", "shift", "fn", "win" }.Select(str => new TestShortcut(str)); }
 		}
 	}
 }

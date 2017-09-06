@@ -43,6 +43,7 @@ namespace Xamarin.Forms
 						case "alt":
 						case "shift":
 						case "fn":
+						case "win":
 							modifiers.Add(modiferMaskLower);
 							text = text.Replace(modifierMask, "");
 							break;
