@@ -1,12 +1,12 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<UsingTask TaskName="Xamarin.Forms.Build.Tasks.DebugXamlCTask" AssemblyFile="Xamarin.Forms.Build.Tasks.dll"/>
 
-	<Import Project="$(MSBuildThisFileDirectory)Xamarin.Forms.targets" />
-
 	<PropertyGroup>
 		<XFKeepXamlResources>True</XFKeepXamlResources>
 		<XFVerbosity>4</XFVerbosity>
 	</PropertyGroup>
+
+	<Import Project="$(MSBuildThisFileDirectory)Xamarin.Forms.targets" />
 
 	<PropertyGroup>
 		<CompileDependsOn>
