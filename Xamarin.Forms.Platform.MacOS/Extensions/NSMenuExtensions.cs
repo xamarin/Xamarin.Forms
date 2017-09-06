@@ -6,8 +6,6 @@ namespace Xamarin.Forms.Platform.macOS.Extensions
 {
 	internal static class NSMenuExtensions
 	{
-		const char Separator = '+';
-
 		public static NSMenu ToNSMenu(this Menu menus, NSMenu nsMenu = null)
 		{
 			if (nsMenu == null)
@@ -73,17 +71,15 @@ namespace Xamarin.Forms.Platform.macOS.Extensions
 			if (accelerator == null)
 				return;
 
-			bool hasModifierMask = false;
-			var acceleratorParts = accelerator.Split(Separator);
-			hasModifierMask = (acceleratorParts.Length > 1);
+			bool hasModifierMask = accelerator.Modififiers.Count() > 1;
 
 			if (hasModifierMask)
 			{
 				nsMenuItem.KeyEquivalentModifierMask = 0;
 
-				for (int i = 0; i < acceleratorParts.Count() - 1; i++)
+				for (int i = 0; i < accelerator.Modififiers.Count(); i++)
 				{
-					var modifierMast = acceleratorParts[i].ToLower();
+					var modifierMast = accelerator.Modififiers.ElementAt(i).ToLower();
 					switch (modifierMast)
 					{
 						case "ctrl":
@@ -104,7 +100,7 @@ namespace Xamarin.Forms.Platform.macOS.Extensions
 					}
 				}
 			}
-			nsMenuItem.KeyEquivalent = acceleratorParts.Last();
+			nsMenuItem.KeyEquivalent = accelerator.Keys.FirstOrDefault();
 		}
 	}
 }

@@ -192,7 +192,7 @@ namespace Xamarin.Forms.Controls.Issues
 								shourtCutKeyBinding = $"cmd+alt+{j}";
 
 							item.Text = shourtCutKeyBinding;
-							MenuItem.SetAccelerator(item, shourtCutKeyBinding);
+							MenuItem.SetAccelerator(item, Accelerator.FromString(shourtCutKeyBinding));
 						}
 						menu.Items.Add(item);
 					}

@@ -204,14 +204,14 @@
       </Docs>
     </Member>
     <Member MemberName="GetAccelerator">
-      <MemberSignature Language="C#" Value="public static string GetAccelerator (Xamarin.Forms.BindableObject bindable);" />
-      <MemberSignature Language="ILAsm" Value=".method public static hidebysig string GetAccelerator(class Xamarin.Forms.BindableObject bindable) cil managed" />
+      <MemberSignature Language="C#" Value="public static Xamarin.Forms.Accelerator GetAccelerator (Xamarin.Forms.BindableObject bindable);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig class Xamarin.Forms.Accelerator GetAccelerator(class Xamarin.Forms.BindableObject bindable) cil managed" />
       <MemberType>Method</MemberType>
       <AssemblyInfo>
         <AssemblyVersion>2.0.0.0</AssemblyVersion>
       </AssemblyInfo>
       <ReturnValue>
-        <ReturnType>System.String</ReturnType>
+        <ReturnType>Xamarin.Forms.Accelerator</ReturnType>
       </ReturnValue>
       <Parameters>
         <Parameter Name="bindable" Type="Xamarin.Forms.BindableObject" />
@@ -379,8 +379,8 @@
       </Docs>
     </Member>
     <Member MemberName="SetAccelerator">
-      <MemberSignature Language="C#" Value="public static void SetAccelerator (Xamarin.Forms.BindableObject bindable, string menu);" />
-      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void SetAccelerator(class Xamarin.Forms.BindableObject bindable, string menu) cil managed" />
+      <MemberSignature Language="C#" Value="public static void SetAccelerator (Xamarin.Forms.BindableObject bindable, Xamarin.Forms.Accelerator value);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void SetAccelerator(class Xamarin.Forms.BindableObject bindable, class Xamarin.Forms.Accelerator value) cil managed" />
       <MemberType>Method</MemberType>
       <AssemblyInfo>
         <AssemblyVersion>2.0.0.0</AssemblyVersion>
@@ -390,11 +390,11 @@
       </ReturnValue>
       <Parameters>
         <Parameter Name="bindable" Type="Xamarin.Forms.BindableObject" />
-        <Parameter Name="menu" Type="System.String" />
+        <Parameter Name="value" Type="Xamarin.Forms.Accelerator" />
       </Parameters>
       <Docs>
         <param name="bindable">To be added.</param>
-        <param name="menu">To be added.</param>
+        <param name="value">To be added.</param>
         <summary>To be added.</summary>
         <remarks>To be added.</remarks>
       </Docs>
