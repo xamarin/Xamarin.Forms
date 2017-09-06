@@ -224,7 +224,7 @@ namespace Xamarin.Forms
 
 			if (widthIsProportional)
 			{
-				result.Width = Math.Round(region.Width * bounds.Width);
+				result.Width = region.Width * bounds.Width;
 			}
 			else if (bounds.Width != AutoSize)
 			{
@@ -233,7 +233,7 @@ namespace Xamarin.Forms
 
 			if (heightIsProportional)
 			{
-				result.Height = Math.Round(region.Height * bounds.Height);
+				result.Height = region.Height * bounds.Height;
 			}
 			else if (bounds.Height != AutoSize)
 			{
@@ -265,7 +265,7 @@ namespace Xamarin.Forms
 
 			if (xIsProportional)
 			{
-				result.X = Math.Round((region.Width - result.Width) * bounds.X);
+				result.X = (region.Width - result.Width) * bounds.X;
 			}
 			else
 			{
@@ -274,7 +274,7 @@ namespace Xamarin.Forms
 
 			if (yIsProportional)
 			{
-				result.Y = Math.Round((region.Height - result.Height) * bounds.Y);
+				result.Y = (region.Height - result.Height) * bounds.Y;
 			}
 			else
 			{
