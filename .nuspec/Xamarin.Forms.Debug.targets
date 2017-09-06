@@ -43,7 +43,7 @@
 			<Output TaskParameter="ResourceFilesWithManifestResourceNames" ItemName="XamlFiles" />
 		</FixedCreateCSharpManifestResourceName>
 		<ItemGroup>
-			<XamlGFiles Include="@(XamlFiles->'$(IntermediateOutputPath)%(ManifestResourceName).g$(DefaultLanguageSourceExtension)')"/>
+			<XamlGFiles Include="@(XamlFiles->'$(IntermediateOutputPath)%(RandomFileName).g$(DefaultLanguageSourceExtension)')"/>
 			<Compile Include="@(XamlGFiles)"/>
 			<FileWrites Include="@(XamlGFiles)"/>
 		</ItemGroup>
@@ -51,12 +51,12 @@
 
 	<Target Name="_CoreXamlG"
 		Inputs = "@(XamlFiles)"
-		Outputs = "$(IntermediateOutputPath)%(ManifestResourceName).g$(DefaultLanguageSourceExtension)">
+		Outputs = "$(IntermediateOutputPath)%(RandomFileName).g$(DefaultLanguageSourceExtension)">
 		<XamlGTask
 			Source="@(XamlFiles)"
 			Language = "$(Language)"
 			AssemblyName = "$(AssemblyName)"
-			OutputFile = "$(IntermediateOutputPath)%(ManifestResourceName).g$(DefaultLanguageSourceExtension)">
+			OutputFile = "$(IntermediateOutputPath)%(RandomFileName).g$(DefaultLanguageSourceExtension)">
 		</XamlGTask>
 	</Target>
 

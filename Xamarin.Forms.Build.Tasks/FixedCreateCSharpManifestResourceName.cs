@@ -21,6 +21,7 @@ namespace Xamarin.Forms.Build.Tasks
 			{
 				var copy = new TaskItem(ResourceFiles[i]);
 				copy.SetMetadata("ManifestResourceName", ManifestResourceNames[i].ItemSpec);
+				copy.SetMetadata("RandomFileName", System.IO.Path.GetRandomFileName());
 				ResourceFilesWithManifestResourceNames[i] = copy;
 			}
 			return ret;
