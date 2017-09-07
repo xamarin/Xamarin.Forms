@@ -41,7 +41,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(accelerator.Keys.ElementAt(0), shourtCutKeyBinding);
 		}
 
-		[Test TestCaseSource(nameof(GenerateTests))]
+		[Test, TestCaseSource(nameof(GenerateTests))]
 		public void AcceleratorFromLetterAndModifier(TestShortcut shourtcut)
 		{
 			string modifier = shourtcut.Modifier;
