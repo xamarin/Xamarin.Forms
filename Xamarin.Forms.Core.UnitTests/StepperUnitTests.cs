@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-
 using NUnit.Framework;
 
 namespace Xamarin.Forms.Core.UnitTests
@@ -38,6 +35,40 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			Stepper stepper = new Stepper ();
 			Assert.Throws<ArgumentException> (() => stepper.Minimum = stepper.Maximum + 1);
+		}
+
+		[Test]
+		public void TestInvalidValue()
+		{
+			var stepper = new Stepper();
+			Assert.Throws<ArgumentException>(() => stepper.Value = stepper.Minimum - 1);
+			Assert.Throws<ArgumentException>(() => stepper.Value = stepper.Maximum + 1);
+		}
+
+		[Test]
+		public void TestValidValueAfterRangeChange()
+		{
+			var stepper = new Stepper
+			{
+				Minimum = -100,
+				Maximum = 200,
+				Value = -50
+			};
+
+			Assert.AreEqual(-50, stepper.Value);
+		}
+
+		[Test]
+		public void TestInvalidValueAfterRangeChange()
+		{
+			var stepper = new Stepper
+			{
+				Minimum = -100,
+				Maximum = 200
+			};
+
+			Assert.Throws<ArgumentException>(() => stepper.Value = stepper.Minimum - 1);
+			Assert.Throws<ArgumentException>(() => stepper.Value = stepper.Maximum + 1);
 		}
 
 		[Test]

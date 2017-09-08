@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-
 using NUnit.Framework;
 
 namespace Xamarin.Forms.Core.UnitTests
@@ -67,6 +64,40 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			var slider = new Slider ();
 			Assert.Throws<ArgumentException> (() => slider.Minimum = slider.Maximum + 1);
+		}
+
+		[Test]
+		public void TestInvalidValue()
+		{
+			var slider = new Slider();
+			Assert.Throws<ArgumentException>(() => slider.Value = slider.Minimum - 1);
+			Assert.Throws<ArgumentException>(() => slider.Value = slider.Maximum + 1);
+		}
+
+		[Test]
+		public void TestValidValueAfterRangeChange()
+		{
+			var slider = new Slider
+			{
+				Minimum = -100,
+				Maximum = 200,
+				Value = -50
+			};
+
+			Assert.AreEqual(-50, slider.Value);
+		}
+
+		[Test]
+		public void TestInvalidValueAfterRangeChange()
+		{
+			var slider = new Slider
+			{
+				Minimum = -100,
+				Maximum = 200
+			};
+
+			Assert.Throws<ArgumentException>(() => slider.Value = slider.Minimum - 1);
+			Assert.Throws<ArgumentException>(() => slider.Value = slider.Maximum + 1);
 		}
 
 		[Test]

@@ -29,16 +29,18 @@ namespace Xamarin.Forms
 			return value;
 		});
 
-		public static readonly BindableProperty ValueProperty = BindableProperty.Create("Value", typeof(double), typeof(Slider), 0d, BindingMode.TwoWay, coerceValue: (bindable, value) =>
+		public static readonly BindableProperty ValueProperty = BindableProperty.Create("Value", typeof(double), typeof(Slider), 0d, BindingMode.TwoWay, (bindable, value) =>
+		{
+			var slider = (Slider)bindable;
+			return (double)value >= slider.Minimum && (double)value <= slider.Maximum;
+		}, coerceValue: (bindable, value) =>
 		{
 			var slider = (Slider)bindable;
 			return ((double)value).Clamp(slider.Minimum, slider.Maximum);
 		}, propertyChanged: (bindable, oldValue, newValue) =>
 		{
 			var slider = (Slider)bindable;
-			EventHandler<ValueChangedEventArgs> eh = slider.ValueChanged;
-			if (eh != null)
-				eh(slider, new ValueChangedEventArgs((double)oldValue, (double)newValue));
+			slider.ValueChanged?.Invoke(slider, new ValueChangedEventArgs((double)oldValue, (double)newValue));
 		});
 
 		readonly Lazy<PlatformConfigurationRegistry<Slider>> _platformConfigurationRegistry;
@@ -51,7 +53,7 @@ namespace Xamarin.Forms
 		public Slider(double min, double max, double val) : this()
 		{
 			if (min >= max)
-				throw new ArgumentOutOfRangeException("min");
+				throw new ArgumentOutOfRangeException(nameof(min));
 
 			if (max > Minimum)
 			{
