@@ -18,14 +18,19 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				ItemsSource = new string[] { "A", "B", "C" }
 			};
+			var picker2 = new Picker
+			{
+				ItemsSource = new string[] { "D", "E", "F" }
+			};
 			Content = new StackLayout
 			{
 				Children =
 				{
 					picker,
+					picker2,
 					new Button
 					{
-						Text = "Click to focus the picker",
+						Text = "Click to focus the first picker",
 						Command = new Command(() =>
 						{
 							picker.Focus();

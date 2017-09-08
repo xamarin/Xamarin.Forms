@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
 
@@ -19,7 +20,6 @@ namespace Xamarin.Forms.Platform.WinRT
 	{
 		bool _isAnimating;
 		Brush _defaultBrush;
-		bool _dropDownWasOpened;
 
 		protected override void Dispose(bool disposing)
 		{
@@ -33,7 +33,7 @@ namespace Xamarin.Forms.Platform.WinRT
 					Control.DropDownClosed -= OnDropDownOpenStateChanged;
 					Control.OpenAnimationCompleted -= ControlOnOpenAnimationCompleted;
 					Control.Loaded -= ControlOnLoaded;
-					Control.GotFocus -= ControlOnGotFocus;
+					Element.Focused -= OnElementFocused;
 				}
 			}
 
@@ -53,7 +53,7 @@ namespace Xamarin.Forms.Platform.WinRT
 					Control.OpenAnimationCompleted += ControlOnOpenAnimationCompleted;
 					Control.ClosedAnimationStarted += ControlOnClosedAnimationStarted;
 					Control.Loaded += ControlOnLoaded;
-					Control.GotFocus += ControlOnGotFocus;
+					e.NewElement.Focused += OnElementFocused;
 				}
 
 				Control.ItemsSource = ((LockableObservableListWrapper)Element.Items)._list;
@@ -63,6 +63,12 @@ namespace Xamarin.Forms.Platform.WinRT
 			}
 
 			base.OnElementChanged(e);
+		}
+
+		void OnElementFocused(object sender, FocusEventArgs e)
+		{
+			if (!Control.IsPopupOpen && Control.FocusState != FocusState.Keyboard)
+				Control.IsDropDownOpen = true;
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -105,19 +111,6 @@ namespace Xamarin.Forms.Platform.WinRT
 			}
 		}
 
-		void ControlOnGotFocus(object sender, RoutedEventArgs routedEventArgs)
-		{
-			// The FormsComboBox is separate from the Popup/dropdown that it uses to select an item,
-			// and the behavior here is changed to be similar to the other platforms where focusing the
-			// Picker opens the dropdown (with the exception where if focus was given via keyboard, such
-			// as tabbing through controls). The _dropDownWasOpened flag is reset to false in the case that
-			// the FormsComboBox regained focus after the dropdown closed.
-			if (!_dropDownWasOpened && Control.FocusState != FocusState.Keyboard)
-				Control.IsDropDownOpen = true;
-			else
-				_dropDownWasOpened = false;
-		}
-
 		void OnControlSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if (Element != null)
@@ -145,9 +138,6 @@ namespace Xamarin.Forms.Platform.WinRT
 				_isAnimating = false;
 				// and force the final redraw
 				((IVisualElementController)Element)?.InvalidateMeasure(InvalidationTrigger.MeasureChanged);
-
-				// Related to ControlOnGotFocus, _dropDownWasOpened is set to true
-				_dropDownWasOpened = true;
 			}
 		}
 

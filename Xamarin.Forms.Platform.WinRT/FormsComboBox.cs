@@ -1,6 +1,7 @@
 ﻿using System;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Media.Animation;
 
 #if WINDOWS_UWP
@@ -18,6 +19,10 @@ namespace Xamarin.Forms.Platform.WinRT
 		internal bool IsFullScreen => Device.Idiom == TargetIdiom.Phone && Items != null && Items.Count > 5;
 
 		internal bool IsOpeningAnimated { get; private set; }
+
+		internal bool IsPopupOpen { get; private set; }
+
+		Popup Popup { get; set; }
 
 		protected override void OnApplyTemplate()
 		{
@@ -48,6 +53,12 @@ namespace Xamarin.Forms.Platform.WinRT
 					closedSignalAnimation.Completed += (sender, o) => OnClosedAnimationStarted();
 					IsClosingAnimated = true;
 				}
+			}
+			Popup = (Popup)GetTemplateChild("Popup");
+			if (Popup != null)
+			{
+				Popup.Opened += (s, e) => IsPopupOpen = true;
+				Popup.Closed += (s, e) => IsPopupOpen = false;
 			}
 		}
 
