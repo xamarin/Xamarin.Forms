@@ -46,7 +46,10 @@ namespace Xamarin.Forms.Platform.WinRT
 			{
 				if (e.OldElement == null)
 				{
-					Loaded += OnLoaded;
+                    // In the previous version not remove it before, This might be cause a add multiple even problem and cause some performance and memory or other problems wehen keep navigate exist page.
+                    Loaded -= OnLoaded;
+                    Unloaded -= OnUnloaded;
+                    Loaded += OnLoaded;
 					Unloaded += OnUnloaded;
 
 					Tracker = new BackgroundTracker<FrameworkElement>(BackgroundProperty);

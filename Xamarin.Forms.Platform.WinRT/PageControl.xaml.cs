@@ -5,6 +5,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
+using System.Linq;
 
 #if WINDOWS_UWP
 
@@ -52,12 +53,19 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		TaskCompletionSource<CommandBar> _commandBarTcs;
 		Windows.UI.Xaml.Controls.ContentPresenter _presenter;
-	    
 
-	    public PageControl()
+        Canvas ContentController;
+
+
+
+        public PageControl()
 		{
 			InitializeComponent();
-		}
+            ContentController = new Canvas();
+            base.Content = ContentController;
+
+
+        }
 
 		public string BackButtonTitle
 		{
@@ -190,5 +198,58 @@ namespace Xamarin.Forms.Platform.WinRT
 
 			_backButton.Opacity = ShowBackButton ? 1 : 0;
 		}
+
+        /*** Every time display a element, that's take too much performance, especially for some exist page, That's why
+        I changed the original lotic, replace it with visibility, next time navigate exist page or switch exists content page(For NavigationPage) it will be fast displayed, even there are too much element in target page ***/
+        public new object Content
+        {
+            get
+            {
+                return this.ContentController.Children.Where(x => x.Visibility == Visibility.Visible).FirstOrDefault();
+            }
+            set
+            {
+                UIElement newElement = value as UIElement;
+                UIElement oldElement = this.Content as UIElement;
+
+
+                if (newElement != oldElement)
+                {
+                    if (null != oldElement)
+                        oldElement.Visibility = Visibility.Collapsed;
+
+
+                    if (null != newElement)
+                    {
+                        if (this.ContentController.Children.Any(x => x == newElement))
+                            newElement.Visibility = Visibility.Visible;
+                        else
+                            this.ContentController.Children.Add(newElement);
+                    }
+                }
+            }
+        }
+
+        internal bool CheckContentIfExist(UIElement element) {
+            return this.ContentController.Children.Any(x => x == element);
+        }
+
+
+        internal void RecalcVisiblitiy(UIElement element)
+        {
+            foreach (var item in this.ContentController.Children)
+            {
+                if (element == item && element.Visibility != item.Visibility)
+                    item.Visibility = element.Visibility;
+                else if (element != item && element.Visibility != Visibility.Collapsed)
+                    item.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        internal void RemoveContent(UIElement element)
+        {
+            ContentController.Children.Remove(element);
+        }
+
     }
 }

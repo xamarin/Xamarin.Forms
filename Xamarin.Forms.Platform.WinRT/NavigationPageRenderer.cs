@@ -297,8 +297,19 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		void MultiPagePropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == "CurrentPage" || e.PropertyName == "Detail")
-				UpdateTitleOnParents();
+            if (e.PropertyName == "CurrentPage" || e.PropertyName == "Detail")
+            {
+                // In the RetainsRenderer mode, should avoid all page fire the event(that will cause the title bar don't show up, because history page != currentPage)
+                if (this._currentPage.GetRetainsRendererValue())
+                {
+                    if (_parentMasterDetailPage.Detail == _currentPage)
+                        UpdateTitleOnParents(); 
+                }
+                else
+                {
+                    UpdateTitleOnParents();
+                }
+            }
 		}
 
 		async void OnBackClicked(object sender, RoutedEventArgs e)
@@ -411,12 +422,23 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		void SetPage(Page page, bool isAnimated, bool isPopping)
 		{
-			if (_currentPage != null)
-			{
-				if (isPopping)
-					_currentPage.Cleanup();
+            // Ignore if same page loaded
+            if (page == _currentPage)
+                return;
 
-				_container.Content = null;
+            // The new changes of this method, for :MasterDetails.Detail = exist page; performance
+            if (_currentPage != null)
+			{
+                // Don't clean if RetainsRenderer is true
+                if (isPopping && !page.GetRetainsRendererValue())
+                {
+                    IVisualElementRenderer previousRenderer = _currentPage.GetOrCreateRenderer();
+                    _container.RemoveContent(previousRenderer.ContainerElement);
+                    _currentPage.Cleanup();
+                }
+                
+
+                _container.Content = null;
 
 				_currentPage.PropertyChanged -= OnCurrentPagePropertyChanged;
 			}
@@ -432,12 +454,12 @@ namespace Xamarin.Forms.Platform.WinRT
 			UpdateBackButton();
 			UpdateBackButtonTitle();
 
-			page.PropertyChanged += OnCurrentPagePropertyChanged;
+            page.PropertyChanged -= OnCurrentPagePropertyChanged;
+            page.PropertyChanged += OnCurrentPagePropertyChanged;
 
 			IVisualElementRenderer renderer = page.GetOrCreateRenderer();
 
-			UpdateTitleVisible();
-			UpdateTitleOnParents();
+
 
 			if (isAnimated && _transition == null)
 			{
@@ -450,8 +472,20 @@ namespace Xamarin.Forms.Platform.WinRT
 			else if (isAnimated && _container.ContentTransitions.Count == 0)
 				_container.ContentTransitions.Add(_transition);
 
-			_container.Content = renderer.ContainerElement;
+            if (null != _previousPage)
+                ((IPageController)_previousPage)?.SendDisappearing();
+            _container.Content = renderer.ContainerElement;
+            if (_container.CheckContentIfExist(renderer.ContainerElement))
+                ((IPageController)page)?.SendAppearing();
+            
 			_container.DataContext = page;
+
+
+            UpdateTitleVisible();
+            UpdateTitleOnParents();
+
+            // update the inside pages size, if first page change size(because phone orientation changed), navigate to (exist) second page, the page size must resize again
+            RefreshInsidePagesSize();
 		}
 
 		void UpdateBackButtonTitle()
@@ -463,10 +497,25 @@ namespace Xamarin.Forms.Platform.WinRT
 			_container.BackButtonTitle = title;
 		}
 
-		void UpdateContainerArea()
-		{
+        void UpdateContainerArea()
+        {
 			Element.ContainerArea = new Rectangle(0, 0, _container.ContentWidth, _container.ContentHeight);
-		}
+            
+            // Resize the inside pages
+            RefreshInsidePagesSize();
+            // Rechange visibility again(avoid after change phone orientation, the first page will show up)
+            IVisualElementRenderer renderer = _currentPage.GetOrCreateRenderer();
+            _container.RecalcVisiblitiy(renderer.ContainerElement);
+            
+        }
+
+        private void RefreshInsidePagesSize() {
+			foreach (var item in Element.Pages)
+			{
+				if (item == _currentPage)
+                    item.ContainerArea = new Rectangle(0, 0, _container.ContentWidth, _container.ContentHeight);
+            }
+        }
 
 		void UpdateNavigationBarBackground()
 		{

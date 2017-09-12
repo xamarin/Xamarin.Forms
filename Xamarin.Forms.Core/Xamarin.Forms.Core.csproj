@@ -251,6 +251,7 @@
     <Compile Include="ResolutionGroupNameAttribute.cs" />
     <Compile Include="ResourcesChangedEventArgs.cs" />
     <Compile Include="ResourcesExtensions.cs" />
+    <Compile Include="RetainsRendererExtentions.cs" />
     <Compile Include="RoutingEffect.cs" />
     <Compile Include="RowDefinition.cs" />
     <Compile Include="RowDefinitionCollection.cs" />

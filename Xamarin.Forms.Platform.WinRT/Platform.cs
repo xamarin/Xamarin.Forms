@@ -195,13 +195,20 @@ namespace Xamarin.Forms.Platform.WinRT
 				return;
 			foreach (Page root in _navModel.Roots)
 			{
-				root.Layout(bounds);
-				IVisualElementRenderer renderer = GetRenderer(root);
-				if (renderer != null)
-				{
-					renderer.ContainerElement.Width = _container.ActualWidth;
-					renderer.ContainerElement.Height = _container.ActualHeight;
-				}
+                // Don't resize every page, it will let previous page visible in new design page display mode
+                if (root == _currentPage)
+                {
+                    if (root.Width != bounds.Width || root.Height != bounds.Height)
+                        root.Layout(bounds);
+                    IVisualElementRenderer renderer = GetRenderer(root);
+                    if (renderer != null)
+                    {
+                        if (renderer.ContainerElement.Width != _container.ActualWidth)
+                            renderer.ContainerElement.Width = _container.ActualWidth;
+                        if (renderer.ContainerElement.Height != _container.ActualHeight)
+                        renderer.ContainerElement.Height = _container.ActualHeight;
+                    }
+                }
 			}
 		}
 
@@ -276,40 +283,72 @@ namespace Xamarin.Forms.Platform.WinRT
 		}
 
 		async void SetCurrent(Page newPage, bool popping = false, Action completedCallback = null)
-		{
-			if (newPage == _currentPage)
-				return;
+        {
+            if (newPage == _currentPage)
+                return;
 
-			newPage.Platform = this;
+            newPage.Platform = this;
 
-			if (_currentPage != null)
-			{
-				Page previousPage = _currentPage;
-				IVisualElementRenderer previousRenderer = GetRenderer(previousPage);
-				_container.Children.Remove(previousRenderer.ContainerElement);
+            // The new changes of this method, for : App.MainPag = existPage;
 
-				if (popping)
-					previousPage.Cleanup();
-			}
+            if (_currentPage != null)
+            {
+                Page previousPage = _currentPage;
+                IVisualElementRenderer previousRenderer = GetRenderer(previousPage);
+
+
+                // Don't clean if RetainsRenderer is true
+                if (popping && !previousPage.GetRetainsRendererValue())
+                {
+                    previousPage.Cleanup();
+                    _container.Children.Remove(previousRenderer.ContainerElement);
+                }
+                else
+                {
+                    // We should just hide it, not remove or add again, that cause much performance
+                    //_container.Children.Remove(previousRenderer.ContainerElement);
+                    previousRenderer.ContainerElement.Visibility = Visibility.Collapsed;
+                }
+            }
+
 
 			newPage.Layout(ContainerBounds);
+            IVisualElementRenderer pageRenderer = newPage.GetOrCreateRenderer();
 
-			IVisualElementRenderer pageRenderer = newPage.GetOrCreateRenderer();
-			_container.Children.Add(pageRenderer.ContainerElement);
+            if (null != _currentPage)
+                ((IPageController)_currentPage)?.SendDisappearing();
 
-			pageRenderer.ContainerElement.Width = _container.ActualWidth;
-			pageRenderer.ContainerElement.Height = _container.ActualHeight;
+            // Only if the page are new, we should add it, once only(avoid performance)
+            if (_container.Children.Any( x => x == pageRenderer.ContainerElement))
+                pageRenderer.ContainerElement.Visibility = Visibility.Visible;
+            else
+                _container.Children.Add(pageRenderer.ContainerElement);
+
+            if (_container.Children.Any(x => x == pageRenderer.ContainerElement))
+                ((IPageController)newPage)?.SendAppearing();
+
+            pageRenderer.ContainerElement.Width = _container.ActualWidth;
+            pageRenderer.ContainerElement.Height = _container.ActualHeight;
 
 			completedCallback?.Invoke();
 
-			_currentPage = newPage;
+            _currentPage = newPage;
 
-			UpdateToolbarTracker();
+            UpdateToolbarTracker();
 #if WINDOWS_UWP
-			UpdateToolbarTitle(newPage);
+            UpdateToolbarTitle(newPage);
 #endif
-			await UpdateToolbarItems();
-		}
+            UpdatePageSizes();
+
+            // When App.MainPage navigate to exist navigation page, maybe in UWP Desktop App lose Back button on the top, That's why I add it
+            if (pageRenderer is NavigationPageRenderer)
+                ((NavigationPageRenderer)pageRenderer).UpdateBackButton();
+
+            await UpdateToolbarItems();
+
+        }
+
+        
 
 		Task<CommandBar> IToolbarProvider.GetCommandBarAsync()
 		{

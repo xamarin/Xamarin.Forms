@@ -4,6 +4,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
+using System.Linq;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -14,8 +15,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 		public static readonly DependencyProperty MasterTitleProperty = DependencyProperty.Register("MasterTitle", typeof(string), typeof(MasterDetailControl), new PropertyMetadata(default(string)));
 
-		public static readonly DependencyProperty DetailProperty = DependencyProperty.Register("Detail", typeof(FrameworkElement), typeof(MasterDetailControl),
-			new PropertyMetadata(default(FrameworkElement)));
+		public static readonly DependencyProperty DetailContentProperty = DependencyProperty.Register("DetailContent", typeof(Canvas), typeof(MasterDetailControl),
+			new PropertyMetadata(default(Canvas)));
 
 		public static readonly DependencyProperty IsPaneOpenProperty = DependencyProperty.Register("IsPaneOpen", typeof(bool), typeof(MasterDetailControl), new PropertyMetadata(default(bool)));
 
@@ -70,34 +71,84 @@ namespace Xamarin.Forms.Platform.UWP
 			DetailTitleVisibility = Visibility.Collapsed;
 
 			CollapseStyle = CollapseStyle.Full;
+
+            DetailContent = new Canvas();
 		}
 
-		public FrameworkElement Detail
-		{
-			get { return (FrameworkElement)GetValue(DetailProperty); }
-			set { SetValue(DetailProperty, value); }
-		}
+        public Canvas DetailContent
+        {
+            get { return (Canvas)GetValue(DetailContentProperty); }
+            set { SetValue(DetailContentProperty, value); }
+        }
 
-		public Windows.Foundation.Size DetailSize
+
+        /*** Every time display a element, that's take too much performance, especially for some exist page, That's why
+        I changed the original lotic, replace it with visibility, next time navigate exist page or switch exists detail page(For MasterDetailPage) it will be fast displayed, even there are too much element in target page ***/
+        public UIElement Detail
+        {
+            get
+            {
+                return this.DetailContent.Children.Where(x => x.Visibility == Visibility.Visible).FirstOrDefault();
+            }
+            set
+            {
+                UIElement newElement = value as UIElement;
+                UIElement oldElement = this.Detail as UIElement;
+
+
+                if (newElement != oldElement)
+                {
+                    if (null != oldElement)
+                        oldElement.Visibility = Visibility.Collapsed;
+
+
+                    if (null != newElement)
+                    {
+                        if (this.DetailContent.Children.Any(x => x == newElement))
+                            newElement.Visibility = Visibility.Visible;
+                        else
+                            this.DetailContent.Children.Add(newElement);
+                    }
+                }
+
+            }
+        }
+
+        internal bool CheckContentIfExist(FrameworkElement element)
+        {
+            return this.DetailContent.Children.Any(x => x == element);
+        }
+
+        internal void RemoveContent(FrameworkElement element)
+        {
+            DetailContent.Children.Remove(element);
+        }
+
+
+        public Windows.Foundation.Size DetailSize
 		{
 			get
 			{
-				double height = ActualHeight;
-				double width = ActualWidth;
+                //double height = ActualHeight;
+                //double width = ActualWidth;
 
-				if (_commandBar != null)
-					height -= _commandBar.ActualHeight;
+                //if (_commandBar != null)
+                //	height -= _commandBar.ActualHeight;
 
-				if (ShouldShowSplitMode && IsPaneOpen)
-				{
-					if (_split != null)
-						width -= _split.OpenPaneLength;
-					else if (_detailPresenter != null)
-						width -= _masterPresenter.ActualWidth;
-				}
+                //if (ShouldShowSplitMode && IsPaneOpen)
+                //{
+                //	if (_split != null)
+                //		width -= _split.OpenPaneLength;
+                //	else if (_detailPresenter != null)
+                //		width -= _masterPresenter.ActualWidth;
+                //}
 
-				return new Windows.Foundation.Size(width >= 0 ? width : 0, height);
-			}
+                //return new Windows.Foundation.Size(width, height);
+
+                // This is more clean and good way, if use the old way, it will failed calculate the details size after resize
+                return new Windows.Foundation.Size(this.DetailContent.ActualWidth, this.DetailContent.ActualHeight);
+
+            }
 		}
 
 		public string DetailTitle
@@ -281,7 +332,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (_split == null)
 			{
-				return;
+                return;
 			}
 
 			_split.DisplayMode = ShouldShowSplitMode 
@@ -290,21 +341,27 @@ namespace Xamarin.Forms.Platform.UWP
 
 			_split.CompactPaneLength = CollapsedPaneWidth;
 
-			if (_split.DisplayMode == SplitViewDisplayMode.Inline)
-			{
-				// If we've determined that the pane will always be open, then there's no
-				// reason to display the show/hide pane button in the master
-				MasterToolbarVisibility = Visibility.Collapsed;
-			}
+            if (_split.DisplayMode == SplitViewDisplayMode.Inline)
+            {
+                // If we've determined that the pane will always be open, then there's no
+                // reason to display the show/hide pane button in the master
+                MasterToolbarVisibility = Visibility.Collapsed;
+            }
 
-			// If we're in compact mode or the pane is always open,
-			// we don't need to display the content pane's toggle button
-			ContentTogglePaneButtonVisibility = _split.DisplayMode == SplitViewDisplayMode.Overlay 
+            // If we're in compact mode or the pane is always open,
+            // we don't need to display the content pane's toggle button
+            ContentTogglePaneButtonVisibility = _split.DisplayMode == SplitViewDisplayMode.Overlay 
 				? Visibility.Visible 
 				: Visibility.Collapsed;
 
-			if (ContentTogglePaneButtonVisibility == Visibility.Visible)
-				DetailTitleVisibility = Visibility.Visible;
-		}
-	}
+            // if panel default mode is always open, but we set IsPresented = false
+            if (!IsPaneOpen)
+            {
+                ContentTogglePaneButtonVisibility = Visibility.Visible;
+            }
+
+            if (ContentTogglePaneButtonVisibility == Visibility.Visible)
+                DetailTitleVisibility = Visibility.Visible;
+        }
+    }
 }

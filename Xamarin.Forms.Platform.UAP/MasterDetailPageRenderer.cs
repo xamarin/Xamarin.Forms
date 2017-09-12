@@ -15,6 +15,7 @@ namespace Xamarin.Forms.Platform.UWP
 	{
 		Page _master;
 		Page _detail;
+        Page _previousDetail;
 		bool _showTitle;
 
 		VisualElementTracker<Page, FrameworkElement> _tracker;
@@ -178,16 +179,20 @@ namespace Xamarin.Forms.Platform.UWP
 			if (_detail == null)
 				return;
 
-			_detail.PropertyChanged -= OnDetailPropertyChanged;
+            if (!_detail.GetRetainsRendererValue())
+            {
+                _detail.PropertyChanged -= OnDetailPropertyChanged;
 
-			IVisualElementRenderer renderer = Platform.GetRenderer(_detail);
-			renderer?.Dispose();
+                IVisualElementRenderer renderer = Platform.GetRenderer(_detail);
+                Control.RemoveContent(renderer.ContainerElement);
+                renderer?.Dispose();
 
-			_detail.ClearValue(Platform.RendererProperty);
-			_detail = null;
-		}
+                _detail.ClearValue(Platform.RendererProperty);
+                _detail = null;
+            }
+        }
 
-		void ClearMaster()
+        void ClearMaster()
 		{
 			if (_master == null)
 				return;
@@ -241,22 +246,26 @@ namespace Xamarin.Forms.Platform.UWP
 		void UpdateBounds()
 		{
 			Windows.Foundation.Size masterSize = Control.MasterSize;
-			Windows.Foundation.Size detailSize = Control.DetailSize;
+            Windows.Foundation.Size detailSize = Control.DetailSize;
+
 
 			Element.MasterBounds = new Rectangle(0, 0, masterSize.Width, masterSize.Height);
 			Element.DetailBounds = new Rectangle(0, 0, detailSize.Width, detailSize.Height);
-		}
+            RefreshInsidePagesSize();
+            }
 
 		void UpdateDetail()
 		{
-			ClearDetail();
+            ClearDetail();
 
-			FrameworkElement element = null;
+            FrameworkElement element = null;
 
-			_detail = Element.Detail;
+            _previousDetail = _detail;
+            _detail = Element.Detail;
 			if (_detail != null)
 			{
-				_detail.PropertyChanged += OnDetailPropertyChanged;
+                _detail.PropertyChanged -= OnDetailPropertyChanged;
+                _detail.PropertyChanged += OnDetailPropertyChanged;
 
 				IVisualElementRenderer renderer = _detail.GetOrCreateRenderer();
 				element = renderer.ContainerElement;
@@ -264,11 +273,31 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateToolbarVisibilty();
 			}
 
-			Control.Detail = element;
+            if (null != _previousDetail)
+                ((IPageController)_previousDetail)?.SendDisappearing();
+            Control.Detail = element;
+            
+            if (Control.CheckContentIfExist(element))
+                ((IPageController)_detail)?.SendAppearing();
+            
 			UpdateDetailTitle();
-		}
 
-		void UpdateDetailTitle()
+            // avoid other page size not right after switch back
+            RefreshInsidePagesSize();
+
+        }
+
+
+        private void RefreshInsidePagesSize()
+        {
+            if (null != _detail)
+            ((IPageController)_detail).ContainerArea = new Rectangle(0, 0, _detail.Width, _detail.Height);
+            
+        }
+
+
+
+        void UpdateDetailTitle()
 		{
 			if (_detail == null)
 				return;
@@ -277,15 +306,24 @@ namespace Xamarin.Forms.Platform.UWP
 			(this as ITitleProvider).ShowTitle = !string.IsNullOrEmpty(Control.DetailTitle);
 		}
 
-		void UpdateIsPresented()
-		{
+        void UpdateIsPresented()
+        {
 			// Ignore the IsPresented value being set to false for Split mode on desktop and allow the master
 			// view to be made initially visible
 			if (Device.Idiom == TargetIdiom.Desktop && Control.IsPaneOpen && Element.MasterBehavior != MasterBehavior.Popover)
 				return;
 
-			Control.IsPaneOpen = Element.IsPresented;
-		}
+            Control.IsPaneOpen = Element.IsPresented;
+
+            // Fix in PC mode, the split change, but the detail content width not changed
+            if (Control.ShouldShowSplitMode)
+            {
+                if (Control.Width != _detail.Width)
+                    Control.UpdateLayout();
+                UpdateBounds();
+                UpdateMode();
+            }
+        }
 
 		void UpdateMaster()
 		{

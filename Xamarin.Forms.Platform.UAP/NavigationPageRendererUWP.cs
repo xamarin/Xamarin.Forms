@@ -46,7 +46,7 @@ namespace Xamarin.Forms.Platform.UWP
 			return Windows.UI.Xaml.Application.Current.Resources["SystemControlBackgroundChromeMediumLowBrush"];
 		}
 
-		void UpdateBackButton()
+		internal void UpdateBackButton()
 		{
 			bool showBackButton = Element.InternalChildren.Count > 1 && NavigationPage.GetHasBackButton(_currentPage);
 			_container.ShowBackButton = showBackButton;
