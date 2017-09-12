@@ -9,7 +9,8 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 53179, "PopAsync crashing after RemovePage when support packages are updated to 25.1.1", PlatformAffected.Android)]
+	[Issue(IssueTracker.Bugzilla, 53179, 
+		"PopAsync crashing after RemovePage when support packages are updated to 25.1.1", PlatformAffected.Android)]
 	public class Bugzilla53179 : TestNavigationPage
 	{
 		class TestPage : ContentPage
@@ -19,7 +20,7 @@ namespace Xamarin.Forms.Controls.Issues
 			public TestPage(int index)
 			{
 				nextBtn = new Button { Text = "Next Page" };
-				rmBtn = new Button { Text = "Remove previous page" };
+				rmBtn = new Button { Text = "Remove previous pages" };
 				popBtn = new Button { Text = "Back" };
 
 				nextBtn.Clicked += async (sender, e) => await Navigation.PushAsync(new TestPage(index + 1));
@@ -27,6 +28,10 @@ namespace Xamarin.Forms.Controls.Issues
 				{
 					var stackSize = Navigation.NavigationStack.Count;
 					Navigation.RemovePage(Navigation.NavigationStack[stackSize - 2]);
+
+					stackSize = Navigation.NavigationStack.Count;
+					Navigation.RemovePage(Navigation.NavigationStack[stackSize - 2]);
+
 					popBtn.IsVisible = true;
 					rmBtn.IsVisible = false;
 				};
@@ -34,7 +39,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 				switch (index)
 				{
-					case 3:
+					case 4:
 						nextBtn.IsVisible = false;
 						popBtn.IsVisible = false;
 						break;
@@ -72,8 +77,11 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement(q => q.Marked("Next Page"));
 			RunningApp.Tap(q => q.Marked("Next Page"));
 
-			RunningApp.WaitForElement(q => q.Marked("Remove previous page"));
-			RunningApp.Tap(q => q.Marked("Remove previous page"));
+			RunningApp.WaitForElement(q => q.Marked("Next Page"));
+			RunningApp.Tap(q => q.Marked("Next Page"));
+
+			RunningApp.WaitForElement(q => q.Marked("Remove previous pages"));
+			RunningApp.Tap(q => q.Marked("Remove previous pages"));
 
 			RunningApp.WaitForElement(q => q.Marked("Back"));
 			RunningApp.Tap(q => q.Marked("Back"));
