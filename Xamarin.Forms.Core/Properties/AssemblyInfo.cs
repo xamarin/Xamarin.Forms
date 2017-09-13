@@ -41,6 +41,7 @@ using Xamarin.Forms.Internals;
 [assembly: InternalsVisibleTo("Xamarin.Forms.Maps.iOS")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.Maps.iOS.Classic")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.Maps.Android")]
+[assembly: InternalsVisibleTo("Xamarin.Forms.Maps.GTK")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.Xaml.UnitTests")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.UITests")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.FlexLayout.UnitTests")]

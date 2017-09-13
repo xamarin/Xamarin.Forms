@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Xamarin.Forms.Controls.Monkeys.Views.MonkeysView"
+             Title="Monkeys">
+    <ListView 
+        ItemsSource="{Binding MonkeysGrouped}"
+        SeparatorVisibility="None"
+        GroupShortNameBinding ="{Binding Key}"
+        IsGroupingEnabled ="true"
+        GroupDisplayBinding ="{Binding Key}"
+        RowHeight="300">
+        <ListView.ItemTemplate>
+            <DataTemplate>
+                <ViewCell>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="250"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Image 
+                            Grid.Row="0"
+                            Source="{Binding Image}" 
+                            Aspect="AspectFill"/>
+                        <Label 
+                            Grid.Row="1"
+                            Text="{Binding Name}"
+                            FontSize="Large"
+                            TextColor="Red"/>
+                    </Grid>
+                </ViewCell>
+            </DataTemplate>
+        </ListView.ItemTemplate>
+    </ListView>
+</ContentPage>

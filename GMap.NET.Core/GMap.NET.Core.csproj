@@ -1,0 +1,404 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D0C39D9D-BED0-418B-9A5E-713176CAF40C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GMap.NET</RootNamespace>
+    <AssemblyName>GMap.NET.Core</AssemblyName>
+    <FileAlignment>512</FileAlignment>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>sn.snk</AssemblyOriginatorKeyFile>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkSubset>
+    </TargetFrameworkSubset>
+    <NoWin32Manifest>False</NoWin32Manifest>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <IntermediateOutputPath>obj\$(Configuration)\</IntermediateOutputPath>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;MONO; MySQL_disabled; PostgreSQL_disabled; SQLite</DefineConstants>
+    <DebugType>Full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisLogFile>bin\x86\Debug\GMap.NET.Core.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <BaseAddress>4194304</BaseAddress>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <Optimize>False</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;MONO; MySQL_disabled; PostgreSQL_disabled; SQLite</DefineConstants>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisLogFile>bin\x86\Release\GMap.NET.Core.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+    <BaseAddress>4194304</BaseAddress>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU' ">
+    <BaseAddress>4194304</BaseAddress>
+    <RegisterForComInterop>False</RegisterForComInterop>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'v4.0-Debug|AnyCPU'">
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\v4.0-Debug\</OutputPath>
+    <DefineConstants>NET40;TRACE;DEBUG;SQLite;MONO;MySQL_disabled;PostgreSQL_disabled</DefineConstants>
+    <DebugType>Full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'v4.0-Release|AnyCPU'">
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <OutputPath>bin\v4.0-Release\</OutputPath>
+    <DefineConstants>NET40;TRACE;SQLite;MONO;MySQL_disabled;PostgreSQL_disabled</DefineConstants>
+    <Optimize>true</Optimize>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v2.0' ">
+    <TargetFrameworkVersionNumber>2.0</TargetFrameworkVersionNumber>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v3.0' ">
+    <TargetFrameworkVersionNumber>3.0</TargetFrameworkVersionNumber>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v3.5' ">
+    <TargetFrameworkVersionNumber>3.5</TargetFrameworkVersionNumber>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v4.0' ">
+    <TargetFrameworkVersionNumber>4.0</TargetFrameworkVersionNumber>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v4.5' ">
+    <TargetFrameworkVersionNumber>4.5</TargetFrameworkVersionNumber>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v4.6' ">
+    <TargetFrameworkVersionNumber>4.6</TargetFrameworkVersionNumber>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v5.0' ">
+    <TargetFrameworkVersionNumber>5.0</TargetFrameworkVersionNumber>
+  </PropertyGroup>
+  <Choose>
+    <When Condition=" '$(TargetFrameworkVersionNumber)' == '4.0' ">
+      <ItemGroup>
+        <Reference Include="Mono.Data.Sqlite">
+          <HintPath>..\References\Windows\NET4\Mono.Data.Sqlite.dll</HintPath>
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="System.Data.SQLite">
+          <HintPath>..\References\Windows\NET4\System.Data.SQLite.DLL</HintPath>
+          <SpecificVersion>False</SpecificVersion>
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Npgsql">
+          <HintPath>..\References\Windows\NET4\Npgsql.dll</HintPath>
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Mono.Security">
+          <HintPath>..\References\Windows\NET4\Mono.Security.dll</HintPath>
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="MySql.Data">
+          <HintPath>..\References\Windows\NET4\MySql.Data.dll</HintPath>
+          <SpecificVersion>False</SpecificVersion>
+          <Private>False</Private>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <Reference Include="Mono.Data.Sqlite">
+          <HintPath>..\References\Windows\Mono.Data.Sqlite.dll</HintPath>
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="System.Data.SQLite">
+          <HintPath>..\References\Windows\System.Data.SQLite.DLL</HintPath>
+          <SpecificVersion>False</SpecificVersion>
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Npgsql">
+          <HintPath>..\References\Windows\Npgsql.dll</HintPath>
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Mono.Security">
+          <HintPath>..\References\Windows\Mono.Security.dll</HintPath>
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="MySql.Data">
+          <HintPath>..\References\Windows\MySql.Data.dll</HintPath>
+          <SpecificVersion>False</SpecificVersion>
+          <Private>False</Private>
+        </Reference>
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.SqlServerCe" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="GMap.NET.CacheProviders\MemoryCache.cs" />
+    <Compile Include="GMap.NET.Internals\SocksProxySocket\SocksHttpWebRequest.cs" />
+    <Compile Include="GMap.NET.Internals\DrawTile.cs" />
+    <Compile Include="GMap.NET.Internals\FastResourceLock.cs" />
+    <Compile Include="GMap.NET.Internals\SocksProxySocket\AuthMethod.cs" />
+    <Compile Include="GMap.NET.Internals\SocksProxySocket\AuthNone.cs" />
+    <Compile Include="GMap.NET.Internals\SocksProxySocket\AuthUserPass.cs" />
+    <Compile Include="GMap.NET.Internals\SocksProxySocket\IAsyncProxyResult.cs" />
+    <Compile Include="GMap.NET.Internals\SocksProxySocket\ProxyException.cs" />
+    <Compile Include="GMap.NET.Internals\SocksProxySocket\ProxySocket.cs" />
+    <Compile Include="GMap.NET.Internals\SocksProxySocket\Socks4Handler.cs" />
+    <Compile Include="GMap.NET.Internals\SocksProxySocket\Socks5Handler.cs" />
+    <Compile Include="GMap.NET.Internals\SocksProxySocket\SocksHandler.cs" />
+    <Compile Include="GMap.NET.Internals\TileHttpHost.cs" />
+    <Compile Include="GMap.NET.MapProviders\ArcGIS\ArcGIS_DarbAE_Q2_2011_NAVTQ_Eng_V5_MapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Bing\BingMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Bing\BingSatelliteMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Bing\BingHybridMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\ArcGIS\ArcGIS_StreetMap_World_2D_MapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\ArcGIS\ArcGIS_Imagery_World_2D_MapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\ArcGIS\ArcGIS_ShadedRelief_World_2D_MapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\ArcGIS\ArcGIS_Topo_US_2D_MapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\ArcGIS\ArcGIS_World_Physical_MapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\ArcGIS\ArcGIS_World_Shaded_Relief_MapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\ArcGIS\ArcGIS_World_Street_MapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\ArcGIS\ArcGIS_World_Terrain_Base_MapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\ArcGIS\ArcGIS_World_Topo_MapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Czech\CzechGeographicMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Czech\CzechHistoryMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Czech\CzechHybridMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Czech\CzechMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Czech\CzechSatelliteMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Czech\CzechTuristMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Czech\CzechTuristWinterMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Etc\CloudMadeMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Etc\SwedenMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Etc\WikiMapiaMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\CzechOld\CzechHistoryMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\CzechOld\CzechHybridMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\CzechOld\CzechSatelliteMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\CzechOld\CzechTuristMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\CzechOld\CzechMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Etc\TurkeyMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Etc\MapBenderWMSProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Etc\SpainMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Etc\LatviaMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Lithuania\LithuaniaReliefMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Lithuania\LithuaniaHybridOldMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Lithuania\LithuaniaHybridMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Lithuania\LithuaniaOrtoFotoOldMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Lithuania\LithuaniaOrtoFotoMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Lithuania\Lithuania3dMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Lithuania\LithuaniaMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Lithuania\LithuaniaTOP50.cs" />
+    <Compile Include="GMap.NET.MapProviders\OpenStreetMap\OpenStreet4UMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\OpenStreetMap\OpenStreetMapQuestSatteliteProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\OpenStreetMap\OpenStreetMapQuestHybridProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\OpenStreetMap\OpenStreetMapQuestProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\OpenStreetMap\OpenCycleTransportMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\OpenStreetMap\OpenCycleLandscapeMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Yandex\YandexHybridMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Yandex\YandexSatelliteMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Yandex\YandexMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Ovi\OviHybridMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Ovi\OviTerrainMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Ovi\OviSatelliteMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Ovi\OviMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\NearMap\NearHybridMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\NearMap\NearSatelliteMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\NearMap\NearMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Google\Korea\GoogleKoreaHybridMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Google\Korea\GoogleKoreaSatelliteMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Google\Korea\GoogleKoreaMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Google\China\GoogleChinaTerrainMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Google\China\GoogleChinaHybridMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Google\China\GoogleChinaSatelliteMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Google\China\GoogleChinaMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Google\GoogleTerrainMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Google\GoogleHybridMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Google\GoogleSatelliteMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Google\GoogleMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Yahoo\YahooHybridMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Yahoo\YahooSatelliteMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\Yahoo\YahooMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\OpenStreetMap\OpenSeaMapHybridProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\OpenStreetMap\OpenCycleMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\OpenStreetMap\OpenStreetMapSurferTerrainProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\OpenStreetMap\OpenStreetMapSurferProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\OpenStreetMap\OpenStreetOsmProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\OpenStreetMap\OpenStreetMapProvider.cs" />
+    <Compile Include="GMap.NET.MapProviders\GMapProvider.cs" />
+    <Compile Include="GMap.NET.Projections\SWEREF99_TMProjection.cs" />
+    <Compile Include="GMap.NET.Projections\MapsLTReliefProjection.cs" />
+    <Compile Include="GMap.NET.Projections\PlateCarreeProjectionDarbAe.cs" />
+    <Compile Include="GMap.NET\GDirections.cs" />
+    <Compile Include="GMap.NET\DirectionsProvider.cs" />
+    <Compile Include="GMap.NET\GeocodingProvider.cs" />
+    <Compile Include="GMap.NET\RoutingProvider.cs" />
+    <Compile Include="GMap.NET\ZipStorer.cs" />
+    <Compile Include="Properties\VersionInfo.cs" />
+    <Compile Include="GMap.NET.CacheProviders\PostgreSQLPureImageCache.cs" />
+    <Compile Include="GMap.NET.CacheProviders\SQLitePureImageCache.cs" />
+    <Compile Include="GMap.NET.Internals\CacheQueueItem.cs" />
+    <Compile Include="GMap.NET.Internals\FastReaderWriterLock.cs" />
+    <Compile Include="GMap.NET.Internals\KiberTileCache.cs" />
+    <Compile Include="GMap.NET.Internals\PureImage.cs" />
+    <Compile Include="GMap.NET.Internals\LoadTask.cs" />
+    <Compile Include="GMap.NET.Internals\RawTile.cs" />
+    <Compile Include="GMap.NET.Projections\MapsLVProjection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GMap.NET.Projections\MapyCZProjection.cs" />
+    <Compile Include="GMap.NET.Projections\MercatorProjectionYandex.cs" />
+    <Compile Include="GMap.NET.Projections\PlateCarreeProjectionPergo.cs" />
+    <Compile Include="GMap.NET.Projections\MapsLTProjection.cs" />
+    <Compile Include="GMap.NET.Projections\MercatorProjection.cs" />
+    <Compile Include="GMap.NET.Projections\PlateCarreeProjection.cs" />
+    <Compile Include="GMap.NET\Extensions.cs" />
+    <Compile Include="GMap.NET\StatusCodes.cs" />
+    <Compile Include="GMap.NET.CacheProviders\MySQLPureImageCache.cs" />
+    <Compile Include="GMap.NET\GpsLog.cs" />
+    <Compile Include="GMap.NET\gpx.cs" />
+    <Compile Include="GMap.NET\LanguageType.cs" />
+    <Compile Include="GMap.NET\PureProjection.cs" />
+    <Compile Include="GMap.NET\Interface.cs" />
+    <Compile Include="GMap.NET\AccessMode.cs" />
+    <Compile Include="GMap.NET\Delegates.cs" />
+    <Compile Include="GMap.NET\MapRoute.cs" />
+    <None Include="GMap.NET\MapType.cs" />
+    <Compile Include="GMap.NET\GPoint.cs" />
+    <Compile Include="GMap.NET\PureImageCache.cs" />
+    <Compile Include="GMap.NET\GRect.cs" />
+    <Compile Include="GMap.NET\Singleton.cs" />
+    <Compile Include="GMap.NET\MouseWheelZoomType.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <DependentUpon>Resources.resx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="GMap.NET.Internals\Cache.cs" />
+    <Compile Include="GMap.NET.Internals\Core.cs" />
+    <Compile Include="GMap.NET.Internals\Tile.cs" />
+    <Compile Include="GMap.NET.Internals\TileMatrix.cs" />
+    <Compile Include="GMap.NET\GMaps.cs" />
+    <Compile Include="GMap.NET\Placemark.cs" />
+    <Compile Include="GMap.NET\PointLatLng.cs" />
+    <Compile Include="GMap.NET\RectLatLng.cs" />
+    <Compile Include="GMap.NET\RenderMode.cs" />
+    <Compile Include="GMap.NET\GSize.cs" />
+    <Compile Include="GMap.NET\SizeLatLng.cs" />
+    <Compile Include="GMap.NET.Internals\Stuff.cs" />
+    <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
+    <Compile Include="GMap.NET.CacheProviders\MSSQLCEPureImageCache.cs" />
+    <Compile Include="GMap.NET.CacheProviders\MSSQLPureImageCache.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\System.Data.SQLite.x64.NET2.dll.gz" />
+    <None Include="Resources\System.Data.SQLite.x64.NET4.dll.gz" />
+    <None Include="Resources\System.Data.SQLite.x86.NET2.dll.gz" />
+    <None Include="Resources\System.Data.SQLite.x86.NET4.dll.gz" />
+    <None Include="sn.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <WebReferences Include="Web References\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Libs\Mono.Data.Sqlite.dll" />
+    <Content Include="Libs\Mono.Security.dll" />
+    <Content Include="Libs\MySql.Data.dll" />
+    <Content Include="Libs\Npgsql.dll" />
+    <Content Include="Libs\System.Data.SQLite.DLL" />
+    <Content Include="Libs\System.Data.SQLite.Linq.dll" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

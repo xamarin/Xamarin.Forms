@@ -48,7 +48,10 @@ namespace Xamarin.Forms.Controls
 
 			var modalDismissButton = new Button () {
 				Text = "Dismiss Page",
-				Command = new Command (async () => await Navigation.PopModalAsync ())
+				Command = new Command (async () =>
+                {
+                    await Navigation.PopModalAsync();
+                })
 			};
 			Layout.Children.Add (modalDismissButton);
 

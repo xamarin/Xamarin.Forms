@@ -42,6 +42,9 @@
       <group targetFramework="WP80">
         <reference file="Xamarin.Forms.Pages.Azure.dll" />
       </group>
+      <group targetFramework="net45">
+        <reference file="Xamarin.Forms.Pages.Azure.dll" />
+      </group>
     </references>
   </metadata>
   <files>
@@ -61,6 +64,8 @@
     
     <!--WinRT Tablet-->
     <file src="..\Xamarin.Forms.Pages.Azure\bin\$Configuration$\Xamarin.Forms.Pages.Azure.dll" target="lib\win81" />
-    
+  
+    <!--GTK-->
+    <file src="..\Xamarin.Forms.Pages.Azure\bin\$Configuration$\Xamarin.Forms.Pages.Azure.dll" target="lib\net45" />
   </files>
 </package>

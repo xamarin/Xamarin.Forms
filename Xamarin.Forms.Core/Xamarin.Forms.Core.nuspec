@@ -9,6 +9,6 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Xamarin.Forms platform abstruction library for mobile applications.</description>
     <releaseNotes></releaseNotes>
-    <copyright>Copyright 2013</copyright>
+    <copyright>Copyright 2013-2017</copyright>
   </metadata>
 </package>

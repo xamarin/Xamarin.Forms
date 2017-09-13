@@ -99,6 +99,10 @@
     <Compile Include="PlatformConfiguration\AndroidSpecific\Application.cs" />
     <Compile Include="PlatformConfiguration\AndroidSpecific\TabbedPage.cs" />
     <Compile Include="PlatformConfiguration\ExtensionPoints.cs" />
+    <Compile Include="PlatformConfiguration\GTKSpecific\BoxView.cs" />
+    <Compile Include="PlatformConfiguration\GTKSpecific\NavigationPage.cs" />
+    <Compile Include="PlatformConfiguration\GTKSpecific\TabbedPage.cs" />
+    <Compile Include="PlatformConfiguration\GTKSpecific\TabPosition.cs" />
     <Compile Include="PlatformConfiguration\iOSSpecific\BlurEffectStyle.cs" />
     <Compile Include="PlatformConfiguration\iOSSpecific\Entry.cs" />
     <Compile Include="PlatformConfiguration\iOSSpecific\NavigationPage.cs" />
@@ -488,7 +492,5 @@
   </PropertyGroup>
   <ItemGroup />
   <ItemGroup />
-  <ItemGroup>
-    <Folder Include="Xaml\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

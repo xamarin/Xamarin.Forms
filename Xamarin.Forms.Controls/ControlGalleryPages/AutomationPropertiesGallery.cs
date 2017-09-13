@@ -1,4 +1,5 @@
-﻿
+﻿using Xamarin.Forms;
+
 namespace Xamarin.Forms.Controls
 {
 	public class AutomationPropertiesGallery : ContentPage

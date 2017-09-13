@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Xamarin.Forms.Controls.WeatherPage">
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style x:Key="labelStyle" TargetType="Label">
+                <Setter Property="TextColor" Value="#a8a8a8" />
+                <Setter Property="FontSize" Value="Small" />
+            </Style>
+            <Style x:Key="fieldStyle" TargetType="Label">
+                <Setter Property="TextColor">
+                    <OnPlatform x:TypeArguments="Color" iOS="Black" Android="White" WinPhone="White" />
+                </Setter>
+                <Setter Property="FontSize" Value="Medium" />
+            </Style>
+            <Style x:Key="fieldView" TargetType="ContentView">
+                <Setter Property="Padding" Value="10,0,0,0" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <ContentPage.Content>
+        <ScrollView>
+            <StackLayout>
+                <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand"
+                    BackgroundColor="#545454">
+                    <StackLayout Padding="10,10,10,10" HorizontalOptions="Start">
+                        <Label Text="Search by Zip Code" TextColor="White" FontAttributes="Bold"
+                            FontSize="Medium" />
+                        <Label x:Name="zipCodeLabel" Text="Zip Code" Style="{StaticResource labelStyle}" />
+                        <Entry x:Name="zipCodeEntry" />
+                    </StackLayout>
+                    <StackLayout Padding="0,0,0,10" VerticalOptions="End">
+                        <Button x:Name="getWeatherBtn" Text="Get Weather" WidthRequest="185" BorderWidth="1" BackgroundColor="Black">
+                            <!-- Set iOS colors; use defaults on other platforms -->
+                            <Button.TextColor>
+                                <OnPlatform x:TypeArguments="Color" iOS="White"/>
+                            </Button.TextColor>
+                            <Button.BorderColor>
+                                <OnPlatform x:TypeArguments="Color" iOS="White"/>
+                            </Button.BorderColor>
+                        </Button>
+                    </StackLayout>
+                </StackLayout>
+                <StackLayout Padding="10,10,10,10" HorizontalOptions="Start">
+                    <Label Text="Location" Style="{StaticResource labelStyle}" />
+                    <ContentView Style="{StaticResource fieldView}">
+                        <Label Text="{Binding Title}" Style="{StaticResource fieldStyle}" />
+                    </ContentView>
+                    <Label Text="Temperature" Style="{StaticResource labelStyle}" />
+                    <ContentView Style="{StaticResource fieldView}">
+                        <Label x:Name="tempLabel" Text="{Binding Temperature}"
+                            Style="{StaticResource fieldStyle}" />
+                    </ContentView>
+                    <Label Text="Wind Speed" Style="{StaticResource labelStyle}" />
+                    <ContentView Style="{StaticResource fieldView}">
+                        <Label x:Name="windLabel" Text="{Binding Wind}" Style="{StaticResource fieldStyle}" />
+                    </ContentView>
+                    <Label Text="Humidity" Style="{StaticResource labelStyle}" />
+                    <ContentView Style="{StaticResource fieldView}">
+                        <Label x:Name="humidityLabel" Text="{Binding Humidity}"
+                            Style="{StaticResource fieldStyle}" />
+                    </ContentView>
+                    <Label Text="Visibility" Style="{StaticResource labelStyle}" />
+                    <ContentView Style="{StaticResource fieldView}">
+                        <Label x:Name="visibilitylabel" Text="{Binding Visibility}"
+                            Style="{StaticResource fieldStyle}" />
+                    </ContentView>
+                    <Label Text="Time of Sunrise" Style="{StaticResource labelStyle}" />
+                    <ContentView Style="{StaticResource fieldView}">
+                        <Label x:Name="sunriseLabel" Text="{Binding Sunrise}"
+                            Style="{StaticResource fieldStyle}" />
+                    </ContentView>
+                    <Label Text="Time of Sunset" Style="{StaticResource labelStyle}" />
+                    <ContentView Style="{StaticResource fieldView}">
+                        <Label x:Name="sunsetLabel" Text="{Binding Sunset}"
+                            Style="{StaticResource fieldStyle}" />
+                    </ContentView>
+                </StackLayout>
+            </StackLayout>
+        </ScrollView>
+    </ContentPage.Content>
+</ContentPage>

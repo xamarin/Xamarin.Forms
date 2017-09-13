@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -29,15 +29,20 @@
     <UseSGen>true</UseSGen>
     <UseRefCounting>true</UseRefCounting>
     <Profiling>true</Profiling>
-    <HttpClientHandler></HttpClientHandler>
-    <TlsProvider></TlsProvider>
-    <LinkMode></LinkMode>
-    <XamMacArch></XamMacArch>
+    <HttpClientHandler>
+    </HttpClientHandler>
+    <TlsProvider>
+    </TlsProvider>
+    <LinkMode>
+    </LinkMode>
+    <XamMacArch>
+    </XamMacArch>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
-    <DefineConstants></DefineConstants>
+    <DefineConstants>
+    </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -49,9 +54,12 @@
     <UseSGen>true</UseSGen>
     <UseRefCounting>true</UseRefCounting>
     <LinkMode>SdkOnly</LinkMode>
-    <HttpClientHandler></HttpClientHandler>
-    <TlsProvider></TlsProvider>
-    <XamMacArch></XamMacArch>
+    <HttpClientHandler>
+    </HttpClientHandler>
+    <TlsProvider>
+    </TlsProvider>
+    <XamMacArch>
+    </XamMacArch>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -72,9 +80,7 @@
     <ImageAsset Include="Assets.xcassets\AppIcons.appiconset\AppIcon-512%402x.png" />
     <ImageAsset Include="Assets.xcassets\Contents.json" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="Info.plist" />
     <None Include="Entitlements.plist" />
@@ -105,7 +111,7 @@
     </ProjectReference>
     <ProjectReference Include="..\Xamarin.Forms.Platform.MacOS\Xamarin.Forms.Platform.MacOS.csproj">
       <Project>{C0059C45-EA1E-42F3-8A0E-794BB547EC3C}</Project>
-      <Name>Xamarin.Forms.Platform.macOS</Name>
+      <Name>Xamarin.Forms.Platform.MacOS</Name>
     </ProjectReference>
     <ProjectReference Include="..\Xamarin.Forms.Xaml\Xamarin.Forms.Xaml.csproj">
       <Project>{9DB2F292-8034-4E06-89AD-98BBDA4306B9}</Project>
@@ -113,7 +119,7 @@
     </ProjectReference>
     <ProjectReference Include="..\Xamarin.Forms.Maps.MacOS\Xamarin.Forms.Maps.MacOS.csproj">
       <Project>{C3C24A6D-2D0C-4053-9FCC-E54FF9CA1884}</Project>
-      <Name>Xamarin.Forms.Maps.macOS</Name>
+      <Name>Xamarin.Forms.Maps.MacOS</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -55,14 +55,14 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->
-    <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">
-      <Project>{57B8B73D-C3B5-4C42-869E-7B2F17D354AC}</Project>
-      <Name>Xamarin.Forms.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Xamarin.Forms.Build.Tasks\Xamarin.Forms.Build.Tasks.csproj">
       <Project>{96D89208-4EB9-4451-BE73-8A9DF3D9D7B7}</Project>
       <Name>Xamarin.Forms.Build.Tasks</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">
+      <Project>{57b8b73d-c3b5-4c42-869e-7b2f17d354ac}</Project>
+      <Name>Xamarin.Forms.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\Xamarin.Forms.CustomAttributes\Xamarin.Forms.CustomAttributes.csproj">
       <Project>{4dcd0420-1168-4b77-86db-6196ee4bd491}</Project>
@@ -76,15 +76,26 @@
       <Project>{d6133dbd-6c60-4bd5-bea2-07e0a3927c31}</Project>
       <Name>Xamarin.Forms.Pages</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj">
+      <Project>{67f9d3a8-f71e-4428-913f-c37ae82cdb24}</Project>
+      <Name>Xamarin.Forms.Platform</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Xamarin.Forms.Xaml\Xamarin.Forms.Xaml.csproj">
       <Project>{9db2f292-8034-4e06-89ad-98bbda4306b9}</Project>
       <Name>Xamarin.Forms.Xaml</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Accesibility\AccesibilityPage.xaml.cs">
+      <DependentUpon>AccesibilityPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Animations\TransformAnimationPageCS.cs" />
     <Compile Include="App.cs" />
     <Compile Include="AppLifeCycle.cs" />
     <Compile Include="Bugzilla44596SplashPage.cs" />
+    <Compile Include="BuiltInStyles\BuiltInStylesXaml.xaml.cs">
+      <DependentUpon>BuiltInStylesXaml.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ControlGalleryPages\AutomationPropertiesGallery.cs" />
     <Compile Include="ControlGalleryPages\CellForceUpdateSizeGalleryPage.cs" />
     <Compile Include="ControlGalleryPages\LayoutAddPerformance.xaml.cs">
@@ -104,12 +115,15 @@
     <Compile Include="GalleryPages\NavigationPropertiesGallery.cs" />
     <Compile Include="ControlGalleryPages\ListViewSelectionColor.cs" />
     <Compile Include="GalleryPages\PlatformSpecificsGalleries\ApplicationAndroid.cs" />
+    <Compile Include="GalleryPages\PlatformSpecificsGalleries\BoxViewGtk.cs" />
     <Compile Include="GalleryPages\PlatformSpecificsGalleries\EntryPageiOS.cs" />
     <Compile Include="GalleryPages\PlatformSpecificsGalleries\MasterDetailPageiOS.cs" />
     <Compile Include="GalleryPages\PlatformSpecificsGalleries\MasterDetailPageWindows.cs" />
+    <Compile Include="GalleryPages\PlatformSpecificsGalleries\NavigationPageGtk.cs" />
     <Compile Include="GalleryPages\PlatformSpecificsGalleries\NavigationPageiOS.cs" />
     <Compile Include="GalleryPages\PlatformSpecificsGalleries\NavigationPageWindows.cs" />
     <Compile Include="GalleryPages\PlatformSpecificsGalleries\TabbedPageAndroid.cs" />
+    <Compile Include="GalleryPages\PlatformSpecificsGalleries\TabbedPageGtk.cs" />
     <Compile Include="GalleryPages\PlatformSpecificsGalleries\TabbedPageiOS.cs" />
     <Compile Include="GalleryPages\PlatformSpecificsGalleries\TabbedPageWindows.cs" />
     <Compile Include="GalleryPages\PlatformSpecificsGalleries\VisualElementiOS.cs" />
@@ -119,7 +133,18 @@
       <DependentUpon>Page1.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainPageLifeCycleTests.cs" />
+    <Compile Include="Monkeys\Helpers\Grouping.cs" />
+    <Compile Include="Monkeys\Helpers\MonkeyHelper.cs" />
+    <Compile Include="Monkeys\Models\Monkey.cs" />
+    <Compile Include="Monkeys\ViewModels\MonkeysViewModel.cs" />
+    <Compile Include="Monkeys\Views\MonkeysView.xaml.cs">
+      <DependentUpon>MonkeysView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="NavReproApp.cs" />
+    <Compile Include="PullToRefresh\ViewModels\PullToRefreshViewModel.cs" />
+    <Compile Include="PullToRefresh\Views\PullToRefreshView.xaml.cs">
+      <DependentUpon>PullToRefreshView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="RootPages\RootContentPage.cs" />
     <Compile Include="RootPages\SwapHierachyStackLayout.cs" />
     <Compile Include="GalleryPages\EditableList.cs" />
@@ -143,6 +168,12 @@
       <DependentUpon>SampleViewCell.xaml</DependentUpon>
     </Compile>
     <Compile Include="SimpleApp.cs" />
+    <Compile Include="TipCalc\DoubleRoundingConverter.cs" />
+    <Compile Include="TipCalc\DoubleToStringConverter.cs" />
+    <Compile Include="TipCalc\TipCalcModel.cs" />
+    <Compile Include="TipCalc\TipCalcPage.xaml.cs">
+      <DependentUpon>TipCalcPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewContainers\EventViewContainer.cs" />
     <Compile Include="ViewContainers\LayeredViewContainer.cs" />
     <Compile Include="ViewContainers\MultiBindingHack.cs" />
@@ -261,6 +292,12 @@
     <Compile Include="GalleryPages\MacTwitterDemo.xaml.cs">
       <DependentUpon>MacTwitterDemo.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Weather\Core.cs" />
+    <Compile Include="Weather\DataService.cs" />
+    <Compile Include="Weather\Weather.cs" />
+    <Compile Include="Weather\WeatherPage.xaml.cs">
+      <DependentUpon>WeatherPage.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Import Project="..\.nuspec\Xamarin.Forms.targets" />
@@ -335,6 +372,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.2\lib\portable-net45+win8+wpa81+wp8\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="PCLStorage, Version=1.0.2.0, Culture=neutral, PublicKeyToken=286fe515a2c35b64, processorArchitecture=MSIL">
       <HintPath>..\packages\PCLStorage.1.0.2\lib\portable-net45+wp8+wpa81+win8+monoandroid+monotouch+Xamarin.iOS+Xamarin.Mac\PCLStorage.dll</HintPath>
       <Private>True</Private>
@@ -355,6 +396,42 @@
     <Reference Include="System.Net.Http.Primitives">
       <HintPath>..\packages\Microsoft.Net.Http.2.2.29\lib\portable-net40+sl4+win8+wp71+wpa81\System.Net.Http.Primitives.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="TipCalc\TipCalcPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Weather\WeatherPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Monkeys\Views\MonkeysView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="PullToRefresh\Views\PullToRefreshView.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Accesibility\AccesibilityPage.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="BuiltInStyles\BuiltInStylesXaml.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <Target Name="BeforeBuild">
     <CreateItem Include="blank.config">

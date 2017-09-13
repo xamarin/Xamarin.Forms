@@ -18,8 +18,11 @@ namespace Xamarin.Forms.Controls
 			var appAndroidButton = new Button() { Text = "Application (Android)" };
 			var tbAndroidButton = new Button { Text = "TabbedPage (Android)" };
 			var entryiOSButton = new Button() { Text = "Entry (iOS)" };
+            var tabGtkButton = new Button() { Text = "TabbedPage (GTK)" };
+            var boxGtkButton = new Button() { Text = "BoxView (GTK)" };
+            var navigationGtkButton = new Button() { Text = "NavigationPage (GTK)" };
 
-			mdpiOSButton.Clicked += (sender, args) => { SetRoot(new MasterDetailPageiOS(new Command(RestoreOriginal))); };
+            mdpiOSButton.Clicked += (sender, args) => { SetRoot(new MasterDetailPageiOS(new Command(RestoreOriginal))); };
 			mdpWindowsButton.Clicked += (sender, args) => { SetRoot(new MasterDetailPageWindows(new Command(RestoreOriginal))); };
 			npiOSButton.Clicked += (sender, args) => { SetRoot(NavigationPageiOS.Create(new Command(RestoreOriginal))); };
 			npWindowsButton.Clicked += (sender, args) => { SetRoot(new NavigationPageWindows(new Command(RestoreOriginal))); };
@@ -29,11 +32,13 @@ namespace Xamarin.Forms.Controls
 			appAndroidButton.Clicked += (sender, args) => { SetRoot(new ApplicationAndroid(new Command(RestoreOriginal))); };
 			tbAndroidButton.Clicked += (sender, args) => { SetRoot(new TabbedPageAndroid(new Command(RestoreOriginal))); };
 			entryiOSButton.Clicked += (sender, args) => { Navigation.PushAsync(new EntryPageiOS()); };
-			
+            tabGtkButton.Clicked += (sender, args) => { Navigation.PushAsync(new TabbedPageGtk()); };
+            boxGtkButton.Clicked += (sender, args) => { Navigation.PushAsync(new BoxViewGtk()); };
+            navigationGtkButton.Clicked += (sender, args) => { Navigation.PushAsync(new NavigationPageGtk()); };
 
-			Content = new StackLayout
+            Content = new StackLayout
 			{
-				Children = { mdpiOSButton, mdpWindowsButton, npWindowsButton, tbiOSButton, tbWindowsButton, viselemiOSButton, appAndroidButton, tbAndroidButton, entryiOSButton }
+				Children = { mdpiOSButton, mdpWindowsButton, npWindowsButton, tbiOSButton, tbWindowsButton, viselemiOSButton, appAndroidButton, tbAndroidButton, entryiOSButton, tabGtkButton, boxGtkButton, navigationGtkButton }
 			};
 		}
 

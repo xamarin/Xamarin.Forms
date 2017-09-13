@@ -1,0 +1,2180 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>System.Data.SQLite.Linq</name>
+    </assembly>
+    <members>
+        <member name="T:System.Data.SQLite.Linq.Properties.Resources">
+            <summary>
+              A strongly-typed resource class, for looking up localized strings, etc.
+            </summary>
+        </member>
+        <member name="P:System.Data.SQLite.Linq.Properties.Resources.ResourceManager">
+            <summary>
+              Returns the cached ResourceManager instance used by this class.
+            </summary>
+        </member>
+        <member name="P:System.Data.SQLite.Linq.Properties.Resources.Culture">
+            <summary>
+              Overrides the current thread's CurrentUICulture property for all
+              resource lookups using this strongly typed resource class.
+            </summary>
+        </member>
+        <member name="P:System.Data.SQLite.Linq.Properties.Resources.SQL_CONSTRAINTCOLUMNS">
+             <summary>
+               Looks up a localized string similar to CREATE TEMP VIEW SCHEMACONSTRAINTCOLUMNS AS
+            SELECT CONSTRAINT_CATALOG, NULL AS CONSTRAINT_SCHEMA, CONSTRAINT_NAME, TABLE_CATALOG, NULL AS TABLE_SCHEMA, TABLE_NAME, COLUMN_NAME
+            FROM TEMP.SCHEMAINDEXCOLUMNS
+            UNION
+            SELECT CONSTRAINT_CATALOG, NULL, CONSTRAINT_NAME, TABLE_CATALOG, NULL, TABLE_NAME, FKEY_FROM_COLUMN
+            FROM TEMP.SCHEMAFOREIGNKEYS;.
+             </summary>
+        </member>
+        <member name="P:System.Data.SQLite.Linq.Properties.Resources.SQL_CONSTRAINTS">
+             <summary>
+               Looks up a localized string similar to CREATE TEMP VIEW SCHEMACONSTRAINTS AS
+            SELECT INDEX_CATALOG AS CONSTRAINT_CATALOG, NULL AS CONSTRAINT_SCHEMA, INDEX_NAME AS CONSTRAINT_NAME, TABLE_CATALOG, NULL AS TABLE_SCHEMA, TABLE_NAME, &apos;PRIMARY KEY&apos; AS CONSTRAINT_TYPE, 0 AS IS_DEFERRABLE, 0 AS INITIALLY_DEFERRED, NULL AS CHECK_CLAUSE
+            FROM TEMP.SCHEMAINDEXES WHERE PRIMARY_KEY = 1
+            UNION
+            SELECT INDEX_CATALOG, NULL, INDEX_NAME, TABLE_CATALOG, NULL, TABLE_NAME, &apos;UNIQUE&apos;, 0, 0, NULL
+            FROM TEMP.SCHEMAINDEXES WHERE PRIMARY_KEY = 0 AND [UNIQUE] = 1
+            UNION
+             [rest of string was truncated]&quot;;.
+             </summary>
+        </member>
+        <member name="T:System.Data.SQLite.Linq.DmlSqlGenerator">
+            <summary>
+            Class generating SQL for a DML command tree.
+            </summary>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.DmlSqlGenerator.IsIntegerPrimaryKey(System.Data.Metadata.Edm.EntitySetBase,System.Data.Metadata.Edm.ReadOnlyMetadataCollection{System.Data.Metadata.Edm.EdmMember}@,System.Data.Metadata.Edm.EdmMember@)">
+            <summary>
+            This method attempts to determine if the specified table has an integer
+            primary key (i.e. "rowid").  If so, it sets the
+            <paramref name="primaryKeyMember"/> parameter to the right
+            <see cref="T:System.Data.Metadata.Edm.EdmMember"/>; otherwise, the
+            <paramref name="primaryKeyMember"/> parameter is set to null.
+            </summary>
+            <param name="table">The table to check.</param>
+            <param name="keyMembers">
+            The collection of key members.  An attempt is always made to set this
+            parameter to a valid value.
+            </param>
+            <param name="primaryKeyMember">
+            The <see cref="T:System.Data.Metadata.Edm.EdmMember"/> that represents the integer primary key
+            -OR- null if no such <see cref="T:System.Data.Metadata.Edm.EdmMember"/> exists.
+            </param>
+            <returns>
+            Non-zero if the specified table has an integer primary key.
+            </returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.DmlSqlGenerator.DoAllKeyMembersHaveValues(System.Data.SQLite.Linq.DmlSqlGenerator.ExpressionTranslator,System.Data.Metadata.Edm.ReadOnlyMetadataCollection{System.Data.Metadata.Edm.EdmMember},System.Data.Metadata.Edm.EdmMember@)">
+            <summary>
+            This method attempts to determine if all the specified key members have
+            values available.
+            </summary>
+            <param name="translator">
+            The <see cref="T:System.Data.SQLite.Linq.DmlSqlGenerator.ExpressionTranslator"/> to use.
+            </param>
+            <param name="keyMembers">
+            The collection of key members to check.
+            </param>
+            <param name="missingKeyMember">
+            The first missing key member that is found.  This is only set to a valid
+            value if the method is returning false.
+            </param>
+            <returns>
+            Non-zero if all key members have values; otherwise, zero.
+            </returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.DmlSqlGenerator.GenerateReturningSql(System.Text.StringBuilder,System.Data.Common.CommandTrees.DbModificationCommandTree,System.Data.SQLite.Linq.DmlSqlGenerator.ExpressionTranslator,System.Data.Common.CommandTrees.DbExpression,System.Boolean)">
+            <summary>
+            Generates SQL fragment returning server-generated values.
+            Requires: translator knows about member values so that we can figure out
+            how to construct the key predicate.
+            <code>
+            Sample SQL:
+                
+                select IdentityValue
+                from dbo.MyTable
+                where @@ROWCOUNT > 0 and IdentityValue = scope_identity()
+            
+            or
+            
+                select TimestamptValue
+                from dbo.MyTable
+                where @@ROWCOUNT > 0 and Id = 1
+            
+            Note that we filter on rowcount to ensure no rows are returned if no rows were modified.
+            </code>
+            </summary>
+            <param name="commandText">Builder containing command text</param>
+            <param name="tree">Modification command tree</param>
+            <param name="translator">Translator used to produce DML SQL statement
+            for the tree</param>
+            <param name="returning">Returning expression. If null, the method returns
+            immediately without producing a SELECT statement.</param>
+            <param name="wasInsert">
+            Non-zero if this method is being called as part of processing an INSERT;
+            otherwise (e.g. UPDATE), zero.
+            </param>
+        </member>
+        <member name="T:System.Data.SQLite.Linq.DmlSqlGenerator.ExpressionTranslator">
+            <summary>
+            Lightweight expression translator for DML expression trees, which have constrained
+            scope and support.
+            </summary>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.DmlSqlGenerator.ExpressionTranslator.#ctor(System.Text.StringBuilder,System.Data.Common.CommandTrees.DbModificationCommandTree,System.Boolean,System.String)">
+            <summary>
+            Initialize a new expression translator populating the given string builder
+            with command text. Command text builder and command tree must not be null.
+            </summary>
+            <param name="commandText">Command text with which to populate commands</param>
+            <param name="commandTree">Command tree generating SQL</param>
+            <param name="preserveMemberValues">Indicates whether the translator should preserve
+            member values while compiling t-SQL (only needed for server generation)</param>
+            <param name="kind"></param>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.DmlSqlGenerator.ExpressionTranslator.RegisterMemberValue(System.Data.Common.CommandTrees.DbExpression,System.Data.Common.CommandTrees.DbExpression)">
+            <summary>
+            Call this method to register a property value pair so the translator "remembers"
+            the values for members of the row being modified. These values can then be used
+            to form a predicate for server-generation (based on the key of the row)
+            </summary>
+            <param name="propertyExpression">DbExpression containing the column reference (property expression).</param>
+            <param name="value">DbExpression containing the value of the column.</param>
+        </member>
+        <member name="T:System.Data.SQLite.Linq.ISqlFragment">
+            <summary>
+            Represents the sql fragment for any node in the query tree.
+            </summary>
+            <remarks>
+            The nodes in a query tree produce various kinds of sql
+            <list type="bullet">
+            <item>A select statement.</item>
+            <item>A reference to an extent. (symbol)</item>
+            <item>A raw string.</item>
+            </list>
+            We have this interface to allow for a common return type for the methods
+            in the expression visitor <see cref="T:System.Data.Common.CommandTrees.DbExpressionVisitor`1"/>
+            
+            At the end of translation, the sql fragments are converted into real strings.
+            </remarks>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.ISqlFragment.WriteSql(System.Data.SQLite.Linq.SqlWriter,System.Data.SQLite.Linq.SqlGenerator)">
+            <summary>
+            Write the string represented by this fragment into the stream.
+            </summary>
+            <param name="writer">The stream that collects the strings.</param>
+            <param name="sqlGenerator">Context information used for renaming.
+            The global lists are used to generated new names without collisions.</param>
+        </member>
+        <member name="T:System.Data.SQLite.Linq.JoinSymbol">
+            <summary>
+            A Join symbol is a special kind of Symbol.
+            It has to carry additional information
+            <list type="bullet">
+            <item>ColumnList for the list of columns in the select clause if this
+            symbol represents a sql select statement.  This is set by <see cref="M:System.Data.SQLite.Linq.SqlGenerator.AddDefaultColumns(System.Data.SQLite.Linq.SqlSelectStatement)"/>. </item>
+            <item>ExtentList is the list of extents in the select clause.</item>
+            <item>FlattenedExtentList - if the Join has multiple extents flattened at the 
+            top level, we need this information to ensure that extent aliases are renamed
+            correctly in <see cref="M:System.Data.SQLite.Linq.SqlSelectStatement.WriteSql(System.Data.SQLite.Linq.SqlWriter,System.Data.SQLite.Linq.SqlGenerator)"/></item>
+            <item>NameToExtent has all the extents in ExtentList as a dictionary.
+            This is used by <see cref="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbPropertyExpression)"/> to flatten
+            record accesses.</item>
+            <item>IsNestedJoin - is used to determine whether a JoinSymbol is an 
+            ordinary join symbol, or one that has a corresponding SqlSelectStatement.</item>
+            </list>
+            
+            All the lists are set exactly once, and then used for lookups/enumerated.
+            </summary>
+        </member>
+        <member name="T:System.Data.SQLite.Linq.Symbol">
+             <summary>
+             <see cref="T:System.Data.SQLite.Linq.SymbolTable"/>
+             This class represents an extent/nested select statement,
+             or a column.
+            
+             The important fields are Name, Type and NewName.
+             NewName starts off the same as Name, and is then modified as necessary.
+            
+            
+             The rest are used by special symbols.
+             e.g. NeedsRenaming is used by columns to indicate that a new name must
+             be picked for the column in the second phase of translation.
+            
+             IsUnnest is used by symbols for a collection expression used as a from clause.
+             This allows <see cref="M:System.Data.SQLite.Linq.SqlGenerator.AddFromSymbol(System.Data.SQLite.Linq.SqlSelectStatement,System.String,System.Data.SQLite.Linq.Symbol,System.Boolean)"/> to add the column list
+             after the alias.
+            
+             </summary>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.Symbol.WriteSql(System.Data.SQLite.Linq.SqlWriter,System.Data.SQLite.Linq.SqlGenerator)">
+             <summary>
+             Write this symbol out as a string for sql.  This is just
+             the new name of the symbol (which could be the same as the old name).
+            
+             We rename columns here if necessary.
+             </summary>
+             <param name="writer"></param>
+             <param name="sqlGenerator"></param>
+        </member>
+        <member name="T:System.Data.SQLite.Linq.MetadataHelpers">
+            <summary>
+            A set of static helpers for type metadata
+            </summary>
+        </member>
+        <member name="F:System.Data.SQLite.Linq.MetadataHelpers.NullableFacetName">
+            <summary>
+            Name of the Nullable Facet
+            </summary>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.MetadataHelpers.GetEdmType``1(System.Data.Metadata.Edm.TypeUsage)">
+            <summary>
+            Cast the EdmType of the given type usage to the given TEdmType
+            </summary>
+            <typeparam name="TEdmType"></typeparam>
+            <param name="typeUsage"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.MetadataHelpers.GetElementTypeUsage(System.Data.Metadata.Edm.TypeUsage)">
+            <summary>
+            Gets the TypeUsage of the elment if the given type is a collection type
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.MetadataHelpers.GetProperties(System.Data.Metadata.Edm.TypeUsage)">
+            <summary>
+            Retrieves the properties of in the EdmType underlying the input type usage, 
+             if that EdmType is a structured type (EntityType, RowType). 
+            </summary>
+            <param name="typeUsage"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.MetadataHelpers.GetProperties(System.Data.Metadata.Edm.EdmType)">
+            <summary>
+            Retrieves the properties of the given EdmType, if it is
+             a structured type (EntityType, RowType). 
+            </summary>
+            <param name="edmType"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.MetadataHelpers.IsCollectionType(System.Data.Metadata.Edm.TypeUsage)">
+            <summary>
+            Is the given type usage over a collection type
+            </summary>
+            <param name="typeUsage"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.MetadataHelpers.IsCollectionType(System.Data.Metadata.Edm.EdmType)">
+            <summary>
+            Is the given type a collection type
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.MetadataHelpers.IsPrimitiveType(System.Data.Metadata.Edm.TypeUsage)">
+            <summary>
+            Is the given type usage over a primitive type
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.MetadataHelpers.IsPrimitiveType(System.Data.Metadata.Edm.EdmType)">
+            <summary>
+            Is the given type a primitive type
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.MetadataHelpers.IsRowType(System.Data.Metadata.Edm.TypeUsage)">
+            <summary>
+            Is the given type usage over a row type
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.MetadataHelpers.IsRowType(System.Data.Metadata.Edm.EdmType)">
+            <summary>
+            Is the given type a row type
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.MetadataHelpers.TryGetPrimitiveTypeKind(System.Data.Metadata.Edm.TypeUsage,System.Data.Metadata.Edm.PrimitiveTypeKind@)">
+            <summary>
+            Gets the type of the given type usage if it is a primitive type
+            </summary>
+            <param name="type"></param>
+            <param name="typeKind"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.MetadataHelpers.TryGetValueForMetadataProperty``1(System.Data.Metadata.Edm.MetadataItem,System.String)">
+            <summary>
+            Gets the value for the metadata property with the given name
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="item"></param>
+            <param name="propertyName"></param>
+            <returns></returns>
+        </member>
+        <member name="F:System.Data.SQLite.Linq.MetadataHelpers.MaxLengthFacetName">
+            <summary>
+            Name of the MaxLength Facet
+            </summary>
+        </member>
+        <member name="F:System.Data.SQLite.Linq.MetadataHelpers.UnicodeFacetName">
+            <summary>
+            Name of the Unicode Facet
+            </summary>
+        </member>
+        <member name="F:System.Data.SQLite.Linq.MetadataHelpers.FixedLengthFacetName">
+            <summary>
+            Name of the FixedLength Facet
+            </summary>
+        </member>
+        <member name="F:System.Data.SQLite.Linq.MetadataHelpers.PreserveSecondsFacetName">
+            <summary>
+            Name of the PreserveSeconds Facet
+            </summary>
+        </member>
+        <member name="F:System.Data.SQLite.Linq.MetadataHelpers.PrecisionFacetName">
+            <summary>
+            Name of the Precision Facet
+            </summary>
+        </member>
+        <member name="F:System.Data.SQLite.Linq.MetadataHelpers.ScaleFacetName">
+            <summary>
+            Name of the Scale Facet
+            </summary>
+        </member>
+        <member name="F:System.Data.SQLite.Linq.MetadataHelpers.DefaultValueFacetName">
+            <summary>
+            Name of the DefaultValue Facet
+            </summary>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.MetadataHelpers.GetFacetValueOrDefault``1(System.Data.Metadata.Edm.TypeUsage,System.String,``0)">
+            <summary>
+            Get the value specified on the given type usage for the given facet name.
+            If the faces does not have a value specifid or that value is null returns
+            the default value for that facet.
+            </summary>
+            <typeparam name="T"></typeparam>
+            <param name="type"></param>
+            <param name="facetName"></param>
+            <param name="defaultValue"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.MetadataHelpers.TryGetTypeFacetDescriptionByName(System.Data.Metadata.Edm.EdmType,System.String,System.Data.Metadata.Edm.FacetDescription@)">
+            <summary>
+            Given a facet name and an EdmType, tries to get that facet's description.
+            </summary>
+            <param name="edmType"></param>
+            <param name="facetName"></param>
+            <param name="facetDescription"></param>
+            <returns></returns>
+        </member>
+        <member name="T:System.Data.SQLite.Linq.SkipClause">
+            <summary>
+            SkipClause represents the a SKIP expression in a SqlSelectStatement.
+            It has a count property, which indicates how many rows should be skipped.
+            </summary>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SkipClause.#ctor(System.Data.SQLite.Linq.ISqlFragment)">
+            <summary>
+            Creates a SkipClause with the given skipCount.
+            </summary>
+            <param name="skipCount"></param>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SkipClause.#ctor(System.Int32)">
+            <summary>
+            Creates a SkipClause with the given skipCount.
+            </summary>
+            <param name="skipCount"></param>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SkipClause.WriteSql(System.Data.SQLite.Linq.SqlWriter,System.Data.SQLite.Linq.SqlGenerator)">
+            <summary>
+            Write out the SKIP part of sql select statement 
+            It basically writes OFFSET (X).
+            </summary>
+            <param name="writer"></param>
+            <param name="sqlGenerator"></param>
+        </member>
+        <member name="P:System.Data.SQLite.Linq.SkipClause.SkipCount">
+            <summary>
+            How many rows should be skipped.
+            </summary>
+        </member>
+        <member name="T:System.Data.SQLite.Linq.SqlBuilder">
+            <summary>
+            This class is like StringBuilder.  While traversing the tree for the first time, 
+            we do not know all the strings that need to be appended e.g. things that need to be
+            renamed, nested select statements etc.  So, we use a builder that can collect
+            all kinds of sql fragments.
+            </summary>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlBuilder.Append(System.Object)">
+            <summary>
+            Add an object to the list - we do not verify that it is a proper sql fragment
+            since this is an internal method.
+            </summary>
+            <param name="s"></param>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlBuilder.AppendLine">
+            <summary>
+            This is to pretty print the SQL.  The writer <see cref="M:System.Data.SQLite.Linq.SqlWriter.Write(System.String)"/>
+            needs to know about new lines so that it can add the right amount of 
+            indentation at the beginning of lines.
+            </summary>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlBuilder.WriteSql(System.Data.SQLite.Linq.SqlWriter,System.Data.SQLite.Linq.SqlGenerator)">
+            <summary>
+            We delegate the writing of the fragment to the appropriate type.
+            </summary>
+            <param name="writer"></param>
+            <param name="sqlGenerator"></param>
+        </member>
+        <member name="P:System.Data.SQLite.Linq.SqlBuilder.IsEmpty">
+            <summary>
+            Whether the builder is empty.  This is used by the <see cref="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbProjectExpression)"/>
+            to determine whether a sql statement can be reused.
+            </summary>
+        </member>
+        <member name="T:System.Data.SQLite.Linq.SqlGenerator">
+             <summary>
+             Translates the command object into a SQL string that can be executed on
+             SQLite.
+             </summary>
+             <remarks>
+             The translation is implemented as a visitor <see cref="T:System.Data.Common.CommandTrees.DbExpressionVisitor`1"/>
+             over the query tree.  It makes a single pass over the tree, collecting the sql
+             fragments for the various nodes in the tree <see cref="T:System.Data.SQLite.Linq.ISqlFragment"/>.
+            
+             The major operations are
+             <list type="bullet">
+             <item>Select statement minimization.  Multiple nodes in the query tree
+             that can be part of a single SQL select statement are merged. e.g. a
+             Filter node that is the input of a Project node can typically share the
+             same SQL statement.</item>
+             <item>Alpha-renaming.  As a result of the statement minimization above, there
+             could be name collisions when using correlated subqueries
+             <example>
+             <code>
+             Filter(
+                 b = Project( c.x
+                     c = Extent(foo)
+                     )
+                 exists (
+                     Filter(
+                         c = Extent(foo)
+                         b.x = c.x
+                         )
+                 )
+             )
+             </code>
+             The first Filter, Project and Extent will share the same SQL select statement.
+             The alias for the Project i.e. b, will be replaced with c.
+             If the alias c for the Filter within the exists clause is not renamed,
+             we will get <c>c.x = c.x</c>, which is incorrect.
+             Instead, the alias c within the second filter should be renamed to c1, to give
+             <c>c.x = c1.x</c> i.e. b is renamed to c, and c is renamed to c1.
+             </example>
+             </item>
+             <item>Join flattening.  In the query tree, a list of join nodes is typically
+             represented as a tree of Join nodes, each with 2 children. e.g.
+             <example>
+             <code>
+             a = Join(InnerJoin
+                 b = Join(CrossJoin
+                     c = Extent(foo)
+                     d = Extent(foo)
+                     )
+                 e = Extent(foo)
+                 on b.c.x = e.x
+                 )
+             </code>
+             If translated directly, this will be translated to
+             <code>
+             FROM ( SELECT c.*, d.*
+                     FROM foo as c
+                     CROSS JOIN foo as d) as b
+             INNER JOIN foo as e on b.x' = e.x
+             </code>
+             It would be better to translate this as
+             <code>
+             FROM foo as c
+             CROSS JOIN foo as d
+             INNER JOIN foo as e on c.x = e.x
+             </code>
+             This allows the optimizer to choose an appropriate join ordering for evaluation.
+             </example>
+             </item>
+             <item>Select * and column renaming.  In the example above, we noticed that
+             in some cases we add <c>SELECT * FROM ...</c> to complete the SQL
+             statement. i.e. there is no explicit PROJECT list.
+             In this case, we enumerate all the columns available in the FROM clause
+             This is particularly problematic in the case of Join trees, since the columns
+             from the extents joined might have the same name - this is illegal.  To solve
+             this problem, we will have to rename columns if they are part of a SELECT *
+             for a JOIN node - we do not need renaming in any other situation.
+             <see cref="M:System.Data.SQLite.Linq.SqlGenerator.AddDefaultColumns(System.Data.SQLite.Linq.SqlSelectStatement)"/>.
+             </item>
+             </list>
+            
+             <para>
+             Renaming issues.
+             When rows or columns are renamed, we produce names that are unique globally
+             with respect to the query.  The names are derived from the original names,
+             with an integer as a suffix. e.g. CustomerId will be renamed to CustomerId1,
+             CustomerId2 etc.
+            
+             Since the names generated are globally unique, they will not conflict when the
+             columns of a JOIN SELECT statement are joined with another JOIN.
+            
+             </para>
+            
+             <para>
+             Record flattening.
+             SQL server does not have the concept of records.  However, a join statement
+             produces records.  We have to flatten the record accesses into a simple
+             <c>alias.column</c> form.  <see cref="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbPropertyExpression)"/>
+             </para>
+            
+             <para>
+             Building the SQL.
+             There are 2 phases
+             <list type="numbered">
+             <item>Traverse the tree, producing a sql builder <see cref="T:System.Data.SQLite.Linq.SqlBuilder"/></item>
+             <item>Write the SqlBuilder into a string, renaming the aliases and columns
+             as needed.</item>
+             </list>
+            
+             In the first phase, we traverse the tree.  We cannot generate the SQL string
+             right away, since
+             <list type="bullet">
+             <item>The WHERE clause has to be visited before the from clause.</item>
+             <item>extent aliases and column aliases need to be renamed.  To minimize
+             renaming collisions, all the names used must be known, before any renaming
+             choice is made.</item>
+             </list>
+             To defer the renaming choices, we use symbols <see cref="T:System.Data.SQLite.Linq.Symbol"/>.  These
+             are renamed in the second phase.
+            
+             Since visitor methods cannot transfer information to child nodes through
+             parameters, we use some global stacks,
+             <list type="bullet">
+             <item>A stack for the current SQL select statement.  This is needed by
+             <see cref="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbVariableReferenceExpression)"/> to create a
+             list of free variables used by a select statement.  This is needed for
+             alias renaming.
+             </item>
+             <item>A stack for the join context.  When visiting a <see cref="T:System.Data.Common.CommandTrees.DbScanExpression"/>,
+             we need to know whether we are inside a join or not.  If we are inside
+             a join, we do not create a new SELECT statement.</item>
+             </list>
+             </para>
+            
+             <para>
+             Global state.
+             To enable renaming, we maintain
+             <list type="bullet">
+             <item>The set of all extent aliases used.</item>
+             <item>The set of all column aliases used.</item>
+             </list>
+            
+             Finally, we have a symbol table to lookup variable references.  All references
+             to the same extent have the same symbol.
+             </para>
+            
+             <para>
+             Sql select statement sharing.
+            
+             Each of the relational operator nodes
+             <list type="bullet">
+             <item>Project</item>
+             <item>Filter</item>
+             <item>GroupBy</item>
+             <item>Sort/OrderBy</item>
+             </list>
+             can add its non-input (e.g. project, predicate, sort order etc.) to
+             the SQL statement for the input, or create a new SQL statement.
+             If it chooses to reuse the input's SQL statement, we play the following
+             symbol table trick to accomplish renaming.  The symbol table entry for
+             the alias of the current node points to the symbol for the input in
+             the input's SQL statement.
+             <example>
+             <code>
+             Project(b.x
+                 b = Filter(
+                     c = Extent(foo)
+                     c.x = 5)
+                 )
+             </code>
+             The Extent node creates a new SqlSelectStatement.  This is added to the
+             symbol table by the Filter as {c, Symbol(c)}.  Thus, <c>c.x</c> is resolved to
+             <c>Symbol(c).x</c>.
+             Looking at the project node, we add {b, Symbol(c)} to the symbol table if the
+             SQL statement is reused, and {b, Symbol(b)}, if there is no reuse.
+            
+             Thus, <c>b.x</c> is resolved to <c>Symbol(c).x</c> if there is reuse, and to
+             <c>Symbol(b).x</c> if there is no reuse.
+             </example>
+             </para>
+             </remarks>
+        </member>
+        <member name="F:System.Data.SQLite.Linq.SqlGenerator.selectStatementStack">
+            <summary>
+            Every relational node has to pass its SELECT statement to its children
+            This allows them (DbVariableReferenceExpression eventually) to update the list of
+            outer extents (free variables) used by this select statement.
+            </summary>
+        </member>
+        <member name="F:System.Data.SQLite.Linq.SqlGenerator.isParentAJoinStack">
+            <summary>
+            Nested joins and extents need to know whether they should create
+            a new Select statement, or reuse the parent's.  This flag
+            indicates whether the parent is a join or not.
+            </summary>
+        </member>
+        <member name="F:System.Data.SQLite.Linq.SqlGenerator.isVarRefSingle">
+            <summary>
+            VariableReferenceExpressions are allowed only as children of DbPropertyExpression
+            or MethodExpression.  The cheapest way to ensure this is to set the following
+            property in DbVariableReferenceExpression and reset it in the allowed parent expressions.
+            </summary>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.InitializeBuiltInFunctionHandlers">
+            <summary>
+            All special built-in functions and their handlers
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.InitializeCanonicalFunctionHandlers">
+            <summary>
+            All special non-aggregate canonical functions and their handlers
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.InitializeDatepartKeywords">
+            <summary>
+            Valid datepart values
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.InitializeFunctionNameToOperatorDictionary">
+            <summary>
+            Initializes the mapping from functions to T-SQL operators
+            for all functions that translate to T-SQL operators
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.#ctor(System.Data.SQLite.Linq.SQLiteProviderManifest)">
+            <summary>
+            Basic constructor.
+            </summary>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.GenerateSql(System.Data.SQLite.Linq.SQLiteProviderManifest,System.Data.Common.CommandTrees.DbCommandTree,System.Collections.Generic.List{System.Data.Common.DbParameter}@,System.Data.CommandType@)">
+            <summary>
+            General purpose static function that can be called from System.Data assembly
+            </summary>
+            <param name="manifest"></param>
+            <param name="tree">command tree</param>
+            <param name="parameters">Parameters to add to the command tree corresponding
+            to constants in the command tree. Used only in ModificationCommandTrees.</param>
+            <param name="commandType"></param>
+            <returns>The string representing the SQL to be executed.</returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.GenerateSql(System.Data.Common.CommandTrees.DbQueryCommandTree)">
+             <summary>
+             Translate a command tree to a SQL string.
+            
+             The input tree could be translated to either a SQL SELECT statement
+             or a SELECT expression.  This choice is made based on the return type
+             of the expression
+             CollectionType => select statement
+             non collection type => select expression
+             </summary>
+             <param name="tree"></param>
+             <returns>The string representing the SQL to be executed.</returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.GenerateFunctionSql(System.Data.Common.CommandTrees.DbFunctionCommandTree,System.Data.CommandType@)">
+            <summary>
+            Translate a function command tree to a SQL string.
+            </summary>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.WriteSql(System.Data.SQLite.Linq.ISqlFragment)">
+            <summary>
+            Convert the SQL fragments to a string.
+            We have to setup the Stream for writing.
+            </summary>
+            <param name="sqlStatement"></param>
+            <returns>A string representing the SQL to be executed.</returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbAndExpression)">
+            <summary>
+            Translate(left) AND Translate(right)
+            </summary>
+            <param name="e"></param>
+            <returns>A <see cref="T:System.Data.SQLite.Linq.SqlBuilder"/>.</returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbApplyExpression)">
+            <summary>
+            An apply is just like a join, so it shares the common join processing
+            in <see cref="M:System.Data.SQLite.Linq.SqlGenerator.VisitJoinExpression(System.Collections.Generic.IList{System.Data.Common.CommandTrees.DbExpressionBinding},System.Data.Common.CommandTrees.DbExpressionKind,System.String,System.Data.Common.CommandTrees.DbExpression)"/>
+            </summary>
+            <param name="e"></param>
+            <returns>A <see cref="T:System.Data.SQLite.Linq.SqlSelectStatement"/>.</returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbArithmeticExpression)">
+            <summary>
+            For binary expressions, we delegate to <see cref="M:System.Data.SQLite.Linq.SqlGenerator.VisitBinaryExpression(System.String,System.Data.Common.CommandTrees.DbExpression,System.Data.Common.CommandTrees.DbExpression)"/>.
+            We handle the other expressions directly.
+            </summary>
+            <param name="e"></param>
+            <returns>A <see cref="T:System.Data.SQLite.Linq.SqlBuilder"/></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbCaseExpression)">
+            <summary>
+            If the ELSE clause is null, we do not write it out.
+            </summary>
+            <param name="e"></param>
+            <returns>A <see cref="T:System.Data.SQLite.Linq.SqlBuilder"/></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbCastExpression)">
+             <summary>
+            
+             </summary>
+             <param name="e"></param>
+             <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbComparisonExpression)">
+            <summary>
+            The parser generates Not(Equals(...)) for &lt;&gt;.
+            </summary>
+            <param name="e"></param>
+            <returns>A <see cref="T:System.Data.SQLite.Linq.SqlBuilder"/>.</returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbConstantExpression)">
+            <summary>
+            Constants will be send to the store as part of the generated TSQL, not as parameters
+            </summary>
+            <param name="e"></param>
+            <returns>A <see cref="T:System.Data.SQLite.Linq.SqlBuilder"/>.  Strings are wrapped in single
+            quotes and escaped.  Numbers are written literally.</returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbDerefExpression)">
+            <summary>
+            <see cref="T:System.Data.Common.CommandTrees.DbDerefExpression"/> is illegal at this stage
+            </summary>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbDistinctExpression)">
+            <summary>
+            The DISTINCT has to be added to the beginning of SqlSelectStatement.Select,
+            but it might be too late for that.  So, we use a flag on SqlSelectStatement
+            instead, and add the "DISTINCT" in the second phase.
+            </summary>
+            <param name="e"></param>
+            <returns>A <see cref="T:System.Data.SQLite.Linq.SqlSelectStatement"/></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbElementExpression)">
+            <summary>
+            An element expression returns a scalar - so it is translated to
+            ( Select ... )
+            </summary>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbExceptExpression)">
+            <summary>
+            <see cref="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbUnionAllExpression)"/>
+            </summary>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbExpression)">
+            <summary>
+            Only concrete expression types will be visited.
+            </summary>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbScanExpression)">
+             <summary>
+            
+             </summary>
+             <param name="e"></param>
+             <returns>If we are in a Join context, returns a <see cref="T:System.Data.SQLite.Linq.SqlBuilder"/>
+             with the extent name, otherwise, a new <see cref="T:System.Data.SQLite.Linq.SqlSelectStatement"/>
+             with the From field set.</returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.GetTargetTSql(System.Data.Metadata.Edm.EntitySetBase)">
+            <summary>
+            Gets escaped TSql identifier describing this entity set.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbFilterExpression)">
+            <summary>
+            The bodies of <see cref="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbFilterExpression)"/>, <see cref="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbGroupByExpression)"/>,
+            <see cref="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbProjectExpression)"/>, <see cref="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbSortExpression)"/> are similar.
+            Each does the following.
+            <list type="number">
+            <item> Visit the input expression</item>
+            <item> Determine if the input's SQL statement can be reused, or a new
+            one must be created.</item>
+            <item>Create a new symbol table scope</item>
+            <item>Push the Sql statement onto a stack, so that children can
+            update the free variable list.</item>
+            <item>Visit the non-input expression.</item>
+            <item>Cleanup</item>
+            </list>
+            </summary>
+            <param name="e"></param>
+            <returns>A <see cref="T:System.Data.SQLite.Linq.SqlSelectStatement"/></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbFunctionExpression)">
+            <summary>
+            Lambda functions are not supported.
+            The functions supported are:
+            <list type="number">
+            <item>Canonical Functions - We recognize these by their dataspace, it is DataSpace.CSpace</item>
+            <item>Store Functions - We recognize these by the BuiltInAttribute and not being Canonical</item>
+            <item>User-defined Functions - All the rest except for Lambda functions</item>
+            </list>
+            We handle Canonical and Store functions the same way: If they are in the list of functions
+            that need special handling, we invoke the appropriate handler, otherwise we translate them to
+            FunctionName(arg1, arg2, ..., argn).
+            We translate user-defined functions to NamespaceName.FunctionName(arg1, arg2, ..., argn).
+            </summary>
+            <param name="e"></param>
+            <returns>A <see cref="T:System.Data.SQLite.Linq.SqlBuilder"/></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbEntityRefExpression)">
+            <summary>
+            <see cref="T:System.Data.Common.CommandTrees.DbEntityRefExpression"/> is illegal at this stage
+            </summary>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbRefKeyExpression)">
+            <summary>
+            <see cref="T:System.Data.Common.CommandTrees.DbRefKeyExpression"/> is illegal at this stage
+            </summary>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbGroupByExpression)">
+             <summary>
+             <see cref="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbFilterExpression)"/> for general details.
+             We modify both the GroupBy and the Select fields of the SqlSelectStatement.
+             GroupBy gets just the keys without aliases,
+             and Select gets the keys and the aggregates with aliases.
+            
+             Whenever there exists at least one aggregate with an argument that is not is not a simple
+             <see cref="T:System.Data.Common.CommandTrees.DbPropertyExpression"/>  over <see cref="T:System.Data.Common.CommandTrees.DbVariableReferenceExpression"/>,
+             we create a nested query in which we alias the arguments to the aggregates.
+             That is due to the following two limitations of Sql Server:
+             <list type="number">
+             <item>If an expression being aggregated contains an outer reference, then that outer
+             reference must be the only column referenced in the expression </item>
+             <item>Sql Server cannot perform an aggregate function on an expression containing
+             an aggregate or a subquery. </item>
+             </list>
+            
+             The default translation, without inner query is:
+            
+                 SELECT
+                     kexp1 AS key1, kexp2 AS key2,... kexpn AS keyn,
+                     aggf1(aexpr1) AS agg1, .. aggfn(aexprn) AS aggn
+                 FROM input AS a
+                 GROUP BY kexp1, kexp2, .. kexpn
+            
+             When we inject an innner query, the equivalent translation is:
+            
+                 SELECT
+                     key1 AS key1, key2 AS key2, .. keyn AS keys,
+                     aggf1(agg1) AS agg1, aggfn(aggn) AS aggn
+                 FROM (
+                         SELECT
+                             kexp1 AS key1, kexp2 AS key2,... kexpn AS keyn,
+                             aexpr1 AS agg1, .. aexprn AS aggn
+                         FROM input AS a
+                     ) as a
+                 GROUP BY key1, key2, keyn
+            
+             </summary>
+             <param name="e"></param>
+             <returns>A <see cref="T:System.Data.SQLite.Linq.SqlSelectStatement"/></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbIntersectExpression)">
+            <summary>
+            <see cref="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbUnionAllExpression)"/>
+            </summary>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbIsEmptyExpression)">
+             <summary>
+             Not(IsEmpty) has to be handled specially, so we delegate to
+             <see cref="M:System.Data.SQLite.Linq.SqlGenerator.VisitIsEmptyExpression(System.Data.Common.CommandTrees.DbIsEmptyExpression,System.Boolean)"/>.
+            
+             </summary>
+             <param name="e"></param>
+             <returns>A <see cref="T:System.Data.SQLite.Linq.SqlBuilder"/>.
+             <code>[NOT] EXISTS( ... )</code>
+             </returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbIsNullExpression)">
+            <summary>
+            Not(IsNull) is handled specially, so we delegate to
+            <see cref="M:System.Data.SQLite.Linq.SqlGenerator.VisitIsNullExpression(System.Data.Common.CommandTrees.DbIsNullExpression,System.Boolean)"/>
+            </summary>
+            <param name="e"></param>
+            <returns>A <see cref="T:System.Data.SQLite.Linq.SqlBuilder"/>
+            <code>IS [NOT] NULL</code>
+            </returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbIsOfExpression)">
+            <summary>
+            <see cref="T:System.Data.Common.CommandTrees.DbIsOfExpression"/> is illegal at this stage
+            </summary>
+            <param name="e"></param>
+            <returns>A <see cref="T:System.Data.SQLite.Linq.SqlBuilder"/></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbCrossJoinExpression)">
+            <summary>
+            <see cref="M:System.Data.SQLite.Linq.SqlGenerator.VisitJoinExpression(System.Collections.Generic.IList{System.Data.Common.CommandTrees.DbExpressionBinding},System.Data.Common.CommandTrees.DbExpressionKind,System.String,System.Data.Common.CommandTrees.DbExpression)"/>
+            </summary>
+            <param name="e"></param>
+            <returns>A <see cref="T:System.Data.SQLite.Linq.SqlSelectStatement"/>.</returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbJoinExpression)">
+            <summary>
+            <see cref="M:System.Data.SQLite.Linq.SqlGenerator.VisitJoinExpression(System.Collections.Generic.IList{System.Data.Common.CommandTrees.DbExpressionBinding},System.Data.Common.CommandTrees.DbExpressionKind,System.String,System.Data.Common.CommandTrees.DbExpression)"/>
+            </summary>
+            <param name="e"></param>
+            <returns>A <see cref="T:System.Data.SQLite.Linq.SqlSelectStatement"/>.</returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbLikeExpression)">
+             <summary>
+            
+             </summary>
+             <param name="e"></param>
+             <returns>A <see cref="T:System.Data.SQLite.Linq.SqlBuilder"/></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbLimitExpression)">
+            <summary>
+             Translates to TOP expression.
+            </summary>
+            <param name="e"></param>
+            <returns>A <see cref="T:System.Data.SQLite.Linq.SqlBuilder"/></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbNewInstanceExpression)">
+             <summary>
+             DbNewInstanceExpression is allowed as a child of DbProjectExpression only.
+             If anyone else is the parent, we throw.
+             We also perform special casing for collections - where we could convert
+             them into Unions
+            
+             <see cref="M:System.Data.SQLite.Linq.SqlGenerator.VisitNewInstanceExpression(System.Data.Common.CommandTrees.DbNewInstanceExpression)"/> for the actual implementation.
+            
+             </summary>
+             <param name="e"></param>
+             <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbNotExpression)">
+            <summary>
+            The Not expression may cause the translation of its child to change.
+            These children are
+            <list type="bullet">
+            <item><see cref="T:System.Data.Common.CommandTrees.DbNotExpression"/>NOT(Not(x)) becomes x</item>
+            <item><see cref="T:System.Data.Common.CommandTrees.DbIsEmptyExpression"/>NOT EXISTS becomes EXISTS</item>
+            <item><see cref="T:System.Data.Common.CommandTrees.DbIsNullExpression"/>IS NULL becomes IS NOT NULL</item>
+            <item><see cref="T:System.Data.Common.CommandTrees.DbComparisonExpression"/>= becomes&lt;&gt; </item>
+            </list>
+            </summary>
+            <param name="e"></param>
+            <returns>A <see cref="T:System.Data.SQLite.Linq.SqlBuilder"/></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbNullExpression)">
+            <summary>
+            </summary>
+            <param name="e"></param>
+            <returns><see cref="T:System.Data.SQLite.Linq.SqlBuilder"/></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbOfTypeExpression)">
+            <summary>
+            <see cref="T:System.Data.Common.CommandTrees.DbOfTypeExpression"/> is illegal at this stage
+            </summary>
+            <param name="e"></param>
+            <returns>A <see cref="T:System.Data.SQLite.Linq.SqlBuilder"/></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbOrExpression)">
+             <summary>
+            
+             </summary>
+             <param name="e"></param>
+             <returns>A <see cref="T:System.Data.SQLite.Linq.SqlBuilder"/></returns>
+             <seealso cref="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbAndExpression)"/>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbParameterReferenceExpression)">
+             <summary>
+            
+             </summary>
+             <param name="e"></param>
+             <returns>A <see cref="T:System.Data.SQLite.Linq.SqlBuilder"/></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbProjectExpression)">
+            <summary>
+            <see cref="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbFilterExpression)"/> for the general ideas.
+            </summary>
+            <param name="e"></param>
+            <returns>A <see cref="T:System.Data.SQLite.Linq.SqlSelectStatement"/></returns>
+            <seealso cref="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbFilterExpression)"/>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbPropertyExpression)">
+             <summary>
+             This method handles record flattening, which works as follows.
+             consider an expression <c>Prop(y, Prop(x, Prop(d, Prop(c, Prop(b, Var(a)))))</c>
+             where a,b,c are joins, d is an extent and x and y are fields.
+             b has been flattened into a, and has its own SELECT statement.
+             c has been flattened into b.
+             d has been flattened into c.
+            
+             We visit the instance, so we reach Var(a) first.  This gives us a (join)symbol.
+             Symbol(a).b gives us a join symbol, with a SELECT statement i.e. Symbol(b).
+             From this point on , we need to remember Symbol(b) as the source alias,
+             and then try to find the column.  So, we use a SymbolPair.
+            
+             We have reached the end when the symbol no longer points to a join symbol.
+             </summary>
+             <param name="e"></param>
+             <returns>A <see cref="T:System.Data.SQLite.Linq.JoinSymbol"/> if we have not reached the first
+             Join node that has a SELECT statement.
+             A <see cref="T:System.Data.SQLite.Linq.SymbolPair"/> if we have seen the JoinNode, and it has
+             a SELECT statement.
+             A <see cref="T:System.Data.SQLite.Linq.SqlBuilder"/> with {Input}.propertyName otherwise.
+             </returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbQuantifierExpression)">
+            <summary>
+            Any(input, x) => Exists(Filter(input,x))
+            All(input, x) => Not Exists(Filter(input, not(x))
+            </summary>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbRefExpression)">
+            <summary>
+            <see cref="T:System.Data.Common.CommandTrees.DbRefExpression"/> is illegal at this stage
+            </summary>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbRelationshipNavigationExpression)">
+            <summary>
+            <see cref="T:System.Data.Common.CommandTrees.DbRelationshipNavigationExpression"/> is illegal at this stage
+            </summary>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbSkipExpression)">
+            <summary>
+            For Sql9 it translates to:
+            SELECT Y.x1, Y.x2, ..., Y.xn
+            FROM (
+                SELECT X.x1, X.x2, ..., X.xn, row_number() OVER (ORDER BY sk1, sk2, ...) AS [row_number]
+                FROM input as X
+                ) as Y
+            WHERE Y.[row_number] &gt; count
+            ORDER BY sk1, sk2, ...
+            </summary>
+            <param name="e"></param>
+            <returns>A <see cref="T:System.Data.SQLite.Linq.SqlBuilder"/></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbSortExpression)">
+            <summary>
+            <see cref="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbFilterExpression)"/>
+            </summary>
+            <param name="e"></param>
+            <returns>A <see cref="T:System.Data.SQLite.Linq.SqlSelectStatement"/></returns>
+            <seealso cref="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbFilterExpression)"/>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbTreatExpression)">
+            <summary>
+            <see cref="T:System.Data.Common.CommandTrees.DbTreatExpression"/> is illegal at this stage
+            </summary>
+            <param name="e"></param>
+            <returns>A <see cref="T:System.Data.SQLite.Linq.SqlBuilder"/></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbUnionAllExpression)">
+             <summary>
+             This code is shared by <see cref="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbExceptExpression)"/>
+             and <see cref="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbIntersectExpression)"/>
+            
+             <see cref="M:System.Data.SQLite.Linq.SqlGenerator.VisitSetOpExpression(System.Data.Common.CommandTrees.DbExpression,System.Data.Common.CommandTrees.DbExpression,System.String)"/>
+             Since the left and right expression may not be Sql select statements,
+             we must wrap them up to look like SQL select statements.
+             </summary>
+             <param name="e"></param>
+             <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbVariableReferenceExpression)">
+             <summary>
+             This method determines whether an extent from an outer scope(free variable)
+             is used in the CurrentSelectStatement.
+            
+             An extent in an outer scope, if its symbol is not in the FromExtents
+             of the CurrentSelectStatement.
+             </summary>
+             <param name="e"></param>
+             <returns>A <see cref="T:System.Data.SQLite.Linq.Symbol"/>.</returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.VisitAggregate(System.Data.Common.CommandTrees.DbAggregate,System.Object)">
+            <summary>
+            Aggregates are not visited by the normal visitor walk.
+            </summary>
+            <param name="aggregate">The aggreate to be translated</param>
+            <param name="aggregateArgument">The translated aggregate argument</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.VisitInputExpression(System.Data.Common.CommandTrees.DbExpression,System.String,System.Data.Metadata.Edm.TypeUsage,System.Data.SQLite.Linq.Symbol@)">
+            <summary>
+            This is called by the relational nodes.  It does the following
+            <list>
+            <item>If the input is not a SqlSelectStatement, it assumes that the input
+            is a collection expression, and creates a new SqlSelectStatement </item>
+            </list>
+            </summary>
+            <param name="inputExpression"></param>
+            <param name="inputVarName"></param>
+            <param name="inputVarType"></param>
+            <param name="fromSymbol"></param>
+            <returns>A <see cref="T:System.Data.SQLite.Linq.SqlSelectStatement"/> and the main fromSymbol
+            for this select statement.</returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.VisitIsEmptyExpression(System.Data.Common.CommandTrees.DbIsEmptyExpression,System.Boolean)">
+            <summary>
+            <see cref="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbIsEmptyExpression)"/>
+            </summary>
+            <param name="e"></param>
+            <param name="negate">Was the parent a DbNotExpression?</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.VisitCollectionConstructor(System.Data.Common.CommandTrees.DbNewInstanceExpression)">
+            <summary>
+            Translate a NewInstance(Element(X)) expression into
+              "select top(1) * from X"
+            </summary>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.VisitIsNullExpression(System.Data.Common.CommandTrees.DbIsNullExpression,System.Boolean)">
+            <summary>
+            <see cref="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbIsNullExpression)"/>
+            </summary>
+            <param name="e"></param>
+            <param name="negate">Was the parent a DbNotExpression?</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.VisitJoinExpression(System.Collections.Generic.IList{System.Data.Common.CommandTrees.DbExpressionBinding},System.Data.Common.CommandTrees.DbExpressionKind,System.String,System.Data.Common.CommandTrees.DbExpression)">
+             <summary>
+             This handles the processing of join expressions.
+             The extents on a left spine are flattened, while joins
+             not on the left spine give rise to new nested sub queries.
+            
+             Joins work differently from the rest of the visiting, in that
+             the parent (i.e. the join node) creates the SqlSelectStatement
+             for the children to use.
+            
+             The "parameter" IsInJoinContext indicates whether a child extent should
+             add its stuff to the existing SqlSelectStatement, or create a new SqlSelectStatement
+             By passing true, we ask the children to add themselves to the parent join,
+             by passing false, we ask the children to create new Select statements for
+             themselves.
+            
+             This method is called from <see cref="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbApplyExpression)"/> and
+             <see cref="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbJoinExpression)"/>.
+             </summary>
+             <param name="inputs"></param>
+             <param name="joinKind"></param>
+             <param name="joinString"></param>
+             <param name="joinCondition"></param>
+             <returns> A <see cref="T:System.Data.SQLite.Linq.SqlSelectStatement"/></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.ProcessJoinInputResult(System.Data.SQLite.Linq.ISqlFragment,System.Data.SQLite.Linq.SqlSelectStatement,System.Data.Common.CommandTrees.DbExpressionBinding,System.Int32)">
+             <summary>
+             This is called from <see cref="M:System.Data.SQLite.Linq.SqlGenerator.VisitJoinExpression(System.Collections.Generic.IList{System.Data.Common.CommandTrees.DbExpressionBinding},System.Data.Common.CommandTrees.DbExpressionKind,System.String,System.Data.Common.CommandTrees.DbExpression)"/>.
+            
+             This is responsible for maintaining the symbol table after visiting
+             a child of a join expression.
+            
+             The child's sql statement may need to be completed.
+            
+             The child's result could be one of
+             <list type="number">
+             <item>The same as the parent's - this is treated specially.</item>
+             <item>A sql select statement, which may need to be completed</item>
+             <item>An extent - just copy it to the from clause</item>
+             <item>Anything else (from a collection-valued expression) -
+             unnest and copy it.</item>
+             </list>
+            
+             If the input was a Join, we need to create a new join symbol,
+             otherwise, we create a normal symbol.
+            
+             We then call AddFromSymbol to add the AS clause, and update the symbol table.
+            
+            
+            
+             If the child's result was the same as the parent's, we have to clean up
+             the list of symbols in the FromExtents list, since this contains symbols from
+             the children of both the parent and the child.
+             The happens when the child visited is a Join, and is the leftmost child of
+             the parent.
+             </summary>
+             <param name="fromExtentFragment"></param>
+             <param name="result"></param>
+             <param name="input"></param>
+             <param name="fromSymbolStart"></param>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.VisitNewInstanceExpression(System.Data.Common.CommandTrees.DbNewInstanceExpression)">
+             <summary>
+             We assume that this is only called as a child of a Project.
+            
+             This replaces <see cref="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbNewInstanceExpression)"/>, since
+             we do not allow DbNewInstanceExpression as a child of any node other than
+             DbProjectExpression.
+            
+             We write out the translation of each of the columns in the record.
+             </summary>
+             <param name="e"></param>
+             <returns>A <see cref="T:System.Data.SQLite.Linq.SqlBuilder"/></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.IsSpecialBuiltInFunction(System.Data.Common.CommandTrees.DbFunctionExpression)">
+            <summary>
+            Determines whether the given function is a built-in function that requires special handling
+            </summary>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.IsSpecialCanonicalFunction(System.Data.Common.CommandTrees.DbFunctionExpression)">
+            <summary>
+            Determines whether the given function is a canonical function that requires special handling
+            </summary>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.HandleFunctionDefault(System.Data.Common.CommandTrees.DbFunctionExpression)">
+            <summary>
+            Default handling for functions
+            Translates them to FunctionName(arg1, arg2, ..., argn)
+            </summary>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.HandleFunctionDefaultGivenName(System.Data.Common.CommandTrees.DbFunctionExpression,System.String)">
+            <summary>
+            Default handling for functions with a given name.
+            Translates them to functionName(arg1, arg2, ..., argn)
+            </summary>
+            <param name="e"></param>
+            <param name="functionName"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.HandleFunctionArgumentsDefault(System.Data.Common.CommandTrees.DbFunctionExpression,System.Data.SQLite.Linq.SqlBuilder)">
+            <summary>
+            Default handling on function arguments
+            Appends the list of arguments to the given result
+            If the function is niladic it does not append anything,
+            otherwise it appends (arg1, arg2, ..., argn)
+            </summary>
+            <param name="e"></param>
+            <param name="result"></param>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.HandleSpecialBuiltInFunction(System.Data.Common.CommandTrees.DbFunctionExpression)">
+            <summary>
+            Handler for special built in functions
+            </summary>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.HandleSpecialCanonicalFunction(System.Data.Common.CommandTrees.DbFunctionExpression)">
+            <summary>
+            Handler for special canonical functions
+            </summary>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.HandleSpecialFunction(System.Collections.Generic.Dictionary{System.String,System.Data.SQLite.Linq.SqlGenerator.FunctionHandler},System.Data.Common.CommandTrees.DbFunctionExpression)">
+            <summary>
+            Dispatches the special function processing to the appropriate handler
+            </summary>
+            <param name="handlers"></param>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.HandleSpecialFunctionToOperator(System.Data.Common.CommandTrees.DbFunctionExpression,System.Boolean)">
+            <summary>
+            Handles functions that are translated into TSQL operators.
+            The given function should have one or two arguments.
+            Functions with one arguemnt are translated into
+                op arg
+            Functions with two arguments are translated into
+                arg0 op arg1
+            Also, the arguments can be optionaly enclosed in parethesis
+            </summary>
+            <param name="e"></param>
+            <param name="parenthesiseArguments">Whether the arguments should be enclosed in parethesis</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.HandleConcatFunction(System.Data.SQLite.Linq.SqlGenerator,System.Data.Common.CommandTrees.DbFunctionExpression)">
+            <summary>
+            <see cref="M:System.Data.SQLite.Linq.SqlGenerator.HandleSpecialFunctionToOperator(System.Data.Common.CommandTrees.DbFunctionExpression,System.Boolean)"></see>
+            </summary>
+            <param name="sqlgen"></param>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.HandleCanonicalFunctionBitwise(System.Data.SQLite.Linq.SqlGenerator,System.Data.Common.CommandTrees.DbFunctionExpression)">
+            <summary>
+            <see cref="M:System.Data.SQLite.Linq.SqlGenerator.HandleSpecialFunctionToOperator(System.Data.Common.CommandTrees.DbFunctionExpression,System.Boolean)"></see>
+            </summary>
+            <param name="sqlgen"></param>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.HandleDatepartDateFunction(System.Data.SQLite.Linq.SqlGenerator,System.Data.Common.CommandTrees.DbFunctionExpression)">
+            <summary>
+            Handles special case in which datepart 'type' parameter is present. all the functions
+            handles here have *only* the 1st parameter as datepart. datepart value is passed along
+            the QP as string and has to be expanded as TSQL keyword.
+            </summary>
+            <param name="sqlgen"></param>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.HandleCanonicalFunctionDateAdd(System.Data.SQLite.Linq.SqlGenerator,System.Data.Common.CommandTrees.DbFunctionExpression)">
+            <summary>
+            DateAdd(datetime, secondsToAdd) -> DATEADD ( seconds , number,  date)
+            </summary>
+            <param name="sqlgen"></param>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.HandleCanonicalFunctionDateSubtract(System.Data.SQLite.Linq.SqlGenerator,System.Data.Common.CommandTrees.DbFunctionExpression)">
+            <summary>
+            DateSubtract(datetime1, datetime2) -> DATEDIFF ( seconds , startdate , enddate )
+            </summary>
+            <param name="sqlgen"></param>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.HandleCanonicalFunctionDatepart(System.Data.SQLite.Linq.SqlGenerator,System.Data.Common.CommandTrees.DbFunctionExpression)">
+            <summary>
+            Handler for canonical functions for extracting date parts.
+            For example:
+                Year(date) -> DATEPART( year, date)
+            </summary>
+            <param name="sqlgen"></param>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.HandleCanonicalFunctionIndexOf(System.Data.SQLite.Linq.SqlGenerator,System.Data.Common.CommandTrees.DbFunctionExpression)">
+            <summary>
+             Function rename IndexOf -> CHARINDEX
+            </summary>
+            <param name="sqlgen"></param>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.HandleCanonicalFunctionNewGuid(System.Data.SQLite.Linq.SqlGenerator,System.Data.Common.CommandTrees.DbFunctionExpression)">
+            <summary>
+             Function rename NewGuid -> NEWID
+            </summary>
+            <param name="sqlgen"></param>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.HandleCanonicalFunctionLength(System.Data.SQLite.Linq.SqlGenerator,System.Data.Common.CommandTrees.DbFunctionExpression)">
+            <summary>
+             Length(arg) -> LEN(arg + '.') - LEN('.')
+            </summary>
+            <param name="sqlgen"></param>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.HandleCanonicalFunctionRound(System.Data.SQLite.Linq.SqlGenerator,System.Data.Common.CommandTrees.DbFunctionExpression)">
+            <summary>
+            Round(numericExpression) -> Round(numericExpression, 0);
+            Round(numericExpression, N) -> Round(numericExpression, N);
+            </summary>
+            <param name="sqlgen"></param>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.HandleCanonicalFunctionTrim(System.Data.SQLite.Linq.SqlGenerator,System.Data.Common.CommandTrees.DbFunctionExpression)">
+            <summary>
+            TRIM(string) -> LTRIM(RTRIM(string))
+            </summary>
+            <param name="sqlgen"></param>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.HandleCanonicalFunctionLeft(System.Data.SQLite.Linq.SqlGenerator,System.Data.Common.CommandTrees.DbFunctionExpression)">
+            <summary>
+            LEFT(string, length) -> SUBSTR(string, 1, length)
+            </summary>
+            <param name="sqlgen"></param>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.HandleCanonicalFunctionRight(System.Data.SQLite.Linq.SqlGenerator,System.Data.Common.CommandTrees.DbFunctionExpression)">
+            <summary>
+            RIGHT(string, length) -> SUBSTR(string, -(length), length)
+            </summary>
+            <param name="sqlgen"></param>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.HandleCanonicalFunctionSubstring(System.Data.SQLite.Linq.SqlGenerator,System.Data.Common.CommandTrees.DbFunctionExpression)">
+            <summary>
+            SUBSTRING(string, start) -> SUBSTR(string, start)
+            SUBSTRING(string, start, length) -> SUBSTR(string, start, length)
+            </summary>
+            <param name="sqlgen"></param>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.HandleCanonicalFunctionToLower(System.Data.SQLite.Linq.SqlGenerator,System.Data.Common.CommandTrees.DbFunctionExpression)">
+            <summary>
+             Function rename ToLower -> LOWER
+            </summary>
+            <param name="sqlgen"></param>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.HandleCanonicalFunctionToUpper(System.Data.SQLite.Linq.SqlGenerator,System.Data.Common.CommandTrees.DbFunctionExpression)">
+            <summary>
+             Function rename ToUpper -> UPPER
+            </summary>
+            <param name="sqlgen"></param>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.AddColumns(System.Data.SQLite.Linq.SqlSelectStatement,System.Data.SQLite.Linq.Symbol,System.Collections.Generic.List{System.Data.SQLite.Linq.Symbol},System.Collections.Generic.Dictionary{System.String,System.Data.SQLite.Linq.Symbol},System.String@)">
+             <summary>
+             <see cref="M:System.Data.SQLite.Linq.SqlGenerator.AddDefaultColumns(System.Data.SQLite.Linq.SqlSelectStatement)"/>
+             Add the column names from the referenced extent/join to the
+             select statement.
+            
+             If the symbol is a JoinSymbol, we recursively visit all the extents,
+             halting at real extents and JoinSymbols that have an associated SqlSelectStatement.
+            
+             The column names for a real extent can be derived from its type.
+             The column names for a Join Select statement can be got from the
+             list of columns that was created when the Join's select statement
+             was created.
+            
+             We do the following for each column.
+             <list type="number">
+             <item>Add the SQL string for each column to the SELECT clause</item>
+             <item>Add the column to the list of columns - so that it can
+             become part of the "type" of a JoinSymbol</item>
+             <item>Check if the column name collides with a previous column added
+             to the same select statement.  Flag both the columns for renaming if true.</item>
+             <item>Add the column to a name lookup dictionary for collision detection.</item>
+             </list>
+             </summary>
+             <param name="selectStatement">The select statement that started off as SELECT *</param>
+             <param name="symbol">The symbol containing the type information for
+             the columns to be added.</param>
+             <param name="columnList">Columns that have been added to the Select statement.
+             This is created in <see cref="M:System.Data.SQLite.Linq.SqlGenerator.AddDefaultColumns(System.Data.SQLite.Linq.SqlSelectStatement)"/>.</param>
+             <param name="columnDictionary">A dictionary of the columns above.</param>
+             <param name="separator">Comma or nothing, depending on whether the SELECT
+             clause is empty.</param>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.AddDefaultColumns(System.Data.SQLite.Linq.SqlSelectStatement)">
+             <summary>
+             Expands Select * to "select the_list_of_columns"
+             If the columns are taken from an extent, they are written as
+             {original_column_name AS Symbol(original_column)} to allow renaming.
+            
+             If the columns are taken from a Join, they are written as just
+             {original_column_name}, since there cannot be a name collision.
+            
+             We concatenate the columns from each of the inputs to the select statement.
+             Since the inputs may be joins that are flattened, we need to recurse.
+             The inputs are inferred from the symbols in FromExtents.
+             </summary>
+             <param name="selectStatement"></param>
+             <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.AddFromSymbol(System.Data.SQLite.Linq.SqlSelectStatement,System.String,System.Data.SQLite.Linq.Symbol)">
+            <summary>
+            <see cref="M:System.Data.SQLite.Linq.SqlGenerator.AddFromSymbol(System.Data.SQLite.Linq.SqlSelectStatement,System.String,System.Data.SQLite.Linq.Symbol,System.Boolean)"/>
+            </summary>
+            <param name="selectStatement"></param>
+            <param name="inputVarName"></param>
+            <param name="fromSymbol"></param>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.AddFromSymbol(System.Data.SQLite.Linq.SqlSelectStatement,System.String,System.Data.SQLite.Linq.Symbol,System.Boolean)">
+             <summary>
+             This method is called after the input to a relational node is visited.
+             <see cref="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbProjectExpression)"/> and <see cref="M:System.Data.SQLite.Linq.SqlGenerator.ProcessJoinInputResult(System.Data.SQLite.Linq.ISqlFragment,System.Data.SQLite.Linq.SqlSelectStatement,System.Data.Common.CommandTrees.DbExpressionBinding,System.Int32)"/>
+             There are 2 scenarios
+             <list type="number">
+             <item>The fromSymbol is new i.e. the select statement has just been
+             created, or a join extent has been added.</item>
+             <item>The fromSymbol is old i.e. we are reusing a select statement.</item>
+             </list>
+            
+             If we are not reusing the select statement, we have to complete the
+             FROM clause with the alias
+             <code>
+             -- if the input was an extent
+             FROM = [SchemaName].[TableName]
+             -- if the input was a Project
+             FROM = (SELECT ... FROM ... WHERE ...)
+             </code>
+            
+             These become
+             <code>
+             -- if the input was an extent
+             FROM = [SchemaName].[TableName] AS alias
+             -- if the input was a Project
+             FROM = (SELECT ... FROM ... WHERE ...) AS alias
+             </code>
+             and look like valid FROM clauses.
+            
+             Finally, we have to add the alias to the global list of aliases used,
+             and also to the current symbol table.
+             </summary>
+             <param name="selectStatement"></param>
+             <param name="inputVarName">The alias to be used.</param>
+             <param name="fromSymbol"></param>
+             <param name="addToSymbolTable"></param>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.AddSortKeys(System.Data.SQLite.Linq.SqlBuilder,System.Collections.Generic.IList{System.Data.Common.CommandTrees.DbSortClause})">
+            <summary>
+            Translates a list of SortClauses.
+            Used in the translation of OrderBy
+            </summary>
+            <param name="orderByClause">The SqlBuilder to which the sort keys should be appended</param>
+            <param name="sortKeys"></param>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.CreateNewSelectStatement(System.Data.SQLite.Linq.SqlSelectStatement,System.String,System.Data.Metadata.Edm.TypeUsage,System.Data.SQLite.Linq.Symbol@)">
+            <summary>
+            <see cref="M:System.Data.SQLite.Linq.SqlGenerator.CreateNewSelectStatement(System.Data.SQLite.Linq.SqlSelectStatement,System.String,System.Data.Metadata.Edm.TypeUsage,System.Boolean,System.Data.SQLite.Linq.Symbol@)"/>
+            </summary>
+            <param name="oldStatement"></param>
+            <param name="inputVarName"></param>
+            <param name="inputVarType"></param>
+            <param name="fromSymbol"></param>
+            <returns>A new select statement, with the old one as the from clause.</returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.CreateNewSelectStatement(System.Data.SQLite.Linq.SqlSelectStatement,System.String,System.Data.Metadata.Edm.TypeUsage,System.Boolean,System.Data.SQLite.Linq.Symbol@)">
+             <summary>
+             This is called after a relational node's input has been visited, and the
+             input's sql statement cannot be reused.  <see cref="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbProjectExpression)"/>
+            
+             When the input's sql statement cannot be reused, we create a new sql
+             statement, with the old one as the from clause of the new statement.
+            
+             The old statement must be completed i.e. if it has an empty select list,
+             the list of columns must be projected out.
+            
+             If the old statement being completed has a join symbol as its from extent,
+             the new statement must have a clone of the join symbol as its extent.
+             We cannot reuse the old symbol, but the new select statement must behave
+             as though it is working over the "join" record.
+             </summary>
+             <param name="oldStatement"></param>
+             <param name="inputVarName"></param>
+             <param name="inputVarType"></param>
+             <param name="finalizeOldStatement"></param>
+             <param name="fromSymbol"></param>
+             <returns>A new select statement, with the old one as the from clause.</returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.NeedSingleQuotes(System.Data.SQLite.SQLiteDateFormats)">
+            <summary>
+            Determines if values of the specified <see cref="T:System.Data.SQLite.SQLiteDateFormats"/>
+            require wrapping in single quotes.
+            </summary>
+            <param name="format">
+            The <see cref="T:System.Data.SQLite.SQLiteDateFormats"/> format.
+            </param>
+            <returns>
+            Non-zero if single quotes are required for a value in the specified
+            <see cref="T:System.Data.SQLite.SQLiteDateFormats"/>.
+            </returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.EscapeSingleQuote(System.String,System.Boolean)">
+            <summary>
+            Before we embed a string literal in a SQL string, we should
+            convert all ' to '', and enclose the whole string in single quotes.
+            </summary>
+            <param name="s"></param>
+            <param name="isUnicode"></param>
+            <returns>The escaped sql string.</returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.GetSqlPrimitiveType(System.Data.Metadata.Edm.TypeUsage)">
+            <summary>
+            Returns the sql primitive/native type name.
+            It will include size, precision or scale depending on type information present in the
+            type facets
+            </summary>
+            <param name="type"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.HandleCountExpression(System.Data.Common.CommandTrees.DbExpression)">
+            <summary>
+            Handles the expression represending DbLimitExpression.Limit and DbSkipExpression.Count.
+            If it is a constant expression, it simply does to string thus avoiding casting it to the specific value
+            (which would be done if <see cref="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbConstantExpression)"/> is called)
+            </summary>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.IsApplyExpression(System.Data.Common.CommandTrees.DbExpression)">
+            <summary>
+            This is used to determine if a particular expression is an Apply operation.
+            This is only the case when the DbExpressionKind is CrossApply or OuterApply.
+            </summary>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.IsJoinExpression(System.Data.Common.CommandTrees.DbExpression)">
+            <summary>
+            This is used to determine if a particular expression is a Join operation.
+            This is true for DbCrossJoinExpression and DbJoinExpression, the
+            latter of which may have one of several different ExpressionKinds.
+            </summary>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.IsComplexExpression(System.Data.Common.CommandTrees.DbExpression)">
+             <summary>
+             This is used to determine if a calling expression needs to place
+             round brackets around the translation of the expression e.
+            
+             Constants, parameters and properties do not require brackets,
+             everything else does.
+             </summary>
+             <param name="e"></param>
+             <returns>true, if the expression needs brackets </returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.IsCompatible(System.Data.SQLite.Linq.SqlSelectStatement,System.Data.Common.CommandTrees.DbExpressionKind)">
+            <summary>
+            Determine if the owner expression can add its unique sql to the input's
+            SqlSelectStatement
+            </summary>
+            <param name="result">The SqlSelectStatement of the input to the relational node.</param>
+            <param name="expressionKind">The kind of the expression node(not the input's)</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.QuoteIdentifier(System.String)">
+            <summary>
+            We use the normal box quotes for SQL server.  We do not deal with ANSI quotes
+            i.e. double quotes.
+            </summary>
+            <param name="name"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.VisitExpressionEnsureSqlStatement(System.Data.Common.CommandTrees.DbExpression)">
+            <summary>
+            Simply calls <see cref="M:System.Data.SQLite.Linq.SqlGenerator.VisitExpressionEnsureSqlStatement(System.Data.Common.CommandTrees.DbExpression,System.Boolean)"/>
+            with addDefaultColumns set to true
+            </summary>
+            <param name="e"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.VisitExpressionEnsureSqlStatement(System.Data.Common.CommandTrees.DbExpression,System.Boolean)">
+             <summary>
+             This is called from <see cref="M:System.Data.SQLite.Linq.SqlGenerator.GenerateSql(System.Data.Common.CommandTrees.DbQueryCommandTree)"/> and nodes which require a
+             select statement as an argument e.g. <see cref="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbIsEmptyExpression)"/>,
+             <see cref="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbUnionAllExpression)"/>.
+            
+             SqlGenerator needs its child to have a proper alias if the child is
+             just an extent or a join.
+            
+             The normal relational nodes result in complete valid SQL statements.
+             For the rest, we need to treat them as there was a dummy
+             <code>
+             -- originally {expression}
+             -- change that to
+             SELECT *
+             FROM {expression} as c
+             </code>
+            
+             DbLimitExpression needs to start the statement but not add the default columns
+             </summary>
+             <param name="e"></param>
+             <param name="addDefaultColumns"></param>
+             <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.VisitFilterExpression(System.Data.Common.CommandTrees.DbExpressionBinding,System.Data.Common.CommandTrees.DbExpression,System.Boolean)">
+             <summary>
+             This method is called by <see cref="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbFilterExpression)"/> and
+             <see cref="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbQuantifierExpression)"/>
+            
+             </summary>
+             <param name="input"></param>
+             <param name="predicate"></param>
+             <param name="negatePredicate">This is passed from <see cref="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbQuantifierExpression)"/>
+             in the All(...) case.</param>
+             <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.WrapNonQueryExtent(System.Data.SQLite.Linq.SqlSelectStatement,System.Data.SQLite.Linq.ISqlFragment,System.Data.Common.CommandTrees.DbExpressionKind)">
+            <summary>
+            If the sql fragment for an input expression is not a SqlSelect statement
+            or other acceptable form (e.g. an extent as a SqlBuilder), we need
+            to wrap it in a form acceptable in a FROM clause.  These are
+            primarily the
+            <list type="bullet">
+            <item>The set operation expressions - union all, intersect, except</item>
+            <item>TVFs, which are conceptually similar to tables</item>
+            </list>
+            </summary>
+            <param name="result"></param>
+            <param name="sqlFragment"></param>
+            <param name="expressionKind"></param>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.IsBuiltinFunction(System.Data.Metadata.Edm.EdmFunction)">
+            <summary>
+            Is this a builtin function (ie) does it have the builtinAttribute specified?
+            </summary>
+            <param name="function"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.WriteFunctionName(System.Data.SQLite.Linq.SqlBuilder,System.Data.Metadata.Edm.EdmFunction)">
+             <summary>
+            
+             </summary>
+             <param name="function"></param>
+             <param name="result"></param>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.ToBlobLiteral(System.Byte[],System.Data.SQLite.Linq.SqlBuilder)">
+            <summary>
+            Appends the literal BLOB string representation of the specified
+            byte array to the <see cref="T:System.Data.SQLite.Linq.SqlBuilder"/>.
+            </summary>
+            <param name="bytes">
+            The byte array to be formatted as a literal BLOB string.
+            </param>
+            <param name="builder">
+            The <see cref="T:System.Data.SQLite.Linq.SqlBuilder"/> object to use.  If null, an exception
+            will be thrown.
+            </param>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.NeedsInnerQuery(System.Collections.Generic.IList{System.Data.Common.CommandTrees.DbAggregate})">
+            <summary>
+            Helper method for the Group By visitor
+            Returns true if at least one of the aggregates in the given list
+            has an argument that is not a <see cref="T:System.Data.Common.CommandTrees.DbPropertyExpression"/>
+            over <see cref="T:System.Data.Common.CommandTrees.DbVariableReferenceExpression"/>
+            </summary>
+            <param name="aggregates"></param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlGenerator.IsPropertyOverVarRef(System.Data.Common.CommandTrees.DbExpression)">
+            <summary>
+            Determines whether the given expression is a <see cref="T:System.Data.Common.CommandTrees.DbPropertyExpression"/>
+            over <see cref="T:System.Data.Common.CommandTrees.DbVariableReferenceExpression"/>
+            </summary>
+            <param name="expression"></param>
+            <returns></returns>
+        </member>
+        <member name="P:System.Data.SQLite.Linq.SqlGenerator.CurrentSelectStatement">
+            <summary>
+            The top of the stack
+            </summary>
+        </member>
+        <member name="P:System.Data.SQLite.Linq.SqlGenerator.IsParentAJoin">
+            <summary>
+            The top of the stack
+            </summary>
+        </member>
+        <member name="T:System.Data.SQLite.Linq.SqlSelectStatement">
+             <summary>
+             A SqlSelectStatement represents a canonical SQL SELECT statement.
+             It has fields for the 5 main clauses
+             <list type="number">
+             <item>SELECT</item>
+             <item>FROM</item>
+             <item>WHERE</item>
+             <item>GROUP BY</item>
+             <item>ORDER BY</item>
+             </list>
+             We do not have HAVING, since it does not correspond to anything in the DbCommandTree.
+             Each of the fields is a SqlBuilder, so we can keep appending SQL strings
+             or other fragments to build up the clause.
+            
+             We have a IsDistinct property to indicate that we want distict columns.
+             This is given out of band, since the input expression to the select clause
+             may already have some columns projected out, and we use append-only SqlBuilders.
+             The DISTINCT is inserted when we finally write the object into a string.
+             
+             Also, we have a Top property, which is non-null if the number of results should
+             be limited to certain number. It is given out of band for the same reasons as DISTINCT.
+            
+             The FromExtents contains the list of inputs in use for the select statement.
+             There is usually just one element in this - Select statements for joins may
+             temporarily have more than one.
+            
+             If the select statement is created by a Join node, we maintain a list of
+             all the extents that have been flattened in the join in AllJoinExtents
+             <example>
+             in J(j1= J(a,b), c)
+             FromExtents has 2 nodes JoinSymbol(name=j1, ...) and Symbol(name=c)
+             AllJoinExtents has 3 nodes Symbol(name=a), Symbol(name=b), Symbol(name=c)
+             </example>
+            
+             If any expression in the non-FROM clause refers to an extent in a higher scope,
+             we add that extent to the OuterExtents list.  This list denotes the list
+             of extent aliases that may collide with the aliases used in this select statement.
+             It is set by <see cref="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbVariableReferenceExpression)"/>.
+             An extent is an outer extent if it is not one of the FromExtents.
+            
+            
+             </summary>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlSelectStatement.HaveOrderByLimitOrOffset">
+            <summary>
+            Checks if the statement has an ORDER BY, LIMIT, or OFFSET clause.
+            </summary>
+            <returns>
+            Non-zero if there is an ORDER BY, LIMIT, or OFFSET clause;
+            otherwise, zero.
+            </returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlSelectStatement.WriteSql(System.Data.SQLite.Linq.SqlWriter,System.Data.SQLite.Linq.SqlGenerator)">
+            <summary>
+            Write out a SQL select statement as a string.
+            We have to
+            <list type="number">
+            <item>Check whether the aliases extents we use in this statement have
+            to be renamed.
+            We first create a list of all the aliases used by the outer extents.
+            For each of the FromExtents( or AllJoinExtents if it is non-null),
+            rename it if it collides with the previous list.
+            </item>
+            <item>Write each of the clauses (if it exists) as a string</item>
+            </list>
+            </summary>
+            <param name="writer"></param>
+            <param name="sqlGenerator"></param>
+        </member>
+        <member name="P:System.Data.SQLite.Linq.SqlSelectStatement.IsDistinct">
+            <summary>
+            Do we need to add a DISTINCT at the beginning of the SELECT
+            </summary>
+        </member>
+        <member name="T:System.Data.SQLite.Linq.SqlWriter">
+            <summary>
+            This extends StringWriter primarily to add the ability to add an indent
+            to each line that is written out.
+            </summary>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlWriter.#ctor(System.Text.StringBuilder)">
+            <summary>
+            
+            </summary>
+            <param name="b"></param>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlWriter.Write(System.String)">
+            <summary>
+            Reset atBeginningofLine if we detect the newline string.
+            <see cref="M:System.Data.SQLite.Linq.SqlBuilder.AppendLine"/>
+            Add as many tabs as the value of indent if we are at the 
+            beginning of a line.
+            </summary>
+            <param name="value"></param>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SqlWriter.WriteLine">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="P:System.Data.SQLite.Linq.SqlWriter.Indent">
+            <summary>
+            The number of tabs to be added at the beginning of each new line.
+            </summary>
+        </member>
+        <member name="T:System.Data.SQLite.Linq.SymbolPair">
+            <summary>
+            The SymbolPair exists to solve the record flattening problem.
+            <see cref="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbPropertyExpression)"/>
+            Consider a property expression D(v, "j3.j2.j1.a.x")
+            where v is a VarRef, j1, j2, j3 are joins, a is an extent and x is a columns.
+            This has to be translated eventually into {j'}.{x'}
+            
+            The source field represents the outermost SqlStatement representing a join
+            expression (say j2) - this is always a Join symbol.
+            
+            The column field keeps moving from one join symbol to the next, until it
+            stops at a non-join symbol.
+            
+            This is returned by <see cref="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbPropertyExpression)"/>,
+            but never makes it into a SqlBuilder.
+            </summary>
+        </member>
+        <member name="T:System.Data.SQLite.Linq.SymbolTable">
+            <summary>
+            The symbol table is quite primitive - it is a stack with a new entry for
+            each scope.  Lookups search from the top of the stack to the bottom, until
+            an entry is found.
+            
+            The symbols are of the following kinds
+            <list type="bullet">
+            <item><see cref="T:System.Data.SQLite.Linq.Symbol"/> represents tables (extents/nested selects/unnests)</item>
+            <item><see cref="T:System.Data.SQLite.Linq.JoinSymbol"/> represents Join nodes</item>
+            <item><see cref="T:System.Data.SQLite.Linq.Symbol"/> columns.</item>
+            </list>
+            
+            Symbols represent names <see cref="M:System.Data.SQLite.Linq.SqlGenerator.Visit(System.Data.Common.CommandTrees.DbVariableReferenceExpression)"/> to be resolved, 
+            or things to be renamed.
+            </summary>
+        </member>
+        <member name="T:System.Data.SQLite.Linq.TopClause">
+            <summary>
+            TopClause represents the a TOP expression in a SqlSelectStatement. 
+            It has a count property, which indicates how many TOP rows should be selected and a 
+            boolen WithTies property.
+            </summary>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.TopClause.#ctor(System.Data.SQLite.Linq.ISqlFragment,System.Boolean)">
+            <summary>
+            Creates a TopClause with the given topCount and withTies.
+            </summary>
+            <param name="topCount"></param>
+            <param name="withTies"></param>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.TopClause.#ctor(System.Int32,System.Boolean)">
+            <summary>
+            Creates a TopClause with the given topCount and withTies.
+            </summary>
+            <param name="topCount"></param>
+            <param name="withTies"></param>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.TopClause.WriteSql(System.Data.SQLite.Linq.SqlWriter,System.Data.SQLite.Linq.SqlGenerator)">
+            <summary>
+            Write out the TOP part of sql select statement 
+            It basically writes LIMIT (X).
+            </summary>
+            <param name="writer"></param>
+            <param name="sqlGenerator"></param>
+        </member>
+        <member name="P:System.Data.SQLite.Linq.TopClause.WithTies">
+            <summary>
+            Do we need to add a WITH_TIES to the top statement
+            </summary>
+        </member>
+        <member name="P:System.Data.SQLite.Linq.TopClause.TopCount">
+            <summary>
+            How many top rows should be selected.
+            </summary>
+        </member>
+        <member name="T:System.Data.SQLite.Linq.SQLiteProviderFactory">
+            <summary>
+            SQLite implementation of <see cref="T:System.Data.Common.DbProviderFactory"/>.
+            </summary>
+        </member>
+        <member name="F:System.Data.SQLite.Linq.SQLiteProviderFactory.Instance">
+            <summary>
+            Static instance member which returns an instanced
+            <see cref="T:System.Data.SQLite.Linq.SQLiteProviderFactory"/> class.
+            </summary>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SQLiteProviderFactory.#ctor">
+            <summary>
+            Constructs a new instance.
+            </summary>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SQLiteProviderFactory.CreateCommand">
+            <summary>
+            Creates and returns a new <see cref="T:System.Data.SQLite.SQLiteCommand"/> object.
+            </summary>
+            <returns>The new object.</returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SQLiteProviderFactory.CreateCommandBuilder">
+            <summary>
+            Creates and returns a new <see cref="T:System.Data.SQLite.SQLiteCommandBuilder"/> object.
+            </summary>
+            <returns>The new object.</returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SQLiteProviderFactory.CreateConnection">
+            <summary>
+            Creates and returns a new <see cref="T:System.Data.SQLite.SQLiteConnection"/> object.
+            </summary>
+            <returns>The new object.</returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SQLiteProviderFactory.CreateConnectionStringBuilder">
+            <summary>
+            Creates and returns a new <see cref="T:System.Data.SQLite.SQLiteConnectionStringBuilder"/>
+            object.
+            </summary>
+            <returns>The new object.</returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SQLiteProviderFactory.CreateDataAdapter">
+            <summary>
+            Creates and returns a new <see cref="T:System.Data.SQLite.SQLiteDataAdapter"/> object.
+            </summary>
+            <returns>The new object.</returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SQLiteProviderFactory.CreateParameter">
+            <summary>
+            Creates and returns a new <see cref="T:System.Data.SQLite.SQLiteParameter"/> object.
+            </summary>
+            <returns>The new object.</returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SQLiteProviderFactory.GetService(System.Type)">
+            <summary>
+            Gets the service object of the specified type.
+            </summary>
+            <param name="serviceType">
+            An object that specifies the type of service object to get.
+            </param>
+            <returns>
+            A service object of type serviceType -OR- a null reference if
+            there is no service object of type serviceType.
+            </returns>
+        </member>
+        <member name="T:System.Data.SQLite.Linq.SQLiteProviderManifest">
+            <summary>
+            The Provider Manifest for SQL Server
+            </summary>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SQLiteProviderManifest.#ctor(System.String)">
+            <summary>
+            Constructs the provider manifest.
+            </summary>
+            <remarks>
+            Previously, the manifest token was interpreted as a <see cref="T:System.Data.SQLite.SQLiteDateFormats"/>,
+            because the <see cref="T:System.DateTime"/> functions are vastly different depending on the
+            connection was opened.  However, the manifest token may specify a connection string
+            instead.  WARNING: Only the "DateTimeFormat", "DateTimeKind", "DateTimeFormatString",
+            and "BinaryGUID" connection parameters are extracted from it.  All other connection
+            parameters, if any are present, are silently ignored.
+            </remarks>
+            <param name="manifestToken">
+            A token used to infer the capabilities of the store.
+            </param>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SQLiteProviderManifest.GetProviderManifestToken(System.String)">
+            <summary>
+            Determines and returns the effective provider manifest token to use,
+            based on the specified provider manifest token and the environment,
+            if applicable.
+            </summary>
+            <param name="manifestToken">
+            The original provider manifest token passed to the constructor for this
+            class.
+            </param>
+            <returns>
+            The effective provider manifest token.
+            </returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SQLiteProviderManifest.ParseProviderManifestToken(System.String)">
+            <summary>
+            Attempts to parse a provider manifest token.  It must contain either a
+            legacy string that specifies the <see cref="T:System.Data.SQLite.SQLiteDateFormats"/> value
+            -OR- string that uses the standard connection string syntax; otherwise,
+            the results are undefined.
+            </summary>
+            <param name="manifestToken">
+            The manifest token to parse.
+            </param>
+            <returns>
+            The dictionary containing the connection string parameters.
+            </returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SQLiteProviderManifest.SetFromOptions(System.Collections.Generic.SortedList{System.String,System.String})">
+            <summary>
+            Attempts to set the provider manifest options from the specified
+            connection string parameters.  An exception may be thrown if one
+            or more of the connection string parameter values do not conform
+            to the expected type.
+            </summary>
+            <param name="opts">
+            The dictionary containing the connection string parameters.
+            </param>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SQLiteProviderManifest.GetDbInformation(System.String)">
+            <summary>
+            Returns manifest information for the provider
+            </summary>
+            <param name="informationType">The name of the information to be retrieved.</param>
+            <returns>An XmlReader at the begining of the information requested.</returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SQLiteProviderManifest.GetEdmType(System.Data.Metadata.Edm.TypeUsage)">
+            <summary>
+            This method takes a type and a set of facets and returns the best mapped equivalent type 
+            in EDM.
+            </summary>
+            <param name="storeType">A TypeUsage encapsulating a store type and a set of facets</param>
+            <returns>A TypeUsage encapsulating an EDM type and a set of facets</returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SQLiteProviderManifest.GetStoreType(System.Data.Metadata.Edm.TypeUsage)">
+            <summary>
+            This method takes a type and a set of facets and returns the best mapped equivalent type 
+            </summary>
+            <param name="edmType">A TypeUsage encapsulating an EDM type and a set of facets</param>
+            <returns>A TypeUsage encapsulating a store type and a set of facets</returns>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SQLiteProviderServices.CreateSqlParameter(System.Data.SQLite.Linq.SQLiteProviderManifest,System.String,System.Data.Metadata.Edm.TypeUsage,System.Data.Metadata.Edm.ParameterMode,System.Object)">
+            <summary>
+            Creates a SQLiteParameter given a name, type, and direction
+            </summary>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SQLiteProviderServices.GetSqlDbType(System.Data.Metadata.Edm.TypeUsage,System.Boolean,System.Nullable{System.Int32}@)">
+            <summary>
+            Determines DbType for the given primitive type. Extracts facet
+            information as well.
+            </summary>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SQLiteProviderServices.GetParameterSize(System.Data.Metadata.Edm.TypeUsage,System.Boolean)">
+            <summary>
+            Determines preferred value for SqlParameter.Size. Returns null
+            where there is no preference.
+            </summary>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SQLiteProviderServices.GetStringDbType(System.Data.Metadata.Edm.TypeUsage)">
+            <summary>
+            Chooses the appropriate DbType for the given string type.
+            </summary>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SQLiteProviderServices.GetBinaryDbType(System.Data.Metadata.Edm.TypeUsage)">
+            <summary>
+            Chooses the appropriate DbType for the given binary type.
+            </summary>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SQLiteProviderServices.System#Data#SQLite#ISQLiteSchemaExtensions#BuildTempSchema(System.Data.SQLite.SQLiteConnection)">
+            <summary>
+            Creates temporary tables on the connection so schema information can be queried
+            </summary>
+            <remarks>
+            There's a lot of work involved in getting schema information out of SQLite, but LINQ expects to
+            be able to query on schema tables.  Therefore we need to "fake" it by generating temporary tables
+            filled with the schema of the current connection.  We get away with making this information static
+            because schema information seems to always be queried on a new connection object, so the schema is
+            always fresh.
+            </remarks>
+            <param name="cnn">The connection upon which to build the schema tables.</param>
+        </member>
+        <member name="M:System.Data.SQLite.Linq.SQLiteProviderServices.DataTableToTable(System.Data.SQLite.SQLiteConnection,System.Data.DataTable,System.String)">
+            <summary>
+            Turn a datatable into a table in the temporary database for the connection
+            </summary>
+            <param name="cnn">The connection to make the temporary table in</param>
+            <param name="table">The table to write out</param>
+            <param name="dest">The temporary table name to write to</param>
+        </member>
+    </members>
+</doc>

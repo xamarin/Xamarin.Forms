@@ -415,7 +415,13 @@ namespace Xamarin.Forms.Controls
 
 			await PushPage (page);
 		}
-	}
+
+        internal void Filter(string text)
+        {
+            var culture = System.Globalization.CultureInfo.CurrentCulture;
+            ItemsSource = _pages.Where(p => culture.CompareInfo.IndexOf(p.Title, text, System.Globalization.CompareOptions.IgnoreCase) >= 0);
+        }
+    }
 
 	internal class CoreRootPage : ContentPage
 	{
@@ -427,11 +433,16 @@ namespace Xamarin.Forms.Controls
 
 			var corePageView = new CorePageView (rootPage, navigationBehavior);
 
-			var searchBar = new SearchBar () {
-				AutomationId = "SearchBar"
+            var searchBar = new SearchBar() {
+                AutomationId = "SearchBar"
 			};
 
-			var testCasesButton = new Button {
+            searchBar.TextChanged += (o, e) =>
+            {
+                corePageView.Filter(searchBar.Text);
+            };
+
+            var testCasesButton = new Button {
 				Text = "Go to Test Cases",
 				AutomationId = "GoToTestButton",
 				Command = new Command (async () => {
@@ -443,6 +454,7 @@ namespace Xamarin.Forms.Controls
 			};
 
 			var stackLayout = new StackLayout () { 
+                BackgroundColor = Color.White,
 				Children = {
 					testCasesButton,
 					searchBar,
@@ -458,7 +470,7 @@ namespace Xamarin.Forms.Controls
 				}
 			};
 
-			Content = new AbsoluteLayout {
+            Content = new AbsoluteLayout {
 				Children = {
 					{ new CoreRootView (), new Rectangle(0, 0.0, 1, 0.35), AbsoluteLayoutFlags.All },
 					{ stackLayout, new Rectangle(0, 0.5, 1, 0.30), AbsoluteLayoutFlags.All },
