@@ -13,7 +13,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		bool _isDisposed;
 
-		IElementController ElementController => _element;// Renderer.Element as IElementController;
+		IElementController ElementController => _element;
 
 		public VisualElementPackager(IVisualElementRenderer renderer) : this(renderer, null)
 		{

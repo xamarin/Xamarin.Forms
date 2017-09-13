@@ -239,10 +239,8 @@ namespace Xamarin.Forms
 
 			var isHeadless = CompressedLayout.GetIsHeadless(this);
 			var headlessOffset = CompressedLayout.GetHeadlessOffset(this);
-			for (var i = 0; i < LogicalChildrenInternal.Count; i++) {
-				var child = (VisualElement)LogicalChildrenInternal[i];
-				CompressedLayout.SetHeadlessOffset(child, isHeadless ? new Point(headlessOffset.X + Bounds.X, headlessOffset.Y + Bounds.Y) : new Point());
-			}
+			for (var i = 0; i < LogicalChildrenInternal.Count; i++)
+				CompressedLayout.SetHeadlessOffset((VisualElement)LogicalChildrenInternal[i], isHeadless ? new Point(headlessOffset.X + Bounds.X, headlessOffset.Y + Bounds.Y) : new Point());
 
 			LayoutChildren(x, y, w, h);
 

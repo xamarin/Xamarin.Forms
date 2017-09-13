@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		VisualElement _element;
 
-		IElementController ElementController => _element;// _renderer.Element as IElementController;
+		IElementController ElementController => _element;
 
 		public VisualElementPackager(IVisualElementRenderer renderer, VisualElement element = null)
 		{
@@ -78,9 +78,9 @@ namespace Xamarin.Forms.Platform.Android
 			Performance.Start();
 
 			if (CompressedLayout.GetIsHeadless(view)) {
-				var _packager = new VisualElementPackager(_renderer, view);
+				var packager = new VisualElementPackager(_renderer, view);
 				view.IsPlatformEnabled = true;
-				_packager.Load();
+				packager.Load();
 			} else {
 				if (_childViews == null)
 					_childViews = new List<IVisualElementRenderer>();
