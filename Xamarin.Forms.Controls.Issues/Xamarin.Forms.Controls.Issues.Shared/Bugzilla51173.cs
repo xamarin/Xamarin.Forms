@@ -27,6 +27,9 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement(q => q.Marked(UriDoesNotExist));
 
 			RunningApp.Tap(UriDoesNotExist);
+
+			RunningApp.ScrollDown();
+
 			RunningApp.WaitForElement(q => q.Marked(ErrorLogged));
 			RunningApp.WaitForElement(q => q.Marked(NotLoading));
 		}
@@ -37,6 +40,9 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement(q => q.Marked(HandlerThrows));
 			
 			RunningApp.Tap(HandlerThrows);
+
+			RunningApp.ScrollDown();
+
 			RunningApp.WaitForElement(q => q.Marked(ErrorLogged));
 			RunningApp.WaitForElement(q => q.Marked(NotLoading));
 		}
@@ -47,6 +53,9 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement(q => q.Marked(RealUriInvalidImage));
 
 			RunningApp.Tap(RealUriInvalidImage);
+
+			RunningApp.ScrollDown();
+
 			RunningApp.WaitForElement(q => q.Marked(ErrorLogged));
 			RunningApp.WaitForElement(q => q.Marked(NotLoading));
 		}
@@ -57,6 +66,9 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement(q => q.Marked(ImageDoesNotExist));
 
 			RunningApp.Tap(ImageDoesNotExist);
+
+			RunningApp.ScrollDown();
+
 			RunningApp.WaitForElement(q => q.Marked(ErrorLogged));
 			RunningApp.WaitForElement(q => q.Marked(NotLoading));
 		}
@@ -67,6 +79,9 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement(q => q.Marked(ImageIsInvalid));
 
 			RunningApp.Tap(ImageIsInvalid);
+
+			RunningApp.ScrollDown();
+
 			RunningApp.WaitForElement(q => q.Marked(ErrorLogged));
 			RunningApp.WaitForElement(q => q.Marked(NotLoading));
 		}
@@ -76,6 +91,9 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			RunningApp.WaitForElement(q => q.Marked(ValidImage));
 			RunningApp.Tap(ValidImage);
+
+			RunningApp.ScrollDown();
+
 			RunningApp.WaitForElement(q => q.Marked(NotLoading));
 		}
 #endif
