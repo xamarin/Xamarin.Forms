@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Foundation;
 using UIKit;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using RectangleF = CoreGraphics.CGRect;
 using SizeF = CoreGraphics.CGSize;
 
@@ -707,6 +708,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 			public override nfloat GetHeightForRow(UITableView tableView, NSIndexPath indexPath)
 			{
+				if (List.OnThisPlatform().IsUsingAutoSizedViewCellsOnly())
+				{
+					if (Forms.IsiOS8OrNewer && List.HasUnevenRows && List.RowHeight == -1)
+						return UITableView.AutomaticDimension;
+
+					throw new InvalidOperationException("IsUsingAutoSizedViewCellsOnly works on iOS 8+ with uneven rows, a row height of -1, and ViewCell items only.");
+				}
+
 				var cell = GetCellForPath(indexPath);
 
 				if (List.RowHeight == -1 && cell.Height == -1 && cell is ViewCell)
