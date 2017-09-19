@@ -41,8 +41,8 @@ namespace Xamarin.Forms.Xaml
 			var parentElement = parentNode as IElementNode;
 			var value = Values [node];
 			var source = Values [parentNode];
-
-			if (TryGetPropertyName(node, parentNode, out XmlName propertyName)) {
+			XmlName propertyName;
+			if (TryGetPropertyName(node, parentNode, out propertyName)) {
 				if (Skips.Contains(propertyName))
 					return;
 				if (parentElement.SkipProperties.Contains(propertyName))
@@ -70,7 +70,8 @@ namespace Xamarin.Forms.Xaml
 
 		public void Visit(ElementNode node, INode parentNode)
 		{
-			if (TryGetPropertyName(node, parentNode, out XmlName propertyName) && propertyName == XmlName._CreateContent) {
+			XmlName propertyName;
+			if (TryGetPropertyName(node, parentNode, out propertyName) && propertyName == XmlName._CreateContent) {
 				var s0 = Values[parentNode];
 				if (s0 is ElementTemplate) {
 					SetTemplate(s0 as ElementTemplate, node);
@@ -82,7 +83,8 @@ namespace Xamarin.Forms.Xaml
 			propertyName = XmlName.Empty;
 
 			//Simplify ListNodes with single elements
-			if (parentNode is ListNode pList && pList.CollectionItems.Count == 1) {
+			var pList = parentNode as ListNode;
+			if (pList != null && pList.CollectionItems.Count == 1) {
 				propertyName = pList.XmlName;
 				parentNode = parentNode.Parent;
 				parentElement = parentNode as IElementNode;

@@ -36,9 +36,9 @@ namespace Xamarin.Forms.Xaml
 		public void Visit(ElementNode node, INode parentNode)
 		{
 			var value = Values[node];
-
+			XmlName propertyName;
 			//Set RD to VE
-			if (typeof(ResourceDictionary).IsAssignableFrom(Context.Types[node]) && ApplyPropertiesVisitor.TryGetPropertyName(node, parentNode, out XmlName propertyName)) {
+			if (typeof(ResourceDictionary).IsAssignableFrom(Context.Types[node]) && ApplyPropertiesVisitor.TryGetPropertyName(node, parentNode, out propertyName)) {
 				if ((propertyName.LocalName == "Resources" ||
 					 propertyName.LocalName.EndsWith(".Resources", StringComparison.Ordinal)) && value is ResourceDictionary) {
 					var source = Values[parentNode];
@@ -50,7 +50,6 @@ namespace Xamarin.Forms.Xaml
 			//Only proceed further if the node is a RD
 			if (parentNode is IElementNode && typeof(ResourceDictionary).IsAssignableFrom(Context.Types[((IElementNode)parentNode)]))
 				node.Accept(new ApplyPropertiesVisitor(Context, stopOnResourceDictionary: false), parentNode);
-
 			else if (parentNode is ListNode && typeof(ResourceDictionary).IsAssignableFrom(Context.Types[((IElementNode)parentNode.Parent)]))
 				node.Accept(new ApplyPropertiesVisitor(Context, stopOnResourceDictionary: false), parentNode);
 		}
