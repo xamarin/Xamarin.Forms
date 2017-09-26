@@ -250,16 +250,17 @@ namespace Xamarin.Forms.Controls
 		// (or booted by jetsam)
 		public static void EnsureMemory()
 		{
+#if __ANDROID__
 			if (RunningApp != null)
 			{
 				s_testsrun += 1;
-
 				if (s_testsrun >= ConsecutiveTestLimit)
 				{
 					s_testsrun = 0;
 					RunningApp = InitializeApp();
 				}
 			}
+#endif
 		}
 
 		// For tests which just don't play well with others, we can ensure
