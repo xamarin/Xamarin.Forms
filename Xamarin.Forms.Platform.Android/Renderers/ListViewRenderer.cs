@@ -45,14 +45,14 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (_headerRenderer != null)
 				{
-					_headerRenderer.ViewGroup.RemoveAllViews();
+					(_headerRenderer.View as ViewGroup)?.RemoveAllViews();
 					_headerRenderer.Dispose();
 					_headerRenderer = null;
 				}
 
 				if (_footerRenderer != null)
 				{
-					_footerRenderer.ViewGroup.RemoveAllViews();
+					(_footerRenderer.View as ViewGroup)?.RemoveAllViews();
 					_footerRenderer.Dispose();
 					_footerRenderer = null;
 				}
@@ -141,7 +141,7 @@ namespace Xamarin.Forms.Platform.Android
 				nativeListView.Focusable = false;
 				nativeListView.DescendantFocusability = DescendantFocusability.AfterDescendants;
 				nativeListView.OnFocusChangeListener = this;
-				nativeListView.Adapter = _adapter = new ListViewAdapter(Context, nativeListView, e.NewElement);
+				nativeListView.Adapter = _adapter = e.NewElement.IsGroupingEnabled && e.NewElement.OnThisPlatform ().IsFastScrollEnabled () ? new GroupedListViewAdapter (Context, nativeListView, e.NewElement) : new ListViewAdapter(Context, nativeListView, e.NewElement);
 				_adapter.HeaderView = _headerView;
 				_adapter.FooterView = _footerView;
 				_adapter.IsAttachedToWindow = _isAttached;
@@ -150,7 +150,22 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateFooter();
 				UpdateIsSwipeToRefreshEnabled();
 				UpdateFastScrollEnabled();
+
+				
 			}
+		}
+
+		internal void LongClickOn(AView viewCell)
+		{
+			if (Control == null)
+			{
+				return;
+			}
+
+			var position = Control.GetPositionForView(viewCell);
+			var id = Control.GetItemIdAtPosition(position);
+
+			_adapter.OnItemLongClick(Control, viewCell, position, id);
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -335,13 +350,19 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateFastScrollEnabled()
 		{
-			if (Control != null)
-				Control.FastScrollEnabled = Element.OnThisPlatform().IsFastScrollEnabled();
+			if (Control != null) {
+				Control.FastScrollEnabled = Element.OnThisPlatform ().IsFastScrollEnabled ();
+			}
 		}
 
 		internal class Container : ViewGroup
 		{
 			IVisualElementRenderer _child;
+
+			public Container(IntPtr p, global::Android.Runtime.JniHandleOwnership o) : base(p, o)
+			{
+				// Added default constructor to prevent crash when accessing header/footer row in ListViewAdapter.Dispose
+			}
 
 			public Container(Context context) : base(context)
 			{
@@ -352,12 +373,12 @@ namespace Xamarin.Forms.Platform.Android
 				set
 				{
 					if (_child != null)
-						RemoveView(_child.ViewGroup);
+						RemoveView(_child.View);
 
 					_child = value;
 
 					if (value != null)
-						AddView(value.ViewGroup);
+						AddView(value.View);
 				}
 			}
 
@@ -389,7 +410,7 @@ namespace Xamarin.Forms.Platform.Android
 				int widthSpec = MeasureSpecFactory.MakeMeasureSpec((int)ctx.ToPixels(width), MeasureSpecMode.Exactly);
 				int heightSpec = MeasureSpecFactory.MakeMeasureSpec((int)ctx.ToPixels(request.Request.Height), MeasureSpecMode.Exactly);
 
-				_child.ViewGroup.Measure(widthMeasureSpec, heightMeasureSpec);
+				_child.View.Measure(widthMeasureSpec, heightMeasureSpec);
 				SetMeasuredDimension(widthSpec, heightSpec);
 			}
 		}

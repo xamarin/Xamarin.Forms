@@ -58,7 +58,6 @@
     <Compile Include="XmlnsHelper.cs" />
     <Compile Include="IExpressionParser.cs" />
     <Compile Include="MarkupExtensionParser.cs" />
-    <Compile Include="TypeConversionExtensions.cs" />
     <Compile Include="IDictionaryExtensions.cs" />
     <Compile Include="MarkupExtensions\NullExtension.cs" />
     <Compile Include="MarkupExtensions\ReferenceExtension.cs" />
@@ -70,13 +69,12 @@
     <Compile Include="NamescopingVisitor.cs" />
     <Compile Include="CreateValuesVisitor.cs" />
     <Compile Include="ApplyPropertiesVisitor.cs" />
-    <Compile Include="HydratationContext.cs" />
+    <Compile Include="HydrationContext.cs" />
     <Compile Include="RegisterXNamesVisitor.cs" />
     <Compile Include="XamlParser.cs" />
     <Compile Include="MarkupExtensions\BindingExtension.cs" />
     <Compile Include="MarkupExtensions\StaticResourceExtension.cs" />
     <Compile Include="MarkupExtensions\DynamicResourceExtension.cs" />
-    <Compile Include="ValueConverterProvider.cs" />
     <Compile Include="FillResourceDictionariesVisitor.cs" />
     <Compile Include="ExpandMarkupsVisitor.cs" />
     <Compile Include="XamlCompilationAttribute.cs" />

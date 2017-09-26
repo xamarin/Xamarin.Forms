@@ -220,7 +220,7 @@
         <ReturnType>System.EventHandler&lt;Xamarin.Forms.Internals.EventArg&lt;Xamarin.Forms.VisualElement&gt;&gt;</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -240,7 +240,7 @@
         <ReturnType>System.Boolean</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
@@ -347,24 +347,8 @@
         <ReturnType>System.Boolean</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <value>To be added.</value>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
-    <Member MemberName="Finalize">
-      <MemberSignature Language="C#" Value="~VisualElement ();" />
-      <MemberSignature Language="ILAsm" Value=".method familyhidebysig virtual instance void Finalize() cil managed" />
-      <MemberType>Method</MemberType>
-      <AssemblyInfo>
-        <AssemblyVersion>2.0.0.0</AssemblyVersion>
-      </AssemblyInfo>
-      <ReturnValue>
-        <ReturnType>System.Void</ReturnType>
-      </ReturnValue>
-      <Parameters />
-      <Docs>
-        <summary>Finalizer for visual elements.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -408,7 +392,7 @@
         <ReturnType>System.EventHandler&lt;Xamarin.Forms.VisualElement+FocusRequestArgs&gt;</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -450,7 +434,7 @@
       </AssemblyInfo>
       <Attributes>
         <Attribute>
-          <AttributeName>System.Obsolete("Use Measure")</AttributeName>
+          <AttributeName>System.Obsolete("OnSizeRequest is obsolete as of version 2.2.0. Please use OnMeasure instead.")</AttributeName>
         </Attribute>
       </Attributes>
       <ReturnValue>
@@ -465,8 +449,8 @@
         <param name="heightConstraint">The available height that a parent element can allocated to a child. Value will be between 0 and double.PositiveInfinity.</param>
         <summary>Returns the <see cref="T:Xamarin.Forms.SizeRequest" /> of the element. Calling this method begins the measure pass of a layout cycle.</summary>
         <returns>A <see cref="T:Xamarin.Forms.SizeRequest" /> which contains a requested size and a minimum size.</returns>
-        <remarks>Calling GetSizeRequest causes a measure pass to occur for the subtree of elements it is called on. It is ideal to only call GetSizeRequest when needed as excessive calls can negatively impact the performance of your app. Overriding GetSizeRequest should only be done if you want to ignore Width/HeightRequest. More likely a subclass would wish to override <see cref="M:Xamarin.Forms.VisualElement.OnSizeRequest (double, double)" />.</remarks>
-        <altmember cref="M:Xamarin.Forms.OnSizeRequest (double, double)" />
+        <remarks>Calling GetSizeRequest causes a measure pass to occur for the subtree of elements it is called on. It is ideal to only call GetSizeRequest when needed as excessive calls can negatively impact the performance of your app. Overriding GetSizeRequest should only be done if you want to ignore Width/HeightRequest. More likely a subclass would wish to override <see cref="M:Xamarin.Forms.VisualElement.OnSizeRequest" />.</remarks>
+        <altmember cref="M:Xamarin.Forms.OnSizeRequest" />
       </Docs>
     </Member>
     <Member MemberName="Height">
@@ -640,8 +624,8 @@
         <Parameter Name="trigger" Type="Xamarin.Forms.Internals.InvalidationTrigger" />
       </Parameters>
       <Docs>
-        <param name="trigger">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="trigger">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -785,7 +769,7 @@
         <ReturnType>Xamarin.Forms.BindablePropertyKey</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -805,7 +789,7 @@
         <ReturnType>System.Boolean</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
@@ -826,7 +810,7 @@
         <ReturnType>System.Boolean</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
@@ -847,7 +831,7 @@
         <ReturnType>System.Boolean</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
@@ -972,12 +956,14 @@
         <Parameter Name="flags" Type="Xamarin.Forms.MeasureFlags" />
       </Parameters>
       <Docs>
-        <param name="widthConstraint">To be added.</param>
-        <param name="heightConstraint">To be added.</param>
-        <param name="flags">To be added.</param>
-        <summary>Measures a visual element for layout operations.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
+        <param name="widthConstraint">The suggested maximum width constraint for the visual element to render.</param>
+        <param name="heightConstraint">The suggested maximum height constraint for the visual element to render.</param>
+        <param name="flags">A value that controls whether margins are included in the returned size.</param>
+        <summary>Returns the minimum size that a visual element needs in order to be displayed on the device.</summary>
+        <returns>The minimum size that a visual element needs in order to be displayed on the device.</returns>
+        <remarks>
+          <para>If the minimum sized that the visual element needs in order to be displayed on the device is larger than can be accommodated by <paramref name="widthConstraint" /> and <paramref name="heightConstraint" />, the return value may represent a rectangle that is larger in either or both of those parameters.</para>
+        </remarks>
       </Docs>
     </Member>
     <Member MemberName="MeasureInvalidated">
@@ -1130,6 +1116,27 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
+    <Member MemberName="NativeSizeChanged">
+      <MemberSignature Language="C#" Value="public void NativeSizeChanged ();" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void NativeSizeChanged() cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute>
+          <AttributeName>System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters />
+      <Docs>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
     <Member MemberName="Navigation">
       <MemberSignature Language="C#" Value="public Xamarin.Forms.INavigation Navigation { get; }" />
       <MemberSignature Language="ILAsm" Value=".property instance class Xamarin.Forms.INavigation Navigation" />
@@ -1217,7 +1224,7 @@
         <ReturnType>Xamarin.Forms.Internals.NavigationProxy</ReturnType>
       </ReturnValue>
       <Docs>
-        <summary>To be added.</summary>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
         <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
@@ -1237,7 +1244,7 @@
         <Parameter Name="child" Type="Xamarin.Forms.Element" />
       </Parameters>
       <Docs>
-        <param name="child">To be added.</param>
+        <param name="child">The child that was added.</param>
         <summary>Application developers can override this method to respond when a child is added.</summary>
         <remarks>Application developers who override this method must call base.OnChildAdded before performing any other actions in their override.</remarks>
       </Docs>
@@ -1257,7 +1264,7 @@
         <Parameter Name="child" Type="Xamarin.Forms.Element" />
       </Parameters>
       <Docs>
-        <param name="child">To be added.</param>
+        <param name="child">The child that was removed.</param>
         <summary>Application developers can override this method to respond when a child is removed.</summary>
         <remarks>Application developers who override this method must call base.OnChildRemoved before performing any other actions in their override.</remarks>
       </Docs>
@@ -1299,8 +1306,8 @@
         <Parameter Name="heightConstraint" Type="System.Double" />
       </Parameters>
       <Docs>
-        <param name="widthConstraint">To be added.</param>
-        <param name="heightConstraint">To be added.</param>
+        <param name="widthConstraint">The width constraint to request.</param>
+        <param name="heightConstraint">The height constraint to request.</param>
         <summary>Method that is called when a layout measurement happens.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
@@ -1370,7 +1377,7 @@
       </AssemblyInfo>
       <Attributes>
         <Attribute>
-          <AttributeName>System.Obsolete("Use OnMeasure")</AttributeName>
+          <AttributeName>System.Obsolete("OnSizeRequest is obsolete as of version 2.2.0. Please use OnMeasure instead.")</AttributeName>
         </Attribute>
       </Attributes>
       <ReturnValue>
@@ -1384,7 +1391,7 @@
         <param name="widthConstraint">The available width for the element to use.</param>
         <param name="heightConstraint">The available height for the element to use.</param>
         <summary>This method is called during the measure pass of a layout cycle to get the desired size of an element.</summary>
-        <returns>A <see cref="T:Xamarin.Forms.SizeRequest&gt;" /> which contains the desired size of the element.</returns>
+        <returns>A <see cref="T:Xamarin.Forms.SizeRequest" /> which contains the desired size of the element.</returns>
         <remarks>The results of this method will be (-1, -1) if the element has not yet been realized with a platform specific backing control. Overriding this method does not require a call to the base class so long as a valid SizeRequest is returned.</remarks>
       </Docs>
     </Member>
@@ -2069,7 +2076,7 @@
         <Parameter Name="trigger" Type="Xamarin.Forms.Internals.InvalidationTrigger" />
       </Parameters>
       <Docs>
-        <param name="trigger">To be added.</param>
+        <param name="trigger">For internal use by the Xamarin.Forms platform.</param>
         <summary>This method is for internal use.</summary>
         <remarks>To be added.</remarks>
       </Docs>
@@ -2082,7 +2089,6 @@
         <AssemblyVersion>1.3.0.0</AssemblyVersion>
         <AssemblyVersion>1.4.0.0</AssemblyVersion>
         <AssemblyVersion>1.5.0.0</AssemblyVersion>
-        <AssemblyVersion>2.0.0.0</AssemblyVersion>
       </AssemblyInfo>
       <ReturnValue>
         <ReturnType>System.Void</ReturnType>

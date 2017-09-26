@@ -90,9 +90,10 @@ namespace Xamarin.Forms
 				OnModelChanged();
 			}
 		}
-		ITableModel ITableViewController.Model
+
+		ITableModel ITableViewController.Model 
 		{
-			get
+			get 
 			{
 				return Model;
 			}
@@ -114,7 +115,7 @@ namespace Xamarin.Forms
 				ModelChanged(this, EventArgs.Empty);
 		}
 
-		[Obsolete("Use OnMeasure")]
+		[Obsolete("OnSizeRequest is obsolete as of version 2.2.0. Please use OnMeasure instead.")]
 		protected override SizeRequest OnSizeRequest(double widthConstraint, double heightConstraint)
 		{
 			var minimumSize = new Size(40, 40);
@@ -124,12 +125,8 @@ namespace Xamarin.Forms
 			return new SizeRequest(request, minimumSize);
 		}
 
-		internal event EventHandler ModelChanged;
-		event EventHandler ITableViewController.ModelChanged
-		{
-			add { ModelChanged += value; }
-			remove { ModelChanged -= value; }
-		}
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public event EventHandler ModelChanged;
 
 		public IPlatformElementConfiguration<T, TableView> On<T>() where T : IConfigPlatform
 		{

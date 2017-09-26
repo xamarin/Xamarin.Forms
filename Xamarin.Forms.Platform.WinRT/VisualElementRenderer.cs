@@ -6,6 +6,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 
 #if WINDOWS_UWP
 
@@ -25,6 +26,7 @@ namespace Xamarin.Forms.Platform.WinRT
 		bool _disposed;
 		EventHandler<VisualElementChangedEventArgs> _elementChangedHandlers;
 		VisualElementTracker<TElement, TNativeElement> _tracker;
+		Windows.UI.Xaml.Controls.Page _containingPage; // Cache of containing page used for unfocusing
 
 		public TNativeElement Control { get; private set; }
 
@@ -35,6 +37,8 @@ namespace Xamarin.Forms.Platform.WinRT
 		protected bool AutoTrack { get; set; } = true;
 
 		protected bool ArrangeNativeChildren { get; set; }
+
+		protected virtual bool PreventGestureBubbling { get; set; } = false;
 
 		IElementController ElementController => Element as IElementController;
 
@@ -297,13 +301,13 @@ namespace Xamarin.Forms.Platform.WinRT
 				UpdateEnabled();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor();
-			else if (e.PropertyName == Accessibility.HintProperty.PropertyName)
+			else if (e.PropertyName == AutomationProperties.HelpTextProperty.PropertyName)
 				SetAutomationPropertiesHelpText();
-			else if (e.PropertyName == Accessibility.NameProperty.PropertyName)
+			else if (e.PropertyName == AutomationProperties.NameProperty.PropertyName)
 				SetAutomationPropertiesName();
-			else if (e.PropertyName == Accessibility.IsInAccessibleTreeProperty.PropertyName)
+			else if (e.PropertyName == AutomationProperties.IsInAccessibleTreeProperty.PropertyName)
 				SetAutomationPropertiesAccessibilityView();
-			else if (e.PropertyName == Accessibility.LabeledByProperty.PropertyName)
+			else if (e.PropertyName == AutomationProperties.LabeledByProperty.PropertyName)
 				SetAutomationPropertiesLabeledBy();
 		}
 
@@ -315,7 +319,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		protected virtual void SetAutomationId(string id)
 		{
-			SetValue(AutomationProperties.AutomationIdProperty, id);
+			SetValue(Windows.UI.Xaml.Automation.AutomationProperties.AutomationIdProperty, id);
 		}
 
 		protected virtual void SetAutomationPropertiesName()
@@ -324,14 +328,14 @@ namespace Xamarin.Forms.Platform.WinRT
 				return;
 
 			if (_defaultAutomationPropertiesName == null)
-				_defaultAutomationPropertiesName = (string)Control.GetValue(AutomationProperties.NameProperty);
+				_defaultAutomationPropertiesName = (string)Control.GetValue(Windows.UI.Xaml.Automation.AutomationProperties.NameProperty);
 
-			var elemValue = (string)Element.GetValue(Accessibility.NameProperty);
+			var elemValue = (string)Element.GetValue(AutomationProperties.NameProperty);
 
 			if (!string.IsNullOrWhiteSpace(elemValue))
-				Control.SetValue(AutomationProperties.NameProperty, elemValue);
+				Control.SetValue(Windows.UI.Xaml.Automation.AutomationProperties.NameProperty, elemValue);
 			else
-				Control.SetValue(AutomationProperties.NameProperty, _defaultAutomationPropertiesName);
+				Control.SetValue(Windows.UI.Xaml.Automation.AutomationProperties.NameProperty, _defaultAutomationPropertiesName);
 		}
 
 		protected virtual void SetAutomationPropertiesAccessibilityView()
@@ -340,17 +344,17 @@ namespace Xamarin.Forms.Platform.WinRT
 				return;
 
 			if (!_defaultAutomationPropertiesAccessibilityView.HasValue)
-				_defaultAutomationPropertiesAccessibilityView = (AccessibilityView)Control.GetValue(AutomationProperties.AccessibilityViewProperty);
+				_defaultAutomationPropertiesAccessibilityView = (AccessibilityView)Control.GetValue(Windows.UI.Xaml.Automation.AutomationProperties.AccessibilityViewProperty);
 
 			var newValue = _defaultAutomationPropertiesAccessibilityView;
-			var elemValue = (bool?)Element.GetValue(Accessibility.IsInAccessibleTreeProperty);
+			var elemValue = (bool?)Element.GetValue(AutomationProperties.IsInAccessibleTreeProperty);
 
 			if (elemValue == true)
 				newValue = AccessibilityView.Content;
 			else if (elemValue == false)
 				newValue = AccessibilityView.Raw;
 
-			Control.SetValue(AutomationProperties.AccessibilityViewProperty, newValue);
+			Control.SetValue(Windows.UI.Xaml.Automation.AutomationProperties.AccessibilityViewProperty, newValue);
 		}
 
 		protected virtual void SetAutomationPropertiesHelpText()
@@ -359,14 +363,14 @@ namespace Xamarin.Forms.Platform.WinRT
 				return;
 
 			if (_defaultAutomationPropertiesHelpText == null)
-				_defaultAutomationPropertiesHelpText = (string)Control.GetValue(AutomationProperties.HelpTextProperty);
+				_defaultAutomationPropertiesHelpText = (string)Control.GetValue(Windows.UI.Xaml.Automation.AutomationProperties.HelpTextProperty);
 
-			var elemValue = (string)Element.GetValue(Accessibility.HintProperty);
+			var elemValue = (string)Element.GetValue(AutomationProperties.HelpTextProperty);
 
 			if (!string.IsNullOrWhiteSpace(elemValue))
-				Control.SetValue(AutomationProperties.HelpTextProperty, elemValue);
+				Control.SetValue(Windows.UI.Xaml.Automation.AutomationProperties.HelpTextProperty, elemValue);
 			else
-				Control.SetValue(AutomationProperties.HelpTextProperty, _defaultAutomationPropertiesHelpText);
+				Control.SetValue(Windows.UI.Xaml.Automation.AutomationProperties.HelpTextProperty, _defaultAutomationPropertiesHelpText);
 		}
 
 		protected virtual void SetAutomationPropertiesLabeledBy()
@@ -375,16 +379,16 @@ namespace Xamarin.Forms.Platform.WinRT
 				return;
 
 			if (_defaultAutomationPropertiesLabeledBy == null)
-				_defaultAutomationPropertiesLabeledBy = (UIElement)Control.GetValue(AutomationProperties.LabeledByProperty);
+				_defaultAutomationPropertiesLabeledBy = (UIElement)Control.GetValue(Windows.UI.Xaml.Automation.AutomationProperties.LabeledByProperty);
 
-			var elemValue = (VisualElement)Element.GetValue(Accessibility.LabeledByProperty);
+			var elemValue = (VisualElement)Element.GetValue(AutomationProperties.LabeledByProperty);
 			var renderer = elemValue?.GetOrCreateRenderer();
 			var nativeElement = renderer?.GetNativeElement();
 
 			if (nativeElement != null)
-				Control.SetValue(AutomationProperties.LabeledByProperty, nativeElement);
+				Control.SetValue(Windows.UI.Xaml.Automation.AutomationProperties.LabeledByProperty, nativeElement);
 			else
-				Control.SetValue(AutomationProperties.LabeledByProperty, _defaultAutomationPropertiesLabeledBy);
+				Control.SetValue(Windows.UI.Xaml.Automation.AutomationProperties.LabeledByProperty, _defaultAutomationPropertiesLabeledBy);
 		}
 
 		protected void SetNativeControl(TNativeElement control)
@@ -410,6 +414,11 @@ namespace Xamarin.Forms.Platform.WinRT
 			Control.VerticalAlignment = VerticalAlignment.Stretch;
 
 			Children.Add(control);
+
+			if (Element == null)
+				throw new InvalidOperationException(
+					"Cannot assign a native control without an Element; Renderer unbound and/or disposed. " +
+					"Please consult Xamarin.Forms renderers for reference implementation of OnElementChanged.");
 
 			Element.IsNativeStateConsistent = false;
 			control.Loaded += OnControlLoaded;
@@ -477,11 +486,40 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		internal void UnfocusControl(Control control)
 		{
-			if (control == null || !control.IsEnabled)
+			if (control == null || !control.IsEnabled || !control.IsTabStop)
 				return;
 
-			control.IsEnabled = false;
-			control.IsEnabled = true;
+			// "Unfocusing" doesn't really make sense on Windows; for accessibility reasons,
+			// something always has focus. So forcing the unfocusing of a control would normally 
+			// just move focus to the next control, or leave it on the current control if no other
+			// focus targets are available. This is what happens if you use the "disable/enable"
+			// hack. What we *can* do is set the focus to the Page which contains Control;
+			// this will cause Control to lose focus without shifting focus to, say, the next Entry 
+
+			if (_containingPage == null)
+			{
+				// Work our way up the tree to find the containing Page
+				DependencyObject parent = Control as Control;
+				while (parent != null && !(parent is Windows.UI.Xaml.Controls.Page))
+				{
+					parent = VisualTreeHelper.GetParent(parent);
+				}
+				_containingPage = parent as Windows.UI.Xaml.Controls.Page;
+			}
+
+			if (_containingPage != null)
+			{
+				// Cache the tabstop setting
+				var wasTabStop = _containingPage.IsTabStop;
+
+				// Controls can only get focus if they're a tabstop
+				_containingPage.IsTabStop = true;
+				_containingPage.Focus(FocusState.Programmatic);
+
+				// Restore the tabstop setting; that may cause the Page to lose focus,
+				// but it won't restore the focus to Control
+				_containingPage.IsTabStop = wasTabStop;
+			}
 		}
 
 		void OnControlGotFocus(object sender, RoutedEventArgs args)
@@ -509,6 +547,8 @@ namespace Xamarin.Forms.Platform.WinRT
 			var control = Control as Control;
 			if (control != null)
 				control.IsEnabled = Element.IsEnabled;
+			else
+				IsHitTestVisible = Element.IsEnabled && !Element.InputTransparent;
 		}
 
 		void UpdateTracker()
@@ -516,6 +556,7 @@ namespace Xamarin.Forms.Platform.WinRT
 			if (_tracker == null)
 				return;
 
+			_tracker.PreventGestureBubbling = PreventGestureBubbling;
 			_tracker.Control = Control;
 			_tracker.Element = Element;
 			_tracker.Container = ContainerElement;

@@ -15,7 +15,7 @@
     </Interface>
   </Interfaces>
   <Docs>
-    <summary>To be added.</summary>
+    <summary>For internal use by the XAML platform.</summary>
     <remarks>To be added.</remarks>
   </Docs>
   <Members>
@@ -29,7 +29,7 @@
       </AssemblyInfo>
       <Parameters />
       <Docs>
-        <summary>To be added.</summary>
+        <summary>For internal use by the XAML platform.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -49,9 +49,9 @@
         <Parameter Name="ns" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="prefix">To be added.</param>
-        <param name="ns">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="prefix">For internal use by the Xamarin.Forms platform.</param>
+        <param name="ns">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by the XAML platform.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -70,8 +70,8 @@
         <Parameter Name="scope" Type="System.Xml.XmlNamespaceScope" />
       </Parameters>
       <Docs>
-        <param name="scope">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="scope">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by the XAML platform.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
@@ -91,8 +91,8 @@
         <Parameter Name="prefix" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="prefix">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="prefix">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by the XAML platform.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
@@ -112,8 +112,8 @@
         <Parameter Name="namespaceName" Type="System.String" />
       </Parameters>
       <Docs>
-        <param name="namespaceName">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="namespaceName">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by the XAML platform.</summary>
         <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>

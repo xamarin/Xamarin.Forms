@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Platform.iOS
 		VisualElementPackager _packager;
 		VisualElementTracker _tracker;
 
-		IPageController PageController => Element as IPageController;
+		Page Page => Element as Page;
 
 		public PageRenderer()
 		{
@@ -73,7 +73,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			_appeared = true;
-			PageController.SendAppearing();
+			Page.SendAppearing();
 			UpdateStatusBarPrefersHidden();
 		}
 
@@ -85,7 +85,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			_appeared = false;
-			PageController.SendDisappearing();
+			Page.SendDisappearing();
 		}
 
 		public override void ViewDidLoad()
@@ -128,7 +128,7 @@ namespace Xamarin.Forms.Platform.iOS
 				Element.PropertyChanged -= OnHandlePropertyChanged;
 				Platform.SetRenderer(Element, null);
 				if (_appeared)
-					PageController.SendDisappearing();
+					Page.SendDisappearing();
 
 				_appeared = false;
 
@@ -200,6 +200,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateStatusBarPrefersHidden()
 		{
+			if (Element == null)
+				return;
+
 			var animation = ((Page)Element).OnThisPlatform().PreferredStatusBarUpdateAnimation();
 			if (animation == PageUIStatusBarAnimation.Fade || animation == PageUIStatusBarAnimation.Slide)
 				UIView.Animate(0.25, () => SetNeedsStatusBarAppearanceUpdate());
@@ -229,12 +232,7 @@ namespace Xamarin.Forms.Platform.iOS
 					return false;
 				case (StatusBarHiddenMode.Default):
 				default:
-					{
-						if (Device.info.CurrentOrientation.IsLandscape())
-							return true;
-						else
-							return false;
-					}
+					return base.PrefersStatusBarHidden();
 			}
 		}
 

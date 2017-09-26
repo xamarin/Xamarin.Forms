@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Automation.Peers;
 
 #if WINDOWS_UWP
 
@@ -15,7 +16,11 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		bool _loaded;
 
-		IPageController PageController => Element as IPageController;
+		protected override AutomationPeer OnCreateAutomationPeer()
+		{
+			// Pages need an automation peer so we can interact with them in automated tests
+			return new FrameworkElementAutomationPeer(this);
+		}
 
 		protected override void Dispose(bool disposing)
 		{
@@ -32,7 +37,7 @@ namespace Xamarin.Forms.Platform.WinRT
 					var visualChild = children[i] as VisualElement;
 					visualChild?.Cleanup();
 				}
-				PageController?.SendDisappearing();
+				Element?.SendDisappearing();
 			}
 
 			base.Dispose();
@@ -42,7 +47,7 @@ namespace Xamarin.Forms.Platform.WinRT
 		{
 			base.OnElementChanged(e);
 
-			((IPageController)e.OldElement)?.SendDisappearing();
+			e.OldElement?.SendDisappearing();
 
 			if (e.NewElement != null)
 			{
@@ -54,8 +59,13 @@ namespace Xamarin.Forms.Platform.WinRT
 					Tracker = new BackgroundTracker<FrameworkElement>(BackgroundProperty);
 				}
 
+				if (!string.IsNullOrEmpty(Element.AutomationId))
+				{
+					SetAutomationId(Element.AutomationId);
+				}
+
 				if (_loaded)
-					((IPageController)e.NewElement).SendAppearing();
+					e.NewElement.SendAppearing();
 			}
 		}
 
@@ -67,13 +77,13 @@ namespace Xamarin.Forms.Platform.WinRT
 				return;
 			}
 			_loaded = true;
-			PageController?.SendAppearing();
+			Element?.SendAppearing();
 		}
 
 		void OnUnloaded(object sender, RoutedEventArgs args)
 		{
 			_loaded = false;
-			PageController?.SendDisappearing();
+			Element?.SendDisappearing();
 		}
 	}
 }

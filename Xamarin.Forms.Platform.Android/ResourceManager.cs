@@ -17,6 +17,24 @@ namespace Xamarin.Forms.Platform.Android
 
 		public static Type ResourceClass { get; set; }
 
+		internal static Drawable GetFormsDrawable(this Resources resource, FileImageSource fileImageSource)
+		{
+			var file = fileImageSource.File;
+			Drawable drawable = resource.GetDrawable(fileImageSource);
+			if(drawable == null)
+			{
+				var bitmap = GetBitmap(resource, file) ?? BitmapFactory.DecodeFile(file);
+				if (bitmap == null)
+				{
+					var source = Registrar.Registered.GetHandler<IImageSourceHandler>(fileImageSource.GetType());
+					bitmap = source.LoadImageAsync(fileImageSource, Forms.Context).GetAwaiter().GetResult();
+				}
+				if (bitmap != null)
+					drawable = new BitmapDrawable(resource, bitmap);
+			}
+			return drawable;
+		}
+
 		public static Bitmap GetBitmap(this Resources resource, FileImageSource fileImageSource)
 		{
 			var file = fileImageSource.File;
@@ -61,23 +79,23 @@ namespace Xamarin.Forms.Platform.Android
 
 		public static void Init(Assembly masterAssembly)
 		{
-			DrawableClass = masterAssembly.GetTypes().FirstOrDefault(x => x.Name == "Drawable");
-			ResourceClass = masterAssembly.GetTypes().FirstOrDefault(x => x.Name == "Id");
+			DrawableClass = masterAssembly.GetTypes().FirstOrDefault(x => x.Name == "Drawable" || x.Name == "Resource_Drawable");
+			ResourceClass = masterAssembly.GetTypes().FirstOrDefault(x => x.Name == "Id" || x.Name == "Resource_Id");
 		}
 
 		internal static int IdFromTitle(string title, Type type)
 		{
 			string name = Path.GetFileNameWithoutExtension(title);
 			int id = GetId(type, name);
-			return id; // Resources.System.GetDrawable (Resource.Drawable.dashboard);
+			return id;
 		}
 
-		static int GetId(Type type, string propertyName)
+		static int GetId(Type type, string memberName)
 		{
-			FieldInfo[] props = type.GetFields();
-			FieldInfo prop = props.Select(p => p).FirstOrDefault(p => p.Name == propertyName);
-			if (prop != null)
-				return (int)prop.GetValue(type);
+			object value = type.GetFields().FirstOrDefault(p => p.Name == memberName)?.GetValue(type)
+				?? type.GetProperties().FirstOrDefault(p => p.Name == memberName)?.GetValue(type);
+			if (value is int)
+				return (int)value;
 			return 0;
 		}
 	}

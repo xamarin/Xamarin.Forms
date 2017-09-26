@@ -67,6 +67,8 @@ namespace Xamarin.Forms.Platform.WinRT
 			}
 		}
 
+		public bool PreventGestureBubbling { get; set; }
+
 		public TNativeElement Control
 		{
 			get { return _control; }
@@ -75,8 +77,19 @@ namespace Xamarin.Forms.Platform.WinRT
 				if (_control == value)
 					return;
 
+				if (_control != null)
+				{
+					_control.Tapped -= HandleTapped;
+					_control.DoubleTapped -= HandleDoubleTapped;
+				}
+
 				_control = value;
 				UpdateNativeControl();
+
+				if (PreventGestureBubbling)
+				{
+					UpdatingGestureRecognizers();
+				}
 			}
 		}
 
@@ -163,6 +176,12 @@ namespace Xamarin.Forms.Platform.WinRT
 				}
 			}
 
+			if (_control != null)
+			{
+				_control.Tapped -= HandleTapped;
+				_control.DoubleTapped -= HandleDoubleTapped;
+			}
+
 			Control = null;
 			Element = null;
 			Container = null;
@@ -210,6 +229,10 @@ namespace Xamarin.Forms.Platform.WinRT
 			{
 				UpdateInputTransparent(Element, Container);
 			}
+			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
+			{
+				UpdateInputTransparent(Element, Container);
+			}
 		}
 
 		protected virtual void UpdateNativeControl()
@@ -242,9 +265,9 @@ namespace Xamarin.Forms.Platform.WinRT
 			{
 				if (!_wasPanGestureStartedSent)
 				{
-					((IPanGestureController)recognizer).SendPanStarted(view, Application.Current.PanGestureId);
+					recognizer.SendPanStarted(view, Application.Current.PanGestureId);
 				}
-				((IPanGestureController)recognizer).SendPan(view, e.Delta.Translation.X + e.Cumulative.Translation.X, e.Delta.Translation.Y + e.Cumulative.Translation.Y, Application.Current.PanGestureId);
+				recognizer.SendPan(view, e.Delta.Translation.X + e.Cumulative.Translation.X, e.Delta.Translation.Y + e.Cumulative.Translation.Y, Application.Current.PanGestureId);
 			}
 			_wasPanGestureStartedSent = true;
 		}
@@ -264,9 +287,9 @@ namespace Xamarin.Forms.Platform.WinRT
 			{
 				if (!_wasPinchGestureStartedSent)
 				{
-					((IPinchGestureController)recognizer).SendPinchStarted(view, scaleOriginPoint);
+					recognizer.SendPinchStarted(view, scaleOriginPoint);
 				}
-				((IPinchGestureController)recognizer).SendPinch(view, e.Delta.Scale, scaleOriginPoint);
+				recognizer.SendPinch(view, e.Delta.Scale, scaleOriginPoint);
 			}
 			_wasPinchGestureStartedSent = true;
 		}
@@ -394,11 +417,11 @@ namespace Xamarin.Forms.Platform.WinRT
 			{
 				if (success)
 				{
-					((IPanGestureController)recognizer).SendPanCompleted(view, Application.Current.PanGestureId);
+					recognizer.SendPanCompleted(view, Application.Current.PanGestureId);
 				}
 				else
 				{
-					((IPanGestureController)recognizer).SendPanCanceled(view, Application.Current.PanGestureId);
+					recognizer.SendPanCanceled(view, Application.Current.PanGestureId);
 				}
 			}
 
@@ -417,11 +440,11 @@ namespace Xamarin.Forms.Platform.WinRT
 			{
 				if (success)
 				{
-					((IPinchGestureController)recognizer).SendPinchEnded(view);
+					recognizer.SendPinchEnded(view);
 				}
 				else
 				{
-					((IPinchGestureController)recognizer).SendPinchCanceled(view);
+					recognizer.SendPinchCanceled(view);
 				}
 			}
 
@@ -430,7 +453,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		static void UpdateInputTransparent(VisualElement view, FrameworkElement frameworkElement)
 		{
-			frameworkElement.IsHitTestVisible = !view.InputTransparent;
+			frameworkElement.IsHitTestVisible = view.IsEnabled && !view.InputTransparent;
 		}
 
 		static void UpdateOpacity(VisualElement view, FrameworkElement frameworkElement)
@@ -502,11 +525,29 @@ namespace Xamarin.Forms.Platform.WinRT
 			_container.PointerReleased -= OnPointerReleased;
 			_container.PointerCanceled -= OnPointerCanceled;
 
-			if (gestures.GetGesturesFor<TapGestureRecognizer>(g => g.NumberOfTapsRequired == 1).GetEnumerator().MoveNext())
+			if (gestures.GetGesturesFor<TapGestureRecognizer>(g => g.NumberOfTapsRequired == 1).Any())
+			{
 				_container.Tapped += OnTap;
+			}
+			else
+			{
+				if (_control != null && PreventGestureBubbling)
+				{
+					_control.Tapped += HandleTapped;
+				}
+			}
 
-			if (gestures.GetGesturesFor<TapGestureRecognizer>(g => g.NumberOfTapsRequired == 2).GetEnumerator().MoveNext())
+			if (gestures.GetGesturesFor<TapGestureRecognizer>(g => g.NumberOfTapsRequired == 2).Any())
+			{
 				_container.DoubleTapped += OnDoubleTap;
+			}
+			else
+			{
+				if (_control != null && PreventGestureBubbling)
+				{
+					_control.DoubleTapped += HandleDoubleTapped;
+				}
+			}
 
 			bool hasPinchGesture = gestures.GetGesturesFor<PinchGestureRecognizer>().GetEnumerator().MoveNext();
 			bool hasPanGesture = gestures.GetGesturesFor<PanGestureRecognizer>().GetEnumerator().MoveNext();
@@ -531,6 +572,16 @@ namespace Xamarin.Forms.Platform.WinRT
 			_container.PointerExited += OnPointerExited;
 			_container.PointerReleased += OnPointerReleased;
 			_container.PointerCanceled += OnPointerCanceled;
+		}
+
+		void HandleTapped(object sender, TappedRoutedEventArgs tappedRoutedEventArgs)
+		{
+			tappedRoutedEventArgs.Handled = true;
+		}
+
+		void HandleDoubleTapped(object sender, DoubleTappedRoutedEventArgs doubleTappedRoutedEventArgs)
+		{
+			doubleTappedRoutedEventArgs.Handled = true;
 		}
 	}
 }

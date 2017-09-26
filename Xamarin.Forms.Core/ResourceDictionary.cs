@@ -5,6 +5,8 @@ using System.Runtime.CompilerServices;
 using System.Linq;
 using System.Reflection;
 using Xamarin.Forms.Internals;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 
 namespace Xamarin.Forms
 {
@@ -12,12 +14,13 @@ namespace Xamarin.Forms
 	{
 		static ConditionalWeakTable<Type, ResourceDictionary> s_instances = new ConditionalWeakTable<Type, ResourceDictionary>();
 		readonly Dictionary<string, object> _innerDictionary = new Dictionary<string, object>();
-
+		ResourceDictionary _mergedInstance;
 		Type _mergedWith;
+
 		[TypeConverter (typeof(TypeTypeConverter))]
 		public Type MergedWith {
 			get { return _mergedWith; }
-			set { 
+			set {
 				if (_mergedWith == value)
 					return;
 
@@ -28,12 +31,69 @@ namespace Xamarin.Forms
 				if (_mergedWith == null)
 					return;
 
-				_mergedInstance = s_instances.GetValue(_mergedWith,(key) => (ResourceDictionary)Activator.CreateInstance(key));
-				OnValuesChanged (_mergedInstance.ToArray());
+				_mergedInstance = s_instances.GetValue(_mergedWith, (key) => (ResourceDictionary)Activator.CreateInstance(key));
+				OnValuesChanged(_mergedInstance.ToArray());
 			}
 		}
 
-		ResourceDictionary _mergedInstance;
+		ICollection<ResourceDictionary> _mergedDictionaries;
+		public ICollection<ResourceDictionary> MergedDictionaries {
+			get {
+				if (_mergedDictionaries == null) {
+					var col = new ObservableCollection<ResourceDictionary>();
+					col.CollectionChanged += MergedDictionaries_CollectionChanged;
+					_mergedDictionaries = col;
+				}
+				return _mergedDictionaries;
+			}
+		}
+
+		IList<ResourceDictionary> _collectionTrack;
+
+		void MergedDictionaries_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			// Move() isn't exposed by ICollection
+			if (e.Action == NotifyCollectionChangedAction.Move)
+				return;
+
+			_collectionTrack = _collectionTrack ?? new List<ResourceDictionary>();
+			// Collection has been cleared
+			if (e.Action == NotifyCollectionChangedAction.Reset) {
+				foreach (var dictionary in _collectionTrack)
+					dictionary.ValuesChanged -= Item_ValuesChanged;
+
+				_collectionTrack.Clear();
+				return;
+			}
+
+			// New Items
+			if (e.NewItems != null)
+			{
+				foreach (var item in e.NewItems)
+				{
+					var rd = (ResourceDictionary)item;
+					_collectionTrack.Add(rd);
+					rd.ValuesChanged += Item_ValuesChanged;
+					OnValuesChanged(rd.ToArray());
+				}
+			}
+
+			// Old Items
+			if (e.OldItems != null)
+			{
+				foreach (var item in e.OldItems)
+				{
+					var rd = (ResourceDictionary)item;
+					rd.ValuesChanged -= Item_ValuesChanged;
+					_collectionTrack.Remove(rd);
+				}
+			}
+		}
+
+		void Item_ValuesChanged(object sender, ResourcesChangedEventArgs e)
+		{
+			OnValuesChanged(e.Values.ToArray());
+		}
 
 		void ICollection<KeyValuePair<string, object>>.Add(KeyValuePair<string, object> item)
 		{
@@ -48,7 +108,8 @@ namespace Xamarin.Forms
 
 		bool ICollection<KeyValuePair<string, object>>.Contains(KeyValuePair<string, object> item)
 		{
-			return ((ICollection<KeyValuePair<string, object>>)_innerDictionary).Contains(item);
+			return ((ICollection<KeyValuePair<string, object>>)_innerDictionary).Contains(item)
+				|| (_mergedInstance != null && _mergedInstance.Contains(item));
 		}
 
 		void ICollection<KeyValuePair<string, object>>.CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
@@ -91,6 +152,12 @@ namespace Xamarin.Forms
 			{
 				if (_innerDictionary.ContainsKey(index))
 					return _innerDictionary[index];
+				if (_mergedInstance != null && _mergedInstance.ContainsKey(index))
+					return _mergedInstance[index];
+				if (MergedDictionaries != null)
+					foreach (var dict in MergedDictionaries.Reverse())
+						if (dict.ContainsKey(index))
+							return dict[index];
 				throw new KeyNotFoundException($"The resource '{index}' is not present in the dictionary.");
 			}
 			set
@@ -127,6 +194,9 @@ namespace Xamarin.Forms
 
 		internal IEnumerable<KeyValuePair<string, object>> MergedResources {
 			get {
+				if (MergedDictionaries != null)
+					foreach (var r in MergedDictionaries.Reverse().SelectMany(x => x.MergedResources))
+						yield return r;
 				if (_mergedInstance != null)
 					foreach (var r in _mergedInstance.MergedResources)
 						yield return r;
@@ -137,12 +207,19 @@ namespace Xamarin.Forms
 
 		public bool TryGetValue(string key, out object value)
 		{
-			return _innerDictionary.TryGetValue(key, out value);
+			return _innerDictionary.TryGetValue(key, out value)
+				|| (_mergedInstance != null && _mergedInstance.TryGetValue(key, out value))
+				|| (MergedDictionaries != null && TryGetMergedDictionaryValue(key, out value));
 		}
 
-		internal bool TryGetMergedValue(string key, out object value)
+		bool TryGetMergedDictionaryValue(string key, out object value)
 		{
-			return _innerDictionary.TryGetValue(key, out value) || (_mergedInstance != null && _mergedInstance.TryGetValue(key, out value));
+			foreach (var dictionary in MergedDictionaries.Reverse())
+				if (dictionary.TryGetValue(key, out value))
+					return true;
+
+			value = null;
+			return false;
 		}
 
 		event EventHandler<ResourcesChangedEventArgs> IResourceDictionary.ValuesChanged

@@ -3,6 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using System.Collections.Generic;
 using Xamarin.Forms.Internals;
+using System.Collections.ObjectModel;
 
 namespace Xamarin.Forms.Core.UnitTests
 {
@@ -290,7 +291,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			rd0.MergedWith = typeof(MyRD);
 
 			object _;
-			Assert.True(rd0.TryGetMergedValue("foo", out _));
+			Assert.True(rd0.TryGetValue("foo", out _));
 			Assert.AreEqual("Foo", _);
 		}
 
@@ -306,6 +307,165 @@ namespace Xamarin.Forms.Core.UnitTests
 				Assert.Pass();
 			}
 			Assert.Fail();
+		}
+
+		[Test]
+		public void ContainsReturnsValuesForMergedRD()
+		{
+			var rd = new ResourceDictionary {
+				{"baz", "BAZ"},
+				{"qux", "QUX"},
+			};
+			rd.MergedWith = typeof(MyRD);
+
+			Assert.That(rd.Contains(new KeyValuePair<string, object>("foo", "Foo")), Is.True);
+		}
+
+		[Test]
+		public void CountDoesNotIncludeMerged()
+		{
+			var rd = new ResourceDictionary {
+				{"baz", "Baz"},
+				{"qux", "Qux"},
+			};
+			rd.MergedWith = typeof(MyRD);
+
+			Assert.That(rd.Count, Is.EqualTo(2));
+		}
+
+		[Test]
+		public void IndexerLookupInMerged()
+		{
+			var rd = new ResourceDictionary {
+				{"baz", "BAZ"},
+				{"qux", "QUX"},
+			};
+			rd.MergedWith = typeof(MyRD);
+
+			Assert.That(() => rd["foo"], Throws.Nothing);
+			Assert.That(rd["foo"], Is.EqualTo("Foo"));
+		}
+
+		[Test]
+		public void TryGetValueLookupInMerged()
+		{
+			var rd = new ResourceDictionary {
+				{"baz", "BAZ"},
+				{"qux", "QUX"},
+			};
+			rd.MergedWith = typeof(MyRD);
+
+			object _;
+			Assert.That(rd.TryGetValue("foo", out _), Is.True);
+			Assert.That(rd.TryGetValue("baz", out _), Is.True);
+		}
+
+		[Test]
+		public void MergedDictionaryResourcesAreFound()
+		{
+			var rd0 = new ResourceDictionary();
+			rd0.MergedDictionaries.Add(new ResourceDictionary() { { "foo", "bar" } });
+
+			object value;
+			Assert.True(rd0.TryGetValue("foo", out value));
+			Assert.AreEqual("bar", value);
+		}
+
+		[Test]
+		public void MergedDictionaryResourcesAreFoundLastDictionaryTakesPriority()
+		{
+			var rd0 = new ResourceDictionary();
+			rd0.MergedDictionaries.Add(new ResourceDictionary() { { "foo", "bar" } });
+			rd0.MergedDictionaries.Add(new ResourceDictionary() { { "foo", "bar1" } });
+			rd0.MergedDictionaries.Add(new ResourceDictionary() { { "foo", "bar2" } });
+
+			object value;
+			Assert.True(rd0.TryGetValue("foo", out value));
+			Assert.AreEqual("bar2", value);
+		}
+
+		[Test]
+		public void CountDoesNotIncludeMergedDictionaries()
+		{
+			var rd = new ResourceDictionary {
+				{"baz", "Baz"},
+				{"qux", "Qux"},
+			};
+			rd.MergedDictionaries.Add(new ResourceDictionary() { { "foo", "bar" } });
+
+			Assert.That(rd.Count, Is.EqualTo(2));
+		}
+
+		[Test]
+		public void ClearMergedDictionaries()
+		{
+			var rd = new ResourceDictionary {
+				{"baz", "Baz"},
+				{"qux", "Qux"},
+			};
+			rd.MergedDictionaries.Add(new ResourceDictionary() { { "foo", "bar" } });
+
+			Assert.That(rd.Count, Is.EqualTo(2));
+
+			rd.MergedDictionaries.Clear();
+
+			Assert.That(rd.MergedDictionaries.Count, Is.EqualTo(0));
+		}
+
+		[Test]
+		public void AddingMergedRDTriggersValueChanged()
+		{
+			var rd = new ResourceDictionary();
+			var label = new Label {
+				Resources = rd
+			};
+			label.SetDynamicResource(Label.TextProperty, "foo");
+			Assert.That(label.Text, Is.EqualTo(Label.TextProperty.DefaultValue));
+
+			rd.MergedDictionaries.Add(new ResourceDictionary { { "foo", "Foo"} });
+			Assert.That(label.Text, Is.EqualTo("Foo"));
+		}
+
+		[Test]
+		//this is to keep the alignment with resources removed from RD
+		public void RemovingMergedRDDoesntTriggersValueChanged()
+		{
+			var rd = new ResourceDictionary {
+				MergedDictionaries = {
+					new ResourceDictionary {
+						{ "foo", "Foo" }
+					}
+				}
+			};
+			var label = new Label {
+				Resources = rd,
+			};
+
+			label.SetDynamicResource(Label.TextProperty, "foo");
+			Assert.That(label.Text, Is.EqualTo("Foo"));
+
+			rd.MergedDictionaries.Clear();
+			Assert.That(label.Text, Is.EqualTo("Foo"));
+		}
+
+		[Test]
+		public void AddingResourceInMergedRDTriggersValueChanged()
+		{
+			var rd0 = new ResourceDictionary ();
+			var rd = new ResourceDictionary {
+				MergedDictionaries = {
+					rd0
+				}
+			};
+
+			var label = new Label {
+				Resources = rd,
+			};
+			label.SetDynamicResource(Label.TextProperty, "foo");
+			Assert.That(label.Text, Is.EqualTo(Label.TextProperty.DefaultValue));
+
+			rd0.Add("foo", "Foo");
+			Assert.That(label.Text, Is.EqualTo("Foo"));
 		}
 	}
 }

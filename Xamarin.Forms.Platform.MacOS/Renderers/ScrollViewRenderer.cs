@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using System.ComponentModel;
 using AppKit;
 using RectangleF = CoreGraphics.CGRect;
@@ -19,14 +19,14 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public ScrollViewRenderer() : base(RectangleF.Empty)
 		{
+			ContentView = new FlippedClipView();
 			DrawsBackground = false;
-			ContentView.PostsBoundsChangedNotifications = true;
-			NSNotificationCenter.DefaultCenter.AddObserver(this, new Selector(nameof(UpdateScrollPosition)),
-				BoundsChangedNotification, ContentView);
+			ContentView.PostsBoundsChangedNotifications = false;
+			NSNotificationCenter.DefaultCenter.AddObserver(this, new Selector(nameof(UpdateScrollPosition)), BoundsChangedNotification, ContentView);
 			HasVerticalScroller = true;
 		}
 
-		IScrollViewController Controller => Element as IScrollViewController;
+		ScrollView ScrollView => Element as ScrollView;
 
 		public VisualElement Element { get; private set; }
 
@@ -48,13 +48,13 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (oldElement != null)
 			{
 				oldElement.PropertyChanged -= HandlePropertyChanged;
-				((IScrollViewController)oldElement).ScrollToRequested -= OnScrollToRequested;
+				((ScrollView)oldElement).ScrollToRequested -= OnScrollToRequested;
 			}
 
 			if (element != null)
 			{
 				element.PropertyChanged += HandlePropertyChanged;
-				((IScrollViewController)element).ScrollToRequested += OnScrollToRequested;
+				((ScrollView)element).ScrollToRequested += OnScrollToRequested;
 				if (_tracker == null)
 				{
 					PackContent();
@@ -120,16 +120,18 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			ClearContentRenderer();
 
-			if (Controller.Children.Count == 0 || !(Controller.Children[0] is VisualElement))
+			if (ScrollView.Children.Count == 0 || !(ScrollView.Children[0] is VisualElement))
 				return;
 
-			var content = (VisualElement)Controller.Children[0];
+			var content = (VisualElement)ScrollView.Children[0];
 			if (Platform.GetRenderer(content) == null)
 				Platform.SetRenderer(content, Platform.CreateRenderer(content));
 
 			_contentRenderer = Platform.GetRenderer(content);
-
+			(ContentView as FlippedClipView).ContentRenderer = _contentRenderer;
 			DocumentView = _contentRenderer.NativeView;
+
+			ContentView.PostsBoundsChangedNotifications = true;
 		}
 
 		void LayoutSubviews()
@@ -150,16 +152,6 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateBackgroundColor();
 		}
 
-		void HandleScrollAnimationEnded(object sender, EventArgs e)
-		{
-			Controller.SendScrollFinished();
-		}
-
-		void HandleScrolled(object sender, EventArgs e)
-		{
-			UpdateScrollPosition();
-		}
-
 		void OnNativeControlUpdated(object sender, EventArgs eventArgs)
 		{
 			UpdateContentSize();
@@ -175,38 +167,73 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			Point scrollPoint = (e.Mode == ScrollToMode.Position)
 				? new Point(e.ScrollX, Element.Height - e.ScrollY)
-				: Controller.GetScrollPositionForElement(e.Element as VisualElement, e.Position);
+				: ScrollView.GetScrollPositionForElement(e.Element as VisualElement, e.Position);
 
-			(DocumentView as NSView)?.ScrollPoint(scrollPoint.ToPointF());
-
-			Controller.SendScrollFinished();
+			ContentView.ScrollToPoint(scrollPoint.ToPointF());
+			ScrollView.SendScrollFinished();
 		}
 
 		void UpdateBackgroundColor()
 		{
-			BackgroundColor = Element.BackgroundColor.ToNSColor(Color.Transparent);
+			if (Element.BackgroundColor == Color.Default)
+			{
+				if (DrawsBackground)
+					DrawsBackground = false;
+				if (BackgroundColor != NSColor.Clear)
+					BackgroundColor = NSColor.Clear;
+			}
+			else
+			{
+				DrawsBackground = true;
+				BackgroundColor = Element.BackgroundColor.ToNSColor();
+			}
 		}
 
 		void UpdateContentSize()
 		{
-			if (_contentRenderer == null)
+			if (ContentView == null || ScrollView == null)
 				return;
-			var contentSize = ((ScrollView)Element).ContentSize.ToSizeF();
-			if (!contentSize.IsEmpty)
-				_contentRenderer.NativeView.Frame = new RectangleF(0, Element.Height - contentSize.Height, contentSize.Width,
-					contentSize.Height);
+
+			ContentView.Frame = new RectangleF(ContentView.Frame.X, ContentView.Frame.Y, Frame.Width, Frame.Height);
+			ResetNativeNonScroll();
+		}
+
+		private bool ResetNativeNonScroll( )
+		{
+			if (ScrollView == null || ContentView == null)
+				return false;
+
+			if (ScrollView.ScrollY <= 0.0f && ContentView.DocumentVisibleRect().Location.Y > 0.0f)
+			{
+				ContentView.ScrollToPoint(new CoreGraphics.CGPoint(0, 0));
+				return true;
+			}
+
+			return false;
 		}
 
 		[Export(nameof(UpdateScrollPosition))]
 		void UpdateScrollPosition()
 		{
-			var convertedPoint = (DocumentView as NSView)?.ConvertPointFromView(ContentView.Bounds.Location, ContentView);
-			if (convertedPoint.HasValue)
-				Controller.SetScrolledPosition(Math.Max(0, convertedPoint.Value.X), Math.Max(0, convertedPoint.Value.Y));
+			if (ScrollView == null)
+				return;
+
+			if (ScrollView.ContentSize.Height >= ScrollView.Height)
+			{
+				CoreGraphics.CGPoint location = ContentView.DocumentVisibleRect().Location;
+
+				if (location.Y > -1)
+					ScrollView.SetScrolledPosition(Math.Max(0, location.X), Math.Max(0, ContentView.Frame.Height - location.Y));
+			}
+			else
+				ResetNativeNonScroll();
 		}
 
 		void ClearContentRenderer()
 		{
+			if ((ContentView as FlippedClipView) != null)
+				(ContentView as FlippedClipView).ContentRenderer = null;
+
 			_contentRenderer?.NativeView?.RemoveFromSuperview();
 			_contentRenderer?.Dispose();
 			_contentRenderer = null;

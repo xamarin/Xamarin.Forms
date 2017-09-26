@@ -110,8 +110,6 @@ namespace Xamarin.Forms.Platform.iOS
 				_menu = menu;
 			}
 
-			INavigationMenuController MenuController => _menu;
-
 			public override UICollectionViewCell GetCell(UICollectionView collectionView, NSIndexPath indexPath)
 			{
 				var cell = (NavigationCell)collectionView.DequeueReusableCell(new NSString("NavigationCell"), indexPath);
@@ -120,8 +118,8 @@ namespace Xamarin.Forms.Platform.iOS
 				if (target != null)
 				{
 					cell.Name = target.Title;
-					cell.Icon = target.Icon;
-					cell.Selected = () => MenuController.SendTargetSelected(target);
+					cell.Icon = target.Icon?.File;
+					cell.Selected = () => _menu.SendTargetSelected(target);
 				}
 				else
 				{

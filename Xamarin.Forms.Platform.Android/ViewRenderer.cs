@@ -127,7 +127,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateIsEnabled();
-			else if (e.PropertyName == Accessibility.LabeledByProperty.PropertyName)
+			else if (e.PropertyName == AutomationProperties.LabeledByProperty.PropertyName)
 				SetLabeledBy();
 		}
 
@@ -177,7 +177,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (_defaultContentDescription == null)
 				_defaultContentDescription = Control.ContentDescription;
 
-			var elemValue = string.Join(" ", (string)Element.GetValue(Accessibility.NameProperty), (string)Element.GetValue(Accessibility.HintProperty));
+			var elemValue = string.Join(" ", (string)Element.GetValue(AutomationProperties.NameProperty), (string)Element.GetValue(AutomationProperties.HelpTextProperty));
 
 			if (!string.IsNullOrWhiteSpace(elemValue))
 				Control.ContentDescription = elemValue;
@@ -199,7 +199,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (!_defaultFocusable.HasValue)
 				_defaultFocusable = Control.Focusable;
 
-			Control.Focusable = (bool)((bool?)Element.GetValue(Accessibility.IsInAccessibleTreeProperty) ?? _defaultFocusable);
+			Control.Focusable = (bool)((bool?)Element.GetValue(AutomationProperties.IsInAccessibleTreeProperty) ?? _defaultFocusable);
 		}
 
 		protected override bool SetHint()
@@ -223,7 +223,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (_defaultHint == null)
 				_defaultHint = textView.Hint;
 
-			var elemValue = string.Join((String.IsNullOrWhiteSpace((string)(Element.GetValue(Accessibility.NameProperty))) || String.IsNullOrWhiteSpace((string)(Element.GetValue(Accessibility.HintProperty)))) ? "" : ". ", (string)Element.GetValue(Accessibility.NameProperty), (string)Element.GetValue(Accessibility.HintProperty));
+			var elemValue = string.Join((String.IsNullOrWhiteSpace((string)(Element.GetValue(AutomationProperties.NameProperty))) || String.IsNullOrWhiteSpace((string)(Element.GetValue(AutomationProperties.HelpTextProperty)))) ? "" : ". ", (string)Element.GetValue(AutomationProperties.NameProperty), (string)Element.GetValue(AutomationProperties.HelpTextProperty));
 
 			if (!string.IsNullOrWhiteSpace(elemValue))
 				textView.Hint = elemValue;
@@ -290,6 +290,10 @@ namespace Xamarin.Forms.Platform.Android
 			_container = container;
 
 			Control = control;
+			if (Control.Id == NoId)
+			{
+				Control.Id = Platform.GenerateViewId();
+			}
 
 			AView toAdd = container == this ? control : (AView)container;
 			AddView(toAdd, LayoutParams.MatchParent);
@@ -305,13 +309,13 @@ namespace Xamarin.Forms.Platform.Android
 			if (Element == null || Control == null)
 				return;
 
-			var elemValue = (VisualElement)Element.GetValue(Accessibility.LabeledByProperty);
+			var elemValue = (VisualElement)Element.GetValue(AutomationProperties.LabeledByProperty);
 
 			if (elemValue != null)
 			{
 				var id = Control.Id;
-				if (id == -1)
-					id = Control.Id = FormsAppCompatActivity.GetUniqueId();
+				if (id == NoId)
+					id = Control.Id = Platform.GenerateViewId();
 
 				var renderer = elemValue?.GetRenderer();
 				renderer?.SetLabelFor(id);

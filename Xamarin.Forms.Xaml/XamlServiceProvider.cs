@@ -10,7 +10,7 @@ namespace Xamarin.Forms.Xaml.Internals
 	{
 		readonly Dictionary<Type, object> services = new Dictionary<Type, object>();
 
-		internal XamlServiceProvider(INode node, HydratationContext context)
+		internal XamlServiceProvider(INode node, HydrationContext context)
 		{
 			object targetObject;
 			if (node != null && node.Parent != null && context.Values.TryGetValue(node.Parent, out targetObject))
@@ -91,7 +91,7 @@ namespace Xamarin.Forms.Xaml.Internals
 
 	class XamlValueTargetProvider : IProvideParentValues, IProvideValueTarget
 	{
-		public XamlValueTargetProvider(object targetObject, INode node, HydratationContext context, object targetProperty)
+		public XamlValueTargetProvider(object targetObject, INode node, HydrationContext context, object targetProperty)
 		{
 			Context = context;
 			Node = node;
@@ -101,9 +101,9 @@ namespace Xamarin.Forms.Xaml.Internals
 
 		INode Node { get; }
 
-		HydratationContext Context { get; }
+		HydrationContext Context { get; }
 		public object TargetObject { get; }
-		public object TargetProperty { get; } = null;
+		public object TargetProperty { get; internal set; } = null;
 
 		IEnumerable<object> IProvideParentValues.ParentObjects
 		{
@@ -137,7 +137,7 @@ namespace Xamarin.Forms.Xaml.Internals
 		readonly object[] objectAndParents;
 		readonly object targetProperty;
 
-		[Obsolete("TargetProperty is now supported, use it")]
+		[Obsolete("SimpleValueTargetProvider(object[] objectAndParents) is obsolete as of version 2.3.4. Please use SimpleValueTargetProvider(object[] objectAndParents, object targetProperty) instead.")]
 		public SimpleValueTargetProvider(object[] objectAndParents) : this (objectAndParents, null)
 		{
 		}

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using Xamarin.Forms.Internals;
 
@@ -172,7 +173,8 @@ namespace Xamarin.Forms
 			return GetContext(targetProperty) == null;
 		}
 
-		internal object[] GetValues(BindableProperty property0, BindableProperty property1)
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public object[] GetValues(BindableProperty property0, BindableProperty property1)
 		{
 			var values = new object[2];
 
@@ -298,9 +300,9 @@ namespace Xamarin.Forms
 		internal void SetDynamicResource(BindableProperty property, string key, bool fromStyle)
 		{
 			if (property == null)
-				throw new ArgumentNullException("property");
+				throw new ArgumentNullException(nameof(property));
 			if (string.IsNullOrEmpty(key))
-				throw new ArgumentNullException("key");
+				throw new ArgumentNullException(nameof(key));
 
 			BindablePropertyContext context = null;
 			if (fromStyle && (context = GetContext(property)) != null && (context.Attributes & BindableContextAttributes.IsDefaultValue) == 0 &&
@@ -363,9 +365,10 @@ namespace Xamarin.Forms
 				value = property.CoerceValue(this, value);
 
 			BindablePropertyContext context = GetOrCreateContext(property);
-			if (manuallySet)
+			if (manuallySet) {
 				context.Attributes |= BindableContextAttributes.IsManuallySet;
-			else
+				context.Attributes &= ~BindableContextAttributes.IsSetFromStyle;
+			} else
 				context.Attributes &= ~BindableContextAttributes.IsManuallySet;
 
 			if (fromStyle)
@@ -550,7 +553,7 @@ namespace Xamarin.Forms
 			bool clearOneWayBindings = (attributes & SetValueFlags.ClearOneWayBindings) != 0;
 			bool clearTwoWayBindings = (attributes & SetValueFlags.ClearTwoWayBindings) != 0;
 
-			bool same = Equals(value, original);
+			bool same = ReferenceEquals(context.Property, BindingContextProperty) ? ReferenceEquals(value, original) : Equals(value, original);
 			if (!silent && (!same || raiseOnEqual))
 			{
 				if (property.PropertyChanging != null)

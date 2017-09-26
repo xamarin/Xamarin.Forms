@@ -20,6 +20,8 @@
     <RestorePackages>true</RestorePackages>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <AndroidTlsProvider>
+    </AndroidTlsProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,8 +32,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>
-    </NoWarn>
+    <NoWarn>CS0109</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -100,9 +101,15 @@
     </Compile>
     <Compile Include="AndroidApplicationLifecycleState.cs" />
     <Compile Include="AndroidTitleBarVisibility.cs" />
+    <Compile Include="AppCompat\FrameRenderer.cs" />
+    <Compile Include="ButtonBackgroundTracker.cs" />
+    <Compile Include="Extensions\JavaObjectExtensions.cs" />
+    <Compile Include="FastRenderers\AutomationPropertiesProvider.cs" />
+    <Compile Include="FastRenderers\ButtonRenderer.cs" />
     <Compile Include="AppCompat\FormsViewPager.cs" />
     <Compile Include="AppCompat\FragmentContainer.cs" />
-    <Compile Include="AppCompat\FrameRenderer.cs" />
+    <Compile Include="FastRenderers\EffectControlProvider.cs" />
+    <Compile Include="FastRenderers\FrameRenderer.cs" />
     <Compile Include="AppCompat\IManageFragments.cs" />
     <Compile Include="AppCompat\MasterDetailContainer.cs" />
     <Compile Include="AppCompat\Platform.cs" />
@@ -118,6 +125,10 @@
     <Compile Include="ExportCellAttribute.cs" />
     <Compile Include="ExportImageSourceHandlerAttribute.cs" />
     <Compile Include="ExportRendererAttribute.cs" />
+    <Compile Include="GestureManager.cs" />
+    <Compile Include="FastRenderers\LabelRenderer.cs" />
+    <Compile Include="FastRenderers\VisualElementRenderer.cs" />
+    <Compile Include="Flags.cs" />
     <Compile Include="FormsApplicationActivity.cs" />
     <Compile Include="AndroidActivity.cs" />
     <Compile Include="AndroidTicker.cs" />
@@ -156,8 +167,7 @@
     <Compile Include="IStartActivityForResult.cs" />
     <Compile Include="Renderers\ConditionalFocusLayout.cs" />
     <Compile Include="Renderers\DescendantFocusToggler.cs" />
-    <Compile Include="Renderers\EditorEditText.cs" />
-    <Compile Include="Renderers\EntryEditText.cs" />
+    <Compile Include="Renderers\FormsEditText.cs" />
     <Compile Include="Renderers\FileImageSourceHandler.cs" />
     <Compile Include="Renderers\FormattedStringExtensions.cs" />
     <Compile Include="Renderers\FormsImageView.cs" />
@@ -174,14 +184,15 @@
     <Compile Include="AppCompat\ViewRenderer.cs" />
     <Compile Include="Renderers\LocalizedDigitsKeyListener.cs" />
     <Compile Include="Renderers\MasterDetailContainer.cs" />
+    <Compile Include="Renderers\MotionEventHelper.cs" />
     <Compile Include="Renderers\PageContainer.cs" />
     <Compile Include="Renderers\ScrollViewContainer.cs" />
     <Compile Include="Renderers\StreamImagesourceHandler.cs" />
     <Compile Include="Renderers\ToolbarButton.cs" />
     <Compile Include="Renderers\ToolbarImageButton.cs" />
+    <Compile Include="Renderers\ViewCellExtensions.cs" />
     <Compile Include="Renderers\ViewGroupExtensions.cs" />
     <Compile Include="TapGestureHandler.cs" />
-    <Compile Include="TextViewExtensions.cs" />
     <Compile Include="TextColorSwitcher.cs" />
     <Compile Include="ViewInitializedEventArgs.cs" />
     <Compile Include="VisualElementChangedEventArgs.cs" />
@@ -245,6 +256,10 @@
     <Compile Include="Extensions\NativeBindingExtensions.cs" />
     <Compile Include="NativeValueConverterService.cs" />
     <Compile Include="NativeBindingservice.cs" />
+    <Compile Include="Renderers\GroupedListViewAdapter.cs" />
+    <Compile Include="FastRenderers\ImageRenderer.cs" />
+    <Compile Include="Extensions\ImageViewExtensions.cs" />
+    <Compile Include="Extensions\TextViewExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

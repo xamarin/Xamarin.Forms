@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using UIKit;
 using Xamarin.Forms.Internals;
 using static Xamarin.Forms.PlatformConfiguration.iOSSpecific.Page;
@@ -20,8 +21,7 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _loaded;
 		Size _queuedSize;
 
-		IPageController PageController => Element as IPageController;
-		IElementController ElementController => Element as IElementController;
+		Page Page => Element as Page;
 
 		public override UIViewController SelectedViewController
 		{
@@ -99,14 +99,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void ViewDidAppear(bool animated)
 		{
-			PageController.SendAppearing();
+			Page.SendAppearing();
 			base.ViewDidAppear(animated);
 		}
 
 		public override void ViewDidDisappear(bool animated)
 		{
 			base.ViewDidDisappear(animated);
-			PageController.SendDisappearing();
+			Page.SendDisappearing();
 		}
 
 		public override void ViewDidLayoutSubviews()
@@ -123,7 +123,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			var frame = View.Frame;
 			var tabBarFrame = TabBar.Frame;
-			PageController.ContainerArea = new Rectangle(0, 0, frame.Width, frame.Height - tabBarFrame.Height);
+			Page.ContainerArea = new Rectangle(0, 0, frame.Width, frame.Height - tabBarFrame.Height);
 
 			if (!_queuedSize.IsZero)
 			{
@@ -138,7 +138,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (disposing)
 			{
-				PageController.SendDisappearing();
+				Page.SendDisappearing();
 				Tabbed.PropertyChanged -= OnPropertyChanged;
 				Tabbed.PagesChanged -= OnPagesChanged;
 				FinishedCustomizingViewControllers -= HandleFinishedCustomizingViewControllers;
@@ -266,9 +266,9 @@ namespace Xamarin.Forms.Platform.iOS
 		void SetControllers()
 		{
 			var list = new List<UIViewController>();
-			for (var i = 0; i < ElementController.LogicalChildren.Count; i++)
+			for (var i = 0; i < Element.LogicalChildren.Count; i++)
 			{
-				var child = ElementController.LogicalChildren[i];
+				var child = Element.LogicalChildren[i];
 				var v = child as VisualElement;
 				if (v == null)
 					continue;
@@ -367,7 +367,7 @@ namespace Xamarin.Forms.Platform.iOS
 				var originalIndex = -1;
 				if (int.TryParse(viewControllers[i].TabBarItem.Tag.ToString(), out originalIndex))
 				{
-					var page = (Page)((IPageController)Tabbed).InternalChildren[originalIndex];
+					var page = (Page)Tabbed.InternalChildren[originalIndex];
 					TabbedPage.SetIndex(page, i);
 				}
 			}
@@ -375,7 +375,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateCurrentPage()
 		{
-			var count = ((IPageController)Tabbed).InternalChildren.Count;
+			var count = Tabbed.InternalChildren.Count;
 			var index = (int)SelectedIndex;
 			((TabbedPage)Element).CurrentPage = index >= 0 && index < count ? Tabbed.GetPageByIndex(index) : null;
 		}
@@ -385,13 +385,13 @@ namespace Xamarin.Forms.Platform.iOS
 			VisualElementRenderer<VisualElement>.RegisterEffect(effect, View);
 		}
 
-		void SetTabBarItem(IVisualElementRenderer renderer)
+		async void SetTabBarItem(IVisualElementRenderer renderer)
 		{
 			var page = renderer.Element as Page;
 			if(page == null)
 				throw new InvalidCastException($"{nameof(renderer)} must be a {nameof(Page)} renderer.");
 
-			var icons = GetIcon(page);
+			var icons = await GetIcon(page);
 			renderer.ViewController.TabBarItem = new UITabBarItem(page.Title, icons?.Item1, icons?.Item2)
 			{
 				Tag = Tabbed.Children.IndexOf(page),
@@ -408,11 +408,12 @@ namespace Xamarin.Forms.Platform.iOS
 		/// A tuple containing as item1: the unselected version of the icon, item2: the selected version of the icon (item2 can be null),
 		/// or null if no icon should be set.
 		/// </returns>
-		protected virtual Tuple<UIImage, UIImage> GetIcon(Page page)
+		protected virtual async Task<Tuple<UIImage, UIImage>> GetIcon(Page page)
 		{
-		    if (!string.IsNullOrEmpty(page.Icon))
+		    if (!string.IsNullOrEmpty(page.Icon?.File))
 		    {
-		        var icon = new UIImage(page.Icon);
+				var source = Internals.Registrar.Registered.GetHandler<IImageSourceHandler>(page.Icon.GetType());
+				var icon = await source.LoadImageAsync(page.Icon);
 		        return Tuple.Create(icon, (UIImage)null);
 		    }
 		

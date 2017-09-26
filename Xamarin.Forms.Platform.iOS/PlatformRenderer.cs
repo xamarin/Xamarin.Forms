@@ -1,3 +1,5 @@
+using System;
+using System.Diagnostics;
 using UIKit;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 
@@ -13,9 +15,26 @@ namespace Xamarin.Forms.Platform.iOS
 
 			View.BackgroundColor = UIColor.White;
 			View.AddSubview(modal.ViewController.View);
+			TransitioningDelegate = modal.ViewController.TransitioningDelegate;
 			AddChildViewController(modal.ViewController);
 
 			modal.ViewController.DidMoveToParentViewController(this);
+		}
+
+		public override void DismissViewController(bool animated, Action completionHandler)
+		{
+			if (PresentedViewController == null)
+			{
+				// After dismissing a UIDocumentMenuViewController, (for instance, if a WebView with an Upload button
+				// is asking the user for a source (camera roll, etc.)), the view controller accidentally calls dismiss
+				// again on itself before presenting the UIImagePickerController; this leaves the UIImagePickerController
+				// without an anchor to the view hierarchy and it doesn't show up. This appears to be an iOS bug.
+
+				// We can work around it by ignoring the dismiss call when PresentedViewController is null. 
+				return;
+			}
+
+			base.DismissViewController(animated, completionHandler);
 		}
 
 		public override UIInterfaceOrientationMask GetSupportedInterfaceOrientations()
@@ -24,7 +43,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				return ChildViewControllers[0].GetSupportedInterfaceOrientations();
 			}
-
+			
 			return base.GetSupportedInterfaceOrientations();
 		}
 

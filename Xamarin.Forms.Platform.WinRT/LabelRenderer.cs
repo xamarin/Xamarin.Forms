@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using Windows.Foundation;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
 
@@ -17,7 +18,7 @@ namespace Xamarin.Forms.Platform.WinRT
 	{
 		public static Run ToRun(this Span span)
 		{
-			var run = new Run { Text = span.Text };
+			var run = new Run { Text = span.Text ?? string.Empty };
 
 			if (span.ForegroundColor != Color.Default)
 				run.Foreground = span.ForegroundColor.ToBrush();
@@ -35,6 +36,19 @@ namespace Xamarin.Forms.Platform.WinRT
 	{
 		bool _fontApplied;
 		bool _isInitiallyDefault;
+		SizeRequest _perfectSize;
+		bool _perfectSizeValid;
+
+		protected override AutomationPeer OnCreateAutomationPeer()
+		{
+			// We need an automation peer so we can interact with this in automated tests
+			if (Control == null)
+			{
+				return new FrameworkElementAutomationPeer(this);
+			}
+
+			return new FrameworkElementAutomationPeer(Control);
+		}
 
 		protected override Windows.Foundation.Size ArrangeOverride(Windows.Foundation.Size finalSize)
 		{
@@ -59,6 +73,45 @@ namespace Xamarin.Forms.Platform.WinRT
 			rect.Width = finalSize.Width;
 			Control.Arrange(rect);
 			return finalSize;
+		}
+
+		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
+		{
+			if (!_perfectSizeValid)
+			{
+				_perfectSize = base.GetDesiredSize(double.PositiveInfinity, double.PositiveInfinity);
+				_perfectSize.Minimum = new Size(Math.Min(10, _perfectSize.Request.Width), _perfectSize.Request.Height);
+				_perfectSizeValid = true;
+			}
+
+			var widthFits = widthConstraint >= _perfectSize.Request.Width;
+			var heightFits = heightConstraint >= _perfectSize.Request.Height;
+
+			if (widthFits && heightFits)
+				return _perfectSize;
+
+			var result = base.GetDesiredSize(widthConstraint, heightConstraint);
+			var tinyWidth = Math.Min(10, result.Request.Width);
+			result.Minimum = new Size(tinyWidth, result.Request.Height);
+
+			if (widthFits || Element.LineBreakMode == LineBreakMode.NoWrap)
+				return result;
+
+			bool containerIsNotInfinitelyWide = !double.IsInfinity(widthConstraint);
+
+			if (containerIsNotInfinitelyWide)
+			{
+				bool textCouldHaveWrapped = Element.LineBreakMode == LineBreakMode.WordWrap || Element.LineBreakMode == LineBreakMode.CharacterWrap;
+				bool textExceedsContainer = result.Request.Width > widthConstraint;
+
+				if (textExceedsContainer || textCouldHaveWrapped)
+				{
+					var expandedWidth = Math.Max(tinyWidth, widthConstraint);
+					result.Request = new Size(expandedWidth, result.Request.Height);
+				}
+			}
+
+			return result;
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Label> e)
@@ -100,6 +153,8 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		void UpdateAlign(TextBlock textBlock)
 		{
+			_perfectSizeValid = false;
+
 			if (textBlock == null)
 				return;
 
@@ -129,6 +184,8 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		void UpdateFont(TextBlock textBlock)
 		{
+			_perfectSizeValid = false;
+
 			if (textBlock == null)
 				return;
 
@@ -146,6 +203,8 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		void UpdateLineBreakMode(TextBlock textBlock)
 		{
+			_perfectSizeValid = false;
+
 			if (textBlock == null)
 				return;
 
@@ -164,6 +223,7 @@ namespace Xamarin.Forms.Platform.WinRT
 					textBlock.TextWrapping = TextWrapping.Wrap;
 					break;
 				case LineBreakMode.HeadTruncation:
+					// TODO: This truncates at the end.
 					textBlock.TextTrimming = TextTrimming.WordEllipsis;
 					textBlock.TextWrapping = TextWrapping.NoWrap;
 					break;
@@ -172,6 +232,7 @@ namespace Xamarin.Forms.Platform.WinRT
 					textBlock.TextWrapping = TextWrapping.NoWrap;
 					break;
 				case LineBreakMode.MiddleTruncation:
+					// TODO: This truncates at the end.
 					textBlock.TextTrimming = TextTrimming.WordEllipsis;
 					textBlock.TextWrapping = TextWrapping.NoWrap;
 					break;
@@ -182,6 +243,8 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		void UpdateText(TextBlock textBlock)
 		{
+			_perfectSizeValid = false;
+
 			if (textBlock == null)
 				return;
 

@@ -193,11 +193,12 @@ namespace Xamarin.Forms.Platform.Android
 
 				IMenuItem item = menu.Add(Menu.None, i, Menu.None, action.Text);
 
-				if (action.Icon != null)
+				var icon = action.Icon;
+				if (icon != null)
 				{
-					var iconBitmap = new BitmapDrawable(_context.Resources, ResourceManager.GetBitmap(_context.Resources, action.Icon));
-					if (iconBitmap != null && iconBitmap.Bitmap != null)
-						item.SetIcon(_context.Resources.GetDrawable(action.Icon));
+					Drawable iconDrawable = _context.Resources.GetFormsDrawable(icon);
+					if (iconDrawable != null)
+						item.SetIcon(iconDrawable);
 				}
 
 				action.PropertyChanged += changed;
@@ -264,7 +265,8 @@ namespace Xamarin.Forms.Platform.Android
 		void OnContextActionCommandCanExecuteChanged(object sender, EventArgs eventArgs)
 		{
 			_actionModeNeedsUpdates = true;
-			_actionMode.Invalidate();
+			_actionMode?.Invalidate();
+			_supportActionMode?.Invalidate();
 		}
 
 		void OnContextActionPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -294,7 +296,8 @@ namespace Xamarin.Forms.Platform.Android
 		void OnContextItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			_actionModeNeedsUpdates = true;
-			_actionMode.Invalidate();
+			_actionMode?.Invalidate();
+			_supportActionMode?.Invalidate();
 		}
 
 		void OnDestroyActionModeImpl()

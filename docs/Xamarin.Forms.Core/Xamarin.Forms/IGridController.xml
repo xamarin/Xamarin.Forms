@@ -7,7 +7,7 @@
   </AssemblyInfo>
   <Interfaces />
   <Docs>
-    <summary>To be added.</summary>
+    <summary>For internal use by platform renderers.</summary>
     <remarks>To be added.</remarks>
   </Docs>
   <Members>
@@ -25,8 +25,8 @@
         <Parameter Name="trigger" Type="Xamarin.Forms.Internals.InvalidationTrigger" />
       </Parameters>
       <Docs>
-        <param name="trigger">To be added.</param>
-        <summary>To be added.</summary>
+        <param name="trigger">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by platform renderers.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>

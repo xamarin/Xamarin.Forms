@@ -12,7 +12,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	internal sealed class ListViewAdapter : CellAdapter
+	internal class ListViewAdapter : CellAdapter
 	{
 		const int DefaultGroupHeaderTemplateId = 0;
 		const int DefaultItemTemplateId = 1;
@@ -22,10 +22,15 @@ namespace Xamarin.Forms.Platform.Android
 		internal static readonly BindableProperty IsSelectedProperty = BindableProperty.CreateAttached("IsSelected", typeof(bool), typeof(Cell), false);
 
 		readonly Context _context;
-		readonly ListView _listView;
+		protected readonly ListView _listView;
 		readonly AListView _realListView;
 		readonly Dictionary<DataTemplate, int> _templateToId = new Dictionary<DataTemplate, int>();
-		int _dataTemplateIncrementer = 2; // lets start at not 0 because
+		int _dataTemplateIncrementer = 2; // lets start at not 0 because ... 
+
+		// We will use _dataTemplateIncrementer to get the proper ViewType key for the item's DataTemplate and store these keys in  _templateToId.
+		// If an item does _not_ use a DataTemplate, then the ViewType key will be DefaultItemTemplateId (1) or DefaultGroupHeaderTemplateId (0).
+		// To prevent a conflict in the event that a ListView supports both templates and non-templates, we will start the DataTemplate key at 2.
+
 		int _listCount = -1; // -1 we need to get count from the list
 		Cell _enabledCheckCell;
 
@@ -34,7 +39,7 @@ namespace Xamarin.Forms.Platform.Android
 		WeakReference<Cell> _selectedCell;
 
 		IListViewController Controller => _listView;
-		ITemplatedItemsView<Cell> TemplatedItemsView => _listView;
+		protected ITemplatedItemsView<Cell> TemplatedItemsView => _listView;
 
 		public ListViewAdapter(Context context, AListView realListView, ListView listView) : base(context)
 		{
@@ -109,7 +114,13 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override int ViewTypeCount
 		{
-			get { return 20; }
+			get
+			{
+				// We have a documented limit of 20 templates on Android.
+				// ViewTypes are selected on a zero-based index, so this count must be at least 20 + 1.
+				// Plus, we arbitrarily increased the index of the DataTemplate index by 2 (see _dataTemplateIncrementer).
+				return 23;
+			}
 		}
 
 		public override bool AreAllItemsEnabled()
@@ -207,7 +218,7 @@ namespace Xamarin.Forms.Platform.Android
 			else
 				layout = new ConditionalFocusLayout(_context) { Orientation = Orientation.Vertical };
 
-			if (cachingStrategy == ListViewCachingStrategy.RecycleElement && convertView != null)
+			if (((cachingStrategy & ListViewCachingStrategy.RecycleElement) != 0) && convertView != null)
 			{
 				var boxedCell = convertView as INativeElementView;
 				if (boxedCell == null)
@@ -310,7 +321,8 @@ namespace Xamarin.Forms.Platform.Android
 				return leftOver > 0;
 			}
 
-			if (((IListViewController)list).CachingStrategy == ListViewCachingStrategy.RecycleElement)
+			var strategy = ((IListViewController)list).CachingStrategy;
+			if ((strategy & ListViewCachingStrategy.RecycleElement) != 0)
 			{
 				if (_enabledCheckCell == null)
 					_enabledCheckCell = GetCellForPosition(position);
@@ -348,6 +360,8 @@ namespace Xamarin.Forms.Platform.Android
 					_lastSelected.Dispose();
 					_lastSelected = null;
 				}
+
+				DisposeCells();
 			}
 
 			base.Dispose(disposing);
@@ -362,7 +376,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			Cell cell = null;
 
-			if (Controller.CachingStrategy == ListViewCachingStrategy.RecycleElement)
+			if ((Controller.CachingStrategy & ListViewCachingStrategy.RecycleElement) != 0)
 			{
 				AView cellOwner = view;
 				var layout = cellOwner as ConditionalFocusLayout;
@@ -381,6 +395,39 @@ namespace Xamarin.Forms.Platform.Android
 				_fromNative = true;
 			Select(position, view);
 			Controller.NotifyRowTapped(position, cell);
+		}
+
+		void DisposeCells()
+		{
+			var cellCount = _realListView?.ChildCount ?? 0;
+			for (int i = 0; i < cellCount; i++)
+			{
+				var layout = _realListView.GetChildAt(i) as ConditionalFocusLayout;
+
+				// Headers and footers will be skipped. They are disposed elsewhere.
+				if (layout == null || layout.IsDisposed())
+					continue;
+
+				var renderedView = layout?.GetChildAt(0);
+
+				var element = (renderedView as INativeElementView)?.Element;
+
+				var view = (element as ViewCell)?.View;
+
+				if (view != null)
+				{
+					var renderer = Platform.GetRenderer(view);
+
+					if (renderer == renderedView)
+						element.ClearValue(Platform.RendererProperty);
+
+					renderer?.Dispose();
+					renderer = null;
+				}
+
+				renderedView?.Dispose();
+				renderedView = null;
+			}
 		}
 
 		// TODO: We can optimize this by storing the last position, group index and global index
@@ -415,7 +462,8 @@ namespace Xamarin.Forms.Platform.Android
 				if (global == position || cells.Count > 0)
 				{
 					//Always create a new cell if we are using the RecycleElement strategy
-					var headerCell = _listView.CachingStrategy == ListViewCachingStrategy.RecycleElement ? GetNewGroupHeaderCell(group) : group.HeaderContent;
+					var recycleElement = (_listView.CachingStrategy & ListViewCachingStrategy.RecycleElement) != 0;
+					var headerCell = recycleElement ? GetNewGroupHeaderCell(group) : group.HeaderContent;
 					cells.Add(headerCell);
 
 					if (cells.Count == take)
@@ -514,6 +562,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		void SelectItem(object item)
 		{
+			if (_listView == null)
+				return;
+
 			int position = TemplatedItemsView.TemplatedItems.GetGlobalIndexOfItem(item);
 			AView view = null;
 			if (position != -1)
@@ -527,7 +578,8 @@ namespace Xamarin.Forms.Platform.Android
 			bline = null;
 			if (cellIsBeingReused)
 				return;
-			var makeBline = _listView.SeparatorVisibility == SeparatorVisibility.Default || isHeader && !nextCellIsHeader;
+			bool isSeparatorVisible = _listView.SeparatorVisibility == SeparatorVisibility.Default;
+			var makeBline = isSeparatorVisible || isHeader && isSeparatorVisible && !nextCellIsHeader;
 			if (makeBline)
 			{
 				bline = new AView(_context) { LayoutParameters = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, 1) };
@@ -595,9 +647,10 @@ namespace Xamarin.Forms.Platform.Android
 			Header
 		}
 
-		void InvalidateCount()
+		protected virtual void InvalidateCount()
 		{
 			_listCount = -1;
 		}
 	}
+
 }
