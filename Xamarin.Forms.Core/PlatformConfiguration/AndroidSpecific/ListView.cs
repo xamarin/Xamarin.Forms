@@ -26,5 +26,28 @@
 			SetIsFastScrollEnabled(config.Element, value);
 			return config;
 		}
+
+		public static readonly BindableProperty IsNestedScrollingEnabledProperty = BindableProperty.Create("IsNestedScrollingEnabled", typeof(bool), typeof(ListView), false);
+
+		public static bool GetIsNestedScrollingEnabled(BindableObject element)
+		{
+			return (bool)element.GetValue(IsNestedScrollingEnabledProperty);
+		}
+
+		public static void SetIsNestedScrollingEnabled(BindableObject element, bool value)
+		{
+			element.SetValue(IsNestedScrollingEnabledProperty, value);
+		}
+
+		public static bool IsNestedScrollingEnabled(this IPlatformElementConfiguration<Android, FormsElement> config)
+		{
+			return GetIsNestedScrollingEnabled(config.Element);
+		}
+
+		public static IPlatformElementConfiguration<Android, FormsElement> SetIsNestedScrollingEnabled(this IPlatformElementConfiguration<Android, FormsElement> config, bool value)
+		{
+			SetIsNestedScrollingEnabled(config.Element, value);
+			return config;
+		}
 	}
 }

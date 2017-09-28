@@ -8,6 +8,7 @@ using AView = Android.Views.View;
 using Xamarin.Forms.Internals;
 using System;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
+using Android.OS;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -150,8 +151,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateFooter();
 				UpdateIsSwipeToRefreshEnabled();
 				UpdateFastScrollEnabled();
-
-				
+				UpdateNestedScrollingEnabled();				
 			}
 		}
 
@@ -186,6 +186,8 @@ namespace Xamarin.Forms.Platform.Android
 				_adapter.NotifyDataSetChanged();
 			else if (e.PropertyName == PlatformConfiguration.AndroidSpecific.ListView.IsFastScrollEnabledProperty.PropertyName)
 				UpdateFastScrollEnabled();
+			else if (e.PropertyName == PlatformConfiguration.AndroidSpecific.ListView.IsNestedScrollingEnabledProperty.PropertyName)
+				UpdateNestedScrollingEnabled();
 		}
 
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)
@@ -352,6 +354,15 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (Control != null) {
 				Control.FastScrollEnabled = Element.OnThisPlatform ().IsFastScrollEnabled ();
+			}
+		}
+
+		void UpdateNestedScrollingEnabled()
+		{
+			if (Control != null)
+			{
+				if (Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
+					Control.NestedScrollingEnabled = Element.OnThisPlatform().IsNestedScrollingEnabled();
 			}
 		}
 
