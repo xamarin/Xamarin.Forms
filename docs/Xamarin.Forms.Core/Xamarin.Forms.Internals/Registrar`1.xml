@@ -1,4 +1,4 @@
-<Type Name="Registrar&lt;TRegistrable&gt;" FullName="Xamarin.Forms.Internals.Registrar&lt;TRegistrable&gt;">
+<<Type Name="Registrar&lt;TRegistrable&gt;" FullName="Xamarin.Forms.Internals.Registrar&lt;TRegistrable&gt;">
   <TypeSignature Language="C#" Value="public class Registrar&lt;TRegistrable&gt; where TRegistrable : class" />
   <TypeSignature Language="ILAsm" Value=".class public auto ansi beforefieldinit Registrar`1&lt;class TRegistrable&gt; extends System.Object" />
   <AssemblyInfo>
@@ -68,29 +68,9 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-    <Member MemberName="GetHandlerType">
-      <MemberSignature Language="C#" Value="public Type GetHandlerType (Type viewType);" />
-      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance class System.Type GetHandlerType(class System.Type viewType) cil managed" />
-      <MemberType>Method</MemberType>
-      <AssemblyInfo>
-        <AssemblyVersion>2.0.0.0</AssemblyVersion>
-      </AssemblyInfo>
-      <ReturnValue>
-        <ReturnType>System.Type</ReturnType>
-      </ReturnValue>
-      <Parameters>
-        <Parameter Name="viewType" Type="System.Type" />
-      </Parameters>
-      <Docs>
-        <param name="viewType">For internal use by the Xamarin.Forms platform.</param>
-        <summary>For internal use by the Xamarin.Forms platform.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
     <Member MemberName="GetHandlerForObject&lt;TOut&gt;">
       <MemberSignature Language="C#" Value="public TOut GetHandlerForObject&lt;TOut&gt; (object obj) where TOut : TRegistrable;" />
-      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance !!TOut GetHandlerForObject&lt;(!TRegistrable) TOut&gt;(class System.Object obj) cil managed" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance !!TOut GetHandlerForObject&lt;(!TRegistrable) TOut&gt;(object obj) cil managed" />
       <MemberType>Method</MemberType>
       <AssemblyInfo>
         <AssemblyVersion>2.0.0.0</AssemblyVersion>
@@ -116,9 +96,29 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
+    <Member MemberName="GetHandlerType">
+      <MemberSignature Language="C#" Value="public Type GetHandlerType (Type viewType);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance class System.Type GetHandlerType(class System.Type viewType) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Type</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="viewType" Type="System.Type" />
+      </Parameters>
+      <Docs>
+        <param name="viewType">For internal use by the Xamarin.Forms platform.</param>
+        <summary>For internal use by the Xamarin.Forms platform.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
     <Member MemberName="GetHandlerTypeForObject">
       <MemberSignature Language="C#" Value="public Type GetHandlerTypeForObject (object obj);" />
-      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance class System.Type GetHandlerTypeForObject(class System.Object obj) cil managed" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance class System.Type GetHandlerTypeForObject(object obj) cil managed" />
       <MemberType>Method</MemberType>
       <AssemblyInfo>
         <AssemblyVersion>2.0.0.0</AssemblyVersion>
