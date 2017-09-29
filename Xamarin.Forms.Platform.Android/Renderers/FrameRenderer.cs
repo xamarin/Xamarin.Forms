@@ -38,25 +38,25 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (e.NewElement != null && e.OldElement == null)
 			{
-				UpdateBackground();
-				UpdateCornerRadius();
+				this.SetBackground(new FrameDrawable(Element));
 				_motionEventHelper.UpdateElement(e.NewElement);
 			}
 		}
-
-		void UpdateBackground()
+		
+		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			this.SetBackground(new FrameDrawable(Element));
-		}
+			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
+			{
+				//prevent update bg color by base impl
+				return;
+			}
 
-		void UpdateCornerRadius()
-		{
-			this.SetBackground(new FrameDrawable(Element));
+			base.OnElementPropertyChanged(sender, e);
 		}
 
 		class FrameDrawable : Drawable
 		{
-			readonly Frame _frame;
+			Frame _frame;
 
 			bool _isDisposed;
 			Bitmap _normalBitmap;
@@ -126,7 +126,11 @@ namespace Xamarin.Forms.Platform.Android
 						_normalBitmap.Dispose();
 						_normalBitmap = null;
 					}
-
+					if (_frame != null)
+					{
+						_frame.PropertyChanged -= FrameOnPropertyChanged;
+						_frame = null;
+					}
 					_isDisposed = true;
 				}
 
