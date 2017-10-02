@@ -79,8 +79,8 @@ namespace Xamarin.Forms.Platform.macOS.Extensions
 
 				for (int i = 0; i < accelerator.Modifiers.Count(); i++)
 				{
-					var modifierMast = accelerator.Modifiers.ElementAt(i).ToLower();
-					switch (modifierMast)
+					var modifierMask = accelerator.Modifiers.ElementAt(i).ToLower();
+					switch (modifierMask)
 					{
 						case "ctrl":
 							nsMenuItem.KeyEquivalentModifierMask = nsMenuItem.KeyEquivalentModifierMask | NSEventModifierMask.ControlKeyMask;
