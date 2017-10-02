@@ -71,15 +71,15 @@ namespace Xamarin.Forms.Platform.macOS.Extensions
 			if (accelerator == null)
 				return;
 
-			bool hasModifierMask = accelerator.Modififiers.Count() > 1;
+			bool hasModifierMask = accelerator.Modifiers.Count() > 1;
 
 			if (hasModifierMask)
 			{
 				nsMenuItem.KeyEquivalentModifierMask = 0;
 
-				for (int i = 0; i < accelerator.Modififiers.Count(); i++)
+				for (int i = 0; i < accelerator.Modifiers.Count(); i++)
 				{
-					var modifierMast = accelerator.Modififiers.ElementAt(i).ToLower();
+					var modifierMast = accelerator.Modifiers.ElementAt(i).ToLower();
 					switch (modifierMast)
 					{
 						case "ctrl":

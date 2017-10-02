@@ -18,7 +18,7 @@ namespace Xamarin.Forms
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public IEnumerable<string> Modififiers { get; set; }
+		public IEnumerable<string> Modifiers { get; set; }
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public IEnumerable<string> Keys { get; set; }
@@ -49,7 +49,7 @@ namespace Xamarin.Forms
 							break;
 					}
 				}
-				accelarat.Modififiers = modifiers;
+				accelarat.Modifiers = modifiers;
 
 			}
 

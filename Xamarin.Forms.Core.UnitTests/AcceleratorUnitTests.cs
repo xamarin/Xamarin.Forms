@@ -49,9 +49,9 @@ namespace Xamarin.Forms.Core.UnitTests
 			var accelerator = Accelerator.FromString(shourtcut.ToString());
 
 			Assert.AreEqual(accelerator.Keys.Count(), 1);
-			Assert.AreEqual(accelerator.Modififiers.Count(), 1);
+			Assert.AreEqual(accelerator.Modifiers.Count(), 1);
 			Assert.AreEqual(accelerator.Keys.ElementAt(0), shourtcut.Key);
-			Assert.AreEqual(accelerator.Modififiers.ElementAt(0), shourtcut.Modifier);
+			Assert.AreEqual(accelerator.Modifiers.ElementAt(0), shourtcut.Modifier);
 		}
 
 
@@ -65,10 +65,10 @@ namespace Xamarin.Forms.Core.UnitTests
 			var accelerator = Accelerator.FromString(shourtCutKeyBinding);
 
 			Assert.AreEqual(accelerator.Keys.Count(), 1);
-			Assert.AreEqual(accelerator.Modififiers.Count(), 2);
+			Assert.AreEqual(accelerator.Modifiers.Count(), 2);
 			Assert.AreEqual(accelerator.Keys.ElementAt(0), key);
-			Assert.AreEqual(accelerator.Modififiers.ElementAt(0), modifier);
-			Assert.AreEqual(accelerator.Modififiers.ElementAt(1), modifier1Alt);
+			Assert.AreEqual(accelerator.Modifiers.ElementAt(0), modifier);
+			Assert.AreEqual(accelerator.Modifiers.ElementAt(1), modifier1Alt);
 		}
 
 
