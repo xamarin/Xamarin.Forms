@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (view == null)
 				throw new ArgumentNullException("view");
 
-			var rendererType = Internals.Registrar.Registered.GetHandlerType(view.GetType()) ?? typeof(ViewRenderer);
+			var rendererType = Internals.Registrar.Registered.GetHandlerTypeForObject(view) ?? typeof(ViewRenderer);
 
 			Stack<IVisualElementRenderer> renderers;
 			if (!_freeRenderers.TryGetValue(rendererType, out renderers) || renderers.Count == 0)
@@ -108,17 +108,22 @@ namespace Xamarin.Forms.Platform.MacOS
 				var child = logicalChild as VisualElement;
 				if (child != null)
 				{
-					var renderer = GetFreeRenderer(child) ?? Platform.CreateRenderer(child);
-					Platform.SetRenderer(child, renderer);
-
-					_parent.NativeView.AddSubview(renderer.NativeView);
+					if (CompressedLayout.GetIsHeadless(child)) {
+						child.IsPlatformEnabled = true;
+						FillChildrenWithRenderers(child);
+					} else {
+						var renderer = GetFreeRenderer(child) ?? Platform.CreateRenderer(child);
+						Platform.SetRenderer(child, renderer);
+						_parent.NativeView.AddSubview(renderer.NativeView);
+					}
 				}
 			}
 		}
 
 		void PushRenderer(IVisualElementRenderer renderer)
 		{
-			var rendererType = renderer.GetType();
+			var reflectableType = renderer as System.Reflection.IReflectableType;
+			var rendererType = reflectableType != null ? reflectableType.GetTypeInfo().AsType() : renderer.GetType();
 
 			Stack<IVisualElementRenderer> renderers;
 			if (!_freeRenderers.TryGetValue(rendererType, out renderers))

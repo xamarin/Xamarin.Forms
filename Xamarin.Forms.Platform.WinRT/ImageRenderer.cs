@@ -124,7 +124,7 @@ namespace Xamarin.Forms.Platform.WinRT
 			}
 
 			Control.Stretch = GetStretch(Element.Aspect);
-			if (Element.Aspect == Aspect.AspectFill) // Then Center Crop
+			if (Element.Aspect == Aspect.AspectFill || Element.Aspect == Aspect.AspectFit) // Then Center Crop
 			{
 				Control.HorizontalAlignment = HorizontalAlignment.Center;
 				Control.VerticalAlignment = VerticalAlignment.Center;
@@ -167,7 +167,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 			ImageSource source = Element.Source;
 			IImageSourceHandler handler;
-			if (source != null && (handler = Registrar.Registered.GetHandler<IImageSourceHandler>(source.GetType())) != null)
+			if (source != null && (handler = Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(source)) != null)
 			{
 				Windows.UI.Xaml.Media.ImageSource imagesource;
 

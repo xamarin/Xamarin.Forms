@@ -3,6 +3,8 @@ using Android.Views;
 using AView = Android.Views.View;
 using Xamarin.Forms.Internals;
 using System;
+using System.Linq;
+using Android.Runtime;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -53,8 +55,48 @@ namespace Xamarin.Forms.Platform.Android
 			readonly BindableProperty _unevenRows;
 			IVisualElementRenderer _view;
 			ViewCell _viewCell;
+			GestureDetector _longPressGestureDetector;
+			ListViewRenderer _listViewRenderer;
+			bool _watchForLongPress;
 
-			public ViewCellContainer(Context context, IVisualElementRenderer view, ViewCell viewCell, View parent, BindableProperty unevenRows, BindableProperty rowHeight) : base(context)
+			ListViewRenderer ListViewRenderer
+			{
+				get
+				{
+					if (_listViewRenderer != null)
+					{
+						return _listViewRenderer;
+					}
+
+					var listView = _parent as ListView;
+
+					if (listView == null)
+					{
+						return null;
+					}
+
+					_listViewRenderer = Platform.GetRenderer(listView) as ListViewRenderer;
+
+					return _listViewRenderer;
+				}
+			}
+
+			GestureDetector LongPressGestureDetector
+			{
+				get
+				{
+					if (_longPressGestureDetector != null)
+					{
+						return _longPressGestureDetector;
+					}
+
+					_longPressGestureDetector = new GestureDetector(new LongPressGestureListener(TriggerLongClick));
+					return _longPressGestureDetector;
+				}
+			}
+
+			public ViewCellContainer(Context context, IVisualElementRenderer view, ViewCell viewCell, View parent, 
+				BindableProperty unevenRows, BindableProperty rowHeight) : base(context)
 			{
 				_view = view;
 				_parent = parent;
@@ -63,7 +105,7 @@ namespace Xamarin.Forms.Platform.Android
 				_viewCell = viewCell;
 				AddView(view.View);
 				UpdateIsEnabled();
-				UpdateLongClickable();
+				UpdateWatchForLongPress();
 			}
 
 			protected bool ParentHasUnevenRows
@@ -86,6 +128,11 @@ namespace Xamarin.Forms.Platform.Android
 				if (!Enabled)
 					return true;
 
+				if (_watchForLongPress)
+				{
+					LongPressGestureDetector.OnTouchEvent(ev);
+				}
+
 				return base.OnInterceptTouchEvent(ev);
 			}
 
@@ -94,8 +141,10 @@ namespace Xamarin.Forms.Platform.Android
 				Performance.Start();
 
 				var renderer = GetChildAt(0) as IVisualElementRenderer;
-				var viewHandlerType = Registrar.Registered.GetHandlerType(cell.View.GetType()) ?? typeof(Platform.DefaultRenderer);
-				if (renderer != null && renderer.GetType() == viewHandlerType)
+				var viewHandlerType = Registrar.Registered.GetHandlerTypeForObject(cell.View) ?? typeof(Platform.DefaultRenderer);
+				var reflectableType = renderer as System.Reflection.IReflectableType;
+				var rendererType = reflectableType != null ? reflectableType.GetTypeInfo().AsType() : (renderer != null ? renderer.GetType() : typeof(System.Object));
+				if (renderer != null && rendererType == viewHandlerType)
 				{
 					Performance.Start("Reuse");
 					_viewCell = cell;
@@ -137,7 +186,7 @@ namespace Xamarin.Forms.Platform.Android
 				AddView(_view.View);
 
 				UpdateIsEnabled();
-				UpdateLongClickable();
+				UpdateWatchForLongPress();
 
 				Performance.Stop();
 			}
@@ -182,12 +231,75 @@ namespace Xamarin.Forms.Platform.Android
 				Performance.Stop();
 			}
 
-			void UpdateLongClickable()
+			void UpdateWatchForLongPress()
 			{
-				// In order for context menu long presses/clicks to work on ViewCells which have 
-				// and Clickable content, we have to make the container view LongClickable
-				// If we don't have a context menu, we don't have to worry about it
-				_view.View.LongClickable = _viewCell.ContextActions.Count > 0;
+				var vw = _view.Element as Xamarin.Forms.View;
+				if (vw == null)
+				{
+					return;
+				}
+
+				// If the view cell has any context actions and the View itself has any Tap Gestures, they're going
+				// to conflict with one another - the Tap Gesture handling will prevent the ListViewAdapter's
+				// LongClick handling from happening. So we need to watch locally for LongPress and if we see it,
+				// trigger the LongClick manually.
+				_watchForLongPress = _viewCell.ContextActions.Count > 0 
+					&& HasTapGestureRecognizers(vw);
+			}
+
+			static bool HasTapGestureRecognizers(View view)
+			{
+				return view.GestureRecognizers.Any(t => t is TapGestureRecognizer) 
+					|| view.LogicalChildren.OfType<View>().Any(HasTapGestureRecognizers);
+			}
+
+			void TriggerLongClick()
+			{
+				ListViewRenderer?.LongClickOn(this);
+			}
+
+			internal class LongPressGestureListener : Java.Lang.Object, GestureDetector.IOnGestureListener
+			{
+				readonly Action _onLongClick;
+
+				internal LongPressGestureListener(Action onLongClick)
+				{
+					_onLongClick = onLongClick;
+				}
+
+				internal LongPressGestureListener(IntPtr handle, JniHandleOwnership ownership) : base(handle, ownership)
+				{
+				}
+
+				public bool OnDown(MotionEvent e)
+				{
+					return true;
+				}
+
+				public bool OnFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY)
+				{
+					return false;
+				}
+
+				public void OnLongPress(MotionEvent e)
+				{
+					_onLongClick();
+				}
+
+				public bool OnScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY)
+				{
+					return false;
+				}
+
+				public void OnShowPress(MotionEvent e)
+				{
+					
+				}
+
+				public bool OnSingleTapUp(MotionEvent e)
+				{
+					return false;
+				}
 			}
 		}
 	}
