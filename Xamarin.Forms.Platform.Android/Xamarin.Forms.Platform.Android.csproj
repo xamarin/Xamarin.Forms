@@ -102,6 +102,7 @@
     <Compile Include="AndroidTitleBarVisibility.cs" />
     <Compile Include="AppCompat\FrameRenderer.cs" />
     <Compile Include="ButtonBackgroundTracker.cs" />
+    <Compile Include="Elevation.cs" />
     <Compile Include="Extensions\JavaObjectExtensions.cs" />
     <Compile Include="FastRenderers\AutomationPropertiesProvider.cs" />
     <Compile Include="FastRenderers\ButtonRenderer.cs" />
@@ -124,9 +125,10 @@
     <Compile Include="ExportCellAttribute.cs" />
     <Compile Include="ExportImageSourceHandlerAttribute.cs" />
     <Compile Include="ExportRendererAttribute.cs" />
-    <Compile Include="FastRenderers\GestureManager.cs" />
+    <Compile Include="GestureManager.cs" />
     <Compile Include="FastRenderers\LabelRenderer.cs" />
     <Compile Include="FastRenderers\VisualElementRenderer.cs" />
+    <Compile Include="Flags.cs" />
     <Compile Include="FormsApplicationActivity.cs" />
     <Compile Include="AndroidActivity.cs" />
     <Compile Include="AndroidTicker.cs" />

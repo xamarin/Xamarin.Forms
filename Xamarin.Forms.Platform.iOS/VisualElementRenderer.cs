@@ -17,6 +17,7 @@ using AppKit;
 using NativeView = AppKit.NSView;
 using NativeViewController = AppKit.NSViewController;
 using NativeColor = AppKit.NSColor;
+using Xamarin.Forms.Platform.macOS.Extensions;
 
 namespace Xamarin.Forms.Platform.MacOS
 #endif
@@ -225,6 +226,15 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (Element.InputTransparent || inViewCell)
 				base.MouseDown(theEvent);
 		}
+
+		public override void RightMouseUp(NSEvent theEvent)
+		{
+			var menu = Xamarin.Forms.Element.GetMenu(Element);
+			if (menu != null && NativeView != null)
+				NSMenu.PopUpContextMenu(menu.ToNSMenu(), theEvent, NativeView);
+		
+			base.RightMouseUp(theEvent);
+		}
 #endif
 
 		protected override void Dispose(bool disposing)
@@ -251,11 +261,11 @@ namespace Xamarin.Forms.Platform.MacOS
 					_packager = null;
 				}
 
-				// The ListView can create renderers and unhook them from the Element before Dispose is called.
+				// The ListView can create renderers and unhook them from the Element before Dispose is called in CalculateHeightForCell.
 				// Thus, it is possible that this work is already completed.
 				if (Element != null)
 				{
-					Platform.SetRenderer(Element, null);
+					Element.ClearValue(Platform.RendererProperty);
 					SetElement(null);
 				}
 			}

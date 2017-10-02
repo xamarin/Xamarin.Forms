@@ -191,8 +191,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				MenuItem action = ActionModeContext.ContextActions[i];
 
-				IMenuItem item = menu.Add(Menu.None, i, Menu.None, action.Text);
-
+				IMenuItem item = menu.Add(global::Android.Views.Menu.None, i,global::Android.Views.Menu.None, action.Text);
 				var icon = action.Icon;
 				if (icon != null)
 				{
@@ -265,7 +264,8 @@ namespace Xamarin.Forms.Platform.Android
 		void OnContextActionCommandCanExecuteChanged(object sender, EventArgs eventArgs)
 		{
 			_actionModeNeedsUpdates = true;
-			_actionMode.Invalidate();
+			_actionMode?.Invalidate();
+			_supportActionMode?.Invalidate();
 		}
 
 		void OnContextActionPropertyChanged(object sender, PropertyChangedEventArgs e)

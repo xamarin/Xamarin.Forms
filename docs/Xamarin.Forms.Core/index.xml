@@ -135,6 +135,8 @@
       <Type Name="AbsoluteLayout" Kind="Class" />
       <Type Name="AbsoluteLayout+IAbsoluteList`1" DisplayName="AbsoluteLayout+IAbsoluteList&lt;T&gt;" Kind="Interface" />
       <Type Name="AbsoluteLayoutFlags" Kind="Enumeration" />
+      <Type Name="Accelerator" Kind="Class" />
+      <Type Name="AcceleratorTypeConverter" Kind="Class" />
       <Type Name="ActivityIndicator" Kind="Class" />
       <Type Name="Animation" Kind="Class" />
       <Type Name="AnimationExtensions" Kind="Class" />
@@ -173,8 +175,11 @@
       <Type Name="Button+ButtonContentLayout" Kind="Class" />
       <Type Name="Button+ButtonContentLayout+ImagePosition" Kind="Enumeration" />
       <Type Name="Button+ButtonContentTypeConverter" Kind="Class" />
+      <Type Name="ButtonsMask" Kind="Enumeration" />
       <Type Name="CarouselPage" Kind="Class" />
       <Type Name="Cell" Kind="Class" />
+      <Type Name="ClickedEventArgs" Kind="Class" />
+      <Type Name="ClickGestureRecognizer" Kind="Class" />
       <Type Name="CollectionSynchronizationCallback" Kind="Delegate" />
       <Type Name="Color" Kind="Structure" />
       <Type Name="ColorTypeConverter" Kind="Class" />
@@ -182,6 +187,7 @@
       <Type Name="ColumnDefinitionCollection" Kind="Class" />
       <Type Name="Command" Kind="Class" />
       <Type Name="Command`1" DisplayName="Command&lt;T&gt;" Kind="Class" />
+      <Type Name="CompressedLayout" Kind="Class" />
       <Type Name="Condition" Kind="Class" />
       <Type Name="Configuration`2" DisplayName="Configuration&lt;TPlatform,TElement&gt;" Kind="Class" />
       <Type Name="Constraint" Kind="Class" />
@@ -315,6 +321,7 @@
       <Type Name="MasterBehavior" Kind="Enumeration" />
       <Type Name="MasterDetailPage" Kind="Class" />
       <Type Name="MeasureFlags" Kind="Enumeration" />
+      <Type Name="Menu" Kind="Class" />
       <Type Name="MenuItem" Kind="Class" />
       <Type Name="MessagingCenter" Kind="Class" />
       <Type Name="ModalEventArgs" Kind="Class" />
@@ -500,6 +507,7 @@
     </Namespace>
     <Namespace Name="Xamarin.Forms.PlatformConfiguration.AndroidSpecific">
       <Type Name="Application" Kind="Class" />
+      <Type Name="Elevation" Kind="Class" />
       <Type Name="ListView" Kind="Class" />
       <Type Name="TabbedPage" Kind="Class" />
       <Type Name="WindowSoftInputModeAdjust" Kind="Enumeration" />
@@ -1068,6 +1076,31 @@
           <summary>For internal use by the Xamarin.Forms platform.</summary>
         </Docs>
         <Link Type="Xamarin.Forms.Internals.DataTemplateExtensions" Member="M:Xamarin.Forms.Internals.DataTemplateExtensions.CreateContent(Xamarin.Forms.DataTemplate,System.Object,Xamarin.Forms.BindableObject)" />
+      </Member>
+    </ExtensionMethod>
+    <ExtensionMethod>
+      <Targets>
+        <Target Type="T:Xamarin.Forms.DataTemplate" />
+      </Targets>
+      <Member MemberName="SelectDataTemplate">
+        <MemberSignature Language="C#" Value="public static Xamarin.Forms.DataTemplate SelectDataTemplate (this Xamarin.Forms.DataTemplate self, object item, Xamarin.Forms.BindableObject container);" />
+        <MemberSignature Language="ILAsm" Value=".method public static hidebysig class Xamarin.Forms.DataTemplate SelectDataTemplate(class Xamarin.Forms.DataTemplate self, object item, class Xamarin.Forms.BindableObject container) cil managed" />
+        <MemberType>ExtensionMethod</MemberType>
+        <ReturnValue>
+          <ReturnType>Xamarin.Forms.DataTemplate</ReturnType>
+        </ReturnValue>
+        <Parameters>
+          <Parameter Name="self" Type="Xamarin.Forms.DataTemplate" RefType="this" />
+          <Parameter Name="item" Type="System.Object" />
+          <Parameter Name="container" Type="Xamarin.Forms.BindableObject" />
+        </Parameters>
+        <Docs>
+          <param name="self">To be added.</param>
+          <param name="item">To be added.</param>
+          <param name="container">To be added.</param>
+          <summary>To be added.</summary>
+        </Docs>
+        <Link Type="Xamarin.Forms.Internals.DataTemplateExtensions" Member="M:Xamarin.Forms.Internals.DataTemplateExtensions.SelectDataTemplate(Xamarin.Forms.DataTemplate,System.Object,Xamarin.Forms.BindableObject)" />
       </Member>
     </ExtensionMethod>
     <ExtensionMethod>
@@ -1738,6 +1771,50 @@
           <summary>Sets a value that controls whether the soft input mode of the provided platform configuration pans or resizes its content to allow the display of the on-screen input UI.</summary>
         </Docs>
         <Link Type="Xamarin.Forms.PlatformConfiguration.AndroidSpecific.Application" Member="M:Xamarin.Forms.PlatformConfiguration.AndroidSpecific.Application.UseWindowSoftInputModeAdjust(Xamarin.Forms.IPlatformElementConfiguration{Xamarin.Forms.PlatformConfiguration.Android,Xamarin.Forms.Application},Xamarin.Forms.PlatformConfiguration.AndroidSpecific.WindowSoftInputModeAdjust)" />
+      </Member>
+    </ExtensionMethod>
+    <ExtensionMethod>
+      <Targets>
+        <Target Type="T:Xamarin.Forms.IPlatformElementConfiguration`2" />
+      </Targets>
+      <Member MemberName="GetElevation">
+        <MemberSignature Language="C#" Value="public static Nullable&lt;float&gt; GetElevation (this Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Android,Xamarin.Forms.VisualElement&gt; config);" />
+        <MemberSignature Language="ILAsm" Value=".method public static hidebysig valuetype System.Nullable`1&lt;float32&gt; GetElevation(class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.Android, class Xamarin.Forms.VisualElement&gt; config) cil managed" />
+        <MemberType>ExtensionMethod</MemberType>
+        <ReturnValue>
+          <ReturnType>System.Nullable&lt;System.Single&gt;</ReturnType>
+        </ReturnValue>
+        <Parameters>
+          <Parameter Name="config" Type="Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Android,Xamarin.Forms.VisualElement&gt;" RefType="this" />
+        </Parameters>
+        <Docs>
+          <param name="config">To be added.</param>
+          <summary>To be added.</summary>
+        </Docs>
+        <Link Type="Xamarin.Forms.PlatformConfiguration.AndroidSpecific.Elevation" Member="M:Xamarin.Forms.PlatformConfiguration.AndroidSpecific.Elevation.GetElevation(Xamarin.Forms.IPlatformElementConfiguration{Xamarin.Forms.PlatformConfiguration.Android,Xamarin.Forms.VisualElement})" />
+      </Member>
+    </ExtensionMethod>
+    <ExtensionMethod>
+      <Targets>
+        <Target Type="T:Xamarin.Forms.IPlatformElementConfiguration`2" />
+      </Targets>
+      <Member MemberName="SetElevation">
+        <MemberSignature Language="C#" Value="public static Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Android,Xamarin.Forms.VisualElement&gt; SetElevation (this Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Android,Xamarin.Forms.VisualElement&gt; config, Nullable&lt;float&gt; value);" />
+        <MemberSignature Language="ILAsm" Value=".method public static hidebysig class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.Android, class Xamarin.Forms.VisualElement&gt; SetElevation(class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.Android, class Xamarin.Forms.VisualElement&gt; config, valuetype System.Nullable`1&lt;float32&gt; value) cil managed" />
+        <MemberType>ExtensionMethod</MemberType>
+        <ReturnValue>
+          <ReturnType>Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Android,Xamarin.Forms.VisualElement&gt;</ReturnType>
+        </ReturnValue>
+        <Parameters>
+          <Parameter Name="config" Type="Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Android,Xamarin.Forms.VisualElement&gt;" RefType="this" />
+          <Parameter Name="value" Type="System.Nullable&lt;System.Single&gt;" />
+        </Parameters>
+        <Docs>
+          <param name="config">To be added.</param>
+          <param name="value">To be added.</param>
+          <summary>To be added.</summary>
+        </Docs>
+        <Link Type="Xamarin.Forms.PlatformConfiguration.AndroidSpecific.Elevation" Member="M:Xamarin.Forms.PlatformConfiguration.AndroidSpecific.Elevation.SetElevation(Xamarin.Forms.IPlatformElementConfiguration{Xamarin.Forms.PlatformConfiguration.Android,Xamarin.Forms.VisualElement},System.Nullable{System.Single})" />
       </Member>
     </ExtensionMethod>
     <ExtensionMethod>

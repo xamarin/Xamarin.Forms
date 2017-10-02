@@ -9,7 +9,7 @@ using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android.FastRenderers
 {
-	public class LabelRenderer : FormsTextView, IVisualElementRenderer
+	internal sealed class LabelRenderer : FormsTextView, IVisualElementRenderer
 	{
 		int? _defaultLabelFor;
 		bool _disposed;
@@ -23,7 +23,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		Color _lastUpdateColor = Color.Default;
 		VisualElementTracker _visualElementTracker;
 		VisualElementRenderer _visualElementRenderer;
-		
+		readonly MotionEventHelper _motionEventHelper = new MotionEventHelper();
+
 		bool _wasFormatted;
 
 		public LabelRenderer() : base(Forms.Context)
@@ -43,7 +44,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		ViewGroup IVisualElementRenderer.ViewGroup => null;
 
-		protected Label Element
+		Label Element
 		{
 			get { return _element; }
 			set
@@ -112,6 +113,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				throw new ArgumentException("Element must be of type Label");
 
 			Element = label;
+			_motionEventHelper.UpdateElement(element);
 		}
 
 		void IVisualElementRenderer.SetLabelFor(int? id)
@@ -163,13 +165,15 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
         public override bool OnTouchEvent(MotionEvent e)
         {
-            bool handled;
-            var result = _visualElementRenderer.OnTouchEvent(e, Parent, out handled);
+	        if (_visualElementRenderer.OnTouchEvent(e))
+	        {
+		        return true;
+	        }
 
-            return handled ? result : base.OnTouchEvent(e);
+	        return _motionEventHelper.HandleMotionEvent(Parent, e);
         }
 
-        protected virtual void OnElementChanged(ElementChangedEventArgs<Label> e)
+        void OnElementChanged(ElementChangedEventArgs<Label> e)
 		{
 			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(e.OldElement, e.NewElement));
 
@@ -196,10 +200,12 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				if (e.OldElement?.HorizontalTextAlignment != e.NewElement.HorizontalTextAlignment
 				 || e.OldElement?.VerticalTextAlignment != e.NewElement.VerticalTextAlignment)
 					UpdateGravity();
+
+				ElevationHelper.SetElevation(this, e.NewElement);
 			}
 		}
 
-		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			ElementPropertyChanged?.Invoke(this, e);
 

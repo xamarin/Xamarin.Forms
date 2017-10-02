@@ -30,7 +30,9 @@ using Xamarin.Forms.Controls.Issues;
 
 [assembly: ExportRenderer(typeof(Bugzilla42000._42000NumericEntryNoDecimal), typeof(EntryRendererNoDecimal))]
 [assembly: ExportRenderer(typeof(Bugzilla42000._42000NumericEntryNoNegative), typeof(EntryRendererNoNegative))]
-[assembly: ExportRenderer(typeof(AndroidHelpText.HintLabel), typeof(HintLabel))]
+//[assembly: ExportRenderer(typeof(AndroidHelpText.HintLabel), typeof(HintLabel))]
+[assembly: ExportRenderer(typeof(Bugzilla57910QuickCollectNavigationPage), typeof(QuickCollectNavigationPage))]
+
 
 [assembly: ExportRenderer(typeof(Xamarin.Forms.Controls.Issues.NoFlashTestNavigationPage), typeof(Xamarin.Forms.ControlGallery.Android.NoFlashTestNavigationPage))]
 
@@ -523,20 +525,81 @@ namespace Xamarin.Forms.ControlGallery.Android
 		}
 	}
 
-
-	public class HintLabel : Xamarin.Forms.Platform.Android.FastRenderers.LabelRenderer
+	//public class HintLabel : Xamarin.Forms.Platform.Android.AppCompat.LabelRenderer
+	//{
+	//	public HintLabel()
+	//	{
+	//		Hint = AndroidHelpText.HintLabel.Success;
+	//	}
+ // }
+ 
+	public class NoFlashTestNavigationPage 
+#if FORMS_APPLICATION_ACTIVITY
+		: Xamarin.Forms.Platform.Android.NavigationRenderer
+#else
+		: Xamarin.Forms.Platform.Android.AppCompat.NavigationPageRenderer
+#endif
 	{
-		public HintLabel()
-		{
-			Hint = AndroidHelpText.HintLabel.Success;
-		}
-  }
-
-	public class NoFlashTestNavigationPage : Xamarin.Forms.Platform.Android.AppCompat.NavigationPageRenderer
-	{
+#if !FORMS_APPLICATION_ACTIVITY
 		protected override void SetupPageTransition(global::Android.Support.V4.App.FragmentTransaction transaction, bool isPush)
 		{
 			transaction.SetTransition((int)FragmentTransit.None);
+		}
+#endif
+	}
+
+	public class QuickCollectNavigationPage
+#if FORMS_APPLICATION_ACTIVITY
+		: Xamarin.Forms.Platform.Android.NavigationRenderer
+#else
+		: Xamarin.Forms.Platform.Android.AppCompat.NavigationPageRenderer
+#endif
+	{
+		bool _disposed;
+		NavigationPage _page;
+
+		protected override void OnElementChanged(ElementChangedEventArgs<NavigationPage> e)
+		{
+			base.OnElementChanged(e);
+
+			if (e.NewElement == null)
+			{
+				if (e.OldElement != null)
+				{
+					((IPageController)e.OldElement).InternalChildren.CollectionChanged -= OnInternalPageCollectionChanged;
+				}
+
+				return;
+			}
+
+			((IPageController)e.NewElement).InternalChildren.CollectionChanged += OnInternalPageCollectionChanged;
+		}
+
+		private void OnInternalPageCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		{
+			if (e.OldItems != null)
+			{
+				// Force a collection on popped to simulate the problem.
+				GC.Collect();
+			}
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (_disposed)
+			{
+				return;
+			}
+
+			_disposed = true;
+
+			if (disposing && _page != null)
+			{
+				_page.InternalChildren.CollectionChanged -= OnInternalPageCollectionChanged;
+				_page = null;
+			}
+
+			base.Dispose(disposing);
 		}
 	}
 }

@@ -281,7 +281,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			UpdateGlobalContext(element);
 
-			IVisualElementRenderer renderer = Registrar.Registered.GetHandler<IVisualElementRenderer>(element.GetType()) ?? new DefaultRenderer();
+			IVisualElementRenderer renderer = Registrar.Registered.GetHandlerForObject<IVisualElementRenderer>(element) ?? new DefaultRenderer();
 			renderer.SetElement(element);
 
 			return renderer;
@@ -314,7 +314,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			UpdateGlobalContext(element);
 
-			IVisualElementRenderer renderer = Registrar.Registered.GetHandler<IVisualElementRenderer>(element.GetType()) ?? new DefaultRenderer();
+			IVisualElementRenderer renderer = Registrar.Registered.GetHandlerForObject<IVisualElementRenderer>(element) ?? new DefaultRenderer();
 
 			var managesFragments = renderer as IManageFragments;
 			managesFragments?.SetFragmentManager(fragmentManager);
@@ -866,7 +866,7 @@ namespace Xamarin.Forms.Platform.Android
 						}
 					}
 				}
-			}			
+			}
 
 			if (actionBarTitleTextView == null)
 			{
@@ -909,6 +909,11 @@ namespace Xamarin.Forms.Platform.Android
 			bool hasMasterDetailPage = CurrentMasterDetailPage != null;
 			bool navigated = CurrentNavigationPage != null && ((INavigationPageController)CurrentNavigationPage).StackDepth > 1;
 			bool navigationPageHasNavigationBar = CurrentNavigationPage != null && NavigationPage.GetHasNavigationBar(CurrentNavigationPage.CurrentPage);
+			//if we have MDP and Navigation , we let navigation choose
+			if (CurrentNavigationPage != null && hasMasterDetailPage)
+			{
+				return NavigationPage.GetHasNavigationBar(CurrentNavigationPage.CurrentPage);
+			}
 			return navigationPageHasNavigationBar || (hasMasterDetailPage && !navigated);
 		}
 
@@ -1055,6 +1060,11 @@ namespace Xamarin.Forms.Platform.Android
 		internal class DefaultRenderer : VisualElementRenderer<View>
 		{
 			bool _notReallyHandled;
+
+			public DefaultRenderer()
+			{
+			}
+
 			readonly MotionEventHelper _motionEventHelper = new MotionEventHelper();
 
 			internal void NotifyFakeHandling()
@@ -1116,6 +1126,8 @@ namespace Xamarin.Forms.Platform.Android
 				}
 
 				return result;
+					{
+					}
 			}
 		}
 

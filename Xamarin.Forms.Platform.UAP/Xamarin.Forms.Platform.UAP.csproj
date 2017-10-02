@@ -182,7 +182,9 @@
     <Compile Include="..\Xamarin.Forms.Platform.WinRT\LayoutExtensions.cs">
       <Link>LayoutExtensions.cs</Link>
     </Compile>
+    <Compile Include="Flags.cs" />
     <Compile Include="FormsPresenter.cs" />
+    <Compile Include="FormsUWP.cs" />
     <Compile Include="IToolBarForegroundBinder.cs" />
     <Compile Include="NativeBindingService.cs" />
     <Compile Include="NativeValueConverterService.cs" />
@@ -337,8 +339,8 @@
     <Compile Include="..\Xamarin.Forms.Platform.WinRT\NavigationPageRenderer.cs">
       <Link>NavigationPageRenderer.cs</Link>
     </Compile>
-    <Compile Include="..\Xamarin.Forms.Platform.WinRT\PageControl.xaml.cs">
-      <Link>PageControl.xaml.cs</Link>
+    <Compile Include="..\Xamarin.Forms.Platform.WinRT\PageControl.cs">
+      <Link>PageControl.cs</Link>
     </Compile>
     <Compile Include="..\Xamarin.Forms.Platform.WinRT\PageRenderer.cs">
       <Link>PageRenderer.cs</Link>
@@ -454,10 +456,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="MasterDetailControlStyle.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="PageControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

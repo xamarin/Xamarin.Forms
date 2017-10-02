@@ -34,6 +34,7 @@ namespace Xamarin.Forms
 		public static Context Context { get; internal set; }
 
 		public static bool IsInitialized { get; private set; }
+		static bool FlagsSet { get; set; }
 
 		internal static bool IsLollipopOrNewer
 		{
@@ -149,6 +150,27 @@ namespace Xamarin.Forms
 				ExpressionSearch.Default = new AndroidExpressionSearch();
 
 			IsInitialized = true;
+		}
+
+		static IReadOnlyList<string> s_flags;
+		public static IReadOnlyList<string> Flags => s_flags ?? (s_flags = new List<string>().AsReadOnly());
+
+		public static void SetFlags(params string[] flags)
+		{
+			if (FlagsSet)
+			{
+				// Don't try to set the flags again if they've already been set
+				// (e.g., during a configuration change where OnCreate runs again)
+				return;
+			}
+
+			if (IsInitialized)
+			{
+				throw new InvalidOperationException($"{nameof(SetFlags)} must be called before {nameof(Init)}");
+			}
+
+			s_flags = flags.ToList().AsReadOnly();
+			FlagsSet = true;
 		}
 
 		static Color GetAccentColor()
@@ -471,6 +493,11 @@ namespace Xamarin.Forms
 					Internals.Log.Warning("Xamarin.Forms.Platform.Android.AndroidPlatformServices", "Error retrieving text appearance: {0}", ex);
 				}
 				return false;
+			}
+
+			public void QuitApplication()
+			{
+				Internals.Log.Warning(nameof(AndroidPlatformServices), "Platform doesn't implement QuitApp");
 			}
 
 			public class _IsolatedStorageFile : IIsolatedStorageFile
