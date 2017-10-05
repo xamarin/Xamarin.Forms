@@ -77,17 +77,20 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void OnControlDateChanged(object sender, DatePickerValueChangedEventArgs e)
 		{
-			Element.Date = e.NewDate.Date;
-			DateTime currentDate = Element.Date;
-			if (currentDate != e.NewDate.Date) // Match coerced value
-				UpdateDate(currentDate);
+			if (Element == null)
+				return;
 
-			((IVisualElementController)Element).InvalidateMeasure(InvalidationTrigger.SizeRequestChanged);
+			if (Element.Date.CompareTo(e.NewDate.Date) != 0)
+			{
+				Element.Date = e.NewDate.Date;
+				((IVisualElementController)Element).InvalidateMeasure(InvalidationTrigger.SizeRequestChanged);
+			}
 		}
 
 		void UpdateDate(DateTime date)
 		{
-			Control.Date = date;
+			if (Control != null)
+				Control.Date = new DateTimeOffset(new DateTime(date.Ticks, DateTimeKind.Unspecified));
 		}
 
 		void UpdateFlowDirection()
@@ -130,17 +133,16 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateMaximumDate()
 		{
-			DateTime maxdate = Element.MaximumDate;
-			Control.MaxYear = new DateTimeOffset(maxdate);
+			if (Element != null && Control != null)
+				Control.MaxYear = new DateTimeOffset(new DateTime(Element.MaximumDate.Ticks, DateTimeKind.Unspecified));			
 		}
 
 		void UpdateMinimumDate()
 		{
-			DateTime mindate = Element.MinimumDate;
-
 			try
 			{
-				Control.MinYear = new DateTimeOffset(mindate);
+				if (Element != null && Control != null)
+					Control.MinYear = new DateTimeOffset(new DateTime(Element.MinimumDate.Ticks, DateTimeKind.Unspecified));
 			}
 			catch (ArgumentOutOfRangeException)
 			{
