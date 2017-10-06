@@ -47,13 +47,13 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			if (oldElement != null)
 			{
-				oldElement.PropertyChanged -= HandlePropertyChanged;
+				oldElement.PropertyChanged -= OnElementPropertyChanged;
 				((ScrollView)oldElement).ScrollToRequested -= OnScrollToRequested;
 			}
 
 			if (element != null)
 			{
-				element.PropertyChanged += HandlePropertyChanged;
+				element.PropertyChanged += OnElementPropertyChanged;
 				((ScrollView)element).ScrollToRequested += OnScrollToRequested;
 				if (_tracker == null)
 				{
@@ -111,7 +111,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			base.Dispose(disposing);
 		}
 
-		void OnElementChanged(VisualElementChangedEventArgs e)
+		protected virtual void OnElementChanged(VisualElementChangedEventArgs e)
 		{
 			ElementChanged?.Invoke(this, e);
 		}
@@ -144,7 +144,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 		}
 
-		void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
+		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == ScrollView.ContentSizeProperty.PropertyName)
 				UpdateContentSize();
