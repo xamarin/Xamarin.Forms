@@ -356,6 +356,9 @@ namespace Xamarin.Forms.Core.UITests
 
 				for (int n = 0; n < taps; n++)
 				{
+					// TODO hartez getting an invalidop exception here when the element is a Frame; 
+					// maybe we can catch the exception or somehow determine that it's a frame and see if
+					// tapcoordinates will work instead
 					element.Click();
 				}
 			}
