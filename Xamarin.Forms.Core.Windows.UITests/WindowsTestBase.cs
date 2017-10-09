@@ -255,7 +255,13 @@ namespace Xamarin.Forms.Core.UITests
 
 			var elements = QueryWindows(winQuery);
 
-			// TODO hartez 2017/07/19 17:09:14 Alas, for now this simply doesn't work. Waiting for WinAppDrive to implement it	
+			foreach (var e in elements)
+			{
+				var x = e.GetAttribute(attribute);
+				Debug.WriteLine($">>>>> WinDriverApp Query 261: {x}");
+			}
+
+			// TODO hartez 2017/07/19 17:09:14 Alas, for now this simply doesn't work. Waiting for WinAppDriver to implement it	
 			return elements.Select(e => (T)Convert.ChangeType(e.GetAttribute(attribute), typeof(T))).ToArray();
 		}
 
@@ -296,7 +302,7 @@ namespace Xamarin.Forms.Core.UITests
 
 		public void ClearText(Func<AppQuery, AppQuery> query)
 		{
-			throw new NotImplementedException();
+			QueryWindows(query).First().Clear();
 		}
 
 		public void ClearText(Func<AppQuery, AppWebQuery> query)
@@ -306,7 +312,7 @@ namespace Xamarin.Forms.Core.UITests
 
 		public void ClearText(string marked)
 		{
-			throw new NotImplementedException();
+			QueryWindows(marked).First().Clear();
 		}
 
 		public void ClearText()
