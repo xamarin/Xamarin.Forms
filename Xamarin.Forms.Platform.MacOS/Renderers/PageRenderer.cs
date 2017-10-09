@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			Element = element;
 			UpdateTitle();
 
-			OnElementChanged(new VisualElementChangedEventArgs(oldElement, element));
+			RaiseElementChanged(new VisualElementChangedEventArgs(oldElement, element));
 
 			if (Element != null && !string.IsNullOrEmpty(Element.AutomationId))
 				SetAutomationId(Element.AutomationId);
@@ -125,9 +125,14 @@ namespace Xamarin.Forms.Platform.MacOS
 			base.Dispose(disposing);
 		}
 
+		void RaiseElementChanged(VisualElementChangedEventArgs e)
+		{
+			OnElementChanged(e);
+			ElementChanged?.Invoke(this, e);
+		}
+
 		protected virtual void OnElementChanged(VisualElementChangedEventArgs e)
 		{
-			ElementChanged?.Invoke(this, e);
 		}
 
 		void SetAutomationId(string id)
