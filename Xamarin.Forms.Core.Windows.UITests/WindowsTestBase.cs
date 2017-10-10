@@ -123,15 +123,8 @@ namespace Xamarin.Forms.Core.UITests
 					return string.Empty;
 				}
 
-				// TODO hartez Somehow we're getting extra \' escaping here, and it propagates until we have a mess of backslashes in the raw query we're trying to parse
-				var x = query(new AppQuery(QueryPlatform.iOS)).ToString();
-				Debug.WriteLine($"raw query is {x}");
-
-				x = x.Replace("\\'", "'");
-
-				Debug.WriteLine($"fixed up query is {x}");
-
-				return x;
+				// When we pull out the iOS query it's got any instances of "'" escaped with "\", need to fix that up
+				return query(new AppQuery(QueryPlatform.iOS)).ToString().Replace("\\'", "'");
 			}
 
 			WinQuery(string controlType, string marked, string raw)
@@ -364,12 +357,69 @@ namespace Xamarin.Forms.Core.UITests
 
 				for (int n = 0; n < taps; n++)
 				{
-					// TODO hartez getting an invalidop exception here when the element is a Frame; 
-					// maybe we can catch the exception or somehow determine that it's a frame and see if
-					// tapcoordinates will work instead
-					element.Click();
+					ClickOrTapElement(element);
 				}
 			}
+		}
+
+		void ClickOrTapElement(WindowsElement element)
+		{
+			try
+			{
+				// For most stuff, a simple click will work
+				element.Click();
+			}
+			catch (InvalidOperationException)
+			{
+				// Some elements aren't "clickable" from an automation perspective (e.g., Frame renders as a Border
+				// with content in it; if the content is just a TextBlock, we'll end up here)
+
+				// All is not lost; we can figure out the location of the element in in the application window
+				// and Tap in that spot
+				var clickablePoint = GetClickablePoint(element);
+
+				var window = QueryWindows("Xamarin.Forms.ControlGallery.WindowsUniversal")[0];
+				var origin = GetOriginOfBoundingRectangle(window);
+				
+				// Tap the coordinates in the app window's viewport relative to the window's origin
+				TapCoordinates(clickablePoint.X - origin.X, clickablePoint.Y - origin.Y); 
+			}
+		}
+
+		struct Point
+		{
+			public Point(float x, float y)
+			{
+				X = x;
+				Y = y;
+			}
+
+			public readonly float X;
+			public readonly float Y;
+		}
+
+		Point GetOriginOfBoundingRectangle(WindowsElement element)
+		{	
+			var vpcpString = element.GetAttribute("BoundingRectangle");
+		
+			// returned string format looks like:
+			// Left:-1868 Top:382 Width:1013 Height:680
+
+			var vpparts = vpcpString.Split(new [] {':', ' '}, StringSplitOptions.RemoveEmptyEntries);
+			var vpx = float.Parse(vpparts[1]);
+			var vpy = float.Parse(vpparts[3]);
+
+			return new Point(vpx, vpy);
+		}
+
+		Point GetClickablePoint(WindowsElement element)
+		{
+			var cpString = element.GetAttribute("ClickablePoint");
+			var parts = cpString.Split(',');
+			var x = float.Parse(parts[0]);
+			var y = float.Parse(parts[1]);
+
+			return new Point(x, y);
 		}
 
 		public void Tap(Func<AppQuery, AppWebQuery> query)
