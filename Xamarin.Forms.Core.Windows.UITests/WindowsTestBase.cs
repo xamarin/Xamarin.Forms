@@ -35,7 +35,7 @@ namespace Xamarin.Forms.Core.UITests
 				appCapabilities.SetCapability("deviceName", "WindowsPC");
 				Session = new WindowsDriver<WindowsElement>(new Uri(WindowsApplicationDriverUrl), appCapabilities);
 				Assert.IsNotNull(Session);
-				Session.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(2));
+				Session.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(5));
 				Reset();
 			}
 			
@@ -106,7 +106,7 @@ namespace Xamarin.Forms.Core.UITests
 			{
 				Debug.WriteLine($">>>>> Converting raw query '{raw}' to {nameof(WinQuery)}");
 
-				var match = Regex.Match(raw, @"(.*)\s(marked|text):'(.*)'");
+				var match = Regex.Match(raw, @"(.*)\s(marked|text):'((.|\n)*)'");
 
 				var controlType = match.Groups[1].Captures[0].Value;
 				var marked = match.Groups[3].Captures[0].Value;
@@ -123,7 +123,15 @@ namespace Xamarin.Forms.Core.UITests
 					return string.Empty;
 				}
 
-				return query(new AppQuery(QueryPlatform.iOS)).ToString();
+				// TODO hartez Somehow we're getting extra \' escaping here, and it propagates until we have a mess of backslashes in the raw query we're trying to parse
+				var x = query(new AppQuery(QueryPlatform.iOS)).ToString();
+				Debug.WriteLine($"raw query is {x}");
+
+				x = x.Replace("\\'", "'");
+
+				Debug.WriteLine($"fixed up query is {x}");
+
+				return x;
 			}
 
 			WinQuery(string controlType, string marked, string raw)
@@ -493,8 +501,11 @@ namespace Xamarin.Forms.Core.UITests
 
 			while (!satisfactory(result.Count))
 			{
-				if (DateTime.Now.Subtract(start).Ticks >= timeout.Value.Ticks)
+				var elapsed = DateTime.Now.Subtract(start).Ticks;
+				if (elapsed >= timeout.Value.Ticks)
 				{
+					Debug.WriteLine($">>>>> {elapsed} ticks elapsed, timeout value is {timeout.Value.Ticks}");
+
 					throw new TimeoutException(timeoutMessage);
 				}
 
