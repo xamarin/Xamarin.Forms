@@ -1,4 +1,6 @@
+using System;
 using System.ComponentModel;
+using Android.Content;
 using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.Views;
@@ -12,6 +14,16 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		bool _disposed;
 		readonly MotionEventHelper _motionEventHelper = new MotionEventHelper();
+
+		public FrameRenderer(Context context) : base(context)
+		{
+		}
+
+		[Obsolete("This constructor is obsolete as of version 3.0. Please use FrameRenderer(Context) instead.")]
+		public FrameRenderer()
+		{
+			AutoPackage = false;
+		}
 
 		protected override void Dispose(bool disposing)
 		{
@@ -38,7 +50,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (e.NewElement != null && e.OldElement == null)
 			{
-				this.SetBackground(new FrameDrawable(Element));
+				this.SetBackground(new FrameDrawable(Element, Context.ToPixels));
 				_motionEventHelper.UpdateElement(e.NewElement);
 			}
 		}
@@ -56,14 +68,16 @@ namespace Xamarin.Forms.Platform.Android
 
 		class FrameDrawable : Drawable
 		{
-			Frame _frame;
+			readonly Frame _frame;
+			readonly Func<double, float> _convertToPixels;
 
 			bool _isDisposed;
 			Bitmap _normalBitmap;
 
-			public FrameDrawable(Frame frame)
+			public FrameDrawable(Frame frame, Func<double, float> convertToPixels)
 			{
 				_frame = frame;
+				_convertToPixels = convertToPixels;
 				frame.PropertyChanged += FrameOnPropertyChanged;
 			}
 
@@ -164,8 +178,8 @@ namespace Xamarin.Forms.Platform.Android
 				using (Paint.Style style = Paint.Style.Fill)
 				using (var rect = new RectF(0, 0, width, height))
 				{
-					float rx = Forms.Context.ToPixels(cornerRadius);
-					float ry = Forms.Context.ToPixels(cornerRadius);
+					float rx = _convertToPixels(cornerRadius);
+					float ry = _convertToPixels(cornerRadius);
 					path.AddRoundRect(rect, rx, ry, direction);
 
 					global::Android.Graphics.Color color = _frame.BackgroundColor.ToAndroid();
@@ -185,8 +199,8 @@ namespace Xamarin.Forms.Platform.Android
 				using (Paint.Style style = Paint.Style.Stroke)
 				using (var rect = new RectF(0, 0, width, height))
 				{
-					float rx = Forms.Context.ToPixels(cornerRadius);
-					float ry = Forms.Context.ToPixels(cornerRadius);
+					float rx = _convertToPixels(cornerRadius);
+					float ry = _convertToPixels(cornerRadius);
 					path.AddRoundRect(rect, rx, ry, direction);
 
 					paint.StrokeWidth = 1;
