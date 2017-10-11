@@ -547,6 +547,7 @@ namespace Xamarin.Forms.Core.UITests
 
 			var start = DateTime.Now;
 
+
 			var result = query();
 
 			while (!satisfactory(result.Count))
@@ -560,6 +561,7 @@ namespace Xamarin.Forms.Core.UITests
 				}
 
 				Task.Delay(retryFrequency.Value.Milliseconds).Wait();
+				result = query();
 			}
 
 			return result;
