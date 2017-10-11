@@ -83,6 +83,7 @@ namespace Xamarin.Forms
 			set { s_platformServices = value; }
 		}
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static IReadOnlyList<string> Flags { get; private set; }
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
