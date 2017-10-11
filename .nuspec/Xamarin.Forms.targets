@@ -1,8 +1,8 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<UsingTask TaskName="Xamarin.Forms.Build.Tasks.XamlGTask" AssemblyFile="Xamarin.Forms.Build.Tasks.dll"/>
 	<UsingTask TaskName="Xamarin.Forms.Build.Tasks.XamlCTask" AssemblyFile="Xamarin.Forms.Build.Tasks.dll"/>
-	<UsingTask TaskName="Xamarin.Forms.Build.Tasks.FixedCreateCSharpManifestResourceName" AssemblyFile="Xamarin.Forms.Build.Tasks.dll"/>
 	<UsingTask TaskName="Xamarin.Forms.Build.Tasks.GetTasksAbi" AssemblyFile="Xamarin.Forms.Build.Tasks.dll"/>
+	<UsingTask TaskName="Xamarin.Forms.Build.Tasks.FixedCreateCSharpManifestResourceName" AssemblyFile="Xamarin.Forms.Build.Tasks.dll"/>
 
 	<PropertyGroup>
 		<EnableDefaultXamlItems Condition="'$(EnableDefaultXamlItems)'==''">True</EnableDefaultXamlItems>
@@ -11,36 +11,11 @@
 
 	<Import Project="$(MSBuildThisFileDirectory)Xamarin.Forms.DefaultItems.targets" Condition="'$(MSBuildSDKsPath)'!=''" />
 
-	<PropertyGroup>
-		<CoreCompileDependsOn>
-			XamlG;
-			$(CoreCompileDependsOn);
-		</CoreCompileDependsOn>
-	</PropertyGroup>
-
-	<PropertyGroup>
-		<CompileDependsOn>
-			$(CompileDependsOn);
-			XamlC;
-		</CompileDependsOn>
-	</PropertyGroup>
-
 	<ItemGroup>
 		<ProjectCapability Include="XamarinForms" />
 	</ItemGroup>
 
-	<Target Name="UpdateDesignTimeXaml" DependsOnTargets="XamlG"/>
-
-	<Target Name="XamlG" DependsOnTargets="$(XamlGDependsOn)"/>
-
-	<PropertyGroup>
-		<XamlGDependsOn>
-			_PreXamlG;
-			_CollectXamlFiles;
-			_CoreXamlG;
-		</XamlGDependsOn>
-	</PropertyGroup>
-
+	<!-- Check Tasks ABI and other validations -->
 	<PropertyGroup>
 		<_XFTargetsImportedAgain Condition="'$(_XFTargetsImported)'=='True'">True</_XFTargetsImportedAgain>
 		<_XFTargetsImported>True</_XFTargetsImported>
@@ -65,6 +40,22 @@
 			Code="XF002"
 			Condition="'$(_XFTasksAbi)' != '$(_XFTasksExpectedAbi)'" />
 	</Target>
+
+	<!-- XamlG -->
+	<Target Name="UpdateDesignTimeXaml" DependsOnTargets="XamlG"/>
+	<Target Name="XamlG" DependsOnTargets="$(XamlGDependsOn)"/>
+
+	<PropertyGroup>
+		<CoreCompileDependsOn>
+			XamlG;
+			$(CoreCompileDependsOn);
+		</CoreCompileDependsOn>
+		<XamlGDependsOn>
+			_PreXamlG;
+			_CollectXamlFiles;
+			_CoreXamlG;
+		</XamlGDependsOn>
+	</PropertyGroup>
 
 	<Target Name="_PreXamlG">
 		<MakeDir Directories="$(IntermediateOutputPath)"/>
@@ -94,6 +85,14 @@
 			OutputFile = "$(IntermediateOutputPath)%(ManifestResourceName).g$(DefaultLanguageSourceExtension)">
 		</XamlGTask>
 	</Target>
+
+	<!-- XamlC -->
+	<PropertyGroup>
+		<CompileDependsOn>
+			$(CompileDependsOn);
+			XamlC;
+		</CompileDependsOn>
+	</PropertyGroup>
 
 	<PropertyGroup>
 		<XFVerbosity Condition="'$(XFVerbosity)' == ''">2</XFVerbosity>
