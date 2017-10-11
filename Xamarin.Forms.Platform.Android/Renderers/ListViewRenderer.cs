@@ -25,6 +25,12 @@ namespace Xamarin.Forms.Platform.Android
 		IListViewController Controller => Element;
 		ITemplatedItemsView<Cell> TemplatedItemsView => Element;
 
+		public ListViewRenderer(Context context) : base(context)
+		{
+			AutoPackage = false;
+		}
+
+		[Obsolete("This constructor is obsolete as of version 3.0. Please use ListViewRenderer(Context) instead.")]
 		public ListViewRenderer()
 		{
 			AutoPackage = false;
@@ -275,12 +281,17 @@ namespace Xamarin.Forms.Platform.Android
 		void UpdateFooter()
 		{
 			var footer = (VisualElement)Controller.FooterElement;
-			if (_footerRenderer != null && (footer == null || Registrar.Registered.GetHandlerType(footer.GetType()) != _footerRenderer.GetType()))
+			if (_footerRenderer != null)
 			{
-				if (_footerView != null)
-					_footerView.Child = null;
-				_footerRenderer.Dispose();
-				_footerRenderer = null;
+				var reflectableType = _footerRenderer as System.Reflection.IReflectableType;
+				var rendererType = reflectableType != null ? reflectableType.GetTypeInfo().AsType() : _footerRenderer.GetType();
+				if (footer == null || Registrar.Registered.GetHandlerTypeForObject(footer) != rendererType)
+				{
+					if (_footerView != null)
+						_footerView.Child = null;
+					_footerRenderer.Dispose();
+					_footerRenderer = null;
+				}
 			}
 
 			if (footer == null)
@@ -290,7 +301,7 @@ namespace Xamarin.Forms.Platform.Android
 				_footerRenderer.SetElement(footer);
 			else
 			{
-				_footerRenderer = Platform.CreateRenderer(footer);
+				_footerRenderer = Platform.CreateRenderer(footer, Context);
 				if (_footerView != null)
 					_footerView.Child = _footerRenderer;
 			}
@@ -301,12 +312,17 @@ namespace Xamarin.Forms.Platform.Android
 		void UpdateHeader()
 		{
 			var header = (VisualElement)Controller.HeaderElement;
-			if (_headerRenderer != null && (header == null || Registrar.Registered.GetHandlerType(header.GetType()) != _headerRenderer.GetType()))
+			if (_headerRenderer != null)
 			{
-				if (_headerView != null)
-					_headerView.Child = null;
-				_headerRenderer.Dispose();
-				_headerRenderer = null;
+				var reflectableType = _headerRenderer as System.Reflection.IReflectableType;
+				var rendererType = reflectableType != null ? reflectableType.GetTypeInfo().AsType() : _headerRenderer.GetType();
+				if (header == null || Registrar.Registered.GetHandlerTypeForObject(header) != rendererType)
+				{
+					if (_headerView != null)
+						_headerView.Child = null;
+					_headerRenderer.Dispose();
+					_headerRenderer = null;
+				}
 			}
 
 			if (header == null)
@@ -316,7 +332,7 @@ namespace Xamarin.Forms.Platform.Android
 				_headerRenderer.SetElement(header);
 			else
 			{
-				_headerRenderer = Platform.CreateRenderer(header);
+				_headerRenderer = Platform.CreateRenderer(header, Context);
 				if (_headerView != null)
 					_headerView.Child = _headerRenderer;
 			}

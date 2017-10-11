@@ -170,6 +170,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla45215.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla44500.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla46363.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla46363_2.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla47548.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla52419.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla53834.cs" />
@@ -600,6 +601,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla52700.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla39407.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ButtonFastRendererTest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)DesktopSupportTestPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla58779.cs" />
   </ItemGroup>
   <ItemGroup>
