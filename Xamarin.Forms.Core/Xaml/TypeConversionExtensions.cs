@@ -193,17 +193,14 @@ namespace Xamarin.Forms.Xaml
 
 		internal static MethodInfo GetImplicitConversionOperator(this Type onType, Type fromType, Type toType)
 		{
-			foreach (var mi in onType.GetRuntimeMethods()) {
-				if (!mi.IsSpecialName) continue;
-				if (mi.Name != "op_Implicit") continue;
-				if (!mi.IsPublic) continue;
-				if (!toType.IsAssignableFrom(mi.ReturnType)) continue;
-				var parameters = mi.GetParameters();
-				if (parameters.Length != 1) continue;
-				if (parameters[0].ParameterType != fromType) continue;
-				return mi;
-			}
-			return null;
+			var mi = onType.GetRuntimeMethod("op_Implicit", new[] { fromType });
+			if (mi == null) return null;
+			if (!mi.IsSpecialName) return null;
+			if (!mi.IsPublic) return null;
+			if (!mi.IsStatic) return null;
+			if (!toType.IsAssignableFrom(mi.ReturnType)) return null;
+
+			return mi;
 		}
 	}
 }
