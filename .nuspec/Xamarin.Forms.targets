@@ -2,7 +2,6 @@
 	<UsingTask TaskName="Xamarin.Forms.Build.Tasks.XamlGTask" AssemblyFile="Xamarin.Forms.Build.Tasks.dll"/>
 	<UsingTask TaskName="Xamarin.Forms.Build.Tasks.XamlCTask" AssemblyFile="Xamarin.Forms.Build.Tasks.dll"/>
 	<UsingTask TaskName="Xamarin.Forms.Build.Tasks.GetTasksAbi" AssemblyFile="Xamarin.Forms.Build.Tasks.dll"/>
-	<UsingTask TaskName="Xamarin.Forms.Build.Tasks.FixedCreateCSharpManifestResourceName" AssemblyFile="Xamarin.Forms.Build.Tasks.dll"/>
 
 	<PropertyGroup>
 		<EnableDefaultXamlItems Condition="'$(EnableDefaultXamlItems)'==''">True</EnableDefaultXamlItems>
@@ -43,46 +42,22 @@
 
 	<!-- XamlG -->
 	<Target Name="UpdateDesignTimeXaml" DependsOnTargets="XamlG"/>
-	<Target Name="XamlG" DependsOnTargets="$(XamlGDependsOn)"/>
 
 	<PropertyGroup>
 		<CoreCompileDependsOn>
 			XamlG;
 			$(CoreCompileDependsOn);
 		</CoreCompileDependsOn>
-		<XamlGDependsOn>
-			_PreXamlG;
-			_CollectXamlFiles;
-			_CoreXamlG;
-		</XamlGDependsOn>
 	</PropertyGroup>
 
-	<Target Name="_PreXamlG">
-		<MakeDir Directories="$(IntermediateOutputPath)"/>
-	</Target>
-  
-	<Target Name="_CollectXamlFiles">
-		<ItemGroup>
-			<_XamlResources Include="@(EmbeddedResource)" Condition="'%(Extension)' == '.xaml' AND '$(DefaultLanguageSourceExtension)' == '.cs'"/>
-		</ItemGroup>
-		<FixedCreateCSharpManifestResourceName ResourceFiles="@(_XamlResources)" RootNamespace="$(RootNamespace)">
-			<Output TaskParameter="ResourceFilesWithManifestResourceNames" ItemName="XamlFiles" />
-		</FixedCreateCSharpManifestResourceName>
-		<ItemGroup>
-			<XamlGFiles Include="@(XamlFiles->'$(IntermediateOutputPath)%(ManifestResourceName).g$(DefaultLanguageSourceExtension)')"/>
-			<Compile Include="@(XamlGFiles)"/>
-			<FileWrites Include="@(XamlGFiles)"/>
-		</ItemGroup>
-	</Target>
-
-	<Target Name="_CoreXamlG"
-		Inputs = "@(XamlFiles)"
-		Outputs = "$(IntermediateOutputPath)%(ManifestResourceName).g$(DefaultLanguageSourceExtension)">
+	<Target Name="XamlG">
 		<XamlGTask
-			Source="@(XamlFiles)"
+			XamlFiles="@(EmbeddedResource)" Condition="'%(Extension)' == '.xaml' AND '$(DefaultLanguageSourceExtension)' == '.cs'"
 			Language = "$(Language)"
 			AssemblyName = "$(AssemblyName)"
-			OutputFile = "$(IntermediateOutputPath)%(ManifestResourceName).g$(DefaultLanguageSourceExtension)">
+			OutputPath = "$(IntermediateOutputPath)">
+			<Output ItemName="FilesWrite" TaskParameter="GeneratedCodeFiles" />
+			<Output ItemName="Compile" TaskParameter="GeneratedCodeFiles" />
 		</XamlGTask>
 	</Target>
 
