@@ -117,8 +117,12 @@ namespace Xamarin.Forms.Core.UITests
 				rect.CenterY, 
 				rect.X + (0.25f * rect.Width),
 				rect.CenterY);
-#else
+#elif __ANDROID__
 			app.TouchAndHold(target);
+#elif __WINDOWS__
+			// Since we know we're on desktop for the moment, just use ContextClick. If we get this running
+			// on actual touch devices at some point, we'll need to check for that and use TouchAndHold
+			app.Invoke("ContextClick", target);
 #endif
 
 		}

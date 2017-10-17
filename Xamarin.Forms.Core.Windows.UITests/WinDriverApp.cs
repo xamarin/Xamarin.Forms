@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Appium.Windows;
@@ -18,12 +17,22 @@ namespace Xamarin.Forms.Core.UITests
 	public class WinDriverApp : IApp
 	{
 		readonly WindowsDriver<WindowsElement> _session;
-		protected static RemoteTouchScreen _touchScreen;
+
+		struct Point
+		{
+			public Point(float x, float y)
+			{
+				X = x;
+				Y = y;
+			}
+
+			public readonly float X;
+			public readonly float Y;
+		}
 
 		public WinDriverApp(WindowsDriver<WindowsElement> session)
 		{
 			_session = session;
-			_touchScreen = new RemoteTouchScreen(session);
 			TestServer = new WindowsTestServer(_session);
 		}
 
@@ -47,63 +56,6 @@ namespace Xamarin.Forms.Core.UITests
 			}
 
 			return new ReadOnlyCollection<WindowsElement>(elements.Where(element => element.TagName == tag).ToList()); 
-		}
-
-		class WinQuery
-		{
-			public static WinQuery FromQuery(Func<AppQuery, AppQuery> query)
-			{
-				var raw = GetRawQuery(query);
-				return FromRaw(raw);
-			}
-
-			public static WinQuery FromMarked(string marked)
-			{
-				return new WinQuery("*", marked, $"* '{marked}'");
-			}
-
-			public static WinQuery FromRaw(string raw)
-			{
-				Debug.WriteLine($">>>>> Converting raw query '{raw}' to {nameof(WinQuery)}");
-
-				var match = Regex.Match(raw, @"(.*)\s(marked|text):'((.|\n)*)'");
-
-				var controlType = match.Groups[1].Captures[0].Value;
-				var marked = match.Groups[3].Captures[0].Value;
-
-				// Just ignoring everything else for now (parent, index statements, etc)
-
-				return new WinQuery(controlType, marked, raw);
-			}
-
-			static string GetRawQuery(Func<AppQuery, AppQuery> query = null)
-			{
-				if (query == null)
-				{
-					return string.Empty;
-				}
-
-				// When we pull out the iOS query it's got any instances of "'" escaped with "\", need to fix that up
-				return query(new AppQuery(QueryPlatform.iOS)).ToString().Replace("\\'", "'");
-			}
-
-			WinQuery(string controlType, string marked, string raw)
-			{
-				ControlType = controlType;
-				Marked = marked;
-				Raw = raw;
-			}
-
-			public string ControlType { get; }
-
-			public string Marked { get; }
-
-			public string Raw { get; }
-
-			public override string ToString()
-			{
-				return $"{nameof(ControlType)}: {ControlType}, {nameof(Marked)}: {Marked}";
-			}
 		}
 
 		ReadOnlyCollection<WindowsElement> QueryWindows(WinQuery query)
@@ -336,29 +288,23 @@ namespace Xamarin.Forms.Core.UITests
 
 				// All is not lost; we can figure out the location of the element in in the application window
 				// and Tap in that spot
-				var clickablePoint = GetClickablePoint(element);
-
-				var window = QueryWindows("Xamarin.Forms.ControlGallery.WindowsUniversal")[0];
-				var origin = GetOriginOfBoundingRectangle(window);
-				
-				// Tap the coordinates in the app window's viewport relative to the window's origin
-				TapCoordinates(clickablePoint.X - origin.X, clickablePoint.Y - origin.Y); 
+				var p = ElementToClickablePoint(element);
+				TapCoordinates(p.X, p.Y); 
 			}
 		}
 
-		struct Point
+		Point ElementToClickablePoint(WindowsElement element)
 		{
-			public Point(float x, float y)
-			{
-				X = x;
-				Y = y;
-			}
+			var clickablePoint = GetClickablePoint(element);
 
-			public readonly float X;
-			public readonly float Y;
+			var window = QueryWindows("Xamarin.Forms.ControlGallery.WindowsUniversal")[0];
+			var origin = GetOriginOfBoundingRectangle(window);
+
+			// Use the coordinates in the app window's viewport relative to the window's origin
+			return new Point(clickablePoint.X - origin.X, clickablePoint.Y - origin.Y);
 		}
 
-		Point GetOriginOfBoundingRectangle(WindowsElement element)
+		static Point GetOriginOfBoundingRectangle(WindowsElement element)
 		{	
 			var vpcpString = element.GetAttribute("BoundingRectangle");
 		
@@ -372,7 +318,7 @@ namespace Xamarin.Forms.Core.UITests
 			return new Point(vpx, vpy);
 		}
 
-		Point GetClickablePoint(WindowsElement element)
+		static Point GetClickablePoint(WindowsElement element)
 		{
 			var cpString = element.GetAttribute("ClickablePoint");
 			var parts = cpString.Split(',');
@@ -399,6 +345,16 @@ namespace Xamarin.Forms.Core.UITests
 			// If we could just use the element, we wouldn't be tapping at specific coordinates, so that's not 
 			// very helpful.
 
+			// Instead, we'll use MouseClickAt
+
+			MouseClickAt(x, y);
+		}
+
+		internal void MouseClickAt(float x, float y, bool contextClick = false)
+		{
+			// Mouse clicking with ICoordinates doesn't work the way we'd like (see TapCoordinates comments),
+			// so we have to do some math on our own to get the mouse in the right spot
+
 			// So here's how we're working around it for the moment:
 			// 1. Get the Window viewport (which is a known-to-exist element)
 			// 2. Using the Window's ICoordinates and the MouseMove() overload with x/y offsets, move the pointer
@@ -411,7 +367,23 @@ namespace Xamarin.Forms.Core.UITests
 			var xOffset = viewPort.Coordinates.LocationInViewport.X;
 			var yOffset = viewPort.Coordinates.LocationInViewport.Y;
 			_session.Mouse.MouseMove(viewPort.Coordinates, (int)x - xOffset, (int)y - yOffset);
-			_session.Mouse.Click(null);
+
+			if (contextClick)
+			{
+				_session.Mouse.ContextClick(null);
+			}
+			else
+			{
+				_session.Mouse.Click(null);
+			}
+		}
+
+		public void ContextClick(string marked)
+		{
+			var element = QueryWindows(marked).First();
+			var point = ElementToClickablePoint(element);
+
+			MouseClickAt(point.X, point.Y, contextClick:true);
 		}
 
 		public void TouchAndHold(Func<AppQuery, AppQuery> query)
@@ -745,12 +717,21 @@ namespace Xamarin.Forms.Core.UITests
 
 		public object Invoke(string methodName, object argument = null)
 		{
-			throw new NotImplementedException();
+			return Invoke(methodName, new[] { argument });
 		}
 
 		public object Invoke(string methodName, object[] arguments)
 		{
-			throw new NotImplementedException();
+			if (methodName == "ContextClick")
+			{
+				// The IApp interface doesn't have a context click concept, and mapping TouchAndHold to 
+				// context clicking would box us in if we have the option of running these tests on touch
+				// devices later. So we're going to use the back door.
+				ContextClick(arguments[0].ToString());
+				return null;
+			}
+
+			return null;
 		}
 
 		public void DragCoordinates(float fromX, float fromY, float toX, float toY)
@@ -783,45 +764,5 @@ namespace Xamarin.Forms.Core.UITests
 		public IDevice Device { get; }
 
 		public ITestServer TestServer { get; }
-
-		class WindowsTestServer : ITestServer
-		{
-			readonly WindowsDriver<WindowsElement> _session;
-
-			public WindowsTestServer(WindowsDriver<WindowsElement> session)
-			{
-				_session = session;
-			}
-
-			public string Post(string endpoint, object arguments = null)
-			{
-				throw new NotImplementedException();
-			}
-
-			public string Put(string endpoint, byte[] data)
-			{
-				throw new NotImplementedException();
-			}
-
-			public string Get(string endpoint)
-			{
-				if (endpoint == "version")
-				{
-					try
-					{
-						return _session.CurrentWindowHandle;
-					}
-					catch (Exception exception)
-					{
-						WindowsTestBase.HandleAppClosed(exception);
-						throw;
-					}
-				}
-
-				return endpoint;
-			}
-		}
-
-		
 	}
 }
