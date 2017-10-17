@@ -28,8 +28,11 @@ namespace Xamarin.Forms.Core.UITests
 			var marked = match.Groups[3].Captures[0].Value;
 
 			// Just ignoring everything else for now (parent, index statements, etc)
+			var result = new WinQuery(controlType, marked, raw);
 
-			return new WinQuery(controlType, marked, raw);
+			Debug.WriteLine($">>>>> WinQuery is: {result}");
+
+			return result;
 		}
 
 		static string GetRawQuery(Func<AppQuery, AppQuery> query = null)
