@@ -79,9 +79,9 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				Assert.NotNull (dict);
 				Assert.That (dict, Is.TypeOf<Dictionary<string,string>> ());
 
-				var queue = layout.Resources ["queue"];
+				var queue = layout.Resources ["genericsquaredlist"];
 				Assert.NotNull (dict);
-				Assert.That (queue, Is.TypeOf<Queue<KeyValuePair<string,string>>> ());
+				Assert.That (queue, Is.TypeOf<List<KeyValuePair<string,string>>> ());
 			}
 
 			[TestCase (false)]
