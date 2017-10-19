@@ -89,6 +89,19 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
+		public void CanExecuteWithDefaultValue([Values(true, false)] bool expected)
+		{
+			bool canExecuteRan = false;
+			var cmd = new Command(() => { }, () => {
+				canExecuteRan = true;
+				return expected;
+			});
+
+			Assert.AreEqual(expected, cmd.CanExecute(null,expected));
+			Assert.True(canExecuteRan);
+		}
+
+		[Test]
 		public void ChangeCanExecute ()
 		{
 			bool signaled = false;

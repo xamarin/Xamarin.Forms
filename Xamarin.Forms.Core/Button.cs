@@ -188,8 +188,8 @@ namespace Xamarin.Forms
 		void CommandCanExecuteChanged(object sender, EventArgs eventArgs)
 		{
 			ICommand cmd = Command;
-			if (cmd != null)
-				IsEnabledCore = cmd.CanExecute(CommandParameter);
+			if(cmd != null)
+				IsEnabledCore = (cmd as Command)?.CanExecute(CommandParameter, IsEnabled) ?? cmd.CanExecute(CommandParameter);
 		}
 
 		void IFontElement.OnFontFamilyChanged(string oldValue, string newValue) =>

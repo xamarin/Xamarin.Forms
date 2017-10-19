@@ -173,6 +173,28 @@ var button = new Button {
         </remarks>
       </Docs>
     </Member>
+    <Member MemberName="CanExecute">
+      <MemberSignature Language="C#" Value="public bool CanExecute (object parameter, bool defaultCanExecute);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance bool CanExecute(object parameter, bool defaultCanExecute) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="parameter" Type="System.Object" />
+        <Parameter Name="defaultCanExecute" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="parameter">To be added.</param>
+        <param name="defaultCanExecute">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
     <Member MemberName="CanExecuteChanged">
       <MemberSignature Language="C#" Value="public event EventHandler CanExecuteChanged;" />
       <MemberSignature Language="ILAsm" Value=".event class System.EventHandler CanExecuteChanged" />

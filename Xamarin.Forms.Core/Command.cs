@@ -94,10 +94,15 @@ namespace Xamarin.Forms
 
 		public bool CanExecute(object parameter)
 		{
+			return CanExecute(parameter, true);
+		}
+
+		public bool CanExecute(object parameter, bool defaultCanExecute)
+		{
 			if (_canExecute != null)
 				return _canExecute(parameter);
 
-			return true;
+			return defaultCanExecute;
 		}
 
 		public event EventHandler CanExecuteChanged;

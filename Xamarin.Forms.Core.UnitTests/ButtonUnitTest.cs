@@ -227,5 +227,28 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(layout1.Position, bcl.Position);
 			Assert.AreEqual(layout1.Spacing, bcl.Spacing);
 		}
+
+		[Test]
+		public void EnabledAndCommandCanExecuteWorksWithIsEnabledFirst()
+		{
+			var button = new Button();
+
+			bool result = false;
+
+			var bindingContext = new
+			{
+				Command = new Command(() => { }),
+				IsButtonEnabled = result
+			};
+
+			//order is important
+			button.SetBinding(Button.IsEnabledProperty, "IsButtonEnabled");
+			button.SetBinding(Button.CommandProperty, "Command");
+	
+			button.BindingContext = bindingContext;
+
+			Assert.False(button.IsEnabled);
+		}
+
 	}	
 }
