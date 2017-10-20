@@ -200,19 +200,12 @@ namespace Xamarin.Forms
 
 		public bool TryGetValue(string key, out object value)
 		{
-			return _innerDictionary.TryGetValue(key, out value)
-				|| (_mergedInstance != null && _mergedInstance.TryGetValue(key, out value))
-				|| (_mergedDictionaries != null && TryGetMergedDictionaryValue(key, out value));
-		}
-
-		bool TryGetMergedDictionaryValue(string key, out object value)
-		{
-			foreach (var dictionary in _mergedDictionaries.Reverse())
-				if (dictionary.TryGetValue(key, out value))
-					return true;
-
-			value = null;
-			return false;
+			object outValue;
+			var containsKey = _innerDictionary.TryGetValue(key, out outValue)
+				|| _mergedInstance != null && _mergedInstance.TryGetValue(key, out outValue)
+				|| _mergedDictionaries != null && _mergedDictionaries.Reverse().Any(d => d.TryGetValue(key, out outValue));
+			value = outValue;
+			return containsKey;
 		}
 
 		event EventHandler<ResourcesChangedEventArgs> IResourceDictionary.ValuesChanged
