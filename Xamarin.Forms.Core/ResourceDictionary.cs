@@ -149,14 +149,8 @@ namespace Xamarin.Forms
 		{
 			get
 			{
-				if (_innerDictionary.ContainsKey(index))
-					return _innerDictionary[index];
-				if (_mergedInstance != null && _mergedInstance.ContainsKey(index))
-					return _mergedInstance[index];
-				if (_mergedDictionaries != null)
-					foreach (var dict in _mergedDictionaries.Reverse())
-						if (dict.ContainsKey(index))
-							return dict[index];
+				object value;
+				if (TryGetValue(index, out value)) return value;
 				throw new KeyNotFoundException($"The resource '{index}' is not present in the dictionary.");
 			}
 			set
