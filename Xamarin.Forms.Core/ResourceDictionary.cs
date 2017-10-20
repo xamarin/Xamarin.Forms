@@ -38,14 +38,13 @@ namespace Xamarin.Forms
 
 		ICollection<ResourceDictionary> _mergedDictionaries;
 		public ICollection<ResourceDictionary> MergedDictionaries {
-			get {
-				if (_mergedDictionaries == null) {
-					var col = new ObservableCollection<ResourceDictionary>();
-					col.CollectionChanged += MergedDictionaries_CollectionChanged;
-					_mergedDictionaries = col;
-				}
-				return _mergedDictionaries;
-			}
+			get { return _mergedDictionaries ?? (_mergedDictionaries = CreateMergedDictionariesCollection()); }
+		}
+
+		private ICollection<ResourceDictionary> CreateMergedDictionariesCollection() {
+			var collection = new ObservableCollection<ResourceDictionary>();
+			collection.CollectionChanged += MergedDictionaries_CollectionChanged;
+			return collection;
 		}
 
 		IList<ResourceDictionary> _collectionTrack;
@@ -154,8 +153,8 @@ namespace Xamarin.Forms
 					return _innerDictionary[index];
 				if (_mergedInstance != null && _mergedInstance.ContainsKey(index))
 					return _mergedInstance[index];
-				if (MergedDictionaries != null)
-					foreach (var dict in MergedDictionaries.Reverse())
+				if (_mergedDictionaries != null)
+					foreach (var dict in _mergedDictionaries.Reverse())
 						if (dict.ContainsKey(index))
 							return dict[index];
 				throw new KeyNotFoundException($"The resource '{index}' is not present in the dictionary.");
@@ -194,8 +193,8 @@ namespace Xamarin.Forms
 
 		internal IEnumerable<KeyValuePair<string, object>> MergedResources {
 			get {
-				if (MergedDictionaries != null)
-					foreach (var r in MergedDictionaries.Reverse().SelectMany(x => x.MergedResources))
+				if (_mergedDictionaries != null)
+					foreach (var r in _mergedDictionaries.Reverse().SelectMany(x => x.MergedResources))
 						yield return r;
 				if (_mergedInstance != null)
 					foreach (var r in _mergedInstance.MergedResources)
@@ -209,12 +208,12 @@ namespace Xamarin.Forms
 		{
 			return _innerDictionary.TryGetValue(key, out value)
 				|| (_mergedInstance != null && _mergedInstance.TryGetValue(key, out value))
-				|| (MergedDictionaries != null && TryGetMergedDictionaryValue(key, out value));
+				|| (_mergedDictionaries != null && TryGetMergedDictionaryValue(key, out value));
 		}
 
 		bool TryGetMergedDictionaryValue(string key, out object value)
 		{
-			foreach (var dictionary in MergedDictionaries.Reverse())
+			foreach (var dictionary in _mergedDictionaries.Reverse())
 				if (dictionary.TryGetValue(key, out value))
 					return true;
 
