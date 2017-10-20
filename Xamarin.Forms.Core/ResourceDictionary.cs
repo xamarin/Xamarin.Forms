@@ -12,14 +12,14 @@ namespace Xamarin.Forms
 {
 	public class ResourceDictionary : IResourceDictionary, IDictionary<string, object>
 	{
-		static ConditionalWeakTable<Type, ResourceDictionary> s_instances = new ConditionalWeakTable<Type, ResourceDictionary>();
+		static readonly ConditionalWeakTable<Type, ResourceDictionary> s_instances = new ConditionalWeakTable<Type, ResourceDictionary>();
 		readonly Dictionary<string, object> _innerDictionary = new Dictionary<string, object>();
 		ResourceDictionary _mergedInstance;
 		Type _mergedWith;
 
 		[TypeConverter (typeof(TypeTypeConverter))]
 		public Type MergedWith {
-			get { return _mergedWith; }
+			get => _mergedWith;
 			set {
 				if (_mergedWith == value)
 					return;
@@ -37,15 +37,14 @@ namespace Xamarin.Forms
 		}
 
 		ICollection<ResourceDictionary> _mergedDictionaries;
-		public ICollection<ResourceDictionary> MergedDictionaries {
-			get {
-				if (_mergedDictionaries == null) {
-					var col = new ObservableCollection<ResourceDictionary>();
-					col.CollectionChanged += MergedDictionaries_CollectionChanged;
-					_mergedDictionaries = col;
-				}
-				return _mergedDictionaries;
-			}
+		public ICollection<ResourceDictionary> MergedDictionaries => 
+			_mergedDictionaries ?? (_mergedDictionaries = CreateMergedDictionariesCollection());
+
+		public ICollection<ResourceDictionary> CreateMergedDictionariesCollection()
+		{
+			var collection = new ObservableCollection<ResourceDictionary>();
+			collection.CollectionChanged += MergedDictionaries_CollectionChanged;
+			return collection;
 		}
 
 		IList<ResourceDictionary> _collectionTrack;
@@ -90,10 +89,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		void Item_ValuesChanged(object sender, ResourcesChangedEventArgs e)
-		{
-			OnValuesChanged(e.Values);
-		}
+		void Item_ValuesChanged(object sender, ResourcesChangedEventArgs e) => OnValuesChanged(e.Values);
 
 		void ICollection<KeyValuePair<string, object>>.Add(KeyValuePair<string, object> item)
 		{
@@ -101,36 +97,22 @@ namespace Xamarin.Forms
 			OnValuesChanged(item);
 		}
 
-		public void Clear()
-		{
-			_innerDictionary.Clear();
-		}
+		public void Clear() => _innerDictionary.Clear();
 
-		bool ICollection<KeyValuePair<string, object>>.Contains(KeyValuePair<string, object> item)
-		{
-			return ((ICollection<KeyValuePair<string, object>>)_innerDictionary).Contains(item)
-				|| (_mergedInstance != null && _mergedInstance.Contains(item));
-		}
+		bool ICollection<KeyValuePair<string, object>>.Contains(KeyValuePair<string, object> item) =>
+			((ICollection<KeyValuePair<string, object>>) _innerDictionary).Contains(item)
+			|| _mergedInstance != null && _mergedInstance.Contains(item);
 
-		void ICollection<KeyValuePair<string, object>>.CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
-		{
+		void ICollection<KeyValuePair<string, object>>.CopyTo(KeyValuePair<string, object>[] array, int arrayIndex) => 
 			((ICollection<KeyValuePair<string, object>>)_innerDictionary).CopyTo(array, arrayIndex);
-		}
 
-		public int Count
-		{
-			get { return _innerDictionary.Count; }
-		}
+		public int Count => _innerDictionary.Count;
 
-		bool ICollection<KeyValuePair<string, object>>.IsReadOnly
-		{
-			get { return ((ICollection<KeyValuePair<string, object>>)_innerDictionary).IsReadOnly; }
-		}
+		bool ICollection<KeyValuePair<string, object>>.IsReadOnly => 
+			((ICollection<KeyValuePair<string, object>>)_innerDictionary).IsReadOnly;
 
-		bool ICollection<KeyValuePair<string, object>>.Remove(KeyValuePair<string, object> item)
-		{
-			return ((ICollection<KeyValuePair<string, object>>)_innerDictionary).Remove(item);
-		}
+		bool ICollection<KeyValuePair<string, object>>.Remove(KeyValuePair<string, object> item) => 
+			((ICollection<KeyValuePair<string, object>>)_innerDictionary).Remove(item);
 
 		public void Add(string key, object value)
 		{
@@ -140,10 +122,7 @@ namespace Xamarin.Forms
 			OnValueChanged(key, value);
 		}
 
-		public bool ContainsKey(string key)
-		{
-			return _innerDictionary.ContainsKey(key);
-		}
+		public bool ContainsKey(string key) => _innerDictionary.ContainsKey(key);
 
 		[IndexerName("Item")]
 		public object this[string index]
@@ -158,35 +137,20 @@ namespace Xamarin.Forms
 			}
 		}
 
-		public ICollection<string> Keys
-		{
-			get { return _innerDictionary.Keys; }
-		}
+		public ICollection<string> Keys => _innerDictionary.Keys;
 
-		public bool Remove(string key)
-		{
-			return _innerDictionary.Remove(key);
-		}
+		public bool Remove(string key) => _innerDictionary.Remove(key);
 
-		public ICollection<object> Values
-		{
-			get { return _innerDictionary.Values; }
-		}
+		public ICollection<object> Values => _innerDictionary.Values;
 
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return GetEnumerator();
-		}
+		IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-		public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
-		{
-			return _innerDictionary.GetEnumerator();
-		}
+		public IEnumerator<KeyValuePair<string, object>> GetEnumerator() => _innerDictionary.GetEnumerator();
 
 		internal IEnumerable<KeyValuePair<string, object>> MergedResources {
 			get {
-				if (MergedDictionaries != null)
-					foreach (var r in MergedDictionaries.Reverse().SelectMany(x => x.MergedResources))
+				if (_mergedDictionaries != null)
+					foreach (var r in _mergedDictionaries.Reverse().SelectMany(x => x.MergedResources))
 						yield return r;
 				if (_mergedInstance != null)
 					foreach (var r in _mergedInstance.MergedResources)
@@ -207,8 +171,8 @@ namespace Xamarin.Forms
 
 		event EventHandler<ResourcesChangedEventArgs> IResourceDictionary.ValuesChanged
 		{
-			add { ValuesChanged += value; }
-			remove { ValuesChanged -= value; }
+			add => ValuesChanged += value;
+			remove => ValuesChanged -= value;
 		}
 
 		public void Add(Style style)
@@ -218,8 +182,8 @@ namespace Xamarin.Forms
 			else
 			{
 				IList<Style> classes;
-				object outclasses;
-				if (!TryGetValue(Style.StyleClassPrefix + style.Class, out outclasses) || (classes = outclasses as IList<Style>) == null)
+				if (!TryGetValue(Style.StyleClassPrefix + style.Class, out var outClasses)
+				    || (classes = outClasses as IList<Style>) == null)
 					classes = new List<Style>();
 				classes.Add(style);
 				this[Style.StyleClassPrefix + style.Class] = classes;
