@@ -148,18 +148,9 @@ namespace Xamarin.Forms
 		[IndexerName("Item")]
 		public object this[string index]
 		{
-			get
-			{
-				if (_innerDictionary.ContainsKey(index))
-					return _innerDictionary[index];
-				if (_mergedInstance != null && _mergedInstance.ContainsKey(index))
-					return _mergedInstance[index];
-				if (MergedDictionaries != null)
-					foreach (var dict in MergedDictionaries.Reverse())
-						if (dict.ContainsKey(index))
-							return dict[index];
-				throw new KeyNotFoundException($"The resource '{index}' is not present in the dictionary.");
-			}
+			get => TryGetValue(index, out var value)
+				? value
+				: throw new KeyNotFoundException($"The resource '{index}' is not present in the dictionary.");
 			set
 			{
 				_innerDictionary[index] = value;
@@ -207,19 +198,11 @@ namespace Xamarin.Forms
 
 		public bool TryGetValue(string key, out object value)
 		{
-			return _innerDictionary.TryGetValue(key, out value)
-				|| (_mergedInstance != null && _mergedInstance.TryGetValue(key, out value))
-				|| (MergedDictionaries != null && TryGetMergedDictionaryValue(key, out value));
-		}
-
-		bool TryGetMergedDictionaryValue(string key, out object value)
-		{
-			foreach (var dictionary in MergedDictionaries.Reverse())
-				if (dictionary.TryGetValue(key, out value))
-					return true;
-
-			value = null;
-			return false;
+			var containsKey = _innerDictionary.TryGetValue(key, out var outValue)
+			             || _mergedInstance != null && _mergedInstance.TryGetValue(key, out outValue)
+			             || _mergedDictionaries != null && _mergedDictionaries.Reverse().Any(d => d.TryGetValue(key, out outValue));
+			value = outValue;
+			return containsKey;
 		}
 
 		event EventHandler<ResourcesChangedEventArgs> IResourceDictionary.ValuesChanged
