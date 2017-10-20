@@ -467,5 +467,19 @@ namespace Xamarin.Forms.Core.UnitTests
 			rd0.Add("foo", "Foo");
 			Assert.That(label.Text, Is.EqualTo("Foo"));
 		}
+
+		[Test]
+		public void MergedDictionariesOverriding()
+		{
+			var commonKey = "CommonKey";
+			var rd0 = new ResourceDictionary { { commonKey, "Value0" } };
+			var rd1 = new ResourceDictionary { { commonKey, "Value1" } };
+
+			var rd = new ResourceDictionary { MergedDictionaries = { rd0, rd1 } };
+			Assert.That(rd[commonKey], Is.EqualTo("Value1"));
+
+			rd[commonKey] = "Value";
+			Assert.That(rd[commonKey], Is.EqualTo("Value"));
+		}
 	}
 }
