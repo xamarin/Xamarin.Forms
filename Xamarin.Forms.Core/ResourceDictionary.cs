@@ -32,7 +32,7 @@ namespace Xamarin.Forms
 					return;
 
 				_mergedInstance = s_instances.GetValue(_mergedWith, (key) => (ResourceDictionary)Activator.CreateInstance(key));
-				OnValuesChanged(_mergedInstance.ToArray());
+				OnValuesChanged(_mergedInstance);
 			}
 		}
 
@@ -74,7 +74,7 @@ namespace Xamarin.Forms
 					var rd = (ResourceDictionary)item;
 					_collectionTrack.Add(rd);
 					rd.ValuesChanged += Item_ValuesChanged;
-					OnValuesChanged(rd.ToArray());
+					OnValuesChanged(rd);
 				}
 			}
 
@@ -92,7 +92,7 @@ namespace Xamarin.Forms
 
 		void Item_ValuesChanged(object sender, ResourcesChangedEventArgs e)
 		{
-			OnValuesChanged(e.Values.ToArray());
+			OnValuesChanged(e.Values);
 		}
 
 		void ICollection<KeyValuePair<string, object>>.Add(KeyValuePair<string, object> item)
@@ -226,17 +226,14 @@ namespace Xamarin.Forms
 			}
 		}
 
-		void OnValueChanged(string key, object value)
-		{
+		void OnValueChanged(string key, object value) =>
 			OnValuesChanged(new KeyValuePair<string, object>(key, value));
-		}
 
-		void OnValuesChanged(params KeyValuePair<string, object>[] values)
-		{
-			if (values == null || values.Length == 0)
-				return;
-			ValuesChanged?.Invoke(this, new ResourcesChangedEventArgs(values));
-		}
+		void OnValuesChanged(KeyValuePair<string, object> value) =>
+			ValuesChanged?.Invoke(this, new ResourcesChangedEventArgs(new[] {value}));
+
+		void OnValuesChanged(IEnumerable<KeyValuePair<string, object>> values) =>
+			ValuesChanged?.Invoke(this, new ResourcesChangedEventArgs(values.Select(v => v)));
 
 		event EventHandler<ResourcesChangedEventArgs> ValuesChanged;
 	}
