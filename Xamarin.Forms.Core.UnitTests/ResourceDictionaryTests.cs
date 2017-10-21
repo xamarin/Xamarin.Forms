@@ -476,9 +476,13 @@ namespace Xamarin.Forms.Core.UnitTests
 			var rd1 = new ResourceDictionary { { commonKey, "Value1" } };
 
 			var rd = new ResourceDictionary { MergedDictionaries = { rd0, rd1 } };
+
+			Assert.That(rd0.ContainsKey(commonKey), Is.EqualTo(true));
 			Assert.That(rd[commonKey], Is.EqualTo("Value1"));
 
 			rd[commonKey] = "Value";
+
+			Assert.That(rd0.ContainsKey(commonKey), Is.EqualTo(true));
 			Assert.That(rd[commonKey], Is.EqualTo("Value"));
 		}
 
@@ -491,6 +495,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			rd1.MergedDictionaries.Add(rd2);
 			rd0.MergedDictionaries.Add(rd1);
 
+			Assert.That(rd0.ContainsKey("Key2"), Is.EqualTo(true));
 			Assert.That(rd0["Key2"], Is.EqualTo("Level2"));
 		}
 	}

@@ -141,7 +141,7 @@ namespace Xamarin.Forms
 
 		public bool ContainsKey(string key)
 		{
-			return _innerDictionary.ContainsKey(key);
+			return TryGetValue(key, out var _);
 		}
 
 		[IndexerName("Item")]
