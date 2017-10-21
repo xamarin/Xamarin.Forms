@@ -481,5 +481,17 @@ namespace Xamarin.Forms.Core.UnitTests
 			rd[commonKey] = "Value";
 			Assert.That(rd[commonKey], Is.EqualTo("Value"));
 		}
+
+		[Test]
+		public void MergedDictionariesDeepSublevels()
+		{
+			var rd0 = new ResourceDictionary();
+			var rd1 = new ResourceDictionary();
+			var rd2 = new ResourceDictionary { { "Key2", "Level2" } };
+			rd1.MergedDictionaries.Add(rd2);
+			rd0.MergedDictionaries.Add(rd1);
+
+			Assert.That(rd0["Key2"], Is.EqualTo("Level2"));
+		}
 	}
 }
