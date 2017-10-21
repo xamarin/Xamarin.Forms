@@ -32,20 +32,19 @@ namespace Xamarin.Forms
 					return;
 
 				_mergedInstance = s_instances.GetValue(_mergedWith, (key) => (ResourceDictionary)Activator.CreateInstance(key));
-				OnValuesChanged(_mergedInstance.ToArray());
+				OnValuesChanged(_mergedInstance);
 			}
 		}
 
 		ICollection<ResourceDictionary> _mergedDictionaries;
 		public ICollection<ResourceDictionary> MergedDictionaries {
-			get {
-				if (_mergedDictionaries == null) {
-					var col = new ObservableCollection<ResourceDictionary>();
-					col.CollectionChanged += MergedDictionaries_CollectionChanged;
-					_mergedDictionaries = col;
-				}
-				return _mergedDictionaries;
-			}
+			get { return _mergedDictionaries ?? (_mergedDictionaries = CreateMergedDictionariesCollection()); }
+		}
+
+		private ICollection<ResourceDictionary> CreateMergedDictionariesCollection() {
+			var collection = new ObservableCollection<ResourceDictionary>();
+			collection.CollectionChanged += MergedDictionaries_CollectionChanged;
+			return collection;
 		}
 
 		IList<ResourceDictionary> _collectionTrack;
@@ -74,7 +73,7 @@ namespace Xamarin.Forms
 					var rd = (ResourceDictionary)item;
 					_collectionTrack.Add(rd);
 					rd.ValuesChanged += Item_ValuesChanged;
-					OnValuesChanged(rd.ToArray());
+					OnValuesChanged(rd);
 				}
 			}
 
@@ -92,7 +91,7 @@ namespace Xamarin.Forms
 
 		void Item_ValuesChanged(object sender, ResourcesChangedEventArgs e)
 		{
-			OnValuesChanged(e.Values.ToArray());
+			OnValuesChanged(e.Values);
 		}
 
 		void ICollection<KeyValuePair<string, object>>.Add(KeyValuePair<string, object> item)
@@ -142,7 +141,7 @@ namespace Xamarin.Forms
 
 		public bool ContainsKey(string key)
 		{
-			return _innerDictionary.ContainsKey(key);
+			return TryGetValue(key, out var _);
 		}
 
 		[IndexerName("Item")]
@@ -150,14 +149,8 @@ namespace Xamarin.Forms
 		{
 			get
 			{
-				if (_innerDictionary.ContainsKey(index))
-					return _innerDictionary[index];
-				if (_mergedInstance != null && _mergedInstance.ContainsKey(index))
-					return _mergedInstance[index];
-				if (MergedDictionaries != null)
-					foreach (var dict in MergedDictionaries.Reverse())
-						if (dict.ContainsKey(index))
-							return dict[index];
+				object value;
+				if (TryGetValue(index, out value)) return value;
 				throw new KeyNotFoundException($"The resource '{index}' is not present in the dictionary.");
 			}
 			set
@@ -194,8 +187,8 @@ namespace Xamarin.Forms
 
 		internal IEnumerable<KeyValuePair<string, object>> MergedResources {
 			get {
-				if (MergedDictionaries != null)
-					foreach (var r in MergedDictionaries.Reverse().SelectMany(x => x.MergedResources))
+				if (_mergedDictionaries != null)
+					foreach (var r in _mergedDictionaries.Reverse().SelectMany(x => x.MergedResources))
 						yield return r;
 				if (_mergedInstance != null)
 					foreach (var r in _mergedInstance.MergedResources)
@@ -207,19 +200,12 @@ namespace Xamarin.Forms
 
 		public bool TryGetValue(string key, out object value)
 		{
-			return _innerDictionary.TryGetValue(key, out value)
-				|| (_mergedInstance != null && _mergedInstance.TryGetValue(key, out value))
-				|| (MergedDictionaries != null && TryGetMergedDictionaryValue(key, out value));
-		}
-
-		bool TryGetMergedDictionaryValue(string key, out object value)
-		{
-			foreach (var dictionary in MergedDictionaries.Reverse())
-				if (dictionary.TryGetValue(key, out value))
-					return true;
-
-			value = null;
-			return false;
+			object outValue;
+			var containsKey = _innerDictionary.TryGetValue(key, out outValue)
+				|| _mergedInstance != null && _mergedInstance.TryGetValue(key, out outValue)
+				|| _mergedDictionaries != null && _mergedDictionaries.Reverse().Any(d => d.TryGetValue(key, out outValue));
+			value = outValue;
+			return containsKey;
 		}
 
 		event EventHandler<ResourcesChangedEventArgs> IResourceDictionary.ValuesChanged
@@ -248,11 +234,14 @@ namespace Xamarin.Forms
 			OnValuesChanged(new KeyValuePair<string, object>(key, value));
 		}
 
-		void OnValuesChanged(params KeyValuePair<string, object>[] values)
+		void OnValuesChanged(KeyValuePair<string, object> pair)
 		{
-			if (values == null || values.Length == 0)
-				return;
-			ValuesChanged?.Invoke(this, new ResourcesChangedEventArgs(values));
+			ValuesChanged?.Invoke(this, new ResourcesChangedEventArgs(new[] { pair }));
+		}
+
+		void OnValuesChanged(IEnumerable<KeyValuePair<string, object>> pairs)
+		{
+			ValuesChanged?.Invoke(this, new ResourcesChangedEventArgs(pairs.Select(p => p)));
 		}
 
 		event EventHandler<ResourcesChangedEventArgs> ValuesChanged;
