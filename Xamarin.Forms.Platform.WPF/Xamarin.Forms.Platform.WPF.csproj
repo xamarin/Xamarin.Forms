@@ -82,6 +82,7 @@
     <Compile Include="Extensions\FrameworkElementExtensions.cs" />
     <Compile Include="Extensions\ImageExtensions.cs" />
     <Compile Include="Extensions\KeyboardExtensions.cs" />
+    <Compile Include="Extensions\PageExtensions.cs" />
     <Compile Include="Extensions\VisualElementExtensions.cs" />
     <Compile Include="Forms.cs" />
     <Compile Include="FormsApplicationPage.cs" />

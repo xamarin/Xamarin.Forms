@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 using System.Windows;
 using WpfLightToolkit.Controls;
 
@@ -25,7 +20,7 @@ namespace Xamarin.Forms.Platform.WPF
 			this.ContentLoader = new FormsContentLoader();
 		}
 
-		protected void LoadApplication(Application application)
+		public void LoadApplication(Application application)
 		{
 			Application.Current = application;
 			application.PropertyChanged += ApplicationOnPropertyChanged;

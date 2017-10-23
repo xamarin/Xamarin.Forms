@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.WPF;
@@ -12,11 +8,11 @@ namespace Xamarin.Forms
 {
 	public static class Forms
 	{
-		static bool s_isInitialized;
+		public static bool IsInitialized { get; private set; }
 
 		public static void Init()
 		{
-			if (s_isInitialized)
+			if (IsInitialized)
 				return;
 
 			string assemblyName = Assembly.GetExecutingAssembly().GetName().Name;
@@ -40,8 +36,8 @@ namespace Xamarin.Forms
 			
 			Ticker.SetDefault(new WPFTicker());
 			Device.SetIdiom(TargetIdiom.Desktop);
-			
-			s_isInitialized = true;
+
+			IsInitialized = true;
 		}
 	}
 }
