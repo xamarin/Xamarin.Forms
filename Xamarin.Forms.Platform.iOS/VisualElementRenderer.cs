@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using RectangleF = CoreGraphics.CGRect;
 using SizeF = CoreGraphics.CGSize;
+using System.Threading;
 
 #if __MOBILE__
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
@@ -54,9 +55,14 @@ namespace Xamarin.Forms.Platform.MacOS
 		BlurEffectStyle _previousBlur;
 #endif
 
+		public static int s__id;
+		public int __id;
+
 		protected VisualElementRenderer() : base(RectangleF.Empty)
 		{
 			_propertyChangedHandler = OnElementPropertyChanged;
+			__id = Interlocked.Increment(ref s__id);
+
 #if __MOBILE__
 			BackgroundColor = _defaultColor;
 #else
@@ -75,6 +81,9 @@ namespace Xamarin.Forms.Platform.MacOS
 #endif
 
 		public TElement Element { get; private set; }
+
+		public bool IsDisposed
+			=> (_flags & VisualElementRendererFlags.Disposed) != 0;
 
 		protected bool AutoPackage
 		{
@@ -151,6 +160,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public void SetElement(TElement element)
 		{
+			Assert.That(!IsDisposed || element == null, $"Internal Error: Reinitializing disposed renderer __id={__id}.");
+
 			var oldElement = Element;
 			Element = element;
 

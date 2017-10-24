@@ -11,6 +11,7 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		EventTracker _events;
 		bool _ignoreSourceChanges;
+		bool _disposed;
 		WebNavigationEvent _lastBackForwardEvent;
 		VisualElementPackager _packager;
 #pragma warning disable 0414
@@ -90,6 +91,9 @@ namespace Xamarin.Forms.Platform.iOS
 			ScrollView.Frame = Bounds;
 		}
 
+		public bool IsDisposed
+			=> _disposed;
+
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing)
@@ -107,6 +111,8 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			base.Dispose(disposing);
+
+			_disposed = true;
 		}
 
 		protected virtual void OnElementChanged(VisualElementChangedEventArgs e)

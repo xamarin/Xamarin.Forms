@@ -10,6 +10,7 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class ScrollViewRenderer : UIScrollView, IVisualElementRenderer, IEffectControlProvider
 	{
+		bool _disposed;
 		EventTracker _events;
 		KeyboardInsetTracker _insetTracker;
 
@@ -123,6 +124,9 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		public bool IsDisposed
+			=> _disposed;
+
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing)
@@ -150,6 +154,8 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			base.Dispose(disposing);
+
+			_disposed = true;
 		}
 
 		protected virtual void OnElementChanged(VisualElementChangedEventArgs e)

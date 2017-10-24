@@ -89,6 +89,10 @@ namespace Xamarin.Forms.Platform.MacOS
 			base.ViewWillAppear();
 		}
 
+
+		public bool IsDisposed
+			=> _disposed;
+
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing && !_disposed)

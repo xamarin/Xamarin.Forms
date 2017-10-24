@@ -142,6 +142,9 @@ namespace Xamarin.Forms.Platform.MacOS
 			Page.SendDisappearing();
 		}
 
+		public bool IsDisposed
+			=> _disposed;
+
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing && !_disposed)

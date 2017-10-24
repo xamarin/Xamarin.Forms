@@ -121,6 +121,9 @@ namespace Xamarin.Forms.Platform.iOS
 			View.Window?.EndEditing(true);
 		}
 
+		public bool IsDisposed
+			=> _disposed;
+
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing && !_disposed)

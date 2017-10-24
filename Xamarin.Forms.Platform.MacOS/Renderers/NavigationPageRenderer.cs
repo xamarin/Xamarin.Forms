@@ -82,6 +82,10 @@ namespace Xamarin.Forms.Platform.MacOS
 			return OnPush(page, animated);
 		}
 
+
+		public bool IsDisposed
+			=> _disposed;
+
 		protected override void Dispose(bool disposing)
 		{
 			if (!_disposed && disposing)

@@ -148,6 +148,9 @@ namespace Xamarin.Forms.Platform.iOS
 			base.WillRotate(toInterfaceOrientation, duration);
 		}
 
+		public bool IsDisposed
+			=> _disposed;
+
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing && !_disposed)

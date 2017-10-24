@@ -201,6 +201,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public static void SetRenderer(VisualElement bindable, IVisualElementRenderer value)
 		{
+			Assert.That(!value.IsDisposed, "SetRenderer called with disposed renderer.");
 			bindable.SetValue(RendererProperty, value);
 		}
 

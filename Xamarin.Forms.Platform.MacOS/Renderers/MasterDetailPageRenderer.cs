@@ -24,6 +24,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected MasterDetailPage MasterDetailPage => _masterDetailPage ?? (_masterDetailPage = (MasterDetailPage)Element);
 
+		public bool IsDisposed
+			=> _disposed;
+
 		protected override void Dispose(bool disposing)
 		{
 			if (!_disposed && disposing)

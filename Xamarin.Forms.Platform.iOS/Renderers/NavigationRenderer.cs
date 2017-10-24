@@ -20,6 +20,7 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _appeared;
 		bool _ignorePopCall;
 		bool _loaded;
+		bool _disposed;
 		MasterDetailPage _parentMasterDetailPage;
 		Size _queuedSize;
 		UIViewController[] _removeControllers;
@@ -218,6 +219,9 @@ namespace Xamarin.Forms.Platform.iOS
 			Current = navPage.CurrentPage;
 		}
 
+		public bool IsDisposed
+			=> _disposed;
+
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing)
@@ -254,6 +258,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 				_appeared = false;
 			}
+
+			_disposed = true;
 		}
 
 		protected virtual void OnElementChanged(VisualElementChangedEventArgs e)

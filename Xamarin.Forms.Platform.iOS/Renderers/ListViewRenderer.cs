@@ -18,7 +18,6 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		const int DefaultRowHeight = 44;
 		ListViewDataSource _dataSource;
-		bool _estimatedRowHeight;
 		IVisualElementRenderer _headerRenderer;
 		IVisualElementRenderer _footerRenderer;
 
@@ -224,7 +223,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 				Control.Source = _dataSource = e.NewElement.HasUnevenRows ? new UnevenListViewDataSource(e.NewElement, _tableViewController) : new ListViewDataSource(e.NewElement, _tableViewController);
 
-				UpdateEstimatedRowHeight();
+				Control.EstimatedRowHeight = DefaultRowHeight;
+
 				UpdateHeader();
 				UpdateFooter();
 				UpdatePullToRefreshEnabled();
@@ -248,10 +248,7 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.PropertyName == Xamarin.Forms.ListView.IsGroupingEnabledProperty.PropertyName)
 				_dataSource.UpdateGrouping();
 			else if (e.PropertyName == Xamarin.Forms.ListView.HasUnevenRowsProperty.PropertyName)
-			{
-				_estimatedRowHeight = false;
 				Control.Source = _dataSource = Element.HasUnevenRows ? new UnevenListViewDataSource(_dataSource) : new ListViewDataSource(_dataSource);
-			}
 			else if (e.PropertyName == Xamarin.Forms.ListView.IsPullToRefreshEnabledProperty.PropertyName)
 				UpdatePullToRefreshEnabled();
 			else if (e.PropertyName == Xamarin.Forms.ListView.IsRefreshingProperty.PropertyName)
@@ -365,40 +362,6 @@ namespace Xamarin.Forms.Platform.iOS
 					Control.ScrollToRow(NSIndexPath.FromRowSection(index, 0), position, e.ShouldAnimate);
 				}
 			}
-		}
-
-		void UpdateEstimatedRowHeight()
-		{
-			if (_estimatedRowHeight)
-				return;
-
-			// if even rows OR uneven rows but user specified a row height anyway...
-			if (!Element.HasUnevenRows || Element.RowHeight != -1)
-			{
-				Control.EstimatedRowHeight = 0;
-				_estimatedRowHeight = true;
-				return;
-			}
-
-			var source = _dataSource as UnevenListViewDataSource;
-
-			// We want to make sure we reset the cached defined row heights whenever this is called.
-			// Failing to do this will regress Bugzilla 43313 
-			// (strange animation when adding rows with uneven heights)
-			//source?.CacheDefinedRowHeights();
-
-			if (source == null)
-			{
-				// We need to set a default estimated row height, 
-				// because re-setting it later(when we have items on the TIL)
-				// will cause the UITableView to reload, and throw an Exception
-				Control.EstimatedRowHeight = DefaultRowHeight;
-				return;
-			}
-
-			Control.EstimatedRowHeight = source.GetEstimatedRowHeight(Control);
-			_estimatedRowHeight = true;
-			return;
 		}
 
 		void UpdateFooter()
@@ -521,7 +484,6 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				case NotifyCollectionChangedAction.Add:
 
-					UpdateEstimatedRowHeight();
 					if (e.NewStartingIndex == -1 || groupReset)
 						goto case NotifyCollectionChangedAction.Reset;
 
@@ -538,9 +500,6 @@ namespace Xamarin.Forms.Platform.iOS
 					Control.DeleteRows(GetPaths(section, e.OldStartingIndex, e.OldItems.Count), DeleteRowsAnimation);
 
 					Control.EndUpdates();
-
-					if (_estimatedRowHeight && TemplatedItemsView.TemplatedItems.Count == 0)
-						_estimatedRowHeight = false;
 
 					break;
 
@@ -562,10 +521,6 @@ namespace Xamarin.Forms.Platform.iOS
 						Control.MoveRow(NSIndexPath.FromRowSection(oldi, section), NSIndexPath.FromRowSection(newi, section));
 					}
 					Control.EndUpdates();
-
-					if (_estimatedRowHeight && e.OldStartingIndex == 0)
-						_estimatedRowHeight = false;
-
 					break;
 
 				case NotifyCollectionChangedAction.Replace:
@@ -574,14 +529,9 @@ namespace Xamarin.Forms.Platform.iOS
 					Control.BeginUpdates();
 					Control.ReloadRows(GetPaths(section, e.OldStartingIndex, e.OldItems.Count), ReloadRowsAnimation);
 					Control.EndUpdates();
-
-					if (_estimatedRowHeight && e.OldStartingIndex == 0)
-						_estimatedRowHeight = false;
-
 					break;
 
 				case NotifyCollectionChangedAction.Reset:
-					_estimatedRowHeight = false;
 					Control.ReloadData();
 					return;
 			}
@@ -633,7 +583,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		internal class UnevenListViewDataSource : ListViewDataSource
 		{
-			IVisualElementRenderer _prototype;
 			bool _disposed;
 			Dictionary<object, Cell> _prototypicalCellByTypeOrDataTemplate = new Dictionary<object, Cell>();
 
@@ -643,41 +592,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			public UnevenListViewDataSource(ListViewDataSource source) : base(source)
 			{
-			}
-
-			internal nfloat GetEstimatedRowHeight(UITableView table)
-			{
-				if (List.RowHeight != -1)
-				{
-					// Not even sure we need this case; A list with HasUnevenRows and a RowHeight doesn't make a ton of sense
-					// Anyway, no need for an estimate, because the heights we'll use are known
-					return 0;
-				}
-
-				var templatedItems = TemplatedItemsView.TemplatedItems;
-
-				if (templatedItems.Count == 0)
-				{
-					// No cells to provide an estimate, use the default row height constant
-					return DefaultRowHeight;
-				}
-
-				// We're going to base our estimate off of the first cell
-				var firstCell = templatedItems.First();
-
-				// Let's skip this optimization for grouped lists. It will likely cause more trouble than it's worth.
-				if (firstCell.Height > 0 && !List.IsGroupingEnabled)
-				{
-					// Seems like we've got cells which already specify their height; since the heights are known,
-					// we don't need to use estimatedRowHeight at all; zero will disable it and use the known heights.
-					// However, not setting the EstimatedRowHeight will drastically degrade performance with large lists.
-					// In this case, we will cache the specified cell heights asynchronously, which will be returned one time on
-					// table load by EstimatedHeight. 
-
-					return 0;
-				}
-
-				return CalculateHeightForCell(table, firstCell);
 			}
 
 			internal override void InvalidatePrototypicalCellCache()
@@ -724,58 +638,12 @@ namespace Xamarin.Forms.Platform.iOS
 				return renderHeight > 0 ? (nfloat)renderHeight : DefaultRowHeight;
 			}
 
-			internal nfloat CalculateHeightForCell(UITableView tableView, Cell cell)
-			{
-				var viewCell = cell as ViewCell;
-				if (viewCell != null && viewCell.View != null)
-				{
-					var target = viewCell.View;
-					if (_prototype == null)
-						_prototype = Platform.CreateRenderer(target);
-					else
-						_prototype.SetElement(target);
-
-					Platform.SetRenderer(target, _prototype);
-
-					var req = target.Measure(tableView.Frame.Width, double.PositiveInfinity, MeasureFlags.IncludeMargins);
-
-					target.ClearValue(Platform.RendererProperty);
-					foreach (Element descendant in target.Descendants())
-					{
-						IVisualElementRenderer renderer = Platform.GetRenderer(descendant as VisualElement);
-
-						// Clear renderer from descendent; this will not happen in Dispose as normal because we need to
-						// unhook the Element from the renderer before disposing it.
-						descendant.ClearValue(Platform.RendererProperty);
-						renderer?.Dispose();
-						renderer = null;
-					}
-
-					// Let the EstimatedHeight method know to use this value.
-					// Much more efficient than checking the value each time.
-					//_useEstimatedRowHeight = true;
-					return (nfloat)req.Request.Height;
-				}
-
-				var renderHeight = cell.RenderHeight;
-				return renderHeight > 0 ? (nfloat)renderHeight : DefaultRowHeight;
-			}
-
 			protected override void Dispose(bool disposing)
 			{
 				if (_disposed)
 					return;
 
 				_disposed = true;
-
-				if (disposing)
-				{
-					if (_prototype != null)
-					{
-						_prototype.Dispose();
-						_prototype = null;
-					}
-				}
 
 				base.Dispose(disposing);
 			}

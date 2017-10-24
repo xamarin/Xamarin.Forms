@@ -27,5 +27,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		void SetElement(VisualElement element);
 
 		void SetElementSize(Size size);
+
+		bool IsDisposed { get; }
 	}
 }

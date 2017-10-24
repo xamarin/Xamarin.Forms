@@ -19,6 +19,7 @@ namespace Xamarin.Forms.Platform.iOS
 		UIColor _defaultBarColor;
 		bool _defaultBarColorSet;
 		bool _loaded;
+		bool _disposed;
 		Size _queuedSize;
 
 		Page Page => Element as Page;
@@ -134,6 +135,9 @@ namespace Xamarin.Forms.Platform.iOS
 			_loaded = true;
 		}
 
+		public bool IsDisposed
+			=> _disposed;
+
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing)
@@ -145,6 +149,8 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			base.Dispose(disposing);
+
+			_disposed = true;
 		}
 
 		protected virtual void OnElementChanged(VisualElementChangedEventArgs e)

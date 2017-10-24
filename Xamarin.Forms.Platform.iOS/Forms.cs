@@ -26,6 +26,23 @@ using TNativeView = AppKit.NSView;
 
 namespace Xamarin.Forms
 {
+	internal sealed class Assert 
+	{
+		internal sealed class Exception : System.Exception
+		{
+			public Exception(string message) : base(message) { }
+		}
+
+		[Conditional("DEBUG")]
+		internal static void That(bool condition, string message) 
+		{
+			if (condition)
+				return;
+
+			throw new Exception(message);
+		}
+	}
+
 	public static class Forms
 	{
 		//Preserve GetCallingAssembly

@@ -6,6 +6,7 @@ classic_obj
 *.mdb
 *.exe
 *.log
+*.nupkg
 *.userprefs
 *.suo
 UpgradeLog*

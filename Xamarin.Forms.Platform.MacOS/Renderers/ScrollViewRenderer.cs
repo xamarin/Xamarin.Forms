@@ -16,6 +16,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		VisualElementTracker _tracker;
 		ScrollToRequestedEventArgs _requestedScroll;
 		IVisualElementRenderer _contentRenderer;
+		bool _disposed;
 
 		public ScrollViewRenderer() : base(RectangleF.Empty)
 		{
@@ -87,6 +88,9 @@ namespace Xamarin.Forms.Platform.MacOS
 			LayoutSubviews();
 		}
 
+		public bool IsDisposed
+			=> _disposed;
+
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing)
@@ -109,6 +113,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 
 			base.Dispose(disposing);
+
+			_disposed = true;
 		}
 
 		void RaiseElementChanged(VisualElementChangedEventArgs e)
