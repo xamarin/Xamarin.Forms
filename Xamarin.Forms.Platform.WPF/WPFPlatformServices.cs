@@ -140,5 +140,10 @@ namespace Xamarin.Forms.Platform.WPF
 					timer.Stop();
 			};
 		}
+
+		public void QuitApplication()
+		{
+			System.Windows.Application.Current.Shutdown();
+		}
 	}
 }
