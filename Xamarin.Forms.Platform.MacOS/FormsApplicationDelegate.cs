@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using AppKit;
+using Xamarin.Forms.Platform.macOS.Extensions;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
@@ -41,6 +42,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				throw new InvalidOperationException("You MUST invoke LoadApplication () before calling base.FinishedLaunching ()");
 
 			SetMainPage();
+			UpdateMainMenu();
 			_application.SendStart();
 		}
 
@@ -65,6 +67,8 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			if (e.PropertyName == nameof(Application.MainPage))
 				UpdateMainPage();
+			if (e.PropertyName == nameof(Menu))
+				UpdateMainMenu();
 		}
 
 		void SetMainPage()
@@ -80,6 +84,35 @@ namespace Xamarin.Forms.Platform.MacOS
 			var platformRenderer = (PlatformRenderer)MainWindow.ContentViewController;
 			MainWindow.ContentViewController = _application.MainPage.CreateViewController();
 			(platformRenderer?.Platform as IDisposable)?.Dispose();
+		}
+
+		void UpdateMainMenu()
+		{
+			var mainMenu = Element.GetMenu(_application);
+			if (mainMenu != null)
+				SetMainMenu(mainMenu);
+			else if (NSApplication.SharedApplication.MainMenu.Count >= 2)
+				ClearMainMenu();
+		}
+
+		void SetMainMenu(Menu mainMenu)
+		{
+			mainMenu.PropertyChanged -= MainMenuOnPropertyChanged;
+			mainMenu.PropertyChanged += MainMenuOnPropertyChanged;
+			MainMenuOnPropertyChanged(this, null);
+		}
+
+		void MainMenuOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			ClearMainMenu();
+			Element.GetMenu(_application).ToNSMenu(NSApplication.SharedApplication.MainMenu);
+		}
+
+		static void ClearMainMenu()
+		{
+			//for now we can't remove the 1st menu item		
+			for (var i = NSApplication.SharedApplication.MainMenu.Count - 1; i > 0; i--)
+				NSApplication.SharedApplication.MainMenu.RemoveItemAt(i);
 		}
 	}
 }
