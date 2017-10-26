@@ -2,16 +2,24 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using OpenQA.Selenium;
+using OpenQA.Selenium.Appium;
+using OpenQA.Selenium.Appium.Interfaces;
 using OpenQA.Selenium.Appium.Windows;
+using OpenQA.Selenium.Interactions.Internal;
+using OpenQA.Selenium.Remote;
+using OpenQA.Selenium.Support.PageObjects;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.UITest;
 using Xamarin.UITest.Queries;
 using Xamarin.UITest.Queries.Tokens;
+using Point = System.Drawing.Point;
 
 namespace Xamarin.Forms.Core.UITests
 {
@@ -23,6 +31,7 @@ namespace Xamarin.Forms.Core.UITests
 		};
 
 		readonly WindowsDriver<WindowsElement> _session;
+		readonly RemoteTouchScreen _touchScreen;
 
 		readonly Dictionary<string, string> _translatePropertyAccessor = new Dictionary<string, string>
 		{
@@ -32,6 +41,7 @@ namespace Xamarin.Forms.Core.UITests
 		public WinDriverApp(WindowsDriver<WindowsElement> session)
 		{
 			_session = session;
+			_touchScreen = new RemoteTouchScreen(_session);
 			TestServer = new WindowsTestServer(_session);
 		}
 
@@ -271,18 +281,50 @@ namespace Xamarin.Forms.Core.UITests
 			return new FileInfo(filename);
 		}
 
+		void Scroll(WinQuery query, string scrollButton)
+		{
+			if (query == null)
+			{
+				var appScrollDownButton = _session.FindElementByAccessibilityId(scrollButton);
+				appScrollDownButton.Click();
+			}
+
+			var element = FindFirstElement(query);
+			var scrollDownButton = element.FindElementByAccessibilityId(scrollButton);
+			scrollDownButton.Click();
+		}
+
+
+		void ScrollDown(WinQuery query)
+		{
+			Scroll(query, "VerticalSmallIncrease");
+		}
+
+		void ScrollUp(WinQuery query)
+		{
+			Scroll(query, "VerticalSmallDecrease");
+		}
+
 		public void ScrollDown(Func<AppQuery, AppQuery> withinQuery = null, ScrollStrategy strategy = ScrollStrategy.Auto,
 			double swipePercentage = 0.67,
 			int swipeSpeed = 500, bool withInertia = true)
 		{
-			throw new NotImplementedException();
+			if (withinQuery == null)
+			{
+				ScrollDown(null);
+				return;
+			}
+
+			WinQuery winQuery = WinQuery.FromQuery(withinQuery);
+			ScrollDown(winQuery);
 		}
 
 		public void ScrollDown(string withinMarked, ScrollStrategy strategy = ScrollStrategy.Auto,
 			double swipePercentage = 0.67,
 			int swipeSpeed = 500, bool withInertia = true)
 		{
-			throw new NotImplementedException();
+			WinQuery winQuery = WinQuery.FromMarked(withinMarked);
+			ScrollDown(winQuery);
 		}
 
 		public void ScrollDownTo(string toMarked, string withinMarked = null, ScrollStrategy strategy = ScrollStrategy.Auto,
@@ -322,14 +364,22 @@ namespace Xamarin.Forms.Core.UITests
 			double swipePercentage = 0.67, int swipeSpeed = 500,
 			bool withInertia = true)
 		{
-			throw new NotImplementedException();
+			if (query == null)
+			{
+				ScrollUp(null);
+				return;
+			}
+
+			WinQuery winQuery = WinQuery.FromQuery(query);
+			ScrollUp(winQuery);
 		}
 
 		public void ScrollUp(string withinMarked, ScrollStrategy strategy = ScrollStrategy.Auto,
 			double swipePercentage = 0.67, int swipeSpeed = 500,
 			bool withInertia = true)
 		{
-			throw new NotImplementedException();
+			WinQuery winQuery = WinQuery.FromMarked(withinMarked);
+			ScrollUp(winQuery);
 		}
 
 		public void ScrollUpTo(string toMarked, string withinMarked = null, ScrollStrategy strategy = ScrollStrategy.Auto,
@@ -547,9 +597,18 @@ namespace Xamarin.Forms.Core.UITests
 		public void ContextClick(string marked)
 		{
 			WindowsElement element = QueryWindows(marked).First();
-			Point point = ElementToClickablePoint(element);
+			PointF point = ElementToClickablePoint(element);
 
 			MouseClickAt(point.X, point.Y, ClickType.ContextClick);
+		}
+
+		WindowsElement GetViewPort()
+		{
+			ReadOnlyCollection<WindowsElement> candidates = QueryWindows("Xamarin.Forms.ControlGallery.WindowsUniversal");
+			WindowsElement
+				viewPort = candidates[3]; // We really just want the viewport; skip the full window, title bar, min/max buttons...
+
+			return viewPort;
 		}
 
 		internal void MouseClickAt(float x, float y, ClickType clickType = ClickType.SingleClick)
@@ -564,9 +623,7 @@ namespace Xamarin.Forms.Core.UITests
 			// 3. Use the (undocumented, except in https://github.com/Microsoft/WinAppDriver/issues/118#issuecomment-269404335)
 			//		null parameter for Mouse.Click() to click at the current pointer location
 
-			ReadOnlyCollection<WindowsElement> candidates = QueryWindows("Xamarin.Forms.ControlGallery.WindowsUniversal");
-			WindowsElement
-				viewPort = candidates[3]; // We really just want the viewport; skip the full window, title bar, min/max buttons...
+			var viewPort = GetViewPort();
 			int xOffset = viewPort.Coordinates.LocationInViewport.X;
 			int yOffset = viewPort.Coordinates.LocationInViewport.Y;
 			_session.Mouse.MouseMove(viewPort.Coordinates, (int)x - xOffset, (int)y - yOffset);
@@ -600,14 +657,14 @@ namespace Xamarin.Forms.Core.UITests
 
 				// All is not lost; we can figure out the location of the element in in the application window
 				// and Tap in that spot
-				Point p = ElementToClickablePoint(element);
+				PointF p = ElementToClickablePoint(element);
 				TapCoordinates(p.X, p.Y);
 			}
 		}
 
 		void DoubleClickElement(WindowsElement element)
 		{
-			Point point = ElementToClickablePoint(element);
+			PointF point = ElementToClickablePoint(element);
 
 			MouseClickAt(point.X, point.Y, clickType: ClickType.DoubleClick);
 		}
@@ -637,15 +694,15 @@ namespace Xamarin.Forms.Core.UITests
 			return element;
 		}
 
-		Point ElementToClickablePoint(WindowsElement element)
+		PointF ElementToClickablePoint(WindowsElement element)
 		{
-			Point clickablePoint = GetClickablePoint(element);
+			PointF clickablePoint = GetClickablePoint(element);
 
 			WindowsElement window = QueryWindows("Xamarin.Forms.ControlGallery.WindowsUniversal")[0];
-			Point origin = GetOriginOfBoundingRectangle(window);
+			System.Drawing.PointF origin = GetOriginOfBoundingRectangle(window);
 
 			// Use the coordinates in the app window's viewport relative to the window's origin
-			return new Point(clickablePoint.X - origin.X, clickablePoint.Y - origin.Y);
+			return new PointF(clickablePoint.X - origin.X, clickablePoint.Y - origin.Y);
 		}
 
 		ReadOnlyCollection<WindowsElement> FilterControlType(IEnumerable<WindowsElement> elements, string controlType)
@@ -665,17 +722,17 @@ namespace Xamarin.Forms.Core.UITests
 			return new ReadOnlyCollection<WindowsElement>(elements.Where(element => element.TagName == tag).ToList());
 		}
 
-		static Point GetClickablePoint(WindowsElement element)
+		static PointF GetClickablePoint(WindowsElement element)
 		{
 			string cpString = element.GetAttribute("ClickablePoint");
 			string[] parts = cpString.Split(',');
 			float x = float.Parse(parts[0]);
 			float y = float.Parse(parts[1]);
 
-			return new Point(x, y);
+			return new PointF(x, y);
 		}
 
-		static Point GetOriginOfBoundingRectangle(WindowsElement element)
+		static System.Drawing.PointF GetOriginOfBoundingRectangle(WindowsElement element)
 		{
 			string vpcpString = element.GetAttribute("BoundingRectangle");
 
@@ -686,7 +743,7 @@ namespace Xamarin.Forms.Core.UITests
 			float vpx = float.Parse(vpparts[1]);
 			float vpy = float.Parse(vpparts[3]);
 
-			return new Point(vpx, vpy);
+			return new System.Drawing.PointF(vpx, vpy);
 		}
 
 		ReadOnlyCollection<WindowsElement> QueryWindows(WinQuery query)
@@ -751,7 +808,7 @@ namespace Xamarin.Forms.Core.UITests
 			catch (Exception ex)
 			{
 				Debug.WriteLine(
-					$"Waring: error determining AppRect for {windowsElement}; "
+					$"Warning: error determining AppRect for {windowsElement}; "
 					+ $"if this is a Label with a modified Text value, it might be confusing Windows automation. " +
 					$"{ex}");
 			}
@@ -813,18 +870,6 @@ namespace Xamarin.Forms.Core.UITests
 			TimeSpan? timeout = null, TimeSpan? retryFrequency = null)
 		{
 			Wait(query, i => i == 0, timeoutMessage, timeout, retryFrequency);
-		}
-
-		struct Point
-		{
-			public Point(float x, float y)
-			{
-				X = x;
-				Y = y;
-			}
-
-			public readonly float X;
-			public readonly float Y;
 		}
 
 		internal enum ClickType
