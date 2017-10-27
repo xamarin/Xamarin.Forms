@@ -37,14 +37,16 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				e.OldElement.ItemSelected -= OnElementItemSelected;
 				e.OldElement.ScrollToRequested -= OnElementScrollToRequested;
-			}
+                ((ITemplatedItemsView<Cell>)e.OldElement).TemplatedItems.CollectionChanged -= OnCollectionChanged;
+            }
 
 			if (e.NewElement != null)
 			{
 				e.NewElement.ItemSelected += OnElementItemSelected;
 				e.NewElement.ScrollToRequested += OnElementScrollToRequested;
+                ((ITemplatedItemsView<Cell>)e.NewElement).TemplatedItems.CollectionChanged += OnCollectionChanged;
 
-				if (List == null)
+                if (List == null)
 				{
 					List = new WListView
 					{
@@ -72,7 +74,12 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+        void OnCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            List.DataContext = new CollectionViewSource { Source = Element.ItemsSource, IsSourceGrouped = Element.IsGroupingEnabled };
+        }
+
+        protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);
 
