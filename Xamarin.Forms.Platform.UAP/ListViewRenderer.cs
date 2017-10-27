@@ -48,7 +48,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 				if (List == null)
 				{
-					List = new WListView {
+					List = new WListView 
+					{
 						IsSynchronizedWithCurrentItem = false,
 						ItemTemplate = (Windows.UI.Xaml.DataTemplate)WApp.Current.Resources["CellTemplate"],
 						HeaderTemplate = (Windows.UI.Xaml.DataTemplate)WApp.Current.Resources["View"],
@@ -321,7 +322,8 @@ namespace Xamarin.Forms.Platform.UWP
 			if (viewer == null)
 			{
 				RoutedEventHandler loadedHandler = null;
-				loadedHandler = async (o, e) => {
+				loadedHandler = async (o, e) => 
+				{
 					List.Loaded -= loadedHandler;
 
 					// Here we try to avoid an exception, see explanation at bottom
