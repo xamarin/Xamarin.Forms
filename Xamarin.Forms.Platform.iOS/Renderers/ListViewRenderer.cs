@@ -924,7 +924,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 					var renderer = (CellRenderer)Internals.Registrar.Registered.GetHandlerForObject<IRegisterable>(cell);
 
-					var view = new HeaderWrapperView();
+					view = new HeaderWrapperView();
 					view.AddSubview(renderer.GetCell(cell, null, tableView));
 
 				return view;
