@@ -1075,7 +1075,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			bool _notReallyHandled;
 
-			[Obsolete("This constructor is obsolete as of version 3.0. Please use DefaultRenderer(Context) instead.")]
+			[Obsolete("This constructor is obsolete as of version 2.5. Please use DefaultRenderer(Context) instead.")]
 			public DefaultRenderer()
 			{
 			}
