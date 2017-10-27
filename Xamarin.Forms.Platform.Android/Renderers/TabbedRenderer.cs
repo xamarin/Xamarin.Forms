@@ -77,7 +77,7 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 
 			if (Platform.GetRenderer(view) == null)
-				Platform.SetRenderer(view, Platform.CreateRenderer(view, Context));
+				Platform.SetRenderer(view, Platform.CreateRenderer2(view, Context));
 
 			AddView(Platform.GetRenderer(view).View);
 		}

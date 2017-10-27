@@ -52,7 +52,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			IVisualElementRenderer renderer = Platform.GetRenderer(childView);
 			if (renderer == null)
-				Platform.SetRenderer(childView, renderer = Platform.CreateRenderer(childView, Context));
+				Platform.SetRenderer(childView, renderer = Platform.CreateRenderer2(childView, Context));
 
 			if (renderer.View.Parent != this)
 			{

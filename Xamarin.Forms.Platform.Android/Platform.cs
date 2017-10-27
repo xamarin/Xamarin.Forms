@@ -300,13 +300,15 @@ namespace Xamarin.Forms.Platform.Android
 			throw new InvalidOperationException("RemovePage is not supported globally on Android, please use a NavigationPage.");
 		}
 
-		[Obsolete("CreateRenderer(VisualElement) is obsolete as of version 3.0. Please use CreateRenderer(VisualElement, Context) instead.")]
+		[Obsolete("CreateRenderer(VisualElement) is obsolete as of version 3.0. Please use " 
+			+ nameof(CreateRenderer2) + "(VisualElement, Context) instead.")]
 		public static IVisualElementRenderer CreateRenderer(VisualElement element)
 		{
-			return CreateRenderer(element, Forms.Context);
+			return CreateRenderer2(element, Forms.Context);
 		}
 
-		public static IVisualElementRenderer CreateRenderer(VisualElement element, Context context)
+		// This method has to have a different name than CreateRenderer for legacy previewer compatibility reasons
+		public static IVisualElementRenderer CreateRenderer2(VisualElement element, Context context)
 		{
 			IVisualElementRenderer renderer = Registrar.Registered.GetHandler<IVisualElementRenderer>(element.GetType(), context) 
 				?? new DefaultRenderer(context);
@@ -556,7 +558,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (GetRenderer(view) != null)
 				return;
 
-			IVisualElementRenderer renderView = CreateRenderer(view, _context);
+			IVisualElementRenderer renderView = CreateRenderer2(view, _context);
 			SetRenderer(view, renderView);
 
 			if (layout)
@@ -787,7 +789,7 @@ namespace Xamarin.Forms.Platform.Android
 			IVisualElementRenderer modalRenderer = GetRenderer(modal);
 			if (modalRenderer == null)
 			{
-				modalRenderer = CreateRenderer(modal, _context);
+				modalRenderer = CreateRenderer2(modal, _context);
 				SetRenderer(modal, modalRenderer);
 
 				if (modal.BackgroundColor == Color.Default && modal.BackgroundImage == null)

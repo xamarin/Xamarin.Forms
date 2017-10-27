@@ -213,7 +213,7 @@ namespace Xamarin.Forms.Platform.Android
 			IVisualElementRenderer rendererToAdd = Platform.GetRenderer(view);
 			bool existing = rendererToAdd != null;
 			if (!existing)
-				Platform.SetRenderer(view, rendererToAdd = Platform.CreateRenderer(view, Context));
+				Platform.SetRenderer(view, rendererToAdd = Platform.CreateRenderer2(view, Context));
 
 			Page pageToRemove = _current;
 			IVisualElementRenderer rendererToRemove = pageToRemove == null ? null : Platform.GetRenderer(pageToRemove);

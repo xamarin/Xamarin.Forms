@@ -324,7 +324,7 @@ namespace Xamarin.Forms.Platform.Android
 				_footerRenderer.SetElement(footer);
 			else
 			{
-				_footerRenderer = Platform.CreateRenderer(footer, Context);
+				_footerRenderer = Platform.CreateRenderer2(footer, Context);
 				if (_footerView != null)
 					_footerView.Child = _footerRenderer;
 			}
@@ -356,7 +356,7 @@ namespace Xamarin.Forms.Platform.Android
 				_headerRenderer.SetElement(header);
 			else
 			{
-				_headerRenderer = Platform.CreateRenderer(header, Context);
+				_headerRenderer = Platform.CreateRenderer2(header, Context);
 				if (_headerView != null)
 					_headerView.Child = _headerRenderer;
 			}
