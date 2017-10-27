@@ -604,8 +604,7 @@ namespace Xamarin.Forms
 			IsBeingSet = 1 << 1,
 			IsDynamicResource = 1 << 2,
 			IsSetFromStyle = 1 << 3,
-			IsDefaultValue = 1 << 4,
-			IsInherited = 1 << 5,
+			IsDefaultValue = 1 << 4
 		}
 
 		class BindablePropertyContext
