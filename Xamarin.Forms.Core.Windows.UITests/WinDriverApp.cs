@@ -792,12 +792,13 @@ namespace Xamarin.Forms.Core.UITests
 
 		ReadOnlyCollection<WindowsElement> QueryWindows(WinQuery query)
 		{
-			ReadOnlyCollection<WindowsElement> resultByName = _session.FindElementsByName(query.Marked);
 			ReadOnlyCollection<WindowsElement> resultByAccessibilityId = _session.FindElementsByAccessibilityId(query.Marked);
+			ReadOnlyCollection<WindowsElement> resultByName = _session.FindElementsByName(query.Marked);
 
-			IEnumerable<WindowsElement> result = resultByName
-				.Concat(resultByAccessibilityId);
+			IEnumerable<WindowsElement> result = resultByAccessibilityId.Concat(resultByName);
 
+			// TODO hartez 2017/10/30 09:47:44 Should this be == "*" || == "TextBox"?	
+			// what about other controls where we might be looking by content? TextBlock?
 			if (query.ControlType == "*")
 			{
 				IEnumerable<WindowsElement> textBoxesByContent =

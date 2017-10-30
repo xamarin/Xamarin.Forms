@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.System;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
@@ -692,5 +694,41 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		bool _deferSelection = false;
 		Tuple<object, SelectedItemChangedEventArgs> _deferredSelectedItemChangedEvent;
+
+#if WINDOWS_UWP
+
+		class FormsListViewAutomationPeer : ListViewAutomationPeer
+		{
+			public FormsListViewAutomationPeer(WListView owner) : base(owner)
+			{
+			}
+
+			protected override ItemAutomationPeer OnCreateItemAutomationPeer(object item)
+			{
+				if (item is string || item.GetType().GetTypeInfo().IsValueType)
+				{
+					// Passing a string or value type to the base method will cause automation to 
+					// freeze entirely whenever the ListView is on screen. In other words, if the 
+					// list is bound to an ItemSource which is made up only of, e.g., 
+					// IEnumerable<string> or IEnumerable<int>, it'll break automation
+
+					// Returning null here prevents the freeze. There's probably a more correct
+					// solution to this problem. 
+					
+					return null;
+				}
+
+				return base.OnCreateItemAutomationPeer(item);
+			}
+		}
+
+		protected override AutomationPeer OnCreateAutomationPeer()
+		{
+			return List == null 
+				? new FrameworkElementAutomationPeer(this) 
+				: new FormsListViewAutomationPeer(List);
+		}
+
+#endif
 	}
 }
