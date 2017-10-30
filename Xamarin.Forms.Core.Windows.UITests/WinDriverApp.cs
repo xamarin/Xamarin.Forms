@@ -330,7 +330,7 @@ namespace Xamarin.Forms.Core.UITests
 		public void ScrollDownTo(string toMarked, string withinMarked = null, ScrollStrategy strategy = ScrollStrategy.Auto,
 			double swipePercentage = 0.67, int swipeSpeed = 500, bool withInertia = true, TimeSpan? timeout = null)
 		{
-			throw new NotImplementedException();
+			ScrollTo(WinQuery.FromMarked(toMarked), withinMarked == null ? null : WinQuery.FromMarked(withinMarked), timeout);
 		}
 
 		public void ScrollDownTo(Func<AppQuery, AppWebQuery> toQuery, string withinMarked,
@@ -340,11 +340,55 @@ namespace Xamarin.Forms.Core.UITests
 			throw new NotImplementedException();
 		}
 
+		void ScrollTo(WinQuery toQuery, WinQuery withinQuery, TimeSpan? timeout = null, bool down = true)
+		{
+			timeout = timeout ?? TimeSpan.FromSeconds(5);
+			DateTime start = DateTime.Now;
+
+			while (true)
+			{
+				Func<ReadOnlyCollection<WindowsElement>> result = () => QueryWindows(toQuery);
+				TimeSpan iterationTimeout = TimeSpan.FromSeconds(1);
+
+				try
+				{
+					var found = WaitForAtLeastOne(result, timeoutMessage: null, timeout: iterationTimeout);
+
+					if (found.Count > 0)
+					{
+						// Success
+						return;
+					}
+				}
+				catch (TimeoutException ex)
+				{
+					// Haven't found it yet, keep scrolling
+				}
+
+				long elapsed = DateTime.Now.Subtract(start).Ticks;
+				if (elapsed >= timeout.Value.Ticks)
+				{
+					Debug.WriteLine($">>>>> {elapsed} ticks elapsed, timeout value is {timeout.Value.Ticks}");
+
+					throw new TimeoutException($"Timed out scrolling to {toQuery}");
+				}
+
+				if (down)
+				{
+					ScrollDown(withinQuery);
+				}
+				else
+				{
+					ScrollUp(withinQuery);
+				}
+			}
+		}
+
 		public void ScrollDownTo(Func<AppQuery, AppQuery> toQuery, Func<AppQuery, AppQuery> withinQuery = null,
 			ScrollStrategy strategy = ScrollStrategy.Auto, double swipePercentage = 0.67,
 			int swipeSpeed = 500, bool withInertia = true, TimeSpan? timeout = null)
 		{
-			throw new NotImplementedException();
+			ScrollTo(WinQuery.FromQuery(toQuery), withinQuery == null ? null : WinQuery.FromQuery(withinQuery), timeout);
 		}
 
 		public void ScrollDownTo(Func<AppQuery, AppWebQuery> toQuery, Func<AppQuery, AppQuery> withinQuery = null,
@@ -385,7 +429,7 @@ namespace Xamarin.Forms.Core.UITests
 		public void ScrollUpTo(string toMarked, string withinMarked = null, ScrollStrategy strategy = ScrollStrategy.Auto,
 			double swipePercentage = 0.67, int swipeSpeed = 500, bool withInertia = true, TimeSpan? timeout = null)
 		{
-			throw new NotImplementedException();
+			ScrollTo(WinQuery.FromMarked(toMarked), withinMarked == null ? null : WinQuery.FromMarked(withinMarked), timeout, down: false);
 		}
 
 		public void ScrollUpTo(Func<AppQuery, AppWebQuery> toQuery, string withinMarked,
@@ -399,7 +443,7 @@ namespace Xamarin.Forms.Core.UITests
 			ScrollStrategy strategy = ScrollStrategy.Auto, double swipePercentage = 0.67,
 			int swipeSpeed = 500, bool withInertia = true, TimeSpan? timeout = null)
 		{
-			throw new NotImplementedException();
+			ScrollTo(WinQuery.FromQuery(toQuery), withinQuery == null ? null : WinQuery.FromQuery(withinQuery), timeout, down: false);
 		}
 
 		public void ScrollUpTo(Func<AppQuery, AppWebQuery> toQuery, Func<AppQuery, AppQuery> withinQuery = null,
@@ -828,7 +872,7 @@ namespace Xamarin.Forms.Core.UITests
 			};
 		}
 
-		ReadOnlyCollection<WindowsElement> Wait(Func<ReadOnlyCollection<WindowsElement>> query,
+		static ReadOnlyCollection<WindowsElement> Wait(Func<ReadOnlyCollection<WindowsElement>> query,
 			Func<int, bool> satisfactory,
 			string timeoutMessage = null,
 			TimeSpan? timeout = null, TimeSpan? retryFrequency = null)
@@ -858,7 +902,7 @@ namespace Xamarin.Forms.Core.UITests
 			return result;
 		}
 
-		ReadOnlyCollection<WindowsElement> WaitForAtLeastOne(Func<ReadOnlyCollection<WindowsElement>> query,
+		static ReadOnlyCollection<WindowsElement> WaitForAtLeastOne(Func<ReadOnlyCollection<WindowsElement>> query,
 			string timeoutMessage = null,
 			TimeSpan? timeout = null, TimeSpan? retryFrequency = null)
 		{
