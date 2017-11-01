@@ -462,7 +462,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var navPage = (Element as NavigationPage);
 			if (Forms.IsiOS11OrNewer && navPage != null)
-				NavigationBar.PrefersLargeTitles = navPage.OnThisPlatform().UseLargeTitles();
+				NavigationBar.PrefersLargeTitles = navPage.OnThisPlatform().UsingLargeTitles();
 		}	
 
 

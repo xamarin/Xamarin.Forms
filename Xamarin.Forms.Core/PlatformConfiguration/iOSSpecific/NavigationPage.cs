@@ -72,7 +72,7 @@ namespace Xamarin.Forms.PlatformConfiguration.iOSSpecific
 		}
 		#endregion
 
-		public static readonly BindableProperty UseLargeTitlesProperty = BindableProperty.Create(nameof(UseLargeTitles), typeof(bool), typeof(Page), false);
+		public static readonly BindableProperty UseLargeTitlesProperty = BindableProperty.Create("UseLargeTitles", typeof(bool), typeof(Page), false);
 
 		public static bool GetUseLargeTitles(BindableObject element)
 		{
@@ -90,7 +90,7 @@ namespace Xamarin.Forms.PlatformConfiguration.iOSSpecific
 			return config;
 		}
 
-		public static bool UseLargeTitles(this IPlatformElementConfiguration<iOS, FormsElement> config)
+		public static bool UsingLargeTitles(this IPlatformElementConfiguration<iOS, FormsElement> config)
 		{
 			return GetUseLargeTitles(config.Element);
 		}
