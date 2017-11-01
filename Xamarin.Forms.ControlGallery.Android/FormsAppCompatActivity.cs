@@ -84,6 +84,12 @@ namespace Xamarin.Forms.ControlGallery.Android
 			SetUpForceRestartTest();
 
 			LoadApplication(_app);
+			if (Forms.Flags.Contains("FastRenderers_Experimental"))
+			{
+				var masterPage = ((_app.MainPage as MasterDetailPage)?.Master as ContentPage);
+				if (masterPage != null)
+					masterPage.Content = new Label { Text = "Fast Renderers" };
+			}
 		}
 
 		
