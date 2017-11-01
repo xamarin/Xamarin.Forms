@@ -74,6 +74,26 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
+    <Member MemberName="GetPrefersLargeTitles">
+      <MemberSignature Language="C#" Value="public static bool GetPrefersLargeTitles (Xamarin.Forms.BindableObject element);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig bool GetPrefersLargeTitles(class Xamarin.Forms.BindableObject element) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="element" Type="Xamarin.Forms.BindableObject" />
+      </Parameters>
+      <Docs>
+        <param name="element">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
     <Member MemberName="GetStatusBarTextColorMode">
       <MemberSignature Language="C#" Value="public static Xamarin.Forms.PlatformConfiguration.iOSSpecific.StatusBarTextColorMode GetStatusBarTextColorMode (Xamarin.Forms.BindableObject element);" />
       <MemberSignature Language="ILAsm" Value=".method public static hidebysig valuetype Xamarin.Forms.PlatformConfiguration.iOSSpecific.StatusBarTextColorMode GetStatusBarTextColorMode(class Xamarin.Forms.BindableObject element) cil managed" />
@@ -114,26 +134,6 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-    <Member MemberName="GetUseLargeTitles">
-      <MemberSignature Language="C#" Value="public static bool GetUseLargeTitles (Xamarin.Forms.BindableObject element);" />
-      <MemberSignature Language="ILAsm" Value=".method public static hidebysig bool GetUseLargeTitles(class Xamarin.Forms.BindableObject element) cil managed" />
-      <MemberType>Method</MemberType>
-      <AssemblyInfo>
-        <AssemblyVersion>2.0.0.0</AssemblyVersion>
-      </AssemblyInfo>
-      <ReturnValue>
-        <ReturnType>System.Boolean</ReturnType>
-      </ReturnValue>
-      <Parameters>
-        <Parameter Name="element" Type="Xamarin.Forms.BindableObject" />
-      </Parameters>
-      <Docs>
-        <param name="element">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
     <Member MemberName="IsNavigationBarTranslucent">
       <MemberSignature Language="C#" Value="public static bool IsNavigationBarTranslucent (this Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.iOS,Xamarin.Forms.NavigationPage&gt; config);" />
       <MemberSignature Language="ILAsm" Value=".method public static hidebysig bool IsNavigationBarTranslucent(class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.iOS, class Xamarin.Forms.NavigationPage&gt; config) cil managed" />
@@ -166,6 +166,41 @@
       </ReturnValue>
       <Docs>
         <summary>Backing store for the <see cref="P:Xamarin.Forms.PlatformConfiguration.iOSSpecific.NavigationPage.IsNavigationBarTranslucent" /> property</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="PrefersLargeTitles">
+      <MemberSignature Language="C#" Value="public static bool PrefersLargeTitles (this Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.iOS,Xamarin.Forms.NavigationPage&gt; config);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig bool PrefersLargeTitles(class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.iOS, class Xamarin.Forms.NavigationPage&gt; config) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="config" Type="Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.iOS,Xamarin.Forms.NavigationPage&gt;" RefType="this" />
+      </Parameters>
+      <Docs>
+        <param name="config">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="PrefersLargeTitlesProperty">
+      <MemberSignature Language="C#" Value="public static readonly Xamarin.Forms.BindableProperty PrefersLargeTitlesProperty;" />
+      <MemberSignature Language="ILAsm" Value=".field public static initonly class Xamarin.Forms.BindableProperty PrefersLargeTitlesProperty" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>Xamarin.Forms.BindableProperty</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -212,6 +247,49 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
+    <Member MemberName="SetPrefersLargeTitles">
+      <MemberSignature Language="C#" Value="public static void SetPrefersLargeTitles (Xamarin.Forms.BindableObject element, bool value);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void SetPrefersLargeTitles(class Xamarin.Forms.BindableObject element, bool value) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="element" Type="Xamarin.Forms.BindableObject" />
+        <Parameter Name="value" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="element">To be added.</param>
+        <param name="value">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SetPrefersLargeTitles">
+      <MemberSignature Language="C#" Value="public static Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.iOS,Xamarin.Forms.NavigationPage&gt; SetPrefersLargeTitles (this Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.iOS,Xamarin.Forms.NavigationPage&gt; config, bool value);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.iOS, class Xamarin.Forms.NavigationPage&gt; SetPrefersLargeTitles(class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.iOS, class Xamarin.Forms.NavigationPage&gt; config, bool value) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.iOS,Xamarin.Forms.NavigationPage&gt;</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="config" Type="Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.iOS,Xamarin.Forms.NavigationPage&gt;" RefType="this" />
+        <Parameter Name="value" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="config">To be added.</param>
+        <param name="value">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
     <Member MemberName="SetStatusBarTextColorMode">
       <MemberSignature Language="C#" Value="public static void SetStatusBarTextColorMode (Xamarin.Forms.BindableObject element, Xamarin.Forms.PlatformConfiguration.iOSSpecific.StatusBarTextColorMode value);" />
       <MemberSignature Language="ILAsm" Value=".method public static hidebysig void SetStatusBarTextColorMode(class Xamarin.Forms.BindableObject element, valuetype Xamarin.Forms.PlatformConfiguration.iOSSpecific.StatusBarTextColorMode value) cil managed" />
@@ -255,49 +333,6 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-    <Member MemberName="SetUseLargeTitles">
-      <MemberSignature Language="C#" Value="public static void SetUseLargeTitles (Xamarin.Forms.BindableObject element, bool value);" />
-      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void SetUseLargeTitles(class Xamarin.Forms.BindableObject element, bool value) cil managed" />
-      <MemberType>Method</MemberType>
-      <AssemblyInfo>
-        <AssemblyVersion>2.0.0.0</AssemblyVersion>
-      </AssemblyInfo>
-      <ReturnValue>
-        <ReturnType>System.Void</ReturnType>
-      </ReturnValue>
-      <Parameters>
-        <Parameter Name="element" Type="Xamarin.Forms.BindableObject" />
-        <Parameter Name="value" Type="System.Boolean" />
-      </Parameters>
-      <Docs>
-        <param name="element">To be added.</param>
-        <param name="value">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
-    <Member MemberName="SetUseLargeTitles">
-      <MemberSignature Language="C#" Value="public static Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.iOS,Xamarin.Forms.NavigationPage&gt; SetUseLargeTitles (this Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.iOS,Xamarin.Forms.NavigationPage&gt; config, bool value);" />
-      <MemberSignature Language="ILAsm" Value=".method public static hidebysig class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.iOS, class Xamarin.Forms.NavigationPage&gt; SetUseLargeTitles(class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.iOS, class Xamarin.Forms.NavigationPage&gt; config, bool value) cil managed" />
-      <MemberType>Method</MemberType>
-      <AssemblyInfo>
-        <AssemblyVersion>2.0.0.0</AssemblyVersion>
-      </AssemblyInfo>
-      <ReturnValue>
-        <ReturnType>Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.iOS,Xamarin.Forms.NavigationPage&gt;</ReturnType>
-      </ReturnValue>
-      <Parameters>
-        <Parameter Name="config" Type="Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.iOS,Xamarin.Forms.NavigationPage&gt;" RefType="this" />
-        <Parameter Name="value" Type="System.Boolean" />
-      </Parameters>
-      <Docs>
-        <param name="config">To be added.</param>
-        <param name="value">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
     <Member MemberName="StatusBarTextColorModeProperty">
       <MemberSignature Language="C#" Value="public static readonly Xamarin.Forms.BindableProperty StatusBarTextColorModeProperty;" />
       <MemberSignature Language="ILAsm" Value=".field public static initonly class Xamarin.Forms.BindableProperty StatusBarTextColorModeProperty" />
@@ -310,41 +345,6 @@
       </ReturnValue>
       <Docs>
         <summary>Backing store for the attached property that controls whether the status bar text color is adjusted to match the luminosity of the navigation bar for the platform-specific navigation page.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
-    <Member MemberName="UseLargeTitlesProperty">
-      <MemberSignature Language="C#" Value="public static readonly Xamarin.Forms.BindableProperty UseLargeTitlesProperty;" />
-      <MemberSignature Language="ILAsm" Value=".field public static initonly class Xamarin.Forms.BindableProperty UseLargeTitlesProperty" />
-      <MemberType>Field</MemberType>
-      <AssemblyInfo>
-        <AssemblyVersion>2.0.0.0</AssemblyVersion>
-      </AssemblyInfo>
-      <ReturnValue>
-        <ReturnType>Xamarin.Forms.BindableProperty</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
-    <Member MemberName="UsingLargeTitles">
-      <MemberSignature Language="C#" Value="public static bool UsingLargeTitles (this Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.iOS,Xamarin.Forms.NavigationPage&gt; config);" />
-      <MemberSignature Language="ILAsm" Value=".method public static hidebysig bool UsingLargeTitles(class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.iOS, class Xamarin.Forms.NavigationPage&gt; config) cil managed" />
-      <MemberType>Method</MemberType>
-      <AssemblyInfo>
-        <AssemblyVersion>2.0.0.0</AssemblyVersion>
-      </AssemblyInfo>
-      <ReturnValue>
-        <ReturnType>System.Boolean</ReturnType>
-      </ReturnValue>
-      <Parameters>
-        <Parameter Name="config" Type="Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.iOS,Xamarin.Forms.NavigationPage&gt;" RefType="this" />
-      </Parameters>
-      <Docs>
-        <param name="config">To be added.</param>
-        <summary>To be added.</summary>
-        <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>

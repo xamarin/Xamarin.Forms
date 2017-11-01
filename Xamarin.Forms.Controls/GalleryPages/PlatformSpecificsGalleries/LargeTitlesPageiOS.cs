@@ -42,7 +42,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformSpecificsGalleries
 						Text = "Tooggle UseLargeTitles on Navigation",
 						Command = new Command( () =>{
 							var navPage = (Parent as NavigationPage);
-							navPage.On<iOS>().SetUseLargeTitles(!navPage.On<iOS>().UsingLargeTitles());
+							navPage.On<iOS>().SetPrefersLargeTitles(!navPage.On<iOS>().PrefersLargeTitles());
 						} )
 					},
 					offscreenPageLimit

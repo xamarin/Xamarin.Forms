@@ -445,7 +445,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateTranslucent();
 			else if (e.PropertyName == PreferredStatusBarUpdateAnimationProperty.PropertyName)
 				UpdateCurrentPagePreferredStatusBarUpdateAnimation();
-			else if (e.PropertyName == UseLargeTitlesProperty.PropertyName)
+			else if (e.PropertyName == PrefersLargeTitlesProperty.PropertyName)
 				UpdateUseLargeTitles();
 			
 		}
@@ -462,7 +462,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var navPage = (Element as NavigationPage);
 			if (Forms.IsiOS11OrNewer && navPage != null)
-				NavigationBar.PrefersLargeTitles = navPage.OnThisPlatform().UsingLargeTitles();
+				NavigationBar.PrefersLargeTitles = navPage.OnThisPlatform().PrefersLargeTitles();
 		}	
 
 
@@ -915,7 +915,7 @@ namespace Xamarin.Forms.Platform.iOS
 					UpdateHasBackButton();
 				else if (e.PropertyName == PrefersStatusBarHiddenProperty.PropertyName)
 					UpdatePrefersStatusBarHidden();
-				else if (e.PropertyName == PlatformConfiguration.iOSSpecific.Page.LargeTitleDisplayProperty.PropertyName)
+				else if (e.PropertyName == LargeTitleDisplayProperty.PropertyName)
 					UpdateLargeTitles();
 			}
 

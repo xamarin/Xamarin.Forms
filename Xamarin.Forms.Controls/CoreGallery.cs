@@ -83,7 +83,7 @@ namespace Xamarin.Forms.Controls
 				return false;
 			});
 
-			On<iOS>().SetUseLargeTitles(true);
+			On<iOS>().SetPrefersLargeTitles(true);
 		
 			Navigation.PushAsync (new CoreRootPage (this));
 		}
