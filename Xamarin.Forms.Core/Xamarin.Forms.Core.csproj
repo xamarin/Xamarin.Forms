@@ -77,7 +77,9 @@
     <Compile Include="DataTemplateSelector.cs" />
     <Compile Include="DateChangedEventArgs.cs" />
     <Compile Include="DelegateLogListener.cs" />
+    <Compile Include="EffectiveFlowDirectionExtensions.cs" />
     <Compile Include="IEditorController.cs" />
+    <Compile Include="IFlowDirectionController.cs" />
     <Compile Include="IGridController.cs" />
     <Compile Include="IWebViewController.cs" />
     <Compile Include="INavigationMenuController.cs" />

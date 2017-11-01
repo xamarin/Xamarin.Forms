@@ -50,12 +50,13 @@ namespace Xamarin.Forms
 		}
 	}
 
-    public abstract class Layout : View, ILayout, ILayoutController
+	public abstract class Layout : View, ILayout, ILayoutController
 	{
 		public static readonly BindableProperty IsClippedToBoundsProperty = BindableProperty.Create("IsClippedToBounds", typeof(bool), typeof(Layout), false);
 
 		public static readonly BindableProperty PaddingProperty = BindableProperty.Create("Padding", typeof(Thickness), typeof(Layout), default(Thickness),
-									propertyChanged: (bindable, old, newValue) => {
+									propertyChanged: (bindable, old, newValue) =>
+									{
 										var layout = (Layout)bindable;
 										layout.UpdateChildrenLayout();
 									}, defaultValueCreator: (bindable) => ((Layout)bindable).CreateDefaultPadding());
@@ -125,17 +126,10 @@ namespace Xamarin.Forms
 
 		public static void LayoutChildIntoBoundingRegion(VisualElement child, Rectangle region)
 		{
-			var parentLayout = child.Parent as Layout;
+			var parent = child.Parent as IFlowDirectionController;
 			bool isRightToLeft = false;
-			if (parentLayout != null)
-			{
-				isRightToLeft = parentLayout.FlowDirection == FlowDirection.RightToLeft;
-				if (isRightToLeft)
-				{
-					var parentWidth = parentLayout.Width;
-					region = new Rectangle(parentWidth - region.Right, region.Y, region.Width, region.Height);
-				}
-			}
+			if (parent != null && (isRightToLeft = parent.EffectiveFlowDirection.IsRightToLeft()))
+				region = new Rectangle(parent.Width - region.Right, region.Y, region.Width, region.Height);
 
 			var view = child as View;
 			if (view == null)
@@ -149,10 +143,10 @@ namespace Xamarin.Forms
 			{
 				SizeRequest request = child.Measure(region.Width, region.Height, MeasureFlags.IncludeMargins);
 				double diff = Math.Max(0, region.Width - request.Request.Width);
-				double horizontaAlign = horizontalOptions.Alignment.ToDouble();
+				double horizontalAlign = horizontalOptions.Alignment.ToDouble();
 				if (isRightToLeft)
-					horizontaAlign = 1 - horizontaAlign;
-				region.X += (int)(diff * horizontaAlign);
+					horizontalAlign = 1 - horizontalAlign;
+				region.X += (int)(diff * horizontalAlign);
 				region.Width -= diff;
 			}
 
@@ -275,17 +269,10 @@ namespace Xamarin.Forms
 
 		internal static void LayoutChildIntoBoundingRegion(View child, Rectangle region, SizeRequest childSizeRequest)
 		{
-			var parentLayout = child.Parent as Layout;
+			var parent = child.Parent as IFlowDirectionController;
 			bool isRightToLeft = false;
-			if (parentLayout != null)
-			{
-				isRightToLeft = parentLayout.FlowDirection == FlowDirection.RightToLeft;
-				if (isRightToLeft)
-				{
-					var parentWidth = parentLayout.Width;
-					region = new Rectangle(parentWidth - region.Right, region.Y, region.Width, region.Height);
-				}
-			}
+			if (parent != null && (isRightToLeft = parent.EffectiveFlowDirection.IsRightToLeft()))
+				region = new Rectangle(parent.Width - region.Right, region.Y, region.Width, region.Height);
 
 			if (region.Size != childSizeRequest.Request)
 			{
@@ -296,10 +283,10 @@ namespace Xamarin.Forms
 				{
 					SizeRequest request = canUseAlreadyDoneRequest ? childSizeRequest : child.Measure(region.Width, region.Height, MeasureFlags.IncludeMargins);
 					double diff = Math.Max(0, region.Width - request.Request.Width);
-					double horizontaAlign = horizontalOptions.Alignment.ToDouble();
+					double horizontalAlign = horizontalOptions.Alignment.ToDouble();
 					if (isRightToLeft)
-						horizontaAlign = 1 - horizontaAlign;
-					region.X += (int)(diff * horizontaAlign);
+						horizontalAlign = 1 - horizontalAlign;
+					region.X += (int)(diff * horizontalAlign);
 					region.Width -= diff;
 				}
 

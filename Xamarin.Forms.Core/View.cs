@@ -18,7 +18,6 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty MarginProperty = BindableProperty.Create("Margin", typeof(Thickness), typeof(View), default(Thickness), propertyChanged: MarginPropertyChanged);
 
 		readonly ObservableCollection<IGestureRecognizer> _gestureRecognizers = new ObservableCollection<IGestureRecognizer>();
-		public static readonly BindableProperty FlowDirectionProperty = BindableProperty.Create(nameof(FlowDirection), typeof(FlowDirection), typeof(Layout), FlowDirection.MatchParent, propertyChanged: FlowDirectionChanged);
 
 		protected internal View()
 		{
@@ -77,14 +76,6 @@ namespace Xamarin.Forms
 			set { SetValue(VerticalOptionsProperty, value); }
 		}
 
-		public FlowDirection FlowDirection
-		{
-			get { return (FlowDirection)GetValue(FlowDirectionProperty); }
-			set { SetValue(FlowDirectionProperty, value); }
-		}
-
-		internal EffectiveFlowDirection EffectiveFlowDirection { get; set; } = EffectiveFlowDirection.LeftToRight | EffectiveFlowDirection.Implicit; 
-
 		protected override void OnBindingContextChanged()
 		{
 			var gotBindingContext = false;
@@ -106,24 +97,6 @@ namespace Xamarin.Forms
 			}
 
 			base.OnBindingContextChanged();
-		}
-
-		EffectiveFlowDirection IViewController.EffectiveFlowDirection => EffectiveFlowDirection;
-
-		static void FlowDirectionChanged(BindableObject bindable, object oldValue, object newValue)
-		{
-			var self = bindable as View;
-			var newFlowDirection = (FlowDirection)newValue;
-		}
-
-		protected override void OnParentSet()
-		{
-			base.OnParentSet();
-
-			if (EffectiveFlowDirection.HasFlag(EffectiveFlowDirection.Implicit))
-			{
-				
-			}
 		}
 
 		static void MarginPropertyChanged(BindableObject bindable, object oldValue, object newValue)
