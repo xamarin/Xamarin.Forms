@@ -1,5 +1,4 @@
 ﻿using System;
-
 using Xamarin.Forms;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
@@ -7,6 +6,7 @@ using Xamarin.Forms.Internals;
 #if UITEST
 using NUnit.Framework;
 using Xamarin.UITest.iOS;
+using Xamarin.Forms.Core.UITests;
 #endif
 
 namespace Xamarin.Forms.Controls.Issues
@@ -62,7 +62,7 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			RunningApp.WaitForElement(c => c.Marked("Swipe ME"));
 
-			var screenBounds = RunningApp.Query (q => q.Raw ("* index:0"))[0].Rect;
+			var screenBounds = RunningApp.RootViewRect();
 
 			var cell = RunningApp.Query(c => c.Marked("Swipe ME")) [0];
 #if __IOS__
@@ -87,9 +87,10 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			RunningApp.WaitForElement(c => c.Marked("Swipe ME"));
 
-			var screenBounds = RunningApp.Query (q => q.Raw ("* index:0"))[0].Rect;
+			var screenBounds = RunningApp.RootViewRect();
 
 			var cell = RunningApp.Query (c => c.Marked ("Swipe ME")) [0];
+
 #if __IOS__
 			RunningApp.DragCoordinates (screenBounds.Width -10, cell.Rect.CenterY, 0, cell.Rect.CenterY);
 #else

@@ -33,6 +33,8 @@ namespace Xamarin.Forms.Core.UITests
 		readonly WindowsDriver<WindowsElement> _session;
 		readonly RemoteTouchScreen _touchScreen;
 
+		public const string AppName = "Xamarin.Forms.ControlGallery.WindowsUniversal";
+
 		readonly Dictionary<string, string> _translatePropertyAccessor = new Dictionary<string, string>
 		{
 			{ "getAlpha", "Opacity" }
@@ -648,7 +650,7 @@ namespace Xamarin.Forms.Core.UITests
 
 		WindowsElement GetViewPort()
 		{
-			ReadOnlyCollection<WindowsElement> candidates = QueryWindows("Xamarin.Forms.ControlGallery.WindowsUniversal");
+			ReadOnlyCollection<WindowsElement> candidates = QueryWindows(AppName);
 			WindowsElement
 				viewPort = candidates[3]; // We really just want the viewport; skip the full window, title bar, min/max buttons...
 
@@ -742,7 +744,7 @@ namespace Xamarin.Forms.Core.UITests
 		{
 			PointF clickablePoint = GetClickablePoint(element);
 
-			WindowsElement window = QueryWindows("Xamarin.Forms.ControlGallery.WindowsUniversal")[0];
+			WindowsElement window = QueryWindows(AppName)[0];
 			System.Drawing.PointF origin = GetOriginOfBoundingRectangle(window);
 
 			// Use the coordinates in the app window's viewport relative to the window's origin

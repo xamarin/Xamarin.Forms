@@ -6,6 +6,7 @@ using System.Windows.Input;
 using Xamarin.Forms.Internals;
 
 #if UITEST
+using Xamarin.Forms.Core.UITests;
 using Xamarin.UITest.iOS;
 using Xamarin.UITest;
 using NUnit.Framework;
@@ -132,7 +133,8 @@ namespace Xamarin.Forms.Controls.Issues
 		public void Bugzilla31330Test ()
 		{
 			RunningApp.WaitForElement (c => c.Marked ("Something 2"));
-			var screenBounds = RunningApp.Query (q => q.Raw ("* index:0"))[0].Rect;
+
+			var screenBounds = RunningApp.RootViewRect();
 
 			var cell = RunningApp.Query (c => c.Marked ("Something 1")) [0];
 			var cell2 = RunningApp.Query (c => c.Marked ("Something 2")) [0];
