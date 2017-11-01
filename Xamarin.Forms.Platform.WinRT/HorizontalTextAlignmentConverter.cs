@@ -13,7 +13,7 @@ namespace Xamarin.Forms.Platform.WinRT
 		public object Convert(object value, Type targetType, object parameter, string language)
 		{
 			var textAlign = (TextAlignment)value;
-			return textAlign.ToNativeTextAlignment();
+			return textAlign.ToNativeTextAlignment(EffectiveFlowDirection.LeftToRight);
 		}
 
 		public object ConvertBack(object value, Type targetType, object parameter, string language)

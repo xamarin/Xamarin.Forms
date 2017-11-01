@@ -151,7 +151,7 @@ namespace Xamarin.Forms.Platform.WinRT
 				return;
 			}
 
-			_searchTextBox.TextAlignment = HorizontalTextAlignment.ToNativeTextAlignment();
+			_searchTextBox.TextAlignment = HorizontalTextAlignment.ToNativeTextAlignment(EffectiveFlowDirection.LeftToRight);
 		}
 	}
 }
