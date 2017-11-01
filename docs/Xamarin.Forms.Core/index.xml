@@ -213,6 +213,7 @@
       <Type Name="Easing" Kind="Class" />
       <Type Name="Editor" Kind="Class" />
       <Type Name="Effect" Kind="Class" />
+      <Type Name="EffectiveFlowDirection" Kind="Enumeration" />
       <Type Name="Element" Kind="Class" />
       <Type Name="ElementEventArgs" Kind="Class" />
       <Type Name="ElementTemplate" Kind="Class" />
@@ -222,6 +223,7 @@
       <Type Name="ExportEffectAttribute" Kind="Class" />
       <Type Name="FileImageSource" Kind="Class" />
       <Type Name="FileImageSourceConverter" Kind="Class" />
+      <Type Name="FlowDirection" Kind="Enumeration" />
       <Type Name="FocusEventArgs" Kind="Class" />
       <Type Name="Font" Kind="Structure" />
       <Type Name="FontAttributes" Kind="Enumeration" />
@@ -451,6 +453,7 @@
       <Type Name="DeviceOrientation" Kind="Enumeration" />
       <Type Name="DeviceOrientationExtensions" Kind="Class" />
       <Type Name="DynamicResource" Kind="Class" />
+      <Type Name="EffectiveFlowDirectionExtensions" Kind="Class" />
       <Type Name="EffectUtilities" Kind="Class" />
       <Type Name="EnumerableExtensions" Kind="Class" />
       <Type Name="EvalRequested" Kind="Class" />
@@ -1148,6 +1151,134 @@
           <summary>For internal use by the Xamarin.Forms platform.</summary>
         </Docs>
         <Link Type="Xamarin.Forms.Internals.DeviceOrientationExtensions" Member="M:Xamarin.Forms.Internals.DeviceOrientationExtensions.IsPortrait(Xamarin.Forms.Internals.DeviceOrientation)" />
+      </Member>
+    </ExtensionMethod>
+    <ExtensionMethod>
+      <Targets>
+        <Target Type="T:Xamarin.Forms.EffectiveFlowDirection" />
+      </Targets>
+      <Member MemberName="IsExplicit">
+        <MemberSignature Language="C#" Value="public static bool IsExplicit (this Xamarin.Forms.EffectiveFlowDirection self);" />
+        <MemberSignature Language="ILAsm" Value=".method public static hidebysig bool IsExplicit(valuetype Xamarin.Forms.EffectiveFlowDirection self) cil managed" />
+        <MemberType>ExtensionMethod</MemberType>
+        <ReturnValue>
+          <ReturnType>System.Boolean</ReturnType>
+        </ReturnValue>
+        <Parameters>
+          <Parameter Name="self" Type="Xamarin.Forms.EffectiveFlowDirection" RefType="this" />
+        </Parameters>
+        <Docs>
+          <param name="self">To be added.</param>
+          <summary>To be added.</summary>
+        </Docs>
+        <Link Type="Xamarin.Forms.Internals.EffectiveFlowDirectionExtensions" Member="M:Xamarin.Forms.Internals.EffectiveFlowDirectionExtensions.IsExplicit(Xamarin.Forms.EffectiveFlowDirection)" />
+      </Member>
+    </ExtensionMethod>
+    <ExtensionMethod>
+      <Targets>
+        <Target Type="T:Xamarin.Forms.EffectiveFlowDirection" />
+      </Targets>
+      <Member MemberName="IsImplicit">
+        <MemberSignature Language="C#" Value="public static bool IsImplicit (this Xamarin.Forms.EffectiveFlowDirection self);" />
+        <MemberSignature Language="ILAsm" Value=".method public static hidebysig bool IsImplicit(valuetype Xamarin.Forms.EffectiveFlowDirection self) cil managed" />
+        <MemberType>ExtensionMethod</MemberType>
+        <ReturnValue>
+          <ReturnType>System.Boolean</ReturnType>
+        </ReturnValue>
+        <Parameters>
+          <Parameter Name="self" Type="Xamarin.Forms.EffectiveFlowDirection" RefType="this" />
+        </Parameters>
+        <Docs>
+          <param name="self">To be added.</param>
+          <summary>To be added.</summary>
+        </Docs>
+        <Link Type="Xamarin.Forms.Internals.EffectiveFlowDirectionExtensions" Member="M:Xamarin.Forms.Internals.EffectiveFlowDirectionExtensions.IsImplicit(Xamarin.Forms.EffectiveFlowDirection)" />
+      </Member>
+    </ExtensionMethod>
+    <ExtensionMethod>
+      <Targets>
+        <Target Type="T:Xamarin.Forms.EffectiveFlowDirection" />
+      </Targets>
+      <Member MemberName="IsLeftToRight">
+        <MemberSignature Language="C#" Value="public static bool IsLeftToRight (this Xamarin.Forms.EffectiveFlowDirection self);" />
+        <MemberSignature Language="ILAsm" Value=".method public static hidebysig bool IsLeftToRight(valuetype Xamarin.Forms.EffectiveFlowDirection self) cil managed" />
+        <MemberType>ExtensionMethod</MemberType>
+        <ReturnValue>
+          <ReturnType>System.Boolean</ReturnType>
+        </ReturnValue>
+        <Parameters>
+          <Parameter Name="self" Type="Xamarin.Forms.EffectiveFlowDirection" RefType="this" />
+        </Parameters>
+        <Docs>
+          <param name="self">To be added.</param>
+          <summary>To be added.</summary>
+        </Docs>
+        <Link Type="Xamarin.Forms.Internals.EffectiveFlowDirectionExtensions" Member="M:Xamarin.Forms.Internals.EffectiveFlowDirectionExtensions.IsLeftToRight(Xamarin.Forms.EffectiveFlowDirection)" />
+      </Member>
+    </ExtensionMethod>
+    <ExtensionMethod>
+      <Targets>
+        <Target Type="T:Xamarin.Forms.EffectiveFlowDirection" />
+      </Targets>
+      <Member MemberName="IsRightToLeft">
+        <MemberSignature Language="C#" Value="public static bool IsRightToLeft (this Xamarin.Forms.EffectiveFlowDirection self);" />
+        <MemberSignature Language="ILAsm" Value=".method public static hidebysig bool IsRightToLeft(valuetype Xamarin.Forms.EffectiveFlowDirection self) cil managed" />
+        <MemberType>ExtensionMethod</MemberType>
+        <ReturnValue>
+          <ReturnType>System.Boolean</ReturnType>
+        </ReturnValue>
+        <Parameters>
+          <Parameter Name="self" Type="Xamarin.Forms.EffectiveFlowDirection" RefType="this" />
+        </Parameters>
+        <Docs>
+          <param name="self">To be added.</param>
+          <summary>To be added.</summary>
+        </Docs>
+        <Link Type="Xamarin.Forms.Internals.EffectiveFlowDirectionExtensions" Member="M:Xamarin.Forms.Internals.EffectiveFlowDirectionExtensions.IsRightToLeft(Xamarin.Forms.EffectiveFlowDirection)" />
+      </Member>
+    </ExtensionMethod>
+    <ExtensionMethod>
+      <Targets>
+        <Target Type="T:Xamarin.Forms.FlowDirection" />
+      </Targets>
+      <Member MemberName="ToEffectiveFlowDirection">
+        <MemberSignature Language="C#" Value="public static Xamarin.Forms.EffectiveFlowDirection ToEffectiveFlowDirection (this Xamarin.Forms.FlowDirection self, Xamarin.Forms.EffectiveFlowDirection mode);" />
+        <MemberSignature Language="ILAsm" Value=".method public static hidebysig valuetype Xamarin.Forms.EffectiveFlowDirection ToEffectiveFlowDirection(valuetype Xamarin.Forms.FlowDirection self, valuetype Xamarin.Forms.EffectiveFlowDirection mode) cil managed" />
+        <MemberType>ExtensionMethod</MemberType>
+        <ReturnValue>
+          <ReturnType>Xamarin.Forms.EffectiveFlowDirection</ReturnType>
+        </ReturnValue>
+        <Parameters>
+          <Parameter Name="self" Type="Xamarin.Forms.FlowDirection" RefType="this" />
+          <Parameter Name="mode" Type="Xamarin.Forms.EffectiveFlowDirection" />
+        </Parameters>
+        <Docs>
+          <param name="self">To be added.</param>
+          <param name="mode">To be added.</param>
+          <summary>To be added.</summary>
+        </Docs>
+        <Link Type="Xamarin.Forms.Internals.EffectiveFlowDirectionExtensions" Member="M:Xamarin.Forms.Internals.EffectiveFlowDirectionExtensions.ToEffectiveFlowDirection(Xamarin.Forms.FlowDirection,Xamarin.Forms.EffectiveFlowDirection)" />
+      </Member>
+    </ExtensionMethod>
+    <ExtensionMethod>
+      <Targets>
+        <Target Type="T:Xamarin.Forms.EffectiveFlowDirection" />
+      </Targets>
+      <Member MemberName="ToFlowDirection">
+        <MemberSignature Language="C#" Value="public static Xamarin.Forms.FlowDirection ToFlowDirection (this Xamarin.Forms.EffectiveFlowDirection self);" />
+        <MemberSignature Language="ILAsm" Value=".method public static hidebysig valuetype Xamarin.Forms.FlowDirection ToFlowDirection(valuetype Xamarin.Forms.EffectiveFlowDirection self) cil managed" />
+        <MemberType>ExtensionMethod</MemberType>
+        <ReturnValue>
+          <ReturnType>Xamarin.Forms.FlowDirection</ReturnType>
+        </ReturnValue>
+        <Parameters>
+          <Parameter Name="self" Type="Xamarin.Forms.EffectiveFlowDirection" RefType="this" />
+        </Parameters>
+        <Docs>
+          <param name="self">To be added.</param>
+          <summary>To be added.</summary>
+        </Docs>
+        <Link Type="Xamarin.Forms.Internals.EffectiveFlowDirectionExtensions" Member="M:Xamarin.Forms.Internals.EffectiveFlowDirectionExtensions.ToFlowDirection(Xamarin.Forms.EffectiveFlowDirection)" />
       </Member>
     </ExtensionMethod>
     <ExtensionMethod>
