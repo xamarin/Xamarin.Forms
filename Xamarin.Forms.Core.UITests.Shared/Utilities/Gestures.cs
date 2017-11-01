@@ -126,5 +126,18 @@ namespace Xamarin.Forms.Core.UITests
 #endif
 
 		}
+
+		public static void DismissContextMenu(this IApp app)
+		{
+#if __IOS__
+			var screenbounds = app.RootViewRect();
+			app.TapCoordinates (screenbounds.CenterX, screenbounds.CenterY);
+#elif __ANDROID__
+			app.Back();
+#elif __WINDOWS__
+			var screenbounds = app.RootViewRect();
+			app.TapCoordinates (screenbounds.CenterX, screenbounds.CenterY);
+#endif
+		}
 	}
 }

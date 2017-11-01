@@ -133,31 +133,15 @@ namespace Xamarin.Forms.Controls.Issues
 		public void Bugzilla31330Test ()
 		{
 			RunningApp.WaitForElement (c => c.Marked ("Something 2"));
-
-			var screenBounds = RunningApp.RootViewRect();
-
-			var cell = RunningApp.Query (c => c.Marked ("Something 1")) [0];
-			var cell2 = RunningApp.Query (c => c.Marked ("Something 2")) [0];
-#if __IOS__
-			RunningApp.DragCoordinates (screenBounds.Width - 10, cell.Rect.CenterY, 0, cell.Rect.CenterY);
-			RunningApp.WaitForElement (c => c.Marked ("Delete"));
-			RunningApp.Tap (c => c.Marked ("Delete"));
-			RunningApp.WaitForElement (c => c.Marked ("Something 1"));
+			RunningApp.ActivateContextMenu("Something 1");
+			RunningApp.WaitForElement(c => c.Marked("Delete"));
+			RunningApp.Tap(c => c.Marked("Delete"));
+			RunningApp.DismissContextMenu();
 			RunningApp.Tap (c => c.Marked ("Something 2"));
-			RunningApp.DragCoordinates (screenBounds.Width - 10, cell2.Rect.CenterY, 0, cell2.Rect.CenterY);
-			RunningApp.Tap (c => c.Marked ("Delete"));
+			RunningApp.ActivateContextMenu("Something 2");
+			RunningApp.WaitForElement(c => c.Marked("Delete"));
+			RunningApp.Tap(c => c.Marked("Delete"));
 			RunningApp.WaitForNoElement (c => c.Marked ("Something 2"));
-#else
-			RunningApp.TouchAndHoldCoordinates (cell.Rect.CenterX, cell.Rect.CenterY);
-			RunningApp.WaitForElement (c => c.Marked ("Delete"));
-			RunningApp.Tap (c => c.Marked ("Delete"));
-			RunningApp.Back ();
-			RunningApp.WaitForElement (c => c.Marked ("Something 1"));
-			RunningApp.Tap (c => c.Marked ("Something 2"));
-			RunningApp.TouchAndHoldCoordinates (cell2.Rect.CenterX, cell2.Rect.CenterY);
-			RunningApp.Tap (c => c.Marked ("Delete"));
-			RunningApp.WaitForNoElement (c => c.Marked ("Something 2"));
-#endif
 		}
 #endif
 	}
