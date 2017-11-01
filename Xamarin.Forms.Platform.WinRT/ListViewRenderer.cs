@@ -712,10 +712,9 @@ namespace Xamarin.Forms.Platform.WinRT
 					// list is bound to an ItemSource which is made up only of, e.g., 
 					// IEnumerable<string> or IEnumerable<int>, it'll break automation
 
-					// Returning null here prevents the freeze. There's probably a more correct
-					// solution to this problem. 
-					
-					return null;
+					// Why? ¯\_(ツ)_/¯
+					// But if we force it to use ItemAutomationPeer directly, it doesn't freeze
+					return new ItemAutomationPeer(item, this);
 				}
 
 				return base.OnCreateItemAutomationPeer(item);
