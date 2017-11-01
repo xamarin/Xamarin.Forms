@@ -14,6 +14,8 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+	// Note that this test fails on UWP due to https://bugzilla.xamarin.com/show_bug.cgi?id=59650
+
 	[Preserve (AllMembers = true)]
 	[Issue (IssueTracker.Bugzilla, 31330, "Disabled context actions appear enabled")]
 	public class Bugzilla31330 : TestContentPage
