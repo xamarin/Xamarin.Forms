@@ -19,7 +19,7 @@ namespace Xamarin.Forms
 
 		bool _nextCallToForceUpdateSizeQueued;
 
-		EffectiveFlowDirection _effectiveFlowDirection = EffectiveFlowDirection.LeftToRight | EffectiveFlowDirection.Implicit;
+		EffectiveFlowDirection _effectiveFlowDirection = default(EffectiveFlowDirection);
 		EffectiveFlowDirection IFlowDirectionController.EffectiveFlowDirection
 		{
 			get { return _effectiveFlowDirection; }

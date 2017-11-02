@@ -11,7 +11,7 @@ namespace Xamarin.Forms.Platform.WinRT
 {
 	internal static class AlignmentExtensions
 	{
-		internal static Windows.UI.Xaml.TextAlignment ToNativeTextAlignment(this TextAlignment alignment, EffectiveFlowDirection flowDirection)
+		internal static Windows.UI.Xaml.TextAlignment ToNativeTextAlignment(this TextAlignment alignment, EffectiveFlowDirection flowDirection = default(EffectiveFlowDirection))
 		{
 			var isLtr = flowDirection.IsLeftToRight();
 			switch (alignment)

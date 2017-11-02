@@ -103,7 +103,7 @@ namespace Xamarin.Forms
 			set { SetValue(FlowDirectionProperty, value); }
 		}
 
-		EffectiveFlowDirection _effectiveFlowDirection = EffectiveFlowDirection.LeftToRight | EffectiveFlowDirection.Implicit;
+		EffectiveFlowDirection _effectiveFlowDirection = default(EffectiveFlowDirection);
 		EffectiveFlowDirection IFlowDirectionController.EffectiveFlowDirection
 		{
 			get { return _effectiveFlowDirection; }
@@ -773,7 +773,7 @@ namespace Xamarin.Forms
 
 			var newFlowDirection = (FlowDirection)newValue;
 
-			self.EffectiveFlowDirection = newFlowDirection.ToEffectiveFlowDirection(EffectiveFlowDirection.Explicit);
+			self.EffectiveFlowDirection = newFlowDirection.ToEffectiveFlowDirection(isExplicit: true);
 
 			self.NotifyFlowDirectionChanged();
 		}

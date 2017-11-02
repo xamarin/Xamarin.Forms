@@ -1,58 +1,69 @@
 using System;
 using System.ComponentModel;
-using System.Linq;
 
-namespace Xamarin.Forms.Internals
+namespace Xamarin.Forms
 {
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	public static class EffectiveFlowDirectionExtensions
 	{
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public static EffectiveFlowDirection ToEffectiveFlowDirection(this FlowDirection self, EffectiveFlowDirection mode)
+		internal static EffectiveFlowDirection ToEffectiveFlowDirection(this FlowDirection self, bool isExplicit = false)
 		{
 			switch (self)
 			{
 				case FlowDirection.MatchParent:
-					return EffectiveFlowDirection.LeftToRight | EffectiveFlowDirection.Implicit;
+					return default(EffectiveFlowDirection);
+
+
 				case FlowDirection.LeftToRight:
-					return EffectiveFlowDirection.LeftToRight | mode;
+					if (isExplicit)
+					{
+						return EffectiveFlowDirection.Explicit;
+					}
+					else
+					{
+						return default(EffectiveFlowDirection);
+					}
+
 				case FlowDirection.RightToLeft:
-					return EffectiveFlowDirection.RightToLeft | mode;
+					if (isExplicit)
+					{
+						return EffectiveFlowDirection.RightToLeft | EffectiveFlowDirection.Explicit;
+					}
+					else
+					{
+						return EffectiveFlowDirection.RightToLeft;
+					}
+
 				default:
 					throw new InvalidOperationException($"Cannot convert {self} to {nameof(EffectiveFlowDirection)}.");
-			}			
+			}
 		}
 
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public static FlowDirection ToFlowDirection(this EffectiveFlowDirection self)
+		internal static FlowDirection ToFlowDirection(this EffectiveFlowDirection self)
 		{
-			if (self.IsLeftToRight() && !self.IsRightToLeft())
+			if (self.IsLeftToRight())
 				return FlowDirection.LeftToRight;
-			else if (self.IsRightToLeft() && !self.IsLeftToRight())
+			else
 				return FlowDirection.RightToLeft;
 
 			throw new InvalidOperationException($"Cannot convert {self} to {nameof(FlowDirection)}.");
 		}
 
-		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static bool IsRightToLeft(this EffectiveFlowDirection self)
 		{
 			return (self & EffectiveFlowDirection.RightToLeft) == EffectiveFlowDirection.RightToLeft;
 		}
 
-		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static bool IsLeftToRight(this EffectiveFlowDirection self)
 		{
-			return (self & EffectiveFlowDirection.LeftToRight) == EffectiveFlowDirection.LeftToRight;
+			return (self & EffectiveFlowDirection.RightToLeft) != EffectiveFlowDirection.RightToLeft;
 		}
 
-		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static bool IsImplicit(this EffectiveFlowDirection self)
 		{
-			return (self & EffectiveFlowDirection.Implicit) == EffectiveFlowDirection.Implicit;
+			return (self & EffectiveFlowDirection.Explicit) != EffectiveFlowDirection.Explicit;
 		}
 
-		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static bool IsExplicit(this EffectiveFlowDirection self)
 		{
 			return (self & EffectiveFlowDirection.Explicit) == EffectiveFlowDirection.Explicit;

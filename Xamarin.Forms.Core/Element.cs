@@ -519,7 +519,7 @@ namespace Xamarin.Forms
 
 				if (flowDirection != controller.EffectiveFlowDirection.ToFlowDirection())
 				{
-					controller.EffectiveFlowDirection = flowDirection.ToEffectiveFlowDirection(EffectiveFlowDirection.Implicit);
+					controller.EffectiveFlowDirection = flowDirection.ToEffectiveFlowDirection();
 				}
 			}
 		}
