@@ -48,7 +48,6 @@
     </Reference>
     <Reference Include="Xamarin.UITest">
       <HintPath>..\packages\Xamarin.UITest.2.2.0\lib\net45\Xamarin.UITest.dll</HintPath>
-      <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
