@@ -10,6 +10,7 @@ using Xamarin.Forms.Controls;
 using Xamarin.Forms.Controls.Issues;
 using Xamarin.Forms.Platform.Android;
 using Xamarin.Forms.Platform.Android.AppLinks;
+using System.Linq;
 
 namespace Xamarin.Forms.ControlGallery.Android
 {
