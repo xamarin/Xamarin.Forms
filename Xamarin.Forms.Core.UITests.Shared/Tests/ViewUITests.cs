@@ -14,10 +14,10 @@ namespace Xamarin.Forms.Core.UITests
 	[Category("ViewBaseTests")]
 	internal abstract class _ViewUITests : BaseTestFixture
 	{
-		const string PleaseInspect = "Test framework cannout currently check this value; please inspect visually";
+		protected const string PleaseInspect = "Test framework cannout currently check this value; please inspect visually";
 
 		// TODO hartez 2017/10/31 17:33:21 Make sure to remove these ignores once you're done making the other tests work	
-		const string IgnoredForSpeed =
+		protected const string IgnoredForSpeed =
 			"Ignoring this test for now because it won't do anything; we'll turn it back on for real test runs";
 
 		/* Under score prefixes ensure inherited properties run first in test suite */

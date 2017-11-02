@@ -47,6 +47,9 @@ namespace Xamarin.Forms.Core.UITests
 
 		// ActivityIndicator tests
 		[Test]
+#if __WINDOWS__
+		[Ignore(IgnoredForSpeed)]
+#endif
 		[UiTest(typeof(ActivityIndicator), "IsRunning")]
 		public void IsRunning()
 		{
@@ -54,6 +57,8 @@ namespace Xamarin.Forms.Core.UITests
 			remote.GoTo();
 #if __MACOS__
 			Assert.Inconclusive("Not tested yet");
+#elif __WINDOWS__
+			Assert.Inconclusive(PleaseInspect);
 #else
 			var isRunning = remote.GetProperty<bool> (ActivityIndicator.IsRunningProperty);
 			Assert.IsTrue (isRunning);
