@@ -9,11 +9,16 @@ namespace Xamarin.Forms.Core.UITests
 	{
 		public static bool ScrollForElement (this IApp app, string query, Drag drag, int maxSteps = 25)
 		{
+			Func<AppQuery, AppQuery> elementQuery = q => q.Raw (query);
+
+#if __WINDOWS__
+			app.ScrollDownTo(elementQuery);
+			return true;
+#else
+
 			int count = 0;
 
 			int centerTolerance = 50;
-
-			Func<AppQuery, AppQuery> elementQuery = q => q.Raw (query);
 
 			// Visible elements
 			if (app.Query (elementQuery).Length > 1) {
@@ -57,6 +62,7 @@ namespace Xamarin.Forms.Core.UITests
 			}
 
 			return false;
+#endif
 		}
 			
 		static void CenterElementInView (this IApp app, Func<AppQuery, AppQuery> element, AppRect containingView, Drag.Direction direction)
