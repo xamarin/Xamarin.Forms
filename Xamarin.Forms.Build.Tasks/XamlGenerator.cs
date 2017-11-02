@@ -48,6 +48,7 @@ namespace Xamarin.Forms.Build.Tasks
 		public string RootType { get; private set; }
 		bool GenerateDefaultCtor { get; set; }
 		bool AddXamlCompilationAttribute { get; set; }
+		bool HideFromIntellisense { get; set; }
 		internal IEnumerable<CodeMemberField> NamedFields { get; set; }
 		internal CodeTypeReference BaseType { get; set; }
 
@@ -127,10 +128,11 @@ namespace Xamarin.Forms.Build.Tasks
 				RootClrNamespace = rootNs;
 			}
 			else if (hasXamlCompilationProcessingInstruction) {
-				RootClrNamespace = "__GeneratedTypes__";
+				RootClrNamespace = "__XamlGeneratedCode__";
 				RootType = $"__Type{generatedTypesCount++}";
 				GenerateDefaultCtor = true;
 				AddXamlCompilationAttribute = true;
+				HideFromIntellisense = true;
 			}
 			else { // rootClass == null && !hasXamlCompilationProcessingInstruction) {
 				Logger?.LogMessage(" no x:Class on root element and no xaml-comp processing instruction: Skipping");
@@ -178,7 +180,11 @@ namespace Xamarin.Forms.Build.Tasks
 			if (AddXamlCompilationAttribute)
 				declType.CustomAttributes.Add(
 					new CodeAttributeDeclaration(new CodeTypeReference($"global::{typeof(XamlCompilationAttribute).FullName}"),
-					                             new CodeAttributeArgument(new CodeSnippetExpression($"global::{typeof(XamlCompilationOptions).FullName}.Compile"))));
+												 new CodeAttributeArgument(new CodeSnippetExpression($"global::{typeof(XamlCompilationOptions).FullName}.Compile"))));
+			if (HideFromIntellisense)
+				declType.CustomAttributes.Add(
+					new CodeAttributeDeclaration(new CodeTypeReference($"global::{typeof(System.ComponentModel.EditorBrowsableAttribute).FullName}"),
+												 new CodeAttributeArgument(new CodeSnippetExpression($"global::{typeof(System.ComponentModel.EditorBrowsableState).FullName}.{nameof(System.ComponentModel.EditorBrowsableState.Never)}"))));
 
 			declType.BaseTypes.Add(BaseType);
 
