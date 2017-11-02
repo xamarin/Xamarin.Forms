@@ -27,7 +27,7 @@ namespace Xamarin.Forms.Core.XamlC
 			var rdNode = node.Parent as IElementNode;
 
 			var rootTargetPath = GetPathForType(module, ((ILRootNode)rootNode).TypeReference);
-			var uri = new Uri(value, UriKind.RelativeOrAbsolute);
+			var uri = new Uri(value, UriKind.Relative);
 
 			var resourceId = ResourceDictionary.RDSourceTypeConverter.GetResourceId(uri, rootTargetPath, s => GetResourceIdForPath(module, s));
 			//abuse the converter, produce some side effect, but leave the stack untouched

@@ -65,7 +65,7 @@ namespace Xamarin.Forms
 
 			//this will return a type if the RD as an x:Class element, and codebehind
 			var type = XamlResourceIdAttribute.GetTypeForResourceId(assembly, resourceID);
-			if (type != null) 
+			if (type != null)
 				_mergedInstance = s_instances.GetValue(type, (key) => (ResourceDictionary)Activator.CreateInstance(key));
 			else
 				_mergedInstance = DependencyService.Get<IResourcesLoader>().CreateResourceDictionary(resourceID, assembly, lineInfo);
@@ -311,16 +311,19 @@ namespace Xamarin.Forms
 
 				var lineInfo = (serviceProvider.GetService(typeof(Xaml.IXmlLineInfoProvider)) as Xaml.IXmlLineInfoProvider)?.XmlLineInfo;
 				var rootTargetPath = XamlResourceIdAttribute.GetPathForType(rootObjectType);
-				var uri = new Uri(value, UriKind.RelativeOrAbsolute);
+				var uri = new Uri(value, UriKind.Relative); //we don't want file:// uris, aven if they start with '/'
 				var resourceId = GetResourceId(uri, rootTargetPath,
 											   s => XamlResourceIdAttribute.GetResourceIdForPath(rootObjectType.GetTypeInfo().Assembly, s));
 				targetRD.SetAndLoadSource(uri, resourceId, rootObjectType.GetTypeInfo().Assembly, lineInfo);
 				return uri;
 			}
 
-			internal static string GetResourceId(Uri uri, string rootTargetPath, Func<string,string> getResourceIdForPath)
+			internal static string GetResourceId(Uri uri, string rootTargetPath, Func<string, string> getResourceIdForPath)
 			{
-				var resourceUri = uri.IsAbsoluteUri ? uri : new Uri($"/{rootTargetPath}/../{uri.OriginalString}", UriKind.Absolute);
+				//need a fake scheme so it's not seen as file:// uri, and the forward slashes are valid on all plats
+				var resourceUri = uri.OriginalString.StartsWith("/", StringComparison.Ordinal)
+				                     ? new Uri($"pack://{uri.OriginalString}", UriKind.Absolute)
+				                     : new Uri($"pack:///{rootTargetPath}/../{uri.OriginalString}", UriKind.Absolute);
 
 				//drop the leading '/'
 				var resourcePath = resourceUri.AbsolutePath.Substring(1);
