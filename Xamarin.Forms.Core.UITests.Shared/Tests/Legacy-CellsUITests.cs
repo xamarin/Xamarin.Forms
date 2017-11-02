@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -21,21 +22,35 @@ namespace Xamarin.Forms.Core.UITests
 			App.NavigateToGallery(GalleryQueries.CellsGalleryLegacy);
 		}
 
+		void SelectTest(string testName)
+		{
+#if __WINDOWS__
+			App.ScrollDownTo(testName);
+#else
+			App.ScrollForElement($"* marked:'{testName}'",
+				new Drag(ScreenBounds, Drag.Direction.BottomToTop, Drag.DragLength.Medium));
+#endif
+			App.Tap(q => q.Marked(testName));
+		}
+
 		[Test]
 		[Description("ListView with TextCells, all are present")]
 		[UiTest(typeof(ListView))]
 		[UiTest(typeof(TextCell))]
 		public void CellsGalleryTextCellList()
 		{
-			App.ScrollForElement("* marked:'TextCell List'",
-				new Drag(ScreenBounds, Drag.Direction.BottomToTop, Drag.DragLength.Medium));
-			App.Tap(q => q.Marked("TextCell List"));
+			SelectTest("TextCell List");
+
 			App.WaitForElement(q => q.Marked("Text 0"), "Timeout : Text 0");
 
 			App.Screenshot("At TextCell List Gallery");
-
+			
+#if __WINDOWS__
+			App.ScrollDownTo("Detail 99", "celltestlist", timeout: TimeSpan.FromMinutes(1));
+#else
 			App.ScrollForElement("* marked:'Detail 99'",
 				new Drag(ScreenBounds, Drag.Direction.BottomToTop, Drag.DragLength.Medium));
+#endif
 
 			App.WaitForElement(q => q.Marked("Detail 99"), "Timeout : Detail 99");
 
@@ -48,10 +63,8 @@ namespace Xamarin.Forms.Core.UITests
 		[UiTest(typeof(TextCell))]
 		public void CellsGalleryTextCellTable()
 		{
-			App.ScrollForElement("* marked:'TextCell Table'",
-				new Drag(ScreenBounds, Drag.Direction.BottomToTop, Drag.DragLength.Medium));
+			SelectTest("TextCell Table");
 
-			App.Tap(q => q.Marked("TextCell Table"));
 			App.WaitForElement(q => q.Marked("Text 1"), "Timeout : Text 1");
 
 			App.Screenshot("At TextCell Table Gallery");
@@ -72,12 +85,10 @@ namespace Xamarin.Forms.Core.UITests
 		{
 			Thread.Sleep(2000);
 
-			App.ScrollForElement("* marked:'ImageCell List'",
-				new Drag(ScreenBounds, Drag.Direction.BottomToTop, Drag.DragLength.Medium));
+			SelectTest("ImageCell List");
 
 			Thread.Sleep(2000);
 
-			App.Tap(q => q.Marked("ImageCell List"));
 			App.WaitForElement(q => q.Marked("Text 0"), "Timeout : Text 0");
 
 			App.Screenshot("At ImageCell List Gallery");
@@ -105,10 +116,7 @@ namespace Xamarin.Forms.Core.UITests
 		[UiTest(typeof(ImageCell))]
 		public async Task CellsGalleryImageUrlCellList()
 		{
-			App.ScrollForElement("* marked:'ImageCell Url List'",
-				new Drag(ScreenBounds, Drag.Direction.BottomToTop, Drag.DragLength.Medium));
-
-			App.Tap(q => q.Marked("ImageCell Url List"));
+			SelectTest("ImageCell Url List");
 
 			//var scollBounds = App.Query(q => q.Marked("ImageUrlCellListView")).First().Rect;
 			//App.ScrollForElement("* marked:'Detail 200'", new Drag(scollBounds, Drag.Direction.BottomToTop, Drag.DragLength.Medium));
@@ -144,10 +152,8 @@ namespace Xamarin.Forms.Core.UITests
 		[UiTest(typeof(ImageCell))]
 		public void CellsGalleryImageCellTable()
 		{
-			App.ScrollForElement("* marked:'ImageCell Table'",
-				new Drag(ScreenBounds, Drag.Direction.BottomToTop, Drag.DragLength.Medium));
+			SelectTest("ImageCell Table");
 
-			App.Tap(q => q.Marked("ImageCell Table"));
 			App.WaitForElement(q => q.Marked("Text 1"), "Timeout : Text 1");
 
 			App.Screenshot("At ImageCell Table Gallery");
@@ -173,10 +179,8 @@ namespace Xamarin.Forms.Core.UITests
 		[UiTest(typeof(SwitchCell))]
 		public void CellsGallerySwitchCellList()
 		{
-			App.ScrollForElement("* marked:'SwitchCell List'",
-				new Drag(ScreenBounds, Drag.Direction.BottomToTop, Drag.DragLength.Medium));
+			SelectTest("SwitchCell List");
 
-			App.Tap(q => q.Marked("SwitchCell List"));
 			App.WaitForElement(q => q.Marked("Label 0"), "Timeout : Label 0");
 
 			App.Screenshot("At SwitchCell List Gallery");
@@ -196,10 +200,8 @@ namespace Xamarin.Forms.Core.UITests
 		[UiTest(typeof(SwitchCell))]
 		public void CellsGallerySwitchCellTable()
 		{
-			App.ScrollForElement("* marked:'SwitchCell Table'",
-				new Drag(ScreenBounds, Drag.Direction.BottomToTop, Drag.DragLength.Medium));
+			SelectTest("SwitchCell Table");
 
-			App.Tap(q => q.Marked("SwitchCell Table"));
 			App.WaitForElement(q => q.Marked("text 1"), "Timeout : text 1");
 
 			App.Screenshot("At SwitchCell Table Gallery");
@@ -218,10 +220,8 @@ namespace Xamarin.Forms.Core.UITests
 		[UiTest(typeof(EntryCell))]
 		public void CellsGalleryEntryCellList()
 		{
-			App.ScrollForElement("* marked:'EntryCell List'",
-				new Drag(ScreenBounds, Drag.Direction.BottomToTop, Drag.DragLength.Medium));
+			SelectTest("EntryCell List");
 
-			App.Tap(q => q.Marked("EntryCell List"));
 			App.WaitForElement(q => q.Marked("Label 0"), "Timeout : Label 0");
 
 			App.Screenshot("At EntryCell List Gallery");
@@ -238,10 +238,8 @@ namespace Xamarin.Forms.Core.UITests
 		[UiTest(typeof(EntryCell))]
 		public void CellsGalleryEntryCellTable()
 		{
-			App.ScrollForElement("* marked:'EntryCell Table'",
-				new Drag(ScreenBounds, Drag.Direction.BottomToTop, Drag.DragLength.Medium));
+			SelectTest("EntryCell Table");
 
-			App.Tap(q => q.Marked("EntryCell Table"));
 			App.WaitForElement(q => q.Marked("Text 2"), "Timeout : Text 2");
 
 			App.Screenshot("At EntryCell Table Gallery");
@@ -257,10 +255,8 @@ namespace Xamarin.Forms.Core.UITests
 		[UiTest(typeof(EntryCell), "Completed")]
 		public void CellsGalleryEntryCellCompleted()
 		{
-			App.ScrollForElement("* marked:'EntryCell Table'",
-				new Drag(ScreenBounds, Drag.Direction.BottomToTop, Drag.DragLength.Medium));
+			SelectTest("EntryCell Table");
 
-			App.Tap(q => q.Marked("EntryCell Table"));
 			App.WaitForElement(q => q.Marked("Text 2"), "Timeout : Text 2");
 
 			App.Screenshot("At EntryCell Table Gallery");

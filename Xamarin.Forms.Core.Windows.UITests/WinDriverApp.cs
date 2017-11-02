@@ -283,28 +283,77 @@ namespace Xamarin.Forms.Core.UITests
 			return new FileInfo(filename);
 		}
 
-		void Scroll(WinQuery query, string scrollButton)
+		void Scroll(WinQuery query, bool down)
 		{
 			if (query == null)
 			{
-				var appScrollDownButton = _session.FindElementByAccessibilityId(scrollButton);
-				appScrollDownButton.Click();
+				WindowsElement window = QueryWindows(AppName)[0];
+				ScrollClick(window, down);
+				return;
 			}
 
 			var element = FindFirstElement(query);
-			var scrollDownButton = element.FindElementByAccessibilityId(scrollButton);
-			scrollDownButton.Click();
+
+			ScrollClick(element, down);
 		}
 
-
-		void ScrollDown(WinQuery query)
+		void ScrollClick(WindowsElement element, bool down = true)
 		{
-			Scroll(query, "VerticalSmallIncrease");
+			PointF point = down ? GetBottomRightOfBoundingRectangle(element) :  GetTopRightOfBoundingRectangle(element);
+
+			WindowsElement window = QueryWindows(AppName)[0];
+			System.Drawing.PointF origin = GetOriginOfBoundingRectangle(window);
+
+			var realPoint = new PointF(point.X - origin.X, point.Y - origin.Y);
+
+			Debug.WriteLine($">>>>> WinDriverApp ScrollDownClick 308: {realPoint}");
+
+			var xOffset = realPoint.X - 15;
+			var yOffset = realPoint.Y - (down ? 15 : -15);
+
+			OriginMouse();
+			MouseClickAt(xOffset, yOffset, ClickType.SingleClick);
 		}
 
-		void ScrollUp(WinQuery query)
+		void OriginMouse()
 		{
-			Scroll(query, "VerticalSmallDecrease");
+			var viewPort = GetViewPort();
+			int xOffset = viewPort.Coordinates.LocationInViewport.X;
+			int yOffset = viewPort.Coordinates.LocationInViewport.Y;
+			_session.Mouse.MouseMove(viewPort.Coordinates, xOffset, yOffset);
+		}
+
+		static System.Drawing.PointF GetBottomRightOfBoundingRectangle(WindowsElement element)
+		{
+			string vpcpString = element.GetAttribute("BoundingRectangle");
+
+			// returned string format looks like:
+			// Left:-1868 Top:382 Width:1013 Height:680
+
+			string[] vpparts = vpcpString.Split(new[] { ':', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+			float vpx = float.Parse(vpparts[1]);
+			float vpy = float.Parse(vpparts[3]);
+
+			float vpw = float.Parse(vpparts[5]);
+			float vph = float.Parse(vpparts[7]);
+
+			return new System.Drawing.PointF(vpx + vpw, vpy + vph);
+		}
+
+		static System.Drawing.PointF GetTopRightOfBoundingRectangle(WindowsElement element)
+		{
+			string vpcpString = element.GetAttribute("BoundingRectangle");
+
+			// returned string format looks like:
+			// Left:-1868 Top:382 Width:1013 Height:680
+
+			string[] vpparts = vpcpString.Split(new[] { ':', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+			float vpx = float.Parse(vpparts[1]);
+			float vpy = float.Parse(vpparts[3]);
+
+			float vpw = float.Parse(vpparts[5]);
+
+			return new System.Drawing.PointF(vpx + vpw, vpy);
 		}
 
 		public void ScrollDown(Func<AppQuery, AppQuery> withinQuery = null, ScrollStrategy strategy = ScrollStrategy.Auto,
@@ -313,12 +362,12 @@ namespace Xamarin.Forms.Core.UITests
 		{
 			if (withinQuery == null)
 			{
-				ScrollDown(null);
+				Scroll(null, true);
 				return;
 			}
 
 			WinQuery winQuery = WinQuery.FromQuery(withinQuery);
-			ScrollDown(winQuery);
+			Scroll(winQuery, true);
 		}
 
 		public void ScrollDown(string withinMarked, ScrollStrategy strategy = ScrollStrategy.Auto,
@@ -326,7 +375,7 @@ namespace Xamarin.Forms.Core.UITests
 			int swipeSpeed = 500, bool withInertia = true)
 		{
 			WinQuery winQuery = WinQuery.FromMarked(withinMarked);
-			ScrollDown(winQuery);
+			Scroll(winQuery, true);
 		}
 
 		public void ScrollDownTo(string toMarked, string withinMarked = null, ScrollStrategy strategy = ScrollStrategy.Auto,
@@ -350,11 +399,13 @@ namespace Xamarin.Forms.Core.UITests
 			while (true)
 			{
 				Func<ReadOnlyCollection<WindowsElement>> result = () => QueryWindows(toQuery);
-				TimeSpan iterationTimeout = TimeSpan.FromSeconds(1);
+				TimeSpan iterationTimeout = TimeSpan.FromMilliseconds(0);
+				TimeSpan retryFrequency = TimeSpan.FromMilliseconds(0);
 
 				try
 				{
-					var found = WaitForAtLeastOne(result, timeoutMessage: null, timeout: iterationTimeout);
+					var found = WaitForAtLeastOne(result, timeoutMessage: null, 
+						timeout: iterationTimeout, retryFrequency: retryFrequency);
 
 					if (found.Count > 0)
 					{
@@ -371,18 +422,10 @@ namespace Xamarin.Forms.Core.UITests
 				if (elapsed >= timeout.Value.Ticks)
 				{
 					Debug.WriteLine($">>>>> {elapsed} ticks elapsed, timeout value is {timeout.Value.Ticks}");
-
 					throw new TimeoutException($"Timed out scrolling to {toQuery}");
 				}
 
-				if (down)
-				{
-					ScrollDown(withinQuery);
-				}
-				else
-				{
-					ScrollUp(withinQuery);
-				}
+				Scroll(withinQuery, down);
 			}
 		}
 
@@ -412,12 +455,12 @@ namespace Xamarin.Forms.Core.UITests
 		{
 			if (query == null)
 			{
-				ScrollUp(null);
+				Scroll(null, false);
 				return;
 			}
 
 			WinQuery winQuery = WinQuery.FromQuery(query);
-			ScrollUp(winQuery);
+			Scroll(winQuery, false);
 		}
 
 		public void ScrollUp(string withinMarked, ScrollStrategy strategy = ScrollStrategy.Auto,
@@ -425,7 +468,7 @@ namespace Xamarin.Forms.Core.UITests
 			bool withInertia = true)
 		{
 			WinQuery winQuery = WinQuery.FromMarked(withinMarked);
-			ScrollUp(winQuery);
+			Scroll(winQuery, false);
 		}
 
 		public void ScrollUpTo(string toMarked, string withinMarked = null, ScrollStrategy strategy = ScrollStrategy.Auto,

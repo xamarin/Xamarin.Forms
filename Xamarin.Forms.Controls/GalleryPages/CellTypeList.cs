@@ -29,6 +29,8 @@ namespace Xamarin.Forms.Controls
 
 	public class CellTypeList : ListView
 	{
+		CellNavigation _last;
+
 		// TODO Add gallerys for ViewCell, ListView and TableView
 		public CellTypeList ()
 		{
@@ -52,12 +54,23 @@ namespace Xamarin.Forms.Controls
 
 			ItemTemplate = template;
 			ItemSelected += (s, e) => {
+				
 				if (SelectedItem == null)
 					return;
 
 				var cellNav = (CellNavigation) e.SelectedItem;
+
+				if (cellNav == _last)
+				{
+					_last = null;
+					return;
+				}
+
 				Navigation.PushAsync (cellNav.Page);
+				_last = cellNav;
+#if !__WINDOWS__
 				SelectedItem = null;
+#endif
 			};
 		}		
 	}
