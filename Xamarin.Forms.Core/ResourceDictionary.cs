@@ -311,7 +311,7 @@ namespace Xamarin.Forms
 
 				var lineInfo = (serviceProvider.GetService(typeof(Xaml.IXmlLineInfoProvider)) as Xaml.IXmlLineInfoProvider)?.XmlLineInfo;
 				var rootTargetPath = XamlResourceIdAttribute.GetPathForType(rootObjectType);
-				var uri = new Uri(value, UriKind.Relative); //we don't want file:// uris, aven if they start with '/'
+				var uri = new Uri(value, UriKind.Relative); //we don't want file:// uris, even if they start with '/'
 				var resourceId = GetResourceId(uri, rootTargetPath,
 											   s => XamlResourceIdAttribute.GetResourceIdForPath(rootObjectType.GetTypeInfo().Assembly, s));
 				targetRD.SetAndLoadSource(uri, resourceId, rootObjectType.GetTypeInfo().Assembly, lineInfo);
