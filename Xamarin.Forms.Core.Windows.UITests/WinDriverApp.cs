@@ -9,41 +9,39 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using OpenQA.Selenium;
-using OpenQA.Selenium.Appium;
-using OpenQA.Selenium.Appium.Interfaces;
 using OpenQA.Selenium.Appium.Windows;
-using OpenQA.Selenium.Interactions.Internal;
 using OpenQA.Selenium.Remote;
-using OpenQA.Selenium.Support.PageObjects;
-using Xamarin.Forms.CustomAttributes;
 using Xamarin.UITest;
 using Xamarin.UITest.Queries;
 using Xamarin.UITest.Queries.Tokens;
-using Point = System.Drawing.Point;
 
 namespace Xamarin.Forms.Core.UITests
 {
 	public class WinDriverApp : IApp
 	{
+		public const string AppName = "Xamarin.Forms.ControlGallery.WindowsUniversal";
+
 		readonly Dictionary<string, string> _controlNameToTag = new Dictionary<string, string>
 		{
 			{ "button", "ControlType.Button" }
 		};
 
 		readonly WindowsDriver<WindowsElement> _session;
-		readonly RemoteTouchScreen _touchScreen;
-
-		public const string AppName = "Xamarin.Forms.ControlGallery.WindowsUniversal";
 
 		readonly Dictionary<string, string> _translatePropertyAccessor = new Dictionary<string, string>
 		{
 			{ "getAlpha", "Opacity" }
 		};
 
+		int _scrollBarOffset = 5;
+
+		WindowsElement _viewPort;
+
+		WindowsElement _window;
+
 		public WinDriverApp(WindowsDriver<WindowsElement> session)
 		{
 			_session = session;
-			_touchScreen = new RemoteTouchScreen(_session);
 			TestServer = new WindowsTestServer(_session);
 		}
 
@@ -276,83 +274,6 @@ namespace Xamarin.Forms.Core.UITests
 			return new FileInfo(filename);
 		}
 
-		void Scroll(WinQuery query, bool down)
-		{
-			if (query == null)
-			{
-				WindowsElement window = QueryWindows(AppName)[0];
-				ScrollClick(window, down);
-				return;
-			}
-
-			var element = FindFirstElement(query);
-
-			ScrollClick(element, down);
-		}
-
-		void ScrollClick(WindowsElement element, bool down = true)
-		{
-			PointF point = down ? GetBottomRightOfBoundingRectangle(element) :  GetTopRightOfBoundingRectangle(element);
-
-			WindowsElement window = QueryWindows(AppName)[0];
-			System.Drawing.PointF origin = GetOriginOfBoundingRectangle(window);
-
-			var realPoint = new PointF(point.X - origin.X, point.Y - origin.Y);
-
-			var xOffset = 5;
-			if (origin.X < 0)
-			{
-				xOffset = 15;
-			}
-
-			var finalX = realPoint.X - xOffset;
-			var finalY = realPoint.Y - (down ? 15 : -15);
-
-			OriginMouse();
-			MouseClickAt(finalX, finalY, ClickType.SingleClick);
-		}
-
-		void OriginMouse()
-		{
-			var viewPort = GetViewPort();
-			int xOffset = viewPort.Coordinates.LocationInViewport.X;
-			int yOffset = viewPort.Coordinates.LocationInViewport.Y;
-			_session.Mouse.MouseMove(viewPort.Coordinates, xOffset, yOffset);
-		}
-
-		static System.Drawing.PointF GetBottomRightOfBoundingRectangle(WindowsElement element)
-		{
-			string vpcpString = element.GetAttribute("BoundingRectangle");
-
-			// returned string format looks like:
-			// Left:-1868 Top:382 Width:1013 Height:680
-
-			string[] vpparts = vpcpString.Split(new[] { ':', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-			float vpx = float.Parse(vpparts[1]);
-			float vpy = float.Parse(vpparts[3]);
-
-			float vpw = float.Parse(vpparts[5]);
-			float vph = float.Parse(vpparts[7]);
-
-			return new System.Drawing.PointF(vpx + vpw, vpy + vph);
-		}
-
-		static System.Drawing.PointF GetTopRightOfBoundingRectangle(WindowsElement element)
-		{
-			string vpcpString = element.GetAttribute("BoundingRectangle");
-
-			// returned string format looks like:
-			// Left:-1868 Top:382 Width:1013 Height:680
-
-			string[] vpparts = vpcpString.Split(new[] { ':', ' ' }, StringSplitOptions.RemoveEmptyEntries);
-			float vpx = float.Parse(vpparts[1]);
-			float vpy = float.Parse(vpparts[3]);
-
-			float vpw = float.Parse(vpparts[5]);
-
-			return new System.Drawing.PointF(vpx + vpw, vpy);
-		}
-
 		public void ScrollDown(Func<AppQuery, AppQuery> withinQuery = null, ScrollStrategy strategy = ScrollStrategy.Auto,
 			double swipePercentage = 0.67,
 			int swipeSpeed = 500, bool withInertia = true)
@@ -386,44 +307,6 @@ namespace Xamarin.Forms.Core.UITests
 			int swipeSpeed = 500, bool withInertia = true, TimeSpan? timeout = null)
 		{
 			throw new NotImplementedException();
-		}
-
-		void ScrollTo(WinQuery toQuery, WinQuery withinQuery, TimeSpan? timeout = null, bool down = true)
-		{
-			timeout = timeout ?? TimeSpan.FromSeconds(5);
-			DateTime start = DateTime.Now;
-
-			while (true)
-			{
-				Func<ReadOnlyCollection<WindowsElement>> result = () => QueryWindows(toQuery);
-				TimeSpan iterationTimeout = TimeSpan.FromMilliseconds(0);
-				TimeSpan retryFrequency = TimeSpan.FromMilliseconds(0);
-
-				try
-				{
-					var found = WaitForAtLeastOne(result, timeoutMessage: null, 
-						timeout: iterationTimeout, retryFrequency: retryFrequency);
-
-					if (found.Count > 0)
-					{
-						// Success
-						return;
-					}
-				}
-				catch (TimeoutException ex)
-				{
-					// Haven't found it yet, keep scrolling
-				}
-
-				long elapsed = DateTime.Now.Subtract(start).Ticks;
-				if (elapsed >= timeout.Value.Ticks)
-				{
-					Debug.WriteLine($">>>>> {elapsed} ticks elapsed, timeout value is {timeout.Value.Ticks}");
-					throw new TimeoutException($"Timed out scrolling to {toQuery}");
-				}
-
-				Scroll(withinQuery, down);
-			}
 		}
 
 		public void ScrollDownTo(Func<AppQuery, AppQuery> toQuery, Func<AppQuery, AppQuery> withinQuery = null,
@@ -471,7 +354,8 @@ namespace Xamarin.Forms.Core.UITests
 		public void ScrollUpTo(string toMarked, string withinMarked = null, ScrollStrategy strategy = ScrollStrategy.Auto,
 			double swipePercentage = 0.67, int swipeSpeed = 500, bool withInertia = true, TimeSpan? timeout = null)
 		{
-			ScrollTo(WinQuery.FromMarked(toMarked), withinMarked == null ? null : WinQuery.FromMarked(withinMarked), timeout, down: false);
+			ScrollTo(WinQuery.FromMarked(toMarked), withinMarked == null ? null : WinQuery.FromMarked(withinMarked), timeout,
+				down: false);
 		}
 
 		public void ScrollUpTo(Func<AppQuery, AppWebQuery> toQuery, string withinMarked,
@@ -485,7 +369,8 @@ namespace Xamarin.Forms.Core.UITests
 			ScrollStrategy strategy = ScrollStrategy.Auto, double swipePercentage = 0.67,
 			int swipeSpeed = 500, bool withInertia = true, TimeSpan? timeout = null)
 		{
-			ScrollTo(WinQuery.FromQuery(toQuery), withinQuery == null ? null : WinQuery.FromQuery(withinQuery), timeout, down: false);
+			ScrollTo(WinQuery.FromQuery(toQuery), withinQuery == null ? null : WinQuery.FromQuery(withinQuery), timeout,
+				down: false);
 		}
 
 		public void ScrollUpTo(Func<AppQuery, AppWebQuery> toQuery, Func<AppQuery, AppQuery> withinQuery = null,
@@ -688,21 +573,6 @@ namespace Xamarin.Forms.Core.UITests
 			MouseClickAt(point.X, point.Y, ClickType.ContextClick);
 		}
 
-		WindowsElement _viewPort;
-
-		WindowsElement GetViewPort()
-		{
-			if (_viewPort != null)
-			{
-				return _viewPort;
-			}
-
-			ReadOnlyCollection<WindowsElement> candidates = QueryWindows(AppName);
-			_viewPort = candidates[3]; // We really just want the viewport; skip the full window, title bar, min/max buttons...
-
-			return _viewPort;
-		}
-
 		internal void MouseClickAt(float x, float y, ClickType clickType = ClickType.SingleClick)
 		{
 			// Mouse clicking with ICoordinates doesn't work the way we'd like (see TapCoordinates comments),
@@ -715,11 +585,11 @@ namespace Xamarin.Forms.Core.UITests
 			// 3. Use the (undocumented, except in https://github.com/Microsoft/WinAppDriver/issues/118#issuecomment-269404335)
 			//		null parameter for Mouse.Click() to click at the current pointer location
 
-			var viewPort = GetViewPort();
+			WindowsElement viewPort = GetViewPort();
 			int xOffset = viewPort.Coordinates.LocationInViewport.X;
 			int yOffset = viewPort.Coordinates.LocationInViewport.Y;
 			_session.Mouse.MouseMove(viewPort.Coordinates, (int)x - xOffset, (int)y - yOffset);
-			
+
 			switch (clickType)
 			{
 				case ClickType.DoubleClick:
@@ -763,7 +633,7 @@ namespace Xamarin.Forms.Core.UITests
 
 		void DoubleTap(WinQuery query)
 		{
-			var element = FindFirstElement(query);
+			WindowsElement element = FindFirstElement(query);
 
 			if (element == null)
 			{
@@ -773,25 +643,12 @@ namespace Xamarin.Forms.Core.UITests
 			DoubleClickElement(element);
 		}
 
-		WindowsElement FindFirstElement(WinQuery query)
-		{
-			Func<ReadOnlyCollection<WindowsElement>> fquery = () => QueryWindows(query);
-
-			string timeoutMessage = $"Timed out waiting for element: {query.Raw}";
-
-			ReadOnlyCollection<WindowsElement> results = WaitForAtLeastOne(fquery, timeoutMessage);
-
-			WindowsElement element = results.FirstOrDefault();
-
-			return element;
-		}
-
 		PointF ElementToClickablePoint(WindowsElement element)
 		{
 			PointF clickablePoint = GetClickablePoint(element);
 
-			WindowsElement window = QueryWindows(AppName)[0];
-			System.Drawing.PointF origin = GetOriginOfBoundingRectangle(window);
+			WindowsElement window = GetWindow();
+			PointF origin = GetOriginOfBoundingRectangle(window);
 
 			// Use the coordinates in the app window's viewport relative to the window's origin
 			return new PointF(clickablePoint.X - origin.X, clickablePoint.Y - origin.Y);
@@ -814,17 +671,20 @@ namespace Xamarin.Forms.Core.UITests
 			return new ReadOnlyCollection<WindowsElement>(elements.Where(element => element.TagName == tag).ToList());
 		}
 
-		static PointF GetClickablePoint(WindowsElement element)
+		WindowsElement FindFirstElement(WinQuery query)
 		{
-			string cpString = element.GetAttribute("ClickablePoint");
-			string[] parts = cpString.Split(',');
-			float x = float.Parse(parts[0]);
-			float y = float.Parse(parts[1]);
+			Func<ReadOnlyCollection<WindowsElement>> fquery = () => QueryWindows(query);
 
-			return new PointF(x, y);
+			string timeoutMessage = $"Timed out waiting for element: {query.Raw}";
+
+			ReadOnlyCollection<WindowsElement> results = WaitForAtLeastOne(fquery, timeoutMessage);
+
+			WindowsElement element = results.FirstOrDefault();
+
+			return element;
 		}
 
-		static System.Drawing.PointF GetOriginOfBoundingRectangle(WindowsElement element)
+		static PointF GetBottomRightOfBoundingRectangle(WindowsElement element)
 		{
 			string vpcpString = element.GetAttribute("BoundingRectangle");
 
@@ -835,7 +695,90 @@ namespace Xamarin.Forms.Core.UITests
 			float vpx = float.Parse(vpparts[1]);
 			float vpy = float.Parse(vpparts[3]);
 
-			return new System.Drawing.PointF(vpx, vpy);
+			float vpw = float.Parse(vpparts[5]);
+			float vph = float.Parse(vpparts[7]);
+
+			return new PointF(vpx + vpw, vpy + vph);
+		}
+
+		static PointF GetClickablePoint(WindowsElement element)
+		{
+			string cpString = element.GetAttribute("ClickablePoint");
+			string[] parts = cpString.Split(',');
+			float x = float.Parse(parts[0]);
+			float y = float.Parse(parts[1]);
+
+			return new PointF(x, y);
+		}
+
+		static PointF GetOriginOfBoundingRectangle(WindowsElement element)
+		{
+			string vpcpString = element.GetAttribute("BoundingRectangle");
+
+			// returned string format looks like:
+			// Left:-1868 Top:382 Width:1013 Height:680
+
+			string[] vpparts = vpcpString.Split(new[] { ':', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+			float vpx = float.Parse(vpparts[1]);
+			float vpy = float.Parse(vpparts[3]);
+
+			return new PointF(vpx, vpy);
+		}
+
+		static PointF GetTopRightOfBoundingRectangle(WindowsElement element)
+		{
+			string vpcpString = element.GetAttribute("BoundingRectangle");
+
+			// returned string format looks like:
+			// Left:-1868 Top:382 Width:1013 Height:680
+
+			string[] vpparts = vpcpString.Split(new[] { ':', ' ' }, StringSplitOptions.RemoveEmptyEntries);
+			float vpx = float.Parse(vpparts[1]);
+			float vpy = float.Parse(vpparts[3]);
+
+			float vpw = float.Parse(vpparts[5]);
+
+			return new PointF(vpx + vpw, vpy);
+		}
+
+		WindowsElement GetViewPort()
+		{
+			if (_viewPort != null)
+			{
+				return _viewPort;
+			}
+
+			ReadOnlyCollection<WindowsElement> candidates = QueryWindows(AppName);
+			_viewPort = candidates[3]; // We really just want the viewport; skip the full window, title bar, min/max buttons...
+
+			int xOffset = _viewPort.Coordinates.LocationInViewport.X;
+
+			if (xOffset > 1) // Everything having to do with scrolling right now is a horrid kludge
+			{
+				// This makes the scrolling stuff work correctly on a higher density screen (e.g. MBP running Windows) 
+				_scrollBarOffset = -70;
+			}
+
+			return _viewPort;
+		}
+
+		WindowsElement GetWindow()
+		{
+			if (_window != null)
+			{
+				return _window;
+			}
+
+			_window = QueryWindows(AppName)[0];
+			return _window;
+		}
+
+		void OriginMouse()
+		{
+			WindowsElement viewPort = GetViewPort();
+			int xOffset = viewPort.Coordinates.LocationInViewport.X;
+			int yOffset = viewPort.Coordinates.LocationInViewport.Y;
+			_session.Mouse.MouseMove(viewPort.Coordinates, xOffset, yOffset);
 		}
 
 		ReadOnlyCollection<WindowsElement> QueryWindows(WinQuery query)
@@ -869,9 +812,83 @@ namespace Xamarin.Forms.Core.UITests
 			return QueryWindows(winQuery);
 		}
 
+		void Scroll(WinQuery query, bool down)
+		{
+			if (query == null)
+			{
+				ScrollClick(GetWindow(), down);
+				return;
+			}
+
+			WindowsElement element = FindFirstElement(query);
+
+			ScrollClick(element, down);
+		}
+
+		void ScrollClick(WindowsElement element, bool down = true)
+		{
+			PointF point = down ? GetBottomRightOfBoundingRectangle(element) : GetTopRightOfBoundingRectangle(element);
+
+			PointF origin = GetOriginOfBoundingRectangle(GetWindow());
+
+			var realPoint = new PointF(point.X - origin.X, point.Y - origin.Y);
+
+			int xOffset = _scrollBarOffset;
+			if (origin.X < 0)
+			{
+				// The scrollbar's in a slightly different place relative to the window bounds
+				// if we're running on the left monitor (which I like to do)
+				xOffset = xOffset * 3;
+			}
+
+			float finalX = realPoint.X - xOffset;
+			float finalY = realPoint.Y - (down ? 15 : -15);
+
+			OriginMouse();
+			MouseClickAt(finalX, finalY, ClickType.SingleClick);
+		}
+
+		void ScrollTo(WinQuery toQuery, WinQuery withinQuery, TimeSpan? timeout = null, bool down = true)
+		{
+			timeout = timeout ?? TimeSpan.FromSeconds(5);
+			DateTime start = DateTime.Now;
+
+			while (true)
+			{
+				Func<ReadOnlyCollection<WindowsElement>> result = () => QueryWindows(toQuery);
+				TimeSpan iterationTimeout = TimeSpan.FromMilliseconds(0);
+				TimeSpan retryFrequency = TimeSpan.FromMilliseconds(0);
+
+				try
+				{
+					ReadOnlyCollection<WindowsElement> found = WaitForAtLeastOne(result, timeoutMessage: null,
+						timeout: iterationTimeout, retryFrequency: retryFrequency);
+
+					if (found.Count > 0)
+					{
+						// Success
+						return;
+					}
+				}
+				catch (TimeoutException ex)
+				{
+					// Haven't found it yet, keep scrolling
+				}
+
+				long elapsed = DateTime.Now.Subtract(start).Ticks;
+				if (elapsed >= timeout.Value.Ticks)
+				{
+					Debug.WriteLine($">>>>> {elapsed} ticks elapsed, timeout value is {timeout.Value.Ticks}");
+					throw new TimeoutException($"Timed out scrolling to {toQuery}");
+				}
+
+				Scroll(withinQuery, down);
+			}
+		}
+
 		void Tap(WinQuery query)
 		{
-			var element = FindFirstElement(query);
+			WindowsElement element = FindFirstElement(query);
 
 			if (element == null)
 			{
