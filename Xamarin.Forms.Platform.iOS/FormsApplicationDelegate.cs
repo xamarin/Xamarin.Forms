@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Platform.iOS
 			// prepare you apps window and views for display
 			// keep lightweight, anything long winded should be executed asynchronously on a secondary thread.
 			// application:didFinishLaunchingWithOptions
-			if(Window == null)
+			if (Window == null)
 				Window = new UIWindow(UIScreen.MainScreen.Bounds);
 
 			if (_application == null)
@@ -176,7 +176,8 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_application.MainPage == null)
 				return;
 
-			if(Window.RootViewController is PlatformRenderer platformRenderer)
+			var platformRenderer = Window.RootViewController as PlatformRenderer;
+			if (platformRenderer != null)
 				((IDisposable)platformRenderer.Platform).Dispose();
 
 			Window.RootViewController = _application.MainPage.CreateViewController();
