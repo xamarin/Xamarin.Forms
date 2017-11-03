@@ -73,7 +73,7 @@ namespace Xamarin.Forms.Controls.Issues
 			InitializeData();
 		}
 
-#if UITEST
+#if UITEST && __IOS__
 		[Test]
 		public void Bugzilla56771Test()
 		{
