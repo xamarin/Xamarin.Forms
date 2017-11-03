@@ -27,7 +27,7 @@ namespace Xamarin.Forms.Core.UITests
 				appCapabilities.SetCapability("deviceName", "WindowsPC");
 				Session = new WindowsDriver<WindowsElement>(new Uri(WindowsApplicationDriverUrl), appCapabilities);
 				Assert.IsNotNull(Session);
-				Session.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(5));
+				Session.Manage().Timeouts().ImplicitlyWait(TimeSpan.FromSeconds(1));
 				Reset();
 			}
 			

@@ -236,13 +236,6 @@ namespace Xamarin.Forms.Core.UITests
 
 			var tokens = (IQueryToken[])tokensProperty.GetValue(appTypedSelector);
 
-			// Output some debugging info
-			//foreach (var t in tokens)
-			//{
-			//	Debug.WriteLine($">>>>> WinDriverApp Query 208: {t.ToQueryString(QueryPlatform.iOS)}");
-			//	Debug.WriteLine($">>>>> WinDriverApp Query 208: {t.ToCodeString()}");
-			//}
-
 			string selector = tokens[0].ToQueryString(QueryPlatform.iOS);
 			string invoke = tokens[1].ToCodeString();
 
@@ -306,13 +299,17 @@ namespace Xamarin.Forms.Core.UITests
 
 			var realPoint = new PointF(point.X - origin.X, point.Y - origin.Y);
 
-			Debug.WriteLine($">>>>> WinDriverApp ScrollDownClick 308: {realPoint}");
+			var xOffset = 5;
+			if (origin.X < 0)
+			{
+				xOffset = 15;
+			}
 
-			var xOffset = realPoint.X - 15;
-			var yOffset = realPoint.Y - (down ? 15 : -15);
+			var finalX = realPoint.X - xOffset;
+			var finalY = realPoint.Y - (down ? 15 : -15);
 
 			OriginMouse();
-			MouseClickAt(xOffset, yOffset, ClickType.SingleClick);
+			MouseClickAt(finalX, finalY, ClickType.SingleClick);
 		}
 
 		void OriginMouse()
@@ -691,13 +688,19 @@ namespace Xamarin.Forms.Core.UITests
 			MouseClickAt(point.X, point.Y, ClickType.ContextClick);
 		}
 
+		WindowsElement _viewPort;
+
 		WindowsElement GetViewPort()
 		{
-			ReadOnlyCollection<WindowsElement> candidates = QueryWindows(AppName);
-			WindowsElement
-				viewPort = candidates[3]; // We really just want the viewport; skip the full window, title bar, min/max buttons...
+			if (_viewPort != null)
+			{
+				return _viewPort;
+			}
 
-			return viewPort;
+			ReadOnlyCollection<WindowsElement> candidates = QueryWindows(AppName);
+			_viewPort = candidates[3]; // We really just want the viewport; skip the full window, title bar, min/max buttons...
+
+			return _viewPort;
 		}
 
 		internal void MouseClickAt(float x, float y, ClickType clickType = ClickType.SingleClick)
@@ -716,7 +719,7 @@ namespace Xamarin.Forms.Core.UITests
 			int xOffset = viewPort.Coordinates.LocationInViewport.X;
 			int yOffset = viewPort.Coordinates.LocationInViewport.Y;
 			_session.Mouse.MouseMove(viewPort.Coordinates, (int)x - xOffset, (int)y - yOffset);
-
+			
 			switch (clickType)
 			{
 				case ClickType.DoubleClick:
