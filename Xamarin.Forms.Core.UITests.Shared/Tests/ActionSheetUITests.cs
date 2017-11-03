@@ -166,6 +166,7 @@ namespace Xamarin.Forms.Core.UITests
 #else
 			App.ScrollForElement(queryString, new Drag(App.Query(q => q.Marked("ActionSheetPage"))[0].Rect, Drag.Direction.BottomToTop, Drag.DragLength.Long));
 #endif
+			App.Tap(actionSheetQuery);
 		}
 
 	}
