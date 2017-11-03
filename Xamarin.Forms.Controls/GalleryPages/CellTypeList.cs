@@ -31,6 +31,8 @@ namespace Xamarin.Forms.Controls
 	{
 		CellNavigation _last;
 
+		public const string CellTestContainerId = "CellTestContainer";
+
 		// TODO Add gallerys for ViewCell, ListView and TableView
 		public CellTypeList ()
 		{

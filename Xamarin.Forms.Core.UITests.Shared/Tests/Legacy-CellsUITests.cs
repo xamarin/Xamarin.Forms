@@ -14,6 +14,8 @@ namespace Xamarin.Forms.Core.UITests
 	[Category(UITestCategories.Cells)]
 	internal class CellsGalleryTests : BaseTestFixture
 	{
+		public const string CellTestContainerId = "CellTestContainer";
+
 		// TODO find a way to test individual elements of cells
 		// TODO port to new framework
 
@@ -44,15 +46,17 @@ namespace Xamarin.Forms.Core.UITests
 			App.WaitForElement(q => q.Marked("Text 0"), "Timeout : Text 0");
 
 			App.Screenshot("At TextCell List Gallery");
-			
+
+			string target = "Detail 99";
+
 #if __WINDOWS__
-			App.ScrollDownTo("Detail 99", "celltestlist", timeout: TimeSpan.FromMinutes(1));
+			App.ScrollDownTo(target, CellTestContainerId, timeout: TimeSpan.FromMinutes(1));
 #else
-			App.ScrollForElement("* marked:'Detail 99'",
+			App.ScrollForElement($"* marked:'{target}'",
 				new Drag(ScreenBounds, Drag.Direction.BottomToTop, Drag.DragLength.Medium));
 #endif
 
-			App.WaitForElement(q => q.Marked("Detail 99"), "Timeout : Detail 99");
+			App.WaitForElement(q => q.Marked(target), $"Timeout : {target}");
 
 			App.Screenshot("All TextCells are present");
 		}
@@ -69,10 +73,16 @@ namespace Xamarin.Forms.Core.UITests
 
 			App.Screenshot("At TextCell Table Gallery");
 
-			App.ScrollForElement("* marked:'Detail 12'",
-				new Drag(ScreenBounds, Drag.Direction.BottomToTop, Drag.DragLength.Medium));
+			string target = "Detail 12";
 
-			App.WaitForElement(q => q.Marked("Detail 12"), "Timeout : Detail 12");
+#if __WINDOWS__
+			App.ScrollDownTo(target, CellTestContainerId, timeout: TimeSpan.FromMinutes(1));
+#else
+			App.ScrollForElement($"* marked:'{target}'",
+				new Drag(ScreenBounds, Drag.Direction.BottomToTop, Drag.DragLength.Medium));
+#endif
+
+			App.WaitForElement(q => q.Marked(target), $"Timeout : {target}");
 
 			App.Screenshot("All TextCells are present");
 		}
@@ -93,24 +103,32 @@ namespace Xamarin.Forms.Core.UITests
 
 			App.Screenshot("At ImageCell List Gallery");
 
-			var scollBounds = App.Query(q => q.Marked("ImageCellListView")).First().Rect;
-			App.ScrollForElement("* marked:'Detail 99'",
-				new Drag(scollBounds, Drag.Direction.BottomToTop, Drag.DragLength.Medium));
+			string target = "Detail 99";
 
-			App.WaitForElement(q => q.Marked("Detail 99"), "Timeout : Detail 99");
+#if __WINDOWS__
+			App.ScrollDownTo(target, CellTestContainerId, timeout: TimeSpan.FromMinutes(3));
+#else
+			var scrollBounds = App.Query(q => q.Marked(CellTestContainerId)).First().Rect;
+			App.ScrollForElement($"* marked:'{target}'",
+				new Drag(scrollBounds, Drag.Direction.BottomToTop, Drag.DragLength.Medium));
+#endif
+
+			App.WaitForElement(q => q.Marked(target), $"Timeout : {target}");
 
 			App.Screenshot("All ImageCells are present");
 
+#if !__WINDOWS__
 			var numberOfImages = App.Query(q => q.Raw(PlatformViews.Image)).Length;
 			// Check that there are images present. In Android, 
 			// have to make sure that there are more than 2 for navigation.
 			Assert.IsTrue(numberOfImages > 2);
+#endif
 
 			App.Screenshot("Images are present");
 		}
 
 		[Test]
-		[Ignore("Ignore because is only failing on iOS10 at XTC")]
+		[Ignore("Ignore because is only failing on iOS10 at XTC")] // TODO hartez also probably failing because the urls used on the test page are now invalid
 		[Description("ListView with ImageCells, file access problems")]
 		[UiTest(typeof(ListView))]
 		[UiTest(typeof(ImageCell))]
@@ -158,17 +176,25 @@ namespace Xamarin.Forms.Core.UITests
 
 			App.Screenshot("At ImageCell Table Gallery");
 
-			App.ScrollForElement("* marked:'Detail 12'",
-				new Drag(ScreenBounds, Drag.Direction.BottomToTop, Drag.DragLength.Medium));
+			string target = "Detail 12";
 
-			App.WaitForElement(q => q.Marked("Detail 12"), "Timeout : Detail 12");
+#if __WINDOWS__
+			App.ScrollDownTo(target, CellTestContainerId, timeout: TimeSpan.FromMinutes(1));
+#else
+			App.ScrollForElement($"* marked:'{target}'",
+				new Drag(ScreenBounds, Drag.Direction.BottomToTop, Drag.DragLength.Medium));
+#endif
+
+			App.WaitForElement(q => q.Marked(target), $"Timeout : {target}");
 
 			App.Screenshot("All ImageCells are present");
 
+#if !__WINDOWS__
 			var numberOfImages = App.Query(q => q.Raw(PlatformViews.Image)).Length;
 			// Check that there are images present. In Android, 
 			// have to make sure that there are more than 2 for navigation.
 			Assert.IsTrue(numberOfImages > 2);
+#endif
 
 			App.Screenshot("Images are present");
 		}
@@ -185,11 +211,17 @@ namespace Xamarin.Forms.Core.UITests
 
 			App.Screenshot("At SwitchCell List Gallery");
 
-			App.ScrollForElement("* marked:'Label 99'",
+			string target = "Label 99";
+
+#if __WINDOWS__
+			App.ScrollDownTo(target, CellTestContainerId, timeout: TimeSpan.FromMinutes(1));
+#else
+			App.ScrollForElement($"* marked:'{target}'",
 				new Drag(ScreenBounds, Drag.Direction.BottomToTop, Drag.DragLength.Medium));
 
 			var numberOfSwitches = App.Query(q => q.Raw(PlatformViews.Switch)).Length;
 			Assert.IsTrue(numberOfSwitches > 2);
+#endif
 
 			App.Screenshot("Switches are present");
 		}
@@ -206,10 +238,17 @@ namespace Xamarin.Forms.Core.UITests
 
 			App.Screenshot("At SwitchCell Table Gallery");
 
-			App.ScrollForElement("* marked:'text 32'", new Drag(ScreenBounds, Drag.Direction.BottomToTop, Drag.DragLength.Medium));
+			string target = "text 32";
+
+#if __WINDOWS__
+			App.ScrollDownTo(target, CellTestContainerId, timeout: TimeSpan.FromMinutes(1));
+#else
+			App.ScrollForElement($"* marked:'{target}'",
+				new Drag(ScreenBounds, Drag.Direction.BottomToTop, Drag.DragLength.Medium));
 
 			var numberOfSwitches = App.Query(q => q.Raw(PlatformViews.Switch)).Length;
 			Assert.IsTrue(numberOfSwitches > 2);
+#endif
 
 			App.Screenshot("Switches are present");
 		}
@@ -226,8 +265,14 @@ namespace Xamarin.Forms.Core.UITests
 
 			App.Screenshot("At EntryCell List Gallery");
 
-			App.ScrollForElement("* marked:'Label 99'",
+			string target = "Label 99";
+
+#if __WINDOWS__
+			App.ScrollDownTo(target, CellTestContainerId, timeout: TimeSpan.FromMinutes(3));
+#else
+			App.ScrollForElement($"* marked:'{target}'",
 				new Drag(ScreenBounds, Drag.Direction.BottomToTop, Drag.DragLength.Medium));
+#endif
 
 			App.Screenshot("All EntryCells are present");
 		}
@@ -244,7 +289,14 @@ namespace Xamarin.Forms.Core.UITests
 
 			App.Screenshot("At EntryCell Table Gallery");
 
-			App.ScrollForElement("* marked:'Text 32'", new Drag(ScreenBounds, Drag.Direction.BottomToTop, Drag.DragLength.Medium));
+			string target = "Text 32";
+
+#if __WINDOWS__
+			App.ScrollDownTo(target, CellTestContainerId, timeout: TimeSpan.FromMinutes(1));
+#else
+			App.ScrollForElement($"* marked:'{target}'",
+				new Drag(ScreenBounds, Drag.Direction.BottomToTop, Drag.DragLength.Medium));
+#endif
 
 			App.Screenshot("All EntryCells are present");
 		}
@@ -260,12 +312,19 @@ namespace Xamarin.Forms.Core.UITests
 			App.WaitForElement(q => q.Marked("Text 2"), "Timeout : Text 2");
 
 			App.Screenshot("At EntryCell Table Gallery");
-			App.ScrollForElement("* marked:'Enter text'",
+
+			string target = "Enter text";
+
+#if __WINDOWS__
+			App.ScrollDownTo(target, CellTestContainerId, timeout: TimeSpan.FromMinutes(1));
+#else
+			App.ScrollForElement($"* marked:'{target}'",
 				new Drag(ScreenBounds, Drag.Direction.BottomToTop, Drag.DragLength.Medium));
+#endif
 
 			App.Screenshot("Before clicking Entry");
 
-#if !__IOS__
+#if !__IOS__ && !__WINDOWS__
 			App.Tap(PlatformQueries.EntryCellWithPlaceholder("I am a placeholder"));
 			App.EnterText(PlatformQueries.EntryCellWithPlaceholder("I am a placeholder"), "Hi");
 			App.Screenshot("Entered Text");
