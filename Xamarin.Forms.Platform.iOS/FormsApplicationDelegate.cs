@@ -9,20 +9,20 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class FormsApplicationDelegate : UIApplicationDelegate
 	{
-        Application _application;
+		Application _application;
 		bool _isSuspended;
 		UIWindow _window;
-        public override UIWindow Window
-        {
-            get
-            {
-                return _window;
-            }
-            set
-            {
-                _window = value;
-            }
-        }
+		public override UIWindow Window
+		{
+			get
+			{
+				return _window;
+			}
+			set
+			{
+				_window = value;
+			}
+		}
 
 		protected FormsApplicationDelegate()
 		{
@@ -48,8 +48,8 @@ namespace Xamarin.Forms.Platform.iOS
 			// prepare you apps window and views for display
 			// keep lightweight, anything long winded should be executed asynchronously on a secondary thread.
 			// application:didFinishLaunchingWithOptions
-            if(Window == null)
-                Window = new UIWindow(UIScreen.MainScreen.Bounds);
+			if(Window == null)
+				Window = new UIWindow(UIScreen.MainScreen.Bounds);
 
 			if (_application == null)
 				throw new InvalidOperationException("You MUST invoke LoadApplication () before calling base.FinishedLaunching ()");
@@ -168,7 +168,7 @@ namespace Xamarin.Forms.Platform.iOS
 		void SetMainPage()
 		{
 			UpdateMainPage();
-            Window.MakeKeyAndVisible();
+			Window.MakeKeyAndVisible();
 		}
 
 		void UpdateMainPage()
@@ -176,10 +176,10 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_application.MainPage == null)
 				return;
 
-            if(Window.RootViewController is PlatformRenderer platformRenderer)
-                ((IDisposable)platformRenderer.Platform).Dispose();
+			if(Window.RootViewController is PlatformRenderer platformRenderer)
+				((IDisposable)platformRenderer.Platform).Dispose();
 
-            Window.RootViewController = _application.MainPage.CreateViewController();
+			Window.RootViewController = _application.MainPage.CreateViewController();
 		}
 	}
 }
