@@ -78,7 +78,9 @@ namespace Xamarin.Forms.Controls.Issues
 		public void Bugzilla56771Test()
 		{
 			RunningApp.WaitForElement(q => q.Marked(BtnAdd));
-			Assert.Throws<ArgumentException>(() => RunningApp.Tap(q => q.Marked(BtnAdd)));
+			try { RunningApp.Tap(q => q.Marked(BtnAdd)); }
+			catch (ArgumentException) { Assert.Pass(); }
+			Assert.Fail($"Expected {nameof(ArgumentException)}");
 		}
 #endif
 
