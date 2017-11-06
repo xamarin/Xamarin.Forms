@@ -89,4 +89,4 @@ namespace Xamarin.Forms.Controls.Issues
 	}
 }
 
-// TODO hartez 2017/11/01 15:31:51 This is failing because we can't currently inspect listview headers on UWP	
+// Note: this fails on UWP because we can't currently inspect listview headers	

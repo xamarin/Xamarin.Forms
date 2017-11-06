@@ -16,10 +16,6 @@ namespace Xamarin.Forms.Core.UITests
 	{
 		protected const string PleaseInspect = "Test framework cannout currently check this value; please inspect visually";
 
-		// TODO hartez 2017/10/31 17:33:21 Make sure to remove these ignores once you're done making the other tests work	
-		protected const string IgnoredForSpeed =
-			"Ignoring this test for now because it won't do anything; we'll turn it back on for real test runs";
-
 		/* Under score prefixes ensure inherited properties run first in test suite */
 		//[Test]
 		//[Category ("View")]
@@ -144,9 +140,6 @@ namespace Xamarin.Forms.Core.UITests
 		public virtual void _Navigation () {}
 
 		[Test]
-#if __WINDOWS__
-		[Ignore(IgnoredForSpeed)]
-#endif
 		[UiTest (typeof (VisualElement), "Opacity")]
 		public virtual void _Opacity ()
 		{
@@ -164,9 +157,6 @@ namespace Xamarin.Forms.Core.UITests
 		}
 
 		[Test]
-#if __WINDOWS__
-		[Ignore(IgnoredForSpeed)]
-#endif
 		[UiTest (typeof(VisualElement), "Rotation")]
 		[UiTestBroken (BrokenReason.CalabashBug, "Calabash bug")]
 		public virtual void _Rotation ()
@@ -189,9 +179,6 @@ namespace Xamarin.Forms.Core.UITests
 		}
 
 		[Test]
-#if __WINDOWS__
-		[Ignore(IgnoredForSpeed)]
-#endif
 		[UiTest (typeof (VisualElement), "RotationX")]
 		public virtual void _RotationX ()
 		{
@@ -213,9 +200,6 @@ namespace Xamarin.Forms.Core.UITests
 		}
 
 		[Test]
-#if __WINDOWS__
-		[Ignore(IgnoredForSpeed)]
-#endif
 		[UiTest (typeof (VisualElement), "RotationY")]
 		public virtual void _RotationY ()
 		{
@@ -237,9 +221,6 @@ namespace Xamarin.Forms.Core.UITests
 		}
 
 		[Test]
-#if __WINDOWS__
-		[Ignore(IgnoredForSpeed)]
-#endif
 		[UiTest (typeof (VisualElement), "Scale")]
 		public virtual void _Scale ()
 		{
@@ -259,9 +240,6 @@ namespace Xamarin.Forms.Core.UITests
 		}
 
 		[Test]
-#if __WINDOWS__
-		[Ignore(IgnoredForSpeed)]
-#endif
 		[UiTest (typeof (VisualElement), "TranslationX")]
 		[Category(UITestCategories.ManualReview)]
 		public virtual void _TranslationX ()
@@ -274,9 +252,6 @@ namespace Xamarin.Forms.Core.UITests
 		}
 
 		[Test]
-#if __WINDOWS__
-		[Ignore(IgnoredForSpeed)]
-#endif
 		[UiTest (typeof (VisualElement), "TranslationY")]
 		[Category(UITestCategories.ManualReview)]
 		public virtual void _TranslationY ()

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
@@ -89,7 +88,7 @@ namespace Xamarin.Forms.Platform.WinRT
 #endif
 
 			TaskCompletionSource<CommandBar> tcs = _commandBarTcs;
-		    tcs?.SetResult(_commandBar); 
+			tcs?.SetResult(_commandBar); 
 		}
 
 		protected override DependencyObject GetContainerForItemOverride()

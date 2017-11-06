@@ -47,9 +47,6 @@ namespace Xamarin.Forms.Core.UITests
 
 		// ActivityIndicator tests
 		[Test]
-#if __WINDOWS__
-		[Ignore(IgnoredForSpeed)]
-#endif
 		[UiTest(typeof(ActivityIndicator), "IsRunning")]
 		public void IsRunning()
 		{
