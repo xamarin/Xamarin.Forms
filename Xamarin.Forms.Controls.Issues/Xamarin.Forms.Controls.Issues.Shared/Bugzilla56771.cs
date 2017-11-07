@@ -18,6 +18,7 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Bugzilla, 56771, "Multi-item add in INotifyCollectionChanged causes a NSInternalInconsistencyException in bindings on iOS", PlatformAffected.iOS)]
 	public class Bugzilla56771 : TestContentPage
 	{
+		const string Success = "Success";
 		const string BtnAdd = "btnAdd";
 		OptimizedCollection<string> data = new OptimizedCollection<string>();
 		int i = 4;
@@ -34,13 +35,21 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
 		{
+			var label = new Label { Text = "Click the Add 2 button." };
 			var button = new Button
 			{
 				Text = "Add 2",
 				AutomationId = BtnAdd,
 				Command = new Command(() =>
 				{
-					data.AddRange($"Item {++i}", $"Item {++i}");
+					try
+					{
+						data.AddRange($"Item {++i}", $"Item {++i}");
+					}
+					catch (ArgumentException)
+					{
+						label.Text = Success;
+					}
 				})
 			};
 			var button1 = new Button
@@ -67,7 +76,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			Content = new StackLayout
 			{
-				Children = { new Label { Text = "Clicking the Add 2 button should cause an ArgumentException. This is expected." }, button, button1, button2, listView }
+				Children = { label, button, button1, button2, listView }
 			};
 
 			InitializeData();
@@ -78,12 +87,12 @@ namespace Xamarin.Forms.Controls.Issues
 		public void Bugzilla56771Test()
 		{
 			RunningApp.WaitForElement(q => q.Marked(BtnAdd));
-			try { RunningApp.Tap(q => q.Marked(BtnAdd)); }
-			catch (ArgumentException) { Assert.Pass(); }
-			Assert.Fail($"Expected {nameof(ArgumentException)}");
+			RunningApp.Tap(q => q.Marked(BtnAdd)); 
+			RunningApp.WaitForElement(q => q.Marked(Success));
 		}
 #endif
 
+		[Preserve(AllMembers = true)]
 		public class OptimizedCollection<T> : ObservableCollection<T>
 		{
 			public OptimizedCollection()

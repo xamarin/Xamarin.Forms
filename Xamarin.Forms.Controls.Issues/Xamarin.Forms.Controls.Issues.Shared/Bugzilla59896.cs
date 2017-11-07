@@ -62,6 +62,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		}
 
+		[Preserve(AllMembers = true)]
 		public class Group : List<string>
 		{
 			public string Title
@@ -78,6 +79,7 @@ namespace Xamarin.Forms.Controls.Issues
 			}
 		}
 
+		[Preserve(AllMembers = true)]
 		public class GroupHeaderView
 		{
 			public GroupHeaderView()
