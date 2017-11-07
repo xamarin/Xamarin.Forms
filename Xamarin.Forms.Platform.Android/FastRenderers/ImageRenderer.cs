@@ -76,7 +76,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		public override bool OnTouchEvent(MotionEvent e)
 		{
-			if (_visualElementRenderer.OnTouchEvent(e))
+			if (_visualElementRenderer.OnTouchEvent(e) || base.OnTouchEvent(e))
 			{
 				return true;
 			}
@@ -163,7 +163,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		{
 		}
 
-		[Obsolete("This constructor is obsolete as of version 3.0. Please use ImageRenderer(Context) instead.")]
+		[Obsolete("This constructor is obsolete as of version 2.5. Please use ImageRenderer(Context) instead.")]
 		public ImageRenderer() : base(Forms.Context)
 		{
 		}

@@ -24,6 +24,7 @@ using ARelativeLayout = Android.Widget.RelativeLayout;
 using Xamarin.Forms.Internals;
 using System.Threading.Tasks;
 
+
 #endregion
 
 namespace Xamarin.Forms.Platform.Android
@@ -125,6 +126,15 @@ namespace Xamarin.Forms.Platform.Android
 			CheckForAppLink(Intent);
 
 			application.PropertyChanged += AppOnPropertyChanged;
+
+			if (application?.MainPage != null)
+			{
+				var iver = Platform.GetRenderer(application.MainPage);
+				if (iver != null) {
+					iver.Dispose();
+					application.MainPage.ClearValue(Platform.RendererProperty);
+				}
+			}
 
 			SetMainPage();
 		}
