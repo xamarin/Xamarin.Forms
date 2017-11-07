@@ -19,6 +19,8 @@ namespace Xamarin.Forms
 
 		internal static readonly BindablePropertyKey IsLoadingPropertyKey = BindableProperty.CreateReadOnly("IsLoading", typeof(bool), typeof(Image), default(bool));
 
+		public static readonly BindableProperty TintColorProperty = BindableProperty.Create("TintColor", typeof(Color), typeof(Color), Color.Transparent);
+
 		public static readonly BindableProperty IsLoadingProperty = IsLoadingPropertyKey.BindableProperty;
 
 		readonly Lazy<PlatformConfigurationRegistry<Image>> _platformConfigurationRegistry;
@@ -26,6 +28,12 @@ namespace Xamarin.Forms
 		public Image()
 		{
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Image>>(() => new PlatformConfigurationRegistry<Image>(this));
+		}
+
+		public Color TintColor
+		{
+			get { return (Color)GetValue(TintColorProperty); }
+			set { SetValue(TintColorProperty, value); }
 		}
 
 		public Aspect Aspect

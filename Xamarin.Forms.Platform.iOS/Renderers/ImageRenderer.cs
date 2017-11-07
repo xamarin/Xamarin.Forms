@@ -65,6 +65,7 @@ namespace Xamarin.Forms.Platform.iOS
 				SetAspect();
 				await TrySetImage(e.OldElement);
 				SetOpacity();
+				SetTintColor();
 			}
 
 			base.OnElementChanged(e);
@@ -79,6 +80,32 @@ namespace Xamarin.Forms.Platform.iOS
 				SetOpacity();
 			else if (e.PropertyName == Image.AspectProperty.PropertyName)
 				SetAspect();
+			else if (e.PropertyName == Image.TintColorProperty.PropertyName)
+				SetTintColor();
+		}
+
+		void SetTintColor()
+		{
+
+
+			if (_isDisposed || Element == null || Control == null)
+			{
+				return;
+			}
+
+
+			if (Element.TintColor == Color.Transparent)
+			{
+				Control.Image = Control.Image.ImageWithRenderingMode(UIImageRenderingMode.Automatic);
+				Control.TintColor = null;
+			}
+			else
+			{
+				//Apply tint color
+				Control.Image = Control.Image.ImageWithRenderingMode
+					(UIImageRenderingMode.AlwaysTemplate);
+				Control.TintColor = Element.TintColor.ToUIColor();
+			}
 		}
 
 		void SetAspect()
