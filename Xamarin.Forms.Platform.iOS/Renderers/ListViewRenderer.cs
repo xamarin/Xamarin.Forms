@@ -663,7 +663,14 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 
 				// We're going to base our estimate off of the first cell
+				if (List.IsGroupingEnabled)
+					templatedItems = templatedItems.GetGroup(0);
+				if (templatedItems == null)
+					return DefaultRowHeight;
+
 				var firstCell = templatedItems.ActivateContent(0, templatedItems.ListProxy[0]);
+				if (firstCell == null)
+					return DefaultRowHeight;
 
 				// Let's skip this optimization for grouped lists. It will likely cause more trouble than it's worth.
 				if (firstCell.Height > 0 && !List.IsGroupingEnabled)
