@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage Title="Options" xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="FormsFlexLayoutDemo.FlexOptionsPage">
+	<TableView>
+		<TableView.Root>
+			<TableSection Title="Flex Container Options">
+				<ViewCell>
+					<StackLayout Orientation="Horizontal" Padding="15,10,10,10">
+						<Label Text="Flex Direction" />
+						<Picker ItemsSource="{Binding FlexDirectionOptions}" SelectedItem="{Binding SelectedFlexDirection, Mode=TwoWay}" />
+					</StackLayout>
+				</ViewCell>
+				<ViewCell>
+					<StackLayout Orientation="Horizontal" Padding="15,10,10,10">
+						<Label Text="Justify Content" />
+						<Picker ItemsSource="{Binding JustifyOptions}" SelectedItem="{Binding SelectedJustifyContent, Mode=TwoWay}" />
+					</StackLayout>
+				</ViewCell>
+				<ViewCell>
+					<StackLayout Orientation="Horizontal" Padding="15,10,10,10">
+						<Label Text="Wrap" />
+						<Picker ItemsSource="{Binding WrapOptions}" SelectedItem="{Binding SelectedWrap, Mode=TwoWay}" />
+					</StackLayout>
+				</ViewCell>
+				<ViewCell>
+					<StackLayout Orientation="Horizontal" Padding="15,10,10,10">
+						<Label Text="Align Items" />
+						<Picker ItemsSource="{Binding AlignOptions}" SelectedItem="{Binding SelectedAlignItems, Mode=TwoWay}" />
+					</StackLayout>
+				</ViewCell>
+				<ViewCell>
+					<StackLayout Orientation="Horizontal" Padding="15,10,10,10">
+						<Label Text="Align Content" />
+						<Picker ItemsSource="{Binding AlignOptions}" SelectedItem="{Binding SelectedAlignContent, Mode=TwoWay}" />
+					</StackLayout>
+				</ViewCell>
+				<ViewCell>
+					<StackLayout Orientation="Horizontal" Padding="15,10,10,10">
+						<Label Text="Align Self" />
+						<Picker ItemsSource="{Binding AlignOptions}" SelectedItem="{Binding SelectedAlignSelf, Mode=TwoWay}" />
+					</StackLayout>
+				</ViewCell>
+				<ViewCell>
+					<StackLayout Orientation="Horizontal" Padding="15,10,10,10">
+						<Label Text="Overflow" />
+						<Picker ItemsSource="{Binding OverflowOptions}" SelectedItem="{Binding SelectedOverflow, Mode=TwoWay}" />
+					</StackLayout>
+				</ViewCell>
+			</TableSection>
+			<TableSection Title="Flex Item Options">
+        <ViewCell>
+          <StackLayout Orientation="Horizontal" Padding="15,10,10,10">
+            <Label Text="Item Width" />
+            <Label Text="{Binding ItemWidth}" Margin="10,0,10,0" />
+            <Slider  Value="{Binding ItemWidth}"  Maximum="1000"></Slider>
+          </StackLayout>
+        </ViewCell>
+			</TableSection>
+		</TableView.Root>
+	</TableView>
+</ContentPage>

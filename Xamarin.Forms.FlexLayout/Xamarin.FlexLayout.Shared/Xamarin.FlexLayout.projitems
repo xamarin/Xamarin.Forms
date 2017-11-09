@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>a04e0ad6-3009-4ce7-b62e-efcb0dc91c73</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Xamarin.FlexLayout</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Align.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FlexDirection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FlexLayout.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FlexLayoutExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IFlexNode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Justify.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MeasureFunc.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MeasureMode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Overflow.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)FlexPosition.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Wrap.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Xamarin.Forms.FlexLayout.cs" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ContentPage x:Name="rootElement" Title="FlexibleBox" xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="FormsFlexLayoutDemo.FlexDemoPage">
+	<ContentPage.Resources>
+		<ResourceDictionary>
+			<Style x:Key="FlexLayoutStyle" TargetType="FlexLayout">
+				<Setter Property="Overflow" Value="{Binding SelectedOverflow}" />
+				<Setter Property="AlignItems" Value="{Binding SelectedAlignItems}" />
+				<Setter Property="AlignContent" Value="{Binding SelectedAlignContent}" />
+				<Setter Property="AlignSelf" Value="{Binding SelectedAlignSelf}" />
+				<Setter Property="FlexDirection" Value="{Binding SelectedFlexDirection}" />
+				<Setter Property="Wrap" Value="{Binding SelectedWrap}" />
+				<Setter Property="JustifyContent" Value="{Binding SelectedJustifyContent}" />
+				<Setter Property="Padding" Value="10" />
+				<Setter Property="BackgroundColor" Value="#FFD54F" />
+			</Style>
+			<Style x:Key="DemoItemStyle" TargetType="ContentView">
+				<Setter Property="WidthRequest" Value="{Binding Source={x:Reference rootElement}, Path=BindingContext.ItemWidth}" />
+				<Setter Property="Margin" Value="10" />
+				<Setter Property="Padding" Value="5" />
+				<Setter Property="BackgroundColor" Value="White" />
+			</Style>
+		</ResourceDictionary>
+	</ContentPage.Resources>
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="40" />
+			<RowDefinition />
+			<RowDefinition Height="Auto" />
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition />
+			<ColumnDefinition />
+			<ColumnDefinition />
+		</Grid.ColumnDefinitions>
+		<Button Text="Add" Clicked="AddClicked" />
+		<Button Text="Remove" Grid.Column="1" Clicked="RemoveClicked" />
+		<Button Text="Clear" Grid.Column="2" Clicked="ClearClicked" />
+		<FlexLayout x:Name="flexBox" Grid.Row="1" Grid.ColumnSpan="3" Style="{StaticResource FlexLayoutStyle}" />
+		<Label BackgroundColor="Silver" Grid.Row="2" Grid.ColumnSpan="3" Text="{Binding LayoutTime}" HorizontalOptions="End" />
+	</Grid>
+</ContentPage>

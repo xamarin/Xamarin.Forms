@@ -15,8 +15,8 @@ using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.WinPhone;
 #endif
 
-[assembly:Dependency (typeof(MockDeserializer))]
-[assembly:Dependency (typeof(MockResourcesProvider))]
+[assembly: Dependency(typeof(MockDeserializer))]
+[assembly: Dependency(typeof(MockResourcesProvider))]
 
 namespace Xamarin.Forms.Core.UnitTests
 {
@@ -25,35 +25,37 @@ namespace Xamarin.Forms.Core.UnitTests
 		Action<Action> invokeOnMainThread;
 		Action<Uri> openUriAction;
 		Func<Uri, CancellationToken, Task<Stream>> getStreamAsync;
-		public MockPlatformServices (Action<Action> invokeOnMainThread = null, Action<Uri> openUriAction = null, Func<Uri, CancellationToken, Task<Stream>> getStreamAsync = null)
+		public MockPlatformServices(Action<Action> invokeOnMainThread = null, Action<Uri> openUriAction = null, Func<Uri, CancellationToken, Task<Stream>> getStreamAsync = null)
 		{
 			this.invokeOnMainThread = invokeOnMainThread;
 			this.openUriAction = openUriAction;
 			this.getStreamAsync = getStreamAsync;
 		}
 
-		static MD5CryptoServiceProvider checksum = new MD5CryptoServiceProvider ();
+		static MD5CryptoServiceProvider checksum = new MD5CryptoServiceProvider();
 
-		public string GetMD5Hash (string input)
+		public string GetMD5Hash(string input)
 		{
-			var bytes = checksum.ComputeHash (Encoding.UTF8.GetBytes (input));
-			var ret = new char [32];
-			for (int i = 0; i < 16; i++){
-				ret [i*2] = (char)hex (bytes [i] >> 4);
-				ret [i*2+1] = (char)hex (bytes [i] & 0xf);
+			var bytes = checksum.ComputeHash(Encoding.UTF8.GetBytes(input));
+			var ret = new char[32];
+			for (int i = 0; i < 16; i++)
+			{
+				ret[i * 2] = (char)hex(bytes[i] >> 4);
+				ret[i * 2 + 1] = (char)hex(bytes[i] & 0xf);
 			}
-			return new string (ret);
+			return new string(ret);
 		}
-		static int hex (int v)
+		static int hex(int v)
 		{
 			if (v < 10)
 				return '0' + v;
-			return 'a' + v-10;
+			return 'a' + v - 10;
 		}
 
-		public double GetNamedSize (NamedSize size, Type targetElement, bool useOldSizes)
+		public double GetNamedSize(NamedSize size, Type targetElement, bool useOldSizes)
 		{
-			switch (size) {
+			switch (size)
+			{
 				case NamedSize.Default:
 					return 10;
 				case NamedSize.Micro:
@@ -65,16 +67,16 @@ namespace Xamarin.Forms.Core.UnitTests
 				case NamedSize.Large:
 					return 16;
 				default:
-					throw new ArgumentOutOfRangeException ("size");
+					throw new ArgumentOutOfRangeException("size");
 			}
 		}
 
-		public void OpenUriAction (Uri uri)
+		public void OpenUriAction(Uri uri)
 		{
 			if (openUriAction != null)
-				openUriAction (uri);
+				openUriAction(uri);
 			else
-				throw new NotImplementedException ();
+				throw new NotImplementedException();
 		}
 
 		public bool IsInvokeRequired
@@ -84,12 +86,12 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		public string RuntimePlatform { get; set; }
 
-		public void BeginInvokeOnMainThread (Action action) 
+		public void BeginInvokeOnMainThread(Action action)
 		{
 			if (invokeOnMainThread == null)
-				action ();
+				action();
 			else
-				invokeOnMainThread (action);
+				invokeOnMainThread(action);
 		}
 
 		public Ticker CreateTicker()
@@ -97,78 +99,79 @@ namespace Xamarin.Forms.Core.UnitTests
 			return new MockTicker();
 		}
 
-		public void StartTimer (TimeSpan interval, Func<bool> callback)
+		public void StartTimer(TimeSpan interval, Func<bool> callback)
 		{
 			Timer timer = null;
-			TimerCallback onTimeout = o => BeginInvokeOnMainThread (() => {
-				if (callback ())
+			TimerCallback onTimeout = o => BeginInvokeOnMainThread(() =>
+			{
+				if (callback())
 					return;
 
-				timer.Dispose ();
+				timer.Dispose();
 			});
-			timer = new Timer (onTimeout, null, interval, interval);
+			timer = new Timer(onTimeout, null, interval, interval);
 		}
 
-		public Task<Stream> GetStreamAsync (Uri uri, CancellationToken cancellationToken)
+		public Task<Stream> GetStreamAsync(Uri uri, CancellationToken cancellationToken)
 		{
 			if (getStreamAsync == null)
-				throw new NotImplementedException ();
-			return getStreamAsync (uri, cancellationToken);
+				throw new NotImplementedException();
+			return getStreamAsync(uri, cancellationToken);
 		}
 
-		public Assembly[] GetAssemblies ()
+		public Assembly[] GetAssemblies()
 		{
-			return AppDomain.CurrentDomain.GetAssemblies ();
+			return AppDomain.CurrentDomain.GetAssemblies();
 		}
 
-		public IIsolatedStorageFile GetUserStoreForApplication ()
+		public IIsolatedStorageFile GetUserStoreForApplication()
 		{
 #if WINDOWS_PHONE
 			return new MockIsolatedStorageFile (IsolatedStorageFile.GetUserStoreForApplication ());
 #else
-			return new MockIsolatedStorageFile (IsolatedStorageFile.GetUserStoreForAssembly ());
+			return new MockIsolatedStorageFile(IsolatedStorageFile.GetUserStoreForAssembly());
 #endif
 		}
 
 		public class MockIsolatedStorageFile : IIsolatedStorageFile
 		{
 			readonly IsolatedStorageFile isolatedStorageFile;
-			public MockIsolatedStorageFile (IsolatedStorageFile isolatedStorageFile)
+			public MockIsolatedStorageFile(IsolatedStorageFile isolatedStorageFile)
 			{
 				this.isolatedStorageFile = isolatedStorageFile;
 			}
 
-			public Task<bool> GetDirectoryExistsAsync (string path)
+			public Task<bool> GetDirectoryExistsAsync(string path)
 			{
-				return Task.FromResult (isolatedStorageFile.DirectoryExists (path));
+				return Task.FromResult(isolatedStorageFile.DirectoryExists(path));
 			}
 
-			public Task CreateDirectoryAsync (string path)
+			public Task CreateDirectoryAsync(string path)
 			{
-				isolatedStorageFile.CreateDirectory (path);
-				return Task.FromResult (true);
+				isolatedStorageFile.CreateDirectory(path);
+				return Task.FromResult(true);
 			}
 
-			public Task<Stream> OpenFileAsync (string path, Internals.FileMode mode, Internals.FileAccess access)
+			public Task<Stream> OpenFileAsync(string path, Internals.FileMode mode, Internals.FileAccess access)
 			{
-				Stream stream = isolatedStorageFile.OpenFile (path, (System.IO.FileMode)mode, (System.IO.FileAccess)access);
-				return Task.FromResult (stream);
+				Stream stream = isolatedStorageFile.OpenFile(path, (System.IO.FileMode)mode, (System.IO.FileAccess)access);
+				return Task.FromResult(stream);
 			}
 
-			public Task<Stream> OpenFileAsync (string path, Internals.FileMode mode, Internals.FileAccess access, Internals.FileShare share)
+			public Task<Stream> OpenFileAsync(string path, Internals.FileMode mode, Internals.FileAccess access, Internals.FileShare share)
 			{
-				Stream stream = isolatedStorageFile.OpenFile (path, (System.IO.FileMode)mode, (System.IO.FileAccess)access, (System.IO.FileShare)share);
-				return Task.FromResult (stream);
+				Stream stream = isolatedStorageFile.OpenFile(path, (System.IO.FileMode)mode, (System.IO.FileAccess)access, (System.IO.FileShare)share);
+				return Task.FromResult(stream);
 			}
 
-			public Task<bool> GetFileExistsAsync (string path)
+			public Task<bool> GetFileExistsAsync(string path)
 			{
-				return Task.FromResult (isolatedStorageFile.FileExists (path));
+				return Task.FromResult(isolatedStorageFile.FileExists(path));
 			}
 
-			public Task<DateTimeOffset> GetLastWriteTimeAsync (string path)
+			public Task<DateTimeOffset> GetLastWriteTimeAsync(string path)
 			{
-				return Task.FromResult (isolatedStorageFile.GetLastWriteTime (path));
+				return Task.FromResult(isolatedStorageFile.GetLastWriteTime(path));
 			}
 		}
 
@@ -180,45 +183,45 @@ namespace Xamarin.Forms.Core.UnitTests
 
 	internal class MockDeserializer : IDeserializer
 	{
-		public Task<IDictionary<string, object>> DeserializePropertiesAsync ()
+		public Task<IDictionary<string, object>> DeserializePropertiesAsync()
 		{
-			return Task.FromResult<IDictionary<string, object>> (new Dictionary<string,object> ());
+			return Task.FromResult<IDictionary<string, object>>(new Dictionary<string, object>());
 		}
 
-		public Task SerializePropertiesAsync (IDictionary<string, object> properties)
+		public Task SerializePropertiesAsync(IDictionary<string, object> properties)
 		{
-			return Task.FromResult (false);
+			return Task.FromResult(false);
 		}
 	}
 
 	internal class MockResourcesProvider : ISystemResourcesProvider
 	{
-		public IResourceDictionary GetSystemResources ()
+		public IResourceDictionary GetSystemResources()
 		{
-			var dictionary = new ResourceDictionary ();
+			var dictionary = new ResourceDictionary();
 			Style style;
-			style = new Style (typeof(Label));
-			dictionary [Device.Styles.BodyStyleKey] = style;
+			style = new Style(typeof(Label));
+			dictionary[Device.Styles.BodyStyleKey] = style;
 
-			style = new Style (typeof(Label));
-			style.Setters.Add (Label.FontSizeProperty, 50);
-			dictionary [Device.Styles.TitleStyleKey] = style;
+			style = new Style(typeof(Label));
+			style.Setters.Add(Label.FontSizeProperty, 50);
+			dictionary[Device.Styles.TitleStyleKey] = style;
 
-			style = new Style (typeof(Label));
-			style.Setters.Add (Label.FontSizeProperty, 40);
-			dictionary [Device.Styles.SubtitleStyleKey] = style;
+			style = new Style(typeof(Label));
+			style.Setters.Add(Label.FontSizeProperty, 40);
+			dictionary[Device.Styles.SubtitleStyleKey] = style;
 
-			style = new Style (typeof(Label));
-			style.Setters.Add (Label.FontSizeProperty, 30);
-			dictionary [Device.Styles.CaptionStyleKey] = style;
+			style = new Style(typeof(Label));
+			style.Setters.Add(Label.FontSizeProperty, 30);
+			dictionary[Device.Styles.CaptionStyleKey] = style;
 
-			style = new Style (typeof(Label));
-			style.Setters.Add (Label.FontSizeProperty, 20);
-			dictionary [Device.Styles.ListItemTextStyleKey] = style;
+			style = new Style(typeof(Label));
+			style.Setters.Add(Label.FontSizeProperty, 20);
+			dictionary[Device.Styles.ListItemTextStyleKey] = style;
 
-			style = new Style (typeof(Label));
-			style.Setters.Add (Label.FontSizeProperty, 10);
-			dictionary [Device.Styles.ListItemDetailTextStyleKey] = style;
+			style = new Style(typeof(Label));
+			style.Setters.Add(Label.FontSizeProperty, 10);
+			dictionary[Device.Styles.ListItemDetailTextStyleKey] = style;
 
 			return dictionary;
 		}
@@ -226,7 +229,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 	public class MockApplication : Application
 	{
-		public MockApplication ()
+		public MockApplication()
 		{
 		}
 	}
