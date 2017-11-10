@@ -495,8 +495,11 @@
     <Compile Include="Issues\Bz59818.xaml.cs">
       <DependentUpon>Bz59818.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ResourceDictionaryWithSource.xaml.cs" >
+    <Compile Include="ResourceDictionaryWithSource.xaml.cs">
       <DependentUpon>ResourceDictionaryWithSource.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ResourceDictionaryWithInvalidSource.xaml.cs">
+      <DependentUpon>ResourceDictionaryWithInvalidSource.xaml</DependentUpon>
     </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
@@ -924,6 +927,11 @@
     <EmbeddedResource Include="ResourceDictionaryWithSource.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
+    <EmbeddedResource Include="AppResources\Colors.xaml" />
+    <EmbeddedResource Include="AppResources\CompiledColors.xaml" />
+    <EmbeddedResource Include="ResourceDictionaryWithInvalidSource.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
@@ -958,5 +966,8 @@
     <EmbeddedResource Include="AutomationProperties.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="AppResources\" />
   </ItemGroup>
 </Project>
