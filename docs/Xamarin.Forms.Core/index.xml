@@ -3,7 +3,7 @@
     <Assembly Name="Xamarin.Forms.Core" Version="2.0.0.0">
       <Attributes>
         <Attribute>
-          <AttributeName>System.Diagnostics.Debuggable(System.Diagnostics.DebuggableAttribute+DebuggingModes.Default | System.Diagnostics.DebuggableAttribute+DebuggingModes.DisableOptimizations | System.Diagnostics.DebuggableAttribute+DebuggingModes.EnableEditAndContinue | System.Diagnostics.DebuggableAttribute+DebuggingModes.IgnoreSymbolStoreSequencePoints)</AttributeName>
+          <AttributeName>System.Diagnostics.Debuggable(System.Diagnostics.DebuggableAttribute+DebuggingModes.IgnoreSymbolStoreSequencePoints)</AttributeName>
         </Attribute>
         <Attribute>
           <AttributeName>System.Reflection.AssemblyCompany("Xamarin Inc.")</AttributeName>
@@ -12,7 +12,7 @@
           <AttributeName>System.Reflection.AssemblyConfiguration("")</AttributeName>
         </Attribute>
         <Attribute>
-          <AttributeName>System.Reflection.AssemblyCopyright("Copyright © Xamarin Inc. 2013-2016")</AttributeName>
+          <AttributeName>System.Reflection.AssemblyCopyright("Copyright � Xamarin Inc. 2013-2016")</AttributeName>
         </Attribute>
         <Attribute>
           <AttributeName>System.Reflection.AssemblyDescription("")</AttributeName>
@@ -138,6 +138,7 @@
       <Type Name="Accelerator" Kind="Class" />
       <Type Name="AcceleratorTypeConverter" Kind="Class" />
       <Type Name="ActivityIndicator" Kind="Class" />
+      <Type Name="Align" Kind="Enumeration" />
       <Type Name="Animation" Kind="Class" />
       <Type Name="AnimationExtensions" Kind="Class" />
       <Type Name="Application" Kind="Class" />
@@ -224,6 +225,9 @@
       <Type Name="ExportEffectAttribute" Kind="Class" />
       <Type Name="FileImageSource" Kind="Class" />
       <Type Name="FileImageSourceConverter" Kind="Class" />
+      <Type Name="FlexDirection" Kind="Enumeration" />
+      <Type Name="FlexLayout" Kind="Class" />
+      <Type Name="FlexPosition" Kind="Enumeration" />
       <Type Name="FlowDirection" Kind="Enumeration" />
       <Type Name="FocusEventArgs" Kind="Class" />
       <Type Name="Font" Kind="Structure" />
@@ -259,6 +263,7 @@
       <Type Name="IEntryCellController" Kind="Interface" />
       <Type Name="IEntryController" Kind="Interface" />
       <Type Name="IExtendedTypeConverter" Kind="Interface" />
+      <Type Name="IFlexNode" Kind="Interface" />
       <Type Name="IGestureRecognizer" Kind="Interface" />
       <Type Name="IGridController" Kind="Interface" />
       <Type Name="IImageController" Kind="Interface" />
@@ -308,6 +313,7 @@
       <Type Name="IVisualElementController" Kind="Interface" />
       <Type Name="IWebViewController" Kind="Interface" />
       <Type Name="IWebViewDelegate" Kind="Interface" />
+      <Type Name="Justify" Kind="Enumeration" />
       <Type Name="Keyboard" Kind="Class" />
       <Type Name="KeyboardFlags" Kind="Enumeration" />
       <Type Name="KeyboardTypeConverter" Kind="Class" />
@@ -324,6 +330,7 @@
       <Type Name="MasterBehavior" Kind="Enumeration" />
       <Type Name="MasterDetailPage" Kind="Class" />
       <Type Name="MeasureFlags" Kind="Enumeration" />
+      <Type Name="MeasureFunc" Kind="Delegate" />
       <Type Name="Menu" Kind="Class" />
       <Type Name="MenuItem" Kind="Class" />
       <Type Name="MessagingCenter" Kind="Class" />
@@ -343,6 +350,7 @@
       <Type Name="OnIdiom`1" DisplayName="OnIdiom&lt;T&gt;" Kind="Class" />
       <Type Name="OnPlatform`1" DisplayName="OnPlatform&lt;T&gt;" Kind="Class" />
       <Type Name="OpenGLView" Kind="Class" />
+      <Type Name="Overflow" Kind="Enumeration" />
       <Type Name="Page" Kind="Class" />
       <Type Name="PanGestureRecognizer" Kind="Class" />
       <Type Name="PanUpdatedEventArgs" Kind="Class" />
@@ -443,6 +451,7 @@
       <Type Name="WebView" Kind="Class" />
       <Type Name="WebViewSource" Kind="Class" />
       <Type Name="WebViewSourceTypeConverter" Kind="Class" />
+      <Type Name="Wrap" Kind="Enumeration" />
     </Namespace>
     <Namespace Name="Xamarin.Forms.Internals">
       <Type Name="ActionSheetArguments" Kind="Class" />

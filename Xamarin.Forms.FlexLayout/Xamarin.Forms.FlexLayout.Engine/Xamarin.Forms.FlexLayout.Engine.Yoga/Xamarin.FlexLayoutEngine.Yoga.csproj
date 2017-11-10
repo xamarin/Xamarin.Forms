@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+	<PropertyGroup>
+		<MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
+		<Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+		<Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+		<ProjectGuid>{BEE8E0B8-BD65-4A0C-86B2-7F964EB7460A}</ProjectGuid>
+		<OutputType>Library</OutputType>
+		<AppDesignerFolder>Properties</AppDesignerFolder>
+		<RootNamespace>Xamarin.FlexLayoutEngine.Yoga</RootNamespace>
+		<AssemblyName>Xamarin.FlexLayoutEngine.Yoga</AssemblyName>
+		<DefaultLanguage>en-US</DefaultLanguage>
+		<FileAlignment>512</FileAlignment>
+		<ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+		<TargetFrameworkProfile>
+		</TargetFrameworkProfile>
+		<TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
+		<NuGetPackageImportStamp>
+		</NuGetPackageImportStamp>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+		<DebugSymbols>true</DebugSymbols>
+		<DebugType>full</DebugType>
+		<Optimize>false</Optimize>
+		<OutputPath>bin\Debug\</OutputPath>
+		<DefineConstants>DEBUG;TRACE</DefineConstants>
+		<ErrorReport>prompt</ErrorReport>
+		<WarningLevel>4</WarningLevel>
+		<DocumentationFile>
+		</DocumentationFile>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+		<DebugType>pdbonly</DebugType>
+		<Optimize>true</Optimize>
+		<OutputPath>bin\Release\</OutputPath>
+		<DefineConstants>TRACE</DefineConstants>
+		<ErrorReport>prompt</ErrorReport>
+		<WarningLevel>4</WarningLevel>
+		<DocumentationFile>
+		</DocumentationFile>
+	</PropertyGroup>
+	<ItemGroup>
+		<Compile Include="YogaEngine.cs" />
+	</ItemGroup>
+	<ItemGroup>
+		<None Include="project.json" />
+	</ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\..\..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">
+		  <Project>{57B8B73D-C3B5-4C42-869E-7B2F17D354AC}</Project>
+		  <Name>Xamarin.Forms.Core</Name>
+		</ProjectReference>
+	</ItemGroup>
+	<Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+	<PropertyGroup>
+		<NuGetTargetMoniker>.NETStandard,Version=v1.0</NuGetTargetMoniker>
+	</PropertyGroup>
+</Project>

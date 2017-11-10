@@ -1,0 +1,29 @@
+<Type Name="MeasureFunc" FullName="Xamarin.Forms.MeasureFunc">
+  <TypeSignature Language="C#" Value="public delegate Xamarin.Forms.Size MeasureFunc(IFlexNode node, float width, float height);" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi sealed MeasureFunc extends System.MulticastDelegate" />
+  <AssemblyInfo>
+    <AssemblyName>Xamarin.Forms.Core</AssemblyName>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Delegate</BaseTypeName>
+  </Base>
+  <Parameters>
+    <Parameter Name="node" Type="Xamarin.Forms.IFlexNode" />
+    <Parameter Name="width" Type="System.Single" />
+    <Parameter Name="widthMode" Type="Xamarin.Forms.FlexMeasureMode" />
+    <Parameter Name="height" Type="System.Single" />
+    <Parameter Name="heightMode" Type="Xamarin.Forms.FlexMeasureMode" />
+  </Parameters>
+  <ReturnValue>
+    <ReturnType>Xamarin.Forms.Size</ReturnType>
+  </ReturnValue>
+  <Docs>
+    <param name="node">To be added.</param>
+    <param name="width">To be added.</param>
+    <param name="height">To be added.</param>
+    <summary>To be added.</summary>
+    <returns>To be added.</returns>
+    <remarks>To be added.</remarks>
+  </Docs>
+</Type>

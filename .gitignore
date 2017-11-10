@@ -57,3 +57,6 @@ AndroidNative/.gradle/
 AndroidNative/gradlew
 AndroidNative/gradlew.bat
 !EmbeddingTestBeds/Embedding.iOS/*.designer.cs
+*.nuget.targets
+Xamarin.FlexLayoutEngine.Yoga.nuget.props
+Xamarin.FlexLayoutEngine.Yoga.csproj.nuget.cache
