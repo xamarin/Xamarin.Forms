@@ -18,10 +18,8 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		{
 			bindable.SetValue(CollectionProperty, value);
 		}
-
-
 	}
-	[XamlCompilation(XamlCompilationOptions.Skip)]
+
 	public partial class Bz60575:ContentPage
 	{
 		public Bz60575()
@@ -45,7 +43,6 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		[TestFixture]
 		class Tests
 		{
-
 			[SetUp]
 			public void Setup()
 			{
@@ -61,8 +58,6 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			[TestCase(true), TestCase(false)]
 			public void CollectionProperties(bool useCompiledXaml)
 			{
-				if (useCompiledXaml)
-					MockCompiler.Compile(typeof(Bz60575));
 				var layout = new Bz60575(useCompiledXaml);
 
 				//attached BP
