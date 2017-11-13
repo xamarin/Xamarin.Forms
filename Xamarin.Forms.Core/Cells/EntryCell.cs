@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace Xamarin.Forms
 {
-	public class EntryCell : Cell, IEntryCellController
+	public class EntryCell : Cell, ITextElement, IEntryCellController
 	{
 		public static readonly BindableProperty TextProperty = BindableProperty.Create("Text", typeof(string), typeof(EntryCell), null, BindingMode.TwoWay);
 
@@ -11,7 +11,10 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty PlaceholderProperty = BindableProperty.Create("Placeholder", typeof(string), typeof(EntryCell), null);
 
-		public static readonly BindableProperty LabelColorProperty = BindableProperty.Create("LabelColor", typeof(Color), typeof(EntryCell), Color.Default);
+		[Obsolete("LabelColorProperty is obsolete as of version 2.5.0. Please use TextColorProperty instead.")]
+		public static readonly BindableProperty LabelColorProperty = TextElement.TextColorProperty;
+
+		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
 
 		public static readonly BindableProperty KeyboardProperty = BindableProperty.Create("Keyboard", typeof(Keyboard), typeof(EntryCell), Keyboard.Default);
 
@@ -39,10 +42,17 @@ namespace Xamarin.Forms
 			set { SetValue(LabelProperty, value); }
 		}
 
+		[Obsolete("LabelColor is obsolete as of version 2.5.0. Please use TextColor instead.")]
 		public Color LabelColor
 		{
 			get { return (Color)GetValue(LabelColorProperty); }
 			set { SetValue(LabelColorProperty, value); }
+		}
+
+		public Color TextColor
+		{
+			get => (Color)GetValue(TextElement.TextColorProperty);
+			set => SetValue(TextElement.TextColorProperty, value);
 		}
 
 		public string Placeholder
@@ -79,6 +89,13 @@ namespace Xamarin.Forms
 			var label = (EntryCell)bindable;
 #pragma warning disable 0618 // retain until XAlign removed
 			label.OnPropertyChanged(nameof(XAlign));
+#pragma warning restore
+		}
+
+		void ITextElement.OnTextColorPropertyChanged(Color oldValue, Color newValue)
+		{
+#pragma warning disable 0618 // retain until LabelColor removed
+			OnPropertyChanged(nameof(LabelColor));
 #pragma warning restore
 		}
 	}
