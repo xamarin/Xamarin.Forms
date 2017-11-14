@@ -54,7 +54,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			Device.Info.PropertyChanged += DeviceInfoPropertyChanged;
 		}
 
-		[Obsolete("This constructor is obsolete as of version 3.0. Please use NavigationPageRenderer(Context) instead.")]
+		[Obsolete("This constructor is obsolete as of version 2.5. Please use NavigationPageRenderer(Context) instead.")]
 		public NavigationPageRenderer()
 		{
 			AutoPackage = false;
@@ -128,20 +128,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			{
 				_disposed = true;
 
-				// API only exists on newer android YAY
-				if ((int)Build.VERSION.SdkInt >= 17)
-				{
-					FragmentManager fm = FragmentManager;
-
-					if (!fm.IsDestroyed)
-					{
-						FragmentTransaction trans = fm.BeginTransaction();
-						foreach (Fragment fragment in _fragmentStack)
-							trans.Remove(fragment);
-						trans.CommitAllowingStateLoss();
-						fm.ExecutePendingTransactions();
-					}
-				}
 
 				if (_toolbarTracker != null)
 				{
@@ -206,6 +192,21 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				}
 
 				Device.Info.PropertyChanged -= DeviceInfoPropertyChanged;
+
+				// API only exists on newer android YAY
+				if ((int)Build.VERSION.SdkInt >= 17)
+				{
+					FragmentManager fm = FragmentManager;
+
+					if (!fm.IsDestroyed)
+					{
+						FragmentTransaction trans = fm.BeginTransaction();
+						foreach (Fragment fragment in _fragmentStack)
+							trans.Remove(fragment);
+						trans.CommitAllowingStateLoss();
+						fm.ExecutePendingTransactions();
+					}
+				}
 			}
 
 			base.Dispose(disposing);

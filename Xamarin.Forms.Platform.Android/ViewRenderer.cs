@@ -14,7 +14,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 		}
 
-		[Obsolete("This constructor is obsolete as of version 3.0. Please use ViewRenderer(Context) instead.")]
+		[Obsolete("This constructor is obsolete as of version 2.5. Please use ViewRenderer(Context) instead.")]
 		protected ViewRenderer()
 		{
 		}
@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 		}
 
-		[Obsolete("This constructor is obsolete as of version 3.0. Please use ViewRenderer(Context) instead.")]
+		[Obsolete("This constructor is obsolete as of version 2.5. Please use ViewRenderer(Context) instead.")]
 		protected ViewRenderer() 
 		{
 		}
@@ -147,6 +147,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateIsEnabled();
 			else if (e.PropertyName == AutomationProperties.LabeledByProperty.PropertyName)
 				SetLabeledBy();
+			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
+				UpdateFlowDirection();
 		}
 
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)
@@ -319,6 +321,7 @@ namespace Xamarin.Forms.Platform.Android
 			Control.OnFocusChangeListener = this;
 
 			UpdateIsEnabled();
+			UpdateFlowDirection();
 			SetLabeledBy();
 		}
 
@@ -344,6 +347,11 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (Control != null)
 				Control.Enabled = Element.IsEnabled;
+		}
+
+		void UpdateFlowDirection()
+		{
+			Control.UpdateFlowDirection(Element);
 		}
 	}
 }

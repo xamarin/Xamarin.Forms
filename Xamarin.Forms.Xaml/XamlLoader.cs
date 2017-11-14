@@ -150,9 +150,10 @@ namespace Xamarin.Forms.Xaml
 				return xaml;
 #pragma warning restore 0618
 
-			var typeInfo = type.GetTypeInfo();
-			var assembly = typeInfo.Assembly;
-			var resourceId = typeInfo.GetCustomAttribute<XamlResourceIdAttribute>()?.ResourceId;
+
+			var assembly = type.GetTypeInfo().Assembly;
+			var resourceId = XamlResourceIdAttribute.GetResourceIdForType(type);
+
 			if (resourceId == null)
 				return LegacyGetXamlForType(type);
 

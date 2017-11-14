@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		{
 		}
 
-		[Obsolete("This constructor is obsolete as of version 3.0. Please use MasterDetailPageRenderer(Context) instead.")]
+		[Obsolete("This constructor is obsolete as of version 2.5. Please use MasterDetailPageRenderer(Context) instead.")]
 		public MasterDetailPageRenderer() : base(Forms.Context)
 		{
 		}
@@ -152,6 +152,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 				UpdateMaster();
 				UpdateDetail();
+
+				UpdateFlowDirection();
 
 				((IMasterDetailPageController)newElement).BackButtonPressed += OnBackButtonPressed;
 				newElement.PropertyChanged += HandlePropertyChanged;
@@ -310,6 +312,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				UpdateBackgroundImage(Element);
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor(Element);
+			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
+				UpdateFlowDirection();
 		}
 
 		void MasterDetailPageAppearing(object sender, EventArgs e)
@@ -365,6 +369,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		{
 			Context.HideKeyboard(this);
 			_detailLayout.ChildView = Element.Detail;
+		}
+
+		void UpdateFlowDirection()
+		{
+			this.UpdateFlowDirection(Element);
 		}
 
 		void UpdateIsPresented()

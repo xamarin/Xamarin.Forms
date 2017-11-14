@@ -101,13 +101,15 @@
     <Compile Include="CompiledMarkupExtensions\NullExtension.cs" />
     <Compile Include="GetTasksAbi.cs" />
     <Compile Include="CompiledConverters\UriTypeConverter.cs" />
+    <Compile Include="CompiledConverters\RDSourceTypeConverter.cs" />
+    <Compile Include="XamlGenerator.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Target Name="AfterBuild">
     <ItemGroup>
       <_CopyItems Include="$(TargetDir)*.dll" />
     </ItemGroup>
-    <Copy SourceFiles="@(_CopyItems)" DestinationFolder="..\.nuspec\" ContinueOnError="true" />
+    <Copy SourceFiles="@(_CopyItems)" DestinationFolder="..\.nuspec\" ContinueOnError="true" Retries="0" />
   </Target>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Xaml\Xamarin.Forms.Xaml.csproj">
