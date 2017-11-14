@@ -18,6 +18,7 @@ namespace Xamarin.Forms
 		public const string WinRT = "WinRT";
 		public const string macOS = "macOS";
 		public const string GTK = "GTK";
+		public const string WPF = "WPF";
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static DeviceInfo info;
