@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using Android.Content;
 using Android.Content.Res;
+using Android.OS;
 using Android.Text;
 using Android.Text.Method;
 using Android.Util;
@@ -22,13 +23,13 @@ namespace Xamarin.Forms.Platform.Android
 			AutoPackage = false;
 		}
 
-		[Obsolete("This constructor is obsolete as of version 3.0. Please use EditorRenderer(Context) instead.")]
+		[Obsolete("This constructor is obsolete as of version 2.5. Please use EditorRenderer(Context) instead.")]
 		public EditorRenderer()
 		{
 			AutoPackage = false;
 		}
 
-        IEditorController ElementController => Element;
+		IEditorController ElementController => Element;
 
 		void ITextWatcher.AfterTextChanged(IEditable s)
 		{
@@ -70,6 +71,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			edit.SetSingleLine(false);
 			edit.Gravity = GravityFlags.Top;
+			if ((int)Build.VERSION.SdkInt > 16)
+				edit.TextAlignment = global::Android.Views.TextAlignment.ViewStart;
 			edit.SetHorizontallyScrolling(false);
 
 			UpdateText();
@@ -127,7 +130,7 @@ namespace Xamarin.Forms.Platform.Android
 		internal override void OnNativeFocusChanged(bool hasFocus)
 		{
 			if (Element.IsFocused && !hasFocus) // Editor has requested an unfocus, fire completed event
-                ElementController.SendCompleted();
+				ElementController.SendCompleted();
 		}
 
 		void UpdateFont()

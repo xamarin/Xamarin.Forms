@@ -9,8 +9,6 @@ using Android.Views;
 using Android.Views.InputMethods;
 using Android.Widget;
 using Java.Lang;
-using Xamarin.Forms.Internals;
-using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -25,7 +23,7 @@ namespace Xamarin.Forms.Platform.Android
 			AutoPackage = false;
 		}
 
-		[Obsolete("This constructor is obsolete as of version 3.0. Please use EntryRenderer(Context) instead.")]
+		[Obsolete("This constructor is obsolete as of version 2.5. Please use EntryRenderer(Context) instead.")]
 		public EntryRenderer()
 		{
 			AutoPackage = false;
@@ -34,7 +32,7 @@ namespace Xamarin.Forms.Platform.Android
 		bool TextView.IOnEditorActionListener.OnEditorAction(TextView v, ImeAction actionId, KeyEvent e)
 		{
 			// Fire Completed and dismiss keyboard for hardware / physical keyboards
-			if (actionId == ImeAction.Done || (actionId == ImeAction.ImeNull && e.KeyCode == Keycode.Enter))
+			if (actionId == ImeAction.Done || (actionId == ImeAction.ImeNull && e.KeyCode == Keycode.Enter && e.Action == KeyEventActions.Up))
 			{
 				Control.ClearFocus();
 				v.HideKeyboard();
@@ -143,6 +141,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateFont();
 			else if (e.PropertyName == Entry.PlaceholderColorProperty.PropertyName)
 				UpdatePlaceholderColor();
+			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
+				UpdateAlignment();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -157,7 +157,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateAlignment()
 		{
-			Control.Gravity = Element.HorizontalTextAlignment.ToHorizontalGravityFlags();
+			Control.UpdateHorizontalAlignment(Element.HorizontalTextAlignment);
 		}
 
 		void UpdateColor()

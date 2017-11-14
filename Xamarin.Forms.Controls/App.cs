@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 
 namespace Xamarin.Forms.Controls
@@ -33,7 +34,7 @@ namespace Xamarin.Forms.Controls
 			SetMainPage(CreateDefaultMainPage());
 
 			//// Uncomment to verify that there is no gray screen displayed between the blue splash and red MasterDetailPage.
-			//MainPage = new Bugzilla44596SplashPage(() =>
+			//SetMainPage(new Bugzilla44596SplashPage(() =>
 			//{
 			//	var newTabbedPage = new TabbedPage();
 			//	newTabbedPage.Children.Add(new ContentPage { BackgroundColor = Color.Red, Content = new Label { Text = "yay" } });
@@ -42,15 +43,22 @@ namespace Xamarin.Forms.Controls
 			//		Master = new ContentPage { Title = "Master", BackgroundColor = Color.Red },
 			//		Detail = newTabbedPage
 			//	};
-			//});
+			//}));
+
+			//// Uncomment to verify that there is no crash when switching MainPage from MDP inside NavPage
+			//SetMainPage(new Bugzilla45702());
 		}
 
 		public Page CreateDefaultMainPage()
 		{
+			var layout = new StackLayout { BackgroundColor = Color.Red };
+			layout.Children.Add(new Label { Text ="This is master Page" });
+			var master = new ContentPage { Title = "Master", Content = layout,  BackgroundColor = Color.SkyBlue };
+			master.On<iOS>().SetUseSafeArea(true);
 			return new MasterDetailPage
 			{
 				AutomationId = DefaultMainPageId,
-				Master = new ContentPage { Title = "Master", Content = new View { BackgroundColor = Color.Red } },
+				Master = master,
 				Detail = CoreGallery.GetMainPage()
 			};
 		}
