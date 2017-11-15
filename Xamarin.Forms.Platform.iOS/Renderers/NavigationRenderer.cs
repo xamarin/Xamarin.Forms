@@ -149,6 +149,8 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void ViewDidLayoutSubviews()
 		{
 			base.ViewDidLayoutSubviews();
+			if (Current == null)
+				return;
 			UpdateToolBarVisible();
 
 			var navBarFrameBottom = Math.Min(NavigationBar.Frame.Bottom, 140);
@@ -718,7 +720,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			nfloat navBottom = NavigationBar.Frame.Bottom;
 
-			if (_navigationBottom != navBottom)
+			if (_navigationBottom != navBottom && Current != null)
 				ViewDidLayoutSubviews();
 		}
 
