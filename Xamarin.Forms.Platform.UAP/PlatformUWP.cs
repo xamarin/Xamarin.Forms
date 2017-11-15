@@ -58,8 +58,8 @@ namespace Xamarin.Forms.Platform.UWP
 			((ToolbarProvider)_toolbarProvider).CommandBar.Content = page.Title;
 		}
 
-		static async void OnPageActionSheet(object sender, ActionSheetArguments options)
-		{
+		static void OnPageActionSheet(object sender, ActionSheetArguments options)
+		{ 
 			bool userDidSelect = false;
 			var flyoutContent = new FormsFlyout(options);
 
@@ -82,10 +82,10 @@ namespace Xamarin.Forms.Platform.UWP
 					options.SetResult(null);
 			};
 
-			actionSheet.ShowAt(_page);
+			actionSheet.ShowAt(((Page)sender).GetOrCreateRenderer().ContainerElement);
 		}
 
-		async void OnPageAlert(Page sender, AlertArguments options)
+		static async void OnPageAlert(Page sender, AlertArguments options)
 		{
 			string content = options.Message ?? string.Empty;
 			string title = options.Title ?? string.Empty;
