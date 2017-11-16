@@ -24,60 +24,32 @@ namespace Xamarin.Forms.Controls.Issues
 
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 45722, "Memory leak in Xamarin Forms ListView", PlatformAffected.UWP)]
-	public class Bugzilla45722 : TestNavigationPage
+	public class Bugzilla45722 : TestContentPage
 	{
 		const string Success = "Success";
 		const string Running = "Running...";
 		const string Update = "Update List";
+		const string Collect = "GC";
 
-		const int ItemCount = 30;
+		const int ItemCount = 10;
 
 		Label _currentLabelCount;
 		Label _statusLabel;
 
-		[Preserve(AllMembers = true)]
-		public class _45722Model : INotifyPropertyChanged
+		protected override void Init()
 		{
-			string _text;
+			_currentLabelCount = new Label();
+			_statusLabel = new Label { Text = Running };
 
-			public event PropertyChangedEventHandler PropertyChanged;
-
-			protected virtual void OnPropertyChanged1([CallerMemberName] string propertyName = null)
+			MessagingCenter.Subscribe<_45722Label>(this, _45722Label.CountMessage, sender =>
 			{
-				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-			}
-
-			public _45722Model(string text)
-			{
-				_text = text;
-
-				Command = new Command(() => Debug.WriteLine($">>>>> _45722Model Command Running"));
-			}
-
-			public string Text
-			{
-				get { return _text; }
-				set
+				Device.BeginInvokeOnMainThread(() =>
 				{
-					_text = value;
-					OnPropertyChanged1();
-				}
-			}
+					_currentLabelCount.Text = _45722Label.Count.ToString();
+					_statusLabel.Text = _45722Label.Count - ItemCount <= 0 ? Success : Running;
+				});
+			});
 
-			public Command Command { get; }
-		}
-
-		static IEnumerable<_45722Model> CreateItems()
-		{
-			var r = new Random(DateTime.Now.Millisecond);
-			for (int n = 0; n < ItemCount; n++)
-			{
-				yield return new _45722Model(r.NextDouble().ToString(CultureInfo.InvariantCulture));
-			}
-		}
-
-		ContentPage ListPage()
-		{
 			var lv = new ListView(ListViewCachingStrategy.RetainElement);
 
 			var items = new ObservableCollection<_45722Model>();
@@ -113,61 +85,88 @@ namespace Xamarin.Forms.Controls.Issues
 			lv.ItemTemplate = dt;
 
 			var button = new Button { Text = Update };
-			button.Clicked += async (sender, args) =>
+			button.Clicked += (sender, args) =>
 			{
 				items.Clear();
 				foreach (var item in CreateItems())
 				{
 					items.Add(item);
 				}
+			};
 
-				await Task.Delay(1000);
-
+			var collect = new Button() { Text = Collect };
+			collect.Clicked += (sender, args) =>
+			{
 				GC.Collect();
 				GC.WaitForPendingFinalizers();
 			};
 
-			return new ContentPage
+			Title = "Bugzilla 45722";
+			Content = new StackLayout
 			{
-				Content = new StackLayout
-				{
-					Padding = new Thickness(0, 20, 0, 0),
-					Children = { _currentLabelCount, _statusLabel, button, lv }
-				}
+				Padding = new Thickness(0, 20, 0, 0),
+				Children = { _currentLabelCount, _statusLabel, button, collect, lv }
 			};
 		}
 
-		protected override void Init()
+		[Preserve(AllMembers = true)]
+		public class _45722Model : INotifyPropertyChanged
 		{
-			_currentLabelCount = new Label();
-			_statusLabel = new Label { Text = Running };
-			
-			Log.Listeners.Add(new DelegateLogListener((c, m) =>
-			{
-				if (c == nameof(_45722Label))
-				{
-					Device.BeginInvokeOnMainThread(() =>
-					{
-						_currentLabelCount.Text = m;
-						_statusLabel.Text = int.Parse(m) - ItemCount == 0 ? Success : Running;
-					});
-				}
-			}));
+			string _text;
 
-			PushAsync(ListPage());
+			public event PropertyChangedEventHandler PropertyChanged;
+
+			protected virtual void OnPropertyChanged1([CallerMemberName] string propertyName = null)
+			{
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+			}
+
+			public _45722Model(string text)
+			{
+				_text = text;
+				Command = new Command(() => Debug.WriteLine($">>>>> _45722Model Command Running"));
+			}
+
+			public string Text
+			{
+				get { return _text; }
+				set
+				{
+					_text = value;
+					OnPropertyChanged1();
+				}
+			}
+
+			public Command Command { get; }
+		}
+
+		static IEnumerable<_45722Model> CreateItems()
+		{
+			var r = new Random(DateTime.Now.Millisecond);
+			for (int n = 0; n < ItemCount; n++)
+			{
+				yield return new _45722Model(r.NextDouble().ToString(CultureInfo.InvariantCulture));
+			}
+		}
+
+		protected override void OnDisappearing()
+		{
+			MessagingCenter.Unsubscribe<_45722Label>(this, _45722Label.CountMessage);
+			base.OnDisappearing();
 		}
 
 #if UITEST && __WINDOWS__
 		[Test]
 		public void LabelsInListViewTemplatesShouldBeCollected()
 		{
+			RunningApp.WaitForElement(Update);
+
 			for(int n = 0; n < 10; n++)
 			{
 				RunningApp.Tap(Update);
 			}
 
-			Task.Delay(1500).Wait();
-
+			RunningApp.Tap(Collect);
 			RunningApp.WaitForElement(Success);
 		}
 #endif
@@ -176,28 +175,19 @@ namespace Xamarin.Forms.Controls.Issues
 	[Preserve(AllMembers = true)]
 	public class _45722Label : Label
 	{
-		static int s_id;
-		static int s_count;
-
-		int Id { get; }
+		public static int Count;
+		public const string CountMessage = "45722Count";
 
 		public _45722Label()
 		{
-			Id = s_id;
-			Interlocked.Increment(ref s_count);
-			Log.Warning(nameof(_45722Label), $"{s_count}");
-			s_id += 1;
+			Interlocked.Increment(ref Count);
+			MessagingCenter.Send(this, CountMessage);
 		}
 
 		~_45722Label()
 		{
-			Interlocked.Decrement(ref s_count);
-			Log.Warning(nameof(_45722Label), $"{s_count}");
-		}
-
-		public override string ToString()
-		{
-			return $"{nameof(_45722Label)}: {nameof(Id)}: {Id}";
+			Interlocked.Decrement(ref Count);
+			MessagingCenter.Send(this, CountMessage);
 		}
 	}
 }

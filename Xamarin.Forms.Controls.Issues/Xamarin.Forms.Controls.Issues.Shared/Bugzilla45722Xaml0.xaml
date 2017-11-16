@@ -1,8 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+<controls:TestContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="Xamarin.Forms.Controls.Issues.Bugzilla45722Xaml0"
-			xmlns:local="clr-namespace:Xamarin.Forms.Controls.Issues">
+			xmlns:local="clr-namespace:Xamarin.Forms.Controls.Issues"
+			xmlns:controls="clr-namespace:Xamarin.Forms.Controls;assembly=Xamarin.Forms.Core.Android.UITests" 
+            Title="Bugzilla 45722 (with grouping)">
     <ContentPage.Content>
       <StackLayout>
 		
@@ -11,6 +13,7 @@
         <Label x:Name="Result"></Label>
 
         <Button Text="Refresh" x:Name="RefreshButton"></Button>
+		<Button Text="GC" x:Name="GCButton"></Button>
 
 		<ListView x:Name="listView" HasUnevenRows="True" IsGroupingEnabled="{ Binding IsGroupingEnabled }" GroupDisplayBinding="{ Binding Key }"
 				ItemsSource="{Binding Model}" SeparatorVisibility="None" SeparatorColor="Gray" BackgroundColor="Transparent"  HorizontalOptions="FillAndExpand">
@@ -36,8 +39,8 @@
 							<StackLayout Spacing="8" Orientation="Vertical" VerticalOptions="Center" HorizontalOptions="FillAndExpand">
 								<StackLayout Spacing="10" Padding="5,7,8,7" Orientation="Horizontal" VerticalOptions="Center" HorizontalOptions="FillAndExpand" BackgroundColor="Transparent">
 									<StackLayout Spacing="0" VerticalOptions="FillAndExpand" HorizontalOptions="FillAndExpand" BackgroundColor="Transparent">
-										<Label Text="{ Binding ListName }"  />
-										<Label Text="{ Binding ListDescription }"  />
+										<local:_45722Label Text="{ Binding ListName }"  />
+										<local:_45722Label Text="{ Binding ListDescription }"  />
 									</StackLayout>
 								</StackLayout>
 							</StackLayout>
@@ -49,4 +52,4 @@
 
 	</StackLayout>
     </ContentPage.Content>
-</ContentPage>
+</controls:TestContentPage>

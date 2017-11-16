@@ -1,41 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Xamarin.Forms;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
 
+#if UITEST
+using Xamarin.UITest;
+using NUnit.Framework;
+using Xamarin.Forms.Core.UITests;
+#endif
+
 namespace Xamarin.Forms.Controls.Issues
 {
-	[XamlCompilation(XamlCompilationOptions.Compile)]
+#if UITEST
+	[NUnit.Framework.Category(UITestCategories.ListView)]
+#endif
+
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 945722, "Memory leak in Xamarin Forms ListView", PlatformAffected.UWP)]
-	public partial class Bugzilla45722Xaml0 : ContentPage
+	[Issue(IssueTracker.Bugzilla, 45722, "Memory leak in Xamarin Forms ListView", 
+		PlatformAffected.UWP, issueTestNumber: 1)]
+	public partial class Bugzilla45722Xaml0 : TestContentPage
 	{
-		const int ItemCount = 50;
+		const int ItemCount = 10;
 		const string Success = "Success";
 		const string Running = "Running...";
+		const string Update = "Refresh";
+		const string Collect = "GC";
 
 		public Bugzilla45722Xaml0 ()
 		{
+#if APP
 			InitializeComponent ();
-
-			Log.Listeners.Add(new DelegateLogListener((c, m) =>
-			{
-				if (c == nameof(_45722Label))
-				{
-					Device.BeginInvokeOnMainThread(() =>
-					{
-						CurrentCount.Text = m;
-						Result.Text = int.Parse(m) - ItemCount == 0 ? Success : Running;
-					});
-				}
-			}));
 
 			Model = new ObservableCollection<_45722Group>();
 
@@ -45,13 +41,41 @@ namespace Xamarin.Forms.Controls.Issues
 			BindingContext = this;
 
 			RefreshButton.Clicked += (sender, args) => { RefreshModel(); };
+
+			GCButton.Clicked += (sender, args) =>
+			{
+				GC.Collect();
+				GC.WaitForPendingFinalizers();
+			};
+
+			MessagingCenter.Subscribe<_45722Label>(this, _45722Label.CountMessage, sender =>
+			{
+				Device.BeginInvokeOnMainThread(() =>
+				{
+					CurrentCount.Text = _45722Label.Count.ToString();
+
+					// GroupHeader label + (3 items per group * 2 labels per item) = 7
+					Result.Text = (_45722Label.Count - (ItemCount * 7)) <= 0 ? Success : Running;
+				});
+			});
+#endif
+		}
+
+		protected override void Init()
+		{
+		}
+
+		protected override void OnDisappearing()
+		{
+			MessagingCenter.Unsubscribe<_45722Label>(this, _45722Label.CountMessage);
+			base.OnDisappearing();
 		}
 
 		public ObservableCollection<_45722Group> Model { get; }
 
 		public bool IsGroupingEnabled { get; }
 
-		async void RefreshModel()
+		void RefreshModel()
 		{
 			Model.Clear();
 
@@ -66,12 +90,24 @@ namespace Xamarin.Forms.Controls.Issues
 
 				Model.Add(group);
 			}
-
-			await Task.Delay(1000);
-
-			GC.Collect();
-			GC.WaitForPendingFinalizers();
 		}
+
+#if UITEST && __WINDOWS__
+		[Test]
+		public void LabelsInListViewTemplatesShouldBeCollected()
+		{
+			RunningApp.WaitForElement(Update);
+
+			for(int n = 0; n < 10; n++)
+			{
+				RunningApp.Tap(Update);
+			}
+
+			RunningApp.Tap(Collect);
+			RunningApp.WaitForElement(Success);
+		}
+#endif
+		
 	}
 
 	public class _45722Group : ObservableCollection<_45722Item>
@@ -91,7 +127,6 @@ namespace Xamarin.Forms.Controls.Issues
 			ListName = listName;
 			ListDescription = listDescription;
 		}
-
 	
 		public string ListName { get; set; }
 		public string ListDescription { get; set; }
