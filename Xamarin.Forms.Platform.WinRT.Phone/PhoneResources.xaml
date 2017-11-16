@@ -380,7 +380,7 @@
 				Grid.Column="0" Text="{Binding Text}" VerticalAlignment="Center"
 				local:ListViewRenderer.HighlightWhenSelected="true"/>
 
-			<ToggleSwitch Grid.Column="1" IsOn="{Binding On, Mode=TwoWay}" OnContent="" OffContent="" VerticalAlignment="Center" />
+			<ToggleSwitch Grid.Column="1" IsOn="{Binding On, Mode=TwoWay}" OnContent="" OffContent="" VerticalAlignment="Center" IsEnabled="{Binding IsEnabled}" />
 		</Grid>
 	</DataTemplate>
 
