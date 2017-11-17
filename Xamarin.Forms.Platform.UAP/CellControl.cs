@@ -42,7 +42,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			_propertyChangedHandler = OnCellPropertyChanged;
 		}
-								
+
 		public Cell Cell		
 		{
 			get { return (Cell)GetValue(CellProperty); }
@@ -166,7 +166,7 @@ namespace Xamarin.Forms.Platform.UWP
 			// set on MeasureOverrideDelegate. However, if the parent is a TableView, we'll already 
 			// have a complete Cell object to work with, so we can move ahead.
 			if (_isListViewRealized || args.NewValue is Cell)
-				SetCell(args.NewValue, sender as CellControl);
+				SetCell(args.NewValue);
 			else if (args.NewValue != null)
 				_newValue = args.NewValue;
 		}
@@ -193,7 +193,7 @@ namespace Xamarin.Forms.Platform.UWP
 			FlyoutBase.ShowAttachedFlyout(CellContent);
 		}
 
-		void SetCell(object newContext, CellControl cellControl = null)
+		void SetCell(object newContext)
 		{
 			var cell = newContext as Cell;
 
@@ -250,7 +250,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 				// This provides the Group Header styling (e.g., larger font, etc.) when the
 				// template is loaded later.
-				CellExtensions.SetIsGroupHeader<ItemsView<Cell>, Cell>(cell, isGroupHeader);
+				cell.SetIsGroupHeader<ItemsView<Cell>, Cell>(isGroupHeader);
 			}
 
 			Cell = cell;
@@ -323,11 +323,11 @@ namespace Xamarin.Forms.Platform.UWP
 
 			((FrameworkElement)Content).DataContext = newCell;
 		}
-		
+
 		protected override AutomationPeer OnCreateAutomationPeer()
 		{
 			return new FrameworkElementAutomationPeer(this);
-    	}
+		}
 
 		void UpdateFlowDirection(Cell newCell)
 		{
