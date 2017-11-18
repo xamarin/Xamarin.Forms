@@ -28,7 +28,6 @@ namespace Xamarin.Forms.Platform.iOS
 		VisualElementTracker _tracker;
 		nfloat _navigationBottom = 0;
 
-
 		public NavigationRenderer()
 		{
 			MessagingCenter.Subscribe<IVisualElementRenderer>(this, UpdateToolbarButtons, sender =>
@@ -133,6 +132,13 @@ namespace Xamarin.Forms.Platform.iOS
 			base.ViewDidAppear(animated);
 
 			View.SetNeedsLayout();
+		}
+
+		public override void ViewWillAppear(bool animated)
+		{
+			base.ViewWillAppear(animated);
+
+			SetStatusBarStyle();
 		}
 
 		public override void ViewDidDisappear(bool animated)
@@ -468,7 +474,6 @@ namespace Xamarin.Forms.Platform.iOS
 				NavigationBar.PrefersLargeTitles = navPage.OnThisPlatform().PrefersLargeTitles();
 		}	
 
-
 		void UpdateTranslucent()
 		{
 			NavigationBar.Translucent = ((NavigationPage)Element).OnThisPlatform().IsNavigationBarTranslucent();
@@ -621,13 +626,18 @@ namespace Xamarin.Forms.Platform.iOS
 				NavigationBar.LargeTitleTextAttributes = NavigationBar.TitleTextAttributes;      
 			}
 
-
 			var statusBarColorMode = (Element as NavigationPage).OnThisPlatform().GetStatusBarTextColorMode();
 
 			// set Tint color (i. e. Back Button arrow and Text)
 			NavigationBar.TintColor = barTextColor == Color.Default || statusBarColorMode == StatusBarTextColorMode.DoNotAdjust
 				? UINavigationBar.Appearance.TintColor
 				: barTextColor.ToUIColor();
+		}
+
+		void SetStatusBarStyle()
+		{
+			var barTextColor = ((NavigationPage)Element).BarTextColor;
+			var statusBarColorMode = (Element as NavigationPage).OnThisPlatform().GetStatusBarTextColorMode();
 
 			if (statusBarColorMode == StatusBarTextColorMode.DoNotAdjust || barTextColor.Luminosity <= 0.5)
 			{
