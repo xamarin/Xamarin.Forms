@@ -445,7 +445,10 @@ namespace Xamarin.Forms.Platform.iOS
 			if (e.PropertyName == NavigationPage.BarBackgroundColorProperty.PropertyName)
 				UpdateBarBackgroundColor();
 			else if (e.PropertyName == NavigationPage.BarTextColorProperty.PropertyName || e.PropertyName == PlatformConfiguration.iOSSpecific.NavigationPage.StatusBarTextColorModeProperty.PropertyName)
+			{
 				UpdateBarTextColor();
+				SetStatusBarStyle();
+			}
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor();
 			else if (e.PropertyName == NavigationPage.CurrentPageProperty.PropertyName)
@@ -456,7 +459,6 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateCurrentPagePreferredStatusBarUpdateAnimation();
 			else if (e.PropertyName == PrefersLargeTitlesProperty.PropertyName)
 				UpdateUseLargeTitles();
-			
 		}
 
 		void UpdateCurrentPagePreferredStatusBarUpdateAnimation()
