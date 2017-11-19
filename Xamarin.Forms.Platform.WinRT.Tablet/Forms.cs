@@ -76,7 +76,14 @@ namespace Xamarin.Forms
 			Registrar.ExtraAssemblies = rendererAssemblies?.ToArray();
 #endif
 
-			Registrar.RegisterAll(new[] { typeof(ExportRendererAttribute), typeof(ExportCellAttribute), typeof(ExportImageSourceHandlerAttribute) });
+			Registrar.RegisterAll(new[] {
+				typeof (ExportRendererAttribute),
+				typeof (ExportCellAttribute),
+				typeof (ExportImageSourceHandlerAttribute),
+				typeof (Xamarin.Forms.ExportRendererAttribute),
+				typeof (Xamarin.Forms.ExportCellAttribute),
+				typeof (Xamarin.Forms.ExportImageSourceHandlerAttribute)
+			});
 
 			IsInitialized = true;
 			s_state = launchActivatedEventArgs.PreviousExecutionState;
