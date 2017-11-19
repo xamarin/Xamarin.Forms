@@ -36,7 +36,10 @@ namespace Xamarin.Forms
 			Registrar.RegisterAll (new[] {
 				typeof (ExportRendererAttribute),
 				typeof (ExportCellAttribute),
-				typeof (ExportImageSourceHandlerAttribute)
+				typeof (ExportImageSourceHandlerAttribute),
+				typeof (Xamarin.Forms.ExportRendererAttribute),
+				typeof (Xamarin.Forms.ExportCellAttribute),
+				typeof (Xamarin.Forms.ExportImageSourceHandlerAttribute)
 			});
 
 			MessagingCenter.Subscribe<Page, bool> (Device.PlatformServices, Page.BusySetSignalName, OnPageBusy);
