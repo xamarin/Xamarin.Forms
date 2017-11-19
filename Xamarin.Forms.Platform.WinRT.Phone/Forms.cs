@@ -37,9 +37,9 @@ namespace Xamarin.Forms
 				typeof (ExportRendererAttribute),
 				typeof (ExportCellAttribute),
 				typeof (ExportImageSourceHandlerAttribute),
-				typeof (Xamarin.Forms.ExportRendererAttribute),
-				typeof (Xamarin.Forms.ExportCellAttribute),
-				typeof (Xamarin.Forms.ExportImageSourceHandlerAttribute)
+				typeof (Platform.WinRT.ExportRendererAttribute),
+				typeof (Platform.WinRT.ExportCellAttribute),
+				typeof (Platform.WinRT.ExportImageSourceHandlerAttribute)
 			});
 
 			MessagingCenter.Subscribe<Page, bool> (Device.PlatformServices, Page.BusySetSignalName, OnPageBusy);
