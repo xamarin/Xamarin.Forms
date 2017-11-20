@@ -627,6 +627,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			_toolbar = null;
 
 			SetupToolbar();
+			
+			// if the old toolbar had padding from transluscentflags, set it to the new toolbar
+			if (oldToolbar.PaddingTop != 0)
+				_toolbar.SetPadding(0, oldToolbar.PaddingTop, 0, 0);
+			
 			RegisterToolbar();
 			UpdateToolbar();
 			UpdateMenu();
