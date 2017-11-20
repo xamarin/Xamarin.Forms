@@ -108,7 +108,8 @@ namespace Xamarin.Forms.Platform.WPF
 			if (Control.Text != entryText)
 			{
 				Control.Text = entryText;
-				Control.SelectionStart = Control.Text.Length;
+				if (Control.Text != null)
+					Control.SelectionStart = Control.Text.Length;
 			}
 
 			_ignoreTextChange = false;
@@ -224,7 +225,7 @@ namespace Xamarin.Forms.Platform.WPF
 				return;
 
 			Control.Text = Element.Text ?? "";
-			Control.Select(Control.Text.Length, 0);
+			Control.Select(Control.Text == null ? 0 : Control.Text.Length, 0);
 		}
 
 		bool _isDisposed;
