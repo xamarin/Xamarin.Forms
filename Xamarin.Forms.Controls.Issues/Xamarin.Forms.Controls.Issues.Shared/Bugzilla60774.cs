@@ -4,7 +4,7 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 960774, "Some scrolling thing", PlatformAffected.Android)]
+	[Issue(IssueTracker.Bugzilla, 60774, "[Android] ScrollOrientation.Both doubles the distance of scrolling", PlatformAffected.Android)]
 	public class Bugzilla60774 : TestContentPage
 	{
 		ScrollOrientation _currentOrientation;
@@ -21,7 +21,6 @@ namespace Xamarin.Forms.Controls.Issues
 					new RowDefinition()
 				}
 			};
-
 
 			var layout = new StackLayout();
 

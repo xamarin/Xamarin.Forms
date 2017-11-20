@@ -153,12 +153,11 @@ namespace Xamarin.Forms.Platform.Android
 			if (_isBidirectional && !Element.InputTransparent)
 			{
 				float dX = LastX - ev.RawX;
-				float dY = LastY - ev.RawY;
+
 				LastY = ev.RawY;
 				LastX = ev.RawX;
 				if (ev.Action == MotionEventActions.Move)
 				{
-					ScrollBy(0, (int)dY);
 					foreach (AHorizontalScrollView child in this.GetChildrenOfType<AHorizontalScrollView>())
 					{
 						child.ScrollBy((int)dX, 0);
