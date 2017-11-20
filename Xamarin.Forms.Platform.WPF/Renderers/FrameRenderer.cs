@@ -61,8 +61,16 @@ namespace Xamarin.Forms.Platform.WPF
 
 		void UpdateBorder()
 		{
-			Control.UpdateDependencyColor(Border.BorderBrushProperty, Element.OutlineColor);
-			Control.BorderThickness = new System.Windows.Thickness(1);
+			if (Element.OutlineColor != Color.Default)
+			{
+				Control.UpdateDependencyColor(Border.BorderBrushProperty, Element.OutlineColor);
+				Control.BorderThickness = new System.Windows.Thickness(1);
+			}
+			else
+			{
+				Control.UpdateDependencyColor(Border.BorderBrushProperty, new Color(0, 0, 0, 0));
+				Control.BorderThickness = new System.Windows.Thickness(0);
+			}
 		}
 
 		void UpdateCornerRadius()
