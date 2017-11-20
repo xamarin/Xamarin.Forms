@@ -27,15 +27,15 @@ namespace Xamarin.Forms.Platform.WPF
 	{
 		readonly List<EventHandler<VisualElementChangedEventArgs>> _elementChangedHandlers =
 			new List<EventHandler<VisualElementChangedEventArgs>>();
-		
+
 		VisualElementTracker _tracker;
-		
+
 		IElementController ElementController => Element as IElementController;
 
 		public TNativeElement Control { get; private set; }
 
 		public TElement Element { get; private set; }
-		
+
 		protected virtual bool AutoTrack { get; set; } = true;
 
 		protected VisualElementTracker Tracker
@@ -64,12 +64,12 @@ namespace Xamarin.Forms.Platform.WPF
 			if (platformEffect != null)
 				OnRegisterEffect(platformEffect);
 		}
-		
+
 		VisualElement IVisualElementRenderer.Element
 		{
 			get { return Element; }
 		}
-		
+
 		public FrameworkElement GetNativeElement()
 		{
 			return Control;
@@ -87,7 +87,7 @@ namespace Xamarin.Forms.Platform.WPF
 				return new SizeRequest();
 
 			var constraint = new System.Windows.Size(widthConstraint, heightConstraint);
-			
+
 			Control.Measure(constraint);
 
 			return new SizeRequest(new Size(Math.Ceiling(Control.DesiredSize.Width), Math.Ceiling(Control.DesiredSize.Height)));
@@ -117,15 +117,16 @@ namespace Xamarin.Forms.Platform.WPF
 			if (controller != null)
 				controller.EffectControlProvider = this;
 		}
-		
+
 		public event EventHandler<ElementChangedEventArgs<TElement>> ElementChanged;
-		
+
 		protected virtual void OnElementChanged(ElementChangedEventArgs<TElement> e)
 		{
 			var args = new VisualElementChangedEventArgs(e.OldElement, e.NewElement);
 			for (var i = 0; i < _elementChangedHandlers.Count; i++)
 				_elementChangedHandlers[i](this, args);
 
+			UpdateRequests();
 			ElementChanged?.Invoke(this, e);
 		}
 
@@ -133,6 +134,10 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateEnabled();
+			else if (e.PropertyName == Frame.HeightRequestProperty.PropertyName)
+				UpdateRequests();
+			else if (e.PropertyName == Frame.WidthRequestProperty.PropertyName)
+				UpdateRequests();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackground();
 			else if (e.PropertyName == View.HorizontalOptionsProperty.PropertyName || e.PropertyName == View.VerticalOptionsProperty.PropertyName)
@@ -176,24 +181,33 @@ namespace Xamarin.Forms.Platform.WPF
 			UpdateBackground();
 			UpdateAlignment();
 		}
-		
+
 		protected virtual void Appearing()
 		{
-			
+
 		}
 
 		protected virtual void Disappearing()
 		{
-			
+
 		}
-		
+
 		protected virtual void UpdateBackground()
 		{
 			var control = Control as WControl;
 			if (control == null)
 				return;
-			
+
 			control.UpdateDependencyColor(WControl.BackgroundProperty, Element.BackgroundColor);
+		}
+
+		protected virtual void UpdateRequests()
+		{
+			if (Control == null || Element == null)
+				return;
+
+			Control.Width = Element.WidthRequest >= 0 ? Element.WidthRequest : Double.NaN;
+			Control.Height = Element.HeightRequest >= 0 ? Element.HeightRequest : Double.NaN;
 		}
 
 		protected virtual void UpdateNativeWidget()
@@ -228,7 +242,7 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			UpdateNativeWidget();
 		}
-		
+
 		protected virtual void UpdateEnabled()
 		{
 			WControl wcontrol = Control as WControl;
@@ -247,7 +261,7 @@ namespace Xamarin.Forms.Platform.WPF
 		}
 
 		bool _disposed;
-		
+
 		public void Dispose()
 		{
 			Dispose(true);
@@ -259,7 +273,7 @@ namespace Xamarin.Forms.Platform.WPF
 				return;
 
 			_disposed = true;
-			
+
 			if (Control != null)
 			{
 				//Console.WriteLine("Dispose : " + this.Control.GetType());
@@ -272,7 +286,7 @@ namespace Xamarin.Forms.Platform.WPF
 				Element.PropertyChanged -= OnElementPropertyChanged;
 				Element.FocusChangeRequested -= OnModelFocusChangeRequested;
 			}
-			
+
 			Tracker = null;
 		}
 	}
