@@ -7,7 +7,7 @@ using System.Windows.Media;
 
 namespace Xamarin.Forms.Platform.WPF
 { 
-	internal static class ColorExtensions
+	public static class ColorExtensions
 	{
 		public static Brush ToBrush(this Color color)
 		{
