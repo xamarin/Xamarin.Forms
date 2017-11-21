@@ -5,11 +5,6 @@ namespace Xamarin.Forms
 	{
 		public static readonly BindableProperty ContentProperty = BindableProperty.Create(nameof(Content), typeof(View), typeof(ContentView), null, propertyChanged: TemplateUtilities.OnContentChanged);
 
-		public ContentView()
-		{
-			Resources = new ResourceDictionary();
-		}
-
 		public View Content
 		{
 			get { return (View)GetValue(ContentProperty); }
