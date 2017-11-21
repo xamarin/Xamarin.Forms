@@ -35,7 +35,8 @@ namespace Xamarin.Forms.Platform.WPF
 
 		void UpdateColor()
 		{
-			Control.UpdateDependencyColor(WRectangle.FillProperty, Element.Color);
+			Color color = Element.Color != Color.Default ? Element.Color : Element.BackgroundColor;
+			Control.UpdateDependencyColor(WRectangle.FillProperty, color);
 		}
 	}
 }
