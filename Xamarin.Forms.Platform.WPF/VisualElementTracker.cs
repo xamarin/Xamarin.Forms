@@ -47,7 +47,7 @@ namespace Xamarin.Forms.Platform.WPF
 
 				if (_control != null)
 				{
-					_control.PreviewMouseLeftButtonDown -= PreviewMouseLeftButtonDown;
+					_control.MouseLeftButtonUp -= MouseLeftButtonUp;
 					_control.ManipulationDelta -= OnManipulationDelta;
 					_control.ManipulationCompleted -= OnManipulationCompleted;
 				}
@@ -56,7 +56,7 @@ namespace Xamarin.Forms.Platform.WPF
 
 				if (_control != null)
 				{
-					_control.PreviewMouseLeftButtonDown += PreviewMouseLeftButtonDown;
+					_control.MouseLeftButtonUp += MouseLeftButtonUp;
 					_control.ManipulationDelta += OnManipulationDelta;
 					_control.ManipulationCompleted += OnManipulationCompleted;
 				}
@@ -90,16 +90,14 @@ namespace Xamarin.Forms.Platform.WPF
 			}
 		}
 
-		private void PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+		private void MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
 		{
 			var fe = (sender as FrameworkElement);
 			var vr = (sender as DefaultViewRenderer)?.Element;
 
 			if ((fe != null && !fe.IsEnabled) || (vr != null && !vr.IsEnabled))
-			{
-				e.Handled = true;
 				return;
-			}
+
 			e.Handled = ElementOnTap(e.ClickCount);
 		}
 		
@@ -317,7 +315,7 @@ namespace Xamarin.Forms.Platform.WPF
 
 			if (_control != null)
 			{
-				_control.PreviewMouseLeftButtonDown -= PreviewMouseLeftButtonDown;
+				_control.MouseLeftButtonUp -= MouseLeftButtonUp;
 				_control.ManipulationDelta -= OnManipulationDelta;
 				_control.ManipulationCompleted -= OnManipulationCompleted;
 			}
