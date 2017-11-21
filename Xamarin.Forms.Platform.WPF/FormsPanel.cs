@@ -13,7 +13,7 @@ namespace Xamarin.Forms.Platform.WPF
 		IElementController ElementController => Element as IElementController;
 
 		public Layout Element { get; private set; }
-		
+
 		public FormsPanel(Layout element)
 		{
 			Element = element;
@@ -21,17 +21,17 @@ namespace Xamarin.Forms.Platform.WPF
 
 		protected override System.Windows.Size ArrangeOverride(System.Windows.Size finalSize)
 		{
-			if (Element == null || finalSize.Width * finalSize.Height == 0)
+			if (Element == null)
 				return finalSize;
 
 			Element.IsInNativeLayout = true;
-			
+
 			for (var i = 0; i < ElementController.LogicalChildren.Count; i++)
 			{
 				var child = ElementController.LogicalChildren[i] as VisualElement;
 				if (child == null)
 					continue;
-				
+
 				IVisualElementRenderer renderer = Platform.GetRenderer(child);
 				if (renderer == null)
 					continue;
@@ -65,8 +65,8 @@ namespace Xamarin.Forms.Platform.WPF
 
 				if (control.ActualWidth != child.Width || control.ActualHeight != child.Height)
 				{
-					double width = child.Width == -1 ? ActualWidth : child.Width;
-					double height = child.Height == -1 ? ActualHeight : child.Height;
+					double width = child.Width <= -1 ? ActualWidth : child.Width;
+					double height = child.Height <= -1 ? ActualHeight : child.Height;
 					control.Measure(new System.Windows.Size(width, height));
 				}
 			}
@@ -82,6 +82,11 @@ namespace Xamarin.Forms.Platform.WPF
 				result = availableSize;
 			}
 			Element.IsInNativeLayout = false;
+
+			if (Double.IsPositiveInfinity(result.Height))
+				result.Height = 0.0;
+			if (Double.IsPositiveInfinity(result.Width))
+				result.Width = 0.0;
 
 			return result;
 		}
