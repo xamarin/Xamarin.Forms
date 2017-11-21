@@ -14,6 +14,7 @@ namespace Xamarin.Forms.Platform.WPF
 	public class LayoutRenderer : ViewRenderer<Layout, FormsPanel>
 	{
 		IElementController ElementController => Element as IElementController;
+		bool _isZChanged;
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Layout> e)
 		{
@@ -37,7 +38,7 @@ namespace Xamarin.Forms.Platform.WPF
 
 			base.OnElementChanged(e);
 		}
-		
+
 		void HandleChildAdded(object sender, ElementEventArgs e)
 		{
 			UiHelper.ExecuteInUiThread(() =>
@@ -50,13 +51,15 @@ namespace Xamarin.Forms.Platform.WPF
 				IVisualElementRenderer renderer;
 				Platform.SetRenderer(view, renderer = Platform.CreateRenderer(view));
 				Control.Children.Add(renderer.GetNativeElement());
-				EnsureZIndex();
+				if (_isZChanged)
+					EnsureZIndex();
 			});
 		}
 
 		void HandleChildRemoved(object sender, ElementEventArgs e)
 		{
-			UiHelper.ExecuteInUiThread(() => {
+			UiHelper.ExecuteInUiThread(() =>
+			{
 				var view = e.Element as VisualElement;
 
 				if (view == null)
@@ -67,7 +70,8 @@ namespace Xamarin.Forms.Platform.WPF
 				{
 					Control.Children.Remove(native);
 					view.Cleanup();
-					EnsureZIndex();
+					if (_isZChanged)
+						EnsureZIndex();
 				}
 			});
 		}
@@ -79,21 +83,34 @@ namespace Xamarin.Forms.Platform.WPF
 
 		void EnsureZIndex()
 		{
-			for (var index = 0; index < ElementController.LogicalChildren.Count; index++)
+			if (ElementController.LogicalChildren.Count == 0)
+				return;
+
+			for (var z = 0; z < ElementController.LogicalChildren.Count; z++)
 			{
-				var child = (VisualElement)ElementController.LogicalChildren[index];
-				IVisualElementRenderer r = Platform.GetRenderer(child);
-				if (r == null)
+				var child = ElementController.LogicalChildren[z] as VisualElement;
+				if (child == null)
 					continue;
 
-				Canvas.SetZIndex(r.GetNativeElement(), index + 1);
+				IVisualElementRenderer childRenderer = Platform.GetRenderer(child);
+
+				if (childRenderer == null)
+					continue;
+
+				if (Canvas.GetZIndex(childRenderer.GetNativeElement()) != (z + 1))
+				{
+					if (!_isZChanged)
+						_isZChanged = true;
+
+					Canvas.SetZIndex(childRenderer.GetNativeElement(), z + 1);
+				}
 			}
 		}
-		
+
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);
-			
+
 			if (e.PropertyName == Layout.IsClippedToBoundsProperty.PropertyName)
 				UpdateClipToBounds();
 		}
@@ -108,7 +125,7 @@ namespace Xamarin.Forms.Platform.WPF
 			base.UpdateNativeWidget();
 			UpdateClipToBounds();
 		}
-		
+
 		void UpdateClipToBounds()
 		{
 			Control.Clip = null;
