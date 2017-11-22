@@ -319,6 +319,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		public static IVisualElementRenderer CreateRendererWithContext(VisualElement element, Context context)
 		{
+			// This is an interim method to allow public access to CreateRenderer(element, context), which we 
+			// can't make public yet because it will break the previewer
 			return CreateRenderer(element, context);
 		}
 
