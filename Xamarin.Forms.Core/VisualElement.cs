@@ -450,11 +450,8 @@ namespace Xamarin.Forms
 			get {
 				if (_resources != null)
 					return _resources;
-				OnPropertyChanging();
 				_resources = new ResourceDictionary();
 				((IResourceDictionary)_resources).ValuesChanged += OnResourcesChanged;
-				OnResourcesChanged(_resources);
-				OnPropertyChanged();
 				return _resources;
 			}
 			set
