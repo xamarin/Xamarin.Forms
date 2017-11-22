@@ -17,6 +17,7 @@ using Android.Widget;
 using Xamarin.Forms.Platform.Android.AppCompat;
 using FragmentManager = Android.Support.V4.App.FragmentManager;
 using Xamarin.Forms.Internals;
+using ALog = Android.Util.Log;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -53,8 +54,6 @@ namespace Xamarin.Forms.Platform.Android
 		NavigationModel _navModel = new NavigationModel();
 
 		readonly bool _embedded;
-
-		
 
 		internal Platform(Context context, bool embedded)
 		{
@@ -305,7 +304,8 @@ namespace Xamarin.Forms.Platform.Android
 		[Obsolete("CreateRenderer(VisualElement) is obsolete as of version 2.5. Please use CreateRenderer(VisualElement, Context) instead.")]
 		public static IVisualElementRenderer CreateRenderer(VisualElement element)
 		{
-			return CreateRenderer(element, Forms.Context);
+			// If there's a previewer context set, use that when created 
+			return CreateRenderer(element, GetPreviewerContext(element) ?? Forms.Context);
 		}
 
 		internal static IVisualElementRenderer CreateRenderer(VisualElement element, Context context)
@@ -1075,6 +1075,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		#region Previewer Stuff
 		
+		internal static readonly BindableProperty PageContextProperty = 
+			BindableProperty.CreateAttached("PageContext", typeof(Context), typeof(Platform), null);
+
 		internal Platform(Context context) : this(context, false)
 		{
 			// we have this overload instead of using a default value for 
@@ -1083,9 +1086,23 @@ namespace Xamarin.Forms.Platform.Android
 
 		internal static void SetPageContext(BindableObject bindable, Context context)		
  		{
-			// We need to keep this around for now because the previewer calls it
+			// Set a context for this page and its child controls
+			bindable.SetValue(PageContextProperty, context);
 		}
 		
+		static Context GetPreviewerContext(Element element)
+		{
+			// Walk up the tree and find the Page this element is hosted in
+			Element parent = element;
+			while (!Application.IsApplicationOrNull(parent.RealParent))
+			{
+				parent = parent.RealParent;
+			}
+
+			// If a page is found, return the PageContext set by the previewer for that page (if any)
+			return (parent as Page)?.GetValue(PageContextProperty) as Context;
+		}
+
 		#endregion
 
 		internal class DefaultRenderer : VisualElementRenderer<View>
