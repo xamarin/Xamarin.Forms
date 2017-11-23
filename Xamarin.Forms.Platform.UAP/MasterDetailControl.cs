@@ -61,9 +61,9 @@ namespace Xamarin.Forms.Platform.UWP
 		FrameworkElement _masterPresenter;
 		FrameworkElement _detailPresenter;
 		SplitView _split;
-	    ToolbarPlacement _toolbarPlacement;
+	    	ToolbarPlacement _toolbarPlacement;
 
-	    public MasterDetailControl()
+	    	public MasterDetailControl()
 		{
 			DefaultStyleKey = typeof(MasterDetailControl);
 
@@ -181,17 +181,17 @@ namespace Xamarin.Forms.Platform.UWP
 			set { SetValue(CollapseStyleProperty, value); }
 		}
 
-	    public ToolbarPlacement ToolbarPlacement
-	    {
-	        get { return _toolbarPlacement; }
-	        set
-	        {
-	            _toolbarPlacement = value;
-	            _toolbarPlacementHelper.UpdateToolbarPlacement();
-	        }
-	    }
+	    	public ToolbarPlacement ToolbarPlacement
+	    	{
+			get { return _toolbarPlacement; }
+			set
+			{
+			    _toolbarPlacement = value;
+			    _toolbarPlacementHelper.UpdateToolbarPlacement();
+			}
+	    	}
 
-	    public Visibility ContentTogglePaneButtonVisibility
+	    	public Visibility ContentTogglePaneButtonVisibility
 		{
 			get { return (Visibility)GetValue(ContentTogglePaneButtonVisibilityProperty); }
 			set { SetValue(ContentTogglePaneButtonVisibilityProperty, value); }
