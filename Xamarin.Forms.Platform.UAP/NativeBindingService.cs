@@ -1,4 +1,5 @@
-﻿using Windows.UI.Xaml;
+﻿using System.Reflection;
+using Windows.UI.Xaml;
 using Xamarin.Forms.Xaml.Internals;
 
 
