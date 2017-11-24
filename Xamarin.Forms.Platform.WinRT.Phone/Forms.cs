@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using Windows.ApplicationModel.Activation;
 using Windows.Phone.UI.Input;
@@ -36,7 +36,10 @@ namespace Xamarin.Forms
 			Registrar.RegisterAll (new[] {
 				typeof (ExportRendererAttribute),
 				typeof (ExportCellAttribute),
-				typeof (ExportImageSourceHandlerAttribute)
+				typeof (ExportImageSourceHandlerAttribute),
+				typeof (Platform.WinRT.ExportRendererAttribute),
+				typeof (Platform.WinRT.ExportCellAttribute),
+				typeof (Platform.WinRT.ExportImageSourceHandlerAttribute)
 			});
 
 			MessagingCenter.Subscribe<Page, bool> (Device.PlatformServices, Page.BusySetSignalName, OnPageBusy);

@@ -14,10 +14,10 @@ using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
 #if WINDOWS_UWP
 using Xamarin.Forms.Platform.UWP;
-
+using PlatformNamespace = Xamarin.Forms.Platform.UWP;
 #else
 using Xamarin.Forms.Platform.WinRT;
-
+using PlatformNamespace = Xamarin.Forms.Platform.WinRT;
 #endif
 
 namespace Xamarin.Forms
@@ -76,7 +76,14 @@ namespace Xamarin.Forms
 			Registrar.ExtraAssemblies = rendererAssemblies?.ToArray();
 #endif
 
-			Registrar.RegisterAll(new[] { typeof(ExportRendererAttribute), typeof(ExportCellAttribute), typeof(ExportImageSourceHandlerAttribute) });
+			Registrar.RegisterAll(new[] {
+				typeof (ExportRendererAttribute),
+				typeof (ExportCellAttribute),
+				typeof (ExportImageSourceHandlerAttribute),
+				typeof (PlatformNamespace::ExportRendererAttribute),
+				typeof (PlatformNamespace::ExportCellAttribute),
+				typeof (PlatformNamespace::ExportImageSourceHandlerAttribute)
+			});
 
 			IsInitialized = true;
 			s_state = launchActivatedEventArgs.PreviousExecutionState;
