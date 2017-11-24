@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using Xamarin.Forms.Internals;
 
+// touch
 namespace Xamarin.Forms.Platform.Android
 {
 	internal class PanGestureHandler

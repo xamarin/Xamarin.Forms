@@ -8,6 +8,7 @@ using UIKit;
 using RectangleF = CoreGraphics.CGRect;
 using Xamarin.Forms.Internals;
 
+// touch
 namespace Xamarin.Forms.Platform.iOS
 {
 	public class Platform : BindableObject, IPlatform, INavigation, IDisposable
