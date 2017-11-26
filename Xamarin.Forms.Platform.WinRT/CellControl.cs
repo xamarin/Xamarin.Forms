@@ -45,6 +45,11 @@ namespace Xamarin.Forms.Platform.WinRT
 			{
 				if (Cell != null)
 					Cell.SendDisappearing();
+//disconnect Forms versions
+				Xamarin.Forms.ViewCell XCell = Cell as Xamarin.Forms.ViewCell;
+				if (XCell != null)
+					XCell.Parent = null; //disconnect from parent view
+				
 			};
 
 			_propertyChangedHandler = OnCellPropertyChanged;
@@ -250,6 +255,10 @@ namespace Xamarin.Forms.Platform.WinRT
 				cell.SetIsGroupHeader<ItemsView<Cell>, Cell>(isGroupHeader);
 			}
 
+		//disconnect Forms versions during scrolling operations
+				Xamarin.Forms.ViewCell VCell = Cell as Xamarin.Forms.ViewCell;
+				if (VCell != null)
+					VCell.Parent = null; //disconnect from parent view
 			Cell = cell;
 		}
 
