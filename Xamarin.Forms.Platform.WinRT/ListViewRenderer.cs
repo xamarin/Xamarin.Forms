@@ -88,6 +88,12 @@ namespace Xamarin.Forms.Platform.WinRT
 				// WinRT throws an exception if you set ItemsSource directly to a CVS, so bind it.
 				List.DataContext = new CollectionViewSource { Source = Element.ItemsSource, IsSourceGrouped = Element.IsGroupingEnabled };
 
+				// This is a bit of a hack around the fact that SetupContent is not being called on the initial items
+				// in the ListView; iterating on each of the TemplatedItems gets around this as it then forces
+				// GetOrCreateContent to be called.
+				TemplatedItemsView.TemplatedItems.CollectionChanged += OnTemplatedItemsCollectionChanged;
+				foreach (var item in TemplatedItemsView.TemplatedItems) { }
+
 #if !WINDOWS_UWP
 				var selected = Element.SelectedItem;
 				if (selected != null)
@@ -102,6 +108,12 @@ namespace Xamarin.Forms.Platform.WinRT
 			}
 		}
 
+		void OnTemplatedItemsCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		{
+			// Performing a similar iteration to call SetupContent
+			foreach (var item in TemplatedItemsView.TemplatedItems) { }
+		}
+		
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);
@@ -156,6 +168,9 @@ namespace Xamarin.Forms.Platform.WinRT
 					List.ItemClick -= OnListItemClicked;
 				}
 				List.SelectionChanged -= OnControlSelectionChanged;
+
+				if (TemplatedItemsView.TemplatedItems != null)
+					TemplatedItemsView.TemplatedItems.CollectionChanged -= OnTemplatedItemsCollectionChanged;
 
 				List.DataContext = null;
 				List = null;
