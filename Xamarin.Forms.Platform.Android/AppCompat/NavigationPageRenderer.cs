@@ -129,7 +129,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			{
 				_disposed = true;
 
-
 				if (_toolbarTracker != null)
 				{
 					_toolbarTracker.CollectionChanged -= ToolbarTrackerOnCollectionChanged;
