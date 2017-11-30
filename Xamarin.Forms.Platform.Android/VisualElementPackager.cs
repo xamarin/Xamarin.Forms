@@ -81,23 +81,26 @@ namespace Xamarin.Forms.Platform.Android
 			var reference = Guid.NewGuid().ToString();
 			Performance.Start(reference);
 
-			if (CompressedLayout.GetIsHeadless(view)) {
+			if (CompressedLayout.GetIsHeadless(view))
+			{
 				var packager = new VisualElementPackager(_renderer, view);
 				view.IsPlatformEnabled = true;
 				packager.Load();
-			} else {
+			}
+			else
+			{
 				if (_childViews == null)
 					_childViews = new List<IVisualElementRenderer>();
 
-			IVisualElementRenderer renderer = oldRenderer;
-			if (pool != null)
-				renderer = pool.GetFreeRenderer(view);
-			if (renderer == null)
-			{
-				Performance.Start(reference, "New renderer");
-				renderer = Platform.CreateRenderer(view);
-				Performance.Stop(reference, "New renderer");
-			}
+				IVisualElementRenderer renderer = oldRenderer;
+				if (pool != null)
+					renderer = pool.GetFreeRenderer(view);
+				if (renderer == null)
+				{
+					Performance.Start(reference, "New renderer");
+					renderer = Platform.CreateRenderer(view, _renderer.View.Context);
+					Performance.Stop(reference, "New renderer");
+				}
 
 				if (renderer == oldRenderer)
 				{
@@ -105,21 +108,21 @@ namespace Xamarin.Forms.Platform.Android
 					renderer.SetElement(view);
 				}
 
-			Performance.Start(reference, "Set renderer");
-			Platform.SetRenderer(view, renderer);
-			Performance.Stop(reference, "Set renderer");
+				Performance.Start(reference, "Set renderer");
+				Platform.SetRenderer(view, renderer);
+				Performance.Stop(reference, "Set renderer");
 
-			Performance.Start(reference, "Add view");
-			if (!sameChildren)
-			{
-				(_renderer.View as ViewGroup)?.AddView(renderer.View);
-				_childViews.Add(renderer);
+				Performance.Start(reference, "Add view");
+				if (!sameChildren)
+				{
+					(_renderer.View as ViewGroup)?.AddView(renderer.View);
+					_childViews.Add(renderer);
+				}
+				Performance.Stop(reference, "Add view");
+
+				Performance.Stop(reference);
 			}
-			Performance.Stop(reference, "Add view");
-
-			Performance.Stop(reference);
 		}
-
 		void EnsureChildOrder()
 		{
 			for (var i = 0; i < ElementController.LogicalChildren.Count; i++)
@@ -246,3 +249,4 @@ namespace Xamarin.Forms.Platform.Android
 		}
 	}
 }
+

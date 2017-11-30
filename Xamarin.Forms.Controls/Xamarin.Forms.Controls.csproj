@@ -31,6 +31,8 @@
 
   <ItemGroup>
     <EmbeddedResource Include="GalleryPages\crimson.jpg" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
+    <PackageReference Include="Xam.Plugin.DeviceInfo" Version="3.0.2" />
     <EmbeddedResource Update="GalleryPages\XamlPage.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
