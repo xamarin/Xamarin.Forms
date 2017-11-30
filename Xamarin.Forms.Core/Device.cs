@@ -9,26 +9,14 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-<<<<<<< HEAD
 	public static class Device
 	{
 		public const string iOS = "iOS";
 		public const string Android = "Android";
-		public const string WinPhone = "WinPhone";
 		public const string UWP = "UWP";
-		public const string WinRT = "WinRT";
 		public const string macOS = "macOS";
 		public const string GTK = "GTK";
 		public const string WPF = "WPF";
-=======
-    public static class Device
-    {
-        public const string iOS = "iOS";
-        public const string Android = "Android";
-        public const string UWP = "UWP";
-        public const string macOS = "macOS";
-        public const string GTK = "GTK";
->>>>>>> master
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static DeviceInfo info;
@@ -45,7 +33,6 @@ namespace Xamarin.Forms
 
 		[Obsolete("TargetPlatform is obsolete as of version 2.3.4. Please use RuntimePlatform instead.")]
 #pragma warning disable 0618
-<<<<<<< HEAD
 		public static TargetPlatform OS
 		{
 			get
@@ -55,7 +42,7 @@ namespace Xamarin.Forms
 					return platform;
 
 				// In the old TargetPlatform, there was no distinction between WinRT/UWP
-				if (RuntimePlatform == UWP || RuntimePlatform == WinRT)
+				if (RuntimePlatform == UWP)
 				{
 					return TargetPlatform.Windows;
 				}
@@ -63,25 +50,6 @@ namespace Xamarin.Forms
 				return TargetPlatform.Other;
 			}
 		}
-=======
-        public static TargetPlatform OS
-        {
-            get
-            {
-                TargetPlatform platform;
-                if (Enum.TryParse(RuntimePlatform, out platform))
-                    return platform;
-
-                // In the old TargetPlatform, there was no distinction between WinRT/UWP
-                if (RuntimePlatform == UWP)
-                {
-                    return TargetPlatform.Windows;
-                }
-
-                return TargetPlatform.Other;
-            }
-        }
->>>>>>> master
 #pragma warning restore 0618
 
 		public static string RuntimePlatform => PlatformServices.RuntimePlatform;
