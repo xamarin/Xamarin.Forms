@@ -1,7 +1,12 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<UsingTask TaskName="Xamarin.Forms.Build.Tasks.XamlGTask" AssemblyFile="Xamarin.Forms.Build.Tasks.dll"/>
-	<UsingTask TaskName="Xamarin.Forms.Build.Tasks.XamlCTask" AssemblyFile="Xamarin.Forms.Build.Tasks.dll"/>
-	<UsingTask TaskName="Xamarin.Forms.Build.Tasks.GetTasksAbi" AssemblyFile="Xamarin.Forms.Build.Tasks.dll"/>
+    
+	<UsingTask TaskName="Xamarin.Forms.Build.Tasks.XamlGTask" AssemblyFile="Xamarin.Forms.Build.Tasks.dll" Condition="'$(MSBuildRuntimeType)' != 'Core'" />
+	<UsingTask TaskName="Xamarin.Forms.Build.Tasks.XamlCTask" AssemblyFile="Xamarin.Forms.Build.Tasks.dll" Condition="'$(MSBuildRuntimeType)' != 'Core'" />
+	<UsingTask TaskName="Xamarin.Forms.Build.Tasks.GetTasksAbi" AssemblyFile="Xamarin.Forms.Build.Tasks.dll" Condition="'$(MSBuildRuntimeType)' != 'Core'" />
+
+	<UsingTask TaskName="Xamarin.Forms.Build.Tasks.XamlGTask" AssemblyFile="core\Xamarin.Forms.Build.Tasks.dll" Condition="'$(MSBuildRuntimeType)' == 'Core'" />
+	<UsingTask TaskName="Xamarin.Forms.Build.Tasks.XamlCTask" AssemblyFile="core\Xamarin.Forms.Build.Tasks.dll" Condition="'$(MSBuildRuntimeType)' == 'Core'" />
+	<UsingTask TaskName="Xamarin.Forms.Build.Tasks.GetTasksAbi" AssemblyFile="core\Xamarin.Forms.Build.Tasks.dll" Condition="'$(MSBuildRuntimeType)' == 'Core'" />
 
 	<PropertyGroup>
 		<EnableDefaultXamlItems Condition="'$(EnableDefaultXamlItems)'==''">True</EnableDefaultXamlItems>
@@ -18,7 +23,7 @@
 	<PropertyGroup>
 		<_XFTargetsImportedAgain Condition="'$(_XFTargetsImported)'=='True'">True</_XFTargetsImportedAgain>
 		<_XFTargetsImported>True</_XFTargetsImported>
-		<IsXBuild Condition="'$(MSBuildRuntimeVersion)' == ''">true</IsXBuild>
+		<IsXBuild Condition="'$(MSBuildRuntimeVersion)' == '' and '$(MSBuildRuntimeType)' != 'Core'">true</IsXBuild>
 		<IsXBuild Condition="'$(MSBuildRuntimeVersion)' != ''">false</IsXBuild>
 	</PropertyGroup>
 
