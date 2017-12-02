@@ -11,6 +11,13 @@ using WVisualStateManager = Windows.UI.Xaml.VisualStateManager;
 
 namespace Xamarin.Forms.Platform.UWP
 {
+	internal enum ColorHandling
+	{
+		None,
+		DeferToNativeVsm,
+		FormsVisualStateManager
+	}
+
 	/// <summary>
 	///     An intermediate class for injecting bindings for things the default
 	///     textbox doesn't allow us to bind/modify
@@ -54,6 +61,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			TextChanged += OnTextChanged;
 			SelectionChanged += OnSelectionChanged;
+			IsEnabledChanged += OnIsEnabledChanged;
 		}
 
 		public Brush BackgroundFocusBrush
@@ -73,6 +81,8 @@ namespace Xamarin.Forms.Platform.UWP
 			get { return (bool)GetValue(IsPasswordProperty); }
 			set { SetValue(IsPasswordProperty, value); }
 		}
+
+		internal ColorHandling ColorHandling { get; set; }
 
 		public Brush PlaceholderForegroundBrush
 		{
@@ -377,6 +387,19 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 
 			WVisualStateManager.GoToState(control, "Focused", false);
+
+			// TODO hartez 2017/12/01 18:10:53 Take a look at the ColorHandling property and react accordingly	
+			// DeferToNativeVSM is what's happening above
+			// None would be that we ignore focus property changing entirely
+			// XFVSM would be that instead of WVisualStateManager.GoToState, we use ours
+		}
+
+		void OnIsEnabledChanged(object sender, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+		{
+			// TODO hartez 2017/12/01 18:09:13 I think we're doing DeferToNativeVSM for this right now
+			// We need the version where we ignore the VSM and just set the color explicitly (None)
+			// Need to think about this with a clearer head
+
 		}
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using Windows.System;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
@@ -29,6 +30,22 @@ namespace Xamarin.Forms.Platform.UWP
 					SetNativeControl(textBox);
 
 					// TODO hartez 2017/02/15 15:59:04 This is where we check the PlatformSpecific for LegacyColorBehavior
+					// TODO hartez 6:07:26 PM Clean this up
+					if (Xamarin.Forms.VisualStateManager.GetVisualStateGroups(e.NewElement) == null && e.NewElement.OnThisPlatform().DisableLegacyColorModeProperty())
+					{
+						// No Forms VisualStates and the user doesn't want our legacy color handling
+						textBox.ColorHandling = ColorHandling.None;
+					}
+					else if (Xamarin.Forms.VisualStateManager.GetVisualStateGroups(e.NewElement) != null)
+					{
+						// Forms VisualStates are present, listen to them
+						textBox.ColorHandling = ColorHandling.FormsVisualStateManager;
+					}
+					else
+					{
+						// Okay, use our legacy color handling
+						textBox.ColorHandling = ColorHandling.DeferToNativeVsm;
+					}
 
 					textBox.TextChanged += OnNativeTextChanged;
 					textBox.KeyUp += TextBoxOnKeyUp;
