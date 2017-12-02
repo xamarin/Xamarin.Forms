@@ -14,8 +14,9 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public class EntryRenderer : ViewRenderer<Entry, FormsEditText>, ITextWatcher, TextView.IOnEditorActionListener
 	{
-		ColorStateList _hintTextColorDefault;
-		ColorStateList _textColorDefault;
+		TextColorSwitcher _hintColorSwitcher;
+		TextColorSwitcher _textColorSwitcher;
+		bool _useLegacyColorManagement;
 		bool _disposed;
 
 		public EntryRenderer(Context context) : base(context)
@@ -76,6 +77,12 @@ namespace Xamarin.Forms.Platform.Android
 				textView.AddTextChangedListener(this);
 				textView.SetOnEditorActionListener(this);
 				textView.OnKeyboardBackPressed += OnKeyboardBackPressed;
+
+				_textColorSwitcher = new TextColorSwitcher(textView.TextColors);
+				_hintColorSwitcher = new TextColorSwitcher(textView.HintTextColors);
+
+				_useLegacyColorManagement = VisualStateManager.GetVisualStateGroups(e.NewElement) == null;
+
 				SetNativeControl(textView);
 			}
 
@@ -162,27 +169,13 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateColor()
 		{
-			if (Element.TextColor.IsDefault)
+			if (_useLegacyColorManagement)
 			{
-				if (_textColorDefault == null)
-				{
-					// This control has always had the default colors; nothing to update
-					return;
-				}
-
-				// This control is being set back to the default colors
-				Control.SetTextColor(_textColorDefault);
+				_textColorSwitcher.UpdateTextColor(Control, Element.TextColor);
 			}
 			else
 			{
-				if (_textColorDefault == null)
-				{
-					// Keep track of the default colors so we can return to them later
-					// and so we can preserve the default disabled color
-					_textColorDefault = Control.TextColors;
-				}
-
-				Control.SetTextColor(Element.TextColor.ToAndroidPreserveDisabled(_textColorDefault));
+				_textColorSwitcher.UpdateTextColor(Control, Element.TextColor, preserveDisabled: false);
 			}
 		}
 
@@ -212,29 +205,13 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdatePlaceholderColor()
 		{
-			Color placeholderColor = Element.PlaceholderColor;
-
-			if (placeholderColor.IsDefault)
+			if (_useLegacyColorManagement)
 			{
-				if (_hintTextColorDefault == null)
-				{
-					// This control has always had the default colors; nothing to update
-					return;
-				}
-
-				// This control is being set back to the default colors
-				Control.SetHintTextColor(_hintTextColorDefault);
+				_hintColorSwitcher.UpdateTextColor(Control, Element.PlaceholderColor, Control.SetHintTextColor);
 			}
 			else
 			{
-				if (_hintTextColorDefault == null)
-				{
-					// Keep track of the default colors so we can return to them later
-					// and so we can preserve the default disabled color
-					_hintTextColorDefault = Control.HintTextColors;
-				}
-
-				Control.SetHintTextColor(placeholderColor.ToAndroidPreserveDisabled(_hintTextColorDefault));
+				_hintColorSwitcher.UpdateTextColor(Control, Element.PlaceholderColor, Control.SetHintTextColor, preserveDisabled: false);
 			}
 		}
 

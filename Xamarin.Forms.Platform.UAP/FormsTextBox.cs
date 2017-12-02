@@ -7,6 +7,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using WVisualStateManager = Windows.UI.Xaml.VisualStateManager;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -375,7 +376,7 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 			}
 
-			VisualStateManager.GoToState(control, "Focused", false);
+			WVisualStateManager.GoToState(control, "Focused", false);
 		}
 	}
 }

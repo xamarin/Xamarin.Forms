@@ -28,6 +28,8 @@ namespace Xamarin.Forms.Platform.UWP
 					var textBox = new FormsTextBox { Style = Windows.UI.Xaml.Application.Current.Resources["FormsTextBoxStyle"] as Windows.UI.Xaml.Style };
 					SetNativeControl(textBox);
 
+					// TODO hartez 2017/02/15 15:59:04 This is where we check the PlatformSpecific for LegacyColorBehavior
+
 					textBox.TextChanged += OnNativeTextChanged;
 					textBox.KeyUp += TextBoxOnKeyUp;
 				}

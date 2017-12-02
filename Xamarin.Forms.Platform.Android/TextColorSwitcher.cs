@@ -1,3 +1,4 @@
+using System;
 using Android.Content.Res;
 using Android.Widget;
 
@@ -19,22 +20,36 @@ namespace Xamarin.Forms.Platform.Android
 			_defaultTextColors = textColors;
 		}
 
-		public void UpdateTextColor(TextView control, Color color)
+		public void UpdateTextColor(TextView control, Color color, Action<ColorStateList> setColor = null, bool preserveDisabled = true)
 		{
 			if (color == _currentTextColor)
 				return;
 
+			if (setColor == null)
+			{
+				setColor = control.SetTextColor;
+			}
+
 			_currentTextColor = color;
 
 			if (color.IsDefault)
-				control.SetTextColor(_defaultTextColors);
+			{
+				setColor(_defaultTextColors);
+			}
 			else
 			{
-				// Set the new enabled state color, preserving the default disabled state color
-				int defaultDisabledColor = _defaultTextColors.GetColorForState(s_colorStates[1], color.ToAndroid());
-				control.SetTextColor(new ColorStateList(s_colorStates, new[] { color.ToAndroid().ToArgb(), defaultDisabledColor }));
+				if (preserveDisabled)
+				{
+					// Set the new enabled state color, preserving the default disabled state color
+					int defaultDisabledColor = _defaultTextColors.GetColorForState(s_colorStates[1], color.ToAndroid());
+					setColor(new ColorStateList(s_colorStates, new[] { color.ToAndroid().ToArgb(), defaultDisabledColor }));
+				}
+				else
+				{
+					var acolor = color.ToAndroid().ToArgb();
+					setColor(new ColorStateList(s_colorStates, new[] { acolor, acolor }));
+				}
 			}
 		}
-
 	}
 }

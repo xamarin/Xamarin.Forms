@@ -64,6 +64,8 @@ namespace Xamarin.Forms.Build.Tasks
 					return;
 			}
 
+			if (TrySetRuntimeName(propertyName, Context.Variables[(IElementNode)parentNode], node))
+				return;
 			if (skips.Contains(propertyName))
 				return;
 			if (parentNode is IElementNode && ((IElementNode)parentNode).SkipProperties.Contains (propertyName))
@@ -165,6 +167,21 @@ namespace Xamarin.Forms.Build.Tasks
 
 				var parentList = (ListNode)parentNode;
 				var parent = Context.Variables[((IElementNode)parentNode.Parent)];
+
+				// See if this is an attached bindable property
+				XmlName bpName;
+				if (TryGetPropertyName(parentNode, parentNode.Parent, out bpName)) {
+					// TODO hartez 2017/12/01 12:26:17 inline this ref	
+					bool attached; 
+					string name = bpName.LocalName;
+
+					var bindablePropertyRef = GetBindablePropertyReference(parent, parentList.XmlName.NamespaceURI, ref name, out attached, Context, node);
+
+					if (bindablePropertyRef != null && CanAddToAttachedProperty(bindablePropertyRef, attached, node, node, Context)) {
+						Context.IL.Append(AddValue(parent, bindablePropertyRef, node, node, Context));
+						return;
+					}
+				}
 
 				if (skips.Contains(parentList.XmlName))
 					return;
@@ -723,6 +740,10 @@ namespace Xamarin.Forms.Build.Tasks
 			if (CanSetValue(bpRef, attached, valueNode, iXmlLineInfo, context))
 				return SetValue(parent, bpRef, valueNode, iXmlLineInfo, context);
 
+			//If it's an attached BP that's also a collection, add to it
+			if (CanAddToAttachedProperty(bpRef, attached, valueNode, iXmlLineInfo, context))
+				return AddValue(parent, bpRef, valueNode, iXmlLineInfo, context).ToList();
+
 			//If it's a property, set it
 			if (CanSet(parent, localName, valueNode, context))
 				return Set(parent, localName, valueNode, iXmlLineInfo, context);
@@ -993,6 +1014,9 @@ namespace Xamarin.Forms.Build.Tasks
 
 		static bool CanSet(VariableDefinition parent, string localName, INode node, ILContext context)
 		{
+			if (IsSetterCollection(parent, localName, node, context))
+				return false;
+
 			var module = context.Body.Method.Module;
 			TypeReference declaringTypeReference;
 			var property = parent.VariableType.GetProperty(pd => pd.Name == localName, out declaringTypeReference);
@@ -1123,6 +1147,9 @@ namespace Xamarin.Forms.Build.Tasks
 
 		static bool CanAdd(VariableDefinition parent, XmlName propertyName, INode node, IXmlLineInfo lineInfo, ILContext context)
 		{
+			if (IsSetterCollection(parent, propertyName.LocalName, node, context))
+				return true;
+
 			var module = context.Body.Method.Module;
 			var localName = propertyName.LocalName;
 			bool attached;
@@ -1165,6 +1192,13 @@ namespace Xamarin.Forms.Build.Tasks
 
 		static IEnumerable<Instruction> Add(VariableDefinition parent, XmlName propertyName, INode node, IXmlLineInfo iXmlLineInfo, ILContext context)
 		{
+			if (IsSetterCollection(parent, propertyName.LocalName, node, context)) {
+				foreach (var instruction in AddToSetterCollection(parent, node, context))
+					yield return instruction;
+
+				yield break;
+			}
+
 			var module = context.Body.Method.Module;
 			var elementNode = node as IElementNode;
 			var vardef = context.Variables [elementNode];
@@ -1353,6 +1387,162 @@ namespace Xamarin.Forms.Build.Tasks
 			parentContext.IL.Emit(OpCodes.Callvirt, module.ImportReference(propertySetter));
 
 			loadTemplate.Body.Optimize();
+		}
+
+		bool TrySetRuntimeName(XmlName propertyName, VariableDefinition variableDefinition, ValueNode node)
+		{
+			if (propertyName != XmlName.xName)
+				return false;
+
+			var attributes = variableDefinition.VariableType.Resolve()
+				.CustomAttributes.Where(attribute => attribute.AttributeType.FullName == "Xamarin.Forms.RuntimeNamePropertyAttribute").ToList();
+
+			if (!attributes.Any())
+				return false;
+
+			var runTimeName = attributes[0].ConstructorArguments[0].Value as string;
+
+			if (string.IsNullOrEmpty(runTimeName)) 
+				return false;
+
+			Context.IL.Append(SetPropertyValue(variableDefinition, new XmlName("", runTimeName), node, Context, node));
+			return true;
+		}
+
+		static bool CanAddToAttachedProperty(FieldReference bpRef, bool attached, INode node, IXmlLineInfo iXmlLineInfo, ILContext context)
+		{
+			if (!attached || bpRef == null)
+				return false;
+
+			var elementNode = node as IElementNode;
+			if (elementNode == null)
+				return false;
+
+			VariableDefinition varValue;
+			if (!context.Variables.TryGetValue(elementNode, out varValue))
+				return false;
+
+			var module = context.Body.Method.Module;
+			var bpTypeRef = bpRef.GetBindablePropertyType(iXmlLineInfo, module);
+
+			// Is this a generic type ?
+			var generic = bpTypeRef as GenericInstanceType;
+
+			// With a single generic argument?
+			if (generic?.GenericArguments.Count != 1)
+				return false;
+			
+			// Is the generic argument assignable from this value?
+			var genericType = generic.GenericArguments[0];
+			if (!varValue.VariableType.InheritsFromOrImplements(genericType))
+				return false;
+
+			// Does this type have an Add method?
+
+			var adderTuple = GetAdder(bpTypeRef, module);
+			if (adderTuple == null)
+				return false;
+
+			return true;
+		}
+
+		static IEnumerable<Instruction> AddValue(VariableDefinition parent, FieldReference bpRef, INode node, IXmlLineInfo iXmlLineInfo, ILContext context)
+		{
+			var init = typeof(CollectionExtensions).GetMethod("EnsureCollectionInitialized", new[] { typeof(BindableObject), typeof(BindableProperty) });
+			var elementNode = node as IElementNode;
+			var module = context.Body.Method.Module;
+			var bpTypeRef = bpRef.GetBindablePropertyType(iXmlLineInfo, module);
+			var varDef = context.Variables[elementNode];
+
+			// Find the Add method
+			var adderRef = GetAdderRef(GetAdder(bpTypeRef, module), module);
+
+			// Initialize the collection (if necessary)
+			yield return Instruction.Create(OpCodes.Ldloc, parent); // bindable
+			yield return Instruction.Create(OpCodes.Ldsfld, bpRef); // property
+			yield return Instruction.Create(OpCodes.Call, module.ImportReference(init));
+
+			// Then push the value to be added onto the stack and call the adder
+			yield return Instruction.Create(OpCodes.Ldloc, varDef);
+			yield return Instruction.Create(OpCodes.Callvirt, adderRef);
+
+			if (adderRef.ReturnType.FullName != "System.Void")
+				yield return Instruction.Create(OpCodes.Pop);
+		}
+
+			static bool IsSetterCollection(VariableDefinition parent, string localName, INode node, ILContext context)
+		{
+			if (localName != "Value" || parent.VariableType.FullName != typeof(Setter).FullName)
+				return false;
+
+			var elementNode = node as IElementNode;
+			if (elementNode == null)
+				return false;
+
+			var vardef = context.Variables[elementNode];
+
+			var setterNode = node.Parent as IElementNode;
+			if (setterNode == null)
+				return false;
+
+			var module = context.Body.Method.Module;
+			var bpNode = (ValueNode)setterNode.Properties[new XmlName("", "Property")];
+			var bpRef = (new Core.XamlC.BindablePropertyConverter()).GetBindablePropertyFieldReference((string)bpNode.Value,
+				module, bpNode);
+			var bpTypeRef = bpRef.GetBindablePropertyType(setterNode as IXmlLineInfo, module);
+
+			// Is this a generic type with a single generic argument?
+			var generic = bpTypeRef as GenericInstanceType;
+			if (generic?.GenericArguments.Count != 1)
+				return false;
+
+			return vardef.VariableType.InheritsFromOrImplements(generic.GenericArguments[0]);
+		}
+
+		static IEnumerable<Instruction> AddToSetterCollection(VariableDefinition parent, INode node, ILContext context)
+		{
+			var module = context.Body.Method.Module;
+			var setterNode = node.Parent as IElementNode;
+			var bpNode = (ValueNode)setterNode.Properties[new XmlName("", "Property")];
+			var bpRef = (new Core.XamlC.BindablePropertyConverter()).GetBindablePropertyFieldReference((string)bpNode.Value,
+						module, bpNode);
+			var bpTypeRef = bpRef.GetBindablePropertyType(setterNode as IXmlLineInfo, module);
+			var init = typeof(CollectionExtensions).GetMethod("EnsureCollectionInitialized", new[] { typeof(Setter) });
+			var elementNode = node as IElementNode;
+			var vardef = context.Variables[elementNode];
+
+			// Get a reference to the Add method for the collection
+			var adderRef = GetAdderRef(GetAdder(bpTypeRef, module), module);
+
+			// Create a variable to store the collection
+			VariableDefinition collection = new VariableDefinition(module.ImportReference(bpTypeRef));
+			context.Body.Variables.Add(collection);
+
+			// Initialize the collection (if necessary)
+			yield return Instruction.Create(OpCodes.Ldloc, parent); 
+			yield return Instruction.Create(OpCodes.Call, module.ImportReference(init));
+
+			// Store the collection locally
+			yield return Instruction.Create(OpCodes.Stloc, collection);
+
+			// Add the item to the collection
+			yield return Instruction.Create(OpCodes.Ldloc, collection);
+			yield return Instruction.Create(OpCodes.Ldloc, vardef);
+			yield return Instruction.Create(OpCodes.Callvirt, adderRef);
+
+			if (adderRef.ReturnType.FullName != "System.Void") // clean up the stack if necessary
+				yield return Instruction.Create(OpCodes.Pop);
+		}
+
+		static Tuple<MethodDefinition, TypeReference> GetAdder(TypeReference bindablePropertyTypeReference, ModuleDefinition module)
+		{
+			return bindablePropertyTypeReference.GetMethods(definition => definition.Name == "Add" && definition.Parameters.Count == 1, module).FirstOrDefault();
+		}
+
+		static MethodReference GetAdderRef(Tuple<MethodDefinition, TypeReference> adder, ModuleDefinition module)
+		{
+			var adderRef = module.ImportReference(adder.Item1);
+			return module.ImportReference(adderRef.ResolveGenericParameters(adder.Item2, module));
 		}
 	}
 
