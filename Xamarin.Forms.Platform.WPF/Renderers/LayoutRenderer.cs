@@ -39,6 +39,12 @@ namespace Xamarin.Forms.Platform.WPF
 			base.OnElementChanged(e);
 		}
 
+		protected override void Appearing()
+		{
+			base.Appearing();
+			Element.Layout(new Rectangle(0, 0, Control.ActualWidth, Control.ActualHeight));
+		}
+
 		void HandleChildAdded(object sender, ElementEventArgs e)
 		{
 			UiHelper.ExecuteInUiThread(() =>
