@@ -96,9 +96,11 @@
 																		Storyboard.TargetName="HeaderContentPresenter">
 											<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledBaseLowBrush}" />
 										</ObjectAnimationUsingKeyFrames>
+										
+										<!-- TODO One of these next two is the thing you have to change to fix that the backgrounds don't get set for disable states -->
 										<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background"
 																		Storyboard.TargetName="BackgroundElement">
-											<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledTransparentBrush}" />
+											<DiscreteObjectKeyFrame KeyTime="0" Value="{Binding Background, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
 										</ObjectAnimationUsingKeyFrames>
 										<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background" Storyboard.TargetName="BorderElement">
 											<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlBackgroundBaseLowBrush}" />

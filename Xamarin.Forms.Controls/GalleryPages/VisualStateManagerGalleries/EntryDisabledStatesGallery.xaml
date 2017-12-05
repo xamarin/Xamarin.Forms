@@ -2,13 +2,13 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
 			 xmlns:windowsSpecific="clr-namespace:Xamarin.Forms.PlatformConfiguration.WindowsSpecific;assembly=Xamarin.Forms.Core"
+             xmlns:androidSpecific="clr-namespace:Xamarin.Forms.PlatformConfiguration.AndroidSpecific;assembly=Xamarin.Forms.Core"
+             xmlns:iosSpecific="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core"
 			 x:Class="Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries.EntryDisabledStatesGallery"
 			 Title="Entry Disabled States Gallery">
 
 	<ContentPage.Resources>
 		<ResourceDictionary>
-			<Style TargetType="Entry" x:Key="PersistentColor">
-			</Style>
 
 			<Style TargetType="Entry" x:Key="CustomDisabledState">
 				<Setter Property="VisualStateManager.VisualStateGroups">
@@ -18,7 +18,7 @@
 							<VisualState.Setters>
 								<Setter Property="TextColor" Value="Red" />
 								<Setter Property="PlaceholderColor" Value="LightCoral" />
-								<Setter Property="BackgroundColor" Value="LightGray" />
+								<Setter Property="BackgroundColor" Value="Purple" />
 							</VisualState.Setters>
 						</VisualState>
 					</VisualStateGroup>
@@ -52,45 +52,36 @@
 	
 			-->
 
-
-			<!-- Default control, no VSG at all; should exhibit pre-VSM default behavior -->
+			<!-- Not using the VSM at all; should exhibit pre-VSM default behavior -->
 			<Label Text="The Entry below uses the current XF defaults; when IsEnabled is false, it uses the default native colors for the control. (Legacy Color Behavior)"/>
-			<Entry x:Name="Entry0" TextColor="Blue" PlaceholderColor="Green" Placeholder="placeholder" />
+			<Entry x:Name="Entry0" TextColor="Blue" PlaceholderColor="Green" Placeholder="placeholder" 
+				    BackgroundColor="Bisque" />
 			<Button Text="Toggle IsEnabled" x:Name="Button0" Clicked="Button0_OnClicked" />
-			
-			<!-- Legacy Color Behavior turned off by the PlatformSpecific; ignores states entirely and uses whatever colors are manually set for it -->
+
+			<!-- Legacy Color Behavior turned off by the PlatformSpecific; ignores states entirely and uses 
+			whatever colors are manually set for it -->
 			<Label Text="The Entry below has the Legacy Color Behavior disabled; it will stick with whatever colors are set, regardless of state"/>
-			<Label FontSize="9" Text="(Note that we never did disabled state color preservation on Windows, so this doesn't apply)"/>
 			<Entry x:Name="Entry5" TextColor="Blue" PlaceholderColor="Green" Placeholder="placeholder" 
-					windowsSpecific:Entry.IsLegacyColorModeEnabled="False"  />
+					BackgroundColor="Bisque"
+					windowsSpecific:Entry.IsLegacyColorModeEnabled="False"
+				   />
+				<!-- TODO hartez set this for ios and Android
 				
-				<!-- TODO hartez set this for ios and Android-->
-				
+						iosSpecific:Entry.IsLegacyColorModeEnabled="False"
+						androidSpecific:Entry.IsLegacyColorModeEnabled="False"
+				-->
 			<Button Text="Toggle IsEnabled" x:Name="Button5" Clicked="Button5_OnClicked" />
-
-			<!-- Empty VSG list (via style); the control should keep whatever colors are set no matter what the state -->
-			<Label Text="The Entry below has empty VisualStates (via a Style); whatever TextColor/PlaceholderTextColor are set to will persist even if IsEnabled is false." Margin="2,20,2,0"/>
-			<Label FontSize="9" Text="(Note that we never did disabled state color preservation on Windows, so this doesn't apply)"/>
-			<Entry x:Name="Entry1" Style="{StaticResource PersistentColor}" TextColor="MediumVioletRed" PlaceholderColor="MediumPurple" Placeholder="placeholder" />
-			<Button Text="Toggle IsEnabled" x:Name="Button1" Clicked="Button1_OnClicked" />
-
-			<!-- Empty VSG list (directly on the control); the control should keep whatever colors are set no matter what the state -->
-			<Label Text="The Entry below has has empty VisualStates (set directly in XAML); whatever TextColor/PlaceholderTextColor are set to will persist even if IsEnabled is false." Margin="0,20,0,0"/>
-			<Label FontSize="9" Text="(Note that we never did disabled state color preservation on Windows, so this doesn't apply)"/>
-			<Entry x:Name="Entry4" TextColor="MediumVioletRed" PlaceholderColor="MediumPurple" Placeholder="placeholder">
-				<VisualStateManager.VisualStateGroups>
-				</VisualStateManager.VisualStateGroups>
-			</Entry>
-			<Button Text="Toggle IsEnabled" x:Name="Button4" Clicked="Button4_OnClicked" />
-
-			<!-- Colors fully managed by the VSM -->
-			<Label Text="The Entry below uses VSM to customize the colors for enabled/disabled." Margin="0,20,0,0"/>
-			<Entry x:Name="Entry2" Style="{StaticResource CustomDisabledState}"  TextColor="Green" PlaceholderColor="LightGreen" Placeholder="placeholder" />
+			
+			<!-- Disabled colors fully managed by the VSM -->
+			<Label Text="The Entry below uses the VSM to customize the colors for the disabled state." />
+			<Entry x:Name="Entry2" Style="{StaticResource CustomDisabledState}" TextColor="Green" 
+				   PlaceholderColor="LightGreen" Placeholder="placeholder" BackgroundColor="Beige" />
 			<Button Text="Toggle IsEnabled" x:Name="Button2" Clicked="Button2_OnClicked" />
 
 			<!-- This section verifies that the default colors for an entry's text and placeholder are cached and can be reverted to -->
-			<Label Text="This Entry uses Color.Default for the intial text, and different colors when disabled."/>
-			<Entry x:Name="Entry3" Style="{StaticResource DefaultInInitialState}" TextColor="Default" PlaceholderColor="Default" Placeholder="placeholder" />
+			<Label Text="This Entry uses Color.Default for the intial text, and colors from the VSM when disabled."/>
+			<Entry x:Name="Entry3" Style="{StaticResource DefaultInInitialState}" TextColor="Default" 
+				   PlaceholderColor="Default" Placeholder="placeholder" BackgroundColor="Default" />
 			<Button Text="Toggle IsEnabled" x:Name="Button3" Clicked="Button3_OnClicked" />
 		</StackLayout>
 	</ScrollView>

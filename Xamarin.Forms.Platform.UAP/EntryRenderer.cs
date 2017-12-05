@@ -30,7 +30,10 @@ namespace Xamarin.Forms.Platform.UWP
 					textBox.TextChanged += OnNativeTextChanged;
 					textBox.KeyUp += TextBoxOnKeyUp;
 
-					textBox.UseFormsVsm = VisualStateManager.GetVisualStateGroups(Element) != null;
+					// If the Forms VisualStateManager is in play or the user wants to disable the Forms legacy
+					// color stuff, then the underlying textbox should just use the Forms VSM states
+					textBox.UseFormsVsm = VisualStateManager.GetVisualStateGroups(Element) != null 
+						|| !e.NewElement.OnThisPlatform().GetIsLegacyColorModeEnabled();
 				}
 
 				UpdateIsPassword();

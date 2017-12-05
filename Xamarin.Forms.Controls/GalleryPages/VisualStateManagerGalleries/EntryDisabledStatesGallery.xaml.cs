@@ -17,10 +17,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries
 			InitializeComponent();
 
 			Button0.Text = $"Toggle IsEnabled (Currently {Entry0.IsEnabled})";
-			Button1.Text = $"Toggle IsEnabled (Currently {Entry1.IsEnabled})";
 			Button2.Text = $"Toggle IsEnabled (Currently {Entry2.IsEnabled})";
 			Button3.Text = $"Toggle IsEnabled (Currently {Entry3.IsEnabled})";
-			Button4.Text = $"Toggle IsEnabled (Currently {Entry4.IsEnabled})";
 			Button5.Text = $"Toggle IsEnabled (Currently {Entry5.IsEnabled})";
 		}
 
@@ -28,12 +26,6 @@ namespace Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries
 		{
 			var button = sender as Button;
 			ToggleIsEnabled(Entry0, button);
-		}
-
-		void Button1_OnClicked(object sender, EventArgs e)
-		{
-			var button = sender as Button;
-			ToggleIsEnabled(Entry1, button);
 		}
 
 		void Button2_OnClicked(object sender, EventArgs e)
@@ -48,10 +40,10 @@ namespace Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries
 			ToggleIsEnabled(Entry3, button);
 		}
 
-		void Button4_OnClicked(object sender, EventArgs e)
+		void Button5_OnClicked(object sender, EventArgs e)
 		{
 			var button = sender as Button;
-			ToggleIsEnabled(Entry4, button);
+			ToggleIsEnabled(Entry5, button);
 		}
 
 		void ToggleIsEnabled(Entry entry, Button button)
@@ -62,12 +54,6 @@ namespace Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries
 			{
 				button.Text = $"Toggle IsEnabled (Currently {entry.IsEnabled})";
 			}
-		}
-
-		void Button5_OnClicked(object sender, EventArgs e)
-		{
-			var button = sender as Button;
-			ToggleIsEnabled(Entry5, button);
 		}
 	}
 }
