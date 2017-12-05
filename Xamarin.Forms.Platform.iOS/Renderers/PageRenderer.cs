@@ -109,12 +109,12 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.ViewDidLoad();
 
-			var uiTapGestureRecognizer = new UITapGestureRecognizer(a => View.EndEditing(true));
-
-			uiTapGestureRecognizer.ShouldRecognizeSimultaneously = (recognizer, gestureRecognizer) => true;
-			uiTapGestureRecognizer.ShouldReceiveTouch = OnShouldReceiveTouch;
-			uiTapGestureRecognizer.DelaysTouchesBegan =
-				uiTapGestureRecognizer.DelaysTouchesEnded = uiTapGestureRecognizer.CancelsTouchesInView = false;
+			var uiTapGestureRecognizer = new UITapGestureRecognizer(a => View.EndEditing(true))
+			{
+				ShouldRecognizeSimultaneously = (recognizer, gestureRecognizer) => true,
+				ShouldReceiveTouch = OnShouldReceiveTouch,
+				CancelsTouchesInView = false
+			};
 			View.AddGestureRecognizer(uiTapGestureRecognizer);
 
 			UpdateBackground();
