@@ -9,6 +9,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
+<<<<<<< HEAD
 	public static class Device
 	{
 		public const string iOS = "iOS";
@@ -17,6 +18,16 @@ namespace Xamarin.Forms
 		public const string macOS = "macOS";
 		public const string GTK = "GTK";
 		public const string WPF = "WPF";
+=======
+    public static class Device
+    {
+        public const string iOS = "iOS";
+        public const string Android = "Android";
+        public const string UWP = "UWP";
+        public const string macOS = "macOS";
+        public const string GTK = "GTK";
+        public const string Tizen = "Tizen";
+>>>>>>> master
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static DeviceInfo info;
