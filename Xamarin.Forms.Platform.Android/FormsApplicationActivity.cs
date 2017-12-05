@@ -145,6 +145,9 @@ namespace Xamarin.Forms.Platform.Android
 			// Avoid writing to permanent storage and CPU intensive tasks
 			base.OnPause();
 
+			if (Xamarin.Forms.Application.Current.On<PlatformConfiguration.Android>().GetShouldHandleWebViewStateOnLifecycleChange())
+				MessagingCenter.Send(this, WebViewRenderer.HandleWebViewStateSignalName, "Pause");
+
 			_previousState = _currentState;
 			_currentState = AndroidApplicationLifecycleState.OnPause;
 
@@ -165,6 +168,9 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			// counterpart to OnPause
 			base.OnResume();
+
+			if (Xamarin.Forms.Application.Current.On<PlatformConfiguration.Android>().GetShouldHandleWebViewStateOnLifecycleChange())
+				MessagingCenter.Send(this, WebViewRenderer.HandleWebViewStateSignalName, "Resume");
 
 			_previousState = _currentState;
 			_currentState = AndroidApplicationLifecycleState.OnResume;
