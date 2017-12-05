@@ -64,11 +64,12 @@
 			<Entry x:Name="Entry5" TextColor="Blue" PlaceholderColor="Green" Placeholder="placeholder" 
 					BackgroundColor="Bisque"
 					windowsSpecific:Entry.IsLegacyColorModeEnabled="False"
+					androidSpecific:Entry.IsLegacyColorModeEnabled="False"
 				   />
 				<!-- TODO hartez set this for ios and Android
 				
 						iosSpecific:Entry.IsLegacyColorModeEnabled="False"
-						androidSpecific:Entry.IsLegacyColorModeEnabled="False"
+						
 				-->
 			<Button Text="Toggle IsEnabled" x:Name="Button5" Clicked="Button5_OnClicked" />
 			

@@ -1,6 +1,5 @@
 ﻿namespace Xamarin.Forms.PlatformConfiguration.WindowsSpecific
 {
-	// TODO hartez 5:38:45 PM Clean this up I don't think we need it for this platform (just copy/paste it to the other two)
 	using FormsElement = Forms.Entry;
 
 	public static class Entry

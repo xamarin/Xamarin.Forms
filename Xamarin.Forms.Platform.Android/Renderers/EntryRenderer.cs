@@ -9,6 +9,7 @@ using Android.Views;
 using Android.Views.InputMethods;
 using Android.Widget;
 using Java.Lang;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -81,7 +82,8 @@ namespace Xamarin.Forms.Platform.Android
 				_textColorSwitcher = new TextColorSwitcher(textView.TextColors);
 				_hintColorSwitcher = new TextColorSwitcher(textView.HintTextColors);
 
-				_useLegacyColorManagement = VisualStateManager.GetVisualStateGroups(e.NewElement) == null;
+				_useLegacyColorManagement = VisualStateManager.GetVisualStateGroups(e.NewElement) == null
+					&& e.NewElement.OnThisPlatform().GetIsLegacyColorModeEnabled();
 
 				SetNativeControl(textView);
 			}
