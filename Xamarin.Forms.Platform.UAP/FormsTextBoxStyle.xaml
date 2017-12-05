@@ -3,6 +3,7 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:uwp="using:Xamarin.Forms.Platform.UWP">
 
+	<uwp:FormsVisualStateManager x:Key="FormsVisualStateManager"></uwp:FormsVisualStateManager>
 	<uwp:TextAlignmentToHorizontalAlignmentConverter x:Key="AlignmentConverter" />
 	<Style x:Key="FormsTextBoxStyle" TargetType="uwp:FormsTextBox">
 		<Setter Property="MinWidth" Value="{ThemeResource TextControlThemeMinWidth}" />
@@ -92,11 +93,11 @@
 								<VisualState x:Name="FormsDisabled">
 									<Storyboard>
 										<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground"
-										                               Storyboard.TargetName="HeaderContentPresenter">
+																		Storyboard.TargetName="HeaderContentPresenter">
 											<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledBaseLowBrush}" />
 										</ObjectAnimationUsingKeyFrames>
 										<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background"
-										                               Storyboard.TargetName="BackgroundElement">
+																		Storyboard.TargetName="BackgroundElement">
 											<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledTransparentBrush}" />
 										</ObjectAnimationUsingKeyFrames>
 										<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background" Storyboard.TargetName="BorderElement">
@@ -106,11 +107,11 @@
 											<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledBaseLowBrush}" />
 										</ObjectAnimationUsingKeyFrames>
 										<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground" Storyboard.TargetName="ContentElement">
-											<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledChromeDisabledLowBrush}" />
+											<DiscreteObjectKeyFrame KeyTime="0" Value="{Binding Foreground, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
 										</ObjectAnimationUsingKeyFrames>
 										<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Foreground"
 										                               Storyboard.TargetName="PlaceholderTextContentPresenter">
-											<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledChromeDisabledLowBrush}" />
+											<DiscreteObjectKeyFrame KeyTime="0" Value="{Binding PlaceholderForegroundBrush, RelativeSource={RelativeSource Mode=TemplatedParent}}" />
 										</ObjectAnimationUsingKeyFrames>
 									</Storyboard>
 								</VisualState>

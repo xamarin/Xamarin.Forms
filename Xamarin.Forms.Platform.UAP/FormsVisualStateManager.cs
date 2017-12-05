@@ -1,12 +1,12 @@
-﻿using Windows.UI.Xaml;
+﻿using System.Diagnostics;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
-namespace Xamarin.Forms.Platform.WinRT
+namespace Xamarin.Forms.Platform.UWP
 {
 	internal class FormsVisualStateManager : Windows.UI.Xaml.VisualStateManager
 	{
 		// TODO hartez 2017/12/01 16:45:09 Add a reference to your VSTS case here, this override is broken for some UWP controls	
-
 		protected override bool GoToStateCore(Control control, FrameworkElement templateRoot, string stateName, Windows.UI.Xaml.VisualStateGroup @group,
 			Windows.UI.Xaml.VisualState state, bool useTransitions)
 		{

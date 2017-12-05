@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries
+﻿namespace Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries
 {
 	public class VisualStateManagerGallery : ContentPage
 	{
@@ -13,10 +7,14 @@ namespace Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries
 			var entryDisabledStatesButton = new Button { Text = "Entry Disabled States" };
 			
 			entryDisabledStatesButton.Clicked += (sender, args) => { Navigation.PushAsync (new EntryDisabledStatesGallery()); };
-			
+
+			var entryFocusStatesButton = new Button { Text = "Entry Focus States" };
+
+			entryFocusStatesButton.Clicked += (sender, args) => { Navigation.PushAsync(new EntryFocusStatesGallery()); };
+
 			Content = new StackLayout
 			{
-				Children = { entryDisabledStatesButton }
+				Children = { entryDisabledStatesButton, entryFocusStatesButton }
 			};
 		}
 	}

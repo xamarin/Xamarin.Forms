@@ -1,21 +1,12 @@
 ﻿using System;
-//using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.Text;
-using System.Threading.Tasks;
-using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	//[ContentProperty("VisualStateGroups")]
 	public static class VisualStateManager
 	{
 		public static readonly BindableProperty VisualStateGroupsProperty =
 			BindableProperty.CreateAttached("VisualStateGroups", typeof(Collection<VisualStateGroup>), typeof(VisualElement), null);
-
-		//public static readonly BindableProperty VisualStateGroupsProperty =
-		//	BindableProperty.CreateAttached("VisualStateGroups", typeof(Collection<VisualStateGroup>), typeof(VisualElement), new Collection<VisualStateGroup>());
 
 		public static Collection<VisualStateGroup> GetVisualStateGroups(VisualElement visualElement)
 		{

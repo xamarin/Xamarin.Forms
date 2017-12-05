@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
 			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-			 
+			 xmlns:windowsSpecific="clr-namespace:Xamarin.Forms.PlatformConfiguration.WindowsSpecific;assembly=Xamarin.Forms.Core"
 			 x:Class="Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries.EntryDisabledStatesGallery"
 			 Title="Entry Disabled States Gallery">
 
@@ -33,6 +33,7 @@
 							<VisualState.Setters>
 								<Setter Property="TextColor" Value="Green" />
 								<Setter Property="PlaceholderColor" Value="LightGreen" />
+								<Setter Property="BackgroundColor" Value="Black" />
 							</VisualState.Setters>
 						</VisualState>
 					</VisualStateGroup>
@@ -59,16 +60,23 @@
 			
 			<!-- Legacy Color Behavior turned off by the PlatformSpecific; ignores states entirely and uses whatever colors are manually set for it -->
 			<Label Text="The Entry below has the Legacy Color Behavior disabled; it will stick with whatever colors are set, regardless of state"/>
-			<Entry x:Name="Entry0" TextColor="Blue" PlaceholderColor="Green" Placeholder="placeholder" /><!--  TODO hartez set the platform specific -->
-			<Button Text="Toggle IsEnabled" x:Name="Button0" Clicked="Button0_OnClicked" />
+			<Label FontSize="9" Text="(Note that we never did disabled state color preservation on Windows, so this doesn't apply)"/>
+			<Entry x:Name="Entry5" TextColor="Blue" PlaceholderColor="Green" Placeholder="placeholder" 
+					windowsSpecific:Entry.IsLegacyColorModeEnabled="False"  />
+				
+				<!-- TODO hartez set this for ios and Android-->
+				
+			<Button Text="Toggle IsEnabled" x:Name="Button5" Clicked="Button5_OnClicked" />
 
 			<!-- Empty VSG list (via style); the control should keep whatever colors are set no matter what the state -->
-			<Label Text="The Entry below has empty VisualStates (via a Style); whatever TextColor/PlaceholderTextColor are set to will persist even if IsEnabled is false." Margin="0,20,0,0"/>
+			<Label Text="The Entry below has empty VisualStates (via a Style); whatever TextColor/PlaceholderTextColor are set to will persist even if IsEnabled is false." Margin="2,20,2,0"/>
+			<Label FontSize="9" Text="(Note that we never did disabled state color preservation on Windows, so this doesn't apply)"/>
 			<Entry x:Name="Entry1" Style="{StaticResource PersistentColor}" TextColor="MediumVioletRed" PlaceholderColor="MediumPurple" Placeholder="placeholder" />
 			<Button Text="Toggle IsEnabled" x:Name="Button1" Clicked="Button1_OnClicked" />
 
 			<!-- Empty VSG list (directly on the control); the control should keep whatever colors are set no matter what the state -->
 			<Label Text="The Entry below has has empty VisualStates (set directly in XAML); whatever TextColor/PlaceholderTextColor are set to will persist even if IsEnabled is false." Margin="0,20,0,0"/>
+			<Label FontSize="9" Text="(Note that we never did disabled state color preservation on Windows, so this doesn't apply)"/>
 			<Entry x:Name="Entry4" TextColor="MediumVioletRed" PlaceholderColor="MediumPurple" Placeholder="placeholder">
 				<VisualStateManager.VisualStateGroups>
 				</VisualStateManager.VisualStateGroups>

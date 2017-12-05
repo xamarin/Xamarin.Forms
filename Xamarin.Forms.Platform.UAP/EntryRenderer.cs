@@ -4,12 +4,11 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
-
-
+using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	public class EntryRenderer : ViewRenderer<Entry, FormsTextBox>
+	public class EntryRenderer : ViewRenderer<Xamarin.Forms.Entry, FormsTextBox>
 	{
 		bool _fontApplied;
 		Brush _backgroundColorFocusedDefaultBrush;
@@ -28,27 +27,10 @@ namespace Xamarin.Forms.Platform.UWP
 				{
 					var textBox = new FormsTextBox { Style = Windows.UI.Xaml.Application.Current.Resources["FormsTextBoxStyle"] as Windows.UI.Xaml.Style };
 					SetNativeControl(textBox);
-
-					// TODO hartez 2017/02/15 15:59:04 This is where we check the PlatformSpecific for LegacyColorBehavior
-					// TODO hartez 6:07:26 PM Clean this up
-					if (Xamarin.Forms.VisualStateManager.GetVisualStateGroups(e.NewElement) == null && e.NewElement.OnThisPlatform().DisableLegacyColorModeProperty())
-					{
-						// No Forms VisualStates and the user doesn't want our legacy color handling
-						textBox.ColorHandling = ColorHandling.None;
-					}
-					else if (Xamarin.Forms.VisualStateManager.GetVisualStateGroups(e.NewElement) != null)
-					{
-						// Forms VisualStates are present, listen to them
-						textBox.ColorHandling = ColorHandling.FormsVisualStateManager;
-					}
-					else
-					{
-						// Okay, use our legacy color handling
-						textBox.ColorHandling = ColorHandling.DeferToNativeVsm;
-					}
-
 					textBox.TextChanged += OnNativeTextChanged;
 					textBox.KeyUp += TextBoxOnKeyUp;
+
+					textBox.UseFormsVsm = VisualStateManager.GetVisualStateGroups(Element) != null;
 				}
 
 				UpdateIsPassword();
@@ -213,10 +195,10 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			Color textColor = Element.TextColor;
 
-			BrushHelpers.UpdateColor(textColor, ref _textDefaultBrush, 
+			BrushHelpers.UpdateColor(textColor, ref _textDefaultBrush,
 				() => Control.Foreground, brush => Control.Foreground = brush);
 
-			BrushHelpers.UpdateColor(textColor, ref _defaultTextColorFocusBrush, 
+			BrushHelpers.UpdateColor(textColor, ref _defaultTextColorFocusBrush,
 				() => Control.ForegroundFocusBrush, brush => Control.ForegroundFocusBrush = brush);
 		}
 	}

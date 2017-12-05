@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.System;
@@ -11,13 +12,6 @@ using WVisualStateManager = Windows.UI.Xaml.VisualStateManager;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	internal enum ColorHandling
-	{
-		None,
-		DeferToNativeVsm,
-		FormsVisualStateManager
-	}
-
 	/// <summary>
 	///     An intermediate class for injecting bindings for things the default
 	///     textbox doesn't allow us to bind/modify
@@ -64,6 +58,11 @@ namespace Xamarin.Forms.Platform.UWP
 			IsEnabledChanged += OnIsEnabledChanged;
 		}
 
+		void OnIsEnabledChanged(object sender, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+		{
+			UpdateEnabled();
+		}
+
 		public Brush BackgroundFocusBrush
 		{
 			get { return (Brush)GetValue(BackgroundFocusBrushProperty); }
@@ -82,7 +81,7 @@ namespace Xamarin.Forms.Platform.UWP
 			set { SetValue(IsPasswordProperty, value); }
 		}
 
-		internal ColorHandling ColorHandling { get; set; }
+		internal bool UseFormsVsm { get; set; }
 
 		public Brush PlaceholderForegroundBrush
 		{
@@ -394,12 +393,15 @@ namespace Xamarin.Forms.Platform.UWP
 			// XFVSM would be that instead of WVisualStateManager.GoToState, we use ours
 		}
 
-		void OnIsEnabledChanged(object sender, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+		internal void UpdateEnabled()
 		{
-			// TODO hartez 2017/12/01 18:09:13 I think we're doing DeferToNativeVSM for this right now
-			// We need the version where we ignore the VSM and just set the color explicitly (None)
-			// Need to think about this with a clearer head
+			if (UseFormsVsm)
+			{
+				// TODO hartez See if we can use FormsVisualStateManager GoToCore (maybe a static version) here
 
+				var state = IsEnabled ? "FormsNormal" : "FormsDisabled";
+				WVisualStateManager.GoToState(this, state, true);
+			}
 		}
 	}
 }
