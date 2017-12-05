@@ -8,7 +8,7 @@ using AListView = Android.Widget.ListView;
 namespace Xamarin.Forms.Platform.Android
 {
 
-	internal class GroupedListViewAdapter : ListViewAdapter, ISectionIndexer
+	public class GroupedListViewAdapter : ListViewAdapter, ISectionIndexer
 	{
 		class SectionData
 		{

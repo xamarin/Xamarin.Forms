@@ -13,7 +13,7 @@ using System.Collections;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	internal class ListViewAdapter : CellAdapter
+	public class ListViewAdapter : CellAdapter
 	{
 		static readonly object DefaultItemTypeOrDataTemplate = new object();
 		const int DefaultGroupHeaderTemplateId = 0;
