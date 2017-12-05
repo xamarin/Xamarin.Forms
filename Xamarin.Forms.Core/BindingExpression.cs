@@ -382,8 +382,11 @@ namespace Xamarin.Forms
 					var nextPart = part.NextPart;
 					var name = nextPart.Content;
 					var index = tupleEltNames.TransformNames.IndexOf(name);
-					nextPart.IsIndexer = true;
-					nextPart.Content = index.ToString();
+					if (index >= 0)
+					{
+						nextPart.IsIndexer = true;
+						nextPart.Content = index.ToString();
+					}
 				}
 			}
 		}
