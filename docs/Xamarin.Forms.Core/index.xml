@@ -1945,6 +1945,27 @@
       <Targets>
         <Target Type="T:Xamarin.Forms.IPlatformElementConfiguration`2" />
       </Targets>
+      <Member MemberName="IsNestedScrollingEnabled">
+        <MemberSignature Language="C#" Value="public static bool IsNestedScrollingEnabled (this Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Android,Xamarin.Forms.ListView&gt; config);" />
+        <MemberSignature Language="ILAsm" Value=".method public static hidebysig bool IsNestedScrollingEnabled(class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.Android, class Xamarin.Forms.ListView&gt; config) cil managed" />
+        <MemberType>ExtensionMethod</MemberType>
+        <ReturnValue>
+          <ReturnType>System.Boolean</ReturnType>
+        </ReturnValue>
+        <Parameters>
+          <Parameter Name="config" Type="Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Android,Xamarin.Forms.ListView&gt;" RefType="this" />
+        </Parameters>
+        <Docs>
+          <param name="config">To be added.</param>
+          <summary>To be added.</summary>
+        </Docs>
+        <Link Type="Xamarin.Forms.PlatformConfiguration.AndroidSpecific.ListView" Member="M:Xamarin.Forms.PlatformConfiguration.AndroidSpecific.ListView.IsNestedScrollingEnabled(Xamarin.Forms.IPlatformElementConfiguration{Xamarin.Forms.PlatformConfiguration.Android,Xamarin.Forms.ListView})" />
+      </Member>
+    </ExtensionMethod>
+    <ExtensionMethod>
+      <Targets>
+        <Target Type="T:Xamarin.Forms.IPlatformElementConfiguration`2" />
+      </Targets>
       <Member MemberName="SetIsFastScrollEnabled">
         <MemberSignature Language="C#" Value="public static Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Android,Xamarin.Forms.ListView&gt; SetIsFastScrollEnabled (this Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Android,Xamarin.Forms.ListView&gt; config, bool value);" />
         <MemberSignature Language="ILAsm" Value=".method public static hidebysig class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.Android, class Xamarin.Forms.ListView&gt; SetIsFastScrollEnabled(class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.Android, class Xamarin.Forms.ListView&gt; config, bool value) cil managed" />
@@ -1962,6 +1983,29 @@
           <summary>Sets the attached property that controls whether fast scrolling is enabled.</summary>
         </Docs>
         <Link Type="Xamarin.Forms.PlatformConfiguration.AndroidSpecific.ListView" Member="M:Xamarin.Forms.PlatformConfiguration.AndroidSpecific.ListView.SetIsFastScrollEnabled(Xamarin.Forms.IPlatformElementConfiguration{Xamarin.Forms.PlatformConfiguration.Android,Xamarin.Forms.ListView},System.Boolean)" />
+      </Member>
+    </ExtensionMethod>
+    <ExtensionMethod>
+      <Targets>
+        <Target Type="T:Xamarin.Forms.IPlatformElementConfiguration`2" />
+      </Targets>
+      <Member MemberName="SetIsNestedScrollingEnabled">
+        <MemberSignature Language="C#" Value="public static Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Android,Xamarin.Forms.ListView&gt; SetIsNestedScrollingEnabled (this Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Android,Xamarin.Forms.ListView&gt; config, bool value);" />
+        <MemberSignature Language="ILAsm" Value=".method public static hidebysig class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.Android, class Xamarin.Forms.ListView&gt; SetIsNestedScrollingEnabled(class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.Android, class Xamarin.Forms.ListView&gt; config, bool value) cil managed" />
+        <MemberType>ExtensionMethod</MemberType>
+        <ReturnValue>
+          <ReturnType>Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Android,Xamarin.Forms.ListView&gt;</ReturnType>
+        </ReturnValue>
+        <Parameters>
+          <Parameter Name="config" Type="Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Android,Xamarin.Forms.ListView&gt;" RefType="this" />
+          <Parameter Name="value" Type="System.Boolean" />
+        </Parameters>
+        <Docs>
+          <param name="config">To be added.</param>
+          <param name="value">To be added.</param>
+          <summary>To be added.</summary>
+        </Docs>
+        <Link Type="Xamarin.Forms.PlatformConfiguration.AndroidSpecific.ListView" Member="M:Xamarin.Forms.PlatformConfiguration.AndroidSpecific.ListView.SetIsNestedScrollingEnabled(Xamarin.Forms.IPlatformElementConfiguration{Xamarin.Forms.PlatformConfiguration.Android,Xamarin.Forms.ListView},System.Boolean)" />
       </Member>
     </ExtensionMethod>
     <ExtensionMethod>

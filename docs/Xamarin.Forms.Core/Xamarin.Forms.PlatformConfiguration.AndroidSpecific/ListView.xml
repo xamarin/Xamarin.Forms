@@ -34,6 +34,26 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
+    <Member MemberName="GetIsNestedScrollingEnabled">
+      <MemberSignature Language="C#" Value="public static bool GetIsNestedScrollingEnabled (Xamarin.Forms.BindableObject element);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig bool GetIsNestedScrollingEnabled(class Xamarin.Forms.BindableObject element) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="element" Type="Xamarin.Forms.BindableObject" />
+      </Parameters>
+      <Docs>
+        <param name="element">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
     <Member MemberName="IsFastScrollEnabled">
       <MemberSignature Language="C#" Value="public static bool IsFastScrollEnabled (this Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Android,Xamarin.Forms.ListView&gt; config);" />
       <MemberSignature Language="ILAsm" Value=".method public static hidebysig bool IsFastScrollEnabled(class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.Android, class Xamarin.Forms.ListView&gt; config) cil managed" />
@@ -66,6 +86,41 @@
       </ReturnValue>
       <Docs>
         <summary>Backing store for the attached property that controls whether fast scrolling is enabled.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="IsNestedScrollingEnabled">
+      <MemberSignature Language="C#" Value="public static bool IsNestedScrollingEnabled (this Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Android,Xamarin.Forms.ListView&gt; config);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig bool IsNestedScrollingEnabled(class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.Android, class Xamarin.Forms.ListView&gt; config) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Boolean</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="config" Type="Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Android,Xamarin.Forms.ListView&gt;" RefType="this" />
+      </Parameters>
+      <Docs>
+        <param name="config">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="IsNestedScrollingEnabledProperty">
+      <MemberSignature Language="C#" Value="public static readonly Xamarin.Forms.BindableProperty IsNestedScrollingEnabledProperty;" />
+      <MemberSignature Language="ILAsm" Value=".field public static initonly class Xamarin.Forms.BindableProperty IsNestedScrollingEnabledProperty" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>Xamarin.Forms.BindableProperty</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
@@ -109,6 +164,49 @@
         <param name="value">The new property value to assign.</param>
         <summary>Sets the attached property that controls whether fast scrolling is enabled.</summary>
         <returns>The updated configuration object, on which more methods may be called.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SetIsNestedScrollingEnabled">
+      <MemberSignature Language="C#" Value="public static void SetIsNestedScrollingEnabled (Xamarin.Forms.BindableObject element, bool value);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void SetIsNestedScrollingEnabled(class Xamarin.Forms.BindableObject element, bool value) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="element" Type="Xamarin.Forms.BindableObject" />
+        <Parameter Name="value" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="element">To be added.</param>
+        <param name="value">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SetIsNestedScrollingEnabled">
+      <MemberSignature Language="C#" Value="public static Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Android,Xamarin.Forms.ListView&gt; SetIsNestedScrollingEnabled (this Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Android,Xamarin.Forms.ListView&gt; config, bool value);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.Android, class Xamarin.Forms.ListView&gt; SetIsNestedScrollingEnabled(class Xamarin.Forms.IPlatformElementConfiguration`2&lt;class Xamarin.Forms.PlatformConfiguration.Android, class Xamarin.Forms.ListView&gt; config, bool value) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Android,Xamarin.Forms.ListView&gt;</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="config" Type="Xamarin.Forms.IPlatformElementConfiguration&lt;Xamarin.Forms.PlatformConfiguration.Android,Xamarin.Forms.ListView&gt;" RefType="this" />
+        <Parameter Name="value" Type="System.Boolean" />
+      </Parameters>
+      <Docs>
+        <param name="config">To be added.</param>
+        <param name="value">To be added.</param>
+        <summary>To be added.</summary>
+        <returns>To be added.</returns>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
