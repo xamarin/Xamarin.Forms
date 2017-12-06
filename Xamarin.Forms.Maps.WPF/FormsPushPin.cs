@@ -24,17 +24,17 @@ namespace Xamarin.Forms.Maps.WPF
 			MouseDown += FormsPushPin_MouseDown;
 		}
 
-		private void FormsPushPin_Loaded(object sender, System.Windows.RoutedEventArgs e)
+		void FormsPushPin_Loaded(object sender, System.Windows.RoutedEventArgs e)
 		{
 			Pin.PropertyChanged += PinPropertyChanged;
 		}
 
-		private void FormsPushPin_Unloaded(object sender, System.Windows.RoutedEventArgs e)
+		void FormsPushPin_Unloaded(object sender, System.Windows.RoutedEventArgs e)
 		{
 			Pin.PropertyChanged -= PinPropertyChanged;
 		}
 
-		private void FormsPushPin_MouseDown(object sender, MouseButtonEventArgs e)
+		void FormsPushPin_MouseDown(object sender, MouseButtonEventArgs e)
 		{
 			Pin.SendTap();
 		}

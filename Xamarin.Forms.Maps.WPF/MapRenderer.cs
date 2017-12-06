@@ -50,7 +50,7 @@ namespace Xamarin.Forms.Maps.WPF
 			base.OnElementChanged(e);
 		}
 
-		private void Control_ViewChangeOnFrame(object sender, MapEventArgs e)
+		void Control_ViewChangeOnFrame(object sender, MapEventArgs e)
 		{
 			UpdateVisibleRegion();
 		}
