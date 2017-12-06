@@ -658,21 +658,6 @@ button.HeightRequest = Device.OnPlatform (20,30,30);
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-	  <Member MemberName="WPF">
-      <MemberSignature Language="C#" Value="public const string WPF;" />
-      <MemberSignature Language="ILAsm" Value=".field public static literal string WPF" />
-      <MemberType>Field</MemberType>
-      <AssemblyInfo>
-        <AssemblyVersion>2.0.0.0</AssemblyVersion>
-      </AssemblyInfo>
-      <ReturnValue>
-        <ReturnType>System.String</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
     <Member MemberName="UWP">
       <MemberSignature Language="C#" Value="public const string UWP;" />
       <MemberSignature Language="ILAsm" Value=".field public static literal string UWP" />
@@ -685,6 +670,21 @@ button.HeightRequest = Device.OnPlatform (20,30,30);
       </ReturnValue>
       <Docs>
         <summary>The string "Windows", representing the Windows operating system.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="WPF">
+      <MemberSignature Language="C#" Value="public const string WPF;" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal string WPF" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
