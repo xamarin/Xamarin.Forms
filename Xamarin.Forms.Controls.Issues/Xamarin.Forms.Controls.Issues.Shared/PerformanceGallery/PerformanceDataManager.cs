@@ -47,7 +47,7 @@ namespace Xamarin.Forms.Controls.Issues
 			return JsonConvert.DeserializeObject<Dictionary<string, double>>(content);
 		}
 
-		public static async Task PostScenarioResults(string scenarioName, Result result, Guid testRunReferenceId, string deviceIdentifier, string platform, string version, string idiom, double totalMilliseconds, Dictionary<string, PerformanceProvider.Statistic> details)
+		public static async Task PostScenarioResults(string scenarioName, Result result, Guid testRunReferenceId, string deviceIdentifier, string platform, string version, string idiom, string buildInfo, double totalMilliseconds, Dictionary<string, PerformanceProvider.Statistic> details)
 		{
 			var data = new ScenarioResult
 			{
@@ -58,7 +58,8 @@ namespace Xamarin.Forms.Controls.Issues
 				DevicePlatform = platform,
 				DeviceVersion = version,
 				DeviceIdiom = idiom,
-				TotalMilliseconds = totalMilliseconds
+				TotalMilliseconds = totalMilliseconds,
+				BuildInfo = buildInfo
 			};
 			var json = JsonConvert.SerializeObject(data);
 			var content = new StringContent(json, Encoding.UTF8, "application/json");
@@ -100,6 +101,7 @@ namespace Xamarin.Forms.Controls.Issues
 			public Guid ScenarioId { get; set; }
 			public Guid TestRunReferenceId { get; set; }
 			public double TotalMilliseconds { get; set; }
+			public string BuildInfo { get; set; }
 		}
 
 		[Preserve(AllMembers = true)]
