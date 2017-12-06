@@ -14,7 +14,7 @@ namespace Xamarin.Forms.ControlGallery.Android
 {
 	public class PerformanceTrackerRenderer : ViewRenderer, IOnDrawListener
 	{
-		public PerformanceTrackerRenderer()
+		public PerformanceTrackerRenderer(global::Android.Content.Context context) : base(context)
 		{
 			ViewTreeObserver.AddOnDrawListener(this);
 		}
