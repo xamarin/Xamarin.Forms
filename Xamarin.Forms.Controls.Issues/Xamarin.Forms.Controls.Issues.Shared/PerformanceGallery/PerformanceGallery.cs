@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
+using System.IO;
 
 #if UITEST
 using Xamarin.UITest;
@@ -34,6 +35,7 @@ namespace Xamarin.Forms.Controls.Issues
 		string _DeviceModel;
 		string _DevicePlatform;
 		string _DeviceVersionNumber;
+		string _BuildInfo;
 		PerformanceProvider _PerformanceProvider = new PerformanceProvider();
 		PerformanceTracker _PerformanceTracker = new PerformanceTracker();
 		List<PerformanceScenario> _TestCases = new List<PerformanceScenario>();
@@ -43,6 +45,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override async void Init()
 		{
+			_BuildInfo = GetBuildNumber();
+
 			_DeviceIdentifier = CrossDeviceInfo.Current.Id;
 			_DeviceIdiom = CrossDeviceInfo.Current.Idiom.ToString();
 			_DeviceModel = CrossDeviceInfo.Current.Model;
@@ -82,6 +86,16 @@ namespace Xamarin.Forms.Controls.Issues
 
 			nextButton.IsEnabled = true;
 			nextButton.Text = Next;
+		}
+
+		private static string GetBuildNumber()
+		{
+			var assembly = typeof(PerformanceGallery).GetTypeInfo().Assembly;
+			var txt = "Xamarin.Forms.Controls.BuildNumber.txt";
+
+			using (Stream s = assembly.GetManifestResourceStream(txt))
+			using (StreamReader sr = new StreamReader(s))
+				return sr.ReadToEnd();
 		}
 
 		static IEnumerable<Type> FindPerformanceScenarios()
@@ -136,6 +150,7 @@ namespace Xamarin.Forms.Controls.Issues
 				_DevicePlatform,
 				_DeviceVersionNumber,
 				_DeviceIdiom,
+				_BuildInfo,
 				ViewModel.ActualRenderTime,
 				_PerformanceProvider.Statistics);
 		}
