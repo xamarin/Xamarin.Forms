@@ -180,6 +180,7 @@
     <Compile Include="NativeBindingTests.cs" />
     <Compile Include="TypedBindingUnitTests.cs" />
     <Compile Include="AnimationTests.cs" />
+    <Compile Include="SwipeGestureRecognizerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">
