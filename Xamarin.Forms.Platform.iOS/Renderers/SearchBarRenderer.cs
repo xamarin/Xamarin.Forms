@@ -14,6 +14,8 @@ namespace Xamarin.Forms.Platform.iOS
 		UIColor _defaultTextColor;
 		UIColor _defaultTintColor;
 		UITextField _textField;
+		bool _textWasTyped;
+		string _typedText;
 
 		IElementController ElementController => Element as IElementController;
 
@@ -96,6 +98,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateFont();
 			else if (e.PropertyName == SearchBar.HorizontalTextAlignmentProperty.PropertyName)
 				UpdateAlignment();
+			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
+				UpdateAlignment();
 		}
 
 		protected override void SetBackgroundColor(Color color)
@@ -117,6 +121,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 			// updating BarTintColor resets the button color so we need to update the button color again
 			UpdateCancelButton();
+		}
+
+		public override CoreGraphics.CGSize SizeThatFits(CoreGraphics.CGSize size)
+		{
+			if (nfloat.IsInfinity(size.Width) && Forms.IsiOS11OrNewer)
+				size.Width = nfloat.MaxValue;
+			
+			return base.SizeThatFits(size);
 		}
 
 		void OnCancelClicked(object sender, EventArgs args)
@@ -143,7 +155,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnTextChanged(object sender, UISearchBarTextChangedEventArgs a)
 		{
-			ElementController.SetValueFromRenderer(SearchBar.TextProperty, Control.Text);
+			// This only fires when text has been typed into the SearchBar; see UpdateText()
+			// for why this is handled in this manner.
+			_textWasTyped = true;
+			_typedText = a.SearchText;
+			UpdateOnTextChanged();
 		}
 
 		void UpdateAlignment()
@@ -153,7 +169,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_textField == null)
 				return;
 
-			_textField.TextAlignment = Element.HorizontalTextAlignment.ToNativeTextAlignment();
+			_textField.TextAlignment = Element.HorizontalTextAlignment.ToNativeTextAlignment(((IVisualElementController)Element).EffectiveFlowDirection);
 		}
 
 		void UpdateCancelButton()
@@ -216,8 +232,22 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateText()
 		{
-			Control.Text = Element.Text;
+			// There is at least one scenario where modifying the Element's Text value from TextChanged
+			// can cause issues with a Korean keyboard. The characters normally combine into larger
+			// characters as they are typed, but if SetValueFromRenderer is used in that manner,
+			// it ignores the combination and outputs them individually. This hook only fires 
+			// when typing, so by keeping track of whether or not text was typed, we can respect
+			// other changes to Element.Text.
+			if (!_textWasTyped)
+				Control.Text = Element.Text;
+			
 			UpdateCancelButton();
+		}
+
+		void UpdateOnTextChanged()
+		{
+			ElementController?.SetValueFromRenderer(SearchBar.TextProperty, _typedText);
+			_textWasTyped = false;
 		}
 
 		void UpdateTextColor()

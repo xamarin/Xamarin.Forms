@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Android.Content;
 using Android.Views;
 using Xamarin.Forms.Internals;
 using AndroidAnimation = Android.Animation;
@@ -13,6 +14,12 @@ namespace Xamarin.Forms.Platform.Android
 		Page _current;
 		bool _disposed;
 
+		public NavigationRenderer(Context context) : base(context)
+		{
+			AutoPackage = false;
+		}
+
+		[Obsolete("This constructor is obsolete as of version 2.5. Please use NavigationRenderer(Context) instead.")]
 		public NavigationRenderer()
 		{
 			AutoPackage = false;
@@ -206,7 +213,7 @@ namespace Xamarin.Forms.Platform.Android
 			IVisualElementRenderer rendererToAdd = Platform.GetRenderer(view);
 			bool existing = rendererToAdd != null;
 			if (!existing)
-				Platform.SetRenderer(view, rendererToAdd = Platform.CreateRenderer(view));
+				Platform.SetRenderer(view, rendererToAdd = Platform.CreateRenderer(view, Context));
 
 			Page pageToRemove = _current;
 			IVisualElementRenderer rendererToRemove = pageToRemove == null ? null : Platform.GetRenderer(pageToRemove);
@@ -230,7 +237,10 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					// animate out
 					if (containerToAdd.Parent != this)
-						AddView(containerToAdd, ((IElementController)Element).LogicalChildren.IndexOf(rendererToAdd.Element));
+					{
+						var indexRenderToAdd = Math.Min(ChildCount,((IElementController)Element).LogicalChildren.IndexOf(rendererToAdd.Element));
+						AddView(containerToAdd, indexRenderToAdd);
+					}						
 					else
 						((IPageController)rendererToAdd.Element).SendAppearing();
 					containerToAdd.Visibility = ViewStates.Visible;

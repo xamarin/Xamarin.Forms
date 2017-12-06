@@ -1,6 +1,5 @@
 ﻿#if !FORMS_APPLICATION_ACTIVITY && !PRE_APPLICATION_CLASS
 
-using System.Diagnostics;
 using Android.App;
 using Android.Content;
 using Android.Content.PM;
@@ -10,6 +9,7 @@ using Xamarin.Forms.Controls;
 using Xamarin.Forms.Controls.Issues;
 using Xamarin.Forms.Platform.Android;
 using Xamarin.Forms.Platform.Android.AppLinks;
+using System.Linq;
 
 namespace Xamarin.Forms.ControlGallery.Android
 {
@@ -39,12 +39,12 @@ namespace Xamarin.Forms.ControlGallery.Android
 			//Window.AddFlags(WindowManagerFlags.Fullscreen | WindowManagerFlags.TurnScreenOn);
 
 			base.OnCreate(bundle);
-
-			if (!Debugger.IsAttached)
-				Insights.Initialize(App.InsightsApiKey, ApplicationContext);
+			
 
 #if TEST_EXPERIMENTAL_RENDERERS
 			Forms.SetFlags("FastRenderers_Experimental");
+#else
+			Forms.SetFlags("Fake_Flag"); // So we can test for flag initialization issues
 #endif
 
 			Forms.Init(this, bundle);
@@ -60,8 +60,16 @@ namespace Xamarin.Forms.ControlGallery.Android
 			// uncomment to verify turning off title bar works. This is not intended to be dynamic really.
 			//Forms.SetTitleBarVisibility (AndroidTitleBarVisibility.Never);
 
-			_app = new App();
-			
+			if (RestartAppTest.App != null)
+			{
+				_app = (App)RestartAppTest.App;
+				RestartAppTest.Reinit = true;
+			}
+			else
+			{
+				_app = new App();
+			}
+
 			// When the native control gallery loads up, it'll let us know so we can add the nested native controls
 			MessagingCenter.Subscribe<NestedNativeControlGalleryPage>(this, NestedNativeControlGalleryPage.ReadyForNativeControlsMessage, AddNativeControls);
 
@@ -71,7 +79,15 @@ namespace Xamarin.Forms.ControlGallery.Android
 			// Listen for the message from the status bar color toggle test
 			MessagingCenter.Subscribe<AndroidStatusBarColor>(this, AndroidStatusBarColor.Message, color => SetStatusBarColor(global::Android.Graphics.Color.Red));
 
+			SetUpForceRestartTest();
+
 			LoadApplication(_app);
+			if (Forms.Flags.Contains("FastRenderers_Experimental"))
+			{
+				var masterPage = ((_app.MainPage as MasterDetailPage)?.Master as ContentPage);
+				if (masterPage != null)
+					masterPage.Content = new Label { Text = "Fast Renderers" };
+			}
 		}
 
 		

@@ -12,6 +12,12 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public sealed class NavigationMenuRenderer : ViewRenderer
 	{
+		public NavigationMenuRenderer(Context context) : base(context)
+		{
+			AutoPackage = false;
+		}
+
+		[Obsolete("This constructor is obsolete as of version 2.5. Please use NavigationMenuRenderer(Context) instead.")]
 		public NavigationMenuRenderer()
 		{
 			AutoPackage = false;

@@ -11,6 +11,9 @@ using Mono.Cecil.Rocks;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
 
+using static Mono.Cecil.Cil.Instruction;
+using static Mono.Cecil.Cil.OpCodes;
+
 namespace Xamarin.Forms.Build.Tasks
 {
 	class SetPropertiesVisitor : IXamlNodeVisitor
@@ -65,8 +68,7 @@ namespace Xamarin.Forms.Build.Tasks
 				return;
 			if (parentNode is IElementNode && ((IElementNode)parentNode).SkipProperties.Contains (propertyName))
 				return;
-			if (propertyName.NamespaceURI == "http://schemas.openxmlformats.org/markup-compatibility/2006" &&
-			    propertyName.LocalName == "Ignorable")
+			if (propertyName.Equals(XamlParser.McUri, "Ignorable"))
 				return;
 			Context.IL.Append(SetPropertyValue(Context.Variables [(IElementNode)parentNode], propertyName, node, Context, node));
 		}
@@ -114,8 +116,7 @@ namespace Xamarin.Forms.Build.Tasks
 				Context.Variables[node] = vardef;
 			}
 
-			if (propertyName != XmlName.Empty)
-			{
+			if (propertyName != XmlName.Empty) {
 				if (skips.Contains(propertyName))
 					return;
 				if (parentNode is IElementNode && ((IElementNode)parentNode).SkipProperties.Contains (propertyName))
@@ -123,36 +124,36 @@ namespace Xamarin.Forms.Build.Tasks
 				
 				Context.IL.Append(SetPropertyValue(Context.Variables[(IElementNode)parentNode], propertyName, node, Context, node));
 			}
-			else if (IsCollectionItem(node, parentNode) && parentNode is IElementNode)
-			{
-				// Collection element, implicit content, or implicit collection element.
-				string contentProperty;
+			else if (IsCollectionItem(node, parentNode) && parentNode is IElementNode) {
 				var parentVar = Context.Variables[(IElementNode)parentNode];
-				if (parentVar.VariableType.ImplementsInterface(Module.ImportReference(typeof (IEnumerable))) && parentVar.VariableType.GetMethods(md => md.Name == "Add" && md.Parameters.Count == 1, Module).Any())
-				{
-					var elementType = parentVar.VariableType;
-					if (elementType.FullName != "Xamarin.Forms.ResourceDictionary" && elementType.Resolve().BaseType.FullName != "Xamarin.Forms.ResourceDictionary")
-					{
-						var adderTuple = elementType.GetMethods(md => md.Name == "Add" && md.Parameters.Count == 1, Module).First();
-						var adderRef = Module.ImportReference(adderTuple.Item1);
-						adderRef = Module.ImportReference(adderRef.ResolveGenericParameters(adderTuple.Item2, Module));
+				string contentProperty;
 
-						Context.IL.Emit(OpCodes.Ldloc, parentVar);
-						Context.IL.Emit(OpCodes.Ldloc, vardef);
-						Context.IL.Emit(OpCodes.Callvirt, adderRef);
-						if (adderRef.ReturnType.FullName != "System.Void")
-							Context.IL.Emit(OpCodes.Pop);
-					}
+				if (CanAddToResourceDictionary(parentVar.VariableType, node, node, Context)) {
+					Context.IL.Emit(Ldloc, parentVar);
+					Context.IL.Append(AddToResourceDictionary(node, node, Context));
 				}
-				else if ((contentProperty = GetContentProperty(parentVar.VariableType)) != null)
-				{
+				// Collection element, implicit content, or implicit collection element.
+				else if (parentVar.VariableType.ImplementsInterface(Module.ImportReference(typeof (IEnumerable))) && parentVar.VariableType.GetMethods(md => md.Name == "Add" && md.Parameters.Count == 1, Module).Any()) {
+					var elementType = parentVar.VariableType;
+					var adderTuple = elementType.GetMethods(md => md.Name == "Add" && md.Parameters.Count == 1, Module).First();
+					var adderRef = Module.ImportReference(adderTuple.Item1);
+					adderRef = Module.ImportReference(adderRef.ResolveGenericParameters(adderTuple.Item2, Module));
+
+					Context.IL.Emit(OpCodes.Ldloc, parentVar);
+					Context.IL.Emit(OpCodes.Ldloc, vardef);
+					Context.IL.Emit(OpCodes.Callvirt, adderRef);
+					if (adderRef.ReturnType.FullName != "System.Void")
+						Context.IL.Emit(OpCodes.Pop);
+				}
+				else if ((contentProperty = GetContentProperty(parentVar.VariableType)) != null) {
 					var name = new XmlName(node.NamespaceURI, contentProperty);
 					if (skips.Contains(name))
 						return;
 					if (parentNode is IElementNode && ((IElementNode)parentNode).SkipProperties.Contains (propertyName))
 						return;
 					Context.IL.Append(SetPropertyValue(Context.Variables[(IElementNode)parentNode], name, node, Context, node));
-				} else
+				}
+				else
 					throw new XamlParseException($"Can not set the content of {((IElementNode)parentNode).XmlType.Name} as it doesn't have a ContentPropertyAttribute", node);
 			}
 			else if (IsCollectionItem(node, parentNode) && parentNode is ListNode)
@@ -172,31 +173,21 @@ namespace Xamarin.Forms.Build.Tasks
 				var elementType = parent.VariableType;
 				var localname = parentList.XmlName.LocalName;
 
-				GetNameAndTypeRef(ref elementType, parentList.XmlName.NamespaceURI, ref localname, Context, node);
+				TypeReference propertyType;
+				Context.IL.Append(GetPropertyValue(parent, parentList.XmlName, Context, node, out propertyType));
 
-				TypeReference propertyDeclaringType;
-				var property = elementType.GetProperty(pd => pd.Name == localname, out propertyDeclaringType);
-				MethodDefinition propertyGetter;
+				if (CanAddToResourceDictionary(propertyType, node, node, Context)) {
+					Context.IL.Append(AddToResourceDictionary(node, node, Context));
+					return;
+				} 
+				var adderTuple = propertyType.GetMethods(md => md.Name == "Add" && md.Parameters.Count == 1, Module).First();
+				var adderRef = Module.ImportReference(adderTuple.Item1);
+				adderRef = Module.ImportReference(adderRef.ResolveGenericParameters(adderTuple.Item2, Module));
 
-				if (property != null && (propertyGetter = property.GetMethod) != null && propertyGetter.IsPublic)
-				{
-					var propertyGetterRef = Module.ImportReference(propertyGetter);
-					propertyGetterRef = Module.ImportReference(propertyGetterRef.ResolveGenericParameters(propertyDeclaringType, Module));
-					var propertyType = propertyGetterRef.ReturnType.ResolveGenericParameters(propertyDeclaringType);
-
-					var adderTuple = propertyType.GetMethods(md => md.Name == "Add" && md.Parameters.Count == 1, Module).First();
-					var adderRef = Module.ImportReference(adderTuple.Item1);
-					adderRef = Module.ImportReference(adderRef.ResolveGenericParameters(adderTuple.Item2, Module));
-
-					Context.IL.Emit(OpCodes.Ldloc, parent);
-					Context.IL.Emit(OpCodes.Callvirt, propertyGetterRef);
-					Context.IL.Emit(OpCodes.Ldloc, vardef);
-					Context.IL.Emit(OpCodes.Callvirt, adderRef);
-					if (adderRef.ReturnType.FullName != "System.Void")
+				Context.IL.Emit(OpCodes.Ldloc, vardef);
+				Context.IL.Emit(OpCodes.Callvirt, adderRef);
+				if (adderRef.ReturnType.FullName != "System.Void")
 						Context.IL.Emit(OpCodes.Pop);
-				} else
-					throw new XamlParseException(string.Format("Property {0} not found", localname), node);
-
 			}
 		}
 
@@ -737,10 +728,29 @@ namespace Xamarin.Forms.Build.Tasks
 				return Set(parent, localName, valueNode, iXmlLineInfo, context);
 
 			//If it's an already initialized property, add to it
-			if (CanAdd(parent, localName, valueNode, context))
-				return Add(parent, localName, valueNode, iXmlLineInfo, context);
+			if (CanAdd(parent, propertyName, valueNode, iXmlLineInfo, context))
+				return Add(parent, propertyName, valueNode, iXmlLineInfo, context);
 
 			throw new XamlParseException($"No property, bindable property, or event found for '{localName}', or mismatching type between value and property.", iXmlLineInfo);
+		}
+
+		public static IEnumerable<Instruction> GetPropertyValue(VariableDefinition parent, XmlName propertyName, ILContext context, IXmlLineInfo lineInfo, out TypeReference propertyType)
+		{
+			var module = context.Body.Method.Module;
+			var localName = propertyName.LocalName;
+			bool attached;
+			var bpRef = GetBindablePropertyReference(parent, propertyName.NamespaceURI, ref localName, out attached, context, lineInfo);
+			TypeReference _;
+
+			//If it's a BP, GetValue ()
+			if (CanGetValue(parent, bpRef, attached, lineInfo, context, out _))
+				return GetValue(parent, bpRef, lineInfo, context, out propertyType);
+
+			//If it's a property, set it
+			if (CanGet(parent, localName, context, out _))
+				return Get(parent, localName, lineInfo, context, out propertyType);
+
+			throw new XamlParseException($"Property {localName} is not found or does not have an accessible getter", lineInfo);
 		}
 
 		static FieldReference GetBindablePropertyReference(VariableDefinition parent, string namespaceURI, ref string localName, out bool attached, ILContext context, IXmlLineInfo iXmlLineInfo)
@@ -890,7 +900,8 @@ namespace Xamarin.Forms.Build.Tasks
 			if (bpRef == null)
 				return false;
 
-			if (node is ValueNode)
+			var valueNode = node as ValueNode;
+			if (valueNode != null && valueNode.CanConvertValue(context, bpRef))
 				return true;
 
 			var elementNode = node as IElementNode;
@@ -915,6 +926,21 @@ namespace Xamarin.Forms.Build.Tasks
 				return true;
 
 			return varValue.VariableType.InheritsFromOrImplements(bpTypeRef);
+		}
+
+		static bool CanGetValue(VariableDefinition parent, FieldReference bpRef, bool attached, IXmlLineInfo iXmlLineInfo, ILContext context, out TypeReference propertyType)
+		{
+			var module = context.Body.Method.Module;
+			propertyType = null;
+
+			if (bpRef == null)
+				return false;
+
+			if (!parent.VariableType.InheritsFromOrImplements(module.ImportReference(typeof(BindableObject))))
+				return false;
+
+			propertyType = bpRef.GetBindablePropertyType(iXmlLineInfo, module);
+			return true;
 		}
 
 		static IEnumerable<Instruction> SetValue(VariableDefinition parent, FieldReference bpRef, INode node, IXmlLineInfo iXmlLineInfo, ILContext context)
@@ -952,6 +978,19 @@ namespace Xamarin.Forms.Build.Tasks
 			yield return Instruction.Create(OpCodes.Callvirt, module.ImportReference(setValue));
 		}
 
+		static IEnumerable<Instruction> GetValue(VariableDefinition parent, FieldReference bpRef, IXmlLineInfo iXmlLineInfo, ILContext context, out TypeReference propertyType)
+		{
+			var getValue = typeof(BindableObject).GetMethod("GetValue", new[] { typeof(BindableProperty) });
+			var module = context.Body.Method.Module;
+			propertyType = bpRef.GetBindablePropertyType(iXmlLineInfo, module);
+
+			return new[] {
+				Instruction.Create(OpCodes.Ldloc, parent),
+				Instruction.Create(OpCodes.Ldsfld, bpRef),
+				Instruction.Create(OpCodes.Callvirt, module.ImportReference(getValue)),
+			};
+		}
+
 		static bool CanSet(VariableDefinition parent, string localName, INode node, ILContext context)
 		{
 			var module = context.Body.Method.Module;
@@ -959,11 +998,13 @@ namespace Xamarin.Forms.Build.Tasks
 			var property = parent.VariableType.GetProperty(pd => pd.Name == localName, out declaringTypeReference);
 			if (property == null)
 				return false;
+			var propertyType = property.ResolveGenericPropertyType(declaringTypeReference, module);
 			var propertySetter = property.SetMethod;
 			if (propertySetter == null || !propertySetter.IsPublic || propertySetter.IsStatic)
 				return false;
 
-			if (node is ValueNode)
+			var valueNode = node as ValueNode;
+			if (valueNode != null && valueNode.CanConvertValue(context, propertyType, new ICustomAttributeProvider[] { property, propertyType.Resolve()}))
 				return true;
 
 			var elementNode = node as IElementNode;
@@ -971,7 +1012,6 @@ namespace Xamarin.Forms.Build.Tasks
 				return false;
 
 			var vardef = context.Variables [elementNode];
-			var propertyType = property.ResolveGenericPropertyType(declaringTypeReference, module);
 			var implicitOperator = vardef.VariableType.GetImplicitOperatorTo(propertyType, module);
 
 			if (implicitOperator != null)
@@ -986,6 +1026,26 @@ namespace Xamarin.Forms.Build.Tasks
 				return true;
 
 			return false;
+		}
+
+		static bool CanGet(VariableDefinition parent, string localName, ILContext context, out TypeReference propertyType)
+		{
+			var module = context.Body.Method.Module;
+			propertyType = null;
+			TypeReference declaringTypeReference;
+			var property = parent.VariableType.GetProperty(pd => pd.Name == localName, out declaringTypeReference);
+			if (property == null)
+				return false;
+			var propertyGetter = property.GetMethod;
+			if (propertyGetter == null || !propertyGetter.IsPublic || propertyGetter.IsStatic)
+				return false;
+
+			module.ImportReference(parent.VariableType.Resolve());
+			var propertyGetterRef = module.ImportReference(module.ImportReference(propertyGetter).ResolveGenericParameters(declaringTypeReference, module));
+			propertyGetterRef.ImportTypes(module);
+			propertyType = propertyGetterRef.ReturnType.ResolveGenericParameters(declaringTypeReference);
+
+			return true;
 		}
 
 		static IEnumerable<Instruction> Set(VariableDefinition parent, string localName, INode node, IXmlLineInfo iXmlLineInfo, ILContext context)
@@ -1037,24 +1097,41 @@ namespace Xamarin.Forms.Build.Tasks
 			}
 		}
 
-		static bool CanAdd(VariableDefinition parent, string localName, INode node, ILContext context)
+		static IEnumerable<Instruction> Get(VariableDefinition parent, string localName, IXmlLineInfo iXmlLineInfo, ILContext context, out TypeReference propertyType)
 		{
 			var module = context.Body.Method.Module;
 			TypeReference declaringTypeReference;
 			var property = parent.VariableType.GetProperty(pd => pd.Name == localName, out declaringTypeReference);
-			if (property == null)
-				return false;
 			var propertyGetter = property.GetMethod;
-			if (propertyGetter == null || !propertyGetter.IsPublic || propertyGetter.IsStatic)
-				return false;
-			var elementNode = node as IElementNode;
-			if (elementNode == null)
-				return false;
 
-			var vardef = context.Variables [elementNode];
-			var propertyGetterRef = module.ImportReference(propertyGetter);
-			propertyGetterRef = module.ImportReference(propertyGetterRef.ResolveGenericParameters(declaringTypeReference, module));
-			var propertyType = propertyGetterRef.ReturnType.ResolveGenericParameters(declaringTypeReference);
+			module.ImportReference(parent.VariableType.Resolve());
+			var propertyGetterRef = module.ImportReference(module.ImportReference(propertyGetter).ResolveGenericParameters(declaringTypeReference, module));
+			propertyGetterRef.ImportTypes(module);
+			propertyType = propertyGetterRef.ReturnType.ResolveGenericParameters(declaringTypeReference);
+
+			if (parent.VariableType.IsValueType)
+				return new[] {
+					Instruction.Create(OpCodes.Ldloca, parent),
+					Instruction.Create(OpCodes.Call, propertyGetterRef),
+				};
+			else
+				return new[] {
+					Instruction.Create(OpCodes.Ldloc, parent),
+					Instruction.Create(OpCodes.Callvirt, propertyGetterRef),
+				};
+		}
+
+		static bool CanAdd(VariableDefinition parent, XmlName propertyName, INode node, IXmlLineInfo lineInfo, ILContext context)
+		{
+			var module = context.Body.Method.Module;
+			var localName = propertyName.LocalName;
+			bool attached;
+			var bpRef = GetBindablePropertyReference(parent, propertyName.NamespaceURI, ref localName, out attached, context, lineInfo);
+			TypeReference propertyType;
+
+			if (   !CanGetValue(parent, bpRef, attached, null, context, out propertyType)
+				&& !CanGet(parent, localName, context, out propertyType))
+				return false;
 
 			//TODO check md.Parameters[0] type
 			var adderTuple = propertyType.GetMethods(md => md.Name == "Add" && md.Parameters.Count == 1, module).FirstOrDefault();
@@ -1064,26 +1141,46 @@ namespace Xamarin.Forms.Build.Tasks
 			return true;
 		}
 
-		static IEnumerable<Instruction> Add(VariableDefinition parent, string localName, INode node, IXmlLineInfo iXmlLineInfo, ILContext context)
+		static bool CanAddToResourceDictionary(TypeReference collectionType, IElementNode node, IXmlLineInfo lineInfo, ILContext context)
+		{
+			if (   collectionType.FullName != "Xamarin.Forms.ResourceDictionary"
+			    && collectionType.Resolve().BaseType?.FullName != "Xamarin.Forms.ResourceDictionary")
+				return false;
+
+			if (node.Properties.ContainsKey(XmlName.xKey))
+				return true;
+
+			if (node.XmlType.Name == "Style")
+				return true;
+
+			if (node.XmlType.Name == "ResourceDictionary")
+				return true;
+
+			throw new XamlParseException("resources in ResourceDictionary require a x:Key attribute", lineInfo);
+		}
+
+		static IEnumerable<Instruction> Add(VariableDefinition parent, XmlName propertyName, INode node, IXmlLineInfo iXmlLineInfo, ILContext context)
 		{
 			var module = context.Body.Method.Module;
-			TypeReference declaringTypeReference;
-			var property = parent.VariableType.GetProperty(pd => pd.Name == localName, out declaringTypeReference);
-			var propertyGetter = property.GetMethod;
 			var elementNode = node as IElementNode;
 			var vardef = context.Variables [elementNode];
-			var propertyGetterRef = module.ImportReference(propertyGetter);
-			propertyGetterRef = module.ImportReference(propertyGetterRef.ResolveGenericParameters(declaringTypeReference, module));
-			var propertyType = propertyGetterRef.ReturnType.ResolveGenericParameters(declaringTypeReference);
-			//TODO check md.Parameters[0] type
+
+			TypeReference propertyType;
+			foreach (var instruction in GetPropertyValue(parent, propertyName, context, iXmlLineInfo, out propertyType))
+				yield return instruction;
+
+			if (CanAddToResourceDictionary(propertyType, elementNode, iXmlLineInfo, context)) {
+				foreach (var instruction in AddToResourceDictionary(elementNode, iXmlLineInfo, context))
+					yield return instruction;
+				yield break;
+			}
+
 			var adderTuple = propertyType.GetMethods(md => md.Name == "Add" && md.Parameters.Count == 1, module).FirstOrDefault();
 			var adderRef = module.ImportReference(adderTuple.Item1);
 			adderRef = module.ImportReference(adderRef.ResolveGenericParameters(adderTuple.Item2, module));
-			var childType = GetParameterType(adderRef.Parameters [0]);
+			var childType = GetParameterType(adderRef.Parameters[0]);
 			var implicitOperator = vardef.VariableType.GetImplicitOperatorTo(childType, module);
 
-			yield return Instruction.Create(OpCodes.Ldloc, parent);
-			yield return Instruction.Create(OpCodes.Callvirt, propertyGetterRef);
 			yield return Instruction.Create(OpCodes.Ldloc, vardef);
 			if (implicitOperator != null)
 				yield return Instruction.Create(OpCodes.Call, module.ImportReference(implicitOperator));
@@ -1092,6 +1189,39 @@ namespace Xamarin.Forms.Build.Tasks
 			yield return Instruction.Create(OpCodes.Callvirt, adderRef);
 			if (adderRef.ReturnType.FullName != "System.Void")
 				yield return Instruction.Create(OpCodes.Pop);
+		}
+
+		static IEnumerable<Instruction> AddToResourceDictionary(IElementNode node, IXmlLineInfo lineInfo, ILContext context)
+		{
+			var module = context.Body.Method.Module;
+
+			if (node.Properties.ContainsKey(XmlName.xKey)) {
+//				IL_0014:  ldstr "key"
+//				IL_0019:  ldstr "foo"
+//				IL_001e:  callvirt instance void class [Xamarin.Forms.Core]Xamarin.Forms.ResourceDictionary::Add(string, object)
+				yield return Create(Ldstr, (node.Properties[XmlName.xKey] as ValueNode).Value as string);
+				var varDef = context.Variables[node];
+				yield return Create(Ldloc, varDef);
+				if (varDef.VariableType.IsValueType)
+					yield return Create(Box, module.ImportReference(varDef.VariableType));
+				yield return Create(Callvirt,
+					module.ImportReference(
+						module.ImportReference(typeof(ResourceDictionary))
+							.Resolve()
+							.Methods.Single(md => md.Name == "Add" && md.Parameters.Count == 2)));
+				yield break;
+			}
+
+			var nodeTypeRef = node.XmlType.GetTypeReference(module, lineInfo);
+			yield return Create(Ldloc, context.Variables[node]);
+			yield return Create(Callvirt,
+				module.ImportReference(
+					module.ImportReference(typeof(ResourceDictionary))
+						.Resolve()
+						.Methods.Single(md => md.Name == "Add"
+									 && md.Parameters.Count == 1
+									 && TypeRefComparer.Default.Equals(md.Parameters[0].ParameterType, nodeTypeRef))));
+			yield break;
 		}
 
 		public static TypeReference GetParameterType(ParameterDefinition param)
@@ -1177,7 +1307,7 @@ namespace Xamarin.Forms.Build.Tasks
 			node.Accept(new SetNamescopesAndRegisterNamesVisitor(templateContext), null);
 			node.Accept(new SetFieldVisitor(templateContext), null);
 			node.Accept(new SetResourcesVisitor(templateContext), null);
-			node.Accept(new SetPropertiesVisitor(templateContext), null);
+			node.Accept(new SetPropertiesVisitor(templateContext, stopOnResourceDictionary: true), null);
 
 			templateIl.Emit(OpCodes.Ldloc, templateContext.Variables[node]);
 			templateIl.Emit(OpCodes.Ret);

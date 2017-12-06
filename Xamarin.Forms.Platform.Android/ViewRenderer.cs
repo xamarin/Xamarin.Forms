@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using Android.App;
+using Android.Content;
 using Android.OS;
 using Android.Views;
 using AView = Android.Views.View;
@@ -9,10 +10,27 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public abstract class ViewRenderer : ViewRenderer<View, AView>
 	{
+		protected ViewRenderer(Context context) : base(context)
+		{
+		}
+
+		[Obsolete("This constructor is obsolete as of version 2.5. Please use ViewRenderer(Context) instead.")]
+		protected ViewRenderer()
+		{
+		}
 	}
 
 	public abstract class ViewRenderer<TView, TNativeView> : VisualElementRenderer<TView>, AView.IOnFocusChangeListener where TView : View where TNativeView : AView
 	{
+		protected ViewRenderer(Context context) : base(context)
+		{
+		}
+
+		[Obsolete("This constructor is obsolete as of version 2.5. Please use ViewRenderer(Context) instead.")]
+		protected ViewRenderer() 
+		{
+		}
+
 		protected virtual TNativeView CreateNativeControl()
 		{
 			return default(TNativeView);
@@ -129,6 +147,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateIsEnabled();
 			else if (e.PropertyName == AutomationProperties.LabeledByProperty.PropertyName)
 				SetLabeledBy();
+			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
+				UpdateFlowDirection();
 		}
 
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)
@@ -301,6 +321,7 @@ namespace Xamarin.Forms.Platform.Android
 			Control.OnFocusChangeListener = this;
 
 			UpdateIsEnabled();
+			UpdateFlowDirection();
 			SetLabeledBy();
 		}
 
@@ -326,6 +347,11 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (Control != null)
 				Control.Enabled = Element.IsEnabled;
+		}
+
+		void UpdateFlowDirection()
+		{
+			Control.UpdateFlowDirection(Element);
 		}
 	}
 }

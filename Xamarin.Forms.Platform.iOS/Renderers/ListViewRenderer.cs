@@ -102,10 +102,19 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void DisposeSubviews(UIView view)
 		{
-			foreach (UIView subView in view.Subviews)
-				DisposeSubviews(subView);
+			var ver = view as IVisualElementRenderer;
 
-			view.RemoveFromSuperview();
+			if (ver == null)
+			{
+				// VisualElementRenderers should implement their own dispose methods that will appropriately dispose and remove their child views.
+				// Attempting to do this work twice could cause a SIGSEGV (only observed in iOS8), so don't do this work here.
+				// Non-renderer views, such as separator lines, etc., can be removed here.
+				foreach (UIView subView in view.Subviews)
+					DisposeSubviews(subView);
+
+				view.RemoveFromSuperview();
+			}
+
 			view.Dispose();
 		}
 
@@ -333,7 +342,7 @@ namespace Xamarin.Forms.Platform.iOS
 			Control.TableHeaderView = _headerRenderer.NativeView;
 		}
 
-		void OnScrollToRequested(object sender, ScrollToRequestedEventArgs e)
+		async void OnScrollToRequested(object sender, ScrollToRequestedEventArgs e)
 		{
 			if (Superview == null)
 			{
@@ -357,6 +366,11 @@ namespace Xamarin.Forms.Platform.iOS
 				if (index != -1)
 				{
 					Control.Layer.RemoveAllAnimations();
+					//iOS11 hack
+					if (Forms.IsiOS11OrNewer)
+					{
+						await Task.Delay(1);
+					}
 					Control.ScrollToRow(NSIndexPath.FromRowSection(index, 0), position, e.ShouldAnimate);
 				}
 			}
@@ -406,7 +420,9 @@ namespace Xamarin.Forms.Platform.iOS
 				if (_footerRenderer != null)
 				{
 					_footerRenderer.Element.MeasureInvalidated -= OnFooterMeasureInvalidated;
-					if (footer != null && _footerRenderer.GetType() == Internals.Registrar.Registered.GetHandlerType(footer.GetType()))
+					var reflectableType = _footerRenderer as System.Reflection.IReflectableType;
+					var rendererType = reflectableType != null ? reflectableType.GetTypeInfo().AsType() : _footerRenderer.GetType();
+					if (footer != null && rendererType == Internals.Registrar.Registered.GetHandlerTypeForObject(footer))
 					{
 						_footerRenderer.SetElement(footerView);
 						return;
@@ -452,7 +468,9 @@ namespace Xamarin.Forms.Platform.iOS
 				if (_headerRenderer != null)
 				{
 					_headerRenderer.Element.MeasureInvalidated -= OnHeaderMeasureInvalidated;
-					if (header != null && _headerRenderer.GetType() == Internals.Registrar.Registered.GetHandlerType(header.GetType()))
+					var reflectableType = _headerRenderer as System.Reflection.IReflectableType;
+					var rendererType = reflectableType != null ? reflectableType.GetTypeInfo().AsType() : _headerRenderer.GetType();
+					if (header != null && rendererType == Internals.Registrar.Registered.GetHandlerTypeForObject(header))
 					{
 						_headerRenderer.SetElement(headerView);
 						return;
@@ -503,10 +521,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 			var groupReset = resetWhenGrouped && Element.IsGroupingEnabled;
 
-			var lastIndex = Control.NumberOfRowsInSection(section);
-			if (e.NewStartingIndex > lastIndex || e.OldStartingIndex > lastIndex)
-				throw new ArgumentException(
-					$"Index '{Math.Max(e.NewStartingIndex, e.OldStartingIndex)}' is greater than the number of rows '{lastIndex}'.");
+			if (!groupReset)
+			{
+				var lastIndex = Control.NumberOfRowsInSection(section);
+				if (e.NewStartingIndex > lastIndex || e.OldStartingIndex > lastIndex)
+					throw new ArgumentException(
+						$"Index '{Math.Max(e.NewStartingIndex, e.OldStartingIndex)}' is greater than the number of rows '{lastIndex}'.");
+			}
 
 			switch (e.Action)
 			{
@@ -654,10 +675,19 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 
 				// We're going to base our estimate off of the first cell
-				var firstCell = templatedItems.First();
+				var isGroupingEnabled = List.IsGroupingEnabled;
+
+				if (isGroupingEnabled)
+					templatedItems = templatedItems.GetGroup(0);
+
+				object item = null;
+				if (templatedItems == null || templatedItems.ListProxy.TryGetValue(0, out item) == false)
+					return DefaultRowHeight;
+
+				var firstCell = templatedItems.ActivateContent(0, item);
 
 				// Let's skip this optimization for grouped lists. It will likely cause more trouble than it's worth.
-				if (firstCell.Height > 0 && !List.IsGroupingEnabled)
+				if (firstCell?.Height > 0 && !isGroupingEnabled)
 				{
 					// Seems like we've got cells which already specify their height; since the heights are known,
 					// we don't need to use estimatedRowHeight at all; zero will disable it and use the known heights.
@@ -745,7 +775,8 @@ namespace Xamarin.Forms.Platform.iOS
 					// Let the EstimatedHeight method know to use this value.
 					// Much more efficient than checking the value each time.
 					//_useEstimatedRowHeight = true;
-					return (nfloat)req.Request.Height;
+					var height = (nfloat)req.Request.Height;
+					return height > 1 ? height : DefaultRowHeight;
 				}
 
 				var renderHeight = cell.RenderHeight;
@@ -873,7 +904,7 @@ namespace Xamarin.Forms.Platform.iOS
 				PreserveActivityIndicatorState(cell);
 				return nativeCell;
 			}
-		
+
 			public override nfloat GetHeightForHeader(UITableView tableView, nint section)
 			{
 				if (List.IsGroupingEnabled)
@@ -891,21 +922,30 @@ namespace Xamarin.Forms.Platform.iOS
 
 			public override UIView GetViewForHeader(UITableView tableView, nint section)
 			{
-				if (List.IsGroupingEnabled && List.GroupHeaderTemplate != null)
-				{
-					var cell = TemplatedItemsView.TemplatedItems[(int)section];
-					if (cell.HasContextActions)
-						throw new NotSupportedException("Header cells do not support context actions");
+				UIView view = null;
 
-					var renderer = (CellRenderer)Internals.Registrar.Registered.GetHandler<IRegisterable>(cell.GetType());
+				if (!List.IsGroupingEnabled)
+					return view;
 
-					var view = new HeaderWrapperView();
+				var cell = TemplatedItemsView.TemplatedItems[(int)section];
+				if (cell.HasContextActions)
+					throw new NotSupportedException("Header cells do not support context actions");
+
+					var renderer = (CellRenderer)Internals.Registrar.Registered.GetHandlerForObject<IRegisterable>(cell);
+
+					view = new HeaderWrapperView();
 					view.AddSubview(renderer.GetCell(cell, null, tableView));
 
-					return view;
-				}
+				return view;
+			}
 
-				return null;
+			public override void HeaderViewDisplayingEnded(UITableView tableView, UIView headerView, nint section)
+			{
+				if (!List.IsGroupingEnabled)
+					return;
+
+				var cell = TemplatedItemsView.TemplatedItems[(int)section];
+				cell.SendDisappearing();
 			}
 
 			public override nint NumberOfSections(UITableView tableView)
@@ -1015,18 +1055,6 @@ namespace Xamarin.Forms.Platform.iOS
 				return templatedItems.ShortNames.ToArray();
 			}
 
-			public override string TitleForHeader(UITableView tableView, nint section)
-			{
-				if (!List.IsGroupingEnabled)
-					return null;
-
-				var sl = GetSectionList((int)section);
-				sl.PropertyChanged -= OnSectionPropertyChanged;
-				sl.PropertyChanged += OnSectionPropertyChanged;
-
-				return sl.Name;
-			}
-
 			public void Cleanup()
 			{
 				_selectionFromNative = false;
@@ -1067,27 +1095,6 @@ namespace Xamarin.Forms.Platform.iOS
 				var templatedItems = GetTemplatedItemsListForPath(indexPath);
 				var cell = templatedItems[indexPath.Row];
 				return cell;
-			}
-
-			ITemplatedItemsList<Cell> GetSectionList(int section)
-			{
-				return (ITemplatedItemsList<Cell>)((IList)TemplatedItemsView.TemplatedItems)[section];
-			}
-
-			void OnSectionPropertyChanged(object sender, PropertyChangedEventArgs e)
-			{
-				var currentSelected = _uiTableView.IndexPathForSelectedRow;
-
-				var til = (TemplatedItemsList<ItemsView<Cell>, Cell>)sender;
-				var groupIndex = ((IList)TemplatedItemsView.TemplatedItems).IndexOf(til);
-				if (groupIndex == -1)
-				{
-					til.PropertyChanged -= OnSectionPropertyChanged;
-					return;
-				}
-
-				_uiTableView.ReloadSections(NSIndexSet.FromIndex(groupIndex), ReloadSectionsAnimation);
-				_uiTableView.SelectRow(currentSelected, false, UITableViewScrollPosition.None);
 			}
 
 			void OnShortNamesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

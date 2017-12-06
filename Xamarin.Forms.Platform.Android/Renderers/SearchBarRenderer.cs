@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Linq;
+using Android.Content;
 using Android.Content.Res;
 using Android.Graphics;
 using Android.OS;
@@ -18,6 +19,12 @@ namespace Xamarin.Forms.Platform.Android
 		InputTypes _inputType;
 		ColorStateList _textColorDefault;
 
+		public SearchBarRenderer(Context context) : base(context)
+		{
+			AutoPackage = false;
+		}
+
+		[Obsolete("This constructor is obsolete as of version 2.5. Please use SearchBarRenderer(Context) instead.")]
 		public SearchBarRenderer()
 		{
 			AutoPackage = false;
@@ -108,6 +115,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateTextColor();
 			else if (e.PropertyName == SearchBar.PlaceholderColorProperty.PropertyName)
 				UpdatePlaceholderColor();
+			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
+				UpdateAlignment();
 		}
 
 		internal override void OnNativeFocusChanged(bool hasFocus)
@@ -123,7 +132,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (_editText == null)
 				return;
 
-			_editText.Gravity = Element.HorizontalTextAlignment.ToHorizontalGravityFlags() | Xamarin.Forms.TextAlignment.Center.ToVerticalGravityFlags();
+			_editText.UpdateHorizontalAlignment(Element.HorizontalTextAlignment);
 		}
 
 		void UpdateCancelButtonColor()

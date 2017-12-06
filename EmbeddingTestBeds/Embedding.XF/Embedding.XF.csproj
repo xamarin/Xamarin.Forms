@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <XFDisableTargetsValidation>True</XFDisableTargetsValidation>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="AlertsAndActionSheets.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="WebViewExample.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Page3.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Hello.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Page4.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OpenUri.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Xamarin.Forms.Build.Tasks\Xamarin.Forms.Build.Tasks.csproj" />
+    <ProjectReference Include="..\..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">
+      <Project>{57B8B73D-C3B5-4C42-869E-7B2F17D354AC}</Project>
+      <Name>Xamarin.Forms.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj">
+      <Project>{67F9D3A8-F71E-4428-913F-C37AE82CDB24}</Project>
+      <Name>Xamarin.Forms.Platform</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Xamarin.Forms.Xaml\Xamarin.Forms.Xaml.csproj">
+      <Project>{9DB2F292-8034-4E06-89AD-98BBDA4306B9}</Project>
+      <Name>Xamarin.Forms.Xaml</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="..\..\.nuspec\Xamarin.Forms.targets" />
+</Project>

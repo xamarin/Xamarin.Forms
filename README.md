@@ -67,7 +67,7 @@ You can find out how to obtain a Google Maps API key [here](https://developer.xa
 
 ## Coding Style ##
 
-We follow the style used by the [.NET Foundation](https://github.com/dotnet/corefx/blob/master/Documentation/coding-guidelines/coding-style.md), with two primary exceptions:
+We follow the style used by the [.NET Foundation](https://github.com/dotnet/corefx/blob/master/Documentation/coding-guidelines/coding-style.md), with a few exceptions:
 
 - We do not use the `private` keyword as it is the default accessibility level in C#.
 - We use hard tabs over spaces. You can change this setting in VS 2015 via `Tools > Options` and navigating to `Text Editor > C#` and selecting the "Keep tabs" radio option. In Visual Studio for Mac it's set via preferences in `Source Code > Code Formatting > C# source code` and disabling the checkbox for `Convert tabs to spaces`.
@@ -75,14 +75,10 @@ We follow the style used by the [.NET Foundation](https://github.com/dotnet/core
 
 ## Contributing ##
 
-- [How to Contribute](https://github.com/xamarin/xamarin.forms/wiki/Contributing-Code)
-
-### Xamarin.Forms Evolution
-
-To discuss this project and participate in the design, we use the [Xamarin.Forms Evolution](https://forums.xamarin.com/categories/xamarin-forms-evolution) discussion board.   
+- [How to Contribute](https://github.com/xamarin/Xamarin.Forms/wiki/How-to-Contribute)
 
 ### Reporting Bugs
 
-We use [Bugzilla](https://bugzilla.xamarin.com/newbug) to track issues.
+We use [GitHub Issues](https://github.com/xamarin/Xamarin.Forms/issues) to track issues. If at all possible, please submit a [reproduction of your bug](https://gist.github.com/jassmith/92405c300e54a01dcc6d) along with your bug report.
 
 

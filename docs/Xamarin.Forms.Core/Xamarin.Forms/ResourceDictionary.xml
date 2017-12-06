@@ -53,6 +53,25 @@
       </Docs>
     </Member>
     <Member MemberName="Add">
+      <MemberSignature Language="C#" Value="public void Add (Xamarin.Forms.ResourceDictionary mergedResourceDictionary);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void Add(class Xamarin.Forms.ResourceDictionary mergedResourceDictionary) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="mergedResourceDictionary" Type="Xamarin.Forms.ResourceDictionary" />
+      </Parameters>
+      <Docs>
+        <param name="mergedResourceDictionary">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Add">
       <MemberSignature Language="C#" Value="public void Add (Xamarin.Forms.Style style);" />
       <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void Add(class Xamarin.Forms.Style style) cil managed" />
       <MemberType>Method</MemberType>
@@ -246,6 +265,22 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
+    <Member MemberName="MergedDictionaries">
+      <MemberSignature Language="C#" Value="public System.Collections.Generic.ICollection&lt;Xamarin.Forms.ResourceDictionary&gt; MergedDictionaries { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Collections.Generic.ICollection`1&lt;class Xamarin.Forms.ResourceDictionary&gt; MergedDictionaries" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Collections.Generic.ICollection&lt;Xamarin.Forms.ResourceDictionary&gt;</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
     <Member MemberName="MergedWith">
       <MemberSignature Language="C#" Value="public Type MergedWith { get; set; }" />
       <MemberSignature Language="ILAsm" Value=".property instance class System.Type MergedWith" />
@@ -254,6 +289,9 @@
         <AssemblyVersion>2.0.0.0</AssemblyVersion>
       </AssemblyInfo>
       <Attributes>
+        <Attribute>
+          <AttributeName>System.Obsolete("Use Source")</AttributeName>
+        </Attribute>
         <Attribute>
           <AttributeName>Xamarin.Forms.TypeConverter(typeof(Xamarin.Forms.TypeTypeConverter))</AttributeName>
         </Attribute>
@@ -291,6 +329,57 @@
         <summary>Removes the key and value identified by <paramref name="key" /> from the <see cref="T:Xamarin.Forms.ResourceDictionary" />.</summary>
         <returns>
           <see langword="true" /> if the key existed and the removal was successful.</returns>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="SetAndLoadSource">
+      <MemberSignature Language="C#" Value="public void SetAndLoadSource (Uri value, string resourcePath, System.Reflection.Assembly assembly, System.Xml.IXmlLineInfo lineInfo);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig instance void SetAndLoadSource(class System.Uri value, string resourcePath, class System.Reflection.Assembly assembly, class System.Xml.IXmlLineInfo lineInfo) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute>
+          <AttributeName>System.ComponentModel.EditorBrowsable(System.ComponentModel.EditorBrowsableState.Never)</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="value" Type="System.Uri" />
+        <Parameter Name="resourceID" Type="System.String" />
+        <Parameter Name="assembly" Type="System.Reflection.Assembly" />
+        <Parameter Name="lineInfo" Type="System.Xml.IXmlLineInfo" />
+      </Parameters>
+      <Docs>
+        <param name="value">To be added.</param>
+        <param name="resourcePath">To be added.</param>
+        <param name="assembly">To be added.</param>
+        <param name="lineInfo">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="Source">
+      <MemberSignature Language="C#" Value="public Uri Source { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Uri Source" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Attributes>
+        <Attribute>
+          <AttributeName>Xamarin.Forms.TypeConverter(typeof(Xamarin.Forms.ResourceDictionary/RDSourceTypeConverter))</AttributeName>
+        </Attribute>
+      </Attributes>
+      <ReturnValue>
+        <ReturnType>System.Uri</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>

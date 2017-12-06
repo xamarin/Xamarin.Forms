@@ -36,6 +36,7 @@ namespace Xamarin.Forms
 #if __MOBILE__
 		static bool? s_isiOS9OrNewer;
 		static bool? s_isiOS10OrNewer;
+		static bool? s_isiOS11OrNewer;
 #endif
 		static Forms()
 		{
@@ -64,6 +65,16 @@ namespace Xamarin.Forms
 				return s_isiOS10OrNewer.Value;
 			}
 		}
+
+		internal static bool IsiOS11OrNewer
+		{
+			get
+			{
+				if (!s_isiOS11OrNewer.HasValue)
+					s_isiOS11OrNewer = UIDevice.CurrentDevice.CheckSystemVersion(11, 0);
+				return s_isiOS11OrNewer.Value;
+			}
+		}
 #endif
 
 		static IReadOnlyList<string> s_flags;
@@ -90,9 +101,12 @@ namespace Xamarin.Forms
 
 #if __MOBILE__
 			Device.SetIdiom(UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad ? TargetIdiom.Tablet : TargetIdiom.Phone);
+			Device.SetFlowDirection(UIApplication.SharedApplication.UserInterfaceLayoutDirection.ToFlowDirection());
 #else
 			Device.SetIdiom(TargetIdiom.Desktop);
+			Device.SetFlowDirection(NSApplication.SharedApplication.UserInterfaceLayoutDirection.ToFlowDirection());
 #endif
+			Device.SetFlags(s_flags);
 			Device.PlatformServices = new IOSPlatformServices();
 			Device.Info = new IOSDeviceInfo();
 
@@ -319,18 +333,26 @@ namespace Xamarin.Forms
 					return Task.FromResult(_isolatedStorageFile.GetLastWriteTime(path));
 				}
 
-				public Task<Stream> OpenFileAsync(string path, Internals.FileMode mode, Internals.FileAccess access)
+				public Task<Stream> OpenFileAsync(string path, FileMode mode, FileAccess access)
 				{
-					Stream stream = _isolatedStorageFile.OpenFile(path, (System.IO.FileMode)mode, (System.IO.FileAccess)access);
+					Stream stream = _isolatedStorageFile.OpenFile(path, mode, access);
 					return Task.FromResult(stream);
 				}
 
-				public Task<Stream> OpenFileAsync(string path, Internals.FileMode mode, Internals.FileAccess access, Internals.FileShare share)
+				public Task<Stream> OpenFileAsync(string path, FileMode mode, FileAccess access, FileShare share)
 				{
-					Stream stream = _isolatedStorageFile.OpenFile(path, (System.IO.FileMode)mode, (System.IO.FileAccess)access,
-						(System.IO.FileShare)share);
+					Stream stream = _isolatedStorageFile.OpenFile(path, mode, access, share);
 					return Task.FromResult(stream);
 				}
+			}
+
+			public void QuitApplication()
+			{
+#if __MOBILE__
+				Log.Warning(nameof(IOSPlatformServices), "Platform doesn't implement QuitApp");
+#else
+				NSApplication.SharedApplication.Terminate(new NSObject());
+#endif
 			}
 		}
 	}

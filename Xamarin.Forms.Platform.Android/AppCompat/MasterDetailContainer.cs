@@ -69,7 +69,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				{
 					// But first, if the previous occupant of this container was a fragment, we need to remove it properly
 					FragmentTransaction transaction = FragmentManager.BeginTransaction();
-					transaction.DisallowAddToBackStack();
 					transaction.Remove(_currentFragment);
 					transaction.SetTransition((int)FragmentTransit.None);
 
@@ -97,7 +96,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				});
 
 				FragmentTransaction transaction = FragmentManager.BeginTransaction();
-				transaction.DisallowAddToBackStack();
 
 				if (_currentFragment != null)
 				{
@@ -138,10 +136,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			if (disposing)
 			{
-				if (_currentFragment != null)
+				if (_currentFragment != null && !FragmentManager.IsDestroyed)
 				{
 					FragmentTransaction transaction = FragmentManager.BeginTransaction();
-					transaction.DisallowAddToBackStack();
 					transaction.Remove(_currentFragment);
 					transaction.SetTransition((int)FragmentTransit.None);
 					transaction.CommitAllowingStateLoss();

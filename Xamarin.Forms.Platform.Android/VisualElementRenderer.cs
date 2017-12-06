@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using Android.Content;
 using Android.Support.V4.View;
 using Android.Views;
 using Xamarin.Forms.Internals;
-using Xamarin.Forms.Platform.Android.FastRenderers;
 using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
@@ -27,14 +27,14 @@ namespace Xamarin.Forms.Platform.Android
 
 		readonly GestureManager _gestureManager;
 
-		protected VisualElementRenderer() : base(Forms.Context)
+		protected VisualElementRenderer(Context context) : base(context)
 		{
 			_gestureManager = new GestureManager(this);
 		}
 
 		public override bool OnTouchEvent(MotionEvent e)
 		{
-			return _gestureManager.OnTouchEvent(e);
+			return _gestureManager.OnTouchEvent(e) || base.OnTouchEvent(e);
 		}
 
 		public override bool OnInterceptTouchEvent(MotionEvent ev)
@@ -61,6 +61,11 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			return base.DispatchTouchEvent(e);
+		}		  		
+
+		[Obsolete("This constructor is obsolete as of version 2.5. Please use VisualElementRenderer(Context) instead.")]
+		protected VisualElementRenderer() : this(Forms.Context)
+		{
 		}
 
 		public TElement Element { get; private set; }
@@ -258,8 +263,10 @@ namespace Xamarin.Forms.Platform.Android
 				handler(this, args);
 
 			ElementChanged?.Invoke(this, e);
-		}
 
+			ElevationHelper.SetElevation(this, e.NewElement);
+		}
+		
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)

@@ -1,5 +1,8 @@
+using System;
 using System.ComponentModel;
+using Android.Content;
 using Android.Views;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -7,6 +10,12 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		readonly MotionEventHelper _motionEventHelper = new MotionEventHelper();
 
+		public BoxRenderer(Context context) : base(context)
+		{
+			AutoPackage = false;
+		}
+
+		[Obsolete("This constructor is obsolete as of version 2.5. Please use BoxRenderer(Context) instead.")]
 		public BoxRenderer()
 		{
 			AutoPackage = false;

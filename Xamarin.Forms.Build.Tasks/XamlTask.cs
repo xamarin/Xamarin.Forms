@@ -65,7 +65,7 @@ namespace Xamarin.Forms.Build.Tasks
 
 	static class CecilExtensions
 	{
-		public static bool IsXaml(this EmbeddedResource resource, out string classname)
+		public static bool IsXaml(this EmbeddedResource resource, ModuleDefinition module, out string classname)
 		{
 			classname = null;
 			if (!resource.Name.EndsWith(".xaml", StringComparison.InvariantCulture))
@@ -81,13 +81,35 @@ namespace Xamarin.Forms.Build.Tasks
 				if (root == null)
 					return false;
 
-				var rootClass = root.Attributes ["Class", "http://schemas.microsoft.com/winfx/2006/xaml"] ??
-								root.Attributes ["Class", "http://schemas.microsoft.com/winfx/2009/xaml"];
-				if (rootClass == null)
-					return false;
-				classname = rootClass.Value;
-				return true;
+				var rootClass = root.Attributes["Class", XamlParser.X2006Uri] ??
+								root.Attributes["Class", XamlParser.X2009Uri];
+				if (rootClass != null) {
+					classname = rootClass.Value;
+					return true;
+				}
+
+				//no x:Class, but it might be a RD without x:Class and with <?xaml-comp compile="true" ?>
+				//in that case, it has a XamlResourceIdAttribute
+				var typeRef = GetTypeForResourceId(module, resource.Name);
+				if (typeRef != null) {
+					classname = typeRef.FullName;
+					return true;
+				}
+
+				return false;
 			}
+		}
+
+		static TypeReference GetTypeForResourceId(ModuleDefinition module, string resourceId)
+		{
+			foreach (var ca in module.GetCustomAttributes()) {
+				if (!TypeRefComparer.Default.Equals(ca.AttributeType, module.ImportReference(typeof(XamlResourceIdAttribute))))
+					continue;
+				if (ca.ConstructorArguments[0].Value as string != resourceId)
+					continue;
+				return ca.ConstructorArguments[2].Value as TypeReference;
+			}
+			return null;
 		}
 	}
 }

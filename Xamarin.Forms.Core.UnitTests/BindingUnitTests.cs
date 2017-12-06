@@ -1257,10 +1257,11 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		#if !WINDOWS_PHONE
-		[Test]
-		[SetUICulture ("pt-PT")]
-		public void ValueConverterCulture ()
+		[TestCase("en-US"), TestCase("pt-PT"), TestCase("tr-TR")]
+		public void ValueConverterCulture (string culture)
 		{
+			System.Threading.Thread.CurrentThread.CurrentUICulture = new CultureInfo(culture);
+
 			var converter = new TestConverterCulture ();
 			var vm = new MockViewModel ();
 			var property = BindableProperty.Create<MockBindable, string> (w=>w.Text, "Bar", BindingMode.OneWayToSource);
@@ -1268,7 +1269,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			bindable.SetBinding (property, new Binding ("Text", converter: converter));
 			bindable.BindingContext = vm;
 
-			Assert.AreEqual ("pt-PT", vm.Text);
+			Assert.AreEqual (culture, vm.Text);
 		}
 		#endif
 
@@ -1881,11 +1882,11 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		#if !WINDOWS_PHONE
-		[Test]
-		[SetCulture ("pt-PT")]
-		[SetUICulture ("pt-PT")]
-		public void ConvertIsCultureInvariant ()
+		[TestCase("en-US"), TestCase("pt-PT")]
+		public void ConvertIsCultureInvariant (string culture)
 		{
+			System.Threading.Thread.CurrentThread.CurrentCulture = System.Threading.Thread.CurrentThread.CurrentUICulture = new CultureInfo(culture);
+
 			var slider = new Slider ();
 			var vm = new MockViewModel { Text = "0.5" };
 			slider.BindingContext = vm;
@@ -2113,6 +2114,49 @@ namespace Xamarin.Forms.Core.UnitTests
 			viewModel["Foo"] = "Baz";
 
 			Assert.AreEqual ("Baz", label.Text);
+		}
+
+		class VM57081
+		{
+			string _foo;
+			public string Foo
+			{
+				get {
+					Count++;
+					return _foo;
+				}
+				set { _foo = value; }
+			}
+
+			public int Count { get; set; }
+		}
+
+		[Test]
+		// https://bugzilla.xamarin.com/show_bug.cgi?id=57081
+		public void BindingWithSourceNotReappliedWhenBindingContextIsChanged()
+		{
+			var bindable = new MockBindable();
+			var model = new VM57081();
+			var bp = BindableProperty.Create("foo", typeof(string), typeof(MockBindable), null);
+			Assume.That(model.Count, Is.EqualTo(0));
+			bindable.SetBinding(bp, new Binding { Path = "Foo", Source = model });
+			Assume.That(model.Count, Is.EqualTo(1));
+			bindable.BindingContext = new object();
+			Assert.That(model.Count, Is.EqualTo(1));
+		}
+
+		[Test]
+		// https://bugzilla.xamarin.com/show_bug.cgi?id=57081
+		public void BindingWithSourceNotReappliedWhenParented()
+		{
+			var view = new ContentView();
+			var model = new VM57081();
+			Assume.That(model.Count, Is.EqualTo(0));
+			view.SetBinding(BindableObject.BindingContextProperty, new Binding { Path = "Foo", Source = model });
+			Assume.That(model.Count, Is.EqualTo(1));
+			var parent = new ContentView { BindingContext = new object() };
+			parent.Content = view;
+			Assert.That(model.Count, Is.EqualTo(1));
 		}
 	}
 }

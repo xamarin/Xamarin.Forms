@@ -12,6 +12,49 @@ namespace Xamarin.Forms.Build.Tasks
 {
 	static class NodeILExtensions
 	{
+		public static bool CanConvertValue(this ValueNode node, ILContext context, TypeReference targetTypeRef, IEnumerable<ICustomAttributeProvider> attributeProviders)
+		{
+			TypeReference typeConverter = null;
+			foreach (var attributeProvider in attributeProviders) {
+				CustomAttribute typeConverterAttribute;
+				if (
+					(typeConverterAttribute =
+						attributeProvider.CustomAttributes.FirstOrDefault(
+							cad => TypeConverterAttribute.TypeConvertersType.Contains(cad.AttributeType.FullName))) != null) {
+					typeConverter = typeConverterAttribute.ConstructorArguments[0].Value as TypeReference;
+					break;
+				}
+			}
+
+			return node.CanConvertValue(context, targetTypeRef, typeConverter);
+		}
+
+		public static bool CanConvertValue(this ValueNode node, ILContext context, FieldReference bpRef)
+		{
+			var module = context.Body.Method.Module;
+			var targetTypeRef = bpRef.GetBindablePropertyType(node, module);
+			var typeConverter = bpRef.GetBindablePropertyTypeConverter(module);
+			return node.CanConvertValue(context, targetTypeRef, typeConverter);
+		}
+
+		public static bool CanConvertValue(this ValueNode node, ILContext context, TypeReference targetTypeRef, TypeReference typeConverter)
+		{
+			var str = (string)node.Value;
+			var module = context.Body.Method.Module;
+
+			//If there's a [TypeConverter], use it
+			if (typeConverter != null && str != null) {
+				var typeConvAttribute = typeConverter.GetCustomAttribute(module.ImportReference(typeof(TypeConversionAttribute)));
+				if (typeConvAttribute == null) //trust the unattributed TypeConverter
+					return true;
+				var toType = typeConvAttribute.ConstructorArguments.First().Value as TypeReference;
+				return toType.InheritsFromOrImplements(targetTypeRef);
+			}
+
+			///No reason to return false
+			return true;
+		}
+
 		public static IEnumerable<Instruction> PushConvertedValue(this ValueNode node, ILContext context,
 			TypeReference targetTypeRef, IEnumerable<ICustomAttributeProvider> attributeProviders,
 			IEnumerable<Instruction> pushServiceProvider, bool boxValueTypes, bool unboxValueTypes)
@@ -58,7 +101,7 @@ namespace Xamarin.Forms.Build.Tasks
 				var compiledConverter = Activator.CreateInstance (compiledConverterType);
 				var converter = typeof(ICompiledTypeConverter).GetMethods ().FirstOrDefault (md => md.Name == "ConvertFromString");
 				var instructions = (IEnumerable<Instruction>)converter.Invoke (compiledConverter, new object[] {
-					node.Value as string, context.Body.Method.Module, node as BaseNode});
+					node.Value as string, context, node as BaseNode});
 				foreach (var i in instructions)
 					yield return i;
 				if (targetTypeRef.IsValueType && boxValueTypes)
@@ -310,20 +353,18 @@ namespace Xamarin.Forms.Build.Tasks
 			var module = context.Body.Method.Module;
 
 			var xmlLineInfo = node as IXmlLineInfo;
-			if (xmlLineInfo == null)
-			{
+			if (xmlLineInfo == null) {
 				yield return Instruction.Create(OpCodes.Ldnull);
 				yield break;
 			}
 			MethodReference ctor;
-			if (xmlLineInfo.HasLineInfo())
-			{
+			if (xmlLineInfo.HasLineInfo()) {
 				yield return Instruction.Create(OpCodes.Ldc_I4, xmlLineInfo.LineNumber);
 				yield return Instruction.Create(OpCodes.Ldc_I4, xmlLineInfo.LinePosition);
-				ctor = module.ImportReference(typeof (XmlLineInfo).GetConstructor(new[] { typeof (int), typeof (int) }));
+				ctor = module.ImportReference(typeof(XmlLineInfo).GetConstructor(new[] { typeof(int), typeof(int) }));
 			}
 			else
-				ctor = module.ImportReference(typeof (XmlLineInfo).GetConstructor(new Type[] { }));
+				ctor = module.ImportReference(typeof(XmlLineInfo).GetConstructor(new Type[] { }));
 			yield return Instruction.Create(OpCodes.Newobj, ctor);
 		}
 

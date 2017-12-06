@@ -11,6 +11,19 @@ namespace Xamarin.Forms
 {
 	public abstract class Element : BindableObject, IElement, INameScope, IElementController
 	{
+
+		public static readonly BindableProperty MenuProperty = BindableProperty.CreateAttached(nameof(Menu), typeof(Menu), typeof(Element), null);
+
+		public static Menu GetMenu(BindableObject bindable)
+		{
+			return (Menu)bindable.GetValue(MenuProperty);
+		}
+
+		public static void SetMenu(BindableObject bindable, Menu menu)
+		{
+			bindable.SetValue(MenuProperty, menu);
+		}
+
 		internal static readonly ReadOnlyCollection<Element> EmptyChildren = new ReadOnlyCollection<Element>(new Element[0]);
 
 		public static readonly BindableProperty ClassIdProperty = BindableProperty.Create("ClassId", typeof(string), typeof(View), null);
@@ -356,7 +369,7 @@ namespace Xamarin.Forms
 			if (Platform != null)
 				child.Platform = Platform;
 
-			child.ApplyBindings();
+			child.ApplyBindings(skipBindingContext: false, fromBindingContextChanged:true);
 
 			if (ChildAdded != null)
 				ChildAdded(this, new ElementEventArgs(child));
@@ -489,6 +502,27 @@ namespace Xamarin.Forms
 		}
 
 		internal event EventHandler ParentSet;
+
+		internal static void SetFlowDirectionFromParent(Element child)
+		{
+			IFlowDirectionController controller = child as IFlowDirectionController;
+			if (controller == null)
+				return;
+
+			if (controller.EffectiveFlowDirection.IsImplicit())
+			{
+				var parentView = child.Parent as IFlowDirectionController;
+				if (parentView == null)
+					return;
+
+				var flowDirection = parentView.EffectiveFlowDirection.ToFlowDirection();
+
+				if (flowDirection != controller.EffectiveFlowDirection.ToFlowDirection())
+				{
+					controller.EffectiveFlowDirection = flowDirection.ToEffectiveFlowDirection();
+				}
+			}
+		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public event EventHandler PlatformSet;

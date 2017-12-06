@@ -8,6 +8,7 @@ using UIKit;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using static Xamarin.Forms.PlatformConfiguration.iOSSpecific.Page;
+using static Xamarin.Forms.PlatformConfiguration.iOSSpecific.NavigationPage;
 using PageUIStatusBarAnimation = Xamarin.Forms.PlatformConfiguration.iOSSpecific.UIStatusBarAnimation;
 using PointF = CoreGraphics.CGPoint;
 using RectangleF = CoreGraphics.CGRect;
@@ -25,6 +26,8 @@ namespace Xamarin.Forms.Platform.iOS
 		UIViewController[] _removeControllers;
 		UIToolbar _secondaryToolbar;
 		VisualElementTracker _tracker;
+		nfloat _navigationBottom = 0;
+
 
 		public NavigationRenderer()
 		{
@@ -146,13 +149,15 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void ViewDidLayoutSubviews()
 		{
 			base.ViewDidLayoutSubviews();
+			if (Current == null)
+				return;
 			UpdateToolBarVisible();
 
-			var navBarFrame = NavigationBar.Frame;
-
+			var navBarFrameBottom = Math.Min(NavigationBar.Frame.Bottom, 140);
+			_navigationBottom = (nfloat)navBarFrameBottom;
 			var toolbar = _secondaryToolbar;
 			// Use 0 if the NavBar is hidden or will be hidden
-			var toolbarY = NavigationBarHidden || NavigationBar.Translucent || !NavigationPage.GetHasNavigationBar(Current) ? 0 : navBarFrame.Bottom;
+			var toolbarY = NavigationBarHidden || NavigationBar.Translucent || !NavigationPage.GetHasNavigationBar(Current) ? 0 : navBarFrameBottom;
 			toolbar.Frame = new RectangleF(0, toolbarY, View.Frame.Width, toolbar.Frame.Height);
 
 			double trueBottom = toolbar.Hidden ? toolbarY : toolbar.Frame.Bottom;
@@ -205,6 +210,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateTint();
 			UpdateBarBackgroundColor();
 			UpdateBarTextColor();
+			UpdateUseLargeTitles();
 
 			// If there is already stuff on the stack we need to push it
 			navPage.Pages.ForEach(async p => await PushPageAsync(p, false));
@@ -378,7 +384,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		async void setTitleImage(ParentingViewController pack, FileImageSource titleIcon)
 		{
-			var source = Internals.Registrar.Registered.GetHandler<IImageSourceHandler>(titleIcon.GetType());
+			var source = Internals.Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(titleIcon);
 			var image = await source.LoadImageAsync(titleIcon);
 			//UIImage ctor throws on file not found if MonoTouch.ObjCRuntime.Class.ThrowOnInitFailure is true;
 			pack.NavigationItem.TitleView = new UIImageView(image);
@@ -442,6 +448,9 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateTranslucent();
 			else if (e.PropertyName == PreferredStatusBarUpdateAnimationProperty.PropertyName)
 				UpdateCurrentPagePreferredStatusBarUpdateAnimation();
+			else if (e.PropertyName == PrefersLargeTitlesProperty.PropertyName)
+				UpdateUseLargeTitles();
+			
 		}
 
 		void UpdateCurrentPagePreferredStatusBarUpdateAnimation()
@@ -451,6 +460,14 @@ namespace Xamarin.Forms.Platform.iOS
 			PageUIStatusBarAnimation animation = PlatformConfiguration.iOSSpecific.Page.PreferredStatusBarUpdateAnimation(((Page)Element).OnThisPlatform());
 			PlatformConfiguration.iOSSpecific.Page.SetPreferredStatusBarUpdateAnimation(Current.OnThisPlatform(), animation);
 		}
+
+		void UpdateUseLargeTitles()
+		{
+			var navPage = (Element as NavigationPage);
+			if (Forms.IsiOS11OrNewer && navPage != null)
+				NavigationBar.PrefersLargeTitles = navPage.OnThisPlatform().PrefersLargeTitles();
+		}	
+
 
 		void UpdateTranslucent()
 		{
@@ -599,6 +616,12 @@ namespace Xamarin.Forms.Platform.iOS
 				NavigationBar.TitleTextAttributes = titleAttributes;
 			}
 
+			if(Forms.IsiOS11OrNewer)
+			{
+				NavigationBar.LargeTitleTextAttributes = NavigationBar.TitleTextAttributes;      
+			}
+
+
 			var statusBarColorMode = (Element as NavigationPage).OnThisPlatform().GetStatusBarTextColorMode();
 
 			// set Tint color (i. e. Back Button arrow and Text)
@@ -676,7 +699,7 @@ namespace Xamarin.Forms.Platform.iOS
 				try
 				{
 
-					var source = Internals.Registrar.Registered.GetHandler<IImageSourceHandler>(masterDetailPage.Master.Icon.GetType());
+					var source = Internals.Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(masterDetailPage.Master.Icon);
 					var icon = await source.LoadImageAsync(masterDetailPage.Master.Icon);
 					containerController.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(icon, UIBarButtonItemStyle.Plain, handler);
 				}
@@ -691,6 +714,14 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				containerController.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(masterDetailPage.Master.Title, UIBarButtonItemStyle.Plain, handler);
 			}
+		}
+
+		internal void ValidateInsets()
+		{
+			nfloat navBottom = NavigationBar.Frame.Bottom;
+
+			if (_navigationBottom != navBottom && Current != null)
+				ViewDidLayoutSubviews();
 		}
 
 		class SecondaryToolbar : UIToolbar
@@ -717,22 +748,29 @@ namespace Xamarin.Forms.Platform.iOS
 				base.LayoutSubviews();
 				if (Items == null || Items.Length == 0)
 					return;
-				nfloat padding = 11f;
-				var itemWidth = (Bounds.Width - padding) / Items.Length - padding;
+				LayoutToolbarItems(Bounds.Width, Bounds.Height, 0);
+			}
+
+			void LayoutToolbarItems(nfloat toolbarWidth, nfloat toolbarHeight, nfloat padding)
+			{
 				var x = padding;
-				var itemH = Bounds.Height - 10;
+				var y = 0;
+				var itemH = toolbarHeight;
+				var itemW = toolbarWidth / Items.Length;
+
 				foreach (var item in Items)
 				{
-					var frame = new RectangleF(x, 5, itemWidth, itemH);
+					var frame = new RectangleF(x, y, itemW, itemH);
 					item.CustomView.Frame = frame;
-					x += itemWidth + padding;
+					x += itemW + padding;
 				}
-				x = itemWidth + padding * 1.5f;
-				var y = Bounds.GetMidY();
+
+				x = itemW + padding * 1.5f;
+				y = (int)Bounds.GetMidY();
 				foreach (var l in _lines)
 				{
 					l.Center = new PointF(x, y);
-					x += itemWidth + padding;
+					x += itemW + padding;
 				}
 			}
 
@@ -782,6 +820,7 @@ namespace Xamarin.Forms.Platform.iOS
 						_child.PropertyChanged += HandleChildPropertyChanged;
 
 					UpdateHasBackButton();
+					UpdateLargeTitles();
 				}
 			}
 
@@ -812,6 +851,15 @@ namespace Xamarin.Forms.Platform.iOS
 				var handler = Disappearing;
 				if (handler != null)
 					handler(this, EventArgs.Empty);
+			}
+
+			public override void ViewWillLayoutSubviews()
+			{
+				base.ViewWillLayoutSubviews();
+
+				NavigationRenderer n;
+				if (_navigation.TryGetTarget(out n))
+					n.ValidateInsets();
 			}
 
 			public override void ViewDidLayoutSubviews()
@@ -887,6 +935,8 @@ namespace Xamarin.Forms.Platform.iOS
 					UpdateHasBackButton();
 				else if (e.PropertyName == PrefersStatusBarHiddenProperty.PropertyName)
 					UpdatePrefersStatusBarHidden();
+				else if (e.PropertyName == LargeTitleDisplayProperty.PropertyName)
+					UpdateLargeTitles();
 			}
 
 			void UpdatePrefersStatusBarHidden()
@@ -956,6 +1006,27 @@ namespace Xamarin.Forms.Platform.iOS
 				NavigationRenderer n;
 				if (_navigation.TryGetTarget(out n))
 					n.UpdateToolBarVisible();
+			}
+
+			void UpdateLargeTitles()
+			{
+				var page = Child;
+				if (page != null && Forms.IsiOS11OrNewer)
+				{
+					var largeTitleDisplayMode = page.OnThisPlatform().LargeTitleDisplay();
+					switch (largeTitleDisplayMode)
+					{
+						case LargeTitleDisplayMode.Always:
+							NavigationItem.LargeTitleDisplayMode = UINavigationItemLargeTitleDisplayMode.Always;
+							break;
+						case LargeTitleDisplayMode.Automatic:
+							NavigationItem.LargeTitleDisplayMode = UINavigationItemLargeTitleDisplayMode.Automatic;
+							break;
+						case LargeTitleDisplayMode.Never:
+							NavigationItem.LargeTitleDisplayMode = UINavigationItemLargeTitleDisplayMode.Never;
+							break;
+					}
+				}
 			}
 
 			public override UIInterfaceOrientationMask GetSupportedInterfaceOrientations()

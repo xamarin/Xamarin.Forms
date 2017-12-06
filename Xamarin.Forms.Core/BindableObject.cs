@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using Xamarin.Forms.Internals;
 
@@ -116,13 +117,13 @@ namespace Xamarin.Forms
 				bindable._inheritedContext = value;
 			}
 
-			bindable.ApplyBindings();
+			bindable.ApplyBindings(skipBindingContext:false, fromBindingContextChanged:true);
 			bindable.OnBindingContextChanged();
 		}
 
 		protected void ApplyBindings()
 		{
-			ApplyBindings(false);
+			ApplyBindings(skipBindingContext: false, fromBindingContextChanged: false);
 		}
 
 		protected virtual void OnBindingContextChanged()
@@ -405,7 +406,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		void ApplyBindings(bool skipBindingContext)
+		internal void ApplyBindings(bool skipBindingContext, bool fromBindingContextChanged)
 		{
 			var prop = _properties.ToArray();
 			for (int i = 0, propLength = prop.Length; i < propLength; i++) {
@@ -417,8 +418,8 @@ namespace Xamarin.Forms
 				if (skipBindingContext && ReferenceEquals(context.Property, BindingContextProperty))
 					continue;
 
-				binding.Unapply();
-				binding.Apply(BindingContext, this, context.Property);
+				binding.Unapply(fromBindingContextChanged: fromBindingContextChanged);
+				binding.Apply(BindingContext, this, context.Property, fromBindingContextChanged: fromBindingContextChanged);
 			}
 		}
 
@@ -437,7 +438,7 @@ namespace Xamarin.Forms
 		static void BindingContextPropertyChanged(BindableObject bindable, object oldvalue, object newvalue)
 		{
 			bindable._inheritedContext = null;
-			bindable.ApplyBindings(true);
+			bindable.ApplyBindings(skipBindingContext: true, fromBindingContextChanged:true);
 			bindable.OnBindingContextChanged();
 		}
 
@@ -552,7 +553,7 @@ namespace Xamarin.Forms
 			bool clearOneWayBindings = (attributes & SetValueFlags.ClearOneWayBindings) != 0;
 			bool clearTwoWayBindings = (attributes & SetValueFlags.ClearTwoWayBindings) != 0;
 
-			bool same = Equals(value, original);
+			bool same = ReferenceEquals(context.Property, BindingContextProperty) ? ReferenceEquals(value, original) : Equals(value, original);
 			if (!silent && (!same || raiseOnEqual))
 			{
 				if (property.PropertyChanging != null)
@@ -592,8 +593,7 @@ namespace Xamarin.Forms
 
 				OnPropertyChanged(property.PropertyName);
 
-				if (property.PropertyChanged != null)
-					property.PropertyChanged(this, original, value);
+				property.PropertyChanged?.Invoke(this, original, value);
 			}
 		}
 

@@ -7,7 +7,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Xamarin.Forms.Core.macOS.UITests</RootNamespace>
     <AssemblyName>Xamarin.Forms.Core.macOS.UITests</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -64,7 +64,7 @@
       <HintPath>..\packages\ServiceStack.Client.4.5.12\lib\net45\ServiceStack.Client.dll</HintPath>
     </Reference>
     <Reference Include="Xamarin.UITest">
-      <HintPath>..\packages\Xamarin.UITest.2.1.1\lib\net45\Xamarin.UITest.dll</HintPath>
+      <HintPath>..\packages\Xamarin.UITest.2.2.1.1670-dev\lib\net45\Xamarin.UITest.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -73,6 +73,7 @@
     <Compile Include="MacOSApp.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
