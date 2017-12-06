@@ -6,7 +6,17 @@ namespace Xamarin.Forms
 	public static class VisualStateManager
 	{
 		public static readonly BindableProperty VisualStateGroupsProperty =
-			BindableProperty.CreateAttached("VisualStateGroups", typeof(Collection<VisualStateGroup>), typeof(VisualElement), null);
+			BindableProperty.CreateAttached("VisualStateGroups", typeof(Collection<VisualStateGroup>), typeof(VisualElement), 
+				defaultValue: null, propertyChanged: VisualStateGroupsPropertyChanged);
+
+		static void VisualStateGroupsPropertyChanged(BindableObject bindable, object oldValue, object newValue)
+		{
+			if (bindable is VisualElement visualElement)
+			{
+				// Start out in the Normal state, if one is defined
+				GoToState(visualElement, "Normal");
+			}
+		}
 
 		public static Collection<VisualStateGroup> GetVisualStateGroups(VisualElement visualElement)
 		{
@@ -20,9 +30,7 @@ namespace Xamarin.Forms
 
 		public static bool GoToState(VisualElement visualElement, string name)
 		{
-			var groups = visualElement.GetValue(VisualStateGroupsProperty) as Collection<VisualStateGroup>;
-
-			if (groups == null)
+			if (!(visualElement.GetValue(VisualStateGroupsProperty) is Collection<VisualStateGroup> groups))
 			{
 				return false;
 			}

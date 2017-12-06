@@ -46,12 +46,6 @@
 	<ScrollView VerticalOptions="Fill" HorizontalOptions="Fill">
 		<StackLayout>
 
-			<!-- TODO
-	
-				 Set background colors for each textbox (and the states) to make sure you've got backgrounds working right
-	
-			-->
-
 			<!-- Not using the VSM at all; should exhibit pre-VSM default behavior -->
 			<Label Text="The Entry below uses the current XF defaults; when IsEnabled is false, it uses the default native colors for the control. (Legacy Color Behavior)"/>
 			<Entry x:Name="Entry0" TextColor="Blue" PlaceholderColor="Green" Placeholder="placeholder" 
