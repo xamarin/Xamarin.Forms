@@ -50,12 +50,15 @@ namespace Xamarin.Forms.Controls.Issues
 
 				View = _content;
 				ContextActions.Add(new MenuItem { Text = s_index++ + " Action" });
+
+				_content.SetBinding(Label.TextProperty, new Binding("."));
 			}
 
 			protected override void OnBindingContextChanged()
 			{
 				base.OnBindingContextChanged();
-				_content.Text = (string)BindingContext;
+				if(BindingContext != null)
+					_content.AutomationId = (string)BindingContext;
 			}
 		}
 
@@ -101,31 +104,23 @@ namespace Xamarin.Forms.Controls.Issues
 			// Item #1 should not have a tap gesture, so it should be selectable
 			RunningApp.WaitForElement(q => q.Marked("Item #1"));
 			RunningApp.Tap(q => q.Marked("Item #1"));
-			RunningApp.WaitForElement(q => q.Marked(ItemSelectedSuccess));
+			RunningApp.WaitForElement(q => q.Text(ItemSelectedSuccess));
 
 			// Item #2 should have a tap gesture
 			RunningApp.WaitForElement(q => q.Marked("Item #2"));
 			RunningApp.Tap(q => q.Marked("Item #2"));
-			RunningApp.WaitForElement(q => q.Marked(TapGestureSucess));
+			RunningApp.WaitForElement(q => q.Text(TapGestureSucess));
 
 			// Both items should allow access to the context menu
 			RunningApp.ActivateContextMenu("Item #2");
 			RunningApp.WaitForElement("2 Action");
-#if __ANDROID__
-			RunningApp.Back();
-#else 
 			RunningApp.Tap(q => q.Marked("Item #3"));
-#endif
 
 			RunningApp.ActivateContextMenu("Item #1");
 			RunningApp.WaitForElement("1 Action");
-#if __ANDROID__
-			RunningApp.Back();
-#else 
 			RunningApp.Tap(q => q.Marked("Item #3"));
-#endif
 
 		}
 #endif
-		}
+	}
 }
