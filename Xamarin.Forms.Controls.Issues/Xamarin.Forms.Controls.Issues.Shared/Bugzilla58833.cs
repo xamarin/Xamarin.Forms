@@ -103,12 +103,13 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			// Item #1 should not have a tap gesture, so it should be selectable
 			RunningApp.WaitForElement(q => q.Marked("Item #1"));
-			RunningApp.Tap(q => q.Marked("Item #1"));
+			RunningApp.Tap(q => q.Text("Item #1"));
+			RunningApp.Screenshot("After selected tap");
 			RunningApp.WaitForElement(q => q.Text(ItemSelectedSuccess));
 
 			// Item #2 should have a tap gesture
 			RunningApp.WaitForElement(q => q.Marked("Item #2"));
-			RunningApp.Tap(q => q.Marked("Item #2"));
+			RunningApp.Tap(q => q.Text("Item #2"));
 			RunningApp.WaitForElement(q => q.Text(TapGestureSucess));
 
 			// Both items should allow access to the context menu
