@@ -17,7 +17,6 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		TextColorSwitcher _hintColorSwitcher;
 		TextColorSwitcher _textColorSwitcher;
-		bool _useLegacyColorManagement;
 		bool _disposed;
 
 		public EntryRenderer(Context context) : base(context)
@@ -79,11 +78,13 @@ namespace Xamarin.Forms.Platform.Android
 				textView.SetOnEditorActionListener(this);
 				textView.OnKeyboardBackPressed += OnKeyboardBackPressed;
 
-				_textColorSwitcher = new TextColorSwitcher(textView.TextColors);
-				_hintColorSwitcher = new TextColorSwitcher(textView.HintTextColors);
+				var useLegacyColorManagement = VisualStateManager.GetVisualStateGroups(e.NewElement) == null
+											&& e.NewElement.OnThisPlatform().GetIsLegacyColorModeEnabled();
 
-				_useLegacyColorManagement = VisualStateManager.GetVisualStateGroups(e.NewElement) == null
-					&& e.NewElement.OnThisPlatform().GetIsLegacyColorModeEnabled();
+				_textColorSwitcher = new TextColorSwitcher(textView.TextColors, useLegacyColorManagement);
+				_hintColorSwitcher = new TextColorSwitcher(textView.HintTextColors, useLegacyColorManagement);
+
+				
 
 				SetNativeControl(textView);
 			}
@@ -171,14 +172,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateColor()
 		{
-			if (_useLegacyColorManagement)
-			{
-				_textColorSwitcher.UpdateTextColor(Control, Element.TextColor);
-			}
-			else
-			{
-				_textColorSwitcher.UpdateTextColor(Control, Element.TextColor, preserveDisabled: false);
-			}
+			_textColorSwitcher.UpdateTextColor(Control, Element.TextColor);
 		}
 
 		void UpdateFont()
@@ -207,14 +201,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdatePlaceholderColor()
 		{
-			if (_useLegacyColorManagement)
-			{
-				_hintColorSwitcher.UpdateTextColor(Control, Element.PlaceholderColor, Control.SetHintTextColor);
-			}
-			else
-			{
-				_hintColorSwitcher.UpdateTextColor(Control, Element.PlaceholderColor, Control.SetHintTextColor, preserveDisabled: false);
-			}
+			_hintColorSwitcher.UpdateTextColor(Control, Element.PlaceholderColor, Control.SetHintTextColor);
 		}
 
 		void OnKeyboardBackPressed(object sender, EventArgs eventArgs)

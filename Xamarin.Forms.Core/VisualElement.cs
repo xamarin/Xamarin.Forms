@@ -13,8 +13,8 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty InputTransparentProperty = BindableProperty.Create("InputTransparent", typeof(bool), typeof(VisualElement), default(bool));
 
-		public static readonly BindableProperty IsEnabledProperty = BindableProperty.Create("IsEnabled", typeof(bool), typeof(VisualElement), true,
-			propertyChanged: OnIsEnabledPropertyChanged);
+		public static readonly BindableProperty IsEnabledProperty = BindableProperty.Create("IsEnabled", typeof(bool), 
+			typeof(VisualElement), true, propertyChanged: OnIsEnabledPropertyChanged);
 
 		static readonly BindablePropertyKey XPropertyKey = BindableProperty.CreateReadOnly("X", typeof(double), typeof(VisualElement), default(double));
 
@@ -89,8 +89,8 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty MinimumHeightRequestProperty = BindableProperty.Create("MinimumHeightRequest", typeof(double), typeof(VisualElement), -1d, propertyChanged: OnRequestChanged);
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public static readonly BindablePropertyKey IsFocusedPropertyKey = BindableProperty.CreateReadOnly("IsFocused", typeof(bool), typeof(VisualElement), default(bool),
-			propertyChanged: OnIsFocusedPropertyChanged);
+		public static readonly BindablePropertyKey IsFocusedPropertyKey = BindableProperty.CreateReadOnly("IsFocused", 
+			typeof(bool), typeof(VisualElement), default(bool), propertyChanged: OnIsFocusedPropertyChanged);
 
 		public static readonly BindableProperty IsFocusedProperty = IsFocusedPropertyKey.BindableProperty;
 
@@ -804,9 +804,7 @@ namespace Xamarin.Forms
 
 		static void OnIsEnabledPropertyChanged(BindableObject bindable, object oldValue, object newValue)
 		{
-			// TODO hartez 2017/12/01 12:33:57 Pattern matching	
-			var element = bindable as VisualElement;
-			if (element == null)
+			if (!(bindable is VisualElement element))
 			{
 				return;
 			}
@@ -818,7 +816,10 @@ namespace Xamarin.Forms
 
 		static void OnIsFocusedPropertyChanged(BindableObject bindable, object oldvalue, object newvalue)
 		{
-			var element = bindable as VisualElement;
+			if (!(bindable is VisualElement element))
+			{
+				return;
+			}
 
 			var isFocused = (bool)newvalue;
 			if (isFocused)
@@ -829,6 +830,9 @@ namespace Xamarin.Forms
 			{
 				element.OnUnfocus();
 			}
+
+			// TODO hartez 2017/02/13 11:43:56 These state names should be consts defined somewhere	
+			VisualStateManager.GoToState(element, isFocused ? "Focused" : "Normal");
 		}
 
 		static void OnRequestChanged(BindableObject bindable, object oldvalue, object newvalue)

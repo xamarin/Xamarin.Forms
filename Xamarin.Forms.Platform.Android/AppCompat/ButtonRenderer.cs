@@ -8,6 +8,7 @@ using Android.Support.V4.Content;
 using Android.Support.V7.Widget;
 using Android.Util;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using GlobalResource = Android.Resource;
 using Object = Java.Lang.Object;
 using AView = Android.Views.View;
@@ -111,9 +112,12 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					button.SetOnClickListener(ButtonClickListener.Instance.Value);
 					button.SetOnTouchListener(ButtonTouchListener.Instance.Value);
 					button.Tag = this;
-					_textColorSwitcher = new TextColorSwitcher(button.TextColors);  
-					SetNativeControl(button);
 
+					var useLegacyColorManagement = VisualStateManager.GetVisualStateGroups(e.NewElement) == null
+												&& e.NewElement.OnThisPlatform().GetIsLegacyColorModeEnabled();
+					_textColorSwitcher = new TextColorSwitcher(button.TextColors, useLegacyColorManagement);  
+
+					SetNativeControl(button);
 					button.AddOnAttachStateChangeListener(this);
 				}
 
