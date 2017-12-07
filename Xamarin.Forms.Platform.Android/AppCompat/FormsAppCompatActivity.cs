@@ -114,17 +114,18 @@ namespace Xamarin.Forms.Platform.Android
 				_renderersAdded = true;
 			}
 
-			if (application == null)
-				throw new ArgumentNullException("application");
-
-			_application = application;
-			(application as IApplicationController)?.SetAppIndexingProvider(new AndroidAppIndexProvider(this));
+			_application = application ?? throw new ArgumentNullException(nameof(application));
+			(application as IApplicationController).SetAppIndexingProvider(new AndroidAppIndexProvider(this));
 			Xamarin.Forms.Application.SetCurrentApplication(application);
 
-			SetSoftInputMode();
+			if (Xamarin.Forms.Application.Current.OnThisPlatform().GetShouldSetWindowSoftInputModeAtStartup())
+				SetSoftInputMode();
+			else
+				Xamarin.Forms.Application.Current.OnThisPlatform().UseWindowSoftInputModeAdjust(WindowSoftInputModeAdjust.Unspecified);
 
 			CheckForAppLink(Intent);
 
+			// Make sure this event is wired AFTER window soft input mode is set above.
 			application.PropertyChanged += AppOnPropertyChanged;
 
 			if (application?.MainPage != null)
@@ -345,7 +346,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void SetSoftInputMode()
 		{
-			SoftInput adjust = SoftInput.AdjustPan;
+			var adjust = SoftInput.AdjustPan;
 
 			if (Xamarin.Forms.Application.Current != null)
 			{
