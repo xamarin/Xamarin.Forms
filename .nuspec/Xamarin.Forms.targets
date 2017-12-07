@@ -26,8 +26,8 @@
 	<PropertyGroup>
 		<_XFTargetsImportedAgain Condition="'$(_XFTargetsImported)'=='True'">True</_XFTargetsImportedAgain>
 		<_XFTargetsImported>True</_XFTargetsImported>
-		<IsXBuild Condition="'$(MSBuildRuntimeVersion)' == '' and '$(MSBuildRuntimeType)' != 'Core'">true</IsXBuild>
-		<IsXBuild Condition="'$(MSBuildRuntimeVersion)' != ''">false</IsXBuild>
+		<IsXBuild Condition="'$(MSBuildRuntimeType)' == ''">true</IsXBuild>
+		<IsXBuild Condition="'$(MSBuildRuntimeType)' != ''">false</IsXBuild>
 	</PropertyGroup>
 
 	<Target Name="_ValidateXFTasks" BeforeTargets="_CheckForInvalidConfigurationAndPlatform" Condition="'$(XFDisableTargetsValidation)' != 'True'">
