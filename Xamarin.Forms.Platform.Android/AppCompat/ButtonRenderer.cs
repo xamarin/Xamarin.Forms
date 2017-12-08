@@ -282,7 +282,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		void UpdateText()
 		{
 			var oldText = NativeButton.Text;
-			NativeButton.Text = Element.Text;
+			if ((IsNullOrEmpty(NativeButton.TextFormatted?.ToString()) || Element.Text != null))
+				NativeButton.Text = Element.Text;
 
 			// If we went from or to having no text, we need to update the image position
 			if (IsNullOrEmpty(oldText) != IsNullOrEmpty(NativeButton.Text))
