@@ -12,6 +12,7 @@ using ATimePicker = Android.Widget.TimePicker;
 using Object = Java.Lang.Object;
 using Orientation = Android.Widget.Orientation;
 using Android.Content;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -62,7 +63,11 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					var textField = CreateNativeControl();
 					textField.SetOnClickListener(PickerListener.Instance);
-					_textColorSwitcher = new TextColorSwitcher(textField.TextColors);
+
+					var useLegacyColorManagement = VisualStateManager.GetVisualStateGroups(e.NewElement) == null
+													&& e.NewElement.OnThisPlatform().GetIsLegacyColorModeEnabled();
+					_textColorSwitcher = new TextColorSwitcher(textField.TextColors, useLegacyColorManagement);
+
 					SetNativeControl(textField);
 				}
 				
