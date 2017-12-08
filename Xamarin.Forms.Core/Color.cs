@@ -394,7 +394,7 @@ namespace Xamarin.Forms
 
 		public static implicit operator System.Drawing.Color(Color color)
 		{
-			return System.Drawing.Color.FromArgb((byte)(color._a * 255), (byte)(color._g * 255), (byte)(color._b * 255), (byte)(color._a * 255));
+			return System.Drawing.Color.FromArgb((byte)(color._a * 255), (byte)(color._r * 255), (byte)(color._g * 255), (byte)(color._b * 255));
 		}
 
 		public static implicit operator Color(System.Drawing.Color color)
