@@ -5,6 +5,7 @@ using Android.Content;
 using Android.Content.Res;
 using Android.Util;
 using Android.Widget;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using AView = Android.Views.View;
 using Object = Java.Lang.Object;
 
@@ -67,7 +68,10 @@ namespace Xamarin.Forms.Platform.Android
 
 				textField.SetOnClickListener(TextFieldClickHandler.Instance);
 				SetNativeControl(textField);
-				_textColorSwitcher = new TextColorSwitcher(textField.TextColors); 
+
+				var useLegacyColorManagement = VisualStateManager.GetVisualStateGroups(e.NewElement) == null
+												&& e.NewElement.OnThisPlatform().GetIsLegacyColorModeEnabled();
+				_textColorSwitcher = new TextColorSwitcher(textField.TextColors, useLegacyColorManagement); 
 			}
 
 			SetDate(Element.Date);
