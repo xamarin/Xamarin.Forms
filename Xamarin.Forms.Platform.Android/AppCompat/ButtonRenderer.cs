@@ -113,8 +113,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					button.SetOnTouchListener(ButtonTouchListener.Instance.Value);
 					button.Tag = this;
 
-					var useLegacyColorManagement = VisualStateManager.GetVisualStateGroups(e.NewElement) == null
-												&& e.NewElement.OnThisPlatform().GetIsLegacyColorModeEnabled();
+					var useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
 					_textColorSwitcher = new TextColorSwitcher(button.TextColors, useLegacyColorManagement);  
 
 					SetNativeControl(button);

@@ -9,6 +9,11 @@ namespace Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries
 		public PickerDisabledStatesGallery ()
 		{
 			InitializeComponent ();
+
+			Button0.Text = $"Toggle IsEnabled (Currently {Picker0.IsEnabled})";
+			Button1.Text = $"Toggle IsEnabled (Currently {Picker1.IsEnabled})";
+			Button2.Text = $"Toggle IsEnabled (Currently {Picker2.IsEnabled})";
+			Button3.Text = $"Toggle IsEnabled (Currently {Picker3.IsEnabled})";
 		}
 
 		void Button0_OnClicked(object sender, EventArgs e)

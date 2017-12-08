@@ -4,7 +4,8 @@
 			xmlns:windowsSpecific="clr-namespace:Xamarin.Forms.PlatformConfiguration.WindowsSpecific;assembly=Xamarin.Forms.Core"
 			xmlns:androidSpecific="clr-namespace:Xamarin.Forms.PlatformConfiguration.AndroidSpecific;assembly=Xamarin.Forms.Core"
 			xmlns:iosSpecific="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core"
-             x:Class="Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries.DatePickerDisabledStatesGallery">
+             x:Class="Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries.DatePickerDisabledStatesGallery"
+			Title="DatePicker Disabled States Gallery">
 
 	<ContentPage.Resources>
 		<ResourceDictionary>
@@ -66,7 +67,7 @@
 				</DatePicker>
 				<Button Text="Toggle IsEnabled" x:Name="Button2" Clicked="Button2_OnClicked" />
 
-				<!-- This section verifies that the default colors for an entry's text and placeholder are cached and can be reverted to -->
+				<!-- This section verifies that the default colors for a DatePicker's text is cached and can be reverted to -->
 				<Label Text="This DatePicker uses Color.Default for the intial text/background, and colors from the VSM when disabled."/>
 				<DatePicker x:Name="Picker3" Style="{StaticResource DefaultInInitialState}" TextColor="Default" 
 							BackgroundColor="Default">

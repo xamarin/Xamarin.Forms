@@ -33,10 +33,6 @@ namespace Xamarin.Forms.Core.XamlC
 			if (parts.Length == 1) {
 				var parent = node.Parent?.Parent as IElementNode ?? (node.Parent?.Parent as IListNode)?.Parent as IElementNode;
 
-				// TODO hartez 2017/12/01 10:05:03 Had this in my version, but the additions in the line above might make it unnecessary	
-				//if (parent == null && node.Parent?.Parent is IListNode)
-				//	parent = node.Parent?.Parent?.Parent as IElementNode;
-
 				if ((node.Parent as ElementNode)?.XmlType.NamespaceUri == XamlParser.XFUri &&
 				    ((node.Parent as ElementNode)?.XmlType.Name == "Setter" || (node.Parent as ElementNode)?.XmlType.Name == "PropertyCondition")) {
 					if (parent.XmlType.NamespaceUri == XamlParser.XFUri &&

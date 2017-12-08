@@ -63,8 +63,7 @@ namespace Xamarin.Forms.Platform.Android
 				textField.SetOnClickListener(TimePickerListener.Instance);
 				SetNativeControl(textField);
 
-				var useLegacyColorManagement = VisualStateManager.GetVisualStateGroups(e.NewElement) == null
-												&& e.NewElement.OnThisPlatform().GetIsLegacyColorModeEnabled();
+				var useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
 				_textColorSwitcher = new TextColorSwitcher(textField.TextColors, useLegacyColorManagement);
 				
 				_is24HourFormat = DateFormat.Is24HourFormat(Context);

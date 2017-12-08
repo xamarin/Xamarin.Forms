@@ -69,8 +69,7 @@ namespace Xamarin.Forms.Platform.Android
 				textField.SetOnClickListener(TextFieldClickHandler.Instance);
 				SetNativeControl(textField);
 
-				var useLegacyColorManagement = VisualStateManager.GetVisualStateGroups(e.NewElement) == null
-												&& e.NewElement.OnThisPlatform().GetIsLegacyColorModeEnabled();
+				var useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
 				_textColorSwitcher = new TextColorSwitcher(textField.TextColors, useLegacyColorManagement); 
 			}
 

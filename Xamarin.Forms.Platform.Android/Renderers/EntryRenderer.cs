@@ -78,8 +78,7 @@ namespace Xamarin.Forms.Platform.Android
 				textView.SetOnEditorActionListener(this);
 				textView.OnKeyboardBackPressed += OnKeyboardBackPressed;
 
-				var useLegacyColorManagement = VisualStateManager.GetVisualStateGroups(e.NewElement) == null
-											&& e.NewElement.OnThisPlatform().GetIsLegacyColorModeEnabled();
+				var useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
 
 				_textColorSwitcher = new TextColorSwitcher(textView.TextColors, useLegacyColorManagement);
 				_hintColorSwitcher = new TextColorSwitcher(textView.HintTextColors, useLegacyColorManagement);

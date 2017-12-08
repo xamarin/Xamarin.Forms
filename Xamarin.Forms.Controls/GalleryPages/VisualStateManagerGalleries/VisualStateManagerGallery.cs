@@ -37,7 +37,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries
 
 		public DisabledStatesGallery()
 		{
-			var desc = "Some of the XF controls have legacy behaviors such that when IsEnabled is set to `false`, they " 
+			var desc = "Some of the XF controls have legacy (pre-VSM) behaviors such that when IsEnabled is set to `false`, they " 
 						+ "will override the colors set by the user with the default native colors for the 'disabled' " 
 						+ "state. For backward compatibility, this remains the default behavior for those controls. " 
 						+ "\n\nUsing the VSM with these controls overrides that behavior; it is also possible to override " 
@@ -47,6 +47,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries
 
 			var descriptionLabel = new Label { Text = desc, Margin = new Thickness(2,2,2,2)};
 
+			Title = "Disabled states galleries";
+
 			Content = new ScrollView
 			{
 				Content = new StackLayout
@@ -54,6 +56,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries
 					Children =
 					{
 						descriptionLabel,
+						GalleryNav("SearchBar", () => new SearchBarDisabledStatesGallery(), Navigation),
 						GalleryNav("Entry", () => new EntryDisabledStatesGallery(), Navigation),
 						GalleryNav("Button", () => new ButtonDisabledStatesGallery(), Navigation),
 						GalleryNav("Picker", () => new PickerDisabledStatesGallery(), Navigation),
