@@ -392,6 +392,16 @@ namespace Xamarin.Forms
 			return new Color(h, s, l, a, Mode.Hsl);
 		}
 
+		public static implicit operator System.Drawing.Color(Color color)
+		{
+			return System.Drawing.Color.FromArgb((byte)(color._a * 255), (byte)(color._g * 255), (byte)(color._b * 255), (byte)(color._a * 255));
+		}
+
+		public static implicit operator Color(System.Drawing.Color color)
+		{
+			return FromRgba(color.R, color.G, color.B, color.A);
+		}
+
 		#region Color Definitions
 
 		// matches colors in WPF's System.Windows.Media.Colors
