@@ -56,6 +56,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries
 					Children =
 					{
 						descriptionLabel,
+						GalleryNav("Editor", () => new EditorDisabledStatesGallery(), Navigation),
 						GalleryNav("SearchBar", () => new SearchBarDisabledStatesGallery(), Navigation),
 						GalleryNav("Entry", () => new EntryDisabledStatesGallery(), Navigation),
 						GalleryNav("Button", () => new ButtonDisabledStatesGallery(), Navigation),
