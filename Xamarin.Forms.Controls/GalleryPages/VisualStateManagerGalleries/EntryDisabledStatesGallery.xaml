@@ -7,8 +7,6 @@
 			 x:Class="Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries.EntryDisabledStatesGallery"
 			 Title="Entry Disabled States Gallery">
 
-	<!-- TODO hartez Create this, but for Picker, TimePicker, and DatePicker and verify everything there works as you expect -->
-	
 	<ContentPage.Resources>
 		<ResourceDictionary>
 

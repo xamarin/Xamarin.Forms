@@ -48,15 +48,16 @@
 
 				<!-- Not using the VSM at all; should exhibit pre-VSM default behavior -->
 				<Label Text="The Button below uses the current XF defaults; when IsEnabled is false, it uses the default native colors for the control. (Legacy Color Behavior)"/>
-				<Button Text="Button" x:Name="Button0" TextColor="Blue"  
-				    BackgroundColor="Bisque" />
+				<Button Text="Button" x:Name="Button0" TextColor="Blue" BackgroundColor="Bisque" />
 				<Button Text="Toggle IsEnabled" x:Name="Button0_Toggle" Clicked="Button0_Toggle_OnClicked" />
 
 				<!-- Legacy Color Behavior turned off by the PlatformSpecific; ignores states entirely and uses 
 				whatever colors are manually set for it -->
 				<Label Text="The Button below has the Legacy Color Behavior disabled; it will stick with whatever colors are set, regardless of state"/>
 				<Button Text="Button" x:Name="Button1" TextColor="Blue" BackgroundColor="Bisque"
-						androidSpecific:Button.IsLegacyColorModeEnabled="False"/>
+						androidSpecific:Button.IsLegacyColorModeEnabled="False"
+						iosSpecific:Button.IsLegacyColorModeEnabled="False"
+						/>
 				<Button Text="Toggle IsEnabled" x:Name="Button1_Toggle" Clicked="Button1_Toggle_OnClicked" />
 
 				<!-- Disabled colors fully managed by the VSM -->

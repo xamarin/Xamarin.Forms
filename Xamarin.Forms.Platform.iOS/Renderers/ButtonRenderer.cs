@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using Foundation;
 using UIKit;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using SizeF = CoreGraphics.CGSize;
 
 namespace Xamarin.Forms.Platform.iOS
@@ -13,6 +14,7 @@ namespace Xamarin.Forms.Platform.iOS
 		UIColor _buttonTextColorDefaultDisabled;
 		UIColor _buttonTextColorDefaultHighlighted;
 		UIColor _buttonTextColorDefaultNormal;
+		bool _useLegacyColorManagement;
 		bool _titleChanged;
 		SizeF _titleSize;
 
@@ -61,6 +63,11 @@ namespace Xamarin.Forms.Platform.iOS
 					Debug.Assert(Control != null, "Control != null");
 
 					SetControlPropertiesFromProxy();
+
+					// Determine whether we're letting the VSM handle the colors or doing it the old way
+					// or disabling the legacy color management and doing it the old-old (pre 2.0) way
+					_useLegacyColorManagement = VisualStateManager.GetVisualStateGroups(e.NewElement) == null
+												&& e.NewElement.OnThisPlatform().GetIsLegacyColorModeEnabled();
 
 					_buttonTextColorDefaultNormal = Control.TitleColor(UIControlState.Normal);
 					_buttonTextColorDefaultHighlighted = Control.TitleColor(UIControlState.Highlighted);
@@ -206,11 +213,13 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else
 			{
-				Control.SetTitleColor(Element.TextColor.ToUIColor(), UIControlState.Normal);
-				Control.SetTitleColor(Element.TextColor.ToUIColor(), UIControlState.Highlighted);
-				Control.SetTitleColor(_buttonTextColorDefaultDisabled, UIControlState.Disabled);
-				
-				Control.TintColor = Element.TextColor.ToUIColor();
+				var color = Element.TextColor.ToUIColor();
+
+				Control.SetTitleColor(color, UIControlState.Normal);
+				Control.SetTitleColor(color, UIControlState.Highlighted);
+				Control.SetTitleColor(_useLegacyColorManagement ? _buttonTextColorDefaultDisabled : color, UIControlState.Disabled);
+
+				Control.TintColor = color;
 			}
 		}
 

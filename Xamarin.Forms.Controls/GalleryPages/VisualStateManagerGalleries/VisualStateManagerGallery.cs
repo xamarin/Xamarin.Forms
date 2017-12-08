@@ -55,6 +55,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries
 					GalleryNav("Entry", () => new EntryDisabledStatesGallery(), Navigation),
 					GalleryNav("Button", () => new ButtonDisabledStatesGallery(), Navigation),
 					GalleryNav("Picker", () => new PickerDisabledStatesGallery(), Navigation),
+					GalleryNav("TimePicker", () => new TimePickerDisabledStatesGallery(), Navigation),
+					GalleryNav("DatePicker", () => new DatePickerDisabledStatesGallery(), Navigation)
 				}
 			};
 		}
