@@ -1,9 +1,9 @@
-﻿namespace Xamarin.Forms.PlatformConfiguration.iOSSpecific
+﻿namespace Xamarin.Forms.PlatformConfiguration.WindowsSpecific
 {
-	using FormsElement = Forms.Button;
+	using FormsElement = Forms.VisualElement;
 
-	public static class Button
-    {
+	public static class VisualElement
+	{
 		#region IsLegacyColorModeEnabled
 
 		public static readonly BindableProperty IsLegacyColorModeEnabledProperty =
@@ -20,13 +20,13 @@
 			element.SetValue(IsLegacyColorModeEnabledProperty, value);
 		}
 
-		public static bool GetIsLegacyColorModeEnabled(this IPlatformElementConfiguration<iOS, FormsElement> config)
+		public static bool GetIsLegacyColorModeEnabled(this IPlatformElementConfiguration<Windows, FormsElement> config)
 		{
 			return (bool)config.Element.GetValue(IsLegacyColorModeEnabledProperty);
 		}
 
-		public static IPlatformElementConfiguration<iOS, FormsElement> SetIsLegacyColorModeEnabled(
-			this IPlatformElementConfiguration<iOS, FormsElement> config, bool value)
+		public static IPlatformElementConfiguration<Windows, FormsElement> SetIsLegacyColorModeEnabled(
+			this IPlatformElementConfiguration<Windows, FormsElement> config, bool value)
 		{
 			config.Element.SetValue(IsLegacyColorModeEnabledProperty, value);
 			return config;

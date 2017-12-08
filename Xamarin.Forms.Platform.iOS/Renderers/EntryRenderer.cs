@@ -83,10 +83,7 @@ namespace Xamarin.Forms.Platform.iOS
 				// Cache the default text color
 				_defaultTextColor = textField.TextColor;
 
-				// Determine whether we're letting the VSM handle the colors or doing it the old way
-				// or disabling the legacy color management and doing it the old-old (pre 2.0) way
-				_useLegacyColorManagement = VisualStateManager.GetVisualStateGroups(e.NewElement) == null
-											&& e.NewElement.OnThisPlatform().GetIsLegacyColorModeEnabled();
+				_useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
 
 				textField.BorderStyle = UITextBorderStyle.RoundedRect;
 				textField.ClipsToBounds = true;

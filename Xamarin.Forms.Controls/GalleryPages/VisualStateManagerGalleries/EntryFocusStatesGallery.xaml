@@ -72,9 +72,9 @@
 				<Label Text="The Entry below has the Legacy Color Behavior disabled; it will stick with whatever colors are set, regardless of focus"/>
 				<Entry x:Name="Entry5" TextColor="Blue" PlaceholderColor="Green" Placeholder="placeholder" 
 					BackgroundColor="Bisque"
-					windowsSpecific:Entry.IsLegacyColorModeEnabled="False"
-					androidSpecific:Entry.IsLegacyColorModeEnabled="False"
-					iosSpecific:Entry.IsLegacyColorModeEnabled="False"
+					windowsSpecific:VisualElement.IsLegacyColorModeEnabled="False"
+					androidSpecific:VisualElement.IsLegacyColorModeEnabled="False"
+					iosSpecific:VisualElement.IsLegacyColorModeEnabled="False"
 				   />
 				
 				

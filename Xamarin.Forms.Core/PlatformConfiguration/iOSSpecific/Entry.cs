@@ -8,7 +8,7 @@ namespace Xamarin.Forms.PlatformConfiguration.iOSSpecific
 	{
 		public static readonly BindableProperty AdjustsFontSizeToFitWidthProperty =
 			BindableProperty.Create("AdjustsFontSizeToFitWidth", typeof(bool),
-			typeof(Entry), false);
+				typeof(Entry), false);
 
 		public static bool GetAdjustsFontSizeToFitWidth(BindableObject element)
 		{
@@ -25,52 +25,25 @@ namespace Xamarin.Forms.PlatformConfiguration.iOSSpecific
 			return GetAdjustsFontSizeToFitWidth(config.Element);
 		}
 
-		public static IPlatformElementConfiguration<iOS, FormsElement> SetAdjustsFontSizeToFitWidth(this IPlatformElementConfiguration<iOS, FormsElement> config, bool value)
+		public static IPlatformElementConfiguration<iOS, FormsElement> SetAdjustsFontSizeToFitWidth(
+			this IPlatformElementConfiguration<iOS, FormsElement> config, bool value)
 		{
 			SetAdjustsFontSizeToFitWidth(config.Element, value);
 			return config;
 		}
 
-		public static IPlatformElementConfiguration<iOS, FormsElement> EnableAdjustsFontSizeToFitWidth(this IPlatformElementConfiguration<iOS, FormsElement> config)
+		public static IPlatformElementConfiguration<iOS, FormsElement> EnableAdjustsFontSizeToFitWidth(
+			this IPlatformElementConfiguration<iOS, FormsElement> config)
 		{
 			SetAdjustsFontSizeToFitWidth(config.Element, true);
 			return config;
 		}
 
-		public static IPlatformElementConfiguration<iOS, FormsElement> DisableAdjustsFontSizeToFitWidth(this IPlatformElementConfiguration<iOS, FormsElement> config)
+		public static IPlatformElementConfiguration<iOS, FormsElement> DisableAdjustsFontSizeToFitWidth(
+			this IPlatformElementConfiguration<iOS, FormsElement> config)
 		{
 			SetAdjustsFontSizeToFitWidth(config.Element, false);
 			return config;
 		}
-
-		#region IsLegacyColorModeEnabled
-
-		public static readonly BindableProperty IsLegacyColorModeEnabledProperty =
-			BindableProperty.CreateAttached("IsLegacyColorModeEnabled", typeof(bool),
-				typeof(FormsElement), true);
-
-		public static bool GetIsLegacyColorModeEnabled(BindableObject element)
-		{
-			return (bool)element.GetValue(IsLegacyColorModeEnabledProperty);
-		}
-
-		public static void SetIsLegacyColorModeEnabled(BindableObject element, bool value)
-		{
-			element.SetValue(IsLegacyColorModeEnabledProperty, value);
-		}
-
-		public static bool GetIsLegacyColorModeEnabled(this IPlatformElementConfiguration<iOS, FormsElement> config)
-		{
-			return (bool)config.Element.GetValue(IsLegacyColorModeEnabledProperty);
-		}
-
-		public static IPlatformElementConfiguration<iOS, FormsElement> SetIsLegacyColorModeEnabled(
-			this IPlatformElementConfiguration<iOS, FormsElement> config, bool value)
-		{
-			config.Element.SetValue(IsLegacyColorModeEnabledProperty, value);
-			return config;
-		}
-
-		#endregion
 	}
 }

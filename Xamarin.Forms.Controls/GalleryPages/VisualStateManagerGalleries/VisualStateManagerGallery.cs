@@ -47,16 +47,19 @@ namespace Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries
 
 			var descriptionLabel = new Label { Text = desc, Margin = new Thickness(2,2,2,2)};
 
-			Content = new StackLayout
+			Content = new ScrollView
 			{
-				Children =
+				Content = new StackLayout
 				{
-					descriptionLabel,
-					GalleryNav("Entry", () => new EntryDisabledStatesGallery(), Navigation),
-					GalleryNav("Button", () => new ButtonDisabledStatesGallery(), Navigation),
-					GalleryNav("Picker", () => new PickerDisabledStatesGallery(), Navigation),
-					GalleryNav("TimePicker", () => new TimePickerDisabledStatesGallery(), Navigation),
-					GalleryNav("DatePicker", () => new DatePickerDisabledStatesGallery(), Navigation)
+					Children =
+					{
+						descriptionLabel,
+						GalleryNav("Entry", () => new EntryDisabledStatesGallery(), Navigation),
+						GalleryNav("Button", () => new ButtonDisabledStatesGallery(), Navigation),
+						GalleryNav("Picker", () => new PickerDisabledStatesGallery(), Navigation),
+						GalleryNav("TimePicker", () => new TimePickerDisabledStatesGallery(), Navigation),
+						GalleryNav("DatePicker", () => new DatePickerDisabledStatesGallery(), Navigation)
+					}
 				}
 			};
 		}

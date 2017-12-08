@@ -64,10 +64,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 					SetControlPropertiesFromProxy();
 
-					// Determine whether we're letting the VSM handle the colors or doing it the old way
-					// or disabling the legacy color management and doing it the old-old (pre 2.0) way
-					_useLegacyColorManagement = VisualStateManager.GetVisualStateGroups(e.NewElement) == null
-												&& e.NewElement.OnThisPlatform().GetIsLegacyColorModeEnabled();
+					_useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
 
 					_buttonTextColorDefaultNormal = Control.TitleColor(UIControlState.Normal);
 					_buttonTextColorDefaultHighlighted = Control.TitleColor(UIControlState.Highlighted);

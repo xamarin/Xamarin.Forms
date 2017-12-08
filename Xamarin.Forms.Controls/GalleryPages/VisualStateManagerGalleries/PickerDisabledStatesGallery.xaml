@@ -59,7 +59,8 @@
 					whatever colors are manually set for it -->
 				<Label Text="The Picker below has the Legacy Color Behavior disabled; it will stick with whatever colors are set, regardless of state"/>
 				<Picker x:Name="Picker1" TextColor="Blue" BackgroundColor="Bisque" 
-					androidSpecific:Picker.IsLegacyColorModeEnabled="False">
+					androidSpecific:VisualElement.IsLegacyColorModeEnabled="False"
+					iosSpecific:VisualElement.IsLegacyColorModeEnabled="False">
 					<Picker.Items>
 						<x:String>First</x:String>
 						<x:String>Second</x:String>
