@@ -6,8 +6,7 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms.Controls
 {
 	[Preserve (AllMembers=true)]
-	// TODO hartez 4:50:30 PM Clean this up
-	[Issue (IssueTracker.Bugzilla, 90000, "Default colors toggle test", PlatformAffected.All)]
+	[Issue (IssueTracker.None, 9906753, "Default colors toggle test", PlatformAffected.All)]
 	public class DefaultColorToggleTest : TabbedPage
 	{
 		public DefaultColorToggleTest()

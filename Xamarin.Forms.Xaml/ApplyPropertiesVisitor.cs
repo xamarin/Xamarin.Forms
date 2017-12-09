@@ -663,19 +663,16 @@ namespace Xamarin.Forms.Xaml
 		static bool TryAddValue(BindableObject bindable, BindableProperty property, object value, XamlServiceProvider serviceProvider)
 		{
 			if(property?.ReturnTypeInfo?.GenericTypeArguments == null){
-				//Debug.WriteLine($">>>>> ApplyPropertiesVisitor TryAddValue 653: property {property}, ReturnTypeInfo {property?.ReturnTypeInfo}, GenericTypeArguments {property?.ReturnTypeInfo?.GenericTypeArguments}");
 				return false;
 			}
 
 			if(property.ReturnType == null){
-				Debug.WriteLine($">>>>> ApplyPropertiesVisitor TryAddValue 658: MESSAGE");
 				return false;
 			}
 
 			if (property.ReturnTypeInfo.GenericTypeArguments.Length != 1 ||
 				!property.ReturnTypeInfo.GenericTypeArguments[0].IsInstanceOfType(value))
 			{
-				Debug.WriteLine($">>>>> ApplyPropertiesVisitor TryAddValue 665: MESSAGE");
 				return false;
 			}
 
@@ -683,7 +680,6 @@ namespace Xamarin.Forms.Xaml
 			var addMethod = property.ReturnType.GetRuntimeMethods().FirstOrDefault(mi => mi.Name == "Add" && mi.GetParameters().Length == 1);
 			if (addMethod == null)
 			{
-				Debug.WriteLine($">>>>> ApplyPropertiesVisitor TryAddValue 673: MESSAGE");
 				return false;
 			}
 
