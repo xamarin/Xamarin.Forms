@@ -118,6 +118,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			fragmentTransaction.Add(Id, fragment);
 			fragmentTransaction.SetTransition((int)FragmentTransit.None);
 
+			// The view we're hosting in the fragment was never created (possibly we're already 		
+			// navigating to another page?) so there's nothing to commit synchronously.
 			if (_pageContainer == null)
 			{
 				// We don't currently support fragment restoration 
