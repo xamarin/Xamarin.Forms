@@ -1,4 +1,3 @@
-using System;
 using Android.App;
 using Android.Content;
 using Android.OS;
@@ -61,24 +60,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			Page page = childView as NavigationPage ?? (Page)(childView as TabbedPage);
 
+			// The thing we're adding is not a NavigationPage or TabbedPage, so we can just use the old AddChildView 
 			if (page == null)
 			{
-				// The thing we're adding is not a NavigationPage or TabbedPage, so we can just use the old AddChildView 
-
-				if (_currentFragment != null)
-				{
-					// But first, if the previous occupant of this container was a fragment, we need to remove it properly
-					FragmentTransaction transaction = FragmentManager.BeginTransaction();
-					transaction.Remove(_currentFragment);
-					transaction.SetTransition((int)FragmentTransit.None);
-
-					// This is a removal of a fragment that's not going on the back stack; there's no reason to care
-					// whether its state gets successfully saved, since we'll never restore it. Ergo, CommitAllowingStateLoss
-					transaction.CommitAllowingStateLoss();
-
-					_currentFragment = null;
-				}
-				
+				ClearCurrentFragment();
 				base.AddChildView(childView);
 			}
 			else
@@ -87,65 +72,27 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				// FragmentContainer in order to get isolated fragment management
 				Fragment fragment = FragmentContainer.CreateInstance(page);
 				
-				var fc = fragment as FragmentContainer;
-
-				fc?.SetOnCreateCallback(pc =>
+				(fragment as FragmentContainer)?.SetOnCreateCallback(pc =>
 				{
 					_pageContainer = pc;
 					SetDefaultBackgroundColor(pc.Child);
 				});
 
-				FragmentTransaction transaction = FragmentManager.BeginTransaction();
-
-				if (_currentFragment != null)
-				{
-					transaction.Remove(_currentFragment);
-				}
-
-				transaction.Add(Id, fragment);
-				transaction.SetTransition((int)FragmentTransit.None);
-
-				// We don't currently support fragment restoration 
-				// So we don't need to worry about loss of this fragment's state
-				transaction.CommitAllowingStateLoss();
-
-				_currentFragment = fragment;
-
-				new Handler(Looper.MainLooper).PostAtFrontOfQueue(() =>
-				{
-					if (_pageContainer == null)
-					{
-						// The view we're hosting in the fragment was never created (possibly we're already 
-						// navigating to another page?) so there's nothing to commit
-						return;
-					}
-
-					FragmentManager.ExecutePendingTransactions();
-				});
+				SetCurrentFragment(fragment);
 			}
 		}
 
 		protected override void Dispose(bool disposing)
 		{
 			if (_disposed)
-			{
 				return;
-			}
 
 			_disposed = true;
 
 			if (disposing)
 			{
-				if (_currentFragment != null && !FragmentManager.IsDestroyed)
-				{
-					FragmentTransaction transaction = FragmentManager.BeginTransaction();
-					transaction.Remove(_currentFragment);
-					transaction.SetTransition((int)FragmentTransit.None);
-					transaction.CommitAllowingStateLoss();
-					FragmentManager.ExecutePendingTransactions();
-
-					_currentFragment = null;
-				}
+				if (!FragmentManager.IsDestroyed)
+					ClearCurrentFragment();
 
 				_parent = null;
 				_pageContainer = null;
@@ -159,6 +106,58 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		{
 			if (_fragmentManager == null)
 				_fragmentManager = fragmentManager;
+		}
+
+		void SetCurrentFragment(Fragment fragment)
+		{
+			FragmentTransaction fragmentTransaction = FragmentManager.BeginTransaction();
+
+			if (_currentFragment != null)
+				fragmentTransaction.Remove(_currentFragment);
+
+			fragmentTransaction.Add(Id, fragment);
+			fragmentTransaction.SetTransition((int)FragmentTransit.None);
+
+			if (_pageContainer == null)
+			{
+				// We don't currently support fragment restoration 
+				// So we don't need to worry about loss of this fragment's state
+				fragmentTransaction.CommitAllowingStateLoss();
+			}
+			else
+				CommitTransaction(fragmentTransaction);
+
+			_currentFragment = fragment;
+		}
+
+		void ClearCurrentFragment()
+		{
+			if (_currentFragment == null)
+				return;
+
+			FragmentTransaction fragmentTransaction = FragmentManager.BeginTransaction();
+			fragmentTransaction.Remove(_currentFragment);
+			fragmentTransaction.SetTransition((int)FragmentTransit.None);
+
+			// This is a removal of a fragment that's not going on the back stack; there's no reason to care
+			// whether its state gets successfully saved, since we'll never restore it. Ergo, CommitAllowingStateLoss
+			CommitTransaction(fragmentTransaction);
+
+			_currentFragment = null;
+		}
+
+		void CommitTransaction(FragmentTransaction fragmentTransaction)
+		{
+			if (Build.VERSION.SdkInt >= BuildVersionCodes.N)
+				fragmentTransaction.CommitNowAllowingStateLoss();
+			else
+			{
+				fragmentTransaction.CommitAllowingStateLoss();
+				new Handler(Looper.MainLooper).PostAtFrontOfQueue(() =>
+				{
+					FragmentManager.ExecutePendingTransactions();
+				});
+			}
 		}
 	}
 }
