@@ -103,8 +103,6 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				Assert.True(groups.Count == 1);
 			}
 
-			// TODO hartez 2017/12/11 10:51:06 Test that state starts as Normal if available	
-
 			[TestCase(false)]
 			[TestCase(true)]
 			public void VisualStateGroupsFromStylesAreDistinct(bool useCompiledXaml)

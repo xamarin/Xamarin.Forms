@@ -21,6 +21,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries
 					GalleryNav("Entry Focus States", () => new EntryFocusStatesGallery(), Navigation),
 					GalleryNav("OnPlatform Example", () => new OnPlatformExample(), Navigation),
 					GalleryNav("OnIdiom Example", () => new OnIdiomExample(), Navigation),
+					GalleryNav("Validation Example", () => new ValidationExample(), Navigation)
 				}
 			};
 		}
