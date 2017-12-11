@@ -19,6 +19,7 @@
 								<Setter Property="TextColor" Value="Red" />
 								<Setter Property="PlaceholderColor" Value="LightCoral" />
 								<Setter Property="BackgroundColor" Value="Purple" />
+								<Setter Property="CancelButtonColor" Value="OrangeRed" />
 							</VisualState.Setters>
 						</VisualState>
 					</VisualStateGroup>
@@ -34,6 +35,7 @@
 								<Setter Property="TextColor" Value="Green" />
 								<Setter Property="PlaceholderColor" Value="LightGreen" />
 								<Setter Property="BackgroundColor" Value="Black" />
+								<Setter Property="CancelButtonColor" Value="DarkSeaGreen"></Setter>
 							</VisualState.Setters>
 						</VisualState>
 					</VisualStateGroup>
@@ -49,8 +51,8 @@
 
 				<!-- Not using the VSM at all; should exhibit pre-VSM default behavior -->
 				<Label Text="The SearchBar below uses the current XF defaults; when IsEnabled is false, it uses the default native colors for the control. (Legacy Color Behavior)"/>
-				<SearchBar x:Name="Search0" TextColor="Blue" PlaceholderColor="LightBlue" BackgroundColor="Bisque" 
-						   Placeholder="search">
+				<SearchBar x:Name="Search0" TextColor="Default" PlaceholderColor="LightBlue" BackgroundColor="Bisque" 
+						   Placeholder="search" CancelButtonColor="Aqua">
 				</SearchBar>
 				<Button Text="Toggle IsEnabled" x:Name="Button0" Clicked="Button0_OnClicked" />
 
@@ -58,7 +60,7 @@
 					whatever colors are manually set for it -->
 				<Label Text="The SearchBar below has the Legacy Color Behavior disabled; it will stick with whatever colors are set, regardless of state"/>
 				<SearchBar x:Name="Search1" TextColor="Blue" PlaceholderColor="Green" Placeholder="placeholder" 
-						BackgroundColor="Bisque"
+						BackgroundColor="Bisque" CancelButtonColor="GreenYellow"
 						windowsSpecific:VisualElement.IsLegacyColorModeEnabled="False"
 						androidSpecific:VisualElement.IsLegacyColorModeEnabled="False"
 						iosSpecific:VisualElement.IsLegacyColorModeEnabled="False"
@@ -68,13 +70,15 @@
 				<!-- Disabled colors fully managed by the VSM -->
 				<Label Text="The SearchBar below uses the VSM to customize the colors for the disabled state." />
 				<SearchBar x:Name="Search2" Style="{StaticResource CustomDisabledState}" TextColor="Green" 
-						PlaceholderColor="LightGreen" Placeholder="placeholder" BackgroundColor="Beige" />
+						PlaceholderColor="LightGreen" Placeholder="placeholder" BackgroundColor="Beige"
+						CancelButtonColor="Aquamarine"/>
 				<Button Text="Toggle IsEnabled" x:Name="Button2" Clicked="Button2_OnClicked" />
 
 				<!-- This section verifies that the default colors for a searchbar's text and placeholder are cached and can be reverted to -->
 				<Label Text="This SearchBar uses Color.Default for the intial text/background, and colors from the VSM when disabled."/>
 				<SearchBar x:Name="Search3" Style="{StaticResource DefaultInInitialState}" TextColor="Default" 
-						PlaceholderColor="Default" Placeholder="placeholder" BackgroundColor="Default" />
+						PlaceholderColor="Default" Placeholder="placeholder" BackgroundColor="Default"
+						CancelButtonColor="Default" />
 				<Button Text="Toggle IsEnabled" x:Name="Button3" Clicked="Button3_OnClicked" />
 
 			</StackLayout>
