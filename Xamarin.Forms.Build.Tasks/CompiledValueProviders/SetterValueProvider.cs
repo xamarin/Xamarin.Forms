@@ -65,10 +65,7 @@ namespace Xamarin.Forms.Core.XamlC
 			// Is the generic argument assignable from this value?
 			var genericType = generic.GenericArguments[0];
 
-			// TODO hartez 2017/12/01 10:09:55 Pattern matching allowed?	
-			var firstItem = items[0] as IElementNode;
-
-			if (firstItem == null)
+			if (!(items[0] is IElementNode firstItem))
 				return false;
 
 			return context.Variables[firstItem].VariableType.InheritsFromOrImplements(genericType);

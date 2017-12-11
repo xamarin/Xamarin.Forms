@@ -111,9 +111,7 @@ namespace Xamarin.Forms
 		{
 			var obj = parentObjects.Skip(3).Take(1).FirstOrDefault();  // Skip this Setter, VisualState, and VisualStateGroup
 
-			// TODO hartez 2017/12/01 09:56:42 Find out if you're allowed to use pattern matching for this yet	
-			var setter = obj as Setter;
-			if (setter != null)
+			if (obj is Setter)
 			{
 				return (parentObjects.Skip(4).Take(1).FirstOrDefault() as Style)?.TargetType;
 			}

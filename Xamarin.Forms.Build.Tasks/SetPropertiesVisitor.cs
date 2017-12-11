@@ -169,13 +169,10 @@ namespace Xamarin.Forms.Build.Tasks
 				var parent = Context.Variables[((IElementNode)parentNode.Parent)];
 
 				// See if this is an attached bindable property
-				XmlName bpName;
-				if (TryGetPropertyName(parentNode, parentNode.Parent, out bpName)) {
-					// TODO hartez 2017/12/01 12:26:17 inline this ref	
-					bool attached; 
+				if (TryGetPropertyName(parentNode, parentNode.Parent, out XmlName bpName)) {
 					string name = bpName.LocalName;
 
-					var bindablePropertyRef = GetBindablePropertyReference(parent, parentList.XmlName.NamespaceURI, ref name, out attached, Context, node);
+					var bindablePropertyRef = GetBindablePropertyReference(parent, parentList.XmlName.NamespaceURI, ref name, out bool attached, Context, node);
 
 					if (bindablePropertyRef != null && CanAddToAttachedProperty(bindablePropertyRef, attached, node, node, Context)) {
 						Context.IL.Append(AddValue(parent, bindablePropertyRef, node, node, Context));
