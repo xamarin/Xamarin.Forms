@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		const string NormalStateName = "Normal";
 		const string InvalidStateName = "Invalid";
 
-		Collection<VisualStateGroup> CreateTestStateGroup()
+		static Collection<VisualStateGroup> CreateTestStateGroups()
 		{
 			var stateGroups = new Collection<VisualStateGroup>();
 			var visualStateGroup = new VisualStateGroup { Name = "CommonStates" };
@@ -24,7 +24,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			return stateGroups;
 		}
 
-		Collection<VisualStateGroup> CreateStateGroupWithoutNormalState()
+		static Collection<VisualStateGroup> CreateStateGroupsWithoutNormalState()
 		{
 			var stateGroups = new Collection<VisualStateGroup>();
 			var visualStateGroup = new VisualStateGroup { Name = "CommonStates" };
@@ -42,7 +42,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			var label1 = new Label();
 		
-			VisualStateManager.SetVisualStateGroups(label1, CreateTestStateGroup());
+			VisualStateManager.SetVisualStateGroups(label1, CreateTestStateGroups());
 
 			var groups1 = VisualStateManager.GetVisualStateGroups(label1);
 
@@ -54,7 +54,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			var label1 = new Label();
 
-			VisualStateManager.SetVisualStateGroups(label1, CreateStateGroupWithoutNormalState());
+			VisualStateManager.SetVisualStateGroups(label1, CreateStateGroupsWithoutNormalState());
 
 			var groups1 = VisualStateManager.GetVisualStateGroups(label1);
 
@@ -67,8 +67,8 @@ namespace Xamarin.Forms.Core.UnitTests
 			var label1 = new Label();
 			var label2 = new Label();
 
-			VisualStateManager.SetVisualStateGroups(label1, CreateTestStateGroup());
-			VisualStateManager.SetVisualStateGroups(label2, CreateTestStateGroup());
+			VisualStateManager.SetVisualStateGroups(label1, CreateTestStateGroups());
+			VisualStateManager.SetVisualStateGroups(label2, CreateTestStateGroups());
 
 			var groups1 = VisualStateManager.GetVisualStateGroups(label1);
 			var groups2 = VisualStateManager.GetVisualStateGroups(label2);
@@ -89,7 +89,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			var x = new Setter();
 			x.Property = VisualStateManager.VisualStateGroupsProperty;
-			x.Value = CreateTestStateGroup();
+			x.Value = CreateTestStateGroups();
 
 			var label1 = new Label();
 			var label2 = new Label();

@@ -3,22 +3,15 @@ using System.Collections.ObjectModel;
 
 namespace Xamarin.Forms
 {
-	internal static class VisualStateGroupCollectionExtensions
-	{
-		internal static Collection<VisualStateGroup> Clone(this Collection<VisualStateGroup> groups)
-		{
-			var actual = new Collection<VisualStateGroup>();
-			foreach (var s in groups)
-			{
-				actual.Add(s.Clone());
-			}
-
-			return actual;
-		}
-	}
-
 	public static class VisualStateManager
 	{
+		internal class CommonStates
+		{
+			internal const string Normal = "Normal";
+			internal const string Disabled = "Disabled";
+			internal const string Focused = "Focused";
+		}
+
 		public static readonly BindableProperty VisualStateGroupsProperty =
 			BindableProperty.CreateAttached("VisualStateGroups", typeof(Collection<VisualStateGroup>), typeof(VisualElement), 
 				defaultValue: null, propertyChanged: VisualStateGroupsPropertyChanged);
@@ -28,7 +21,7 @@ namespace Xamarin.Forms
 			if (bindable is VisualElement visualElement)
 			{
 				// Start out in the Normal state, if one is defined
-				GoToState(visualElement, "Normal");
+				GoToState(visualElement, CommonStates.Normal);
 			}
 		}
 
@@ -48,11 +41,6 @@ namespace Xamarin.Forms
 			{
 				return false;
 			}
-
-			// TODO hartez 2017/02/08 17:53:46 Figure out what UWP does about duplicate state names inside of groups and between groups	
-			// Right now, if there are duplicates we don't throw any exceptions, and the first one found will always win
-			// I think in UWP since everything comes from XAML x:Name is doing the enforcement; if we're going to allow creation
-			// of VSM stuff from code (and we are), we need to enforce names on our own
 
 			foreach (VisualStateGroup group in groups)
 			{
@@ -151,4 +139,17 @@ namespace Xamarin.Forms
 		}
 	}
 
+	internal static class VisualStateGroupCollectionExtensions
+	{
+		internal static Collection<VisualStateGroup> Clone(this Collection<VisualStateGroup> groups)
+		{
+			var actual = new Collection<VisualStateGroup>();
+			foreach (var group in groups)
+			{
+				actual.Add(group.Clone());
+			}
+
+			return actual;
+		}
+	}
 }

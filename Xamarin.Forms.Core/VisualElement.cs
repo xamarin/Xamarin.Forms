@@ -810,8 +810,10 @@ namespace Xamarin.Forms
 			}
 
 			var isEnabled = (bool)newValue;
-			// TODO hartez 2017/02/13 11:43:56 These state names should be consts defined somewhere	
-			VisualStateManager.GoToState(element, isEnabled ? "Normal" : "Disabled");
+
+			VisualStateManager.GoToState(element, isEnabled 
+				? VisualStateManager.CommonStates.Normal 
+				: VisualStateManager.CommonStates.Disabled);
 		}
 
 		static void OnIsFocusedPropertyChanged(BindableObject bindable, object oldvalue, object newvalue)
@@ -831,8 +833,9 @@ namespace Xamarin.Forms
 				element.OnUnfocus();
 			}
 
-			// TODO hartez 2017/02/13 11:43:56 These state names should be consts defined somewhere	
-			VisualStateManager.GoToState(element, isFocused ? "Focused" : "Normal");
+			VisualStateManager.GoToState(element, isFocused
+				? VisualStateManager.CommonStates.Normal
+				: VisualStateManager.CommonStates.Focused);
 		}
 
 		static void OnRequestChanged(BindableObject bindable, object oldvalue, object newvalue)
