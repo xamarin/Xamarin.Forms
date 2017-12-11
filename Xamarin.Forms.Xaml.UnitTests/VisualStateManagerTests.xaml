@@ -45,6 +45,25 @@
 				</Setter>
 			</Style>
 
+			<Style TargetType="Label" x:Key="ErrorLabel">
+				<Setter Property="VisualStateManager.VisualStateGroups">
+					<VisualStateGroup x:Name="CommonStates">
+						<VisualState x:Name="Normal">
+							<VisualState.Setters>
+								<Setter Property="IsVisible" Value="False"/>
+							</VisualState.Setters>
+						</VisualState>
+						<VisualState x:Name="Invalid">
+							<VisualState.Setters>
+								<Setter Property="IsVisible" Value="True"/>
+							</VisualState.Setters>
+						</VisualState>
+					</VisualStateGroup>
+				</Setter>
+				<Setter Property="TextColor" Value="Red"></Setter>
+				<Setter Property="Margin" Value="2,10,2,10"></Setter>
+			</Style>
+			
 		</ResourceDictionary>
 	</ContentPage.Resources>
 
@@ -74,6 +93,9 @@
 				<VisualStateGroup x:Name="Empty" />
 			</VisualStateManager.VisualStateGroups>
 		</Entry>
+		
+		<Label x:Name="ErrorLabel1" Style="{StaticResource ErrorLabel}"></Label>
+		<Label x:Name="ErrorLabel2" Style="{StaticResource ErrorLabel}"></Label>
 
 	</StackLayout>
 

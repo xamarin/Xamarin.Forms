@@ -93,7 +93,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			[TestCase(true)]
 			public void EmptyGroupDirectlyOnElement(bool useCompiledXaml)
 			{
-				var layout = new VisualStateManagerTests(false);
+				var layout = new VisualStateManagerTests(useCompiledXaml);
 
 				var entry3 = layout.Entry3;
 
@@ -101,6 +101,34 @@ namespace Xamarin.Forms.Xaml.UnitTests
 
 				Assert.NotNull(groups);
 				Assert.True(groups.Count == 1);
+			}
+
+			// TODO hartez 2017/12/11 10:51:06 Test that state starts as Normal if available	
+
+			[TestCase(false)]
+			[TestCase(true)]
+			public void VisualStateGroupsFromStylesAreDistinct(bool useCompiledXaml)
+			{
+				var layout = new VisualStateManagerTests(useCompiledXaml);
+
+				var label1 = layout.ErrorLabel1;
+				var label2 = layout.ErrorLabel2;
+
+				var groups1 = VisualStateManager.GetVisualStateGroups(label1);
+				var groups2 = VisualStateManager.GetVisualStateGroups(label2);
+
+				Assert.AreNotSame(groups1, groups2);
+
+				var currentState1 = groups1[0].CurrentState;
+				var currentState2 = groups2[0].CurrentState;
+
+				Assert.That(currentState1.Name == "Normal");
+				Assert.That(currentState2.Name == "Normal");
+
+				VisualStateManager.GoToState(label1, "Invalid");
+
+				Assert.That(groups1[0].CurrentState.Name == "Invalid");
+				Assert.That(groups2[0].CurrentState.Name == "Normal");
 			}
 		}
 	}

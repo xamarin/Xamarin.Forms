@@ -3,6 +3,20 @@ using System.Collections.ObjectModel;
 
 namespace Xamarin.Forms
 {
+	internal static class VisualStateGroupCollectionExtensions
+	{
+		internal static Collection<VisualStateGroup> Clone(this Collection<VisualStateGroup> groups)
+		{
+			var actual = new Collection<VisualStateGroup>();
+			foreach (var s in groups)
+			{
+				actual.Add(s.Clone());
+			}
+
+			return actual;
+		}
+	}
+
 	public static class VisualStateManager
 	{
 		public static readonly BindableProperty VisualStateGroupsProperty =
@@ -82,7 +96,7 @@ namespace Xamarin.Forms
 
 	[RuntimeNameProperty("Name")]
 	[ContentProperty("States")]
-	public class VisualStateGroup
+	public class VisualStateGroup 
 	{
 		public VisualStateGroup()
 		{
@@ -106,10 +120,21 @@ namespace Xamarin.Forms
 
 			return null;
 		}
+
+		internal VisualStateGroup Clone()
+		{
+			var clone =  new VisualStateGroup {TargetType = TargetType, Name = Name, CurrentState = CurrentState};
+			foreach (VisualState state in States)
+			{
+				clone.States.Add(state.Clone());
+			}
+
+			return clone;
+		}
 	}
 
 	[RuntimeNameProperty("Name")]
-	public class VisualState
+	public class VisualState 
 	{
 		public VisualState()
 		{
@@ -119,6 +144,11 @@ namespace Xamarin.Forms
 		public string Name { get; set; }
 		public Collection<Setter> Setters { get; set; }
 		public Type TargetType { get; internal set; }
+
+		internal VisualState Clone()
+		{
+			return new VisualState { Name = Name, TargetType = TargetType, Setters = Setters };
+		}
 	}
 
 }
