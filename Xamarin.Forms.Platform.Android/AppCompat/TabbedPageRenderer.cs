@@ -241,10 +241,14 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					var child = PageController.InternalChildren[i] as VisualElement;
 					if (child == null)
 						continue;
-					IVisualElementRenderer renderer = Android.Platform.GetRenderer(child);
-					var navigationRenderer = renderer as NavigationPageRenderer;
+
+					var navigationRenderer = Android.Platform.GetRenderer(child) as NavigationPageRenderer;
 					if (navigationRenderer != null)
+					{
 						navigationRenderer.ContainerPadding = tabsHeight;
+						navigationRenderer.Invalidate();
+						navigationRenderer.RequestLayout();
+					}
 				}
 
 				pager.Layout(0, 0, width, b);
