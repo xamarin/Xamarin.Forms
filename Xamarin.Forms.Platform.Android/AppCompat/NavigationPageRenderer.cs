@@ -38,6 +38,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		ActionBarDrawerToggle _drawerToggle;
 		FragmentManager _fragmentManager;
 		int _lastActionBarHeight = -1;
+		int _statusbarHeight;
 		AToolbar _toolbar;
 		ToolbarTracker _toolbarTracker;
 		DrawerMultiplexedListener _drawerListener;
@@ -396,7 +397,27 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			if (actionBarHeight <= 0)
 				return Device.Info.CurrentOrientation.IsPortrait() ? (int)Context.ToPixels(56) : (int)Context.ToPixels(48);
 
+			if (((Activity)Context).Window.Attributes.Flags.HasFlag(WindowManagerFlags.TranslucentStatus))
+			{
+				if (_toolbar.PaddingTop == 0)
+					_toolbar.SetPadding(0, GetStatusBarHeight(), 0, 0);
+					
+				return actionBarHeight + GetStatusBarHeight();
+			}
+			
 			return actionBarHeight;
+		}
+		
+		int GetStatusBarHeight()
+		{
+			if (_statusbarHeight > 0)
+				return _statusbarHeight;
+			
+			int resourceId = Resources.GetIdentifier("status_bar_height", "dimen", "android");
+			if (resourceId > 0)
+				_statusbarHeight = Resources.GetDimensionPixelSize(resourceId);
+
+			return _statusbarHeight;
 		}
 
 		void AnimateArrowIn()
