@@ -12,14 +12,15 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		protected override AView GetCellCore(Cell item, AView convertView, ViewGroup parent, Context context)
 		{
-			Performance.Start();
+			var reference = Guid.NewGuid().ToString();
+			Performance.Start(reference, "GetCellCore");
 			var cell = (ViewCell)item;
 
 			var container = convertView as ViewCellContainer;
 			if (container != null)
 			{
 				container.Update(cell);
-				Performance.Stop();
+				Performance.Stop(reference);
 				return container;
 			}
 
@@ -43,7 +44,7 @@ namespace Xamarin.Forms.Platform.Android
 			cell.View.IsPlatformEnabled = true;
 			var c = new ViewCellContainer(context, view, cell, ParentView, unevenRows, rowHeight);
 
-			Performance.Stop();
+			Performance.Stop(reference, "GetCellCore");
 
 			return c;
 		}
@@ -138,22 +139,23 @@ namespace Xamarin.Forms.Platform.Android
 
 			public void Update(ViewCell cell)
 			{
-				Performance.Start();
+				var reference = Guid.NewGuid().ToString();
+				Performance.Start(reference);
 
 				var renderer = GetChildAt(0) as IVisualElementRenderer;
 				var viewHandlerType = Registrar.Registered.GetHandlerType(cell.View.GetType()) ?? typeof(Platform.DefaultRenderer);
 				if (renderer != null && renderer.GetType() == viewHandlerType)
 				{
-					Performance.Start("Reuse");
+					Performance.Start(reference, "Reuse");
 					_viewCell = cell;
 
 					cell.View.DisableLayout = true;
 					foreach (VisualElement c in cell.View.Descendants())
 						c.DisableLayout = true;
 
-					Performance.Start("Reuse.SetElement");
+					Performance.Start(reference, "Reuse.SetElement");
 					renderer.SetElement(cell.View);
-					Performance.Stop("Reuse.SetElement");
+					Performance.Stop(reference, "Reuse.SetElement");
 
 					Platform.SetRenderer(cell.View, _view);
 
@@ -167,8 +169,8 @@ namespace Xamarin.Forms.Platform.Android
 
 					Invalidate();
 
-					Performance.Stop("Reuse");
-					Performance.Stop();
+					Performance.Stop(reference, "Reuse");
+					Performance.Stop(reference);
 					return;
 				}
 
@@ -186,7 +188,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateIsEnabled();
 				UpdateWatchForLongPress();
 
-				Performance.Stop();
+				Performance.Stop(reference);
 			}
 
 			public void UpdateIsEnabled()
@@ -196,22 +198,24 @@ namespace Xamarin.Forms.Platform.Android
 
 			protected override void OnLayout(bool changed, int l, int t, int r, int b)
 			{
-				Performance.Start();
+				var reference = Guid.NewGuid().ToString();
+				Performance.Start(reference);
 
 				double width = Context.FromPixels(r - l);
 				double height = Context.FromPixels(b - t);
 
-				Performance.Start("Element.Layout");
+				Performance.Start(reference, "Element.Layout");
 				Xamarin.Forms.Layout.LayoutChildIntoBoundingRegion(_view.Element, new Rectangle(0, 0, width, height));
-				Performance.Stop("Element.Layout");
+				Performance.Stop(reference, "Element.Layout");
 
 				_view.UpdateLayout();
-				Performance.Stop();
+				Performance.Stop(reference);
 			}
 
 			protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
 			{
-				Performance.Start();
+				var reference = Guid.NewGuid().ToString();
+				Performance.Start(reference);
 
 				int width = MeasureSpec.GetSize(widthMeasureSpec);
 				int height;
@@ -226,7 +230,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				SetMeasuredDimension(width, height);
 
-				Performance.Stop();
+				Performance.Stop(reference);
 			}
 
 			void UpdateWatchForLongPress()
