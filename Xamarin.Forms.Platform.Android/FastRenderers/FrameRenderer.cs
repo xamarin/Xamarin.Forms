@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using Android.Content;
+using Android.Graphics.Drawables;
 using Android.Support.V7.Widget;
 using Android.Views;
 using Xamarin.Forms.Platform.Android.FastRenderers;
@@ -17,6 +18,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		bool _disposed;
 		Frame _element;
+		GradientDrawable _backgroundDrawable;
 
 		VisualElementPackager _visualElementPackager;
 		VisualElementTracker _visualElementTracker;
@@ -158,6 +160,9 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			if (e.NewElement != null)
 			{
 				this.EnsureId();
+				_backgroundDrawable = new GradientDrawable();
+				_backgroundDrawable.SetShape(ShapeType.Rectangle);
+				this.SetBackground(_backgroundDrawable);
 
 				if (_visualElementTracker == null)
 				{
@@ -170,6 +175,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				UpdateShadow();
 				UpdateBackgroundColor();
 				UpdateCornerRadius();
+				UpdateOutlineColor();
 
 				ElevationHelper.SetElevation(this, e.NewElement);
 			}
@@ -211,6 +217,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				UpdateBackgroundColor();
 			else if (e.PropertyName == Frame.CornerRadiusProperty.PropertyName)
 				UpdateCornerRadius();
+			else if (e.PropertyName == Frame.OutlineColorProperty.PropertyName)
+				UpdateOutlineColor();
 		}
 
 		void UpdateBackgroundColor()
@@ -219,7 +227,16 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				return;
 				
 			Color bgColor = Element.BackgroundColor;
-			SetCardBackgroundColor(bgColor.IsDefault ? AColor.White : bgColor.ToAndroid());
+			_backgroundDrawable.SetColor(bgColor.IsDefault ? AColor.White : bgColor.ToAndroid());
+		}
+
+		void UpdateOutlineColor()
+		{
+			if (_disposed)
+				return;
+
+			Color outlineColor = Element.OutlineColor;
+			_backgroundDrawable.SetStroke(3, outlineColor.IsDefault ? AColor.White : outlineColor.ToAndroid());
 		}
 
 		void UpdateShadow()
@@ -255,7 +272,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			else
 				cornerRadius = Context.ToPixels(cornerRadius);
 
-			Radius = cornerRadius;
+			_backgroundDrawable.SetCornerRadius(cornerRadius);
 		}
 	}
 }
