@@ -127,7 +127,13 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					_visualElementPackager.Dispose();
 					_visualElementPackager = null;
 				}
-			
+				
+				if (_backgroundDrawable != null)
+				{
+					_backgroundDrawable.Dispose();
+					_backgroundDrawable = null;
+				}
+				
 				int count = ChildCount;
 				for (var i = 0; i < count; i++)
 				{
