@@ -486,6 +486,9 @@
     <Compile Include="AutoMergedResourceDictionaries.xaml.cs" >
       <DependentUpon>AutoMergedResourceDictionaries.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Issues\Gh1346.xaml.cs">
+      <DependentUpon>Gh1346.xaml</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -894,6 +897,9 @@
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="AutoMergedResourceDictionaries.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Issues\Gh1346.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
     <EmbeddedResource Include="Issues\Bz41296.xaml">
