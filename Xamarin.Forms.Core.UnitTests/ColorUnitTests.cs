@@ -290,6 +290,12 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
+		public void TestDefaultColorToSystemDrawingColorEmpty()
+		{
+			Assert.AreEqual(System.Drawing.Color.Empty, (System.Drawing.Color)Color.Default);
+		}
+
+		[Test]
 		public void TestImplicitConversionFromSystemDrawingColor()
 		{
 			System.Drawing.Color sdColor = System.Drawing.Color.FromArgb(32, 64, 128, 255);
@@ -298,6 +304,12 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(.25, color.R, .01);
 			Assert.AreEqual(.5, color.G, .01);
 			Assert.AreEqual(1, color.B, .01);
+		}
+
+		[Test]
+		public void TestSystemDrawingColorEmptyToColorDefault()
+		{
+			Assert.AreEqual(Color.Default, (Color)System.Drawing.Color.Empty);
 		}
 	}
 }
