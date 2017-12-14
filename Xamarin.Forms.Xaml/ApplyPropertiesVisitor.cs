@@ -148,7 +148,7 @@ namespace Xamarin.Forms.Xaml
 				Exception xpe = null;
 				var xKey = node.Properties.ContainsKey(XmlName.xKey) ? ((ValueNode)node.Properties[XmlName.xKey]).Value as string : null;
 
-				if (HandleAttachedCollection(source, parentList, node, value))  { // TODO hartez 2017/12/01 15:17:57 Don't love this method name	
+				if (HandleAttachedCollection(source, parentList, node, value))  { 
 					return;
 				}
 
