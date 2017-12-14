@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		int _imageHeight = -1;
 		bool _isDisposed;
 		bool _inputTransparent;
-		readonly Lazy<TextColorSwitcher> _textColorSwitcher;
+		Lazy<TextColorSwitcher> _textColorSwitcher;
 		readonly AutomationPropertiesProvider _automationPropertiesProvider;
 		readonly EffectControlProvider _effectControlProvider;
 		VisualElementTracker _tracker;
@@ -38,7 +38,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		{
 			_automationPropertiesProvider = new AutomationPropertiesProvider(this);
 			_effectControlProvider = new EffectControlProvider(this);
-			_textColorSwitcher = new Lazy<TextColorSwitcher>(() => new TextColorSwitcher(TextColors));
 
 			Initialize();
 		}
@@ -48,8 +47,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		{
 			_automationPropertiesProvider = new AutomationPropertiesProvider(this);
 			_effectControlProvider = new EffectControlProvider(this);
-			_textColorSwitcher = new Lazy<TextColorSwitcher>(() => new TextColorSwitcher(TextColors));
-
+			
 			Initialize();
 		}
 
@@ -232,6 +230,9 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				UpdateBackgroundColor();
 
 				ElevationHelper.SetElevation(this, e.NewElement);
+
+				_textColorSwitcher = new Lazy<TextColorSwitcher>(
+					() => new TextColorSwitcher(TextColors, e.NewElement.UseLegacyColorManagement()));
 			}
 
 			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(e.OldElement, e.NewElement));
@@ -503,7 +504,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		void UpdateTextColor()
 		{
-			if (Element == null || _isDisposed)
+			if (Element == null || _isDisposed || _textColorSwitcher == null)
 			{
 				return;
 			}
