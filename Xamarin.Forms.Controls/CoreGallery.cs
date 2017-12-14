@@ -245,7 +245,7 @@ namespace Xamarin.Forms.Controls
 		}
 
 		List<GalleryPageFactory> _pages = new List<GalleryPageFactory> {
-				new GalleryPageFactory(() => new VisualStateManagerGallery(), "VisualStateManager"),
+				new GalleryPageFactory(() => new VisualStateManagerGallery(), "VisualStateManager Gallery"),
 				new GalleryPageFactory(() => new FlowDirectionGalleryLandingPage(), "FlowDirection"),
 				new GalleryPageFactory(() => new AutomationPropertiesGallery(), "Accessibility"),
 				new GalleryPageFactory(() => new PlatformSpecificsGallery(), "Platform Specifics"),

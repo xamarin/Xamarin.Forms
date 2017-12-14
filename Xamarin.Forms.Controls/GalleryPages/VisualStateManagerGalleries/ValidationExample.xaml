@@ -83,6 +83,12 @@
 			
 			<Button x:Name="Submit" Text="Submit" Clicked="Submit_OnClicked"></Button>
 
+			<Label Margin="2,20,2,0" 
+				   Text="The form above uses the VSM to create a custom 'Invalid' state for the various controls. 
+				   
+				   When validation runs for the form, it toggles the state of the controls between 'Invalid' and 'Normal', 
+				   which determines the appearance of the controls. "></Label>
+			
 		</StackLayout>
     </ContentPage.Content>
 </ContentPage>
