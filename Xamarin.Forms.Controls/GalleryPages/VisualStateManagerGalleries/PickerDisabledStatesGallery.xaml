@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-			xmlns:windowsSpecific="clr-namespace:Xamarin.Forms.PlatformConfiguration.WindowsSpecific;assembly=Xamarin.Forms.Core"
-			xmlns:androidSpecific="clr-namespace:Xamarin.Forms.PlatformConfiguration.AndroidSpecific;assembly=Xamarin.Forms.Core"
-			xmlns:iosSpecific="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core"
+			 xmlns:windowsSpecific="clr-namespace:Xamarin.Forms.PlatformConfiguration.WindowsSpecific;assembly=Xamarin.Forms.Core"
+			 xmlns:androidSpecific="clr-namespace:Xamarin.Forms.PlatformConfiguration.AndroidSpecific;assembly=Xamarin.Forms.Core"
+			 xmlns:iosSpecific="clr-namespace:Xamarin.Forms.PlatformConfiguration.iOSSpecific;assembly=Xamarin.Forms.Core"
              x:Class="Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries.PickerDisabledStatesGallery"
-			Title="Picker Disabled States Gallery">
+			 Title="Picker Disabled States Gallery">
 
 	<ContentPage.Resources>
 		<ResourceDictionary>
@@ -60,6 +60,7 @@
 					whatever colors are manually set for it -->
 				<Label Text="The Picker below has the Legacy Color Behavior disabled; it will stick with whatever colors are set, regardless of state"/>
 				<Picker x:Name="Picker1" TextColor="Blue" BackgroundColor="Bisque" 
+					windowsSpecific:VisualElement.IsLegacyColorModeEnabled="False"
 					androidSpecific:VisualElement.IsLegacyColorModeEnabled="False"
 					iosSpecific:VisualElement.IsLegacyColorModeEnabled="False">
 					<Picker.Items>

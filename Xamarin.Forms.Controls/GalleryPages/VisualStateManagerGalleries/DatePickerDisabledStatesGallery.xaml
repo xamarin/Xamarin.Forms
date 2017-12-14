@@ -56,6 +56,7 @@
 				<Label Text="The DatePicker below has the Legacy Color Behavior disabled; it will stick with whatever colors are set, regardless of state"/>
 				<DatePicker x:Name="Picker1" TextColor="Blue" BackgroundColor="Bisque" 
 							androidSpecific:VisualElement.IsLegacyColorModeEnabled="False"
+							windowsSpecific:VisualElement.IsLegacyColorModeEnabled="False"
 							iosSpecific:VisualElement.IsLegacyColorModeEnabled="False">
 				</DatePicker>
 				<Button Text="Toggle IsEnabled" x:Name="Button1" Clicked="Button1_OnClicked" />

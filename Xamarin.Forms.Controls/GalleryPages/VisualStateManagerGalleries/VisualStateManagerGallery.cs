@@ -18,7 +18,6 @@ namespace Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries
 				Children =
 				{
 					GalleryNav("Disabled States Gallery", () => new DisabledStatesGallery(), Navigation),
-					GalleryNav("Entry Focus States", () => new EntryFocusStatesGallery(), Navigation),
 					GalleryNav("OnPlatform Example", () => new OnPlatformExample(), Navigation),
 					GalleryNav("OnIdiom Example", () => new OnIdiomExample(), Navigation),
 					GalleryNav("Validation Example", () => new ValidationExample(), Navigation)

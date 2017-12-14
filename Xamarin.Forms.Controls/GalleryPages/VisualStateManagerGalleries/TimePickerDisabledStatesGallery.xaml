@@ -56,6 +56,7 @@
 				<Label Text="The TimePicker below has the Legacy Color Behavior disabled; it will stick with whatever colors are set, regardless of state"/>
 				<TimePicker x:Name="Picker1" TextColor="Blue" BackgroundColor="Bisque" 
 					androidSpecific:VisualElement.IsLegacyColorModeEnabled="False"
+					windowsSpecific:VisualElement.IsLegacyColorModeEnabled="False"
 					iosSpecific:VisualElement.IsLegacyColorModeEnabled="False">
 				</TimePicker>
 				<Button Text="Toggle IsEnabled" x:Name="Button1" Clicked="Button1_OnClicked" />

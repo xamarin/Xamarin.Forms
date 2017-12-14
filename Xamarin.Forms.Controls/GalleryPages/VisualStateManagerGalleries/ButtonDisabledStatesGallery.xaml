@@ -14,6 +14,10 @@
 				<Setter Property="VisualStateManager.VisualStateGroups">
 					<VisualStateGroup x:Name="CommonStates">
 						<VisualState x:Name="Normal" />
+						<!-- Because we're creating out own PointerOVer state here, the Forms VSM will override
+						the Windows VSM for UWP. So this button won't display the native PointerOver behavior. 
+						If we remove this next line, the usual PointerOver behavior will be restored. -->
+						<VisualState x:Name="PointerOver" />
 						<VisualState x:Name="Disabled">
 							<VisualState.Setters>
 								<Setter Property="TextColor" Value="Red" />
@@ -57,6 +61,7 @@
 				<Button Text="Button" x:Name="Button1" TextColor="Blue" BackgroundColor="Bisque"
 						androidSpecific:VisualElement.IsLegacyColorModeEnabled="False"
 						iosSpecific:VisualElement.IsLegacyColorModeEnabled="False"
+						windowsSpecific:VisualElement.IsLegacyColorModeEnabled="False"
 						/>
 				<Button Text="Toggle IsEnabled" x:Name="Button1_Toggle" Clicked="Button1_Toggle_OnClicked" />
 

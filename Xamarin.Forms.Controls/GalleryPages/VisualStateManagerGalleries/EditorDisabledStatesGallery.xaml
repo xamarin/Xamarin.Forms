@@ -54,7 +54,7 @@
 				<!-- Legacy Color Behavior turned off by the PlatformSpecific; ignores states entirely and uses 
 					whatever colors are manually set for it -->
 				<Label Text="The Editor below has the Legacy Color Behavior disabled; it will stick with whatever colors are set, regardless of state"/>
-				<Editor x:Name="Editor1" TextColor="Blue" BackgroundColor="Bisque" Text="Kwyjibo"
+				<Editor x:Name="Editor1" TextColor="Blue" BackgroundColor="GreenYellow" Text="Kwyjibo"
 						windowsSpecific:VisualElement.IsLegacyColorModeEnabled="False"
 						androidSpecific:VisualElement.IsLegacyColorModeEnabled="False"
 						iosSpecific:VisualElement.IsLegacyColorModeEnabled="False"
