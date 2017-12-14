@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Xml;
@@ -270,24 +269,8 @@ namespace Xamarin.Forms.Xaml
 		static BindableProperty GetBindableProperty(Type elementType, string localName, IXmlLineInfo lineInfo,
 			bool throwOnError = false)
 		{
-			if (elementType.Name.Contains("Entry"))
-			{
-				var x = elementType.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
-
-				foreach (FieldInfo fieldInfo in x)
-				{
-					Debug.WriteLine($">>>>> ApplyPropertiesVisitor GetBindableProperty 287: fieldInfo: {fieldInfo.Name}");
-				}
-			}
-
-
-
 			var bindableFieldInfo =
 				elementType.GetFields(BindingFlags.Static | BindingFlags.Public|BindingFlags.FlattenHierarchy).FirstOrDefault(fi => fi.Name == localName + "Property");
-
-			
-
-			Debug.WriteLine($">>>>> ApplyPropertiesVisitor GetBindableProperty: type : {elementType}; localName : {localName}; line : {lineInfo.LineNumber}; {bindableFieldInfo}");
 
 			Exception exception = null;
 			if (exception == null && bindableFieldInfo == null) {
