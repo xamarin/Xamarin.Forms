@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
 using Windows.System;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
@@ -8,7 +7,7 @@ using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	public class EntryRenderer : ViewRenderer<Xamarin.Forms.Entry, FormsTextBox>
+	public class EntryRenderer : ViewRenderer<Entry, FormsTextBox>
 	{
 		bool _fontApplied;
 		Brush _backgroundColorFocusedDefaultBrush;
@@ -26,13 +25,14 @@ namespace Xamarin.Forms.Platform.UWP
 				if (Control == null)
 				{
 					var textBox = new FormsTextBox { Style = Windows.UI.Xaml.Application.Current.Resources["FormsTextBoxStyle"] as Windows.UI.Xaml.Style };
+
 					SetNativeControl(textBox);
 					textBox.TextChanged += OnNativeTextChanged;
 					textBox.KeyUp += TextBoxOnKeyUp;
 
 					// If the Forms VisualStateManager is in play or the user wants to disable the Forms legacy
 					// color stuff, then the underlying textbox should just use the Forms VSM states
-					textBox.UseFormsVsm = VisualStateManager.GetVisualStateGroups(Element) != null 
+					textBox.UseFormsVsm = VisualStateManager.GetVisualStateGroups(Element) != null
 						|| !e.NewElement.OnThisPlatform().GetIsLegacyColorModeEnabled();
 				}
 

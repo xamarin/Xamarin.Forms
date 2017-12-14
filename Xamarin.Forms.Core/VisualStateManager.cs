@@ -130,12 +130,18 @@ namespace Xamarin.Forms
 		}
 
 		public string Name { get; set; }
-		public Collection<Setter> Setters { get; set; }
-		public Type TargetType { get; internal set; }
+		public Collection<Setter> Setters { get;}
+		public Type TargetType { get; set; }
 
 		internal VisualState Clone()
 		{
-			return new VisualState { Name = Name, TargetType = TargetType, Setters = Setters };
+			var clone = new VisualState { Name = Name, TargetType = TargetType };
+			foreach (var setter in Setters)
+			{
+				clone.Setters.Add(setter);
+			}
+
+			return clone;
 		}
 	}
 

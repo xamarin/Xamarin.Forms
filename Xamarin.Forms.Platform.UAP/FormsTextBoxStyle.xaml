@@ -3,7 +3,6 @@
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:uwp="using:Xamarin.Forms.Platform.UWP">
 
-	<uwp:FormsVisualStateManager x:Key="FormsVisualStateManager"></uwp:FormsVisualStateManager>
 	<uwp:TextAlignmentToHorizontalAlignmentConverter x:Key="AlignmentConverter" />
 	<Style x:Key="FormsTextBoxStyle" TargetType="uwp:FormsTextBox">
 		<Setter Property="MinWidth" Value="{ThemeResource TextControlThemeMinWidth}" />
@@ -85,10 +84,11 @@
 							<RowDefinition Height="*" />
 						</Grid.RowDefinitions>
 						<VisualStateManager.VisualStateGroups>
-							<!-- TODO Hopefully once we sort out GoToStateCore, we can swap these back 
-							(see notes in FormsVisualStateManager.cs) -->
 
 							<VisualStateGroup x:Name="FormsManaged">
+								<!-- These "Forms" prefixed states exist to support the Forms VSM; once custom 
+								visual state managers are working correctly for TextBox, we'll be able to remove them
+								(see notes in FormsVisualStateManager.cs) -->
 								<VisualState x:Name="FormsNormal" />
 								<VisualState x:Name="FormsDisabled">
 									<Storyboard>
@@ -96,8 +96,6 @@
 																		Storyboard.TargetName="HeaderContentPresenter">
 											<DiscreteObjectKeyFrame KeyTime="0" Value="{ThemeResource SystemControlDisabledBaseLowBrush}" />
 										</ObjectAnimationUsingKeyFrames>
-										
-										<!-- TODO One of these next two is the thing you have to change to fix that the backgrounds don't get set for disable states -->
 										<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="Background"
 																		Storyboard.TargetName="BackgroundElement">
 											<DiscreteObjectKeyFrame KeyTime="0" Value="{Binding Background, RelativeSource={RelativeSource Mode=TemplatedParent}}" />

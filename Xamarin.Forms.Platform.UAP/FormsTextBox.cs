@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.System;
@@ -42,7 +41,7 @@ namespace Xamarin.Forms.Platform.UWP
 		public new static readonly DependencyProperty TextProperty = DependencyProperty.Register(nameof(Text), 
 			typeof(string), typeof(FormsTextBox), new PropertyMetadata("", TextPropertyChanged));
 
-		InputScope passwordInputScope;
+		InputScope _passwordInputScope;
 		Border _borderElement;
 		InputScope _cachedInputScope;
 		bool _cachedPredictionsSetting;
@@ -105,16 +104,16 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			get
 			{
-				if (passwordInputScope != null)
+				if (_passwordInputScope != null)
 				{
-					return passwordInputScope;
+					return _passwordInputScope;
 				}
 
-				passwordInputScope = new InputScope();
+				_passwordInputScope = new InputScope();
 				var name = new InputScopeName { NameValue = InputScopeNameValue.Default };
-				passwordInputScope.Names.Add(name);
+				_passwordInputScope.Names.Add(name);
 
-				return passwordInputScope;
+				return _passwordInputScope;
 			}
 		}
 
@@ -379,26 +378,18 @@ namespace Xamarin.Forms.Platform.UWP
 			// when the Windows.UI.XAML.VisualStateManager moves to the "Focused" state. So we have to force a 
 			// "refresh" of the Focused state by going to that state again
 
-			var control = dependencyObject as Control;
-			if (control == null || control.FocusState == FocusState.Unfocused)
+			if (!(dependencyObject is Control control) || control.FocusState == FocusState.Unfocused)
 			{
 				return;
 			}
 
 			WVisualStateManager.GoToState(control, "Focused", false);
-
-			// TODO hartez 2017/12/01 18:10:53 Take a look at the ColorHandling property and react accordingly	
-			// DeferToNativeVSM is what's happening above
-			// None would be that we ignore focus property changing entirely
-			// XFVSM would be that instead of WVisualStateManager.GoToState, we use ours
 		}
 
 		internal void UpdateEnabled()
 		{
 			if (UseFormsVsm)
 			{
-				// TODO hartez See if we can use FormsVisualStateManager GoToCore (maybe a static version) here
-
 				var state = IsEnabled ? "FormsNormal" : "FormsDisabled";
 				WVisualStateManager.GoToState(this, state, true);
 			}
