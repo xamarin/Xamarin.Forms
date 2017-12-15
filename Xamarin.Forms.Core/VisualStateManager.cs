@@ -83,8 +83,8 @@ namespace Xamarin.Forms
 		}
 	}
 
-	[RuntimeNameProperty("Name")]
-	[ContentProperty("States")]
+	[RuntimeNameProperty(nameof(Name))]
+	[ContentProperty(nameof(States))]
 	public class VisualStateGroup 
 	{
 		public VisualStateGroup()
@@ -122,7 +122,7 @@ namespace Xamarin.Forms
 		}
 	}
 
-	[RuntimeNameProperty("Name")]
+	[RuntimeNameProperty(nameof(Name))]
 	public class VisualState 
 	{
 		public VisualState()
