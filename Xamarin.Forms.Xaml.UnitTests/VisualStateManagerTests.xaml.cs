@@ -26,6 +26,13 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				Application.Current = new MockApplication ();
 			}
 
+			[TearDown]
+			public void TearDown()
+			{
+				Device.PlatformServices = null;
+				Application.Current = null;
+			}
+
 			[TestCase(false)]
 			[TestCase(true)]
 			public void VisualStatesFromStyleXaml(bool useCompiledXaml)
@@ -36,15 +43,15 @@ namespace Xamarin.Forms.Xaml.UnitTests
 
 				// Verify that Entry0 has no VisualStateGroups
 				Assert.That(VisualStateManager.GetVisualStateGroups(entry0) == null);
-				Assert.AreEqual(Color.Default, entry0.TextColor);
-				Assert.AreEqual(Color.Default, entry0.PlaceholderColor);
+				Assert.That(Color.Default, Is.EqualTo(entry0.TextColor));
+				Assert.That(Color.Default, Is.EqualTo(entry0.PlaceholderColor));
 
 				var entry1 = layout.Entry1;
 
 				// Verify that the correct groups are set up for Entry1
 				var groups = VisualStateManager.GetVisualStateGroups(entry1);
 				Assert.AreEqual(3, groups.Count);
-				Assert.That(groups[0].Name == "CommonStates");
+				Assert.That(groups[0].Name, Is.EqualTo("CommonStates"));
 				Assert.Contains("Normal", groups[0].States.Select(state => state.Name).ToList());
 				Assert.Contains("Disabled", groups[0].States.Select(state => state.Name).ToList());
 
@@ -120,13 +127,13 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				var currentState1 = groups1[0].CurrentState;
 				var currentState2 = groups2[0].CurrentState;
 
-				Assert.That(currentState1.Name == "Normal");
-				Assert.That(currentState2.Name == "Normal");
+				Assert.That(currentState1.Name, Is.EqualTo("Normal"));
+				Assert.That(currentState2.Name, Is.EqualTo("Normal"));
 
 				VisualStateManager.GoToState(label1, "Invalid");
 
-				Assert.That(groups1[0].CurrentState.Name == "Invalid");
-				Assert.That(groups2[0].CurrentState.Name == "Normal");
+				Assert.That(groups1[0].CurrentState.Name, Is.EqualTo("Invalid"));
+				Assert.That(groups2[0].CurrentState.Name, Is.EqualTo("Normal"));
 			}
 		}
 	}
