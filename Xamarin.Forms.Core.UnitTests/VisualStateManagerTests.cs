@@ -46,7 +46,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			var groups1 = VisualStateManager.GetVisualStateGroups(label1);
 
-			Assert.That(groups1[0].CurrentState.Name == NormalStateName);
+			Assert.That(groups1[0].CurrentState.Name, Is.EqualTo(NormalStateName));
 		}
 
 		[Test]
@@ -75,13 +75,13 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			Assert.AreNotSame(groups1, groups2);
 
-			Assert.That(groups1[0].CurrentState.Name == NormalStateName);
-			Assert.That(groups2[0].CurrentState.Name == NormalStateName);
+			Assert.That(groups1[0].CurrentState.Name, Is.EqualTo(NormalStateName));
+			Assert.That(groups2[0].CurrentState.Name, Is.EqualTo(NormalStateName));
 
 			VisualStateManager.GoToState(label1, InvalidStateName);
 
-			Assert.That(groups1[0].CurrentState.Name == InvalidStateName);
-			Assert.That(groups2[0].CurrentState.Name == NormalStateName);
+			Assert.That(groups1[0].CurrentState.Name, Is.EqualTo(InvalidStateName));
+			Assert.That(groups2[0].CurrentState.Name, Is.EqualTo(NormalStateName));
 		}
 
 		[Test]
@@ -105,13 +105,13 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			Assert.AreNotSame(groups1, groups2);
 
-			Assert.That(groups1[0].CurrentState.Name == NormalStateName);
-			Assert.That(groups2[0].CurrentState.Name == NormalStateName);
+			Assert.That(groups1[0].CurrentState.Name, Is.EqualTo(NormalStateName));
+			Assert.That(groups2[0].CurrentState.Name, Is.EqualTo(NormalStateName));
 
 			VisualStateManager.GoToState(label1, InvalidStateName);
 
-			Assert.That(groups1[0].CurrentState.Name == InvalidStateName);
-			Assert.That(groups2[0].CurrentState.Name == NormalStateName);
+			Assert.That(groups1[0].CurrentState.Name, Is.EqualTo(InvalidStateName));
+			Assert.That(groups2[0].CurrentState.Name, Is.EqualTo(NormalStateName));
 		}
 	}
 }
