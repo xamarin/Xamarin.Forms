@@ -8,9 +8,9 @@ namespace Xamarin.Forms
 	{
 		internal class CommonStates
 		{
-			internal const string Normal = "Normal";
-			internal const string Disabled = "Disabled";
-			internal const string Focused = "Focused";
+			public const string Normal = "Normal";
+			public const string Disabled = "Disabled";
+			public const string Focused = "Focused";
 		}
 
 		public static readonly BindableProperty VisualStateGroupsProperty =
