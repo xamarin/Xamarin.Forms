@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using Xamarin.Forms.Xaml;
 
 namespace Xamarin.Forms
 {

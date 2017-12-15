@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Xamarin.Forms
+namespace Xamarin.Forms.Xaml
 {
 	[AttributeUsage(AttributeTargets.Class)]
 	public sealed class RuntimeNamePropertyAttribute : Attribute
