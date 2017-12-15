@@ -42,7 +42,7 @@ namespace Xamarin.Forms.Core.XamlC
 							typeName = (ttnode as ValueNode).Value as string;
 						else if (ttnode is IElementNode)
 							typeName = ((ttnode as IElementNode).CollectionItems.FirstOrDefault() as ValueNode)?.Value as string ?? ((ttnode as IElementNode).Properties [new XmlName("", "TypeName")] as ValueNode)?.Value as string;
-					} else if (parent.XmlType.Name == "VisualState") {
+					} else if (parent.XmlType.NamespaceUri == XamlParser.XFUri && parent.XmlType.Name == "VisualState") {
 						var current = parent.Parent.Parent as IElementNode ?? parent.Parent.Parent.Parent as IElementNode;
 
 						if (current.XmlType.Name == "Setter") {
