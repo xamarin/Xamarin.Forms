@@ -19,11 +19,7 @@ namespace Xamarin.Forms
 
 		static void VisualStateGroupsPropertyChanged(BindableObject bindable, object oldValue, object newValue)
 		{
-			if (bindable is VisualElement visualElement)
-			{
-				// Start out in the Normal state, if one is defined
-				GoToState(visualElement, CommonStates.Normal);
-			}
+			GoToState((VisualElement)bindable, CommonStates.Normal);
 		}
 
 		public static Collection<VisualStateGroup> GetVisualStateGroups(VisualElement visualElement)
