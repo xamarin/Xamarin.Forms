@@ -81,7 +81,7 @@ namespace Xamarin.Forms
 
 	[RuntimeNameProperty(nameof(Name))]
 	[ContentProperty(nameof(States))]
-	public class VisualStateGroup 
+	public sealed class VisualStateGroup 
 	{
 		public VisualStateGroup()
 		{
@@ -119,7 +119,7 @@ namespace Xamarin.Forms
 	}
 
 	[RuntimeNameProperty(nameof(Name))]
-	public class VisualState 
+	public sealed class VisualState 
 	{
 		public VisualState()
 		{
