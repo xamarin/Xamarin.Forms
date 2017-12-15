@@ -1,5 +1,5 @@
 using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Xml;
@@ -59,7 +59,7 @@ namespace Xamarin.Forms
 				target.SetDynamicResource(Property, dynamicResource.Key, fromStyle);
 			else
 			{
-				if (Value is Collection<VisualStateGroup> visualStateGroupCollection)
+				if (Value is IList<VisualStateGroup> visualStateGroupCollection)
 					target.SetValue(Property, visualStateGroupCollection.Clone(), fromStyle);
 				else
 					target.SetValue(Property, Value, fromStyle);

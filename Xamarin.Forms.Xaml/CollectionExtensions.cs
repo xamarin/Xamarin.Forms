@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Xamarin.Forms.Xaml
 {
@@ -9,12 +10,14 @@ namespace Xamarin.Forms.Xaml
 			// Retrieve the value
 			var propertyValue = bindable.GetValue(property);
 
-			// If it's not initialized, create it
-			if (propertyValue == null)
+			if (propertyValue != null)
 			{
-				propertyValue = Activator.CreateInstance(property.ReturnType);
-				bindable.SetValue(property, propertyValue);
+				return propertyValue;
 			}
+
+			// If it's not initialized, create it
+			propertyValue = CreateValue(property.ReturnType);
+			bindable.SetValue(property, propertyValue);
 
 			return propertyValue;
 		}
@@ -23,15 +26,24 @@ namespace Xamarin.Forms.Xaml
 		{
 			// Retrieve the value
 			var propertyValue = setter.Value;
-
-			// If it's not initialized, create it
-			if (propertyValue == null)
+			
+			if (propertyValue != null)
 			{
-				propertyValue = Activator.CreateInstance(setter.Property.ReturnType);
-				setter.Value = propertyValue;
+				return propertyValue;
 			}
 
+			// If it's not initialized, create it
+			propertyValue = CreateValue(setter.Property.ReturnType);
+			setter.Value = propertyValue;
+
 			return propertyValue;
+		}
+
+		static object CreateValue(Type type)
+		{
+			return type == typeof(IList<VisualStateGroup>)
+				? new List<VisualStateGroup>()
+				: Activator.CreateInstance(type);
 		}
 	}
 }

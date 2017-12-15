@@ -655,16 +655,13 @@ namespace Xamarin.Forms.Xaml
 
 			if (property.ReturnTypeInfo.GenericTypeArguments.Length != 1 ||
 				!property.ReturnTypeInfo.GenericTypeArguments[0].IsInstanceOfType(value))
-			{
 				return false;
-			}
 
 			// This might be a collection we can add to; see if we can find an Add method
-			var addMethod = property.ReturnType.GetRuntimeMethods().FirstOrDefault(mi => mi.Name == "Add" && mi.GetParameters().Length == 1);
+			var addMethod = GetAllRuntimeMethods(property.ReturnType)
+				.FirstOrDefault(mi => mi.Name == "Add" && mi.GetParameters().Length == 1);
 			if (addMethod == null)
-			{
 				return false;
-			}
 
 			// If there's an add method, make sure the collection is initialized
 			var collection = bindable.EnsureCollectionInitialized(property);
@@ -672,6 +669,12 @@ namespace Xamarin.Forms.Xaml
 			// And add the new value to it
 			addMethod.Invoke(collection,new[] { value.ConvertTo(addMethod.GetParameters()[0].ParameterType, (Func<TypeConverter>)null, serviceProvider) });
 			return true;
+		}
+
+		static IEnumerable<MethodInfo> GetAllRuntimeMethods(Type type)
+		{
+			return type.GetRuntimeMethods()
+				.Concat(type.GetTypeInfo().ImplementedInterfaces.SelectMany(t => t.GetRuntimeMethods()));
 		}
 
 		static bool TrySetterValueCollection(object element, object value)
@@ -697,8 +700,8 @@ namespace Xamarin.Forms.Xaml
 
 			// If the collection hasn't already been created, do so
 			if (setter.Value == null)
-				setter.Value = Activator.CreateInstance(targetProperty.ReturnType);
-
+				setter.Value = setter.EnsureCollectionInitialized();
+					
 			// Fall through to Add/TryAdd
 			return true;
 		}

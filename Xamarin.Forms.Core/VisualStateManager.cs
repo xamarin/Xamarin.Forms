@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.ObjectModel;
+using System.Collections.Generic;
 using Xamarin.Forms.Xaml;
 
 namespace Xamarin.Forms
@@ -14,7 +14,7 @@ namespace Xamarin.Forms
 		}
 
 		public static readonly BindableProperty VisualStateGroupsProperty =
-			BindableProperty.CreateAttached("VisualStateGroups", typeof(Collection<VisualStateGroup>), typeof(VisualElement), 
+			BindableProperty.CreateAttached("VisualStateGroups", typeof(IList<VisualStateGroup>), typeof(VisualElement), 
 				defaultValue: null, propertyChanged: VisualStateGroupsPropertyChanged);
 
 		static void VisualStateGroupsPropertyChanged(BindableObject bindable, object oldValue, object newValue)
@@ -22,19 +22,19 @@ namespace Xamarin.Forms
 			GoToState((VisualElement)bindable, CommonStates.Normal);
 		}
 
-		public static Collection<VisualStateGroup> GetVisualStateGroups(VisualElement visualElement)
+		public static IList<VisualStateGroup> GetVisualStateGroups(VisualElement visualElement)
 		{
-			return (Collection<VisualStateGroup>)visualElement.GetValue(VisualStateGroupsProperty);
+			return (IList<VisualStateGroup>)visualElement.GetValue(VisualStateGroupsProperty);
 		}
 
-		public static void SetVisualStateGroups(VisualElement visualElement, Collection<VisualStateGroup> value)
+		public static void SetVisualStateGroups(VisualElement visualElement, IList<VisualStateGroup> value)
 		{
 			visualElement.SetValue(VisualStateGroupsProperty, value);
 		}
 
 		public static bool GoToState(VisualElement visualElement, string name)
 		{
-			if (!(visualElement.GetValue(VisualStateGroupsProperty) is Collection<VisualStateGroup> groups))
+			if (!(visualElement.GetValue(VisualStateGroupsProperty) is IList<VisualStateGroup> groups))
 			{
 				return false;
 			}
@@ -85,12 +85,12 @@ namespace Xamarin.Forms
 	{
 		public VisualStateGroup()
 		{
-			States = new Collection<VisualState>();
+			States = new List<VisualState>();
 		}
 
 		public Type TargetType { get; set; }
 		public string Name { get; set; }
-		public Collection<VisualState> States { get; }
+		public IList<VisualState> States { get; }
 		public VisualState CurrentState { get; internal set; }
 
 		internal VisualState GetState(string name)
@@ -123,11 +123,11 @@ namespace Xamarin.Forms
 	{
 		public VisualState()
 		{
-			Setters = new Collection<Setter>();
+			Setters = new List<Setter>();
 		}
 
 		public string Name { get; set; }
-		public Collection<Setter> Setters { get;}
+		public IList<Setter> Setters { get;}
 		public Type TargetType { get; set; }
 
 		internal VisualState Clone()
@@ -142,11 +142,11 @@ namespace Xamarin.Forms
 		}
 	}
 
-	internal static class VisualStateGroupCollectionExtensions
+	internal static class VisualStateGroupListExtensions
 	{
-		internal static Collection<VisualStateGroup> Clone(this Collection<VisualStateGroup> groups)
+		internal static IList<VisualStateGroup> Clone(this IList<VisualStateGroup> groups)
 		{
-			var actual = new Collection<VisualStateGroup>();
+			var actual = new List<VisualStateGroup>();
 			foreach (var group in groups)
 			{
 				actual.Add(group.Clone());
