@@ -42,7 +42,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				var entry0 = layout.Entry0;
 
 				// Verify that Entry0 has no VisualStateGroups
-				Assert.That(VisualStateManager.GetVisualStateGroups(entry0) == null);
+				Assert.False(entry0.HasVisualStateGroups());
 				Assert.That(Color.Default, Is.EqualTo(entry0.TextColor));
 				Assert.That(Color.Default, Is.EqualTo(entry0.PlaceholderColor));
 

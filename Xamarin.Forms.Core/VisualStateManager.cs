@@ -24,6 +24,11 @@ namespace Xamarin.Forms
 
 		public static IList<VisualStateGroup> GetVisualStateGroups(VisualElement visualElement)
 		{
+			if (!visualElement.HasVisualStateGroups())
+			{
+				SetVisualStateGroups(visualElement, new List<VisualStateGroup>());
+			}
+
 			return (IList<VisualStateGroup>)visualElement.GetValue(VisualStateGroupsProperty);
 		}
 
@@ -76,6 +81,11 @@ namespace Xamarin.Forms
 			}
 
 			return false;
+		}
+
+		public static bool HasVisualStateGroups(this VisualElement element)
+		{
+			return !element.GetIsDefault(VisualStateGroupsProperty);
 		}
 	}
 

@@ -81,7 +81,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			// If the Forms VisualStateManager is in play or the user wants to disable the Forms legacy
 			// color stuff, then the underlying textbox should just use the Forms VSM states
-			_queryTextBox.UseFormsVsm = VisualStateManager.GetVisualStateGroups(Element) != null
+			_queryTextBox.UseFormsVsm = Element.HasVisualStateGroups()
 							|| !Element.OnThisPlatform().GetIsLegacyColorModeEnabled();
 		}
 

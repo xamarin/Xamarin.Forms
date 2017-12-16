@@ -19,7 +19,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			// Determine whether we're letting the VSM handle the colors or doing it the old way
 			// or disabling the legacy color management and doing it the old-old (pre 2.0) way
-			return VisualStateManager.GetVisualStateGroups(element) == null
+			return !element.HasVisualStateGroups()
 					&& element.OnThisPlatform().GetIsLegacyColorModeEnabled();
 		}
 	}
