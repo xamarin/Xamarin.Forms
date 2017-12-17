@@ -35,10 +35,12 @@ namespace Xamarin.Forms
 
 		public static bool GoToState(VisualElement visualElement, string name)
 		{
-			if (!(visualElement.GetValue(VisualStateGroupsProperty) is IList<VisualStateGroup> groups))
+			if (visualElement.GetIsDefault(VisualStateGroupsProperty))
 			{
 				return false;
 			}
+
+			var groups = (IList<VisualStateGroup>)visualElement.GetValue(VisualStateGroupsProperty);
 
 			foreach (VisualStateGroup group in groups)
 			{
