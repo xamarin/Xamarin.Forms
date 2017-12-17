@@ -1,6 +1,7 @@
-{
+﻿{
   "dependencies": {
-    "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0"
+    "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0",
+    "Xam.Plugin.DeviceInfo": "2.1.2"
   },
   "frameworks": {
     "uap10.0": {}
