@@ -1445,7 +1445,8 @@ namespace Xamarin.Forms.Build.Tasks
 
 		static IEnumerable<Instruction> AddValue(VariableDefinition parent, FieldReference bpRef, INode node, IXmlLineInfo iXmlLineInfo, ILContext context)
 		{
-			var init = typeof(CollectionExtensions).GetMethod("EnsureCollectionInitialized", new[] { typeof(BindableObject), typeof(BindableProperty) });
+			var getValue = typeof(BindableObject).GetMethod("GetValue", new[] { typeof(BindableProperty) });
+
 			var elementNode = node as IElementNode;
 			var module = context.Body.Method.Module;
 			var bpTypeRef = bpRef.GetBindablePropertyType(iXmlLineInfo, module);
@@ -1454,10 +1455,10 @@ namespace Xamarin.Forms.Build.Tasks
 			// Find the Add method
 			var adderRef = GetAdderRef(GetAdder(bpTypeRef, module), module);
 
-			// Initialize the collection (if necessary)
+			// Get the collection
 			yield return Instruction.Create(OpCodes.Ldloc, parent); // bindable
 			yield return Instruction.Create(OpCodes.Ldsfld, bpRef); // property
-			yield return Instruction.Create(OpCodes.Call, module.ImportReference(init));
+			yield return Instruction.Create(OpCodes.Call, module.ImportReference(getValue));
 
 			// Then push the value to be added onto the stack and call the adder
 			yield return Instruction.Create(OpCodes.Ldloc, varDef);
@@ -1467,7 +1468,7 @@ namespace Xamarin.Forms.Build.Tasks
 				yield return Instruction.Create(OpCodes.Pop);
 		}
 
-			static bool IsSetterCollection(VariableDefinition parent, string localName, INode node, ILContext context)
+		static bool IsSetterCollection(VariableDefinition parent, string localName, INode node, ILContext context)
 		{
 			if (localName != "Value" || parent.VariableType.FullName != typeof(Setter).FullName)
 				return false;
@@ -1504,7 +1505,9 @@ namespace Xamarin.Forms.Build.Tasks
 			var bpRef = (new Core.XamlC.BindablePropertyConverter()).GetBindablePropertyFieldReference((string)bpNode.Value,
 						module, bpNode);
 			var bpTypeRef = bpRef.GetBindablePropertyType(setterNode as IXmlLineInfo, module);
-			var init = typeof(CollectionExtensions).GetMethod("EnsureCollectionInitialized", new[] { typeof(Setter) });
+
+			var init = typeof(CollectionExtensions).GetMethod("EnsureSetterCollectionInitialized", new[] { typeof(Setter) });
+
 			var elementNode = node as IElementNode;
 			var vardef = context.Variables[elementNode];
 

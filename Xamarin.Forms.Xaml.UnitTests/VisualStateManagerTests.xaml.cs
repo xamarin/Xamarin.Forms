@@ -8,7 +8,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 	{
 		public VisualStateManagerTests()
 		{
-			InitializeComponent ();
+			InitializeComponent();
 		}
 
 		public VisualStateManagerTests(bool useCompiledXaml)
@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		public class Tests
 		{
 			[SetUp]
-			public void SetUp ()
+			public void SetUp()
 			{
 				Device.PlatformServices = new MockPlatformServices ();
 				Application.Current = new MockApplication ();
@@ -94,6 +94,20 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				// And verify that the changes reverted
 				Assert.AreEqual(Color.Default, entry1.TextColor);
 				Assert.AreEqual(Color.Default, entry1.PlaceholderColor);
+			}
+
+			[TestCase(false)]
+			[TestCase(true)]
+			public void VisualStateGroupsDirectlyOnElement(bool useCompiledXaml)
+			{
+				var layout = new VisualStateManagerTests(useCompiledXaml);
+
+				var entry = layout.Entry2;
+
+				var groups = VisualStateManager.GetVisualStateGroups(entry);
+
+				Assert.NotNull(groups);
+				Assert.That(groups.Count, Is.EqualTo(2));
 			}
 
 			[TestCase(false)]

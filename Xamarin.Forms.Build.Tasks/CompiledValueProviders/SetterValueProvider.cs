@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Core.XamlC
 			var bpNode = ((ValueNode)((IElementNode)node).Properties[new XmlName("", "Property")]);
 			var bpRef = (new BindablePropertyConverter()).GetBindablePropertyFieldReference((string)bpNode.Value, module, bpNode);
 
-			if (IsSetterCollection(bpRef, module, node, context))
+			if (SetterValueIsCollection(bpRef, module, node, context))
 				yield break;
 
 			if (valueNode == null)
@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Core.XamlC
 			yield return Instruction.Create(OpCodes.Callvirt, setValueRef);
 		}
 
-		bool IsSetterCollection(FieldReference bindablePropertyReference, ModuleDefinition module, BaseNode node, ILContext context)
+		static bool SetterValueIsCollection(FieldReference bindablePropertyReference, ModuleDefinition module, BaseNode node, ILContext context)
 		{
 			var items = (node as IElementNode)?.CollectionItems;
 

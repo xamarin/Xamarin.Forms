@@ -113,5 +113,12 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(groups1[0].CurrentState.Name, Is.EqualTo(InvalidStateName));
 			Assert.That(groups2[0].CurrentState.Name, Is.EqualTo(NormalStateName));
 		}
+
+		[Test]
+		public void ElementsDoNotHaveVisualStateGroupsCollectionByDefault()
+		{
+			var label1 = new Label();
+			Assert.False(label1.HasVisualStateGroups());
+		}
 	}
 }

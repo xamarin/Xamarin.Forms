@@ -15,7 +15,8 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty VisualStateGroupsProperty =
 			BindableProperty.CreateAttached("VisualStateGroups", typeof(IList<VisualStateGroup>), typeof(VisualElement), 
-				defaultValue: null, propertyChanged: VisualStateGroupsPropertyChanged);
+				defaultValue: null, propertyChanged: VisualStateGroupsPropertyChanged, 
+				defaultValueCreator: bindable => new List<VisualStateGroup>());
 
 		static void VisualStateGroupsPropertyChanged(BindableObject bindable, object oldValue, object newValue)
 		{
@@ -24,11 +25,6 @@ namespace Xamarin.Forms
 
 		public static IList<VisualStateGroup> GetVisualStateGroups(VisualElement visualElement)
 		{
-			if (!visualElement.HasVisualStateGroups())
-			{
-				SetVisualStateGroups(visualElement, new List<VisualStateGroup>());
-			}
-
 			return (IList<VisualStateGroup>)visualElement.GetValue(VisualStateGroupsProperty);
 		}
 

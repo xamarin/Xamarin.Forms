@@ -42,7 +42,7 @@ namespace Xamarin.Forms.Xaml
 			var value = Values [node];
 			var source = Values [parentNode];
 			XmlName propertyName;
-			
+
 			if (TryGetPropertyName(node, parentNode, out propertyName)) {
 				if (TrySetRuntimeName(propertyName, source, value, node))
 					return;
@@ -120,6 +120,7 @@ namespace Xamarin.Forms.Xaml
 				if (xpe == null && typeof(IEnumerable).IsAssignableFrom(Context.Types[parentElement]) && Context.Types[parentElement].GetRuntimeMethods().Any(mi => mi.Name == "Add" && mi.GetParameters().Length == 1)) {
 					var addMethod =
 						Context.Types[parentElement].GetRuntimeMethods().First(mi => mi.Name == "Add" && mi.GetParameters().Length == 1);
+
 					addMethod.Invoke(source, new[] { value });
 					return;
 				}
@@ -259,6 +260,7 @@ namespace Xamarin.Forms.Xaml
 				XamlParseException xpe;
 				elementType = XamlParser.GetElementType(new XmlType(namespaceURI, typename, null), lineInfo,
 					context.RootElement.GetType().GetTypeInfo().Assembly, out xpe);
+
 				if (xpe != null)
 					throw xpe;
 				return true;
@@ -308,7 +310,6 @@ namespace Xamarin.Forms.Xaml
 			var serviceProvider = new XamlServiceProvider(node, context);
 			Exception xpe = null;
 			var xKey = node is IElementNode && ((IElementNode)node).Properties.ContainsKey(XmlName.xKey) ? ((ValueNode)((IElementNode)node).Properties[XmlName.xKey]).Value as string : null;
-
 
 			//If it's an attached BP, update elementType and propertyName
 			var bpOwnerType = xamlelement.GetType();
@@ -583,6 +584,7 @@ namespace Xamarin.Forms.Xaml
 
 			object targetProperty;
 			var collection = GetPropertyValue(element, propertyName, context, lineInfo, out targetProperty) as IEnumerable;
+
 			if (collection == null)
 				return false;
 
@@ -663,11 +665,11 @@ namespace Xamarin.Forms.Xaml
 			if (addMethod == null)
 				return false;
 
-			// If there's an add method, make sure the collection is initialized
-			var collection = bindable.EnsureCollectionInitialized(property);
-
+			// If there's an add method, get the collection
+			var collection = bindable.GetValue(property);
+			
 			// And add the new value to it
-			addMethod.Invoke(collection,new[] { value.ConvertTo(addMethod.GetParameters()[0].ParameterType, (Func<TypeConverter>)null, serviceProvider) });
+			addMethod.Invoke(collection, new[] { value.ConvertTo(addMethod.GetParameters()[0].ParameterType, (Func<TypeConverter>)null, serviceProvider) });
 			return true;
 		}
 
@@ -698,10 +700,9 @@ namespace Xamarin.Forms.Xaml
 			if (genericArgs.Length != 1 || !genericArgs[0].IsInstanceOfType(value))
 				return false;
 
-			// If the collection hasn't already been created, do so
-			if (setter.Value == null)
-				setter.Value = setter.EnsureCollectionInitialized();
-					
+			// Make sure the collection exists
+			setter.EnsureSetterCollectionInitialized();
+			
 			// Fall through to Add/TryAdd
 			return true;
 		}
