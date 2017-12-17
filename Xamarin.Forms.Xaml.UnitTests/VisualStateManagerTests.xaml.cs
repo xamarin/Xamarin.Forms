@@ -149,6 +149,29 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				Assert.That(groups1[0].CurrentState.Name, Is.EqualTo("Invalid"));
 				Assert.That(groups2[0].CurrentState.Name, Is.EqualTo("Normal"));
 			}
+
+
+			[TestCase(false)]
+			[TestCase(true)]
+			public void SettersAreAddedToCorrectState(bool useCompiledXaml)
+			{
+				var layout = new VisualStateManagerTests(useCompiledXaml);
+
+				var entry = layout.Entry4;
+
+				var groups = VisualStateManager.GetVisualStateGroups(entry);
+				
+				Assert.That(groups.Count, Is.EqualTo(1));
+
+				var common = groups[0];
+
+				var normal = common.States.Single(state => state.Name == "Normal");
+				var disabled = common.States.Single(state => state.Name == "Disabled");
+
+				Assert.That(normal.Setters.Count, Is.EqualTo(0));
+				Assert.That(disabled.Setters.Count, Is.EqualTo(2));
+			}
+
 		}
 	}
 }

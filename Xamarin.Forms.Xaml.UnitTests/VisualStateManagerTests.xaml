@@ -97,6 +97,8 @@
 		<Label x:Name="ErrorLabel1" Style="{StaticResource ErrorLabel}"></Label>
 		<Label x:Name="ErrorLabel2" Style="{StaticResource ErrorLabel}"></Label>
 
+		<Entry x:Name="Entry4" Style="{StaticResource OtherStyle}"></Entry>
+		
 	</StackLayout>
 
 </ContentPage>

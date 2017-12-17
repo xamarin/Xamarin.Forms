@@ -60,7 +60,7 @@ namespace Xamarin.Forms
 				{
 					foreach (Setter setter in group.CurrentState.Setters)
 					{
-						setter.UnApply(visualElement, true);
+						setter.UnApply(visualElement);
 					}
 				}
 
@@ -70,7 +70,7 @@ namespace Xamarin.Forms
 				// Apply the setters from the new state
 				foreach (Setter setter in target.Setters)
 				{
-					setter.Apply(visualElement, true);
+					setter.Apply(visualElement);
 				}
 
 				return true;
