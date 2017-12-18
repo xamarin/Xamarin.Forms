@@ -139,6 +139,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateMinimumDate()
 		{
+			DateTime mindate = Element.MinimumDate;
+
 			try
 			{
 				if (Element != null && Control != null)
