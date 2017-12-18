@@ -101,6 +101,9 @@
     <Compile Include="AutomationProperties.xaml.cs">
       <DependentUpon>AutomationProperties.xaml</DependentUpon>
     </Compile>
+    <Compile Include="BindingContexEvents.xaml.cs">
+      <DependentUpon>BindingContexEvents.xaml</DependentUpon>
+    </Compile>
     <Compile Include="FontConverterTests.cs" />
     <Compile Include="Issues\Bz43450.xaml.cs">
       <DependentUpon>Bz43450.xaml</DependentUpon>
@@ -1044,5 +1047,10 @@
   <ItemGroup>
     <Folder Include="css\" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="BindingContexEvents.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
 </Project>
+
