@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
@@ -52,7 +53,7 @@ namespace Xamarin.Forms
 					else if (triggerBase != null)
 						type = triggerBase.TargetType;
 					else if (visualState != null)
-						type = FindTypeForVisualState(parentValuesProvider.ParentObjects.ToList());
+						type = FindTypeForVisualState(parentValuesProvider, lineinfo);
 				}
 				else if (parentValuesProvider.TargetObject is Trigger)
 					type = (parentValuesProvider.TargetObject as Trigger).TargetType;
@@ -107,16 +108,33 @@ namespace Xamarin.Forms
 			return bp;
 		}
 
-		Type FindTypeForVisualState(List<object> parentObjects)
+		Type FindTypeForVisualState(IProvideParentValues parentValueProvider, IXmlLineInfo lineInfo)
 		{
-			var obj = parentObjects.Skip(3).Take(1).FirstOrDefault();  // Skip this Setter, VisualState, and VisualStateGroup
+			var parents = parentValueProvider.ParentObjects.ToList();
 
-			if (obj is Setter)
-			{
-				return (parentObjects.Skip(4).Take(1).FirstOrDefault() as Style)?.TargetType;
+			// Skip 0; we would not be making this check if TargetObject were not a Setter
+			// Skip 1; we would not be making this check if the immediate parent were not a VisualState
+
+			// VisualStates must be in a VisualStateGroup
+			if(!(parents[2] is VisualStateGroup)) {
+				throw new XamlParseException($"Expected {nameof(VisualStateGroup)} but found {parents[2]}.", lineInfo);
 			}
 
-			return obj.GetType();
+			var vsTarget = parents[3];
+
+			// Are these Visual States directly on a VisualElement?
+			if (vsTarget is VisualElement)
+			{
+				return vsTarget.GetType();
+			}
+
+			// These must be part of a Style; verify that 
+			if (!(parents[4] is Style style))
+			{
+				throw new XamlParseException($"Expected {nameof(Style)} but found {parents[4]}.", lineInfo);
+			}
+
+			return style.TargetType;
 		}
 	}
 }
