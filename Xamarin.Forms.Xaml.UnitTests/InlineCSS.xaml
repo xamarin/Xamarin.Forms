@@ -11,7 +11,7 @@
 }
 label {
     color: pink;
-    background-color: none;
+    background-color: initial;
 }
             ]]>
         </StyleSheet>

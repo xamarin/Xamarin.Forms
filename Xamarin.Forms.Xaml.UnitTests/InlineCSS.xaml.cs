@@ -40,7 +40,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			}
 
 			[TestCase(false), TestCase(true)]
-			public void NoneValue(bool useCompiledXaml)
+			public void InitialValue(bool useCompiledXaml)
 			{
 				var layout = new InlineCSS(useCompiledXaml);
 				Assert.That(layout.BackgroundColor, Is.EqualTo(Color.Green));
