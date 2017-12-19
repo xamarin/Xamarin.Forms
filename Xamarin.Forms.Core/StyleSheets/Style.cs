@@ -64,7 +64,7 @@ namespace Xamarin.Forms.StyleSheets
 				var property = ((IStylable)styleable).GetProperty(decl.Key);
 				if (property == null)
 					continue;
-				if (string.Equals(decl.Value, "none", StringComparison.OrdinalIgnoreCase))
+				if (string.Equals(decl.Value, "initial", StringComparison.OrdinalIgnoreCase))
 					styleable.ClearValue(property, fromStyle: true);
 				else {
 					object value;
