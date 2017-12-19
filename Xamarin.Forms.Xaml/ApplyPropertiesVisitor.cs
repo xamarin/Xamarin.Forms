@@ -685,7 +685,7 @@ namespace Xamarin.Forms.Xaml
 
 			// The element must be a Setter 
 			var targetProperty = setter?.Property;
-			
+
 			// and must already have Property established
 			if (targetProperty == null)
 				return false;
@@ -694,10 +694,11 @@ namespace Xamarin.Forms.Xaml
 			if (value.GetType().IsInstanceOfType(targetProperty.ReturnType))
 				return false;
 
-			var genericArgs = targetProperty.ReturnTypeInfo.GenericTypeArguments;
+			// Is ther an add method which accepts the value's type?
+			var addMethod = targetProperty.ReturnType.GetRuntimeMethods()
+				.FirstOrDefault(mi => mi.Name == "Add" && mi.GetParameters().Length == 1 && mi.GetParameters()[0].ParameterType == value.GetType());
 
-			// Is this a generic collection of value's type?
-			if (genericArgs.Length != 1 || !genericArgs[0].IsInstanceOfType(value))
+			if (addMethod == null)
 				return false;
 
 			// Make sure the collection exists
