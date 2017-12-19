@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using NUnit.Framework;
 
@@ -8,11 +10,12 @@ namespace Xamarin.Forms.Core.UnitTests
 	{
 		const string NormalStateName = "Normal";
 		const string InvalidStateName = "Invalid";
+		const string CommonStatesName = "CommonStates";
 
-		static Collection<VisualStateGroup> CreateTestStateGroups()
+		static IList<VisualStateGroup> CreateTestStateGroups()
 		{
-			var stateGroups = new Collection<VisualStateGroup>();
-			var visualStateGroup = new VisualStateGroup { Name = "CommonStates" };
+			var stateGroups = new VisualStateGroupList();
+			var visualStateGroup = new VisualStateGroup { Name = CommonStatesName };
 			var normalState = new VisualState { Name = NormalStateName };
 			var invalidState = new VisualState { Name = InvalidStateName };
 
@@ -24,10 +27,10 @@ namespace Xamarin.Forms.Core.UnitTests
 			return stateGroups;
 		}
 
-		static Collection<VisualStateGroup> CreateStateGroupsWithoutNormalState()
+		static IList<VisualStateGroup> CreateStateGroupsWithoutNormalState()
 		{
-			var stateGroups = new Collection<VisualStateGroup>();
-			var visualStateGroup = new VisualStateGroup { Name = "CommonStates" };
+			var stateGroups = new VisualStateGroupList();
+			var visualStateGroup = new VisualStateGroup { Name = CommonStatesName };
 			var invalidState = new VisualState { Name = InvalidStateName };
 
 			visualStateGroup.States.Add(invalidState);
@@ -41,7 +44,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		public void InitialStateIsNormalIfAvailable()
 		{
 			var label1 = new Label();
-		
+
 			VisualStateManager.SetVisualStateGroups(label1, CreateTestStateGroups());
 
 			var groups1 = VisualStateManager.GetVisualStateGroups(label1);
@@ -94,8 +97,8 @@ namespace Xamarin.Forms.Core.UnitTests
 			var label1 = new Label();
 			var label2 = new Label();
 
-			x.Apply(label1, true);
-			x.Apply(label2, true);
+			x.Apply(label1);
+			x.Apply(label2);
 
 			var groups1 = VisualStateManager.GetVisualStateGroups(label1);
 			var groups2 = VisualStateManager.GetVisualStateGroups(label2);
@@ -119,6 +122,40 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			var label1 = new Label();
 			Assert.False(label1.HasVisualStateGroups());
+		}
+
+		[Test]
+		public void StateNamesMustBeUniqueWithinGroup()
+		{
+			IList<VisualStateGroup> vsgs = CreateTestStateGroups();
+
+			var duplicate = new VisualState { Name = NormalStateName };
+
+			Assert.Throws<InvalidOperationException>(() => vsgs[0].States.Add(duplicate));
+		}
+
+		[Test]
+		public void StateNamesMustBeUniqueWithinGroupList()
+		{
+			IList<VisualStateGroup> vsgs = CreateTestStateGroups();
+
+			// Create and add a second VisualStateGroup
+			var secondGroup = new VisualStateGroup { Name = "Foo" };
+			vsgs.Add(secondGroup);
+
+			// Create a VisualState with the same name as one in another group in this list
+			var duplicate = new VisualState { Name = NormalStateName };
+
+			Assert.Throws<InvalidOperationException>(() => secondGroup.States.Add(duplicate));
+		}
+
+		[Test]
+		public void GroupNamesMustBeUniqueWithinGroupList()
+		{
+			IList<VisualStateGroup> vsgs = CreateTestStateGroups();
+			var secondGroup = new VisualStateGroup { Name = CommonStatesName };
+
+			Assert.Throws<InvalidOperationException>(() => vsgs.Add(secondGroup));
 		}
 	}
 }
