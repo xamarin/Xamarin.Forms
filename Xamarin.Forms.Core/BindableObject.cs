@@ -112,6 +112,8 @@ namespace Xamarin.Forms
 			if (bpContext != null && oldContext == null)
 				oldContext = bpContext.Value;
 
+			bindable.OnPropertyChanging(nameof(BindingContext));
+
 			if (bpContext != null && bpContext.Binding != null)
 			{
 				bpContext.Binding.Context = value;
@@ -123,6 +125,7 @@ namespace Xamarin.Forms
 			}
 
 			bindable.ApplyBindings(skipBindingContext:false, fromBindingContextChanged:true);
+			bindable.OnPropertyChanged(nameof(BindingContext));
 			bindable.OnBindingContextChanged();
 		}
 
