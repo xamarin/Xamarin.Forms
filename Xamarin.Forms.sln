@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2003
+VisualStudioVersion = 15.0.27130.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Xamarin.Forms", "Xamarin.Forms", "{9AD757F5-E57A-459D-A0A7-E0675E045B84}"
 EndProject
@@ -34,9 +34,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuspec", ".nuspec", "{7E12
 		.nuspec\Xamarin.Forms.DefaultItems.props = .nuspec\Xamarin.Forms.DefaultItems.props
 		.nuspec\Xamarin.Forms.DefaultItems.targets = .nuspec\Xamarin.Forms.DefaultItems.targets
 		.nuspec\Xamarin.Forms.Maps.nuspec = .nuspec\Xamarin.Forms.Maps.nuspec
+		.nuspec\Xamarin.Forms.Maps.WPF.nuspec = .nuspec\Xamarin.Forms.Maps.WPF.nuspec
 		.nuspec\Xamarin.Forms.nuspec = .nuspec\Xamarin.Forms.nuspec
 		.nuspec\Xamarin.Forms.Pages.Azure.nuspec = .nuspec\Xamarin.Forms.Pages.Azure.nuspec
 		.nuspec\Xamarin.Forms.Pages.nuspec = .nuspec\Xamarin.Forms.Pages.nuspec
+		.nuspec\Xamarin.Forms.Platform.WPF.nuspec = .nuspec\Xamarin.Forms.Platform.WPF.nuspec
 		.nuspec\Xamarin.Forms.props = .nuspec\Xamarin.Forms.props
 		.nuspec\Xamarin.Forms.targets = .nuspec\Xamarin.Forms.targets
 	EndProjectSection
@@ -156,7 +158,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xamarin.Forms.Maps.WPF", "X
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Xamarin.Forms.ControlGallery.WPF", "Xamarin.Forms.ControlGallery.WPF\Xamarin.Forms.ControlGallery.WPF.csproj", "{411B960D-6D30-4079-83B2-ABB9987D2EDF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PagesGallery.Tizen", "PagesGallery\PagesGallery.Tizen\PagesGallery.Tizen.csproj", "{AFF3AD0D-7181-4551-A29C-8701FE3E6753}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PagesGallery.Tizen", "PagesGallery\PagesGallery.Tizen\PagesGallery.Tizen.csproj", "{AFF3AD0D-7181-4551-A29C-8701FE3E6753}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xamarin.Forms.ControlGallery.Tizen", "Xamarin.Forms.ControlGallery.Tizen\Xamarin.Forms.ControlGallery.Tizen.csproj", "{8C7F0087-4031-4297-A651-6ED55F7B88BA}"
 EndProject
