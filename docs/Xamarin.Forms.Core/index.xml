@@ -358,7 +358,6 @@
       <Type Name="RoutingEffect" Kind="Class" />
       <Type Name="RowDefinition" Kind="Class" />
       <Type Name="RowDefinitionCollection" Kind="Class" />
-      <Type Name="RuntimeNamePropertyAttribute" Kind="Class" />
       <Type Name="ScrolledEventArgs" Kind="Class" />
       <Type Name="ScrollOrientation" Kind="Enumeration" />
       <Type Name="ScrollToMode" Kind="Enumeration" />
@@ -430,6 +429,7 @@
       <Type Name="VisualElement+VisibilityConverter" Kind="Class" />
       <Type Name="VisualState" Kind="Class" />
       <Type Name="VisualStateGroup" Kind="Class" />
+      <Type Name="VisualStateGroupList" Kind="Class" />
       <Type Name="VisualStateManager" Kind="Class" />
       <Type Name="WebNavigatedEventArgs" Kind="Class" />
       <Type Name="WebNavigatingEventArgs" Kind="Class" />
@@ -4576,6 +4576,27 @@
           <summary>Animates an elements TranslationX and TranslationY properties from their current values to the new values.</summary>
         </Docs>
         <Link Type="Xamarin.Forms.ViewExtensions" Member="M:Xamarin.Forms.ViewExtensions.TranslateTo(Xamarin.Forms.VisualElement,System.Double,System.Double,System.UInt32,Xamarin.Forms.Easing)" />
+      </Member>
+    </ExtensionMethod>
+    <ExtensionMethod>
+      <Targets>
+        <Target Type="T:Xamarin.Forms.VisualElement" />
+      </Targets>
+      <Member MemberName="HasVisualStateGroups">
+        <MemberSignature Language="C#" Value="public static bool HasVisualStateGroups (this Xamarin.Forms.VisualElement element);" />
+        <MemberSignature Language="ILAsm" Value=".method public static hidebysig bool HasVisualStateGroups(class Xamarin.Forms.VisualElement element) cil managed" />
+        <MemberType>ExtensionMethod</MemberType>
+        <ReturnValue>
+          <ReturnType>System.Boolean</ReturnType>
+        </ReturnValue>
+        <Parameters>
+          <Parameter Name="element" Type="Xamarin.Forms.VisualElement" RefType="this" />
+        </Parameters>
+        <Docs>
+          <param name="element">To be added.</param>
+          <summary>To be added.</summary>
+        </Docs>
+        <Link Type="Xamarin.Forms.VisualStateManager" Member="M:Xamarin.Forms.VisualStateManager.HasVisualStateGroups(Xamarin.Forms.VisualElement)" />
       </Member>
     </ExtensionMethod>
   </ExtensionMethods>

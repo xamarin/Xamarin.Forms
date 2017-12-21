@@ -1,6 +1,6 @@
 <Type Name="VisualState" FullName="Xamarin.Forms.VisualState">
-  <TypeSignature Language="C#" Value="public class VisualState" />
-  <TypeSignature Language="ILAsm" Value=".class public auto ansi beforefieldinit VisualState extends System.Object" />
+  <TypeSignature Language="C#" Value="public sealed class VisualState" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi sealed beforefieldinit VisualState extends System.Object" />
   <AssemblyInfo>
     <AssemblyName>Xamarin.Forms.Core</AssemblyName>
     <AssemblyVersion>2.0.0.0</AssemblyVersion>
@@ -9,11 +9,6 @@
     <BaseTypeName>System.Object</BaseTypeName>
   </Base>
   <Interfaces />
-  <Attributes>
-    <Attribute>
-      <AttributeName>Xamarin.Forms.RuntimeNameProperty("Name")</AttributeName>
-    </Attribute>
-  </Attributes>
   <Docs>
     <summary>To be added.</summary>
     <remarks>To be added.</remarks>
@@ -49,14 +44,14 @@
       </Docs>
     </Member>
     <Member MemberName="Setters">
-      <MemberSignature Language="C#" Value="public System.Collections.ObjectModel.Collection&lt;Xamarin.Forms.Setter&gt; Setters { get; }" />
-      <MemberSignature Language="ILAsm" Value=".property instance class System.Collections.ObjectModel.Collection`1&lt;class Xamarin.Forms.Setter&gt; Setters" />
+      <MemberSignature Language="C#" Value="public System.Collections.Generic.IList&lt;Xamarin.Forms.Setter&gt; Setters { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance class System.Collections.Generic.IList`1&lt;class Xamarin.Forms.Setter&gt; Setters" />
       <MemberType>Property</MemberType>
       <AssemblyInfo>
         <AssemblyVersion>2.0.0.0</AssemblyVersion>
       </AssemblyInfo>
       <ReturnValue>
-        <ReturnType>System.Collections.ObjectModel.Collection&lt;Xamarin.Forms.Setter&gt;</ReturnType>
+        <ReturnType>System.Collections.Generic.IList&lt;Xamarin.Forms.Setter&gt;</ReturnType>
       </ReturnValue>
       <Docs>
         <summary>To be added.</summary>
