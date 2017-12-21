@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
@@ -39,7 +40,7 @@ namespace Xamarin.Forms.Build.Tasks
 		{
 			VariableDefinition namescopeVarDef;
 			IList<string> namesInNamescope;
-			if (parentNode == null || IsDataTemplate(node, parentNode) || IsStyle(node, parentNode)) {
+			if (parentNode == null || IsDataTemplate(node, parentNode) || IsStyle(node, parentNode) || IsVisualStateGroupList(node)) {
 				namescopeVarDef = CreateNamescope();
 				namesInNamescope = new List<string>();
 			} else {
@@ -50,7 +51,7 @@ namespace Xamarin.Forms.Build.Tasks
 				SetNameScope(node, namescopeVarDef);
 			Context.Scopes[node] = new System.Tuple<VariableDefinition, IList<string>>(namescopeVarDef, namesInNamescope);
 		}
-
+	
 		public void Visit(RootNode node, INode parentNode)
 		{
 			var namescopeVarDef = CreateNamescope();
@@ -79,6 +80,11 @@ namespace Xamarin.Forms.Build.Tasks
 		{
 			var pnode = parentNode as ElementNode;
 			return pnode != null && pnode.XmlType.Name == "Style";
+		}
+
+		static bool IsVisualStateGroupList(ElementNode node)
+		{
+			return node != null  && node.XmlType.Name == "VisualStateGroup" && node.Parent is IListNode;
 		}
 
 		static bool IsXNameProperty(ValueNode node, INode parentNode)
@@ -119,7 +125,7 @@ namespace Xamarin.Forms.Build.Tasks
 		void RegisterName(string str, VariableDefinition namescopeVarDef, IList<string> namesInNamescope, VariableDefinition element, INode node)
 		{
 			if (namesInNamescope.Contains(str))
-				throw new XamlParseException($"An element with the name \"{str}\" already exists in this NameScope", node as IXmlLineInfo);
+				throw new XamlParseException($"An element with the name \"{str}\" already exists in this NameScope 1", node as IXmlLineInfo);
 			namesInNamescope.Add(str);
 
 			var module = Context.Body.Method.Module;

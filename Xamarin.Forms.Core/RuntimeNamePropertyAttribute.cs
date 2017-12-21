@@ -3,7 +3,7 @@
 namespace Xamarin.Forms.Xaml
 {
 	[AttributeUsage(AttributeTargets.Class)]
-	public sealed class RuntimeNamePropertyAttribute : Attribute
+	internal sealed class RuntimeNamePropertyAttribute : Attribute
 	{
 		public RuntimeNamePropertyAttribute(string name)
 		{
