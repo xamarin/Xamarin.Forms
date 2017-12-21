@@ -2,6 +2,8 @@ bin
 obj
 classic_bin
 classic_obj
+*.nupkg
+/docs/*.xml
 *.dll
 *.mdb
 *.exe
