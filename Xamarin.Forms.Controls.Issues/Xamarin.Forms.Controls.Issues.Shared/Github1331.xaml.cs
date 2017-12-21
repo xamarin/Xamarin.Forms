@@ -19,7 +19,6 @@ namespace Xamarin.Forms.Controls.Issues
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 1331, "[Android] ViewCell shows ContextActions on tap instead of long press", 
 		PlatformAffected.Android)]
-	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class GitHub1331 : TestContentPage
 	{
 		const string Action = "Action 1";
