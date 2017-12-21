@@ -21,7 +21,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries
 					GalleryNav("OnPlatform Example", () => new OnPlatformExample(), Navigation),
 					GalleryNav("OnIdiom Example", () => new OnIdiomExample(), Navigation),
 					GalleryNav("Validation Example", () => new ValidationExample(), Navigation),
-					GalleryNav("Code (No XAML) Example", () => new CodeOnlyExample(), Navigation)
+					GalleryNav("Code (No XAML) Example", () => new CodeOnlyExample(), Navigation),
+					GalleryNav("VisualStates directly on Elements", () => new VisualStatesDirectlyOnElements(), Navigation)
 				}
 			};
 		}
