@@ -1,0 +1,19 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <AndroidNativeLibrary Include="$(MSBuildThisFileDirectory)\..\..\native\android\x86\libflex.so">
+      <Link>Libs\x86\libflex.so</Link>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Include="$(MSBuildThisFileDirectory)\..\..\native\android\x86_64\libflex.so">
+      <Link>Libs\x86_64\libflex.so</Link>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Include="$(MSBuildThisFileDirectory)\..\..\native\android\arm64-v8a\libflex.so">
+      <Link>Libs\arm64-v8a\libflex.so</Link>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Include="$(MSBuildThisFileDirectory)\..\..\native\android\armeabi\libflex.so">
+      <Link>Libs\armeabi\libflex.so</Link>
+    </AndroidNativeLibrary>
+    <AndroidNativeLibrary Include="$(MSBuildThisFileDirectory)\..\..\native\android\armeabi-v7a\libflex.so">
+      <Link>Libs\armeabi-v7a\libflex.so</Link>
+    </AndroidNativeLibrary>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredOSXNativeFlexPath>$(MSBuildThisFileDirectory)..\..\runtimes\osx\native\libflex.dylib</PreferredOSXNativeFlexPath>
+  </PropertyGroup>
+  <ItemGroup Condition="'$(PlatformTarget)' == 'AnyCPU' and '$(OS)' == 'Windows_NT'">
+    <Content Include="$(MSBuildThisFileDirectory)..\..\runtimes\win10-x86\native\*">
+      <Link>x86\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+    <Content Include="$(MSBuildThisFileDirectory)..\..\runtimes\win10-x64\native\*">
+      <Link>x64\%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+  </ItemGroup>
+  <ItemGroup Condition="'$(PlatformTarget)' == 'x86' and '$(OS)' == 'Windows_NT'">
+    <Content Include="$(MSBuildThisFileDirectory)..\..\runtimes\win10-x86\native\*">
+      <Link>%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+  </ItemGroup>
+  <ItemGroup Condition="'$(PlatformTarget)' == 'x64' and '$(OS)' == 'Windows_NT'">
+    <Content Include="$(MSBuildThisFileDirectory)..\..\runtimes\win10-x64\native\*">
+      <Link>%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+  </ItemGroup>
+  <ItemGroup Condition="'$(PlatformTarget)' == 'ARM' and '$(OS)' == 'Windows_NT'">
+    <Content Include="$(MSBuildThisFileDirectory)..\..\runtimes\win10-arm\native\*">
+      <Link>%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Visible>False</Visible>
+    </Content>
+  </ItemGroup>
+  <ItemGroup Condition="'$(OS)' != 'Windows_NT'">
+    <NativeReference Include="$(PreferredOSXNativeFlexPath)">
+      <IsCxx>False</IsCxx>
+      <Kind>Dynamic</Kind>
+    </NativeReference>
+    <None Include="$(PreferredOSXNativeFlexPath)">
+      <Link>libflex.dylib</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+</Project>

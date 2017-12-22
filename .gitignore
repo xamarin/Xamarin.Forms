@@ -57,3 +57,4 @@ AndroidNative/.gradle/
 AndroidNative/gradlew
 AndroidNative/gradlew.bat
 !EmbeddingTestBeds/Embedding.iOS/*.designer.cs
+!Libs/flex/**/flex.dll

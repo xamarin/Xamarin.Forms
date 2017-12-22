@@ -149,6 +149,7 @@
     <None Include="packages.config" />
     <Compile Include="CustomRenderers.cs" />
     <Compile Include="CustomRendererBugzila38731.cs" />
+    <Compile Include="FlexTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Controls\Xamarin.Forms.Controls.csproj">
@@ -292,4 +293,6 @@
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
+   <Import Project="..\Libs\flex\build\XamariniOS\Xamarin.Flex.targets" />
+	
 </Project>
