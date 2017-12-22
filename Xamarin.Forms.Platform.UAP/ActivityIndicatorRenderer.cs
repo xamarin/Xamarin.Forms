@@ -3,7 +3,7 @@ using Windows.UI.Xaml;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	public class ActivityIndicatorRenderer : ViewRenderer<ActivityIndicator, FormsProgressBar>
+	public class ActivityIndicatorRenderer : ViewRenderer<ActivityIndicator, ProgressRing>
 	{
 		object _foregroundDefault;
 
@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				if (Control == null)
 				{
-					SetNativeControl(new FormsProgressBar { IsIndeterminate = true, Style = Windows.UI.Xaml.Application.Current.Resources["FormsProgressBarStyle"] as Windows.UI.Xaml.Style });
+					SetNativeControl(new ProgressRing());
 
 					Control.Loaded += OnControlLoaded;
 				}
@@ -37,7 +37,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void OnControlLoaded(object sender, RoutedEventArgs routedEventArgs)
 		{
-			_foregroundDefault = Control.GetForegroundCache();
+			_foregroundDefault = Control.Foreground; //Control.GetForegroundCache();
 			UpdateColor();
 		}
 
@@ -47,7 +47,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (color.IsDefault)
 			{
-				Control.RestoreForegroundCache(_foregroundDefault);
+				Control.Foreground = _foregroundDefault as Brush;
 			}
 			else
 			{
@@ -57,7 +57,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateIsRunning()
 		{
-			Control.ElementOpacity = Element.IsRunning ? Element.Opacity : 0;
+			Control.IsActive = Element.IsRunning;
 		}
 	}
 }
