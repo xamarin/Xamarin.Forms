@@ -3,11 +3,12 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	// Manual test to verify that ScrollOrientation.Both scrolls at the correct speed vertically
+	// Manual test to verify that ScrollOrientation.Both scrolls at the correct speed horizontally
+
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 60774, "[Android] ScrollOrientation.Both doubles the distance of scrolling", 
-		PlatformAffected.Android)]
-	public class Bugzilla60774 : TestContentPage
+		PlatformAffected.Android, issueTestNumber: 1)]
+	public class Bugzilla60774_1 : TestContentPage
 	{
 		ScrollOrientation _currentOrientation;
 		Grid _host;
@@ -15,7 +16,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
 		{
-			Title = "ScrollOrientation Vertical/Both";
+			Title = "ScrollOrientation Horizontal/Both";
 
 			var grid = new Grid
 			{
@@ -30,8 +31,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var instructions = new Label
 			{
-				Text = "Scroll the text vertically. Tap 'Change Orientation' to change the ScrollView orientation " 
-						+ "to 'Both'. Scroll the text vertically again - the text should scroll at the same rate. " 
+				Text = "Scroll the text horizontally. Tap 'Change Orientation' to change the ScrollView orientation " 
+						+ "to 'Both'. Scroll the text horizontally again - the text should scroll at the same rate. " 
 						+ "If the text scrolls more quickly in one orientation, the test has failed."
 			};
 
@@ -59,15 +60,15 @@ namespace Xamarin.Forms.Controls.Issues
 		void ChangeOrientation()
 		{
 			_host.Children.Clear();
-			_currentOrientation = _currentOrientation == ScrollOrientation.Vertical
+			_currentOrientation = _currentOrientation == ScrollOrientation.Horizontal
 				? ScrollOrientation.Both
-				: ScrollOrientation.Vertical;
+				: ScrollOrientation.Horizontal;
 
 			var al = new AbsoluteLayout();
 			for (var i = 0; i < 100; i++)
 			{
-				var label = new Label { Text = "label " + i };
-				AbsoluteLayout.SetLayoutBounds(label, new Rectangle(0, i * 50, 100, 30));
+				var label = new Label { Text = $"{i} label", Margin = 10 };
+				AbsoluteLayout.SetLayoutBounds(label, new Rectangle(i * 50, 50, 30, 200));
 				al.Children.Add(label);
 			}
 
