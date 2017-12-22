@@ -181,7 +181,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				UpdateShadow();
 				UpdateBackgroundColor();
 				UpdateCornerRadius();
-				UpdateOutlineColor();
+				UpdateBorderColor();
 
 				ElevationHelper.SetElevation(this, e.NewElement);
 			}
@@ -223,8 +223,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				UpdateBackgroundColor();
 			else if (e.PropertyName == Frame.CornerRadiusProperty.PropertyName)
 				UpdateCornerRadius();
-			else if (e.PropertyName == Frame.OutlineColorProperty.PropertyName)
-				UpdateOutlineColor();
+			else if (e.PropertyName == Frame.BorderColorProperty.PropertyName)
+				UpdateBorderColor();
 		}
 
 		void UpdateBackgroundColor()
@@ -236,13 +236,13 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			_backgroundDrawable.SetColor(bgColor.IsDefault ? AColor.White : bgColor.ToAndroid());
 		}
 
-		void UpdateOutlineColor()
+		void UpdateBorderColor()
 		{
 			if (_disposed)
 				return;
 
-			Color outlineColor = Element.OutlineColor;
-			_backgroundDrawable.SetStroke(3, outlineColor.IsDefault ? AColor.White : outlineColor.ToAndroid());
+			Color borderColor = Element.BorderColor;
+			_backgroundDrawable.SetStroke(3, borderColor.IsDefault ? AColor.White : borderColor.ToAndroid());
 		}
 
 		void UpdateShadow()
