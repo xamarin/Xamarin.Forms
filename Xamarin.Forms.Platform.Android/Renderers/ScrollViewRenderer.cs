@@ -163,8 +163,10 @@ namespace Xamarin.Forms.Platform.Android
 						child.ScrollBy((int)dX, 0);
 						break;
 					}
+					// Fall through to base.OnTouchEvent, it'll take care of the Y scrolling				
 				}
 			}
+
 			return base.OnTouchEvent(ev);
 		}
 
