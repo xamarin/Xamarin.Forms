@@ -14,6 +14,9 @@ namespace Xamarin.Forms.Xaml
 
 		PropertyChangedEventHandler invalidateCanExecuteHandler;
 
+		WeakReference oldBindingContex;
+
+
 		[DefaultValue(null)]
 		public string Command { get; set; }
 
@@ -28,8 +31,8 @@ namespace Xamarin.Forms.Xaml
 				&& this.TryGetTargetItems(serviceProvider, out target, out targetProperty)
 				&& targetProperty.ReturnType == typeof(ICommand))
 			{
-				OnDataContextChanged(target, targetProperty);
-
+				target.BindingContextChanged += (s, e) 
+					=> OnDataContextChanged(target, targetProperty);					 
 			}
 			return EmptyCommand;
 		}
@@ -46,27 +49,19 @@ namespace Xamarin.Forms.Xaml
 
 		private void OnDataContextChanged(BindableObject target, BindableProperty targetProperty)
 		{
+			var currentContext = target.BindingContext;
 			//CleanUp
-			target.PropertyChanging += (s, e) =>
+			if (oldBindingContex != null && oldBindingContex.IsAlive)
 			{
-				if (e.PropertyName == "BindingContext")
-				{
-					OnUnregisterCommand(target
-						, targetProperty
-						, target.BindingContext);
-				}
-			};
-
+				OnUnregisterCommand(target
+					, targetProperty
+					, oldBindingContex.Target);
+			}
+			oldBindingContex = new WeakReference(currentContext);
 			//Setup
-			target.PropertyChanged += (s, e) =>
-			{
-				if (e.PropertyName == "BindingContext")
-				{
-					OnRegisterCommand(target
-						, targetProperty
-						, target.BindingContext);
-				}
-			};
+			OnRegisterCommand(target
+				, targetProperty
+				, target.BindingContext);
 		}
 
 		void OnUnregisterCommand(BindableObject target, BindableProperty targetProperty, object oldDataContext)
