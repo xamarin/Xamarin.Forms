@@ -221,6 +221,9 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			{
 				this.EnsureId();
 
+				_textColorSwitcher = new Lazy<TextColorSwitcher>(
+					() => new TextColorSwitcher(TextColors, e.NewElement.UseLegacyColorManagement()));
+
 				UpdateFont();
 				UpdateText();
 				UpdateBitmap();
@@ -230,9 +233,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				UpdateBackgroundColor();
 
 				ElevationHelper.SetElevation(this, e.NewElement);
-
-				_textColorSwitcher = new Lazy<TextColorSwitcher>(
-					() => new TextColorSwitcher(TextColors, e.NewElement.UseLegacyColorManagement()));
 			}
 
 			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(e.OldElement, e.NewElement));
