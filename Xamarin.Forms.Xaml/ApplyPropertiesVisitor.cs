@@ -149,10 +149,6 @@ namespace Xamarin.Forms.Xaml
 				Exception xpe = null;
 				var xKey = node.Properties.ContainsKey(XmlName.xKey) ? ((ValueNode)node.Properties[XmlName.xKey]).Value as string : null;
 
-				if (HandleAttachedCollection(source, parentList, node, value))  { 
-					return;
-				}
-
 				object _;
 				var collection = GetPropertyValue(source, parentList.XmlName, Context, parentList, out _) as IEnumerable;
 				if (collection == null)
@@ -531,9 +527,6 @@ namespace Xamarin.Forms.Xaml
 			if (convertedValue != null && !propertyInfo.PropertyType.IsInstanceOfType(convertedValue))
 				return false;
 
-			if (TrySetterValueCollection(element, convertedValue))
-				return false;
-
 			setter.Invoke(element, new object [] { convertedValue });
 			return true;
 		}
@@ -679,35 +672,6 @@ namespace Xamarin.Forms.Xaml
 				.Concat(type.GetTypeInfo().ImplementedInterfaces.SelectMany(t => t.GetRuntimeMethods()));
 		}
 
-		static bool TrySetterValueCollection(object element, object value)
-		{
-			var setter = element as Setter;
-
-			// The element must be a Setter 
-			var targetProperty = setter?.Property;
-
-			// and must already have Property established
-			if (targetProperty == null)
-				return false;
-
-			// Is value's type assignable to Property's type?
-			if (value.GetType().IsInstanceOfType(targetProperty.ReturnType))
-				return false;
-
-			// Is ther an add method which accepts the value's type?
-			var addMethod = targetProperty.ReturnType.GetRuntimeMethods()
-				.FirstOrDefault(mi => mi.Name == "Add" && mi.GetParameters().Length == 1 && mi.GetParameters()[0].ParameterType == value.GetType());
-
-			if (addMethod == null)
-				return false;
-
-			// Make sure the collection exists
-			setter.EnsureSetterCollectionInitialized();
-			
-			// Fall through to Add/TryAdd
-			return true;
-		}
-
 		bool TrySetRuntimeName(XmlName propertyName, object source, object value, ValueNode node)
 		{
 			if (propertyName != XmlName.xName)
@@ -719,15 +683,6 @@ namespace Xamarin.Forms.Xaml
 
 			SetPropertyValue(source, new XmlName("", runTimeName.Name), value, Context.RootElement, node, Context, node);
 			return true;
-		}
-
-		bool HandleAttachedCollection(object source, ListNode parentList, ElementNode node, object value)
-		{
-			var elementType = source.GetType();
-			var localName = parentList.XmlName.LocalName;
-			GetRealNameAndType(ref elementType, parentList.XmlName.NamespaceURI, ref localName, Context, node);
-			var bindableProperty = GetBindableProperty(elementType, localName, node);
-			return TryAddValue(source as BindableObject, bindableProperty, value, new XamlServiceProvider(node, Context));
 		}
 	}
 }

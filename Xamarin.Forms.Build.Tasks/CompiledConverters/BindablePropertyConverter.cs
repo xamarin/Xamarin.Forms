@@ -43,9 +43,8 @@ namespace Xamarin.Forms.Core.XamlC
 						else if (ttnode is IElementNode)
 							typeName = ((ttnode as IElementNode).CollectionItems.FirstOrDefault() as ValueNode)?.Value as string ?? ((ttnode as IElementNode).Properties [new XmlName("", "TypeName")] as ValueNode)?.Value as string;
 					} else if (parent.XmlType.NamespaceUri == XamlParser.XFUri && parent.XmlType.Name == "VisualState") {
-						var current = parent.Parent.Parent as IElementNode ?? parent.Parent.Parent.Parent as IElementNode;
-
-						if (current.XmlType.Name == "Setter") {
+						var current = parent.Parent.Parent.Parent as IElementNode;
+						if (current.XmlType.NamespaceUri == XamlParser.XFUri && current.XmlType.Name == "Setter") {
 							// Parent will be a Style, and the type will be that Style's TargetType
 							typeName =
 								((current?.Parent as IElementNode)?.Properties[new XmlName("", "TargetType")] as ValueNode)?.Value as string;

@@ -8,35 +8,37 @@
 
 		<Style TargetType="Label" x:Key="OnIdiomExample">
 			<Setter Property="VisualStateManager.VisualStateGroups">
-				<VisualStateGroup x:Name="CommonStates">
-					<VisualState x:Name="Normal">
-						<VisualState.Setters>
-							<Setter Property="FontSize">
-								<OnIdiom x:TypeArguments="x:Double">
-									<OnIdiom.Phone>12</OnIdiom.Phone>
-									<OnIdiom.Tablet>24</OnIdiom.Tablet>
-									<OnIdiom.Desktop>36</OnIdiom.Desktop>
-									<OnIdiom.TV>30</OnIdiom.TV>
-									</OnIdiom>
-							</Setter>
-							<Setter Property="Text" Value="Normal State"></Setter>
-						</VisualState.Setters>
-					</VisualState>
-					<VisualState x:Name="CustomState">
-						<VisualState.Setters>
-							<Setter Property="FontSize">
-								<OnIdiom x:TypeArguments="x:Double">
-									<OnIdiom.Phone>24</OnIdiom.Phone>
-									<OnIdiom.Tablet>48</OnIdiom.Tablet>
-									<OnIdiom.Desktop>72</OnIdiom.Desktop>
-									<OnIdiom.TV>60</OnIdiom.TV>
-									</OnIdiom>
-							</Setter>
-								<Setter Property="Text" Value="Custom State"></Setter>
-						</VisualState.Setters>
-					</VisualState>
-				</VisualStateGroup>
-			</Setter>
+				<VisualStateGroupList>
+						<VisualStateGroup x:Name="CommonStates">
+							<VisualState x:Name="Normal">
+								<VisualState.Setters>
+									<Setter Property="FontSize">
+										<OnIdiom x:TypeArguments="x:Double">
+											<OnIdiom.Phone>12</OnIdiom.Phone>
+											<OnIdiom.Tablet>24</OnIdiom.Tablet>
+											<OnIdiom.Desktop>36</OnIdiom.Desktop>
+											<OnIdiom.TV>30</OnIdiom.TV>
+										</OnIdiom>
+									</Setter>
+									<Setter Property="Text" Value="Normal State"></Setter>
+								</VisualState.Setters>
+							</VisualState>
+							<VisualState x:Name="CustomState">
+								<VisualState.Setters>
+									<Setter Property="FontSize">
+										<OnIdiom x:TypeArguments="x:Double">
+											<OnIdiom.Phone>24</OnIdiom.Phone>
+											<OnIdiom.Tablet>48</OnIdiom.Tablet>
+											<OnIdiom.Desktop>72</OnIdiom.Desktop>
+											<OnIdiom.TV>60</OnIdiom.TV>
+										</OnIdiom>
+									</Setter>
+									<Setter Property="Text" Value="Custom State"></Setter>
+								</VisualState.Setters>
+							</VisualState>
+						</VisualStateGroup>	
+					</VisualStateGroupList>
+				</Setter>
 		</Style>
 
 	</ResourceDictionary>

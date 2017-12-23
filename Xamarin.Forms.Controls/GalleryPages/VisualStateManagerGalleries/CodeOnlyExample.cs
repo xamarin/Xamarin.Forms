@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 
 namespace Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries
 {
@@ -11,7 +10,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries
 
 			var calendar = new DatePicker();
 
-			VisualStateManager.SetVisualStateGroups(calendar, new Collection<VisualStateGroup> { SetUpMonths() }); 
+			VisualStateManager.SetVisualStateGroups(calendar, new VisualStateGroupList { SetUpMonths() }); 
 
 			calendar.DateSelected += CalendarOnDateSelected;
 			calendar.Date = new DateTime(2017, 12, 25);
@@ -34,9 +33,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries
 
 		VisualStateGroup SetUpMonths()
 		{
-			var stateGroup = new VisualStateGroup() { Name = "Months", TargetType = typeof(DatePicker) };
+			var stateGroup = new VisualStateGroup { Name = "Months", TargetType = typeof(DatePicker) };
 
-			stateGroup.States.Add(CreateState(1, Color.CornflowerBlue, Color.AliceBlue));
 			stateGroup.States.Add(CreateState(1, Color.CornflowerBlue, Color.AliceBlue));
 			stateGroup.States.Add(CreateState(2, Color.Red, Color.WhiteSmoke));
 			stateGroup.States.Add(CreateState(3, Color.GreenYellow, Color.ForestGreen));

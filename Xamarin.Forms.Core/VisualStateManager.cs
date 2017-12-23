@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Linq;
 using Xamarin.Forms.Xaml;
 
@@ -32,7 +31,7 @@ namespace Xamarin.Forms
 			return (IList<VisualStateGroup>)visualElement.GetValue(VisualStateGroupsProperty);
 		}
 
-		public static void SetVisualStateGroups(VisualElement visualElement, IList<VisualStateGroup> value)
+		public static void SetVisualStateGroups(VisualElement visualElement, VisualStateGroupList value)
 		{
 			visualElement.SetValue(VisualStateGroupsProperty, value);
 		}

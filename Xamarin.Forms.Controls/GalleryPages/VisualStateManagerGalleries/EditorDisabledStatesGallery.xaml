@@ -12,29 +12,33 @@
 
 			<Style TargetType="Editor" x:Key="CustomDisabledState">
 				<Setter Property="VisualStateManager.VisualStateGroups">
-					<VisualStateGroup x:Name="CommonStates">
-						<VisualState x:Name="Normal" />
-						<VisualState x:Name="Disabled">
-							<VisualState.Setters>
-								<Setter Property="TextColor" Value="Red" />
-								<Setter Property="BackgroundColor" Value="Purple" />
-							</VisualState.Setters>
-						</VisualState>
-					</VisualStateGroup>
+					<VisualStateGroupList>
+						<VisualStateGroup x:Name="CommonStates">
+							<VisualState x:Name="Normal" />
+							<VisualState x:Name="Disabled">
+								<VisualState.Setters>
+									<Setter Property="TextColor" Value="Red" />
+									<Setter Property="BackgroundColor" Value="Purple" />
+								</VisualState.Setters>
+							</VisualState>
+						</VisualStateGroup>
+					</VisualStateGroupList>
 				</Setter>
 			</Style>
 
 			<Style TargetType="Editor" x:Key="DefaultInInitialState">
 				<Setter Property="VisualStateManager.VisualStateGroups">
-					<VisualStateGroup x:Name="CommonStates">
-						<VisualState x:Name="Normal" />
-						<VisualState x:Name="Disabled">
-							<VisualState.Setters>
-								<Setter Property="TextColor" Value="Green" />
-								<Setter Property="BackgroundColor" Value="Black" />
-							</VisualState.Setters>
-						</VisualState>
-					</VisualStateGroup>
+					<VisualStateGroupList>
+						<VisualStateGroup x:Name="CommonStates">
+							<VisualState x:Name="Normal" />
+							<VisualState x:Name="Disabled">
+								<VisualState.Setters>
+									<Setter Property="TextColor" Value="Green" />
+									<Setter Property="BackgroundColor" Value="Black" />
+								</VisualState.Setters>
+							</VisualState>
+						</VisualStateGroup>
+					</VisualStateGroupList>
 				</Setter>
 			</Style>
 

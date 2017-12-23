@@ -8,57 +8,62 @@
 		<ResourceDictionary>
 			<Style TargetType="Entry" x:Key="CustomDisabledState">
 				<Setter Property="VisualStateManager.VisualStateGroups">
-					<VisualStateGroup x:Name="CommonStates">
-						<VisualState x:Name="Normal" />
-						<VisualState x:Name="Disabled">
-							<VisualState.Setters>
-								<Setter Property="TextColor" Value="Gray" />
-								<Setter Property="PlaceholderColor" Value="LightGray" />
-							</VisualState.Setters>
-						</VisualState>
-					</VisualStateGroup>
-					<VisualStateGroup x:Name="Other">
-						<VisualState x:Name="Fake">
-							<VisualState.Setters>
-								<Setter Property="TextColor" Value="Gray" />
-								<Setter Property="PlaceholderColor" Value="LightGray" />
-							</VisualState.Setters>
-						</VisualState>
-					</VisualStateGroup>
-					<VisualStateGroup x:Name="Extra">
-
-					</VisualStateGroup>
+					<VisualStateGroupList>
+						<VisualStateGroup x:Name="CommonStates">
+							<VisualState x:Name="Normal" />
+							<VisualState x:Name="Disabled">
+								<VisualState.Setters>
+									<Setter Property="TextColor" Value="Gray" />
+									<Setter Property="PlaceholderColor" Value="LightGray" />
+								</VisualState.Setters>
+							</VisualState>
+						</VisualStateGroup>
+						<VisualStateGroup x:Name="Other">
+							<VisualState x:Name="Fake">
+								<VisualState.Setters>
+									<Setter Property="TextColor" Value="Gray" />
+									<Setter Property="PlaceholderColor" Value="LightGray" />
+								</VisualState.Setters>
+							</VisualState>
+						</VisualStateGroup>
+						<VisualStateGroup x:Name="Extra">
+						</VisualStateGroup>
+					</VisualStateGroupList>
 				</Setter>
 			</Style>
 
 			<Style TargetType="Entry" x:Key="OtherStyle">
 				<Setter Property="VisualStateManager.VisualStateGroups">
-					<VisualStateGroup x:Name="CommonStates">
-						<VisualState x:Name="Normal" />
-						<VisualState x:Name="Disabled">
-							<VisualState.Setters>
-								<Setter Property="TextColor" Value="Default" />
-								<Setter Property="PlaceholderColor" Value="Default" />
-							</VisualState.Setters>
-						</VisualState>
-					</VisualStateGroup>
+					<VisualStateGroupList>
+						<VisualStateGroup x:Name="CommonStates">
+							<VisualState x:Name="Normal" />
+							<VisualState x:Name="Disabled">
+								<VisualState.Setters>
+									<Setter Property="TextColor" Value="Default" />
+									<Setter Property="PlaceholderColor" Value="Default" />
+								</VisualState.Setters>
+							</VisualState>
+						</VisualStateGroup>
+					</VisualStateGroupList>
 				</Setter>
 			</Style>
 
 			<Style TargetType="Label" x:Key="ErrorLabel">
 				<Setter Property="VisualStateManager.VisualStateGroups">
-					<VisualStateGroup x:Name="CommonStates">
-						<VisualState x:Name="Normal">
-							<VisualState.Setters>
-								<Setter Property="IsVisible" Value="False"/>
-							</VisualState.Setters>
-						</VisualState>
-						<VisualState x:Name="Invalid">
-							<VisualState.Setters>
-								<Setter Property="IsVisible" Value="True"/>
-							</VisualState.Setters>
-						</VisualState>
-					</VisualStateGroup>
+					<VisualStateGroupList>
+						<VisualStateGroup x:Name="CommonStates">
+							<VisualState x:Name="Normal">
+								<VisualState.Setters>
+									<Setter Property="IsVisible" Value="False"/>
+								</VisualState.Setters>
+							</VisualState>
+							<VisualState x:Name="Invalid">
+								<VisualState.Setters>
+									<Setter Property="IsVisible" Value="True"/>
+								</VisualState.Setters>
+							</VisualState>
+						</VisualStateGroup>
+					</VisualStateGroupList>
 				</Setter>
 				<Setter Property="TextColor" Value="Red"></Setter>
 				<Setter Property="Margin" Value="2,10,2,10"></Setter>

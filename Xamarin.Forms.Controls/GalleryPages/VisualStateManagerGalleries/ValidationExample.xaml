@@ -8,18 +8,20 @@
 
 			<Style TargetType="Label" x:Key="ErrorLabel">
 				<Setter Property="VisualStateManager.VisualStateGroups">
-					<VisualStateGroup x:Name="CommonStates">
-						<VisualState x:Name="Normal">
-							<VisualState.Setters>
-								<Setter Property="IsVisible" Value="False"/>
-							</VisualState.Setters>
-						</VisualState>
-						<VisualState x:Name="Invalid">
-							<VisualState.Setters>
-								<Setter Property="IsVisible" Value="True"/>
-							</VisualState.Setters>
-						</VisualState>
-					</VisualStateGroup>
+					<VisualStateGroupList>
+						<VisualStateGroup x:Name="CommonStates">
+							<VisualState x:Name="Normal">
+								<VisualState.Setters>
+									<Setter Property="IsVisible" Value="False"/>
+								</VisualState.Setters>
+							</VisualState>
+							<VisualState x:Name="Invalid">
+								<VisualState.Setters>
+									<Setter Property="IsVisible" Value="True"/>
+								</VisualState.Setters>
+							</VisualState>
+						</VisualStateGroup>
+					</VisualStateGroupList>
 				</Setter>
 				<Setter Property="TextColor" Value="Red"></Setter>
 				<Setter Property="Margin" Value="2,10,2,10"></Setter>
@@ -27,41 +29,47 @@
 
 			<Style TargetType="Label" x:Key="FormLabel">
 				<Setter Property="VisualStateManager.VisualStateGroups">
-					<VisualStateGroup x:Name="CommonStates">
-						<VisualState x:Name="Normal" />
-						<VisualState x:Name="Invalid">
-							<VisualState.Setters>
-								<Setter Property="TextColor" Value="DarkRed"/>
-							</VisualState.Setters>
-						</VisualState>
-					</VisualStateGroup>
+					<VisualStateGroupList>
+						<VisualStateGroup x:Name="CommonStates">
+							<VisualState x:Name="Normal" />
+							<VisualState x:Name="Invalid">
+								<VisualState.Setters>
+									<Setter Property="TextColor" Value="DarkRed"/>
+								</VisualState.Setters>
+							</VisualState>
+						</VisualStateGroup>
+					</VisualStateGroupList>
 				</Setter>
 				<Setter Property="Margin" Value="2,10,2,10"></Setter>
 			</Style>
 
 			<Style TargetType="Entry">
 				<Setter Property="VisualStateManager.VisualStateGroups">
-					<VisualStateGroup x:Name="CommonStates">
-						<VisualState x:Name="Normal" />
-						<VisualState x:Name="Invalid">
-							<VisualState.Setters>
-								<Setter Property="BackgroundColor" Value="LightCoral"/>
-							</VisualState.Setters>
-						</VisualState>
-					</VisualStateGroup>
+					<VisualStateGroupList>
+						<VisualStateGroup x:Name="CommonStates">
+							<VisualState x:Name="Normal" />
+							<VisualState x:Name="Invalid">
+								<VisualState.Setters>
+									<Setter Property="BackgroundColor" Value="LightCoral"/>
+								</VisualState.Setters>
+							</VisualState>
+						</VisualStateGroup>
+					</VisualStateGroupList>
 				</Setter>
 			</Style>
 
 			<Style TargetType="Editor">
 				<Setter Property="VisualStateManager.VisualStateGroups">
-					<VisualStateGroup x:Name="CommonStates">
-						<VisualState x:Name="Normal" />
-						<VisualState x:Name="Invalid">
-							<VisualState.Setters>
-								<Setter Property="BackgroundColor" Value="LightCoral"/>
-							</VisualState.Setters>
-						</VisualState>
-					</VisualStateGroup>
+					<VisualStateGroupList>
+						<VisualStateGroup x:Name="CommonStates">
+							<VisualState x:Name="Normal" />
+							<VisualState x:Name="Invalid">
+								<VisualState.Setters>
+									<Setter Property="BackgroundColor" Value="LightCoral"/>
+								</VisualState.Setters>
+							</VisualState>
+						</VisualStateGroup>
+					</VisualStateGroupList>
 				</Setter>
 			</Style>
 

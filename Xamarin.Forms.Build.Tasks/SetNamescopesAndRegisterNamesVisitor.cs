@@ -125,7 +125,7 @@ namespace Xamarin.Forms.Build.Tasks
 		void RegisterName(string str, VariableDefinition namescopeVarDef, IList<string> namesInNamescope, VariableDefinition element, INode node)
 		{
 			if (namesInNamescope.Contains(str))
-				throw new XamlParseException($"An element with the name \"{str}\" already exists in this NameScope 1", node as IXmlLineInfo);
+				throw new XamlParseException($"An element with the name \"{str}\" already exists in this NameScope", node as IXmlLineInfo);
 			namesInNamescope.Add(str);
 
 			var module = Context.Body.Method.Module;

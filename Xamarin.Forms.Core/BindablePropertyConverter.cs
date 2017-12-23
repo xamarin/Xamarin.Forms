@@ -128,10 +128,20 @@ namespace Xamarin.Forms
 				return vsTarget.GetType();
 			}
 
-			// These must be part of a Style; verify that 
-			if (!(parents[4] is Style style))
+			if (!(parents[3] is VisualStateGroupList))
 			{
-				throw new XamlParseException($"Expected {nameof(Style)} but found {parents[4]}.", lineInfo);
+				throw new XamlParseException($"Expected {nameof(VisualStateGroupList)} but found {parents[3]}.", lineInfo);
+			}
+
+			if (!(parents[4] is Setter))
+			{
+				throw new XamlParseException($"Expected {nameof(Setter)} but found {parents[4]}.", lineInfo);
+			}
+
+			// These must be part of a Style; verify that 
+			if (!(parents[5] is Style style))
+			{
+				throw new XamlParseException($"Expected {nameof(Style)} but found {parents[5]}.", lineInfo);
 			}
 
 			return style.TargetType;
