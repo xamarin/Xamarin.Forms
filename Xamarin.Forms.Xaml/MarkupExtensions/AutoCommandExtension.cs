@@ -70,7 +70,7 @@ namespace Xamarin.Forms.Xaml
 			{
 				inpc.PropertyChanged -= invalidateCanExecuteHandler;
 				invalidateCanExecuteHandler = null;
-			} 
+			}
 			(target.GetValue(targetProperty) as Command)
 				?.ChangeCanExecute();
 			target.SetValue(targetProperty, EmptyCommand);
@@ -137,7 +137,7 @@ namespace Xamarin.Forms.Xaml
 					command = new Command(onExecute
 						, onCanExecute);
 
-					// Check CanExcute Dependecy for invlidated
+					// Check CanExcute Dependecy for invalidated
 					if (dataContext is INotifyPropertyChanged inpc)
 					{
 						var dependencyProperties = canExecuteMethod
