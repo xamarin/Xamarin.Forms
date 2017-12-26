@@ -17,6 +17,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		int _changedByScroll = 0;
 		ESize _layoutBound;
+		bool _isInitalized = false;
 
 		/// <summary>
 		/// Invoked whenever the CarouselPage element has been changed in Xamarin.
@@ -65,16 +66,24 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				e.OldElement.CurrentPageChanged -= OnCurrentPageChanged;
 				e.OldElement.PagesChanged -= OnPagesChanged;
+				_isInitalized = false;
+
 			}
 
 			if (e.NewElement != null)
 			{
 				Element.CurrentPageChanged += OnCurrentPageChanged;
 				Element.PagesChanged += OnPagesChanged;
-				UpdateCarouselContent();
 			}
 
 			base.OnElementChanged(e);
+		}
+
+		protected override void OnElementReady()
+		{
+			base.OnElementReady();
+			_isInitalized = true;
+			UpdateCarouselContent();
 		}
 
 		/// <summary>
@@ -88,7 +97,7 @@ namespace Xamarin.Forms.Platform.Tizen
 				if (Element != null)
 				{
 					Element.CurrentPageChanged -= OnCurrentPageChanged;
-			        Element.PagesChanged -= OnPagesChanged;
+					Element.PagesChanged -= OnPagesChanged;
 				}
 				_innerContainer = null;
 				_scroller = null;
@@ -98,7 +107,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		void OnInnerLayoutUpdate()
 		{
-			if (_layoutBound == _innerContainer.Geometry.Size)
+			if (!_isInitalized || _layoutBound == _innerContainer.Geometry.Size)
 				return;
 
 			_layoutBound = _innerContainer.Geometry.Size;
@@ -117,7 +126,8 @@ namespace Xamarin.Forms.Platform.Tizen
 
 			if (_scroller.HorizontalPageIndex != _pageIndex)
 			{
-				_scroller.ScrollTo(_pageIndex, 0, false);
+				// If you change the orientation of the device and the Animation is set to false, it will not work.
+				_scroller.ScrollTo(_pageIndex, 0, true);
 			}
 		}
 

@@ -27,8 +27,6 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				_mdpage = new Native.MasterDetailPage(Forms.NativeParent)
 				{
-					Master = GetNativePage(e.NewElement.Master),
-					Detail = GetNativePage(e.NewElement.Detail),
 					IsPresented = e.NewElement.IsPresented,
 				};
 
@@ -57,6 +55,13 @@ namespace Xamarin.Forms.Platform.Tizen
 			base.OnElementChanged(e);
 		}
 
+		protected override void OnElementReady()
+		{
+			base.OnElementReady();
+			UpdateMasterPage(false);
+			UpdateDetailPage(false);
+		}
+
 		void OnBackButtonPressed(object sender, BackButtonPressedEventArgs e)
 		{
 			if ((Element != null) && Element.IsPresented)
@@ -76,14 +81,16 @@ namespace Xamarin.Forms.Platform.Tizen
 			_mdpage.MasterBehavior = Element.MasterBehavior;
 		}
 
-		void UpdateMasterPage()
+		void UpdateMasterPage(bool isInit)
 		{
-			_mdpage.Master = GetNativePage(Element.Master);
+			if(!isInit)
+				_mdpage.Master = GetNativePage(Element.Master);
 		}
 
-		void UpdateDetailPage()
+		void UpdateDetailPage(bool isInit)
 		{
-			_mdpage.Detail = GetNativePage(Element.Detail);
+			if (!isInit)
+				_mdpage.Detail = GetNativePage(Element.Detail);
 		}
 
 		void UpdateIsPresented()

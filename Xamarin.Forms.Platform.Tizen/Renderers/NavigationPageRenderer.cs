@@ -99,21 +99,25 @@ namespace Xamarin.Forms.Platform.Tizen
 				navigation.RemovePageRequested += OnRemovePageRequested;
 				navigation.InsertPageBeforeRequested += OnInsertPageBeforeRequested;
 
-				var pageController = e.NewElement as IPageController;
-				pageController.InternalChildren.CollectionChanged += OnPageCollectionChanged;
-
-				foreach (Page page in pageController.InternalChildren)
-				{
-					_naviItemMap[page] = _naviFrame.Push(Platform.GetOrCreateRenderer(page).NativeView, SpanTitle(page.Title));
-					page.PropertyChanged += NavigationBarPropertyChangedHandler;
-
-					UpdateHasNavigationBar(page);
-				}
-
 				_toolbarTracker.Target = e.NewElement;
 				_previousPage = e.NewElement.CurrentPage;
 			}
 			base.OnElementChanged(e);
+		}
+
+		protected override void OnElementReady()
+		{
+			base.OnElementReady();
+			var pageController = Element as IPageController;
+			pageController.InternalChildren.CollectionChanged += OnPageCollectionChanged;
+
+			foreach (Page page in pageController.InternalChildren)
+			{
+				_naviItemMap[page] = _naviFrame.Push(Platform.GetRenderer(page).NativeView, SpanTitle(page.Title));
+				page.PropertyChanged += NavigationBarPropertyChangedHandler;
+
+				UpdateHasNavigationBar(page);
+			}
 		}
 
 		protected override void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

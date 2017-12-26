@@ -19,6 +19,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		Dictionary<EToolbarItem, Page> _itemToItemPage = new Dictionary<EToolbarItem, Page>();
 		List<EToolbarItem> _toolbarItemList = new List<EToolbarItem>();
 		bool _isResettingToolbarItems = false;
+		bool _isInitialized = false;
 
 		public TabbedPageRenderer()
 		{
@@ -102,6 +103,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			if (e.OldElement != null)
 			{
 				Element.PagesChanged -= OnElementPagesChanged;
+				_isInitialized = false;
 			}
 			if (e.NewElement != null)
 			{
@@ -134,8 +136,9 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		protected override void OnElementReady()
 		{
-			FillToolbarAndContents();
 			base.OnElementReady();
+			_isInitialized = true;
+			FillToolbarAndContents();
 		}
 
 		protected override void UpdateThemeStyle()
@@ -150,12 +153,15 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		void OnInnerLayoutUpdate()
 		{
+			if (!_isInitialized)
+				return;
+
 			int baseX = _innerBox.Geometry.X;
 			Rect bound = _scroller.Geometry;
 			int index = 0;
 			foreach (var page in Element.Children)
 			{
-				var nativeView = Platform.GetOrCreateRenderer(page).NativeView;
+				var nativeView = Platform.GetRenderer(page).NativeView;
 				bound.X = baseX + index * bound.Width;
 				nativeView.Geometry = bound;
 				index++;
