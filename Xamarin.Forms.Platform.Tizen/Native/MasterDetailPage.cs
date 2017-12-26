@@ -127,7 +127,8 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			_drawer.Direction = PanelDirection.Left;
 			_drawer.Toggled += (object sender, EventArgs e) =>
 			{
-				IsPresentedChanged?.Invoke(this, EventArgs.Empty);
+				UpdateFocusPolicy();
+				IsPresentedChanged?.Invoke(this, new IsPresentedChangedEventArgs(_drawer.IsOpen));
 			};
 
 			ConfigureLayout();
@@ -146,7 +147,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		/// <summary>
 		/// Occurs when the MasterPage is shown or hidden.
 		/// </summary>
-		public event EventHandler IsPresentedChanged;
+		public event EventHandler<IsPresentedChangedEventArgs> IsPresentedChanged;
 
 		/// <summary>
 		/// Occurs when the IsPresentChangeable was changed.
@@ -169,7 +170,6 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				if (_masterBehavior != value)
 				{
 					_masterBehavior = value;
-
 					UpdateMasterBehavior();
 				}
 			}
@@ -194,6 +194,8 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 					UpdatePageGeometry(_master);
 					_masterCanvas.Children.Clear();
 					_masterCanvas.Children.Add(_master);
+					if (_internalMasterBehavior == MasterBehavior.Popover)
+						UpdateFocusPolicy();
 				}
 			}
 		}
@@ -217,6 +219,8 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 					UpdatePageGeometry(_detail);
 					_detailCanvas.Children.Clear();
 					_detailCanvas.Children.Add(_detail);
+					if (_internalMasterBehavior == MasterBehavior.Popover)
+						UpdateFocusPolicy();
 				}
 			}
 		}
@@ -330,7 +334,6 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			if (behavior != _internalMasterBehavior)
 			{
 				_internalMasterBehavior = behavior;
-
 				ConfigureLayout();
 			}
 		}
@@ -359,7 +362,8 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				PackEnd(_splitPane);
 
 				IsPresented = true;
-				UpdateIsPresentChangeable?.Invoke(this, new UpdateIsPresentChangeableEventArgs { CanChange = false });
+				UpdateIsPresentChangeable?.Invoke(this, new UpdateIsPresentChangeableEventArgs(false));
+				UpdateFocusPolicy(true);
 			}
 			else
 			{
@@ -370,19 +374,81 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				PackEnd(_drawer);
 
 				_drawer.IsOpen = IsPresented;
-				UpdateIsPresentChangeable?.Invoke(this, new UpdateIsPresentChangeableEventArgs { CanChange = false });
+				UpdateIsPresentChangeable?.Invoke(this, new UpdateIsPresentChangeableEventArgs(false));
+				UpdateFocusPolicy();
 			}
 
 			_masterCanvas.Show();
 			_detailCanvas.Show();
 		}
+
+		/// <summary>
+		/// Force update the focus management
+		/// </summary>
+		void UpdateFocusPolicy(bool forceAllowFocusAll=false)
+		{
+			var master = _master as Widget;
+			var detail = _detail as Widget;
+
+			if(forceAllowFocusAll)
+			{
+				if (master != null)
+					master.AllowTreeFocus = true;
+				if (detail != null)
+					detail.AllowTreeFocus = true;
+				return;
+			}
+
+			if (_drawer.IsOpen)
+			{
+				if (detail != null)
+				{
+					detail.AllowTreeFocus = false;
+				}
+				if (master != null)
+				{
+					master.AllowTreeFocus = true;
+					master.SetFocus(true);
+				}
+			}
+			else
+			{
+				if (master != null)
+				{
+					master.AllowTreeFocus = false;
+				}
+				if (detail != null)
+				{
+					detail.AllowTreeFocus = true;
+					detail.SetFocus(true);
+				}
+			}
+		}
+	}
+
+	public class IsPresentedChangedEventArgs : EventArgs
+	{
+		public IsPresentedChangedEventArgs (bool isPresent)
+		{
+			IsPresent = isPresent;
+		}
+
+		/// <summary>
+		/// Value of IsPresent
+		/// </summary>
+		public bool IsPresent { get; private set; }
 	}
 
 	public class UpdateIsPresentChangeableEventArgs : EventArgs
 	{
+		public UpdateIsPresentChangeableEventArgs(bool canChange)
+		{
+			CanChange = CanChange;
+		}
+
 		/// <summary>
 		/// Value of changeable
 		/// </summary>
-		public bool CanChange { get; set; }
+		public bool CanChange { get; private set; }
 	}
 }

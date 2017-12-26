@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
 				_mdpage.IsPresentedChanged += (sender, ev) =>
 				{
-					Element.IsPresented = _mdpage.IsPresented;
+					Element.IsPresented = ev.IsPresent;
 				};
 				_mdpage.UpdateIsPresentChangeable += (sender, ev) =>
 				{
