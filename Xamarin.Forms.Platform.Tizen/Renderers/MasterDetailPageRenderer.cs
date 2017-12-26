@@ -11,8 +11,8 @@ namespace Xamarin.Forms.Platform.Tizen
 		/// </summary>
 		public MasterDetailPageRenderer()
 		{
-			RegisterPropertyHandler("Master", UpdateMasterPage);
-			RegisterPropertyHandler("Detail", UpdateDetailPage);
+			RegisterPropertyHandler(nameof(Element.Master), UpdateMasterPage);
+			RegisterPropertyHandler(nameof(Element.Detail), UpdateDetailPage);
 			RegisterPropertyHandler(MasterDetailPage.IsPresentedProperty,
 				UpdateIsPresented);
 			RegisterPropertyHandler(MasterDetailPage.MasterBehaviorProperty,
@@ -64,7 +64,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		void OnBackButtonPressed(object sender, BackButtonPressedEventArgs e)
 		{
-			if ((Element != null) && Element.IsPresented)
+			if ((Element != null) && Element.IsPresented && !_mdpage.IsSplit)
 			{
 				Element.IsPresented = false;
 				e.Handled = true;
