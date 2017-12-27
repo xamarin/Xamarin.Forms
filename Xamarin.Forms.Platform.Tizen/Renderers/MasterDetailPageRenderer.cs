@@ -62,6 +62,12 @@ namespace Xamarin.Forms.Platform.Tizen
 			UpdateDetailPage(false);
 		}
 
+		protected void UpdateMasterPageRatio(double popoverRatio, double splitRatio)
+		{
+			_mdpage.PopoverRatio = popoverRatio;
+			_mdpage.SplitRatio = splitRatio;
+		}
+
 		void OnBackButtonPressed(object sender, BackButtonPressedEventArgs e)
 		{
 			if ((Element != null) && Element.IsPresented && !_mdpage.IsSplit)
@@ -102,5 +108,6 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			_mdpage.IsGestureEnabled = Element.IsGestureEnabled;
 		}
+
 	}
 }

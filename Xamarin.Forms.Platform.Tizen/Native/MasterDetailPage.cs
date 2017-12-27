@@ -10,16 +10,6 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 	public class MasterDetailPage : Box
 	{
 		/// <summary>
-		/// The portion of the screen that the MasterPage takes in Split mode.
-		/// </summary>
-		static readonly double s_splitRatio = 0.35;
-
-		/// <summary>
-		/// The portion of the screen that the MasterPage takes in Popover mode.
-		/// </summary>
-		static readonly double s_popoverRatio = 0.8;
-
-		/// <summary>
 		/// The default master behavior (a.k.a mode).
 		/// </summary>
 		static readonly MasterBehavior s_defaultMasterBehavior = (Device.Idiom == TargetIdiom.Phone) ? MasterBehavior.Popover : MasterBehavior.SplitOnLandscape;
@@ -75,6 +65,16 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		bool _isGestureEnabled = true;
 
 		/// <summary>
+		/// The portion of the screen that the MasterPage takes in Split mode.
+		/// </summary>
+		double _splitRatio = 0.35;
+
+		/// <summary>
+		/// The portion of the screen that the MasterPage takes in Popover mode.
+		/// </summary>
+		double _popoverRatio = 0.8;
+
+		/// <summary>
 		/// Initializes a new instance of the <see cref="Xamarin.Forms.Platform.Tizen.Native.MasterDetailPage"/> class.
 		/// </summary>
 		/// <param name="parent">Parent evas object.</param>
@@ -110,7 +110,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				WeightY = 1,
 				IsFixed = true,
 				IsHorizontal = false,
-				Proportion = s_splitRatio,
+				Proportion = _splitRatio,
 			};
 
 			_drawer = new Panel(Forms.NativeParent);
@@ -267,6 +267,47 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		}
 
 		/// <summary>
+		/// Gets or Sets the portion of the screen that the MasterPage takes in split mode.
+		/// </summary>
+		/// <value>The portion.</value>
+		public double SplitRatio
+		{
+			get
+			{
+				return _splitRatio;
+			}
+			set
+			{
+				if (_splitRatio != value)
+				{
+					_splitRatio = value;
+					_splitPane.Proportion = _splitRatio;
+				}
+			}
+
+		}
+
+		/// <summary>
+		/// Gets or sets the portion of the screen that the MasterPage takes in Popover mode.
+		/// </summary>
+		/// <value>The portion.</value>
+		public double PopoverRatio
+		{
+			get
+			{
+				return _popoverRatio;
+			}
+			set
+			{
+				if (_popoverRatio != value)
+				{
+					_popoverRatio = value;
+					UpdateChildCanvasGeometry();
+				}
+			}
+		}
+
+		/// <summary>
 		/// Provides destruction for native element and contained elements.
 		/// </summary>
 		protected override void OnUnrealize()
@@ -392,7 +433,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				_mainWidget.Geometry = bound;
 			}
 
-			bound.Width = (int)((s_popoverRatio * bound.Width));
+			bound.Width = (int)((_popoverRatio * bound.Width));
 			_drawer.Geometry = bound;
 		}
 
