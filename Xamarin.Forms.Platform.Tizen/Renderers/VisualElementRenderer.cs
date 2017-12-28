@@ -188,7 +188,6 @@ namespace Xamarin.Forms.Platform.Tizen
 			// send notification
 			OnElementChanged(new ElementChangedEventArgs<TElement>(oldElement, newElement));
 
-
 			// store renderer for the new element
 			Platform.SetRenderer(newElement, this);
 
@@ -201,8 +200,9 @@ namespace Xamarin.Forms.Platform.Tizen
 
 			newElement.IsPlatformEnabled = true;
 
-
 			OnElementReady();
+
+			SendVisualElementInitialized(newElement, NativeView);
 		}
 
 		void IVisualElementRenderer.UpdateLayout()
@@ -436,6 +436,11 @@ namespace Xamarin.Forms.Platform.Tizen
 				widget.Focused += OnFocused;
 				widget.Unfocused += OnUnfocused;
 			}
+		}
+
+		internal virtual void SendVisualElementInitialized(VisualElement element, EvasObject nativeView)
+		{
+			element.SendViewInitialized(nativeView);
 		}
 
 		void UpdateNativeGeometry()
