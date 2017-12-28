@@ -214,7 +214,7 @@ namespace Xamarin.Forms
 		{
 			foreach (VisualState state in States)
 			{
-				if (state.Name == name)
+				if (string.CompareOrdinal(state.Name, name) == 0)
 				{
 					return state;
 				}
