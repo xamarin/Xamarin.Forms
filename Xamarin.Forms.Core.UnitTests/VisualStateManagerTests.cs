@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using NUnit.Framework;
 
 namespace Xamarin.Forms.Core.UnitTests
@@ -12,7 +11,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		const string InvalidStateName = "Invalid";
 		const string CommonStatesName = "CommonStates";
 
-		static IList<VisualStateGroup> CreateTestStateGroups()
+		static VisualStateGroupList CreateTestStateGroups()
 		{
 			var stateGroups = new VisualStateGroupList();
 			var visualStateGroup = new VisualStateGroup { Name = CommonStatesName };
@@ -27,7 +26,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			return stateGroups;
 		}
 
-		static IList<VisualStateGroup> CreateStateGroupsWithoutNormalState()
+		static VisualStateGroupList CreateStateGroupsWithoutNormalState()
 		{
 			var stateGroups = new VisualStateGroupList();
 			var visualStateGroup = new VisualStateGroup { Name = CommonStatesName };
