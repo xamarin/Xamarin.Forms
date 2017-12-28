@@ -266,8 +266,8 @@ namespace Xamarin.Forms.Platform.Tizen
 			if (modalRenderer != null)
 			{
 				await PopModalInternal(animated);
+				modalRenderer.Dispose();
 			}
-			Platform.GetRenderer(modal).Dispose();
 
 			CurrentPageController?.SendAppearing();
 			return modal;
