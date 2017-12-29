@@ -74,7 +74,6 @@
     <Namespace Name="Xamarin.Forms.Xaml">
       <Type Name="ArrayExtension" Kind="Class" />
       <Type Name="BindingExtension" Kind="Class" />
-      <Type Name="CollectionExtensions" Kind="Class" />
       <Type Name="DynamicResourceExtension" Kind="Class" />
       <Type Name="Extensions" Kind="Class" />
       <Type Name="NullExtension" Kind="Class" />
@@ -102,27 +101,6 @@
   </Types>
   <Title>Xamarin.Forms.Xaml</Title>
   <ExtensionMethods>
-    <ExtensionMethod>
-      <Targets>
-        <Target Type="T:Xamarin.Forms.Setter" />
-      </Targets>
-      <Member MemberName="EnsureSetterCollectionInitialized">
-        <MemberSignature Language="C#" Value="public static object EnsureSetterCollectionInitialized (this Xamarin.Forms.Setter setter);" />
-        <MemberSignature Language="ILAsm" Value=".method public static hidebysig object EnsureSetterCollectionInitialized(class Xamarin.Forms.Setter setter) cil managed" />
-        <MemberType>ExtensionMethod</MemberType>
-        <ReturnValue>
-          <ReturnType>System.Object</ReturnType>
-        </ReturnValue>
-        <Parameters>
-          <Parameter Name="setter" Type="Xamarin.Forms.Setter" RefType="this" />
-        </Parameters>
-        <Docs>
-          <param name="setter">To be added.</param>
-          <summary>To be added.</summary>
-        </Docs>
-        <Link Type="Xamarin.Forms.Xaml.CollectionExtensions" Member="M:Xamarin.Forms.Xaml.CollectionExtensions.EnsureSetterCollectionInitialized(Xamarin.Forms.Setter)" />
-      </Member>
-    </ExtensionMethod>
     <ExtensionMethod>
       <Targets>
         <Target Type="System.Object" />

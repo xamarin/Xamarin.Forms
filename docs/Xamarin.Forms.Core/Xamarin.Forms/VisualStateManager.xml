@@ -77,8 +77,8 @@
       </Docs>
     </Member>
     <Member MemberName="SetVisualStateGroups">
-      <MemberSignature Language="C#" Value="public static void SetVisualStateGroups (Xamarin.Forms.VisualElement visualElement, System.Collections.Generic.IList&lt;Xamarin.Forms.VisualStateGroup&gt; value);" />
-      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void SetVisualStateGroups(class Xamarin.Forms.VisualElement visualElement, class System.Collections.Generic.IList`1&lt;class Xamarin.Forms.VisualStateGroup&gt; value) cil managed" />
+      <MemberSignature Language="C#" Value="public static void SetVisualStateGroups (Xamarin.Forms.VisualElement visualElement, Xamarin.Forms.VisualStateGroupList value);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void SetVisualStateGroups(class Xamarin.Forms.VisualElement visualElement, class Xamarin.Forms.VisualStateGroupList value) cil managed" />
       <MemberType>Method</MemberType>
       <AssemblyInfo>
         <AssemblyVersion>2.0.0.0</AssemblyVersion>
@@ -88,7 +88,7 @@
       </ReturnValue>
       <Parameters>
         <Parameter Name="visualElement" Type="Xamarin.Forms.VisualElement" />
-        <Parameter Name="value" Type="System.Collections.Generic.IList&lt;Xamarin.Forms.VisualStateGroup&gt;" />
+        <Parameter Name="value" Type="Xamarin.Forms.VisualStateGroupList" />
       </Parameters>
       <Docs>
         <param name="visualElement">To be added.</param>
