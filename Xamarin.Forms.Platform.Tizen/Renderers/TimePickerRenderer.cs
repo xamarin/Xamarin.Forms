@@ -1,5 +1,6 @@
 using System;
 using System.Globalization;
+using Xamarin.Forms.Platform.Tizen.Native;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
@@ -11,6 +12,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		static readonly string s_defaultFormat = CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern;
 
 		TimeSpan _time = DateTime.Now.TimeOfDay;
+		Lazy<DateTimePickerDialog<Native.TimePicker>> _lazyDialog;
 
 		public TimePickerRenderer()
 		{
@@ -32,6 +34,16 @@ namespace Xamarin.Forms.Platform.Tizen
 				entry.AllowFocus(false);
 				SetNativeControl(entry);
 				Control.Clicked += OnClicked;
+
+				_lazyDialog = new Lazy<DateTimePickerDialog<Native.TimePicker>>(() =>
+				{
+					var dialog = new DateTimePickerDialog<Native.TimePicker>(Forms.NativeParent)
+					{
+						Title = DialogTitle
+					};
+					dialog.DateTimeChanged += OnDialogTimeChanged;
+					return dialog;
+				});
 			}
 			base.OnElementChanged(e);
 		}
@@ -43,6 +55,11 @@ namespace Xamarin.Forms.Platform.Tizen
 				if (Control != null)
 				{
 					Control.Clicked -= OnClicked;
+				}
+				if (_lazyDialog.IsValueCreated)
+				{
+					_lazyDialog.Value.DateTimeChanged -= OnDialogTimeChanged;
+					_lazyDialog.Value.Unrealize();
 				}
 			}
 
@@ -60,15 +77,11 @@ namespace Xamarin.Forms.Platform.Tizen
 			// If the problem is resolved, no conditional statement is required.
 			if (Element.IsEnabled)
 			{
-				Native.DateTimePickerDialog dialog = new Native.DateTimePickerDialog(Forms.NativeParent)
-				{
-					Title = DialogTitle
-				};
-
-				dialog.InitializeTimePicker(_time, null);
-				dialog.DateTimeChanged += OnDialogTimeChanged;
-				dialog.Dismissed += OnDialogDismissed;
-				dialog.Show();
+				var dialog = _lazyDialog.Value;
+				dialog.DateTimePicker.Time = Element.Time;
+				// You need to call Show() after ui thread occupation because of EFL problem.
+				// Otherwise, the content of the popup will not receive focus.
+				Device.BeginInvokeOnMainThread(() => dialog.Show());
 			}
 		}
 
@@ -76,13 +89,6 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			Element.Time = dcea.NewDate.TimeOfDay;
 			UpdateTime();
-		}
-
-		void OnDialogDismissed(object sender, EventArgs e)
-		{
-			var dialog = sender as Native.DateTimePickerDialog;
-			dialog.DateTimeChanged -= OnDialogTimeChanged;
-			dialog.Dismissed -= OnDialogDismissed;
 		}
 
 		void UpdateFormat()
