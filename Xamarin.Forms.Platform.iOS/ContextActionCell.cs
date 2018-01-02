@@ -407,9 +407,12 @@ namespace Xamarin.Forms.Platform.iOS
 			else
 				button.SetBackgroundImage(DestructiveBackground, UIControlState.Normal);
 
-			button.SetTitle(item.Text, UIControlState.Normal);
-			button.TitleEdgeInsets = new UIEdgeInsets(0, 15, 0, 15);
+			if (item.Icon != null)
+				button.SetImage(new UIImage(item.Icon.File), UIControlState.Normal);
+			else
+				button.SetTitle(item.Text, UIControlState.Normal);
 
+			button.TitleEdgeInsets = new UIEdgeInsets(0, 15, 0, 15);
 			button.Enabled = item.IsEnabled;
 
 			return button;
