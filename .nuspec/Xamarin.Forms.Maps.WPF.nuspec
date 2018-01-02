@@ -11,7 +11,7 @@
     <projectUrl>http://xamarin.com/forms</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Xamarin.Forms.Maps Renderer for WPF</description>
-    <copyright>Copyright 2013-2017</copyright>
+    <copyright>Copyright 2013-2018</copyright>
     <dependencies>
       <group>
         <dependency id="Xamarin.Forms$IdAppend$" version="$version$"/>

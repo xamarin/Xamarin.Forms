@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.WPF;
+using Xamarin.Forms.Platform.WPF.Renderers;
 
 // Les informations générales relatives à un assembly dépendent de
 // l'ensemble d'attributs suivant. Changez les valeurs de ces attributs pour modifier les informations
@@ -71,7 +72,7 @@ using Xamarin.Forms.Platform.WPF;
 [assembly: ExportRenderer(typeof(WebView), typeof(WebViewRenderer))]
 [assembly: ExportRenderer(typeof(SearchBar), typeof(SearchBarRenderer))]
 [assembly: ExportRenderer(typeof(Switch), typeof(SwitchRenderer))]
-[assembly: ExportRenderer(typeof(DatePicker), typeof(DatePickerRenderer))]
+[assembly: ExportRenderer(typeof(TimePicker), typeof(TimePickerRenderer))]
 [assembly: ExportRenderer(typeof(Picker), typeof(PickerRenderer))]
 [assembly: ExportRenderer(typeof(Stepper), typeof(StepperRenderer))]
 [assembly: ExportRenderer(typeof(ProgressBar), typeof(ProgressBarRenderer))]
