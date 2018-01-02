@@ -11,7 +11,7 @@
     <projectUrl>http://xamarin.com/forms</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>Xamarin.Forms.Maps Renderer for GTK</description>
-    <copyright>Copyright 2013-2017</copyright>
+    <copyright>Copyright 2013-2018</copyright>
     <dependencies>
       <dependency id="Xamarin.Forms$IdAppend$" version="$version$"/>
       <dependency id="Xamarin.Forms.Maps$IdAppend$" version="$version$" />
