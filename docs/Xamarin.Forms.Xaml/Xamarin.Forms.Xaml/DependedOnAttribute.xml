@@ -1,0 +1,53 @@
+<Type Name="DependedOnAttribute" FullName="Xamarin.Forms.Xaml.DependedOnAttribute">
+  <TypeSignature Language="C#" Value="public sealed class DependedOnAttribute : Attribute" />
+  <TypeSignature Language="ILAsm" Value=".class public auto ansi sealed beforefieldinit DependedOnAttribute extends System.Attribute" />
+  <AssemblyInfo>
+    <AssemblyName>Xamarin.Forms.Xaml</AssemblyName>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Attribute</BaseTypeName>
+  </Base>
+  <Interfaces />
+  <Attributes>
+    <Attribute>
+      <AttributeName>System.AttributeUsage(System.AttributeTargets.Method, AllowMultiple=true, Inherited=true)</AttributeName>
+    </Attribute>
+  </Attributes>
+  <Docs>
+    <summary>This attribute is applied to the ViewModel method with this signature : bool Can [CommandName] (object parameter). Tells at <see cref="T:Xamarin.Forms.Xaml.AutoCommandExtension" /> to re-evaluate the decorated method when the indicated ViewModel property changes.</summary>
+    <remarks>The ViewModel must implement <see cref="T:System.ComponentModel.INotifyPropertyChanged" />.</remarks>
+  </Docs>
+  <Members>
+    <Member MemberName=".ctor">
+      <MemberSignature Language="C#" Value="public DependedOnAttribute (string propertyName);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(string propertyName) cil managed" />
+      <MemberType>Constructor</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <Parameters>
+        <Parameter Name="propertyName" Type="System.String" />
+      </Parameters>
+      <Docs>
+        <param name="propertyName">The property name of the ViewModel.</param>
+        <summary>Set the name of the properties that execute the decorated method when property changes.</summary>
+        <remarks>if is null or String.Empty any changes of properties of ViewModel running decorated method.</remarks>
+      </Docs>
+    </Member>
+	<Member MemberName="PropertyName">
+      <MemberSignature Language="C#" Value="public string PropertyName { get; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string PropertyName" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>Get the name of the properties that execute the decorated method when property changes.</summary>
+      </Docs>
+    </Member>
+  </Members>
+</Type>

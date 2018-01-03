@@ -73,7 +73,9 @@
   <Types>
     <Namespace Name="Xamarin.Forms.Xaml">
       <Type Name="ArrayExtension" Kind="Class" />
+      <Type Name="AutoCommandExtension" Kind="Class" />	  
       <Type Name="BindingExtension" Kind="Class" />
+	  <Type Name="DependedOnAttribute" Kind="Class" />
       <Type Name="DynamicResourceExtension" Kind="Class" />
       <Type Name="Extensions" Kind="Class" />
       <Type Name="NullExtension" Kind="Class" />

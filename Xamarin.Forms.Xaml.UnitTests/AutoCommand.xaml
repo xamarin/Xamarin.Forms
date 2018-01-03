@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<ContentView
+	xmlns="http://xamarin.com/schemas/2014/forms"
+	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+	xmlns:local="clr-namespace:Xamarin.Forms.Xaml.UnitTests"
+	xmlns:sys="clr-namespace:System;assembly=mscorlib"
+	x:Class="Xamarin.Forms.Xaml.UnitTests.AutoCommand">
+  <ContentView.Content>
+      <StackLayout>
+			<Label Text="Enable Button 1" />
+			<Switch IsToggled ="{Binding EnableButton1}"/>
+			<Label Text="Enable Button 2" />
+			<Switch IsToggled ="{Binding EnableButton2}"/>
+			<Button Command="{AutoCommand DoButton1}"
+					Text="Button 1"
+					x:Name="Button1"/>
+			<Button Command="{AutoCommand DoButton2}" 
+					CommandParameter="Button 2"
+					x:Name="Button2"/>
+			<Button Command="{AutoCommand DoAll}}"
+					x:Name="ButtonDoAll"/>
+			<Button Command="{AutoCommand InvalidMethod}"
+					x:Name="ButtonInvalid"/>
+		</StackLayout>
+  </ContentView.Content>
+</ContentView>

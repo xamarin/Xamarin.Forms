@@ -1044,5 +1044,12 @@
   <ItemGroup>
     <Folder Include="css\" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>         
+    <EmbeddedResource Include="AutoCommand.xaml">
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+    <Compile Include="AutoCommand.xaml.cs">
+      <DependentUpon>AutoCommand.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
 </Project>
