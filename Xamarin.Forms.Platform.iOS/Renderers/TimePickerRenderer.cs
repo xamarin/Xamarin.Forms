@@ -73,8 +73,10 @@ namespace Xamarin.Forms.Platform.iOS
 					SetNativeControl(entry);
 				}
 
+				UpdateFont();
 				UpdateTime();
 				UpdateTextColor();
+				UpdateFlowDirection();
 			}
 
 			base.OnElementChanged(e);
@@ -86,9 +88,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (e.PropertyName == TimePicker.TimeProperty.PropertyName || e.PropertyName == TimePicker.FormatProperty.PropertyName)
 				UpdateTime();
-
-			if (e.PropertyName == TimePicker.TextColorProperty.PropertyName || e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
+			else if (e.PropertyName == TimePicker.TextColorProperty.PropertyName || e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateTextColor();
+			else if (e.PropertyName == TimePicker.FontAttributesProperty.PropertyName || e.PropertyName == TimePicker.FontFamilyProperty.PropertyName || e.PropertyName == TimePicker.FontSizeProperty.PropertyName)
+				UpdateFont();
+
+			if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
+				UpdateFlowDirection();
 		}
 
 		void OnEnded(object sender, EventArgs eventArgs)
@@ -104,6 +110,16 @@ namespace Xamarin.Forms.Platform.iOS
 		void OnValueChanged(object sender, EventArgs e)
 		{
 			ElementController.SetValueFromRenderer(TimePicker.TimeProperty, _picker.Date.ToDateTime() - new DateTime(1, 1, 1));
+		}
+
+		void UpdateFlowDirection()
+		{
+			(Control as UITextField).UpdateTextAlignment(Element);
+		}
+		
+		void UpdateFont()
+		{
+			Control.Font = Element.ToUIFont();
 		}
 
 		void UpdateTextColor()

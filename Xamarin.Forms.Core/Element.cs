@@ -9,7 +9,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	public abstract class Element : BindableObject, IElement, INameScope, IElementController
+	public abstract partial class Element : BindableObject, IElement, INameScope, IElementController
 	{
 
 		public static readonly BindableProperty MenuProperty = BindableProperty.CreateAttached(nameof(Menu), typeof(Menu), typeof(Element), null);
@@ -369,7 +369,7 @@ namespace Xamarin.Forms
 			if (Platform != null)
 				child.Platform = Platform;
 
-			child.ApplyBindings();
+			child.ApplyBindings(skipBindingContext: false, fromBindingContextChanged:true);
 
 			if (ChildAdded != null)
 				ChildAdded(this, new ElementEventArgs(child));
@@ -428,7 +428,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		internal void OnParentResourcesChanged(object sender, ResourcesChangedEventArgs e)
+		internal virtual void OnParentResourcesChanged(object sender, ResourcesChangedEventArgs e)
 		{
 			OnParentResourcesChanged(e.Values);
 		}
@@ -447,7 +447,7 @@ namespace Xamarin.Forms
 			base.OnRemoveDynamicResource(property);
 		}
 
-		internal void OnResourcesChanged(object sender, ResourcesChangedEventArgs e)
+		internal virtual void OnResourcesChanged(object sender, ResourcesChangedEventArgs e)
 		{
 			OnResourcesChanged(e.Values);
 		}
@@ -502,6 +502,27 @@ namespace Xamarin.Forms
 		}
 
 		internal event EventHandler ParentSet;
+
+		internal static void SetFlowDirectionFromParent(Element child)
+		{
+			IFlowDirectionController controller = child as IFlowDirectionController;
+			if (controller == null)
+				return;
+
+			if (controller.EffectiveFlowDirection.IsImplicit())
+			{
+				var parentView = child.Parent as IFlowDirectionController;
+				if (parentView == null)
+					return;
+
+				var flowDirection = parentView.EffectiveFlowDirection.ToFlowDirection();
+
+				if (flowDirection != controller.EffectiveFlowDirection.ToFlowDirection())
+				{
+					controller.EffectiveFlowDirection = flowDirection.ToEffectiveFlowDirection();
+				}
+			}
+		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public event EventHandler PlatformSet;

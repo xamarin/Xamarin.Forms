@@ -30,16 +30,6 @@ namespace Xamarin.Forms.Platform.iOS
 			return cell;
 		}
 
-		public override void SetBackgroundColor(UITableViewCell tableViewCell, Cell cell, UIColor color)
-		{
-			if (cell is ViewCell && Forms.IsiOS11OrNewer)
-			{
-				color = (cell as ViewCell).View.BackgroundColor == Color.Default ? color : (cell as ViewCell).View.BackgroundColor.ToUIColor();
-				tableViewCell.BackgroundColor = color;
-			}
-			base.SetBackgroundColor(tableViewCell, cell, color);
-		}
-
 		static void UpdateIsEnabled(ViewTableCell cell, ViewCell viewCell)
 		{
 			cell.UserInteractionEnabled = viewCell.IsEnabled;
@@ -94,12 +84,6 @@ namespace Xamarin.Forms.Platform.iOS
 				var contentFrame = ContentView.Frame;
 				var view = ViewCell.View;
 
-				if (Forms.IsiOS11OrNewer)
-				{
-					var rect = new Rectangle(ContentView.LayoutMargins.Left, 0, contentFrame.Width - ContentView.LayoutMargins.Left, contentFrame.Height);
-					contentFrame = rect.ToRectangleF();
-				}
-
 				Layout.LayoutChildIntoBoundingRegion(view, contentFrame.ToRectangle());
 
 				if (_rendererRef == null)
@@ -121,7 +105,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				double width = size.Width;
 				var height = size.Height > 0 ? size.Height : double.PositiveInfinity;
-				var result = renderer.Element.Measure(width, height);
+				var result = renderer.Element.Measure(width, height, MeasureFlags.IncludeMargins);
 
 				// make sure to add in the separator if needed
 				var finalheight = (float)result.Request.Height + (SupressSeparator ? 0f : 1f) / UIScreen.MainScreen.Scale;

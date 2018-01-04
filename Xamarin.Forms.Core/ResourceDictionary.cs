@@ -57,18 +57,18 @@ namespace Xamarin.Forms
 
 		//Used by the XamlC compiled converter
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public void SetAndLoadSource(Uri value, string resourceID, Assembly assembly, System.Xml.IXmlLineInfo lineInfo)
+		public void SetAndLoadSource(Uri value, string resourcePath, Assembly assembly, System.Xml.IXmlLineInfo lineInfo)
 		{
 			_source = value;
 			if (_mergedWith != null)
 				throw new ArgumentException("Source can not be used with MergedWith");
 
 			//this will return a type if the RD as an x:Class element, and codebehind
-			var type = XamlResourceIdAttribute.GetTypeForResourceId(assembly, resourceID);
+			var type = XamlResourceIdAttribute.GetTypeForPath(assembly, resourcePath);
 			if (type != null)
 				_mergedInstance = s_instances.GetValue(type, (key) => (ResourceDictionary)Activator.CreateInstance(key));
 			else
-				_mergedInstance = DependencyService.Get<IResourcesLoader>().CreateResourceDictionary(resourceID, assembly, lineInfo);
+				_mergedInstance = DependencyService.Get<IResourcesLoader>().CreateFromResource<ResourceDictionary>(resourcePath, assembly, lineInfo);
 			OnValuesChanged(_mergedInstance.ToArray());
 		}
 
@@ -84,6 +84,16 @@ namespace Xamarin.Forms
 			}
 		}
 
+		internal IList<StyleSheets.StyleSheet> StyleSheets { get; set; }
+
+		void StyleSheetsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			switch (e.Action) {
+			case NotifyCollectionChangedAction.Add:
+					ValuesChanged?.Invoke(this, ResourcesChangedEventArgs.StyleSheets);
+				break;
+			}
+		}
 		IList<ResourceDictionary> _collectionTrack;
 
 		void MergedDictionaries_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -279,6 +289,18 @@ namespace Xamarin.Forms
 			}
 		}
 
+		public void Add(ResourceDictionary mergedResourceDictionary)
+		{
+			MergedDictionaries.Add(mergedResourceDictionary);
+		}
+
+		public void Add(StyleSheets.StyleSheet styleSheet)
+		{
+			StyleSheets = StyleSheets ?? new List<StyleSheets.StyleSheet>(2);
+			StyleSheets.Add(styleSheet);
+			ValuesChanged?.Invoke(this, ResourcesChangedEventArgs.StyleSheets);
+		}
+
 		void OnValueChanged(string key, object value)
 		{
 			OnValuesChanged(new KeyValuePair<string, object>(key, value));
@@ -312,13 +334,13 @@ namespace Xamarin.Forms
 				var lineInfo = (serviceProvider.GetService(typeof(Xaml.IXmlLineInfoProvider)) as Xaml.IXmlLineInfoProvider)?.XmlLineInfo;
 				var rootTargetPath = XamlResourceIdAttribute.GetPathForType(rootObjectType);
 				var uri = new Uri(value, UriKind.Relative); //we don't want file:// uris, even if they start with '/'
-				var resourceId = GetResourceId(uri, rootTargetPath,
-											   s => XamlResourceIdAttribute.GetResourceIdForPath(rootObjectType.GetTypeInfo().Assembly, s));
-				targetRD.SetAndLoadSource(uri, resourceId, rootObjectType.GetTypeInfo().Assembly, lineInfo);
+				var resourcePath = GetResourcePath(uri, rootTargetPath);
+
+				targetRD.SetAndLoadSource(uri, resourcePath, rootObjectType.GetTypeInfo().Assembly, lineInfo);
 				return uri;
 			}
 
-			internal static string GetResourceId(Uri uri, string rootTargetPath, Func<string, string> getResourceIdForPath)
+			internal static string GetResourcePath(Uri uri, string rootTargetPath)
 			{
 				//need a fake scheme so it's not seen as file:// uri, and the forward slashes are valid on all plats
 				var resourceUri = uri.OriginalString.StartsWith("/", StringComparison.Ordinal)
@@ -326,9 +348,7 @@ namespace Xamarin.Forms
 				                     : new Uri($"pack:///{rootTargetPath}/../{uri.OriginalString}", UriKind.Absolute);
 
 				//drop the leading '/'
-				var resourcePath = resourceUri.AbsolutePath.Substring(1);
-
-				return getResourceIdForPath(resourcePath);
+				return resourceUri.AbsolutePath.Substring(1);
 			}
 
 			object IExtendedTypeConverter.ConvertFrom(CultureInfo culture, object value, IServiceProvider serviceProvider)

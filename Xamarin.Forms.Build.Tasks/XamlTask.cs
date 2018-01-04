@@ -16,7 +16,8 @@ using Mono.Cecil.Mdb;
 
 namespace Xamarin.Forms.Build.Tasks
 {
-	public abstract class XamlTask : AppDomainIsolatedTask
+	[LoadInSeparateAppDomain]
+	public abstract class XamlTask : MarshalByRefObject, ITask
 	{
 		[Required]
 		public string Assembly { get; set; }
@@ -26,15 +27,21 @@ namespace Xamarin.Forms.Build.Tasks
 		public bool DebugSymbols { get; set; }
 		public string DebugType { get; set; }
 
+		TaskLoggingHelper _log;
+
 		internal XamlTask()
 		{
+			_log = new TaskLoggingHelper(this);
 		}
+
+		public IBuildEngine BuildEngine { get; set; }
+		public ITaskHost HostObject { get; set; }
 
 		protected Logger Logger { get; set; }
 
-		public override bool Execute()
+		public bool Execute()
 		{
-			Logger = new Logger(Log, Verbosity);
+			Logger = new Logger(_log, Verbosity);
 			IList<Exception> _;
 			return Execute(out _);
 		}
@@ -65,7 +72,7 @@ namespace Xamarin.Forms.Build.Tasks
 
 	static class CecilExtensions
 	{
-		public static bool IsXaml(this EmbeddedResource resource, out string classname)
+		public static bool IsXaml(this EmbeddedResource resource, ModuleDefinition module, out string classname)
 		{
 			classname = null;
 			if (!resource.Name.EndsWith(".xaml", StringComparison.InvariantCulture))
@@ -83,11 +90,33 @@ namespace Xamarin.Forms.Build.Tasks
 
 				var rootClass = root.Attributes["Class", XamlParser.X2006Uri] ??
 								root.Attributes["Class", XamlParser.X2009Uri];
-				if (rootClass == null)
-					return false;
-				classname = rootClass.Value;
-				return true;
+				if (rootClass != null) {
+					classname = rootClass.Value;
+					return true;
+				}
+
+				//no x:Class, but it might be a RD without x:Class and with <?xaml-comp compile="true" ?>
+				//in that case, it has a XamlResourceIdAttribute
+				var typeRef = GetTypeForResourceId(module, resource.Name);
+				if (typeRef != null) {
+					classname = typeRef.FullName;
+					return true;
+				}
+
+				return false;
 			}
+		}
+
+		static TypeReference GetTypeForResourceId(ModuleDefinition module, string resourceId)
+		{
+			foreach (var ca in module.GetCustomAttributes()) {
+				if (!TypeRefComparer.Default.Equals(ca.AttributeType, module.ImportReference(typeof(XamlResourceIdAttribute))))
+					continue;
+				if (ca.ConstructorArguments[0].Value as string != resourceId)
+					continue;
+				return ca.ConstructorArguments[2].Value as TypeReference;
+			}
+			return null;
 		}
 	}
 }

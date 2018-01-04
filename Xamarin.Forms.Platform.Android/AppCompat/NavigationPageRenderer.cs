@@ -38,10 +38,12 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		ActionBarDrawerToggle _drawerToggle;
 		FragmentManager _fragmentManager;
 		int _lastActionBarHeight = -1;
+		int _statusbarHeight;
 		AToolbar _toolbar;
 		ToolbarTracker _toolbarTracker;
 		DrawerMultiplexedListener _drawerListener;
 		DrawerLayout _drawerLayout;
+		MasterDetailPage _masterDetailPage;
 		bool _toolbarVisible;
 
 		// The following is based on https://android.googlesource.com/platform/frameworks/support/+/refs/heads/master/v4/java/android/support/v4/app/FragmentManager.java#849
@@ -85,7 +87,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			}
 		}
 
-		FragmentManager FragmentManager	=> _fragmentManager ?? (_fragmentManager = ((FormsAppCompatActivity)Context).SupportFragmentManager);
+		FragmentManager FragmentManager => _fragmentManager ?? (_fragmentManager = ((FormsAppCompatActivity)Context).SupportFragmentManager);
 
 		IPageController PageController => Element;
 
@@ -128,20 +130,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			{
 				_disposed = true;
 
-				// API only exists on newer android YAY
-				if ((int)Build.VERSION.SdkInt >= 17)
-				{
-					FragmentManager fm = FragmentManager;
-
-					if (!fm.IsDestroyed)
-					{
-						FragmentTransaction trans = fm.BeginTransaction();
-						foreach (Fragment fragment in _fragmentStack)
-							trans.Remove(fragment);
-						trans.CommitAllowingStateLoss();
-						fm.ExecutePendingTransactions();
-					}
-				}
 
 				if (_toolbarTracker != null)
 				{
@@ -206,6 +194,21 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				}
 
 				Device.Info.PropertyChanged -= DeviceInfoPropertyChanged;
+
+				// API only exists on newer android YAY
+				if ((int)Build.VERSION.SdkInt >= 17)
+				{
+					FragmentManager fm = FragmentManager;
+
+					if (!fm.IsDestroyed)
+					{
+						FragmentTransaction trans = fm.BeginTransaction();
+						foreach (Fragment fragment in _fragmentStack)
+							trans.Remove(fragment);
+						trans.CommitAllowingStateLoss();
+						fm.ExecutePendingTransactions();
+					}
+				}
 			}
 
 			base.Dispose(disposing);
@@ -370,7 +373,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			else
 				transaction.SetTransition((int)FragmentTransit.FragmentClose);
 		}
-		
+
 		internal int GetNavBarHeight()
 		{
 			if (!ToolbarVisible)
@@ -393,6 +396,14 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			if (actionBarHeight <= 0)
 				return Device.Info.CurrentOrientation.IsPortrait() ? (int)Context.ToPixels(56) : (int)Context.ToPixels(48);
+			
+			if (((Activity)Context).Window.Attributes.Flags.HasFlag(WindowManagerFlags.TranslucentStatus) || ((Activity)Context).Window.Attributes.Flags.HasFlag(WindowManagerFlags.TranslucentNavigation))
+			{
+				if (_toolbar.PaddingTop == 0)
+					_toolbar.SetPadding(0, GetStatusBarHeight(), 0, 0);
+
+				return actionBarHeight + GetStatusBarHeight();
+			}
 
 			return actionBarHeight;
 		}
@@ -407,6 +418,18 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			valueAnim.SetDuration(200);
 			valueAnim.Update += (s, a) => icon.Progress = (float)a.Animation.AnimatedValue;
 			valueAnim.Start();
+		}
+		
+		int GetStatusBarHeight()
+		{
+			if (_statusbarHeight > 0)
+				return _statusbarHeight;
+
+			int resourceId = Resources.GetIdentifier("status_bar_height", "dimen", "android");
+			if (resourceId > 0)
+				_statusbarHeight = Resources.GetDimensionPixelSize(resourceId);
+
+			return _statusbarHeight;
 		}
 
 		void AnimateArrowOut()
@@ -512,28 +535,28 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			AToolbar bar = _toolbar;
 			Element page = Element.RealParent;
 
-			MasterDetailPage masterDetailPage = null;
+			_masterDetailPage = null;
 			while (page != null)
 			{
 				if (page is MasterDetailPage)
 				{
-					masterDetailPage = page as MasterDetailPage;
+					_masterDetailPage = page as MasterDetailPage;
 					break;
 				}
 				page = page.RealParent;
 			}
 
-			if (masterDetailPage == null)
+			if (_masterDetailPage == null)
 			{
-				masterDetailPage = PageController.InternalChildren[0] as MasterDetailPage;
-				if (masterDetailPage == null)
+				_masterDetailPage = PageController.InternalChildren[0] as MasterDetailPage;
+				if (_masterDetailPage == null)
 					return;
 			}
 
-			if (((IMasterDetailPageController)masterDetailPage).ShouldShowSplitMode)
+			if (((IMasterDetailPageController)_masterDetailPage).ShouldShowSplitMode)
 				return;
 
-			var renderer = Android.Platform.GetRenderer(masterDetailPage) as MasterDetailPageRenderer;
+			var renderer = Android.Platform.GetRenderer(_masterDetailPage) as MasterDetailPageRenderer;
 			if (renderer == null)
 				return;
 
@@ -550,8 +573,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			_drawerListener = new DrawerMultiplexedListener { Listeners = { _drawerToggle, renderer } };
 			_drawerLayout.AddDrawerListener(_drawerListener);
-
-			_drawerToggle.DrawerIndicatorEnabled = true;
 		}
 
 		Fragment GetPageFragment(Page page)
@@ -606,6 +627,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			_toolbar = null;
 
 			SetupToolbar();
+			
+			// if the old toolbar had padding from transluscentflags, set it to the new toolbar
+			if (oldToolbar.PaddingTop != 0)
+				_toolbar.SetPadding(0, oldToolbar.PaddingTop, 0, 0);
+			
 			RegisterToolbar();
 			UpdateToolbar();
 			UpdateMenu();
@@ -668,7 +694,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 						transaction.Remove(currentToRemove);
 						popPage = popToRoot;
 					}
-					
+
 					Fragment toShow = _fragmentStack.Last();
 					// Execute pending transactions so that we can be sure the fragment list is accurate.
 					FragmentManager.ExecutePendingTransactions();
@@ -744,7 +770,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				return _fragmentStack[_fragmentStack.Count - 2];
 
 			// pop to root
-			if(popToRoot)
+			if (popToRoot)
 				return _fragmentStack[0];
 
 			// push
@@ -829,9 +855,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			}
 			else
 			{
-				if (toggle != null)
+				if (toggle != null && _masterDetailPage != null)
 				{
-					toggle.DrawerIndicatorEnabled = true;
+					toggle.DrawerIndicatorEnabled = _masterDetailPage.ShouldShowToolbarButton();
 					toggle.SyncState();
 				}
 			}

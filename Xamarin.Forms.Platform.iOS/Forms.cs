@@ -28,9 +28,6 @@ namespace Xamarin.Forms
 {
 	public static class Forms
 	{
-		//Preserve GetCallingAssembly
-		static readonly bool nevertrue = false;
-
 		public static bool IsInitialized { get; private set; }
 
 #if __MOBILE__
@@ -38,11 +35,6 @@ namespace Xamarin.Forms
 		static bool? s_isiOS10OrNewer;
 		static bool? s_isiOS11OrNewer;
 #endif
-		static Forms()
-		{
-			if (nevertrue)
-				Assembly.GetCallingAssembly();
-		}
 
 #if __MOBILE__
 		internal static bool IsiOS9OrNewer
@@ -101,8 +93,10 @@ namespace Xamarin.Forms
 
 #if __MOBILE__
 			Device.SetIdiom(UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad ? TargetIdiom.Tablet : TargetIdiom.Phone);
+			Device.SetFlowDirection(UIApplication.SharedApplication.UserInterfaceLayoutDirection.ToFlowDirection());
 #else
 			Device.SetIdiom(TargetIdiom.Desktop);
+			Device.SetFlowDirection(NSApplication.SharedApplication.UserInterfaceLayoutDirection.ToFlowDirection());
 #endif
 			Device.SetFlags(s_flags);
 			Device.PlatformServices = new IOSPlatformServices();
@@ -331,16 +325,15 @@ namespace Xamarin.Forms
 					return Task.FromResult(_isolatedStorageFile.GetLastWriteTime(path));
 				}
 
-				public Task<Stream> OpenFileAsync(string path, Internals.FileMode mode, Internals.FileAccess access)
+				public Task<Stream> OpenFileAsync(string path, FileMode mode, FileAccess access)
 				{
-					Stream stream = _isolatedStorageFile.OpenFile(path, (System.IO.FileMode)mode, (System.IO.FileAccess)access);
+					Stream stream = _isolatedStorageFile.OpenFile(path, mode, access);
 					return Task.FromResult(stream);
 				}
 
-				public Task<Stream> OpenFileAsync(string path, Internals.FileMode mode, Internals.FileAccess access, Internals.FileShare share)
+				public Task<Stream> OpenFileAsync(string path, FileMode mode, FileAccess access, FileShare share)
 				{
-					Stream stream = _isolatedStorageFile.OpenFile(path, (System.IO.FileMode)mode, (System.IO.FileAccess)access,
-						(System.IO.FileShare)share);
+					Stream stream = _isolatedStorageFile.OpenFile(path, mode, access, share);
 					return Task.FromResult(stream);
 				}
 			}
