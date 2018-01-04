@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -82,7 +82,7 @@ namespace Xamarin.Forms.Maps
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public MapSpan LastMoveToRegion { get; private set; }
+		public MapSpan LastMoveToRegion { get; set; }
 
 		IEnumerator IEnumerable.GetEnumerator()
 		{
