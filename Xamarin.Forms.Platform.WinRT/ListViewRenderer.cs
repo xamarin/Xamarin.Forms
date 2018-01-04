@@ -559,7 +559,12 @@ namespace Xamarin.Forms.Platform.WinRT
 		void OnListItemClicked(object sender, ItemClickEventArgs e)
 		{
 			if (e.ClickedItem != null)
-				OnListItemClicked(((WListView)e.OriginalSource).Items.IndexOf(e.ClickedItem));
+			{
+				var templatedItems = TemplatedItemsView.TemplatedItems;
+				var selectedItemIndex = templatedItems.GetGlobalIndexOfItem(e.ClickedItem);
+				
+				OnListItemClicked(selectedItemIndex);
+			}
 		}
 
 		void OnControlSelectionChanged(object sender, SelectionChangedEventArgs e)
