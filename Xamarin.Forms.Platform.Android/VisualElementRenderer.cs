@@ -21,6 +21,7 @@ namespace Xamarin.Forms.Platform.Android
 		string _defaultContentDescription;
 		bool? _defaultFocusable;
 		string _defaultHint;
+		bool _inputTransparentInherited = true;
 
 		VisualElementPackager _packager;
 		PropertyChangedEventHandler _propertyChangeHandler;
@@ -51,11 +52,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override bool DispatchTouchEvent(MotionEvent e)
 		{
-			if (InputTransparent)
+			if (InputTransparent && _inputTransparentInherited)
 			{
 				// If the Element is InputTransparent, this ViewGroup will be marked InputTransparent
-				// If we're InputTransparent we should return false on all touch events without
-				// even bothering to send them to the child Views
+				// If we're InputTransparent and our transparency should be applied to our child controls,
+				// we return false on all touch events without even bothering to send them to the child Views
 
 				return false; // IOW, not handled
 			}
@@ -192,6 +193,7 @@ namespace Xamarin.Forms.Platform.Android
 			SetContentDescription();
 			SetFocusable();
 			UpdateInputTransparent();
+			UpdateInputTransparentInherited();
 
 			Performance.Stop();
 		}
@@ -279,7 +281,8 @@ namespace Xamarin.Forms.Platform.Android
 				SetFocusable();
 			else if (e.PropertyName == VisualElement.InputTransparentProperty.PropertyName)
 				UpdateInputTransparent();
-			
+			else if (e.PropertyName == VisualElement.InputTransparentInheritedProperty.PropertyName)
+				UpdateInputTransparentInherited();
 
 			ElementPropertyChanged?.Invoke(this, e);
 		}
@@ -325,6 +328,11 @@ namespace Xamarin.Forms.Platform.Android
 		void UpdateInputTransparent()
 		{
 			InputTransparent = Element.InputTransparent;
+		}
+
+		void UpdateInputTransparentInherited()
+		{
+			_inputTransparentInherited = Element.InputTransparentInherited;
 		}
 
 		protected void SetPackager(VisualElementPackager packager)

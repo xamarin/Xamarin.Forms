@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
@@ -97,11 +98,12 @@ namespace Xamarin.Forms.Controls.Issues
 
 			bool overPressed = false;
 			bool underPressed = false;
+			bool layoutTapped = false;
 
 			underButton.Clicked += (sender, args) =>
 			{
 				underPressed = true;
-				UpdateResults(results, inherited, overPressed, underPressed);
+				EvaluateTest(results, inherited, overPressed, underPressed, layoutTapped);
 			};
 
 			var overButton = new Button
@@ -113,7 +115,7 @@ namespace Xamarin.Forms.Controls.Issues
 			overButton.Clicked += (sender, args) =>
 			{
 				overPressed = true;
-				UpdateResults(results, inherited, overPressed, underPressed);
+				EvaluateTest(results, inherited, overPressed, underPressed, layoutTapped);
 			};
 
 			var layout = new StackLayout
@@ -122,9 +124,19 @@ namespace Xamarin.Forms.Controls.Issues
 				HorizontalOptions = LayoutOptions.Fill,
 				VerticalOptions = LayoutOptions.Fill,
 				InputTransparent = true,
+				InputTransparentInherited = inherited,
 				BackgroundColor = Color.Blue,
 				Opacity = 0.2
 			};
+
+			layout.GestureRecognizers.Add(new TapGestureRecognizer()
+			{
+				Command = new Command(() =>
+				{
+					layoutTapped = true;
+					EvaluateTest(results, inherited, overPressed, underPressed, layoutTapped);
+				})
+			});
 
 			layout.Children.Add(overButton);
 
@@ -140,8 +152,14 @@ namespace Xamarin.Forms.Controls.Issues
 			return new ContentPage { Content = grid, Title = inherited.ToString()};
 		}
 
-		static void UpdateResults(Label results, bool inherited, bool overPressed, bool underPressed)
+		static void EvaluateTest(Label results, bool inherited, bool overPressed, bool underPressed, bool layoutTapped)
 		{
+			if (layoutTapped)
+			{
+				results.Text = Failure;
+				return;
+			}
+
 			if (inherited)
 			{
 				if (overPressed)
