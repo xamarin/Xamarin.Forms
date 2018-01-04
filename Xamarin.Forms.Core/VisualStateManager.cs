@@ -238,6 +238,11 @@ namespace Xamarin.Forms
 
 		void OnStatesChanged(IList<VisualState> list)
 		{
+			if (list.Any(state => string.IsNullOrEmpty(state.Name)))
+			{
+				throw new InvalidOperationException("State names may not be null or empty");
+			}
+
 			StatesChanged?.Invoke(this, EventArgs.Empty);
 		}
 	}

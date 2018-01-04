@@ -156,5 +156,25 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			Assert.Throws<InvalidOperationException>(() => vsgs.Add(secondGroup));
 		}
+
+		[Test]
+		public void StateNamesInGroupMayNotBeNull()
+		{
+			IList<VisualStateGroup> vsgs = CreateTestStateGroups();
+
+			var nullStateName = new VisualState();
+
+			Assert.Throws<InvalidOperationException>(() => vsgs[0].States.Add(nullStateName));
+		}
+
+		[Test]
+		public void StateNamesInGroupMayNotBeEmpty()
+		{
+			IList<VisualStateGroup> vsgs = CreateTestStateGroups();
+
+			var emptyStateName = new VisualState{Name = ""};
+
+			Assert.Throws<InvalidOperationException>(() => vsgs[0].States.Add(emptyStateName));
+		}
 	}
 }
