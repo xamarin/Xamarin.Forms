@@ -83,28 +83,28 @@ namespace Xamarin.Forms.Controls.Issues
 			}
 			RunningApp.SetOrientationPortrait ();
 			RunningApp.Screenshot ("Portrait");
-			RunningApp.Tap (q => q.Marked ("Toggle"));
+			RunningApp.Tap (q => q.Text ("Toggle"));
 			RunningApp.Screenshot ("Portrait Visible");
-			RunningApp.WaitForElement (q => q.Marked ("The Master is now visible"));
+			RunningApp.WaitForElement (q => q.Text ("The Master is now visible"));
 			Back();
 			RunningApp.Screenshot ("Portrait Invisible");
-			RunningApp.WaitForElement (q => q.Marked ("The Master is now invisible"));
+			RunningApp.WaitForElement (q => q.Text ("The Master is now invisible"));
 			RunningApp.SetOrientationLandscape ();
 			RunningApp.Screenshot ("Landscape Invisible");
 			RunningApp.WaitForElement (q => q.Marked ("The Master is now invisible"));
-			RunningApp.Tap (q => q.Marked ("Toggle"));
+			RunningApp.Tap (q => q.Text ("Toggle"));
 			RunningApp.Screenshot ("Landscape Visible");
-			RunningApp.WaitForElement (q => q.Marked ("The Master is now visible"));
+			RunningApp.WaitForElement (q => q.Text ("The Master is now visible"));
 			Back();
 			RunningApp.Screenshot ("Landscape InVisible");
-			RunningApp.WaitForElement (q => q.Marked ("The Master is now invisible"));
+			RunningApp.WaitForElement (q => q.Text ("The Master is now invisible"));
 			RunningApp.SetOrientationPortrait ();
-			RunningApp.Tap (q => q.Marked ("Toggle"));
+			RunningApp.Tap (q => q.Text ("Toggle"));
 			RunningApp.Screenshot ("Portrait Visible");
-			RunningApp.WaitForElement (q => q.Marked ("The Master is now visible"));
+			RunningApp.WaitForElement (q => q.Text("The Master is now visible"));
 			Back();
 			RunningApp.Screenshot ("Portrait Invisible");
-			RunningApp.WaitForElement (q => q.Marked ("The Master is now invisible"));
+			RunningApp.WaitForElement (q => q.Text("The Master is now invisible"));
 			RunningApp.SetOrientationLandscape ();
 		}
 

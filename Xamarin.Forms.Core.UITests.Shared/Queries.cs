@@ -54,11 +54,6 @@ namespace Xamarin.Forms.Core.UITests
 	{
 		#region Platform queries
 
-		public static Func<AppQuery, AppQuery> NavigationBarBackButton ()
-		{
-			return PlatformQueries.NavigationBarBackButton;
-		}
-
 		public static Func<AppQuery, AppQuery> PageWithoutNavigationBar ()
 		{
 			return PlatformQueries.PageWithoutNavigationBar;
