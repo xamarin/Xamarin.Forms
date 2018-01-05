@@ -1,4 +1,4 @@
-﻿namespace Xamarin.Forms
+namespace Xamarin.Forms
 {
     public interface ISwipeGestureController
     {
