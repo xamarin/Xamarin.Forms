@@ -52,7 +52,7 @@ namespace Xamarin.Forms.Platform.Android
 			_scrollStartedDelegate = panGestureHandler.OnPanStarted;
 			_scrollCompleteDelegate = panGestureHandler.OnPanComplete;
             _swipeDelegate = swipeGestureHandler.OnSwipe;
-            _swipeCompletedDelegate = swipeGestureHandler.OnSwipeComplete;
+           	_swipeCompletedDelegate = swipeGestureHandler.OnSwipeComplete;
 		}
 
 		bool HasAnyGestures()
