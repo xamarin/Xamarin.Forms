@@ -140,7 +140,13 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			return (UIViewController)Platform.GetRenderer(this.Platform.Page);
 		}
-
+		public override UIViewController ChildViewControllerForHomeIndicatorAutoHidden
+		{
+			get
+			{
+				return (UIViewController)Platform.GetRenderer(this.Platform.Page);
+			}
+		}
 		public override UIViewController ChildViewControllerForStatusBarStyle()
 		{
 			return ChildViewControllers?.LastOrDefault();
@@ -189,6 +195,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.ViewDidLoad();
 			SetNeedsStatusBarAppearanceUpdate();
+			SetNeedsUpdateOfHomeIndicatorAutoHidden();
 		}
 	}
 }
