@@ -1,9 +1,8 @@
-﻿using System.Drawing;
-using Windows.UI.Xaml.Media;
+﻿using Windows.UI.Xaml.Media;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	internal static class ConvertExtensions
+	public static class ColorExtensions
 	{
 		public static Brush ToBrush(this Color color)
 		{
