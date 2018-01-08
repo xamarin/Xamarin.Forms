@@ -326,6 +326,7 @@ namespace Xamarin.Forms.Platform.iOS
 			poppedViewController.Dispose();
 
 			UpdateToolBarVisible();
+			ViewDidLayoutSubviews();
 			return actuallyRemoved;
 		}
 
@@ -713,7 +714,6 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				try
 				{
-
 					var source = Internals.Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(masterDetailPage.Master.Icon);
 					var icon = await source.LoadImageAsync(masterDetailPage.Master.Icon);
 					containerController.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(icon, UIBarButtonItemStyle.Plain, handler);
