@@ -145,6 +145,8 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				HasAlpha = MainWindow.Alpha
 			};
+			BaseLayout.SetContent(_platform.InternalNaviframe);
+
 			if (_application != null)
 			{
 				_application.Platform = _platform;
