@@ -286,7 +286,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		/// </remarks>
 		/// <param name="dp"></param>
 		/// <returns></returns>
-		internal static int ConvertToPixel(double dp)
+		public static int ConvertToPixel(double dp)
 		{
 			return (int)Math.Round(dp * s_dpi.Value / 160.0);
 		}
@@ -300,7 +300,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		/// </remarks>
 		/// <param name="dp"></param>
 		/// <returns></returns>
-		internal static int ConvertToScaledPixel(double dp)
+		public static int ConvertToScaledPixel(double dp)
 		{
 			return (int)Math.Round(dp * Device.Info.ScalingFactor);
 		}
@@ -313,7 +313,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		/// </remarks>
 		/// <param name="pixel"></param>
 		/// <returns></returns>
-		internal static double ConvertToScaledDP(int pixel)
+		public static double ConvertToScaledDP(int pixel)
 		{
 			return pixel / Device.Info.ScalingFactor;
 		}
@@ -326,7 +326,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		/// </remarks>
 		/// <param name="pixel"></param>
 		/// <returns></returns>
-		internal static double ConvertToScaledDP(double pixel)
+		public static double ConvertToScaledDP(double pixel)
 		{
 			return pixel / Device.Info.ScalingFactor;
 		}
@@ -336,7 +336,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		/// </summary>
 		/// <param name="sp"></param>
 		/// <returns></returns>
-		internal static int ConvertToEflFontPoint(double sp)
+		public static int ConvertToEflFontPoint(double sp)
 		{
 			return (int)Math.Round(sp * s_elmScale.Value);
 		}
@@ -346,7 +346,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		/// </summary>
 		/// <param name="eflPt"></param>
 		/// <returns></returns>
-		internal static double ConvertToDPFont(int eflPt)
+		public static double ConvertToDPFont(int eflPt)
 		{
 			return eflPt / s_elmScale.Value;
 		}
@@ -355,7 +355,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		/// Get the EFL's profile
 		/// </summary>
 		/// <returns></returns>
-		internal static string GetProfile()
+		public static string GetProfile()
 		{
 			return s_profile.Value;
 		}
