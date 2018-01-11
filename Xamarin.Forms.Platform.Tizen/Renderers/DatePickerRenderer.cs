@@ -24,10 +24,10 @@ namespace Xamarin.Forms.Platform.Tizen
 				{
 					IsSingleLine = true,
 					HorizontalTextAlignment = Native.TextAlignment.Center,
+					InputPanelShowByOnDemand = true,
 				};
 				entry.SetVerticalTextAlignment("elm.text", 0.5);
-				entry.AllowFocus(false);
-				entry.Clicked += OnEntryClicked;
+				entry.TextBlockFocused += OnTextBlockFocused;
 				SetNativeControl(entry);
 
 				_lazyDialog = new Lazy<DateTimePickerDialog<Native.DatePicker>>(() =>
@@ -40,7 +40,6 @@ namespace Xamarin.Forms.Platform.Tizen
 					return dialog;
 				});
 			}
-
 			base.OnElementChanged(e);
 		}
 
@@ -55,7 +54,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				if (Control != null)
 				{
-					Control.Clicked -= OnEntryClicked;
+					Control.TextBlockFocused -= OnTextBlockFocused;
 				}
 				if (_lazyDialog.IsValueCreated)
 				{
@@ -66,7 +65,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			base.Dispose(disposing);
 		}
 
-		void OnEntryClicked(object sender, EventArgs e)
+		void OnTextBlockFocused(object sender, EventArgs e)
 		{
 			// For EFL Entry, the event will occur even if it is currently disabled.
 			// If the problem is resolved, no conditional statement is required.

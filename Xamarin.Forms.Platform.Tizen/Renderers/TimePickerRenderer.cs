@@ -4,7 +4,7 @@ using Xamarin.Forms.Platform.Tizen.Native;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
-	public class TimePickerRenderer : ViewRenderer<TimePicker, Native.EditfieldEntry>
+	public class TimePickerRenderer : ViewRenderer<TimePicker, EditfieldEntry>
 	{
 		//TODO need to add internationalization support
 		const string DialogTitle = "Choose Time";
@@ -29,11 +29,11 @@ namespace Xamarin.Forms.Platform.Tizen
 				{
 					IsSingleLine = true,
 					HorizontalTextAlignment = Native.TextAlignment.Center,
+					InputPanelShowByOnDemand = true,
 				};
 				entry.SetVerticalTextAlignment("elm.text", 0.5);
-				entry.AllowFocus(false);
+				entry.TextBlockFocused += OnTextBlockFocused;
 				SetNativeControl(entry);
-				Control.Clicked += OnClicked;
 
 				_lazyDialog = new Lazy<DateTimePickerDialog<Native.TimePicker>>(() =>
 				{
@@ -54,7 +54,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				if (Control != null)
 				{
-					Control.Clicked -= OnClicked;
+					Control.TextBlockFocused -= OnTextBlockFocused;
 				}
 				if (_lazyDialog.IsValueCreated)
 				{
@@ -71,7 +71,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			return Control.Measure(Control.MinimumWidth, Control.MinimumHeight).ToDP();
 		}
 
-		void OnClicked(object o, EventArgs e)
+		void OnTextBlockFocused(object o, EventArgs e)
 		{
 			// For EFL Entry, the event will occur even if it is currently disabled.
 			// If the problem is resolved, no conditional statement is required.
