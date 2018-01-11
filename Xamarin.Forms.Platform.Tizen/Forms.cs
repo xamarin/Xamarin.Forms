@@ -8,6 +8,7 @@ using ElmSharp;
 using Tizen.Applications;
 using TSystemInfo = Tizen.System.Information;
 using ELayout = ElmSharp.Layout;
+using DeviceOrientation = Xamarin.Forms.Internals.DeviceOrientation;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
@@ -35,6 +36,23 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			// 72.0 is from EFL which is using fixed DPI value (72.0) to determine font size internally. Thus, we are restoring the size by deviding the DPI by 72.0 here.
 			return s_dpi.Value / 72.0 / Elementary.GetScale();
+		});
+
+		static Lazy<DeviceOrientation> s_naturalOrientation = new Lazy<DeviceOrientation>(() =>
+		{
+			int width = 0;
+			int height = 0;
+			TSystemInfo.TryGetValue<int>("http://tizen.org/feature/screen.width", out width);
+			TSystemInfo.TryGetValue<int>("http://tizen.org/feature/screen.height", out height);
+
+			if (height >= width)
+			{
+				return DeviceOrientation.Portrait;
+			}
+			else
+			{
+				return DeviceOrientation.Landscape;
+			}
 		});
 
 		class TizenDeviceInfo : DeviceInfo
@@ -121,6 +139,8 @@ namespace Xamarin.Forms.Platform.Tizen
 			get;
 			private set;
 		}
+
+		public static DeviceOrientation NaturalOrientation => s_naturalOrientation.Value;
 
 		internal static TizenTitleBarVisibility TitleBarVisibility
 		{

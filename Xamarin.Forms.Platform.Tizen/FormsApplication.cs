@@ -9,6 +9,7 @@ using EButton = ElmSharp.Button;
 using EColor = ElmSharp.Color;
 using ELayout = ElmSharp.Layout;
 using EProgressBar = ElmSharp.ProgressBar;
+using DeviceOrientation = Xamarin.Forms.Internals.DeviceOrientation;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
@@ -177,26 +178,11 @@ namespace Xamarin.Forms.Platform.Tizen
 				Exit();
 			};
 
+			Device.Info.CurrentOrientation = MainWindow.GetDeviceOrientation();
+
 			MainWindow.RotationChanged += (sender, e) =>
 			{
-				switch (MainWindow.Rotation)
-				{
-					case 0:
-						Device.Info.CurrentOrientation = Internals.DeviceOrientation.PortraitUp;
-						break;
-
-					case 90:
-						Device.Info.CurrentOrientation = Internals.DeviceOrientation.LandscapeLeft;
-						break;
-
-					case 180:
-						Device.Info.CurrentOrientation = Internals.DeviceOrientation.PortraitDown;
-						break;
-
-					case 270:
-						Device.Info.CurrentOrientation = Internals.DeviceOrientation.LandscapeRight;
-						break;
-				}
+				Device.Info.CurrentOrientation = MainWindow.GetDeviceOrientation();
 			};
 
 			MainWindow.BackButtonPressed += (sender, e) =>
@@ -238,6 +224,27 @@ namespace Xamarin.Forms.Platform.Tizen
 			}
 
 			base.Exit();
+		}
+	}
+	static class WindowExtension
+	{
+		public static DeviceOrientation GetDeviceOrientation(this Window window)
+		{
+			DeviceOrientation orientation = DeviceOrientation.Other;
+			var isPortraitDevice = Forms.NaturalOrientation.IsPortrait();
+			switch (window.Rotation)
+			{
+				case 0:
+				case 180:
+					orientation = isPortraitDevice ? DeviceOrientation.Portrait : DeviceOrientation.Landscape;
+					break;
+
+				case 90:
+				case 270:
+					orientation = isPortraitDevice ? DeviceOrientation.Landscape : DeviceOrientation.Portrait;
+					break;
+			}
+			return orientation;
 		}
 	}
 }
