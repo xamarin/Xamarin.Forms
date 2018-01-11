@@ -159,11 +159,8 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 			set
 			{
-				if (_masterBehavior != value)
-				{
-					_masterBehavior = value;
-					UpdateMasterBehavior();
-				}
+				_masterBehavior = value;
+				UpdateMasterBehavior();
 			}
 		}
 
