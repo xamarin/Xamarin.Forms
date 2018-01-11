@@ -126,12 +126,11 @@ namespace Xamarin.Forms.Platform.Tizen
 
 			if (e.PropertyName == NavigationPage.CurrentPageProperty.PropertyName)
 			{
-				(_previousPage as IPageController)?.SendDisappearing();
-				_previousPage = Element.CurrentPage;
-				Device.StartTimer(TimeSpan.Zero, () =>
+				Device.BeginInvokeOnMainThread(() =>
 				{
+					(_previousPage as IPageController)?.SendDisappearing();
+					_previousPage = Element.CurrentPage;
 					(_previousPage as IPageController)?.SendAppearing();
-					return false;
 				});
 			}
 			else if (e.PropertyName == NavigationPage.BarTextColorProperty.PropertyName)
@@ -378,6 +377,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			if ((Element as IPageController).InternalChildren.Count == _naviFrame.NavigationStack.Count)
 			{
+				nre.Page?.SendDisappearing();
 				UpdateNavigationBar(PreviousPage, PreviousNaviItem);
 
 				if (nre.Animated)

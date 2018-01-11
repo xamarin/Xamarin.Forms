@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using ElmSharp;
-using ESize = ElmSharp.Size;
-using ERect = ElmSharp.Rect;
-using EFocusDirection = ElmSharp.FocusDirection;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Tizen.Native;
+using EFocusDirection = ElmSharp.FocusDirection;
+using ERect = ElmSharp.Rect;
+using ESize = ElmSharp.Size;
 using Specific = Xamarin.Forms.PlatformConfiguration.TizenSpecific.VisualElement;
 using XFocusDirection = Xamarin.Forms.PlatformConfiguration.TizenSpecific.FocusDirection;
 
@@ -131,6 +131,10 @@ namespace Xamarin.Forms.Platform.Tizen
 		/// the memory that the <see cref="Xamarin.Forms.Platform.Tizen.VisualElementRenderer"/> was occupying.</remarks>
 		public void Dispose()
 		{
+			// This is the reason why I call SendDisappearing() here.
+			// When OnChildRemove is called first like how it is called in Navigation.PopToRootAsync(),
+			// you can not controll using SendDisappearing() on the lower class.
+			(Element as IPageController)?.SendDisappearing();
 			Dispose(true);
 			GC.SuppressFinalize(this);
 		}

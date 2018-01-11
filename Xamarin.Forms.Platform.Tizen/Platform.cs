@@ -102,7 +102,6 @@ namespace Xamarin.Forms.Platform.Tizen
 				foreach (Page page in _navModel.Roots)
 				{
 					var renderer = GetRenderer(page);
-					(page as IPageController)?.SendDisappearing();
 					renderer?.Dispose();
 				}
 				_navModel = new NavigationModel();
@@ -238,7 +237,8 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		async Task INavigation.PushModalAsync(Page modal, bool animated)
 		{
-			CurrentPageController?.SendDisappearing();
+			var previousPage = CurrentPageController;
+			Device.BeginInvokeOnMainThread(()=> previousPage?.SendDisappearing());
 
 			_navModel.PushModal(modal);
 
@@ -259,8 +259,6 @@ namespace Xamarin.Forms.Platform.Tizen
 		async Task<Page> INavigation.PopModalAsync(bool animated)
 		{
 			Page modal = _navModel.PopModal();
-
-			((IPageController)modal).SendDisappearing();
 
 			IVisualElementRenderer modalRenderer = GetRenderer(modal);
 			if (modalRenderer != null)

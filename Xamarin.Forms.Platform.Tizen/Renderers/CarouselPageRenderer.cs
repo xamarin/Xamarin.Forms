@@ -141,6 +141,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			if (IsChangedByScroll())
 				return;
+			Element.UpdateFocusTreePolicy();
 
 			if (Element.CurrentPage != Element.Children[_pageIndex])
 			{
@@ -185,12 +186,10 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				EvasObject nativeView = Platform.GetOrCreateRenderer(page).NativeView;
 				_innerContainer.PackEnd(nativeView);
-				// if possible, make the subpage focusable, this ensures that there is something
-				// to focus on all pages and prevents the scroller from auto-scrolling to focused widget
-				(nativeView as ElmSharp.Widget)?.AllowFocus(true);
 			}
 			_pageIndex = Element.Children.IndexOf(Element.CurrentPage);
 			_scroller.ScrollTo(_pageIndex, 0, false);
+			Element.UpdateFocusTreePolicy();
 		}
 
 		/// <summary>

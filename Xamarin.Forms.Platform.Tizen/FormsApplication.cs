@@ -212,15 +212,14 @@ namespace Xamarin.Forms.Platform.Tizen
 				Log.Warn("Exit was already called or FormsApplication is not initialized yet.");
 				return;
 			}
-			// before everything is closed, inform the MainPage that it is disappearing
 			try
 			{
-				(_platform?.Page as IPageController)?.SendDisappearing();
+				_platform.Dispose();
 				_platform = null;
 			}
 			catch (Exception e)
 			{
-				Log.Error("Exception thrown from SendDisappearing: {0}", e.Message);
+				Log.Error("Exception thrown from Dispose: {0}", e.Message);
 			}
 
 			base.Exit();
