@@ -18,7 +18,11 @@ namespace Xamarin.Forms.Platform.Android
 		Color _defaultColor;
 
 		float PaddingLeft => _convertToPixels(8) / 2f; //<dimen name="button_padding_horizontal_material">8dp</dimen>
-		float PaddingTop { get => (_paddingTop / 2f) + ShadowDy; set => _paddingTop = value; } //can change based on font, so this is not a constant
+		float PaddingTop //can change based on font, so this is not a constant
+		{
+			get { return (_paddingTop / 2f) + ShadowDy; }
+			set { _paddingTop = value; }
+		} 
 
 		public ButtonDrawable(Func<double, float> convertToPixels, Color defaultColor)
 		{
