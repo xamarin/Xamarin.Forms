@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 9991436, "Button border not drawn on Android without a BorderRadius", PlatformAffected.Android)]
+	[Issue(IssueTracker.Github, 1436, "Button border not drawn on Android without a BorderRadius", PlatformAffected.Android)]
 	public class Issue1436 : TestContentPage
 	{
 		protected override void Init()
@@ -90,7 +90,7 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST
 		[Test]
 		[Category(UITestCategories.ManualReview)]
-		public void Issue1Test()
+		public void Issue1436Test()
 		{
 			RunningApp.Screenshot("I am at Issue 1436");
 		}
