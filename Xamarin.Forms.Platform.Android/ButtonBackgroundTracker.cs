@@ -1,6 +1,8 @@
 ﻿using System;
 using System.ComponentModel;
+using Android.Content.Res;
 using Android.Graphics.Drawables;
+using Android.OS;
 using AButton = Android.Widget.Button;
 
 namespace Xamarin.Forms.Platform.Android
@@ -9,6 +11,7 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		Drawable _defaultDrawable;
 		ButtonDrawable _backgroundDrawable;
+		RippleDrawable _rippleDrawable;
 		Button _button;
 		AButton _nativeButton;
 		bool _drawableEnabled;
@@ -39,7 +42,10 @@ namespace Xamarin.Forms.Platform.Android
 			if (_button == null || _nativeButton == null)
 				return;
 
-			if (_button.BackgroundColor == Color.Default)
+			if (_button.BackgroundColor == Color.Default 
+				&& _button.BorderRadius == (int)Button.BorderRadiusProperty.DefaultValue 
+				&& _button.BorderColor == Color.Default 
+				&& _button.BorderWidth == (double)Button.BorderWidthProperty.DefaultValue)
 			{
 				if (!_drawableEnabled)
 					return;
@@ -55,6 +61,7 @@ namespace Xamarin.Forms.Platform.Android
 					_backgroundDrawable = new ButtonDrawable(_nativeButton.Context.ToPixels);
 
 				_backgroundDrawable.Button = _button;
+				_backgroundDrawable.SetPaddingTop(_nativeButton.PaddingTop);
 
 				if (_drawableEnabled)
 					return;
@@ -62,7 +69,18 @@ namespace Xamarin.Forms.Platform.Android
 				if (_defaultDrawable == null)
 					_defaultDrawable = _nativeButton.Background;
 
-				_nativeButton.SetBackground(_backgroundDrawable);
+				if (Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
+				{
+					var rippleColor = _backgroundDrawable.PressedBackgroundColor.ToAndroid();
+
+					_rippleDrawable = new RippleDrawable(ColorStateList.ValueOf(rippleColor), _backgroundDrawable, null);
+					_nativeButton.SetBackground(_rippleDrawable);
+				}
+				else
+				{
+					_nativeButton.SetBackground(_backgroundDrawable);
+				}
+
 				_drawableEnabled = true;
 			}
 
@@ -76,6 +94,7 @@ namespace Xamarin.Forms.Platform.Android
 				_drawableEnabled = false;
 				_backgroundDrawable?.Reset();
 				_backgroundDrawable = null;
+				_rippleDrawable = null;
 			}
 		}
 
@@ -99,6 +118,8 @@ namespace Xamarin.Forms.Platform.Android
 					_backgroundDrawable = null;
 					_defaultDrawable?.Dispose();
 					_defaultDrawable = null;
+					_rippleDrawable?.Dispose();
+					_rippleDrawable = null;
 					if (_button != null)
 					{
 						_button.PropertyChanged -= ButtonPropertyChanged;
