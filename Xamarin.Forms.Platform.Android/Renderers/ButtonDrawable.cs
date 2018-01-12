@@ -15,14 +15,16 @@ namespace Xamarin.Forms.Platform.Android
 		bool _pressed;
 		Bitmap _pressedBitmap;
 		float _paddingTop;
+		Color _defaultColor;
 
 		float PaddingLeft => _convertToPixels(8) / 2f; //<dimen name="button_padding_horizontal_material">8dp</dimen>
 		float PaddingTop { get => (_paddingTop / 2f) + ShadowDy; set => _paddingTop = value; } //can change based on font, so this is not a constant
 
-		public ButtonDrawable(Func<double, float> convertToPixels)
+		public ButtonDrawable(Func<double, float> convertToPixels, Color defaultColor)
 		{
 			_convertToPixels = convertToPixels;
 			_pressed = false;
+			_defaultColor = defaultColor;
 		}
 
 		public Button Button { get; set; }
@@ -87,7 +89,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 		}
 
-		public Color BackgroundColor => Button.BackgroundColor == Color.Default ? Color.FromHex("#ffd6d7d7") : Button.BackgroundColor; //<color name="button_material_light">#ffd6d7d7</color>
+		public Color BackgroundColor => Button.BackgroundColor == Color.Default ? _defaultColor : Button.BackgroundColor; //<color name="button_material_light">#ffd6d7d7</color>
 		public Color PressedBackgroundColor => BackgroundColor.AddLuminosity(-.12);//<item name="highlight_alpha_material_light" format="float" type="dimen">0.12</item>
 
 		protected override void Dispose(bool disposing)

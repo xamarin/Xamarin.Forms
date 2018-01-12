@@ -58,7 +58,7 @@ namespace Xamarin.Forms.Platform.Android
 			else
 			{
 				if (_backgroundDrawable == null)
-					_backgroundDrawable = new ButtonDrawable(_nativeButton.Context.ToPixels);
+					_backgroundDrawable = new ButtonDrawable(_nativeButton.Context.ToPixels, ((IDefaultColorProvider)_nativeButton.Context).ButtonBackgroundColor);
 
 				_backgroundDrawable.Button = _button;
 				_backgroundDrawable.SetPaddingTop(_nativeButton.PaddingTop);
@@ -69,7 +69,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (_defaultDrawable == null)
 					_defaultDrawable = _nativeButton.Background;
 
-				if (Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
+				if (Forms.IsLollipopOrNewer)
 				{
 					var rippleColor = _backgroundDrawable.PressedBackgroundColor.ToAndroid();
 

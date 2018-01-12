@@ -13,7 +13,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class FormsApplicationActivity : Activity, IDeviceInfoProvider
+	public class FormsApplicationActivity : Activity, IDeviceInfoProvider, IDefaultColorProvider
 	{
 		public delegate bool BackButtonPressedEventHandler(object sender, EventArgs e);
 
@@ -24,6 +24,8 @@ namespace Xamarin.Forms.Platform.Android
 
 
 		AndroidApplicationLifecycleState _previousState;
+
+		Color IDefaultColorProvider.ButtonBackgroundColor => Color.FromHex("#5a595b");
 
 		protected FormsApplicationActivity()
 		{
