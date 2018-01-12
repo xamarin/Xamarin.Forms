@@ -771,6 +771,7 @@ namespace Xamarin.Forms.Platform.iOS
 						renderer?.Dispose();
 						renderer = null;
 					}
+					_prototype = null;
 
 					// Let the EstimatedHeight method know to use this value.
 					// Much more efficient than checking the value each time.
