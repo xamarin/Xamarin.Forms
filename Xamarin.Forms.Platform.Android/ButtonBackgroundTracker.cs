@@ -42,8 +42,8 @@ namespace Xamarin.Forms.Platform.Android
 			if (_button == null || _nativeButton == null)
 				return;
 
-			if (_button.BackgroundColor == Color.Default 
-				&& _button.BorderRadius == (int)Button.BorderRadiusProperty.DefaultValue 
+			if (_button.BackgroundColor == Color.Default
+				&& _button.BorderRadius == 2 // Default value for Android material button. (int)Button.BorderRadiusProperty.DefaultValue will return the constant value 5
 				&& _button.BorderColor == Color.Default 
 				&& _button.BorderWidth == (double)Button.BorderWidthProperty.DefaultValue)
 			{
