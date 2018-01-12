@@ -35,7 +35,14 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty BorderColorProperty = BindableProperty.Create("BorderColor", typeof(Color), typeof(Button), Color.Default);
 
-		public static readonly BindableProperty BorderRadiusProperty = BindableProperty.Create("BorderRadius", typeof(int), typeof(Button), 5);
+		public static readonly BindableProperty BorderRadiusProperty = BindableProperty.Create("BorderRadius", typeof(int), typeof(Button), defaultValue: 5, defaultValueCreator: bindable =>
+		{
+			//<dimen name="control_corner_material">2dp</dimen>
+			if (Device.RuntimePlatform == Device.Android)
+				return 2;
+			else
+				return 5;
+		});
 
 		public static readonly BindableProperty ImageProperty = BindableProperty.Create("Image", typeof(FileImageSource), typeof(Button), default(FileImageSource),
 			propertyChanging: (bindable, oldvalue, newvalue) => ((Button)bindable).OnSourcePropertyChanging((ImageSource)oldvalue, (ImageSource)newvalue),
