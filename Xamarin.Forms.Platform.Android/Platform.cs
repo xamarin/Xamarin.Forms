@@ -17,7 +17,6 @@ using Android.Widget;
 using Xamarin.Forms.Platform.Android.AppCompat;
 using FragmentManager = Android.Support.V4.App.FragmentManager;
 using Xamarin.Forms.Internals;
-using Debug = System.Diagnostics.Debug;
 
 namespace Xamarin.Forms.Platform.Android
 {
