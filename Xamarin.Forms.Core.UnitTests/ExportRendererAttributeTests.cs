@@ -61,5 +61,54 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			Assert.True(testExportRendererAttribute.ShouldRegister());
 		}
+
+		[Test]
+		public void ShouldRegister2()
+		{
+			// Remember that MajorVersion is set to 8.
+			var testExportRendererAttribute = new TestExportRendererAttribute(typeof(Entry), typeof(object))
+			{
+				MinimumSdkVersion = 6,
+				MaximumSdkVersion = 8
+			};
+
+			Assert.True(testExportRendererAttribute.ShouldRegister());
+		}
+
+		[Test]
+		public void ShouldRegister3()
+		{
+			var testExportRendererAttribute = new TestExportRendererAttribute(typeof(Entry), typeof(object))
+			{
+				MinimumSdkVersion = 8,
+				MaximumSdkVersion = 10
+			};
+
+			Assert.True(testExportRendererAttribute.ShouldRegister());
+		}
+
+		[Test]
+		public void ShouldNotRegister()
+		{
+			var testExportRendererAttribute = new TestExportRendererAttribute(typeof(Entry), typeof(object))
+			{
+				MinimumSdkVersion = 4,
+				MaximumSdkVersion = 6
+			};
+
+			Assert.False(testExportRendererAttribute.ShouldRegister());
+		}
+
+		[Test]
+		public void ShouldNotRegister2()
+		{
+			var testExportRendererAttribute = new TestExportRendererAttribute(typeof(Entry), typeof(object))
+			{
+				MinimumSdkVersion = 10,
+				MaximumSdkVersion = 12
+			};
+
+			Assert.False(testExportRendererAttribute.ShouldRegister());
+		}
 	}
 }
