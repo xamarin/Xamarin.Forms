@@ -145,6 +145,7 @@
     <Compile Include="TableViewUnitTests.cs" />
     <Compile Include="TapGestureRecognizerTests.cs" />
     <Compile Include="TemplatedItemsListTests.cs" />
+    <Compile Include="TestExportRendererAttribute.cs" />
     <Compile Include="TextCellTests.cs" />
     <Compile Include="ThicknessTests.cs" />
     <Compile Include="TimePickerUnitTest.cs" />
@@ -218,7 +219,5 @@
       <LogicalName>Images/crimson.jpg</LogicalName>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="StyleSheets\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

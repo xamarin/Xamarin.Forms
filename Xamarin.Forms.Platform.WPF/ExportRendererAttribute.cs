@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Xamarin.Forms.Core;
 
 namespace Xamarin.Forms.Platform.WPF
 {
 	[AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
-	public sealed class ExportRendererAttribute : HandlerAttribute
+	public sealed class ExportRendererAttribute : BaseExportRendererAttribute
 	{
 		public ExportRendererAttribute(Type handler, Type target) : base(handler, target)
 		{
+			MajorVersion = Environment.OSVersion.Version.Major;
 		}
 	}
 
