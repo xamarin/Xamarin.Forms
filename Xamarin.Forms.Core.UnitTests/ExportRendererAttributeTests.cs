@@ -12,7 +12,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	}
 
 	[TestFixture]
-	public class ExportRendererTests : BaseTestFixture
+	public class ExportRendererAttributeTests : BaseTestFixture
 	{
 		[Test]
 		public void InvalidMinimumSdkVersion()

@@ -145,7 +145,7 @@
     <Compile Include="TableViewUnitTests.cs" />
     <Compile Include="TapGestureRecognizerTests.cs" />
     <Compile Include="TemplatedItemsListTests.cs" />
-    <Compile Include="TestExportRendererAttribute.cs" />
+    <Compile Include="ExportRendererAttributeTests.cs" />
     <Compile Include="TextCellTests.cs" />
     <Compile Include="ThicknessTests.cs" />
     <Compile Include="TimePickerUnitTest.cs" />
