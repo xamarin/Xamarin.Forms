@@ -60,7 +60,7 @@ namespace Xamarin.Forms.Platform.Android
 			await TryUpdateBitmap(e.OldElement);
 
 			UpdateAspect();
-			SetTint();
+			UpdateTintColor();
 		}
 
 		protected override async void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -72,8 +72,8 @@ namespace Xamarin.Forms.Platform.Android
 			else if (e.PropertyName == Image.AspectProperty.PropertyName)
 				UpdateAspect();
 			else if (e.PropertyName == Image.TintColorProperty.PropertyName)
-				SetTint();
-			
+				UpdateTintColor();
+
 		}
 
 		void UpdateAspect()
@@ -125,18 +125,16 @@ namespace Xamarin.Forms.Platform.Android
 			return _motionEventHelper.HandleMotionEvent(Parent, e);
 		}
 
-		void SetTint()
+		void UpdateTintColor()
 		{
 			if (Control == null || Element == null)
 				return;
 
-			if (Element.TintColor.Equals(Xamarin.Forms.Color.Transparent))
+			if (Element.TintColor == Color.Transparent)
 			{
 				//Turn off tinting
-
 				if (Control.ColorFilter != null)
 					Control.ClearColorFilter();
-
 				return;
 			}
 

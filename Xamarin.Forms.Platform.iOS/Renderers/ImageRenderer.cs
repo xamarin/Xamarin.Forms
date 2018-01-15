@@ -65,7 +65,7 @@ namespace Xamarin.Forms.Platform.iOS
 				SetAspect();
 				await TrySetImage(e.OldElement);
 				SetOpacity();
-				SetTintColor();
+				UpdateTintColor();
 			}
 
 			base.OnElementChanged(e);
@@ -81,10 +81,10 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.PropertyName == Image.AspectProperty.PropertyName)
 				SetAspect();
 			else if (e.PropertyName == Image.TintColorProperty.PropertyName)
-				SetTintColor();
+				UpdateTintColor();
 		}
 
-		void SetTintColor()
+		void UpdateTintColor()
 		{
 
 
