@@ -1,6 +1,6 @@
 using System;
 using Xamarin.Forms.Core;
-using Information = Tizen.System.Information;
+using DotnetUtil = Tizen.Common.DotnetUtil;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
@@ -9,8 +9,7 @@ namespace Xamarin.Forms.Platform.Tizen
 	{
 		public ExportRendererAttribute(Type handler, Type target) : base(handler, target)
 		{
-			if(Information.TryGetValue("tizen.org/feature/platform.version", out string OSVersion))
-				MajorVersion = Convert.ToInt32(OSVersion.Split('.')[0]);
+			MajorVersion = DotnetUtil.TizenAPIVersion;
 		}
 	}
 }
