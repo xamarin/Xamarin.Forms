@@ -9,10 +9,10 @@ namespace Xamarin.Forms.Platform.UWP
 	{
 		public ExportRendererAttribute(Type handler, Type target) : base(handler, target)
 		{
-			MajorVersion = Convert.ToInt32(GetOSVersion().Split('.')[0]);
+			MajorVersion = Convert.ToInt32(GetSystemVersion().Split('.')[0]);
 		}
 
-		string GetOSVersion()
+		string GetSystemVersion()
 		{
 			string deviceFamilyVersion = AnalyticsInfo.VersionInfo.DeviceFamilyVersion;
 			ulong version = ulong.Parse(deviceFamilyVersion);

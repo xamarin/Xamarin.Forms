@@ -24,7 +24,7 @@ namespace Xamarin.Forms
 		public ExportRendererAttribute(Type handler, Type target) : base(handler, target)
 		{
 			Idiomatic = false;
-			MajorVersion = Convert.ToInt32(GetOSVersion().Split('.')[0]);
+			MajorVersion = Convert.ToInt32(GetSystemVersion().Split('.')[0]);
 		}
 
 		internal bool Idiomatic { get; }
@@ -41,7 +41,7 @@ namespace Xamarin.Forms
 #endif
 		}
 
-		string GetOSVersion()
+		string GetSystemVersion()
 		{
 #if __MOBILE__
 			return UIDevice.CurrentDevice.SystemVersion;
