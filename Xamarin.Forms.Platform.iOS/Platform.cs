@@ -480,6 +480,12 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			public override UIView HitTest(CGPoint point, UIEvent uievent)
 			{
+				if (!UserInteractionEnabled) 
+				{
+					// This view can't interact, and neither can its children
+					return null;
+				}
+
 				// UIview hit testing ignores objects which have an alpha of less than 0.01 
 				// (see https://developer.apple.com/reference/uikit/uiview/1622469-hittest)
 				// To prevent layouts with low opacity from being implicitly input transparent, 
@@ -498,6 +504,14 @@ namespace Xamarin.Forms.Platform.iOS
 				if (UserInteractionEnabled && old <= 0.01)
 				{
 					Alpha = old;
+				}
+
+				if (UserInteractionEnabled && !Element.InputTransparentInherited)
+				{
+					if (result.Equals(this))
+					{
+						return null;
+					}
 				}
 
 				return result;
