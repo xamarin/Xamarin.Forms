@@ -83,7 +83,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				e.PropertyName == VisualElement.RotationProperty.PropertyName || e.PropertyName == VisualElement.RotationXProperty.PropertyName || e.PropertyName == VisualElement.RotationYProperty.PropertyName ||
 				e.PropertyName == VisualElement.IsVisibleProperty.PropertyName || e.PropertyName == VisualElement.IsEnabledProperty.PropertyName ||
 				e.PropertyName == VisualElement.InputTransparentProperty.PropertyName || e.PropertyName == VisualElement.OpacityProperty.PropertyName || 
-				e.PropertyName == VisualElement.InputTransparentInheritedProperty.PropertyName)
+				e.PropertyName == Layout.InputTransparentInheritedProperty.PropertyName)
 				UpdateNativeControl(); // poorly optimized
 		}
 
@@ -115,15 +115,15 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			bool shouldInteract;
 
-			if (view is Layout)
+			if (view is Layout layout)
 			{
-				if (view.InputTransparent)
+				if (layout.InputTransparent)
 				{
-					shouldInteract = !view.InputTransparentInherited;
+					shouldInteract = !layout.InputTransparentInherited;
 				}
 				else
 				{
-					shouldInteract = view.IsEnabled;
+					shouldInteract = layout.IsEnabled;
 				}
 			}
 			else

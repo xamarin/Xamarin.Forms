@@ -13,9 +13,6 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty InputTransparentProperty = BindableProperty.Create("InputTransparent", typeof(bool), typeof(VisualElement), default(bool));
 
-		public static readonly BindableProperty InputTransparentInheritedProperty = BindableProperty.Create(
-			"InputTransparentInherited", typeof(bool), typeof(VisualElement), true);
-
 		public static readonly BindableProperty IsEnabledProperty = BindableProperty.Create("IsEnabled", typeof(bool), 
 			typeof(VisualElement), true, propertyChanged: OnIsEnabledPropertyChanged);
 
@@ -207,12 +204,6 @@ namespace Xamarin.Forms
 		{
 			get { return (bool)GetValue(InputTransparentProperty); }
 			set { SetValue(InputTransparentProperty, value); }
-		}
-
-		public bool InputTransparentInherited
-		{
-			get => (bool)GetValue(InputTransparentInheritedProperty);
-			set => SetValue(InputTransparentInheritedProperty, value);
 		}
 
 		public bool IsEnabled

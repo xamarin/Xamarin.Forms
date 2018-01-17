@@ -17,7 +17,9 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST
 	[Category(UITestCategories.InputTransparent)]
 #endif
-	
+
+	// TODO hartez 2018/01/17 15:58:40 Somewhere we need tests for when InputTransparentInherited changes	
+
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.None, 5552368, "Transparency Inheritance", PlatformAffected.All)]
     public class InputTransparentInheritance : TestNavigationPage

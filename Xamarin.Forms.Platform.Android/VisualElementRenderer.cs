@@ -281,7 +281,7 @@ namespace Xamarin.Forms.Platform.Android
 				SetFocusable();
 			else if (e.PropertyName == VisualElement.InputTransparentProperty.PropertyName)
 				UpdateInputTransparent();
-			else if (e.PropertyName == VisualElement.InputTransparentInheritedProperty.PropertyName)
+			else if (e.PropertyName == Xamarin.Forms.Layout.InputTransparentInheritedProperty.PropertyName)
 				UpdateInputTransparentInherited();
 
 			ElementPropertyChanged?.Invoke(this, e);
@@ -292,7 +292,6 @@ namespace Xamarin.Forms.Platform.Android
 			if (Element == null)
 				return;
 
-			ReadOnlyCollection<Element> children = ((IElementController)Element).LogicalChildren;
 			UpdateLayout(((IElementController)Element).LogicalChildren);
 		}
 
@@ -332,7 +331,14 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateInputTransparentInherited()
 		{
-			_inputTransparentInherited = Element.InputTransparentInherited;
+			var layout = Element as Layout;
+
+			if (layout == null)
+			{
+				return;
+			}
+
+			_inputTransparentInherited = layout.InputTransparentInherited;
 		}
 
 		protected void SetPackager(VisualElementPackager packager)
