@@ -437,8 +437,13 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			Color backgroundColor = Element.BackgroundColor;
 			var control = Control as Control;
-			
-			var container = _backgroundLayer ?? (Panel)this;
+
+			var container = (Panel)this;
+			if (_backgroundLayer != null)
+			{
+				container = _backgroundLayer;
+				Background = null;
+			}
 
 			if (control != null)
 			{
@@ -579,6 +584,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			_backgroundLayer = new Canvas { IsHitTestVisible = false };
 			Children.Insert(0, _backgroundLayer);
+			UpdateBackgroundColor();
 		}
 
 		void RemoveBackgroundLayer()
@@ -590,6 +596,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			Children.Remove(_backgroundLayer);
 			_backgroundLayer = null;
+			UpdateBackgroundColor();
 		}
 
 		internal static bool NeedsBackgroundLayer(VisualElement element)
