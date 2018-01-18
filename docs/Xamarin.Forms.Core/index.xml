@@ -440,6 +440,9 @@
       <Type Name="WebViewSource" Kind="Class" />
       <Type Name="WebViewSourceTypeConverter" Kind="Class" />
     </Namespace>
+    <Namespace Name="Xamarin.Forms.Core">
+      <Type Name="BaseExportRendererAttribute" Kind="Class" />
+    </Namespace>
     <Namespace Name="Xamarin.Forms.Internals">
       <Type Name="ActionSheetArguments" Kind="Class" />
       <Type Name="AlertArguments" Kind="Class" />
