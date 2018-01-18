@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using System.Threading.Tasks;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration;
@@ -18,8 +19,6 @@ namespace Xamarin.Forms.Controls.Issues
 	[Category(UITestCategories.InputTransparent)]
 #endif
 
-	// TODO hartez 2018/01/17 15:58:40 Somewhere we need tests for when InputTransparentInherited changes	
-
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.None, 5552368, "Transparency Inheritance", PlatformAffected.All)]
     public class InputTransparentInheritance : TestNavigationPage
@@ -30,6 +29,11 @@ namespace Xamarin.Forms.Controls.Issues
 		const string UnderButtonText = "Button";
 		const string OverButtonText = "+";
 		const string Overlay = "overlay";
+		
+		const string InheritedStatic = "Inherited";
+		const string InheritedChange = "Inherited (changes)";
+		const string NotInheritedStatic = "Not Inherited";
+		const string NotInheritedChange = "Not Inherited (changes)";
 
 		protected override void Init()
 		{
@@ -42,23 +46,28 @@ namespace Xamarin.Forms.Controls.Issues
 
 			layout.Children.Add(new Label {Text = "Select a test below"});
 
-			layout.Children.Add(MenuButton(true));
-			layout.Children.Add(MenuButton(false));
+			layout.Children.Add(MenuButton(true, false));
+			layout.Children.Add(MenuButton(false, false));
+			layout.Children.Add(MenuButton(true, true));
+			layout.Children.Add(MenuButton(false, true));
 
 			return new ContentPage { Content = layout };
 		}
 
-		Button MenuButton(bool inherited)
+		Button MenuButton(bool inherited, bool transition)
 		{
-			var text = inherited ? "Inherited" : "Not Inherited";
+			var text = inherited 
+				? transition ? InheritedChange : InheritedStatic 
+				: transition ? NotInheritedChange : NotInheritedStatic;
+
 			var button = new Button { Text = text, AutomationId = text };
 
-			button.Clicked += (sender, args) => PushAsync(CreateTestPage(inherited));
+			button.Clicked += (sender, args) => PushAsync(CreateTestPage(inherited, transition));
 
 			return button;
 		}
 
-		ContentPage CreateTestPage(bool inherited)
+		static ContentPage CreateTestPage(bool inherited, bool transition)
 		{
             var grid = new Grid
             {
@@ -75,7 +84,7 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				HorizontalOptions = LayoutOptions.Fill,
 				HorizontalTextAlignment = TextAlignment.Center,
-				Text = $"Tap the button labeled '{UnderButtonText}'. Then tap the button labeled '{OverButtonText}'."
+				Text = $"Wait 5 seconds. Tap the button labeled '{UnderButtonText}'. Then tap the button labeled '{OverButtonText}'."
 				       + $" If the label below's text changes to '{Success}' the test has passed."
 			};
 
@@ -151,7 +160,19 @@ namespace Xamarin.Forms.Controls.Issues
 			grid.Children.Add(layout);
 			Grid.SetRow(layout, 2);
 
-			return new ContentPage { Content = grid, Title = inherited.ToString()};
+			var page = new ContentPage { Content = grid, Title = inherited.ToString()};
+
+			if (transition)
+			{
+				page.Appearing += async (sender, args) =>
+				{
+					await Task.Delay(1000);
+					inherited = !inherited;
+					layout.InputTransparentInherited = inherited;
+				};
+			}
+
+			return page;
 		}
 
 		static void EvaluateTest(Label results, bool inherited, bool overPressed, bool underPressed, bool layoutTapped)
@@ -187,5 +208,22 @@ namespace Xamarin.Forms.Controls.Issues
 
 			results.Text = Running;
 		}
+
+#if UITEST
+		[Test, TestCaseSource(nameof(GenerateTests))]
+		public void TransparencyNotInherited(string test)
+		{
+			RunningApp.WaitForElement(test);
+			RunningApp.Tap(test);
+
+			RunningApp.WaitForElement(UnderButtonText);
+			RunningApp.Tap(UnderButtonText);
+			RunningApp.Tap(OverButtonText);
+
+			RunningApp.WaitForElement(Success);
+		}
+
+		static IEnumerable<string> GenerateTests => new List<string> { InheritedChange, InheritedStatic, NotInheritedChange, NotInheritedStatic };
+#endif
 	}
 }

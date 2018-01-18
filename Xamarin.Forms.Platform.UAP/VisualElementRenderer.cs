@@ -438,11 +438,11 @@ namespace Xamarin.Forms.Platform.UWP
 			Color backgroundColor = Element.BackgroundColor;
 			var control = Control as Control;
 
-			var container = (Panel)this;
+			var backgroundLayer = (Panel)this;
 			if (_backgroundLayer != null)
 			{
-				container = _backgroundLayer;
-				Background = null;
+				backgroundLayer = _backgroundLayer;
+				Background = null; // Make the container effectively hit test invisible
 			}
 
 			if (control != null)
@@ -460,11 +460,11 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				if (!backgroundColor.IsDefault)
 				{
-					container.Background = backgroundColor.ToBrush();
+					backgroundLayer.Background = backgroundColor.ToBrush();
 				}
 				else
 				{
-					container.ClearValue(BackgroundProperty);
+					backgroundLayer.ClearValue(BackgroundProperty);
 				}
 			}
 		}
@@ -581,6 +581,16 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				return;
 			}
+
+			// In UWP, once a control has hit testing disabled, all of its child controls
+			// also have hit testing disabled. The exception is a Panel with its 
+			// Background Brush set to `null`; the Panel will be invisible to hit testing, but its
+			// children will work just fine. 
+
+			// In order to handle the situation where we need the layout to be invisible to hit testing,
+			// the child controls to be visible to hit testing, *and* we need to support non-null
+			// background brushes, we insert another empty Panel which is invisible to hit testing; that
+			// Panel will be our Background color
 
 			_backgroundLayer = new Canvas { IsHitTestVisible = false };
 			Children.Insert(0, _backgroundLayer);
