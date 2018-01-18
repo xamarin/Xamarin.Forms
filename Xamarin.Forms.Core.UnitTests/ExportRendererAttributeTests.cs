@@ -7,7 +7,11 @@ namespace Xamarin.Forms.Core.UnitTests
 	{
 		public TestExportRendererAttribute(Type handler, Type target) : base(handler, target)
 		{
-			MajorVersion = 8;
+		}
+
+		public override int GetMajorVersion()
+		{
+			return 8;
 		}
 	}
 
