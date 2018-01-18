@@ -9,7 +9,11 @@ namespace Xamarin.Forms.Platform.Tizen
 	{
 		public ExportRendererAttribute(Type handler, Type target) : base(handler, target)
 		{
-			MajorVersion = DotnetUtil.TizenAPIVersion;
+		}
+
+		public override int GetMajorVersion()
+		{
+			return DotnetUtil.TizenAPIVersion;
 		}
 	}
 }

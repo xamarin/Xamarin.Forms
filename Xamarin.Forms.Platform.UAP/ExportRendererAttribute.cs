@@ -9,10 +9,9 @@ namespace Xamarin.Forms.Platform.UWP
 	{
 		public ExportRendererAttribute(Type handler, Type target) : base(handler, target)
 		{
-			MajorVersion = Convert.ToInt32(GetSystemVersion().Split('.')[0]);
 		}
 
-		string GetSystemVersion()
+		public override int GetMajorVersion()
 		{
 			string deviceFamilyVersion = AnalyticsInfo.VersionInfo.DeviceFamilyVersion;
 			ulong version = ulong.Parse(deviceFamilyVersion);
@@ -20,7 +19,7 @@ namespace Xamarin.Forms.Platform.UWP
 			ulong minor = (version & 0x0000FFFF00000000L) >> 32;
 			ulong build = (version & 0x00000000FFFF0000L) >> 16;
 			ulong revision = version & 0x000000000000FFFFL;
-			return $"{major}.{minor}.{build}.{revision}";
+			return Convert.ToInt32($"{major}.{minor}.{build}.{revision}".Split('.')[0]);
 		}
 	}
 

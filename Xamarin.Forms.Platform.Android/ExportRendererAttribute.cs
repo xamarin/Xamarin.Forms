@@ -9,7 +9,11 @@ namespace Xamarin.Forms
 	{
 		public ExportRendererAttribute(Type handler, Type target) : base(handler, target)
 		{
-			MajorVersion = (int)Build.VERSION.SdkInt;
+		}
+
+		public override int GetMajorVersion()
+		{
+			return (int)Build.VERSION.SdkInt;
 		}
 	}
 }

@@ -13,7 +13,7 @@ namespace Xamarin.Forms
 	public sealed class ExportRendererAttribute : BaseExportRendererAttribute
 	{
 #if __MOBILE__
-		public ExportRendererAttribute(Type handler, Type target, UIUserInterfaceIdiom idiom) : this(handler, target)
+		public ExportRendererAttribute(Type handler, Type target, UIUserInterfaceIdiom idiom) : base(handler, target)
 		{
 			Idiomatic = true;
 			Idiom = idiom;
@@ -24,7 +24,6 @@ namespace Xamarin.Forms
 		public ExportRendererAttribute(Type handler, Type target) : base(handler, target)
 		{
 			Idiomatic = false;
-			MajorVersion = Convert.ToInt32(GetSystemVersion().Split('.')[0]);
 		}
 
 		internal bool Idiomatic { get; }
@@ -41,12 +40,12 @@ namespace Xamarin.Forms
 #endif
 		}
 
-		string GetSystemVersion()
+		public override int GetMajorVersion()
 		{
 #if __MOBILE__
-			return UIDevice.CurrentDevice.SystemVersion;
+			return Convert.ToInt32(UIDevice.CurrentDevice.SystemVersion.Split('.')[0]);
 #else
-			return NSProcessInfo.ProcessInfo.OperatingSystemVersionString;
+			return Convert.ToInt32(NSProcessInfo.ProcessInfo.OperatingSystemVersionString.Split('.')[0]);
 #endif
 		}
 	}
