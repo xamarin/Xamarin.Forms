@@ -12,9 +12,32 @@ namespace Xamarin.Forms.Core.UnitTests
 		protected override int? MajorVersion => 8;
 	}
 
+	public class TestExportRendererAttribute2 : BaseExportRendererAttribute
+	{
+		public TestExportRendererAttribute2(Type handler, Type target) : base(handler, target)
+		{
+		}
+
+		protected override int? MajorVersion => null;
+	}
+
 	[TestFixture]
 	public class ExportRendererAttributeTests : BaseTestFixture
 	{
+		[Test]
+		public void NotUsingConditionalRegistration()
+		{
+			var testExportRendererAttribute = new TestExportRendererAttribute(typeof(Entry), typeof(object));
+
+			Assert.That(testExportRendererAttribute.MinimumSdkVersion == int.MinValue);
+			Assert.That(testExportRendererAttribute.MaximumSdkVersion == int.MaxValue);
+
+			Assert.DoesNotThrow(() =>
+			{
+				testExportRendererAttribute.ShouldRegister();
+			});
+		}
+
 		[Test]
 		public void InvalidMinimumSdkVersion()
 		{
@@ -110,6 +133,21 @@ namespace Xamarin.Forms.Core.UnitTests
 			};
 
 			Assert.False(testExportRendererAttribute.ShouldRegister());
+		}
+
+		[Test]
+		public void NullMajorVersionWhileMinMaxSdkVersionsSet()
+		{
+			var testExportRendererAttribute2 = new TestExportRendererAttribute2(typeof(Entry), typeof(object))
+			{
+				MinimumSdkVersion = 10,
+				MaximumSdkVersion = 12
+			};
+
+			Assert.Throws<ArgumentNullException>(() =>
+			{
+				testExportRendererAttribute2.ShouldRegister();
+			});
 		}
 	}
 }

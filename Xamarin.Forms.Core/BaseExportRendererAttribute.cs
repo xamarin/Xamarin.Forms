@@ -57,6 +57,9 @@ namespace Xamarin.Forms.Core
 			if (MinimumSdkVersion == int.MinValue && MaximumSdkVersion == int.MaxValue)
 				return base.ShouldRegister();
 
+			if (MajorVersion == null)
+				throw new ArgumentNullException($"Platform-specific implementation of {nameof(BaseExportRendererAttribute)} should set {nameof(MajorVersion)} properly.");
+
 			// Conditional registration is being used
 			if (MinimumSdkVersion <= MajorVersion && MajorVersion <= MaximumSdkVersion)
 				return base.ShouldRegister();
