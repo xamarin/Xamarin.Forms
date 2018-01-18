@@ -9,10 +9,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 		}
 
-		public override int GetMajorVersion()
-		{
-			return 8;
-		}
+		protected override int? MajorVersion => 8;
 	}
 
 	[TestFixture]

@@ -7,16 +7,24 @@ namespace Xamarin.Forms.Platform.UWP
 	[AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
 	public sealed class ExportRendererAttribute : BaseExportRendererAttribute
 	{
-		public ExportRendererAttribute(Type handler, Type target) : base(handler, target)
+		protected override int? MajorVersion
 		{
+			get
+			{
+				if (_majorVersion == null)
+				{
+					string deviceFamilyVersion = AnalyticsInfo.VersionInfo.DeviceFamilyVersion;
+					ulong version = ulong.Parse(deviceFamilyVersion);
+					ulong major = (version & 0xFFFF000000000000L) >> 48;
+					_majorVersion = (int)major;
+				}
+
+				return _majorVersion;
+			}
 		}
 
-		public override int GetMajorVersion()
+		public ExportRendererAttribute(Type handler, Type target) : base(handler, target)
 		{
-			string deviceFamilyVersion = AnalyticsInfo.VersionInfo.DeviceFamilyVersion;
-			ulong version = ulong.Parse(deviceFamilyVersion);
-			ulong major = (version & 0xFFFF000000000000L) >> 48;
-			return (int)major;
 		}
 	}
 

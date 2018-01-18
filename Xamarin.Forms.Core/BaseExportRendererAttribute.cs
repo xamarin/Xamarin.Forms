@@ -5,6 +5,12 @@ namespace Xamarin.Forms.Core
 	[AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
 	public abstract class BaseExportRendererAttribute : HandlerAttribute
 	{
+		#region MajorVersion
+		// not exposed publicly
+		protected int? _majorVersion;
+		protected abstract int? MajorVersion { get; }
+		#endregion
+
 		#region MinimumSdkVersion
 		int _minimumSdkVersion = int.MinValue;
 		public int MinimumSdkVersion
@@ -52,14 +58,10 @@ namespace Xamarin.Forms.Core
 				return base.ShouldRegister();
 
 			// Conditional registration is being used
-			var majorVersion = GetMajorVersion();
-
-			if (MinimumSdkVersion <= majorVersion && majorVersion <= MaximumSdkVersion)
+			if (MinimumSdkVersion <= MajorVersion && MajorVersion <= MaximumSdkVersion)
 				return base.ShouldRegister();
 
 			return false;
 		}
-
-		public abstract int GetMajorVersion();
 	}
 }
