@@ -91,8 +91,8 @@ namespace Xamarin.Forms
 
 		public bool InputTransparentInherited
 		{
-			get => (bool)GetValue(InputTransparentInheritedProperty);
-			set => SetValue(InputTransparentInheritedProperty, value);
+			get { return (bool)GetValue(InputTransparentInheritedProperty); }
+			set { SetValue(InputTransparentInheritedProperty, value); }
 		}
 
 		Thickness IPaddingElement.PaddingDefaultValueCreator()
