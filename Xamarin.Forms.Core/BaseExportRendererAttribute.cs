@@ -7,7 +7,7 @@ namespace Xamarin.Forms.Core
 	{
 		#region MajorVersion
 		// not exposed publicly
-		protected int? _majorVersion;
+		protected internal int? _majorVersion;
 		protected abstract int? MajorVersion { get; }
 		#endregion
 
