@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
+
 #if UITEST
 using Xamarin.Forms.Core.UITests;
 using Xamarin.UITest;
@@ -21,15 +18,15 @@ namespace Xamarin.Forms.Controls.Issues
 
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.None, 5552368, "Transparency Inheritance", PlatformAffected.All)]
-    public class InputTransparentInheritance : TestNavigationPage
-    {
+	public class InputTransparentInheritance : TestNavigationPage
+	{
 		const string Running = "Running...";
 		const string Success = "Success";
 		const string Failure = "Failure";
 		const string UnderButtonText = "Button";
 		const string OverButtonText = "+";
 		const string Overlay = "overlay";
-		
+
 		const string InheritedStatic = "Inherited";
 		const string InheritedChange = "Inherited (changes)";
 		const string NotInheritedStatic = "Not Inherited";
@@ -44,7 +41,7 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			var layout = new StackLayout();
 
-			layout.Children.Add(new Label {Text = "Select a test below"});
+			layout.Children.Add(new Label { Text = "Select a test below" });
 
 			layout.Children.Add(MenuButton(true, false));
 			layout.Children.Add(MenuButton(false, false));
@@ -56,9 +53,11 @@ namespace Xamarin.Forms.Controls.Issues
 
 		Button MenuButton(bool inherited, bool transition)
 		{
-			var text = inherited 
-				? transition ? InheritedChange : InheritedStatic 
-				: transition ? NotInheritedChange : NotInheritedStatic;
+			var text = inherited
+				? transition ? InheritedChange : InheritedStatic
+				: transition
+					? NotInheritedChange
+					: NotInheritedStatic;
 
 			var button = new Button { Text = text, AutomationId = text };
 
@@ -69,36 +68,37 @@ namespace Xamarin.Forms.Controls.Issues
 
 		static ContentPage CreateTestPage(bool inherited, bool transition)
 		{
-            var grid = new Grid
-            {
-                AutomationId = "testgrid",
+			var grid = new Grid
+			{
+				AutomationId = "testgrid",
 				HorizontalOptions = LayoutOptions.Fill,
 				VerticalOptions = LayoutOptions.Fill
 			};
 
 			grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-            grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+			grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 			grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Star });
 
 			var instructions = new Label
 			{
 				HorizontalOptions = LayoutOptions.Fill,
 				HorizontalTextAlignment = TextAlignment.Center,
-				Text = $"Wait 5 seconds. Tap the button labeled '{UnderButtonText}'. Then tap the button labeled '{OverButtonText}'."
-				       + $" If the label below's text changes to '{Success}' the test has passed."
+				Text =
+					$"Wait 5 seconds. Tap the button labeled '{UnderButtonText}'. Then tap the button labeled '{OverButtonText}'."
+					+ $" If the label below's text changes to '{Success}' the test has passed."
 			};
 
 			grid.Children.Add(instructions);
 
-            var results = new Label 
-            { 
-                HorizontalOptions = LayoutOptions.Fill,
-                HorizontalTextAlignment = TextAlignment.Center, 
-                Text = Running 
-            };
+			var results = new Label
+			{
+				HorizontalOptions = LayoutOptions.Fill,
+				HorizontalTextAlignment = TextAlignment.Center,
+				Text = Running
+			};
 
-            grid.Children.Add(results);
-            Grid.SetRow(results, 1);
+			grid.Children.Add(results);
+			Grid.SetRow(results, 1);
 
 			var underButton = new Button
 			{
@@ -131,7 +131,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var layout = new StackLayout
 			{
-                AutomationId = Overlay,
+				AutomationId = Overlay,
 				HorizontalOptions = LayoutOptions.Fill,
 				VerticalOptions = LayoutOptions.Fill,
 				InputTransparent = true,
@@ -140,7 +140,7 @@ namespace Xamarin.Forms.Controls.Issues
 				Opacity = 0.2
 			};
 
-			layout.GestureRecognizers.Add(new TapGestureRecognizer()
+			layout.GestureRecognizers.Add(new TapGestureRecognizer
 			{
 				Command = new Command(() =>
 				{
@@ -160,7 +160,7 @@ namespace Xamarin.Forms.Controls.Issues
 			grid.Children.Add(layout);
 			Grid.SetRow(layout, 2);
 
-			var page = new ContentPage { Content = grid, Title = inherited.ToString()};
+			var page = new ContentPage { Content = grid, Title = inherited.ToString() };
 
 			if (transition)
 			{
