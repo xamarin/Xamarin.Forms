@@ -41,39 +41,39 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			RunningApp.SetOrientationPortrait();
 
-            RunningApp.Tap(x => x.Marked("Picker"));
-            CheckPickerAccessory("UIPickerView");
-            RunningApp.SetOrientationLandscape();
-            CheckPickerAccessory("UIPickerView");
-            RunningApp.SetOrientationPortrait();
-            RunningApp.DismissKeyboard();
+			RunningApp.Tap(x => x.Marked("Picker"));
+			CheckPickerAccessory("UIPickerView");
+			RunningApp.SetOrientationLandscape();
+			CheckPickerAccessory("UIPickerView");
+			RunningApp.SetOrientationPortrait();
+			RunningApp.DismissKeyboard();
 
-            RunningApp.Tap(x => x.Marked("DatePicker"));
-            CheckPickerAccessory("UIDatePicker");
-            RunningApp.SetOrientationLandscape();
-            CheckPickerAccessory("UIDatePicker");
-            RunningApp.SetOrientationPortrait();
-            RunningApp.DismissKeyboard();
+			RunningApp.Tap(x => x.Marked("DatePicker"));
+			CheckPickerAccessory("UIDatePicker");
+			RunningApp.SetOrientationLandscape();
+			CheckPickerAccessory("UIDatePicker");
+			RunningApp.SetOrientationPortrait();
+			RunningApp.DismissKeyboard();
 
-            RunningApp.Tap(x => x.Marked("TimePicker"));
-            CheckPickerAccessory("UIDatePicker");
-            RunningApp.SetOrientationLandscape();
-            CheckPickerAccessory("UIDatePicker");
-            RunningApp.SetOrientationPortrait();
-            RunningApp.DismissKeyboard();
-        }
+			RunningApp.Tap(x => x.Marked("TimePicker"));
+			CheckPickerAccessory("UIDatePicker");
+			RunningApp.SetOrientationLandscape();
+			CheckPickerAccessory("UIDatePicker");
+			RunningApp.SetOrientationPortrait();
+			RunningApp.DismissKeyboard();
+		}
 
-        private void CheckPickerAccessory(string className)
-        {
-            RunningApp.WaitForElement(x => x.Class("UIButtonLabel"));
-            var buttonRect = RunningApp.Query(x => x.Class("UIButtonLabel"))[0].Rect;
-            var pickerRect = RunningApp.Query(x => x.Class(className))[0].Rect;
+		private void CheckPickerAccessory(string className)
+		{
+			RunningApp.WaitForElement(x => x.Class("UIButtonLabel"));
+			var buttonRect = RunningApp.Query(x => x.Class("UIButtonLabel"))[0].Rect;
+			var pickerRect = RunningApp.Query(x => x.Class(className))[0].Rect;
 
-            var buttonBottom = buttonRect.Y + buttonRect.Height;
-            var pickerTop = pickerRect.Y;
+			var buttonBottom = buttonRect.Y + buttonRect.Height;
+			var pickerTop = pickerRect.Y;
 
-            Assert.IsTrue(buttonBottom <= pickerTop);
-        }
+			Assert.IsTrue(buttonBottom <= pickerTop);
+		}
 #endif
 	}
 }
