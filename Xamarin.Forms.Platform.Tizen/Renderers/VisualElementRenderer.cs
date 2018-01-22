@@ -551,11 +551,6 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 		}
 
-		protected void DoLayout(Native.LayoutEventArgs e)
-		{
-			Element.Layout(e.Geometry.ToDP());
-		}
-
 		protected virtual Size MinimumSize()
 		{
 			return new ESize(NativeView.MinimumWidth, NativeView.MinimumHeight).ToDP();
