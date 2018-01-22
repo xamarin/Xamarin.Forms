@@ -41,21 +41,22 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			RunningApp.SetOrientationPortrait();
 
-			RunningApp.Tap(x => x.Marked("Picker"));
+			RunningApp.WaitForElement(x => x.Class("UITextField"));
+			RunningApp.Tap(x => x.Class("UITextField").Index(0));
 			CheckPickerAccessory("UIPickerView");
 			RunningApp.SetOrientationLandscape();
 			CheckPickerAccessory("UIPickerView");
 			RunningApp.SetOrientationPortrait();
 			RunningApp.DismissKeyboard();
 
-			RunningApp.Tap(x => x.Marked("DatePicker"));
+			RunningApp.Tap(x => x.Class("UITextField").Index(1));
 			CheckPickerAccessory("UIDatePicker");
 			RunningApp.SetOrientationLandscape();
 			CheckPickerAccessory("UIDatePicker");
 			RunningApp.SetOrientationPortrait();
 			RunningApp.DismissKeyboard();
 
-			RunningApp.Tap(x => x.Marked("TimePicker"));
+			RunningApp.Tap(x => x.Class("UITextField").Index(2));
 			CheckPickerAccessory("UIDatePicker");
 			RunningApp.SetOrientationLandscape();
 			CheckPickerAccessory("UIDatePicker");
