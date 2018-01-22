@@ -1,6 +1,6 @@
 namespace Xamarin.Forms
 {
-	[Flags]
+    [Flags]
     public enum SwipeDirection
     {
         Right = 1,
