@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration;
@@ -209,8 +210,10 @@ namespace Xamarin.Forms.Controls.Issues
 			results.Text = Running;
 		}
 
+		static IEnumerable<string> TestList => new List<string> { InheritedChange, InheritedStatic, NotInheritedChange, NotInheritedStatic };
+
 #if UITEST
-		[Test, TestCaseSource(nameof(GenerateTests))]
+		[Test, TestCaseSource(nameof(TestList))]
 		public void TransparencyNotInherited(string test)
 		{
 			RunningApp.WaitForElement(test);
@@ -223,7 +226,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement(Success);
 		}
 
-		static IEnumerable<string> GenerateTests => new List<string> { InheritedChange, InheritedStatic, NotInheritedChange, NotInheritedStatic };
+		
 #endif
 	}
 }
