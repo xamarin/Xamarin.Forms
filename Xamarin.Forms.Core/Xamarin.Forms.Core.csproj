@@ -8,5 +8,9 @@
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj" />
   </ItemGroup>
-
+  <ItemGroup>
+    <Compile Remove="Internals\Legacy\FileAccess.cs" />
+    <Compile Remove="Internals\Legacy\FileMode.cs" />
+    <Compile Remove="Internals\Legacy\FileShare.cs" />
+  </ItemGroup>
 </Project>

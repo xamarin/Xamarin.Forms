@@ -391,7 +391,7 @@ namespace Xamarin.Forms
 		{
 			return new Color(h, s, l, a, Mode.Hsl);
 		}
-
+#if !PCL
 		public static implicit operator System.Drawing.Color(Color color)
 		{
 			if (color.IsDefault)
@@ -405,8 +405,8 @@ namespace Xamarin.Forms
 				return Color.Default;
 			return FromRgba(color.R, color.G, color.B, color.A);
 		}
-
-		#region Color Definitions
+#endif
+#region Color Definitions
 
 		// matches colors in WPF's System.Windows.Media.Colors
 		public static readonly Color AliceBlue = FromRgb(240, 248, 255);
@@ -553,6 +553,6 @@ namespace Xamarin.Forms
 		public static readonly Color Yellow = FromRgb(255, 255, 0);
 		public static readonly Color YellowGreen = FromRgb(154, 205, 50);
 
-		#endregion
+#endregion
 	}
 }

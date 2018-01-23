@@ -11,13 +11,14 @@
     <TargetFrameworkProfile>Profile259</TargetFrameworkProfile>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
+	<BaseIntermediateOutputPath>obj_pcl</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
+    <OutputPath>bin_pcl\Debug</OutputPath>
+	<DefineConstants>DEBUG;PCL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -26,9 +27,10 @@
     </NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>full</DebugType>
+    <DebugType></DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release</OutputPath>
+    <OutputPath>bin_pcl\Release</OutputPath>
+	<DefineConstants>PCL</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -38,13 +40,13 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Turkey|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\Turkey\</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
+    <OutputPath>bin_pcl\Turkey</OutputPath>
+	<DefineConstants>DEBUG;PCL</DefineConstants>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>
     </NoWarn>
     <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>anycpu</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
@@ -99,7 +101,6 @@
     <Compile Include="LockableObservableListWrapper.cs" />
     <Compile Include="PlatformConfiguration\AndroidSpecific\AppCompat\Application.cs" />
     <Compile Include="PlatformConfiguration\AndroidSpecific\Application.cs" />
-    <Compile Include="PlatformConfiguration\AndroidSpecific\Elevation.cs" />
     <Compile Include="PlatformConfiguration\AndroidSpecific\TabbedPage.cs" />
     <Compile Include="PlatformConfiguration\ExtensionPoints.cs" />
     <Compile Include="PlatformConfiguration\iOSSpecific\BlurEffectStyle.cs" />
@@ -140,10 +141,7 @@
     <Compile Include="Internals\EvalRequested.cs" />
     <Compile Include="ExportEffectAttribute.cs" />
     <Compile Include="ExpressionSearch.cs" />
-    <Compile Include="FileAccess.cs" />
     <Compile Include="FileImageSourceConverter.cs" />
-    <Compile Include="FileMode.cs" />
-    <Compile Include="FileShare.cs" />
     <Compile Include="FontAttributes.cs" />
     <Compile Include="FontSizeConverter.cs" />
     <Compile Include="FontTypeConverter.cs" />
@@ -474,6 +472,39 @@
     <Compile Include="PlatformConfiguration\macOSSpecific\NavigationPage.cs" />
     <Compile Include="PlatformConfiguration\macOSSpecific\NavigationTransitionStyle.cs" />
     <Compile Include="PlatformConfiguration\iOSSpecific\LargeTitleDisplayMode.cs" />
+    <Compile Include="Internals\Legacy\FileAccess.cs" />
+    <Compile Include="Internals\Legacy\FileMode.cs" />
+    <Compile Include="Internals\Legacy\FileShare.cs" />
+    <Compile Include="IBorderElement.cs" />
+    <Compile Include="IFlowDirectionController.cs" />
+    <Compile Include="EffectiveFlowDirection.cs" />
+    <Compile Include="EffectiveFlowDirectionExtensions.cs" />
+    <Compile Include="Element_StyleSheets.cs" />
+    <Compile Include="StyleSheets\CharExtensions.cs" />
+    <Compile Include="StyleSheets\CssReader.cs" />
+    <Compile Include="StyleSheets\IStyleSelectable.cs" />
+    <Compile Include="StyleSheets\Selector.cs" />
+    <Compile Include="StyleSheets\Style.cs" />
+    <Compile Include="StyleSheets\StylePropertyAttribute.cs" />
+    <Compile Include="StyleSheets\StyleSheet.cs" />
+    <Compile Include="StyleSheets\StyleSheetExtensions.cs" />
+    <Compile Include="StyleSheets\StyleSheetServiceProvider.cs" />
+    <Compile Include="StyleSheets\TextReaderExtensions.cs" />
+    <Compile Include="IPaddingElement.cs" />
+    <Compile Include="BorderElement.cs" />
+    <Compile Include="ITextAlignmentElement.cs" />
+    <Compile Include="PaddingElement.cs" />
+    <Compile Include="TextAlignmentElement.cs" />
+    <Compile Include="Xaml\IResourcesLoader.cs" />
+    <Compile Include="Xaml\XamlResourceIdAttribute.cs" />
+    <Compile Include="TypeConversionAttribute.cs" />
+    <Compile Include="VisualElement_StyleSheet.cs" />
+    <Compile Include="FlowDirection.cs" />
+    <Compile Include="ReferenceTypeConverter.cs" />
+    <Compile Include="IConverterOptions.cs" />
+    <Compile Include="VisualStateManager.cs" />
+    <Compile Include="RuntimeNamePropertyAttribute.cs" />
+    <Compile Include="Internals\INamescopeProvider.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <ItemGroup />
@@ -484,4 +515,10 @@
   <ItemGroup />
   <ItemGroup />
   <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.PCL.csproj">
+      <Project>{67F9D3A8-F71E-4428-913F-C37AE82CDB24}</Project>
+      <Name>Xamarin.Forms.Platform.PCL</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>

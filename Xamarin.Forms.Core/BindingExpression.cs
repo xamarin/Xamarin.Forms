@@ -295,7 +295,8 @@ namespace Xamarin.Forms
 					property = sourceType.BaseType.GetProperty(indexerName);
 				if (property == null) //is the indexer defined on implemented interface ?
 				{
-					foreach (var implementedInterface in sourceType.ImplementedInterfaces) {
+					foreach (var implementedInterface in sourceType.ImplementedInterfaces)
+					{
 						property = implementedInterface.GetProperty(indexerName);
 						if (property != null)
 							break;
@@ -363,12 +364,12 @@ namespace Xamarin.Forms
 						}
 					}
 				}
-
+#if !PCL
 				TupleElementNamesAttribute tupleEltNames;
-				if (   property != null
-				    && part.NextPart != null
+				if (property != null
+					&& part.NextPart != null
 					&& property.PropertyType.IsGenericType
-					&& (   property.PropertyType.GetGenericTypeDefinition() == typeof(ValueTuple<>)
+					&& (property.PropertyType.GetGenericTypeDefinition() == typeof(ValueTuple<>)
 						|| property.PropertyType.GetGenericTypeDefinition() == typeof(ValueTuple<,>)
 						|| property.PropertyType.GetGenericTypeDefinition() == typeof(ValueTuple<,,>)
 						|| property.PropertyType.GetGenericTypeDefinition() == typeof(ValueTuple<,,,>)
@@ -388,10 +389,12 @@ namespace Xamarin.Forms
 						nextPart.Content = index.ToString();
 					}
 				}
+#endif
 			}
-		}
 
+		}
 		static Type[] DecimalTypes = new[] { typeof(float), typeof(decimal), typeof(double) };
+
 		bool TryConvert(BindingExpressionPart part, ref object value, Type convertTo, bool toTarget)
 		{
 			if (value == null)
@@ -466,7 +469,7 @@ namespace Xamarin.Forms
 			}
 
 			public void SubscribeTo(INotifyPropertyChanged source, PropertyChangedEventHandler listener)
-			{ 
+			{
 				source.PropertyChanged += _handler;
 				_source.SetTarget(source);
 				_listener.SetTarget(listener);
@@ -475,7 +478,7 @@ namespace Xamarin.Forms
 			public void Unsubscribe()
 			{
 				INotifyPropertyChanged source;
-				if (_source.TryGetTarget(out source) && source!=null)
+				if (_source.TryGetTarget(out source) && source != null)
 					source.PropertyChanged -= _handler;
 				_source.SetTarget(null);
 				_listener.SetTarget(null);
