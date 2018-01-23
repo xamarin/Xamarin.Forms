@@ -509,7 +509,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (UserInteractionEnabled && Element is Layout layout && !layout.InputTransparentInherited)
 				{
 					// This is a Layout with 'InputTransparent = true' and 'InputTransparentInherited = false'
-					if (result.Equals(this))
+					if (this.Equals(result))
 					{
 						// If the hit is on the Layout (and not a child control), then ignore it
 						return null;

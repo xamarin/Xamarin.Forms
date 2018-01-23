@@ -13,9 +13,9 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-#if UITEST
+	#if UITEST
 	[Category(UITestCategories.InputTransparent)]
-#endif
+	#endif
 
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.None, 5552368, "Transparency Inheritance", PlatformAffected.All)]
@@ -57,8 +57,8 @@ namespace Xamarin.Forms.Controls.Issues
 			var text = inherited
 				? transition ? InheritedChange : InheritedStatic
 				: transition
-					? NotInheritedChange
-					: NotInheritedStatic;
+				? NotInheritedChange
+				: NotInheritedStatic;
 
 			var button = new Button { Text = text, AutomationId = text };
 
@@ -87,7 +87,7 @@ namespace Xamarin.Forms.Controls.Issues
 				Text =
 					$"Wait 5 seconds. Tap the button labeled '{UnderButtonText}'. Then tap the button labeled '{OverButtonText}'."
 					+ $" If the label below's text changes to '{Success}' the test has passed."
-			};
+				};
 
 			grid.Children.Add(instructions);
 
@@ -212,12 +212,14 @@ namespace Xamarin.Forms.Controls.Issues
 
 		static IEnumerable<string> TestList => new List<string> { InheritedChange, InheritedStatic, NotInheritedChange, NotInheritedStatic };
 
-#if UITEST
+		#if UITEST
 		[Test, TestCaseSource(nameof(TestList))]
 		public void TransparencyNotInherited(string test)
 		{
 			RunningApp.WaitForElement(test);
 			RunningApp.Tap(test);
+
+			Task.Delay(2000).Wait();
 
 			RunningApp.WaitForElement(UnderButtonText);
 			RunningApp.Tap(UnderButtonText);
@@ -226,7 +228,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement(Success);
 		}
 
-		
-#endif
+
+		#endif
 	}
 }
