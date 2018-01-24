@@ -29,7 +29,7 @@ using System.Threading.Tasks;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class FormsAppCompatActivity : AppCompatActivity, IDeviceInfoProvider, IDefaultColorProvider
+	public class FormsAppCompatActivity : AppCompatActivity, IDeviceInfoProvider
 	{
 		public delegate bool BackButtonPressedEventHandler(object sender, EventArgs e);
 
@@ -377,8 +377,6 @@ namespace Xamarin.Forms.Platform.Android
 		public static int TabLayoutResource { get; set; }
 
 		public static int ToolbarResource { get; set; }
-
-		Color IDefaultColorProvider.ButtonBackgroundColor => Color.FromHex("#d6d7d7");
 
 		#endregion
 	}

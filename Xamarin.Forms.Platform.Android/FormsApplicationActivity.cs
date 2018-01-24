@@ -13,7 +13,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class FormsApplicationActivity : Activity, IDeviceInfoProvider, IDefaultColorProvider
+	public class FormsApplicationActivity : Activity, IDeviceInfoProvider
 	{
 		public delegate bool BackButtonPressedEventHandler(object sender, EventArgs e);
 
@@ -25,13 +25,15 @@ namespace Xamarin.Forms.Platform.Android
 
 		AndroidApplicationLifecycleState _previousState;
 
-		Color IDefaultColorProvider.ButtonBackgroundColor => Color.FromHex("#5a595b");
-
 		protected FormsApplicationActivity()
 		{
 			_previousState = AndroidApplicationLifecycleState.Uninitialized;
 			_currentState = AndroidApplicationLifecycleState.Uninitialized;
 			PopupManager.Subscribe(this);
+
+			// We seem to get a different color from the theme than we use by default
+			// Override to use the old color
+			Forms.ColorButtonNormalOverride = Color.FromHex("#5a595b");
 		}
 
 		public event EventHandler ConfigurationChanged;

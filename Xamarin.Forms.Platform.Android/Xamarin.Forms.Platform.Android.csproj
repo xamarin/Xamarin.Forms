@@ -158,7 +158,6 @@
     <Compile Include="ColorExtensions.cs" />
     <Compile Include="ContextExtensions.cs" />
     <Compile Include="GetDesiredSizeDelegate.cs" />
-    <Compile Include="IDefaultColorProvider.cs" />
     <Compile Include="IDeviceInfoProvider.cs" />
     <Compile Include="InnerGestureListener.cs" />
     <Compile Include="InnerScaleListener.cs" />
