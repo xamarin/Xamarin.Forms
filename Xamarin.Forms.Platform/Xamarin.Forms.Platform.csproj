@@ -1,13 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;netstandard1.0</TargetFrameworks>
   </PropertyGroup>
-  <ItemGroup>
-    <None Remove="bin_pcl\Debug\Xamarin.Forms.Platform.dll" />
-    <None Remove="bin_pcl\Debug\Xamarin.Forms.Platform.pdb" />
-    <None Remove="obj_pcl\Debug\Xamarin.Forms.Platform.PCL.csproj.CoreCompileInputs.cache" />
-    <None Remove="obj_pcl\Debug\Xamarin.Forms.Platform.PCL.csproj.FileListAbsolute.txt" />
-    <None Remove="obj_pcl\Debug\Xamarin.Forms.Platform.dll" />
-    <None Remove="obj_pcl\Debug\Xamarin.Forms.Platform.pdb" />
-  </ItemGroup>
 </Project>
