@@ -5,11 +5,8 @@ namespace Xamarin.Forms.Core
 	[AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
 	public abstract class BaseExportRendererAttribute : HandlerAttribute
 	{
-		#region MajorVersion
 		// not exposed publicly
-		protected internal int? _majorVersion;
 		protected abstract int? MajorVersion { get; }
-		#endregion
 
 		#region MinimumSdkVersion
 		int _minimumSdkVersion = int.MinValue;

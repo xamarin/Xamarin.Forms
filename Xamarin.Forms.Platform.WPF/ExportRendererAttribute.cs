@@ -6,6 +6,8 @@ namespace Xamarin.Forms.Platform.WPF
 	[AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
 	public sealed class ExportRendererAttribute : BaseExportRendererAttribute
 	{
+		int? _majorVersion;
+
 		protected override int? MajorVersion
 		{
 			get
