@@ -59,7 +59,3 @@ AndroidNative/.gradle/
 AndroidNative/gradlew
 AndroidNative/gradlew.bat
 !EmbeddingTestBeds/Embedding.iOS/*.designer.cs
-Xamarin.Forms.Platform/obj_pcl
-Xamarin.Forms.Platform/bin_pcl
-Xamarin.Forms.Core/obj_pcl
-Xamarin.Forms.Core/bin_pcl

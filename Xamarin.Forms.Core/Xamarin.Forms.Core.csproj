@@ -7,6 +7,10 @@
   <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.0'">
     <DefineConstants>$(DefineConstants);PCL</DefineConstants>    
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
   <ItemGroup>
     <Compile Remove="Internals\Legacy\**" />
     <EmbeddedResource Remove="Internals\Legacy\**" />
