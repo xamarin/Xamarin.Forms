@@ -37,21 +37,6 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-    <Member MemberName="_majorVersion">
-      <MemberSignature Language="C#" Value="protected Nullable&lt;int&gt; _majorVersion;" />
-      <MemberSignature Language="ILAsm" Value=".field family valuetype System.Nullable`1&lt;int32&gt; _majorVersion" />
-      <MemberType>Field</MemberType>
-      <AssemblyInfo>
-        <AssemblyVersion>2.0.0.0</AssemblyVersion>
-      </AssemblyInfo>
-      <ReturnValue>
-        <ReturnType>System.Nullable&lt;System.Int32&gt;</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
     <Member MemberName="MajorVersion">
       <MemberSignature Language="C#" Value="protected abstract Nullable&lt;int&gt; MajorVersion { get; }" />
       <MemberSignature Language="ILAsm" Value=".property instance valuetype System.Nullable`1&lt;int32&gt; MajorVersion" />
