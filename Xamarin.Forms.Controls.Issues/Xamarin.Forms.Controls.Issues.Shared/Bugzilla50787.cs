@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Controls.Issues
 				{
 					new Label
 					{
-						Text = "As you push, a new page should slide in from the right. If you hit the back button or the navigation arrow, it should be the reverse. Popping to root should slide in only the root page.",
+						Text = "As you push, a new page should slide in from the right. If you hit the back button or the navigation arrow, the previous animation should be reversed. Popping to root should slide in only the root page.",
 						TextColor = Color.White
 					},
 					button,
