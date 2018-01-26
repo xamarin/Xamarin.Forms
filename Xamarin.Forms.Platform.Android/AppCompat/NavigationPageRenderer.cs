@@ -47,6 +47,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		bool _toolbarVisible;
 
 		// The following is based on https://android.googlesource.com/platform/frameworks/support.git/+/4a7e12af4ec095c3a53bb8481d8d92f63157c3b7/v4/java/android/support/v4/app/FragmentManager.java#677
+		// Must be overriden in a custom renderer to match durations in XML animation resource files
 		protected virtual int TransitionDuration { get; set; } = 220;
 
 		public NavigationPageRenderer(Context context) : base(context)
