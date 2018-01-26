@@ -67,6 +67,9 @@ namespace Xamarin.Forms
 
 		public static ImageSource FromResource(string resource, Assembly sourceAssembly = null)
 		{
+#if !PCL
+			sourceAssembly = sourceAssembly ?? Assembly.GetCallingAssembly();
+#endif
 			if (sourceAssembly == null)
 			{
 				MethodInfo callingAssemblyMethod = typeof(Assembly).GetTypeInfo().GetDeclaredMethod("GetCallingAssembly");
