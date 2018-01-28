@@ -27,7 +27,7 @@ Read more about the platform at https://www.xamarin.com/forms.
 
 ## Getting Started ##
 
-##### Install Visual Studio 2015 #####
+##### Install Visual Studio 2017 #####
 VS 2017 is required for developing Xamarin.Forms. If you do not already have it installed, you can download it [here](https://www.visualstudio.com/downloads/download-visual-studio-vs). VS 2017 Community is completely free. If you are installing VS 2017 for the first time, select the "Custom" installation type and select the following from the features list to install:
 
 - Universal Windows Platform Development - In the `Summary > Optional select the Windows 10 Mobile Emulator`.
