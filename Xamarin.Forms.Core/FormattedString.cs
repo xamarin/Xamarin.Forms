@@ -14,7 +14,14 @@ namespace Xamarin.Forms
 
 		public FormattedString()
 		{
-			_spans.CollectionChanged += OnCollectionChanged;
+			_spans.CollectionChanged += OnCollectionChanged;			
+			BindingContextChanged += FormattedString_BindingContextChanged;
+		}
+
+		private void FormattedString_BindingContextChanged(object sender, EventArgs e)
+		{
+			foreach (var span in Spans)
+				SetInheritedBindingContext(span, BindingContext);
 		}
 
 		protected override void OnBindingContextChanged()
