@@ -1,12 +1,10 @@
 using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
 	[ContentProperty("Text")]
-	public sealed class Span : INotifyPropertyChanged, IFontElement
+	public sealed class Span : BindableObject, IFontElement
 	{
 		class BindableSpan : BindableObject, IFontElement
 		{
@@ -59,13 +57,11 @@ namespace Xamarin.Forms
 			}
 		}
 
-		Color _backgroundColor;
-
 		BindableObject _fontElement;
 
 		Color _foregroundColor;
 
-		string _text;
+		Color _backgroundColor;
 
 		public Span()
 		{
@@ -89,7 +85,7 @@ namespace Xamarin.Forms
 			get { return (Font)_fontElement.GetValue(FontElement.FontProperty); }
 			set { _fontElement.SetValue(FontElement.FontProperty, value); }
 		}
-
+		
 		public Color ForegroundColor
 		{
 			get { return _foregroundColor; }
@@ -102,16 +98,13 @@ namespace Xamarin.Forms
 			}
 		}
 
+		public static readonly BindableProperty TextProperty
+			= BindableProperty.Create("Text", typeof(string), typeof(Span), null);
+
 		public string Text
 		{
-			get { return _text; }
-			set
-			{
-				if (_text == value)
-					return;
-				_text = value;
-				OnPropertyChanged();
-			}
+			get { return (string)GetValue(TextProperty); }
+			set	{ SetValue(TextProperty, value); }
 		}
 
 		public FontAttributes FontAttributes
@@ -131,15 +124,6 @@ namespace Xamarin.Forms
 		{
 			get { return (double)_fontElement.GetValue(FontElement.FontSizeProperty); }
 			set { _fontElement.SetValue(FontElement.FontSizeProperty, value); }
-		}
-
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		void OnPropertyChanged([CallerMemberName] string propertyName = null)
-		{
-			PropertyChangedEventHandler handler = PropertyChanged;
-			if (handler != null)
-				handler(this, new PropertyChangedEventArgs(propertyName));
 		}
 
 		void IFontElement.OnFontFamilyChanged(string oldValue, string newValue)
