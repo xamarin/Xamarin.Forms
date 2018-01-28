@@ -1028,7 +1028,8 @@ namespace Xamarin.Forms.Platform.Tizen
 				}
 			}
 		}
-		EFocusDirection ConvertToNativeFocusDirection(string direction) {
+		EFocusDirection ConvertToNativeFocusDirection(string direction)
+		{
 			if (direction == XFocusDirection.Back) return EFocusDirection.Previous;
 			if (direction == XFocusDirection.Forward) return EFocusDirection.Next;
 			if (direction == XFocusDirection.Up) return EFocusDirection.Up;
