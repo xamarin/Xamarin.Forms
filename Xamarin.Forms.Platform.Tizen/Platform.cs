@@ -25,8 +25,9 @@ namespace Xamarin.Forms.Platform.Tizen
 		bool _disposed;
 		Native.Dialog _pageBusyDialog;
 		int _pageBusyCount;
+		Naviframe _internalNaviframe;
 
-		internal Platform(CoreUIApplication context, EvasObject parent)
+		internal Platform(EvasObject parent)
 		{
 			Forms.NativeParent = parent;
 			_pageBusyCount = 0;
@@ -34,15 +35,15 @@ namespace Xamarin.Forms.Platform.Tizen
 			MessagingCenter.Subscribe<Page, AlertArguments>(this, Page.AlertSignalName, AlertSignalNameHandler);
 			MessagingCenter.Subscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName, ActionSheetSignalNameHandler);
 
-			InternalNaviframe = new Naviframe(Forms.NativeParent)
+			_internalNaviframe = new Naviframe(Forms.NativeParent)
 			{
 				PreserveContentOnPop = true,
 				DefaultBackButtonEnabled = false,
 			};
-			InternalNaviframe.SetAlignment(-1, -1);
-			InternalNaviframe.SetWeight(1.0, 1.0);
-			InternalNaviframe.Show();
-			InternalNaviframe.AnimationFinished += NaviAnimationFinished;
+			_internalNaviframe.SetAlignment(-1, -1);
+			_internalNaviframe.SetWeight(1.0, 1.0);
+			_internalNaviframe.Show();
+			_internalNaviframe.AnimationFinished += NaviAnimationFinished;
 		}
 
 		~Platform()
@@ -52,7 +53,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		public Page Page { get; private set; }
 
-		public Naviframe InternalNaviframe { get; private set; }
+		public EvasObject RootNativeView => _internalNaviframe as EvasObject;
 
 		public bool HasAlpha { get; set; }
 
@@ -94,7 +95,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			if (Page != null)
 			{
-				var copyOfStack = new List<NaviItem>(InternalNaviframe.NavigationStack);
+				var copyOfStack = new List<NaviItem>(_internalNaviframe.NavigationStack);
 				for (var i = 0; i < copyOfStack.Count; i++)
 				{
 					copyOfStack[i].Delete();
@@ -116,7 +117,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			Page.Platform = this;
 
 			IVisualElementRenderer pageRenderer = AttachRenderer(Page);
-			var naviItem = InternalNaviframe.Push(pageRenderer.NativeView);
+			var naviItem = _internalNaviframe.Push(pageRenderer.NativeView);
 			naviItem.TitleBarVisible = false;
 
 			// Make naviitem transparent if parent window is transparent.
@@ -169,8 +170,11 @@ namespace Xamarin.Forms.Platform.Tizen
 			if (_disposed) return;
 			if (disposing)
 			{
+				MessagingCenter.Unsubscribe<Page, AlertArguments>(this, "Xamarin.SendAlert");
+				MessagingCenter.Unsubscribe<Page, bool>(this, "Xamarin.BusySet");
+				MessagingCenter.Unsubscribe<Page, ActionSheetArguments>(this, "Xamarin.ShowActionSheet");
 				SetPage(null);
-				InternalNaviframe.Unrealize();
+				_internalNaviframe.Unrealize();
 			}
 			_disposed = true;
 		}
@@ -282,15 +286,15 @@ namespace Xamarin.Forms.Platform.Tizen
 				await previousTask;
 			}
 
-			var after = InternalNaviframe.NavigationStack.LastOrDefault();
+			var after = _internalNaviframe.NavigationStack.LastOrDefault();
 			NaviItem pushed = null;
 			if (animated || after == null)
 			{
-				pushed = InternalNaviframe.Push(Platform.GetOrCreateRenderer(modal).NativeView, modal.Title);
+				pushed = _internalNaviframe.Push(Platform.GetOrCreateRenderer(modal).NativeView, modal.Title);
 			}
 			else
 			{
-				pushed = InternalNaviframe.InsertAfter(after, Platform.GetOrCreateRenderer(modal).NativeView, modal.Title);
+				pushed = _internalNaviframe.InsertAfter(after, Platform.GetOrCreateRenderer(modal).NativeView, modal.Title);
 			}
 			pushed.TitleBarVisible = false;
 
@@ -311,14 +315,14 @@ namespace Xamarin.Forms.Platform.Tizen
 
 			if (animated)
 			{
-				InternalNaviframe.Pop();
+				_internalNaviframe.Pop();
 			}
 			else
 			{
-				InternalNaviframe.NavigationStack.LastOrDefault()?.Delete();
+				_internalNaviframe.NavigationStack.LastOrDefault()?.Delete();
 			}
 
-			bool shouldWait = animated && (InternalNaviframe.NavigationStack.Count != 0);
+			bool shouldWait = animated && (_internalNaviframe.NavigationStack.Count != 0);
 			await WaitForCompletion(shouldWait, tcs);
 		}
 
@@ -387,7 +391,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		void AlertSignalNameHandler(Page sender, AlertArguments arguments)
 		{
-			// Verify that the page making the request is child of this platform 
+			// Verify that the page making the request is child of this platform
 			if (!PageIsChildOfPlatform(sender))
 				return;
 

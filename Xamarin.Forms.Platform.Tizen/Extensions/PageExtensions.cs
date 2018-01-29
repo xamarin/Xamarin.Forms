@@ -19,12 +19,12 @@ namespace Xamarin.Forms
 				app.MainPage = page;
 			}
 
-			var platform = new Platform.Tizen.Platform(Platform.Tizen.Forms.Context, parent)
+			var platform = new Platform.Tizen.Platform(parent)
 			{
 				HasAlpha = hasAlpha
 			};
 			platform.SetPage(page);
-			return platform.InternalNaviframe;
+			return platform.RootNativeView;
 		}
 
 		class DefaultApplication : Application

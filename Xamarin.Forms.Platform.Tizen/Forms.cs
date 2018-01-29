@@ -121,7 +121,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		public static event EventHandler<ViewInitializedEventArgs> ViewInitialized;
 
-		public static CoreUIApplication Context
+		public static CoreApplication Context
 		{
 			get;
 			internal set;
@@ -179,19 +179,19 @@ namespace Xamarin.Forms.Platform.Tizen
 			TitleBarVisibility = visibility;
 		}
 
-		public static void Init(CoreUIApplication application)
+		public static void Init(CoreApplication application)
 		{
 			Init(application, false);
 		}
 
 
-		public static void Init(CoreUIApplication application, bool useDeviceIndependentPixel)
+		public static void Init(CoreApplication application, bool useDeviceIndependentPixel)
 		{
 			_useDeviceIndependentPixel = useDeviceIndependentPixel;
 			SetupInit(application);
 		}
 
-		static void SetupInit(CoreUIApplication application)
+		static void SetupInit(CoreApplication application)
 		{
 			Context = application;
 

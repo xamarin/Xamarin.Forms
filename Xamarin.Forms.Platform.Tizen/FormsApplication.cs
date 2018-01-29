@@ -58,9 +58,6 @@ namespace Xamarin.Forms.Platform.Tizen
 		protected override void OnTerminate()
 		{
 			base.OnTerminate();
-			MessagingCenter.Unsubscribe<Page, AlertArguments>(this, "Xamarin.SendAlert");
-			MessagingCenter.Unsubscribe<Page, bool>(this, "Xamarin.BusySet");
-			MessagingCenter.Unsubscribe<Page, ActionSheetArguments>(this, "Xamarin.ShowActionSheet");
 			if (_platform != null)
 			{
 				_platform.Dispose();
@@ -142,11 +139,11 @@ namespace Xamarin.Forms.Platform.Tizen
 				return;
 			}
 
-			_platform = new Platform(this, BaseLayout)
+			_platform = new Platform(BaseLayout)
 			{
 				HasAlpha = MainWindow.Alpha
 			};
-			BaseLayout.SetContent(_platform.InternalNaviframe);
+			BaseLayout.SetContent(_platform.RootNativeView);
 
 			if (_application != null)
 			{
