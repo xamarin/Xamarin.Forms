@@ -35,7 +35,7 @@ namespace Xamarin.Forms.Controls.Issues
 			Content = stackLayout;
 		}
 
-#if UITEST
+#if UITEST && __IOS__
 		protected override bool Isolate => true;
 
 		[Test]
