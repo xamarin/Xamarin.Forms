@@ -57,9 +57,6 @@ namespace Xamarin.Forms
 
 		public bool IsDefault(BindableProperty targetProperty)
 		{
-			if (targetProperty == null)
-				throw new ArgumentNullException(nameof(targetProperty));
-
 			if (!IsSet(targetProperty))
 				return true;
 
