@@ -55,17 +55,6 @@ namespace Xamarin.Forms
 			return GetContext(targetProperty) != null;
 		}
 
-		public bool IsDefault(BindableProperty targetProperty)
-		{
-			if (!IsSet(targetProperty))
-				return true;
-
-			var defaultValue = targetProperty.GetDefaultValue(this);
-			var currentValue = GetValue(targetProperty);
-
-			return defaultValue == currentValue;
-		}
-
 		public object GetValue(BindableProperty property)
 		{
 			if (property == null)
