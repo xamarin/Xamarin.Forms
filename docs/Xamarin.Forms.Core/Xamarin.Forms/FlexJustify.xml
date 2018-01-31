@@ -8,6 +8,11 @@
   <Base>
     <BaseTypeName>System.Enum</BaseTypeName>
   </Base>
+  <Attributes>
+    <Attribute>
+      <AttributeName>Xamarin.Forms.TypeConverter(typeof(Xamarin.Forms.FlexJustifyTypeConverter))</AttributeName>
+    </Attribute>
+  </Attributes>
   <Docs>
     <summary>To be added.</summary>
     <remarks>To be added.</remarks>
@@ -72,20 +77,6 @@
     <Member MemberName="SpaceBetween">
       <MemberSignature Language="C#" Value="SpaceBetween" />
       <MemberSignature Language="ILAsm" Value=".field public static literal valuetype Xamarin.Forms.FlexJustify SpaceBetween = int32(5)" />
-      <MemberType>Field</MemberType>
-      <AssemblyInfo>
-        <AssemblyVersion>2.0.0.0</AssemblyVersion>
-      </AssemblyInfo>
-      <ReturnValue>
-        <ReturnType>Xamarin.Forms.FlexJustify</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-      </Docs>
-    </Member>
-    <Member MemberName="SpaceEvenly">
-      <MemberSignature Language="C#" Value="SpaceEvenly" />
-      <MemberSignature Language="ILAsm" Value=".field public static literal valuetype Xamarin.Forms.FlexJustify SpaceEvenly = int32(7)" />
       <MemberType>Field</MemberType>
       <AssemblyInfo>
         <AssemblyVersion>2.0.0.0</AssemblyVersion>
