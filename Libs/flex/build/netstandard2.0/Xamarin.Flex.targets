@@ -31,7 +31,7 @@
       <Visible>False</Visible>
     </Content>
   </ItemGroup>
-  <ItemGroup Condition="'$(OS)' != 'Windows_NT'">
+  <ItemGroup Condition="'$(OS)' == 'Unix'">
     <NativeReference Include="$(PreferredOSXNativeFlexPath)">
       <IsCxx>False</IsCxx>
       <Kind>Dynamic</Kind>
