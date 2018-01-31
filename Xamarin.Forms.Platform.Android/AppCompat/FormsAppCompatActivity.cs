@@ -60,7 +60,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override void OnBackPressed()
 		{
-			if (BackPressed != null && BackPressed(this, EventArgs.Empty))
+			if (!CanGoBack())
 				return;
 			base.OnBackPressed();
 		}
@@ -274,6 +274,22 @@ namespace Xamarin.Forms.Platform.Android
 			_currentState = AndroidApplicationLifecycleState.OnStop;
 
 			await OnStateChanged();
+		}
+
+		bool CanGoBack()
+		{
+			var backPressed = BackPressed;
+
+			if (backPressed == null)
+				return true;
+
+			var invocationList = backPressed.GetInvocationList().ToList();
+
+			var canGoBack = !invocationList
+				.Select(@delegate => ((BackButtonPressedEventHandler) @delegate).Invoke(this, EventArgs.Empty))
+				.Any(b => b);
+
+			return canGoBack;
 		}
 
 		void AppOnPropertyChanged(object sender, PropertyChangedEventArgs args)
