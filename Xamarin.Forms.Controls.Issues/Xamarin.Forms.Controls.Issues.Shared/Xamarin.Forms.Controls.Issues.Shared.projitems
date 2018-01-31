@@ -178,6 +178,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla46363.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla46363_2.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla47548.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla50787.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla52299.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla52419.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla49304.cs" />
@@ -219,6 +220,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla55714.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla54649.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla56609.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla55674.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla55912.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla57317.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla57114.cs" />
@@ -258,6 +260,7 @@
       <DependentUpon>GitHub1331.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)InputTransparentTests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue1614.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IsInvokeRequiredRaceCondition.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IsPasswordToggleTest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1023.cs" />
@@ -266,6 +269,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue1026.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1347.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1356.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue1439.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1691.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue2983.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue2963.cs" />
@@ -403,6 +407,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue1329.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1384.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1400.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue1414.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1461.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1497.xaml.cs">
       <DependentUpon>Issue1497.xaml</DependentUpon>
@@ -827,7 +832,7 @@
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)GitHub1331.xaml">
       <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
   </ItemGroup>
 </Project>

@@ -155,6 +155,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			var reference = Guid.NewGuid().ToString();
 			Performance.Start(reference);
 
+			_element = newElement;
+
 			if (oldElement != null)
 			{
 				oldElement.ChildAdded -= OnChildAdded;
@@ -180,8 +182,6 @@ namespace Xamarin.Forms.Platform.MacOS
 					}
 				}
 			}
-
-			_element = newElement;
 
 			if (newElement != null)
 			{
