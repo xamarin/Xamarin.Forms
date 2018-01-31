@@ -5,10 +5,7 @@ using System.Threading.Tasks;
 using ElmSharp;
 using Tizen.Applications;
 using Xamarin.Forms.Internals;
-using EButton = ElmSharp.Button;
-using EColor = ElmSharp.Color;
 using ELayout = ElmSharp.Layout;
-using EProgressBar = ElmSharp.ProgressBar;
 using DeviceOrientation = Xamarin.Forms.Internals.DeviceOrientation;
 
 namespace Xamarin.Forms.Platform.Tizen
@@ -16,7 +13,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
 	public class FormsApplication : CoreUIApplication
 	{
-		Platform _platform;
+		ITizenPlatform _platform;
 		Application _application;
 		bool _isInitialStart;
 		Window _window;
@@ -133,17 +130,16 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				throw new InvalidOperationException("Call Forms.Init (UIApplication) before this");
 			}
+
 			if (_platform != null)
 			{
 				_platform.SetPage(page);
 				return;
 			}
 
-			_platform = new Platform(BaseLayout)
-			{
-				HasAlpha = MainWindow.Alpha
-			};
-			BaseLayout.SetContent(_platform.RootNativeView);
+			_platform = Platform.CreatePlatform(BaseLayout);
+			_platform.HasAlpha = MainWindow.Alpha;
+			BaseLayout.SetContent(_platform.GetRootNativeView());
 
 			if (_application != null)
 			{
@@ -158,16 +154,17 @@ namespace Xamarin.Forms.Platform.Tizen
 
 			MainWindow.Active();
 			MainWindow.Show();
+
 			var conformant = new Conformant(MainWindow);
 			conformant.Show();
 
-			// Create the base (default) layout for the application
 			var layout = new ELayout(conformant);
 			layout.SetTheme("layout", "application", "default");
 			layout.Show();
 
 			BaseLayout = layout;
 			conformant.SetContent(BaseLayout);
+
 			MainWindow.AvailableRotations = DisplayRotation.Degree_0 | DisplayRotation.Degree_90 | DisplayRotation.Degree_180 | DisplayRotation.Degree_270;
 
 			MainWindow.Deleted += (s, e) =>
