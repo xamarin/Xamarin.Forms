@@ -8,7 +8,13 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public static class PageExtensions
 	{
+		[Obsolete("Please use CreateFragment(this ContentPage view, Activity activity) instead")]
 		public static Fragment CreateFragment(this ContentPage view, Context context)
+		{
+			return view.CreateFragment((Activity)context);
+		}
+
+		public static Fragment CreateFragment(this ContentPage view, Activity activity)
 		{
 			if (!Forms.IsInitialized)
 				throw new InvalidOperationException("call Forms.Init() before this");
@@ -19,7 +25,7 @@ namespace Xamarin.Forms.Platform.Android
 				app.MainPage = view;
 			}
 
-			var platform = new Platform(context, true);
+			var platform = new Platform(activity, true);
 			platform.SetPage(view);
 
 			var vg = platform.GetViewGroup();
@@ -27,7 +33,13 @@ namespace Xamarin.Forms.Platform.Android
 			return new EmbeddedFragment(vg, platform);
 		}
 
+		[Obsolete("Please use CreateSupportFragment(this ContentPage view, Activity activity) instead")]
 		public static global::Android.Support.V4.App.Fragment CreateSupportFragment(this ContentPage view, Context context)
+		{
+			return view.CreateSupportFragment((Activity)context);
+		}
+
+		public static global::Android.Support.V4.App.Fragment CreateSupportFragment(this ContentPage view, Activity activity)
 		{
 			if (!Forms.IsInitialized)
 				throw new InvalidOperationException("call Forms.Init() before this");
@@ -38,7 +50,7 @@ namespace Xamarin.Forms.Platform.Android
 				app.MainPage = view;
 			}
 
-			var platform = new Platform(context, true);
+			var platform = new Platform(activity, true);
 			platform.SetPage(view);
 
 			var vg = platform.GetViewGroup();
