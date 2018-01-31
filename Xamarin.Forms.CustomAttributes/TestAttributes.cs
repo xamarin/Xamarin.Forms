@@ -679,7 +679,9 @@ namespace Xamarin.Forms.CustomAttributes
 		public enum WebView {
 			UrlWebViewSource,
 			HtmlWebViewSource,
-			LoadHtml
+			LoadHtml,
+			MixedContentDisallowed,
+			MixedContentAllowed
 		}
 
 		public enum UrlWebViewSource {
