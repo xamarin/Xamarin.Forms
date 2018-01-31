@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
@@ -34,6 +35,10 @@ namespace Xamarin.Forms.Platform.Tizen
 			else if (e.PropertyName == Image.IsOpaqueProperty.PropertyName)
 			{
 				UpdateIsOpaque();
+			}
+			else if (e.PropertyName == Image.TintColorProperty.PropertyName)
+			{
+				UpdateTintColor();
 			}
 			else if (TizenPlatformServices.AppDomain.IsTizenSpecificAvailable && e.PropertyName == "BlendColor")
 			{
@@ -89,6 +94,13 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			UpdateSource();
 			UpdateAspect();
+			UpdateTintColor();
+		}
+
+		private void UpdateTintColor()
+		{
+			if (!Element.TintColor.Equals(Color.Transparent))
+				UpdateBlendColor();
 		}
 	}
 
