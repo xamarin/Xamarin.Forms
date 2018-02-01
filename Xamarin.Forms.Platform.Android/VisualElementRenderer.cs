@@ -340,7 +340,7 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			_inputTransparentInherited = layout.InputTransparentInherited;
+			_inputTransparentInherited = layout.CascadeInputTransparent;
 		}
 
 		protected void SetPackager(VisualElementPackager packager)

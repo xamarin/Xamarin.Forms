@@ -119,7 +119,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				if (layout.InputTransparent)
 				{
-					shouldInteract = !layout.InputTransparentInherited;
+					shouldInteract = !layout.CascadeInputTransparent;
 				}
 				else
 				{
