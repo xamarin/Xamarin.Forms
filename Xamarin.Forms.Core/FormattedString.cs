@@ -4,27 +4,31 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 
 namespace Xamarin.Forms
 {
 	[ContentProperty("Spans")]
-	public class FormattedString : INotifyPropertyChanged
+	public class FormattedString : BindableObject
 	{
 		readonly SpanCollection _spans = new SpanCollection();
 
 		public FormattedString()
 		{
-			_spans.CollectionChanged += OnCollectionChanged;
+			_spans.CollectionChanged += OnCollectionChanged;			
+			BindingContextChanged += FormattedString_BindingContextChanged;
+		}
+
+		private void FormattedString_BindingContextChanged(object sender, EventArgs e)
+		{
+			foreach (var span in Spans)
+				SetInheritedBindingContext(span, BindingContext);
 		}
 
 		public IList<Span> Spans
 		{
 			get { return _spans; }
 		}
-
-		public event PropertyChangedEventHandler PropertyChanged;
-
+				
 		public static explicit operator string(FormattedString formatted)
 		{
 			return formatted.ToString();
@@ -57,6 +61,7 @@ namespace Xamarin.Forms
 				foreach (object item in e.NewItems)
 				{
 					var bo = item as Span;
+					SetInheritedBindingContext(bo, this.BindingContext);
 					if (bo != null)
 						bo.PropertyChanged += OnItemPropertyChanged;
 				}
@@ -68,13 +73,6 @@ namespace Xamarin.Forms
 		void OnItemPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			OnPropertyChanged("Spans");
-		}
-
-		void OnPropertyChanged([CallerMemberName] string propertyName = null)
-		{
-			PropertyChangedEventHandler handler = PropertyChanged;
-			if (handler != null)
-				handler(this, new PropertyChangedEventArgs(propertyName));
 		}
 
 		class SpanCollection : ObservableCollection<Span>

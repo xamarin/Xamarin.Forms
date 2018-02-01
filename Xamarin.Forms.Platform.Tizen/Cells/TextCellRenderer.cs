@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			return new Span()
 			{
 				Text = cell.Text,
-				ForegroundColor = cell.TextColor,
+				TextColor = cell.TextColor,
 				FontSize = -1
 			};
 		}
@@ -46,7 +46,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			return new Span()
 			{
 				Text = cell.Detail,
-				ForegroundColor = cell.DetailColor,
+				TextColor = cell.DetailColor,
 				FontSize = -1
 			};
 		}

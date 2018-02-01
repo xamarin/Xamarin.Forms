@@ -35,9 +35,9 @@ namespace Xamarin.Forms.Platform.Android
 				int end = start + span.Text.Length;
 				c = end;
 
-				if (span.ForegroundColor != Color.Default)
+				if (span.TextColor != Color.Default)
 				{
-					spannable.SetSpan(new ForegroundColorSpan(span.ForegroundColor.ToAndroid()), start, end, SpanTypes.InclusiveExclusive);
+					spannable.SetSpan(new ForegroundColorSpan(span.TextColor.ToAndroid()), start, end, SpanTypes.InclusiveExclusive);
 				}
 				else if (defaultForegroundColor != Color.Default)
 				{

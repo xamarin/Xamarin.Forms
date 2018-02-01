@@ -40,7 +40,16 @@ namespace Xamarin.Forms
 			}, propertyChanged: (bindable, oldvalue, newvalue) =>
 			{
 				if (newvalue != null)
-					((FormattedString)newvalue).PropertyChanged += ((Label)bindable).OnFormattedTextChanged;
+				{
+					var formattedString = (FormattedString)newvalue;
+					formattedString.PropertyChanged += ((Label)bindable).OnFormattedTextChanged;
+					SetInheritedBindingContext(formattedString, bindable.BindingContext);
+					bindable.BindingContextChanged += (s, e) =>
+					{
+						SetInheritedBindingContext(formattedString, bindable.BindingContext);
+					};
+				}
+
 				((Label)bindable).InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 				if (newvalue != null)
 					((Label)bindable).Text = null;
