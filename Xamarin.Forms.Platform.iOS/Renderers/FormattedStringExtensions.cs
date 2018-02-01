@@ -21,7 +21,7 @@ namespace Xamarin.Forms.Platform.MacOS
 #pragma warning disable 0618 //retaining legacy call to obsolete code
 			var font = span.Font != Font.Default ? span.Font : defaultFont;
 #pragma warning restore 0618
-			var fgcolor = span.ForegroundColor;
+			var fgcolor = span.TextColor;
 			if (fgcolor.IsDefault)
 				fgcolor = defaultForegroundColor;
 			if (fgcolor.IsDefault)
@@ -64,7 +64,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			else
 				targetFont = span.ToUIFont();
 
-			var fgcolor = span.ForegroundColor;
+			var fgcolor = span.TextColor;
 			if (fgcolor.IsDefault)
 				fgcolor = defaultForegroundColor;
 			if (fgcolor.IsDefault)
@@ -78,7 +78,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			else
 				targetFont = span.ToNSFont();
 
-			var fgcolor = span.ForegroundColor;
+			var fgcolor = span.TextColor;
 			if (fgcolor.IsDefault)
 				fgcolor = defaultForegroundColor;
 			if (fgcolor.IsDefault)
