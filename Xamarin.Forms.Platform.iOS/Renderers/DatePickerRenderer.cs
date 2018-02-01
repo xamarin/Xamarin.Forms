@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using Foundation;
 using UIKit;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using RectangleF = CoreGraphics.CGRect;
 
 namespace Xamarin.Forms.Platform.iOS
@@ -23,6 +24,7 @@ namespace Xamarin.Forms.Platform.iOS
 		UIDatePicker _picker;
 		UIColor _defaultTextColor;
 		bool _disposed;
+		bool _useLegacyColorManagement;
 
 		IElementController ElementController => Element as IElementController;
 
@@ -54,7 +56,12 @@ namespace Xamarin.Forms.Platform.iOS
 				entry.InputView = _picker;
 				entry.InputAccessoryView = toolbar;
 
+				entry.InputView.AutoresizingMask = UIViewAutoresizing.FlexibleHeight;
+				entry.InputAccessoryView.AutoresizingMask = UIViewAutoresizing.FlexibleHeight;
+
 				_defaultTextColor = entry.TextColor;
+
+				_useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
 
 				SetNativeControl(entry);
 			}
@@ -132,10 +139,13 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var textColor = Element.TextColor;
 
-			if (textColor.IsDefault || !Element.IsEnabled)
+			if (textColor.IsDefault || (!Element.IsEnabled && _useLegacyColorManagement))
 				Control.TextColor = _defaultTextColor;
 			else
 				Control.TextColor = textColor.ToUIColor();
+
+			// HACK This forces the color to update; there's probably a more elegant way to make this happen
+			Control.Text = Control.Text;
 		}
 
 		protected override void Dispose(bool disposing)

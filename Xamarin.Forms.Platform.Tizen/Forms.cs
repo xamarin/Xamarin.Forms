@@ -7,6 +7,7 @@ using Xamarin.Forms.Internals;
 using ElmSharp;
 using Tizen.Applications;
 using TSystemInfo = Tizen.System.Information;
+using ELayout = ElmSharp.Layout;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
@@ -102,11 +103,18 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		public static event EventHandler<ViewInitializedEventArgs> ViewInitialized;
 
-		public static FormsApplication Context
+		public static CoreUIApplication Context
 		{
 			get;
 			internal set;
 		}
+
+		public static EvasObject NativeParent
+		{
+			get; internal set;
+		}
+
+		public static ELayout BaseLayout => NativeParent as ELayout;
 
 		public static bool IsInitialized
 		{
@@ -133,23 +141,37 @@ namespace Xamarin.Forms.Platform.Tizen
 			}
 		}
 
+		static IReadOnlyList<string> s_flags;
+		public static IReadOnlyList<string> Flags => s_flags ?? (s_flags = new List<string>().AsReadOnly());
+
+		public static void SetFlags(params string[] flags)
+		{
+			if (IsInitialized)
+			{
+				throw new InvalidOperationException($"{nameof(SetFlags)} must be called before {nameof(Init)}");
+			}
+
+			s_flags = flags.ToList().AsReadOnly();
+		}
+
 		public static void SetTitleBarVisibility(TizenTitleBarVisibility visibility)
 		{
 			TitleBarVisibility = visibility;
 		}
 
-		public static void Init(FormsApplication application)
+		public static void Init(CoreUIApplication application)
 		{
 			Init(application, false);
 		}
 
-		public static void Init(FormsApplication application, bool useDeviceIndependentPixel)
+
+		public static void Init(CoreUIApplication application, bool useDeviceIndependentPixel)
 		{
 			_useDeviceIndependentPixel = useDeviceIndependentPixel;
 			SetupInit(application);
 		}
 
-		static void SetupInit(FormsApplication application)
+		static void SetupInit(CoreUIApplication application)
 		{
 			Context = application;
 
@@ -178,6 +200,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			}
 
 			Device.Info = new Forms.TizenDeviceInfo();
+			Device.SetFlags(s_flags);
 
 			if (!Forms.IsInitialized)
 			{

@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		public FrameRenderer()
 		{
-			RegisterPropertyHandler(Frame.OutlineColorProperty, UpdateColor);
+			RegisterPropertyHandler(Frame.BorderColorProperty, UpdateColor);
 			RegisterPropertyHandler(Frame.HasShadowProperty, UpdateShadowVisibility);
 		}
 
@@ -25,7 +25,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			if (Control == null)
 			{
-				SetNativeControl(new Native.Canvas(Forms.Context.MainWindow));
+				SetNativeControl(new Native.Canvas(Forms.NativeParent));
 
 				_shadow = new Polygon(NativeView);
 				_shadow.Color = s_ShadowColor;
@@ -105,10 +105,10 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		void UpdateColor()
 		{
-			if (Element.OutlineColor.IsDefault)
+			if (Element.BorderColor.IsDefault)
 				_frame.Color = s_DefaultColor;
 			else
-				_frame.Color = Element.OutlineColor.ToNative();
+				_frame.Color = Element.BorderColor.ToNative();
 		}
 
 		void UpdateShadowVisibility()

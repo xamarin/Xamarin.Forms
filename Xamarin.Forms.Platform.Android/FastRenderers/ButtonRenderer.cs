@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		int _imageHeight = -1;
 		bool _isDisposed;
 		bool _inputTransparent;
-		readonly Lazy<TextColorSwitcher> _textColorSwitcher;
+		Lazy<TextColorSwitcher> _textColorSwitcher;
 		readonly AutomationPropertiesProvider _automationPropertiesProvider;
 		readonly EffectControlProvider _effectControlProvider;
 		VisualElementTracker _tracker;
@@ -38,7 +38,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		{
 			_automationPropertiesProvider = new AutomationPropertiesProvider(this);
 			_effectControlProvider = new EffectControlProvider(this);
-			_textColorSwitcher = new Lazy<TextColorSwitcher>(() => new TextColorSwitcher(TextColors));
 
 			Initialize();
 		}
@@ -48,8 +47,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		{
 			_automationPropertiesProvider = new AutomationPropertiesProvider(this);
 			_effectControlProvider = new EffectControlProvider(this);
-			_textColorSwitcher = new Lazy<TextColorSwitcher>(() => new TextColorSwitcher(TextColors));
-
+			
 			Initialize();
 		}
 
@@ -127,7 +125,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			VisualElement oldElement = Button;
 			Button = (Button)element;
 
-			Performance.Start();
+			var reference = Guid.NewGuid().ToString();
+			Performance.Start(reference);
 
 			if (oldElement != null)
 			{
@@ -154,7 +153,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			EffectUtilities.RegisterEffectControlProvider(this, oldElement, element);
 
-			Performance.Stop();
+			Performance.Stop(reference);
 		}
 
 		void IVisualElementRenderer.SetLabelFor(int? id)
@@ -169,9 +168,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		void IVisualElementRenderer.UpdateLayout()
 		{
-			Performance.Start();
+			var reference = Guid.NewGuid().ToString();
 			_tracker?.UpdateLayout();
-			Performance.Stop();
 		}
 
 		protected override void Dispose(bool disposing)
@@ -222,6 +220,9 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			if (e.NewElement != null && !_isDisposed)
 			{
 				this.EnsureId();
+
+				_textColorSwitcher = new Lazy<TextColorSwitcher>(
+					() => new TextColorSwitcher(TextColors, e.NewElement.UseLegacyColorManagement()));
 
 				UpdateFont();
 				UpdateText();
@@ -503,7 +504,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		void UpdateTextColor()
 		{
-			if (Element == null || _isDisposed)
+			if (Element == null || _isDisposed || _textColorSwitcher == null)
 			{
 				return;
 			}
