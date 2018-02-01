@@ -4,102 +4,53 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms
 {
 	[ContentProperty("Text")]
-	public sealed class Span : BindableObject, IFontElement
+	public sealed class Span : Element, IFontElement
 	{
-		class BindableSpan : BindableObject, IFontElement
-		{
-			Span _span;
-			public BindableSpan(Span span)
-			{
-				_span = span;
-			}
-
-			public Font Font {
-				get { return (Font)GetValue(FontElement.FontProperty); }
-				set { SetValue(FontElement.FontProperty, value); }
-			}
-
-			public FontAttributes FontAttributes {
-				get { return (FontAttributes)GetValue(FontElement.FontAttributesProperty); }
-				set { SetValue(FontElement.FontAttributesProperty, value); }
-			}
-
-			public string FontFamily {
-				get { return (string)GetValue(FontElement.FontFamilyProperty); }
-				set { SetValue(FontElement.FontFamilyProperty, value); }
-			}
-
-			[TypeConverter(typeof(FontSizeConverter))]
-			public double FontSize {
-				get { return (double)GetValue(FontElement.FontSizeProperty); }
-				set { SetValue(FontElement.FontSizeProperty, value); }
-			}
-
-			double IFontElement.FontSizeDefaultValueCreator() =>
-				((IFontElement)_span).FontSizeDefaultValueCreator();
-
-			public void OnFontAttributesChanged(FontAttributes oldValue, FontAttributes newValue) =>
-				((IFontElement)_span).OnFontAttributesChanged(oldValue, newValue);
-
-			public void OnFontChanged(Font oldValue, Font newValue) =>
-				((IFontElement)_span).OnFontChanged(oldValue, newValue);
-
-			public void OnFontFamilyChanged(string oldValue, string newValue) =>
-				((IFontElement)_span).OnFontFamilyChanged(oldValue, newValue);
-
-			public void OnFontSizeChanged(double oldValue, double newValue) =>
-				((IFontElement)_span).OnFontSizeChanged(oldValue, newValue);
-
-			protected override void OnPropertyChanged(string propertyName = null)
-			{
-				base.OnPropertyChanged(propertyName);
-				_span.OnPropertyChanged(propertyName);
-			}
-		}
-
-		BindableObject _fontElement;
-
-		Color _foregroundColor;
-
-		Color _backgroundColor;
+		internal readonly MergedStyle _mergedStyle;
 
 		public Span()
 		{
-			_fontElement = new BindableSpan(this);
+			_mergedStyle = new MergedStyle(GetType(), this);
 		}
+
+		public static readonly BindableProperty StyleProperty = BindableProperty.Create("Style", typeof(Style), typeof(VisualElement), default(Style),
+			propertyChanged: (bindable, oldvalue, newvalue) => ((Span)bindable)._mergedStyle.Style = (Style)newvalue);
+
+		public static readonly BindableProperty BackgroundColorProperty
+			= BindableProperty.Create(nameof(BackgroundColor), typeof(Color), typeof(Span), default(Color));
 
 		public Color BackgroundColor
 		{
-			get { return _backgroundColor; }
-			set
-			{
-				if (_backgroundColor == value)
-					return;
-				_backgroundColor = value;
-				OnPropertyChanged();
-			}
+			get { return (Color)GetValue(BackgroundColorProperty); }
+			set { SetValue(BackgroundColorProperty, value); }
 		}
 
-		[Obsolete("Font is obsolete as of version 1.3.0. Please use the Font properties directly.")]
-		public Font Font {
-			get { return (Font)_fontElement.GetValue(FontElement.FontProperty); }
-			set { _fontElement.SetValue(FontElement.FontProperty, value); }
+		[Obsolete("Foreground is obsolete as of version 2.6.0. Please use the TextColor property instead.")]
+		public static readonly BindableProperty ForegroundColorProperty
+			= BindableProperty.Create(nameof(ForegroundColor), typeof(Color), typeof(Span), default(Color), propertyChanged: ForegroundColorOnPropertyChanged);
+
+		static void ForegroundColorOnPropertyChanged(object bindable, object oldvalue, object newvalue)
+		{
+			((Span)bindable).TextColor = newvalue as Color? ?? default(Color);
 		}
-		
+
 		public Color ForegroundColor
 		{
-			get { return _foregroundColor; }
-			set
-			{
-				if (_foregroundColor == value)
-					return;
-				_foregroundColor = value;
-				OnPropertyChanged();
-			}
+			get { return (Color)GetValue(ForegroundColorProperty); }
+			set { SetValue(ForegroundColorProperty, value); }
+		}
+
+		public static readonly BindableProperty TextColorProperty
+			= BindableProperty.Create(nameof(TextColor), typeof(Color), typeof(Span), default(Color));
+
+		public Color TextColor
+		{
+			get { return (Color)GetValue(TextColorProperty); }
+			set { SetValue(TextColorProperty, value); }
 		}
 
 		public static readonly BindableProperty TextProperty
-			= BindableProperty.Create("Text", typeof(string), typeof(Span), null);
+			= BindableProperty.Create(nameof(Text), typeof(string), typeof(Span), null);
 
 		public string Text
 		{
@@ -107,23 +58,38 @@ namespace Xamarin.Forms
 			set	{ SetValue(TextProperty, value); }
 		}
 
+		public static readonly BindableProperty FontProperty = FontElement.FontProperty;
+
+		public static readonly BindableProperty FontFamilyProperty = FontElement.FontFamilyProperty;
+
+		public static readonly BindableProperty FontSizeProperty = FontElement.FontSizeProperty;
+
+		public static readonly BindableProperty FontAttributesProperty = FontElement.FontAttributesProperty;
+
+		[Obsolete("Font is obsolete as of version 1.3.0. Please use the Font properties directly.")]
+		public Font Font
+		{
+			get { return (Font)GetValue(FontElement.FontProperty); }
+			set { SetValue(FontElement.FontProperty, value); }
+		}
+
 		public FontAttributes FontAttributes
 		{
-			get { return (FontAttributes)_fontElement.GetValue(FontElement.FontAttributesProperty); }
-			set { _fontElement.SetValue(FontElement.FontAttributesProperty, value); }
+			get { return (FontAttributes)GetValue(FontElement.FontAttributesProperty); }
+			set { SetValue(FontElement.FontAttributesProperty, value); }
 		}
 
 		public string FontFamily
 		{
-			get { return (string)_fontElement.GetValue(FontElement.FontFamilyProperty); }
-			set { _fontElement.SetValue(FontElement.FontFamilyProperty, value); }
+			get { return (string)GetValue(FontElement.FontFamilyProperty); }
+			set { SetValue(FontElement.FontFamilyProperty, value); }
 		}
 
 		[TypeConverter(typeof(FontSizeConverter))]
 		public double FontSize
 		{
-			get { return (double)_fontElement.GetValue(FontElement.FontSizeProperty); }
-			set { _fontElement.SetValue(FontElement.FontSizeProperty, value); }
+			get { return (double)GetValue(FontElement.FontSizeProperty); }
+			set { SetValue(FontElement.FontSizeProperty, value); }
 		}
 
 		void IFontElement.OnFontFamilyChanged(string oldValue, string newValue)
@@ -139,6 +105,7 @@ namespace Xamarin.Forms
 
 		void IFontElement.OnFontAttributesChanged(FontAttributes oldValue, FontAttributes newValue)
 		{
+			
 		}
 
 		void IFontElement.OnFontChanged(Font oldValue, Font newValue)
