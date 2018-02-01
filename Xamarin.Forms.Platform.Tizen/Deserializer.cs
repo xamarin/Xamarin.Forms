@@ -6,6 +6,9 @@ using System.Xml;
 using System.Diagnostics;
 using System.IO;
 using Xamarin.Forms.Internals;
+using FileMode = Xamarin.Forms.Internals.FileMode;
+using FileAccess = Xamarin.Forms.Internals.FileAccess;
+using FileShare = Xamarin.Forms.Internals.FileShare;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
@@ -23,7 +26,7 @@ namespace Xamarin.Forms.Platform.Tizen
 				Stream stream = null;
 				try
 				{
-					stream = store.OpenFile(PropertyStoreFile, System.IO.FileMode.OpenOrCreate);
+					stream = store.OpenFile(PropertyStoreFile, FileMode.OpenOrCreate);
 					if (stream.Length == 0)
 					{
 						return null;
@@ -64,7 +67,7 @@ namespace Xamarin.Forms.Platform.Tizen
 				Stream stream = null;
 				try
 				{
-					stream = store.OpenFile(PropertyStoreFile + ".tmp", System.IO.FileMode.OpenOrCreate);
+					stream = store.OpenFile(PropertyStoreFile + ".tmp", FileMode.OpenOrCreate);
 					using (XmlDictionaryWriter writer = XmlDictionaryWriter.CreateBinaryWriter(stream))
 					{
 						stream = null;

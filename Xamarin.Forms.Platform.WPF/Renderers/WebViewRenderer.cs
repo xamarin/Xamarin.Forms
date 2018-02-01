@@ -9,6 +9,9 @@ using System.Windows.Controls;
 using System.Windows.Navigation;
 using System.Windows.Threading;
 using Xamarin.Forms.Internals;
+using FileMode = Xamarin.Forms.Internals.FileMode;
+using FileAccess = Xamarin.Forms.Internals.FileAccess;
+using FileShare = Xamarin.Forms.Internals.FileShare;
 
 namespace Xamarin.Forms.Platform.WPF
 {

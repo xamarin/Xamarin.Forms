@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Platform.WPF
 			if (!isoStore.FileExists(PropertyStoreFile))
 				return new Dictionary<string, object>(4);
 			
-			using (IsolatedStorageFileStream stream = new IsolatedStorageFileStream(PropertyStoreFile, FileMode.Open, isoStore))
+			using (IsolatedStorageFileStream stream = new IsolatedStorageFileStream(PropertyStoreFile, System.IO.FileMode.Open, isoStore))
 			{
 				if (stream.Length == 0)
 					return new Dictionary<string, object>(4);
@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Platform.WPF
 			{
 				IsolatedStorageFile isoStore = IsolatedStorageFile.GetStore(IsolatedStorageScope.User | IsolatedStorageScope.Assembly, null, null);
 
-				using (IsolatedStorageFileStream stream = new IsolatedStorageFileStream(PropertyStoreFile, FileMode.OpenOrCreate, isoStore))
+				using (IsolatedStorageFileStream stream = new IsolatedStorageFileStream(PropertyStoreFile, System.IO.FileMode.OpenOrCreate, isoStore))
 				{
 					var serializer = new DataContractSerializer(typeof(IDictionary<string, object>));
 					serializer.WriteObject(stream, properties);

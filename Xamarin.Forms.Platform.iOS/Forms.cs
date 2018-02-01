@@ -21,8 +21,10 @@ using TNativeView = UIKit.UIView;
 using AppKit;
 using Xamarin.Forms.Platform.MacOS;
 using TNativeView = AppKit.NSView;
-
 #endif
+using FileMode = Xamarin.Forms.Internals.FileMode;
+using FileAccess = Xamarin.Forms.Internals.FileAccess;
+using FileShare = Xamarin.Forms.Internals.FileShare;
 
 namespace Xamarin.Forms
 {
@@ -327,13 +329,13 @@ namespace Xamarin.Forms
 
 				public Task<Stream> OpenFileAsync(string path, FileMode mode, FileAccess access)
 				{
-					Stream stream = _isolatedStorageFile.OpenFile(path, mode, access);
+					Stream stream = _isolatedStorageFile.OpenFile(path, (System.IO.FileMode)mode, (System.IO.FileAccess)access);
 					return Task.FromResult(stream);
 				}
 
 				public Task<Stream> OpenFileAsync(string path, FileMode mode, FileAccess access, FileShare share)
 				{
-					Stream stream = _isolatedStorageFile.OpenFile(path, mode, access, share);
+					Stream stream = _isolatedStorageFile.OpenFile(path, (System.IO.FileMode)mode, (System.IO.FileAccess)access, (System.IO.FileShare)share);
 					return Task.FromResult(stream);
 				}
 			}

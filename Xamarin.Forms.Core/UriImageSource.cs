@@ -6,6 +6,9 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
+using FileMode = Xamarin.Forms.Internals.FileMode;
+using FileAccess = Xamarin.Forms.Internals.FileAccess;
+using FileShare = Xamarin.Forms.Internals.FileShare;
 
 namespace Xamarin.Forms
 {
