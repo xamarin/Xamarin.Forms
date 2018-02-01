@@ -2,16 +2,16 @@ using System;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Reflection;
+using System.IO;
 using System.IO.IsolatedStorage;
 using System.Collections.Generic;
 using Xamarin.Forms;
 using Xamarin.Forms.Core.UnitTests;
 using System.Security.Cryptography;
 using System.Text;
-using FileMode = System.IO.FileMode;
-using FileAccess = System.IO.FileAccess;
-using FileShare = System.IO.FileShare;
-using Stream = System.IO.Stream;
+using FileMode = Xamarin.Forms.Internals.FileMode;
+using FileAccess = Xamarin.Forms.Internals.FileAccess;
+using FileShare = Xamarin.Forms.Internals.FileShare;
 
 [assembly:Dependency (typeof(MockDeserializer))]
 [assembly:Dependency (typeof(MockResourcesProvider))]
@@ -145,13 +145,13 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			public Task<Stream> OpenFileAsync (string path, FileMode mode, FileAccess access)
 			{
-				Stream stream = isolatedStorageFile.OpenFile (path, mode, access);
+				Stream stream = isolatedStorageFile.OpenFile (path, (System.IO.FileMode)mode, (System.IO.FileAccess)access);
 				return Task.FromResult (stream);
 			}
 
 			public Task<Stream> OpenFileAsync (string path, FileMode mode, FileAccess access, FileShare share)
 			{
-				Stream stream = isolatedStorageFile.OpenFile (path, mode, access, share);
+				Stream stream = isolatedStorageFile.OpenFile (path, (System.IO.FileMode)mode, (System.IO.FileAccess)access, (System.IO.FileShare)share);
 				return Task.FromResult (stream);
 			}
 

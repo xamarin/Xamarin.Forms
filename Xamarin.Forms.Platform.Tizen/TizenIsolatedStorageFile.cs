@@ -3,6 +3,9 @@ using System.IO;
 using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
 using TApplication = Tizen.Applications.Application;
+using FileMode = Xamarin.Forms.Internals.FileMode;
+using FileAccess = Xamarin.Forms.Internals.FileAccess;
+using FileShare = Xamarin.Forms.Internals.FileShare;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
@@ -109,7 +112,7 @@ namespace Xamarin.Forms.Platform.Tizen
 				throw new ArgumentException("An empty path is not valid.");
 
 			string fullPath = Path.Combine(_rootPath, path);
-			return new FileStream(fullPath, mode, access, share);
+			return new FileStream(fullPath, (System.IO.FileMode)mode, (System.IO.FileAccess)access, (System.IO.FileShare)share);
 		}
 
 		public Task<Stream> OpenFileAsync(string path, FileMode mode, FileAccess access)

@@ -11,17 +11,11 @@
     <DebugType>none</DebugType>
     <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Remove="Internals\Legacy\**" />
-    <EmbeddedResource Remove="Internals\Legacy\**" />
-    <None Remove="Internals\Legacy\**" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.0' ">
-    <Compile Include="Internals\Legacy\**" />
     <PackageReference Include="System.ComponentModel" Version="4.3.0" />
     <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
   </ItemGroup>
