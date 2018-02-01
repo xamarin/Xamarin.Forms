@@ -63,7 +63,7 @@ using Xamarin.Forms.StyleSheets;
 
 //flex
 [assembly: StyleProperty("align-content", typeof(FlexLayout), nameof(FlexLayout.AlignContentProperty))]
-[assembly: StyleProperty("align-items", typeof(FlexLayout), nameof(FlexLayout.AlignSelfProperty))]
+[assembly: StyleProperty("align-items", typeof(FlexLayout), nameof(FlexLayout.AlignItemsProperty))]
 [assembly: StyleProperty("align-self", typeof(VisualElement), nameof(FlexLayout.AlignSelfProperty), PropertyOwnerType = typeof(FlexLayout))]
 [assembly: StyleProperty("flex-direction", typeof(FlexLayout), nameof(FlexLayout.DirectionProperty))]
 [assembly: StyleProperty("flex-basis", typeof(VisualElement), nameof(FlexLayout.BasisProperty), PropertyOwnerType = typeof(FlexLayout))]

@@ -255,7 +255,6 @@ namespace Xamarin.Forms
 		{
 			foreach (var child in Children)
 				RemoveChild(child);
-			//_root.Dispose();
 			_root = null;
 		}
 
@@ -321,7 +320,6 @@ namespace Xamarin.Forms
 				return;
 			var item = GetFlexItem(view);
 			_root.Remove(item);
-			//item.Dispose();
 			view.ClearValue(FlexItemProperty);
 		}
 
@@ -334,16 +332,29 @@ namespace Xamarin.Forms
 				item.Height = ((View)sender).HeightRequest < 0 ? float.NaN : (float)((View)sender).HeightRequest;
 				InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 				UpdateChildrenLayout();
+				return;
+			}
+
+			if (e.PropertyName == MarginProperty.PropertyName) {
+				var item = (sender as FlexLayout)?._root ?? GetFlexItem((BindableObject)sender);
+				var margin = (Thickness)((View)sender).GetValue(MarginProperty);
+				item.MarginLeft = (float)margin.Left;
+				item.MarginTop = (float)margin.Top;
+				item.MarginRight = (float)margin.Right;
+				item.MarginBottom = (float)margin.Bottom;
+				InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
+				UpdateChildrenLayout();
+				return;
 			}
 
 			if (   e.PropertyName == OrderProperty.PropertyName
 				|| e.PropertyName == GrowProperty.PropertyName
 				|| e.PropertyName == ShrinkProperty.PropertyName
 				|| e.PropertyName == BasisProperty.PropertyName
-				|| e.PropertyName == AlignSelfProperty.PropertyName
-			    || e.PropertyName == MarginProperty.PropertyName) {
+				|| e.PropertyName == AlignSelfProperty.PropertyName) {
 				InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 				UpdateChildrenLayout();
+				return;
 			}
 		}
 
