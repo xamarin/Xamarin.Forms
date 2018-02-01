@@ -66,7 +66,14 @@ namespace Xamarin.Flex
 		public float MarginLeft { get; set; } = 0f;
 		public float MarginRight { get; set; } = 0f;
 		public float MarginTop { get; set; } = 0f;
-		public int Order { get; set; } = 0;
+		int order = 0;
+		public int Order {
+			get { return order; }
+			set {
+				if ((order = value) != 0 && Parent != null)
+					Parent.ShouldOrderChildren = true;
+			}
+		}
 		public float PaddingBottom { get; set; } = 0f;
 		public float PaddingLeft { get; set; } = 0f;
 		public float PaddingRight { get; set; } = 0f;
@@ -94,6 +101,8 @@ namespace Xamarin.Flex
 			ValidateNewChild(child);
 			(Children ?? (Children = new List<Item>())).Add(child);
 			child.Parent = this;
+			if (child.Order != 0)
+				ShouldOrderChildren = true;
 		}
 
 		public void InsertAt(uint index, Item child)
@@ -101,6 +110,8 @@ namespace Xamarin.Flex
 			ValidateNewChild(child);
 			(Children ?? (Children = new List<Item>())).Insert((int)index, child);
 			child.Parent = this;
+			if (child.Order != 0)
+				ShouldOrderChildren = true;
 		}
 
 		public Item RemoveAt(uint index)
