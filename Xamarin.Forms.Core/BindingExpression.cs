@@ -364,7 +364,7 @@ namespace Xamarin.Forms
 						}
 					}
 				}
-#if !PCL
+#if !NETSTANDARD1_0
 				TupleElementNamesAttribute tupleEltNames;
 				if (property != null
 					&& part.NextPart != null

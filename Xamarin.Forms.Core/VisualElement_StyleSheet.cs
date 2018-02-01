@@ -24,7 +24,7 @@ namespace Xamarin.Forms
 				return styleAttribute.BindableProperty;
 
 			var propertyOwnerType = styleAttribute.PropertyOwnerType ?? GetType();
-#if PCL
+#if NETSTANDARD1_0
 			var bpField = propertyOwnerType.GetField(styleAttribute.BindablePropertyName);
 #else
 			var bpField = propertyOwnerType.GetField(styleAttribute.BindablePropertyName,
