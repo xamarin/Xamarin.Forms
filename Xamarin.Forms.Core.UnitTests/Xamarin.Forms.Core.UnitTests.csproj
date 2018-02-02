@@ -77,6 +77,7 @@
     <Compile Include="FlowDirectionTests.cs" />
     <Compile Include="LayoutChildIntoBoundingRegionTests.cs" />
     <Compile Include="MenuUnitTests.cs" />
+    <Compile Include="SpanTests.cs" />
     <Compile Include="TemplatedViewUnitTests.cs" />
     <Compile Include="TemplatedPageUnitTests.cs" />
     <Compile Include="ContentFormUnitTests.cs" />
@@ -217,8 +218,5 @@
     <EmbeddedResource Include="Images\crimson.jpg">
       <LogicalName>Images/crimson.jpg</LogicalName>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="StyleSheets\" />
   </ItemGroup>
 </Project>
