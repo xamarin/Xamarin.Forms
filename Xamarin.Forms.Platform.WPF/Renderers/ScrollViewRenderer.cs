@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using WpfScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility;
 
 namespace Xamarin.Forms.Platform.WPF
 {
@@ -156,14 +157,14 @@ namespace Xamarin.Forms.Platform.WPF
 		void UpdateOrientation()
 		{
 			if (Element.Orientation == ScrollOrientation.Horizontal || Element.Orientation == ScrollOrientation.Both)
-				Control.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+				Control.HorizontalScrollBarVisibility = WpfScrollBarVisibility.Auto;
 			else
-				Control.HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled;
+				Control.HorizontalScrollBarVisibility = WpfScrollBarVisibility.Disabled;
 
 			if (Element.Orientation == ScrollOrientation.Vertical || Element.Orientation == ScrollOrientation.Both)
-				Control.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+				Control.VerticalScrollBarVisibility = WpfScrollBarVisibility.Auto;
 			else
-				Control.VerticalScrollBarVisibility = ScrollBarVisibility.Disabled;
+				Control.VerticalScrollBarVisibility = WpfScrollBarVisibility.Disabled;
 		}
 
 		void UpdateScrollOffset(double x, double y)
