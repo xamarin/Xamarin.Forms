@@ -20,8 +20,8 @@ namespace Xamarin.Forms
 
 		private void FormattedString_BindingContextChanged(object sender, EventArgs e)
 		{
-			foreach (var span in Spans)
-				SetInheritedBindingContext(span, BindingContext);
+			for (int i = 0; i < Spans.Count; i++)
+				SetInheritedBindingContext(Spans[i], BindingContext);
 		}
 
 		protected override void OnBindingContextChanged()

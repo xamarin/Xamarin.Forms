@@ -63,6 +63,13 @@ namespace Xamarin.Forms
 		public Label()
 		{
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Label>>(() => new PlatformConfigurationRegistry<Label>(this));
+			BindingContextChanged += Label_BindingContextChanged;
+		}
+
+		void Label_BindingContextChanged(object sender, EventArgs e)
+		{
+			if (FormattedText != null)
+				SetInheritedBindingContext(FormattedText, this.BindingContext);
 		}
 
 		protected override void OnBindingContextChanged()
