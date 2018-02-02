@@ -58,27 +58,27 @@ namespace Xamarin.Forms.Controls.Issues
 					grid,
 					new Label{ Text = "The following three buttons should all have a red border." },
 					new Button {
-						Text = "BorderWidth = 1, BorderRadius = [default],",
+						Text = "BorderWidth = 1, CornerRadius = [default],",
 						HorizontalOptions = LayoutOptions.Center,
 						BorderColor = Color.Red,
 						BorderWidth = 1,
 					},
 					new Button {
-						Text = "BorderWidth = 1, BorderRadius = 0",
+						Text = "BorderWidth = 1, CornerRadius = 0",
 						HorizontalOptions = LayoutOptions.Center,
 						BackgroundColor = Color.Blue,
 						BorderColor = Color.Red,
 						BorderWidth = 1,
-						BorderRadius = 0,
+						CornerRadius = 0,
 						TextColor = Color.White
 					},
 					new Button {
-						Text = "BorderWidth = 1, BorderRadius = 1",
+						Text = "BorderWidth = 1, CornerRadius = 1",
 						HorizontalOptions = LayoutOptions.Center,
 						BackgroundColor = Color.Black,
 						BorderColor = Color.Red,
 						BorderWidth = 1,
-						BorderRadius = 1,
+						CornerRadius = 1,
 						TextColor = Color.White
 					}
 				},
