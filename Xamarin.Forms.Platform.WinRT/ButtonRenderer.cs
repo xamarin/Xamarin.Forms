@@ -38,19 +38,19 @@ namespace Xamarin.Forms.Platform.WinRT
 
 				UpdateContent();
 
-				if (Element.BackgroundColor != Color.Default)
+				if (Element.BackgroundColor != Button.DefaultBackgroundColor)
 					UpdateBackground();
 
-				if (Element.TextColor != Color.Default)
+				if (Element.TextColor != Button.DefaultTextColor)
 					UpdateTextColor();
 
-				if (Element.BorderColor != Color.Default)
+				if (Element.BorderColor != Button.DefaultBorderColor)
 					UpdateBorderColor();
 
-				if (Element.BorderWidth != (double)Button.BorderWidthProperty.DefaultValue)
+				if (Element.BorderWidth != Button.DefaultBorderWidth)
 					UpdateBorderWidth();
 
-				if (Element.BorderRadius != (int)Button.BorderRadiusProperty.DefaultValue)
+				if (Element.CornerRadius != Button.DefaultCornerRadius)
 					UpdateBorderRadius();
 
 				UpdateFont();
@@ -85,7 +85,7 @@ namespace Xamarin.Forms.Platform.WinRT
 			{
 				UpdateBorderWidth();
 			}
-			else if (e.PropertyName == Button.BorderRadiusProperty.PropertyName)
+			else if (e.PropertyName == Button.CornerRadiusProperty.PropertyName)
 			{
 				UpdateBorderRadius();
 			}
@@ -124,7 +124,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 		void UpdateBorderRadius()
 		{
-			Control.BorderRadius = Element.BorderRadius;
+			Control.BorderRadius = Element.CornerRadius;
 		}
 
 		void UpdateBorderWidth()
