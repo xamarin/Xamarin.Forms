@@ -20,8 +20,8 @@ namespace Xamarin.Forms
 
 		private void FormattedString_BindingContextChanged(object sender, EventArgs e)
 		{
-			foreach (var span in Spans)
-				SetInheritedBindingContext(span, BindingContext);
+			for (int i = 0; i < Spans.Count; i++)
+				SetInheritedBindingContext(Spans[i], BindingContext);
 		}
 
 		public IList<Span> Spans
@@ -51,6 +51,7 @@ namespace Xamarin.Forms
 				foreach (object item in e.OldItems)
 				{
 					var bo = item as Span;
+					SetInheritedBindingContext(bo, null);
 					if (bo != null)
 						bo.PropertyChanged -= OnItemPropertyChanged;
 				}

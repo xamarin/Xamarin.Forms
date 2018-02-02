@@ -36,7 +36,11 @@ namespace Xamarin.Forms
 			propertyChanging: (bindable, oldvalue, newvalue) =>
 			{
 				if (oldvalue != null)
-					((FormattedString)oldvalue).PropertyChanged -= ((Label)bindable).OnFormattedTextChanged;
+				{
+					var formattedString = ((FormattedString)oldvalue);
+					formattedString.PropertyChanged -= ((Label)bindable).OnFormattedTextChanged;
+					SetInheritedBindingContext(formattedString, null);
+				}
 			}, propertyChanged: (bindable, oldvalue, newvalue) =>
 			{
 				if (newvalue != null)
@@ -44,10 +48,6 @@ namespace Xamarin.Forms
 					var formattedString = (FormattedString)newvalue;
 					formattedString.PropertyChanged += ((Label)bindable).OnFormattedTextChanged;
 					SetInheritedBindingContext(formattedString, bindable.BindingContext);
-					bindable.BindingContextChanged += (s, e) =>
-					{
-						SetInheritedBindingContext(formattedString, bindable.BindingContext);
-					};
 				}
 
 				((Label)bindable).InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
@@ -63,6 +63,13 @@ namespace Xamarin.Forms
 		public Label()
 		{
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Label>>(() => new PlatformConfigurationRegistry<Label>(this));
+			BindingContextChanged += Label_BindingContextChanged;
+		}
+
+		void Label_BindingContextChanged(object sender, EventArgs e)
+		{
+			if (FormattedText != null)
+				SetInheritedBindingContext(FormattedText, this.BindingContext);
 		}
 
 		[Obsolete("Font is obsolete as of version 1.3.0. Please use the Font attributes which are on the class itself.")]

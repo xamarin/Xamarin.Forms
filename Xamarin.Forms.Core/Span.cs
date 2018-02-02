@@ -40,11 +40,13 @@ namespace Xamarin.Forms
 			((Span)bindable).TextColor = newvalue as Color? ?? default(Color);
 		}
 
+#pragma warning disable 618
 		public Color ForegroundColor
 		{
 			get { return (Color)GetValue(ForegroundColorProperty); }
 			set { SetValue(ForegroundColorProperty, value); }
 		}
+#pragma warning restore 618
 
 		public static readonly BindableProperty TextColorProperty
 			= BindableProperty.Create(nameof(TextColor), typeof(Color), typeof(Span), default(Color));
@@ -56,7 +58,7 @@ namespace Xamarin.Forms
 		}
 
 		public static readonly BindableProperty TextProperty
-			= BindableProperty.Create(nameof(Text), typeof(string), typeof(Span), null);
+			= BindableProperty.Create(nameof(Text), typeof(string), typeof(Span), "");
 
 		public string Text
 		{
