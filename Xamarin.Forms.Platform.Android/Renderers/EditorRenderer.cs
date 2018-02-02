@@ -186,6 +186,11 @@ namespace Xamarin.Forms.Platform.Android
         void UpdateMaxLength()
         {
             var currentFilters = Control?.GetFilters()?.ToList() ?? new List<IInputFilter>();
+            var currentMaxLengthFilter = currentFilters.SingleOrDefault(f => f is InputFilterLengthFilter);
+
+            if (currentMaxLengthFilter != null)
+                currentFilters.Remove(currentMaxLengthFilter);
+            
             currentFilters.Add(new InputFilterLengthFilter(Element.MaxLength));
 
             Control?.SetFilters(currentFilters.ToArray());
