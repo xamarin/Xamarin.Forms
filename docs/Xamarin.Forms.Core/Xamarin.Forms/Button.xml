@@ -181,6 +181,11 @@ namespace FormsGallery
         <AssemblyVersion>1.5.0.0</AssemblyVersion>
         <AssemblyVersion>2.0.0.0</AssemblyVersion>
       </AssemblyInfo>
+      <Attributes>
+        <Attribute>
+          <AttributeName>System.Obsolete("BorderRadius is obsolete as of 2.5.0. Please use CornerRadius instead.")</AttributeName>
+        </Attribute>
+      </Attributes>
       <ReturnValue>
         <ReturnType>System.Int32</ReturnType>
       </ReturnValue>
@@ -204,6 +209,11 @@ namespace FormsGallery
         <AssemblyVersion>1.5.0.0</AssemblyVersion>
         <AssemblyVersion>2.0.0.0</AssemblyVersion>
       </AssemblyInfo>
+      <Attributes>
+        <Attribute>
+          <AttributeName>System.Obsolete("BorderRadiusProperty is obsolete as of 2.5.0. Please use CornerRadius instead.")</AttributeName>
+        </Attribute>
+      </Attributes>
       <ReturnValue>
         <ReturnType>Xamarin.Forms.BindableProperty</ReturnType>
       </ReturnValue>
@@ -395,6 +405,99 @@ namespace FormsGallery
       </ReturnValue>
       <Docs>
         <summary>Backing store for the <see cref="T:Xamarin.Forms.Button.ContentLayout" /> property.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="CornerRadius">
+      <MemberSignature Language="C#" Value="public int CornerRadius { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance int32 CornerRadius" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="CornerRadiusProperty">
+      <MemberSignature Language="C#" Value="public static readonly Xamarin.Forms.BindableProperty CornerRadiusProperty;" />
+      <MemberSignature Language="ILAsm" Value=".field public static initonly class Xamarin.Forms.BindableProperty CornerRadiusProperty" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>Xamarin.Forms.BindableProperty</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="DefaultBorderColor">
+      <MemberSignature Language="C#" Value="public static Xamarin.Forms.Color DefaultBorderColor;" />
+      <MemberSignature Language="ILAsm" Value=".field public static valuetype Xamarin.Forms.Color DefaultBorderColor" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>Xamarin.Forms.Color</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="DefaultBorderWidth">
+      <MemberSignature Language="C#" Value="public const double DefaultBorderWidth = -1;" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal float64 DefaultBorderWidth = (-1)" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Double</ReturnType>
+      </ReturnValue>
+      <MemberValue>-1</MemberValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="DefaultCornerRadius">
+      <MemberSignature Language="C#" Value="public const int DefaultCornerRadius = -1;" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal int32 DefaultCornerRadius = (-1)" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Int32</ReturnType>
+      </ReturnValue>
+      <MemberValue>-1</MemberValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="DefaultTextColor">
+      <MemberSignature Language="C#" Value="public static Xamarin.Forms.Color DefaultTextColor;" />
+      <MemberSignature Language="ILAsm" Value=".field public static valuetype Xamarin.Forms.Color DefaultTextColor" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>Xamarin.Forms.Color</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
