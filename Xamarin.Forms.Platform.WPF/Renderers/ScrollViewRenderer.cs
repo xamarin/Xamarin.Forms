@@ -33,8 +33,8 @@ namespace Xamarin.Forms.Platform.WPF
 				if (Control == null) // construct and SetNativeControl and suscribe control event
 				{
 					SetNativeControl(new ScrollViewer() { IsManipulationEnabled = true, PanningMode = PanningMode.Both,
-						HorizontalScrollBarVisibility = ScrollBarVisibilityToUwp(e.NewElement.HorizontalScrollBarVisibility),
-						VerticalScrollBarVisibility = ScrollBarVisibilityToUwp(e.NewElement.VerticalScrollBarVisibility)
+						HorizontalScrollBarVisibility = ScrollBarVisibilityToWpf(e.NewElement.HorizontalScrollBarVisibility),
+						VerticalScrollBarVisibility = ScrollBarVisibilityToWpf(e.NewElement.VerticalScrollBarVisibility)
 					});
 					Control.LayoutUpdated += NativeLayoutUpdated;
 				}
@@ -188,7 +188,7 @@ namespace Xamarin.Forms.Platform.WPF
 				Controller.SetScrolledPosition(Control.HorizontalOffset, Control.VerticalOffset);
 		}
 
-		WpfScrollBarVisibility ScrollBarVisibilityToUwp(ScrollBarVisibility visibility)
+		WpfScrollBarVisibility ScrollBarVisibilityToWpf(ScrollBarVisibility visibility)
 		{
 			switch (visibility)
 			{
@@ -201,13 +201,13 @@ namespace Xamarin.Forms.Platform.WPF
 
 		void UpdateVerticalScrollBarVisibiilty()
 		{
-			Control.VerticalScrollBarVisibility = ScrollBarVisibilityToUwp(Element.VerticalScrollBarVisibility);
+			Control.VerticalScrollBarVisibility = ScrollBarVisibilityToWpf(Element.VerticalScrollBarVisibility);
 		}
 
 		void UpdateHorizontalScrollBarVisibility()
 		{
 			if (Element.Orientation == ScrollOrientation.Horizontal || Element.Orientation == ScrollOrientation.Both)
-				Control.HorizontalScrollBarVisibility = ScrollBarVisibilityToUwp(Element.HorizontalScrollBarVisibility);
+				Control.HorizontalScrollBarVisibility = ScrollBarVisibilityToWpf(Element.HorizontalScrollBarVisibility);
 		}
 
 		bool _isDisposed;
