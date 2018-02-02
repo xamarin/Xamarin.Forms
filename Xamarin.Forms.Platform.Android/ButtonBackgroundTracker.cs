@@ -9,6 +9,7 @@ namespace Xamarin.Forms.Platform.Android
 {
 	internal class ButtonBackgroundTracker : IDisposable
 	{
+		const int DefaultCornerRadius = 2; // Default value for Android material button.
 		Drawable _defaultDrawable;
 		ButtonDrawable _backgroundDrawable;
 		RippleDrawable _rippleDrawable;
@@ -42,10 +43,10 @@ namespace Xamarin.Forms.Platform.Android
 			if (_button == null || _nativeButton == null)
 				return;
 
-			if (_button.BackgroundColor == Color.Default
-				&& _button.BorderRadius == 2 // Default value for Android material button. (int)Button.BorderRadiusProperty.DefaultValue will return the constant value 5
-				&& _button.BorderColor == Color.Default 
-				&& _button.BorderWidth == (double)Button.BorderWidthProperty.DefaultValue)
+			if (_button.BackgroundColor == VisualElement.DefaultBackgroundColor
+				&& (_button.CornerRadius == Button.DefaultCornerRadius || _button.CornerRadius == DefaultCornerRadius)
+				&& _button.BorderColor == Button.DefaultBorderColor 
+				&& _button.BorderWidth == Button.DefaultBorderWidth)
 			{
 				if (!_drawableEnabled)
 					return;
@@ -135,7 +136,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (e.PropertyName.Equals(Button.BorderColorProperty.PropertyName) ||
 				e.PropertyName.Equals(Button.BorderWidthProperty.PropertyName) ||
-				e.PropertyName.Equals(Button.BorderRadiusProperty.PropertyName) ||
+				e.PropertyName.Equals(Button.CornerRadiusProperty.PropertyName) ||
 				e.PropertyName.Equals(VisualElement.BackgroundColorProperty.PropertyName))
 			{
 				Reset();
