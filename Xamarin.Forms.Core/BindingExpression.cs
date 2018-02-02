@@ -342,7 +342,23 @@ namespace Xamarin.Forms
 						FieldInfo bindablePropertyField = sourceType.GetDeclaredField(part.Content + "Property");
 						if (bindablePropertyField != null && bindablePropertyField.FieldType == typeof(BindableProperty) && sourceType.ImplementedInterfaces.Contains(typeof(IElementController)))
 						{
-							MethodInfo setValueMethod = typeof(IElementController).GetMethod("SetValueFromRenderer", new[] { typeof(BindableProperty), typeof(object) });
+							MethodInfo setValueMethod = null;
+#if NETSTANDARD1_0
+							foreach (MethodInfo m in sourceType.AsType().GetRuntimeMethods())
+							{
+								if (m.Name.EndsWith("IElementController.SetValueFromRenderer"))
+								{
+									ParameterInfo[] parameters = m.GetParameters();
+									if (parameters.Length == 2 && parameters[0].ParameterType == typeof(BindableProperty))
+									{
+										setValueMethod = m;
+										break;
+									}
+								}
+							}
+#else
+							setValueMethod = typeof(IElementController).GetMethod("SetValueFromRenderer", new[] { typeof(BindableProperty), typeof(object) });
+#endif
 							if (setValueMethod != null)
 							{
 								part.LastSetter = setValueMethod;
