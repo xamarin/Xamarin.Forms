@@ -56,7 +56,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				Platform = platform,
 				IsPlatformEnabled = true,
 
-				AlignItems = FlexAlignItems.FlexStart,
+				AlignItems = FlexAlignItems.Start,
 				Direction = FlexDirection.Column,
 			};
 			var view0 = new View { IsPlatformEnabled = true, WidthRequest = 10, HeightRequest = 10 };
@@ -75,7 +75,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				Platform = platform,
 				IsPlatformEnabled = true,
 
-				AlignItems = FlexAlignItems.FlexEnd,
+				AlignItems = FlexAlignItems.End,
 				Direction = FlexDirection.Column,
 			};
 			var view0 = new View { IsPlatformEnabled = true, WidthRequest = 10, HeightRequest = 10 };

@@ -35,7 +35,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				Direction = FlexDirection.Column,
 			};
 			var view0 = new View { IsPlatformEnabled = true, WidthRequest = 10, HeightRequest = 10 };
-			FlexLayout.SetAlignSelf(view0, FlexAlignSelf.FlexEnd);
+			FlexLayout.SetAlignSelf(view0, FlexAlignSelf.End);
 			layout.Children.Add(view0);
 
 			layout.Layout(new Rectangle(0, 0, 100, 100));
@@ -54,7 +54,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				Direction = FlexDirection.Column,
 			};
 			var view0 = new View { IsPlatformEnabled = true, WidthRequest = 10, HeightRequest = 10 };
-			FlexLayout.SetAlignSelf(view0, FlexAlignSelf.FlexStart);
+			FlexLayout.SetAlignSelf(view0, FlexAlignSelf.Start);
 			layout.Children.Add(view0);
 
 			layout.Layout(new Rectangle(0, 0, 100, 100));
@@ -70,11 +70,11 @@ namespace Xamarin.Forms.Core.UnitTests
 				Platform = platform,
 				IsPlatformEnabled = true,
 
-				AlignItems = FlexAlignItems.FlexStart,
+				AlignItems = FlexAlignItems.Start,
 				Direction = FlexDirection.Column,
 			};
 			var view0 = new View { IsPlatformEnabled = true, WidthRequest = 10, HeightRequest = 10 };
-			FlexLayout.SetAlignSelf(view0, FlexAlignSelf.FlexEnd);
+			FlexLayout.SetAlignSelf(view0, FlexAlignSelf.End);
 			layout.Children.Add(view0);
 
 			layout.Layout(new Rectangle(0, 0, 100, 100));

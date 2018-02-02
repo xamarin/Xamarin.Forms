@@ -88,7 +88,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			var layout = new FlexLayout {
 				Direction = FlexDirection.Row,
-				AlignItems = FlexAlignItems.FlexStart,
+				AlignItems = FlexAlignItems.Start,
 				Platform = platform,
 				IsPlatformEnabled = true
 			};
@@ -244,7 +244,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			var layout = new FlexLayout {
 				Direction = FlexDirection.Row,
-				AlignItems = FlexAlignItems.FlexStart,
+				AlignItems = FlexAlignItems.Start,
 				Platform = platform,
 				IsPlatformEnabled = true
 			};

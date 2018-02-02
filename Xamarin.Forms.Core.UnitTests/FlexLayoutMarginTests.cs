@@ -61,7 +61,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				},
 
 				Direction = FlexDirection.Row,
-				JustifyContent = FlexJustify.FlexEnd,
+				JustifyContent = FlexJustify.End,
 			};
 
 			layout.Layout(new Rectangle(0, 0, 100, 100));
@@ -82,7 +82,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				},
 
 				Direction = FlexDirection.Column,
-				JustifyContent = FlexJustify.FlexEnd,
+				JustifyContent = FlexJustify.End,
 			};
 
 			layout.Layout(new Rectangle(0, 0, 100, 100));

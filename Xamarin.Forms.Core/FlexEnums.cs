@@ -6,12 +6,12 @@ namespace Xamarin.Forms
 	[TypeConverter(typeof(FlexJustifyTypeConverter))]
 	public enum FlexJustify
 	{
-		FlexStart = Flex.Align.Start,
-		Center = Flex.Align.Center,
-		FlexEnd = Flex.Align.End,
-		SpaceBetween = Flex.Align.SpaceBetween,
-		SpaceAround = Flex.Align.SpaceAround,
-		//SpaceEvenly = Flex.Align.SpaceEvenly,
+		Start = Flex.Justify.Start,
+		Center = Flex.Justify.Center,
+		End = Flex.Justify.End,
+		SpaceBetween = Flex.Justify.SpaceBetween,
+		SpaceAround = Flex.Justify.SpaceAround,
+		SpaceEvenly = Flex.Justify.SpaceEvenly,
 	}
 
 	[Xaml.TypeConversion(typeof(FlexJustify))]
@@ -23,9 +23,9 @@ namespace Xamarin.Forms
 				if (Enum.TryParse(value, true, out FlexJustify justify))
 					return justify;
 				if (value.Equals("flex-start", StringComparison.OrdinalIgnoreCase))
-					return FlexJustify.FlexStart;
+					return FlexJustify.Start;
 				if (value.Equals("flex-end", StringComparison.OrdinalIgnoreCase))
-					return FlexJustify.FlexEnd;
+					return FlexJustify.End;
 				if (value.Equals("space-between", StringComparison.OrdinalIgnoreCase))
 					return FlexJustify.SpaceBetween;
 				if (value.Equals("space-around", StringComparison.OrdinalIgnoreCase))
@@ -70,12 +70,13 @@ namespace Xamarin.Forms
 	[TypeConverter(typeof(FlexAlignContentTypeConverter))]
 	public enum FlexAlignContent
 	{
-		Stretch = Flex.Align.Stretch,
-		Center = Flex.Align.Center,
-		FlexStart = Flex.Align.Start,
-		FlexEnd = Flex.Align.End,
-		SpaceBetween = Flex.Align.SpaceBetween,
-		SpaceAround = Flex.Align.SpaceAround,
+		Stretch = Flex.AlignContent.Stretch,
+		Center = Flex.AlignContent.Center,
+		Start = Flex.AlignContent.Start,
+		End = Flex.AlignContent.End,
+		SpaceBetween = Flex.AlignContent.SpaceBetween,
+		SpaceAround = Flex.AlignContent.SpaceAround,
+		SpaceEvenly = Flex.AlignContent.SpaceEvenly,
 	}
 
 	[Xaml.TypeConversion(typeof(FlexAlignContent))]
@@ -87,9 +88,9 @@ namespace Xamarin.Forms
 				if (Enum.TryParse(value, true, out FlexAlignContent aligncontent))
 					return aligncontent;
 				if (value.Equals("flex-start", StringComparison.OrdinalIgnoreCase))
-					return FlexAlignContent.FlexStart;
+					return FlexAlignContent.Start;
 				if (value.Equals("flex-end", StringComparison.OrdinalIgnoreCase))
-					return FlexAlignContent.FlexEnd;
+					return FlexAlignContent.End;
 				if (value.Equals("space-between", StringComparison.OrdinalIgnoreCase))
 					return FlexAlignContent.SpaceBetween;
 				if (value.Equals("space-around", StringComparison.OrdinalIgnoreCase))
@@ -102,11 +103,11 @@ namespace Xamarin.Forms
 	[TypeConverter(typeof(FlexAlignItemsTypeConverter))]
 	public enum FlexAlignItems
 	{
-		Stretch = Flex.Align.Stretch,
-		Center = Flex.Align.Center,
-		FlexStart = Flex.Align.Start,
-		FlexEnd = Flex.Align.End,
-		//Baseline = Flex.Align.Baseline,
+		Stretch = Flex.AlignItems.Stretch,
+		Center = Flex.AlignItems.Center,
+		Start = Flex.AlignItems.Start,
+		End = Flex.AlignItems.End,
+		//Baseline = Flex.AlignItems.Baseline,
 	}
 
 	[Xaml.TypeConversion(typeof(FlexAlignItems))]
@@ -118,9 +119,9 @@ namespace Xamarin.Forms
 				if (Enum.TryParse(value, true, out FlexAlignItems alignitems))
 					return alignitems;
 				if (value.Equals("flex-start", StringComparison.OrdinalIgnoreCase))
-					return FlexAlignItems.FlexStart;
+					return FlexAlignItems.Start;
 				if (value.Equals("flex-end", StringComparison.OrdinalIgnoreCase))
-					return FlexAlignItems.FlexEnd;
+					return FlexAlignItems.End;
 			}
 			throw new InvalidOperationException(string.Format("Cannot convert \"{0}\" into {1}", value, typeof(FlexAlignItems)));
 		}
@@ -129,12 +130,12 @@ namespace Xamarin.Forms
 	[TypeConverter(typeof(FlexAlignSelfTypeConverter))]
 	public enum FlexAlignSelf
 	{
-		Auto = Flex.Align.Auto,
-		Stretch = Flex.Align.Stretch,
-		Center = Flex.Align.Center,
-		FlexStart = Flex.Align.Start,
-		FlexEnd = Flex.Align.End,
-		//Baseline = Flex.Align.Baseline,
+		Auto = Flex.AlignSelf.Auto,
+		Stretch = Flex.AlignSelf.Stretch,
+		Center = Flex.AlignSelf.Center,
+		Start = Flex.AlignSelf.Start,
+		End = Flex.AlignSelf.End,
+		//Baseline = Flex.AlignSelf.Baseline,
 	}
 
 	[Xaml.TypeConversion(typeof(FlexAlignSelf))]
@@ -146,9 +147,9 @@ namespace Xamarin.Forms
 				if (Enum.TryParse(value, true, out FlexAlignSelf alignself))
 					return alignself;
 				if (value.Equals("flex-start", StringComparison.OrdinalIgnoreCase))
-					return FlexAlignSelf.FlexStart;
+					return FlexAlignSelf.Start;
 				if (value.Equals("flex-end", StringComparison.OrdinalIgnoreCase))
-					return FlexAlignSelf.FlexEnd;
+					return FlexAlignSelf.End;
 			}
 			throw new InvalidOperationException(string.Format("Cannot convert \"{0}\" into {1}", value, typeof(FlexAlignSelf)));
 		}
@@ -181,15 +182,19 @@ namespace Xamarin.Forms
 	public struct FlexBasis
 	{
 		bool _isLength;
+		bool _isRelative;
 		public static FlexBasis Auto = new FlexBasis();
 		public float Length { get; }
-		internal bool IsAuto => !_isLength;
-
-		public FlexBasis(float length)
+		internal bool IsAuto => !_isLength && !_isRelative;
+		internal bool IsRelative => _isRelative;
+		public FlexBasis(float length, bool isRelative = false)
 		{
 			if (length < 0)
 				throw new ArgumentException("should be a positive value", nameof(length));
-			_isLength = true;
+			if (isRelative && length > 1)
+				throw new ArgumentException("relative length should be in [0, 1]", nameof(length));
+			_isLength = !isRelative;
+			_isRelative = isRelative;
 			Length = length;
 		}
 
@@ -206,6 +211,9 @@ namespace Xamarin.Forms
 				if (value != null) {
 					if (value.Equals("auto", StringComparison.OrdinalIgnoreCase))
 						return Auto;
+					value = value.Trim();
+					if (value.EndsWith("%", StringComparison.InvariantCulture) && float.TryParse(value.Substring(0, value.Length - 1), NumberStyles.Number, CultureInfo.InvariantCulture, out float relflex))
+						return new FlexBasis(relflex/100, isRelative: true);
 					if (float.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out float flex))
 						return new FlexBasis(flex);
 				}

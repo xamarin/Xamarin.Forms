@@ -16,8 +16,8 @@ namespace Xamarin.Forms.Core.UnitTests
 				WidthRequest = 130,
 				HeightRequest = 100,
 
-				AlignContent = FlexAlignContent.FlexStart,
-				AlignItems = FlexAlignItems.FlexStart,
+				AlignContent = FlexAlignContent.Start,
+				AlignItems = FlexAlignItems.Start,
 				Direction = FlexDirection.Row,
 				Wrap = FlexWrap.Wrap,
 			};
@@ -57,7 +57,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				Platform = platform,
 				IsPlatformEnabled = true,
 
-				AlignItems = FlexAlignItems.FlexStart,
+				AlignItems = FlexAlignItems.Start,
 				Direction = FlexDirection.Column,
 				Wrap = FlexWrap.Wrap,
 			};
@@ -98,7 +98,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 				Direction = FlexDirection.Column,
 				Wrap = FlexWrap.Wrap,
-				AlignItems = FlexAlignItems.FlexStart,
+				AlignItems = FlexAlignItems.Start,
 			};
 
 			var view0 = new View { IsPlatformEnabled = true };
@@ -150,8 +150,8 @@ namespace Xamarin.Forms.Core.UnitTests
 				HeightRequest = 100,
 
 				Direction = FlexDirection.Column,
-				AlignContent = FlexAlignContent.FlexEnd,
-				AlignItems = FlexAlignItems.FlexStart,
+				AlignContent = FlexAlignContent.End,
+				AlignItems = FlexAlignItems.Start,
 				Wrap = FlexWrap.Wrap,
 			};
 
@@ -197,7 +197,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				IsPlatformEnabled = true,
 				Direction = FlexDirection.Column,
 				AlignContent = FlexAlignContent.Stretch,
-				AlignItems = FlexAlignItems.FlexStart,
+				AlignItems = FlexAlignItems.Start,
 				Wrap = FlexWrap.Wrap,
 				WidthRequest = 150,
 				HeightRequest = 100
@@ -343,7 +343,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				IsPlatformEnabled = true,
 				Direction = FlexDirection.Row,
 				AlignContent = FlexAlignContent.Stretch,
-				AlignItems = FlexAlignItems.FlexStart,
+				AlignItems = FlexAlignItems.Start,
 				Wrap = FlexWrap.Wrap,
 				WidthRequest = 150,
 				HeightRequest = 100
@@ -691,7 +691,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				IsPlatformEnabled = true,
 				Direction = FlexDirection.Row,
 				AlignContent = FlexAlignContent.Stretch,
-				AlignItems = FlexAlignItems.FlexStart,
+				AlignItems = FlexAlignItems.Start,
 				Wrap = FlexWrap.Wrap,
 				WidthRequest = 150,
 				HeightRequest = 100

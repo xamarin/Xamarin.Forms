@@ -8,9 +8,8 @@ using System.Collections.Generic;
 
 namespace Xamarin.Flex
 {
-	enum Align
+	enum AlignContent
 	{
-		Auto = 0,
 		Stretch = 1,
 		Center = 2,
 		Start = 3,
@@ -20,12 +19,41 @@ namespace Xamarin.Flex
 		SpaceEvenly = 7,
 	}
 
+	enum AlignItems
+	{
+		Stretch = 1,
+		Center = 2,
+		Start = 3,
+		End = 4,
+		//Baseline = 8,
+	}
+
+	enum AlignSelf
+	{
+		Auto = 0,
+		Stretch = 1,
+		Center = 2,
+		Start = 3,
+		End = 4,
+		//Baseline = 8,
+	}
+
 	enum Direction
 	{
 		Row = 0,
 		RowReverse = 1,
 		Column = 2,
 		ColumnReverse = 3,
+	}
+
+	enum Justify
+	{
+		Center = 2,
+		Start = 3,
+		End = 4,
+		SpaceBetween = 5,
+		SpaceAround = 6,
+		SpaceEvenly = 7,
 	}
 
 	enum Position
@@ -41,39 +69,53 @@ namespace Xamarin.Flex
 		WrapReverse = 2,
 	}
 
+	struct Basis {
+		readonly bool _isRelative;
+		readonly bool _isLength;
+		readonly float _length;
+		public static Basis Auto = new Basis();
+		public bool IsRelative => _isRelative;
+		public bool IsAuto => !_isLength && !_isRelative;
+		public float Length => _length;
+		public Basis(float length, bool isRelative = false)
+		{
+			_length = length;
+			_isLength = !isRelative;
+			_isRelative = isRelative;
+		}
+	}
+
 	class Item : IEnumerable<Item>
 	{
-		public float[] Frame { get; } = new float[4];
+		public float[] Frame { get; } = new float[4];						//x, y, w, h
 		public Item Parent { get; private set; }
 		IList<Item> Children { get; set; }
 		bool ShouldOrderChildren { get; set; }
 
-		public Align AlignContent { get; set; } = Align.Stretch;
-		public Align AlignItems { get; set; } = Align.Stretch;
-		public Align AlignSelf { get; set; } = Align.Auto;
-		public float Basis { get; set; } = float.NaN;
+		public AlignContent AlignContent { get; set; } = AlignContent.Stretch;
+		public AlignItems AlignItems { get; set; } = AlignItems.Stretch;
+		public AlignSelf AlignSelf { get; set; } = AlignSelf.Auto;
+		public Basis Basis { get; set; } = Basis.Auto;
 		public float Bottom { get; set; } = float.NaN;
 		public Direction Direction { get; set; } = Direction.Column;
-		public float FrameHeight => Frame[3];
-		public float FrameWidth => Frame[2];
-		public float FrameX => Frame[0];
-		public float FrameY => Frame[1];
 		public float Grow { get; set; } = 0f;
 		public float Height { get; set; } = float.NaN;
-		public Align JustifyContent { get; set; } = Align.Start;
+		public Justify JustifyContent { get; set; } = Justify.Start;
 		public float Left { get; set; } = float.NaN;
 		public float MarginBottom { get; set; } = 0f;
 		public float MarginLeft { get; set; } = 0f;
 		public float MarginRight { get; set; } = 0f;
 		public float MarginTop { get; set; } = 0f;
-		int order = 0;
+
+		int order;
 		public int Order {
-			get { return order; }
+			get => order; 
 			set {
 				if ((order = value) != 0 && Parent != null)
 					Parent.ShouldOrderChildren = true;
 			}
 		}
+
 		public float PaddingBottom { get; set; } = 0f;
 		public float PaddingLeft { get; set; } = 0f;
 		public float PaddingRight { get; set; } = 0f;
@@ -98,20 +140,18 @@ namespace Xamarin.Flex
 
 		public void Add(Item child)
 		{
-			ValidateNewChild(child);
+			ValidateChild(child);
 			(Children ?? (Children = new List<Item>())).Add(child);
 			child.Parent = this;
-			if (child.Order != 0)
-				ShouldOrderChildren = true;
+			ShouldOrderChildren |= child.Order != 0;
 		}
 
 		public void InsertAt(uint index, Item child)
 		{
-			ValidateNewChild(child);
+			ValidateChild(child);
 			(Children ?? (Children = new List<Item>())).Insert((int)index, child);
 			child.Parent = this;
-			if (child.Order != 0)
-				ShouldOrderChildren = true;
+			ShouldOrderChildren |= child.Order != 0;
 		}
 
 		public Item RemoveAt(uint index)
@@ -160,16 +200,6 @@ namespace Xamarin.Flex
 			set => MarginTop = MarginLeft = MarginRight = MarginBottom = value;
 		}
 
-		public void Flex(float grow = float.NaN, float shrink = float.NaN, float basis = float.NaN)
-		{
-			if (!Double.IsNaN(grow))
-				Grow = grow;
-			if (!Double.IsNaN(shrink))
-				Shrink = shrink;
-			if (!Double.IsNaN(basis))
-				Basis = basis;
-		}
-
 		public delegate void SelfSizingDelegate(Item item, ref float width, ref float height);
 
 		public SelfSizingDelegate SelfSizing { get; set; }
@@ -180,7 +210,7 @@ namespace Xamarin.Flex
 		IEnumerator<Item> IEnumerable<Item>.GetEnumerator() =>
 			Children.GetEnumerator();
 
-		void ValidateNewChild(Item child)
+		void ValidateChild(Item child)
 		{
 			if (this == child)
 				throw new ArgumentException("cannot add item into self");
@@ -254,7 +284,7 @@ namespace Xamarin.Flex
 
 					for (uint j = 0; j < 2; j++) {
 						uint size_off = j + 2;
-						if (size_off == layout.frame_size2_i && child_align(child, item) == Align.Stretch) {
+						if (size_off == layout.frame_size2_i && child_align(child, item) == AlignItems.Stretch) {
 							continue;
 						}
 						float val = size[j];
@@ -265,9 +295,13 @@ namespace Xamarin.Flex
 				}
 
 				// Honor the `basis' property which overrides the main-axis size.
-				if (!float.IsNaN(child.Basis)) {
-					//assert(child.Basis >= 0);
-					child.Frame[layout.frame_size_i] = child.Basis;
+				if (!child.Basis.IsAuto) {
+					if (child.Basis.Length < 0) throw new Exception("basis should >=0");
+					if (child.Basis.IsRelative && child.Basis.Length > 1) throw new Exception("relative basis should be <=1");
+					float basis = child.Basis.Length;
+					if (child.Basis.IsRelative)
+						basis *= (layout.vertical ? height : width);
+					child.Frame[layout.frame_size_i] = basis;
 				}
 
 				float child_size = child.Frame[layout.frame_size_i];
@@ -288,6 +322,10 @@ namespace Xamarin.Flex
 					}
 				}
 
+				if (   child.Grow < 0
+					|| child.Shrink < 0)
+					throw new Exception("shrink and grow should be >= 0");
+				
 				layout.flex_grows += child.Grow;
 				layout.flex_shrinks += child.Shrink;
 
@@ -312,9 +350,8 @@ namespace Xamarin.Flex
 				float pos = 0;
 				float spacing = 0;
 				float flex_dim = layout.align_dim - layout.lines_sizes;
-				if (flex_dim > 0) {
-					layout_align(item.AlignContent, flex_dim, (uint)(layout.lines?.Length ?? 0), ref pos, ref spacing, true);
-				}
+				if (flex_dim > 0)
+					layout_align(item.AlignContent, flex_dim, (uint)(layout.lines?.Length ?? 0), ref pos, ref spacing);
 
 				float old_pos = 0;
 				if (layout.reverse2) {
@@ -344,7 +381,7 @@ namespace Xamarin.Flex
 							// If the child's cross axis size hasn't been set it, it
 							// defaults to the line size.
 							child.Frame[layout.frame_size2_i] = line.size
-								+ (item.AlignContent == Align.Stretch
+								+ (item.AlignContent == AlignContent.Stretch
 								   ? spacing : 0);
 						}
 						child.Frame[layout.frame_pos2_i] = pos + (child.Frame[layout.frame_pos2_i] - old_pos);
@@ -361,51 +398,81 @@ namespace Xamarin.Flex
 			layout.cleanup();
 		}
 
-		static bool layout_align(Align align, float flex_dim, uint children_count, ref float pos_p, ref float spacing_p, bool stretch_allowed)
+		static void layout_align(Justify align, float flex_dim, uint children_count, ref float pos_p, ref float spacing_p)
 		{
 			if (flex_dim < 0)
 				throw new ArgumentException();
-			float pos = 0;
-			float spacing = 0;
+			pos_p = 0;
+			spacing_p = 0;
 
 			switch (align) {
-			case Align.Start:
-				break;
-			case Align.End:
-				pos = flex_dim;
-				break;
-			case Align.Center:
-				pos = flex_dim / 2;
-				break;
-			case Align.SpaceBetween:
+			case Justify.Start:
+				return;
+			case Justify.End:
+				pos_p = flex_dim;
+				return;
+			case Justify.Center:
+				pos_p = flex_dim / 2;
+				return;
+			case Justify.SpaceBetween:
 				if (children_count > 0)
-					spacing = flex_dim / (children_count - 1);
-				break;
-			case Align.SpaceAround:
+					spacing_p = flex_dim / (children_count - 1);
+				return;
+			case Justify.SpaceAround:
 				if (children_count > 0) {
-					spacing = flex_dim / children_count;
-					pos = spacing / 2;
+					spacing_p = flex_dim / children_count;
+					pos_p = spacing_p / 2;
 				}
-				break;
-			case Align.SpaceEvenly:
+				return;
+			case Justify.SpaceEvenly:
 				if (children_count > 0) {
-					spacing = flex_dim / (children_count + 1);
-					pos = spacing;
+					spacing_p = flex_dim / (children_count + 1);
+					pos_p = spacing_p;
 				}
-				break;
-			case Align.Stretch:
-				if (stretch_allowed) {
-					spacing = flex_dim / children_count;
-					break;
-				}
-				return false;
+				return;
 			default:
-				return false;
+				throw new ArgumentException();
 			}
+		}
 
-			pos_p = pos;
-			spacing_p = spacing;
-			return true;
+		static void layout_align(AlignContent align, float flex_dim, uint children_count, ref float pos_p, ref float spacing_p)
+		{
+			if (flex_dim < 0)
+				throw new ArgumentException();
+			pos_p = 0;
+			spacing_p = 0;
+
+			switch (align) {
+			case AlignContent.Start:
+				return;
+			case AlignContent.End:
+				pos_p = flex_dim;
+				return;
+			case AlignContent.Center:
+				pos_p = flex_dim / 2;
+				return;
+			case AlignContent.SpaceBetween:
+				if (children_count > 0)
+					spacing_p = flex_dim / (children_count - 1);
+				return;
+			case AlignContent.SpaceAround:
+				if (children_count > 0) {
+					spacing_p = flex_dim / children_count;
+					pos_p = spacing_p / 2;
+				}
+				return;
+			case AlignContent.SpaceEvenly:
+				if (children_count > 0) {
+					spacing_p = flex_dim / (children_count + 1);
+					pos_p = spacing_p;
+				}
+				return;
+			case AlignContent.Stretch:
+				spacing_p = flex_dim / children_count;
+				return;
+			default:
+				throw new ArgumentException();
+			}
 		}
 
 		static void layout_items(Item item, uint child_begin, uint child_end, uint children_count, ref flex_layout layout)
@@ -424,7 +491,7 @@ namespace Xamarin.Flex
 			float pos = 0;
 			float spacing = 0;
 			if (layout.flex_grows == 0 && layout.flex_dim > 0) {
-				layout_align(item.JustifyContent, layout.flex_dim, children_count, ref pos, ref spacing, false);
+				layout_align(item.JustifyContent, layout.flex_dim, children_count, ref pos, ref spacing);
 
 				if (layout.reverse) {
 					pos = layout.size_dim - pos;
@@ -469,17 +536,17 @@ namespace Xamarin.Flex
 				float align_size = child.Frame[layout.frame_size2_i];
 				float align_pos = layout.pos2 + 0;
 				switch (child_align(child, item)) {
-				case Align.End:
+				case AlignItems.End:
 					align_pos += layout.line_dim - align_size - (layout.vertical ? child.MarginRight : child.MarginBottom);
 					break;
 
-				case Align.Center:
+				case AlignItems.Center:
 					align_pos += (layout.line_dim / 2) - (align_size / 2)
 						+ ((layout.vertical ? child.MarginLeft : child.MarginTop)
 						   - (layout.vertical ? child.MarginRight : child.MarginBottom));
 					break;
 
-				case Align.Stretch:
+				case AlignItems.Stretch:
 					if (align_size == 0) {
 						child.Frame[layout.frame_size2_i] = layout.line_dim
 							- ((layout.vertical ? child.MarginLeft : child.MarginTop)
@@ -487,12 +554,12 @@ namespace Xamarin.Flex
 					}
 					align_pos += (layout.vertical ? child.MarginLeft : child.MarginTop);
 					break;
-				case Align.Start:
+				case AlignItems.Start:
 					align_pos += (layout.vertical ? child.MarginLeft : child.MarginTop);
 					break;
 
 				default:
-					throw new Exception("incorrect align_self");
+					throw new Exception();
 				}
 				child.Frame[layout.frame_pos2_i] = align_pos;
 
@@ -539,8 +606,8 @@ namespace Xamarin.Flex
 		static float absolute_pos(float pos1, float pos2, float size, float dim) =>
 			!float.IsNaN(pos1) ? pos1 : (!float.IsNaN(pos2) ? dim - size - pos2 : 0);
 
-		static Align child_align(Item child, Item parent) =>
-			child.AlignSelf == Align.Auto ? parent.AlignItems : child.AlignSelf;
+		static AlignItems child_align(Item child, Item parent) =>
+			child.AlignSelf == AlignSelf.Auto ? parent.AlignItems : (AlignItems)child.AlignSelf;
 
 		struct flex_layout {
 			// Set during init.
@@ -591,21 +658,16 @@ namespace Xamarin.Flex
 			//layout_init
 			public void init(Item item, float width, float height)
 			{
-				if (item.PaddingLeft < 0)
-					throw new ArgumentException();
-				if (item.PaddingRight < 0)
-					throw new ArgumentException();
-				if (item.PaddingTop < 0)
-					throw new ArgumentException();
-				if (item.PaddingBottom < 0)
+				if (   item.PaddingLeft < 0
+				    || item.PaddingRight < 0
+				    || item.PaddingTop < 0
+				    || item.PaddingBottom < 0)
 					throw new ArgumentException();
 
 				width -= item.PaddingLeft + item.PaddingRight;
 				height -= item.PaddingTop + item.PaddingBottom;
-
-				if (width < 0)
-					throw new ArgumentException();
-				if (height < 0)
+				if (   width < 0
+				    || height < 0)
 					throw new ArgumentException();
 
 				reverse = item.Direction == Direction.RowReverse || item.Direction == Direction.ColumnReverse;
@@ -671,7 +733,7 @@ namespace Xamarin.Flex
 					pos2 = vertical ? item.PaddingLeft : item.PaddingTop;
 				}
 
-				need_lines = wrap && item.AlignContent != Align.Start;
+				need_lines = wrap && item.AlignContent != AlignContent.Start;
 				lines = null;
 				lines_sizes = 0;
 			}
