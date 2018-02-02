@@ -32,9 +32,9 @@
         <summary>To be added.</summary>
       </Docs>
     </Member>
-    <Member MemberName="FlexEnd">
-      <MemberSignature Language="C#" Value="FlexEnd" />
-      <MemberSignature Language="ILAsm" Value=".field public static literal valuetype Xamarin.Forms.FlexAlignItems FlexEnd = int32(4)" />
+    <Member MemberName="End">
+      <MemberSignature Language="C#" Value="End" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal valuetype Xamarin.Forms.FlexAlignItems End = int32(4)" />
       <MemberType>Field</MemberType>
       <AssemblyInfo>
         <AssemblyVersion>2.0.0.0</AssemblyVersion>
@@ -46,9 +46,9 @@
         <summary>To be added.</summary>
       </Docs>
     </Member>
-    <Member MemberName="FlexStart">
-      <MemberSignature Language="C#" Value="FlexStart" />
-      <MemberSignature Language="ILAsm" Value=".field public static literal valuetype Xamarin.Forms.FlexAlignItems FlexStart = int32(3)" />
+    <Member MemberName="Start">
+      <MemberSignature Language="C#" Value="Start" />
+      <MemberSignature Language="ILAsm" Value=".field public static literal valuetype Xamarin.Forms.FlexAlignItems Start = int32(3)" />
       <MemberType>Field</MemberType>
       <AssemblyInfo>
         <AssemblyVersion>2.0.0.0</AssemblyVersion>

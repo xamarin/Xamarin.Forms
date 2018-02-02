@@ -20,17 +20,19 @@
   </Docs>
   <Members>
     <Member MemberName=".ctor">
-      <MemberSignature Language="C#" Value="public FlexBasis (float length);" />
-      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(float32 length) cil managed" />
+      <MemberSignature Language="C#" Value="public FlexBasis (float length, bool isRelative = false);" />
+      <MemberSignature Language="ILAsm" Value=".method public hidebysig specialname rtspecialname instance void .ctor(float32 length, bool isRelative) cil managed" />
       <MemberType>Constructor</MemberType>
       <AssemblyInfo>
         <AssemblyVersion>2.0.0.0</AssemblyVersion>
       </AssemblyInfo>
       <Parameters>
         <Parameter Name="length" Type="System.Single" />
+        <Parameter Name="isRelative" Type="System.Boolean" />
       </Parameters>
       <Docs>
         <param name="length">To be added.</param>
+        <param name="isRelative">To be added.</param>
         <summary>To be added.</summary>
         <remarks>To be added.</remarks>
       </Docs>
