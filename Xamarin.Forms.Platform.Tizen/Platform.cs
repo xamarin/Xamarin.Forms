@@ -55,8 +55,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			ITizenPlatform platform;
 			if (Forms.Flags.Contains(Flags.LightweightPlatformExperimental))
 			{
-				// TODO : Create and return lightweight platform here
-				platform = null;
+				platform = new LightweightPlatform(parent);
 			}
 			else
 			{
@@ -73,6 +72,13 @@ namespace Xamarin.Forms.Platform.Tizen
 		bool SendBackButtonPressed();
 		EvasObject GetRootNativeView();
 		bool HasAlpha { get; set; }
+		event EventHandler<RootNativeViewChangedEventArgs> RootNativeViewChanged;
+	}
+
+	public class RootNativeViewChangedEventArgs : EventArgs
+	{
+		public RootNativeViewChangedEventArgs(EvasObject view) => RootNativeView = view;
+		public EvasObject RootNativeView { get; private set; }
 	}
 
 	public class DefaultPlatform : BindableObject, ITizenPlatform, INavigation
@@ -82,6 +88,8 @@ namespace Xamarin.Forms.Platform.Tizen
 		Native.Dialog _pageBusyDialog;
 		int _pageBusyCount;
 		Naviframe _internalNaviframe;
+
+		public event EventHandler<RootNativeViewChangedEventArgs> RootNativeViewChanged;
 
 		internal DefaultPlatform(EvasObject parent)
 		{

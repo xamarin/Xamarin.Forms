@@ -141,6 +141,8 @@ namespace Xamarin.Forms.Platform.Tizen
 			_platform.HasAlpha = MainWindow.Alpha;
 			BaseLayout.SetContent(_platform.GetRootNativeView());
 
+			_platform.RootNativeViewChanged += (s, e) => BaseLayout.SetContent(e.RootNativeView);
+
 			if (_application != null)
 			{
 				_application.Platform = _platform;
