@@ -69,6 +69,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 				UpdateContentSize();
 				UpdateBackgroundColor();
+                UpdateVerticalScrollBarVisibility();
+                UpdateHorizontalScrollBarVisibility();
+
 				UpdateOrientation();
 				RaiseElementChanged(new VisualElementChangedEventArgs(oldElement, element));
 			}
@@ -153,6 +156,10 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateContentSize();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor();
+            else if (e.PropertyName == ScrollView.VerticalScrollBarVisibilityProperty.PropertyName)
+                UpdateVerticalScrollBarVisibility();
+            else if (e.PropertyName == ScrollView.HorizontalScrollBarVisibilityProperty.PropertyName)
+                UpdateHorizontalScrollBarVisibility();
 			else if (e.PropertyName == ScrollView.OrientationProperty.PropertyName)
 				UpdateOrientation();
 		}
@@ -231,7 +238,23 @@ namespace Xamarin.Forms.Platform.MacOS
 			ResetNativeNonScroll();
 		}
 
-		private bool ResetNativeNonScroll()
+        void UpdateVerticalScrollBarVisibility()
+        {
+            if (ScrollView.VerticalScrollBarVisibility == ScrollBarVisibility.Always || ScrollView.VerticalScrollBarVisibility == ScrollBarVisibility.Default)
+                HasVerticalScroller = true;
+            else
+                HasVerticalScroller = false;
+        }
+
+        void UpdateHorizontalScrollBarVisibility()
+        {
+            if (ScrollView.HorizontalScrollBarVisibility == ScrollBarVisibility.Always)
+                HasHorizontalScroller = true;
+            else
+                HasHorizontalScroller = false;
+        }
+
+		private bool ResetNativeNonScroll( )
 		{
 			if (ContentView == null || ScrollView == null || ScrollView.Content == null)
 				return false;

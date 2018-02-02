@@ -82,6 +82,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateContentSize();
 				UpdateBackgroundColor();
 				UpdateIsEnabled();
+                UpdateVerticalScrollBarVisibility();
+                UpdateHorizontalScrollBarVisibility();
 
 				OnElementChanged(new VisualElementChangedEventArgs(oldElement, element));
 
