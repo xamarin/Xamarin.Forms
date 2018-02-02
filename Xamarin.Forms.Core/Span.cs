@@ -4,7 +4,7 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms
 {
 	[ContentProperty("Text")]
-	public sealed class Span : Element, IFontElement
+	public sealed class Span : Element, IFontElement, ITextElement
 	{
 		internal readonly MergedStyle _mergedStyle;
 
@@ -31,15 +31,17 @@ namespace Xamarin.Forms
 			set { SetValue(BackgroundColorProperty, value); }
 		}
 
-		[Obsolete("Foreground is obsolete as of version 2.6.0. Please use the TextColor property instead.")]
-		public static readonly BindableProperty ForegroundColorProperty
-			= BindableProperty.Create(nameof(ForegroundColor), typeof(Color), typeof(Span), default(Color), propertyChanged: ForegroundColorOnPropertyChanged);
+		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
 
-		static void ForegroundColorOnPropertyChanged(object bindable, object oldvalue, object newvalue)
+		public Color TextColor
 		{
-			((Span)bindable).TextColor = newvalue as Color? ?? default(Color);
+			get { return (Color)GetValue(TextElement.TextColorProperty); }
+			set { SetValue(TextElement.TextColorProperty, value); }
 		}
 
+		[Obsolete("Foreground is obsolete as of version 2.6.0. Please use the TextColor property instead.")]
+		public static readonly BindableProperty ForegroundColorProperty = TextColorProperty;
+		
 #pragma warning disable 618
 		public Color ForegroundColor
 		{
@@ -47,16 +49,7 @@ namespace Xamarin.Forms
 			set { SetValue(ForegroundColorProperty, value); }
 		}
 #pragma warning restore 618
-
-		public static readonly BindableProperty TextColorProperty
-			= BindableProperty.Create(nameof(TextColor), typeof(Color), typeof(Span), default(Color));
-
-		public Color TextColor
-		{
-			get { return (Color)GetValue(TextColorProperty); }
-			set { SetValue(TextColorProperty, value); }
-		}
-
+		
 		public static readonly BindableProperty TextProperty
 			= BindableProperty.Create(nameof(Text), typeof(string), typeof(Span), "");
 
@@ -112,11 +105,14 @@ namespace Xamarin.Forms
 			Device.GetNamedSize(NamedSize.Default, new Label());
 
 		void IFontElement.OnFontAttributesChanged(FontAttributes oldValue, FontAttributes newValue)
-		{
-			
+		{			
 		}
 
 		void IFontElement.OnFontChanged(Font oldValue, Font newValue)
+		{
+		}
+
+		void ITextElement.OnTextColorPropertyChanged(Color oldValue, Color newValue)
 		{
 		}
 	}
