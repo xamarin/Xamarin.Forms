@@ -11,7 +11,7 @@ namespace Xamarin.Forms.PlatformConfiguration.AndroidSpecific
 	}
 
 	public static class WebView
-    {
+	{
 		public static readonly BindableProperty MixedContentModeProperty = BindableProperty.Create("MixedContentMode", typeof(MixedContentHandling), typeof(WebView), MixedContentHandling.NeverAllow);
 
 		public static MixedContentHandling GetMixedContentMode(BindableObject element)
