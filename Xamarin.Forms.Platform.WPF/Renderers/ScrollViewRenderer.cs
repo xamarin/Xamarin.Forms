@@ -32,7 +32,10 @@ namespace Xamarin.Forms.Platform.WPF
 			{
 				if (Control == null) // construct and SetNativeControl and suscribe control event
 				{
-					SetNativeControl(new ScrollViewer() { IsManipulationEnabled = true, PanningMode = PanningMode.Both });
+					SetNativeControl(new ScrollViewer() { IsManipulationEnabled = true, PanningMode = PanningMode.Both,
+						HorizontalScrollBarVisibility = ScrollBarVisibilityToUwp(e.NewElement.HorizontalScrollBarVisibility),
+						VerticalScrollBarVisibility = ScrollBarVisibilityToUwp(e.NewElement.VerticalScrollBarVisibility)
+					});
 					Control.LayoutUpdated += NativeLayoutUpdated;
 				}
 
@@ -58,6 +61,10 @@ namespace Xamarin.Forms.Platform.WPF
 				UpdateMargins();
 			else if (e.PropertyName == ScrollView.OrientationProperty.PropertyName)
 				UpdateOrientation();
+			else if (e.PropertyName == ScrollView.VerticalScrollBarVisibilityProperty.PropertyName)
+				UpdateVerticalScrollBarVisibiilty();
+			else if (e.PropertyName == ScrollView.HorizontalScrollBarVisibilityProperty.PropertyName)
+				UpdateHorizontalScrollBarVisibility();
 		}
 
 		void NativeLayoutUpdated(object sender, EventArgs e)
@@ -179,6 +186,28 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			if (Element != null)
 				Controller.SetScrolledPosition(Control.HorizontalOffset, Control.VerticalOffset);
+		}
+
+		WpfScrollBarVisibility ScrollBarVisibilityToUwp(ScrollBarVisibility visibility)
+		{
+			switch (visibility)
+			{
+				case ScrollBarVisibility.Always: return WpfScrollBarVisibility.Visible;
+				case ScrollBarVisibility.Default: return WpfScrollBarVisibility.Auto;
+				case ScrollBarVisibility.Never: return WpfScrollBarVisibility.Hidden;
+				default: return WpfScrollBarVisibility.Auto;
+			}
+		}
+
+		void UpdateVerticalScrollBarVisibiilty()
+		{
+			Control.VerticalScrollBarVisibility = ScrollBarVisibilityToUwp(Element.VerticalScrollBarVisibility);
+		}
+
+		void UpdateHorizontalScrollBarVisibility()
+		{
+			if (Element.Orientation == ScrollOrientation.Horizontal || Element.Orientation == ScrollOrientation.Both)
+				Control.HorizontalScrollBarVisibility = ScrollBarVisibilityToUwp(Element.HorizontalScrollBarVisibility);
 		}
 
 		bool _isDisposed;
