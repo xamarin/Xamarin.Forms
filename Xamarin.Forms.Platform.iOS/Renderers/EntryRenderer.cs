@@ -62,7 +62,7 @@ namespace Xamarin.Forms.Platform.iOS
 					Control.EditingDidBegin -= OnEditingBegan;
 					Control.EditingChanged -= OnEditingChanged;
 					Control.EditingDidEnd -= OnEditingEnded;
-                    Control.ShouldChangeCharacters -= Control_ShouldChangeCharacters;
+                    Control.ShouldChangeCharacters -= ShouldChangeCharacters;
 				}
 			}
 
@@ -96,7 +96,7 @@ namespace Xamarin.Forms.Platform.iOS
 				textField.EditingDidBegin += OnEditingBegan;
 				textField.EditingDidEnd += OnEditingEnded;
 
-                textField.ShouldChangeCharacters += Control_ShouldChangeCharacters;
+                textField.ShouldChangeCharacters += ShouldChangeCharacters;
 			}
 
 			UpdatePlaceholder();
@@ -253,7 +253,7 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.Text = Element.Text;
 		}
 
-        bool Control_ShouldChangeCharacters(UITextField textField, NSRange range, string replacementString)
+        bool ShouldChangeCharacters(UITextField textField, NSRange range, string replacementString)
         {
             var newLength = textField.Text.Length + replacementString.Length - range.Length;
             return newLength <= Element.MaxLength;
