@@ -88,6 +88,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateBackgroundColor();
 				UpdateOrientation();
 				UpdateIsEnabled();
+				UpdateHorizontalScrollBarVisibility();
+				UpdateVerticalScrollBarVisibility();
 
 				element.SendViewInitialized(this);
 
