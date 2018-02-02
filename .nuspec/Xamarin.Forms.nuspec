@@ -36,7 +36,7 @@
       </group>
       <group targetFramework="uap10.0">
         <dependency id="NETStandard.Library" version="2.0.1"/>
-        <dependecy id="Microsoft.NETCore.UniversalWindowsPlatform" version="6.0.1" />
+        <dependency id="Microsoft.NETCore.UniversalWindowsPlatform" version="6.0.1" />
       </group>
       <group targetFramework="tizen40">
         <dependency id="Tizen.NET" version="4.0.0"/>
