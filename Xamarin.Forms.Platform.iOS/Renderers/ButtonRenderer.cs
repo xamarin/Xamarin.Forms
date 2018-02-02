@@ -88,7 +88,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateTextColor();
 			else if (e.PropertyName == Button.FontProperty.PropertyName)
 				UpdateFont();
-			else if (e.PropertyName == Button.BorderWidthProperty.PropertyName || e.PropertyName == Button.BorderRadiusProperty.PropertyName || e.PropertyName == Button.BorderColorProperty.PropertyName)
+			else if (e.PropertyName == Button.BorderWidthProperty.PropertyName || e.PropertyName == Button.CornerRadiusProperty.PropertyName || e.PropertyName == Button.BorderColorProperty.PropertyName)
 				UpdateBorder();
 			else if (e.PropertyName == Button.ImageProperty.PropertyName)
 				UpdateImage();
@@ -139,7 +139,7 @@ namespace Xamarin.Forms.Platform.iOS
 				uiButton.Layer.BorderColor = button.BorderColor.ToCGColor();
 
 			uiButton.Layer.BorderWidth = Math.Max(0f, (float)button.BorderWidth);
-			uiButton.Layer.CornerRadius = button.BorderRadius;
+			uiButton.Layer.CornerRadius = button.CornerRadius;
 		}
 
 		void UpdateFont()
