@@ -27,6 +27,7 @@ namespace Xamarin.Forms.Platform.Tizen
 				};
 				entry.TextChanged += OnTextChanged;
 				entry.Unfocused += OnCompleted;
+				entry.PrependMarkUpFilter(MaxLengthFilter);
 
 				SetNativeControl(entry);
 			}
@@ -91,6 +92,14 @@ namespace Xamarin.Forms.Platform.Tizen
 				return;
 
 			Control.Keyboard = Element.Keyboard.ToNative();
+		}
+
+		string MaxLengthFilter(Entry entry, string s)
+		{
+			if (s.Length <= Element.MaxLength)
+				return s;
+
+			return null;
 		}
 	}
 }
