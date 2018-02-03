@@ -37,7 +37,7 @@ namespace Xamarin.Forms.Platform.UWP
 					// If the Forms VisualStateManager is in play or the user wants to disable the Forms legacy
 					// color stuff, then the underlying textbox should just use the Forms VSM states
 					textBox.UseFormsVsm = e.NewElement.HasVisualStateGroups()
-										|| !e.NewElement.OnThisPlatform().GetIsLegacyColorModeEnabled();
+					                      || !e.NewElement.OnThisPlatform().GetIsLegacyColorModeEnabled();
 				}
 
 				UpdateText();
@@ -46,6 +46,7 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateFont();
 				UpdateTextAlignment();
 				UpdateFlowDirection();
+				UpdateMaxLength();
 			}
 
 			base.OnElementChanged(e);
@@ -91,6 +92,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateTextAlignment();
 				UpdateFlowDirection();
 			}
+			else if (e.PropertyName == InputView.MaxLengthProperty.PropertyName)
+				UpdateMaxLength();
 		}
 
 		void OnLostFocus(object sender, RoutedEventArgs e)
@@ -127,7 +130,9 @@ namespace Xamarin.Forms.Platform.UWP
 			if (editor == null)
 				return;
 
-			bool editorIsDefault = editor.FontFamily == null && editor.FontSize == Device.GetNamedSize(NamedSize.Default, typeof(Editor), true) && editor.FontAttributes == FontAttributes.None;
+			bool editorIsDefault = editor.FontFamily == null &&
+			                       editor.FontSize == Device.GetNamedSize(NamedSize.Default, typeof(Editor), true) &&
+			                       editor.FontAttributes == FontAttributes.None;
 
 			if (editorIsDefault && !_fontApplied)
 				return;
@@ -200,6 +205,11 @@ namespace Xamarin.Forms.Platform.UWP
 		void UpdateFlowDirection()
 		{
 			Control.UpdateFlowDirection(Element);
+		}
+
+		void UpdateMaxLength()
+		{
+			Control.MaxLength = Element.MaxLength;
 		}
 	}
 }
