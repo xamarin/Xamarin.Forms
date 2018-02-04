@@ -320,9 +320,7 @@ namespace Xamarin.Forms
 
 		internal virtual void OnChildMeasureInvalidated(VisualElement child, InvalidationTrigger trigger)
 		{
-			ReadOnlyCollection<Element> children = LogicalChildrenInternal;
-			int count = children.Count;
-			for (var index = 0; index < count; index++)
+			for (var index = 0; index < LogicalChildrenInternal.Count; index++)
 			{
 				var v = LogicalChildrenInternal[index] as VisualElement;
 				if (v != null && v.IsVisible && (!v.IsPlatformEnabled || !v.IsNativeStateConsistent))

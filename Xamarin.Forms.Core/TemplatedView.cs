@@ -20,9 +20,7 @@ namespace Xamarin.Forms
 		{
 			for (var i = 0; i < LogicalChildrenInternal.Count; i++)
 			{
-				Element element = LogicalChildrenInternal[i];
-				var child = element as View;
-				if (child != null)
+				if (LogicalChildrenInternal[i] is View child)
 					LayoutChildIntoBoundingRegion(child, new Rectangle(x, y, width, height));
 			}
 		}
