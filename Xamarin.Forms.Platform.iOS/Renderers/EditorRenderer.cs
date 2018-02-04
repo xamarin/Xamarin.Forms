@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using Foundation;
 using UIKit;
 using RectangleF = CoreGraphics.CGRect;
 
@@ -24,6 +25,7 @@ namespace Xamarin.Forms.Platform.iOS
 					Control.Changed -= HandleChanged;
 					Control.Started -= OnStarted;
 					Control.Ended -= OnEnded;
+                    Control.ShouldChangeText -= ShouldChangeText;
 				}
 			}
 
@@ -60,6 +62,7 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.Changed += HandleChanged;
 				Control.Started += OnStarted;
 				Control.Ended += OnEnded;
+                Control.ShouldChangeText += ShouldChangeText;
 			}
 
 			UpdateText();
@@ -152,5 +155,11 @@ namespace Xamarin.Forms.Platform.iOS
 			else
 				Control.TextColor = textColor.ToUIColor();
 		}
-	}
+
+        bool ShouldChangeText(UITextView textView, NSRange range, string text)
+        {
+            var newLength = textView.Text.Length + text.Length - range.Length;
+            return newLength <= Element.MaxLength;
+        }
+    }
 }

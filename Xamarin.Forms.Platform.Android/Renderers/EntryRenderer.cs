@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using Android.Content;
 using Android.Content.Res;
 using Android.Text;
@@ -83,8 +85,6 @@ namespace Xamarin.Forms.Platform.Android
 				_textColorSwitcher = new TextColorSwitcher(textView.TextColors, useLegacyColorManagement);
 				_hintColorSwitcher = new TextColorSwitcher(textView.HintTextColors, useLegacyColorManagement);
 
-				
-
 				SetNativeControl(textView);
 			}
 
@@ -96,6 +96,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateAlignment();
 			UpdateFont();
 			UpdatePlaceholderColor();
+            UpdateMaxLength();
 		}
 
 		protected override void Dispose(bool disposing)
@@ -152,6 +153,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdatePlaceholderColor();
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateAlignment();
+            else if (e.PropertyName == InputView.MaxLengthProperty.PropertyName)
+                UpdateMaxLength();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -207,5 +210,18 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			Control?.ClearFocus();
 		}
+
+        void UpdateMaxLength()
+        {
+            var currentFilters = Control?.GetFilters()?.ToList() ?? new List<IInputFilter>();
+            var currentMaxLengthFilter = currentFilters.SingleOrDefault(f => f is InputFilterLengthFilter);
+
+            if (currentMaxLengthFilter != null)
+                currentFilters.Remove(currentMaxLengthFilter);
+
+            currentFilters.Add(new InputFilterLengthFilter(Element.MaxLength));
+
+            Control?.SetFilters(currentFilters.ToArray());
+        }
 	}
 }

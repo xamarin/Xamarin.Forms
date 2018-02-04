@@ -1,4 +1,5 @@
 using System;
+using ElmSharp;
 using Specific = Xamarin.Forms.PlatformConfiguration.TizenSpecific.Entry;
 
 namespace Xamarin.Forms.Platform.Tizen
@@ -36,6 +37,7 @@ namespace Xamarin.Forms.Platform.Tizen
 				entry.SetVerticalTextAlignment("elm.guide", 0.5);
 				entry.TextChanged += OnTextChanged;
 				entry.Activated += OnCompleted;
+				entry.PrependMarkUpFilter(MaxLengthFilter);
 				SetNativeControl(entry);
 			}
 			base.OnElementChanged(e);
@@ -128,6 +130,14 @@ namespace Xamarin.Forms.Platform.Tizen
 		void UpdateFontWeight()
 		{
 			Control.FontWeight = Specific.GetFontWeight(Element);
+		}
+
+		string MaxLengthFilter(Entry entry, string s)
+		{
+			if (s.Length <= Element.MaxLength)
+				return s;
+
+			return null;
 		}
 	}
 }

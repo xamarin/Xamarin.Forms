@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using Android.Content;
 using Android.Content.Res;
 using Android.OS;
@@ -82,22 +84,25 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateInputType();
 			UpdateTextColor();
 			UpdateFont();
+            UpdateMaxLength();
 		}
 
-		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+        protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == Editor.TextProperty.PropertyName)
-				UpdateText();
-			else if (e.PropertyName == InputView.KeyboardProperty.PropertyName)
-				UpdateInputType();
-			else if (e.PropertyName == Editor.TextColorProperty.PropertyName)
-				UpdateTextColor();
-			else if (e.PropertyName == Editor.FontAttributesProperty.PropertyName)
-				UpdateFont();
-			else if (e.PropertyName == Editor.FontFamilyProperty.PropertyName)
-				UpdateFont();
-			else if (e.PropertyName == Editor.FontSizeProperty.PropertyName)
-				UpdateFont();
+            if (e.PropertyName == Editor.TextProperty.PropertyName)
+                UpdateText();
+            else if (e.PropertyName == InputView.KeyboardProperty.PropertyName)
+                UpdateInputType();
+            else if (e.PropertyName == Editor.TextColorProperty.PropertyName)
+                UpdateTextColor();
+            else if (e.PropertyName == Editor.FontAttributesProperty.PropertyName)
+                UpdateFont();
+            else if (e.PropertyName == Editor.FontFamilyProperty.PropertyName)
+                UpdateFont();
+            else if (e.PropertyName == Editor.FontSizeProperty.PropertyName)
+                UpdateFont();
+            else if (e.PropertyName == InputView.MaxLengthProperty.PropertyName)
+                UpdateMaxLength();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -177,5 +182,18 @@ namespace Xamarin.Forms.Platform.Android
 			ElementController?.SendCompleted();
 			Control?.ClearFocus();
 		}
+
+        void UpdateMaxLength()
+        {
+            var currentFilters = Control?.GetFilters()?.ToList() ?? new List<IInputFilter>();
+            var currentMaxLengthFilter = currentFilters.SingleOrDefault(f => f is InputFilterLengthFilter);
+
+            if (currentMaxLengthFilter != null)
+                currentFilters.Remove(currentMaxLengthFilter);
+            
+            currentFilters.Add(new InputFilterLengthFilter(Element.MaxLength));
+
+            Control?.SetFilters(currentFilters.ToArray());
+        }
 	}
 }

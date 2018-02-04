@@ -62,6 +62,7 @@ namespace Xamarin.Forms.Platform.iOS
 					Control.EditingDidBegin -= OnEditingBegan;
 					Control.EditingChanged -= OnEditingChanged;
 					Control.EditingDidEnd -= OnEditingEnded;
+                    Control.ShouldChangeCharacters -= ShouldChangeCharacters;
 				}
 			}
 
@@ -94,6 +95,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 				textField.EditingDidBegin += OnEditingBegan;
 				textField.EditingDidEnd += OnEditingEnded;
+
+                textField.ShouldChangeCharacters += ShouldChangeCharacters;
 			}
 
 			UpdatePlaceholder();
@@ -106,35 +109,35 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateAdjustsFontSizeToFitWidth();
 		}
 
-		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+        protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == Entry.PlaceholderProperty.PropertyName || e.PropertyName == Entry.PlaceholderColorProperty.PropertyName)
-				UpdatePlaceholder();
-			else if (e.PropertyName == Entry.IsPasswordProperty.PropertyName)
-				UpdatePassword();
-			else if (e.PropertyName == Entry.TextProperty.PropertyName)
-				UpdateText();
-			else if (e.PropertyName == Entry.TextColorProperty.PropertyName)
-				UpdateColor();
-			else if (e.PropertyName == Xamarin.Forms.InputView.KeyboardProperty.PropertyName)
-				UpdateKeyboard();
-			else if (e.PropertyName == Entry.HorizontalTextAlignmentProperty.PropertyName)
-				UpdateAlignment();
-			else if (e.PropertyName == Entry.FontAttributesProperty.PropertyName)
-				UpdateFont();
-			else if (e.PropertyName == Entry.FontFamilyProperty.PropertyName)
-				UpdateFont();
-			else if (e.PropertyName == Entry.FontSizeProperty.PropertyName)
-				UpdateFont();
-			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
-			{
-				UpdateColor();
-				UpdatePlaceholder();
-			}
-			else if (e.PropertyName == PlatformConfiguration.iOSSpecific.Entry.AdjustsFontSizeToFitWidthProperty.PropertyName)
-				UpdateAdjustsFontSizeToFitWidth();
-			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
-				UpdateAlignment();
+            if (e.PropertyName == Entry.PlaceholderProperty.PropertyName || e.PropertyName == Entry.PlaceholderColorProperty.PropertyName)
+                UpdatePlaceholder();
+            else if (e.PropertyName == Entry.IsPasswordProperty.PropertyName)
+                UpdatePassword();
+            else if (e.PropertyName == Entry.TextProperty.PropertyName)
+                UpdateText();
+            else if (e.PropertyName == Entry.TextColorProperty.PropertyName)
+                UpdateColor();
+            else if (e.PropertyName == Xamarin.Forms.InputView.KeyboardProperty.PropertyName)
+                UpdateKeyboard();
+            else if (e.PropertyName == Entry.HorizontalTextAlignmentProperty.PropertyName)
+                UpdateAlignment();
+            else if (e.PropertyName == Entry.FontAttributesProperty.PropertyName)
+                UpdateFont();
+            else if (e.PropertyName == Entry.FontFamilyProperty.PropertyName)
+                UpdateFont();
+            else if (e.PropertyName == Entry.FontSizeProperty.PropertyName)
+                UpdateFont();
+            else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
+            {
+                UpdateColor();
+                UpdatePlaceholder();
+            }
+            else if (e.PropertyName == PlatformConfiguration.iOSSpecific.Entry.AdjustsFontSizeToFitWidthProperty.PropertyName)
+                UpdateAdjustsFontSizeToFitWidth();
+            else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
+                UpdateAlignment();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -249,5 +252,11 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Control.Text != Element.Text)
 				Control.Text = Element.Text;
 		}
-	}
+
+        bool ShouldChangeCharacters(UITextField textField, NSRange range, string replacementString)
+        {
+            var newLength = textField.Text.Length + replacementString.Length - range.Length;
+            return newLength <= Element.MaxLength;
+        }
+    }
 }
