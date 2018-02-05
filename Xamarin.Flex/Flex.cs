@@ -205,10 +205,10 @@ namespace Xamarin.Flex
 		public SelfSizingDelegate SelfSizing { get; set; }
 
 		IEnumerator IEnumerable.GetEnumerator() =>
-			Children.GetEnumerator();
+			((IEnumerable<Item>)this).GetEnumerator();
 
 		IEnumerator<Item> IEnumerable<Item>.GetEnumerator() =>
-			Children.GetEnumerator();
+			(Children ?? System.Linq.Enumerable.Empty<Item>()).GetEnumerator();
 
 		void ValidateChild(Item child)
 		{
