@@ -754,7 +754,8 @@ namespace Xamarin.Forms.CustomAttributes
 
 		public enum BoxView
 		{
-			Color
+			Color,
+			CornerRadius
 		}
 
 	}
