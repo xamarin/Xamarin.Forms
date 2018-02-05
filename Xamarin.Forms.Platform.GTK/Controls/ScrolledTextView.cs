@@ -27,7 +27,7 @@ namespace Xamarin.Forms.Platform.GTK.Controls
 
         public void SetMaxLength(int maxLength)
         {
-            
+            _maxLength = maxLength;
         }
 
         protected override void OnFocusGrabbed()

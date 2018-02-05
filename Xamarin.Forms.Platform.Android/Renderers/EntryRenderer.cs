@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using Android.Content;
 using Android.Content.Res;
 using Android.Text;
@@ -213,11 +212,16 @@ namespace Xamarin.Forms.Platform.Android
 
         void UpdateMaxLength()
         {
-            var currentFilters = Control?.GetFilters()?.ToList() ?? new List<IInputFilter>();
-            var currentMaxLengthFilter = currentFilters.SingleOrDefault(f => f is InputFilterLengthFilter);
+            var currentFilters = new List<IInputFilter>(Control?.GetFilters() ?? new IInputFilter[0]);
 
-            if (currentMaxLengthFilter != null)
-                currentFilters.Remove(currentMaxLengthFilter);
+            for (var i = 0; i < currentFilters.Count; i++)
+            {
+                if (currentFilters[i] is InputFilterLengthFilter)
+                {
+                    currentFilters.RemoveAt(i);
+                    break;
+                }
+            }
 
             currentFilters.Add(new InputFilterLengthFilter(Element.MaxLength));
 
