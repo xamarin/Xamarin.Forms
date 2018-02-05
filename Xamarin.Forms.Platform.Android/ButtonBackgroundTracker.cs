@@ -43,10 +43,15 @@ namespace Xamarin.Forms.Platform.Android
 			if (_button == null || _nativeButton == null)
 				return;
 
-			if (_button.BackgroundColor == VisualElement.DefaultBackgroundColor
-				&& (_button.CornerRadius == Button.DefaultCornerRadius || _button.CornerRadius == DefaultCornerRadius)
-				&& _button.BorderColor == Button.DefaultBorderColor 
-				&& _button.BorderWidth == Button.DefaultBorderWidth)
+			bool cornerRadiusIsDefault = !_button.IsSet(Button.CornerRadiusProperty) || (_button.CornerRadius == (int)Button.CornerRadiusProperty.DefaultValue || _button.CornerRadius == DefaultCornerRadius);
+			bool backgroundColorIsDefault = !_button.IsSet(VisualElement.BackgroundColorProperty) || _button.BackgroundColor == (Color)VisualElement.BackgroundColorProperty.DefaultValue;
+			bool borderColorIsDefault = !_button.IsSet(Button.BorderColorProperty) || _button.BorderColor == (Color)Button.BorderColorProperty.DefaultValue;
+			bool borderWidthIsDefault = !_button.IsSet(Button.BorderWidthProperty) || _button.BorderWidth == (double)Button.BorderWidthProperty.DefaultValue;
+
+			if (backgroundColorIsDefault
+				&& cornerRadiusIsDefault
+				&& borderColorIsDefault
+				&& borderWidthIsDefault)
 			{
 				if (!_drawableEnabled)
 					return;
