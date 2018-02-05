@@ -326,5 +326,37 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			Assert.That(footer.Bounds, Is.EqualTo(new Rectangle(0, 550, 300, 50)));
 		}
+
+		[Test]
+		public void TestMeasuring()
+		{
+			var platform = new UnitPlatform();
+			var label = new Label {
+				Platform = platform,
+				IsPlatformEnabled = true,
+			};
+			var Layout = new FlexLayout {
+				Platform = platform,
+				IsPlatformEnabled = true,
+				Direction = FlexDirection.Row,
+				Wrap = FlexWrap.Wrap,
+				Children = { 
+					label,
+				}
+			};
+
+			//measure sith +inf as main-axis
+			var measure = Layout.Measure(double.PositiveInfinity, 40);
+			Assert.That(measure.Request, Is.EqualTo(new Size(100, 40)));
+
+			//measure sith +inf as cross-axis
+			measure = Layout.Measure(200, double.PositiveInfinity);
+			Assert.That(measure.Request, Is.EqualTo(new Size(200, 20)));
+
+			//measure with +inf as both axis
+			measure = Layout.Measure(double.PositiveInfinity, double.PositiveInfinity);
+			Assert.That(measure.Request, Is.EqualTo(new Size(100, 20)));
+
+		}
 	}
 }

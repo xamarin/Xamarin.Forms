@@ -397,10 +397,11 @@ namespace Xamarin.Forms
 			if (!double.IsPositiveInfinity(widthConstraint) && !double.IsPositiveInfinity(heightConstraint))
 				return new SizeRequest(new Size(widthConstraint, heightConstraint));
 
-			//1. Set Shrink to 0;
-			foreach (var item in _root)
+			//1. Set Shrink to 0, set align-self to start (to avoid stretching)
+			foreach (var item in _root) {
 				item.Shrink = 0;
-
+				item.AlignSelf = Flex.AlignSelf.Start;
+			}
 			Layout(0, 0, widthConstraint, heightConstraint);
 
 			//2. look at the children location
@@ -415,9 +416,11 @@ namespace Xamarin.Forms
 					heightConstraint = Math.Max(heightConstraint, item.Frame[1] + item.Frame[3]);
 			}
 
-			//3. reset Shrink
-			foreach (var child in Children)
+			//3. reset Shrink and algin-self
+			foreach (var child in Children) {
 				GetFlexItem(child).Shrink = (float)child.GetValue(ShrinkProperty);
+				GetFlexItem(child).AlignSelf = (Flex.AlignSelf)(FlexAlignSelf)child.GetValue(AlignSelfProperty);
+			}
 
 			return new SizeRequest(new Size(widthConstraint, heightConstraint));
 		}
