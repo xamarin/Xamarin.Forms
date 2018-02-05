@@ -439,68 +439,6 @@ namespace FormsGallery
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-    <Member MemberName="DefaultBorderColor">
-      <MemberSignature Language="C#" Value="public static Xamarin.Forms.Color DefaultBorderColor;" />
-      <MemberSignature Language="ILAsm" Value=".field public static valuetype Xamarin.Forms.Color DefaultBorderColor" />
-      <MemberType>Field</MemberType>
-      <AssemblyInfo>
-        <AssemblyVersion>2.0.0.0</AssemblyVersion>
-      </AssemblyInfo>
-      <ReturnValue>
-        <ReturnType>Xamarin.Forms.Color</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
-    <Member MemberName="DefaultBorderWidth">
-      <MemberSignature Language="C#" Value="public const double DefaultBorderWidth = -1;" />
-      <MemberSignature Language="ILAsm" Value=".field public static literal float64 DefaultBorderWidth = (-1)" />
-      <MemberType>Field</MemberType>
-      <AssemblyInfo>
-        <AssemblyVersion>2.0.0.0</AssemblyVersion>
-      </AssemblyInfo>
-      <ReturnValue>
-        <ReturnType>System.Double</ReturnType>
-      </ReturnValue>
-      <MemberValue>-1</MemberValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
-    <Member MemberName="DefaultCornerRadius">
-      <MemberSignature Language="C#" Value="public const int DefaultCornerRadius = -1;" />
-      <MemberSignature Language="ILAsm" Value=".field public static literal int32 DefaultCornerRadius = (-1)" />
-      <MemberType>Field</MemberType>
-      <AssemblyInfo>
-        <AssemblyVersion>2.0.0.0</AssemblyVersion>
-      </AssemblyInfo>
-      <ReturnValue>
-        <ReturnType>System.Int32</ReturnType>
-      </ReturnValue>
-      <MemberValue>-1</MemberValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
-    <Member MemberName="DefaultTextColor">
-      <MemberSignature Language="C#" Value="public static Xamarin.Forms.Color DefaultTextColor;" />
-      <MemberSignature Language="ILAsm" Value=".field public static valuetype Xamarin.Forms.Color DefaultTextColor" />
-      <MemberType>Field</MemberType>
-      <AssemblyInfo>
-        <AssemblyVersion>2.0.0.0</AssemblyVersion>
-      </AssemblyInfo>
-      <ReturnValue>
-        <ReturnType>Xamarin.Forms.Color</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
     <Member MemberName="Font">
       <MemberSignature Language="C#" Value="public Xamarin.Forms.Font Font { get; set; }" />
       <MemberSignature Language="ILAsm" Value=".property instance valuetype Xamarin.Forms.Font Font" />

@@ -331,21 +331,6 @@
         </remarks>
       </Docs>
     </Member>
-    <Member MemberName="DefaultBackgroundColor">
-      <MemberSignature Language="C#" Value="public static Xamarin.Forms.Color DefaultBackgroundColor;" />
-      <MemberSignature Language="ILAsm" Value=".field public static valuetype Xamarin.Forms.Color DefaultBackgroundColor" />
-      <MemberType>Field</MemberType>
-      <AssemblyInfo>
-        <AssemblyVersion>2.0.0.0</AssemblyVersion>
-      </AssemblyInfo>
-      <ReturnValue>
-        <ReturnType>Xamarin.Forms.Color</ReturnType>
-      </ReturnValue>
-      <Docs>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
     <Member MemberName="DisableLayout">
       <MemberSignature Language="C#" Value="public bool DisableLayout { get; set; }" />
       <MemberSignature Language="ILAsm" Value=".property instance bool DisableLayout" />

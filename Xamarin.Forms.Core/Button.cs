@@ -12,11 +12,7 @@ namespace Xamarin.Forms
 	{
 		const double DefaultSpacing = 10;
 		const int DefaultBorderRadius = 5;
-
-		public const int DefaultCornerRadius = -1;
-		public const double DefaultBorderWidth = -1;
-		public static Color DefaultBorderColor = Color.Default;
-		public static Color DefaultTextColor = Color.Default;
+		const int DefaultCornerRadius = -1;
 
 		public static readonly BindableProperty CommandProperty = BindableProperty.Create("Command", typeof(ICommand), typeof(Button), null, propertyChanged: (bo, o, n) => ((Button)bo).OnCommandChanged());
 
@@ -39,9 +35,9 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty FontAttributesProperty = FontElement.FontAttributesProperty;
 
-		public static readonly BindableProperty BorderWidthProperty = BindableProperty.Create("BorderWidth", typeof(double), typeof(Button), DefaultBorderWidth);
+		public static readonly BindableProperty BorderWidthProperty = BindableProperty.Create("BorderWidth", typeof(double), typeof(Button), -1d);
 
-		public static readonly BindableProperty BorderColorProperty = BindableProperty.Create("BorderColor", typeof(Color), typeof(Button), DefaultBorderColor);
+		public static readonly BindableProperty BorderColorProperty = BindableProperty.Create("BorderColor", typeof(Color), typeof(Button), Color.Default);
 
 		[Obsolete("BorderRadiusProperty is obsolete as of 2.5.0. Please use CornerRadius instead.")]
 		public static readonly BindableProperty BorderRadiusProperty = BindableProperty.Create("BorderRadius", typeof(int), typeof(Button), defaultValue: DefaultBorderRadius,
