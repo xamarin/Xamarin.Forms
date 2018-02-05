@@ -7,6 +7,7 @@ namespace Xamarin.Forms.Platform.Android
 {
 	internal class ButtonDrawable : Drawable
 	{
+		public const int DefaultCornerRadius = 2; // Default value for Android material button.
 		const int ShadowDy = 4;
 
 		readonly Func<double, float> _convertToPixels;
@@ -141,7 +142,7 @@ namespace Xamarin.Forms.Platform.Android
 			var paint = new Paint { AntiAlias = true };
 			var path = new Path();
 
-			float borderRadius = _convertToPixels(Button.CornerRadius);
+			float borderRadius = ConvertCornerRadiusToPixels();
 
 			RectF rect = new RectF(0, 0, width, height - 0);
 
@@ -153,6 +154,16 @@ namespace Xamarin.Forms.Platform.Android
 			paint.SetStyle(Paint.Style.Fill);
 			paint.SetShadowLayer(shadowRadius, shadowDx, ShadowDy, PressedBackgroundColor.ToAndroid());
 			canvas.DrawPath(path, paint);
+		}
+
+		float ConvertCornerRadiusToPixels()
+		{
+			int cornerRadius = DefaultCornerRadius;
+
+			if (Button.IsSet(Button.CornerRadiusProperty) && Button.CornerRadius != (int)Button.CornerRadiusProperty.DefaultValue)
+				cornerRadius = Button.CornerRadius;
+
+			return _convertToPixels(cornerRadius);
 		}
 
 		void DrawOutline(Canvas canvas, int width, int height)
@@ -167,7 +178,7 @@ namespace Xamarin.Forms.Platform.Android
 				float inset = borderWidth / 2;
 
 				// adjust border radius so outer edge of stroke is same radius as border radius of background
-				float borderRadius = Math.Max(_convertToPixels(Button.CornerRadius) - inset, 0);
+				float borderRadius = Math.Max(ConvertCornerRadiusToPixels() - inset, 0);
 
 				RectF rect = new RectF(0, 0, width, height);
 				rect.Inset(inset + PaddingLeft, inset + PaddingTop);
