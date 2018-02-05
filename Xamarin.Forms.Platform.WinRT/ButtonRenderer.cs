@@ -38,19 +38,19 @@ namespace Xamarin.Forms.Platform.WinRT
 
 				UpdateContent();
 
-				if (Element.BackgroundColor != Button.DefaultBackgroundColor)
+				if (Element.IsSet(VisualElement.BackgroundColorProperty) && Element.BackgroundColor != (Color)VisualElement.BackgroundColorProperty.DefaultValue)
 					UpdateBackground();
 
-				if (Element.TextColor != Button.DefaultTextColor)
+				if (Element.IsSet(Button.TextColorProperty) && Element.TextColor != (Color)Button.TextColorProperty.DefaultValue)
 					UpdateTextColor();
 
-				if (Element.BorderColor != Button.DefaultBorderColor)
+				if (Element.IsSet(Button.BorderColorProperty) && Element.BorderColor != (Color)Button.BorderColorProperty.DefaultValue)
 					UpdateBorderColor();
 
-				if (Element.BorderWidth != Button.DefaultBorderWidth)
+				if (Element.IsSet(Button.BorderWidthProperty) && Element.BorderWidth != (double)Button.BorderWidthProperty.DefaultValue)
 					UpdateBorderWidth();
 
-				if (Element.CornerRadius != Button.DefaultCornerRadius)
+				if (Element.IsSet(Button.CornerRadiusProperty) && Element.CornerRadius != (int)Button.CornerRadiusProperty.DefaultValue)
 					UpdateBorderRadius();
 
 				UpdateFont();
