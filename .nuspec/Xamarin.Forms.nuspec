@@ -183,6 +183,26 @@
     <file src="..\Xamarin.Forms.Xaml\bin\$Configuration$\netstandard2.0\Xamarin.Forms.Xaml.dll" target="lib\tizen40" />
     <file src="..\Xamarin.Forms.Xaml\bin\$Configuration$\netstandard2.0\Xamarin.Forms.Xaml.*pdb" target="lib\tizen40" />
     <file src="..\docs\Xamarin.Forms.Xaml.xml" target="lib\tizen40" />
+
+    <!--Flex-->
+    <file src="..\Libs\flex\native\android\x86\libflex.so" target="native\android\x86" />
+    <file src="..\Libs\flex\native\android\x86_64\libflex.so" target="native\android\x86_64" />
+    <file src="..\Libs\flex\native\android\armeabi-v7a\libflex.so" target="native\android\armeabi-v7a" />
+    <file src="..\Libs\flex\native\android\armeabi\libflex.so" target="native\android\armeabi" />
+    <file src="..\Libs\flex\native\android\arm64-v8a\libflex.so" target="native\android\arm64-v8a" />
+    <file src="..\Libs\flex\native\ios\libflex.a" target="native\ios" />
+    <file src="..\Libs\flex\native\ios\flex.framework.zip" target="native\ios" />
+
+    <file src="..\Libs\flex\runtimes\osx\native\libflex.dylib" target="runtimes\osx\native" />
+    <file src="..\Libs\flex\runtimes\win10-arm\native\flex.dll" target="runtimes\win10-arm\native" />
+    <file src="..\Libs\flex\runtimes\win10-x64\native\flex.dll" target="runtimes\win10-x64\native" />
+    <file src="..\Libs\flex\runtimes\win10-x86\native\flex.dll" target="runtimes\win10-x86\native" />
+
+    <file src="..\Libs\flex\build\MonoAndroid\Xamarin.Flex.targets" target="build\MonoAndroid" />
+    <file src="..\Libs\flex\build\netstandard2.0\Xamarin.Flex.targets" target="build\netstandard2.0" />
+    <file src="..\Libs\flex\build\XamariniOS\Xamarin.Flex.targets" target="build\XamariniOS" />
+    <file src="..\Libs\flex\build\XamariniOS\Xamarin.Flex.dll.config" target="build\XamariniOS" />
+
   </files>
 
 </package>

@@ -212,6 +212,15 @@
       <Type Name="ExportEffectAttribute" Kind="Class" />
       <Type Name="FileImageSource" Kind="Class" />
       <Type Name="FileImageSourceConverter" Kind="Class" />
+      <Type Name="FlexAlignContent" Kind="Enumeration" />
+      <Type Name="FlexAlignItems" Kind="Enumeration" />
+      <Type Name="FlexAlignSelf" Kind="Enumeration" />
+      <Type Name="FlexBasis" Kind="Structure" />
+      <Type Name="FlexDirection" Kind="Enumeration" />
+      <Type Name="FlexJustify" Kind="Enumeration" />
+      <Type Name="FlexLayout" Kind="Class" />
+      <Type Name="FlexPosition" Kind="Enumeration" />
+      <Type Name="FlexWrap" Kind="Enumeration" />
       <Type Name="FlowDirection" Kind="Enumeration" />
       <Type Name="FlowDirectionConverter" Kind="Class" />
       <Type Name="FocusEventArgs" Kind="Class" />

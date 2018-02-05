@@ -180,6 +180,11 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			MessagingCenter.Subscribe<NativeBindingGalleryPage>(this, NativeBindingGalleryPage.ReadyForNativeBindingsMessage, AddNativeBindings);
 
 			LoadApplication(app);
+
+			var item = FlexTest.CreateFlexItem();
+			if (item == null)
+				throw new Exception("Couldn't load flex");
+
 			return base.FinishedLaunching(uiApplication, launchOptions);
 		}
 

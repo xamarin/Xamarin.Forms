@@ -166,6 +166,26 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Xamarin.Forms.ControlGaller
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Embedding.Tizen", "EmbeddingTestBeds\Embedding.Tizen\Embedding.Tizen.csproj", "{C5C1D2BE-DB01-4B2E-BCA5-2C9A9691E3F1}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libs", "Libs", "{5F0B91AF-80D3-489B-92B6-02777127AA82}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "flex", "flex", "{69EC5282-3492-4A41-97AE-259013786CCC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{2601FA91-9FDD-4B44-AF30-26FB4D5C1D86}"
+	ProjectSection(SolutionItems) = preProject
+		Libs\flex\build\netstandard2.0\Xamarin.Flex.targets = Libs\flex\build\netstandard2.0\Xamarin.Flex.targets
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "XamariniOS", "XamariniOS", "{D28E753A-64B2-455B-ADDA-A26E4D21BB84}"
+	ProjectSection(SolutionItems) = preProject
+		Libs\flex\build\XamariniOS\Xamarin.Flex.dll.config = Libs\flex\build\XamariniOS\Xamarin.Flex.dll.config
+		Libs\flex\build\XamariniOS\Xamarin.Flex.targets = Libs\flex\build\XamariniOS\Xamarin.Flex.targets
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "netstandard2.0", "netstandard2.0", "{B255CD9F-1DAC-4BCF-BAA5-4D6F8A88A044}"
+	ProjectSection(SolutionItems) = preProject
+		Libs\flex\build\netstandard2.0\Xamarin.Flex.targets = Libs\flex\build\netstandard2.0\Xamarin.Flex.targets
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Xamarin.Forms.Controls.Issues\Xamarin.Forms.Controls.Issues.Shared\Xamarin.Forms.Controls.Issues.Shared.projitems*{0a39a74b-6f7a-4d41-84f2-b0ccdce899df}*SharedItemsImports = 4
@@ -2988,6 +3008,9 @@ Global
 		{AFF3AD0D-7181-4551-A29C-8701FE3E6753} = {80BAC3FB-357A-4D05-A050-9F234DF49C97}
 		{8C7F0087-4031-4297-A651-6ED55F7B88BA} = {4F5E2D21-17F6-4A42-B8FB-D03D82E24EC8}
 		{C5C1D2BE-DB01-4B2E-BCA5-2C9A9691E3F1} = {406DE4B0-F541-4092-B0EE-F0A20E9A89F5}
+		{69EC5282-3492-4A41-97AE-259013786CCC} = {5F0B91AF-80D3-489B-92B6-02777127AA82}
+		{2601FA91-9FDD-4B44-AF30-26FB4D5C1D86} = {69EC5282-3492-4A41-97AE-259013786CCC}
+		{D28E753A-64B2-455B-ADDA-A26E4D21BB84} = {2601FA91-9FDD-4B44-AF30-26FB4D5C1D86}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {650AE971-2F29-46A8-822C-FB4FCDC6A9A0}

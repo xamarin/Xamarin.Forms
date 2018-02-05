@@ -186,6 +186,12 @@
     <Compile Include="StyleSheets\SelectorTests.cs" />
     <Compile Include="StyleSheets\IStylableTest.cs" />
     <Compile Include="StyleSheets\StyleTests.cs" />
+    <Compile Include="FlexLayoutTests.cs" />
+    <Compile Include="FlexLayoutAlignItemsTests.cs" />
+    <Compile Include="FlexLayoutFlexDirectionTests.cs" />
+    <Compile Include="FlexLayoutMarginTests.cs" />
+    <Compile Include="FlexLayoutAlignContentTests.cs" />
+    <Compile Include="FlexLayoutAlignSelfTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">
@@ -210,6 +216,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+	<Import Project="$(SolutionDir)\Libs\flex\build\netstandard2.0\Xamarin.Flex.targets" />
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>

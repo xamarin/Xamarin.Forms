@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<ItemGroup>
+		<NativeReference Include="$(MSBuildThisFileDirectory)\..\..\native\ios\libflex.a">
+			<Kind>Static</Kind>
+			<ForceLoad>True</ForceLoad>
+		</NativeReference>
+	</ItemGroup>
+	<ItemGroup>
+		<Content Include="$(MSBuildThisFileDirectory)\Xamarin.Flex.dll.config">
+			<LogicalName>Xamarin.Flex.dll.config</LogicalName>
+		</Content>
+	</ItemGroup>
+</Project>
