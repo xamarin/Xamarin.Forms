@@ -25,7 +25,7 @@ namespace Xamarin.Forms.Platform.iOS
 					Control.Changed -= HandleChanged;
 					Control.Started -= OnStarted;
 					Control.Ended -= OnEnded;
-                    Control.ShouldChangeText -= ShouldChangeText;
+					Control.ShouldChangeText -= ShouldChangeText;
 				}
 			}
 
@@ -156,10 +156,10 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.TextColor = textColor.ToUIColor();
 		}
 
-        bool ShouldChangeText(UITextView textView, NSRange range, string text)
-        {
-            var newLength = textView.Text.Length + text.Length - range.Length;
-            return newLength <= Element.MaxLength;
-        }
-    }
+		bool ShouldChangeText(UITextView textView, NSRange range, string text)
+		{
+			var newLength = textView.Text.Length + text.Length - range.Length;
+			return newLength <= Element.MaxLength;
+		}
+	}
 }
