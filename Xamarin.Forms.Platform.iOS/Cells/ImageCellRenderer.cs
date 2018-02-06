@@ -59,7 +59,7 @@ namespace Xamarin.Forms.Platform.iOS
 						target.SetNeedsLayout();
 					}
 					else
-						uiimage.Dispose();
+						uiimage?.Dispose();
 				});
 			}
 			else
