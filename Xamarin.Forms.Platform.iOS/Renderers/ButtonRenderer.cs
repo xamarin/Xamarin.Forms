@@ -22,6 +22,7 @@ namespace Xamarin.Forms.Platform.iOS
 		// Under iOS Classic Resharper wants to suggest this use the built-in type ref
 		// but under iOS that suggestion won't work
 		readonly nfloat _minimumButtonHeight = 44; // Apple docs
+		readonly nfloat _defaultCornerRadius = 5;
 
 		static readonly UIControlState[] s_controlStates = { UIControlState.Normal, UIControlState.Highlighted, UIControlState.Disabled };
 
@@ -139,7 +140,13 @@ namespace Xamarin.Forms.Platform.iOS
 				uiButton.Layer.BorderColor = button.BorderColor.ToCGColor();
 
 			uiButton.Layer.BorderWidth = Math.Max(0f, (float)button.BorderWidth);
-			uiButton.Layer.CornerRadius = button.CornerRadius;
+
+			nfloat cornerRadius = _defaultCornerRadius;
+
+			if (button.IsSet(Button.CornerRadiusProperty) && button.CornerRadius != (int)Button.CornerRadiusProperty.DefaultValue)
+				cornerRadius = button.CornerRadius;
+
+			uiButton.Layer.CornerRadius = cornerRadius;
 		}
 
 		void UpdateFont()
