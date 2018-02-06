@@ -88,6 +88,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void HandleChanged(object sender, EventArgs e)
 		{
+			if (Control?.StringValue?.Length > Element?.MaxLength)
+				Control.StringValue = Control.StringValue.Substring(0, Element.MaxLength);
+			
 			ElementController.SetValueFromRenderer(Editor.TextProperty, Control.StringValue);
 		}
 
