@@ -4,6 +4,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
+using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.SearchBar;
 using WVisualStateManager = Windows.UI.Xaml.VisualStateManager;
 
 namespace Xamarin.Forms.Platform.UWP
@@ -39,6 +40,7 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateFont();
 				UpdateTextColor();
 				UpdatePlaceholderColor();
+				UpdateIsSpellCheckEnabled();
 			}
 
 			base.OnElementChanged(e);
@@ -68,6 +70,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdatePlaceholderColor();
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateAlignment();
+			else if (e.PropertyName == Specifics.IsSpellCheckEnabledProperty.PropertyName)
+				UpdateIsSpellCheckEnabled();
 		}
 
 		void OnControlLoaded(object sender, RoutedEventArgs routedEventArgs)
@@ -78,6 +82,7 @@ namespace Xamarin.Forms.Platform.UWP
 			UpdateTextColor();
 			UpdatePlaceholderColor();
 			UpdateBackgroundColor();
+			UpdateIsSpellCheckEnabled();
 
 			// If the Forms VisualStateManager is in play or the user wants to disable the Forms legacy
 			// color stuff, then the underlying textbox should just use the Forms VSM states
@@ -191,6 +196,15 @@ namespace Xamarin.Forms.Platform.UWP
 
 			BrushHelpers.UpdateColor(textColor, ref _defaultTextColorFocusBrush, 
 				() => _queryTextBox.ForegroundFocusBrush, brush => _queryTextBox.ForegroundFocusBrush = brush);
+		}
+
+		void UpdateIsSpellCheckEnabled()
+		{
+			if (_queryTextBox == null)
+				return;
+
+			if (Element.IsSet(Specifics.IsSpellCheckEnabledProperty))
+				_queryTextBox.IsSpellCheckEnabled = Element.OnThisPlatform().GetIsSpellCheckEnabled();
 		}
 
 		protected override void UpdateBackgroundColor()
