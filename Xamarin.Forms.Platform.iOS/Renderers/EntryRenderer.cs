@@ -255,8 +255,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		bool ShouldChangeCharacters(UITextField textField, NSRange range, string replacementString)
 		{
-			var newLength = textField.Text.Length + replacementString.Length - range.Length;
-			return newLength <= Element.MaxLength;
+			var newLength = textField?.Text?.Length + replacementString.Length - range.Length;
+			return newLength <= Element?.MaxLength;
 		}
 	}
 }
