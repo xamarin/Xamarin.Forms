@@ -105,6 +105,7 @@
     <Compile Include="AndroidTitleBarVisibility.cs" />
     <Compile Include="AppCompat\FrameRenderer.cs" />
     <Compile Include="Elevation.cs" />
+    <Compile Include="Extensions\EntryRendererExtensions.cs" />
     <Compile Include="FastRenderers\AutomationPropertiesProvider.cs" />
     <Compile Include="AppCompat\PageExtensions.cs" />
     <Compile Include="Extensions\JavaObjectExtensions.cs" />
