@@ -681,7 +681,7 @@ namespace Xamarin.Forms.CustomAttributes
 			HtmlWebViewSource,
 			LoadHtml,
 			MixedContentDisallowed,
-			MixedContentAllowed
+			MixedContentAllowed,
 			JavaScriptAlert
 		}
 
