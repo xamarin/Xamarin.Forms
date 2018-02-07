@@ -233,7 +233,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		private bool ResetNativeNonScroll()
 		{
-			if (ScrollView == null || ContentView == null)
+			if (ContentView == null || ScrollView == null || ScrollView.Content == null)
 				return false;
 
 			if (Math.Abs(ScrollView.ScrollY) < 0.001 && Math.Abs(ScrollView.ScrollX) < 0.001 && ScrollView.Content.Height > ScrollView.Height)
