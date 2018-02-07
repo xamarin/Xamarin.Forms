@@ -140,6 +140,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateColor();
 			else if (e.PropertyName == InputView.KeyboardProperty.PropertyName)
 				UpdateInputType();
+			else if (e.PropertyName == InputView.IsSpellCheckEnabledProperty.PropertyName)
+				UpdateInputType();
 			else if (e.PropertyName == Entry.HorizontalTextAlignmentProperty.PropertyName)
 				UpdateAlignment();
 			else if (e.PropertyName == Entry.FontAttributesProperty.PropertyName)
@@ -186,6 +188,14 @@ namespace Xamarin.Forms.Platform.Android
 			var keyboard = model.Keyboard;
 
 			Control.InputType = keyboard.ToInputType();
+			if (!(keyboard is Internals.CustomKeyboard) && model.IsSet(InputView.IsSpellCheckEnabledProperty))
+			{
+				if ((Control.InputType & InputTypes.TextFlagNoSuggestions) != InputTypes.TextFlagNoSuggestions)
+				{
+					if (!model.IsSpellCheckEnabled)
+						Control.InputType = Control.InputType | InputTypes.TextFlagNoSuggestions;
+				}
+			}
 
 			if (keyboard == Keyboard.Numeric)
 			{
