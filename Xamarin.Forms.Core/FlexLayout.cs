@@ -280,7 +280,13 @@ namespace Xamarin.Forms
 			InitItemProperties(view, item);
 			if (!(view is FlexLayout)) { //inner layouts don't get measured
 				item.SelfSizing = (Flex.Item it, ref float w, ref float h) => {
-					(var widthConstraint, var heightConstraint) = item.GetConstraints();
+					double widthConstraint = -1d;
+					double heightConstraint = -1d;
+#if NETSTANDARD2_0
+					(widthConstraint, heightConstraint) = item.GetConstraints();
+#else
+					item.GetConstraints(ref widthConstraint, ref heightConstraint);
+#endif
 					var request = view.Measure(widthConstraint, heightConstraint).Request;
 					w = (float)request.Width;
 					h = (float)request.Height;
@@ -462,14 +468,24 @@ namespace Xamarin.Forms
 		{
 			return new Rectangle(item.Frame[0], item.Frame[1], item.Frame[2], item.Frame[3]);
 		}
-
+#if NETSTANDARD2_0
 		public static (double widthConstraint, double heightConstraint) GetConstraints(this Flex.Item item)
 		{
 			var widthConstraint = -1d;
 			var heightConstraint = -1d;
 
+			GetConstraints(item, ref widthConstraint, ref heightConstraint); 
+			return (widthConstraint, heightConstraint);
+		}
+#endif
+
+		public static void GetConstraints(this Flex.Item item, ref double widthConstraint, ref double heightConstraint)
+		{
+			widthConstraint = -1d;
+			heightConstraint = -1d;
 			var parent = item.Parent;
-			do {
+			do
+			{
 				if (parent == null)
 					break;
 				if (widthConstraint < 0 && !float.IsNaN(parent.Width))
@@ -478,7 +494,6 @@ namespace Xamarin.Forms
 					heightConstraint = (double)parent.Height;
 				parent = parent.Parent;
 			} while (widthConstraint < 0 || heightConstraint < 0);
-			return (widthConstraint, heightConstraint);
 		}
 
 		public static Flex.Basis ToFlexBasis(this FlexBasis basis)
