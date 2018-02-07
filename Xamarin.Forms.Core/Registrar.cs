@@ -12,6 +12,7 @@ namespace Xamarin.Forms
 		internal static void RegisterAll(Type[] attrTypes) => Internals.Registrar.RegisterAll(attrTypes);
 	}
 }
+
 namespace Xamarin.Forms.Internals
 {
 	[EditorBrowsable(EditorBrowsableState.Never)]
@@ -33,7 +34,18 @@ namespace Xamarin.Forms.Internals
 			if (handlerType == null)
 				return null;
 
-			object handler = Activator.CreateInstance(handlerType);
+			object handler = null;
+
+			if (Registrar.Resolver != null)
+			{
+				handler = Registrar.Resolver.Invoke(handlerType);
+			}
+
+			if (handler == null)
+			{
+				handler = Activator.CreateInstance(handlerType);
+			}
+
 			return (TRegistrable)handler;
 		}
 
@@ -48,12 +60,26 @@ namespace Xamarin.Forms.Internals
 			if (handlerType == null)
 				return null;
 
+			object handler = null;
+
+			if (Registrar.Resolver != null)
+			{
+				//var argsCopy = new object[args.Length];
+				//args.CopyTo(argsCopy, 0);
+				handler = Registrar.Resolver.Invoke(handlerType, args);
+			}
+
+			if (handler != null)
+			{
+				return (TRegistrable)handler;
+			}
+
 			// This is by no means a general solution to matching with the correct constructor, but it'll
 			// do for finding Android renderers which need Context (vs older custom renderers which may still use
 			// parameterless constructors)
 			if (handlerType.GetTypeInfo().DeclaredConstructors.Any(info => info.GetParameters().Length == args.Length))
 			{
-				object handler = Activator.CreateInstance(handlerType, args);
+				handler = Activator.CreateInstance(handlerType, args);
 				return (TRegistrable)handler;
 			}
 			
@@ -171,7 +197,7 @@ namespace Xamarin.Forms.Internals
 
 		public static IEnumerable<Assembly> ExtraAssemblies { get; set; }
 
-		public static Registrar<IRegisterable> Registered { get; }
+		public static Registrar<IRegisterable> Registered { get; internal set; }
 
 		public static void RegisterAll(Type[] attrTypes)
 		{
@@ -227,6 +253,27 @@ namespace Xamarin.Forms.Internals
 			}
 
 			DependencyService.Initialize(assemblies);
+		}
+
+		public delegate object ResolveDelegate(Type type, params object[] args);
+
+		internal static ResolveDelegate Resolver { get; set; }
+
+		public static void ResolveUsing(ResolveDelegate resolveDelegate)
+		{
+			Resolver = resolveDelegate;
+		}
+
+		public static void ResolveUsing(Func<Type, object> resolveFunc)
+		{
+			object ResolveDelegate(Type type, object[] args) => resolveFunc.Invoke(type);
+			Resolver = ResolveDelegate;
+		}
+
+		internal static void Reset()
+		{
+			Registered = new Registrar<IRegisterable>();
+			Resolver = null;
 		}
 	}
 }

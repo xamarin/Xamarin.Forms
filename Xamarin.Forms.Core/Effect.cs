@@ -20,11 +20,18 @@ namespace Xamarin.Forms
 
 		public static Effect Resolve(string name)
 		{
-			Type effectType;
 			Effect result = null;
-			if (Internals.Registrar.Effects.TryGetValue(name, out effectType))
+			if (Internals.Registrar.Effects.TryGetValue(name, out Type effectType))
 			{
-				result = (Effect)Activator.CreateInstance(effectType);
+				if (Internals.Registrar.Resolver != null)
+				{
+					result = Internals.Registrar.Resolver.Invoke(effectType) as Effect;
+				}
+
+				if (result == null)
+				{
+					result = (Effect)Activator.CreateInstance(effectType);
+				}
 			}
 
 			if (result == null)

@@ -1,0 +1,31 @@
+<Type Name="Registrar+ResolveDelegate" FullName="Xamarin.Forms.Internals.Registrar+ResolveDelegate">
+  <TypeSignature Language="C#" Value="public delegate object Registrar.ResolveDelegate(Type type, object[] args);" />
+  <TypeSignature Language="ILAsm" Value=".class nested public auto ansi sealed Registrar/ResolveDelegate extends System.MulticastDelegate" />
+  <AssemblyInfo>
+    <AssemblyName>Xamarin.Forms.Core</AssemblyName>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+  </AssemblyInfo>
+  <Base>
+    <BaseTypeName>System.Delegate</BaseTypeName>
+  </Base>
+  <Parameters>
+    <Parameter Name="type" Type="System.Type" />
+    <Parameter Name="args" Type="System.Object[]">
+      <Attributes>
+        <Attribute>
+          <AttributeName>System.ParamArray</AttributeName>
+        </Attribute>
+      </Attributes>
+    </Parameter>
+  </Parameters>
+  <ReturnValue>
+    <ReturnType>System.Object</ReturnType>
+  </ReturnValue>
+  <Docs>
+    <param name="type">To be added.</param>
+    <param name="args">To be added.</param>
+    <summary>To be added.</summary>
+    <returns>To be added.</returns>
+    <remarks>To be added.</remarks>
+  </Docs>
+</Type>

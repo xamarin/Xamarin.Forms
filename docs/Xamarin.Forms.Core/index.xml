@@ -502,6 +502,7 @@
       <Type Name="ReflectionExtensions" Kind="Class" />
       <Type Name="Registrar" Kind="Class" />
       <Type Name="Registrar`1" DisplayName="Registrar&lt;TRegistrable&gt;" Kind="Class" />
+      <Type Name="Registrar+ResolveDelegate" Kind="Delegate" />
       <Type Name="ResourceLoader" Kind="Class" />
       <Type Name="ResourcesChangedEventArgs" Kind="Class" />
       <Type Name="SetValueFlags" Kind="Enumeration" />
