@@ -659,7 +659,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 					var cell = table.CellAt(_lastPath) as ContextActionsCell;
 
-					return cell != null;
+					return cell != null && cell.ContentCell.UserInteractionEnabled;
 				};
 			}
 
