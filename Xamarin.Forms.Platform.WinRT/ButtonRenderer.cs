@@ -38,6 +38,7 @@ namespace Xamarin.Forms.Platform.WinRT
 
 				UpdateContent();
 
+				//TODO: We may want to revisit this strategy later. If a user wants to reset any of these to the default, the UI won't update.
 				if (Element.IsSet(VisualElement.BackgroundColorProperty) && Element.BackgroundColor != (Color)VisualElement.BackgroundColorProperty.DefaultValue)
 					UpdateBackground();
 
