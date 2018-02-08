@@ -1,7 +1,8 @@
 using System.ComponentModel;
-
+#if NETSTANDARD1_0
 namespace Xamarin.Forms.Internals
 {
+	[Flags]
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	public enum FileAccess
 	{
@@ -10,3 +11,4 @@ namespace Xamarin.Forms.Internals
 		ReadWrite = Read | Write
 	}
 }
+#endif

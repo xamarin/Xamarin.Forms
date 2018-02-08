@@ -1,6 +1,6 @@
 using System;
 using System.ComponentModel;
-
+#if NETSTANDARD1_0
 namespace Xamarin.Forms.Internals
 {
 	[Flags]
@@ -15,3 +15,4 @@ namespace Xamarin.Forms.Internals
 		Inheritable = 16
 	}
 }
+#endif

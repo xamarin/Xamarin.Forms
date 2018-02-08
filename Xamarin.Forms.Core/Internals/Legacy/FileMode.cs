@@ -1,7 +1,8 @@
 using System.ComponentModel;
-
+#if NETSTANDARD1_0
 namespace Xamarin.Forms.Internals
 {
+	[Flags]
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	public enum FileMode
 	{
@@ -13,3 +14,4 @@ namespace Xamarin.Forms.Internals
 		Append = 6
 	}
 }
+#endif
