@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel;
 #if NETSTANDARD1_0
 namespace Xamarin.Forms.Internals
