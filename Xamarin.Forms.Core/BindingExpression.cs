@@ -370,10 +370,10 @@ namespace Xamarin.Forms
 				}
 #if !NETSTANDARD1_0
 				TupleElementNamesAttribute tupleEltNames;
-				if (property != null
+				if (   property != null
 					&& part.NextPart != null
 					&& property.PropertyType.IsGenericType
-					&& (property.PropertyType.GetGenericTypeDefinition() == typeof(ValueTuple<>)
+					&& (   property.PropertyType.GetGenericTypeDefinition() == typeof(ValueTuple<>)
 						|| property.PropertyType.GetGenericTypeDefinition() == typeof(ValueTuple<,>)
 						|| property.PropertyType.GetGenericTypeDefinition() == typeof(ValueTuple<,,>)
 						|| property.PropertyType.GetGenericTypeDefinition() == typeof(ValueTuple<,,,>)

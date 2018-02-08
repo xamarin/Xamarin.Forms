@@ -553,6 +553,6 @@ namespace Xamarin.Forms
 		public static readonly Color Yellow = FromRgb(255, 255, 0);
 		public static readonly Color YellowGreen = FromRgb(154, 205, 50);
 
-#endregion
+		#endregion
 	}
 }
