@@ -17,12 +17,24 @@ namespace Xamarin.Forms.Core.UITests
 		    App.NavigateToGallery(GalleryQueries.MapGalleryLegacy);
 	    }
 
-		[Test]
-		public void MapGalleryPinClicked()
-		{
-			App.Tap(PlatformQueries.Pin);
-			App.Tap(c => c.Text("Colosseum"));
-			App.Screenshot("Alert displayed as result of PinClicked event");
-		}
-    }
+	    [Test]
+	    public void MapGalleryPinClicked()
+	    {
+		    App.Tap(PlatformQueries.Pin);
+
+		    App.WaitForElement(c => c.Text("Colosseum"));
+		    App.Tap(c => c.Text("Colosseum"));
+
+		    App.Screenshot("Alert displayed as result of PinClicked event");
+
+		    // Dismiss alert
+		    App.Tap(c => c.Text("OK"));
+	    }
+
+	    protected override void FixtureTeardown()
+	    {
+		    App.NavigateBack();
+		    base.FixtureTeardown();
+	    }
+	}
 }
