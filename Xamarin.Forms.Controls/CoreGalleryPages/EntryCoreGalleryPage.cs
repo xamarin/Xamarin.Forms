@@ -65,7 +65,7 @@ namespace Xamarin.Forms.Controls
 				new Entry { IsPassword = true, Text = "12345", TextColor = Color.Red });
 
 			var maxLengthContainer = new ViewContainer<Entry>(Test.Entry.MaxLength,
-			                                                  new Entry { MaxLength = 3 });
+																new Entry { MaxLength = 3 });
 
 			Add (isPasswordContainer);
 			Add (completedContainer);

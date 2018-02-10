@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Controls
 				new Editor { Text = "I should have the default disabled text color", TextColor = Color.Red, IsEnabled = false });
 
 			var maxLengthContainer = new ViewContainer<Editor>(Test.Editor.MaxLength,
-			                                                   new Editor { MaxLength = 3 });
+																new Editor { MaxLength = 3 });
 			
 			Add (completedContainer);
 			Add (textContainer);

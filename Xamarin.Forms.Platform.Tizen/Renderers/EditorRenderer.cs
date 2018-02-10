@@ -96,7 +96,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		string MaxLengthFilter(Entry entry, string s)
 		{
-			if (s.Length <= Element.MaxLength)
+			if (entry.Text.Length < Element.MaxLength)
 				return s;
 
 			return null;
