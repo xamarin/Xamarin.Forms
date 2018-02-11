@@ -382,6 +382,24 @@ namespace Xamarin.Forms.Platform.UWP
 			if (view == null)
 				return;
 
+			if (view is Label label)
+			{
+				var tapPosition = e.GetPosition(Control);
+				foreach (var span in label.FormattedText.Spans)
+					for (int i = 0; i < span.Positions.Count; i++)
+						if (span.Positions[i].Contains(tapPosition.X, tapPosition.Y))
+						{
+							foreach (var recognizer in span.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(g => g.NumberOfTapsRequired == 1))
+							{
+								recognizer.SendTapped(view);
+								e.Handled = true;
+							}
+						}
+			}
+
+			if (e.Handled)
+				return;
+
 			IEnumerable<TapGestureRecognizer> tapGestures = view.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(g => g.NumberOfTapsRequired == 1);
 			foreach (TapGestureRecognizer recognizer in tapGestures)
 			{
