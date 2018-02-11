@@ -7,11 +7,13 @@ namespace Xamarin.Forms.Platform.Android
 {
 	internal class TapGestureHandler
 	{
-		public TapGestureHandler(Func<View> getView)
+		public TapGestureHandler(Func<View> getView, Func<IList<Span>> getSpans)
 		{
 			GetView = getView;
+			GetSpans = getSpans;
 		}
 
+		Func<IList<Span>> GetSpans { get; }
 		Func<View> GetView { get; }
 
 		public void OnSingleClick()
@@ -20,18 +22,36 @@ namespace Xamarin.Forms.Platform.Android
 			if (TapGestureRecognizers(2).Any())
 				return;
 
-			OnTap(1);
+			OnTap(1, new Point(-1, -1));
 		}
 
-		public bool OnTap(int count)
+		public bool OnTap(int count, Point point)
 		{
 			View view = GetView();
 
 			if (view == null)
 				return false;
 
-			IEnumerable<TapGestureRecognizer> gestureRecognizers = TapGestureRecognizers(count);
 			var result = false;
+
+			var spanGestureRecognizers = SpanTapGestureRecognizers(count);
+			foreach (var span in spanGestureRecognizers)
+			{
+				for(int i = 0; i < span.Key.Positions.Count; i++)
+					if (span.Key.Positions[i].Contains(point.X, point.Y))
+					{
+						foreach (var recognizer in span.Value)
+						{
+							recognizer.SendTapped(view);
+							result = true;
+						}
+					}
+			}
+
+			if (result)
+				return result;
+
+			IEnumerable<TapGestureRecognizer> gestureRecognizers = TapGestureRecognizers(count);
 			foreach (TapGestureRecognizer gestureRecognizer in gestureRecognizers)
 			{
 				gestureRecognizer.SendTapped(view);
@@ -54,6 +74,16 @@ namespace Xamarin.Forms.Platform.Android
 				return Enumerable.Empty<TapGestureRecognizer>();
 
 			return view.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(recognizer => recognizer.NumberOfTapsRequired == count);
+		}
+
+		public IDictionary<Span, IEnumerable<TapGestureRecognizer>> SpanTapGestureRecognizers(int count)
+		{
+			var spanRecognizers = new Dictionary<Span, IEnumerable<TapGestureRecognizer>>();
+
+			foreach (var span in GetSpans())
+				spanRecognizers.Add(span, span.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(recognizer => recognizer.NumberOfTapsRequired == count));
+
+			return spanRecognizers;
 		}
 	}
 }

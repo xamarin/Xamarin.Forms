@@ -25,6 +25,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		VisualElementTracker _visualElementTracker;
 		VisualElementRenderer _visualElementRenderer;
 		readonly MotionEventHelper _motionEventHelper = new MotionEventHelper();
+		SpannableString _spannableString;
 
 		bool _wasFormatted;
 
@@ -112,6 +113,12 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			_lastSizeRequest = result;
 
 			return result;
+		}
+
+		protected override void OnSizeChanged(int w, int h, int oldw, int oldh)
+		{
+			base.OnSizeChanged(w, h, oldw, oldh);
+			this.RecalculateSpanPositions(Element, _spannableString, new SizeRequest(new Size(w, h)));
 		}
 
 		void IVisualElementRenderer.SetElement(VisualElement element)
@@ -284,7 +291,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			{
 				FormattedString formattedText = Element.FormattedText ?? Element.Text;
 #pragma warning disable 618 // We will need to update this when .Font goes away
-				TextFormatted = formattedText.ToAttributed(Element.Font, Element.TextColor, this);
+				TextFormatted = _spannableString = formattedText.ToAttributed(Element.Font, Element.TextColor, this);
 #pragma warning restore 618
 				_wasFormatted = true;
 			}

@@ -41,5 +41,57 @@ namespace Xamarin.Forms.Platform.Android
 					break;
 			}
 		}
-    }
+
+		public static void RecalculateSpanPositions(this TextView textView, Label element, SpannableString spannableString, SizeRequest finalSize)
+		{
+			if (element?.FormattedText?.Spans == null
+				|| element.FormattedText.Spans.Count == 0)
+				return;
+			
+			var layout = textView.Layout;
+
+			var text = spannableString.ToString();
+
+			int next;
+			int count = 0;
+
+			for (int i = 0; i < spannableString.Length(); i = next)
+			{
+				var span = element.FormattedText.Spans[count];
+
+				// find the next span
+				next = spannableString.NextSpanTransition(i, spannableString.Length(), Java.Lang.Class.FromType(typeof(Java.Lang.Object)));
+
+				// get all spans in the range				
+				var spans = spannableString.GetSpans(i, next, Java.Lang.Class.FromType(typeof(Java.Lang.Object)));
+
+				var startSpan = spans[0];
+				var endSpan = spans[spans.Length - 1];
+
+				var startSpanOffset = spannableString.GetSpanStart(startSpan);
+				var endSpanOffset = spannableString.GetSpanEnd(endSpan);
+
+				var startX = layout.GetPrimaryHorizontal(startSpanOffset);
+				var endX = layout.GetPrimaryHorizontal(endSpanOffset);
+
+				var startLine = layout.GetLineForOffset(startSpanOffset);
+				var endLine = layout.GetLineForOffset(endSpanOffset);
+
+				var labelWidth = finalSize.Request.Width;
+
+				int[] lineHeights = new int[endLine - startLine + 1];
+
+				// calculate all the different line heights
+				for (var lineCount = startLine; lineCount <= endLine; lineCount++)
+				{
+					var lineHeight = layout.GetLineBottom(lineCount) - layout.GetLineTop(lineCount);
+					lineHeights[lineCount - startLine] = lineHeight;
+				}
+
+				span.CalculatePositions(lineHeights, labelWidth, startX, endX);
+
+				count++;
+			}
+		}
+	}
 }
