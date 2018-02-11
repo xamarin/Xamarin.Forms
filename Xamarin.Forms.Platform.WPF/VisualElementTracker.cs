@@ -97,8 +97,8 @@ namespace Xamarin.Forms.Platform.WPF
 
 			if ((fe != null && !fe.IsEnabled) || (vr != null && !vr.IsEnabled))
 				return;
-
-			e.Handled = ElementOnTap(e.ClickCount);
+			
+			e.Handled = ElementOnTap(e.ClickCount, e.GetPosition(fe));
 		}
 		
 		protected virtual void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -154,20 +154,39 @@ namespace Xamarin.Forms.Platform.WPF
 			OnUpdated();
 		}
 
-		bool ElementOnTap(int numberOfTapsRequired)
+		bool ElementOnTap(int numberOfTapsRequired, System.Windows.Point tapPosition)
 		{
 			var view = Element as View;
 			if (view == null)
 				return false;
 
-			var result = false;
+			var handled = false;
+
+			var label = view as Label;
+			if (label != null)
+			{
+				foreach (var span in label.FormattedText.Spans)
+					for (int i = 0; i < span.Positions.Count; i++)
+						if (span.Positions[i].Contains(tapPosition.X, tapPosition.Y))
+						{
+							foreach (var recognizer in span.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(g => g.NumberOfTapsRequired == 1))
+							{
+								recognizer.SendTapped(view);
+								handled = true;
+							}
+						}
+			}
+
+			if (handled)
+				return handled;
+
 			foreach (TapGestureRecognizer gestureRecognizer in
 				view.GestureRecognizers.OfType<TapGestureRecognizer>().Where(g => g.NumberOfTapsRequired == numberOfTapsRequired))
 			{
 				gestureRecognizer.SendTapped(view);
-				result = true;
+				handled = true;
 			}
-			return result;
+			return handled;
 		}
 		
 		void HandlePan(ManipulationDeltaEventArgs e, View view)

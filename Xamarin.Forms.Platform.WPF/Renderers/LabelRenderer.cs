@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -11,7 +12,8 @@ namespace Xamarin.Forms.Platform.WPF
 	public class LabelRenderer : ViewRenderer<Label, TextBlock>
 	{
 		bool _fontApplied;
-		
+		IList<double> _inlineHeights = new List<double>();
+
 		protected override void OnElementChanged(ElementChangedEventArgs<Label> e)
 		{
 			if (e.NewElement != null)
@@ -30,6 +32,13 @@ namespace Xamarin.Forms.Platform.WPF
 			}
 
 			base.OnElementChanged(e);
+		}
+
+		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
+		{
+			var size = base.GetDesiredSize(widthConstraint, heightConstraint);
+			RecalculatePositions(size.Request);
+			return size;
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -129,6 +138,69 @@ namespace Xamarin.Forms.Platform.WPF
 			}
 		}
 
+		double FindDefaultLineHeight(Inline inline)
+		{
+			var control = new TextBlock();
+			control.Inlines.Add(inline);
+
+			control.Measure(new System.Windows.Size(double.PositiveInfinity, double.PositiveInfinity));
+
+			var height = control.DesiredSize.Height;
+
+			control.Inlines.Remove(inline);
+			control = null;
+
+			return height;
+		}
+
+		void RecalculatePositions(Size finalSize)
+		{
+			if (Element?.FormattedText?.Spans == null
+				|| Element.FormattedText.Spans.Count == 0)
+				return;
+
+			if (finalSize.Height == 0 || finalSize.Width == 0)
+				return;
+
+			for (int i = 0; i < Element.FormattedText.Spans.Count; i++)
+			{
+				var span = Element.FormattedText.Spans[i];
+
+				var inline = Control.Inlines.ElementAt(i);
+				var rect = inline.ContentStart.GetCharacterRect(LogicalDirection.Forward);
+				var endRect = inline.ContentEnd.GetCharacterRect(LogicalDirection.Forward);
+
+				var positions = new List<Rectangle>();
+				var labelWidth = Control.ActualWidth;
+
+				var defaultLineHeight = _inlineHeights[i];
+
+				var yaxis = rect.Top;
+				var lineHeights = new List<double>();
+				while (yaxis < endRect.Bottom)
+				{
+					double lineHeight;
+					if (yaxis == rect.Top) // First Line
+					{
+						lineHeight = rect.Bottom - rect.Top;
+					}
+					else if (yaxis != endRect.Top) // Middle Line(s)
+					{
+						lineHeight = defaultLineHeight;
+					}
+					else // Bottom Line
+					{
+						lineHeight = endRect.Bottom - endRect.Top;
+					}
+					lineHeights.Add(lineHeight);
+					yaxis += lineHeight;
+				}
+
+				span.CalculatePositions(lineHeights.ToArray(), finalSize.Width, rect.X, endRect.X + endRect.Width, rect.Top);
+
+			}
+		}
+
 		void UpdateText()
 		{
 			if (Control == null)
@@ -144,8 +216,21 @@ namespace Xamarin.Forms.Platform.WPF
 					FormattedString formattedText = label.FormattedText ?? label.Text;
 
 					Control.Inlines.Clear();
-					foreach (Inline inline in formattedText.ToInlines())
-						Control.Inlines.Add(inline);
+					// Have to implement a measure here, otherwise inline.ContentStart and ContentEnd will be null, when used in RecalculatePositions
+					Control.Measure(new System.Windows.Size(double.MaxValue, double.MaxValue));
+
+					var heights = new List<double>();
+					for (var i = 0; i < formattedText.Spans.Count; i++)
+					{
+						var span = formattedText.Spans[i];
+						if (span.Text != null)
+						{
+							var run = span.ToRun();
+							heights.Add(FindDefaultLineHeight(run));
+							Control.Inlines.Add(run);
+						}
+					}
+					_inlineHeights = heights;
 				}
 			}
 		}
