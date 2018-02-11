@@ -98,14 +98,41 @@ namespace Xamarin.Forms.Platform.MacOS
 			var tapRecognizer = recognizer as TapGestureRecognizer;
 
 #if !__MOBILE__
-			var clickRecognizer = recognizer as ClickGestureRecognizer;
-			if (clickRecognizer != null)
+			if (recognizer is ClickGestureRecognizer clickRecognizer)
 			{
-				var returnAction = new Action(() =>
+				var returnAction = new Action<NSClickGestureRecognizer>((sender) =>
 				{
 					var clickGestureRecognizer = weakRecognizer.Target as ClickGestureRecognizer;
 					var eventTracker = weakEventTracker.Target as EventTracker;
 					var view = eventTracker?._renderer?.Element as View;
+
+					var captured = false;
+
+					// Check spans to see if a span covers it.
+					if (_renderer.Element is Label label
+						&& label.FormattedText?.Spans != null
+						&& label.FormattedText?.Spans.Count > 0)
+					{
+						var originPoint = sender.LocationInView(null);
+						originPoint = NSApplication.SharedApplication.KeyWindow.ContentView.ConvertPointToView(originPoint, eventTracker._renderer.NativeView);
+
+						foreach (var span in label.FormattedText.Spans)
+						{
+							foreach (var position in span.Positions)
+								if (position.Contains(originPoint.X, originPoint.Y)) // gesture recognizer captures this
+								{
+									foreach (var spanRecognizer in span.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(x => x.NumberOfTapsRequired == (int)sender.NumberOfClicksRequired))
+									{
+										if (view != null)
+											spanRecognizer.SendTapped(view);
+										captured = true;
+									}
+								}
+						}
+					}
+
+					if (captured)
+						return;
 
 					if (clickGestureRecognizer != null && view != null)
 						clickGestureRecognizer.SendClicked(view, clickRecognizer.Buttons);
@@ -141,15 +168,43 @@ namespace Xamarin.Forms.Platform.MacOS
                     var eventTracker = weakEventTracker.Target as EventTracker;
                     var view = eventTracker?._renderer?.Element as View;
 
-                    if (tapGestureRecognizer != null && view != null)
-                        tapGestureRecognizer.SendTapped(view);
-                });
-                var uiRecognizer = CreateTapRecognizer(tapRecognizer.NumberOfTapsRequired, returnAction);
-                return uiRecognizer;
-            }                
+					var captured = false;
+
+					// Check spans to see if a span covers it.
+					if (_renderer.Element is Label label
+						&& label.FormattedText?.Spans != null
+						&& label.FormattedText?.Spans.Count > 0)
+					{
+						var originPoint = sender.LocationInView(null);
+						originPoint = UIApplication.SharedApplication.KeyWindow.ConvertPointToView(originPoint, eventTracker._renderer.NativeView);
+
+						foreach (var span in label.FormattedText.Spans)
+						{
+							foreach (var position in span.Positions)
+								if (position.Contains(originPoint.X, originPoint.Y)) // gesture recognizer captures this
+								{
+									foreach (var spanRecognizer in span.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(x => x.NumberOfTapsRequired == (int)sender.NumberOfTapsRequired))
+									{
+										if (view != null)
+											spanRecognizer.SendTapped(view);
+										captured = true;
+									}
+								}
+						}
+					}
+
+					if (captured)
+						return;
+
+					if (tapGestureRecognizer != null && view != null)
+						tapGestureRecognizer.SendTapped(view);
+
+				});
+
+				var uiRecognizer = CreateTapRecognizer(tapRecognizer.NumberOfTapsRequired, returnAction);
+				return uiRecognizer;
+			}
 #endif
-
-
 			var pinchRecognizer = recognizer as PinchGestureRecognizer;
 			if (pinchRecognizer != null)
 			{
@@ -292,7 +347,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			return result;
 		}
 
-		UITapGestureRecognizer CreateTapRecognizer(int numTaps, Action action, int numFingers = 1)
+		UITapGestureRecognizer CreateTapRecognizer(int numTaps, Action<UITapGestureRecognizer> action, int numFingers = 1)
 		{
 			var result = new UITapGestureRecognizer(action)
 			{
@@ -383,6 +438,34 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			return true;
 		}
+#else
+		NativeGestureRecognizer CreateClickRecognizer(int buttonMask, int numberOfClicksRequired, Action<NSClickGestureRecognizer> returnAction)
+		{
+			var result = new NSClickGestureRecognizer(returnAction);
+			result.ButtonMask = (nuint)buttonMask;
+			result.NumberOfClicksRequired = numberOfClicksRequired;
+			return result;
+		}
+
+		NSPanGestureRecognizer CreatePanRecognizer(int numTouches, Action<NSPanGestureRecognizer> action)
+		{
+			var result = new NSPanGestureRecognizer(action);
+			return result;
+		}
+
+		NSMagnificationGestureRecognizer CreatePinchRecognizer(Action<NSMagnificationGestureRecognizer> action)
+		{
+			var result = new NSMagnificationGestureRecognizer(action);
+			return result;
+		}
+
+		NSClickGestureRecognizer CreateTapRecognizer(int numTaps, Action action)
+		{
+			var result = new NSClickGestureRecognizer(action);
+			result.NumberOfClicksRequired = numTaps;
+			return result;
+		}
+#endif
 
 		void LoadRecognizers()
 		{
@@ -440,7 +523,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				return false;
 			}
-			
+
 			if (touch.View.IsDescendantOfView(_renderer.NativeView) && touch.View.GestureRecognizers?.Length > 0)
 			{
 				return true;

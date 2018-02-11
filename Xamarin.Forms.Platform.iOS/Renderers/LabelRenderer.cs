@@ -2,6 +2,8 @@ using System;
 using System.ComponentModel;
 using RectangleF = CoreGraphics.CGRect;
 using SizeF = CoreGraphics.CGSize;
+using Foundation;
+using System.Collections.Generic;
 
 #if __MOBILE__
 using UIKit;
@@ -107,8 +109,132 @@ namespace Xamarin.Forms.Platform.MacOS
 #endif
 					break;
 			}
+
+			RecalculateSpanPositions(Control.Frame);
+
 		}
 
+		double FindDefaultLineHeight(int start, int length)
+		{
+			if (length == 0)
+				return 0.0;
+
+			var textStorage = new NSTextStorage();
+#if __MOBILE__
+			textStorage.SetString(Control.AttributedText.Substring(start, length));
+#else
+			textStorage.SetString(Control.AttributedStringValue.Substring(start, length));
+#endif
+			var layoutManager = new NSLayoutManager();
+			textStorage.AddLayoutManager(layoutManager);
+
+			var textContainer = new NSTextContainer(size: new SizeF(double.MaxValue, double.MaxValue))
+			{
+				LineFragmentPadding = 0
+			};
+			layoutManager.AddTextContainer(textContainer);
+
+			var glyph = new NSRange();
+#if __MOBILE__
+			layoutManager.CharacterRangeForGlyphRange(new NSRange(0, 1), ref glyph);
+#else
+			layoutManager.CharacterRangeForGlyphRange(new NSRange(0, 1), out glyph);
+#endif
+			var rect = layoutManager.BoundingRectForGlyphRange(glyph, textContainer);
+			return rect.Bottom - rect.Top;
+		}
+
+		void RecalculateSpanPositions(RectangleF finalSize)
+		{
+			if (Element?.FormattedText?.Spans == null
+				|| Element.FormattedText.Spans.Count == 0)
+				return;
+
+			if (finalSize.Width <= 0 || finalSize.Height <= 0)
+				return;
+
+#if __MOBILE__
+			var inline = Control.AttributedText;
+#else
+			var inline = Control.AttributedStringValue;
+#endif
+			var range = new NSRange(0, inline.Length);
+
+			NSTextStorage textStorage = new NSTextStorage();
+			textStorage.SetString(inline);
+
+			var layoutManager = new NSLayoutManager();
+
+			textStorage.AddLayoutManager(layoutManager);
+			
+			var textContainer = new NSTextContainer(size: Control.Frame.Size)
+			{
+				LineFragmentPadding = 0
+			};
+
+			layoutManager.AddTextContainer(textContainer);
+			 
+			var labelWidth = finalSize.Width;
+
+			var currentLocation = 0;
+
+			for (int i = 0; i < Element.FormattedText.Spans.Count; i++)
+			{
+				var span = Element.FormattedText.Spans[i];
+				var glyphRange = new NSRange();
+
+				var location = currentLocation;
+				var length = span.Text.Length;
+							
+				var startRange = new NSRange(location, 1);
+				var endRange = new NSRange(location + length, 1);
+#if __MOBILE__
+				layoutManager.CharacterRangeForGlyphRange(startRange, ref glyphRange);
+#else
+				layoutManager.CharacterRangeForGlyphRange(startRange, out glyphRange);
+#endif
+				var rect = layoutManager.BoundingRectForGlyphRange(glyphRange, textContainer);
+
+#if __MOBILE__
+				layoutManager.CharacterRangeForGlyphRange(endRange, ref glyphRange);
+#else
+				layoutManager.CharacterRangeForGlyphRange(endRange, out glyphRange);
+#endif
+				var endRect = layoutManager.BoundingRectForGlyphRange(glyphRange, textContainer);
+
+				var startLineHeight = rect.Bottom - rect.Top;
+				var endLineHeight = endRect.Bottom - endRect.Top;
+				
+				var defaultLineHeight = FindDefaultLineHeight(location, length);
+
+				var yaxis = rect.Top;
+				var lineHeights = new List<double>();
+				while (yaxis < endRect.Bottom)
+				{
+					double lineHeight;
+					if (yaxis == rect.Top) // First Line
+					{
+						lineHeight = rect.Bottom - rect.Top;
+					}
+					else if (yaxis != endRect.Top) // Middle Line(s)
+					{
+						lineHeight = defaultLineHeight;
+					}
+					else // Bottom Line
+					{
+						lineHeight = endRect.Bottom - endRect.Top;
+					}
+					lineHeights.Add(lineHeight);
+					yaxis += (nfloat)lineHeight;
+				}
+
+				span.CalculatePositions(lineHeights.ToArray(), finalSize.Width, rect.X, endRect.X, rect.Top);
+
+				// update current location
+				currentLocation += length;
+			}
+		}
+		
 		protected override void OnElementChanged(ElementChangedEventArgs<Label> e)
 		{
 			if (e.NewElement != null)
@@ -311,7 +437,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			if (isTextFormatted)
 				return;
-			
+
 			_perfectSizeValid = false;
 
 			var textColor = (Color)Element.GetValue(Label.TextColorProperty);

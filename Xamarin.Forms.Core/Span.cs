@@ -167,20 +167,20 @@ namespace Xamarin.Forms
 		{
 		}
 
-		public IList<Rectangle> Positions { get; set; }
+		public IList<Rectangle> Positions { get; set; } = new List<Rectangle>();
 
-		public void CalculatePositions(int[] lineHeights, double maxWidth, double startX, double endX)
+		public void CalculatePositions(double[] lineHeights, double maxWidth, double startX, double endX, double startY)
 		{
 			var positions = new List<Rectangle>();
 			var endLine = lineHeights.Length - 1;
-			var lineHeightTotal = 0;
+			var lineHeightTotal = startY;
 
 			for (var i = 0; i <= endLine; i++)
 			{
 				if (endLine != 0) // MultiLine
 				{					
 					if (i == 0) // First Line
-						positions.Add(new Rectangle(startX, 0, maxWidth - startX, lineHeights[i]));
+						positions.Add(new Rectangle(startX, lineHeightTotal, maxWidth - startX, lineHeights[i]));
 
 					else if (i != endLine) // Middle Line
 						positions.Add(new Rectangle(0, lineHeightTotal, maxWidth, lineHeights[i]));
@@ -192,7 +192,7 @@ namespace Xamarin.Forms
 				}
 				else // SingleLine
 				{
-					positions.Add(new Rectangle(startX, 0, endX - startX, lineHeights[i]));
+					positions.Add(new Rectangle(startX, lineHeightTotal, endX - startX, lineHeights[i]));
 				}
 			}
 

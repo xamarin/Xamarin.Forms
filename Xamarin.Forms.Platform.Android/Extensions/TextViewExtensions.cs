@@ -79,7 +79,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				var labelWidth = finalSize.Request.Width;
 
-				int[] lineHeights = new int[endLine - startLine + 1];
+				double[] lineHeights = new double[endLine - startLine + 1];
 
 				// calculate all the different line heights
 				for (var lineCount = startLine; lineCount <= endLine; lineCount++)
