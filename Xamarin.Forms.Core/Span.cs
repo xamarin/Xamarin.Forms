@@ -1,145 +1,147 @@
 using System;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.Linq;
+using System.Windows.Input;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
 	[ContentProperty("Text")]
-	public sealed class Span : INotifyPropertyChanged, IFontElement
+	public sealed class Span : Element, IFontElement, ITextElement
 	{
-		class BindableSpan : BindableObject, IFontElement
-		{
-			Span _span;
-			public BindableSpan(Span span)
-			{
-				_span = span;
-			}
+		readonly ObservableCollection<IGestureRecognizer> _gestureRecognizers = new ObservableCollection<IGestureRecognizer>();
 
-			public Font Font {
-				get { return (Font)GetValue(FontElement.FontProperty); }
-				set { SetValue(FontElement.FontProperty, value); }
-			}
-
-			public FontAttributes FontAttributes {
-				get { return (FontAttributes)GetValue(FontElement.FontAttributesProperty); }
-				set { SetValue(FontElement.FontAttributesProperty, value); }
-			}
-
-			public string FontFamily {
-				get { return (string)GetValue(FontElement.FontFamilyProperty); }
-				set { SetValue(FontElement.FontFamilyProperty, value); }
-			}
-
-			[TypeConverter(typeof(FontSizeConverter))]
-			public double FontSize {
-				get { return (double)GetValue(FontElement.FontSizeProperty); }
-				set { SetValue(FontElement.FontSizeProperty, value); }
-			}
-
-			double IFontElement.FontSizeDefaultValueCreator() =>
-				((IFontElement)_span).FontSizeDefaultValueCreator();
-
-			public void OnFontAttributesChanged(FontAttributes oldValue, FontAttributes newValue) =>
-				((IFontElement)_span).OnFontAttributesChanged(oldValue, newValue);
-
-			public void OnFontChanged(Font oldValue, Font newValue) =>
-				((IFontElement)_span).OnFontChanged(oldValue, newValue);
-
-			public void OnFontFamilyChanged(string oldValue, string newValue) =>
-				((IFontElement)_span).OnFontFamilyChanged(oldValue, newValue);
-
-			public void OnFontSizeChanged(double oldValue, double newValue) =>
-				((IFontElement)_span).OnFontSizeChanged(oldValue, newValue);
-
-			protected override void OnPropertyChanged(string propertyName = null)
-			{
-				base.OnPropertyChanged(propertyName);
-				_span.OnPropertyChanged(propertyName);
-			}
-		}
-
-		Color _backgroundColor;
-
-		BindableObject _fontElement;
-
-		Color _foregroundColor;
-
-		string _text;
-
+		internal readonly MergedStyle _mergedStyle;
+		
 		public Span()
 		{
-			_fontElement = new BindableSpan(this);
+			_mergedStyle = new MergedStyle(GetType(), this);
+
+			_gestureRecognizers.CollectionChanged += (sender, args) =>
+			{
+				switch (args.Action)
+				{
+					case NotifyCollectionChangedAction.Add:
+						foreach (IElement item in args.NewItems.OfType<IElement>())
+						{
+							ValidateGesture(item as IGestureRecognizer);
+							item.Parent = this;
+						}
+						break;
+					case NotifyCollectionChangedAction.Remove:
+						foreach (IElement item in args.OldItems.OfType<IElement>())
+							item.Parent = null;
+						break;
+					case NotifyCollectionChangedAction.Replace:
+						foreach (IElement item in args.NewItems.OfType<IElement>())
+						{
+							ValidateGesture(item as IGestureRecognizer);
+							item.Parent = this;
+						}
+						foreach (IElement item in args.OldItems.OfType<IElement>())
+							item.Parent = null;
+						break;
+					case NotifyCollectionChangedAction.Reset:
+						foreach (IElement item in _gestureRecognizers.OfType<IElement>())
+							item.Parent = this;
+						break;
+				}
+			};
 		}
+
+		public IList<IGestureRecognizer> GestureRecognizers
+		{
+			get { return _gestureRecognizers; }
+		}
+
+		public static readonly BindableProperty CommandProperty = BindableProperty.Create(nameof(Command), typeof(ICommand), typeof(Span), null);
+
+		public ICommand Command
+		{
+			get { return (ICommand)GetValue(CommandProperty); }
+			set { SetValue(CommandProperty, value); }
+		}
+
+		public static readonly BindableProperty StyleProperty = BindableProperty.Create("Style", typeof(Style), typeof(Span), default(Style),
+			propertyChanged: (bindable, oldvalue, newvalue) => ((Span)bindable)._mergedStyle.Style = (Style)newvalue);
+
+		public Style Style
+		{
+			get { return (Style)GetValue(StyleProperty); }
+			set { SetValue(StyleProperty, value); }
+		}
+
+		public static readonly BindableProperty BackgroundColorProperty
+			= BindableProperty.Create(nameof(BackgroundColor), typeof(Color), typeof(Span), default(Color));
 
 		public Color BackgroundColor
 		{
-			get { return _backgroundColor; }
-			set
-			{
-				if (_backgroundColor == value)
-					return;
-				_backgroundColor = value;
-				OnPropertyChanged();
-			}
+			get { return (Color)GetValue(BackgroundColorProperty); }
+			set { SetValue(BackgroundColorProperty, value); }
 		}
 
-		[Obsolete("Font is obsolete as of version 1.3.0. Please use the Font properties directly.")]
-		public Font Font {
-			get { return (Font)_fontElement.GetValue(FontElement.FontProperty); }
-			set { _fontElement.SetValue(FontElement.FontProperty, value); }
+		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
+
+		public Color TextColor
+		{
+			get { return (Color)GetValue(TextElement.TextColorProperty); }
+			set { SetValue(TextElement.TextColorProperty, value); }
 		}
 
+		[Obsolete("Foreground is obsolete as of version 2.6.0. Please use the TextColor property instead.")]
+		public static readonly BindableProperty ForegroundColorProperty = TextColorProperty;
+		
+#pragma warning disable 618
 		public Color ForegroundColor
 		{
-			get { return _foregroundColor; }
-			set
-			{
-				if (_foregroundColor == value)
-					return;
-				_foregroundColor = value;
-				OnPropertyChanged();
-			}
+			get { return (Color)GetValue(ForegroundColorProperty); }
+			set { SetValue(ForegroundColorProperty, value); }
 		}
+#pragma warning restore 618
+		
+		public static readonly BindableProperty TextProperty
+			= BindableProperty.Create(nameof(Text), typeof(string), typeof(Span), "");
 
 		public string Text
 		{
-			get { return _text; }
-			set
-			{
-				if (_text == value)
-					return;
-				_text = value;
-				OnPropertyChanged();
-			}
+			get { return (string)GetValue(TextProperty); }
+			set	{ SetValue(TextProperty, value); }
+		}
+
+		public static readonly BindableProperty FontProperty = FontElement.FontProperty;
+
+		public static readonly BindableProperty FontFamilyProperty = FontElement.FontFamilyProperty;
+
+		public static readonly BindableProperty FontSizeProperty = FontElement.FontSizeProperty;
+
+		public static readonly BindableProperty FontAttributesProperty = FontElement.FontAttributesProperty;
+
+		[Obsolete("Font is obsolete as of version 1.3.0. Please use the Font properties directly.")]
+		public Font Font
+		{
+			get { return (Font)GetValue(FontElement.FontProperty); }
+			set { SetValue(FontElement.FontProperty, value); }
 		}
 
 		public FontAttributes FontAttributes
 		{
-			get { return (FontAttributes)_fontElement.GetValue(FontElement.FontAttributesProperty); }
-			set { _fontElement.SetValue(FontElement.FontAttributesProperty, value); }
+			get { return (FontAttributes)GetValue(FontElement.FontAttributesProperty); }
+			set { SetValue(FontElement.FontAttributesProperty, value); }
 		}
 
 		public string FontFamily
 		{
-			get { return (string)_fontElement.GetValue(FontElement.FontFamilyProperty); }
-			set { _fontElement.SetValue(FontElement.FontFamilyProperty, value); }
+			get { return (string)GetValue(FontElement.FontFamilyProperty); }
+			set { SetValue(FontElement.FontFamilyProperty, value); }
 		}
 
 		[TypeConverter(typeof(FontSizeConverter))]
 		public double FontSize
 		{
-			get { return (double)_fontElement.GetValue(FontElement.FontSizeProperty); }
-			set { _fontElement.SetValue(FontElement.FontSizeProperty, value); }
-		}
-
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		void OnPropertyChanged([CallerMemberName] string propertyName = null)
-		{
-			PropertyChangedEventHandler handler = PropertyChanged;
-			if (handler != null)
-				handler(this, new PropertyChangedEventArgs(propertyName));
+			get { return (double)GetValue(FontElement.FontSizeProperty); }
+			set { SetValue(FontElement.FontSizeProperty, value); }
 		}
 
 		void IFontElement.OnFontFamilyChanged(string oldValue, string newValue)
@@ -154,11 +156,55 @@ namespace Xamarin.Forms
 			Device.GetNamedSize(NamedSize.Default, new Label());
 
 		void IFontElement.OnFontAttributesChanged(FontAttributes oldValue, FontAttributes newValue)
-		{
+		{			
 		}
 
 		void IFontElement.OnFontChanged(Font oldValue, Font newValue)
 		{
+		}
+
+		void ITextElement.OnTextColorPropertyChanged(Color oldValue, Color newValue)
+		{
+		}
+
+		public IList<Rectangle> Positions { get; set; }
+
+		public void CalculatePositions(int[] lineHeights, double maxWidth, double startX, double endX)
+		{
+			var positions = new List<Rectangle>();
+			var endLine = lineHeights.Length - 1;
+			var lineHeightTotal = 0;
+
+			for (var i = 0; i <= endLine; i++)
+			{
+				if (endLine != 0) // MultiLine
+				{					
+					if (i == 0) // First Line
+						positions.Add(new Rectangle(startX, 0, maxWidth - startX, lineHeights[i]));
+
+					else if (i != endLine) // Middle Line
+						positions.Add(new Rectangle(0, lineHeightTotal, maxWidth, lineHeights[i]));
+					
+					else // End Line
+						positions.Add(new Rectangle(0, lineHeightTotal, endX, lineHeights[i]));
+
+					lineHeightTotal += lineHeights[i];
+				}
+				else // SingleLine
+				{
+					positions.Add(new Rectangle(startX, 0, endX - startX, lineHeights[i]));
+				}
+			}
+
+			Positions = positions;
+		}
+
+		void ValidateGesture(IGestureRecognizer gesture)
+		{
+			if (gesture == null)
+				return;
+			if (gesture is PinchGestureRecognizer && _gestureRecognizers.GetGesturesFor<PinchGestureRecognizer>().Count() > 1)
+				throw new InvalidOperationException($"Only one {nameof(PinchGestureRecognizer)} per view is allowed");
 		}
 	}
 }

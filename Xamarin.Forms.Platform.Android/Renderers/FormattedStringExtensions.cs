@@ -35,9 +35,9 @@ namespace Xamarin.Forms.Platform.Android
 				int end = start + span.Text.Length;
 				c = end;
 
-				if (span.ForegroundColor != Color.Default)
+				if (span.TextColor != Color.Default)
 				{
-					spannable.SetSpan(new ForegroundColorSpan(span.ForegroundColor.ToAndroid()), start, end, SpanTypes.InclusiveExclusive);
+					spannable.SetSpan(new ForegroundColorSpan(span.TextColor.ToAndroid()), start, end, SpanTypes.InclusiveExclusive);
 				}
 				else if (defaultForegroundColor != Color.Default)
 				{
@@ -53,8 +53,8 @@ namespace Xamarin.Forms.Platform.Android
 #pragma warning disable 618 // We will need to update this when .Font goes away
 					spannable.SetSpan(new FontSpan(span.Font, view), start, end, SpanTypes.InclusiveInclusive);
 #pragma warning restore 618
-				else if (defaultFont != Font.Default)
-					spannable.SetSpan(new FontSpan(defaultFont, view), start, end, SpanTypes.InclusiveInclusive);
+				else
+					spannable.SetSpan(new FontSpan(defaultFont, view), start, end, SpanTypes.InclusiveInclusive);				 
 			}
 			return spannable;
 		}
