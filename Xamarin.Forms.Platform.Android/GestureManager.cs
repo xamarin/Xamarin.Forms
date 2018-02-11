@@ -43,7 +43,7 @@ namespace Xamarin.Forms.Platform.Android
 				return false;
 			}
 
-			if (!DetectorsValid()) 
+			if (!DetectorsValid())
 			{
 				return false;
 			}
@@ -86,7 +86,13 @@ namespace Xamarin.Forms.Platform.Android
 		GestureDetector InitializeTapAndPanDetector()
 		{
 			var context = Control.Context;
-			var listener = new InnerGestureListener(new TapGestureHandler(() => View),
+			var listener = new InnerGestureListener(new TapGestureHandler(() => View, () =>
+			{
+				if (Element is Label label)
+					return label.FormattedText?.Spans;
+
+				return null;
+			}),
 				new PanGestureHandler(() => View, context.FromPixels));
 
 			return new GestureDetector(context, listener);
@@ -116,7 +122,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (e.NewElement != null)
 			{
-                e.NewElement.PropertyChanged += OnElementPropertyChanged;
+				e.NewElement.PropertyChanged += OnElementPropertyChanged;
 			}
 
 			UpdateInputTransparent();
