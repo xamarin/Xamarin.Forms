@@ -14,7 +14,7 @@ namespace Xamarin.Forms
 		readonly ObservableCollection<IGestureRecognizer> _gestureRecognizers = new ObservableCollection<IGestureRecognizer>();
 
 		internal readonly MergedStyle _mergedStyle;
-		
+
 		public Span()
 		{
 			_mergedStyle = new MergedStyle(GetType(), this);
@@ -29,6 +29,7 @@ namespace Xamarin.Forms
 							ValidateGesture(item as IGestureRecognizer);
 							item.Parent = this;
 						}
+						EnsureGestureRecognizerAvailable();
 						break;
 					case NotifyCollectionChangedAction.Remove:
 						foreach (IElement item in args.OldItems.OfType<IElement>())
@@ -42,6 +43,7 @@ namespace Xamarin.Forms
 						}
 						foreach (IElement item in args.OldItems.OfType<IElement>())
 							item.Parent = null;
+						EnsureGestureRecognizerAvailable();
 						break;
 					case NotifyCollectionChangedAction.Reset:
 						foreach (IElement item in _gestureRecognizers.OfType<IElement>())
@@ -49,6 +51,33 @@ namespace Xamarin.Forms
 						break;
 				}
 			};
+		}
+
+		protected override void OnParentSet()
+		{
+			base.OnParentSet();
+
+			EnsureGestureRecognizerAvailable();
+		}
+
+		void EnsureGestureRecognizerAvailable()
+		{
+			if (this.Parent == null)
+				return;
+
+			IList<int> tapCount = new List<int>();
+			for (int i = 0; i < GestureRecognizers.Count; i++)
+			{
+				if (GestureRecognizers[i] is TapGestureRecognizer tapRecognizer)
+					if (!tapCount.Contains(tapRecognizer.NumberOfTapsRequired))
+						tapCount.Add(tapRecognizer.NumberOfTapsRequired);
+			}
+			if (this.Parent.Parent is Label label)
+			{
+				foreach (var taps in tapCount)
+					if (label.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(x => x.NumberOfTapsRequired == taps).Count() == 0)
+						label.GestureRecognizers.Add(new TapGestureRecognizer() { NumberOfTapsRequired = taps });
+			}
 		}
 
 		public IList<IGestureRecognizer> GestureRecognizers
@@ -92,7 +121,7 @@ namespace Xamarin.Forms
 
 		[Obsolete("Foreground is obsolete as of version 3.1.0. Please use the TextColor property instead.")]
 		public static readonly BindableProperty ForegroundColorProperty = TextColorProperty;
-		
+
 #pragma warning disable 618
 		public Color ForegroundColor
 		{
@@ -100,14 +129,14 @@ namespace Xamarin.Forms
 			set { SetValue(ForegroundColorProperty, value); }
 		}
 #pragma warning restore 618
-		
+
 		public static readonly BindableProperty TextProperty
 			= BindableProperty.Create(nameof(Text), typeof(string), typeof(Span), "", defaultBindingMode: BindingMode.OneTime);
 
 		public string Text
 		{
 			get { return (string)GetValue(TextProperty); }
-			set	{ SetValue(TextProperty, value); }
+			set { SetValue(TextProperty, value); }
 		}
 
 		public static readonly BindableProperty FontProperty = FontElement.FontProperty;
@@ -156,7 +185,7 @@ namespace Xamarin.Forms
 			Device.GetNamedSize(NamedSize.Default, new Label());
 
 		void IFontElement.OnFontAttributesChanged(FontAttributes oldValue, FontAttributes newValue)
-		{			
+		{
 		}
 
 		void IFontElement.OnFontChanged(Font oldValue, Font newValue)
@@ -178,13 +207,13 @@ namespace Xamarin.Forms
 			for (var i = 0; i <= endLine; i++)
 			{
 				if (endLine != 0) // MultiLine
-				{					
+				{
 					if (i == 0) // First Line
 						positions.Add(new Rectangle(startX, lineHeightTotal, maxWidth - startX, lineHeights[i]));
 
 					else if (i != endLine) // Middle Line
 						positions.Add(new Rectangle(0, lineHeightTotal, maxWidth, lineHeights[i]));
-					
+
 					else // End Line
 						positions.Add(new Rectangle(0, lineHeightTotal, endX, lineHeights[i]));
 

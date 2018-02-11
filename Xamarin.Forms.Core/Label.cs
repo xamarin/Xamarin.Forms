@@ -38,13 +38,15 @@ namespace Xamarin.Forms
 				if (oldvalue != null)
 				{
 					var formattedString = ((FormattedString)oldvalue);
-					formattedString.PropertyChanged -= ((Label)bindable).OnFormattedTextChanged;
 					formattedString.Parent = null;
+					formattedString.PropertyChanged -= ((Label)bindable).OnFormattedTextChanged;
+					SetInheritedBindingContext(formattedString, null);
 				}
 			}, propertyChanged: (bindable, oldvalue, newvalue) =>
 			{
 				if (newvalue != null)
 				{
+					var label = ((Label)bindable);
 					var formattedString = (FormattedString)newvalue;
 					formattedString.PropertyChanged += ((Label)bindable).OnFormattedTextChanged;
 					formattedString.Parent = (Label)bindable;
