@@ -35,7 +35,7 @@ namespace Xamarin.Forms.Platform.Android
 			var result = false;
 
 			var spanGestureRecognizers = SpanTapGestureRecognizers(count);
-			foreach (var span in spanGestureRecognizers)
+			foreach (var span in spanGestureRecognizers.Where(x=>x.Value.Count() > 0))
 			{
 				for(int i = 0; i < span.Key.Positions.Count; i++)
 					if (span.Key.Positions[i].Contains(point.X, point.Y))

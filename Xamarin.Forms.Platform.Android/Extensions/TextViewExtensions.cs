@@ -1,10 +1,11 @@
 ﻿using Android.Text;
 using Android.Widget;
+using System.Collections.Generic;
 
 namespace Xamarin.Forms.Platform.Android
 {
-    internal static class TextViewExtensions
-    {
+	internal static class TextViewExtensions
+	{
 		public static void SetLineBreakMode(this TextView textView, LineBreakMode lineBreakMode)
 		{
 			switch (lineBreakMode)
@@ -47,13 +48,14 @@ namespace Xamarin.Forms.Platform.Android
 			if (element?.FormattedText?.Spans == null
 				|| element.FormattedText.Spans.Count == 0)
 				return;
-			
+
 			var layout = textView.Layout;
 
 			var text = spannableString.ToString();
 
 			int next;
 			int count = 0;
+			IList<int> totalLineHeights = new List<int>();
 
 			for (int i = 0; i < spannableString.Length(); i = next)
 			{
@@ -80,15 +82,21 @@ namespace Xamarin.Forms.Platform.Android
 				var labelWidth = finalSize.Request.Width;
 
 				double[] lineHeights = new double[endLine - startLine + 1];
-
+			
 				// calculate all the different line heights
 				for (var lineCount = startLine; lineCount <= endLine; lineCount++)
 				{
 					var lineHeight = layout.GetLineBottom(lineCount) - layout.GetLineTop(lineCount);
 					lineHeights[lineCount - startLine] = lineHeight;
-				}
 
-				span.CalculatePositions(lineHeights, labelWidth, startX, endX);
+					if (totalLineHeights.Count < lineCount)
+						totalLineHeights.Add(lineHeight);
+				}
+				var yaxis = 0.0;
+				for (var line = 0; line < totalLineHeights.Count; line++)
+					yaxis += totalLineHeights[line];
+
+				span.CalculatePositions(lineHeights, labelWidth, startX, endX, yaxis);
 
 				count++;
 			}
