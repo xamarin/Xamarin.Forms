@@ -64,8 +64,6 @@ namespace Xamarin.Forms.Internals
 
 			if (Registrar.Resolver != null)
 			{
-				//var argsCopy = new object[args.Length];
-				//args.CopyTo(argsCopy, 0);
 				handler = Registrar.Resolver.Invoke(handlerType, args);
 			}
 
@@ -270,6 +268,7 @@ namespace Xamarin.Forms.Internals
 			Resolver = ResolveDelegate;
 		}
 
+		// Used for testing
 		internal static void Reset()
 		{
 			Registered = new Registrar<IRegisterable>();
