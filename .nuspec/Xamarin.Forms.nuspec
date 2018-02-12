@@ -45,6 +45,9 @@
   </metadata>
   <files>
 
+    <file src="..\toolbox\Xamarin.Forms.toolbox.xml" target="content" />
+    <file src="..\toolbox\icons\mac\*.png" target="content\icons\mac" />
+    <file src="..\toolbox\icons\win\*.png" target="content\icons\win" />
 
     <!--netstandard 1.0-->
     <file src="..\Xamarin.Forms.Core\bin\$Configuration$\netstandard1.0\Xamarin.Forms.Core.dll" target="lib\netstandard1.0" />
