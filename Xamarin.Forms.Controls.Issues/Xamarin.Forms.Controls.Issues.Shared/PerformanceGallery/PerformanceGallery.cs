@@ -82,7 +82,11 @@ namespace Xamarin.Forms.Controls.Issues
 
 			Content = new StackLayout { Children = { testRunRef, nextButton, _PerformanceTracker } };
 
-			ViewModel.BenchmarkResults = await PerformanceDataManager.GetScenarioResults(_DeviceIdentifier);
+			try
+			{
+				ViewModel.BenchmarkResults = await PerformanceDataManager.GetScenarioResults(_DeviceIdentifier);
+			}
+			catch { }
 
 			nextButton.IsEnabled = true;
 			nextButton.Text = Next;
