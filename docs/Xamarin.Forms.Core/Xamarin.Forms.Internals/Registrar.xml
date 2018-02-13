@@ -70,43 +70,5 @@
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
-    <Member MemberName="ResolveUsing">
-      <MemberSignature Language="C#" Value="public static void ResolveUsing (Func&lt;Type,object&gt; resolveFunc);" />
-      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void ResolveUsing(class System.Func`2&lt;class System.Type, object&gt; resolveFunc) cil managed" />
-      <MemberType>Method</MemberType>
-      <AssemblyInfo>
-        <AssemblyVersion>2.0.0.0</AssemblyVersion>
-      </AssemblyInfo>
-      <ReturnValue>
-        <ReturnType>System.Void</ReturnType>
-      </ReturnValue>
-      <Parameters>
-        <Parameter Name="resolveFunc" Type="System.Func&lt;System.Type,System.Object&gt;" />
-      </Parameters>
-      <Docs>
-        <param name="resolveFunc">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
-    <Member MemberName="ResolveUsing">
-      <MemberSignature Language="C#" Value="public static void ResolveUsing (Xamarin.Forms.Internals.Registrar.ResolveDelegate resolveDelegate);" />
-      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void ResolveUsing(class Xamarin.Forms.Internals.Registrar/ResolveDelegate resolveDelegate) cil managed" />
-      <MemberType>Method</MemberType>
-      <AssemblyInfo>
-        <AssemblyVersion>2.0.0.0</AssemblyVersion>
-      </AssemblyInfo>
-      <ReturnValue>
-        <ReturnType>System.Void</ReturnType>
-      </ReturnValue>
-      <Parameters>
-        <Parameter Name="resolveDelegate" Type="Xamarin.Forms.Internals.Registrar+ResolveDelegate" />
-      </Parameters>
-      <Docs>
-        <param name="resolveDelegate">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
   </Members>
 </Type>

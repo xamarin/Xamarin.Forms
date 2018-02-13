@@ -1,6 +1,6 @@
-<Type Name="Registrar+ResolveDelegate" FullName="Xamarin.Forms.Internals.Registrar+ResolveDelegate">
-  <TypeSignature Language="C#" Value="public delegate object Registrar.ResolveDelegate(Type type, object[] args);" />
-  <TypeSignature Language="ILAsm" Value=".class nested public auto ansi sealed Registrar/ResolveDelegate extends System.MulticastDelegate" />
+<Type Name="DependencyResolver+ResolveDelegate" FullName="Xamarin.Forms.Internals.DependencyResolver+ResolveDelegate">
+  <TypeSignature Language="C#" Value="public delegate object DependencyResolver.ResolveDelegate(Type type, object[] args);" />
+  <TypeSignature Language="ILAsm" Value=".class nested public auto ansi sealed DependencyResolver/ResolveDelegate extends System.MulticastDelegate" />
   <AssemblyInfo>
     <AssemblyName>Xamarin.Forms.Core</AssemblyName>
     <AssemblyVersion>2.0.0.0</AssemblyVersion>
