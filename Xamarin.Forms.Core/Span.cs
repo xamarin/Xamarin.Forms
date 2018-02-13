@@ -9,7 +9,7 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms
 {
 	[ContentProperty("Text")]
-	public sealed class Span : Element, IFontElement, ITextElement
+	public sealed class Span : Element, IFontElement, ITextElement, IGestureChildElement
 	{
 		readonly ObservableCollection<IGestureRecognizer> _gestureRecognizers = new ObservableCollection<IGestureRecognizer>();
 
@@ -29,7 +29,6 @@ namespace Xamarin.Forms
 							ValidateGesture(item as IGestureRecognizer);
 							item.Parent = this;
 						}
-						EnsureGestureRecognizerAvailable();
 						break;
 					case NotifyCollectionChangedAction.Remove:
 						foreach (IElement item in args.OldItems.OfType<IElement>())
@@ -43,7 +42,6 @@ namespace Xamarin.Forms
 						}
 						foreach (IElement item in args.OldItems.OfType<IElement>())
 							item.Parent = null;
-						EnsureGestureRecognizerAvailable();
 						break;
 					case NotifyCollectionChangedAction.Reset:
 						foreach (IElement item in _gestureRecognizers.OfType<IElement>())
@@ -51,33 +49,6 @@ namespace Xamarin.Forms
 						break;
 				}
 			};
-		}
-
-		protected override void OnParentSet()
-		{
-			base.OnParentSet();
-
-			EnsureGestureRecognizerAvailable();
-		}
-
-		void EnsureGestureRecognizerAvailable()
-		{
-			if (this.Parent == null)
-				return;
-
-			IList<int> tapCount = new List<int>();
-			for (int i = 0; i < GestureRecognizers.Count; i++)
-			{
-				if (GestureRecognizers[i] is TapGestureRecognizer tapRecognizer)
-					if (!tapCount.Contains(tapRecognizer.NumberOfTapsRequired))
-						tapCount.Add(tapRecognizer.NumberOfTapsRequired);
-			}
-			if (this.Parent.Parent is Label label)
-			{
-				foreach (var taps in tapCount)
-					if (label.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(x => x.NumberOfTapsRequired == taps).Count() == 0)
-						label.GestureRecognizers.Add(new TapGestureRecognizer() { NumberOfTapsRequired = taps });
-			}
 		}
 
 		public IList<IGestureRecognizer> GestureRecognizers
@@ -232,8 +203,11 @@ namespace Xamarin.Forms
 		{
 			if (gesture == null)
 				return;
-			if (gesture is PinchGestureRecognizer && _gestureRecognizers.GetGesturesFor<PinchGestureRecognizer>().Count() > 1)
-				throw new InvalidOperationException($"Only one {nameof(PinchGestureRecognizer)} per view is allowed");
+			if (gesture is PanGestureRecognizer)
+				throw new InvalidOperationException($"{nameof(PanGestureRecognizer)} is not supported on a {nameof(Span)}");
+			if (gesture is PinchGestureRecognizer)
+				throw new InvalidOperationException($"{nameof(PinchGestureRecognizer)} is not supported on a {nameof(Span)}");
 		}
+
 	}
 }

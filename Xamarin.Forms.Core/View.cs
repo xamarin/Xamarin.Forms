@@ -7,7 +7,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	public class View : VisualElement, IViewController
+	public class View : VisualElement, IViewController, IGestureElement
 	{
 		public static readonly BindableProperty VerticalOptionsProperty =
 			BindableProperty.Create(nameof(VerticalOptions), typeof(LayoutOptions), typeof(View), LayoutOptions.Fill,
@@ -81,23 +81,33 @@ namespace Xamarin.Forms
 						{
 							ValidateGesture(item as IGestureRecognizer);
 							item.Parent = this;
+							_compositeGestureRecognizers.Add(item as IGestureRecognizer);
 						}
 						break;
 					case NotifyCollectionChangedAction.Remove:
 						foreach (IElement item in args.OldItems.OfType<IElement>())
+						{
 							item.Parent = null;
+							_compositeGestureRecognizers.Remove(item as IGestureRecognizer);
+						}
 						break;
 					case NotifyCollectionChangedAction.Replace:
 						foreach (IElement item in args.NewItems.OfType<IElement>())
 						{
 							ValidateGesture(item as IGestureRecognizer);
 							item.Parent = this;
+							_compositeGestureRecognizers.Add(item as IGestureRecognizer);
 						}
 						foreach (IElement item in args.OldItems.OfType<IElement>())
+						{
 							item.Parent = null;
+							_compositeGestureRecognizers.Remove(item as IGestureRecognizer);
+						}
 						break;
 					case NotifyCollectionChangedAction.Reset:
 						foreach (IElement item in _gestureRecognizers.OfType<IElement>())
+							item.Parent = this;
+						foreach (IElement item in _compositeGestureRecognizers.OfType<IElement>())
 							item.Parent = this;
 						break;
 				}
@@ -107,6 +117,18 @@ namespace Xamarin.Forms
 		public IList<IGestureRecognizer> GestureRecognizers
 		{
 			get { return _gestureRecognizers; }
+		}
+
+		readonly ObservableCollection<IGestureRecognizer> _compositeGestureRecognizers = new ObservableCollection<IGestureRecognizer>();
+
+		IList<IGestureRecognizer> IGestureElement.CompositeGestureRecognizers
+		{
+			get { return _compositeGestureRecognizers; }
+		}
+
+		public virtual IList<IGestureChildElement> ChildElementOverrides(Point point)
+		{
+			return new List<IGestureChildElement>();
 		}
 
 		public LayoutOptions HorizontalOptions
