@@ -84,13 +84,11 @@ namespace Xamarin.Forms.Core.UnitTests
 		[SetUp]
 		public void SetUp()
 		{
-			Internals.Registrar.Reset();
-
 			_container = new MockContainer();
 
 			object ResolveDelegate(Type type, object[] args) => _container.Resolve(type, args);
 
-			Internals.Registrar.ResolveUsing(ResolveDelegate);
+			Internals.DependencyResolver.ResolveUsing(ResolveDelegate);
 		}
 
 		[Test]

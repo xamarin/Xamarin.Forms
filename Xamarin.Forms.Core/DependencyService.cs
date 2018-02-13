@@ -15,19 +15,9 @@ namespace Xamarin.Forms
 
 		public static T Resolve<T>(DependencyFetchTarget fallbackFetchTarget = DependencyFetchTarget.GlobalInstance) where T : class
 		{
-			T result = null;
+			var result = DependencyResolver.Resolve(typeof(T)) as T;
 
-			if (Internals.Registrar.Resolver != null)
-			{
-				result = Internals.Registrar.Resolver.Invoke(typeof(T)) as T;
-			}
-
-			if (result != null)
-			{
-				return result;
-			}
-
-			return Get<T>(fallbackFetchTarget);
+			return result ?? Get<T>(fallbackFetchTarget);
 		}
 
 		public static T Get<T>(DependencyFetchTarget fetchTarget = DependencyFetchTarget.GlobalInstance) where T : class

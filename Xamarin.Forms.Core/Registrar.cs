@@ -34,17 +34,7 @@ namespace Xamarin.Forms.Internals
 			if (handlerType == null)
 				return null;
 
-			object handler = null;
-
-			if (Registrar.Resolver != null)
-			{
-				handler = Registrar.Resolver.Invoke(handlerType);
-			}
-
-			if (handler == null)
-			{
-				handler = Activator.CreateInstance(handlerType);
-			}
+			object handler = DependencyResolver.ForceResolve(handlerType);
 
 			return (TRegistrable)handler;
 		}
@@ -60,28 +50,7 @@ namespace Xamarin.Forms.Internals
 			if (handlerType == null)
 				return null;
 
-			object handler = null;
-
-			if (Registrar.Resolver != null)
-			{
-				handler = Registrar.Resolver.Invoke(handlerType, args);
-			}
-
-			if (handler != null)
-			{
-				return (TRegistrable)handler;
-			}
-
-			// This is by no means a general solution to matching with the correct constructor, but it'll
-			// do for finding Android renderers which need Context (vs older custom renderers which may still use
-			// parameterless constructors)
-			if (handlerType.GetTypeInfo().DeclaredConstructors.Any(info => info.GetParameters().Length == args.Length))
-			{
-				handler = Activator.CreateInstance(handlerType, args);
-				return (TRegistrable)handler;
-			}
-			
-			return GetHandler(type);
+			return (TRegistrable)DependencyResolver.ForceResolve(handlerType, args);
 		}
 
 		public TOut GetHandler<TOut>(Type type) where TOut : TRegistrable
@@ -251,28 +220,6 @@ namespace Xamarin.Forms.Internals
 			}
 
 			DependencyService.Initialize(assemblies);
-		}
-
-		public delegate object ResolveDelegate(Type type, params object[] args);
-
-		internal static ResolveDelegate Resolver { get; set; }
-
-		public static void ResolveUsing(ResolveDelegate resolveDelegate)
-		{
-			Resolver = resolveDelegate;
-		}
-
-		public static void ResolveUsing(Func<Type, object> resolveFunc)
-		{
-			object ResolveDelegate(Type type, object[] args) => resolveFunc.Invoke(type);
-			Resolver = ResolveDelegate;
-		}
-
-		// Used for testing
-		internal static void Reset()
-		{
-			Registered = new Registrar<IRegisterable>();
-			Resolver = null;
 		}
 	}
 }
