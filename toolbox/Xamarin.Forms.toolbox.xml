@@ -37,6 +37,11 @@
 				<Image Source="" />
 			</Snippet>
 		</Item>
+		<Item Class="Xamarin.Forms.Label" Name="Label" Image="view-Label-16.png">
+			<Snippet>
+				<Label Text="" />
+			</Snippet>
+		</Item>
 		<Item Class="Xamarin.Forms.ListView" Name="ListView" Image="view-ListView-16.png">
 			<Snippet>
 				<ListView ItemsSource="">
@@ -45,6 +50,11 @@
 						</DataTemplate>
 					</ListView.ItemTemplate>
 				</ListView>
+			</Snippet>
+		</Item>
+		<Item Class="Xamarin.Forms.Picker" Name="Picker" Image="view-Picker-16.png">
+			<Snippet>
+				<Picker Title="" />
 			</Snippet>
 		</Item>
 		<Item Class="Xamarin.Forms.ProgressBar" Name="ProgressBar" Image="view-ProgressBar-16.png">
