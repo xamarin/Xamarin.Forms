@@ -32,33 +32,27 @@ namespace Xamarin.Forms.Platform.Android
 			if (view == null)
 				return false;
 
-			var result = false;
+			var captured = false;
+			
+			var overrides = view.ChildElementOverrides(point);
+			for (int i = 0; i < overrides.Count; i++)
+				foreach (TapGestureRecognizer recognizer in overrides[i].GestureRecognizers)
+				{
+					recognizer.SendTapped(view);
+					captured = true;
+				}
 
-			var spanGestureRecognizers = SpanTapGestureRecognizers(count);
-			foreach (var span in spanGestureRecognizers.Where(x=>x.Value.Count() > 0))
-			{
-				for(int i = 0; i < span.Key.Positions.Count; i++)
-					if (span.Key.Positions[i].Contains(point.X, point.Y))
-					{
-						foreach (var recognizer in span.Value)
-						{
-							recognizer.SendTapped(view);
-							result = true;
-						}
-					}
-			}
-
-			if (result)
-				return result;
+			if (captured)
+				return captured;
 
 			IEnumerable<TapGestureRecognizer> gestureRecognizers = TapGestureRecognizers(count);
 			foreach (TapGestureRecognizer gestureRecognizer in gestureRecognizers)
 			{
 				gestureRecognizer.SendTapped(view);
-				result = true;
+				captured = true;
 			}
 
-			return result;
+			return captured;
 		}
 
 		public bool HasAnyGestures()
@@ -73,17 +67,9 @@ namespace Xamarin.Forms.Platform.Android
 			if (view == null)
 				return Enumerable.Empty<TapGestureRecognizer>();
 
-			return view.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(recognizer => recognizer.NumberOfTapsRequired == count);
+			return view.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(recognizer => recognizer.NumberOfTapsRequired == count).ToList();
+
 		}
 
-		public IDictionary<Span, IEnumerable<TapGestureRecognizer>> SpanTapGestureRecognizers(int count)
-		{
-			var spanRecognizers = new Dictionary<Span, IEnumerable<TapGestureRecognizer>>();
-
-			foreach (var span in GetSpans())
-				spanRecognizers.Add(span, span.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(recognizer => recognizer.NumberOfTapsRequired == count));
-
-			return spanRecognizers;
-		}
 	}
 }
