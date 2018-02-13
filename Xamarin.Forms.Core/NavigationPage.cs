@@ -27,6 +27,8 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty TitleIconProperty = BindableProperty.CreateAttached("TitleIcon", typeof(FileImageSource), typeof(NavigationPage), default(FileImageSource));
 
+		public static readonly BindableProperty TitleViewProperty = BindableProperty.CreateAttached("TitleView", typeof(VisualElement), typeof(NavigationPage), null, propertyChanged: TitleViewPropertyChanged);
+
 		static readonly BindablePropertyKey CurrentPagePropertyKey = BindableProperty.CreateReadOnly("CurrentPage", typeof(Page), typeof(NavigationPage), null);
 		public static readonly BindableProperty CurrentPageProperty = CurrentPagePropertyKey.BindableProperty;
 
@@ -103,6 +105,24 @@ namespace Xamarin.Forms
 			private set { SetValue(RootPagePropertyKey, value); }
 		}
 
+		static void TitleViewPropertyChanged(BindableObject bindable, object oldValue, object newValue)
+		{
+			if (oldValue == newValue)
+				return;
+
+			if (oldValue != null)
+			{
+				var oldElem = (VisualElement)oldValue;
+				oldElem.Parent = null;
+			}
+
+			if (newValue != null && bindable != null)
+			{
+				var newElem = (VisualElement)newValue;
+				newElem.Parent = (Page)bindable;
+			}
+		}
+
 		public static string GetBackButtonTitle(BindableObject page)
 		{
 			return (string)page.GetValue(BackButtonTitleProperty);
@@ -123,6 +143,11 @@ namespace Xamarin.Forms
 		public static FileImageSource GetTitleIcon(BindableObject bindable)
 		{
 			return (FileImageSource)bindable.GetValue(TitleIconProperty);
+		}
+
+		public static VisualElement GetTitleView(BindableObject bindable)
+		{
+			return (VisualElement)bindable.GetValue(TitleViewProperty);
 		}
 
 		public Task<Page> PopAsync()
@@ -220,6 +245,11 @@ namespace Xamarin.Forms
 		public static void SetTitleIcon(BindableObject bindable, FileImageSource value)
 		{
 			bindable.SetValue(TitleIconProperty, value);
+		}
+
+		public static void SetTitleView(BindableObject bindable, VisualElement value)
+		{
+			bindable.SetValue(TitleViewProperty, value);
 		}
 
 		protected override bool OnBackButtonPressed()
