@@ -100,6 +100,13 @@ namespace Xamarin.Forms
 
 				base.SetItem(index, item);
 			}
+
+			protected override void ClearItems()
+			{
+				List<Span> removed = new List<Span>(this);
+				base.ClearItems();
+				base.OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, removed));
+			}
 		}
 	}
 }

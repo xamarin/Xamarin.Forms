@@ -11,7 +11,7 @@ namespace Xamarin.Forms
 	[ContentProperty("Text")]
 	public sealed class Span : Element, IFontElement, ITextElement, IGestureChildElement
 	{
-		readonly ObservableCollection<IGestureRecognizer> _gestureRecognizers = new ObservableCollection<IGestureRecognizer>();
+		readonly GestureRecognizerCollection _gestureRecognizers = new GestureRecognizerCollection();
 
 		internal readonly MergedStyle _mergedStyle;
 
@@ -209,5 +209,14 @@ namespace Xamarin.Forms
 				throw new InvalidOperationException($"{nameof(PinchGestureRecognizer)} is not supported on a {nameof(Span)}");
 		}
 
+		class GestureRecognizerCollection : ObservableCollection<IGestureRecognizer>
+		{
+			protected override void ClearItems()
+			{
+				List<IGestureRecognizer> removed = new List<IGestureRecognizer>(this);
+				base.ClearItems();
+				base.OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, removed));
+			}
+		}
 	}
 }

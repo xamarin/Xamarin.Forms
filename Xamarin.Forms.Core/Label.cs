@@ -220,7 +220,7 @@ namespace Xamarin.Forms
 						((ObservableCollection<IGestureRecognizer>)span.GestureRecognizers).CollectionChanged -= Span_GestureRecognizer_CollectionChanged;
 					break;
 				case NotifyCollectionChangedAction.Reset:
-					//TODO: How to remove all existing elements from this span only
+					// Is never called, because the clear command is overridden.
 					break;
 			}
 		}
@@ -249,7 +249,7 @@ namespace Xamarin.Forms
 								((IGestureElement)this).CompositeGestureRecognizers.Remove(spanRecognizer);
 					break;
 				case NotifyCollectionChangedAction.Reset:
-					//TODO: How to remove all existing elements from this span only
+					// Is never called, because the clear command is overridden.
 					break;
 			}
 			
