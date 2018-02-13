@@ -468,7 +468,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				ResetToolbar();
 		}
 
-		void HandleToolbarItemPropertyChanged(object sender, PropertyChangedEventArgs e)
+		protected virtual void HandleToolbarItemPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == MenuItem.IsEnabledProperty.PropertyName || e.PropertyName == MenuItem.TextProperty.PropertyName || e.PropertyName == MenuItem.IconProperty.PropertyName)
 				UpdateMenu();
@@ -792,17 +792,35 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				else
 				{
 					IMenuItem menuItem = menu.Add(item.Text);
-					FileImageSource icon = item.Icon;
-					if (!string.IsNullOrEmpty(icon))
-					{
-						Drawable iconDrawable = context.GetFormsDrawable(icon);
-						if (iconDrawable != null)
-							menuItem.SetIcon(iconDrawable);
-					}
+					UpdateDrawableMenuItem(context, menuItem, item);
 					menuItem.SetEnabled(controller.IsEnabled);
 					menuItem.SetShowAsAction(ShowAsAction.Always);
 					menuItem.SetOnMenuItemClickListener(new GenericMenuClickListener(controller.Activate));
 				}
+			}
+		}
+
+		/// <summary>
+		/// For override specify tint color menu or specify drawable menu
+		/// Sample:
+		/// base.UpdateMenuItem(...)
+		/// menuItem.Icon.Mutate();
+		/// menuItem.Icon.SetColorFilter(this.Resources.GetColor([ResourceColor]), Android.Graphics.PorterDuff.Mode.SrcIn);
+		/// 
+		/// Sample with drawable badge count:
+		/// menuItem.SetIcon(SetDrawableIcon(menuItem.Icon)));
+		/// 
+		/// In this fact, toolBarItem is necessary for access to custom property like badge count
+		/// </summary>
+		/// <param name="menuItem"></param>
+		protected virtual void UpdateDrawableMenuItem(Context context, IMenuItem menuItem, ToolbarItem toolBarItem)
+		{
+			FileImageSource icon = toolBarItem.Icon;
+			if (!string.IsNullOrEmpty(icon))
+			{
+				Drawable iconDrawable = context.GetFormsDrawable(icon);
+				if (iconDrawable != null)
+					menuItem.SetIcon(iconDrawable);
 			}
 		}
 
