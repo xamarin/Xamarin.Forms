@@ -3,7 +3,7 @@ using System.Runtime.CompilerServices;
 
 namespace Xamarin.Forms
 {
-	public sealed class SpanGestureRecognizer : IGestureRecognizer
+	public sealed class ChildGestureRecognizer : IGestureRecognizer
 	{
 		private IGestureRecognizer _gestureRecognizer;
 		public IGestureRecognizer GestureRecognizer {

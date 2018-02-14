@@ -112,8 +112,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 					var overrides = view.ChildElementOverrides(new Point(originPoint.X, originPoint.Y));
 
-					foreach (var child in overrides)
-						if (child.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(x => x.NumberOfTapsRequired == (int)sender.NumberOfClicksRequired).Count() > 0)
+					for (int i = 0; i < overrides.Count; i++)
+						if (overrides[i].GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(x => x.NumberOfTapsRequired == (int)sender.NumberOfClicksRequired).Count() > 0)
 							captured = true;
 
 					if (captured)
@@ -159,8 +159,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 					var overrides = view.ChildElementOverrides(new Point(originPoint.X, originPoint.Y));
 
-					foreach (var child in overrides)
-						if (child.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(x => x.NumberOfTapsRequired == (int)sender.NumberOfTapsRequired).Count() > 0)
+					for (int i = 0; i < overrides.Count; i++)
+						if (overrides[i].GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(x => x.NumberOfTapsRequired == (int)sender.NumberOfTapsRequired).Count() > 0)
 							captured = true;
 
 					if (captured)
@@ -176,14 +176,14 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 #endif
 
-			if (recognizer is SpanGestureRecognizer spanRecognizer)
+			if (recognizer is ChildGestureRecognizer spanRecognizer)
 			{
 #if !__MOBILE__
 				if (spanRecognizer.GestureRecognizer is ClickGestureRecognizer clickSpanRecognizer)
 				{
 					var returnAction = new Action<NSClickGestureRecognizer>((sender) =>
 					{
-						var clickGestureRecognizer = ((SpanGestureRecognizer)weakRecognizer.Target).GestureRecognizer as ClickGestureRecognizer;
+						var clickGestureRecognizer = ((ChildGestureRecognizer)weakRecognizer.Target).GestureRecognizer as ClickGestureRecognizer;
 						var eventTracker = weakEventTracker.Target as EventTracker;
 						var view = eventTracker?._renderer?.Element as View;
 
@@ -191,8 +191,8 @@ namespace Xamarin.Forms.Platform.MacOS
 						originPoint = NSApplication.SharedApplication.KeyWindow.ContentView.ConvertPointToView(originPoint, eventTracker._renderer.NativeView);
 
 						var overrides = view.ChildElementOverrides(new Point(originPoint.X, originPoint.Y));
-						foreach (var child in overrides)
-							if (child.GestureRecognizers.Contains(clickGestureRecognizer) && view != null)
+						for (int i = 0; i < overrides.Count; i++)
+							if (overrides[i].GestureRecognizers.Contains(clickGestureRecognizer) && view != null)
 								clickGestureRecognizer.SendClicked(view, clickGestureRecognizer.Buttons);
 					});
 
@@ -204,7 +204,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				{
 					var returnAction = new Action<UITapGestureRecognizer>((sender) =>
 					{
-						var tapGestureRecognizer = ((SpanGestureRecognizer)weakRecognizer.Target).GestureRecognizer as TapGestureRecognizer;
+						var tapGestureRecognizer = ((ChildGestureRecognizer)weakRecognizer.Target).GestureRecognizer as TapGestureRecognizer;
 						var eventTracker = weakEventTracker.Target as EventTracker;
 						var view = eventTracker?._renderer?.Element as View;
 
@@ -212,8 +212,8 @@ namespace Xamarin.Forms.Platform.MacOS
 						originPoint = UIApplication.SharedApplication.KeyWindow.ConvertPointToView(originPoint, eventTracker._renderer.NativeView);
 
 						var overrides = view.ChildElementOverrides(new Point(originPoint.X, originPoint.Y));
-						foreach (var child in overrides)
-							if (child.GestureRecognizers.Contains(tapGestureRecognizer) && view != null)
+						for (int i = 0; i < overrides.Count; i++)
+							if (overrides[i].GestureRecognizers.Contains(tapGestureRecognizer) && view != null)
 								tapGestureRecognizer.SendTapped(view);
 					});
 

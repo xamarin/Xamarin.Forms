@@ -33,20 +33,21 @@ namespace Xamarin.Forms.Platform.Android
 				return false;
 
 			var captured = false;
-			
+
 			var overrides = view.ChildElementOverrides(point);
 			for (int i = 0; i < overrides.Count; i++)
-				foreach (TapGestureRecognizer recognizer in overrides[i].GestureRecognizers)
-				{
-					recognizer.SendTapped(view);
-					captured = true;
-				}
+				foreach (var recognizer in overrides[i].GestureRecognizers)
+					if (recognizer is TapGestureRecognizer tapRecognizer)
+					{
+						tapRecognizer.SendTapped(view);
+						captured = true;
+					}
 
 			if (captured)
 				return captured;
 
 			IEnumerable<TapGestureRecognizer> gestureRecognizers = TapGestureRecognizers(count);
-			foreach (TapGestureRecognizer gestureRecognizer in gestureRecognizers)
+			foreach (var gestureRecognizer in gestureRecognizers)
 			{
 				gestureRecognizer.SendTapped(view);
 				captured = true;
@@ -68,7 +69,6 @@ namespace Xamarin.Forms.Platform.Android
 				return Enumerable.Empty<TapGestureRecognizer>();
 
 			return view.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(recognizer => recognizer.NumberOfTapsRequired == count).ToList();
-
 		}
 
 	}

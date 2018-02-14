@@ -304,6 +304,24 @@ namespace Xamarin.Forms.Platform.UWP
 			if (view == null)
 				return;
 
+			var tapPosition = e.GetPosition(Control);
+			var overrides = ((IGestureElement)view).ChildElementOverrides(new Point(tapPosition.X, tapPosition.Y));
+
+			foreach (var child in overrides)
+			{
+				foreach (TapGestureRecognizer recognizer in child.GestureRecognizers)
+				{
+					if (recognizer.NumberOfTapsRequired == 2)
+					{
+						recognizer.SendTapped(view);
+						e.Handled = true;
+					}
+				}
+			}
+
+			if (e.Handled)
+				return;
+
 			IEnumerable<TapGestureRecognizer> doubleTapGestures = view.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(g => g.NumberOfTapsRequired == 2);
 			foreach (TapGestureRecognizer recognizer in doubleTapGestures)
 				recognizer.SendTapped(view);
@@ -382,26 +400,25 @@ namespace Xamarin.Forms.Platform.UWP
 			if (view == null)
 				return;
 
-			if (view is Label label)
-			{
-				var tapPosition = e.GetPosition(Control);
-				foreach (var span in label.FormattedText.Spans)
-					for (int i = 0; i < span.Positions.Count; i++)
-						if (span.Positions[i].Contains(tapPosition.X, tapPosition.Y))
+			var tapPosition = e.GetPosition(Control);
+			var overrides = ((IGestureElement)view).ChildElementOverrides(new Point(tapPosition.X, tapPosition.Y));
+
+			for (int i = 0; i < overrides.Count; i++)
+				foreach (var recognizer in overrides[i].GestureRecognizers)
+				{
+					if (recognizer is TapGestureRecognizer tapRecognizer)
+						if (tapRecognizer.NumberOfTapsRequired == 1)
 						{
-							foreach (var recognizer in span.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(g => g.NumberOfTapsRequired == 1))
-							{
-								recognizer.SendTapped(view);
-								e.Handled = true;
-							}
+							tapRecognizer.SendTapped(view);
+							e.Handled = true;
 						}
-			}
+				}
 
 			if (e.Handled)
 				return;
 
 			IEnumerable<TapGestureRecognizer> tapGestures = view.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(g => g.NumberOfTapsRequired == 1);
-			foreach (TapGestureRecognizer recognizer in tapGestures)
+			foreach (var recognizer in tapGestures)
 			{
 				recognizer.SendTapped(view);
 				e.Handled = true;

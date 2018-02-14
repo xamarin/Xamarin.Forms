@@ -42,10 +42,15 @@ namespace Xamarin.Forms
 				if (oldvalue != null)
 				{
 					var formattedString = ((FormattedString)oldvalue);
-					formattedString.Parent = null;
+
+					// Remove spans here, to ensure all collection watching, removes necessary event hooks.
+					for (int i = formattedString.Spans.Count - 1; i >= 0; i--)
+						formattedString.Spans.RemoveAt(i);
+
+					((ObservableCollection<Span>)formattedString.Spans).CollectionChanged -= ((Label)bindable).Span_CollectionChanged;
 					formattedString.PropertyChanged -= ((Label)bindable).OnFormattedTextChanged;
 					SetInheritedBindingContext(formattedString, null);
-					((ObservableCollection<Span>)formattedString.Spans).CollectionChanged -= ((Label)bindable).Span_CollectionChanged;
+					formattedString.Parent = null;
 				}
 			}, propertyChanged: (bindable, oldvalue, newvalue) =>
 			{
@@ -54,14 +59,15 @@ namespace Xamarin.Forms
 					var label = ((Label)bindable);
 					var formattedString = (FormattedString)newvalue;
 					formattedString.Parent = label;
-					formattedString.PropertyChanged += label.OnFormattedTextChanged;
 					SetInheritedBindingContext(formattedString, bindable.BindingContext);
+					formattedString.PropertyChanged += label.OnFormattedTextChanged;
+
 					((ObservableCollection<Span>)formattedString.Spans).CollectionChanged += label.Span_CollectionChanged;
 
 					// Initial Load of FormattedText could come preloaded with spans
-					foreach (var span in formattedString.Spans)
-						foreach (var recognizer in span.GestureRecognizers)
-							((IGestureElement)label).CompositeGestureRecognizers.Add(new SpanGestureRecognizer() { GestureRecognizer = recognizer });
+					for (int i = 0; i < formattedString.Spans.Count; i++)
+						for (int j = 0; j < formattedString.Spans[i].GestureRecognizers.Count; j++)
+							((IGestureElement)label).CompositeGestureRecognizers.Add(new ChildGestureRecognizer() { GestureRecognizer = formattedString.Spans[i].GestureRecognizers[j] });
 				}
 
 				((Label)bindable).InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
@@ -191,33 +197,45 @@ namespace Xamarin.Forms
 		}
 
 		void Span_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-		{			
+		{
 			switch (e.Action)
 			{
 				case NotifyCollectionChangedAction.Add:
 					foreach (IGestureChildElement span in e.NewItems)
 					{
 						((ObservableCollection<IGestureRecognizer>)span.GestureRecognizers).CollectionChanged += Span_GestureRecognizer_CollectionChanged;
-						// Span could be preloaded with GestureRecognizers
+						// span could be preloaded with GestureRecognizers
 						foreach (var recognizer in ((ObservableCollection<IGestureRecognizer>)span.GestureRecognizers))
-							((IGestureElement)this).CompositeGestureRecognizers.Add(new SpanGestureRecognizer() { GestureRecognizer = recognizer });
+							((IGestureElement)this).CompositeGestureRecognizers.Add(new ChildGestureRecognizer() { GestureRecognizer = recognizer });
 					}
 					break;
 				case NotifyCollectionChangedAction.Remove:
 					foreach (IGestureChildElement span in e.OldItems)
+					{
+						// removes gesture recognizers so the event handling can still process its removal
+						for (int i = span.GestureRecognizers.Count - 1; i >= 0; i--)
+							span.GestureRecognizers.RemoveAt(i);
+
 						((ObservableCollection<IGestureRecognizer>)span.GestureRecognizers).CollectionChanged -= Span_GestureRecognizer_CollectionChanged;
+					}
 					break;
 				case NotifyCollectionChangedAction.Replace:
+					foreach (IGestureChildElement span in e.OldItems)
+					{
+						for (int i = span.GestureRecognizers.Count - 1; i >= 0; i--)
+							span.GestureRecognizers.RemoveAt(i);
+
+						((ObservableCollection<IGestureRecognizer>)span.GestureRecognizers).CollectionChanged -= Span_GestureRecognizer_CollectionChanged;
+					}
+
 					foreach (IGestureChildElement span in e.NewItems)
 					{
 						((ObservableCollection<IGestureRecognizer>)span.GestureRecognizers).CollectionChanged += Span_GestureRecognizer_CollectionChanged;
-						// Span could be preloaded with GestureRecognizers
+						// span could be preloaded with GestureRecognizers
 						foreach (var recognizer in ((ObservableCollection<IGestureRecognizer>)span.GestureRecognizers))
-							((IGestureElement)this).CompositeGestureRecognizers.Add(new SpanGestureRecognizer() { GestureRecognizer = recognizer });
+							((IGestureElement)this).CompositeGestureRecognizers.Add(new ChildGestureRecognizer() { GestureRecognizer = recognizer });
 					}
 
-					foreach (IGestureChildElement span in e.OldItems)
-						((ObservableCollection<IGestureRecognizer>)span.GestureRecognizers).CollectionChanged -= Span_GestureRecognizer_CollectionChanged;
 					break;
 				case NotifyCollectionChangedAction.Reset:
 					// Is never called, because the clear command is overridden.
@@ -225,34 +243,34 @@ namespace Xamarin.Forms
 			}
 		}
 
-		private void Span_GestureRecognizer_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		void Span_GestureRecognizer_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			switch (e.Action)
 			{
 				case NotifyCollectionChangedAction.Add:
 					foreach (IGestureRecognizer recognizer in e.NewItems)
-						((IGestureElement)this).CompositeGestureRecognizers.Add(new SpanGestureRecognizer() { GestureRecognizer = recognizer });
+						((IGestureElement)this).CompositeGestureRecognizers.Add(new ChildGestureRecognizer() { GestureRecognizer = recognizer });
 					break;
 				case NotifyCollectionChangedAction.Remove:
-					foreach (IGestureRecognizer recognizer in e.OldItems)
-						foreach (SpanGestureRecognizer spanRecognizer in ((IGestureElement)this).CompositeGestureRecognizers.ToList())
-							if (spanRecognizer == recognizer)
+					for (int i = 0; i < e.OldItems.Count; i++)
+						foreach (var spanRecognizer in ((IGestureElement)this).CompositeGestureRecognizers.ToList())
+							if (spanRecognizer is ChildGestureRecognizer && spanRecognizer == e.OldItems[i])
 								((IGestureElement)this).CompositeGestureRecognizers.Remove(spanRecognizer);
 					break;
 				case NotifyCollectionChangedAction.Replace:
-					foreach (IGestureRecognizer recognizer in e.NewItems)
-						((IGestureElement)this).CompositeGestureRecognizers.Add(new SpanGestureRecognizer() { GestureRecognizer = recognizer });
-
-					foreach (IGestureRecognizer recognizer in e.OldItems)
-						foreach (SpanGestureRecognizer spanRecognizer in ((IGestureElement)this).CompositeGestureRecognizers.ToList())
-							if (spanRecognizer == recognizer)
+					for (int i = 0; i < e.OldItems.Count; i++)
+						foreach (var spanRecognizer in ((IGestureElement)this).CompositeGestureRecognizers.ToList())
+							if (spanRecognizer is ChildGestureRecognizer && spanRecognizer == e.OldItems[i])
 								((IGestureElement)this).CompositeGestureRecognizers.Remove(spanRecognizer);
+
+					foreach (IGestureRecognizer recognizer in e.NewItems)
+						((IGestureElement)this).CompositeGestureRecognizers.Add(new ChildGestureRecognizer() { GestureRecognizer = recognizer });
+
 					break;
 				case NotifyCollectionChangedAction.Reset:
-					// Is never called, because the clear command is overridden.
+					// is never called, because the clear command is overridden.
 					break;
 			}
-			
 		}
 
 		void ITextAlignmentElement.OnHorizontalTextAlignmentPropertyChanged(TextAlignment oldValue, TextAlignment newValue)

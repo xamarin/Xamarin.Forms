@@ -166,14 +166,14 @@ namespace Xamarin.Forms.Platform.MacOS
 			var layoutManager = new NSLayoutManager();
 
 			textStorage.AddLayoutManager(layoutManager);
-			
+
 			var textContainer = new NSTextContainer(size: Control.Frame.Size)
 			{
 				LineFragmentPadding = 0
 			};
 
 			layoutManager.AddTextContainer(textContainer);
-			 
+
 			var labelWidth = finalSize.Width;
 
 			var currentLocation = 0;
@@ -181,40 +181,26 @@ namespace Xamarin.Forms.Platform.MacOS
 			for (int i = 0; i < Element.FormattedText.Spans.Count; i++)
 			{
 				var span = Element.FormattedText.Spans[i];
-				var glyphRange = new NSRange();
 
 				var location = currentLocation;
 				var length = span.Text.Length;
-							
-				var startRange = new NSRange(location, 1);
-				var endRange = new NSRange(location + length, 1);
-#if __MOBILE__
-				layoutManager.CharacterRangeForGlyphRange(startRange, ref glyphRange);
-#else
-				layoutManager.CharacterRangeForGlyphRange(startRange, out glyphRange);
-#endif
-				var rect = layoutManager.BoundingRectForGlyphRange(glyphRange, textContainer);
 
-#if __MOBILE__
-				layoutManager.CharacterRangeForGlyphRange(endRange, ref glyphRange);
-#else
-				layoutManager.CharacterRangeForGlyphRange(endRange, out glyphRange);
-#endif
-				var endRect = layoutManager.BoundingRectForGlyphRange(glyphRange, textContainer);
+				var startRect = GetCharacterBounds(new NSRange(location, 1), layoutManager, textContainer);
+				var endRect = GetCharacterBounds(new NSRange(location + length, 1), layoutManager, textContainer);
 
-				var startLineHeight = rect.Bottom - rect.Top;
+				var startLineHeight = startRect.Bottom - startRect.Top;
 				var endLineHeight = endRect.Bottom - endRect.Top;
-				
+
 				var defaultLineHeight = FindDefaultLineHeight(location, length);
 
-				var yaxis = rect.Top;
+				var yaxis = startRect.Top;
 				var lineHeights = new List<double>();
 				while (yaxis < endRect.Bottom)
 				{
 					double lineHeight;
-					if (yaxis == rect.Top) // First Line
+					if (yaxis == startRect.Top) // First Line
 					{
-						lineHeight = rect.Bottom - rect.Top;
+						lineHeight = startRect.Bottom - startRect.Top;
 					}
 					else if (yaxis != endRect.Top) // Middle Line(s)
 					{
@@ -228,13 +214,25 @@ namespace Xamarin.Forms.Platform.MacOS
 					yaxis += (nfloat)lineHeight;
 				}
 
-				span.CalculatePositions(lineHeights.ToArray(), finalSize.Width, rect.X, endRect.X, rect.Top);
+				span.CalculatePositions(lineHeights.ToArray(), finalSize.Width, startRect.X, endRect.X, startRect.Top);
 
 				// update current location
 				currentLocation += length;
 			}
 		}
-		
+
+		RectangleF GetCharacterBounds(NSRange characterRange, NSLayoutManager layoutManager, NSTextContainer textContainer)
+		{
+			var glyphRange = new NSRange();
+
+#if __MOBILE__
+			layoutManager.CharacterRangeForGlyphRange(characterRange, ref glyphRange);
+#else
+			layoutManager.CharacterRangeForGlyphRange(characterRange, out glyphRange);
+#endif
+			return layoutManager.BoundingRectForGlyphRange(glyphRange, textContainer);
+		}
+
 		protected override void OnElementChanged(ElementChangedEventArgs<Label> e)
 		{
 			if (e.NewElement != null)
@@ -421,7 +419,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateFont()
 		{
-			if(isTextFormatted)
+			if (isTextFormatted)
 				return;
 			_perfectSizeValid = false;
 
