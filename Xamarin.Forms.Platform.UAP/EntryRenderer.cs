@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel;
 using Windows.System;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
+using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.InputView;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -45,6 +47,7 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateAlignment();
 				UpdatePlaceholderColor();
 				UpdateMaxLength();
+				UpdateDetectReadingOrderFromContent();
 			}
 		}
 
@@ -87,6 +90,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateAlignment();
 			else if (e.PropertyName == InputView.MaxLengthProperty.PropertyName)
 				UpdateMaxLength();
+			else if (e.PropertyName == Specifics.DetectReadingOrderFromContentProperty.PropertyName)
+				UpdateDetectReadingOrderFromContent();
 		}
 
 		protected override void UpdateBackgroundColor()
@@ -207,10 +212,25 @@ namespace Xamarin.Forms.Platform.UWP
 			BrushHelpers.UpdateColor(textColor, ref _defaultTextColorFocusBrush,
 				() => Control.ForegroundFocusBrush, brush => Control.ForegroundFocusBrush = brush);
 		}
-
+    
 		void UpdateMaxLength()
 		{
 			Control.MaxLength = Element.MaxLength;
+    }
+    
+		void UpdateDetectReadingOrderFromContent()
+		{
+			if (Element.IsSet(Specifics.DetectReadingOrderFromContentProperty))
+			{
+				if (Element.OnThisPlatform().GetDetectReadingOrderFromContent())
+				{
+					Control.TextReadingOrder = TextReadingOrder.DetectFromContent;
+				}
+				else
+				{
+					Control.TextReadingOrder = TextReadingOrder.UseFlowDirection;
+				}
+			}
 		}
 	}
 }

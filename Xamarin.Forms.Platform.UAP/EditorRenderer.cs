@@ -4,6 +4,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
+using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.InputView;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -47,6 +48,7 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateTextAlignment();
 				UpdateFlowDirection();
 				UpdateMaxLength();
+				UpdateDetectReadingOrderFromContent();
 			}
 
 			base.OnElementChanged(e);
@@ -94,6 +96,8 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 			else if (e.PropertyName == InputView.MaxLengthProperty.PropertyName)
 				UpdateMaxLength();
+			else if (e.PropertyName == Specifics.DetectReadingOrderFromContentProperty.PropertyName)
+				UpdateDetectReadingOrderFromContent();
 		}
 
 		void OnLostFocus(object sender, RoutedEventArgs e)
@@ -210,6 +214,21 @@ namespace Xamarin.Forms.Platform.UWP
 		void UpdateMaxLength()
 		{
 			Control.MaxLength = Element.MaxLength;
+    }
+    
+		void UpdateDetectReadingOrderFromContent()
+		{
+			if (Element.IsSet(Specifics.DetectReadingOrderFromContentProperty))
+			{
+				if (Element.OnThisPlatform().GetDetectReadingOrderFromContent())
+				{
+					Control.TextReadingOrder = TextReadingOrder.DetectFromContent;
+				}
+				else
+				{
+					Control.TextReadingOrder = TextReadingOrder.UseFlowDirection;
+				}
+			}
 		}
 	}
 }
