@@ -28,6 +28,9 @@ namespace Xamarin.Forms.Platform.GTK.Controls
         public void SetMaxLength(int maxLength)
         {
             _maxLength = maxLength;
+
+			if (_textView.Buffer.CharCount > maxLength)
+				_textView.Buffer.Text = _textView.Buffer.Text.Substring(0, maxLength);
         }
 
         protected override void OnFocusGrabbed()
