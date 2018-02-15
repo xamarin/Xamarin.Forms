@@ -132,7 +132,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			Control.FontWeight = Specific.GetFontWeight(Element);
 		}
 
-		string MaxLengthFilter(Entry entry, string s)
+		string MaxLengthFilter(ElmSharp.Entry entry, string s)
 		{
 			if (entry.Text.Length < Element.MaxLength)
 				return s;
