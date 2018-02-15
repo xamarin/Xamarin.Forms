@@ -62,7 +62,7 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.Changed += HandleChanged;
 				Control.Started += OnStarted;
 				Control.Ended += OnEnded;
-                Control.ShouldChangeText += ShouldChangeText;
+				Control.ShouldChangeText += ShouldChangeText;
 			}
 
 			UpdateText();

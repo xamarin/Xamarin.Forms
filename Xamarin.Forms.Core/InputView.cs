@@ -5,13 +5,13 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty KeyboardProperty = BindableProperty.Create("Keyboard", typeof(Keyboard), typeof(InputView), Keyboard.Default,
 			coerceValue: (o, v) => (Keyboard)v ?? Keyboard.Default);
 
-        public static readonly BindableProperty MaxLengthProperty = BindableProperty.Create("MaxLength", typeof(int), typeof(int), int.MaxValue);
+		public static readonly BindableProperty MaxLengthProperty = BindableProperty.Create(nameof(MaxLength), typeof(int), typeof(int), int.MaxValue);
 
-        public int MaxLength
-        {
-            get { return (int)GetValue(MaxLengthProperty); }
-            set { SetValue(MaxLengthProperty, value); }
-        }
+		public int MaxLength
+		{
+			get { return (int)GetValue(MaxLengthProperty); }
+			set { SetValue(MaxLengthProperty, value); }
+		}
 
 		internal InputView()
 		{
