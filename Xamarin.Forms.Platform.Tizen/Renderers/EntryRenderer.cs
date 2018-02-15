@@ -18,6 +18,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			RegisterPropertyHandler(Entry.KeyboardProperty, UpdateKeyboard);
 			RegisterPropertyHandler(Entry.PlaceholderProperty, UpdatePlaceholder);
 			RegisterPropertyHandler(Entry.PlaceholderColorProperty, UpdatePlaceholderColor);
+			RegisterPropertyHandler(InputView.MaxLengthProperty, UpdateMaxLength);
 			if (TizenPlatformServices.AppDomain.IsTizenSpecificAvailable)
 			{
 				RegisterPropertyHandler("FontWeight", UpdateFontWeight);
@@ -130,6 +131,12 @@ namespace Xamarin.Forms.Platform.Tizen
 		void UpdateFontWeight()
 		{
 			Control.FontWeight = Specific.GetFontWeight(Element);
+		}
+
+		void UpdateMaxLength()
+		{
+			if (Control.Text.Length > Element.MaxLength)
+				Control.Text = Control.Text.Substring(0, Element.MaxLength);
 		}
 
 		string MaxLengthFilter(ElmSharp.Entry entry, string s)
