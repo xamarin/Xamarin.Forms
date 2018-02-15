@@ -215,8 +215,10 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			Control.MaxLength = Element.MaxLength;
 
-			if (Control.Text.Length > Element.MaxLength)
-				Control.Text = Control.Text.Substring(0, Element.MaxLength);
+			var currentControlText = Control.Text;
+
+			if (currentControlText.Length > Element.MaxLength)
+				Control.Text = currentControlText.Substring(0, Element.MaxLength);
 		}
     
 		void UpdateDetectReadingOrderFromContent()
