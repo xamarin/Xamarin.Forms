@@ -468,7 +468,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				ResetToolbar();
 		}
 
-		protected virtual void HandleToolbarItemPropertyChanged(object sender, PropertyChangedEventArgs e)
+		protected virtual void OnToolbarItemPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == MenuItem.IsEnabledProperty.PropertyName || e.PropertyName == MenuItem.TextProperty.PropertyName || e.PropertyName == MenuItem.IconProperty.PropertyName)
 				UpdateMenu();
@@ -776,13 +776,13 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			IMenu menu = bar.Menu;
 
 			foreach (ToolbarItem item in _toolbarTracker.ToolbarItems)
-				item.PropertyChanged -= HandleToolbarItemPropertyChanged;
+				item.PropertyChanged -= OnToolbarItemPropertyChanged;
 			menu.Clear();
 
 			foreach (ToolbarItem item in _toolbarTracker.ToolbarItems)
 			{
 				IMenuItemController controller = item;
-				item.PropertyChanged += HandleToolbarItemPropertyChanged;
+				item.PropertyChanged += OnToolbarItemPropertyChanged;
 				if (item.Order == ToolbarItemOrder.Secondary)
 				{
 					IMenuItem menuItem = menu.Add(item.Text);
@@ -792,7 +792,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				else
 				{
 					IMenuItem menuItem = menu.Add(item.Text);
-					UpdateDrawableMenuItem(context, menuItem, item);
+					UpdateMenuItemIcon(context, menuItem, item);
 					menuItem.SetEnabled(controller.IsEnabled);
 					menuItem.SetShowAsAction(ShowAsAction.Always);
 					menuItem.SetOnMenuItemClickListener(new GenericMenuClickListener(controller.Activate));
@@ -800,20 +800,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			}
 		}
 
-		/// <summary>
-		/// For override specify tint color menu or specify drawable menu
-		/// Sample:
-		/// base.UpdateMenuItem(...)
-		/// menuItem.Icon.Mutate();
-		/// menuItem.Icon.SetColorFilter(this.Resources.GetColor([ResourceColor]), Android.Graphics.PorterDuff.Mode.SrcIn);
-		/// 
-		/// Sample with drawable badge count:
-		/// menuItem.SetIcon(SetDrawableIcon(menuItem.Icon)));
-		/// 
-		/// In this fact, toolBarItem is necessary for access to custom property like badge count
-		/// </summary>
-		/// <param name="menuItem"></param>
-		protected virtual void UpdateDrawableMenuItem(Context context, IMenuItem menuItem, ToolbarItem toolBarItem)
+		protected virtual void UpdateMenuItemIcon(Context context, IMenuItem menuItem, ToolbarItem toolBarItem)
 		{
 			FileImageSource icon = toolBarItem.Icon;
 			if (!string.IsNullOrEmpty(icon))
