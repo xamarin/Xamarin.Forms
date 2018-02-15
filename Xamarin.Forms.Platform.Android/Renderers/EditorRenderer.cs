@@ -199,6 +199,9 @@ namespace Xamarin.Forms.Platform.Android
 			currentFilters.Add(new InputFilterLengthFilter(Element.MaxLength));
 
 			Control?.SetFilters(currentFilters.ToArray());
+
+			if (Control?.Text.Length > Element.MaxLength)
+				Control.Text = Control.Text.Substring(0, Element.MaxLength);
 		}
 	}
 }

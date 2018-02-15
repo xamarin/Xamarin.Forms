@@ -71,6 +71,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateKeyboard();
 			UpdateEditable();
 			UpdateTextAlignment();
+			UpdateMaxLength();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -93,6 +94,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateFont();
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateTextAlignment();
+			else if (e.PropertyName == Xamarin.Forms.InputView.MaxLengthProperty.PropertyName)
+				UpdateMaxLength();
 		}
 
 		void HandleChanged(object sender, EventArgs e)
@@ -154,6 +157,12 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.TextColor = UIColor.Black;
 			else
 				Control.TextColor = textColor.ToUIColor();
+		}
+
+		void UpdateMaxLength()
+		{
+			if (Control.Text.Length > Element.MaxLength)
+				Control.Text = Control.Text.Substring(0, Element.MaxLength);
 		}
 
 		bool ShouldChangeText(UITextView textView, NSRange range, string text)

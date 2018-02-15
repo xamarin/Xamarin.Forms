@@ -234,6 +234,9 @@ namespace Xamarin.Forms.Platform.WPF
 		void UpdateMaxLength()
 		{
 			Control.MaxLength = Element.MaxLength;
+
+			if (Control.Text.Length > Element.MaxLength)
+				Control.Text = Control.Text.Substring(0, Element.MaxLength);
 		}
 
 		bool _isDisposed;
