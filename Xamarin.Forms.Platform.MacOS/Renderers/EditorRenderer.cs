@@ -132,8 +132,10 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateMaxLength()
 		{
-			if (Control?.StringValue?.Length > Element?.MaxLength)
-				Control.StringValue = Control.StringValue.Substring(0, Element.MaxLength);
+			var currentControlText = Control?.StringValue;
+
+			if (currentControlText.Length > Element?.MaxLength)
+				Control.StringValue = currentControlText.Substring(0, Element.MaxLength);
 		}
 	}
 }
