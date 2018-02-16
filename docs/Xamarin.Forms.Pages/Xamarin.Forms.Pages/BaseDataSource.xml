@@ -197,9 +197,6 @@
       </AssemblyInfo>
       <Attributes>
         <Attribute>
-          <AttributeName>System.Diagnostics.DebuggerStepThrough</AttributeName>
-        </Attribute>
-        <Attribute>
           <AttributeName>System.Runtime.CompilerServices.AsyncStateMachine(typeof(Xamarin.Forms.Pages.BaseDataSource/&lt;Xamarin-Forms-Pages-IDataSource-MaskKey&gt;d__13))</AttributeName>
         </Attribute>
       </Attributes>
@@ -223,9 +220,6 @@
         <AssemblyVersion>1.0.0.0</AssemblyVersion>
       </AssemblyInfo>
       <Attributes>
-        <Attribute>
-          <AttributeName>System.Diagnostics.DebuggerStepThrough</AttributeName>
-        </Attribute>
         <Attribute>
           <AttributeName>System.Runtime.CompilerServices.AsyncStateMachine(typeof(Xamarin.Forms.Pages.BaseDataSource/&lt;Xamarin-Forms-Pages-IDataSource-UnmaskKey&gt;d__14))</AttributeName>
         </Attribute>
