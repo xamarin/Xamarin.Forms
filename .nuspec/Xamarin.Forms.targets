@@ -27,11 +27,6 @@
 	</PropertyGroup>
 
 	<Target Name="_ValidateXFTasks" BeforeTargets="_CheckForInvalidConfigurationAndPlatform" Condition="'$(XFDisableTargetsValidation)' != 'True'">
-		<Error
-			Text="Xamarin.Forms targets have been imported multiple times. Please check your project file and remove the duplicate import(s)."
-			Code="XF001"
-			Condition="'$(_XFTargetsImportedAgain)' == 'True'" />
-
 		<GetTasksAbi>
 			<Output TaskParameter="AbiVersion" PropertyName="_XFTasksAbi" />
 		</GetTasksAbi >
