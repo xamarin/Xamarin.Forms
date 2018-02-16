@@ -123,6 +123,9 @@
       </AssemblyInfo>
       <Attributes>
         <Attribute>
+          <AttributeName>System.Diagnostics.DebuggerStepThrough</AttributeName>
+        </Attribute>
+        <Attribute>
           <AttributeName>System.Runtime.CompilerServices.AsyncStateMachine(typeof(Xamarin.Forms.StreamImageSource/&lt;Xamarin-Forms-IStreamImageSource-GetStreamAsync&gt;d__5))</AttributeName>
         </Attribute>
       </Attributes>

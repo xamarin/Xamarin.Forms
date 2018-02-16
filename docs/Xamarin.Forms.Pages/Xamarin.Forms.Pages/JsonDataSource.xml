@@ -36,6 +36,9 @@
       </AssemblyInfo>
       <Attributes>
         <Attribute>
+          <AttributeName>System.Diagnostics.DebuggerStepThrough</AttributeName>
+        </Attribute>
+        <Attribute>
           <AttributeName>System.Runtime.CompilerServices.AsyncStateMachine(typeof(Xamarin.Forms.Pages.JsonDataSource/&lt;GetRawData&gt;d__9))</AttributeName>
         </Attribute>
       </Attributes>
