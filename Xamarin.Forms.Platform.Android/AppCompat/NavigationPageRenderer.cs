@@ -807,7 +807,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			{
 				Drawable iconDrawable = context.GetFormsDrawable(icon);
 				if (iconDrawable != null)
+				{
 					menuItem.SetIcon(iconDrawable);
+					iconDrawable.Dispose();
+				}
 			}
 		}
 
