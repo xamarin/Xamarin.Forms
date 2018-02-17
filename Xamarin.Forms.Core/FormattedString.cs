@@ -21,7 +21,7 @@ namespace Xamarin.Forms
 		{
 			base.OnBindingContextChanged();
 			for (int i = 0; i < Spans.Count; i++)
-				SetInheritedBindingContext(Spans[i], BindingContext);
+				SetInheritedBindingContext(Spans[i], BindingContext);			
 		}
 
 		protected override void OnBindingContextChanged()
