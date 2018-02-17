@@ -26,9 +26,9 @@ namespace Xamarin.Forms
 
 		readonly Lazy<PlatformConfigurationRegistry<ScrollView>> _platformConfigurationRegistry;
 
-		public static readonly BindableProperty HorizontalScrollBarVisibilityProperty = BindableProperty.Create("HorizontalScrollBarVisibility", typeof(ScrollBarVisibility), typeof(ScrollView), ScrollBarVisibility.Default);
+		public static readonly BindableProperty HorizontalScrollBarVisibilityProperty = BindableProperty.Create(nameof(HorizontalScrollBarVisibility), typeof(ScrollBarVisibility), typeof(ScrollView), ScrollBarVisibility.Default);
 
-		public static readonly BindableProperty VerticalScrollBarVisibilityProperty = BindableProperty.Create("VerticalScrollBarVisibility", typeof(ScrollBarVisibility), typeof(ScrollView), ScrollBarVisibility.Default);
+		public static readonly BindableProperty VerticalScrollBarVisibilityProperty = BindableProperty.Create(nameof(VerticalScrollBarVisibility), typeof(ScrollBarVisibility), typeof(ScrollView), ScrollBarVisibility.Default);
 
 		View _content;
 

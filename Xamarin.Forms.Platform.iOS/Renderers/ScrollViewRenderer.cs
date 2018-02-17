@@ -82,8 +82,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateContentSize();
 				UpdateBackgroundColor();
 				UpdateIsEnabled();
-                UpdateVerticalScrollBarVisibility();
-                UpdateHorizontalScrollBarVisibility();
+				UpdateVerticalScrollBarVisibility();
+				UpdateHorizontalScrollBarVisibility();
 
 				OnElementChanged(new VisualElementChangedEventArgs(oldElement, element));
 
@@ -189,18 +189,16 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateVerticalScrollBarVisibility()
 		{
-			if (ScrollView.VerticalScrollBarVisibility == ScrollBarVisibility.Always || ScrollView.VerticalScrollBarVisibility == ScrollBarVisibility.Default)
-				ShowsVerticalScrollIndicator = true;
-			else
-				ShowsVerticalScrollIndicator = false;
+			var verticalScrollBarVisibility = ScrollView.VerticalScrollBarVisibility;
+			ShowsVerticalScrollIndicator = verticalScrollBarVisibility == ScrollBarVisibility.Always 
+			                               || verticalScrollBarVisibility == ScrollBarVisibility.Default;
 		}
 
 		void UpdateHorizontalScrollBarVisibility()
 		{
-			if (ScrollView.HorizontalScrollBarVisibility == ScrollBarVisibility.Always)
-				ShowsHorizontalScrollIndicator = true;
-			else
-				ShowsHorizontalScrollIndicator = false;
+			var horizontalScrollBarVisibility;
+			ShowsHorizontalScrollIndicator = horizontalScrollBarVisibility == ScrollBarVisibility.Always
+			                               || horizontalScrollBarVisibility == ScrollBarVisibility.Default;
 		}
 
 		void HandleScrollAnimationEnded(object sender, EventArgs e)

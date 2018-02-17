@@ -217,7 +217,8 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		void UpdateHorizontalScrollBarVisibility()
 		{
-			if (Element.Orientation == ScrollOrientation.Horizontal || Element.Orientation == ScrollOrientation.Both)
+			var orientation = Element.Orientation;
+			if (orientation == ScrollOrientation.Horizontal || orientation == ScrollOrientation.Both)
 				Control.HorizontalScrollBarVisiblePolicy = ScrollBarVisibilityToTizen(Element.HorizontalScrollBarVisibility);
 		}
 
@@ -225,10 +226,14 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			switch (visibility)
 			{
-				case ScrollBarVisibility.Default: return ScrollBarVisiblePolicy.Auto;
-				case ScrollBarVisibility.Always: return ScrollBarVisiblePolicy.Visible;
-				case ScrollBarVisibility.Never: return ScrollBarVisiblePolicy.Invisible;
-				default: return ScrollBarVisiblePolicy.Auto;
+				case ScrollBarVisibility.Default:
+					return ScrollBarVisiblePolicy.Auto;
+				case ScrollBarVisibility.Always:
+					return ScrollBarVisiblePolicy.Visible;
+				case ScrollBarVisibility.Never:
+					return ScrollBarVisiblePolicy.Invisible;
+				default:
+					return ScrollBarVisiblePolicy.Auto;
 			}
 		}
 	}

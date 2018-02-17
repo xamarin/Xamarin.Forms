@@ -210,7 +210,8 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
         void UpdateHorizontalScrollBarVisibility()
         {
-            if (Element.Orientation == ScrollOrientation.Horizontal || Element.Orientation == ScrollOrientation.Both)
+	        var orientation = Element.Orientation;
+            if (orientation == ScrollOrientation.Horizontal || orientation == ScrollOrientation.Both)
                 Control.HscrollbarPolicy = ScrollBarVisibilityToGtk(Element.HorizontalScrollBarVisibility);
         }
 
@@ -218,10 +219,14 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
         {
             switch(visibility)
             {
-                case ScrollBarVisibility.Default: return PolicyType.Automatic;
-                case ScrollBarVisibility.Always: return PolicyType.Always;
-                case ScrollBarVisibility.Never: return PolicyType.Never;
-                default: return PolicyType.Automatic;
+                case ScrollBarVisibility.Default:
+	                return PolicyType.Automatic;
+                case ScrollBarVisibility.Always:
+	                return PolicyType.Always;
+                case ScrollBarVisibility.Never:
+	                return PolicyType.Never;
+                default:
+	                return PolicyType.Automatic;
             }
         }
     }

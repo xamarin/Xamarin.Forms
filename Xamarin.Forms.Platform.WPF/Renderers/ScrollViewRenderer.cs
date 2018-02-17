@@ -163,12 +163,13 @@ namespace Xamarin.Forms.Platform.WPF
 
 		void UpdateOrientation()
 		{
-			if (Element.Orientation == ScrollOrientation.Horizontal || Element.Orientation == ScrollOrientation.Both)
+			var orientation = Element.Orientation;
+			if (orientation == ScrollOrientation.Horizontal || orientation == ScrollOrientation.Both)
 				Control.HorizontalScrollBarVisibility = WpfScrollBarVisibility.Auto;
 			else
 				Control.HorizontalScrollBarVisibility = WpfScrollBarVisibility.Disabled;
 
-			if (Element.Orientation == ScrollOrientation.Vertical || Element.Orientation == ScrollOrientation.Both)
+			if (orientation == ScrollOrientation.Vertical || orientation == ScrollOrientation.Both)
 				Control.VerticalScrollBarVisibility = WpfScrollBarVisibility.Auto;
 			else
 				Control.VerticalScrollBarVisibility = WpfScrollBarVisibility.Disabled;
@@ -192,10 +193,14 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			switch (visibility)
 			{
-				case ScrollBarVisibility.Always: return WpfScrollBarVisibility.Visible;
-				case ScrollBarVisibility.Default: return WpfScrollBarVisibility.Auto;
-				case ScrollBarVisibility.Never: return WpfScrollBarVisibility.Hidden;
-				default: return WpfScrollBarVisibility.Auto;
+				case ScrollBarVisibility.Always:
+					return WpfScrollBarVisibility.Visible;
+				case ScrollBarVisibility.Default:
+					return WpfScrollBarVisibility.Auto;
+				case ScrollBarVisibility.Never:
+					return WpfScrollBarVisibility.Hidden;
+				default:
+					return WpfScrollBarVisibility.Auto;
 			}
 		}
 
