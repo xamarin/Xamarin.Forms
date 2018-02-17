@@ -141,8 +141,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			fragmentTransaction.Remove(_currentFragment);
 			fragmentTransaction.SetTransition((int)FragmentTransit.None);
 
-			// This is a removal of a fragment that's not going on the back stack; there's no reason to care
-			// whether its state gets successfully saved, since we'll never restore it. Ergo, CommitAllowingStateLoss
 			CommitTransaction(fragmentTransaction);
 
 			_currentFragment = null;
@@ -150,6 +148,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void CommitTransaction(FragmentTransaction fragmentTransaction)
 		{
+			// We're performing a removal of a fragment that's not going on the back stack; there's no reason to care
+			// whether its state gets saved successfully since we'll never restore it. Ergo, commit by allowing state loss.
+
 			if (Build.VERSION.SdkInt >= BuildVersionCodes.N)
 				fragmentTransaction.CommitNowAllowingStateLoss();
 			else
