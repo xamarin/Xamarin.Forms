@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Internals
 			if (handlerType == null)
 				return null;
 
-			object handler = DependencyResolver.ForceResolve(handlerType);
+			object handler = DependencyResolver.ResolveOrCreate(handlerType);
 
 			return (TRegistrable)handler;
 		}
@@ -50,7 +50,7 @@ namespace Xamarin.Forms.Internals
 			if (handlerType == null)
 				return null;
 
-			return (TRegistrable)DependencyResolver.ForceResolve(handlerType, args);
+			return (TRegistrable)DependencyResolver.ResolveOrCreate(handlerType, args);
 		}
 
 		public TOut GetHandler<TOut>(Type type) where TOut : TRegistrable

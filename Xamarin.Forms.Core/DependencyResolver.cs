@@ -6,27 +6,34 @@ namespace Xamarin.Forms.Internals
 {
 	public static class DependencyResolver
 	{
-		public delegate object ResolveDelegate(Type type, params object[] args);
+		static Func<Type, object[], object> Resolver { get; set; }
 
-		static ResolveDelegate Resolver { get; set; }
-
-		public static void ResolveUsing(ResolveDelegate resolveDelegate)
+		public static void ResolveUsing(Func<Type, object[], object> resolver)
 		{
-			Resolver = resolveDelegate;
+			Resolver = resolver;
 		}
 
-		public static void ResolveUsing(Func<Type, object> resolveFunc)
+		public static void ResolveUsing(Func<Type, object> resolver)
 		{
-			object ResolveDelegate(Type type, object[] args) => resolveFunc.Invoke(type);
-			Resolver = ResolveDelegate;
+			Resolver = (type, objects) => resolver.Invoke(type);
 		}
 
 		internal static object Resolve(Type type, params object[] args)
 		{
-			return Resolver?.Invoke(type, args);
+			var result = Resolver?.Invoke(type, args);
+
+			if (result != null)
+			{
+				if (!type.IsInstanceOfType(result))
+				{
+					throw new InvalidCastException("Resolved instance is not of the correct type.");
+				}
+			}
+
+			return result;
 		}
 
-		internal static object ForceResolve(Type type, params object[] args)
+		internal static object ResolveOrCreate(Type type, params object[] args)
 		{
 			var result = Resolve(type, args);
 

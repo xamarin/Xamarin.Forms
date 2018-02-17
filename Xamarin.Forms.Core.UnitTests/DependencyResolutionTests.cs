@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Core.UnitTests
 {
@@ -41,6 +42,14 @@ namespace Xamarin.Forms.Core.UnitTests
 		// ReSharper disable once ClassNeverInstantiated.Local 
 		// (Just testing the type registration, don't need an instance)
 		class MockServiceImpl2 : IMockService { }
+
+		class TypeWhichWillNotResolveCorrectly
+		{
+		}
+
+		class IncorrectType
+		{
+		}
 
 		class MockContainer
 		{
@@ -85,10 +94,19 @@ namespace Xamarin.Forms.Core.UnitTests
 		public void SetUp()
 		{
 			_container = new MockContainer();
+			object Resolver(Type type, object[] args) => _container.Resolve(type, args);
 
-			object ResolveDelegate(Type type, object[] args) => _container.Resolve(type, args);
+			DependencyResolver.ResolveUsing(Resolver);
+		}
 
-			Internals.DependencyResolver.ResolveUsing(ResolveDelegate);
+		[Test]
+		public void ThrowsIfResolverReturnsWrongType()
+		{
+			_container = new MockContainer();
+			_container.Register(typeof(TypeWhichWillNotResolveCorrectly), new IncorrectType());
+			DependencyService.Register<TypeWhichWillNotResolveCorrectly>();
+
+			Assert.Throws<InvalidCastException>(() => DependencyService.Resolve<TypeWhichWillNotResolveCorrectly>());
 		}
 
 		[Test]

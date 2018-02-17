@@ -23,7 +23,7 @@ namespace Xamarin.Forms
 			Effect result = null;
 			if (Internals.Registrar.Effects.TryGetValue(name, out Type effectType))
 			{
-				result = DependencyResolver.ForceResolve(effectType) as Effect;
+				result = (Effect)DependencyResolver.ResolveOrCreate(effectType);
 			}
 
 			if (result == null)
