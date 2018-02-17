@@ -263,10 +263,7 @@ namespace Xamarin.Forms.Platform.UWP
 					textBlock.Inlines.Clear();
 
 					for (var i = 0; i < formatted.Spans.Count; i++)
-					{
-						if (formatted.Spans[i].Text != null)
-							textBlock.Inlines.Add(formatted.Spans[i].ToRun());
-					}
+						textBlock.Inlines.Add(formatted.Spans[i].ToRun());
 				}
 			}
 		}

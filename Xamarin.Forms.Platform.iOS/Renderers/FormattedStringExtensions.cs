@@ -57,6 +57,10 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (span == null)
 				return null;
 
+			var text = span.Text;
+			if (text == null)
+				return null;
+
 #if __MOBILE__
 			UIFont targetFont;
 			if (span.IsDefault())
@@ -70,7 +74,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (fgcolor.IsDefault)
 				fgcolor = Color.Black; // as defined by apple docs
 
-			return new NSAttributedString(span.Text, targetFont, fgcolor.ToUIColor(), span.BackgroundColor.ToUIColor());
+			return new NSAttributedString(text, targetFont, fgcolor.ToUIColor(), span.BackgroundColor.ToUIColor());
 #else
 			NSFont targetFont;
 			if (span.IsDefault())
@@ -84,7 +88,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (fgcolor.IsDefault)
 				fgcolor = Color.Black; // as defined by apple docs
 
-			return new NSAttributedString(span.Text, targetFont, fgcolor.ToNSColor(), span.BackgroundColor.ToNSColor());
+			return new NSAttributedString(text, targetFont, fgcolor.ToNSColor(), span.BackgroundColor.ToNSColor());
 #endif
 		}
 
@@ -96,10 +100,11 @@ namespace Xamarin.Forms.Platform.MacOS
 			var attributed = new NSMutableAttributedString();
 			foreach (var span in formattedString.Spans)
 			{
-				if (span.Text == null)
+				var attributedString = span.ToAttributed(owner, defaultForegroundColor);				
+				if (attributedString == null)
 					continue;
 
-				attributed.Append(span.ToAttributed(owner, defaultForegroundColor));
+				attributed.Append(attributedString);
 			}
 
 			return attributed;

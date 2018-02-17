@@ -24,7 +24,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty FontProperty = FontElement.FontProperty;
 
-		public static readonly BindableProperty TextProperty = BindableProperty.Create("Text", typeof(string), typeof(Label), default(string), propertyChanged: OnTextPropertyChanged);
+		public static readonly BindableProperty TextProperty = BindableProperty.Create(nameof(Text), typeof(string), typeof(Label), default(string), propertyChanged: OnTextPropertyChanged);
 
 		public static readonly BindableProperty FontFamilyProperty = FontElement.FontFamilyProperty;
 
@@ -32,14 +32,14 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty FontAttributesProperty = FontElement.FontAttributesProperty;
 
-		public static readonly BindableProperty FormattedTextProperty = BindableProperty.Create("FormattedText", typeof(FormattedString), typeof(Label), default(FormattedString),
+		public static readonly BindableProperty FormattedTextProperty = BindableProperty.Create(nameof(FormattedText), typeof(FormattedString), typeof(Label), default(FormattedString),
 			propertyChanging: (bindable, oldvalue, newvalue) =>
 			{
 				if (oldvalue != null)
 				{
 					var formattedString = ((FormattedString)oldvalue);
 					formattedString.PropertyChanged -= ((Label)bindable).OnFormattedTextChanged;
-					SetInheritedBindingContext(formattedString, null);
+					formattedString.Parent = null;
 				}
 			}, propertyChanged: (bindable, oldvalue, newvalue) =>
 			{
@@ -47,7 +47,7 @@ namespace Xamarin.Forms
 				{
 					var formattedString = (FormattedString)newvalue;
 					formattedString.PropertyChanged += ((Label)bindable).OnFormattedTextChanged;
-					SetInheritedBindingContext(formattedString, bindable.BindingContext);
+					formattedString.Parent = (Label)bindable;
 				}
 
 				((Label)bindable).InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
@@ -55,7 +55,7 @@ namespace Xamarin.Forms
 					((Label)bindable).Text = null;
 			});
 
-		public static readonly BindableProperty LineBreakModeProperty = BindableProperty.Create("LineBreakMode", typeof(LineBreakMode), typeof(Label), LineBreakMode.WordWrap,
+		public static readonly BindableProperty LineBreakModeProperty = BindableProperty.Create(nameof(LineBreakMode), typeof(LineBreakMode), typeof(Label), LineBreakMode.WordWrap,
 			propertyChanged: (bindable, oldvalue, newvalue) => ((Label)bindable).InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged));
 
 		readonly Lazy<PlatformConfigurationRegistry<Label>> _platformConfigurationRegistry;

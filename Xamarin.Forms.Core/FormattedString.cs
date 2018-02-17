@@ -8,7 +8,7 @@ using System.Linq;
 namespace Xamarin.Forms
 {
 	[ContentProperty("Spans")]
-	public class FormattedString : BindableObject
+	public class FormattedString : Element
 	{
 		readonly SpanCollection _spans = new SpanCollection();
 
@@ -21,7 +21,7 @@ namespace Xamarin.Forms
 		{
 			base.OnBindingContextChanged();
 			for (int i = 0; i < Spans.Count; i++)
-				SetInheritedBindingContext(Spans[i], BindingContext);
+				SetInheritedBindingContext(Spans[i], BindingContext);			
 		}
 
 		public IList<Span> Spans
@@ -51,7 +51,7 @@ namespace Xamarin.Forms
 				foreach (object item in e.OldItems)
 				{
 					var bo = item as Span;
-					SetInheritedBindingContext(bo, null);
+					bo.Parent = null;
 					if (bo != null)
 						bo.PropertyChanged -= OnItemPropertyChanged;
 				}
@@ -62,7 +62,7 @@ namespace Xamarin.Forms
 				foreach (object item in e.NewItems)
 				{
 					var bo = item as Span;
-					SetInheritedBindingContext(bo, this.BindingContext);
+					bo.Parent = this;
 					if (bo != null)
 						bo.PropertyChanged += OnItemPropertyChanged;
 				}

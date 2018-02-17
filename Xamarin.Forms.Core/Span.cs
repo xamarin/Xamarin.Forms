@@ -13,7 +13,7 @@ namespace Xamarin.Forms
 			_mergedStyle = new MergedStyle(GetType(), this);
 		}
 
-		public static readonly BindableProperty StyleProperty = BindableProperty.Create("Style", typeof(Style), typeof(Span), default(Style),
+		public static readonly BindableProperty StyleProperty = BindableProperty.Create(nameof(Style), typeof(Style), typeof(Span), default(Style),
 			propertyChanged: (bindable, oldvalue, newvalue) => ((Span)bindable)._mergedStyle.Style = (Style)newvalue);
 
 		public Style Style
