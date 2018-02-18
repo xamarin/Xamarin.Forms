@@ -162,19 +162,15 @@ namespace Xamarin.Forms.Platform.WPF
 
 			var handled = false;
 
-			var overrides = ((IGestureElement)view).ChildElementOverrides(new Point(tapPosition.X, tapPosition.Y));
+			var child = ((IGestureElement)view).GetChildElement(new Point(tapPosition.X, tapPosition.Y));
 
-			for (int i = 0; i < overrides.Count; i++)
-				foreach (var recognizer in overrides[i].GestureRecognizers)
-					if (recognizer is TapGestureRecognizer)
-					{
-						var tapRecognizer = recognizer as TapGestureRecognizer;
-						if (tapRecognizer.NumberOfTapsRequired == numberOfTapsRequired)
-						{
-							tapRecognizer.SendTapped(view);
-							handled = true;
-						}
-					}
+			if (child != null)
+				foreach (var gestureRecognizer in
+				child.GestureRecognizers.OfType<TapGestureRecognizer>().Where(g => g.NumberOfTapsRequired == numberOfTapsRequired))
+				{
+					gestureRecognizer.SendTapped(view);
+					handled = true;
+				}
 
 			if (handled)
 				return handled;

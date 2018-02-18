@@ -4,7 +4,7 @@ namespace Xamarin.Forms.Internals
 {
 	public interface IGestureElement
 	{
-		IList<IGestureChildElement> ChildElementOverrides(Point point);
+		IGestureChildElement GetChildElement(Point point);
 		
 		IList<IGestureRecognizer> CompositeGestureRecognizers { get; }		
 	}

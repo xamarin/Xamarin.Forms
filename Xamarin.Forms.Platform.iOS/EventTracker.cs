@@ -110,10 +110,10 @@ namespace Xamarin.Forms.Platform.MacOS
 					var originPoint = sender.LocationInView(null);
 					originPoint = NSApplication.SharedApplication.KeyWindow.ContentView.ConvertPointToView(originPoint, eventTracker._renderer.NativeView);
 
-					var overrides = view.ChildElementOverrides(new Point(originPoint.X, originPoint.Y));
+					var child = view.GetChildElement(new Point(originPoint.X, originPoint.Y));
 
-					for (int i = 0; i < overrides.Count; i++)
-						if (overrides[i].GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(x => x.NumberOfTapsRequired == (int)sender.NumberOfClicksRequired).Count() > 0)
+					if (child != null)
+						if (child.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(x => x.NumberOfTapsRequired == (int)sender.NumberOfClicksRequired).Count() > 0)
 							captured = true;
 
 					if (captured)
@@ -145,22 +145,23 @@ namespace Xamarin.Forms.Platform.MacOS
 				return uiRecognizer;
 			}
 #else
-            if (tapRecognizer != null)
-            {
-                var returnAction = new Action<UITapGestureRecognizer>((sender) =>
-				{                 
-                    var eventTracker = weakEventTracker.Target as EventTracker;
-                    var view = eventTracker?._renderer?.Element as View;
+			if (tapRecognizer != null)
+			{
+				var returnAction = new Action<UITapGestureRecognizer>((sender) =>
+				{
+					var eventTracker = weakEventTracker.Target as EventTracker;
+					var view = eventTracker?._renderer?.Element as View;
 
 					var captured = false;
 
 					var originPoint = sender.LocationInView(null);
 					originPoint = UIApplication.SharedApplication.KeyWindow.ConvertPointToView(originPoint, eventTracker._renderer.NativeView);
 
-					var overrides = view.ChildElementOverrides(new Point(originPoint.X, originPoint.Y));
+					var overrides = view.GetChildElement(new Point(originPoint.X, originPoint.Y));
 
-					for (int i = 0; i < overrides.Count; i++)
-						if (overrides[i].GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(x => x.NumberOfTapsRequired == (int)sender.NumberOfTapsRequired).Count() > 0)
+					var child = view.GetChildElement(new Point(originPoint.X, originPoint.Y));
+					if (child != null)
+						if (child.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(x => x.NumberOfTapsRequired == (int)sender.NumberOfTapsRequired).Count() > 0)
 							captured = true;
 
 					if (captured)
@@ -190,9 +191,9 @@ namespace Xamarin.Forms.Platform.MacOS
 						var originPoint = sender.LocationInView(null);
 						originPoint = NSApplication.SharedApplication.KeyWindow.ContentView.ConvertPointToView(originPoint, eventTracker._renderer.NativeView);
 
-						var overrides = view.ChildElementOverrides(new Point(originPoint.X, originPoint.Y));
-						for (int i = 0; i < overrides.Count; i++)
-							if (overrides[i].GestureRecognizers.Contains(clickGestureRecognizer) && view != null)
+						var child = view.GetChildElement(new Point(originPoint.X, originPoint.Y));
+						if (child != null)
+							if (child.GestureRecognizers.Contains(clickGestureRecognizer) && view != null)
 								clickGestureRecognizer.SendClicked(view, clickGestureRecognizer.Buttons);
 					});
 
@@ -211,9 +212,9 @@ namespace Xamarin.Forms.Platform.MacOS
 						var originPoint = sender.LocationInView(null);
 						originPoint = UIApplication.SharedApplication.KeyWindow.ConvertPointToView(originPoint, eventTracker._renderer.NativeView);
 
-						var overrides = view.ChildElementOverrides(new Point(originPoint.X, originPoint.Y));
-						for (int i = 0; i < overrides.Count; i++)
-							if (overrides[i].GestureRecognizers.Contains(tapGestureRecognizer) && view != null)
+						var child = view.GetChildElement(new Point(originPoint.X, originPoint.Y));
+						if (child != null)
+							if (child.GestureRecognizers.Contains(tapGestureRecognizer) && view != null)
 								tapGestureRecognizer.SendTapped(view);
 					});
 
@@ -375,7 +376,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			};
 
 			return result;
-		}		
+		}
 #else
 		NativeGestureRecognizer CreateClickRecognizer(int buttonMask, int numberOfClicksRequired, Action<NSClickGestureRecognizer> returnAction)
 		{

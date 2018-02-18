@@ -126,9 +126,9 @@ namespace Xamarin.Forms
 			get { return _compositeGestureRecognizers; }
 		}
 
-		public virtual IList<IGestureChildElement> ChildElementOverrides(Point point)
+		public virtual IGestureChildElement GetChildElement(Point point)
 		{
-			return new List<IGestureChildElement>();
+			return null;
 		}
 
 		public LayoutOptions HorizontalOptions

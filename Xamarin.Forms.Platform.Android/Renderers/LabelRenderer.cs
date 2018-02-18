@@ -77,7 +77,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			return result;
 		}
-		
+
 		protected override void OnSizeChanged(int w, int h, int oldw, int oldh)
 		{
 			base.OnSizeChanged(w, h, oldw, oldh);

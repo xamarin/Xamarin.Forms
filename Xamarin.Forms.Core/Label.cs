@@ -307,19 +307,17 @@ namespace Xamarin.Forms
 		{
 		}
 
-		public override IList<IGestureChildElement> ChildElementOverrides(Point point)
-		{
-			var elements = new List<IGestureChildElement>();
-
+		public override IGestureChildElement GetChildElement(Point point)
+		{	
 			if (FormattedText?.Spans == null || FormattedText?.Spans.Count == 0)
-				return elements;
+				return null;
 
 			foreach (var span in FormattedText.Spans)
 				for (int i = 0; i < span.Positions.Count; i++)
 					if (span.Positions[i].Contains(point.X, point.Y))
-						elements.Add(span);
+						return span;
 
-			return elements;
+			return null;
 		}
 	}
 }
