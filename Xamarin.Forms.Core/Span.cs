@@ -167,7 +167,7 @@ namespace Xamarin.Forms
 		{
 		}
 
-		public IList<Rectangle> Positions { get; set; } = new List<Rectangle>();
+		public IList<Rectangle> Positions { get; private set; } = new List<Rectangle>();
 
 		public void CalculatePositions(double[] lineHeights, double maxWidth, double startX, double endX, double startY)
 		{

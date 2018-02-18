@@ -49,6 +49,11 @@ namespace Xamarin.Forms.Platform.Android
 				|| element.FormattedText.Spans.Count == 0)
 				return;
 
+			var labelWidth = finalSize.Request.Width;
+
+			if (labelWidth <= 0 || finalSize.Request.Height <= 0)
+				return;
+
 			var layout = textView.Layout;
 
 			var text = spannableString.ToString();
@@ -61,11 +66,13 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				var span = element.FormattedText.Spans[count];
 
-				// find the next span
-				next = spannableString.NextSpanTransition(i, spannableString.Length(), Java.Lang.Class.FromType(typeof(Java.Lang.Object)));
+				var type = Java.Lang.Class.FromType(typeof(Java.Lang.Object));
 
-				// get all spans in the range				
-				var spans = spannableString.GetSpans(i, next, Java.Lang.Class.FromType(typeof(Java.Lang.Object)));
+				// find the next span
+				next = spannableString.NextSpanTransition(i, spannableString.Length(), type);
+
+				// get all spans in the range - Android can have overlapping spans				
+				var spans = spannableString.GetSpans(i, next, type);
 
 				var startSpan = spans[0];
 				var endSpan = spans[spans.Length - 1];
@@ -78,9 +85,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				var startLine = layout.GetLineForOffset(startSpanOffset);
 				var endLine = layout.GetLineForOffset(endSpanOffset);
-
-				var labelWidth = finalSize.Request.Width;
-
+				
 				double[] lineHeights = new double[endLine - startLine + 1];
 			
 				// calculate all the different line heights
@@ -92,6 +97,7 @@ namespace Xamarin.Forms.Platform.Android
 					if (totalLineHeights.Count < lineCount)
 						totalLineHeights.Add(lineHeight);
 				}
+
 				var yaxis = 0.0;
 				for (var line = 0; line < totalLineHeights.Count; line++)
 					yaxis += totalLineHeights[line];

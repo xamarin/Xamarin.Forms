@@ -71,7 +71,7 @@ namespace Xamarin.Forms.Platform.UWP
 			rect.Height = childHeight;
 			rect.Width = finalSize.Width;
 			Control.Arrange(rect);
-			RecalculatePositions(finalSize);
+			Control.RecalculateSpanPositions(Element, _inlineHeights);
 			return finalSize;
 		}
 
@@ -245,67 +245,7 @@ namespace Xamarin.Forms.Platform.UWP
 					throw new ArgumentOutOfRangeException();
 			}
 		}
-
-		double FindDefaultLineHeight(Inline inline)
-		{
-			var control = new TextBlock();
-			control.Inlines.Add(inline);
-
-			control.Measure(new Windows.Foundation.Size(double.PositiveInfinity, double.PositiveInfinity));
-
-			var height = control.DesiredSize.Height;
-
-			control.Inlines.Remove(inline);
-			control = null;
-
-			return height;
-		}
-
-		void RecalculatePositions(Windows.Foundation.Size finalSize)
-		{
-			if (Element?.FormattedText?.Spans == null
-				|| Element.FormattedText.Spans.Count == 0)
-				return;
-
-			for (int i = 0; i < Element.FormattedText.Spans.Count; i++)
-			{
-				var span = Element.FormattedText.Spans[i];
-
-				var inline = Control.Inlines[i];
-				var rect = inline.ContentStart.GetCharacterRect(LogicalDirection.Forward);
-				var endRect = inline.ContentEnd.GetCharacterRect(LogicalDirection.Forward);
-
-				var positions = new List<Rectangle>();
-				var labelWidth = Control.ActualWidth;
-
-				var defaultLineHeight = _inlineHeights[i];
-								
-				var yaxis = rect.Top;
-				var lineHeights = new List<double>();
-				while (yaxis < endRect.Bottom)
-				{
-					double lineHeight;
-					if (yaxis == rect.Top) // First Line
-					{
-						lineHeight = rect.Bottom - rect.Top;
-					}
-					else if (yaxis != endRect.Top) // Middle Line(s)
-					{
-						lineHeight = defaultLineHeight;
-					}
-					else // Bottom Line
-					{
-						lineHeight = endRect.Bottom - endRect.Top;
-					}
-					lineHeights.Add(lineHeight);
-					yaxis += lineHeight;
-				}
-
-				span.CalculatePositions(lineHeights.ToArray(), finalSize.Width, rect.X, endRect.X + endRect.Width, rect.Top);
-
-			}
-		}
-				
+						
 		void UpdateText(TextBlock textBlock)
 		{
 			_perfectSizeValid = false;
@@ -335,7 +275,7 @@ namespace Xamarin.Forms.Platform.UWP
 						if (span.Text != null)
 						{
 							var run = span.ToRun();
-							heights.Add(FindDefaultLineHeight(run));
+							heights.Add(Control.FindDefaultLineHeight(run));
 							textBlock.Inlines.Add(run);
 						}
 					}

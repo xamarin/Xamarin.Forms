@@ -37,7 +37,7 @@ namespace Xamarin.Forms.Platform.WPF
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
 			var size = base.GetDesiredSize(widthConstraint, heightConstraint);
-			RecalculatePositions(size.Request);
+			Control.RecalculateSpanPositions(Element, _inlineHeights);
 			return size;
 		}
 
@@ -138,69 +138,6 @@ namespace Xamarin.Forms.Platform.WPF
 			}
 		}
 
-		double FindDefaultLineHeight(Inline inline)
-		{
-			var control = new TextBlock();
-			control.Inlines.Add(inline);
-
-			control.Measure(new System.Windows.Size(double.PositiveInfinity, double.PositiveInfinity));
-
-			var height = control.DesiredSize.Height;
-
-			control.Inlines.Remove(inline);
-			control = null;
-
-			return height;
-		}
-
-		void RecalculatePositions(Size finalSize)
-		{
-			if (Element?.FormattedText?.Spans == null
-				|| Element.FormattedText.Spans.Count == 0)
-				return;
-
-			if (finalSize.Height == 0 || finalSize.Width == 0)
-				return;
-
-			for (int i = 0; i < Element.FormattedText.Spans.Count; i++)
-			{
-				var span = Element.FormattedText.Spans[i];
-
-				var inline = Control.Inlines.ElementAt(i);
-				var rect = inline.ContentStart.GetCharacterRect(LogicalDirection.Forward);
-				var endRect = inline.ContentEnd.GetCharacterRect(LogicalDirection.Forward);
-
-				var positions = new List<Rectangle>();
-				var labelWidth = Control.ActualWidth;
-
-				var defaultLineHeight = _inlineHeights[i];
-
-				var yaxis = rect.Top;
-				var lineHeights = new List<double>();
-				while (yaxis < endRect.Bottom)
-				{
-					double lineHeight;
-					if (yaxis == rect.Top) // First Line
-					{
-						lineHeight = rect.Bottom - rect.Top;
-					}
-					else if (yaxis != endRect.Top) // Middle Line(s)
-					{
-						lineHeight = defaultLineHeight;
-					}
-					else // Bottom Line
-					{
-						lineHeight = endRect.Bottom - endRect.Top;
-					}
-					lineHeights.Add(lineHeight);
-					yaxis += lineHeight;
-				}
-
-				span.CalculatePositions(lineHeights.ToArray(), finalSize.Width, rect.X, endRect.X + endRect.Width, rect.Top);
-
-			}
-		}
-
 		void UpdateText()
 		{
 			if (Control == null)
@@ -226,7 +163,7 @@ namespace Xamarin.Forms.Platform.WPF
 						if (span.Text != null)
 						{
 							var run = span.ToRun();
-							heights.Add(FindDefaultLineHeight(run));
+							heights.Add(Control.FindDefaultLineHeight(run));
 							Control.Inlines.Add(run);
 						}
 					}
