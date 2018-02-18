@@ -49,7 +49,6 @@ namespace Xamarin.Forms
 
 					((ObservableCollection<Span>)formattedString.Spans).CollectionChanged -= ((Label)bindable).Span_CollectionChanged;
 					formattedString.PropertyChanged -= ((Label)bindable).OnFormattedTextChanged;
-					SetInheritedBindingContext(formattedString, null);
 					formattedString.Parent = null;
 				}
 			}, propertyChanged: (bindable, oldvalue, newvalue) =>
@@ -59,7 +58,6 @@ namespace Xamarin.Forms
 					var label = ((Label)bindable);
 					var formattedString = (FormattedString)newvalue;
 					formattedString.Parent = label;
-					SetInheritedBindingContext(formattedString, bindable.BindingContext);
 					formattedString.PropertyChanged += label.OnFormattedTextChanged;
 
 					((ObservableCollection<Span>)formattedString.Spans).CollectionChanged += label.Span_CollectionChanged;

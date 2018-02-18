@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Platform.WPF
 
 		public static Run ToRun(this Span span)
 		{
-			var run = new Run { Text = span.Text };
+			var run = new Run { Text = span.Text ?? string.Empty };
 
 			if (span.TextColor != Color.Default)
 				run.Foreground = span.TextColor.ToBrush();

@@ -78,11 +78,11 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			if (Control == null || Element == null)
 				return;
-			
+
 			if (Element.TextColor != Color.Default)
 				Control.Foreground = Element.TextColor.ToBrush();
 			else
-				Control.Foreground = Brushes.Black; 
+				Control.Foreground = Brushes.Black;
 		}
 
 		void UpdateFont()
@@ -160,17 +160,14 @@ namespace Xamarin.Forms.Platform.WPF
 					for (var i = 0; i < formattedText.Spans.Count; i++)
 					{
 						var span = formattedText.Spans[i];
-						if (span.Text != null)
-						{
-							var run = span.ToRun();
-							heights.Add(Control.FindDefaultLineHeight(run));
-							Control.Inlines.Add(run);
-						}
+						var run = span.ToRun();
+						heights.Add(Control.FindDefaultLineHeight(run));
+						Control.Inlines.Add(run);
 					}
 					_inlineHeights = heights;
 				}
 			}
 		}
-		
+
 	}
 }

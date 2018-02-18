@@ -68,7 +68,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (view == null)
 				return Enumerable.Empty<TapGestureRecognizer>();
 
-			return view.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(recognizer => recognizer.NumberOfTapsRequired == count).ToList();
+			return view.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(recognizer => recognizer.NumberOfTapsRequired == count);
 		}
 
 	}

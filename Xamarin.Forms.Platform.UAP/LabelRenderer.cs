@@ -245,7 +245,7 @@ namespace Xamarin.Forms.Platform.UWP
 					throw new ArgumentOutOfRangeException();
 			}
 		}
-						
+
 		void UpdateText(TextBlock textBlock)
 		{
 			_perfectSizeValid = false;
@@ -272,15 +272,16 @@ namespace Xamarin.Forms.Platform.UWP
 					for (var i = 0; i < formatted.Spans.Count; i++)
 					{
 						var span = formatted.Spans[i];
-						if (span.Text != null)
-						{
-							var run = span.ToRun();
-							heights.Add(Control.FindDefaultLineHeight(run));
-							textBlock.Inlines.Add(run);
-						}
+
+						var run = span.ToRun();
+						heights.Add(Control.FindDefaultLineHeight(run));
+						textBlock.Inlines.Add(run);
 					}
 					_inlineHeights = heights;
-					
+				}
+			}
+		}
+
 		void UpdateDetectReadingOrderFromContent(TextBlock textBlock)
 		{
 			if (Element.IsSet(Specifics.DetectReadingOrderFromContentProperty))
