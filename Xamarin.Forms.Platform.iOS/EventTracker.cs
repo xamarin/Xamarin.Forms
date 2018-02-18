@@ -131,6 +131,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				var returnAction = new NSGestureProbe((gesturerecognizer) =>
 				{
+					var tapGestureRecognizer = weakRecognizer.Target as TapGestureRecognizer;
 					var eventTracker = weakEventTracker.Target as EventTracker;
 					var view = eventTracker?._renderer?.Element as View;
 
@@ -146,9 +147,8 @@ namespace Xamarin.Forms.Platform.MacOS
 #else
             if (tapRecognizer != null)
             {
-                var returnAction = new Action(() =>
-                {
-                    var tapGestureRecognizer = weakRecognizer.Target as TapGestureRecognizer;
+                var returnAction = new Action<UITapGestureRecognizer>((sender) =>
+				{                 
                     var eventTracker = weakEventTracker.Target as EventTracker;
                     var view = eventTracker?._renderer?.Element as View;
 
@@ -377,7 +377,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			return result;
 		}		
 #else
-		NativeGestureRecognizer CreateClickRecognizer(int buttonMask, int numberOfClicksRequired, Action returnAction)
+		NativeGestureRecognizer CreateClickRecognizer(int buttonMask, int numberOfClicksRequired, Action<NSClickGestureRecognizer> returnAction)
 		{
 			var result = new NSClickGestureRecognizer(returnAction);
 			result.ButtonMask = (nuint)buttonMask;
@@ -456,34 +456,6 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			return true;
 		}
-#else
-		NativeGestureRecognizer CreateClickRecognizer(int buttonMask, int numberOfClicksRequired, Action<NSClickGestureRecognizer> returnAction)
-		{
-			var result = new NSClickGestureRecognizer(returnAction);
-			result.ButtonMask = (nuint)buttonMask;
-			result.NumberOfClicksRequired = numberOfClicksRequired;
-			return result;
-		}
-
-		NSPanGestureRecognizer CreatePanRecognizer(int numTouches, Action<NSPanGestureRecognizer> action)
-		{
-			var result = new NSPanGestureRecognizer(action);
-			return result;
-		}
-
-		NSMagnificationGestureRecognizer CreatePinchRecognizer(Action<NSMagnificationGestureRecognizer> action)
-		{
-			var result = new NSMagnificationGestureRecognizer(action);
-			return result;
-		}
-
-		NSClickGestureRecognizer CreateTapRecognizer(int numTaps, Action action)
-		{
-			var result = new NSClickGestureRecognizer(action);
-			result.NumberOfClicksRequired = numTaps;
-			return result;
-		}
-#endif
 
 		void LoadRecognizers()
 		{
