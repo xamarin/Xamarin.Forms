@@ -211,7 +211,8 @@ namespace Xamarin.Forms.Platform.WPF
 
 		void UpdateHorizontalScrollBarVisibility()
 		{
-			if (Element.Orientation == ScrollOrientation.Horizontal || Element.Orientation == ScrollOrientation.Both)
+			var orientation = Element.Orientation;
+			if (orientation == ScrollOrientation.Horizontal || orientation == ScrollOrientation.Both)
 				Control.HorizontalScrollBarVisibility = ScrollBarVisibilityToWpf(Element.HorizontalScrollBarVisibility);
 		}
 
