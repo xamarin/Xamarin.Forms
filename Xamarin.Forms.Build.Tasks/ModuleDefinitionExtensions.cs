@@ -139,19 +139,34 @@ namespace Xamarin.Forms.Build.Tasks
 												classArguments?.Select(gp => module.GetTypeDefinition((gp.assemblyName, gp.clrNamespace, gp.typeName))).ToArray());
 		}
 
+		static Dictionary<(ModuleDefinition module, (string assemblyName, string clrNamespace, string typeName)), TypeDefinition> typeDefCache
+			= new Dictionary<(ModuleDefinition module, (string assemblyName, string clrNamespace, string typeName)), TypeDefinition>();
+
 		public static TypeDefinition GetTypeDefinition(this ModuleDefinition module, (string assemblyName, string clrNamespace, string typeName) type)
 		{
+			if (typeDefCache.TryGetValue((module, type), out TypeDefinition cachedTypeDefinition))
+				return cachedTypeDefinition;
+
 			var asm = module.Assembly.Name.Name == type.assemblyName
 							? module.Assembly
 							: module.AssemblyResolver.Resolve(AssemblyNameReference.Parse(type.assemblyName));
 			var typeDef = asm.MainModule.GetType($"{type.clrNamespace}.{type.typeName}");
-			if (typeDef != null)
+			if (typeDef != null) {
+				typeDefCache.Add((module, type), typeDef);
 				return typeDef;
+			}
 			var exportedType = asm.MainModule.ExportedTypes.FirstOrDefault(
-				(ExportedType arg) => arg.IsForwarder && arg.Namespace == type.clrNamespace && arg.Name == type.typeName);
-			if (exportedType != null)
-				return exportedType.Resolve();
-			return null;
+				arg => arg.IsForwarder && arg.Namespace == type.clrNamespace && arg.Name == type.typeName);
+			if (exportedType != null) {
+				typeDef = exportedType.Resolve();
+				typeDefCache.Add((module, type), typeDef);
+				return typeDef;
+			}
+
+			//I hate you, netstandard
+			if (type.assemblyName == "mscorlib" && type.clrNamespace == "System.Reflection")
+				return module.GetTypeDefinition(("System.Reflection", type.clrNamespace, type.typeName));
+				throw new Exception($"Failed to get typedef for {type}");
 		}
 
 		static IEnumerable<PropertyDefinition> Properties(this TypeDefinition typedef, bool flatten)

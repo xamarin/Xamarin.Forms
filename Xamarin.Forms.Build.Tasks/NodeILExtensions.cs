@@ -443,16 +443,10 @@ namespace Xamarin.Forms.Build.Tasks
 				yield break;
 			}
 			if (propertyRef != null) {
-//				IL_0000:  ldtoken [mscorlib]System.String
-//				IL_0005:  call class [mscorlib]System.Type class [mscorlib] System.Type::GetTypeFromHandle(valuetype [mscorlib] System.RuntimeTypeHandle)
-//				IL_000a:  ldstr "Foo"
-//				IL_000f:  callvirt instance class [mscorlib] System.Reflection.PropertyInfo class [mscorlib] System.Type::GetProperty(string)
-				var getTypeFromHandle = module.ImportMethodReference(("mscorlib", "System", "Type"), methodName: "GetTypeFromHandle", paramCount: 1, predicate: md => md.IsStatic);
-				var getPropertyInfo = module.ImportMethodReference(("mscorlib", "System", "Type"), methodName: "GetProperty", paramCount: 1);
 				yield return Create(Ldtoken, module.ImportReference(declaringTypeReference ?? propertyRef.DeclaringType));
-				yield return Create(Call, module.ImportReference(getTypeFromHandle));
+				yield return Create(Call, module.ImportMethodReference(("mscorlib", "System", "Type"), methodName: "GetTypeFromHandle", paramCount: 1, predicate: md => md.IsStatic));
 				yield return Create(Ldstr, propertyRef.Name);
-				yield return Create(Callvirt, module.ImportReference(getPropertyInfo));
+				yield return Create(Call, module.ImportMethodReference(("System.Reflection.Extensions", "System.Reflection", "RuntimeReflectionExtensions"), methodName: "GetRuntimeProperty", paramCount: 2));
 				yield break;
 			}
 			yield return Create(Ldnull);

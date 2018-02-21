@@ -28,7 +28,7 @@ namespace Xamarin.Forms.Core.XamlC
 												   classArguments: new[] { ("mscorlib", "System", "String") });
 
 			yield return Instruction.Create(OpCodes.Ldc_I4, parts.Count);
-			yield return Instruction.Create(OpCodes.Newobj, module.ImportCtorReference(("mscorlib", "System.Collections.Generic", "List`1"),
+			yield return Instruction.Create(OpCodes.Newobj, module.ImportCtorReference(("System.Collections", "System.Collections.Generic", "List`1"),
 																					   paramCount: 1,
 																					   predicate: md => md.Parameters[0].ParameterType.FullName == "System.Int32",
 																					   classArguments: new[] { ("mscorlib", "System", "String") }));
