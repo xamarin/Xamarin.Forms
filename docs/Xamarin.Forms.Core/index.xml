@@ -464,7 +464,6 @@
       <Type Name="DataTemplateExtensions" Kind="Class" />
       <Type Name="DelegateLogListener" Kind="Class" />
       <Type Name="DependencyResolver" Kind="Class" />
-      <Type Name="DependencyResolver+ResolveDelegate" Kind="Delegate" />
       <Type Name="DeviceInfo" Kind="Class" />
       <Type Name="DeviceOrientation" Kind="Enumeration" />
       <Type Name="DeviceOrientationExtensions" Kind="Class" />

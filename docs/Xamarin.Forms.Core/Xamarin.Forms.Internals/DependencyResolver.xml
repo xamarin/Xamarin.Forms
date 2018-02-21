@@ -15,8 +15,27 @@
   </Docs>
   <Members>
     <Member MemberName="ResolveUsing">
-      <MemberSignature Language="C#" Value="public static void ResolveUsing (Func&lt;Type,object&gt; resolveFunc);" />
-      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void ResolveUsing(class System.Func`2&lt;class System.Type, object&gt; resolveFunc) cil managed" />
+      <MemberSignature Language="C#" Value="public static void ResolveUsing (Func&lt;Type,object[],object&gt; resolver);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void ResolveUsing(class System.Func`3&lt;class System.Type, object[], object&gt; resolver) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="resolver" Type="System.Func&lt;System.Type,System.Object[],System.Object&gt;" />
+      </Parameters>
+      <Docs>
+        <param name="resolver">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="ResolveUsing">
+      <MemberSignature Language="C#" Value="public static void ResolveUsing (Func&lt;Type,object&gt; resolver);" />
+      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void ResolveUsing(class System.Func`2&lt;class System.Type, object&gt; resolver) cil managed" />
       <MemberType>Method</MemberType>
       <AssemblyInfo>
         <AssemblyVersion>2.0.0.0</AssemblyVersion>
@@ -28,26 +47,7 @@
         <Parameter Name="resolveFunc" Type="System.Func&lt;System.Type,System.Object&gt;" />
       </Parameters>
       <Docs>
-        <param name="resolveFunc">To be added.</param>
-        <summary>To be added.</summary>
-        <remarks>To be added.</remarks>
-      </Docs>
-    </Member>
-    <Member MemberName="ResolveUsing">
-      <MemberSignature Language="C#" Value="public static void ResolveUsing (Xamarin.Forms.Internals.DependencyResolver.ResolveDelegate resolveDelegate);" />
-      <MemberSignature Language="ILAsm" Value=".method public static hidebysig void ResolveUsing(class Xamarin.Forms.Internals.DependencyResolver/ResolveDelegate resolveDelegate) cil managed" />
-      <MemberType>Method</MemberType>
-      <AssemblyInfo>
-        <AssemblyVersion>2.0.0.0</AssemblyVersion>
-      </AssemblyInfo>
-      <ReturnValue>
-        <ReturnType>System.Void</ReturnType>
-      </ReturnValue>
-      <Parameters>
-        <Parameter Name="resolveDelegate" Type="Xamarin.Forms.Internals.DependencyResolver+ResolveDelegate" />
-      </Parameters>
-      <Docs>
-        <param name="resolveDelegate">To be added.</param>
+        <param name="resolver">To be added.</param>
         <summary>To be added.</summary>
         <remarks>To be added.</remarks>
       </Docs>
