@@ -196,7 +196,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateHorizontalScrollBarVisibility()
 		{
-			var horizontalScrollBarVisibility;
+			var horizontalScrollBarVisibility = ScrollView.HorizontalScrollBarVisibility;
 			ShowsHorizontalScrollIndicator = horizontalScrollBarVisibility == ScrollBarVisibility.Always
 			                               || horizontalScrollBarVisibility == ScrollBarVisibility.Default;
 		}
