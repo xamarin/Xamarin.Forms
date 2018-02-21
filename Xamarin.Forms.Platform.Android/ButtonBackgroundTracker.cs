@@ -3,6 +3,8 @@ using System.ComponentModel;
 using Android.Content.Res;
 using Android.Graphics.Drawables;
 using Android.OS;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
+using Specifics = Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using AButton = Android.Widget.Button;
 
 namespace Xamarin.Forms.Platform.Android
@@ -66,7 +68,12 @@ namespace Xamarin.Forms.Platform.Android
 					_backgroundDrawable = new ButtonDrawable(_nativeButton.Context.ToPixels, Forms.GetColorButtonNormal(_nativeButton.Context));
 
 				_backgroundDrawable.Button = _button;
-				_backgroundDrawable.SetPadding(_nativeButton.PaddingTop, _nativeButton.PaddingLeft);
+
+				var useNativePadding = _button.OnThisPlatform().UseNativePadding();
+				if (useNativePadding)
+					_backgroundDrawable.SetPadding(_nativeButton.PaddingTop, _nativeButton.PaddingLeft);
+				else
+					_backgroundDrawable.SetPadding(0, 0);
 
 				if (_drawableEnabled)
 					return;
@@ -141,7 +148,8 @@ namespace Xamarin.Forms.Platform.Android
 			if (e.PropertyName.Equals(Button.BorderColorProperty.PropertyName) ||
 				e.PropertyName.Equals(Button.BorderWidthProperty.PropertyName) ||
 				e.PropertyName.Equals(Button.CornerRadiusProperty.PropertyName) ||
-				e.PropertyName.Equals(VisualElement.BackgroundColorProperty.PropertyName))
+				e.PropertyName.Equals(VisualElement.BackgroundColorProperty.PropertyName) ||
+				e.PropertyName.Equals(Specifics.Button.UseNativePaddingProperty.PropertyName))
 			{
 				Reset();
 				UpdateDrawable();
