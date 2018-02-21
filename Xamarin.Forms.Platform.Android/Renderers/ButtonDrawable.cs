@@ -15,15 +15,21 @@ namespace Xamarin.Forms.Platform.Android
 		Bitmap _normalBitmap;
 		bool _pressed;
 		Bitmap _pressedBitmap;
+		float _paddingLeft;
 		float _paddingTop;
 		Color _defaultColor;
 
-		float PaddingLeft => _convertToPixels(8) / 2f; //<dimen name="button_padding_horizontal_material">8dp</dimen>
-		float PaddingTop //can change based on font, so this is not a constant
+		float PaddingLeft
+		{
+			get { return (_paddingLeft / 2f); }
+			set { _paddingLeft = value; }
+		}
+
+		float PaddingTop
 		{
 			get { return (_paddingTop / 2f) + ShadowDy; }
 			set { _paddingTop = value; }
-		} 
+		}
 
 		public ButtonDrawable(Func<double, float> convertToPixels, Color defaultColor)
 		{
@@ -64,9 +70,10 @@ namespace Xamarin.Forms.Platform.Android
 			canvas.DrawBitmap(bitmap, 0, 0, new Paint());
 		}
 
-		public void SetPaddingTop(float value)
+		public void SetPadding(float top, float left)
 		{
-			_paddingTop = value;
+			_paddingTop = top;
+			_paddingLeft = left;
 		}
 
 		public void Reset()
