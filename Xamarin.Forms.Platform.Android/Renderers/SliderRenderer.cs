@@ -13,7 +13,6 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		double _max, _min;
 		bool _isTrackingChange;
-		bool _progressChangedOnce;
 		ColorStateList defaultprogresstintlist, defaultprogressbackgroundtintlist;
 		ColorFilter defaultthumbcolorfilter;
 		Drawable defaultthumb;
