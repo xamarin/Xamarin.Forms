@@ -417,7 +417,7 @@ namespace Xamarin.Forms.Internals
 				{
 					count++;
 
-					if (ReferenceEquals(group, kvp.Key))
+					if (Equals(group, kvp.Key))
 					{
 						int index = kvp.Value.GetGlobalIndexOfItem(item);
 						if (index != -1)

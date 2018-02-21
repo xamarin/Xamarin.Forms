@@ -585,8 +585,13 @@ namespace Xamarin.Forms
 		static void OnSelectedItemChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			var list = (ListView)bindable;
-			if (list.ItemSelected != null)
-				list.ItemSelected(list, new SelectedItemChangedEventArgs(newValue));
+			list.ItemSelected?.Invoke(list, new SelectedItemChangedEventArgs(newValue));
+		}
+
+		protected override void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue)
+		{
+			base.OnItemsSourceChanged(oldValue, newValue);
+			ItemSelected?.Invoke(this, new SelectedItemChangedEventArgs(SelectedItem));
 		}
 
 		static bool ValidateHeaderFooterTemplate(BindableObject bindable, object value)

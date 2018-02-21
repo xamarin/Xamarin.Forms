@@ -80,10 +80,15 @@ namespace Xamarin.Forms
 
 		static void OnItemsSourceChanged(BindableObject bindable, object oldValue, object newValue)
 		{
+			((ItemsView<TVisual>)bindable).OnItemsSourceChanged((IEnumerable)oldValue, (IEnumerable)newValue);
+		}
+
+		protected virtual void OnItemsSourceChanged(IEnumerable oldValue, IEnumerable newValue)
+		{
 			var element = newValue as Element;
 			if (element == null)
 				return;
-			element.Parent = (Element)bindable;
+			element.Parent = this;
 		}
 
 		static bool ValidateItemTemplate(BindableObject bindable, object value)

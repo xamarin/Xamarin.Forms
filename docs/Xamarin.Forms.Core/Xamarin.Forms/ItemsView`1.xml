@@ -210,6 +210,27 @@ void SetupView()
         </remarks>
       </Docs>
     </Member>
+    <Member MemberName="OnItemsSourceChanged">
+      <MemberSignature Language="C#" Value="protected virtual void OnItemsSourceChanged (System.Collections.IEnumerable oldValue, System.Collections.IEnumerable newValue);" />
+      <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void OnItemsSourceChanged(class System.Collections.IEnumerable oldValue, class System.Collections.IEnumerable newValue) cil managed" />
+      <MemberType>Method</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.Void</ReturnType>
+      </ReturnValue>
+      <Parameters>
+        <Parameter Name="oldValue" Type="System.Collections.IEnumerable" />
+        <Parameter Name="newValue" Type="System.Collections.IEnumerable" />
+      </Parameters>
+      <Docs>
+        <param name="oldValue">To be added.</param>
+        <param name="newValue">To be added.</param>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
     <Member MemberName="SetupContent">
       <MemberSignature Language="C#" Value="protected virtual void SetupContent (TVisual content, int index);" />
       <MemberSignature Language="ILAsm" Value=".method familyhidebysig newslot virtual instance void SetupContent(!TVisual content, int32 index) cil managed" />
