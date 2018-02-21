@@ -1,10 +1,7 @@
 ﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
-
-#if UITEST
-using Xamarin.UITest;
-using NUnit.Framework;
-#endif
+using Xamarin.Forms.PlatformConfiguration;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 
 namespace Xamarin.Forms.Controls.Issues
 {
@@ -15,22 +12,26 @@ namespace Xamarin.Forms.Controls.Issues
 		public class FlatButton : Button { }
 		protected override void Init()
 		{
-			Content = new StackLayout
+			Button button = new Button
 			{
-				Children = {
-					new Label{ Text = "The following buttons should be perfectly round. If they are not, this test has failed." },
-					new Button
+				BackgroundColor = Color.Red,
+				CornerRadius = 32,
+				BorderWidth = 0,
+				FontSize = 36,
+				HeightRequest = 64,
+				HorizontalOptions = LayoutOptions.Center,
+				TextColor = Color.White,
+				VerticalOptions = LayoutOptions.Center,
+				WidthRequest = 64
+			};
+
+			button.On<Android>().SetUseNativePadding(false);
+
+			Content = new StackLayout
 					{
-						BackgroundColor = Color.Red,
-						CornerRadius = 32,
-						BorderWidth = 0,
-						FontSize = 36,
-						HeightRequest = 64,
-						HorizontalOptions = LayoutOptions.Center,
-						TextColor = Color.White,
-						VerticalOptions = LayoutOptions.Center,
-						WidthRequest = 64
-					},
+				Children = {
+					new Label{ Text = "The following buttons should be perfectly round. The top button should be larger." },
+					button,
 					new FlatButton
 					{
 						BackgroundColor = Color.Red,
