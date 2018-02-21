@@ -208,6 +208,7 @@
     <Compile Include="ColorPicker.cs" />
     <Compile Include="StringProvider.cs" />
     <Compile Include="TestCloudService.cs" />
+    <Compile Include="_1909CustomRenderer.cs" />
     <Compile Include="_38989CustomRenderer.cs" />
     <Compile Include="BrokenImageSourceHandler.cs" />
     <Compile Include="_57114CustomRenderer.cs" />
