@@ -9,11 +9,20 @@ using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 using WGrid = Windows.UI.Xaml.Controls.Grid;
+using WTextAlignment = Windows.UI.Xaml.TextAlignment;
+using WHorizontalAlignment = Windows.UI.Xaml.HorizontalAlignment;
+using WVisibility = Windows.UI.Xaml.Visibility;
+using WStackPanel = Windows.UI.Xaml.Controls.StackPanel;
+using WImage = Windows.UI.Xaml.Controls.Image;
+using WTextBlock = Windows.UI.Xaml.Controls.TextBlock;
+using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.TabbedPage;
 
 namespace Xamarin.Forms.Platform.UWP
 {
     public class TabbedPageRenderer : IVisualElementRenderer, ITitleProvider, IToolbarProvider
     {
+        const string TabBarHeaderStackPanelName = "TabbedPageHeaderStackPanel";
+        const string TabBarHeaderImageName = "TabbedPageHeaderImage";
         const string TabBarHeaderTextBlockName = "TabbedPageHeaderTextBlock";
         const string TabBarHeaderGridName = "TabbedPageHeaderGrid";
 
@@ -21,6 +30,10 @@ namespace Xamarin.Forms.Platform.UWP
         Color _barTextColor;
         bool _disposed;
         bool _showTitle;
+
+        WTextAlignment _oldBarTextBlockTextAlignment;
+        WHorizontalAlignment _oldBarTextBlockHorinzontalAlignment;
+
         VisualElementTracker<Page, Pivot> _tracker;
 
         ITitleProvider TitleProvider => this;
@@ -210,13 +223,19 @@ namespace Xamarin.Forms.Platform.UWP
                 UpdateBarBackgroundColor();
             else if (e.PropertyName == PlatformConfiguration.WindowsSpecific.Page.ToolbarPlacementProperty.PropertyName)
                 UpdateToolbarPlacement();
+            else if (e.PropertyName == Specifics.HeaderIconsEnabledProperty.PropertyName)
+                UpdateBarIcons();
+            else if (e.PropertyName == Specifics.HeaderIconsSizeProperty.PropertyName)
+                UpdateBarIcons();
         }
 
         void OnLoaded(object sender, RoutedEventArgs args)
         {
             Element?.SendAppearing();
+
             UpdateBarTextColor();
             UpdateBarBackgroundColor();
+            UpdateBarIcons();
         }
 
         void OnPagesChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -302,7 +321,7 @@ namespace Xamarin.Forms.Platform.UWP
 
             TitleProvider.BarForegroundBrush = brush;
 
-            foreach (TextBlock tabBarTextBlock in Control.GetDescendantsByName<TextBlock>(TabBarHeaderTextBlockName))
+            foreach (WTextBlock tabBarTextBlock in Control.GetDescendantsByName<WTextBlock>(TabBarHeaderTextBlockName))
             {
                 tabBarTextBlock.Foreground = brush;
             }
@@ -310,7 +329,7 @@ namespace Xamarin.Forms.Platform.UWP
 
         void UpdateTitleVisibility()
         {
-            Control.TitleVisibility = _showTitle ? Visibility.Visible : Visibility.Collapsed;
+            Control.TitleVisibility = _showTitle ? WVisibility.Visible : WVisibility.Collapsed;
         }
 
         void UpdateCurrentPage()
@@ -332,6 +351,81 @@ namespace Xamarin.Forms.Platform.UWP
         void UpdateToolbarPlacement()
         {
             Control.ToolbarPlacement = Element.OnThisPlatform().GetToolbarPlacement();
+        }
+
+        void UpdateBarIcons()
+        {
+            if (Control == null)
+                return;
+
+            if (Element.IsSet(Specifics.HeaderIconsEnabledProperty))
+            {
+                bool headerIconsEnabled = Element.OnThisPlatform().GetHeaderIconsEnabled();
+                bool invalidateMeasure = false;
+
+                // Get all stack panels affected by update.
+                var stackPanels = Control.GetDescendantsByName<WStackPanel>(TabBarHeaderStackPanelName);
+                foreach (var stackPanel in stackPanels)
+                {
+                    foreach (var stackPanelItem in stackPanel.Children)
+                    {
+                        if (stackPanelItem is WImage)
+                        {
+                            // Update icon image.
+                            var tabBarImage = stackPanelItem as WImage;
+                            if (tabBarImage.GetValue(FrameworkElement.NameProperty).ToString() == TabBarHeaderImageName)
+                            {
+                                if (headerIconsEnabled)
+                                {
+                                    if (Element.IsSet(Specifics.HeaderIconsSizeProperty))
+                                    {
+                                        Size iconSize = Element.OnThisPlatform().GetHeaderIconsSize();
+                                        tabBarImage.Height = iconSize.Height;
+                                        tabBarImage.Width = iconSize.Width;
+                                    }
+                                    tabBarImage.HorizontalAlignment = WHorizontalAlignment.Center;
+                                    tabBarImage.Visibility = WVisibility.Visible;
+                                }
+                                else
+                                {
+                                    tabBarImage.Visibility = WVisibility.Collapsed;
+                                }
+
+                                invalidateMeasure = true;
+                            }
+                        }
+                        else if (stackPanelItem is WTextBlock)
+                        {
+                            // Update text block.
+                            var tabBarTextblock = stackPanelItem as WTextBlock;
+                            if (tabBarTextblock.GetValue(FrameworkElement.NameProperty).ToString() == TabBarHeaderTextBlockName)
+                            {
+                                if (headerIconsEnabled)
+                                {
+                                    // Remember old values so we can restore them if icons are collapsed.
+                                    // NOTE, since all Textblock instances in this stack panel comes from the same
+                                    // style, we just keep one copy of the value (since they should be identical).
+                                    _oldBarTextBlockTextAlignment = tabBarTextblock.TextAlignment;
+                                    _oldBarTextBlockHorinzontalAlignment = tabBarTextblock.HorizontalAlignment;
+
+                                    tabBarTextblock.TextAlignment = WTextAlignment.Center;
+                                    tabBarTextblock.HorizontalAlignment = WHorizontalAlignment.Center;
+                                }
+                                else
+                                {
+                                    // Restore old values.
+                                    tabBarTextblock.TextAlignment = _oldBarTextBlockTextAlignment;
+                                    tabBarTextblock.HorizontalAlignment = _oldBarTextBlockHorinzontalAlignment;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // If items have been made visible or collapsed in panel, invalidate current control measures.
+                if (invalidateMeasure)
+                    Control.InvalidateMeasure();
+            }
         }
     }
 }
