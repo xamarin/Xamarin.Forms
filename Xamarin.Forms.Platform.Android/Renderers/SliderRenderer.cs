@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Platform.Android
 		Drawable defaultthumb;
 		PorterDuff.Mode defaultprogresstintmode, defaultprogressbackgroundtintmode;
 
-    public SliderRenderer(Context context) : base(context)
+		public SliderRenderer(Context context) : base(context)
 		{
 			AutoPackage = false;
 		}
@@ -67,10 +67,6 @@ namespace Xamarin.Forms.Platform.Android
 
 				seekBar.Max = 1000;
 				seekBar.SetOnSeekBarChangeListener(this);
-				//defaultthumbcolorfilter = Control.Thumb.ColorFilter;
-				//defaultprogresstintlist = Control.ProgressTintList;
-				//defaultprogressbackgroundtintlist = Control.ProgressBackgroundTintList;
-
 				defaultthumbcolorfilter = seekBar.Thumb.ColorFilter;
 				defaultprogresstintmode = seekBar.ProgressTintMode;
 				defaultprogressbackgroundtintmode = seekBar.ProgressBackgroundTintMode;
