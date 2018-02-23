@@ -219,7 +219,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		{
 			base.OnAttachedToWindow();
 			PageController.SendAppearing();
-			_fragmentStack.Last().UserVisibleHint = true;
 			RegisterToolbar();
 			UpdateToolbar();
 		}
@@ -468,7 +467,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				ResetToolbar();
 		}
 
-		void HandleToolbarItemPropertyChanged(object sender, PropertyChangedEventArgs e)
+		protected virtual void OnToolbarItemPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == MenuItem.IsEnabledProperty.PropertyName || e.PropertyName == MenuItem.TextProperty.PropertyName || e.PropertyName == MenuItem.IconProperty.PropertyName)
 				UpdateMenu();
@@ -668,6 +667,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			FragmentManager.EnableDebugLogging(true);
 #endif
 
+			Current?.SendDisappearing();
 			Current = page;
 
 			((Platform)Element.Platform).NavAnimationInProgress = true;
@@ -776,13 +776,13 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			IMenu menu = bar.Menu;
 
 			foreach (ToolbarItem item in _toolbarTracker.ToolbarItems)
-				item.PropertyChanged -= HandleToolbarItemPropertyChanged;
+				item.PropertyChanged -= OnToolbarItemPropertyChanged;
 			menu.Clear();
 
 			foreach (ToolbarItem item in _toolbarTracker.ToolbarItems)
 			{
 				IMenuItemController controller = item;
-				item.PropertyChanged += HandleToolbarItemPropertyChanged;
+				item.PropertyChanged += OnToolbarItemPropertyChanged;
 				if (item.Order == ToolbarItemOrder.Secondary)
 				{
 					IMenuItem menuItem = menu.Add(item.Text);
@@ -792,16 +792,24 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				else
 				{
 					IMenuItem menuItem = menu.Add(item.Text);
-					FileImageSource icon = item.Icon;
-					if (!string.IsNullOrEmpty(icon))
-					{
-						Drawable iconDrawable = context.GetFormsDrawable(icon);
-						if (iconDrawable != null)
-							menuItem.SetIcon(iconDrawable);
-					}
+					UpdateMenuItemIcon(context, menuItem, item);
 					menuItem.SetEnabled(controller.IsEnabled);
 					menuItem.SetShowAsAction(ShowAsAction.Always);
 					menuItem.SetOnMenuItemClickListener(new GenericMenuClickListener(controller.Activate));
+				}
+			}
+		}
+
+		protected virtual void UpdateMenuItemIcon(Context context, IMenuItem menuItem, ToolbarItem toolBarItem)
+		{
+			FileImageSource icon = toolBarItem.Icon;
+			if (!string.IsNullOrEmpty(icon))
+			{
+				Drawable iconDrawable = context.GetFormsDrawable(icon);
+				if (iconDrawable != null)
+				{
+					menuItem.SetIcon(iconDrawable);
+					iconDrawable.Dispose();
 				}
 			}
 		}
@@ -882,7 +890,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			Device.StartTimer(TimeSpan.FromMilliseconds(duration), () =>
 			{
 				tcs.TrySetResult(true);
-				fragment.UserVisibleHint = true;
+				Current?.SendAppearing();
 				if (shouldUpdateToolbar)
 					UpdateToolbar();
 
