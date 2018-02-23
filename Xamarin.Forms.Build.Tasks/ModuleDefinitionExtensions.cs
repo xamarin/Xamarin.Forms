@@ -166,7 +166,7 @@ namespace Xamarin.Forms.Build.Tasks
 			//I hate you, netstandard
 			if (type.assemblyName == "mscorlib" && type.clrNamespace == "System.Reflection")
 				return module.GetTypeDefinition(("System.Reflection", type.clrNamespace, type.typeName));
-				throw new Exception($"Failed to get typedef for {type}");
+			return null;
 		}
 
 		static IEnumerable<PropertyDefinition> Properties(this TypeDefinition typedef, bool flatten)
