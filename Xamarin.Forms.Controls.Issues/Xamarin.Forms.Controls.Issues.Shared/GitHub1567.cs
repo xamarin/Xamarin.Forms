@@ -45,6 +45,7 @@ namespace Xamarin.Forms.Controls.Issues
 			await FillData();
 		}
 
+        [Preserve(AllMembers = true)]
 		class CustomCell : ViewCell
 		{
 			public CustomCell()
@@ -87,6 +88,7 @@ namespace Xamarin.Forms.Controls.Issues
 			}, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
 		}
 
+        [Preserve(AllMembers = true)]
 		class LocalIem
 		{
 			public string Value1 { get; set; }
