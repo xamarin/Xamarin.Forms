@@ -16,6 +16,8 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		ScrollViewContainer _container;
 		HorizontalScrollView _hScrollView;
+		ScrollBarVisibility _defaultHorizontalScrollVisibility = 0;
+		ScrollBarVisibility _defaultVerticalScrollVisibility = 0;
 		bool _isAttached;
 		internal bool ShouldSkipOnTouch;
 		bool _isBidirectional;
@@ -434,13 +436,34 @@ namespace Xamarin.Forms.Platform.Android
 		void UpdateHorizontalScrollBarVisibility()
 		{
 			if (_hScrollView != null)
-				_hScrollView.HorizontalScrollBarEnabled = _view.HorizontalScrollBarVisibility == ScrollBarVisibility.Always;
+			{
+				if (_defaultHorizontalScrollVisibility == 0)
+				{
+					_defaultHorizontalScrollVisibility = _hScrollView.HorizontalScrollBarEnabled ? ScrollBarVisibility.Always : ScrollBarVisibility.Never;
+				}
+
+				var newHorizontalScrollVisiblility = _view.HorizontalScrollBarVisibility;
+
+				if (newHorizontalScrollVisiblility == ScrollBarVisibility.Default)
+				{
+					newHorizontalScrollVisiblility = _defaultHorizontalScrollVisibility;
+				}
+
+				_hScrollView.HorizontalScrollBarEnabled = newHorizontalScrollVisiblility == ScrollBarVisibility.Always;
+			}
 		}
 
 		void UpdateVerticalScrollBarVisibility()
 		{
-			VerticalScrollBarEnabled = _view.VerticalScrollBarVisibility == ScrollBarVisibility.Always ||
-				_view.VerticalScrollBarVisibility == ScrollBarVisibility.Default;
+			if (_defaultVerticalScrollVisibility == 0)
+				_defaultVerticalScrollVisibility = VerticalScrollBarEnabled ? ScrollBarVisibility.Always : ScrollBarVisibility.Never;
+
+			var newVerticalScrollVisibility = _view.VerticalScrollBarVisibility;
+
+			if (newVerticalScrollVisibility == ScrollBarVisibility.Default)
+				newVerticalScrollVisibility = _defaultVerticalScrollVisibility;
+
+			VerticalScrollBarEnabled = newVerticalScrollVisibility == ScrollBarVisibility.Always;
 		}
 	}
 }
