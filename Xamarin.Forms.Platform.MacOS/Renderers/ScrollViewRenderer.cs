@@ -239,22 +239,16 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 
 		void UpdateVerticalScrollBarVisibility()
-        	{
-	        	var verticalScrollBarVisibility = ScrollView.VerticalScrollBarVisibility;
+        {
+			var verticalScrollBarVisibility = ScrollView.VerticalScrollBarVisibility;
 
-			if (verticalScrollBarVisibility == ScrollBarVisibility.Always || verticalScrollBarVisibility == ScrollBarVisibility.Default)
-				HasVerticalScroller = true;
-			else
-				HasVerticalScroller = false;
-        	}
+			HasVerticalScroller = (verticalScrollBarVisibility == ScrollBarVisibility.Always || verticalScrollBarVisibility == ScrollBarVisibility.Default);
+		}
 
 		void UpdateHorizontalScrollBarVisibility()
-        	{
-            		if (ScrollView.HorizontalScrollBarVisibility == ScrollBarVisibility.Always)
-                		HasHorizontalScroller = true;
-            		else
-                		HasHorizontalScroller = false;
-        	}
+        {
+			HasHorizontalScroller = (ScrollView.HorizontalScrollBarVisibility == ScrollBarVisibility.Always);
+        }
 
 		private bool ResetNativeNonScroll( )
 		{
