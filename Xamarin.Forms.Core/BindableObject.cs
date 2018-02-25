@@ -57,7 +57,9 @@ namespace Xamarin.Forms
 			if (targetProperty == null)
 				throw new ArgumentNullException(nameof(targetProperty));
 
-			return GetContext(targetProperty) != null;
+			var bpcontext = GetContext(targetProperty);
+			return bpcontext != null
+				&& (bpcontext.Attributes & BindableContextAttributes.IsDefaultValue) == 0;
 		}
 
 		public object GetValue(BindableProperty property)
@@ -178,14 +180,6 @@ namespace Xamarin.Forms
 			return bpcontext != null && bpcontext.Binding != null;
 		}
 
-		internal bool GetIsDefault(BindableProperty targetProperty)
-		{
-			if (targetProperty == null)
-				throw new ArgumentNullException(nameof(targetProperty));
-
-			return GetContext(targetProperty) == null;
-		}
-
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public object[] GetValues(BindableProperty property0, BindableProperty property1)
 		{
@@ -254,6 +248,25 @@ namespace Xamarin.Forms
 			if (!ReferenceEquals(property2, null))
 				values[2] = property2.DefaultValueCreator == null ? property2.DefaultValue : CreateAndAddContext(property2).Value;
 
+			return values;
+		}
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		internal object[] GetValues(params BindableProperty[] properties)
+		{
+			var values = new object[properties.Length];
+			for (var i = 0; i < _properties.Count; i++) {
+				var context = _properties[i];
+				var index = properties.IndexOf(context.Property);
+				if (index < 0)
+					continue;
+				values[index] = context.Value;
+			}
+			for (var i = 0; i < values.Length; i++) {
+				if (!ReferenceEquals(values[i], null))
+					continue;
+				values[i] = properties[i].DefaultValueCreator == null ? properties[i].DefaultValue : CreateAndAddContext(properties[i]).Value;
+			}
 			return values;
 		}
 
