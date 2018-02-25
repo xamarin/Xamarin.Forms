@@ -93,7 +93,7 @@ namespace Xamarin.Forms.Platform.MacOS
 					yaxis += (float)lineHeight;
 				}
 
-				((IGestureChildElement)span).Region = Region.FromLines(lineHeights.ToArray(), finalSize.Width, startRect.X, endRect.X, startRect.Top);
+				((IGestureChildElement)span).Region = Region.FromLines(lineHeights.ToArray(), finalSize.Width, startRect.X, endRect.X, startRect.Top).Inflate(10);
 
 				// update current location
 				currentLocation += length;

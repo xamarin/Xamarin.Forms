@@ -112,7 +112,7 @@ namespace Xamarin.Forms.Platform.Android
 				for (var line = startLine; line > 0; line--)
 					yaxis += totalLineHeights[line];
 
-				((IGestureChildElement)span).Region = Region.FromLines(lineHeights, labelWidth, startX, endX, yaxis);
+				((IGestureChildElement)span).Region = Region.FromLines(lineHeights, labelWidth, startX, endX, yaxis).Inflate(10);
 			}
 		}
 	}
