@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Xamarin.Forms.Internals;
 #if WINDOWS_UWP
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
@@ -78,7 +79,7 @@ namespace Xamarin.Forms.Platform.WPF
 					yaxis += lineHeight;
 				}
 
-				span.CalculatePositions(lineHeights.ToArray(), labelWidth, rect.X, endRect.X + endRect.Width, rect.Top);
+				((IGestureChildElement)span).Region = Region.FromLines(lineHeights.ToArray(), labelWidth, rect.X, endRect.X + endRect.Width, rect.Top).Inflate(10);
 
 			}
 		}

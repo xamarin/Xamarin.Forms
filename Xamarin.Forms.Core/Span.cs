@@ -167,38 +167,8 @@ namespace Xamarin.Forms
 		{
 		}
 
-		public IList<Rectangle> Positions { get; private set; } = new List<Rectangle>();
-
-		public void CalculatePositions(double[] lineHeights, double maxWidth, double startX, double endX, double startY)
-		{
-			var positions = new List<Rectangle>();
-			var endLine = lineHeights.Length - 1;
-			var lineHeightTotal = startY;
-
-			for (var i = 0; i <= endLine; i++)
-			{
-				if (endLine != 0) // MultiLine
-				{
-					if (i == 0) // First Line
-						positions.Add(new Rectangle(startX, lineHeightTotal, maxWidth - startX, lineHeights[i]));
-
-					else if (i != endLine) // Middle Line
-						positions.Add(new Rectangle(0, lineHeightTotal, maxWidth, lineHeights[i]));
-
-					else // End Line
-						positions.Add(new Rectangle(0, lineHeightTotal, endX, lineHeights[i]));
-
-					lineHeightTotal += lineHeights[i];
-				}
-				else // SingleLine
-				{
-					positions.Add(new Rectangle(startX, lineHeightTotal, endX - startX, lineHeights[i]));
-				}
-			}
-
-			Positions = positions;
-		}
-
+		Region IGestureChildElement.Region { get; set; }
+		
 		void ValidateGesture(IGestureRecognizer gesture)
 		{
 			if (gesture == null)

@@ -1,7 +1,7 @@
 ﻿using Android.Text;
 using Android.Widget;
 using System.Collections.Generic;
-using System.Linq;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -93,7 +93,7 @@ namespace Xamarin.Forms.Platform.Android
 				var endX = layout.GetPrimaryHorizontal(endSpanOffset);
 
 				var startLine = layout.GetLineForOffset(startSpanOffset);
-				var endLine = layout.GetLineForOffset(endSpanOffset); // + 1;
+				var endLine = layout.GetLineForOffset(endSpanOffset);
 
 				double[] lineHeights = new double[endLine - startLine + 1];
 
@@ -112,7 +112,7 @@ namespace Xamarin.Forms.Platform.Android
 				for (var line = startLine; line > 0; line--)
 					yaxis += totalLineHeights[line];
 
-				span.CalculatePositions(lineHeights, labelWidth, startX, endX, yaxis);
+				((IGestureChildElement)span).Region = Region.FromLines(lineHeights, labelWidth, startX, endX, yaxis);
 			}
 		}
 	}

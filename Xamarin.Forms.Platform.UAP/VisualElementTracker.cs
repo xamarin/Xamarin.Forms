@@ -305,14 +305,15 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 
 			var tapPosition = e.GetPosition(Control);
-			var child = ((IGestureElement)view).GetChildElement(new Point(tapPosition.X, tapPosition.Y));
+			var children = ((IGestureElement)view).GetChildElements(new Point(tapPosition.X, tapPosition.Y));
 
-			if (child != null)
-				foreach (TapGestureRecognizer recognizer in child.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(g => g.NumberOfTapsRequired == 2))
-				{
-					recognizer.SendTapped(view);
-					e.Handled = true;
-				}
+			if (children != null)
+				foreach (var child in children)
+					foreach (TapGestureRecognizer recognizer in child.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(g => g.NumberOfTapsRequired == 2))
+					{
+						recognizer.SendTapped(view);
+						e.Handled = true;
+					}
 
 			if (e.Handled)
 				return;
@@ -396,10 +397,11 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 
 			var tapPosition = e.GetPosition(Control);
-			var child = ((IGestureElement)view).GetChildElement(new Point(tapPosition.X, tapPosition.Y));
+			var children = ((IGestureElement)view).GetChildElements(new Point(tapPosition.X, tapPosition.Y));
 
-			if (child != null)
-				foreach (TapGestureRecognizer recognizer in child.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(g => g.NumberOfTapsRequired == 1))
+			if (children != null)
+				foreach (var child in children)
+					foreach (TapGestureRecognizer recognizer in child.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(g => g.NumberOfTapsRequired == 1))
 				{
 					recognizer.SendTapped(view);
 					e.Handled = true;

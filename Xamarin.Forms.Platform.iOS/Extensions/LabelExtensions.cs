@@ -2,6 +2,7 @@
 using Foundation;
 using System.Collections.Generic;
 using System.Drawing;
+using Xamarin.Forms.Internals;
 #if __MOBILE__
 using UIKit;
 using NativeLabel = UIKit.UILabel;
@@ -92,7 +93,7 @@ namespace Xamarin.Forms.Platform.MacOS
 					yaxis += (float)lineHeight;
 				}
 
-				span.CalculatePositions(lineHeights.ToArray(), finalSize.Width, startRect.X, endRect.X, startRect.Top);
+				((IGestureChildElement)span).Region = Region.FromLines(lineHeights.ToArray(), finalSize.Width, startRect.X, endRect.X, startRect.Top);
 
 				// update current location
 				currentLocation += length;
