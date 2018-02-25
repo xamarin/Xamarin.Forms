@@ -156,10 +156,10 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateContentSize();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateBackgroundColor();
-            else if (e.PropertyName == ScrollView.VerticalScrollBarVisibilityProperty.PropertyName)
-                UpdateVerticalScrollBarVisibility();
-            else if (e.PropertyName == ScrollView.HorizontalScrollBarVisibilityProperty.PropertyName)
-                UpdateHorizontalScrollBarVisibility();
+			else if (e.PropertyName == ScrollView.VerticalScrollBarVisibilityProperty.PropertyName)
+				UpdateVerticalScrollBarVisibility();
+			else if (e.PropertyName == ScrollView.HorizontalScrollBarVisibilityProperty.PropertyName)
+				UpdateHorizontalScrollBarVisibility();
 			else if (e.PropertyName == ScrollView.OrientationProperty.PropertyName)
 				UpdateOrientation();
 		}
