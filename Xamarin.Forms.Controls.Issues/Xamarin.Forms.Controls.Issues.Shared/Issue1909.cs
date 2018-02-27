@@ -31,23 +31,27 @@ namespace Xamarin.Forms.Controls.Issues
 				WidthRequest = 64
 			};
 
+			button.On<Android>().SetUseDefaultPadding(true).SetUseDefaultShadow(true);
+
+			FlatButton flatButton = new FlatButton
+			{
+				BackgroundColor = Color.Red,
+				CornerRadius = 32,
+				BorderWidth = 0,
+				FontSize = 36,
+				HeightRequest = 64,
+				HorizontalOptions = LayoutOptions.Center,
+				TextColor = Color.White,
+				VerticalOptions = LayoutOptions.Center,
+				WidthRequest = 64
+			};
+
 			Content = new StackLayout
 					{
 				Children = {
-					new Label{ Text = "The following buttons should be perfectly round. The top button should be larger." },
+					new Label{ Text = "The following buttons should be perfectly round. The bottom button should be larger and should not have a shadow." },
 					button,
-					new FlatButton
-					{
-						BackgroundColor = Color.Red,
-						CornerRadius = 32,
-						BorderWidth = 0,
-						FontSize = 36,
-						HeightRequest = 64,
-						HorizontalOptions = LayoutOptions.Center,
-						TextColor = Color.White,
-						VerticalOptions = LayoutOptions.Center,
-						WidthRequest = 64
-					}
+					flatButton
 				}
 			};
 		}
