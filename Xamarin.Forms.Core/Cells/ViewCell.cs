@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 
 namespace Xamarin.Forms
 {
-	[ContentProperty("View")]
+	[ContentProperty(nameof(View))]
 	public class ViewCell : Cell
 	{
 		ReadOnlyCollection<Element> _logicalChildren;

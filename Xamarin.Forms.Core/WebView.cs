@@ -8,7 +8,7 @@ namespace Xamarin.Forms
 	[RenderWith(typeof(_WebViewRenderer))]
 	public class WebView : View, IWebViewController, IElementConfiguration<WebView>
 	{
-		public static readonly BindableProperty SourceProperty = BindableProperty.Create("Source", typeof(WebViewSource), typeof(WebView), default(WebViewSource),
+		public static readonly BindableProperty SourceProperty = BindableProperty.Create(nameof(Source), typeof(WebViewSource), typeof(WebView), default(WebViewSource),
 			propertyChanging: (bindable, oldvalue, newvalue) =>
 			{
 				var source = oldvalue as WebViewSource;
@@ -25,11 +25,11 @@ namespace Xamarin.Forms
 				}
 			});
 
-		static readonly BindablePropertyKey CanGoBackPropertyKey = BindableProperty.CreateReadOnly("CanGoBack", typeof(bool), typeof(WebView), false);
+		static readonly BindablePropertyKey CanGoBackPropertyKey = BindableProperty.CreateReadOnly(nameof(CanGoBack), typeof(bool), typeof(WebView), false);
 
 		public static readonly BindableProperty CanGoBackProperty = CanGoBackPropertyKey.BindableProperty;
 
-		static readonly BindablePropertyKey CanGoForwardPropertyKey = BindableProperty.CreateReadOnly("CanGoForward", typeof(bool), typeof(WebView), false);
+		static readonly BindablePropertyKey CanGoForwardPropertyKey = BindableProperty.CreateReadOnly(nameof(CanGoForward), typeof(bool), typeof(WebView), false);
 
 		public static readonly BindableProperty CanGoForwardProperty = CanGoForwardPropertyKey.BindableProperty;
 
@@ -100,7 +100,7 @@ namespace Xamarin.Forms
 
 		protected override void OnPropertyChanged(string propertyName)
 		{
-			if (propertyName == "BindingContext")
+			if (propertyName == nameof(BindingContext))
 			{
 				WebViewSource source = Source;
 				if (source != null)

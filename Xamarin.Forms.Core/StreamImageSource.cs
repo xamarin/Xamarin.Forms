@@ -7,7 +7,7 @@ namespace Xamarin.Forms
 {
 	public class StreamImageSource : ImageSource, IStreamImageSource
 	{
-		public static readonly BindableProperty StreamProperty = BindableProperty.Create("Stream", typeof(Func<CancellationToken, Task<Stream>>), typeof(StreamImageSource),
+		public static readonly BindableProperty StreamProperty = BindableProperty.Create(nameof(Stream), typeof(Func<CancellationToken, Task<Stream>>), typeof(StreamImageSource),
 			default(Func<CancellationToken, Task<Stream>>));
 
 		public virtual Func<CancellationToken, Task<Stream>> Stream

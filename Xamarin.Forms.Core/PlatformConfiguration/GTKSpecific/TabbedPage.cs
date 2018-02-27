@@ -5,7 +5,7 @@
     public static class TabbedPage
     {
         public static readonly BindableProperty TabPositionProperty = 
-            BindableProperty.Create("TabPosition", typeof(TabPosition), 
+            BindableProperty.Create(nameof(TabPosition), typeof(TabPosition), 
                 typeof(TabbedPage), TabPosition.Default);
 
         public static TabPosition GetTabPosition(BindableObject element)

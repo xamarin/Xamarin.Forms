@@ -56,7 +56,7 @@ namespace Xamarin.Forms
 					if (_styleClass != null) {
 						_classStyleProperties = new List<BindableProperty> ();
 						foreach (var styleClass in _styleClass) {
-							var classStyleProperty = BindableProperty.Create ("ClassStyle", typeof(IList<Style>), typeof(VisualElement), default(IList<Style>),
+							var classStyleProperty = BindableProperty.Create (nameof(ClassStyles), typeof(IList<Style>), typeof(VisualElement), default(IList<Style>),
 								propertyChanged: (bindable, oldvalue, newvalue) => ((VisualElement)bindable)._mergedStyle.OnClassStyleChanged());
 							_classStyleProperties.Add (classStyleProperty);
 							Target.OnSetDynamicResource (classStyleProperty, Forms.Style.StyleClassPrefix + styleClass);
@@ -126,7 +126,7 @@ namespace Xamarin.Forms
 			{
 				Type type = TargetType;
 				while (true) {
-					BindableProperty implicitStyleProperty = BindableProperty.Create("ImplicitStyle", typeof(Style), typeof(VisualElement), default(Style),
+					BindableProperty implicitStyleProperty = BindableProperty.Create(nameof(ImplicitStyle), typeof(Style), typeof(VisualElement), default(Style),
 						 propertyChanged: (bindable, oldvalue, newvalue) => OnImplicitStyleChanged());
 					_implicitStyles.Add(implicitStyleProperty);
 					Target.SetDynamicResource(implicitStyleProperty, type.FullName);

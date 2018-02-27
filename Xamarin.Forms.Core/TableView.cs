@@ -7,13 +7,13 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	[ContentProperty("Root")]
+	[ContentProperty(nameof(Root))]
 	[RenderWith(typeof(_TableViewRenderer))]
 	public class TableView : View, ITableViewController, IElementConfiguration<TableView>
 	{
-		public static readonly BindableProperty RowHeightProperty = BindableProperty.Create("RowHeight", typeof(int), typeof(TableView), -1);
+		public static readonly BindableProperty RowHeightProperty = BindableProperty.Create(nameof(RowHeight), typeof(int), typeof(TableView), -1);
 
-		public static readonly BindableProperty HasUnevenRowsProperty = BindableProperty.Create("HasUnevenRows", typeof(bool), typeof(TableView), false);
+		public static readonly BindableProperty HasUnevenRowsProperty = BindableProperty.Create(nameof(HasUnevenRows), typeof(bool), typeof(TableView), false);
 
 		readonly Lazy<PlatformConfigurationRegistry<TableView>> _platformConfigurationRegistry;
 

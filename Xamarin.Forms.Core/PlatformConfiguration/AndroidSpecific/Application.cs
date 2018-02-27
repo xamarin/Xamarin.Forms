@@ -12,7 +12,7 @@
 	public static class Application
 	{
 		public static readonly BindableProperty WindowSoftInputModeAdjustProperty =
-			BindableProperty.Create("WindowSoftInputModeAdjust", typeof(WindowSoftInputModeAdjust),
+			BindableProperty.Create(nameof(WindowSoftInputModeAdjust), typeof(WindowSoftInputModeAdjust),
 			typeof(Application), WindowSoftInputModeAdjust.Pan);
 
 		public static WindowSoftInputModeAdjust GetWindowSoftInputModeAdjust(BindableObject element)

@@ -12,37 +12,37 @@ namespace Xamarin.Forms
 	[RenderWith(typeof(_ListViewRenderer))]
 	public class ListView : ItemsView<Cell>, IListViewController, IElementConfiguration<ListView>
 	{
-		public static readonly BindableProperty IsPullToRefreshEnabledProperty = BindableProperty.Create("IsPullToRefreshEnabled", typeof(bool), typeof(ListView), false);
+		public static readonly BindableProperty IsPullToRefreshEnabledProperty = BindableProperty.Create(nameof(IsPullToRefreshEnabled), typeof(bool), typeof(ListView), false);
 
-		public static readonly BindableProperty IsRefreshingProperty = BindableProperty.Create("IsRefreshing", typeof(bool), typeof(ListView), false, BindingMode.TwoWay);
+		public static readonly BindableProperty IsRefreshingProperty = BindableProperty.Create(nameof(IsRefreshing), typeof(bool), typeof(ListView), false, BindingMode.TwoWay);
 
-		public static readonly BindableProperty RefreshCommandProperty = BindableProperty.Create("RefreshCommand", typeof(ICommand), typeof(ListView), null, propertyChanged: OnRefreshCommandChanged);
+		public static readonly BindableProperty RefreshCommandProperty = BindableProperty.Create(nameof(RefreshCommand), typeof(ICommand), typeof(ListView), null, propertyChanged: OnRefreshCommandChanged);
 
-		public static readonly BindableProperty HeaderProperty = BindableProperty.Create("Header", typeof(object), typeof(ListView), null, propertyChanged: OnHeaderChanged);
+		public static readonly BindableProperty HeaderProperty = BindableProperty.Create(nameof(Header), typeof(object), typeof(ListView), null, propertyChanged: OnHeaderChanged);
 
-		public static readonly BindableProperty HeaderTemplateProperty = BindableProperty.Create("HeaderTemplate", typeof(DataTemplate), typeof(ListView), null, propertyChanged: OnHeaderTemplateChanged,
+		public static readonly BindableProperty HeaderTemplateProperty = BindableProperty.Create(nameof(HeaderTemplate), typeof(DataTemplate), typeof(ListView), null, propertyChanged: OnHeaderTemplateChanged,
 			validateValue: ValidateHeaderFooterTemplate);
 
-		public static readonly BindableProperty FooterProperty = BindableProperty.Create("Footer", typeof(object), typeof(ListView), null, propertyChanged: OnFooterChanged);
+		public static readonly BindableProperty FooterProperty = BindableProperty.Create(nameof(Footer), typeof(object), typeof(ListView), null, propertyChanged: OnFooterChanged);
 
-		public static readonly BindableProperty FooterTemplateProperty = BindableProperty.Create("FooterTemplate", typeof(DataTemplate), typeof(ListView), null, propertyChanged: OnFooterTemplateChanged,
+		public static readonly BindableProperty FooterTemplateProperty = BindableProperty.Create(nameof(FooterTemplate), typeof(DataTemplate), typeof(ListView), null, propertyChanged: OnFooterTemplateChanged,
 			validateValue: ValidateHeaderFooterTemplate);
 
-		public static readonly BindableProperty SelectedItemProperty = BindableProperty.Create("SelectedItem", typeof(object), typeof(ListView), null, BindingMode.OneWayToSource,
+		public static readonly BindableProperty SelectedItemProperty = BindableProperty.Create(nameof(SelectedItem), typeof(object), typeof(ListView), null, BindingMode.OneWayToSource,
 			propertyChanged: OnSelectedItemChanged);
 
-		public static readonly BindableProperty HasUnevenRowsProperty = BindableProperty.Create("HasUnevenRows", typeof(bool), typeof(ListView), false);
+		public static readonly BindableProperty HasUnevenRowsProperty = BindableProperty.Create(nameof(HasUnevenRows), typeof(bool), typeof(ListView), false);
 
-		public static readonly BindableProperty RowHeightProperty = BindableProperty.Create("RowHeight", typeof(int), typeof(ListView), -1);
+		public static readonly BindableProperty RowHeightProperty = BindableProperty.Create(nameof(RowHeight), typeof(int), typeof(ListView), -1);
 
-		public static readonly BindableProperty GroupHeaderTemplateProperty = BindableProperty.Create("GroupHeaderTemplate", typeof(DataTemplate), typeof(ListView), null,
+		public static readonly BindableProperty GroupHeaderTemplateProperty = BindableProperty.Create(nameof(GroupHeaderTemplate), typeof(DataTemplate), typeof(ListView), null,
 			propertyChanged: OnGroupHeaderTemplateChanged);
 
-		public static readonly BindableProperty IsGroupingEnabledProperty = BindableProperty.Create("IsGroupingEnabled", typeof(bool), typeof(ListView), false);
+		public static readonly BindableProperty IsGroupingEnabledProperty = BindableProperty.Create(nameof(IsGroupingEnabled), typeof(bool), typeof(ListView), false);
 
-		public static readonly BindableProperty SeparatorVisibilityProperty = BindableProperty.Create("SeparatorVisibility", typeof(SeparatorVisibility), typeof(ListView), SeparatorVisibility.Default);
+		public static readonly BindableProperty SeparatorVisibilityProperty = BindableProperty.Create(nameof(SeparatorVisibility), typeof(SeparatorVisibility), typeof(ListView), SeparatorVisibility.Default);
 
-		public static readonly BindableProperty SeparatorColorProperty = BindableProperty.Create("SeparatorColor", typeof(Color), typeof(ListView), Color.Default);
+		public static readonly BindableProperty SeparatorColorProperty = BindableProperty.Create(nameof(SeparatorColor), typeof(Color), typeof(ListView), Color.Default);
 
 		readonly Lazy<PlatformConfigurationRegistry<ListView>> _platformConfigurationRegistry;
 
@@ -70,7 +70,7 @@ namespace Xamarin.Forms
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<ListView>>(() => new PlatformConfigurationRegistry<ListView>(this));
 		}
 
-		public ListView([Parameter("CachingStrategy")] ListViewCachingStrategy cachingStrategy) : this()
+		public ListView([Parameter(nameof(CachingStrategy))] ListViewCachingStrategy cachingStrategy) : this()
 		{
 			// null => UnitTest "platform"
 			if (Device.RuntimePlatform == null || 
@@ -449,13 +449,13 @@ namespace Xamarin.Forms
 		static void OnFooterChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			var lv = (ListView)bindable;
-			lv.OnHeaderOrFooterChanged(ref lv._footerElement, "FooterElement", newValue, lv.FooterTemplate, false);
+			lv.OnHeaderOrFooterChanged(ref lv._footerElement, nameof(FooterElement), newValue, lv.FooterTemplate, false);
 		}
 
 		static void OnFooterTemplateChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			var lv = (ListView)bindable;
-			lv.OnHeaderOrFooterChanged(ref lv._footerElement, "FooterElement", lv.Footer, (DataTemplate)newValue, true);
+			lv.OnHeaderOrFooterChanged(ref lv._footerElement, nameof(FooterElement), lv.Footer, (DataTemplate)newValue, true);
 		}
 
 		static void OnGroupDisplayBindingChanged(BindableObject bindable, BindingBase oldValue, BindingBase newValue)
@@ -481,7 +481,7 @@ namespace Xamarin.Forms
 		static void OnHeaderChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			var lv = (ListView)bindable;
-			lv.OnHeaderOrFooterChanged(ref lv._headerElement, "HeaderElement", newValue, lv.HeaderTemplate, false);
+			lv.OnHeaderOrFooterChanged(ref lv._headerElement, nameof(HeaderElement), newValue, lv.HeaderTemplate, false);
 		}
 
 		void OnHeaderOrFooterChanged(ref Element storage, string property, object dataObject, DataTemplate template, bool templateChanged)
@@ -529,7 +529,7 @@ namespace Xamarin.Forms
 		static void OnHeaderTemplateChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			var lv = (ListView)bindable;
-			lv.OnHeaderOrFooterChanged(ref lv._headerElement, "HeaderElement", lv.Header, (DataTemplate)newValue, true);
+			lv.OnHeaderOrFooterChanged(ref lv._headerElement, nameof(HeaderElement), lv.Header, (DataTemplate)newValue, true);
 		}
 
 		static void OnRefreshCommandChanged(BindableObject bindable, object oldValue, object newValue)

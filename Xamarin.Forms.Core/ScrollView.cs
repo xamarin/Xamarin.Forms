@@ -6,21 +6,21 @@ using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
 {
-	[ContentProperty("Content")]
+	[ContentProperty(nameof(Content))]
 	[RenderWith(typeof(_ScrollViewRenderer))]
 	public class ScrollView : Layout, IScrollViewController, IElementConfiguration<ScrollView>
 	{
-		public static readonly BindableProperty OrientationProperty = BindableProperty.Create("Orientation", typeof(ScrollOrientation), typeof(ScrollView), ScrollOrientation.Vertical);
+		public static readonly BindableProperty OrientationProperty = BindableProperty.Create(nameof(Orientation), typeof(ScrollOrientation), typeof(ScrollView), ScrollOrientation.Vertical);
 
-		static readonly BindablePropertyKey ScrollXPropertyKey = BindableProperty.CreateReadOnly("ScrollX", typeof(double), typeof(ScrollView), 0d);
+		static readonly BindablePropertyKey ScrollXPropertyKey = BindableProperty.CreateReadOnly(nameof(ScrollX), typeof(double), typeof(ScrollView), 0d);
 
 		public static readonly BindableProperty ScrollXProperty = ScrollXPropertyKey.BindableProperty;
 
-		static readonly BindablePropertyKey ScrollYPropertyKey = BindableProperty.CreateReadOnly("ScrollY", typeof(double), typeof(ScrollView), 0d);
+		static readonly BindablePropertyKey ScrollYPropertyKey = BindableProperty.CreateReadOnly(nameof(ScrollY), typeof(double), typeof(ScrollView), 0d);
 
 		public static readonly BindableProperty ScrollYProperty = ScrollYPropertyKey.BindableProperty;
 
-		static readonly BindablePropertyKey ContentSizePropertyKey = BindableProperty.CreateReadOnly("ContentSize", typeof(Size), typeof(ScrollView), default(Size));
+		static readonly BindablePropertyKey ContentSizePropertyKey = BindableProperty.CreateReadOnly(nameof(ContentSize), typeof(Size), typeof(ScrollView), default(Size));
 
 		public static readonly BindableProperty ContentSizeProperty = ContentSizePropertyKey.BindableProperty;
 

@@ -5,7 +5,7 @@ namespace Xamarin.Forms
 {
 	public class TextCell : Cell
 	{
-		public static readonly BindableProperty CommandProperty = BindableProperty.Create("Command", typeof(ICommand), typeof(TextCell), default(ICommand),
+		public static readonly BindableProperty CommandProperty = BindableProperty.Create(nameof(Command) , typeof(ICommand), typeof(TextCell), default(ICommand),
 			propertyChanging: (bindable, oldvalue, newvalue) =>
 			{
 				var textCell = (TextCell)bindable;
@@ -23,7 +23,7 @@ namespace Xamarin.Forms
 				}
 			});
 
-		public static readonly BindableProperty CommandParameterProperty = BindableProperty.Create("CommandParameter", typeof(object), typeof(TextCell), default(object),
+		public static readonly BindableProperty CommandParameterProperty = BindableProperty.Create(nameof(CommandParameter), typeof(object), typeof(TextCell), default(object),
 			propertyChanged: (bindable, oldvalue, newvalue) =>
 			{
 				var textCell = (TextCell)bindable;
@@ -33,13 +33,13 @@ namespace Xamarin.Forms
 				}
 			});
 
-		public static readonly BindableProperty TextProperty = BindableProperty.Create("Text", typeof(string), typeof(TextCell), default(string));
+		public static readonly BindableProperty TextProperty = BindableProperty.Create(nameof(Text), typeof(string), typeof(TextCell), default(string));
 
-		public static readonly BindableProperty DetailProperty = BindableProperty.Create("Detail", typeof(string), typeof(TextCell), default(string));
+		public static readonly BindableProperty DetailProperty = BindableProperty.Create(nameof(Detail), typeof(string), typeof(TextCell), default(string));
 
-		public static readonly BindableProperty TextColorProperty = BindableProperty.Create("TextColor", typeof(Color), typeof(TextCell), Color.Default);
+		public static readonly BindableProperty TextColorProperty = BindableProperty.Create(nameof(TextColor), typeof(Color), typeof(TextCell), Color.Default);
 
-		public static readonly BindableProperty DetailColorProperty = BindableProperty.Create("DetailColor", typeof(Color), typeof(TextCell), Color.Default);
+		public static readonly BindableProperty DetailColorProperty = BindableProperty.Create(nameof(DetailColor), typeof(Color), typeof(TextCell), Color.Default);
 
 		public ICommand Command
 		{

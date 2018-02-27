@@ -8,7 +8,7 @@ using Xamarin.Forms.Xaml;
 
 namespace Xamarin.Forms
 {
-	[ContentProperty("Value")]
+	[ContentProperty(nameof(Value))]
 	[ProvideCompiled("Xamarin.Forms.Core.XamlC.SetterValueProvider")]
 	public sealed class Setter : IValueProvider
 	{

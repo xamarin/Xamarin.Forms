@@ -11,7 +11,7 @@ namespace Xamarin.Forms
 	public abstract class BindableObject : INotifyPropertyChanged, IDynamicResourceHandler
 	{
 		public static readonly BindableProperty BindingContextProperty =
-			BindableProperty.Create("BindingContext", typeof(object), typeof(BindableObject), default(object),
+			BindableProperty.Create(nameof(BindingContext), typeof(object), typeof(BindableObject), default(object),
 									BindingMode.OneWay, null, BindingContextPropertyChanged, null, null, BindingContextPropertyBindingChanging);
 
 		readonly List<BindablePropertyContext> _properties = new List<BindablePropertyContext>(4);

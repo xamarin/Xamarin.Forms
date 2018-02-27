@@ -8,7 +8,7 @@ namespace Xamarin.Forms
 	[RenderWith(typeof(_EditorRenderer))]
 	public class Editor : InputView, IEditorController, IFontElement, ITextElement, IElementConfiguration<Editor>
 	{
-		public static readonly BindableProperty TextProperty = BindableProperty.Create("Text", typeof(string), typeof(Editor), null, BindingMode.TwoWay, propertyChanged: (bindable, oldValue, newValue)
+		public static readonly BindableProperty TextProperty = BindableProperty.Create(nameof(Text), typeof(string), typeof(Editor), null, BindingMode.TwoWay, propertyChanged: (bindable, oldValue, newValue)
 			=> ((Editor)bindable).TextChanged?.Invoke(bindable, new TextChangedEventArgs((string)oldValue, (string)newValue)));
 
 		public static readonly BindableProperty FontFamilyProperty = FontElement.FontFamilyProperty;

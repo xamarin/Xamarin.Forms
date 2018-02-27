@@ -4,7 +4,7 @@ namespace Xamarin.Forms
 {
 	public sealed class RowDefinition : BindableObject, IDefinition
 	{
-		public static readonly BindableProperty HeightProperty = BindableProperty.Create("Height", typeof(GridLength), typeof(RowDefinition), new GridLength(1, GridUnitType.Star),
+		public static readonly BindableProperty HeightProperty = BindableProperty.Create(nameof(Height), typeof(GridLength), typeof(RowDefinition), new GridLength(1, GridUnitType.Star),
 			propertyChanged: (bindable, oldValue, newValue) => ((RowDefinition)bindable).OnSizeChanged());
 
 		public RowDefinition()

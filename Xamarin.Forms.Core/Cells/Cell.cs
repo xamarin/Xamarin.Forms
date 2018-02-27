@@ -11,7 +11,7 @@ namespace Xamarin.Forms
 	public abstract class Cell : Element, ICellController, IFlowDirectionController
 	{
 		public const int DefaultCellHeight = 40;
-		public static readonly BindableProperty IsEnabledProperty = BindableProperty.Create("IsEnabled", typeof(bool), typeof(Cell), true, propertyChanged: OnIsEnabledPropertyChanged);
+		public static readonly BindableProperty IsEnabledProperty = BindableProperty.Create(nameof(IsEnabled), typeof(bool), typeof(Cell), true, propertyChanged: OnIsEnabledPropertyChanged);
 
 		ObservableCollection<MenuItem> _contextActions;
 
@@ -65,11 +65,11 @@ namespace Xamarin.Forms
 				if (_height == value)
 					return;
 
-				OnPropertyChanging("Height");
-				OnPropertyChanging("RenderHeight");
+				OnPropertyChanging(nameof(Height));
+				OnPropertyChanging(nameof(RenderHeight));
 				_height = value;
-				OnPropertyChanged("Height");
-				OnPropertyChanged("RenderHeight");
+				OnPropertyChanged(nameof(Height));
+				OnPropertyChanged(nameof(RenderHeight));
 			}
 		}
 
@@ -153,7 +153,7 @@ namespace Xamarin.Forms
 
 		protected override void OnPropertyChanging(string propertyName = null)
 		{
-			if (propertyName == "Parent")
+			if (propertyName == nameof(Parent))
 			{
 				if (RealParent != null)
 				{
@@ -205,7 +205,7 @@ namespace Xamarin.Forms
 			for (var i = 0; i < _contextActions.Count; i++)
 				SetInheritedBindingContext(_contextActions[i], BindingContext);
 
-			OnPropertyChanged("HasContextActions");
+			OnPropertyChanged(nameof(HasContextActions));
 		}
 
 		async void OnForceUpdateSizeRequested()
@@ -219,7 +219,7 @@ namespace Xamarin.Forms
 
 		static void OnIsEnabledPropertyChanged(BindableObject bindable, object oldvalue, object newvalue)
 		{
-			(bindable as Cell).OnPropertyChanged("HasContextActions");
+			(bindable as Cell).OnPropertyChanged(nameof(HasContextActions));
 		}
 
 		void OnParentPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -227,7 +227,7 @@ namespace Xamarin.Forms
 			// Technically we might be raising this even if it didn't change, but I'm taking the bet that
 			// its uncommon enough that we don't want to take the penalty of N GetValue calls to verify.
 			if (e.PropertyName == "RowHeight")
-				OnPropertyChanged("RenderHeight");
+				OnPropertyChanged(nameof(RenderHeight));
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				FlowController.NotifyFlowDirectionChanged();
 		}
@@ -235,7 +235,7 @@ namespace Xamarin.Forms
 		void OnParentPropertyChanging(object sender, PropertyChangingEventArgs e)
 		{
 			if (e.PropertyName == "RowHeight")
-				OnPropertyChanging("RenderHeight");
+				OnPropertyChanging(nameof(RenderHeight));
 		}
 	}
 }

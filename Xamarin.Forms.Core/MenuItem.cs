@@ -14,20 +14,20 @@ namespace Xamarin.Forms
 
 		public static void SetAccelerator(BindableObject bindable, Accelerator value) => bindable.SetValue(AcceleratorProperty, value);
 
-		public static readonly BindableProperty TextProperty = BindableProperty.Create("Text", typeof(string), typeof(MenuItem), null);
+		public static readonly BindableProperty TextProperty = BindableProperty.Create(nameof(Text), typeof(string), typeof(MenuItem), null);
 
-		public static readonly BindableProperty CommandProperty = BindableProperty.Create("Command", typeof(ICommand), typeof(MenuItem), null,
+		public static readonly BindableProperty CommandProperty = BindableProperty.Create(nameof(Command), typeof(ICommand), typeof(MenuItem), null,
 			propertyChanging: (bo, o, n) => ((MenuItem)bo).OnCommandChanging(), propertyChanged: (bo, o, n) => ((MenuItem)bo).OnCommandChanged());
 
-		public static readonly BindableProperty CommandParameterProperty = BindableProperty.Create("CommandParameter", typeof(object), typeof(MenuItem), null,
+		public static readonly BindableProperty CommandParameterProperty = BindableProperty.Create(nameof(CommandParameter), typeof(object), typeof(MenuItem), null,
 			propertyChanged: (bo, o, n) => ((MenuItem)bo).OnCommandParameterChanged());
 
-		public static readonly BindableProperty IsDestructiveProperty = BindableProperty.Create("IsDestructive", typeof(bool), typeof(MenuItem), false);
+		public static readonly BindableProperty IsDestructiveProperty = BindableProperty.Create(nameof(IsDestructive), typeof(bool), typeof(MenuItem), false);
 
-		public static readonly BindableProperty IconProperty = BindableProperty.Create("Icon", typeof(FileImageSource), typeof(MenuItem), default(FileImageSource));
+		public static readonly BindableProperty IconProperty = BindableProperty.Create(nameof(Icon), typeof(FileImageSource), typeof(MenuItem), default(FileImageSource));
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public static readonly BindableProperty IsEnabledProperty = BindableProperty.Create("IsEnabled", typeof(bool), typeof(ToolbarItem), true);
+		public static readonly BindableProperty IsEnabledProperty = BindableProperty.Create(nameof(IsEnabled), typeof(bool), typeof(ToolbarItem), true);
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public string IsEnabledPropertyName

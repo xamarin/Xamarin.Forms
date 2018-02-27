@@ -4,12 +4,12 @@ using Xamarin.Forms.Xaml;
 
 namespace Xamarin.Forms
 {
-	[ContentProperty("Setters")]
+	[ContentProperty(nameof(Setters))]
 	[ProvideCompiled("Xamarin.Forms.Core.XamlC.PassthroughValueProvider")]
 	[AcceptEmptyServiceProvider]
 	public sealed class Trigger : TriggerBase, IValueProvider
 	{
-		public Trigger([TypeConverter(typeof(TypeTypeConverter))] [Parameter("TargetType")] Type targetType) : base(new PropertyCondition(), targetType)
+		public Trigger([TypeConverter(typeof(TypeTypeConverter))] [Parameter(nameof(TargetType))] Type targetType) : base(new PropertyCondition(), targetType)
 		{
 		}
 

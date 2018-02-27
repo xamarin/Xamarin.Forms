@@ -3,10 +3,10 @@ using System.Collections.Generic;
 
 namespace Xamarin.Forms
 {
-	[ContentProperty("Setters")]
+	[ContentProperty(nameof(Setters))]
 	public sealed class MultiTrigger : TriggerBase
 	{
-		public MultiTrigger([TypeConverter(typeof(TypeTypeConverter))] [Parameter("TargetType")] Type targetType) : base(new MultiCondition(), targetType)
+		public MultiTrigger([TypeConverter(typeof(TypeTypeConverter))] [Parameter(nameof(TargetType))] Type targetType) : base(new MultiCondition(), targetType)
 		{
 		}
 

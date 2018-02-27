@@ -4,7 +4,7 @@ namespace Xamarin.Forms
 {
 	public class UrlWebViewSource : WebViewSource
 	{
-		public static readonly BindableProperty UrlProperty = BindableProperty.Create("Url", typeof(string), typeof(UrlWebViewSource), default(string),
+		public static readonly BindableProperty UrlProperty = BindableProperty.Create(nameof(Url), typeof(string), typeof(UrlWebViewSource), default(string),
 			propertyChanged: (bindable, oldvalue, newvalue) => ((UrlWebViewSource)bindable).OnSourceChanged());
 
 		public string Url

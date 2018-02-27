@@ -17,9 +17,9 @@ namespace Xamarin.Forms
 			set { SetValue (InfiniteScrollingProperty, value); }
 		}*/
 
-		public static readonly BindableProperty ItemsSourceProperty = BindableProperty.Create("ItemsSource", typeof(IEnumerable), typeof(ItemsView<TVisual>), null, propertyChanged: OnItemsSourceChanged);
+		public static readonly BindableProperty ItemsSourceProperty = BindableProperty.Create(nameof(ItemsSource), typeof(IEnumerable), typeof(ItemsView<TVisual>), null, propertyChanged: OnItemsSourceChanged);
 
-		public static readonly BindableProperty ItemTemplateProperty = BindableProperty.Create("ItemTemplate", typeof(DataTemplate), typeof(ItemsView<TVisual>), null, validateValue: ValidateItemTemplate);
+		public static readonly BindableProperty ItemTemplateProperty = BindableProperty.Create(nameof(ItemTemplate), typeof(DataTemplate), typeof(ItemsView<TVisual>), null, validateValue: ValidateItemTemplate);
 
 		internal ItemsView()
 		{

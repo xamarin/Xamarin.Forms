@@ -3,7 +3,7 @@ using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
 {
-	[ContentProperty("Content")]
+	[ContentProperty(nameof(Content))]
 	[RenderWith(typeof(_FrameRenderer))]
 	public class Frame : ContentView, IElementConfiguration<Frame>, IPaddingElement, IBorderElement
 	{
@@ -12,7 +12,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty BorderColorProperty = BorderElement.BorderColorProperty;
 
-		public static readonly BindableProperty HasShadowProperty = BindableProperty.Create("HasShadow", typeof(bool), typeof(Frame), true);
+		public static readonly BindableProperty HasShadowProperty = BindableProperty.Create(nameof(HasShadow), typeof(bool), typeof(Frame), true);
 
 		public static readonly BindableProperty CornerRadiusProperty = BindableProperty.Create(nameof(CornerRadius), typeof(float), typeof(Frame), -1.0f,
 									validateValue: (bindable, value) => ((float)value) == -1.0f || ((float)value) >= 0f);

@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 
 namespace Xamarin.Forms
 {
-	[ContentProperty("Spans")]
+	[ContentProperty(nameof(Spans))]
 	public class FormattedString : INotifyPropertyChanged
 	{
 		readonly SpanCollection _spans = new SpanCollection();

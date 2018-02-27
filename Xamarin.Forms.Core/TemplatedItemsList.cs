@@ -16,13 +16,13 @@ namespace Xamarin.Forms.Internals
 												where TView : BindableObject, IItemsView<TItem>
 												where TItem : BindableObject
 	{
-		public static readonly BindableProperty NameProperty = BindableProperty.Create("Name", typeof(string), typeof(TemplatedItemsList<TView, TItem>), null);
+		public static readonly BindableProperty NameProperty = BindableProperty.Create(nameof(Name), typeof(string), typeof(TemplatedItemsList<TView, TItem>), null);
 
-		public static readonly BindableProperty ShortNameProperty = BindableProperty.Create("ShortName", typeof(string), typeof(TemplatedItemsList<TView, TItem>), null);
+		public static readonly BindableProperty ShortNameProperty = BindableProperty.Create(nameof(ShortName), typeof(string), typeof(TemplatedItemsList<TView, TItem>), null);
 
-		static readonly BindablePropertyKey HeaderContentPropertyKey = BindableProperty.CreateReadOnly("HeaderContent", typeof(TItem), typeof(TemplatedItemsList<TView, TItem>), null);
+		static readonly BindablePropertyKey HeaderContentPropertyKey = BindableProperty.CreateReadOnly(nameof(HeaderContent), typeof(TItem), typeof(TemplatedItemsList<TView, TItem>), null);
 
-		internal static readonly BindablePropertyKey ListProxyPropertyKey = BindableProperty.CreateReadOnly("ListProxy", typeof(ListProxy), typeof(TemplatedItemsList<TView, TItem>), null,
+		internal static readonly BindablePropertyKey ListProxyPropertyKey = BindableProperty.CreateReadOnly(nameof(ListProxy), typeof(ListProxy), typeof(TemplatedItemsList<TView, TItem>), null,
 			propertyChanged: OnListProxyChanged);
 
 		static readonly BindableProperty GroupProperty = BindableProperty.Create("Group", typeof(TemplatedItemsList<TView, TItem>), typeof(TItem), null);
@@ -956,7 +956,7 @@ namespace Xamarin.Forms.Internals
 		static void OnListProxyChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			var til = (TemplatedItemsList<TView, TItem>)bindable;
-			til.OnPropertyChanged("ItemsSource");
+			til.OnPropertyChanged(nameof(ItemsSource));
 		}
 
 		void OnProxyCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)

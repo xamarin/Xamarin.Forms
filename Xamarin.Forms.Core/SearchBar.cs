@@ -9,11 +9,11 @@ namespace Xamarin.Forms
 	[RenderWith(typeof(_SearchBarRenderer))]
 	public class SearchBar : View, IFontElement, ITextElement, ITextAlignmentElement, ISearchBarController, IElementConfiguration<SearchBar>
 	{
-		public static readonly BindableProperty SearchCommandProperty = BindableProperty.Create("SearchCommand", typeof(ICommand), typeof(SearchBar), null, propertyChanged: OnCommandChanged);
+		public static readonly BindableProperty SearchCommandProperty = BindableProperty.Create(nameof(SearchCommand), typeof(ICommand), typeof(SearchBar), null, propertyChanged: OnCommandChanged);
 
-		public static readonly BindableProperty SearchCommandParameterProperty = BindableProperty.Create("SearchCommandParameter", typeof(object), typeof(SearchBar), null);
+		public static readonly BindableProperty SearchCommandParameterProperty = BindableProperty.Create(nameof(SearchCommandParameter), typeof(object), typeof(SearchBar), null);
 
-		public static readonly BindableProperty TextProperty = BindableProperty.Create("Text", typeof(string), typeof(SearchBar), default(string), BindingMode.TwoWay,
+		public static readonly BindableProperty TextProperty = BindableProperty.Create(nameof(Text), typeof(string), typeof(SearchBar), default(string), BindingMode.TwoWay,
 			propertyChanged: (bindable, oldValue, newValue) =>
 			{
 				var searchBar = (SearchBar)bindable;
@@ -22,9 +22,9 @@ namespace Xamarin.Forms
 					eh(searchBar, new TextChangedEventArgs((string)oldValue, (string)newValue));
 			});
 
-		public static readonly BindableProperty CancelButtonColorProperty = BindableProperty.Create("CancelButtonColor", typeof(Color), typeof(SearchBar), default(Color));
+		public static readonly BindableProperty CancelButtonColorProperty = BindableProperty.Create(nameof(CancelButtonColor), typeof(Color), typeof(SearchBar), default(Color));
 
-		public static readonly BindableProperty PlaceholderProperty = BindableProperty.Create("Placeholder", typeof(string), typeof(SearchBar), null);
+		public static readonly BindableProperty PlaceholderProperty = BindableProperty.Create(nameof(Placeholder), typeof(string), typeof(SearchBar), null);
 
 		public static readonly BindableProperty FontFamilyProperty = FontElement.FontFamilyProperty;
 
@@ -36,7 +36,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
 
-		public static readonly BindableProperty PlaceholderColorProperty = BindableProperty.Create("PlaceholderColor", typeof(Color), typeof(SearchBar), Color.Default);
+		public static readonly BindableProperty PlaceholderColorProperty = BindableProperty.Create(nameof(PlaceholderColor), typeof(Color), typeof(SearchBar), Color.Default);
 
 		readonly Lazy<PlatformConfigurationRegistry<SearchBar>> _platformConfigurationRegistry;
 

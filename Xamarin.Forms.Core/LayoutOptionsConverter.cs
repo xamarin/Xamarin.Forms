@@ -13,7 +13,7 @@ namespace Xamarin.Forms
 		{
 			if (value != null) {
 				var parts = value.Split('.');
-				if (parts.Length > 2 || (parts.Length == 2 && parts [0] != "LayoutOptions"))
+				if (parts.Length > 2 || (parts.Length == 2 && parts [0] != nameof(LayoutOptions)))
 					throw new InvalidOperationException($"Cannot convert \"{value}\" into {typeof(LayoutOptions)}");
 				value = parts [parts.Length - 1];
 				switch (value) {
