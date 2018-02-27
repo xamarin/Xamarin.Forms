@@ -8,7 +8,13 @@ using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 
-namespace Xamarin.Forms.Controls.TestCasesPages
+#if UITEST
+using NUnit.Framework;
+using Xamarin.UITest;
+
+#endif
+
+namespace Xamarin.Forms.Controls.Issues
 {
 
 	[Preserve(AllMembers = true)]
@@ -45,29 +51,47 @@ namespace Xamarin.Forms.Controls.TestCasesPages
 		protected override void Init()
 		{
 			On<iOS>().SetPrefersLargeTitles(true);
-		
+			var items = new List<string>();
+			for (int i = 0; i < 1000; i++)
+			{
+				items.Add($"pull to {DateTime.Now.Ticks}");
+			}
 			var page = new ContentPage
 			{
 				Title = "Pull Large Titles"
 			};
+
 			var lst = new ListView();
-			lst.ItemsSource = new string[] { "pull to", "refresh" };
 			lst.IsPullToRefreshEnabled = true;
+			lst.ItemsSource = items;
 			lst.RefreshCommand = new Command(async () =>
 			{
+				var newitems = new List<string>();
 				await Task.Delay(5000);
-				lst.ItemsSource = new string[] { $"data {DateTime.Now.Second}", "refreshed" };
+				for (int i = 0; i < 1000; i++)
+				{
+					newitems.Add($"data {DateTime.Now.Ticks} refreshed");
+				}
+				lst.ItemsSource = newitems;
 				lst.EndRefresh();
 			});
-			page.Content = lst;
+			page.Content = new StackLayout { Children = { lst } };
 			page.Appearing += async (sender, e) =>
 			{
 				await Task.Delay(500);
 				lst.BeginRefresh();
 			};
-			page.ToolbarItems.Add(new ToolbarItem { Text = "Refresh", Command = new Command((obj) => lst.BeginRefresh()) });
+			page.ToolbarItems.Add(new ToolbarItem { Text = "Refresh", Command = new Command((obj) => lst.BeginRefresh()), AutomationId = "btnRefresh" });
 			Navigation.PushAsync(page);
 
 		}
+
+#if UITEST
+		[Test]
+		public void TestIssue1905RefreshShows()
+		{
+			RunningApp.Screenshot("Should show refresh control");
+		}
+#endif
 	}
 }

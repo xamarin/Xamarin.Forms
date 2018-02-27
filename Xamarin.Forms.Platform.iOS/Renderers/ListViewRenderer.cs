@@ -1238,19 +1238,22 @@ namespace Xamarin.Forms.Platform.iOS
 
 		bool _refreshAdded;
 		bool _disposed;
+		bool _usingLargeTitles;
 
 		public FormsUITableViewController(ListView element)
 		{
 			if (Forms.IsiOS9OrNewer)
 				TableView.CellLayoutMarginsFollowReadableWidth = false;
-			
+
 			if (Forms.IsiOS11OrNewer)
 			{
 				ExtendedLayoutIncludesOpaqueBars = true;
 				TableView.ContentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentBehavior.Always;
+				var parentNav = element.FindParentOfType<NavigationPage>();
+				_usingLargeTitles = (parentNav != null && parentNav.OnThisPlatform().PrefersLargeTitles());
 			}
-				
-			_refresh = new UIRefreshControl();
+
+			_refresh = new FormsRefreshControl();
 			_refresh.ValueChanged += OnRefreshingChanged;
 			_list = element;
 		}
@@ -1271,7 +1274,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 					//hack: On iOS11 with large titles we need to adjust the scroll offset manually 
 					//since our UITableView is not the first child of the UINavigationController
-					UpdateContentOffset(TableView.ContentOffset.Y - _refresh.Frame.Height, () => _refresh.Hidden = false);
+					UpdateContentOffset(TableView.ContentOffset.Y - _refresh.Frame.Height);
 
 					//hack: when we don't have cells in our UITableView the spinner fails to appear
 					CheckContentSize();
@@ -1283,8 +1286,9 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (_refresh == null)
 					return;
-				
-				UpdateContentOffset(-1, _refresh.EndRefreshing);
+				_refresh.EndRefreshing();
+
+				UpdateContentOffset(-1);
 
 				if (!_list.IsPullToRefreshEnabled)
 					RemoveRefresh();
@@ -1382,19 +1386,38 @@ namespace Xamarin.Forms.Platform.iOS
 			_refreshAdded = false;
 		}
 
-		void UpdateContentOffset(nfloat offset, Action completed)
+		void UpdateContentOffset(nfloat offset, Action completed = null)
 		{
-			if (!Forms.IsiOS11OrNewer)
-			{
-				completed();
+			if (!_usingLargeTitles)
 				return;
-			}
 
-			var parentNav = _list.Parent.Parent as NavigationPage;
-			if (parentNav != null && parentNav.OnThisPlatform().PrefersLargeTitles())
+			UIView.Animate(0.2, () => TableView.ContentOffset = new CoreGraphics.CGPoint(TableView.ContentOffset.X, offset), completed);
+		}
+	}
+
+
+	internal class FormsRefreshControl : UIRefreshControl
+	{
+		public override bool Hidden
+		{
+			get
 			{
-				UIView.Animate(0.2,() => TableView.ContentOffset = new CoreGraphics.CGPoint(TableView.ContentOffset.X, offset), completed);
+				return base.Hidden;
 			}
+			set
+			{
+				//hack: ahahah take that UIKit! 
+				//when using pull to refresh with Large tiles sometimes iOS tries to hide the UIRefreshControl
+				if (value && Refreshing)
+					return;
+				base.Hidden = value;
+			}
+		}
+
+		public override void BeginRefreshing()
+		{
+			base.BeginRefreshing();
+			Hidden = false;
 		}
 	}
 }
