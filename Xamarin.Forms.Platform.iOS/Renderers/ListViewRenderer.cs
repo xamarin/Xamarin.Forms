@@ -1261,32 +1261,31 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (!_refreshAdded)
 				{
-					TableView.AlwaysBounceHorizontal = true;
 					RefreshControl = _refresh;
 					_refreshAdded = true;
 				}
 
 				if (!_refresh.Refreshing)
 				{
-					RefreshControl.Hidden = false;
-					RefreshControl.LayoutIfNeeded();
-					RefreshControl.BeginRefreshing();
+					_refresh.BeginRefreshing();
 
-					UpdateContentOffset(TableView.ContentOffset.Y - RefreshControl.Frame.Height);
+					//hack: On iOS11 with large titles we need to adjust the scroll offset manually 
+					//since our UITableView is not the first child of the UINavigationController
+					UpdateContentOffset(TableView.ContentOffset.Y - _refresh.Frame.Height, () => _refresh.Hidden = false);
+
 					//hack: when we don't have cells in our UITableView the spinner fails to appear
 					CheckContentSize();
 
-					TableView.ScrollRectToVisible(new RectangleF(0, 0, RefreshControl.Bounds.Width, RefreshControl.Bounds.Height), true);
+					TableView.ScrollRectToVisible(new RectangleF(0, 0, _refresh.Bounds.Width, _refresh.Bounds.Height), true);
 				}
 			}
 			else
 			{
-				if (RefreshControl == null)
+				if (_refresh == null)
 					return;
-				UpdateContentOffset(-RefreshControl.Frame.Height);
-				RefreshControl.EndRefreshing();
+				
+				UpdateContentOffset(-1, _refresh.EndRefreshing);
 
-				RefreshControl.LayoutIfNeeded();
 				if (!_list.IsPullToRefreshEnabled)
 					RemoveRefresh();
 			}
@@ -1383,14 +1382,18 @@ namespace Xamarin.Forms.Platform.iOS
 			_refreshAdded = false;
 		}
 
-		void UpdateContentOffset(nfloat offset)
+		void UpdateContentOffset(nfloat offset, Action completed)
 		{
 			if (!Forms.IsiOS11OrNewer)
+			{
+				completed();
 				return;
+			}
+
 			var parentNav = _list.Parent.Parent as NavigationPage;
 			if (parentNav != null && parentNav.OnThisPlatform().PrefersLargeTitles())
 			{
-				TableView.SetContentOffset(new CoreGraphics.CGPoint(TableView.ContentOffset.X, offset), true);
+				UIView.Animate(0.2,() => TableView.ContentOffset = new CoreGraphics.CGPoint(TableView.ContentOffset.X, offset), completed);
 			}
 		}
 	}
