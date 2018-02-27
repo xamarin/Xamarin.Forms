@@ -6,7 +6,7 @@ namespace Xamarin.Forms
 	[RenderWith(typeof(_SwitchRenderer))]
 	public class Switch : View, IElementConfiguration<Switch>
 	{
-		public static readonly BindableProperty IsToggledProperty = BindableProperty.Create("IsToggled", typeof(bool), typeof(Switch), false, propertyChanged: (bindable, oldValue, newValue) =>
+		public static readonly BindableProperty IsToggledProperty = BindableProperty.Create(nameof(IsToggled), typeof(bool), typeof(Switch), false, propertyChanged: (bindable, oldValue, newValue) =>
 		{
 			EventHandler<ToggledEventArgs> eh = ((Switch)bindable).Toggled;
 			if (eh != null)

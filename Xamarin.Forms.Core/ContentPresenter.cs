@@ -4,11 +4,11 @@ namespace Xamarin.Forms
 {
 	public class ContentPresenter : Layout
 	{
-		public static BindableProperty ContentProperty = BindableProperty.Create("Content", typeof(View), typeof(ContentPresenter), null, propertyChanged: OnContentChanged);
+		public static BindableProperty ContentProperty = BindableProperty.Create(nameof(Content), typeof(View), typeof(ContentPresenter), null, propertyChanged: OnContentChanged);
 
 		public ContentPresenter()
 		{
-			SetBinding(ContentProperty, new TemplateBinding("Content"));
+			SetBinding(ContentProperty, new TemplateBinding(nameof(Content)));
 		}
 
 		public View Content

@@ -7,7 +7,7 @@ namespace Xamarin.Forms
 	[RenderWith(typeof(_StepperRenderer))]
 	public class Stepper : View, IElementConfiguration<Stepper>
 	{
-		public static readonly BindableProperty MaximumProperty = BindableProperty.Create("Maximum", typeof(double), typeof(Stepper), 100.0, validateValue: (bindable, value) =>
+		public static readonly BindableProperty MaximumProperty = BindableProperty.Create(nameof(Maximum), typeof(double), typeof(Stepper), 100.0, validateValue: (bindable, value) =>
 		{
 			var stepper = (Stepper)bindable;
 			return (double)value > stepper.Minimum;
@@ -18,7 +18,7 @@ namespace Xamarin.Forms
 			return value;
 		});
 
-		public static readonly BindableProperty MinimumProperty = BindableProperty.Create("Minimum", typeof(double), typeof(Stepper), 0.0, validateValue: (bindable, value) =>
+		public static readonly BindableProperty MinimumProperty = BindableProperty.Create(nameof(Minimum), typeof(double), typeof(Stepper), 0.0, validateValue: (bindable, value) =>
 		{
 			var stepper = (Stepper)bindable;
 			return (double)value < stepper.Maximum;
@@ -29,7 +29,7 @@ namespace Xamarin.Forms
 			return value;
 		});
 
-		public static readonly BindableProperty ValueProperty = BindableProperty.Create("Value", typeof(double), typeof(Stepper), 0.0, BindingMode.TwoWay, coerceValue: (bindable, value) =>
+		public static readonly BindableProperty ValueProperty = BindableProperty.Create(nameof(Value), typeof(double), typeof(Stepper), 0.0, BindingMode.TwoWay, coerceValue: (bindable, value) =>
 		{
 			var stepper = (Stepper)bindable;
 			return ((double)value).Clamp(stepper.Minimum, stepper.Maximum);
@@ -41,7 +41,7 @@ namespace Xamarin.Forms
 				eh(stepper, new ValueChangedEventArgs((double)oldValue, (double)newValue));
 		});
 
-		public static readonly BindableProperty IncrementProperty = BindableProperty.Create("Increment", typeof(double), typeof(Stepper), 1.0);
+		public static readonly BindableProperty IncrementProperty = BindableProperty.Create(nameof(Increment), typeof(double), typeof(Stepper), 1.0);
 
 		readonly Lazy<PlatformConfigurationRegistry<Stepper>> _platformConfigurationRegistry;
 

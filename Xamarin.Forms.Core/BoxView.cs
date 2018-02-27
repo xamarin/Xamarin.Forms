@@ -6,7 +6,7 @@ namespace Xamarin.Forms
 	[RenderWith(typeof(_BoxViewRenderer))]
 	public class BoxView : View, IElementConfiguration<BoxView>
 	{
-		public static readonly BindableProperty ColorProperty = BindableProperty.Create("Color", typeof(Color), typeof(BoxView), Color.Default);
+		public static readonly BindableProperty ColorProperty = BindableProperty.Create(nameof(Color), typeof(Color), typeof(BoxView), Color.Default);
 
 		readonly Lazy<PlatformConfigurationRegistry<BoxView>> _platformConfigurationRegistry;
 

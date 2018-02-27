@@ -5,7 +5,7 @@ using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
 {
-	[ContentProperty("Text")]
+	[ContentProperty(nameof(Text))]
 	[RenderWith(typeof(_LabelRenderer))]
 	public class Label : View, IFontElement, ITextElement, ITextAlignmentElement, IElementConfiguration<Label>
 	{
@@ -14,7 +14,7 @@ namespace Xamarin.Forms
 		[Obsolete("XAlignProperty is obsolete as of version 2.0.0. Please use HorizontalTextAlignmentProperty instead.")]
 		public static readonly BindableProperty XAlignProperty = HorizontalTextAlignmentProperty;
 
-		public static readonly BindableProperty VerticalTextAlignmentProperty = BindableProperty.Create("VerticalTextAlignment", typeof(TextAlignment), typeof(Label), TextAlignment.Start,
+		public static readonly BindableProperty VerticalTextAlignmentProperty = BindableProperty.Create(nameof(VerticalTextAlignment), typeof(TextAlignment), typeof(Label), TextAlignment.Start,
 			propertyChanged: OnVerticalTextAlignmentPropertyChanged);
 
 		[Obsolete("YAlignProperty is obsolete as of version 2.0.0. Please use VerticalTextAlignmentProperty instead.")]
@@ -24,7 +24,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty FontProperty = FontElement.FontProperty;
 
-		public static readonly BindableProperty TextProperty = BindableProperty.Create("Text", typeof(string), typeof(Label), default(string), propertyChanged: OnTextPropertyChanged);
+		public static readonly BindableProperty TextProperty = BindableProperty.Create(nameof(Text), typeof(string), typeof(Label), default(string), propertyChanged: OnTextPropertyChanged);
 
 		public static readonly BindableProperty FontFamilyProperty = FontElement.FontFamilyProperty;
 
@@ -32,7 +32,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty FontAttributesProperty = FontElement.FontAttributesProperty;
 
-		public static readonly BindableProperty FormattedTextProperty = BindableProperty.Create("FormattedText", typeof(FormattedString), typeof(Label), default(FormattedString),
+		public static readonly BindableProperty FormattedTextProperty = BindableProperty.Create(nameof(FormattedText), typeof(FormattedString), typeof(Label), default(FormattedString),
 			propertyChanging: (bindable, oldvalue, newvalue) =>
 			{
 				if (oldvalue != null)
@@ -46,7 +46,7 @@ namespace Xamarin.Forms
 					((Label)bindable).Text = null;
 			});
 
-		public static readonly BindableProperty LineBreakModeProperty = BindableProperty.Create("LineBreakMode", typeof(LineBreakMode), typeof(Label), LineBreakMode.WordWrap,
+		public static readonly BindableProperty LineBreakModeProperty = BindableProperty.Create(nameof(LineBreakMode), typeof(LineBreakMode), typeof(Label), LineBreakMode.WordWrap,
 			propertyChanged: (bindable, oldvalue, newvalue) => ((Label)bindable).InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged));
 
 		readonly Lazy<PlatformConfigurationRegistry<Label>> _platformConfigurationRegistry;
@@ -150,7 +150,7 @@ namespace Xamarin.Forms
 		void OnFormattedTextChanged(object sender, PropertyChangedEventArgs e)
 		{
 			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
-			OnPropertyChanged("FormattedText");
+			OnPropertyChanged(nameof(FormattedText));
 		}
 
 		void ITextAlignmentElement.OnHorizontalTextAlignmentPropertyChanged(TextAlignment oldValue, TextAlignment newValue)

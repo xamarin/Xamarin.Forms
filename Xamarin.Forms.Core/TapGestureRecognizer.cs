@@ -6,11 +6,11 @@ namespace Xamarin.Forms
 {
 	public sealed class TapGestureRecognizer : GestureRecognizer
 	{
-		public static readonly BindableProperty CommandProperty = BindableProperty.Create("Command", typeof(ICommand), typeof(TapGestureRecognizer), null);
+		public static readonly BindableProperty CommandProperty = BindableProperty.Create(nameof(Command), typeof(ICommand), typeof(TapGestureRecognizer), null);
 
-		public static readonly BindableProperty CommandParameterProperty = BindableProperty.Create("CommandParameter", typeof(object), typeof(TapGestureRecognizer), null);
+		public static readonly BindableProperty CommandParameterProperty = BindableProperty.Create(nameof(CommandParameter), typeof(object), typeof(TapGestureRecognizer), null);
 
-		public static readonly BindableProperty NumberOfTapsRequiredProperty = BindableProperty.Create("NumberOfTapsRequired", typeof(int), typeof(TapGestureRecognizer), 1);
+		public static readonly BindableProperty NumberOfTapsRequiredProperty = BindableProperty.Create(nameof(NumberOfTapsRequired), typeof(int), typeof(TapGestureRecognizer), 1);
 
 		public TapGestureRecognizer()
 		{
@@ -75,7 +75,7 @@ namespace Xamarin.Forms
 		}
 
 		[Obsolete("TappedCallbackProperty is obsolete as of version 1.0.2. Please use Command instead.")] 
-		public static readonly BindableProperty TappedCallbackProperty = BindableProperty.Create("TappedCallback", typeof(Action<View, object>), typeof(TapGestureRecognizer), null);
+		public static readonly BindableProperty TappedCallbackProperty = BindableProperty.Create(nameof(TappedCallback), typeof(Action<View, object>), typeof(TapGestureRecognizer), null);
 
 		[Obsolete("TappedCallback is obsolete as of version 1.0.2. Please use Command instead.")]
 		public Action<View, object> TappedCallback
@@ -85,7 +85,7 @@ namespace Xamarin.Forms
 		}
 
 		[Obsolete("TappedCallbackParameterProperty is obsolete as of version 1.0.2. Please use Command instead.")] 
-		public static readonly BindableProperty TappedCallbackParameterProperty = BindableProperty.Create("TappedCallbackParameter", typeof(object), typeof(TapGestureRecognizer), null);
+		public static readonly BindableProperty TappedCallbackParameterProperty = BindableProperty.Create(nameof(TappedCallbackParameter), typeof(object), typeof(TapGestureRecognizer), null);
 
 		[Obsolete("TappedCallbackParameter is obsolete as of version 1.0.2. Please use Command instead.")]
 		public object TappedCallbackParameter

@@ -6,7 +6,7 @@ namespace Xamarin.Forms
 {
 	public class PanGestureRecognizer : GestureRecognizer, IPanGestureController
 	{
-		public static readonly BindableProperty TouchPointsProperty = BindableProperty.Create("TouchPoints", typeof(int), typeof(PanGestureRecognizer), 1);
+		public static readonly BindableProperty TouchPointsProperty = BindableProperty.Create(nameof(TouchPoints), typeof(int), typeof(PanGestureRecognizer), 1);
 
 		public int TouchPoints
 		{

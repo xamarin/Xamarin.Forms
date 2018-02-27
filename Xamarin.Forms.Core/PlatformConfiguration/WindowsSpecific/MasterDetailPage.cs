@@ -9,7 +9,7 @@ namespace Xamarin.Forms.PlatformConfiguration.WindowsSpecific
 		#region CollapsedStyle
 
 		public static readonly BindableProperty CollapseStyleProperty =
-			BindableProperty.CreateAttached("CollapseStyle", typeof(CollapseStyle),
+			BindableProperty.CreateAttached(nameof(CollapseStyle), typeof(CollapseStyle),
 				typeof(MasterDetailPage), CollapseStyle.Full);
 
 		public static CollapseStyle GetCollapseStyle(BindableObject element)

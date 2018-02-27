@@ -8,7 +8,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	[ContentProperty("Children")]
+	[ContentProperty(nameof(Children))]
 	public abstract class Layout<T> : Layout, IViewContainer<T> where T : View
 	{
 		readonly ElementCollection<T> _children;
@@ -52,7 +52,7 @@ namespace Xamarin.Forms
 
 	public abstract class Layout : View, ILayout, ILayoutController, IPaddingElement
 	{
-		public static readonly BindableProperty IsClippedToBoundsProperty = BindableProperty.Create("IsClippedToBounds", typeof(bool), typeof(Layout), false);
+		public static readonly BindableProperty IsClippedToBoundsProperty = BindableProperty.Create(nameof(IsClippedToBounds), typeof(bool), typeof(Layout), false);
 
 		public static readonly BindableProperty CascadeInputTransparentProperty = BindableProperty.Create(
 			nameof(CascadeInputTransparent), typeof(bool), typeof(Layout), true);

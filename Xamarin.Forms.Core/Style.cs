@@ -5,7 +5,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	[ContentProperty("Setters")]
+	[ContentProperty(nameof(Setters))]
 	public sealed class Style : IStyle
 	{
 		internal const string StyleClassPrefix = "Xamarin.Forms.StyleClass.";
@@ -23,7 +23,7 @@ namespace Xamarin.Forms
 
 		IList<TriggerBase> _triggers;
 
-		public Style([TypeConverter(typeof(TypeTypeConverter))] [Parameter("TargetType")] Type targetType)
+		public Style([TypeConverter(typeof(TypeTypeConverter))] [Parameter(nameof(TargetType))] Type targetType)
 		{
 			if (targetType == null)
 				throw new ArgumentNullException("targetType");

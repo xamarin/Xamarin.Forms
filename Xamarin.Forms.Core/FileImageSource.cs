@@ -5,7 +5,7 @@ namespace Xamarin.Forms
 	[TypeConverter(typeof(FileImageSourceConverter))]
 	public sealed class FileImageSource : ImageSource
 	{
-		public static readonly BindableProperty FileProperty = BindableProperty.Create("File", typeof(string), typeof(FileImageSource), default(string));
+		public static readonly BindableProperty FileProperty = BindableProperty.Create(nameof(File), typeof(string), typeof(FileImageSource), default(string));
 
 		public string File
 		{

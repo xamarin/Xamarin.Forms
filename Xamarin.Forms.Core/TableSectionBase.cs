@@ -4,7 +4,7 @@ namespace Xamarin.Forms
 {
 	public abstract class TableSectionBase : BindableObject
 	{
-		public static readonly BindableProperty TitleProperty = BindableProperty.Create("Title", typeof(string), typeof(TableSectionBase), null);
+		public static readonly BindableProperty TitleProperty = BindableProperty.Create(nameof(Title), typeof(string), typeof(TableSectionBase), null);
 
 		/// <summary>
 		///     Constructs a Section without an empty header.

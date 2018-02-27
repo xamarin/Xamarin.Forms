@@ -1,6 +1,6 @@
 namespace Xamarin.Forms
 {
-	[ContentProperty("Content")]
+	[ContentProperty(nameof(Content))]
 	public class ContentView : TemplatedView
 	{
 		public static readonly BindableProperty ContentProperty = BindableProperty.Create(nameof(Content), typeof(View), typeof(ContentView), null, propertyChanged: TemplateUtilities.OnContentChanged);

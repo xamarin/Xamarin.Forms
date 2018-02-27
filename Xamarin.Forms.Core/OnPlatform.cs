@@ -4,7 +4,7 @@ using Xamarin.Forms.Xaml;
 
 namespace Xamarin.Forms
 {
-	[ContentProperty("Platforms")]
+	[ContentProperty(nameof(Platforms))]
 	public class OnPlatform<T>
 	{
 		public OnPlatform()
@@ -81,7 +81,7 @@ namespace Xamarin.Forms
 		}
 	}
 
-	[ContentProperty("Value")]
+	[ContentProperty(nameof(Value))]
 	public class On
 	{
 		[TypeConverter(typeof(ListStringTypeConverter))]

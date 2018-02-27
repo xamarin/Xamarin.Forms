@@ -13,7 +13,7 @@ namespace Xamarin.Forms.PlatformConfiguration.WindowsSpecific
         #region ToolbarPlacement
 
 		public static readonly BindableProperty ToolbarPlacementProperty =
-			BindableProperty.CreateAttached("ToolbarPlacement", typeof(ToolbarPlacement),
+			BindableProperty.CreateAttached(nameof(ToolbarPlacement), typeof(ToolbarPlacement),
 				typeof(FormsElement), ToolbarPlacement.Default);
 
 		public static ToolbarPlacement GetToolbarPlacement(BindableObject element)

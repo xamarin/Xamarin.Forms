@@ -46,18 +46,18 @@ namespace Xamarin.Forms.Internals
 				return;
 			VerifyTarget(target);
 
-			OnPropertyChanging("Targets");
+			OnPropertyChanging(nameof(Targets));
 			_targets.Add(target);
-			OnPropertyChanged("Targets");
+			OnPropertyChanged(nameof(Targets));
 		}
 
 		public void Remove(Page target)
 		{
 			if (_targets.Contains(target))
 			{
-				OnPropertyChanging("Targets");
+				OnPropertyChanging(nameof(Targets));
 				if (_targets.Remove(target))
-					OnPropertyChanged("Targets");
+					OnPropertyChanged(nameof(Targets));
 			}
 		}
 

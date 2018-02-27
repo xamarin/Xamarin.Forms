@@ -5,7 +5,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	[ContentProperty("Text")]
+	[ContentProperty(nameof(Text))]
 	public sealed class Span : INotifyPropertyChanged, IFontElement
 	{
 		class BindableSpan : BindableObject, IFontElement

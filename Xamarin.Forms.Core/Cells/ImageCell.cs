@@ -4,14 +4,13 @@ namespace Xamarin.Forms
 {
 	public class ImageCell : TextCell
 	{
-		public static readonly BindableProperty ImageSourceProperty = BindableProperty.Create("ImageSource", typeof(ImageSource), typeof(ImageCell), null,
+		public static readonly BindableProperty ImageSourceProperty = BindableProperty.Create(nameof(ImageSource), typeof(ImageSource), typeof(ImageCell), null,
 			propertyChanging: (bindable, oldvalue, newvalue) => ((ImageCell)bindable).OnSourcePropertyChanging((ImageSource)oldvalue, (ImageSource)newvalue),
 			propertyChanged: (bindable, oldvalue, newvalue) => ((ImageCell)bindable).OnSourcePropertyChanged((ImageSource)oldvalue, (ImageSource)newvalue));
 
 		public ImageCell()
 		{
-			Disappearing += (sender, e) =>
-			{
+			Disappearing += (sender, e) => {
 				if (ImageSource == null)
 					return;
 				ImageSource.Cancel();

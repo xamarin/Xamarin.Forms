@@ -10,14 +10,14 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	[ContentProperty("Children")]
+	[ContentProperty(nameof(Children))]
 	public abstract class MultiPage<T> : Page, IViewContainer<T>, IPageContainer<T>, IItemsView<T>, IMultiPageController<T> where T : Page
 	{
-		public static readonly BindableProperty ItemsSourceProperty = BindableProperty.Create("ItemsSource", typeof(IEnumerable), typeof(MultiPage<>), null);
+		public static readonly BindableProperty ItemsSourceProperty = BindableProperty.Create(nameof(ItemsSource), typeof(IEnumerable), typeof(MultiPage<>), null);
 
-		public static readonly BindableProperty ItemTemplateProperty = BindableProperty.Create("ItemTemplate", typeof(DataTemplate), typeof(MultiPage<>), null);
+		public static readonly BindableProperty ItemTemplateProperty = BindableProperty.Create(nameof(ItemTemplate), typeof(DataTemplate), typeof(MultiPage<>), null);
 
-		public static readonly BindableProperty SelectedItemProperty = BindableProperty.Create("SelectedItem", typeof(object), typeof(MultiPage<>), null, BindingMode.TwoWay);
+		public static readonly BindableProperty SelectedItemProperty = BindableProperty.Create(nameof(SelectedItem), typeof(object), typeof(MultiPage<>), null, BindingMode.TwoWay);
 
 		internal static readonly BindableProperty IndexProperty = BindableProperty.Create("Index", typeof(int), typeof(Page), -1);
 
@@ -131,7 +131,7 @@ namespace Xamarin.Forms
 			{
 				UpdateCurrentPage();
 			}
-			else if (propertyName == "CurrentPage" && ItemsSource != null)
+			else if (propertyName == nameof(CurrentPage) && ItemsSource != null)
 			{
 				if (CurrentPage == null)
 				{
