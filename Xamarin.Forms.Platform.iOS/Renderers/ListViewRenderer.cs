@@ -213,8 +213,6 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					_tableViewController = new FormsUITableViewController(e.NewElement);
 					SetNativeControl(_tableViewController.TableView);
-					if (Forms.IsiOS9OrNewer)
-						Control.CellLayoutMarginsFollowReadableWidth = false;
 
 					_insetTracker = new KeyboardInsetTracker(_tableViewController.TableView, () => Control.Window, insets => Control.ContentInset = Control.ScrollIndicatorInsets = insets, point =>
 					{
@@ -950,10 +948,10 @@ namespace Xamarin.Forms.Platform.iOS
 				if (cell.HasContextActions)
 					throw new NotSupportedException("Header cells do not support context actions");
 
-					var renderer = (CellRenderer)Internals.Registrar.Registered.GetHandlerForObject<IRegisterable>(cell);
+				var renderer = (CellRenderer)Internals.Registrar.Registered.GetHandlerForObject<IRegisterable>(cell);
 
-					view = new HeaderWrapperView();
-					view.AddSubview(renderer.GetCell(cell, null, tableView));
+				view = new HeaderWrapperView();
+				view.AddSubview(renderer.GetCell(cell, null, tableView));
 
 				return view;
 			}
@@ -1245,6 +1243,13 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (Forms.IsiOS9OrNewer)
 				TableView.CellLayoutMarginsFollowReadableWidth = false;
+			
+			if (Forms.IsiOS11OrNewer)
+			{
+				ExtendedLayoutIncludesOpaqueBars = true;
+				TableView.ContentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentBehavior.Always;
+			}
+				
 			_refresh = new UIRefreshControl();
 			_refresh.ValueChanged += OnRefreshingChanged;
 			_list = element;
@@ -1256,24 +1261,32 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (!_refreshAdded)
 				{
+					TableView.AlwaysBounceHorizontal = true;
 					RefreshControl = _refresh;
 					_refreshAdded = true;
 				}
 
 				if (!_refresh.Refreshing)
 				{
-					_refresh.BeginRefreshing();
+					RefreshControl.Hidden = false;
+					RefreshControl.LayoutIfNeeded();
+					RefreshControl.BeginRefreshing();
 
+					UpdateContentOffset(TableView.ContentOffset.Y - RefreshControl.Frame.Height);
 					//hack: when we don't have cells in our UITableView the spinner fails to appear
 					CheckContentSize();
 
-					TableView.ScrollRectToVisible(new RectangleF(0, 0, _refresh.Bounds.Width, _refresh.Bounds.Height), true);
+					TableView.ScrollRectToVisible(new RectangleF(0, 0, RefreshControl.Bounds.Width, RefreshControl.Bounds.Height), true);
 				}
 			}
 			else
 			{
-				_refresh.EndRefreshing();
+				if (RefreshControl == null)
+					return;
+				UpdateContentOffset(-RefreshControl.Frame.Height);
+				RefreshControl.EndRefreshing();
 
+				RefreshControl.LayoutIfNeeded();
 				if (!_list.IsPullToRefreshEnabled)
 					RemoveRefresh();
 			}
@@ -1368,6 +1381,17 @@ namespace Xamarin.Forms.Platform.iOS
 
 			RefreshControl = null;
 			_refreshAdded = false;
+		}
+
+		void UpdateContentOffset(nfloat offset)
+		{
+			if (!Forms.IsiOS11OrNewer)
+				return;
+			var parentNav = _list.Parent.Parent as NavigationPage;
+			if (parentNav != null && parentNav.OnThisPlatform().PrefersLargeTitles())
+			{
+				TableView.SetContentOffset(new CoreGraphics.CGPoint(TableView.ContentOffset.X, offset), true);
+			}
 		}
 	}
 }
