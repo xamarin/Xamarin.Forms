@@ -3,6 +3,12 @@ using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 
+#if UITEST
+using Xamarin.Forms.Core.UITests;
+using Xamarin.UITest;
+using NUnit.Framework;
+#endif
+
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
@@ -25,8 +31,6 @@ namespace Xamarin.Forms.Controls.Issues
 				WidthRequest = 64
 			};
 
-			button.On<Android>().SetUseNativePadding(false);
-
 			Content = new StackLayout
 					{
 				Children = {
@@ -47,5 +51,13 @@ namespace Xamarin.Forms.Controls.Issues
 				}
 			};
 		}
+#if UITEST
+		[Test]
+		[Category(UITestCategories.ManualReview)]
+		public void Issue1909Test()
+		{
+			RunningApp.Screenshot("I am at Issue 1909");
+		}
+#endif
 	}
 }
