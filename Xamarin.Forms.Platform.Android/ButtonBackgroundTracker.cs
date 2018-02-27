@@ -6,6 +6,7 @@ using Android.OS;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using Specifics = Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using AButton = Android.Widget.Button;
+using AColor = Android.Graphics.Color;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -69,11 +70,20 @@ namespace Xamarin.Forms.Platform.Android
 
 				_backgroundDrawable.Button = _button;
 
-				var useNativePadding = _button.OnThisPlatform().UseNativePadding();
-				if (useNativePadding)
-					_backgroundDrawable.SetPadding(_nativeButton.PaddingTop, _nativeButton.PaddingLeft);
-				else
-					_backgroundDrawable.SetPadding(0, 0);
+				var useDefaultPadding = _button.OnThisPlatform().UseDefaultPadding();
+
+				int paddingTop = useDefaultPadding ? _nativeButton.PaddingTop : 0;
+				int paddingLeft = useDefaultPadding ? _nativeButton.PaddingLeft : 0;
+
+				var useDefaultShadow = _button.OnThisPlatform().UseDefaultShadow();
+
+				float shadowRadius = useDefaultShadow ? 2 : _nativeButton.ShadowRadius;
+				float shadowDx = useDefaultShadow ? 0 : _nativeButton.ShadowDx;
+				float shadowDy = useDefaultShadow ? 4 : _nativeButton.ShadowDy;
+				AColor shadowColor = useDefaultShadow ? _backgroundDrawable.PressedBackgroundColor.ToAndroid() : _nativeButton.ShadowColor;
+
+				_backgroundDrawable.SetPadding(paddingTop, paddingLeft)
+								   .SetShadow(shadowDy, shadowDx, shadowColor, shadowRadius);
 
 				if (_drawableEnabled)
 					return;
@@ -149,7 +159,8 @@ namespace Xamarin.Forms.Platform.Android
 				e.PropertyName.Equals(Button.BorderWidthProperty.PropertyName) ||
 				e.PropertyName.Equals(Button.CornerRadiusProperty.PropertyName) ||
 				e.PropertyName.Equals(VisualElement.BackgroundColorProperty.PropertyName) ||
-				e.PropertyName.Equals(Specifics.Button.UseNativePaddingProperty.PropertyName))
+				e.PropertyName.Equals(Specifics.Button.UseDefaultPaddingProperty.PropertyName) ||
+				e.PropertyName.Equals(Specifics.Button.UseDefaultShadowProperty.PropertyName))
 			{
 				Reset();
 				UpdateDrawable();

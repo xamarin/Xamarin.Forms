@@ -2,13 +2,13 @@ using System;
 using System.Linq;
 using Android.Graphics;
 using Android.Graphics.Drawables;
+using AColor = Android.Graphics.Color;
 
 namespace Xamarin.Forms.Platform.Android
 {
 	internal class ButtonDrawable : Drawable
 	{
 		public const int DefaultCornerRadius = 2; // Default value for Android material button.
-		const int ShadowDy = 4;
 
 		readonly Func<double, float> _convertToPixels;
 		bool _isDisposed;
@@ -19,6 +19,11 @@ namespace Xamarin.Forms.Platform.Android
 		float _paddingTop;
 		Color _defaultColor;
 
+		AColor _shadowColor;
+		float _shadowDx;
+		float _shadowDy;
+		float _shadowRadius;
+
 		float PaddingLeft
 		{
 			get { return (_paddingLeft / 2f); }
@@ -27,7 +32,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		float PaddingTop
 		{
-			get { return (_paddingTop / 2f) + ShadowDy; }
+			get { return (_paddingTop / 2f) + _shadowDy; }
 			set { _paddingTop = value; }
 		}
 
@@ -70,10 +75,20 @@ namespace Xamarin.Forms.Platform.Android
 			canvas.DrawBitmap(bitmap, 0, 0, new Paint());
 		}
 
-		public void SetPadding(float top, float left)
+		public ButtonDrawable SetShadow(float dy, float dx, AColor color, float radius)
+		{
+			_shadowDx = dx;
+			_shadowDy = dy;
+			_shadowColor = color;
+			_shadowRadius = radius;
+			return this;
+		}
+
+		public ButtonDrawable SetPadding(float top, float left)
 		{
 			_paddingTop = top;
 			_paddingLeft = left;
+			return this;
 		}
 
 		public void Reset()
@@ -143,15 +158,12 @@ namespace Xamarin.Forms.Platform.Android
 
 		void DrawBackground(Canvas canvas, int width, int height, bool pressed)
 		{
-			const int shadowDx = 0;
-			const int shadowRadius = 2;
-
 			var paint = new Paint { AntiAlias = true };
 			var path = new Path();
 
 			float borderRadius = ConvertCornerRadiusToPixels();
 
-			RectF rect = new RectF(0, 0, width, height - 0);
+			RectF rect = new RectF(0, 0, width, height);
 
 			rect.Inset(PaddingLeft, PaddingTop);
 
@@ -159,7 +171,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			paint.Color = pressed ? PressedBackgroundColor.ToAndroid() : BackgroundColor.ToAndroid();
 			paint.SetStyle(Paint.Style.Fill);
-			paint.SetShadowLayer(shadowRadius, shadowDx, ShadowDy, PressedBackgroundColor.ToAndroid());
+			paint.SetShadowLayer(_shadowRadius, _shadowDx, _shadowDy, _shadowColor);
+
 			canvas.DrawPath(path, paint);
 		}
 
