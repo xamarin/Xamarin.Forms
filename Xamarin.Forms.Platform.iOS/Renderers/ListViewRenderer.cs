@@ -1253,7 +1253,7 @@ namespace Xamarin.Forms.Platform.iOS
 				_usingLargeTitles = (parentNav != null && parentNav.OnThisPlatform().PrefersLargeTitles());
 			}
 
-			_refresh = new FormsRefreshControl();
+			_refresh = new FormsRefreshControl(_usingLargeTitles);
 			_refresh.ValueChanged += OnRefreshingChanged;
 			_list = element;
 		}
@@ -1398,6 +1398,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 	internal class FormsRefreshControl : UIRefreshControl
 	{
+		bool _usingLargeTitles;
+
+		public FormsRefreshControl(bool usingLargeTitles)
+		{
+			_usingLargeTitles = usingLargeTitles;
+		}
+
 		public override bool Hidden
 		{
 			get
@@ -1408,7 +1415,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				//hack: ahahah take that UIKit! 
 				//when using pull to refresh with Large tiles sometimes iOS tries to hide the UIRefreshControl
-				if (value && Refreshing)
+				if (_usingLargeTitles && value && Refreshing)
 					return;
 				base.Hidden = value;
 			}
@@ -1417,6 +1424,8 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void BeginRefreshing()
 		{
 			base.BeginRefreshing();
+			if (!_usingLargeTitles)
+				return;
 			Hidden = false;
 		}
 	}
