@@ -21,9 +21,11 @@ namespace Xamarin.Forms.Platform.GTK
 
             if (SynchronizationContext.Current == null)
                 SynchronizationContext.SetSynchronizationContext(new GtkSynchronizationContext());
-        }
 
-        public static int MainThreadID { get; set; }
+			WindowStateEvent += OnWindowStateEvent;
+		}
+				
+		public static int MainThreadID { get; set; }
         public static Window MainWindow { get; set; }
 
         public void LoadApplication(Application application)
@@ -36,7 +38,9 @@ namespace Xamarin.Forms.Platform.GTK
 
             application.PropertyChanged += ApplicationOnPropertyChanged;
             UpdateMainPage();
-        }
+
+			_application.SendStart();
+		}
 
         public void SetApplicationTitle(string title)
         {
@@ -71,7 +75,7 @@ namespace Xamarin.Forms.Platform.GTK
             return true;
         }
 
-        private void ApplicationOnPropertyChanged(object sender, PropertyChangedEventArgs args)
+		private void ApplicationOnPropertyChanged(object sender, PropertyChangedEventArgs args)
         {
             if (args.PropertyName == nameof(Application.MainPage))
             {
@@ -127,11 +131,25 @@ namespace Xamarin.Forms.Platform.GTK
             }
         }
 
-        private void Dispose(bool disposing)
+		private async void OnWindowStateEvent(object o, WindowStateEventArgs args)
+		{
+			if (args.Event.ChangedMask == Gdk.WindowState.Iconified)
+			{
+				var windowState = args.Event.NewWindowState;
+
+				if (windowState == Gdk.WindowState.Iconified)
+					await _application.SendSleepAsync();
+				else
+					_application.SendResume();
+			}
+		}
+
+		private void Dispose(bool disposing)
         {
             if (disposing && _application != null)
             {
-                _application.PropertyChanged -= ApplicationOnPropertyChanged;
+				WindowStateEvent -= OnWindowStateEvent;
+				_application.PropertyChanged -= ApplicationOnPropertyChanged;
             }
         }
     }
