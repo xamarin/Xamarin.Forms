@@ -57,12 +57,17 @@ namespace Xamarin.Forms.Platform.iOS
 					});
 					accessoryView.SetItems(new[] { spacer, doneButton }, false);
 					Control.InputAccessoryView = accessoryView;
+
+					Control.Text = Element.Placeholder;
+					Control.TextColor = Element.PlaceholderColor.ToUIColor();
 				}
 
 				Control.Changed += HandleChanged;
 				Control.Started += OnStarted;
 				Control.Ended += OnEnded;
 				Control.ShouldChangeText += ShouldChangeText;
+				Control.ShouldBeginEditing += ShouldBeginEditing;
+				Control.ShouldEndEditing += ShouldEndEditing;
 			}
 
 			UpdateText();
@@ -72,6 +77,25 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateEditable();
 			UpdateTextAlignment();
 			UpdateMaxLength();
+		}
+
+		bool ShouldBeginEditing(UITextView textField)
+		{
+			if (textField.Text.Equals(Element.Placeholder))
+			{
+				textField.Text = string.Empty;
+				UpdateTextColor();
+			}
+			return true;
+		}
+
+		bool ShouldEndEditing(UITextView textField)
+		{
+			if (string.IsNullOrWhiteSpace(textField.Text))
+			{
+				UpdatePlaceholder();
+			}
+			return true;
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -149,8 +173,30 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateText()
 		{
 			// ReSharper disable once RedundantCheckBeforeAssignment
-			if (Control.Text != Element.Text)
+			if (string.IsNullOrWhiteSpace(Element.Text))
+			{
+				UpdatePlaceholder();
+			}
+			else if (Control.Text != Element.Text)
 				Control.Text = Element.Text;
+		}
+
+		void UpdatePlaceholder()
+		{
+			UpdatePlaceholderText();
+			UpdatePlaceholderColor();
+		}
+
+		void UpdatePlaceholderText()
+		{
+			if (Control.Text != Element.Placeholder)
+				Control.Text = Element.Placeholder;
+		}
+
+		void UpdatePlaceholderColor()
+		{
+			if (Element.PlaceholderColor != Color.Default)
+				Control.TextColor = Element.PlaceholderColor.ToUIColor();
 		}
 
 		void UpdateTextAlignment()

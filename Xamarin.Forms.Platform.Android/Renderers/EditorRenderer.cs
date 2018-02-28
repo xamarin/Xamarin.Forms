@@ -19,6 +19,7 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		bool _disposed;
 		TextColorSwitcher _textColorSwitcher;
+		Color defaultPlaceholdercolor;
 
 		public EditorRenderer(Context context) : base(context)
 		{
@@ -185,6 +186,22 @@ namespace Xamarin.Forms.Platform.Android
 		void UpdateTextColor()
 		{
 			_textColorSwitcher?.UpdateTextColor(Control, Element.TextColor);
+		}
+
+		void UpdatePlaceholderText()
+		{
+			if (Control.Hint == Element.Placeholder)
+				return;
+
+			Control.Hint = Element.Placeholder;
+		}
+
+		void UpdatePlaceholderColor()
+		{
+			if (Element.PlaceholderColor == Color.Default)
+				
+			else
+				Control.SetHintTextColor(Element.PlaceholderColor.ToAndroid());
 		}
 
 		void OnKeyboardBackPressed(object sender, EventArgs eventArgs)
