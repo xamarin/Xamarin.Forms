@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using AppKit;
 using Xamarin.Forms.Core;
+using Xamarin.Forms.Platform.macOS.Controls;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
@@ -12,7 +13,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				if (Control == null)
 				{
-					SetNativeControl(new NSView());
+					var boxView = new FormsBoxView();
+					SetNativeControl (boxView);
 				}
 
 				SetBackgroundColor(Element.Color);
@@ -44,8 +46,12 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void SetCornerRadius(CornerRadius cornerRadius)
 		{
+			if (Element == null)
+				return;
+
 			Control.Layer.MasksToBounds = true;
-			Control.Layer.CornerRadius = (float)cornerRadius.TopLeft;
+
+			(Control as FormsBoxView)?.SetCornerRadius ((float)cornerRadius.TopLeft, (float)cornerRadius.TopRight, (float)cornerRadius.BottomLeft, (float)cornerRadius.BottomRight);
 		}
 	}
 }
