@@ -1070,12 +1070,10 @@ namespace Xamarin.Forms.Platform.iOS
 					_uiTableViewController.UpdateShowHideRefresh(true);
 				}
 
-				if (_isDragging && scrollView.ContentOffset.Y < -1f && _uiTableViewController._usingLargeTitles)
+				if (_isDragging && scrollView.ContentOffset.Y < -10f && _uiTableViewController._usingLargeTitles)
 				{
-					_uiTableViewController.ForceRefreshing();
-				
-				}
-					
+					_uiTableViewController.ForceRefreshing();				
+				}					
 			}
 
 			public override string[] SectionIndexTitles(UITableView tableView)
