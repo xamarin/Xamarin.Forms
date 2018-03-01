@@ -33,6 +33,7 @@ namespace Xamarin.Forms.Platform.iOS
 		ITemplatedItemsView<Cell> TemplatedItemsView => Element;
 		public override UIViewController ViewController => _tableViewController;
 		bool _disposed;
+		bool _usingLargeTitles;
 
 		protected UITableViewRowAnimation InsertRowsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
 		protected UITableViewRowAnimation DeleteRowsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
@@ -211,7 +212,12 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (Control == null)
 				{
-					_tableViewController = new FormsUITableViewController(e.NewElement);
+					if (Forms.IsiOS11OrNewer)
+					{
+						var parentNav = e.NewElement.FindParentOfType<NavigationPage>();
+						_usingLargeTitles = (parentNav != null && parentNav.OnThisPlatform().PrefersLargeTitles());
+					}
+					_tableViewController = new FormsUITableViewController(e.NewElement, _usingLargeTitles);
 					SetNativeControl(_tableViewController.TableView);
 
 					_insetTracker = new KeyboardInsetTracker(_tableViewController.TableView, () => Control.Window, insets => Control.ContentInset = Control.ScrollIndicatorInsets = insets, point =>
@@ -1060,7 +1066,16 @@ namespace Xamarin.Forms.Platform.iOS
 			public override void Scrolled(UIScrollView scrollView)
 			{
 				if (_isDragging && scrollView.ContentOffset.Y < 0)
+				{
 					_uiTableViewController.UpdateShowHideRefresh(true);
+				}
+
+				if (_isDragging && scrollView.ContentOffset.Y < -1f && _uiTableViewController._usingLargeTitles)
+				{
+					_uiTableViewController.ForceRefreshing();
+				
+				}
+					
 			}
 
 			public override string[] SectionIndexTitles(UITableView tableView)
@@ -1238,20 +1253,15 @@ namespace Xamarin.Forms.Platform.iOS
 
 		bool _refreshAdded;
 		bool _disposed;
-		bool _usingLargeTitles;
+		internal bool _usingLargeTitles;
+		bool _isRefreshing;
 
-		public FormsUITableViewController(ListView element)
+		public FormsUITableViewController(ListView element, bool usingLargeTitles)
 		{
 			if (Forms.IsiOS9OrNewer)
 				TableView.CellLayoutMarginsFollowReadableWidth = false;
 
-			if (Forms.IsiOS11OrNewer)
-			{
-				ExtendedLayoutIncludesOpaqueBars = true;
-				TableView.ContentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentBehavior.Always;
-				var parentNav = element.FindParentOfType<NavigationPage>();
-				_usingLargeTitles = (parentNav != null && parentNav.OnThisPlatform().PrefersLargeTitles());
-			}
+			_usingLargeTitles = usingLargeTitles;
 
 			_refresh = new FormsRefreshControl(_usingLargeTitles);
 			_refresh.ValueChanged += OnRefreshingChanged;
@@ -1290,6 +1300,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				UpdateContentOffset(-1);
 
+				_isRefreshing = false;
 				if (!_list.IsPullToRefreshEnabled)
 					RemoveRefresh();
 			}
@@ -1314,6 +1325,17 @@ namespace Xamarin.Forms.Platform.iOS
 			//			(maybe the command it's attached to a button the app wants disabled)
 			//   4. OnCommandCanExecuteChanged handler sets RefreshAllowed to false because the RefreshCommand is disabled
 			//   5. We end up here; A refresh is in progress while being asked to disable pullToRefresh
+		}
+
+		//hack: Form some reason UIKit isnt't allowing to scroll negative values with largetitles 
+		public void ForceRefreshing()
+		{
+			if (!_refresh.Refreshing && !_isRefreshing)
+			{
+				_isRefreshing = true;
+				UpdateContentOffset(TableView.ContentOffset.Y - _refresh.Frame.Height, _refresh.BeginRefreshing);
+				_list.SendRefreshing();
+			}
 		}
 
 		public void UpdateShowHideRefresh(bool shouldHide)
@@ -1372,6 +1394,8 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (_refresh.Refreshing)
 				_list.SendRefreshing();
+
+			_isRefreshing = _refresh.Refreshing;
 		}
 
 		void RemoveRefresh()
@@ -1379,11 +1403,12 @@ namespace Xamarin.Forms.Platform.iOS
 			if (!_refreshAdded)
 				return;
 
-			if (_refresh.Refreshing)
+			if (_refresh.Refreshing || _isRefreshing)
 				_refresh.EndRefreshing();
 
 			RefreshControl = null;
 			_refreshAdded = false;
+			_isRefreshing = false;
 		}
 
 		void UpdateContentOffset(nfloat offset, Action completed = null)
