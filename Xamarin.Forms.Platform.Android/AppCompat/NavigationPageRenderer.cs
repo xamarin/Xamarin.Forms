@@ -43,6 +43,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		DrawerMultiplexedListener _drawerListener;
 		DrawerLayout _drawerLayout;
 		bool _toolbarVisible;
+		bool _isAttachedToWindow;
 
 		// The following is based on https://android.googlesource.com/platform/frameworks/support/+/refs/heads/master/v4/java/android/support/v4/app/FragmentManager.java#849
 		const int TransitionDuration = 220;
@@ -231,12 +232,14 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			PushCurrentPages();
 
 			UpdateToolbar();
+			_isAttachedToWindow = true;
 		}
 
 		protected override void OnDetachedFromWindow()
 		{
 			base.OnDetachedFromWindow();
 			PageController.SendDisappearing();
+			_isAttachedToWindow = false;
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<NavigationPage> e)
@@ -286,6 +289,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				navController.PopToRootRequested += OnPoppedToRoot;
 				navController.InsertPageBeforeRequested += OnInsertPageBeforeRequested;
 				navController.RemovePageRequested += OnRemovePageRequested;
+
+				if (_isAttachedToWindow)
+				{
+					PushCurrentPages();
+				}
 			}
 		}
 
