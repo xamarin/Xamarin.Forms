@@ -290,7 +290,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				navController.InsertPageBeforeRequested += OnInsertPageBeforeRequested;
 				navController.RemovePageRequested += OnRemovePageRequested;
 
-				if (_isAttachedToWindow)
+				if (_isAttachedToWindow && IsAttachedToRoot())
 				{
 					PushCurrentPages();
 				}
