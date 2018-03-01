@@ -1292,8 +1292,9 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else
 			{
-				if (_refresh == null)
+				if (RefreshControl == null)
 					return;
+				
 				_refresh.EndRefreshing();
 
 				UpdateContentOffset(-1);
@@ -1328,6 +1329,8 @@ namespace Xamarin.Forms.Platform.iOS
 		//hack: Form some reason UIKit isnt't allowing to scroll negative values with largetitles 
 		public void ForceRefreshing()
 		{
+			if (!_list.IsPullToRefreshEnabled)
+				return;
 			if (!_refresh.Refreshing && !_isRefreshing)
 			{
 				_isRefreshing = true;
