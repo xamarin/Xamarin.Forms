@@ -259,9 +259,6 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void Issue1Test ()
 		{
-			RunningApp.Screenshot ("I am at Issue 1");
-			RunningApp.WaitForElement (q => q.Marked ("IssuePageLabel"));
-			RunningApp.Screenshot ("I see the Label");
 		}
 #endif
 	}
