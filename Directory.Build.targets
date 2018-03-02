@@ -1,0 +1,9 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <DocumentationFile>$(IntermediateOutputPath)\$(AssemblyName).ignore</DocumentationFile>
+    <!-- cref that points to non-existing API is wrong -->
+    <WarningsAsErrors>CS1574</WarningsAsErrors>
+    <!-- Missing API docs isn't, since we have api-docs for that -->
+    <NoWarn>CS1591</NoWarn>
+  </PropertyGroup>
+</Project>
