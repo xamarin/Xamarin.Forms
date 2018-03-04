@@ -3,6 +3,7 @@ using System.ComponentModel;
 using AppKit;
 using Foundation;
 using Xamarin.Forms.Internals;
+using System.Threading.Tasks;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
@@ -42,6 +43,7 @@ namespace Xamarin.Forms.Platform.MacOS
 					Control.OnFailedLoading += OnNSWebViewFailedLoadWithError;
 
 					Element.EvalRequested += OnEvalRequested;
+					Element.EvaluateJavaScriptRequested += OnEvaluateJavaScriptRequested;
 					Element.GoBackRequested += OnGoBackRequested;
 					Element.GoForwardRequested += OnGoForwardRequested;
 
@@ -68,6 +70,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				Control.OnFinishedLoading -= OnNSWebViewFinishedLoad;
 				Control.OnFailedLoading -= OnNSWebViewFailedLoadWithError;
 				Element.EvalRequested -= OnEvalRequested;
+				Element.EvaluateJavaScriptRequested -= OnEvaluateJavaScriptRequested;
 				Element.GoBackRequested -= OnGoBackRequested;
 				Element.GoForwardRequested -= OnGoForwardRequested;
 			}
@@ -95,6 +98,18 @@ namespace Xamarin.Forms.Platform.MacOS
 		void OnEvalRequested(object sender, EvalRequested eventArg)
 		{
 			Control?.StringByEvaluatingJavaScriptFromString(eventArg?.Script);
+		}
+
+		async Task<string> OnEvaluateJavaScriptRequested(string script)
+		{
+			var tcr = new TaskCompletionSource<string>();
+			var task = tcr.Task;
+
+			Device.BeginInvokeOnMainThread(() => {
+				tcr.SetResult(Control?.StringByEvaluatingJavaScriptFromString(script));
+			});
+
+			return await task;
 		}
 
 		void OnGoBackRequested(object sender, EventArgs eventArgs)

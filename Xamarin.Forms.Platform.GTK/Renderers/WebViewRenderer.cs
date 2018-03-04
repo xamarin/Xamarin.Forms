@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using Xamarin.Forms.Internals;
+using System.Threading.Tasks;
 
 namespace Xamarin.Forms.Platform.GTK.Renderers
 {
@@ -98,6 +99,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
                     }
 
                     WebViewController.EvalRequested += OnEvalRequested;
+                    WebViewController.EvaluateJavaScriptRequested += OnEvaluateJavaScriptRequested;
                     WebViewController.GoBackRequested += OnGoBackRequested;
                     WebViewController.GoForwardRequested += OnGoForwardRequested;
                 }
@@ -129,6 +131,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
                 }
 
                 WebViewController.EvalRequested -= OnEvalRequested;
+                WebViewController.EvaluateJavaScriptRequested -= OnEvaluateJavaScriptRequested;
                 WebViewController.GoBackRequested -= OnGoBackRequested;
                 WebViewController.GoForwardRequested -= OnGoForwardRequested;
             }
@@ -202,6 +205,16 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
                 Control.ExecuteScript(eventArg?.Script);
             }
         }
+
+		async Task<string> OnEvaluateJavaScriptRequested(string script)
+		{
+			if (Control != null)
+			{
+				Control.ExecuteScript(script);
+			}
+
+			return null;
+		}
 
         private void OnGoBackRequested(object sender, EventArgs eventArgs)
         {

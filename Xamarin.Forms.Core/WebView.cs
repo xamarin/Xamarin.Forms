@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform;
 
@@ -8,6 +9,8 @@ namespace Xamarin.Forms
 	[RenderWith(typeof(_WebViewRenderer))]
 	public class WebView : View, IWebViewController, IElementConfiguration<WebView>
 	{
+		public delegate Task<string> EvaluateJavaScriptDelegate(string script);
+
 		public static readonly BindableProperty SourceProperty = BindableProperty.Create("Source", typeof(WebViewSource), typeof(WebView), default(WebViewSource),
 			propertyChanging: (bindable, oldvalue, newvalue) =>
 			{
@@ -77,6 +80,12 @@ namespace Xamarin.Forms
 			handler?.Invoke(this, new EvalRequested(script));
 		}
 
+		public async Task<string> EvaluateJavaScriptAsync(string script)
+		{
+			EvaluateJavaScriptDelegate handler = EvaluateJavaScriptRequested;
+			return await handler?.Invoke(script);
+		}
+
 		public void GoBack()
 			=> GoBackRequested?.Invoke(this, EventArgs.Empty);
 
@@ -122,6 +131,9 @@ namespace Xamarin.Forms
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public event EventHandler<EvalRequested> EvalRequested;
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public event EvaluateJavaScriptDelegate EvaluateJavaScriptRequested;
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public event EventHandler GoBackRequested;
