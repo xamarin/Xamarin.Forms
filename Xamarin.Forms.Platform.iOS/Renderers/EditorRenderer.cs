@@ -26,6 +26,8 @@ namespace Xamarin.Forms.Platform.iOS
 					Control.Started -= OnStarted;
 					Control.Ended -= OnEnded;
 					Control.ShouldChangeText -= ShouldChangeText;
+					Control.ShouldBeginEditing -= ShouldBeginEditing;
+					Control.ShouldEndEditing -= ShouldEndEditing;
 				}
 			}
 
@@ -173,11 +175,7 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateText()
 		{
 			// ReSharper disable once RedundantCheckBeforeAssignment
-			if (string.IsNullOrWhiteSpace(Element.Text))
-			{
-				UpdatePlaceholder();
-			}
-			else if (Control.Text != Element.Text)
+			if (Control.Text != Element.Text)
 				Control.Text = Element.Text;
 		}
 

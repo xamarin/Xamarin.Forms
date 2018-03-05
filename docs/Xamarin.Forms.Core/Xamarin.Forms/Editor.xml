@@ -232,6 +232,68 @@ var editor = new Editor {
         <remarks>To be added.</remarks>
       </Docs>
     </Member>
+    <Member MemberName="Placeholder">
+      <MemberSignature Language="C#" Value="public string Placeholder { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance string Placeholder" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>System.String</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="PlaceholderColor">
+      <MemberSignature Language="C#" Value="public Xamarin.Forms.Color PlaceholderColor { get; set; }" />
+      <MemberSignature Language="ILAsm" Value=".property instance valuetype Xamarin.Forms.Color PlaceholderColor" />
+      <MemberType>Property</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>Xamarin.Forms.Color</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <value>To be added.</value>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="PlaceholderColorProperty">
+      <MemberSignature Language="C#" Value="public static readonly Xamarin.Forms.BindableProperty PlaceholderColorProperty;" />
+      <MemberSignature Language="ILAsm" Value=".field public static initonly class Xamarin.Forms.BindableProperty PlaceholderColorProperty" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>Xamarin.Forms.BindableProperty</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
+    <Member MemberName="PlaceholderProperty">
+      <MemberSignature Language="C#" Value="public static readonly Xamarin.Forms.BindableProperty PlaceholderProperty;" />
+      <MemberSignature Language="ILAsm" Value=".field public static initonly class Xamarin.Forms.BindableProperty PlaceholderProperty" />
+      <MemberType>Field</MemberType>
+      <AssemblyInfo>
+        <AssemblyVersion>2.0.0.0</AssemblyVersion>
+      </AssemblyInfo>
+      <ReturnValue>
+        <ReturnType>Xamarin.Forms.BindableProperty</ReturnType>
+      </ReturnValue>
+      <Docs>
+        <summary>To be added.</summary>
+        <remarks>To be added.</remarks>
+      </Docs>
+    </Member>
     <Member MemberName="SendCompleted">
       <MemberSignature Language="C#" Value="public void SendCompleted ();" />
       <MemberSignature Language="ILAsm" Value=".method public hidebysig newslot virtual instance void SendCompleted() cil managed" />
