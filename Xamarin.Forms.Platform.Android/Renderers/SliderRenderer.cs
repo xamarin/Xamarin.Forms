@@ -67,20 +67,26 @@ namespace Xamarin.Forms.Platform.Android
 
 				seekBar.Max = 1000;
 				seekBar.SetOnSeekBarChangeListener(this);
-				defaultthumbcolorfilter = seekBar.Thumb.ColorFilter;
-				defaultprogresstintmode = seekBar.ProgressTintMode;
-				defaultprogressbackgroundtintmode = seekBar.ProgressBackgroundTintMode;
-				defaultprogresstintlist = seekBar.ProgressTintList;
-				defaultprogressbackgroundtintlist = seekBar.ProgressBackgroundTintList;
-				defaultthumb = seekBar.Thumb;
 
+				if (Build.VERSION.SdkInt > BuildVersionCodes.Kitkat)
+				{
+					defaultthumbcolorfilter = seekBar.Thumb.ColorFilter;
+					defaultprogresstintmode = seekBar.ProgressTintMode;
+					defaultprogressbackgroundtintmode = seekBar.ProgressBackgroundTintMode;
+					defaultprogresstintlist = seekBar.ProgressTintList;
+					defaultprogressbackgroundtintlist = seekBar.ProgressBackgroundTintList;
+					defaultthumb = seekBar.Thumb;
+				}
 			}
 
 			Slider slider = e.NewElement;
 			_min = slider.Minimum;
 			_max = slider.Maximum;
 			Value = slider.Value;
-			UpdateSliderColors();
+			if (Build.VERSION.SdkInt > BuildVersionCodes.Kitkat)
+			{
+				UpdateSliderColors();
+			}
 		}
 
 		SeekBar NativeSeekbar
@@ -107,14 +113,17 @@ namespace Xamarin.Forms.Platform.Android
 					break;
 			}
 
-			if (e.PropertyName == Slider.MinimumTrackColorProperty.PropertyName)
-				UpdateMinimumTrackColor();
-			else if (e.PropertyName == Slider.MaximumTrackColorProperty.PropertyName)
-				UpdateMaximumTrackColor();
-			else if (e.PropertyName == Slider.ThumbImageProperty.PropertyName)
-				UpdateThumbImage();
-			else if (e.PropertyName == Slider.ThumbColorProperty.PropertyName)
-				UpdateThumbColor();
+			if (Build.VERSION.SdkInt > BuildVersionCodes.Kitkat)
+			{
+				if (e.PropertyName == Slider.MinimumTrackColorProperty.PropertyName)
+					UpdateMinimumTrackColor();
+				else if (e.PropertyName == Slider.MaximumTrackColorProperty.PropertyName)
+					UpdateMaximumTrackColor();
+				else if (e.PropertyName == Slider.ThumbImageProperty.PropertyName)
+					UpdateThumbImage();
+				else if (e.PropertyName == Slider.ThumbColorProperty.PropertyName)
+					UpdateThumbColor();
+			}
 		}
 
 		private void UpdateSliderColors()
