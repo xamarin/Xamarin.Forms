@@ -14,6 +14,8 @@ namespace Xamarin.Forms.Platform.UWP
 		Brush _backgroundColorFocusedDefaultBrush;
 		Brush _textDefaultBrush;
 		Brush _defaultTextColorFocusBrush;
+		Brush _defaultPlaceholderColorFocusBrush;
+		Brush _placeholderDefaultBrush;
 
 		IEditorController ElementController => Element;
 
@@ -49,6 +51,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateFlowDirection();
 				UpdateMaxLength();
 				UpdateDetectReadingOrderFromContent();
+				UpdatePlaceholderText();
+				UpdatePlaceholderColor();
 			}
 
 			base.OnElementChanged(e);
@@ -106,11 +110,31 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateMaxLength();
 			else if (e.PropertyName == Specifics.DetectReadingOrderFromContentProperty.PropertyName)
 				UpdateDetectReadingOrderFromContent();
+			else if (e.PropertyName == Editor.PlaceholderProperty.PropertyName)
+				UpdatePlaceholderText();
+			else if (e.PropertyName == Editor.PlaceholderColorProperty.PropertyName)
+				UpdatePlaceholderColor();
 		}
 
 		void OnLostFocus(object sender, RoutedEventArgs e)
 		{
 			ElementController.SendCompleted();
+		}
+
+		void UpdatePlaceholderText()
+		{
+			Control.PlaceholderText = Element.Placeholder ?? "";
+		}
+
+		void UpdatePlaceholderColor()
+		{
+			Color placeholderColor = Element.PlaceholderColor;
+
+			BrushHelpers.UpdateColor(placeholderColor, ref _placeholderDefaultBrush,
+				() => Control.PlaceholderForegroundBrush, brush => Control.PlaceholderForegroundBrush = brush);
+
+			BrushHelpers.UpdateColor(placeholderColor, ref _defaultPlaceholderColorFocusBrush,
+				() => Control.PlaceholderForegroundFocusBrush, brush => Control.PlaceholderForegroundFocusBrush = brush);
 		}
 
 		protected override void UpdateBackgroundColor()
@@ -143,8 +167,8 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 
 			bool editorIsDefault = editor.FontFamily == null &&
-			                       editor.FontSize == Device.GetNamedSize(NamedSize.Default, typeof(Editor), true) &&
-			                       editor.FontAttributes == FontAttributes.None;
+								   editor.FontSize == Device.GetNamedSize(NamedSize.Default, typeof(Editor), true) &&
+								   editor.FontAttributes == FontAttributes.None;
 
 			if (editorIsDefault && !_fontApplied)
 				return;
@@ -232,7 +256,7 @@ namespace Xamarin.Forms.Platform.UWP
 			if (currentControlText.Length > Element.MaxLength)
 				Control.Text = currentControlText.Substring(0, Element.MaxLength);
 		}
-    
+
 		void UpdateDetectReadingOrderFromContent()
 		{
 			if (Element.IsSet(Specifics.DetectReadingOrderFromContentProperty))
