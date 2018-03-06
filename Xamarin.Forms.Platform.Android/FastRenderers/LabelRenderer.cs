@@ -115,10 +115,10 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			return result;
 		}
 
-		protected override void OnSizeChanged(int w, int h, int oldw, int oldh)
+		protected override void OnLayout(bool changed, int left, int top, int right, int bottom)
 		{
-			base.OnSizeChanged(w, h, oldw, oldh);
-			this.RecalculateSpanPositions(Element, _spannableString, new SizeRequest(new Size(w, h)));
+			base.OnLayout(changed, left, top, right, bottom);
+			this.RecalculateSpanPositions(Element, _spannableString, new SizeRequest(new Size(right - left, bottom - top)));
 		}
 
 		void IVisualElementRenderer.SetElement(VisualElement element)

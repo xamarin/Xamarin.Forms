@@ -4,7 +4,7 @@ namespace Xamarin.Forms
 {
 	public struct Region
 	{
-		
+
 		// While Regions are currently rectangular, they could in the future be transformed into any shape.
 		// As such the internals of how it keeps shapes is hidden, so that future internal changes can occur to support shapes
 		// such as circles if required, without affecting anything else.
@@ -54,6 +54,16 @@ namespace Xamarin.Forms
 			return false;
 		}
 
+		Thickness _inflation;
+
+		public Region Deflate()
+		{
+			if (_inflation == null)
+				return this;
+
+			return Inflate(_inflation.Left * -1, _inflation.Top * -1, _inflation.Right * -1, _inflation.Bottom * -1);
+		}
+
 		public Region Inflate(double size)
 		{
 			return Inflate(size, size, size, size);
@@ -79,6 +89,11 @@ namespace Xamarin.Forms
 
 				Regions[i] = region;
 			}
+
+			_inflation = new Thickness(_inflation == null ? left : left + _inflation.Left,
+									   _inflation == null ? top : top + _inflation.Top,
+									   _inflation == null ? right : right + _inflation.Right,
+									   _inflation == null ? bottom : bottom + _inflation.Bottom);
 
 			return this;
 		}

@@ -1,59 +1,17 @@
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.Linq;
 using System.Windows.Input;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
 	[ContentProperty("Text")]
-	public sealed class Span : Element, IFontElement, ITextElement, IGestureChildElement
+	public sealed class Span : GestureElement, IFontElement, ITextElement
 	{
-		readonly GestureRecognizerCollection _gestureRecognizers = new GestureRecognizerCollection();
-
 		internal readonly MergedStyle _mergedStyle;
 
 		public Span()
 		{
 			_mergedStyle = new MergedStyle(GetType(), this);
-
-			_gestureRecognizers.CollectionChanged += (sender, args) =>
-			{
-				switch (args.Action)
-				{
-					case NotifyCollectionChangedAction.Add:
-						foreach (IElement item in args.NewItems.OfType<IElement>())
-						{
-							ValidateGesture(item as IGestureRecognizer);
-							item.Parent = this;
-						}
-						break;
-					case NotifyCollectionChangedAction.Remove:
-						foreach (IElement item in args.OldItems.OfType<IElement>())
-							item.Parent = null;
-						break;
-					case NotifyCollectionChangedAction.Replace:
-						foreach (IElement item in args.NewItems.OfType<IElement>())
-						{
-							ValidateGesture(item as IGestureRecognizer);
-							item.Parent = this;
-						}
-						foreach (IElement item in args.OldItems.OfType<IElement>())
-							item.Parent = null;
-						break;
-					case NotifyCollectionChangedAction.Reset:
-						foreach (IElement item in _gestureRecognizers.OfType<IElement>())
-							item.Parent = this;
-						break;
-				}
-			};
-		}
-
-		public IList<IGestureRecognizer> GestureRecognizers
-		{
-			get { return _gestureRecognizers; }
 		}
 
 		public static readonly BindableProperty CommandProperty = BindableProperty.Create(nameof(Command), typeof(ICommand), typeof(Span), null);
@@ -167,9 +125,7 @@ namespace Xamarin.Forms
 		{
 		}
 
-		Region IGestureChildElement.Region { get; set; }
-		
-		void ValidateGesture(IGestureRecognizer gesture)
+		internal override void ValidateGesture(IGestureRecognizer gesture)
 		{
 			if (gesture == null)
 				return;
@@ -177,16 +133,6 @@ namespace Xamarin.Forms
 				throw new InvalidOperationException($"{nameof(PanGestureRecognizer)} is not supported on a {nameof(Span)}");
 			if (gesture is PinchGestureRecognizer)
 				throw new InvalidOperationException($"{nameof(PinchGestureRecognizer)} is not supported on a {nameof(Span)}");
-		}
-
-		class GestureRecognizerCollection : ObservableCollection<IGestureRecognizer>
-		{
-			protected override void ClearItems()
-			{
-				List<IGestureRecognizer> removed = new List<IGestureRecognizer>(this);
-				base.ClearItems();
-				base.OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, removed));
-			}
 		}
 	}
 }

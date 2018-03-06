@@ -78,10 +78,10 @@ namespace Xamarin.Forms.Platform.Android
 			return result;
 		}
 
-		protected override void OnSizeChanged(int w, int h, int oldw, int oldh)
+		protected override void OnLayout(bool changed, int l, int t, int r, int b)
 		{
-			base.OnSizeChanged(w, h, oldw, oldh);
-			Control.RecalculateSpanPositions(Element, _spannableString, new SizeRequest(new Size(w, h)));
+			base.OnLayout(changed, l, t, r, b);
+			Control.RecalculateSpanPositions(Element, _spannableString, new SizeRequest(new Size(r - l, b - t)));
 		}
 
 		protected override TextView CreateNativeControl()
