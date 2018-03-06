@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Controls.Issues
 		PlatformAffected.UWP, issueTestNumber: 2)]
 
 	class Issue1705_2 : TabbedPage
-    {
+	{
 		ContentPage _page1;
 		ContentPage _page2;
 		ContentPage _page3;
@@ -28,7 +28,7 @@ namespace Xamarin.Forms.Controls.Issues
 		public Issue1705_2()
 		{
 			_page1 = new ContentPage { Title = "TabPage1", Icon = "bank.png" };
-			_page1.Content = new StackLayout { Padding = new Thickness(0,16), Children = { new Label { Text = "This is TabPage1 using bank.png icon.", FontAttributes = FontAttributes.Bold } } };
+			_page1.Content = new StackLayout { Padding = new Thickness(0, 16), Children = { new Label { Text = "This is TabPage1 using bank.png icon.", FontAttributes = FontAttributes.Bold } } };
 			_page2 = new ContentPage { Title = "TabPage2", Icon = "coffee.png" };
 			_page2.Content = new StackLayout { Padding = new Thickness(0, 16), Children = { new Label { Text = "This is TabPage2 using coffee.png icon.", FontAttributes = FontAttributes.Bold } } };
 			_page3 = new ContentPage { Title = "TabPage3" };
@@ -41,7 +41,7 @@ namespace Xamarin.Forms.Controls.Issues
 			if (Device.RuntimePlatform == Device.UWP)
 				Children.Add(new HeaderIconsControlPage(this) { Title = "UWPSpecifics" });
 		}
-    }
+	}
 
 	class HeaderIconsControlPage : ContentPage
 	{
@@ -71,7 +71,7 @@ namespace Xamarin.Forms.Controls.Issues
 				}
 			};
 
-			var iconWidthLabel = new Label { Text = "Head Icons Width:"};
+			var iconWidthLabel = new Label { Text = "Head Icons Width:" };
 			var iconHeightLabel = new Label { Text = "Head Icons Height:" };
 
 			_iconWidthEntry = new Entry { Text = "16" };
@@ -101,7 +101,6 @@ namespace Xamarin.Forms.Controls.Issues
 				_iconWidthEntry.Text = currentSize.Width.ToString();
 				_iconHeightEntry.Text = currentSize.Height.ToString();
 			};
-
 
 			Content = new StackLayout { Padding = new Thickness(0, 16), Children = {
 					new Label { Text = "Control page for header icons on UWP.", FontAttributes = FontAttributes.Bold },

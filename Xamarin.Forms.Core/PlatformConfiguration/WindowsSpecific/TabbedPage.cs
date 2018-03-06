@@ -9,10 +9,10 @@ namespace Xamarin.Forms.PlatformConfiguration.WindowsSpecific
 	public static class TabbedPage
 	{
 		public static readonly BindableProperty HeaderIconsEnabledProperty =
-			BindableProperty.Create("HeaderIconsEnabledProperty", typeof(bool), typeof(TabbedPage), false);
+			BindableProperty.Create(nameof(HeaderIconsEnabledProperty), typeof(bool), typeof(TabbedPage), false);
 
 		public static readonly BindableProperty HeaderIconsSizeProperty =
-			BindableProperty.Create("HeaderIconsSizeProperty ", typeof(Forms.Size), typeof(TabbedPage), new Forms.Size(16, 16));
+			BindableProperty.Create(nameof(HeaderIconsSizeProperty), typeof(Forms.Size), typeof(TabbedPage), new Forms.Size(16, 16));
 
 		public static void SetHeaderIconsEnabled(BindableObject element, bool value)
 		{
