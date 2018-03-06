@@ -31,8 +31,8 @@ namespace Xamarin.Forms.Platform.UWP
 		bool _disposed;
 		bool _showTitle;
 
-		WTextAlignment _oldBarTextBlockTextAlignment;
-		WHorizontalAlignment _oldBarTextBlockHorinzontalAlignment;
+		WTextAlignment _oldBarTextBlockTextAlignment = WTextAlignment.Center;
+		WHorizontalAlignment _oldBarTextBlockHorinzontalAlignment = WHorizontalAlignment.Center;
 
 		VisualElementTracker<Page, Pivot> _tracker;
 
@@ -401,11 +401,17 @@ namespace Xamarin.Forms.Platform.UWP
 									// Remember old values so we can restore them if icons are collapsed.
 									// NOTE, since all Textblock instances in this stack panel comes from the same
 									// style, we just keep one copy of the value (since they should be identical).
-									_oldBarTextBlockTextAlignment = tabBarTextblock.TextAlignment;
-									_oldBarTextBlockHorinzontalAlignment = tabBarTextblock.HorizontalAlignment;
+									if (tabBarTextblock.TextAlignment != WTextAlignment.Center)
+									{
+										_oldBarTextBlockTextAlignment = tabBarTextblock.TextAlignment;
+										tabBarTextblock.TextAlignment = WTextAlignment.Center;
+									}
 
-									tabBarTextblock.TextAlignment = WTextAlignment.Center;
-									tabBarTextblock.HorizontalAlignment = WHorizontalAlignment.Center;
+									if (tabBarTextblock.HorizontalAlignment != WHorizontalAlignment.Center)
+									{
+										_oldBarTextBlockHorinzontalAlignment = tabBarTextblock.HorizontalAlignment;
+										tabBarTextblock.HorizontalAlignment = WHorizontalAlignment.Center;
+									}
 								}
 								else
 								{
