@@ -67,6 +67,12 @@ namespace Xamarin.Forms.Xaml
 			Load(view, xaml);
 		}
 
+		/// <devdoc>
+		/// This member is used by LiveReload to apply incoming XAML from the IDE 
+		/// onto the current view/page.
+		/// NOTE: give the IDE teams a heads-up if the signature or location of 
+		/// this method changes :)
+		/// </devdoc>
 		public static void Load(object view, string xaml)
 		{
 			using (var textReader = new StringReader(xaml))

@@ -24,6 +24,7 @@ using Xamarin.Forms.StyleSheets;
 [assembly: InternalsVisibleTo("Xamarin.Forms.iOS.UITests")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.Android.UITests")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.Loader")]
+
 [assembly: InternalsVisibleTo("Xamarin.Forms.UITest.Validator")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.Build.Tasks")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.Platform")]
@@ -73,3 +74,14 @@ using Xamarin.Forms.StyleSheets;
 [assembly: StyleProperty("justify-content", typeof(FlexLayout), nameof(FlexLayout.JustifyContentProperty))]
 [assembly: StyleProperty("order", typeof(VisualElement), nameof(FlexLayout.OrderProperty), PropertyOwnerType = typeof(FlexLayout))]
 [assembly: StyleProperty("position", typeof(FlexLayout), nameof(FlexLayout.PositionProperty))]
+
+/// <summary>
+/// This class documents the internal members that are used by other teams and 
+/// that would require a heads-up if they need to be changed.
+/// </summary>
+/// <remarks>
+/// Xamarin.Forms.Loader:<see cref="Xamarin.Forms.Internals.ResourceLoader.ResourceProvider">kzu@microsoft.com</see>
+/// </remarks>
+static class InternalsVisibleTo
+{
+}
