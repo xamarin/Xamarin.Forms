@@ -79,7 +79,7 @@ namespace Xamarin.Forms.Platform.WPF
 					yaxis += lineHeight;
 				}
 
-				((IGestureChildElement)span).Region = Region.FromLines(lineHeights.ToArray(), labelWidth, rect.X, endRect.X + endRect.Width, rect.Top).Inflate(10);
+				((ISpatialElement)span).Region = Region.FromLines(lineHeights.ToArray(), labelWidth, rect.X, endRect.X + endRect.Width, rect.Top).Inflate(10);
 
 			}
 		}

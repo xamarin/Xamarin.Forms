@@ -52,7 +52,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			get
 			{
 				if (_renderer?.Element is View)
-					return ((IGestureElement)_renderer.Element).CompositeGestureRecognizers as ObservableCollection<IGestureRecognizer>;
+					return ((IGestureController)_renderer.Element).CompositeGestureRecognizers as ObservableCollection<IGestureRecognizer>;
 				return null;
 			}
 		}
@@ -114,8 +114,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 					if (children != null)
 						foreach (var child in children)
-							if (child.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(x => x.NumberOfTapsRequired == (int)sender.NumberOfClicksRequired).Count() > 0)
-								captured = true;
+							if (child is GestureElement gestureElement)
+								if (gestureElement.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(x => x.NumberOfTapsRequired == (int)sender.NumberOfClicksRequired).Count() > 0)
+									captured = true;
 
 					if (captured)
 						return;
@@ -161,8 +162,9 @@ namespace Xamarin.Forms.Platform.MacOS
 					var children = view.GetChildElements(new Point(originPoint.X, originPoint.Y));
 					if (children != null)
 						foreach (var child in children)
-							if (child.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(x => x.NumberOfTapsRequired == (int)sender.NumberOfTapsRequired).Count() > 0)
-								captured = true;
+							if (child is GestureElement gestureElement)
+								if (gestureElement.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(x => x.NumberOfTapsRequired == (int)sender.NumberOfTapsRequired).Count() > 0)
+									captured = true;
 
 					if (captured)
 						return;
@@ -195,8 +197,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 						if (children != null)
 							foreach (var child in children)
-								if (child.GestureRecognizers.Contains(clickGestureRecognizer) && view != null)
-									clickGestureRecognizer.SendClicked(view, clickGestureRecognizer.Buttons);
+								if (child is GestureElement gestureElement)
+									if (gestureElement.GestureRecognizers.Contains(clickGestureRecognizer) && view != null)
+										clickGestureRecognizer.SendClicked(view, clickGestureRecognizer.Buttons);
 					});
 
 					var uiRecognizer = CreateClickRecognizer((int)clickSpanRecognizer.Buttons, clickSpanRecognizer.NumberOfClicksRequired, returnAction);
@@ -217,8 +220,9 @@ namespace Xamarin.Forms.Platform.MacOS
 						var children = view.GetChildElements(new Point(originPoint.X, originPoint.Y));
 						if (children != null)
 							foreach (var child in children)
-								if (child.GestureRecognizers.Contains(tapGestureRecognizer) && view != null)
-									tapGestureRecognizer.SendTapped(view);
+								if (child is GestureElement gestureElement)
+									if (gestureElement.GestureRecognizers.Contains(tapGestureRecognizer) && view != null)
+										tapGestureRecognizer.SendTapped(view);
 					});
 
 					var uiRecognizer = CreateTapRecognizer(tapSpanRecognizer.NumberOfTapsRequired, returnAction);

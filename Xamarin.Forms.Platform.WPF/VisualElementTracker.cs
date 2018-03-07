@@ -162,16 +162,17 @@ namespace Xamarin.Forms.Platform.WPF
 
 			var handled = false;
 
-			var children = ((IGestureElement)view).GetChildElements(new Point(tapPosition.X, tapPosition.Y));
+			var children = ((IGestureController)view).GetChildElements(new Point(tapPosition.X, tapPosition.Y));
 
 			if (children != null)
 				foreach (var child in children)
-					foreach (var gestureRecognizer in
-					child.GestureRecognizers.OfType<TapGestureRecognizer>().Where(g => g.NumberOfTapsRequired == numberOfTapsRequired))
-					{
-						gestureRecognizer.SendTapped(view);
-						handled = true;
-					}
+					if (child is GestureElement gestureElement)
+						foreach (var gestureRecognizer in
+					gestureElement.GestureRecognizers.OfType<TapGestureRecognizer>().Where(g => g.NumberOfTapsRequired == numberOfTapsRequired))
+						{
+							gestureRecognizer.SendTapped(view);
+							handled = true;
+						}
 
 			if (handled)
 				return handled;

@@ -6,7 +6,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	public class GestureElement : Element, IGestureChildElement
+	public class GestureElement : Element, ISpatialElement
 	{
 		readonly GestureRecognizerCollection _gestureRecognizers = new GestureRecognizerCollection();
 
@@ -44,7 +44,7 @@ namespace Xamarin.Forms
 			};
 		}
 		
-		Region IGestureChildElement.Region { get; set; }
+		Region ISpatialElement.Region { get; set; }
 		
 		public IList<IGestureRecognizer> GestureRecognizers
 		{

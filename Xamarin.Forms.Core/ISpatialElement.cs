@@ -2,10 +2,8 @@
 
 namespace Xamarin.Forms.Internals
 {
-	public interface IGestureChildElement
+	public interface ISpatialElement
     {
-		IList<IGestureRecognizer> GestureRecognizers { get; }
-
 		Region Region { get; set; }
 	}
 }

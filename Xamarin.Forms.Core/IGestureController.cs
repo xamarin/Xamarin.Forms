@@ -2,9 +2,9 @@ using System.Collections.Generic;
 
 namespace Xamarin.Forms.Internals
 {
-	public interface IGestureElement
+	public interface IGestureController
 	{
-		IList<IGestureChildElement> GetChildElements(Point point);
+		IList<ISpatialElement> GetChildElements(Point point);
 		
 		IList<IGestureRecognizer> CompositeGestureRecognizers { get; }		
 	}
