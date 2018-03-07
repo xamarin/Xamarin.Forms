@@ -20,7 +20,7 @@ namespace Xamarin.Forms
 		bool _nextCallToForceUpdateSizeQueued;
 
         object _forceUpdateSizeLocker = new object();
-        Task _forceUpdateSizeDelayTask = Task.FromResult(true);
+        Task _forceUpdateSizeDelayTask = Task.CompletedTask;
 
 		EffectiveFlowDirection _effectiveFlowDirection = default(EffectiveFlowDirection);
 		EffectiveFlowDirection IFlowDirectionController.EffectiveFlowDirection
