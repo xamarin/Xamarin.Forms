@@ -19,6 +19,9 @@ namespace Xamarin.Forms
 
 		bool _nextCallToForceUpdateSizeQueued;
 
+        object _forceUpdateSizeLocker = new object();
+        Task _forceUpdateSizeDelayTask = Task.FromResult(true);
+
 		EffectiveFlowDirection _effectiveFlowDirection = default(EffectiveFlowDirection);
 		EffectiveFlowDirection IFlowDirectionController.EffectiveFlowDirection
 		{
@@ -210,8 +213,13 @@ namespace Xamarin.Forms
 
 		async void OnForceUpdateSizeRequested()
 		{
-			// don't run more than once per 16 milliseconds
-			await Task.Delay(TimeSpan.FromMilliseconds(16));
+            do //don't run more than once per 16 milliseconds
+                lock (_forceUpdateSizeLocker)
+                    if (_forceUpdateSizeDelayTask.IsCompleted)
+                        _forceUpdateSizeDelayTask = Task.Delay(16);
+            while (!_forceUpdateSizeDelayTask.IsCompleted);
+            
+            await _forceUpdateSizeDelayTask;
 			ForceUpdateSizeRequested?.Invoke(this, null);
 
 			_nextCallToForceUpdateSizeQueued = false;
