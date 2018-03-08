@@ -10,6 +10,7 @@ namespace Xamarin.Forms
 {
 	public abstract class Cell : Element, ICellController, IFlowDirectionController
 	{
+		private const int SyncForceUpdateSizeMilliseconds = 16;
 		public const int DefaultCellHeight = 40;
 		public static readonly BindableProperty IsEnabledProperty = BindableProperty.Create("IsEnabled", typeof(bool), typeof(Cell), true, propertyChanged: OnIsEnabledPropertyChanged);
 
@@ -19,8 +20,7 @@ namespace Xamarin.Forms
 
 		bool _nextCallToForceUpdateSizeQueued;
 
-		object _forceUpdateSizeLocker = new object();
-		Task _forceUpdateSizeDelayTask = Task.FromResult(true);
+		Task _prevForceUpdateSizeTimeTask = Task.Delay(0);
 
 		EffectiveFlowDirection _effectiveFlowDirection = default(EffectiveFlowDirection);
 		EffectiveFlowDirection IFlowDirectionController.EffectiveFlowDirection
@@ -211,18 +211,18 @@ namespace Xamarin.Forms
 			OnPropertyChanged("HasContextActions");
 		}
 
-		async void OnForceUpdateSizeRequested()
+		async void OnForceUpdateSizeRequested() //don't run more than once per 16 milliseconds
 		{
-			do //don't run more than once per 16 milliseconds
-				lock (_forceUpdateSizeLocker)
-					if (_forceUpdateSizeDelayTask.IsCompleted)
-						_forceUpdateSizeDelayTask = Task.Delay(16);
-			while (!_forceUpdateSizeDelayTask.IsCompleted);
+			if(!_prevForceUpdateSizeTimeTask.IsCompleted)
+			{
+				await _prevForceUpdateSizeTimeTask;
+			}
 
-			await _forceUpdateSizeDelayTask;
 			ForceUpdateSizeRequested?.Invoke(this, null);
 
 			_nextCallToForceUpdateSizeQueued = false;
+
+			_prevForceUpdateSizeTimeTask = Task.Delay(SyncForceUpdateSizeMilliseconds);
 		}
 
 		static void OnIsEnabledPropertyChanged(BindableObject bindable, object oldvalue, object newvalue)
