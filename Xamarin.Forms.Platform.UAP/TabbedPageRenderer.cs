@@ -254,6 +254,10 @@ namespace Xamarin.Forms.Platform.UWP
 						foreach (var c in e?.OldItems)
 							(c as Page).PropertyChanged -= OnChildPagePropertyChanged;
 					break;
+				case NotifyCollectionChangedAction.Reset:
+					foreach (var p in Element.Children)
+						p.PropertyChanged += OnChildPagePropertyChanged;
+					break;
 				default:
 					break;
 			}
@@ -463,17 +467,17 @@ namespace Xamarin.Forms.Platform.UWP
 
 		protected void UpdateAccessKeys()
 		{
-			Control?.GetDescendantsByName<TextBlock>(TabBarHeaderTextBlockName).ForEach(t => UpdateAccessKey(t));
+			Control?.GetDescendantsByName<TextBlock>(TabBarHeaderTextBlockName).ForEach(UpdateAccessKey);
 		}
 
-		private void AccessKeyInvokedForTab(UIElement sender, AccessKeyInvokedEventArgs arg)
+		void AccessKeyInvokedForTab(UIElement sender, AccessKeyInvokedEventArgs arg)
 		{
 			var tab = sender as TextBlock;
 			if (tab != null && tab.DataContext is Page page)
 				Element.CurrentPage = page;
 		}
 
-		protected void UpdateAccessKey(TextBlock control, bool addListener = true) {
+		protected void UpdateAccessKey(TextBlock control) {
 
 			if (control != null && control.DataContext is Page page)
 			{
@@ -481,8 +485,7 @@ namespace Xamarin.Forms.Platform.UWP
 				if (page.IsSet(VisualElementSpecifics.AccessKeyProperty))
 				{
 					control.AccessKey = windowsElement.GetAccessKey();
-					if (addListener)
-						control.AccessKeyInvoked += AccessKeyInvokedForTab;
+					control.AccessKeyInvoked += AccessKeyInvokedForTab;
 				}
 
 				if (page.IsSet(VisualElementSpecifics.AccessKeyPlacementProperty))

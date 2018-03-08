@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var button2 = new Button() 
 			{
-				Text = "Access key D"
+				Text = "Toggle Access key I/X on tab 2"
 			};
 			button2.On<PlatformConfiguration.Windows>().SetAccessKey("D");
 
@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var button4 = new Button()
 			{
-				Text = "Access key F, placement Right"
+				Text = "Access key F, placement Right."
 			};
 			button4.On<PlatformConfiguration.Windows>()
 				.SetAccessKey("F")
@@ -65,10 +65,10 @@ namespace Xamarin.Forms.Controls.Issues
 				.SetAccessKeyVerticalOffset(40);
 
 			button1.Clicked += ButtonClicked;
-			button2.Clicked += ButtonClicked;
+			button2.Clicked += ToggleAccessKeyOnSecondTab;
 			button3.Clicked += ButtonClicked;
 			button4.Clicked += ButtonClicked;
-			button5.Clicked += (sender, e) => AddTab("New tab", ('N' + Children.Count).ToString());
+			button5.Clicked += (sender, e) => AddTab($"New tab {Children.Count}", $"{Children.Count}");
 
 			var layout = new StackLayout()
 			{
@@ -94,23 +94,22 @@ namespace Xamarin.Forms.Controls.Issues
 
 		}
 
-		private IPlatformElementConfiguration<PlatformConfiguration.Windows, VisualElement> AddTab(string title, string accessKey)
+		IPlatformElementConfiguration<PlatformConfiguration.Windows, VisualElement> AddTab(string title, string accessKey)
 		{
 			var tab = new ContentPage() { Title = title, Content = new StackLayout() { Children = { new Label() { Text = $"Inside {title} with access key {accessKey}" } } } };
 			Children.Add(tab);
 			return tab.On<PlatformConfiguration.Windows>().SetAccessKey(accessKey);			
 		}
 
-		private void ChangeAccessKey(Page tab, string accessKey)
+		void ToggleAccessKeyOnSecondTab(object sender, System.EventArgs e)
 		{
-
-		}
-
-		private void ButtonClicked(object sender, System.EventArgs e)
-		{
-			var button = sender as Button;
 			var tab = _tab2.On<PlatformConfiguration.Windows>();
 			tab.SetAccessKey(tab.GetAccessKey() == "I" ? "X" : "I");
+		}
+
+		void ButtonClicked(object sender, System.EventArgs e)
+		{
+			var button = sender as Button;
 			DisplayAlert("Button clicked", $"Clicked {button?.Text}", "OK");
 		}
 	}
