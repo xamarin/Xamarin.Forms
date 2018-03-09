@@ -143,7 +143,8 @@ namespace Xamarin.Forms
 
 				if (mode == BindingMode.OneWay || mode == BindingMode.TwoWay)
 				{
-					if (current is INotifyPropertyChanged inpc && !ReferenceEquals(current, previous))
+					var inpc = current as INotifyPropertyChanged;
+					if (inpc != null && !ReferenceEquals(current, previous))
 						part.Subscribe(inpc);
 				}
 
@@ -442,7 +443,8 @@ namespace Xamarin.Forms
 
 			public void Unsubscribe()
 			{
-				if (_source.TryGetTarget(out INotifyPropertyChanged source) && source != null)
+				INotifyPropertyChanged source;
+				if (_source.TryGetTarget(out source) && source != null)
 					source.PropertyChanged -= _handler;
 				var bo = source as BindableObject;
 				if (bo != null)
@@ -454,7 +456,8 @@ namespace Xamarin.Forms
 
 			void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
 			{
-				if (_listener.TryGetTarget(out PropertyChangedEventHandler handler) && handler != null)
+				PropertyChangedEventHandler handler;
+				if (_listener.TryGetTarget(out handler) && handler != null)
 					handler(sender, e);
 				else
 					Unsubscribe();
@@ -484,7 +487,8 @@ namespace Xamarin.Forms
 
 			public void Subscribe(INotifyPropertyChanged handler)
 			{
-				if (_listener != null && _listener.Source.TryGetTarget(out INotifyPropertyChanged source) && ReferenceEquals(handler, source))
+				INotifyPropertyChanged source;
+				if (_listener != null && _listener.Source.TryGetTarget(out source) && ReferenceEquals(handler, source))
 					// Already subscribed
 					return;
 
