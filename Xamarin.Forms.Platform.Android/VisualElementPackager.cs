@@ -15,6 +15,8 @@ namespace Xamarin.Forms.Platform.Android
 		readonly EventHandler _childReorderedHandler;
 		List<IVisualElementRenderer> _childViews;
 
+		Dictionary<BindableObject, VisualElementPackager> _childPackagers;
+
 		bool _disposed;
 
 		IVisualElementRenderer _renderer;
@@ -84,8 +86,12 @@ namespace Xamarin.Forms.Platform.Android
 			if (CompressedLayout.GetIsHeadless(view))
 			{
 				var packager = new VisualElementPackager(_renderer, view);
+				if (_childPackagers == null)
+					_childPackagers = new Dictionary<BindableObject, VisualElementPackager>();
 				view.IsPlatformEnabled = true;
 				packager.Load();
+
+				_childPackagers[view] = packager;
 			}
 			else
 			{
@@ -167,9 +173,23 @@ namespace Xamarin.Forms.Platform.Android
 		void RemoveChild(VisualElement view)
 		{
 			IVisualElementRenderer renderer = Platform.GetRenderer(view);
-			_childViews.Remove(renderer);
-			renderer.View.RemoveFromParent();
-			renderer.Dispose();
+			if (renderer == null) // child is itself a compressed layout
+			{
+				if (_childPackagers.TryGetValue (view, out VisualElementPackager packager))
+				{
+					foreach (var child in view.LogicalChildren)
+					{
+						if (child is VisualElement ve)
+							packager.RemoveChild(ve);
+					}
+				}
+			}
+			else
+			{
+				_childViews.Remove(renderer);
+				renderer.View.RemoveFromParent();
+				renderer.Dispose();
+			}
 		}
 
 		void SetElement(VisualElement oldElement, VisualElement newElement)
