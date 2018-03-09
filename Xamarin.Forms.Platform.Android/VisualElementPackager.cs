@@ -60,6 +60,15 @@ namespace Xamarin.Forms.Platform.Android
 					_childViews = null;
 				}
 
+				if (_childPackagers != null)
+				{
+					foreach (var kvp in _childPackagers)
+						kvp.Value.Dispose();
+
+					_childPackagers.Clear();
+					_childPackagers = null;
+				}
+
 				if (_renderer.Element != null)
 				{
 					_renderer.Element.ChildAdded -= _childAddedHandler;
