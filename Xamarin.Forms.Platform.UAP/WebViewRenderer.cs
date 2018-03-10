@@ -145,7 +145,16 @@ if(bases.length == 0){
 
 		async Task<string> OnEvaluateJavaScriptRequested(string script)
 		{
-			return await Control.InvokeScriptAsync("eval", new[] { script });
+			try
+			{
+				return await Control.InvokeScriptAsync("eval", new[] { script });
+			}
+			catch (Exception)
+			{
+				//we only get here if there's a script error.
+				//ios / macos / android / etc all return String.Empty in this case.
+				return string.Empty;
+			}
 		}
 
 		void OnGoBackRequested(object sender, EventArgs eventArgs)

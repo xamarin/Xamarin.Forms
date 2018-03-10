@@ -98,7 +98,18 @@ namespace Xamarin.Forms.Platform.WPF
 			var tcr = new TaskCompletionSource<string>();
 			var task = tcr.Task;
 
-			Device.BeginInvokeOnMainThread(() => { tcr.SetResult((string)Control.InvokeScript("eval", new[] { script })); });
+			Device.BeginInvokeOnMainThread(() => {
+				try
+				{
+					tcr.SetResult((string)Control.InvokeScript("eval", new[] { script }));
+				}
+				catch(Exception)		
+				{
+					//we only get here if there's a script error OR the script returned a non-string).
+					//other platforms return String.Empty in this case.
+					tcr.SetResult(""); 
+				}
+			});
 
 			return await task.ConfigureAwait(false);
 		}

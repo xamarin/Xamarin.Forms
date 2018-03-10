@@ -276,16 +276,15 @@ namespace Xamarin.Forms.Platform.Android
 
 			public void OnReceiveValue(Java.Lang.Object result)
 			{
-				try
+				string json = ((Java.Lang.String)result).ToString();
+				if (json == "null")
+					source.SetResult("");
+				else
 				{
-					string json = ((Java.Lang.String)result).ToString();
 					json = json.Trim('"');
 					source.SetResult(json);
 				}
-				catch (Exception ex)
-				{
-					source.SetException(ex);
-				}
+
 			}
 		}
 	}
