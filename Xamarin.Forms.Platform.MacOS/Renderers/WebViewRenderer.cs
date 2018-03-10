@@ -109,7 +109,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				tcr.SetResult(Control?.StringByEvaluatingJavaScriptFromString(script));
 			});
 
-			return await task;
+			return await task.ConfigureAwait(false);
 		}
 
 		void OnGoBackRequested(object sender, EventArgs eventArgs)
