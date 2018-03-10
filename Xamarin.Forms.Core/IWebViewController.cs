@@ -9,7 +9,7 @@ namespace Xamarin.Forms
 		bool CanGoBack { get; set; }
 		bool CanGoForward { get; set; }
 		event EventHandler<EvalRequested> EvalRequested;
-		event WebView.EvaluateJavaScriptDelegate EvaluateJavaScriptRequested;
+		event EvaluateJavaScriptDelegate EvaluateJavaScriptRequested;
 		event EventHandler GoBackRequested;
 		event EventHandler GoForwardRequested;
 		void SendNavigated(WebNavigatedEventArgs args);

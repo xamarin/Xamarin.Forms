@@ -9,8 +9,6 @@ namespace Xamarin.Forms
 	[RenderWith(typeof(_WebViewRenderer))]
 	public class WebView : View, IWebViewController, IElementConfiguration<WebView>
 	{
-		public delegate Task<string> EvaluateJavaScriptDelegate(string script);
-
 		public static readonly BindableProperty SourceProperty = BindableProperty.Create("Source", typeof(WebViewSource), typeof(WebView), default(WebViewSource),
 			propertyChanging: (bindable, oldvalue, newvalue) =>
 			{
