@@ -51,9 +51,8 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			get
 			{
-				if (_renderer?.Element is View)
-					return ((IGestureController)_renderer.Element).CompositeGestureRecognizers as ObservableCollection<IGestureRecognizer>;
-				return null;
+				return ((_renderer?.Element as IGestureController)
+							?.CompositeGestureRecognizers as ObservableCollection<IGestureRecognizer>);				
 			}
 		}
 

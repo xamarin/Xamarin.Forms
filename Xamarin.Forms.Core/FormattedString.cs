@@ -24,13 +24,6 @@ namespace Xamarin.Forms
 				SetInheritedBindingContext(Spans[i], BindingContext);			
 		}
 
-		protected override void OnBindingContextChanged()
-		{
-			base.OnBindingContextChanged();
-			for (int i = 0; i < Spans.Count; i++)
-				SetInheritedBindingContext(Spans[i], BindingContext);			
-		}
-
 		public IList<Span> Spans
 		{
 			get { return _spans; }
@@ -75,12 +68,12 @@ namespace Xamarin.Forms
 				}
 			}
 
-			OnPropertyChanged("Spans");
+			OnPropertyChanged(nameof(Spans));
 		}
 
 		void OnItemPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			OnPropertyChanged("Spans");
+			OnPropertyChanged(nameof(Spans));
 		}
 
 		class SpanCollection : ObservableCollection<Span>

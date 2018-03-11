@@ -23,7 +23,7 @@ namespace Xamarin.Forms
 		}
 
 		public static readonly BindableProperty StyleProperty = BindableProperty.Create(nameof(Style), typeof(Style), typeof(Span), default(Style),
-			propertyChanged: (bindable, oldvalue, newvalue) => ((Span)bindable)._mergedStyle.Style = (Style)newvalue);
+			propertyChanged: (bindable, oldvalue, newvalue) => ((Span)bindable)._mergedStyle.Style = (Style)newvalue, defaultBindingMode: BindingMode.OneTime);
 
 		public Style Style
 		{
@@ -32,7 +32,7 @@ namespace Xamarin.Forms
 		}
 
 		public static readonly BindableProperty BackgroundColorProperty
-			= BindableProperty.Create(nameof(BackgroundColor), typeof(Color), typeof(Span), default(Color));
+			= BindableProperty.Create(nameof(BackgroundColor), typeof(Color), typeof(Span), default(Color), defaultBindingMode: BindingMode.OneTime);
 
 		public Color BackgroundColor
 		{
@@ -60,7 +60,7 @@ namespace Xamarin.Forms
 #pragma warning restore 618
 
 		public static readonly BindableProperty TextProperty
-			= BindableProperty.Create(nameof(Text), typeof(string), typeof(Span), "");
+			= BindableProperty.Create(nameof(Text), typeof(string), typeof(Span), "", defaultBindingMode: BindingMode.OneTime);
 
 		public string Text
 		{

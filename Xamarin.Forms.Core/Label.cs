@@ -90,13 +90,6 @@ namespace Xamarin.Forms
 				SetInheritedBindingContext(FormattedText, this.BindingContext);
 		}
 
-		protected override void OnBindingContextChanged()
-		{
-			base.OnBindingContextChanged();
-			if (FormattedText != null)
-				SetInheritedBindingContext(FormattedText, this.BindingContext);
-		}
-
 		[Obsolete("Font is obsolete as of version 1.3.0. Please use the Font attributes which are on the class itself.")]
 		public Font Font
 		{
