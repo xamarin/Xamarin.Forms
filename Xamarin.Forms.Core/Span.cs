@@ -14,14 +14,6 @@ namespace Xamarin.Forms
 			_mergedStyle = new MergedStyle(GetType(), this);
 		}
 
-		public static readonly BindableProperty CommandProperty = BindableProperty.Create(nameof(Command), typeof(ICommand), typeof(Span), null);
-
-		public ICommand Command
-		{
-			get { return (ICommand)GetValue(CommandProperty); }
-			set { SetValue(CommandProperty, value); }
-		}
-
 		public static readonly BindableProperty StyleProperty = BindableProperty.Create(nameof(Style), typeof(Style), typeof(Span), default(Style),
 			propertyChanged: (bindable, oldvalue, newvalue) => ((Span)bindable)._mergedStyle.Style = (Style)newvalue, defaultBindingMode: BindingMode.OneTime);
 
