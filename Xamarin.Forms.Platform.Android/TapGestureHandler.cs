@@ -37,13 +37,11 @@ namespace Xamarin.Forms.Platform.Android
 			var children = view.GetChildElements(point);
 
 			if (children != null)
-				foreach (var child in children)
-					if (child is GestureElement gestureElement)
-						foreach (TapGestureRecognizer recognizer in gestureElement.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(recognizer => recognizer.NumberOfTapsRequired == count))
-						{
-							recognizer.SendTapped(view);
-							captured = true;
-						}
+				foreach (var recognizer in children.GetChildGesturesFor<TapGestureRecognizer>(recognizer => recognizer.NumberOfTapsRequired == count))
+				{
+					recognizer.SendTapped(view);
+					captured = true;
+				}
 
 			if (captured)
 				return captured;

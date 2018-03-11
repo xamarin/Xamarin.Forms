@@ -105,20 +105,12 @@ namespace Xamarin.Forms.Platform.MacOS
 					var eventTracker = weakEventTracker.Target as EventTracker;
 					var view = eventTracker?._renderer?.Element as View;
 
-					var captured = false;
-
 					var originPoint = sender.LocationInView(null);
 					originPoint = NSApplication.SharedApplication.KeyWindow.ContentView.ConvertPointToView(originPoint, eventTracker._renderer.NativeView);
 
-					var children = view.GetChildElements(new Point(originPoint.X, originPoint.Y));
+					var childGestures = view.GetChildElements(new Point(originPoint.X, originPoint.Y));
 
-					if (children != null)
-						foreach (var child in children)
-							if (child is GestureElement gestureElement)
-								if (gestureElement.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(x => x.NumberOfTapsRequired == (int)sender.NumberOfClicksRequired).Count() > 0)
-									captured = true;
-
-					if (captured)
+					if (childGestures?.GetChildGesturesFor<TapGestureRecognizer>(x => x.NumberOfTapsRequired == (int)sender.NumberOfClicksRequired).Count() > 0)
 						return;
 
 					if (weakRecognizer.Target is ClickGestureRecognizer clickGestureRecognizer && view != null)
@@ -154,19 +146,12 @@ namespace Xamarin.Forms.Platform.MacOS
 					var eventTracker = weakEventTracker.Target as EventTracker;
 					var view = eventTracker?._renderer?.Element as View;
 
-					var captured = false;
-
 					var originPoint = sender.LocationInView(null);
 					originPoint = UIApplication.SharedApplication.KeyWindow.ConvertPointToView(originPoint, eventTracker._renderer.NativeView);
 
-					var children = view.GetChildElements(new Point(originPoint.X, originPoint.Y));
-					if (children != null)
-						foreach (var child in children)
-							if (child is GestureElement gestureElement)
-								if (gestureElement.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(x => x.NumberOfTapsRequired == (int)sender.NumberOfTapsRequired).Count() > 0)
-									captured = true;
+					var childGestures = view.GetChildElements(new Point(originPoint.X, originPoint.Y));
 
-					if (captured)
+					if (childGestures?.GetChildGesturesFor<TapGestureRecognizer>(x => x.NumberOfTapsRequired == (int)sender.NumberOfTapsRequired).Count() > 0)
 						return;
 
 					if (weakRecognizer.Target is TapGestureRecognizer tapGestureRecognizer && view != null)
@@ -179,10 +164,10 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 #endif
 
-			if (recognizer is ChildGestureRecognizer spanRecognizer)
+			if (recognizer is ChildGestureRecognizer childRecognizer)
 			{
 #if !__MOBILE__
-				if (spanRecognizer.GestureRecognizer is ClickGestureRecognizer clickSpanRecognizer)
+				if (childRecognizer.GestureRecognizer is ClickGestureRecognizer clickSpanRecognizer)
 				{
 					var returnAction = new Action<NSClickGestureRecognizer>((sender) =>
 					{
@@ -193,20 +178,19 @@ namespace Xamarin.Forms.Platform.MacOS
 						var originPoint = sender.LocationInView(null);
 						originPoint = NSApplication.SharedApplication.KeyWindow.ContentView.ConvertPointToView(originPoint, eventTracker._renderer.NativeView);
 
-						var children = view.GetChildElements(new Point(originPoint.X, originPoint.Y));
+						var childGestures = view.GetChildElements(new Point(originPoint.X, originPoint.Y));
+						var recognizers = childGestures?.GetChildGesturesFor<ClickGestureRecognizer>(x => x.NumberOfClicksRequired == (int)sender.NumberOfClicksRequired);
 
-						if (children != null)
-							foreach (var child in children)
-								if (child is GestureElement gestureElement)
-									if (gestureElement.GestureRecognizers.Contains(clickGestureRecognizer) && view != null)
-										clickGestureRecognizer.SendClicked(view, clickGestureRecognizer.Buttons);
+						foreach (var item in recognizers)
+							if (item == clickGestureRecognizer && view != null)
+								clickGestureRecognizer.SendClicked(view, clickGestureRecognizer.Buttons);
 					});
 
 					var uiRecognizer = CreateClickRecognizer((int)clickSpanRecognizer.Buttons, clickSpanRecognizer.NumberOfClicksRequired, returnAction);
 					return uiRecognizer;
 				}
 #else
-				if (spanRecognizer.GestureRecognizer is TapGestureRecognizer tapSpanRecognizer)
+				if (childRecognizer.GestureRecognizer is TapGestureRecognizer tapSpanRecognizer)
 				{
 					var returnAction = new Action<UITapGestureRecognizer>((sender) =>
 					{
@@ -217,12 +201,12 @@ namespace Xamarin.Forms.Platform.MacOS
 						var originPoint = sender.LocationInView(null);
 						originPoint = UIApplication.SharedApplication.KeyWindow.ConvertPointToView(originPoint, eventTracker._renderer.NativeView);
 
-						var children = view.GetChildElements(new Point(originPoint.X, originPoint.Y));
-						if (children != null)
-							foreach (var child in children)
-								if (child is GestureElement gestureElement)
-									if (gestureElement.GestureRecognizers.Contains(tapGestureRecognizer) && view != null)
-										tapGestureRecognizer.SendTapped(view);
+						var childGestures = view.GetChildElements(new Point(originPoint.X, originPoint.Y));
+						var recognizers = childGestures?.GetChildGesturesFor<TapGestureRecognizer>(x => x.NumberOfTapsRequired == (int)sender.NumberOfTapsRequired);
+						
+						foreach (var item in recognizers)
+							if (item == tapGestureRecognizer && view != null)
+								tapGestureRecognizer.SendTapped(view);
 					});
 
 					var uiRecognizer = CreateTapRecognizer(tapSpanRecognizer.NumberOfTapsRequired, returnAction);

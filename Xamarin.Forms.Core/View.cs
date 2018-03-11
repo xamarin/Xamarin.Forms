@@ -126,7 +126,7 @@ namespace Xamarin.Forms
 			get { return _compositeGestureRecognizers ?? (_compositeGestureRecognizers = new ObservableCollection<IGestureRecognizer>()); }
 		}
 
-		public virtual IList<ISpatialElement> GetChildElements(Point point)
+		public virtual IList<GestureElement> GetChildElements(Point point)
 		{
 			return null;
 		}

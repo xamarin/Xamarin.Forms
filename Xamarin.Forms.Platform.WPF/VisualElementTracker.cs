@@ -3,8 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -162,17 +160,14 @@ namespace Xamarin.Forms.Platform.WPF
 
 			var handled = false;
 
-			var children = ((IGestureController)view).GetChildElements(new Point(tapPosition.X, tapPosition.Y));
+			var children = (view as IGestureController)?.GetChildElements(new Point(tapPosition.X, tapPosition.Y));
 
 			if (children != null)
-				foreach (var child in children)
-					if (child is GestureElement gestureElement)
-						foreach (var gestureRecognizer in
-					gestureElement.GestureRecognizers.OfType<TapGestureRecognizer>().Where(g => g.NumberOfTapsRequired == numberOfTapsRequired))
-						{
-							gestureRecognizer.SendTapped(view);
-							handled = true;
-						}
+				foreach (var recognizer in children.GetChildGesturesFor<TapGestureRecognizer>().Where(g => g.NumberOfTapsRequired == numberOfTapsRequired))
+				{
+					recognizer.SendTapped(view);
+					handled = true;
+				}
 
 			if (handled)
 				return handled;

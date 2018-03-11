@@ -305,23 +305,24 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 
 			var tapPosition = e.GetPosition(Control);
-			var children = ((IGestureController)view).GetChildElements(new Point(tapPosition.X, tapPosition.Y));
+			var children = (view as IGestureController)?.GetChildElements(new Point(tapPosition.X, tapPosition.Y));
 
 			if (children != null)
-				foreach (var child in children)
-					if (child is GestureElement gestureElement)
-						foreach (TapGestureRecognizer recognizer in gestureElement.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(g => g.NumberOfTapsRequired == 2))
-						{
-							recognizer.SendTapped(view);
-							e.Handled = true;
-						}
+				foreach (var recognizer in children.GetChildGesturesFor<TapGestureRecognizer>(g => g.NumberOfTapsRequired == 2))
+				{
+					recognizer.SendTapped(view);
+					e.Handled = true;
+				}
 
 			if (e.Handled)
 				return;
 
 			IEnumerable<TapGestureRecognizer> doubleTapGestures = view.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(g => g.NumberOfTapsRequired == 2);
 			foreach (TapGestureRecognizer recognizer in doubleTapGestures)
+			{
 				recognizer.SendTapped(view);
+				e.Handled = true;
+			}
 		}
 
 		void OnManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
@@ -398,16 +399,14 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 
 			var tapPosition = e.GetPosition(Control);
-			var children = ((IGestureController)view).GetChildElements(new Point(tapPosition.X, tapPosition.Y));
+			var children = (view as IGestureController)?.GetChildElements(new Point(tapPosition.X, tapPosition.Y));
 
 			if (children != null)
-				foreach (var child in children)
-					if (child is GestureElement gestureElement)
-						foreach (TapGestureRecognizer recognizer in gestureElement.GestureRecognizers.GetGesturesFor<TapGestureRecognizer>(g => g.NumberOfTapsRequired == 1))
-						{
-							recognizer.SendTapped(view);
-							e.Handled = true;
-						}
+				foreach (var recognizer in children.GetChildGesturesFor<TapGestureRecognizer>(g => g.NumberOfTapsRequired == 1))
+				{
+					recognizer.SendTapped(view);
+					e.Handled = true;
+				}
 
 			if (e.Handled)
 				return;

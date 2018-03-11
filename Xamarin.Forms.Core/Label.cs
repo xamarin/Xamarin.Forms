@@ -307,20 +307,19 @@ namespace Xamarin.Forms
 		{
 		}
 
-		public override IList<ISpatialElement> GetChildElements(Point point)
+		public override IList<GestureElement> GetChildElements(Point point)
 		{
 			if (FormattedText?.Spans == null || FormattedText?.Spans.Count == 0)
 				return null;
 
-			var spans = new List<ISpatialElement>();
+			var spans = new List<GestureElement>();
 			foreach (var span in FormattedText.Spans)
-				if (span.GestureRecognizers.Count > 0)
-					if (((ISpatialElement)span).Region.Contains(point))
-						spans.Add(span);
+				if (span.GestureRecognizers.Count > 0 && ((ISpatialElement)span).Region.Contains(point))
+					spans.Add(span);
 
 			if (spans.Count > 1) // More than 2 elements overlapping, deflate to see which one is actually hit.
 				for (var i = spans.Count - 1; i >= 0; i--)
-					if (!spans[i].Region.Deflate().Contains(point))
+					if (!((ISpatialElement)spans[i]).Region.Deflate().Contains(point))
 						spans.RemoveAt(i);
 
 			return spans;
