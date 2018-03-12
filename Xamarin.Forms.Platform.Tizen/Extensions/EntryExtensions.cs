@@ -21,7 +21,7 @@ namespace Xamarin.Forms.Platform.Tizen
 				case ReturnType.Default:
 					return InputPanelReturnKeyType.Default;
 				default:
-					throw new System.Exception("Return Type Not Supported");
+					throw new System.NotImplementedException($"ReturnType {returnType} not supported");
 			}
 		}
 

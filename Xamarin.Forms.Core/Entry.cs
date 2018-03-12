@@ -139,7 +139,7 @@ namespace Xamarin.Forms
 			{
 				Completed?.Invoke(this, EventArgs.Empty);
 
-				if(ReturnCommand != null && ReturnCommand.CanExecute(ReturnCommandParameter))
+				if (ReturnCommand != null && ReturnCommand.CanExecute(ReturnCommandParameter))
 				{
 					ReturnCommand.Execute(ReturnCommandParameter);
 				}

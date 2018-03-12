@@ -41,7 +41,7 @@ namespace Xamarin.Forms.Platform.UWP
 				case ReturnType.Search:
 					return InputScopeNameValue.Search;
 				default:
-					throw new Exception("Return Type Not Supported");
+					throw new System.NotImplementedException($"ReturnType {returnType} not supported");
 			}
 		}
 

@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Platform.Android
 				case ReturnType.Default:
 					return ImeAction.Done;
 				default:
-					throw new System.Exception("Return Type Not Supported");
+					throw new System.NotImplementedException($"ReturnType {returnType} not supported");
 			}
 		}
 
