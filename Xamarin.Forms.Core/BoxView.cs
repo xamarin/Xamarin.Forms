@@ -9,7 +9,7 @@ namespace Xamarin.Forms
 	{
 		public static readonly BindableProperty ColorProperty = BindableProperty.Create("Color", typeof(Color), typeof(BoxView), Color.Default);
 
-		public static readonly BindableProperty CornerRadiusProperty = BindableProperty.Create("CornerRadius", typeof(CornerRadius), typeof(BoxView), default(CornerRadius));
+		public static readonly BindableProperty CornerRadiusProperty = BindableProperty.Create(nameof(CornerRadius), typeof(CornerRadius), typeof(BoxView), default(CornerRadius));
 
 		readonly Lazy<PlatformConfigurationRegistry<BoxView>> _platformConfigurationRegistry;
 
