@@ -263,7 +263,8 @@ namespace Xamarin.Forms.Platform.Android
 			if (Control == null || Element == null)
 				return;
 			
-			Control.ImeOptions = Element.ReturnType.ToAndroidImeAction();	
+			Control.ImeOptions = Element.ReturnType.ToAndroidImeAction();
+			_currentInputImeFlag = Control.ImeOptions;
 		}
 	}
 }
