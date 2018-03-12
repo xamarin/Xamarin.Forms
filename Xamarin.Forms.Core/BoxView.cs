@@ -1,5 +1,4 @@
 using System;
-using Xamarin.Forms.Core;
 using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms

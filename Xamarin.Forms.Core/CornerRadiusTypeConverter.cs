@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 
-namespace Xamarin.Forms.Core
+namespace Xamarin.Forms
 {
 	[Xaml.ProvideCompiled ("Xamarin.Forms.Core.XamlC.CornerRadiusTypeConverter")]
 	[Xaml.TypeConversion (typeof (CornerRadius))]
