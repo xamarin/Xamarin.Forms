@@ -7,12 +7,17 @@ namespace Xamarin.Forms.Controls
 	{
 		Picker picker;
 		Entry returnTypeEntry;
+		Label lblCompleted;
 		public EntryReturnTypeGalleryPage()
 		{
 			BackgroundColor = Color.LightBlue;
 			var layout = new StackLayout
 			{
 				VerticalOptions = LayoutOptions.StartAndExpand
+			};
+			lblCompleted = new Label
+			{
+				HorizontalOptions = LayoutOptions.FillAndExpand
 			};
 
 			picker = new Picker
@@ -30,10 +35,9 @@ namespace Xamarin.Forms.Controls
 			{
 				HorizontalOptions = LayoutOptions.Fill,
 				Placeholder = $"Entry with {ReturnType.Go}",
-				ReturnCommand = new Command<string>(async obj => 
+				ReturnCommand = new Command<string>(obj => 
 				{
-					await DisplayAlert(obj, "Pressed", "Pressed ok");
-					await Navigation.PopAsync();
+					lblCompleted.Text = "Completed Fired";
 				}),
 				ReturnCommandParameter = "hello titles",
 				AutomationId = "returnTypeEntry"
@@ -77,6 +81,7 @@ namespace Xamarin.Forms.Controls
 
 			layout.Children.Add(returnTypeEntry);
 			layout.Children.Add(picker);
+			layout.Children.Add(lblCompleted);
 			picker.SelectedIndex = 0;
 
 			Content = layout;
