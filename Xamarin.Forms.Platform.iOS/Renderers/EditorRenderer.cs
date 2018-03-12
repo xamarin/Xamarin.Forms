@@ -171,8 +171,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateText()
 		{
-			// ReSharper disable once RedundantCheckBeforeAssignment
-
 			if (string.IsNullOrWhiteSpace(Element.Text) && !Control.IsFirstResponder)
 			{	
 				UpdatePlaceholder();
