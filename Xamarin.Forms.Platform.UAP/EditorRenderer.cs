@@ -142,14 +142,14 @@ namespace Xamarin.Forms.Platform.UWP
 		}
 
 		/*
-		 * Purely invalidating the layout as text is added to the TextBox won't cause it to expand.
-		 * If the TextBox is set to WordWrap and it's part of the layout it will refuse to Measure itself beyond it's established width.
-		 * Giving it infinite contraints it will always just come back the same width but with a vertical growth.
-		 * The only way I was able to grow it was by setting this.Width to some value but then it just set it's own Width to that Width which isn't helpful.
+		 * Purely invalidating the layout as text is added to the TextBox will not cause it to expand.
+		 * If the TextBox is set to WordWrap and it is part of the layout it will refuse to Measure itself beyond its established width.
+		 * Even giving it infinite constraints will cause it to always set its DesiredSize to the same width but with a vertical growth.
+		 * The only way I was able to grow it was by setting layout renderers width explicitly to some value but then it just set its own Width to that Width which is not helpful.
 		 * Even vertically it would measure oddly in cases of rapid text changes.
 		 * Holding down the backspace key or enter key would cause the final result to be not quite right.
-		 * Both of these issues were fixed by just creating a static TextBox that isn't part of the layout which let me just measure
-		 * the size of the text as it would fit into the TextBox unconstrained.
+		 * Both of these issues were fixed by just creating a static TextBox that is not part of the layout which let me just measure
+		 * the size of the text as it would fit into the TextBox unconstrained and then just return that Size from the GetDesiredSize call.
 		 * */
 		Size GetCopyOfSize(FormsTextBox control, Windows.Foundation.Size constraint)
 		{
