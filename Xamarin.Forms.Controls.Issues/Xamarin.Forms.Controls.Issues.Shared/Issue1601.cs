@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Controls.Issues
 				Orientation = StackOrientation.Horizontal
 			};
 			Forms.CompressedLayout.SetIsHeadless(stack, true);
-			var button = new Button { Text = "CRASH!", AutomationId = "TestButton" };
+			var button = new Button { Text = "CRASH!" };
 			stack.Children.Add(button);
 			grid.Children.Add(stack, 0, 1);
 			
@@ -48,9 +48,9 @@ namespace Xamarin.Forms.Controls.Issues
 		public void Issue1414Test()
 		{
 			RunningApp.Screenshot("Start G1601");
-			RunningApp.WaitForElement(q => q.Marked("TestButton"));
+			RunningApp.WaitForElement(q => q.Marked("CRASH!"));
 			RunningApp.Tap (q => q.Marked ("CRASH!"));
-			RunningApp.WaitForElement(q => q.Marked("TestButton"));
+			RunningApp.WaitForElement(q => q.Marked("CRASH!"));
 		}
 #endif
 	}
