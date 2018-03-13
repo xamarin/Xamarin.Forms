@@ -10,10 +10,12 @@ namespace Xamarin.Forms.Platform.UWP
 		internal Thumb Thumb { get; set; }
 		internal Thumb ImageThumb { get; set; }
 
-		public static readonly DependencyProperty ThumbImageProperty = DependencyProperty.Register("ThumbImage", typeof(BitmapImage), 
+		public static readonly DependencyProperty ThumbImageProperty = 
+			DependencyProperty.Register(nameof(ThumbImage), typeof(BitmapImage), 
 			typeof(FormsSlider), new PropertyMetadata(null, PropertyChangedCallback));
 
-		static void PropertyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
+		static void PropertyChangedCallback(DependencyObject dependencyObject,
+			DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
 		{
 			var slider = (FormsSlider)dependencyObject;
 			SwapThumbs(slider);
