@@ -212,6 +212,10 @@
     <AndroidResource Include="Resources\values\styles.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
+  
+  <Import Project="..\..\.nuspec\Xamarin.Forms.targets" Condition="'$(BuildingInsideVisualStudio)' == 'true' AND Exists('..\..\.nuspec\Xamarin.Forms.Build.Tasks.dll')" />
+  <Import Project="..\..\.nuspec\Xamarin.Forms.targets" Condition="'$(BuildingInsideVisualStudio)' != 'true'" />
+  
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
