@@ -67,6 +67,8 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty FontAttributesProperty = FontElement.FontAttributesProperty;
 
+		public static readonly BindableProperty LineHeightProperty = Label.LineHeightProperty;
+
 		[Obsolete("Font is obsolete as of version 1.3.0. Please use the Font properties directly.")]
 		public Font Font
 		{
@@ -91,6 +93,11 @@ namespace Xamarin.Forms
 		{
 			get { return (double)GetValue(FontElement.FontSizeProperty); }
 			set { SetValue(FontElement.FontSizeProperty, value); }
+		}
+
+		public double LineHeight {
+			get { return (double)GetValue(Label.LineHeightProperty); }
+			set { SetValue(Label.LineHeightProperty, value); }
 		}
 
 		void IFontElement.OnFontFamilyChanged(string oldValue, string newValue)

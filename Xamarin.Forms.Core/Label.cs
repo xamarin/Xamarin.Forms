@@ -76,6 +76,8 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty LineBreakModeProperty = BindableProperty.Create(nameof(LineBreakMode), typeof(LineBreakMode), typeof(Label), LineBreakMode.WordWrap,
 			propertyChanged: (bindable, oldvalue, newvalue) => ((Label)bindable).InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged));
 
+		public static readonly BindableProperty LineHeightProperty = BindableProperty.Create("LineHeight", typeof(double), typeof(Label), -1.0);
+
 		readonly Lazy<PlatformConfigurationRegistry<Label>> _platformConfigurationRegistry;
 
 		public Label()
@@ -164,6 +166,12 @@ namespace Xamarin.Forms
 		{
 			get { return (double)GetValue(FontSizeProperty); }
 			set { SetValue(FontSizeProperty, value); }
+		}
+
+		public double LineHeight
+		{
+			get { return (double)GetValue(LineHeightProperty); }
+			set { SetValue(LineHeightProperty, value); }
 		}
 
 		double IFontElement.FontSizeDefaultValueCreator() =>

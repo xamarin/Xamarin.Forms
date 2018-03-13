@@ -2,8 +2,6 @@ using System;
 using System.ComponentModel;
 using RectangleF = CoreGraphics.CGRect;
 using SizeF = CoreGraphics.CGSize;
-using Foundation;
-using System.Collections.Generic;
 
 #if __MOBILE__
 using UIKit;
@@ -159,6 +157,8 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateLineBreakMode();
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateAlignment();
+			else if (e.PropertyName == Label.LineHeightProperty.PropertyName)
+				UpdateText();
 		}
 
 #if __MOBILE__
@@ -269,25 +269,23 @@ namespace Xamarin.Forms.Platform.MacOS
 		void UpdateText()
 		{
 			_perfectSizeValid = false;
-
 			var values = Element.GetValues(Label.FormattedTextProperty, Label.TextProperty, Label.TextColorProperty);
+
 			var formatted = values[0] as FormattedString;
+			if (formatted == null && Element.LineHeight >= 0)
+				formatted = (string)values[1];
+
 			if (formatted != null)
 			{
 #if __MOBILE__
-				Control.AttributedText = formatted.ToAttributed(Element, (Color)values[2]);
+				Control.AttributedText = formatted.ToAttributed(Element, (Color)values[2], Element.LineHeight);
 #else
-				Control.AttributedStringValue = formatted.ToAttributed(Element, (Color)values[2]);
+				Control.AttributedStringValue = formatted.ToAttributed(Element, (Color)values[2], Element.LineHeight);
 #endif
 				isTextFormatted = true;
 			}
 			else
 			{
-				if (isTextFormatted)
-				{
-					UpdateFont();
-					UpdateTextColor();
-				}
 #if __MOBILE__
 				Control.Text = (string)values[1];
 #else
@@ -329,7 +327,6 @@ namespace Xamarin.Forms.Platform.MacOS
 #endif
 			UpdateLayout();
 		}
-
 		void UpdateLayout()
 		{
 #if __MOBILE__
