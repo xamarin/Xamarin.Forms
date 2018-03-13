@@ -45,12 +45,11 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST
 		[Test]
-		public void Issue1414Test()
+		public void Issue1601Test()
 		{
 			RunningApp.Screenshot("Start G1601");
 			RunningApp.WaitForElement(q => q.Marked("CRASH!"));
 			RunningApp.Tap (q => q.Marked ("CRASH!"));
-			RunningApp.WaitForElement(q => q.Marked("CRASH!"));
 		}
 #endif
 	}
