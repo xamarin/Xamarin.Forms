@@ -1070,7 +1070,7 @@ namespace Xamarin.Forms.Platform.iOS
 					_uiTableViewController.UpdateShowHideRefresh(true);
 				}
 
-				if (_isDragging && scrollView.ContentOffset.Y < -10f && _uiTableViewController._usingLargeTitles)
+				if (_isDragging && scrollView.ContentOffset.Y < -10f && _uiTableViewController._usingLargeTitles && Device.Info.CurrentOrientation.IsPortrait())
 				{
 					_uiTableViewController.ForceRefreshing();				
 				}					
