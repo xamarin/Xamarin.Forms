@@ -315,7 +315,7 @@ namespace Xamarin.Forms.Platform.UWP
 			if (ContentTogglePaneButtonVisibility == Visibility.Visible)
 				DetailTitleVisibility = Visibility.Visible;
 
-			if(DetailTitleVisibility == Visibility.Visible && !ShouldShowNavigationBar)
+			if (DetailTitleVisibility == Visibility.Visible && !ShouldShowNavigationBar)
 				DetailTitleVisibility = Visibility.Collapsed;
 			
 		}
