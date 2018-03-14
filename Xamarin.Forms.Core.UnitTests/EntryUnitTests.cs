@@ -52,7 +52,6 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (final, newValue);
 		}
 
-		[Test]
 		[TestCase(true)]
 		[TestCase(false)]
 		public void ReturnTypeCommand(bool isEnabled)
@@ -77,7 +76,6 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True(result == isEnabled ? true : false);
 		}
 
-		[Test]
 		[TestCase(true)]
 		[TestCase(false)]
 		public void ReturnTypeCommandNullTestIsEnabled(bool isEnabled)
