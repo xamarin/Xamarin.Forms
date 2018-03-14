@@ -10,6 +10,7 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		bool _disposed;
 		IEditorController ElementController => Element;
+		UILabel _placeholderLabel;
 
 		protected override void Dispose(bool disposing)
 		{
@@ -26,8 +27,6 @@ namespace Xamarin.Forms.Platform.iOS
 					Control.Started -= OnStarted;
 					Control.Ended -= OnEnded;
 					Control.ShouldChangeText -= ShouldChangeText;
-					Control.ShouldBeginEditing -= ShouldBeginEditing;
-					Control.ShouldEndEditing -= ShouldEndEditing;
 				}
 			}
 
@@ -65,10 +64,9 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.Started += OnStarted;
 				Control.Ended += OnEnded;
 				Control.ShouldChangeText += ShouldChangeText;
-				Control.ShouldBeginEditing += ShouldBeginEditing;
-				Control.ShouldEndEditing += ShouldEndEditing;
 			}
 
+			CreatePlaceholderLabel();
 			UpdateTextColor();
 			UpdateText();
 			UpdateFont();
@@ -78,23 +76,37 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateMaxLength();
 		}
 
-		bool ShouldBeginEditing(UITextView textField)
+		void CreatePlaceholderLabel()
 		{
-			if (textField.Text.Equals(Element.Placeholder))
+			_placeholderLabel = new UILabel
 			{
-				textField.Text = string.Empty;
-				UpdateTextColor();
-			}
-			return true;
-		}
+				Text = Element.Placeholder,
+				TextColor = Element.PlaceholderColor.ToUIColor(),
+				BackgroundColor = UIColor.Clear
+			};
 
-		bool ShouldEndEditing(UITextView textField)
-		{
-			if (string.IsNullOrWhiteSpace(textField.Text))
-			{
-				UpdatePlaceholder();
-			}
-			return true;
+			Control.AddSubview(_placeholderLabel);
+
+			var edgeInsets = Control.TextContainerInset;
+			var lineFragmentPadding = Control.TextContainer.LineFragmentPadding;
+
+			var vConstraints = NSLayoutConstraint.FromVisualFormat(
+			"V:|-" + edgeInsets.Top + "-[_placeholderLabel]-" + edgeInsets.Bottom + "-|", 0, new NSDictionary(),
+			NSDictionary.FromObjectsAndKeys(
+				new NSObject[] { _placeholderLabel }, new NSObject[] { new NSString("_placeholderLabel") })
+		);
+
+			var hConstraints = NSLayoutConstraint.FromVisualFormat(
+				"H:|-" + lineFragmentPadding + "-[_placeholderLabel]-" + lineFragmentPadding + "-|",
+				0, new NSDictionary(),
+				NSDictionary.FromObjectsAndKeys(
+					new NSObject[] { _placeholderLabel }, new NSObject[] { new NSString("_placeholderLabel") })
+			);
+
+			_placeholderLabel.TranslatesAutoresizingMaskIntoConstraints = false;
+
+			Control.AddConstraints(hConstraints);
+			Control.AddConstraints(vConstraints);
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -121,6 +133,10 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateTextAlignment();
 			else if (e.PropertyName == Xamarin.Forms.InputView.MaxLengthProperty.PropertyName)
 				UpdateMaxLength();
+			else if (e.PropertyName == Editor.PlaceholderProperty.PropertyName)
+				UpdatePlaceholderText();
+			else if (e.PropertyName == Editor.PlaceholderColorProperty.PropertyName)
+				UpdatePlaceholderColor();
 		}
 
 		void HandleChanged(object sender, EventArgs e)
@@ -171,34 +187,24 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateText()
 		{
-			if (string.IsNullOrWhiteSpace(Element.Text) && !Control.IsFirstResponder)
-			{	
-				UpdatePlaceholder();
-				return;
-			}
-
 			if (Control.Text != Element.Text)
 			{
 				Control.Text = Element.Text;
-				UpdateTextColor();
 			}
-		}
-
-		void UpdatePlaceholder()
-		{
-			UpdatePlaceholderText();
-			UpdatePlaceholderColor();
+			_placeholderLabel.Hidden = !string.IsNullOrEmpty(Control.Text);
 		}
 
 		void UpdatePlaceholderText()
 		{
-			Control.Text = Element.Placeholder;
+			_placeholderLabel.Text = Element.Placeholder;
 		}
 
 		void UpdatePlaceholderColor()
 		{
-			if (Element.PlaceholderColor != Color.Default)
-				Control.TextColor = Element.PlaceholderColor.ToUIColor();
+			if (Element.PlaceholderColor == Color.Default)
+				_placeholderLabel.TextColor = UIColor.DarkGray;
+			else
+				_placeholderLabel.TextColor = Element.PlaceholderColor.ToUIColor();
 		}
 
 		void UpdateTextAlignment()
