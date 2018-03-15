@@ -40,18 +40,17 @@ namespace Xamarin.Forms.Platform.Android
 
             if (view == null)
                 return false;
-
-            var result = false;
+            
             foreach (SwipeGestureRecognizer swipeGesture in view.GestureRecognizers.GetGesturesFor<SwipeGestureRecognizer>())
             {
                 var detected = ((ISwipeGestureController)swipeGesture).DetectSwipe(view, swipeGesture.Direction);
                 if (detected)
                 {
-                    result = true;
+                    return true;
                 }
             }
 
-            return result;
+            return false;
         }
 
         public bool HasAnyGestures()
