@@ -202,6 +202,7 @@ namespace Xamarin.Forms.Internals
 					catch (System.IO.FileNotFoundException)
 					{
 						// Sometimes the previewer doesn't actually have everything required for these loads to work
+						Log.Warning(nameof(Registrar), "Could not load assembly: {0} for Attibute {1} | Some renderers may not be loaded", assembly.FullName, attrType.FullName);
 						continue;
 					}
 					var length = attributes.Length;
