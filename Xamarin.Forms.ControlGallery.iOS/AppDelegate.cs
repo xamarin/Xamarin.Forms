@@ -169,12 +169,15 @@ namespace Xamarin.Forms.ControlGallery.iOS
 				}
 			};
 
-			// 'Large' Title bar text
-			UINavigationBar.Appearance.LargeTitleTextAttributes = new UIStringAttributes
+			if (App.IOSVersion == 11)
 			{
-				ForegroundColor = UIColor.FromRGB(0xE7, 0x63, 0x3B), // e7963b dark
-				Font = UIFont.FromName("GillSans-Italic", 40)
-			};
+				// 'Large' Title bar text
+				UINavigationBar.Appearance.LargeTitleTextAttributes = new UIStringAttributes
+				{
+					ForegroundColor = UIColor.FromRGB(0xE7, 0x63, 0x3B), // e7963b dark
+					Font = UIFont.FromName("GillSans-Italic", 40)
+				};
+			}
 
 			var app = new App();
 			_app = app;
