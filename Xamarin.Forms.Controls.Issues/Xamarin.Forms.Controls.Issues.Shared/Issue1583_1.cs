@@ -28,7 +28,7 @@ namespace Xamarin.Forms.Controls.Issues
 		public void Issue1583Test ()
 		{
 			RunningApp.WaitForElement (q => q.Marked ("webview"));
-			RunningApp.Screenshot ("I didn'crash and i can see Skøyen");
+			RunningApp.Screenshot ("I didn't crash and i can see Skøyen");
 		}
 #endif
 	}
