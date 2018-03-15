@@ -891,6 +891,21 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
+		public void IsSetIsFalseWhenPropCleared()
+		{
+			string defaultValue = "default";
+			string newValue = "new value";
+
+			var bindableProperty = BindableProperty.Create("Foo", typeof(string), typeof(MockBindable), defaultValue);
+			var bindable = new MockBindable();
+
+			bindable.SetValue(bindableProperty, newValue);
+			bindable.ClearValue(bindableProperty);
+
+			Assert.That(bindable.IsSet(bindableProperty), Is.False);
+		}
+
+		[Test]
 		public void IsSetIsTrueWhenPropSetToDefault()
 		{
 			string defaultValue = "default";
@@ -905,6 +920,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			var isSet = bindable.IsSet(bindableProperty);
 			Assert.IsTrue(isSet);
 		}
+
 		[Test]
 		public void IsSetIsTrueWhenPropSetByDefaultValueCreator()
 		{
@@ -1491,6 +1507,19 @@ namespace Xamarin.Forms.Core.UnitTests
 			locator.Invoked += (sender, e) => Assert.IsTrue(locator.Count <= 1);
 			bindable.SetBinding(BindableObject.BindingContextProperty, new Binding("VM", source: locator));
 			Assert.IsTrue(locator.Count == 1);
+		}
+
+		[Test]
+		//https://github.com/xamarin/Xamarin.Forms/issues/2019
+		public void EventSubscribingOnBindingContextChanged()
+		{
+			var source = new MockBindable();
+			var bindable = new MockBindable();
+			var property = BindableProperty.Create("foo", typeof(string), typeof(MockBindable), null);
+			bindable.SetBinding(property, new Binding("BindingContext", source: source));
+			Assert.That((string)bindable.GetValue(property), Is.EqualTo(null));
+			BindableObject.SetInheritedBindingContext(source, "bar"); //inherited BC, only trigger BCChanged
+			Assert.That((string)bindable.GetValue(property), Is.EqualTo("bar"));
 		}
 
 		[Test]

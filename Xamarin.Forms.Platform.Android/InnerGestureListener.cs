@@ -212,7 +212,7 @@ namespace Xamarin.Forms.Platform.Android
             return _scrollDelegate(totalX, totalY, e2.PointerCount) || _swipeDelegate(totalX, totalY);
         }
 
-        void EndScrolling()
+        internal void EndScrolling()
         {
             if (_isScrolling && _scrollCompleteDelegate != null)
                 _scrollCompleteDelegate();

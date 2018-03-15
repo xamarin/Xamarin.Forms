@@ -10,7 +10,7 @@ namespace Xamarin.Forms.Core.UITests
 		public static readonly Dictionary<BindableProperty, Tuple<string[], bool>> PropertyPlatformMethodDictionary = new Dictionary<BindableProperty, Tuple<string[], bool>> {
 			{ ActivityIndicator.ColorProperty, Tuple.Create (new[] { "color" }, false) },
 			{ ActivityIndicator.IsRunningProperty, Tuple.Create (new[] { "isAnimating" }, false) },
-			{ Button.BorderRadiusProperty, Tuple.Create (new[] { "layer", "cornerRadius" }, false) },
+			{ Button.CornerRadiusProperty, Tuple.Create (new[] { "layer", "cornerRadius" }, false) },
 			{ Button.BorderWidthProperty, Tuple.Create (new[] { "layer", "borderWidth" }, false) },
 			{ Button.FontProperty, Tuple.Create (new[] { "titleLabel", "font" }, false) },
 			{ Button.TextProperty, Tuple.Create (new[] { "titleLabel", "text" }, false) },
@@ -33,7 +33,7 @@ namespace Xamarin.Forms.Core.UITests
 				{ ActivityIndicator.ColorProperty, Tuple.Create(new[] { "getProgressDrawable", "getColor" }, false) },
 				{ ActivityIndicator.IsRunningProperty, Tuple.Create(new[] { "isIndeterminate" }, false) },
 				{ Button.BorderColorProperty, Tuple.Create(new[] { "getBackground" }, false) },
-				{ Button.BorderRadiusProperty, Tuple.Create(new[] { "getBackground" }, false) },
+				{ Button.CornerRadiusProperty, Tuple.Create(new[] { "getBackground" }, false) },
 				{ Button.BorderWidthProperty, Tuple.Create(new[] { "getBackground" }, false) },
 				{ Button.ImageProperty, Tuple.Create(new[] { "getBackground" }, false) },
 				{ Button.FontProperty, Tuple.Create(new[] { "getTypeface", "isBold" }, false) },
@@ -65,8 +65,10 @@ namespace Xamarin.Forms.Core.UITests
 		public static readonly string Image = "UIImageView";
 		public static readonly string Label = "UILabel";
 		public static readonly string ListView = "UITableView";
+		public static readonly string Map = "MKMapView";
 		public static readonly string OpenGLView = "GLKView";
 		public static readonly string Picker = "UITextField";
+		public static readonly string Pin = "MKPinAnnotationView";
 		public static readonly string ProgressBar = "UIProgressView";
 		public static readonly string SearchBar = "UISearchBar";
 		public static readonly string Slider = "UISlider";
@@ -86,8 +88,10 @@ namespace Xamarin.Forms.Core.UITests
 		public static readonly string Image = "android.widget.ImageView";
 		public static readonly string Label = "android.widget.TextView";
 		public static readonly string ListView = "android.widget.ListView";
+		public static readonly string Map = "android.gms.maps.GoogleMap";
 		public static readonly string OpenGLView = "android.widget.GLSurfaceView";
 		public static readonly string Picker = "android.widget.EditText";
+		public static readonly string Pin = "android.gms.maps.model.Marker";
 		public static readonly string ProgressBar = "android.widget.ProgressBar";
 		public static readonly string SearchBar = "android.widget.SearchView";
 		public static readonly string Slider = "android.widget.SeekBar";
@@ -121,6 +125,7 @@ namespace Xamarin.Forms.Core.UITests
 		// Controls
 		public static readonly Func<AppQuery, AppQuery> ActivityIndicator = q => q.ClassFull(PlatformViews.ActivityIndicator);
 		public static readonly Func<AppQuery, AppQuery> Button = q => q.ClassFull(PlatformViews.Button);
+		public static readonly Func<AppQuery, AppQuery> Pin = q => q.ClassFull(PlatformViews.Pin);
 
 #if __ANDROID__
 		public static Func<AppQuery, AppQuery> EntryWithPlaceholder(string text)

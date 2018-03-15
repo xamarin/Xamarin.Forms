@@ -56,7 +56,7 @@ namespace Xamarin.Forms.Build.Tasks
 			out TypeReference declaringTypeRef)
 		{
 			declaringTypeRef = typeRef;
-			var typeDef = typeRef.Resolve();
+			var typeDef = typeRef.ResolveCached();
 			var properties = typeDef.Properties.Where(predicate);
 			if (properties.Any())
 				return properties.Single();
@@ -69,7 +69,7 @@ namespace Xamarin.Forms.Build.Tasks
 			out TypeReference declaringTypeRef)
 		{
 			declaringTypeRef = typeRef;
-			var typeDef = typeRef.Resolve();
+			var typeDef = typeRef.ResolveCached();
 			var events = typeDef.Events.Where(predicate);
 			if (events.Any()) {
 				var ev = events.Single();
@@ -89,7 +89,7 @@ namespace Xamarin.Forms.Build.Tasks
 				throw new ArgumentNullException(nameof(declaringTypeRef));
 			if (!eventDef.EventType.IsGenericInstance)
 				return eventDef;
-			if (eventDef.EventType.Resolve().FullName != "System.EventHandler`1")
+			if (eventDef.EventType.ResolveCached().FullName != "System.EventHandler`1")
 				return eventDef;
 
 			var git = eventDef.EventType as GenericInstanceType;
@@ -105,7 +105,7 @@ namespace Xamarin.Forms.Build.Tasks
 			out TypeReference declaringTypeRef)
 		{
 			declaringTypeRef = typeRef;
-			var typeDef = typeRef.Resolve();
+			var typeDef = typeRef.ResolveCached();
 			var bp = typeDef.Fields.Where
 				(predicate);
 			if (bp.Any())
@@ -118,7 +118,7 @@ namespace Xamarin.Forms.Build.Tasks
 
 		public static bool ImplementsInterface(this TypeReference typeRef, TypeReference @interface)
 		{
-			var typeDef = typeRef.Resolve();
+			var typeDef = typeRef.ResolveCached();
 			if (typeDef.Interfaces.Any(tr => tr.InterfaceType.FullName == @interface.FullName))
 				return true;
 			var baseTypeRef = typeDef.BaseType;
@@ -132,7 +132,7 @@ namespace Xamarin.Forms.Build.Tasks
 		{
 			interfaceReference = null;
 			genericArguments = null;
-			var typeDef = typeRef.Resolve();
+			var typeDef = typeRef.ResolveCached();
 			InterfaceImplementation iface;
 			if ((iface = typeDef.Interfaces.FirstOrDefault(tr =>
 							tr.InterfaceType.FullName.StartsWith(@interface, StringComparison.Ordinal) &&
@@ -175,11 +175,11 @@ namespace Xamarin.Forms.Build.Tasks
 
 			if (typeRef.IsArray) {
 				var array = (ArrayType)typeRef;
-				var arrayType = typeRef.Resolve();
+				var arrayType = typeRef.ResolveCached();
 				if (arrayInterfaces.Contains(baseClass.FullName))
 					return true;
 				if (array.IsVector &&  //generic interfaces are not implemented on multidimensional arrays
-					arrayGenericInterfaces.Contains(baseClass.Resolve().FullName) &&
+				    arrayGenericInterfaces.Contains(baseClass.ResolveCached().FullName) &&
 					baseClass.IsGenericInstance &&
 					TypeRefComparer.Default.Equals((baseClass as GenericInstanceType).GenericArguments[0], arrayType))
 					return true;
@@ -188,8 +188,8 @@ namespace Xamarin.Forms.Build.Tasks
 
 			if (typeRef.FullName == "System.Object")
 				return false;
-			var typeDef = typeRef.Resolve();
-			if (TypeRefComparer.Default.Equals(typeDef, baseClass.Resolve()))
+			var typeDef = typeRef.ResolveCached();
+			if (TypeRefComparer.Default.Equals(typeDef, baseClass.ResolveCached()))
 				return true;
 			if (typeDef.Interfaces.Any(ir => TypeRefComparer.Default.Equals(ir.InterfaceType.ResolveGenericParameters(typeRef), baseClass)))
 				return true;
@@ -200,9 +200,9 @@ namespace Xamarin.Forms.Build.Tasks
 			return typeRef.InheritsFromOrImplements(baseClass);
 		}
 
-		public static CustomAttribute GetCustomAttribute(this TypeReference typeRef, TypeReference attribute)
+		static CustomAttribute GetCustomAttribute(this TypeReference typeRef, TypeReference attribute)
 		{
-			var typeDef = typeRef.Resolve();
+			var typeDef = typeRef.ResolveCached();
 			//FIXME: avoid string comparison. make sure the attribute TypeRef is the same one
 			var attr = typeDef.CustomAttributes.SingleOrDefault(ca => ca.AttributeType.FullName == attribute.FullName);
 			if (attr != null)
@@ -211,6 +211,11 @@ namespace Xamarin.Forms.Build.Tasks
 			if (baseTypeRef != null && baseTypeRef.FullName != "System.Object")
 				return baseTypeRef.GetCustomAttribute(attribute);
 			return null;
+		}
+
+		public static CustomAttribute GetCustomAttribute(this TypeReference typeRef, ModuleDefinition module, (string assemblyName, string clrNamespace, string typeName) attributeType)
+		{
+			return typeRef.GetCustomAttribute(module.ImportReference(module.GetTypeDefinition(attributeType)));
 		}
 
 		[Obsolete]
@@ -225,7 +230,7 @@ namespace Xamarin.Forms.Build.Tasks
 			out TypeReference declaringTypeRef)
 		{
 			declaringTypeRef = typeRef;
-			var typeDef = typeRef.Resolve();
+			var typeDef = typeRef.ResolveCached();
 			var methods = typeDef.Methods.Where(predicate);
 			if (methods.Any())
 				return methods.Single();
@@ -253,7 +258,7 @@ namespace Xamarin.Forms.Build.Tasks
 		public static IEnumerable<Tuple<MethodDefinition, TypeReference>> GetMethods(this TypeReference typeRef,
 			Func<MethodDefinition, TypeReference, bool> predicate, ModuleDefinition module)
 		{
-			var typeDef = typeRef.Resolve();
+			var typeDef = typeRef.ResolveCached();
 			foreach (var method in typeDef.Methods.Where(md => predicate(md, typeRef)))
 				yield return new Tuple<MethodDefinition, TypeReference>(method, typeRef);
 			if (typeDef.IsInterface)
@@ -333,6 +338,14 @@ namespace Xamarin.Forms.Build.Tasks
 					args.Add(genericdeclType.GenericArguments[(genericself.GenericArguments[i] as GenericParameter).Position]);
 			}
 			return self.GetElementType().MakeGenericInstanceType(args.ToArray());
+		}
+
+		static Dictionary<TypeReference, TypeDefinition> resolves = new Dictionary<TypeReference, TypeDefinition>();
+		public static TypeDefinition ResolveCached(this TypeReference typeReference)
+		{
+			if (resolves.TryGetValue(typeReference, out var typeDefinition))
+				return typeDefinition;
+			return (resolves[typeReference] = typeReference.Resolve());
 		}
 	}
 }

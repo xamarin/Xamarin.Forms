@@ -22,6 +22,9 @@ namespace Xamarin.Forms.Internals
 			}
 		}
 
+		public virtual double DisplayRound(double value) =>
+			Math.Round(value);
+
 		public abstract Size PixelScreenSize { get; }
 
 		public abstract Size ScaledScreenSize { get; }
@@ -43,10 +46,6 @@ namespace Xamarin.Forms.Internals
 		}
 
 		protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-		{
-			PropertyChangedEventHandler handler = PropertyChanged;
-			if (handler != null)
-				handler(this, new PropertyChangedEventArgs(propertyName));
-		}
+			=> PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 	}
 }

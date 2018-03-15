@@ -123,7 +123,7 @@ namespace Xamarin.Forms
 
 		readonly Dictionary<Size, SizeRequest> _measureCache = new Dictionary<Size, SizeRequest>();
 
-		readonly MergedStyle _mergedStyle;
+		internal readonly MergedStyle _mergedStyle;
 
 		int _batched;
 		LayoutConstraint _computedConstraint;
@@ -278,9 +278,15 @@ namespace Xamarin.Forms
 			set { SetValue(StyleProperty, value); }
 		}
 
+		
 		[TypeConverter(typeof(ListStringTypeConverter))]
-		public IList<string> StyleClass
-		{
+		public IList<string> StyleClass {
+			get { return @class; }
+			set { @class = value; }
+		}
+
+		[TypeConverter(typeof(ListStringTypeConverter))]
+		public IList<string> @class {
 			get { return _mergedStyle.StyleClass; }
 			set { _mergedStyle.StyleClass = value; }
 		}
@@ -440,8 +446,8 @@ namespace Xamarin.Forms
 		public void BatchCommit()
 		{
 			_batched = Math.Max(0, _batched - 1);
-			if (!Batched && BatchCommitted != null)
-				BatchCommitted(this, new EventArg<VisualElement>(this));
+			if (!Batched)
+				BatchCommitted?.Invoke(this, new EventArg<VisualElement>(this));
 		}
 
 		ResourceDictionary _resources;
@@ -624,10 +630,7 @@ namespace Xamarin.Forms
 		}
 
 		protected void OnChildrenReordered()
-		{
-			if (ChildrenReordered != null)
-				ChildrenReordered(this, EventArgs.Empty);
-		}
+			=> ChildrenReordered?.Invoke(this, EventArgs.Empty);
 
 		protected virtual SizeRequest OnMeasure(double widthConstraint, double heightConstraint)
 		{
@@ -712,7 +715,14 @@ namespace Xamarin.Forms
 
 		internal void MockBounds(Rectangle bounds)
 		{
+#if NETSTANDARD2_0
 			(_mockX, _mockY, _mockWidth, _mockHeight) = bounds;
+#else
+			_mockX = bounds.X;
+			_mockY = bounds.Y;
+			_mockWidth = bounds.Width;
+			_mockHeight = bounds.Height;
+#endif
 		}
 
 		internal virtual void OnConstraintChanged(LayoutConstraint oldConstraint, LayoutConstraint newConstraint)
@@ -879,8 +889,7 @@ namespace Xamarin.Forms
 			Height = height;
 
 			SizeAllocated(width, height);
-			if (SizeChanged != null)
-				SizeChanged(this, EventArgs.Empty);
+			SizeChanged?.Invoke(this, EventArgs.Empty);
 		}
 
 		public class FocusRequestArgs : EventArgs

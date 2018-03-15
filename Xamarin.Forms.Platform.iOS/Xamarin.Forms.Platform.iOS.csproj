@@ -34,11 +34,6 @@
     <NoWarn>
     </NoWarn>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'AppStore|AnyCPU'">
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <NoWarn>
-    </NoWarn>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Runtime.Serialization" />
@@ -135,6 +130,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>StringResources.resx</DependentUpon>
     </Compile>
+    <Compile Include="ShadowEffect.cs" />
     <Compile Include="ViewInitializedEventArgs.cs" />
     <Compile Include="IOSAppIndexingProvider.cs" />
     <Compile Include="IOSAppLinks.cs" />

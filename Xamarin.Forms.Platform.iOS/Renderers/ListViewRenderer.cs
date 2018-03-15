@@ -11,6 +11,8 @@ using UIKit;
 using Xamarin.Forms.Internals;
 using RectangleF = CoreGraphics.CGRect;
 using SizeF = CoreGraphics.CGSize;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
+using Specifics = Xamarin.Forms.PlatformConfiguration.iOSSpecific.ListView;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -31,6 +33,7 @@ namespace Xamarin.Forms.Platform.iOS
 		ITemplatedItemsView<Cell> TemplatedItemsView => Element;
 		public override UIViewController ViewController => _tableViewController;
 		bool _disposed;
+
 		protected UITableViewRowAnimation InsertRowsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
 		protected UITableViewRowAnimation DeleteRowsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
 		protected UITableViewRowAnimation ReloadRowsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
@@ -552,7 +555,8 @@ namespace Xamarin.Forms.Platform.iOS
 					Control.EndUpdates();
 
 					if (_estimatedRowHeight && TemplatedItemsView.TemplatedItems.Count == 0)
-						_estimatedRowHeight = false;
+						InvalidateCellCache();
+
 
 					break;
 
@@ -576,7 +580,7 @@ namespace Xamarin.Forms.Platform.iOS
 					Control.EndUpdates();
 
 					if (_estimatedRowHeight && e.OldStartingIndex == 0)
-						_estimatedRowHeight = false;
+						InvalidateCellCache();
 
 					break;
 
@@ -588,15 +592,22 @@ namespace Xamarin.Forms.Platform.iOS
 					Control.EndUpdates();
 
 					if (_estimatedRowHeight && e.OldStartingIndex == 0)
-						_estimatedRowHeight = false;
+						InvalidateCellCache();
+
 
 					break;
 
 				case NotifyCollectionChangedAction.Reset:
-					_estimatedRowHeight = false;
+					InvalidateCellCache();
 					Control.ReloadData();
 					return;
 			}
+		}
+
+		void InvalidateCellCache()
+		{
+			_estimatedRowHeight = false;
+			_dataSource.InvalidatePrototypicalCellCache();
 		}
 
 		void UpdatePullToRefreshEnabled()
@@ -703,6 +714,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			internal override void InvalidatePrototypicalCellCache()
 			{
+				ClearPrototype();
 				_prototypicalCellByTypeOrDataTemplate.Clear();
 			}
 
@@ -796,14 +808,21 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (disposing)
 				{
-					if (_prototype != null)
-					{
-						_prototype.Dispose();
-						_prototype = null;
-					}
+					ClearPrototype();
 				}
 
 				base.Dispose(disposing);
+			}
+
+			void ClearPrototype()
+			{
+				if (_prototype != null)
+				{
+					var element = _prototype.Element;
+					element?.ClearValue(Platform.RendererProperty);
+					_prototype?.Dispose();
+					_prototype = null;
+				}
 			}
 		}
 
@@ -905,8 +924,16 @@ namespace Xamarin.Forms.Platform.iOS
 				else
 					throw new NotSupportedException();
 
+				if (List.IsSet(Specifics.SeparatorStyleProperty))
+				{
+					if (List.OnThisPlatform().GetSeparatorStyle() == SeparatorStyle.FullWidth)
+					{
+						nativeCell.SeparatorInset = UIEdgeInsets.Zero;
+						nativeCell.LayoutMargins = UIEdgeInsets.Zero;
+						nativeCell.PreservesSuperviewLayoutMargins = false;
+					}
+				}
 				var bgColor = tableView.IndexPathForSelectedRow != null && tableView.IndexPathForSelectedRow.Equals(indexPath) ? UIColor.Clear : DefaultBackgroundColor;
-
 				SetCellBackgroundColor(nativeCell, bgColor);
 				PreserveActivityIndicatorState(cell);
 				Performance.Stop(reference);

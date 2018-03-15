@@ -57,7 +57,9 @@ namespace Xamarin.Forms
 			if (targetProperty == null)
 				throw new ArgumentNullException(nameof(targetProperty));
 
-			return GetContext(targetProperty) != null;
+			var bpcontext = GetContext(targetProperty);
+			return bpcontext != null
+				&& (bpcontext.Attributes & BindableContextAttributes.IsDefaultValue) == 0;
 		}
 
 		public object GetValue(BindableProperty property)
@@ -145,18 +147,10 @@ namespace Xamarin.Forms
 		}
 
 		protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
-		{
-			PropertyChangedEventHandler handler = PropertyChanged;
-			if (handler != null)
-				handler(this, new PropertyChangedEventArgs(propertyName));
-		}
+			=> PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
 		protected virtual void OnPropertyChanging([CallerMemberName] string propertyName = null)
-		{
-			PropertyChangingEventHandler changing = PropertyChanging;
-			if (changing != null)
-				changing(this, new PropertyChangingEventArgs(propertyName));
-		}
+			=> PropertyChanging?.Invoke(this, new PropertyChangingEventArgs(propertyName));
 
 		protected void UnapplyBindings()
 		{
@@ -176,14 +170,6 @@ namespace Xamarin.Forms
 
 			BindablePropertyContext bpcontext = GetContext(targetProperty);
 			return bpcontext != null && bpcontext.Binding != null;
-		}
-
-		internal bool GetIsDefault(BindableProperty targetProperty)
-		{
-			if (targetProperty == null)
-				throw new ArgumentNullException(nameof(targetProperty));
-
-			return GetContext(targetProperty) == null;
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
@@ -257,6 +243,25 @@ namespace Xamarin.Forms
 			return values;
 		}
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		internal object[] GetValues(params BindableProperty[] properties)
+		{
+			var values = new object[properties.Length];
+			for (var i = 0; i < _properties.Count; i++) {
+				var context = _properties[i];
+				var index = properties.IndexOf(context.Property);
+				if (index < 0)
+					continue;
+				values[index] = context.Value;
+			}
+			for (var i = 0; i < values.Length; i++) {
+				if (!ReferenceEquals(values[i], null))
+					continue;
+				values[i] = properties[i].DefaultValueCreator == null ? properties[i].DefaultValue : CreateAndAddContext(properties[i]).Value;
+			}
+			return values;
+		}
+
 		internal virtual void OnRemoveDynamicResource(BindableProperty property)
 		{
 		}
@@ -282,12 +287,10 @@ namespace Xamarin.Forms
 			if (binding == null)
 				throw new ArgumentNullException("binding");
 
-			BindablePropertyContext context = null;
-			if (fromStyle && (context = GetContext(targetProperty)) != null && (context.Attributes & BindableContextAttributes.IsDefaultValue) == 0 &&
-				(context.Attributes & BindableContextAttributes.IsSetFromStyle) == 0)
+			if (fromStyle && !CanBeSetFromStyle(targetProperty))
 				return;
 
-			context = context ?? GetOrCreateContext(targetProperty);
+			var context = GetOrCreateContext(targetProperty);
 			if (fromStyle)
 				context.Attributes |= BindableContextAttributes.IsSetFromStyle;
 			else
@@ -299,10 +302,23 @@ namespace Xamarin.Forms
 			BindingBase oldBinding = context.Binding;
 			context.Binding = binding;
 
-			if (targetProperty.BindingChanging != null)
-				targetProperty.BindingChanging(this, oldBinding, binding);
+			targetProperty.BindingChanging?.Invoke(this, oldBinding, binding);
 
 			binding.Apply(BindingContext, this, targetProperty);
+		}
+
+		bool CanBeSetFromStyle(BindableProperty property)
+		{
+			var context = GetContext(property);
+			if (context == null)
+				return true;
+			if ((context.Attributes & BindableContextAttributes.IsSetFromStyle) == BindableContextAttributes.IsSetFromStyle)
+				return true;
+			if ((context.Attributes & BindableContextAttributes.IsDefaultValue) == BindableContextAttributes.IsDefaultValue)
+				return true;
+			if ((context.Attributes & BindableContextAttributes.IsDefaultValueCreated) == BindableContextAttributes.IsDefaultValueCreated)
+				return true;
+			return false;
 		}
 
 		internal void SetDynamicResource(BindableProperty property, string key)
@@ -316,13 +332,10 @@ namespace Xamarin.Forms
 				throw new ArgumentNullException(nameof(property));
 			if (string.IsNullOrEmpty(key))
 				throw new ArgumentNullException(nameof(key));
-
-			BindablePropertyContext context = null;
-			if (fromStyle && (context = GetContext(property)) != null && (context.Attributes & BindableContextAttributes.IsDefaultValue) == 0 &&
-				(context.Attributes & BindableContextAttributes.IsSetFromStyle) == 0)
+			if (fromStyle && !CanBeSetFromStyle(property))
 				return;
 
-			context = context ?? GetOrCreateContext(property);
+			var context = GetOrCreateContext(property);
 
 			context.Attributes |= BindableContextAttributes.IsDynamicResource;
 			if (fromStyle)
@@ -467,9 +480,7 @@ namespace Xamarin.Forms
 			if (bpcontext == null)
 				return;
 
-			if (   fromStyle && bpcontext != null
-				&& (bpcontext.Attributes & BindableContextAttributes.IsDefaultValue) != 0
-				&& (bpcontext.Attributes & BindableContextAttributes.IsSetFromStyle) == 0)
+			if (fromStyle && !CanBeSetFromStyle(property))
 				return;
 
 			object original = bpcontext.Value;
@@ -486,7 +497,10 @@ namespace Xamarin.Forms
 
 			bpcontext.Attributes &= ~BindableContextAttributes.IsManuallySet;
 			bpcontext.Value = newValue;
-			bpcontext.Attributes |= BindableContextAttributes.IsDefaultValue;
+			if (property.DefaultValueCreator == null)
+				bpcontext.Attributes |= BindableContextAttributes.IsDefaultValue;
+			else
+				bpcontext.Attributes |= BindableContextAttributes.IsDefaultValueCreated;
 
 			if (!same)
 			{
@@ -500,8 +514,10 @@ namespace Xamarin.Forms
 		{
 			var context = new BindablePropertyContext { Property = property, Value = property.DefaultValueCreator != null ? property.DefaultValueCreator(this) : property.DefaultValue };
 
-			if (property.DefaultValueCreator != null)
+			if (property.DefaultValueCreator == null)
 				context.Attributes = BindableContextAttributes.IsDefaultValue;
+			else
+				context.Attributes = BindableContextAttributes.IsDefaultValueCreated;
 
 			_properties.Add(context);
 			return context;
@@ -538,8 +554,7 @@ namespace Xamarin.Forms
 		{
 			context.Binding.Unapply();
 
-			if (property.BindingChanging != null)
-				property.BindingChanging(this, context.Binding, null);
+			property.BindingChanging?.Invoke(this, context.Binding, null);
 
 			context.Binding = null;
 		}
@@ -552,9 +567,7 @@ namespace Xamarin.Forms
 			if (checkAccess && property.IsReadOnly)
 				throw new InvalidOperationException(string.Format("The BindableProperty \"{0}\" is readonly.", property.PropertyName));
 
-			BindablePropertyContext context = null;
-			if (fromStyle && (context = GetContext(property)) != null && (context.Attributes & BindableContextAttributes.IsDefaultValue) == 0 &&
-				(context.Attributes & BindableContextAttributes.IsSetFromStyle) == 0)
+			if (fromStyle && !CanBeSetFromStyle(property))
 				return;
 
 			SetValueCore(property, value, SetValueFlags.ClearOneWayBindings | SetValueFlags.ClearDynamicResource,
@@ -572,8 +585,7 @@ namespace Xamarin.Forms
 			bool same = ReferenceEquals(context.Property, BindingContextProperty) ? ReferenceEquals(value, original) : Equals(value, original);
 			if (!silent && (!same || raiseOnEqual))
 			{
-				if (property.PropertyChanging != null)
-					property.PropertyChanging(this, original, value);
+				property.PropertyChanging?.Invoke(this, original, value);
 
 				OnPropertyChanging(property.PropertyName);
 			}
@@ -584,6 +596,7 @@ namespace Xamarin.Forms
 			}
 
 			context.Attributes &= ~BindableContextAttributes.IsDefaultValue;
+			context.Attributes &= ~BindableContextAttributes.IsDefaultValueCreated;
 
 			if ((context.Attributes & BindableContextAttributes.IsDynamicResource) != 0 && clearDynamicResources)
 				RemoveDynamicResource(property);
@@ -620,7 +633,8 @@ namespace Xamarin.Forms
 			IsBeingSet = 1 << 1,
 			IsDynamicResource = 1 << 2,
 			IsSetFromStyle = 1 << 3,
-			IsDefaultValue = 1 << 4
+			IsDefaultValue = 1 << 4,
+			IsDefaultValueCreated = 1 << 5,
 		}
 
 		class BindablePropertyContext

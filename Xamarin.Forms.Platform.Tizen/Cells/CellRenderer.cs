@@ -9,22 +9,43 @@ namespace Xamarin.Forms.Platform.Tizen
 		readonly Dictionary<Cell, Dictionary<string, EvasObject>> _realizedNativeViews = new Dictionary<Cell, Dictionary<string, EvasObject>>();
 
 		Native.ListView.ItemContext _currentItem;
+		GenItemClass _itemClass;
 
 		protected CellRenderer(string style)
 		{
-			Class = new GenItemClass(style)
+			Style = style;
+		}
+
+		public GenItemClass Class
+		{
+			get
+			{
+				if (_itemClass == null)
+					_itemClass = CreateItemClass(Style);
+				return _itemClass;
+			}
+			protected set
+			{
+				_itemClass?.Dispose();
+				_itemClass = value;
+			}
+		}
+
+		public virtual void SetGroupMode(bool enable)
+		{
+		}
+
+		public string Style { get; protected set; }
+
+		protected GenItemClass CreateItemClass(string style)
+		{
+			return new GenItemClass(style)
 			{
 				GetTextHandler = GetText,
 				GetContentHandler = GetContent,
 				DeleteHandler = ItemDeleted,
 				ReusableContentHandler = ReusableContent,
 			};
-		}
-
-		public GenItemClass Class
-		{
-			get;
-			private set;
 		}
 
 		protected virtual bool OnCellPropertyChanged(Cell cell, string property, Dictionary<string, EvasObject> realizedView)
@@ -74,7 +95,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			var nativeSpan = new Native.Span();
 			nativeSpan.Text = span.Text;
-			nativeSpan.ForegroundColor = span.ForegroundColor.ToNative();
+			nativeSpan.ForegroundColor = span.TextColor.ToNative();
 			nativeSpan.FontAttributes = span.FontAttributes;
 			nativeSpan.BackgroundColor = span.BackgroundColor.ToNative();
 			nativeSpan.FontSize = span.FontSize;

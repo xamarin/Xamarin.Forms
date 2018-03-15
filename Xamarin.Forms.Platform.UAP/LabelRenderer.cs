@@ -5,6 +5,8 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;
+using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
+using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.Label;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -14,8 +16,8 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			var run = new Run { Text = span.Text ?? string.Empty };
 
-			if (span.ForegroundColor != Color.Default)
-				run.Foreground = span.ForegroundColor.ToBrush();
+			if (span.TextColor != Color.Default)
+				run.Foreground = span.TextColor.ToBrush();
 
 			if (!span.IsDefault())
 #pragma warning disable 618
@@ -126,6 +128,7 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateAlign(Control);
 				UpdateFont(Control);
 				UpdateLineBreakMode(Control);
+				UpdateDetectReadingOrderFromContent(Control);
 			}
 		}
 
@@ -143,6 +146,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateLineBreakMode(Control);
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateAlign(Control);
+			else if (e.PropertyName == Specifics.DetectReadingOrderFromContentProperty.PropertyName)
+				UpdateDetectReadingOrderFromContent(Control);
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -258,10 +263,22 @@ namespace Xamarin.Forms.Platform.UWP
 					textBlock.Inlines.Clear();
 
 					for (var i = 0; i < formatted.Spans.Count; i++)
-					{
-						if (formatted.Spans[i].Text != null)
-							textBlock.Inlines.Add(formatted.Spans[i].ToRun());
-					}
+						textBlock.Inlines.Add(formatted.Spans[i].ToRun());
+				}
+			}
+		}
+
+		void UpdateDetectReadingOrderFromContent(TextBlock textBlock)
+		{
+			if (Element.IsSet(Specifics.DetectReadingOrderFromContentProperty))
+			{
+				if (Element.OnThisPlatform().GetDetectReadingOrderFromContent())
+				{
+					textBlock.TextReadingOrder = TextReadingOrder.DetectFromContent;
+				}
+				else
+				{
+					textBlock.TextReadingOrder = TextReadingOrder.UseFlowDirection;
 				}
 			}
 		}

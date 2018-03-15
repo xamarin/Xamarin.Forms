@@ -1,6 +1,7 @@
+using System;
 using System.ComponentModel;
-using ElmSharp;
 using System.Diagnostics;
+using ElmSharp;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
@@ -11,38 +12,24 @@ namespace Xamarin.Forms.Platform.Tizen
 		where TView : View
 		where TNativeView : EvasObject
 	{
-		GestureDetector _gestureDetector;
+		readonly Lazy<GestureDetector> _gestureDetector;
+
+		internal GestureDetector GestureDetector => _gestureDetector.Value;
 
 		/// <summary>
 		/// Default constructor.
 		/// </summary>
 		protected ViewRenderer()
 		{
+			_gestureDetector = new Lazy<GestureDetector>(() => new GestureDetector(this));
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<TView> e)
 		{
 			base.OnElementChanged(e);
-
-			if (e.OldElement != null)
+			if (e.OldElement != null && _gestureDetector.IsValueCreated)
 			{
-				_gestureDetector.Clear();
-				_gestureDetector = null;
-			}
-
-			if (e.NewElement != null)
-			{
-				_gestureDetector = new GestureDetector(this);
-			}
-		}
-
-		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			base.OnElementPropertyChanged(sender, e);
-
-			if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
-			{
-				UpdateIsEnabled();
+				_gestureDetector.Value.Clear();
 			}
 		}
 
@@ -63,9 +50,10 @@ namespace Xamarin.Forms.Platform.Tizen
 			SetNativeView(control);
 		}
 
-		void UpdateIsEnabled()
+		protected override void UpdateIsEnabled(bool initialize)
 		{
-			_gestureDetector.IsEnabled = Element.IsEnabled;
+			base.UpdateIsEnabled(initialize);
+			_gestureDetector.Value.IsEnabled = Element.IsEnabled;
 		}
 	}
 }
