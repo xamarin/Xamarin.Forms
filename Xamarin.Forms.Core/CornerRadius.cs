@@ -6,10 +6,10 @@ namespace Xamarin.Forms
 	[TypeConverter (typeof (CornerRadiusTypeConverter))]
 	public struct CornerRadius
 	{
-		public double TopLeft { get; private set; }
-		public double TopRight { get; private set; }
-		public double BottomLeft { get; private set; }
-		public double BottomRight { get; private set; }
+		public double TopLeft { get; set; }
+		public double TopRight { get; set; }
+		public double BottomLeft { get; set; }
+		public double BottomRight { get; set; }
 
 		internal bool IsDefault
 		{
@@ -35,7 +35,7 @@ namespace Xamarin.Forms
 
 		bool Equals (CornerRadius other)
 		{
-			return TopLeft.Equals (other.TopLeft) && TopRight.Equals (other.TopRight) && BottomLeft.Equals (other.BottomLeft) && BottomRight.Equals (other.BottomRight);
+			return TopLeft == other.TopLeft && TopRight == other.TopRight && BottomLeft == other.BottomLeft && BottomRight == other.BottomRight;
 		}
 
 		public override bool Equals (object obj)
@@ -43,7 +43,7 @@ namespace Xamarin.Forms
 			if (ReferenceEquals (null, obj))
 				return false;
 
-			return obj is CornerRadius && Equals ((CornerRadius)obj);
+			return obj is CornerRadius cornerRadius && Equals (cornerRadius);
 		}
 
 		public override int GetHashCode ()
