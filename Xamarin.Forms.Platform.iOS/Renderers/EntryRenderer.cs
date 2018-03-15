@@ -108,6 +108,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateAlignment();
 			UpdateAdjustsFontSizeToFitWidth();
 			UpdateMaxLength();
+			UpdateReturnType();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -145,6 +146,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateAlignment();
 			else if (e.PropertyName == Xamarin.Forms.InputView.MaxLengthProperty.PropertyName)
 				UpdateMaxLength();
+			else if (e.PropertyName == Entry.ReturnTypeProperty.PropertyName)
+				UpdateReturnType();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -291,5 +294,13 @@ namespace Xamarin.Forms.Platform.iOS
 			var newLength = textField?.Text?.Length + replacementString.Length - range.Length;
 			return newLength <= Element?.MaxLength;
 		}
+
+		void UpdateReturnType()
+		{
+			if (Control == null || Element == null)
+				return;
+			Control.ReturnKeyType = Element.ReturnType.ToUIReturnKeyType();
+		}
+
 	}
 }
