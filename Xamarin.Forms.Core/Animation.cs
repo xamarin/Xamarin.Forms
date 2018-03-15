@@ -47,7 +47,7 @@ namespace Xamarin.Forms
 			_step = f => { };
 		}
 
-		public Animation(Action<double> callback, double start = 0.0f, double end = 1.0f, Easing easing = null, Action finished = null)
+		public Animation(Action<double> callback, double start = 0.0f, double end = 2.0f, Easing easing = null, Action finished = null)
 		{
 			_children = new List<Animation>();
 			_easing = easing ?? Easing.Linear;
