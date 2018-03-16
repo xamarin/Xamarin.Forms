@@ -120,7 +120,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Tap(q => q.Marked("Test")); 
 
 			var errorMessage = RunningApp.Query(x => x.Marked(ErrorMessage)).First().Text;
-			Assert.IsEmpty(errorMessage, errorMessage);
+			Assert.IsTrue(String.IsNullOrWhiteSpace(errorMessage), errorMessage);
 		}
 
 #endif
