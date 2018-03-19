@@ -182,10 +182,11 @@ namespace Xamarin.Forms
 
 		private static string EscapeJsString(string js)
 		{
+			if (!js.Contains("'"))
+				return js;
+
 			//get every quote in the string along with all the backslashes preceding it
 			var singleQuotes = Regex.Matches(js, @"(\\*?)'");
-			if (singleQuotes.Count == 0)
-				return js;
 
 			var uniqueMatches = new List<string>();
 
