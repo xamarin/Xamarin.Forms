@@ -101,8 +101,12 @@ namespace Xamarin.Forms
 			//JSON.stringify wraps the result in literal quotes, we just want the actual returned result
 			//note that if the js function returns the string "null" we will get here and not above
 			else
-				result = result.Trim('"');
-
+			{
+				if (result != null)
+				{
+					result = result.Trim('"');
+				}
+			}
 
 
 			return result;
