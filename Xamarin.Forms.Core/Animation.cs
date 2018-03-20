@@ -27,6 +27,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace Xamarin.Forms
 {
@@ -47,7 +48,7 @@ namespace Xamarin.Forms
 			_step = f => { };
 		}
 
-		public Animation(Action<double> callback, double start = 0.0f, double end = 2.0f, Easing easing = null, Action finished = null)
+		public Animation(Action<double> callback, double start = 0.0f, double end = 1.0f, Easing easing = null, Action finished = null)
 		{
 			_children = new List<Animation>();
 			_easing = easing ?? Easing.Linear;
@@ -78,6 +79,7 @@ namespace Xamarin.Forms
 			_children.Add(animation);
 		}
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void Commit(IAnimatable owner, string name, uint rate = 16, uint length = 250, Easing easing = null, Action<double, bool> finished = null, Func<bool> repeat = null)
 		{
 			owner.Animate(name, this, rate, length, easing, finished, repeat);
