@@ -204,16 +204,30 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 					if (!fm.IsDestroyed)
 					{
-						FragmentTransaction trans = fm.BeginTransaction();
+						FragmentTransaction fragmentTransaction = fm.BeginTransaction();
 						foreach (Fragment fragment in _fragmentStack)
-							trans.Remove(fragment);
-						trans.CommitAllowingStateLoss();
-						fm.ExecutePendingTransactions();
+							fragmentTransaction.Remove(fragment);
+
+						CommitTransaction(fragmentTransaction);
 					}
 				}
 			}
 
 			base.Dispose(disposing);
+		}
+
+		void CommitTransaction(FragmentTransaction fragmentTransaction)
+		{
+			if (Build.VERSION.SdkInt >= BuildVersionCodes.N)
+				fragmentTransaction.CommitNowAllowingStateLoss();
+			else
+			{
+				fragmentTransaction.CommitAllowingStateLoss();
+				new Handler(Looper.MainLooper).PostAtFrontOfQueue(() =>
+				{
+					FragmentManager.ExecutePendingTransactions();
+				});
+			}
 		}
 
 		protected override void OnAttachedToWindow()
