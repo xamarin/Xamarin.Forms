@@ -92,6 +92,7 @@ namespace Xamarin.Forms.Platform.Android
 				RegisterHandlerForDefaultRenderer(typeof(Switch), typeof(AppCompat.SwitchRenderer), typeof(SwitchRenderer));
 				RegisterHandlerForDefaultRenderer(typeof(Picker), typeof(AppCompat.PickerRenderer), typeof(PickerRenderer));
 				RegisterHandlerForDefaultRenderer(typeof(CarouselPage), typeof(AppCompat.CarouselPageRenderer), typeof(CarouselPageRenderer));
+				RegisterHandlerForDefaultRenderer(typeof(Entry), typeof(AppCompat.EntryRenderer), typeof(EntryRenderer));
 
 				if (Forms.Flags.Contains(Flags.FastRenderersExperimental))
 				{

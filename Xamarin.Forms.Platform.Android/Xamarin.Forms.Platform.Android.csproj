@@ -22,14 +22,12 @@
     <AndroidTlsProvider>
     </AndroidTlsProvider>
   </PropertyGroup>
-  
   <PropertyGroup Condition="'$(BuildingInsideVisualStudio)' != 'true'">
     <AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
   </PropertyGroup>
   <PropertyGroup Condition="'$(BuildingInsideVisualStudio)' == 'true'">
     <AndroidUseLatestPlatformSdk>False</AndroidUseLatestPlatformSdk>
-  </PropertyGroup>  
-  
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -110,6 +108,7 @@
     <Compile Include="ActivityResultCallbackRegistry.cs" />
     <Compile Include="AndroidApplicationLifecycleState.cs" />
     <Compile Include="AndroidTitleBarVisibility.cs" />
+    <Compile Include="AppCompat\EntryRenderer.cs" />
     <Compile Include="AppCompat\FrameRenderer.cs" />
     <Compile Include="ButtonBackgroundTracker.cs" />
     <Compile Include="Elevation.cs" />
