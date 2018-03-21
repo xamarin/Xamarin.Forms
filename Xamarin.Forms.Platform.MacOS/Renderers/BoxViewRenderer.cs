@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
 using AppKit;
-using Xamarin.Forms.Core;
 using Xamarin.Forms.Platform.macOS.Controls;
 
 namespace Xamarin.Forms.Platform.MacOS
