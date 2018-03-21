@@ -17,7 +17,7 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Bugzilla, 60699, "Issue Description", PlatformAffected.Android)]
+	[Issue(IssueTracker.Bugzilla, 60699, "ListView Bindings fire multiple times on Android SDK 24+", PlatformAffected.Android)]
 	public class Bugzilla60699 : TestContentPage // or TestMasterDetailPage, etc ...
 	{
 		[Preserve(AllMembers = true)]
@@ -254,12 +254,5 @@ namespace Xamarin.Forms.Controls.Issues
 			if (viewModel.Items.Count == 0)
 				viewModel.LoadItemsCommand.Execute(null);
 		}
-
-#if UITEST
-		[Test]
-		public void Issue1Test ()
-		{
-		}
-#endif
 	}
 }
