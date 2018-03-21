@@ -197,7 +197,7 @@ namespace Xamarin.Forms
 				}
 			}
 
-			uniqueMatches.Sort((x, y) => y.CompareTo(x));
+			uniqueMatches.Sort((x, y) => y.Length.CompareTo(x.Length));
 
 			//escape all quotes from the script as well as add additional escaping to all quotes that were already escaped
 			for (var i=0; i < uniqueMatches.Count; i++)
