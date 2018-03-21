@@ -4,7 +4,7 @@ using CoreGraphics;
 
 namespace Xamarin.Forms.Platform.macOS.Controls
 {
-	public class FormsBoxView : NSView
+	internal class FormsBoxView : NSView
 	{
 		NSColor _colorToRenderer;
 
