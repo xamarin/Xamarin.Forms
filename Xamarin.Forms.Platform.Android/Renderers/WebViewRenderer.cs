@@ -266,7 +266,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		class JavascriptResult : Java.Lang.Object, IValueCallback
 		{
-			private TaskCompletionSource<string> source;
+			TaskCompletionSource<string> source;
 			public Task<string> JsResult { get { return source.Task; } }
 
 			public JavascriptResult()

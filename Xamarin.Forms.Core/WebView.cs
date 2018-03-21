@@ -100,14 +100,8 @@ namespace Xamarin.Forms
 
 			//JSON.stringify wraps the result in literal quotes, we just want the actual returned result
 			//note that if the js function returns the string "null" we will get here and not above
-			else
-			{
-				if (result != null)
-				{
-					result = result.Trim('"');
-				}
-			}
-
+			else if (result != null)
+				result = result.Trim('"');
 
 			return result;
 		}
@@ -184,7 +178,7 @@ namespace Xamarin.Forms
 			return _platformConfigurationRegistry.Value.On<T>();
 		}
 
-		private static string EscapeJsString(string js)
+		static string EscapeJsString(string js)
 		{
 			if (!js.Contains("'"))
 				return js;
