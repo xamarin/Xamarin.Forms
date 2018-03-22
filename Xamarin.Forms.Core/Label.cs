@@ -307,7 +307,7 @@ namespace Xamarin.Forms
 
 			var spans = new List<GestureElement>();
 			foreach (var span in FormattedText.Spans)
-				if (span.GestureRecognizers.Count > 0 && ((ISpatialElement)span).Region.Contains(point))
+				if (span.GestureRecognizers.Count > 0 && (((ISpatialElement)span).Region.Contains(point) || point.IsEmpty))
 					spans.Add(span);
 
 			if (spans.Count > 1) // More than 2 elements overlapping, deflate to see which one is actually hit.

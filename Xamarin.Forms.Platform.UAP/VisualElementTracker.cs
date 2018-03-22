@@ -553,13 +553,17 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			var view = Element as View;
 			IList<IGestureRecognizer> gestures = view?.GestureRecognizers;
-
+						
 			if (_container == null || gestures == null)
 				return;
 
 			ClearContainerEventHandlers();
 
-			if (gestures.GetGesturesFor<TapGestureRecognizer>(g => g.NumberOfTapsRequired == 1).Any())
+			var children = (view as IGestureController)?.GetChildElements(Point.Zero);
+			IList<TapGestureRecognizer> childGestures = children?.GetChildGesturesFor<TapGestureRecognizer>().ToList();
+			
+			if (gestures.GetGesturesFor<TapGestureRecognizer>(g => g.NumberOfTapsRequired == 1).Any()
+				|| children?.GetChildGesturesFor<TapGestureRecognizer>(g => g.NumberOfTapsRequired == 1).Any() == true)
 			{
 				_container.Tapped += OnTap;
 			}
@@ -571,8 +575,9 @@ namespace Xamarin.Forms.Platform.UWP
 				}
 			}
 
-			if (gestures.GetGesturesFor<TapGestureRecognizer>(g => g.NumberOfTapsRequired == 2).Any())
-			{
+			if (gestures.GetGesturesFor<TapGestureRecognizer>(g => g.NumberOfTapsRequired == 2).Any()
+				|| children?.GetChildGesturesFor<TapGestureRecognizer>(g => g.NumberOfTapsRequired == 2).Any() == true)
+			{ 
 				_container.DoubleTapped += OnDoubleTap;
 			}
 			else
