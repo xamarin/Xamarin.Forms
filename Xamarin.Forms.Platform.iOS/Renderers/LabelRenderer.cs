@@ -126,12 +126,11 @@ namespace Xamarin.Forms.Platform.MacOS
 #endif
 				}
 
+				UpdateLineBreakMode();
+				UpdateAlignment();
 				UpdateText();
 				UpdateTextColor();
 				UpdateFont();
-
-				UpdateLineBreakMode();
-				UpdateAlignment();
 			}
 
 			base.OnElementChanged(e);
