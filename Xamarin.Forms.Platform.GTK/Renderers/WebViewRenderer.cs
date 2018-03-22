@@ -208,10 +208,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
         Task<string> OnEvaluateJavaScriptRequested(string script)
         {
-	       if (Control != null)
-	       {
-		       Control.ExecuteScript(script);
-	       }
+		       Control?.ExecuteScript(script);
                return null;
         }
 

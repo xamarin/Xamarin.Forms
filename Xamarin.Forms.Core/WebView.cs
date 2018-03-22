@@ -85,6 +85,9 @@ namespace Xamarin.Forms
 		{
 			EvaluateJavaScriptDelegate handler = EvaluateJavaScriptRequested;
 
+			if (script == null)
+				return null;
+
 			//make all the platforms mimic Android's implementation, which is by far the most complete.
 			if (Xamarin.Forms.Device.RuntimePlatform != "Android")
 			{
@@ -180,6 +183,9 @@ namespace Xamarin.Forms
 
 		static string EscapeJsString(string js)
 		{
+			if (js == null)
+				return null;
+
 			if (!js.Contains("'"))
 				return js;
 

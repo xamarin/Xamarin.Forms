@@ -145,7 +145,7 @@ if(bases.length == 0){
 
 		async Task<string> OnEvaluateJavaScriptRequested(string script)
 		{
-				return await Control.InvokeScriptAsync("eval", new[] { script });
+			return await Control.InvokeScriptAsync("eval", new[] { script });
 		}
 
 		void OnGoBackRequested(object sender, EventArgs eventArgs)
