@@ -13,6 +13,7 @@ using static Xamarin.Forms.PlatformConfiguration.iOSSpecific.NavigationPage;
 using PageUIStatusBarAnimation = Xamarin.Forms.PlatformConfiguration.iOSSpecific.UIStatusBarAnimation;
 using PointF = CoreGraphics.CGPoint;
 using RectangleF = CoreGraphics.CGRect;
+using SizeF = CoreGraphics.CGSize;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -359,32 +360,8 @@ namespace Xamarin.Forms.Platform.iOS
 			// must pack into container so padding can work
 			// otherwise the view controller is forced to 0,0
 			var pack = new ParentingViewController(this) { Child = page };
-			if (!string.IsNullOrWhiteSpace(page.Title))
-				pack.NavigationItem.Title = page.Title;
 
-			// First page and we have a master detail to contend with
-			UpdateLeftBarButtonItem(pack);
-
-			//var pack = Platform.GetRenderer (view).ViewController;
-
-			var titleIcon = NavigationPage.GetTitleIcon(page);
-			if (!string.IsNullOrEmpty(titleIcon?.File))
-			{
-				try
-				{
-					SetTitleImage(pack, titleIcon);
-				}
-				catch
-				{
-				}
-			}
-
-			var titleText = NavigationPage.GetBackButtonTitle(page);
-			if (titleText != null)
-			{
-				// adding a custom event handler to UIBarButtonItem for navigating back seems to be ignored.
-				pack.NavigationItem.BackBarButtonItem = new UIBarButtonItem { Title = titleText, Style = UIBarButtonItemStyle.Plain };
-			}
+			UpdateTitleArea(pack, page);
 
 			var pageRenderer = Platform.GetRenderer(page);
 			pack.View.AddSubview(pageRenderer.ViewController.View);
@@ -392,14 +369,6 @@ namespace Xamarin.Forms.Platform.iOS
 			pageRenderer.ViewController.DidMoveToParentViewController(pack);
 
 			return pack;
-		}
-
-		async void SetTitleImage(ParentingViewController pack, FileImageSource titleIcon)
-		{
-			var source = Internals.Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(titleIcon);
-			var image = await source.LoadImageAsync(titleIcon);
-			//UIImage ctor throws on file not found if MonoTouch.ObjCRuntime.Class.ThrowOnInitFailure is true;
-			pack.NavigationItem.TitleView = new UIImageView(image);
 		}
 
 		void FindParentMasterDetail()
@@ -447,28 +416,45 @@ namespace Xamarin.Forms.Platform.iOS
 #pragma warning disable 0618 //retaining legacy call to obsolete code
 			if (e.PropertyName == NavigationPage.TintProperty.PropertyName)
 #pragma warning restore 0618
+			{
 				UpdateTint();
-			if (e.PropertyName == NavigationPage.BarBackgroundColorProperty.PropertyName)
+			}
+			else if (e.PropertyName == NavigationPage.BarBackgroundColorProperty.PropertyName)
+			{
 				UpdateBarBackgroundColor();
-			else if (e.PropertyName == NavigationPage.BarTextColorProperty.PropertyName || e.PropertyName == PlatformConfiguration.iOSSpecific.NavigationPage.StatusBarTextColorModeProperty.PropertyName)
+			}
+			else if (e.PropertyName == NavigationPage.BarTextColorProperty.PropertyName
+				  || e.PropertyName == StatusBarTextColorModeProperty.PropertyName)
 			{
 				UpdateBarTextColor();
 				SetStatusBarStyle();
 			}
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
+			{
 				UpdateBackgroundColor();
+			}
 			else if (e.PropertyName == NavigationPage.CurrentPageProperty.PropertyName)
 			{
 				Current = ((NavigationPage)Element).CurrentPage;
 				ValidateNavbarExists(Current);
 			}
-				
-			else if (e.PropertyName == PlatformConfiguration.iOSSpecific.NavigationPage.IsNavigationBarTranslucentProperty.PropertyName)
+			else if (e.PropertyName == IsNavigationBarTranslucentProperty.PropertyName)
+			{
 				UpdateTranslucent();
+			}
 			else if (e.PropertyName == PreferredStatusBarUpdateAnimationProperty.PropertyName)
+			{
 				UpdateCurrentPagePreferredStatusBarUpdateAnimation();
+			}
 			else if (e.PropertyName == PrefersLargeTitlesProperty.PropertyName)
+			{
 				UpdateUseLargeTitles();
+			}
+			else if (e.PropertyName == NavigationPage.BackButtonTitleProperty.PropertyName)
+			{
+				var pack = (ParentingViewController)TopViewController;
+				UpdateTitleArea(pack, pack.Child);
+			}
 		}
 
 		void ValidateNavbarExists(Page newCurrentPage)
@@ -492,7 +478,119 @@ namespace Xamarin.Forms.Platform.iOS
 			var navPage = (Element as NavigationPage);
 			if (Forms.IsiOS11OrNewer && navPage != null)
 				NavigationBar.PrefersLargeTitles = navPage.OnThisPlatform().PrefersLargeTitles();
-		}	
+		}
+
+		void UpdateTitleArea(ParentingViewController pack, Page page)
+		{
+			if (pack == null || page == null)
+				return;
+
+			if (!string.IsNullOrWhiteSpace(page.Title))
+				pack.NavigationItem.Title = page.Title;
+
+			// First page and we have a master detail to contend with
+			UpdateLeftBarButtonItem(pack);
+
+			var titleText = NavigationPage.GetBackButtonTitle(page);
+			if (titleText != null)
+			{
+				// adding a custom event handler to UIBarButtonItem for navigating back seems to be ignored.
+				pack.NavigationItem.BackBarButtonItem = new UIBarButtonItem { Title = titleText, Style = UIBarButtonItemStyle.Plain };
+			}
+
+			FileImageSource titleIcon = NavigationPage.GetTitleIcon(page);
+			VisualElement titleView = NavigationPage.GetTitleView(page);
+
+			bool needContainer = titleView != null || titleIcon != null;
+
+			Container titleViewContainer = pack.NavigationItem.TitleView as Container;
+
+			// null this now. if we try to add the same view again, iOS thinks it's smart 
+			// and reuses the same reference, but that one is already gone; it won't reappear.
+			pack.NavigationItem.TitleView = null;
+
+			if (needContainer && titleViewContainer == null)
+				titleViewContainer = new Container();
+
+			// we'll run these even if we don't needContainer because they perform cleanup
+			UpdateTitleImage(titleViewContainer, titleIcon);
+			UpdateTitleView(titleViewContainer, titleView);
+
+			if (needContainer)
+				pack.NavigationItem.TitleView = titleViewContainer;
+			else
+				ClearTitleViewContainer(pack);
+		}
+
+		async void UpdateTitleImage(Container titleViewContainer, FileImageSource titleIcon)
+		{
+			if (titleViewContainer == null)
+				return;
+
+			if (string.IsNullOrWhiteSpace(titleIcon))
+			{
+				titleViewContainer.Icon = null;
+			}
+			else
+			{
+				var source = Internals.Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(titleIcon);
+				var image = await source.LoadImageAsync(titleIcon);
+
+				try
+				{
+					titleViewContainer.Icon = new UIImageView(image) { };
+				}
+				catch
+				{
+					//UIImage ctor throws on file not found if MonoTouch.ObjCRuntime.Class.ThrowOnInitFailure is true;
+				}
+			}
+		}
+
+		void ClearTitleViewContainer(UIViewController pack)
+		{
+			if (pack == null)
+				return;
+
+			if ((pack.NavigationItem.TitleView == null && pack.NavigationItem.TitleView is Container titleViewContainer))
+			{
+				titleViewContainer.Dispose();
+				titleViewContainer = null;
+				pack.NavigationItem.TitleView = null;
+			}
+		}
+
+		void UpdateTitleView(Container titleViewContainer, VisualElement titleView)
+		{
+			if (titleViewContainer == null)
+				return;
+
+			var titleViewRenderer = titleViewContainer.Child;
+
+			if (titleView != null)
+			{
+				if (titleViewRenderer != null)
+				{
+					var reflectableType = titleViewRenderer as System.Reflection.IReflectableType;
+					var rendererType = reflectableType != null ? reflectableType.GetTypeInfo().AsType() : titleViewRenderer.GetType();
+					if (titleView != null && rendererType == Internals.Registrar.Registered.GetHandlerTypeForObject(titleView))
+					{
+						if (titleViewContainer != null)
+							titleViewContainer.Child = null;
+						titleViewRenderer.SetElement(titleView);
+						return;
+					}
+					titleViewContainer?.DisposeChild();
+				}
+
+				titleViewRenderer = Platform.CreateRenderer(titleView);
+				titleViewContainer.Child = titleViewRenderer;
+			}
+			else if (titleViewRenderer != null)
+			{
+				titleViewContainer?.DisposeChild();
+			}
+		}
 
 		void UpdateTranslucent()
 		{
@@ -709,6 +807,8 @@ namespace Xamarin.Forms.Platform.iOS
 				_secondaryToolbar.Hidden = true;
 				//secondaryToolbar.Items = null;
 			}
+
+			TopViewController?.NavigationItem?.TitleView?.SizeToFit();
 		}
 
 		internal async Task UpdateFormsInnerNavigation(Page pageBeingRemoved)
@@ -972,6 +1072,13 @@ namespace Xamarin.Forms.Platform.iOS
 					UpdatePrefersStatusBarHidden();
 				else if (e.PropertyName == LargeTitleDisplayProperty.PropertyName)
 					UpdateLargeTitles();
+				else if (e.PropertyName == NavigationPage.TitleIconProperty.PropertyName ||
+					 e.PropertyName == NavigationPage.TitleViewProperty.PropertyName)
+				{
+					NavigationRenderer n;
+					if (_navigation.TryGetTarget(out n))
+						n.UpdateTitleArea(this, Child);
+				}
 			}
 
 			void UpdatePrefersStatusBarHidden()
@@ -1119,6 +1226,94 @@ namespace Xamarin.Forms.Platform.iOS
 		void IEffectControlProvider.RegisterEffect(Effect effect)
 		{
 			VisualElementRenderer<VisualElement>.RegisterEffect(effect, View);
+		}
+
+		class Container : UIView
+		{
+			IVisualElementRenderer _child;
+			UIImageView _icon;
+
+			protected override void Dispose(bool disposing)
+			{
+				if (disposing)
+				{
+					DisposeChild();
+
+					_icon?.Dispose();
+					_icon = null;
+				}
+				base.Dispose(disposing);
+			}
+
+			public UIImageView Icon
+			{
+				set
+				{
+					if (_icon != null)
+						_icon.RemoveFromSuperview();
+
+					_icon = value;
+
+					if (_icon != null)
+						InsertSubview(_icon, 0);
+				}
+			}
+
+			public IVisualElementRenderer Child
+			{
+				get { return _child; }
+				set
+				{
+					if (_child != null)
+						_child.NativeView.RemoveFromSuperview();
+
+					_child = value;
+
+					if (value != null)
+					{
+						AddSubview(value.NativeView);
+						value.NativeView.Center = Center;
+					}
+				}
+			}
+
+			// Prevent Frame from being 0,0
+			public override SizeF IntrinsicContentSize => UILayoutFittingExpandedSize;
+
+			public override SizeF SizeThatFits(SizeF size)
+			{
+				IVisualElementRenderer renderer = _child;
+				if (renderer == null || renderer.Element == null)
+				{
+					// Preserve legacy behavior, where TitleIcon appeared in center
+					if (_icon != null)
+						_icon.Center = Center;
+
+					return base.SizeThatFits(size);
+				}
+
+				double width = size.Width;
+				var height = size.Height > 0 ? size.Height : double.PositiveInfinity;
+				var result = renderer.Element.Measure(width, height, MeasureFlags.IncludeMargins);
+
+				Layout.LayoutChildIntoBoundingRegion(_child.Element, new Rectangle(0, 0, size.Width, result.Request.Height));
+
+				return new SizeF(size.Width, result.Request.Height);
+			}
+
+			public void DisposeChild()
+			{
+				if (_child == null)
+					return;
+
+				var platform = _child.Element.Platform as Platform;
+				if (platform != null)
+					platform.DisposeModelAndChildrenRenderers(_child.Element);
+
+				_child.NativeView.RemoveFromSuperview();
+				_child.Dispose();
+				_child = null;
+			}
 		}
 	}
 }
