@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Platform.UWP
 			return new FrameworkElementAutomationPeer(Control);
 		}
 
-		private void SetCornerRadius(Core.CornerRadius cornerRadius)
+		private void SetCornerRadius(CornerRadius cornerRadius)
 		{
 			Control.RadiusX = cornerRadius.TopLeft;
 			Control.RadiusY = cornerRadius.BottomRight;

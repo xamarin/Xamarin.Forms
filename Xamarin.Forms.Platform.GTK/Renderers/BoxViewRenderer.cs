@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using Xamarin.Forms.Core;
 using Xamarin.Forms.Platform.GTK.Extensions;
 using Xamarin.Forms.PlatformConfiguration.GTKSpecific;
 
