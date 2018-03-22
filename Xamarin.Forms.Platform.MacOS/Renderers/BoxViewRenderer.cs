@@ -34,13 +34,12 @@ namespace Xamarin.Forms.Platform.MacOS
 				SetNeedsDisplayInRect(Bounds);
 		}
 
-		protected override void SetBackgroundColor(Color color)
+		protected override void SetBackgroundColor (Color color)
 		{
 			if (Element == null || Control == null)
 				return;
 
-			Control.WantsLayer = true;
-			Control.Layer.BackgroundColor = color.ToCGColor();
+			(Control as FormsBoxView)?.SetColor (color.ToNSColor ());
 		}
 
 		void SetCornerRadius(CornerRadius cornerRadius)
