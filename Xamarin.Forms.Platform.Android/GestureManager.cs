@@ -111,10 +111,10 @@ namespace Xamarin.Forms.Platform.Android
 			var context = Control.Context;
 			var listener = new InnerGestureListener(new TapGestureHandler(() => View, () =>
 			{
-				if (Element is Label label)
-					return label.FormattedText?.Spans;
+				if (Element is View view)
+					return view.GetChildElements(Point.Zero) ?? new List<GestureElement>();
 
-				return new List<Span>();
+				return new List<GestureElement>();
 			}),
 				new PanGestureHandler(() => View, context.FromPixels));
 

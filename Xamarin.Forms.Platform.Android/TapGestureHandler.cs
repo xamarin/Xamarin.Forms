@@ -7,13 +7,13 @@ namespace Xamarin.Forms.Platform.Android
 {
 	internal class TapGestureHandler
 	{
-		public TapGestureHandler(Func<View> getView, Func<IList<Span>> getSpans)
+		public TapGestureHandler(Func<View> getView, Func<IList<GestureElement>> getChildElements)
 		{
 			GetView = getView;
-			GetSpans = getSpans;
+			GetChildElements = getChildElements;
 		}
 
-		Func<IList<Span>> GetSpans { get; }
+		Func<IList<GestureElement>> GetChildElements { get; }
 		Func<View> GetView { get; }
 
 		public void OnSingleClick()
@@ -59,7 +59,8 @@ namespace Xamarin.Forms.Platform.Android
 		public bool HasAnyGestures()
 		{
 			var view = GetView();
-			return view != null && view.GestureRecognizers.OfType<TapGestureRecognizer>().Any();
+			return view != null && view.GestureRecognizers.OfType<TapGestureRecognizer>().Any()
+								|| GetChildElements().GetChildGesturesFor<TapGestureRecognizer>().Any();
 		}
 
 		public IEnumerable<TapGestureRecognizer> TapGestureRecognizers(int count)
