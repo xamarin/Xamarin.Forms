@@ -56,7 +56,7 @@ namespace Xamarin.Forms.Platform.Android
 					spannable.SetSpan(new FontSpan(span.Font, view), start, end, SpanTypes.InclusiveInclusive);
 #pragma warning restore 618
 				else
-					spannable.SetSpan(new FontSpan(defaultFont, view), start, end, SpanTypes.InclusiveInclusive);				 
+					spannable.SetSpan(new FontSpan(defaultFont, view), start, end, SpanTypes.InclusiveInclusive);
 			}
 			return spannable;
 		}
