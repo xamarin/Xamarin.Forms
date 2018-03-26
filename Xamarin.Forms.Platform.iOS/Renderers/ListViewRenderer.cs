@@ -1326,7 +1326,7 @@ namespace Xamarin.Forms.Platform.iOS
 			//   5. We end up here; A refresh is in progress while being asked to disable pullToRefresh
 		}
 
-		//hack: Form some reason UIKit isnt't allowing to scroll negative values with largetitles 
+		//hack: Form some reason UIKit isn't allowing to scroll negative values with largetitles 
 		public void ForceRefreshing()
 		{
 			if (!_list.IsPullToRefreshEnabled)
@@ -1422,7 +1422,7 @@ namespace Xamarin.Forms.Platform.iOS
 	}
 
 
-	internal class FormsRefreshControl : UIRefreshControl
+	public class FormsRefreshControl : UIRefreshControl
 	{
 		bool _usingLargeTitles;
 
