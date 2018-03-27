@@ -13,6 +13,17 @@ namespace Xamarin.Forms.Platform.UWP
 		bool _measured;
 		bool _disposed;
 
+		static bool _nativeAnimationSupport = false;
+
+		static ImageRenderer()
+		{
+			if (Windows.Foundation.Metadata.ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Media.Imaging.BitmapImage", "AutoPlay"))
+				if (Windows.Foundation.Metadata.ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Media.Imaging.BitmapImage", "IsPlaying"))
+					if (Windows.Foundation.Metadata.ApiInformation.IsMethodPresent("Windows.UI.Xaml.Media.Imaging.BitmapImage", "Play"))
+						if (Windows.Foundation.Metadata.ApiInformation.IsMethodPresent("Windows.UI.Xaml.Media.Imaging.BitmapImage", "Stop"))
+							_nativeAnimationSupport = true;
+		}
+
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
 			if (Control.Source == null)
@@ -73,6 +84,8 @@ namespace Xamarin.Forms.Platform.UWP
 				await TryUpdateSource();
 			else if (e.PropertyName == Image.AspectProperty.PropertyName)
 				UpdateAspect();
+			else if (e.PropertyName == Image.IsAnimationPlayingProperty.PropertyName)
+				StartStopAnimation();
 		}
 
 		static Stretch GetStretch(Aspect aspect)
@@ -101,7 +114,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		protected virtual void OnImageFailed(object sender, ExceptionRoutedEventArgs exceptionRoutedEventArgs)
 		{
-			Log.Warning("Image Loading", $"Image failed to load: {exceptionRoutedEventArgs.ErrorMessage}" );
+			Log.Warning("Image Loading", $"Image failed to load: {exceptionRoutedEventArgs.ErrorMessage}");
 			Element?.SetIsLoading(false);
 		}
 
@@ -178,6 +191,19 @@ namespace Xamarin.Forms.Platform.UWP
 				// might have disposed of this Image already.
 				if (Control != null)
 				{
+					if (imagesource is BitmapImage bitmapImage)
+					{
+						if (_nativeAnimationSupport)
+						{
+							bitmapImage.AutoPlay = false;
+							if (Element.IsSet(Image.AnimationPlayBehaviorProperty) || Element.IsSet(Image.IsAnimationPlayingProperty))
+								bitmapImage.AutoPlay = ((Image.AnimationPlayBehaviorValue)Element.GetValue(Image.AnimationPlayBehaviorProperty) == Image.AnimationPlayBehaviorValue.OnLoad);
+
+							if (bitmapImage.IsPlaying && !bitmapImage.AutoPlay)
+								bitmapImage.Stop();
+						}
+					}
+
 					Control.Source = imagesource;
 				}
 
@@ -187,6 +213,28 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				Control.Source = null;
 				Element.SetIsLoading(false);
+			}
+		}
+
+		void StartStopAnimation()
+		{
+			if (_disposed || Element == null || Control == null)
+			{
+				return;
+			}
+
+			if (Element.IsLoading)
+				return;
+
+			if (Control.Source is BitmapImage bitmapImage)
+			{
+				if (_nativeAnimationSupport)
+				{
+					if (Element.IsAnimationPlaying && !bitmapImage.IsPlaying)
+						bitmapImage.Play();
+					else if (!Element.IsAnimationPlaying && bitmapImage.IsPlaying)
+						bitmapImage.Stop();
+				}
 			}
 		}
 	}
