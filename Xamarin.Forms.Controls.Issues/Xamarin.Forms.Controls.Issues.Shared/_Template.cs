@@ -32,4 +32,38 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 #endif
 	}
+
+	[Preserve(AllMembers = true)]
+	[Issue(IssueTracker.Github, 1396, "Label HorizontalTextAlignment (Center or End) is not kept when navigating back to a page", PlatformAffected.Android)]
+	public class Issue1396 : TestNavigationPage
+	{
+		protected override void Init()
+		{
+			var button = new Button { Text = "Go" };
+			button.Clicked += Button_Clicked;
+
+			var label = new Label
+			{
+				Text = "I should be centered",
+				HorizontalTextAlignment = TextAlignment.Center
+			};
+
+			var layout = new StackLayout {
+				Children = { button, label },
+				HorizontalOptions = LayoutOptions.Fill,
+				VerticalOptions = LayoutOptions.Fill
+			};
+
+			var content = new ContentPage {
+				Content = layout 
+			};
+
+			PushAsync(content);
+		}
+
+		private void Button_Clicked(object sender, System.EventArgs e)
+		{
+			PushAsync(new ContentPage { Content = new Label { Text = "Page 2" } });
+		}
+	}
 }
