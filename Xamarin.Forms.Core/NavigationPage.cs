@@ -18,6 +18,8 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty HasBackButtonProperty = BindableProperty.CreateAttached("HasBackButton", typeof(bool), typeof(NavigationPage), true);
 
+		public static readonly BindableProperty BarHeightProperty = BindableProperty.Create(nameof(BarHeight), typeof(int), typeof(NavigationPage), -1);
+
 		[Obsolete("TintProperty is obsolete as of version 1.2.0. Please use BarBackgroundColorProperty and BarTextColorProperty to change NavigationPage bar color properties.")] 
 		public static readonly BindableProperty TintProperty = BindableProperty.Create("Tint", typeof(Color), typeof(NavigationPage), Color.Default);
 
@@ -51,6 +53,12 @@ namespace Xamarin.Forms
 		{
 			get { return (Color)GetValue(BarBackgroundColorProperty); }
 			set { SetValue(BarBackgroundColorProperty, value); }
+		}
+
+		public int BarHeight
+		{
+			get { return (int)GetValue(BarHeightProperty); }
+			set { SetValue(BarHeightProperty, value); }
 		}
 
 		public Color BarTextColor
@@ -133,6 +141,11 @@ namespace Xamarin.Forms
 			if (page == null)
 				throw new ArgumentNullException("page");
 			return (bool)page.GetValue(HasBackButtonProperty);
+		}
+
+		public static int GetBarHeight(BindableObject page)
+		{
+			return (int)page.GetValue(BarHeightProperty);
 		}
 
 		public static bool GetHasNavigationBar(BindableObject page)
@@ -240,6 +253,11 @@ namespace Xamarin.Forms
 		public static void SetHasNavigationBar(BindableObject page, bool value)
 		{
 			page.SetValue(HasNavigationBarProperty, value);
+		}
+
+		public static void SetBarHeight(BindableObject page, int value)
+		{
+			page.SetValue(BarHeightProperty, value);
 		}
 
 		public static void SetTitleIcon(BindableObject bindable, FileImageSource value)
