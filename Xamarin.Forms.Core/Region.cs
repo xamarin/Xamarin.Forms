@@ -82,10 +82,10 @@ namespace Xamarin.Forms
 					region.Top -= top;
 
 				region.Left -= left;
-				region.Right += right;
+				region.Width += right + left;
 
 				if (i == Regions.Count - 1) // This is the last line
-					region.Bottom += bottom;
+					region.Height += bottom + top;
 
 				Regions[i] = region;
 			}
