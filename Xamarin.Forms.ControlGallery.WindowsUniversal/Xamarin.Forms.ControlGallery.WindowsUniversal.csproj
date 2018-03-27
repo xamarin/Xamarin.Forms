@@ -143,6 +143,7 @@
     <Content Include="default.css" />
     <Content Include="FlowerBuds.jpg" />
     <Content Include="Fruits.jpg" />
+    <Content Include="ie_retro.gif" />
     <Content Include="invalidimage.jpg" />
     <Content Include="Legumes.jpg" />
     <Content Include="local.html" />

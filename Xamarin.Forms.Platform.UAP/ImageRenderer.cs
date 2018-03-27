@@ -22,6 +22,17 @@ namespace Xamarin.Forms.Platform.UWP
 
 		bool IImageVisualElementRenderer.IsDisposed => _disposed;
 
+		static bool _nativeAnimationSupport = false;
+
+		static ImageRenderer()
+		{
+			if (Windows.Foundation.Metadata.ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Media.Imaging.BitmapImage", "AutoPlay"))
+				if (Windows.Foundation.Metadata.ApiInformation.IsPropertyPresent("Windows.UI.Xaml.Media.Imaging.BitmapImage", "IsPlaying"))
+					if (Windows.Foundation.Metadata.ApiInformation.IsMethodPresent("Windows.UI.Xaml.Media.Imaging.BitmapImage", "Play"))
+						if (Windows.Foundation.Metadata.ApiInformation.IsMethodPresent("Windows.UI.Xaml.Media.Imaging.BitmapImage", "Stop"))
+							_nativeAnimationSupport = true;
+		}
+
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
 			if (Control.Source == null)
@@ -78,6 +89,10 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (e.PropertyName == Image.SourceProperty.PropertyName)
 				await TryUpdateSource().ConfigureAwait(false);
+			else if (e.PropertyName == Image.AspectProperty.PropertyName)
+				UpdateAspect();
+			else if (e.PropertyName == Image.IsAnimationPlayingProperty.PropertyName)
+				StartStopAnimation();
 		}
 
 
@@ -121,13 +136,80 @@ namespace Xamarin.Forms.Platform.UWP
 		protected async Task UpdateSource()
 		{
 			await ImageElementManager.UpdateSource(this).ConfigureAwait(false);
+            // TODO GIF
+
+			Element.SetIsLoading(true);
+
+			ImageSource source = Element.Source;
+			IImageSourceHandler handler;
+			if (source != null && (handler = Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(source)) != null)
+			{
+				Windows.UI.Xaml.Media.ImageSource imagesource;
+
+				try
+				{
+					imagesource = await handler.LoadImageAsync(source);
+				}
+				catch (OperationCanceledException)
+				{
+					imagesource = null;
+				}
+
+				// In the time it takes to await the imagesource, some zippy little app
+				// might have disposed of this Image already.
+				if (Control != null)
+				{
+					if (imagesource is BitmapImage bitmapImage)
+					{
+						if (_nativeAnimationSupport)
+						{
+							bitmapImage.AutoPlay = false;
+							if (Element.IsSet(Image.AnimationPlayBehaviorProperty) || Element.IsSet(Image.IsAnimationPlayingProperty))
+								bitmapImage.AutoPlay = ((Image.AnimationPlayBehaviorValue)Element.GetValue(Image.AnimationPlayBehaviorProperty) == Image.AnimationPlayBehaviorValue.OnLoad);
+
+							if (bitmapImage.IsPlaying && !bitmapImage.AutoPlay)
+								bitmapImage.Stop();
+						}
+					}
+
+					Control.Source = imagesource;
+				}
+
+				RefreshImage();
+			}
+			else
+			{
+				Control.Source = null;
+				Element.SetIsLoading(false);
+			}
 		}
 
-		void IImageVisualElementRenderer.SetImage(Windows.UI.Xaml.Media.ImageSource image)
+		void StartStopAnimation()
 		{
-			Control.Source = image;
-		}
+			if (_disposed || Element == null || Control == null)
+			{
+				return;
+			}
 
+			if (Element.IsLoading)
+				return;
+
+			if (Control.Source is BitmapImage bitmapImage)
+			{
+				if (_nativeAnimationSupport)
+				{
+					if (Element.IsAnimationPlaying && !bitmapImage.IsPlaying)
+						bitmapImage.Play();
+					else if (!Element.IsAnimationPlaying && bitmapImage.IsPlaying)
+						bitmapImage.Stop();
+				}
+			}
+		}
 		Windows.UI.Xaml.Controls.Image IImageVisualElementRenderer.GetImage() => Control;
-	}
+
+        void IImageVisualElementRenderer.SetImage(Windows.UI.Xaml.Media.ImageSource image)
+        {
+            Control.Source = image;
+        }
+    }
 }
