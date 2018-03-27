@@ -6,9 +6,6 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Input;
-using Xamarin.Forms.PlatformConfiguration;
-using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.VisualElement;
 
 namespace Xamarin.Forms.Platform.UWP
@@ -483,42 +480,7 @@ namespace Xamarin.Forms.Platform.UWP
 			var element = Element as IElementConfiguration<TElement>;
 
 			if (element != null && control != null)
-			{
-				var windowsElement = element.On<PlatformConfiguration.Windows>();
-				if (Element.IsSet(Specifics.AccessKeyProperty))
-					control.AccessKey = windowsElement.GetAccessKey();
-
-				if (Element.IsSet(Specifics.AccessKeyPlacementProperty))
-				{
-					switch (windowsElement.GetAccessKeyPlacement())
-					{
-						case AccessKeyPlacement.Auto:
-							control.KeyTipPlacementMode = KeyTipPlacementMode.Auto;
-							break;
-						case AccessKeyPlacement.Bottom:
-							control.KeyTipPlacementMode = KeyTipPlacementMode.Bottom;
-							break;
-						case AccessKeyPlacement.Center:
-							control.KeyTipPlacementMode = KeyTipPlacementMode.Center;
-							break;
-						case AccessKeyPlacement.Left:
-							control.KeyTipPlacementMode = KeyTipPlacementMode.Left;
-							break;
-						case AccessKeyPlacement.Right:
-							control.KeyTipPlacementMode = KeyTipPlacementMode.Right;
-							break;
-						case AccessKeyPlacement.Top:
-							control.KeyTipPlacementMode = KeyTipPlacementMode.Top;
-							break;
-					}
-				}
-
-				if (Element.IsSet(Specifics.AccessKeyHorizontalOffsetProperty))
-					control.KeyTipHorizontalOffset = windowsElement.GetAccessKeyHorizontalOffset();
-
-				if (Element.IsSet(Specifics.AccessKeyVerticalOffsetProperty))
-					control.KeyTipVerticalOffset = windowsElement.GetAccessKeyVerticalOffset();
-			}
+				AccessKeyHelper.UpdateAccessKey(Control, Element);
 		}
 
 		protected virtual void UpdateNativeControl()

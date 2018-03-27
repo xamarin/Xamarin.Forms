@@ -248,11 +248,11 @@ namespace Xamarin.Forms.Platform.UWP
 				case NotifyCollectionChangedAction.Remove:
 				case NotifyCollectionChangedAction.Replace:
 					if (e.NewItems != null)
-						foreach (var c in e.NewItems)
-							(c as Page).PropertyChanged += OnChildPagePropertyChanged;
+						for (int i = 0; i< e.NewItems.Count; i++)
+							(e.NewItems[i] as Page).PropertyChanged += OnChildPagePropertyChanged;
 					if (e.OldItems != null)
-						foreach (var c in e?.OldItems)
-							(c as Page).PropertyChanged -= OnChildPagePropertyChanged;
+						for (int i = 0; i < e.OldItems.Count; i++)
+							(e.OldItems[i] as Page).PropertyChanged -= OnChildPagePropertyChanged;
 					break;
 				case NotifyCollectionChangedAction.Reset:
 					foreach (var p in Element.Children)
@@ -460,10 +460,10 @@ namespace Xamarin.Forms.Platform.UWP
 					Control.InvalidateMeasure();
 			}
 		}
-        void UpdateToolbarPlacement()
-        {
-            Control.ToolbarPlacement = Element.OnThisPlatform().GetToolbarPlacement();
-        }
+		void UpdateToolbarPlacement()
+		{
+			Control.ToolbarPlacement = Element.OnThisPlatform().GetToolbarPlacement();
+		}
 
 		protected void UpdateAccessKeys()
 		{
@@ -484,40 +484,9 @@ namespace Xamarin.Forms.Platform.UWP
 				var windowsElement = page.On<PlatformConfiguration.Windows>();
 				if (page.IsSet(VisualElementSpecifics.AccessKeyProperty))
 				{
-					control.AccessKey = windowsElement.GetAccessKey();
 					control.AccessKeyInvoked += AccessKeyInvokedForTab;
 				}
-
-				if (page.IsSet(VisualElementSpecifics.AccessKeyPlacementProperty))
-				{
-					switch (windowsElement.GetAccessKeyPlacement())
-					{
-						case AccessKeyPlacement.Auto:
-							control.KeyTipPlacementMode = KeyTipPlacementMode.Auto;
-							break;
-						case AccessKeyPlacement.Bottom:
-							control.KeyTipPlacementMode = KeyTipPlacementMode.Bottom;
-							break;
-						case AccessKeyPlacement.Center:
-							control.KeyTipPlacementMode = KeyTipPlacementMode.Center;
-							break;
-						case AccessKeyPlacement.Left:
-							control.KeyTipPlacementMode = KeyTipPlacementMode.Left;
-							break;
-						case AccessKeyPlacement.Right:
-							control.KeyTipPlacementMode = KeyTipPlacementMode.Right;
-							break;
-						case AccessKeyPlacement.Top:
-							control.KeyTipPlacementMode = KeyTipPlacementMode.Top;
-							break;
-					}
-				}
-
-				if (page.IsSet(VisualElementSpecifics.AccessKeyHorizontalOffsetProperty))
-					control.KeyTipHorizontalOffset = windowsElement.GetAccessKeyHorizontalOffset();
-
-				if (page.IsSet(VisualElementSpecifics.AccessKeyVerticalOffsetProperty))
-					control.KeyTipVerticalOffset = windowsElement.GetAccessKeyVerticalOffset();
+				AccessKeyHelper.UpdateAccessKey(control, page);
 			}
 		}
 	}
