@@ -180,6 +180,7 @@
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Goobuntu-icon.png" />
+    <Content Include="ie_retro.gif" />
     <Content Include="Intranet-icon.png" />
     <BundleResource Include="local.html" />
     <Content Include="oasis.jpg" />
