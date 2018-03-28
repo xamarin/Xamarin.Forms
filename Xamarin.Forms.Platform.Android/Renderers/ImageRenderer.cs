@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using Android.Content;
 using Android.Graphics;
+using Android.Graphics.Drawables;
 using Android.Views;
 using AImageView = Android.Widget.ImageView;
 using Xamarin.Forms.Internals;
@@ -36,6 +37,9 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (_isDisposed)
 				return;
+
+			if (Control != null)
+				Control.Reset();
 
 			_isDisposed = true;
 
@@ -72,6 +76,8 @@ namespace Xamarin.Forms.Platform.Android
 				await TryUpdateBitmap();
 			else if (e.PropertyName == Image.AspectProperty.PropertyName)
 				UpdateAspect();
+			else if (e.PropertyName == Image.IsAnimationPlayingProperty.PropertyName)
+				StartStopAnimation();
 		}
 
 		void UpdateAspect()
@@ -121,6 +127,25 @@ namespace Xamarin.Forms.Platform.Android
 				return true;
 
 			return _motionEventHelper.HandleMotionEvent(Parent, e);
+		}
+
+		void StartStopAnimation()
+		{
+			if (_isDisposed || Element == null || Control == null)
+			{
+				return;
+			}
+
+			if (Element.IsLoading)
+				return;
+
+			if (Control.Drawable is AnimationDrawable animation)
+			{
+				if (Element.IsAnimationPlaying && !animation.IsRunning)
+					animation.Start();
+				else if (!Element.IsAnimationPlaying && animation.IsRunning)
+					animation.Stop();
+			}
 		}
 	}
 }

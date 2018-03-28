@@ -385,6 +385,12 @@
       <Link>proguard.cfg</Link>
     </ProguardConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\ie_retro.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\sweden.gif" />
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="BeforeBuild">
