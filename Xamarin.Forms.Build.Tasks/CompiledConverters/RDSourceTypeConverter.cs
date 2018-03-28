@@ -57,7 +57,7 @@ namespace Xamarin.Forms.Core.XamlC
 				yield return instruction; //lineinfo
 			yield return Create(Callvirt, module.ImportMethodReference(("Xamarin.Forms.Core", "Xamarin.Forms", "ResourceDictionary"),
 			                                                           methodName: "SetAndLoadSource",
-			                                                           parameterTypes: new[] { ("System", "System", "Uri"), ("mscorlib", "System", "String"), ("mscorlib", "System.Reflection", "Assembly"), ("System.Xml", "System.Xml", "IXmlLineInfo") }));
+			                                                           parameterTypes: new[] { ("System", "System", "Uri"), ("mscorlib", "System", "String"), ("mscorlib", "System.Reflection", "Assembly"), ("System.Xml.ReaderWriter", "System.Xml", "IXmlLineInfo") }));
 			//ldloc the stored uri as return value
 			yield return Create(Ldloc, uriVarDef);
 		}

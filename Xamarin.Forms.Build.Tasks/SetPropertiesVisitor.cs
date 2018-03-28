@@ -308,7 +308,7 @@ namespace Xamarin.Forms.Build.Tasks
 						yield return instruction;
 				yield return Create(Callvirt, module.ImportMethodReference(("Xamarin.Forms.Core", "Xamarin.Forms.Xaml", "IMarkupExtension"),
 																		   methodName: "ProvideValue",
-																		   parameterTypes: new[] { ("mscorlib", "System", "IServiceProvider") }));
+																		   parameterTypes: new[] { ("System.ComponentModel", "System", "IServiceProvider") }));
 				yield return Create(Stloc, vardefref.VariableDefinition);
 			}
 			else if (context.Variables[node].VariableType.ImplementsInterface(module.ImportReference(("Xamarin.Forms.Core", "Xamarin.Forms.Xaml", "IValueProvider"))))
@@ -340,7 +340,7 @@ namespace Xamarin.Forms.Build.Tasks
 						yield return instruction;
 				yield return Create(Callvirt, module.ImportMethodReference(("Xamarin.Forms.Core", "Xamarin.Forms.Xaml", "IValueProvider"),
 																		   methodName: "ProvideValue",
-																		   parameterTypes: new[] { ("mscorlib", "System", "IServiceProvider") }));
+																		   parameterTypes: new[] { ("System.ComponentModel", "System", "IServiceProvider") }));
 				yield return Create(Stloc, vardefref.VariableDefinition);
 			}
 		}
