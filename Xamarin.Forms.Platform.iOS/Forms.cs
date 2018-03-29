@@ -351,6 +351,11 @@ namespace Xamarin.Forms
 				NSApplication.SharedApplication.Terminate(new NSObject());
 #endif
 			}
+
+			public void ScheduleLayoutUpdate(Action layoutUpdate)
+			{
+				BeginInvokeOnMainThread(layoutUpdate);
+			}
 		}
 	}
 }

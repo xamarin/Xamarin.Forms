@@ -1,4 +1,5 @@
-﻿using Xamarin.Forms.CustomAttributes;
+﻿using System;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
 #if UITEST
@@ -34,36 +35,51 @@ namespace Xamarin.Forms.Controls.Issues
 	}
 
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Github, 1396, "Label HorizontalTextAlignment (Center or End) is not kept when navigating back to a page", PlatformAffected.Android)]
-	public class Issue1396 : TestNavigationPage
+	[Issue(IssueTracker.Github, 1396, 
+		"Label TextAlignment is not kept when resuming application", 
+		PlatformAffected.Android)]
+	public class Issue1396Vertical : TestContentPage
 	{
+		Label _label;
+
 		protected override void Init()
 		{
-			var button = new Button { Text = "Go" };
-			button.Clicked += Button_Clicked;
-
-			var label = new Label
+			var instructions = new Label
 			{
-				Text = "I should be centered",
+				Text = "Tap the 'Change Text' button. Tap the Overview button. Resume the application. If the label" 
+						+ " text is no longer centered, the test has failed."
+			};
+
+			var button = new Button { Text = "Change Text" };
+			button.Clicked += (sender, args) =>
+			{
+				// TODO hartez 2018/03/29 09:34:21 We need to test this if it wraps 	
+
+				_label.Text = DateTime.Now.ToLongDateString() + " " + DateTime.Now.ToLongTimeString();
+			};
+
+			_label = new Label
+			{
+				HeightRequest = 400,
+				BackgroundColor = Color.Gold,
+				Text = "I should be centered in the gold area",
+				VerticalTextAlignment = TextAlignment.Center,
 				HorizontalTextAlignment = TextAlignment.Center
 			};
 
-			var layout = new StackLayout {
-				Children = { button, label },
-				HorizontalOptions = LayoutOptions.Fill,
-				VerticalOptions = LayoutOptions.Fill
+			var layout = new StackLayout 
+			{
+				Children = { instructions, button, _label }
 			};
 
-			var content = new ContentPage {
+			var content = new ContentPage 
+			{
 				Content = layout 
 			};
 
-			PushAsync(content);
-		}
+			Content = new Label { Text = "Shouldn't see this" };
 
-		private void Button_Clicked(object sender, System.EventArgs e)
-		{
-			PushAsync(new ContentPage { Content = new Label { Text = "Page 2" } });
+			Appearing += (sender, args) => Application.Current.MainPage = content;
 		}
 	}
 }

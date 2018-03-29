@@ -103,7 +103,12 @@ namespace Xamarin.Forms
 			PlatformServices.BeginInvokeOnMainThread(action);
 		}
 
-        public static double GetNamedSize(NamedSize size, Element targetElement)
+		public static void ScheduleLayoutUpdate(Action layoutUpdate)
+		{
+			PlatformServices.ScheduleLayoutUpdate(layoutUpdate);
+		}
+
+		public static double GetNamedSize(NamedSize size, Element targetElement)
         {
             return GetNamedSize(size, targetElement.GetType());
         }

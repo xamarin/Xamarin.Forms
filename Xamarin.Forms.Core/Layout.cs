@@ -358,7 +358,13 @@ namespace Xamarin.Forms
 			if (!s_relayoutInProgress)
 			{
 				s_relayoutInProgress = true;
-				Device.BeginInvokeOnMainThread(() =>
+
+				// Rather than recomputing the layout for each change as it happens, we accumulate them in 
+				// s_resolutionList and schedule a single layout update operation to handle them all at once.
+				// This avoids a lot of unnecessary layout operations if something is triggering many property
+				// changes at once (e.g., a BindingContext change)
+
+				Device.ScheduleLayoutUpdate(() =>
 				{
 					// if thread safety mattered we would need to lock this and compareexchange above
 					IList<KeyValuePair<Layout, int>> copy = s_resolutionList;

@@ -589,6 +589,16 @@ namespace Xamarin.Forms
 				Internals.Log.Warning(nameof(AndroidPlatformServices), "Platform doesn't implement QuitApp");
 			}
 
+			public void ScheduleLayoutUpdate(Action layoutUpdate)
+			{
+				if (s_handler == null || s_handler.Looper != Looper.MainLooper)
+				{
+					s_handler = new Handler(Looper.MainLooper);
+				}
+
+				s_handler.PostAtFrontOfQueue(layoutUpdate);
+			}
+
 			public class _IsolatedStorageFile : IIsolatedStorageFile
 			{
 				readonly IsolatedStorageFile _isolatedStorageFile;

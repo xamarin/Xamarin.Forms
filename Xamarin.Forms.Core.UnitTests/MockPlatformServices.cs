@@ -170,6 +170,11 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 
 		}
+
+		public void ScheduleLayoutUpdate(Action layoutUpdate)
+		{
+			BeginInvokeOnMainThread(layoutUpdate);
+		}
 	}
 
 	internal class MockDeserializer : Internals.IDeserializer
