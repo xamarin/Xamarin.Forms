@@ -27,21 +27,6 @@ namespace Xamarin.Forms.Platform.Android
 		{
 		}
 
-		protected override void OnLayout(bool changed, int left, int top, int right, int bottom)
-		{
-			base.OnLayout(changed, left, top, right, bottom);
-		}
-
-		protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
-		{
-			base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
-		}
-
-		protected override void OnDraw(Canvas canvas)
-		{
-			base.OnDraw(canvas);
-		}
-
 		public override void Invalidate()
 		{
 			if (!_skip)
