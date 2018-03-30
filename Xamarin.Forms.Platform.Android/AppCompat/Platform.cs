@@ -8,7 +8,6 @@ using Android.Views;
 using Android.Views.Animations;
 using ARelativeLayout = Android.Widget.RelativeLayout;
 using Xamarin.Forms.Internals;
-using Debug = System.Diagnostics.Debug;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
