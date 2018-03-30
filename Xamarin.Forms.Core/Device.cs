@@ -104,9 +104,9 @@ namespace Xamarin.Forms
 		}
 
 		public static double GetNamedSize(NamedSize size, Element targetElement)
-        {
-            return GetNamedSize(size, targetElement.GetType());
-        }
+		{
+			return GetNamedSize(size, targetElement.GetType());
+		}
 
         public static double GetNamedSize(NamedSize size, Type targetElementType)
         {
