@@ -9,6 +9,11 @@ using Xamarin.Forms.Platform.Android.FastRenderers;
 
 namespace Xamarin.Forms.Platform.Android
 {
+	public interface IViewRenderer
+	{
+		void MeasureExactly();
+	}
+
 	public abstract class ViewRenderer : ViewRenderer<View, AView>
 	{
 		protected ViewRenderer(Context context) : base(context)
@@ -21,7 +26,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 	}
 
-	public abstract class ViewRenderer<TView, TNativeView> : VisualElementRenderer<TView>, AView.IOnFocusChangeListener where TView : View where TNativeView : AView
+	public abstract class ViewRenderer<TView, TNativeView> : VisualElementRenderer<TView>, IViewRenderer, AView.IOnFocusChangeListener where TView : View where TNativeView : AView
 	{
 		protected ViewRenderer(Context context) : base(context)
 		{
@@ -50,6 +55,30 @@ namespace Xamarin.Forms.Platform.Android
 		internal bool HandleKeyboardOnFocus;
 
 		public TNativeView Control { get; private set; }
+
+		void IViewRenderer.MeasureExactly()
+		{
+			if (Control == null || Element == null)
+			{
+				return;
+			}
+
+			var width = Element.Width;
+			var height = Element.Height;
+
+			if (width <= 0 || height <= 0)
+			{
+				return;
+			}
+
+			var realWidth = (int)Context.ToPixels(width);
+			var realHeight = (int)Context.ToPixels(height);
+
+			var widthMeasureSpec = MeasureSpecFactory.MakeMeasureSpec(realWidth, MeasureSpecMode.Exactly);
+			var heightMeasureSpec = MeasureSpecFactory.MakeMeasureSpec(realHeight, MeasureSpecMode.Exactly);
+
+			Control.Measure(widthMeasureSpec, heightMeasureSpec);
+		}
 
 		void AView.IOnFocusChangeListener.OnFocusChange(AView v, bool hasFocus)
 		{
