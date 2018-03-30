@@ -175,12 +175,27 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			widthConstraint = widthConstraint <= -1 ? double.PositiveInfinity : _context.ToPixels(widthConstraint);
 			heightConstraint = heightConstraint <= -1 ? double.PositiveInfinity : _context.ToPixels(heightConstraint);
 
+			var wmode = MeasureSpecMode.AtMost;
+			var hmode = MeasureSpecMode.AtMost;
+
+			if(view is View fview)
+			{
+				if (fview.HorizontalOptions.Alignment == LayoutAlignment.Fill)
+				{
+					wmode = MeasureSpecMode.Exactly;
+				}
+				if (fview.VerticalOptions.Alignment == LayoutAlignment.Fill)
+				{
+					hmode = MeasureSpecMode.Exactly;
+				}
+			}
+
 			int width = !double.IsPositiveInfinity(widthConstraint)
-							? MeasureSpecFactory.MakeMeasureSpec((int)widthConstraint, MeasureSpecMode.AtMost)
+							? MeasureSpecFactory.MakeMeasureSpec((int)widthConstraint, wmode)
 							: MeasureSpecFactory.MakeMeasureSpec(0, MeasureSpecMode.Unspecified);
 
 			int height = !double.IsPositiveInfinity(heightConstraint)
-							 ? MeasureSpecFactory.MakeMeasureSpec((int)heightConstraint, MeasureSpecMode.AtMost)
+							 ? MeasureSpecFactory.MakeMeasureSpec((int)heightConstraint, hmode)
 							 : MeasureSpecFactory.MakeMeasureSpec(0, MeasureSpecMode.Unspecified);
 
 			SizeRequest rawResult = viewRenderer.GetDesiredSize(width, height);

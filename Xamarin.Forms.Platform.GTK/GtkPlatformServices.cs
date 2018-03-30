@@ -110,10 +110,5 @@ namespace Xamarin.Forms.Platform.GTK
 		{
 			Gtk.Application.Quit();
 		}
-
-		public void ScheduleLayoutUpdate(Action layoutUpdate)
-		{
-			BeginInvokeOnMainThread(layoutUpdate);
-		}
 	}
 }

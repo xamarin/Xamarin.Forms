@@ -144,10 +144,5 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			Log.Warning(nameof(WindowsBasePlatformServices), "Platform doesn't implement QuitApp");
 		}
-
-		public void ScheduleLayoutUpdate(Action layoutUpdate)
-		{
-			_dispatcher.RunAsync(CoreDispatcherPriority.High, () => layoutUpdate()).WatchForError();
-		}
 	}
 }

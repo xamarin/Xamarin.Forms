@@ -145,14 +145,5 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			System.Windows.Application.Current.Shutdown();
 		}
-
-		public void ScheduleLayoutUpdate(Action layoutUpdate)
-		{
-			// Leaving the previous behavior for now, but I suspect something like
-			// System.Windows.Application.Current.Dispatcher.BeginInvoke(layoutUpdate, DispatcherPriority.Render);
-			// might be correct here
-
-			BeginInvokeOnMainThread(layoutUpdate);
-		}
 	}
 }

@@ -34,7 +34,5 @@ namespace Xamarin.Forms.Internals
 		string RuntimePlatform { get; }
 
 		void QuitApplication();
-
-		void ScheduleLayoutUpdate(Action layoutUpdate);
 	}
 }

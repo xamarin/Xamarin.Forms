@@ -364,7 +364,7 @@ namespace Xamarin.Forms
 				// This avoids a lot of unnecessary layout operations if something is triggering many property
 				// changes at once (e.g., a BindingContext change)
 
-				Device.ScheduleLayoutUpdate(() =>
+				Device.BeginInvokeOnMainThread(() =>
 				{
 					// if thread safety mattered we would need to lock this and compareexchange above
 					IList<KeyValuePair<Layout, int>> copy = s_resolutionList;

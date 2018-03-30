@@ -176,11 +176,6 @@ namespace Xamarin.Forms.Platform.Tizen
 			Forms.Context.Exit();
 		}
 
-		public void ScheduleLayoutUpdate(Action layoutUpdate)
-		{
-			BeginInvokeOnMainThread(layoutUpdate);
-		}
-
 		public bool IsInvokeRequired
 		{
 			get
