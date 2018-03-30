@@ -7,7 +7,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_SearchBarRenderer))]
-	public class SearchBar : View, IFontElement, ITextElement, ITextAlignmentElement, ISearchBarController, IElementConfiguration<SearchBar>
+	public class SearchBar : View, IFontElement, ITextElement, ITextAlignmentElement, ISearchBarController, IElementConfiguration<SearchBar>, ICommandableElement
 	{
 		public static readonly BindableProperty SearchCommandProperty = BindableProperty.Create("SearchCommand", typeof(ICommand), typeof(SearchBar), null, propertyChanged: OnCommandChanged);
 
@@ -110,6 +110,18 @@ namespace Xamarin.Forms
 		{
 			get { return (double)GetValue(FontSizeProperty); }
 			set { SetValue(FontSizeProperty, value); }
+		}
+
+		ICommand ICommandableElement.Command
+		{
+			get => SearchCommand;
+			set => SearchCommand = value;
+		}
+
+		object ICommandableElement.CommandParameter
+		{
+			get => SearchCommandParameter;
+			set => SearchCommandParameter = value;
 		}
 
 		void IFontElement.OnFontFamilyChanged(string oldValue, string newValue)

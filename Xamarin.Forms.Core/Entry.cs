@@ -7,7 +7,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_EntryRenderer))]
-	public class Entry : InputView, IFontElement, ITextElement, ITextAlignmentElement, IEntryController, IElementConfiguration<Entry>
+	public class Entry : InputView, IFontElement, ITextElement, ITextAlignmentElement, IEntryController, IElementConfiguration<Entry>, ICommandableElement
 	{
 		public static readonly BindableProperty ReturnTypeProperty = BindableProperty.Create(nameof(ReturnType), typeof(ReturnType), typeof(Entry), ReturnType.Default);
 
@@ -135,6 +135,18 @@ namespace Xamarin.Forms
 		{
 			get => GetValue(ReturnCommandParameterProperty);
 			set => SetValue(ReturnCommandParameterProperty, value);
+		}
+
+		ICommand ICommandableElement.Command
+		{
+			get => ReturnCommand;
+			set => ReturnCommand = value;
+		}
+
+		object ICommandableElement.CommandParameter
+		{
+			get => ReturnCommandParameter;
+			set => ReturnCommandParameter = value;
 		}
 
 		double IFontElement.FontSizeDefaultValueCreator() =>

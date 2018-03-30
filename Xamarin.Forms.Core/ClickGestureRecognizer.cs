@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Windows.Input;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
@@ -11,7 +12,7 @@ namespace Xamarin.Forms
 		Secondary = 1 << 1
 	}
 
-	public sealed class ClickGestureRecognizer : GestureRecognizer
+	public sealed class ClickGestureRecognizer : GestureRecognizer, ICommandableElement
 	{
 		public static readonly BindableProperty CommandProperty = BindableProperty.Create(nameof(Command), typeof(ICommand), typeof(ClickGestureRecognizer), null);
 
