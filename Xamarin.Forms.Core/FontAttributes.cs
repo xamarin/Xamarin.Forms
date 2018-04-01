@@ -9,5 +9,4 @@ namespace Xamarin.Forms
 		Bold = 1 << 0,
 		Italic = 1 << 1
 	}
-
 }
