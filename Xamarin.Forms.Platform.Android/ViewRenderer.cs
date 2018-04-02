@@ -58,26 +58,32 @@ namespace Xamarin.Forms.Platform.Android
 
 		void IViewRenderer.MeasureExactly()
 		{
-			if (Control == null || Element == null)
+			MeasureExactly(Control, Element, Context);
+		}
+
+		// This is static so it's also available for use by the fast renderers
+		internal static void MeasureExactly(AView control, VisualElement element, Context context)
+		{
+			if (control == null || element == null)
 			{
 				return;
 			}
 
-			var width = Element.Width;
-			var height = Element.Height;
+			var width = element.Width;
+			var height = element.Height;
 
 			if (width <= 0 || height <= 0)
 			{
 				return;
 			}
 
-			var realWidth = (int)Context.ToPixels(width);
-			var realHeight = (int)Context.ToPixels(height);
+			var realWidth = (int)context.ToPixels(width);
+			var realHeight = (int)context.ToPixels(height);
 
 			var widthMeasureSpec = MeasureSpecFactory.MakeMeasureSpec(realWidth, MeasureSpecMode.Exactly);
 			var heightMeasureSpec = MeasureSpecFactory.MakeMeasureSpec(realHeight, MeasureSpecMode.Exactly);
-
-			Control.Measure(widthMeasureSpec, heightMeasureSpec);
+			
+			control.Measure(widthMeasureSpec, heightMeasureSpec);
 		}
 
 		void AView.IOnFocusChangeListener.OnFocusChange(AView v, bool hasFocus)
