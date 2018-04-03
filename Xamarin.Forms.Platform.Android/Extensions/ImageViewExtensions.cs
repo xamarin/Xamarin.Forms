@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Platform.Android
 
 	internal static class ImageViewExtensions
 	{
-		public static void Reset(this AnimationDrawable animation)
+		public static void Reset(this FormsAnimationDrawable animation)
 		{
 			if (!animation.IsDisposed())
 			{
@@ -43,12 +43,10 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (!imageView.IsDisposed())
 			{
-				if (imageView.Drawable is AnimationDrawable animation)
+				if (imageView.Drawable is FormsAnimationDrawable animation)
 				{
 					imageView.SetImageDrawable(null);
 					animation.Reset();
-					animation.Dispose();
-					animation = null;
 				}
 
 				imageView.SetImageResource(global::Android.Resource.Color.Transparent);
@@ -79,7 +77,7 @@ namespace Xamarin.Forms.Platform.Android
 			imageView.Reset();
 
 			Bitmap bitmap = null;
-			AnimationDrawable animation = null;
+			FormsAnimationDrawable animation = null;
 			Drawable drawable = null;
 			IImageSourceHandlerEx handler;
 			bool useAnimation = newImage.IsSet(Image.AnimationPlayBehaviorProperty) || newImage.IsSet(Image.IsAnimationPlayingProperty);
@@ -127,8 +125,6 @@ namespace Xamarin.Forms.Platform.Android
 			else if (animation != null)
 			{
 				imageView.SetImageDrawable(animation);
-				if ((Image.AnimationPlayBehaviorValue)newImage.GetValue(Image.AnimationPlayBehaviorProperty) == Image.AnimationPlayBehaviorValue.OnLoad)
-					animation.Start();
 			}
 
 			bitmap?.Dispose();

@@ -337,6 +337,8 @@ namespace Xamarin.Forms.Internals
 		GIFBitmap(GIFHeader header)
 		{
 			_header = header;
+			LoopCount = int.MaxValue;
+			Delay = 10;
 		}
 
 		void SetDisposeMethod(int flags)
@@ -395,7 +397,9 @@ namespace Xamarin.Forms.Internals
 			{
 				if (stream.CurrentBlockBuffer[0] == 1 && blockSize == 3)
 				{
-					LoopCount = (stream.CurrentBlockBuffer[2] << 8) | stream.CurrentBlockBuffer[1];
+					int count = (stream.CurrentBlockBuffer[2] << 8) | stream.CurrentBlockBuffer[1];
+					if (count != 0)
+						LoopCount = count;
 				}
 				blockSize = await stream.ReadBlockAsync().ConfigureAwait(false);
 			}

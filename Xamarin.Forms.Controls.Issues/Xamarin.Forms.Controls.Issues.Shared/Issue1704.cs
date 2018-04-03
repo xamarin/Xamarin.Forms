@@ -111,6 +111,8 @@ namespace Xamarin.Forms.Controls.Issues
 				HorizontalOptions = LayoutOptions.Start
 			};
 
+			_animatedImage.AnimationFinishedPlaying += OnAnimationFinishedPlaying;
+
 			_startStopButton = new Button { Text = "Start Animation" };
 			_startStopButton.Clicked += (object sender, EventArgs e) => {
 				if (!_animatedImage.IsAnimationPlaying)
@@ -133,6 +135,11 @@ namespace Xamarin.Forms.Controls.Issues
 					_referenceImageLabel, _referenceImage, _animatedImageLabel, _animatedImage, _startStopButton
 				}
 			};
+		}
+
+		void OnAnimationFinishedPlaying(object sender, EventArgs e)
+		{
+			_startStopButton.Text = "Start Animation";
 		}
 	}
 

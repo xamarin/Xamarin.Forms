@@ -2,8 +2,6 @@ using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Android.Content;
-using Android.Graphics;
-using Android.Graphics.Drawables;
 using Android.Views;
 using AImageView = Android.Widget.ImageView;
 using Xamarin.Forms.Internals;
@@ -37,7 +35,12 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 
 			if (Control != null)
+			{
+				if (Control.Drawable is FormsAnimationDrawable animation)
+					animation.AnimationStopped -= OnAnimationStopped;
+
 				Control.Reset();
+			}
 
 			_isDisposed = true;
 
@@ -117,6 +120,19 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			await Control.UpdateBitmap(Element, previous);
+
+			if (Control.Drawable is FormsAnimationDrawable animation)
+			{
+				animation.AnimationStopped += OnAnimationStopped;
+				if ((Image.AnimationPlayBehaviorValue)Element.GetValue(Image.AnimationPlayBehaviorProperty) == Image.AnimationPlayBehaviorValue.OnLoad)
+					animation.Start();
+			}
+		}
+
+		void OnAnimationStopped(object sender, FormsAnimationDrawableStateEventArgs e)
+		{
+			if (Element != null && !_isDisposed && e.Finished)
+				Element.OnAnimationFinishedPlaying();
 		}
 
 		public override bool OnTouchEvent(MotionEvent e)
@@ -137,7 +153,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (Element.IsLoading)
 				return;
 
-			if (Control.Drawable is AnimationDrawable animation)
+			if (Control.Drawable is FormsAnimationDrawable animation)
 			{
 				if (Element.IsAnimationPlaying && !animation.IsRunning)
 					animation.Start();

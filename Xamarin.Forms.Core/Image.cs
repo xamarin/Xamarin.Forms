@@ -86,6 +86,14 @@ namespace Xamarin.Forms
 				SetValue (IsAnimationPlayingProperty, false);
 		}
 
+		public event EventHandler AnimationFinishedPlaying;
+
+		public void OnAnimationFinishedPlaying()
+		{
+			SetValue(IsAnimationPlayingProperty, false);
+			AnimationFinishedPlaying?.Invoke(this, null);
+		}
+
 		protected override void OnBindingContextChanged()
 		{
 			if (Source != null)

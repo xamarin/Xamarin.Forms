@@ -153,6 +153,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (disposing)
 			{
+				if (Control != null && Control.Animation != null)
+				{
+					Control.Animation.AnimationStopped -= OnAnimationStopped;
+					Control.Animation.Dispose();
+					Control.Animation = null;
+				}
+
 				UIImage oldUIImage;
 				if (Control != null && (oldUIImage = Control.Image) != null)
 				{
@@ -292,6 +299,8 @@ namespace Xamarin.Forms.Platform.iOS
 					{
 						imageView.AutoPlay = ((Image.AnimationPlayBehaviorValue)Element.GetValue(Image.AnimationPlayBehaviorProperty) == Image.AnimationPlayBehaviorValue.OnLoad);
 						imageView.Animation = animation;
+
+						animation.AnimationStopped += OnAnimationStopped;
 					}
 				}
 
@@ -304,6 +313,12 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			Element.SetIsLoading(false);
+		}
+
+		void OnAnimationStopped(object sender, CAAnimationStateEventArgs e)
+		{
+			if (Element != null && !_isDisposed && e.Finished)
+				Element.OnAnimationFinishedPlaying();
 		}
 
 		void SetOpacity()

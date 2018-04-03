@@ -1,14 +1,8 @@
-using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Diagnostics;
-using Android;
 using Android.Content;
-using Android.Content.Res;
 using Android.Graphics;
-using Android.Graphics.Drawables;
-using Android.Util;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -37,7 +31,7 @@ namespace Xamarin.Forms.Platform.Android
 			return bitmap;
 		}
 
-		public async Task<AnimationDrawable> LoadImageAnimationAsync(ImageSource imagesource, Context context, CancellationToken cancelationToken = default(CancellationToken))
+		public async Task<FormsAnimationDrawable> LoadImageAnimationAsync(ImageSource imagesource, Context context, CancellationToken cancelationToken = default(CancellationToken))
 		{
 			string file = ((FileImageSource)imagesource).File;
 

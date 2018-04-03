@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Android.Content;
 using Android.Graphics;
-using Android.Graphics.Drawables;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android
@@ -28,10 +27,10 @@ namespace Xamarin.Forms.Platform.Android
 			return bitmap;
 		}
 
-		public async Task<AnimationDrawable> LoadImageAnimationAsync(ImageSource imagesource, Context context, CancellationToken cancelationToken = default(CancellationToken))
+		public async Task<FormsAnimationDrawable> LoadImageAnimationAsync(ImageSource imagesource, Context context, CancellationToken cancelationToken = default(CancellationToken))
 		{
 			var imageLoader = imagesource as UriImageSource;
-			AnimationDrawable animation = null;
+			FormsAnimationDrawable animation = null;
 			if (imageLoader?.Uri != null)
 			{
 				using (Stream imageStream = await imageLoader.GetStreamAsync(cancelationToken).ConfigureAwait(false))
