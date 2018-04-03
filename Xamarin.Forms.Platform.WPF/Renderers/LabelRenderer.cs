@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Platform.WPF
 
 			if (e.PropertyName == Label.TextProperty.PropertyName || e.PropertyName == Label.FormattedTextProperty.PropertyName)
 				UpdateText();
-			if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
+			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
 				UpdateTextDecorations();
 			else if (e.PropertyName == Label.TextColorProperty.PropertyName)
 				UpdateColor();
