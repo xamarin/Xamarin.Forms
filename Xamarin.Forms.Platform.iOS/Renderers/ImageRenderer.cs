@@ -159,6 +159,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (disposing)
 			{
+				if (Control != null && Control.Animation != null)
+				{
+					Control.Animation.AnimationStopped -= OnAnimationStopped;
+					Control.Animation.Dispose();
+					Control.Animation = null;
+				}
+
 				UIImage oldUIImage;
 				if (Control != null && (oldUIImage = Control.Image) != null)
 				{
@@ -291,19 +298,21 @@ namespace Xamarin.Forms.Platform.iOS
                     return;
                 }
 
-                var imageView = Control;
-                if (imageView != null)
-                {
-                    if (uiimage != null)
-                    {
-                        imageView.Image = uiimage;
-                    }
-                    else if (animation != null)
-                    {
-                        imageView.AutoPlay = ((Image.AnimationPlayBehaviorValue)Element.GetValue(Image.AnimationPlayBehaviorProperty) == Image.AnimationPlayBehaviorValue.OnLoad);
-                        imageView.Animation = animation;
-                    }
-                }
+				var imageView = Control;
+				if (imageView != null)
+				{
+					if (uiimage != null)
+					{
+						imageView.Image = uiimage;
+					}
+					else if (animation != null)
+					{
+						imageView.AutoPlay = ((Image.AnimationPlayBehaviorValue)Element.GetValue(Image.AnimationPlayBehaviorProperty) == Image.AnimationPlayBehaviorValue.OnLoad);
+						imageView.Animation = animation;
+
+						animation.AnimationStopped += OnAnimationStopped;
+					}
+				}
 
                 ((IVisualElementController)Element).NativeSizeChanged();
             }
@@ -316,7 +325,18 @@ namespace Xamarin.Forms.Platform.iOS
             Element.SetIsLoading(false);
         }
 
-		void IImageVisualElementRenderer.SetImage(UIImage image) => Control.Image = image;
+		void OnAnimationStopped(object sender, CAAnimationStateEventArgs e)
+		{
+			if (Element != null && !_isDisposed && e.Finished)
+				Element.OnAnimationFinishedPlaying();
+		}
+
+		void SetOpacity()
+		{
+			if (_isDisposed || Element == null || Control == null)
+			{
+				return;
+			}
 
 		bool IImageVisualElementRenderer.IsDisposed => _isDisposed;
 

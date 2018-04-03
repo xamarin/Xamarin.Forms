@@ -6,20 +6,10 @@ using AImageView = Android.Widget.ImageView;
 namespace Xamarin.Forms.Platform.Android
 {
 
+    // TODO GIF
+
 	internal static class ImageViewExtensions
 	{
-		public static Task UpdateBitmap(this AImageView imageView, IImageElement newView, IImageElement previousView) =>
-			imageView.UpdateBitmap(newView, previousView, null, null);
-
-		public static Task UpdateBitmap(this AImageView imageView, ImageSource newImageSource, ImageSource previousImageSourc) =>
-			imageView.UpdateBitmap(null, null, newImageSource, previousImageSourc);
-
-		static async Task UpdateBitmap(
-			this AImageView imageView,
-			IImageElement newView,
-			IImageElement previousView,
-			ImageSource newImageSource,
-			ImageSource previousImageSource)
 		public static void Reset(this AnimationDrawable animation)
 		{
 			if (!animation.IsDisposed())
@@ -54,12 +44,10 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (!imageView.IsDisposed())
 			{
-				if (imageView.Drawable is AnimationDrawable animation)
+				if (imageView.Drawable is FormsAnimationDrawable animation)
 				{
 					imageView.SetImageDrawable(null);
 					animation.Reset();
-					animation.Dispose();
-					animation = null;
 				}
 
 				imageView.SetImageResource(global::Android.Resource.Color.Transparent);
