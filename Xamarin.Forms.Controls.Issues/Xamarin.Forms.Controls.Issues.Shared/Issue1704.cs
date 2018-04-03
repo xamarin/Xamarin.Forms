@@ -14,22 +14,25 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Github, 1704, "[Enhancement] Basic gif animation features", PlatformAffected.UWP)]
+	[Issue(IssueTracker.Github, 1704, "[Enhancement] Basic GIF animation features", PlatformAffected.UWP)]
 	public class Issue1704 : TabbedPage
 	{
 		ContentPage _page1;
 		ContentPage _page2;
 		ContentPage _page3;
+		ContentPage _page4;
 
 		public Issue1704()
 		{
-			_page1 = new OnLoadAnimationPage { Title = "OnLoad" };
-			_page2 = new OnStartAnimationPage { Title = "OnStart" };
-			_page3 = new LoadImageSourceAnimationPage { Title = "LoadSource" };
+			_page1 = new OnLoadAnimationPage { Title = "On Load" };
+			_page2 = new OnStartAnimationPage { Title = "On Start" };
+			_page3 = new LoadImageSourceAnimationPage { Title = "Source" };
+			_page4 = new MiscPage { Title = "Misc" };
 
 			Children.Add(_page1);
 			Children.Add(_page2);
 			Children.Add(_page3);
+			Children.Add(_page4);
 		}
 	}
 
@@ -70,7 +73,10 @@ namespace Xamarin.Forms.Controls.Issues
 			Content = new StackLayout {
 				Padding = new Thickness(0, 16),
 				Children = {
-					_referenceImageLabel, _referenceImage, _animatedImageLabel, _animatedImage
+					_referenceImageLabel,
+					_referenceImage,
+					_animatedImageLabel,
+					_animatedImage
 				}
 			};
 		}
@@ -193,6 +199,36 @@ namespace Xamarin.Forms.Controls.Issues
 				Padding = new Thickness(0, 16),
 				Children = {
 					_animatedImageLabel, _animatedImage, _imageSource, _loadImageButton
+				}
+			};
+		}
+	}
+
+	class MiscPage : ContentPage
+	{
+		Label _noAnimationFallbackLabel;
+		Image _noAnimationFallbackImage;
+
+		public MiscPage()
+		{
+			var _noAnimationFallbackLabel = new Label {
+				Text = "No animation error fallback.",
+				FontSize = 12,
+				FontAttributes = FontAttributes.Bold,
+				Margin = new Thickness(0, 12, 0, 12)
+			};
+
+			var _noAnimationFallbackImage = new Image {
+				Source = "coffee.png",
+				AnimationPlayBehavior = Image.AnimationPlayBehaviorValue.OnLoad,
+				HorizontalOptions = LayoutOptions.Start
+			};
+
+			Content = new StackLayout {
+				Padding = new Thickness(0, 16),
+				Children = {
+					_noAnimationFallbackLabel,
+					_noAnimationFallbackImage
 				}
 			};
 		}

@@ -49,9 +49,16 @@ namespace Xamarin.Forms.Platform.Android
 					}
 
 					var decoder = new AndroidGIFImageParser(context, sourceDensity, targetDensity);
-					await decoder.ParseAsync(stream);
 
-					animation = decoder.Animation;
+					try
+					{
+						await decoder.ParseAsync(stream);
+						animation = decoder.Animation;
+					}
+					catch (GIFDecoderFormatException)
+					{
+						animation = null;
+					}
 				}
 			}
 
