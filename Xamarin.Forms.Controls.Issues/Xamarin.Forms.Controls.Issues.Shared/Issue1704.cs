@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-using Xamarin.Forms;
+using System.Threading;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.CustomAttributes;
 
@@ -45,26 +42,26 @@ namespace Xamarin.Forms.Controls.Issues
 
 		public OnLoadAnimationPage()
 		{
-			var _referenceImageLabel = new Label {
+			_referenceImageLabel = new Label {
 				Text = "Reference image (no animation).",
 				FontSize = 12,
 				FontAttributes = FontAttributes.Bold,
 				Margin = new Thickness(0, 12, 0, 12)
 			};
 
-			var _referenceImage = new Image {
+			_referenceImage = new Image {
 				Source = "ie_retro.gif",
 				HorizontalOptions = LayoutOptions.Start
 			};
 
-			var _animatedImageLabel = new Label {
+			_animatedImageLabel = new Label {
 				Text = "Animated image.",
 				FontSize = 12,
 				FontAttributes = FontAttributes.Bold,
 				Margin = new Thickness(0, 12, 0, 12)
 			};
 
-			var _animatedImage = new Image {
+			_animatedImage = new Image {
 				Source = "ie_retro.gif",
 				AnimationPlayBehavior = Image.AnimationPlayBehaviorValue.OnLoad,
 				HorizontalOptions = LayoutOptions.Start
@@ -92,26 +89,26 @@ namespace Xamarin.Forms.Controls.Issues
 
 		public OnStartAnimationPage()
 		{
-			var _referenceImageLabel = new Label {
+			_referenceImageLabel = new Label {
 				Text = "Reference image (no animation).",
 				FontSize = 12,
 				FontAttributes = FontAttributes.Bold,
 				Margin = new Thickness(0, 12, 0, 12)
 			};
 
-			var _referenceImage = new Image {
+			_referenceImage = new Image {
 				Source = "sweden.gif",
 				HorizontalOptions = LayoutOptions.Start
 			};
 
-			var _animatedImageLabel = new Label {
+			_animatedImageLabel = new Label {
 				Text = "Animated image.",
 				FontSize = 12,
 				FontAttributes = FontAttributes.Bold,
 				Margin = new Thickness(0, 12, 0, 12)
 			};
 
-			var _animatedImage = new Image {
+			_animatedImage = new Image {
 				Source = "sweden.gif",
 				AnimationPlayBehavior = Image.AnimationPlayBehaviorValue.OnStart,
 				HorizontalOptions = LayoutOptions.Start
@@ -138,7 +135,11 @@ namespace Xamarin.Forms.Controls.Issues
 			Content = new StackLayout {
 				Padding = new Thickness(0, 16),
 				Children = {
-					_referenceImageLabel, _referenceImage, _animatedImageLabel, _animatedImage, _startStopButton
+					_referenceImageLabel,
+					_referenceImage,
+					_animatedImageLabel,
+					_animatedImage,
+					_startStopButton
 				}
 			};
 		}
@@ -198,7 +199,10 @@ namespace Xamarin.Forms.Controls.Issues
 			Content = new StackLayout {
 				Padding = new Thickness(0, 16),
 				Children = {
-					_animatedImageLabel, _animatedImage, _imageSource, _loadImageButton
+					_animatedImageLabel,
+					_animatedImage,
+					_imageSource,
+					_loadImageButton
 				}
 			};
 		}
@@ -208,29 +212,133 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		Label _noAnimationFallbackLabel;
 		Image _noAnimationFallbackImage;
+		Label _stressTestLabel;
+		Label _stressTestIterationLabel;
+		Entry _stressTestItertionEntry;
+		Image _stressTestImage;
+		Button _startStressTestButton;
+		ProgressBar _stressTestProgressBar;
+		Button _stopStressTestButton;
+
+		int _stressTestIterationCount = 1000;
+		AutoResetEvent _nextStressTest = new AutoResetEvent(false);
+		bool _abortStressTest = false;
 
 		public MiscPage()
 		{
-			var _noAnimationFallbackLabel = new Label {
+			_noAnimationFallbackLabel = new Label {
 				Text = "No animation error fallback.",
 				FontSize = 12,
 				FontAttributes = FontAttributes.Bold,
 				Margin = new Thickness(0, 12, 0, 12)
 			};
 
-			var _noAnimationFallbackImage = new Image {
+			_noAnimationFallbackImage = new Image {
 				Source = "coffee.png",
 				AnimationPlayBehavior = Image.AnimationPlayBehaviorValue.OnLoad,
 				HorizontalOptions = LayoutOptions.Start
+			};
+
+			_stressTestLabel = new Label {
+				Text = "Image loading stress test.",
+				FontSize = 12,
+				FontAttributes = FontAttributes.Bold,
+				Margin = new Thickness(0, 24, 0, 0)
+			};
+
+			_stressTestIterationLabel = new Label {
+				Text = "Test iterations:",
+				FontSize = 12,
+				FontAttributes = FontAttributes.Bold
+			};
+
+			_stressTestItertionEntry = new Entry { Text = _stressTestIterationCount.ToString() };
+
+			_stressTestImage = new Image {
+				Source = "ie_retro.gif",
+				AnimationPlayBehavior = Image.AnimationPlayBehaviorValue.OnStart,
+				HorizontalOptions = LayoutOptions.Start,
+				IsVisible = false
+			};
+
+			_startStressTestButton = new Button {
+				Text = "Run Stress Test",
+				Margin = new Thickness(0, 12, 0, 12)
+			};
+
+			_startStressTestButton.Clicked += (object sender, EventArgs e) => {
+
+				_startStressTestButton.Text = "Running...";
+				_startStressTestButton.IsEnabled = false;
+				_stopStressTestButton.IsEnabled = true;
+				_abortStressTest = false;
+
+				int.TryParse(_stressTestItertionEntry.Text, out _stressTestIterationCount);
+				ThreadPool.QueueUserWorkItem(delegate { runStressTest(); });
+			};
+
+			_stressTestProgressBar = new ProgressBar();
+
+			_stopStressTestButton = new Button {
+				Text = "Stop Stress Test",
+				IsEnabled = false,
+				Margin = new Thickness(0, 12, 0, 12)
+			};
+
+			_stopStressTestButton.Clicked += (object sender, EventArgs e) => {
+				_stopStressTestButton.IsEnabled = false;
+				_abortStressTest = true;
 			};
 
 			Content = new StackLayout {
 				Padding = new Thickness(0, 16),
 				Children = {
 					_noAnimationFallbackLabel,
-					_noAnimationFallbackImage
+					_noAnimationFallbackImage,
+					_stressTestLabel,
+					_stressTestIterationLabel,
+					_stressTestItertionEntry,
+					_stressTestImage,
+					_startStressTestButton,
+					_stressTestProgressBar,
+					_stopStressTestButton
 				}
 			};
+		}
+
+		void runStressTest()
+		{
+			for (int i = 0; i < _stressTestIterationCount && !_abortStressTest; i++)
+			{
+				Device.BeginInvokeOnMainThread(() => {
+					if (i % 2 == 0)
+					{
+						_stressTestImage.Source = "ie_retro.gif";
+					}
+					else
+					{
+						_stressTestImage.Source = "sweden.gif";
+					}
+
+					_stressTestProgressBar.Progress = (double)i / (double)_stressTestIterationCount;
+
+					_nextStressTest.Set();
+				});
+
+				_nextStressTest.WaitOne();
+
+				while (_stressTestImage.IsLoading)
+					Thread.Sleep(10);
+
+				Thread.Sleep(10);
+			}
+
+			Device.BeginInvokeOnMainThread(() => {
+				_startStressTestButton.Text = "Run Stress Test";
+				_startStressTestButton.IsEnabled = true;
+				_stopStressTestButton.IsEnabled = false;
+				_stressTestProgressBar.Progress = 1;
+			});
 		}
 	}
 }
