@@ -63,7 +63,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			_animatedImage = new Image {
 				Source = "ie_retro.gif",
-				AnimationPlayBehavior = Image.AnimationPlayBehaviorValue.OnLoad,
+				IsAnimationAutoPlay = true,
 				HorizontalOptions = LayoutOptions.Start
 			};
 
@@ -110,7 +110,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			_animatedImage = new Image {
 				Source = "sweden.gif",
-				AnimationPlayBehavior = Image.AnimationPlayBehaviorValue.OnStart,
+				IsAnimationAutoPlay = false,
 				HorizontalOptions = LayoutOptions.Start
 			};
 
@@ -171,7 +171,7 @@ namespace Xamarin.Forms.Controls.Issues
 			};
 
 			_animatedImage = new Image {
-				AnimationPlayBehavior = Image.AnimationPlayBehaviorValue.OnLoad,
+				IsAnimationAutoPlay = true,
 				HorizontalOptions = LayoutOptions.Start
 			};
 
@@ -235,7 +235,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			_noAnimationFallbackImage = new Image {
 				Source = "coffee.png",
-				AnimationPlayBehavior = Image.AnimationPlayBehaviorValue.OnLoad,
+				IsAnimationAutoPlay = true,
 				HorizontalOptions = LayoutOptions.Start
 			};
 
@@ -256,7 +256,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			_stressTestImage = new Image {
 				Source = "ie_retro.gif",
-				AnimationPlayBehavior = Image.AnimationPlayBehaviorValue.OnStart,
+				IsAnimationAutoPlay = true,
 				HorizontalOptions = LayoutOptions.Start,
 				IsVisible = false
 			};

@@ -27,12 +27,25 @@ namespace Xamarin.Forms.Internals
 	public class GIFDecoderStreamReader
 	{
 		Stream _stream;
+		long _currentPosition;
 		int _currentBlockSize;
 		byte[] _blockBuffer = new byte[256];
 
 		public GIFDecoderStreamReader(Stream stream)
 		{
 			_stream = stream;
+		}
+
+		public long CurrentPosition
+		{
+			get
+			{
+#if DEBUG
+				if (_stream.CanSeek)
+					System.Diagnostics.Debug.Assert(_stream.Position == _currentPosition);
+#endif
+				return _currentPosition;
+			}
 		}
 
 		public byte[] CurrentBlockBuffer
@@ -47,11 +60,13 @@ namespace Xamarin.Forms.Internals
 
 		public int Read()
 		{
+			_currentPosition++;
 			return _stream.ReadByte();
 		}
 
 		public int ReadShort()
 		{
+			_currentPosition += 2;
 			return Read() | (Read() << 8);
 		}
 
@@ -60,6 +75,8 @@ namespace Xamarin.Forms.Internals
 			var buffer = new StringBuilder(length);
 			for (int i = 0; i < length; i++)
 				buffer.Append((char)_stream.ReadByte());
+
+			_currentPosition += length;
 			return buffer.ToString();
 		}
 
@@ -82,6 +99,7 @@ namespace Xamarin.Forms.Internals
 				}
 			}
 
+			_currentPosition += totalBytesRead;
 			return totalBytesRead;
 		}
 
@@ -96,6 +114,7 @@ namespace Xamarin.Forms.Internals
 			}
 
 			Debug.Assert(_currentBlockSize == bytesRead);
+			_currentPosition += bytesRead;
 			return bytesRead;
 		}
 
@@ -104,6 +123,7 @@ namespace Xamarin.Forms.Internals
 			_currentBlockSize = Read();
 			while (_currentBlockSize > 0)
 			{
+				_currentPosition += _currentBlockSize;
 				if (_stream.CanSeek)
 				{
 					_stream.Seek(_currentBlockSize, SeekOrigin.Current);
@@ -115,11 +135,6 @@ namespace Xamarin.Forms.Internals
 
 				_currentBlockSize = Read();
 			}
-		}
-
-		async Task SkipAsync()
-		{
-			await SkipBlockAsync().ConfigureAwait(false);
 		}
 	}
 
@@ -303,6 +318,8 @@ namespace Xamarin.Forms.Internals
 
 		public int[] Data { get; set; }
 
+		public long DataPosition { get; private set; }
+
 		public GIFBitmap.Rect Bounds { get; private set; }
 
 		public DisposeMethod Dispose { get; private set; }
@@ -442,6 +459,8 @@ namespace Xamarin.Forms.Internals
 			await ParseGIFBitmapHeaderAsync(stream).ConfigureAwait(false);
 			if (IsTransparent)
 				ColorTable.SetTransparency(TransparencyIndex);
+
+			DataPosition = stream.CurrentPosition;
 
 			if (!ignoreImageData)
 			{

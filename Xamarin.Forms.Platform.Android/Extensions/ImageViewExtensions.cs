@@ -79,11 +79,11 @@ namespace Xamarin.Forms.Platform.Android
 			Bitmap bitmap = null;
 			FormsAnimationDrawable animation = null;
 			Drawable drawable = null;
-			IImageSourceHandlerEx handler;
+			IImageSourceHandler handler;
 
-			if (source != null && (handler = Internals.Registrar.Registered.GetHandlerForObject<IImageSourceHandlerEx>(source)) != null)
+			if (source != null && (handler = Internals.Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(source)) != null)
 			{
-				bool useAnimation = newImage.IsSet(Image.AnimationPlayBehaviorProperty) || newImage.IsSet(Image.IsAnimationPlayingProperty);
+				bool useAnimation = (newImage.IsSet(Image.IsAnimationAutoPlayProperty) || newImage.IsSet(Image.IsAnimationPlayingProperty)) && (handler is IImageSourceHandlerEx);
 				if (handler is FileImageSourceHandler && !useAnimation)
 				{
 					drawable = imageView.Context.GetDrawable((FileImageSource)source);
@@ -99,7 +99,8 @@ namespace Xamarin.Forms.Platform.Android
 						}
 						else
 						{
-							animation = await handler.LoadImageAnimationAsync(source, imageView.Context);
+							System.Diagnostics.Debug.Assert(handler is IImageSourceHandlerEx);
+							animation = await ((IImageSourceHandlerEx)handler).LoadImageAnimationAsync(source, imageView.Context);
 							if (animation == null)
 							{
 								// Fallback, try to load as regular bitmap.

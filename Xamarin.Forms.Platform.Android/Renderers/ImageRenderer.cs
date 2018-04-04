@@ -124,7 +124,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (Control.Drawable is FormsAnimationDrawable animation)
 			{
 				animation.AnimationStopped += OnAnimationStopped;
-				if ((Image.AnimationPlayBehaviorValue)Element.GetValue(Image.AnimationPlayBehaviorProperty) == Image.AnimationPlayBehaviorValue.OnLoad)
+				if ((bool)Element.GetValue(Image.IsAnimationAutoPlayProperty))
 					animation.Start();
 			}
 		}

@@ -58,7 +58,8 @@ namespace Xamarin.Forms.Platform.iOS
 			return base.SizeThatFits(size);
 		}
 
-		public bool AutoPlay {
+		public bool AutoPlay
+		{
 			get { return _autoPlay; }
 			set
 			{
@@ -257,7 +258,7 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.Animation = null;
 			}
 
-			IImageSourceHandlerEx handler;
+			IImageSourceHandler handler;
 
 			Element.SetIsLoading(true);
 
@@ -266,12 +267,18 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				UIImage uiimage = null;
 				FormsCAKeyFrameAnimation animation = null;
+				bool useAnimation = (Element.IsSet(Image.IsAnimationAutoPlayProperty) || Element.IsSet(Image.IsAnimationPlayingProperty)) && (handler is IImageSourceHandlerEx);
 				try
 				{
-					if (!Element.IsSet(Image.AnimationPlayBehaviorProperty) && !Element.IsSet(Image.IsAnimationPlayingProperty))
+					if (!useAnimation)
+					{
 						uiimage = await handler.LoadImageAsync(source, scale: (float)UIScreen.MainScreen.Scale);
+					}
 					else
-						animation = await handler.LoadImageAnimationAsync(source, scale: (float)UIScreen.MainScreen.Scale);
+					{
+						System.Diagnostics.Debug.Assert(handler is IImageSourceHandlerEx);
+						animation = await ((IImageSourceHandlerEx)handler).LoadImageAnimationAsync(source, scale: (float)UIScreen.MainScreen.Scale);
+					}
 				}
 				catch (OperationCanceledException)
 				{
@@ -297,7 +304,7 @@ namespace Xamarin.Forms.Platform.iOS
 					}
 					else if (animation != null)
 					{
-						imageView.AutoPlay = ((Image.AnimationPlayBehaviorValue)Element.GetValue(Image.AnimationPlayBehaviorProperty) == Image.AnimationPlayBehaviorValue.OnLoad);
+						imageView.AutoPlay = (bool)Element.GetValue(Image.IsAnimationAutoPlayProperty);
 						imageView.Animation = animation;
 
 						animation.AnimationStopped += OnAnimationStopped;
