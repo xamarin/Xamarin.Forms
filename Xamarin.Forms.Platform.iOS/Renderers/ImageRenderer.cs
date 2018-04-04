@@ -12,6 +12,7 @@ using CoreAnimation;
 using Xamarin.Forms.Internals;
 using RectangleF = CoreGraphics.CGRect;
 
+// TODO GIF
 namespace Xamarin.Forms.Platform.iOS
 {
 	public static class ImageExtensions
@@ -59,7 +60,8 @@ namespace Xamarin.Forms.Platform.iOS
 			return base.SizeThatFits(size);
 		}
 
-		public bool AutoPlay {
+		public bool AutoPlay
+		{
 			get { return _autoPlay; }
 			set
 			{
@@ -271,23 +273,23 @@ namespace Xamarin.Forms.Platform.iOS
 
             Element.SetIsLoading(true);
 
-            if (source != null &&
-                (handler = Internals.Registrar.Registered.GetHandlerForObject<IImageSourceHandlerEx>(source)) != null)
-            {
-                UIImage uiimage = null;
-                FormsCAKeyFrameAnimation animation = null;
-                try
-                {
-                    if (!Element.IsSet(Image.AnimationPlayBehaviorProperty) && !Element.IsSet(Image.IsAnimationPlayingProperty))
-                        uiimage = await handler.LoadImageAsync(source, scale: (float)UIScreen.MainScreen.Scale);
-                    else
-                        animation = await handler.LoadImageAnimationAsync(source, scale: (float)UIScreen.MainScreen.Scale);
-                }
-                catch (OperationCanceledException)
-                {
-                    uiimage = null;
-                    animation = null;
-                }
+			if (source != null &&
+				(handler = Internals.Registrar.Registered.GetHandlerForObject<IImageSourceHandlerEx>(source)) != null)
+			{
+				UIImage uiimage = null;
+				FormsCAKeyFrameAnimation animation = null;
+				try
+				{
+					if (!Element.IsSet(Image.AnimationPlayBehaviorProperty) && !Element.IsSet(Image.IsAnimationPlayingProperty))
+						uiimage = await handler.LoadImageAsync(source, scale: (float)UIScreen.MainScreen.Scale);
+					else
+						animation = await handler.LoadImageAnimationAsync(source, scale: (float)UIScreen.MainScreen.Scale);
+				}
+				catch (OperationCanceledException)
+				{
+					uiimage = null;
+					animation = null;
+				}
 
                 if (_isDisposed)
                 {
@@ -307,7 +309,7 @@ namespace Xamarin.Forms.Platform.iOS
 					}
 					else if (animation != null)
 					{
-						imageView.AutoPlay = ((Image.AnimationPlayBehaviorValue)Element.GetValue(Image.AnimationPlayBehaviorProperty) == Image.AnimationPlayBehaviorValue.OnLoad);
+						imageView.AutoPlay = (bool)Element.GetValue(Image.IsAnimationAutoPlayProperty);
 						imageView.Animation = animation;
 
 						animation.AnimationStopped += OnAnimationStopped;

@@ -52,7 +52,7 @@ namespace Xamarin.Forms.Platform.Android
 
 					try
 					{
-						await decoder.ParseAsync(stream);
+						await decoder.ParseAsync(stream).ConfigureAwait(false);
 						animation = decoder.Animation;
 					}
 					catch (GIFDecoderFormatException)

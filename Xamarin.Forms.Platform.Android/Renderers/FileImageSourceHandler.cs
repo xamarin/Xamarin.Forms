@@ -57,7 +57,7 @@ namespace Xamarin.Forms.Platform.Android
 				try
 				{
 					if (!DecodeSynchronously)
-						await decoder.ParseAsync(stream);
+						await decoder.ParseAsync(stream).ConfigureAwait(false);
 					else
 						decoder.ParseAsync(stream).Wait();
 

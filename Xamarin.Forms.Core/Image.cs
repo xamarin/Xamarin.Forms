@@ -20,16 +20,11 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty IsLoadingProperty = IsLoadingPropertyKey.BindableProperty;
 
-		public enum AnimationPlayBehaviorValue
-		{
-			None,
-			OnLoad,
-			OnStart
-		};
+		public static readonly BindableProperty IsAnimationAutoPlayProperty = BindableProperty.Create(nameof(IsAnimationAutoPlay), typeof(bool), typeof(Image), false);
 
-		public static readonly BindableProperty AnimationPlayBehaviorProperty = BindableProperty.Create(nameof(AnimationPlayBehavior), typeof(AnimationPlayBehaviorValue), typeof(Image), AnimationPlayBehaviorValue.None);
+		internal static readonly BindablePropertyKey IsAnimationPlayingPropertyKey = BindableProperty.CreateReadOnly(nameof(IsAnimationPlaying), typeof(bool), typeof(Image), false);
 
-		public static readonly BindableProperty IsAnimationPlayingProperty = BindableProperty.Create (nameof(IsAnimationPlaying), typeof (bool), typeof (Image), false);
+		public static readonly BindableProperty IsAnimationPlayingProperty = IsAnimationPlayingPropertyKey.BindableProperty;
 
 		readonly Lazy<PlatformConfigurationRegistry<Image>> _platformConfigurationRegistry;
 
@@ -58,6 +53,7 @@ namespace Xamarin.Forms
 		public bool IsAnimationPlaying
 		{
 			get { return (bool)GetValue(IsAnimationPlayingProperty); }
+			private set { SetValue(IsAnimationPlayingPropertyKey, value); }
 		}
 
 		[TypeConverter(typeof(ImageSourceConverter))]
@@ -67,22 +63,22 @@ namespace Xamarin.Forms
 			set { SetValue(SourceProperty, value); }
 		}
 
-		public AnimationPlayBehaviorValue AnimationPlayBehavior
+		public bool IsAnimationAutoPlay
 		{
-			get { return (AnimationPlayBehaviorValue)GetValue(AnimationPlayBehaviorProperty); }
-			set { SetValue(AnimationPlayBehaviorProperty, value); }
+			get { return (bool)GetValue(IsAnimationAutoPlayProperty); }
+			set { SetValue(IsAnimationAutoPlayProperty, value); }
 		}
 
 		public void StartAnimation()
 		{
-			if (AnimationPlayBehavior != AnimationPlayBehaviorValue.None)
-				SetValue(IsAnimationPlayingProperty, true);
+			if (IsSet(IsAnimationAutoPlayProperty) || IsSet(IsAnimationPlayingProperty))
+				IsAnimationPlaying = true;
 		}
 
 		public void StopAnimation()
 		{
-			if (AnimationPlayBehavior != AnimationPlayBehaviorValue.None)
-				SetValue (IsAnimationPlayingProperty, false);
+			if (IsSet(IsAnimationAutoPlayProperty) || IsSet(IsAnimationPlayingProperty))
+				IsAnimationPlaying = false;
 		}
 
 		public event EventHandler AnimationFinishedPlaying;
