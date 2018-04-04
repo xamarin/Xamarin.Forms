@@ -203,7 +203,7 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.PropertyName == Image.AspectProperty.PropertyName)
 				SetAspect();
 			else if (e.PropertyName == Image.IsAnimationPlayingProperty.PropertyName)
-				StartStopAnimation();
+				await StartStopAnimation();
 		}
 
 		void SetAspect()
@@ -338,9 +338,9 @@ namespace Xamarin.Forms.Platform.iOS
 			Control.Opaque = Element.IsOpaque;
 		}
 
-		void StartStopAnimation()
+		async Task StartStopAnimation()
 		{
-			if (_isDisposed || Element == null || Control == null || Control.Animation == null)
+			if (_isDisposed || Element == null || Control == null)
 			{
 				return;
 			}
@@ -348,9 +348,12 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Element.IsLoading)
 				return;
 
-			if (Element.IsAnimationPlaying && !Control.IsAnimating)
+			if (Control.Animation == null && Element.IsAnimationPlaying)
+				await TrySetImage();
+
+			if (Control.Animation != null && Element.IsAnimationPlaying && !Control.IsAnimating)
 				Control.StartAnimating();
-			else if (!Element.IsAnimationPlaying && Control.IsAnimating)
+			else if (Control.Animation != null && !Element.IsAnimationPlaying && Control.IsAnimating)
 				Control.StopAnimating();
 		}
 	}

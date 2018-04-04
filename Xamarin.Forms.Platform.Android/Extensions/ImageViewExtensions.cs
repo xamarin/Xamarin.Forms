@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Android.Graphics;
 using Android.Graphics.Drawables;
 using AImageView = Android.Widget.ImageView;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -104,6 +105,7 @@ namespace Xamarin.Forms.Platform.Android
 							if (animation == null)
 							{
 								// Fallback, try to load as regular bitmap.
+								Log.Warning(nameof(ImageViewExtensions), "Failed to load image animations: {0}. Trying to load as regular image.", source);
 								bitmap = await handler.LoadImageAsync(source, imageView.Context);
 							}
 						}
