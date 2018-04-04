@@ -71,14 +71,18 @@ namespace Xamarin.Forms
 
 		public void StartAnimation()
 		{
-			if (IsSet(IsAnimationAutoPlayProperty) || IsSet(IsAnimationPlayingProperty))
-				IsAnimationPlaying = true;
+			if (!IsSet(IsAnimationAutoPlayProperty))
+				IsAnimationAutoPlay = false;
+
+			IsAnimationPlaying = true;
 		}
 
 		public void StopAnimation()
 		{
-			if (IsSet(IsAnimationAutoPlayProperty) || IsSet(IsAnimationPlayingProperty))
-				IsAnimationPlaying = false;
+			if (!IsSet(IsAnimationAutoPlayProperty))
+				IsAnimationAutoPlay = false;
+
+			IsAnimationPlaying = false;
 		}
 
 		public event EventHandler AnimationFinishedPlaying;

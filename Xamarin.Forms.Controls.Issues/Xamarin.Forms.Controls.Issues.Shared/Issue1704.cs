@@ -120,13 +120,11 @@ namespace Xamarin.Forms.Controls.Issues
 			_startStopButton.Clicked += (object sender, EventArgs e) => {
 				if (!_animatedImage.IsAnimationPlaying)
 				{
-					_referenceImage.StartAnimation(); // Shouldn't have any effect.
 					_animatedImage.StartAnimation();
 					_startStopButton.Text = "Stop Animation";
 				}
 				else
 				{
-					_referenceImage.StopAnimation(); // Shouldn't have any effect.
 					_animatedImage.StopAnimation();
 					_startStopButton.Text = "Start Animation";
 				}
@@ -212,6 +210,9 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		Label _noAnimationFallbackLabel;
 		Image _noAnimationFallbackImage;
+		Label _initNoAnimationLabel;
+		Image _initNoAnimationImage;
+		Button _initNoAnimationButton;
 		Label _stressTestLabel;
 		Label _stressTestIterationLabel;
 		Entry _stressTestItertionEntry;
@@ -237,6 +238,39 @@ namespace Xamarin.Forms.Controls.Issues
 				Source = "coffee.png",
 				IsAnimationAutoPlay = true,
 				HorizontalOptions = LayoutOptions.Start
+			};
+
+			_initNoAnimationLabel = new Label {
+				Text = "Initial loaded without animation.",
+				FontSize = 12,
+				FontAttributes = FontAttributes.Bold,
+				Margin = new Thickness(0, 12, 0, 12)
+			};
+
+			_initNoAnimationImage = new Image {
+				Source = "ie_retro.gif",
+				HorizontalOptions = LayoutOptions.Start
+			};
+
+			_initNoAnimationButton = new Button {
+				Text = "Start Animation",
+				Margin = new Thickness(0, 12, 0, 12)
+			};
+
+			_initNoAnimationButton.Clicked += (object sender, EventArgs e) => {
+
+				if (!_initNoAnimationImage.IsAnimationPlaying)
+				{
+					_noAnimationFallbackImage.StartAnimation();
+					_initNoAnimationImage.StartAnimation();
+					_initNoAnimationButton.Text = "Stop Animation";
+				}
+				else
+				{
+					_noAnimationFallbackImage.StopAnimation();
+					_initNoAnimationImage.StopAnimation();
+					_initNoAnimationButton.Text = "Start Animation";
+				}
 			};
 
 			_stressTestLabel = new Label {
@@ -295,6 +329,9 @@ namespace Xamarin.Forms.Controls.Issues
 				Children = {
 					_noAnimationFallbackLabel,
 					_noAnimationFallbackImage,
+					_initNoAnimationLabel,
+					_initNoAnimationImage,
+					_initNoAnimationButton,
 					_stressTestLabel,
 					_stressTestIterationLabel,
 					_stressTestItertionEntry,
@@ -337,7 +374,8 @@ namespace Xamarin.Forms.Controls.Issues
 				_startStressTestButton.Text = "Run Stress Test";
 				_startStressTestButton.IsEnabled = true;
 				_stopStressTestButton.IsEnabled = false;
-				_stressTestProgressBar.Progress = 1;
+				if (!_abortStressTest)
+					_stressTestProgressBar.Progress = 1;
 			});
 		}
 	}

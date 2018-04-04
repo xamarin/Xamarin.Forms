@@ -81,7 +81,7 @@ namespace Xamarin.Forms.Platform.Android
 			else if (e.PropertyName == Image.AspectProperty.PropertyName)
 				UpdateAspect();
 			else if (e.PropertyName == Image.IsAnimationPlayingProperty.PropertyName)
-				StartStopAnimation();
+				await StartStopAnimation();
 		}
 
 		void UpdateAspect()
@@ -133,7 +133,7 @@ namespace Xamarin.Forms.Platform.Android
 			return _motionEventHelper.HandleMotionEvent(Parent, e);
 		}
 
-		void StartStopAnimation()
+		async Task StartStopAnimation()
 		{
 			if (_isDisposed || Element == null || Control == null)
 			{
@@ -142,6 +142,9 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (Element.IsLoading)
 				return;
+
+			if (!(Control.Drawable is FormsAnimationDrawable) && Element.IsAnimationPlaying)
+				await TryUpdateBitmap();
 
 			if (Control.Drawable is FormsAnimationDrawable animation)
 			{
