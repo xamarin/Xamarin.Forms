@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.CustomAttributes;
 
 #if UITEST
 using Xamarin.UITest;
+using Xamarin.Forms.Core.UITests;
 using NUnit.Framework;
 #endif
 
@@ -12,14 +14,14 @@ namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 1704, "[Enhancement] Basic GIF animation features", PlatformAffected.UWP)]
-	public class Issue1704 : TabbedPage
+	public class Issue1704 : TestTabbedPage
 	{
 		ContentPage _page1;
 		ContentPage _page2;
 		ContentPage _page3;
 		ContentPage _page4;
 
-		public Issue1704()
+		protected override void Init()
 		{
 			_page1 = new OnLoadAnimationPage { Title = "On Load" };
 			_page2 = new OnStartAnimationPage { Title = "On Start" };
@@ -31,6 +33,15 @@ namespace Xamarin.Forms.Controls.Issues
 			Children.Add(_page3);
 			Children.Add(_page4);
 		}
+
+#if UITEST
+		[Test]
+		[Category(UITestCategories.ManualReview)]
+		public void Issue1704Test()
+		{
+			RunningApp.WaitForElement("On Load");
+		}
+#endif
 	}
 
 	class OnLoadAnimationPage : ContentPage
@@ -149,15 +160,38 @@ namespace Xamarin.Forms.Controls.Issues
 	}
 
 	// Example URI's:
-	// http://media.giphy.com/media/mf8UbIDew7e8g/giphy.gif
+	//
+	// Small animated GIF (24 KB compressed, 14 frames)
+	// https://media.giphy.com/media/qyjQsUt0p0TT2/giphy.gif
+	//
+	// Medium animated GIF (184 KB compressed, 30 frames)
+	// https://media.giphy.com/media/xThta5b9vezPO75kL6/giphy.gif
+	//
+	// Semi large GIF (447 KB, 48 frames).
 	// https://media.giphy.com/media/AWNxDbtHGIJDW/giphy.gif
+	//
+	// Large animated GIF (3 MB compressed, 192 frames).
 	// https://media.giphy.com/media/YVYRtHiAv1t8Q/giphy.gif
+	//
+	// Large animated GIF that could trigger OOM scenarios and slow load times (12 MB compressed, 240 frames).
+	// http://media.giphy.com/media/mf8UbIDew7e8g/giphy.gif
+	//
 	class LoadImageSourceAnimationPage : ContentPage
 	{
 		Label _animatedImageLabel;
 		Image _animatedImage;
 		Entry _imageSource;
 		Button _loadImageButton;
+		ActivityIndicator _loadingIndicator;
+
+		class TimerContextData
+		{
+			public Image AnimationImage { get; set; }
+			public Entry ImageSource { get; set; }
+			public Button LoadButton { get; set; }
+			public ActivityIndicator LoadIndicator { get; set; }
+			public Timer Timer { get; set; }
+		}
 
 		public LoadImageSourceAnimationPage()
 		{
@@ -169,8 +203,8 @@ namespace Xamarin.Forms.Controls.Issues
 			};
 
 			_animatedImage = new Image {
+				HorizontalOptions = LayoutOptions.Start,
 				IsAnimationAutoPlay = true,
-				HorizontalOptions = LayoutOptions.Start
 			};
 
 			_imageSource = new Entry { Placeholder = "Image Source" };
@@ -181,17 +215,41 @@ namespace Xamarin.Forms.Controls.Issues
 
 			_loadImageButton = new Button { Text = "Load Image" };
 			_loadImageButton.Clicked += (object sender, EventArgs e) => {
-				if (!string.IsNullOrEmpty(_imageSource.Text))
+				if (!string.IsNullOrEmpty(_imageSource.Text) && !_animatedImage.IsLoading)
 				{
 					try
 					{
+						_loadImageButton.IsEnabled = false;
+						_imageSource.IsEnabled = false;
+						_loadingIndicator.IsVisible = true;
+						_loadingIndicator.IsRunning = true;
+
 						_animatedImage.Source = ImageSource.FromUri(new Uri(_imageSource.Text));
+
+						var timerContext = new TimerContextData {
+							AnimationImage = _animatedImage,
+							ImageSource = _imageSource,
+							LoadButton = _loadImageButton,
+							LoadIndicator = _loadingIndicator
+						};
+
+						var onLoadCompleteTimer = new Timer(OnLoadImageComplete, timerContext, 100, 100);
+						timerContext.Timer = onLoadCompleteTimer;
 					}
 					catch (Exception)
 					{
 						_imageSource.TextColor = Color.Red;
+						_loadImageButton.IsEnabled = true;
+						_imageSource.IsEnabled = true;
+						_loadingIndicator.IsVisible = false;
+						_loadingIndicator.IsRunning = false;
 					}
 				}
+			};
+
+			_loadingIndicator = new ActivityIndicator {
+				IsVisible = false,
+				IsRunning = false
 			};
 
 			Content = new StackLayout {
@@ -200,9 +258,54 @@ namespace Xamarin.Forms.Controls.Issues
 					_animatedImageLabel,
 					_animatedImage,
 					_imageSource,
+					_loadingIndicator,
 					_loadImageButton
 				}
 			};
+		}
+
+		static void OnLoadImageComplete(Object state)
+		{
+			if (state is TimerContextData context)
+			{
+				lock (context)
+				{
+					if (context.AnimationImage != null && !context.AnimationImage.IsLoading)
+					{
+						var animationImage = context.AnimationImage;
+						var imageSource = context.ImageSource;
+						var loadButton = context.LoadButton;
+						var loadingIndicator = context.LoadIndicator;
+
+						context.Timer?.Dispose();
+						context.Timer = null;
+
+						context.AnimationImage = null;
+						context.ImageSource = null;
+						context.LoadButton = null;
+						context.LoadIndicator = null;
+
+						Device.BeginInvokeOnMainThread(() => {
+							if (loadButton != null)
+								loadButton.IsEnabled = true;
+
+							if (loadingIndicator != null)
+							{
+								loadingIndicator.IsVisible = false;
+								loadingIndicator.IsRunning = false;
+							}
+
+							if (imageSource != null)
+								imageSource.IsEnabled = true;
+
+							if (animationImage != null)
+							{
+								animationImage.StartAnimation();
+							}
+						});
+					}
+				}
+			}
 		}
 	}
 
