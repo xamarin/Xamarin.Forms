@@ -66,7 +66,6 @@ namespace Xamarin.Forms.Internals
 
 		public int ReadShort()
 		{
-			_currentPosition += 2;
 			return Read() | (Read() << 8);
 		}
 
@@ -114,7 +113,6 @@ namespace Xamarin.Forms.Internals
 			}
 
 			Debug.Assert(_currentBlockSize == bytesRead);
-			_currentPosition += bytesRead;
 			return bytesRead;
 		}
 
@@ -123,10 +121,10 @@ namespace Xamarin.Forms.Internals
 			_currentBlockSize = Read();
 			while (_currentBlockSize > 0)
 			{
-				_currentPosition += _currentBlockSize;
 				if (_stream.CanSeek)
 				{
 					_stream.Seek(_currentBlockSize, SeekOrigin.Current);
+					_currentPosition += _currentBlockSize;
 				}
 				else
 				{
