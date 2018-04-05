@@ -64,8 +64,7 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				foreach (object item in e.AddedItems)
 				{
-					var cell = item as Cell;
-					if (cell != null)
+					if (item is Cell cell)
 					{
 						if (cell.IsEnabled)
 							Element.Model.RowSelected(cell);
@@ -73,6 +72,9 @@ namespace Xamarin.Forms.Platform.UWP
 					}
 				}
 			}
+
+			if (Control == null)
+				return;
 
 			Control.SelectedItem = null;
 		}
