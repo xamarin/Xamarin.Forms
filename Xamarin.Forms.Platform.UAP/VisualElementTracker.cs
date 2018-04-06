@@ -553,7 +553,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			var view = Element as View;
 			IList<IGestureRecognizer> gestures = view?.GestureRecognizers;
-						
+
 			if (_container == null || gestures == null)
 				return;
 

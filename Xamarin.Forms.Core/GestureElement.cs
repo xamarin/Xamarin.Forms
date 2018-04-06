@@ -14,27 +14,32 @@ namespace Xamarin.Forms
 		{
 			_gestureRecognizers.CollectionChanged += (sender, args) =>
 			{
+				void AddItems()
+				{
+					foreach (IElement item in args.NewItems.OfType<IElement>())
+					{
+						ValidateGesture(item as IGestureRecognizer);
+						item.Parent = this;
+					}
+				}
+
+				void RemoveItems()
+				{
+					foreach (IElement item in args.OldItems.OfType<IElement>())
+						item.Parent = null;
+				}
+
 				switch (args.Action)
 				{
 					case NotifyCollectionChangedAction.Add:
-						foreach (IElement item in args.NewItems.OfType<IElement>())
-						{
-							ValidateGesture(item as IGestureRecognizer);
-							item.Parent = this;
-						}
+						AddItems();
 						break;
 					case NotifyCollectionChangedAction.Remove:
-						foreach (IElement item in args.OldItems.OfType<IElement>())
-							item.Parent = null;
+						RemoveItems();
 						break;
 					case NotifyCollectionChangedAction.Replace:
-						foreach (IElement item in args.NewItems.OfType<IElement>())
-						{
-							ValidateGesture(item as IGestureRecognizer);
-							item.Parent = this;
-						}
-						foreach (IElement item in args.OldItems.OfType<IElement>())
-							item.Parent = null;
+						AddItems();
+						RemoveItems();
 						break;
 					case NotifyCollectionChangedAction.Reset:
 						foreach (IElement item in _gestureRecognizers.OfType<IElement>())
@@ -43,14 +48,14 @@ namespace Xamarin.Forms
 				}
 			};
 		}
-		
+
 		Region ISpatialElement.Region { get; set; }
-		
+
 		public IList<IGestureRecognizer> GestureRecognizers
 		{
 			get { return _gestureRecognizers; }
 		}
-		
+
 		internal virtual void ValidateGesture(IGestureRecognizer gesture) { }
 
 		class GestureRecognizerCollection : ObservableCollection<IGestureRecognizer>

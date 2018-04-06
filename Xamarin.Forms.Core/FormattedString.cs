@@ -11,7 +11,7 @@ namespace Xamarin.Forms
 	public class FormattedString : Element
 	{
 		readonly SpanCollection _spans = new SpanCollection();
-		
+
 		public FormattedString()
 		{
 			_spans.CollectionChanged += OnCollectionChanged;

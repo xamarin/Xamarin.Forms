@@ -231,27 +231,34 @@ namespace Xamarin.Forms
 
 		void Span_GestureRecognizer_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
+			void AddItems()
+			{
+				for (var i = 0; i < e.NewItems.Count; i++)
+					GestureController.CompositeGestureRecognizers.Add(new ChildGestureRecognizer()
+					{
+						GestureRecognizer = (IGestureRecognizer)e.NewItems[i]
+					});
+			}
+
+			void RemoveItems()
+			{
+				for (int i = 0; i < e.OldItems.Count; i++)
+					foreach (var spanRecognizer in GestureController.CompositeGestureRecognizers.ToList())
+						if (spanRecognizer is ChildGestureRecognizer && spanRecognizer == e.OldItems[i])
+							GestureController.CompositeGestureRecognizers.Remove(spanRecognizer);
+			}
+
 			switch (e.Action)
 			{
 				case NotifyCollectionChangedAction.Add:
-					for (var i = 0; i < e.NewItems.Count; i++)
-						((IGestureController)this).CompositeGestureRecognizers.Add(new ChildGestureRecognizer() { GestureRecognizer = (IGestureRecognizer)e.NewItems[i] });
+					AddItems();
 					break;
 				case NotifyCollectionChangedAction.Remove:
-					for (int i = 0; i < e.OldItems.Count; i++)
-						foreach (var spanRecognizer in ((IGestureController)this).CompositeGestureRecognizers.ToList())
-							if (spanRecognizer is ChildGestureRecognizer && spanRecognizer == e.OldItems[i])
-								((IGestureController)this).CompositeGestureRecognizers.Remove(spanRecognizer);
+					RemoveItems();
 					break;
 				case NotifyCollectionChangedAction.Replace:
-					for (int i = 0; i < e.OldItems.Count; i++)
-						foreach (var spanRecognizer in ((IGestureController)this).CompositeGestureRecognizers.ToList())
-							if (spanRecognizer is ChildGestureRecognizer && spanRecognizer == e.OldItems[i])
-								((IGestureController)this).CompositeGestureRecognizers.Remove(spanRecognizer);
-
-					for (var i = 0; i < e.NewItems.Count; i++)
-						((IGestureController)this).CompositeGestureRecognizers.Add(new ChildGestureRecognizer() { GestureRecognizer = (IGestureRecognizer)e.NewItems[i] });
-
+					RemoveItems();
+					AddItems();
 					break;
 				case NotifyCollectionChangedAction.Reset:
 					// is never called, because the clear command is overridden.
