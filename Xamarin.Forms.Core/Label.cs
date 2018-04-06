@@ -192,45 +192,40 @@ namespace Xamarin.Forms
 			switch (e.Action)
 			{
 				case NotifyCollectionChangedAction.Add:
-					foreach (GestureElement span in e.NewItems)
-					{
-						((ObservableCollection<IGestureRecognizer>)span.GestureRecognizers).CollectionChanged += Span_GestureRecognizer_CollectionChanged;
-						// span could be preloaded with GestureRecognizers
-						for (int i = 0; i < span.GestureRecognizers.Count; i++)
-							((IGestureController)this).CompositeGestureRecognizers.Add(new ChildGestureRecognizer() { GestureRecognizer = span.GestureRecognizers[i] });
-					}
+					AddItems();
 					break;
 				case NotifyCollectionChangedAction.Remove:
-					foreach (GestureElement span in e.OldItems)
-					{
-						// removes gesture recognizers so the event handling can still process its removal
-						for (int i = span.GestureRecognizers.Count - 1; i >= 0; i--)
-							span.GestureRecognizers.RemoveAt(i);
-
-						((ObservableCollection<IGestureRecognizer>)span.GestureRecognizers).CollectionChanged -= Span_GestureRecognizer_CollectionChanged;
-					}
+					RemoveItems();
 					break;
 				case NotifyCollectionChangedAction.Replace:
-					foreach (GestureElement span in e.OldItems)
-					{
-						for (int i = span.GestureRecognizers.Count - 1; i >= 0; i--)
-							span.GestureRecognizers.RemoveAt(i);
-
-						((ObservableCollection<IGestureRecognizer>)span.GestureRecognizers).CollectionChanged -= Span_GestureRecognizer_CollectionChanged;
-					}
-
-					foreach (GestureElement span in e.NewItems)
-					{
-						((ObservableCollection<IGestureRecognizer>)span.GestureRecognizers).CollectionChanged += Span_GestureRecognizer_CollectionChanged;
-						// span could be preloaded with GestureRecognizers
-						for (int i = 0; i < span.GestureRecognizers.Count; i++)
-							((IGestureController)this).CompositeGestureRecognizers.Add(new ChildGestureRecognizer() { GestureRecognizer = span.GestureRecognizers[i] });
-					}
-
+					RemoveItems();
+					AddItems();
 					break;
 				case NotifyCollectionChangedAction.Reset:
 					// Is never called, because the clear command is overridden.
 					break;
+			}
+
+			void AddItems()
+			{
+				foreach (GestureElement span in e.NewItems)
+				{
+					((ObservableCollection<IGestureRecognizer>)span.GestureRecognizers).CollectionChanged += Span_GestureRecognizer_CollectionChanged;
+					// span could be preloaded with GestureRecognizers
+					for (int i = 0; i < span.GestureRecognizers.Count; i++)
+						((IGestureController)this).CompositeGestureRecognizers.Add(new ChildGestureRecognizer() { GestureRecognizer = span.GestureRecognizers[i] });
+				}
+			}
+
+			void RemoveItems()
+			{
+				foreach (GestureElement span in e.OldItems)
+				{
+					for (int i = span.GestureRecognizers.Count - 1; i >= 0; i--)
+						span.GestureRecognizers.RemoveAt(i);
+
+					((ObservableCollection<IGestureRecognizer>)span.GestureRecognizers).CollectionChanged -= Span_GestureRecognizer_CollectionChanged;
+				}
 			}
 		}
 
