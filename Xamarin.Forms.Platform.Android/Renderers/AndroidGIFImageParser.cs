@@ -76,12 +76,14 @@ namespace Xamarin.Forms.Platform.Android
 		}
 	}
 
-	class AndroidGIFImageParser : GIFImageParser
+	class AndroidGIFImageParser : GIFImageParser, IDisposable
 	{
 		readonly DisplayMetrics _metrics = Resources.System.DisplayMetrics;
 		Context _context;
 		int _sourceDensity;
 		int _targetDensity;
+		Bitmap _currentBitmap;
+		bool _disposed;
 
 		public AndroidGIFImageParser(Context context, int sourceDensity, int targetDensity)
 		{
@@ -91,12 +93,18 @@ namespace Xamarin.Forms.Platform.Android
 			Animation = new FormsAnimationDrawable();
 		}
 
+		public void Dispose()
+		{
+			Dispose(true);
+		}
+
 		public FormsAnimationDrawable Animation { get; private set; }
 
 		protected override void StartParsing()
 		{
 			System.Diagnostics.Debug.Assert(!Animation.IsRunning);
 			System.Diagnostics.Debug.Assert(Animation.NumberOfFrames == 0);
+			System.Diagnostics.Debug.Assert(_currentBitmap == null);
 		}
 
 		protected override void AddBitmap(GIFHeader header, GIFBitmap gifBitmap, bool ignoreImageData)
@@ -104,23 +112,28 @@ namespace Xamarin.Forms.Platform.Android
 			if (!ignoreImageData)
 			{
 				Bitmap bitmap;
-				bitmap = Bitmap.CreateBitmap(gifBitmap.Data, header.Width, header.Height, Bitmap.Config.Argb4444);
 
 				if (_sourceDensity < _targetDensity)
 				{
-					var originalBitmap = bitmap;
+					if (_currentBitmap == null)
+						_currentBitmap = Bitmap.CreateBitmap(header.Width, header.Height, Bitmap.Config.Argb8888);
+
+					System.Diagnostics.Debug.Assert(_currentBitmap.Width == header.Width);
+					System.Diagnostics.Debug.Assert(_currentBitmap.Height == header.Height);
+
+					_currentBitmap.SetPixels(gifBitmap.Data, 0, header.Width, 0, 0, header.Width, header.Height);
 
 					float scaleFactor = (float)_targetDensity / (float)_sourceDensity;
-
 					int scaledWidth = (int)(scaleFactor * header.Width);
 					int scaledHeight = (int)(scaleFactor * header.Height);
-					bitmap = Bitmap.CreateScaledBitmap(originalBitmap, scaledWidth, scaledHeight, true);
 
-					System.Diagnostics.Debug.Assert(!originalBitmap.Equals(bitmap));
+					bitmap = Bitmap.CreateScaledBitmap(_currentBitmap, scaledWidth, scaledHeight, true);
 
-					originalBitmap.Recycle();
-					originalBitmap.Dispose();
-					originalBitmap = null;
+					System.Diagnostics.Debug.Assert(!_currentBitmap.Equals(bitmap));
+				}
+				else
+				{
+					bitmap = Bitmap.CreateBitmap(gifBitmap.Data, header.Width, header.Height, Bitmap.Config.Argb8888);
 				}
 
 				// Frame delay compability adjustment in milliseconds.
@@ -137,7 +150,32 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void FinishedParsing()
 		{
+			if (_currentBitmap != null)
+			{
+				_currentBitmap.Recycle();
+				_currentBitmap.Dispose();
+				_currentBitmap = null;
+			}
+
 			System.Diagnostics.Debug.Assert(!Animation.IsRunning);
+		}
+
+		protected virtual void Dispose(bool disposing)
+		{
+			if (_disposed)
+				return;
+
+			if (!disposing)
+				return;
+
+			if (_currentBitmap != null)
+			{
+				_currentBitmap.Recycle();
+				_currentBitmap.Dispose();
+				_currentBitmap = null;
+			}
+
+			_disposed = true;
 		}
 	}
 }
