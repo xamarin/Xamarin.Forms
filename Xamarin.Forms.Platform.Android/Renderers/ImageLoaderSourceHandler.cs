@@ -34,9 +34,8 @@ namespace Xamarin.Forms.Platform.Android
 			if (imageLoader?.Uri != null)
 			{
 				using (Stream imageStream = await imageLoader.GetStreamAsync(cancelationToken).ConfigureAwait(false))
+				using (var decoder = new AndroidGIFImageParser(context, 1, 1))
 				{
-					var decoder = new AndroidGIFImageParser(context, 1, 1);
-
 					try
 					{
 						await decoder.ParseAsync(imageStream).ConfigureAwait(false);

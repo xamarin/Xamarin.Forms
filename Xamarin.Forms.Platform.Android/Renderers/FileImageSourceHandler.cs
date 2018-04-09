@@ -50,10 +50,9 @@ namespace Xamarin.Forms.Platform.Android
 			else
 				BitmapFactory.DecodeResource(context.Resources, ResourceManager.GetDrawableByName(file), options);
 
-			using (var stream = context.Resources.OpenRawResource(ResourceManager.GetDrawableByName(file)))
+			using (var stream = context.Resources.OpenRawResource(ResourceManager.GetDrawableByName (file)))
+			using (var decoder = new AndroidGIFImageParser(context, options.InDensity, options.InTargetDensity))
 			{
-				var decoder = new AndroidGIFImageParser(context, options.InDensity, options.InTargetDensity);
-
 				try
 				{
 					if (!DecodeSynchronously)
