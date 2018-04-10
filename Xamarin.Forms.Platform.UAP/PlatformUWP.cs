@@ -276,7 +276,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 	// refer to http://stackoverflow.com/questions/29209954/multiple-messagedialog-app-crash for why this is used
 	// in order to allow for multiple MessageDialogs, or a crash occurs otherwise
-	public static class MessageDialogExtensions
+	internal static class MessageDialogExtensions
 	{
 		static TaskCompletionSource<ContentDialog> s_currentDialogShowRequest;
 
