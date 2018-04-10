@@ -7,6 +7,7 @@ using Windows.Foundation;
 using Windows.Foundation.Metadata;
 using Windows.UI;
 using Windows.UI.Core;
+using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -102,8 +103,22 @@ namespace Xamarin.Forms.Platform.UWP
 			if (options.Accept != null)
 				alertDialog.PrimaryButtonText = options.Accept;
 
-			ContentDialogResult result = await alertDialog.ShowAsync();
+			if (Device.IsInvokeRequired)
+			{
+				Device.BeginInvokeOnMainThread(async () =>
+				{
+					await ShowDialogForResult(alertDialog, options);
+				});
+			}
+			else
+			{
+				await ShowDialogForResult(alertDialog, options);
+			}
+		}
 
+		static async Task ShowDialogForResult(ContentDialog alertDialog, AlertArguments options)
+		{
+			var result = await alertDialog.ShowAsyncQueue();
 			if (result == ContentDialogResult.Secondary)
 				options.SetResult(false);
 			else if (result == ContentDialogResult.Primary)
@@ -256,6 +271,28 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				return _commandBar;
 			}
+		}
+	}
+
+	// refer to http://stackoverflow.com/questions/29209954/multiple-messagedialog-app-crash for why this is used
+	// in order to allow for multiple MessageDialogs, or a crash occurs otherwise
+	public static class MessageDialogExtensions
+	{
+		static TaskCompletionSource<ContentDialog> s_currentDialogShowRequest;
+
+		public static async Task<ContentDialogResult> ShowAsyncQueue(this ContentDialog dialog)
+		{
+			while (s_currentDialogShowRequest != null)
+			{
+				await s_currentDialogShowRequest.Task;
+			}
+
+			TaskCompletionSource<ContentDialog> request = s_currentDialogShowRequest = new TaskCompletionSource<ContentDialog>();
+			ContentDialogResult result = await dialog.ShowAsync();
+			s_currentDialogShowRequest = null;
+			request.SetResult(dialog);
+
+			return result;
 		}
 	}
 }
