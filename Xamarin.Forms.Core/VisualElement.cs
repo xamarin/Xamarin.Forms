@@ -100,6 +100,34 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty FlowDirectionProperty = BindableProperty.Create(nameof(FlowDirection), typeof(FlowDirection), typeof(VisualElement), FlowDirection.MatchParent, propertyChanged: FlowDirectionChanged);
 
+		public static readonly BindableProperty TabIndexProperty =
+			BindableProperty.Create(nameof(TabIndex),
+									typeof(int),
+									typeof(View),
+									defaultValue: 0,
+									propertyChanged: OnTabIndexPropertyChanged,
+									defaultValueCreator: TabIndexDefaultValueCreator);
+
+		public static readonly BindableProperty IsTabStopProperty =
+			BindableProperty.Create(nameof(IsTabStop),
+									typeof(bool),
+									typeof(View),
+									defaultValue: true,
+									propertyChanged: OnTabStopPropertyChanged,
+									defaultValueCreator: TabStopDefaultValueCreator);
+
+		static void OnTabIndexPropertyChanged(BindableObject bindable, object oldValue, object newValue) =>
+			((VisualElement)bindable).OnTabIndexPropertyChanged((int)oldValue, (int)newValue);
+
+		static object TabIndexDefaultValueCreator(BindableObject bindable) =>
+			((VisualElement)bindable).TabIndexDefaultValueCreator();
+
+		static void OnTabStopPropertyChanged(BindableObject bindable, object oldValue, object newValue) =>
+			((VisualElement)bindable).OnTabStopPropertyChanged((bool)oldValue, (bool)newValue);
+
+		static object TabStopDefaultValueCreator(BindableObject bindable) =>
+			((VisualElement)bindable).TabStopDefaultValueCreator();
+
 		IFlowDirectionController FlowController => this;
 
 		public FlowDirection FlowDirection
@@ -291,6 +319,25 @@ namespace Xamarin.Forms
 			set { SetValue(StyleProperty, value); }
 		}
 
+		public int TabIndex
+		{
+			get => (int)GetValue(TabIndexProperty);
+			set => SetValue(TabIndexProperty, value);
+		}
+
+		protected virtual void OnTabIndexPropertyChanged(int oldValue, int newValue) { }
+
+		protected virtual int TabIndexDefaultValueCreator() => 0;
+
+		public bool IsTabStop
+		{
+			get => (bool)GetValue(IsTabStopProperty);
+			set => SetValue(IsTabStopProperty, value);
+		}
+
+		protected virtual void OnTabStopPropertyChanged(bool oldValue, bool newValue) { }
+
+		protected virtual bool TabStopDefaultValueCreator() => true;
 
 		[TypeConverter(typeof(ListStringTypeConverter))]
 		public IList<string> StyleClass

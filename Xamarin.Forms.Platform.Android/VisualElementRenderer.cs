@@ -8,6 +8,8 @@ using Android.Views;
 using Xamarin.Forms.Internals;
 using AView = Android.Views.View;
 using Xamarin.Forms.Platform.Android.FastRenderers;
+using Android.Runtime;
+using System.Linq;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -135,6 +137,66 @@ namespace Xamarin.Forms.Platform.Android
 			Performance.Stop(reference);
 		}
 
+		protected int TabIndex { get; set; } = 0;
+
+		protected bool TabStop { get; set; } = true;
+
+		protected void UpdateTabStop() => TabStop = Element.IsTabStop;
+
+		protected void UpdateTabIndex() => TabIndex = Element.TabIndex;
+
+		public override AView FocusSearch(AView focused, [GeneratedEnum] FocusSearchDirection direction)
+		{
+			var allChildrens = Application.Current.WalkChildren().OfType<VisualElement>();
+			var childrensWithTabStop = allChildrens.Where(c => c.IsTabStop);
+			if (!childrensWithTabStop.Contains(Element))
+				return base.FocusSearch(focused, direction);
+
+			var groupedIndex = childrensWithTabStop.GroupBy(c => c.TabIndex);
+
+			var tabIndexes = groupedIndex.Select(c => c.Key);
+			int? tabIndex = Element.TabIndex;
+			AView control = null;
+			int attempt = 0;
+			int maxAttempts = childrensWithTabStop.Count() - 1;
+			VisualElement element = Element;
+
+			do
+			{
+				// search next element in same TabIndex group
+				var tabGroup = groupedIndex.FirstOrDefault(g => g.Key == tabIndex).ToList();
+				var nextSubIndex = tabGroup.IndexOf(element) + 1;
+				if (nextSubIndex > 0 && nextSubIndex < tabGroup.Count)
+				{
+					element = tabGroup[nextSubIndex] as VisualElement;
+				}
+				else // search next element in next TabIndex group
+				{
+					if (direction.HasFlag(FocusSearchDirection.Backward) ||
+						direction.HasFlag(FocusSearchDirection.Left) ||
+						direction.HasFlag(FocusSearchDirection.Up))
+					{
+						var smaller = tabIndexes.Where(i => i < tabIndex);
+						tabIndex = smaller.Any() ? smaller.Max() : tabIndexes.Max();
+					}
+					else // Forward || Right || Down || default
+					{
+						var bigger = tabIndexes.Where(i => i > tabIndex);
+						tabIndex = bigger.Any() ? bigger.Min() : tabIndexes.Min();
+					}
+					element = groupedIndex.Single(g => g.Key == tabIndex).First();
+				}
+				if (element == null)
+					return base.FocusSearch(focused, direction);
+
+				var renderer = element.GetRenderer();
+				// use reflection to get the "Control" property from a specific renderer
+				control = renderer.GetType().GetProperty("Control")?.GetValue(renderer, null) as AView;
+			} while (!(control?.Focusable == true || ++attempt >= maxAttempts));
+
+			return control;
+		}
+
 		public ViewGroup ViewGroup => this;
 		AView IVisualElementRenderer.View => this;
 
@@ -195,6 +257,8 @@ namespace Xamarin.Forms.Platform.Android
 			SetFocusable();
 			UpdateInputTransparent();
 			UpdateInputTransparentInherited();
+			UpdateTabStop();
+			UpdateTabIndex();
 
 			Performance.Stop(reference);
 		}
@@ -284,6 +348,10 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateInputTransparent();
 			else if (e.PropertyName == Xamarin.Forms.Layout.CascadeInputTransparentProperty.PropertyName)
 				UpdateInputTransparentInherited();
+			else if (e.PropertyName == VisualElement.IsTabStopProperty.PropertyName)
+				UpdateTabStop();
+			else if (e.PropertyName == VisualElement.TabIndexProperty.PropertyName)
+				UpdateTabIndex();
 
 			ElementPropertyChanged?.Invoke(this, e);
 		}

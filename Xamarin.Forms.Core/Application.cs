@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform;
+using System.Linq;
 
 namespace Xamarin.Forms
 {
@@ -34,6 +35,20 @@ namespace Xamarin.Forms
 			SystemResources = DependencyService.Get<ISystemResourcesProvider>().GetSystemResources();
 			SystemResources.ValuesChanged += OnParentResourcesChanged;
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Application>>(() => new PlatformConfigurationRegistry<Application>(this));
+		}
+
+		public IEnumerable<Element> WalkChildren() => NavigationProxy?.ModalStack.SelectMany(n => WalkChildren(n)) ?? WalkChildren(this);
+
+		public IEnumerable<Element> WalkChildren(Element element)
+		{
+			foreach (var child in element.LogicalChildren)
+			{
+				yield return child;
+				foreach (var item in WalkChildren(child))
+				{
+					yield return item;
+				}
+			}
 		}
 
 		public void Quit()
