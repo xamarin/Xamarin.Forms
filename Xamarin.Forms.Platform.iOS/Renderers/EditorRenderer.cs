@@ -69,6 +69,8 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			CreatePlaceholderLabel();
+			UpdatePlaceholderText();
+			UpdatePlaceholderColor();
 			UpdateTextColor();
 			UpdateText();
 			UpdateFont();
@@ -93,8 +95,6 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			_placeholderLabel = new UILabel
 			{
-				Text = Element.Placeholder,
-				TextColor = Element.PlaceholderColor.ToUIColor(),
 				BackgroundColor = UIColor.Clear
 			};
 
