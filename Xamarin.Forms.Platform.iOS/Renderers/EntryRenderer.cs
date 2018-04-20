@@ -20,6 +20,7 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _useLegacyColorManagement;
 
 		bool _disposed;
+		IDisposable _selectedTextRangeObserver;
 
 		static readonly int baseHeight = 30;
 		static CGSize initialSize = CGSize.Empty;
@@ -63,6 +64,7 @@ namespace Xamarin.Forms.Platform.iOS
 					Control.EditingChanged -= OnEditingChanged;
 					Control.EditingDidEnd -= OnEditingEnded;
                     Control.ShouldChangeCharacters -= ShouldChangeCharacters;
+					_selectedTextRangeObserver?.Dispose();
 				}
 			}
 
@@ -90,13 +92,12 @@ namespace Xamarin.Forms.Platform.iOS
 				textField.ClipsToBounds = true;
 
 				textField.EditingChanged += OnEditingChanged;
-
 				textField.ShouldReturn = OnShouldReturn;
 
 				textField.EditingDidBegin += OnEditingBegan;
 				textField.EditingDidEnd += OnEditingEnded;
-
                 textField.ShouldChangeCharacters += ShouldChangeCharacters;
+				_selectedTextRangeObserver = textField.AddObserver("selectedTextRange", NSKeyValueObservingOptions.New, UpdateCursorFromControl);
 			}
 
 			UpdatePlaceholder();
@@ -109,6 +110,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateAdjustsFontSizeToFitWidth();
 			UpdateMaxLength();
 			UpdateReturnType();
+			UpdateCursorSelection();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -148,6 +150,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateMaxLength();
 			else if (e.PropertyName == Entry.ReturnTypeProperty.PropertyName)
 				UpdateReturnType();
+			else if (e.PropertyName == Entry.CursorPositionProperty.PropertyName || e.PropertyName == Entry.SelectionLengthProperty.PropertyName)
+				UpdateCursorSelection();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -302,5 +306,45 @@ namespace Xamarin.Forms.Platform.iOS
 			Control.ReturnKeyType = Element.ReturnType.ToUIReturnKeyType();
 		}
 
+		bool _selectedTextRangeIsUpdating;
+
+		void UpdateCursorFromControl(NSObservedChange obj)
+		{
+			if (_selectedTextRangeIsUpdating)
+				return;
+			var control = Control;
+
+			var currentSelection = control.SelectedTextRange;
+			int selectionLength = (int)control.GetOffsetFromPosition(currentSelection.Start, currentSelection.End);
+			int newCursorPosition = (int)control.GetOffsetFromPosition(control.BeginningOfDocument, currentSelection.Start);
+
+			_selectedTextRangeIsUpdating = true;
+			if (newCursorPosition != Element.CursorPosition)
+				ElementController.SetValueFromRenderer(Entry.CursorPositionProperty, newCursorPosition);
+
+			if (selectionLength != Element.SelectionLength)
+				ElementController.SetValueFromRenderer(Entry.SelectionLengthProperty, selectionLength);
+			_selectedTextRangeIsUpdating = false;
+		}
+
+		void UpdateCursorSelection()
+		{
+			var control = Control;
+			if (_selectedTextRangeIsUpdating || control == null || Element == null)
+				return;
+
+			var start = control.GetPosition(control.BeginningOfDocument, Element.CursorPosition);
+			var end = control.GetPosition(start, System.Math.Min(control.Text.Length - Element.CursorPosition, Element.SelectionLength));
+			var currentSelection = control.SelectedTextRange;
+			if (currentSelection.Start != start || currentSelection.End != end)
+			{
+				control.BecomeFirstResponder();
+				_selectedTextRangeIsUpdating = true;
+				control.SelectedTextRange = control.GetTextRange(start, end);
+				_selectedTextRangeIsUpdating = false;
+			}
+		}
 	}
+
+
 }
