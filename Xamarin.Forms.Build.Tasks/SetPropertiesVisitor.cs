@@ -378,7 +378,7 @@ namespace Xamarin.Forms.Build.Tasks
 			if (dataType == null)
 				yield break; //throw
 
-			var namespaceuri = dataType.Contains(":") ? node.NamespaceResolver.LookupNamespace(dataType.Split(':') [0].Trim()) : "";
+			var namespaceuri = dataType.Contains(":") ? node.NamespaceResolver.LookupNamespace(dataType.Split(':') [0].Trim()) : node.NamespaceResolver.LookupNamespace("");
 			var dtXType = new XmlType(namespaceuri, dataType, null);
 
 			var tSourceRef = dtXType.GetTypeReference(module, (IXmlLineInfo)node);
