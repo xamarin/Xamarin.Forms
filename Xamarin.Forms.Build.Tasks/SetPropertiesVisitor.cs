@@ -447,7 +447,8 @@ namespace Xamarin.Forms.Build.Tasks
 				}
 
 				if (p.Length > 0) {
-					var property = previousPartTypeRef.GetProperty(pd => pd.Name == p && pd.GetMethod != null && pd.GetMethod.IsPublic, out _);
+					var property = previousPartTypeRef.GetProperty(pd => pd.Name == p && pd.GetMethod != null && pd.GetMethod.IsPublic, out _)
+					                                  ?? throw new XamlParseException($"Binding: Property '{p}' not found on '{previousPartTypeRef}'", lineInfo);
 					properties.Add(new Tuple<PropertyDefinition, string>(property,null));
 					previousPartTypeRef = property.PropertyType;
 				}
