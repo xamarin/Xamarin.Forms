@@ -123,7 +123,7 @@ namespace Xamarin.Forms.Internals
 		{
 			Type type = viewType;
 
-			while (type != null)
+			while (type != null && type != typeof(Element))
 			{
 				if (_handlers.ContainsKey(type))
 				{
@@ -149,7 +149,7 @@ namespace Xamarin.Forms.Internals
 			// decorated with a RenderWithAttribute. We're going to register each specific type with its
 			// renderer. 
 
-			while (type != null)
+			while (type != null && type != typeof(Element))
 			{
 				// Only go through this process if we have not registered something for this type;
 				// we don't want RenderWith renderers to override ExportRenderers that are already registered.
@@ -176,6 +176,8 @@ namespace Xamarin.Forms.Internals
 							if (specificTypeRenderer.Name.StartsWith("_", StringComparison.Ordinal))
 							{
 								Register(type, null); // Cache this result so we don't work through this chain again
+
+								type = type.GetTypeInfo().BaseType;
 								continue;
 							}
 						}
