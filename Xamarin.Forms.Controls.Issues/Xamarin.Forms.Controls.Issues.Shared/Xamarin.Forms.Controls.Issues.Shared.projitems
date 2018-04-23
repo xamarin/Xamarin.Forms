@@ -242,6 +242,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue1801.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1683.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1705_2.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)GroupListViewHeaderIndexOutOfRange.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1975.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1601.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1717.cs" />
@@ -295,6 +296,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue2104.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1908.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1672.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue2394.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue2983.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue2963.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue2981.cs" />
@@ -495,7 +497,6 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue1755.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1758.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Issue1762.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1763.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1766.xaml.cs">
       <DependentUpon>Issue1766.xaml</DependentUpon>
