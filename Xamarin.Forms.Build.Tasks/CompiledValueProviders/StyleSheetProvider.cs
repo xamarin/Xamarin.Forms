@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-
-using System.Xml;
 
 using Mono.Cecil;
 using Mono.Cecil.Cil;
@@ -12,7 +9,6 @@ using Xamarin.Forms.Xaml;
 
 using static Mono.Cecil.Cil.Instruction;
 using static Mono.Cecil.Cil.OpCodes;
-
 
 namespace Xamarin.Forms.Core.XamlC
 {
@@ -32,26 +28,27 @@ namespace Xamarin.Forms.Core.XamlC
 				styleNode = ((IElementNode)node).CollectionItems[0];
 
 			if (sourceNode != null && styleNode != null)
-				throw new XamlParseException($"StyleSheet can not have both a Source and a content", node);
+				throw new XamlParseException("StyleSheet can not have both a Source and a content", node);
 
 			if (sourceNode == null && styleNode == null)
-				throw new XamlParseException($"StyleSheet require either a Source or a content", node);
+				throw new XamlParseException("StyleSheet require either a Source or a content", node);
 
 			if (styleNode != null && !(styleNode is ValueNode))
-				throw new XamlParseException($"Style property or Content is not a string literal", node);
+				throw new XamlParseException("Style property or Content is not a string literal", node);
 
 			if (sourceNode != null && !(sourceNode is ValueNode))
-				throw new XamlParseException($"Source property is not a string literal", node);
+				throw new XamlParseException("Source property is not a string literal", node);
 
 			if (styleNode != null) {
 				var style = (styleNode as ValueNode).Value as string;
 				yield return Create(Ldstr, style);
-
-				var fromString = module.ImportReferenceCached(typeof(StyleSheets.StyleSheet).GetMethods().FirstOrDefault(mi => mi.Name == nameof(StyleSheets.StyleSheet.FromString) && mi.GetParameters().Length == 1));
-				yield return Create(Call, module.ImportReference(fromString));
+				yield return Create(Call, module.ImportMethodReference(("Xamarin.Forms.Core", "Xamarin.Forms.StyleSheets", "StyleSheet"),
+																	   methodName: "FromString",
+																	   parameterTypes: new[] { ("mscorlib", "System", "String") },
+																	   isStatic: true));
 			}
 			else {
-				string source = (sourceNode as ValueNode)?.Value as string;
+				var source = (sourceNode as ValueNode)?.Value as string;
 				INode rootNode = node;
 				while (!(rootNode is ILRootNode))
 					rootNode = rootNode.Parent;
@@ -65,23 +62,24 @@ namespace Xamarin.Forms.Core.XamlC
 				if (resourceId == null)
 					throw new XamlParseException($"Resource '{source}' not found.", node);
 
-				var getTypeFromHandle = module.ImportReferenceCached(typeof(Type).GetMethod(nameof(Type.GetTypeFromHandle), new[] { typeof(RuntimeTypeHandle) }));
-				var getAssembly = module.ImportReferenceCached(typeof(Type).GetProperty(nameof(Type.Assembly)).GetGetMethod());
 				yield return Create(Ldtoken, module.ImportReference(((ILRootNode)rootNode).TypeReference));
-				yield return Create(Call, module.ImportReference(getTypeFromHandle));
-				yield return Create(Callvirt, module.ImportReference(getAssembly)); //assembly
+				yield return Create(Call, module.ImportMethodReference(("mscorlib", "System", "Type"), methodName: "GetTypeFromHandle", parameterTypes: new[] { ("mscorlib", "System", "RuntimeTypeHandle") }, isStatic: true));
+				yield return Create(Call, module.ImportMethodReference(("mscorlib", "System.Reflection", "IntrospectionExtensions"), methodName: "GetTypeInfo", parameterTypes: new[] { ("mscorlib", "System", "Type") }, isStatic: true));
+				yield return Create(Callvirt, module.ImportPropertyGetterReference(("mscorlib", "System.Reflection", "TypeInfo"), propertyName: "Assembly", flatten: true));
 
 				yield return Create(Ldstr, resourceId); //resourceId
 
 				foreach (var instruction in node.PushXmlLineInfo(context))
 					yield return instruction; //lineinfo
 
-				var fromAssemblyResource = module.ImportReferenceCached(typeof(StyleSheets.StyleSheet).GetMethods().FirstOrDefault(mi => mi.Name == nameof(StyleSheets.StyleSheet.FromAssemblyResource) && mi.GetParameters().Length == 3));
-				yield return Create(Call, module.ImportReference(fromAssemblyResource));
+				yield return Create(Call, module.ImportMethodReference(("Xamarin.Forms.Core", "Xamarin.Forms.StyleSheets", "StyleSheet"),
+																	   methodName: "FromAssemblyResource",
+																	   parameterTypes: new[] { ("mscorlib", "System.Reflection", "Assembly"), ("mscorlib", "System", "String"), ("System.Xml.ReaderWriter", "System.Xml", "IXmlLineInfo") },
+																	   isStatic: true));
 			}
 
 			//the variable is of type `object`. fix that
-			var vardef = new VariableDefinition(module.ImportReferenceCached(typeof(StyleSheets.StyleSheet)));
+			var vardef = new VariableDefinition(module.ImportReference(("Xamarin.Forms.Core", "Xamarin.Forms.StyleSheets", "StyleSheet")));
 			yield return Create(Stloc, vardef);
 			vardefref.VariableDefinition = vardef;
 		}

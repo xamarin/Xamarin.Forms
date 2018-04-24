@@ -79,9 +79,10 @@ namespace Xamarin.Forms.Build.Tasks
 
 				XmlnsHelper.ParseXmlns(namespaceURI, out typename, out ns, out asmstring, out targetPlatform);
 				asmstring = asmstring ?? module.Assembly.Name.Name;
-				lookupAssemblies.Add(new XmlnsDefinitionAttribute(namespaceURI, ns) {
-					AssemblyName = asmstring
-				});
+				if (ns != null)
+					lookupAssemblies.Add(new XmlnsDefinitionAttribute(namespaceURI, ns) {
+						AssemblyName = asmstring
+					});
 			}
 
 			lookupNames.Add(elementName);
@@ -114,19 +115,7 @@ namespace Xamarin.Forms.Build.Tasks
 						clrNamespace += '.' + typeName.Substring(0, typeName.LastIndexOf('.'));
 						typeName = typeName.Substring(typeName.LastIndexOf('.') + 1);
 					}
-					var assemblydefinition = module.Assembly.Name.Name == asm.AssemblyName ?
-												module.Assembly :
-												module.AssemblyResolver.Resolve(AssemblyNameReference.Parse(asm.AssemblyName));
-
-					type = assemblydefinition.MainModule.GetType(clrNamespace + "." + typeName);
-					if (type == null)
-					{
-						var exportedtype =
-							assemblydefinition.MainModule.ExportedTypes.FirstOrDefault(
-								(ExportedType arg) => arg.IsForwarder && arg.Namespace == clrNamespace && arg.Name == typeName);
-						if (exportedtype != null)
-							type = exportedtype.Resolve();
-					}
+					type = module.GetTypeDefinition((asm.AssemblyName, clrNamespace, typeName));
 				}
 			}
 

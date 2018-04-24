@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -73,13 +75,20 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateHeader();
 				UpdateFooter();
 				UpdateSelectionMode();
+				UpdateWindowsSpecificSelectionMode();
 				ClearSizeEstimate();
 			}
 		}
 
 		void OnCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
 		{
-			List.DataContext = new CollectionViewSource { Source = Element.ItemsSource, IsSourceGrouped = Element.IsGroupingEnabled };
+			if (e.Action == NotifyCollectionChangedAction.Reset)
+			{
+				List.DataContext =
+					new CollectionViewSource { Source = Element.ItemsSource, IsSourceGrouped = Element.IsGroupingEnabled };
+			}
+
+			List.UpdateLayout();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -115,9 +124,13 @@ namespace Xamarin.Forms.Platform.UWP
 				ClearSizeEstimate();
 				((CollectionViewSource)List.DataContext).Source = Element.ItemsSource;
 			}
-			else if (e.PropertyName == Specifics.SelectionModeProperty.PropertyName)
+			else if (e.PropertyName == ListView.SelectionModeProperty.PropertyName)
 			{
 				UpdateSelectionMode();
+			}
+			else if (e.PropertyName == Specifics.SelectionModeProperty.PropertyName)
+			{
+				UpdateWindowsSpecificSelectionMode();
 			}
 		}
 
@@ -255,6 +268,20 @@ namespace Xamarin.Forms.Platform.UWP
 		}
 
 		void UpdateSelectionMode()
+		{
+			if (Element.SelectionMode == ListViewSelectionMode.None)
+			{
+				List.SelectionMode = Windows.UI.Xaml.Controls.ListViewSelectionMode.None;
+				List.SelectedIndex = -1;
+				Element.SelectedItem = null;
+			}
+			else if (Element.SelectionMode == ListViewSelectionMode.Single)
+			{
+				List.SelectionMode = Windows.UI.Xaml.Controls.ListViewSelectionMode.Single;
+			}
+		}
+
+		void UpdateWindowsSpecificSelectionMode()
 		{
 			if (Element.OnThisPlatform().GetSelectionMode() == PlatformConfiguration.WindowsSpecific.ListViewSelectionMode.Accessible)
 			{

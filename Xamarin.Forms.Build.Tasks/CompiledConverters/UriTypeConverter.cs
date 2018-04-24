@@ -24,12 +24,11 @@ namespace Xamarin.Forms.Core.XamlC
 				yield break;
 			}
 
-			var uriCtor = module.ImportReferenceCached(typeof(Uri)).ResolveCached().Methods.FirstOrDefault(md => md.IsConstructor && md.Parameters.Count == 2 && md.Parameters[1].ParameterType.FullName == "System.UriKind");
-			var uriCtorRef = module.ImportReference(uriCtor);
-
 			yield return Create(Ldstr, value);
 			yield return Create(Ldc_I4_0); //UriKind.RelativeOrAbsolute
-			yield return Create(Newobj, uriCtorRef);
+			yield return Create(Newobj, module.ImportCtorReference(("System", "System", "Uri"), parameterTypes: new[] {
+				("mscorlib", "System", "String"),
+				("System", "System", "UriKind")}));
 		}
 	}
 }
