@@ -23,6 +23,10 @@ namespace Xamarin.Forms
 		Task PushModalAsync(Page page);
 		Task PushModalAsync(Page page, bool animated);
 
+		Task ShowAsync(Page page);
+		Task ShowAsync(Page page, bool animated);
+		Task SegueAsync(Segue segue, SegueTarget target);
+
 		void RemovePage(Page page);
 	}
 }

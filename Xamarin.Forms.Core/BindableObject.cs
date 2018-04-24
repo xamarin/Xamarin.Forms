@@ -172,6 +172,16 @@ namespace Xamarin.Forms
 			return bpcontext != null && bpcontext.Binding != null;
 		}
 
+		internal bool GetIsManuallySet(BindableProperty targetProperty)
+		{
+			if (targetProperty == null)
+				throw new ArgumentNullException(nameof(targetProperty));
+
+			var bpcontext = GetContext(targetProperty);
+			return bpcontext != null
+				&& (bpcontext.Attributes & BindableContextAttributes.IsManuallySet) == BindableContextAttributes.IsManuallySet;
+		}
+
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public object[] GetValues(BindableProperty property0, BindableProperty property1)
 		{
