@@ -28,6 +28,14 @@ namespace Xamarin.Forms.Controls.Issues
 			_updateButton = new Button { Text = "Update" };
 			_updateButton.Clicked += UpdateCursor;
 
+			var red = new Button { Text = "Red", TextColor = Color.Red};
+			red.Clicked += (sender, e) => _entry.CursorColor = Color.Red;
+
+			var blue = new Button { Text = "Blue", TextColor = Color.Blue};
+			blue.Clicked += (sender, e) => _entry.CursorColor = Color.Blue;
+
+			var defaultColor = new Button { Text = "Default" };
+			defaultColor.Clicked += (sender, e) => _entry.CursorColor = Color.Default;
 			Content = new StackLayout
 			{
 				Margin = new Thickness(10, 40),
@@ -38,7 +46,10 @@ namespace Xamarin.Forms.Controls.Issues
 					_cursorStartPosition,
 					new Label {Text = "Selection Length:"},
 					_selectionLength,
-					_updateButton
+					_updateButton,
+					red,
+					blue,
+					defaultColor
 				}
 			};
 		}

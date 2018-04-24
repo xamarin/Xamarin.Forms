@@ -39,6 +39,8 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty SelectionLengthProperty = BindableProperty.Create(nameof(SelectionLength), typeof(int), typeof(Entry), 0);
 
+		public static readonly BindableProperty CursorColorProperty = BindableProperty.Create(nameof(CursorColor), typeof(Color), typeof(Entry), Color.Default);
+
 		readonly Lazy<PlatformConfigurationRegistry<Entry>> _platformConfigurationRegistry;
 
 		public Entry()
@@ -123,6 +125,12 @@ namespace Xamarin.Forms
 		{
 			get { return (int)GetValue(SelectionLengthProperty); }
 			set { SetValue(SelectionLengthProperty, value); }
+		}
+
+		public Color CursorColor
+		{
+			get { return (Color)GetValue(CursorColorProperty); }
+			set { SetValue(CursorColorProperty, value); }
 		}
 
 		public ICommand ReturnCommand

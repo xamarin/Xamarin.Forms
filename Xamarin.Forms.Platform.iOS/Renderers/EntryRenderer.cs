@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Platform.iOS
 		// Placeholder default color is 70% gray
 		// https://developer.apple.com/library/prerelease/ios/documentation/UIKit/Reference/UITextField_Class/index.html#//apple_ref/occ/instp/UITextField/placeholder
 		readonly Color _defaultPlaceholderColor = ColorExtensions.SeventyPercentGrey.ToColor();
-
+		UIColor _defaultCursorColor;
 		bool _useLegacyColorManagement;
 
 		bool _disposed;
@@ -60,6 +60,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (Control != null)
 				{
+					_defaultCursorColor = Control.TintColor;
 					Control.EditingDidBegin -= OnEditingBegan;
 					Control.EditingChanged -= OnEditingChanged;
 					Control.EditingDidEnd -= OnEditingEnded;
@@ -111,6 +112,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateMaxLength();
 			UpdateReturnType();
 			UpdateCursorSelection();
+			UpdateCursorColor();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -152,6 +154,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateReturnType();
 			else if (e.PropertyName == Entry.CursorPositionProperty.PropertyName || e.PropertyName == Entry.SelectionLengthProperty.PropertyName)
 				UpdateCursorSelection();
+			else if (e.PropertyName == Entry.CursorColorProperty.PropertyName)
+				UpdateCursorColor();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -333,15 +337,34 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_selectedTextRangeIsUpdating || control == null || Element == null)
 				return;
 
-			var start = control.GetPosition(control.BeginningOfDocument, Element.CursorPosition);
-			var end = control.GetPosition(start, System.Math.Min(control.Text.Length - Element.CursorPosition, Element.SelectionLength));
-			var currentSelection = control.SelectedTextRange;
-			if (currentSelection.Start != start || currentSelection.End != end)
+			if (Element.IsSet(Entry.CursorPositionProperty) || Element.IsSet(Entry.SelectionLengthProperty)) {
+
+				var start = control.GetPosition(control.BeginningOfDocument, Element.CursorPosition);
+				var end = control.GetPosition(start, System.Math.Min(control.Text.Length - Element.CursorPosition, Element.SelectionLength));
+				var currentSelection = control.SelectedTextRange;
+				if (currentSelection.Start != start || currentSelection.End != end)
+				{
+					control.BecomeFirstResponder();
+					_selectedTextRangeIsUpdating = true;
+					control.SelectedTextRange = control.GetTextRange(start, end);
+					_selectedTextRangeIsUpdating = false;
+				}
+			}
+		}
+
+		void UpdateCursorColor()
+		{
+			var control = Control;
+			if (control == null || Element == null)
+				return;
+
+			if (Element.IsSet(Entry.CursorColorProperty))
 			{
-				control.BecomeFirstResponder();
-				_selectedTextRangeIsUpdating = true;
-				control.SelectedTextRange = control.GetTextRange(start, end);
-				_selectedTextRangeIsUpdating = false;
+				var color = Element.CursorColor;
+				if (color == Color.Default)
+					control.TintColor = _defaultCursorColor;
+				else
+					control.TintColor = Element.CursorColor.ToUIColor();
 			}
 		}
 	}
