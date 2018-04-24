@@ -175,6 +175,80 @@ namespace Xamarin.Forms.Platform.iOS
 			return Task.FromResult<object>(null);
 		}
 
+		Task INavigation.ShowAsync(Page page)
+		{
+			return ((INavigation)this).ShowAsync(page, true);
+		}
+
+		Task INavigation.ShowAsync(Page page, bool animated)
+		{
+			return ((INavigation)this).PushModalAsync(page, animated);
+		}
+
+		async Task INavigation.SegueAsync(Segue segue, SegueTarget target)
+		{
+			var action = segue.Action;
+			switch (action)
+			{
+				case NavigationAction.Pop:
+					action = NavigationAction.PopModal;
+					goto case NavigationAction.PopModal;
+				case NavigationAction.PopModal:
+					target = (SegueTarget)_modals.Last();
+					break;
+				case NavigationAction.Show:
+				case NavigationAction.Modal:
+				case NavigationAction.MainPage:
+					break; // these are ok
+				default:
+					throw new InvalidOperationException($"{action} is not supported globally on iOS, please use a NavigationPage.");
+			}
+
+			var vc = (UIViewController)target.TryCreateValue(typeof(UIViewController));
+			if (vc == null)
+				throw new ArgumentException("Unsupported target type", nameof(target));
+
+			if (vc.ParentViewController is ModalWrapper wrapper)
+				vc = wrapper;
+
+			// adjust target if needed
+			var exec = segue as ISegueExecution;
+			if (exec != null)
+			{
+				// If we're popping a modal, the real target is the presenting view controller
+				if (action == NavigationAction.PopModal)
+					target = new ViewControllerSegueTarget(vc.PresentingViewController);
+				else if (target.IsTemplate)
+					target = new ViewControllerSegueTarget(vc);
+
+				if (!await exec.OnBeforeExecute(target))
+					return;
+			}
+
+			// If we don't need a target, or can retrieve it as a Page, route it through classic Forms navigation..
+			Page page = null;
+			if (!action.RequiresTarget() || (page = ViewControllerSegueTarget.GetPage(vc)) != null)
+			{
+				await this.NavigateAsync(action, page, segue.IsAnimated);
+				return;
+			}
+
+			// Otherwise, perform a native transition..
+			switch (action)
+			{
+				case NavigationAction.Show:
+				case NavigationAction.Modal:
+					await PresentModal(vc, segue.IsAnimated);
+					break;
+				case NavigationAction.MainPage:
+					var wnd = UIApplication.SharedApplication.Delegate?.GetWindow();
+					if (wnd == null)
+						throw new InvalidOperationException("Cannot get window. Ensure your app delegate implements the Window property");
+					wnd.RootViewController = vc;
+					break;
+			}
+		}
+
 		void INavigation.RemovePage(Page page)
 		{
 			throw new InvalidOperationException("RemovePage is not supported globally on iOS, please use a NavigationPage.");
@@ -451,7 +525,7 @@ namespace Xamarin.Forms.Platform.iOS
 			window.RootViewController.PresentViewController(alert, true, null);
 		}
 
-		async Task PresentModal(Page modal, bool animated)
+		Task PresentModal(Page modal, bool animated)
 		{
 			var modalRenderer = GetRenderer(modal);
 			if (modalRenderer == null)
@@ -461,14 +535,18 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			var wrapper = new ModalWrapper(modalRenderer);
+			return PresentModal(wrapper, animated);
+		}
 
+		async Task PresentModal(UIViewController modal, bool animated)
+		{
 			if (_modals.Count > 1)
 			{
 				var topPage = _modals[_modals.Count - 2];
 				var controller = GetRenderer(topPage) as UIViewController;
 				if (controller != null)
 				{
-					await controller.PresentViewControllerAsync(wrapper, animated);
+					await controller.PresentViewControllerAsync(modal, animated);
 					await Task.Delay(5);
 					return;
 				}
@@ -478,7 +556,7 @@ namespace Xamarin.Forms.Platform.iOS
 			// presentation is complete before it really is. It does not however inform you when it is really done (and thus 
 			// would be safe to dismiss the VC). Fortunately this is almost never an issue
 			
-			await _renderer.PresentViewControllerAsync(wrapper, animated);
+			await _renderer.PresentViewControllerAsync(modal, animated);
 			await Task.Delay(5);
 		}
 

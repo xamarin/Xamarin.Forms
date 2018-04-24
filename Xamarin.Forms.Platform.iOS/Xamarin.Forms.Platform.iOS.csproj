@@ -139,6 +139,7 @@
     <Compile Include="Extensions\LayoutExtensions.cs" />
     <Compile Include="NativeValueConverterService.cs" />
     <Compile Include="NativeBindingService.cs" />
+    <Compile Include="Segues\ViewControllerSegueTarget.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\StringResources.ar.resx" />
@@ -193,5 +194,8 @@
     <Compile Include="..\Xamarin.Forms.Core\Properties\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Segues\" />
   </ItemGroup>
 </Project>
