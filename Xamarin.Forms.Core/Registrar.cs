@@ -95,14 +95,14 @@ namespace Xamarin.Forms.Internals
 		public Type GetHandlerType(Type viewType)
 		{
 			// 1. Do we have this specific type registered already?
-			if (LookupHandlerType(viewType, false, out Type specificTypeRenderer))
+			if (_handlers.TryGetValue(viewType, out Type specificTypeRenderer))
 				return specificTypeRenderer;
 
 			// 2. Do we have a RenderWith for this type or its base types? Register them now.
 			RegisterRenderWithTypes(viewType);
 
 			// 3. Do we have a custom renderer for a base type or did we just register an appropriate renderer from RenderWith?
-			if (LookupHandlerType(viewType, true, out Type baseTypeRenderer))
+			if (LookupHandlerType(viewType, out Type baseTypeRenderer))
 				return baseTypeRenderer;
 			else
 				return null;
@@ -119,22 +119,14 @@ namespace Xamarin.Forms.Internals
 			return GetHandlerType(type);
 		}
 
-		bool LookupHandlerType(Type viewType, bool includeBaseTypes, out Type handlerType)
+		bool LookupHandlerType(Type viewType, out Type handlerType)
 		{
-			Type type = viewType;
-
-			while (type != null && type != typeof(Element))
+			while (viewType != null && viewType != typeof(Element))
 			{
-				if (_handlers.ContainsKey(type))
-				{
-					handlerType = _handlers[type];
+				if (_handlers.TryGetValue(viewType, out handlerType))
 					return true;
-				}
 
-				if (includeBaseTypes)
-					type = type.GetTypeInfo().BaseType;
-				else
-					type = null;
+				viewType = viewType.GetTypeInfo().BaseType;
 			}
 
 			handlerType = null;
@@ -143,28 +135,26 @@ namespace Xamarin.Forms.Internals
 
 		void RegisterRenderWithTypes(Type viewType)
 		{
-			Type type = viewType;
-
 			// We're going to go through each type in this viewType's inheritance chain to look for classes
 			// decorated with a RenderWithAttribute. We're going to register each specific type with its
 			// renderer. 
 
-			while (type != null && type != typeof(Element))
+			while (viewType != null && viewType != typeof(Element))
 			{
 				// Only go through this process if we have not registered something for this type;
 				// we don't want RenderWith renderers to override ExportRenderers that are already registered.
 				// Plus, there's no need to do this again if we already have a renderer registered.
-				if (!LookupHandlerType(type, false, out Type specificTypeRenderer))
+				if (!_handlers.ContainsKey(viewType))
 				{
 					// get RenderWith attribute for just this type, do not inherit attributes from base types
-					var attribute = type.GetTypeInfo().GetCustomAttributes<RenderWithAttribute>(false).FirstOrDefault();
+					var attribute = viewType.GetTypeInfo().GetCustomAttributes<RenderWithAttribute>(false).FirstOrDefault();
 					if (attribute == null)
 					{
-						Register(type, null); // Cache this result so we don't have to do GetCustomAttributes again
+						Register(viewType, null); // Cache this result so we don't have to do GetCustomAttributes again
 					}
 					else
 					{
-						specificTypeRenderer = attribute.Type;
+						Type specificTypeRenderer = attribute.Type;
 
 						if (specificTypeRenderer.Name.StartsWith("_", StringComparison.Ordinal))
 						{
@@ -175,18 +165,18 @@ namespace Xamarin.Forms.Internals
 
 							if (specificTypeRenderer.Name.StartsWith("_", StringComparison.Ordinal))
 							{
-								Register(type, null); // Cache this result so we don't work through this chain again
+								Register(viewType, null); // Cache this result so we don't work through this chain again
 
-								type = type.GetTypeInfo().BaseType;
+								viewType = viewType.GetTypeInfo().BaseType;
 								continue;
 							}
 						}
 
-						Register(type, specificTypeRenderer); // Register this so we don't have to look for the RenderWithAttibute again in the future
+						Register(viewType, specificTypeRenderer); // Register this so we don't have to look for the RenderWithAttibute again in the future
 					}
 				}
 
-				type = type.GetTypeInfo().BaseType;
+				viewType = viewType.GetTypeInfo().BaseType;
 			}
 		}
 	}
