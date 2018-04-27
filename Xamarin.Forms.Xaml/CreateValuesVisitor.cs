@@ -125,7 +125,7 @@ namespace Xamarin.Forms.Xaml
 			}
 
 			var bindableValue = value as BindableObject;
-			if (bindableValue != null)
+			if (bindableValue != null && node.Namescope != (parentNode as IElementNode)?.Namescope)
 				NameScope.SetNameScope(bindableValue, node.Namescope);
 		}
 

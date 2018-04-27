@@ -606,7 +606,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		INameScope GetNameScope()
+		internal INameScope GetNameScope()
 		{
 			var element = this;
 			do {
