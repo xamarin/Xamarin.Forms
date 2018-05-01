@@ -1,3 +1,8 @@
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using Xamarin.Forms.PlatformConfiguration;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 namespace Xamarin.Forms.Controls
 {
 	public class NavigationBarGallery : ContentPage
@@ -15,10 +20,18 @@ namespace Xamarin.Forms.Controls
 
 			rootNavPage.BarHeight = 450;
 
-			Content = new ScrollView { Content = 
+			Content = new ScrollView
+			{
+				Content =
 					new StackLayout
 					{
 						Children = {
+							new Button {
+							Text = "Go to SearchBarTitlePage",
+							Command = new Command (() => {
+								rootNavPage.PushAsync(new SearchBarTitlePage(rootNavPage));
+							})
+						},
 						new Button {
 							Text = "Change BarTextColor",
 							Command = new Command (() => {
@@ -137,7 +150,7 @@ namespace Xamarin.Forms.Controls
 							})
 						}
 					}
-				}
+					}
 			};
 		}
 
@@ -153,9 +166,82 @@ namespace Xamarin.Forms.Controls
 				Spacing = 0,
 				BackgroundColor = Color.Pink,
 				Margin = new Thickness(50, 0),
-				HorizontalOptions = LayoutOptions.Fill
+				HorizontalOptions = LayoutOptions.Fill,
+				VerticalOptions = LayoutOptions.Fill
 			};
 			return titleView;
+		}
+
+		class SearchBarTitlePage : ContentPage
+		{
+			List<string> items = new List<string> { "The Ocean at the End of the Lane", "So Long, and Thanks for All the Fish", "Twenty Thousand Leagues Under the Sea", "Rosencrantz and Guildenstern Are Dead" };
+			ObservableCollection<string> filtereditems;
+			SearchBar search;
+			public SearchBarTitlePage(NavigationPage parent)
+			{
+				filtereditems = new ObservableCollection<string>(items);
+
+				search = new SearchBar { BackgroundColor = Color.Cornsilk, HorizontalOptions = LayoutOptions.FillAndExpand, Margin = new Thickness(10, 0) };
+				search.Effects.Add(Effect.Resolve($"{Issues.Effects.ResolutionGroupName}.SearchbarEffect"));
+				search.TextChanged += Search_TextChanged;
+
+				var list = new ListView
+				{
+					ItemsSource = filtereditems
+				};
+
+				Title = "Large Titles";
+				parent.BarBackgroundColor = Color.Cornsilk;
+				parent.BarTextColor = Color.Orange;
+
+				switch (Device.RuntimePlatform)
+				{
+					case Device.iOS:
+
+						var button = new Button { Text = "Toggle" };
+
+						var extendedStack = new StackLayout
+						{
+							Children = { new StackLayout { Children = { search, button }, BackgroundColor = Color.Cornsilk }, list }
+						};
+
+						parent.On<iOS>().SetPrefersLargeTitles(true)
+										.SetHideNavigationBarSeparator(true);
+
+						Content = extendedStack;
+						break;
+
+					default:
+						NavigationPage.SetTitleView(this, search);
+						Content = list;
+						break;
+				}
+			}
+
+			void Search_TextChanged(object sender, TextChangedEventArgs e)
+			{
+				for (int i = 0; i < filtereditems.Count; i++)
+				{
+					filtereditems.RemoveAt(0);
+				}
+
+				if (search.Text?.Length >= 3)
+				{
+					foreach (var item in items.Where(i => i.ToLower().Contains(search.Text.ToLower())))
+					{
+						if (!filtereditems.Contains(item))
+							filtereditems.Add(item);
+					}
+				}
+				else
+				{
+					foreach (var item in items)
+					{
+						if (!filtereditems.Contains(item))
+							filtereditems.Add(item);
+					}
+				}
+			}
 		}
 	}
 }
