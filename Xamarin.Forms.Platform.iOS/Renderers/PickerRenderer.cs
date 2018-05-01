@@ -41,7 +41,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (Control == null)
 				{
-					// disabled cut, delete, and toggle actions because they can throw an unhandlled native exception
+					// disabled cut, delete, and toggle actions because they can throw an unhandled native exception
 					var entry = new ReadOnlyField { BorderStyle = UITextBorderStyle.RoundedRect };
 
 					entry.EditingDidBegin += OnStarted;
@@ -108,7 +108,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var selectedIndex = Element.SelectedIndex;
 			var items = Element.Items;
 			Control.Text = selectedIndex == -1 || items == null ? "" : items[selectedIndex];
-			// Also clears the undo stack (undo/redo possible on iPad's)
+			// Also clears the undo stack (undo/redo possible on iPads)
 			Control.UndoManager.RemoveAllActions();
 		}
 
