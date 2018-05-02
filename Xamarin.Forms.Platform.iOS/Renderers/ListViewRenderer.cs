@@ -44,6 +44,8 @@ namespace Xamarin.Forms.Platform.iOS
 			set { _dataSource.ReloadSectionsAnimation = value; }
 		}
 
+		protected virtual bool ActionCellIconInsteadOfText { get; }
+
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
 			return Control.GetSizeRequest(widthConstraint, heightConstraint, DefaultRowHeight, DefaultRowHeight);
@@ -238,7 +240,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				UpdateRowHeight();
 
-				Control.Source = _dataSource = e.NewElement.HasUnevenRows ? new UnevenListViewDataSource(e.NewElement, _tableViewController) : new ListViewDataSource(e.NewElement, _tableViewController);
+				Control.Source = _dataSource = e.NewElement.HasUnevenRows ? new UnevenListViewDataSource(e.NewElement, _tableViewController, ActionCellIconInsteadOfText) : new ListViewDataSource(e.NewElement, _tableViewController, ActionCellIconInsteadOfText);
 
 				UpdateEstimatedRowHeight();
 				UpdateHeader();
@@ -267,7 +269,7 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.PropertyName == Xamarin.Forms.ListView.HasUnevenRowsProperty.PropertyName)
 			{
 				_estimatedRowHeight = false;
-				Control.Source = _dataSource = Element.HasUnevenRows ? new UnevenListViewDataSource(_dataSource) : new ListViewDataSource(_dataSource);
+				Control.Source = _dataSource = Element.HasUnevenRows ? new UnevenListViewDataSource(_dataSource, ActionCellIconInsteadOfText) : new ListViewDataSource(_dataSource, ActionCellIconInsteadOfText);
 				Control.ReloadData();
 			}
 			else if (e.PropertyName == Xamarin.Forms.ListView.IsPullToRefreshEnabledProperty.PropertyName)
@@ -680,11 +682,11 @@ namespace Xamarin.Forms.Platform.iOS
 			bool _disposed;
 			Dictionary<object, Cell> _prototypicalCellByTypeOrDataTemplate = new Dictionary<object, Cell>();
 
-			public UnevenListViewDataSource(ListView list, FormsUITableViewController uiTableViewController) : base(list, uiTableViewController)
+			public UnevenListViewDataSource(ListView list, FormsUITableViewController uiTableViewController, bool actionCellIconInsteadOfText) : base(list, uiTableViewController, actionCellIconInsteadOfText)
 			{
 			}
 
-			public UnevenListViewDataSource(ListViewDataSource source) : base(source)
+			public UnevenListViewDataSource(ListViewDataSource source, bool actionCellIconInsteadOfText) : base(source, actionCellIconInsteadOfText)
 			{
 			}
 
@@ -856,13 +858,16 @@ namespace Xamarin.Forms.Platform.iOS
 			FormsUITableViewController _uiTableViewController;
 			protected ListView List;
 			protected ITemplatedItemsView<Cell> TemplatedItemsView => List;
+			bool _actionCellIconInsteadOfText;
 			bool _isDragging;
 			bool _selectionFromNative;
 			bool _disposed;
 			public UITableViewRowAnimation ReloadSectionsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
 
-			public ListViewDataSource(ListViewDataSource source)
+			public ListViewDataSource(ListViewDataSource source, bool actionCellIconInsteadOfText)
 			{
+				_actionCellIconInsteadOfText = actionCellIconInsteadOfText;
+
 				_uiTableViewController = source._uiTableViewController;
 				List = source.List;
 				_uiTableView = source._uiTableView;
@@ -872,8 +877,10 @@ namespace Xamarin.Forms.Platform.iOS
 				Counts = new Dictionary<int, int>();
 			}
 
-			public ListViewDataSource(ListView list, FormsUITableViewController uiTableViewController)
+			public ListViewDataSource(ListView list, FormsUITableViewController uiTableViewController, bool actionCellIconInsteadOfText)
 			{
+				_actionCellIconInsteadOfText = actionCellIconInsteadOfText;
+
 				_uiTableViewController = uiTableViewController;
 				_uiTableView = uiTableViewController.TableView;
 				_defaultSectionHeight = DefaultRowHeight;
@@ -918,7 +925,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (cachingStrategy == ListViewCachingStrategy.RetainElement)
 				{
 					cell = GetCellForPath(indexPath);
-					nativeCell = CellTableViewCell.GetNativeCell(tableView, cell);
+					nativeCell = CellTableViewCell.GetNativeCell(tableView, cell, _actionCellIconInsteadOfText);
 				}
 				else if ((cachingStrategy & ListViewCachingStrategy.RecycleElement) != 0)
 				{
@@ -928,7 +935,7 @@ namespace Xamarin.Forms.Platform.iOS
 					{
 						cell = GetCellForPath(indexPath);
 
-						nativeCell = CellTableViewCell.GetNativeCell(tableView, cell, true, id.ToString());
+						nativeCell = CellTableViewCell.GetNativeCell(tableView, cell, true, id.ToString(), _actionCellIconInsteadOfText);
 					}
 					else
 					{
