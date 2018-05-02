@@ -9,8 +9,11 @@ namespace Xamarin.Forms.Controls
 {
 	public class NavigationBarGallery : ContentPage
 	{
+		NavigationPage _rootNavPage;
 		public NavigationBarGallery(NavigationPage rootNavPage)
 		{
+			_rootNavPage = rootNavPage;
+
 			int toggleBarTextColor = 0;
 			int toggleBarBackgroundColor = 0;
 
@@ -154,6 +157,12 @@ namespace Xamarin.Forms.Controls
 					}
 					}
 			};
+		}
+
+		protected override void OnDisappearing()
+		{
+			base.OnDisappearing();
+			_rootNavPage.ClearValue(BarHeightProperty);
 		}
 
 		static VisualElement CreateTitleView()
