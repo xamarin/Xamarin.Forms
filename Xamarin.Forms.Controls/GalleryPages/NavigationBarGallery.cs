@@ -3,6 +3,8 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific.AppCompat;
+using static Xamarin.Forms.PlatformConfiguration.AndroidSpecific.AppCompat.NavigationPage;
 namespace Xamarin.Forms.Controls
 {
 	public class NavigationBarGallery : ContentPage
@@ -18,7 +20,7 @@ namespace Xamarin.Forms.Controls
 
 			NavigationPage.SetTitleView(this, CreateTitleView());
 
-			rootNavPage.BarHeight = 450;
+			rootNavPage.On<Android>().SetBarHeight(450);
 
 			Content = new ScrollView
 			{
@@ -143,10 +145,10 @@ namespace Xamarin.Forms.Controls
 							Text = "Toggle BarHeight",
 							Command = new Command (() => {
 
-								if (rootNavPage.BarHeight == -1)
-									rootNavPage.BarHeight= 450;
+								if (rootNavPage.On<Android>().GetBarHeight() == -1)
+									rootNavPage.On<Android>().SetBarHeight(450);
 								else
-									rootNavPage.ClearValue(NavigationPage.BarHeightProperty);
+									rootNavPage.ClearValue(BarHeightProperty);
 							})
 						}
 					}

@@ -23,6 +23,7 @@ using Fragment = Android.Support.V4.App.Fragment;
 using FragmentManager = Android.Support.V4.App.FragmentManager;
 using FragmentTransaction = Android.Support.V4.App.FragmentTransaction;
 using Object = Java.Lang.Object;
+using static Xamarin.Forms.PlatformConfiguration.AndroidSpecific.AppCompat.NavigationPage;
 using static Android.Views.View;
 using System.IO;
 using Android.Widget;
@@ -333,7 +334,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				UpdateToolbar();
 			else if (e.PropertyName == NavigationPage.BackButtonTitleProperty.PropertyName)
 				UpdateToolbar();
-			else if (e.PropertyName == NavigationPage.BarHeightProperty.PropertyName)
+			else if (e.PropertyName == BarHeightProperty.PropertyName)
 				UpdateToolbar();
 		}
 
@@ -347,8 +348,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			int barHeight = ActionBarHeight();
 
-			if (Element.IsSet(NavigationPage.BarHeightProperty))
-				barHeight = Element.BarHeight;
+			if (Element.IsSet(BarHeightProperty))
+				barHeight = Element.OnThisPlatform().GetBarHeight();
 
 			if (barHeight != _lastActionBarHeight && _lastActionBarHeight > 0)
 			{
