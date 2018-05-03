@@ -1115,7 +1115,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			public Container(IntPtr p, global::Android.Runtime.JniHandleOwnership o) : base(p, o)
 			{
-				// Added default constructor to prevent crash when accessing header/footer row in Dispose
+				// Added default constructor to prevent crash in Dispose
 			}
 
 			public Container(Context context) : base(context)
