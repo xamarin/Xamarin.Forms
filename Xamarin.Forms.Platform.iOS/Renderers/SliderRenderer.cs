@@ -23,6 +23,11 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Control != null)
 			{
 				Control.ValueChanged -= OnControlValueChanged;
+				if (_sliderTapRecognizer != null)
+				{
+					Control.RemoveGestureRecognizer(_sliderTapRecognizer);
+					_sliderTapRecognizer = null;
+				}
 			}
 
 			base.Dispose(disposing);
@@ -177,11 +182,15 @@ namespace Xamarin.Forms.Platform.iOS
 						_sliderTapRecognizer = new UITapGestureRecognizer((recognizer) =>
 						{
 							var control = Control;
-							var tappedLocation = recognizer.LocationInView(control);
-							var val = (tappedLocation.X - control.Frame.X) * control.MaxValue / control.Frame.Size.Width;
-
-							Element.SetValueFromRenderer(Slider.ValueProperty, val);
-
+							if (control != null)
+							{
+								var tappedLocation = recognizer.LocationInView(control);
+								if (tappedLocation != null)
+								{
+									var val = (tappedLocation.X - control.Frame.X) * control.MaxValue / control.Frame.Size.Width;
+									Element.SetValueFromRenderer(Slider.ValueProperty, val);
+								}
+							}
 						});
 						Control.AddGestureRecognizer(_sliderTapRecognizer);
 					}
