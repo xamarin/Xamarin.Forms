@@ -5,6 +5,11 @@ using System.Linq;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
+#if UITEST
+using Xamarin.Forms.Core.UITests;
+using NUnit.Framework;
+#endif
+
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve (AllMembers = true)]
@@ -19,7 +24,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init ()
 		{
-			_entry = new Entry {Text = "Enter cursor position below"};
+			_entry = new Entry {Text = "Enter cursor position below", AutomationId = "TextField"};
 			_entry.PropertyChanged += ReadCursor;
 
 			_cursorStartPosition = new Entry();
@@ -73,5 +78,25 @@ namespace Xamarin.Forms.Controls.Issues
 			_cursorStartPosition.Text = _entry.CursorPosition.ToString();
 			_selectionLength.Text = _entry.SelectionLength.ToString();
 		}
+
+		#if UITEST
+		[Test]
+		public void Test()
+		{
+			RunningApp.WaitForElement(q => q.Marked("TextField"));
+			_entry.CursorPosition = 2;
+			_entry.SelectionLength = 3;
+			RunningApp.Screenshot("Text selection from char 2 length 3.");
+			Assert.AreEqual("2", _cursorStartPosition.Text);
+			Assert.AreEqual("3", _selectionLength.Text);
+
+			RunningApp.Tap(q => q.Marked("Textfield"));
+
+			Assert.AreEqual(_entry.Text.Length, _entry.CursorPosition);
+			Assert.AreEqual(0, _entry.SelectionLength);
+
+
+		}
+		#endif
 	}
 }

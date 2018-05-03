@@ -289,14 +289,17 @@ namespace Xamarin.Forms.Platform.Android
 		void SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			var control = Control;
+			if (control == null || Element == null)
+				return;
+
 			var start = Element.CursorPosition;
 
 			if (control.SelectionStart != start)
-				ElementController.SetValueFromRenderer(Entry.CursorPositionProperty, control.SelectionStart);
+				ElementController?.SetValueFromRenderer(Entry.CursorPositionProperty, control.SelectionStart);
 
 			var selectionLength = control.SelectionEnd - control.SelectionStart;
 			if (selectionLength != Element.SelectionLength)
-				ElementController.SetValueFromRenderer(Entry.SelectionLengthProperty, selectionLength);
+				ElementController?.SetValueFromRenderer(Entry.SelectionLengthProperty, selectionLength);
 		}
 
 
@@ -306,13 +309,16 @@ namespace Xamarin.Forms.Platform.Android
 			if (control == null || Element == null)
 				return;
 
-			var start = Element.CursorPosition;
-			var end = System.Math.Min(control.Length(), Element.CursorPosition + Element.SelectionLength);
-
-			if (control.SelectionStart != start || control.SelectionEnd != end)
+			if (Element.IsSet(Entry.CursorPositionProperty) || Element.IsSet(Entry.SelectionLengthProperty))
 			{
-				control.SetSelection(start, end);
-				control.RequestFocus();
+				var start = Element.CursorPosition;
+				var end = System.Math.Min(control.Length(), Element.CursorPosition + Element.SelectionLength);
+
+				if (control.SelectionStart != start || control.SelectionEnd != end)
+				{
+					control.SetSelection(start, end);
+					control.RequestFocus();
+				}
 			}
 		}
 	}

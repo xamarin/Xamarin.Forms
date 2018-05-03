@@ -277,14 +277,17 @@ namespace Xamarin.Forms.Platform.UWP
 		void SelectionChanged(object sender, RoutedEventArgs e)
 		{
 			var control = Control;
+			if (control == null || Element == null)
+				return;
+
 			var start = Element.CursorPosition;
 
 			if (control.SelectionStart != start)
-				ElementController.SetValueFromRenderer(Entry.CursorPositionProperty, control.SelectionStart);
+				ElementController?.SetValueFromRenderer(Entry.CursorPositionProperty, control.SelectionStart);
 
 			var selectionLength = control.SelectionLength;
 			if (selectionLength != Element.SelectionLength)
-				ElementController.SetValueFromRenderer(Entry.SelectionLengthProperty, selectionLength);
+				ElementController?.SetValueFromRenderer(Entry.SelectionLengthProperty, selectionLength);
 		}
 
 		void UpdateSelectionLength()
@@ -293,11 +296,14 @@ namespace Xamarin.Forms.Platform.UWP
 			if (control == null || Element == null)
 				return;
 
-			var selectionLength = Element.SelectionLength;
-			if (selectionLength != control.SelectionLength)
+			if (Element.IsSet(Entry.SelectionLengthProperty))
 			{
-				control.SelectionLength = selectionLength;
-				control.Focus(FocusState.Programmatic);
+				var selectionLength = Element.SelectionLength;
+				if (selectionLength != control.SelectionLength)
+				{
+					control.SelectionLength = selectionLength;
+					control.Focus(FocusState.Programmatic);
+				}
 			}
 		}
 
@@ -307,11 +313,14 @@ namespace Xamarin.Forms.Platform.UWP
 			if (control == null || Element == null)
 				return;
 
-			var start = Element.CursorPosition;
-			if (start != control.SelectionStart)
+			if (Element.IsSet(Entry.CursorPositionProperty))
 			{
-				control.SelectionStart = start;
-				control.Focus(FocusState.Programmatic);
+				var start = Element.CursorPosition;
+				if (start != control.SelectionStart)
+				{
+					control.SelectionStart = start;
+					control.Focus(FocusState.Programmatic);
+				}
 			}
 		}
 	}

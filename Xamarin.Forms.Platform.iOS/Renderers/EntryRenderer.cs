@@ -21,6 +21,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		bool _disposed;
 		IDisposable _selectedTextRangeObserver;
+		bool _selectedTextRangeIsUpdating;
 
 		static readonly int baseHeight = 30;
 		static CGSize initialSize = CGSize.Empty;
@@ -168,6 +169,7 @@ namespace Xamarin.Forms.Platform.iOS
 		void OnEditingChanged(object sender, EventArgs eventArgs)
 		{
 			ElementController.SetValueFromRenderer(Entry.TextProperty, Control.Text);
+			UpdateCursorFromControl(null);
 		}
 
 		void OnEditingEnded(object sender, EventArgs e)
@@ -310,13 +312,11 @@ namespace Xamarin.Forms.Platform.iOS
 			Control.ReturnKeyType = Element.ReturnType.ToUIReturnKeyType();
 		}
 
-		bool _selectedTextRangeIsUpdating;
-
 		void UpdateCursorFromControl(NSObservedChange obj)
 		{
-			if (_selectedTextRangeIsUpdating)
-				return;
 			var control = Control;
+			if (_selectedTextRangeIsUpdating || control == null || Element == null)
+				return;
 
 			var currentSelection = control.SelectedTextRange;
 			int selectionLength = (int)control.GetOffsetFromPosition(currentSelection.Start, currentSelection.End);
@@ -324,10 +324,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 			_selectedTextRangeIsUpdating = true;
 			if (newCursorPosition != Element.CursorPosition)
-				ElementController.SetValueFromRenderer(Entry.CursorPositionProperty, newCursorPosition);
+				ElementController?.SetValueFromRenderer(Entry.CursorPositionProperty, newCursorPosition);
 
 			if (selectionLength != Element.SelectionLength)
-				ElementController.SetValueFromRenderer(Entry.SelectionLengthProperty, selectionLength);
+				ElementController?.SetValueFromRenderer(Entry.SelectionLengthProperty, selectionLength);
 			_selectedTextRangeIsUpdating = false;
 		}
 
