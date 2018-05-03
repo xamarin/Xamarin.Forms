@@ -22,6 +22,9 @@ namespace Xamarin.Forms.Platform.UWP
 		public static readonly DependencyProperty ShouldShowSplitModeProperty = DependencyProperty.Register(nameof(ShouldShowSplitMode), typeof(bool), typeof(MasterDetailControl),
 			new PropertyMetadata(default(bool), OnShouldShowSplitModeChanged));
 
+		public static readonly DependencyProperty ShouldShowNavigationBarProperty = DependencyProperty.Register(nameof(ShouldShowNavigationBar), typeof(bool), typeof(MasterDetailControl),
+		new PropertyMetadata(true, OnShouldShowSplitModeChanged));
+
 		public static readonly DependencyProperty CollapseStyleProperty = DependencyProperty.Register(nameof(CollapseStyle), typeof(CollapseStyle), 
 			typeof(MasterDetailControl), new PropertyMetadata(CollapseStyle.Full, CollapseStyleChanged));
 
@@ -50,6 +53,7 @@ namespace Xamarin.Forms.Platform.UWP
 		
 		CommandBar _commandBar;
 		readonly ToolbarPlacementHelper _toolbarPlacementHelper = new ToolbarPlacementHelper();
+		bool _firstLoad;
 
 		public bool ShouldShowToolbar
 		{
@@ -139,8 +143,11 @@ namespace Xamarin.Forms.Platform.UWP
 
 				// On first load, the _commandBar will still occupy space by the time this is called.
 				// Check ShouldShowToolbar to make sure the _commandBar will still be there on render.
-				if (_commandBar != null && ShouldShowToolbar)
+				if (_firstLoad && _commandBar != null && ShouldShowToolbar)
+				{
 					height -= _commandBar.ActualHeight;
+					_firstLoad = false;
+				}
 
 				if (_split != null)
 					width = _split.OpenPaneLength;
@@ -213,6 +220,12 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			get { return (Brush)GetValue(ToolbarForegroundProperty); }
 			set { SetValue(ToolbarForegroundProperty, value); }
+		}
+
+		public bool ShouldShowNavigationBar
+		{
+			get { return (bool)GetValue(ShouldShowNavigationBarProperty); }
+			set { SetValue(ShouldShowNavigationBarProperty, value); }
 		}
 
 		Task<CommandBar> IToolbarProvider.GetCommandBarAsync()
@@ -302,9 +315,14 @@ namespace Xamarin.Forms.Platform.UWP
 			ContentTogglePaneButtonVisibility = _split.DisplayMode == SplitViewDisplayMode.Overlay 
 				? Visibility.Visible 
 				: Visibility.Collapsed;
-
+			
 			if (ContentTogglePaneButtonVisibility == Visibility.Visible)
 				DetailTitleVisibility = Visibility.Visible;
+
+			if (DetailTitleVisibility == Visibility.Visible && !ShouldShowNavigationBar)
+				DetailTitleVisibility = Visibility.Collapsed;
+
+			_firstLoad = true;
 		}
 	}
 }

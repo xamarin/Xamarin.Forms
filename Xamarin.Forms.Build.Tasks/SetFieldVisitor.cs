@@ -19,20 +19,23 @@ namespace Xamarin.Forms.Build.Tasks
 		public bool VisitNodeOnDataTemplate => false;
 		public bool SkipChildren(INode node, INode parentNode) => false;
 
+		public bool IsResourceDictionary(ElementNode node)
+		{
+			var parentVar = Context.Variables[(IElementNode)node];
+			return parentVar.VariableType.FullName == "Xamarin.Forms.ResourceDictionary"
+				|| parentVar.VariableType.Resolve().BaseType?.FullName == "Xamarin.Forms.ResourceDictionary";
+		}
+
 		public void Visit(ValueNode node, INode parentNode)
 		{
 			if (!IsXNameProperty(node, parentNode))
 				return;
-			if (!(parentNode is RootNode))
-			{
-				//no variable assigned for root 
-				var field = Context.Body.Method.DeclaringType.Fields.SingleOrDefault(fd => fd.Name == (string)node.Value);
-				if (field == null)
-					return;
-				Context.IL.Emit(OpCodes.Ldarg_0);
-				Context.IL.Emit(OpCodes.Ldloc, Context.Variables[(IElementNode)parentNode]);
-				Context.IL.Emit(OpCodes.Stfld, field);
-			}
+			var field = Context.Body.Method.DeclaringType.Fields.SingleOrDefault(fd => fd.Name == (string)node.Value);
+			if (field == null)
+				return;
+			Context.IL.Emit(OpCodes.Ldarg_0);
+			Context.IL.Emit(OpCodes.Ldloc, Context.Variables[(IElementNode)parentNode]);
+			Context.IL.Emit(OpCodes.Stfld, field);
 		}
 
 		public void Visit(MarkupNode node, INode parentNode)
