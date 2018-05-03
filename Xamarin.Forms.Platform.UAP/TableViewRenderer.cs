@@ -7,6 +7,7 @@ namespace Xamarin.Forms.Platform.UWP
 	public class TableViewRenderer : ViewRenderer<TableView, Windows.UI.Xaml.Controls.ListView>
 	{
 		bool _ignoreSelectionEvent;
+		bool _disposed;
 
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
@@ -45,6 +46,19 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 
 			base.OnElementChanged(e);
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if(disposing && !_disposed)
+			{
+				_disposed = true;
+				if(Control != null)
+				{
+					Control.SelectionChanged -= OnSelectionChanged;				
+				}
+			}
+			base.Dispose(disposing);
 		}
 
 		void OnModelChanged(object sender, EventArgs e)
