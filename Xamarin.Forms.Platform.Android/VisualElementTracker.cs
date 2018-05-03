@@ -328,8 +328,8 @@ namespace Xamarin.Forms.Platform.Android
 				FormsViewGroup.SendViewBatchUpdate(aview, (float)(view.AnchorX * _context.ToPixels(view.Width)),
 					(float)(view.AnchorY * _context.ToPixels(view.Height)),
 					(int)(view.IsVisible ? ViewStates.Visible : ViewStates.Invisible), view.IsEnabled, (float)view.Opacity,
-					(float)view.Rotation, (float)view.RotationX, (float)view.RotationY, (float)view.Scale,
-					_context.ToPixels(view.TranslationX), _context.ToPixels(view.TranslationY));
+					(float)view.Rotation, (float)view.RotationX, (float)view.RotationY,  (float)view.ScaleX,
+					(float)view.ScaleY, _context.ToPixels(view.TranslationX), _context.ToPixels(view.TranslationY));
 			}
 
 			Performance.Stop(reference);
