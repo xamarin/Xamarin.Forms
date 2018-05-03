@@ -27,7 +27,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty TitleIconProperty = BindableProperty.CreateAttached("TitleIcon", typeof(FileImageSource), typeof(NavigationPage), default(FileImageSource));
 
-		public static readonly BindableProperty TitleViewProperty = BindableProperty.CreateAttached("TitleView", typeof(VisualElement), typeof(NavigationPage), null, propertyChanged: TitleViewPropertyChanged);
+		public static readonly BindableProperty TitleViewProperty = BindableProperty.CreateAttached("TitleView", typeof(View), typeof(NavigationPage), null, propertyChanged: TitleViewPropertyChanged);
 
 		static readonly BindablePropertyKey CurrentPagePropertyKey = BindableProperty.CreateReadOnly("CurrentPage", typeof(Page), typeof(NavigationPage), null);
 		public static readonly BindableProperty CurrentPageProperty = CurrentPagePropertyKey.BindableProperty;
@@ -112,13 +112,13 @@ namespace Xamarin.Forms
 
 			if (oldValue != null)
 			{
-				var oldElem = (VisualElement)oldValue;
+				var oldElem = (View)oldValue;
 				oldElem.Parent = null;
 			}
 
 			if (newValue != null && bindable != null)
 			{
-				var newElem = (VisualElement)newValue;
+				var newElem = (View)newValue;
 				newElem.Parent = (Page)bindable;
 			}
 		}
@@ -145,9 +145,9 @@ namespace Xamarin.Forms
 			return (FileImageSource)bindable.GetValue(TitleIconProperty);
 		}
 
-		public static VisualElement GetTitleView(BindableObject bindable)
+		public static View GetTitleView(BindableObject bindable)
 		{
-			return (VisualElement)bindable.GetValue(TitleViewProperty);
+			return (View)bindable.GetValue(TitleViewProperty);
 		}
 
 		public Task<Page> PopAsync()
@@ -247,7 +247,7 @@ namespace Xamarin.Forms
 			bindable.SetValue(TitleIconProperty, value);
 		}
 
-		public static void SetTitleView(BindableObject bindable, VisualElement value)
+		public static void SetTitleView(BindableObject bindable, View value)
 		{
 			bindable.SetValue(TitleViewProperty, value);
 		}

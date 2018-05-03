@@ -344,7 +344,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			var root = new ContentPage();
 			var nav = new NavigationPage(root);
 
-			VisualElement target = new VisualElement();
+			View target = new View();
 
 			NavigationPage.SetTitleView(root, target);
 
@@ -359,7 +359,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			var root = new ContentPage();
 			var nav = new NavigationPage(root);
 
-			VisualElement target = new VisualElement();
+			View target = new View();
 
 			NavigationPage.SetTitleView(root, target);
 
@@ -372,7 +372,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			var root = new ContentPage();
 			var nav = new NavigationPage(root);
 
-			VisualElement target = new VisualElement();
+			View target = new View();
 
 			NavigationPage.SetTitleView(root, target);
 

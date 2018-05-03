@@ -165,7 +165,7 @@ namespace Xamarin.Forms.Controls
 			_rootNavPage.ClearValue(BarHeightProperty);
 		}
 
-		static VisualElement CreateTitleView()
+		static View CreateTitleView()
 		{
 			var titleView = new StackLayout
 			{
