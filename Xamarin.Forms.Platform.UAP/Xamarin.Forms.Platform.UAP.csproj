@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="ColorExtensions.cs" />
     <Compile Include="FormsCancelButton.cs" />
+    <Compile Include="AlertDialog.cs" />
     <Compile Include="FormsPivot.cs" />
     <Compile Include="AlignmentExtensions.cs" />
     <Compile Include="BrushHelpers.cs" />
@@ -62,6 +63,7 @@
     <Compile Include="NativePropertyListener.cs" />
     <Compile Include="NativeViewWrapper.cs" />
     <Compile Include="NativeViewWrapperRenderer.cs" />
+    <Compile Include="AccessKeyHelper.cs" />
     <Compile Include="PlatformConfigurationExtensions.cs" />
     <Compile Include="PlatformEffect.cs" />
     <Compile Include="UriImageSourceHandler.cs" />

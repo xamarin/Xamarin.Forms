@@ -147,6 +147,7 @@ namespace Xamarin.Forms.CustomAttributes
 		WinPhone = 1 << 2,
 		WinRT = 1 << 3,
 		UWP = 1 << 4,
+		WPF = 1 << 5,
 		All = ~0,
 		Default = 0
 	}
@@ -689,7 +690,8 @@ namespace Xamarin.Forms.CustomAttributes
 			LoadHtml,
 			MixedContentDisallowed,
 			MixedContentAllowed,
-			JavaScriptAlert
+			JavaScriptAlert,
+			EvaluateJavaScript
 		}
 
 		public enum UrlWebViewSource {

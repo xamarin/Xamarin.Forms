@@ -17,6 +17,7 @@ namespace Xamarin.Forms.Platform.UWP
 	public abstract partial class Platform
 	{
 		internal static StatusBar MobileStatusBar => ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar") ? StatusBar.GetForCurrentView() : null;
+		static Task<bool> s_currentAlert;
 
 		IToolbarProvider _toolbarProvider;
 
@@ -90,10 +91,11 @@ namespace Xamarin.Forms.Platform.UWP
 			string content = options.Message ?? string.Empty;
 			string title = options.Title ?? string.Empty;
 
-			var alertDialog = new ContentDialog
+			var alertDialog = new AlertDialog
 			{
 				Content = content,
-				Title = title
+				Title = title,
+				VerticalScrollBarVisibility = Windows.UI.Xaml.Controls.ScrollBarVisibility.Auto
 			};
 
 			if (options.Cancel != null)
@@ -102,12 +104,21 @@ namespace Xamarin.Forms.Platform.UWP
 			if (options.Accept != null)
 				alertDialog.PrimaryButtonText = options.Accept;
 
-			ContentDialogResult result = await alertDialog.ShowAsync();
+			while (s_currentAlert != null)
+			{
+				await s_currentAlert;
+			}
 
-			if (result == ContentDialogResult.Secondary)
-				options.SetResult(false);
-			else if (result == ContentDialogResult.Primary)
-				options.SetResult(true);
+			s_currentAlert = ShowAlert(alertDialog);
+			options.SetResult(await s_currentAlert);
+			s_currentAlert = null;
+		}
+
+		static async Task<bool> ShowAlert(ContentDialog alert)
+		{
+			ContentDialogResult result = await alert.ShowAsync();
+
+			return result == ContentDialogResult.Primary;
 		}
 
 		void ClearCommandBar()

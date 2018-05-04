@@ -23,6 +23,13 @@ namespace Xamarin.Forms.Build.Tasks
 		public bool VisitNodeOnDataTemplate => false;
 		public bool SkipChildren(INode node, INode parentNode) => false;
 
+		public bool IsResourceDictionary(ElementNode node)
+		{
+			var parentVar = Context.Variables[(IElementNode)node];
+			return parentVar.VariableType.FullName == "Xamarin.Forms.ResourceDictionary"
+				|| parentVar.VariableType.Resolve().BaseType?.FullName == "Xamarin.Forms.ResourceDictionary";
+		}
+
 		public void Visit(ValueNode node, INode parentNode)
 		{
 			Context.Scopes[node] = Context.Scopes[parentNode];
@@ -41,16 +48,18 @@ namespace Xamarin.Forms.Build.Tasks
 		{
 			VariableDefinition namescopeVarDef;
 			IList<string> namesInNamescope;
+			var setNameScope = false;
 			if (parentNode == null || IsDataTemplate(node, parentNode) || IsStyle(node, parentNode) || IsVisualStateGroupList(node)) {
 				namescopeVarDef = CreateNamescope();
 				namesInNamescope = new List<string>();
+				setNameScope = true;
 			} else {
 				namescopeVarDef = Context.Scopes[parentNode].Item1;
 				namesInNamescope = Context.Scopes[parentNode].Item2;
 			}
-			if (Context.Variables[node].VariableType.InheritsFromOrImplements(Context.Body.Method.Module.ImportReference(("Xamarin.Forms.Core","Xamarin.Forms","BindableObject"))))
+			if (setNameScope && Context.Variables[node].VariableType.InheritsFromOrImplements(Context.Body.Method.Module.ImportReference(("Xamarin.Forms.Core","Xamarin.Forms","BindableObject"))))
 				SetNameScope(node, namescopeVarDef);
-			Context.Scopes[node] = new System.Tuple<VariableDefinition, IList<string>>(namescopeVarDef, namesInNamescope);
+			Context.Scopes[node] = new Tuple<VariableDefinition, IList<string>>(namescopeVarDef, namesInNamescope);
 		}
 	
 		public void Visit(RootNode node, INode parentNode)
@@ -102,7 +111,7 @@ namespace Xamarin.Forms.Build.Tasks
 			var module = Context.Body.Method.Module;
 			var vardef = new VariableDefinition(module.ImportReference(("Xamarin.Forms.Core", "Xamarin.Forms.Internals", "NameScope")));
 			Context.Body.Variables.Add(vardef);
-			Context.IL.Emit(OpCodes.Newobj, module.ImportCtorReference(("Xamarin.Forms.Core", "Xamarin.Forms.Internals", "NameScope"), paramCount: 0));
+			Context.IL.Emit(OpCodes.Newobj, module.ImportCtorReference(("Xamarin.Forms.Core", "Xamarin.Forms.Internals", "NameScope"), parameterTypes: null));
 			Context.IL.Emit(OpCodes.Stloc, vardef);
 			return vardef;
 		}
@@ -114,8 +123,11 @@ namespace Xamarin.Forms.Build.Tasks
 			Context.IL.Emit(OpCodes.Ldloc, ns);
 			Context.IL.Emit(OpCodes.Call, module.ImportMethodReference(("Xamarin.Forms.Core", "Xamarin.Forms.Internals", "NameScope"),
 																	   methodName: "SetNameScope",
-																	   paramCount: 2,
-																	   predicate: md => md.IsStatic));
+																	   parameterTypes: new[] {
+																		   ("Xamarin.Forms.Core", "Xamarin.Forms", "BindableObject"),
+																		   ("Xamarin.Forms.Core", "Xamarin.Forms.Internals", "INameScope"),
+																	   },
+																	   isStatic: true));
 		}
 
 		void RegisterName(string str, VariableDefinition namescopeVarDef, IList<string> namesInNamescope, VariableDefinition element, INode node)
@@ -130,7 +142,10 @@ namespace Xamarin.Forms.Build.Tasks
 			Context.IL.Emit(OpCodes.Ldloc, element);
 			Context.IL.Emit(OpCodes.Callvirt, module.ImportMethodReference(("Xamarin.Forms.Core", "Xamarin.Forms.Internals", "INameScope"),
 																		   methodName: "RegisterName",
-																		   paramCount: 2));
+																		   parameterTypes: new[] {
+																			   ("mscorlib", "System", "String"),
+																			   ("mscorlib", "System", "Object"),
+																		   }));
 		}
 
 		void SetStyleId(string str, VariableDefinition element)

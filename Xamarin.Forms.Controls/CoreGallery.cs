@@ -11,11 +11,12 @@ using Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries;
 
 namespace Xamarin.Forms.Controls
 {
+	[Preserve(AllMembers = true)]
 	public static class Messages
 	{
 		public const string ChangeRoot = "com.xamarin.ChangeRoot";
 	}
-
+	[Preserve(AllMembers = true)]
 	internal class CoreCarouselPage : CarouselPage
 	{
 		public CoreCarouselPage()
@@ -25,7 +26,7 @@ namespace Xamarin.Forms.Controls
 			Children.Add(new CoreRootPage(this, NavigationBehavior.PushModalAsync) { Title = "Page 2" });
 		}
 	}
-
+	[Preserve(AllMembers = true)]
 	internal class CoreContentPage : ContentPage
 	{
 		public CoreContentPage()
@@ -35,7 +36,7 @@ namespace Xamarin.Forms.Controls
 			Content = new StackLayout { Children = { new CoreRootView(), new CorePageView(this, NavigationBehavior.PushModalAsync) } };
 		}
 	}
-
+	[Preserve(AllMembers = true)]
 	internal class CoreMasterDetailPage : MasterDetailPage
 	{
 		public CoreMasterDetailPage()
@@ -62,7 +63,7 @@ namespace Xamarin.Forms.Controls
 			Detail = detailPage;
 		}
 	}
-
+	[Preserve(AllMembers = true)]
 	internal class CoreNavigationPage : NavigationPage
 	{
 		public CoreNavigationPage()
@@ -186,7 +187,7 @@ namespace Xamarin.Forms.Controls
 			PageType = pageType;
 		}
 	}
-
+	[Preserve(AllMembers = true)]
 	public class CoreRootView : ListView
 	{
 		public CoreRootView()
@@ -222,8 +223,12 @@ namespace Xamarin.Forms.Controls
 		}
 	}
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
 
+	[Preserve(AllMembers = true)]
 	internal class CorePageView : ListView
 	{
 		internal class GalleryPageFactory
@@ -252,6 +257,7 @@ namespace Xamarin.Forms.Controls
 
 		List<GalleryPageFactory> _pages = new List<GalleryPageFactory> {
 				new GalleryPageFactory(() => new Issues.PerformanceGallery(), "Performance"),
+				new GalleryPageFactory(() => new EntryReturnTypeGalleryPage(), "Entry ReturnType "),
 				new GalleryPageFactory(() => new VisualStateManagerGallery(), "VisualStateManager Gallery"),
 				new GalleryPageFactory(() => new FlowDirectionGalleryLandingPage(), "FlowDirection"),
 				new GalleryPageFactory(() => new AutomationPropertiesGallery(), "Accessibility"),
@@ -419,7 +425,7 @@ namespace Xamarin.Forms.Controls
 			await PushPage(page);
 		}
 	}
-
+	[Preserve(AllMembers = true)]
 	internal class CoreRootPage : ContentPage
 	{
 		public CoreRootPage(Page rootPage, NavigationBehavior navigationBehavior = NavigationBehavior.PushAsync)
@@ -475,12 +481,12 @@ namespace Xamarin.Forms.Controls
 			};
 		}
 	}
-
+	[Preserve(AllMembers = true)]
 	public interface IStringProvider
 	{
 		string CoreGalleryTitle { get; }
 	}
-
+	[Preserve(AllMembers = true)]
 	public static class CoreGallery
 	{
 		public static Page GetMainPage()
