@@ -223,11 +223,6 @@ namespace Xamarin.Forms.Controls
 		}
 	}
 
-<<<<<<< HEAD
-
-=======
->>>>>>> master
-
 	[Preserve(AllMembers = true)]
 	internal class CorePageView : ListView
 	{
