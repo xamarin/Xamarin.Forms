@@ -18,6 +18,8 @@ namespace Xamarin.Forms.Xaml
 				markupExtension = new TemplateBindingExtension();
 			else if (match == "StaticResource")
 				markupExtension = new StaticResourceExtension();
+			else if (match == "OnPlatform")
+				markupExtension = new OnPlatformExtension();
 			else
 			{
 				if (typeResolver == null)
@@ -27,7 +29,7 @@ namespace Xamarin.Forms.Xaml
 				//The order of lookup is to look for the Extension-suffixed class name first and then look for the class name without the Extension suffix.
 				if (!typeResolver.TryResolve(match + "Extension", out type) && !typeResolver.TryResolve(match, out type))
 				{
-					var lineInfoProvider = serviceProvider.GetService(typeof (IXmlLineInfoProvider)) as IXmlLineInfoProvider;
+					var lineInfoProvider = serviceProvider.GetService(typeof(IXmlLineInfoProvider)) as IXmlLineInfoProvider;
 					var lineInfo = (lineInfoProvider != null) ? lineInfoProvider.XmlLineInfo : new XmlLineInfo();
 					throw new XamlParseException(String.Format("MarkupExtension not found for {0}", match), lineInfo);
 				}
