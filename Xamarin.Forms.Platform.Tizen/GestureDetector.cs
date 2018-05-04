@@ -272,21 +272,24 @@ namespace Xamarin.Forms.Platform.Tizen
 			// Always change to the absolute coordinates of the pointer.
 			int startX = 0;
 			int startY = 0;
-			_gestureLayer.SetFlickCallback(GestureLayer.GestureState.Start, (data) => {
+			_gestureLayer.SetFlickCallback(GestureLayer.GestureState.Start, (data) =>
+			{
 				startX = _gestureLayer.EvasCanvas.Pointer.X;
 				startY = _gestureLayer.EvasCanvas.Pointer.Y;
 				data.X1 = startX;
 				data.Y1 = startY;
 				OnGestureStarted(type, data);
 			});
-			_gestureLayer.SetFlickCallback(GestureLayer.GestureState.Move, (data) => {
+			_gestureLayer.SetFlickCallback(GestureLayer.GestureState.Move, (data) =>
+			{
 				data.X1 = startX;
 				data.Y1 = startY;
 				data.X2 = _gestureLayer.EvasCanvas.Pointer.X;
 				data.Y2 = _gestureLayer.EvasCanvas.Pointer.Y;
 				OnGestureMoved(type, data);
 			});
-			_gestureLayer.SetFlickCallback(GestureLayer.GestureState.End, (data) => {
+			_gestureLayer.SetFlickCallback(GestureLayer.GestureState.End, (data) =>
+			{
 				data.X1 = startX;
 				data.Y1 = startY;
 				data.X2 = _gestureLayer.EvasCanvas.Pointer.X;

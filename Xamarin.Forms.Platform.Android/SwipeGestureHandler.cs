@@ -4,59 +4,59 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android
 {
-    internal class SwipeGestureHandler
-    {
-        readonly Func<double, double> _pixelTranslation;
+	internal class SwipeGestureHandler
+	{
+		readonly Func<double, double> _pixelTranslation;
 
-        public SwipeGestureHandler(Func<View> getView, Func<double, double> pixelTranslation)
-        {
-            _pixelTranslation = pixelTranslation;
-            GetView = getView;
-        }
+		public SwipeGestureHandler(Func<View> getView, Func<double, double> pixelTranslation)
+		{
+			_pixelTranslation = pixelTranslation;
+			GetView = getView;
+		}
 
-        Func<View> GetView { get; }
+		Func<View> GetView { get; }
 
-        public bool OnSwipe(float x, float y)
-        {
-            View view = GetView();
+		public bool OnSwipe(float x, float y)
+		{
+			View view = GetView();
 
-            if (view == null)
-                return false;
+			if (view == null)
+				return false;
 
-            var result = false;
-            foreach (SwipeGestureRecognizer swipeGesture in
-                     view.GestureRecognizers.GetGesturesFor<SwipeGestureRecognizer>())
-            {
-                ((ISwipeGestureController)swipeGesture).SendSwipe(view, _pixelTranslation(x), _pixelTranslation(y));
-                result = true;
-            }
+			var result = false;
+			foreach (SwipeGestureRecognizer swipeGesture in
+					 view.GestureRecognizers.GetGesturesFor<SwipeGestureRecognizer>())
+			{
+				((ISwipeGestureController)swipeGesture).SendSwipe(view, _pixelTranslation(x), _pixelTranslation(y));
+				result = true;
+			}
 
-            return result;
-        }
+			return result;
+		}
 
-        public bool OnSwipeComplete()
-        {
-            View view = GetView();
+		public bool OnSwipeComplete()
+		{
+			View view = GetView();
 
-            if (view == null)
-                return false;
-            
-            foreach (SwipeGestureRecognizer swipeGesture in view.GestureRecognizers.GetGesturesFor<SwipeGestureRecognizer>())
-            {
-                var detected = ((ISwipeGestureController)swipeGesture).DetectSwipe(view, swipeGesture.Direction);
-                if (detected)
-                {
-                    return true;
-                }
-            }
+			if (view == null)
+				return false;
 
-            return false;
-        }
+			foreach (SwipeGestureRecognizer swipeGesture in view.GestureRecognizers.GetGesturesFor<SwipeGestureRecognizer>())
+			{
+				var detected = ((ISwipeGestureController)swipeGesture).DetectSwipe(view, swipeGesture.Direction);
+				if (detected)
+				{
+					return true;
+				}
+			}
 
-        public bool HasAnyGestures()
-        {
-            var view = GetView();
-            return view != null && view.GestureRecognizers.OfType<SwipeGestureRecognizer>().Any();
-        }
-    }
+			return false;
+		}
+
+		public bool HasAnyGestures()
+		{
+			var view = GetView();
+			return view != null && view.GestureRecognizers.OfType<SwipeGestureRecognizer>().Any();
+		}
+	}
 }
