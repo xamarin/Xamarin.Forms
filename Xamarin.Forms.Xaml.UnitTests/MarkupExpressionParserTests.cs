@@ -358,28 +358,24 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual(expected, actual);
 		}
 
-		[Test]
-		public void OnIdiomExtension()
-		{
-			//var services = new MockPlatformServices();
-			//Device.PlatformServices = services;
-			Func<string, TargetIdiom, object> parse = (markup, idiom) =>
-			{
-				Device.SetIdiom(idiom);
-				return (new MarkupExtensionParser()).ParseExpression(ref markup, new Internals.XamlServiceProvider(null, null)
-				{
-					IXamlTypeResolver = typeResolver,
-				});
-			};
 
-			Assert.AreEqual("23", parse("{OnIdiom Phone=23, Tablet=25, Default=20}", TargetIdiom.Phone));
-			Assert.AreEqual("25", parse("{OnIdiom Phone=23, Tablet=25, Default=20}", TargetIdiom.Tablet));
-			Assert.AreEqual("20", parse("{OnIdiom Phone=23, Tablet=25, Default=20}", TargetIdiom.Desktop));
-			Assert.AreEqual("26", parse("{OnIdiom Phone=23, Tablet=25, Desktop=26, TV=30, Watch=10}", TargetIdiom.Desktop));
-			Assert.AreEqual("30", parse("{OnIdiom Phone=23, Tablet=25, Desktop=26, TV=30, Watch=10}", TargetIdiom.TV));
-			Assert.AreEqual("10", parse("{OnIdiom Phone=23, Tablet=25, Desktop=26, TV=30, Watch=10}", TargetIdiom.Watch));
-			Assert.AreEqual("0", parse("{OnIdiom Phone=23, Unsupported=0}", TargetIdiom.Unsupported));
-			Assert.AreEqual(default(string), parse("{OnIdiom Phone=23}", TargetIdiom.Desktop));
+		[TestCase("{OnIdiom Phone=23, Tablet=25, Default=20}", TargetIdiom.Phone, "23")]
+		[TestCase("{OnIdiom Phone=23, Tablet=25, Default=20}", TargetIdiom.Tablet, "25")]
+		[TestCase("{OnIdiom Phone=23, Tablet=25, Default=20}", TargetIdiom.Desktop, "20")]
+		[TestCase("{OnIdiom Phone=23, Tablet=25, Desktop=26, TV=30, Watch=10}", TargetIdiom.Desktop, "26")]
+		[TestCase("{OnIdiom Phone=23, Tablet=25, Desktop=26, TV=30, Watch=10}", TargetIdiom.TV, "30")]
+		[TestCase("{OnIdiom Phone=23, Tablet=25, Desktop=26, TV=30, Watch=10}", TargetIdiom.Watch, "10")]
+		[TestCase("{OnIdiom Phone=23, Unsupported=0}", TargetIdiom.Unsupported, "0")]
+		[TestCase("{OnIdiom Phone=23}", TargetIdiom.Desktop, default(string))]
+		public void OnIdiomExtension(string markup, TargetIdiom idiom, string expected)
+		{
+			Device.SetIdiom(idiom);
+			var actual =  (new MarkupExtensionParser()).ParseExpression(ref markup, new Internals.XamlServiceProvider(null, null)
+			{
+				IXamlTypeResolver = typeResolver,
+			});
+
+			Assert.AreEqual(expected, actual);
 		}
 	}
 }
