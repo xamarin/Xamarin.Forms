@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 
 namespace Xamarin.Forms.Xaml
 {
@@ -15,18 +16,37 @@ namespace Xamarin.Forms.Xaml
 		public object WPF { get; set; }
 		public string Other { get; set; }
 
-
 		public object ProvideValue(IServiceProvider serviceProvider)
 		{
+			var lineInfo = (serviceProvider.GetService(typeof(IXmlLineInfoProvider)) as IXmlLineInfoProvider)?.XmlLineInfo;
+
 			if (Android == null && GTK == null && iOS == null && 
 				macOS == null && Tizen == null && UWP == null && 
 				WPF == null && Default == null && string.IsNullOrEmpty(Other))
 			{
-				var lineInfo = (serviceProvider.GetService(typeof(IXmlLineInfoProvider)) as IXmlLineInfoProvider)?.XmlLineInfo 
-					?? new XmlLineInfo();
-				throw new XamlParseException("OnPlatformExtension requires a value to be specified for at least one platform or Default.", lineInfo);
+				throw new XamlParseException("OnPlatformExtension requires a value to be specified for at least one platform or Default.", lineInfo ?? new XmlLineInfo());
 			}
 
+			var valueProvider = serviceProvider.GetService<IProvideValueTarget>() ?? throw new ArgumentException();
+
+			var bp = valueProvider.TargetProperty as BindableProperty;
+			var pi = valueProvider.TargetProperty as PropertyInfo;
+			var propertyType = bp?.ReturnType 
+				?? pi?.PropertyType 
+				?? throw new InvalidOperationException("Cannot determine property to provide the value for.");
+
+			var value = GetValue();
+			var info = propertyType.GetTypeInfo();
+			if (value == null && info.IsValueType)
+				return Activator.CreateInstance(propertyType);
+
+			var converted = value.ConvertTo(propertyType, () => pi, serviceProvider);
+
+			return converted;
+		}
+
+		object GetValue()
+		{
 			switch (Device.RuntimePlatform)
 			{
 				case Device.Android:

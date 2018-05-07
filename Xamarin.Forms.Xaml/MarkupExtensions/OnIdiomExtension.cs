@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 
 namespace Xamarin.Forms.Xaml
 {
@@ -10,21 +11,40 @@ namespace Xamarin.Forms.Xaml
 		public object Default { get; set; }
 		public object Unsupported { get; set; }
 		public object Phone { get; set; }
-		public object Tablet { get; set; } 
+		public object Tablet { get; set; }
 		public object Desktop { get; set; }
 		public object TV { get; set; }
 		public object Watch { get; set; }
 
 		public object ProvideValue(IServiceProvider serviceProvider)
 		{
-			if (Default == null && Unsupported == null && Phone == null && 
+			var lineInfo = (serviceProvider.GetService(typeof(IXmlLineInfoProvider)) as IXmlLineInfoProvider)?.XmlLineInfo;
+			if (Default == null && Unsupported == null && Phone == null &&
 				Tablet == null && Desktop == null && TV == null && Watch == null)
 			{
-				var lineInfo = (serviceProvider.GetService(typeof(IXmlLineInfoProvider)) as IXmlLineInfoProvider)?.XmlLineInfo 
-					?? new XmlLineInfo();
-				throw new XamlParseException("OnIdiomExtension requires a value to be specified for at least one idiom or Default.", lineInfo);
+				throw new XamlParseException("OnIdiomExtension requires a value to be specified for at least one idiom or Default.", lineInfo ?? new XmlLineInfo());
 			}
 
+			var valueProvider = serviceProvider.GetService<IProvideValueTarget>() ?? throw new ArgumentException();
+
+			var bp = valueProvider.TargetProperty as BindableProperty;
+			var pi = valueProvider.TargetProperty as PropertyInfo;
+			var propertyType = bp?.ReturnType
+				?? pi?.PropertyType
+				?? throw new InvalidOperationException("Cannot determine property to provide the value for.");
+
+			var value = GetValue();
+			var info = propertyType.GetTypeInfo();
+			if (value == null && info.IsValueType)
+				return Activator.CreateInstance(propertyType);
+
+			var converted = value.ConvertTo(propertyType, () => pi, serviceProvider);
+
+			return converted;
+		}
+
+		object GetValue()
+		{
 			switch (Device.Idiom)
 			{
 				case TargetIdiom.Unsupported:
