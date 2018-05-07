@@ -20,6 +20,8 @@ namespace Xamarin.Forms.Xaml
 				markupExtension = new StaticResourceExtension();
 			else if (match == "OnPlatform")
 				markupExtension = new OnPlatformExtension();
+			else if (match == "OnIdiom")
+				markupExtension = new OnIdiomExtension();
 			else
 			{
 				if (typeResolver == null)

@@ -345,5 +345,29 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual("15", parse("{OnPlatform Android=23, Default=20, Other=Foo:10;Bar:15;Baz:18}", "Bar"));
 			Assert.AreEqual("18", parse("{OnPlatform Android=23, Default=20, Other=Foo:10;Bar:15;Baz:18}", "Baz"));
 		}
+
+		[Test]
+		public void OnIdiomExtension()
+		{
+			//var services = new MockPlatformServices();
+			//Device.PlatformServices = services;
+			Func<string, TargetIdiom, object> parse = (markup, idiom) =>
+			{
+				Device.SetIdiom(idiom);
+				return (new MarkupExtensionParser()).ParseExpression(ref markup, new Internals.XamlServiceProvider(null, null)
+				{
+					IXamlTypeResolver = typeResolver,
+				});
+			};
+
+			Assert.AreEqual("23", parse("{OnIdiom Phone=23, Tablet=25, Default=20}", TargetIdiom.Phone));
+			Assert.AreEqual("25", parse("{OnIdiom Phone=23, Tablet=25, Default=20}", TargetIdiom.Tablet));
+			Assert.AreEqual("20", parse("{OnIdiom Phone=23, Tablet=25, Default=20}", TargetIdiom.Desktop));
+			Assert.AreEqual("26", parse("{OnIdiom Phone=23, Tablet=25, Desktop=26, TV=30, Watch=10}", TargetIdiom.Desktop));
+			Assert.AreEqual("30", parse("{OnIdiom Phone=23, Tablet=25, Desktop=26, TV=30, Watch=10}", TargetIdiom.TV));
+			Assert.AreEqual("10", parse("{OnIdiom Phone=23, Tablet=25, Desktop=26, TV=30, Watch=10}", TargetIdiom.Watch));
+			Assert.AreEqual("0", parse("{OnIdiom Phone=23, Unsupported=0}", TargetIdiom.Unsupported));
+			Assert.AreEqual(default(string), parse("{OnIdiom Phone=23}", TargetIdiom.Desktop));
+		}
 	}
 }
