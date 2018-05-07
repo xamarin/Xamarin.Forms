@@ -5,9 +5,13 @@ namespace Xamarin.Forms.Xaml
 	public class OnPlatformExtension : IMarkupExtension
 	{
 		public object Default { get; set; }
+		public object Android { get; set; }
+		public object GTK { get; set; }
 		public object iOS { get; set; }
-		public object Android { get; set; } 
+		public object macOS { get; set; }
+		public object Tizen { get; set; }
 		public object UWP { get; set; }
+		public object WPF { get; set; }
 		public string Other { get; set; }
 
 
@@ -22,12 +26,20 @@ namespace Xamarin.Forms.Xaml
 
 			switch (Device.RuntimePlatform)
 			{
-				case Device.iOS:
-					return iOS;
 				case Device.Android:
-					return Android;
+					return Android ?? Default;
+				case Device.GTK:
+					return GTK ?? Default;
+				case Device.iOS:
+					return iOS ?? Default;
+				case Device.macOS:
+					return macOS ?? Default;
+				case Device.Tizen:
+					return Tizen ?? Default;
 				case Device.UWP:
-					return UWP;
+					return UWP ?? Default;
+				case Device.WPF:
+					return WPF ?? Default;
 				default:
 					if (string.IsNullOrEmpty(Other))
 						return Default;

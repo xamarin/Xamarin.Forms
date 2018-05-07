@@ -324,26 +324,38 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.That (binding.Converter, Is.TypeOf<ReverseConverter> ());
 		}
 
-		[Test]
-		public void OnPlatformExtension()
+		[TestCase("{OnPlatform Android=23, Default=20}", Device.Android, "23")]
+		[TestCase("{OnPlatform Android=20, iOS=25}", Device.iOS, "25")]
+		[TestCase("{OnPlatform Android=20, GTK=25}", Device.GTK, "25")]
+		[TestCase("{OnPlatform Android=20, macOS=25}", Device.macOS, "25")]
+		[TestCase("{OnPlatform Android=20, Tizen=25}", Device.Tizen, "25")]
+		[TestCase("{OnPlatform Android=20, UWP=25}", Device.UWP, "25")]
+		[TestCase("{OnPlatform Android=20, WPF=25}", Device.WPF, "25")]
+		[TestCase("{OnPlatform Android=23, Default=20}", Device.iOS, "20")]
+		[TestCase("{OnPlatform Android=23, Default=20}", Device.GTK, "20")]
+		[TestCase("{OnPlatform Android=23, Default=20}", Device.macOS, "20")]
+		[TestCase("{OnPlatform Android=23, Default=20}", Device.Tizen, "20")]
+		[TestCase("{OnPlatform Android=23, Default=20}", Device.UWP, "20")]
+		[TestCase("{OnPlatform Android=23, Default=20}", Device.WPF, "20")]
+		[TestCase("{OnPlatform Android=23, Default=20}", "Foo", "20")]
+		[TestCase("{OnPlatform Android=23, Default=20, Other=Foo:10}", "Bar", "20")]
+		[TestCase("{OnPlatform Android=23, Default=20, Other=Foo:10;Bar:15;Baz:18}", "Foo", "10")]
+		[TestCase("{OnPlatform Android=23, Default=20, Other=Foo:10;Bar:15;Baz:18}", "Bar", "15")]
+		[TestCase("{OnPlatform Android=23, Default=20, Other=Foo:10;Bar:15;Baz:18}", "Baz", "18")]
+		public void OnPlatformExtension(string markup, string platform, string expected)
 		{
-			var services = new MockPlatformServices();
-			Device.PlatformServices = services;
-			Func<string, string, object> parse = (markup, platform) =>
+			var services = new MockPlatformServices
 			{
-				services.RuntimePlatform = platform;
-				return (new MarkupExtensionParser()).ParseExpression(ref markup, new Internals.XamlServiceProvider(null, null)
-				{
-					IXamlTypeResolver = typeResolver,
-				});
+				RuntimePlatform = platform
 			};
+			Device.PlatformServices = services;
 
-			Assert.AreEqual("23", parse("{OnPlatform Android=23, Default=20}", Device.Android));
-			Assert.AreEqual("20", parse("{OnPlatform Android=23, Default=20}", "Bar"));
-			Assert.AreEqual("20", parse("{OnPlatform Android=23, Default=20, Other=Foo:10}", "Bar"));
-			Assert.AreEqual("10", parse("{OnPlatform Android=23, Default=20, Other=Foo:10;Bar:15;Baz:18}", "Foo"));
-			Assert.AreEqual("15", parse("{OnPlatform Android=23, Default=20, Other=Foo:10;Bar:15;Baz:18}", "Bar"));
-			Assert.AreEqual("18", parse("{OnPlatform Android=23, Default=20, Other=Foo:10;Bar:15;Baz:18}", "Baz"));
+			var actual = (new MarkupExtensionParser()).ParseExpression(ref markup, new Internals.XamlServiceProvider(null, null)
+			{
+				IXamlTypeResolver = typeResolver,
+			});
+
+			Assert.AreEqual(expected, actual);
 		}
 
 		[Test]
