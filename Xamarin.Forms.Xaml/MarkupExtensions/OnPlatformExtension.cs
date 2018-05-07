@@ -2,6 +2,7 @@
 
 namespace Xamarin.Forms.Xaml
 {
+	[ContentProperty("Default")]
 	public class OnPlatformExtension : IMarkupExtension
 	{
 		public object Default { get; set; }

@@ -2,6 +2,7 @@
 
 namespace Xamarin.Forms.Xaml
 {
+	[ContentProperty("Default")]
 	public class OnIdiomExtension : IMarkupExtension
 	{
 		// See Device.Idiom
