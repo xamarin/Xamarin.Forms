@@ -1,10 +1,9 @@
 using System;
-using NUnit.Framework;
-using System.Xml;
 using System.Collections.Generic;
-
-using Xamarin.Forms.Core.UnitTests;
 using System.Reflection;
+using System.Xml;
+using NUnit.Framework;
+using Xamarin.Forms.Core.UnitTests;
 
 namespace Xamarin.Forms.Xaml.UnitTests
 {
@@ -323,6 +322,28 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.NotNull (binding);
 			Assert.AreEqual(".", binding.Path);
 			Assert.That (binding.Converter, Is.TypeOf<ReverseConverter> ());
+		}
+
+		[Test]
+		public void OnPlatformExtension()
+		{
+			var services = new MockPlatformServices();
+			Device.PlatformServices = services;
+			Func<string, string, object> parse = (markup, platform) =>
+			{
+				services.RuntimePlatform = platform;
+				return (new MarkupExtensionParser()).ParseExpression(ref markup, new Internals.XamlServiceProvider(null, null)
+				{
+					IXamlTypeResolver = typeResolver,
+				});
+			};
+
+			Assert.AreEqual("23", parse("{OnPlatform Android=23, Default=20}", Device.Android));
+			Assert.AreEqual("20", parse("{OnPlatform Android=23, Default=20}", "Bar"));
+			Assert.AreEqual("20", parse("{OnPlatform Android=23, Default=20, Other=Foo:10}", "Bar"));
+			Assert.AreEqual("10", parse("{OnPlatform Android=23, Default=20, Other=Foo:10;Bar:15;Baz:18}", "Foo"));
+			Assert.AreEqual("15", parse("{OnPlatform Android=23, Default=20, Other=Foo:10;Bar:15;Baz:18}", "Bar"));
+			Assert.AreEqual("18", parse("{OnPlatform Android=23, Default=20, Other=Foo:10;Bar:15;Baz:18}", "Baz"));
 		}
 	}
 }
