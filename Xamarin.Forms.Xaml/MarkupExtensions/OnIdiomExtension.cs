@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Reflection;
 
 namespace Xamarin.Forms.Xaml
@@ -15,6 +16,10 @@ namespace Xamarin.Forms.Xaml
 		public object Desktop { get; set; }
 		public object TV { get; set; }
 		public object Watch { get; set; }
+
+		public IValueConverter Converter { get; set; }
+
+		public object ConverterParameter { get; set; }
 
 		public object ProvideValue(IServiceProvider serviceProvider)
 		{
@@ -38,9 +43,15 @@ namespace Xamarin.Forms.Xaml
 			if (value == null && info.IsValueType)
 				return Activator.CreateInstance(propertyType);
 
-			var converted = value.ConvertTo(propertyType, () => pi, serviceProvider);
+			if (Converter != null)
+				return Converter.Convert(value, propertyType, ConverterParameter, CultureInfo.CurrentUICulture);
 
-			return converted;
+			var converterProvider = serviceProvider.GetService<IValueConverterProvider>();
+
+			if (converterProvider != null)
+				return converterProvider.Convert(value, propertyType, () => pi, serviceProvider);
+			else
+				return value.ConvertTo(propertyType, () => pi, serviceProvider);
 		}
 
 		object GetValue()
