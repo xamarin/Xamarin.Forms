@@ -24,6 +24,7 @@ namespace Xamarin.Forms.Controls
 			NavigationPage.SetTitleView(this, CreateTitleView());
 
 			rootNavPage.On<Android>().SetBarHeight(450);
+			rootNavPage.On<iOS>().SetPrefersLargeTitles(false);
 
 			Content = new ScrollView
 			{
@@ -185,9 +186,12 @@ namespace Xamarin.Forms.Controls
 
 		class SearchBarTitlePage : ContentPage
 		{
+			bool _extended = false;
 			List<string> items = new List<string> { "The Ocean at the End of the Lane", "So Long, and Thanks for All the Fish", "Twenty Thousand Leagues Under the Sea", "Rosencrantz and Guildenstern Are Dead" };
 			ObservableCollection<string> filtereditems;
 			SearchBar search;
+			Button button;
+			ListView list;
 			public SearchBarTitlePage(NavigationPage parent)
 			{
 				filtereditems = new ObservableCollection<string>(items);
@@ -196,30 +200,27 @@ namespace Xamarin.Forms.Controls
 				search.Effects.Add(Effect.Resolve($"{Issues.Effects.ResolutionGroupName}.SearchbarEffect"));
 				search.TextChanged += Search_TextChanged;
 
-				var list = new ListView
+				list = new ListView
 				{
 					ItemsSource = filtereditems
 				};
 
-				Title = "Large Titles";
 				parent.BarBackgroundColor = Color.Cornsilk;
 				parent.BarTextColor = Color.Orange;
+				NavigationPage.SetBackButtonTitle(parent, "");
 
 				switch (Device.RuntimePlatform)
 				{
 					case Device.iOS:
 
-						var button = new Button { Text = "Toggle" };
+						button = new Button();
 
-						var extendedStack = new StackLayout
+						button.Clicked += (s, e) =>
 						{
-							Children = { new StackLayout { Children = { search, button }, BackgroundColor = Color.Cornsilk }, list }
+							ToggleContent(parent);
 						};
 
-						parent.On<iOS>().SetPrefersLargeTitles(true)
-										.SetHideNavigationBarSeparator(true);
-
-						Content = extendedStack;
+						ToggleContent(parent);
 						break;
 
 					default:
@@ -227,6 +228,40 @@ namespace Xamarin.Forms.Controls
 						Content = list;
 						break;
 				}
+			}
+
+			void ToggleContent(NavigationPage parent)
+			{
+				StackLayout topStack = new StackLayout { Children = { button }, BackgroundColor = Color.Cornsilk };
+				StackLayout layout = new StackLayout { Children = { topStack, list } };
+
+				if (_extended)
+				{
+					parent.On<iOS>().SetPrefersLargeTitles(false)
+									.SetHideNavigationBarSeparator(false);
+
+					NavigationPage.SetTitleView(this, new StackLayout { Children = { search }, HorizontalOptions = LayoutOptions.Fill });
+					NavigationPage.SetHasBackButton(this, false);
+
+					button.Text = "Expand";
+					Title = "Small Titles";
+				}
+				else
+				{
+					topStack.Children.Insert(0, search);
+
+					parent.On<iOS>().SetPrefersLargeTitles(true)
+									.SetHideNavigationBarSeparator(true);
+
+					ClearValue(NavigationPage.TitleViewProperty);
+					NavigationPage.SetHasBackButton(this, true);
+
+					button.Text = "Collapse";
+					Title = "Large Titles";
+				}
+
+				_extended = !_extended;
+				Content = layout;
 			}
 
 			void Search_TextChanged(object sender, TextChangedEventArgs e)
