@@ -184,6 +184,7 @@
     <Compile Include="NativeBindingTests.cs" />
     <Compile Include="TypedBindingUnitTests.cs" />
     <Compile Include="AnimationTests.cs" />
+    <Compile Include="SwipeGestureRecognizerTests.cs" />
     <Compile Include="StyleSheets\MockStylable.cs" />
     <Compile Include="StyleSheets\SelectorTests.cs" />
     <Compile Include="StyleSheets\IStylableTest.cs" />

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
@@ -40,6 +40,7 @@
     <EmbeddedResource Include="GalleryPages\crimson.jpg" />
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="Xam.Plugin.DeviceInfo" Version="3.0.2" />
+
     <Compile Update="GalleryPages\VisualStateManagerGalleries\OnPlatformExample.xaml.cs">
       <DependentUpon>OnPlatformExample.xaml</DependentUpon>
     </Compile>
