@@ -29,7 +29,7 @@ namespace Xamarin.Forms.Xaml
 				macOS == null && Tizen == null && UWP == null && 
 				WPF == null && Default == null && string.IsNullOrEmpty(Other))
 			{
-				throw new XamlParseException("OnPlatformExtension requires a value to be specified for at least one platform or Default.", lineInfo ?? new XmlLineInfo());
+				throw new XamlParseException("OnPlatformExtension requires a non-null value to be specified for at least one platform or Default.", lineInfo ?? new XmlLineInfo());
 			}
 
 			var valueProvider = serviceProvider.GetService<IProvideValueTarget>() ?? throw new ArgumentException();

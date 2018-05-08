@@ -27,7 +27,7 @@ namespace Xamarin.Forms.Xaml
 			if (Default == null && Unsupported == null && Phone == null &&
 				Tablet == null && Desktop == null && TV == null && Watch == null)
 			{
-				throw new XamlParseException("OnIdiomExtension requires a value to be specified for at least one idiom or Default.", lineInfo ?? new XmlLineInfo());
+				throw new XamlParseException("OnIdiomExtension requires a non-null value to be specified for at least one idiom or Default.", lineInfo ?? new XmlLineInfo());
 			}
 
 			var valueProvider = serviceProvider.GetService<IProvideValueTarget>() ?? throw new ArgumentException();
