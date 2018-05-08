@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Xaml
 
 		public object ProvideValue(IServiceProvider serviceProvider)
 		{
-			var lineInfo = serviceProvider.GetService<IXmlLineInfoProvider>()?.XmlLineInfo;
+			var lineInfo = serviceProvider?.GetService<IXmlLineInfoProvider>()?.XmlLineInfo;
 			if (Android == null && GTK == null && iOS == null && 
 				macOS == null && Tizen == null && UWP == null && 
 				WPF == null && Default == null && string.IsNullOrEmpty(Other))
@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Xaml
 				throw new XamlParseException("OnPlatformExtension requires a non-null value to be specified for at least one platform or Default.", lineInfo ?? new XmlLineInfo());
 			}
 
-			var valueProvider = serviceProvider.GetService<IProvideValueTarget>() ?? throw new ArgumentException();
+			var valueProvider = serviceProvider?.GetService<IProvideValueTarget>() ?? throw new ArgumentException();
 
 			var bp = valueProvider.TargetProperty as BindableProperty;
 			var pi = valueProvider.TargetProperty as PropertyInfo;
@@ -47,7 +47,7 @@ namespace Xamarin.Forms.Xaml
 			if (Converter != null)
 				return Converter.Convert(value, propertyType, ConverterParameter, CultureInfo.CurrentUICulture);
 
-			var converterProvider = serviceProvider.GetService<IValueConverterProvider>();
+			var converterProvider = serviceProvider?.GetService<IValueConverterProvider>();
 
 			if (converterProvider != null)
 				return converterProvider.Convert(value, propertyType, () => pi, serviceProvider);

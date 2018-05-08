@@ -22,14 +22,14 @@ namespace Xamarin.Forms.Xaml
 
 		public object ProvideValue(IServiceProvider serviceProvider)
 		{
-			var lineInfo = serviceProvider.GetService<IXmlLineInfoProvider>()?.XmlLineInfo;
+			var lineInfo = serviceProvider?.GetService<IXmlLineInfoProvider>()?.XmlLineInfo;
 			if (Default == null && Phone == null &&
 				Tablet == null && Desktop == null && TV == null && Watch == null)
 			{
 				throw new XamlParseException("OnIdiomExtension requires a non-null value to be specified for at least one idiom or Default.", lineInfo ?? new XmlLineInfo());
 			}
 
-			var valueProvider = serviceProvider.GetService<IProvideValueTarget>() ?? throw new ArgumentException();
+			var valueProvider = serviceProvider?.GetService<IProvideValueTarget>() ?? throw new ArgumentException();
 
 			var bp = valueProvider.TargetProperty as BindableProperty;
 			var pi = valueProvider.TargetProperty as PropertyInfo;
@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Xaml
 			if (Converter != null)
 				return Converter.Convert(value, propertyType, ConverterParameter, CultureInfo.CurrentUICulture);
 
-			var converterProvider = serviceProvider.GetService<IValueConverterProvider>();
+			var converterProvider = serviceProvider?.GetService<IValueConverterProvider>();
 
 			if (converterProvider != null)
 				return converterProvider.Convert(value, propertyType, () => pi, serviceProvider);
