@@ -13,6 +13,8 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	internal class ContextActionsCell : UITableViewCell, INativeElementView
 	{
+		readonly ContextActionCellDisplay _displayType;
+
 		public const string Key = "ContextActionsCell";
 
 		static readonly UIImage DestructiveBackground;
@@ -48,8 +50,9 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 		}
 
-		public ContextActionsCell(string templateId) : base(UITableViewCellStyle.Default, Key + templateId)
+		public ContextActionsCell(string templateId, ContextActionCellDisplay displayType) : base(UITableViewCellStyle.Default, Key + templateId)
 		{
+			_displayType = displayType;
 		}
 
 		public UITableViewCell ContentCell { get; private set; }
@@ -407,9 +410,19 @@ namespace Xamarin.Forms.Platform.iOS
 			else
 				button.SetBackgroundImage(DestructiveBackground, UIControlState.Normal);
 
-			button.SetTitle(item.Text, UIControlState.Normal);
-			button.TitleEdgeInsets = new UIEdgeInsets(0, 15, 0, 15);
+			switch (_displayType)
+			{
+				case ContextActionCellDisplay.Icon:
+					button.SetImage(new UIImage(item.Icon.File), UIControlState.Normal);
+					break;
 
+				case ContextActionCellDisplay.Text:
+				default:
+					button.SetTitle(item.Text, UIControlState.Normal);
+					break;
+			}
+
+			button.TitleEdgeInsets = new UIEdgeInsets(0, 15, 0, 15);
 			button.Enabled = item.IsEnabled;
 
 			return button;

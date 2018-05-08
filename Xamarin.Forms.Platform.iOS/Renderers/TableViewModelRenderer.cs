@@ -14,6 +14,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected TableView View;
 
+		protected virtual ContextActionCellDisplay ContextActionDisplayType { get; }
+
 		public TableViewModelRenderer(TableView model)
 		{
 			View = model;
@@ -31,7 +33,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var cell = View.Model.GetCell(indexPath.Section, indexPath.Row);
 
-			var nativeCell = CellTableViewCell.GetNativeCell(tableView, cell);
+			var nativeCell = CellTableViewCell.GetNativeCell(tableView, cell, contextActionDisplayType: ContextActionDisplayType);
 			return nativeCell;
 		}
 

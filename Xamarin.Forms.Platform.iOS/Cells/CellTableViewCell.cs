@@ -41,7 +41,7 @@ namespace Xamarin.Forms.Platform.iOS
 				PropertyChanged(this, e);
 		}
 
-		internal static UITableViewCell GetNativeCell(UITableView tableView, Cell cell, bool recycleCells = false, string templateId = "")
+		internal static UITableViewCell GetNativeCell(UITableView tableView, Cell cell, bool recycleCells = false, string templateId = "", ContextActionCellDisplay contextActionDisplayType = ContextActionCellDisplay.Text)
 		{
 			var id = cell.GetType().FullName;
 
@@ -54,7 +54,7 @@ namespace Xamarin.Forms.Platform.iOS
 				contextCell = (ContextActionsCell)tableView.DequeueReusableCell(ContextActionsCell.Key + templateId);
 				if (contextCell == null)
 				{
-					contextCell = new ContextActionsCell(templateId);
+					contextCell = new ContextActionsCell(templateId, contextActionDisplayType);
 					reusableCell = tableView.DequeueReusableCell(id);
 				}
 				else
