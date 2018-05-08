@@ -370,7 +370,6 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		[TestCase("{OnIdiom Phone=23, Tablet=25, Desktop=26, TV=30, Watch=10}", TargetIdiom.Desktop, 26)]
 		[TestCase("{OnIdiom Phone=23, Tablet=25, Desktop=26, TV=30, Watch=10}", TargetIdiom.TV, 30)]
 		[TestCase("{OnIdiom Phone=23, Tablet=25, Desktop=26, TV=30, Watch=10}", TargetIdiom.Watch, 10)]
-		[TestCase("{OnIdiom Phone=23, Unsupported=0}", TargetIdiom.Unsupported, 0)]
 		[TestCase("{OnIdiom Phone=23}", TargetIdiom.Desktop, default(int))]
 		public void OnIdiomExtension(string markup, TargetIdiom idiom, int expected)
 		{

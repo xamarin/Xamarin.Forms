@@ -10,7 +10,6 @@ namespace Xamarin.Forms.Xaml
 		// See Device.Idiom
 
 		public object Default { get; set; }
-		public object Unsupported { get; set; }
 		public object Phone { get; set; }
 		public object Tablet { get; set; }
 		public object Desktop { get; set; }
@@ -24,7 +23,7 @@ namespace Xamarin.Forms.Xaml
 		public object ProvideValue(IServiceProvider serviceProvider)
 		{
 			var lineInfo = (serviceProvider.GetService(typeof(IXmlLineInfoProvider)) as IXmlLineInfoProvider)?.XmlLineInfo;
-			if (Default == null && Unsupported == null && Phone == null &&
+			if (Default == null && Phone == null &&
 				Tablet == null && Desktop == null && TV == null && Watch == null)
 			{
 				throw new XamlParseException("OnIdiomExtension requires a non-null value to be specified for at least one idiom or Default.", lineInfo ?? new XmlLineInfo());
@@ -58,8 +57,6 @@ namespace Xamarin.Forms.Xaml
 		{
 			switch (Device.Idiom)
 			{
-				case TargetIdiom.Unsupported:
-					return Unsupported ?? Default;
 				case TargetIdiom.Phone:
 					return Phone ?? Default;
 				case TargetIdiom.Tablet:
