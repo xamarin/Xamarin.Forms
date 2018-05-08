@@ -6,6 +6,7 @@ using CoreGraphics;
 using Foundation;
 using UIKit;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
+using Specifics = Xamarin.Forms.PlatformConfiguration.iOSSpecific.Entry;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -155,7 +156,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateReturnType();
 			else if (e.PropertyName == Entry.CursorPositionProperty.PropertyName || e.PropertyName == Entry.SelectionLengthProperty.PropertyName)
 				UpdateCursorSelection();
-			else if (e.PropertyName == Entry.CursorColorProperty.PropertyName)
+			else if (e.PropertyName == Specifics.CursorColorProperty.PropertyName)
 				UpdateCursorColor();
 
 			base.OnElementPropertyChanged(sender, e);
@@ -358,13 +359,13 @@ namespace Xamarin.Forms.Platform.iOS
 			if (control == null || Element == null)
 				return;
 
-			if (Element.IsSet(Entry.CursorColorProperty))
+			if (Element.IsSet(Specifics.CursorColorProperty))
 			{
-				var color = Element.CursorColor;
+				var color = Element.OnThisPlatform().GetCursorColor();
 				if (color == Color.Default)
 					control.TintColor = _defaultCursorColor;
 				else
-					control.TintColor = Element.CursorColor.ToUIColor();
+					control.TintColor = color.ToUIColor();
 			}
 		}
 	}
