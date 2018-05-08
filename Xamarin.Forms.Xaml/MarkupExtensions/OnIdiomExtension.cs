@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Xaml
 
 		public object ProvideValue(IServiceProvider serviceProvider)
 		{
-			var lineInfo = (serviceProvider.GetService(typeof(IXmlLineInfoProvider)) as IXmlLineInfoProvider)?.XmlLineInfo;
+			var lineInfo = serviceProvider.GetService<IXmlLineInfoProvider>()?.XmlLineInfo;
 			if (Default == null && Phone == null &&
 				Tablet == null && Desktop == null && TV == null && Watch == null)
 			{
