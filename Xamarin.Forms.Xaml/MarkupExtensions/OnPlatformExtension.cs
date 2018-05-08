@@ -15,7 +15,6 @@ namespace Xamarin.Forms.Xaml
 		public object Tizen { get; set; }
 		public object UWP { get; set; }
 		public object WPF { get; set; }
-		public string Other { get; set; }
 
 		public IValueConverter Converter { get; set; }
 
@@ -26,7 +25,7 @@ namespace Xamarin.Forms.Xaml
 			var lineInfo = serviceProvider?.GetService<IXmlLineInfoProvider>()?.XmlLineInfo;
 			if (Android == null && GTK == null && iOS == null && 
 				macOS == null && Tizen == null && UWP == null && 
-				WPF == null && Default == null && string.IsNullOrEmpty(Other))
+				WPF == null && Default == null)
 			{
 				throw new XamlParseException("OnPlatformExtension requires a non-null value to be specified for at least one platform or Default.", lineInfo ?? new XmlLineInfo());
 			}
@@ -74,20 +73,6 @@ namespace Xamarin.Forms.Xaml
 				case Device.WPF:
 					return WPF ?? Default;
 				default:
-					if (string.IsNullOrEmpty(Other))
-						return Default;
-
-					var others = Other.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
-					foreach (var other in others)
-					{
-						var pair = other.Split(new[] { ':' }, StringSplitOptions.RemoveEmptyEntries);
-						if (pair.Length != 2)
-							continue;
-
-						if (Device.RuntimePlatform == pair[0])
-							return pair[1];
-					}
-
 					return Default;
 			}
 		}

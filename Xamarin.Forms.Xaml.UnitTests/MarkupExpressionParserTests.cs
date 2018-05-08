@@ -340,10 +340,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		[TestCase("{OnPlatform 20}", Device.UWP, 20)]
 		[TestCase("{OnPlatform 20}", Device.WPF, 20)]
 		[TestCase("{OnPlatform 20}", "Foo", 20)]
-		[TestCase("{OnPlatform Android=23, Default=20, Other=Foo:10}", "Bar", 20)]
-		[TestCase("{OnPlatform Android=23, Default=20, Other=Foo:10;Bar:15;Baz:18}", "Foo", 10)]
-		[TestCase("{OnPlatform Android=23, Default=20, Other=Foo:10;Bar:15;Baz:18}", "Bar", 15)]
-		[TestCase("{OnPlatform Android=23, Default=20, Other=Foo:10;Bar:15;Baz:18}", "Baz", 18)]
+		[TestCase("{OnPlatform Android=23, Default=20}", "Foo", 20)]
 		public void OnPlatformExtension(string markup, string platform, int expected)
 		{
 			var services = new MockPlatformServices
