@@ -321,7 +321,10 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		}
 
 		void UpdateLineHeight() {
-			SetLineSpacing(0, (float) Element.LineHeight);
+			if (Element.LineHeight >= 0)
+			{
+				SetLineSpacing(0, (float)Element.LineHeight);
+			}
 			_lastSizeRequest = null;
 		}
 	}
