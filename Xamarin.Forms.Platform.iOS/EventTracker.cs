@@ -313,6 +313,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			var result = new UISwipeGestureRecognizer();
 			result.NumberOfTouchesRequired = (uint)numFingers;
 			result.Direction = (UISwipeGestureRecognizerDirection)direction;
+			result.ShouldRecognizeSimultaneously = true;
 			result.AddTarget(() => action(direction));
 			return result;
 		}
