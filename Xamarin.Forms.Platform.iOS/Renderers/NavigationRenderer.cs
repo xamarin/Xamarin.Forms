@@ -88,6 +88,7 @@ namespace Xamarin.Forms.Platform.iOS
 			get { return this; }
 		}
 
+		//TODO: this was deprecated in iOS8.0 and is not called in 9.0+
 		public override void DidRotate(UIInterfaceOrientation fromInterfaceOrientation)
 		{
 			base.DidRotate(fromInterfaceOrientation);
@@ -523,25 +524,23 @@ namespace Xamarin.Forms.Platform.iOS
 			FileImageSource titleIcon = NavigationPage.GetTitleIcon(page);
 			VisualElement titleView = NavigationPage.GetTitleView(page);
 
+			ClearTitleViewContainer(pack);
+
 			bool needContainer = titleView != null || titleIcon != null;
 
-			Container titleViewContainer = pack.NavigationItem.TitleView as Container;
-
-			// null this now. if we try to add the same view again, iOS thinks it's smart 
-			// and reuses the same reference, but that one is already gone; it won't reappear.
-			pack.NavigationItem.TitleView = null;
-
-			if (needContainer && titleViewContainer == null)
-				titleViewContainer = new Container();
-
-			// we'll run these even if we don't needContainer because they perform cleanup
-			UpdateTitleImage(titleViewContainer, titleIcon);
-			UpdateTitleView(titleViewContainer, titleView);
-
 			if (needContainer)
+			{
+				Container titleViewContainer = new Container();
+
 				pack.NavigationItem.TitleView = titleViewContainer;
-			else
-				ClearTitleViewContainer(pack);
+
+				UpdateTitleImage(titleViewContainer, titleIcon);
+				UpdateTitleView(titleViewContainer, titleView);
+
+				// Need to call this for iOS10 to properly frame the renderer
+				TopViewController?.NavigationItem?.TitleView?.SizeToFit();
+				TopViewController?.NavigationItem?.TitleView?.LayoutSubviews();
+			}
 		}
 
 		async void UpdateTitleImage(Container titleViewContainer, FileImageSource titleIcon)
@@ -574,7 +573,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (pack == null)
 				return;
 
-			if ((pack.NavigationItem.TitleView == null && pack.NavigationItem.TitleView is Container titleViewContainer))
+			if (pack.NavigationItem.TitleView != null && pack.NavigationItem.TitleView is Container titleViewContainer)
 			{
 				titleViewContainer.Dispose();
 				titleViewContainer = null;
@@ -593,8 +592,10 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (titleViewRenderer != null)
 				{
-					var reflectableType = titleViewRenderer as System.Reflection.IReflectableType;
-					var rendererType = reflectableType != null ? reflectableType.GetTypeInfo().AsType() : titleViewRenderer.GetType();
+					var rendererType = titleViewRenderer is System.Reflection.IReflectableType reflectableType 
+						? reflectableType.GetTypeInfo().AsType() 
+						: titleViewRenderer.GetType();
+
 					if (titleView != null && rendererType == Internals.Registrar.Registered.GetHandlerTypeForObject(titleView))
 					{
 						if (titleViewContainer != null)
@@ -831,6 +832,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			TopViewController?.NavigationItem?.TitleView?.SizeToFit();
+			TopViewController?.NavigationItem?.TitleView?.LayoutSubviews();
 		}
 
 		internal async Task UpdateFormsInnerNavigation(Page pageBeingRemoved)
@@ -1254,6 +1256,10 @@ namespace Xamarin.Forms.Platform.iOS
 			IVisualElementRenderer _child;
 			UIImageView _icon;
 
+			nfloat IconHeight => _icon?.Frame.Height ?? 0;
+
+			nfloat IconWidth => _icon?.Frame.Width ?? 0;
+
 			protected override void Dispose(bool disposing)
 			{
 				if (disposing)
@@ -1276,7 +1282,7 @@ namespace Xamarin.Forms.Platform.iOS
 					_icon = value;
 
 					if (_icon != null)
-						InsertSubview(_icon, 0);
+						AddSubview(_icon);
 				}
 			}
 
@@ -1286,15 +1292,12 @@ namespace Xamarin.Forms.Platform.iOS
 				set
 				{
 					if (_child != null)
-						_child.NativeView.RemoveFromSuperview();
+						DisposeChild();
 
 					_child = value;
 
 					if (value != null)
-					{
 						AddSubview(value.NativeView);
-						value.NativeView.Center = Center;
-					}
 				}
 			}
 
@@ -1304,22 +1307,23 @@ namespace Xamarin.Forms.Platform.iOS
 			public override SizeF SizeThatFits(SizeF size)
 			{
 				IVisualElementRenderer renderer = _child;
-				if (renderer == null || renderer.Element == null)
-				{
-					// Preserve legacy behavior, where TitleIcon appeared in center
-					if (_icon != null)
-						_icon.Center = Center;
 
-					return base.SizeThatFits(size);
-				}
+				if (renderer == null || renderer.Element == null || renderer.Element.Parent == null)
+					return new SizeF(IconWidth, IconHeight);
 
-				double width = size.Width;
-				var height = size.Height > 0 ? size.Height : double.PositiveInfinity;
-				var result = renderer.Element.Measure(width, height, MeasureFlags.IncludeMargins);
+				var result = renderer.Element.Measure(double.PositiveInfinity, double.PositiveInfinity, MeasureFlags.IncludeMargins);
 
-				Layout.LayoutChildIntoBoundingRegion(_child.Element, new Rectangle(0, 0, size.Width, result.Request.Height));
+				return new SizeF(result.Request.Width + IconWidth, Math.Max(IconHeight, result.Request.Height));
+			}
 
-				return new SizeF(size.Width, result.Request.Height);
+			public override void LayoutSubviews()
+			{
+				base.LayoutSubviews();
+
+				if (_icon != null)
+					_icon.Frame = new RectangleF(0, 0, IconWidth, IconHeight);
+
+				_child?.Element.Layout(new Rectangle(IconWidth, 0, Bounds.Width - IconWidth, Bounds.Height));
 			}
 
 			public void DisposeChild()
@@ -1327,8 +1331,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (_child == null)
 					return;
 
-				var platform = _child.Element.Platform as Platform;
-				if (platform != null)
+				if (_child.Element.Platform is Platform platform)
 					platform.DisposeModelAndChildrenRenderers(_child.Element);
 
 				_child.NativeView.RemoveFromSuperview();
