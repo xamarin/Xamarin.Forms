@@ -27,7 +27,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty TitleIconProperty = BindableProperty.CreateAttached("TitleIcon", typeof(FileImageSource), typeof(NavigationPage), default(FileImageSource));
 
-		public static readonly BindableProperty TitleViewProperty = BindableProperty.CreateAttached("TitleView", typeof(View), typeof(NavigationPage), null, propertyChanged: TitleViewPropertyChanged);
+		public static readonly BindableProperty TitleViewProperty = BindableProperty.CreateAttached("TitleView", typeof(View), typeof(NavigationPage), null, propertyChanging: TitleViewPropertyChanging);
 
 		static readonly BindablePropertyKey CurrentPagePropertyKey = BindableProperty.CreateReadOnly("CurrentPage", typeof(Page), typeof(NavigationPage), null);
 		public static readonly BindableProperty CurrentPageProperty = CurrentPagePropertyKey.BindableProperty;
@@ -105,7 +105,7 @@ namespace Xamarin.Forms
 			private set { SetValue(RootPagePropertyKey, value); }
 		}
 
-		static void TitleViewPropertyChanged(BindableObject bindable, object oldValue, object newValue)
+		static void TitleViewPropertyChanging(BindableObject bindable, object oldValue, object newValue)
 		{
 			if (oldValue == newValue)
 				return;
