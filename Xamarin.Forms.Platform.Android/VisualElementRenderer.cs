@@ -28,6 +28,27 @@ namespace Xamarin.Forms.Platform.Android
 
 		readonly GestureManager _gestureManager;
 
+		/// <summary>
+		/// The actual size is rounded in step of 0.8 points.
+		/// But that the real size was not less than the given, it should be increased for rounding only in the big party.
+		/// </summary>
+		Rectangle PrepareLayout(Rectangle region)
+		{
+			float step = 0.8f;
+			float halfStep = step / 2;
+			float increment = halfStep + 0.1f;
+			double modH = region.Height % step;
+			double modW = region.Width % step;
+
+			if (region.Height > 0 && modH <= halfStep)
+				region.Height += increment - modH;
+
+			if (region.Width > 0 && modW <= halfStep)
+				region.Width += increment - modW;
+
+			return region;
+		}
+
 		protected VisualElementRenderer(Context context) : base(context)
 		{
 			_gestureManager = new GestureManager(this);
@@ -176,6 +197,8 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			OnElementChanged(new ElementChangedEventArgs<TElement>(oldElement, element));
+
+			Element.PrepareLayout = PrepareLayout;
 
 			if (AutoPackage && _packager == null)
 				SetPackager(new VisualElementPackager(this));
