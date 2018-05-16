@@ -1343,9 +1343,10 @@ namespace Xamarin.Forms.Platform.iOS
 				Frame = new RectangleF(Frame.X, Frame.Y, Bounds.Width, height);
 
 				if (_icon != null)
-					_icon.Frame = new RectangleF(0, 0, IconWidth, IconHeight);
+					_icon.Frame = new RectangleF(0, 0, IconWidth, Math.Min(toolbarHeight, IconHeight));
 
-				_child?.Element.Layout(new Rectangle(IconWidth, 0, Bounds.Width - IconWidth, height));
+				if (_child.Element != null)
+					Layout.LayoutChildIntoBoundingRegion(_child.Element, new Rectangle(IconWidth, 0, Bounds.Width - IconWidth, height));
 			}
 
 			public void DisposeChild()
