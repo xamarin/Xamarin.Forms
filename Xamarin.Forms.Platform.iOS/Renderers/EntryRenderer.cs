@@ -340,12 +340,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (Element.IsSet(Entry.CursorPositionProperty) || Element.IsSet(Entry.SelectionLengthProperty)) {
 
+				control.BecomeFirstResponder();
 				var start = control.GetPosition(control.BeginningOfDocument, Element.CursorPosition);
 				var end = control.GetPosition(start, System.Math.Min(control.Text.Length - Element.CursorPosition, Element.SelectionLength));
 				var currentSelection = control.SelectedTextRange;
 				if (currentSelection.Start != start || currentSelection.End != end)
 				{
-					control.BecomeFirstResponder();
 					_selectedTextRangeIsUpdating = true;
 					control.SelectedTextRange = control.GetTextRange(start, end);
 					_selectedTextRangeIsUpdating = false;
