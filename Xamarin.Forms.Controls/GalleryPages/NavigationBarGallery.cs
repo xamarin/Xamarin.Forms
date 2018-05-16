@@ -21,20 +21,22 @@ namespace Xamarin.Forms.Controls
 
 			NavigationPage.SetTitleIcon(this, "coffee.png");
 
+			SearchBar searchBar = new SearchBar { HeightRequest = 44, WidthRequest = 100 };
+
 			var controls = new List<View>
 			{
+				searchBar,
 				new ActivityIndicator{ IsRunning = true },
-				new BoxView{ BackgroundColor = Color.Red},
+				new BoxView{ BackgroundColor = Color.Red },
 				new Button{ Text = "Button!"},
 				new DatePicker{},
-				new Editor{Text = "Editor"},
-				new Entry{Placeholder = "Entry"},
-				new Image{ Source = "crimson.jpg", HeightRequest = 44, WidthRequest = 375 },
-				new Label{ Text = "Title View Label!"},
+				new Editor{ Text = "Editor"},
+				new Entry{ Placeholder = "Entry"},
+				new Image{ Source = "crimson.jpg", HeightRequest = 44 },
+				new Label{ Text = "Title View Label!" },
 				//new ListView{}, nope, don't do that!
-				new Picker{ ItemsSource = Enumerable.Range(0,10).Select(i => $"Item {i}").ToList() },
-				new ProgressBar{ Progress = 50},
-				new SearchBar{ },
+				new Picker{ ItemsSource = Enumerable.Range(0,10).Select(i => $"Item {i}").ToList(), Title = "Picker" },
+				new ProgressBar{ Progress = 50 },
 				new Slider{},
 				new Stepper{},
 				new Switch{},
@@ -204,15 +206,14 @@ namespace Xamarin.Forms.Controls
 
 		static View CreateTitleView(View control)
 		{
-			control.HorizontalOptions = LayoutOptions.Center;
+			control.HorizontalOptions = LayoutOptions.Fill;
 			control.VerticalOptions = LayoutOptions.CenterAndExpand;
 
 			var titleView = new StackLayout
 			{
 				Children = { control },
 				BackgroundColor = Color.FromHex("#ccc"),
-				Margin = new Thickness(50, 0),
-				HeightRequest = 100
+				Margin = new Thickness(15, 0),
 			};
 			return titleView;
 		}
