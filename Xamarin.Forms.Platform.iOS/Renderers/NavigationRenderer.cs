@@ -1301,9 +1301,6 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 			}
 
-			// Prevent Frame from being 0,0
-			public override SizeF IntrinsicContentSize => UILayoutFittingExpandedSize;
-
 			public override SizeF SizeThatFits(SizeF size)
 			{
 				IVisualElementRenderer renderer = _child;
@@ -1320,10 +1317,20 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				base.LayoutSubviews();
 
+				// Navigation bar will not stretch past these values. Prevent content clipping.
+				// iOS11 does this for us automatically, but apparently iOS10 doesn't.
+				int toolbarHeight = 44;
+				if (Device.Idiom == TargetIdiom.Phone && Device.Info.CurrentOrientation.IsLandscape())
+					toolbarHeight = 32;
+
+				double height = Math.Min(toolbarHeight, Bounds.Height);
+
+				Frame = new RectangleF(Frame.X, Frame.Y, Bounds.Width, height);
+
 				if (_icon != null)
 					_icon.Frame = new RectangleF(0, 0, IconWidth, IconHeight);
 
-				_child?.Element.Layout(new Rectangle(IconWidth, 0, Bounds.Width - IconWidth, Bounds.Height));
+				_child?.Element.Layout(new Rectangle(IconWidth, 0, Bounds.Width - IconWidth, height));
 			}
 
 			public void DisposeChild()
