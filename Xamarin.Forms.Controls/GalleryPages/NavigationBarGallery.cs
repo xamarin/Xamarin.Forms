@@ -21,7 +21,30 @@ namespace Xamarin.Forms.Controls
 
 			NavigationPage.SetTitleIcon(this, "coffee.png");
 
-			NavigationPage.SetTitleView(this, CreateTitleView());
+			var controls = new List<View>
+			{
+				new ActivityIndicator{ IsRunning = true },
+				new BoxView{ BackgroundColor = Color.Red},
+				new Button{ Text = "Button!"},
+				new DatePicker{},
+				new Editor{Text = "Editor"},
+				new Entry{Placeholder = "Entry"},
+				new Image{ Source = "crimson.jpg", HeightRequest = 44, WidthRequest = 375 },
+				new Label{ Text = "Title View Label!"},
+				//new ListView{}, nope, don't do that!
+				new Picker{ ItemsSource = Enumerable.Range(0,10).Select(i => $"Item {i}").ToList() },
+				new ProgressBar{ Progress = 50},
+				new SearchBar{ },
+				new Slider{},
+				new Stepper{},
+				new Switch{},
+				//new TableView{}, nope, don't do that!
+				new TimePicker{}
+			};
+
+			int idx = 0;
+
+			NavigationPage.SetTitleView(this, CreateTitleView(controls[idx]));
 
 			rootNavPage.On<Android>().SetBarHeight(450);
 			rootNavPage.On<iOS>().SetPrefersLargeTitles(false);
@@ -104,9 +127,22 @@ namespace Xamarin.Forms.Controls
 								var titleView = NavigationPage.GetTitleView(this);
 
 								if (titleView == null)
-									titleView = CreateTitleView();
+									titleView = CreateTitleView(controls[idx]);
 								else
 									titleView = null;
+
+								NavigationPage.SetTitleView(this, titleView);
+							})
+						},
+						new Button {
+							Text = "Next TitleView",
+							Command = new Command (() => {
+
+								idx++;
+								if(idx >=controls.Count)
+									idx = 0;
+
+								var titleView = CreateTitleView(controls[idx]);
 
 								NavigationPage.SetTitleView(this, titleView);
 							})
@@ -166,20 +202,17 @@ namespace Xamarin.Forms.Controls
 			_rootNavPage.ClearValue(BarHeightProperty);
 		}
 
-		static View CreateTitleView()
+		static View CreateTitleView(View control)
 		{
+			control.HorizontalOptions = LayoutOptions.Center;
+			control.VerticalOptions = LayoutOptions.CenterAndExpand;
+
 			var titleView = new StackLayout
 			{
-				Children = {
-						new Label { Text = "TitleView", FontSize = 20, HorizontalTextAlignment = TextAlignment.Center },
-						new Label { Text = "it's lovely", HorizontalTextAlignment = TextAlignment.Center },
-						new SearchBar { VerticalOptions = LayoutOptions.Center }
-				},
-				Spacing = 0,
-				BackgroundColor = Color.Pink,
+				Children = { control },
+				BackgroundColor = Color.FromHex("#ccc"),
 				Margin = new Thickness(50, 0),
-				HorizontalOptions = LayoutOptions.Fill,
-				VerticalOptions = LayoutOptions.Fill
+				HeightRequest = 100
 			};
 			return titleView;
 		}
