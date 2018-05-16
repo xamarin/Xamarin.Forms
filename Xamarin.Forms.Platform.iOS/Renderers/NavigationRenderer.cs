@@ -31,6 +31,7 @@ namespace Xamarin.Forms.Platform.iOS
 		nfloat _navigationBottom = 0;
 		bool _hasNavigationBar;
 		UIImage _defaultNavBarShadowImage;
+		UIImage _defaultNavBarBackImage;
 
 		public NavigationRenderer()
 		{
@@ -480,6 +481,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			bool shouldHide = NavPage.OnThisPlatform().HideNavigationBarSeparator();
 
+			// Just setting the ShadowImage is good for iOS11
 			if (_defaultNavBarShadowImage == null)
 				_defaultNavBarShadowImage = NavigationBar.ShadowImage;
 
@@ -487,6 +489,19 @@ namespace Xamarin.Forms.Platform.iOS
 				NavigationBar.ShadowImage = new UIImage();
 			else
 				NavigationBar.ShadowImage = _defaultNavBarShadowImage;
+
+			if (!Forms.IsiOS11OrNewer)
+			{ 
+				// For iOS 10 and lower, you need to set the background image. 
+				// If you set this for iOS11, you'll remove the background color.
+				if (_defaultNavBarBackImage == null)
+					_defaultNavBarBackImage = NavigationBar.GetBackgroundImage(UIBarMetrics.Default);
+
+				if (shouldHide)
+					NavigationBar.SetBackgroundImage(new UIImage(), UIBarMetrics.Default);
+				else
+					NavigationBar.SetBackgroundImage(_defaultNavBarBackImage, UIBarMetrics.Default);
+			}
 		}
 
 		void UpdateCurrentPagePreferredStatusBarUpdateAnimation()
