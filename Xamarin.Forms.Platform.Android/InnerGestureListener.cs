@@ -210,7 +210,7 @@ namespace Xamarin.Forms.Platform.Android
 			float totalX = e2.GetX() - _lastX;
 			float totalY = e2.GetY() - _lastY;
 
-			return _scrollDelegate(totalX, totalY, e2.PointerCount) || || _swipeDelegate(totalX, totalY);
+			return _scrollDelegate(totalX, totalY, e2.PointerCount) || _swipeDelegate(totalX, totalY);
 		}
 
 		internal void EndScrolling()
