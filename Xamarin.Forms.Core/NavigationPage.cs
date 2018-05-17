@@ -402,16 +402,64 @@ namespace Xamarin.Forms
 			CurrentPage = page;
 		}
 
-		async Task SegueAsyncInner(ValueSegue segue, SegueTarget target)
+		async Task SegueAsyncInner(ValueSegue seg, SegueTarget target)
 		{
+			var exec = seg.Segue as ISegueExecution;
+			if (exec != null)
+			{
+				switch (seg.Action)
+				{
+					case NavigationAction.Show:
+					case NavigationAction.Push:
+						if (target.IsTemplate)
+							target = (SegueTarget)target.ToPage();
+						break;
+					case NavigationAction.Pop:
+					case NavigationAction.PopPushed:
+						var page = (Page)InternalChildren[InternalChildren.Count - 2];
+						target = (SegueTarget)page;
+						break;
+
+					case NavigationAction.PopToRoot:
+						target = (SegueTarget)RootPage;
+						break;
+				}
+				if (!await exec.OnBeforeExecute(target))
+					return;
+			}
+
+			var handled = false;
+
 			EventHandler<SegueRequestedEventArgs> requestSegue = SegueRequested;
 			if (requestSegue != null)
 			{
-				var args = new SegueRequestedEventArgs(segue, target);
+				var args = new SegueRequestedEventArgs(seg, target);
 				requestSegue(this, args);
 
 				if (args.Task != null)
 					await args.Task;
+
+				handled = args.Handled;
+			}
+
+			if (!handled)
+			{
+				switch (seg.Action)
+				{
+					case NavigationAction.Show:
+					case NavigationAction.Push:
+						await PushAsyncInner(target.ToPage(), seg.IsAnimated);
+						break;
+
+					case NavigationAction.Pop:
+					case NavigationAction.PopPushed:
+						await PopAsyncInner(seg.IsAnimated, false);
+						break;
+
+					case NavigationAction.PopToRoot:
+						await PopToRootAsyncInner(seg.IsAnimated);
+						break;
+				}
 			}
 		}
 
@@ -473,34 +521,16 @@ namespace Xamarin.Forms
 
 			protected internal override Task OnSegue(ValueSegue seg, SegueTarget target)
 			{
-				var action = seg.Action;
-				switch (action)
-				{
-					case NavigationAction.Modal:
-					case NavigationAction.MainPage:
-					case NavigationAction.PopModal:
-					case NavigationAction.Pop when this.ShouldPopModal():
-						return base.OnSegue(seg, target);
-				}
-
-				Page page = null;
-				if (seg.Segue != null || (target != null && (page = target.TryCreatePage()) == null))
-					return Owner.SegueAsync(seg, target);
-
-				switch (action)
+				switch (seg.Action)
 				{
 					case NavigationAction.Show:
 					case NavigationAction.Push:
-						return Owner.PushAsync(page, seg.IsAnimated);
-
 					case NavigationAction.Pop:
 					case NavigationAction.PopPushed:
-						return Owner.PopAsync(seg.IsAnimated);
 					case NavigationAction.PopToRoot:
-						return Owner.PopToRootAsync(seg.IsAnimated);
+						return Owner.SegueAsync(seg, target);
 				}
-
-				throw new NotSupportedException(action.ToString());
+				return base.OnSegue(seg, target);
 			}
 
 			protected override void OnRemovePage(Page page)

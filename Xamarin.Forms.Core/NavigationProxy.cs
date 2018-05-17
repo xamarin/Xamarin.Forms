@@ -178,25 +178,16 @@ namespace Xamarin.Forms.Internals
 			INavigation currentInner = Inner;
 			if (currentInner == null)
 			{
-				Page page = null;
-				if (segue.Action.RequiresTarget())
-				{
-					if (target == null)
-						throw new ArgumentNullException(nameof(target));
-					page = (Page)target.TryCreatePage();
-					if (page == null)
-						throw new InvalidOperationException($"Navigation must be rooted for non-Page target");
-				}
 				switch (segue.Action)
 				{
 					case NavigationAction.Show:
 						throw new InvalidOperationException($"Navigation must be rooted to use {nameof(NavigationAction.Show)}");
 
 					case NavigationAction.Push:
-						_pushStack.Value.Add(page);
+						_pushStack.Value.Add(target.ToPage());
 						return Task.CompletedTask;
 					case NavigationAction.Modal:
-						_modalStack.Value.Add(page);
+						_modalStack.Value.Add(target.ToPage());
 						return Task.CompletedTask;
 
 					// It's important these Pop* cases (except PopToRoot) return Task<Page>
@@ -213,7 +204,7 @@ namespace Xamarin.Forms.Internals
 						_pushStack.Value.Add(root);
 						return Task.CompletedTask;
 				}
-				return this.NavigateAsync(segue.Action, page, segue.IsAnimated);
+				return this.NavigateAsync(segue.Action, target, segue.IsAnimated);
 			}
 			return currentInner.SegueAsync(segue, target);
 		}

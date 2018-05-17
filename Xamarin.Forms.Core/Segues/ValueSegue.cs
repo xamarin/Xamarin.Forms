@@ -53,11 +53,6 @@ namespace Xamarin.Forms.Internals
 			return Segue.DefaultExecuteCommand(this, source);
 		}
 
-		public Segue GetOrCreateSegue()
-		{
-			return segue ?? new Segue { Action = action, IsAnimated = animated };
-		}
-
 		public static implicit operator ValueSegue(Segue seg) => new ValueSegue(seg);
 	}
 }

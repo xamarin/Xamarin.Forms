@@ -1,114 +1,60 @@
 ﻿using System;
 using System.ComponentModel;
 
+using Xamarin.Forms.Xaml;
+
 namespace Xamarin.Forms
 {
 	public class SegueTarget
 	{
-		object target;
+		readonly Page target;
+		readonly DataTemplate template;
 
-		// This is set in the DataTemplate case below, or when Reject is called
-		WeakReference cachedValue;
+		public bool IsTemplate => template != null;
 
-		// We don't know what type a DataTemplate will construct until we actually create it.
-		//  Here we attempt to avoid creating a lot of garbage when TryCreateValue is called
-		//  for types other than what our DataTemplate returns..
-		Type templatedType;
-
-		// Allow platforms to register their own SegueTarget subclasses that will
-		//  be used for implicit conversion from DataTemplate, etc..
-		protected static Func<object,SegueTarget> CreateFromObjectHandler { private get; set; } =
-			obj => new SegueTarget(obj);
-
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public virtual bool IsTemplate {
-			get {
-				switch (target)
-				{
-					case Type _: return true;
-					case DataTemplate _: return true;
-				}
-				return false;
-			}
-		}
-
-		public Page Page {
-			get {
-				if (IsTemplate)
-					throw new InvalidOperationException("Target is a template");
-				return TryCreatePage();
-			}
-		}
-
-		protected SegueTarget(object target)
+		public SegueTarget(Page target)
 		{
+			if (target == null)
+				throw new ArgumentNullException (nameof(target));
 			this.target = target;
 		}
 
-		// Convenience
-		internal Page TryCreatePage()
+		public SegueTarget(DataTemplate template)
 		{
-			return (Page)TryCreateValue(typeof(Page));
+			if (template == null)
+				throw new ArgumentNullException(nameof(template));
+			this.template = template;
+		}
+
+		protected SegueTarget()
+		{
 		}
 
 		/// <summary>
-		/// For internal use.
+		/// Gets or creates the <see cref="Page"/> for this <see cref="SegueTarget"/>
 		/// </summary>
 		/// <remarks>
-		/// Generally, you will want to pass <see cref="Page"/> or a platform-specific
-		///  type for <see cref="targetType"/>. This call might be expensive.
+		/// If this instance was created directly from a <see cref="Page"/>, returns that instance.
+		///  Otherwise, attempts to instantiate a new page from the <see cref="DataTemplate"/>.
 		/// </remarks>
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public virtual object TryCreateValue(Type targetType)
+		public virtual Page ToPage()
 		{
-			var cached = cachedValue?.Target;
-			if (cached != null && targetType.IsAssignableFrom(cached.GetType()))
-			{
-				cachedValue = null;
-				return cached;
-			}
-			if (targetType.IsAssignableFrom(target.GetType()))
+			if (target != null)
 				return target;
-			switch (target)
-			{
-				case Type ty when targetType.IsAssignableFrom(ty):
-					return Activator.CreateInstance(ty);
 
-				case DataTemplate dt when templatedType == null || targetType.IsAssignableFrom(templatedType):
-				{
-					var content = dt.CreateContent();
-					if (templatedType != null)
-						return content;
+			var obj = template.CreateContent();
+			if (obj is Page page)
+				return page;
 
-					templatedType = content.GetType();
-					if (targetType.IsAssignableFrom(templatedType))
-						return content;
-
-					// Oops, we can't use content this time. But at least we have
-					//  a chance of using it next time if it's not collected..
-					Reject(content);
-					break;
-				}
-			}
-			return null;
+			// This could be a native object that we can convert to a page..
+			return obj.ConvertTo(typeof(Page), (Func<object>)null, null) as Page;
 		}
 
-		protected void Reject(object value)
-		{
-			if (IsTemplate)
-				cachedValue = new WeakReference(value);
-		}
-
-		protected static SegueTarget CreateFromObject(object obj)
-		{
-			return (obj == null) ? null : CreateFromObjectHandler(obj);
-		}
-
-		public static implicit operator SegueTarget(Type ty) => CreateFromObject(ty);
-		public static implicit operator SegueTarget(DataTemplate dt) => CreateFromObject(dt);
+		public static implicit operator SegueTarget(Type ty) => (ty == null) ? null : new SegueTarget(new DataTemplate(ty));
+		public static implicit operator SegueTarget(DataTemplate dt) => (dt == null) ? null : new SegueTarget(dt);
 
 		// The conversion from Page is explicit because we don't want people accidently
 		//  using raw Page in XAML when they should be using DataTemplate..
-		public static explicit operator SegueTarget(Page page) => CreateFromObject(page);
+		public static explicit operator SegueTarget(Page page) => (page == null) ? null : new SegueTarget(page);
 	}
 }

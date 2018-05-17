@@ -53,12 +53,10 @@ namespace Xamarin.Forms
 				return proxy.OnSegue(seg, target);
 
 			// If this is a simple navigation, bypass the Segue machinery...
-			Page page = null;
-			if (seg.Segue == null && (target == null || (page = target.TryCreatePage()) != null))
-				return nav.NavigateAsync(seg.Action, page, seg.IsAnimated);
+			if (seg.Segue == null)
+				return nav.NavigateAsync(seg.Action, target?.ToPage(), seg.IsAnimated);
 
-			// This is potentially the most expensive..
-			return nav.SegueAsync(seg.GetOrCreateSegue(), target);
+			return nav.SegueAsync(seg.Segue, target);
 		}
 
 		public static void SetSegue(this ICommandableElement trigger, Segue segue, SegueTarget target)

@@ -218,7 +218,6 @@ namespace Xamarin.Forms.Platform.iOS
 			navPage.PopToRootRequested += OnPopToRootRequested;
 			navPage.RemovePageRequested += OnRemovedPageRequested;
 			navPage.InsertPageBeforeRequested += OnInsertPageBeforeRequested;
-			navPage.SegueRequested += OnSegueRequested;
 
 			UpdateTint();
 			UpdateBarBackgroundColor();
@@ -259,7 +258,6 @@ namespace Xamarin.Forms.Platform.iOS
 				var navPage = (NavigationPage)Element;
 				navPage.PropertyChanged -= HandlePropertyChanged;
 
-				navPage.SegueRequested -= OnSegueRequested;
 				navPage.PushRequested -= OnPushRequested;
 				navPage.PopRequested -= OnPopRequested;
 				navPage.PopToRootRequested -= OnPopToRootRequested;
@@ -536,70 +534,6 @@ namespace Xamarin.Forms.Platform.iOS
 			View?.Window?.EndEditing(true);
 
 			e.Task = PushPageAsync(e.Page, e.Animated);
-		}
-
-		void OnSegueRequested(object sender, SegueRequestedEventArgs e)
-		{
-			e.Task = SegueAsync(e.Segue, e.Target);
-		}
-
-		async Task SegueAsync(ValueSegue seg, SegueTarget target)
-		{
-			var action = seg.Action;
-			var exec = seg.Segue as ISegueExecution;
-			UIViewController vc = null;
-
-			// adjust target and action as needed
-			switch (action)
-			{
-				case NavigationAction.Pop:
-					action = NavigationAction.PopPushed;
-					goto case NavigationAction.PopPushed;
-
-				case NavigationAction.PopPushed:
-					if (exec != null)
-					{
-						var stack = ViewControllers;
-						vc = stack[stack.Length - 2];
-					}
-					break;
-
-				case NavigationAction.PopToRoot:
-					if (exec != null)
-						vc = ViewControllers[0];
-					break;
-			}
-
-			if (vc == null)
-			{
-				vc = (UIViewController)target.TryCreateValue(typeof(UIViewController));
-				if (vc == null)
-					throw new ArgumentException("Unsupported target type", nameof(target));
-			}
-			if (exec != null)
-			{
-				target = new ViewControllerSegueTarget(vc); // clone so we don't risk recreating it
-				if (!await exec.OnBeforeExecute(target))
-					return;
-			}
-
-			// If we don't need a target, or can retrieve it as a Page, route it through classic Forms navigation..
-			Page page = null;
-			if (!action.RequiresTarget() || (page = ViewControllerSegueTarget.GetPage(vc)) != null)
-			{
-				await Element.Navigation.NavigateAsync(action, page, seg.IsAnimated);
-				return;
-			}
-
-			// Otherwise, perform a native transition..
-			switch (action)
-			{
-				case NavigationAction.Show:
-				case NavigationAction.Push:
-					//FIXME: figure out how to await this
-					PushViewController(vc, seg.IsAnimated);
-					return;
-			}
 		}
 
 		void OnRemovedPageRequested(object sender, NavigationRequestedEventArgs e)
@@ -1179,7 +1113,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override UIViewController ChildViewControllerForStatusBarHidden()
 		{
-			return (UIViewController)Platform.GetRenderer(Current);
+			return Platform.GetRenderer(Current).ViewController;
 		}
 
 		void IEffectControlProvider.RegisterEffect(Effect effect)

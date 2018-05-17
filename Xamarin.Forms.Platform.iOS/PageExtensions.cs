@@ -35,5 +35,10 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			return Xamarin.Forms.PageExtensions.CreateViewController(page);
 		}
+
+		public static Page ToPage(this UIViewController viewController)
+		{
+			return new NativePageWrapper(viewController);
+		}
 	}
 }

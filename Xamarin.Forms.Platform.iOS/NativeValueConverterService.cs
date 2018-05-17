@@ -19,10 +19,15 @@ namespace Xamarin.Forms.Platform.MacOS
 		public bool ConvertTo(object value, Type toType, out object nativeValue)
 		{
 			nativeValue = null;
-			if (typeof(UIView).IsInstanceOfType(value) && toType.IsAssignableFrom(typeof(View)))
+			switch (value)
 			{
-				nativeValue = ((UIView)value).ToView();
-				return true;
+				case UIView nativeView when toType.IsAssignableFrom(typeof(View)):
+					nativeValue = nativeView.ToView();
+					return true;
+
+				case UIViewController nativeViewController when toType.IsAssignableFrom(typeof(Page)):
+					nativeValue = nativeViewController.ToPage();
+					return true;
 			}
 			return false;
 		}

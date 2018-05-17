@@ -9,6 +9,7 @@ namespace Xamarin.Forms.Internals
 		public ValueSegue Segue { get; }
 		public SegueTarget Target { get; }
 		public Task Task { get; set; }
+		public bool Handled { get; set; }
 
 		internal SegueRequestedEventArgs(ValueSegue segue, SegueTarget target)
 		{

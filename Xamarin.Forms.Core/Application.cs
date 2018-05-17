@@ -399,12 +399,7 @@ namespace Xamarin.Forms
 
 			async Task OnPushModal(ValueSegue segue, SegueTarget target)
 			{
-				var modal = target.TryCreatePage();
-				if (modal == null)
-				{
-					await base.OnSegue(segue, target);
-					return;
-				}
+				var modal = target.ToPage();
 
 				// IMPORTANT! If the target was a template, create a new SegueTarget from
 				//  the instantiated page.
