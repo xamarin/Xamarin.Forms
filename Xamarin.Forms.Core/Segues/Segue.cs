@@ -24,9 +24,6 @@ namespace Xamarin.Forms
 			BindableProperty.Create(nameof(IsEnabled), typeof(bool), typeof(Segue), defaultValue: true, 
 				propertyChanged: (s, _, __) => ((Segue)s).OnCanExecuteChanged());
 
-		public static readonly BindableProperty SourceElementProperty =
-			BindableProperty.Create(nameof(SourceElement), typeof(Element), typeof(Segue));
-
 		public static readonly BindableProperty TargetProperty =
 			BindableProperty.CreateAttached("Target", typeof(SegueTarget), typeof(Segue), defaultValue: null,
 				propertyChanged: (obj, oldVal, newVal) => {
@@ -58,21 +55,6 @@ namespace Xamarin.Forms
 		public bool IsEnabled {
 			get => (bool)GetValue(IsEnabledProperty);
 			set => SetValue(IsEnabledProperty, value);
-		}
-
-		/// <summary>
-		/// Gets the exact element that triggered this <see cref="Segue"/>, or <c>null</c>
-		///  if one wasn't provided.
-		/// </summary>
-		/// <remarks>
-		/// This property is set automatically when the <c>{Segue}</c> markup extension is used,
-		///  or by the <see cref="ICommand"/> returned by <see cref="ToCommand"/> when the
-		///  <c>source</c> parameter is provided. Setting or binding this property explicitly
-		///  disables that automatic behavior.
-		/// </remarks>
-		public Element SourceElement {
-			get => (Element)GetValue(SourceElementProperty);
-			set => SetValue(SourceElementProperty, value);
 		}
 
 		public event EventHandler<SegueBeforeExecuteEventArgs> BeforeExecute;
@@ -157,14 +139,6 @@ namespace Xamarin.Forms
 		{
 			if (!seg.IsEnabled)
 				throw new InvalidOperationException("IsEnabled is false");
-
-			var s = seg.Segue;
-			if (s != null)
-			{
-				// Set SourceElement property if it wasn't manually set or bound by the user
-				if (!(s.GetIsBound(SourceElementProperty) || s.GetIsManuallySet(SourceElementProperty)))
-					s.SetValueCore(SourceElementProperty, source);
-			}
 
 			var nav = FindVisualElement(source)?.Navigation;
 			if (nav == null)
