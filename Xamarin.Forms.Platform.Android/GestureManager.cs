@@ -11,7 +11,6 @@ namespace Xamarin.Forms.Platform.Android
 	internal class GestureManager : IDisposable
 	{
 		IVisualElementRenderer _renderer;
-		readonly Lazy<GestureDetector> _tapAndPanDetector;
 		readonly Lazy<ScaleGestureDetector> _scaleDetector;
 		readonly Lazy<GestureDetector> _tapAndPanAndSwipeDetector;
 
