@@ -911,8 +911,10 @@ namespace Xamarin.Forms.Platform.iOS
 				Cell cell;
 				UITableViewCell nativeCell;
 
+				#if PERF
 				var reference = Guid.NewGuid().ToString();
 				Performance.Start(reference);
+				#endif
 
 				var cachingStrategy = List.CachingStrategy;
 				if (cachingStrategy == ListViewCachingStrategy.RetainElement)
@@ -956,7 +958,9 @@ namespace Xamarin.Forms.Platform.iOS
 				var bgColor = tableView.IndexPathForSelectedRow != null && tableView.IndexPathForSelectedRow.Equals(indexPath) ? UIColor.Clear : DefaultBackgroundColor;
 				SetCellBackgroundColor(nativeCell, bgColor);
 				PreserveActivityIndicatorState(cell);
+				#if PERF
 				Performance.Stop(reference);
+				#endif
 				return nativeCell;
 			}
 

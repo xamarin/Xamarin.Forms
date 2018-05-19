@@ -194,8 +194,10 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			Cell cell = null;
 
+#if PERF
 			var reference = Guid.NewGuid().ToString();
 			Performance.Start(reference);
+#endif
 
 			ListViewCachingStrategy cachingStrategy = Controller.CachingStrategy;
 			var nextCellIsHeader = false;
@@ -279,13 +281,17 @@ namespace Xamarin.Forms.Platform.Android
 				else
 					UnsetSelectedBackground(layout);
 
+#if PERF
 				Performance.Stop(reference);
+#endif
 				return layout;
 			}
 
 			AView view = CellFactory.GetCell(cell, convertView, parent, _context, _listView);
 
+#if PERF
 			Performance.Start(reference, "AddView");
+#endif
 
 			if (cellIsBeingReused)
 			{
@@ -298,7 +304,9 @@ namespace Xamarin.Forms.Platform.Android
 			else
 				layout.AddView(view, 0);
 
+#if PERF
 			Performance.Stop(reference, "AddView");
+#endif
 
 			bool isHeader = cell.GetIsGroupHeader<ItemsView<Cell>, Cell>();
 
@@ -315,7 +323,9 @@ namespace Xamarin.Forms.Platform.Android
 
 			layout.ApplyTouchListenersToSpecialCells(cell);
 
+#if PERF
 			Performance.Stop(reference);
+#endif
 
 			return layout;
 		}

@@ -73,8 +73,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void UpdateLayout()
 		{
+#if PERF
 			var reference = Guid.NewGuid().ToString();
 			Performance.Start(reference);
+#endif
 
 			VisualElement view = _renderer.Element;
 			AView aview = _renderer.View;
@@ -88,22 +90,36 @@ namespace Xamarin.Forms.Platform.Android
 			var formsViewGroup = aview as FormsViewGroup;
 			if (formsViewGroup == null)
 			{
+#if PERF
 				Performance.Start(reference, "Measure");
+#endif
 				aview.Measure(MeasureSpecFactory.MakeMeasureSpec(width, MeasureSpecMode.Exactly), MeasureSpecFactory.MakeMeasureSpec(height, MeasureSpecMode.Exactly));
+#if PERF
 				Performance.Stop(reference, "Measure");
+#endif
 
+#if PERF
 				Performance.Start(reference, "Layout");
+#endif
 				aview.Layout(x, y, x + width, y + height);
+#if PERF
 				Performance.Stop(reference, "Layout");
+#endif
 			}
 			else
 			{
+#if PERF
 				Performance.Start(reference, "MeasureAndLayout");
+#endif
 				formsViewGroup.MeasureAndLayout(MeasureSpecFactory.MakeMeasureSpec(width, MeasureSpecMode.Exactly), MeasureSpecFactory.MakeMeasureSpec(height, MeasureSpecMode.Exactly), x, y, x + width, y + height);
+#if PERF
 				Performance.Stop(reference, "MeasureAndLayout");
+#endif
 			}
 
+#if PERF
 			Performance.Stop(reference);
+#endif
 
 			//On Width or Height changes, the anchors needs to be updated
 			UpdateAnchorX();
@@ -301,8 +317,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateNativeView(object sender, EventArgs e)
 		{
+#if PERF
 			var reference = Guid.NewGuid().ToString();
 			Performance.Start(reference);
+#endif
 
 			VisualElement view = _renderer.Element;
 			AView aview = _renderer.View;
@@ -323,20 +341,26 @@ namespace Xamarin.Forms.Platform.Android
 					_context.ToPixels(view.TranslationX), _context.ToPixels(view.TranslationY));
 			}
 
+#if PERF
 			Performance.Stop(reference);
+#endif
 		}
 
 		void UpdateOpacity()
 		{
+#if PERF
 			var reference = Guid.NewGuid().ToString();
 			Performance.Start(reference);
+#endif
 
 			VisualElement view = _renderer.Element;
 			AView aview = _renderer.View;
 
 			aview.Alpha = (float)view.Opacity;
 
+#if PERF
 			Performance.Stop(reference);
+#endif
 		}
 
 		void UpdateRotation()

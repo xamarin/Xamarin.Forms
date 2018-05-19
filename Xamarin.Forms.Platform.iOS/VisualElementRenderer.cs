@@ -155,8 +155,10 @@ namespace Xamarin.Forms.Platform.MacOS
 			var oldElement = Element;
 			Element = element;
 
+#if PERF
 			var reference = Guid.NewGuid().ToString();
 			Performance.Start(reference);
+#endif
 
 			if (oldElement != null)
 				oldElement.PropertyChanged -= _propertyChangedHandler;
@@ -204,7 +206,9 @@ namespace Xamarin.Forms.Platform.MacOS
 			SetAccessibilityHint();
 			SetIsAccessibilityElement();
 #endif
+#if PERF
 			Performance.Stop(reference);
+#endif
 		}
 
 #if __MOBILE__

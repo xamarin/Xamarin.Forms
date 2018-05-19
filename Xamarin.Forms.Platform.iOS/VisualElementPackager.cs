@@ -85,8 +85,10 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			if (_isDisposed)
 				return;
+			#if PERF
 			var reference = Guid.NewGuid().ToString();
 			Performance.Start(reference);
+			#endif
 			if (CompressedLayout.GetIsHeadless(view))
 			{
 				var packager = new VisualElementPackager(Renderer, view);
@@ -106,7 +108,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 				EnsureChildrenOrder();
 			}
+			#if PERF
 			Performance.Stop(reference);
+			#endif
 		}
 
 		protected virtual void OnChildRemoved(VisualElement view)
@@ -173,8 +177,10 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (oldElement == newElement)
 				return;
 
+#if PERF
 			var reference = Guid.NewGuid().ToString();
 			Performance.Start(reference);
+#endif
 
 			_element = newElement;
 
@@ -210,7 +216,10 @@ namespace Xamarin.Forms.Platform.MacOS
 				newElement.ChildRemoved += OnChildRemoved;
 				newElement.ChildrenReordered += UpdateChildrenOrder;
 			}
+
+#if PERF
 			Performance.Stop(reference);
+#endif
 		}
 
 		void UpdateChildrenOrder(object sender, EventArgs e)

@@ -300,8 +300,10 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateNativeControl()
 		{
+#if PERF
 			var reference = Guid.NewGuid().ToString();
 			Performance.Start(reference);
+#endif
 
 			if (_disposed)
 				return;
@@ -320,7 +322,9 @@ namespace Xamarin.Forms.Platform.MacOS
 			OnUpdateNativeControl(_layer);
 
 			NativeControlUpdated?.Invoke(this, EventArgs.Empty);
+#if PERF
 			Performance.Stop(reference);
+#endif
 		}
 	}
 }

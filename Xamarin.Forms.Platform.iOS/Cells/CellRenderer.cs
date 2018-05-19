@@ -12,8 +12,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public virtual UITableViewCell GetCell(Cell item, UITableViewCell reusableCell, UITableView tv)
 		{
+			#if PERF
 			var reference = Guid.NewGuid().ToString();
 			Performance.Start(reference);
+			#endif
 
 			var tvc = reusableCell as CellTableViewCell ?? new CellTableViewCell(UITableViewCellStyle.Default, item.GetType().FullName);
 
@@ -25,7 +27,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 			UpdateBackground(tvc, item);
 
+			#if PERF
 			Performance.Stop(reference);
+			#endif
 			return tvc;
 		}
 

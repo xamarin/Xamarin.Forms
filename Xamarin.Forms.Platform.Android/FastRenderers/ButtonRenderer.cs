@@ -122,8 +122,10 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			VisualElement oldElement = Button;
 			Button = (Button)element;
 
+#if PERF
 			var reference = Guid.NewGuid().ToString();
 			Performance.Start(reference);
+#endif
 
 			if (oldElement != null)
 			{
@@ -155,7 +157,9 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			EffectUtilities.RegisterEffectControlProvider(this, oldElement, element);
 
+#if PERF
 			Performance.Stop(reference);
+#endif
 		}
 
 		void IVisualElementRenderer.SetLabelFor(int? id)

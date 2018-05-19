@@ -20,7 +20,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG;__IOS__;UITEST</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;__IOS__;UITEST;PERF</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -99,7 +99,7 @@
   <Import Project="..\Xamarin.Forms.Controls.Issues\Xamarin.Forms.Controls.Issues.Shared\Xamarin.Forms.Controls.Issues.Shared.projitems" Label="Shared" />
   <Import Project="..\Xamarin.Forms.Core.UITests.Shared\Xamarin.Forms.Core.UITests.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="AfterBuild">  
-     <Delete Files="bin/$(Configuration)/System.Net.Http.dll" /> 
-  </Target> 
+  <Target Name="AfterBuild">
+    <Delete Files="bin/$(Configuration)/System.Net.Http.dll" />
+  </Target>
 </Project>

@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using Xamarin.Forms.Internals;
 
+#if PERF
 namespace Xamarin.Forms.Controls
 {
 	[Preserve(AllMembers = true)]
@@ -98,3 +99,4 @@ namespace Xamarin.Forms.Controls
 		}
 	}
 }
+#endif

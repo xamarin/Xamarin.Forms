@@ -11,8 +11,10 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		public override UITableViewCell GetCell(Cell item, UITableViewCell reusableCell, UITableView tv)
 		{
+			#if PERF
 			var reference = Guid.NewGuid().ToString();
 			Performance.Start(reference);
+			#endif
 
 			var viewCell = (ViewCell)item;
 
@@ -32,7 +34,9 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateBackground(cell, item);
 			UpdateIsEnabled(cell, viewCell);
 
+			#if PERF
 			Performance.Stop(reference);
+			#endif
 			return cell;
 		}
 
@@ -77,8 +81,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 			public override void LayoutSubviews()
 			{
+				#if PERF
 				var reference = Guid.NewGuid().ToString();
 				Performance.Start(reference);
+				#endif
 
 				//This sets the content views frame.
 				base.LayoutSubviews();
@@ -101,14 +107,17 @@ namespace Xamarin.Forms.Platform.iOS
 				IVisualElementRenderer renderer;
 				if (_rendererRef.TryGetTarget(out renderer))
 					renderer.NativeView.Frame = view.Bounds.ToRectangleF();
-
+				#if PERF
 				Performance.Stop(reference);
+				#endif
 			}
 
 			public override SizeF SizeThatFits(SizeF size)
 			{
+				#if PERF
 				var reference = Guid.NewGuid().ToString();
 				Performance.Start(reference);
+				#endif
 
 				IVisualElementRenderer renderer;
 				if (!_rendererRef.TryGetTarget(out renderer))
@@ -124,7 +133,9 @@ namespace Xamarin.Forms.Platform.iOS
 				// make sure to add in the separator if needed
 				var finalheight = (float)result.Request.Height + (SupressSeparator ? 0f : 1f) / UIScreen.MainScreen.Scale;
 
+				#if PERF
 				Performance.Stop(reference);
+				#endif
 
 				return new SizeF(size.Width, finalheight);
 			}
@@ -167,8 +178,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 			void UpdateCell(ViewCell cell)
 			{
+				#if PERF
 				var reference = Guid.NewGuid().ToString();
 				Performance.Start(reference);
+				#endif
 
 				if (_viewCell != null)
 					Device.BeginInvokeOnMainThread(_viewCell.SendDisappearing);
@@ -202,7 +215,9 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 
 				Platform.SetRenderer(this._viewCell.View, renderer);
+				#if PERF
 				Performance.Stop(reference);
+				#endif
 			}
 		}
 	}

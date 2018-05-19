@@ -130,10 +130,14 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void UpdateLayout()
 		{
+#if PERF
 			var reference = Guid.NewGuid().ToString();
 			Performance.Start(reference);
+#endif
 			Tracker?.UpdateLayout();
+#if PERF
 			Performance.Stop(reference);
+#endif
 		}
 
 		public ViewGroup ViewGroup => this;
@@ -150,8 +154,10 @@ namespace Xamarin.Forms.Platform.Android
 			TElement oldElement = Element;
 			Element = element;
 
+#if PERF
 			var reference = Guid.NewGuid().ToString();
 			Performance.Start(reference);
+#endif
 
 			if (oldElement != null)
 			{
@@ -197,7 +203,9 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateInputTransparent();
 			UpdateInputTransparentInherited();
 
+#if PERF
 			Performance.Stop(reference);
+#endif
 		}
 
 		/// <summary>

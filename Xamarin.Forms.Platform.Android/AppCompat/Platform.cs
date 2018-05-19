@@ -165,8 +165,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		SizeRequest IPlatform.GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
 		{
+#if PERF
 			var reference = Guid.NewGuid().ToString();
 			Performance.Start(reference);
+#endif
 
 			// FIXME: potential crash
 			IVisualElementRenderer visualElementRenderer = Android.Platform.GetRenderer(view);
@@ -199,7 +201,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				(visualElementRenderer as IViewRenderer)?.MeasureExactly();
 			}
 
+#if PERF
 			Performance.Stop(reference);
+#endif
 
 			return result;
 		}
@@ -404,7 +408,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			return Android.Platform.GenerateViewId();
 		}
 
-		#region Statics
+#region Statics
 
 		public static implicit operator ViewGroup(Platform canvas)
 		{
@@ -413,6 +417,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		internal const string CloseContextActionsSignalName = "Xamarin.CloseContextActions";
 
-		#endregion
+#endregion
 	}
 }
