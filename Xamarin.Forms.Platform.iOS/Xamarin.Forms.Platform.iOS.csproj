@@ -117,6 +117,7 @@
     <Compile Include="Extensions\ArrayExtensions.cs" />
     <Compile Include="Extensions\FlowDirectionExtensions.cs" />
     <Compile Include="Extensions\PlatformConfigurationExtensions.cs" />
+    <Compile Include="Extensions\LabelExtensions.cs" />
     <Compile Include="Extensions\VisualElementExtensions.cs" />
     <Compile Include="Flags.cs" />
     <Compile Include="NativeViewWrapper.cs" />
@@ -130,6 +131,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>StringResources.resx</DependentUpon>
     </Compile>
+    <Compile Include="ShadowEffect.cs" />
     <Compile Include="ViewInitializedEventArgs.cs" />
     <Compile Include="IOSAppIndexingProvider.cs" />
     <Compile Include="IOSAppLinks.cs" />

@@ -194,8 +194,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			Cell cell = null;
 
-			var reference = Guid.NewGuid().ToString();
-			Performance.Start(reference);
+			Performance.Start(out string reference);
 
 			ListViewCachingStrategy cachingStrategy = Controller.CachingStrategy;
 			var nextCellIsHeader = false;
@@ -459,7 +458,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (_lastSelected != view)
 				_fromNative = true;
-			Select(position, view);
+			if (_listView.SelectionMode != ListViewSelectionMode.None)
+				Select(position, view);
 			Controller.NotifyRowTapped(position, cell);
 		}
 

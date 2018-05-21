@@ -76,6 +76,12 @@ namespace Xamarin.Forms.Controls
 				map.MoveToRegion (MapSpan.FromCenterAndRadius (new Position (41.890202, 12.492049), Distance.FromMiles (0.5)));
 			};
 
+			var buttonRemove = new Button { Text = "Remove Pin" };
+			buttonRemove.Clicked += (a, e) =>
+			{
+				map.Pins.RemoveAt(0);
+			};
+
 			_stack = new StackLayout {
 				Spacing = 0,
 				Padding = new Thickness (30, 0)
@@ -91,7 +97,19 @@ namespace Xamarin.Forms.Controls
 				map.Pins.Add (new Pin { Position = pos, Label = "Rui" });
 				map.MoveToRegion (MapSpan.FromCenterAndRadius (pos, Distance.FromMiles (0.5)));
 			};
-			
+
+			var buttonEditPin = new Button { Text = "Edit Pin" };
+			buttonEditPin.Clicked += (a, e) =>
+			{
+				var pin = map.Pins.First();
+
+				pin.Label += " Edited";
+				pin.Address = "Edited";
+
+				var pos = new Position(pin.Position.Latitude + 1, pin.Position.Longitude + 1);
+				pin.Position = pos;
+				map.MoveToRegion(MapSpan.FromCenterAndRadius(pos, Distance.FromMiles(0.5)));
+			};
 
 			map.VerticalOptions = LayoutOptions.FillAndExpand;
 			_stack.Children.Add (searchAddress);
@@ -102,6 +120,8 @@ namespace Xamarin.Forms.Controls
 			_stack.Children.Add (buttonAddressFromPosition);
 			_stack.Children.Add (buttonHome);
 			_stack.Children.Add (buttonZoomPin);
+			_stack.Children.Add (buttonEditPin);
+			_stack.Children.Add (buttonRemove);
 
 			Content = _stack;
 		}
@@ -144,7 +164,10 @@ namespace Xamarin.Forms.Controls
 
 		static void PinClicked (object sender, EventArgs e)
 		{
-			// yea!
+			Pin pin = (Pin)sender;
+			Application.Current.MainPage.DisplayAlert("Pin Click",
+				$"You clicked the {pin.Label} pin, located at {pin.Address}, or coordinates ({pin.Position.Latitude}, {pin.Position.Longitude})",
+				"OK");
 		}
 	}
 }

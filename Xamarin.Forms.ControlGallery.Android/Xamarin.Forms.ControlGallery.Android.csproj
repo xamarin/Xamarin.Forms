@@ -188,6 +188,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activity1.cs" />
+    <Compile Include="AttachedStateEffectRenderer.cs" />
     <Compile Include="BorderEffect.cs" />
     <Compile Include="BrokenNativeControl.cs" />
     <Compile Include="CacheService.cs" />
@@ -344,6 +345,9 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\red_button.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="Assets\test.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

@@ -54,6 +54,22 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			if (disposing)
 			{
+				if (ElementController != null)
+				{
+					for (var i = 0; i < ElementController.LogicalChildren.Count; i++)
+					{
+						var child = ElementController.LogicalChildren[i] as VisualElement;
+						if (child == null)
+							continue;
+
+						var childRenderer = Platform.GetRenderer(child);
+						if (childRenderer == null)
+							continue;
+
+						childRenderer.Dispose();
+					}
+				}
+
 				SetElement(_element, null);
 				if (Renderer != null)
 				{
@@ -69,13 +85,15 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			if (_isDisposed)
 				return;
-			var reference = Guid.NewGuid().ToString();
-			Performance.Start(reference);
-			if (CompressedLayout.GetIsHeadless(view)) {
+			Performance.Start(out string reference);
+			if (CompressedLayout.GetIsHeadless(view))
+			{
 				var packager = new VisualElementPackager(Renderer, view);
 				view.IsPlatformEnabled = true;
 				packager.Load();
-			} else {
+			}
+			else
+			{
 				var viewRenderer = Platform.CreateRenderer(view);
 				Platform.SetRenderer(view, viewRenderer);
 
@@ -100,6 +118,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			if (Renderer.ViewController != null && viewRenderer.ViewController != null)
 				viewRenderer.ViewController.RemoveFromParentViewController();
+
+			viewRenderer.Dispose();
 		}
 
 		void EnsureChildrenOrder()
@@ -152,8 +172,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (oldElement == newElement)
 				return;
 
-			var reference = Guid.NewGuid().ToString();
-			Performance.Start(reference);
+			Performance.Start(out string reference);
 
 			_element = newElement;
 

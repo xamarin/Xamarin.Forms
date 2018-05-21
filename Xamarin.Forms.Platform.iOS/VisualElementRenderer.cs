@@ -155,8 +155,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			var oldElement = Element;
 			Element = element;
 
-			var reference = Guid.NewGuid().ToString();
-			Performance.Start(reference);
+			Performance.Start(out string reference);
 
 			if (oldElement != null)
 				oldElement.PropertyChanged -= _propertyChangedHandler;
@@ -404,6 +403,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 
 			_blur = new UIVisualEffectView(blurEffect);
+			_blur.UserInteractionEnabled = false;
 			LayoutSubviews();
 		}
 #endif

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using Windows.Foundation;
 using Windows.UI.Xaml;
@@ -16,8 +17,8 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			var run = new Run { Text = span.Text ?? string.Empty };
 
-			if (span.ForegroundColor != Color.Default)
-				run.Foreground = span.ForegroundColor.ToBrush();
+			if (span.TextColor != Color.Default)
+				run.Foreground = span.TextColor.ToBrush();
 
 			if (!span.IsDefault())
 #pragma warning disable 618
@@ -34,6 +35,7 @@ namespace Xamarin.Forms.Platform.UWP
 		bool _isInitiallyDefault;
 		SizeRequest _perfectSize;
 		bool _perfectSizeValid;
+		IList<double> _inlineHeights = new List<double>();
 
 		protected override AutomationPeer OnCreateAutomationPeer()
 		{
@@ -50,6 +52,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (Element == null)
 				return finalSize;
+
 			double childHeight = Math.Max(0, Math.Min(Element.Height, Control.DesiredSize.Height));
 			var rect = new Rect();
 
@@ -68,6 +71,7 @@ namespace Xamarin.Forms.Platform.UWP
 			rect.Height = childHeight;
 			rect.Width = finalSize.Width;
 			Control.Arrange(rect);
+			Control.RecalculateSpanPositions(Element, _inlineHeights);
 			return finalSize;
 		}
 
@@ -148,7 +152,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateAlign(Control);
 			else if (e.PropertyName == Specifics.DetectReadingOrderFromContentProperty.PropertyName)
 				UpdateDetectReadingOrderFromContent(Control);
-
+			else if (e.PropertyName == Label.LineHeightProperty.PropertyName)
+				UpdateLineHeight(Control);
 			base.OnElementPropertyChanged(sender, e);
 		}
 
@@ -261,12 +266,19 @@ namespace Xamarin.Forms.Platform.UWP
 				else
 				{
 					textBlock.Inlines.Clear();
+					// Have to implement a measure here, otherwise inline.ContentStart and ContentEnd will be null, when used in RecalculatePositions
+					textBlock.Measure(new Windows.Foundation.Size(double.MaxValue, double.MaxValue));
 
+					var heights = new List<double>();
 					for (var i = 0; i < formatted.Spans.Count; i++)
 					{
-						if (formatted.Spans[i].Text != null)
-							textBlock.Inlines.Add(formatted.Spans[i].ToRun());
+						var span = formatted.Spans[i];
+
+						var run = span.ToRun();
+						heights.Add(Control.FindDefaultLineHeight(run));
+						textBlock.Inlines.Add(run);
 					}
+					_inlineHeights = heights;
 				}
 			}
 		}
@@ -283,6 +295,17 @@ namespace Xamarin.Forms.Platform.UWP
 				{
 					textBlock.TextReadingOrder = TextReadingOrder.UseFlowDirection;
 				}
+			}
+		}
+
+		void UpdateLineHeight(TextBlock textBlock) 
+		{
+			if (textBlock == null)
+				return;
+			
+			if (Element.LineHeight >= 0)
+			{
+				textBlock.LineHeight = Element.LineHeight * textBlock.FontSize;
 			}
 		}
 	}

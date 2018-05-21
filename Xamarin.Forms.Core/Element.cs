@@ -161,13 +161,11 @@ namespace Xamarin.Forms
 				if (_platform == value)
 					return;
 				_platform = value;
-				if (PlatformSet != null)
-					PlatformSet(this, EventArgs.Empty);
+				PlatformSet?.Invoke(this, EventArgs.Empty);
 				foreach (Element descendant in Descendants())
 				{
 					descendant._platform = _platform;
-					if (descendant.PlatformSet != null)
-						descendant.PlatformSet(this, EventArgs.Empty);
+					descendant.PlatformSet?.Invoke(this, EventArgs.Empty);
 				}
 			}
 		}
@@ -285,9 +283,9 @@ namespace Xamarin.Forms
 			return false;
 		}
 
-		object INameScope.FindByName(string name)
+		public object FindByName(string name)
 		{
-			INameScope namescope = GetNameScope();
+			var namescope = GetNameScope();
 			if (namescope == null)
 				throw new InvalidOperationException("this element is not in a namescope");
 			return namescope.FindByName(name);
@@ -295,27 +293,10 @@ namespace Xamarin.Forms
 
 		void INameScope.RegisterName(string name, object scopedElement)
 		{
-			INameScope namescope = GetNameScope();
+			var namescope = GetNameScope();
 			if (namescope == null)
 				throw new InvalidOperationException("this element is not in a namescope");
 			namescope.RegisterName(name, scopedElement);
-		}
-
-		[Obsolete]
-		void INameScope.RegisterName(string name, object scopedElement, IXmlLineInfo xmlLineInfo)
-		{
-			INameScope namescope = GetNameScope();
-			if (namescope == null)
-				throw new InvalidOperationException("this element is not in a namescope");
-			namescope.RegisterName(name, scopedElement, xmlLineInfo);
-		}
-
-		void INameScope.UnregisterName(string name)
-		{
-			INameScope namescope = GetNameScope();
-			if (namescope == null)
-				throw new InvalidOperationException("this element is not in a namescope");
-			namescope.UnregisterName(name);
 		}
 
 		public event EventHandler<ElementEventArgs> ChildAdded;
@@ -371,8 +352,7 @@ namespace Xamarin.Forms
 
 			child.ApplyBindings(skipBindingContext: false, fromBindingContextChanged:true);
 
-			if (ChildAdded != null)
-				ChildAdded(this, new ElementEventArgs(child));
+			ChildAdded?.Invoke(this, new ElementEventArgs(child));
 
 			OnDescendantAdded(child);
 			foreach (Element element in child.Descendants())
@@ -383,8 +363,7 @@ namespace Xamarin.Forms
 		{
 			child.Parent = null;
 
-			if (ChildRemoved != null)
-				ChildRemoved(child, new ElementEventArgs(child));
+			ChildRemoved?.Invoke(child, new ElementEventArgs(child));
 
 			OnDescendantRemoved(child);
 			foreach (Element element in child.Descendants())
@@ -627,34 +606,27 @@ namespace Xamarin.Forms
 			}
 		}
 
-		INameScope GetNameScope()
+		internal INameScope GetNameScope()
 		{
-			INameScope namescope = NameScope.GetNameScope(this);
-			Element p = RealParent;
-			while (namescope == null && p != null)
-			{
-				namescope = NameScope.GetNameScope(p);
-				p = p.RealParent;
-			}
-			return namescope;
+			var element = this;
+			do {
+				var ns = NameScope.GetNameScope(element);
+				if (ns != null)
+					return ns;
+			} while ((element = element.RealParent) != null);
+			return null;
 		}
 
 		void OnDescendantAdded(Element child)
 		{
-			if (DescendantAdded != null)
-				DescendantAdded(this, new ElementEventArgs(child));
-
-			if (RealParent != null)
-				RealParent.OnDescendantAdded(child);
+			DescendantAdded?.Invoke(this, new ElementEventArgs(child));
+			RealParent?.OnDescendantAdded(child);
 		}
 
 		void OnDescendantRemoved(Element child)
 		{
-			if (DescendantRemoved != null)
-				DescendantRemoved(this, new ElementEventArgs(child));
-
-			if (RealParent != null)
-				RealParent.OnDescendantRemoved(child);
+			DescendantRemoved?.Invoke(this, new ElementEventArgs(child));
+			RealParent?.OnDescendantRemoved(child);
 		}
 
 		void OnResourceChanged(BindableProperty property, object value)

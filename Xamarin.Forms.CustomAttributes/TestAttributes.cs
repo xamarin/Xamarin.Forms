@@ -147,6 +147,7 @@ namespace Xamarin.Forms.CustomAttributes
 		WinPhone = 1 << 2,
 		WinRT = 1 << 3,
 		UWP = 1 << 4,
+		WPF = 1 << 5,
 		All = ~0,
 		Default = 0
 	}
@@ -226,6 +227,7 @@ namespace Xamarin.Forms.CustomAttributes
 			BorderColor,
 			BorderRadius,
 			Image,
+			Padding
 		}
 
 		public enum VisualElement
@@ -493,6 +495,7 @@ namespace Xamarin.Forms.CustomAttributes
 		{
 			Completed,
 			TextChanged,
+			Placeholder,
 			Text,
 			TextColor,
 			FontAttributes,
@@ -650,7 +653,11 @@ namespace Xamarin.Forms.CustomAttributes
 		public enum Slider {
 			Minimum,
 			Maximum,
-			Value
+			Value,
+			MinimumTrackColor,
+			MaximumTrackColor,
+			ThumbColor,
+			ThumbImage
 		}
 
 		public enum StackLayout {
@@ -685,7 +692,8 @@ namespace Xamarin.Forms.CustomAttributes
 			LoadHtml,
 			MixedContentDisallowed,
 			MixedContentAllowed,
-			JavaScriptAlert
+			JavaScriptAlert,
+			EvaluateJavaScript
 		}
 
 		public enum UrlWebViewSource {
@@ -760,7 +768,8 @@ namespace Xamarin.Forms.CustomAttributes
 
 		public enum BoxView
 		{
-			Color
+			Color,
+			CornerRadius
 		}
 
 	}
