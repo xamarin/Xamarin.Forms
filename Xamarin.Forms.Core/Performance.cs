@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System;
+using System.Threading;
 
 namespace Xamarin.Forms.Internals
 {
@@ -15,6 +16,8 @@ namespace Xamarin.Forms.Internals
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	public class Performance
 	{
+		static long Reference;
+
 		public static IPerformanceProvider Provider { get; private set; }
 
 		public static void SetProvider(IPerformanceProvider instance)
@@ -24,7 +27,13 @@ namespace Xamarin.Forms.Internals
 
 		public static void Start(out string reference, string tag = null, [CallerFilePath] string path = null, [CallerMemberName] string member = null)
 		{
-			reference = Guid.NewGuid().ToString();
+			if (Provider == null)
+			{
+				reference = String.Empty;
+				return;
+			}
+
+			reference = Interlocked.Increment(ref Reference).ToString();
 			Provider?.Start(reference, tag, path, member);
 		}
 
