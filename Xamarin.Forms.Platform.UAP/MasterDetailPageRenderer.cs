@@ -245,12 +245,18 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void OnDetailPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == Page.TitleProperty.PropertyName || e.PropertyName == NavigationPage.CurrentPageProperty.PropertyName)
+			if (e.PropertyName == Page.TitleProperty.PropertyName)
 				UpdateDetailTitle();
-			else if (e.PropertyName == NavigationPage.TitleIconProperty.PropertyName || e.PropertyName == NavigationPage.CurrentPageProperty.PropertyName)
+			else if (e.PropertyName == NavigationPage.TitleIconProperty.PropertyName)
 				UpdateDetailTitleIcon();
-			else if (e.PropertyName == NavigationPage.TitleViewProperty.PropertyName || e.PropertyName == NavigationPage.CurrentPageProperty.PropertyName)
+			else if (e.PropertyName == NavigationPage.TitleViewProperty.PropertyName)
 				UpdateDetailTitleView();
+			else if (e.PropertyName == NavigationPage.CurrentPageProperty.PropertyName)
+			{
+				UpdateDetailTitle();
+				UpdateDetailTitleIcon();
+				UpdateDetailTitleView();
+			}
 		}
 
 		void OnIsPaneOpenChanged(DependencyObject sender, DependencyProperty dp)
