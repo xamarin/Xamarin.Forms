@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Platform.Android
 			return bitmap;
 		}
 
-		public async Task<FormsAnimationDrawable> LoadImageAnimationAsync(ImageSource imagesource, Context context, CancellationToken cancelationToken = default(CancellationToken))
+		public async Task<IFormsAnimationDrawable> LoadImageAnimationAsync(ImageSource imagesource, Context context, CancellationToken cancelationToken = default(CancellationToken))
 		{
 			string file = ((FileImageSource)imagesource).File;
 			FormsAnimationDrawable animation = null;

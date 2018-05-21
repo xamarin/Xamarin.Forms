@@ -113,6 +113,12 @@ namespace Xamarin.Forms
 			SetValue(IsLoadingPropertyKey, isLoading);
 		}
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public bool GetLoadAsAnimation()
+		{
+			return IsSet(Image.IsAnimationAutoPlayProperty) || IsSet(Image.IsAnimationPlayingProperty);
+		}
+
 		public IPlatformElementConfiguration<T, Image> On<T>() where T : IConfigPlatform
 		{
 			return _platformConfigurationRegistry.Value.On<T>();

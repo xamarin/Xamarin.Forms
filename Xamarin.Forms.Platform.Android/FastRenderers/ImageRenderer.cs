@@ -9,6 +9,7 @@ using Android.Views;
 using Xamarin.Forms.Internals;
 using Android.Support.V4.View;
 
+// TODO GIF
 namespace Xamarin.Forms.Platform.Android.FastRenderers
 {
 	public class ImageRenderer : AImageView, IVisualElementRenderer, IImageRendererController, IViewRenderer, ITabStop,
@@ -50,6 +51,14 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				{
 					_visualElementRenderer.Dispose();
 					_visualElementRenderer = null;
+				}
+
+				if (Control != null)
+				{
+					if (Control.Drawable is IFormsAnimationDrawable animation)
+						animation.AnimationStopped -= OnAnimationStopped;
+
+					Control.Reset();
 				}
 
 				if (_element != null)
@@ -188,7 +197,96 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (e.PropertyName == Image.SourceProperty.PropertyName)
+				await TryUpdateBitmap();
+			else if (e.PropertyName == Image.AspectProperty.PropertyName)
+				UpdateAspect();
+			else if (e.PropertyName == Image.IsAnimationPlayingProperty.PropertyName)
+				await StartStopAnimation();
+
 			ElementPropertyChanged?.Invoke(this, e);
+		}
+
+		async Task TryUpdateBitmap(Image previous = null)
+		{
+			// By default we'll just catch and log any exceptions thrown by UpdateBitmap so they don't bring down
+			// the application; a custom renderer can override this method and handle exceptions from
+			// UpdateBitmap differently if it wants to
+
+			try
+			{
+				await UpdateBitmap(previous);
+			}
+			catch (Exception ex)
+			{
+				Log.Warning(nameof(ImageRenderer), "Error loading image: {0}", ex);
+			}
+			finally
+			{
+				((IImageController)_element)?.SetIsLoading(false);
+			}
+		}
+
+		async Task UpdateBitmap(Image previous = null)
+		{
+			if (_element == null || _disposed)
+			{
+				return;
+			}
+
+			if (Control.Drawable is IFormsAnimationDrawable currentAnimation)
+			{
+				currentAnimation.Stop();
+				currentAnimation.AnimationStopped -= OnAnimationStopped;
+			}
+
+			await Control.UpdateBitmap(_element, previous);
+
+			if (Control.Drawable is IFormsAnimationDrawable updatedAnimation)
+			{
+				updatedAnimation.AnimationStopped += OnAnimationStopped;
+				if (_element.IsAnimationAutoPlay)
+					updatedAnimation.Start();
+			}
+		}
+
+		void UpdateAspect()
+		{
+			if (_element == null || _disposed)
+			{
+				return;
+			}
+
+			ScaleType type = _element.Aspect.ToScaleType();
+			SetScaleType(type);
+		}
+
+		void OnAnimationStopped(object sender, FormsAnimationDrawableStateEventArgs e)
+		{
+			if (_element != null && !_disposed && e.Finished)
+				_element.OnAnimationFinishedPlaying();
+		}
+
+		async Task StartStopAnimation()
+		{
+			if (_disposed || _element == null || Control == null)
+			{
+				return;
+			}
+
+			if (_element.IsLoading)
+				return;
+
+			if (!(Control.Drawable is IFormsAnimationDrawable) && _element.IsAnimationPlaying)
+				await TryUpdateBitmap();
+
+			if (Control.Drawable is IFormsAnimationDrawable animation)
+			{
+				if (_element.IsAnimationPlaying && !animation.IsRunning)
+					animation.Start();
+				else if (!_element.IsAnimationPlaying && animation.IsRunning)
+					animation.Stop();
+			}
 		}
 	}
 }
