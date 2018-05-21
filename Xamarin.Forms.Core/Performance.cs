@@ -22,7 +22,14 @@ namespace Xamarin.Forms.Internals
 			Provider = instance;
 		}
 
-		public static void Start(string reference, string tag = null, [CallerFilePath] string path = null, [CallerMemberName] string member = null)
+		public static void Start(out string reference, string tag = null, [CallerFilePath] string path = null, [CallerMemberName] string member = null)
+		{
+			reference = Guid.NewGuid().ToString();
+			Provider?.Start(reference, tag, path, member);
+		}
+
+		public static void Start(string reference, string tag = null, [CallerFilePath] string path = null,
+			[CallerMemberName] string member = null)
 		{
 			Provider?.Start(reference, tag, path, member);
 		}
@@ -46,11 +53,11 @@ namespace Xamarin.Forms.Internals
 
 			public DisposablePerformanceReference(string tag, string path, string member)
 			{
-				_reference = Guid.NewGuid().ToString();
 				_tag = tag;
 				_path = path;
 				_member = member;
-				Start(_reference, _tag, _path, _member);
+				Start(out string reference, _tag, _path, _member);
+				_reference = reference;
 			}
 
 			public void Dispose()
