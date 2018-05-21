@@ -12,6 +12,6 @@ namespace Xamarin.Forms.Platform.Android
 
 	public interface IImageSourceHandlerEx : IImageSourceHandler
 	{
-		Task<FormsAnimationDrawable> LoadImageAnimationAsync(ImageSource imagesource, Context context, CancellationToken cancelationToken = default(CancellationToken));
+		Task<IFormsAnimationDrawable> LoadImageAnimationAsync(ImageSource imagesource, Context context, CancellationToken cancelationToken = default(CancellationToken));
 	}
 }

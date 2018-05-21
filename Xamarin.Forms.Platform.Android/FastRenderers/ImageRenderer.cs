@@ -40,6 +40,14 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					_visualElementRenderer = null;
 				}
 
+				if (Control != null)
+				{
+					if (Control.Drawable is IFormsAnimationDrawable animation)
+						animation.AnimationStopped -= OnAnimationStopped;
+
+					Control.Reset();
+				}
+
 				if (_element != null)
 				{
 					_element.PropertyChanged -= OnElementPropertyChanged;
@@ -180,6 +188,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				await TryUpdateBitmap();
 			else if (e.PropertyName == Image.AspectProperty.PropertyName)
 				UpdateAspect();
+			else if (e.PropertyName == Image.IsAnimationPlayingProperty.PropertyName)
+				await StartStopAnimation();
 
 			ElementPropertyChanged?.Invoke(this, e);
 		}
@@ -211,7 +221,20 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				return;
 			}
 
+			if (Control.Drawable is IFormsAnimationDrawable currentAnimation)
+			{
+				currentAnimation.Stop();
+				currentAnimation.AnimationStopped -= OnAnimationStopped;
+			}
+
 			await Control.UpdateBitmap(_element, previous);
+
+			if (Control.Drawable is IFormsAnimationDrawable updatedAnimation)
+			{
+				updatedAnimation.AnimationStopped += OnAnimationStopped;
+				if (_element.IsAnimationAutoPlay)
+					updatedAnimation.Start();
+			}
 		}
 
 		void UpdateAspect()
@@ -223,6 +246,34 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			ScaleType type = _element.Aspect.ToScaleType();
 			SetScaleType(type);
+		}
+
+		void OnAnimationStopped(object sender, FormsAnimationDrawableStateEventArgs e)
+		{
+			if (_element != null && !_disposed && e.Finished)
+				_element.OnAnimationFinishedPlaying();
+		}
+
+		async Task StartStopAnimation()
+		{
+			if (_disposed || _element == null || Control == null)
+			{
+				return;
+			}
+
+			if (_element.IsLoading)
+				return;
+
+			if (!(Control.Drawable is IFormsAnimationDrawable) && _element.IsAnimationPlaying)
+				await TryUpdateBitmap();
+
+			if (Control.Drawable is IFormsAnimationDrawable animation)
+			{
+				if (_element.IsAnimationPlaying && !animation.IsRunning)
+					animation.Start();
+				else if (!_element.IsAnimationPlaying && animation.IsRunning)
+					animation.Stop();
+			}
 		}
 	}
 }

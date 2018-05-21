@@ -254,6 +254,13 @@ namespace Xamarin.Forms.Platform.iOS
 				if (oldSource is FileImageSource && source is FileImageSource && ((FileImageSource)oldSource).File == ((FileImageSource)source).File)
 					return;
 
+				if (Control.Animation != null)
+				{
+					Control.StopAnimating();
+					Control.Animation.AnimationStopped -= OnAnimationStopped;
+					Control.Animation.Dispose();
+				}
+
 				Control.Image = null;
 				Control.Animation = null;
 			}
@@ -263,21 +270,21 @@ namespace Xamarin.Forms.Platform.iOS
 			Element.SetIsLoading(true);
 
 			if (source != null &&
-				(handler = Internals.Registrar.Registered.GetHandlerForObject<IImageSourceHandlerEx>(source)) != null)
+				(handler = Internals.Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(source)) != null)
 			{
 				UIImage uiimage = null;
 				FormsCAKeyFrameAnimation animation = null;
-				bool useAnimation = (Element.IsSet(Image.IsAnimationAutoPlayProperty) || Element.IsSet(Image.IsAnimationPlayingProperty)) && (handler is IImageSourceHandlerEx);
+				bool useAnimation = Element.GetLoadAsAnimation() && (handler is IImageSourceHandlerEx);
 				try
 				{
 					if (!useAnimation)
 					{
-						uiimage = await handler.LoadImageAsync(source, scale: (float)UIScreen.MainScreen.Scale);
+						uiimage = await handler.LoadImageAsync(source, scale: (float)UIScreen.MainScreen.Scale).ConfigureAwait(false);
 					}
 					else
 					{
 						System.Diagnostics.Debug.Assert(handler is IImageSourceHandlerEx);
-						animation = await ((IImageSourceHandlerEx)handler).LoadImageAnimationAsync(source, scale: (float)UIScreen.MainScreen.Scale);
+						animation = await ((IImageSourceHandlerEx)handler).LoadImageAnimationAsync(source, scale: (float)UIScreen.MainScreen.Scale).ConfigureAwait(false);
 					}
 				}
 				catch (OperationCanceledException)
@@ -649,7 +656,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public async Task<FormsCAKeyFrameAnimation> LoadImageAnimationAsync(ImageSource imagesource, CancellationToken cancelationToken = default(CancellationToken), float scale = 1)
 		{
-			FormsCAKeyFrameAnimation animation = await ImageAnimationHelper.CreateAnimationFromStreamImageSourceAsync(imagesource as StreamImageSource, cancelationToken);
+			FormsCAKeyFrameAnimation animation = await ImageAnimationHelper.CreateAnimationFromStreamImageSourceAsync(imagesource as StreamImageSource, cancelationToken).ConfigureAwait(false);
 			if (animation == null)
 			{
 				Log.Warning(nameof(FileImageSourceHandler), "Could not find image: {0}", imagesource);
@@ -684,7 +691,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public async Task<FormsCAKeyFrameAnimation> LoadImageAnimationAsync(ImageSource imagesource, CancellationToken cancelationToken = default(CancellationToken), float scale = 1)
 		{
-			FormsCAKeyFrameAnimation animation = await ImageAnimationHelper.CreateAnimationFromUriImageSourceAsync(imagesource as UriImageSource, cancelationToken);
+			FormsCAKeyFrameAnimation animation = await ImageAnimationHelper.CreateAnimationFromUriImageSourceAsync(imagesource as UriImageSource, cancelationToken).ConfigureAwait(false);
 			if (animation == null)
 			{
 				Log.Warning(nameof(FileImageSourceHandler), "Could not find image: {0}", imagesource);

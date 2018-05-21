@@ -19,15 +19,35 @@ namespace Xamarin.Forms.Platform.Android
 		public bool Finished { get; set; }
 	}
 
-	public class FormsAnimationDrawable : AnimationDrawable
+	public interface IFormsAnimationDrawable : IDisposable
+	{
+		event EventHandler AnimationStarted;
+		event EventHandler<FormsAnimationDrawableStateEventArgs> AnimationStopped;
+
+		int RepeatCount { get; set; }
+
+		bool IsRunning { get; }
+
+		Drawable ImageDrawable { get; }
+
+		void Start();
+		void Stop();
+
+	}
+
+	public class FormsAnimationDrawable : AnimationDrawable, IFormsAnimationDrawable
 	{
 		int _repeatCounter = 0;
 		int _frameCount = 0;
 		bool _finished = false;
+		bool _isRunning = false;
 
 		public FormsAnimationDrawable()
 		{
 			RepeatCount = int.MaxValue;
+
+			if (!Forms.IsLollipopOrNewer)
+				base.SetVisible(false, true);
 		}
 
 		public int RepeatCount { get; set; }
@@ -35,24 +55,49 @@ namespace Xamarin.Forms.Platform.Android
 		public event EventHandler AnimationStarted;
 		public event EventHandler<FormsAnimationDrawableStateEventArgs> AnimationStopped;
 
+		public override bool IsRunning
+		{
+			get { return _isRunning; }
+		}
+
+		public Drawable ImageDrawable
+		{
+			get { return this; }
+		}
+
 		public override void Start()
 		{
 			_repeatCounter = 0;
 			_frameCount = NumberOfFrames;
 			_finished = false;
 
+			base.OneShot = RepeatCount == 1 ? true : false;
+
 			base.Start();
+
+			if (!Forms.IsLollipopOrNewer)
+				base.SetVisible(true, true);
+
+			_isRunning = true;
 			AnimationStarted?.Invoke(this, null);
 		}
 
 		public override void Stop()
 		{
 			base.Stop();
+
+			if (!Forms.IsLollipopOrNewer)
+				base.SetVisible(false, true);
+
+			_isRunning = false;
 			AnimationStopped?.Invoke(this, new FormsAnimationDrawableStateEventArgs(_finished));
 		}
 
 		public override bool SelectDrawable(int index)
 		{
+			if (!_isRunning)
+				return base.SelectDrawable(0);
+
 			// Restarted animation, reached max number of repeats?
 			if (_repeatCounter >= RepeatCount)
 			{

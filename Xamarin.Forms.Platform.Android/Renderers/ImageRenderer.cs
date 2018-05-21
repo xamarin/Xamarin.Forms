@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (Control != null)
 			{
-				if (Control.Drawable is FormsAnimationDrawable animation)
+				if (Control.Drawable is IFormsAnimationDrawable animation)
 					animation.AnimationStopped -= OnAnimationStopped;
 
 				Control.Reset();
@@ -119,13 +119,19 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
+			if (Control.Drawable is IFormsAnimationDrawable currentAnimation)
+			{
+				currentAnimation.Stop();
+				currentAnimation.AnimationStopped -= OnAnimationStopped;
+			}
+
 			await Control.UpdateBitmap(Element, previous);
 
-			if (Control.Drawable is FormsAnimationDrawable animation)
+			if (Control.Drawable is IFormsAnimationDrawable updatedAnimation)
 			{
-				animation.AnimationStopped += OnAnimationStopped;
-				if ((bool)Element.GetValue(Image.IsAnimationAutoPlayProperty))
-					animation.Start();
+				updatedAnimation.AnimationStopped += OnAnimationStopped;
+				if (Element.IsAnimationAutoPlay)
+					updatedAnimation.Start();
 			}
 		}
 
@@ -153,10 +159,10 @@ namespace Xamarin.Forms.Platform.Android
 			if (Element.IsLoading)
 				return;
 
-			if (!(Control.Drawable is FormsAnimationDrawable) && Element.IsAnimationPlaying)
+			if (!(Control.Drawable is IFormsAnimationDrawable) && Element.IsAnimationPlaying)
 				await TryUpdateBitmap();
 
-			if (Control.Drawable is FormsAnimationDrawable animation)
+			if (Control.Drawable is IFormsAnimationDrawable animation)
 			{
 				if (Element.IsAnimationPlaying && !animation.IsRunning)
 					animation.Start();

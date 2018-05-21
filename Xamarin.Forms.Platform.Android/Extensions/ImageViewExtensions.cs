@@ -10,33 +10,36 @@ namespace Xamarin.Forms.Platform.Android
 
 	internal static class ImageViewExtensions
 	{
-		public static void Reset(this FormsAnimationDrawable animation)
+		public static void Reset(this IFormsAnimationDrawable formsAnimation)
 		{
-			if (!animation.IsDisposed())
+			if (formsAnimation is FormsAnimationDrawable animation)
 			{
-				animation.Stop();
-				int frameCount = animation.NumberOfFrames;
-				for (int i = 0; i < frameCount; i++)
+				if (!animation.IsDisposed())
 				{
-					var currentFrame = animation.GetFrame(i);
-					if (currentFrame is BitmapDrawable bitmapDrawable)
+					animation.Stop();
+					int frameCount = animation.NumberOfFrames;
+					for (int i = 0; i < frameCount; i++)
 					{
-						var bitmap = bitmapDrawable.Bitmap;
-						if (bitmap != null)
+						var currentFrame = animation.GetFrame(i);
+						if (currentFrame is BitmapDrawable bitmapDrawable)
 						{
-							if (!bitmap.IsRecycled)
+							var bitmap = bitmapDrawable.Bitmap;
+							if (bitmap != null)
 							{
-								bitmap.Recycle();
+								if (!bitmap.IsRecycled)
+								{
+									bitmap.Recycle();
+								}
+								bitmap.Dispose();
+								bitmap = null;
 							}
-							bitmap.Dispose();
-							bitmap = null;
+							bitmapDrawable.Dispose();
+							bitmapDrawable = null;
 						}
-						bitmapDrawable.Dispose();
-						bitmapDrawable = null;
+						currentFrame = null;
 					}
-					currentFrame = null;
+					animation = null;
 				}
-				animation = null;
 			}
 		}
 
@@ -44,7 +47,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (!imageView.IsDisposed())
 			{
-				if (imageView.Drawable is FormsAnimationDrawable animation)
+				if (imageView.Drawable is IFormsAnimationDrawable animation)
 				{
 					imageView.SetImageDrawable(null);
 					animation.Reset();
@@ -78,13 +81,13 @@ namespace Xamarin.Forms.Platform.Android
 			imageView.Reset();
 
 			Bitmap bitmap = null;
-			FormsAnimationDrawable animation = null;
+			IFormsAnimationDrawable animation = null;
 			Drawable drawable = null;
 			IImageSourceHandler handler;
 
 			if (source != null && (handler = Internals.Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(source)) != null)
 			{
-				bool useAnimation = (newImage.IsSet(Image.IsAnimationAutoPlayProperty) || newImage.IsSet(Image.IsAnimationPlayingProperty)) && (handler is IImageSourceHandlerEx);
+				bool useAnimation = newImage.GetLoadAsAnimation() && (handler is IImageSourceHandlerEx);
 				if (handler is FileImageSourceHandler && !useAnimation)
 				{
 					drawable = imageView.Context.GetDrawable((FileImageSource)source);
@@ -136,7 +139,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 			else if (animation != null)
 			{
-				imageView.SetImageDrawable(animation);
+				imageView.SetImageDrawable(animation.ImageDrawable);
 			}
 
 			bitmap?.Dispose();
