@@ -23,6 +23,7 @@ namespace Xamarin.Forms.Controls
 
 			SearchBar searchBar = new SearchBar { HeightRequest = 44, WidthRequest = 100 };
 
+			// Note: Large and complex controls, such as ListView and TableView, are not recommended.
 			var controls = new List<View>
 			{
 				searchBar,
@@ -34,13 +35,11 @@ namespace Xamarin.Forms.Controls
 				new Entry{ Placeholder = "Entry"},
 				new Image{ Source = "crimson.jpg", HeightRequest = 44 },
 				new Label{ Text = "Title View Label!" },
-				//new ListView{}, nope, don't do that!
 				new Picker{ ItemsSource = Enumerable.Range(0,10).Select(i => $"Item {i}").ToList(), Title = "Picker" },
 				new ProgressBar{ Progress = 50 },
 				new Slider{},
 				new Stepper{},
 				new Switch{},
-				//new TableView{}, nope, don't do that!
 				new TimePicker{}
 			};
 
