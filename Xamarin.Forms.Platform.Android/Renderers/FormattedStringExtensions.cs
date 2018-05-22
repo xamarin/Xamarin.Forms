@@ -62,7 +62,6 @@ namespace Xamarin.Forms.Platform.Android
 #pragma warning restore 618
 				else
 					spannable.SetSpan(new FontSpan(defaultFont, view), start, end, SpanTypes.InclusiveInclusive);
-
 				if (span.IsSet(Span.TextDecorationsProperty))
 					spannable.SetSpan(new TextDecorationSpan(span), start, end, SpanTypes.InclusiveInclusive);
 			}
