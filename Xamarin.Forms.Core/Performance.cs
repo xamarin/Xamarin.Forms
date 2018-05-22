@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Internals
 			}
 
 			reference = Interlocked.Increment(ref Reference).ToString();
-			Provider?.Start(reference, tag, path, member);
+			Provider.Start(reference, tag, path, member);
 		}
 
 		public static void Start(string reference, string tag = null, [CallerFilePath] string path = null,
