@@ -67,10 +67,11 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		void UpdateTextDecorations()
 		{
+			Control.BatchBegin();
 			var textDecorations = Element.TextDecorations;
 			Control.Strikethrough = (textDecorations & TextDecorations.Strikethrough) != 0;
 			Control.Underline = (textDecorations & TextDecorations.Underline) != 0;
-			UpdateFormattedText();
+			Control.BatchCommit();
 		}
 
 		void UpdateFormattedText()
