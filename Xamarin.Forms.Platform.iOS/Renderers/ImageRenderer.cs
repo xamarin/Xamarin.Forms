@@ -90,6 +90,8 @@ namespace Xamarin.Forms.Platform.iOS
 					Layer.AddAnimation(_animation, AnimationLayerName);
 					Layer.Speed = AutoPlay ? 1.0f : 0.0f;
 				}
+
+				Layer.SetNeedsDisplay();
 			}
 		}
 
