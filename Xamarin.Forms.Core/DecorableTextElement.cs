@@ -22,14 +22,28 @@ namespace Xamarin.Forms
 	{
 		public override object ConvertFromInvariantString(string value)
 		{
-			if (value != null)
+			TextDecorations result = TextDecorations.None;
+			if (String.IsNullOrEmpty(value))
+				throw new InvalidOperationException(string.Format("Cannot convert \"{0}\" into {1}", value, typeof(TextDecorations)));
+
+			var valueArr = value.Split(',');
+
+			if (valueArr.Length <= 1)
+				valueArr = value.Split(' ');
+
+			foreach (var item in valueArr)
 			{
-				if (Enum.TryParse(value, true, out TextDecorations textDecorations))
-					return textDecorations;
-				if (value.Equals("line-through", StringComparison.OrdinalIgnoreCase))
-					return TextDecorations.Strikethrough;
+				if (Enum.TryParse(item.Trim(), true, out TextDecorations textDecorations))
+					result |= textDecorations;
+				if (item.Equals("line-through", StringComparison.OrdinalIgnoreCase))
+					result |= TextDecorations.Strikethrough;
+				else
+					throw new InvalidOperationException(string.Format("Cannot convert \"{0}\" into {1}", item, typeof(TextDecorations)));
 			}
-			throw new InvalidOperationException(string.Format("Cannot convert \"{0}\" into {1}", value, typeof(TextDecorations)));
+
+			return result;
 		}
 	}
+
 }
+
