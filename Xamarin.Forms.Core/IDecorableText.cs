@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Xamarin.Forms
 {
-    public interface IDecorableText
+    public interface IDecorableTextElement
 	{
 		TextDecorations TextDecorations { get; set; }
 	}
