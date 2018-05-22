@@ -91,7 +91,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			get { return _currentPage?.Title; }
 
-			set { }
+			set { /*Not implemented but required by interface*/ }
 		}
 
 		public WImageSource TitleIcon
@@ -109,7 +109,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 				return NavigationPage.GetTitleView(_currentPage) as View;
 			}
-			set { }
+			set { /*Not implemented but required by interface*/ }
 		}
 
 		Task<CommandBar> IToolbarProvider.GetCommandBarAsync()
