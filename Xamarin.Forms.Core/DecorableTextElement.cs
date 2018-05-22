@@ -23,7 +23,7 @@ namespace Xamarin.Forms
 		public override object ConvertFromInvariantString(string value)
 		{
 			TextDecorations result = TextDecorations.None;
-			if (String.IsNullOrEmpty(value))
+			if (value == null)
 				throw new InvalidOperationException(string.Format("Cannot convert \"{0}\" into {1}", value, typeof(TextDecorations)));
 
 			var valueArr = value.Split(',');
