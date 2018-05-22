@@ -33,6 +33,10 @@ namespace Xamarin.Forms.Controls
 			toggleUnderline.GestureRecognizers.Add(new TapGestureRecognizer { Command = new Command(()=> { toggleUnderline.TextDecorations ^= TextDecorations.Underline; }) });
 			var toggleStrike = new Label { Text = "Tap to toggle StrikeThrough", TextDecorations = TextDecorations.Strikethrough };
 			toggleStrike.GestureRecognizers.Add(new TapGestureRecognizer { Command = new Command(() => { toggleStrike.TextDecorations ^= TextDecorations.Strikethrough; }) });
+			var toggleBoth = new Label { Text = "Tap to toggle both", TextDecorations = TextDecorations.Strikethrough | TextDecorations.Underline };
+			toggleBoth.GestureRecognizers.Add(new TapGestureRecognizer { Command = new Command(() => { toggleBoth.TextDecorations ^= TextDecorations.Strikethrough;
+																										toggleBoth.TextDecorations ^= TextDecorations.Underline;
+																								}) });
 			var huge = new Label {
 				Text = "This is the label that never ends, yes it go on and on my friend. " +
 				"Some people started catting it not knowing what it was, and they'll continue catting it forever just because...",
@@ -157,6 +161,7 @@ namespace Xamarin.Forms.Controls
 						bolditalic,
 						toggleUnderline,
 						toggleStrike,
+						toggleBoth,
 						customFont,
 						italicfont,
 						boldfont,
