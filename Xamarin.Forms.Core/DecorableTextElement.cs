@@ -14,7 +14,7 @@ namespace Xamarin.Forms
 	}
 	static class DecorableTextElement
 	{
-		public static readonly BindableProperty TextDecorationsProperty = BindableProperty.Create("TextDecorations", typeof(TextDecorations), typeof(IDecorableTextElement), TextDecorations.None);
+		public static readonly BindableProperty TextDecorationsProperty = BindableProperty.Create(nameof(IDecorableTextElement.TextDecorations), typeof(TextDecorations), typeof(IDecorableTextElement), TextDecorations.None);
 	}
 
 	[Xaml.TypeConversion(typeof(TextDecorations))]
