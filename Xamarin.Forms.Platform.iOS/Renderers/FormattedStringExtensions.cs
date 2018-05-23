@@ -113,7 +113,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			var attrString = new NSAttributedString(text, targetFont, spanFgColor, spanBgColor,
 				underlineStyle: hasUnderline ? NSUnderlineStyle.Single : NSUnderlineStyle.None,
-				strikethroughStyle: hasStrikethrough ? NSUnderlineStyle.Single : NSUnderlineStyle.None);
+				strikethroughStyle: hasStrikethrough ? NSUnderlineStyle.Single : NSUnderlineStyle.None, paragraphStyle: style);
 
 			return attrString;
 		}
