@@ -145,5 +145,26 @@ namespace Xamarin.Forms.Platform.Android
 				paint.StrikeThruText = (textDecorations & TextDecorations.Strikethrough) != 0;
 			}
 		}
+
+		class LineHeightSpan : Java.Lang.Object, ILineHeightSpan
+		{
+			private double _lineHeight;
+			private int _ascent;
+			private int _descent;
+
+			public LineHeightSpan(TextView view, double lineHeight)
+			{
+				_lineHeight = lineHeight;
+				Paint.FontMetricsInt fm = view.Paint.GetFontMetricsInt();
+				_ascent = fm.Ascent;
+				_descent = fm.Descent;
+			}
+
+			public void ChooseHeight(Java.Lang.ICharSequence text, int start, int end, int spanstartv, int v, Paint.FontMetricsInt fm)
+			{
+				fm.Ascent = (int) (_ascent * _lineHeight);
+				fm.Descent = (int) (_descent * _lineHeight);
+			}
+		}
 	}
 }
