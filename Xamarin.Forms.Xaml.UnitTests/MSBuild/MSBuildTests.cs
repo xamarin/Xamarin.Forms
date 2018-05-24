@@ -13,7 +13,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 	[TestFixture]
 	public class MSBuildTests
 	{
-		static readonly string XamarinFormsTargets = Path.Combine ("..", "..", "..", "..", "..", ".nuspec", "Xamarin.Forms.targets");
+		const string XamarinFormsTargets = "Xamarin.Forms.targets";
 
 		static readonly string [] references = new []
 		{
@@ -56,6 +56,27 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			tempDirectory = Path.Combine (testDirectory, "temp", TestContext.CurrentContext.Test.Name);
 			intermediateDirectory = Path.Combine (tempDirectory, "obj", "Debug");
 			Directory.CreateDirectory (tempDirectory);
+
+			//We need to copy Xamarin.Forms.targets to the test directory, to reliably import them
+			var xamarinFormsTargets = Path.Combine (testDirectory, "..", "..", "..", ".nuspec", XamarinFormsTargets);
+			if (!File.Exists (xamarinFormsTargets)) {
+				//NOTE: VSTS may be running tests in a staging directory, so we can use an environment variable to find the source
+				//	https://docs.microsoft.com/en-us/vsts/build-release/concepts/definitions/build/variables?view=vsts&tabs=batch#buildsourcesdirectory
+				var sourcesDirectory = Environment.GetEnvironmentVariable ("BUILD_SOURCESDIRECTORY");
+				if (!string.IsNullOrEmpty (sourcesDirectory)) {
+					xamarinFormsTargets = Path.Combine (sourcesDirectory, ".nuspec", XamarinFormsTargets);
+					if (!File.Exists (xamarinFormsTargets)) {
+						Assert.Fail ("Unable to find Xamarin.Forms.targets at path: " + xamarinFormsTargets);
+					}
+				} else {
+					Assert.Fail ("Unable to find Xamarin.Forms.targets at path: " + xamarinFormsTargets);
+				}
+			}
+
+			//Copy all *.targets files to the test directory
+			foreach (var file in Directory.GetFiles (Path.GetDirectoryName (xamarinFormsTargets), "*.targets")) {
+				File.Copy (file, Path.Combine (testDirectory, Path.GetFileName (file)), true);
+			}
 		}
 
 		[TearDown]
@@ -120,7 +141,10 @@ namespace Xamarin.Forms.Xaml.UnitTests
 
 			if (!sdkStyle)
 				project.Add (NewElement ("Import").WithAttribute ("Project", @"$(MSBuildBinPath)\Microsoft.CSharp.targets"));
-			project.Add (NewElement ("Import").WithAttribute ("Project", XamarinFormsTargets));
+
+			//Import Xamarin.Forms.targets that was copied to the test directory in [SetUp]
+			project.Add (NewElement ("Import").WithAttribute ("Project", Path.Combine (testDirectory, XamarinFormsTargets)));
+
 			return project;
 		}
 
