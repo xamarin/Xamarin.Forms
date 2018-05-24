@@ -6,7 +6,6 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform;
-using System.Linq;
 
 namespace Xamarin.Forms
 {
@@ -37,7 +36,17 @@ namespace Xamarin.Forms
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Application>>(() => new PlatformConfigurationRegistry<Application>(this));
 		}
 
-		public IEnumerable<Element> WalkChildren() => NavigationProxy?.ModalStack.SelectMany(n => WalkChildren(n)) ?? WalkChildren(this);
+		public IEnumerable<Element> WalkChildren()
+		{
+			var pages = NavigationProxy?.ModalStack;
+			if (pages == null)
+				return WalkChildren(this);
+
+			var result = new List<Element>();
+			foreach (var page in pages)
+				result.AddRange(WalkChildren(page));
+			return result;
+		}
 
 		public IEnumerable<Element> WalkChildren(Element element)
 		{

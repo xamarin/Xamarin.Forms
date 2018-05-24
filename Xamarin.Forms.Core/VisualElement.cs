@@ -103,7 +103,7 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty TabIndexProperty =
 			BindableProperty.Create(nameof(TabIndex),
 									typeof(int),
-									typeof(View),
+									typeof(VisualElement),
 									defaultValue: 0,
 									propertyChanged: OnTabIndexPropertyChanged,
 									defaultValueCreator: TabIndexDefaultValueCreator);
@@ -111,7 +111,7 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty IsTabStopProperty =
 			BindableProperty.Create(nameof(IsTabStop),
 									typeof(bool),
-									typeof(View),
+									typeof(VisualElement),
 									defaultValue: true,
 									propertyChanged: OnTabStopPropertyChanged,
 									defaultValueCreator: TabStopDefaultValueCreator);

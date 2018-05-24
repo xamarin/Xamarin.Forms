@@ -1,15 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using Android.Content;
-using Android.Support.V4.View;
 using Android.Views;
 using Xamarin.Forms.Internals;
 using AView = Android.Views.View;
 using Xamarin.Forms.Platform.Android.FastRenderers;
 using Android.Runtime;
-using System.Linq;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -147,28 +144,40 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override AView FocusSearch(AView focused, [GeneratedEnum] FocusSearchDirection direction)
 		{
-			var allChildrens = Application.Current.WalkChildren().OfType<VisualElement>();
-			var childrensWithTabStop = allChildrens.Where(c => c.IsTabStop);
+			var allChildrens = Application.Current.WalkChildren();
+			var childrensWithTabStop = new List<VisualElement>();
+			var tabIndexes = new Dictionary<int, List<VisualElement>>();
+			foreach (var ch in allChildrens)
+			{
+				if (ch is VisualElement ve && ve.IsTabStop)
+					childrensWithTabStop.Add(ve);
+			}
 			if (!childrensWithTabStop.Contains(Element))
 				return base.FocusSearch(focused, direction);
 
-			var groupedIndex = childrensWithTabStop.GroupBy(c => c.TabIndex);
+			// groupping => childrensWithTabStop.GroupBy(c => c.TabIndex)
+			foreach (var ve in childrensWithTabStop)
+			{
+				if (!tabIndexes.ContainsKey(ve.TabIndex))
+					tabIndexes.Add(ve.TabIndex, new List<VisualElement>() { ve });
+				else
+					tabIndexes[ve.TabIndex].Add(ve);
+			}
 
-			var tabIndexes = groupedIndex.Select(c => c.Key);
-			int? tabIndex = Element.TabIndex;
+			int tabIndex = Element.TabIndex;
 			AView control = null;
 			int attempt = 0;
-			int maxAttempts = childrensWithTabStop.Count() - 1;
+			int maxAttempts = childrensWithTabStop.Count - 1;
 			VisualElement element = Element;
 
 			do
 			{
 				// search next element in same TabIndex group
-				var tabGroup = groupedIndex.FirstOrDefault(g => g.Key == tabIndex).ToList();
+				var tabGroup = tabIndexes[tabIndex];
 				var nextSubIndex = tabGroup.IndexOf(element) + 1;
 				if (nextSubIndex > 0 && nextSubIndex < tabGroup.Count)
 				{
-					element = tabGroup[nextSubIndex] as VisualElement;
+					element = tabGroup[nextSubIndex];
 				}
 				else // search next element in next TabIndex group
 				{
@@ -176,18 +185,32 @@ namespace Xamarin.Forms.Platform.Android
 						direction.HasFlag(FocusSearchDirection.Left) ||
 						direction.HasFlag(FocusSearchDirection.Up))
 					{
-						var smaller = tabIndexes.Where(i => i < tabIndex);
-						tabIndex = smaller.Any() ? smaller.Max() : tabIndexes.Max();
+						var smallerMax = int.MinValue;
+						var tabIndexesMax = int.MinValue;
+						foreach (var index in tabIndexes.Keys)
+						{
+							if (index < tabIndex && smallerMax < index)
+								smallerMax = index;
+							if (tabIndexesMax < index)
+								tabIndexesMax = index;
+						}
+						tabIndex = smallerMax != int.MinValue ? smallerMax : tabIndexesMax;
 					}
 					else // Forward || Right || Down || default
 					{
-						var bigger = tabIndexes.Where(i => i > tabIndex);
-						tabIndex = bigger.Any() ? bigger.Min() : tabIndexes.Min();
+						var biggerMin = int.MaxValue;
+						var tabIndexesMin = int.MaxValue;
+						foreach (var index in tabIndexes.Keys)
+						{
+							if (index > tabIndex && biggerMin > index)
+								biggerMin = index;
+							if (tabIndexesMin > index)
+								tabIndexesMin = index;
+						}
+						tabIndex = biggerMin != int.MaxValue ? biggerMin : tabIndexesMin;
 					}
-					element = groupedIndex.Single(g => g.Key == tabIndex).First();
+					element = tabIndexes[tabIndex][0];
 				}
-				if (element == null)
-					return base.FocusSearch(focused, direction);
 
 				var renderer = element.GetRenderer();
 				// use reflection to get the "Control" property from a specific renderer

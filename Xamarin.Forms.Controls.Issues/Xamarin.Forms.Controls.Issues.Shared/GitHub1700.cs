@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
@@ -184,7 +183,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			listViews = stack.Children;
 
-			foreach (var item in stack.Children)
+			foreach (var item in listViews)
 			{
 				item.Focused += (_, e) =>
 				{
@@ -200,12 +199,12 @@ namespace Xamarin.Forms.Controls.Issues
 				};
 			}
 
-			var content = new ScrollView()
+			IndexDesc();
+
+			Content = new ScrollView()
 			{
 				Content = stack
 			};
-
-			Content = content;
 		}
 	}
 }
