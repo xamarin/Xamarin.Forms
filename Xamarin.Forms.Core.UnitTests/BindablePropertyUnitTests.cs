@@ -148,5 +148,49 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (1, bindable.GetValue (prop));
 		}
 
+		enum TestEnum
+		{
+			One,Two,Three
+		}
+
+		[Test]
+		public void EnumPropertyDefaultValue ()
+		{
+			// Create BindableProperty without explicit default value
+			var prop = BindableProperty.Create ("foo", typeof(TestEnum), typeof(MockBindable));
+			Assert.AreEqual (typeof(TestEnum), prop.ReturnType);
+
+			Assert.AreEqual(prop.DefaultValue, default(TestEnum));
+
+			var bindable = new MockBindable ();
+			Assert.AreEqual (default(TestEnum), bindable.GetValue (prop));
+
+			bindable.SetValue (prop, TestEnum.Two);
+			Assert.AreEqual (TestEnum.Two, bindable.GetValue (prop));
+		}
+
+		struct TestStruct
+		{
+			public int IntValue;
+		}
+
+		[Test]
+		public void StructPropertyDefaultValue ()
+		{
+			// Create BindableProperty without explicit default value
+			var prop = BindableProperty.Create ("foo", typeof(TestStruct), typeof(MockBindable));
+			Assert.AreEqual (typeof(TestStruct), prop.ReturnType);
+
+			Assert.AreEqual(((TestStruct)prop.DefaultValue).IntValue, default(int));
+
+			var bindable = new MockBindable ();
+			Assert.AreEqual (default(int), ((TestStruct)bindable.GetValue (prop)).IntValue);
+
+			var propStruct = new TestStruct {IntValue = 1};
+
+			bindable.SetValue (prop, propStruct);
+			Assert.AreEqual (1, ((TestStruct)bindable.GetValue (prop)).IntValue);
+		}
+
 	}
 }
