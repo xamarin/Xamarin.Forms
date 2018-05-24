@@ -139,6 +139,8 @@ namespace Xamarin.Forms.Platform.MacOS
 		void IVisualElementRenderer.SetElement(VisualElement element)
 		{
 			SetElement((TElement)element);
+			UpdateTabStop();
+			UpdateTabIndex();
 		}
 
 		public void SetElementSize(Size size)
@@ -149,6 +151,118 @@ namespace Xamarin.Forms.Platform.MacOS
 		public virtual NativeViewController ViewController => null;
 
 		public event EventHandler<ElementChangedEventArgs<TElement>> ElementChanged;
+
+		protected int TabIndex { get; set; } = 0;
+
+		protected bool TabStop { get; set; } = true;
+
+		protected void UpdateTabStop () => TabStop = Element.IsTabStop;
+
+		protected void UpdateTabIndex () => TabIndex = Element.TabIndex;
+
+		public NativeView FocusSearch (bool forward)
+		{
+			var allChildrens = Application.Current.WalkChildren ();
+			var childrensWithTabStop = new List<VisualElement> ();
+			var tabIndexes = new Dictionary<int, List<VisualElement>> ();
+			foreach (var ch in allChildrens)
+			{
+				if (ch is VisualElement ve && ve.IsTabStop)
+					childrensWithTabStop.Add (ve);
+			}
+			if (!childrensWithTabStop.Contains (Element))
+				return null;
+
+			// groupping => childrensWithTabStop.GroupBy(c => c.TabIndex)
+			foreach (var ve in childrensWithTabStop)
+			{
+				if (!tabIndexes.ContainsKey (ve.TabIndex))
+					tabIndexes.Add (ve.TabIndex, new List<VisualElement> { ve });
+				else
+					tabIndexes [ve.TabIndex].Add (ve);
+			}
+
+			int tabIndex = Element.TabIndex;
+			int attempt = 0;
+			int maxAttempts = childrensWithTabStop.Count - 1;
+			VisualElement element = Element;
+			NativeView control = null;
+
+			do {
+				// search next element in same TabIndex group
+				var tabGroup = tabIndexes [tabIndex];
+				var nextSubIndex = tabGroup.IndexOf (element) + 1;
+				if (nextSubIndex > 0 && nextSubIndex < tabGroup.Count) {
+					element = tabGroup [nextSubIndex];
+				} else // search next element in next TabIndex group
+				  {
+					if (!forward) {
+						var smallerMax = int.MinValue;
+						var tabIndexesMax = int.MinValue;
+						foreach (var index in tabIndexes.Keys) {
+							if (index < tabIndex && smallerMax < index)
+								smallerMax = index;
+							if (tabIndexesMax < index)
+								tabIndexesMax = index;
+						}
+						tabIndex = smallerMax != int.MinValue ? smallerMax : tabIndexesMax;
+					}
+					else // Forward
+					{
+						var biggerMin = int.MaxValue;
+						var tabIndexesMin = int.MaxValue;
+						foreach (var index in tabIndexes.Keys) {
+							if (index > tabIndex && biggerMin > index)
+								biggerMin = index;
+							if (tabIndexesMin > index)
+								tabIndexesMin = index;
+						}
+						tabIndex = biggerMin != int.MaxValue ? biggerMin : tabIndexesMin;
+					}
+					element = tabIndexes[tabIndex][0];
+				}
+#if __MACOS__
+				var renderer = Platform.GetRenderer(element);
+				// use reflection to get the "Control" property from a specific renderer
+				control = renderer.GetType ().GetProperty ("Control")?.GetValue (renderer, null) as NativeView;
+#else
+				element.Focus ();
+#endif
+			} while (!(control != null || element.IsFocused || ++attempt >= maxAttempts));
+			return control;
+		}
+
+#if __MACOS__
+		public override NativeView NextKeyView { 
+			get {
+				return FocusSearch (forward: true) ?? base.NextKeyView;
+			}
+			set {
+				if (value != null) // setting the value to null throws an exception
+					base.NextKeyView = value;
+			}
+		}
+
+		public override NativeView PreviousKeyView {
+			get {
+				return FocusSearch (forward: false) ?? base.PreviousKeyView;
+			}
+		}
+#else
+		UIKeyCommand [] tabCommands = {
+			UIKeyCommand.Create ((Foundation.NSString)"\t", 0, new ObjCRuntime.Selector ("tabForward:")),
+			UIKeyCommand.Create ((Foundation.NSString)"\t", UIKeyModifierFlags.Shift, new ObjCRuntime.Selector ("tabBackward:"))
+		};
+
+		public override UIKeyCommand [] KeyCommands => tabCommands;
+
+
+		[Foundation.Export ("tabForward:")]
+		void TabForward (UIKeyCommand cmd) => FocusSearch (forward: true);
+
+		[Foundation.Export ("tabBackward:")]
+		void TabBackward (UIKeyCommand cmd) => FocusSearch (forward: false);
+#endif
 
 		public void SetElement(TElement element)
 		{
@@ -295,6 +409,10 @@ namespace Xamarin.Forms.Platform.MacOS
 				SetBackgroundColor(Element.BackgroundColor);
 			else if (e.PropertyName == Xamarin.Forms.Layout.IsClippedToBoundsProperty.PropertyName)
 				UpdateClipToBounds();
+			else if (e.PropertyName == VisualElement.IsTabStopProperty.PropertyName)
+				UpdateTabStop();
+			else if (e.PropertyName == VisualElement.TabIndexProperty.PropertyName)
+				UpdateTabIndex();
 #if __MOBILE__
 			else if (e.PropertyName == PlatformConfiguration.iOSSpecific.VisualElement.BlurEffectProperty.PropertyName)
 				SetBlur((BlurEffectStyle)Element.GetValue(PlatformConfiguration.iOSSpecific.VisualElement.BlurEffectProperty));

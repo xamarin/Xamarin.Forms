@@ -38,13 +38,16 @@ namespace Xamarin.Forms
 
 		public IEnumerable<Element> WalkChildren()
 		{
-			var pages = NavigationProxy?.ModalStack;
-			if (pages == null)
-				return WalkChildren(this);
-
 			var result = new List<Element>();
-			foreach (var page in pages)
-				result.AddRange(WalkChildren(page));
+			result.AddRange(WalkChildren (this));
+			var pages = NavigationProxy?.ModalStack;
+			if (pages != null)
+			{
+				foreach (var page in pages)
+				{
+					result.AddRange (WalkChildren (page));
+				}
+			}
 			return result;
 		}
 
