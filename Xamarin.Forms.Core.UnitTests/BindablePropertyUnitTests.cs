@@ -131,5 +131,22 @@ namespace Xamarin.Forms.Core.UnitTests
 			bindable.SetValue (prop, null);
 			Assert.AreEqual (null, bindable.GetValue (prop));
 		}
+
+		[Test]
+		public void ValueTypePropertyDefaultValue ()
+		{
+			// Create BindableProperty without explicit default value
+			var prop = BindableProperty.Create ("foo", typeof(int), typeof(MockBindable));
+			Assert.AreEqual (typeof(int), prop.ReturnType);
+
+			Assert.AreEqual(prop.DefaultValue, 0);
+
+			var bindable = new MockBindable ();
+			Assert.AreEqual (0, bindable.GetValue (prop));
+
+			bindable.SetValue (prop, 1);
+			Assert.AreEqual (1, bindable.GetValue (prop));
+		}
+
 	}
 }
