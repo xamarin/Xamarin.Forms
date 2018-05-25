@@ -20,6 +20,7 @@ namespace Xamarin.Forms.Platform.Android
 		TextColorSwitcher _textColorSwitcher;
 		bool _disposed;
 		ImeAction _currentInputImeFlag;
+		IElementController ElementController => Element as IElementController;
 
 		public EntryRenderer(Context context) : base(context)
 		{
@@ -35,7 +36,7 @@ namespace Xamarin.Forms.Platform.Android
 		bool TextView.IOnEditorActionListener.OnEditorAction(TextView v, ImeAction actionId, KeyEvent e)
 		{
 			// Fire Completed and dismiss keyboard for hardware / physical keyboards
-			if (actionId == ImeAction.Done || actionId == _currentInputImeFlag || (actionId == ImeAction.ImeNull && e.KeyCode == Keycode.Enter && e.Action == KeyEventActions.Up) )
+			if (actionId == ImeAction.Done || actionId == _currentInputImeFlag || (actionId == ImeAction.ImeNull && e.KeyCode == Keycode.Enter && e.Action == KeyEventActions.Up))
 			{
 				Control.ClearFocus();
 				v.HideKeyboard();
@@ -75,10 +76,11 @@ namespace Xamarin.Forms.Platform.Android
 			if (e.OldElement == null)
 			{
 				var textView = CreateNativeControl();
-				
+
 				textView.AddTextChangedListener(this);
 				textView.SetOnEditorActionListener(this);
 				textView.OnKeyboardBackPressed += OnKeyboardBackPressed;
+				textView.SelectionChanged += SelectionChanged;
 
 				var useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
 
@@ -98,6 +100,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateMaxLength();
 			UpdateImeOptions();
 			UpdateReturnType();
+			UpdateCursorSelection();
 		}
 
 		protected override void Dispose(bool disposing)
@@ -114,6 +117,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (Control != null)
 				{
 					Control.OnKeyboardBackPressed -= OnKeyboardBackPressed;
+					Control.SelectionChanged -= SelectionChanged;
 				}
 			}
 
@@ -164,6 +168,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateImeOptions();
 			else if (e.PropertyName == Entry.ReturnTypeProperty.PropertyName)
 				UpdateReturnType();
+			else if (e.PropertyName == Entry.CursorPositionProperty.PropertyName || e.PropertyName == Entry.SelectionLengthProperty.PropertyName)
+				UpdateCursorSelection();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -187,7 +193,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateAlignment()
 		{
-			Control.UpdateHorizontalAlignment(Element.HorizontalTextAlignment);
+			Control.UpdateHorizontalAlignment(Element.HorizontalTextAlignment, Context.HasRtlSupport());
 		}
 
 		void UpdateColor()
@@ -247,7 +253,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			Control?.ClearFocus();
 		}
-    
+
 		void UpdateMaxLength()
 		{
 			var currentFilters = new List<IInputFilter>(Control?.GetFilters() ?? new IInputFilter[0]);
@@ -278,6 +284,42 @@ namespace Xamarin.Forms.Platform.Android
 			
 			Control.ImeOptions = Element.ReturnType.ToAndroidImeAction();
 			_currentInputImeFlag = Control.ImeOptions;
+		}
+
+		void SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			var control = Control;
+			if (control == null || Element == null)
+				return;
+
+			var start = Element.CursorPosition;
+
+			if (control.SelectionStart != start)
+				ElementController?.SetValueFromRenderer(Entry.CursorPositionProperty, control.SelectionStart);
+
+			var selectionLength = control.SelectionEnd - control.SelectionStart;
+			if (selectionLength != Element.SelectionLength)
+				ElementController?.SetValueFromRenderer(Entry.SelectionLengthProperty, selectionLength);
+		}
+
+
+		void UpdateCursorSelection()
+		{
+			var control = Control;
+			if (control == null || Element == null)
+				return;
+
+			if (Element.IsSet(Entry.CursorPositionProperty) || Element.IsSet(Entry.SelectionLengthProperty))
+			{
+				var start = Element.CursorPosition;
+				var end = System.Math.Min(control.Length(), Element.CursorPosition + Element.SelectionLength);
+
+				if (control.SelectionStart != start || control.SelectionEnd != end)
+				{
+					control.SetSelection(start, end);
+					control.RequestFocus();
+				}
+			}
 		}
 	}
 }
