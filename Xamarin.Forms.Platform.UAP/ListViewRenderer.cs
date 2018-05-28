@@ -17,6 +17,7 @@ using WBinding = Windows.UI.Xaml.Data.Binding;
 using WApp = Windows.UI.Xaml.Application;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
+using WItemsControl = Windows.UI.Xaml.Controls.ItemsControl;
 using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.ListView;
 using System.Collections.ObjectModel;
 using UwpScrollBarVisibility = Windows.UI.Xaml.Controls.ScrollBarVisibility;
@@ -69,6 +70,8 @@ namespace Xamarin.Forms.Platform.UWP
 					};
 
 					List.SelectionChanged += OnControlSelectionChanged;
+
+					List.SetBinding(WItemsControl.ItemsSourceProperty, "");
 				}
 
 				ReloadData();
@@ -772,5 +775,41 @@ namespace Xamarin.Forms.Platform.UWP
 				: new ListViewAutomationPeer(List);
 		}
 
+	}
+
+	public class ListView2Renderer : ViewRenderer<ListView2, WItemsControl>
+	{
+		protected WItemsControl ItemsControl { get; private set; }
+
+		protected override void OnElementChanged(ElementChangedEventArgs<ListView2> args)
+		{
+			base.OnElementChanged(args);
+
+			// TODO hartez 2018-05-22 12:58 PM Unhook old element stuff
+			//if (args.OldElement != null)
+			//{
+			//}
+
+			if (args.NewElement != null)
+			{
+				if (ItemsControl == null)
+				{
+					// TODO hartez 2018-05-22 12:08 PM control selection should be based on layout
+					//ItemsControl = new WListView();
+
+					ItemsControl = new Windows.UI.Xaml.Controls.GridView();
+
+					SetNativeControl(ItemsControl);
+				}
+
+				// TODO hartez 2018-05-22 12:59 PM Handle grouping
+				var cvs = new CollectionViewSource
+				{
+					Source = Element.ItemsSource, IsSourceGrouped = false
+				};
+
+				ItemsControl.ItemsSource = cvs.View;
+			}
+		}
 	}
 }
