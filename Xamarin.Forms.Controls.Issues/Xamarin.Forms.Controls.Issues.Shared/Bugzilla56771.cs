@@ -55,7 +55,6 @@ namespace Xamarin.Forms.Controls.Issues
 			var buttonI = new Button
 			{
 				Text = "Insert odd",
-				AutomationId = BtnAdd,
 				Command = new Command(() =>
 				{
 					try
