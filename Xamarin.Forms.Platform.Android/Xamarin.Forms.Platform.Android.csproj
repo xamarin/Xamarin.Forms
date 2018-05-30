@@ -140,6 +140,9 @@
     <Compile Include="Renderers\AlignmentExtensions.cs" />
     <Compile Include="Renderers\BorderDrawable.cs" />
     <Compile Include="Renderers\ButtonRenderer.cs" />
+    <Compile Include="Renderers\ButtonDrawable.cs" />
+    <Compile Include="Renderers\AlignmentExtensions.cs" />
+    <Compile Include="Renderers\CollectionViewRenderer.cs" />
     <Compile Include="Renderers\ConditionalFocusLayout.cs" />
     <Compile Include="Renderers\DescendantFocusToggler.cs" />
     <Compile Include="Renderers\FormsEditText.cs" />

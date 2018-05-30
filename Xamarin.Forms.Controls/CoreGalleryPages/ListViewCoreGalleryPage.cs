@@ -291,9 +291,9 @@ namespace Xamarin.Forms.Controls
 		}
 	}
 
-	internal class ListView2CoreGalleryPage : CoreGalleryPage<ListView2>
+	internal class ListView2CoreGalleryPage : CoreGalleryPage<CollectionView>
 	{
-		protected override void InitializeElement(ListView2 element)
+		protected override void InitializeElement(CollectionView element)
 		{
 			base.InitializeElement(element);
 
@@ -307,6 +307,8 @@ namespace Xamarin.Forms.Controls
 			element.ItemsSource = items;
 
 			element.HeightRequest = 500;
+
+			element.ItemsLayout = ListItemsLayout.HorizontalList;
 		}
 	}
 }

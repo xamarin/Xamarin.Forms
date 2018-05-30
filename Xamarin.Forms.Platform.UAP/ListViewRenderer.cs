@@ -18,6 +18,7 @@ using WApp = Windows.UI.Xaml.Application;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 using WItemsControl = Windows.UI.Xaml.Controls.ItemsControl;
+using WApplication = Windows.UI.Xaml.Application;
 using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.ListView;
 using System.Collections.ObjectModel;
 using UwpScrollBarVisibility = Windows.UI.Xaml.Controls.ScrollBarVisibility;
@@ -777,11 +778,12 @@ namespace Xamarin.Forms.Platform.UWP
 
 	}
 
-	public class ListView2Renderer : ViewRenderer<ListView2, WItemsControl>
+	// TODO hartez 2018/05/29 14:27:55 Move this into its own file	
+	public class ListView2Renderer : ViewRenderer<CollectionView, WItemsControl>
 	{
 		protected WItemsControl ItemsControl { get; private set; }
 
-		protected override void OnElementChanged(ElementChangedEventArgs<ListView2> args)
+		protected override void OnElementChanged(ElementChangedEventArgs<CollectionView> args)
 		{
 			base.OnElementChanged(args);
 
@@ -795,10 +797,7 @@ namespace Xamarin.Forms.Platform.UWP
 				if (ItemsControl == null)
 				{
 					// TODO hartez 2018-05-22 12:08 PM control selection should be based on layout
-					//ItemsControl = new WListView();
-
-					ItemsControl = new Windows.UI.Xaml.Controls.GridView();
-
+					ItemsControl = CreateNativeItemsControl(args.NewElement.ItemsLayout);
 					SetNativeControl(ItemsControl);
 				}
 
@@ -810,6 +809,26 @@ namespace Xamarin.Forms.Platform.UWP
 
 				ItemsControl.ItemsSource = cvs.View;
 			}
+		}
+
+		protected virtual WItemsControl CreateNativeItemsControl(IItemsLayout layout)
+		{
+			// TODO hartez 2018/05/29 15:04:50 Handle GridItemsLayout	
+
+			if (layout is ListItemsLayout listItemsLayout 
+				&& listItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal)
+			{
+				var horizontalListView = new WListView
+				{
+					// TODO hartez 2018/05/29 15:38:04 Make sure the ItemsViewStyles.xaml xbf gets into the nuspec	
+					ItemsPanel = (ItemsPanelTemplate)WApplication.Current.Resources["HorizontalListItemsPanel"]
+				};
+
+				return horizontalListView;
+			}
+
+			// Default to a plain old vertical ListView
+			return new WListView();
 		}
 	}
 }

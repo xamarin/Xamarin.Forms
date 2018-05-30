@@ -1,19 +1,27 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Xamarin.Forms
 {
-	public class ItemsControl : View
+	public class ItemsView : View
 	{
 		public static readonly BindableProperty ItemsSourceProperty =
-			BindableProperty.Create(nameof(ItemsSource), typeof(IEnumerable), typeof(ItemsControl), null);
+			BindableProperty.Create(nameof(ItemsSource), typeof(IEnumerable), typeof(ItemsView), null);
 
 		public IEnumerable ItemsSource 
 		{
 			get => (IEnumerable)GetValue(ItemsSourceProperty);
 			set => SetValue(ItemsSourceProperty, value);
+		}
+
+		public static readonly BindableProperty ItemsLayoutProperty =
+			BindableProperty.Create(nameof(ItemsLayout), typeof(IItemsLayout), typeof(ItemsView), 
+				ListItemsLayout.VerticalList);
+
+		public IItemsLayout ItemsLayout
+		{
+			get => (IItemsLayout)GetValue(ItemsLayoutProperty);
+			set => SetValue(ItemsLayoutProperty, value);
 		}
 
 		protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint)
@@ -45,9 +53,4 @@ namespace Xamarin.Forms
 			// TODO hartez 2018-05-22 05:07 PM Work out measurement heuristics if the ItemTemplate gives us sizes
 		}
 	}
-
-	public class ListView2 : ItemsControl
-    {
-	    
-    }
 }
