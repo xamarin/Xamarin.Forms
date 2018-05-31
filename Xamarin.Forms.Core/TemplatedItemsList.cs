@@ -337,6 +337,8 @@ namespace Xamarin.Forms.Internals
 			get { return GetOrCreateContent(index, ListProxy[index]); }
 		}
 
+		public bool HasCollisions(object item) => ListProxy.HasCollisions(item);
+
 		public int GetDescendantCount()
 		{
 			if (!IsGroupingEnabled)

@@ -43,7 +43,7 @@ namespace Xamarin.Forms.Platform.UWP
 			_propertyChangedHandler = OnCellPropertyChanged;
 		}
 
-		public Cell Cell		
+		public Cell Cell
 		{
 			get { return (Cell)GetValue(CellProperty); }
 			set { SetValue(CellProperty, value); }
@@ -222,15 +222,23 @@ namespace Xamarin.Forms.Platform.UWP
 
 				if (template != null)
 				{
-					if (lv.IsGroupingEnabled)
+					// if there are several such elements, it is impossible to know the index of the element.
+					if (lv.TemplatedItems.HasCollisions(newContext))
 					{
-						cell = isGroupHeader 
-							? RealizeGroupedHeaderTemplate(lv.TemplatedItems, template, newContext) 
-							: RealizeGroupedItemTemplate(lv.TemplatedItems, template, newContext);
+						cell = template.CreateContent() as Cell;
 					}
 					else
 					{
-						cell = RealizeItemTemplate(lv.TemplatedItems, template, newContext);
+						if (lv.IsGroupingEnabled)
+						{
+							cell = isGroupHeader
+								? RealizeGroupedHeaderTemplate(lv.TemplatedItems, template, newContext)
+								: RealizeGroupedItemTemplate(lv.TemplatedItems, template, newContext);
+						}
+						else
+						{
+							cell = RealizeItemTemplate(lv.TemplatedItems, template, newContext);
+						}
 					}
 				}
 				else
