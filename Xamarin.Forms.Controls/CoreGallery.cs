@@ -270,7 +270,7 @@ namespace Xamarin.Forms.Controls
 		}
 
 		List<GalleryPageFactory> _pages = new List<GalleryPageFactory> {
-				new GalleryPageFactory(() => new ListView2CoreGalleryPage(), "ListView2 Gallery"),
+				new GalleryPageFactory(() => new CollectionViewCoreGalleryPage(), "CollectionView Gallery"),
 				new GalleryPageFactory(() => new Issues.PerformanceGallery(), "Performance"),
 				new GalleryPageFactory(() => new EntryReturnTypeGalleryPage(), "Entry ReturnType "),
 				new GalleryPageFactory(() => new VisualStateManagerGallery(), "VisualStateManager Gallery"),

@@ -779,6 +779,7 @@ namespace Xamarin.Forms.Platform.UWP
 	}
 
 	// TODO hartez 2018/05/29 14:27:55 Move this into its own file	
+	// TODO hartez 2018/05/31 15:02:06 Rename this to CollectionViewRenderer	
 	public class ListView2Renderer : ViewRenderer<CollectionView, WItemsControl>
 	{
 		protected WItemsControl ItemsControl { get; private set; }

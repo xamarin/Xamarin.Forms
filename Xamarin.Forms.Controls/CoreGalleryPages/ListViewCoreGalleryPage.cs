@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Threading;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
@@ -288,27 +287,6 @@ namespace Xamarin.Forms.Controls
 			Add(selectedItemContainer);
 			Add(fastScrollItemContainer);
 			Add(scrollbarVisibilityContainer);
-		}
-	}
-
-	internal class ListView2CoreGalleryPage : CoreGalleryPage<CollectionView>
-	{
-		protected override void InitializeElement(CollectionView element)
-		{
-			base.InitializeElement(element);
-
-			var items = new List<string>();
-
-			for (int n = 0; n < 1000; n++)
-			{
-				items.Add(DateTime.Now.AddDays(n).ToLongDateString());
-			}
-
-			element.ItemsSource = items;
-
-			element.HeightRequest = 500;
-
-			element.ItemsLayout = ListItemsLayout.HorizontalList;
 		}
 	}
 }
