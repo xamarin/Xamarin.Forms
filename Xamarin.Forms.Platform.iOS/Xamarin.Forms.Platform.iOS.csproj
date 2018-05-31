@@ -112,6 +112,7 @@
     <Compile Include="CADisplayLinkTicker.cs" />
     <Compile Include="CollectionView\CollectionViewController.cs" />
     <Compile Include="CollectionView\DefaultCell.cs" />
+    <Compile Include="CollectionView\ListViewLayout.cs" />
     <Compile Include="DisposeHelpers.cs" />
     <Compile Include="EffectUtilities.cs" />
     <Compile Include="ExportCellAttribute.cs" />
