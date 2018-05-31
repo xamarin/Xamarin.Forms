@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 
 #if __MOBILE__
 using UIKit;
@@ -213,6 +214,22 @@ namespace Xamarin.Forms.Platform.MacOS
 				var uiRecognizer = CreateTapRecognizer(tapRecognizer.NumberOfTapsRequired, returnAction);
 				return uiRecognizer;
 			}
+
+			var swipeRecognizer = recognizer as SwipeGestureRecognizer;
+			if (swipeRecognizer != null)
+			{
+				var returnAction = new Action<SwipeDirection>((direction) =>
+				{
+					var swipeGestureRecognizer = weakRecognizer.Target as SwipeGestureRecognizer;
+					var eventTracker = weakEventTracker.Target as EventTracker;
+					var view = eventTracker?._renderer.Element as View;
+
+					if (swipeGestureRecognizer != null && view != null)
+						swipeGestureRecognizer.SendSwiped(view, direction);
+				});
+				var uiRecognizer = CreateSwipeRecognizer(swipeRecognizer.Direction, returnAction, 1);
+				return uiRecognizer;
+			}
 #endif
 
 			if (recognizer is ChildGestureRecognizer childRecognizer)
@@ -367,12 +384,25 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			var result = new UIPanGestureRecognizer(action);
 			result.MinimumNumberOfTouches = result.MaximumNumberOfTouches = (uint)numTouches;
+
+			// enable touches to pass through so that underlying scrolling views will still receive the pan
+			result.ShouldRecognizeSimultaneously = (g, o) => Application.Current?.OnThisPlatform().GetPanGestureRecognizerShouldRecognizeSimultaneously() ?? false;
 			return result;
 		}
 
 		UIPinchGestureRecognizer CreatePinchRecognizer(Action<UIPinchGestureRecognizer> action)
 		{
 			var result = new UIPinchGestureRecognizer(action);
+			return result;
+		}
+
+		UISwipeGestureRecognizer CreateSwipeRecognizer(SwipeDirection direction, Action<SwipeDirection> action, int numFingers = 1)
+		{
+			var result = new UISwipeGestureRecognizer();
+			result.NumberOfTouchesRequired = (uint)numFingers;
+			result.Direction = (UISwipeGestureRecognizerDirection)direction;
+			result.ShouldRecognizeSimultaneously = (g, o) => true;
+			result.AddTarget(() => action(direction));
 			return result;
 		}
 

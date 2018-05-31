@@ -127,6 +127,8 @@
     <Compile Include="AttachedStateEffectRenderer.cs" />
     <Compile Include="BorderEffect.cs" />
     <Compile Include="DisposePageRenderer.cs" />
+    <Compile Include="RegistrarValidationService.cs" />
+    <Compile Include="SampleNativeControl.cs" />
     <Compile Include="_2489CustomRenderer.cs" />
     <Compile Include="_57114Renderer.cs" />
     <Compile Include="_58406EffectRenderer.cs" />
@@ -136,6 +138,7 @@
     <Content Include="coffee.png" />
     <Content Include="cover1.jpg" />
     <Content Include="cover1small.jpg" />
+    <Content Include="crimson.jpg" />
     <Content Include="crimsonsmall.jpg" />
     <Content Include="default.css" />
     <Content Include="invalidimage.jpg" />
