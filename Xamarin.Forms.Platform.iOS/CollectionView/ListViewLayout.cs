@@ -1,31 +1,44 @@
-﻿using CoreGraphics;
+﻿using System;
+using System.Diagnostics;
+using CoreGraphics;
 using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	// TODO hartez 2018/05/31 11:50:26 Add a property for scroll direction	
-	// TODO hartez 2018/05/31 11:50:43 Add a property for the fixed width/height and use it in ItemSize	
 	internal class ListViewLayout : UICollectionViewFlowLayout
 	{
-		public ListViewLayout()
+		readonly Func<nfloat> _getConstrainedDimension;
+
+		public ListViewLayout(UICollectionViewScrollDirection scrollDirection, Func<nfloat> getConstrainedDimension)
 		{
-			Initialize();
-		}
-		
-		void Initialize()
-		{
-			EstimatedItemSize = new CGSize(200, 40);
-			ScrollDirection = UICollectionViewScrollDirection.Vertical;
+			_getConstrainedDimension = getConstrainedDimension;
+			Initialize(scrollDirection);
 		}
 
-		public override CGSize ItemSize {
+		public override CGSize ItemSize
+		{
 			get
 			{
-				// TODO hartez 2018/05/30 12:32:16 This itemheight is very obviously not what we want	
-				var x = new CGSize(200, 40);
-				return x;
+				// TODO hartez 2018/06/01 09:53:24 Can't use this set item size forever	
+
+				Debug.WriteLine($">>>>> ListViewLayout ItemSize 22: _getConstrainedDimension = {_getConstrainedDimension()}");
+
+				return ScrollDirection == UICollectionViewScrollDirection.Horizontal
+					? new CGSize(40, _getConstrainedDimension())
+					: new CGSize(_getConstrainedDimension(), 40);
 			}
 			set { base.ItemSize = value; }
 		}
+
+		void Initialize(UICollectionViewScrollDirection scrollDirection)
+		{
+			//EstimatedItemSize = scrollDirection == UICollectionViewScrollDirection.Horizontal
+			//	? new CGSize(40, _constrainedDimension)
+			//	: new CGSize(_constrainedDimension, 40);
+
+			ScrollDirection = scrollDirection;
+		}
+
+		
 	}
 }

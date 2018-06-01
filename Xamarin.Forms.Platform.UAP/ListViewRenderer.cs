@@ -797,8 +797,7 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				if (ItemsControl == null)
 				{
-					// TODO hartez 2018-05-22 12:08 PM control selection should be based on layout
-					ItemsControl = CreateNativeItemsControl(args.NewElement.ItemsLayout);
+					ItemsControl = SelectLayout(args.NewElement.ItemsLayout);
 					SetNativeControl(ItemsControl);
 				}
 
@@ -812,11 +811,11 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		protected virtual WItemsControl CreateNativeItemsControl(IItemsLayout layout)
+		protected virtual WItemsControl SelectLayout(IItemsLayout layoutSpecification)
 		{
 			// TODO hartez 2018/05/29 15:04:50 Handle GridItemsLayout	
 
-			if (layout is ListItemsLayout listItemsLayout 
+			if (layoutSpecification is ListItemsLayout listItemsLayout 
 				&& listItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal)
 			{
 				var horizontalListView = new WListView

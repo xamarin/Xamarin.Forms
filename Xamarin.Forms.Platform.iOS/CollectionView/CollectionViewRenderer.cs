@@ -26,19 +26,28 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (e.NewElement != null)
 			{
-				// TODO hartez 2018/05/31 15:01:19 Check for known layout types	
-				// That check should be done in its own protected virtual method (see UWP implementation)
-
-				// TODO hartez 2018/05/31 15:06:28 Set the scroll direction and item width/height	
-
-				var layout = new ListViewLayout();
+				var layout = SelectLayout(e.NewElement.ItemsLayout);
 				_collectionViewController = new CollectionViewController(e.NewElement.ItemsSource, layout);
 				SetNativeControl(_collectionViewController.CollectionView);
-
 				_collectionViewController.CollectionView.BackgroundColor = UIColor.Clear;
 			}
 
 			base.OnElementChanged(e);
+		}
+
+		protected virtual UICollectionViewLayout SelectLayout(IItemsLayout layoutSpecification)
+		{
+			if (layoutSpecification is ListItemsLayout listItemsLayout)
+			{
+				return listItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal
+					? new ListViewLayout(UICollectionViewScrollDirection.Horizontal, () => Control.Bounds.Height)
+					: new ListViewLayout(UICollectionViewScrollDirection.Vertical, () => Control.Bounds.Width);
+			}
+
+			// TODO hartez 2018/06/01 11:07:36 Handle Grid	
+
+			// Fall back to vertical list
+			return new ListViewLayout(UICollectionViewScrollDirection.Vertical, () => Control.ContentSize.Width);
 		}
 	}
 }
