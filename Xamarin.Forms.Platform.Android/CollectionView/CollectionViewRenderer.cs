@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -7,58 +6,12 @@ using Android.Content;
 using Android.Runtime;
 using Android.Support.V7.Widget;
 using Android.Views;
-using Android.Widget;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android.FastRenderers;
 using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	internal class CollectionViewAdapter : RecyclerView.Adapter
-	{
-		readonly ItemsView _itemsView;
-		readonly Context _context;
-
-		// TODO hartez 2018/05/29 17:06:45 Reconcile the type/name mismatch here	
-		// This class should probably be something like ItemsViewAdapter
-		// TODO hartez 2018/05/30 08:54:46 Instead of taking the ItemsView, this should take the ItemsSource directly	
-		// TODO hartez 2018/05/30 08:55:12 The renderer should be watching the ItemsView for the ItemsSource being reset and create a new adapter	
-		internal CollectionViewAdapter(ItemsView itemsView, Context context)
-		{
-			_itemsView = itemsView;
-			_context = context;
-		}
-
-		public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
-		{
-			// TODO hartez 2018/05/30 08:41:05 This needs a wrapper which can interpret the ItemsSource as an IList for us	
-			// TODO hartez 2018/05/31 09:26:18 Can we just use CollectionViewSource everywhere?	
-			if (holder is ViewHolder textViewHolder && _itemsView.ItemsSource is IList list)
-			{
-				textViewHolder.TextView.Text = list[position].ToString();
-			}
-		}
-
-		internal class ViewHolder : RecyclerView.ViewHolder
-		{
-			public TextView TextView { get; set; }
-
-			public ViewHolder(TextView itemView) : base(itemView)
-			{
-				TextView = itemView;
-			}
-		}
-
-		public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)
-		{
-			var view = new TextView(_context);
-			return new ViewHolder(view);
-		}
-
-		// TODO hartez 2018/05/29 17:08:30 Very naive implementation, obviously we'll need something better	
-		public override int ItemCount => (_itemsView.ItemsSource as IList).Count;
-	}
-
 	public class CollectionViewRenderer : RecyclerView, IVisualElementRenderer, IEffectControlProvider
 	{
 		ItemsView ItemsView { get; set; }
@@ -146,10 +99,27 @@ namespace Xamarin.Forms.Platform.Android
 				// TODO hartez 2018/05/29 20:28:14 Review whether we really need to keep a ref to adapter	
 				_adapter = new CollectionViewAdapter(args.NewElement, Context);
 				SetAdapter(_adapter);
-				SetLayoutManager(new LinearLayoutManager(Context));
+				SetLayoutManager(SelectLayoutManager(args.NewElement.ItemsLayout));
 			}
 
 			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(args.OldElement, args.NewElement));;
+		}
+
+		protected virtual RecyclerView.LayoutManager SelectLayoutManager(IItemsLayout layoutSpecification)
+		{
+			if (layoutSpecification is ListItemsLayout listItemsLayout)
+			{
+				var orientation = listItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal
+					? LinearLayoutManager.Horizontal
+					: LinearLayoutManager.Vertical;
+
+				return new LinearLayoutManager(Context, orientation, false);
+			}
+
+			// TODO hartez 2018/06/01 09:28:16 Handle grid	
+
+			// Fall back to plain old vertical list
+			return new LinearLayoutManager(Context);
 		}
 
 		void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
