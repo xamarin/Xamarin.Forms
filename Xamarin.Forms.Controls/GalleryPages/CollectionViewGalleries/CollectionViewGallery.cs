@@ -1,24 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries
+namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 {
 	public class CollectionViewGallery : ContentPage
 	{
-		static Button GalleryNav(string galleryName, Func<ContentPage> gallery, INavigation nav)
-		{
-			var button = new Button { Text = $"{galleryName}" };
-			button.Clicked += (sender, args) => { nav.PushAsync(gallery()); };
-			return button;
-		}
-
 		public CollectionViewGallery()
 		{
 			Content = new StackLayout
 			{
 				Children =
 				{
-					GalleryNav("Default Text Galleries", () => new DefaultTextGallery(), Navigation),
+					GalleryBuilder.NavButton("Default Text Galleries", () => new DefaultTextGallery(), Navigation),
 				}
 			};
 		}
@@ -26,13 +19,6 @@ namespace Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries
 
 	public class DefaultTextGallery : ContentPage
 	{
-		static Button GalleryNav(string control, Func<ContentPage> gallery, INavigation nav)
-		{
-			var button = new Button { Text = $"{control} Disabled States" };
-			button.Clicked += (sender, args) => { nav.PushAsync(gallery()); };
-			return button;
-		}
-
 		public DefaultTextGallery()
 		{
 			var desc = "No DataTemplates; just using the ToString() of the objects in the source.";
@@ -48,7 +34,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries
 					Children =
 					{
 						descriptionLabel,
-						GalleryNav("Vertical List (Code)", () => new TextCodeVerticalListGallery(), Navigation),
+						GalleryBuilder.NavButton("Vertical List (Code)", () => new TextCodeVerticalListGallery(), Navigation),
+						GalleryBuilder.NavButton("Horizontal List (Code)", () => new TextCodeHorizontalListGallery(), Navigation),
 					}
 				}
 			};
@@ -66,12 +53,31 @@ namespace Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries
 				items.Add(DateTime.Now.AddDays(n).ToLongDateString());
 			}
 
-			var collectionView = new CollectionView();
+			var collectionView = new CollectionView { ItemsSource = items };
 
-			collectionView.ItemsSource = items;
-			
 			// This the default
 			//collectionView.ItemsLayout = ListItemsLayout.VerticalList; 
+
+			Content = collectionView;
+		}
+	}
+
+	public class TextCodeHorizontalListGallery : ContentPage
+	{
+		public TextCodeHorizontalListGallery()
+		{
+			var items = new List<string>();
+
+			for (int n = 0; n < 1000; n++)
+			{
+				items.Add(DateTime.Now.AddDays(n).ToLongDateString());
+			}
+
+			var collectionView = new CollectionView
+			{
+				ItemsSource = items,
+				ItemsLayout = ListItemsLayout.HorizontalList
+			};
 
 			Content = collectionView;
 		}
