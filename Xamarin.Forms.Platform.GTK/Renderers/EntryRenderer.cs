@@ -91,6 +91,10 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
             {
                 Control.SetBackgroundColor(Element.BackgroundColor.ToGtkColor());
             }
+			else
+			{
+				Control.SetBackgroundColor(Color.Transparent.ToGtkColor());
+			}
         }
 
         private void UpdateText()
