@@ -141,19 +141,19 @@ namespace Xamarin.Forms.Platform.WPF
 	{
 		public async Task<System.Windows.Media.ImageSource> LoadImageAsync(ImageSource imagesource, CancellationToken cancelationToken = new CancellationToken())
 		{
-			BitmapImage bitmapimage = null;
-			StreamImageSource streamsource = imagesource as StreamImageSource;
-			if (streamsource != null && streamsource.Stream != null)
+			BitmapImage bitmapImage = null;
+
+			if (imagesource is StreamImageSource streamsource && streamsource.Stream != null)
 			{
-				using (Stream stream = await ((IStreamImageSource)streamsource).GetStreamAsync(cancelationToken))
-				{
-					bitmapimage = new BitmapImage()
-					{
-						StreamSource = stream
-					};
-				}
+				Stream stream = await ((IStreamImageSource)streamsource).GetStreamAsync(cancelationToken);
+				bitmapImage = new BitmapImage();
+				bitmapImage.BeginInit();
+				bitmapImage.StreamSource = stream;
+				bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+				bitmapImage.EndInit();
 			}
-			return bitmapimage;
+
+			return bitmapImage;
 		}
 	}
 
