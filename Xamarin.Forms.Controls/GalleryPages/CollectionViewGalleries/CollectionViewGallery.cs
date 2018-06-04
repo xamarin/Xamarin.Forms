@@ -25,7 +25,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 
 			var descriptionLabel = new Label { Text = desc, Margin = new Thickness(2,2,2,2)};
 
-			Title = "Disabled states galleries";
+			Title = "Default Text Galleries";
 
 			Content = new ScrollView
 			{
@@ -50,7 +50,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 
 			for (int n = 0; n < 1000; n++)
 			{
-				items.Add(DateTime.Now.AddDays(n).ToLongDateString());
+				items.Add($"This is a long string. Will it wrap? Possibly. The only way to find out is to test this. {DateTime.Now.AddDays(n).ToLongDateString()}");
 			}
 
 			var collectionView = new CollectionView { ItemsSource = items };

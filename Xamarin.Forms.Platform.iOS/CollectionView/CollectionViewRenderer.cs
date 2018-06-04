@@ -14,6 +14,7 @@ namespace Xamarin.Forms.Platform.iOS
 	public class CollectionViewRenderer : ViewRenderer<CollectionView, UICollectionView>
 	{
 		CollectionViewController _collectionViewController;
+		ItemsViewLayout _layout;
 
 		public override UIViewController ViewController => _collectionViewController;
 
@@ -26,8 +27,8 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (e.NewElement != null)
 			{
-				var layout = SelectLayout(e.NewElement.ItemsLayout);
-				_collectionViewController = new CollectionViewController(e.NewElement.ItemsSource, layout);
+				_layout = SelectLayout(e.NewElement.ItemsLayout);
+				_collectionViewController = new CollectionViewController(e.NewElement.ItemsSource, _layout);
 				SetNativeControl(_collectionViewController.CollectionView);
 				_collectionViewController.CollectionView.BackgroundColor = UIColor.Clear;
 			}
@@ -35,19 +36,26 @@ namespace Xamarin.Forms.Platform.iOS
 			base.OnElementChanged(e);
 		}
 
-		protected virtual UICollectionViewLayout SelectLayout(IItemsLayout layoutSpecification)
+		public override void LayoutSubviews()
+		{
+			base.LayoutSubviews();
+
+			_layout.UpdateBounds(Control.Bounds);
+		}
+
+		protected virtual ItemsViewLayout SelectLayout(IItemsLayout layoutSpecification)
 		{
 			if (layoutSpecification is ListItemsLayout listItemsLayout)
 			{
 				return listItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal
-					? new ListViewLayout(UICollectionViewScrollDirection.Horizontal, () => Control.Bounds.Height)
-					: new ListViewLayout(UICollectionViewScrollDirection.Vertical, () => Control.Bounds.Width);
+					? new ListViewLayout(UICollectionViewScrollDirection.Horizontal)
+					: new ListViewLayout(UICollectionViewScrollDirection.Vertical);
 			}
 
 			// TODO hartez 2018/06/01 11:07:36 Handle Grid	
 
 			// Fall back to vertical list
-			return new ListViewLayout(UICollectionViewScrollDirection.Vertical, () => Control.ContentSize.Width);
+			return new ListViewLayout(UICollectionViewScrollDirection.Vertical);
 		}
 	}
 }
