@@ -84,6 +84,11 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void ReloadData()
 		{
+			if (Element?.ItemsSource == null)
+			{
+				return;
+			}
+
 			var allSourceItems = new ObservableCollection<object>();
 			foreach (var item in Element.ItemsSource)
 				allSourceItems.Add(item);
@@ -279,6 +284,11 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateGrouping()
 		{
+			if (Element?.ItemsSource == null)
+			{
+				return;
+			}
+
 			bool grouping = Element.IsGroupingEnabled;
 
 			((CollectionViewSource)List.DataContext).IsSourceGrouped = grouping;
