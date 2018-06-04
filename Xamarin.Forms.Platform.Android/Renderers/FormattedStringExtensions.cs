@@ -1,3 +1,5 @@
+using System;
+using System.Diagnostics;
 using System.Text;
 using Android.Graphics;
 using Android.Text;
@@ -17,10 +19,11 @@ namespace Xamarin.Forms.Platform.Android
 			var builder = new StringBuilder();
 			foreach (Span span in formattedString.Spans)
 			{
-				if (span.Text == null)
+				var text = span.Text;
+				if (text == null)
 					continue;
 
-				builder.Append(span.Text);
+				builder.Append(text);
 			}
 
 			var spannable = new SpannableString(builder.ToString());
@@ -28,16 +31,17 @@ namespace Xamarin.Forms.Platform.Android
 			var c = 0;
 			foreach (Span span in formattedString.Spans)
 			{
-				if (span.Text == null)
+				var text = span.Text;
+				if (text == null)
 					continue;
 
 				int start = c;
-				int end = start + span.Text.Length;
+				int end = start + text.Length;
 				c = end;
 
-				if (span.ForegroundColor != Color.Default)
+				if (span.TextColor != Color.Default)
 				{
-					spannable.SetSpan(new ForegroundColorSpan(span.ForegroundColor.ToAndroid()), start, end, SpanTypes.InclusiveExclusive);
+					spannable.SetSpan(new ForegroundColorSpan(span.TextColor.ToAndroid()), start, end, SpanTypes.InclusiveExclusive);
 				}
 				else if (defaultForegroundColor != Color.Default)
 				{
@@ -48,12 +52,15 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					spannable.SetSpan(new BackgroundColorSpan(span.BackgroundColor.ToAndroid()), start, end, SpanTypes.InclusiveExclusive);
 				}
-
+				if (span.LineHeight >= 0)
+				{
+					spannable.SetSpan(new LineHeightSpan(view, span.LineHeight), start, end, SpanTypes.InclusiveExclusive);
+				}
 				if (!span.IsDefault())
 #pragma warning disable 618 // We will need to update this when .Font goes away
 					spannable.SetSpan(new FontSpan(span.Font, view), start, end, SpanTypes.InclusiveInclusive);
 #pragma warning restore 618
-				else if (defaultFont != Font.Default)
+				else
 					spannable.SetSpan(new FontSpan(defaultFont, view), start, end, SpanTypes.InclusiveInclusive);
 			}
 			return spannable;
@@ -87,6 +94,27 @@ namespace Xamarin.Forms.Platform.Android
 				float value = Font.ToScaledPixel();
 				paint.TextSize = TypedValue.ApplyDimension(ComplexUnitType.Sp, value, TextView.Resources.DisplayMetrics);
 			}
+		}
+		class LineHeightSpan : Java.Lang.Object, ILineHeightSpan
+		{
+			private double _lineHeight;
+			private int _ascent;
+			private int _descent;
+
+			public LineHeightSpan(TextView view, double lineHeight)
+			{
+				_lineHeight = lineHeight;
+				Paint.FontMetricsInt fm = view.Paint.GetFontMetricsInt();
+				_ascent = fm.Ascent;
+				_descent = fm.Descent;
+			}
+
+			public void ChooseHeight(Java.Lang.ICharSequence text, int start, int end, int spanstartv, int v, Paint.FontMetricsInt fm)
+			{
+				fm.Ascent = (int) (_ascent * _lineHeight);
+				fm.Descent = (int) (_descent * _lineHeight);
+			}
+
 		}
 	}
 }

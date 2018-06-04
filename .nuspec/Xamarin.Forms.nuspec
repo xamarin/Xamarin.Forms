@@ -13,12 +13,12 @@
     <description>Build native UIs for iOS, Android, UWP, macOS, Tizen and many more from a single, shared C# codebase</description>
     <copyright>© Microsoft Corporation. All rights reserved.</copyright>
     <dependencies>
-      <group targetFramework="MonoAndroid71">
-        <dependency id="Xamarin.Android.Support.v4" version="25.4.0.2"/>
-        <dependency id="Xamarin.Android.Support.Design" version="25.4.0.2"/>
-        <dependency id="Xamarin.Android.Support.v7.AppCompat" version="25.4.0.2"/>
-        <dependency id="Xamarin.Android.Support.v7.CardView" version="25.4.0.2"/>
-        <dependency id="Xamarin.Android.Support.v7.MediaRouter" version="25.4.0.2"/>
+      <group targetFramework="MonoAndroid81">
+        <dependency id="Xamarin.Android.Support.v4" version="27.0.2"/>
+        <dependency id="Xamarin.Android.Support.Design" version="27.0.2"/>
+        <dependency id="Xamarin.Android.Support.v7.AppCompat" version="27.0.2"/>
+        <dependency id="Xamarin.Android.Support.v7.CardView" version="27.0.2"/>
+        <dependency id="Xamarin.Android.Support.v7.MediaRouter" version="27.0.2"/>
       </group>
       <group targetFramework="uap10.0">
         <dependency id="NETStandard.Library" version="2.0.1"/>
@@ -182,6 +182,7 @@
     <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\Resources.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
     <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\FormsTextBoxStyle.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
     <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\AutoSuggestStyle.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
+    <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\SliderStyle.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
     <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\MasterDetailControlStyle.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
     <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\PageControlStyle.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
     <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\TabbedPageStyle.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />

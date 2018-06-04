@@ -1,4 +1,5 @@
 using Foundation;
+using System;
 using Xamarin.Forms.Internals;
 #if __MOBILE__
 using UIKit;
@@ -21,7 +22,7 @@ namespace Xamarin.Forms.Platform.MacOS
 #pragma warning disable 0618 //retaining legacy call to obsolete code
 			var font = span.Font != Font.Default ? span.Font : defaultFont;
 #pragma warning restore 0618
-			var fgcolor = span.ForegroundColor;
+			var fgcolor = span.TextColor;
 			if (fgcolor.IsDefault)
 				fgcolor = defaultForegroundColor;
 			if (fgcolor.IsDefault)
@@ -52,10 +53,22 @@ namespace Xamarin.Forms.Platform.MacOS
 			return attributed;
 		}
 
-		internal static NSAttributedString ToAttributed(this Span span, Element owner, Color defaultForegroundColor)
+		internal static NSAttributedString ToAttributed(this Span span, Element owner, Color defaultForegroundColor, double lineHeight = -1.0)
 		{
 			if (span == null)
 				return null;
+
+			var text = span.Text;
+			if (text == null)
+				return null;
+
+			NSMutableParagraphStyle style = null;
+			lineHeight = span.LineHeight >= 0 ? span.LineHeight : lineHeight;
+			if (lineHeight >= 0)
+			{
+				style = new NSMutableParagraphStyle();
+				style.LineHeightMultiple = new nfloat(lineHeight);
+			}
 
 #if __MOBILE__
 			UIFont targetFont;
@@ -64,13 +77,13 @@ namespace Xamarin.Forms.Platform.MacOS
 			else
 				targetFont = span.ToUIFont();
 
-			var fgcolor = span.ForegroundColor;
+			var fgcolor = span.TextColor;
 			if (fgcolor.IsDefault)
 				fgcolor = defaultForegroundColor;
 			if (fgcolor.IsDefault)
 				fgcolor = Color.Black; // as defined by apple docs
 
-			return new NSAttributedString(span.Text, targetFont, fgcolor.ToUIColor(), span.BackgroundColor.ToUIColor());
+			return new NSAttributedString(text, targetFont, fgcolor.ToUIColor(), span.BackgroundColor.ToUIColor(), null, style);
 #else
 			NSFont targetFont;
 			if (span.IsDefault())
@@ -78,28 +91,31 @@ namespace Xamarin.Forms.Platform.MacOS
 			else
 				targetFont = span.ToNSFont();
 
-			var fgcolor = span.ForegroundColor;
+			var fgcolor = span.TextColor;
 			if (fgcolor.IsDefault)
 				fgcolor = defaultForegroundColor;
 			if (fgcolor.IsDefault)
 				fgcolor = Color.Black; // as defined by apple docs
 
-			return new NSAttributedString(span.Text, targetFont, fgcolor.ToNSColor(), span.BackgroundColor.ToNSColor());
+			return new NSAttributedString(text, targetFont, fgcolor.ToNSColor(), span.BackgroundColor.ToNSColor(),
+										  null, null, null, NSUnderlineStyle.None, NSUnderlineStyle.None, style);
 #endif
 		}
 
 		internal static NSAttributedString ToAttributed(this FormattedString formattedString, Element owner,
-			Color defaultForegroundColor)
+			Color defaultForegroundColor, double lineHeight = -1.0)
 		{
 			if (formattedString == null)
 				return null;
 			var attributed = new NSMutableAttributedString();
+
 			foreach (var span in formattedString.Spans)
 			{
-				if (span.Text == null)
+				var attributedString = span.ToAttributed(owner, defaultForegroundColor, lineHeight);
+				if (attributedString == null)
 					continue;
 
-				attributed.Append(span.ToAttributed(owner, defaultForegroundColor));
+				attributed.Append(attributedString);
 			}
 
 			return attributed;

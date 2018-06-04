@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using UwpScrollBarVisibility = Windows.UI.Xaml.Controls.ScrollBarVisibility;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -40,9 +41,10 @@ namespace Xamarin.Forms.Platform.UWP
 		protected override void Dispose(bool disposing)
 		{
 			if (Control != null)
-			{
 				Control.ViewChanged -= OnViewChanged;
-			}
+
+			if (Element != null)
+				Element.ScrollToRequested -= OnScrollToRequested;
 
 			base.Dispose(disposing);
 		}
@@ -74,7 +76,11 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				if (Control == null)
 				{
-					SetNativeControl(new ScrollViewer { HorizontalScrollBarVisibility = ScrollBarVisibility.Auto, VerticalScrollBarVisibility = ScrollBarVisibility.Auto });
+					SetNativeControl(new ScrollViewer
+					{
+						HorizontalScrollBarVisibility = ScrollBarVisibilityToUwp(e.NewElement.HorizontalScrollBarVisibility),
+						VerticalScrollBarVisibility = ScrollBarVisibilityToUwp(e.NewElement.VerticalScrollBarVisibility)
+					});
 
 					Control.ViewChanged += OnViewChanged;
 				}
@@ -97,6 +103,10 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateMargins();
 			else if (e.PropertyName == ScrollView.OrientationProperty.PropertyName)
 				UpdateOrientation();
+			else if (e.PropertyName == ScrollView.VerticalScrollBarVisibilityProperty.PropertyName)
+				UpdateVerticalScrollBarVisibiilty();
+			else if (e.PropertyName == ScrollView.HorizontalScrollBarVisibilityProperty.PropertyName)
+				UpdateHorizontalScrollBarVisibility();
 		}
 
 		void LoadContent()
@@ -126,7 +136,7 @@ namespace Xamarin.Forms.Platform.UWP
 			// values. The ScrollViewRenderer for Android does something similar by waiting up
 			// to 10ms for layout to occur.
 			int cycle = 0;
-			while (!Element.IsInNativeLayout)
+			while (Element != null && !Element.IsInNativeLayout)
 			{
 				await Task.Delay(TimeSpan.FromMilliseconds(1));
 				cycle++;
@@ -134,6 +144,9 @@ namespace Xamarin.Forms.Platform.UWP
 				if (cycle >= 10)
 					break;
 			}
+
+			if (Element == null)
+				return;
 
 			double x = e.ScrollX, y = e.ScrollY;
 
@@ -161,6 +174,11 @@ namespace Xamarin.Forms.Platform.UWP
 				Element.SendScrollFinished();
 		}
 
+		Windows.UI.Xaml.Thickness AddMargin(Windows.UI.Xaml.Thickness original, double left, double top, double right, double bottom)
+		{
+			return new Windows.UI.Xaml.Thickness(original.Left + left, original.Top + top, original.Right + right, original.Bottom + bottom);
+		}
+
 		void UpdateMargins()
 		{
 			var element = Control.Content as FrameworkElement;
@@ -171,15 +189,15 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				case ScrollOrientation.Horizontal:
 					// need to add left/right margins
-					element.Margin = new Windows.UI.Xaml.Thickness(Element.Padding.Left, 0, Element.Padding.Right, 0);
+					element.Margin = AddMargin(element.Margin, Element.Padding.Left, 0, Element.Padding.Right, 0);
 					break;
 				case ScrollOrientation.Vertical:
 					// need to add top/bottom margins
-					element.Margin = new Windows.UI.Xaml.Thickness(0, Element.Padding.Top, 0, Element.Padding.Bottom);
+					element.Margin = AddMargin(element.Margin, 0, Element.Padding.Top, 0, Element.Padding.Bottom);
 					break;
 				case ScrollOrientation.Both:
 					// need to add all margins
-					element.Margin = new Windows.UI.Xaml.Thickness(Element.Padding.Left, Element.Padding.Top, Element.Padding.Right, Element.Padding.Bottom);
+					element.Margin = AddMargin(element.Margin, Element.Padding.Left, Element.Padding.Top, Element.Padding.Right, Element.Padding.Bottom);
 					break;
 			}
 		}
@@ -188,12 +206,39 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (Element.Orientation == ScrollOrientation.Horizontal || Element.Orientation == ScrollOrientation.Both)
 			{
-				Control.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+				Control.HorizontalScrollBarVisibility = UwpScrollBarVisibility.Auto;
 			}
 			else
 			{
-				Control.HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled;
+				Control.HorizontalScrollBarVisibility = UwpScrollBarVisibility.Disabled;
 			}
+		}
+
+		UwpScrollBarVisibility ScrollBarVisibilityToUwp(ScrollBarVisibility visibility)
+		{
+			switch (visibility)
+			{
+				case ScrollBarVisibility.Always:
+					return UwpScrollBarVisibility.Visible;
+				case ScrollBarVisibility.Default:
+					return UwpScrollBarVisibility.Auto;
+				case ScrollBarVisibility.Never:
+					return UwpScrollBarVisibility.Hidden;
+				default:
+					return UwpScrollBarVisibility.Auto;
+			}
+		}
+
+		void UpdateVerticalScrollBarVisibiilty()
+		{
+			Control.VerticalScrollBarVisibility = ScrollBarVisibilityToUwp(Element.VerticalScrollBarVisibility);
+		}
+
+		void UpdateHorizontalScrollBarVisibility()
+		{
+			var orientation = Element.Orientation;
+			if (orientation == ScrollOrientation.Horizontal || orientation == ScrollOrientation.Both)
+				Control.HorizontalScrollBarVisibility = ScrollBarVisibilityToUwp(Element.HorizontalScrollBarVisibility);
 		}
 	}
 }

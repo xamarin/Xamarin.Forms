@@ -16,7 +16,7 @@ using Math = System.Math;
 
 namespace Xamarin.Forms.Maps.Android
 {
-	public class MapRenderer : ViewRenderer<Map, MapView>, GoogleMap.IOnCameraMoveListener, IOnMapReadyCallback 
+	public class MapRenderer : ViewRenderer<Map, MapView>, GoogleMap.IOnCameraMoveListener, IOnMapReadyCallback
 	{
 		const string MoveMessageName = "MapMoveToRegion";
 
@@ -73,6 +73,11 @@ namespace Xamarin.Forms.Maps.Android
 				{
 					MessagingCenter.Unsubscribe<Map, MapSpan>(this, MoveMessageName);
 					((ObservableCollection<Pin>)Element.Pins).CollectionChanged -= OnCollectionChanged;
+
+					foreach (Pin pin in Element.Pins)
+					{
+						pin.PropertyChanged -= PinOnPropertyChanged;
+					}
 				}
 
 				if (NativeMap != null)
@@ -105,6 +110,11 @@ namespace Xamarin.Forms.Maps.Android
 			{
 				Map oldMapModel = e.OldElement;
 				((ObservableCollection<Pin>)oldMapModel.Pins).CollectionChanged -= OnCollectionChanged;
+
+				foreach (Pin pin in oldMapModel.Pins)
+				{
+					pin.PropertyChanged -= PinOnPropertyChanged;
+				}
 
 				MessagingCenter.Unsubscribe<Map, MapSpan>(this, MoveMessageName);
 
@@ -182,31 +192,31 @@ namespace Xamarin.Forms.Maps.Android
 				MoveToRegion(Element.LastMoveToRegion, false);
 			}
 		}
-		
+
 		protected virtual void OnMapReady(GoogleMap map)
 		{
 			if (map == null)
 			{
 				return;
 			}
-			
+
 			map.SetOnCameraMoveListener(this);
 			map.InfoWindowClick += MapOnMarkerClick;
-			
+
 			map.UiSettings.ZoomControlsEnabled = Map.HasZoomEnabled;
 			map.UiSettings.ZoomGesturesEnabled = Map.HasZoomEnabled;
 			map.UiSettings.ScrollGesturesEnabled = Map.HasScrollEnabled;
 			map.MyLocationEnabled = map.UiSettings.MyLocationButtonEnabled = Map.IsShowingUser;
 			SetMapType();
 		}
-		
+
 		protected virtual MarkerOptions CreateMarker(Pin pin)
 		{
 			var opts = new MarkerOptions();
 			opts.SetPosition(new LatLng(pin.Position.Latitude, pin.Position.Longitude));
 			opts.SetTitle(pin.Label);
 			opts.SetSnippet(pin.Address);
-			
+
 			return opts;
 		}
 
@@ -229,10 +239,36 @@ namespace Xamarin.Forms.Maps.Android
 				var opts = CreateMarker(pin);
 				var marker = map.AddMarker(opts);
 
+				pin.PropertyChanged += PinOnPropertyChanged;
+
 				// associate pin with marker for later lookup in event handlers
 				pin.Id = marker.Id;
 				return marker;
 			}));
+		}
+
+		void PinOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			Pin pin = (Pin)sender;
+			Marker marker = _markers.FirstOrDefault(m => m.Id == (string)pin.Id);
+
+			if (marker == null)
+			{
+				return;
+			}
+
+			if (e.PropertyName == Pin.LabelProperty.PropertyName)
+			{
+				marker.Title = pin.Label;
+			}
+			else if (e.PropertyName == Pin.AddressProperty.PropertyName)
+			{
+				marker.Snippet = pin.Address;
+			}
+			else if (e.PropertyName == Pin.PositionProperty.PropertyName)
+			{
+				marker.Position = new LatLng(pin.Position.Latitude, pin.Position.Longitude);
+			}
 		}
 
 		void MapOnMarkerClick(object sender, GoogleMap.InfoWindowClickEventArgs eventArgs)
@@ -254,7 +290,7 @@ namespace Xamarin.Forms.Maps.Android
 				break;
 			}
 
-			// only consider event handled if a handler is present. 
+			// only consider event handled if a handler is present.
 			// Else allow default behavior of displaying an info window.
 			targetPin?.SendTap();
 		}
@@ -336,7 +372,9 @@ namespace Xamarin.Forms.Maps.Android
 
 			foreach (Pin p in pins)
 			{
-				var marker = _markers.FirstOrDefault(m => (object)m.Id == p.Id);
+				p.PropertyChanged -= PinOnPropertyChanged;
+				var marker = _markers.FirstOrDefault(m => m.Id == (string)p.Id);
+
 				if (marker == null)
 				{
 					continue;

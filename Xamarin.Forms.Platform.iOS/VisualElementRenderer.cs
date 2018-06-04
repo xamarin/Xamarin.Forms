@@ -403,6 +403,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 
 			_blur = new UIVisualEffectView(blurEffect);
+			_blur.UserInteractionEnabled = false;
 			LayoutSubviews();
 		}
 #endif

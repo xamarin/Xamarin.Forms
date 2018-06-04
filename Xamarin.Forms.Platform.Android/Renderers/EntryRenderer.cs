@@ -19,8 +19,8 @@ namespace Xamarin.Forms.Platform.Android
 		TextColorSwitcher _hintColorSwitcher;
 		TextColorSwitcher _textColorSwitcher;
 		bool _disposed;
-		//global::Android.Views.InputMethods.ImeFlags _defaultInputImeFlag;
 		ImeAction _currentInputImeFlag;
+		IElementController ElementController => Element as IElementController;
 
 		public EntryRenderer(Context context) : base(context)
 		{
@@ -80,6 +80,7 @@ namespace Xamarin.Forms.Platform.Android
 				textView.AddTextChangedListener(this);
 				textView.SetOnEditorActionListener(this);
 				textView.OnKeyboardBackPressed += OnKeyboardBackPressed;
+				textView.SelectionChanged += SelectionChanged;
 
 				var useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
 
@@ -98,6 +99,8 @@ namespace Xamarin.Forms.Platform.Android
 			UpdatePlaceholderColor();
 			UpdateMaxLength();
 			UpdateImeOptions();
+			UpdateReturnType();
+			UpdateCursorSelection();
 		}
 
 		protected override void Dispose(bool disposing)
@@ -114,6 +117,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (Control != null)
 				{
 					Control.OnKeyboardBackPressed -= OnKeyboardBackPressed;
+					Control.SelectionChanged -= SelectionChanged;
 				}
 			}
 
@@ -144,6 +148,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateInputType();
 			else if (e.PropertyName == InputView.IsSpellCheckEnabledProperty.PropertyName)
 				UpdateInputType();
+			else if (e.PropertyName == Entry.IsTextPredictionEnabledProperty.PropertyName)
+				UpdateInputType();
 			else if (e.PropertyName == Entry.HorizontalTextAlignmentProperty.PropertyName)
 				UpdateAlignment();
 			else if (e.PropertyName == Entry.FontAttributesProperty.PropertyName)
@@ -160,6 +166,10 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateMaxLength();
 			else if (e.PropertyName == PlatformConfiguration.AndroidSpecific.Entry.ImeOptionsProperty.PropertyName)
 				UpdateImeOptions();
+			else if (e.PropertyName == Entry.ReturnTypeProperty.PropertyName)
+				UpdateReturnType();
+			else if (e.PropertyName == Entry.CursorPositionProperty.PropertyName || e.PropertyName == Entry.SelectionLengthProperty.PropertyName)
+				UpdateCursorSelection();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -203,12 +213,23 @@ namespace Xamarin.Forms.Platform.Android
 			var keyboard = model.Keyboard;
 
 			Control.InputType = keyboard.ToInputType();
-			if (!(keyboard is Internals.CustomKeyboard) && model.IsSet(InputView.IsSpellCheckEnabledProperty))
+			if (!(keyboard is Internals.CustomKeyboard))
 			{
-				if ((Control.InputType & InputTypes.TextFlagNoSuggestions) != InputTypes.TextFlagNoSuggestions)
+				if (model.IsSet(InputView.IsSpellCheckEnabledProperty))
 				{
-					if (!model.IsSpellCheckEnabled)
-						Control.InputType = Control.InputType | InputTypes.TextFlagNoSuggestions;
+					if ((Control.InputType & InputTypes.TextFlagNoSuggestions) != InputTypes.TextFlagNoSuggestions)
+					{
+						if (!model.IsSpellCheckEnabled)
+							Control.InputType = Control.InputType | InputTypes.TextFlagNoSuggestions;
+					}
+				}
+				if (model.IsSet(Entry.IsTextPredictionEnabledProperty))
+				{
+					if ((Control.InputType & InputTypes.TextFlagNoSuggestions) != InputTypes.TextFlagNoSuggestions)
+					{
+						if (!model.IsTextPredictionEnabled)
+							Control.InputType = Control.InputType | InputTypes.TextFlagNoSuggestions;
+					}
 				}
 			}
 
@@ -254,6 +275,51 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (currentControlText.Length > Element.MaxLength)
 				Control.Text = currentControlText.Substring(0, Element.MaxLength);
+		}
+
+		void UpdateReturnType()
+		{
+			if (Control == null || Element == null)
+				return;
+			
+			Control.ImeOptions = Element.ReturnType.ToAndroidImeAction();
+			_currentInputImeFlag = Control.ImeOptions;
+		}
+
+		void SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			var control = Control;
+			if (control == null || Element == null)
+				return;
+
+			var start = Element.CursorPosition;
+
+			if (control.SelectionStart != start)
+				ElementController?.SetValueFromRenderer(Entry.CursorPositionProperty, control.SelectionStart);
+
+			var selectionLength = control.SelectionEnd - control.SelectionStart;
+			if (selectionLength != Element.SelectionLength)
+				ElementController?.SetValueFromRenderer(Entry.SelectionLengthProperty, selectionLength);
+		}
+
+
+		void UpdateCursorSelection()
+		{
+			var control = Control;
+			if (control == null || Element == null)
+				return;
+
+			if (Element.IsSet(Entry.CursorPositionProperty) || Element.IsSet(Entry.SelectionLengthProperty))
+			{
+				var start = Element.CursorPosition;
+				var end = System.Math.Min(control.Length(), Element.CursorPosition + Element.SelectionLength);
+
+				if (control.SelectionStart != start || control.SelectionEnd != end)
+				{
+					control.SetSelection(start, end);
+					control.RequestFocus();
+				}
+			}
 		}
 	}
 }

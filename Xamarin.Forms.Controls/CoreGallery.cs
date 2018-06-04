@@ -6,9 +6,9 @@ using Xamarin.Forms.Controls.GalleryPages;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using Xamarin.Forms.Controls.GalleryPages.VisualStateManagerGalleries;
-
 namespace Xamarin.Forms.Controls
 {
 	[Preserve(AllMembers = true)]
@@ -86,16 +86,30 @@ namespace Xamarin.Forms.Controls
 			Navigation.PushAsync(new CoreRootPage(this));
 		}
 	}
+	[Preserve(AllMembers = true)]
+	public class CoreTabbedPageAsBottomNavigation : CoreTabbedPageBase
+	{
+		protected override void Init()
+		{
+			On<Android>().SetToolbarPlacement(ToolbarPlacement.Bottom);
+			base.Init();
+		}
+	}
 
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 2456, "StackOverflow after reordering tabs in a TabbedPageView", PlatformAffected.All)]
-	public class CoreTabbedPage : TestTabbedPage
+	public class CoreTabbedPage : CoreTabbedPageBase
+	{
+	}
+
+	[Preserve(AllMembers = true)]
+	public class CoreTabbedPageBase : TestTabbedPage
 	{
 		protected override void Init()
 		{
 		}
 #if APP
-		public CoreTabbedPage()
+		public CoreTabbedPageBase()
 		{
 			AutomationId = "TabbedPageRoot";
 
@@ -136,20 +150,23 @@ namespace Xamarin.Forms.Controls
 				Title = "Bookmarks",
 			});
 
-			Children.Add(new NavigationPage(new Page { Title = "Alertes" })
+			if (On<Android>().GetMaxItemCount() > 5)
 			{
-				Title = "Notifications",
-			});
+				Children.Add(new NavigationPage(new Page { Title = "Alertes" })
+				{
+					Title = "Notifications",
+				});
 
-			Children.Add(new NavigationPage(new Page { Title = "My account" })
-			{
-				Title = "My account",
-			});
+				Children.Add(new NavigationPage(new Page { Title = "My account" })
+				{
+					Title = "My account",
+				});
 
-			Children.Add(new NavigationPage(new Page { Title = "About" })
-			{
-				Title = "About",
-			});
+				Children.Add(new NavigationPage(new Page { Title = "About" })
+				{
+					Title = "About",
+				});
+			}
 		}
 #endif
 
@@ -198,6 +215,7 @@ namespace Xamarin.Forms.Controls
 				new CoreViewContainer ("SwapRoot - MasterDetailPage", typeof(CoreMasterDetailPage)),
 				new CoreViewContainer ("SwapRoot - NavigationPage", typeof(CoreNavigationPage)),
 				new CoreViewContainer ("SwapRoot - TabbedPage", typeof(CoreTabbedPage)),
+				new CoreViewContainer ("SwapRoot - BottomNavigation TabbedPage", typeof(CoreTabbedPageAsBottomNavigation)),
 			};
 
 			var template = new DataTemplate(typeof(TextCell));
@@ -253,6 +271,7 @@ namespace Xamarin.Forms.Controls
 
 		List<GalleryPageFactory> _pages = new List<GalleryPageFactory> {
 				new GalleryPageFactory(() => new Issues.PerformanceGallery(), "Performance"),
+				new GalleryPageFactory(() => new EntryReturnTypeGalleryPage(), "Entry ReturnType "),
 				new GalleryPageFactory(() => new VisualStateManagerGallery(), "VisualStateManager Gallery"),
 				new GalleryPageFactory(() => new FlowDirectionGalleryLandingPage(), "FlowDirection"),
 				new GalleryPageFactory(() => new AutomationPropertiesGallery(), "Accessibility"),
@@ -266,6 +285,7 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new EntryCoreGalleryPage(), "Entry Gallery"),
 				new GalleryPageFactory(() => new NavBarTitleTestPage(), "Titles And Navbar Windows"),
 				new GalleryPageFactory(() => new PanGestureGalleryPage(), "Pan gesture Gallery"),
+				new GalleryPageFactory(() => new SwipeGestureGalleryPage(), "Swipe gesture Gallery"),
 				new GalleryPageFactory(() => new PinchGestureTestPage(), "Pinch gesture Gallery"),
 				new GalleryPageFactory(() => new AutomationIdGallery(), "AutomationID Gallery"),
 				new GalleryPageFactory(() => new LayoutPerformanceGallery(), "Layout Perf Gallery"),

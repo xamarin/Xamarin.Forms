@@ -12,7 +12,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		/// <summary>
 		/// The default master behavior (a.k.a mode).
 		/// </summary>
-		static readonly MasterBehavior s_defaultMasterBehavior = (Device.Idiom == TargetIdiom.Phone) ? MasterBehavior.Popover : MasterBehavior.SplitOnLandscape;
+		static readonly MasterBehavior s_defaultMasterBehavior = (Device.Idiom == TargetIdiom.Phone || Device.Idiom == TargetIdiom.Watch) ? MasterBehavior.Popover : MasterBehavior.SplitOnLandscape;
 
 		/// <summary>
 		/// The MasterPage native container.
@@ -432,6 +432,9 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 			bound.Width = (int)((_popoverRatio * bound.Width));
 			_drawer.Geometry = bound;
+			// When a _drawer.IsOpen was false, Content of _drawer area is not allocated. So, need to manaully set the content area
+			if (!IsSplit)
+				_masterCanvas.Geometry = bound;
 		}
 
 		/// <summary>

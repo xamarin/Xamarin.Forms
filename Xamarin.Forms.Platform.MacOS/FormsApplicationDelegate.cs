@@ -10,6 +10,7 @@ namespace Xamarin.Forms.Platform.MacOS
 	{
 		Application _application;
 		bool _isSuspended;
+		static int _storyboardMainMenuCount;
 
 		public abstract NSWindow MainWindow { get; }
 
@@ -28,6 +29,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			Application.SetCurrentApplication(application);
 			_application = application;
+			_storyboardMainMenuCount = (int)NSApplication.SharedApplication.MainMenu.Count;
 
 			application.PropertyChanged += ApplicationOnPropertyChanged;
 		}
@@ -56,12 +58,12 @@ namespace Xamarin.Forms.Platform.MacOS
 			_application.SendResume();
 		}
 
-		public override async void DidResignActive(Foundation.NSNotification notification)
+		public override void DidResignActive(Foundation.NSNotification notification)
 		{
 			// applicationWillResignActive
 			if (_application == null) return;
 			_isSuspended = true;
-			await _application.SendSleepAsync();
+			_application.SendSleep();
 		}
 
 		void ApplicationOnPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -119,8 +121,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		static void ClearNSMenu(NSMenu menu)
 		{
-			//for now we can't remove the 1st menu item		
-			for (var i = menu.Count - 1; i > 0; i--)
+			// remove the menu that was created in the code
+			for (var i = menu.Count - _storyboardMainMenuCount; i > 0; i--)
 				menu.RemoveItemAt(i);
 		}
 	}
