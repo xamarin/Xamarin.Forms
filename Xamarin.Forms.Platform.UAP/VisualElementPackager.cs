@@ -119,8 +119,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			_panel.Children.Add(childRenderer.ContainerElement);
 
-			if (ElementController.LogicalChildren[ElementController.LogicalChildren.Count - 1] != view)
-				EnsureZIndex();
+			EnsureZIndex();
 		}
 
 		void OnChildRemoved(object sender, ElementEventArgs e)
