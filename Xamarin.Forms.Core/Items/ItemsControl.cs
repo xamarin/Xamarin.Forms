@@ -9,7 +9,7 @@
 		Horizontal
 	}
 
-	public abstract class ItemsLayout : IItemsLayout
+	public abstract class ItemsLayout : BindableObject, IItemsLayout
 	{
 		public ItemsLayoutOrientation Orientation { get; }
 
@@ -34,6 +34,24 @@
 		// TODO hartez 2018/05/31 15:56:23 Should these just be called Vertical and Horizontal (without List)?	
 		public static readonly IItemsLayout VerticalList = new ListItemsLayout(ItemsLayoutOrientation.Vertical); 
 		public static readonly IItemsLayout HorizontalList = new ListItemsLayout(ItemsLayoutOrientation.Horizontal); 
+	}
+
+	public class GridItemsLayout : ItemsLayout
+	{
+		public static readonly BindableProperty SpanProperty =
+			BindableProperty.Create(nameof(Span), typeof(int), typeof(GridItemsLayout), 1);
+
+		public int Span
+		{
+			get => (int)GetValue(SpanProperty);
+			set => SetValue(SpanProperty, value);
+		}
+
+		public GridItemsLayout([Parameter("Span")] int span, [Parameter("Orientation")] ItemsLayoutOrientation orientation) :
+			base(orientation)
+		{
+			Span = span;
+		}
 	}
 
 	public enum SnapPointsAlignment

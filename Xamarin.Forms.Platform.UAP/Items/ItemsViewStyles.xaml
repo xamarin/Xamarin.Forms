@@ -7,4 +7,12 @@
 		<VirtualizingStackPanel Orientation="Horizontal" VerticalAlignment="Stretch" />
 	</ItemsPanelTemplate>
 
+	<ItemsPanelTemplate x:Key="HorizontalGridItemsPanel">
+		<WrapGrid Orientation="Horizontal" />
+	</ItemsPanelTemplate>
+
+	<ItemsPanelTemplate x:Key="VerticalGridItemsPanel">
+		<WrapGrid Orientation="Vertical" />
+	</ItemsPanelTemplate>
+
 </ResourceDictionary>
