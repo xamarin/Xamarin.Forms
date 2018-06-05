@@ -18,7 +18,6 @@ using WApp = Windows.UI.Xaml.Application;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 using WItemsControl = Windows.UI.Xaml.Controls.ItemsControl;
-using WApplication = Windows.UI.Xaml.Application;
 using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.ListView;
 using System.Collections.ObjectModel;
 using UwpScrollBarVisibility = Windows.UI.Xaml.Controls.ScrollBarVisibility;
@@ -776,59 +775,5 @@ namespace Xamarin.Forms.Platform.UWP
 				: new ListViewAutomationPeer(List);
 		}
 
-	}
-
-	// TODO hartez 2018/05/29 14:27:55 Move this into its own file	
-	// TODO hartez 2018/05/31 15:02:06 Rename this to CollectionViewRenderer	
-	public class ListView2Renderer : ViewRenderer<CollectionView, WItemsControl>
-	{
-		protected WItemsControl ItemsControl { get; private set; }
-
-		protected override void OnElementChanged(ElementChangedEventArgs<CollectionView> args)
-		{
-			base.OnElementChanged(args);
-
-			// TODO hartez 2018-05-22 12:58 PM Unhook old element stuff
-			//if (args.OldElement != null)
-			//{
-			//}
-
-			if (args.NewElement != null)
-			{
-				if (ItemsControl == null)
-				{
-					ItemsControl = SelectLayout(args.NewElement.ItemsLayout);
-					SetNativeControl(ItemsControl);
-				}
-
-				// TODO hartez 2018-05-22 12:59 PM Handle grouping
-				var cvs = new CollectionViewSource
-				{
-					Source = Element.ItemsSource, IsSourceGrouped = false
-				};
-
-				ItemsControl.ItemsSource = cvs.View;
-			}
-		}
-
-		protected virtual WItemsControl SelectLayout(IItemsLayout layoutSpecification)
-		{
-			// TODO hartez 2018/05/29 15:04:50 Handle GridItemsLayout	
-
-			if (layoutSpecification is ListItemsLayout listItemsLayout 
-				&& listItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal)
-			{
-				var horizontalListView = new WListView
-				{
-					// TODO hartez 2018/05/29 15:38:04 Make sure the ItemsViewStyles.xaml xbf gets into the nuspec	
-					ItemsPanel = (ItemsPanelTemplate)WApplication.Current.Resources["HorizontalListItemsPanel"]
-				};
-
-				return horizontalListView;
-			}
-
-			// Default to a plain old vertical ListView
-			return new WListView();
-		}
 	}
 }
