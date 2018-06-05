@@ -85,19 +85,19 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
             base.Dispose(disposing);
         }
 
-        protected override void UpdateBackgroundColor()
-        {
-            if (!Element.BackgroundColor.IsDefaultOrTransparent())
-            {
-                Control.SetBackgroundColor(Element.BackgroundColor.ToGtkColor());
-            }
+		protected override void UpdateBackgroundColor()
+		{
+			if (!Element.BackgroundColor.IsDefaultOrTransparent())
+			{
+				Control.SetBackgroundColor(Element.BackgroundColor.ToGtkColor());
+			}
 			else
 			{
 				Control.SetBackgroundColor(Color.Transparent.ToGtkColor());
 			}
-        }
+		}
 
-        private void UpdateText()
+		private void UpdateText()
         {
             if (Control.Entry.Text != Element.Text)
                 Control.Entry.Text = Element.Text ?? string.Empty;
