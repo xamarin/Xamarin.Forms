@@ -145,12 +145,14 @@ namespace Xamarin.Forms.Platform.WPF
 
 			if (imagesource is StreamImageSource streamsource && streamsource.Stream != null)
 			{
-				Stream stream = await ((IStreamImageSource)streamsource).GetStreamAsync(cancelationToken);
-				bitmapImage = new BitmapImage();
-				bitmapImage.BeginInit();
-				bitmapImage.StreamSource = stream;
-				bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-				bitmapImage.EndInit();
+				using (Stream stream = await ((IStreamImageSource)streamsource).GetStreamAsync(cancelationToken))
+				{
+					bitmapImage = new BitmapImage();
+					bitmapImage.BeginInit();
+					bitmapImage.StreamSource = stream;
+					bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+					bitmapImage.EndInit();
+				}
 			}
 
 			return bitmapImage;
