@@ -34,52 +34,83 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 					Children =
 					{
 						descriptionLabel,
-						GalleryBuilder.NavButton("Vertical List (Code)", () => new TextCodeVerticalListGallery(), Navigation),
-						GalleryBuilder.NavButton("Horizontal List (Code)", () => new TextCodeHorizontalListGallery(), Navigation),
+						GalleryBuilder.NavButton("Vertical List (Code)", () => new TextCodeCollectionViewGallery(ListItemsLayout.VerticalList), Navigation),
+						GalleryBuilder.NavButton("Horizontal List (Code)", () => new TextCodeCollectionViewGallery(ListItemsLayout.HorizontalList), Navigation),
 					}
 				}
 			};
 		}
 	}
 
-	public class TextCodeVerticalListGallery : ContentPage
+	internal class ItemsSourceGenerator : ContentView
 	{
-		public TextCodeVerticalListGallery()
+		readonly CollectionView _cv;
+		readonly Entry _entry;
+
+		public ItemsSourceGenerator(CollectionView cv)
 		{
-			var items = new List<string>();
+			_cv = cv;
 
-			for (int n = 0; n < 1000; n++)
+			var layout = new StackLayout { Orientation = StackOrientation.Horizontal };
+
+			var button = new Button { Text = "Update" };
+			var label = new Label { Text = "Item count:", VerticalTextAlignment = TextAlignment.Center };
+			_entry = new Entry { Keyboard = Keyboard.Numeric, Text = "1000" };
+
+			layout.Children.Add(label);
+			layout.Children.Add(_entry);
+			layout.Children.Add(button);
+
+			button.Clicked += GenerateItems;
+
+			Content = layout;
+		}
+
+		public void GenerateItems()
+		{
+			if (int.TryParse(_entry.Text, out int count))
 			{
-				items.Add($"{DateTime.Now.AddDays(n).ToLongDateString()}");
+				var items = new List<string>();
+
+				for (int n = 0; n < count; n++)
+				{
+					items.Add($"{DateTime.Now.AddDays(n).ToLongDateString()}");
+				}
+
+				_cv.ItemsSource = items;
 			}
+		}
 
-			var collectionView = new CollectionView { ItemsSource = items };
-
-			// This the default
-			//collectionView.ItemsLayout = ListItemsLayout.VerticalList; 
-
-			Content = collectionView;
+		void GenerateItems(object sender, EventArgs e)
+		{
+			GenerateItems();
 		}
 	}
 
-	public class TextCodeHorizontalListGallery : ContentPage
+	internal class TextCodeCollectionViewGallery : ContentPage
 	{
-		public TextCodeHorizontalListGallery()
+		public TextCodeCollectionViewGallery(IItemsLayout itemsLayout)
 		{
-			var items = new List<string>();
-
-			for (int n = 0; n < 1000; n++)
+			var layout = new Grid
 			{
-				items.Add(DateTime.Now.AddDays(n).ToLongDateString());
-			}
-
-			var collectionView = new CollectionView
-			{
-				ItemsSource = items,
-				ItemsLayout = ListItemsLayout.HorizontalList
+				RowDefinitions = new RowDefinitionCollection
+				{
+					new RowDefinition { Height = GridLength.Auto },
+					new RowDefinition { Height = GridLength.Star }
+				}
 			};
 
-			Content = collectionView;
+			var collectionView = new CollectionView {ItemsLayout = itemsLayout};
+
+			var generator = new ItemsSourceGenerator(collectionView);
+
+			layout.Children.Add(generator);
+			layout.Children.Add(collectionView);
+			Grid.SetRow(collectionView, 1);
+
+			Content = layout;
+
+			generator.GenerateItems();
 		}
 	}
 }
