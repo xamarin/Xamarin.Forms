@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using CoreGraphics;
 using Foundation;
 using UIKit;
 
@@ -28,6 +29,14 @@ namespace Xamarin.Forms.Platform.iOS
 		public override nint GetItemsCount (UICollectionView collectionView, nint section)
 		{
 			return (_itemsSource as IList).Count;
+		}
+
+		public override void ViewWillTransitionToSize(CGSize toSize, IUIViewControllerTransitionCoordinator coordinator)
+		{
+			_layout.UpdateBounds(toSize);
+
+			// TODO hartez 2018/06/04 21:01:30 Figure the right timing to update the estimate sizes so we don't throw a metric ton of autolayout errors	
+			base.ViewWillTransitionToSize(toSize, coordinator);
 		}
 
 		public override UICollectionViewCell GetCell (UICollectionView collectionView, NSIndexPath indexPath)

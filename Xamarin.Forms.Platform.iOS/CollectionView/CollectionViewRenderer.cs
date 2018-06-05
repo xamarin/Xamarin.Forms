@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using CoreGraphics;
 using UIKit;
 using Xamarin.Forms.Internals;
 
@@ -40,7 +41,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.LayoutSubviews();
 
-			_layout.UpdateBounds(Control.Bounds);
+			_layout.UpdateBounds(Control.Bounds.Size);
 		}
 
 		protected virtual ItemsViewLayout SelectLayout(IItemsLayout layoutSpecification)

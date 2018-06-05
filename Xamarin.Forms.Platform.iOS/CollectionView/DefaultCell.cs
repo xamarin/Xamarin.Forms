@@ -77,6 +77,7 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 	}
 
+	// TODO hartez 2018/06/04 17:23:25 Why does navigating back from the test page for this cause a crash?	
 	internal sealed class DefaultHorizontalListCell : DefaultCell
 	{
 		public static NSString ReuseId = new NSString("Xamarin.Forms.Platform.iOS.DefaultHorizontalListCell");
@@ -84,26 +85,6 @@ namespace Xamarin.Forms.Platform.iOS
 		[Export("initWithFrame:")]
 		public DefaultHorizontalListCell(CGRect frame) : base(frame)
 		{
-			Debug.WriteLine($">>>>> DefaultHorizontalListCell DefaultHorizontalListCell 87: {frame.Height}");
-		}
-
-		public override UICollectionViewLayoutAttributes PreferredLayoutAttributesFittingAttributes(
-			UICollectionViewLayoutAttributes layoutAttributes)
-		{
-			//Debug.WriteLine($">>>>> DefaultVerticalListCell PreferredLayoutAttributesFittingAttributes 64: {Label.IntrinsicContentSize}");
-			var attrs = base.PreferredLayoutAttributesFittingAttributes(layoutAttributes);
-
-			// Auto layout giving priority to the height
-			var targetSize = new CGSize(0, UIScreen.MainScreen.Bounds.Height);
-
-			var size = ContentView.SystemLayoutSizeFittingSize(targetSize,
-				(float)UILayoutPriority.DefaultLow, (float)UILayoutPriority.Required);
-
-			var frame = new CGRect(attrs.Frame.Location, size);
-
-			attrs.Frame = frame;
-
-			return attrs;
 		}
 
 		protected override void InitializeOrientationConstraints(NSDictionary views)
