@@ -1,4 +1,5 @@
-﻿using Windows.UI.Xaml.Controls;
+﻿using System.ComponentModel;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 
 namespace Xamarin.Forms.Platform.UWP
@@ -24,13 +25,33 @@ namespace Xamarin.Forms.Platform.UWP
 					SetNativeControl(ItemsControl);
 				}
 
-				// TODO hartez 2018-05-22 12:59 PM Handle grouping
-				var cvs = new CollectionViewSource
-				{
-					Source = Element.ItemsSource, IsSourceGrouped = false
-				};
+				UpdateItemsSource();
+			}
+		}
 
-				ItemsControl.ItemsSource = cvs.View;
+		protected virtual void UpdateItemsSource()
+		{
+			if (ItemsControl == null)
+			{
+				return;
+			}
+
+			// TODO hartez 2018-05-22 12:59 PM Handle grouping
+			var cvs = new CollectionViewSource
+			{
+				Source = Element.ItemsSource, IsSourceGrouped = false
+			};
+
+			ItemsControl.ItemsSource = cvs.View;
+		}
+
+		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			base.OnElementPropertyChanged(sender, e);
+
+			if (e.PropertyName == ItemsView.ItemsSourceProperty.PropertyName)
+			{
+				UpdateItemsSource();
 			}
 		}
 
