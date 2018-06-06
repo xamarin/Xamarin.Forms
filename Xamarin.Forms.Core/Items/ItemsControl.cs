@@ -1,7 +1,9 @@
-﻿namespace Xamarin.Forms
+﻿using System.ComponentModel;
+
+namespace Xamarin.Forms
 {
 	// TODO hartez 2018/05/31 11:49:49 Move the stuff in ItemsControl.cs to the appropriate files
-	public interface IItemsLayout {}
+	public interface IItemsLayout : INotifyPropertyChanged {}
 
 	public enum ItemsLayoutOrientation
 	{

@@ -63,9 +63,9 @@
     <Compile Include="InterceptVisualStateManager.cs" />
     <Compile Include="HorizontalTextAlignmentConverter.cs" />
     <Compile Include="ITitleIconProvider.cs" />
-    <Compile Include="ITitleProvider.cs" />
     <Compile Include="ITitleViewProvider.cs" />
-    <Compile Include="ITitleViewRendererController.cs" />
+    <Compile Include="Items\FormsGridView.cs" />
+    <Compile Include="ITitleProvider.cs" />
     <Compile Include="IToolbarProvider.cs" />
     <Compile Include="IVisualNativeElementRenderer.cs" />
     <Compile Include="NativeBindingExtensions.cs" />

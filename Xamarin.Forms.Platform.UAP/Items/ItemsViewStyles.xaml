@@ -4,7 +4,7 @@
     xmlns:local="using:Xamarin.Forms.Platform.UWP">
     
 	<ItemsPanelTemplate x:Key="HorizontalListItemsPanel">
-		<VirtualizingStackPanel Orientation="Horizontal" VerticalAlignment="Stretch" />
+		<VirtualizingStackPanel Orientation="Horizontal" />
 	</ItemsPanelTemplate>
 
 	<ItemsPanelTemplate x:Key="HorizontalGridItemsPanel">

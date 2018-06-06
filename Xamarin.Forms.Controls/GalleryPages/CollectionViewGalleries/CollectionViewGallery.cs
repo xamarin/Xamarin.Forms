@@ -35,9 +35,14 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 					{
 						// TODO hartez 2018-06-05 10:43 AM Need a gallery page which allows layout selection so we can demonstrate switching between them
 						descriptionLabel,
-						GalleryBuilder.NavButton("Vertical List (Code)", () => new TextCodeCollectionViewGallery(ListItemsLayout.VerticalList), Navigation),
-						GalleryBuilder.NavButton("Horizontal List (Code)", () => new TextCodeCollectionViewGallery(ListItemsLayout.HorizontalList), Navigation),
-						GalleryBuilder.NavButton("Vertical Grid (Code)", () => new TextCodeCollectionViewGridGallery(), Navigation),
+						GalleryBuilder.NavButton("Vertical List (Code)", () => 
+							new TextCodeCollectionViewGallery(ListItemsLayout.VerticalList), Navigation),
+						GalleryBuilder.NavButton("Horizontal List (Code)", () => 
+							new TextCodeCollectionViewGallery(ListItemsLayout.HorizontalList), Navigation),
+						GalleryBuilder.NavButton("Vertical Grid (Code)", () => 
+							new TextCodeCollectionViewGridGallery(), Navigation),
+						GalleryBuilder.NavButton("Horizontal Grid (Code)", () => 
+							new TextCodeCollectionViewGridGallery(ItemsLayoutOrientation.Horizontal), Navigation),
 					}
 				}
 			};
@@ -89,6 +94,47 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 		}
 	}
 
+	internal class SpanSetter : ContentView
+	{
+		readonly CollectionView _cv;
+		readonly Entry _entry;
+
+		public SpanSetter(CollectionView cv)
+		{
+			_cv = cv;
+
+			var layout = new StackLayout { Orientation = StackOrientation.Horizontal };
+
+			var button = new Button { Text = "Update" };
+			var label = new Label { Text = "Span:", VerticalTextAlignment = TextAlignment.Center };
+			_entry = new Entry { Keyboard = Keyboard.Numeric, Text = "3" };
+
+			layout.Children.Add(label);
+			layout.Children.Add(_entry);
+			layout.Children.Add(button);
+
+			button.Clicked += UpdateSpan ;
+
+			Content = layout;
+		}
+
+		public void UpdateSpan()
+		{
+			if (int.TryParse(_entry.Text, out int span))
+			{
+				if (_cv.ItemsLayout is GridItemsLayout gridItemsLayout)
+				{
+					gridItemsLayout.Span = span;
+				}
+			}
+		}
+
+		public void UpdateSpan(object sender, EventArgs e)
+		{
+			UpdateSpan();
+		}
+	}
+
 	internal class TextCodeCollectionViewGallery : ContentPage
 	{
 		public TextCodeCollectionViewGallery(IItemsLayout itemsLayout)
@@ -118,30 +164,34 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 
 	internal class TextCodeCollectionViewGridGallery : ContentPage
 	{
-		public TextCodeCollectionViewGridGallery()
+		public TextCodeCollectionViewGridGallery(ItemsLayoutOrientation orientation = ItemsLayoutOrientation.Vertical)
 		{
 			var layout = new Grid
 			{
 				RowDefinitions = new RowDefinitionCollection
 				{
 					new RowDefinition { Height = GridLength.Auto },
-					//new RowDefinition { Height = GridLength.Auto },
+					new RowDefinition { Height = GridLength.Auto },
 					new RowDefinition { Height = GridLength.Star }
 				}
 			};
 
-			var itemsLayout = new GridItemsLayout(2, ItemsLayoutOrientation.Vertical);
+			var itemsLayout = new GridItemsLayout(2, orientation);
 
 			var collectionView = new CollectionView {ItemsLayout = itemsLayout};
 
 			var generator = new ItemsSourceGenerator(collectionView);
+			var spanSetter = new SpanSetter(collectionView);
 
 			layout.Children.Add(generator);
+			layout.Children.Add(spanSetter);
+			Grid.SetRow(spanSetter, 1);
 			layout.Children.Add(collectionView);
-			Grid.SetRow(collectionView, 1);
+			Grid.SetRow(collectionView, 2);
 
 			Content = layout;
 
+			spanSetter.UpdateSpan();
 			generator.GenerateItems();
 		}
 	}
