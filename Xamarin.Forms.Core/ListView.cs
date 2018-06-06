@@ -46,7 +46,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty SeparatorColorProperty = BindableProperty.Create("SeparatorColor", typeof(Color), typeof(ListView), Color.Default);
 
-		public static readonly BindableProperty SpinnerColorProperty = BindableProperty.Create(nameof(SpinnerColor), typeof(Color), typeof(ListView), Color.Default);
+		public static readonly BindableProperty SpinnerColorProperty = BindableProperty.Create(nameof(SpinnerColor), typeof(Color), typeof(ListView), Color.Black);
 
 		readonly Lazy<PlatformConfigurationRegistry<ListView>> _platformConfigurationRegistry;
 
