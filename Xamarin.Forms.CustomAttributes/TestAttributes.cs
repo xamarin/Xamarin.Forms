@@ -428,7 +428,8 @@ namespace Xamarin.Forms.CustomAttributes
 			GroupDisplayBinding,
 			GroupShortNameBinding,
 			ScrollTo,
-			FastScroll
+			FastScroll,
+			ColoredSpinner
 		}
 
 		public enum TableView

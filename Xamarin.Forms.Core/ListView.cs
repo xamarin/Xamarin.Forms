@@ -46,6 +46,8 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty SeparatorColorProperty = BindableProperty.Create("SeparatorColor", typeof(Color), typeof(ListView), Color.Default);
 
+		public static readonly BindableProperty SpinnerColorProperty = BindableProperty.Create(nameof(SpinnerColor), typeof(Color), typeof(ListView), Color.Default);
+
 		readonly Lazy<PlatformConfigurationRegistry<ListView>> _platformConfigurationRegistry;
 
 		BindingBase _groupDisplayBinding;
@@ -215,6 +217,12 @@ namespace Xamarin.Forms
 		{
 			get { return (Color)GetValue(SeparatorColorProperty); }
 			set { SetValue(SeparatorColorProperty, value); }
+		}
+
+		public Color SpinnerColor
+		{
+			get { return (Color)GetValue(SpinnerColorProperty); }
+			set { SetValue(SpinnerColorProperty, value); }
 		}
 
 		public SeparatorVisibility SeparatorVisibility

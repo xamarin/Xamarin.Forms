@@ -5,7 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading;
-
+using System.Threading.Tasks;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
@@ -268,6 +268,16 @@ namespace Xamarin.Forms.Controls
 			fastScrollItemContainer.View.On<Android>().SetIsFastScrollEnabled(true);
 			fastScrollItemContainer.View.ItemsSource = viewModel.CategorizedEmployees;
 
+			var coloredSpinnerContainer = new ViewContainer<ListView>(Test.ListView.ColoredSpinner, new ListView());
+			InitializeElement(coloredSpinnerContainer.View);
+			coloredSpinnerContainer.View.SpinnerColor = Color.Yellow;
+			coloredSpinnerContainer.View.IsPullToRefreshEnabled = true;
+			coloredSpinnerContainer.View.Refreshing += async (object sender, EventArgs e) => {
+				await Task.Delay(2000);
+				coloredSpinnerContainer.View.IsRefreshing = false;
+			};
+			coloredSpinnerContainer.View.ItemsSource = viewModel.Employees;
+
 			Add(groupDisplayBindingContainer);
 			Add(groupHeaderTemplateContainer);
 			Add(groupShortNameContainer);
@@ -280,6 +290,7 @@ namespace Xamarin.Forms.Controls
 			Add(rowHeightContainer);
 			Add(selectedItemContainer);
 			Add(fastScrollItemContainer);
+			Add(coloredSpinnerContainer);
 		}
 	}
 }
