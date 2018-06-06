@@ -432,7 +432,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			return new FormsViewPager(context)
 			{
 				OverScrollMode = OverScrollMode.Never,
-				EnableGesture = tabbedPage.OnThisPlatform().IsSmoothScrollEnabled(),
+				EnableGesture = tabbedPage.OnThisPlatform().IsSwipePagingEnabled(),
 				LayoutParameters = new LayoutParams(LayoutParams.MatchParent, LayoutParams.MatchParent),
 				Adapter = new FormsFragmentPagerAdapter<Page>(tabbedPage, FragmentManager) { CountOverride = tabbedPage.Children.Count }
 			};
