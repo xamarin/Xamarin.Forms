@@ -2,7 +2,8 @@
 using Xamarin.Forms.Internals;
 
 #if UITEST
-using Xamarin.UITest;
+using System;
+using System.Threading.Tasks;
 using NUnit.Framework;
 #endif
 
@@ -21,7 +22,7 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				AutomationId = "webview"	
 			};
-			_label = new Label();
+			_label = new Label { AutomationId = "label" };
 
 			var hashButton = new Button { Text = "1:hash", HorizontalOptions = LayoutOptions.FillAndExpand, AutomationId = "hashButton" };
 			hashButton.Clicked += (sender, args) => Load("https://github.com/xamarin/Xamarin.Forms/issues/2736#issuecomment-389443737");
@@ -32,9 +33,6 @@ namespace Xamarin.Forms.Controls.Issues
 			var queryButton = new Button { Text = "3:query", HorizontalOptions = LayoutOptions.FillAndExpand, AutomationId = "queryButton" };
 			queryButton.Clicked += (sender, args) => Load("https://www.google.com/search?q=http%3A%2F%2Fmicrosoft.com");
 
-			var punycodeButton = new Button { Text = "4:punycode", HorizontalOptions = LayoutOptions.FillAndExpand, AutomationId = "punycodeButton" };
-			punycodeButton.Clicked += (sender, args) => Load("http://δπθ.gr");
-
 			Content = new StackLayout
 			{
 				Children =
@@ -43,7 +41,7 @@ namespace Xamarin.Forms.Controls.Issues
 					new StackLayout
 					{
 						Orientation = StackOrientation.Horizontal,
-						Children = { unicodeButton, hashButton, punycodeButton, queryButton }
+						Children = { hashButton, unicodeButton, queryButton }
 					},
 					_webview
 				}
@@ -64,15 +62,16 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST
 		[Test]
-		public void Issue1583Test ()
+		public async Task Issue1583Test ()
 		{
-			RunningApp.WaitForElement (q => q.Marked ("webview"), "Could not find webview", System.TimeSpan.FromSeconds(60), null, null);
+			RunningApp.WaitForElement (q => q.Marked ("label"), "Could not find label", TimeSpan.FromSeconds(10), null, null);
+			await Task.Delay(TimeSpan.FromSeconds(3));
 			RunningApp.Screenshot ("I didn't crash and i can see Skøyen");
 			RunningApp.Tap("hashButton");
+			await Task.Delay(TimeSpan.FromSeconds(3));
 			RunningApp.Screenshot ("I didn't crash and i can see the GitHub comment #issuecomment-389443737");
-			RunningApp.Tap("punycodeButton");
-			RunningApp.Screenshot ("I didn't crash and i can see the punycode website");
 			RunningApp.Tap("queryButton");
+			await Task.Delay(TimeSpan.FromSeconds(3));
 			RunningApp.Screenshot ("I didn't crash and i can see google search for http://microsoft.com");
 		}
 #endif
