@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 
@@ -58,22 +59,51 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			var gridView = new GridView();
 
-			// TODO hartez 2018-06-05 12:23 PM Select panel based on orientation
+			if (gridItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal)
+			{
+				gridView.ItemsPanel =
+					(ItemsPanelTemplate)Windows.UI.Xaml.Application.Current.Resources["HorizontalGridItemsPanel"];
+			}
+			else
+			{
+				gridView.ItemsPanel =
+					(ItemsPanelTemplate)Windows.UI.Xaml.Application.Current.Resources["VerticalGridItemsPanel"];
+			}
 
-			gridView.ItemsPanel = (ItemsPanelTemplate)Windows.UI.Xaml.Application.Current.Resources["VerticalGridItemsPanel"];
-
-			// TODO hartez 2018-06-05 12:20 PM We need to figure out a way to make the MaximumRowsOrColumns settable
-			// We could subclass GridView and grab a reference to the WrapGrid in ApplyTemplate/Load
-
-
+			gridView.Loaded += GridViewOnLoaded;
+			
 			return gridView;
 		}
 
-		ItemsControl CreateHorizontalListView()
+		void GridViewOnLoaded(object sender, RoutedEventArgs e)
 		{
+			// Once the GridView is loaded, we can dive into its tree and find the ItemsWrapGrid so we can 
+			// set the rows/columns for it. 
+
+			// TODO hartez 2018/06/05 17:24:17 Subclass GridView as FormsGridView and add MaxRowsColumns as a property	
+			// We don't want to have to do this traversal every time the GridLayout's Span changes
+
+			var gridView = (GridView)sender;
+
+			gridView.Loaded -= GridViewOnLoaded;
+
+			if (Element == null)
+			{
+				return;
+			}
+
+			var gridItemsLayout = (GridItemsLayout)Element.ItemsLayout;
+
+			var wrapGrid = gridView.GetFirstDescendant<ItemsWrapGrid>();
+			wrapGrid.MaximumRowsOrColumns = gridItemsLayout.Span;
+		}
+
+		static ItemsControl CreateHorizontalListView()
+		{
+			// TODO hartez 2018/06/05 16:18:57 Is there any performance benefit to caching the ItemsPanelTemplate lookup?	
+			// TODO hartez 2018/05/29 15:38:04 Make sure the ItemsViewStyles.xaml xbf gets into the nuspec	
 			var horizontalListView = new Windows.UI.Xaml.Controls.ListView
 			{
-				// TODO hartez 2018/05/29 15:38:04 Make sure the ItemsViewStyles.xaml xbf gets into the nuspec	
 				ItemsPanel = (ItemsPanelTemplate)Windows.UI.Xaml.Application.Current.Resources["HorizontalListItemsPanel"]
 			};
 

@@ -8,11 +8,15 @@
 	</ItemsPanelTemplate>
 
 	<ItemsPanelTemplate x:Key="HorizontalGridItemsPanel">
-		<WrapGrid Orientation="Horizontal" />
+		<!-- Yes, this is counterintuitive. Orientation here means "direction we lay out the items until we hit the 
+		edge and then wrap around". -->
+		<ItemsWrapGrid Orientation="Vertical" />
 	</ItemsPanelTemplate>
 
 	<ItemsPanelTemplate x:Key="VerticalGridItemsPanel">
-		<WrapGrid Orientation="Vertical" />
+		<!-- Yes, this is counterintuitive. Orientation here means "direction we lay out the items until we hit the 
+		edge and then wrap around". -->
+		<ItemsWrapGrid Orientation="Horizontal" />
 	</ItemsPanelTemplate>
 
 </ResourceDictionary>
