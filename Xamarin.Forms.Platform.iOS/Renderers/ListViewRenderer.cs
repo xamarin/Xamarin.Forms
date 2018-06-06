@@ -248,6 +248,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateSeparatorColor();
 				UpdateSeparatorVisibility();
 				UpdateSelectionMode();
+				UpdateSpinnerColor();
 
 				var selected = e.NewElement.SelectedItem;
 				if (selected != null)
@@ -286,6 +287,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdatePullToRefreshEnabled();
 			else if (e.PropertyName == Xamarin.Forms.ListView.SelectionModeProperty.PropertyName)
 				UpdateSelectionMode();
+			else if (e.PropertyName == Xamarin.Forms.ListView.SpinnerColorProperty.PropertyName)
+				UpdateSpinnerColor();
 		}
 
 		NSIndexPath[] GetPaths(int section, int index, int count)
@@ -673,6 +676,13 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		void UpdateSpinnerColor()
+		{
+			var color = Element.SpinnerColor;
+
+			if (_tableViewController != null)
+				_tableViewController.UpdateSpinnerColor(color.ToUIColor());
+		}
 
 		internal class UnevenListViewDataSource : ListViewDataSource
 		{
@@ -1407,6 +1417,12 @@ namespace Xamarin.Forms.Platform.iOS
 			// Restart the refreshing to get the animation to trigger
 			UpdateIsRefreshing(false);
 			UpdateIsRefreshing(true);
+		}
+
+		public void UpdateSpinnerColor(UIColor color)
+		{
+			if (RefreshControl != null)
+				RefreshControl.TintColor = color;
 		}
 
 		protected override void Dispose(bool disposing)

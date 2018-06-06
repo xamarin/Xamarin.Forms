@@ -163,6 +163,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateIsSwipeToRefreshEnabled();
 				UpdateFastScrollEnabled();
 				UpdateSelectionMode();
+				UpdateSpinnerColor();
 			}
 		}
 
@@ -200,6 +201,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateFastScrollEnabled();
 			else if (e.PropertyName == ListView.SelectionModeProperty.PropertyName)
 				UpdateSelectionMode();
+			else if (e.PropertyName == ListView.SpinnerColorProperty.PropertyName)
+				UpdateSpinnerColor();
 		}
 
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)
@@ -413,6 +416,12 @@ namespace Xamarin.Forms.Platform.Android
 					Control.ChoiceMode = ChoiceMode.Single;
 				}
 			}
+		}
+
+		void UpdateSpinnerColor()
+		{
+			if (_refresh != null)
+				_refresh.SetColorSchemeColors(Element.SpinnerColor.ToAndroid());
 		}
 
 		internal class Container : ViewGroup
