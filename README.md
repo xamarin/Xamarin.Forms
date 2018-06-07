@@ -3,7 +3,7 @@
 
 # Xamarin.Forms #
 
-Xamarin.Forms provides a way to quickly build native apps for iOS, Android, Windows and macOS, completely in C#.
+Xamarin.Forms provides a way to quickly build native apps for iOS, Android, Windows, macOS and gtk+, completely in C#.
 
 Read more about the platform at https://www.xamarin.com/forms.
 
