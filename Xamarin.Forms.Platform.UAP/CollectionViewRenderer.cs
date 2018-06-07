@@ -111,7 +111,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		void SetUpNewElement(CollectionView newElement)
+		void SetUpNewElement(ItemsView newElement)
 		{
 			if (newElement == null)
 			{
@@ -131,7 +131,7 @@ namespace Xamarin.Forms.Platform.UWP
 			UpdateItemsSource();
 		}
 
-		void TearDownOldElement(CollectionView oldElement)
+		void TearDownOldElement(ItemsView oldElement)
 		{
 			if (oldElement == null)
 			{

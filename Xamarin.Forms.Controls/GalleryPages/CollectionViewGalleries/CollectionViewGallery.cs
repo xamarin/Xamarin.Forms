@@ -58,11 +58,15 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 		{
 			_cv = cv;
 
-			var layout = new StackLayout { Orientation = StackOrientation.Horizontal };
+			var layout = new StackLayout
+			{
+				Orientation = StackOrientation.Horizontal,
+				HorizontalOptions = LayoutOptions.Fill
+			};
 
 			var button = new Button { Text = "Update" };
 			var label = new Label { Text = "Item count:", VerticalTextAlignment = TextAlignment.Center };
-			_entry = new Entry { Keyboard = Keyboard.Numeric, Text = "1000" };
+			_entry = new Entry { Keyboard = Keyboard.Numeric, Text = "1000", WidthRequest = 200 };
 
 			layout.Children.Add(label);
 			layout.Children.Add(_entry);
@@ -103,11 +107,15 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 		{
 			_cv = cv;
 
-			var layout = new StackLayout { Orientation = StackOrientation.Horizontal };
+			var layout = new StackLayout
+			{
+				Orientation = StackOrientation.Horizontal,
+				HorizontalOptions = LayoutOptions.Fill
+			};
 
 			var button = new Button { Text = "Update" };
 			var label = new Label { Text = "Span:", VerticalTextAlignment = TextAlignment.Center };
-			_entry = new Entry { Keyboard = Keyboard.Numeric, Text = "3" };
+			_entry = new Entry { Keyboard = Keyboard.Numeric, Text = "3", WidthRequest = 200 };
 
 			layout.Children.Add(label);
 			layout.Children.Add(_entry);
@@ -167,7 +175,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 		public TextCodeCollectionViewGridGallery(ItemsLayoutOrientation orientation = ItemsLayoutOrientation.Vertical)
 		{
 			var layout = new Grid
-			{
+			{ 
 				RowDefinitions = new RowDefinitionCollection
 				{
 					new RowDefinition { Height = GridLength.Auto },
