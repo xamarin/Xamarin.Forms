@@ -287,7 +287,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdatePullToRefreshEnabled();
 			else if (e.PropertyName == Xamarin.Forms.ListView.SelectionModeProperty.PropertyName)
 				UpdateSelectionMode();
-			else if (e.PropertyName == Xamarin.Forms.ListView.SpinnerColorProperty.PropertyName)
+			else if (e.PropertyName == Xamarin.Forms.ListView.RefreshControlColorProperty.PropertyName)
 				UpdateSpinnerColor();
 		}
 
@@ -678,10 +678,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateSpinnerColor()
 		{
-			var color = Element.SpinnerColor;
+			var color = Element.RefreshControlColor;
 
 			if (_tableViewController != null)
-				_tableViewController.UpdateSpinnerColor(color.ToUIColor());
+				_tableViewController.UpdateRefreshControlColor(color.ToUIColor(UIColor.Black));
 		}
 
 		internal class UnevenListViewDataSource : ListViewDataSource
@@ -1419,7 +1419,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateIsRefreshing(true);
 		}
 
-		public void UpdateSpinnerColor(UIColor color)
+		public void UpdateRefreshControlColor(UIColor color)
 		{
 			if (RefreshControl != null)
 				RefreshControl.TintColor = color;
