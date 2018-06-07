@@ -268,15 +268,15 @@ namespace Xamarin.Forms.Controls
 			fastScrollItemContainer.View.On<Android>().SetIsFastScrollEnabled(true);
 			fastScrollItemContainer.View.ItemsSource = viewModel.CategorizedEmployees;
 
-			var coloredSpinnerContainer = new ViewContainer<ListView>(Test.ListView.ColoredSpinner, new ListView());
-			InitializeElement(coloredSpinnerContainer.View);
-			coloredSpinnerContainer.View.SpinnerColor = Color.Yellow;
-			coloredSpinnerContainer.View.IsPullToRefreshEnabled = true;
-			coloredSpinnerContainer.View.Refreshing += async (object sender, EventArgs e) => {
+			var refreshControlColorContainer = new ViewContainer<ListView>(Test.ListView.RefreshControlColor, new ListView());
+			InitializeElement(refreshControlColorContainer.View);
+			//refreshControlColorContainer.View.RefreshControlColor = Color.Yellow;
+			refreshControlColorContainer.View.IsPullToRefreshEnabled = true;
+			refreshControlColorContainer.View.Refreshing += async (object sender, EventArgs e) => {
 				await Task.Delay(2000);
-				coloredSpinnerContainer.View.IsRefreshing = false;
+				refreshControlColorContainer.View.IsRefreshing = false;
 			};
-			coloredSpinnerContainer.View.ItemsSource = viewModel.Employees;
+			refreshControlColorContainer.View.ItemsSource = viewModel.Employees;
 
 			Add(groupDisplayBindingContainer);
 			Add(groupHeaderTemplateContainer);
@@ -290,7 +290,7 @@ namespace Xamarin.Forms.Controls
 			Add(rowHeightContainer);
 			Add(selectedItemContainer);
 			Add(fastScrollItemContainer);
-			Add(coloredSpinnerContainer);
+			Add(refreshControlColorContainer);
 		}
 	}
 }
