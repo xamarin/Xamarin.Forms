@@ -201,7 +201,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateFastScrollEnabled();
 			else if (e.PropertyName == ListView.SelectionModeProperty.PropertyName)
 				UpdateSelectionMode();
-			else if (e.PropertyName == ListView.SpinnerColorProperty.PropertyName)
+			else if (e.PropertyName == ListView.RefreshControlColorProperty.PropertyName)
 				UpdateSpinnerColor();
 		}
 
@@ -421,7 +421,7 @@ namespace Xamarin.Forms.Platform.Android
 		void UpdateSpinnerColor()
 		{
 			if (_refresh != null)
-				_refresh.SetColorSchemeColors(Element.SpinnerColor.ToAndroid());
+				_refresh.SetColorSchemeColors(Element.RefreshControlColor.ToAndroid());
 		}
 
 		internal class Container : ViewGroup
