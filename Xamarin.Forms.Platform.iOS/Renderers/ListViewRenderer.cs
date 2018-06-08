@@ -681,7 +681,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var color = Element.RefreshControlColor;
 
 			if (_tableViewController != null)
-				_tableViewController.UpdateRefreshControlColor(color.ToUIColor(UIColor.Black));
+				_tableViewController.UpdateRefreshControlColor(color == Color.Default ? null : color.ToUIColor());
 		}
 
 		internal class UnevenListViewDataSource : ListViewDataSource
