@@ -28,6 +28,9 @@ namespace Xamarin.Forms.Platform.Android
 			AutoPackage = false;
 		}
 
+		public override bool OnTouchEvent(AMotionEvent e)
+			=> Element.InputTransparent ? false : IsShown;
+
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use ButtonRenderer(Context) instead.")]
 		public ButtonRenderer()
 		{
@@ -290,6 +293,9 @@ namespace Xamarin.Forms.Platform.Android
 
 			public void OnClick(AView v)
 			{
+				if (!v.Enabled)
+					return;
+
 				var renderer = v.Tag as ButtonRenderer;
 				if (renderer != null)
 					((IButtonController)renderer.Element).SendClicked();
@@ -302,6 +308,9 @@ namespace Xamarin.Forms.Platform.Android
 
 			public bool OnTouch(AView v, AMotionEvent e)
 			{
+				if (!v.Enabled)
+					return false;
+
 				var renderer = v.Tag as ButtonRenderer;
 				if (renderer != null)
 				{

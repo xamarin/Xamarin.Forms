@@ -12,6 +12,7 @@ using AView = Android.Views.View;
 using AMotionEvent = Android.Views.MotionEvent;
 using AMotionEventActions = Android.Views.MotionEventActions;
 using static System.String;
+using Android.Views;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
@@ -29,6 +30,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		{
 			AutoPackage = false;
 		}
+
+		public override bool OnTouchEvent(AMotionEvent e)
+			=> Element.InputTransparent ? false : IsShown;
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use ButtonRenderer(Context) instead.")]
 		public ButtonRenderer() 
@@ -311,6 +315,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			public void OnClick(AView v)
 			{
+				if (!v.Enabled)
+					return;
+
 				var renderer = v.Tag as ButtonRenderer;
 				((IButtonController)renderer?.Element)?.SendClicked();
 			}
@@ -322,6 +329,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			public bool OnTouch(AView v, AMotionEvent e)
 			{
+				if (!v.Enabled)
+					return false;
+
 				var renderer = v.Tag as ButtonRenderer;
 				if (renderer != null)
 				{

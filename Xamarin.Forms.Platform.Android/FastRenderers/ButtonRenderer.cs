@@ -58,11 +58,17 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		public void OnClick(AView v)
 		{
+			if (!v.Enabled)
+				return;
+
 			((IButtonController)Button)?.SendClicked();
 		}
 
 		public bool OnTouch(AView v, MotionEvent e)
 		{
+			if (!v.Enabled)
+				return false;
+
 			var buttonController = Element as IButtonController;
 			switch (e.Action)
 			{
@@ -212,12 +218,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		}
 
 		public override bool OnTouchEvent(MotionEvent e)
-		{
-			if (!Enabled || (_inputTransparent && Enabled))
-				return false;
-
-			return base.OnTouchEvent(e);
-		}
+			=> Element.InputTransparent ? false : base.OnTouchEvent(e);
 
 		Size MinimumSize()
 		{
