@@ -65,18 +65,15 @@ namespace Xamarin.Forms
 		{
 			if (item == null || ProxiedEnumerable == null)
 				return false;
-#if NETSTANDARD1_0
-			if (!(item is string))
-				return false;
-#else
-			var itemType = item.GetType();
-			var isValueType = item is string || itemType.IsValueType || itemType.IsEnum;
+#if !NETSTANDARD1_0
+			Type itemType = item.GetType();
+			bool isValueType = item is string || itemType.IsValueType || itemType.IsEnum;
 			if (!isValueType)
 				return false;
 #endif
 			int count = 0;
-
-			foreach (var current in ProxiedEnumerable)
+			int index = 0;
+			while (TryGetValue(index++, out object current))
 			{
 				if (current.Equals(item) && ++count > 1)
 				{
