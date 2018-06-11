@@ -40,7 +40,6 @@ namespace Xamarin.Forms
 
 		public Picker()
 		{
-			((INotifyCollectionChanged)Items).CollectionChanged += OnItemsCollectionChanged;
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Picker>>(() => new PlatformConfigurationRegistry<Picker>(this));
 		}
 		public FontAttributes FontAttributes
@@ -88,7 +87,13 @@ namespace Xamarin.Forms
 		public int SelectedIndex
 		{
 			get { return (int)GetValue(SelectedIndexProperty); }
-			set { SetValue(SelectedIndexProperty, value); }
+			set
+			{
+				if (((LockableObservableListWrapper)Items).IsLocked)
+					return;
+
+				SetValue(SelectedIndexProperty, value);
+			}
 		}
 
 		public object SelectedItem
@@ -140,18 +145,15 @@ namespace Xamarin.Forms
 		static object CoerceSelectedIndex(BindableObject bindable, object value)
 		{
 			var picker = (Picker)bindable;
+			if (((LockableObservableListWrapper)picker.Items).IsLocked)
+				return picker.SelectedIndex;
+
 			return picker.Items == null ? -1 : ((int)value).Clamp(-1, picker.Items.Count - 1);
 		}
 
 		void OnItemDisplayBindingChanged(BindingBase oldValue, BindingBase newValue)
 		{
 			ResetItems();
-		}
-
-		void OnItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-		{
-			SelectedIndex = SelectedIndex.Clamp(-1, Items.Count - 1);
-			UpdateSelectedItem();
 		}
 
 		static void OnItemsSourceChanged(BindableObject bindable, object oldValue, object newValue)
@@ -171,11 +173,16 @@ namespace Xamarin.Forms
 			}
 
 			if (newValue != null) {
-				((LockableObservableListWrapper)Items).IsLocked = true;
 				ResetItems();
 			} else {
 				((LockableObservableListWrapper)Items).InternalClear();
 				((LockableObservableListWrapper)Items).IsLocked = false;
+			}
+
+			if (SelectedIndex != -1 && newValue != null)
+			{
+				if (newValue.IndexOf(SelectedItem) != -1)
+					UpdateSelectedIndex(SelectedItem);
 			}
 		}
 
@@ -193,6 +200,7 @@ namespace Xamarin.Forms
 				break;
 			}
 		}
+
 		void AddItems(NotifyCollectionChangedEventArgs e)
 		{
 			int index = e.NewStartingIndex < 0 ? Items.Count : e.NewStartingIndex;
@@ -211,10 +219,14 @@ namespace Xamarin.Forms
 		{
 			if (ItemsSource == null)
 				return;
+
+			((LockableObservableListWrapper)Items).IsLocked = true;
 			((LockableObservableListWrapper)Items).InternalClear();
 			foreach (object item in ItemsSource)
 				((LockableObservableListWrapper)Items).InternalAdd(GetDisplayMember(item));
-			UpdateSelectedItem();
+
+			((LockableObservableListWrapper)Items).IsLocked = false;
+			OnPropertyChanged("SelectedIndex");
 		}
 
 		static void OnSelectedIndexChanged(object bindable, object oldValue, object newValue)
@@ -228,30 +240,39 @@ namespace Xamarin.Forms
 		{
 			var picker = (Picker)bindable;
 			picker.UpdateSelectedIndex(newValue);
+			picker.InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 		}
 
 		void UpdateSelectedIndex(object selectedItem)
 		{
-			if (ItemsSource != null) {
-				SelectedIndex = ItemsSource.IndexOf(selectedItem);
-				return;
-			}
-			SelectedIndex = Items.IndexOf(selectedItem);
+			if (Items == null || Items.Count == 0)
+				ResetItems();
+
+			int selectedIndex = SelectedIndex;
+
+			if (ItemsSource != null)
+				selectedIndex = ItemsSource.IndexOf(selectedItem);
+			else
+				selectedIndex = Items.IndexOf(selectedItem);
+
+			SelectedIndex = selectedIndex;
 		}
 
 		void UpdateSelectedItem()
 		{
-			if (SelectedIndex == -1) {
-				SelectedItem = null;
+			if (SelectedIndex == -1)
 				return;
-			}
 
-			if (ItemsSource != null) {
-				SelectedItem = ItemsSource [SelectedIndex];
-				return;
-			}
+			Object selectedItem = null;
 
-			SelectedItem = Items [SelectedIndex];
+			if (ItemsSource != null)
+				selectedItem = ItemsSource [SelectedIndex];
+
+			if (selectedItem == null)
+				selectedItem = Items [SelectedIndex];
+
+			if (SelectedItem != selectedItem)
+				SelectedItem = selectedItem;
 		}
 
 		public IPlatformElementConfiguration<T, Picker> On<T>() where T : IConfigPlatform

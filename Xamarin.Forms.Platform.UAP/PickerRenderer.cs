@@ -66,7 +66,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == Picker.SelectedIndexProperty.PropertyName)
+			if (e.PropertyName == Picker.SelectedIndexProperty.PropertyName || e.PropertyName == Picker.ItemsSourceProperty.PropertyName)
 				UpdateSelectedIndex();
 			else if (e.PropertyName == Picker.TitleProperty.PropertyName)
 				UpdateTitle();
@@ -199,7 +199,11 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateSelectedIndex()
 		{
-			Control.SelectedIndex = Element.SelectedIndex;
+			if (Control == null || Element == null)
+				return;
+
+			if (Control.SelectedIndex != Element.SelectedIndex && Control.Items != null && Control.Items.Count > Element.SelectedIndex)
+				Control.SelectedIndex = Element.SelectedIndex;
 		}
 
 		void UpdateTextColor()

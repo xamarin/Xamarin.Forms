@@ -182,7 +182,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (Element.SelectedIndex == -1 || Element.Items == null)
 				Control.Text = null;
-			else
+			else if (Element.Items.Count > Element.SelectedIndex)
 				Control.Text = Element.Items[Element.SelectedIndex];
 
 			if (oldText != Control.Text)

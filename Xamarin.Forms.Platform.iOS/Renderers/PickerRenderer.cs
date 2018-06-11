@@ -107,7 +107,10 @@ namespace Xamarin.Forms.Platform.iOS
 			// Reset the TextField's Text so it appears as if typing with a keyboard does not work.
 			var selectedIndex = Element.SelectedIndex;
 			var items = Element.Items;
-			Control.Text = selectedIndex == -1 || items == null ? "" : items[selectedIndex];
+			String text = (selectedIndex != -1 && items != null && items.Count > selectedIndex) ? items[selectedIndex] : "";
+			if (Control.Text != text)
+				Control.Text = text;
+
 			// Also clears the undo stack (undo/redo possible on iPads)
 			Control.UndoManager.RemoveAllActions();
 		}
@@ -143,7 +146,12 @@ namespace Xamarin.Forms.Platform.iOS
 			var items = Element.Items;
 			Control.Placeholder = Element.Title;
 			var oldText = Control.Text;
-			Control.Text = selectedIndex == -1 || items == null ? "" : items[selectedIndex];
+
+			if (selectedIndex == -1 || items == null)
+				Control.Text = null;
+			else if (items.Count > selectedIndex)
+				Control.Text = items[selectedIndex];
+
 			UpdatePickerNativeSize(oldText);
 			_picker.ReloadAllComponents();
 			if (items == null || items.Count == 0)
@@ -172,8 +180,15 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdatePickerSelectedIndex(int formsIndex)
 		{
 			var source = (PickerSource)_picker.Model;
-			source.SelectedIndex = formsIndex;
-			source.SelectedItem = formsIndex >= 0 ? Element.Items[formsIndex] : null;
+
+			if (source.SelectedIndex != formsIndex)
+				source.SelectedIndex = formsIndex;
+
+			String selectedItem = (formsIndex >= 0 && Element.Items.Count > formsIndex) ? Element.Items[formsIndex] : null;
+
+			if (source.SelectedItem != selectedItem)
+				source.SelectedItem = selectedItem;
+
 			_picker.Select(Math.Max(formsIndex, 0), 0, true);
 		}
 

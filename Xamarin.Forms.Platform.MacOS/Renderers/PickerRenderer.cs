@@ -46,6 +46,21 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			Control.RemoveAllItems();
 			Control.AddItems(Element.Items.ToArray());
+			UpdateIsEnabled();
+		}
+
+		protected override void UpdateIsEnabled()
+		{
+			if (Element == null || Control == null)
+				return;
+
+			if (Element.Items.Count > 0)
+			{
+				if (Control.Enabled != Element.IsEnabled)
+					Control.Enabled = Element.IsEnabled;
+			}
+			else
+				Control.Enabled = false;
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -130,7 +145,10 @@ namespace Xamarin.Forms.Platform.MacOS
 			UpdateItems();
 
 			if (items == null || items.Count == 0 || selectedIndex < 0)
+			{
+				Control.Title = "";
 				return;
+			}
 
 			Control.SelectItem(selectedIndex);
 		}
