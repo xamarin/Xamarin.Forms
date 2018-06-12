@@ -261,7 +261,10 @@ namespace Xamarin.Forms
 		void UpdateSelectedItem()
 		{
 			if (SelectedIndex == -1)
+			{
+				SelectedItem = null;
 				return;
+			}
 
 			Object selectedItem = null;
 
