@@ -9,8 +9,8 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.None, 0, "[macOS] Entry unfocus behavior", PlatformAffected.macOS)]
-	public class EntryUnfocusedImmediately : TestContentPage
+	[Issue(IssueTracker.Github, 3012, "[macOS] Entry focus / unfocus behavior", PlatformAffected.macOS)]
+	public class Issue3012 : TestContentPage
 	{
 		Label _focusedCountLabel = new Label
 		{
@@ -84,7 +84,7 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST
 #if __MACOS__
 		[Test]
-		public void EntryUnfocusedImmediatelyTest()
+		public void Issue3012Test()
 		{
 			RunningApp.WaitForElement(q => q.Marked("DumbyEntry"));
 			RunningApp.Tap(q => q.Marked("DumbyEntry"));
