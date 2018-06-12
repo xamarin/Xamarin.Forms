@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Collections.Generic;
 using Xamarin.Forms.Internals;
+using System.Reflection;
 
 namespace Xamarin.Forms.Internals
 {
@@ -199,7 +200,8 @@ namespace Xamarin.Forms.Internals
 				Subscribe((TSource)sourceObject);
 
 			if (needsGetter) {
-				var value = FallbackValue ?? property.DefaultValue;
+				object value = null;
+				var defaultValue = FallbackValue ?? property.DefaultValue;
 				if (isTSource) {
 					try {
 						value = GetSourceValue(_getter((TSource)sourceObject), property.ReturnType);
@@ -207,8 +209,12 @@ namespace Xamarin.Forms.Internals
 					}
 				}
 				if (!TryConvert(ref value, property, property.ReturnType, true)) {
-					Log.Warning("Binding", "{0} can not be converted to type '{1}'", value, property.ReturnType);
-					return;
+					if (!TryConvert(ref defaultValue, property, property.ReturnType, true)) {
+						Log.Warning("Binding", $"{value} can not be converted to type '{property.ReturnType}'");
+						return;
+					}
+					Log.Warning("Binding", $"{value} can not be converted to type '{property.ReturnType}', using `{defaultValue}` as fallback");
+					value = defaultValue;
 				}
 				target.SetValueCore(property, value, SetValueFlags.ClearDynamicResource, BindableObject.SetValuePrivateFlags.Default | BindableObject.SetValuePrivateFlags.Converted);
 				return;
@@ -218,8 +224,13 @@ namespace Xamarin.Forms.Internals
 			if (needsSetter && _setter != null && isTSource) {
 				var value = GetTargetValue(target.GetValue(property), typeof(TProperty));
 				if (!TryConvert(ref value, property, typeof(TProperty), false)) {
-					Log.Warning("Binding", "{0} can not be converted to type '{1}'", value, typeof(TProperty));
-					return;
+					var defaultValue = FallbackValue ?? property.DefaultValue;
+					if (!TryConvert(ref defaultValue, property, typeof(TProperty), false)) {
+						Log.Warning("Binding", $"{value} can not be converted to type '{typeof(TProperty)}'");
+						return;
+					}
+					Log.Warning("Binding", $"{value} can not be converted to type '{typeof(TProperty)}', using `{defaultValue}` as fallback");
+					value = defaultValue;
 				}
 				_setter((TSource)sourceObject, (TProperty)value);
 			}
@@ -227,7 +238,11 @@ namespace Xamarin.Forms.Internals
 
 		static bool TryConvert(ref object value, BindableProperty targetProperty, Type convertTo, bool toTarget)
 		{
-			if (value == null)
+#if NETSTANDARD2_0
+			if (value == null && !convertTo.IsValueType)
+#else
+			if (value == null && !convertTo.GetTypeInfo().IsValueType)
+#endif
 				return true;
 			if ((toTarget && targetProperty.TryConvert(ref value)) || (!toTarget && convertTo.IsInstanceOfType(value)))
 				return true;
@@ -236,7 +251,7 @@ namespace Xamarin.Forms.Internals
 			try {
 				value = Convert.ChangeType(value, convertTo, CultureInfo.InvariantCulture);
 				return true;
-			} catch (Exception ex ) when (ex is InvalidCastException || ex is FormatException||ex is OverflowException) {
+			} catch (Exception ex ) when (ex is InvalidCastException || ex is FormatException || ex is OverflowException) {
 				value = original;
 				return false;
 			}

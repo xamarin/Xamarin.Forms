@@ -156,18 +156,22 @@ namespace Xamarin.Forms
 
 			if (needsGetter)
 			{
-				object value = property.DefaultValue;
-				if (part.TryGetValue(current, out value) || part.IsSelf)
-				{
+				object value = null;
+				var defaultValue = Binding.FallbackValue ?? property.DefaultValue;
+				if (part.IsSelf)
+					value = current;
+				else if (part.TryGetValue(current, out value))
 					value = Binding.GetSourceValue(value, property.ReturnType);
-				}
 				else
-					value = Binding.FallbackValue ?? property.DefaultValue;
+					value = defaultValue;
 
-				if (!TryConvert(part, ref value, property.ReturnType, true))
-				{
-					Log.Warning("Binding", "{0} can not be converted to type '{1}'", value, property.ReturnType);
-					return;
+				if (!TryConvert(part, ref value, property.ReturnType, true)) {
+					if (!TryConvert(part, ref defaultValue, property.ReturnType, true)) {
+						Log.Warning("Binding", $"{value} can not be converted to type '{property.ReturnType}'");
+						return;
+					}
+					Log.Warning("Binding", $"{value} can not be converted to type '{property.ReturnType}', using `{defaultValue}` as fallback");
+					value = defaultValue;
 				}
 
 				target.SetValueCore(property, value, SetValueFlags.ClearDynamicResource, BindableObject.SetValuePrivateFlags.Default | BindableObject.SetValuePrivateFlags.Converted);
@@ -178,8 +182,13 @@ namespace Xamarin.Forms
 
 				if (!TryConvert(part, ref value, part.SetterType, false))
 				{
-					Log.Warning("Binding", "{0} can not be converted to type '{1}'", value, part.SetterType);
-					return;
+					var defaultValue = Binding.FallbackValue ?? property.DefaultValue;
+					if (!TryConvert(part, ref defaultValue, part.SetterType, false)) {
+						Log.Warning("Binding", $"{value} can not be converted to type '{part.SetterType}'");
+						return;
+					}
+					Log.Warning("Binding", $"{value} can not be converted to type '{part.SetterType}', using `{defaultValue}` as fallback");
+					value = defaultValue;
 				}
 
 				object[] args;
@@ -417,7 +426,11 @@ namespace Xamarin.Forms
 
 		bool TryConvert(BindingExpressionPart part, ref object value, Type convertTo, bool toTarget)
 		{
-			if (value == null)
+#if NETSTANDARD2_0
+			if (value == null && !convertTo.IsValueType)
+#else
+			if (value == null && !convertTo.GetTypeInfo().IsValueType)
+#endif
 				return true;
 			if ((toTarget && _targetProperty.TryConvert(ref value)) || (!toTarget && convertTo.IsInstanceOfType(value)))
 				return true;
@@ -428,7 +441,7 @@ namespace Xamarin.Forms
 				var stringValue = value as string ?? string.Empty;
 				// see: https://bugzilla.xamarin.com/show_bug.cgi?id=32871
 				// do not canonicalize "*.[.]"; "1." should not update bound BindableProperty
-				if (stringValue.EndsWith(".") && DecimalTypes.Contains(convertTo))
+				if (stringValue.EndsWith(".", StringComparison.Ordinal) && DecimalTypes.Contains(convertTo))
 					throw new FormatException();
 
 				// do not canonicalize "-0"; user will likely enter a period after "-0"
@@ -618,29 +631,24 @@ namespace Xamarin.Forms
 
 			public bool TryGetValue(object source, out object value)
 			{
-				value = source;
-
-				if (LastGetter != null && value != null)
-				{
-					if (IsIndexer)
-					{
-						try
-						{
-							value = LastGetter.Invoke(value, Arguments);
-						}
-						catch (TargetInvocationException ex)
-						{
-							if (!(ex.InnerException is KeyNotFoundException))
-								throw;
-							value = null;
-						}
-						return true;
-					}
-					value = LastGetter.Invoke(value, Arguments);
-					return true;
+				if (LastGetter == null || source == null) {
+					value = null;
+					return false;
 				}
 
-				return false;
+				if (IsIndexer) {
+					try {
+						value = LastGetter.Invoke(source, Arguments);
+					}
+					catch (TargetInvocationException ex) {
+						if (!(ex.InnerException is KeyNotFoundException))
+							throw;
+						value = null;
+					}
+					return true;
+				}
+				value = LastGetter.Invoke(source, Arguments);
+				return true;
 			}
 		}
 	}

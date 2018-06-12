@@ -1909,8 +1909,39 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (() => {
 				slider.SetBinding (Slider.ValueProperty, "Model");
 			}, Throws.Nothing);
+			Assert.That(log.Messages.Count, Is.EqualTo(1));
 
 			Assert.That (slider.Value, Is.EqualTo (Slider.ValueProperty.DefaultValue));
+		}
+
+		[Test]
+		public void FailToConvertUseDefaultValue()
+		{
+			var property = BindableProperty.Create("foo", typeof(double), typeof(MockBindable), -1d);
+			var bindable = new MockBindable {
+				BindingContext = new ComplexMockViewModel { Model = new ComplexMockViewModel() }
+			};
+			bindable.SetValue(property, 0d);
+			Assert.That(() => {
+				bindable.SetBinding(property, "Model");
+			}, Throws.Nothing);
+			Assert.That(log.Messages.Count, Is.EqualTo(1));
+			Assert.That(bindable.GetValue(property), Is.EqualTo(property.DefaultValue));
+		}
+
+		[Test]
+		public void FailToConvertUseFallbackValue()
+		{
+			var property = BindableProperty.Create("foo", typeof(double), typeof(MockBindable), -1d);
+			var bindable = new MockBindable {
+				BindingContext = new ComplexMockViewModel { Model = new ComplexMockViewModel() }
+			};
+			bindable.SetValue(property, 0d);
+			Assert.That(() => {
+				bindable.SetBinding(property, new Binding("Model") { FallbackValue = 42d });
+			}, Throws.Nothing);
+			Assert.That(log.Messages.Count, Is.EqualTo(1));
+			Assert.That(bindable.GetValue(property), Is.EqualTo(42d));
 		}
 
 		class NullViewModel : INotifyPropertyChanged
@@ -1967,11 +1998,12 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (bindable.Text2, Is.EqualTo ("Bar"));
 		}
 
-		[TestCase]
+		[Test]
 		public void BindingSourceOverContext ()
 		{
-			var label = new Label ();
-			label.BindingContext = "bindingcontext";
+			var label = new Label {
+				BindingContext = "bindingcontext"
+			};
 			label.SetBinding (Label.TextProperty, Binding.SelfPath);
 			Assert.AreEqual ("bindingcontext", label.Text);
 
