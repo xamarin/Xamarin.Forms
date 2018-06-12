@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using AppKit;
+using Foundation;
 
 namespace Xamarin.Forms.Platform.MacOS
 {
@@ -9,15 +10,50 @@ namespace Xamarin.Forms.Platform.MacOS
 		class FormsNSTextField : NSTextField
 		{
 			public EventHandler<BoolEventArgs> FocusChanged;
+
+			bool _windowEventsSet;
+
 			public override bool ResignFirstResponder()
 			{
-				FocusChanged?.Invoke(this, new BoolEventArgs(false));
 				return base.ResignFirstResponder();
 			}
+
 			public override bool BecomeFirstResponder()
 			{
 				FocusChanged?.Invoke(this, new BoolEventArgs(true));
-				return base.BecomeFirstResponder();
+
+				var result = base.BecomeFirstResponder();
+
+				if (!_windowEventsSet)
+				{
+					_windowEventsSet = true;
+					Window.DidResignKey += HandleWindowDidResignKey;
+					Window.DidBecomeKey += HandleWindowDidBecomeKey;
+				}
+
+				return result;
+			}
+
+			public override void DidEndEditing(NSNotification notification)
+			{
+				if (CurrentEditor != Window.FirstResponder)
+				{
+					FocusChanged?.Invoke(this, new BoolEventArgs(false));
+				}
+				base.DidEndEditing(notification);
+			}
+
+			void HandleWindowDidResignKey(object sender, EventArgs args)
+			{
+				FocusChanged?.Invoke(this, new BoolEventArgs(false));
+			}
+
+			void HandleWindowDidBecomeKey(object sender, EventArgs args)
+			{
+				if (CurrentEditor == Window.FirstResponder)
+				{
+					FocusChanged?.Invoke(this, new BoolEventArgs(true));
+				}
 			}
 		}
 
