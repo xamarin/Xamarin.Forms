@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using CoreGraphics;
 using Foundation;
 using UIKit;
@@ -8,6 +9,8 @@ namespace Xamarin.Forms.Platform.iOS
 	internal abstract class DefaultCell : UICollectionViewCell
 	{
 		public UILabel Label { get; }
+
+		public abstract void UpdateConstrainedDimension(nfloat constant);
 
 		[Export("initWithFrame:")]
 		protected DefaultCell(CGRect frame) : base(frame)
@@ -23,8 +26,6 @@ namespace Xamarin.Forms.Platform.iOS
 			
 			ContentView.AddSubview(Label);
 
-			ContentView.BackgroundColor = UIColor.Yellow;
-
 			InitializeConstraints();
 		}
 
@@ -33,25 +34,11 @@ namespace Xamarin.Forms.Platform.iOS
 			Label.TranslatesAutoresizingMaskIntoConstraints = false;
 			ContentView.TranslatesAutoresizingMaskIntoConstraints = false;
 
-			var views = new NSMutableDictionary
-			{
-				{ new NSString("label"), Label }, { new NSString("contentView"), ContentView }
-			};
-
-			// TODO hartez 2018/06/04 14:28:08 Replace these with NSConstraint.Create or Anchor constraints (save some parsing cycles)	
-			var pinContentToTop = NSLayoutConstraint.FromVisualFormat("V:|[contentView]",
-				NSLayoutFormatOptions.DirectionLeadingToTrailing, null, views);
-
-			var pinContentToLeading = NSLayoutConstraint.FromVisualFormat("H:|[contentView]",
-				NSLayoutFormatOptions.DirectionLeadingToTrailing, null, views);
-
-			AddConstraints(pinContentToLeading);
-			AddConstraints(pinContentToTop);
-
-			InitializeOrientationConstraints(views);
+			ContentView.TopAnchor.ConstraintEqualTo(Label.TopAnchor).Active = true;
+			ContentView.BottomAnchor.ConstraintEqualTo(Label.BottomAnchor).Active = true;
+			ContentView.LeadingAnchor.ConstraintEqualTo(Label.LeadingAnchor).Active = true;
+			ContentView.TrailingAnchor.ConstraintEqualTo(Label.TrailingAnchor).Active = true;
 		}
-
-		protected abstract void InitializeOrientationConstraints(NSDictionary views);
 	}
 
 	internal sealed class DefaultVerticalListCell : DefaultCell
@@ -61,23 +48,19 @@ namespace Xamarin.Forms.Platform.iOS
 		[Export("initWithFrame:")]
 		public DefaultVerticalListCell(CGRect frame) : base(frame)
 		{
+			Width = Label.WidthAnchor.ConstraintEqualTo(Frame.Width - 2);
+			Width.Active = true;
 		}
 
-		protected override void InitializeOrientationConstraints(NSDictionary views)
+		NSLayoutConstraint Width { get; }
+
+		public override void UpdateConstrainedDimension(nfloat constant)
 		{
-			// TODO hartez 2018/06/04 14:28:08 Replace these with NSConstraint.Create or Anchor constraints (save some parsing cycles)	
-			var sizeToLabelVertical = NSLayoutConstraint.FromVisualFormat("V:|-[label]-|",
-				NSLayoutFormatOptions.SpacingEdgeToEdge, null, views);
-
-			var pinLabelToLeading = NSLayoutConstraint.FromVisualFormat("H:|-[label]", 
-				NSLayoutFormatOptions.DirectionLeadingToTrailing, null, views);
-
-			ContentView.AddConstraints(pinLabelToLeading);
-			ContentView.AddConstraints(sizeToLabelVertical);
+			// TODO hartez 2018/06/10 14:54:51 Can we drop the "- 2" now? Or at least make it a constant. (with an explanation)
+			Width.Constant = constant - 2;
 		}
 	}
 
-	// TODO hartez 2018/06/04 17:23:25 Why does navigating back from the test page for this cause a crash?	
 	internal sealed class DefaultHorizontalListCell : DefaultCell
 	{
 		public static NSString ReuseId = new NSString("Xamarin.Forms.Platform.iOS.DefaultHorizontalListCell");
@@ -85,17 +68,15 @@ namespace Xamarin.Forms.Platform.iOS
 		[Export("initWithFrame:")]
 		public DefaultHorizontalListCell(CGRect frame) : base(frame)
 		{
+			Height = Label.HeightAnchor.ConstraintEqualTo(Frame.Height - 2);
+			Height.Active = true;
 		}
 
-		protected override void InitializeOrientationConstraints(NSDictionary views)
+		NSLayoutConstraint Height { get; }
+
+		public override void UpdateConstrainedDimension(nfloat constant)
 		{
-			// TODO hartez 2018/06/04 14:28:08 Replace these with NSConstraint.Create or Anchor constraints (save some parsing cycles)	
-			var sizeToLabelHorizontal = NSLayoutConstraint.FromVisualFormat("H:|-[label]-|",
-				NSLayoutFormatOptions.SpacingEdgeToEdge, null, views);
-
-			ContentView.AddConstraints(sizeToLabelHorizontal);
-
-			Label.CenterYAnchor.ConstraintEqualTo(CenterYAnchor).Active = true;
+			Height.Constant = constant - 2;
 		}
 	}
 }
