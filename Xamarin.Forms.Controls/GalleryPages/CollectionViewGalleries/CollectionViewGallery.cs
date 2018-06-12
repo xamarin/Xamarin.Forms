@@ -33,7 +33,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 				{
 					Children =
 					{
-						// TODO hartez 2018-06-05 10:43 AM Need a gallery page which allows layout selection so we can demonstrate switching between them
+						// TODO hartez 2018-06-05 10:43 AM Need a gallery page which allows layout selection
+						// so we can demonstrate switching between them
 						descriptionLabel,
 						GalleryBuilder.NavButton("Vertical List (Code)", () => 
 							new TextCodeCollectionViewGallery(ListItemsLayout.VerticalList), Navigation),
@@ -66,7 +67,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 
 			var button = new Button { Text = "Update" };
 			var label = new Label { Text = "Item count:", VerticalTextAlignment = TextAlignment.Center };
-			_entry = new Entry { Keyboard = Keyboard.Numeric, Text = "10", WidthRequest = 200 };
+			_entry = new Entry { Keyboard = Keyboard.Numeric, Text = "1000", WidthRequest = 200 };
 
 			layout.Children.Add(label);
 			layout.Children.Add(_entry);
@@ -147,24 +148,24 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 	{
 		public TextCodeCollectionViewGallery(IItemsLayout itemsLayout)
 		{
-			//var layout = new Grid
-			//{
-			//	RowDefinitions = new RowDefinitionCollection
-			//	{
-			//		new RowDefinition { Height = GridLength.Auto },
-			//		new RowDefinition { Height = GridLength.Star }
-			//	}
-			//};
+			var layout = new Grid
+			{
+				RowDefinitions = new RowDefinitionCollection
+				{
+					new RowDefinition { Height = GridLength.Auto },
+					new RowDefinition { Height = GridLength.Star }
+				}
+			};
 
 			var collectionView = new CollectionView {ItemsLayout = itemsLayout};
 
 			var generator = new ItemsSourceGenerator(collectionView);
 
-			//layout.Children.Add(generator);
-			//layout.Children.Add(collectionView);
-			//Grid.SetRow(collectionView, 1);
+			layout.Children.Add(generator);
+			layout.Children.Add(collectionView);
+			Grid.SetRow(collectionView, 1);
 
-			Content = collectionView;
+			Content = layout;
 
 			generator.GenerateItems();
 		}

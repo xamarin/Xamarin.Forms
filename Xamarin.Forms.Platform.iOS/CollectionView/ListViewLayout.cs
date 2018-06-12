@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using CoreGraphics;
-using Foundation;
 using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
@@ -13,15 +10,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public abstract Type CellType { get; }
 
-		public abstract void UpdateItemSizeEstimate(CGSize size);
-
 		public nfloat ConstrainedDimension { get; set; }
 
 		public abstract void ConstrainTo(CGSize size);
 
-		public abstract void ShrinkConstraints(CGSize size, UICollectionViewCell[] cells);
-
-		public abstract void ForceConstraints(CGSize size, UICollectionViewCell[] cells);
+		public abstract void PrepareCellForLayout(DefaultCell cell);
 	}
 
 	internal class ListViewLayout : ItemsViewLayout
@@ -39,16 +32,28 @@ namespace Xamarin.Forms.Platform.iOS
 			? typeof(DefaultHorizontalListCell)
 			: typeof(DefaultVerticalListCell);
 
-		public override void UpdateItemSizeEstimate(CGSize size)
+		public override void ConstrainTo(CGSize size)
 		{
-			// TODO hartez 2018/06/12 08:25:05 Determine if 64 is really correct here (it seems to work) and if so, make it a const	
-			if (ScrollDirection == UICollectionViewScrollDirection.Horizontal)
+			ConstrainedDimension =
+				ScrollDirection == UICollectionViewScrollDirection.Vertical ? size.Width : size.Height;
+			UpdateItemSizeEstimate(size);
+		}
+
+		public override void PrepareCellForLayout(DefaultCell cell)
+		{
+			cell.UpdateConstrainedDimension(ConstrainedDimension);
+		}
+
+		public override bool ShouldInvalidateLayoutForBoundsChange(CGRect newBounds)
+		{
+			var shouldInvalidate = base.ShouldInvalidateLayoutForBoundsChange(newBounds);
+
+			if (shouldInvalidate)
 			{
-				EstimatedItemSize = new CGSize(64, size.Height);
-				return;
+				UpdateConstraints(newBounds.Size);
 			}
 
-			EstimatedItemSize = new CGSize(size.Width, 64);
+			return shouldInvalidate;
 		}
 
 		void Initialize(UICollectionViewScrollDirection scrollDirection)
@@ -56,14 +61,9 @@ namespace Xamarin.Forms.Platform.iOS
 			ScrollDirection = scrollDirection;
 		}
 
-		public override void ConstrainTo(CGSize size)
+		void UpdateCellConstraints()
 		{
-			ConstrainedDimension = ScrollDirection == UICollectionViewScrollDirection.Vertical ? size.Width : size.Height;
-		}
-
-		void UpdateConstraints(CGSize size, UICollectionViewCell[] cells)
-		{
-			ConstrainTo(size);
+			var cells = CollectionView.VisibleCells;
 
 			for (int n = 0; n < cells.Length; n++)
 			{
@@ -72,54 +72,35 @@ namespace Xamarin.Forms.Platform.iOS
 					defaultCell.UpdateConstrainedDimension(ConstrainedDimension);
 				}
 			}
-
-			// TODO hartez 2018/06/12 08:38:18 Are these calls needed? If so, can we take them out if the constrainted dimension isn't changing?	
-			InvalidateLayout();
-			CollectionView.LayoutIfNeeded();
 		}
 
-		public override void ShrinkConstraints(CGSize size, UICollectionViewCell[] cells)
+		void UpdateConstraints(CGSize size)
 		{
-			if (ScrollDirection == UICollectionViewScrollDirection.Vertical &&
-				ConstrainedDimension > size.Width)
-			{
-				UpdateConstraints(size, CollectionView.VisibleCells);
-				UpdateItemSizeEstimate(size);
-			}
-			else if (ScrollDirection == UICollectionViewScrollDirection.Horizontal &&
-					ConstrainedDimension > size.Height)
-			{
-				UpdateConstraints(size, CollectionView.VisibleCells);
-				UpdateItemSizeEstimate(size);
-			}
-		}
-
-		public override void ForceConstraints(CGSize size, UICollectionViewCell[] cells)
-		{
-			UpdateItemSizeEstimate(size);
-
 			if (ScrollDirection == UICollectionViewScrollDirection.Vertical
 				&& ConstrainedDimension != size.Width)
 			{
-				UpdateConstraints(size, CollectionView.VisibleCells);
+				ConstrainTo(size);
+				UpdateCellConstraints();
 			}
 			else if (ScrollDirection == UICollectionViewScrollDirection.Horizontal
 					&& ConstrainedDimension != size.Height)
 			{
-				UpdateConstraints(size, CollectionView.VisibleCells);
+				ConstrainTo(size);
+				UpdateCellConstraints();
 			}
 		}
 
-		public override bool ShouldInvalidateLayoutForBoundsChange(CGRect newBounds)
+		void UpdateItemSizeEstimate(CGSize size)
 		{
-			var x = base.ShouldInvalidateLayoutForBoundsChange(newBounds);
+			// TODO hartez 2018/06/12 08:25:05 Determine if 64 is really correct here (it seems to work)
+			// and if so, make it a const	
+			if (ScrollDirection == UICollectionViewScrollDirection.Horizontal)
+			{
+				EstimatedItemSize = new CGSize(64, size.Height);
+				return;
+			}
 
-			// TODO hartez 2018/06/12 10:05:09 Catch whatever nonsense titlebar resize is happening on Back and make sure to update any height constraints for it so we don't straight-up crash	
-
-			Debug.WriteLine($">>>>> ListViewLayout ShouldInvalidateLayoutForBoundsChange newBounds: {newBounds}, shouldInvalidate: {x}");
-			Debug.WriteLine($">>>>> ListViewLayout ShouldInvalidateLayoutForBoundsChange ConstrainedDimension: {ConstrainedDimension}");
-
-			return x;
+			EstimatedItemSize = new CGSize(size.Width, 64);
 		}
 	}
 }

@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Diagnostics;
 using CoreGraphics;
 using Foundation;
 using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	internal abstract class DefaultCell : UICollectionViewCell
+	public abstract class DefaultCell : UICollectionViewCell
 	{
 		public UILabel Label { get; }
 
@@ -15,23 +14,16 @@ namespace Xamarin.Forms.Platform.iOS
 		[Export("initWithFrame:")]
 		protected DefaultCell(CGRect frame) : base(frame)
 		{
-			ContentView.BackgroundColor = UIColor.Clear;
-
 			Label = new UILabel(frame)
 			{
 				TextColor = UIColor.Black,
 				Lines = 1,
-				Font = UIFont.PreferredBody
+				Font = UIFont.PreferredBody,
+				TranslatesAutoresizingMaskIntoConstraints = false
 			};
-			
+
+			ContentView.BackgroundColor = UIColor.Clear;
 			ContentView.AddSubview(Label);
-
-			InitializeConstraints();
-		}
-
-		void InitializeConstraints()
-		{
-			Label.TranslatesAutoresizingMaskIntoConstraints = false;
 			ContentView.TranslatesAutoresizingMaskIntoConstraints = false;
 
 			ContentView.TopAnchor.ConstraintEqualTo(Label.TopAnchor).Active = true;
@@ -48,7 +40,7 @@ namespace Xamarin.Forms.Platform.iOS
 		[Export("initWithFrame:")]
 		public DefaultVerticalListCell(CGRect frame) : base(frame)
 		{
-			Width = Label.WidthAnchor.ConstraintEqualTo(Frame.Width - 2);
+			Width = Label.WidthAnchor.ConstraintEqualTo(Frame.Width);
 			Width.Active = true;
 		}
 
@@ -56,8 +48,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void UpdateConstrainedDimension(nfloat constant)
 		{
-			// TODO hartez 2018/06/10 14:54:51 Can we drop the "- 2" now? Or at least make it a constant. (with an explanation)
-			Width.Constant = constant - 2;
+			Width.Constant = constant;
 		}
 	}
 
@@ -68,7 +59,7 @@ namespace Xamarin.Forms.Platform.iOS
 		[Export("initWithFrame:")]
 		public DefaultHorizontalListCell(CGRect frame) : base(frame)
 		{
-			Height = Label.HeightAnchor.ConstraintEqualTo(Frame.Height - 2);
+			Height = Label.HeightAnchor.ConstraintEqualTo(Frame.Height);
 			Height.Active = true;
 		}
 
@@ -76,7 +67,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void UpdateConstrainedDimension(nfloat constant)
 		{
-			Height.Constant = constant - 2;
+			Height.Constant = constant;
 		}
 	}
 }

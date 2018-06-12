@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Diagnostics;
-using System.Threading.Tasks;
 using CoreGraphics;
 using Foundation;
 using UIKit;
@@ -29,7 +27,8 @@ namespace Xamarin.Forms.Platform.iOS
 			CollectionView.RegisterClassForCell(_layout.CellType, _layout.CellReuseId);
 			CollectionView.WeakDelegate = _layout;
 
-			// TODO hartez 2018/06/10 14:29:22 Does ItemsSize need to be set at all when we're doing auto layout? If not, can we leave it default/-1,-1 until UniformSize is set?	
+			// TODO hartez 2018/06/10 14:29:22 Does ItemsSize need to be set at all when we're doing auto layout?
+			// If not, can we leave it default/-1,-1 until UniformSize is set?	
 			_layout.ItemSize = new CGSize(64, 64);
 		}
 
@@ -37,14 +36,13 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.ViewWillLayoutSubviews();
 
-			// TODO hartez 2018/06/10 17:31:32 Do we just need to do this the first time through?	
-			// TODO hartez 2018/06/10 17:31:50 Now that we've got this firing, see if it all still works even if you get rid of the viewcontroller adjustments higher up the chain	
+			// We can't set this constraint up on ViewDidLoad, because Forms does other stuff that resizes the view
+			// and we end up with massive layout errors. And View[Will/Did]Appear do not fire for this controller
+			// reliably. So until one of those options is cleared up, we set this flag so that the initial constraints
+			// are set up the first time this method is called.
 			if (!_initialEstimateMade)
 			{
-				_layout.UpdateItemSizeEstimate(CollectionView.Bounds.Size);
-
 				_layout.ConstrainTo(CollectionView.Bounds.Size);
-
 				_initialEstimateMade = true;
 			}
 		}
@@ -55,29 +53,18 @@ namespace Xamarin.Forms.Platform.iOS
 			return (_itemsSource as IList).Count;
 		}
 
-		public override void ViewWillTransitionToSize(CGSize toSize, IUIViewControllerTransitionCoordinator coordinator)
-		{
-			base.ViewWillTransitionToSize(toSize, coordinator);
-
-			_layout.ShrinkConstraints(toSize, CollectionView.VisibleCells);
-
-			coordinator.AnimateAlongsideTransition(
-				context => { },
-				context =>
-				{
-					_layout.ForceConstraints(View.Bounds.Size, CollectionView.VisibleCells);
-				});
-		}
-
 		public override UICollectionViewCell GetCell(UICollectionView collectionView, NSIndexPath indexPath)
 		{
-			// TODO hartez 2018/05/31 11:53:51 Find guidance on what this should do if it can't dequeue a cell	(Probably throw?)
-			var cell = collectionView.DequeueReusableCell(_layout.CellReuseId, indexPath) as DefaultCell;
-			cell.UpdateConstrainedDimension(_layout.ConstrainedDimension);
+			var cell = collectionView.DequeueReusableCell(_layout.CellReuseId, indexPath) as UICollectionViewCell;
 
-			if (_itemsSource is IList list)
+			if (cell is DefaultCell defaultCell)
 			{
-				cell.Label.Text = list[indexPath.Row].ToString();
+				_layout.PrepareCellForLayout(defaultCell);
+			
+				if (_itemsSource is IList list)
+				{
+					defaultCell.Label.Text = list[indexPath.Row].ToString();
+				}
 			}
 
 			return cell;
