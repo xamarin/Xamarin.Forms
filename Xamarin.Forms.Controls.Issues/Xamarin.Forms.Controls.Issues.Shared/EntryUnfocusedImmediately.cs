@@ -2,6 +2,10 @@
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
+#if UITEST
+using NUnit.Framework;
+#endif
+
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
@@ -10,7 +14,8 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		Label _focusedCountLabel = new Label
 		{
-			Text = "Focused count: 0"
+			Text = "Focused count: 0",
+			AutomationId = "FocusedCountLabel"
 		};
 		int _focusedCount;
 		int FocusedCount
@@ -25,7 +30,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 		Label _unfocusedCountLabel = new Label
 		{
-			Text = "Unfocused count: 0"
+			Text = "Unfocused count: 0",
+			AutomationId = "UnfocusedCountLabel"
 		};
 		int _unfocusedCount;
 		int UnfocusedCount
@@ -40,7 +46,10 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
 		{
-			var entry = new Entry();
+			var entry = new Entry
+			{
+				AutomationId = "FocusTargetEntry"
+			};
 			entry.Focused += (sender, e) =>
 			{
 				FocusedCount++;
@@ -52,7 +61,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var dumbyEntry = new Entry()
 			{
-				Placeholder = "I'm just here as another focus target"
+				Placeholder = "I'm just here as another focus target",
+				AutomationId = "DumbyEntry"
 			};
 
 			var divider = new BoxView
@@ -70,5 +80,23 @@ namespace Xamarin.Forms.Controls.Issues
 
 			Content = stackLayout;
 		}
+
+#if UITEST
+#if __MACOS__
+		[Test]
+		public void EntryUnfocusedImmediatelyTest()
+		{
+			RunningApp.WaitForElement(q => q.Marked("DumbyEntry"));
+			RunningApp.Tap(q => q.Marked("DumbyEntry"));
+			
+			RunningApp.WaitForElement(q => q.Marked("FocusTargetEntry"));
+			RunningApp.Tap(q => q.Marked("FocusTargetEntry"));
+			Assert.AreEqual(0, _unfocusedCount, "Unfocused should not have fired");
+
+			RunningApp.Tap(q => q.Marked("DumbyEntry"));
+			Assert.AreEqual(1, _unfocusedCount, "Unfocused should have been fired once");
+		}
+#endif
+#endif
 	}
 }
