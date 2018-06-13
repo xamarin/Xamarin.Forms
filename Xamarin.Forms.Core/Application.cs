@@ -36,11 +36,17 @@ namespace Xamarin.Forms
 
 				if (_logWarningsToApplicationOutput)
 				{
-					Log.Listeners.Add(_applicationOutputListener.Value);
+					if (!Log.Listeners.Contains(_applicationOutputListener.Value))
+					{
+						Log.Listeners.Add(_applicationOutputListener.Value);
+					}
 				}
 				else
 				{
-					Log.Listeners.Remove(_applicationOutputListener.Value);
+					if (Log.Listeners.Contains(_applicationOutputListener.Value))
+					{
+						Log.Listeners.Remove(_applicationOutputListener.Value);
+					}
 				}
 			}
 		}
