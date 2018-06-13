@@ -13,6 +13,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			bool _windowEventsSet;
 
+			bool _disposed;
+
 			public override bool ResignFirstResponder()
 			{
 				return base.ResignFirstResponder();
@@ -41,6 +43,22 @@ namespace Xamarin.Forms.Platform.MacOS
 					FocusChanged?.Invoke(this, new BoolEventArgs(false));
 				}
 				base.DidEndEditing(notification);
+			}
+
+			protected override void Dispose(bool disposing)
+			{
+				if (disposing && !_disposed)
+				{
+					_disposed = true;
+
+					if (Window != null)
+					{
+						Window.DidResignKey -= HandleWindowDidResignKey;
+						Window.DidBecomeKey -= HandleWindowDidBecomeKey;
+					}
+				}
+
+				base.Dispose(disposing);
 			}
 
 			void HandleWindowDidResignKey(object sender, EventArgs args)
