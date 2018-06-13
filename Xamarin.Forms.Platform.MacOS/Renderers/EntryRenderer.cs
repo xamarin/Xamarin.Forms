@@ -39,9 +39,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			public override void DidEndEditing(NSNotification notification)
 			{
 				if (CurrentEditor != Window.FirstResponder)
-				{
 					FocusChanged?.Invoke(this, new BoolEventArgs(false));
-				}
+				
 				base.DidEndEditing(notification);
 			}
 
