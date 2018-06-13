@@ -532,11 +532,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 			var groupReset = resetWhenGrouped && Element.IsGroupingEnabled;
 
-			if (!groupReset)
+			// We can't do this check on grouped lists because the index doesn't match the number of rows in a section.
+			// Likewise, we can't do this check on lists using RecycleElement because the number of rows in a section will remain constant because they are reused.
+			if (!groupReset && Element.CachingStrategy == ListViewCachingStrategy.RetainElement)
 			{
 				var lastIndex = Control.NumberOfRowsInSection(section);
 				if (e.NewStartingIndex > lastIndex || e.OldStartingIndex > lastIndex)
-					throw new ArgumentException(
+					throw new InvalidOperationException(
 						$"Index '{Math.Max(e.NewStartingIndex, e.OldStartingIndex)}' is greater than the number of rows '{lastIndex}'.");
 			}
 
