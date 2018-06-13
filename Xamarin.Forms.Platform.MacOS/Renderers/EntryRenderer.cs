@@ -69,9 +69,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			void HandleWindowDidBecomeKey(object sender, EventArgs args)
 			{
 				if (CurrentEditor == Window.FirstResponder)
-				{
 					FocusChanged?.Invoke(this, new BoolEventArgs(true));
-				}
 			}
 		}
 
@@ -189,7 +187,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		void OnChanged(object sender, EventArgs eventArgs)
 		{
 			UpdateMaxLength();
-			
+
 			ElementController.SetValueFromRenderer(Entry.TextProperty, Control.StringValue);
 		}
 
