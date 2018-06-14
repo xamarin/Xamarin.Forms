@@ -31,27 +31,43 @@ namespace Xamarin.Forms.Platform.Android
 
 			imageView.SetImageResource(global::Android.Resource.Color.Transparent);
 
+			bool setByImageViewHandler = false;
 			Bitmap bitmap = null;
 			Drawable drawable = null;
 
-			IImageSourceHandler handler;
-
-			if (source != null && (handler = Internals.Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(source)) != null)
+			if (source != null)
 			{
-				if (handler is FileImageSourceHandler)
-				{
-					drawable = imageView.Context.GetDrawable((FileImageSource)source);
-				}
-
-				if (drawable == null)
+				var imageViewHandler = Internals.Registrar.Registered.GetHandlerForObject<IImageViewHandler>(source);
+				if (imageViewHandler != null)
 				{
 					try
 					{
-						bitmap = await handler.LoadImageAsync(source, imageView.Context);
+						await imageViewHandler.LoadImageAsync(source, imageView);
+						setByImageViewHandler = true;
 					}
 					catch (TaskCanceledException)
 					{
 						imageController?.SetIsLoading(false);
+					}
+				}
+				else
+				{
+					var imageSourceHandler = Internals.Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(source);
+					if (imageSourceHandler is FileImageSourceHandler)
+					{
+						drawable = imageView.Context.GetDrawable((FileImageSource)source);
+					}
+
+					if (drawable == null)
+					{
+						try
+						{
+							bitmap = await imageSourceHandler.LoadImageAsync(source, imageView.Context);
+						}
+						catch (TaskCanceledException)
+						{
+							imageController?.SetIsLoading(false);
+						}
 					}
 				}
 			}
@@ -63,7 +79,7 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			if (!imageView.IsDisposed())
+			if (!setByImageViewHandler && !imageView.IsDisposed())
 			{
 				if (bitmap == null && drawable != null)
 				{
