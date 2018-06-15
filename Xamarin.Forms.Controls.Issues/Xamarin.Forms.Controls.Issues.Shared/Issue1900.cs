@@ -12,7 +12,7 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Github, 999999, "Xamarin ios ListView ObservableCollection<myClass>. Collection.Add() throwing 'Index # is greater than the number of rows #' exception", PlatformAffected.iOS)]
+	[Issue(IssueTracker.Github, 1900, "Xamarin ios ListView ObservableCollection<myClass>. Collection.Add() throwing 'Index # is greater than the number of rows #' exception", PlatformAffected.iOS)]
 	public class Issue1900 : TestContentPage
 	{
 		public ObservableCollection<string> Items { get; set; } = new ObservableCollection<string>(Enumerable.Range(0, 25).Select(i => $"Initial {i}"));
