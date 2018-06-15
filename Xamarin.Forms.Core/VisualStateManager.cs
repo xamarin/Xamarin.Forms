@@ -116,7 +116,7 @@ namespace Xamarin.Forms
 			{
 				_names.Clear();
 
-				// Using a for loop to avoid allocting an enumerator
+				// Using a for loop to avoid allocating an enumerator
 				for (int n = 0; n < groupCount; n++)
 				{
 					// HashSet will return false if the string is already in the set
