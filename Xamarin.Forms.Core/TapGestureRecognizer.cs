@@ -1,10 +1,11 @@
 using System;
 using System.ComponentModel;
 using System.Windows.Input;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	public sealed class TapGestureRecognizer : GestureRecognizer
+	public sealed class TapGestureRecognizer : GestureRecognizer, ICommandableElement
 	{
 		public static readonly BindableProperty CommandProperty = BindableProperty.Create("Command", typeof(ICommand), typeof(TapGestureRecognizer), null);
 

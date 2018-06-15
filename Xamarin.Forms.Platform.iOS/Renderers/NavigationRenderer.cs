@@ -1120,7 +1120,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override UIViewController ChildViewControllerForStatusBarHidden()
 		{
-			return (UIViewController)Platform.GetRenderer(Current);
+			return Platform.GetRenderer(Current).ViewController;
 		}
 
 		void IEffectControlProvider.RegisterEffect(Effect effect)

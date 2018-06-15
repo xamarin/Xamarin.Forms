@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Input;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
 
-	public class MenuItem : BaseMenuItem, IMenuItemController
+	public class MenuItem : BaseMenuItem, IMenuItemController, ICommandableElement
 	{
 		public static readonly BindableProperty AcceleratorProperty = BindableProperty.CreateAttached(nameof(Accelerator), typeof(Accelerator), typeof(MenuItem), null);
 

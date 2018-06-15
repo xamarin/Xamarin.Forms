@@ -200,6 +200,24 @@ namespace Xamarin.Forms
 
 		public event EventHandler<NavigationEventArgs> Pushed;
 
+		async Task SegueAsync(ValueSegue segue, SegueTarget target)
+		{
+			if (CurrentNavigationTask != null && !CurrentNavigationTask.IsCompleted)
+			{
+				var tcs = new TaskCompletionSource<bool>();
+				Task oldTask = CurrentNavigationTask;
+				CurrentNavigationTask = tcs.Task;
+				await oldTask;
+
+				await SegueAsyncInner(segue, target);
+				tcs.SetResult(true);
+				return;
+			}
+
+			CurrentNavigationTask = SegueAsyncInner(segue, target);
+			await CurrentNavigationTask;
+		}
+
 		public static void SetBackButtonTitle(BindableObject page, string value)
 		{
 			page.SetValue(BackButtonTitleProperty, value);
@@ -297,6 +315,9 @@ namespace Xamarin.Forms
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public event EventHandler<NavigationRequestedEventArgs> RemovePageRequested;
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public event EventHandler<SegueRequestedEventArgs> SegueRequested;
+
 		void InsertPageBefore(Page page, Page before)
 		{
 			if (page == null)
@@ -381,6 +402,67 @@ namespace Xamarin.Forms
 			CurrentPage = page;
 		}
 
+		async Task SegueAsyncInner(ValueSegue seg, SegueTarget target)
+		{
+			var exec = seg.Segue as ISegueExecution;
+			if (exec != null)
+			{
+				switch (seg.Action)
+				{
+					case NavigationAction.Show:
+					case NavigationAction.Push:
+						if (target.IsTemplate)
+							target = (SegueTarget)target.ToPage();
+						break;
+					case NavigationAction.Pop:
+					case NavigationAction.PopPushed:
+						var page = (Page)InternalChildren[InternalChildren.Count - 2];
+						target = (SegueTarget)page;
+						break;
+
+					case NavigationAction.PopToRoot:
+						target = (SegueTarget)RootPage;
+						break;
+				}
+				if (!await exec.OnBeforeExecute(target))
+					return;
+			}
+
+			var handled = false;
+
+			EventHandler<SegueRequestedEventArgs> requestSegue = SegueRequested;
+			if (requestSegue != null)
+			{
+				var args = new SegueRequestedEventArgs(seg, target);
+				requestSegue(this, args);
+
+				if (args.Task != null)
+					await args.Task;
+
+				handled = args.Handled;
+			}
+
+			if (!handled)
+			{
+				switch (seg.Action)
+				{
+					case NavigationAction.Show:
+					case NavigationAction.Push:
+						await PushAsyncInner(target.ToPage(), seg.IsAnimated);
+						break;
+
+					case NavigationAction.Pop:
+					case NavigationAction.PopPushed:
+						await PopAsyncInner(seg.IsAnimated, false);
+						break;
+
+					case NavigationAction.PopToRoot:
+						await PopToRootAsyncInner(seg.IsAnimated);
+						break;
+				}
+			}
+		}
+
 		void RemovePage(Page page)
 		{
 			if (page == null)
@@ -437,19 +519,18 @@ namespace Xamarin.Forms
 				Owner.InsertPageBefore(page, before);
 			}
 
-			protected override Task<Page> OnPopAsync(bool animated)
+			protected internal override Task OnSegue(ValueSegue seg, SegueTarget target)
 			{
-				return Owner.PopAsync(animated);
-			}
-
-			protected override Task OnPopToRootAsync(bool animated)
-			{
-				return Owner.PopToRootAsync(animated);
-			}
-
-			protected override Task OnPushAsync(Page root, bool animated)
-			{
-				return Owner.PushAsync(root, animated);
+				switch (seg.Action)
+				{
+					case NavigationAction.Show:
+					case NavigationAction.Push:
+					case NavigationAction.Pop:
+					case NavigationAction.PopPushed:
+					case NavigationAction.PopToRoot:
+						return Owner.SegueAsync(seg, target);
+				}
+				return base.OnSegue(seg, target);
 			}
 
 			protected override void OnRemovePage(Page page)

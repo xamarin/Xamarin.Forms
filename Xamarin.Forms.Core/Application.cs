@@ -369,7 +369,21 @@ namespace Xamarin.Forms
 				_owner = owner;
 			}
 
-			protected override async Task<Page> OnPopModal(bool animated)
+			protected internal override Task OnSegue(ValueSegue segue, SegueTarget target)
+			{
+				switch (segue.Action)
+				{
+					case NavigationAction.PopModal:
+					case NavigationAction.Pop when this.ShouldPopModal():
+						return OnPopModal(segue);
+
+					case NavigationAction.Modal:
+						return OnPushModal(segue, target);
+				}
+				return base.OnSegue(segue, target);
+			}
+
+			async Task<Page> OnPopModal(ValueSegue segue)
 			{
 				Page modal = ModalStack[ModalStack.Count - 1];
 				if (_owner.OnModalPopping(modal))
@@ -377,14 +391,21 @@ namespace Xamarin.Forms
 					_owner.OnPopCanceled();
 					return null;
 				}
-				Page result = await base.OnPopModal(animated);
+				Page result = await ((Task<Page>)base.OnSegue(segue, null));
 				result.Parent = null;
 				_owner.OnModalPopped(result);
 				return result;
 			}
 
-			protected override async Task OnPushModal(Page modal, bool animated)
+			async Task OnPushModal(ValueSegue segue, SegueTarget target)
 			{
+				var modal = target.ToPage();
+
+				// IMPORTANT! If the target was a template, create a new SegueTarget from
+				//  the instantiated page.
+				if (target.IsTemplate)
+					target = (SegueTarget)modal;
+
 				_owner.OnModalPushing(modal);
 
 				modal.Parent = _owner;
@@ -392,11 +413,11 @@ namespace Xamarin.Forms
 				if (modal.NavigationProxy.ModalStack.Count == 0)
 				{
 					modal.NavigationProxy.Inner = this;
-					await base.OnPushModal(modal, animated);
+					await base.OnSegue(segue, target);
 				}
 				else
 				{
-					await base.OnPushModal(modal, animated);
+					await base.OnSegue(segue, target);
 					modal.NavigationProxy.Inner = this;
 				}
 

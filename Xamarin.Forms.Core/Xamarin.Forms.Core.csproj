@@ -16,6 +16,9 @@
     <PackageReference Include="System.ComponentModel" Version="4.3.0" />
     <PackageReference Include="System.Dynamic.Runtime" Version="4.3.0" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Segues\" />
+  </ItemGroup>
   <Import Project="..\Xamarin.Flex\Xamarin.Flex.projitems" Label="Shared" Condition="Exists('..\Xamarin.Flex\Xamarin.Flex.projitems')" />
 	<UsingTask TaskName="XFCorePostProcessor.Tasks.FixXFCoreAssembly" AssemblyFile="..\XFCorePostProcessor.Tasks\bin\Debug\netstandard2.0\XFCorePostProcessor.Tasks.dll" />
 	<Target AfterTargets="AfterCompile" Name="ShameHat">

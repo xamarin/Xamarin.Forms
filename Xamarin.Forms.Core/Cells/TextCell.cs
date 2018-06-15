@@ -1,9 +1,10 @@
 using System;
 using System.Windows.Input;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	public class TextCell : Cell
+	public class TextCell : Cell, ICommandableElement
 	{
 		public static readonly BindableProperty CommandProperty = BindableProperty.Create("Command", typeof(ICommand), typeof(TextCell), default(ICommand),
 			propertyChanging: (bindable, oldvalue, newvalue) =>

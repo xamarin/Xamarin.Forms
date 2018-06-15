@@ -175,6 +175,49 @@ namespace Xamarin.Forms.Platform.iOS
 			return Task.FromResult<object>(null);
 		}
 
+		Task INavigation.ShowAsync(Page page)
+		{
+			return ((INavigation)this).ShowAsync(page, true);
+		}
+
+		Task INavigation.ShowAsync(Page page, bool animated)
+		{
+			return ((INavigation)this).PushModalAsync(page, animated);
+		}
+
+		async Task INavigation.SegueAsync(Segue segue, SegueTarget target)
+		{
+			Page page = null;
+			var action = segue.Action;
+
+			// adjust target and action as needed
+			switch (action)
+			{
+				case NavigationAction.Pop:
+				case NavigationAction.PopModal:
+					page = _modals.Last();
+					action = NavigationAction.PopModal;
+					var controller = GetRenderer(page)?.ViewController.PresentingViewController;
+					if (controller != null)
+						target = new ViewControllerSegueTarget(controller);
+					break;
+				case NavigationAction.Show:
+				case NavigationAction.Modal:
+				case NavigationAction.MainPage:
+					page = target.ToPage();
+					if (target.IsTemplate)
+						target = (SegueTarget)page;
+					break;
+				default:
+					throw new InvalidOperationException($"{action} is not supported globally on iOS, please use a NavigationPage.");
+			}
+
+			if (!await ((ISegueExecution)segue).OnBeforeExecute(target))
+				return;
+
+			await this.NavigateAsync(action, page, segue.IsAnimated);
+		}
+
 		void INavigation.RemovePage(Page page)
 		{
 			throw new InvalidOperationException("RemovePage is not supported globally on iOS, please use a NavigationPage.");

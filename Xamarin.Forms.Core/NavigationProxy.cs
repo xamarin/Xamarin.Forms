@@ -71,32 +71,32 @@ namespace Xamarin.Forms.Internals
 
 		public Task<Page> PopAsync()
 		{
-			return OnPopAsync(true);
+			return PopAsync(true);
 		}
 
 		public Task<Page> PopAsync(bool animated)
 		{
-			return OnPopAsync(animated);
+			return (Task<Page>)OnSegue(new ValueSegue(NavigationAction.PopPushed, animated), null);
 		}
 
 		public Task<Page> PopModalAsync()
 		{
-			return OnPopModal(true);
+			return PopModalAsync(true);
 		}
 
 		public Task<Page> PopModalAsync(bool animated)
 		{
-			return OnPopModal(animated);
+			return (Task<Page>)OnSegue(new ValueSegue(NavigationAction.PopModal, animated), null);
 		}
 
 		public Task PopToRootAsync()
 		{
-			return OnPopToRootAsync(true);
+			return PopToRootAsync(true);
 		}
 
 		public Task PopToRootAsync(bool animated)
 		{
-			return OnPopToRootAsync(animated);
+			return OnSegue(new ValueSegue(NavigationAction.PopToRoot, animated), null);
 		}
 
 		public Task PushAsync(Page root)
@@ -108,7 +108,7 @@ namespace Xamarin.Forms.Internals
 		{
 			if (root.RealParent != null)
 				throw new InvalidOperationException("Page must not already have a parent.");
-			return OnPushAsync(root, animated);
+			return OnSegue(new ValueSegue(NavigationAction.Push, animated), (SegueTarget)root);
 		}
 
 		public Task PushModalAsync(Page modal)
@@ -120,7 +120,24 @@ namespace Xamarin.Forms.Internals
 		{
 			if (modal.RealParent != null)
 				throw new InvalidOperationException("Page must not already have a parent.");
-			return OnPushModal(modal, animated);
+			return OnSegue(new ValueSegue(NavigationAction.Modal, animated), (SegueTarget)modal);
+		}
+
+		public Task ShowAsync(Page page)
+		{
+			return ShowAsync(page, true);
+		}
+
+		public Task ShowAsync(Page page, bool animated)
+		{
+			if (page.RealParent != null)
+				throw new InvalidOperationException("Page must not already have a parent.");
+			return OnSegue(new ValueSegue(NavigationAction.Show, animated), (SegueTarget)page);
+		}
+
+		public Task SegueAsync(Segue segue, SegueTarget target)
+		{
+			return OnSegue(segue, target);
 		}
 
 		public void RemovePage(Page page)
@@ -156,51 +173,40 @@ namespace Xamarin.Forms.Internals
 			}
 		}
 
-		protected virtual Task<Page> OnPopAsync(bool animated)
-		{
-			INavigation inner = Inner;
-			return inner == null ? Task.FromResult(Pop()) : inner.PopAsync(animated);
-		}
-
-		protected virtual Task<Page> OnPopModal(bool animated)
-		{
-			INavigation innerNav = Inner;
-			return innerNav == null ? Task.FromResult(PopModal()) : innerNav.PopModalAsync(animated);
-		}
-
-		protected virtual Task OnPopToRootAsync(bool animated)
+		protected internal virtual Task OnSegue(ValueSegue segue, SegueTarget target)
 		{
 			INavigation currentInner = Inner;
 			if (currentInner == null)
 			{
-				Page root = _pushStack.Value.Last();
-				_pushStack.Value.Clear();
-				_pushStack.Value.Add(root);
-				return Task.FromResult(root);
-			}
-			return currentInner.PopToRootAsync(animated);
-		}
+				switch (segue.Action)
+				{
+					case NavigationAction.Show:
+						throw new InvalidOperationException($"Navigation must be rooted to use {nameof(NavigationAction.Show)}");
 
-		protected virtual Task OnPushAsync(Page page, bool animated)
-		{
-			INavigation currentInner = Inner;
-			if (currentInner == null)
-			{
-				_pushStack.Value.Add(page);
-				return Task.FromResult(page);
-			}
-			return currentInner.PushAsync(page, animated);
-		}
+					case NavigationAction.Push:
+						_pushStack.Value.Add(target.ToPage());
+						return Task.CompletedTask;
+					case NavigationAction.Modal:
+						_modalStack.Value.Add(target.ToPage());
+						return Task.CompletedTask;
 
-		protected virtual Task OnPushModal(Page modal, bool animated)
-		{
-			INavigation currentInner = Inner;
-			if (currentInner == null)
-			{
-				_modalStack.Value.Add(modal);
-				return Task.FromResult<object>(null);
+					// It's important these Pop* cases (except PopToRoot) return Task<Page>
+					case NavigationAction.Pop:
+						return Task.FromResult(this.ShouldPopModal() ? PopModal() : Pop());
+					case NavigationAction.PopPushed:
+						return Task.FromResult(Pop());
+					case NavigationAction.PopModal:
+						return Task.FromResult(PopModal());
+
+					case NavigationAction.PopToRoot:
+						Page root = _pushStack.Value.Last();
+						_pushStack.Value.Clear();
+						_pushStack.Value.Add(root);
+						return Task.CompletedTask;
+				}
+				return this.NavigateAsync(segue.Action, target, segue.IsAnimated);
 			}
-			return currentInner.PushModalAsync(modal, animated);
+			return currentInner.SegueAsync(segue, target);
 		}
 
 		protected virtual void OnRemovePage(Page page)
