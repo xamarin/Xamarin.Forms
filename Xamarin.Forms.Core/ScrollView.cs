@@ -206,6 +206,10 @@ namespace Xamarin.Forms
 						LayoutChildIntoBoundingRegion(_content, new Rectangle(x, y, GetMaxWidth(width, size), GetMaxHeight(height, size)));
 						ContentSize = new Size(GetMaxWidth(width), GetMaxHeight(height));
 						break;
+					case ScrollOrientation.Neither:
+						LayoutChildIntoBoundingRegion(_content, new Rectangle(x, y, width, height));
+						ContentSize = new Size(width, height);
+						break;
 				}
 			}
 		}
@@ -227,6 +231,10 @@ namespace Xamarin.Forms
 				case ScrollOrientation.Both:
 					widthConstraint = double.PositiveInfinity;
 					heightConstraint = double.PositiveInfinity;
+					break;
+				case ScrollOrientation.Neither:
+					widthConstraint = Width;
+					heightConstraint = Height;
 					break;
 			}
 
