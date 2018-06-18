@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls.Primitives;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Imaging;
 
@@ -13,9 +14,19 @@ namespace Xamarin.Forms.Platform.UWP
 		Brush defaultbackgroundcolor;
 		Brush _defaultThumbColor;
 
+		PointerEventHandler _pointerPressedHandler;
+		PointerEventHandler _pointerReleasedHandler;
+
 		protected override void OnElementChanged(ElementChangedEventArgs<Slider> e)
 		{
 			base.OnElementChanged(e);
+
+			if (e.OldElement != null)
+			{
+				Control.RemoveHandler(PointerPressedEvent, _pointerPressedHandler);
+				Control.RemoveHandler(PointerReleasedEvent, _pointerReleasedHandler);
+				Control.RemoveHandler(PointerCanceledEvent, _pointerReleasedHandler);
+			}
 
 			if (e.NewElement != null)
 			{
@@ -54,6 +65,13 @@ namespace Xamarin.Forms.Platform.UWP
 
 						slider.Margin = new Windows.UI.Xaml.Thickness(0, 7, 0, 0);
 					}
+
+					_pointerPressedHandler = new PointerEventHandler(OnPointerPressed);
+					_pointerReleasedHandler = new PointerEventHandler(OnPointerReleased);
+
+					Control.AddHandler(PointerPressedEvent, _pointerPressedHandler, true);
+					Control.AddHandler(PointerReleasedEvent, _pointerReleasedHandler, true);
+					Control.AddHandler(PointerCanceledEvent, _pointerReleasedHandler, true);
 				}
 
 				double stepping = Math.Min((e.NewElement.Maximum - e.NewElement.Minimum) / 10, 1);
@@ -179,6 +197,16 @@ namespace Xamarin.Forms.Platform.UWP
 		void OnNativeValueChanged(object sender, RangeBaseValueChangedEventArgs e)
 		{
 			((IElementController)Element).SetValueFromRenderer(Slider.ValueProperty, e.NewValue);
+		}
+
+		private void OnPointerPressed(object sender, PointerRoutedEventArgs e)
+		{
+			Element.SendDragStarted();
+		}
+
+		private void OnPointerReleased(object sender, PointerRoutedEventArgs e)
+		{
+			Element.SendDragCompleted();
 		}
 	}
 }

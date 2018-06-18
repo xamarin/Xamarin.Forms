@@ -49,6 +49,10 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty ThumbImageProperty = BindableProperty.Create(nameof(ThumbImage), typeof(FileImageSource), typeof(Slider), default(FileImageSource));
 
+		public static readonly BindableProperty DragStartedCommandProperty = BindableProperty.Create(nameof(DragStartedCommand), typeof(ICommand), typeof(Slider), default(ICommand));
+
+		public static readonly BindableProperty DragCompletedCommandProperty = BindableProperty.Create(nameof(DragCompletedCommand), typeof(ICommand), typeof(Slider), default(ICommand));
+
 		readonly Lazy<PlatformConfigurationRegistry<Slider>> _platformConfigurationRegistry;
 
 		public Slider()
@@ -98,6 +102,18 @@ namespace Xamarin.Forms
 			set { SetValue(ThumbImageProperty, value); }
 		}
 
+		public ICommand DragStartedCommand
+		{
+			get { return (ICommand)GetValue(DragStartedCommandProperty); }
+			set { SetValue(DragStartedCommandProperty, value); }
+		}
+
+		public ICommand DragCompletedCommand
+		{
+			get { return (ICommand)GetValue(DragCompletedCommandProperty); }
+			set { SetValue(DragCompletedCommandProperty, value); }
+		}
+
 		public double Maximum
 		{
 			get { return (double)GetValue(MaximumProperty); }
@@ -118,9 +134,34 @@ namespace Xamarin.Forms
 
 		public event EventHandler<ValueChangedEventArgs> ValueChanged;
 
+		public event EventHandler DragStarted;
+		public event EventHandler DragCompleted;
+
 		public IPlatformElementConfiguration<T, Slider> On<T>() where T : IConfigPlatform
 		{
 			return _platformConfigurationRegistry.Value.On<T>();
+		}
+
+		public void SendDragStarted()
+		{
+			var command = DragStartedCommand;
+			if (command != null && command.CanExecute(null))
+			{
+				command.Execute(null);
+			}
+
+			DragStarted?.Invoke(this, null);
+		}
+
+		public void SendDragCompleted()
+		{
+			var command = DragCompletedCommand;
+			if (command != null && command.CanExecute(null))
+			{
+				command.Execute(null);
+			}
+
+			DragCompleted?.Invoke(this, null);
 		}
 	}
 }
