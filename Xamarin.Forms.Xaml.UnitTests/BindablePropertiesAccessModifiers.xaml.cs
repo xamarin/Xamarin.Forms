@@ -27,8 +27,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			set => SetValue(InternalBarProperty, value);
 		}
 	}
-
-	[XamlCompilation(XamlCompilationOptions.Skip)]
+	
 	public partial class BindablePropertiesAccessModifiers : ContentPage
 	{
 		class Data
@@ -66,17 +65,10 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			[TestCase(false)]
 			public void BindProperties(bool useCompiledXaml)
 			{
-				if (useCompiledXaml)
-				{
-					MockCompiler.Compile(typeof(BindablePropertiesAccessModifiers));
-				}
-				else
-				{
-					var page = new BindablePropertiesAccessModifiers();
-					page.BindingContext = new Data();
-					Assert.AreEqual("Bar", page.AMC.GetValue(AccessModifiersControl.InternalBarProperty));
-					Assert.AreEqual("Foo", page.AMC.GetValue(AccessModifiersControl.PublicFooProperty));
-				}
+				var page = new BindablePropertiesAccessModifiers(useCompiledXaml);
+				page.BindingContext = new Data();
+				Assert.AreEqual("Bar", page.AMC.GetValue(AccessModifiersControl.InternalBarProperty));
+				Assert.AreEqual("Foo", page.AMC.GetValue(AccessModifiersControl.PublicFooProperty));
 			}
 		}
 	}
