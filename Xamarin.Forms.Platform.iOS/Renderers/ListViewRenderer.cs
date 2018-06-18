@@ -538,7 +538,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				var lastIndex = Control.NumberOfRowsInSection(section);
 				if (e.NewStartingIndex > lastIndex || e.OldStartingIndex > lastIndex)
-					throw new InvalidOperationException(
+					throw new ArgumentException(
 						$"Index '{Math.Max(e.NewStartingIndex, e.OldStartingIndex)}' is greater than the number of rows '{lastIndex}'.");
 			}
 
