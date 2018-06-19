@@ -44,13 +44,13 @@ namespace Xamarin.Forms.Platform.Android
 		void SeekBar.IOnSeekBarChangeListener.OnStartTrackingTouch(SeekBar seekBar)
 		{
 			_isTrackingChange = true;
-			Element.SendDragStarted();
+			((ISliderController)Element)?.SendDragStarted();
 		}
 
 		void SeekBar.IOnSeekBarChangeListener.OnStopTrackingTouch(SeekBar seekBar)
 		{
 			_isTrackingChange = false;
-			Element.SendDragCompleted();
+			((ISliderController)Element)?.SendDragCompleted();
 		}
 
 		protected override SeekBar CreateNativeControl()

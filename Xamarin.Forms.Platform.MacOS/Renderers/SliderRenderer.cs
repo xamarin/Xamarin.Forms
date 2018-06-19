@@ -60,11 +60,11 @@ namespace Xamarin.Forms.Platform.MacOS
 			var controlEvent = NSApplication.SharedApplication.CurrentEvent;
 			if (controlEvent.Type == NSEventType.LeftMouseDown)
 			{
-				Element.SendDragStarted();
+				((ISliderController)Element)?.SendDragStarted();
 			}
 			else if (controlEvent.Type == NSEventType.LeftMouseUp)
 			{
-				Element.SendDragCompleted();
+				((ISliderController)Element)?.SendDragCompleted();
 			}
 		}
 

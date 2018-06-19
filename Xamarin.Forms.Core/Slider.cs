@@ -7,7 +7,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_SliderRenderer))]
-	public class Slider : View, IElementConfiguration<Slider>
+	public class Slider : View, ISliderController, IElementConfiguration<Slider>
 	{
 		public static readonly BindableProperty MinimumProperty = BindableProperty.Create("Minimum", typeof(double), typeof(Slider), 0d, validateValue: (bindable, value) =>
 		{
@@ -147,25 +147,21 @@ namespace Xamarin.Forms
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendDragStarted()
 		{
-			var command = DragStartedCommand;
-			if (command != null && command.CanExecute(null))
+			if (IsEnabled == true)
 			{
-				command.Execute(null);
+				DragStartedCommand?.Execute(null);
+				DragStarted?.Invoke(this, null);
 			}
-
-			DragStarted?.Invoke(this, null);
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendDragCompleted()
 		{
-			var command = DragCompletedCommand;
-			if (command != null && command.CanExecute(null))
+			if (IsEnabled == true)
 			{
-				command.Execute(null);
+				DragCompletedCommand?.Execute(null);
+				DragCompleted?.Invoke(this, null);
 			}
-
-			DragCompleted?.Invoke(this, null);
 		}
 	}
 }

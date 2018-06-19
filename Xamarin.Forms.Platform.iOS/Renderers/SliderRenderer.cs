@@ -180,12 +180,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 		private void OnTouchDownControlEvent(object sender, EventArgs e)
 		{
-			Element.SendDragStarted();
+			((ISliderController)Element)?.SendDragStarted();
 		}
 
 		private void OnTouchUpControlEvent(object sender, EventArgs e)
 		{
-			Element.SendDragCompleted();
+			((ISliderController)Element)?.SendDragCompleted();
 		}
 
 		void UpdateTapRecognizer()

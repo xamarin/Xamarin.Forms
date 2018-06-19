@@ -201,12 +201,12 @@ namespace Xamarin.Forms.Platform.UWP
 
 		private void OnPointerPressed(object sender, PointerRoutedEventArgs e)
 		{
-			Element.SendDragStarted();
+			((ISliderController)Element)?.SendDragStarted();
 		}
 
 		private void OnPointerReleased(object sender, PointerRoutedEventArgs e)
 		{
-			Element.SendDragCompleted();
+			((ISliderController)Element)?.SendDragCompleted();
 		}
 	}
 }
