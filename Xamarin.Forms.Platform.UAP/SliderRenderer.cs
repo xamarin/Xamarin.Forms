@@ -17,16 +17,27 @@ namespace Xamarin.Forms.Platform.UWP
 		PointerEventHandler _pointerPressedHandler;
 		PointerEventHandler _pointerReleasedHandler;
 
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				if (Control != null)
+				{
+					Control.RemoveHandler(PointerPressedEvent, _pointerPressedHandler);
+					Control.RemoveHandler(PointerReleasedEvent, _pointerReleasedHandler);
+					Control.RemoveHandler(PointerCanceledEvent, _pointerReleasedHandler);
+
+					_pointerPressedHandler = null;
+					_pointerReleasedHandler = null;
+				}
+			}
+
+			base.Dispose(disposing);
+		}
+
 		protected override void OnElementChanged(ElementChangedEventArgs<Slider> e)
 		{
 			base.OnElementChanged(e);
-
-			if (e.OldElement != null)
-			{
-				Control.RemoveHandler(PointerPressedEvent, _pointerPressedHandler);
-				Control.RemoveHandler(PointerReleasedEvent, _pointerReleasedHandler);
-				Control.RemoveHandler(PointerCanceledEvent, _pointerReleasedHandler);
-			}
 
 			if (e.NewElement != null)
 			{
