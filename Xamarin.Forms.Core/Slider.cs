@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.Windows.Input;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform;
@@ -143,6 +144,7 @@ namespace Xamarin.Forms
 			return _platformConfigurationRegistry.Value.On<T>();
 		}
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendDragStarted()
 		{
 			var command = DragStartedCommand;
@@ -154,6 +156,7 @@ namespace Xamarin.Forms
 			DragStarted?.Invoke(this, null);
 		}
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendDragCompleted()
 		{
 			var command = DragCompletedCommand;
