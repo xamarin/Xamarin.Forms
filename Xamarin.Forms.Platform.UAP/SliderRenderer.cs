@@ -199,12 +199,12 @@ namespace Xamarin.Forms.Platform.UWP
 			((IElementController)Element).SetValueFromRenderer(Slider.ValueProperty, e.NewValue);
 		}
 
-		private void OnPointerPressed(object sender, PointerRoutedEventArgs e)
+		void OnPointerPressed(object sender, PointerRoutedEventArgs e)
 		{
 			((ISliderController)Element)?.SendDragStarted();
 		}
 
-		private void OnPointerReleased(object sender, PointerRoutedEventArgs e)
+		void OnPointerReleased(object sender, PointerRoutedEventArgs e)
 		{
 			((ISliderController)Element)?.SendDragCompleted();
 		}

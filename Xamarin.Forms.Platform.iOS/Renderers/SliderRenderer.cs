@@ -178,12 +178,12 @@ namespace Xamarin.Forms.Platform.iOS
 			((IElementController)Element).SetValueFromRenderer(Slider.ValueProperty, Control.Value);
 		}
 
-		private void OnTouchDownControlEvent(object sender, EventArgs e)
+		void OnTouchDownControlEvent(object sender, EventArgs e)
 		{
 			((ISliderController)Element)?.SendDragStarted();
 		}
 
-		private void OnTouchUpControlEvent(object sender, EventArgs e)
+		void OnTouchUpControlEvent(object sender, EventArgs e)
 		{
 			((ISliderController)Element)?.SendDragCompleted();
 		}
