@@ -23,7 +23,6 @@ namespace Xamarin.Forms.Controls.Issues
 	[Category(UITestCategories.Gestures)]
 #endif
 
-	[XamlCompilation(XamlCompilationOptions.Compile)]
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 2858, "Transparency Cascading", PlatformAffected.Android)]
 	public partial class Issue2858 : TestContentPage
