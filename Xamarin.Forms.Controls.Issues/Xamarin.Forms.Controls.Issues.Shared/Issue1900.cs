@@ -7,10 +7,14 @@ using Xamarin.Forms.Internals;
 #if UITEST
 using Xamarin.UITest;
 using NUnit.Framework;
+using Xamarin.Forms.Core.UITests;
 #endif
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[Category(UITestCategories.ListView)] 
+#endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 1900, "Xamarin ios ListView ObservableCollection<myClass>. Collection.Add() throwing 'Index # is greater than the number of rows #' exception", PlatformAffected.iOS)]
 	public class Issue1900 : TestContentPage
@@ -29,7 +33,7 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			var listView = new ListView(ListViewCachingStrategy.RecycleElement) { AutomationId = "ListView", ItemsSource = Items };
 			listView.ItemAppearing += ItemList_ItemAppearing;
-			Content = new StackLayout { Children = { new Label { Text = "If this test crashes when i loads or when you scroll the list, then this test has failed. Obviously." }, listView } };
+			Content = new StackLayout { Children = { new Label { Text = "If this test crashes when it loads or when you scroll the list, then this test has failed. Obviously." }, listView } };
 		}
 
 		void ItemList_ItemAppearing(object sender, ItemVisibilityEventArgs e)
