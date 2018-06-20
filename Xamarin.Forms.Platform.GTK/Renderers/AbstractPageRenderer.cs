@@ -1,5 +1,6 @@
 ﻿using Gtk;
 using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.GTK.Extensions;
@@ -89,8 +90,15 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
             if (!_disposed)
             {
                 if (_appeared)
-                {
-                    Page.SendDisappearing();
+				{
+					ReadOnlyCollection<Element> children = ((IElementController)Element).LogicalChildren;
+					for (var i = 0; i < children.Count; i++)
+					{
+						var visualChild = children[i] as VisualElement;
+						visualChild?.Cleanup();
+					}
+
+					Page.SendDisappearing();
                 }
 
                 _appeared = false;
@@ -125,7 +133,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
             _appeared = false;
 
-            PageController.SendDisappearing();
+			PageController.SendDisappearing();
         }
 
         protected override void OnSizeAllocated(Gdk.Rectangle allocation)
