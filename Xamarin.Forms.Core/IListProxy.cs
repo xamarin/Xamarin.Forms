@@ -9,5 +9,6 @@ namespace Xamarin.Forms
 		event NotifyCollectionChangedEventHandler CollectionChanged;
 		IEnumerable ProxiedEnumerable { get; }
 		bool TryGetValue(int index, out object value);
+		bool HasCollisions(object item);
 	}
 }

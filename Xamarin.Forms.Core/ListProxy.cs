@@ -59,6 +59,41 @@ namespace Xamarin.Forms
 		}
 
 		/// <summary>
+		/// If context is value type like as `string` possible conflict between equals elements.
+		/// </summary>
+		public bool HasCollisions(object item)
+		{
+			if (item == null || ProxiedEnumerable == null)
+				return false;
+#if !NETSTANDARD1_0
+			Type itemType = item.GetType();
+			bool isValueType = item is string || itemType.IsValueType || itemType.IsEnum;
+			if (!isValueType)
+				return false;
+#endif
+			int count = 0;
+			int index = 0;
+			while (TryGetValue(index++, out object current))
+			{
+				if (current.Equals(item) && ++count > 1)
+				{
+					return true;
+				}
+				else if (current is IEnumerable _group)
+				{
+					foreach (var _grItem in _group)
+					{
+						if (_grItem.Equals(item) && ++count > 1)
+						{
+							return true;
+						}
+					}
+				}
+			}
+			return false;
+		}
+
+		/// <summary>
 		///     Gets whether or not the current window contains the <paramref name="item" />.
 		/// </summary>
 		/// <param name="item">The item to search for.</param>
