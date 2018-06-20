@@ -119,7 +119,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (renderer == oldRenderer)
 				{
-					renderer.Element?.ClearValue(Platform.RendererProperty)
+					renderer.Element?.ClearValue(Platform.RendererProperty);
 					renderer.SetElement(view);
 				}
 
