@@ -8,7 +8,7 @@ namespace Xamarin.Forms
 		public static void CancelAnimations(VisualElement view)
 		{
 			if (view == null)
-				throw new ArgumentNullException("view");
+				throw new ArgumentNullException(nameof(view));
 			view.AbortAnimation("LayoutTo");
 			view.AbortAnimation("TranslateTo");
 			view.AbortAnimation("RotateTo");
@@ -19,35 +19,42 @@ namespace Xamarin.Forms
 			view.AbortAnimation("SizeTo");
 		}
 
-		public static Task<bool> FadeTo(this VisualElement view, double opacity, uint length = 250, Easing easing = null)
+		static Task<bool> AnimateTo(this VisualElement view, double start, double end, string name, 
+			Action<VisualElement, double> updateAction, uint length = 250, Easing easing = null)
 		{
-			if (view == null)
-				throw new ArgumentNullException("view");
 			if (easing == null)
 				easing = Easing.Linear;
 
 			var tcs = new TaskCompletionSource<bool>();
-			var weakView = new WeakReference<VisualElement>(view);
-			Action<double> fade = f =>
-			{
-				VisualElement v;
-				if (weakView.TryGetTarget(out v))
-					v.Opacity = f;
-			};
 
-			new Animation(fade, view.Opacity, opacity, easing).Commit(view, "FadeTo", 16, length, finished: (f, a) => tcs.SetResult(a));
+			var weakView = new WeakReference<VisualElement>(view);
+
+			void UpdateProperty(double f)
+			{
+				if (weakView.TryGetTarget(out VisualElement v))
+				{
+					updateAction(v, f);
+				}
+			}
+
+			new Animation(UpdateProperty, start, end, easing).Commit(view, name, 16, length, finished: (f, a) => tcs.SetResult(a));
 
 			return tcs.Task;
+		}
+
+		public static Task<bool> FadeTo(this VisualElement view, double opacity, uint length = 250, Easing easing = null)
+		{
+			if (view == null)
+				throw new ArgumentNullException(nameof(view));
+
+			return AnimateTo(view, view.Opacity, opacity, "FadeTo", (v, value) => v.Opacity = value, length, easing);
 		}
 
 		public static Task<bool> LayoutTo(this VisualElement view, Rectangle bounds, uint length = 250, Easing easing = null)
 		{
 			if (view == null)
-				throw new ArgumentNullException("view");
-			if (easing == null)
-				easing = Easing.Linear;
+				throw new ArgumentNullException(nameof(view));
 
-			var tcs = new TaskCompletionSource<bool>();
 			Rectangle start = view.Bounds;
 			Func<double, Rectangle> computeBounds = progress =>
 			{
@@ -58,114 +65,56 @@ namespace Xamarin.Forms
 
 				return new Rectangle(x, y, w, h);
 			};
-			var weakView = new WeakReference<VisualElement>(view);
-			Action<double> layout = f =>
-			{
-				VisualElement v;
-				if (weakView.TryGetTarget(out v))
-					v.Layout(computeBounds(f));
-			};
-			new Animation(layout, 0, 1, easing).Commit(view, "LayoutTo", 16, length, finished: (f, a) => tcs.SetResult(a));
-
-			return tcs.Task;
+		
+			return AnimateTo(view, 0, 1, "LayoutTo", (v, value) => v.Layout(computeBounds(value)), length, easing);
 		}
 
 		public static Task<bool> RelRotateTo(this VisualElement view, double drotation, uint length = 250, Easing easing = null)
 		{
 			if (view == null)
-				throw new ArgumentNullException("view");
+				throw new ArgumentNullException(nameof(view));
+
 			return view.RotateTo(view.Rotation + drotation, length, easing);
 		}
 
 		public static Task<bool> RelScaleTo(this VisualElement view, double dscale, uint length = 250, Easing easing = null)
 		{
 			if (view == null)
-				throw new ArgumentNullException("view");
+				throw new ArgumentNullException(nameof(view));
+
 			return view.ScaleTo(view.Scale + dscale, length, easing);
 		}
 
 		public static Task<bool> RotateTo(this VisualElement view, double rotation, uint length = 250, Easing easing = null)
 		{
 			if (view == null)
-				throw new ArgumentNullException("view");
-			if (easing == null)
-				easing = Easing.Linear;
+				throw new ArgumentNullException(nameof(view));
 
-			var tcs = new TaskCompletionSource<bool>();
-			var weakView = new WeakReference<VisualElement>(view);
-			Action<double> rotate = f =>
-			{
-				VisualElement v;
-				if (weakView.TryGetTarget(out v))
-					v.Rotation = f;
-			};
-
-			new Animation(rotate, view.Rotation, rotation, easing).Commit(view, "RotateTo", 16, length, finished: (f, a) => tcs.SetResult(a));
-
-			return tcs.Task;
+			return AnimateTo(view, view.Rotation, rotation, "RotateTo", (v, value) => v.Rotation = value, length, easing);
 		}
 
 		public static Task<bool> RotateXTo(this VisualElement view, double rotation, uint length = 250, Easing easing = null)
 		{
 			if (view == null)
-				throw new ArgumentNullException("view");
-			if (easing == null)
-				easing = Easing.Linear;
+				throw new ArgumentNullException(nameof(view));
 
-			var tcs = new TaskCompletionSource<bool>();
-			var weakView = new WeakReference<VisualElement>(view);
-			Action<double> rotatex = f =>
-			{
-				VisualElement v;
-				if (weakView.TryGetTarget(out v))
-					v.RotationX = f;
-			};
-
-			new Animation(rotatex, view.RotationX, rotation, easing).Commit(view, "RotateXTo", 16, length, finished: (f, a) => tcs.SetResult(a));
-
-			return tcs.Task;
+			return AnimateTo(view, view.RotationX, rotation, "RotateXTo", (v, value) => v.RotationX = value, length, easing);
 		}
 
 		public static Task<bool> RotateYTo(this VisualElement view, double rotation, uint length = 250, Easing easing = null)
 		{
 			if (view == null)
-				throw new ArgumentNullException("view");
-			if (easing == null)
-				easing = Easing.Linear;
+				throw new ArgumentNullException(nameof(view));
 
-			var tcs = new TaskCompletionSource<bool>();
-			var weakView = new WeakReference<VisualElement>(view);
-			Action<double> rotatey = f =>
-			{
-				VisualElement v;
-				if (weakView.TryGetTarget(out v))
-					v.RotationY = f;
-			};
-
-			new Animation(rotatey, view.RotationY, rotation, easing).Commit(view, "RotateYTo", 16, length, finished: (f, a) => tcs.SetResult(a));
-
-			return tcs.Task;
+			return AnimateTo(view, view.RotationY, rotation, "RotateYTo", (v, value) => v.RotationY = value, length, easing);
 		}
 
 		public static Task<bool> ScaleTo(this VisualElement view, double scale, uint length = 250, Easing easing = null)
 		{
 			if (view == null)
-				throw new ArgumentNullException("view");
-			if (easing == null)
-				easing = Easing.Linear;
+				throw new ArgumentNullException(nameof(view));
 
-			var tcs = new TaskCompletionSource<bool>();
-			var weakView = new WeakReference<VisualElement>(view);
-			Action<double> _scale = f =>
-			{
-				VisualElement v;
-				if (weakView.TryGetTarget(out v))
-					v.Scale = f;
-			};
-
-			new Animation(_scale, view.Scale, scale, easing).Commit(view, "ScaleTo", 16, length, finished: (f, a) => tcs.SetResult(a));
-
-			return tcs.Task;
+			return AnimateTo(view, view.Scale, scale, "ScaleTo", (v, value) => v.Scale = value, length, easing);
 		}
 
 		public static Task<bool> TranslateTo(this VisualElement view, double x, double y, uint length = 250, Easing easing = null)
