@@ -201,25 +201,25 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
         private void UpdateCurrentPage()
         {
-            Page page = Page.CurrentPage;
-
+			Page page = Page.CurrentPage;
+ 
             if (page == null)
                 return;
-
+ 
             int selectedIndex = 0;
             if (Page.SelectedItem != null)
             {
-                for (var i = 0; i < Page.Children.Count; i++)
+                for (var i = 0; i < Page.Children.Count - 1; i++)
                 {
-                    if (Page.Children[i].BindingContext.Equals(Page.SelectedItem))
+                    if (Page.Children[i].Equals(Page.SelectedItem))
                     {
                         break;
                     }
-
+ 
                     selectedIndex++;
                 }
             }
-
+ 
             Widget.NoteBook.CurrentPage = selectedIndex;
             Widget.NoteBook.ShowAll();
         }
