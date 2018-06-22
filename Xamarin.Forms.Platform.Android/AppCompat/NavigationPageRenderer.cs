@@ -937,6 +937,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			foreach (Page page in navController.Pages)
 			{
+				if (GetPageFragment(page) != null)
+					continue;
+
 				PushViewAsync(page, false);
 			}
 			_didInitialPushPages = true;
