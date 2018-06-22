@@ -7,6 +7,7 @@ using Foundation;
 using UIKit;
 using RectangleF = CoreGraphics.CGRect;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -462,6 +463,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 			var wrapper = new ModalWrapper(modalRenderer);
 
+			if (Device.Idiom == TargetIdiom.Tablet && modal.OnThisPlatform().ModalPresentationStyle() == PlatformConfiguration.iOSSpecific.UIModalPresentationStyle.FormSheet)
+				wrapper.ModalPresentationStyle = UIKit.UIModalPresentationStyle.FormSheet;
+
 			if (_modals.Count > 1)
 			{
 				var topPage = _modals[_modals.Count - 2];
@@ -477,7 +481,7 @@ namespace Xamarin.Forms.Platform.iOS
 			// One might wonder why these delays are here... well thats a great question. It turns out iOS will claim the 
 			// presentation is complete before it really is. It does not however inform you when it is really done (and thus 
 			// would be safe to dismiss the VC). Fortunately this is almost never an issue
-			
+
 			await _renderer.PresentViewControllerAsync(wrapper, animated);
 			await Task.Delay(5);
 		}
