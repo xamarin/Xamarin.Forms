@@ -29,6 +29,11 @@ namespace Xamarin.Forms.Platform.Android
 			// We can't just check ValueAnimator.AreAnimationsEnabled() because there's no event for that, and it's
 			// only supported on API >= 26
 
+			if (!Forms.IsLollipopOrNewer)
+			{
+				_systemEnabled = true;
+			}
+
 			var powerManager = (PowerManager)Forms.ApplicationContext.GetSystemService(Context.PowerService);
 
 			var powerSaveOn = powerManager.IsPowerSaveMode;
