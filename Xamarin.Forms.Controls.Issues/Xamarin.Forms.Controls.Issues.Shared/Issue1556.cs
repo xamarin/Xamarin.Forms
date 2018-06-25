@@ -1,19 +1,11 @@
 ﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
-#if UITEST
-using Xamarin.UITest;
-using NUnit.Framework;
-#endif
-
 namespace Xamarin.Forms.Controls.Issues
 {
-#if UITEST
-	[System.ComponentModel.Category(Xamarin.Forms.Core.UITests.UITestCategories.Animation)]
-#endif
-
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Github, 1556, "Animation tasks do not complete when Battery Saver enabled", PlatformAffected.Android)]
+	[Issue(IssueTracker.Github, 1556, "Animation tasks do not complete when Battery Saver enabled", 
+		PlatformAffected.Android)]
 	public class Issue1556 : TestContentPage
 	{
 		const string FirstLabel = "Label 1";
@@ -21,8 +13,13 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override void Init()
 		{
-			var instructions = new Label {Text = $"The label with the text '{SecondLabel}' should be visible." 
-												+ $" If the label with '{SecondLabel}' does not become visible, the test has failed." };
+			var instructions = new Label
+			{
+				Text =
+					"Once the page appears, you have 30 seconds to enable Battery Saver; enabling Battery Saver " 
+					+ "should make both labels fully visible immediately. " 
+					+ "If either label is not fully visible, this test has failed"
+			};
 
 			var label1 = new Label { Text = FirstLabel, Opacity = 0 };
 			var label2 = new Label { Text = SecondLabel, IsVisible = false };
@@ -37,17 +34,9 @@ namespace Xamarin.Forms.Controls.Issues
 
 			Appearing += async (sender, args) =>
 			{
-				await label1.FadeTo(1);
+				await label1.FadeTo(1, 30000);
 				label2.IsVisible = true;
 			};
 		}
-
-#if UITEST
-		[Test, Explicit("This only makes sense to run if animator duration scale (in dev options) is set to 0 or low battery mode is active")]
-		public void LowBatteryAnimationTest ()
-		{
-			RunningApp.WaitForElement(SecondLabel);
-		}
-#endif
 	}
 }
