@@ -83,13 +83,13 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
             return Container.GetDesiredSize(widthConstraint, heightConstraint);
         }
 
-        public override void Dispose()
-        {
-            base.Dispose();
+		public override void Dispose()
+		{
+			base.Dispose();
 
-            if (!_disposed)
-            {
-                if (_appeared)
+			if (!_disposed)
+			{
+				if (_appeared)
 				{
 					ReadOnlyCollection<Element> children = ((IElementController)Element).LogicalChildren;
 					for (var i = 0; i < children.Count; i++)
@@ -99,17 +99,17 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 					}
 
 					Page.SendDisappearing();
-                }
+				}
 
-                _appeared = false;
+				_appeared = false;
 
-                Dispose(true);
+				Dispose(true);
 
-                _disposed = true;
-            }
-        }
+				_disposed = true;
+			}
+		}
 
-        protected override void OnShown()
+		protected override void OnShown()
         {
             base.OnShown();
 
