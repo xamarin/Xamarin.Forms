@@ -1,10 +1,22 @@
 ﻿using System;
 using System.Collections;
+using System.ComponentModel;
 
 namespace Xamarin.Forms
 {
+	// TODO hartez 2018/06/23 13:42:22 Trying this out for a nicer read in OnElementPropertyChanged, not sure if I like it yet	
+	public static class PropertyChangedEventArgsExtensions
+	{
+		public static bool Is(this PropertyChangedEventArgs args, BindableProperty property)
+		{
+			return args.PropertyName == property.PropertyName;
+		}
+	}
+
 	public class ItemsView : View
 	{
+		// TODO hartez 2018/06/24 11:37:00 Give DisplayMemberPath some thought	
+
 		public static readonly BindableProperty ItemsSourceProperty =
 			BindableProperty.Create(nameof(ItemsSource), typeof(IEnumerable), typeof(ItemsView), null);
 
@@ -22,6 +34,15 @@ namespace Xamarin.Forms
 		{
 			get => (IItemsLayout)GetValue(ItemsLayoutProperty);
 			set => SetValue(ItemsLayoutProperty, value);
+		}
+
+		public static readonly BindableProperty ItemTemplateProperty =
+			BindableProperty.Create(nameof(ItemTemplate), typeof(DataTemplate), typeof(ItemsView));
+
+		public DataTemplate ItemTemplate
+		{
+			get => (DataTemplate)GetValue(ItemTemplateProperty);
+			set => SetValue(ItemTemplateProperty, value);
 		}
 
 		protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint)

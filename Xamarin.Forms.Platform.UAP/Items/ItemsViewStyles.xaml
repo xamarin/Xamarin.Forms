@@ -19,4 +19,26 @@
 		<ItemsWrapGrid Orientation="Horizontal" />
 	</ItemsPanelTemplate>
 
+	<DataTemplate x:Key="ItemsViewDefaultTemplate">
+		<local:FormsContentControl x:Name="FormsContentControl">
+		</local:FormsContentControl>
+	</DataTemplate>
+	
+	<Style TargetType="local:FormsContentControl">
+		<Setter Property="HorizontalContentAlignment" Value="Left"/>
+		<Setter Property="VerticalContentAlignment" Value="Top"/>
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="local:FormsContentControl">
+					<ContentPresenter x:Name="ContentPresenter" Content="{TemplateBinding Content}"
+									ContentTemplate="{TemplateBinding ContentTemplate}"
+									Margin="{TemplateBinding Padding}"
+									ContentTransitions="{TemplateBinding ContentTransitions}"
+									HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+									VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
 </ResourceDictionary>
