@@ -187,6 +187,7 @@
     <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\PageControlStyle.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
     <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\TabbedPageStyle.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
     <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\FormsEmbeddedPageWrapper.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
+    <file src="..\Xamarin.Forms.Platform.UAP\bin\$Configuration$\FlipViewControl.xbf" target="lib\uap10.0\Xamarin.Forms.Platform.UAP" />
 
     <!--Mac-->
     <file src="..\Xamarin.Forms.Core\bin\$Configuration$\netstandard2.0\Xamarin.Forms.Core.dll" target="lib\Xamarin.Mac" />

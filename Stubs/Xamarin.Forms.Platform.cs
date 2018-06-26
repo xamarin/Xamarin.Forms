@@ -128,6 +128,9 @@ namespace Xamarin.Forms.Platform
 	[RenderWith (typeof (PhoneMasterDetailRenderer))]
 #endif
 	internal class _MasterDetailPageRenderer { }
+
+	[RenderWith(typeof(CarouselViewRenderer))]
+	internal class _CarouselViewRenderer {}
 }
 
 

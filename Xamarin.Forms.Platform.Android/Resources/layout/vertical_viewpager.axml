@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    <Xamarin.Forms.Platform.Android.VerticalViewPager
+        android:id="@+id/pager"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" />
+    <LinearLayout
+        android:id="@+id/prev"
+        android:layout_width="36dip"
+        android:layout_height="20dip"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:gravity="center">
+        <ImageView
+            android:id="@+id/prevArrow"
+            android:layout_width="17dip"
+            android:layout_height="17dip" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/next"
+        android:layout_width="36dip"
+        android:layout_height="20dip"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal"
+        android:gravity="center">
+        <ImageView
+            android:id="@+id/nextArrow"
+            android:layout_width="17dip"
+            android:layout_height="17dip" />
+    </LinearLayout>
+    <Xamarin.Forms.Platform.Android.PageIndicator
+        android:id="@+id/pageIndicator"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="20dp" />
+</RelativeLayout>

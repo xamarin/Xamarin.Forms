@@ -23,6 +23,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Tests\AutomationIDUITests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\BoxViewUITests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\ButtonUITests.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Tests\CarouselViewUITests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\ContextActionsUITests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\DatePickerUITests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Tests\DisplayAlertUITests.cs" />

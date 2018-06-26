@@ -139,6 +139,7 @@
     <Compile Include="Extensions\LayoutExtensions.cs" />
     <Compile Include="NativeValueConverterService.cs" />
     <Compile Include="NativeBindingService.cs" />
+    <Compile Include="Renderers\CarouselViewRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\StringResources.ar.resx" />
@@ -193,5 +194,11 @@
     <Compile Include="..\Xamarin.Forms.Core\Properties\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <BundleResource Include="Resources\Down.png" />
+    <BundleResource Include="Resources\Next.png" />
+    <BundleResource Include="Resources\Prev.png" />
+    <BundleResource Include="Resources\Up.png" />
   </ItemGroup>
 </Project>

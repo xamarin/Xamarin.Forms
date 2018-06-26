@@ -76,6 +76,9 @@
     <Compile Include="FormsFlyout.xaml.cs">
       <DependentUpon>FormsFlyout.xaml</DependentUpon>
     </Compile>
+    <Compile Include="FlipViewControl.xaml.cs">
+      <DependentUpon>FlipViewControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="FormsPresenter.cs" />
     <Compile Include="FormsUWP.cs" />
     <Compile Include="IToolBarForegroundBinder.cs" />
@@ -174,9 +177,14 @@
     <Compile Include="MasterDetailControl.cs" />
     <Compile Include="MasterDetailPageRenderer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="CarouselViewRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="AutoSuggestStyle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="FlipViewControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -242,6 +250,7 @@
       <Name>Windows Mobile Extensions for the UWP</Name>
     </SDKReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

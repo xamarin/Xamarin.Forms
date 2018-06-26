@@ -1,0 +1,34 @@
+﻿<UserControl
+    x:Class="Xamarin.Forms.Platform.UWP.FlipViewControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <ItemsPanelTemplate x:Key="HPanel" >
+            <VirtualizingStackPanel Orientation="Horizontal" PointerWheelChanged="VirtualizingStackPanel_PointerWheelChanged"/>
+        </ItemsPanelTemplate>
+
+        <ItemsPanelTemplate x:Key="VPanel">
+            <VirtualizingStackPanel Orientation="Vertical" PointerWheelChanged="VirtualizingStackPanel_PointerWheelChanged"/>
+        </ItemsPanelTemplate>
+
+        <ItemsPanelTemplate x:Key="dotsHPanel">
+            <StackPanel Orientation="Horizontal"/>
+        </ItemsPanelTemplate>
+
+        <ItemsPanelTemplate x:Key="dotsVPanel">
+            <StackPanel Orientation="Vertical"/>
+        </ItemsPanelTemplate>
+
+    </UserControl.Resources>
+
+    <Grid>
+        <FlipView x:Name="flipView"/>
+        <StackPanel x:Name="indicators" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Height="32">
+            <ItemsControl x:Name="dotsPanel" HorizontalAlignment="Center" VerticalAlignment="Bottom" />
+        </StackPanel>
+    </Grid>
+</UserControl>

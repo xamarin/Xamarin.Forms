@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>5c42f869-ae56-4c42-b950-4a40e880bce9</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Xamarin.Forms.CarouselView</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)CarouselView.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)CarouselOrientation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)IndicatorsShape.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ScrollDirection.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ScrolledDirectionEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)ICarouselViewController.cs" />
+  </ItemGroup>
+</Project>

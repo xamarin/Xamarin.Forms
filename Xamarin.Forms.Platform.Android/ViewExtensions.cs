@@ -39,7 +39,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				view.Background = drawable;
 			}
-			
+
 		}
 
 		public static void SetWindowBackground(this AView view)
@@ -77,5 +77,25 @@ namespace Xamarin.Forms.Platform.Android
 				view.Id = Platform.GenerateViewId();
 			}
 		}
+
+        public static AView ToAndroid(this Xamarin.Forms.View view, Rectangle size, Context context)
+        {
+            //var vRenderer = RendererFactory.GetRenderer (view);
+
+            // NullReferenceException during swiping #314 (ScrollView)
+            if (Platform.GetRenderer(view) == null || Platform.GetRenderer(view)?.Tracker == null)
+                Platform.SetRenderer(view, Platform.CreateRendererWithContext(view, context));
+
+            var vRenderer = Platform.GetRenderer(view);
+
+            var viewGroup = vRenderer.View;
+
+            vRenderer.Tracker?.UpdateLayout();
+            var layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent);
+            viewGroup.LayoutParameters = layoutParams;
+            view.Layout(size);
+            viewGroup.Layout(0, 0, (int)view.WidthRequest, (int)view.HeightRequest);
+            return viewGroup;
+        }
 	}
 }

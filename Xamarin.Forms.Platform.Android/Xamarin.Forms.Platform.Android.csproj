@@ -22,14 +22,12 @@
     <AndroidTlsProvider>
     </AndroidTlsProvider>
   </PropertyGroup>
-  
   <PropertyGroup Condition="'$(BuildingInsideVisualStudio)' != 'true'">
     <AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
   </PropertyGroup>
   <PropertyGroup Condition="'$(BuildingInsideVisualStudio)' == 'true'">
     <AndroidUseLatestPlatformSdk>False</AndroidUseLatestPlatformSdk>
-  </PropertyGroup>  
-  
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -121,6 +119,15 @@
     <Compile Include="AndroidTitleBarVisibility.cs" />
     <Compile Include="AppCompat\FrameRenderer.cs" />
     <Compile Include="ButtonBackgroundTracker.cs" />
+    <Compile Include="CarouselView\CarouselViewRenderer.cs" />
+    <Compile Include="CarouselView\GlobalLayoutListener.cs" />
+    <Compile Include="CarouselView\HorizontalViewPager.cs" />
+    <Compile Include="CarouselView\IViewPager.cs" />
+    <Compile Include="CarouselView\PageIndicator.cs" />
+    <Compile Include="CarouselView\SoftKeyboardEventArgs.cs" />
+    <Compile Include="CarouselView\SoftKeyboardService.cs" />
+    <Compile Include="CarouselView\Tag.cs" />
+    <Compile Include="CarouselView\VerticalViewPager.cs" />
     <Compile Include="Elevation.cs" />
     <Compile Include="Extensions\EntryRendererExtensions.cs" />
     <Compile Include="FastRenderers\AutomationPropertiesProvider.cs" />
@@ -303,7 +310,31 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <AndroidResource Include="Resources\drawable\Down.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\layout\horizontal_viewpager.axml" />
+    <AndroidResource Include="Resources\layout\vertical_viewpager.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\Prev.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\Next.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\Up.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
   </ItemGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Import Project="..\packages\Xamarin.Android.Support.Annotations.27.0.2\build\MonoAndroid81\Xamarin.Android.Support.Annotations.targets" Condition="Exists('..\packages\Xamarin.Android.Support.Annotations.27.0.2\build\MonoAndroid81\Xamarin.Android.Support.Annotations.targets')" />

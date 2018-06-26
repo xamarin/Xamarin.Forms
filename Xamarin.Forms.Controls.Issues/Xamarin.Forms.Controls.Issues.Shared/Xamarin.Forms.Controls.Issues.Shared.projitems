@@ -131,6 +131,9 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla40333.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla31806.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla40408.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla40502.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla40631.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla40634.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla40858.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla40824.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla40911.cs" />
@@ -153,6 +156,7 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla42074.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla42075.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla40856.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla42329.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla42364.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla42519.cs" />
@@ -424,6 +428,13 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla51503.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla51505.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla52533.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla45996.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla48090.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla51657.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla42996.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla40696.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla42234.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla42320.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla53362.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla45874.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)TransparentOverlayTests.cs" />
@@ -460,6 +471,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)GitHub1567.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1909.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla60699.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Bugzilla42230.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue2035.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue2299.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1900.cs" />

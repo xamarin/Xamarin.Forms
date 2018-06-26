@@ -275,6 +275,7 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new VisualStateManagerGallery(), "VisualStateManager Gallery"),
 				new GalleryPageFactory(() => new FlowDirectionGalleryLandingPage(), "FlowDirection"),
 				new GalleryPageFactory(() => new AutomationPropertiesGallery(), "Accessibility"),
+				new GalleryPageFactory(() => new CarouselViewGalleryPage(), "CarouselView Gallery"),
 				new GalleryPageFactory(() => new PlatformSpecificsGallery(), "Platform Specifics"),
 				new GalleryPageFactory(() => new NativeBindingGalleryPage(), "Native Binding Controls Gallery"),
 				new GalleryPageFactory(() => new XamlNativeViews(), "Xaml Native Views Gallery"),

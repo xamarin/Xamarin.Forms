@@ -34,6 +34,7 @@ using Xamarin.Forms.Platform.Tizen;
 [assembly: ExportRenderer(typeof(TableView), typeof(TableViewRenderer))]
 [assembly: ExportRenderer(typeof(NativeViewWrapper), typeof(NativeViewWrapperRenderer))]
 [assembly: ExportRenderer(typeof(WebView), typeof(WebViewRenderer))]
+[assembly: ExportRenderer(typeof(CarouselView), typeof(CarouselViewRenderer))]
 
 [assembly: ExportImageSourceHandler(typeof(FileImageSource), typeof(FileImageSourceHandler))]
 [assembly: ExportImageSourceHandler(typeof(StreamImageSource), typeof(StreamImageSourceHandler))]

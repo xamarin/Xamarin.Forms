@@ -49,6 +49,8 @@ namespace Xamarin.Forms.Core.UITests
 		public const string CellsGalleryLegacy = "* marked:'Cells Gallery - Legacy'";
 		public const string UnevenListGalleryLegacy = "* marked:'UnevenList Gallery - Legacy'";
 		public const string MapGalleryLegacy = "* marked:'Map Gallery - Legacy'";
+
+		public const string CarouselViewGallery = "* marked:'CarouselView Gallery'";
 	}
 
 	internal static class Queries
