@@ -21,6 +21,13 @@
 
 	<DataTemplate x:Key="ItemsViewDefaultTemplate">
 		<local:FormsContentControl x:Name="FormsContentControl">
+			<StackPanel>
+				
+				<TextBlock Text="{Binding FormsDataTemplate}"></TextBlock>
+				<TextBlock Text="{Binding Item}"></TextBlock>
+
+			</StackPanel>
+			
 		</local:FormsContentControl>
 	</DataTemplate>
 	

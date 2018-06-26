@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using System.Collections;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Windows.UI.Xaml;
@@ -10,111 +11,80 @@ using Xamarin.Forms.Platform.UAP;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	public class FormsListItem : ListViewItem
-	{
-		DataTemplate FormsTemplate { get; set; }
-
-		BindableObject _bindableObject;
-
-		public FormsListItem(DataTemplate formsTemplate)
-		{
-			FormsTemplate = formsTemplate;
-		}
-
-		protected override void OnApplyTemplate()
-		{
-			base.OnApplyTemplate();
-
-			var content = FormsTemplate.CreateContent();
-
-			_bindableObject = content as BindableObject;
-		}
-
-
-
-		protected override void OnContentChanged(object oldContent, object newContent)
-		{
-			//base.OnContentChanged(oldContent, newContent);
-
-			if (_bindableObject != null)
-			{
-				BindableObject.SetInheritedBindingContext(_bindableObject, newContent);
-			}
-
-			if (_bindableObject is VisualElement visualElement)
-			{
-				var formsContent = visualElement.GetOrCreateRenderer().ContainerElement;
-				((FormsContentControl)ContentTemplateRoot).Content = formsContent;
-			}
-		}
-
-		//protected override void OnContentChanged(object oldContent, object newContent)
-		//{
-		//	base.OnContentChanged(oldContent, newContent);
-		//	if (newContent is VisualElement visualElement)
-		//	{
-		//		var formsContent = visualElement.GetOrCreateRenderer().ContainerElement;
-		//		Content = formsContent;
-		//	}
-		//}
-	}
-
-	public class FormsListView : Windows.UI.Xaml.Controls.ListView
-	{
-		// TODO hartez 2018/06/24 16:22:12 If this works, we need to apply it to FormsGridView	
-		// TODO hartez 2018/06/24 16:54:56 If these GetContainer overrides work, I wonder if we need FormsContentControl at all	
-		public DataTemplate FormsTemplate { get; set; }
-
-		protected override bool IsItemItsOwnContainerOverride(object item)
-		{
-			return item is FormsListItem;
-		}
-
-		protected override DependencyObject GetContainerForItemOverride()
-		{
-			return new FormsListItem(FormsTemplate);
-		}
-	}
-
 	public class FormsContentControl : ContentControl
 	{
 		public FormsContentControl()
 		{
 			DefaultStyleKey = typeof(FormsContentControl);
-			Loaded += OnLoaded;
 		}
+		//var content = FormsTemplate.CreateContent();
 
-		void OnLoaded(object sender, RoutedEventArgs e)
-		{
-			Loaded -= OnLoaded;
+		//if (content is BindableObject bindableObject)
+		//{
+		//	BindableObject.SetInheritedBindingContext(bindableObject, DataContext);
+		//}
 
-			//var content = FormsTemplate.CreateContent();
+		//if (content is VisualElement visualElement)
+		//{
+		//	_contentPresenter.Content = visualElement.GetOrCreateRenderer().ContainerElement;
+		//	_contentPresenter.Width = 200;
+		//	_contentPresenter.Height = 200;
+		//}
 
-			//if (content is BindableObject bindableObject)
-			//{
-			//	BindableObject.SetInheritedBindingContext(bindableObject, DataContext);
-			//}
-
-			//if (content is VisualElement visualElement)
-			//{
-			//	_contentPresenter.Content = visualElement.GetOrCreateRenderer().ContainerElement;
-			//	_contentPresenter.Width = 200;
-			//	_contentPresenter.Height = 200;
-			//}
-		}
-
-		Windows.UI.Xaml.Controls.ContentPresenter _contentPresenter;
+		//Windows.UI.Xaml.Controls.ContentPresenter _contentPresenter;
 
 		protected override void OnApplyTemplate()
 		{
 			base.OnApplyTemplate();
 
-			_contentPresenter = (Windows.UI.Xaml.Controls.ContentPresenter)GetTemplateChild("ContentPresenter");
+			//_contentPresenter = (Windows.UI.Xaml.Controls.ContentPresenter)GetTemplateChild("ContentPresenter");
 		}
 
 		public DataTemplate FormsTemplate { get; set; }
 	}
 
+	// TODO hartez 2018/06/25 21:10:06 Obviously this needs a better name	
+	internal class ItemsSourceThing : IEnumerable, IEnumerator
+	{
+		readonly DataTemplate _formsDataTemplate;
+		readonly IEnumerator _innerEnumerator;
+
+		public ItemsSourceThing(IEnumerable itemsSource, DataTemplate formsDataTemplate)
+		{
+			_formsDataTemplate = formsDataTemplate;
+			_innerEnumerator = itemsSource.GetEnumerator();
+		}
+
+		public IEnumerator GetEnumerator()
+		{
+			return this;
+		}
+
+		public bool MoveNext()
+		{
+			var moveNext = _innerEnumerator.MoveNext();
+
+			if (moveNext)
+			{
+				Current = new ItemTemplatePair() { FormsDataTemplate = _formsDataTemplate, Item = _innerEnumerator.Current };
+			}
+
+			return moveNext;
+		}
+
+		public void Reset()
+		{
+			_innerEnumerator.Reset();
+		}
+
+		public object Current { get; private set; }
+	}
+
+	internal class ItemTemplatePair
+	{
+		public DataTemplate FormsDataTemplate { get; set; }
+		public object Item { get; set; }
+	}
 
 	public class CollectionViewRenderer : ViewRenderer<CollectionView, ItemsControl>
 	{
@@ -155,7 +125,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 
 			// Default to a plain old vertical ListView
-			return new FormsListView();
+			return new Windows.UI.Xaml.Controls.ListView();
 		}
 
 		protected virtual void UpdateItemsSource()
@@ -166,31 +136,32 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 
 			// TODO hartez 2018-05-22 12:59 PM Handle grouping
-			var cvs = new CollectionViewSource
+
+			CollectionViewSource collectionViewSource;
+
+			var itemsSource = Element.ItemsSource;
+
+			var itemTemplate = Element.ItemTemplate;
+			if (itemTemplate != null)
 			{
-				Source = Element.ItemsSource,
-				IsSourceGrouped = false
-			};
+				ItemsSourceThing sourceThing = new ItemsSourceThing(itemsSource, itemTemplate);
+				collectionViewSource = new CollectionViewSource
+				{
+					Source = sourceThing,
+					IsSourceGrouped = false
+				};
+			}
+			else
+			{
+				collectionViewSource = new CollectionViewSource
+				{
+					Source = itemsSource,
+					IsSourceGrouped = false
+				};	
+			}
 
-			ItemsControl.ItemsSource = cvs.View;
+			ItemsControl.ItemsSource = collectionViewSource.View;
 		}
-
-		//class FormsDataTemplateSelector : Windows.UI.Xaml.Controls.DataTemplateSelector
-		//{
-		//	public Xamarin.Forms.DataTemplate FormsTemplate { get; set; }
-			
-		//	protected override Windows.UI.Xaml.DataTemplate SelectTemplateCore(object item)
-		//	{
-		//		var template = (Windows.UI.Xaml.DataTemplate)Windows.UI.Xaml.Application.Current.Resources["ItemsViewDefaultTemplate"];
-
-		//		return template;
-		//	}
-
-		//	protected override Windows.UI.Xaml.DataTemplate SelectTemplateCore(object item, DependencyObject container)
-		//	{
-		//		return SelectTemplateCore(item);
-		//	}
-		//}
 
 		protected virtual void UpdateItemTemplate()
 		{
@@ -200,16 +171,21 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 
 			var formsTemplate = Element.ItemTemplate;
+			var itemsControlItemTemplate = ItemsControl.ItemTemplate;
 
 			if (formsTemplate == null)
 			{
 				ItemsControl.ItemTemplate = null;
+
+				if (itemsControlItemTemplate != null)
+				{
+					// We've removed the template; the itemssource should be updated
+					// TODO hartez 2018/06/25 21:25:24 I don't love that changing the template might reset the whole itemssource. We should think about a way to make that unnecessary	
+					UpdateItemsSource();
+				}
+
+				return;
 			}
-
-			// TODO hartez 2018/06/24 17:05:30 Should this be an else?	
-
-			//var itemTemplateSelector = new FormsDataTemplateSelector { FormsTemplate = formsTemplate };
-			//ItemsControl.ItemTemplateSelector = itemTemplateSelector;
 
 			// TODO hartez 2018/06/23 13:47:27 Handle DataTemplateSelector case
 			// Actually, DataTemplateExtensions CreateContent might handle the selector for us
@@ -220,14 +196,13 @@ namespace Xamarin.Forms.Platform.UWP
 			// and then doing something like GetOrCreateRenderer
 			// and then set the content of the ContentControl to the result
 
-			
-
 			ItemsControl.ItemTemplate =
 				(Windows.UI.Xaml.DataTemplate)Windows.UI.Xaml.Application.Current.Resources["ItemsViewDefaultTemplate"];
 
-			if (ItemsControl is FormsListView formsListView)
+			if (itemsControlItemTemplate == null)
 			{
-				formsListView.FormsTemplate = formsTemplate;
+				// We're using a data template now, so we'll need to update the itemsource
+				UpdateItemsSource();
 			}
 		}
 
@@ -258,7 +233,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			// TODO hartez 2018/06/05 16:18:57 Is there any performance benefit to caching the ItemsPanelTemplate lookup?	
 			// TODO hartez 2018/05/29 15:38:04 Make sure the ItemsViewStyles.xaml xbf gets into the nuspec	
-			var horizontalListView = new FormsListView
+			var horizontalListView = new Windows.UI.Xaml.Controls.ListView()
 			{
 				ItemsPanel =
 					(ItemsPanelTemplate)Windows.UI.Xaml.Application.Current.Resources["HorizontalListItemsPanel"]
@@ -299,8 +274,8 @@ namespace Xamarin.Forms.Platform.UWP
 				SetNativeControl(ItemsControl);
 			}
 
-			UpdateItemsSource();
 			UpdateItemTemplate();
+			UpdateItemsSource();
 		}
 
 		void TearDownOldElement(ItemsView oldElement)
