@@ -21,11 +21,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			RegisterPropertyHandler(Entry.ReturnTypeProperty, UpdateReturnType);
 			RegisterPropertyHandler(InputView.IsSpellCheckEnabledProperty, UpdateIsSpellCheckEnabled);
 			RegisterPropertyHandler(Entry.IsTextPredictionEnabledProperty, UpdateIsSpellCheckEnabled);
-
-			if (TizenPlatformServices.AppDomain.IsTizenSpecificAvailable)
-			{
-				RegisterPropertyHandler("FontWeight", UpdateFontWeight);
-			}
+			RegisterPropertyHandler(Specific.FontWeightProperty, UpdateFontWeight);
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Entry> e)
@@ -35,7 +31,6 @@ namespace Xamarin.Forms.Platform.Tizen
 				var entry = new Native.EditfieldEntry(Forms.NativeParent)
 				{
 					IsSingleLine = true,
-					PropagateEvents = false,
 				};
 				entry.SetVerticalTextAlignment("elm.text", 0.5);
 				entry.SetVerticalTextAlignment("elm.guide", 0.5);
@@ -68,7 +63,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		void OnTextChanged(object sender, EventArgs e)
 		{
-			Element.Text = Control.Text;
+			Element.SetValueFromRenderer(Entry.TextProperty, Control.Text);
 		}
 
 		void OnCompleted(object sender, EventArgs e)

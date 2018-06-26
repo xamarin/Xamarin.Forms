@@ -11,18 +11,21 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		readonly TapGestureHandler _tapGestureHandler;
 		readonly PanGestureHandler _panGestureHandler;
+		readonly SwipeGestureHandler _swipeGestureHandler;
 		bool _isScrolling;		
 		float _lastX;
 		float _lastY;
 		bool _disposed;
 
+		Func<float, float, bool> _swipeDelegate;
+		Func<bool> _swipeCompletedDelegate;
 		Func<bool> _scrollCompleteDelegate;
 		Func<float, float, int, bool> _scrollDelegate;
 		Func<int, bool> _scrollStartedDelegate;
-		Func<int, bool> _tapDelegate;
+		Func<int, Point, bool> _tapDelegate;
 		Func<int, IEnumerable<TapGestureRecognizer>> _tapGestureRecognizers;
 
-		public InnerGestureListener(TapGestureHandler tapGestureHandler, PanGestureHandler panGestureHandler)
+		public InnerGestureListener(TapGestureHandler tapGestureHandler, PanGestureHandler panGestureHandler, SwipeGestureHandler swipeGestureHandler)
 		{
 			if (tapGestureHandler == null)
 			{
@@ -34,19 +37,27 @@ namespace Xamarin.Forms.Platform.Android
 				throw new ArgumentNullException(nameof(panGestureHandler));
 			}
 
+			if (swipeGestureHandler == null)
+			{
+				throw new ArgumentNullException(nameof(swipeGestureHandler));
+			}
+
 			_tapGestureHandler = tapGestureHandler;
 			_panGestureHandler = panGestureHandler;
+			_swipeGestureHandler = swipeGestureHandler;
 
 			_tapDelegate = tapGestureHandler.OnTap;
 			_tapGestureRecognizers = tapGestureHandler.TapGestureRecognizers;
 			_scrollDelegate = panGestureHandler.OnPan;
 			_scrollStartedDelegate = panGestureHandler.OnPanStarted;
 			_scrollCompleteDelegate = panGestureHandler.OnPanComplete;
+			_swipeDelegate = swipeGestureHandler.OnSwipe;
+			_swipeCompletedDelegate = swipeGestureHandler.OnSwipeComplete;
 		}
 
 		bool HasAnyGestures()
 		{
-			return _panGestureHandler.HasAnyGestures() || _tapGestureHandler.HasAnyGestures();
+			return _panGestureHandler.HasAnyGestures() || _tapGestureHandler.HasAnyGestures() || _swipeGestureHandler.HasAnyGestures();
 		}
 
 		// This is needed because GestureRecognizer callbacks can be delayed several hundred milliseconds
@@ -63,7 +74,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (HasDoubleTapHandler())
 			{
-				return _tapDelegate(2);
+				return _tapDelegate(2, new Point(e.GetX(), e.GetY()));
 			}
 
 			if (HasSingleTapHandler())
@@ -71,7 +82,7 @@ namespace Xamarin.Forms.Platform.Android
 				// If we're registering double taps and we don't actually have a double-tap handler,
 				// but we _do_ have a single-tap handler, then we're really just seeing two singles in a row
 				// Fire off the delegate for the second single-tap (OnSingleTapUp already did the first one)
-				return _tapDelegate(1);
+				return _tapDelegate(1, new Point(e.GetX(), e.GetY()));
 			}
 
 			return false;
@@ -137,7 +148,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			// A single tap has occurred and there's no handler for double tap to worry about,
 			// so we can go ahead and run the delegate
-			return _tapDelegate(1);
+			return _tapDelegate(1, new Point(e.GetX(), e.GetY()));
 		}
 
 		bool GestureDetector.IOnDoubleTapListener.OnSingleTapConfirmed(MotionEvent e)
@@ -154,7 +165,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			// Since there was a double-tap handler, we had to wait for OnSingleTapConfirmed;
 			// Now that we're sure it's a single tap, we can run the delegate
-			return _tapDelegate(1);
+			return _tapDelegate(1, new Point(e.GetX(), e.GetY()));
 		}
 
 		protected override void Dispose(bool disposing)
@@ -173,6 +184,8 @@ namespace Xamarin.Forms.Platform.Android
 				_scrollDelegate = null;
 				_scrollStartedDelegate = null;
 				_scrollCompleteDelegate = null;
+				_swipeDelegate = null;
+				_swipeCompletedDelegate = null;
 			}
 
 			base.Dispose(disposing);
@@ -197,13 +210,15 @@ namespace Xamarin.Forms.Platform.Android
 			float totalX = e2.GetX() - _lastX;
 			float totalY = e2.GetY() - _lastY;
 
-			return _scrollDelegate(totalX, totalY, e2.PointerCount);
+			return _scrollDelegate(totalX, totalY, e2.PointerCount) || _swipeDelegate(totalX, totalY);
 		}
 
 		internal void EndScrolling()
 		{
 			if (_isScrolling && _scrollCompleteDelegate != null)
 				_scrollCompleteDelegate();
+			if (_swipeCompletedDelegate != null)
+				_swipeCompletedDelegate();
 
 			_isScrolling = false;
 		}

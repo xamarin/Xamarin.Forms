@@ -17,6 +17,7 @@ using Android.Widget;
 using Xamarin.Forms.Platform.Android.AppCompat;
 using FragmentManager = Android.Support.V4.App.FragmentManager;
 using Xamarin.Forms.Internals;
+using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -65,7 +66,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				_defaultActionBarTitleTextColor = SetDefaultActionBarTitleTextColor();
 			}
-			
+
 			_renderer = new PlatformRenderer(context, this);
 
 			if (embedded)
@@ -296,6 +297,23 @@ namespace Xamarin.Forms.Platform.Android
 		void INavigation.RemovePage(Page page)
 		{
 			throw new InvalidOperationException("RemovePage is not supported globally on Android, please use a NavigationPage.");
+		}
+
+		public static void ClearRenderer(AView renderedView)
+		{
+			var element = (renderedView as IVisualElementRenderer)?.Element;
+			var view = element as View;
+			if (view != null)
+			{
+				var renderer = GetRenderer(view);
+				if (renderer == renderedView)
+					element.ClearValue(RendererProperty);
+				renderer?.Dispose();
+				renderer = null;
+			}
+			var layout = view as IVisualElementRenderer;
+			layout?.Dispose();
+			layout = null;
 		}
 
 		[Obsolete("CreateRenderer(VisualElement) is obsolete as of version 2.5. Please use CreateRendererWithContext(VisualElement, Context) instead.")]
@@ -1105,8 +1123,8 @@ namespace Xamarin.Forms.Platform.Android
 		static int s_id = 0x00000400;
 
 		#region Previewer Stuff
-		
-		internal static readonly BindableProperty PageContextProperty = 
+
+		internal static readonly BindableProperty PageContextProperty =
 			BindableProperty.CreateAttached("PageContext", typeof(Context), typeof(Platform), null);
 
 		internal Platform(Context context) : this(context, false)
@@ -1115,12 +1133,12 @@ namespace Xamarin.Forms.Platform.Android
 			// the 'embedded' bool parameter so the previewer can find it via reflection
 		}
 
-		internal static void SetPageContext(BindableObject bindable, Context context)		
- 		{
+		internal static void SetPageContext(BindableObject bindable, Context context)
+		{
 			// Set a context for this page and its child controls
 			bindable.SetValue(PageContextProperty, context);
 		}
-		
+
 		static Context GetPreviewerContext(Element element)
 		{
 			// Walk up the tree and find the Page this element is hosted in
@@ -1139,6 +1157,7 @@ namespace Xamarin.Forms.Platform.Android
 		internal class DefaultRenderer : VisualElementRenderer<View>
 		{
 			public bool NotReallyHandled { get; private set; }
+			IOnTouchListener _touchListener;
 
 			[Obsolete("This constructor is obsolete as of version 2.5. Please use DefaultRenderer(Context) instead.")]
 			public DefaultRenderer()
@@ -1207,10 +1226,28 @@ namespace Xamarin.Forms.Platform.Android
 					// don't consider the event truly "handled" yet. 
 					// Since a child control short-circuited the normal dispatchTouchEvent stuff, this layout never got the chance for
 					// IOnTouchListener.OnTouch and the OnTouchEvent override to try handling the touches; we'll do that now
-					return OnTouchEvent(e);
+					// Any associated Touch Listeners are called from DispatchTouchEvents if all children of this view return false
+					// So here we are simulating both calls that would have typically been called from inside DispatchTouchEvent
+					// but were not called due to the fake "true"
+					result = _touchListener?.OnTouch(this, e) ?? false;
+					return result || OnTouchEvent(e);
 				}
 
 				return result;
+			}
+
+			public override void SetOnTouchListener(IOnTouchListener l)
+			{
+				_touchListener = l;
+				base.SetOnTouchListener(l);
+			}
+
+			protected override void Dispose(bool disposing)
+			{
+				if (disposing)
+					_touchListener = null;
+
+				base.Dispose(disposing);
 			}
 		}
 

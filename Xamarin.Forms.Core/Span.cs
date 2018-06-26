@@ -4,7 +4,7 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms
 {
 	[ContentProperty("Text")]
-	public sealed class Span : Element, IFontElement, ITextElement
+	public sealed class Span : GestureElement, IFontElement, ITextElement, ILineHeightElement
 	{
 		internal readonly MergedStyle _mergedStyle;
 
@@ -41,7 +41,7 @@ namespace Xamarin.Forms
 
 		[Obsolete("Foreground is obsolete as of version 3.1.0. Please use the TextColor property instead.")]
 		public static readonly BindableProperty ForegroundColorProperty = TextColorProperty;
-		
+
 #pragma warning disable 618
 		public Color ForegroundColor
 		{
@@ -49,14 +49,14 @@ namespace Xamarin.Forms
 			set { SetValue(ForegroundColorProperty, value); }
 		}
 #pragma warning restore 618
-		
+
 		public static readonly BindableProperty TextProperty
 			= BindableProperty.Create(nameof(Text), typeof(string), typeof(Span), "", defaultBindingMode: BindingMode.OneTime);
 
 		public string Text
 		{
 			get { return (string)GetValue(TextProperty); }
-			set	{ SetValue(TextProperty, value); }
+			set { SetValue(TextProperty, value); }
 		}
 
 		public static readonly BindableProperty FontProperty = FontElement.FontProperty;
@@ -66,6 +66,8 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty FontSizeProperty = FontElement.FontSizeProperty;
 
 		public static readonly BindableProperty FontAttributesProperty = FontElement.FontAttributesProperty;
+
+		public static readonly BindableProperty LineHeightProperty = LineHeightElement.LineHeightProperty;
 
 		[Obsolete("Font is obsolete as of version 1.3.0. Please use the Font properties directly.")]
 		public Font Font
@@ -93,6 +95,11 @@ namespace Xamarin.Forms
 			set { SetValue(FontElement.FontSizeProperty, value); }
 		}
 
+		public double LineHeight {
+			get { return (double)GetValue(LineHeightElement.LineHeightProperty); }
+			set { SetValue(LineHeightElement.LineHeightProperty, value); }
+		}
+
 		void IFontElement.OnFontFamilyChanged(string oldValue, string newValue)
 		{
 		}
@@ -105,7 +112,7 @@ namespace Xamarin.Forms
 			Device.GetNamedSize(NamedSize.Default, new Label());
 
 		void IFontElement.OnFontAttributesChanged(FontAttributes oldValue, FontAttributes newValue)
-		{			
+		{
 		}
 
 		void IFontElement.OnFontChanged(Font oldValue, Font newValue)
@@ -113,6 +120,20 @@ namespace Xamarin.Forms
 		}
 
 		void ITextElement.OnTextColorPropertyChanged(Color oldValue, Color newValue)
+		{
+		}
+
+		internal override void ValidateGesture(IGestureRecognizer gesture)
+		{
+			if (gesture == null)
+				return;
+			if (gesture is PanGestureRecognizer)
+				throw new InvalidOperationException($"{nameof(PanGestureRecognizer)} is not supported on a {nameof(Span)}");
+			if (gesture is PinchGestureRecognizer)
+				throw new InvalidOperationException($"{nameof(PinchGestureRecognizer)} is not supported on a {nameof(Span)}");
+		}
+
+		void ILineHeightElement.OnLineHeightChanged(double oldValue, double newValue)
 		{
 		}
 	}

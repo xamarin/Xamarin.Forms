@@ -51,24 +51,22 @@ namespace Xamarin.Forms.Platform.Tizen
 			RegisterPropertyHandler(VisualElement.InputTransparentProperty, UpdateInputTransparent);
 			RegisterPropertyHandler(VisualElement.BackgroundColorProperty, UpdateBackgroundColor);
 
-			// Use TizenSpecific APIs only if available
-			if (TizenPlatformServices.AppDomain.IsTizenSpecificAvailable)
-			{
-				RegisterPropertyHandler("ThemeStyle", UpdateThemeStyle);
-				RegisterPropertyHandler("IsFocusAllowed", UpdateFocusAllowed);
-				RegisterPropertyHandler("NextFocusDirection", UpdateFocusDirection);
-				RegisterPropertyHandler("NextFocusUpView", UpdateFocusUpView);
-				RegisterPropertyHandler("NextFocusDownView", UpdateFocusDownView);
-				RegisterPropertyHandler("NextFocusLeftView", UpdateFocusLeftView);
-				RegisterPropertyHandler("NextFocusRightView", UpdateFocusRightView);
-				RegisterPropertyHandler("NextFocusBackView", UpdateFocusBackView);
-				RegisterPropertyHandler("NextFocusForwardView", UpdateFocusForwardView);
-				RegisterPropertyHandler("ToolTip", UpdateToolTip);
-			}
+			RegisterPropertyHandler(Specific.StyleProperty, UpdateThemeStyle);
+			RegisterPropertyHandler(Specific.IsFocusAllowedProperty, UpdateFocusAllowed);
+			RegisterPropertyHandler(Specific.NextFocusDirectionProperty, UpdateFocusDirection);
+			RegisterPropertyHandler(Specific.NextFocusUpViewProperty, UpdateFocusUpView);
+			RegisterPropertyHandler(Specific.NextFocusDownViewProperty, UpdateFocusDownView);
+			RegisterPropertyHandler(Specific.NextFocusLeftViewProperty, UpdateFocusLeftView);
+			RegisterPropertyHandler(Specific.NextFocusRightViewProperty, UpdateFocusRightView);
+			RegisterPropertyHandler(Specific.NextFocusBackViewProperty, UpdateFocusBackView);
+			RegisterPropertyHandler(Specific.NextFocusForwardViewProperty, UpdateFocusForwardView);
+			RegisterPropertyHandler(Specific.ToolTipProperty, UpdateToolTip);
 
 			RegisterPropertyHandler(VisualElement.AnchorXProperty, ApplyTransformation);
 			RegisterPropertyHandler(VisualElement.AnchorYProperty, ApplyTransformation);
 			RegisterPropertyHandler(VisualElement.ScaleProperty, ApplyTransformation);
+			RegisterPropertyHandler(VisualElement.ScaleXProperty, ApplyTransformation);
+			RegisterPropertyHandler(VisualElement.ScaleYProperty, ApplyTransformation);
 			RegisterPropertyHandler(VisualElement.RotationProperty, ApplyTransformation);
 			RegisterPropertyHandler(VisualElement.RotationXProperty, ApplyTransformation);
 			RegisterPropertyHandler(VisualElement.RotationYProperty, ApplyTransformation);
@@ -793,19 +791,16 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 		}
 
-		void UpdateFocusAllowed(bool initialize)
+		void UpdateFocusAllowed()
 		{
-			if (!initialize)
+			var widget = NativeView as Widget;
+			if (widget != null && Specific.IsFocusAllowed(Element).HasValue)
 			{
-				var widget = NativeView as Widget;
-				if (widget != null && Specific.IsFocusAllowed(Element).HasValue)
-				{
-					widget.AllowFocus((bool)Specific.IsFocusAllowed(Element));
-				}
-				else
-				{
-					Log.Warn("{0} uses {1} which does not support Focus management", this, NativeView);
-				}
+				widget.AllowFocus((bool)Specific.IsFocusAllowed(Element));
+			}
+			else
+			{
+				Log.Warn("{0} uses {1} which does not support Focus management", this, NativeView);
 			}
 		}
 
@@ -948,11 +943,13 @@ namespace Xamarin.Forms.Platform.Tizen
 		void ApplyScale(EvasMap map, ERect geometry, ref bool changed)
 		{
 			var scale = Element.Scale;
+			var scaleX = Element.ScaleX * scale;
+			var scaleY = Element.ScaleY * scale;
 
 			// apply scale factor
-			if (scale != 1.0)
+			if (scaleX != 1.0 || scaleY != 1.0)
 			{
-				map.Zoom(scale, scale,
+				map.Zoom(scaleX, scaleY,
 					geometry.X + (int)(geometry.Width * Element.AnchorX),
 					geometry.Y + (int)(geometry.Height * Element.AnchorY));
 				changed = true;
