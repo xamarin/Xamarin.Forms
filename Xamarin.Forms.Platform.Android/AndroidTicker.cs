@@ -32,6 +32,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (!Forms.IsLollipopOrNewer)
 			{
 				_systemEnabled = true;
+				return;
 			}
 
 			var powerManager = (PowerManager)Forms.ApplicationContext.GetSystemService(Context.PowerService);
