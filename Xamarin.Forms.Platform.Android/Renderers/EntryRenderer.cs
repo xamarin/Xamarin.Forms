@@ -158,6 +158,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateFont();
 			else if (e.PropertyName == Entry.FontSizeProperty.PropertyName)
 				UpdateFont();
+			else if (e.PropertyName == Entry.FontProperty.PropertyName)
+				UpdateFont();
 			else if (e.PropertyName == Entry.PlaceholderColorProperty.PropertyName)
 				UpdatePlaceholderColor();
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)

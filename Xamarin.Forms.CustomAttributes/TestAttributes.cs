@@ -520,6 +520,7 @@ namespace Xamarin.Forms.CustomAttributes
 			HorizontalTextAlignmentPlaceholderStart,
 			HorizontalTextAlignmentPlaceholderCenter,
 			HorizontalTextAlignmentPlaceholderEnd,
+			Font,
 			FontAttributes,
 			FontFamily,
 			FontSize,
