@@ -15,7 +15,7 @@ using static System.String;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
-    public class ButtonRenderer : ViewRenderer<Button, AppCompatButton>, AView.IOnAttachStateChangeListener
+	public class ButtonRenderer : ViewRenderer<Button, AppCompatButton>, AView.IOnAttachStateChangeListener
 	{
 		ButtonBackgroundTracker _backgroundTracker;
 		TextColorSwitcher _textColorSwitcher;
@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use ButtonRenderer(Context) instead.")]
-		public ButtonRenderer() 
+		public ButtonRenderer()
 		{
 			AutoPackage = false;
 		}
@@ -118,7 +118,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					button.Tag = this;
 
 					var useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
-					_textColorSwitcher = new TextColorSwitcher(button.TextColors, useLegacyColorManagement);  
+					_textColorSwitcher = new TextColorSwitcher(button.TextColors, useLegacyColorManagement);
 
 					SetNativeControl(button);
 					button.AddOnAttachStateChangeListener(this);
@@ -287,6 +287,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void UpdatePadding()
 		{
+			if (!Element.IsSet(Button.PaddingProperty))
+				return;
+
 			Control?.SetPadding(
 				(int)(Context.ToPixels(Element.Padding.Left) + _paddingDeltaPix.Left),
 				(int)(Context.ToPixels(Element.Padding.Top) + _paddingDeltaPix.Top),
@@ -295,9 +298,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			);
 		}
 
-		void UpdateContentEdge (Thickness? delta = null)
+		void UpdateContentEdge(Thickness? delta = null)
 		{
-			_paddingDeltaPix = delta ?? new Thickness ();
+			_paddingDeltaPix = delta ?? new Thickness();
 			UpdatePadding();
 		}
 
