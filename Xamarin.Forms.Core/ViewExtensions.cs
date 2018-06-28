@@ -9,14 +9,13 @@ namespace Xamarin.Forms
 		{
 			if (view == null)
 				throw new ArgumentNullException(nameof(view));
-			view.AbortAnimation("LayoutTo");
-			view.AbortAnimation("TranslateTo");
-			view.AbortAnimation("RotateTo");
-			view.AbortAnimation("RotateYTo");
-			view.AbortAnimation("RotateXTo");
-			view.AbortAnimation("ScaleTo");
-			view.AbortAnimation("FadeTo");
-			view.AbortAnimation("SizeTo");
+			view.AbortAnimation(nameof(LayoutTo));
+			view.AbortAnimation(nameof(TranslateTo));
+			view.AbortAnimation(nameof(RotateTo));
+			view.AbortAnimation(nameof(RotateYTo));
+			view.AbortAnimation(nameof(RotateXTo));
+			view.AbortAnimation(nameof(ScaleTo));
+			view.AbortAnimation(nameof(FadeTo));
 		}
 
 		static Task<bool> AnimateTo(this VisualElement view, double start, double end, string name, 
@@ -47,7 +46,7 @@ namespace Xamarin.Forms
 			if (view == null)
 				throw new ArgumentNullException(nameof(view));
 
-			return AnimateTo(view, view.Opacity, opacity, "FadeTo", (v, value) => v.Opacity = value, length, easing);
+			return AnimateTo(view, view.Opacity, opacity, nameof(FadeTo), (v, value) => v.Opacity = value, length, easing);
 		}
 
 		public static Task<bool> LayoutTo(this VisualElement view, Rectangle bounds, uint length = 250, Easing easing = null)
@@ -66,7 +65,7 @@ namespace Xamarin.Forms
 				return new Rectangle(x, y, w, h);
 			};
 		
-			return AnimateTo(view, 0, 1, "LayoutTo", (v, value) => v.Layout(computeBounds(value)), length, easing);
+			return AnimateTo(view, 0, 1, nameof(LayoutTo), (v, value) => v.Layout(computeBounds(value)), length, easing);
 		}
 
 		public static Task<bool> RelRotateTo(this VisualElement view, double drotation, uint length = 250, Easing easing = null)
@@ -90,7 +89,7 @@ namespace Xamarin.Forms
 			if (view == null)
 				throw new ArgumentNullException(nameof(view));
 
-			return AnimateTo(view, view.Rotation, rotation, "RotateTo", (v, value) => v.Rotation = value, length, easing);
+			return AnimateTo(view, view.Rotation, rotation, nameof(RotateTo), (v, value) => v.Rotation = value, length, easing);
 		}
 
 		public static Task<bool> RotateXTo(this VisualElement view, double rotation, uint length = 250, Easing easing = null)
@@ -98,7 +97,7 @@ namespace Xamarin.Forms
 			if (view == null)
 				throw new ArgumentNullException(nameof(view));
 
-			return AnimateTo(view, view.RotationX, rotation, "RotateXTo", (v, value) => v.RotationX = value, length, easing);
+			return AnimateTo(view, view.RotationX, rotation, nameof(RotateXTo), (v, value) => v.RotationX = value, length, easing);
 		}
 
 		public static Task<bool> RotateYTo(this VisualElement view, double rotation, uint length = 250, Easing easing = null)
@@ -106,7 +105,7 @@ namespace Xamarin.Forms
 			if (view == null)
 				throw new ArgumentNullException(nameof(view));
 
-			return AnimateTo(view, view.RotationY, rotation, "RotateYTo", (v, value) => v.RotationY = value, length, easing);
+			return AnimateTo(view, view.RotationY, rotation, nameof(RotateYTo), (v, value) => v.RotationY = value, length, easing);
 		}
 
 		public static Task<bool> ScaleTo(this VisualElement view, double scale, uint length = 250, Easing easing = null)
@@ -114,13 +113,13 @@ namespace Xamarin.Forms
 			if (view == null)
 				throw new ArgumentNullException(nameof(view));
 
-			return AnimateTo(view, view.Scale, scale, "ScaleTo", (v, value) => v.Scale = value, length, easing);
+			return AnimateTo(view, view.Scale, scale, nameof(ScaleTo), (v, value) => v.Scale = value, length, easing);
 		}
 
 		public static Task<bool> TranslateTo(this VisualElement view, double x, double y, uint length = 250, Easing easing = null)
 		{
 			if (view == null)
-				throw new ArgumentNullException("view");
+				throw new ArgumentNullException(nameof(view));
 			easing = easing ?? Easing.Linear;
 
 			var tcs = new TaskCompletionSource<bool>();
@@ -137,7 +136,7 @@ namespace Xamarin.Forms
 				if (weakView.TryGetTarget(out v))
 					v.TranslationY = f;
 			};
-			new Animation { { 0, 1, new Animation(translateX, view.TranslationX, x, easing: easing) }, { 0, 1, new Animation(translateY, view.TranslationY, y, easing:easing) } }.Commit(view, "TranslateTo", 16, length, null,
+			new Animation { { 0, 1, new Animation(translateX, view.TranslationX, x, easing: easing) }, { 0, 1, new Animation(translateY, view.TranslationY, y, easing:easing) } }.Commit(view, nameof(TranslateTo), 16, length, null,
 				(f, a) => tcs.SetResult(a));
 
 			return tcs.Task;
