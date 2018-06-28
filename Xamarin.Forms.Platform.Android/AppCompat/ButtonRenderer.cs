@@ -20,6 +20,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		ButtonBackgroundTracker _backgroundTracker;
 		TextColorSwitcher _textColorSwitcher;
 		float _defaultFontSize;
+		Thickness? _defaultPadding;
 		Typeface _defaultTypeface;
 		bool _isDisposed;
 		int _imageHeight = -1;
@@ -128,6 +129,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					_backgroundTracker = new ButtonBackgroundTracker(Element, Control);
 				else
 					_backgroundTracker.Button = e.NewElement;
+
+				_defaultFontSize = 0f;
+				_defaultPadding = null;
 
 				UpdateAll();
 			}
@@ -287,15 +291,30 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void UpdatePadding()
 		{
-			if (!Element.IsSet(Button.PaddingProperty))
+			if (Control == null)
 				return;
 
-			Control?.SetPadding(
-				(int)(Context.ToPixels(Element.Padding.Left) + _paddingDeltaPix.Left),
-				(int)(Context.ToPixels(Element.Padding.Top) + _paddingDeltaPix.Top),
-				(int)(Context.ToPixels(Element.Padding.Right) + _paddingDeltaPix.Right),
-				(int)(Context.ToPixels(Element.Padding.Bottom) + _paddingDeltaPix.Bottom)
-			);
+			if (!_defaultPadding.HasValue)
+				_defaultPadding = new Thickness(Control.PaddingLeft, Control.PaddingTop, Control.PaddingRight, Control.PaddingBottom);
+
+			if (Element.IsSet(Button.PaddingProperty))
+			{
+				Control.SetPadding(
+					(int)(Context.ToPixels(Element.Padding.Left) + _paddingDeltaPix.Left),
+					(int)(Context.ToPixels(Element.Padding.Top) + _paddingDeltaPix.Top),
+					(int)(Context.ToPixels(Element.Padding.Right) + _paddingDeltaPix.Right),
+					(int)(Context.ToPixels(Element.Padding.Bottom) + _paddingDeltaPix.Bottom)
+				);
+			}
+			else
+			{
+				Control.SetPadding(
+						(int)_defaultPadding.Value.Left,
+						(int)_defaultPadding.Value.Top,
+						(int)_defaultPadding.Value.Right,
+						(int)_defaultPadding.Value.Bottom
+					);
+			}
 		}
 
 		void UpdateContentEdge(Thickness? delta = null)
