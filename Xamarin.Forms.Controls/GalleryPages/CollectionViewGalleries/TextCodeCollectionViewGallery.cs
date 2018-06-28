@@ -40,6 +40,7 @@
 				}
 			};
 
+			// TODO hartez 2018/06/28 10:04:12 Current boggle: the image renderer is growing the image wayyyy outside of its heigt/width requests in the horizontal list	
 			var itemTemplate = new DataTemplate(() =>
 			{
 				var view = new Image

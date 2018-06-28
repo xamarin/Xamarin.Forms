@@ -52,6 +52,8 @@
 						descriptionLabel,
 						GalleryBuilder.NavButton("Vertical List (Code)", () => 
 							new TemplateCodeCollectionViewGallery(ListItemsLayout.VerticalList), Navigation),
+						GalleryBuilder.NavButton("Horizontal List (Code)", () => 
+							new TemplateCodeCollectionViewGallery(ListItemsLayout.HorizontalList), Navigation),
 					}
 				}
 			};

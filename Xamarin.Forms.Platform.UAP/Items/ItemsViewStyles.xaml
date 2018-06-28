@@ -20,18 +20,13 @@
 	</ItemsPanelTemplate>
 
 	<DataTemplate x:Key="ItemsViewDefaultTemplate">
-		<local:FormsContentControl x:Name="FormsContentControl">
-			<StackPanel>
-				
-				<TextBlock Text="{Binding FormsDataTemplate}"></TextBlock>
-				<TextBlock Text="{Binding Item}"></TextBlock>
-
-			</StackPanel>
+		<local:FormsContentControl x:Name="FormsContentControl" 
+									FormsDataTemplate="{Binding FormsDataTemplate}" FormsDataContext="{Binding Item}">
 			
 		</local:FormsContentControl>
 	</DataTemplate>
 	
-	<Style TargetType="local:FormsContentControl">
+	<Style TargetType="local:FormsContentControl" >
 		<Setter Property="HorizontalContentAlignment" Value="Left"/>
 		<Setter Property="VerticalContentAlignment" Value="Top"/>
 		<Setter Property="Template">
