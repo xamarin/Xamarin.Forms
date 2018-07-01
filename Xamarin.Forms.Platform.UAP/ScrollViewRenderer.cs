@@ -195,6 +195,10 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateOrientation()
 		{
+			//Only update the horizontal scroll bar visibility if the user has not set a desired state.
+			if (Element.HorizontalScrollBarVisibility != ScrollBarVisibility.Default)
+				return;
+
 			if (Element.Orientation == ScrollOrientation.Horizontal || Element.Orientation == ScrollOrientation.Both)
 			{
 				Control.HorizontalScrollBarVisibility = UwpScrollBarVisibility.Auto;
