@@ -199,7 +199,8 @@ namespace Xamarin.Forms.Platform.UWP
 			if (Element.HorizontalScrollBarVisibility != ScrollBarVisibility.Default)
 				return;
 
-			if (Element.Orientation == ScrollOrientation.Horizontal || Element.Orientation == ScrollOrientation.Both)
+			var orientation = Element.Orientation;
+			if (orientation == ScrollOrientation.Horizontal || orientation == ScrollOrientation.Both)
 			{
 				Control.HorizontalScrollBarVisibility = UwpScrollBarVisibility.Auto;
 			}
@@ -231,9 +232,17 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateHorizontalScrollBarVisibility()
 		{
+			var horizontalVisibility = Element.HorizontalScrollBarVisibility;
+
+			if (horizontalVisibility == ScrollBarVisibility.Default)
+			{
+				UpdateOrientation();
+				return;
+			}
+
 			var orientation = Element.Orientation;
 			if (orientation == ScrollOrientation.Horizontal || orientation == ScrollOrientation.Both)
-				Control.HorizontalScrollBarVisibility = ScrollBarVisibilityToUwp(Element.HorizontalScrollBarVisibility);
+				Control.HorizontalScrollBarVisibility = ScrollBarVisibilityToUwp(horizontalVisibility);
 		}
 	}
 }
