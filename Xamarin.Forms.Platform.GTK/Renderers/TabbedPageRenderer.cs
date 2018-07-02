@@ -11,8 +11,8 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 {
 	public class TabbedPageRenderer : AbstractPageRenderer<NotebookWrapper, TabbedPage>
 	{
-		private const int DefaultIconWidth = 24;
-		private const int DefaultIconHeight = 24;
+		const int DefaultIconWidth = 24;
+		const int DefaultIconHeight = 24;
 
 		protected override void OnElementChanged(VisualElementChangedEventArgs e)
 		{
@@ -43,7 +43,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 			}
 		}
 
-		private void Init()
+		void Init()
 		{
 			OnPagesChanged(Page.Children,
 				  new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
@@ -104,7 +104,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 			base.Dispose(disposing);
 		}
 
-		private void OnPagesChanged(object sender, NotifyCollectionChangedEventArgs e)
+		void OnPagesChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			Widget.NoteBook.SwitchPage -= OnNotebookPageSwitched;
 
@@ -119,17 +119,17 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 			Widget.NoteBook.SwitchPage += OnNotebookPageSwitched;
 		}
 
-		private void OnPageAdded(object sender, ElementEventArgs e)
+		void OnPageAdded(object sender, ElementEventArgs e)
 		{
 			InsertPage(e.Element as Page, Page.Children.IndexOf(e.Element));
 		}
 
-		private void OnPageRemoved(object sender, ElementEventArgs e)
+		void OnPageRemoved(object sender, ElementEventArgs e)
 		{
 			RemovePage(e.Element as Page);
 		}
 
-		private void InsertPage(Page page, int index)
+		void InsertPage(Page page, int index)
 		{
 			var pageRenderer = Platform.GetRenderer(page);
 
@@ -150,7 +150,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 			page.PropertyChanged += OnPagePropertyChanged;
 		}
 
-		private void RemovePage(Page page)
+		void RemovePage(Page page)
 		{
 			page.PropertyChanged -= OnPagePropertyChanged;
 
@@ -164,7 +164,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 			Platform.SetRenderer(page, null);
 		}
 
-		private void ResetPages()
+		void ResetPages()
 		{
 			foreach (var page in Page.Children)
 				RemovePage(page);
@@ -176,7 +176,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 				InsertPage(page, i++);
 		}
 
-		private void OnPagePropertyChanged(object sender, PropertyChangedEventArgs e)
+		void OnPagePropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == Xamarin.Forms.Page.TitleProperty.PropertyName)
 			{
@@ -199,7 +199,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 				UpdateBarTextColor();
 		}
 
-		private void UpdateCurrentPage()
+		void UpdateCurrentPage()
 		{
 			Page page = Page.CurrentPage;
 
@@ -222,7 +222,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 			Widget.NoteBook.ShowAll();
 		}
 
-		private void UpdateChildrenOrderIndex()
+		void UpdateChildrenOrderIndex()
 		{
 			for (var i = 0; i < Page.Children.Count; i++)
 			{
@@ -232,7 +232,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 			}
 		}
 
-		private void UpdateBarBackgroundColor()
+		void UpdateBarBackgroundColor()
 		{
 			if (Element == null || Page.BarBackgroundColor.IsDefault)
 				return;
@@ -245,7 +245,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 			}
 		}
 
-		private void UpdateBarTextColor()
+		void UpdateBarTextColor()
 		{
 			if (Element == null || Page.BarTextColor.IsDefault)
 				return;
@@ -258,7 +258,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 			}
 		}
 
-		private void UpdateTabPos() // Platform-Specific Functionality
+		void UpdateTabPos() // Platform-Specific Functionality
 		{
 			var tabposition = Page.OnThisPlatform().GetTabPosition();
 
@@ -273,7 +273,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 			}
 		}
 
-		private void OnNotebookPageSwitched(object o, SwitchPageArgs args)
+		void OnNotebookPageSwitched(object o, SwitchPageArgs args)
 		{
 			var currentPageIndex = (int)args.PageNum;
 			VisualElement currentSelectedChild = Page.Children.Count > currentPageIndex
