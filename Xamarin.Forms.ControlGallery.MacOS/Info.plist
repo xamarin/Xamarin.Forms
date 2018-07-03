@@ -23,7 +23,7 @@
 	<key>NSHumanReadableCopyright</key>
 	<string>rmarinho</string>
 	<key>NSPrincipalClass</key>
-	<string>NSApplication</string>
+	<string>FormsApplication</string>
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/AppIcons.appiconset</string>
 	<key>LSApplicationCategoryType</key>
