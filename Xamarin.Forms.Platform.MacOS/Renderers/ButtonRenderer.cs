@@ -31,8 +31,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			var formsButton = Control as FormsNSButton;
 			if (formsButton != null)
 			{
-				formsButton.Pressed -= Btn_Pressed;
-				formsButton.Released -= Btn_Released;
+				formsButton.Pressed -= HandleButtonPressed;
+				formsButton.Released -= HandleButtonReleased;
 			}
 
 			base.Dispose(disposing);
@@ -48,8 +48,8 @@ namespace Xamarin.Forms.Platform.MacOS
 				{
 					var btn = new FormsNSButton();
 					btn.SetButtonType(NSButtonType.MomentaryPushIn);
-					btn.Pressed += Btn_Pressed;
-					btn.Released += Btn_Released;
+					btn.Pressed += HandleButtonPressed;
+					btn.Released += HandleButtonReleased;
 					SetNativeControl(btn);
 
 					Control.Activated += OnButtonActivated;
@@ -152,14 +152,14 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 		}
 
-		void Btn_Pressed()
+		void HandleButtonPressed()
 		{
-			Element.SendPressed();
+			Element?.SendPressed();
 		}
 
-		void Btn_Released()
+		void HandleButtonReleased()
 		{
-			Element.SendReleased();
+			Element?.SendReleased();
 		}
 
 	}
