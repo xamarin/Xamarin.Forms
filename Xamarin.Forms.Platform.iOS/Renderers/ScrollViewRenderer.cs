@@ -213,8 +213,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnNativeControlUpdated(object sender, EventArgs eventArgs)
 		{
-			ContentSize = Bounds.Size;
-			UpdateContentSize();
+			if (((ScrollView)Element).ContentSize.IsZero)
+				ContentSize = Bounds.Size;
+			else
+				UpdateContentSize();
 		}
 
 		void OnScrollToRequested(object sender, ScrollToRequestedEventArgs e)
