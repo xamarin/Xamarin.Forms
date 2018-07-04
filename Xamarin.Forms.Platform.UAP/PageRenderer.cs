@@ -8,8 +8,6 @@ namespace Xamarin.Forms.Platform.UWP
 	{
 		bool _disposed;
 
-		bool _loaded;
-
 		protected override AutomationPeer OnCreateAutomationPeer()
 		{
 			// Pages need an automation peer so we can interact with them in automated tests
@@ -47,7 +45,6 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				if (e.OldElement == null)
 				{
-					Loaded += OnLoaded;
 					Tracker = new BackgroundTracker<FrameworkElement>(BackgroundProperty);
 				}
 
@@ -55,29 +52,31 @@ namespace Xamarin.Forms.Platform.UWP
 				{
 					SetAutomationId(Element.AutomationId);
 				}
-
-				if (_loaded)
-					e.NewElement.SendAppearing();
 			}
 		}
 
-		void OnLoaded(object sender, RoutedEventArgs args)
+		public override void OnLoading(FrameworkElement sender, object args)
 		{
+			base.OnLoading(sender, args);
+			Element?.SendAppearing();
+		}
+
+		public override void OnLoaded(object sender, RoutedEventArgs args)
+		{
+			base.OnLoaded(sender, args);
 			var carouselPage = Element?.Parent as CarouselPage;
 			if (carouselPage != null && carouselPage.Children[0] != Element)
 			{
 				return;
 			}
-			_loaded = true;
-			Unloaded += OnUnloaded;
-			Element?.SendAppearing();
+			Element?.SendAppeared();
 		}
 
-		void OnUnloaded(object sender, RoutedEventArgs args)
+		public override void OnUnloaded(object sender, RoutedEventArgs args)
 		{
-			Unloaded -= OnUnloaded;
-			_loaded = false;
-			Element?.SendDisappearing();
+			Element?.SendDisappeared();
+
+			base.OnUnloaded(sender, args);
 		}
 	}
 }

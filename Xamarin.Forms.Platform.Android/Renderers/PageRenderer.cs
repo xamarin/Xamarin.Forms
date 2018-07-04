@@ -15,6 +15,9 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public class PageRenderer : VisualElementRenderer<Page>, IOrderedTraversalController
 	{
+		bool _appeared;
+		bool _appearing;
+
 		public PageRenderer(Context context) : base(context)
 		{
 		}
@@ -40,26 +43,54 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void Dispose(bool disposing)
 		{
-			PageController?.SendDisappearing();
+			if (disposing)
+			{
+				if(_appearing)
+					PageController.SendDisappearing();
+				_appearing = false;
+
+				if (_appeared)
+					PageController.SendDisappeared();
+				_appeared = false;
+			}
 			base.Dispose(disposing);
 		}
 
 		protected override void OnAttachedToWindow()
 		{
 			base.OnAttachedToWindow();
+
+			if (!_appearing)
+				PageController.SendAppearing();
+			_appearing = true;
+
 			var pageContainer = Parent as PageContainer;
 			if (pageContainer != null && (pageContainer.IsInFragment || pageContainer.Visibility == ViewStates.Gone))
 				return;
-			PageController.SendAppearing();
+		}
+
+		public override void OnGlobalLayout(object sender, EventArgs e)
+		{
+			base.OnGlobalLayout(sender, e);
+
+			if (!_appeared)
+			{
+				PageController?.SendAppeared();
+				_appeared = true;
+			}
 		}
 
 		protected override void OnDetachedFromWindow()
 		{
 			base.OnDetachedFromWindow();
+
+			if (_appeared)
+				PageController.SendDisappeared();
+			_appeared = false;
+
 			var pageContainer = Parent as PageContainer;
 			if (pageContainer != null && pageContainer.IsInFragment)
 				return;
-			PageController.SendDisappearing();
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Page> e)

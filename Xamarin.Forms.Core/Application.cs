@@ -333,6 +333,12 @@ namespace Xamarin.Forms
 		internal void OnPageDisappearing(Page page)
 			=> PageDisappearing?.Invoke(this, page);
 
+		internal void OnPageAppeared(Page page)
+			=> PageAppearing?.Invoke(this, page);
+
+		internal void OnPageDisappeared(Page page)
+			=> PageDisappearing?.Invoke(this, page);
+
 		void OnModalPopped(Page modalPage)
 			=> ModalPopped?.Invoke(this, new ModalPoppedEventArgs(modalPage));
 

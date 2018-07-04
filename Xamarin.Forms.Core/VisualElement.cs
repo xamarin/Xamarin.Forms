@@ -266,6 +266,45 @@ namespace Xamarin.Forms
 
 		LayoutConstraint _selfConstraint;
 
+		public event EventHandler Loaded;
+
+		public event EventHandler Unloaded;
+
+		public event EventHandler BeforeAppearing;
+
+		protected virtual void OnLoaded()
+		{
+		}
+
+		protected virtual void OnUnloaded()
+		{
+		}
+
+		protected virtual void OnBeforeAppearing()
+		{
+		}
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void SendLoaded()
+		{
+			OnLoaded();
+			Loaded?.Invoke(this, EventArgs.Empty);
+		}
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void SendUnloaded()
+		{
+			OnUnloaded();
+			Unloaded?.Invoke(this, EventArgs.Empty);
+		}
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void SendBeforeAppearing()
+		{
+			OnBeforeAppearing();
+			BeforeAppearing?.Invoke(this, EventArgs.Empty);
+		}
+
 		internal VisualElement()
 		{
 			

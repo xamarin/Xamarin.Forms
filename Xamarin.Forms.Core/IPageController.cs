@@ -13,5 +13,9 @@ namespace Xamarin.Forms
 		void SendAppearing();
 
 		void SendDisappearing();
+
+		void SendAppeared();
+
+		void SendDisappeared();
 	}
 }

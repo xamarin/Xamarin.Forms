@@ -28,6 +28,8 @@ namespace Xamarin.Forms.Platform.UWP
 		VisualElementTracker<TElement, TNativeElement> _tracker;
 		Windows.UI.Xaml.Controls.Page _containingPage; // Cache of containing page used for unfocusing
 		Control _control => Control as Control;
+		bool _firstSetElement = true;
+		bool _loaded;
 
 		Canvas _backgroundLayer;
 
@@ -151,6 +153,14 @@ namespace Xamarin.Forms.Platform.UWP
 				if (Packager != null)
 					Packager.Load();
 				//};
+
+				if (_firstSetElement)
+				{
+					Loading += OnLoading;
+					Loaded += OnLoaded;
+					Unloaded += OnUnloaded;
+					_firstSetElement = false;
+				}
 			}
 
 			OnElementChanged(new ElementChangedEventArgs<TElement>(oldElement, Element));
@@ -178,6 +188,23 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (e.OriginalSource == Control)
 				FocusManager.TryMoveFocus(focusDirection != FocusNavigationDirection.None ? focusDirection : FocusNavigationDirection.Next);
+		}
+
+		public virtual void OnLoading(FrameworkElement sender, object args) => Element?.SendBeforeAppearing();
+
+		public virtual void OnLoaded(object sender, RoutedEventArgs e)
+		{
+			if (!_loaded && !_disposed)
+			{
+				Element.SendLoaded();
+				_loaded = true;
+			}
+		}
+
+		public virtual void OnUnloaded(object sender, RoutedEventArgs e)
+		{
+			_loaded = false;
+			Element?.SendUnloaded();
 		}
 
 		public event EventHandler<ElementChangedEventArgs<TElement>> ElementChanged;
@@ -281,6 +308,11 @@ namespace Xamarin.Forms.Platform.UWP
 				_control.GotFocus -= OnGotFocus;
 				_control.GettingFocus -= OnGettingFocus;
 			}
+			if (_loaded)
+				OnUnloaded(Control, new RoutedEventArgs());
+			Unloaded -= OnUnloaded;
+			_loaded = false;
+
 			SetNativeControl(null);
 			SetElement(null);
 		}

@@ -10,6 +10,7 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class PageRenderer : UIViewController, IVisualElementRenderer, IEffectControlProvider, IAccessibilityElementsController
 	{
+		bool _appearing;
 		bool _appeared;
 		bool _disposed;
 		EventTracker _events;
@@ -162,6 +163,20 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public UIViewController ViewController => _disposed ? null : this;
 
+		public override void ViewWillAppear (bool animated)
+		{
+			if (!_appearing && !_disposed)
+				Page.SendBeforeAppearing();
+
+			base.ViewWillAppear (animated);
+
+			if (_appearing || _disposed)
+				return;
+
+			_appearing = true;
+			Page.SendAppearing();
+		}
+
 		public override void ViewDidAppear(bool animated)
 		{
 			base.ViewDidAppear(animated);
@@ -170,6 +185,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			_appeared = true;
+			Page.SendAppeared();
 			UpdateStatusBarPrefersHidden();
 			if(Forms.IsiOS11OrNewer)
 				SetNeedsUpdateOfHomeIndicatorAutoHidden();
@@ -192,7 +208,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Element.Parent is CarouselPage)
 				return;
 
-			Page.SendDisappearing();
+			Page.SendDisappeared();
 		}
 
 		public override void ViewDidLoad()
@@ -222,12 +238,14 @@ namespace Xamarin.Forms.Platform.iOS
 			_events.LoadEvents(NativeView);
 
 			Element.SendViewInitialized(NativeView);
+			Element.SendLoaded();
 		}
 
 		public override void ViewWillDisappear(bool animated)
 		{
 			base.ViewWillDisappear(animated);
-
+			_appearing = false;
+			Page.SendDisappearing ();
 			NativeView?.Window?.EndEditing(true);
 		}
 
@@ -237,8 +255,13 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				Element.PropertyChanged -= OnHandlePropertyChanged;
 				Platform.SetRenderer(Element, null);
-				if (_appeared)
+				if (_appearing)
 					Page.SendDisappearing();
+
+				_appearing = false;
+
+				if (_appeared)
+					Page.SendDisappeared();
 
 				_appeared = false;
 
@@ -260,6 +283,7 @@ namespace Xamarin.Forms.Platform.iOS
 					_tracker = null;
 				}
 
+				Element.SendUnloaded ();
 				Element = null;
 				Container?.Dispose();
 				_disposed = true;

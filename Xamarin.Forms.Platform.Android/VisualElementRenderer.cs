@@ -8,6 +8,7 @@ using AView = Android.Views.View;
 using Xamarin.Forms.Platform.Android.FastRenderers;
 using Android.Runtime;
 using Android.Support.V4.View;
+using Android.Graphics;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -22,6 +23,8 @@ namespace Xamarin.Forms.Platform.Android
 		bool? _defaultFocusable;
 		string _defaultHint;
 		bool _cascadeInputTransparent = true;
+		bool _loaded;
+		bool _disposed;
 
 		VisualElementPackager _packager;
 		PropertyChangedEventHandler _propertyChangeHandler;
@@ -31,6 +34,7 @@ namespace Xamarin.Forms.Platform.Android
 		protected VisualElementRenderer(Context context) : base(context)
 		{
 			_gestureManager = new GestureManager(this);
+			ViewTreeObserver.GlobalLayout += OnGlobalLayout;
 		}
 
 		public override bool OnTouchEvent(MotionEvent e)
@@ -259,6 +263,28 @@ namespace Xamarin.Forms.Platform.Android
 			Performance.Stop(reference);
 		}
 
+		protected override void OnAttachedToWindow()
+		{
+			Element?.SendBeforeAppearing();
+			base.OnAttachedToWindow();
+		}
+
+		protected override void OnDetachedFromWindow()
+		{
+			base.OnDetachedFromWindow();
+			_loaded = false;
+			Element?.SendUnloaded();
+		}
+
+		public virtual void OnGlobalLayout(object sender, EventArgs e)
+		{
+			if (!_loaded && !_disposed)
+			{
+				Element.SendLoaded();
+				_loaded = true;
+			}
+		}
+
 		/// <summary>
 		/// Determines whether the native control is disposed of when this renderer is disposed
 		/// Can be overridden in deriving classes 
@@ -271,12 +297,15 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			_flags |= VisualElementRendererFlags.Disposed;
 
-			if (disposing)
+			if (disposing && !_disposed)
 			{
 				SetOnClickListener(null);
 				SetOnTouchListener(null);
 
 				EffectUtilities.UnregisterEffectControlProvider(this, Element);
+
+				if (_loaded)
+					Element.SendUnloaded();
 
 				if (Tracker != null)
 				{
@@ -315,6 +344,7 @@ namespace Xamarin.Forms.Platform.Android
 
 					Element = null;
 				}
+				_disposed = true;
 			}
 
 			base.Dispose(disposing);

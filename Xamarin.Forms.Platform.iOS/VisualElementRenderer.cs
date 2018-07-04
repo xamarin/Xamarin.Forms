@@ -4,6 +4,7 @@ using System.ComponentModel;
 using RectangleF = CoreGraphics.CGRect;
 using SizeF = CoreGraphics.CGSize;
 using Xamarin.Forms.Internals;
+using CoreGraphics;
 
 #if __MOBILE__
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
@@ -42,6 +43,8 @@ namespace Xamarin.Forms.Platform.MacOS
 		string _defaultAccessibilityLabel;
 		string _defaultAccessibilityHint;
 		bool? _defaultIsAccessibilityElement;
+		bool _beforeAppearing;
+		bool _loaded;
 #endif
 		EventTracker _events;
 
@@ -292,6 +295,29 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 
 #if __MOBILE__
+		public override void MovedToWindow ()
+		{
+			base.MovedToWindow ();
+
+			if (Window != null && !_loaded) {
+				Element.SendLoaded ();
+				_loaded = true;
+			} else if (Window == null && _loaded) {
+				Element.SendUnloaded ();
+				_loaded = false;
+			}
+		}
+
+		public override void WillMoveToWindow (UIWindow window)
+		{
+			base.WillMoveToWindow (window);
+
+			if (!_beforeAppearing && Element != null) {
+				Element.SendBeforeAppearing ();
+				_beforeAppearing = true;
+			}
+		}
+
 		public override SizeF SizeThatFits(SizeF size)
 		{
 			return new SizeF(0, 0);
