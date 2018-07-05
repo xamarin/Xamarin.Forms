@@ -225,10 +225,10 @@ namespace Xamarin.Forms
 			SizeRequest sizeRequest;
 			Rectangle bounds = GetLayoutBounds(view);
 			AbsoluteLayoutFlags absFlags = GetLayoutFlags(view);
-			bool widthIsProportional = (absFlags & AbsoluteLayoutFlags.WidthProportional) != 0;
-			bool heightIsProportional = (absFlags & AbsoluteLayoutFlags.HeightProportional) != 0;
-			bool xIsProportional = (absFlags & AbsoluteLayoutFlags.XProportional) != 0;
-			bool yIsProportional = (absFlags & AbsoluteLayoutFlags.YProportional) != 0;
+			bool widthIsProportional = absFlags.HasFlag(AbsoluteLayoutFlags.WidthProportional);
+			bool heightIsProportional = absFlags.HasFlag(AbsoluteLayoutFlags.HeightProportional);
+			bool xIsProportional = absFlags.HasFlag(AbsoluteLayoutFlags.XProportional);
+			bool yIsProportional = absFlags.HasFlag(AbsoluteLayoutFlags.YProportional);
 
 			if (widthIsProportional)
 			{
@@ -250,25 +250,19 @@ namespace Xamarin.Forms
 
 			if (!widthIsProportional && bounds.Width == AutoSize)
 			{
+				sizeRequest = view.Measure(region.Width, region.Height, MeasureFlags.IncludeMargins);
+				result.Width = sizeRequest.Request.Width > 0 ? sizeRequest.Request.Width : region.Width;
 				if (!heightIsProportional && bounds.Width == AutoSize)
 				{
 					// Width and Height are auto
-					sizeRequest = view.Measure(region.Width, region.Height, MeasureFlags.IncludeMargins);
-					result.Width = sizeRequest.Request.Width;
-					result.Height = sizeRequest.Request.Height;
-				}
-				else
-				{
-					// Only width is auto
-					sizeRequest = view.Measure(region.Width, result.Height, MeasureFlags.IncludeMargins);
-					result.Width = sizeRequest.Request.Width;
+					result.Height = sizeRequest.Request.Height > 0 ? sizeRequest.Request.Height : region.Height;
 				}
 			}
 			else if (!heightIsProportional && bounds.Height == AutoSize)
 			{
 				// Only height is auto
 				sizeRequest = view.Measure(result.Width, region.Height, MeasureFlags.IncludeMargins);
-				result.Height = sizeRequest.Request.Height;
+				result.Height = sizeRequest.Request.Height > 0 ? sizeRequest.Request.Height : region.Height;
 			}
 
 			if (xIsProportional)
