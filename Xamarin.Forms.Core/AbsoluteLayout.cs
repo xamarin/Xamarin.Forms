@@ -225,10 +225,10 @@ namespace Xamarin.Forms
 			SizeRequest sizeRequest;
 			Rectangle bounds = GetLayoutBounds(view);
 			AbsoluteLayoutFlags absFlags = GetLayoutFlags(view);
-			bool widthIsProportional = absFlags.HasFlag(AbsoluteLayoutFlags.WidthProportional);
-			bool heightIsProportional = absFlags.HasFlag(AbsoluteLayoutFlags.HeightProportional);
-			bool xIsProportional = absFlags.HasFlag(AbsoluteLayoutFlags.XProportional);
-			bool yIsProportional = absFlags.HasFlag(AbsoluteLayoutFlags.YProportional);
+			bool widthIsProportional = (absFlags & AbsoluteLayoutFlags.WidthProportional) != 0;
+			bool heightIsProportional = (absFlags & AbsoluteLayoutFlags.HeightProportional) != 0;
+			bool xIsProportional = (absFlags & AbsoluteLayoutFlags.XProportional) != 0;
+			bool yIsProportional = (absFlags & AbsoluteLayoutFlags.YProportional) != 0;
 
 			if (widthIsProportional)
 			{
