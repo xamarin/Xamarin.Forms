@@ -213,10 +213,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnNativeControlUpdated(object sender, EventArgs eventArgs)
 		{
-			if (((ScrollView)Element).ContentSize.IsZero)
-				ContentSize = Bounds.Size;
-			else
-				UpdateContentSize();
+			if (ScrollView != null)
+			{
+				if (ScrollView.ContentSize.IsZero)
+					ContentSize = Bounds.Size;
+				else
+					UpdateContentSize();
+			}
 		}
 
 		void OnScrollToRequested(object sender, ScrollToRequestedEventArgs e)
@@ -254,7 +257,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateDelaysContentTouches()
 		{
-			DelaysContentTouches = ((ScrollView)Element).OnThisPlatform().ShouldDelayContentTouches();
+			if (ScrollView != null)
+				DelaysContentTouches = ScrollView.OnThisPlatform().ShouldDelayContentTouches();
 		}
 
 		void UpdateBackgroundColor()
@@ -264,9 +268,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateContentSize()
 		{
-			var contentSize = ((ScrollView)Element).ContentSize.ToSizeF();
-			if (!contentSize.IsEmpty)
-				ContentSize = contentSize;
+			if (ScrollView != null)
+			{
+				var contentSize = ScrollView.ContentSize.ToSizeF();
+				if (!contentSize.IsEmpty)
+					ContentSize = contentSize;
+			}
 		}
 
 		void UpdateScrollPosition()
