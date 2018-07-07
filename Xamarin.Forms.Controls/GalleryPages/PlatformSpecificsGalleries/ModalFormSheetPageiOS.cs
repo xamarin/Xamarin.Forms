@@ -1,5 +1,4 @@
-﻿using System;
-using Xamarin.Forms.PlatformConfiguration;
+﻿using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 
 namespace Xamarin.Forms.Controls.GalleryPages.PlatformSpecificsGalleries
@@ -12,6 +11,17 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformSpecificsGalleries
 			BackgroundColor = Color.Azure;
 
 			On<iOS>().SetModalPresentationStyle(UIModalPresentationStyle.FormSheet);
+
+			var restoreButton = new Button { Text = "Back To Gallery" };
+			restoreButton.Clicked += (sender, args) => Navigation.PopModalAsync();
+
+			Content = new StackLayout
+			{
+				Children =
+				{
+					restoreButton
+				}
+			};
 		}
 	}
 }

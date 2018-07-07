@@ -40,10 +40,7 @@ namespace Xamarin.Forms.Controls
 			entryAndroidButton.Clicked += (sender, args) => { Navigation.PushAsync(new EntryPageAndroid()); };
 			largeTitlesiOSButton.Clicked += (sender, args) => { Navigation.PushAsync(new LargeTitlesPageiOS(new Command(RestoreOriginal))); };
 			safeareaiOSButton.Clicked += (sender, args) => { SetRoot(new SafeAreaPageiOS(new Command(RestoreOriginal), new Command<Page>(p => SetRoot(p)))); };
-			modalformsheetiOSButton.Clicked += async (sender, args) => 
-			{
-				var page = new ModalFormSheetPageiOS();
-				await Navigation.PushModalAsync(page); };
+			modalformsheetiOSButton.Clicked += async (sender, args) => { await Navigation.PushModalAsync(new ModalFormSheetPageiOS()); };
 
 			Content = new ScrollView
 			{
