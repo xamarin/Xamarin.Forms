@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public static class ResourceManager
 	{
-		public static Type DrawableClass { get; set; }
+		public static Type[] DrawableClasses { get; set; }
 
 		public static Type ResourceClass { get; set; }
 
@@ -63,19 +63,19 @@ namespace Xamarin.Forms.Platform.Android
 
 		public static Bitmap GetBitmap(this Resources resource, string name)
 		{
-			return BitmapFactory.DecodeResource(resource, IdFromTitle(name, DrawableClass));
+			return BitmapFactory.DecodeResource(resource, IdFromTitle(name, DrawableClasses));
 		}
 
 		public static Task<Bitmap> GetBitmapAsync(this Resources resource, string name)
 		{
-			return BitmapFactory.DecodeResourceAsync(resource, IdFromTitle(name, DrawableClass));
+			return BitmapFactory.DecodeResourceAsync(resource, IdFromTitle(name, DrawableClasses));
 		}
 
 		[Obsolete("GetDrawable(this Resources, string) is obsolete as of version 2.5. "
 			+ "Please use GetDrawable(this Context, string) instead.")]
 		public static Drawable GetDrawable(this Resources resource, string name)
 		{
-			int id = IdFromTitle(name, DrawableClass);
+			int id = IdFromTitle(name, DrawableClasses);
 			if (id == 0)
 			{
 				Log.Warning("Could not load image named: {0}", name);
@@ -87,7 +87,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public static Drawable GetDrawable(this Context context, string name)
 		{
-			int id = IdFromTitle(name, DrawableClass);
+			int id = IdFromTitle(name, DrawableClasses);
 			if (id == 0)
 			{
 				Log.Warning("Could not load image named: {0}", name);
@@ -99,7 +99,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public static int GetDrawableByName(string name)
 		{
-			return IdFromTitle(name, DrawableClass);
+			return IdFromTitle(name, DrawableClasses);
 		}
 
 		public static int GetResourceByName(string name)
@@ -114,17 +114,21 @@ namespace Xamarin.Forms.Platform.Android
 
 		public static void Init(Assembly masterAssembly)
 		{
-			DrawableClass = masterAssembly.GetTypes().FirstOrDefault(x => x.Name == "Drawable" || x.Name == "Resource_Drawable");
+			DrawableClasses = masterAssembly.GetTypes().Where(x => x.Name == "Drawable" || x.Name == "Mipmap").ToArray();
 			ResourceClass = masterAssembly.GetTypes().FirstOrDefault(x => x.Name == "Id" || x.Name == "Resource_Id");
 			StyleClass = masterAssembly.GetTypes().FirstOrDefault(x => x.Name == "Style" || x.Name == "Resource_Style");
 			
 		}
 
-		internal static int IdFromTitle(string title, Type type)
+		internal static int IdFromTitle(string title, params Type[] types)
 		{
 			string name = Path.GetFileNameWithoutExtension(title);
-			int id = GetId(type, name);
-			return id;
+			foreach (var type in types)
+			{
+				int id = GetId(type, name);
+				if (id > 0) return id; 
+			}
+			return 0;
 		}
 
 		static int GetId(Type type, string memberName)
