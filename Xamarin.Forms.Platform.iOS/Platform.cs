@@ -463,9 +463,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			var wrapper = new ModalWrapper(modalRenderer);
 
-			if (Device.Idiom == TargetIdiom.Tablet && modal.OnThisPlatform().ModalPresentationStyle() == PlatformConfiguration.iOSSpecific.UIModalPresentationStyle.FormSheet)
-				wrapper.ModalPresentationStyle = UIKit.UIModalPresentationStyle.FormSheet;
-
 			if (_modals.Count > 1)
 			{
 				var topPage = _modals[_modals.Count - 2];
