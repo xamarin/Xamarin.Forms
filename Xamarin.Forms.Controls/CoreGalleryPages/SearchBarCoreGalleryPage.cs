@@ -68,7 +68,7 @@ namespace Xamarin.Forms.Controls
 			var keyboardContainer = new ViewContainer<SearchBar>(Test.InputView.Keyboard,
 				new SearchBar { Keyboard = Keyboard.Numeric });
 
-			var maxLengthContainer = new ViewContainer<SearchBar>(Test.SearchBar.MaxLength, 
+			var maxLengthContainer = new ViewContainer<SearchBar>(Test.InputView.MaxLength, 
 				new SearchBar { MaxLength = 3 });
 
 			Add (placeholderContainer);

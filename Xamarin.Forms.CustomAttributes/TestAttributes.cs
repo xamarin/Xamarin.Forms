@@ -646,9 +646,7 @@ namespace Xamarin.Forms.CustomAttributes
 			PlaceholderAlignmentCenter,
 			PlaceholderAlignmentEnd,
 			TextColor,
-			PlaceholderColor,
-			Keyboard,
-			MaxLength
+			PlaceholderColor
 		}
 
 		public enum Slider {

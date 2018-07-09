@@ -310,7 +310,7 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.Text = currentControlText.Substring(0, Element.MaxLength);
 		}
 
-		private bool ShouldChangeText(UISearchBar searchBar, NSRange range, string text)
+		bool ShouldChangeText(UISearchBar searchBar, NSRange range, string text)
 		{
 			var newLength = searchBar?.Text?.Length + text.Length - range.Length;
 			return newLength <= Element?.MaxLength;
