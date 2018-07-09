@@ -126,7 +126,7 @@ namespace Xamarin.Forms.Platform.Android
 			foreach (var type in types)
 			{
 				int id = GetId(type, name);
-				if (id > 0) return id; 
+				if (id != 0) return id; 
 			}
 			return 0;
 		}
