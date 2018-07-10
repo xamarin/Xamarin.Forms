@@ -7,44 +7,44 @@ namespace Xamarin.Forms.Platform.Android
 	// This is a way to centralize all fragment modifications which makes it a lot easier to debug
 	internal static class FragmentManagerExtensions
 	{
-		public static FragmentTransaction RemoveEx(this FragmentTransaction @this, Fragment fragment)
+		public static FragmentTransaction RemoveEx(this FragmentTransaction fragmentTransaction, Fragment fragment)
 		{
-			return @this.Remove(fragment);
+			return fragmentTransaction.Remove(fragment);
 		}
 
-		public static FragmentTransaction AddEx(this FragmentTransaction @this, int containerViewId, Fragment fragment)
+		public static FragmentTransaction AddEx(this FragmentTransaction fragmentTransaction, int containerViewId, Fragment fragment)
 		{
-			return @this.Add(containerViewId, fragment);
+			return fragmentTransaction.Add(containerViewId, fragment);
 		}
 
-		public static FragmentTransaction HideEx(this FragmentTransaction @this, Fragment fragment)
+		public static FragmentTransaction HideEx(this FragmentTransaction fragmentTransaction, Fragment fragment)
 		{
-			return @this.Hide(fragment);
+			return fragmentTransaction.Hide(fragment);
 		}
 
-		public static FragmentTransaction ShowEx(this FragmentTransaction @this, Fragment fragment)
+		public static FragmentTransaction ShowEx(this FragmentTransaction fragmentTransaction, Fragment fragment)
 		{
-			return @this.Show(fragment);
+			return fragmentTransaction.Show(fragment);
 		}
 
-		public static FragmentTransaction SetTransitionEx(this FragmentTransaction @this, int transit)
+		public static FragmentTransaction SetTransitionEx(this FragmentTransaction fragmentTransaction, int transit)
 		{
-			return @this.SetTransition(transit);
+			return fragmentTransaction.SetTransition(transit);
 		}
 
-		public static int CommitAllowingStateLossEx(this FragmentTransaction @this)
+		public static int CommitAllowingStateLossEx(this FragmentTransaction fragmentTransaction)
 		{
-			return @this.CommitAllowingStateLoss();
+			return fragmentTransaction.CommitAllowingStateLoss();
 		}
 
-		public static bool ExecutePendingTransactionsEx(this FragmentManager @this)
+		public static bool ExecutePendingTransactionsEx(this FragmentManager fragmentTransaction)
 		{
-			return @this.ExecutePendingTransactions();
+			return fragmentTransaction.ExecutePendingTransactions();
 		}
 
-		public static FragmentTransaction BeginTransactionEx(this FragmentManager @this)
+		public static FragmentTransaction BeginTransactionEx(this FragmentManager fragmentTransaction)
 		{
-			return @this.BeginTransaction();
+			return fragmentTransaction.BeginTransaction();
 		}
 	}
 }

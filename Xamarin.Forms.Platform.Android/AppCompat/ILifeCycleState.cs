@@ -10,7 +10,7 @@ using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 
-namespace Xamarin.Forms.Internals
+namespace Xamarin.Forms.Platform.Android
 {
 	internal interface ILifeCycleState
 	{

@@ -65,7 +65,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 		// Various tests are commented out on certain platforms because
-		// they fail and there are issues already created to fix those
+		// https://github.com/xamarin/Xamarin.Forms/issues/3188
 		[Test]
 		public async Task SwapMainPageOut()
 		{
