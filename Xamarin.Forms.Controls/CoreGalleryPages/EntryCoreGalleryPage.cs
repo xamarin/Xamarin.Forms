@@ -24,6 +24,7 @@ namespace Xamarin.Forms.Controls
 			var textChangedContainer = new EventViewContainer<Entry> (Test.Entry.TextChanged, new Entry ());
 			textChangedContainer.View.TextChanged += (sender, args) => textChangedContainer.EventFired ();
 
+			var textFontContainer = new ViewContainer<Entry>(Test.Entry.Font, new Entry { Text = "Font", Font = Font.SystemFontOfSize(NamedSize.Large, FontAttributes.Bold)});
 			var textFontAttributesContainer = new ViewContainer<Entry> (Test.Entry.FontAttributes, new Entry { Text = "I have italic text", FontAttributes = FontAttributes.Italic });
 			var textFamilyContainer1 = new ViewContainer<Entry> (Test.Entry.FontFamily, new Entry { Text = "I have Comic Sans text in Win & Android", FontFamily = "Comic Sans MS" });
 			var textFamilyContainer2 = new ViewContainer<Entry> (Test.Entry.FontFamily, new Entry { Text = "I have bold Chalkboard text in iOS", FontFamily = "ChalkboardSE-Regular", FontAttributes = FontAttributes.Bold });
@@ -79,6 +80,7 @@ namespace Xamarin.Forms.Controls
 			Add (xAlignEndContainer);
 			Add (xAlignPlaceholderStart);
 			Add (xAlignStartContainer);
+			Add	(textFontContainer);
 			Add (textFontAttributesContainer);
 			Add (textFamilyContainer1);
 			Add (textFamilyContainer2);

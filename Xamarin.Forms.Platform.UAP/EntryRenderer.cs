@@ -86,6 +86,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateInputScope();
 			else if (e.PropertyName == Entry.IsTextPredictionEnabledProperty.PropertyName)
 				UpdateInputScope();
+			else if (e.PropertyName == Entry.FontProperty.PropertyName)
+				UpdateFont();
 			else if (e.PropertyName == Entry.FontAttributesProperty.PropertyName)
 				UpdateFont();
 			else if (e.PropertyName == Entry.FontFamilyProperty.PropertyName)
