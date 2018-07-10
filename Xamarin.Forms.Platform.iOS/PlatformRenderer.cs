@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Linq;
 using UIKit;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
