@@ -1,9 +1,7 @@
-﻿using System.Collections;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using Windows.Foundation;
-using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
@@ -12,154 +10,6 @@ using Xamarin.Forms.Platform.UAP;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	// TODO hartez 2018/06/28 09:08:55 This should really be named something like FormsItemControl/FormsItemsContentControl? Not sure yet.
-	public class FormsContentControl : ContentControl
-	{
-		public FormsContentControl()
-		{
-			DefaultStyleKey = typeof(FormsContentControl);
-		}
-
-		public static readonly DependencyProperty FormsDataTemplateProperty = DependencyProperty.Register(
-			"FormsDataTemplate", typeof(DataTemplate), typeof(FormsContentControl), new PropertyMetadata(default(DataTemplate), FormsDataTemplateChanged));
-
-		static void FormsDataTemplateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-		{
-			var formsContentControl = (FormsContentControl)d;
-			formsContentControl.RealizeFormsDataTemplate((DataTemplate)e.NewValue);
-		}
-
-		public DataTemplate FormsDataTemplate
-		{
-			get { return (DataTemplate)GetValue(FormsDataTemplateProperty); }
-			set { SetValue(FormsDataTemplateProperty, value); }
-		}
-
-		public static readonly DependencyProperty FormsDataContextProperty = DependencyProperty.Register(
-			"FormsDataContext", typeof(object), typeof(FormsContentControl), new PropertyMetadata(default(object), FormsDataContextChanged));
-
-		static void FormsDataContextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-		{
-			var formsContentControl = (FormsContentControl)d;
-			formsContentControl.SetFormsDataContext(e.NewValue);
-		}
-
-		public object FormsDataContext
-		{
-			get { return (object)GetValue(FormsDataContextProperty); }
-			set { SetValue(FormsDataContextProperty, value); }
-		}
-
-		//Windows.UI.Xaml.Controls.ContentPresenter _contentPresenter;
-
-		VisualElement _rootElement;
-
-		internal void RealizeFormsDataTemplate(DataTemplate template)
-		{
-			//if (_contentPresenter == null)
-			//{
-			//	return;
-			//}
-
-			var content = FormsDataTemplate.CreateContent();
-
-			if (content is VisualElement visualElement)
-			{
-				_rootElement = visualElement;
-				Content = visualElement.GetOrCreateRenderer().ContainerElement;
-			}
-
-			if (FormsDataContext != null)
-			{
-				SetFormsDataContext(FormsDataContext);
-			}
-		}
-
-		internal void SetFormsDataContext(object context)
-		{
-			if (_rootElement == null)
-			{
-				return;
-			}
-
-			BindableObject.SetInheritedBindingContext(_rootElement, context);
-		}
-
-		protected override void OnApplyTemplate()
-		{
-			base.OnApplyTemplate();
-
-			//_contentPresenter = (Windows.UI.Xaml.Controls.ContentPresenter)GetTemplateChild("ContentPresenter");
-		}
-
-		protected override Windows.Foundation.Size MeasureOverride(Windows.Foundation.Size availableSize)
-		{
-			if (_rootElement == null)
-			{
-				return base.MeasureOverride(availableSize);
-			}
-
-			Size request = _rootElement.Measure(availableSize.Width, availableSize.Height, MeasureFlags.IncludeMargins).Request;
-
-			_rootElement.Layout(new Rectangle(0,0, request.Width, request.Height));
-
-			return new Windows.Foundation.Size(request.Width, request.Height); 
-		}
-
-		//protected override Windows.Foundation.Size ArrangeOverride(Windows.Foundation.Size finalSize)
-		//{
-		//	_rootElement.IsInNativeLayout = true;
-		//	Layout.LayoutChildIntoBoundingRegion(_rootElement, new Rectangle(0, 0, finalSize.Width, finalSize.Height));
-		//	_rootElement.IsInNativeLayout = false;
-
-		//	FrameworkElement?.Arrange(new Rect(_rootElement.X, _rootElement.Y, _rootElement.Width, _rootElement.Height));
-		//	return finalSize;
-		//}
-	}
-
-	// TODO hartez 2018/06/25 21:10:06 Obviously this needs a better name	
-	internal class ItemsSourceThing : IEnumerable, IEnumerator
-	{
-		readonly DataTemplate _formsDataTemplate;
-		readonly IEnumerator _innerEnumerator;
-
-		public ItemsSourceThing(IEnumerable itemsSource, DataTemplate formsDataTemplate)
-		{
-			_formsDataTemplate = formsDataTemplate;
-			_innerEnumerator = itemsSource.GetEnumerator();
-		}
-
-		public IEnumerator GetEnumerator()
-		{
-			return this;
-		}
-
-		public bool MoveNext()
-		{
-			var moveNext = _innerEnumerator.MoveNext();
-
-			if (moveNext)
-			{
-				Current = new ItemTemplatePair() { FormsDataTemplate = _formsDataTemplate, Item = _innerEnumerator.Current };
-			}
-
-			return moveNext;
-		}
-
-		public void Reset()
-		{
-			_innerEnumerator.Reset();
-		}
-
-		public object Current { get; private set; }
-	}
-
-	internal class ItemTemplatePair
-	{
-		public DataTemplate FormsDataTemplate { get; set; }
-		public object Item { get; set; }
-	}
-
 	public class CollectionViewRenderer : ViewRenderer<CollectionView, ItemsControl>
 	{
 		IItemsLayout _layout;
@@ -218,7 +68,7 @@ namespace Xamarin.Forms.Platform.UWP
 			var itemTemplate = Element.ItemTemplate;
 			if (itemTemplate != null)
 			{
-				ItemsSourceThing sourceThing = new ItemsSourceThing(itemsSource, itemTemplate);
+				ItemTemplateEnumerator sourceThing = new ItemTemplateEnumerator(itemsSource, itemTemplate);
 				collectionViewSource = new CollectionViewSource
 				{
 					Source = sourceThing,

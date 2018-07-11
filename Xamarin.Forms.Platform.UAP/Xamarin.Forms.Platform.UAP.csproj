@@ -50,6 +50,7 @@
     <Compile Include="ColorExtensions.cs" />
     <Compile Include="FormsCancelButton.cs" />
     <Compile Include="AlertDialog.cs" />
+    <Compile Include="Items\FormsContentControl.cs" />
     <Compile Include="FormsPivot.cs" />
     <Compile Include="AlignmentExtensions.cs" />
     <Compile Include="BrushHelpers.cs" />
@@ -65,6 +66,8 @@
     <Compile Include="ITitleIconProvider.cs" />
     <Compile Include="ITitleViewProvider.cs" />
     <Compile Include="Items\FormsGridView.cs" />
+    <Compile Include="Items\ItemTemplateEnumerator.cs" />
+    <Compile Include="Items\ItemTemplatePair.cs" />
     <Compile Include="ITitleProvider.cs" />
     <Compile Include="IToolbarProvider.cs" />
     <Compile Include="IVisualNativeElementRenderer.cs" />

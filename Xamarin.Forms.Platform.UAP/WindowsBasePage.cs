@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		internal Platform Platform { get; private set; }
+		protected Platform Platform { get; private set; }
 
 		protected abstract Platform CreatePlatform();
 
