@@ -28,12 +28,14 @@ namespace Xamarin.Forms.Controls.GalleryPages.PerformanceGallery.Scenarios
 	[Preserve(AllMembers = true)]
 	internal class ImageScenario3 : PerformanceScenario
 	{
+		const int count = 5;
+
 		public ImageScenario3()
-		: base(".[Image] 100x AndroidResource")
+		: base($"[Image] {count}x AndroidResource")
 		{
 			var source = ImageSource.FromFile("bank.png");
 			var layout = new StackLayout();
-			for (int i = 0; i < 100; i++)
+			for (int i = 0; i < count; i++)
 			{
 				layout.Children.Add(new Image { Source = source, HeightRequest = 20 });
 			}
@@ -44,6 +46,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.PerformanceGallery.Scenarios
 	[Preserve(AllMembers = true)]
 	internal class ImageScenario4 : PerformanceScenario
 	{
+		const int count = 5;
 		static readonly string tempFile;
 
 		static ImageScenario4()
@@ -56,11 +59,11 @@ namespace Xamarin.Forms.Controls.GalleryPages.PerformanceGallery.Scenarios
 		}
 
 		public ImageScenario4()
-		: base(".[Image] 100x from disk")
+		: base($"[Image] {count}x from disk")
 		{
 			var source = ImageSource.FromFile(tempFile);
 			var layout = new StackLayout();
-			for (int i = 0; i < 100; i++)
+			for (int i = 0; i < count; i++)
 			{
 				layout.Children.Add(new Image { Source = source, HeightRequest = 20 });
 			}

@@ -47,9 +47,9 @@ namespace Xamarin.Forms.Platform.Android
 			}
 			else
 			{
-				int resource = ResourceManager.GetDrawableByName(file);
-				if (resource != 0)
-					imageView.SetImageResource(resource);
+				var drawable = ResourceManager.GetDrawable(imageView.Context, file);
+				if (drawable != null)
+					imageView.SetImageDrawable(drawable);
 				else
 					Log.Warning(nameof(FileImageSourceHandler), "Could not find image or image file was invalid: {0}", imagesource);
 			}
