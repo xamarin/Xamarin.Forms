@@ -128,6 +128,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UIImage image = null;
 			var filesource = imagesource as FileImageSource;
 			var file = filesource?.File;
+			file = System.Text.RegularExpressions.Regex.Replace(file, @"[\\/]", "_"); // pseudo folders
 			if (!string.IsNullOrEmpty(file))
 				image = File.Exists(file) ? new UIImage(file) : UIImage.FromBundle(file);
 

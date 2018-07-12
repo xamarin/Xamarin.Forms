@@ -378,6 +378,11 @@
       <Generator>MSBuild:UpdateGeneratedFiles</Generator>
     </TransformFile>
   </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\drawable\assets_logo.png">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+    </AndroidResource>
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="BeforeBuild">

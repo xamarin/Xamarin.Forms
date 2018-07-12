@@ -144,7 +144,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 		protected async Task UpdateSource()
 		{
-			await ImageElementManager.UpdateSource(this).ConfigureAwait(false);
+			// TODO: add setting of the directory for the images
+			await ImageElementManager.UpdateSource(this, null).ConfigureAwait(false);
 		}
 
 

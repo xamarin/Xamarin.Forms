@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
-using Xamarin.Forms.Platform.UWP;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -97,7 +93,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		public static async Task UpdateSource(IImageVisualElementRenderer renderer)
+		public static async Task UpdateSource(IImageVisualElementRenderer renderer, ImageSource customImageSource)
 		{
 			var Element = renderer.Element;
 			var Control = renderer.GetNativeElement();
@@ -114,7 +110,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			try
 			{
-				var imagesource = await imageElement.Source.ToWindowsImageSourceAsync();
+				var imagesource = await (customImageSource ?? imageElement.Source).ToWindowsImageSourceAsync();
 
 				if (renderer.IsDisposed)
 					return;

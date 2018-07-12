@@ -1,4 +1,5 @@
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Android.Content;
@@ -20,6 +21,7 @@ namespace Xamarin.Forms.Platform.Android
 		public async Task<Bitmap> LoadImageAsync(ImageSource imagesource, Context context, CancellationToken cancelationToken = default(CancellationToken))
 		{
 			string file = ((FileImageSource)imagesource).File;
+			file = Regex.Replace(file, @"[\\/]", "_"); // pseudo folders
 			Bitmap bitmap;
 			if (File.Exists (file))
 				bitmap = !DecodeSynchronously ? (await BitmapFactory.DecodeFileAsync (file).ConfigureAwait (false)) : BitmapFactory.DecodeFile (file);

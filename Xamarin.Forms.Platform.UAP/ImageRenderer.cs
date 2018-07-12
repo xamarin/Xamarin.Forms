@@ -1,12 +1,11 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
-using Microsoft.Graphics.Canvas.UI.Xaml;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Imaging;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
+using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.Image;
+using SpecificsPage = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.Page;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -14,6 +13,7 @@ namespace Xamarin.Forms.Platform.UWP
 	{
 		bool _measured;
 		bool _disposed;
+		ImageSource _sourceWithAssetPath;
 
 		public ImageRenderer() : base()
 		{
@@ -68,7 +68,8 @@ namespace Xamarin.Forms.Platform.UWP
 					SetNativeControl(image);
 				}
 
-				await TryUpdateSource().ConfigureAwait(false);
+				if (!await UpdateImageDirectory())
+					await TryUpdateSource().ConfigureAwait(false);
 			}
 		}
 
@@ -77,7 +78,60 @@ namespace Xamarin.Forms.Platform.UWP
 			base.OnElementPropertyChanged(sender, e);
 
 			if (e.PropertyName == Image.SourceProperty.PropertyName)
-				await TryUpdateSource().ConfigureAwait(false);
+				await TryUpdateSource();
+			else if (e.PropertyName == Specifics.ImageDirectoryProperty.PropertyName)
+				await UpdateImageDirectory();
+		}
+
+		/// <returns>Source updated</returns>
+		async Task<bool> UpdateImageDirectory()
+		{
+			if (Element.IsSet(Specifics.ImageDirectoryProperty))
+				return await AddPathToSource(Element.OnThisPlatform().GetImageDirectory());
+
+			// Check parent page
+			var parentPage = GetParentPage();
+			if (parentPage?.IsSet(SpecificsPage.ImageDirectoryProperty) == true)
+			{
+				Element.OnThisPlatform().SetImageDirectory(parentPage.OnThisPlatform().GetImageDirectory());
+				return true;
+			}
+
+			// Reset
+			var oldPath = _sourceWithAssetPath;
+			_sourceWithAssetPath = null;
+			if (oldPath != null)
+			{
+				await TryUpdateSource();
+				return true;
+			}
+
+			return false;
+		}
+
+		async Task<bool> AddPathToSource(string newPath)
+		{
+			if (!(Element.Source is FileImageSource fileSource))
+				return false;
+
+			string fullPath = $"{newPath}{System.IO.Path.DirectorySeparatorChar}{fileSource.File}";
+			if ((_sourceWithAssetPath as FileImageSource)?.File == fullPath)
+				return false;
+
+			_sourceWithAssetPath = string.IsNullOrEmpty(newPath)
+				? null
+				: ImageSource.FromFile(fullPath);
+
+			await TryUpdateSource();
+			return true;
+		}
+
+		Page GetParentPage()
+		{
+			var parentPage = Element.Parent;
+			while (parentPage != null && !(parentPage is Page))
+				parentPage = parentPage.Parent;
+			return parentPage as Page;
 		}
 
 
@@ -120,7 +174,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		protected async Task UpdateSource()
 		{
-			await ImageElementManager.UpdateSource(this).ConfigureAwait(false);
+			await ImageElementManager.UpdateSource(this, _sourceWithAssetPath).ConfigureAwait(false);
 		}
 
 		void IImageVisualElementRenderer.SetImage(Windows.UI.Xaml.Media.ImageSource image)

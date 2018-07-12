@@ -1,6 +1,9 @@
 ﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
+using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
+using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.Page;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -58,6 +61,35 @@ namespace Xamarin.Forms.Platform.UWP
 
 				if (_loaded)
 					e.NewElement.SendAppearing();
+
+				UpdateImageDirectory();
+			}
+		}
+
+		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			base.OnElementPropertyChanged(sender, e);
+			if (e.PropertyName == Specifics.ImageDirectoryProperty.PropertyName)
+				UpdateImageDirectory();
+		}
+
+		void UpdateImageDirectory()
+		{
+			string path = Element.IsSet(Specifics.ImageDirectoryProperty)
+				? Element.OnThisPlatform().GetImageDirectory()
+				: null;
+
+			foreach (var element in Element.Descendants())
+			{
+				switch (element)
+				{
+					case Page p:
+						p.OnThisPlatform().SetImageDirectory(path);
+						break;
+					case Image i:
+						i.OnThisPlatform().SetImageDirectory(path);
+						break;
+				}
 			}
 		}
 

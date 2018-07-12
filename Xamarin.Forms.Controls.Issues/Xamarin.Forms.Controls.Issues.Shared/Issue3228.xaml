@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<local:TestContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+	xmlns:local="clr-namespace:Xamarin.Forms.Controls"
+	x:Class="Xamarin.Forms.Controls.Issues.Issue3228">
+	<StackLayout x:Name="layout1" BackgroundColor="Black">
+		<Entry x:Name="text1" Text="Assets"/>
+		<Image x:Name="image1" Source="Logo.png"/>
+		<Image x:Name="image2" Source="cover1.jpg"/>
+		<Entry x:Name="text2" Text="Assets"/>
+		<Image x:Name="image3" Source="Logo.png"/>
+		<Image x:Name="image4" Source="assets/logo.png"/>
+		<Button Text="Add new image" Clicked="Button_Clicked" BackgroundColor="White" TextColor="Black"/>
+		<Button Text="Clean" Clicked="OnClean" BackgroundColor="White" TextColor="Black"/>
+	</StackLayout>
+</local:TestContentPage>
