@@ -60,7 +60,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			//background color change must be handled separately
 			//because the background would protrude through the border if the corners are rounded
-			//as the bakcgorund would be applied to the renderer's FrameworkElement
+			//as the background would be applied to the renderer's FrameworkElement
 			Color backgroundColor = Element.BackgroundColor;
 			if (Control != null)
 			{
