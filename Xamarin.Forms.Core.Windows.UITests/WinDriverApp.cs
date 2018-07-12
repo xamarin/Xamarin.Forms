@@ -30,7 +30,8 @@ namespace Xamarin.Forms.Core.UITests
 
 		readonly Dictionary<string, string> _translatePropertyAccessor = new Dictionary<string, string>
 		{
-			{ "getAlpha", "Opacity" }
+			{ "getAlpha", "Opacity" },
+			{ "isEnabled", "IsEnabled" }
 		};
 
 		int _scrollBarOffset = 5;
@@ -240,7 +241,12 @@ namespace Xamarin.Forms.Core.UITests
 			// Now that we have them in text form, we can reinterpret them for Windows
 			WinQuery winQuery = WinQuery.FromRaw(selector);
 			// TODO hartez 2017/07/19 17:08:44 Make this a bit more resilient if the translation isn't there	
-			string attribute = _translatePropertyAccessor[invoke.Substring(8).Replace("\")", "")];
+			var translationKey = invoke.Substring(8).Replace("\")", "");
+
+			if (!_translatePropertyAccessor.ContainsKey(translationKey))
+				throw new Exception($"{translationKey} not found please add to _translatePropertyAccessor");
+
+			string attribute = _translatePropertyAccessor[translationKey];
 
 			ReadOnlyCollection<WindowsElement> elements = QueryWindows(winQuery);
 
@@ -270,7 +276,7 @@ namespace Xamarin.Forms.Core.UITests
 			string filename = $"{title}.png";
 
 			Screenshot screenshot = _session.GetScreenshot();
-			screenshot.SaveAsFile(filename, ImageFormat.Png);
+			screenshot.SaveAsFile(filename, ScreenshotImageFormat.Png);
 			return new FileInfo(filename);
 		}
 
