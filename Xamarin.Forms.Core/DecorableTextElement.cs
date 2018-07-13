@@ -35,7 +35,7 @@ namespace Xamarin.Forms
 			{
 				if (Enum.TryParse(item.Trim(), true, out TextDecorations textDecorations))
 					result |= textDecorations;
-				if (item.Equals("line-through", StringComparison.OrdinalIgnoreCase))
+				else if (item.Equals("line-through", StringComparison.OrdinalIgnoreCase))
 					result |= TextDecorations.Strikethrough;
 				else
 					throw new InvalidOperationException(string.Format("Cannot convert \"{0}\" into {1}", item, typeof(TextDecorations)));
