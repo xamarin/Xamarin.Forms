@@ -14,15 +14,18 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class FloatingActionButtonRenderer : ViewRenderer<FloatingActionButton, UIButton>
 	{
+		const int smallSize = 44;
+		const int normalSize = 56;
+
 		public override SizeF SizeThatFits(SizeF size)
 		{
 			if (Element == null)
 				return SizeF.Empty;
 
 			if (Element.Size == FloatingActionButtonSize.Mini)
-				return new SizeF(44, 44);
+				return new SizeF(smallSize, smallSize);
 
-			return new SizeF(56, 56);
+			return new SizeF(normalSize, normalSize);
 		}
 
 		protected override void Dispose(bool disposing)
@@ -77,6 +80,8 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else if (e.PropertyName == Image.SourceProperty.PropertyName)
 				await TrySetImage();
+			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
+				UpdateEnabled();
 		}
 
 		void OnButtonTouchUpInside(object sender, EventArgs eventArgs)
@@ -97,7 +102,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			uiButton.ClipsToBounds = false;
 
-			nfloat cornerRadius = button.Size == FloatingActionButtonSize.Mini ? 22 : 28;
+			nfloat cornerRadius = button.Size == FloatingActionButtonSize.Mini ? smallSize / 2 : normalSize / 2;
 			uiButton.Layer.CornerRadius = cornerRadius;
 			uiButton.Layer.ShadowColor = UIColor.Black.CGColor;
 			uiButton.Layer.ShadowOpacity = 0.4f;
@@ -116,9 +121,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateSize()
 		{
-			var size = Element.Size == FloatingActionButtonSize.Mini ? 44 : 56;
+			var size = Element.Size == FloatingActionButtonSize.Mini ? smallSize : normalSize;
 
 			Control.Frame = new CGRect(Control.Frame.X, Control.Frame.Y, size, size);
+		}
+
+		void UpdateEnabled()
+		{
+			Control.Enabled = Element.IsEnabled;
 		}
 
 		protected virtual async Task TrySetImage()
