@@ -164,7 +164,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
 				}
 			};
 
-			if (App.IOSVersion == 11)
+			if (App.IOSVersion >= 11)
 			{
 				// 'Large' Title bar text
 				UINavigationBar.Appearance.LargeTitleTextAttributes = new UIStringAttributes

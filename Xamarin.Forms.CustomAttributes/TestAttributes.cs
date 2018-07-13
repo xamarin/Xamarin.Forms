@@ -232,6 +232,11 @@ namespace Xamarin.Forms.CustomAttributes
 			Pressed
 		}
 
+		public enum FloatingActionButton
+		{
+			Command,
+		}
+
 		public enum VisualElement
 		{
 			IsEnabled,
