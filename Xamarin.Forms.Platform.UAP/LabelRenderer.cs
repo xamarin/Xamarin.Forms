@@ -135,7 +135,7 @@ namespace Xamarin.Forms.Platform.UWP
 				_isInitiallyDefault = Element.IsDefault();
 
 				UpdateText(Control);
-				UpdateTextDecorations();
+				UpdateTextDecorations(Control);
 				UpdateColor(Control);
 				UpdateAlign(Control);
 				UpdateFont(Control);
@@ -184,7 +184,20 @@ namespace Xamarin.Forms.Platform.UWP
 			else
 				textBlock.TextDecorations |= Windows.UI.Text.TextDecorations.Strikethrough;
 
-			textBlock.Text = textBlock.Text; //TextDecorations are not updated in the UI until the text changes
+			//TextDecorations are not updated in the UI until the text changes
+			if (textBlock.Inlines != null && textBlock.Inlines.Count > 0)
+			{
+				for (var i = 0; i < textBlock.Inlines.Count; i++)
+				{
+					var run = (Run)textBlock.Inlines[i];
+					run.Text = run.Text;
+				}
+			}
+			else
+			{
+				textBlock.Text = textBlock.Text; 
+			}
+
 		}
 
 		void UpdateAlign(TextBlock textBlock)
