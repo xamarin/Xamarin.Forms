@@ -25,9 +25,10 @@ namespace Xamarin.Forms.Controls.Issues
 						Text ="The frame below should have its corners rounded and the background should not protrude through them.",
 						TextColor = Color.Black,
 						WidthRequest = 300,
+						HeightRequest = 90,
 						LineBreakMode = LineBreakMode.WordWrap,
 						HorizontalOptions = LayoutOptions.Center,
-						Margin = new Thickness(20)
+						Margin = new Thickness(10)
 					},
 					new Frame
 					{
