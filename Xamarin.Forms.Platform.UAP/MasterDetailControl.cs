@@ -89,7 +89,7 @@ namespace Xamarin.Forms.Platform.UWP
 				double height = ActualHeight;
 				double width = ActualWidth;
 
-				if (_commandBar != null && height != 0)
+				if (_commandBar != null)
 					height -= _commandBar.ActualHeight;
 
 				if (ShouldShowSplitMode && IsPaneOpen)
@@ -100,7 +100,7 @@ namespace Xamarin.Forms.Platform.UWP
 						width -= _masterPresenter.ActualWidth;
 				}
 
-				return new Windows.Foundation.Size(width > 0 ? width : 0, height);
+				return new Windows.Foundation.Size(Math.Max(width, 0), Math.Max(height, 0));
 			}
 		}
 
@@ -143,7 +143,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 				// On first load, the _commandBar will still occupy space by the time this is called.
 				// Check ShouldShowToolbar to make sure the _commandBar will still be there on render.
-				if (_firstLoad && height != 0 && _commandBar != null && ShouldShowToolbar)
+				if (_firstLoad && _commandBar != null && ShouldShowToolbar)
 				{
 					height -= _commandBar.ActualHeight;
 					_firstLoad = false;
@@ -154,7 +154,7 @@ namespace Xamarin.Forms.Platform.UWP
 				else if (_masterPresenter != null)
 					width = _masterPresenter.ActualWidth;
 
-				return new Windows.Foundation.Size(width, height);
+				return new Windows.Foundation.Size(Math.Max(width, 0), Math.Max(height, 0));
 			}
 		}
 
