@@ -155,7 +155,7 @@ namespace Xamarin.Forms.Platform.UWP
 			else if (e.PropertyName == Label.FontProperty.PropertyName)
 				UpdateFont(Control);
 			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
-				UpdateTextDecorations();
+				UpdateTextDecorations(Control);
 			else if (e.PropertyName == Label.LineBreakModeProperty.PropertyName)
 				UpdateLineBreakMode(Control);
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
@@ -167,7 +167,7 @@ namespace Xamarin.Forms.Platform.UWP
 			base.OnElementPropertyChanged(sender, e);
 		}
 
-		void UpdateTextDecorations()
+		void UpdateTextDecorations(TextBlock textBlock)
 		{
 			if (!Element.IsSet(Label.TextDecorationsProperty))
 				return;
@@ -175,16 +175,16 @@ namespace Xamarin.Forms.Platform.UWP
 			var elementTextDecorations = Element.TextDecorations;
 
 			if ((elementTextDecorations & TextDecorations.Underline) == 0)
-				Control.TextDecorations &= ~Windows.UI.Text.TextDecorations.Underline;
+				textBlock.TextDecorations &= ~Windows.UI.Text.TextDecorations.Underline;
 			else
-				Control.TextDecorations |= Windows.UI.Text.TextDecorations.Underline;
+				textBlock.TextDecorations |= Windows.UI.Text.TextDecorations.Underline;
 
 			if ((elementTextDecorations & TextDecorations.Strikethrough) == 0)
-				Control.TextDecorations &= ~Windows.UI.Text.TextDecorations.Strikethrough;
+				textBlock.TextDecorations &= ~Windows.UI.Text.TextDecorations.Strikethrough;
 			else
-				Control.TextDecorations |= Windows.UI.Text.TextDecorations.Strikethrough;
+				textBlock.TextDecorations |= Windows.UI.Text.TextDecorations.Strikethrough;
 
-			Control.Text = Control.Text; //TextDecorations are not updated in the UI until the text changes
+			textBlock.Text = textBlock.Text; //TextDecorations are not updated in the UI until the text changes
 		}
 
 		void UpdateAlign(TextBlock textBlock)
