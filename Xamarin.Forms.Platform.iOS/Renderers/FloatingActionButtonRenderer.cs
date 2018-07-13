@@ -71,7 +71,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == FloatingActionButton.ColorProperty.PropertyName)
+			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateColor();
 			else if (e.PropertyName == FloatingActionButton.SizeProperty.PropertyName)
 			{
@@ -113,10 +113,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateColor()
 		{
-			var color = Element.Color.ToUIColor();
+			var color = Element.BackgroundColor.ToUIColor();
 
 			Control.TintColor = UIColor.White;
-			Control.SetBackgroundImage (ImageColor(color), UIControlState.Normal);
+			Control.BackgroundColor = color;
 		}
 
 		void UpdateSize()
@@ -183,21 +183,6 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			// VisualElement's width is used in base on layout subviews, need to override that here, base is not called on purpose
 			UpdateSize();
-		}
-
-		UIImage ImageColor(UIColor color)
-		{
-			var rect = new CGRect(x: 0.0, y: 0.0, width: 1.0, height: 1.0);
-			UIGraphics.BeginImageContext(rect.Size);
-
-			using (var context = UIGraphics.GetCurrentContext())
-			{
-				context?.SetFillColor(color.CGColor);
-				context?.FillRect(rect);
-				var image = UIGraphics.GetImageFromCurrentImageContext();
-				UIGraphics.EndImageContext();
-				return image;
-			}
 		}
 	}
 }

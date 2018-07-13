@@ -10,9 +10,6 @@ namespace Xamarin.Forms
 	[RenderWith(typeof(_FloatingActionButtonRenderer))]
 	public class FloatingActionButton : View, IButtonController
 	{
-
-		public static readonly BindableProperty ColorProperty = BindableProperty.Create("Color", typeof(Color), typeof(FloatingActionButton), Color.Default);
-
 		public static readonly BindableProperty ImageSourceProperty = BindableProperty.Create("ImageSource", typeof(ImageSource), typeof(FloatingActionButton), null);
 
 		public static readonly BindableProperty CommandProperty = BindableProperty.Create("Command", typeof(ICommand), typeof(FloatingActionButton), null);
@@ -20,12 +17,6 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty CommandParameterProperty = BindableProperty.Create("CommandParameter", typeof(object), typeof(FloatingActionButton), null);
 
 		public static readonly BindableProperty SizeProperty = BindableProperty.Create("Size", typeof(FloatingActionButtonSize), typeof(FloatingActionButton), FloatingActionButtonSize.Normal);
-
-		public Color Color
-		{
-			get { return (Color)GetValue(ColorProperty); }
-			set { SetValue(ColorProperty, value); }
-		}
 
 		public ImageSource ImageSource
 		{

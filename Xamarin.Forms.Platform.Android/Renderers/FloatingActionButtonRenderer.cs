@@ -13,6 +13,7 @@ using Object = Java.Lang.Object;
 using Xamarin.Forms.Internals;
 using System.Threading.Tasks;
 using Android.Graphics.Drawables;
+using Android.Content.Res;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -109,7 +110,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == FloatingActionButton.ColorProperty.PropertyName)
+			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
 				UpdateColor();
 			else if (e.PropertyName == FloatingActionButton.SizeProperty.PropertyName)
 				this.UpdateLayout();
@@ -134,7 +135,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateColor()
 		{
-			// lets check if we can do that on droid actually
+			NativeButton.BackgroundTintList = ColorStateList.ValueOf(Element.BackgroundColor.ToAndroid());
 		}
 
 		void UpdateEnabled()
