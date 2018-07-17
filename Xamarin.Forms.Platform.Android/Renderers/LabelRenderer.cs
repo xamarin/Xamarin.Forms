@@ -108,6 +108,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateText();
 				UpdateLineBreakMode();
 				UpdateGravity();
+				UpdateMaxLines();
 			}
 			else
 			{
@@ -117,6 +118,8 @@ namespace Xamarin.Forms.Platform.Android
 					UpdateLineBreakMode();
 				if (e.OldElement.HorizontalTextAlignment != e.NewElement.HorizontalTextAlignment || e.OldElement.VerticalTextAlignment != e.NewElement.VerticalTextAlignment)
 					UpdateGravity();
+				if (e.OldElement.MaxLines != e.NewElement.MaxLines)
+					UpdateMaxLines();
 			}
 
 			_motionEventHelper.UpdateElement(e.NewElement);
@@ -138,6 +141,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateText();
 			else if (e.PropertyName == Label.LineHeightProperty.PropertyName)
 				UpdateLineHeight();
+			else if (e.PropertyName == Label.MaxLinesProperty.PropertyName)
+				UpdateMaxLines();
 		}
 
 		void UpdateColor()
@@ -195,6 +200,15 @@ namespace Xamarin.Forms.Platform.Android
 				_view.SetLineSpacing(_lineSpacingExtraDefault, _lineSpacingMultiplierDefault);
 			else if (Element.LineHeight >= 0)
 				_view.SetLineSpacing(0, (float)Element.LineHeight);
+		}
+
+		void UpdateMaxLines()
+		{
+			if (Element.MaxLines > 0)
+			{
+				Control.SetSingleLine(Element.MaxLines == 1);
+				Control.SetMaxLines(Element.MaxLines);
+			}
 		}
 
 		void UpdateText()

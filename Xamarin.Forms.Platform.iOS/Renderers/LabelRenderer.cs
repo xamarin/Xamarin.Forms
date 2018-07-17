@@ -110,7 +110,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			Control.RecalculateSpanPositions(Element);
 
-		}		
+		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Label> e)
 		{
@@ -131,6 +131,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateText();
 				UpdateTextColor();
 				UpdateFont();
+				UpdateMaxLines();
 			}
 
 			base.OnElementChanged(e);
@@ -158,6 +159,8 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateAlignment();
 			else if (e.PropertyName == Label.LineHeightProperty.PropertyName)
 				UpdateText();
+			else if (e.PropertyName == Label.MaxLinesProperty.PropertyName)
+				UpdateMaxLines();
 		}
 
 #if __MOBILE__
@@ -210,27 +213,21 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				case LineBreakMode.NoWrap:
 					Control.LineBreakMode = UILineBreakMode.Clip;
-					Control.Lines = 1;
 					break;
 				case LineBreakMode.WordWrap:
 					Control.LineBreakMode = UILineBreakMode.WordWrap;
-					Control.Lines = 0;
 					break;
 				case LineBreakMode.CharacterWrap:
 					Control.LineBreakMode = UILineBreakMode.CharacterWrap;
-					Control.Lines = 0;
 					break;
 				case LineBreakMode.HeadTruncation:
 					Control.LineBreakMode = UILineBreakMode.HeadTruncation;
-					Control.Lines = 1;
 					break;
 				case LineBreakMode.MiddleTruncation:
 					Control.LineBreakMode = UILineBreakMode.MiddleTruncation;
-					Control.Lines = 1;
 					break;
 				case LineBreakMode.TailTruncation:
 					Control.LineBreakMode = UILineBreakMode.TailTruncation;
-					Control.Lines = 1;
 					break;
 			}
 #else
@@ -238,27 +235,21 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				case LineBreakMode.NoWrap:
 					Control.LineBreakMode = NSLineBreakMode.Clipping;
-					Control.MaximumNumberOfLines = 1;
 					break;
 				case LineBreakMode.WordWrap:
 					Control.LineBreakMode = NSLineBreakMode.ByWordWrapping;
-					Control.MaximumNumberOfLines = 0;
 					break;
 				case LineBreakMode.CharacterWrap:
 					Control.LineBreakMode = NSLineBreakMode.CharWrapping;
-					Control.MaximumNumberOfLines = 0;
 					break;
 				case LineBreakMode.HeadTruncation:
 					Control.LineBreakMode = NSLineBreakMode.TruncatingHead;
-					Control.MaximumNumberOfLines = 1;
 					break;
 				case LineBreakMode.MiddleTruncation:
 					Control.LineBreakMode = NSLineBreakMode.TruncatingMiddle;
-					Control.MaximumNumberOfLines = 1;
 					break;
 				case LineBreakMode.TailTruncation:
 					Control.LineBreakMode = NSLineBreakMode.TruncatingTail;
-					Control.MaximumNumberOfLines = 1;
 					break;
 			}
 #endif
@@ -333,6 +324,22 @@ namespace Xamarin.Forms.Platform.MacOS
 #else
 			Layout();
 #endif
+		}
+
+		void UpdateMaxLines()
+		{
+			if (Element.MaxLines > 0)
+			{
+#if __MOBILE__
+				Control.Lines = Element.MaxLines;
+
+				LayoutSubviews();
+#else
+				Control.MaximumNumberOfLines = Element.MaxLines;
+
+				Layout();
+#endif
+			}
 		}
 	}
 }
