@@ -19,6 +19,7 @@ using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.ListView;
 using System.Collections.ObjectModel;
+using System.Reflection;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -100,6 +101,37 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				Source = allSourceItems,
 				IsSourceGrouped = Element.IsGroupingEnabled
+			};
+
+			if (Element?.ItemsSource is INotifyCollectionChanged)
+			{
+				allSourceItems.CollectionChanged -= OnCollectionChangedInUserCode;
+				allSourceItems.CollectionChanged += OnCollectionChangedInUserCode;
+			}
+		}
+
+		/// <summary>
+		/// Call all methods subscribed to the "CollectionChanged" event in the original ItemsSource
+		/// </summary>
+		void OnCollectionChangedInUserCode(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			Type sourceType = Element?.ItemsSource?.GetType();
+			if (sourceType == null)
+				return;
+
+			var multiDelegate = sourceType
+				.GetField("CollectionChanged", BindingFlags.Instance | BindingFlags.NonPublic)?
+				.GetValue(Element.ItemsSource)
+				as MulticastDelegate;
+			Delegate[] list = multiDelegate?.GetInvocationList();
+			if (list == null)
+				return;
+
+			Assembly elementAssembly = Element.GetType().Assembly;
+			foreach (var d in list)
+			{
+				if (elementAssembly != d.Method.Module.Assembly) // Excluding internal subscriptions in Xamrin.Forms.Core
+					d.Method.Invoke(d.Target, new[] { sender, e });
 			};
 		}
 
@@ -223,6 +255,9 @@ namespace Xamarin.Forms.Platform.UWP
 						_subscribedToItemClick = false;
 						List.ItemClick -= OnListItemClicked;
 					}
+					if (Element?.ItemsSource is INotifyCollectionChanged notityCollection)
+						notityCollection.CollectionChanged -= OnCollectionChangedInUserCode;
+
 					List.SelectionChanged -= OnControlSelectionChanged;
 					List.DataContext = null;
 					List = null;
