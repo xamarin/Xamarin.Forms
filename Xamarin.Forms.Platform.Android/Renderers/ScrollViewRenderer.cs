@@ -25,7 +25,7 @@ namespace Xamarin.Forms.Platform.Android
 		int _previousBottom;
 		bool _isEnabled;
 		bool _disposed;
-		LayoutDirection _previousLTR = LayoutDirection.Ltr;
+		LayoutDirection _prevLayoutDirection = LayoutDirection.Ltr;
 		bool _checkedForRtlScroll = false;
 
 		public ScrollViewRenderer(Context context) : base(context)
@@ -114,9 +114,9 @@ namespace Xamarin.Forms.Platform.Android
 					? LayoutDirection.Ltr
 					: LayoutDirection.Rtl;
 
-				if (_previousLTR != flowDirection && _hScrollView != null)
+				if (_prevLayoutDirection != flowDirection && _hScrollView != null)
 				{
-					_previousLTR = flowDirection;
+					_prevLayoutDirection = flowDirection;
 					_hScrollView.LayoutDirection = flowDirection;
 				}
 			}

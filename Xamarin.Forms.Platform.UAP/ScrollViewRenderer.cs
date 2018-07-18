@@ -67,8 +67,7 @@ namespace Xamarin.Forms.Platform.UWP
 			if (scrollViewer != null)
 			{
 				scrollViewer.ViewChanged -= OnViewChanged;
-				var element = (scrollViewer.Content as FrameworkElement);
-				if (element != null)
+				if (scrollViewer.Content is FrameworkElement element)
 				{
 					element.LayoutUpdated -= SetInitialRtlPosition;
 				}
@@ -174,7 +173,7 @@ namespace Xamarin.Forms.Platform.UWP
 			Element.SendScrollFinished();
 		}
 				
-		private void SetInitialRtlPosition(object sender, object e)
+		void SetInitialRtlPosition(object sender, object e)
 		{
 			if (Control == null) return;
 

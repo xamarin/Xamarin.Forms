@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 	public class Issue3000 : TestContentPage
 	{
-		private const string kSuccess = "Success";
+		const string kSuccess = "Success";
 
 		protected override void Init()
 		{
@@ -56,7 +56,7 @@ namespace Xamarin.Forms.Controls.Issues
 			layout.Children.Add(new Label() { Text = "LEFT" });
 			for (int i = 0; i < 80; i++)
 				layout.Children.Add(new Image() { BackgroundColor = Color.Pink, Source = "coffee.png" });
-			layout.Children.Add(new Label() { Text = "rIGHT" });
+			layout.Children.Add(new Label() { Text = "RIGHT" });
 
 
 

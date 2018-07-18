@@ -187,7 +187,7 @@ namespace Xamarin.Forms
 		protected override void LayoutChildren(double x, double y, double width, double height)
 		{
 			if (_content != null)
-			{				
+			{
 				SizeRequest size;
 				switch (Orientation)
 				{
