@@ -600,7 +600,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			if (_masterDetailPage == null)
 			{
-				_masterDetailPage = PageController.InternalChildren[0] as MasterDetailPage;
+				if (PageController.InternalChildren.Count > 0)
+					_masterDetailPage = PageController.InternalChildren[0] as MasterDetailPage;
+
 				if (_masterDetailPage == null)
 					return;
 			}
