@@ -630,7 +630,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return null;
 		}
 
-		void SetupSelection(UITableView table)
+		static void SetupSelection(UITableView table)
 		{
 			if (table.GestureRecognizers == null)
 				return;
@@ -642,7 +642,7 @@ namespace Xamarin.Forms.Platform.iOS
 					return;
 			}
 
-			_tableView.AddGestureRecognizer(new SelectGestureRecognizer());
+			table.AddGestureRecognizer(new SelectGestureRecognizer());
 		}
 
 		class SelectGestureRecognizer : UITapGestureRecognizer
