@@ -125,6 +125,19 @@ namespace Xamarin.Forms
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public ReadOnlyCollection<Element> LogicalChildren => LogicalChildrenInternal;
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public virtual IEnumerable<T> WalkChildren<T>() where T : Element
+		{
+			var result = new List<T>();
+			foreach (var item in LogicalChildrenInternal)
+			{
+				if (item is T element)
+					result.Add(element);
+				result.AddRange(item.WalkChildren<T>());
+			}
+			return result;
+		}
+
 		internal bool Owned { get; set; }
 
 		internal Element ParentOverride

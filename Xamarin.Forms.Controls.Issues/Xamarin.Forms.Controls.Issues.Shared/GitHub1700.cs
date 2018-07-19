@@ -13,13 +13,23 @@ namespace Xamarin.Forms.Controls.Issues
 		void IndexDesc()
 		{
 			int index = 100500;
-			listViews.ForEach(c => c.TabIndex = index--);
+			foreach (var item in listViews)
+			{
+				if (item is Button but && but.Text.StartsWith("TabIndex"))
+					continue;
+				item.TabIndex = index--;
+			}
 		}
 
 		void IndexNegative()
 		{
 			int index = -100;
-			listViews.ForEach(c => c.TabIndex = index++);
+			foreach (var item in listViews)
+			{
+				if (item is Button but && but.Text.StartsWith("TabIndex"))
+					continue;
+				item.TabIndex = index++;
+			}
 		}
 
 		protected override void Init()
@@ -86,6 +96,30 @@ namespace Xamarin.Forms.Controls.Issues
 					actionGrid,
 					pickerStopped,
 					pickerNotStopped,
+					new Button
+					{
+						Text = $"TabIndex 90",
+						IsTabStop = true,
+						TabIndex = 90
+					},
+					new Button
+					{
+						Text = $"TabIndex 100",
+						IsTabStop = true,
+						TabIndex = 100
+					},
+					new Button
+					{
+						Text = $"TabIndex 100",
+						IsTabStop = true,
+						TabIndex = 100
+					},
+					new Button
+					{
+						Text = $"TabIndex 90",
+						IsTabStop = true,
+						TabIndex = 90
+					},
 					new Button
 					{
 						Text = $"[+] Button - TabStop enable",
@@ -188,7 +222,7 @@ namespace Xamarin.Forms.Controls.Issues
 				item.Focused += (_, e) =>
 				{
 					BackgroundColor = e.VisualElement.IsTabStop ? Color.Transparent : Color.OrangeRed;
-					Title = $"{e.VisualElement} - " + (e.VisualElement.IsTabStop ? "[+]" : "WRONG");
+					Title = $"{e.VisualElement.TabIndex} - " + (e.VisualElement.IsTabStop ? "[+]" : "WRONG");
 					e.VisualElement.Scale = 0.7;
 				};
 				item.Unfocused += (_, e) =>

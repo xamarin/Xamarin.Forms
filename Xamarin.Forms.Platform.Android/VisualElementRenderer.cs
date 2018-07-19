@@ -144,25 +144,17 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override AView FocusSearch(AView focused, [GeneratedEnum] FocusSearchDirection direction)
 		{
-			var allChildrens = Application.Current.WalkChildren();
+			var allChildrens = Application.Current.WalkChildren<VisualElement>();
 			var childrensWithTabStop = new List<VisualElement>();
-			var tabIndexes = new Dictionary<int, List<VisualElement>>();
 			foreach (var ch in allChildrens)
 			{
-				if (ch is VisualElement ve && ve.IsTabStop)
-					childrensWithTabStop.Add(ve);
+				if (ch.IsTabStop)
+					childrensWithTabStop.Add(ch);
 			}
 			if (!childrensWithTabStop.Contains(Element))
 				return base.FocusSearch(focused, direction);
 
-			// groupping => childrensWithTabStop.GroupBy(c => c.TabIndex)
-			foreach (var ve in childrensWithTabStop)
-			{
-				if (!tabIndexes.ContainsKey(ve.TabIndex))
-					tabIndexes.Add(ve.TabIndex, new List<VisualElement>() { ve });
-				else
-					tabIndexes[ve.TabIndex].Add(ve);
-			}
+			IDictionary<int, List<VisualElement>> tabIndexes = childrensWithTabStop.GroupToDictionary(c => c.TabIndex);
 
 			int tabIndex = Element.TabIndex;
 			AView control = null;
@@ -172,18 +164,19 @@ namespace Xamarin.Forms.Platform.Android
 
 			do
 			{
-				// search next element in same TabIndex group
 				var tabGroup = tabIndexes[tabIndex];
-				var nextSubIndex = tabGroup.IndexOf(element) + 1;
-				if (nextSubIndex > 0 && nextSubIndex < tabGroup.Count)
+
+				if ((direction & FocusSearchDirection.Backward) != 0 ||
+					(direction & FocusSearchDirection.Left) != 0 ||
+					(direction & FocusSearchDirection.Up) != 0)
 				{
-					element = tabGroup[nextSubIndex];
-				}
-				else // search next element in next TabIndex group
-				{
-					if (direction.HasFlag(FocusSearchDirection.Backward) ||
-						direction.HasFlag(FocusSearchDirection.Left) ||
-						direction.HasFlag(FocusSearchDirection.Up))
+					// search prev element in same TabIndex group
+					var prevSubIndex = tabGroup.IndexOf(element) - 1;
+					if (prevSubIndex >= 0 && prevSubIndex < tabGroup.Count)
+					{
+						element = tabGroup[prevSubIndex];
+					}
+					else // search next element in next TabIndex group
 					{
 						var smallerMax = int.MinValue;
 						var tabIndexesMax = int.MinValue;
@@ -195,8 +188,18 @@ namespace Xamarin.Forms.Platform.Android
 								tabIndexesMax = index;
 						}
 						tabIndex = smallerMax != int.MinValue ? smallerMax : tabIndexesMax;
+						element = tabIndexes[tabIndex][0];
 					}
-					else // Forward || Right || Down || default
+				}
+				else // Forward || Right || Down || default
+				{
+					// search next element in same TabIndex group
+					var nextSubIndex = tabGroup.IndexOf(element) + 1;
+					if (nextSubIndex > 0 && nextSubIndex < tabGroup.Count)
+					{
+						element = tabGroup[nextSubIndex];
+					}
+					else // search next element in next TabIndex group
 					{
 						var biggerMin = int.MaxValue;
 						var tabIndexesMin = int.MaxValue;
@@ -208,8 +211,8 @@ namespace Xamarin.Forms.Platform.Android
 								tabIndexesMin = index;
 						}
 						tabIndex = biggerMin != int.MaxValue ? biggerMin : tabIndexesMin;
+						element = tabIndexes[tabIndex][0];
 					}
-					element = tabIndexes[tabIndex][0];
 				}
 
 				var renderer = element.GetRenderer();

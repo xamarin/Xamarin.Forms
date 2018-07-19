@@ -162,25 +162,17 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public NativeView FocusSearch (bool forward)
 		{
-			var allChildrens = Application.Current.WalkChildren ();
+			var allChildrens = Application.Current.WalkChildren<VisualElement> ();
 			var childrensWithTabStop = new List<VisualElement> ();
-			var tabIndexes = new Dictionary<int, List<VisualElement>> ();
 			foreach (var ch in allChildrens)
 			{
-				if (ch is VisualElement ve && ve.IsTabStop)
-					childrensWithTabStop.Add (ve);
+				if (ch.IsTabStop)
+					childrensWithTabStop.Add (ch);
 			}
 			if (!childrensWithTabStop.Contains (Element))
 				return null;
 
-			// groupping => childrensWithTabStop.GroupBy(c => c.TabIndex)
-			foreach (var ve in childrensWithTabStop)
-			{
-				if (!tabIndexes.ContainsKey (ve.TabIndex))
-					tabIndexes.Add (ve.TabIndex, new List<VisualElement> { ve });
-				else
-					tabIndexes [ve.TabIndex].Add (ve);
-			}
+			IDictionary<int, List<VisualElement>> tabIndexes = childrensWithTabStop.GroupToDictionary(c => c.TabIndex);
 
 			int tabIndex = Element.TabIndex;
 			int attempt = 0;
@@ -188,43 +180,59 @@ namespace Xamarin.Forms.Platform.MacOS
 			VisualElement element = Element;
 			NativeView control = null;
 
-			do {
-				// search next element in same TabIndex group
+			do
+			{
 				var tabGroup = tabIndexes [tabIndex];
-				var nextSubIndex = tabGroup.IndexOf (element) + 1;
-				if (nextSubIndex > 0 && nextSubIndex < tabGroup.Count) {
-					element = tabGroup [nextSubIndex];
-				} else // search next element in next TabIndex group
-				  {
-					if (!forward) {
+				if (!forward)
+				{
+					// search prev element in same TabIndex group
+					var prevSubIndex = tabGroup.IndexOf(element) - 1;
+					if (prevSubIndex >= 0 && prevSubIndex < tabGroup.Count)
+					{
+						element = tabGroup[prevSubIndex];
+					}
+					else // search prev element in prev TabIndex group
+					{
 						var smallerMax = int.MinValue;
 						var tabIndexesMax = int.MinValue;
-						foreach (var index in tabIndexes.Keys) {
+						foreach (var index in tabIndexes.Keys)
+						{
 							if (index < tabIndex && smallerMax < index)
 								smallerMax = index;
 							if (tabIndexesMax < index)
 								tabIndexesMax = index;
 						}
 						tabIndex = smallerMax != int.MinValue ? smallerMax : tabIndexesMax;
+						element = tabIndexes[tabIndex][0];
 					}
-					else // Forward
+				}
+				else // Forward
+				{
+					// search next element in same TabIndex group
+					var nextSubIndex = tabGroup.IndexOf(element) + 1;
+					if (nextSubIndex > 0 && nextSubIndex < tabGroup.Count)
+					{
+						element = tabGroup[nextSubIndex];
+					}
+					else // search next element in next TabIndex group
 					{
 						var biggerMin = int.MaxValue;
 						var tabIndexesMin = int.MaxValue;
-						foreach (var index in tabIndexes.Keys) {
+						foreach (var index in tabIndexes.Keys)
+						{
 							if (index > tabIndex && biggerMin > index)
 								biggerMin = index;
 							if (tabIndexesMin > index)
 								tabIndexesMin = index;
 						}
 						tabIndex = biggerMin != int.MaxValue ? biggerMin : tabIndexesMin;
+						element = tabIndexes[tabIndex][0];
 					}
-					element = tabIndexes[tabIndex][0];
 				}
 #if __MACOS__
 				var renderer = Platform.GetRenderer(element);
 				// use reflection to get the "Control" property from a specific renderer
-				control = renderer.GetType ().GetProperty ("Control")?.GetValue (renderer, null) as NativeView;
+				control = renderer?.GetType ().GetProperty ("Control")?.GetValue (renderer, null) as NativeView;
 #else
 				element.Focus ();
 #endif
