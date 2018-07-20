@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
@@ -21,7 +22,8 @@ using Windows.UI.Xaml.Input;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	public class TabbedPageRenderer : IVisualElementRenderer, ITitleProvider, IToolbarProvider
+	public class TabbedPageRenderer : IVisualElementRenderer, ITitleProvider, IToolbarProvider, 
+		IToolBarForegroundBinder
 	{
 		const string TabBarHeaderStackPanelName = "TabbedPageHeaderStackPanel";
 		const string TabBarHeaderImageName = "TabbedPageHeaderImage";
@@ -488,6 +490,23 @@ namespace Xamarin.Forms.Platform.UWP
 				}
 				AccessKeyHelper.UpdateAccessKey(control, page);
 			}
+		}
+
+		public void BindForegroundColor(AppBar appBar)
+		{
+			SetAppBarForegroundBinding(appBar);
+		}
+
+		public void BindForegroundColor(AppBarButton button)
+		{
+			SetAppBarForegroundBinding(button);
+		}
+
+		void SetAppBarForegroundBinding(FrameworkElement element)
+		{
+			element.SetBinding(Windows.UI.Xaml.Controls.Control.ForegroundProperty,
+				new Windows.UI.Xaml.Data.Binding { Path = new PropertyPath("ToolbarForeground"), 
+					Source = Control, RelativeSource = new RelativeSource { Mode = RelativeSourceMode.TemplatedParent } });
 		}
 	}
 }
