@@ -252,7 +252,7 @@ namespace Xamarin.Forms.Platform.Android
 				_container?.RequestLayout();
 
 			// if the target sdk >= 17 then setting the LayoutDirection on the scroll view natively takes care of the scroll
-			if (!_checkedForRtlScroll && _hScrollView != null && Context.TargetSdkVersion() < 17)
+			if (Context.TargetSdkVersion() < 17 && !_checkedForRtlScroll && _hScrollView != null && Element is IVisualElementController controller && controller.EffectiveFlowDirection.IsRightToLeft())
 				_hScrollView.ScrollX = _container.MeasuredWidth - _hScrollView.MeasuredWidth - _hScrollView.ScrollX;
 
 			_checkedForRtlScroll = true;
