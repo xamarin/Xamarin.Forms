@@ -159,12 +159,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (_headerRenderer != null)
 				{
-					_headerRenderer.Element.DisposeModalAndChildRenderers();
+					_headerRenderer.Element?.DisposeModalAndChildRenderers();
 					_headerRenderer = null;
 				}
 				if (_footerRenderer != null)
 				{
-					_footerRenderer.Element.DisposeModalAndChildRenderers();
+					_footerRenderer.Element?.DisposeModalAndChildRenderers();
 					_footerRenderer = null;
 				}
 
@@ -438,7 +438,7 @@ namespace Xamarin.Forms.Platform.iOS
 					}
 					Control.TableFooterView = null;
 					
-					_footerRenderer.Element.DisposeModalAndChildRenderers();
+					_footerRenderer.Element?.DisposeModalAndChildRenderers();
 					_footerRenderer.Dispose();
 					_footerRenderer = null;
 				}
@@ -458,7 +458,7 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.TableFooterView = null;
 				_footerRenderer.Element.MeasureInvalidated -= OnFooterMeasureInvalidated;
 
-				_footerRenderer.Element.DisposeModalAndChildRenderers();
+				_footerRenderer.Element?.DisposeModalAndChildRenderers();
 				_footerRenderer.Dispose();
 				_footerRenderer = null;
 			}
@@ -483,7 +483,7 @@ namespace Xamarin.Forms.Platform.iOS
 					}
 					Control.TableHeaderView = null;
 
-					_headerRenderer.Element.DisposeModalAndChildRenderers();
+					_headerRenderer.Element?.DisposeModalAndChildRenderers();
 					_headerRenderer.Dispose();
 					_headerRenderer = null;
 				}
@@ -504,7 +504,7 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.TableHeaderView = null;
 				_headerRenderer.Element.MeasureInvalidated -= OnHeaderMeasureInvalidated;
 
-				_headerRenderer.Element.DisposeModalAndChildRenderers();
+				_headerRenderer.Element?.DisposeModalAndChildRenderers();
 				_headerRenderer.Dispose();
 				_headerRenderer = null;
 			}

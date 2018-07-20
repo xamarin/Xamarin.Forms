@@ -294,7 +294,7 @@ namespace Xamarin.Forms.Platform.iOS
 		static void HandleChildRemoved(object sender, ElementEventArgs e)
 		{
 			var view = e.Element;
-			view.DisposeModalAndChildRenderers();
+			view?.DisposeModalAndChildRenderers();
 		}
 
 		bool PageIsChildOfPlatform(Page page)
