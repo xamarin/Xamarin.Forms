@@ -66,9 +66,7 @@ namespace Xamarin.Forms.Platform.UWP
 				_rootElement = visualElement;
 				_rootElement.MeasureInvalidated += RootElementOnMeasureInvalidated;
 
-				// TODO hartez 2018/07/24 11:22:05 Using GetOrCreate might be a waste here, since we're creating the element in this method	
-				// The "Get" part of GetOrCreate is checking a value that's certain to not be set. Change this to just create the renderer
-				Content = visualElement.GetOrCreateRenderer().ContainerElement;
+				Content = Platform.CreateRenderer(visualElement).ContainerElement;
 			}
 
 			if (FormsDataContext != null)
