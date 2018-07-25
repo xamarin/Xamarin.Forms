@@ -27,10 +27,18 @@ namespace Xamarin.Forms.Platform.Android
 		protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
 		{
 			int width = MeasureSpec.GetSize(widthMeasureSpec);
+			int height = MeasureSpec.GetSize(heightMeasureSpec);
 
-			// TODO hartez 2018/07/25 08:50:19 This only correctly measures for vertical right now	
-			SizeRequest measure = _content.Element.Measure(Context.FromPixels(width), double.PositiveInfinity, MeasureFlags.IncludeMargins);
-			var height = (int)Context.ToPixels(_content.Element.Height > 0 ? _content.Element.Height : measure.Request.Height);
+			var pixelWidth = Context.FromPixels(width);
+			var pixelHeight = Context.FromPixels(height);
+
+			SizeRequest measure = _content.Element.Measure(pixelWidth, pixelHeight, MeasureFlags.IncludeMargins);
+			
+			width = (int)Context.ToPixels(_content.Element.Width > 0 
+				? _content.Element.Width : measure.Request.Width);
+
+			height = (int)Context.ToPixels(_content.Element.Height > 0 
+				? _content.Element.Height : measure.Request.Height);
 
 			SetMeasuredDimension(width, height);
 		}
