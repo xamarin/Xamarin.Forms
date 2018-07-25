@@ -66,6 +66,7 @@
     <Compile Include="BorderBackgroundManager.cs" />
     <Compile Include="ButtonBackgroundTracker.cs" />
     <Compile Include="CollectionView\CollectionViewAdapter.cs" />
+    <Compile Include="CollectionView\ItemContentControl.cs" />
     <Compile Include="Elevation.cs" />
     <Compile Include="Extensions\EntryRendererExtensions.cs" />
     <Compile Include="Extensions\FragmentManagerExtensions.cs" />
