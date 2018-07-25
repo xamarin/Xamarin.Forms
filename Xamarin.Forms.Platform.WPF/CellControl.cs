@@ -99,7 +99,7 @@ namespace Xamarin.Forms.Platform.WPF
 			ApplyTemplate();
 
 			ContextMenu menu = new CustomContextMenu();
-			menu.SetBinding(ItemsView.ItemsSourceProperty, new System.Windows.Data.Binding("ContextActions"));
+			menu.SetBinding(ItemsControl.ItemsSourceProperty, new System.Windows.Data.Binding("ContextActions"));
 
 			ContextMenuService.SetContextMenu(this, menu);
 		}
