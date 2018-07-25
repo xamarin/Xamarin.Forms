@@ -105,17 +105,6 @@ namespace Xamarin.Forms.Platform.UWP
 			Size request = _rootElement.Measure(availableSize.Width, availableSize.Height, 
 				MeasureFlags.IncludeMargins).Request;
 
-			// TODO hartez 2018/07/24 11:01:41 With GetNativeSize working, I don't think this next set of ifs is entirely necessary 
-			if (request.Width < 0)
-			{
-				request.Width = 100;
-			}
-
-			if (request.Height < 0)
-			{
-				request.Height = 100;
-			}
-
 			// TODO hartez 2018/07/25 08:51:52 To make this look nicer, how about a LayoutOrigin extension method on VisualElement that just takes a size	
 			_rootElement.Layout(new Rectangle(0, 0, request.Width, request.Height));
 
