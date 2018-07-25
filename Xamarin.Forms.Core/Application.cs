@@ -36,20 +36,6 @@ namespace Xamarin.Forms
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Application>>(() => new PlatformConfigurationRegistry<Application>(this));
 		}
 
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public override IEnumerable<T> WalkChildren<T>()
-		{
-			var pages = NavigationProxy?.ModalStack;
-			if (pages == null)
-				return base.WalkChildren<T>();
-
-			var result = new List<T>(base.WalkChildren<T>());
-			foreach (var page in pages)
-				result.AddRange(page.WalkChildren<T>());
-
-			return result;
-		}
-
 		public void Quit()
 		{
 			Device.PlatformServices?.QuitApplication();

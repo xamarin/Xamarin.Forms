@@ -160,81 +160,27 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected void UpdateTabIndex () => TabIndex = Element.TabIndex;
 
-		public NativeView FocusSearch (bool forward)
+		public NativeView FocusSearch(bool forwardDirection)
 		{
-			var allChildrens = Application.Current.WalkChildren<VisualElement> ();
-			var childrensWithTabStop = new List<VisualElement> ();
-			foreach (var ch in allChildrens)
-			{
-				if (ch.IsTabStop)
-					childrensWithTabStop.Add (ch);
-			}
-			if (!childrensWithTabStop.Contains (Element))
+			VisualElement element = Element as VisualElement;
+			int maxAttempts = 0;
+			var tabIndexes = element?.GetTabIndexesOnParentPage(out maxAttempts);
+			if (tabIndexes == null)
 				return null;
-
-			IDictionary<int, List<VisualElement>> tabIndexes = childrensWithTabStop.GroupToDictionary(c => c.TabIndex);
 
 			int tabIndex = Element.TabIndex;
 			int attempt = 0;
-			int maxAttempts = childrensWithTabStop.Count - 1;
-			VisualElement element = Element;
 			NativeView control = null;
 
 			do
 			{
-				var tabGroup = tabIndexes [tabIndex];
-				if (!forward)
-				{
-					// search prev element in same TabIndex group
-					var prevSubIndex = tabGroup.IndexOf(element) - 1;
-					if (prevSubIndex >= 0 && prevSubIndex < tabGroup.Count)
-					{
-						element = tabGroup[prevSubIndex];
-					}
-					else // search prev element in prev TabIndex group
-					{
-						var smallerMax = int.MinValue;
-						var tabIndexesMax = int.MinValue;
-						foreach (var index in tabIndexes.Keys)
-						{
-							if (index < tabIndex && smallerMax < index)
-								smallerMax = index;
-							if (tabIndexesMax < index)
-								tabIndexesMax = index;
-						}
-						tabIndex = smallerMax != int.MinValue ? smallerMax : tabIndexesMax;
-						element = tabIndexes[tabIndex][0];
-					}
-				}
-				else // Forward
-				{
-					// search next element in same TabIndex group
-					var nextSubIndex = tabGroup.IndexOf(element) + 1;
-					if (nextSubIndex > 0 && nextSubIndex < tabGroup.Count)
-					{
-						element = tabGroup[nextSubIndex];
-					}
-					else // search next element in next TabIndex group
-					{
-						var biggerMin = int.MaxValue;
-						var tabIndexesMin = int.MaxValue;
-						foreach (var index in tabIndexes.Keys)
-						{
-							if (index > tabIndex && biggerMin > index)
-								biggerMin = index;
-							if (tabIndexesMin > index)
-								tabIndexesMin = index;
-						}
-						tabIndex = biggerMin != int.MaxValue ? biggerMin : tabIndexesMin;
-						element = tabIndexes[tabIndex][0];
-					}
-				}
+				element = element.FindNextElement(forwardDirection, tabIndexes, ref tabIndex);
 #if __MACOS__
 				var renderer = Platform.GetRenderer(element);
 				// use reflection to get the "Control" property from a specific renderer
-				control = renderer?.GetType ().GetProperty ("Control")?.GetValue (renderer, null) as NativeView;
+				control = renderer?.GetType().GetProperty("Control")?.GetValue(renderer, null) as NativeView;
 #else
-				element.Focus ();
+				element.Focus();
 #endif
 			} while (!(control != null || element.IsFocused || ++attempt >= maxAttempts));
 			return control;
@@ -243,7 +189,7 @@ namespace Xamarin.Forms.Platform.MacOS
 #if __MACOS__
 		public override NativeView NextKeyView { 
 			get {
-				return FocusSearch (forward: true) ?? base.NextKeyView;
+				return FocusSearch (forwardDirection: true) ?? base.NextKeyView;
 			}
 			set {
 				if (value != null) // setting the value to null throws an exception
@@ -253,7 +199,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public override NativeView PreviousKeyView {
 			get {
-				return FocusSearch (forward: false) ?? base.PreviousKeyView;
+				return FocusSearch (forwardDirection: false) ?? base.PreviousKeyView;
 			}
 		}
 #else
@@ -266,10 +212,10 @@ namespace Xamarin.Forms.Platform.MacOS
 
 
 		[Foundation.Export ("tabForward:")]
-		void TabForward (UIKeyCommand cmd) => FocusSearch (forward: true);
+		void TabForward (UIKeyCommand cmd) => FocusSearch (forwardDirection: true);
 
 		[Foundation.Export ("tabBackward:")]
-		void TabBackward (UIKeyCommand cmd) => FocusSearch (forward: false);
+		void TabBackward (UIKeyCommand cmd) => FocusSearch (forwardDirection: false);
 #endif
 
 		public void SetElement(TElement element)

@@ -144,80 +144,26 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override AView FocusSearch(AView focused, [GeneratedEnum] FocusSearchDirection direction)
 		{
-			var allChildrens = Application.Current.WalkChildren<VisualElement>();
-			var childrensWithTabStop = new List<VisualElement>();
-			foreach (var ch in allChildrens)
-			{
-				if (ch.IsTabStop)
-					childrensWithTabStop.Add(ch);
-			}
-			if (!childrensWithTabStop.Contains(Element))
-				return base.FocusSearch(focused, direction);
+			VisualElement element = Element as VisualElement;
+			int maxAttempts = 0;
+			var tabIndexes = element?.GetTabIndexesOnParentPage(out maxAttempts);
+			if (tabIndexes == null)
+				return null;
 
-			IDictionary<int, List<VisualElement>> tabIndexes = childrensWithTabStop.GroupToDictionary(c => c.TabIndex);
-
-			int tabIndex = Element.TabIndex;
+			int tabIndex = element.TabIndex;
 			AView control = null;
 			int attempt = 0;
-			int maxAttempts = childrensWithTabStop.Count - 1;
-			VisualElement element = Element;
+			bool forwardDirection = !(
+				(direction & FocusSearchDirection.Backward) != 0 ||
+				(direction & FocusSearchDirection.Left) != 0 ||
+				(direction & FocusSearchDirection.Up) != 0);
 
 			do
 			{
-				var tabGroup = tabIndexes[tabIndex];
-
-				if ((direction & FocusSearchDirection.Backward) != 0 ||
-					(direction & FocusSearchDirection.Left) != 0 ||
-					(direction & FocusSearchDirection.Up) != 0)
-				{
-					// search prev element in same TabIndex group
-					var prevSubIndex = tabGroup.IndexOf(element) - 1;
-					if (prevSubIndex >= 0 && prevSubIndex < tabGroup.Count)
-					{
-						element = tabGroup[prevSubIndex];
-					}
-					else // search next element in next TabIndex group
-					{
-						var smallerMax = int.MinValue;
-						var tabIndexesMax = int.MinValue;
-						foreach (var index in tabIndexes.Keys)
-						{
-							if (index < tabIndex && smallerMax < index)
-								smallerMax = index;
-							if (tabIndexesMax < index)
-								tabIndexesMax = index;
-						}
-						tabIndex = smallerMax != int.MinValue ? smallerMax : tabIndexesMax;
-						element = tabIndexes[tabIndex][0];
-					}
-				}
-				else // Forward || Right || Down || default
-				{
-					// search next element in same TabIndex group
-					var nextSubIndex = tabGroup.IndexOf(element) + 1;
-					if (nextSubIndex > 0 && nextSubIndex < tabGroup.Count)
-					{
-						element = tabGroup[nextSubIndex];
-					}
-					else // search next element in next TabIndex group
-					{
-						var biggerMin = int.MaxValue;
-						var tabIndexesMin = int.MaxValue;
-						foreach (var index in tabIndexes.Keys)
-						{
-							if (index > tabIndex && biggerMin > index)
-								biggerMin = index;
-							if (tabIndexesMin > index)
-								tabIndexesMin = index;
-						}
-						tabIndex = biggerMin != int.MaxValue ? biggerMin : tabIndexesMin;
-						element = tabIndexes[tabIndex][0];
-					}
-				}
-
+				element = element.FindNextElement(forwardDirection, tabIndexes, ref tabIndex);
 				var renderer = element.GetRenderer();
 				// use reflection to get the "Control" property from a specific renderer
-				control = renderer.GetType().GetProperty("Control")?.GetValue(renderer, null) as AView;
+				control = renderer.GetType()?.GetProperty("Control")?.GetValue(renderer, null) as AView;
 			} while (!(control?.Focusable == true || ++attempt >= maxAttempts));
 
 			return control;
