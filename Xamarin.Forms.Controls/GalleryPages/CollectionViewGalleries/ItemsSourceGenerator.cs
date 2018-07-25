@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 {
-	public class TesItem
+	public class TestItem
 	{
 		public string First { get; set; }
 		public string Second { get; set; }
@@ -37,19 +37,15 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			Content = layout;
 		}
 
-
-
 		public void GenerateItems()
 		{
 			if (int.TryParse(_entry.Text, out int count))
 			{
-				var items = new List<TesItem>();
+				var items = new List<TestItem>();
 
 				for (int n = 0; n < count; n++)
 				{
-					//items.Add($"{DateTime.Now.AddDays(n).ToLongDateString()}");
-
-					items.Add(new TesItem(){First = "Herp", Second = "derp"});
+					items.Add(new TestItem(){First = $"{DateTime.Now.AddDays(n).ToLongDateString()}", Second = "Second Property"});
 				}
 
 				_cv.ItemsSource = items;
