@@ -20,18 +20,18 @@
 	</ItemsPanelTemplate>
 
 	<DataTemplate x:Key="ItemsViewDefaultTemplate">
-		<local:FormsContentControl x:Name="FormsContentControl" 
+		<local:ItemContentControl x:Name="ItemContentControl" 
 									FormsDataTemplate="{Binding FormsDataTemplate}" FormsDataContext="{Binding Item}">
 			
-		</local:FormsContentControl>
+		</local:ItemContentControl>
 	</DataTemplate>
 	
-	<Style TargetType="local:FormsContentControl" >
+	<Style TargetType="local:ItemContentControl" >
 		<Setter Property="HorizontalContentAlignment" Value="Left"/>
 		<Setter Property="VerticalContentAlignment" Value="Top"/>
 		<Setter Property="Template">
 			<Setter.Value>
-				<ControlTemplate TargetType="local:FormsContentControl">
+				<ControlTemplate TargetType="local:ItemContentControl">
 					<ContentPresenter x:Name="ContentPresenter" Content="{TemplateBinding Content}"
 									ContentTemplate="{TemplateBinding ContentTemplate}"
 									Margin="{TemplateBinding Padding}"
@@ -44,3 +44,4 @@
 	</Style>
 
 </ResourceDictionary>
+

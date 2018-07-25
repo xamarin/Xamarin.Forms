@@ -6,17 +6,15 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	// TODO hartez 2018/06/28 09:08:55 This should really be named something like FormsItemControl/FormsItemsContentControl? Not sure yet.
-	// ItemContentControl right now on Android
-	public class FormsContentControl : ContentControl
+	public class ItemContentControl : ContentControl
 	{
-		public FormsContentControl()
+		public ItemContentControl()
 		{
-			DefaultStyleKey = typeof(FormsContentControl);
+			DefaultStyleKey = typeof(ItemContentControl);
 		}
 
 		public static readonly DependencyProperty FormsDataTemplateProperty = DependencyProperty.Register(
-			nameof(FormsDataTemplate), typeof(DataTemplate), typeof(FormsContentControl), 
+			nameof(FormsDataTemplate), typeof(DataTemplate), typeof(ItemContentControl), 
 			new PropertyMetadata(default(DataTemplate), FormsDataTemplateChanged));
 
 		static void FormsDataTemplateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -26,7 +24,7 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 			}
 
-			var formsContentControl = (FormsContentControl)d;
+			var formsContentControl = (ItemContentControl)d;
 			formsContentControl.RealizeFormsDataTemplate((DataTemplate)e.NewValue);
 		}
 
@@ -37,12 +35,12 @@ namespace Xamarin.Forms.Platform.UWP
 		}
 
 		public static readonly DependencyProperty FormsDataContextProperty = DependencyProperty.Register(
-			nameof(FormsDataContext), typeof(object), typeof(FormsContentControl), 
+			nameof(FormsDataContext), typeof(object), typeof(ItemContentControl), 
 			new PropertyMetadata(default(object), FormsDataContextChanged));
 
 		static void FormsDataContextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
 		{
-			var formsContentControl = (FormsContentControl)d;
+			var formsContentControl = (ItemContentControl)d;
 			formsContentControl.SetFormsDataContext(e.NewValue);
 		}
 
