@@ -15,11 +15,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)
 		{
-			double width = Context.FromPixels(r - l);
-			double height = Context.FromPixels(b - t);
+			var size = Context.FromPixels(r - l, b - t);
 
-			// TODO hartez 2018/07/25 08:51:24 Can this just be element.Layout?	
-			Xamarin.Forms.Layout.LayoutChildIntoBoundingRegion(_content.Element, new Rectangle(0, 0, width, height));
+			_content.Element.Layout(new Rectangle(Point.Zero, size));
 
 			_content.UpdateLayout();
 		}

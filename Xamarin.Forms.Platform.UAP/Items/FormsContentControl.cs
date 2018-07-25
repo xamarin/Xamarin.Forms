@@ -105,8 +105,7 @@ namespace Xamarin.Forms.Platform.UWP
 			Size request = _rootElement.Measure(availableSize.Width, availableSize.Height, 
 				MeasureFlags.IncludeMargins).Request;
 
-			// TODO hartez 2018/07/25 08:51:52 To make this look nicer, how about a LayoutOrigin extension method on VisualElement that just takes a size	
-			_rootElement.Layout(new Rectangle(0, 0, request.Width, request.Height));
+			_rootElement.Layout(new Rectangle(Point.Zero, request));
 
 			return new Windows.Foundation.Size(request.Width, request.Height); 
 		}
