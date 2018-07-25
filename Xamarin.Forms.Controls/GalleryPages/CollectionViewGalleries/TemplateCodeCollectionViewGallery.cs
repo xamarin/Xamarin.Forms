@@ -19,8 +19,8 @@
 				{
 					Source = "oasis.jpg",
 					
-					WidthRequest = 50,
-					HeightRequest = 50
+					WidthRequest = 100,
+					HeightRequest = 100
 				};
 
 				return view;

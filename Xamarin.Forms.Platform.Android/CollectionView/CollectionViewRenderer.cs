@@ -18,8 +18,6 @@ namespace Xamarin.Forms.Platform.Android
 		int? _defaultLabelFor;
 		bool _isDisposed;
 		ItemsView _itemsView;
-
-		// TODO hartez 2018/06/06 17:00:07 Add a watch on the IItemsLayout so we can update when Span changes	
 		IItemsLayout _layout;
 
 		public CollectionViewRenderer(Context context) : base(context)

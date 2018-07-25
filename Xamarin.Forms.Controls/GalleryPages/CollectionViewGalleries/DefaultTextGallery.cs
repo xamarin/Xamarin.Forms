@@ -54,6 +54,10 @@
 							new TemplateCodeCollectionViewGallery(ListItemsLayout.VerticalList), Navigation),
 						GalleryBuilder.NavButton("Horizontal List (Code)", () => 
 							new TemplateCodeCollectionViewGallery(ListItemsLayout.HorizontalList), Navigation),
+						GalleryBuilder.NavButton("Vertical Grid (Code)", () => 
+							new TemplateCodeCollectionViewGridGallery (), Navigation),
+						GalleryBuilder.NavButton("Horizontal Grid (Code)", () => 
+							new TemplateCodeCollectionViewGridGallery (ItemsLayoutOrientation.Horizontal), Navigation),
 					}
 				}
 			};
