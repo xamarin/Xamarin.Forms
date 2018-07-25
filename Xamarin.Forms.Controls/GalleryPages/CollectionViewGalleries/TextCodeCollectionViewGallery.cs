@@ -41,20 +41,15 @@
 				}
 			};
 
-			// TODO hartez 2018/07/11 11:56:39 Not setting width/height request throws an exception (at least on vertical)	
 			var itemTemplate = new DataTemplate(() =>
 			{
-				//var l = new StackLayout();
-
 				var view = new Image
 				{
 					Source = "oasis.jpg",
 					
-					//WidthRequest = 50,
-					//HeightRequest = 50
+					WidthRequest = 50,
+					HeightRequest = 50
 				};
-
-				//l.Children.Add(view);
 
 				return view;
 			});
@@ -72,7 +67,6 @@
 
 			var sl = new StackLayout();
 			sl.Children.Add(new Image{Source = "oasis.jpg"});
-			//layout.Children.Add(sl);
 
 			layout.Children.Add(collectionView);
 
