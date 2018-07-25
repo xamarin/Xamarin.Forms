@@ -177,41 +177,29 @@ namespace Xamarin.Forms
 			double minWidth = width;
 			double minHeight = height;
 
-			if (!widthIsProportional && bounds.Width != AutoSize)
+			if (!widthIsProportional)
 			{
-				// fixed size
-				width += bounds.Width;
-				minWidth += bounds.Width;
-			}
-			else if (!widthIsProportional)
-			{
-				// auto size
-				width += sizeRequest.Value.Request.Width;
-				minWidth += sizeRequest.Value.Minimum.Width;
+				bool isFixed = bounds.Width != AutoSize;
+				width += isFixed ? bounds.Width : sizeRequest.Value.Request.Width;
+				minWidth += isFixed ? bounds.Width : sizeRequest.Value.Minimum.Width;
 			}
 			else
 			{
 				// proportional size
-				width += sizeRequest.Value.Request.Width / Math.Max(0.25, bounds.Width);
+				width += sizeRequest.Value.Request.Width;
 				//minWidth += 0;
 			}
 
-			if (!heightIsProportional && bounds.Height != AutoSize)
+			if (!heightIsProportional)
 			{
-				// fixed size
-				height += bounds.Height;
-				minHeight += bounds.Height;
-			}
-			else if (!heightIsProportional)
-			{
-				// auto size
-				height += sizeRequest.Value.Request.Height;
-				minHeight += sizeRequest.Value.Minimum.Height;
+				bool isFixed = bounds.Height != AutoSize;
+				height += isFixed ? bounds.Height : sizeRequest.Value.Request.Height;
+				minHeight += isFixed ? bounds.Height : sizeRequest.Value.Minimum.Height;
 			}
 			else
 			{
 				// proportional size
-				height += sizeRequest.Value.Request.Height / Math.Max(0.25, bounds.Height);
+				height += sizeRequest.Value.Request.Height;
 				//minHeight += 0;
 			}
 

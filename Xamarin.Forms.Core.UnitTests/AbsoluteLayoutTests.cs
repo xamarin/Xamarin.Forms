@@ -174,7 +174,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			var sizeReq = abs.GetSizeRequest (double.PositiveInfinity, double.PositiveInfinity);
 
-			Assert.AreEqual (new Size (200, 40), sizeReq.Request);
+			Assert.AreEqual (new Size (100, 20), sizeReq.Request);
 			Assert.AreEqual (new Size (0, 0), sizeReq.Minimum);
 		}
 
@@ -196,7 +196,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			var sizeReq = abs.GetSizeRequest (double.PositiveInfinity, double.PositiveInfinity);
 
-			Assert.AreEqual (new Size (210, 60), sizeReq.Request);
+			Assert.AreEqual (new Size (110, 40), sizeReq.Request);
 			Assert.AreEqual (new Size (10, 20), sizeReq.Minimum);
 		}
 
