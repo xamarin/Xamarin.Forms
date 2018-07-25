@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Platform.UWP
 		}
 
 		public static readonly DependencyProperty FormsDataTemplateProperty = DependencyProperty.Register(
-			"FormsDataTemplate", typeof(DataTemplate), typeof(FormsContentControl), 
+			nameof(FormsDataTemplate), typeof(DataTemplate), typeof(FormsContentControl), 
 			new PropertyMetadata(default(DataTemplate), FormsDataTemplateChanged));
 
 		static void FormsDataTemplateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -36,9 +36,8 @@ namespace Xamarin.Forms.Platform.UWP
 			set => SetValue(FormsDataTemplateProperty, value);
 		}
 
-		// TODO hartez 2018/07/24 11:02:39 Use nameof	
 		public static readonly DependencyProperty FormsDataContextProperty = DependencyProperty.Register(
-			"FormsDataContext", typeof(object), typeof(FormsContentControl), 
+			nameof(FormsDataContext), typeof(object), typeof(FormsContentControl), 
 			new PropertyMetadata(default(object), FormsDataContextChanged));
 
 		static void FormsDataContextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
