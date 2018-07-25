@@ -1,12 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 {
+	[Preserve(AllMembers = true)]
 	public class TestItem
 	{
-		public string First { get; set; }
-		public string Second { get; set; }
+		public string Date { get; set; }
+		public string Caption { get; set; }
+		public string Image { get; set; }
+
+		public override string ToString()
+		{
+			return $"{nameof(Date)}: {Date}";
+		}
 	}
 
 	internal class ItemsSourceGenerator : ContentView
@@ -37,6 +45,17 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			Content = layout;
 		}
 
+		readonly string[] _images = 
+		{
+			"cover1.jpg", 
+			"oasis.jpg",
+			"photo.jpg",
+			"Vegetables.jpg",
+			"Fruits.jpg",
+			"FlowerBuds.jpg",
+			"Legumes.jpg"
+		};
+
 		public void GenerateItems()
 		{
 			if (int.TryParse(_entry.Text, out int count))
@@ -45,7 +64,12 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 
 				for (int n = 0; n < count; n++)
 				{
-					items.Add(new TestItem(){First = $"{DateTime.Now.AddDays(n).ToLongDateString()}", Second = "Second Property"});
+					items.Add(new TestItem
+					{
+						Date = $"{DateTime.Now.AddDays(n).ToLongDateString()}", 
+						Image = _images[n % _images.Length],
+						Caption = $"{_images[n % _images.Length]}, {n}",
+					});
 				}
 
 				_cv.ItemsSource = items;

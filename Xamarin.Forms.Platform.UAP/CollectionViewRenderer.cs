@@ -68,10 +68,13 @@ namespace Xamarin.Forms.Platform.UWP
 			var itemTemplate = Element.ItemTemplate;
 			if (itemTemplate != null)
 			{
-				ItemTemplateEnumerator sourceThing = new ItemTemplateEnumerator(itemsSource, itemTemplate);
+				// The ItemContentControls need the actual data item and the template so they can inflate the template
+				// and bind the result to the data item.
+				// ItemTemplateEnumerator handles pairing them up for the ItemContentControls to consume
+				var itemTemplateEnumerator = new ItemTemplateEnumerator(itemsSource, itemTemplate);
 				collectionViewSource = new CollectionViewSource
 				{
-					Source = sourceThing,
+					Source = itemTemplateEnumerator,
 					IsSourceGrouped = false
 				};
 			}

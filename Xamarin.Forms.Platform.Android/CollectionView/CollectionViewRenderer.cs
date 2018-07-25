@@ -161,9 +161,26 @@ namespace Xamarin.Forms.Platform.Android
 			EffectUtilities.RegisterEffectControlProvider(this, oldElement, newElement);
 		}
 
-		void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		void OnElementPropertyChanged(object sender, PropertyChangedEventArgs changedProperty)
 		{
-			ElementPropertyChanged?.Invoke(this, e);
+			ElementPropertyChanged?.Invoke(this, changedProperty);
+
+			if (changedProperty.Is(ItemsView.ItemsSourceProperty))
+			{
+				UpdateItemsSource();
+			}
+		}
+
+		protected void UpdateItemsSource()
+		{
+			if (_itemsView == null)
+			{
+				return;
+			}
+
+			// TODO hartez 2018/05/29 20:28:14 Review whether we really need to keep a ref to adapter	
+			_adapter = new CollectionViewAdapter(_itemsView, Context);
+			SetAdapter(_adapter);
 		}
 
 		void SetUpNewElement(ItemsView newElement)
@@ -183,9 +200,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			this.EnsureId();
 
-			// TODO hartez 2018/05/29 20:28:14 Review whether we really need to keep a ref to adapter	
-			_adapter = new CollectionViewAdapter(newElement, Context);
-			SetAdapter(_adapter);
+			UpdateItemsSource();
 			SetLayoutManager(SelectLayoutManager(newElement.ItemsLayout));
 
 			// Keep track of the ItemsLayout's property changes

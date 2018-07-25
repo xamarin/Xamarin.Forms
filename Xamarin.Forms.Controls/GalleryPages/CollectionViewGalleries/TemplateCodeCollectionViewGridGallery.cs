@@ -16,18 +16,7 @@
 
 			var itemsLayout = new GridItemsLayout(2, orientation);
 
-			var itemTemplate = new DataTemplate(() =>
-			{
-				var view = new Image
-				{
-					Source = "oasis.jpg",
-					
-					WidthRequest = 100,
-					HeightRequest = 100
-				};
-
-				return view;
-			});
+			var itemTemplate = ExampleTemplates.PhotoTemplate();
 
 			var collectionView = new CollectionView {ItemsLayout = itemsLayout, ItemTemplate = itemTemplate};
 
