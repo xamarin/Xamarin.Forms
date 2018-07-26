@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		EventTracker _events;
 		VisualElementTracker _tracker;
 		ScrollToRequestedEventArgs _requestedScroll;
-		IVisualElementRenderer _contentRenderer;
+		VisualElementPackager _packager;
 
 		public ScrollViewRenderer() : base(RectangleF.Empty)
 		{
@@ -56,9 +56,10 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				element.PropertyChanged += OnElementPropertyChanged;
 				((ScrollView)element).ScrollToRequested += OnScrollToRequested;
-				if (_tracker == null)
+				if (_packager == null)
 				{
-					PackContent();
+					_packager = new VisualElementPackager(this);
+					_packager.Load();
 
 					_events = new EventTracker(this);
 					_events.LoadEvents(this);
@@ -97,10 +98,13 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			if (disposing)
 			{
-				if (_tracker == null)
+				if (_packager == null)
 					return;
 
 				SetElement(null);
+
+				_packager.Dispose();
+				_packager = null;
 
 				_tracker.NativeControlUpdated -= OnNativeControlUpdated;
 				_tracker.Dispose();
@@ -108,8 +112,6 @@ namespace Xamarin.Forms.Platform.MacOS
 
 				_events.Dispose();
 				_events = null;
-
-				ClearContentRenderer();
 
 				//NSNotificationCenter.DefaultCenter.RemoveObserver(this, BoundsChangedNotification);
 			}
@@ -120,24 +122,6 @@ namespace Xamarin.Forms.Platform.MacOS
 		void RaiseElementChanged(VisualElementChangedEventArgs e)
 		{
 			ElementChanged?.Invoke(this, e);
-		}
-
-		void PackContent()
-		{
-			ClearContentRenderer();
-
-			if (ScrollView.Children.Count == 0 || !(ScrollView.Children[0] is VisualElement))
-				return;
-
-			var content = (VisualElement)ScrollView.Children[0];
-			if (Platform.GetRenderer(content) == null)
-				Platform.SetRenderer(content, Platform.CreateRenderer(content));
-
-			_contentRenderer = Platform.GetRenderer(content);
-			(ContentView as FlippedClipView).ContentRenderer = _contentRenderer;
-			DocumentView = _contentRenderer.NativeView;
-
-			ContentView.PostsBoundsChangedNotifications = true;
 		}
 
 		void LayoutSubviews()
@@ -279,16 +263,6 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 			else
 				ResetNativeNonScroll();
-		}
-
-		void ClearContentRenderer()
-		{
-			if ((ContentView as FlippedClipView) != null)
-				(ContentView as FlippedClipView).ContentRenderer = null;
-
-			_contentRenderer?.NativeView?.RemoveFromSuperview();
-			_contentRenderer?.Dispose();
-			_contentRenderer = null;
 		}
 	}
 }
