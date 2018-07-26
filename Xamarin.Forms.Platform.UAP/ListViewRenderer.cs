@@ -19,15 +19,14 @@ using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.ListView;
 using System.Collections.ObjectModel;
-using System.Reflection;
 
 namespace Xamarin.Forms.Platform.UWP
 {
 	public class ListViewRenderer : ViewRenderer<ListView, FrameworkElement>
 	{
 		ITemplatedItemsView<Cell> TemplatedItemsView => Element;
-		ObservableCollection<object> SourceItems => _context?.Source as ObservableCollection<object>;
-		CollectionViewSource _context;
+		bool _collectionIsWrapped;
+		IList _collection = null;
 		bool _itemWasClicked;
 		bool _subscribedToItemClick;
 		bool _subscribedToTapped;
@@ -83,107 +82,91 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
+		bool IsObservableCollection(Type type)
+		{
+			return type.IsGenericType &&
+				   type.GetGenericTypeDefinition() == typeof(ObservableCollection<>);
+		}
+
 		void ReloadData()
 		{
-			if (Element?.ItemsSource == null && _context != null)
-				_context.Source = null;
+			if (Element?.ItemsSource == null)
+				_collection = null;
 
-			var allSourceItems = new ObservableCollection<object>();
-
-			if (Element?.ItemsSource != null)
+			if (IsObservableCollection(Element?.ItemsSource.GetType()))
 			{
+				_collection = (IList)Element?.ItemsSource;
+				_collectionIsWrapped = false;
+			}
+			else
+			{
+				_collection = new ObservableCollection<object>();
 				foreach (var item in Element.ItemsSource)
-					allSourceItems.Add(item);
+					_collection.Add(item);
+				_collectionIsWrapped = true;
 			}
 
 			// WinRT throws an exception if you set ItemsSource directly to a CVS, so bind it.
-			List.DataContext = _context = new CollectionViewSource
+			List.DataContext = new CollectionViewSource
 			{
-				Source = allSourceItems,
+				Source = _collection,
 				IsSourceGrouped = Element.IsGroupingEnabled
-			};
-
-			if (Element?.ItemsSource is INotifyCollectionChanged)
-			{
-				allSourceItems.CollectionChanged -= OnCollectionChangedInUserCode;
-				allSourceItems.CollectionChanged += OnCollectionChangedInUserCode;
-			}
-		}
-
-		/// <summary>
-		/// Call all methods subscribed to the "CollectionChanged" event in the original ItemsSource
-		/// </summary>
-		void OnCollectionChangedInUserCode(object sender, NotifyCollectionChangedEventArgs e)
-		{
-			Type sourceType = Element?.ItemsSource?.GetType();
-			if (sourceType == null)
-				return;
-
-			var multiDelegate = sourceType
-				.GetField("CollectionChanged", BindingFlags.Instance | BindingFlags.NonPublic)?
-				.GetValue(Element.ItemsSource)
-				as MulticastDelegate;
-			Delegate[] list = multiDelegate?.GetInvocationList();
-			if (list == null)
-				return;
-
-			Assembly elementAssembly = Element.GetType().Assembly;
-			foreach (var d in list)
-			{
-				if (elementAssembly != d.Method.Module.Assembly) // Excluding internal subscriptions in Xamrin.Forms.Core
-					d.Method.Invoke(d.Target, new[] { sender, e });
 			};
 		}
 
 		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			switch (e.Action)
+			if (_collectionIsWrapped && _collection != null)
 			{
-				case NotifyCollectionChangedAction.Add:
-					if (e.NewStartingIndex < 0)
-						goto case NotifyCollectionChangedAction.Reset;
+				switch (e.Action)
+				{
+					case NotifyCollectionChangedAction.Add:
+						if (e.NewStartingIndex < 0)
+							goto case NotifyCollectionChangedAction.Reset;
 
-					// if a NewStartingIndex that's too high is passed in just add the items.
-					// I realize this is enforcing bad behavior but prior to this synchronization
-					// code being added it wouldn't cause the app to crash whereas now it does
-					// so this code accounts for that in order to ensure smooth sailing for the user
-					if (e.NewStartingIndex >= SourceItems.Count)
-					{
-						for (int i = 0; i < e.NewItems.Count; i++)
-							SourceItems.Add((e.NewItems[i] as BindableObject).BindingContext);
-					}
-					else
-					{
-						for (int i = e.NewItems.Count - 1; i >= 0; i--)
-							SourceItems.Insert(e.NewStartingIndex, (e.NewItems[i] as BindableObject).BindingContext);
-					}
-
-					break;
-				case NotifyCollectionChangedAction.Remove:
-					for (int i = e.OldItems.Count - 1; i >= 0; i--)
-						SourceItems.RemoveAt(e.OldStartingIndex);
-					break;
-				case NotifyCollectionChangedAction.Move:
-					for (var i = 0; i < e.OldItems.Count; i++)
-					{
-						var oldi = e.OldStartingIndex;
-						var newi = e.NewStartingIndex;
-
-						if (e.NewStartingIndex < e.OldStartingIndex)
+						// if a NewStartingIndex that's too high is passed in just add the items.
+						// I realize this is enforcing bad behavior but prior to this synchronization
+						// code being added it wouldn't cause the app to crash whereas now it does
+						// so this code accounts for that in order to ensure smooth sailing for the user
+						if (e.NewStartingIndex >= _collection.Count)
 						{
-							oldi += i;
-							newi += i;
+							for (int i = 0; i < e.NewItems.Count; i++)
+								_collection.Add((e.NewItems[i] as BindableObject).BindingContext);
+						}
+						else
+						{
+							for (int i = e.NewItems.Count - 1; i >= 0; i--)
+								_collection.Insert(e.NewStartingIndex, (e.NewItems[i] as BindableObject).BindingContext);
 						}
 
-						SourceItems.Move(oldi, newi);
-					}
-					break;
-				case NotifyCollectionChangedAction.Replace:
-				case NotifyCollectionChangedAction.Reset:
-				default:
-					ClearSizeEstimate();
-					ReloadData();
-					break;
+						break;
+					case NotifyCollectionChangedAction.Remove:
+						for (int i = e.OldItems.Count - 1; i >= 0; i--)
+							_collection.RemoveAt(e.OldStartingIndex);
+						break;
+					case NotifyCollectionChangedAction.Move:
+						for (var i = 0; i < e.OldItems.Count; i++)
+						{
+							var oldi = e.OldStartingIndex;
+							var newi = e.NewStartingIndex;
+
+							if (e.NewStartingIndex < e.OldStartingIndex)
+							{
+								oldi += i;
+								newi += i;
+							}
+
+							// we know that wrapped collection is an ObservableCollection<object>
+							((ObservableCollection<object>)_collection).Move(oldi, newi);
+						}
+						break;
+					case NotifyCollectionChangedAction.Replace:
+					case NotifyCollectionChangedAction.Reset:
+					default:
+						ClearSizeEstimate();
+						ReloadData();
+						break;
+				}
 			}
 
 			Device.BeginInvokeOnMainThread(() => List?.UpdateLayout());
@@ -255,8 +238,6 @@ namespace Xamarin.Forms.Platform.UWP
 						_subscribedToItemClick = false;
 						List.ItemClick -= OnListItemClicked;
 					}
-					if (Element?.ItemsSource is INotifyCollectionChanged notityCollection)
-						notityCollection.CollectionChanged -= OnCollectionChangedInUserCode;
 
 					List.SelectionChanged -= OnControlSelectionChanged;
 					List.DataContext = null;
@@ -332,8 +313,8 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			bool grouping = Element.IsGroupingEnabled;
 
-			if (_context != null)
-				_context.IsSourceGrouped = grouping;
+			if (List.DataContext is CollectionViewSource context && context != null)
+				context.IsSourceGrouped = grouping;
 
 			var templatedItems = TemplatedItemsView.TemplatedItems;
 			if (grouping && templatedItems.ShortNames != null)
