@@ -78,7 +78,7 @@ namespace Xamarin.Forms.Controls.Issues
 		public void Issue3001Test()
 		{
 			RunningApp.WaitForElement(q => q.Marked(ButtonId));
-			RunningApp.Tap(q => q.Marked(ButtonId), timeout: TimeSpan.FromSeconds(5));
+			RunningApp.Tap(q => q.Marked(ButtonId));
 			RunningApp.WaitForElement(q => q.Marked(ReadyId), timeout: TimeSpan.FromSeconds(5));
 		}
 #endif
