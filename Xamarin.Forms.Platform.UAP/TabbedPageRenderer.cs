@@ -242,7 +242,8 @@ namespace Xamarin.Forms.Platform.UWP
 			UpdateAccessKeys();
 		}
 
-		void OnPagesChanged(object sender, NotifyCollectionChangedEventArgs e) {
+		void OnPagesChanged(object sender, NotifyCollectionChangedEventArgs e) 
+		{
 			e.Apply(Element.Children, Control.Items);
 			switch (e.Action)
 			{
@@ -251,20 +252,33 @@ namespace Xamarin.Forms.Platform.UWP
 				case NotifyCollectionChangedAction.Replace:
 					if (e.NewItems != null)
 						for (int i = 0; i< e.NewItems.Count; i++)
-							(e.NewItems[i] as Page).PropertyChanged += OnChildPagePropertyChanged;
+							((Page)e.NewItems[i]).PropertyChanged += OnChildPagePropertyChanged;
 					if (e.OldItems != null)
 						for (int i = 0; i < e.OldItems.Count; i++)
-							(e.OldItems[i] as Page).PropertyChanged -= OnChildPagePropertyChanged;
+							((Page)e.OldItems[i]).PropertyChanged -= OnChildPagePropertyChanged;
 					break;
 				case NotifyCollectionChangedAction.Reset:
-					foreach (var p in Element.Children)
-						p.PropertyChanged += OnChildPagePropertyChanged;
-					break;
-				default:
+					foreach (var page in Element.Children)
+						page.PropertyChanged += OnChildPagePropertyChanged;
 					break;
 			}
-			// Potential performance issue, UpdateLayout () is called for every page change
+			
 			Control.UpdateLayout();
+			EnsureBarColors(e.Action);
+		}
+
+		void EnsureBarColors(NotifyCollectionChangedAction action)
+		{
+			switch (action)
+			{
+				case NotifyCollectionChangedAction.Add:
+				case NotifyCollectionChangedAction.Replace:
+				case NotifyCollectionChangedAction.Reset:
+					// Need to make sure any new items have the correct fore/background colors
+					ApplyBarBackgroundColor(true);
+					ApplyBarTextColor(true);
+					break;
+			}
 		}
 
 		void OnChildPagePropertyChanged(object sender, PropertyChangedEventArgs e) {
@@ -325,11 +339,17 @@ namespace Xamarin.Forms.Platform.UWP
 			if (barBackgroundColor == _barBackgroundColor) return;
 			_barBackgroundColor = barBackgroundColor;
 
+			ApplyBarBackgroundColor();
+		}
+
+		void ApplyBarBackgroundColor(bool force = false)
+		{
 			var controlToolbarBackground = Control.ToolbarBackground;
-			if (controlToolbarBackground == null && barBackgroundColor.IsDefault) return;
+			if (controlToolbarBackground == null && _barBackgroundColor.IsDefault) return;
 
 			var brush = GetBarBackgroundBrush();
-			if (brush == controlToolbarBackground) return;
+			if (brush == controlToolbarBackground && !force) 
+				return;
 
 			TitleProvider.BarBackgroundBrush = brush;
 
@@ -347,11 +367,16 @@ namespace Xamarin.Forms.Platform.UWP
 			if (barTextColor == _barTextColor) return;
 			_barTextColor = barTextColor;
 
+			ApplyBarTextColor();
+		}
+
+		void ApplyBarTextColor(bool force = false)
+		{
 			var controlToolbarForeground = Control.ToolbarForeground;
-			if (controlToolbarForeground == null && barTextColor.IsDefault) return;
+			if (controlToolbarForeground == null && _barTextColor.IsDefault) return;
 
 			var brush = GetBarForegroundBrush();
-			if (brush == controlToolbarForeground)
+			if (brush == controlToolbarForeground && !force)
 				return;
 
 			TitleProvider.BarForegroundBrush = brush;
