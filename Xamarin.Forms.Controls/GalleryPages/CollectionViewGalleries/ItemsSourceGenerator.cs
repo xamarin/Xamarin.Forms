@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
@@ -73,6 +74,26 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 				}
 
 				_cv.ItemsSource = items;
+			}
+		}
+
+		public void GenerateObservableCollection()
+		{
+			if (int.TryParse(_entry.Text, out int count))
+			{
+				var items = new List<TestItem>();
+
+				for (int n = 0; n < count; n++)
+				{
+					items.Add(new TestItem
+					{
+						Date = $"{DateTime.Now.AddDays(n).ToLongDateString()}", 
+						Image = _images[n % _images.Length],
+						Caption = $"{_images[n % _images.Length]}, {n}",
+					});
+				}
+
+				_cv.ItemsSource = new ObservableCollection<TestItem>(items);
 			}
 		}
 
