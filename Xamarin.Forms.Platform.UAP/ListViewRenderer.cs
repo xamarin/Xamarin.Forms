@@ -91,19 +91,23 @@ namespace Xamarin.Forms.Platform.UWP
 		void ReloadData()
 		{
 			if (Element?.ItemsSource == null)
-				_collection = null;
-
-			if (IsObservableCollection(Element?.ItemsSource.GetType()))
 			{
-				_collection = (IList)Element?.ItemsSource;
-				_collectionIsWrapped = false;
+				_collection = null;
 			}
 			else
 			{
-				_collection = new ObservableCollection<object>();
-				foreach (var item in Element.ItemsSource)
-					_collection.Add(item);
-				_collectionIsWrapped = true;
+				if (IsObservableCollection(Element?.ItemsSource.GetType()))
+				{
+					_collection = (IList)Element?.ItemsSource;
+					_collectionIsWrapped = false;
+				}
+				else
+				{
+					_collection = new ObservableCollection<object>();
+					foreach (var item in Element.ItemsSource)
+						_collection.Add(item);
+					_collectionIsWrapped = true;
+				}
 			}
 
 			// WinRT throws an exception if you set ItemsSource directly to a CVS, so bind it.

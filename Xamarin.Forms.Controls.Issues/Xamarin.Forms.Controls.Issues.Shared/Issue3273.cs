@@ -50,7 +50,8 @@ namespace Xamarin.Forms.Controls.Issues
 							statusLabel.Text = "Failed";
 							Items.Move(0, 1); })
 					},
-					listView
+					listView,
+					new ListView()
 				}
 			};
 		}
