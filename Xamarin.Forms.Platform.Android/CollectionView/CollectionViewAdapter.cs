@@ -1,64 +1,29 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
 using Android.Content;
 using Android.Support.V7.Widget;
 using Android.Views;
 using Android.Widget;
-using Xamarin.Forms.Internals;
 using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
 	// TODO hartez 2018/07/25 14:39:29 Split up CollectionViewAdapter into one for templates, one for text	
-	// TODO hartez 2018/07/25 14:40:04 The base of CollectionViewAdapter needs to handle ObservableCollection as a source	
-	// TODO hartez 2018/07/25 14:40:35 Handle observablecollection adds/removes/etc as Adapter.notifyItemInserted, removed, etc
 	// TODO hartez 2018/07/25 14:43:04 Experiment with an ItemSource property change as _adapter.notifyDataSetChanged	
 	// TODO hartez 2018/07/25 14:44:15 Template property changed should do a whole new adapter; and that way we can cache the template
-
-	internal class ItemSourceList : List<object>
-	{
-		public ItemSourceList()
-		{
-		}
-
-		public ItemSourceList(IEnumerable<object> collection) : base(collection)
-		{
-		}
-
-		public static ItemSourceList Create(IEnumerable itemSource)
-		{
-			if (itemSource is IEnumerable<object> generic)
-			{
-				return new ItemSourceList(generic);	
-			}
-			
-			var list = new ItemSourceList();
-
-			foreach (object item in itemSource)
-			{
-				list.Add(item);
-			}
-
-			return list;
-		}
-	}
 
 	internal class CollectionViewAdapter : RecyclerView.Adapter
 	{
 		readonly ItemsView _itemsView;
 		readonly Context _context;
-		readonly ItemSourceList _itemSource;
+		readonly ICollectionViewSource _itemSource;
 
 		// TODO hartez 2018/05/29 17:06:45 Reconcile the type/name mismatch here	
 		// This class should probably be something like ItemsViewAdapter
 		internal CollectionViewAdapter(ItemsView itemsView, Context context)
 		{
 			_itemsView = itemsView;
-			_itemSource = ItemSourceList.Create(itemsView.ItemsSource);
 			_context = context;
+			_itemSource = ItemsSourceFactory.Create(itemsView.ItemsSource, this);
 		}
 
 		public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
@@ -75,6 +40,7 @@ namespace Xamarin.Forms.Platform.Android
 					break;
 			}
 		}
+
 		public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)
 		{
 			// Does the ItemsView have a DataTemplate?
