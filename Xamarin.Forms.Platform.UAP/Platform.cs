@@ -46,6 +46,16 @@ namespace Xamarin.Forms.Platform.UWP
 			return renderer;
 		}
 
+		internal static Platform Current
+		{
+			get
+			{
+				var frame = Window.Current?.Content as Windows.UI.Xaml.Controls.Frame;
+				var wbp = frame?.Content as WindowsBasePage;
+				return wbp?.Platform;
+			}
+		}
+
 		internal Platform(Windows.UI.Xaml.Controls.Page page)
 		{
 			if (page == null)
