@@ -11,6 +11,7 @@
 					new RowDefinition { Height = GridLength.Auto },
 					new RowDefinition { Height = GridLength.Auto },
 					new RowDefinition { Height = GridLength.Auto },
+					new RowDefinition { Height = GridLength.Auto },
 					new RowDefinition { Height = GridLength.Star }
 				}
 			};
@@ -24,6 +25,7 @@
 			var generator = new ItemsSourceGenerator(collectionView);
 			var spanSetter = new SpanSetter(collectionView);
 			var remover = new ItemRemover(collectionView);
+			var adder = new ItemAdder(collectionView);
 
 			layout.Children.Add(generator);
 			layout.Children.Add(spanSetter);
@@ -32,8 +34,11 @@
 			layout.Children.Add(remover);
 			Grid.SetRow(remover, 2);
 
+			layout.Children.Add(adder);
+			Grid.SetRow(adder, 3);
+
 			layout.Children.Add(collectionView);
-			Grid.SetRow(collectionView, 3);
+			Grid.SetRow(collectionView, 4);
 
 			Content = layout;
 

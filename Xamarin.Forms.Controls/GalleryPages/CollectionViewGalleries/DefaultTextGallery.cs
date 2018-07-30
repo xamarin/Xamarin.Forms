@@ -81,7 +81,7 @@
 					Children =
 					{
 						descriptionLabel,
-						GalleryBuilder.NavButton("Removing Items", () => 
+						GalleryBuilder.NavButton("Add/Remove Items", () => 
 							new ObservableCodeCollectionViewGridGallery (), Navigation),
 					}
 				}

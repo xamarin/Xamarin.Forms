@@ -24,6 +24,7 @@ namespace Xamarin.Forms.Platform.Android
 			switch (args.Action)
 			{
 				case NotifyCollectionChangedAction.Add:
+					Add(args);
 					break;
 				case NotifyCollectionChangedAction.Remove:
 					Remove(args);
@@ -39,23 +40,32 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		void Remove(NotifyCollectionChangedEventArgs args)
+		void Add(NotifyCollectionChangedEventArgs args)
 		{
-			if (args.OldStartingIndex > -1)
+			var startIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : _itemsSource.IndexOf(args.NewItems[0]);
+			var count = args.NewItems.Count;
+
+			if (count == 1)
 			{
-				_adapter.NotifyItemRangeRemoved(args.OldStartingIndex, args.OldItems.Count);
+				_adapter.NotifyItemInserted(startIndex);
 				return;
 			}
 
-			var startIndex = _itemsSource.IndexOf(args.OldItems[0]);
+			_adapter.NotifyItemRangeInserted(startIndex, count);
+		}
 
-			if (args.OldItems.Count == 1)
+		void Remove(NotifyCollectionChangedEventArgs args)
+		{
+			var startIndex = args.OldStartingIndex > -1 ? args.OldStartingIndex : _itemsSource.IndexOf(args.OldItems[0]);
+			var count = args.OldItems.Count;
+
+			if (count == 1)
 			{
 				_adapter.NotifyItemRemoved(startIndex);
 				return;
 			}
 
-			_adapter.NotifyItemRangeRemoved(startIndex, args.OldItems.Count);
+			_adapter.NotifyItemRangeRemoved(startIndex, count);
 		}
 
 
