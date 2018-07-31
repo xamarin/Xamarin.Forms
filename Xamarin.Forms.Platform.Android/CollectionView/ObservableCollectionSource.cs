@@ -21,6 +21,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void CollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
 		{
+			// TODO hartez 2018/07/31 16:02:50 Handle the reset of these cases (implementing selection will make them much easier to test)	
 			switch (args.Action)
 			{
 				case NotifyCollectionChangedAction.Add:

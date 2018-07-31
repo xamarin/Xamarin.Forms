@@ -47,6 +47,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void InnerCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
 		{
+			// TODO hartez 2018/07/31 16:02:50 Handle the reset of these cases (implementing selection will make them much easier to test)	
 			switch (args.Action)
 			{
 				case NotifyCollectionChangedAction.Add:
@@ -55,6 +56,7 @@ namespace Xamarin.Forms.Platform.UWP
 				case NotifyCollectionChangedAction.Move:
 					break;
 				case NotifyCollectionChangedAction.Remove:
+					Remove(args);
 					break;
 				case NotifyCollectionChangedAction.Replace:
 					break;
@@ -74,6 +76,16 @@ namespace Xamarin.Forms.Platform.UWP
 			for (int n = args.NewItems.Count - 1; n >= 0; n--)
 			{
 				Insert(startIndex, new ItemTemplatePair(_itemTemplate, args.NewItems[n]));
+			}
+		}
+
+		void Remove(NotifyCollectionChangedEventArgs args)
+		{
+			var startIndex = args.OldStartingIndex > -1 ? args.OldStartingIndex : _innerSource.IndexOf(args.OldItems[0]);
+
+			for (int n = 0; n < args.OldItems.Count; n++)
+			{
+				RemoveAt(startIndex);
 			}
 		}
 	}
