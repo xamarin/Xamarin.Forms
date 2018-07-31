@@ -7,6 +7,7 @@ namespace Xamarin.Forms.Platform.Android
 {
 	internal static class ItemsSourceFactory
 	{
+		// TODO hartez 2018-07-31 11:45 AM For consistency, change the param names to itemsSource (plural items)
 		public static ICollectionViewSource Create(IEnumerable itemSource, RecyclerView.Adapter adapter)
 		{
 			switch (itemSource)
