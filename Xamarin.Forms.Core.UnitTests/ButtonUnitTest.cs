@@ -305,7 +305,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
-		public void ButtonBorderRadiusSetMinisOne()
+		public void ButtonBorderRadiusSetMinusOne()
 		{
 			var button = new Button { Platform = new UnitPlatform() };
 

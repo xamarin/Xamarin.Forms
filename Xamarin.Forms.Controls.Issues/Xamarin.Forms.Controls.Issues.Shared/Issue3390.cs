@@ -27,7 +27,7 @@ namespace Xamarin.Forms.Controls.Issues
 			btn.Command = new Command(async () => {
 				btn.CornerRadius = 5;
 				await Task.Delay(200);
-				btn.Text = btn.CornerRadius == 5 ? "Success" : "Faled";
+				btn.Text = btn.CornerRadius == 5 ? "Success" : "Failed";
 			});
 
 			Content = new StackLayout()
@@ -39,7 +39,7 @@ namespace Xamarin.Forms.Controls.Issues
 					{
 						Text = $"When you click on the button, it will change the corner radius.{Environment.NewLine}" +
 							$"[UWP] Application does not crash.{Environment.NewLine}" +
-							$"[All] Сorner radius must be equal 5.{Environment.NewLine}"
+							$"[All] Сorner radius must be equal 5."
 					}
 				}
 			};
