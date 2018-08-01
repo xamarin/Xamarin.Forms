@@ -3,6 +3,9 @@ using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.StyleSheets;
 
+[assembly: AssemblyVersion("2.0.0.0")]
+[assembly: AssemblyFileVersion("2.0.0.0")]
+
 [assembly: InternalsVisibleTo("iOSUnitTests")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.Controls")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.Core.Design")]
