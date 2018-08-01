@@ -202,21 +202,57 @@ namespace Xamarin.Forms.Platform.Android
 
 			UpdateItemsSource();
 			SetLayoutManager(SelectLayoutManager(newElement.ItemsLayout));
+			UpdateSnapBehavior();
 
 			// Keep track of the ItemsLayout's property changes
 			_layout = newElement.ItemsLayout;
 			_layout.PropertyChanged += LayoutOnPropertyChanged;
 		}
 
-		void LayoutOnPropertyChanged(object sender, PropertyChangedEventArgs e)
+		void LayoutOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChanged)
 		{
-			if (e.PropertyName == GridItemsLayout.SpanProperty.PropertyName)
+			if(propertyChanged.Is(GridItemsLayout.SpanProperty))
 			{
 				if (GetLayoutManager() is GridLayoutManager gridLayoutManager)
 				{
 					gridLayoutManager.SpanCount = ((GridItemsLayout)_layout).Span;
 				}
+			} 
+			else if (propertyChanged.IsOneOf(ItemsLayout.SnapPointsTypeProperty, ItemsLayout.SnapPointsAlignmentProperty))
+			{
+				UpdateSnapBehavior();
 			}
+		}
+
+		SnapHelper _snapHelper;
+
+		protected void UpdateSnapBehavior()
+		{
+			if (!(_itemsView.ItemsLayout is ItemsLayout itemsLayout))
+			{
+				return;
+			}
+
+			var snapPointsType = itemsLayout.SnapPointsType;
+
+			if (snapPointsType == SnapPointsType.None)
+			{
+				// If we have a snap helper, detach it from the RecyclerView and set it to null
+				_snapHelper?.AttachToRecyclerView(null);
+				_snapHelper = null;
+				return;
+			}
+
+			// If we don't have a snap helper, we need to create one
+			if (_snapHelper == null)
+			{
+				// TODO hartez 2018/08/01 15:24:02 Choose the appropriate snap helper type 	
+				_snapHelper = new LinearSnapHelper();
+				// And attach it to this RecyclerView
+				_snapHelper.AttachToRecyclerView(this);
+			}
+
+			//var alignment = itemsLayout.SnapPointsAlignment;
 		}
 
 		void TearDownOldElement(ItemsView oldElement)

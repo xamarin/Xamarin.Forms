@@ -11,6 +11,19 @@ namespace Xamarin.Forms
 		{
 			return args.PropertyName == property.PropertyName;
 		}
+
+		public static bool IsOneOf(this PropertyChangedEventArgs args, params BindableProperty[] properties)
+		{
+			for (int n = 0; n < properties.Length; n++)
+			{
+				if (args.PropertyName == properties[n].PropertyName)
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
 	}
 
 	public class ItemsView : View

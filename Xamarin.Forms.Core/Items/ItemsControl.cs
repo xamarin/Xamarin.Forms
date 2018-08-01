@@ -19,6 +19,26 @@ namespace Xamarin.Forms
 		{
 			Orientation = orientation;
 		}
+
+		public static readonly BindableProperty SnapPointsAlignmentProperty =
+			BindableProperty.Create(nameof(SnapPointsAlignment), typeof(SnapPointsAlignment), typeof(ItemsLayout), 
+				SnapPointsAlignment.Start);
+
+		public SnapPointsAlignment SnapPointsAlignment
+		{
+			get => (SnapPointsAlignment)GetValue(SnapPointsAlignmentProperty);
+			set => SetValue(SnapPointsAlignmentProperty, value);
+		}
+
+		public static readonly BindableProperty SnapPointsTypeProperty =
+			BindableProperty.Create(nameof(SnapPointsType), typeof(SnapPointsType), typeof(ItemsLayout), 
+				SnapPointsType.None);
+
+		public SnapPointsType SnapPointsType
+		{
+			get => (SnapPointsType)GetValue(SnapPointsTypeProperty);
+			set => SetValue(SnapPointsTypeProperty, value);
+		}
 	}
 
 	public class ListItemsLayout : ItemsLayout
@@ -26,12 +46,6 @@ namespace Xamarin.Forms
 		public ListItemsLayout(ItemsLayoutOrientation orientation) : base(orientation)
 		{
 		}
-
-		public static readonly BindableProperty SnapPointsAlignmentProperty;
-		public SnapPointsAlignment SnapPointsAlignment { get; set; }
-
-		public static readonly BindableProperty SnapPointsTypeProperty;
-		public SnapPointsType SnapPointsType { get; set; }
 
 		// TODO hartez 2018/05/31 15:56:23 Should these just be called Vertical and Horizontal (without List)?	
 		public static readonly IItemsLayout VerticalList = new ListItemsLayout(ItemsLayoutOrientation.Vertical); 

@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 {
-	internal class ItemRemover : ContentView
+	internal class ItemAdder : ContentView
 	{
 		readonly CollectionView _cv;
 		readonly Entry _entry;
 
-		public ItemRemover(CollectionView cv)
+		public ItemAdder(CollectionView cv)
 		{
 			_cv = cv;
 
@@ -19,7 +18,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 				HorizontalOptions = LayoutOptions.Fill
 			};
 
-			var button = new Button { Text = "Remove" };
+			var button = new Button { Text = "Insert" };
 			var label = new Label { Text = "Index:", VerticalTextAlignment = TextAlignment.Center };
 
 			_entry = new Entry { Keyboard = Keyboard.Numeric, Text = "0", WidthRequest = 200 };
@@ -28,12 +27,12 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			layout.Children.Add(_entry);
 			layout.Children.Add(button);
 
-			button.Clicked += RemoveItem;
+			button.Clicked += InsertItem;
 
 			Content = layout;
 		}
 
-		void RemoveItem(object sender, EventArgs e)
+		void InsertItem(object sender, EventArgs e)
 		{
 			if (!int.TryParse(_entry.Text, out int index))
 			{
@@ -47,7 +46,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 
 			if (index > -1 && index < observableCollection.Count)
 			{
-				observableCollection.Remove(observableCollection[index]);
+				var item = new TestItem(){ Image = "oasis.jpg", Date = $"{DateTime.Now.ToLongDateString()}", Caption = "Inserted"};
+				observableCollection.Insert(index, item);
 			}
 		}
 	}
