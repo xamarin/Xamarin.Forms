@@ -4,9 +4,11 @@
 	{
 		public DefaultTextGallery()
 		{
-			var desc = "No DataTemplates; just using the ToString() of the objects in the source.";
-
-			var descriptionLabel = new Label { Text = desc, Margin = new Thickness(2,2,2,2)};
+			var descriptionLabel = new Label
+			{
+				Text = "No DataTemplates; just using the ToString() of the objects in the source.",
+				Margin = new Thickness(2, 2, 2, 2)
+			};
 
 			Title = "Default Text Galleries";
 
@@ -27,62 +29,6 @@
 							new TextCodeCollectionViewGridGallery(), Navigation),
 						GalleryBuilder.NavButton("Horizontal Grid (Code)", () => 
 							new TextCodeCollectionViewGridGallery(ItemsLayoutOrientation.Horizontal), Navigation),
-					}
-				}
-			};
-		}
-	}
-
-	internal class DataTemplateGallery : ContentPage
-	{
-		public DataTemplateGallery()
-		{
-			var desc = "Simple DataTemplate Galleries";
-
-			var descriptionLabel = new Label { Text = desc, Margin = new Thickness(2,2,2,2)};
-
-			Title = "Simple DataTemplate Galleries";
-
-			Content = new ScrollView
-			{
-				Content = new StackLayout
-				{
-					Children =
-					{
-						descriptionLabel,
-						GalleryBuilder.NavButton("Vertical List (Code)", () => 
-							new TemplateCodeCollectionViewGallery(ListItemsLayout.VerticalList), Navigation),
-						GalleryBuilder.NavButton("Horizontal List (Code)", () => 
-							new TemplateCodeCollectionViewGallery(ListItemsLayout.HorizontalList), Navigation),
-						GalleryBuilder.NavButton("Vertical Grid (Code)", () => 
-							new TemplateCodeCollectionViewGridGallery (), Navigation),
-						GalleryBuilder.NavButton("Horizontal Grid (Code)", () => 
-							new TemplateCodeCollectionViewGridGallery (ItemsLayoutOrientation.Horizontal), Navigation),
-					}
-				}
-			};
-		}
-	}
-
-	internal class ObservableCollectionGallery : ContentPage
-	{
-		public ObservableCollectionGallery ()
-		{
-			var desc = "Observable Collection Galleries";
-
-			var descriptionLabel = new Label { Text = desc, Margin = new Thickness(2,2,2,2)};
-
-			Title = "Simple DataTemplate Galleries";
-
-			Content = new ScrollView
-			{
-				Content = new StackLayout
-				{
-					Children =
-					{
-						descriptionLabel,
-						GalleryBuilder.NavButton("Add/Remove Items", () => 
-							new ObservableCodeCollectionViewGridGallery (), Navigation),
 					}
 				}
 			};
