@@ -86,7 +86,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected void LoadApplication(Application application)
 		{
-		        if(!_activityCreated)
+			if(!_activityCreated)
 			{
 			    throw new InvalidOperationException("Activity OnCreate was not called prior to loading the application. Did you forget a base.OnCreate call?");
 			}
@@ -148,7 +148,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void OnCreate(Bundle savedInstanceState)
 		{
-		        _activityCreated = true;
+			_activityCreated = true;
 			if (!AllowFragmentRestore)
 			{
 				// Remove the automatically persisted fragment structure; we don't need them
