@@ -132,6 +132,9 @@ namespace Xamarin.Forms.Platform
 	[RenderWith (typeof (PhoneMasterDetailRenderer))]
 #endif
 	internal class _MasterDetailPageRenderer { }
+
+	[RenderWith (typeof(MediaElementRenderer))]
+	internal class _MediaElementRenderer { }
 }
 
 

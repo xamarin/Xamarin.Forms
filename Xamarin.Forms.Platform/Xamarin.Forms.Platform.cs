@@ -118,4 +118,8 @@
 	internal class _MasterDetailPageRenderer
 	{
 	}
+
+	internal class _MediaElementRenderer
+	{
+	}
 }
