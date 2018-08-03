@@ -48,6 +48,8 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				Children =
 				{
+					new Label { Text = "As the list views scrolls, click around and try to select rows in the ListView. " +
+						"The UI should remain responsive as you click and as the ListView continues to scrolls." },
 					startStopButton,
 					lstMessages
 				}
