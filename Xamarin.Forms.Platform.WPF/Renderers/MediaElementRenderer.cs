@@ -6,9 +6,8 @@ namespace Xamarin.Forms.Platform.WPF
 {
 	public sealed class MediaElementRenderer : ViewRenderer<MediaElement, System.Windows.Controls.MediaElement>, IMediaElementRenderer
 	{
-		private long _bufferingProgressChangedToken;
-
-		private long _positionChangedToken;
+		long _bufferingProgressChangedToken;
+		long _positionChangedToken;
 
 		double IMediaElementRenderer.BufferingProgress
 		{
@@ -68,7 +67,7 @@ namespace Xamarin.Forms.Platform.WPF
 
 			if (e.NewElement != null)
 			{
-				this.SetNativeControl(new System.Windows.Controls.MediaElement());
+				SetNativeControl(new System.Windows.Controls.MediaElement());
 				Control.HorizontalAlignment = HorizontalAlignment.Stretch;
 				Control.VerticalAlignment = VerticalAlignment.Stretch;
 
@@ -87,7 +86,7 @@ namespace Xamarin.Forms.Platform.WPF
 			}
 		}
 
-		private void UpdateSource()
+		void UpdateSource()
 		{
 			if (Element.Source != null)
 			{
@@ -102,22 +101,22 @@ namespace Xamarin.Forms.Platform.WPF
 			}
 		}
 
-		private void Control_BufferingEnded(object sender, RoutedEventArgs e)
+		void Control_BufferingEnded(object sender, RoutedEventArgs e)
 		{
 			Element.SetValueFromRenderer(MediaElement.BufferingProgressProperty, 1.0);
 		}
 
-		private void Control_BufferingStarted(object sender, RoutedEventArgs e)
+		void Control_BufferingStarted(object sender, RoutedEventArgs e)
 		{
 			Element.SetValueFromRenderer(MediaElement.BufferingProgressProperty, 0);
 		}
 
-		private void Control_MediaFailed(object sender, ExceptionRoutedEventArgs e)
+		void Control_MediaFailed(object sender, ExceptionRoutedEventArgs e)
 		{
 			System.Diagnostics.Debug.WriteLine(e.ErrorException);
 		}
 
-		private void Control_MediaEnded(object sender, RoutedEventArgs e)
+		void Control_MediaEnded(object sender, RoutedEventArgs e)
 		{
 			if(Element.IsLooping)
 			{
@@ -127,17 +126,17 @@ namespace Xamarin.Forms.Platform.WPF
 			}
 		}
 
-		private void Control_MediaOpened(object sender, RoutedEventArgs e)
+		void Control_MediaOpened(object sender, RoutedEventArgs e)
 		{
 			Element?.RaiseMediaOpened();
 		}
 
-		private void BufferingProgressChanged(DependencyObject sender, DependencyProperty dp)
+		void BufferingProgressChanged(DependencyObject sender, DependencyProperty dp)
 		{
 			((IElementController)Element).SetValueFromRenderer(MediaElement.BufferingProgressProperty, Control.BufferingProgress);
 		}
 		
-		private void Control_SeekCompleted(object sender, RoutedEventArgs e)
+		void Control_SeekCompleted(object sender, RoutedEventArgs e)
 		{
 			Element?.RaiseSeekCompleted();
 		}

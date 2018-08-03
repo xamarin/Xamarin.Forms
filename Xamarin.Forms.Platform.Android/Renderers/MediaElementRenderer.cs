@@ -14,9 +14,9 @@ namespace Xamarin.Forms.Platform.Android
 {
     public sealed class MediaElementRenderer : ViewRenderer<MediaElement, FrameLayout>, MediaPlayer.IOnCompletionListener, MediaPlayer.IOnPreparedListener, IMediaElementRenderer
     {
-        private MediaController _controller;
-        private FormsVideoView _view;
-        private MediaPlayer _mediaPlayer;
+        MediaController _controller;
+        FormsVideoView _view;
+        MediaPlayer _mediaPlayer;
 
 		public MediaElementRenderer(Context context) : base(context)
 		{
@@ -191,7 +191,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-        private void UpdateSource()
+        void UpdateSource()
         {
             if (Element.Source != null)
             {
@@ -301,7 +301,7 @@ namespace Xamarin.Forms.Platform.Android
             UpdateLayoutParameters();
         }
 
-        private void UpdateLayoutParameters()
+        void UpdateLayoutParameters()
         {
             if (Element.NaturalVideoHeight == 0)
             {
@@ -362,7 +362,7 @@ namespace Xamarin.Forms.Platform.Android
             Element.OnMediaEnded();
         }
 
-        public void OnPrepared(MediaPlayer mp)
+        void MediaPlayer.IOnPreparedListener.OnPrepared(MediaPlayer mp)
         {
             Element?.RaiseMediaOpened();
 
