@@ -83,16 +83,21 @@ namespace Xamarin.Forms.Platform.WPF
 				Control.MediaEnded += Control_MediaEnded;
 				Control.MediaFailed += Control_MediaFailed;
 
-				if (Element.Source != null)
+				UpdateSource();
+			}
+		}
+
+		private void UpdateSource()
+		{
+			if (Element.Source != null)
+			{
+				if(Element.Source.Scheme == "ms-appx")
 				{
-					if (Element.Source.IsAbsoluteUri)
-					{
-						Control.Source = Element.Source;
-					}
-					else
-					{
-						Control.Source = new Uri("ms-appx:///" + Element.Source.ToString());
-					}
+					Control.Source = new Uri(Element.Source.ToString().Replace("ms-appx://", "pack://application:,,,"));
+				}
+				else
+				{
+					Control.Source = Element.Source;
 				}
 			}
 		}
