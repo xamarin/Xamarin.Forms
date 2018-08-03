@@ -11,11 +11,11 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public sealed class MediaElementRenderer : ViewRenderer<MediaElement, UIView>, IMediaElementRenderer
 	{
-		private AVPlayerViewController _avPlayerViewController = new AVPlayerViewController();
-		private NSObject _notificationHandle;
-		private NSObject _observer;
+		AVPlayerViewController _avPlayerViewController = new AVPlayerViewController();
+		NSObject _notificationHandle;
+		NSObject _observer;
 
-		public double BufferingProgress
+		double IMediaElementRenderer.BufferingProgress
 		{
 			get
 			{
@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		public TimeSpan Position
+		TimeSpan IMediaElementRenderer.Position
 		{
 			get
 			{
@@ -55,7 +55,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		protected override void OnElementChanged(Xamarin.Forms.Platform.iOS.ElementChangedEventArgs<MediaElement> e)
+		protected override void OnElementChanged(ElementChangedEventArgs<MediaElement> e)
 		{
 			base.OnElementChanged(e);
 
@@ -101,8 +101,8 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		private bool _idleTimerDisabled = false;
-		private void SetKeepScreenOn(bool value)
+		bool _idleTimerDisabled = false;
+		void SetKeepScreenOn(bool value)
 		{
 			if (value)
 			{
@@ -122,7 +122,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		private AVUrlAssetOptions GetOptionsWithHeaders(IDictionary<string, string> headers)
+		AVUrlAssetOptions GetOptionsWithHeaders(IDictionary<string, string> headers)
 		{
 			var nativeHeaders = new NSMutableDictionary();
 
@@ -141,7 +141,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return options;
 		}
 
-		private void UpdateSource()
+		void UpdateSource()
 		{
 			if (Element.Source != null)
 			{
@@ -202,8 +202,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void Dispose(bool disposing)
 		{
-			System.Diagnostics.Debug.WriteLine(DateTimeOffset.Now + " Dispose " + this.GetHashCode());
-
 			if (_notificationHandle != null)
 			{
 				NSNotificationCenter.DefaultCenter.RemoveObserver(_notificationHandle);
@@ -218,7 +216,7 @@ namespace Xamarin.Forms.Platform.iOS
 			base.Dispose(disposing);
 		}
 
-		private void RemoveStatusObserver()
+		void RemoveStatusObserver()
 		{
 			if (_observer != null)
 			{
@@ -235,7 +233,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		private void ObserveStatus(NSObservedChange e)
+		void ObserveStatus(NSObservedChange e)
 		{
 			if (e.NewValue != null)
 			{
@@ -248,7 +246,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		private void PlayedToEnd(NSNotification notification)
+		void PlayedToEnd(NSNotification notification)
 		{
 			if (Element.IsLooping)
 			{
@@ -362,7 +360,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		private static AVLayerVideoGravity AspectToGravity(Aspect aspect)
+		static AVLayerVideoGravity AspectToGravity(Aspect aspect)
 		{
 			switch (aspect)
 			{
@@ -377,7 +375,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		private void SeekComplete(bool finished)
+		void SeekComplete(bool finished)
 		{
 			if (finished)
 			{

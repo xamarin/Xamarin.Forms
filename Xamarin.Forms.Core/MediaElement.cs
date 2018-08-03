@@ -65,7 +65,7 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty PositionProperty =
 		  BindableProperty.Create(nameof(Position), typeof(TimeSpan), typeof(MediaElement), TimeSpan.Zero, validateValue: ValidatePosition);
 
-		private static bool ValidatePosition(BindableObject bindable, object value)
+		static bool ValidatePosition(BindableObject bindable, object value)
 		{
 			MediaElement element = bindable as MediaElement;
 			if (element != null)
@@ -81,7 +81,7 @@ namespace Xamarin.Forms
 
 
 
-		private IMediaElementRenderer _renderer = null;
+		IMediaElementRenderer _renderer = null;
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SetRenderer(IMediaElementRenderer renderer)
@@ -186,14 +186,7 @@ namespace Xamarin.Forms
 			set { SetValue(SourceProperty, value); }
 		}
 
-		private IDictionary<string, string> _httpHeaders = new Dictionary<string, string>();
-		public IDictionary<string, string> HttpHeaders
-		{
-			get
-			{
-				return _httpHeaders;
-			}
-		}
+        public IDictionary<string, string> HttpHeaders { get; } = new Dictionary<string, string>();
 
 		/// <summary>
 		/// Gets the status of this MediaElement.
@@ -214,7 +207,7 @@ namespace Xamarin.Forms
 		/// <summary>
 		/// Gets or sets the current position of progress through the media's playback time.
 		/// </summary>
-		public System.TimeSpan Position
+		public TimeSpan Position
 		{
 			get
 			{

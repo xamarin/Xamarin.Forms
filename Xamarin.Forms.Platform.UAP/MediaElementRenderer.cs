@@ -7,11 +7,11 @@ namespace Xamarin.Forms.Platform.UWP
 {
 	public sealed class MediaElementRenderer : ViewRenderer<MediaElement, Windows.UI.Xaml.Controls.MediaElement>, IMediaElementRenderer
 	{
-		private Windows.System.Display.DisplayRequest _request = new Windows.System.Display.DisplayRequest();
+		Windows.System.Display.DisplayRequest _request = new Windows.System.Display.DisplayRequest();
 
-		private long _bufferingProgressChangedToken;
+		long _bufferingProgressChangedToken;
 
-		private long _positionChangedToken;
+		long _positionChangedToken;
 
 		double IMediaElementRenderer.BufferingProgress
 		{
@@ -101,18 +101,18 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		private void Control_MediaEnded(object sender, RoutedEventArgs e)
+		void Control_MediaEnded(object sender, RoutedEventArgs e)
 		{
 			Element?.OnMediaEnded();
 		}
 
-		private void Control_MediaOpened(object sender, RoutedEventArgs e)
+		void Control_MediaOpened(object sender, RoutedEventArgs e)
 		{
 			Element?.RaiseMediaOpened();
 		}
 
 	
-		private void Control_CurrentStateChanged(object sender, RoutedEventArgs e)
+		void Control_CurrentStateChanged(object sender, RoutedEventArgs e)
 		{
 			switch (Control.CurrentState)
 			{
@@ -139,16 +139,16 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 		
-		private void BufferingProgressChanged(DependencyObject sender, DependencyProperty dp)
+		void BufferingProgressChanged(DependencyObject sender, DependencyProperty dp)
 		{
 			((IElementController)Element).SetValueFromRenderer(MediaElement.BufferingProgressProperty, Control.BufferingProgress);
 		}
 
-		private void PositionChanged(DependencyObject sender, DependencyProperty dp)
+		void PositionChanged(DependencyObject sender, DependencyProperty dp)
 		{
 		}
 
-		private void Control_SeekCompleted(object sender, RoutedEventArgs e)
+		void Control_SeekCompleted(object sender, RoutedEventArgs e)
 		{
 			Element?.RaiseSeekCompleted();
 		}
