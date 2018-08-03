@@ -351,6 +351,7 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new ListRefresh(), "ListView.PullToRefresh"),
 				new GalleryPageFactory(() => new ListViewDemoPage(), "ListView Demo Gallery - Legacy"),
 				new GalleryPageFactory(() => new MapGallery(), "Map Gallery - Legacy"),
+				new GalleryPageFactory(() => new MediaElementDemoPage(), "MediaElement"),
 				new GalleryPageFactory(() => new MinimumSizeGallery(), "MinimumSize Gallery - Legacy"),
 				new GalleryPageFactory(() => new MultiGallery(), "Multi Gallery - Legacy"),
 				new GalleryPageFactory(() => new NavigationMenuGallery(), "NavigationMenu Gallery - Legacy"),

@@ -1,4 +1,5 @@
 ﻿using System;
+using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 
@@ -75,9 +76,11 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (e.NewElement != null)
 			{
-				this.SetNativeControl(new Windows.UI.Xaml.Controls.MediaElement());
+				SetNativeControl(new Windows.UI.Xaml.Controls.MediaElement());
+				Control.HorizontalAlignment = HorizontalAlignment.Stretch;
+				Control.VerticalAlignment = VerticalAlignment.Stretch;
+
 				e.NewElement.SetRenderer(this);
-				Control.Stretch = Windows.UI.Xaml.Media.Stretch.Uniform;
 				Control.AreTransportControlsEnabled = Element.AreTransportControlsEnabled;
 				Control.AutoPlay = Element.AutoPlay;
 				Control.IsLooping = Element.IsLooping;
@@ -109,6 +112,7 @@ namespace Xamarin.Forms.Platform.UWP
 			Element?.RaiseMediaOpened();
 		}
 
+	
 		private void Control_CurrentStateChanged(object sender, RoutedEventArgs e)
 		{
 			switch (Control.CurrentState)
@@ -203,6 +207,20 @@ namespace Xamarin.Forms.Platform.UWP
 
 				case nameof(MediaElement.Source):
 					Control.Source = Element.Source;
+					break;
+
+				case nameof(MediaElement.Width):
+					if (Element.Width > 0)
+					{
+						Width = Element.Width;
+					}
+					break;
+
+				case nameof(MediaElement.Height):
+					if (Element.Height > 0)
+					{
+						Height = Element.Height;
+					}
 					break;
 			}
 

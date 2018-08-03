@@ -28,6 +28,7 @@ using Xamarin.Forms.Platform.UWP;
 [assembly: ExportRenderer(typeof(Entry), typeof(EntryRenderer))]
 [assembly: ExportRenderer(typeof(TableView), typeof(TableViewRenderer))]
 [assembly: ExportRenderer(typeof(NativeViewWrapper), typeof(NativeViewWrapperRenderer))]
+[assembly: ExportRenderer(typeof(MediaElement), typeof(MediaElementRenderer))]
 
 //ImageSources
 
