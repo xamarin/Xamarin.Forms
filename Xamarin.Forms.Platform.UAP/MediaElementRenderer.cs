@@ -68,7 +68,7 @@ namespace Xamarin.Forms.Platform.UWP
 					Control.CurrentStateChanged -= Control_CurrentStateChanged;
 					Control.SeekCompleted -= Control_SeekCompleted;
 					Control.MediaOpened -= Control_MediaOpened;
-
+					Control.MediaEnded -= Control_MediaEnded;
 				}
 
 				e.OldElement.SetRenderer(null);
@@ -92,19 +92,18 @@ namespace Xamarin.Forms.Platform.UWP
 				Control.SeekCompleted += Control_SeekCompleted;
 				Control.CurrentStateChanged += Control_CurrentStateChanged;
 				Control.MediaOpened += Control_MediaOpened;
+				Control.MediaEnded += Control_MediaEnded;
 
 				if (Element.Source != null)
 				{
-					if (Element.Source.IsAbsoluteUri)
-					{
-						Control.Source = Element.Source;
-					}
-					else
-					{
-						Control.Source = new Uri("ms-appx:///" + Element.Source.ToString());
-					}
+					Control.Source = Element.Source;
 				}
 			}
+		}
+
+		private void Control_MediaEnded(object sender, RoutedEventArgs e)
+		{
+			Element?.OnMediaEnded();
 		}
 
 		private void Control_MediaOpened(object sender, RoutedEventArgs e)
