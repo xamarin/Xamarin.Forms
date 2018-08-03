@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using CoreGraphics;
 using Foundation;
 using UIKit;
-using RectangleF = CoreGraphics.CGRect;
 using Xamarin.Forms.Internals;
+using RectangleF = CoreGraphics.CGRect;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -81,9 +81,9 @@ namespace Xamarin.Forms.Platform.iOS
 			MessagingCenter.Unsubscribe<Page, AlertArguments>(this, Page.AlertSignalName);
 			MessagingCenter.Unsubscribe<Page, bool>(this, Page.BusySetSignalName);
 
-			DisposeModelAndChildrenRenderers(Page);
+			Page.DisposeModalAndChildRenderers();
 			foreach (var modal in _modals)
-				DisposeModelAndChildrenRenderers(modal);
+				modal.DisposeModalAndChildRenderers();
 
 			_renderer.Dispose();
 		}
@@ -131,7 +131,7 @@ namespace Xamarin.Forms.Platform.iOS
 			else
 				await _renderer.DismissViewControllerAsync(animated);
 
-			DisposeModelAndChildrenRenderers(modal);
+			modal.DisposeModalAndChildRenderers();
 
 			return modal;
 		}
@@ -223,57 +223,6 @@ namespace Xamarin.Forms.Platform.iOS
 			_animateModals = true;
 		}
 
-		internal void DisposeModelAndChildrenRenderers(Element view)
-		{
-			IVisualElementRenderer renderer;
-			foreach (VisualElement child in view.Descendants())
-			{
-				renderer = GetRenderer(child);
-				child.ClearValue(RendererProperty);
-
-				if (renderer != null)
-				{
-					renderer.NativeView.RemoveFromSuperview();
-					renderer.Dispose();
-				}
-			}
-
-			renderer = GetRenderer((VisualElement)view);
-			if (renderer != null)
-			{
-				if (renderer.ViewController != null)
-				{
-					var modalWrapper = renderer.ViewController.ParentViewController as ModalWrapper;
-					if (modalWrapper != null)
-						modalWrapper.Dispose();
-				}
-
-				renderer.NativeView.RemoveFromSuperview();
-				renderer.Dispose();
-			}
-			view.ClearValue(RendererProperty);
-		}
-
-		internal void DisposeRendererAndChildren(IVisualElementRenderer rendererToRemove)
-		{
-			if (rendererToRemove == null)
-				return;
-
-			if (rendererToRemove.Element != null && GetRenderer(rendererToRemove.Element) == rendererToRemove)
-				rendererToRemove.Element.ClearValue(RendererProperty);
-
-			var subviews = rendererToRemove.NativeView.Subviews;
-			for (var i = 0; i < subviews.Length; i++)
-			{
-				var childRenderer = subviews[i] as IVisualElementRenderer;
-				if (childRenderer != null)
-					DisposeRendererAndChildren(childRenderer);
-			}
-
-			rendererToRemove.NativeView.RemoveFromSuperview();
-			rendererToRemove.Dispose();
-		}
-
 		internal void LayoutSubviews()
 		{
 			if (Page == null)
@@ -342,10 +291,10 @@ namespace Xamarin.Forms.Platform.iOS
 				Console.Error.WriteLine("Potential view double add");
 		}
 
-		void HandleChildRemoved(object sender, ElementEventArgs e)
+		static void HandleChildRemoved(object sender, ElementEventArgs e)
 		{
 			var view = e.Element;
-			DisposeModelAndChildrenRenderers(view);
+			view?.DisposeModalAndChildRenderers();
 		}
 
 		bool PageIsChildOfPlatform(Page page)
@@ -477,7 +426,7 @@ namespace Xamarin.Forms.Platform.iOS
 			// One might wonder why these delays are here... well thats a great question. It turns out iOS will claim the 
 			// presentation is complete before it really is. It does not however inform you when it is really done (and thus 
 			// would be safe to dismiss the VC). Fortunately this is almost never an issue
-			
+
 			await _renderer.PresentViewControllerAsync(wrapper, animated);
 			await Task.Delay(5);
 		}
