@@ -18,9 +18,8 @@ namespace Xamarin.Forms.Platform.Android
     public sealed class FormsVideoView : VideoView
     {
         private int _videoHeight, _videoWidth;
-        private TimeSpan _duration;
 
-        public FormsVideoView(Context context) : base(context) { }
+		public FormsVideoView(Context context) : base(context) { }
 
         public override void SetVideoPath(string path)
         {
@@ -40,7 +39,6 @@ namespace Xamarin.Forms.Platform.Android
 
         private void ExtractMetadata(MediaMetadataRetriever retriever)
         {
-            _duration = TimeSpan.Zero;
             _videoWidth = 0;
             int.TryParse(retriever.ExtractMetadata(MetadataKey.VideoWidth), out _videoWidth);
             _videoHeight = 0;
@@ -50,7 +48,7 @@ namespace Xamarin.Forms.Platform.Android
             if (!string.IsNullOrEmpty(durationString))
             {
                 long durationMS = long.Parse(durationString);
-                _duration = TimeSpan.FromMilliseconds(durationMS);
+                NaturalDuration = TimeSpan.FromMilliseconds(durationMS);
             }
         }
 
@@ -95,9 +93,6 @@ namespace Xamarin.Forms.Platform.Android
             get { return _videoWidth; }
         }
 
-        public TimeSpan NaturalDuration
-        {
-            get { return _duration; }
-        }
+        public TimeSpan? NaturalDuration { get; private set; }
     }
 }

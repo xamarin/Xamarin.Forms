@@ -120,6 +120,15 @@ namespace Xamarin.Forms
 		}
 
 		/// <summary>
+		/// Gets a value that indicates whether media can be repositioned by setting the value of the <see cref="Position"/> property.
+		/// </summary>
+		/// <value>true if the media can be repositioned; otherwise, false.</value>
+		public bool CanSeek
+		{
+			get { return Source != null && NaturalDuration.HasValue; }
+		}
+
+		/// <summary>
 		/// Gets or sets a value that describes whether the media source currently loaded in the media engine should automatically set the position to the media start after reaching its end.
 		/// </summary>
 		public bool IsLooping
@@ -137,7 +146,7 @@ namespace Xamarin.Forms
 			set { SetValue(KeepScreenOnProperty, value); }
 		}
 
-		public TimeSpan NaturalDuration
+		public TimeSpan? NaturalDuration
 		{
 			get
 			{
@@ -146,7 +155,7 @@ namespace Xamarin.Forms
 					return _renderer.NaturalDuration;
 				}
 
-				return TimeSpan.Zero;
+				return null;
 			}
 		}
 
@@ -221,7 +230,17 @@ namespace Xamarin.Forms
 
 			set
 			{
-				SetValue(PositionProperty, value);
+				TimeSpan newPosition = value;
+				if(value < TimeSpan.Zero)
+				{
+					newPosition = TimeSpan.Zero;
+				}
+				else if(NaturalDuration.HasValue && value > NaturalDuration.Value)
+				{
+					newPosition = NaturalDuration.Value;
+				}
+
+				SetValue(PositionProperty, newPosition);
 			}
 		}
 
@@ -324,7 +343,7 @@ namespace Xamarin.Forms
 	{
 		double BufferingProgress { get; }
 
-		TimeSpan NaturalDuration { get; }
+		TimeSpan? NaturalDuration { get; }
 
 		int NaturalVideoHeight { get; }
 

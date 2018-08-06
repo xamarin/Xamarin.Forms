@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Animation;
 
 namespace Xamarin.Forms.Platform.WPF
 {
@@ -14,7 +16,7 @@ namespace Xamarin.Forms.Platform.WPF
 			get { return Control.BufferingProgress; }
 		}
 
-		TimeSpan IMediaElementRenderer.NaturalDuration
+		TimeSpan? IMediaElementRenderer.NaturalDuration
 		{
 			get
 			{
@@ -23,7 +25,7 @@ namespace Xamarin.Forms.Platform.WPF
 					return Control.NaturalDuration.TimeSpan;
 				}
 
-				return TimeSpan.Zero;
+				return null;
 			}
 		}
 
@@ -90,6 +92,9 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			if (Element.Source != null)
 			{
+				if (Control.Clock != null)
+					Control.Clock = null;
+
 				if(Element.Source.Scheme == "ms-appx")
 				{
 					Control.Source = new Uri(Element.Source.ToString().Replace("ms-appx://", "pack://application:,,,"));
@@ -161,35 +166,50 @@ namespace Xamarin.Forms.Platform.WPF
 					switch (Element.CurrentState)
 					{
 						case MediaElementState.Playing:
+							if (Element.KeepScreenOn)
+							{
+								DisplayRequestActive();
+							}
+
 							Control.Play();
 							break;
 
 						case MediaElementState.Paused:
 							if (Control.CanPause)
 							{
+								if (Element.KeepScreenOn)
+								{
+									DisplayRequestRelease();
+								}
+
 								Control.Pause();
 							}
 							break;
 
 						case MediaElementState.Stopped:
+							if (Element.KeepScreenOn)
+							{
+								DisplayRequestRelease();
+							}
+
 							Control.Stop();
 							break;
 					}
 					break;
 					
-				/*case nameof(MediaElement.KeepScreenOn):
+				case nameof(MediaElement.KeepScreenOn):
 					if (Element.KeepScreenOn)
 					{
-						if (Control.CurrentState == Windows.UI.Xaml.Media.MediaElementState.Playing)
+						if (Control.Clock != null && Control.Clock.CurrentState == System.Windows.Media.Animation.ClockState.Active)
 						{
-							_request.RequestActive();
+							DisplayRequestActive();
 						}
 					}
 					else
 					{
-						_request.RequestRelease();
+						DisplayRequestRelease();
 					}
-					break;*/
+					break;
 
 				case nameof(MediaElement.Source):
 					Control.Source = Element.Source;
@@ -198,7 +218,7 @@ namespace Xamarin.Forms.Platform.WPF
 
 			base.OnElementPropertyChanged(sender, e);
 		}
-
+		
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
 			return base.GetDesiredSize(Math.Max(240,widthConstraint), Math.Max(180,heightConstraint));
@@ -217,6 +237,35 @@ namespace Xamarin.Forms.Platform.WPF
 			if (Element.Height > 0)
 			{
 				Control.Height = Element.Height;
+			}
+		}
+
+		private void DisplayRequestActive()
+		{
+			NativeMethods.SetThreadExecutionState(NativeMethods.EXECUTION_STATE.DISPLAY_REQUIRED | NativeMethods.EXECUTION_STATE.CONTINUOUS);
+		}
+
+		private void DisplayRequestRelease()
+		{
+			NativeMethods.SetThreadExecutionState(NativeMethods.EXECUTION_STATE.CONTINUOUS);
+		}
+
+		private static class NativeMethods
+		{
+			[DllImport("Kernel32", SetLastError = true)]
+			internal static extern EXECUTION_STATE SetThreadExecutionState(EXECUTION_STATE esFlags);
+
+			internal enum EXECUTION_STATE : uint
+			{
+				/// <summary>
+				/// Informs the system that the state being set should remain in effect until the next call that uses ES_CONTINUOUS and one of the other state flags is cleared.
+				/// </summary>
+				CONTINUOUS = 0x80000000,
+
+				/// <summary>
+				/// Forces the display to be on by resetting the display idle timer.
+				/// </summary>
+				DISPLAY_REQUIRED = 0x00000002,
 			}
 		}
 	}
