@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Platform.UWP
 			get { return Control.BufferingProgress; }
 		}
 
-		TimeSpan IMediaElementRenderer.NaturalDuration
+		TimeSpan? IMediaElementRenderer.NaturalDuration
 		{
 			get
 			{
@@ -27,7 +27,7 @@ namespace Xamarin.Forms.Platform.UWP
 					return Control.NaturalDuration.TimeSpan;
 				}
 
-				return TimeSpan.Zero;
+				return null;
 			}
 		}
 

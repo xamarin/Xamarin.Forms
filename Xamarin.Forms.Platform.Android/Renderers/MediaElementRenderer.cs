@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Platform.Android
             }
         }
 
-        TimeSpan IMediaElementRenderer.NaturalDuration
+        TimeSpan? IMediaElementRenderer.NaturalDuration
         {
             get
             {
@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Platform.Android
                     return _view.NaturalDuration;
                 }
 
-                return TimeSpan.Zero;
+                return null;
             }
         }
 

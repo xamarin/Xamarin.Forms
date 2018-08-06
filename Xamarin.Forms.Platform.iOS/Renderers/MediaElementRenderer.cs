@@ -31,11 +31,16 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		TimeSpan IMediaElementRenderer.NaturalDuration
+		TimeSpan? IMediaElementRenderer.NaturalDuration
 		{
 			get
 			{
-				return TimeSpan.FromSeconds(_avPlayerViewController.Player.CurrentItem != null ? _avPlayerViewController.Player.CurrentItem.Asset.Duration.Seconds : 0);
+				if (_avPlayerViewController.Player.CurrentItem != null)
+				{
+					return TimeSpan.FromSeconds(_avPlayerViewController.Player.CurrentItem.Asset.Duration.Seconds);
+				}
+
+				return null;
 			}
 		}
 
@@ -323,6 +328,11 @@ namespace Xamarin.Forms.Platform.iOS
 					if (!Element.KeepScreenOn)
 					{
 						SetKeepScreenOn(false);
+					}
+					else if(Element.CurrentState == MediaElementState.Playing)
+					{
+						// only toggle this on if property is set while video is already running
+						SetKeepScreenOn(true);
 					}
 					break;
 

@@ -14,30 +14,59 @@ namespace Xamarin.Forms.Controls
 			element.VerticalOptions = new LayoutOptions(LayoutAlignment.Fill,true);
 			element.AutoPlay = false;
 
-			var button = new Button();
-			button.Text = "Play/Pause";
-			button.HorizontalOptions = new LayoutOptions(LayoutAlignment.Center, true);
-			button.Clicked += Button_Clicked;
+			var label = new Label();
+			label.SetBinding(Label.TextProperty, new Binding("CurrentState", BindingMode.OneWay, null, null, null, element));
+
+			var playButton = new Button();
+			playButton.Text = "\u23f5";
+			playButton.HorizontalOptions = new LayoutOptions(LayoutAlignment.Center, true);
+			playButton.Clicked += PlayButton_Clicked;
+
+			var pauseButton = new Button();
+			pauseButton.Text = "\u23f8";
+			pauseButton.HorizontalOptions = new LayoutOptions(LayoutAlignment.Center, true);
+			pauseButton.Clicked += PauseButton_Clicked;
+
+			var stopButton = new Button();
+			stopButton.Text = "\u23f9";
+			stopButton.HorizontalOptions = new LayoutOptions(LayoutAlignment.Center, true);
+			stopButton.Clicked += StopButton_Clicked;
+
+			var mediaControlStack = new StackLayout();
+			mediaControlStack.Orientation = StackOrientation.Horizontal;
+			mediaControlStack.HorizontalOptions = new LayoutOptions(LayoutAlignment.Center, false);
+			mediaControlStack.Children.Add(playButton);
+			mediaControlStack.Children.Add(pauseButton);
+			mediaControlStack.Children.Add(stopButton);
+
 			var stack = new StackLayout();
 			stack.Padding = new Thickness(10);
 			stack.Spacing = 10;
 			stack.HorizontalOptions = new LayoutOptions(LayoutAlignment.Fill, false);
 			stack.VerticalOptions = new LayoutOptions(LayoutAlignment.Fill, false);
 			stack.Children.Add(element);
-			stack.Children.Add(button);
+			stack.Children.Add(label);
+			stack.Children.Add(mediaControlStack);
 			Content = stack;	
 		}
 
-		private void Button_Clicked(object sender, EventArgs e)
+		private void PlayButton_Clicked(object sender, EventArgs e)
 		{
-			if (element.CurrentState == MediaElementState.Playing)
-			{
-				element.Pause();
-			}
-			else
-			{
-				element.Play();
-			}
+			System.Diagnostics.Debug.WriteLine(element.CanSeek);
+			element.Play();
+			System.Diagnostics.Debug.WriteLine(element.CanSeek);
+		}
+
+		private void PauseButton_Clicked(object sender, EventArgs e)
+		{
+			element.Pause();
+			System.Diagnostics.Debug.WriteLine(element.CanSeek);
+		}
+
+		private void StopButton_Clicked(object sender, EventArgs e)
+		{
+			element.Stop();
+			System.Diagnostics.Debug.WriteLine(element.CanSeek);
 		}
 
 		protected override void OnAppearing()
