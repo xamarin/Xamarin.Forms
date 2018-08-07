@@ -5,7 +5,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	public partial class VisualElement : Element, IAnimatable, IVisualElementController, IResourcesProvider, IFlowDirectionController
+	public partial class VisualElement : Element, IAnimatable, IVisualElementController, IResourcesProvider, IStyleElement, IFlowDirectionController
 	{
 		internal static readonly BindablePropertyKey NavigationPropertyKey = BindableProperty.CreateReadOnly("Navigation", typeof(INavigation), typeof(VisualElement), default(INavigation));
 
@@ -290,7 +290,6 @@ namespace Xamarin.Forms
 			get { return (Style)GetValue(StyleProperty); }
 			set { SetValue(StyleProperty, value); }
 		}
-
 
 		[TypeConverter(typeof(ListStringTypeConverter))]
 		public IList<string> StyleClass
@@ -894,6 +893,8 @@ namespace Xamarin.Forms
 			if (unFocus != null)
 				unFocus(this, new FocusEventArgs(this, false));
 		}
+
+		bool IFlowDirectionController.ApplyEffectiveFlowDirectionToChildContainer => true;
 
 		void IFlowDirectionController.NotifyFlowDirectionChanged()
 		{
