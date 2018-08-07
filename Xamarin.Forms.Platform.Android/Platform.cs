@@ -17,6 +17,7 @@ using Android.Widget;
 using Xamarin.Forms.Platform.Android.AppCompat;
 using FragmentManager = Android.Support.V4.App.FragmentManager;
 using Xamarin.Forms.Internals;
+using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -296,6 +297,23 @@ namespace Xamarin.Forms.Platform.Android
 		void INavigation.RemovePage(Page page)
 		{
 			throw new InvalidOperationException("RemovePage is not supported globally on Android, please use a NavigationPage.");
+		}
+
+		public static void ClearRenderer(AView renderedView)
+		{
+			var element = (renderedView as IVisualElementRenderer)?.Element;
+			var view = element as View;
+			if (view != null)
+			{
+				var renderer = GetRenderer(view);
+				if (renderer == renderedView)
+					element.ClearValue(RendererProperty);
+				renderer?.Dispose();
+				renderer = null;
+			}
+			var layout = view as IVisualElementRenderer;
+			layout?.Dispose();
+			layout = null;
 		}
 
 		[Obsolete("CreateRenderer(VisualElement) is obsolete as of version 2.5. Please use CreateRendererWithContext(VisualElement, Context) instead.")]
@@ -1138,7 +1156,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		internal class DefaultRenderer : VisualElementRenderer<View>
 		{
-			bool _notReallyHandled;
+			public bool NotReallyHandled { get; private set; }
 			IOnTouchListener _touchListener;
 
 			[Obsolete("This constructor is obsolete as of version 2.5. Please use DefaultRenderer(Context) instead.")]
@@ -1155,7 +1173,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			internal void NotifyFakeHandling()
 			{
-				_notReallyHandled = true;
+				NotReallyHandled = true;
 			}
 
 			public override bool OnTouchEvent(MotionEvent e)
@@ -1198,11 +1216,11 @@ namespace Xamarin.Forms.Platform.Android
 				// it then knows to ignore that result and return false/unhandled. This allows the event to propagate up the tree.
 				#endregion
 
-				_notReallyHandled = false;
+				NotReallyHandled = false;
 
 				var result = base.DispatchTouchEvent(e);
 
-				if (result && _notReallyHandled)
+				if (result && NotReallyHandled)
 				{
 					// If the child control returned true from its touch event handler but signalled that it was a fake "true", then we
 					// don't consider the event truly "handled" yet. 

@@ -525,9 +525,10 @@ namespace Xamarin.Forms.Platform.UWP
 			double rotation = view.Rotation;
 			double translationX = view.TranslationX;
 			double translationY = view.TranslationY;
-			double scale = view.Scale;
+			double scaleX = view.Scale * view.ScaleX;
+			double scaleY = view.Scale * view.ScaleY;
 
-			if (rotationX % 360 == 0 && rotationY % 360 == 0 && rotation % 360 == 0 && translationX == 0 && translationY == 0 && scale == 1)
+			if (rotationX % 360 == 0 && rotationY % 360 == 0 && rotation % 360 == 0 && translationX == 0 && translationY == 0 && scaleX == 1 && scaleY == 1)
 			{
 				frameworkElement.Projection = null;
 			}
@@ -538,14 +539,14 @@ namespace Xamarin.Forms.Platform.UWP
 				// (i.e. their absolute value is 0), a CompositeTransform is instead used to allow for
 				// rotation of the control on a 2D plane, and the other values are set. Otherwise, the
 				// rotation values are set, but the aforementioned functionality will be lost.
-				if (Math.Abs(view.RotationX) == 0 && Math.Abs(view.RotationY) == 0)
+				if (Math.Abs(view.RotationX) != 0 || Math.Abs(view.RotationY) != 0)
 				{
 					frameworkElement.Projection = new PlaneProjection
 					{
 						CenterOfRotationX = anchorX,
 						CenterOfRotationY = anchorY,
-						GlobalOffsetX = scale == 0 ? 0 : translationX / scale,
-						GlobalOffsetY = scale == 0 ? 0 : translationY / scale,
+						GlobalOffsetX = scaleX == 0 ? 0 : translationX / scaleX,
+						GlobalOffsetY = scaleY == 0 ? 0 : translationY / scaleY,
 						RotationX = -rotationX,
 						RotationY = -rotationY,
 						RotationZ = -rotation
@@ -558,8 +559,10 @@ namespace Xamarin.Forms.Platform.UWP
 						CenterX = anchorX,
 						CenterY = anchorY,
 						Rotation = rotation,
-						TranslateX = scale == 0 ? 0 : translationX / scale,
-						TranslateY = scale == 0 ? 0 : translationY / scale
+						ScaleX = scaleX,
+						ScaleY = scaleY,
+						TranslateX = scaleX == 0 ? 0 : translationX / scaleX,
+						TranslateY = scaleY == 0 ? 0 : translationY / scaleY
 					};
 				}
 			}
@@ -622,7 +625,7 @@ namespace Xamarin.Forms.Platform.UWP
 			bool hasSwipeGesture = gestures.GetGesturesFor<SwipeGestureRecognizer>().GetEnumerator().MoveNext();
 			bool hasPinchGesture = gestures.GetGesturesFor<PinchGestureRecognizer>().GetEnumerator().MoveNext();
 			bool hasPanGesture = gestures.GetGesturesFor<PanGestureRecognizer>().GetEnumerator().MoveNext();
-			if (!hasPinchGesture && !hasPanGesture)
+			if (!hasSwipeGesture && !hasPinchGesture && !hasPanGesture)
 				return;
 
 			//We can't handle ManipulationMode.Scale and System , so we don't support pinch/pan on a scrollview 

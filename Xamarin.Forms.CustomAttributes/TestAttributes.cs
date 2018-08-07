@@ -148,6 +148,7 @@ namespace Xamarin.Forms.CustomAttributes
 		WinRT = 1 << 3,
 		UWP = 1 << 4,
 		WPF = 1 << 5,
+		macOS = 1 << 6,
 		All = ~0,
 		Default = 0
 	}
@@ -581,6 +582,8 @@ namespace Xamarin.Forms.CustomAttributes
 			FormattedText,
 			FontAttibutesBold,
 			FontAttributesItalic,
+			TextDecorationUnderline,
+			TextDecorationStrike,
 			FontNamedSizeMicro,
 			FontNamedSizeSmall,
 			FontNamedSizeMedium,

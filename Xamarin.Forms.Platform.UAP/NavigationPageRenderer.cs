@@ -11,12 +11,17 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Xamarin.Forms.Internals;
+using static Xamarin.Forms.PlatformConfiguration.WindowsSpecific.Page;
+using WImageSource = Windows.UI.Xaml.Media.ImageSource;
 
 
 using Windows.UI.Core;
+using Windows.UI.Xaml.Data;
+
 namespace Xamarin.Forms.Platform.UWP
 {
-	public partial class NavigationPageRenderer : IVisualElementRenderer, ITitleProvider, IToolbarProvider
+	public class NavigationPageRenderer : IVisualElementRenderer, ITitleProvider, ITitleIconProvider, 
+		ITitleViewProvider, IToolbarProvider, IToolBarForegroundBinder
 	{
 		PageControl _container;
 		Page _currentPage;
@@ -27,8 +32,12 @@ namespace Xamarin.Forms.Platform.UWP
 		MasterDetailPage _parentMasterDetailPage;
 		TabbedPage _parentTabbedPage;
 		bool _showTitle = true;
+		WImageSource _titleIcon;
 		VisualElementTracker<Page, PageControl> _tracker;
 		EntranceThemeTransition _transition;
+		Platform _platform;
+
+		Platform Platform => _platform ?? (_platform = Platform.Current);
 
 		public NavigationPage Element { get; private set; }
 
@@ -88,7 +97,25 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			get { return _currentPage?.Title; }
 
-			set { }
+			set { /*Not implemented but required by interface*/ }
+		}
+
+		public WImageSource TitleIcon
+		{
+			get => _titleIcon;
+			set => _titleIcon = value;
+		}
+
+		public View TitleView
+		{
+			get
+			{
+				if (_currentPage == null)
+					return null;
+
+				return NavigationPage.GetTitleView(_currentPage) as View;
+			}
+			set { /*Not implemented but required by interface*/ }
 		}
 
 		Task<CommandBar> IToolbarProvider.GetCommandBarAsync()
@@ -158,7 +185,6 @@ namespace Xamarin.Forms.Platform.UWP
 					_container = new PageControl();
 					_container.PointerPressed += OnPointerPressed;
 					_container.SizeChanged += OnNativeSizeChanged;
-					_container.BackClicked += OnBackClicked;
 
 					Tracker = new BackgroundTracker<PageControl>(Control.BackgroundProperty) { Element = (Page)element, Container = _container };
 
@@ -175,6 +201,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateTitleColor();
 				UpdateNavigationBarBackground();
 				UpdateToolbarPlacement();
+				UpdateTitleIcon();
+				UpdateTitleView();
 
 				// Enforce consistency rules on toolbar (show toolbar if top-level page is Navigation Page)
 				_container.ShouldShowToolbar = _parentMasterDetailPage == null && _parentTabbedPage == null;
@@ -208,7 +236,6 @@ namespace Xamarin.Forms.Platform.UWP
 
 			_container.PointerPressed -= OnPointerPressed;
 			_container.SizeChanged -= OnNativeSizeChanged;
-			_container.BackClicked -= OnBackClicked;
 			_container.Loaded -= OnLoaded;
 			_container.Unloaded -= OnUnloaded;
 
@@ -283,12 +310,20 @@ namespace Xamarin.Forms.Platform.UWP
 			UpdateShowTitle();
 
 			UpdateTitleOnParents();
+
+			UpdateTitleIcon();
+
+			UpdateTitleView();
 		}
 
 		void MultiPagePropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == "CurrentPage" || e.PropertyName == "Detail")
+			{
 				UpdateTitleOnParents();
+				UpdateTitleIcon();
+				UpdateTitleView();
+			}
 		}
 
 		async void OnBackClicked(object sender, RoutedEventArgs e)
@@ -311,6 +346,10 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateTitleVisible();
 			else if (e.PropertyName == Page.TitleProperty.PropertyName)
 				UpdateTitleOnParents();
+			else if (e.PropertyName == NavigationPage.TitleIconProperty.PropertyName)
+				UpdateTitleIcon();
+			else if (e.PropertyName == NavigationPage.TitleViewProperty.PropertyName)
+				UpdateTitleView();
 		}
 
 		void OnElementAppearing(object sender, EventArgs e)
@@ -327,9 +366,12 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateNavigationBarBackground();
 			else if (e.PropertyName == Page.PaddingProperty.PropertyName)
 				UpdatePadding();
-
-			else if (e.PropertyName == PlatformConfiguration.WindowsSpecific.Page.ToolbarPlacementProperty.PropertyName)
+			else if (e.PropertyName == ToolbarPlacementProperty.PropertyName)
 				UpdateToolbarPlacement();
+			else if (e.PropertyName == NavigationPage.TitleIconProperty.PropertyName)
+				UpdateTitleIcon();
+			else if (e.PropertyName == NavigationPage.TitleViewProperty.PropertyName)
+				UpdateTitleView();
 		}
 
 		void OnLoaded(object sender, RoutedEventArgs args)
@@ -424,6 +466,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 			UpdateTitleVisible();
 			UpdateTitleOnParents();
+			UpdateTitleIcon();
+			UpdateTitleView();
 
 			if (isAnimated && _transition == null)
 			{
@@ -483,6 +527,120 @@ namespace Xamarin.Forms.Platform.UWP
 		void UpdateTitleColor()
 		{
 			(this as ITitleProvider).BarForegroundBrush = GetBarForegroundBrush();
+		}
+
+		async void UpdateTitleIcon()
+		{
+			if (_currentPage == null)
+				return;
+
+			ImageSource source = NavigationPage.GetTitleIcon(_currentPage);
+
+			_titleIcon = await source.ToWindowsImageSource();
+
+			_container.TitleIcon = _titleIcon;
+
+			if (_parentMasterDetailPage != null && Platform.GetRenderer(_parentMasterDetailPage) is ITitleIconProvider parent)
+				parent.TitleIcon = _titleIcon;
+
+			_container.UpdateLayout();
+			UpdateContainerArea();
+		}
+
+		void UpdateTitleView()
+		{
+			if (_currentPage == null)
+				return;
+
+			_container.TitleView = TitleView;
+
+			if (_parentMasterDetailPage != null && Platform.GetRenderer(_parentMasterDetailPage) is ITitleViewProvider parent)
+				parent.TitleView = TitleView;
+		}
+
+		SystemNavigationManager _navManager;
+
+		public void BindForegroundColor(AppBar appBar)
+		{
+			SetAppBarForegroundBinding(appBar);
+		}
+
+		public void BindForegroundColor(AppBarButton button)
+		{
+			SetAppBarForegroundBinding(button);
+		}
+
+		void SetAppBarForegroundBinding(FrameworkElement element)
+		{
+			element.SetBinding(Control.ForegroundProperty,
+				new Windows.UI.Xaml.Data.Binding { Path = new PropertyPath("TitleBrush"), Source = _container, RelativeSource = new RelativeSource { Mode = RelativeSourceMode.TemplatedParent } });
+		}
+
+		void UpdateToolbarPlacement()
+		{
+			if (_container == null)
+			{
+				return;
+			}
+
+			_container.ToolbarPlacement = Element.OnThisPlatform().GetToolbarPlacement();
+		}
+
+		void UpdateShowTitle()
+		{
+			((ITitleProvider)this).ShowTitle = _parentTabbedPage == null && _parentMasterDetailPage == null;
+		}
+
+		static object GetDefaultColor()
+		{
+			return Windows.UI.Xaml.Application.Current.Resources["SystemControlBackgroundChromeMediumLowBrush"];
+		}
+
+		void UpdateBackButton()
+		{
+			if (_navManager == null)
+			{
+				return;
+			}
+
+			bool showBackButton = Element.InternalChildren.Count > 1 && NavigationPage.GetHasBackButton(_currentPage);
+			_navManager.AppViewBackButtonVisibility = showBackButton ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed;
+		}
+
+		async void UpdateTitleOnParents()
+		{
+			if (Element == null)
+				return;
+
+			ITitleProvider render = null;
+			if (_parentTabbedPage != null)
+			{
+				render = Platform.GetRenderer(_parentTabbedPage) as ITitleProvider;
+				if (render != null)
+					render.ShowTitle = (_parentTabbedPage.CurrentPage == Element) && NavigationPage.GetHasNavigationBar(_currentPage);
+			}
+
+			if (_parentMasterDetailPage != null)
+			{
+				render = Platform.GetRenderer(_parentMasterDetailPage) as ITitleProvider;
+				if (render != null)
+					render.ShowTitle = (_parentMasterDetailPage.Detail == Element) && NavigationPage.GetHasNavigationBar(_currentPage);
+			}
+
+			if (render != null && render.ShowTitle)
+			{
+				render.Title = _currentPage.Title;
+				render.BarBackgroundBrush = GetBarBackgroundBrush();
+				render.BarForegroundBrush = GetBarForegroundBrush();
+			}
+
+			if (_showTitle || (render != null && render.ShowTitle))
+			{
+				if (Platform != null)
+				{
+					await Platform.UpdateToolbarItems();
+				}
+			}
 		}
 	}
 }

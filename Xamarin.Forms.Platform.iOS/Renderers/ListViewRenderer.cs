@@ -159,14 +159,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (_headerRenderer != null)
 				{
-					var platform = _headerRenderer.Element?.Platform as Platform;
-					platform?.DisposeModelAndChildrenRenderers(_headerRenderer.Element);
+					_headerRenderer.Element?.DisposeModalAndChildRenderers();
 					_headerRenderer = null;
 				}
 				if (_footerRenderer != null)
 				{
-					var platform = _footerRenderer.Element?.Platform as Platform;
-					platform?.DisposeModelAndChildrenRenderers(_footerRenderer.Element);
+					_footerRenderer.Element?.DisposeModalAndChildRenderers();
 					_footerRenderer = null;
 				}
 
@@ -439,9 +437,8 @@ namespace Xamarin.Forms.Platform.iOS
 						return;
 					}
 					Control.TableFooterView = null;
-					var platform = _footerRenderer.Element.Platform as Platform;
-					if (platform != null)
-						platform.DisposeModelAndChildrenRenderers(_footerRenderer.Element);
+					
+					_footerRenderer.Element?.DisposeModalAndChildRenderers();
 					_footerRenderer.Dispose();
 					_footerRenderer = null;
 				}
@@ -461,9 +458,7 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.TableFooterView = null;
 				_footerRenderer.Element.MeasureInvalidated -= OnFooterMeasureInvalidated;
 
-				var platform = _footerRenderer.Element.Platform as Platform;
-				if (platform != null)
-					platform.DisposeModelAndChildrenRenderers(_footerRenderer.Element);
+				_footerRenderer.Element?.DisposeModalAndChildRenderers();
 				_footerRenderer.Dispose();
 				_footerRenderer = null;
 			}
@@ -487,9 +482,9 @@ namespace Xamarin.Forms.Platform.iOS
 						return;
 					}
 					Control.TableHeaderView = null;
-					var platform = _headerRenderer.Element.Platform as Platform;
-					if (platform != null)
-						platform.DisposeModelAndChildrenRenderers(_headerRenderer.Element);
+
+					_headerRenderer.Element?.DisposeModalAndChildRenderers();
+					_headerRenderer.Dispose();
 					_headerRenderer = null;
 				}
 
@@ -509,9 +504,7 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.TableHeaderView = null;
 				_headerRenderer.Element.MeasureInvalidated -= OnHeaderMeasureInvalidated;
 
-				var platform = _headerRenderer.Element.Platform as Platform;
-				if (platform != null)
-					platform.DisposeModelAndChildrenRenderers(_headerRenderer.Element);
+				_headerRenderer.Element?.DisposeModalAndChildRenderers();
 				_headerRenderer.Dispose();
 				_headerRenderer = null;
 			}
@@ -530,9 +523,16 @@ namespace Xamarin.Forms.Platform.iOS
 			if (exArgs != null)
 				_dataSource.Counts[section] = exArgs.Count;
 
+			// This means the UITableView hasn't rendered any cells yet
+			// so there's no need to synchronize the rows on the UITableView
+			if (Control.IndexPathsForVisibleRows == null && e.Action != NotifyCollectionChangedAction.Reset)
+				return;
+
 			var groupReset = resetWhenGrouped && Element.IsGroupingEnabled;
 
-			if (!groupReset)
+			// We can't do this check on grouped lists because the index doesn't match the number of rows in a section.
+			// Likewise, we can't do this check on lists using RecycleElement because the number of rows in a section will remain constant because they are reused.
+			if (!groupReset && Element.CachingStrategy == ListViewCachingStrategy.RetainElement)
 			{
 				var lastIndex = Control.NumberOfRowsInSection(section);
 				if (e.NewStartingIndex > lastIndex || e.OldStartingIndex > lastIndex)
@@ -752,9 +752,10 @@ namespace Xamarin.Forms.Platform.iOS
 				else // ListViewCachingStrategy.RetainElement
 					return GetCellForPath(indexPath);
 
+				if (itemTypeOrDataTemplate == null)
+					itemTypeOrDataTemplate = typeof(TextCell);
 
-				Cell protoCell;
-				if (!_prototypicalCellByTypeOrDataTemplate.TryGetValue(itemTypeOrDataTemplate, out protoCell))
+				if (!_prototypicalCellByTypeOrDataTemplate.TryGetValue(itemTypeOrDataTemplate, out Cell protoCell))
 				{
 					// cache prototypical cell by item type; Items of the same Type share
 					// the same DataTemplate (this is enforced by RecycleElementAndDataTemplate)
@@ -988,7 +989,7 @@ namespace Xamarin.Forms.Platform.iOS
 				var renderer = (CellRenderer)Internals.Registrar.Registered.GetHandlerForObject<IRegisterable>(cell);
 				view = new HeaderWrapperView { Cell = cell };
 				view.AddSubview(renderer.GetCell(cell, null, tableView));
-        
+
 				return view;
 			}
 
@@ -1103,13 +1104,20 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (_isDragging && scrollView.ContentOffset.Y < 0)
 				{
+					// If the refresh spinner is currently displayed and pull-to-refresh is not enabled,
+					// calling UpdateShowHideRefresh will remove the spinner and cause the ScrollView to shift;
+					// this will fire off this Scrolled override again and we'll be in an infinite loop (which iOS
+					// will promptly kill, and the app will close)
+					// So we temporarily flip _isDragging to false in order to prevent the loop.
+					_isDragging = false;
 					_uiTableViewController.UpdateShowHideRefresh(true);
+					_isDragging = true;
 				}
 
 				if (_isDragging && scrollView.ContentOffset.Y < -10f && _uiTableViewController._usingLargeTitles && Device.Info.CurrentOrientation.IsPortrait())
 				{
-					_uiTableViewController.ForceRefreshing();				
-				}					
+					_uiTableViewController.ForceRefreshing();
+				}
 			}
 
 			public override string[] SectionIndexTitles(UITableView tableView)
@@ -1343,7 +1351,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (RefreshControl == null)
 					return;
-				
+
 				_refresh.EndRefreshing();
 
 				UpdateContentOffset(-1);
