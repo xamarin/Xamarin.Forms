@@ -17,8 +17,9 @@ namespace Xamarin.Forms.Platform.Android
 				return null;
 
 			var builder = new StringBuilder();
-			foreach (Span span in formattedString.Spans)
+			for (int i = 0; i < formattedString.Spans.Count; i++)
 			{
+				Span span = formattedString.Spans[i];
 				var text = span.Text;
 				if (text == null)
 					continue;
@@ -29,8 +30,9 @@ namespace Xamarin.Forms.Platform.Android
 			var spannable = new SpannableString(builder.ToString());
 
 			var c = 0;
-			foreach (Span span in formattedString.Spans)
+			for (int i = 0; i < formattedString.Spans.Count; i++)
 			{
+				Span span = formattedString.Spans[i];
 				var text = span.Text;
 				if (text == null)
 					continue;
@@ -62,6 +64,8 @@ namespace Xamarin.Forms.Platform.Android
 #pragma warning restore 618
 				else
 					spannable.SetSpan(new FontSpan(defaultFont, view), start, end, SpanTypes.InclusiveInclusive);
+				if (span.IsSet(Span.TextDecorationsProperty))
+					spannable.SetSpan(new TextDecorationSpan(span), start, end, SpanTypes.InclusiveInclusive);
 			}
 			return spannable;
 		}
@@ -95,6 +99,34 @@ namespace Xamarin.Forms.Platform.Android
 				paint.TextSize = TypedValue.ApplyDimension(ComplexUnitType.Sp, value, TextView.Resources.DisplayMetrics);
 			}
 		}
+
+		class TextDecorationSpan : MetricAffectingSpan
+		{
+			public TextDecorationSpan(Span span)
+			{
+				Span = span;
+			}
+
+			public Span Span { get; }
+
+			public override void UpdateDrawState(TextPaint tp)
+			{
+				Apply(tp);
+			}
+
+			public override void UpdateMeasureState(TextPaint p)
+			{
+				Apply(p);
+			}
+
+			void Apply(Paint paint)
+			{
+				var textDecorations = Span.TextDecorations;
+				paint.UnderlineText = (textDecorations & TextDecorations.Underline) != 0;
+				paint.StrikeThruText = (textDecorations & TextDecorations.Strikethrough) != 0;
+			}
+		}
+
 		class LineHeightSpan : Java.Lang.Object, ILineHeightSpan
 		{
 			private double _lineHeight;
@@ -114,7 +146,6 @@ namespace Xamarin.Forms.Platform.Android
 				fm.Ascent = (int) (_ascent * _lineHeight);
 				fm.Descent = (int) (_descent * _lineHeight);
 			}
-
 		}
 	}
 }

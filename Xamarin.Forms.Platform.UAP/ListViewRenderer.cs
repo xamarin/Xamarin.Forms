@@ -154,7 +154,7 @@ namespace Xamarin.Forms.Platform.UWP
 					break;
 			}
 
-			Device.BeginInvokeOnMainThread(() => List.UpdateLayout());
+			Device.BeginInvokeOnMainThread(() => List?.UpdateLayout());
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -457,37 +457,42 @@ namespace Xamarin.Forms.Platform.UWP
 
 			var semanticLocation = new SemanticZoomLocation { Item = c };
 
-			switch (toPosition)
+			// async scrolling
+			await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
 			{
-				case ScrollToPosition.Start:
-					{
-						List.ScrollIntoView(c, ScrollIntoViewAlignment.Leading);
-						return;
-					}
+				switch (toPosition)
+				{
+					case ScrollToPosition.Start:
+						{
 
-				case ScrollToPosition.MakeVisible:
-					{
-						List.ScrollIntoView(c, ScrollIntoViewAlignment.Default);
-						return;
-					}
+							List.ScrollIntoView(c, ScrollIntoViewAlignment.Leading);
+							return;
+						}
 
-				case ScrollToPosition.End:
-				case ScrollToPosition.Center:
-					{
-						var content = (FrameworkElement)List.ItemTemplate.LoadContent();
-						content.DataContext = c;
-						content.Measure(new Windows.Foundation.Size(viewer.ActualWidth, double.PositiveInfinity));
+					case ScrollToPosition.MakeVisible:
+						{
+							List.ScrollIntoView(c, ScrollIntoViewAlignment.Default);
+							return;
+						}
 
-						double tHeight = content.DesiredSize.Height;
+					case ScrollToPosition.End:
+					case ScrollToPosition.Center:
+						{
+							var content = (FrameworkElement)List.ItemTemplate.LoadContent();
+							content.DataContext = c;
+							content.Measure(new Windows.Foundation.Size(viewer.ActualWidth, double.PositiveInfinity));
 
-						if (toPosition == ScrollToPosition.Center)
-							semanticLocation.Bounds = new Rect(0, viewportHeight / 2 - tHeight / 2, 0, 0);
-						else
-							semanticLocation.Bounds = new Rect(0, viewportHeight - tHeight, 0, 0);
+							double tHeight = content.DesiredSize.Height;
 
-						break;
-					}
-			}
+							if (toPosition == ScrollToPosition.Center)
+								semanticLocation.Bounds = new Rect(0, viewportHeight / 2 - tHeight / 2, 0, 0);
+							else
+								semanticLocation.Bounds = new Rect(0, viewportHeight - tHeight, 0, 0);
+
+							break;
+						}
+				}
+			});
 
 			// Waiting for loaded doesn't seem to be enough anymore; the ScrollViewer does not appear until after Loaded.
 			// Even if the ScrollViewer is present, an invoke at low priority fails (E_FAIL) presumably because the items are
@@ -635,8 +640,13 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void OnControlSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			if (Element.SelectedItem != List.SelectedItem && !_itemWasClicked)
-				((IElementController)Element).SetValueFromRenderer(ListView.SelectedItemProperty, List.SelectedItem);
+			if (Element.SelectedItem != List.SelectedItem)
+			{
+				if (_itemWasClicked)
+					List.SelectedItem = Element.SelectedItem;
+				else
+					((IElementController)Element).SetValueFromRenderer(ListView.SelectedItemProperty, List.SelectedItem);
+			}
 
 			_itemWasClicked = false;
 		}
