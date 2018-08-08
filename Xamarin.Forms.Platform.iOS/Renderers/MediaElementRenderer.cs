@@ -35,7 +35,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			get
 			{
-				if (_avPlayerViewController.Player.CurrentItem != null)
+				if (_avPlayerViewController.Player != null && _avPlayerViewController.Player.CurrentItem != null)
 				{
 					return TimeSpan.FromSeconds(_avPlayerViewController.Player.CurrentItem.Asset.Duration.Seconds);
 				}
@@ -48,7 +48,10 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			get
 			{
-				return (int)_avPlayerViewController.Player?.CurrentItem.Asset.NaturalSize.Height;
+				if (_avPlayerViewController.Player == null)
+					return 0;
+
+				return (int)_avPlayerViewController.Player.CurrentItem.Asset.NaturalSize.Height;
 			}
 		}
 
@@ -56,7 +59,10 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			get
 			{
-				return (int)_avPlayerViewController.Player?.CurrentItem.Asset.NaturalSize.Width;
+				if (_avPlayerViewController.Player == null)
+					return 0;
+
+				return (int)_avPlayerViewController.Player.CurrentItem.Asset.NaturalSize.Width;
 			}
 		}
 
@@ -129,6 +135,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		AVUrlAssetOptions GetOptionsWithHeaders(IDictionary<string, string> headers)
 		{
+			if (headers == null || headers.Count == 0)
+				return null;
+
 			var nativeHeaders = new NSMutableDictionary();
 
 			foreach (var header in headers)
@@ -171,7 +180,6 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 
 				AVPlayerItem item = new AVPlayerItem(asset);
-
 				RemoveStatusObserver();
 
 				_observer = (NSObject)item.AddObserver("status", NSKeyValueObservingOptions.New, ObserveStatus);
@@ -184,7 +192,7 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					_avPlayerViewController.Player = new AVPlayer(item);
 				}
-
+				
 				if (Element.AutoPlay)
 				{
 					var audioSession = AVAudioSession.SharedInstance();
@@ -298,7 +306,6 @@ namespace Xamarin.Forms.Platform.iOS
 							{
 								SetKeepScreenOn(true);
 							}
-							System.Diagnostics.Debug.WriteLine(_avPlayerViewController.Player.Status.ToString());
 							break;
 
 						case MediaElementState.Paused:
