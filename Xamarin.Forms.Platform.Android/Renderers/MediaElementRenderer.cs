@@ -151,29 +151,24 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (e.NewElement != null)
 			{
-				try
-				{
-					e.NewElement.SetRenderer(this);
+				e.NewElement.SetRenderer(this);
 
-					_view = new FormsVideoView(Context);
-					SetNativeControl(new FrameLayout(Context));
+				_view = new FormsVideoView(Context);
+				SetNativeControl(new FrameLayout(Context));
 
-					_view.SetZOrderMediaOverlay(true);
-					_view.SetOnCompletionListener(this);
-					_view.SetOnPreparedListener(this);
-					_view.KeepScreenOn = Element.KeepScreenOn;
+				_view.SetZOrderMediaOverlay(true);
+				_view.SetOnCompletionListener(this);
+				_view.SetOnPreparedListener(this);
+				_view.KeepScreenOn = Element.KeepScreenOn;
 
-					Control.AddView(_view);
+				Control.AddView(_view);
 
-					_controller = new MediaController(Context);
-					_controller.SetAnchorView(this);
-					_controller.Visibility = Element.AreTransportControlsEnabled ? ViewStates.Visible : ViewStates.Gone;
-					_view.SetMediaController(_controller);
+				_controller = new MediaController(Context);
+				_controller.SetAnchorView(this);
+				_controller.Visibility = Element.AreTransportControlsEnabled ? ViewStates.Visible : ViewStates.Gone;
+				_view.SetMediaController(_controller);
 
-					UpdateSource();
-				}
-				catch
-				{ }
+				UpdateSource();
 			}
 		}
 
