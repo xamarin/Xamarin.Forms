@@ -240,17 +240,17 @@ namespace Xamarin.Forms.Platform.WPF
 			}
 		}
 
-		private void DisplayRequestActive()
+		void DisplayRequestActive()
 		{
 			NativeMethods.SetThreadExecutionState(NativeMethods.EXECUTION_STATE.DISPLAY_REQUIRED | NativeMethods.EXECUTION_STATE.CONTINUOUS);
 		}
 
-		private void DisplayRequestRelease()
+		void DisplayRequestRelease()
 		{
 			NativeMethods.SetThreadExecutionState(NativeMethods.EXECUTION_STATE.CONTINUOUS);
 		}
 
-		private static class NativeMethods
+		static class NativeMethods
 		{
 			[DllImport("Kernel32", SetLastError = true)]
 			internal static extern EXECUTION_STATE SetThreadExecutionState(EXECUTION_STATE esFlags);
