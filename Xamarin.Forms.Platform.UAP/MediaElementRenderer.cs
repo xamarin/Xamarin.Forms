@@ -114,6 +114,9 @@ namespace Xamarin.Forms.Platform.UWP
 	
 		void Control_CurrentStateChanged(object sender, RoutedEventArgs e)
 		{
+			if (Element == null)
+				return;
+
 			switch (Control.CurrentState)
 			{
 				case Windows.UI.Xaml.Media.MediaElementState.Playing:
@@ -133,10 +136,7 @@ namespace Xamarin.Forms.Platform.UWP
 					break;
 			}
 
-			if (Element != null)
-			{
-				Element.SendCurrentState((MediaElementState)((int)Control.CurrentState));
-			}
+			Element.SendCurrentState((MediaElementState)((int)Control.CurrentState));
 		}
 		
 		void BufferingProgressChanged(DependencyObject sender, DependencyProperty dp)

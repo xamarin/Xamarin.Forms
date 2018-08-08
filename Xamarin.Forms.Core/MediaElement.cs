@@ -281,15 +281,8 @@ namespace Xamarin.Forms
 		/// The default value is Uniform.</value>
 		public Aspect Aspect
 		{
-			get
-			{
-				return (Aspect)GetValue(AspectProperty);
-			}
-
-			set
-			{
-				SetValue(AspectProperty, value);
-			}
+			get { return (Aspect)GetValue(AspectProperty); }
+			set { SetValue(AspectProperty, value); }
 		}
 
 		/// <summary>

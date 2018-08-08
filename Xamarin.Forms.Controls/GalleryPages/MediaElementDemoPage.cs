@@ -50,20 +50,20 @@ namespace Xamarin.Forms.Controls
 			Content = stack;	
 		}
 
-		private void PlayButton_Clicked(object sender, EventArgs e)
+		void PlayButton_Clicked(object sender, EventArgs e)
 		{
 			System.Diagnostics.Debug.WriteLine(element.CanSeek);
 			element.Play();
 			System.Diagnostics.Debug.WriteLine(element.CanSeek);
 		}
 
-		private void PauseButton_Clicked(object sender, EventArgs e)
+		void PauseButton_Clicked(object sender, EventArgs e)
 		{
 			element.Pause();
 			System.Diagnostics.Debug.WriteLine(element.CanSeek);
 		}
 
-		private void StopButton_Clicked(object sender, EventArgs e)
+		void StopButton_Clicked(object sender, EventArgs e)
 		{
 			element.Stop();
 			System.Diagnostics.Debug.WriteLine(element.CanSeek);
