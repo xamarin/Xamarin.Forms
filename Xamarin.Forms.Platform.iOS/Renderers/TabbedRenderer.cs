@@ -379,9 +379,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (SelectedTintColor != Color.Default)
 				TabBar.SelectedImageTintColor = SelectedTintColor.ToUIColor();
-
-			// TODO: Only iOS 10 or higher
-			if (UnselectedTintColor != Color.Default)
+				
+			if (Forms.IsiOS10OrNewer && UnselectedTintColor != Color.Default)
 				TabBar.UnselectedItemTintColor = UnselectedTintColor.ToUIColor();
 		}
 
