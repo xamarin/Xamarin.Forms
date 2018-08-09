@@ -27,7 +27,12 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			get
 			{
-				return TimeSpan.FromSeconds(_avPlayerViewController.Player.CurrentTime.Seconds);
+				if (_avPlayerViewController.Player != null && _avPlayerViewController.Player.CurrentItem != null)
+				{
+					return TimeSpan.FromSeconds(_avPlayerViewController.Player.CurrentTime.Seconds);
+				}
+
+				return TimeSpan.Zero;
 			}
 		}
 
@@ -48,10 +53,12 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			get
 			{
-				if (_avPlayerViewController.Player == null)
-					return 0;
+				if (_avPlayerViewController.Player != null && _avPlayerViewController.Player.CurrentItem != null)
+				{
+					return (int)_avPlayerViewController.Player.CurrentItem.Asset.NaturalSize.Height;
+				}
 
-				return (int)_avPlayerViewController.Player.CurrentItem.Asset.NaturalSize.Height;
+				return 0;
 			}
 		}
 
@@ -59,10 +66,12 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			get
 			{
-				if (_avPlayerViewController.Player == null)
-					return 0;
+				if (_avPlayerViewController.Player != null && _avPlayerViewController.Player.CurrentItem != null)
+				{
+					return (int)_avPlayerViewController.Player.CurrentItem.Asset.NaturalSize.Width;
+				}
 
-				return (int)_avPlayerViewController.Player.CurrentItem.Asset.NaturalSize.Width;
+				return 0;		
 			}
 		}
 

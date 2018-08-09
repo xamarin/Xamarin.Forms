@@ -13,26 +13,26 @@ namespace Xamarin.Forms.Controls
 			element.HorizontalOptions = new LayoutOptions(LayoutAlignment.Fill,true);
 			element.VerticalOptions = new LayoutOptions(LayoutAlignment.Fill,true);
 			element.AutoPlay = false;
-			element.AreTransportControlsEnabled = true;
+			element.AreTransportControlsEnabled = false;
 
 			var label = new Label();
 			label.SetBinding(Label.TextProperty, new Binding("CurrentState", BindingMode.OneWay, null, null, null, element));
 
 			var playButton = new Button();
 			playButton.Text = "\u25b6\uFE0F";
-			playButton.FontSize = 32;
+			playButton.FontSize = 48;
 			playButton.HorizontalOptions = new LayoutOptions(LayoutAlignment.Center, true);
 			playButton.Clicked += PlayButton_Clicked;
 
 			var pauseButton = new Button();
 			pauseButton.Text = "\u23f8\uFE0F";
-			pauseButton.FontSize = 32;
+			pauseButton.FontSize = 48;
 			pauseButton.HorizontalOptions = new LayoutOptions(LayoutAlignment.Center, true);
 			pauseButton.Clicked += PauseButton_Clicked;
 
 			var stopButton = new Button();
 			stopButton.Text = "\u23f9\uFE0F";
-			stopButton.FontSize = 32;
+			stopButton.FontSize = 48;
 			stopButton.HorizontalOptions = new LayoutOptions(LayoutAlignment.Center, true);
 			stopButton.Clicked += StopButton_Clicked;
 
@@ -77,7 +77,7 @@ namespace Xamarin.Forms.Controls
 		{
 			base.OnAppearing();
 
-			element.Source = new Uri("http://sec.ch9.ms/ch9/5d93/a1eab4bf-3288-4faf-81c4-294402a85d93/XamarinShow_mid.mp4");
+			element.Source = new Uri("https://sec.ch9.ms/ch9/5d93/a1eab4bf-3288-4faf-81c4-294402a85d93/XamarinShow_mid.mp4");
 		}
 	}
 }
