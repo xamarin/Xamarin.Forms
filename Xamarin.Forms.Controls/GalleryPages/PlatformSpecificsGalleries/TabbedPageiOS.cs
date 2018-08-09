@@ -43,6 +43,14 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformSpecificsGalleries
 			{
 				Text = "Toggle PreferredStatusBarUpdateAnimation"
 			};
+			var setSelectedItemColorToRedButton = new Button
+			{
+				Text = "Set selected item color to red"
+			};
+			var setUnselectedItemColorToRedButton = new Button
+			{
+				Text = "Set unselected item color to yellow"
+			};
 
 			togglePrefersStatusBarHiddenButton.Command = new Command(() =>
 			{
@@ -77,12 +85,24 @@ namespace Xamarin.Forms.Controls.GalleryPages.PlatformSpecificsGalleries
 					page.On<iOS>().SetPreferredStatusBarUpdateAnimation(UIStatusBarAnimation.Fade);
 			});
 
+			setSelectedItemColorToRedButton.Command = new Command(() =>
+			{
+				On<iOS>().SetSelectedTintColor(Color.Red);
+			});
+
+			setUnselectedItemColorToRedButton.Command = new Command(() =>
+			{
+				On<iOS>().SetUnselectedTintColor(Color.Yellow);
+			});
+
 			var restoreButton = new Button { Text = "Back To Gallery" };
 			restoreButton.Clicked += (sender, args) => restore.Execute(null);
 			content.Children.Add(restoreButton);
 			content.Children.Add(togglePrefersStatusBarHiddenButton);
 			content.Children.Add(togglePrefersStatusBarHiddenForPageButton);
 			content.Children.Add(togglePreferredStatusBarUpdateAnimationButton);
+			content.Children.Add(setSelectedItemColorToRedButton);
+			content.Children.Add(setUnselectedItemColorToRedButton);
 			content.Children.Add(new Label
 			{
 				HorizontalOptions = LayoutOptions.Center,

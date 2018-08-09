@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using UIKit;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using static Xamarin.Forms.PlatformConfiguration.iOSSpecific.Page;
 using PageUIStatusBarAnimation = Xamarin.Forms.PlatformConfiguration.iOSSpecific.UIStatusBarAnimation;
 
@@ -52,6 +53,9 @@ namespace Xamarin.Forms.Platform.iOS
 			get { return View; }
 		}
 
+		public Color SelectedTintColor => (Element != null) ? Tabbed.OnThisPlatform().GetSelectedTintColor() : Color.Default;
+		public Color UnselectedTintColor => (Element != null) ? Tabbed.OnThisPlatform().GetUnselectedTintColor() : Color.Default;
+
 		public void SetElement(VisualElement element)
 		{
 			var oldElement = Element;
@@ -73,6 +77,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			UpdateBarBackgroundColor();
 			UpdateBarTextColor();
+			UpdateTintColor();
 
 			EffectUtilities.RegisterEffectControlProvider(this, oldElement, element);
 		}
@@ -210,6 +215,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			UpdateBarBackgroundColor();
 			UpdateBarTextColor();
+			UpdateTintColor();
 		}
 
 		void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -234,6 +240,9 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdatePrefersStatusBarHiddenOnPages();
 			else if (e.PropertyName == PreferredStatusBarUpdateAnimationProperty.PropertyName)
 				UpdateCurrentPagePreferredStatusBarUpdateAnimation();
+			else if (e.PropertyName == PlatformConfiguration.iOSSpecific.TabbedPage.SelectedTintColorProperty.PropertyName ||
+				e.PropertyName == PlatformConfiguration.iOSSpecific.TabbedPage.UnselectedTintColorProperty.PropertyName)
+				UpdateTintColor();
 		}
 
 		public override UIViewController ChildViewControllerForStatusBarHidden()
@@ -361,6 +370,19 @@ namespace Xamarin.Forms.Platform.iOS
 			// set TintColor for selected icon
 			// setting the unselected icon tint is not supported by iOS
 			TabBar.TintColor = isDefaultColor ? _defaultBarTextColor : barTextColor.ToUIColor();
+		}
+
+		void UpdateTintColor()
+		{
+			if (Tabbed == null || TabBar == null || TabBar.Items == null)
+				return;
+
+			if (SelectedTintColor != Color.Default)
+				TabBar.SelectedImageTintColor = SelectedTintColor.ToUIColor();
+
+			// TODO: Only iOS 10 or higher
+			if (UnselectedTintColor != Color.Default)
+				TabBar.UnselectedItemTintColor = UnselectedTintColor.ToUIColor();
 		}
 
 		void UpdateChildrenOrderIndex(UIViewController[] viewControllers)
