@@ -19,6 +19,7 @@ namespace Xamarin.Forms.Platform.Android
 		bool _isDisposed;
 		ItemsView _itemsView;
 		IItemsLayout _layout;
+		SnapManager _snapManager;
 
 		public CollectionViewRenderer(Context context) : base(context)
 		{
@@ -201,6 +202,7 @@ namespace Xamarin.Forms.Platform.Android
 			this.EnsureId();
 
 			UpdateItemsSource();
+
 			SetLayoutManager(SelectLayoutManager(newElement.ItemsLayout));
 			UpdateSnapBehavior();
 
@@ -224,35 +226,14 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		SnapHelper _snapHelper;
-
-		protected void UpdateSnapBehavior()
+		protected virtual void UpdateSnapBehavior()
 		{
-			if (!(_itemsView.ItemsLayout is ItemsLayout itemsLayout))
+			if (_snapManager == null)
 			{
-				return;
+				_snapManager = new SnapManager(_itemsView, this);
 			}
 
-			var snapPointsType = itemsLayout.SnapPointsType;
-
-			if (snapPointsType == SnapPointsType.None)
-			{
-				// If we have a snap helper, detach it from the RecyclerView and set it to null
-				_snapHelper?.AttachToRecyclerView(null);
-				_snapHelper = null;
-				return;
-			}
-
-			// If we don't have a snap helper, we need to create one
-			if (_snapHelper == null)
-			{
-				// TODO hartez 2018/08/01 15:24:02 Choose the appropriate snap helper type 	
-				_snapHelper = new LinearSnapHelper();
-				// And attach it to this RecyclerView
-				_snapHelper.AttachToRecyclerView(this);
-			}
-
-			//var alignment = itemsLayout.SnapPointsAlignment;
+			_snapManager.UpdateSnapBehavior();
 		}
 
 		void TearDownOldElement(ItemsView oldElement)
@@ -268,6 +249,12 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				_adapter.Dispose();
 				_adapter = null;
+			}
+
+			if (_snapManager != null)
+			{
+				_snapManager.Dispose();
+				_snapManager = null;
 			}
 		}
 	}
