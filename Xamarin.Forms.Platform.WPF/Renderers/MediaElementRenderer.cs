@@ -99,6 +99,26 @@ namespace Xamarin.Forms.Platform.WPF
 				{
 					Control.Source = new Uri(Element.Source.ToString().Replace("ms-appx://", "pack://application:,,,"));
 				}
+				else if(Element.Source.Scheme == "ms-appdata")
+				{
+					string filePath = string.Empty;
+
+					if (Element.Source.LocalPath.StartsWith("/local"))
+					{
+						// WPF doesn't have the concept of an app package local folder so using My Documents as a placeholder
+						filePath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Element.Source.LocalPath.Substring(7));
+					}
+					else if (Element.Source.LocalPath.StartsWith("/temp"))
+					{
+						filePath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), Element.Source.LocalPath.Substring(6));
+					}
+					else
+					{
+						throw new ArgumentException("Invalid Uri", "Source");
+					}
+
+					Control.Source = new Uri(filePath);
+				}
 				else
 				{
 					Control.Source = Element.Source;
