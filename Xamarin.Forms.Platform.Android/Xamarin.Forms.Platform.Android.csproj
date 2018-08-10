@@ -71,6 +71,7 @@
     <Compile Include="CollectionView\ItemsSourceFactory.cs" />
     <Compile Include="CollectionView\ListSource.cs" />
     <Compile Include="CollectionView\ObservableCollectionSource.cs" />
+    <Compile Include="CollectionView\SnapManager.cs" />
     <Compile Include="Elevation.cs" />
     <Compile Include="Extensions\EntryRendererExtensions.cs" />
     <Compile Include="Extensions\FragmentManagerExtensions.cs" />

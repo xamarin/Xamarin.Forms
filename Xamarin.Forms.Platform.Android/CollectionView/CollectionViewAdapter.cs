@@ -100,6 +100,7 @@ namespace Xamarin.Forms.Platform.Android
 			public TemplatedItemViewHolder(AView itemView, View rootElement) : base(itemView)
 			{
 				View = rootElement;
+				System.Diagnostics.Debug.WriteLine($">>>>> TemplatedItemViewHolder Elevation: {itemView.Elevation}");
 			}
 		}
 

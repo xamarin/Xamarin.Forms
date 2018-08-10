@@ -13,7 +13,15 @@
 				}
 			};
 
-			var collectionView = new CollectionView {ItemsLayout = itemsLayout};
+			var collectionView = new CollectionView
+			{
+				ItemsLayout = itemsLayout,
+
+				Margin = new Thickness(50,50,50,50),
+				BackgroundColor = Color.Aquamarine,
+			};
+
+
 
 			var generator = new ItemsSourceGenerator(collectionView);
 
