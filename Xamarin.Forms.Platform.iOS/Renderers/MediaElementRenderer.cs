@@ -181,7 +181,22 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 				else if (Element.Source.Scheme == "ms-appdata")
 				{
-					asset = AVAsset.FromUrl(NSUrl.FromFilename(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Element.Source.LocalPath.Substring(1))));
+					string filePath = string.Empty;
+
+					if (Element.Source.LocalPath.StartsWith("/local"))
+					{
+						filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Element.Source.LocalPath.Substring(7));
+					}
+					else if (Element.Source.LocalPath.StartsWith("/temp"))
+					{
+						filePath = Path.Combine(Path.GetTempPath(), Element.Source.LocalPath.Substring(6));
+					}
+					else
+					{
+						throw new ArgumentException("Invalid Uri", "Source");
+					}
+
+					asset = AVAsset.FromUrl(NSUrl.FromFilename(filePath));
 				}
 				else
 				{

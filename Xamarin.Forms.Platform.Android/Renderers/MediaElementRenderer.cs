@@ -188,7 +188,23 @@ namespace Xamarin.Forms.Platform.Android
 				}
 				else if (Element.Source.Scheme == "ms-appdata")
 				{
-					_view.SetVideoPath(System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Element.Source.LocalPath.Substring(1)));
+					string filePath = string.Empty;
+
+					if (Element.Source.LocalPath.StartsWith("/local"))
+					{
+						filePath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Element.Source.LocalPath.Substring(7));
+					}
+					else if (Element.Source.LocalPath.StartsWith("/temp"))
+					{
+						filePath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), Element.Source.LocalPath.Substring(6));
+					}
+					else
+					{
+						throw new ArgumentException("Invalid Uri", "Source");
+					}
+
+					_view.SetVideoPath(filePath);
+
 				}
 				else
 				{
@@ -217,6 +233,8 @@ namespace Xamarin.Forms.Platform.Android
 				}
 			}
 		}
+
+
 
 		protected override void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
