@@ -62,9 +62,10 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateDetectReadingOrderFromContent();
 				UpdatePlaceholderText();
 				UpdatePlaceholderColor();
-			}
+                UpdateIsReadOnly();
+            }
 
-			base.OnElementChanged(e);
+            base.OnElementChanged(e);
 		}
 
 		protected override void Dispose(bool disposing)
@@ -127,7 +128,9 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdatePlaceholderText();
 			else if (e.PropertyName == Editor.PlaceholderColorProperty.PropertyName)
 				UpdatePlaceholderColor();
-		}
+            else if (e.PropertyName == InputView.IsReadOnlyProperty.PropertyName)
+                UpdateIsReadOnly();
+        }
 
 		void OnLostFocus(object sender, RoutedEventArgs e)
 		{
@@ -357,5 +360,10 @@ namespace Xamarin.Forms.Platform.UWP
 				}
 			}
 		}
-	}
+
+        void UpdateIsReadOnly()
+        {
+            Control.IsReadOnly = Element.IsReadOnly;
+        }
+    }
 }
