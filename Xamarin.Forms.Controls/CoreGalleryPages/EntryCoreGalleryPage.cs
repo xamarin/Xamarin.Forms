@@ -66,6 +66,8 @@ namespace Xamarin.Forms.Controls
 
 			var maxLengthContainer = new ViewContainer<Entry>(Test.Entry.MaxLength,	new Entry { MaxLength = 3 });
 
+			var readOnlyContainer = new ViewContainer<Entry>(Test.Entry.IsReadOnly, new Entry { Text = "This is read-only Entry", IsReadOnly = true });
+
 			Add (isPasswordContainer);
 			Add (completedContainer);
 			Add (placeholderContainer);
@@ -90,6 +92,7 @@ namespace Xamarin.Forms.Controls
 			Add (placeholderColorDisabledContainer);
 			Add (passwordColorContainer);
 			Add (maxLengthContainer);
+			Add (readOnlyContainer);
 		}
 	}
 }

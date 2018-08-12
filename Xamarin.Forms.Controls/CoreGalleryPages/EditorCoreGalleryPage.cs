@@ -37,6 +37,8 @@ namespace Xamarin.Forms.Controls
 
 			var maxLengthContainer = new ViewContainer<Editor>(Test.Editor.MaxLength, new Editor { MaxLength = 3 });
 
+			var readOnlyContainer = new ViewContainer<Editor>(Test.Editor.IsReadOnly, new Editor { Text = "This is read-only Editor", IsReadOnly = true });
+
 			Add(completedContainer);
 			Add(textContainer);
 			Add(textChangedContainer);
@@ -50,6 +52,7 @@ namespace Xamarin.Forms.Controls
 			Add(textColorContainer);
 			Add(textColorDisabledContainer);
 			Add(maxLengthContainer);
+			Add(readOnlyContainer);
 		}
 	}
 }
