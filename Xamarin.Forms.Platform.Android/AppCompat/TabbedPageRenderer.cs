@@ -21,9 +21,9 @@ using AColor = Android.Graphics.Color;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
-	public class TabbedPageRenderer : VisualElementRenderer<TabbedPage>, TabLayout.IOnTabSelectedListener, ViewPager.IOnPageChangeListener, IManageFragments, BottomNavigationView.IOnNavigationItemSelectedListener
-	{
-		Drawable _backgroundDrawable;
+	public class TabbedPageRenderer : VisualElementRenderer<TabbedPage>, TabLayout.IOnTabSelectedListener, ViewPager.IOnPageChangeListener, IManageFragments, BottomNavigationView.IOnNavigationItemSelectedListener, BottomNavigationView.IOnNavigationItemReselectedListener
+    {
+        Drawable _backgroundDrawable;
 		Drawable _wrappedBackgroundDrawable;
 		ColorStateList _originalTabTextColors;
 		ColorStateList _orignalTabIconColors;
@@ -113,6 +113,18 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			SetIconColorFilter(tab, false);
 		}
 
+        void BottomNavigationView.IOnNavigationItemReselectedListener.OnNavigationItemReselected(IMenuItem item)
+        {
+            if (Element == null)
+                return;
+
+			OnNavigationItemReselected(item);
+        }
+
+		protected virtual void OnNavigationItemReselected(IMenuItem item)
+		{
+		}
+
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing && !_disposed)
@@ -148,7 +160,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				if (_bottomNavigationView != null)
 				{
 					_bottomNavigationView.SetOnNavigationItemSelectedListener(null);
-					_bottomNavigationView.Dispose();
+                    _bottomNavigationView.SetOnNavigationItemReselectedListener(null);
+                    _bottomNavigationView.Dispose();
 					_bottomNavigationView = null;
 				}
 
@@ -203,7 +216,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 						{
 							_relativeLayout.RemoveView(_bottomNavigationView);
 							_bottomNavigationView.SetOnNavigationItemSelectedListener(null);
-						}
+                            _bottomNavigationView.SetOnNavigationItemReselectedListener(null);
+                        }
 
 						var bottomNavigationViewLayoutParams = new AWidget.RelativeLayout.LayoutParams(
 							LayoutParams.MatchParent,
@@ -400,7 +414,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					SetupBottomNavigationView(e);
 					UpdateBottomNavigationViewIcons();
 					bottomNavigationView.SetOnNavigationItemSelectedListener(this);
-				}
+                    bottomNavigationView.SetOnNavigationItemReselectedListener(this);
+                }
 
 				UpdateIgnoreContainerAreas();
 			}
