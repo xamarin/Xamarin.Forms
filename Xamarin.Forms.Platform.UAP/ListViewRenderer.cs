@@ -82,8 +82,9 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		bool IsObservableCollection(Type type)
+		bool IsObservableCollection(object source)
 		{
+			var type = source.GetType();
 			return type.IsGenericType &&
 				   type.GetGenericTypeDefinition() == typeof(ObservableCollection<>);
 		}
@@ -96,17 +97,16 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 			else
 			{
-				if (IsObservableCollection(Element?.ItemsSource.GetType()))
-				{
-					_collection = (IList)Element?.ItemsSource;
-					_collectionIsWrapped = false;
-				}
-				else
+				_collectionIsWrapped = !IsObservableCollection(Element?.ItemsSource);
+				if (_collectionIsWrapped)
 				{
 					_collection = new ObservableCollection<object>();
 					foreach (var item in Element.ItemsSource)
 						_collection.Add(item);
-					_collectionIsWrapped = true;
+				}
+				else
+				{
+					_collection = (IList)Element?.ItemsSource;
 				}
 			}
 
