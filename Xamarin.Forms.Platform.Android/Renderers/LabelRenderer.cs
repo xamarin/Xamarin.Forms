@@ -7,6 +7,7 @@ using Android.Views;
 using Android.Widget;
 using System;
 using System.ComponentModel;
+using Xamarin.Forms.PlatformConfiguration.TizenSpecific;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -211,7 +212,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 			else
 			{
-				Control.SetSingleLine(true);
+				Control.SetSingleLine(false);
 				Control.SetMaxLines(1);
 			}
 		}

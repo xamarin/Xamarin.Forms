@@ -78,7 +78,13 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty LineHeightProperty = LineHeightElement.LineHeightProperty;
 
-		public static readonly BindableProperty MaxLinesProperty = BindableProperty.Create(nameof(MaxLines), typeof(int), typeof(Label), -1);
+		public static readonly BindableProperty MaxLinesProperty = BindableProperty.Create(nameof(MaxLines), typeof(int), typeof(Label), -1, propertyChanged: (bindable, oldvalue, newvalue) =>
+			{
+				if (bindable != null)
+				{
+					((Label)bindable).InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
+				}
+			});
 
 		readonly Lazy<PlatformConfigurationRegistry<Label>> _platformConfigurationRegistry;
 

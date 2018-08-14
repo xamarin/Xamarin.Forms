@@ -343,11 +343,35 @@ namespace Xamarin.Forms.Platform.MacOS
 			else
 			{
 #if __MOBILE__
-				Control.Lines = 1;
+				switch (Element.LineBreakMode)
+				{
+					case LineBreakMode.WordWrap:
+					case LineBreakMode.CharacterWrap:
+						Control.Lines = 0;
+						break;
+					case LineBreakMode.NoWrap:
+					case LineBreakMode.HeadTruncation:
+					case LineBreakMode.MiddleTruncation:
+					case LineBreakMode.TailTruncation:
+						Control.Lines = 1;
+						break;
+				}
 
 				LayoutSubviews();
 #else
-				Control.MaximumNumberOfLines = 1;
+				switch (Element.LineBreakMode)
+				{
+					case LineBreakMode.WordWrap:
+					case LineBreakMode.CharacterWrap:
+						Control.MaximumNumberOfLines = 0;
+						break;
+					case LineBreakMode.NoWrap:
+					case LineBreakMode.HeadTruncation:
+					case LineBreakMode.MiddleTruncation:
+					case LineBreakMode.TailTruncation:
+						Control.MaximumNumberOfLines = 1;
+						break;
+				}
 
 				Layout();
 #endif
