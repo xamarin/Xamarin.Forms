@@ -322,6 +322,10 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				textBlock.MaxLines = Element.MaxLines;
 			}
+			else
+			{
+				textBlock.MaxLines = 0;
+			}
 		}
 	}
 }

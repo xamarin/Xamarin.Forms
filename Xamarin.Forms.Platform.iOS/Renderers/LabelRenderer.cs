@@ -328,7 +328,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateMaxLines()
 		{
-			if (Element.MaxLines > 0)
+			if (Element.MaxLines >= 0)
 			{
 #if __MOBILE__
 				Control.Lines = Element.MaxLines;
@@ -336,6 +336,18 @@ namespace Xamarin.Forms.Platform.MacOS
 				LayoutSubviews();
 #else
 				Control.MaximumNumberOfLines = Element.MaxLines;
+
+				Layout();
+#endif
+			}
+			else
+			{
+#if __MOBILE__
+				Control.Lines = 1;
+
+				LayoutSubviews();
+#else
+				Control.MaximumNumberOfLines = 1;
 
 				Layout();
 #endif
