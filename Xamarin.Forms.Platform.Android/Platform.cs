@@ -341,6 +341,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		public static IVisualElementRenderer GetRenderer(VisualElement bindable)
 		{
+			if (bindable == null)
+				return null;
 			return (IVisualElementRenderer)bindable.GetValue(RendererProperty);
 		}
 
