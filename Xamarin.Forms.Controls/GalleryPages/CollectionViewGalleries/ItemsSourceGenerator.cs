@@ -44,6 +44,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			button.Clicked += GenerateItems;
 
 			Content = layout;
+
+			IsClippedToBounds = true;
 		}
 
 		readonly string[] _images = 

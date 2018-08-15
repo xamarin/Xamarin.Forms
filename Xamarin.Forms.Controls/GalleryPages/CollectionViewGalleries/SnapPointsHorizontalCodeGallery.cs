@@ -28,13 +28,9 @@
 
 			var collectionView = new CollectionView
 			{
-				Margin = new Thickness(50,50,50,50),
-				BackgroundColor = Color.Aquamarine,
 				ItemsLayout = itemsLayout,
 				ItemTemplate = itemTemplate,
 			};
-
-			
 
 			var generator = new ItemsSourceGenerator(collectionView, initialItems: 50);
 
