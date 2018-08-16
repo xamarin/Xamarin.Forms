@@ -97,7 +97,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 			else
 			{
-				_collectionIsWrapped = !IsObservableCollection(Element?.ItemsSource);
+				_collectionIsWrapped = !IsObservableCollection(Element.ItemsSource);
 				if (_collectionIsWrapped)
 				{
 					_collection = new ObservableCollection<object>();
@@ -106,7 +106,7 @@ namespace Xamarin.Forms.Platform.UWP
 				}
 				else
 				{
-					_collection = (IList)Element?.ItemsSource;
+					_collection = (IList)Element.ItemsSource;
 				}
 			}
 
@@ -171,6 +171,11 @@ namespace Xamarin.Forms.Platform.UWP
 						ReloadData();
 						break;
 				}
+			}
+			else if (e.Action == NotifyCollectionChangedAction.Reset)
+			{
+				ClearSizeEstimate();
+				ReloadData();
 			}
 
 			Device.BeginInvokeOnMainThread(() => List?.UpdateLayout());
@@ -242,7 +247,6 @@ namespace Xamarin.Forms.Platform.UWP
 						_subscribedToItemClick = false;
 						List.ItemClick -= OnListItemClicked;
 					}
-
 					List.SelectionChanged -= OnControlSelectionChanged;
 					List.DataContext = null;
 					List = null;
