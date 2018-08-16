@@ -162,8 +162,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				element = element.FindNextElement(forwardDirection, tabIndexes, ref tabIndex);
 				var renderer = element.GetRenderer();
-				// use reflection to get the "Control" property from a specific renderer
-				control = renderer.GetType()?.GetProperty("Control")?.GetValue(renderer, null) as AView;
+				control = (renderer as INativeViewRenderer)?.NativeView;
 			} while (!(control?.Focusable == true || ++attempt >= maxAttempts));
 
 			return control;

@@ -177,8 +177,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				element = element.FindNextElement(forwardDirection, tabIndexes, ref tabIndex);
 #if __MACOS__
 				var renderer = Platform.GetRenderer(element);
-				// use reflection to get the "Control" property from a specific renderer
-				control = renderer?.GetType().GetProperty("Control")?.GetValue(renderer, null) as NativeView;
+				control = (renderer as INativeViewRenderer)?.NativeView;
 #else
 				element.Focus();
 #endif
