@@ -45,7 +45,7 @@
 			{
 				var templateLayout = new Grid
 				{
-					RowDefinitions = new RowDefinitionCollection { new RowDefinition(), new RowDefinition() },
+					RowDefinitions = new RowDefinitionCollection { new RowDefinition(), new RowDefinition {Height = GridLength.Auto} },
 					WidthRequest = 200,
 					HeightRequest = 200
 				};
@@ -62,7 +62,7 @@
 				var caption = new Label
 				{
 					HorizontalOptions = LayoutOptions.Fill,
-					HorizontalTextAlignment = TextAlignment.Center
+					HorizontalTextAlignment = TextAlignment.Start
 				};
 
 				caption.SetBinding(Label.TextProperty, new Binding("Caption"));

@@ -19,8 +19,6 @@ namespace Xamarin.Forms.Platform.Android
 	// clipToPadding (which is supposed to default to true)
 	// https://developer.android.com/reference/android/view/ViewGroup#attr_android:clipChildren
 
-
-
 	public class CollectionViewRenderer : RecyclerView, IVisualElementRenderer, IEffectControlProvider
 	{
 		readonly AutomationPropertiesProvider _automationPropertiesProvider;
@@ -278,6 +276,34 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			this.UpdateFlowDirection(Element);
+
+			ReconcileFlowDirectionAndLayout();
+		}
+
+		protected virtual void ReconcileFlowDirectionAndLayout()
+		{
+			if (!(GetLayoutManager() is LinearLayoutManager linearLayoutManager))
+			{
+				return;
+			}
+
+			if (linearLayoutManager.CanScrollVertically())
+			{
+				return;
+			}
+
+			var effectiveFlowDirection = ((IVisualElementController)Element).EffectiveFlowDirection;
+
+			if (effectiveFlowDirection.IsRightToLeft() && !linearLayoutManager.ReverseLayout)
+			{
+				linearLayoutManager.ReverseLayout = true;
+				return;
+			}
+
+			if (effectiveFlowDirection.IsLeftToRight() && linearLayoutManager.ReverseLayout)
+			{
+				linearLayoutManager.ReverseLayout = false;
+			}
 		}
 
 		void TearDownOldElement(ItemsView oldElement)
@@ -300,29 +326,6 @@ namespace Xamarin.Forms.Platform.Android
 				_snapManager.Dispose();
 				_snapManager = null;
 			}
-		}
-
-		public override void OnDraw(Canvas c)
-		{
-			System.Diagnostics.Debug.WriteLine($">>>>> CollectionViewRenderer OnDraw Elevation: {Elevation}");
-			base.OnDraw(c);
-		}
-
-		protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
-		{
-			System.Diagnostics.Debug.WriteLine($">>>>> CollectionViewRenderer OnMeasure 297: MESSAGE");
-
-			var width = MeasureSpec.GetSize(widthMeasureSpec);
-			var height = MeasureSpec.GetSize(heightMeasureSpec);
-
-			System.Diagnostics.Debug.WriteLine($">>>>> CollectionViewRenderer OnMeasure: width {width}, height {height}");
-
-			base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
-		}
-
-		protected override void OnLayout(bool changed, int l, int t, int r, int b)
-		{
-			base.OnLayout(changed, l, t, r, b);
 		}
 	}
 }

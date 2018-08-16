@@ -1,4 +1,6 @@
-﻿namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
+﻿using System;
+
+namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 {
 	internal class SnapPointsGallery : ContentPage
 	{
@@ -19,7 +21,7 @@
 						GalleryBuilder.NavButton("Snap Points (Code, Horizontal List)", () => 
 							new SnapPointsCodeGallery(ItemsLayoutOrientation.Horizontal), Navigation),
 						GalleryBuilder.NavButton("Snap Points (Code, Vertical List)", () => 
-							new SnapPointsCodeGallery(ItemsLayoutOrientation.Vertical), Navigation),
+							new SnapPointsCodeGallery(ItemsLayoutOrientation.Vertical), Navigation)
 					}
 				}
 			};
