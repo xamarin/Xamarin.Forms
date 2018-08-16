@@ -84,6 +84,8 @@ namespace Xamarin.Forms.Platform.iOS
 			View.Model.RowSelected(indexPath.Section, indexPath.Row);
 			if (AutomaticallyDeselect)
 				tableView.DeselectRow(indexPath, true);
+
+			tableView.EndEditing(true);
 		}
 
 		public override nint RowsInSection(UITableView tableview, nint section)
@@ -121,6 +123,15 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void Tap(UITapGestureRecognizer gesture)
 		{
+			// if the gesture point is in the view and maps to a table index, do not end editing
+			// this forces the keyboard to close, adjusting the screen and changing the index on RowSelected
+			// the keyboard should close after RowSelected is complete
+
+			var point = gesture.LocationInView(Table);
+			var indexPath = Table.IndexPathForRowAtPoint(point);
+			if (indexPath != null)
+				return;
+
 			gesture.View.EndEditing(true);
 		}
 	}
