@@ -22,8 +22,8 @@ using AColor = Android.Graphics.Color;
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
 	public class TabbedPageRenderer : VisualElementRenderer<TabbedPage>, TabLayout.IOnTabSelectedListener, ViewPager.IOnPageChangeListener, IManageFragments, BottomNavigationView.IOnNavigationItemSelectedListener, BottomNavigationView.IOnNavigationItemReselectedListener
-    {
-        Drawable _backgroundDrawable;
+	{
+		Drawable _backgroundDrawable;
 		Drawable _wrappedBackgroundDrawable;
 		ColorStateList _originalTabTextColors;
 		ColorStateList _orignalTabIconColors;
@@ -114,9 +114,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		}
 
         void BottomNavigationView.IOnNavigationItemReselectedListener.OnNavigationItemReselected(IMenuItem item)
-        {
-            if (Element == null)
-                return;
+		{
+			if (Element == null)
+				return;
 
 			OnNavigationItemReselected(item);
         }
@@ -160,7 +160,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				if (_bottomNavigationView != null)
 				{
 					_bottomNavigationView.SetOnNavigationItemSelectedListener(null);
-                    _bottomNavigationView.SetOnNavigationItemReselectedListener(null);
+					_bottomNavigationView.SetOnNavigationItemReselectedListener(null);
                     _bottomNavigationView.Dispose();
 					_bottomNavigationView = null;
 				}
@@ -216,8 +216,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 						{
 							_relativeLayout.RemoveView(_bottomNavigationView);
 							_bottomNavigationView.SetOnNavigationItemSelectedListener(null);
-                            _bottomNavigationView.SetOnNavigationItemReselectedListener(null);
-                        }
+							_bottomNavigationView.SetOnNavigationItemReselectedListener(null);
+						}
 
 						var bottomNavigationViewLayoutParams = new AWidget.RelativeLayout.LayoutParams(
 							LayoutParams.MatchParent,
