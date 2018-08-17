@@ -113,13 +113,13 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			SetIconColorFilter(tab, false);
 		}
 
-        void BottomNavigationView.IOnNavigationItemReselectedListener.OnNavigationItemReselected(IMenuItem item)
+		void BottomNavigationView.IOnNavigationItemReselectedListener.OnNavigationItemReselected(IMenuItem item)
 		{
 			if (Element == null)
 				return;
 
 			OnNavigationItemReselected(item);
-        }
+		}
 
 		protected virtual void OnNavigationItemReselected(IMenuItem item)
 		{
