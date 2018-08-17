@@ -129,6 +129,8 @@ namespace Xamarin.Forms.Platform.Android
 				newElementController.ReloadRequested += OnReloadRequested;
 
 				UpdateMixedContentMode();
+				UpdateEnableZoomControls();
+				UpdateDisplayZoomControls();
 			}
 
 			Load();
@@ -145,6 +147,12 @@ namespace Xamarin.Forms.Platform.Android
 					break;
 				case "MixedContentMode":
 					UpdateMixedContentMode();
+					break;
+				case "EnableZoomControls":
+					UpdateEnableZoomControls();
+					break;
+				case "DisplayZoomControls":
+					UpdateDisplayZoomControls();
 					break;
 			}
 		}
@@ -207,6 +215,22 @@ namespace Xamarin.Forms.Platform.Android
 			if (Control != null && ((int)Build.VERSION.SdkInt >= 21))
 			{
 				Control.Settings.MixedContentMode = (MixedContentHandling)Element.OnThisPlatform().MixedContentMode();
+			}
+		}
+
+		void UpdateEnableZoomControls()
+		{
+			if (Control != null)
+			{
+				Control.Settings.SupportZoom = Element.OnThisPlatform().EnableZoomControls();
+			}
+		}
+
+		void UpdateDisplayZoomControls()
+		{
+			if (Control != null && ((int)Build.VERSION.SdkInt >= 11))
+			{
+				Control.Settings.DisplayZoomControls = Element.OnThisPlatform().DisplayZoomControls();
 			}
 		}
 
