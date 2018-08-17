@@ -251,6 +251,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue1556.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1799.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1931.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue2187.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3001.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3271.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3390.cs" />
@@ -368,6 +369,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue3008.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3019.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue2993.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue3507.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3367.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LegacyComponents\NonAppCompatSwitch.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MapsModalCrash.cs" />
