@@ -10,15 +10,6 @@ using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	// TODO hartez 2018/08/09 16:28:34 Current theory:	
-
-	// Somehow, the container (layout?) renderer has clipChildren and clipToPadding both set to false
-	// see your Recycler project for a repro of this problem in Xamarin.Android
-
-	// clipChildren _might_ be getting set by VisualElementTracker; can't find anywhere that sets
-	// clipToPadding (which is supposed to default to true)
-	// https://developer.android.com/reference/android/view/ViewGroup#attr_android:clipChildren
-
 	public class CollectionViewRenderer : RecyclerView, IVisualElementRenderer, IEffectControlProvider
 	{
 		readonly AutomationPropertiesProvider _automationPropertiesProvider;

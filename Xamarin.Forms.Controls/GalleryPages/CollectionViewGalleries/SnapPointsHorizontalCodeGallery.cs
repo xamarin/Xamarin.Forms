@@ -1,11 +1,7 @@
 ﻿namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 {
-	// TODO hartez 2018/08/16 12:55:19 This needs a flow direction selector	
-	// The CollectionViewAdapter needs to generate views (text or from Templates) with the correct flowdirection
-	// The CollectionViewAdapter needs to respond to flow direction changes (for now, just reset it completely)
-	// The StartSnapHelper is handling RTL incorrectly (rewinds all the way back)
-	// Verify that the layouts handle flow direction changes reasonably
-	// Still need an EndSnapHelper (or to make Start generic enough that we can have an EdgeSnapHelper)
+	// TODO hartez The CollectionViewAdapter needs to generate views (text or from Templates) with the correct flowdirection
+	// TODO hartez The CollectionViewAdapter needs to respond to flow direction changes (for now, just reset it completely)
 
 	internal class SnapPointsCodeGallery : ContentPage
 	{

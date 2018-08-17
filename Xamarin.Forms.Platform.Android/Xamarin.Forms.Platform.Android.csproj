@@ -66,6 +66,8 @@
     <Compile Include="BorderBackgroundManager.cs" />
     <Compile Include="ButtonBackgroundTracker.cs" />
     <Compile Include="CollectionView\CollectionViewAdapter.cs" />
+    <Compile Include="CollectionView\EdgeSnapHelper.cs" />
+    <Compile Include="CollectionView\EndSnapHelper.cs" />
     <Compile Include="CollectionView\ICollectionViewSource.cs" />
     <Compile Include="CollectionView\ItemContentControl.cs" />
     <Compile Include="CollectionView\ItemsSourceFactory.cs" />
