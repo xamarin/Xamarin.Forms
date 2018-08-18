@@ -44,7 +44,7 @@ namespace Xamarin.Forms.PlatformConfiguration.AndroidSpecific
 
 		public static void SetEnableZoomControls(BindableObject element, bool value)
 		{
-			element.SetValue(MixedContentModeProperty, value);
+			element.SetValue(EnableZoomControlProperty, value);
 		}
 
 		public static bool EnableZoomControls(this IPlatformElementConfiguration<Android, FormsElement> config)
@@ -62,12 +62,12 @@ namespace Xamarin.Forms.PlatformConfiguration.AndroidSpecific
 
 		public static bool GetDisplayZoomControls(BindableObject element)
 		{
-			return (bool)element.GetValue(EnableZoomControlProperty);
+			return (bool)element.GetValue(DisplayZoomControlsProperty);
 		}
 
 		public static void SetDisplayZoomControls(BindableObject element, bool value)
 		{
-			element.SetValue(MixedContentModeProperty, value);
+			element.SetValue(DisplayZoomControlsProperty, value);
 		}
 
 		public static bool DisplayZoomControls(this IPlatformElementConfiguration<Android, FormsElement> config)
