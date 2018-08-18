@@ -21,7 +21,6 @@ namespace Xamarin.Forms.Platform.Android
 			if (!(layoutManager is LinearLayoutManager linearLayoutManager))
 			{
 				// Don't snap to anything if this isn't a LinearLayoutManager;
-				// we'll need to update this to handle grids eventually
 				return null;
 			}
 

@@ -1,8 +1,5 @@
 ﻿namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 {
-	// TODO hartez The CollectionViewAdapter needs to generate views (text or from Templates) with the correct flowdirection
-	// TODO hartez The CollectionViewAdapter needs to respond to flow direction changes (for now, just reset it completely)
-
 	internal class SnapPointsCodeGallery : ContentPage
 	{
 		public SnapPointsCodeGallery(ItemsLayoutOrientation orientation)

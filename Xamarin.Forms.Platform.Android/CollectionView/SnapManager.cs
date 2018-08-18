@@ -50,9 +50,24 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					case SnapPointsAlignment.Start:
 						return new StartSnapHelper();
+					case SnapPointsAlignment.Center:
+						return new LinearSnapHelper();
 					case SnapPointsAlignment.End:
 						return new EndSnapHelper();
+					default:
+						throw new ArgumentOutOfRangeException(nameof(alignment), alignment, null);
+				}
+			}
+
+			if (snapPointsType == SnapPointsType.MandatorySingle)
+			{
+				switch (alignment)
+				{
+					case SnapPointsAlignment.Start:
+						return new StartPagerSnapHelper();
 					case SnapPointsAlignment.Center:
+						return new PagerSnapHelper();
+					case SnapPointsAlignment.End:
 						break;
 					default:
 						throw new ArgumentOutOfRangeException(nameof(alignment), alignment, null);

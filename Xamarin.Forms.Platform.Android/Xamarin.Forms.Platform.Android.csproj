@@ -74,6 +74,7 @@
     <Compile Include="CollectionView\ListSource.cs" />
     <Compile Include="CollectionView\ObservableCollectionSource.cs" />
     <Compile Include="CollectionView\SnapManager.cs" />
+    <Compile Include="CollectionView\StartPagerSnapHelper.cs" />
     <Compile Include="CollectionView\StartSnapHelper.cs" />
     <Compile Include="Elevation.cs" />
     <Compile Include="Extensions\EntryRendererExtensions.cs" />

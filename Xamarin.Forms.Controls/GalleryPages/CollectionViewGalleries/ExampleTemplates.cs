@@ -45,14 +45,15 @@
 			{
 				var templateLayout = new Grid
 				{
+					BackgroundColor = Color.BlueViolet,
 					RowDefinitions = new RowDefinitionCollection { new RowDefinition(), new RowDefinition {Height = GridLength.Auto} },
-					WidthRequest = 200,
+					WidthRequest = 500,
 					HeightRequest = 200
 				};
 
 				var image = new Image
 				{
-					HeightRequest = 200, WidthRequest = 200,
+					HeightRequest = 200, WidthRequest = 500,
 					HorizontalOptions = LayoutOptions.Center,
 					VerticalOptions = LayoutOptions.Center
 				};
@@ -62,7 +63,7 @@
 				var caption = new Label
 				{
 					HorizontalOptions = LayoutOptions.Fill,
-					HorizontalTextAlignment = TextAlignment.Start
+					HorizontalTextAlignment = TextAlignment.Center
 				};
 
 				caption.SetBinding(Label.TextProperty, new Binding("Caption"));
@@ -72,7 +73,7 @@
 
 				Grid.SetRow(caption, 1);
 
-				return templateLayout;
+				return new Frame { Content = templateLayout, BorderColor = Color.Bisque };
 			});
 		}
 	}

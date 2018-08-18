@@ -54,7 +54,6 @@ namespace Xamarin.Forms.Platform.Android
 
 			// Realize the content, create a renderer out of it, and use that
 			var templateElement = template.CreateContent() as View;
-
 			var itemContentControl = new ItemContentControl(CreateRenderer(templateElement), _context);
 
 			return new TemplatedItemViewHolder(itemContentControl, templateElement);
@@ -103,6 +102,5 @@ namespace Xamarin.Forms.Platform.Android
 				System.Diagnostics.Debug.WriteLine($">>>>> TemplatedItemViewHolder Elevation: {itemView.Elevation}");
 			}
 		}
-
 	}
 }
