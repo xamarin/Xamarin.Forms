@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Controls.Issues
 			var editorReadOnly = new Editor { Text = text, IsReadOnly = true };
 			var entryToggleable = new Entry { Text = text };
 			var editorToggleable = new Editor { Text = text };
-			var toggle = new Switch { IsToggled = true };
+			var toggle = new Switch { IsToggled = false };
 
 			var stackLayout = new StackLayout();
 			stackLayout.Children.Add(new Label { Text = "Defaults" });
