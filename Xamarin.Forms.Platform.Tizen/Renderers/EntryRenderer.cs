@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			RegisterPropertyHandler(Entry.IsTextPredictionEnabledProperty, UpdateIsSpellCheckEnabled);
 			RegisterPropertyHandler(Specific.FontWeightProperty, UpdateFontWeight);
 			RegisterPropertyHandler(Entry.SelectionLengthProperty, UpdateSelectionLength);
-			RegisterPropertyHandler(Entry.IsReadOnlyProperty, UpdateIsReadOnly);
+			RegisterPropertyHandler(InputView.IsReadOnlyProperty, UpdateIsReadOnly);
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Entry> e)
@@ -202,7 +202,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		void UpdateIsReadOnly()
 		{
-			Control.AllowFocus(!Element.IsReadOnly);
+			Control.IsEditable = !Element.IsReadOnly;
 		}
 	}
 }
