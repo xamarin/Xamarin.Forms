@@ -1,8 +1,13 @@
 using System;
 using System.ComponentModel;
 using System.Windows.Input;
+using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform;
+using Xamarin.Forms.StyleSheets;
+
+[assembly: StyleProperty("-xf-placeholder-color", typeof(SearchBar), nameof(SearchBar.PlaceholderColorProperty))]
+[assembly: StyleProperty("-xf-cancel-button-color", typeof(SearchBar), nameof(SearchBar.CancelButtonColorProperty))]
 
 namespace Xamarin.Forms
 {

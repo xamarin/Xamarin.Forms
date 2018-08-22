@@ -3,7 +3,12 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using Xamarin.Forms;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.StyleSheets;
+
+[assembly: StyleProperty("-xf-row-spacing", typeof(Grid), nameof(Grid.RowSpacingProperty))]
+[assembly: StyleProperty("-xf-column-spacing", typeof(Grid), nameof(Grid.ColumnSpacingProperty))]
 
 namespace Xamarin.Forms
 {

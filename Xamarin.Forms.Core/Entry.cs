@@ -1,8 +1,14 @@
 using System;
 using System.ComponentModel;
 using System.Windows.Input;
+using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform;
+using Xamarin.Forms.StyleSheets;
+
+[assembly: StyleProperty("-xf-color", typeof(Entry), nameof(Entry.TextColorProperty))]
+[assembly: StyleProperty("-xf-placeholder", typeof(Entry), nameof(Entry.PlaceholderProperty))]
+[assembly: StyleProperty("-xf-placeholder-color", typeof(Entry), nameof(Entry.PlaceholderColorProperty))]
 
 namespace Xamarin.Forms
 {

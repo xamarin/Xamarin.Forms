@@ -1,5 +1,9 @@
 using System;
+using Xamarin.Forms;
 using Xamarin.Forms.Platform;
+using Xamarin.Forms.StyleSheets;
+
+[assembly: StyleProperty("-xf-color", typeof(ActivityIndicator), nameof(ActivityIndicator.ColorProperty))]
 
 namespace Xamarin.Forms
 {

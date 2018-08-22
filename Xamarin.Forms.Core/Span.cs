@@ -1,5 +1,9 @@
 using System;
+using Xamarin.Forms;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.StyleSheets;
+
+[assembly: StyleProperty("-xf-color", typeof(Span), nameof(Span.BackgroundColorProperty))]
 
 namespace Xamarin.Forms
 {

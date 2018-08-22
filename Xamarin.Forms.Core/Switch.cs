@@ -1,5 +1,9 @@
 using System;
+using XSwitch = Xamarin.Forms.Switch;
 using Xamarin.Forms.Platform;
+using Xamarin.Forms.StyleSheets;
+
+[assembly: StyleProperty("-xf-color", typeof(XSwitch), nameof(XSwitch.OnColorProperty))]
 
 namespace Xamarin.Forms
 {

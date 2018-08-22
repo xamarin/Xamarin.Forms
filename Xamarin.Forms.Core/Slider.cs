@@ -1,6 +1,12 @@
 using System;
+using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform;
+using Xamarin.Forms.StyleSheets;
+
+[assembly: StyleProperty("-xf-min-track-color", typeof(Slider), nameof(Slider.MinimumTrackColorProperty))]
+[assembly: StyleProperty("-xf-max-track-color", typeof(Slider), nameof(Slider.MaximumTrackColorProperty))]
+[assembly: StyleProperty("-xf-thumb-color", typeof(Slider), nameof(Slider.ThumbColorProperty))]
 
 namespace Xamarin.Forms
 {

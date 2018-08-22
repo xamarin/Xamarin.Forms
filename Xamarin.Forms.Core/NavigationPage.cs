@@ -4,8 +4,13 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform;
+using Xamarin.Forms.StyleSheets;
+
+[assembly: StyleProperty("-xf-bar-background-color", typeof(NavigationPage), nameof(NavigationPage.BarBackgroundColorProperty))]
+[assembly: StyleProperty("-xf-bar-text-color", typeof(NavigationPage), nameof(NavigationPage.BarTextColorProperty))]
 
 namespace Xamarin.Forms
 {

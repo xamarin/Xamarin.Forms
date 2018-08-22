@@ -1,7 +1,20 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Xamarin.Forms;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.StyleSheets;
+
+[assembly: StyleProperty("-xf-anchor-x", typeof(VisualElement), nameof(VisualElement.AnchorXProperty))]
+[assembly: StyleProperty("-xf-anchor-y", typeof(VisualElement), nameof(VisualElement.AnchorYProperty))]
+[assembly: StyleProperty("-xf-translation-x", typeof(VisualElement), nameof(VisualElement.TranslationXProperty))]
+[assembly: StyleProperty("-xf-translation-y", typeof(VisualElement), nameof(VisualElement.TranslationYProperty))]
+[assembly: StyleProperty("-xf-rotation", typeof(VisualElement), nameof(VisualElement.RotationProperty))]
+[assembly: StyleProperty("-xf-rotation-x", typeof(VisualElement), nameof(VisualElement.RotationXProperty))]
+[assembly: StyleProperty("-xf-rotation-y", typeof(VisualElement), nameof(VisualElement.RotationYProperty))]
+[assembly: StyleProperty("-xf-scale", typeof(VisualElement), nameof(VisualElement.ScaleProperty))]
+[assembly: StyleProperty("-xf-scale-x", typeof(VisualElement), nameof(VisualElement.ScaleXProperty))]
+[assembly: StyleProperty("-xf-scale-y", typeof(VisualElement), nameof(VisualElement.ScaleYProperty))]
 
 namespace Xamarin.Forms
 {

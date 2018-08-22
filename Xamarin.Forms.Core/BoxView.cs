@@ -1,5 +1,9 @@
 using System;
+using Xamarin.Forms;
 using Xamarin.Forms.Platform;
+using Xamarin.Forms.StyleSheets;
+
+[assembly: StyleProperty("-xf-color", typeof(BoxView), nameof(BoxView.ColorProperty))]
 
 namespace Xamarin.Forms
 {

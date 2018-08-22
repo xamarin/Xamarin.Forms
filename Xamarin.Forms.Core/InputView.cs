@@ -1,3 +1,8 @@
+using Xamarin.Forms;
+using Xamarin.Forms.StyleSheets;
+
+[assembly: StyleProperty("-xf-max-length", typeof(InputView), nameof(InputView.MaxLengthProperty))]
+
 namespace Xamarin.Forms
 {
 	public class InputView : View

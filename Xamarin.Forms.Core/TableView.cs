@@ -4,6 +4,10 @@ using System.ComponentModel;
 using System.Linq;
 using Xamarin.Forms.Platform;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.StyleSheets;
+using Xamarin.Forms;
+
+[assembly: StyleProperty("-xf-row-height", typeof(TableView), nameof(TableView.RowHeightProperty))]
 
 namespace Xamarin.Forms
 {

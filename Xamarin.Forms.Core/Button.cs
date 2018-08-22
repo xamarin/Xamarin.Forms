@@ -2,8 +2,14 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows.Input;
+using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform;
+using Xamarin.Forms.StyleSheets;
+
+[assembly: StyleProperty("-xf-border-width", typeof(Button), nameof(Button.BorderWidthProperty))]
+[assembly: StyleProperty("-xf-border-color", typeof(Button), nameof(Button.BorderColorProperty))]
+[assembly: StyleProperty("-xf-corner-radius", typeof(Button), nameof(Button.CornerRadiusProperty))]
 
 namespace Xamarin.Forms
 {
