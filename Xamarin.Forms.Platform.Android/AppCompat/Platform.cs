@@ -268,8 +268,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 				foreach (IVisualElementRenderer rootRenderer in _navModel.Roots.Select(Android.Platform.GetRenderer))
 				{
-					if (rootRenderer != null)
-						rootRenderer.Dispose();
+					rootRenderer?.Dispose();
 				}
 
 				_navModel = new NavigationModel();
