@@ -81,8 +81,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (e.OldElement != null)
 			{
-				System.Diagnostics.Debug.WriteLine("OnElementChanged e.OldElement != null");
-
 				e.OldElement.SetRenderer(null);
 
 				if (_notificationHandle != null)
@@ -278,8 +276,6 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					Element?.RaiseMediaOpened();
 				}
-
-				System.Diagnostics.Debug.WriteLine(DateTimeOffset.Now + " " + e.NewValue.ToString());
 			}
 		}
 
@@ -316,7 +312,6 @@ namespace Xamarin.Forms.Platform.iOS
 					break;
 
 				case nameof(MediaElement.CurrentState):
-					System.Diagnostics.Debug.WriteLine(Element.CurrentState.ToString());
 					switch (Element.CurrentState)
 					{
 						case MediaElementState.Playing:

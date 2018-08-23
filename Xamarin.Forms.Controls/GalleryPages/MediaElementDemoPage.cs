@@ -56,21 +56,17 @@ namespace Xamarin.Forms.Controls
 
 		void PlayButton_Clicked(object sender, EventArgs e)
 		{
-			System.Diagnostics.Debug.WriteLine(element.CanSeek);
 			element.Play();
-			System.Diagnostics.Debug.WriteLine(element.CanSeek);
 		}
 
 		void PauseButton_Clicked(object sender, EventArgs e)
 		{
 			element.Pause();
-			System.Diagnostics.Debug.WriteLine(element.CanSeek);
 		}
 
 		void StopButton_Clicked(object sender, EventArgs e)
 		{
 			element.Stop();
-			System.Diagnostics.Debug.WriteLine(element.CanSeek);
 		}
 
 		protected override void OnAppearing()
