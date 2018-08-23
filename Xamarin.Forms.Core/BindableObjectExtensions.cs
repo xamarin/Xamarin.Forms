@@ -13,20 +13,16 @@ namespace Xamarin.Forms
 
 		internal static void PropagateBindingContext<T>(this BindableObject self, IList<T> children, Action<BindableObject, object> setChildBindingContext)
 		{
-			var gotBindingContext = false;
-			object bc = null;
+			if (children == null || children.Count == 0)
+				return;
+
+			var bc = self.BindingContext;
 
 			for (var i = 0; i < children.Count; i++)
 			{
 				var bo = children[i] as BindableObject;
 				if (bo == null)
 					continue;
-
-				if (!gotBindingContext)
-				{
-					bc = self.BindingContext;
-					gotBindingContext = true;
-				}
 
 				setChildBindingContext(bo, bc);
 			}
