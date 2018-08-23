@@ -69,6 +69,7 @@ namespace Xamarin.Forms.Platform.UWP
 					Control.SeekCompleted -= Control_SeekCompleted;
 					Control.MediaOpened -= Control_MediaOpened;
 					Control.MediaEnded -= Control_MediaEnded;
+					Control.MediaFailed -= Control_MediaFailed;
 				}
 
 				e.OldElement.SetRenderer(null);
@@ -93,12 +94,18 @@ namespace Xamarin.Forms.Platform.UWP
 				Control.CurrentStateChanged += Control_CurrentStateChanged;
 				Control.MediaOpened += Control_MediaOpened;
 				Control.MediaEnded += Control_MediaEnded;
+				Control.MediaFailed += Control_MediaFailed;
 
 				if (Element.Source != null)
 				{
 					Control.Source = Element.Source;
 				}
 			}
+		}
+
+		void Control_MediaFailed(object sender, ExceptionRoutedEventArgs e)
+		{
+			Element?.OnMediaFailed();
 		}
 
 		void Control_MediaEnded(object sender, RoutedEventArgs e)

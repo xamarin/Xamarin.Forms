@@ -138,7 +138,7 @@ namespace Xamarin.Forms.Platform.WPF
 
 		void Control_MediaFailed(object sender, ExceptionRoutedEventArgs e)
 		{
-			System.Diagnostics.Debug.WriteLine(e.ErrorException);
+			Element.OnMediaFailed();
 		}
 
 		void Control_MediaEnded(object sender, RoutedEventArgs e)
@@ -170,9 +170,7 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			switch (e.PropertyName)
 			{
-				//case nameof(MediaElement.AreTransportControlsEnabled):
-				//	Control.AreTransportControlsEnabled = Element.AreTransportControlsEnabled;
-				//	break;
+				//TODO: AreTransportControlsEnabled not supported for WPF
 
 				case nameof(MediaElement.Aspect):
 					Control.Stretch = Element.Aspect.ToStretch();
