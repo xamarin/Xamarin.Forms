@@ -106,15 +106,9 @@ namespace Xamarin.Forms.Platform.Android
 				_automationPropertiesProvider?.Dispose();
 				Tracker?.Dispose();
 
-				if (_adapter != null)
-				{
-					_adapter.Dispose();
-					_adapter = null;
-				}
-
 				if (Element != null)
 				{
-					Element.PropertyChanged -= OnElementPropertyChanged;
+					TearDownOldElement(Element as ItemsView);
 
 					if (Platform.GetRenderer(Element) == this)
 					{
@@ -221,6 +215,35 @@ namespace Xamarin.Forms.Platform.Android
 			// Keep track of the ItemsLayout's property changes
 			_layout = newElement.ItemsLayout;
 			_layout.PropertyChanged += LayoutOnPropertyChanged;
+
+			// Listen for ScrollTo requests
+			newElement.ScrollToRequested += ScrollToRequested;
+		}
+
+		void TearDownOldElement(ItemsView oldElement)
+		{
+			if (oldElement == null)
+			{
+				return;
+			}
+
+			// Stop listening for property changes
+			oldElement.PropertyChanged -= OnElementPropertyChanged;
+
+			// Stop listening for ScrollTo requests
+			oldElement.ScrollToRequested -= ScrollToRequested;
+
+			if (_adapter != null)
+			{
+				_adapter.Dispose();
+				_adapter = null;
+			}
+
+			if (_snapManager != null)
+			{
+				_snapManager.Dispose();
+				_snapManager = null;
+			}
 		}
 
 		void LayoutOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChanged)
@@ -297,25 +320,28 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		void TearDownOldElement(ItemsView oldElement)
+		void ScrollToRequested(object sender, ScrollToRequestEventArgs args)
 		{
-			if (oldElement == null)
+			if (args.Mode == ScrollToMode.Position)
 			{
+				ScrollToPosition(args);
 				return;
 			}
 
-			oldElement.PropertyChanged -= OnElementPropertyChanged;
+			// TODO hartez 2018/08/28 15:40:26 handle scrolling to to item	
+		}
 
-			if (_adapter != null)
+		void ScrollToPosition(ScrollToRequestEventArgs args)
+		{
+			// TODO hartez 2018/08/28 15:40:03 Need to handle group indices here as well	
+
+			if (args.Animate)
 			{
-				_adapter.Dispose();
-				_adapter = null;
+				SmoothScrollToPosition(args.Index);
 			}
-
-			if (_snapManager != null)
+			else
 			{
-				_snapManager.Dispose();
-				_snapManager = null;
+				ScrollToPosition(args.Index);	
 			}
 		}
 	}

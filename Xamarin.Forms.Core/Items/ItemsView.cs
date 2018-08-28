@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace Xamarin.Forms
 {
@@ -23,6 +25,42 @@ namespace Xamarin.Forms
 			}
 
 			return false;
+		}
+	}
+
+	public class ScrollToRequestEventArgs : EventArgs
+	{
+		public ScrollToMode Mode { get; }
+
+		public ScrollToPosition ScrollToPosition { get; }
+		public bool Animate { get; }
+
+		public int Index { get; }
+		public int GroupIndex { get; }
+
+		public object Item { get; }
+		public object Group { get; }
+
+		public ScrollToRequestEventArgs(int index, int groupIndex, 
+			ScrollToPosition scrollToPosition, bool animate)
+		{
+			Mode = ScrollToMode.Position;
+
+			Index = index;
+			GroupIndex = groupIndex;
+			ScrollToPosition = scrollToPosition;
+			Animate = animate;
+		}
+
+		public ScrollToRequestEventArgs(object item, object group, 
+			ScrollToPosition scrollToPosition, bool animate)
+		{
+			Mode = ScrollToMode.Element;
+
+			Item = item;
+			Group = group;
+			ScrollToPosition = scrollToPosition;
+			Animate = animate;
 		}
 	}
 
@@ -58,6 +96,20 @@ namespace Xamarin.Forms
 			set => SetValue(ItemTemplateProperty, value);
 		}
 
+		public void ScrollTo(int index, int groupIndex = -1,
+			ScrollToPosition position = ScrollToPosition.MakeVisible, bool animate = true)
+		{
+			OnScrollToRequested(new ScrollToRequestEventArgs(index, groupIndex, position, animate));
+		}
+
+		public void ScrollTo(object item, object group = null,
+			ScrollToPosition position = ScrollToPosition.MakeVisible, bool animate = true)
+		{
+			OnScrollToRequested(new ScrollToRequestEventArgs(item, group, position, animate));
+		}
+
+		public event EventHandler<ScrollToRequestEventArgs> ScrollToRequested;
+
 		protected override SizeRequest OnMeasure(double widthConstraint, double heightConstraint)
 		{
 			// TODO hartez 2018-05-22 05:04 PM This 40,40 is what LV1 does; can we come up with something less arbitrary?
@@ -69,6 +121,11 @@ namespace Xamarin.Forms
 			Size request = new Size(maxWidth, maxHeight);
 
 			return new SizeRequest(request, minimumSize);
+		}
+
+		protected virtual void OnScrollToRequested(ScrollToRequestEventArgs e)
+		{
+			ScrollToRequested?.Invoke(this, e);
 		}
 	}
 }

@@ -12,8 +12,6 @@
 				{
 					new RowDefinition { Height = GridLength.Auto },
 					new RowDefinition { Height = GridLength.Auto },
-					new RowDefinition { Height = GridLength.Auto },
-					new RowDefinition { Height = GridLength.Auto },
 					new RowDefinition { Height = GridLength.Star }
 				}
 			};
@@ -28,25 +26,15 @@
 
 			var generator = new ItemsSourceGenerator(collectionView, initialItems: 50);
 
-			//var snapPointsTypeSelector = new EnumSelector<SnapPointsType>(() => itemsLayout.SnapPointsType,
-			//	type => itemsLayout.SnapPointsType = type);
-
-			//var snapPointsAlignmentSelector = new EnumSelector<SnapPointsAlignment>(() => itemsLayout.SnapPointsAlignment,
-			//	type => itemsLayout.SnapPointsAlignment = type);
-
-			//var flowDirectionSelector = new EnumSelector<FlowDirection>(() => layout.FlowDirection,
-			//	type => layout.FlowDirection = type);
+			var scrollToControl = new ScrollToControl(collectionView);
 
 			layout.Children.Add(generator);
-			//layout.Children.Add(snapPointsTypeSelector);
-			//layout.Children.Add(snapPointsAlignmentSelector);
-			//layout.Children.Add(flowDirectionSelector);
+			layout.Children.Add(scrollToControl);
+			
 			layout.Children.Add(collectionView);
 
-			//Grid.SetRow(snapPointsTypeSelector, 1);
-			//Grid.SetRow(snapPointsAlignmentSelector, 2);
-			//Grid.SetRow(flowDirectionSelector, 3);
-			Grid.SetRow(collectionView, 4);
+			Grid.SetRow(scrollToControl, 1);
+			Grid.SetRow(collectionView, 2);
 
 			Content = layout;
 
