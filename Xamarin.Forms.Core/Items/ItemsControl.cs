@@ -49,7 +49,12 @@ namespace Xamarin.Forms
 
 		// TODO hartez 2018/05/31 15:56:23 Should these just be called Vertical and Horizontal (without List)?	
 		public static readonly IItemsLayout VerticalList = new ListItemsLayout(ItemsLayoutOrientation.Vertical); 
-		public static readonly IItemsLayout HorizontalList = new ListItemsLayout(ItemsLayoutOrientation.Horizontal); 
+		public static readonly IItemsLayout HorizontalList = new ListItemsLayout(ItemsLayoutOrientation.Horizontal);
+
+		public override string ToString()
+		{
+			return Orientation == ItemsLayoutOrientation.Horizontal ? "Horizontal List" : "Vertical List";
+		}
 	}
 
 	public class GridItemsLayout : ItemsLayout
@@ -67,6 +72,13 @@ namespace Xamarin.Forms
 			base(orientation)
 		{
 			Span = span;
+		}
+
+		public override string ToString()
+		{
+			var orientation = Orientation == ItemsLayoutOrientation.Horizontal ? "Horizontal Grid" : "Vertical Grid";
+			
+			return $"{orientation}, {nameof(Span)} {Span}";
 		}
 	}
 

@@ -45,15 +45,14 @@
 			{
 				var templateLayout = new Grid
 				{
-					BackgroundColor = Color.BlueViolet,
 					RowDefinitions = new RowDefinitionCollection { new RowDefinition(), new RowDefinition {Height = GridLength.Auto} },
-					WidthRequest = 500,
-					HeightRequest = 200
+					WidthRequest = 200,
+					HeightRequest = 300
 				};
 
 				var image = new Image
 				{
-					HeightRequest = 200, WidthRequest = 500,
+					HeightRequest = 200, 
 					HorizontalOptions = LayoutOptions.Center,
 					VerticalOptions = LayoutOptions.Center
 				};
@@ -73,7 +72,7 @@
 
 				Grid.SetRow(caption, 1);
 
-				return new Frame { Content = templateLayout, BorderColor = Color.Bisque };
+				return templateLayout;
 			});
 		}
 	}
