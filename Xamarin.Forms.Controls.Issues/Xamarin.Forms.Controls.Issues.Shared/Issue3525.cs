@@ -35,6 +35,7 @@ namespace Xamarin.Forms.Controls.Issues
 			var formattedString = new FormattedString();
 			formattedString.Spans.Add(new Span { Text = "Not Clickable, ", ForegroundColor = Color.Red, FontAttributes = FontAttributes.Bold, LineHeight = 1.8 });
 			formattedString.Spans.Add(new Span { Text = Environment.NewLine });
+			formattedString.Spans.Add(new Span { Text = Environment.NewLine });
 			var span = new Span { Text = "Clickable, " };
 			int clickCount = 0;
 			span.GestureRecognizers.Add(new TapGestureRecognizer
@@ -47,6 +48,7 @@ namespace Xamarin.Forms.Controls.Issues
 			});
 
 			formattedString.Spans.Add(span);
+			formattedString.Spans.Add(new Span { Text = Environment.NewLine });
 			formattedString.Spans.Add(new Span { Text = Environment.NewLine });
 
 			formattedString.Spans.Add(new Span { Text = "You also cannot click on me sorry about that.", FontAttributes = FontAttributes.Italic, FontSize = Device.GetNamedSize(NamedSize.Small, typeof(Label)) });
@@ -65,11 +67,11 @@ namespace Xamarin.Forms.Controls.Issues
 			var label = RunningApp.WaitForElement(kLabelTestAutomationId);
 			var location = label[0].Rect;
 
-			var lineHeight = location.Height / 3;
+			var lineHeight = location.Height / 5;
 			var y = location.Y;
 			RunningApp.TapCoordinates(location.X, y + lineHeight / 2);
-			RunningApp.TapCoordinates(location.X + 5, y + lineHeight + 5);
-			RunningApp.TapCoordinates(location.X, y + (lineHeight * 2));
+			RunningApp.TapCoordinates(location.X + 5, y + (lineHeight * 3) + 5);
+			RunningApp.TapCoordinates(location.X, y + (lineHeight * 5) + lineHeight / 2);
 			RunningApp.WaitForElement($"{kClickCount}{1}");
 
 		}
