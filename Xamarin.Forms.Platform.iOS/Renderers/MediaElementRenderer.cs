@@ -198,7 +198,7 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 				else
 				{
-					asset = AVUrlAsset.Create(NSUrl.FromString(Element.Source.ToString()), GetOptionsWithHeaders(Element.HttpHeaders));
+					asset = AVUrlAsset.Create(NSUrl.FromString(Element.Source.AbsoluteUri), GetOptionsWithHeaders(Element.HttpHeaders));
 				}
 
 				AVPlayerItem item = new AVPlayerItem(asset);
