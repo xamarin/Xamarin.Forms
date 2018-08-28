@@ -335,6 +335,8 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			// TODO hartez 2018/08/28 15:40:03 Need to handle group indices here as well	
 
+			// TODO hartez 2018/08/28 16:38:49 Handle args.ScrollToPosition; right now we're just doing MakeVisible by default	
+
 			if (args.Animate)
 			{
 				SmoothScrollToPosition(args.Index);

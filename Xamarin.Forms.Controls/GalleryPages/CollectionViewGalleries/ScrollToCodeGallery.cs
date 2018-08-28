@@ -26,7 +26,7 @@
 
 			var generator = new ItemsSourceGenerator(collectionView, initialItems: 50);
 
-			var scrollToControl = new ScrollToControl(collectionView);
+			var scrollToControl = new ScrollToIndexControl(collectionView);
 
 			layout.Children.Add(generator);
 			layout.Children.Add(scrollToControl);

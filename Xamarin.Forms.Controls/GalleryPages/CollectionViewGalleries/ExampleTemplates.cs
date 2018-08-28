@@ -46,13 +46,13 @@
 				var templateLayout = new Grid
 				{
 					RowDefinitions = new RowDefinitionCollection { new RowDefinition(), new RowDefinition {Height = GridLength.Auto} },
-					WidthRequest = 200,
-					HeightRequest = 300
+					WidthRequest = 100,
+					HeightRequest = 140
 				};
 
 				var image = new Image
 				{
-					HeightRequest = 200, 
+					HeightRequest = 100, 
 					HorizontalOptions = LayoutOptions.Center,
 					VerticalOptions = LayoutOptions.Center
 				};
