@@ -69,9 +69,9 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var lineHeight = location.Height / 5;
 			var y = location.Y;
-			RunningApp.TapCoordinates(location.X, y + lineHeight / 2);
-			RunningApp.TapCoordinates(location.X + 5, y + (lineHeight * 3) + 5);
-			RunningApp.TapCoordinates(location.X, y + (lineHeight * 5) + lineHeight / 2);
+			RunningApp.TapCoordinates(location.X + 10, y + lineHeight / 2);
+			RunningApp.TapCoordinates(location.X + 10, y + (lineHeight * 2) + lineHeight / 2);
+			RunningApp.TapCoordinates(location.X + 10, y + (lineHeight * 4) + lineHeight / 2);
 			RunningApp.WaitForElement($"{kClickCount}{1}");
 
 		}
