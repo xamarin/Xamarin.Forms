@@ -106,6 +106,7 @@ namespace Xamarin.Forms.Platform.Android
 					RegisterHandlerForDefaultRenderer(typeof(Label), typeof(FastRenderers.LabelRenderer), typeof(LabelRenderer));
 					RegisterHandlerForDefaultRenderer(typeof(Image), typeof(FastRenderers.ImageRenderer), typeof(ImageRenderer));
 					RegisterHandlerForDefaultRenderer(typeof(Frame), typeof(FastRenderers.FrameRenderer), typeof(FrameRenderer));
+					RegisterHandlerForDefaultRenderer(typeof(MediaElement), typeof(FastRenderers.MediaElementRenderer), typeof(MediaElementRenderer));
 				}
 				else
 				{

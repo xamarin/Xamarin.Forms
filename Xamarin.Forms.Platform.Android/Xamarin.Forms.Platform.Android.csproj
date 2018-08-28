@@ -113,6 +113,7 @@
     <Compile Include="Extensions\FlowDirectionExtensions.cs" />
     <Compile Include="AppCompat\ImageButtonRenderer.cs" />
     <Compile Include="FastRenderers\ImageElementManager.cs" />
+    <Compile Include="FastRenderers\MediaElementRenderer.cs" />
     <Compile Include="GestureManager.cs" />
     <Compile Include="FastRenderers\LabelRenderer.cs" />
     <Compile Include="FastRenderers\VisualElementRenderer.cs" />
