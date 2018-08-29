@@ -12,12 +12,12 @@ namespace Xamarin.Forms
 		IReadOnlyList<Rectangle> Regions { get; }
 		readonly Thickness _inflation;
 
-		private Region(IList<Rectangle> positions) : this()
+		Region(IList<Rectangle> positions) : this()
 		{
 			Regions = new ReadOnlyCollection<Rectangle>(positions);
 		}
 
-		private Region(IList<Rectangle> positions, Thickness inflation) : this(positions)
+		Region(IList<Rectangle> positions, Thickness inflation) : this(positions)
 		{
 			_inflation = inflation;
 		}
