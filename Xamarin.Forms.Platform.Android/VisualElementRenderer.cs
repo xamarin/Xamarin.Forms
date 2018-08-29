@@ -162,7 +162,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				element = element.FindNextElement(forwardDirection, tabIndexes, ref tabIndex);
 				var renderer = element.GetRenderer();
-				control = (renderer as INativeViewRenderer)?.NativeView;
+				control = (renderer as ITabStop)?.TabStop;
 			} while (!(control?.Focusable == true || ++attempt >= maxAttempts));
 
 			return control;

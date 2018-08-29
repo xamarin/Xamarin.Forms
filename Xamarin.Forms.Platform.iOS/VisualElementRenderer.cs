@@ -177,7 +177,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				element = element.FindNextElement(forwardDirection, tabIndexes, ref tabIndex);
 #if __MACOS__
 				var renderer = Platform.GetRenderer(element);
-				control = (renderer as INativeViewRenderer)?.NativeView;
+				control = (renderer as ITabStop)?.TabStop;
 #else
 				element.Focus();
 #endif

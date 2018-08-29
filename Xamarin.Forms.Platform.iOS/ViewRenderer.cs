@@ -18,16 +18,16 @@ using NativeControl = AppKit.NSControl;
 namespace Xamarin.Forms.Platform.MacOS
 #endif
 {
-	public interface INativeViewRenderer
+	public interface ITabStop
 	{
-		NativeView NativeView { get; }
+		NativeView TabStop { get; }
 	}
 
 	public abstract class ViewRenderer : ViewRenderer<View, NativeView>
 	{
 	}
 
-	public abstract class ViewRenderer<TView, TNativeView> : VisualElementRenderer<TView>, INativeViewRenderer where TView : View where TNativeView : NativeView
+	public abstract class ViewRenderer<TView, TNativeView> : VisualElementRenderer<TView>, ITabStop where TView : View where TNativeView : NativeView
 	{
 #if __MOBILE__
 		string _defaultAccessibilityLabel;
@@ -43,7 +43,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		public TNativeView Control { get; private set; }
 
-		NativeView INativeViewRenderer.NativeView => Control;
+		NativeView ITabStop.TabStop => Control;
 #if __MOBILE__
 		public override void LayoutSubviews()
 		{
