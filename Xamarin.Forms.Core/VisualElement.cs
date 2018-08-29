@@ -5,7 +5,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	public partial class VisualElement : Element, IAnimatable, IVisualElementController, IResourcesProvider, IFlowDirectionController
+	public partial class VisualElement : Element, IAnimatable, IVisualElementController, IResourcesProvider, IStyleElement, IFlowDirectionController
 	{
 		internal static readonly BindablePropertyKey NavigationPropertyKey = BindableProperty.CreateReadOnly("Navigation", typeof(INavigation), typeof(VisualElement), default(INavigation));
 
@@ -290,7 +290,6 @@ namespace Xamarin.Forms
 			get { return (Style)GetValue(StyleProperty); }
 			set { SetValue(StyleProperty, value); }
 		}
-
 
 		[TypeConverter(typeof(ListStringTypeConverter))]
 		public IList<string> StyleClass
@@ -895,6 +894,8 @@ namespace Xamarin.Forms
 				unFocus(this, new FocusEventArgs(this, false));
 		}
 
+		bool IFlowDirectionController.ApplyEffectiveFlowDirectionToChildContainer => true;
+
 		void IFlowDirectionController.NotifyFlowDirectionChanged()
 		{
 			SetFlowDirectionFromParent(this);
@@ -931,13 +932,14 @@ namespace Xamarin.Forms
 		{
 			public override object ConvertFromInvariantString(string value)
 			{
-				if (value != null)
+				value = value?.Trim();
+				if (!string.IsNullOrEmpty(value))
 				{
-					if (value.Equals("true", StringComparison.OrdinalIgnoreCase))
+					if (value.Equals(Boolean.TrueString, StringComparison.OrdinalIgnoreCase))
 						return true;
 					if (value.Equals("visible", StringComparison.OrdinalIgnoreCase))
 						return true;
-					if (value.Equals("false", StringComparison.OrdinalIgnoreCase))
+					if (value.Equals(Boolean.FalseString, StringComparison.OrdinalIgnoreCase))
 						return false;
 					if (value.Equals("hidden", StringComparison.OrdinalIgnoreCase))
 						return false;

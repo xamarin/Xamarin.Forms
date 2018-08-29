@@ -332,8 +332,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				UpdateToolbar();
 			else if (e.PropertyName == NavigationPage.BarTextColorProperty.PropertyName)
 				UpdateToolbar();
-			else if (e.PropertyName == NavigationPage.BackButtonTitleProperty.PropertyName)
-				UpdateToolbar();
 			else if (e.PropertyName == BarHeightProperty.PropertyName)
 				UpdateToolbar();
 		}
@@ -1070,12 +1068,15 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				if (shouldUpdateToolbar)
 					UpdateToolbar();
 
-				FragmentTransaction fragmentTransaction = fragmentManager.BeginTransactionEx();
+				if (fragmentsToRemove.Count > 0)
+				{
+					FragmentTransaction fragmentTransaction = fragmentManager.BeginTransactionEx();
 
-				foreach (Fragment frag in fragmentsToRemove)
-					fragmentTransaction.RemoveEx(frag);
+					foreach (Fragment frag in fragmentsToRemove)
+						fragmentTransaction.RemoveEx(frag);
 
-				fragmentTransaction.CommitAllowingStateLossEx();
+					fragmentTransaction.CommitAllowingStateLossEx();
+				}
 
 				return false;
 			});

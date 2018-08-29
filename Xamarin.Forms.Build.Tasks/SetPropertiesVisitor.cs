@@ -137,7 +137,7 @@ namespace Xamarin.Forms.Build.Tasks
 				var parentVar = Context.Variables[(IElementNode)parentNode];
 				string contentProperty;
 
-				if (CanAddToResourceDictionary(parentVar.VariableType, node, node, Context)) {
+				if (CanAddToResourceDictionary(parentVar, parentVar.VariableType, node, node, Context)) {
 					Context.IL.Emit(Ldloc, parentVar);
 					Context.IL.Append(AddToResourceDictionary(node, node, Context));
 				}
@@ -186,7 +186,7 @@ namespace Xamarin.Forms.Build.Tasks
 				TypeReference propertyType;
 				Context.IL.Append(GetPropertyValue(parent, parentList.XmlName, Context, node, out propertyType));
 
-				if (CanAddToResourceDictionary(propertyType, node, node, Context)) {
+				if (CanAddToResourceDictionary(parent, propertyType, node, node, Context)) {
 					Context.IL.Append(AddToResourceDictionary(node, node, Context));
 					return;
 				} 
@@ -540,7 +540,7 @@ namespace Xamarin.Forms.Build.Tasks
 		static IEnumerable<Instruction> CompiledBindingGetSetter(TypeReference tSourceRef, TypeReference tPropertyRef, IList<Tuple<PropertyDefinition, string>> properties, ElementNode node, ILContext context)
 		{
 			if (properties == null || properties.Count == 0) {
-				yield return Instruction.Create(OpCodes.Ldnull);
+				yield return Create(Ldnull);
 				yield break;
 			}
 
@@ -573,7 +573,7 @@ namespace Xamarin.Forms.Build.Tasks
 			var lastProperty = properties.LastOrDefault();
 			var setterRef = lastProperty?.Item1.SetMethod;
 			if (setterRef == null) {
-				yield return Instruction.Create(OpCodes.Ldnull); //throw or not ?
+				yield return Create(Ldnull); //throw or not ?
 				yield break;
 			}
 
@@ -586,12 +586,12 @@ namespace Xamarin.Forms.Build.Tasks
 				var indexerArg = properties[i].Item2;
 				if (indexerArg != null) {
 					if (property.GetMethod.Parameters [0].ParameterType == module.TypeSystem.String)
-						il.Emit(OpCodes.Ldstr, indexerArg);
+						il.Emit(Ldstr, indexerArg);
 					else if (property.GetMethod.Parameters [0].ParameterType == module.TypeSystem.Int32) {
 						int index;
 						if (!int.TryParse(indexerArg, out index))
 							throw new XamlParseException($"Binding: {indexerArg} could not be parsed as an index for a {property.Name}", node as IXmlLineInfo);
-						il.Emit(OpCodes.Ldc_I4, index);
+						il.Emit(Ldc_I4, index);
 					}
 				}
 				if (property.GetMethod.IsVirtual)
@@ -603,25 +603,23 @@ namespace Xamarin.Forms.Build.Tasks
 			var indexer = properties.Last().Item2;
 			if (indexer != null) {
 				if (lastProperty.Item1.GetMethod.Parameters [0].ParameterType == module.TypeSystem.String)
-					il.Emit(OpCodes.Ldstr, indexer);
+					il.Emit(Ldstr, indexer);
 				else if (lastProperty.Item1.GetMethod.Parameters [0].ParameterType == module.TypeSystem.Int32) {
 					int index;
 					if (!int.TryParse(indexer, out index))
 						throw new XamlParseException($"Binding: {indexer} could not be parsed as an index for a {lastProperty.Item1.Name}", node as IXmlLineInfo);
-					il.Emit(OpCodes.Ldc_I4, index);
+					il.Emit(Ldc_I4, index);
 				}
 			}
-			if (tPropertyRef.IsValueType)
-				il.Emit(Ldarga_S, (byte)1);
-			else
-				il.Emit(Ldarg_1);
+
+			il.Emit(Ldarg_1);
 
 			if (setterRef.IsVirtual)
 				il.Emit(Callvirt, module.ImportReference(setterRef));
 			else
 				il.Emit(Call, module.ImportReference(setterRef));
 
-			il.Emit(OpCodes.Ret);
+			il.Emit(Ret);
 
 			context.Body.Method.DeclaringType.Methods.Add(setter);
 
@@ -799,7 +797,6 @@ namespace Xamarin.Forms.Build.Tasks
 			var localName = propertyName.LocalName;
 			bool attached;
 			var bpRef = GetBindablePropertyReference(parent, propertyName.NamespaceURI, ref localName, out attached, context, lineInfo);
-			TypeReference _;
 
 			//If it's a BP, GetValue ()
 			if (CanGetValue(parent, bpRef, attached, lineInfo, context, out _))
@@ -1181,8 +1178,7 @@ namespace Xamarin.Forms.Build.Tasks
 		static IEnumerable<Instruction> Get(VariableDefinition parent, string localName, IXmlLineInfo iXmlLineInfo, ILContext context, out TypeReference propertyType)
 		{
 			var module = context.Body.Method.Module;
-			TypeReference declaringTypeReference;
-			var property = parent.VariableType.GetProperty(pd => pd.Name == localName, out declaringTypeReference);
+			var property = parent.VariableType.GetProperty(pd => pd.Name == localName, out var declaringTypeReference);
 			var propertyGetter = property.GetMethod;
 
 			module.ImportReference(parent.VariableType.ResolveCached());
@@ -1222,15 +1218,23 @@ namespace Xamarin.Forms.Build.Tasks
 			return true;
 		}
 
-		static bool CanAddToResourceDictionary(TypeReference collectionType, IElementNode node, IXmlLineInfo lineInfo, ILContext context)
+		static Dictionary<VariableDefinition, IList<string>> resourceNamesInUse = new Dictionary<VariableDefinition, IList<string>>();
+		static bool CanAddToResourceDictionary(VariableDefinition parent, TypeReference collectionType, IElementNode node, IXmlLineInfo lineInfo, ILContext context)
 		{
 			if (   collectionType.FullName != "Xamarin.Forms.ResourceDictionary"
 				&& collectionType.ResolveCached().BaseType?.FullName != "Xamarin.Forms.ResourceDictionary")
 				return false;
 
 
-			if (node.Properties.ContainsKey(XmlName.xKey))
+			if (node.Properties.ContainsKey(XmlName.xKey)) {
+				var key = (node.Properties[XmlName.xKey] as ValueNode).Value as string;
+				if (!resourceNamesInUse.TryGetValue(parent, out var names))
+					resourceNamesInUse[parent] = (names = new List<string>());
+				if (names.Contains(key))
+					throw new XamlParseException($"A resource with the key '{key}' is already present in the ResourceDictionary.", lineInfo);
+				names.Add(key);
 				return true;
+			}
 
 			//is there a RD.Add() overrides that accepts this ?
 			var nodeTypeRef = context.Variables[node].VariableType;
@@ -1253,7 +1257,7 @@ namespace Xamarin.Forms.Build.Tasks
 			foreach (var instruction in GetPropertyValue(parent, propertyName, context, iXmlLineInfo, out propertyType))
 				yield return instruction;
 
-			if (CanAddToResourceDictionary(propertyType, elementNode, iXmlLineInfo, context)) {
+			if (CanAddToResourceDictionary(parent, propertyType, elementNode, iXmlLineInfo, context)) {
 				foreach (var instruction in AddToResourceDictionary(elementNode, iXmlLineInfo, context))
 					yield return instruction;
 				yield break;
