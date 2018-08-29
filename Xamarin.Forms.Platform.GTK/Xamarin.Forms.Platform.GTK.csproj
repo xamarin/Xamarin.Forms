@@ -211,6 +211,8 @@
     <Compile Include="ViewRenderer.cs" />
     <Compile Include="VisualElementRenderer.cs" />
     <Compile Include="VisualElementTracker.cs" />
+    <Compile Include="Renderers\GtkWidgetWrapperRenderer.cs" />
+    <Compile Include="GtkWidgetWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">
