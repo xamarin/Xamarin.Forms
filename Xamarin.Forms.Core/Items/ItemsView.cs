@@ -3,6 +3,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
 {
@@ -26,6 +27,11 @@ namespace Xamarin.Forms
 
 			return false;
 		}
+	}
+
+	[RenderWith(typeof(_CarouselViewRenderer))]
+	public class CarouselView : ItemsView
+	{
 	}
 
 	public class ItemsView : View

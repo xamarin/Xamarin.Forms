@@ -13,17 +13,25 @@ namespace Xamarin.Forms.Platform.Android
 
 	internal class CollectionViewAdapter : RecyclerView.Adapter
 	{
-		readonly ItemsView _itemsView;
+		protected readonly ItemsView ItemsView;
 		readonly Context _context;
+		readonly Func<IVisualElementRenderer, Context, AView> _createView;
 		readonly ICollectionViewSource _itemSource;
 
 		// TODO hartez 2018/05/29 17:06:45 Reconcile the type/name mismatch here	
 		// This class should probably be something like ItemsViewAdapter
-		internal CollectionViewAdapter(ItemsView itemsView, Context context)
+		internal CollectionViewAdapter(ItemsView itemsView, Context context, 
+			Func<IVisualElementRenderer, Context, AView> createView = null)
 		{
-			_itemsView = itemsView;
+			ItemsView = itemsView;
 			_context = context;
+			_createView = createView;
 			_itemSource = ItemsSourceFactory.Create(itemsView.ItemsSource, this);
+
+			if (_createView == null)
+			{
+				_createView = (renderer, context1) => new ItemContentControl(renderer, context1);
+			}
 		}
 
 		public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
@@ -44,7 +52,7 @@ namespace Xamarin.Forms.Platform.Android
 		public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)
 		{
 			// Does the ItemsView have a DataTemplate?
-			var template = _itemsView.ItemTemplate;
+			var template = ItemsView.ItemTemplate;
 			if (template == null)
 			{
 				// No template, just use the ToString view
@@ -54,12 +62,12 @@ namespace Xamarin.Forms.Platform.Android
 
 			// Realize the content, create a renderer out of it, and use that
 			var templateElement = template.CreateContent() as View;
-			var itemContentControl = new ItemContentControl(CreateRenderer(templateElement), _context);
+			var itemContentControl = _createView(CreateRenderer(templateElement), _context);
 
 			return new TemplatedItemViewHolder(itemContentControl, templateElement);
 		}
 
-		public IVisualElementRenderer CreateRenderer(View view)
+		IVisualElementRenderer CreateRenderer(View view)
 		{
 			if (view == null)
 				throw new ArgumentNullException(nameof(view));
@@ -102,4 +110,5 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 	}
+	
 }

@@ -45,6 +45,7 @@
 			{
 				var templateLayout = new Grid
 				{
+					BackgroundColor = Color.Aqua,
 					RowDefinitions = new RowDefinitionCollection { new RowDefinition(), new RowDefinition {Height = GridLength.Auto} },
 					WidthRequest = 100,
 					HeightRequest = 140
@@ -54,7 +55,8 @@
 				{
 					HeightRequest = 100, 
 					HorizontalOptions = LayoutOptions.Center,
-					VerticalOptions = LayoutOptions.Center
+					VerticalOptions = LayoutOptions.Center,
+					Aspect = Aspect.AspectFit
 				};
 
 				image.SetBinding(Image.SourceProperty, new Binding("Image"));
@@ -63,6 +65,43 @@
 				{
 					HorizontalOptions = LayoutOptions.Fill,
 					HorizontalTextAlignment = TextAlignment.Center
+				};
+
+				caption.SetBinding(Label.TextProperty, new Binding("Caption"));
+				
+				templateLayout.Children.Add(image);
+				templateLayout.Children.Add(caption);
+
+				Grid.SetRow(caption, 1);
+
+				return templateLayout;
+			});
+		}
+
+		public static DataTemplate CarouselTemplate()
+		{
+			return new DataTemplate(() =>
+			{
+				var templateLayout = new Grid
+				{
+					BackgroundColor = Color.Aqua,
+					RowDefinitions = new RowDefinitionCollection { new RowDefinition(), new RowDefinition {Height = GridLength.Auto} },
+				};
+
+				var image = new Image
+				{
+					HorizontalOptions = LayoutOptions.Center,
+					VerticalOptions = LayoutOptions.Center,
+					Aspect = Aspect.AspectFit
+				};
+
+				image.SetBinding(Image.SourceProperty, new Binding("Image"));
+
+				var caption = new Label
+				{
+					HorizontalOptions = LayoutOptions.Fill,
+					HorizontalTextAlignment = TextAlignment.Center,
+					Margin = new Thickness(5)
 				};
 
 				caption.SetBinding(Label.TextProperty, new Binding("Caption"));

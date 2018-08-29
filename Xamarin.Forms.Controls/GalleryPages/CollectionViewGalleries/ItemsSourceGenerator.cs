@@ -20,10 +20,10 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 
 	internal class ItemsSourceGenerator : ContentView
 	{
-		readonly CollectionView _cv;
+		readonly ItemsView _cv;
 		readonly Entry _entry;
 
-		public ItemsSourceGenerator(CollectionView cv, int initialItems = 1000)
+		public ItemsSourceGenerator(ItemsView cv, int initialItems = 1000)
 		{
 			_cv = cv;
 

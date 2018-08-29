@@ -15,10 +15,9 @@ namespace Xamarin.Forms.Platform.Android
 		readonly AutomationPropertiesProvider _automationPropertiesProvider;
 		readonly EffectControlProvider _effectControlProvider;
 
-		Adapter _adapter;
 		int? _defaultLabelFor;
 		bool _disposed;
-		ItemsView _itemsView;
+		protected ItemsView ItemsView;
 		IItemsLayout _layout;
 		SnapManager _snapManager;
 
@@ -33,7 +32,7 @@ namespace Xamarin.Forms.Platform.Android
 			_effectControlProvider.RegisterEffect(effect);
 		}
 
-		public VisualElement Element => _itemsView;
+		public VisualElement Element => ItemsView;
 
 		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
 
@@ -54,15 +53,15 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (!(element is ItemsView))
 			{
-				throw new ArgumentException($"{nameof(element)} must be of type {nameof(_itemsView)}");
+				throw new ArgumentException($"{nameof(element)} must be of type {nameof(ItemsView)}");
 			}
 
 			Performance.Start(out string perfRef);
 
-			VisualElement oldElement = _itemsView;
-			_itemsView = (ItemsView)element;
+			VisualElement oldElement = ItemsView;
+			ItemsView = (ItemsView)element;
 
-			OnElementChanged(oldElement as ItemsView, _itemsView);
+			OnElementChanged(oldElement as ItemsView, ItemsView);
 
 			// TODO hartez 2018/06/06 20:57:12 Find out what this does, and whether we really need it	
 			element.SendViewInitialized(this);
@@ -155,7 +154,7 @@ namespace Xamarin.Forms.Platform.Android
 			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(oldElement, newElement));
 
 			EffectUtilities.RegisterEffectControlProvider(this, oldElement, newElement);
-
+			
 			UpdateBackgroundColor();
 			UpdateFlowDirection();
 		}
@@ -178,16 +177,14 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		protected void UpdateItemsSource()
+		protected virtual void UpdateItemsSource()
 		{
-			if (_itemsView == null)
+			if (ItemsView == null)
 			{
 				return;
 			}
 
-			// TODO hartez 2018/05/29 20:28:14 Review whether we really need to keep a ref to adapter	
-			_adapter = new CollectionViewAdapter(_itemsView, Context);
-			SetAdapter(_adapter);
+			SetAdapter(new CollectionViewAdapter(ItemsView, Context));
 		}
 
 		void SetUpNewElement(ItemsView newElement)
@@ -233,10 +230,12 @@ namespace Xamarin.Forms.Platform.Android
 			// Stop listening for ScrollTo requests
 			oldElement.ScrollToRequested -= ScrollToRequested;
 
-			if (_adapter != null)
+			var adapter = GetAdapter();
+
+			if (adapter != null)
 			{
-				_adapter.Dispose();
-				_adapter = null;
+				adapter.Dispose();
+				SetAdapter(null);
 			}
 
 			if (_snapManager != null)
@@ -265,7 +264,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (_snapManager == null)
 			{
-				_snapManager = new SnapManager(_itemsView, this);
+				_snapManager = new SnapManager(ItemsView, this);
 			}
 
 			_snapManager.UpdateSnapBehavior();
@@ -345,6 +344,30 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				ScrollToPosition(args.Index);	
 			}
+		}
+	}
+
+	public class CarouselViewRenderer : CollectionViewRenderer
+	{
+
+		// TODO hartez 2018/08/29 17:13:17 Does this need to override SelectLayout so it ignores grids?	
+
+		public CarouselViewRenderer(Context context) : base(context)
+		{
+			System.Diagnostics.Debug.WriteLine($">>>>> CarouselViewRenderer CarouselViewRenderer");
+		}
+
+		protected override void UpdateItemsSource()
+		{
+			if (ItemsView == null)
+			{
+				return;
+			}
+
+			var adapter = new CollectionViewAdapter(ItemsView, Context, 
+				(renderer, context) => new SizedItemContentControl(renderer, context, () => Width, () => Height));
+
+			SetAdapter(adapter);
 		}
 	}
 }

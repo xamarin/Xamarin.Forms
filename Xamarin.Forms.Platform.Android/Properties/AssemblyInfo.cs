@@ -33,6 +33,7 @@ using Xamarin.Forms.Platform.Android;
 [assembly: ExportRenderer (typeof (TableView), typeof (TableViewRenderer))]
 [assembly: ExportRenderer (typeof (ListView), typeof (ListViewRenderer))]
 [assembly: ExportRenderer (typeof (CollectionView), typeof (CollectionViewRenderer))]
+[assembly: ExportRenderer (typeof (CarouselView), typeof (CarouselViewRenderer))]
 [assembly: ExportRenderer (typeof (Slider), typeof (SliderRenderer))]
 [assembly: ExportRenderer (typeof (WebView), typeof (WebViewRenderer))]
 [assembly: ExportRenderer (typeof (SearchBar), typeof (SearchBarRenderer))]
