@@ -9,10 +9,14 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
+#if UITEST
+	[Category(UITestCategories.ListView)]
+#endif
 	[Preserve (AllMembers = true)]
 	[Issue (IssueTracker.Github, 3273, "Drag and drop reordering not firing CollectionChanged", PlatformAffected.UWP)]
 	public class Issue3273 : TestContentPage
 	{
+		[Preserve(AllMembers = true)]
 		public class SortableListView : ListView
 		{
 		}
