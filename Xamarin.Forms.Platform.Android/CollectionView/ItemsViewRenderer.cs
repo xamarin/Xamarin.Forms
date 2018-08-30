@@ -184,7 +184,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			// TODO hartez 2018/08/29 17:33:59 Should this use SwapAdapter if one exists? Probably	
 
-			SetAdapter(new CollectionViewAdapter(ItemsView, Context));
+			SetAdapter(new ItemsViewAdapter(ItemsView, Context));
 		}
 
 		void SetUpNewElement(ItemsView newElement)

@@ -5,13 +5,13 @@ using Android.Support.V7.Widget;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	internal class ObservableCollectionSource : ICollectionViewSource
+	internal class ObservableItemsSource : IItemsViewSource
 	{
 		// TODO hartez 2018/07/30 14:40:11 We may need to implement IDisposable to make sure this all gets cleaned up	
 		readonly RecyclerView.Adapter _adapter;
 		readonly IList _itemsSource;
 
-		public ObservableCollectionSource(IEnumerable itemSource, RecyclerView.Adapter adapter)
+		public ObservableItemsSource(IEnumerable itemSource, RecyclerView.Adapter adapter)
 		{
 			_itemsSource = (IList)itemSource;
 			_adapter = adapter;
@@ -21,7 +21,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void CollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
 		{
-			// TODO hartez 2018/07/31 16:02:50 Handle the reset of these cases (implementing selection will make them much easier to test)	
+			// TODO hartez 2018/07/31 16:02:50 Handle the rest of these cases (implementing selection will make them much easier to test)	
 			switch (args.Action)
 			{
 				case NotifyCollectionChangedAction.Add:

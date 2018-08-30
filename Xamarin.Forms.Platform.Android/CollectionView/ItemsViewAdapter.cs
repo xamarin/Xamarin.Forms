@@ -11,16 +11,14 @@ namespace Xamarin.Forms.Platform.Android
 	// TODO hartez 2018/07/25 14:43:04 Experiment with an ItemSource property change as _adapter.notifyDataSetChanged	
 	// TODO hartez 2018/07/25 14:44:15 Template property changed should do a whole new adapter; and that way we can cache the template
 
-	internal class CollectionViewAdapter : RecyclerView.Adapter
+	internal class ItemsViewAdapter : RecyclerView.Adapter
 	{
 		protected readonly ItemsView ItemsView;
 		readonly Context _context;
 		readonly Func<IVisualElementRenderer, Context, AView> _createView;
-		readonly ICollectionViewSource _itemSource;
+		readonly IItemsViewSource _itemSource;
 
-		// TODO hartez 2018/05/29 17:06:45 Reconcile the type/name mismatch here	
-		// This class should probably be something like ItemsViewAdapter
-		internal CollectionViewAdapter(ItemsView itemsView, Context context, 
+		internal ItemsViewAdapter(ItemsView itemsView, Context context, 
 			Func<IVisualElementRenderer, Context, AView> createView = null)
 		{
 			ItemsView = itemsView;

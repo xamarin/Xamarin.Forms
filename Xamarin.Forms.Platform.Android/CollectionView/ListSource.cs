@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	internal class ListSource : List<object>, ICollectionViewSource
+	internal class ListSource : List<object>, IItemsViewSource
 	{
 		public ListSource()
 		{
