@@ -7,18 +7,17 @@ namespace Xamarin.Forms.Platform.Android
 {
 	internal static class ItemsSourceFactory
 	{
-		// TODO hartez 2018-07-31 11:45 AM For consistency, change the param names to itemsSource (plural items)
-		public static IItemsViewSource Create(IEnumerable itemSource, RecyclerView.Adapter adapter)
+		public static IItemsViewSource Create(IEnumerable itemsSource, RecyclerView.Adapter adapter)
 		{
-			switch (itemSource)
+			switch (itemsSource)
 			{
-				case IList _ when itemSource is INotifyCollectionChanged:
-					return new ObservableItemsSource(itemSource, adapter);
+				case IList _ when itemsSource is INotifyCollectionChanged:
+					return new ObservableItemsSource(itemsSource, adapter);
 				case IEnumerable<object> generic:
 					return new ListSource(generic);
 			}
 
-			return new ListSource(itemSource);
+			return new ListSource(itemsSource);
 		}
 	}
 }

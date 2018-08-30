@@ -5,7 +5,7 @@ namespace Xamarin.Forms.Platform.Android
 	public class CarouselViewRenderer : ItemsViewRenderer
 	{
 
-		// TODO hartez 2018/08/29 17:13:17 Does this need to override SelectLayout so it ignores grids?	
+		// TODO hartez 2018/08/29 17:13:17 Does this need to override SelectLayout so it ignores grids?	(Yes, and so it can warn on unknown layouts)
 
 		public CarouselViewRenderer(Context context) : base(context)
 		{

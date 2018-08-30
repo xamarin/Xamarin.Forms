@@ -132,6 +132,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			// Fall back to plain old vertical list
+			// TODO hartez 2018/08/30 19:34:36 Log a warning when we have to fall back because of an unknown layout	
 			return new LinearLayoutManager(Context);
 		}
 
