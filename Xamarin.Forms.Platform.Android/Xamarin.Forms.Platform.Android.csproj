@@ -65,12 +65,14 @@
     <Compile Include="AppCompat\ILifeCycleState.cs" />
     <Compile Include="BorderBackgroundManager.cs" />
     <Compile Include="ButtonBackgroundTracker.cs" />
+    <Compile Include="CollectionView\CarouselViewRenderer.cs" />
     <Compile Include="CollectionView\CollectionViewAdapter.cs" />
     <Compile Include="CollectionView\EdgeSnapHelper.cs" />
     <Compile Include="CollectionView\EndSnapHelper.cs" />
     <Compile Include="CollectionView\ICollectionViewSource.cs" />
     <Compile Include="CollectionView\ItemContentControl.cs" />
     <Compile Include="CollectionView\ItemsSourceFactory.cs" />
+    <Compile Include="CollectionView\ItemsViewRenderer.cs" />
     <Compile Include="CollectionView\ListSource.cs" />
     <Compile Include="CollectionView\ObservableCollectionSource.cs" />
     <Compile Include="CollectionView\SnapManager.cs" />

@@ -27,7 +27,7 @@
 
 			var itemTemplate = ExampleTemplates.SnapPointsTemplate();
 
-			var collectionView = new CarouselView()
+			var collectionView = new CollectionView
 			{
 				ItemsLayout = itemsLayout,
 				ItemTemplate = itemTemplate,

@@ -18,7 +18,7 @@
 						descriptionLabel,
 						GalleryBuilder.NavButton("ScrollTo (Code, Horizontal List)", () =>
 							new ScrollToCodeGallery(ListItemsLayout.HorizontalList), Navigation),
-						GalleryBuilder.NavButton("ScrollTo (Code, Verticl List)", () =>
+						GalleryBuilder.NavButton("ScrollTo (Code, Vertical List)", () =>
 							new ScrollToCodeGallery(ListItemsLayout.VerticalList), Navigation),
 						GalleryBuilder.NavButton("ScrollTo (Code, Horizontal Grid)", () =>
 							new ScrollToCodeGallery(new GridItemsLayout(3, ItemsLayoutOrientation.Horizontal)), Navigation),

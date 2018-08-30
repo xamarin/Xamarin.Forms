@@ -32,6 +32,14 @@ namespace Xamarin.Forms
 	[RenderWith(typeof(_CarouselViewRenderer))]
 	public class CarouselView : ItemsView
 	{
+		public CarouselView()
+		{
+			ItemsLayout = new ListItemsLayout(ItemsLayoutOrientation.Horizontal)
+			{
+				SnapPointsType = SnapPointsType.MandatorySingle,
+				SnapPointsAlignment = SnapPointsAlignment.Center
+			};
+		}
 	}
 
 	public class ItemsView : View
@@ -46,6 +54,13 @@ namespace Xamarin.Forms
 			get => (IEnumerable)GetValue(ItemsSourceProperty);
 			set => SetValue(ItemsSourceProperty, value);
 		}
+
+		// TODO hartez 2018/08/29 17:35:10 Should ItemsView be abstract? With ItemsLayout as an interface?
+		// Trying to come up with a reasonable way to restrict CarouselView to ListItemsLayout(LinearLayout) 
+		// ((because setting Carousel to grid is ... weird? And by default it just won't do anything.))
+		// And allow CollectionView to use a broader set of Layout options
+		// So the Bindable property only exists at the CarouselView/CollectionView (i.e., concrete class) level
+		// but some version of IItemsLayout is still here?
 
 		public static readonly BindableProperty ItemsLayoutProperty =
 			BindableProperty.Create(nameof(ItemsLayout), typeof(IItemsLayout), typeof(ItemsView), 

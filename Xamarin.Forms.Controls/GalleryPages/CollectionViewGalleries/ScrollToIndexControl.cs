@@ -8,12 +8,14 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 		readonly Switch _animateSwitch;
 		readonly Label _currentIndex;
 		ScrollToPosition _currentScrollToPosition;
-		readonly CollectionView _cv;
+		readonly ItemsView _itemsView;
 		int _index;
 
-		public ScrollToIndexControl(CollectionView cv)
+		public ScrollToIndexControl(ItemsView itemsView, bool showPositionSelector = true)
 		{
-			_cv = cv;
+			_itemsView = itemsView;
+
+			var layout = new StackLayout { Margin = 3 };
 
 			var indexLabel = new Label { Text = "Scroll To Index: ", VerticalTextAlignment = TextAlignment.Center};
 			_entry = new Entry { Keyboard = Keyboard.Numeric, Text = "0", WidthRequest = 200 };
@@ -25,6 +27,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			row1.Children.Add(indexLabel);
 			row1.Children.Add(_entry);
 			row1.Children.Add(indexButton);
+
+			layout.Children.Add(row1);
 
 			var animateLabel = new Label { Text = "Animate: ", VerticalTextAlignment = TextAlignment.Center};
 			_animateSwitch = new Switch { IsToggled = true };
@@ -60,22 +64,25 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 				}
 			};
 
+			layout.Children.Add(row2);
+
 			var row3 = new StackLayout { Orientation = StackOrientation.Horizontal };
 			row3.Children.Add(backButton);
 			row3.Children.Add(_currentIndex);
 			row3.Children.Add(forwardButton);
 
+			layout.Children.Add(row3);
+
 			var row4 = new StackLayout { Orientation = StackOrientation.Horizontal };
 
-			var scrollPositionSelector = new EnumSelector<ScrollToPosition>(() => _currentScrollToPosition,
-				type => _currentScrollToPosition = type);
-			row4.Children.Add(scrollPositionSelector);
+			if (showPositionSelector)
+			{
+				var scrollPositionSelector = new EnumSelector<ScrollToPosition>(() => _currentScrollToPosition,
+					type => _currentScrollToPosition = type);
+				row4.Children.Add(scrollPositionSelector);
 
-			var layout = new StackLayout { Margin = 3 };
-			layout.Children.Add(row1);
-			layout.Children.Add(row2);
-			layout.Children.Add(row3);
-			layout.Children.Add(row4);
+				layout.Children.Add(row4);
+			}
 
 			Content = layout;
 
@@ -84,7 +91,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 
 		void ScrollToIndex(int index)
 		{
-			_cv.ScrollTo(index, position: _currentScrollToPosition, animate: _animateSwitch.IsToggled);
+			_itemsView.ScrollTo(index, position: _currentScrollToPosition, animate: _animateSwitch.IsToggled);
 		}
 
 		void ScrollTo()
