@@ -24,6 +24,7 @@ namespace Xamarin.Forms.Platform.WPF
 			new List<EventHandler<VisualElementChangedEventArgs>>();
 
 		VisualElementTracker _tracker;
+		bool _disposed;
 
 		IElementController ElementController => Element as IElementController;
 
@@ -174,7 +175,6 @@ namespace Xamarin.Forms.Platform.WPF
 		
 		private void Control_Loaded(object sender, RoutedEventArgs e)
 		{
-			Debug.WriteLine("Control_Loaded : " + this.Control.GetType());
 			Control.Loaded -= Control_Loaded;
 			Element.IsNativeStateConsistent = true;
 			Appearing();
@@ -182,7 +182,6 @@ namespace Xamarin.Forms.Platform.WPF
 
 		private void Control_Unloaded(object sender, RoutedEventArgs e)
 		{
-			Debug.WriteLine("Control_Unloaded : " + this.Control.GetType());
 			Control.Unloaded -= Control_Unloaded;
 			Disappearing();
 		}
@@ -271,8 +270,6 @@ namespace Xamarin.Forms.Platform.WPF
 				Control.VerticalAlignment = view.VerticalOptions.ToNativeVerticalAlignment();
 			}
 		}
-
-		bool _disposed;
 
 		public void Dispose()
 		{
