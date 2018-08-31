@@ -285,7 +285,6 @@ namespace Xamarin.Forms.Platform.WPF
 
 			if (Control != null)
 			{
-				Debug.WriteLine("Dispose : " + this.Control.GetType());
 				Control.GotFocus -= OnGotFocus;
 				Control.LostFocus -= OnLostFocus;
 			}
