@@ -148,7 +148,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 				var x = (int)childRenderer.NativeView.Layer.ZPosition / 1000;
 				var element = newElementController.LogicalChildren[x] as VisualElement;
-				if (element == null)
+				if (element == null || childRenderer.Element.GetType() != element.GetType())
 					continue;
 
 				if (childRenderer.Element != null && ReferenceEquals(childRenderer, Platform.GetRenderer(childRenderer.Element)))
