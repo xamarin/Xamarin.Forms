@@ -130,15 +130,21 @@ namespace Xamarin.Forms.Platform.iOS
 		public override CoreGraphics.CGSize SizeThatFits(CoreGraphics.CGSize size)
 		{
 			if (nfloat.IsInfinity(size.Width))
-				size.Width = (nfloat)(Element?.Parent is VisualElement parent ? parent.Width : Device.Info.ScaledScreenSize.Width);
+			{
+				var width = Device.Info.ScaledScreenSize.Width;
+
+				if (Element?.Parent is VisualElement parent)
+					width = parent.Width;
+
+				size.Width = (nfloat)width;
+			}
+
 
 			var sizeThatFits = Control.SizeThatFits(size);
 
-			if (Forms.IsiOS11OrNewer)
-				return sizeThatFits;
-
-			////iOS10 hack because SizeThatFits always returns a width of 0
-			sizeThatFits.Width = (nfloat)Math.Max(sizeThatFits.Width, size.Width);
+			// SizeThatFits sometimes returns a width of 0 on older iOS versions  
+			if (sizeThatFits.Width == 0)
+				sizeThatFits.Width = size.Width;
 
 			return sizeThatFits;
 		}
