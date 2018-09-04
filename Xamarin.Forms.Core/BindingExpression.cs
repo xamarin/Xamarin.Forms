@@ -423,19 +423,26 @@ namespace Xamarin.Forms
 				return true;
 
 			object original = value;
+			var locale = CultureInfo.InvariantCulture;
 			try
 			{
 				var stringValue = value as string ?? string.Empty;
-				// see: https://bugzilla.xamarin.com/show_bug.cgi?id=32871
-				// do not canonicalize "*.[.]"; "1." should not update bound BindableProperty
-				if (stringValue.EndsWith(".") && DecimalTypes.Contains(convertTo))
-					throw new FormatException();
 
-				// do not canonicalize "-0"; user will likely enter a period after "-0"
-				if (stringValue == "-0" && DecimalTypes.Contains(convertTo))
-					throw new FormatException();
+				if (DecimalTypes.Contains(convertTo))
+				{
+					// see: https://bugzilla.xamarin.com/show_bug.cgi?id=32871
+					// do not canonicalize "*.[.]"; "1." should not update bound BindableProperty
+					if (stringValue.EndsWith("."))
+						throw new FormatException();
 
-				value = Convert.ChangeType(value, convertTo, CultureInfo.InvariantCulture);
+					// do not canonicalize "-0"; user will likely enter a period after "-0"
+					if (stringValue == "-0")
+						throw new FormatException();
+
+					locale = CultureInfo.CurrentCulture;
+				}
+
+				value = Convert.ChangeType(value, convertTo, locale);
 				return true;
 			}
 			catch (InvalidCastException)
