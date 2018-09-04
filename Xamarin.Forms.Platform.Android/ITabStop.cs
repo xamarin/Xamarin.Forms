@@ -2,7 +2,7 @@
 
 namespace Xamarin.Forms.Platform.Android
 {
-	internal interface ITabStop
+	public interface ITabStop
 	{
 		AView TabStop { get; }
 	}
