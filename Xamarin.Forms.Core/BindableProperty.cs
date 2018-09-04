@@ -51,7 +51,8 @@ namespace Xamarin.Forms
 			{ typeof(long), new[] { typeof(string), typeof(float), typeof(double), typeof(decimal) } },
 			{ typeof(char), new[] { typeof(string), typeof(ushort), typeof(int), typeof(uint), typeof(long), typeof(ulong), typeof(float), typeof(double), typeof(decimal) } },
 			{ typeof(float), new[] { typeof(string), typeof(double) } },
-			{ typeof(ulong), new[] { typeof(string), typeof(float), typeof(double), typeof(decimal) } }
+			{ typeof(ulong), new[] { typeof(string), typeof(float), typeof(double), typeof(decimal) } },
+			{ typeof(DateTime), new[] { typeof(string) } }
 		};
 
 		BindableProperty(string propertyName, Type returnType, Type declaringType, object defaultValue, BindingMode defaultBindingMode = BindingMode.OneWay,
@@ -317,7 +318,7 @@ namespace Xamarin.Forms
 			TypeConverter typeConverterTo;
 			if (SimpleConvertTypes.TryGetValue(valueType, out convertableTo) && Array.IndexOf(convertableTo, type) != -1)
 			{
-				value = Convert.ChangeType(value, type);
+				value = Convert.ChangeType(value, type, System.Globalization.CultureInfo.CurrentCulture);
 			}
 			else if (WellKnownConvertTypes.TryGetValue(type, out typeConverterTo) && typeConverterTo.CanConvertFrom(valueType))
 			{
