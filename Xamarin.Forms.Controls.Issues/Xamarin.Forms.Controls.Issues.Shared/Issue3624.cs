@@ -5,9 +5,6 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-#if UITEST
-	[Category(UITestCategories.ListView)]
-#endif
 	[Preserve (AllMembers = true)]
 	[Issue (IssueTracker.Github, 3624, "Layout Compression causes the app to crash when scrolling a ListView with ListViewCachingStrategy.RetainElement")]
 	public class Issue3624 : TestContentPage // or TestMasterDetailPage, etc ...
