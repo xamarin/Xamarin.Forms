@@ -15,32 +15,9 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 2049, "Bound DateTimes Display in en-US Format Not Local Format", PlatformAffected.All)]
 	public class Issue2049 : TestContentPage
 	{
-		[Preserve(AllMembers = true)]
-		public class Model
-		{
-			public DateTime TheDate { get; set; }
-			public float FloatValue { get; set; }
-
-			decimal _decimal;
-			public decimal Decimal
-			{
-				get
-				{
-					return _decimal;
-				}
-				set
-				{
-					_decimal = value;
-					DecimalChange?.Invoke(value);
-				}
-			}
-
-			public static Action<decimal> DecimalChange;
-		}
-
-		DateTime testDate = DateTime.ParseExact("2077-12-31T13:55:56", "yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture);
+		DateTime _testDate = DateTime.ParseExact("2077-12-31T13:55:56", "yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture);
 		int _localeIndex = 0;
-		string[] _localeIds = new[] { "en-US", "ru-RU", "en-AU", "zh-Hans" };
+		string[] _localeIds = new[] { "en-US", "pt-PT", "ru-RU", "en-AU", "zh-Hans" };
 		string _instuctions = $"When you change the locale, the date format must change.{Environment.NewLine}Current locale: ";
 		Label descLabel = new Label();
 		Label decimalResult = new Label();
@@ -52,7 +29,7 @@ namespace Xamarin.Forms.Controls.Issues
 			var label = new Label();
 			label.SetBinding(Label.TextProperty, nameof(Model.TheDate));
 			var labelFloat = new Label();
-			labelFloat.SetBinding(Label.TextProperty, nameof(Model.Decimal));
+			labelFloat.SetBinding(Label.TextProperty, nameof(Model.Float));
 			var entry = new Entry
 			{
 				Keyboard = Keyboard.Numeric
@@ -88,7 +65,7 @@ namespace Xamarin.Forms.Controls.Issues
 			BindingContext = new Model
 			{
 				TheDate = DateTime.ParseExact("2077-12-31T13:55:56", "yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture),
-				FloatValue = 123.456f, // in some locales, the decimal symbol may not be a dot.
+				Float = 123.456f, // in some locales, the decimal symbol may not be a dot.
 				Decimal = 456.789m
 			};
 		}
@@ -104,6 +81,30 @@ namespace Xamarin.Forms.Controls.Issues
 			UpdateContext();
 		}
 
+		[Preserve(AllMembers = true)]
+		public class Model
+		{
+			public DateTime TheDate { get; set; }
+
+			public float Float { get; set; }
+
+			decimal _decimal;
+			public decimal Decimal
+			{
+				get
+				{
+					return _decimal;
+				}
+				set
+				{
+					_decimal = value;
+					DecimalChange?.Invoke(value);
+				}
+			}
+
+			public static Action<decimal> DecimalChange;
+		}
+
 		void UpdateDescLabel() => descLabel.Text = $"{_instuctions}{Thread.CurrentThread.CurrentCulture.DisplayName}";
 
 #if UITEST
@@ -112,7 +113,7 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			foreach (var locale in _localeIds)
 			{
-				if (RunningApp.Query(query => query.Text(testDate.ToString(new CultureInfo(locale)))).Length != 1)
+				if (RunningApp.Query(query => query.Text(_testDate.ToString(new CultureInfo(locale)))).Length != 1)
 					Assert.Fail();
 				RunningApp.Tap("Change Locale");
 			}
