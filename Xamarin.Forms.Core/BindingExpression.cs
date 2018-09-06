@@ -439,7 +439,9 @@ namespace Xamarin.Forms
 					if (stringValue == "-0")
 						throw new FormatException();
 
-					locale = CultureInfo.CurrentCulture;
+					// to change locale if stringValue contains decimal separator for that locale
+					if (stringValue.IndexOf(CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator) != -1)
+						locale = CultureInfo.CurrentCulture;
 				}
 
 				value = Convert.ChangeType(value, convertTo, locale);
