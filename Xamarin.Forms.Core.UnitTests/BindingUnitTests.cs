@@ -1897,6 +1897,11 @@ namespace Xamarin.Forms.Core.UnitTests
 			slider.Value = 0.9;
 
 			Assert.That (vm.Text, Is.EqualTo ("0.9"));
+
+			// people write numbers using the separator accepted in their locale
+			var ds = System.Threading.Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator;
+			vm.Text = $"0{ds}7";
+			Assert.That(slider.Value, Is.EqualTo(0.7));
 		}
 		#endif
 
