@@ -5,6 +5,7 @@ using Xamarin.Forms.Internals;
 #if UITEST
 using Xamarin.UITest;
 using NUnit.Framework;
+using Xamarin.Forms.Core.UITests;
 #endif
 
 namespace Xamarin.Forms.Controls.Issues

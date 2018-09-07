@@ -31,6 +31,7 @@ namespace Xamarin.Forms.Platform.UWP
 		bool _subscribedToItemClick;
 		bool _subscribedToTapped;
 		bool _disposed;
+		CollectionViewSource _collectionViewSource;
 
 		protected WListView List { get; private set; }
 
@@ -108,11 +109,16 @@ namespace Xamarin.Forms.Platform.UWP
 				}
 			}
 
-			List.ItemsSource = new CollectionViewSource
+			if (_collectionViewSource != null)
+				_collectionViewSource.Source = null;
+
+			_collectionViewSource = new CollectionViewSource
 			{
 				Source = _collection,
 				IsSourceGrouped = Element.IsGroupingEnabled
-			}.View;
+			};
+			
+			List.ItemsSource = _collectionViewSource.View;
 		}
 
 		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -244,8 +250,17 @@ namespace Xamarin.Forms.Platform.UWP
 						_subscribedToItemClick = false;
 						List.ItemClick -= OnListItemClicked;
 					}
+
 					List.SelectionChanged -= OnControlSelectionChanged;
+					if (_collectionViewSource != null)
+						_collectionViewSource.Source = null;
+
 					List.DataContext = null;
+
+					// Leaving this here as a warning because setting this to null causes
+					// an AccessViolationException if you run Issue1975
+					// List.ItemsSource = null;
+
 					List = null;
 				}
 
@@ -318,8 +333,8 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			bool grouping = Element.IsGroupingEnabled;
 
-			if (List.DataContext is CollectionViewSource context && context != null)
-				context.IsSourceGrouped = grouping;
+			if (_collectionViewSource != null)
+				_collectionViewSource.IsSourceGrouped = grouping;
 
 			var templatedItems = TemplatedItemsView.TemplatedItems;
 			if (grouping && templatedItems.ShortNames != null)
