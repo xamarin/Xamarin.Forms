@@ -63,9 +63,7 @@ namespace Xamarin.Forms.Platform.UWP
 						GroupStyleSelector = (GroupStyleSelector)WApp.Current.Resources["ListViewGroupSelector"]
 					};
 
-					List.SelectionChanged += OnControlSelectionChanged;
-
-					List.SetBinding(ItemsControl.ItemsSourceProperty, "");
+					List.SelectionChanged += OnControlSelectionChanged;	
 				}
 
 				ReloadData();
@@ -110,12 +108,11 @@ namespace Xamarin.Forms.Platform.UWP
 				}
 			}
 
-			// WinRT throws an exception if you set ItemsSource directly to a CVS, so bind it.
-			List.DataContext = new CollectionViewSource
+			List.ItemsSource = new CollectionViewSource
 			{
 				Source = _collection,
 				IsSourceGrouped = Element.IsGroupingEnabled
-			};
+			}.View;
 		}
 
 		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
