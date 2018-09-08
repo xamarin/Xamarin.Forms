@@ -9,6 +9,10 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.iOS
 {
+	public class CarouselViewRenderer
+	{
+	}
+
 	// TODO hartez 2018/05/31 16:29:30 Implement dispose override	
 	// TODO hartez 2018/05/30 08:58:42 This follows the same basic scheme as RecyclerView.Adapter; you should be able to reuse the same wrapper class for the IEnumerable	
 	//// TODO hartez 2018/05/30 09:05:38 Think about whether this Controller and/or the new Adapter should be internal or public
@@ -29,7 +33,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (e.NewElement != null)
 			{
 				_layout = SelectLayout(e.NewElement.ItemsLayout);
-				_collectionViewController = new CollectionViewController(e.NewElement.ItemsSource, _layout);
+				_collectionViewController = new CollectionViewController(e.NewElement.ItemsSource, _layout, e.NewElement);
 				SetNativeControl(_collectionViewController.View);
 				_collectionViewController.CollectionView.BackgroundColor = UIColor.Clear;
 			}

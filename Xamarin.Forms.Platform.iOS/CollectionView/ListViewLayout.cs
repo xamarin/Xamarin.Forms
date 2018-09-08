@@ -6,15 +6,11 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public abstract class ItemsViewLayout : UICollectionViewFlowLayout, IUICollectionViewDelegateFlowLayout
 	{
-		public abstract string CellReuseId { get; }
-
-		public abstract Type CellType { get; }
-
 		public nfloat ConstrainedDimension { get; set; }
 
 		public abstract void ConstrainTo(CGSize size);
 
-		public abstract void PrepareCellForLayout(DefaultCell cell);
+		public abstract void PrepareCellForLayout(IConstrainedCell cell);
 	}
 
 	internal class ListViewLayout : ItemsViewLayout
@@ -24,14 +20,6 @@ namespace Xamarin.Forms.Platform.iOS
 			Initialize(scrollDirection);
 		}
 
-		public override string CellReuseId => ScrollDirection == UICollectionViewScrollDirection.Horizontal
-			? DefaultHorizontalListCell.ReuseId
-			: DefaultVerticalListCell.ReuseId;
-
-		public override Type CellType => ScrollDirection == UICollectionViewScrollDirection.Horizontal
-			? typeof(DefaultHorizontalListCell)
-			: typeof(DefaultVerticalListCell);
-
 		public override void ConstrainTo(CGSize size)
 		{
 			ConstrainedDimension =
@@ -39,9 +27,9 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateItemSizeEstimate(size);
 		}
 
-		public override void PrepareCellForLayout(DefaultCell cell)
+		public override void PrepareCellForLayout(IConstrainedCell cell)
 		{
-			cell.UpdateConstrainedDimension(ConstrainedDimension);
+			cell.SetConstrainedDimension(ConstrainedDimension);
 		}
 
 		public override bool ShouldInvalidateLayoutForBoundsChange(CGRect newBounds)
@@ -67,9 +55,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 			for (int n = 0; n < cells.Length; n++)
 			{
-				if (cells[n] is DefaultCell defaultCell)
+				if (cells[n] is IConstrainedCell defaultCell)
 				{
-					defaultCell.UpdateConstrainedDimension(ConstrainedDimension);
+					defaultCell.SetConstrainedDimension(ConstrainedDimension);
 				}
 			}
 		}

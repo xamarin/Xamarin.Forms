@@ -12,19 +12,29 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		readonly IEnumerable _itemsSource;
 		readonly ItemsViewLayout _layout;
+		readonly ItemsView _itemsView;
 		bool _initialEstimateMade;
 
-		public CollectionViewController(IEnumerable itemsSource, ItemsViewLayout layout) : base(layout)
+		public CollectionViewController(IEnumerable itemsSource, ItemsViewLayout layout, ItemsView itemsView) : base(layout)
 		{
 			_itemsSource = itemsSource;
 			_layout = layout;
+			_itemsView = itemsView;
 		}
-		
-		public override void ViewDidLoad ()
+
+		void RegisterCells()
+		{
+			CollectionView.RegisterClassForCell(typeof(DefaultHorizontalListCell), DefaultHorizontalListCell.ReuseId);
+			CollectionView.RegisterClassForCell(typeof(DefaultVerticalListCell), DefaultVerticalListCell.ReuseId);
+			CollectionView.RegisterClassForCell(typeof(TemplatedHorizontalListCell), TemplatedHorizontalListCell.ReuseId);
+			CollectionView.RegisterClassForCell(typeof(TemplatedVerticalListCell), TemplatedVerticalListCell.ReuseId);
+		}
+
+		public override void ViewDidLoad()
 		{
 			base.ViewDidLoad();
 			AutomaticallyAdjustsScrollViewInsets = false;
-			CollectionView.RegisterClassForCell(_layout.CellType, _layout.CellReuseId);
+			RegisterCells();
 			CollectionView.WeakDelegate = _layout;
 
 			// TODO hartez 2018/06/10 14:29:22 Does ItemsSize need to be set at all when we're doing auto layout?
@@ -47,27 +57,88 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		public override nint GetItemsCount (UICollectionView collectionView, nint section)
+		public override nint GetItemsCount(UICollectionView collectionView, nint section)
 		{
 			// TODO hartez 2018/06/07 17:06:18 Obviously this needs to handle things which are not ILists	
 			return (_itemsSource as IList).Count;
 		}
 
+		string DetermineCellReusedId()
+		{
+			if (_itemsView.ItemTemplate != null)
+			{
+				return _layout.ScrollDirection == UICollectionViewScrollDirection.Horizontal
+					? TemplatedHorizontalListCell.ReuseId
+					: TemplatedVerticalListCell.ReuseId;
+			}
+
+			return _layout.ScrollDirection == UICollectionViewScrollDirection.Horizontal
+				? DefaultHorizontalListCell.ReuseId
+				: DefaultVerticalListCell.ReuseId;
+		}
+
 		public override UICollectionViewCell GetCell(UICollectionView collectionView, NSIndexPath indexPath)
 		{
-			var cell = collectionView.DequeueReusableCell(_layout.CellReuseId, indexPath) as UICollectionViewCell;
+			var cell = collectionView.DequeueReusableCell(DetermineCellReusedId(), indexPath) as UICollectionViewCell;
 
-			if (cell is DefaultCell defaultCell)
+			switch (cell)
 			{
-				_layout.PrepareCellForLayout(defaultCell);
-			
-				if (_itemsSource is IList list)
-				{
-					defaultCell.Label.Text = list[indexPath.Row].ToString();
-				}
+				case DefaultCell defaultCell:
+					UpdateDefaultCell(defaultCell, indexPath);
+					break;
+				case TemplatedCell templatedCell:
+					UpdateTemplatedCell(templatedCell, indexPath);
+					break;
 			}
 
 			return cell;
+		}
+
+		protected virtual void UpdateDefaultCell(DefaultCell defaultCell, NSIndexPath indexPath)
+		{
+			if (defaultCell is IConstrainedCell constrainedCell)
+			{
+				_layout.PrepareCellForLayout(constrainedCell);
+			}
+
+			if (_itemsSource is IList list)
+			{
+				defaultCell.Label.Text = list[indexPath.Row].ToString();
+			}
+		}
+
+		protected virtual void UpdateTemplatedCell(TemplatedCell cell, NSIndexPath indexPath)
+		{
+			IVisualElementRenderer renderer = null;
+
+			if (cell.VisualElementRenderer == null)
+			{
+				// We need to create a renderer, which means we need a template
+				var templateElement = _itemsView.ItemTemplate.CreateContent() as View;
+				renderer = CreateRenderer(templateElement);
+			}
+
+			if (_itemsSource is IList list && renderer != null)
+			{
+				BindableObject.SetInheritedBindingContext(renderer.Element, list[indexPath.Row]);
+				cell.SetRenderer(renderer);
+			}
+
+			if (cell is IConstrainedCell constrainedCell)
+			{
+				_layout.PrepareCellForLayout(constrainedCell);
+			}
+		}
+
+		IVisualElementRenderer CreateRenderer(View view)
+		{
+			if (view == null)
+				throw new ArgumentNullException(nameof(view));
+
+			var renderer = Platform.CreateRenderer(view);
+			Platform.SetRenderer(view, renderer);
+
+			return renderer;
 		}
 	}
 }
