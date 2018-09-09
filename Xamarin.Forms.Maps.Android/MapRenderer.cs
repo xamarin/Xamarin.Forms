@@ -271,9 +271,9 @@ namespace Xamarin.Forms.Maps.Android
 			}
 		}
 
-        protected GetMarkerForPin(Pin pin)
-        {
-            return _markers?.FirstOrDefault(m => m.Id == (string)pin.Id);
+		protected Marker GetMarkerForPin(Pin pin)
+		{
+			return _markers?.FirstOrDefault(m => m.Id == (string)pin.Id);
 		}
 
 		void MapOnMarkerClick(object sender, GoogleMap.InfoWindowClickEventArgs eventArgs)
@@ -378,7 +378,7 @@ namespace Xamarin.Forms.Maps.Android
 			foreach (Pin p in pins)
 			{
 				p.PropertyChanged -= PinOnPropertyChanged;
-				var marker = GetMarkerForPin(pin);
+				var marker = GetMarkerForPin(p);
 
 				if (marker == null)
 				{
