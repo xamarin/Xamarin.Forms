@@ -6,7 +6,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_MediaElementRenderer))]
-	public sealed class MediaElement : View
+	public sealed class MediaElement : View, IMediaElementController
 	{
 		public static readonly BindableProperty AreTransportControlsEnabledProperty =
 		  BindableProperty.Create(nameof(AreTransportControlsEnabled), typeof(bool), typeof(MediaElement), false);
@@ -20,44 +20,30 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty BufferingProgressProperty =
 		  BindableProperty.Create(nameof(BufferingProgress), typeof(double), typeof(MediaElement), 0.0);
 
+		public static readonly BindableProperty CurrentStateProperty =
+		  BindableProperty.Create(nameof(CurrentState), typeof(MediaElementState), typeof(MediaElement), MediaElementState.Closed);
+
+		public static readonly BindableProperty DurationProperty =
+		  BindableProperty.Create(nameof(Duration), typeof(TimeSpan?), typeof(MediaElement), null);
+
 		public static readonly BindableProperty IsLoopingProperty =
 		  BindableProperty.Create(nameof(IsLooping), typeof(bool), typeof(MediaElement), false);
 
 		public static readonly BindableProperty KeepScreenOnProperty =
 		  BindableProperty.Create(nameof(KeepScreenOn), typeof(bool), typeof(MediaElement), false);
 
+		public static readonly BindableProperty PositionProperty =
+		  BindableProperty.Create(nameof(Position), typeof(TimeSpan), typeof(MediaElement), TimeSpan.Zero);
+
 		public static readonly BindableProperty SourceProperty =
 		  BindableProperty.Create(nameof(Source), typeof(Uri), typeof(MediaElement));
 
-		public static readonly BindableProperty CurrentStateProperty =
-		  BindableProperty.Create(nameof(CurrentState), typeof(MediaElementState), typeof(MediaElement), MediaElementState.Closed);
+		public static readonly BindableProperty VideoHeightProperty =
+		  BindableProperty.Create(nameof(VideoHeight), typeof(int), typeof(MediaElement));
 
-		public static readonly BindableProperty PositionProperty =
-		  BindableProperty.Create(nameof(Position), typeof(TimeSpan), typeof(MediaElement), TimeSpan.Zero, validateValue: ValidatePosition);
-
-		static bool ValidatePosition(BindableObject bindable, object value)
-		{
-			MediaElement element = bindable as MediaElement;
-			if (element != null)
-			{
-				if (element._renderer != null)
-				{
-					element._renderer.Seek((TimeSpan)value);
-				}
-			}
-
-			return true;
-		}
-
-		
-		IMediaElementRenderer _renderer = null;
-
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public void SetRenderer(IMediaElementRenderer renderer)
-		{
-			_renderer = renderer;
-		}
-		
+		public static readonly BindableProperty VideoWidthProperty =
+		  BindableProperty.Create(nameof(VideoWidth), typeof(int), typeof(MediaElement));
+				
 		public bool AreTransportControlsEnabled
 		{
 			get { return (bool)GetValue(AreTransportControlsEnabledProperty); }
@@ -77,7 +63,7 @@ namespace Xamarin.Forms
 		
 		public bool CanSeek
 		{
-			get { return Source != null && NaturalDuration.HasValue; }
+			get { return Source != null && Duration.HasValue; }
 		}
 		
 		public bool IsLooping
@@ -92,43 +78,19 @@ namespace Xamarin.Forms
 			set { SetValue(KeepScreenOnProperty, value); }
 		}
 
-		public TimeSpan? NaturalDuration
+		public TimeSpan? Duration
 		{
-			get
-			{
-				if (_renderer != null)
-				{
-					return _renderer.NaturalDuration;
-				}
-
-				return null;
-			}
+			get { return (TimeSpan?)GetValue(DurationProperty); }
 		}
 
-		public int NaturalVideoHeight
+		public int VideoHeight
 		{
-			get
-			{
-				if (_renderer != null)
-				{
-					return _renderer.NaturalVideoHeight;
-				}
-
-				return 0;
-			}
+			get { return (int)GetValue(VideoHeightProperty); }
 		}
 
-		public int NaturalVideoWidth
+		public int VideoWidth
 		{
-			get
-			{
-				if (_renderer != null)
-				{
-					return _renderer.NaturalVideoWidth;
-				}
-
-				return 0;
-			}
+			get { return (int)GetValue(VideoWidthProperty); }
 		}
 		
 		[TypeConverter(typeof(UriTypeConverter))]
@@ -145,60 +107,38 @@ namespace Xamarin.Forms
 			get { return (MediaElementState)GetValue(CurrentStateProperty); }
 		}
 		
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public void SendCurrentState(MediaElementState state)
-		{
-			SetValue(CurrentStateProperty, state);
-			CurrentStateChanged?.Invoke(this, EventArgs.Empty);
-		}
-
 		public TimeSpan Position
 		{
 			get
 			{
-				if (_renderer != null)
-				{
-					return _renderer.Position;
-				}
-
 				return (TimeSpan)GetValue(PositionProperty);
 			}
 
 			set
 			{
-				TimeSpan newPosition = value;
-				if(value < TimeSpan.Zero)
-				{
-					newPosition = TimeSpan.Zero;
-				}
-				else if(NaturalDuration.HasValue && value > NaturalDuration.Value)
-				{
-					newPosition = NaturalDuration.Value;
-				}
-
-				SetValue(PositionProperty, newPosition);
+				SeekRequested?.Invoke(this, new SeekRequested(value));
 			}
 		}
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public event EventHandler<SeekRequested> SeekRequested;
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public event EventHandler<StateRequested> StateRequested;
+
 		public void Play()
 		{
-			SendCurrentState(MediaElementState.Playing);
+			StateRequested?.Invoke(this, new StateRequested(MediaElementState.Playing));
 		}
 
 		public void Pause()
 		{
-			if (CurrentState == MediaElementState.Playing)
-			{
-				SendCurrentState(MediaElementState.Paused);
-			}
+			StateRequested?.Invoke(this, new StateRequested(MediaElementState.Paused));
 		}
 
 		public void Stop()
 		{
-			if (CurrentState != MediaElementState.Stopped)
-			{
-				SendCurrentState(MediaElementState.Stopped);
-			}
+			StateRequested?.Invoke(this, new StateRequested(MediaElementState.Stopped));
 		}
 
 		public Aspect Aspect
@@ -207,7 +147,12 @@ namespace Xamarin.Forms
 			set { SetValue(AspectProperty, value); }
 		}
 
-		public event EventHandler CurrentStateChanged;
+		double IMediaElementController.BufferingProgress { get => (double)GetValue(BufferingProgressProperty); set => SetValue(BufferingProgressProperty, value); }
+		MediaElementState IMediaElementController.CurrentState { get => (MediaElementState)GetValue(CurrentStateProperty); set => SetValue(CurrentStateProperty, value); }
+		TimeSpan? IMediaElementController.Duration { get => (TimeSpan?)GetValue(DurationProperty); set => SetValue(DurationProperty, value); }
+		TimeSpan IMediaElementController.Position { get => (TimeSpan)GetValue(PositionProperty); set => SetValue(PositionProperty, value); }
+		int IMediaElementController.VideoHeight { get => (int)GetValue(VideoHeightProperty); set => SetValue(VideoHeightProperty, value); }
+		int IMediaElementController.VideoWidth { get => (int)GetValue(VideoWidthProperty); set => SetValue(VideoWidthProperty, value); }
 
 		public event EventHandler MediaEnded;
 
@@ -238,8 +183,7 @@ namespace Xamarin.Forms
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void OnMediaEnded()
 		{
-			SendCurrentState(MediaElementState.Stopped);
-
+			SetValue(CurrentStateProperty, MediaElementState.Stopped);
 			MediaEnded?.Invoke(this, EventArgs.Empty);
 		}
 
@@ -250,18 +194,55 @@ namespace Xamarin.Forms
 	}
 
 	[EditorBrowsable(EditorBrowsableState.Never)]
+	public class SeekRequested : EventArgs
+	{
+		public TimeSpan Position { get; }
+
+		public SeekRequested(TimeSpan position)
+		{
+			Position = position;
+		}
+	}
+
+	[EditorBrowsable(EditorBrowsableState.Never)]
+	public class StateRequested : EventArgs
+	{
+		public MediaElementState State { get; }
+
+		public StateRequested(MediaElementState state)
+		{
+			State = state;
+		}
+	}
+
+	[EditorBrowsable(EditorBrowsableState.Never)]
 	public interface IMediaElementRenderer
 	{
 		double BufferingProgress { get; }
 
-		TimeSpan? NaturalDuration { get; }
+		TimeSpan? Duration { get; }
 
-		int NaturalVideoHeight { get; }
+		int VideoHeight { get; }
 
-		int NaturalVideoWidth { get; }
+		int VideoWidth { get; }
 
 		TimeSpan Position { get; }
 
 		void Seek(TimeSpan time);
+	}
+
+	public interface IMediaElementController
+	{
+		double BufferingProgress { get; set; }
+		MediaElementState CurrentState { get; set; }
+		TimeSpan? Duration { get; set; }
+		TimeSpan Position { get; set; }
+		int VideoHeight { get; set; }
+		int VideoWidth { get; set; }
+	}
+
+	public interface IMediaElementDelegate
+	{
+
 	}
 }

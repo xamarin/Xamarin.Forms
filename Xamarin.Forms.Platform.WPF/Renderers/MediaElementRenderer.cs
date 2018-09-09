@@ -6,55 +6,20 @@ using System.Windows.Media.Animation;
 
 namespace Xamarin.Forms.Platform.WPF
 {
-	public sealed class MediaElementRenderer : ViewRenderer<MediaElement, System.Windows.Controls.MediaElement>, IMediaElementRenderer
+	public sealed class MediaElementRenderer : ViewRenderer<MediaElement, System.Windows.Controls.MediaElement>
 	{
 		long _bufferingProgressChangedToken;
 		long _positionChangedToken;
-
-		double IMediaElementRenderer.BufferingProgress
-		{
-			get { return Control.BufferingProgress; }
-		}
-
-		TimeSpan? IMediaElementRenderer.NaturalDuration
-		{
-			get
-			{
-				if (Control.NaturalDuration.HasTimeSpan)
-				{
-					return Control.NaturalDuration.TimeSpan;
-				}
-
-				return null;
-			}
-		}
-
-		int IMediaElementRenderer.NaturalVideoHeight
-		{
-			get { return Control.NaturalVideoHeight; }
-		}
-
-		int IMediaElementRenderer.NaturalVideoWidth
-		{
-			get { return Control.NaturalVideoWidth; }
-		}
-
-		TimeSpan IMediaElementRenderer.Position
-		{
-			get { return Control.Position; }
-		}
-
-		void IMediaElementRenderer.Seek(TimeSpan time)
-		{
-			Control.Position = time;
-		}
-
+		
 		protected override void OnElementChanged(ElementChangedEventArgs<MediaElement> e)
 		{
 			base.OnElementChanged(e);
 
 			if (e.OldElement != null)
 			{
+				Element.SeekRequested -= Element_SeekRequested;
+				Element.StateRequested -= Element_StateRequested;
+
 				if (Control != null)
 				{
 					Control.BufferingStarted -= Control_BufferingStarted;
@@ -63,8 +28,7 @@ namespace Xamarin.Forms.Platform.WPF
 					Control.MediaEnded -= Control_MediaEnded;
 					Control.MediaFailed -= Control_MediaFailed;
 				}
-
-				e.OldElement.SetRenderer(null);
+				
 			}
 
 			if (e.NewElement != null)
@@ -72,9 +36,8 @@ namespace Xamarin.Forms.Platform.WPF
 				SetNativeControl(new System.Windows.Controls.MediaElement());
 				Control.HorizontalAlignment = HorizontalAlignment.Stretch;
 				Control.VerticalAlignment = VerticalAlignment.Stretch;
-
-				e.NewElement.SetRenderer(this);
-				Control.LoadedBehavior = Element.AutoPlay ? MediaState.Play : MediaState.Manual;
+				
+				Control.LoadedBehavior = MediaState.Manual;
 				Control.UnloadedBehavior = MediaState.Close;
 				Control.Stretch = Element.Aspect.ToStretch();
 				
@@ -84,8 +47,57 @@ namespace Xamarin.Forms.Platform.WPF
 				Control.MediaEnded += Control_MediaEnded;
 				Control.MediaFailed += Control_MediaFailed;
 
+				Element.SeekRequested += Element_SeekRequested;
+				Element.StateRequested += Element_StateRequested;
 				UpdateSource();
 			}
+		}
+
+		private void Element_StateRequested(object sender, StateRequested e)
+		{
+			switch(e.State)
+			{
+				case MediaElementState.Playing:
+					if (Element.KeepScreenOn)
+					{
+						DisplayRequestActive();
+					}
+
+					Control.Play();
+					((IMediaElementController)Element).CurrentState = MediaElementState.Playing;
+					break;
+
+				case MediaElementState.Paused:
+					if (Control.CanPause)
+					{
+						if (Element.KeepScreenOn)
+						{
+							DisplayRequestRelease();
+						}
+
+						Control.Pause();
+						((IMediaElementController)Element).CurrentState = MediaElementState.Paused;
+					}
+					break;
+
+				case MediaElementState.Stopped:
+					if (Element.KeepScreenOn)
+					{
+						DisplayRequestRelease();
+					}
+
+					Control.Stop();
+					((IMediaElementController)Element).CurrentState = MediaElementState.Stopped;
+					break;
+			}
+
+			((IMediaElementController)Element).Position = Control.Position;
+		}
+
+		private void Element_SeekRequested(object sender, SeekRequested e)
+		{
+			Control.Position = e.Position;
+			((IMediaElementController)Element).Position = Control.Position;
 		}
 
 		void UpdateSource()
@@ -95,11 +107,11 @@ namespace Xamarin.Forms.Platform.WPF
 				if (Control.Clock != null)
 					Control.Clock = null;
 
-				if(Element.Source.Scheme == "ms-appx")
+				if (Element.Source.Scheme == "ms-appx")
 				{
 					Control.Source = new Uri(Element.Source.ToString().Replace("ms-appx://", "pack://application:,,,"));
 				}
-				else if(Element.Source.Scheme == "ms-appdata")
+				else if (Element.Source.Scheme == "ms-appdata")
 				{
 					string filePath = string.Empty;
 
@@ -119,21 +131,36 @@ namespace Xamarin.Forms.Platform.WPF
 
 					Control.Source = new Uri(filePath);
 				}
+				else if (Element.Source.Scheme == "https")
+				{
+					throw new ArgumentException("HTTPS Not supported", "Source");
+				}
 				else
 				{
 					Control.Source = Element.Source;
 				}
+
+				((IMediaElementController)Element).CurrentState = MediaElementState.Opening;
 			}
 		}
 
 		void Control_BufferingEnded(object sender, RoutedEventArgs e)
 		{
 			Element.SetValueFromRenderer(MediaElement.BufferingProgressProperty, 1.0);
+			if (Control.Clock != null && Control.Clock.CurrentState == System.Windows.Media.Animation.ClockState.Active)
+			{
+				((IMediaElementController)Element).CurrentState = MediaElementState.Playing;
+			}
+			else
+			{
+				((IMediaElementController)Element).CurrentState = MediaElementState.Paused;
+			}
 		}
 
 		void Control_BufferingStarted(object sender, RoutedEventArgs e)
 		{
 			Element.SetValueFromRenderer(MediaElement.BufferingProgressProperty, 0);
+			((IMediaElementController)Element).CurrentState = MediaElementState.Buffering;
 		}
 
 		void Control_MediaFailed(object sender, ExceptionRoutedEventArgs e)
@@ -147,18 +174,31 @@ namespace Xamarin.Forms.Platform.WPF
 			{
 				// restart media
 				Control.Position = TimeSpan.Zero;
-				Element.Play();
+				Control.Play();
+			}
+			else
+			{
+				((IMediaElementController)Element).CurrentState = MediaElementState.Stopped;
 			}
 		}
 
 		void Control_MediaOpened(object sender, RoutedEventArgs e)
 		{
+			((IMediaElementController)Element).Duration = Control.NaturalDuration.HasTimeSpan ? Control.NaturalDuration.TimeSpan : (TimeSpan?)null;
+			((IMediaElementController)Element).VideoHeight = Control.NaturalVideoHeight;
+			((IMediaElementController)Element).VideoWidth = Control.NaturalVideoWidth;
+
 			Element?.RaiseMediaOpened();
+			if(Element.AutoPlay)
+			{
+				Control.Play();
+				((IMediaElementController)Element).CurrentState = MediaElementState.Playing;
+			}
 		}
 
 		void BufferingProgressChanged(DependencyObject sender, DependencyProperty dp)
 		{
-			((IElementController)Element).SetValueFromRenderer(MediaElement.BufferingProgressProperty, Control.BufferingProgress);
+			((IMediaElementController)Element).BufferingProgress = Control.BufferingProgress;
 		}
 		
 		void Control_SeekCompleted(object sender, RoutedEventArgs e)
@@ -174,45 +214,6 @@ namespace Xamarin.Forms.Platform.WPF
 
 				case nameof(MediaElement.Aspect):
 					Control.Stretch = Element.Aspect.ToStretch();
-					break;
-
-				case nameof(MediaElement.AutoPlay):
-					Control.LoadedBehavior = Element.AutoPlay ? MediaState.Play : MediaState.Manual;
-					break;
-
-				case nameof(MediaElement.CurrentState):
-					switch (Element.CurrentState)
-					{
-						case MediaElementState.Playing:
-							if (Element.KeepScreenOn)
-							{
-								DisplayRequestActive();
-							}
-
-							Control.Play();
-							break;
-
-						case MediaElementState.Paused:
-							if (Control.CanPause)
-							{
-								if (Element.KeepScreenOn)
-								{
-									DisplayRequestRelease();
-								}
-
-								Control.Pause();
-							}
-							break;
-
-						case MediaElementState.Stopped:
-							if (Element.KeepScreenOn)
-							{
-								DisplayRequestRelease();
-							}
-
-							Control.Stop();
-							break;
-					}
 					break;
 					
 				case nameof(MediaElement.KeepScreenOn):
@@ -230,7 +231,7 @@ namespace Xamarin.Forms.Platform.WPF
 					break;
 
 				case nameof(MediaElement.Source):
-					Control.Source = Element.Source;
+					UpdateSource();
 					break;
 			}
 

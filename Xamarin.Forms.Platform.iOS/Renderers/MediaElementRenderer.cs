@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		TimeSpan? IMediaElementRenderer.NaturalDuration
+		TimeSpan? IMediaElementRenderer.Duration
 		{
 			get
 			{
@@ -49,7 +49,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		int IMediaElementRenderer.NaturalVideoHeight
+		int IMediaElementRenderer.VideoHeight
 		{
 			get
 			{
@@ -62,7 +62,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		int IMediaElementRenderer.NaturalVideoWidth
+		int IMediaElementRenderer.VideoWidth
 		{
 			get
 			{
@@ -372,26 +372,17 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void IMediaElementRenderer.Seek(TimeSpan time)
 		{
-			if (_avPlayerViewController.Player.Status == AVPlayerStatus.ReadyToPlay)
-			{
-				if (_avPlayerViewController.Player.CurrentItem != null)
-				{
-					NSValue[] ranges = _avPlayerViewController.Player.CurrentItem.SeekableTimeRanges;
-					CMTime seekTo = new CMTime(Convert.ToInt64(time.TotalMilliseconds), 1000);
-					bool canSeek = false;
-					foreach (NSValue v in ranges)
-					{
-						if (seekTo >= v.CMTimeRangeValue.Start && seekTo < (v.CMTimeRangeValue.Start + v.CMTimeRangeValue.Duration))
-						{
-							canSeek = true;
-							break;
-						}
-					}
+			if (_avPlayerViewController.Player.Status != AVPlayerStatus.ReadyToPlay || _avPlayerViewController.Player.CurrentItem == null)
+				return;
 
-					if (canSeek)
-					{
-						_avPlayerViewController.Player.Seek(seekTo, SeekComplete);
-					}
+			NSValue[] ranges = _avPlayerViewController.Player.CurrentItem.SeekableTimeRanges;
+			CMTime seekTo = new CMTime(Convert.ToInt64(time.TotalMilliseconds), 1000);
+			foreach (NSValue v in ranges)
+			{
+				if (seekTo >= v.CMTimeRangeValue.Start && seekTo < (v.CMTimeRangeValue.Start + v.CMTimeRangeValue.Duration))
+				{
+					_avPlayerViewController.Player.Seek(seekTo, SeekComplete);
+					break;
 				}
 			}
 		}

@@ -5,51 +5,13 @@ using Windows.UI.Xaml.Controls;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	public sealed class MediaElementRenderer : ViewRenderer<MediaElement, Windows.UI.Xaml.Controls.MediaElement>, IMediaElementRenderer
+	public sealed class MediaElementRenderer : ViewRenderer<MediaElement, Windows.UI.Xaml.Controls.MediaElement>
 	{
 		Windows.System.Display.DisplayRequest _request = new Windows.System.Display.DisplayRequest();
 
 		long _bufferingProgressChangedToken;
 
 		long _positionChangedToken;
-
-		double IMediaElementRenderer.BufferingProgress
-		{
-			get { return Control.BufferingProgress; }
-		}
-
-		TimeSpan? IMediaElementRenderer.NaturalDuration
-		{
-			get
-			{
-				if (Control.NaturalDuration.HasTimeSpan)
-				{
-					return Control.NaturalDuration.TimeSpan;
-				}
-
-				return null;
-			}
-		}
-
-		int IMediaElementRenderer.NaturalVideoHeight
-		{
-			get	{ return Control.NaturalVideoHeight; }
-		}
-
-		int IMediaElementRenderer.NaturalVideoWidth
-		{
-			get { return Control.NaturalVideoWidth; }
-		}
-
-		TimeSpan IMediaElementRenderer.Position
-		{
-			get { return Control.Position; }
-		}
-
-		void IMediaElementRenderer.Seek(TimeSpan time)
-		{
-			Control.Position = time;
-		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<MediaElement> e)
 		{
@@ -59,20 +21,26 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				if (Control != null)
 				{
+					if (_bufferingProgressChangedToken != 0)
+					{
+						Control.UnregisterPropertyChangedCallback(Windows.UI.Xaml.Controls.MediaElement.BufferingProgressProperty, _bufferingProgressChangedToken);
+						_bufferingProgressChangedToken = 0;
+					}
+
 					if (_positionChangedToken != 0)
 					{
 						Control.UnregisterPropertyChangedCallback(Windows.UI.Xaml.Controls.MediaElement.PositionProperty, _positionChangedToken);
 						_positionChangedToken = 0;
 					}
 
+					Element.SeekRequested -= Element_SeekRequested;
+					Element.StateRequested -= Element_StateRequested;
 					Control.CurrentStateChanged -= Control_CurrentStateChanged;
 					Control.SeekCompleted -= Control_SeekCompleted;
 					Control.MediaOpened -= Control_MediaOpened;
 					Control.MediaEnded -= Control_MediaEnded;
 					Control.MediaFailed -= Control_MediaFailed;
 				}
-
-				e.OldElement.SetRenderer(null);
 			}
 
 			if (e.NewElement != null)
@@ -80,8 +48,7 @@ namespace Xamarin.Forms.Platform.UWP
 				SetNativeControl(new Windows.UI.Xaml.Controls.MediaElement());
 				Control.HorizontalAlignment = HorizontalAlignment.Stretch;
 				Control.VerticalAlignment = VerticalAlignment.Stretch;
-
-				e.NewElement.SetRenderer(this);
+				
 				Control.AreTransportControlsEnabled = Element.AreTransportControlsEnabled;
 				Control.AutoPlay = Element.AutoPlay;
 				Control.IsLooping = Element.IsLooping;
@@ -90,6 +57,8 @@ namespace Xamarin.Forms.Platform.UWP
 				_bufferingProgressChangedToken = Control.RegisterPropertyChangedCallback(Windows.UI.Xaml.Controls.MediaElement.BufferingProgressProperty, BufferingProgressChanged);
 				_positionChangedToken = Control.RegisterPropertyChangedCallback(Windows.UI.Xaml.Controls.MediaElement.PositionProperty, PositionChanged);
 
+				Element.SeekRequested += Element_SeekRequested;
+				Element.StateRequested += Element_StateRequested;
 				Control.SeekCompleted += Control_SeekCompleted;
 				Control.CurrentStateChanged += Control_CurrentStateChanged;
 				Control.MediaOpened += Control_MediaOpened;
@@ -103,6 +72,37 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
+		private void Element_StateRequested(object sender, StateRequested e)
+		{
+			switch (e.State)
+			{
+				case MediaElementState.Playing:
+					Control.Play();
+					break;
+
+				case MediaElementState.Paused:
+					if (Control.CanPause)
+					{
+						Control.Pause();
+					}
+					break;
+
+				case MediaElementState.Stopped:
+					Control.Stop();
+					break;
+			}
+
+			((IMediaElementController)Element).Position = Control.Position;
+		}
+
+		private void Element_SeekRequested(object sender, SeekRequested e)
+		{
+			if (Control.CanSeek)
+			{
+				Control.Position = e.Position;
+			}
+		}
+
 		void Control_MediaFailed(object sender, ExceptionRoutedEventArgs e)
 		{
 			Element?.OnMediaFailed();
@@ -110,11 +110,16 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void Control_MediaEnded(object sender, RoutedEventArgs e)
 		{
+			((IMediaElementController)Element).Position = Control.Position;
 			Element?.OnMediaEnded();
 		}
 
 		void Control_MediaOpened(object sender, RoutedEventArgs e)
 		{
+			((IMediaElementController)Element).Duration = Control.NaturalDuration.HasTimeSpan ? Control.NaturalDuration.TimeSpan : (TimeSpan?)null;
+			((IMediaElementController)Element).VideoHeight = Control.NaturalVideoHeight;
+			((IMediaElementController)Element).VideoWidth = Control.NaturalVideoWidth;
+
 			Element?.RaiseMediaOpened();
 		}
 
@@ -124,7 +129,7 @@ namespace Xamarin.Forms.Platform.UWP
 			if (Element == null)
 				return;
 
-			switch (Control.CurrentState)
+			switch (((Windows.UI.Xaml.Controls.MediaElement)sender).CurrentState)
 			{
 				case Windows.UI.Xaml.Media.MediaElementState.Playing:
 					if (Element.KeepScreenOn)
@@ -143,16 +148,43 @@ namespace Xamarin.Forms.Platform.UWP
 					break;
 			}
 
-			Element.SendCurrentState((MediaElementState)((int)Control.CurrentState));
+			((IMediaElementController)Element).CurrentState = FromWindowsMediaElementState(Control.CurrentState);
+		}
+
+		static MediaElementState FromWindowsMediaElementState(Windows.UI.Xaml.Media.MediaElementState state)
+		{
+			switch(state)
+			{
+				case Windows.UI.Xaml.Media.MediaElementState.Buffering:
+					return MediaElementState.Buffering;
+
+				case Windows.UI.Xaml.Media.MediaElementState.Closed:
+					return MediaElementState.Closed;
+
+				case Windows.UI.Xaml.Media.MediaElementState.Opening:
+					return MediaElementState.Opening;
+
+				case Windows.UI.Xaml.Media.MediaElementState.Paused:
+					return MediaElementState.Paused;
+
+				case Windows.UI.Xaml.Media.MediaElementState.Playing:
+					return MediaElementState.Playing;
+
+				case Windows.UI.Xaml.Media.MediaElementState.Stopped:
+					return MediaElementState.Stopped;
+			}
+
+			return 0;
 		}
 		
 		void BufferingProgressChanged(DependencyObject sender, DependencyProperty dp)
 		{
-			((IElementController)Element).SetValueFromRenderer(MediaElement.BufferingProgressProperty, Control.BufferingProgress);
+			((IMediaElementController)Element).BufferingProgress = ((Windows.UI.Xaml.Controls.MediaElement)sender).BufferingProgress;
 		}
 
 		void PositionChanged(DependencyObject sender, DependencyProperty dp)
 		{
+			((IMediaElementController)Element).Position = ((Windows.UI.Xaml.Controls.MediaElement)sender).Position;
 		}
 
 		void Control_SeekCompleted(object sender, RoutedEventArgs e)
@@ -177,20 +209,7 @@ namespace Xamarin.Forms.Platform.UWP
 					break;
 
 				case nameof(MediaElement.CurrentState):
-					switch (Element.CurrentState)
-					{
-						case MediaElementState.Playing:
-							Control.Play();
-							break;
-
-						case MediaElementState.Paused:
-							Control.Pause();
-							break;
-
-						case MediaElementState.Stopped:
-							Control.Stop();
-							break;
-					}
+					((IMediaElementController)Element).Position = Control.Position;
 					break;
 
 				case nameof(MediaElement.IsLooping):
@@ -212,7 +231,7 @@ namespace Xamarin.Forms.Platform.UWP
 					break;
 
 				case nameof(MediaElement.Source):
-					Control.Source = Element.Source;
+					Control.Source = Element.Source;				
 					break;
 
 				case nameof(MediaElement.Width):

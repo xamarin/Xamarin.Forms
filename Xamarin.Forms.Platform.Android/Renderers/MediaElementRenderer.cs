@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		TimeSpan? IMediaElementRenderer.NaturalDuration
+		TimeSpan? IMediaElementRenderer.Duration
 		{
 			get
 			{
@@ -49,7 +49,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		int IMediaElementRenderer.NaturalVideoHeight
+		int IMediaElementRenderer.VideoHeight
 		{
 			get
 			{
@@ -62,7 +62,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		int IMediaElementRenderer.NaturalVideoWidth
+		int IMediaElementRenderer.VideoWidth
 		{
 			get
 			{
@@ -302,19 +302,19 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateLayoutParameters()
 		{
-			if (Element.NaturalVideoWidth == 0 || Element.NaturalVideoHeight == 0)
+			if (_view.VideoWidth == 0 || _view.VideoHeight == 0)
 			{
 				_view.LayoutParameters = new FrameLayout.LayoutParams(Width, Height, GravityFlags.Fill);
 				return;
 			}
 
-			float ratio = (float)Element.NaturalVideoWidth / Element.NaturalVideoHeight;
+			float ratio = (float)_view.VideoWidth / _view.VideoHeight;
 			float controlRatio = (float)Width / Height;
 
 			switch (Element.Aspect)
 			{
 				case Aspect.Fill:
-					// TODO: this doesn't stretch like other platforms...
+					// This doesn't stretch like other platforms as Android won't display out of aspect ratio
 					_view.LayoutParameters = new FrameLayout.LayoutParams(Width, Height, GravityFlags.FillHorizontal | GravityFlags.FillVertical | GravityFlags.CenterHorizontal | GravityFlags.CenterVertical) { LeftMargin = 0, RightMargin = 0, TopMargin = 0, BottomMargin = 0 };
 					break;
 
