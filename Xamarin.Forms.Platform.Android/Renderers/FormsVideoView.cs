@@ -39,7 +39,11 @@ namespace Xamarin.Forms.Platform.Android
 			if (!string.IsNullOrEmpty(durationString))
 			{
 				long durationMS = long.Parse(durationString);
-				NaturalDuration = TimeSpan.FromMilliseconds(durationMS);
+				DurationTimeSpan = TimeSpan.FromMilliseconds(durationMS);
+			}
+			else
+			{
+				DurationTimeSpan = null;
 			}
 		}
 
@@ -84,6 +88,14 @@ namespace Xamarin.Forms.Platform.Android
 			get { return _videoWidth; }
 		}
 
-		public TimeSpan? NaturalDuration { get; private set; }
+		public TimeSpan? DurationTimeSpan { get; private set; }
+
+		public TimeSpan Position
+		{
+			get
+			{
+				return TimeSpan.FromMilliseconds(CurrentPosition);
+			}
+		}
 	}
 }
