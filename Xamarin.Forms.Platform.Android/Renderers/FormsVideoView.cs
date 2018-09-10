@@ -1,12 +1,13 @@
 using Android.Content;
 using Android.Media;
+using Android.Runtime;
 using Android.Widget;
 using System;
 using System.Collections.Generic;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public sealed class FormsVideoView : VideoView
+	public class FormsVideoView : VideoView
 	{
 		int _videoHeight, _videoWidth;
 
@@ -35,10 +36,11 @@ namespace Xamarin.Forms.Platform.Android
 			_videoHeight = 0;
 			int.TryParse(retriever.ExtractMetadata(MetadataKey.VideoHeight), out _videoHeight);
 
+			long durationMS;
 			string durationString = retriever.ExtractMetadata(MetadataKey.Duration);
-			if (!string.IsNullOrEmpty(durationString))
+
+			if (!string.IsNullOrEmpty(durationString) && long.TryParse(durationString, out durationMS))
 			{
-				long durationMS = long.Parse(durationString);
 				DurationTimeSpan = TimeSpan.FromMilliseconds(durationMS);
 			}
 			else

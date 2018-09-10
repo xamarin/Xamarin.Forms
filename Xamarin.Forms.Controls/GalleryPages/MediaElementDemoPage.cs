@@ -15,6 +15,7 @@ namespace Xamarin.Forms.Controls
 			element.HorizontalOptions = new LayoutOptions(LayoutAlignment.Fill,true);
 			element.VerticalOptions = new LayoutOptions(LayoutAlignment.Fill,true);
 			element.AutoPlay = false;
+			element.Aspect = Aspect.AspectFill;
 			element.AreTransportControlsEnabled = true;
 			element.BackgroundColor = Color.Red;
 			element.MediaEnded += Element_MediaEnded;
@@ -25,15 +26,18 @@ namespace Xamarin.Forms.Controls
 			var infoStack = new StackLayout { Orientation = StackOrientation.Horizontal };
 
 			var stateLabel = new Label();
-			stateLabel.SetBinding(Label.TextProperty, new Binding("CurrentState", BindingMode.OneWay, null, null, null, element));
+			stateLabel.SetBinding(Label.TextProperty, new Binding("CurrentState", BindingMode.OneWay, null, null, "s:{0}", element));
+			var bufferingLabel = new Label();
+			bufferingLabel.SetBinding(Label.TextProperty, new Binding("BufferingProgress", BindingMode.OneWay, null, null, "b:{0:f2}", element));
 			var heightLabel = new Label();
-			heightLabel.SetBinding(Label.TextProperty, new Binding("VideoHeight", BindingMode.OneWay, null, null, null, element));
+			heightLabel.SetBinding(Label.TextProperty, new Binding("VideoHeight", BindingMode.OneWay, null, null, "h:{0}", element));
 			var widthLabel = new Label();
-			widthLabel.SetBinding(Label.TextProperty, new Binding("VideoWidth", BindingMode.OneWay, null, null, null, element));
+			widthLabel.SetBinding(Label.TextProperty, new Binding("VideoWidth", BindingMode.OneWay, null, null, "w:{0}", element));
 			var durationLabel = new Label();
-			durationLabel.SetBinding(Label.TextProperty, new Binding("Duration", BindingMode.OneWay, null, null, "{0:g}", element));
+			durationLabel.SetBinding(Label.TextProperty, new Binding("Duration", BindingMode.OneWay, null, null, "d:{0:g}", element));
 
 			infoStack.Children.Add(stateLabel);
+			infoStack.Children.Add(bufferingLabel);
 			infoStack.Children.Add(heightLabel);
 			infoStack.Children.Add(widthLabel);
 			infoStack.Children.Add(durationLabel);
@@ -80,19 +84,19 @@ namespace Xamarin.Forms.Controls
 			Content = stack;	
 		}
 
-		private void Element_MediaOpened(object sender, EventArgs e)
+		void Element_MediaOpened(object sender, EventArgs e)
 		{
-			consoleLabel.Text += "Media opened\r\n";
+			consoleLabel.Text += "Media opened" + Environment.NewLine;
 		}
 
-		private void Element_MediaFailed(object sender, EventArgs e)
+		void Element_MediaFailed(object sender, EventArgs e)
 		{
-			consoleLabel.Text += "Media failed\r\n";
+			consoleLabel.Text += "Media failed" + Environment.NewLine;
 		}
 
-		private void Element_MediaEnded(object sender, EventArgs e)
+		void Element_MediaEnded(object sender, EventArgs e)
 		{
-			consoleLabel.Text += "Media ended\r\n";
+			consoleLabel.Text += "Media ended" + Environment.NewLine;
 		}
 
 		void PlayButton_Clicked(object sender, EventArgs e)

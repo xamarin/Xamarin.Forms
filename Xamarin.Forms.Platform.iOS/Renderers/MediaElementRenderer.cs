@@ -3,86 +3,66 @@ using System.Collections.Generic;
 using System.IO;
 using AVFoundation;
 using AVKit;
+using CoreGraphics;
 using CoreMedia;
 using Foundation;
 using UIKit;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public sealed class MediaElementRenderer : ViewRenderer<MediaElement, UIView>, IMediaElementRenderer
+	public sealed class MediaElementRenderer : UIView, IVisualElementRenderer, IEffectControlProvider
 	{
-		AVPlayerViewController _avPlayerViewController = new AVPlayerViewController();
-		NSObject _notificationHandle;
-		NSObject _observer;
+		MediaElement MediaElement { get; set; }
+		IMediaElementController Controller => MediaElement as IMediaElementController;
 
-		double IMediaElementRenderer.BufferingProgress
+#pragma warning disable 0414
+		VisualElementTracker _tracker;
+#pragma warning restore 0414
+
+		AVPlayerViewController _avPlayerViewController = new AVPlayerViewController();
+
+		NSObject _playToEndObserver;
+		NSObject _statusObserver;
+		NSObject _rateObserver;
+
+		public MediaElementRenderer()
+		{
+			_playToEndObserver = NSNotificationCenter.DefaultCenter.AddObserver(AVPlayerItem.DidPlayToEndTimeNotification, PlayedToEnd);
+			_avPlayerViewController.View.Frame = Bounds;
+			AddSubview(_avPlayerViewController.View);
+		}
+
+		public override CGRect Frame
+		{
+			get => base.Frame;
+			set
+			{
+				base.Frame = value;
+				_avPlayerViewController.View.Frame = Bounds;				
+			}
+		}
+
+		/*double IMediaElementRenderer.BufferingProgress
 		{
 			get
 			{
 				return _avPlayerViewController.Player.Status == AVPlayerStatus.ReadyToPlay ? 1.0 : 0.0;
 			}
-		}
+		}*/
 
-		TimeSpan IMediaElementRenderer.Position
-		{
-			get
-			{
-				if (_avPlayerViewController.Player != null && _avPlayerViewController.Player.CurrentItem != null)
-				{
-					return TimeSpan.FromSeconds(_avPlayerViewController.Player.CurrentTime.Seconds);
-				}
+		VisualElement IVisualElementRenderer.Element => MediaElement;
 
-				return TimeSpan.Zero;
-			}
-		}
+		UIView IVisualElementRenderer.NativeView => this;
 
-		TimeSpan? IMediaElementRenderer.Duration
-		{
-			get
-			{
-				if (_avPlayerViewController.Player != null && _avPlayerViewController.Player.CurrentItem != null)
-				{
-					return TimeSpan.FromSeconds(_avPlayerViewController.Player.CurrentItem.Asset.Duration.Seconds);
-				}
-
-				return null;
-			}
-		}
-
-		int IMediaElementRenderer.VideoHeight
-		{
-			get
-			{
-				if (_avPlayerViewController.Player != null && _avPlayerViewController.Player.CurrentItem != null)
-				{
-					return (int)_avPlayerViewController.Player.CurrentItem.Asset.NaturalSize.Height;
-				}
-
-				return 0;
-			}
-		}
-
-		int IMediaElementRenderer.VideoWidth
-		{
-			get
-			{
-				if (_avPlayerViewController.Player != null && _avPlayerViewController.Player.CurrentItem != null)
-				{
-					return (int)_avPlayerViewController.Player.CurrentItem.Asset.NaturalSize.Width;
-				}
-
-				return 0;		
-			}
-		}
-
-		protected override void OnElementChanged(ElementChangedEventArgs<MediaElement> e)
+		UIViewController IVisualElementRenderer.ViewController => _avPlayerViewController;
+		
+		/*protected override void OnElementChanged(ElementChangedEventArgs<MediaElement> e)
 		{
 			base.OnElementChanged(e);
 
 			if (e.OldElement != null)
 			{
-				e.OldElement.SetRenderer(null);
-
 				if (_notificationHandle != null)
 				{
 					NSNotificationCenter.DefaultCenter.RemoveObserver(_notificationHandle);
@@ -104,7 +84,6 @@ namespace Xamarin.Forms.Platform.iOS
 			if (e.NewElement != null)
 			{
 				SetNativeControl(_avPlayerViewController.View);
-				e.NewElement.SetRenderer(this);
 
 				_avPlayerViewController.ShowsPlaybackControls = Element.AreTransportControlsEnabled;
 				_avPlayerViewController.VideoGravity = AVLayerVideoGravity.ResizeAspect;
@@ -117,7 +96,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				UpdateSource();
 			}
-		}
+		}*/
 
 		bool _idleTimerDisabled = false;
 		void SetKeepScreenOn(bool value)
@@ -164,30 +143,30 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateSource()
 		{
-			if (Element.Source != null)
+			if (MediaElement.Source != null)
 			{
 				AVAsset asset = null;
-				if (Element.Source.Scheme == null)
+				if (MediaElement.Source.Scheme == null)
 				{
 					// file path
-					asset = AVAsset.FromUrl(NSUrl.FromFilename(Element.Source.OriginalString));
+					asset = AVAsset.FromUrl(NSUrl.FromFilename(MediaElement.Source.OriginalString));
 				}
-				else if (Element.Source.Scheme == "ms-appx")
+				else if (MediaElement.Source.Scheme == "ms-appx")
 				{
 					// used for a file embedded in the application package
-					asset = AVAsset.FromUrl(NSUrl.FromFilename(Element.Source.LocalPath.Substring(1)));
+					asset = AVAsset.FromUrl(NSUrl.FromFilename(MediaElement.Source.LocalPath.Substring(1)));
 				}
-				else if (Element.Source.Scheme == "ms-appdata")
+				else if (MediaElement.Source.Scheme == "ms-appdata")
 				{
 					string filePath = string.Empty;
 
-					if (Element.Source.LocalPath.StartsWith("/local"))
+					if (MediaElement.Source.LocalPath.StartsWith("/local"))
 					{
-						filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Element.Source.LocalPath.Substring(7));
+						filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), MediaElement.Source.LocalPath.Substring(7));
 					}
-					else if (Element.Source.LocalPath.StartsWith("/temp"))
+					else if (MediaElement.Source.LocalPath.StartsWith("/temp"))
 					{
-						filePath = Path.Combine(Path.GetTempPath(), Element.Source.LocalPath.Substring(6));
+						filePath = Path.Combine(Path.GetTempPath(), MediaElement.Source.LocalPath.Substring(6));
 					}
 					else
 					{
@@ -198,14 +177,15 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 				else
 				{
-					asset = AVUrlAsset.Create(NSUrl.FromString(Element.Source.AbsoluteUri), GetOptionsWithHeaders(Element.HttpHeaders));
+					asset = AVUrlAsset.Create(NSUrl.FromString(MediaElement.Source.AbsoluteUri), GetOptionsWithHeaders(MediaElement.HttpHeaders));
 				}
 
 				AVPlayerItem item = new AVPlayerItem(asset);
 				RemoveStatusObserver();
 
-				_observer = (NSObject)item.AddObserver("status", NSKeyValueObservingOptions.New, ObserveStatus);
-
+				_statusObserver = (NSObject)item.AddObserver("status", NSKeyValueObservingOptions.New, ObserveStatus);
+				
+				
 				if (_avPlayerViewController.Player != null)
 				{
 					_avPlayerViewController.Player.ReplaceCurrentItemWithPlayerItem(item);
@@ -213,9 +193,10 @@ namespace Xamarin.Forms.Platform.iOS
 				else
 				{
 					_avPlayerViewController.Player = new AVPlayer(item);
+					_rateObserver = (NSObject)_avPlayerViewController.Player.AddObserver("rate", NSKeyValueObservingOptions.New, ObserveRate);
 				}
 				
-				if (Element.AutoPlay)
+				if (MediaElement.AutoPlay)
 				{
 					var audioSession = AVAudioSession.SharedInstance();
 					NSError err = audioSession.SetCategory(AVAudioSession.CategoryPlayback);
@@ -223,24 +204,31 @@ namespace Xamarin.Forms.Platform.iOS
 					err = audioSession.SetActive(true);
 
 					_avPlayerViewController.Player.Play();
-					Element.SendCurrentState(MediaElementState.Playing);
+					Controller.CurrentState = MediaElementState.Playing;
 				}
 			}
 			else
 			{
-				if (Element.CurrentState == MediaElementState.Playing || Element.CurrentState == MediaElementState.Buffering)
+				if (MediaElement.CurrentState == MediaElementState.Playing || MediaElement.CurrentState == MediaElementState.Buffering)
 				{
-					Element.Stop();
+					_avPlayerViewController.Player.Pause();
+					Controller.CurrentState = MediaElementState.Stopped;
 				}
 			}
 		}
 
 		protected override void Dispose(bool disposing)
 		{
-			if (_notificationHandle != null)
+			if(_playToEndObserver != null)
 			{
-				NSNotificationCenter.DefaultCenter.RemoveObserver(_notificationHandle);
-				_notificationHandle = null;
+				NSNotificationCenter.DefaultCenter.RemoveObserver(_playToEndObserver);
+				_playToEndObserver = null;
+			}
+
+			if(_rateObserver != null)
+			{
+				_avPlayerViewController?.Player.RemoveObserver(_rateObserver, "rate");
+				_rateObserver = null;
 			}
 
 			RemoveStatusObserver();
@@ -253,109 +241,104 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void RemoveStatusObserver()
 		{
-			if (_observer != null)
+			if (_statusObserver != null)
 			{
 				try
 				{
-					_avPlayerViewController?.Player?.CurrentItem?.RemoveObserver(_observer, "status");
+					_avPlayerViewController?.Player?.CurrentItem?.RemoveObserver(_statusObserver, "status");
 				}
 				catch { }
 				finally
 				{
 
-					_observer = null;
+					_statusObserver = null;
 				}
 			}
 		}
+		void ObserveRate(NSObservedChange e)
+		{
+			switch(_avPlayerViewController.Player.Rate)
+			{
+				case 0.0f:
+					Controller.CurrentState = MediaElementState.Paused;
+					break;
 
+				case 1.0f:
+					Controller.CurrentState = MediaElementState.Playing;
+					break;
+			}
+
+			Controller.Position = Position;
+		}
 		void ObserveStatus(NSObservedChange e)
 		{
 			if (e.NewValue != null)
 			{
-				if (_avPlayerViewController.Player.Status == AVPlayerStatus.ReadyToPlay)
+				switch (_avPlayerViewController.Player.Status)
 				{
-					Element?.RaiseMediaOpened();
+					case AVPlayerStatus.Failed:
+						MediaElement.OnMediaFailed();
+						break;
+
+					case AVPlayerStatus.ReadyToPlay:
+						Controller.Duration = TimeSpan.FromSeconds(_avPlayerViewController.Player.CurrentItem.Duration.Seconds);
+						Controller.VideoHeight = (int)_avPlayerViewController.Player.CurrentItem.Asset.NaturalSize.Height;
+						Controller.VideoWidth = (int)_avPlayerViewController.Player.CurrentItem.Asset.NaturalSize.Width;
+						MediaElement?.RaiseMediaOpened();
+						Controller.Position = Position;
+						break;
 				}
+			}
+		}
+
+		TimeSpan Position
+		{
+			get
+			{
+				return TimeSpan.FromSeconds(_avPlayerViewController.Player.CurrentTime.Seconds);
 			}
 		}
 
 		void PlayedToEnd(NSNotification notification)
 		{
-			if (Element.IsLooping)
+			if (MediaElement.IsLooping)
 			{
 				_avPlayerViewController.Player.Seek(CMTime.Zero);
+				Controller.Position = Position;
 				_avPlayerViewController.Player.Play();
 			}
 			else
 			{
 				SetKeepScreenOn(false);
+				Controller.Position = Position;
 
 				try
 				{
-					Device.BeginInvokeOnMainThread(Element.OnMediaEnded);
+					Device.BeginInvokeOnMainThread(MediaElement.OnMediaEnded);
 				}
 				catch { }
 			}
 		}
 		
 
-		protected override void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
 			switch (e.PropertyName)
 			{
 				case nameof(MediaElement.AreTransportControlsEnabled):
-					_avPlayerViewController.ShowsPlaybackControls = Element.AreTransportControlsEnabled;
+					_avPlayerViewController.ShowsPlaybackControls = MediaElement.AreTransportControlsEnabled;
 					break;
 
 				case nameof(MediaElement.Source):
 					UpdateSource();
 					break;
 
-				case nameof(MediaElement.CurrentState):
-					switch (Element.CurrentState)
-					{
-						case MediaElementState.Playing:
-							var audioSession = AVAudioSession.SharedInstance();
-							NSError err = audioSession.SetCategory(AVAudioSession.CategoryPlayback);
-							audioSession.SetMode(AVAudioSession.ModeMoviePlayback, out err);
-							err = audioSession.SetActive(true);
-
-							_avPlayerViewController.Player.Play();
-							if (Element.KeepScreenOn)
-							{
-								SetKeepScreenOn(true);
-							}
-							break;
-
-						case MediaElementState.Paused:
-							if (Element.KeepScreenOn)
-							{
-								SetKeepScreenOn(false);
-							}
-							_avPlayerViewController.Player.Pause();
-							break;
-
-						case MediaElementState.Stopped:
-							if (Element.KeepScreenOn)
-							{
-								SetKeepScreenOn(false);
-							}
-							//ios has no stop...
-							_avPlayerViewController.Player.Pause();
-							_avPlayerViewController.Player.Seek(CMTime.Zero);
-
-							err = AVAudioSession.SharedInstance().SetActive(false);
-							break;
-					}
-
-					break;
-
 				case nameof(MediaElement.KeepScreenOn):
-					if (!Element.KeepScreenOn)
+					if (!MediaElement.KeepScreenOn)
 					{
 						SetKeepScreenOn(false);
 					}
-					else if(Element.CurrentState == MediaElementState.Playing)
+					else if(MediaElement.CurrentState == MediaElementState.Playing)
 					{
 						// only toggle this on if property is set while video is already running
 						SetKeepScreenOn(true);
@@ -363,20 +346,20 @@ namespace Xamarin.Forms.Platform.iOS
 					break;
 
 				case nameof(MediaElement.Aspect):
-					_avPlayerViewController.VideoGravity = AspectToGravity(Element.Aspect);
+					_avPlayerViewController.VideoGravity = AspectToGravity(MediaElement.Aspect);
 					break;
 			}
-
-			base.OnElementPropertyChanged(sender, e);
 		}
 
-		void IMediaElementRenderer.Seek(TimeSpan time)
+		
+
+		void MediaElement_SeekRequested(object sender, SeekRequested e)
 		{
 			if (_avPlayerViewController.Player.Status != AVPlayerStatus.ReadyToPlay || _avPlayerViewController.Player.CurrentItem == null)
 				return;
 
 			NSValue[] ranges = _avPlayerViewController.Player.CurrentItem.SeekableTimeRanges;
-			CMTime seekTo = new CMTime(Convert.ToInt64(time.TotalMilliseconds), 1000);
+			CMTime seekTo = new CMTime(Convert.ToInt64(e.Position.TotalMilliseconds), 1000);
 			foreach (NSValue v in ranges)
 			{
 				if (seekTo >= v.CMTimeRangeValue.Start && seekTo < (v.CMTimeRangeValue.Start + v.CMTimeRangeValue.Duration))
@@ -385,6 +368,50 @@ namespace Xamarin.Forms.Platform.iOS
 					break;
 				}
 			}
+		}
+
+		void MediaElement_StateRequested(object sender, StateRequested e)
+		{
+			switch (e.State)
+			{
+				case MediaElementState.Playing:
+					var audioSession = AVAudioSession.SharedInstance();
+					NSError err = audioSession.SetCategory(AVAudioSession.CategoryPlayback);
+					audioSession.SetMode(AVAudioSession.ModeMoviePlayback, out err);
+					err = audioSession.SetActive(true);
+
+					_avPlayerViewController.Player.Play();
+					Controller.CurrentState = MediaElementState.Playing;
+					if (MediaElement.KeepScreenOn)
+					{
+						SetKeepScreenOn(true);
+					}
+					break;
+
+				case MediaElementState.Paused:
+					if (MediaElement.KeepScreenOn)
+					{
+						SetKeepScreenOn(false);
+					}
+					_avPlayerViewController.Player.Pause();
+					Controller.CurrentState = MediaElementState.Paused;
+					break;
+
+				case MediaElementState.Stopped:
+					if (MediaElement.KeepScreenOn)
+					{
+						SetKeepScreenOn(false);
+					}
+					//ios has no stop...
+					_avPlayerViewController.Player.Pause();
+					_avPlayerViewController.Player.Seek(CMTime.Zero);
+					Controller.CurrentState = MediaElementState.Stopped;
+
+					err = AVAudioSession.SharedInstance().SetActive(false);
+					break;
+			}
+
+			Controller.Position = Position;
 		}
 
 		static AVLayerVideoGravity AspectToGravity(Aspect aspect)
@@ -406,8 +433,76 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (finished)
 			{
-				Element.RaiseSeekCompleted();
+				MediaElement.RaiseSeekCompleted();
 			}
+		}
+
+		SizeRequest IVisualElementRenderer.GetDesiredSize(double widthConstraint, double heightConstraint)
+		{
+			return ((IVisualElementRenderer)this).NativeView.GetSizeRequest(widthConstraint, heightConstraint, 44, 44);
+		}
+
+		void IVisualElementRenderer.SetElement(VisualElement element)
+		{
+			if (element == null)
+			{
+				throw new ArgumentNullException(nameof(element));
+			}
+
+			if (!(element is MediaElement))
+			{
+				throw new ArgumentException($"{nameof(element)} must be of type {nameof(MediaElement)}");
+			}
+
+			MediaElement oldElement = MediaElement;
+			MediaElement = (MediaElement)element;
+
+			Performance.Start(out string reference);
+
+			if (oldElement != null)
+			{
+				oldElement.PropertyChanged -= OnElementPropertyChanged;
+			}
+
+			Color currentColor = oldElement?.BackgroundColor ?? Color.Default;
+			if (element.BackgroundColor != currentColor)
+			{
+				UpdateBackgroundColor();
+			}
+
+			MediaElement.PropertyChanged += OnElementPropertyChanged;
+			MediaElement.SeekRequested += MediaElement_SeekRequested;
+			MediaElement.StateRequested += MediaElement_StateRequested;
+
+			_tracker = new VisualElementTracker(this);
+
+			OnElementChanged(new VisualElementChangedEventArgs(oldElement, MediaElement));
+
+			EffectUtilities.RegisterEffectControlProvider(this, oldElement, element);
+
+			Performance.Stop(reference);
+		}
+
+		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
+
+		void OnElementChanged(VisualElementChangedEventArgs e)
+		{
+			ElementChanged?.Invoke(this, e);
+		}
+
+		void IVisualElementRenderer.SetElementSize(Size size)
+		{
+			Layout.LayoutChildIntoBoundingRegion(MediaElement, new Rectangle(MediaElement.X, MediaElement.Y, size.Width, size.Height));
+		}
+
+		void IEffectControlProvider.RegisterEffect(Effect effect)
+		{
+			VisualElementRenderer<VisualElement>.RegisterEffect(effect, this);
+		}
+
+		void UpdateBackgroundColor()
+		{
+			BackgroundColor = MediaElement.BackgroundColor.ToUIColor();
 		}
 	}
 }

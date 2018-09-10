@@ -16,7 +16,7 @@ using Android.Media;
 
 namespace Xamarin.Forms.Platform.Android.FastRenderers
 {
-	internal sealed class MediaElementRenderer : FrameLayout, IVisualElementRenderer, IViewRenderer, IEffectControlProvider, MediaPlayer.IOnCompletionListener, MediaPlayer.IOnPreparedListener, MediaPlayer.IOnErrorListener
+	internal sealed class MediaElementRenderer : FrameLayout, IVisualElementRenderer, IViewRenderer, IEffectControlProvider, MediaPlayer.IOnCompletionListener, MediaPlayer.IOnInfoListener, MediaPlayer.IOnPreparedListener, MediaPlayer.IOnErrorListener
 	{
 		bool _isDisposed;
 		int? _defaultLabelFor;
@@ -115,10 +115,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			switch (e.State)
 			{
 				case MediaElementState.Playing:
-					if (!_view.IsPlaying)
-					{
-						_view.Start();
-					}
+					_view.Start();
 					((IMediaElementController)MediaElement).CurrentState = _view.IsPlaying ? MediaElementState.Playing : MediaElementState.Stopped;
 					break;
 
@@ -138,6 +135,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					break;
 			}
 
+			UpdateLayoutParameters();
 			((IMediaElementController)MediaElement).Position = _view.Position;
 		}
 
@@ -218,6 +216,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				_view = new FormsVideoView(Context);
 				_view.SetZOrderMediaOverlay(true);
 				_view.SetOnCompletionListener(this);
+				_view.SetOnInfoListener(this);
 				_view.SetOnPreparedListener(this);
 				_view.SetOnErrorListener(this);
 				_view.KeepScreenOn = e.NewElement.KeepScreenOn;
@@ -318,13 +317,10 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				}
 
 			}
-			else
+			else if (_view.IsPlaying)
 			{
-				if(_view.IsPlaying)
-				{
-					_view.StopPlayback();
-					((IMediaElementController)MediaElement).CurrentState = MediaElementState.Stopped;
-				}
+				_view.StopPlayback();
+				((IMediaElementController)MediaElement).CurrentState = MediaElementState.Stopped;
 			}
 		}
 
@@ -431,7 +427,40 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		bool MediaPlayer.IOnErrorListener.OnError(MediaPlayer mp, MediaError what, int extra)
 		{
-			throw new NotImplementedException();
+			MediaElement.OnMediaFailed();
+			return false;
+		}
+		
+
+		bool MediaPlayer.IOnInfoListener.OnInfo(MediaPlayer mp, MediaInfo what, int extra)
+		{
+			System.Diagnostics.Debug.WriteLine(what);
+			switch (what)
+			{
+				case MediaInfo.BufferingStart:
+					((IMediaElementController)MediaElement).CurrentState = MediaElementState.Buffering;
+					mp.BufferingUpdate += Mp_BufferingUpdate;
+					break;
+
+				case MediaInfo.BufferingEnd:
+					mp.BufferingUpdate -= Mp_BufferingUpdate;
+					((IMediaElementController)MediaElement).CurrentState = MediaElementState.Paused;
+					break;
+
+				case MediaInfo.VideoRenderingStart:
+					((IMediaElementController)MediaElement).CurrentState = MediaElementState.Playing;
+					break;
+			}
+
+			_mediaPlayer = mp;
+			//_mediaPlayer.SetVideoScalingMode(MediaElement.Aspect == Aspect.AspectFill ? VideoScalingMode.ScaleToFitWithCropping : VideoScalingMode.ScaleToFit);
+			return true;
+		}
+
+		void Mp_BufferingUpdate(object sender, MediaPlayer.BufferingUpdateEventArgs e)
+		{
+			System.Diagnostics.Debug.WriteLine(e.Percent + "%");
+			((IMediaElementController)MediaElement).BufferingProgress = e.Percent / 100f;
 		}
 	}
 }
