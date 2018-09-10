@@ -21,7 +21,7 @@
 				ItemTemplate = itemTemplate
 			};
 
-			var generator = new ItemsSourceGenerator(collectionView, initialItems: 2);
+			var generator = new ItemsSourceGenerator(collectionView, initialItems: 20);
 
 			layout.Children.Add(generator);
 			layout.Children.Add(collectionView);

@@ -43,6 +43,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual ItemsViewLayout SelectLayout(IItemsLayout layoutSpecification)
 		{
+			if (layoutSpecification is GridItemsLayout gridItemsLayout)
+			{
+				// TODO hartez 2018/09/10 11:14:50 Maybe just make this a contstructor which takes the layout, do the work there	
+				return gridItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal
+					? new GridViewLayout(UICollectionViewScrollDirection.Horizontal, gridItemsLayout.Span)
+					: new GridViewLayout(UICollectionViewScrollDirection.Vertical, gridItemsLayout.Span);
+			}
+
 			if (layoutSpecification is ListItemsLayout listItemsLayout)
 			{
 				return listItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal
