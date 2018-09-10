@@ -1898,7 +1898,29 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			Assert.That (vm.Text, Is.EqualTo ("0.9"));
 		}
-		#endif
+
+		[TestCase("pt-PT"), TestCase("ru-RU")]
+		public void ConvertIsCommaCulture(string culture)
+		{
+			var locale = System.Threading.Thread.CurrentThread.CurrentCulture = System.Threading.Thread.CurrentThread.CurrentUICulture = new CultureInfo(culture);
+
+			Slider.ValueProperty.UseCurrentCulture = true;
+			var slider = new Slider();
+			var dot = locale.NumberFormat.NumberDecimalSeparator;
+			var vm = new MockViewModel { Text = $"0{dot}5" };
+			slider.BindingContext = vm;
+			slider.SetBinding(Slider.ValueProperty, "Text", BindingMode.TwoWay);
+
+			Assert.That(slider.Value, Is.EqualTo(0.5));
+
+			// old "excepted" behavior
+			Slider.ValueProperty.UseCurrentCulture = false;
+			vm.Text = $"0{dot}7";
+			Assert.AreNotEqual(slider.Value, 0.7);
+			vm.Text = $"0.8";
+			Assert.AreEqual(slider.Value, 0.8);
+		}
+#endif
 
 		[Test]
 		public void FailToConvert ()
