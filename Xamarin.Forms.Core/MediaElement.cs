@@ -215,22 +215,6 @@ namespace Xamarin.Forms
 		}
 	}
 
-	[EditorBrowsable(EditorBrowsableState.Never)]
-	public interface IMediaElementRenderer
-	{
-		double BufferingProgress { get; }
-
-		TimeSpan? Duration { get; }
-
-		int VideoHeight { get; }
-
-		int VideoWidth { get; }
-
-		TimeSpan Position { get; }
-
-		void Seek(TimeSpan time);
-	}
-
 	public interface IMediaElementController
 	{
 		double BufferingProgress { get; set; }
