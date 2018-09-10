@@ -18,13 +18,16 @@ namespace Xamarin.Forms.Controls.Issues
 		DateTime _testDate = DateTime.ParseExact("2077-12-31T13:55:56", "yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture);
 		int _localeIndex = 0;
 		string[] _localeIds = new[] { "en-US", "pt-PT", "ru-RU", "en-AU", "zh-Hans" };
-		string _instuctions = $"When you change the locale, the date format must change.{Environment.NewLine}Current locale: ";
-		Label descLabel = new Label();
+		readonly string _instructions = $"When you change the locale, the date format must change.{Environment.NewLine}Current locale: ";
+		Label descLabel = new Label { MaxLines = 3 };
 		Label decimalResult = new Label();
 
 		protected override void Init()
 		{
 			UpdateContext();
+
+			Label.TextProperty.UseCurrentCulture = true;
+			Entry.TextProperty.UseCurrentCulture = true;
 
 			var label = new Label();
 			label.SetBinding(Label.TextProperty, nameof(Model.TheDate));
@@ -105,7 +108,7 @@ namespace Xamarin.Forms.Controls.Issues
 			public static Action<decimal> DecimalChange;
 		}
 
-		void UpdateDescLabel() => descLabel.Text = $"{_instuctions}{Thread.CurrentThread.CurrentCulture.DisplayName}";
+		void UpdateDescLabel() => descLabel.Text = $"{_instructions}{Thread.CurrentThread.CurrentCulture.DisplayName}";
 
 #if UITEST
 		[Test]

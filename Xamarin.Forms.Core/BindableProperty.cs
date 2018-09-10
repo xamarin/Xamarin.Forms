@@ -106,6 +106,8 @@ namespace Xamarin.Forms
 
 		public Type ReturnType { get; }
 
+		public bool UseCurrentCulture { get; set; } = false;
+
 		internal BindablePropertyBindingChanging BindingChanging { get; private set; }
 
 		internal CoerceValueDelegate CoerceValue { get; private set; }
@@ -318,7 +320,7 @@ namespace Xamarin.Forms
 			TypeConverter typeConverterTo;
 			if (SimpleConvertTypes.TryGetValue(valueType, out convertableTo) && Array.IndexOf(convertableTo, type) != -1)
 			{
-				value = Convert.ChangeType(value, type, System.Globalization.CultureInfo.CurrentCulture);
+				value = Convert.ChangeType(value, type, UseCurrentCulture ? System.Globalization.CultureInfo.CurrentCulture : System.Globalization.CultureInfo.InvariantCulture);
 			}
 			else if (WellKnownConvertTypes.TryGetValue(type, out typeConverterTo) && typeConverterTo.CanConvertFrom(valueType))
 			{

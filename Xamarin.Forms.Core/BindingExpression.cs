@@ -153,6 +153,7 @@ namespace Xamarin.Forms
 			}
 
 			Debug.Assert(part != null, "There should always be at least the self part in the expression.");
+			var locale = property.UseCurrentCulture ? CultureInfo.CurrentCulture : CultureInfo.InvariantCulture;
 
 			if (needsGetter)
 			{
@@ -164,7 +165,7 @@ namespace Xamarin.Forms
 				else
 					value = Binding.FallbackValue ?? property.DefaultValue;
 
-				if (!TryConvert(part, ref value, property.ReturnType, true))
+				if (!TryConvert(part, ref value, property.ReturnType, true, locale))
 				{
 					Log.Warning("Binding", "{0} can not be converted to type '{1}'", value, property.ReturnType);
 					return;
@@ -176,7 +177,7 @@ namespace Xamarin.Forms
 			{
 				object value = Binding.GetTargetValue(target.GetValue(property), part.SetterType);
 
-				if (!TryConvert(part, ref value, part.SetterType, false))
+				if (!TryConvert(part, ref value, part.SetterType, false, locale))
 				{
 					Log.Warning("Binding", "{0} can not be converted to type '{1}'", value, part.SetterType);
 					return;
@@ -415,7 +416,7 @@ namespace Xamarin.Forms
 		}
 		static Type[] DecimalTypes = new[] { typeof(float), typeof(decimal), typeof(double) };
 
-		bool TryConvert(BindingExpressionPart part, ref object value, Type convertTo, bool toTarget)
+		bool TryConvert(BindingExpressionPart part, ref object value, Type convertTo, bool toTarget, CultureInfo locale)
 		{
 			if (value == null)
 				return true;
@@ -423,26 +424,18 @@ namespace Xamarin.Forms
 				return true;
 
 			object original = value;
-			var locale = CultureInfo.InvariantCulture;
 			try
 			{
 				var stringValue = value as string ?? string.Empty;
 
-				if (DecimalTypes.Contains(convertTo))
-				{
-					// see: https://bugzilla.xamarin.com/show_bug.cgi?id=32871
-					// do not canonicalize "*.[.]"; "1." should not update bound BindableProperty
-					if (stringValue.EndsWith("."))
-						throw new FormatException();
+				// see: https://bugzilla.xamarin.com/show_bug.cgi?id=32871
+				// do not canonicalize "*.[.]"; "1." should not update bound BindableProperty
+				if (stringValue.EndsWith(locale.NumberFormat.NumberDecimalSeparator) && DecimalTypes.Contains(convertTo))
+					throw new FormatException();
 
-					// do not canonicalize "-0"; user will likely enter a period after "-0"
-					if (stringValue == "-0")
-						throw new FormatException();
-
-					// to change locale if stringValue contains decimal separator for that locale
-					if (stringValue.IndexOf(CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator) != -1)
-						locale = CultureInfo.CurrentCulture;
-				}
+				// do not canonicalize "-0"; user will likely enter a period after "-0"
+				if (stringValue == "-0" && DecimalTypes.Contains(convertTo))
+					throw new FormatException();
 
 				value = Convert.ChangeType(value, convertTo, locale);
 				return true;
