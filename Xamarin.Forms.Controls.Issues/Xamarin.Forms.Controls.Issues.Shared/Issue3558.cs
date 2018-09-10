@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Controls.Issues
 		protected override void Init()
 		{
 			var stack = new StackLayout();
-			Label label = new Label { Text = "Lotsa test here to make this a really really really really long line that should be wrapped",
+			Label label = new Label { Text = "Lotsa text here to make this a really really really really long line that should be wrapped",
 				LineBreakMode = LineBreakMode.WordWrap };
 
 			stack.Children.Add(label);

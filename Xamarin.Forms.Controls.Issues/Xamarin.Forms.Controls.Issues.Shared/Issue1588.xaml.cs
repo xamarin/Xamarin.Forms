@@ -29,17 +29,14 @@ namespace Xamarin.Forms.Controls.Issues
 	public enum EntryOrientation
 	{
 		Vertical,
-
 		Horizontal
 	}
 
 	class LabledEntry : ContentView
 	{
-		StackLayout stk;
-
-		Label label;
-
-		Entry entry;
+		StackLayout _stk;
+		Label _label;
+		Entry _entry;
 
 		public static readonly BindableProperty FontSizeProperty = BindableProperty.Create(
 			"FontSize",
@@ -51,8 +48,8 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				var labledEntry = ((LabledEntry)bindable);
 				var fontSize = (double)newvalue;
-				labledEntry.entry.FontSize = fontSize;
-				labledEntry.label.FontSize = fontSize;
+				labledEntry._entry.FontSize = fontSize;
+				labledEntry._label.FontSize = fontSize;
 			});
 
 		public double FontSize
@@ -71,7 +68,7 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				var labledEntry = ((LabledEntry)bindable);
 				var orientation = (EntryOrientation)newvalue;
-				labledEntry.stk.Orientation = orientation == EntryOrientation.Vertical ? StackOrientation.Vertical : StackOrientation.Horizontal;
+				labledEntry._stk.Orientation = orientation == EntryOrientation.Vertical ? StackOrientation.Vertical : StackOrientation.Horizontal;
 				labledEntry.Orientation = orientation;
 			});
 
@@ -80,7 +77,6 @@ namespace Xamarin.Forms.Controls.Issues
 			set { SetValue(OrientationProperty, value); }
 			get { return (EntryOrientation)GetValue(OrientationProperty); }
 		}
-
 
 		public static readonly BindableProperty KeyboardProperty = BindableProperty.Create(
 			"Keyboard",
@@ -92,7 +88,7 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				var labledEntry = ((LabledEntry)bindable);
 				var keyboard = (Keyboard)newvalue;
-				labledEntry.entry.Keyboard = keyboard;
+				labledEntry._entry.Keyboard = keyboard;
 				labledEntry.Keyboard = keyboard;
 			});
 
@@ -111,7 +107,7 @@ namespace Xamarin.Forms.Controls.Issues
 			propertyChanged: (bindable, oldvalue, newvalue) =>
 			{
 				var labledEntry = ((LabledEntry)bindable);
-				labledEntry.label.Text = (string)newvalue;
+				labledEntry._label.Text = (string)newvalue;
 				labledEntry.LabelText = (string)newvalue;
 			});
 
@@ -130,7 +126,7 @@ namespace Xamarin.Forms.Controls.Issues
 			propertyChanged: (bindable, oldvalue, newvalue) =>
 			{
 				var labledEntry = ((LabledEntry)bindable);
-				labledEntry.entry.Text = (string)newvalue;
+				labledEntry._entry.Text = (string)newvalue;
 				labledEntry.EntryText = (string)newvalue;
 			});
 
@@ -149,7 +145,7 @@ namespace Xamarin.Forms.Controls.Issues
 			propertyChanged: (bindable, oldvalue, newvalue) =>
 			{
 				var labledEntry = ((LabledEntry)bindable);
-				labledEntry.entry.Placeholder = (string)newvalue;
+				labledEntry._entry.Placeholder = (string)newvalue;
 				labledEntry.Placeholder = (string)newvalue;
 			});
 
@@ -158,8 +154,7 @@ namespace Xamarin.Forms.Controls.Issues
 			set { SetValue(PlaceholderProperty, value); }
 			get { return (string)GetValue(PlaceholderProperty); }
 		}
-
-
+		
 		public static readonly BindableProperty LabelTextColorProperty = BindableProperty.Create(
 			"LabelTextColor",
 			typeof(Color),
@@ -169,7 +164,7 @@ namespace Xamarin.Forms.Controls.Issues
 			propertyChanged: (bindable, oldvalue, newvalue) =>
 			{
 				var labledEntry = ((LabledEntry)bindable);
-				labledEntry.label.TextColor = (Color)newvalue;
+				labledEntry._label.TextColor = (Color)newvalue;
 				labledEntry.LabelTextColor = (Color)newvalue;
 			});
 
@@ -188,7 +183,7 @@ namespace Xamarin.Forms.Controls.Issues
 			propertyChanged: (bindable, oldvalue, newvalue) =>
 			{
 				var labledEntry = ((LabledEntry)bindable);
-				labledEntry.entry.TextColor = (Color)newvalue;
+				labledEntry._entry.TextColor = (Color)newvalue;
 				labledEntry.EntryTextColor = (Color)newvalue;
 			});
 
@@ -197,8 +192,7 @@ namespace Xamarin.Forms.Controls.Issues
 			set { SetValue(EntryTextColorProperty, value); }
 			get { return (Color)GetValue(EntryTextColorProperty); }
 		}
-
-
+		
 		public static readonly BindableProperty PlaceholderColorProperty = BindableProperty.Create(
 			"PlaceholderColor",
 			typeof(Color),
@@ -208,7 +202,7 @@ namespace Xamarin.Forms.Controls.Issues
 			propertyChanged: (bindable, oldvalue, newvalue) =>
 			{
 				var labledEntry = ((LabledEntry)bindable);
-				labledEntry.entry.PlaceholderColor = (Color)newvalue;
+				labledEntry._entry.PlaceholderColor = (Color)newvalue;
 				labledEntry.PlaceholderColor = (Color)newvalue;
 			});
 
@@ -217,8 +211,7 @@ namespace Xamarin.Forms.Controls.Issues
 			set { SetValue(PlaceholderColorProperty, value); }
 			get { return (Color)GetValue(PlaceholderColorProperty); }
 		}
-
-
+		
 		public static readonly BindableProperty MaxLengthProperty = BindableProperty.Create(
 			"MaxLength",
 			typeof(int),
@@ -239,29 +232,28 @@ namespace Xamarin.Forms.Controls.Issues
 
 		public LabledEntry()
 		{
-			stk = new StackLayout();
-			entry = new Entry();
-			entry.FontSize = Device.GetNamedSize(NamedSize.Small, entry);
-			label = new Label();
-			entry.FontSize = Device.GetNamedSize(NamedSize.Small, label);
-			entry.HorizontalOptions = LayoutOptions.FillAndExpand;
-			label.VerticalOptions = LayoutOptions.Center;
-			stk.Children.Add(label);
-			stk.Children.Add(entry);
-			Content = stk;
-
+			_stk = new StackLayout();
+			_entry = new Entry();
+			_entry.FontSize = Device.GetNamedSize(NamedSize.Small, _entry);
+			_label = new Label();
+			_entry.FontSize = Device.GetNamedSize(NamedSize.Small, _label);
+			_entry.HorizontalOptions = LayoutOptions.FillAndExpand;
+			_label.VerticalOptions = LayoutOptions.Center;
+			_stk.Children.Add(_label);
+			_stk.Children.Add(_entry);
+			Content = _stk;
 		}
 	}
 
 	public enum DividerOrientation
 	{
 		Vertical,
-
 		Horizontal
 	}
+
 	class Divider : ContentView
 	{
-		BoxView line;
+		BoxView _line;
 
 		public static readonly BindableProperty OrientationProperty = BindableProperty.Create(
 			"Orientation",
@@ -275,13 +267,13 @@ namespace Xamarin.Forms.Controls.Issues
 				var orientation = (DividerOrientation)newvalue;
 				if (orientation == DividerOrientation.Vertical)
 				{
-					divider.line.WidthRequest = divider.Thickness;
-					divider.line.HeightRequest = -1;
+					divider._line.WidthRequest = divider.Thickness;
+					divider._line.HeightRequest = -1;
 				}
 				else
 				{
-					divider.line.HeightRequest = divider.Thickness;
-					divider.line.WidthRequest = -1;
+					divider._line.HeightRequest = divider.Thickness;
+					divider._line.WidthRequest = -1;
 				}
 				divider.Orientation = orientation;
 			});
@@ -301,7 +293,7 @@ namespace Xamarin.Forms.Controls.Issues
 			propertyChanged: (bindable, oldvalue, newvalue) =>
 			{
 				var divider = ((Divider)bindable);
-				divider.line.Color = (Color)newvalue;
+				divider._line.Color = (Color)newvalue;
 				divider.Color = (Color)newvalue;
 			});
 
@@ -310,8 +302,7 @@ namespace Xamarin.Forms.Controls.Issues
 			set { SetValue(ColorProperty, value); }
 			get { return (Color)GetValue(ColorProperty); }
 		}
-
-
+		
 		public static readonly BindableProperty ThicknessProperty = BindableProperty.Create(
 		   "Thickness",
 		   typeof(double),
@@ -324,11 +315,11 @@ namespace Xamarin.Forms.Controls.Issues
 			   var thickness = (double)newvalue;
 			   if (divider.Orientation == DividerOrientation.Vertical)
 			   {
-				   divider.line.WidthRequest = thickness;
+				   divider._line.WidthRequest = thickness;
 			   }
 			   else
 			   {
-				   divider.line.HeightRequest = thickness;
+				   divider._line.HeightRequest = thickness;
 			   }
 			   divider.Thickness = thickness;
 		   });
@@ -341,9 +332,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 		public Divider()
 		{
-			line = new BoxView();
-			Content = line;
-
+			_line = new BoxView();
+			Content = _line;
 		}
 	}
 }

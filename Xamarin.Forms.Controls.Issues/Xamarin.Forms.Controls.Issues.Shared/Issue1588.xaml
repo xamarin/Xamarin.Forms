@@ -31,7 +31,7 @@
 						<Label Text="TAX INFORMATION" FontAttributes="Bold" TextColor="#212121" Margin="0,0,0,20"/>
 						<local:LabledEntry LabelText="Tax card" LabelTextColor="#757575" />
 						<local:LabledEntry LabelText="Tax file no." LabelTextColor="#757575" />
-						<local:LabledEntry LabelText="Commerial regestration" LabelTextColor="#757575" />
+						<local:LabledEntry LabelText="Commercial Registration" LabelTextColor="#757575" />
 					</StackLayout>
 				</StackLayout>
 
