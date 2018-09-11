@@ -16,7 +16,8 @@ namespace Xamarin.Forms.Platform.WPF
 
 		public override void OnBackButtonPressed()
 		{
-			NavigationPage.PopAsync();
+			if (NavigationPage.CurrentPage?.SendBackButtonPressed() == false)
+				NavigationPage.PopAsync();
 		}
 	}
 	
