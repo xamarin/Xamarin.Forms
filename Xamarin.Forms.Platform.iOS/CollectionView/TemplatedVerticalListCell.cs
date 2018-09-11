@@ -15,16 +15,18 @@ namespace Xamarin.Forms.Platform.iOS
 		[Export("initWithFrame:")]
 		public TemplatedVerticalListCell(CGRect frame) : base(frame)
 		{
+			Debug.WriteLine($"TemplatedVerticalListCell Constructor, frame is {frame}");
 		}
 
 		public void SetConstrainedDimension(nfloat constant)
 		{
 			ConstrainedDimension = constant;
+			Layout();
 		}
 
-		protected override CGSize Layout()
+		public override CGSize Layout()
 		{
-			Debug.WriteLine($">>>>> TemplatedVerticalListCell Layout 30: {_called++}");
+			Debug.WriteLine($">>>>> TemplatedVerticalListCell Layout called {_called++} times so far");
 
 			var nativeView = VisualElementRenderer.NativeView;
 
@@ -41,7 +43,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			nativeView.Frame = new CGRect(0, 0, ConstrainedDimension, height);
 
-		//	Debug.WriteLine($">>>>> TemplatedCell SetRenderer 48: {nativeView.Frame}");
+			Debug.WriteLine($">>>>> TemplatedCell Layout: nativeView.Frame is {nativeView.Frame}");
 
 			VisualElementRenderer.Element.Layout(nativeView.Frame.ToRectangle());
 
@@ -59,6 +61,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public override UICollectionViewLayoutAttributes PreferredLayoutAttributesFittingAttributes(
 			UICollectionViewLayoutAttributes layoutAttributes)
 		{
+			Debug.WriteLine($"EstimatedItemSize is in play");
 			Layout();
 
 			layoutAttributes.Frame = VisualElementRenderer.NativeView.Frame;

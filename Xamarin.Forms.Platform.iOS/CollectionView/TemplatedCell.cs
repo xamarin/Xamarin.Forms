@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Platform.iOS
 			InitializeContentConstraints(nativeView);
 		}
 
-		protected abstract CGSize Layout();
+		public abstract CGSize Layout();
 
 		public abstract CGSize GetEstimate();
 

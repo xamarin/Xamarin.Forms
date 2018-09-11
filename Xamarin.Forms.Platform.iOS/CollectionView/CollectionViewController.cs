@@ -37,10 +37,6 @@ namespace Xamarin.Forms.Platform.iOS
 			AutomaticallyAdjustsScrollViewInsets = false;
 			RegisterCells();
 			CollectionView.WeakDelegate = _layout;
-
-			// TODO hartez 2018/06/10 14:29:22 Does ItemsSize need to be set at all when we're doing auto layout?
-			// If not, can we leave it default/-1,-1 until UniformSize is set?	
-			_layout.ItemSize = new CGSize(64, 64);
 		}
 
 		public override void ViewWillLayoutSubviews()
@@ -54,6 +50,24 @@ namespace Xamarin.Forms.Platform.iOS
 			if (!_initialEstimateMade)
 			{
 				_layout.ConstrainTo(CollectionView.Bounds.Size);
+
+				//Debug.WriteLine("Okay, attempting to create a prototype we can use for an estimate");
+
+				// TODO hartez This seems to be working for estimates, need to try it for itemsize
+				// Also, seeing a weird reordering happening on the grid, maybe a cell reuse bug (maybe need to clear out old cell info?)
+
+				// TODO hartez assuming this works, we'll need to evaluate using this nsindexpath (what about groups?)
+				var path = NSIndexPath.Create(0,0);
+				var prototype = GetCell(CollectionView, path);
+				if(prototype is TemplatedCell cell){
+					UpdateTemplatedCell(cell, path);
+					cell.Layout();
+
+					_layout.EstimatedItemSize = cell.VisualElementRenderer.NativeView.Frame.Size;
+
+					Debug.WriteLine("Estimate set!");
+				}
+
 				_initialEstimateMade = true;
 			}
 		}
@@ -128,17 +142,6 @@ namespace Xamarin.Forms.Platform.iOS
 			if (cell is IConstrainedCell constrainedCell)
 			{
 				_layout.PrepareCellForLayout(constrainedCell);
-
-				if (_layout is GridViewLayout gridViewLayout)
-				{
-					if (gridViewLayout.HasUpdatedEstimate)
-					{
-						Debug.WriteLine($">>>>> CollectionViewController UpdateTemplatedCell: EstimatedItemSize was {gridViewLayout.EstimatedItemSize}");
-
-						gridViewLayout.EstimatedItemSize = gridViewLayout.UpdatedEstimate;
-						Debug.WriteLine($">>>>> CollectionViewController: New EstimatedItemSize was set to {gridViewLayout.EstimatedItemSize}");
-					}
-				}
 			}
 		}
 

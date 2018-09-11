@@ -19,7 +19,7 @@ namespace Xamarin.Forms.Platform.iOS
 			Layout();
 		}
 
-		protected override CGSize Layout()
+		public override CGSize Layout()
 		{
 			var nativeView = VisualElementRenderer.NativeView;
 

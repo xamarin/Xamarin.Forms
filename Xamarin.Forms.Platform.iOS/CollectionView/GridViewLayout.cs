@@ -12,6 +12,8 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		readonly int _span;
 
+		public bool NeedsEstimate;
+
 		//static int _called;
 
 		[Export("collectionView:layout:insetForSectionAtIndex:"), CompilerGenerated]
@@ -46,16 +48,10 @@ namespace Xamarin.Forms.Platform.iOS
 		//	return x;
 		//}
 
-		CGSize _defaultEstimate = new CGSize(200,200);
-		bool _needEstimate = true;
-		public bool HasUpdatedEstimate = false;
-		public CGSize UpdatedEstimate;
-
 		public GridViewLayout(UICollectionViewScrollDirection scrollDirection, int span)
 		{
 			_span = span;
 			Initialize(scrollDirection);
-			EstimatedItemSize = _defaultEstimate;
 		}
 
 		public override void ConstrainTo(CGSize size)
@@ -71,27 +67,12 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void PrepareCellForLayout(IConstrainedCell cell)
 		{
 			cell.SetConstrainedDimension(ConstrainedDimension);
-
-			// TODO hartez 2018/09/10 19:13:10 This cast is not great, the text-only cells could probably benefit from estimate updates, too.	
-			if (_needEstimate && cell is TemplatedCell templatedCell) 
-			{
-				var x = templatedCell.GetEstimate();
-				Debug.WriteLine($">>>>> GridViewLayout PrepareCellForLayout: updated estimate: {x}");
-
-				UpdatedEstimate = new CGSize(x.Width, x.Height);
-				HasUpdatedEstimate = true;
-
-				
-
-				_needEstimate = false;
-			}
+			Debug.WriteLine($"EstimatedItemSize is {EstimatedItemSize}");
 		}
 
 		void Initialize(UICollectionViewScrollDirection scrollDirection)
 		{
 			ScrollDirection = scrollDirection;
 		}
-
-		
 	}
 }
