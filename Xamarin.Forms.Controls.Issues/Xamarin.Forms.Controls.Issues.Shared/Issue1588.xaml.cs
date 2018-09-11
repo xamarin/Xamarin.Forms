@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Xamarin.Forms;
-using Xamarin.Forms.CustomAttributes;
+﻿using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
 
@@ -16,10 +9,12 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 1588, "[WPF] Stacklayout WidthRequest adds unwanted margin", PlatformAffected.WPF)]
 	public partial class Issue1588 : TestContentPage
 	{
+#if APP
 		public Issue1588 ()
 		{
 			InitializeComponent ();
 		}
+#endif
 
 		protected override void Init()
 		{
