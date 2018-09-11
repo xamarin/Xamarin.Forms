@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Platform.iOS
 		[Export("initWithFrame:")]
 		protected BaseCell(CGRect frame) : base(frame)
 		{
-			ContentView.BackgroundColor = UIColor.Cyan;
+			ContentView.BackgroundColor = UIColor.Clear;
 		}
 
 		protected void InitializeContentConstraints(UIView nativeView)

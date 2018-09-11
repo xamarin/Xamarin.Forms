@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Diagnostics;
 using CoreGraphics;
 using Foundation;
 using UIKit;
@@ -127,6 +128,17 @@ namespace Xamarin.Forms.Platform.iOS
 			if (cell is IConstrainedCell constrainedCell)
 			{
 				_layout.PrepareCellForLayout(constrainedCell);
+
+				if (_layout is GridViewLayout gridViewLayout)
+				{
+					if (gridViewLayout.HasUpdatedEstimate)
+					{
+						Debug.WriteLine($">>>>> CollectionViewController UpdateTemplatedCell: EstimatedItemSize was {gridViewLayout.EstimatedItemSize}");
+
+						gridViewLayout.EstimatedItemSize = gridViewLayout.UpdatedEstimate;
+						Debug.WriteLine($">>>>> CollectionViewController: New EstimatedItemSize was set to {gridViewLayout.EstimatedItemSize}");
+					}
+				}
 			}
 		}
 

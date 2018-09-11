@@ -20,7 +20,7 @@
 
 			var collectionView = new CollectionView {ItemsLayout = itemsLayout, ItemTemplate = itemTemplate};
 
-			var generator = new ItemsSourceGenerator(collectionView, 3);
+			var generator = new ItemsSourceGenerator(collectionView, 100);
 			var spanSetter = new SpanSetter(collectionView);
 
 			layout.Children.Add(generator);

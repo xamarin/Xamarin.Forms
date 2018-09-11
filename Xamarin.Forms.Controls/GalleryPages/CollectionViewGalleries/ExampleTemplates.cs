@@ -10,7 +10,7 @@
 				{
 					RowDefinitions = new RowDefinitionCollection { new RowDefinition(), new RowDefinition() },
 					WidthRequest = 100,
-					HeightRequest = 100
+					HeightRequest = 100, BackgroundColor = Color.Bisque
 				};
 
 				var image = new Image

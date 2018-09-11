@@ -1,4 +1,5 @@
 ﻿using System;
+using CoreGraphics;
 
 namespace Xamarin.Forms.Platform.iOS
 {

@@ -70,8 +70,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateItemSizeEstimate(CGSize size)
 		{
-			// TODO hartez 2018/06/12 08:25:05 Determine if 64 is really correct here (it seems to work)
-			// and if so, make it a const	
+			// TODO hartez 2018/09/10 19:13:48 We should probably have this update after layouts for template cells
+			// And the default cells should also report back, maybe using their Labels' intrinsic content sizes
 			if (ScrollDirection == UICollectionViewScrollDirection.Horizontal)
 			{
 				EstimatedItemSize = new CGSize(64, size.Height);

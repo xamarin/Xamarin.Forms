@@ -19,7 +19,7 @@ namespace Xamarin.Forms.Platform.iOS
 			Layout();
 		}
 
-		protected override void Layout()
+		protected override CGSize Layout()
 		{
 			var nativeView = VisualElementRenderer.NativeView;
 
@@ -32,6 +32,13 @@ namespace Xamarin.Forms.Platform.iOS
 			nativeView.Frame = new CGRect(0, 0, width, ConstrainedDimension);
 
 			VisualElementRenderer.Element.Layout(nativeView.Frame.ToRectangle());
+
+			return VisualElementRenderer.NativeView.Frame.Size;
+		}
+
+		public override CGSize GetEstimate()
+		{
+			return Layout();
 		}
 	}
 }

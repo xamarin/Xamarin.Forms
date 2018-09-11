@@ -26,7 +26,9 @@ namespace Xamarin.Forms.Platform.iOS
 			InitializeContentConstraints(nativeView);
 		}
 
-		protected abstract void Layout();
+		protected abstract CGSize Layout();
+
+		public abstract CGSize GetEstimate();
 
 		[Export("initWithFrame:")]
 		protected TemplatedCell(CGRect frame) : base(frame)
