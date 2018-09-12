@@ -28,8 +28,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public abstract CGSize Layout();
 
-		public abstract CGSize GetEstimate();
-
 		[Export("initWithFrame:")]
 		protected TemplatedCell(CGRect frame) : base(frame)
 		{

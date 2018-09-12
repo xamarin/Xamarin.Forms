@@ -5,6 +5,7 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public interface IConstrainedCell
 	{
-		void SetConstrainedDimension(nfloat constant);
+		void Constrain(nfloat constant);
+		void Constrain(CGSize constraint);
 	}
 }

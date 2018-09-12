@@ -1,6 +1,7 @@
 ﻿using System;
 using CoreGraphics;
 using Foundation;
+using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -13,17 +14,11 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 		}
 
-		public void SetConstrainedDimension(nfloat constant)
-		{
-			ConstrainedDimension = constant;
-			Layout();
-		}
-
 		public override CGSize Layout()
 		{
 			var nativeView = VisualElementRenderer.NativeView;
 
-			var measure = VisualElementRenderer.Element.Measure(ContentView.Frame.Width, 
+			var measure = VisualElementRenderer.Element.Measure(double.PositiveInfinity, 
 				ConstrainedDimension, MeasureFlags.IncludeMargins);
 
 			var width = VisualElementRenderer.Element.Width > 0 
@@ -36,9 +31,39 @@ namespace Xamarin.Forms.Platform.iOS
 			return VisualElementRenderer.NativeView.Frame.Size;
 		}
 
-		public override CGSize GetEstimate()
+		public void Layout(CGSize constraints)
 		{
-			return Layout();
+			var nativeView = VisualElementRenderer.NativeView;
+
+			var width = constraints.Width;
+			var height = constraints.Height;
+
+			VisualElementRenderer.Element.Measure(width, height, MeasureFlags.IncludeMargins);
+
+			nativeView.Frame = new CGRect(0, 0, width, height);
+
+			VisualElementRenderer.Element.Layout(nativeView.Frame.ToRectangle());
+		}
+
+		public override UICollectionViewLayoutAttributes PreferredLayoutAttributesFittingAttributes(
+			UICollectionViewLayoutAttributes layoutAttributes)
+		{
+			Layout();
+
+			layoutAttributes.Frame = VisualElementRenderer.NativeView.Frame;
+
+			return layoutAttributes;
+		}
+
+		public void Constrain(nfloat constant)
+		{
+			ConstrainedDimension = constant;
+		}
+
+		public void Constrain(CGSize constraint)
+		{
+			ConstrainedDimension = constraint.Height;
+			Layout(constraint);
 		}
 	}
 }

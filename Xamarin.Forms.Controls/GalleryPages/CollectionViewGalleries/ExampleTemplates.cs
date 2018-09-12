@@ -6,15 +6,15 @@
 		{
 			return new DataTemplate(() =>
 			{
-				var rand = new System.Random(System.DateTime.Now.Millisecond);
+				//var rand = new System.Random(System.DateTime.Now.Millisecond);
 
-				var extra = rand.Next(0, 50);
+				//var extra = rand.Next(0, 50);
 
 				var templateLayout = new Grid
 				{
 					RowDefinitions = new RowDefinitionCollection { new RowDefinition(), new RowDefinition() },
 					WidthRequest = 100,
-					HeightRequest = 100 + extra, BackgroundColor = Color.Bisque
+					HeightRequest = 100, BackgroundColor = Color.Bisque
 				};
 
 				var image = new Image

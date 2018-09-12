@@ -8,65 +8,65 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	internal sealed class TemplatedVerticalListCell : TemplatedCell, IConstrainedCell
 	{
-		static int _called;
-
 		public static NSString ReuseId = new NSString("Xamarin.Forms.Platform.iOS.TemplatedVerticalListCell");
 
 		[Export("initWithFrame:")]
 		public TemplatedVerticalListCell(CGRect frame) : base(frame)
 		{
-			Debug.WriteLine($"TemplatedVerticalListCell Constructor, frame is {frame}");
 		}
 
-		public void SetConstrainedDimension(nfloat constant)
+		public void Layout(CGSize constraints)
 		{
-			ConstrainedDimension = constant;
-			Layout();
+			var nativeView = VisualElementRenderer.NativeView;
+
+			var width = constraints.Width;
+			var height = constraints.Height;
+
+			VisualElementRenderer.Element.Measure(width, height, MeasureFlags.IncludeMargins);
+
+			nativeView.Frame = new CGRect(0, 0, width, height);
+
+			VisualElementRenderer.Element.Layout(nativeView.Frame.ToRectangle());
 		}
+
+		// TODO hartez 2018/09/12 10:51:26 This layout shouldn't return a value; rather, the parts which do the measuring should be a separate method which the Controller can use	
 
 		public override CGSize Layout()
 		{
-			Debug.WriteLine($">>>>> TemplatedVerticalListCell Layout called {_called++} times so far");
-
 			var nativeView = VisualElementRenderer.NativeView;
-
-			//Debug.WriteLine($">>>>> TemplatedCell SetRenderer: ContentView.Frame.Width {ContentView.Frame.Width}");
-			//Debug.WriteLine($">>>>> TemplatedCell SetRenderer: ContentView.Frame.Height {ContentView.Frame.Height}");
 
 			var measure = VisualElementRenderer.Element.Measure(ConstrainedDimension, 
 				double.PositiveInfinity, MeasureFlags.IncludeMargins);
-
-	//		Debug.WriteLine($">>>>> TemplatedCell SetRenderer: sizeRequest is {measure}");
 
 			var height = VisualElementRenderer.Element.Height > 0 
 				? VisualElementRenderer.Element.Height : measure.Request.Height;
 
 			nativeView.Frame = new CGRect(0, 0, ConstrainedDimension, height);
 
-			Debug.WriteLine($">>>>> TemplatedCell Layout: nativeView.Frame is {nativeView.Frame}");
-
 			VisualElementRenderer.Element.Layout(nativeView.Frame.ToRectangle());
 
-			//Debug.WriteLine($">>>>> TemplatedCell SetRenderer 52: {VisualElementRenderer.Element.Bounds}");
-		//	Debug.WriteLine($">>>>> TemplatedCell SetRenderer 53: {ContentView.Frame}");
-
 			return VisualElementRenderer.NativeView.Frame.Size;
-		}
-
-		public override CGSize GetEstimate()
-		{
-			return Layout();
 		}
 
 		public override UICollectionViewLayoutAttributes PreferredLayoutAttributesFittingAttributes(
 			UICollectionViewLayoutAttributes layoutAttributes)
 		{
-			Debug.WriteLine($"EstimatedItemSize is in play");
 			Layout();
 
 			layoutAttributes.Frame = VisualElementRenderer.NativeView.Frame;
 
 			return layoutAttributes;
+		}
+
+		public void Constrain(nfloat constant)
+		{
+			ConstrainedDimension = constant;
+		}
+
+		public void Constrain(CGSize constraint)
+		{
+			ConstrainedDimension = constraint.Width;
+			Layout(constraint);
 		}
 	}
 }

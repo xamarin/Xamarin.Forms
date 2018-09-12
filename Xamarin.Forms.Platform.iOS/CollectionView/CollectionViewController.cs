@@ -50,26 +50,37 @@ namespace Xamarin.Forms.Platform.iOS
 			if (!_initialEstimateMade)
 			{
 				_layout.ConstrainTo(CollectionView.Bounds.Size);
-
-				//Debug.WriteLine("Okay, attempting to create a prototype we can use for an estimate");
-
-				// TODO hartez This seems to be working for estimates, need to try it for itemsize
-				// Also, seeing a weird reordering happening on the grid, maybe a cell reuse bug (maybe need to clear out old cell info?)
-
-				// TODO hartez assuming this works, we'll need to evaluate using this nsindexpath (what about groups?)
-				var path = NSIndexPath.Create(0,0);
-				var prototype = GetCell(CollectionView, path);
-				if(prototype is TemplatedCell cell){
-					UpdateTemplatedCell(cell, path);
-					cell.Layout();
-
-					_layout.EstimatedItemSize = cell.VisualElementRenderer.NativeView.Frame.Size;
-
-					Debug.WriteLine("Estimate set!");
-				}
-
+				DetermineCellSize(_layout.ConstrainedDimension);
 				_initialEstimateMade = true;
 			}
+		}
+
+		void DetermineCellSize(nfloat layoutConstrainedDimension)
+		{
+			// TODO hartez This seems to be working for estimates, need to try it for itemsize
+			// TODO hartez assuming this works, we'll need to evaluate using this nsindexpath (what about groups?)
+			// TODO hartez Also, what about situations where there is no data which matches the path?
+
+			var indexPath = NSIndexPath.Create(0,0);
+			var prototype = CollectionView.DequeueReusableCell(DetermineCellReusedId(), indexPath) as UICollectionViewCell;
+			
+			if (!(prototype is TemplatedCell cell))
+			{
+				// TODO hartez 2018/09/12 11:13:40 What about getting an initial size for UniformSize with text cells?	
+				return;
+			}
+
+			ApplyTemplateAndData(cell, indexPath);
+
+			if (cell is IConstrainedCell constrainedCell)
+			{
+				constrainedCell.Constrain(layoutConstrainedDimension);
+			}
+
+			cell.Layout();
+
+			_layout.EstimatedItemSize = cell.VisualElementRenderer.NativeView.Frame.Size;
+			Debug.WriteLine($">>>>> CollectionViewController ViewWillLayoutSubviews 65: Setting estimate to {_layout.EstimatedItemSize}");
 		}
 
 		public override nint GetItemsCount(UICollectionView collectionView, nint section)
@@ -111,37 +122,37 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual void UpdateDefaultCell(DefaultCell defaultCell, NSIndexPath indexPath)
 		{
-			if (defaultCell is IConstrainedCell constrainedCell)
-			{
-				_layout.PrepareCellForLayout(constrainedCell);
-			}
-
 			if (_itemsSource is IList list)
 			{
 				defaultCell.Label.Text = list[indexPath.Row].ToString();
+			}
+
+			if (defaultCell is IConstrainedCell constrainedCell)
+			{
+				_layout.PrepareCellForLayout(constrainedCell);
 			}
 		}
 
 		protected virtual void UpdateTemplatedCell(TemplatedCell cell, NSIndexPath indexPath)
 		{
-			IVisualElementRenderer renderer = null;
+			ApplyTemplateAndData(cell, indexPath);
 
-			if (cell.VisualElementRenderer == null)
+			if (cell is IConstrainedCell constrainedCell)
 			{
-				// We need to create a renderer, which means we need a template
-				var templateElement = _itemsView.ItemTemplate.CreateContent() as View;
-				renderer = CreateRenderer(templateElement);
+				_layout.PrepareCellForLayout(constrainedCell);
 			}
+		}
+
+		void ApplyTemplateAndData(TemplatedCell cell, NSIndexPath indexPath)
+		{
+			// We need to create a renderer, which means we need a template
+			var templateElement = _itemsView.ItemTemplate.CreateContent() as View;
+			IVisualElementRenderer renderer = CreateRenderer(templateElement);
 
 			if (_itemsSource is IList list && renderer != null)
 			{
 				BindableObject.SetInheritedBindingContext(renderer.Element, list[indexPath.Row]);
 				cell.SetRenderer(renderer);
-			}
-
-			if (cell is IConstrainedCell constrainedCell)
-			{
-				_layout.PrepareCellForLayout(constrainedCell);
 			}
 		}
 

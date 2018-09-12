@@ -18,9 +18,16 @@ namespace Xamarin.Forms.Platform.iOS
 
 		NSLayoutConstraint Width { get; }
 
-		public void SetConstrainedDimension(nfloat constant)
+		public void Constrain(nfloat constant)
 		{
 			Width.Constant = constant;
+		}
+
+		public void Constrain(CGSize constraint)
+		{
+			Width.Constant = constraint.Width;
+			// TODO hartez 2018/09/12 10:38:51 We need to add an optional Height constraint here, in case they've set up a text-only list with UniformSize	
+			// This might turn into a single class with a PrimaryConstraintDirection property or something
 		}
 	}
 }

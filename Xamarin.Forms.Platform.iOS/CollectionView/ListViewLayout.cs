@@ -19,7 +19,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override void PrepareCellForLayout(IConstrainedCell cell)
 		{
-			cell.SetConstrainedDimension(ConstrainedDimension);
+			if (EstimatedItemSize == CGSize.Empty)
+			{
+				cell.Constrain(ItemSize);
+			}
+			else
+			{
+				cell.Constrain(ConstrainedDimension);
+			}
 		}
 
 		public override bool ShouldInvalidateLayoutForBoundsChange(CGRect newBounds)
@@ -45,15 +52,18 @@ namespace Xamarin.Forms.Platform.iOS
 
 			for (int n = 0; n < cells.Length; n++)
 			{
-				if (cells[n] is IConstrainedCell defaultCell)
+				if (cells[n] is IConstrainedCell constrainedCell)
 				{
-					defaultCell.SetConstrainedDimension(ConstrainedDimension);
+					{
+						PrepareCellForLayout(constrainedCell);
+					}
 				}
 			}
 		}
 
 		void UpdateConstraints(CGSize size)
 		{
+			// TODO hartez 2018/09/12 13:01:02 De-duplicate the code here	
 			if (ScrollDirection == UICollectionViewScrollDirection.Vertical
 				&& ConstrainedDimension != size.Width)
 			{
