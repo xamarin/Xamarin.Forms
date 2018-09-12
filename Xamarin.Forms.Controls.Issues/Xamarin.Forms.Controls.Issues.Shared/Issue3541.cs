@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
@@ -14,6 +15,9 @@ namespace Xamarin.Forms.Controls.Issues
 	public class Issue3541 : TestContentPage
 	{
 		Entry _entry;
+		Label _valueSaved = new Label();
+		const string _success = "Success";
+		const string _buttonText = "Run Test";
 
 		protected override void Init()
 		{
@@ -29,22 +33,43 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				Text = "Save"
 			};
+
 			saveButton.Clicked += SaveButton_Clicked;
 			
 			stack.Children.Add(_entry);
 			stack.Children.Add(saveButton);
+			stack.Children.Add(new Button()
+			{
+				Text = _buttonText,
+				Command = new Command(async () =>
+				{
+					await Save("Some long text that's longer");
+					await Save("");
+					await Save(_success);
+				})
+			});
+			stack.Children.Add(_valueSaved);
 			Content = stack;
 		}
 
-		private void SaveButton_Clicked(object sender, System.EventArgs e)
+		private async void SaveButton_Clicked(object sender, System.EventArgs e)
 		{
-			this.Save(_entry.Text);
+			await this.Save(_entry.Text);
 		}
 
-		private async void Save(string text)
+		private async Task Save(string text)
 		{
 			Application.Current.Properties[nameof(Issue3541)] = text;
 			await Application.Current.SavePropertiesAsync();
+			await CheckWhatIsStored();
+		}
+
+		async Task CheckWhatIsStored()
+		{
+			var deserializer = DependencyService.Get<IDeserializer>();
+			object result = null;
+			(await deserializer.DeserializePropertiesAsync())?.TryGetValue(nameof(Issue3541), out result);
+			_valueSaved.Text = $"{result}";
 		}
 
 		private string GetText()
@@ -54,5 +79,16 @@ namespace Xamarin.Forms.Controls.Issues
 
 			return null;
 		}
+
+
+#if UITEST
+		[Test]
+		public void SaveDifferentLengthValuesIntoPropertyStore()
+		{
+			RunningApp.WaitForElement(_buttonText);
+			RunningApp.Tap(_buttonText);
+			RunningApp.WaitForElement(_success);
+		}
+#endif
 	}
 }
