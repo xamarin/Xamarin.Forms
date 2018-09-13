@@ -1,12 +1,15 @@
-﻿using CoreGraphics;
+﻿using System;
+using CoreGraphics;
 using Foundation;
 using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public abstract class DefaultCell : BaseCell
+	public abstract class DefaultCell : BaseCell, IConstrainedCell
 	{
 		public UILabel Label { get; }
+
+		protected NSLayoutConstraint Constraint { get; set; }
 
 		[Export("initWithFrame:")]
 		protected DefaultCell(CGRect frame) : base(frame)
@@ -23,5 +26,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 			InitializeContentConstraints(Label);
 		}
+
+		public void Constrain(nfloat constant)
+		{
+			Constraint.Constant = constant;
+		}
+
+		public abstract void Constrain(CGSize constraint);
+
+		public abstract CGSize Measure();
 	}
 }

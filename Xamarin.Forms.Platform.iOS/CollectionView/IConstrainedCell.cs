@@ -7,5 +7,6 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		void Constrain(nfloat constant);
 		void Constrain(CGSize constraint);
+		CGSize Measure();
 	}
 }

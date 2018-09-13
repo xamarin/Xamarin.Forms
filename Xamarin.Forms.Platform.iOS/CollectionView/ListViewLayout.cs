@@ -14,7 +14,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			ConstrainedDimension =
 				ScrollDirection == UICollectionViewScrollDirection.Vertical ? size.Width : size.Height;
-			UpdateItemSizeEstimate(size);
+			//UpdateItemSizeEstimate(size);
 		}
 
 		public override void PrepareCellForLayout(IConstrainedCell cell)

@@ -1,33 +1,30 @@
 ﻿using System;
+using System.Diagnostics;
 using CoreGraphics;
 using Foundation;
 using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	internal sealed class DefaultVerticalListCell : DefaultCell, IConstrainedCell
+	internal sealed class DefaultVerticalListCell : DefaultCell
 	{
 		public static NSString ReuseId = new NSString("Xamarin.Forms.Platform.iOS.DefaultVerticalListCell");
 
 		[Export("initWithFrame:")]
 		public DefaultVerticalListCell(CGRect frame) : base(frame)
 		{
-			Width = Label.WidthAnchor.ConstraintEqualTo(Frame.Width);
-			Width.Active = true;
+			Constraint = Label.WidthAnchor.ConstraintEqualTo(Frame.Width);
+			Constraint.Active = true;
 		}
 
-		NSLayoutConstraint Width { get; }
-
-		public void Constrain(nfloat constant)
+		public override void Constrain(CGSize constraint)
 		{
-			Width.Constant = constant;
+			Constraint.Constant = constraint.Width;
 		}
 
-		public void Constrain(CGSize constraint)
+		public override CGSize Measure()
 		{
-			Width.Constant = constraint.Width;
-			// TODO hartez 2018/09/12 10:38:51 We need to add an optional Height constraint here, in case they've set up a text-only list with UniformSize	
-			// This might turn into a single class with a PrimaryConstraintDirection property or something
+			return new CGSize(Constraint.Constant, Label.IntrinsicContentSize.Height); 
 		}
 	}
 }

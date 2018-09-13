@@ -1,36 +1,76 @@
 ﻿using System;
 using CoreGraphics;
 using Foundation;
+using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public abstract class TemplatedCell : BaseCell
+	public abstract class TemplatedCell : BaseCell, IConstrainedCell
 	{
+		protected nfloat ConstrainedDimension;
+
+		[Export("initWithFrame:")]
+		protected TemplatedCell(CGRect frame) : base(frame)
+		{
+		}
+
 		public IVisualElementRenderer VisualElementRenderer { get; private set; }
 
-		protected nfloat ConstrainedDimension;
+		public void Constrain(nfloat constant)
+		{
+			ConstrainedDimension = constant;
+		}
+
+		public abstract void Constrain(CGSize constraint);
+
+		public abstract CGSize Measure();
+
+		public override UICollectionViewLayoutAttributes PreferredLayoutAttributesFittingAttributes(
+			UICollectionViewLayoutAttributes layoutAttributes)
+		{
+			var nativeView = VisualElementRenderer.NativeView;
+
+			var size = Measure();
+
+			nativeView.Frame = new CGRect(CGPoint.Empty, size);
+			VisualElementRenderer.Element.Layout(nativeView.Frame.ToRectangle());
+
+			layoutAttributes.Frame = VisualElementRenderer.NativeView.Frame;
+
+			return layoutAttributes;
+		}
 
 		public void SetRenderer(IVisualElementRenderer renderer)
 		{
+			ClearSubviews();
+
 			VisualElementRenderer = renderer;
-
-			// TODO hartez 2018/09/07 16:00:46 Move this loop to its own method	
-			for (int n = ContentView.Subviews.Length - 1; n >= 0; n--)
-			{
-				// TODO hartez 2018/09/07 16:14:43 Does this also need to clear the constraints?	
-				ContentView.Subviews[n].RemoveFromSuperview();
-			}
-
 			var nativeView = VisualElementRenderer.NativeView;
 
 			InitializeContentConstraints(nativeView);
 		}
 
-		public abstract CGSize Layout();
-
-		[Export("initWithFrame:")]
-		protected TemplatedCell(CGRect frame) : base(frame)
+		protected void Layout(CGSize constraints)
 		{
+			var nativeView = VisualElementRenderer.NativeView;
+
+			var width = constraints.Width;
+			var height = constraints.Height;
+
+			VisualElementRenderer.Element.Measure(width, height, MeasureFlags.IncludeMargins);
+
+			nativeView.Frame = new CGRect(0, 0, width, height);
+
+			VisualElementRenderer.Element.Layout(nativeView.Frame.ToRectangle());
+		}
+
+		void ClearSubviews()
+		{
+			for (int n = ContentView.Subviews.Length - 1; n >= 0; n--)
+			{
+				// TODO hartez 2018/09/07 16:14:43 Does this also need to clear the constraints?	
+				ContentView.Subviews[n].RemoveFromSuperview();
+			}
 		}
 	}
 }

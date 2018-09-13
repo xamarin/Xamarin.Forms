@@ -5,28 +5,26 @@ using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	internal sealed class DefaultHorizontalListCell : DefaultCell, IConstrainedCell
+	// TODO hartez 2018/09/12 21:43:54 The "List" part of all these cell names needs to go	
+	internal sealed class DefaultHorizontalListCell : DefaultCell
 	{
 		public static NSString ReuseId = new NSString("Xamarin.Forms.Platform.iOS.DefaultHorizontalListCell");
 
 		[Export("initWithFrame:")]
 		public DefaultHorizontalListCell(CGRect frame) : base(frame)
 		{
-			Height = Label.HeightAnchor.ConstraintEqualTo(Frame.Height);
-			Height.Active = true;
+			Constraint = Label.HeightAnchor.ConstraintEqualTo(Frame.Height);
+			Constraint.Active = true;
 		}
 
-		NSLayoutConstraint Height { get; }
-
-		public void Constrain(nfloat constant)
+		public override void Constrain(CGSize constraint)
 		{
-			Height.Constant = constant;
+			Constraint.Constant = constraint.Height;
 		}
 
-		public void Constrain(CGSize constraint)
+		public override CGSize Measure()
 		{
-			Height.Constant = constraint.Height;
-			// TODO hartez 2018/09/12 10:38:51 We need to add an optional width constraint here, in case they've set up a text-only list with UniformSize	
+			return new CGSize(Label.IntrinsicContentSize.Width, Constraint.Constant); 
 		}
 	}
 }
