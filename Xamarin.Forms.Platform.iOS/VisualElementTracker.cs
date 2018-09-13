@@ -143,7 +143,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			var viewParent = view.RealParent as VisualElement;
 			var parentBoundsChanged = _lastParentBounds != (viewParent == null ? Rectangle.Zero : viewParent.Bounds);
 #else
-			var thread = Application.Current?.OnThisPlatform()?.GetHandleControlUpdatesOnMainThread() == false && !boundsChanged && !caLayer.Frame.IsEmpty;
+			var thread = !boundsChanged && !caLayer.Frame.IsEmpty && Application.Current?.OnThisPlatform()?.GetHandleControlUpdatesOnMainThread() == false;
 #endif
 			var anchorX = (float)view.AnchorX;
 			var anchorY = (float)view.AnchorY;
