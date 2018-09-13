@@ -4,7 +4,6 @@ using Xamarin.Forms.Xaml;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-	[XamlCompilation(XamlCompilationOptions.Compile)]
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 1588, "[WPF] Stacklayout WidthRequest adds unwanted margin", PlatformAffected.WPF)]
 	public partial class Issue1588 : TestContentPage
