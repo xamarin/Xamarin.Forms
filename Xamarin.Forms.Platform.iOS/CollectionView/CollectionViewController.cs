@@ -64,14 +64,12 @@ namespace Xamarin.Forms.Platform.iOS
 			// TODO hartez Also, what about situations where there is no data which matches the path?
 
 			var indexPath = NSIndexPath.Create(0,0);
-			var prototype = CollectionView.DequeueReusableCell(DetermineCellReusedId(), indexPath) as IConstrainedCell;
+			var prototype = GetCell(CollectionView, indexPath) as IConstrainedCell;
 
 			if (prototype == null)
 			{
 				return;
 			}
-
-			UpdateContent(prototype, indexPath);
 
 			prototype.Constrain(layoutConstrainedDimension);
 
@@ -122,11 +120,14 @@ namespace Xamarin.Forms.Platform.iOS
 			return cell;
 		}
 
-		protected virtual void UpdateDefaultCell(DefaultCell defaultCell, NSIndexPath indexPath)
+		protected virtual void UpdateDefaultCell(DefaultCell cell, NSIndexPath indexPath)
 		{
-			UpdateContent(defaultCell, indexPath);
+			if (_itemsSource is IList list)
+			{
+				cell.Label.Text = list[indexPath.Row].ToString();
+			}
 
-			if (defaultCell is IConstrainedCell constrainedCell)
+			if (_initialEstimateMade && cell is IConstrainedCell constrainedCell)
 			{
 				_layout.PrepareCellForLayout(constrainedCell);
 			}
@@ -134,35 +135,15 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual void UpdateTemplatedCell(TemplatedCell cell, NSIndexPath indexPath)
 		{
-			ApplyTemplateAndData(cell, indexPath);
+			ApplyTemplateAndDataContext(cell, indexPath);
 
-			if (cell is IConstrainedCell constrainedCell)
+			if (_initialEstimateMade && cell is IConstrainedCell constrainedCell)
 			{
 				_layout.PrepareCellForLayout(constrainedCell);
 			}
 		}
 
-		void UpdateContent(IConstrainedCell cell, NSIndexPath indexPath)
-		{
-			if (cell is TemplatedCell templatedCell)
-			{
-				ApplyTemplateAndData(templatedCell, indexPath);
-			}
-			else if(cell is DefaultCell defaultCell)
-			{
-				UpdateContent(defaultCell, indexPath);
-			}
-		}
-
-		void UpdateContent(DefaultCell cell, NSIndexPath indexPath)
-		{
-			if (_itemsSource is IList list)
-			{
-				cell.Label.Text = list[indexPath.Row].ToString();
-			}
-		}
-
-		void ApplyTemplateAndData(TemplatedCell cell, NSIndexPath indexPath)
+		void ApplyTemplateAndDataContext(TemplatedCell cell, NSIndexPath indexPath)
 		{
 			// We need to create a renderer, which means we need a template
 			var templateElement = _itemsView.ItemTemplate.CreateContent() as View;

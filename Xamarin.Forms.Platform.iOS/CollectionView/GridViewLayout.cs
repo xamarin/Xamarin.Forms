@@ -36,6 +36,7 @@ namespace Xamarin.Forms.Platform.iOS
 			ConstrainedDimension = (int)ConstrainedDimension;
 		}
 
+		// TODO hartez 2018/09/13 08:13:23 This method is the same here and on ListViewLayout; need to consolidate	
 		public override void PrepareCellForLayout(IConstrainedCell cell)
 		{
 			if (EstimatedItemSize == CGSize.Empty)
