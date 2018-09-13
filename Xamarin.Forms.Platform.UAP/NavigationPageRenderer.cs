@@ -16,9 +16,12 @@ using WImageSource = Windows.UI.Xaml.Media.ImageSource;
 
 
 using Windows.UI.Core;
+using Windows.UI.Xaml.Data;
+
 namespace Xamarin.Forms.Platform.UWP
 {
-	public partial class NavigationPageRenderer : IVisualElementRenderer, ITitleProvider, ITitleIconProvider, ITitleViewProvider, IToolbarProvider
+	public class NavigationPageRenderer : IVisualElementRenderer, ITitleProvider, ITitleIconProvider, 
+		ITitleViewProvider, IToolbarProvider, IToolBarForegroundBinder
 	{
 		PageControl _container;
 		Page _currentPage;
@@ -32,6 +35,9 @@ namespace Xamarin.Forms.Platform.UWP
 		WImageSource _titleIcon;
 		VisualElementTracker<Page, PageControl> _tracker;
 		EntranceThemeTransition _transition;
+		Platform _platform;
+
+		Platform Platform => _platform ?? (_platform = Platform.Current);
 
 		public NavigationPage Element { get; private set; }
 
@@ -550,6 +556,91 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (_parentMasterDetailPage != null && Platform.GetRenderer(_parentMasterDetailPage) is ITitleViewProvider parent)
 				parent.TitleView = TitleView;
+		}
+
+		SystemNavigationManager _navManager;
+
+		public void BindForegroundColor(AppBar appBar)
+		{
+			SetAppBarForegroundBinding(appBar);
+		}
+
+		public void BindForegroundColor(AppBarButton button)
+		{
+			SetAppBarForegroundBinding(button);
+		}
+
+		void SetAppBarForegroundBinding(FrameworkElement element)
+		{
+			element.SetBinding(Control.ForegroundProperty,
+				new Windows.UI.Xaml.Data.Binding { Path = new PropertyPath("TitleBrush"), Source = _container, RelativeSource = new RelativeSource { Mode = RelativeSourceMode.TemplatedParent } });
+		}
+
+		void UpdateToolbarPlacement()
+		{
+			if (_container == null)
+			{
+				return;
+			}
+
+			_container.ToolbarPlacement = Element.OnThisPlatform().GetToolbarPlacement();
+		}
+
+		void UpdateShowTitle()
+		{
+			((ITitleProvider)this).ShowTitle = _parentTabbedPage == null && _parentMasterDetailPage == null;
+		}
+
+		static object GetDefaultColor()
+		{
+			return Windows.UI.Xaml.Application.Current.Resources["SystemControlBackgroundChromeMediumLowBrush"];
+		}
+
+		void UpdateBackButton()
+		{
+			if (_navManager == null || _currentPage == null)
+			{
+				return;
+			}
+
+			bool showBackButton = Element.InternalChildren.Count > 1 && NavigationPage.GetHasBackButton(_currentPage);
+			_navManager.AppViewBackButtonVisibility = showBackButton ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed;
+		}
+
+		async void UpdateTitleOnParents()
+		{
+			if (Element == null)
+				return;
+
+			ITitleProvider render = null;
+			if (_parentTabbedPage != null)
+			{
+				render = Platform.GetRenderer(_parentTabbedPage) as ITitleProvider;
+				if (render != null)
+					render.ShowTitle = (_parentTabbedPage.CurrentPage == Element) && NavigationPage.GetHasNavigationBar(_currentPage);
+			}
+
+			if (_parentMasterDetailPage != null)
+			{
+				render = Platform.GetRenderer(_parentMasterDetailPage) as ITitleProvider;
+				if (render != null)
+					render.ShowTitle = (_parentMasterDetailPage.Detail == Element) && NavigationPage.GetHasNavigationBar(_currentPage);
+			}
+
+			if (render != null && render.ShowTitle)
+			{
+				render.Title = _currentPage.Title;
+				render.BarBackgroundBrush = GetBarBackgroundBrush();
+				render.BarForegroundBrush = GetBarForegroundBrush();
+			}
+
+			if (_showTitle || (render != null && render.ShowTitle))
+			{
+				if (Platform != null)
+				{
+					await Platform.UpdateToolbarItems();
+				}
+			}
 		}
 	}
 }

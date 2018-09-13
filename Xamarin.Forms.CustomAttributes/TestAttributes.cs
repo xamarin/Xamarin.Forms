@@ -580,6 +580,8 @@ namespace Xamarin.Forms.CustomAttributes
 			FormattedText,
 			FontAttibutesBold,
 			FontAttributesItalic,
+			TextDecorationUnderline,
+			TextDecorationStrike,
 			FontNamedSizeMicro,
 			FontNamedSizeSmall,
 			FontNamedSizeMedium,
@@ -596,6 +598,7 @@ namespace Xamarin.Forms.CustomAttributes
 			VerticalTextAlignmentStart,
 			VerticalTextAlignmentCenter,
 			VerticalTextAlignmentEnd,
+			MaxLines
 		}
 
 		public enum MasterDetailPage {
