@@ -31,5 +31,29 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			return (nfloat)0.0;
 		}
+
+		public event EventHandler<EventArgs> NeedsEstimate;
+
+		public bool RequestingEstimate { get; private set; } = true;
+
+		protected virtual void OnNeedsEstimate()
+		{
+			RequestingEstimate = true;
+			NeedsEstimate?.Invoke(this, EventArgs.Empty);
+		}
+
+		public void SetEstimate(CGSize cellSize, bool uniformSize)
+		{
+			if (uniformSize)
+			{
+				ItemSize = cellSize;
+			}
+			else
+			{
+				EstimatedItemSize = cellSize;
+			}
+
+			RequestingEstimate = false;
+		}
 	}
 }

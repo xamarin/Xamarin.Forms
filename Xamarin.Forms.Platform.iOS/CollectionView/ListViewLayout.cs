@@ -1,4 +1,5 @@
-﻿using CoreGraphics;
+﻿using System.Diagnostics;
+using CoreGraphics;
 using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
@@ -14,11 +15,16 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			ConstrainedDimension =
 				ScrollDirection == UICollectionViewScrollDirection.Vertical ? size.Width : size.Height;
-			//UpdateItemSizeEstimate(size);
+			OnNeedsEstimate();
 		}
 
 		public override void PrepareCellForLayout(IConstrainedCell cell)
 		{
+			if (RequestingEstimate)
+			{
+				return;
+			}
+
 			if (EstimatedItemSize == CGSize.Empty)
 			{
 				cell.Constrain(ItemSize);
@@ -76,19 +82,6 @@ namespace Xamarin.Forms.Platform.iOS
 				ConstrainTo(size);
 				UpdateCellConstraints();
 			}
-		}
-
-		void UpdateItemSizeEstimate(CGSize size)
-		{
-			// TODO hartez 2018/09/10 19:13:48 We should probably have this update after layouts for template cells
-			// And the default cells should also report back, maybe using their Labels' intrinsic content sizes
-			if (ScrollDirection == UICollectionViewScrollDirection.Horizontal)
-			{
-				EstimatedItemSize = new CGSize(64, size.Height);
-				return;
-			}
-
-			EstimatedItemSize = new CGSize(size.Width, 64);
 		}
 	}
 }

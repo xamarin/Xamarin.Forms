@@ -34,11 +34,61 @@ namespace Xamarin.Forms.Platform.iOS
 			// There may not be anything we can do about this.
 
 			ConstrainedDimension = (int)ConstrainedDimension;
+			OnNeedsEstimate();
+		}
+
+		public override bool ShouldInvalidateLayoutForBoundsChange(CGRect newBounds)
+		{
+			var shouldInvalidate = base.ShouldInvalidateLayoutForBoundsChange(newBounds);
+
+			if (shouldInvalidate)
+			{
+				UpdateConstraints(newBounds.Size);
+			}
+
+			return shouldInvalidate;
+		}
+
+		void UpdateConstraints(CGSize size)
+		{
+			// TODO hartez 2018/09/12 13:01:02 De-duplicate the code here	
+			if (ScrollDirection == UICollectionViewScrollDirection.Vertical
+				&& ConstrainedDimension != size.Width)
+			{
+				ConstrainTo(size);
+				UpdateCellConstraints();
+			}
+			else if (ScrollDirection == UICollectionViewScrollDirection.Horizontal
+					&& ConstrainedDimension != size.Height)
+			{
+				ConstrainTo(size);
+				UpdateCellConstraints();
+			}
+		}
+
+		void UpdateCellConstraints()
+		{
+			var cells = CollectionView.VisibleCells;
+
+			for (int n = 0; n < cells.Length; n++)
+			{
+				if (cells[n] is IConstrainedCell constrainedCell)
+				{
+					{
+						PrepareCellForLayout(constrainedCell);
+					}
+				}
+			}
 		}
 
 		// TODO hartez 2018/09/13 08:13:23 This method is the same here and on ListViewLayout; need to consolidate	
 		public override void PrepareCellForLayout(IConstrainedCell cell)
 		{
+			if (RequestingEstimate)
+			{
+				return;
+			}
+
 			if (EstimatedItemSize == CGSize.Empty)
 			{
 				cell.Constrain(ItemSize);
