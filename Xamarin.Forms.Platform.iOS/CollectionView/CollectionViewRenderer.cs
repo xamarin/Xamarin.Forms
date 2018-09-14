@@ -33,7 +33,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (e.NewElement != null)
 			{
 				_layout = SelectLayout(e.NewElement.ItemsLayout);
-				_collectionViewController = new CollectionViewController(e.NewElement.ItemsSource, _layout, e.NewElement);
+				_collectionViewController = new CollectionViewController(e.NewElement, _layout);
 				SetNativeControl(_collectionViewController.View);
 				_collectionViewController.CollectionView.BackgroundColor = UIColor.Clear;
 			}

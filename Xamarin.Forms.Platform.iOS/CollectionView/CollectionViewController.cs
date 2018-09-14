@@ -15,19 +15,21 @@ namespace Xamarin.Forms.Platform.iOS
 		readonly ItemsViewLayout _layout;
 		readonly ItemsView _itemsView;
 
-		public CollectionViewController(IEnumerable itemsSource, ItemsViewLayout layout, ItemsView itemsView) : base(layout)
+		public CollectionViewController(ItemsView itemsView, ItemsViewLayout layout) : base(layout) 
 		{
-			_itemsSource = itemsSource;
-			_layout = layout;
 			_itemsView = itemsView;
+			_itemsSource = _itemsView.ItemsSource;
+			_layout = layout;
 
-			// TODO hartez 2018/09/14 11:59:14 If we are stuck with using an event for this, override dispose and unhook it	
-			_layout.NeedsEstimate += LayoutOnNeedsEstimate;
+			_layout.GetPrototype = GetProtoType;
 		}
 
-		void LayoutOnNeedsEstimate(object sender, EventArgs e)
+		UICollectionViewCell GetProtoType()
 		{
-			DetermineCellSize(_layout.ConstrainedDimension);
+			// TODO hartez assuming this works, we'll need to evaluate using this nsindexpath (what about groups?)
+			// TODO hartez Also, what about situations where there is no data which matches the path?
+			var indexPath = NSIndexPath.Create(0,0);
+			return GetCell(CollectionView, indexPath);
 		}
 
 		void RegisterCells()
@@ -59,28 +61,6 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				_layout.ConstrainTo(CollectionView.Bounds.Size);
 			}
-		}
-
-		// TODO hartez 2018/09/12 17:05:48 Get this set from the CollectionView	
-		bool _uniformSize = false;
-
-		void DetermineCellSize(nfloat layoutConstrainedDimension)
-		{
-			// TODO hartez assuming this works, we'll need to evaluate using this nsindexpath (what about groups?)
-			// TODO hartez Also, what about situations where there is no data which matches the path?
-
-			var indexPath = NSIndexPath.Create(0,0);
-			var prototype = GetCell(CollectionView, indexPath) as IConstrainedCell;
-
-			if (prototype == null)
-			{
-				return;
-			}
-
-			prototype.Constrain(layoutConstrainedDimension);
-
-			var measure = prototype.Measure();
-			_layout.SetEstimate(measure, _uniformSize);
 		}
 
 		public override nint GetItemsCount(UICollectionView collectionView, nint section)
@@ -165,12 +145,6 @@ namespace Xamarin.Forms.Platform.iOS
 			Platform.SetRenderer(view, renderer);
 
 			return renderer;
-		}
-		
-		public override void ViewWillTransitionToSize(CGSize toSize, IUIViewControllerTransitionCoordinator coordinator)
-		{
-			Debug.WriteLine($">>>>> CollectionViewController ViewWillTransitionToSize 172: {toSize}");
-			base.ViewWillTransitionToSize(toSize, coordinator);
 		}
 	}
 }

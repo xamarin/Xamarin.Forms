@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Platform.iOS
 	public abstract class ItemsViewLayout : UICollectionViewFlowLayout, IUICollectionViewDelegateFlowLayout
 	{
 		public nfloat ConstrainedDimension { get; set; }
-
+		
 		public bool RequestingEstimate { get; private set; } = true;
 
 		public abstract void ConstrainTo(CGSize size);
@@ -48,8 +48,6 @@ namespace Xamarin.Forms.Platform.iOS
 			return (nfloat)0.0;
 		}
 
-		public event EventHandler<EventArgs> NeedsEstimate;
-
 		public void PrepareCellForLayout(IConstrainedCell cell)
 		{
 			if (RequestingEstimate)
@@ -69,6 +67,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public void SetEstimate(CGSize cellSize, bool uniformSize)
 		{
+			// TODO hartez 2018/09/14 17:03:07 If this is still a property, just use the property and drop the parameter	
 			if (uniformSize)
 			{
 				ItemSize = cellSize;
@@ -96,7 +95,7 @@ namespace Xamarin.Forms.Platform.iOS
 		protected virtual void OnNeedsEstimate()
 		{
 			RequestingEstimate = true;
-			NeedsEstimate?.Invoke(this, EventArgs.Empty);
+			DetermineCellSize(ConstrainedDimension);
 		}
 
 		void UpdateCellConstraints()
@@ -127,6 +126,28 @@ namespace Xamarin.Forms.Platform.iOS
 				ConstrainTo(size);
 				UpdateCellConstraints();
 			}
+		}
+
+		public Func<UICollectionViewCell> GetPrototype { get; set; }
+
+		public bool UniformSize { get; set; }
+
+		void DetermineCellSize(nfloat layoutConstrainedDimension)
+		{
+			if (GetPrototype == null)
+			{
+				return;
+			}
+
+			if (!(GetPrototype() is IConstrainedCell prototype))
+			{
+				return;
+			}
+
+			prototype.Constrain(layoutConstrainedDimension);
+
+			var measure = prototype.Measure();
+			SetEstimate(measure, UniformSize);
 		}
 	}
 }
