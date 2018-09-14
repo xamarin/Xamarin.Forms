@@ -10,36 +10,61 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		public nfloat ConstrainedDimension { get; set; }
 
+		public bool RequestingEstimate { get; private set; } = true;
+
 		public abstract void ConstrainTo(CGSize size);
 
-		public abstract void PrepareCellForLayout(IConstrainedCell cell);
+		protected ItemsViewLayout(UICollectionViewScrollDirection scrollDirection)
+		{
+			Initialize(scrollDirection);
+		}
 
-		[Export("collectionView:layout:insetForSectionAtIndex:"), CompilerGenerated]
-		public virtual UIEdgeInsets GetInsetForSection(UICollectionView collectionView, UICollectionViewLayout layout, int section)
+		void Initialize(UICollectionViewScrollDirection scrollDirection)
+		{
+			ScrollDirection = scrollDirection;
+		}
+
+		[Export("collectionView:layout:insetForSectionAtIndex:")]
+		[CompilerGenerated]
+		public virtual UIEdgeInsets GetInsetForSection(UICollectionView collectionView, UICollectionViewLayout layout,
+			int section)
 		{
 			return UIEdgeInsets.Zero;
 		}
 
-		[Export("collectionView:layout:minimumInteritemSpacingForSectionAtIndex:"), CompilerGenerated]
-		public virtual nfloat GetMinimumInteritemSpacingForSection(UICollectionView collectionView, UICollectionViewLayout layout, int section)
+		[Export("collectionView:layout:minimumInteritemSpacingForSectionAtIndex:")]
+		[CompilerGenerated]
+		public virtual nfloat GetMinimumInteritemSpacingForSection(UICollectionView collectionView,
+			UICollectionViewLayout layout, int section)
 		{
 			return (nfloat)0.0;
 		}
 
-		[Export("collectionView:layout:minimumLineSpacingForSectionAtIndex:"), CompilerGenerated]
-		public virtual nfloat GetMinimumLineSpacingForSection(UICollectionView collectionView, UICollectionViewLayout layout, int section)
+		[Export("collectionView:layout:minimumLineSpacingForSectionAtIndex:")]
+		[CompilerGenerated]
+		public virtual nfloat GetMinimumLineSpacingForSection(UICollectionView collectionView,
+			UICollectionViewLayout layout, int section)
 		{
 			return (nfloat)0.0;
 		}
 
 		public event EventHandler<EventArgs> NeedsEstimate;
 
-		public bool RequestingEstimate { get; private set; } = true;
-
-		protected virtual void OnNeedsEstimate()
+		public void PrepareCellForLayout(IConstrainedCell cell)
 		{
-			RequestingEstimate = true;
-			NeedsEstimate?.Invoke(this, EventArgs.Empty);
+			if (RequestingEstimate)
+			{
+				return;
+			}
+
+			if (EstimatedItemSize == CGSize.Empty)
+			{
+				cell.Constrain(ItemSize);
+			}
+			else
+			{
+				cell.Constrain(ConstrainedDimension);
+			}
 		}
 
 		public void SetEstimate(CGSize cellSize, bool uniformSize)
@@ -54,6 +79,54 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			RequestingEstimate = false;
+		}
+
+		public override bool ShouldInvalidateLayoutForBoundsChange(CGRect newBounds)
+		{
+			var shouldInvalidate = base.ShouldInvalidateLayoutForBoundsChange(newBounds);
+
+			if (shouldInvalidate)
+			{
+				UpdateConstraints(newBounds.Size);
+			}
+
+			return shouldInvalidate;
+		}
+
+		protected virtual void OnNeedsEstimate()
+		{
+			RequestingEstimate = true;
+			NeedsEstimate?.Invoke(this, EventArgs.Empty);
+		}
+
+		void UpdateCellConstraints()
+		{
+			var cells = CollectionView.VisibleCells;
+
+			for (int n = 0; n < cells.Length; n++)
+			{
+				if (cells[n] is IConstrainedCell constrainedCell)
+				{
+					PrepareCellForLayout(constrainedCell);
+				}
+			}
+		}
+
+		void UpdateConstraints(CGSize size)
+		{
+			// TODO hartez 2018/09/12 13:01:02 De-duplicate the code here	
+			if (ScrollDirection == UICollectionViewScrollDirection.Vertical
+				&& ConstrainedDimension != size.Width)
+			{
+				ConstrainTo(size);
+				UpdateCellConstraints();
+			}
+			else if (ScrollDirection == UICollectionViewScrollDirection.Horizontal
+					&& ConstrainedDimension != size.Height)
+			{
+				ConstrainTo(size);
+				UpdateCellConstraints();
+			}
 		}
 	}
 }

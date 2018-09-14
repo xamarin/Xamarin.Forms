@@ -1,7 +1,5 @@
-﻿using System;
-using CoreGraphics;
+﻿using CoreGraphics;
 using UIKit;
-using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -10,10 +8,9 @@ namespace Xamarin.Forms.Platform.iOS
 		readonly int _span;
 
 		// TODO hartez 2018/09/12 12:59:42 Take the GridItemsLayout so you can watch for span changes	
-		public GridViewLayout(UICollectionViewScrollDirection scrollDirection, int span)
+		public GridViewLayout(UICollectionViewScrollDirection scrollDirection, int span) : base(scrollDirection)
 		{
 			_span = span;
-			Initialize(scrollDirection);
 		}
 
 		public override void ConstrainTo(CGSize size)
@@ -26,7 +23,7 @@ namespace Xamarin.Forms.Platform.iOS
 			// But this can run into situations where we have an extra gap because we're cutting off too much
 			// and we have a small gap; need to determine where the cut-off is that leads to layout dropping a whole row/column
 			// and see if we can adjust for that
-			
+
 			// E.G.: We have a CollectionView that's 532 units tall, and we have a span of 3
 			// So we end up with ConstrainedDimension of 177.3333333333333...
 			// When UICollectionView lays that out, it can't fit all the rows in so it just gives us two rows.
@@ -35,73 +32,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			ConstrainedDimension = (int)ConstrainedDimension;
 			OnNeedsEstimate();
-		}
-
-		public override bool ShouldInvalidateLayoutForBoundsChange(CGRect newBounds)
-		{
-			var shouldInvalidate = base.ShouldInvalidateLayoutForBoundsChange(newBounds);
-
-			if (shouldInvalidate)
-			{
-				UpdateConstraints(newBounds.Size);
-			}
-
-			return shouldInvalidate;
-		}
-
-		void UpdateConstraints(CGSize size)
-		{
-			// TODO hartez 2018/09/12 13:01:02 De-duplicate the code here	
-			if (ScrollDirection == UICollectionViewScrollDirection.Vertical
-				&& ConstrainedDimension != size.Width)
-			{
-				ConstrainTo(size);
-				UpdateCellConstraints();
-			}
-			else if (ScrollDirection == UICollectionViewScrollDirection.Horizontal
-					&& ConstrainedDimension != size.Height)
-			{
-				ConstrainTo(size);
-				UpdateCellConstraints();
-			}
-		}
-
-		void UpdateCellConstraints()
-		{
-			var cells = CollectionView.VisibleCells;
-
-			for (int n = 0; n < cells.Length; n++)
-			{
-				if (cells[n] is IConstrainedCell constrainedCell)
-				{
-					{
-						PrepareCellForLayout(constrainedCell);
-					}
-				}
-			}
-		}
-
-		// TODO hartez 2018/09/13 08:13:23 This method is the same here and on ListViewLayout; need to consolidate	
-		public override void PrepareCellForLayout(IConstrainedCell cell)
-		{
-			if (RequestingEstimate)
-			{
-				return;
-			}
-
-			if (EstimatedItemSize == CGSize.Empty)
-			{
-				cell.Constrain(ItemSize);
-			}
-			else
-			{
-				cell.Constrain(ConstrainedDimension);
-			}
-		}
-
-		void Initialize(UICollectionViewScrollDirection scrollDirection)
-		{
-			ScrollDirection = scrollDirection;
 		}
 	}
 }
