@@ -32,7 +32,7 @@ namespace Xamarin.Forms.Platform.iOS
 			// There may not be anything we can do about this.
 
 			ConstrainedDimension = (int)ConstrainedDimension;
-			OnNeedsEstimate();
+			DetermineCellSize();
 		}
 	}
 }

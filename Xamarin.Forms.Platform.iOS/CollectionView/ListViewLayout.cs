@@ -13,7 +13,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			ConstrainedDimension =
 				ScrollDirection == UICollectionViewScrollDirection.Vertical ? size.Width : size.Height;
-			OnNeedsEstimate();
+			DetermineCellSize();
 		}
 	}
 }

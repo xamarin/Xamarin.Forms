@@ -8,21 +8,21 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public abstract class ItemsViewLayout : UICollectionViewFlowLayout, IUICollectionViewDelegateFlowLayout
 	{
-		public nfloat ConstrainedDimension { get; set; }
-		
-		public bool RequestingEstimate { get; private set; } = true;
-
-		public abstract void ConstrainTo(CGSize size);
+		bool _determiningCellSize;
 
 		protected ItemsViewLayout(UICollectionViewScrollDirection scrollDirection)
 		{
 			Initialize(scrollDirection);
 		}
 
-		void Initialize(UICollectionViewScrollDirection scrollDirection)
-		{
-			ScrollDirection = scrollDirection;
-		}
+		public nfloat ConstrainedDimension { get; set; }
+
+		public Func<UICollectionViewCell> GetPrototype { get; set; }
+
+		// TODO hartez 2018/09/14 17:24:22 Long term, this needs to use the ItemSizingStrategy enum and not be locked into bool	
+		public bool UniformSize { get; set; }
+
+		public abstract void ConstrainTo(CGSize size);
 
 		[Export("collectionView:layout:insetForSectionAtIndex:")]
 		[CompilerGenerated]
@@ -50,7 +50,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public void PrepareCellForLayout(IConstrainedCell cell)
 		{
-			if (RequestingEstimate)
+			if (_determiningCellSize)
 			{
 				return;
 			}
@@ -65,21 +65,6 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		public void SetEstimate(CGSize cellSize, bool uniformSize)
-		{
-			// TODO hartez 2018/09/14 17:03:07 If this is still a property, just use the property and drop the parameter	
-			if (uniformSize)
-			{
-				ItemSize = cellSize;
-			}
-			else
-			{
-				EstimatedItemSize = cellSize;
-			}
-
-			RequestingEstimate = false;
-		}
-
 		public override bool ShouldInvalidateLayoutForBoundsChange(CGRect newBounds)
 		{
 			var shouldInvalidate = base.ShouldInvalidateLayoutForBoundsChange(newBounds);
@@ -92,10 +77,49 @@ namespace Xamarin.Forms.Platform.iOS
 			return shouldInvalidate;
 		}
 
-		protected virtual void OnNeedsEstimate()
+		protected void DetermineCellSize()
 		{
-			RequestingEstimate = true;
-			DetermineCellSize(ConstrainedDimension);
+			if (GetPrototype == null)
+			{
+				return;
+			}
+
+			_determiningCellSize = true;
+
+			if (!(GetPrototype() is IConstrainedCell prototype))
+			{
+				return;
+			}
+
+			prototype.Constrain(ConstrainedDimension);
+
+			var measure = prototype.Measure();
+
+			if (UniformSize)
+			{
+				ItemSize = measure;
+			}
+			else
+			{
+				EstimatedItemSize = measure;
+			}
+
+			_determiningCellSize = false;
+		}
+
+		bool ConstraintsMatchScrollDirection(CGSize size)
+		{
+			if (ScrollDirection == UICollectionViewScrollDirection.Vertical)
+			{
+				return ConstrainedDimension == size.Width;
+			}
+
+			return ConstrainedDimension == size.Height;
+		}
+
+		void Initialize(UICollectionViewScrollDirection scrollDirection)
+		{
+			ScrollDirection = scrollDirection;
 		}
 
 		void UpdateCellConstraints()
@@ -113,41 +137,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateConstraints(CGSize size)
 		{
-			// TODO hartez 2018/09/12 13:01:02 De-duplicate the code here	
-			if (ScrollDirection == UICollectionViewScrollDirection.Vertical
-				&& ConstrainedDimension != size.Width)
-			{
-				ConstrainTo(size);
-				UpdateCellConstraints();
-			}
-			else if (ScrollDirection == UICollectionViewScrollDirection.Horizontal
-					&& ConstrainedDimension != size.Height)
-			{
-				ConstrainTo(size);
-				UpdateCellConstraints();
-			}
-		}
-
-		public Func<UICollectionViewCell> GetPrototype { get; set; }
-
-		public bool UniformSize { get; set; }
-
-		void DetermineCellSize(nfloat layoutConstrainedDimension)
-		{
-			if (GetPrototype == null)
+			if (ConstraintsMatchScrollDirection(size))
 			{
 				return;
 			}
 
-			if (!(GetPrototype() is IConstrainedCell prototype))
-			{
-				return;
-			}
-
-			prototype.Constrain(layoutConstrainedDimension);
-
-			var measure = prototype.Measure();
-			SetEstimate(measure, UniformSize);
+			ConstrainTo(size);
+			UpdateCellConstraints();
 		}
 	}
 }
