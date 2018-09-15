@@ -5,7 +5,7 @@ using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public abstract class TemplatedCell : BaseCell, IConstrainedCell
+	public abstract class TemplatedCell : ItemsViewCell
 	{
 		protected nfloat ConstrainedDimension;
 
@@ -16,14 +16,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public IVisualElementRenderer VisualElementRenderer { get; private set; }
 
-		public void Constrain(nfloat constant)
+		public override void Constrain(nfloat constant)
 		{
 			ConstrainedDimension = constant;
 		}
-
-		public abstract void Constrain(CGSize constraint);
-
-		public abstract CGSize Measure();
 
 		public override UICollectionViewLayoutAttributes PreferredLayoutAttributesFittingAttributes(
 			UICollectionViewLayoutAttributes layoutAttributes)

@@ -1,13 +1,14 @@
-﻿using CoreGraphics;
+﻿using System;
+using CoreGraphics;
 using Foundation;
 using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public abstract class BaseCell : UICollectionViewCell
+	public abstract class ItemsViewCell : UICollectionViewCell
 	{
 		[Export("initWithFrame:")]
-		protected BaseCell(CGRect frame) : base(frame)
+		protected ItemsViewCell(CGRect frame) : base(frame)
 		{
 			ContentView.BackgroundColor = UIColor.Clear;
 		}
@@ -21,5 +22,9 @@ namespace Xamarin.Forms.Platform.iOS
 			ContentView.LeadingAnchor.ConstraintEqualTo(nativeView.LeadingAnchor).Active = true;
 			ContentView.TrailingAnchor.ConstraintEqualTo(nativeView.TrailingAnchor).Active = true;
 		}
+
+		public abstract void Constrain(nfloat constant);
+		public abstract void Constrain(CGSize constraint);
+		public abstract CGSize Measure();
 	}
 }

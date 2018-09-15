@@ -77,7 +77,7 @@ namespace Xamarin.Forms.Platform.iOS
 				cell.Label.Text = list[indexPath.Row].ToString();
 			}
 
-			if (cell is IConstrainedCell constrainedCell)
+			if (cell is ItemsViewCell constrainedCell)
 			{
 				_layout.PrepareCellForLayout(constrainedCell);
 			}
@@ -87,7 +87,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			ApplyTemplateAndDataContext(cell, indexPath);
 
-			if (cell is IConstrainedCell constrainedCell)
+			if (cell is ItemsViewCell constrainedCell)
 			{
 				_layout.PrepareCellForLayout(constrainedCell);
 			}

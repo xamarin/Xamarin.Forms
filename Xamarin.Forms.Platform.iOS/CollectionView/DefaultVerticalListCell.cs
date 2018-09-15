@@ -1,8 +1,5 @@
-﻿using System;
-using System.Diagnostics;
-using CoreGraphics;
+﻿using CoreGraphics;
 using Foundation;
-using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -24,7 +21,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override CGSize Measure()
 		{
-			return new CGSize(Constraint.Constant, Label.IntrinsicContentSize.Height); 
+			return new CGSize(Constraint.Constant, Label.IntrinsicContentSize.Height);
 		}
 	}
 }

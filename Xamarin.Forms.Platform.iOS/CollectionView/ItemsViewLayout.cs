@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return (nfloat)0.0;
 		}
 
-		public void PrepareCellForLayout(IConstrainedCell cell)
+		public void PrepareCellForLayout(ItemsViewCell cell)
 		{
 			if (_determiningCellSize)
 			{
@@ -86,7 +86,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			_determiningCellSize = true;
 
-			if (!(GetPrototype() is IConstrainedCell prototype))
+			if (!(GetPrototype() is ItemsViewCell prototype))
 			{
 				return;
 			}
@@ -128,7 +128,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			for (int n = 0; n < cells.Length; n++)
 			{
-				if (cells[n] is IConstrainedCell constrainedCell)
+				if (cells[n] is ItemsViewCell constrainedCell)
 				{
 					PrepareCellForLayout(constrainedCell);
 				}

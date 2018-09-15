@@ -5,7 +5,7 @@ using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public abstract class DefaultCell : BaseCell, IConstrainedCell
+	public abstract class DefaultCell : ItemsViewCell
 	{
 		public UILabel Label { get; }
 
@@ -27,13 +27,9 @@ namespace Xamarin.Forms.Platform.iOS
 			InitializeContentConstraints(Label);
 		}
 
-		public void Constrain(nfloat constant)
+		public override void Constrain(nfloat constant)
 		{
 			Constraint.Constant = constant;
 		}
-
-		public abstract void Constrain(CGSize constraint);
-
-		public abstract CGSize Measure();
 	}
 }
