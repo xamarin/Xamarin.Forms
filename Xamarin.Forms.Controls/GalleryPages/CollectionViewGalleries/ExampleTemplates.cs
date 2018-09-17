@@ -45,6 +45,8 @@
 			{
 				var templateLayout = new Grid
 				{
+					BackgroundColor = Color.Bisque,
+
 					RowDefinitions = new RowDefinitionCollection { new RowDefinition(), new RowDefinition {Height = GridLength.Auto} },
 					WidthRequest = 100,
 					HeightRequest = 140
@@ -53,7 +55,8 @@
 				var image = new Image
 				{
 					Margin = new Thickness(5),
-					HeightRequest = 100, 
+					HeightRequest = 100,
+					WidthRequest = 100,
 					HorizontalOptions = LayoutOptions.Center,
 					VerticalOptions = LayoutOptions.Center,
 					Aspect = Aspect.AspectFit
