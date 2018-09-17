@@ -5,6 +5,7 @@ using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
+	// TODO hartez 2018/09/17 14:11:02 Should this be named "TemplateCell" instead of "TemplatedCell"?	
 	public abstract class TemplatedCell : ItemsViewCell
 	{
 		protected nfloat ConstrainedDimension;

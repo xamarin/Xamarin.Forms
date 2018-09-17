@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using CoreGraphics;
 using Foundation;
@@ -8,11 +9,50 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public abstract class ItemsViewLayout : UICollectionViewFlowLayout, IUICollectionViewDelegateFlowLayout
 	{
+		readonly ItemsLayout _itemsLayout;
 		bool _determiningCellSize;
+		bool _disposed;
 
-		protected ItemsViewLayout(UICollectionViewScrollDirection scrollDirection)
+		protected ItemsViewLayout(ItemsLayout itemsLayout)
 		{
+			_itemsLayout = itemsLayout;
+			_itemsLayout.PropertyChanged += LayoutOnPropertyChanged;
+
+			var scrollDirection = itemsLayout.Orientation == ItemsLayoutOrientation.Horizontal
+				? UICollectionViewScrollDirection.Horizontal
+				: UICollectionViewScrollDirection.Vertical;
+
 			Initialize(scrollDirection);
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (_disposed)
+			{
+				return;
+			}
+
+			_disposed = true;
+
+			if (disposing)
+			{
+				if (_itemsLayout != null)
+				{
+					_itemsLayout.PropertyChanged += LayoutOnPropertyChanged;
+				}
+			}
+
+			base.Dispose(disposing);
+		}
+
+		void LayoutOnPropertyChanged(object sender, PropertyChangedEventArgs propertyChanged)
+		{
+			HandlePropertyChanged(propertyChanged);
+		}
+
+		protected virtual void HandlePropertyChanged(PropertyChangedEventArgs  propertyChanged)
+		{
+			// Nothing to do here for now; may need something here when we implement Snapping
 		}
 
 		public nfloat ConstrainedDimension { get; set; }

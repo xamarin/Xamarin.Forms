@@ -63,7 +63,8 @@ namespace Xamarin.Forms
 	public class GridItemsLayout : ItemsLayout
 	{
 		public static readonly BindableProperty SpanProperty =
-			BindableProperty.Create(nameof(Span), typeof(int), typeof(GridItemsLayout), 1);
+			BindableProperty.Create(nameof(Span), typeof(int), typeof(GridItemsLayout), 1, 
+				validateValue: (bindable, value) => (int)value >= 1);
 
 		public int Span
 		{

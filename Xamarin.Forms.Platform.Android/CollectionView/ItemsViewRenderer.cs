@@ -215,6 +215,8 @@ namespace Xamarin.Forms.Platform.Android
 			_layout = newElement.ItemsLayout;
 			_layout.PropertyChanged += LayoutOnPropertyChanged;
 
+			// TODO hartez 2018/09/17 13:16:12 This propertychanged handler needs to be torn down in Dispose and TearDownElement	
+
 			// Listen for ScrollTo requests
 			newElement.ScrollToRequested += ScrollToRequested;
 		}

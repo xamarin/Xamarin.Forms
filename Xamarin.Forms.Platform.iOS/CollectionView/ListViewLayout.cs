@@ -5,7 +5,7 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	internal class ListViewLayout : ItemsViewLayout
 	{
-		public ListViewLayout(UICollectionViewScrollDirection scrollDirection): base(scrollDirection)
+		public ListViewLayout(ListItemsLayout itemsLayout): base(itemsLayout)
 		{
 		}
 

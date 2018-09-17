@@ -1,11 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using CoreGraphics;
-using UIKit;
-using Xamarin.Forms.Internals;
+﻿using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -13,13 +6,13 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 	}
 
-	// TODO hartez 2018/05/31 16:29:30 Implement dispose override	
 	// TODO hartez 2018/05/30 08:58:42 This follows the same basic scheme as RecyclerView.Adapter; you should be able to reuse the same wrapper class for the IEnumerable	
 	//// TODO hartez 2018/05/30 09:05:38 Think about whether this Controller and/or the new Adapter should be internal or public
 	public class CollectionViewRenderer : ViewRenderer<CollectionView, UIView>
 	{
 		CollectionViewController _collectionViewController;
 		ItemsViewLayout _layout;
+		bool _disposed;
 
 		public override UIViewController ViewController => _collectionViewController;
 
@@ -30,14 +23,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected override void OnElementChanged(ElementChangedEventArgs<CollectionView> e)
 		{
-			if (e.NewElement != null)
-			{
-				_layout = SelectLayout(e.NewElement.ItemsLayout);
-				_collectionViewController = new CollectionViewController(e.NewElement, _layout);
-				SetNativeControl(_collectionViewController.View);
-				_collectionViewController.CollectionView.BackgroundColor = UIColor.Clear;
-			}
-
+			TearDownOldElement(e.OldElement);
+			SetUpNewElement(e.NewElement);
+			
 			base.OnElementChanged(e);
 		}
 
@@ -45,23 +33,57 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (layoutSpecification is GridItemsLayout gridItemsLayout)
 			{
-				// TODO hartez 2018/09/10 11:14:50 Maybe just make this a contstructor which takes the layout, do the work there	
-				return gridItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal
-					? new GridViewLayout(UICollectionViewScrollDirection.Horizontal, gridItemsLayout.Span)
-					: new GridViewLayout(UICollectionViewScrollDirection.Vertical, gridItemsLayout.Span);
+				return new GridViewLayout(gridItemsLayout);
 			}
 
 			if (layoutSpecification is ListItemsLayout listItemsLayout)
 			{
-				return listItemsLayout.Orientation == ItemsLayoutOrientation.Horizontal
-					? new ListViewLayout(UICollectionViewScrollDirection.Horizontal)
-					: new ListViewLayout(UICollectionViewScrollDirection.Vertical);
+				return new ListViewLayout(listItemsLayout);
 			}
 
-			// TODO hartez 2018/06/01 11:07:36 Handle Grid	
-
 			// Fall back to vertical list
-			return new ListViewLayout(UICollectionViewScrollDirection.Vertical);
+			return new ListViewLayout(new ListItemsLayout(ItemsLayoutOrientation.Vertical));
+		}
+
+		void TearDownOldElement(CollectionView oldElement)
+		{
+			if (oldElement == null)
+			{
+				return;
+			}
+		}
+
+		void SetUpNewElement(CollectionView newElement)
+		{
+			if (newElement == null)
+			{
+				return;
+			}
+
+			_layout = SelectLayout(newElement.ItemsLayout);
+			_collectionViewController = new CollectionViewController(newElement, _layout);
+			SetNativeControl(_collectionViewController.View);
+			_collectionViewController.CollectionView.BackgroundColor = UIColor.Clear;
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (_disposed)
+			{
+				return;
+			}
+
+			_disposed = true;
+
+			if (disposing)
+			{
+				if (Element != null)
+				{
+					TearDownOldElement(Element);
+				}
+			}
+
+			base.Dispose(disposing);
 		}
 	}
 }
