@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		public const string AssetBaseUrl = "file:///android_asset/";
 
-		FormsWebViewClient _webViewClient;
+		WebViewClient _webViewClient;
 		FormsWebChromeClient _webChromeClient;
 
 		public IWebViewController ElementController => Element;
@@ -64,7 +64,7 @@ namespace Xamarin.Forms.Platform.Android
 			base.Dispose(disposing);
 		}
 
-		protected virtual FormsWebViewClient GetFormsWebViewClient()
+		protected virtual WebViewClient GetWebViewClient()
 		{
 			return new FormsWebViewClient(this);
 		}
@@ -95,7 +95,7 @@ namespace Xamarin.Forms.Platform.Android
 				webView.LayoutParameters = new global::Android.Widget.AbsoluteLayout.LayoutParams(LayoutParams.MatchParent, LayoutParams.MatchParent, 0, 0);
 #pragma warning restore 618
 
-				_webViewClient = GetFormsWebViewClient();
+				_webViewClient = GetWebViewClient();
 				webView.SetWebViewClient(_webViewClient);
 
 				_webChromeClient = GetFormsWebChromeClient();
