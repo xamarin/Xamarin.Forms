@@ -153,7 +153,7 @@ namespace Xamarin.Forms.Platform.UWP
 						break;
 					case NotifyCollectionChangedAction.Move:
 						{
-							var collection = ((ObservableCollection<object>)_collection);
+							var collection = (ObservableCollection<object>)_collection;
 							for (var i = 0; i < e.OldItems.Count; i++)
 							{
 								var oldi = e.OldStartingIndex;
@@ -171,12 +171,12 @@ namespace Xamarin.Forms.Platform.UWP
 						break;
 					case NotifyCollectionChangedAction.Replace:
 						{
-							var collection = ((ObservableCollection<object>)_collection);
+							var collection = (ObservableCollection<object>)_collection;
 							var newi = e.NewStartingIndex;
 							for (var i = 0; i < e.NewItems.Count; i++)
 							{
 								newi += i;
-								collection[newi] = e.NewItems[i];
+								collection[newi] = (e.NewItems[i] as BindableObject).BindingContext;
 							}
 						}
 						break;
