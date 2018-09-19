@@ -26,9 +26,14 @@ namespace Xamarin.Forms.Platform.Android
 			_renderer = renderer;
 		}
 
+		protected FormsWebViewClient(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer)
+		{
+
+		}
+
 		public override void OnPageStarted(global::Android.Webkit.WebView view, string url, Bitmap favicon)
 		{
-			if (_renderer.Element == null || url == WebViewRenderer.AssetBaseUrl)
+			if (_renderer?.Element == null || url == WebViewRenderer.AssetBaseUrl)
 				return;
 
 			var args = new WebNavigatingEventArgs(WebNavigationEvent.NewPage, new UrlWebViewSource { Url = url }, url);
@@ -50,7 +55,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override void OnPageFinished(global::Android.Webkit.WebView view, string url)
 		{
-			if (_renderer.Element == null || url == WebViewRenderer.AssetBaseUrl)
+			if (_renderer?.Element == null || url == WebViewRenderer.AssetBaseUrl)
 				return;
 
 			var source = new UrlWebViewSource { Url = url };

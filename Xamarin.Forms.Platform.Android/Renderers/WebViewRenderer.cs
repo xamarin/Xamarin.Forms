@@ -20,8 +20,8 @@ namespace Xamarin.Forms.Platform.Android
 		WebViewClient _webViewClient;
 		FormsWebChromeClient _webChromeClient;
 
-		public IWebViewController ElementController => Element;
-		public bool IgnoreSourceChanges { get; set; }
+		protected internal IWebViewController ElementController => Element;
+		protected internal bool IgnoreSourceChanges { get; set; }
 
 		public WebViewRenderer(Context context) : base(context)
 		{
@@ -185,7 +185,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateCanGoBackForward();
 		}
 
-		public void UpdateCanGoBackForward()
+		protected internal void UpdateCanGoBackForward()
 		{
 			if (Element == null || Control == null)
 				return;
