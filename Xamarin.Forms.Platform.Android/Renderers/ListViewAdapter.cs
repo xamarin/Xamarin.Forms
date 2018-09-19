@@ -40,6 +40,7 @@ namespace Xamarin.Forms.Platform.Android
 		bool _fromNative;
 		AView _lastSelected;
 		WeakReference<Cell> _selectedCell;
+		bool _disposed;
 
 		IListViewController Controller => _listView;
 		protected ITemplatedItemsView<Cell> TemplatedItemsView => _listView;
@@ -417,6 +418,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void Dispose(bool disposing)
 		{
+			if (_disposed)
+				return;
+
+			_disposed = true;
+
 			if (disposing)
 			{
 				CloseContextActions();
@@ -426,9 +432,6 @@ namespace Xamarin.Forms.Platform.Android
 					MessagingCenter.Unsubscribe<AppCompat.Platform>(this, Platform.CloseContextActionsSignalName);
 				else
 					MessagingCenter.Unsubscribe<Platform>(this, Platform.CloseContextActionsSignalName);
-
-				_realListView.OnItemClickListener = null;
-				_realListView.OnItemLongClickListener = null;
 
 				var templatedItems = TemplatedItemsView.TemplatedItems;
 				templatedItems.CollectionChanged -= OnCollectionChanged;

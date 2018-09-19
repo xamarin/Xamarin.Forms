@@ -75,11 +75,14 @@ namespace Xamarin.Forms.Platform.Android
 				_footerView?.Dispose();
 				_footerView = null;
 
-				if (_adapter != null)
+				Device.BeginInvokeOnMainThread(() =>
 				{
-					_adapter.Dispose();
+					_adapter?.Dispose();
 					_adapter = null;
-				}
+				});
+
+				Control.OnItemClickListener = null;
+				Control.OnItemLongClickListener = null;
 
 				Controller.ScrollToRequested -= OnScrollToRequested;
 			}
@@ -97,7 +100,8 @@ namespace Xamarin.Forms.Platform.Android
 			base.OnAttachedToWindow();
 
 			_isAttached = true;
-			_adapter.IsAttachedToWindow = _isAttached;
+			if (_adapter != null)
+				_adapter.IsAttachedToWindow = _isAttached;
 			UpdateIsRefreshing(isInitialValue: true);
 		}
 
@@ -122,11 +126,11 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				((IListViewController)e.OldElement).ScrollToRequested -= OnScrollToRequested;
 
-				if (_adapter != null)
+				Device.BeginInvokeOnMainThread(() =>
 				{
-					_adapter.Dispose();
+					_adapter?.Dispose();
 					_adapter = null;
-				}
+				});
 			}
 
 			if (e.NewElement != null)
@@ -153,10 +157,14 @@ namespace Xamarin.Forms.Platform.Android
 				nativeListView.Focusable = false;
 				nativeListView.DescendantFocusability = DescendantFocusability.AfterDescendants;
 				nativeListView.OnFocusChangeListener = this;
-				nativeListView.Adapter = _adapter = e.NewElement.IsGroupingEnabled && e.NewElement.OnThisPlatform().IsFastScrollEnabled() ? new GroupedListViewAdapter(Context, nativeListView, e.NewElement) : new ListViewAdapter(Context, nativeListView, e.NewElement);
-				_adapter.HeaderView = _headerView;
-				_adapter.FooterView = _footerView;
-				_adapter.IsAttachedToWindow = _isAttached;
+				Device.BeginInvokeOnMainThread(() =>
+				{
+					nativeListView.Adapter = _adapter = e.NewElement.IsGroupingEnabled && e.NewElement.OnThisPlatform().IsFastScrollEnabled() ? new GroupedListViewAdapter(Context, nativeListView, e.NewElement) : new ListViewAdapter(Context, nativeListView, e.NewElement);
+					_adapter.HeaderView = _headerView;
+					_adapter.FooterView = _footerView;
+					_adapter.IsAttachedToWindow = _isAttached;
+
+				});
 
 				UpdateHeader();
 				UpdateFooter();

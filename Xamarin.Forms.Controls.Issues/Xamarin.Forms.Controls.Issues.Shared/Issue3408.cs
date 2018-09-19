@@ -35,7 +35,10 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var grd = new Grid();
 
-			var aacountListView = new ListView();
+			var aacountListView = new ListView
+			{
+				AutomationId = "AccountDetailsDataTemplateSelector"
+			};
 			aacountListView.HasUnevenRows = true;
 			aacountListView.ItemTemplate = new AccountDetailsDataTemplateSelector();
 			aacountListView.BindingContext = new List<RecommendationsViewModel> { new RecommendationsViewModel() };
@@ -149,9 +152,9 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		public RecommendationsView()
 		{
-			Grid grd = new Grid();
 			var lst = new ListView
 			{
+				AutomationId = "SwitchCell",
 				ItemTemplate = new DataTemplate(() =>
 				{
 					var swittch = new SwitchCell();
@@ -163,8 +166,7 @@ namespace Xamarin.Forms.Controls.Issues
 			};
 
 			lst.SetBinding(ListView.ItemsSourceProperty, new Binding("Recommendations"));
-			grd.Children.Add(lst);
-			Content = grd;
+			Content = lst;
 		}
 
 		// This work around exists because of this issue
