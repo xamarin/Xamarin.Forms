@@ -237,9 +237,7 @@ namespace Xamarin.Forms.Platform.iOS
 		void OnNativeControlUpdated(object sender, EventArgs eventArgs)
 		{
 			var elementContentSize = RetrieveElementContentSize();
-			ContentSize = elementContentSize.IsEmpty ?
-											Bounds.Size
-											: elementContentSize;
+			ContentSize = elementContentSize.IsEmpty ? Bounds.Size : elementContentSize;
 		}
 
 		void OnScrollToRequested(object sender, ScrollToRequestedEventArgs e)
