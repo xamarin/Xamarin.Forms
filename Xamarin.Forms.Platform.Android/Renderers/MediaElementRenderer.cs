@@ -12,7 +12,7 @@ using Android.Runtime;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public sealed class MediaElementRenderer : ViewRenderer<MediaElement, FrameLayout>, MediaPlayer.IOnCompletionListener, MediaPlayer.IOnPreparedListener, IMediaElementRenderer
+	public sealed class MediaElementRenderer : ViewRenderer<MediaElement, FrameLayout>, MediaPlayer.IOnCompletionListener, MediaPlayer.IOnPreparedListener
 	{
 		MediaController _controller;
 		FormsVideoView _view;
@@ -22,88 +22,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			AutoPackage = false;
 		}
-
-		double IMediaElementRenderer.BufferingProgress
-		{
-			get
-			{
-				if (_view != null)
-				{
-					return _view.BufferPercentage / 100;
-				}
-
-				return 0.0;
-			}
-		}
-
-		TimeSpan? IMediaElementRenderer.Duration
-		{
-			get
-			{
-				if (_view != null)
-				{
-					return _view.DurationTimeSpan;
-				}
-
-				return null;
-			}
-		}
-
-		int IMediaElementRenderer.VideoHeight
-		{
-			get
-			{
-				if (_view != null)
-				{
-					return _view.VideoHeight;
-				}
-
-				return 0;
-			}
-		}
-
-		int IMediaElementRenderer.VideoWidth
-		{
-			get
-			{
-				if (_view != null)
-				{
-					return _view.VideoWidth;
-				}
-
-				return 0;
-			}
-		}
-
-		void IMediaElementRenderer.Seek(TimeSpan time)
-		{
-			if (Control != null)
-			{
-				try
-				{
-					_view?.SeekTo((int)time.TotalMilliseconds);
-				}
-				catch (ObjectDisposedException)
-				{
-				}
-			}
-		}
-
-		TimeSpan IMediaElementRenderer.Position
-		{
-			get
-			{
-				try
-				{
-					return TimeSpan.FromMilliseconds(_view.CurrentPosition);
-				}
-				catch
-				{
-					return TimeSpan.Zero;
-				}
-			}
-		}
-
+		
 		protected override void Dispose(bool disposing)
 		{
 			if (Control != null)
@@ -119,6 +38,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (_view != null)
 			{
+				_view.MetadataRetrieved -= MetadataRetrieved;
 				_view.SetOnPreparedListener(null);
 				_view.SetOnCompletionListener(null);
 				_view.Dispose();
@@ -150,6 +70,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (e.NewElement != null)
 			{
 				_view = new FormsVideoView(Context);
+				_view.MetadataRetrieved += MetadataRetrieved;
 				SetNativeControl(new FrameLayout(Context));
 
 				_view.SetZOrderMediaOverlay(true);
@@ -164,9 +85,54 @@ namespace Xamarin.Forms.Platform.Android
 				_controller.Visibility = Element.AreTransportControlsEnabled ? ViewStates.Visible : ViewStates.Gone;
 				_view.SetMediaController(_controller);
 
+				Element.SeekRequested += SeekRequested;
+				Element.StateRequested += StateRequested;
+
 				UpdateSource();
 			}
 		}
+
+		void MetadataRetrieved(object sender, EventArgs e)
+		{
+			((IMediaElementController)Element).Duration = _view.DurationTimeSpan;
+			((IMediaElementController)Element).VideoHeight = _view.VideoHeight;
+			((IMediaElementController)Element).VideoWidth = _view.VideoWidth;
+		}
+
+		void StateRequested(object sender, StateRequested e)
+		{
+			switch (e.State)
+			{
+				case MediaElementState.Playing:
+					_view.Start();
+					((IMediaElementController)Element).CurrentState = _view.IsPlaying ? MediaElementState.Playing : MediaElementState.Stopped;
+					break;
+
+				case MediaElementState.Paused:
+					if (_view.CanPause())
+					{
+						_view.Pause();
+						((IMediaElementController)Element).CurrentState = MediaElementState.Paused;
+					}
+					break;
+
+				case MediaElementState.Stopped:
+					_view.Pause();
+					_view.SeekTo(0);
+
+					((IMediaElementController)Element).CurrentState = _view.IsPlaying ? MediaElementState.Playing : MediaElementState.Stopped;
+					break;
+			}
+
+			UpdateLayoutParameters();
+			((IMediaElementController)Element).Position = _view.Position;
+		}
+
+		void SeekRequested(object sender, SeekRequested e)
+		{
+			((IMediaElementController)Element).Position = _view.Position;
+		}
+
 
 		void UpdateSource()
 		{
@@ -243,39 +209,7 @@ namespace Xamarin.Forms.Platform.Android
 				case nameof(MediaElement.Source):
 					UpdateSource();
 					break;
-
-				case nameof(MediaElement.CurrentState):
-					switch (Element.CurrentState)
-					{
-						case MediaElementState.Playing:
-							if (!_view.IsPlaying)
-							{
-								// To match other platforms seek to beginning if at end of video
-								if (_view.CurrentPosition == _view.Duration)
-									_view.SeekTo(0);
-
-								_view.Start();
-							}
-							((IMediaElementController)Element).CurrentState = _view.IsPlaying ? MediaElementState.Playing : MediaElementState.Stopped;
-							break;
-
-						case MediaElementState.Paused:
-							_view.Pause();
-							((IMediaElementController)Element).CurrentState = MediaElementState.Paused;
-							break;
-
-						case MediaElementState.Stopped:
-							if (_view.IsPlaying)
-							{
-								_view.SeekTo(0);
-								_view.StopPlayback();
-							}
-							((IMediaElementController)Element).CurrentState = _view.IsPlaying ? MediaElementState.Playing : MediaElementState.Stopped;
-							break;
-					}
-
-					break;
-
+				
 				case nameof(MediaElement.IsLooping):
 					if (_mediaPlayer != null)
 					{
