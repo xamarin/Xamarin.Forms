@@ -29,7 +29,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Issue2837Test()
 		{
 			RunningApp.WaitForElement(q => q.Text (_labelText));

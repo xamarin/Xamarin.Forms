@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class SearchBarUnitTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void TestConstructor ()
 		{
 			SearchBar searchBar = new SearchBar ();
@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Null (searchBar.Text);
 		}
 
-		[Test]
+		
 		public void TestContentsChanged ()
 		{
 			SearchBar searchBar = new SearchBar ();
@@ -32,7 +32,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (thrown);
 		}
 
-		[Test]
+		
 		public void TestSearchButtonPressed ()
 		{
 			SearchBar searchBar = new SearchBar ();
@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (thrown);
 		}
 
-		[Test]
+		
 		public void TestSearchCommandParameter ()
 		{
 			var searchBar = new SearchBar ();
@@ -86,7 +86,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (finalText, newText);
 		}
 
-		[Test]
+		
 		public void CommandCanExecuteUpdatesEnabled ()
 		{
 			var searchBar = new SearchBar ();
@@ -123,7 +123,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	        public event EventHandler CanExecuteChanged;
 	    }
 
-	    [Test]
+	    
 	    public void DoesNotCrashWithNonCommandICommand()
 	    {
 	        var searchBar = new SearchBar();

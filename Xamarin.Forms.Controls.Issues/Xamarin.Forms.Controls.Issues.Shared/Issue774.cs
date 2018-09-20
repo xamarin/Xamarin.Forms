@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Issue774TestsDismissActionSheetAfterRotation ()
 		{
 			RunningApp.Tap(q => q.Button("Show ActionSheet"));

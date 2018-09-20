@@ -47,7 +47,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			return stateGroups;
 		}
 
-		[Test]
+		
 		public void InitialStateIsNormalIfAvailable()
 		{
 			var label1 = new Label();
@@ -59,7 +59,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(groups1[0].CurrentState.Name, Is.EqualTo(NormalStateName));
 		}
 
-		[Test]
+		
 		public void InitialStateIsNullIfNormalNotAvailable()
 		{
 			var label1 = new Label();
@@ -71,7 +71,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Null(groups1[0].CurrentState);
 		}
 
-		[Test]
+		
 		public void VisualElementsStateGroupsAreDistinct()
 		{
 			var label1 = new Label();
@@ -94,7 +94,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(groups2[0].CurrentState.Name, Is.EqualTo(NormalStateName));
 		}
 
-		[Test]
+		
 		public void VisualStateGroupsFromSettersAreDistinct()
 		{
 			var x = new Setter();
@@ -124,14 +124,14 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(groups2[0].CurrentState.Name, Is.EqualTo(NormalStateName));
 		}
 
-		[Test]
+		
 		public void ElementsDoNotHaveVisualStateGroupsCollectionByDefault()
 		{
 			var label1 = new Label();
 			Assert.False(label1.HasVisualStateGroups());
 		}
 
-		[Test]
+		
 		public void StateNamesMustBeUniqueWithinGroup()
 		{
 			IList<VisualStateGroup> vsgs = CreateTestStateGroups();
@@ -141,7 +141,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Throws<InvalidOperationException>(() => vsgs[0].States.Add(duplicate));
 		}
 
-		[Test]
+		
 		public void StateNamesMustBeUniqueWithinGroupList()
 		{
 			IList<VisualStateGroup> vsgs = CreateTestStateGroups();
@@ -156,7 +156,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Throws<InvalidOperationException>(() => secondGroup.States.Add(duplicate));
 		}
 
-		[Test]
+		
 		public void StateNamesMustBeUniqueWithinGroupListWhenAddingGroup()
 		{
 			IList<VisualStateGroup> vsgs = CreateTestStateGroups();
@@ -171,7 +171,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Throws<InvalidOperationException>(() => vsgs.Add(secondGroup));
 		}
 
-		[Test]
+		
 		public void GroupNamesMustBeUniqueWithinGroupList()
 		{
 			IList<VisualStateGroup> vsgs = CreateTestStateGroups();
@@ -180,7 +180,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Throws<InvalidOperationException>(() => vsgs.Add(secondGroup));
 		}
 
-		[Test]
+		
 		public void StateNamesInGroupMayNotBeNull()
 		{
 			IList<VisualStateGroup> vsgs = CreateTestStateGroups();
@@ -190,7 +190,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Throws<InvalidOperationException>(() => vsgs[0].States.Add(nullStateName));
 		}
 
-		[Test]
+		
 		public void StateNamesInGroupMayNotBeEmpty()
 		{
 			IList<VisualStateGroup> vsgs = CreateTestStateGroups();
@@ -200,7 +200,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Throws<InvalidOperationException>(() => vsgs[0].States.Add(emptyStateName));
 		}
 
-		[Test]
+		
 		public void VerifyVisualStateChanges()
 		{
 			var label1 = new Label();
@@ -230,7 +230,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		}
 
-		[Test]
+		
 		public void VisualElementGoesToCorrectStateWhenAvailable()
 		{
 			var label = new Label();
@@ -250,7 +250,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(label.Margin.Bottom, Is.EqualTo(targetBottomMargin));
 		}
 
-		[Test]
+		
 		public void VisualElementGoesToCorrectStateWhenAvailableFromSetter()
 		{
 			double targetBottomMargin = 1.5;
@@ -280,7 +280,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(label2.Margin.Bottom, Is.EqualTo(targetBottomMargin));
 		}
 
-		[Test]
+		
 		public void CanRemoveAStateAndAddANewStateWithTheSameName()
 		{
 			var stateGroups = new VisualStateGroupList();
@@ -299,7 +299,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			visualStateGroup.States.Add(new VisualState { Name = name });
 		}
 
-		[Test]
+		
 		public void CanRemoveAGroupAndAddANewGroupWithTheSameName()
 		{
 			var stateGroups = new VisualStateGroupList();
@@ -321,7 +321,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			stateGroups.Add(new VisualStateGroup { Name = name });
 		}
 
-		[Test]
+		
 		[Explicit("This test was created to check performance characteristics; leaving it in because it may be useful again.")]
 		[TestCase(1, 10)]
 		[TestCase(1, 10000)]

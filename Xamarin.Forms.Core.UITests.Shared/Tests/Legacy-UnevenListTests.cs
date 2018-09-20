@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Core.UITests
 			App.NavigateToGallery(GalleryQueries.UnevenListGalleryLegacy);
 		}
 
-		[Test]
+		
 		public void UnevenListCellTest()
 		{
 			if (UnevenListTests.ShouldRunTest(App))

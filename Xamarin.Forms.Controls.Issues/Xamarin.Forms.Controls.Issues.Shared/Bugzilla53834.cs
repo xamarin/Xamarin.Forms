@@ -83,7 +83,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if (UITEST && __IOS__)
-		[Test]
+		
 		[Category(UITestCategories.ManualReview)]
 		public void Bugzilla53834Test()
 		{

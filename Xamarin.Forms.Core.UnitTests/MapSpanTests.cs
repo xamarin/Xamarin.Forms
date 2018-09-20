@@ -6,7 +6,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class MapSpanTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void Constructor ()
 		{
 			var span = new MapSpan (new Position(0, 0), 1, 1);
@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue (span.Radius.Kilometers > 54 && span.Radius.Kilometers < 56);
 		}
 
-		[Test]
+		
 		public void Equals ()
 		{
 			Assert.True (new MapSpan (new Position (1, 2), 3, 4) == new MapSpan (new Position (1, 2), 3, 4));
@@ -27,13 +27,13 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (new MapSpan (new Position (1, 2), 3, 4).Equals (null));
 		}
 
-		[Test]
+		
 		public void HashCode ()
 		{
 			Assert.AreEqual (new MapSpan (new Position (1, 2), 3, 4).GetHashCode (), new MapSpan (new Position (1, 2), 3, 4).GetHashCode ());
 		}
 
-		[Test]
+		
 		public void RangeClamping ()
 		{
 			var span = new MapSpan (new Position (0, 0), -1, -2);

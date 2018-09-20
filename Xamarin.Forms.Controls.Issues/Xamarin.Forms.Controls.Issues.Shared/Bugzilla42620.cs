@@ -291,7 +291,7 @@ namespace Xamarin.Forms.Controls.Issues
 			_colDef++;
 			_totalWidth = Math.Max(_colDef, _totalWidth);
 		}
-		[Test]
+		
 		public void Issue42620Test()
 		{
 			Issue42620Test("RCRHVHVHVHVHV");

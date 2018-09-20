@@ -7,7 +7,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class ObservableWrapperTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void Constructor ()
 		{
 			var observableCollection = new ObservableCollection<View> ();
@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Throws<ArgumentNullException> (() => new ObservableWrapper<View, View> (null));
 		}
 
-		[Test]
+		
 		public void IgnoresInternallyAdded ()
 		{
 			var observableCollection = new ObservableCollection<View> ();
@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsEmpty (wrapper);
 		}
 
-		[Test]
+		
 		public void TracksExternallyAdded ()
 		{
 			var observableCollection = new ObservableCollection<View> ();
@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (child, observableCollection[0]);
 		}
 
-		[Test]
+		
 		public void AddWithInternalItemsAlreadyAdded ()
 		{
 			var observableCollection = new ObservableCollection<View> ();
@@ -66,7 +66,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (2, observableCollection.Count);
 		}
 
-		[Test]
+		
 		public void IgnoresInternallyAddedSameType ()
 		{
 			var observableCollection = new ObservableCollection<View> ();
@@ -79,7 +79,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsEmpty (wrapper);
 		}
 
-		[Test]
+		
 		public void TracksExternallyAddedSameType ()
 		{
 			var observableCollection = new ObservableCollection<View> ();
@@ -93,7 +93,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (child, observableCollection[0]);
 		}
 
-		[Test]
+		
 		public void AddWithInternalItemsAlreadyAddedSameType ()
 		{
 			var observableCollection = new ObservableCollection<View> ();
@@ -114,7 +114,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (2, observableCollection.Count);
 		}
 
-		[Test]
+		
 		public void CannotRemoveInternalItem ()
 		{
 			var observableCollection = new ObservableCollection<View> ();
@@ -131,7 +131,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Contains (child, observableCollection);
 		}
 
-		[Test]
+		
 		public void ReadOnly ()
 		{
 			var observableCollection = new ObservableCollection<View> ();
@@ -152,7 +152,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Throws<NotSupportedException> (wrapper.Clear);
 		}
 
-		[Test]
+		
 		public void Indexer ()
 		{
 			var observableCollection = new ObservableCollection<View> ();
@@ -167,7 +167,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (newButton, wrapper[0]);
 		}
 
-		[Test]
+		
 		public void IndexerSameType ()
 		{
 			var observableCollection = new ObservableCollection<View> ();
@@ -182,7 +182,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (newButton, wrapper[0]);
 		}
 
-		[Test]
+		
 		public void CopyTo ()
 		{
 			var observableCollection = new ObservableCollection<View> ();
@@ -213,7 +213,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (target[6], child5);
 		}
 
-		[Test]
+		
 		public void INCCSimpleAdd ()
 		{
 			var oc = new ObservableCollection<View> ();
@@ -234,7 +234,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (child, addedResult);
 		}
 
-		[Test]
+		
 		public void INCCSimpleAddToInner ()
 		{
 			var oc = new ObservableCollection<View> ();
@@ -255,7 +255,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (null, addedResult);
 		}
 
-		[Test]
+		
 		public void INCCComplexAdd ()
 		{
 			var oc = new ObservableCollection<View> ();
@@ -278,7 +278,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (child, addedResult);
 		}
 
-		[Test]
+		
 		public void INCCSimpleRemove ()
 		{
 			var oc = new ObservableCollection<View> ();
@@ -300,7 +300,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (child, removedResult);
 		}
 
-		[Test]
+		
 		public void INCCSimpleRemoveFromInner ()
 		{
 			var oc = new ObservableCollection<View> ();
@@ -322,7 +322,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (null, addedResult);
 		}
 
-		[Test]
+		
 		public void INCCComplexRemove ()
 		{
 			var oc = new ObservableCollection<View> ();
@@ -346,7 +346,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (0, removeIndex);
 		}
 
-		[Test]
+		
 		public void INCCComplexRemoveLast ()
 		{
 			var oc = new ObservableCollection<View> ();
@@ -372,7 +372,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (2, removeIndex);
 		}
 
-		[Test]
+		
 		public void INCCReplace ()
 		{
 			var oc = new ObservableCollection<View> ();

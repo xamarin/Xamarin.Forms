@@ -78,7 +78,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void TGroupDisplayBindingPresentRecycleElementTest()
 		{
 			RunningApp.WaitForElement(q => q.Marked("vegetables"));

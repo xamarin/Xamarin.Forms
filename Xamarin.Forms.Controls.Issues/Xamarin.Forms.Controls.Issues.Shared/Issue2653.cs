@@ -150,7 +150,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 // https://github.com/xamarin/Xamarin.Forms/issues/2989
 #if UITEST && !__ANDROID__
-		[Test]
+		
 		public void ZIndexWhenInsertingChildren()
 		{
 			RunningApp.WaitForElement(x => x.Marked(ButtonText));
@@ -160,7 +160,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement(x => x.Marked(Success));
 		}
 
-		[Test]
+		
 		public void InsertThenAddSetsZIndex()
 		{
 			RunningApp.WaitForElement(x => x.Marked(ClickShouldAddText));
@@ -179,7 +179,7 @@ namespace Xamarin.Forms.Controls.Issues
 		
 
 
-		[Test]
+		
 		public void MoveUpAndMoveDown()
 		{
 			RunningApp.WaitForElement(x => x.Marked(MoveUp));

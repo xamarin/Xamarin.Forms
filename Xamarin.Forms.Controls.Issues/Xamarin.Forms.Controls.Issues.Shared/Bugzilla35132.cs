@@ -71,7 +71,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST 
-		[Test]
+		
 		public void PagesAreCollected()
 		{
 			RunningApp.WaitForElement (q => q.Marked ("Open"));

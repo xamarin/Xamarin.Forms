@@ -7,7 +7,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class TextCellTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void TestTapped ()
 		{
 			var cell = new TextCell ();
@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (executed, Is.EqualTo(canExecute));
 		}
 
-		[Test]
+		
 		public void TestCommand()
 		{
 			bool executed = false;
@@ -44,7 +44,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue (executed, "Command was not executed");
 		}
 
-		[Test]
+		
 		public void TestCommandParameter()
 		{
 			bool executed = false;
@@ -65,7 +65,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue (executed, "Command was not executed");
 		}
 
-		[Test]
+		
 		public void TestCommandCanExecute()
 		{
 			bool tested = false;
@@ -80,7 +80,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue (tested, "Command.CanExecute was not called");
 		}
 
-		[Test]
+		
 		public void TestCommandCanExecuteDisables()
 		{
 			var cmd = new Command (() => { }, () => false);
@@ -88,7 +88,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsFalse (cell.IsEnabled, "Cell was not disabled");
 		}
 
-		[Test]
+		
 		public void TestCommandCanExecuteChanged()
 		{
 			bool first = true;
@@ -109,7 +109,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue (cell.IsEnabled, "Cell was not reenabled");
 		}
 
-		[Test]
+		
 		public void Create ()
 		{
 			var template = new DataTemplate (typeof (TextCell));
@@ -119,7 +119,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (content, Is.InstanceOf<TextCell> ());
 		}
 
-		[Test]
+		
 		public void Detail ()
 		{
 			var template = new DataTemplate (typeof (TextCell));
@@ -129,7 +129,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (cell.Detail, Is.EqualTo ("detail"));
 		}
 
-		[Test]
+		
 		public void Text ()
 		{
 			var template = new DataTemplate (typeof (TextCell));

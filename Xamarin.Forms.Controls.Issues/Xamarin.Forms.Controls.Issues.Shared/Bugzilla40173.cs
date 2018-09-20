@@ -27,7 +27,7 @@ namespace Xamarin.Forms.Controls.Issues
 		const string ListTapSuccessText = "ItemTapped";
 
 #if UITEST
-		[Test]
+		
 		public void ButtonBlocked()
 		{
 			RunningApp.Tap(q => q.All().Marked(CantTouchButtonId));

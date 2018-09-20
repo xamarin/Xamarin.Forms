@@ -57,7 +57,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Device.PlatformServices = null;
 		}
 
-		[Test]
+		
 		public void GetGlobalInstance ()
 		{
 			var global = DependencyService.Get<IDependencyTest> ();
@@ -69,7 +69,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (ReferenceEquals (global, secondFetch));
 		}
 
-		[Test]
+		
 		public void NewInstanceIsNotGlobalInstance ()
 		{
 			var global = DependencyService.Get<IDependencyTest> ();
@@ -81,7 +81,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (ReferenceEquals (global, secondFetch));
 		}
 
-		[Test]
+		
 		public void NewInstanceIsAlwaysNew ()
 		{
 			var firstFetch = DependencyService.Get<IDependencyTest> (DependencyFetchTarget.NewInstance);
@@ -93,13 +93,13 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (ReferenceEquals (firstFetch, secondFetch));
 		}
 
-		[Test]
+		
 		public void UnsatisfiedReturnsNull ()
 		{
 			Assert.Null (DependencyService.Get<IUnsatisfied> ());
 		}
 
-		[Test]
+		
 		public void RegisterTypeImplementation ()
 		{
 			DependencyService.Register<DependencyTestRegisterImpl> ();
@@ -108,7 +108,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 
-		[Test]
+		
 		public void RegisterInterfaceAndImplementations ()
 		{
 			DependencyService.Register<IDependencyTestRegister, DependencyTestRegisterImpl2> ();
@@ -116,7 +116,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsInstanceOf<DependencyTestRegisterImpl2> (global);
 		}
 
-		[Test]
+		
 		public void RegisterInterfaceAndOverrideImplementations ()
 		{
 			DependencyService.Register<IDependencyTestRegister, DependencyTestRegisterImpl> ();

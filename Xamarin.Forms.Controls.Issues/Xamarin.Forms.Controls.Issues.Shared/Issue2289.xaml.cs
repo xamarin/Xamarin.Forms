@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Controls.Issues
 		public ICommand DeleteCommand { get; protected set; }
 
 #if UITEST && __IOS__
-		[Test]
+		
 		[Ignore("Fails sometimes on XTC")]
 		public void TestIsEnabledFalse ()
 		{
@@ -55,7 +55,7 @@ namespace Xamarin.Forms.Controls.Issues
 			Assert.IsFalse (disable2.Enabled);
 		}
 
-		[Test]
+		
 		[Ignore("Fails sometimes on XTC")]
 		public void TestIsEnabledFalseContextActions ()
 		{
@@ -71,7 +71,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.TapCoordinates (screenBounds.CenterX, screenBounds.CenterY);
 		}
 
-		[Test]
+		
 		[Ignore("Fails sometimes on XTC")]
 		public void TestIsEnabledTrue ()
 		{
@@ -81,7 +81,7 @@ namespace Xamarin.Forms.Controls.Issues
 			Assert.IsTrue (disable2.Enabled);
 		}
 
-		[Test]
+		
 		[Ignore("Fails sometimes on XTC")]
 		public void TestIsEnabledTrueContextActions ()
 		{

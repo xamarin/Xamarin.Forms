@@ -40,7 +40,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Issue2767Test()
 		{
 			RunningApp.WaitForElement("Label 1:1");

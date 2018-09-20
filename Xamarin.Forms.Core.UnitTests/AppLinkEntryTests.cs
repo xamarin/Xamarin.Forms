@@ -7,7 +7,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	public class AppLinkEntryTests : BaseTestFixture
 	{
 
-		[Test]
+		
 		public void KeyValuesTest()
 		{
 			var entry = new AppLinkEntry();
@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 
-		[Test]
+		
 		public void FromUriTest()
 		{
 			var uri = new Uri("http://foo.com");
@@ -28,7 +28,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(uri, entry.AppLinkUri);
 		}
 
-		[Test]
+		
 		public void ToStringTest()
 		{
 			var str = "http://foo.com";

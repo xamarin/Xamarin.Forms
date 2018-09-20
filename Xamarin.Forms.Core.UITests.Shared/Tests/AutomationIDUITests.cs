@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Core.UITests
 			App.NavigateToGallery (GalleryQueries.AutomationIDGallery);
 		}
 
-		[Test]
+		
 		public void Test1 ()
 		{
 			App.WaitForElement(c => c.Marked("btnTest1"));
@@ -41,7 +41,7 @@ namespace Xamarin.Forms.Core.UITests
 		}
 
 
-		[Test]
+		
 		public async void Test2()
 		{
 			await Task.Delay(1000);
@@ -60,7 +60,7 @@ namespace Xamarin.Forms.Core.UITests
 			App.Tap (c => c.Marked ("popModal"));
 		}
 #if __IOS__
-		[Test]
+		
 		public void TestToolbarItem ()
 		{
 			App.Tap (c => c.Marked ("tbItemHello"));

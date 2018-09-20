@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class NavigationUnitTest : BaseTestFixture
 	{
-		[Test]
+		
 		public async Task TestNavigationImplPush ()
 		{
 			NavigationPage nav = new NavigationPage ();
@@ -27,7 +27,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreSame(nav.RootPage, nav.CurrentPage);
 		}
 
-		[Test]
+		
 		public async Task TestNavigationImplPop ()
 		{
 			NavigationPage nav = new NavigationPage ();
@@ -65,7 +65,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreSame(nav.RootPage, nav.CurrentPage);
 		}
 
-		[Test]
+		
 		public async Task TestPushRoot ()
 		{
 			NavigationPage nav = new NavigationPage ();
@@ -83,7 +83,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreSame(nav.RootPage, nav.CurrentPage);
 		}
 
-		[Test]
+		
 		public async Task TestPushEvent ()
 		{
 			NavigationPage nav = new NavigationPage ();
@@ -99,7 +99,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (fired);
 		}
 
-		[Test]
+		
 		public async Task TestDoublePush ()
 		{
 			NavigationPage nav = new NavigationPage ();
@@ -123,7 +123,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreSame(nav.RootPage, nav.CurrentPage);
 		}
 
-		[Test]
+		
 		public async Task TestPop ()
 		{
 			NavigationPage nav = new NavigationPage ();
@@ -151,7 +151,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsNull (last);
 		}
 
-		[Test]
+		
 		public void TestTint ()
 		{
 			var nav = new NavigationPage ();
@@ -170,7 +170,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (signaled);
 		}
 
-		[Test]
+		
 		public void TestTintDoubleSet ()
 		{
 			var nav = new NavigationPage ();
@@ -186,7 +186,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (signaled);
 		}
 
-		[Test]
+		
 		public async Task TestPopToRoot ()
 		{
 			var nav = new NavigationPage ();
@@ -210,7 +210,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreSame(nav.RootPage, nav.CurrentPage);
 		}
 
-		[Test]
+		
 		public async Task TestPopToRootEventArgs ()
 		{
 			var nav = new NavigationPage ();
@@ -237,7 +237,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreSame(nav.RootPage, nav.CurrentPage);
 		}
 
-		[Test]
+		
 		public async Task PeekOne()
 		{
 			var nav = new NavigationPage();
@@ -256,7 +256,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(((INavigationPageController)nav).Peek(1), child1);
 		}
 
-		[Test]
+		
 		public async Task PeekZero()
 		{
 			var nav = new NavigationPage();
@@ -276,7 +276,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(((INavigationPageController)nav).Peek(), child2);
 		}
 
-		[Test]
+		
 		public async Task PeekPastStackDepth()
 		{
 			var nav = new NavigationPage();
@@ -295,7 +295,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(((INavigationPageController)nav).Peek(3), null);
 		}
 
-		[Test]
+		
 		public async Task PeekShallow()
 		{
 			var nav = new NavigationPage();
@@ -314,7 +314,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(((INavigationPageController)nav).Peek(-1), null);
 		}
 
-		[Test]
+		
 		public async Task PeekEmpty([Range(0, 3)] int depth)
 		{
 			var nav = new NavigationPage();
@@ -326,7 +326,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 
-		[Test]
+		
 		public void ConstructWithRoot ()
 		{
 			var root = new ContentPage ();
@@ -338,7 +338,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		}
 
-		[Test]
+		
 		public void TitleViewSetProperty()
 		{
 			var root = new ContentPage();
@@ -353,7 +353,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreSame(result, target);
 		}
 
-		[Test]
+		
 		public void TitleViewSetsParentWhenAdded()
 		{
 			var root = new ContentPage();
@@ -366,7 +366,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreSame(root, target.Parent);
 		}
 
-		[Test]
+		
 		public void TitleViewClearsParentWhenRemoved()
 		{
 			var root = new ContentPage();
@@ -381,7 +381,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsNull(target.Parent);
 		}
 
-		[Test]
+		
 		public async Task NavigationChangedEventArgs ()
 		{
 			var rootPage = new ContentPage { Title = "Root" };
@@ -410,7 +410,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (rootArg, secondPushPage);
 		}
 
-		[Test]
+		
 		public async Task CurrentPageChanged()
 		{
 			var root = new ContentPage { Title = "Root" };
@@ -440,7 +440,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (changed, Is.True, "PropertyChanged was not raised for 'CurrentPage'");
 		}
 
-		[Test]
+		
 		public async void HandlesPopToRoot ()
 		{
 			var root = new ContentPage { Title = "Root" };
@@ -459,7 +459,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (popped);
 		}
 
-		[Test]
+		
 		public void SendsBackButtonEventToCurrentPage ()
 		{
 			var current = new BackButtonPage ();
@@ -473,7 +473,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (emitted);
 		}
 
-		[Test]
+		
 		public void DoesNotSendBackEventToNonCurrentPage ()
 		{
 			var current = new BackButtonPage ();
@@ -488,7 +488,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (emitted);
 		}
 
-		[Test]
+		
 		public async void NavigatesBackWhenBackButtonPressed ()
 		{
 			var root = new ContentPage { Title = "Root" };
@@ -502,7 +502,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (result);
 		}
 
-		[Test]
+		
 		public async void DoesNotNavigatesBackWhenBackButtonPressedIfHandled ()
 		{
 			var root = new BackButtonPage { Title = "Root" };
@@ -516,7 +516,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (second, navPage.CurrentPage);
 		}
 
-		[Test]
+		
 		public void DoesNotHandleBackButtonWhenNoNavStack ()
 		{
 			var root = new ContentPage { Title = "Root" };
@@ -526,7 +526,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (result);
 		}
 
-		[Test]
+		
 		public void TestInsertPage()
 		{
 			var root = new ContentPage { Title = "Root" };
@@ -561,7 +561,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			});
 		}
 
-		[Test]
+		
 		public async void TestRemovePage()
 		{
 			var root = new ContentPage { Title = "Root" };
@@ -603,7 +603,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (navPage.CurrentPage, Is.SameAs (root));
 		}
 		
-		[Test]
+		
 		[Property("Bugzilla", 31171)]
 		public async Task ReleasesPoppedPage()
 		{

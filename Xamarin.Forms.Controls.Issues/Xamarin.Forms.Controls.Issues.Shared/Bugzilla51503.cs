@@ -61,7 +61,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-[Test]
+
 		public void Issue51503Test()
 		{
 			for (int i = 0; i < 3; i++)

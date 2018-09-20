@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void TestItDoesntCrashWithWrongIconName ()
 		{
 			RunningApp.WaitForElement(c=>c.Marked("Hello Toolbaritem"));

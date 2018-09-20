@@ -29,7 +29,7 @@ namespace Xamarin.Forms.Controls.Issues
 		// Text wrapping issue in Label
 
 #if UITEST
-		[Test]
+		
 		[Category(UITestCategories.ManualReview)]
 		public void Issue488TestsLongTextRotation ()
 		{

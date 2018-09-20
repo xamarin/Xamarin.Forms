@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Core.UITests
 			Assert.Inconclusive("Does not make sense for WebView");
 		}
 
-		[Test]
+		
 		[Category(UITestCategories.ManualReview)]
 		[Ignore("Keep empty test from failing in Test Cloud")]
 		public override void _IsVisible()
@@ -45,49 +45,49 @@ namespace Xamarin.Forms.Core.UITests
 		{
 		}
 
-		[Test]
+		
 		[Category(UITestCategories.ManualReview)]
 		[Ignore("Keep empty test from failing in Test Cloud")]
 		public override void _Opacity()
 		{
 		}
 
-		[Test]
+		
 		[Category(UITestCategories.ManualReview)]
 		[Ignore("Keep empty test from failing in Test Cloud")]
 		public override void _Rotation()
 		{
 		}
 
-		[Test]
+		
 		[Category(UITestCategories.ManualReview)]
 		[Ignore("Keep empty test from failing in Test Cloud")]
 		public override void _RotationX()
 		{
 		}
 
-		[Test]
+		
 		[Category(UITestCategories.ManualReview)]
 		[Ignore("Keep empty test from failing in Test Cloud")]
 		public override void _RotationY()
 		{
 		}
 
-		[Test]
+		
 		[Category(UITestCategories.ManualReview)]
 		[Ignore("Keep empty test from failing in Test Cloud")]
 		public override void _TranslationX()
 		{
 		}
 
-		[Test]
+		
 		[Category(UITestCategories.ManualReview)]
 		[Ignore("Keep empty test from failing in Test Cloud")]
 		public override void _TranslationY()
 		{
 		}
 
-		[Test]
+		
 		[Category(UITestCategories.ManualReview)]
 		[Ignore("Keep empty test from failing in Test Cloud")]
 		public override void _Scale()

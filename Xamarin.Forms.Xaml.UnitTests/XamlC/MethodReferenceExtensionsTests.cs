@@ -21,7 +21,7 @@ namespace Xamarin.Forms.Xaml.XamlcUnitTests
 			module = ModuleDefinition.CreateModule ("foo", ModuleKind.Dll);
 		}
 
-		[Test]
+		
 		public void ResolveRowDefAdder ()
 		{
 			var propertyType = module.ImportReference(typeof (RowDefinitionCollection));
@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Xaml.XamlcUnitTests
 			Assert.AreEqual ("System.Void Xamarin.Forms.DefinitionCollection`1<Xamarin.Forms.RowDefinition>::Add(T)", adderRef.FullName);
 		}
 
-		[Test]
+		
 		public void GenericGetter ()
 		{
 			TypeReference declaringTypeReference;
@@ -55,7 +55,7 @@ namespace Xamarin.Forms.Xaml.XamlcUnitTests
 			Assert.AreEqual ("System.Collections.Generic.IList`1<Xamarin.Forms.View>", returnType.FullName);
 		}
 
-		[Test]
+		
 		public void GetterWithGenericReturnType ()
 		{
 			TypeReference declaringTypeReference;
@@ -74,7 +74,7 @@ namespace Xamarin.Forms.Xaml.XamlcUnitTests
 			Assert.AreEqual ("System.Collections.Generic.IList`1<Xamarin.Forms.Setter>", returnType.FullName);
 		}
 
-		[Test]
+		
 		public void ResolveChildren ()
 		{
 			var propertyType = module.ImportReference (typeof (IList<View>));

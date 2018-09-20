@@ -64,14 +64,14 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Issue2923TestOne ()
 		{
 			RunningApp.WaitForElement (q => q.Marked ("FirstPageLabel"));
 			RunningApp.Screenshot ("First Tab is showing");
 		}
 
-		[Test]
+		
 		public void Issue2923TestTwo ()
 		{
 			RunningApp.Tap (q => q.Marked ("ResetButton"));

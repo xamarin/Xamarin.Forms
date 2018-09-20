@@ -7,7 +7,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	public class EffectiveFlowDirectionExtensions : BaseTestFixture
 	{
 
-		[Test]
+		
 		public void LeftToRightImplicit()
 		{
 			var target = FlowDirection.LeftToRight.ToEffectiveFlowDirection();
@@ -19,7 +19,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsFalse(target.IsExplicit());
 		}
 
-		[Test]
+		
 		public void LeftToRightExplicit()
 		{
 			var target = FlowDirection.LeftToRight.ToEffectiveFlowDirection(isExplicit: true);
@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsFalse(target.IsImplicit());
 		}
 
-		[Test]
+		
 		public void RightToLeftImplicit()
 		{
 			var target = FlowDirection.RightToLeft.ToEffectiveFlowDirection();
@@ -43,7 +43,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsFalse(target.IsExplicit());
 		}
 
-		[Test]
+		
 		public void RightToLeftExplicit()
 		{
 			var target = FlowDirection.RightToLeft.ToEffectiveFlowDirection(isExplicit: true);

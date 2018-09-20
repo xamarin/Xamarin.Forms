@@ -7,20 +7,20 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class PointTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void TestPointEquality ()
 		{
 			Assert.True (new Point (0, 1) != new Point (1, 0));
 			Assert.True (new Point (5, 5) == new Point (5, 5));
 		}
 
-		[Test]
+		
 		public void TestPointDistance ()
 		{
 			Assert.That (new Point (2, 2).Distance (new Point (5, 6)), Is.EqualTo (5).Within (0.001));
 		}
 
-		[Test]
+		
 		public void TestPointMath ()
 		{
 			var point = new Point (2, 3) + new Size (3, 2);
@@ -30,7 +30,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Point (1, 1), point);
 		}
 
-		[Test]
+		
 		public void TestPointFromSize ()
 		{
 			var point = new Point (new Size (10, 20));
@@ -39,7 +39,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (20, point.Y);
 		}
 
-		[Test]
+		
 		public void TestPointOffset ()
 		{
 			var point = new Point (2, 2);
@@ -49,7 +49,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Point (12, 22), point);
 		}
 
-		[Test]
+		
 		public void TestPointRound ()
 		{
 			var point = new Point (2.4, 2.7);
@@ -59,7 +59,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (Math.Round (2.7), point.Y);
 		}
 
-		[Test]
+		
 		public void TestPointEmpty ()
 		{
 			var point = new Point ();
@@ -67,7 +67,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (point.IsEmpty);
 		}
 
-		[Test]
+		
 		public void TestPointHashCode ([Range (3, 6)] double x1, [Range (3, 6)] double y1, [Range (3, 6)] double x2,
 		                               [Range (3, 6)] double y2)
 		{
@@ -78,7 +78,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				Assert.False (result);
 		}
 
-		[Test]
+		
 		public void TestSizeFromPoint ()
 		{
 			var point = new Point (2, 4);
@@ -87,7 +87,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Size (2, 4), size);
 		}
 
-		[Test]
+		
 		public void TestPointEquals ()
 		{
 			var point = new Point (2, 4);
@@ -97,7 +97,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (point.Equals ("Point"));
 		}
 
-		[Test]
+		
 		[TestCase (0, 0, ExpectedResult = "{X=0 Y=0}")]
 		[TestCase (5, 2, ExpectedResult = "{X=5 Y=2}")]
 		public string TestPointToString (double x, double y)
@@ -105,7 +105,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			return new Point (x, y).ToString ();
 		}
 
-		[Test]
+		
 		public void TestPointTypeConverter ()
 		{
 			var converter = new PointTypeConverter ();

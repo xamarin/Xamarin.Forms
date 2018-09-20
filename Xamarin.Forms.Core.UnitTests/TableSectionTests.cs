@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Device.PlatformServices = null;
 		}
 
-		[Test]
+		
 		public void Constructor ()
 		{
 			var section = new TableSection ("Title");
@@ -28,14 +28,14 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (section, Is.Empty);
 		}
 
-		[Test]
+		
 		public void IsReadOnly ()
 		{
 			var section = new TableSection () as ICollection<Cell>;
 			Assert.False (section.IsReadOnly);
 		}
 
-		[Test]
+		
 		public void Add ()
 		{
 			var section = new TableSection ();
@@ -47,7 +47,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (section, NContains.Item (second));
 		}
 
-		[Test]
+		
 		public void Remove ()
 		{
 			var section = new TableSection ();
@@ -60,7 +60,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (section, Has.No.Contains (first));
 		}
 
-		[Test]
+		
 		public void Clear ()
 		{
 			var section = new TableSection {new TextCell { Text = "Text" }, new TextCell { Text = "Text" }};
@@ -68,7 +68,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (section, Is.Empty);
 		}
 
-		[Test]
+		
 		public void Contains ()
 		{
 			var section = new TableSection ();
@@ -80,7 +80,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (section.Contains (second));
 		}
 
-		[Test]
+		
 		public void IndexOf ()
 		{
 			var section = new TableSection ();
@@ -92,7 +92,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (1, section.IndexOf (second));
 		}
 
-		[Test]
+		
 		public void Insert ()
 		{
 			var section = new TableSection ();
@@ -104,7 +104,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (third, section[1]);
 		}
 
-		[Test]
+		
 		public void RemoveAt ()
 		{
 			var section = new TableSection ();
@@ -116,7 +116,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (section, Has.No.Contains (first));
 		}
 
-		[Test]
+		
 		public void Overwrite ()
 		{
 			var section = new TableSection ();
@@ -131,7 +131,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (section, Has.No.Contains (second));
 		}
 
-		[Test]
+		
 		public void CopyTo ()
 		{
 			var section = new TableSection ();
@@ -146,7 +146,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (second, cells[1]);
 		}
 
-		[Test]
+		
 		public void ChainsBindingContextOnSet ()
 		{
 			var section = new TableSection ();
@@ -162,7 +162,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (bindingContext, second.BindingContext);
 		}
 
-		[Test]
+		
 		public void ChainsBindingContextWithExistingContext ()
 		{
 			var section = new TableSection ();
@@ -180,7 +180,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (bindingContext, second.BindingContext);
 		}
 
-		[Test]
+		
 		public void ChainsBindingContextToNewlyAdded ()
 		{
 			var section = new TableSection ();
@@ -195,7 +195,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (bindingContext, second.BindingContext);
 		}
 
-		[Test]
+		
 		public void TestBindingTitleSectionChange ()
 		{
 			var vm = new MockViewModel { Text = "FooBar" };
@@ -211,7 +211,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("Baz", section.Title);
 		}
 	
-		[Test]
+		
 		public void TestBindingTitle ()
 		{
 			var section = new TableSection ();

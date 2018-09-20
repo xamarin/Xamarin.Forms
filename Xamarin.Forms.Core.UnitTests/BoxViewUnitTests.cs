@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class BoxViewUnitTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void TestConstructor ()
 		{
 			var box = new BoxView {
@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (30, request.Height);
 		}
 
-		[Test]
+		
 		public void DefaultSize ()
 		{
 			var box = new BoxView {

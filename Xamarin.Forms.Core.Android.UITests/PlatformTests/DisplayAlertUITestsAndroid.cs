@@ -13,7 +13,7 @@ namespace Xamarin.Forms.Core.UITests
 			App.NavigateToGallery (GalleryQueries.DisplayAlertGallery);
 		}
 			
-		[Test]
+		
 		public void TestTapOff ()
 		{
 			App.Tap (c => c.Marked ("Alert Override2"));

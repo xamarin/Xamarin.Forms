@@ -8,7 +8,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class FontUnitTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void TestFontForSize ()
 		{
 			var font = Font.OfSize ("Foo", 12);
@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ((NamedSize)0, font.NamedSize);
 		}
 
-		[Test]
+		
 		public void TestFontForSizeDouble ()
 		{
 			var font = Font.OfSize ("Foo", 12.7);
@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ((NamedSize)0, font.NamedSize);
 		}
 
-		[Test]
+		
 		public void TestFontForNamedSize ()
 		{
 			var font = Font.OfSize ("Foo", NamedSize.Large);
@@ -35,7 +35,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (NamedSize.Large, font.NamedSize);
 		}
 
-		[Test]
+		
 		public void TestSystemFontOfSize ()
 		{
 			var font = Font.SystemFontOfSize (12);
@@ -65,7 +65,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (NamedSize.Medium, font.NamedSize);
 		}
 
-		[Test]
+		
 		public void TestEquality ()
 		{
 			var font1 = Font.SystemFontOfSize (12);
@@ -80,7 +80,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (font1 != font2);
 		}
 
-		[Test]
+		
 		public void TestHashCode ()
 		{
 			var font1 = Font.SystemFontOfSize (12);
@@ -93,7 +93,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (font1.GetHashCode () == font2.GetHashCode ());
 		}
 
-		[Test]
+		
 		public void TestEquals ()
 		{
 			var font = Font.SystemFontOfSize (12);
@@ -104,7 +104,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (font.Equals (Font.SystemFontOfSize (12)));
 		}
 
-		[Test]
+		
 		public void TestFontConverter ()
 		{
 			var converter = new FontTypeConverter ();

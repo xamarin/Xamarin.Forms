@@ -68,7 +68,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Device.PlatformServices = null;
 		}
 
-		[Test]
+		
 		public void ConverterIsInvoked ()
 		{
 			var xaml = @"
@@ -97,7 +97,7 @@ xmlns=""http://xamarin.com/schemas/2014/forms""
 			Assert.AreEqual (1, SeverityColorConverter.count);
 		}
 
-		[Test]
+		
 		public void ResourcesInNonXFBaseClassesAreFound ()
 		{
 			var xaml = @"<local:BaseView 

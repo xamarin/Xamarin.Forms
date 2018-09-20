@@ -21,7 +21,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void TestDoesNotCrash ()
 		{
 			RunningApp.WaitForElement (c => c.Marked ("footer"));

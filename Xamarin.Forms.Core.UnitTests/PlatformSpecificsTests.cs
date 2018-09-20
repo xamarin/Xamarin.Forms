@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class PlatformSpecificsTests
 	{
-		[Test]
+		
 		public void VendorPlatformProperty()
 		{
 			var x = new MasterDetailPage();
@@ -21,7 +21,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsFalse(x.On<iOS>().GetVendorFoo());
 		}
 
-		[Test]
+		
 		public void ConsumeVendorSetting()
 		{
 			var x = new MasterDetailPage();
@@ -30,7 +30,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsFalse(x.On<iOS>().GetVendorFoo());
 		}
 
-		[Test]
+		
 		public void Properties()
 		{
 			var x = new MasterDetailPage();
@@ -39,7 +39,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue(x.On<Android>().GetSomeAndroidThing() == 42);
 		}
 
-		[Test]
+		
 		public void ConvenienceConfiguration()
 		{
 			var x = new MasterDetailPage();
@@ -55,7 +55,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue(x.On<Android>().GetSomeOtherAndroidThing() == 40);
 		}
 
-		[Test]
+		
 		public void NavigationPageiOSConfiguration()
 		{
 			var x = new NavigationPage();

@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Core.UITests
 		    App.NavigateToGallery(GalleryQueries.MapGalleryLegacy);
 	    }
 
-	    [Test]
+	    
 	    public void MapGalleryPinClicked()
 	    {
 		    App.Tap(PlatformQueries.Pin);

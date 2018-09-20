@@ -10,19 +10,19 @@ namespace Xamarin.Forms.Core.UnitTests
 	public class AcceleratorUnitTests : BaseTestFixture
 	{
 
-		[Test]
+		
 		public void AcceleratorThrowsOnEmptyString()
 		{
 			Assert.Throws<ArgumentNullException>(() => Accelerator.FromString(""));
 		}
 
-		[Test]
+		
 		public void AcceleratorThrowsOnNull()
 		{
 			Assert.Throws<ArgumentNullException>(() => Accelerator.FromString(null));
 		}
 
-		[Test]
+		
 		public void AcceleratorFromString()
 		{
 			string shourtCutKeyBinding = "ctrl+A";
@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(shourtCutKeyBinding, accelerator.ToString());
 		}
 
-		[Test]
+		
 		public void AcceleratorFromOnlyLetter()
 		{
 			string shourtCutKeyBinding = "A";
@@ -55,7 +55,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 
-		[Test]
+		
 		public void AcceleratorFromLetterAnd2Modifier()
 		{
 			string modifier = "ctrl";

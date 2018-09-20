@@ -6,7 +6,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class BindableObjectExtensionTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void SetBindingNull()
 		{
 			Assert.That (() => BindableObjectExtensions.SetBinding (null, MockBindable.TextProperty, "Name"),
@@ -24,7 +24,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				Throws.InstanceOf<ArgumentNullException>());
 		}
 
-		[Test]
+		
 		public void Issue2643()
 		{
 			Label labelTempoDiStampa = new Label();
@@ -53,7 +53,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			public TResult Result { get; set; }
 		}
 
-		[Test]
+		
 		public void Bz27229 ()
 		{
 			var totalCheckTime = new TextCell { Text = "Total Check Time" };

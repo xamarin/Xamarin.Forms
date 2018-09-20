@@ -80,7 +80,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 
 		#if UITEST
-		[Test]
+		
 		public void Issue3276Test ()
 		{
 			RunningApp.Tap (q => q.Marked ("Second"));

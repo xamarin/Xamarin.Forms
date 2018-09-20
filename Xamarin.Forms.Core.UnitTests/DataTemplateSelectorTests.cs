@@ -58,13 +58,13 @@ namespace Xamarin.Forms.Core.UnitTests
 			readonly DataTemplate templateTwo;
 		}
 
-		[Test]
+		
 		public void Constructor ()
 		{
 			var dts = new TestDTS ();
 		}
 
-		[Test]
+		
 		public void ReturnsCorrectType ()
 		{
 			var dts = new TestDTS ();
@@ -72,7 +72,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsInstanceOf<TemplateTwo> (dts.SelectTemplate ("test", null));
 		}
 
-		[Test]
+		
 		public void ListViewSupport ()
 		{
 			var listView = new ListView(ListViewCachingStrategy.RecycleElement);
@@ -83,7 +83,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsInstanceOf<EntryCell> (listView.TemplatedItems[1]);
 		}
 
-		[Test]
+		
 		public void NestingThrowsException ()
 		{
 			var dts = new TestDTS ();
@@ -132,7 +132,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			public int Counter = 0;
 		}
 
-		[Test]
+		
 		public void ListViewSupport ()
 		{
 			var listView = new ListView(ListViewCachingStrategy.RecycleElementAndDataTemplate);

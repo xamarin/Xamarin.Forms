@@ -6,7 +6,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class RectangleUnitTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void TestRectangleConstruction ()
 		{
 			var rect = new Rectangle ();
@@ -28,7 +28,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (5, rect.Height);
 		}
 
-		[Test]
+		
 		public void TestRectangleFromLTRB ()
 		{
 			var rect = Rectangle.FromLTRB (10, 10, 30, 40);
@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (10, 10, 20, 30), rect);
 		}
 
-		[Test]
+		
 		public void TestRectangleCalculatedPoints ()
 		{
 			var rect = new Rectangle (2, 3, 4, 5);
@@ -63,7 +63,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (1, rect.Height);
 		}
 
-		[Test]
+		
 		public void TestRectangleContains ()
 		{
 			var rect = new Rectangle (0, 0, 10, 10);
@@ -75,7 +75,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (rect.Contains (10, 10));
 		}
 
-		[Test]
+		
 		public void TestRectangleInflate ()
 		{
 			var rect = new Rectangle (0, 0, 10, 10);
@@ -88,7 +88,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (0, 0, 10, 10), rect);
 		}
 
-		[Test]
+		
 		public void TestRectangleOffset ()
 		{
 			var rect = new Rectangle (0, 0, 10, 10);
@@ -101,7 +101,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (0, 0, 10, 10), rect);
 		}
 
-		[Test]
+		
 		public void TestRectangleRound ()
 		{
 			var rect = new Rectangle (0.2, 0.3, 0.6, 0.7);
@@ -109,7 +109,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (0, 0, 1, 1), rect.Round ());
 		}
 
-		[Test]
+		
 		public void TestRectangleIntersect ()
 		{
 			var rect1 = new Rectangle (0, 0, 10, 10);
@@ -131,7 +131,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (Rectangle.Zero, intersection);
 		}
 
-		[Test]
+		
 		[TestCase(0, 0, ExpectedResult = true)]
 		[TestCase(0, 5, ExpectedResult = true)]
 		[TestCase(5, 0, ExpectedResult = true)]
@@ -141,7 +141,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			return new Rectangle (0, 0, w, h).IsEmpty;
 		}
 
-		[Test]
+		
 		[TestCase(0, 0, 8, 8, 0, 0, 5, 5, ExpectedResult = true)]
 		[TestCase(0, 0, 5, 5, 5, 5, 5, 5, ExpectedResult = false)]
 		[TestCase(0, 0, 2, 2, 3, 0, 5, 5, ExpectedResult = false)]
@@ -150,7 +150,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			return new Rectangle (x1, y1, w1, h1).IntersectsWith (new Rectangle (x2, y2, w2, h2));
 		}
 
-		[Test]
+		
 		public void TestSetSize ()
 		{
 			var rect = new Rectangle ();
@@ -159,7 +159,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (0, 0, 10, 20), rect);
 		}
 
-		[Test]
+		
 		public void TestSetLocation ()
 		{
 			var rect = new Rectangle ();
@@ -168,13 +168,13 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (10, 20, 0, 0), rect);
 		}
 
-		[Test]
+		
 		public void TestUnion ()
 		{
 			Assert.AreEqual (new Rectangle (0, 3, 13, 10), new Rectangle (3, 3, 10, 10).Union (new Rectangle(0, 5, 2, 2)));
 		}
 
-		[Test]
+		
 		[TestCase(0, 0, 2, 2, ExpectedResult = "{X=0 Y=0 Width=2 Height=2}")]
 		[TestCase(1, 0, 3, 2, ExpectedResult = "{X=1 Y=0 Width=3 Height=2}")]
 		public string TestRectangleToString (double x, double y, double w, double h)
@@ -182,7 +182,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			return new Rectangle (x, y, w, h).ToString ();
 		}
 
-		[Test]
+		
 		public void TestRectangleEquals ()
 		{
 			Assert.True (new Rectangle (0, 0, 10, 10).Equals (new Rectangle(0, 0, 10, 10)));
@@ -193,7 +193,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (new Rectangle (0, 0, 10, 10) != new Rectangle (0, 0, 10, 5));
 		}
 
-		[Test]
+		
 		public void TestRectangleGetHashCode ([Range(3, 4)] double x1, [Range(3, 4)] double y1, [Range(3, 4)] double w1, [Range(3, 4)] double h1, 
 		                                      [Range(3, 4)] double x2, [Range(3, 4)] double y2, [Range(3, 4)] double w2, [Range(3, 4)] double h2)
 		{

@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		: CommandSourceTests<T>
 		where T : MenuItem, new()
 	{
-		[Test]
+		
 		public void Activated()
 		{
 			var item = new MenuItem();
@@ -30,7 +30,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (activated, Is.True);
 		}
 
-		[Test]
+		
 		public void Command()
 		{
 			bool executed = false;
@@ -47,7 +47,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (executed, Is.True);
 		}
 
-		[Test]
+		
 		public void Accelerator()
 		{
 			var item = new MenuItem ();
@@ -57,7 +57,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(MenuItem.GetAccelerator(item).ToString(), shourtCutKeyBinding);
 		}
 
-		[Test]
+		
 		public void AcceleratorPlus ()
 		{
 			var item = new MenuItem ();

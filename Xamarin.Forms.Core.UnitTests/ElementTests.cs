@@ -43,7 +43,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	public class ElementTests
 		: BaseTestFixture
 	{
-		[Test]
+		
 		public void DescendantAddedLevel1 ()
 		{
 			var root = new TestElement();
@@ -59,7 +59,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			root.Children.Add (child);
 		}
 
-		[Test]
+		
 		public void DescendantAddedLevel2 ()
 		{
 			var root = new TestElement();
@@ -78,7 +78,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			child.Children.Add (child2);
 		}
 
-		[Test]
+		
 		public void DescendantAddedExistingChildren ()
 		{
 			var root = new TestElement();
@@ -106,7 +106,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (tier2added, Is.True);
 		}
 
-		[Test]
+		
 		public void DescendantRemovedLevel1 ()
 		{
 			var root = new TestElement();
@@ -123,7 +123,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			root.Children.Remove (child);
 		}
 
-		[Test]
+		
 		public void DescendantRemovedLevel2 ()
 		{
 			var root = new TestElement();
@@ -143,7 +143,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			child.Children.Remove (child2);
 		}
 
-		[Test]
+		
 		public void DescendantRemovedWithChildren ()
 		{
 			var root = new TestElement();

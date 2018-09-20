@@ -171,7 +171,7 @@ namespace Xamarin.Forms.Controls
 #endif
 
 #if UITest
-		[Test]
+		
 		[Issue (IssueTracker.Github, 2456, "StackOverflow after reordering tabs in a TabbedPageView", PlatformAffected.iOS)]
 		public void TestReorderTabs ()
 		{

@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class ThicknessTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void Constructor ()
 		{
 			var thickness = new Thickness ();
@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (0, thickness.VerticalThickness);
 		}
 
-		[Test]
+		
 		public void UniformParameterizedConstructor()
 		{
 			var thickness = new Thickness(3);
@@ -35,7 +35,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(6, thickness.VerticalThickness);
 		}
 
-		[Test]
+		
 		public void HorizontalVerticalParameterizedConstructor()
 		{
 			var thickness = new Thickness(4, 5);
@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(10, thickness.VerticalThickness);
 		}
 
-		[Test]
+		
 		public void ParameterizedConstructor ()
 		{
 			var thickness = new Thickness (1, 2, 3, 4);
@@ -61,7 +61,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (6, thickness.VerticalThickness);
 		}
 
-		[Test]
+		
 		public void ParameterizedConstuctorDoubles ()
 		{
 			var thickness = new Thickness (1.2, 3.3, 4.2, 10.66);
@@ -73,7 +73,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (13.96, thickness.VerticalThickness);
 		}
 
-		[Test]
+		
 		public void Equality ()
 		{
 			Assert.False (new Thickness ().Equals (null));
@@ -85,7 +85,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (new Thickness (4, 3, 2, 1) != new Thickness (1, 2, 3, 4));
 		}
 
-		[Test]
+		
 		public void HashCode ([Range(3, 4)] double l1, [Range(3, 4)] double t1, [Range(3, 4)] double r1, [Range(3, 4)] double b1,
 							  [Range(3, 4)] double l2, [Range(3, 4)] double t2, [Range(3, 4)] double r2, [Range(3, 4)] double b2)
 		{
@@ -96,7 +96,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				Assert.False (result);
 		}
 
-		[Test]
+		
 		public void ImplicitConversionFromSize ()
 		{
 			Thickness thickness = new Thickness();
@@ -107,7 +107,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Thickness (42), thickness);
 		}
 
-		[Test]
+		
 		public void TestThicknessTypeConverter ()
 		{
 			var converter = new ThicknessTypeConverter ();
@@ -119,7 +119,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Throws<InvalidOperationException> (() => converter.ConvertFromInvariantString (""));
 		}
 
-		[Test]
+		
 		public void ThicknessTypeConverterDoubles ()
 		{
 			var converter = new ThicknessTypeConverter ();

@@ -65,7 +65,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void SpanGestureCommand()
 		{
 			RunningApp.WaitForElement(kText);

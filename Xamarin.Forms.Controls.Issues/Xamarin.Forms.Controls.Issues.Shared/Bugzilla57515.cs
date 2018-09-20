@@ -126,7 +126,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Bugzilla57515Test()
 		{
 			RunningApp.WaitForElement(ZoomContainer);

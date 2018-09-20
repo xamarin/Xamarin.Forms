@@ -67,7 +67,7 @@ namespace Xamarin.Forms.Core.UITests
 			App.NavigateToGallery(GalleryQueries.RootPagesGallery);
 		}
 
-		[Test]
+		
 		[Ignore("Ignore while we dont't have a response from XTC team why this fails some times")]
 		public void VisitEachPage()
 		{

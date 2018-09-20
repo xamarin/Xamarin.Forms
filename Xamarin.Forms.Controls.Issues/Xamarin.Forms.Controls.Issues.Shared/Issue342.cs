@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Controls.Issues
 		// Should not throw exception when user does not include image
 
 #if UITEST
-		[Test]
+		
 		public void Issue342NoSourceTestsLablePresentNoImage ()
 		{
 			RunningApp.WaitForElement (q => q.Marked ("Uninitialized image"), "Cannot see label");
@@ -74,7 +74,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		[Category(UITestCategories.ManualReview)]
 		public void Issue342DelayedLoadTestsImageLoads ()
 		{

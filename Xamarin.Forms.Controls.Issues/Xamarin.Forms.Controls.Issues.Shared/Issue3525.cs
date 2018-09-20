@@ -61,7 +61,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void SpanRegionClicking()
 		{
 			var label = RunningApp.WaitForElement(kLabelTestAutomationId);

@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Core.UITests
 			App.Tap(q => q.Marked(testName));
 		}
 
-		[Test]
+		
 		[Description("ListView with TextCells, all are present")]
 		[UiTest(typeof(ListView))]
 		[UiTest(typeof(TextCell))]
@@ -62,7 +62,7 @@ namespace Xamarin.Forms.Core.UITests
 			App.Screenshot("All TextCells are present");
 		}
 
-		[Test]
+		
 		[Description("TableView with TextCells, all are present")]
 		[UiTest(typeof(TableView))]
 		[UiTest(typeof(TextCell))]
@@ -88,7 +88,7 @@ namespace Xamarin.Forms.Core.UITests
 			App.Screenshot("All TextCells are present");
 		}
 
-		[Test]
+		
 		[Description("ListView with ImageCells, all are present")]
 		[UiTest(typeof(ListView))]
 		[UiTest(typeof(ImageCell))]
@@ -128,7 +128,7 @@ namespace Xamarin.Forms.Core.UITests
 			App.Screenshot("Images are present");
 		}
 
-		[Test]
+		
 		[Description("ListView with ImageCells, file access problems")]
 		[UiTest(typeof(ListView))]
 		[UiTest(typeof(ImageCell))]
@@ -165,7 +165,7 @@ namespace Xamarin.Forms.Core.UITests
 			App.Screenshot("Images are present");
 		}
 
-		[Test]
+		
 		[Description("TableView with ImageCells, all are present")]
 		[UiTest(typeof(TableView))]
 		[UiTest(typeof(ImageCell))]
@@ -200,7 +200,7 @@ namespace Xamarin.Forms.Core.UITests
 			App.Screenshot("Images are present");
 		}
 
-		[Test]
+		
 		[Description("ListView with SwitchCells, all are present")]
 		[UiTest(typeof(ListView))]
 		[UiTest(typeof(SwitchCell))]
@@ -229,7 +229,7 @@ namespace Xamarin.Forms.Core.UITests
 			App.Screenshot("Switches are present");
 		}
 
-		[Test]
+		
 		[Description("TableView with SwitchCells, all are present")]
 		[UiTest(typeof(TableView))]
 		[UiTest(typeof(SwitchCell))]
@@ -258,7 +258,7 @@ namespace Xamarin.Forms.Core.UITests
 			App.Screenshot("Switches are present");
 		}
 
-		[Test]
+		
 		[Description("ListView with EntryCells, all are present")]
 		[UiTest(typeof(ListView))]
 		[UiTest(typeof(EntryCell))]
@@ -282,7 +282,7 @@ namespace Xamarin.Forms.Core.UITests
 			App.Screenshot("All EntryCells are present");
 		}
 
-		[Test]
+		
 		[Description("TableView with EntryCells, all are present")]
 		[UiTest(typeof(TableView))]
 		[UiTest(typeof(EntryCell))]
@@ -306,7 +306,7 @@ namespace Xamarin.Forms.Core.UITests
 			App.Screenshot("All EntryCells are present");
 		}
 
-		[Test]
+		
 		[Category("EntryCell")]
 		[Description("EntryCell fires .Completed event")]
 		[UiTest(typeof(EntryCell), "Completed")]

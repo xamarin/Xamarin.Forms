@@ -83,7 +83,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST && __ANDROID__ // This test only makes sense on platforms using Long Press to activate context menus
-		[Test]
+		
 		public void SingleTapOnCellDoesNotActivateContext()
 		{
 			RunningApp.WaitForElement(Action);

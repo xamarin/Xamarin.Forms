@@ -52,28 +52,28 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void AddHandlerWithEmptyEventNameThrowsException()
 		{
 			var wem = new WeakEventManager();
 			Assert.Throws<ArgumentNullException>(() => wem.AddEventHandler("", (sender, args) => { }));
 		}
 
-		[Test]
+		
 		public void AddHandlerWithNullEventHandlerThrowsException()
 		{
 			var wem = new WeakEventManager();
 			Assert.Throws<ArgumentNullException>(() => wem.AddEventHandler("test", null));
 		}
 
-		[Test]
+		
 		public void AddHandlerWithNullEventNameThrowsException()
 		{
 			var wem = new WeakEventManager();
 			Assert.Throws<ArgumentNullException>(() => wem.AddEventHandler(null, (sender, args) => { }));
 		}
 
-		[Test]
+		
 		public void CanRemoveStaticEventHandler()
 		{
 			int beforeRun = s_count;
@@ -87,7 +87,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue(s_count == beforeRun);
 		}
 
-		[Test]
+		
 		public void EventHandlerCalled()
 		{
 			var called = false;
@@ -100,14 +100,14 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue(called);
 		}
 
-		[Test]
+		
 		public void FiringEventWithoutHandlerShouldNotThrow()
 		{
 			var source = new TestEventSource();
 			source.FireTestEvent();
 		}
 
-		[Test]
+		
 		public void MultipleHandlersCalled()
 		{
 			var called1 = false;
@@ -121,28 +121,28 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue(called1 && called2);
 		}
 
-		[Test]
+		
 		public void RemoveHandlerWithEmptyEventNameThrowsException()
 		{
 			var wem = new WeakEventManager();
 			Assert.Throws<ArgumentNullException>(() => wem.RemoveEventHandler("", (sender, args) => { }));
 		}
 
-		[Test]
+		
 		public void RemoveHandlerWithNullEventHandlerThrowsException()
 		{
 			var wem = new WeakEventManager();
 			Assert.Throws<ArgumentNullException>(() => wem.RemoveEventHandler("test", null));
 		}
 
-		[Test]
+		
 		public void RemoveHandlerWithNullEventNameThrowsException()
 		{
 			var wem = new WeakEventManager();
 			Assert.Throws<ArgumentNullException>(() => wem.RemoveEventHandler(null, (sender, args) => { }));
 		}
 
-		[Test]
+		
 		public void RemovingNonExistentHandlersShouldNotThrow()
 		{
 			var wem = new WeakEventManager();
@@ -150,7 +150,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			wem.RemoveEventHandler("alsofake", Handler);
 		}
 
-		[Test]
+		
 		public void StaticHandlerShouldRun()
 		{
 			int beforeRun = s_count;
@@ -163,7 +163,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue(s_count > beforeRun);
 		}
 
-		[Test]
+		
 		public void VerifySubscriberCanBeCollected()
 		{
 			WeakReference wr = null;

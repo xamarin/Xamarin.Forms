@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void ButtonCanBeClicked ()
 		{
 			RunningApp.WaitForElement (q => q.Marked ("firstButton"));

@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Device.PlatformServices = null;
 		}
 
-		[Test]
+		
 		public void MeasureInvalidatedOnTextChange ()
 		{
 			var button = new Button ();
@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (fired);
 		}
 
-		[Test]
+		
 		[TestCase(true)]
 		[TestCase(false)]
 		public void TestClickedvent (bool isEnabled)
@@ -52,7 +52,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (activated == isEnabled ? true : false);
 		}
 
-		[Test]
+		
 		[TestCase(true)]
 		[TestCase(false)]
 		public void TestPressedEvent (bool isEnabled)
@@ -70,7 +70,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True(pressed == isEnabled ? true : false);
 		}
 
-		[Test]
+		
 		[TestCase(true)]
 		[TestCase(false)]
 		public void TestReleasedEvent (bool isEnabled)
@@ -114,7 +114,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 			
 
-		[Test]
+		
 		public void TestBindingContextPropagation ()
 		{
 			var context = new object ();
@@ -131,7 +131,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreSame (context, source.BindingContext);
 		}
 
-		[Test]
+		
 		public void TestImageSourcePropertiesChangedTriggerResize ()
 		{
 			var source = new FileImageSource ();
@@ -144,7 +144,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (fired);
 		}
 
-		[Test]
+		
 		public void AssignToFontStructUpdatesFontFamily (
 			[Values (NamedSize.Default, NamedSize.Large, NamedSize.Medium, NamedSize.Small, NamedSize.Micro)] NamedSize size,
 			[Values (FontAttributes.None, FontAttributes.Bold, FontAttributes.Italic, FontAttributes.Bold | FontAttributes.Italic)] FontAttributes attributes)
@@ -170,7 +170,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (startAttributes != button.FontAttributes, firedAttributesChanged);
 		}
 
-		[Test]
+		
 		public void AssignToFontFamilyUpdatesFont ()
 		{
 			var button = new Button {Platform = new UnitPlatform ()};
@@ -179,7 +179,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (button.Font, Font.OfSize ("CrazyFont", button.FontSize));
 		}
 
-		[Test]
+		
 		public void AssignToFontSizeUpdatesFont ()
 		{
 			var button = new Button {Platform = new UnitPlatform ()};
@@ -188,7 +188,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (button.Font, Font.SystemFontOfSize (1000));
 		}
 
-		[Test]
+		
 		public void AssignToFontAttributesUpdatesFont ()
 		{
 			var button = new Button {Platform = new UnitPlatform ()};
@@ -197,7 +197,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (button.Font, Font.SystemFontOfSize (button.FontSize, FontAttributes.Bold | FontAttributes.Italic));
 		}
 
-		[Test]
+		
 		public void CommandCanExecuteUpdatesEnabled ()
 		{
 			var button = new Button ();
@@ -220,7 +220,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (button.IsEnabled);
 		}
 
-		[Test]
+		
 		public void ButtonContentLayoutTypeConverterTest()
 		{
 			var converter = new Button.ButtonContentTypeConverter();
@@ -235,7 +235,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Throws<InvalidOperationException>(() => converter.ConvertFromInvariantString(""));
 		}
 
-		[Test]
+		
 		public void ButtonClickWhenCommandCanExecuteFalse()
 		{
 			bool invoked = false;
@@ -259,7 +259,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(10, button.CornerRadius);
 		}
 
-		[Test]
+		
 		public void ButtonCornerRadiusForwardsToButtonBorderRadius()
 		{
 			var button = new Button { Platform = new UnitPlatform() };
@@ -268,7 +268,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(10, button.BorderRadius);
 		}
 
-		[Test]
+		
 		public void ButtonCornerRadiusClearValueForwardsToButtonBorderRadius()
 		{
 			var button = new Button { Platform = new UnitPlatform() };
@@ -280,7 +280,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual((int)Button.BorderRadiusProperty.DefaultValue, button.BorderRadius);
 		}
 
-		[Test]
+		
 		public void ButtonBorderRadiusClearValueForwardsToButtonCornerRadius()
 		{
 			var button = new Button { Platform = new UnitPlatform() };

@@ -80,7 +80,7 @@ Use the toggle button to check both values of 'IsEnabled'."
 		}
 
 #if UITEST
-		[Test]
+		
 		public void ScrollViewInitiallyEnabled()
 		{
 			RunningApp.WaitForElement(InitiallyEnabled);
@@ -91,7 +91,7 @@ Use the toggle button to check both values of 'IsEnabled'."
 			RunningApp.WaitForElement(Success); // If the ScrollView scrolled, the success label should be displayed
 		}
 
-		[Test]
+		
 		public void ScrollViewInitiallyEnabledThenDisabled()
 		{
 			RunningApp.WaitForElement(InitiallyEnabled);
@@ -107,7 +107,7 @@ Use the toggle button to check both values of 'IsEnabled'."
 			RunningApp.WaitForNoElement(Success); // Shouldn't have scrolled, so no success label should be displayed
 		}
 
-		[Test]
+		
 		public void ScrollViewInitiallyNotEnabled()
 		{
 			RunningApp.WaitForElement(InitiallyNotEnabled);
@@ -118,7 +118,7 @@ Use the toggle button to check both values of 'IsEnabled'."
 			RunningApp.WaitForNoElement(Success); // Shouldn't have scrolled, so no success label should be displayed
 		}
 
-		[Test]
+		
 		public void ScrollViewInitiallyNotEnabledThenEnabled()
 		{
 			RunningApp.WaitForElement(InitiallyNotEnabled);

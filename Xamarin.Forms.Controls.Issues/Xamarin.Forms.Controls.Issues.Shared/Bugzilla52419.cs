@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST
 
 #if __ANDROID__
-		[Test]
+		
 		public void Bugzilla52419Test()
 		{
 			RunningApp.WaitForElement(q => q.Marked("Push new page"));

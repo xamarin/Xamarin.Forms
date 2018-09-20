@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Bugzilla30935DoesntThrowException ()
 		{
 			RunningApp.WaitForNoElement (q => q.Marked ("IssuePageLabel"));

@@ -102,7 +102,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void _46363_2_Tap_Succeeds()
 		{
 			RunningApp.WaitForElement(Testing);
@@ -113,7 +113,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForNoElement(ContextAction);
 		}
 
-		[Test]
+		
 		public void _46363_2_ContextAction_Succeeds()
 		{
 			RunningApp.WaitForElement(Testing);

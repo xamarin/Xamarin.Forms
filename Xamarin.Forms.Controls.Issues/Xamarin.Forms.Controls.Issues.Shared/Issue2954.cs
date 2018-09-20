@@ -44,7 +44,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 		#if UITEST
-		[Test]
+		
 		public void Issue2954Test ()
 		{
 			RunningApp.Screenshot ("I am at Issue 2954");

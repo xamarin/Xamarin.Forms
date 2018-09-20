@@ -40,7 +40,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Bugzilla57674Test()
 		{
 			RunningApp.Screenshot("Initial Status");

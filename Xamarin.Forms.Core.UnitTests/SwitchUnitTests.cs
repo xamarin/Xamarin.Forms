@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class SwitchUnitTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void TestConstructor ()
 		{
 			Switch sw = new Switch ();
@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsFalse (sw.IsToggled);
 		}
 
-		[Test]
+		
 		public void TestOnEvent ()
 		{
 			Switch sw = new Switch ();
@@ -30,7 +30,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue (fired);
 		}
 
-		[Test]
+		
 		public void TestOnEventNotDoubleFired ()
 		{
 			var sw = new Switch ();

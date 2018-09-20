@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Core.UITests
 		protected const string PleaseInspect = "Test framework cannout currently check this value; please inspect visually";
 
 		/* Under score prefixes ensure inherited properties run first in test suite */
-		//[Test]
+		//
 		//[Category ("View")]
 		//[UiTestBroken (BrokenReason.UITestBug, "Issue #115 - when trying to get anchorPoint, iOS")]
 		//[UiTest (Test.VisualElement.AnchorX)]
@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Core.UITests
 			
 		}
 
-		// [Test]
+		// 
 		// [UiTest (Test.VisualElement.AnchorY)]
 		// TODO: working on some views, others not
 		public virtual void _AnchorY ()
@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Core.UITests
 			
 		}
 
-		// [Test]
+		// 
 		// [UiTest (Test.VisualElement.BackgroundColor)]
 		// [UiTestBroken (BrokenReason.UITestBug, "UITest Issue #107")]
 		public virtual void _BackgroundColor ()
@@ -49,15 +49,15 @@ namespace Xamarin.Forms.Core.UITests
 
 		}
 
-		[Test]
+		
 		[UiTest (typeof(VisualElement), "Focus")]
 		public abstract void _Focus ();
 
-		[Test]
+		
 		[UiTest (typeof (VisualElement), "GestureRecognizers")]
 		public abstract void _GestureRecognizers ();
 
-		//[Test]
+		//
 		[UiTest (typeof (VisualElement), "InputTransparent")]
 		public virtual void _InputTransparent ()
 		{
@@ -80,7 +80,7 @@ namespace Xamarin.Forms.Core.UITests
 			//Assert.True (hiddenButtonClicked);		
 		}
 
-		[Test]
+		
 		[UiTest (typeof (VisualElement), "IsEnabled")]
 		public virtual void _IsEnabled ()
 		{
@@ -107,11 +107,11 @@ namespace Xamarin.Forms.Core.UITests
 			Assert.AreEqual ("False", isDisabled);
 		}
 
-		[Test]
+		
 		[UiTest (typeof (VisualElement), "IsFocused")]
 		public abstract void _IsFocused ();
 
-		[Test]
+		
 		[UiTest (typeof (VisualElement), "IsVisible")]
 		public virtual void _IsVisible ()
 		{
@@ -139,7 +139,7 @@ namespace Xamarin.Forms.Core.UITests
 		[UiTestExemptAttribute (ExemptReason.None, "Not sure how to test at the moment")]
 		public virtual void _Navigation () {}
 
-		[Test]
+		
 		[UiTest (typeof (VisualElement), "Opacity")]
 		public virtual void _Opacity ()
 		{
@@ -156,7 +156,7 @@ namespace Xamarin.Forms.Core.UITests
 #endif
 		}
 
-		[Test]
+		
 		[UiTest (typeof(VisualElement), "Rotation")]
 		[UiTestBroken (BrokenReason.CalabashBug, "Calabash bug")]
 		public virtual void _Rotation ()
@@ -178,7 +178,7 @@ namespace Xamarin.Forms.Core.UITests
 #endif
 		}
 
-		[Test]
+		
 		[UiTest (typeof (VisualElement), "RotationX")]
 		public virtual void _RotationX ()
 		{
@@ -199,7 +199,7 @@ namespace Xamarin.Forms.Core.UITests
 #endif
 		}
 
-		[Test]
+		
 		[UiTest (typeof (VisualElement), "RotationY")]
 		public virtual void _RotationY ()
 		{
@@ -220,7 +220,7 @@ namespace Xamarin.Forms.Core.UITests
 #endif
 		}
 
-		[Test]
+		
 		[UiTest (typeof (VisualElement), "Scale")]
 		public virtual void _Scale ()
 		{
@@ -239,7 +239,7 @@ namespace Xamarin.Forms.Core.UITests
 
 		}
 
-		[Test]
+		
 		[UiTest (typeof (VisualElement), "TranslationX")]
 		[Category(UITestCategories.ManualReview)]
 		public virtual void _TranslationX ()
@@ -251,7 +251,7 @@ namespace Xamarin.Forms.Core.UITests
 #endif
 		}
 
-		[Test]
+		
 		[UiTest (typeof (VisualElement), "TranslationY")]
 		[Category(UITestCategories.ManualReview)]
 		public virtual void _TranslationY ()
@@ -263,7 +263,7 @@ namespace Xamarin.Forms.Core.UITests
 #endif
 		}
 
-		[Test]
+		
 		[UiTest (typeof (VisualElement), "Unfocus")]
 		public abstract void _UnFocus ();
 	}

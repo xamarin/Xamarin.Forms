@@ -193,7 +193,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			GC.Collect();
 		}
 
-		[Test]
+		
 		public void SetOneWayBinding()
 		{
 			var nativeView = new MockNativeView();
@@ -210,7 +210,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(42, nativeView.Bar);
 		}
 
-		[Test]
+		
 		public void AttachedPropertiesAreTransferredFromTheBackpack()
 		{
 			var nativeView = new MockNativeView();
@@ -223,7 +223,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(42, view.GetValue(Grid.RowProperty));
 		}
 
-		[Test]
+		
 		public void Set2WayBindings()
 		{
 			var nativeView = new MockNativeView();
@@ -257,7 +257,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(42, vm.BBar);
 		}
 
-		[Test]
+		
 		public void Set2WayBindingsWithUpdateSourceEvent()
 		{
 			var nativeView = new MockNativeView();
@@ -280,7 +280,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("foo", vm.FFoo);
 		}
 
-		[Test]
+		
 		public void Set2WayBindingsWithUpdateSourceEventInBindingObject()
 		{
 			var nativeView = new MockNativeView();
@@ -303,7 +303,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("foo", vm.FFoo);
 		}
 
-		[Test]
+		
 		public void NativeViewsAreCollected()
 		{
 			WeakReference wr = null;
@@ -334,7 +334,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False(wr.IsAlive);
 		}
 
-		[Test]
+		
 		public void ProxiesAreCollected()
 		{
 			WeakReference wr = null;
@@ -368,7 +368,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False(wr.IsAlive);
 		}
 
-		[Test]
+		
 		public void SetBindingContextToSubviews()
 		{
 			var nativeView = new MockNativeView { SubViews = new List<MockNativeView> ()};
@@ -390,7 +390,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(42, nativeViewChild.Bar);
 		}
 
-		[Test]
+		
 		public void TestConverterDoesNotThrow()
 		{
 			var nativeView = new MockNativeView();
@@ -402,7 +402,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.DoesNotThrow(() => nativeView.SetBindingContext(vm));
 		}
 
-		[Test]
+		
 		public void TestConverterWorks()
 		{
 			var nativeView = new MockNativeView();
@@ -416,7 +416,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(vm.CColor, nativeView.SelectedColor.FormsColor);
 		}
 
-		[Test]
+		
 		public void TestConverter2WayWorks()
 		{
 			var nativeView = new MockNativeView();
@@ -439,7 +439,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		}
 
-		[Test]
+		
 		public void Binding2WayWithConvertersDoNotLoop()
 		{
 			var nativeView = new MockNativeView();
@@ -458,7 +458,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(count, 1);
 		}
 
-		[Test]
+		
 		public void ThrowsOnMissingProperty()
 		{
 			var nativeView = new MockNativeView();
@@ -466,14 +466,14 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Throws<InvalidOperationException>(()=>nativeView.SetBindingContext(new { Foo = 42 }));
 		}
 
-		[Test]
+		
 		public void ThrowsOnMissingEvent()
 		{
 			var nativeView = new MockNativeView();
 			Assert.Throws<ArgumentException>(()=>nativeView.SetBinding("Foo", new Binding("Foo", BindingMode.TwoWay), "missingEvent"));
 		}
 
-		[Test]
+		
 		public void OneWayToSourceAppliedOnSetBC()
 		{
 			var nativeView = new MockNativeView { Foo = "foobar" };
@@ -483,7 +483,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("foobar", vm.FFoo);
 		}
 
-		[Test]
+		
 		public void DoNotApplyNull()
 		{
 			var native = new MockNativeView();

@@ -35,7 +35,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void ButtonBackgroundColorAutomatedTest()
 		{
 			// With the original bug in place, we'll crash before we get this far

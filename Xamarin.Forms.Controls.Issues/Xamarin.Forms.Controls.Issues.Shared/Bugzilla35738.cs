@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Controls.Issues
         }
 
 #if UITEST
-        [Test]
+        
         [UiTest (typeof(TestContentPage))]
         public void CallingOnElementChangedOnCustomButtonShouldNotCrash ()
         {

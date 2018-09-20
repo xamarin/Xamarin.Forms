@@ -6,7 +6,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class LayoutOptionsUnitTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void TestTypeConverter ()
 		{
 			var converter = new LayoutOptionsConverter ();

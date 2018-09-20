@@ -47,7 +47,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			return typeof(UriImageSourceTests).Assembly.GetManifestResourceStream (uri.LocalPath.Substring (1));
 		}
 
-		[Test]
+		
 		[Ignore]
 		public void LoadImageFromStream ()
 		{
@@ -59,7 +59,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (79109, s0.Length);
 		}
 
-		[Test]
+		
 		[Ignore]
 		public void SecondCallLoadFromCache ()
 		{
@@ -79,7 +79,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		[Ignore]
 		public void DoNotKeepFailedRetrieveInCache ()
 		{
@@ -97,7 +97,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (2, networkcalls);
 		}
 
-		[Test]
+		
 		[Ignore]
 		public void ConcurrentCallsOnSameUriAreQueued ()
 		{
@@ -116,7 +116,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void NullUriDoesNotCrash ()
 		{
 			var loader = new UriImageSource ();
@@ -125,7 +125,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			});
 		}
 
-		[Test]
+		
 		public void UrlHashKeyAreTheSame ()
 		{
 			var urlHash1 = Device.PlatformServices.GetMD5Hash ("http://www.optipess.com/wp-content/uploads/2010/08/02_Bad-Comics6-10.png?a=bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbasdasdasdasdasasdasdasdasdasd");
@@ -133,7 +133,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue (urlHash1 == urlHash2);
 		}
 
-		[Test]
+		
 		public void UrlHashKeyAreNotTheSame ()
 		{
 			var urlHash1 = Device.PlatformServices.GetMD5Hash ("http://www.optipess.com/wp-content/uploads/2010/08/02_Bad-Comics6-10.png?a=bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbasdasdasdasdasasdasdasdasdasd");

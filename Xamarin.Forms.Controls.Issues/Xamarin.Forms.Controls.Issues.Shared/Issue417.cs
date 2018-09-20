@@ -78,7 +78,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 
 #if UITEST
-		[Test]
+		
 		[UiTest (typeof(NavigationPage), "PopToRootAsync")]
 		public void Issue417TestsNavigateAndPopToRoot ()
 		{

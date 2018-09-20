@@ -99,7 +99,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			DependencyResolver.ResolveUsing(Resolver);
 		}
 
-		[Test]
+		
 		public void ThrowsIfResolverReturnsWrongType()
 		{
 			_container = new MockContainer();
@@ -109,7 +109,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Throws<InvalidCastException>(() => DependencyService.Resolve<TypeWhichWillNotResolveCorrectly>());
 		}
 
-		[Test]
+		
 		public void GetHandlerFromContainer()
 		{
 			Internals.Registrar.Registered.Register(typeof(MockElement), typeof(MockElementRenderer));
@@ -121,7 +121,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(typedRenderer, Is.SameAs(renderer));
 		}
 
-		[Test]
+		
 		public void GetEffectFromContainer()
 		{
 			string effectName = "anEffect";
@@ -133,7 +133,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(result, Is.SameAs(effect));
 		}
 
-		[Test]
+		
 		public void GetServiceFromContainer()
 		{
 			MockServiceImpl impl = new MockServiceImpl();
@@ -144,7 +144,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(result, Is.SameAs(impl));
 		}
 
-		[Test]
+		
 		public void PreferServiceTypeFromContainer()
 		{
 			MockServiceImpl impl = new MockServiceImpl();
@@ -155,7 +155,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(result, Is.SameAs(impl));
 		}
 
-		[Test]
+		
 		public void FallbackOnDependencyServiceIfNotInContainer()
 		{
 			DependencyService.Register<MockServiceImpl>();
@@ -164,7 +164,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(result, Is.Not.Null);
 		}
 
-		[Test]
+		
 		public void HandlerWithParameter()
 		{
 			Internals.Registrar.Registered.Register(typeof(MockElement), typeof(MockRendererWithParam));

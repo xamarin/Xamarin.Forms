@@ -92,7 +92,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Device.PlatformServices = null;
 		}
 
-		[Test]
+		
 		public void BindingContext()
 		{
 			var mock = new MockBindable();
@@ -103,7 +103,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreSame(obj, mock.BindingContext);
 		}
 
-		[Test]
+		
 		public void BindingContextChangedEvent()
 		{
 			var mock = new MockBindable();
@@ -114,7 +114,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Fail("The BindingContextChanged event was not fired.");
 		}
 
-		[Test]
+		
 		public void BindingContextChangedOnce()
 		{
 			var count = 0;
@@ -144,7 +144,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		//https://bugzilla.xamarin.com/show_bug.cgi?id=59507
 		public void BindingContextChangedCompareReferences()
 		{
@@ -157,7 +157,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Fail("The BindingContextChanged event was not fired.");
 		}
 
-		[Test]
+		
 		public void ParentAndChildBindingContextChanged()
 		{
 			int parentCount = 0, childCount = 0;
@@ -192,7 +192,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(parentCount, 1, "Parent" + changedWhenNoChange);
 		}
 
-		[Test]
+		
 		public void ParentSetOnNullChildBindingContext()
 		{
 			var parent = new MockBindable();
@@ -205,7 +205,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			parent.BindingContext = new object();
 		}
 
-		[Test]
+		
 		public void ParentSetOnNonNullChildBindingContext()
 		{
 			var count = 0;
@@ -229,7 +229,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(count, 3);
 		}
 
-		[Test]
+		
 		[Description("When the BindingContext changes, any bindings should be immediately applied.")]
 		public void BindingContextChangedBindingsApplied()
 		{
@@ -245,7 +245,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				"Bindings were not reapplied to the new binding context");
 		}
 
-		[Test]
+		
 		[Description("When the BindingContext changes, the new context needs to listen for updates.")]
 		public void BindingContextChangedBindingsListening()
 		{
@@ -263,7 +263,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				"The new ViewModel was not being listened to after being set");
 		}
 
-		[Test]
+		
 		[Description("When an INPC implementer is unset as the BindingContext, its changes shouldn't be listened to any further.")]
 		public void BindingContextUnsetStopsListening()
 		{
@@ -280,7 +280,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsNull(mock.GetValue(Entry.TextProperty), "ViewModel was still being listened to after set to null");
 		}
 
-		[Test]
+		
 		public void PropertyChanging()
 		{
 			var mock = new MockBindable();
@@ -296,7 +296,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Fail("The PropertyChanging event was not fired.");
 		}
 
-		[Test]
+		
 		public void PropertyChangingSameValue()
 		{
 			const string value = "foo";
@@ -310,7 +310,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Pass();
 		}
 
-		[Test]
+		
 		public void PropertyChangingDefaultValue()
 		{
 			var prop = BindableProperty.Create<MockBindable, string>(w => w.Foo, "DefaultValue");
@@ -322,7 +322,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Pass();
 		}
 
-		[Test]
+		
 		public void PropertyChanged()
 		{
 			const string value = "foo";
@@ -340,7 +340,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Fail("The PropertyChanged event was not fired.");
 		}
 
-		[Test]
+		
 		public void PropertyChangedSameValue()
 		{
 			const string value = "foo";
@@ -354,7 +354,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Pass();
 		}
 
-		[Test]
+		
 		public void PropertyChangedDefaultValue()
 		{
 			var prop = BindableProperty.Create<MockBindable, string>(w => w.Foo, "DefaultValue");
@@ -367,7 +367,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Pass();
 		}
 
-		[Test]
+		
 		public void GetSetValue()
 		{
 			const string value = "foo";
@@ -377,7 +377,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(value, mock.GetValue(MockBindable.TextProperty));
 		}
 
-		[Test]
+		
 		public void GetValueDefault()
 		{
 			var nulldefault = BindableProperty.Create<MockBindable, string>(w => w.Foo, null);
@@ -394,28 +394,28 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(property.DefaultValue, value);
 		}
 
-		[Test]
+		
 		public void SetValueInvalid()
 		{
 			var mock = new MockBindable();
 			Assert.Throws<ArgumentNullException>(() => mock.SetValue((BindableProperty)null, "null"));
 		}
 
-		[Test]
+		
 		public void GetValueInvalid()
 		{
 			var mock = new MockBindable();
 			Assert.Throws<ArgumentNullException>(() => mock.GetValue(null));
 		}
 
-		[Test]
+		
 		public void ClearValueInvalid()
 		{
 			var mock = new MockBindable();
 			Assert.Throws<ArgumentNullException>(() => mock.ClearValue((BindableProperty)null));
 		}
 
-		[Test]
+		
 		public void ClearValue()
 		{
 			const string value = "foo";
@@ -427,7 +427,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			TestGetValueDefault(MockBindable.TextProperty);
 		}
 
-		[Test]
+		
 		public void ClearValueTriggersINPC()
 		{
 			var bindable = new MockBindable();
@@ -452,7 +452,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True(changeddelegatefired);
 		}
 
-		[Test]
+		
 		public void ClearValueDoesNotTriggersINPCOnSameValues()
 		{
 			var bindable = new MockBindable();
@@ -478,7 +478,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False(changeddelegatefired);
 		}
 
-		[Test]
+		
 		public void SetBindingInvalid()
 		{
 			var mock = new MockBindable();
@@ -486,21 +486,21 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Throws<ArgumentNullException>(() => mock.SetBinding(MockBindable.TextProperty, null));
 		}
 
-		[Test]
+		
 		public void RemoveUnaddedBinding()
 		{
 			var mock = new MockBindable();
 			Assert.That(() => mock.RemoveBinding(MockBindable.TextProperty), Throws.Nothing);
 		}
 
-		[Test]
+		
 		public void RemoveBindingInvalid()
 		{
 			var mock = new MockBindable();
 			Assert.Throws<ArgumentNullException>(() => mock.RemoveBinding(null));
 		}
 
-		[Test]
+		
 		public void RemovedBindingDoesNotUpdate()
 		{
 			const string newvalue = "New Value";
@@ -524,7 +524,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				"Property updated from a removed binding");
 		}
 
-		[Test]
+		
 		public void CoerceValue()
 		{
 			var property = BindableProperty.Create<MockBindable, string>(w => w.Foo, null,
@@ -536,7 +536,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(value.ToUpper(), mock.GetValue(property));
 		}
 
-		[Test]
+		
 		public void ValidateValue()
 		{
 			var property = BindableProperty.Create<MockBindable, string>(w => w.Foo, null,
@@ -546,7 +546,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Throws<ArgumentException>(() => mock.SetValue(property, null));
 		}
 
-		[Test]
+		
 		public void BindablePropertyChanged()
 		{
 			bool changed = false;
@@ -568,7 +568,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue(changed, "PropertyChanged was not called");
 		}
 
-		[Test]
+		
 		public void RecursiveChange()
 		{
 			bool changedA1 = false, changedA2 = false, changedB1 = false, changedB2 = false;
@@ -621,7 +621,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue(changedB2);
 		}
 
-		[Test]
+		
 		public void RaiseOnEqual()
 		{
 			string foo = "foo";
@@ -649,7 +649,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(changed, Is.True, "PropertyChanged event did not fire");
 		}
 
-		[Test]
+		
 		public void BindingContextGetter()
 		{
 			var label = new Label();
@@ -662,7 +662,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreSame(label.BindingContext, label.GetValue(BindableObject.BindingContextProperty));
 		}
 
-		[Test]
+		
 		public void BoundBindingContextUpdate()
 		{
 			var label = new Label();
@@ -679,7 +679,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("Baz", label.BindingContext);
 		}
 
-		[Test]
+		
 		public void BoundBindingContextChange()
 		{
 			var label = new Label();
@@ -695,7 +695,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("Baz", label.BindingContext);
 		}
 
-		[Test]
+		
 		public void TestReadOnly()
 		{
 			var bindablePropertyKey = BindableProperty.CreateReadOnly<MockBindable, string>(w => w.Foo, "DefaultValue");
@@ -716,7 +716,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("DefaultValue", bindable.GetValue(bindableProperty));
 		}
 
-		[Test]
+		
 		public void TestBindingTwoWayOnReadOnly()
 		{
 			var bindablePropertyKey = BindableProperty.CreateReadOnly<MockBindable, string>(w => w.Foo, "DefaultValue", BindingMode.OneWayToSource);
@@ -731,7 +731,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("DefaultValue", bindable.GetValue(bindableProperty));
 		}
 
-		[Test]
+		
 		public void DefaultValueCreator()
 		{
 			int invoked = 0;
@@ -750,7 +750,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(1, invoked);
 		}
 
-		[Test]
+		
 		public void DefaultValueCreatorIsInvokedOnlyAtFirstTime()
 		{
 			int invoked = 0;
@@ -769,7 +769,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(1, invoked);
 		}
 
-		[Test]
+		
 		public void DefaultValueCreatorNotSharedAccrossInstances()
 		{
 			int invoked = 0;
@@ -787,7 +787,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(2, invoked);
 		}
 
-		[Test]
+		
 		public void DefaultValueCreatorInvokedAfterClearValue()
 		{
 			int invoked = 0;
@@ -811,7 +811,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreNotSame(value0, value1);
 		}
 
-		[Test]
+		
 		public void DefaultValueCreatorOnlyInvokedOnGetValue()
 		{
 			int invoked = 0;
@@ -829,7 +829,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(1, invoked);
 		}
 
-		[Test]
+		
 		public void DefaultValueCreatorDoesNotTriggerINPC()
 		{
 			int invoked = 0;
@@ -860,7 +860,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		}
 
-		[Test]
+		
 		public void IsSetIsFalseWhenPropNotSet()
 		{
 			string defaultValue = "default";
@@ -873,7 +873,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsFalse(isSet);
 		}
 
-		[Test]
+		
 		public void IsSetIsTrueWhenPropSet()
 		{
 			string defaultValue = "default";
@@ -890,7 +890,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue(isSet);
 		}
 
-		[Test]
+		
 		public void IsSetIsFalseWhenPropCleared()
 		{
 			string defaultValue = "default";
@@ -905,7 +905,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(bindable.IsSet(bindableProperty), Is.False);
 		}
 
-		[Test]
+		
 		public void IsSetIsTrueWhenPropSetToDefault()
 		{
 			string defaultValue = "default";
@@ -921,7 +921,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue(isSet);
 		}
 
-		[Test]
+		
 		public void IsSetIsTrueWhenPropSetByDefaultValueCreator()
 		{
 			string defaultValue = "default";
@@ -942,7 +942,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue(isSet);
 		}
 
-		[Test]
+		
 		public void StyleValueIsOverridenByValue()
 		{
 			var label = new Label();
@@ -953,7 +953,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("Bar", label.Text);
 		}
 
-		[Test]
+		
 		public void StyleBindingIsOverridenByValue()
 		{
 			var label = new Label();
@@ -965,7 +965,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("Bar", label.Text);
 		}
 
-		[Test]
+		
 		public void StyleDynResourceIsOverridenByValue()
 		{
 			var label = new Label();
@@ -979,7 +979,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("Bar", label.Text);
 		}
 
-		[Test]
+		
 		public void StyleValueIsOverridenByBinding()
 		{
 			var label = new Label();
@@ -991,7 +991,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("Bar", label.Text);
 		}
 
-		[Test]
+		
 		public void StyleBindingIsOverridenByBinding()
 		{
 			var label = new Label();
@@ -1003,7 +1003,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("Bar", label.Text);
 		}
 
-		[Test]
+		
 		public void StyleDynResourceIsOverridenByBinding()
 		{
 			var label = new Label();
@@ -1018,7 +1018,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("Bar", label.Text);
 		}
 
-		[Test]
+		
 		public void StyleValueIsOverridenByDynResource()
 		{
 			var label = new Label();
@@ -1034,7 +1034,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("Bar", label.Text);
 		}
 
-		[Test]
+		
 		public void StyleBindingIsOverridenByDynResource()
 		{
 			var label = new Label();
@@ -1050,7 +1050,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("Bar", label.Text);
 		}
 
-		[Test]
+		
 		public void StyleDynResourceIsOverridenByDynResource()
 		{
 			var label = new Label();
@@ -1067,7 +1067,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("Bar", label.Text);
 		}
 
-		[Test]
+		
 		public void ValueIsPreservedOnStyleValue()
 		{
 			var label = new Label();
@@ -1077,7 +1077,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			label.SetValue(Label.TextProperty, "Bar", true);
 			Assert.AreEqual("Foo", label.Text);
 		}
-		[Test]
+		
 		public void BindingIsPreservedOnStyleValue()
 		{
 			var label = new Label();
@@ -1088,7 +1088,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			label.SetValue(Label.TextProperty, "Bar", true);
 			Assert.AreEqual("Foo", label.Text);
 		}
-		[Test]
+		
 		public void DynResourceIsPreservedOnStyleValue()
 		{
 			var label = new Label();
@@ -1102,7 +1102,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("Foo", label.Text);
 		}
 
-		[Test]
+		
 		public void ValueIsPreservedOnStyleBinding()
 		{
 			var label = new Label();
@@ -1114,7 +1114,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("Foo", label.Text);
 		}
 
-		[Test]
+		
 		public void BindingIsPreservedOnStyleBinding()
 		{
 			var label = new Label();
@@ -1126,7 +1126,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("Foo", label.Text);
 		}
 
-		[Test]
+		
 		public void DynResourceIsPreservedOnStyleBinding()
 		{
 			var label = new Label();
@@ -1141,7 +1141,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("Foo", label.Text);
 		}
 
-		[Test]
+		
 		public void ValueIsPreservedOnStyleDynResource()
 		{
 			var label = new Label();
@@ -1157,7 +1157,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("Foo", label.Text);
 		}
 
-		[Test]
+		
 		public void BindingIsPreservedOnStyleDynResource()
 		{
 			var label = new Label();
@@ -1173,7 +1173,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("Foo", label.Text);
 		}
 
-		[Test]
+		
 		public void DynResourceIsPreservedOnStyleDynResource()
 		{
 			var label = new Label();
@@ -1190,7 +1190,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("Foo", label.Text);
 		}
 
-		[Test]
+		
 		public void StyleValueIsOverridenByStyleValue()
 		{
 			var label = new Label();
@@ -1201,7 +1201,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("Bar", label.Text);
 		}
 
-		[Test]
+		
 		public void StyleBindingIsOverridenByStyleValue()
 		{
 			var label = new Label();
@@ -1213,7 +1213,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("Bar", label.Text);
 		}
 
-		[Test]
+		
 		public void StyleDynResourceIsOverridenByStyleValue()
 		{
 			var label = new Label();
@@ -1227,7 +1227,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("Bar", label.Text);
 		}
 
-		[Test]
+		
 		public void StyleValueIsOverridenByStyleBinding()
 		{
 			var label = new Label();
@@ -1239,7 +1239,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("Bar", label.Text);
 		}
 
-		[Test]
+		
 		public void StyleBindingIsOverridenByStyleBinding()
 		{
 			var label = new Label();
@@ -1251,7 +1251,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("Bar", label.Text);
 		}
 
-		[Test]
+		
 		public void StyleDynResourceIsOverridenByStyleBinding()
 		{
 			var label = new Label();
@@ -1266,7 +1266,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("Bar", label.Text);
 		}
 
-		[Test]
+		
 		public void StyleValueIsOverridenByStyleDynResource()
 		{
 			var label = new Label();
@@ -1282,7 +1282,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("Bar", label.Text);
 		}
 
-		[Test]
+		
 		public void StyleBindingIsOverridenByStyleDynResource()
 		{
 			var label = new Label();
@@ -1298,7 +1298,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("Bar", label.Text);
 		}
 
-		[Test]
+		
 		public void StyleDynResourceIsOverridenByStyleDynResource()
 		{
 			var label = new Label();
@@ -1315,7 +1315,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("Bar", label.Text);
 		}
 
-		[Test]
+		
 		public void SetValueCoreImplicitelyCastBasicType()
 		{
 			var prop = BindableProperty.Create("Foo", typeof(int), typeof(MockBindable), 0);
@@ -1339,7 +1339,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void SetValueCoreInvokesOpImplicitOnPropertyType()
 		{
 			var prop = BindableProperty.Create("Foo", typeof(CastFromString), typeof(MockBindable), null);
@@ -1371,7 +1371,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void SetValueCoreInvokesOpImplicitOnValue()
 		{
 			var prop = BindableProperty.Create("Foo", typeof(string), typeof(MockBindable), null);
@@ -1383,7 +1383,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("foo", bindable.GetValue(prop));
 		}
 
-		[Test]
+		
 		public void DefaultValueCreatorCalledForChangeDelegates()
 		{
 			int changedOld = -1;
@@ -1420,7 +1420,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(10, changingNew);
 		}
 
-		[Test]
+		
 		public void GetValuesDefaults()
 		{
 			var prop = BindableProperty.Create("Foo", typeof(int), typeof(MockBindable), 0);
@@ -1436,7 +1436,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(values[2], Is.EqualTo(2));
 		}
 
-		[Test]
+		
 		public void GetValues()
 		{
 			var prop = BindableProperty.Create("Foo", typeof(int), typeof(MockBindable), 0);
@@ -1468,7 +1468,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		//https://bugzilla.xamarin.com/show_bug.cgi?id=24485
 		public void BindingContextBoundThroughConverter()
 		{
@@ -1497,7 +1497,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		//https://bugzilla.xamarin.com/show_bug.cgi?id=27299
 		public void BindingOnBindingContextDoesntReapplyBindingContextBinding()
 		{
@@ -1509,7 +1509,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue(locator.Count == 1);
 		}
 
-		[Test]
+		
 		//https://github.com/xamarin/Xamarin.Forms/issues/2019
 		public void EventSubscribingOnBindingContextChanged()
 		{
@@ -1522,7 +1522,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That((string)bindable.GetValue(property), Is.EqualTo("bar"));
 		}
 
-		[Test]
+		
 		public void BindingsEditableAfterUnapplied()
 		{
 			var bindable = new MockBindable();
@@ -1538,7 +1538,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(() => binding.Path = "foo", Throws.Nothing);
 		}
 
-		[Test]
+		
 		// https://bugzilla.xamarin.com/show_bug.cgi?id=24054
 		public void BindingsAppliedUnappliedWithNullContext()
 		{

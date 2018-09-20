@@ -118,7 +118,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Bugzilla31688Test ()
 		{
 			RunningApp.WaitForElement (q => q.Marked ("Page 3"));

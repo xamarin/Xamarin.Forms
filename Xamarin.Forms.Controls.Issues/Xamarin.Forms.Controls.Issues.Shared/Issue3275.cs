@@ -216,7 +216,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Issue3275Test()
 		{
 			RunningApp.WaitForElement(q => q.Marked(_btnLeakId));

@@ -57,7 +57,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void TestDoesntCrashShowingContextMenu ()
 		{
 			RunningApp.ActivateContextMenu("Swipe ME");
@@ -66,7 +66,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Tap(c => c.Marked("Text0"));
 		}
 
-		[Test]
+		
 		public void TestShowContextMenuItemsInTheRightOrder ()
 		{
 			RunningApp.ActivateContextMenu("Swipe ME");

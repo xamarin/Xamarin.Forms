@@ -77,7 +77,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void DoubleTapWithMixedRecognizersShouldRegisterDoubleTap()
 		{
 			RunningApp.WaitForElement(MixedTapBoxId);
@@ -86,7 +86,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement($"1 {Doubles} on {MixedTapBoxId}");
 		}
 
-		[Test]
+		
 		public void SingleTapWithMixedRecognizersShouldRegisterSingleTap()
 		{
 			RunningApp.WaitForElement(MixedTapBoxId);

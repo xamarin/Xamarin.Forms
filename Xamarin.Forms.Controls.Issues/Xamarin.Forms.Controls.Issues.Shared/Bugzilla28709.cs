@@ -84,7 +84,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 
 		#if UITEST
-		[Test]
+		
 		public void Bugzilla28709Test ()
 		{
 			RunningApp.Tap (q => q.Marked ("Save Properties"));

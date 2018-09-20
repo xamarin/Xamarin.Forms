@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class EventTriggerTest : BaseTestFixture
 	{
-		[Test]
+		
 		public void TestTriggerActionInvoked ()
 		{
 			var bindable = new MockBindableWithEvent ();
@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (triggeraction.Invoked);
 		}
 			
-		[Test]
+		
 		public void TestChangeEventOnEventTrigger ()
 		{
 			var bindable = new MockBindableWithEvent ();

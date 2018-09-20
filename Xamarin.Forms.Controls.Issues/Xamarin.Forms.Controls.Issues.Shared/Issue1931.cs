@@ -93,7 +93,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		
 #if UITEST
-		[Test]
+		
 		public void ScrollViewInHeaderDisposesProperly()
 		{
 			RunningApp.WaitForElement(Go);

@@ -6,7 +6,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 	[TestFixture]
 	public class Issue1564
 	{
-		[Test]
+		
 		public void ViewCellAsXamlRoot ()
 		{
 			var xaml = @"<?xml version=""1.0"" encoding=""UTF-8""?>

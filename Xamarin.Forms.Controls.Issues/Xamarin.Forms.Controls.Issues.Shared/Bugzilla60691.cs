@@ -27,7 +27,7 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST
 		protected override bool Isolate => true;
 
-		[Test]
+		
 		[Ignore("This test opens a system dialog in iOS11+ that cannot be dismissed by UITest and covers subsequent tests.")]
 		public async void Bugzilla60691_Tel()
 		{

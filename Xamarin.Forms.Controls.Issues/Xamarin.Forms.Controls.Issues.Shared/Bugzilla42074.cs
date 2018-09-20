@@ -40,7 +40,7 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST
 
 #if __ANDROID__
-        [Test]
+        
         public void TimePickerCancelShouldUnfocus()
         {
             RunningApp.Tap(q => q.Marked(TimePicker));

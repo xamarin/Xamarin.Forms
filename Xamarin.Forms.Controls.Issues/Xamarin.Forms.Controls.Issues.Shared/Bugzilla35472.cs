@@ -71,7 +71,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		[UiTest (typeof(NavigationPage))]
 		public void Issue35472PopAsyncDuringAnimatedScrollToAsync ()
 		{

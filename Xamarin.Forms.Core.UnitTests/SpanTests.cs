@@ -19,7 +19,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Device.PlatformServices = null;
 		}
 
-		[Test]
+		
 		public void StyleApplied()
 		{
 			var pinkStyle = new Style(typeof(Span))
@@ -53,7 +53,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(Color.Pink, span.TextColor);
 		}
 
-		[Test]
+		
 		public void BindingApplied()
 		{
 			var vm = new ViewModel()

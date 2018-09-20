@@ -37,7 +37,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void ListViewWithoutDataDoesNotCrash()
 		{
 			var result = RunningApp.WaitForElement(ListView);

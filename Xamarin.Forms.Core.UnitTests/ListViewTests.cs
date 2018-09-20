@@ -30,7 +30,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Device.Info = new TestDeviceInfo ();
 		}
 
-		[Test]
+		
 		public void TestConstructor ()
 		{
 			var listView = new ListView ();
@@ -47,7 +47,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			public string Description { get; set; }
 		}
 
-		[Test]
+		
 		public void TestTemplating ()
 		{
 			var cellTemplate = new DataTemplate (typeof (TextCell));
@@ -71,7 +71,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("Bar", textCell.Detail);
 		}
 
-		[Test]
+		
 		public void TemplateNullObject()
 		{
 			var listView = new ListView {
@@ -87,7 +87,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (((TextCell) cell).Text, Is.Null);
 		}
 
-		[Test]
+		
 		[Description("Setting BindingContext should trickle down to Header and Footer.")]
 		public void SettingBindingContextPassesToHeaderAndFooter()
 		{
@@ -105,7 +105,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(footer.BindingContext, Is.SameAs(bc));
 		}
 
-		[Test]
+		
 		[Description("Setting Header and Footer should pass BindingContext.")]
 		public void SettingHeaderFooterPassesBindingContext()
 		{
@@ -124,7 +124,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(footer.BindingContext, Is.SameAs(bc));
 		}
 
-		[Test]
+		
 		[Description ("Setting GroupDisplayBinding or GroupHeaderTemplate when the other is set should set the other one to null.")]
 		public void SettingGroupHeaderTemplateSetsDisplayBindingToNull()
 		{
@@ -137,7 +137,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (listView.GroupDisplayBinding, Is.Null);
 		}
 
-		[Test]
+		
 		[Description ("Setting GroupDisplayBinding or GroupHeaderTemplate when the other is set should set the other one to null.")]
 		public void SettingGroupDisplayBindingSetsHeaderTemplateToNull()
 		{
@@ -150,7 +150,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (listView.GroupHeaderTemplate, Is.Null);
 		}
 
-		[Test]
+		
 		[Description ("You should be able to set ItemsSource without having set the other properties first without issue")]
 		public void SettingItemsSourceWithoutBindingsOrItemsSource()
 		{
@@ -161,7 +161,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (() => listView.ItemsSource = new[] { new[] { new object() } }, Throws.Nothing);
 		}
 
-		[Test]
+		
 		public void DefaultGroupHeaderTemplates()
 		{
 			var items = new[] { new[] { new object() } };
@@ -179,7 +179,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (((TextCell) cell).Text, Is.EqualTo (items[0].ToString()));
 		}
 
-		[Test]
+		
 		[Description ("Tapping a different item (row) that is equal to the current item selection should still raise ItemSelected")]
 		public void NotifyRowTappedDifferentIndex()
 		{
@@ -201,7 +201,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (raised, Is.True, "ItemSelected was not raised");
 		}
 
-		[Test]
+		
 		public void DoesNotCrashWhenAddingToSource ()
 		{
 			var items = new ObservableCollection<string> {
@@ -218,7 +218,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.DoesNotThrow (() => items.Add ("Blah"));
 		}
 
-		[Test]
+		
 		public void DoesNotThrowWhenMovingInSource ()
 		{
 			var items = new ObservableCollection<string> {
@@ -235,7 +235,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.DoesNotThrow (() => items.Move (0, 1));
 		}
 
-		[Test]
+		
 		[Description ("A cell being tapped from the UI should raise both tapped events, but not change ItemSelected")]
 		public void NotifyTappedSameItem()
 		{
@@ -270,7 +270,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (itemSelected, Is.EqualTo (1), "ListView.ItemSelected was raised a second time");
 		}
 
-		[Test]
+		
 		public void ScrollTo()
 		{
 			var listView = new ListView {
@@ -294,7 +294,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (requested, Is.True);
 		}
 
-		[Test]
+		
 		public void ScrollToDelayed()
 		{
 			var listView = new ListView();
@@ -320,7 +320,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (requested, Is.True);
 		}
 
-		[Test]
+		
 		public void ScrollToGroup()
 		{
 			// Fake a renderer so we pass along messages right away
@@ -347,7 +347,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (requested, Is.True);
 		}
 
-		[Test]
+		
 		public void ScrollToInvalid()
 		{
 			var listView = new ListView {
@@ -362,7 +362,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (() => listView.ScrollTo (new object(), new object(), (ScrollToPosition) 500, true), Throws.ArgumentException);
 		}
 
-		[Test]
+		
 		public void GetSizeRequest ()
 		{
 			var listView = new ListView {
@@ -381,7 +381,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (50 * 20, sizeRequest.Request.Height);
 		}
 
-		[Test]
+		
 		public void GetSizeRequestUneven ()
 		{
 			var listView = new ListView {
@@ -487,7 +487,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			return allListItemGroups;
 		}
 
-		[Test]
+		
 		public void UncollectableHeaderReferences ()
 		{
 			var list = new ListView {
@@ -528,7 +528,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			var keepAlive = list.ToString ();
 		}
 
-		[Test]
+		
 		public void CollectionChangedMultipleFires ()
 		{
 			var source = new ObservableCollection<string> {
@@ -553,7 +553,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (1, fireCount);
 		}
 
-		[Test]
+		
 		public void GroupedCollectionChangedMultipleFires ()
 		{
 			var source = new ObservableCollection<ObservableCollection <string>> {
@@ -583,7 +583,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (1, fireCount);
 		}
 
-		[Test]
+		
 		public void HeaderAsView()
 		{
 			var label = new Label { Text = "header" };
@@ -595,7 +595,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (controller.HeaderElement, Is.SameAs (label));
 		}
 
-		[Test]
+		
 		public void HeaderTemplated()
 		{
 			var lv = new ListView {
@@ -613,7 +613,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (((Label) controller.HeaderElement).Text, Is.EqualTo (lv.Header));
 		}
 
-		[Test]
+		
 		public void HeaderTemplateThrowsIfCell ()
 		{
 			var lv = new ListView ();
@@ -621,7 +621,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Throws<ArgumentException> (() => lv.HeaderTemplate = new DataTemplate (typeof (TextCell)));
 		}
 
-		[Test]
+		
 		public void FooterTemplateThrowsIfCell ()
 		{
 			var lv = new ListView ();
@@ -629,7 +629,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Throws<ArgumentException> (() => lv.FooterTemplate = new DataTemplate (typeof (TextCell)));
 		}
 
-		[Test]
+		
 		public void HeaderObjectTemplatedChanged()
 		{
 			var lv = new ListView {
@@ -662,7 +662,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (((Label) controller.HeaderElement).Text, Is.EqualTo (lv.Header));
 		}
 
-		[Test]
+		
 		public void HeaderViewChanged()
 		{
 			var lv = new ListView {
@@ -690,7 +690,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		
-		[Test]
+		
 		public void HeaderTemplateChanged()
 		{
 			var lv = new ListView {
@@ -727,7 +727,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (((Entry) controller.HeaderElement).Text, Is.EqualTo (lv.Header));
 		}
 
-		[Test]
+		
 		public void HeaderTemplateChangedNoObject()
 		{
 			var lv = new ListView {
@@ -761,7 +761,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (controller.HeaderElement, Is.Null);
 		}
 
-		[Test]
+		
 		public void HeaderNoTemplate()
 		{
 			var lv = new ListView {
@@ -774,7 +774,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (((Label) controller.HeaderElement).Text, Is.EqualTo (lv.Header));
 		}
 
-		[Test]
+		
 		public void HeaderChangedNoTemplate()
 		{
 			var lv = new ListView {
@@ -802,7 +802,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (((Label) controller.HeaderElement).Text, Is.EqualTo (lv.Header));
 		}
 
-		[Test]
+		
 		public void HeaderViewButTemplated()
 		{
 			var lv = new ListView {
@@ -820,7 +820,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (((Label) controller.HeaderElement).Text, Is.EqualTo (((Entry)lv.Header).Text));
 		}
 
-		[Test]
+		
 		public void HeaderTemplatedChangedToView()
 		{
 			var lv = new ListView {
@@ -853,7 +853,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (((Entry) controller.HeaderElement).Text, Is.EqualTo (((Entry)lv.Header).Text));
 		}
 
-		[Test]
+		
 		public void HeaderTemplatedSetToNull()
 		{
 			var lv = new ListView {
@@ -884,7 +884,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (controller.HeaderElement, Is.Null);
 		}
 
-		[Test]
+		
 		public void FooterAsView()
 		{
 			var label = new Label { Text = "footer" };
@@ -896,7 +896,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (controller.FooterElement, Is.SameAs (label));
 		}
 
-		[Test]
+		
 		public void FooterTemplated()
 		{
 			var lv = new ListView {
@@ -914,7 +914,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (((Label) controller.FooterElement).Text, Is.EqualTo (lv.Footer));
 		}
 
-		[Test]
+		
 		public void FooterObjectTemplatedChanged()
 		{
 			var lv = new ListView {
@@ -947,7 +947,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (((Label) controller.FooterElement).Text, Is.EqualTo (lv.Footer));
 		}
 
-		[Test]
+		
 		public void FooterViewChanged()
 		{
 			var lv = new ListView {
@@ -975,7 +975,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		
-		[Test]
+		
 		public void FooterTemplateChanged()
 		{
 			var lv = new ListView {
@@ -1012,7 +1012,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (((Entry) controller.FooterElement).Text, Is.EqualTo (lv.Footer));
 		}
 
-		[Test]
+		
 		public void FooterTemplateChangedNoObject()
 		{
 			var lv = new ListView {
@@ -1046,7 +1046,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (controller.FooterElement, Is.Null);
 		}
 
-		[Test]
+		
 		public void FooterNoTemplate()
 		{
 			var lv = new ListView {
@@ -1059,7 +1059,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (((Label) controller.FooterElement).Text, Is.EqualTo (lv.Footer));
 		}
 
-		[Test]
+		
 		public void FooterChangedNoTemplate()
 		{
 			var lv = new ListView {
@@ -1087,7 +1087,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (((Label) controller.FooterElement).Text, Is.EqualTo (lv.Footer));
 		}
 
-		[Test]
+		
 		public void FooterViewButTemplated()
 		{
 			var lv = new ListView {
@@ -1105,7 +1105,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (((Label) controller.FooterElement).Text, Is.EqualTo (((Entry)lv.Footer).Text));
 		}
 
-		[Test]
+		
 		public void FooterTemplatedChangedToView()
 		{
 			var lv = new ListView {
@@ -1138,7 +1138,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (((Entry) controller.FooterElement).Text, Is.EqualTo (((Entry)lv.Footer).Text));
 		}
 
-		[Test]
+		
 		public void FooterTemplatedSetToNull()
 		{
 			var lv = new ListView {
@@ -1169,7 +1169,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (controller.FooterElement, Is.Null);
 		}
 
-		[Test]
+		
 		public void BeginRefresh()
 		{
 			var lv = new ListView();
@@ -1185,7 +1185,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (lv.IsRefreshing, Is.True);
 		}
 
-		[Test]
+		
 		public void SendRefreshing()
 		{
 			var lv = new ListView();
@@ -1202,7 +1202,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (lv.IsRefreshing, Is.True);
 		}
 
-		[Test]
+		
 		public void RefreshCommand()
 		{
 			var lv = new ListView();
@@ -1256,7 +1256,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That ((lv as IListViewController).RefreshAllowed, Is.EqualTo (initial));
 		}
 
-		[Test]
+		
 		public void BeginRefreshDoesNothingWhenCannotExecute()
 		{
 			var lv = new ListView();
@@ -1276,7 +1276,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (commandExecuted, Is.False);
 		}
 
-		[Test]
+		
 		public void SendRefreshingDoesNothingWhenCannotExecute()
 		{
 			var lv = new ListView();
@@ -1297,7 +1297,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (commandExecuted, Is.False);
 		}
 
-		[Test]
+		
 		public void SettingIsRefreshingDoesntFireEvent()
 		{
 			var lv = new ListView();
@@ -1312,7 +1312,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (refreshing, Is.False);
 		}
 
-		[Test]
+		
 		public void EndRefresh()
 		{
 			var lv = new ListView { IsRefreshing = true };
@@ -1324,7 +1324,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (lv.IsRefreshing, Is.False);
 		}
 
-		[Test]
+		
 		public void CanRefreshAfterCantExecuteCommand()
 		{
 			var lv = new ListView();
@@ -1346,7 +1346,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (commandExecuted, Is.False);
 		}
 
-		[Test]
+		
 		public void StopsListeningToCommandAfterCleared()
 		{
 			var lv = new ListView();
@@ -1369,7 +1369,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (commandExecuted, Is.False);
 		}
 
-		[Test]
+		
 		[Description ("We should be able to set selected item when using ReadOnlyList")]
 		public void SetItemSelectedOnReadOnlyList()
 		{
@@ -1426,7 +1426,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		}
 
-		[Test]
+		
 		public void ChildElementsParentIsNulledWhenReset()
 		{
 			var list = new ListView();
@@ -1439,7 +1439,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (cell.Parent, Is.Null);
 		}
 
-		[Test]
+		
 		public void ChildElementsParentIsNulledWhenRemoved()
 		{
 			var collection = new ObservableCollection<string> {
@@ -1456,7 +1456,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (cell.Parent, Is.Null);
 		}
 
-		[Test]
+		
 		public void ChildElementsParentIsNulledWhenCleared()
 		{
 			var collection = new ObservableCollection<string> {
@@ -1488,7 +1488,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			((MockPlatformServices)Device.PlatformServices).RuntimePlatform = oldOS;
 		}
 
-		[Test]
+		
 		public void DefaultCacheStrategy ()
 		{
 			var listView = new ListView ();
@@ -1496,7 +1496,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (ListViewCachingStrategy.RetainElement, listView.CachingStrategy);
 		}
 
-		[Test]
+		
 		public void DoesNotRetainInRecycleMode ()
 		{
 			var items = new ObservableCollection<string> {

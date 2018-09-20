@@ -142,7 +142,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 	
 #if UITEST
-		[Test]
+		
 		[UiTest (typeof(ListView), "ScrollTo")]
 		public void Issue2259Tests ()
 		{

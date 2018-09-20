@@ -42,7 +42,7 @@ namespace Xamarin.Forms.Controls.Issues
 		// Pop modal null reference exception
 
 #if UITEST
-		[Test]
+		
 		public void Issue264TestsPushAndPopModal ()
 		{
 			RunningApp.WaitForElement (q => q.Marked ("Home"));

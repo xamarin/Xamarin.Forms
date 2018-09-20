@@ -61,7 +61,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void CanRemoveIntermediatePagesAndPopToFirstPage ()
 		{
 			// Start at page 1

@@ -70,7 +70,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Bugzilla34561Test ()
 		{
 			RunningApp.WaitForElement (q => q.Marked ("ListViewItem"));

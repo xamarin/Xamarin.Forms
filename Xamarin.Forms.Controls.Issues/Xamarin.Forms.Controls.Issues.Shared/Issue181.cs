@@ -35,7 +35,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		[Category(UITestCategories.ManualReview)]
 		[UiTest (typeof(Label), "TextColor")]
 		public void Issue181TestsLabelShouldHaveRedText ()

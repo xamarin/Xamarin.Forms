@@ -76,7 +76,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Bugzilla38112_SwitchIsStillOnScreen ()
 		{
 			RunningApp.WaitForElement (q => q.Marked ("Click"));
@@ -84,7 +84,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement (q => q.Marked ("switch3"));
 		}
 
-		[Test]
+		
 		public void Bugzilla38112_SwitchIsStillDisabled ()
 		{
 			RunningApp.WaitForElement (q => q.Marked ("Click"));

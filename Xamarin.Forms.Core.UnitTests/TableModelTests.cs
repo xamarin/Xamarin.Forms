@@ -30,25 +30,25 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void DefaultSectionTitle ()
 		{
 			Assert.IsNull (new TestModel ().ProtectedSectionTitle ());
 		}
 
-		[Test]
+		
 		public void DefualtSectionIndexTitles ()
 		{
 			Assert.IsNull (new TestModel ().GetSectionIndexTitles ());
 		}
 
-		[Test]
+		
 		public void DefaultHeaderCell ()
 		{
 			Assert.IsNull (new TestModel ().GetHeaderCell (0));
 		}
 
-		[Test]
+		
 		public void DefaultCellFromObject ()
 		{
 			var model = new TestModel ();
@@ -60,7 +60,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("Foo", textCell.Text);
 		}
 
-		[Test]
+		
 		public void RowLongPressed ()
 		{
 			var model = new TestModel ();
@@ -73,7 +73,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			model.RowLongPressed (0, 5);
 		}
 
-		[Test]
+		
 		public void RowSelectedForObject ()
 		{
 			var model = new TestModel ();

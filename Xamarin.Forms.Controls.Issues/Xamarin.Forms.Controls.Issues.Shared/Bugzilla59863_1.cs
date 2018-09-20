@@ -62,7 +62,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void SingleTapWithOnlyDoubleTapRecognizerShouldRegisterNothing()
 		{
 			RunningApp.WaitForElement(DoubleTapBoxId);
@@ -71,7 +71,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement($"0 {Doubles} on {DoubleTapBoxId}");
 		}
 
-		[Test]
+		
 		public void DoubleTapWithOnlyDoubleTapRecognizerShouldRegisterOneDoubleTap()
 		{
 			RunningApp.WaitForElement(DoubleTapBoxId);

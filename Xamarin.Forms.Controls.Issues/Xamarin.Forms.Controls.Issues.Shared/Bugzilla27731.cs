@@ -40,7 +40,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Bugzilla27731Test()
 		{
 			RunningApp.WaitForNoElement(_pageTitle);

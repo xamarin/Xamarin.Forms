@@ -27,7 +27,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Device.PlatformServices = null;
 		}
 
-		[Test]
+		
 		public void ListCount()
 		{
 			var list = new List<string> { "foo", "bar" };
@@ -38,7 +38,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (list.Count, proxy.Count);
 		}
 
-		[Test]
+		
 		public void CollectionCount()
 		{
 			var list = new Collection<string> { "foo", "bar" };
@@ -49,7 +49,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (list.Count, proxy.Count);
 		}
 
-		[Test]
+		
 		[Description ("Count should ensure that the window is created if neccessary")]
 		public void EnumerableInitialCount()
 		{
@@ -59,7 +59,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (10, proxy.Count);
 		}
 
-		[Test]
+		
 		public void EnumerableCount()
 		{
 			var enumerable = Enumerable.Range (0, 100);
@@ -100,7 +100,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (19, changed);
 		}
 
-		[Test]
+		
 		public void InsideWindowSize()
 		{
 			var numbers = Enumerable.Range (0, 100);
@@ -110,7 +110,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (i, Is.EqualTo (5));
 		}
 
-		[Test]
+		
 		public void IndexOutsideWindowSize()
 		{
 			var numbers = Enumerable.Range (0, 100);
@@ -120,7 +120,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (i, Is.EqualTo (50));
 		}
 
-		[Test]
+		
 		public void IndexInsideToOutsideWindowSize()
 		{
 			var numbers = Enumerable.Range (0, 100);
@@ -133,7 +133,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (i, Is.EqualTo (50));
 		}
 
-		[Test]
+		
 		public void IndexOutsideToPreWindowSize()
 		{
 			var numbers = Enumerable.Range (0, 100);
@@ -146,7 +146,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (i, Is.EqualTo (5));
 		}
 
-		[Test]
+		
 		public void EnumerableIndexOutOfRange()
 		{
 			var numbers = Enumerable.Range (0, 100);
@@ -195,7 +195,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			public bool IsReadOnly { get { return true; } }
 		}
 
-		[Test]
+		
 		public void CollectionIndexOutOfRange()
 		{
 			var numbers = new IntCollection (Enumerable.Range (0, 100));
@@ -204,7 +204,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (() => proxy[100], Throws.InstanceOf<ArgumentOutOfRangeException>());
 		}
 
-		[Test]
+		
 		public void ListIndexOutOfRange()
 		{
 			var numbers = Enumerable.Range (0, 100).ToList();
@@ -213,7 +213,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (() => proxy[100], Throws.InstanceOf<ArgumentOutOfRangeException>());
 		}
 
-		[Test]
+		
 		public void CollectionChangedWhileEnumerating()
 		{
 			var c = new ObservableCollection<string> { "foo", "bar" };
@@ -228,7 +228,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				"MoveNext did not throw an exception when the underlying collection had changed");
 		}
 
-		[Test]
+		
 		public void SynchronizedCollectionAccess()
 		{
 			var collection = new ObservableCollection<string> { "foo" };
@@ -253,7 +253,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue (executed, "Callback was not executed");
 		}
 
-		[Test]
+		
 		public void SynchronizedCollectionAdd()
 		{
 			bool invoked = false;
@@ -296,7 +296,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue (invoked, "Callback was not executed on the UI thread");
 		}
 
-		[Test]
+		
 		public void ClearEnumerable()
 		{
 			var proxy = new ListProxy (Enumerable.Range (0, 100));
@@ -310,7 +310,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (() => enumerator.MoveNext(), Throws.InvalidOperationException);
 		}
 
-		[Test]
+		
 		public void ClearCollection()
 		{
 			var proxy = new ListProxy (new IntCollection (Enumerable.Range (0, 100)));
@@ -324,7 +324,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (() => enumerator.MoveNext(), Throws.InvalidOperationException);
 		}
 
-		[Test]
+		
 		public void ClearList()
 		{
 			var proxy = new ListProxy (Enumerable.Range (0, 100).ToList());
@@ -338,14 +338,14 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (() => enumerator.MoveNext(), Throws.InvalidOperationException);
 		}
 
-		[Test]
+		
 		public void IndexOfValueTypeNonList()
 		{
 			var proxy = new ListProxy (Enumerable.Range (0, 100));
 			Assert.AreEqual (1, proxy.IndexOf (1));
 		}
 
-		[Test]
+		
 		public void EnumeratorForEnumerable()
 		{
 			var proxy = new ListProxy (Enumerable.Range (0, 2));
@@ -359,7 +359,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (enumerator.MoveNext(), Is.False);
 		}
 
-		[Test]
+		
 		public void ProxyIsWeaklyHeldByINotifyCollectionChanged()
 		{
 			ObservableCollection<string> collection = new ObservableCollection<string>();
@@ -387,7 +387,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (weakProxy.IsAlive, Is.False);
 		}
 
-		[Test]
+		
 		public void IEnumerableAddDoesNotReport0()
 		{
 			var custom = new CustomINCC();
@@ -429,7 +429,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		ListProxy _proxyForWeakToWeakTest;
 #pragma warning restore 0414
 
-		[Test]
+		
 		public void WeakToWeak()
 		{
 			WeakCollectionChangedList list = new WeakCollectionChangedList();

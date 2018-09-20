@@ -52,7 +52,7 @@ namespace Xamarin.Forms.Core.UITests
 #endif
 		}
 
-		[Test]
+		
 		public void ToolbarButtonsClick()
 		{
 			ShouldHideMenu();
@@ -67,7 +67,7 @@ namespace Xamarin.Forms.Core.UITests
 			Assert.True(textLabel.Text == "Hello ContentPage");
 		}
 
-		[Test]
+		
 		public void ToolbarButtonsCommand()
 		{
 			ShouldShowMenu();
@@ -92,7 +92,7 @@ namespace Xamarin.Forms.Core.UITests
 #endif
 		}
 
-		[Test]
+		
 		public void ToolbarButtonsDisable()
 		{
 			ShouldHideMenu();
@@ -111,7 +111,7 @@ namespace Xamarin.Forms.Core.UITests
 			Assert.False(btn1.Enabled, "Toolbar Item  should be disable");
 		}
 
-		[Test]
+		
 		public void ToolbarButtons_1_Exist()
 		{
 			ShouldHideMenu();
@@ -134,7 +134,7 @@ namespace Xamarin.Forms.Core.UITests
 			App.WaitForElement(c => c.Marked(btn4Id));
 		}
 
-		[Test]
+		
 		public void ToolbarButtons_2_Order()
 		{
 			ShouldHideMenu();

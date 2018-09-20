@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Ticker.Default = null;
 		}
 
-		[Test]
+		
 		public void TestClamp ()
 		{
 			ProgressBar bar = new ProgressBar ();
@@ -38,7 +38,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (0, bar.Progress);
 		}
 
-		[Test]
+		
 		public void TestProgressTo ()
 		{
 			var bar = new ProgressBar ();

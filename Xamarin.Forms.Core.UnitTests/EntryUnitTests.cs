@@ -7,7 +7,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class EntryUnitTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void ValueChangedFromSetValue()
 		{
 			var entry = new Entry();
@@ -71,7 +71,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(target, val);
 		}
 
-		[Test]
+		
 		public void CursorPositionInvalid()
 		{
 			Assert.Throws<System.ArgumentException>(() =>
@@ -98,7 +98,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(target, val);
 		}
 
-		[Test]
+		
 		public void SelectionLengthInvalid()
 		{
 			Assert.Throws<System.ArgumentException>(() =>

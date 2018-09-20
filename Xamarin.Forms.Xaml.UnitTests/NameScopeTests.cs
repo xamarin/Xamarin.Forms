@@ -8,7 +8,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 	[TestFixture]
 	public class NameScopeTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void TopLevelObjectsHaveANameScope ()
 		{
 			var xaml = @"
@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.That (Forms.Internals.NameScope.GetNameScope (view), Is.TypeOf<Forms.Internals.NameScope> ());
 		}
 
-		[Test]
+		
 		public void NameScopeAreSharedWithChildren ()
 		{
 			var xaml = @"
@@ -44,7 +44,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void DataTemplateChildrenDoesNotParticipateToParentNameScope ()
 		{
 			var xaml = @"
@@ -66,7 +66,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.IsNull (((Forms.Internals.INameScope)listview).FindByName ("textcell"));
 		}
 
-		[Test]
+		
 		public void ElementsCreatedFromDataTemplateHaveTheirOwnNameScope ()
 		{
 			var xaml = @"

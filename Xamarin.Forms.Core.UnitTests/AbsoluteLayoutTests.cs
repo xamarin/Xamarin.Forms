@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 
-		[Test]
+		
 		public void Constructor ()
 		{
 			var abs = new AbsoluteLayout {
@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (Size.Zero, sizeReq.Minimum);
 		}
 
-		[Test]
+		
 		public void AbsolutePositionAndSize ()
 		{
 			var abs = new AbsoluteLayout {
@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (10, 20, 30, 40), child.Bounds);
 		}
 
-		[Test]
+		
 		public void AbsolutePositionRelativeSize ()
 		{
 			var abs = new AbsoluteLayout {
@@ -94,7 +94,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (child.Height, Is.EqualTo (height));
 		}
 
-		[Test]
+		
 		public void RelativePositionRelativeSize ([Values (0.0, 0.2, 0.5, 1.0)] double relX, [Values (0.0, 0.2, 0.5, 1.0)] double relY, [Values (0.0, 0.2, 0.5, 1.0)] double relHeight, [Values (0.0, 0.2, 0.5, 1.0)] double relWidth)
 		{
 			var abs = new AbsoluteLayout {
@@ -118,7 +118,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (child.Height, Is.EqualTo (expectedHeight).Within (0.0001));
 		}
 
-		[Test]
+		
 		public void SizeRequestWithNormalChild ()
 		{
 			var abs = new AbsoluteLayout {
@@ -137,7 +137,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Size (40, 60), sizeReq.Minimum);
 		}
 
-		[Test]
+		
 		public void SizeRequestWithRelativePositionChild ()
 		{
 			var abs = new AbsoluteLayout {
@@ -156,7 +156,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Size (30, 40), sizeReq.Minimum);
 		}
 
-		[Test]
+		
 		public void SizeRequestWithRelativeChild ()
 		{
 			var abs = new AbsoluteLayout {
@@ -178,7 +178,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Size (0, 0), sizeReq.Minimum);
 		}
 
-		[Test]
+		
 		public void SizeRequestWithRelativeSizeChild ()
 		{
 			var abs = new AbsoluteLayout {
@@ -200,7 +200,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Size (10, 20), sizeReq.Minimum);
 		}
 
-		[Test]
+		
 		public void MeasureInvalidatedFiresWhenFlagsChanged ()
 		{
 			var abs = new AbsoluteLayout {
@@ -223,7 +223,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (fired);
 		}
 
-		[Test]
+		
 		public void MeasureInvalidatedFiresWhenBoundsChanged ()
 		{
 			var abs = new AbsoluteLayout {

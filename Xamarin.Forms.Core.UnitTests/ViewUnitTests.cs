@@ -25,7 +25,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Device.PlatformServices = null;
 		}
 
-		[Test]
+		
 		public void TestLayout ()
 		{
 			View view = new View ();
@@ -37,7 +37,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (view.Height, 200);
 		}
 
-		[Test]
+		
 		public void TestPreferredSize ()
 		{
 			View view = new View {
@@ -57,7 +57,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Size (200, 300), result);
 		}
 
-		[Test]
+		
 		public void TestSizeChangedEvent ()
 		{
 			View view = new View ();
@@ -70,7 +70,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (fired);
 		}
 			
-		[Test]
+		
 		public void TestOpacityClamping ()
 		{
 			var view = new View ();
@@ -82,7 +82,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (1, view.Opacity);
 		}
 
-		[Test]
+		
 		public void TestMeasureInvalidatedFiredOnVisibilityChanged ()
 		{
 			var view = new View {IsVisible = false};
@@ -94,7 +94,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (signaled);
 		}
 
-		[Test]
+		
 		public void TestOnPlatformiOS ()
 		{
 			var view = new View ();
@@ -115,7 +115,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (winphone);
 		}
 
-		[Test]
+		
 		public void TestOnPlatformAndroid ()
 		{
 			var view = new View ();
@@ -136,7 +136,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (winphone);
 		}
 
-		[Test]
+		
 		public void TestOnPlatformDefault ()
 		{
 			var view = new View ();
@@ -154,7 +154,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (android);
 		}
 
-		[Test]
+		
 		public void TestOnPlatformNoOpWithoutDefault ()
 		{
 			bool any = false;
@@ -168,7 +168,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (any);
 		}
 
-		[Test]
+		
 		public void TestDefaultOniOS ()
 		{
 			bool defaultExecuted = false;
@@ -183,7 +183,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (defaultExecuted);
 		}
 
-		[Test]
+		
 		public void TestDefaultOnAndroid ()
 		{
 			bool defaultExecuted = false;
@@ -198,7 +198,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (defaultExecuted);
 		}
 
-		[Test]
+		
 		public void TestDefaultOnOther ()
 		{
 			bool defaultExecuted = false;
@@ -214,7 +214,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (defaultExecuted);
 		}
 
-		[Test]
+		
 		public void TestNativeStateConsistent ()
 		{
 			var view = new View { IsPlatformEnabled = true };
@@ -240,7 +240,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (sizeChanged);
 		}
 
-		[Test]
+		
 		public void TestFadeTo ()
 		{
 			var view = new View {IsPlatformEnabled = true, Platform = new UnitPlatform ()};
@@ -251,7 +251,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (Math.Abs (0.1 - view.Opacity) < 0.001);
 		}
 
-		[Test]
+		
 		public void TestTranslateTo ()
 		{
 			var view = new View {IsPlatformEnabled = true, Platform = new UnitPlatform ()};
@@ -263,7 +263,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (50, view.TranslationY);
 		}
 
-		[Test]
+		
 		public void ScaleTo ()
 		{
 			var view = new View {IsPlatformEnabled = true, Platform = new UnitPlatform ()};
@@ -274,7 +274,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (2, view.Scale);
 		}
 
-		[Test]
+		
 		public void TestNativeSizeChanged ()
 		{
 			var view = new View ();
@@ -287,7 +287,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (sizeChanged);
 		}
 
-		[Test]
+		
 		public void TestRotateTo ()
 		{
 			var view = new View {IsPlatformEnabled = true, Platform = new UnitPlatform ()};
@@ -298,7 +298,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (view.Rotation, Is.EqualTo (25).Within (0.001));
 		}
 
-		[Test]
+		
 		public void TestRotateYTo ()
 		{
 			var view = new View {IsPlatformEnabled = true, Platform = new UnitPlatform ()};
@@ -309,7 +309,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (view.RotationY, Is.EqualTo (25).Within (0.001));
 		}
 
-		[Test]
+		
 		public void TestRotateXTo ()
 		{
 			var view = new View {IsPlatformEnabled = true, Platform = new UnitPlatform ()};
@@ -320,7 +320,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (view.RotationX, Is.EqualTo (25).Within (0.001));
 		}
 
-		[Test]
+		
 		public void TestRelRotateTo ()
 		{
 			var view = new View {Rotation = 30, IsPlatformEnabled = true, Platform = new UnitPlatform ()};
@@ -331,7 +331,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (view.Rotation, Is.EqualTo (50).Within (0.001));
 		}
 
-		[Test]
+		
 		public void TestRelScaleTo ()
 		{
 			var view = new View {Scale = 1, IsPlatformEnabled = true, Platform = new UnitPlatform ()};
@@ -353,7 +353,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void TestDoubleSetParent ()
 		{
 			var view = new ParentSignalView ();
@@ -365,7 +365,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (view.ParentSet, "OnParentSet should not be called in the event the parent is already properly set");
 		}
 
-		[Test]
+		
 		public void TestAncestorAdded ()
 		{
 			var child = new NaiveLayout ();
@@ -379,7 +379,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (added, "AncestorAdded must fire when adding a child to an ancestor of a view.");
 		}
 
-		[Test]
+		
 		public void TestAncestorRemoved ()
 		{
 			var ancestor = new View ();
@@ -393,7 +393,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (removed, "AncestorRemoved must fire when removing a child from an ancestor of a view.");
 		}
 
-		[Test]
+		
 		public void TestOnPlatformGeneric ()
 		{
 			((MockPlatformServices)Device.PlatformServices).RuntimePlatform = Device.iOS;
@@ -406,7 +406,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (1, Device.OnPlatform (1, 2, 3));
 		}
 
-		[Test]
+		
 		public void TestBatching ()
 		{
 			var view = new View ();
@@ -433,7 +433,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (committed);
 		}
 
-		[Test]
+		
 		public void IsPlatformEnabled ()
 		{
 			var view = new View ();
@@ -449,7 +449,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (view.IsPlatformEnabled);
 		}
 
-		[Test]
+		
 		public void TestBindingContextChaining ()
 		{
 			View child;
@@ -465,7 +465,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 
 
-		[Test]
+		
 		public void FocusWithoutSubscriber ()
 		{
 			var view = new View ();
@@ -473,7 +473,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (view.Focus ());
 		}
 		
-		[Test]
+		
 		public void FocusWithSubscriber ([Values(true, false)] bool result)
 		{
 			var view = new View ();
@@ -481,7 +481,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (view.Focus () == result);
 		}
 
-		[Test]
+		
 		public void DoNotSignalWhenAlreadyFocused ()
 		{
 			var view = new View ();
@@ -493,7 +493,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (signaled, "FocusRequested was raised");
 		}
 
-		[Test]
+		
 		public void UnFocus ()
 		{
 			var view = new View ();
@@ -509,7 +509,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (requested);
 		}
 
-		[Test]
+		
 		public void UnFocusDoesNotFireWhenNotFocused ()
 		{
 			var view = new View ();
@@ -525,7 +525,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (requested);
 		}
 
-		[Test]
+		
 		public void PlatformSet ()
 		{
 			var view = new View ();
@@ -537,7 +537,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (set);
 		}
 
-		[Test]
+		
 		public void TestFocusedEvent ()
 		{
 			var view = new View ();
@@ -550,7 +550,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (fired);
 		}
 
-		[Test]
+		
 		public void TestUnFocusedEvent ()
 		{
 			var view = new View ();
@@ -563,7 +563,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (fired);
 		}
 
-		[Test]
+		
 		public void TestBeginInvokeOnMainThread ()
 		{
 			Device.PlatformServices = new MockPlatformServices (invokeOnMainThread: action => action ());
@@ -574,14 +574,14 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (invoked);
 		}
 
-		[Test]
+		
 		public void InvokeOnMainThreadThrowsWhenNull ()
 		{
 			Device.PlatformServices = null;
 			Assert.Throws<InvalidOperationException>(() => Device.BeginInvokeOnMainThread (() => { }));
 		}
 
-		[Test]
+		
 		public void TestOpenUriAction ()
 		{
 			var uri = new Uri ("http://www.xamarin.com/");
@@ -595,7 +595,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (invoked);
 		}
 
-		[Test]
+		
 		public void OpenUriThrowsWhenNull ()
 		{
 			Device.PlatformServices = null;
@@ -603,7 +603,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Throws<InvalidOperationException> (() => Device.OpenUri (uri));
 		}
 
-		[Test]
+		
 		public void MinimumWidthRequest ()
 		{
 			var view = new View ();
@@ -620,7 +620,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (signaled);
 		}
 
-		[Test]
+		
 		public void MinimumHeightRequest ()
 		{
 			var view = new View ();
@@ -637,7 +637,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (signaled);
 		}
 
-		[Test]
+		
 		public void MinimumWidthRequestInSizeRequest ()
 		{
 			var view = new View {
@@ -654,7 +654,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Size (100, 20), result.Minimum);
 		}
 
-		[Test]
+		
 		public void MinimumHeightRequestInSizeRequest ()
 		{
 			var view = new View {
@@ -671,7 +671,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Size (20, 100), result.Minimum);
 		}
 
-		[Test]
+		
 		public void StartTimerSimple ()
 		{
 			Device.PlatformServices = new MockPlatformServices ();
@@ -687,7 +687,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Device.PlatformServices = null;
 		}
 
-		[Test]
+		
 		public void StartTimerMultiple ()
 		{
 			Device.PlatformServices = new MockPlatformServices ();
@@ -707,7 +707,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Device.PlatformServices = null;
 		}
 
-		[Test]
+		
 		public void BindingsApplyAfterViewAddedToParentWithContextSet()
 		{
 			var parent = new NaiveLayout();
@@ -722,7 +722,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (child.Text, Is.EqualTo ("test"));
 		}
 
-		[Test]
+		
 		public void IdIsUnique ()
 		{
 			var view1 = new View ();
@@ -731,7 +731,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (view1.Id != view2.Id);
 		}
 
-		[Test]
+		
 		public void MockBounds ()
 		{
 			var view = new View ();
@@ -759,7 +759,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (changed);
 		}
 
-		[Test]
+		
 		public void AddGestureRecognizer ()
 		{
 			var view = new View ();
@@ -770,7 +770,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (view.GestureRecognizers.Contains (gestureRecognizer));
 		}
 
-		[Test]
+		
 		public void AddGestureRecognizerSetsParent ()
 		{
 			var view = new View ();
@@ -781,7 +781,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (view, gestureRecognizer.Parent);
 		}
 
-		[Test]
+		
 		public void RemoveGestureRecognizerUnsetsParent ()
 		{
 			var view = new View ();
@@ -793,7 +793,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Null (gestureRecognizer.Parent);
 		}
 
-		[Test]
+		
 		public void WidthRequestEffectsGetSizeRequest ()
 		{
 			var view = new View ();
@@ -810,7 +810,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Size (20, 50), request.Request);
 		}
 
-		[Test]
+		
 		public void HeightRequestEffectsGetSizeRequest ()
 		{
 			var view = new View ();

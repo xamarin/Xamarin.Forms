@@ -40,7 +40,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void TapGestureFiresOnFrame ()
 		{
 			RunningApp.WaitForElement ("No taps yet");

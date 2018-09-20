@@ -10,7 +10,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	internal class KeyboardTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void KeyboardTypesAreCorrect ()
 		{
 			Assert.True (Keyboard.Chat is ChatKeyboard);
@@ -25,7 +25,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	internal class KeyboardTypeConverterTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void ConversionConvert ()
 		{
 
@@ -42,7 +42,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				Assert.AreSame (kvp.Value, converter.ConvertFromInvariantString (kvp.Key));
 		}
 
-		[Test]
+		
 		public void ConversionFail ()
 		{
 			var converter = new KeyboardTypeConverter ();

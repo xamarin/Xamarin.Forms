@@ -179,7 +179,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST && !__ANDROID__
-		[Test]
+		
 		public void EnsureListViewEmptiesOut()
 		{
 			RunningApp.Tap("Click Until Success");

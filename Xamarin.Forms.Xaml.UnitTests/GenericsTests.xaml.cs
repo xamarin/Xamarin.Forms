@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		[TestFixture]
 		public class Tests
 		{
-			[Test]
+			
 			public void NoGenericsOnXaml2006 ()
 			{
 				var xaml = @"

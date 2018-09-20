@@ -112,7 +112,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Bugzilla32902Test ()
 		{
 			var appIos = RunningApp as iOSApp;

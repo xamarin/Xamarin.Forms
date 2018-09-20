@@ -405,7 +405,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST && __IOS__
-		[Test]
+		
 		[Ignore("Fails sometimes - needs a better test")]
 		public void Bugzilla31114Test ()
 		{

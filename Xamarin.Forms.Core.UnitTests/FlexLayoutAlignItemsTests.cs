@@ -11,7 +11,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class FlexLayoutAlignItemsTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void TestAlignItemsStretch()
 		{
 			var platform = new UnitPlatform();
@@ -29,7 +29,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(view0.Bounds, Is.EqualTo(new Rectangle(0, 0, 100, 10)));
 		}
 
-		[Test]
+		
 		public void TestAlignItemsCenter()
 		{
 			var platform = new UnitPlatform();
@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(view0.Bounds, Is.EqualTo(new Rectangle(45, 0, 10, 10)));
 		}
 
-		[Test]
+		
 		public void TestAlignItemsFlexStart()
 		{
 			var platform = new UnitPlatform();
@@ -67,7 +67,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(view0.Bounds, Is.EqualTo(new Rectangle(0, 0, 10, 10)));
 		}
 
-		[Test]
+		
 		public void TestAlignItemsFlexEnd()
 		{
 			var platform = new UnitPlatform();

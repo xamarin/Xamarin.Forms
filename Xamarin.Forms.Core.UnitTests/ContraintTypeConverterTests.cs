@@ -5,7 +5,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class ContraintTypeConverterTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void ConvertFrom ()
 		{
 			var converter = new ConstraintTypeConverter ();

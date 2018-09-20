@@ -39,7 +39,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void NullItemSourceDoesNotCrash()
 		{
 			// If we can see the Success label, it means we didn't crash. 
@@ -99,7 +99,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		[NUnit.Framework.Category(UITestCategories.ListView)]
 		public void SettingItemsSourceToNullDoesNotCrash()
 		{

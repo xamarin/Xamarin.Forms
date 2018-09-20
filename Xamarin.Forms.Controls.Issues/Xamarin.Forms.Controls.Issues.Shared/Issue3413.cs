@@ -65,7 +65,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		[Category(UITestCategories.ManualReview)]
 		public void Issue3413Test ()
 		{

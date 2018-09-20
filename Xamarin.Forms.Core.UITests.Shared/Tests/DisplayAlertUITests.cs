@@ -11,7 +11,7 @@ namespace Xamarin.Forms.Core.UITests
 			App.NavigateToGallery(GalleryQueries.DisplayAlertGallery);
 		}
 
-		[Test]
+		
 		public void TestWithCancelButton()
 		{
 			App.Tap(c => c.Marked("Alert Override1"));
@@ -24,7 +24,7 @@ namespace Xamarin.Forms.Core.UITests
 			App.WaitForNoElement(c => c.Marked("TheAlertTitle"));
 		}
 
-		[Test]
+		
 		public void TestWithCancelAndOkButton()
 		{
 			App.Tap(c => c.Marked("Alert Override2"));
@@ -38,7 +38,7 @@ namespace Xamarin.Forms.Core.UITests
 			App.WaitForNoElement(c => c.Marked("TheAlertTitle"));
 		}
 
-		[Test]
+		
 		public void TestOkAndCancelResults()
 		{
 			App.Tap(c => c.Marked("Alert Override2"));

@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Controls.Issues
 		} 
 
 #if UITEST
-		[Test]
+		
 		public void TestSwitchDisable()
 		{
 			RunningApp.WaitForElement (c => c.Marked ("switch"));

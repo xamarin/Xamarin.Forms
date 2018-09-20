@@ -125,7 +125,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Bugzilla47923Test()
 		{
 			foreach (var testString in new[] { "AspectFit", "AspectFill", "Fill", "Test cell views" })

@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class StepperUnitTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void TestConstructor ()
 		{
 			var stepper = new Stepper (120, 200, 150, 2);
@@ -20,27 +20,27 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (2, stepper.Increment);
 		}
 
-		[Test]
+		
 		public void TestInvalidConstructor ()
 		{
 			Assert.Throws<ArgumentOutOfRangeException>(()=>new Stepper (100, 0, 50, 1));
 		}
 
-		[Test]
+		
 		public void TestInvalidMaxValue ()
 		{
 			Stepper stepper = new Stepper ();
 			Assert.Throws<ArgumentException> (() => stepper.Maximum = stepper.Minimum - 1);
 		}
 
-		[Test]
+		
 		public void TestInvalidMinValue ()
 		{
 			Stepper stepper = new Stepper ();
 			Assert.Throws<ArgumentException> (() => stepper.Minimum = stepper.Maximum + 1);
 		}
 
-		[Test]
+		
 		public void TestValidMaxValue ()
 		{
 			Stepper stepper = new Stepper ();
@@ -50,7 +50,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (2000, stepper.Maximum);
 		}
 
-		[Test]
+		
 		public void TestValidMinValue ()
 		{
 			Stepper stepper = new Stepper ();
@@ -61,7 +61,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (200, stepper.Minimum);
 		}
 
-		[Test]
+		
 		public void TestConstructorClampValue ()
 		{
 			Stepper stepper = new Stepper (0, 100, 2000, 1);
@@ -73,7 +73,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (0, stepper.Value);
 		}
 
-		[Test]
+		
 		public void TestMinClampValue ()
 		{
 			Stepper stepper = new Stepper ();
@@ -101,7 +101,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (valThrown);
 		}
 
-		[Test]
+		
 		public void TestMaxClampValue ()
 		{
 			Stepper stepper = new Stepper ();
@@ -131,7 +131,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (valThrown);
 		}
 
-		[Test]
+		
 		public void TestValueChangedEvent ()
 		{
 			var stepper = new Stepper ();

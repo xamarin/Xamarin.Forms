@@ -90,7 +90,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void Constructor ()
 		{
 			var proxy = new NavigationProxy ();
@@ -98,7 +98,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Null (proxy.Inner);
 		}
 
-		[Test]
+		
 		public async Task PushesIntoNextInner ()
 		{
 			var page = new ContentPage ();
@@ -112,7 +112,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (page, navTest.LastPushed);
 		}
 
-		[Test]
+		
 		public async Task PushesModalIntoNextInner ()
 		{
 			var page = new ContentPage ();
@@ -126,7 +126,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (page, navTest.LastPushedModal);
 		}
 
-		[Test]
+		
 		public async Task TestPushWithInner ()
 		{
 			var proxy = new NavigationProxy ();
@@ -140,7 +140,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (child, inner.LastPushed);
 		}
 
-		[Test]
+		
 		public async Task TestPushModalWithInner ()
 		{
 			var proxy = new NavigationProxy ();
@@ -154,7 +154,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (child, inner.LastPushedModal);
 		}
 
-		[Test]
+		
 		public async Task TestPopWithInner ()
 		{
 			var proxy = new NavigationProxy ();
@@ -170,7 +170,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (inner.Popped, "Pop was never called on the inner proxy item");
 		}
 
-		[Test]
+		
 		public async Task TestPopModalWithInner ()
 		{
 			var proxy = new NavigationProxy ();

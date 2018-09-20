@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		[UiTest (typeof (MasterDetailPage), "IsPresented")]
 		[UiTest (typeof (MasterDetailPage), "Master")]
 		public void Test1 ()
@@ -68,7 +68,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		[UiTest (typeof (MasterDetailPage), "IsPresented")]
 		[UiTest (typeof (MasterDetailPage), "Master")]
 		public void Test2 ()
@@ -89,7 +89,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 		#if UITEST
-		[Test]
+		
 		[UiTest (typeof (MasterDetailPage), "Button")]
 		public void TestButton ()
 		{
@@ -116,7 +116,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		[UiTest (typeof (MasterDetailPage), "IsPresented")]
 		[UiTest (typeof (MasterDetailPage), "Master")]
 		public void Test3 ()
@@ -148,7 +148,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		[UiTest (typeof (MasterDetailPage), "IsPresented")]
 		[UiTest (typeof (MasterDetailPage), "Master")]
 		public void Test4 ()
@@ -181,7 +181,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		[UiTest (typeof (MasterDetailPage), "IsPresented")]
 		[UiTest (typeof (MasterDetailPage), "Master")]
 		public void Test5 ()

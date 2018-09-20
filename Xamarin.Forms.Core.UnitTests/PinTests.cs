@@ -6,7 +6,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class PinTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void Constructor ()
 		{
 			Pin pin = new Pin {
@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (pin.Address, "123 Hello World Street");
 		}
 
-		[Test]
+		
 		public void Equals ()
 		{
 			Pin pin1 = new Pin ();
@@ -46,7 +46,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (pin1.Equals (pin3));
 		}
 
-		[Test]
+		
 		public void EqualsOp () {
 			var pin1 = new Pin {
 				Type = PinType.Place,
@@ -65,7 +65,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (pin1 == pin2);
 		}
 
-		[Test]
+		
 		public void InEqualsOp () {
 			var pin1 = new Pin {
 				Type = PinType.Place,
@@ -84,7 +84,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (pin1 != pin2);
 		}
 
-		[Test]
+		
 		public void Label ()
 		{
 			var pin = new Pin {

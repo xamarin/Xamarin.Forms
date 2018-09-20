@@ -72,7 +72,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 #if __MACOS__
 		[Ignore("Missing UITest for focus")]
 #endif
@@ -95,7 +95,7 @@ namespace Xamarin.Forms.Controls.Issues
 			Assert.That(entry2.Length, Is.GreaterThanOrEqualTo(1), "The entry text should now be '1234'.");
 		}
 
-		[Test]
+		
 #if __MACOS__
 		[Ignore("Missing UITest for focus")]
 #endif

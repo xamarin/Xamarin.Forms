@@ -229,7 +229,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				Assert.Fail ($"{path} should *not* exist!");
 		}
 
-		[Test]
+		
 		public void BuildAProject ([Values (false, true)] bool sdkStyle)
 		{
 			var project = NewProject (sdkStyle);
@@ -248,7 +248,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		/// <summary>
 		/// Tests that XamlG and XamlC targets skip, as well as checking IncrementalClean doesn't delete generated files
 		/// </summary>
-		[Test]
+		
 		public void TargetsShouldSkip ([Values (false, true)] bool sdkStyle)
 		{
 			var project = NewProject (sdkStyle);
@@ -285,7 +285,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		/// <summary>
 		/// Checks that XamlG and XamlC files are cleaned
 		/// </summary>
-		[Test]
+		
 		public void Clean ([Values (false, true)] bool sdkStyle)
 		{
 			var project = NewProject (sdkStyle);
@@ -309,7 +309,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			AssertDoesNotExist (xamlCStamp);
 		}
 
-		[Test]
+		
 		public void LinkedFile ([Values (false, true)] bool sdkStyle)
 		{
 			var folder = Path.Combine (tempDirectory, "A", "B");
@@ -334,7 +334,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 
 		//https://github.com/dotnet/project-system/blob/master/docs/design-time-builds.md
 		//https://daveaglick.com/posts/running-a-design-time-build-with-msbuild-apis
-		[Test]
+		
 		public void DesignTimeBuild ([Values (false, true)] bool sdkStyle)
 		{
 			var project = NewProject (sdkStyle);
@@ -375,7 +375,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		}
 
 		//I believe the designer might invoke this target manually
-		[Test]
+		
 		public void UpdateDesignTimeXaml ([Values (false, true)] bool sdkStyle)
 		{
 			var project = NewProject (sdkStyle);
@@ -390,7 +390,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			AssertDoesNotExist (Path.Combine (intermediateDirectory, "XamlC.stamp"));
 		}
 
-		[Test]
+		
 		public void AddNewFile ([Values (false, true)] bool sdkStyle)
 		{
 			var project = NewProject (sdkStyle);
@@ -429,7 +429,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreNotEqual (expectedXamlC, actualXamlC, $"Timestamps should *not* match for {xamlCStamp}.");
 		}
 
-		[Test]
+		
 		public void TouchXamlFile ([Values (false, true)] bool sdkStyle)
 		{
 			var project = NewProject (sdkStyle);
@@ -468,7 +468,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreNotEqual (expectedXamlC, actualXamlC, $"Timestamps should *not* match for {xamlCStamp}.");
 		}
 
-		[Test]
+		
 		public void RandomXml ([Values (false, true)] bool sdkStyle)
 		{
 			var project = NewProject (sdkStyle);
@@ -494,7 +494,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Build (projectFile);
 		}
 
-		[Test]
+		
 		public void RandomEmbeddedResource ([Values (false, true)] bool sdkStyle)
 		{
 			var project = NewProject (sdkStyle);

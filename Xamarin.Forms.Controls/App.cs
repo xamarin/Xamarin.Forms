@@ -161,7 +161,7 @@ namespace Xamarin.Forms.Controls
 				toTestPage = delegate(object sender, EventArgs e) 
 				{
 					Current.MainPage.Navigation.PushModalAsync(TestCases.GetTestCases());
-					TestCases.TestCaseScreen.PageToAction[test]();
+					TestCases.TestCaseScreen.PageToAction();
 					Current.MainPage.Appearing -= toTestPage;
 				};
 

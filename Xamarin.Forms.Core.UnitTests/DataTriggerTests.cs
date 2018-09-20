@@ -24,7 +24,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 		}
 
-		[Test]
+		
 		public void SettersAppliedOnAttachIfConditionIsTrue ()
 		{
 			var setterbp = BindableProperty.Create ("bar", typeof(string), typeof(BindableObject), null);
@@ -44,7 +44,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("qux", element.GetValue (setterbp));
 		}
 
-		[Test]
+		
 		public void SettersUnappliedOnDetach ()
 		{
 			var setterbp = BindableProperty.Create ("bar", typeof(string), typeof(BindableObject), null);
@@ -67,7 +67,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("default", element.GetValue (setterbp));
 		}
 
-		[Test]
+		
 		public void SettersAppliedOnConditionChanged ()
 		{
 			var setterbp = BindableProperty.Create ("bar", typeof(string), typeof(BindableObject), null);
@@ -90,7 +90,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("default", element.GetValue (setterbp));
 		}
 
-		[Test]
+		
 		public void TriggersAppliedOnMultipleElements ()
 		{
 			var setterbp = BindableProperty.Create ("bar", typeof(string), typeof(BindableObject), null);
@@ -109,7 +109,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("qux", element1.GetValue (setterbp));
 		}
 
-		[Test]
+		
 		//https://bugzilla.xamarin.com/show_bug.cgi?id=30074
 		public void AllTriggersUnappliedBeforeApplying ()
 		{

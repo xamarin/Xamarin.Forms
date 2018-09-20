@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class NotifyCollectionChangedEventArgsExtensionsTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void Add()
 		{
 			List<string> applied = new List<string> { "foo", "bar", "baz" };
@@ -30,7 +30,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			CollectionAssert.AreEqual (items, applied);
 		}
 
-		[Test]
+		
 		public void Insert()
 		{
 			List<string> applied = new List<string> { "foo", "bar", "baz" };
@@ -50,7 +50,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			CollectionAssert.AreEqual (items, applied);
 		}
 
-		[Test]
+		
 		public void Move()
 		{
 			List<string> applied = new List<string> { "foo", "bar", "baz" };
@@ -71,7 +71,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			CollectionAssert.AreEqual (items, applied);
 		}
 
-		[Test]
+		
 		public void Replace()
 		{
 			List<string> applied = new List<string> { "foo", "bar", "baz" };

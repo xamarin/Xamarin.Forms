@@ -176,7 +176,7 @@ namespace Xamarin.Forms.Controls.Issues
 		double TopThreshold => 1 + Threshold;
 		double BottomThreshold => 1 - Threshold;
 
-		[Test]
+		
 		public void PerformanceTest()
 		{
 			var testCasesCount = FindPerformanceScenarios().Count();

@@ -28,7 +28,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Device.PlatformServices = null;
 		}
 
-		[Test]
+		
 		public void TestSetChildren ()
 		{
 			var container = CreateMultiPage();
@@ -51,7 +51,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (2, pagesAdded);
 		}
 
-		[Test]
+		
 		public void TestOverwriteChildren()
 		{
 			var page = CreateMultiPage();
@@ -74,7 +74,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (2, ((IElementController)page).LogicalChildren.Count);
 		}
 
-		[Test]
+		
 		public void CurrentPageSetAfterAdd()
 		{
 			var page = CreateMultiPage();
@@ -94,7 +94,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (property, Is.True, "CurrentPage property change did not fire");
 		}
 
-		[Test]
+		
 		public void CurrentPageChangedAfterRemove()
 		{
 			var page = CreateMultiPage();
@@ -115,7 +115,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (property, Is.True, "CurrentPage property change did not fire");
 		}
 
-		[Test]
+		
 		public void CurrentPageNullAfterRemove()
 		{
 			var page = CreateMultiPage();
@@ -134,7 +134,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (property, Is.True, "CurrentPage property change did not fire");
 		}
 
-		[Test]
+		
 		public void TemplatedPage()
 		{
 			var page = CreateMultiPage();
@@ -162,7 +162,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			assertPage ((Page)pages[1], "Bar");
 		}
 
-		[Test]
+		
 		public void SelectedItemSetAfterAdd()
 		{
 			var page = CreateMultiPage();
@@ -189,7 +189,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (selected, Is.True, "SelectedItem property change did not fire");
 		}
 
-		[Test]
+		
 		public void SelectedItemNullAfterRemove()
 		{
 			var page = CreateMultiPage();
@@ -215,7 +215,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (selected, Is.True, "SelectedItem property change did not fire");
 		}
 
-		[Test]
+		
 		[Description ("When ItemsSource is set with items, the first item should automatically be selected")]
 		public void SelectedItemSetAfterItemsSourceSet()
 		{
@@ -238,7 +238,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (selected, Is.True, "SelectedItem property change did not fire");
 		}
 
-		[Test]
+		
 		public void SelectedItemNoLongerPresent()
 		{
 			var page = CreateMultiPage();
@@ -253,7 +253,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (page.SelectedItem, Is.SameAs (items[0]));
 		}
 
-		[Test]
+		
 		public void SelectedItemAfterMove()
 		{
 			var page = CreateMultiPage();
@@ -275,7 +275,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (page.CurrentPage.BindingContext, Is.SameAs (items[0]));
 		}
 
-		[Test]
+		
 		public void UntemplatedItemsSourcePage()
 		{
 			var page = CreateMultiPage();
@@ -288,7 +288,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (((Page)pages[1]).Title, Is.EqualTo ("Bar"));
 		}
 
-		[Test]
+		
 		public void TemplatePagesAdded()
 		{
 			var page = CreateMultiPage();
@@ -322,7 +322,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			assertPage (pages, 2, "Baz");
 		}
 
-		[Test]
+		
 		public void TemplatePagesRangeAdded()
 		{
 			var page = CreateMultiPage();
@@ -368,7 +368,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			assertPage (pages, 3, "Bam");
 		}
 
-		[Test]
+		
 		public void TemplatePagesInserted()
 		{
 			var page = CreateMultiPage();
@@ -402,7 +402,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			assertPage (pages, 2, "Bar");
 		}
 
-		[Test]
+		
 		public void TemplatePagesRangeInserted()
 		{
 			var page = CreateMultiPage();
@@ -437,7 +437,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			assertPage (pages, 3, "Bar");
 		}
 
-		[Test]
+		
 		public void TemplatePagesRemoved()
 		{
 			var page = CreateMultiPage();
@@ -469,7 +469,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			assertPage (pages, 0, "Bar");
 		}
 
-		[Test]
+		
 		public void TemplatePagesRangeRemoved()
 		{
 			var page = CreateMultiPage();
@@ -503,7 +503,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			assertPage (pages, 2, "Who");
 		}
 
-		[Test]
+		
 		public void TemplatePagesReordered()
 		{
 			var page = CreateMultiPage();
@@ -536,7 +536,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			assertPage (pages, 1, "Foo");
 		}
 
-		[Test]
+		
 		public void TemplatePagesRangeReorderedForward()
 		{
 			var page = CreateMultiPage();
@@ -573,7 +573,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			assertPage (pages, 5, "Where");
 		}
 
-		[Test]
+		
 		public void TemplatePagesRangeReorderedBackward()
 		{
 			var page = CreateMultiPage();
@@ -611,7 +611,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			assertPage (pages, 6, "When");
 		}
 
-		[Test]
+		
 		public void TemplatePagesReplaced()
 		{
 			var page = CreateMultiPage();
@@ -644,7 +644,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			assertPage (pages, 1, "Bar");
 		}
 
-		[Test]
+		
 		public void TemplatedPagesSourceReplaced()
 		{
 			var page = CreateMultiPage();
@@ -674,7 +674,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			assertPage ((Page)pages[1], "Bar");
 		}
 
-		[Test]
+		
 		[Description ("If you have a templated set of items, setting CurrentPage (usually from renderers) should update SelectedItem properly")]
 		public void SettingCurrentPageWithTemplatesUpdatesSelectedItem()
 		{
@@ -692,7 +692,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (page.SelectedItem, Is.SameAs (items[1]));
 		}
 
-		[Test]
+		
 		public void PagesChangedOnItemsSourceChange()
 		{
 			var page = CreateMultiPage();
@@ -714,7 +714,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (fail, Is.EqualTo (0), "PagesChanged was raised with an unexpected action");
 		}
 
-		[Test]
+		
 		public void PagesChangedOnTemplateChange()
 		{
 			var page = CreateMultiPage();
@@ -738,7 +738,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (fail, Is.EqualTo (0), "PagesChanged was raised with an unexpected action");
 		}
 
-		[Test]
+		
 		public void SelectedItemSetBeforeTemplate()
 		{
 			var page = CreateMultiPage();
@@ -754,7 +754,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (page.SelectedItem, Is.SameAs (items[1]));
 		}
 
-		[Test]
+		
 		public void CurrentPageUpdatedWithTemplate()
 		{
 			var page = CreateMultiPage();
@@ -781,7 +781,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (page.CurrentPage, Is.Not.SameAs (untemplated));
 		}
 
-		[Test]
+		
 		public void CurrentPageChanged()
 		{
 			var page = CreateMultiPage();

@@ -24,7 +24,7 @@ namespace Xamarin.Forms.StyleSheets.UnitTests
 			Application.ClearCurrent();
 		}
 
-		[Test]
+		
 		public void PropertiesAreApplied()
 		{
 			var styleString = @"background-color: #ff0000;";
@@ -37,7 +37,7 @@ namespace Xamarin.Forms.StyleSheets.UnitTests
 			Assert.That(ve.BackgroundColor, Is.EqualTo(Color.Red));
 		}
 
-		[Test]
+		
 		public void PropertiesSetByStyleDoesNotOverrideManualOne()
 		{
 			var styleString = @"background-color: #ff0000;";
@@ -51,7 +51,7 @@ namespace Xamarin.Forms.StyleSheets.UnitTests
 			Assert.That(ve.BackgroundColor, Is.EqualTo(Color.Pink));
 		}
 
-		[Test]
+		
 		public void StylesAreCascading()
 		{
 			//color should cascade, background-color should not
@@ -76,7 +76,7 @@ namespace Xamarin.Forms.StyleSheets.UnitTests
 			Assert.That(label.TextColor, Is.EqualTo(Color.Lime));
 		}
 
-		[Test]
+		
 		public void PropertiesAreOnlySetOnMatchingElements()
 		{
 			var styleString = @"background-color: #ff0000; color: #00ff00;";
@@ -87,7 +87,7 @@ namespace Xamarin.Forms.StyleSheets.UnitTests
 			Assert.That(layout.GetValue(TextElement.TextColorProperty), Is.EqualTo(Color.Default));
 		}
 
-		[Test]
+		
 		public void StyleSheetsOnAppAreApplied()
 		{
 			var app = new MockApplication();

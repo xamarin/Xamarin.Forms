@@ -24,7 +24,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			return fileName;
 		}
 
-		[Test]
+		
 		public void XamlFileShouldNotBeLockedAfterFileIsGenerated ()
 		{
 			string xamlInputFile = CreateXamlInputFile ();

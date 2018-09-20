@@ -6,7 +6,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class TapGestureRecognizerTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void Constructor ()
 		{
 			var tap = new TapGestureRecognizer ();
@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (1, tap.NumberOfTapsRequired);
 		}
 
-		[Test]
+		
 		public void CallbackPassesParameter ()
 		{
 			var view = new View ();

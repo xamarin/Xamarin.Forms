@@ -44,7 +44,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 	
 		#if UITEST
-		[Test]
+		
 		public void Bugzilla28001Test ()
 		{
 			RunningApp.Screenshot ("I am at Bugzilla 28001");

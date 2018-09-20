@@ -147,25 +147,25 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST
 
-		[Test]
+		
 		public void TestGrid()
 		{
 			TestControl(Grid);
 		}
 
-		[Test]
+		
 		public void TestContentView()
 		{
 			TestControl(ContentView);
 		}
 
-		[Test]
+		
 		public void TestStackLayout()
 		{
 			TestControl(StackLayout);
 		}
 
-		[Test]
+		
 		public void TestRelativeLayout()
 		{
 			TestControl(RelativeLayout);

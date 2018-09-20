@@ -8,7 +8,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class FlexOrderTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void TestOrderingElements()
 		{
 			var platform = new UnitPlatform();

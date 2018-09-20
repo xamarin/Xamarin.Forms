@@ -28,7 +28,7 @@ namespace Xamarin.Forms.Controls.Issues
 		// This test won't work on Windows right now because we can only test desktop, so touch events
 		// (like LongPress) don't really work. The test should work manually on a touch screen, though.
 
-		[Test]
+		
 		public void Issue2981Test ()
 		{
 			RunningApp.Screenshot ("I am at Issue 1");

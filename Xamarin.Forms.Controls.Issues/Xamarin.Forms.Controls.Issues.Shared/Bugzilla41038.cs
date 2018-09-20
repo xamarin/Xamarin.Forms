@@ -79,7 +79,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 		#if UITEST &&  __IOS__
-		[Test]
+		
 		public void Bugzilla41038Test()
 		{
 			RunningApp.WaitForElement("Master");

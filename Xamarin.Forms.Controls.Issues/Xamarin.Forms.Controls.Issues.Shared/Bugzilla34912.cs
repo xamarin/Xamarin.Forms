@@ -98,7 +98,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Bugzilla34912Test ()
 		{
 			RunningApp.Tap (q => q.Marked ("Allen"));

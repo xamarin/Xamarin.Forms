@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class SliderUnitTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void TestConstructor ()
 		{
 			var slider = new Slider (20, 200, 50);
@@ -19,13 +19,13 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (50, slider.Value);
 		}
 
-		[Test]
+		
 		public void TestInvalidConstructor ()
 		{
 			Assert.Throws<ArgumentOutOfRangeException> (() => new Slider (10, 5, 10));
 		}
 
-		[Test]
+		
 		public void TestConstructorClamping ()
 		{
 			Slider slider = new Slider (50, 100, 0);
@@ -33,7 +33,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (50, slider.Value);
 		}
 
-		[Test]
+		
 		public void TestMinValueClamp ()
 		{
 			Slider slider = new Slider (0, 100, 0);
@@ -44,7 +44,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (10, slider.Minimum);
 		}
 
-		[Test]
+		
 		public void TestMaxValueClamp ()
 		{
 			Slider slider = new Slider (0, 100, 100);
@@ -55,21 +55,21 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (10, slider.Maximum);
 		}
 
-		[Test]
+		
 		public void TestInvalidMaxValue ()
 		{
 			var slider = new Slider ();
 			Assert.Throws<ArgumentException> (() => slider.Maximum = slider.Minimum - 1);
 		}
 
-		[Test]
+		
 		public void TestInvalidMinValue ()
 		{
 			var slider = new Slider ();
 			Assert.Throws<ArgumentException> (() => slider.Minimum = slider.Maximum + 1);
 		}
 
-		[Test]
+		
 		public void TestValueChanged ()
 		{
 			var slider = new Slider ();

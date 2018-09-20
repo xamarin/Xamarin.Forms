@@ -42,7 +42,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Issue1323Test()
 		{
 			RunningApp.WaitForElement(X => X.Marked("Page 1"));

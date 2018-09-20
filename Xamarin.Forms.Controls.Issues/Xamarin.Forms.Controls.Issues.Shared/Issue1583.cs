@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Issue1583TitleIconTest ()
 		{
 			RunningApp.WaitForElement(q => q.Marked ("lblHello"));			

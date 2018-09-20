@@ -7,7 +7,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class ViewCellTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void SetParentBeforeView ()
 		{
 			var parent = new View { Platform = new UnitPlatform () };
@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreSame (parent.Platform, child.Platform);
 		}
 
-		[Test]
+		
 		//issue 550
 		public void SetBindingContextBeforeParent ()
 		{
@@ -40,7 +40,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreSame (itemcontext, cell.View.BindingContext);
 		}
 
-		[Test]
+		
 		public void SetBindingContextBeforeView ()
 		{
 			var context = new object ();
@@ -51,7 +51,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreSame (context, view.BindingContext);
 		}
 
-		[Test]
+		
 		public void SetViewBeforeBindingContext ()
 		{
 			var context = new object ();

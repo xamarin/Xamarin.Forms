@@ -73,7 +73,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Bugzilla30353Test ()
 		{
 			var dontRun = RunningApp.Query (q => q.Marked ("Don't run"));

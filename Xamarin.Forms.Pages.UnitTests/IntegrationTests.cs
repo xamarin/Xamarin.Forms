@@ -100,7 +100,7 @@ namespace Xamarin.Forms.Pages.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void Test1 ()
 		{
 			var page = new TestPage ();
@@ -111,7 +111,7 @@ namespace Xamarin.Forms.Pages.UnitTests
 			Assert.AreEqual (9, page.DataSource.MaskedKeys.Count ());
 		}
 
-		[Test]
+		
 		public void JsonDataSourceComplex ()
 		{
 			var jsonDataSource = new JsonDataSource ();

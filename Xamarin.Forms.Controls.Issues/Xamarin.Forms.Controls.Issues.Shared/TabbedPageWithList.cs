@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void TabbedPageWithListViewIssueTestsAllElementsPresent ()
 		{
 			RunningApp.WaitForElement (q => q.Marked ("Tab Two"));
@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Screenshot ("All elements present");
 		}
 
-		[Test]
+		
 		public void TabbedPageWithListViewIssueTestsNavigateToAndVerifyListView ()
 		{
 			RunningApp.Tap (q => q.Marked ("List Page"));

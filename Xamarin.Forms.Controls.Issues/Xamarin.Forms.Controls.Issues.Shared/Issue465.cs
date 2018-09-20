@@ -47,7 +47,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Issue465TestsPushPopModal ()
 		{
 			RunningApp.WaitForElement (q => q.Button ("Pop this page"));

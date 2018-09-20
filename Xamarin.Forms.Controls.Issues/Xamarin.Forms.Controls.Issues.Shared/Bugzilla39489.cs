@@ -30,7 +30,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		protected override bool Isolate => true;
 
-		[Test]
+		
 		public async Task Bugzilla39489Test()
 		{
 			// Original bug report (https://bugzilla.xamarin.com/show_bug.cgi?id=39489) had a crash (OOM) after 25-30

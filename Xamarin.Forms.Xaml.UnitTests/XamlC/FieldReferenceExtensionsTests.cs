@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Xaml.XamlcUnitTests
 			module = ModuleDefinition.CreateModule ("foo", ModuleKind.Dll);
 		}
 
-		[Test]
+		
 		public void ResolveGenericsOnNonGenericDoesNotThrow ()
 		{
 			var type = module.ImportReference (typeof (NonGenericClass));
@@ -43,7 +43,7 @@ namespace Xamarin.Forms.Xaml.XamlcUnitTests
 			Assert.DoesNotThrow (() => field.ResolveGenericParameters (declaringTypeReference));
 		}
 
-		[Test]
+		
 		public void NonGenericFieldOnGenericType ()
 		{
 			var type = module.ImportReference (typeof (Inheritor));
@@ -58,7 +58,7 @@ namespace Xamarin.Forms.Xaml.XamlcUnitTests
 			Assert.True (genericField.DeclaringType.IsGenericInstance);
 		}
 
-		[Test]
+		
 		public void GenericFieldOnGenericType ()
 		{
 			var type = module.ImportReference (typeof (Inheritor));

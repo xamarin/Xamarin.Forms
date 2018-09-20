@@ -87,7 +87,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void TestIssue1905RefreshShows()
 		{
 			RunningApp.Screenshot("Should show refresh control");

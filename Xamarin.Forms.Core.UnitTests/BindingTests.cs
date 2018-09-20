@@ -42,7 +42,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void RecursiveSettingInSystem ()
 		{
 			var tempObjects = new[] {

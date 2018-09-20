@@ -35,7 +35,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Bugzilla30166Test()
 		{
 			RunningApp.WaitForElement(q => q.Marked("Push Modal"));

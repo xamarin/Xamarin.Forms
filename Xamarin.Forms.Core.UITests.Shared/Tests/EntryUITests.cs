@@ -39,7 +39,7 @@ namespace Xamarin.Forms.Core.UITests
 
 		// TODO
 		// Implement control specific ui tests
-		[Test]
+		
 		[UiTest(typeof(Entry), "Completed")]
 		public void Completed()
 		{

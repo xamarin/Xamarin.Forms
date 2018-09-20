@@ -39,7 +39,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void ListViewNRETest()
 		{
 			RunningApp.WaitForElement(q => q.Marked("1"));

@@ -8,7 +8,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	internal class ToolbarTrackerTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void Constructor ()
 		{
 			var tracker = new ToolbarTracker ();
@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (tracker.ToolbarItems.Any ());
 		}
 
-		[Test]
+		
 		public void SimpleTrackEmpty ()
 		{
 			var tracker = new ToolbarTracker ();
@@ -27,7 +27,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (tracker.ToolbarItems.Any ());
 		}
 
-		[Test]
+		
 		public void SimpleTrackWithItems ()
 		{
 			var tracker = new ToolbarTracker ();
@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (tracker.ToolbarItems.Contains (page.ToolbarItems[1]));
 		}
 
-		[Test]
+		
 		public void TrackPreConstructedTabbedPage ()
 		{
 			var tracker = new ToolbarTracker ();
@@ -86,7 +86,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (tracker.ToolbarItems.Last () == subPage2.ToolbarItems[1]);
 		}
 
-		[Test]
+		
 		public void AdditionalTargets ()
 		{
 			var tracker = new ToolbarTracker ();
@@ -111,7 +111,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (tracker.ToolbarItems.Contains (toolbarItem2));
 		}
 
-		[Test]
+		
 		public async Task PushAfterTrackingStarted ()
 		{
 			var tracker = new ToolbarTracker ();
@@ -140,7 +140,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (tracker.ToolbarItems.Contains (toolbarItem2));
 		}
 
-		[Test]
+		
 		public async Task PopAfterTrackingStarted ()
 		{
 			var tracker = new ToolbarTracker ();
@@ -171,7 +171,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (tracker.ToolbarItems.Contains (toolbarItem2));
 		}
 
-		[Test]
+		
 		public void UnsetTarget ()
 		{
 			var tracker = new ToolbarTracker ();

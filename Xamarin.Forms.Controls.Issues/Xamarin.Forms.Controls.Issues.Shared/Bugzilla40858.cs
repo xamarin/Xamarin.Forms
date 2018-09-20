@@ -46,7 +46,7 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST
 
 #if __ANDROID__
-		[Test]
+		
 		public void ListViewDoesNotCrashOnTextEntryHeaderOrFooterLongClick()
 		{
 			RunningApp.TouchAndHold(x => x.Marked("Header"));

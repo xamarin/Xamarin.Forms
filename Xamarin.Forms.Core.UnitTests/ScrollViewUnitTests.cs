@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Device.PlatformServices = null;
 		}
 
-		[Test]
+		
 		public void TestConstructor ()
 		{
 			ScrollView scrollView = new ScrollView ();
@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (view, scrollView.Content);
 		}
 
-		[Test]
+		
 		[TestCase (ScrollOrientation.Horizontal)]
 		[TestCase (ScrollOrientation.Both)]
 		public void GetsCorrectSizeRequestWithWrappingContent (ScrollOrientation orientation)
@@ -66,7 +66,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (10, r.Request.Height);
 		}
 
-		[Test]
+		
 		public void TestContentSizeChangedVertical ()
 		{
 			View view = new View {IsPlatformEnabled = true, WidthRequest = 100, HeightRequest = 100};
@@ -92,7 +92,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Size (50, 200), scroll.ContentSize);
 		}
 
-		[Test]
+		
 		public void TestContentSizeChangedVerticalBidirectional ()
 		{
 			View view = new View { IsPlatformEnabled = true, WidthRequest = 100, HeightRequest = 100 };
@@ -118,7 +118,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Size (100, 200), scroll.ContentSize);
 		}
 
-		[Test]
+		
 		public void TestContentSizeChangedHorizontal ()
 		{
 			View view = new View {IsPlatformEnabled = true, WidthRequest = 100, HeightRequest = 100};
@@ -147,7 +147,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Size (200, 50), scroll.ContentSize);
 		}
 
-		[Test]
+		
 		public void TestContentSizeChangedHorizontalBidirectional ()
 		{
 			View view = new View { IsPlatformEnabled = true, WidthRequest = 100, HeightRequest = 100 };
@@ -176,7 +176,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Size (200, 100), scroll.ContentSize);
 		}
 
-		[Test]
+		
 		public void TestContentSizeClamping ()
 		{
 			View view = new View {IsPlatformEnabled = true, WidthRequest = 100, HeightRequest = 100};
@@ -203,7 +203,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Size (100, 50), scroll.ContentSize);
 		}
 
-		[Test]
+		
 		public void TestChildChanged ()
 		{
 			ScrollView scrollView = new ScrollView ();
@@ -222,7 +222,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (changed);
 		}
 
-		[Test]
+		
 		public void TestChildDoubleSet ()
 		{
 			var scrollView = new ScrollView ();
@@ -251,7 +251,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Null (scrollView.Content);
 		}
 
-		[Test]
+		
 		public void TestOrientation ()
 		{
 			var scrollView = new ScrollView ();
@@ -274,7 +274,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (signaled); 
 		}
 
-		[Test]
+		
 		public void TestOrientationDoubleSet ()
 		{
 			var scrollView = new ScrollView ();
@@ -291,7 +291,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 
-		[Test]
+		
 		public void TestScrollTo()
 		{
 			var scrollView = new ScrollView ();
@@ -313,7 +313,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (requested, Is.True);
 		}
 
-		[Test]
+		
 		public void TestScrollToNotAnimated()
 		{
 			var scrollView = new ScrollView ();
@@ -335,7 +335,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (requested, Is.True);
 		}
 
-		[Test]
+		
 		public void TestScrollToElement ()
 		{
 			var scrollView = new ScrollView ();
@@ -357,7 +357,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (requested, Is.True);
 		}
 
-		[Test]
+		
 		public void TestScrollToElementNotAnimated ()
 		{
 			var scrollView = new ScrollView ();
@@ -379,7 +379,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (requested, Is.True);
 		}
 
-		[Test]
+		
 		public void TestScrollToInvalid ()
 		{
 			var scrollView = new ScrollView ();
@@ -389,7 +389,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (() => scrollView.ScrollToAsync (null, (ScrollToPosition) 500, true), Throws.ArgumentException);
 		}
 
-		[Test]
+		
 		public void SetScrollPosition ()
 		{
 			var scroll = new ScrollView();
@@ -400,7 +400,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (scroll.ScrollY, Is.EqualTo (100));
 		}
 
-		[Test]
+		
 		public void TestScrollContentMarginHorizontal()
 		{
 			View view = new View { IsPlatformEnabled = true, Margin = 100, WidthRequest = 100, HeightRequest = 100 };
@@ -418,7 +418,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(100, scroll.Width);
 		}
 
-		[Test]
+		
 		public void TestScrollContentMarginVertical()
 		{
 			View view = new View { IsPlatformEnabled = true, Margin = 100, WidthRequest = 100, HeightRequest = 100 };
@@ -436,7 +436,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(100, scroll.Width);
 		}
 
-		[Test]
+		
 		public void TestScrollContentMarginBiDirectional()
 		{
 			View view = new View { IsPlatformEnabled = true, Margin = 100, WidthRequest = 100, HeightRequest = 100 };
@@ -454,7 +454,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(100, scroll.Width);
 		}
 
-		[Test]
+		
 		public void TestBackToBackBiDirectionalScroll()
 		{
 			var scrollView = new ScrollView

@@ -40,7 +40,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 		#if UITEST
-		[Test]
+		
 		public void Bugzilla31395Test ()
 		{
 			RunningApp.WaitForElement (q => q.Marked ("Switch Main Page"));

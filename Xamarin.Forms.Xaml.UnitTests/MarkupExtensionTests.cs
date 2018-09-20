@@ -99,7 +99,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			typeResolver = new Internals.XamlTypeResolver (nsManager, XamlParser.GetElementType, Assembly.GetCallingAssembly ());
 		}
 
-		[Test]
+		
 		public void TestSimpleExtension ()
 		{
 			var markupString = "{local:FooMarkupExtension}";
@@ -112,7 +112,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual ("Foo", result);
 		}
 
-		[Test]
+		
 		public void TestExtensionWithParameters ()
 		{
 			var markupString = "{local:AppendMarkupExtension Value0=Foo, Value1=Bar}";
@@ -125,7 +125,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual ("FooBar", result);
 		}
 
-		[Test]
+		
 		public void TestServiceProvider ()
 		{
 			var markupString = "{local:AccessServiceProviderExtension}";
@@ -141,7 +141,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual ("TrueTrueTrue", result);
 		}
 
-		[Test]
+		
 		public void TestInXaml ()
 		{
 			var xaml = @"
@@ -157,7 +157,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual ("FooBar", label.Text.ToString ());
 		}
 
-		[Test]
+		
 		public void TestMarkupExtensionInDefaultNamespace ()
 		{
 			var xaml = @"
@@ -173,7 +173,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual("FooBar", label.Text.ToString());
 		}
 
-		[Test]
+		
 		public void TestDocumentationCode ()
 		{
 			var xaml =@"
@@ -187,7 +187,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual (Color.FromRgb (100, 80, 60), label.TextColor);
 		}
 
-		[Test]
+		
 		public void TestLookupWithSuffix ()
 		{
 			var markupString = "{local:Baa}";
@@ -200,7 +200,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual ("BaaExtension", result);
 		}
 
-		[Test]
+		
 		public void TestLookupOrder ()
 		{
 			//The order of lookup is to look for the Extension-suffixed class name first and then look for the class name without the Extension suffix.
@@ -214,7 +214,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual ("FuuExtension", result);
 		}
 
-		[Test]
+		
 		public void ThrowOnMarkupExtensionNotFound ()
 		{
 			var markupString = "{local:Missing}";

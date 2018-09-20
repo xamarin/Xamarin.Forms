@@ -95,7 +95,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void GitHub1567Test()
 		{
 			RunningApp.WaitForElement(q => q.Marked("btnFillData"));

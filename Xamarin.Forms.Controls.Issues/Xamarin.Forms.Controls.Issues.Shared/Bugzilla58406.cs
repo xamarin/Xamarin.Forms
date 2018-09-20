@@ -47,7 +47,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST 
-		[Test]
+		
 		public void EffectAppliesToLabel()
 		{
 			RunningApp.WaitForElement(ReversedText);

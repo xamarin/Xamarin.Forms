@@ -52,7 +52,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			ExpressionSearch.Default = new UnitExpressionSearch ();
 		}
 
-		[Test]
+		
 		public void SimpleLayout ()
 		{
 			var relativeLayout = new RelativeLayout {
@@ -75,7 +75,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (30, 20, 50, 25), child.Bounds);
 		}
 
-		[Test]
+		
 		public void LayoutIsUpdatedWhenConstraintsChange()
 		{
 			var relativeLayout = new RelativeLayout
@@ -116,7 +116,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(new Rectangle(40, 10, 25, 50), child.Bounds);
 		}
 
-		[Test]
+		
 		//https://github.com/xamarin/Xamarin.Forms/issues/2169
 		public void BoundsUpdatedIfConstraintsChangedWhileNotParented()
 		{
@@ -140,7 +140,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		}
 
-		[Test]
+		
 		public void SimpleExpressionLayout ()
 		{
 			var relativeLayout = new RelativeLayout {
@@ -163,7 +163,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (30, 20, 50, 25), child.Bounds);
 		}
 
-		[Test]
+		
 		public void SimpleBoundsSizing ()
 		{
 			var relativeLayout = new RelativeLayout {
@@ -182,7 +182,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (30, 20, 50, 25), child.Bounds);
 		}
 
-		[Test]
+		
 		public void UnconstrainedSize()
 		{
 			var relativeLayout = new RelativeLayout {
@@ -203,7 +203,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (30, 20, 25, 50), child.Bounds);
 		}
 
-		[Test]
+		
 		public void ViewRelativeLayout ()
 		{
 			var relativeLayout = new RelativeLayout {
@@ -237,7 +237,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (60, 20, 20, 10), child2.Bounds);
 		}
 
-		[Test]
+		
 		public void ViewRelativeLayoutWithExpressions()
 		{
 			var relativeLayout = new RelativeLayout {
@@ -271,7 +271,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (60, 20, 20, 10), child2.Bounds);
 		}
 
-		[Test]
+		
 		public void ViewRelativeToMultipleViews ()
 		{
 			var relativeLayout = new RelativeLayout {
@@ -316,7 +316,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (60, 50, 20, 40), child3.Bounds);
 		}
 
-		[Test]
+		
 		public void ExpressionRelativeToMultipleViews()
 		{
 			var relativeLayout = new RelativeLayout {
@@ -361,7 +361,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (60, 20, 45, 40), child3.Bounds);
 		}
 
-		[Test]
+		
 		public void ThreePassLayout ()
 		{
 			var relativeLayout = new RelativeLayout {
@@ -417,7 +417,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (60, 50, 20, 80), child4.Bounds);
 		}
 
-		[Test]
+		
 		public void ThreePassLayoutWithExpressions()
 		{
 			var relativeLayout = new RelativeLayout {
@@ -473,7 +473,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (60, 50, 20, 80), child4.Bounds);
 		}
 
-		[Test]
+		
 		public void ThrowsWithUnsolvableConstraints ()
 		{
 			var relativeLayout = new RelativeLayout {
@@ -504,7 +504,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Throws<UnsolvableConstraintsException> (() => relativeLayout.Layout (new Rectangle (0, 0, 100, 100)));
 		}
 
-		[Test]
+		
 		public void ChildAddedBeforeLayoutChildrenAfterInitialLayout ()
 		{
 			var relativeLayout = new MockRelativeLayout {

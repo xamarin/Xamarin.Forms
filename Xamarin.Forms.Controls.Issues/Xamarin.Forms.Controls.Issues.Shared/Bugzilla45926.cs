@@ -61,7 +61,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Issue45926Test ()
 		{
 			RunningApp.WaitForElement (q => q.Marked ("New Page"));

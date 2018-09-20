@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Device.PlatformServices = null;
 		}
 
-		[Test]
+		
 		public void ThrowsOnNullAdd ()
 		{
 			var layout = new Grid ();
@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Throws<ArgumentNullException> (() => layout.Children.Add (null));
 		}
 
-		[Test]
+		
 		public void ThrowsOnNullRemove ()
 		{
 			var layout = new Grid ();
@@ -197,7 +197,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void TestBasicVerticalLayout ()
 		{
 			var platform = new UnitPlatform ();
@@ -224,7 +224,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (0, 612, 912, 300), label3.Bounds);
 		}
 
-		[Test]
+		
 		public void TestBasicHorizontalLayout ()
 		{
 			var platform = new UnitPlatform ();
@@ -251,7 +251,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (612, 0, 300, 912), label3.Bounds);
 		}
 
-		[Test]
+		
 		public void TestVerticalExpandStart ()
 		{
 			var platform = new UnitPlatform ();
@@ -277,7 +277,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (0, 1000 - 20, 1000, 20), label2.Bounds);
 		}
 
-		[Test]
+		
 		public void TestHorizontalExpandStart ()
 		{
 			var platform = new UnitPlatform ();
@@ -303,7 +303,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (1000 - 100, 0, 100, 1000), label2.Bounds);
 		}
 
-		[Test]
+		
 		public void TestVerticalExpandEnd ()
 		{
 			var platform = new UnitPlatform ();
@@ -329,7 +329,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (0, 26, 1000, 1000 - 26), label2.Bounds);
 		}
 
-		[Test]
+		
 		public void TestHorizontalExpandEnd ()
 		{
 			var platform = new UnitPlatform ();
@@ -356,7 +356,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (106, 0, 1000 - 106, 1000), label2.Bounds);
 		}
 
-		[Test]
+		
 		public void TestVerticalExpandMiddle ()
 		{
 			var platform = new UnitPlatform ();
@@ -386,7 +386,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (0, 980, 1000, 20), label3.Bounds);
 		}
 
-		[Test]
+		
 		public void TestHorizontalExpandMiddle ()
 		{
 			var platform = new UnitPlatform ();
@@ -417,7 +417,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (900, 0, 100, 1000), label3.Bounds);
 		}
 
-		[Test]
+		
 		public void TestTableNoExpand ()
 		{
 			var platform = new UnitPlatform ();
@@ -454,7 +454,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (106, 26, 100, 20), label4.Bounds);
 		}
 
-		[Test]
+		
 		public void TestTableExpand ()
 		{
 			var platform = new UnitPlatform ();
@@ -487,7 +487,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (106, 503, 894, 497), label4.Bounds);
 		}
 
-		[Test]
+		
 		public void TestTableSpan ()
 		{
 			var platform = new UnitPlatform ();
@@ -521,7 +521,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (106, 26, 100, 20), label3.Bounds);
 		}
 
-		[Test]
+		
 		public void TestTableExpandedSpan ()
 		{
 			var platform = new UnitPlatform ();
@@ -555,7 +555,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (503, 26, 497, 20), label3.Bounds);
 		}
 
-		[Test]
+		
 		public void TestInvalidSet ()
 		{
 			var platform = new UnitPlatform ();
@@ -575,7 +575,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (thrown);
 		}
 
-		[Test]
+		
 		public void TestCentering ()
 		{
 			var platform = new UnitPlatform ();
@@ -597,7 +597,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (450, 490, 100, 20), label1.Bounds);
 		}
 
-		[Test]
+		
 		public void TestStart ()
 		{
 			var platform = new UnitPlatform ();
@@ -619,7 +619,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (0, 0, 100, 20), label1.Bounds);
 		}
 
-		[Test]
+		
 		public void TestEnd ()
 		{
 			var platform = new UnitPlatform ();
@@ -641,7 +641,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (900, 980, 100, 20), label1.Bounds);
 		}
 
-		[Test]
+		
 		public void TestDefaultRowSpacing ()
 		{
 			var layout = new Grid ();
@@ -660,7 +660,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (preferredSizeChanged);
 		}
 
-		[Test]
+		
 		public void TestDefaultColumnSpacing ()
 		{
 			var layout = new Grid ();
@@ -679,7 +679,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (preferredSizeChanged);
 		}
 
-		[Test]
+		
 		public void TestAddCell ()
 		{
 			var layout = new Grid ();
@@ -693,7 +693,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (preferredSizeChanged);
 		}
 
-		[Test]
+		
 		public void TestMoveCell ()
 		{
 			var layout = new Grid ();
@@ -725,7 +725,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (preferredSizeChanged);
 		}
 
-		[Test]
+		
 		public void TestInvalidBottomAdd ()
 		{
 			var layout = new Grid ();
@@ -733,7 +733,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Throws<ArgumentOutOfRangeException> (() => layout.Children.Add (new View (), 0, 1, 1, 0));
 		}
 
-		[Test]
+		
 		public void TestZeroSizeConstraints ()
 		{
 			var layout = new Grid {Platform = new UnitPlatform ()};
@@ -743,7 +743,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Size (0, 0), layout.GetSizeRequest (10, 0).Request);
 		}
 
-		[Test]
+		
 		public void TestSizeRequest ()
 		{
 			var platform = new UnitPlatform ();
@@ -758,7 +758,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Size (100, 72), result);
 		}
 
-		[Test]
+		
 		public void TestLimitedSizeRequest ()
 		{
 			var platform = new UnitPlatform ();
@@ -773,7 +773,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Size (100, 72), result);
 		}
 
-		[Test]
+		
 		public void TestLimitedWidthSizeRequest ()
 		{
 			var platform = new UnitPlatform ();
@@ -788,7 +788,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Size (100, 72), result);
 		}
 
-		[Test]
+		
 		public void TestLimitedHeightSizeRequest ()
 		{
 
@@ -804,7 +804,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Size (100, 72), result);
 		}
 
-		[Test]
+		
 		public void IgnoresInvisibleChildren ()
 		{
 			var platform = new UnitPlatform ();
@@ -833,7 +833,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (0, 6, 100, 20), label2.Bounds);
 		}
 
-		[Test]
+		
 		public void TestSizeRequestWithPadding ()
 		{
 			var platform = new UnitPlatform ();
@@ -848,7 +848,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Size (135, 87), result);
 		}
 
-		[Test]
+		
 		public void InvalidCallsToStaticMethods ()
 		{
 			Assert.Throws<ArgumentException> (() => Grid.SetRow (new Label (), -1));
@@ -857,7 +857,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Throws<ArgumentException> (() => Grid.SetColumnSpan (new Label (), 0));
 		}
 
-		[Test]
+		
 		public void TestAddedBP ()
 		{
 			var platform = new UnitPlatform ();
@@ -903,7 +903,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (0, 52, 206, 20), labelc.Bounds);
 		}
 
-		[Test]
+		
 		public void Remove ()
 		{
 			var platform = new UnitPlatform();
@@ -932,7 +932,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (((IElementController)layout).LogicalChildren.Contains (labela0));
 		}
 
-		[Test]
+		
 		public void TestAbsoluteLayout ()
 		{
 			var platform = new UnitPlatform ();
@@ -968,7 +968,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (312, 72, 150, 30), label3.Bounds);
 		}
 
-		[Test]
+		
 		public void TestAbsoluteLayoutWithSpans ()
 		{
 			var platform = new UnitPlatform ();
@@ -1004,7 +1004,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (156, 72, 150, 30), label3.Bounds);
 		}
 
-		[Test]
+		
 		public void TestStarLayout ()
 		{
 			var platform = new UnitPlatform ();
@@ -1042,7 +1042,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (672, 312, 330, 150), label3.Bounds);
 		}
 
-		[Test]
+		
 		public void TestStarLayoutWithSpans ()
 		{
 			var platform = new UnitPlatform ();
@@ -1077,7 +1077,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (336, 312, 330, 150), label3.Bounds);
 		}
 
-		[Test]
+		
 		public void TestAutoLayout ()
 		{
 			var platform = new UnitPlatform ();
@@ -1113,7 +1113,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (212, 52, 100, 20), label3.Bounds);
 		}
 
-		[Test]
+		
 		public void TestAutoLayoutWithSpans ()
 		{
 			var platform = new UnitPlatform ();
@@ -1148,7 +1148,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (50, 56, 100, 20), label3.Bounds);
 		}
 
-		[Test]
+		
 		public void AutoLayoutWithComplexSpans ()
 		{
 			var platform = new UnitPlatform ();
@@ -1186,7 +1186,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (100, layout.ColumnDefinitions [4].ActualWidth);
 		}
 
-		[Test]
+		
 		public void AutoLayoutExpandColumns ()
 		{
 			var platform = new UnitPlatform ();
@@ -1212,7 +1212,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (194, layout.ColumnDefinitions [1].ActualWidth);
 		}
 
-		[Test]
+		
 		public void GridHasDefaultDefinitions ()
 		{
 			var grid = new Grid ();
@@ -1220,7 +1220,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.NotNull (grid.RowDefinitions);
 		}
 
-		[Test]
+		
 		public void DefaultDefinitionsArentSharedAccrossInstances ()
 		{
 			var grid0 = new Grid ();
@@ -1233,7 +1233,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreNotSame (rowdefs, grid1.RowDefinitions);
 		}
 
-		[Test]
+		
 		public void ChildrenLayoutRespectAlignment ()
 		{
 			var platform = new UnitPlatform ();
@@ -1255,7 +1255,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (200, 40, 100, 20), label.Bounds);
 		}
 
-		[Test]
+		
 		public void BothChildrenPropertiesUseTheSameBackendStore ()
 		{
 			var view = new View ();
@@ -1268,7 +1268,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreSame (view, grid.Children.First ());
 		}
 
-		[Test]
+		
 		//Issue 1384
 		public void ImageInAutoCellIsProperlyConstrained ()
 		{
@@ -1304,7 +1304,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (10, grid.Height);
 		}
 
-		[Test]
+		
 		//Issue 1384
 		public void ImageInStarCellIsProperlyConstrained ()
 		{
@@ -1340,7 +1340,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (10, grid.Height);
 		}
 
-		[Test]
+		
 		public void SizeRequestForStar ()
 		{
 			var platform = new UnitPlatform ();
@@ -1369,7 +1369,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			//
 		}
 
-		[Test]
+		
 		//Issue 1497
 		public void StarRowsShouldOccupyTheSpace ()
 		{
@@ -1403,7 +1403,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (0, 280, 300, 20), Button.Bounds);
 		}
 
-		[Test]
+		
 		public void StarColumnsWithSpansDoNotExpandAutos ()
 		{
 			var grid = new Grid {
@@ -1449,7 +1449,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			return new SizeRequest(new Size (100, 20));
 		}
 			
-		[Test]
+		
 		//Issue 1893
 		public void EditorSpanningOnMultipleAutoRows ()
 		{
@@ -1495,7 +1495,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (106, 0, 50, 40), editor1.Bounds);
 		}
 
-		[Test]
+		
 		public void WidthBoundRequestRespected ()
 		{
 			var grid = new Grid {
@@ -1528,7 +1528,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new SizeRequest (new Size (50, 60), new Size (0, 60)), widthBoundRequest);
 		}
 
-		[Test]
+		
 		//https://bugzilla.xamarin.com/show_bug.cgi?id=31608
 		public void ColAndRowDefinitionsAreActuallyBindable ()
 		{
@@ -1542,7 +1542,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new GridLength(32), rowdef.Height);
 		}
 
-		[Test]
+		
 		//https://bugzilla.xamarin.com/show_bug.cgi?id=31967
 		public void ChangingRowHeightViaBindingTriggersRedraw ()
 		{
@@ -1574,7 +1574,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new SizeRequest (new Size (100, 62), new Size (0, 62)), grid.GetSizeRequest (double.PositiveInfinity, double.PositiveInfinity));
 		}
 
-		[Test]
+		
 		public void InvalidationBlockedForAbsoluteCell ()
 		{
 			var grid = new Grid () {
@@ -1693,7 +1693,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Device.PlatformServices = null;
 		}
 		
-		[Test]
+		
 		public void NestedInvalidateMeasureDoesNotCrash ()
 		{
 			var grid = new Grid {

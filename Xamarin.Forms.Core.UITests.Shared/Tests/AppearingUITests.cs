@@ -24,7 +24,7 @@ namespace Xamarin.Forms.Core.UITests
 			NavigateToGallery();
 		}
 
-		[Test]
+		
 		public void AppearingNavigationPage()
 		{
 			App.Tap(t => t.Marked("NavAppearingPage"));
@@ -39,7 +39,7 @@ namespace Xamarin.Forms.Core.UITests
 			App.WaitForElement("Appearing Page 3");
 		}
 
-		[Test]
+		
 		public void AppearingCarouselPage()
 		{
 			App.Tap(t => t.Marked("CarouselAppearingPage"));
@@ -47,7 +47,7 @@ namespace Xamarin.Forms.Core.UITests
 			App.WaitForElement("Appearing Page 1");
 		}
 
-		[Test]
+		
 		public void AppearingTabbedPage()
 		{
 			App.Tap(t => t.Marked("TabbedAppearingPage"));
@@ -55,7 +55,7 @@ namespace Xamarin.Forms.Core.UITests
 			App.WaitForElement("Appearing Page 1");
 		}
 
-		[Test]
+		
 		public void AppearingMasterDetailPage()
 		{
 			App.Tap(t => t.Marked("MasterAppearingPage"));

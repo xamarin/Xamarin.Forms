@@ -6,7 +6,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class TypeUnitTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void TestVec2 ()
 		{
 			var vec2 = new Vec2 ();

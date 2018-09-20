@@ -14,7 +14,7 @@ namespace Xamarin.Forms.Controls.Issues
 	public class Bugzilla51238 : TestContentPage
 	{
 #if UITEST
-		[Test]
+		
 		public void Issue1Test()
 		{
 			RunningApp.WaitForElement("Tap Me!");

@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class BehaviorTest : BaseTestFixture
 	{
-		[Test]
+		
 		public void AttachAndDetach ()
 		{
 			var behavior = new MockBehavior<MockBindable> ();
@@ -54,7 +54,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Null (behavior.AssociatedObject);
 		}
 
-		[Test]
+		
 		public void AttachToTypeCompatibleWithTargetType ()
 		{
 			var behavior = new MockBehavior<MockBindable> ();
@@ -63,7 +63,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Throws<InvalidOperationException> (() => ((IAttachedObject)behavior).AttachTo (bindable));
 		}
 			
-		[Test]
+		
 		public void BehaviorsInCollectionAreAttachedWhenCollectionIsAttached ()
 		{
 			var behavior = new MockBehavior<MockBindable> ();
@@ -79,7 +79,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Null (behavior.AssociatedObject);
 		}
 
-		[Test]
+		
 		public void BehaviorsAddedToAttachedCollectionAreAttached ()
 		{
 			var behavior = new MockBehavior<MockBindable> ();
@@ -95,7 +95,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Null (behavior.AssociatedObject);
 		}
 
-		[Test]
+		
 		public void TestBehaviorsAttachedDP ()
 		{
 			var behavior = new MockBehavior<MockBindable> ();

@@ -46,7 +46,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		[UiTest (typeof(ListView))]
 		public void Issue530TestsLoadAsync ()
 		{

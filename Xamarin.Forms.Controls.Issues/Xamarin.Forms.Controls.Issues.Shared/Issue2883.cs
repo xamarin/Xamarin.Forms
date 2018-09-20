@@ -97,7 +97,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 		#if UITEST
-		[Test]
+		
 		public void Issue2883TestDisabled ()
 		{
 			RunningApp.Screenshot ("I am at Issue 2883");
@@ -109,7 +109,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Screenshot ("I dont see the disable cell");
 		}
 
-		[Test]
+		
 		public void Issue2883TestEnabled ()
 		{
 

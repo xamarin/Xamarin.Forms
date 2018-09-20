@@ -72,7 +72,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void CanDisplayModalOverMap()
 		{
 			RunningApp.WaitForElement(StartTest);

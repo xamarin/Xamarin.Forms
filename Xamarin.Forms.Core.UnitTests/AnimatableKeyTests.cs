@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void KeysWithDifferentHandlesAreNotEqual ()
 		{
 			var animatable = new FakeAnimatable();
@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreNotEqual (key1, key2);
 		}
 
-		[Test]
+		
 		public void KeysWithDifferentAnimatablesAreNotEqual ()
 		{
 			var animatable1 = new FakeAnimatable();
@@ -43,7 +43,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreNotEqual (key1, key2);
 		}
 
-		[Test]
+		
 		public void KeysWithSameAnimatableAndHandleAreEqual ()
 		{
 			var animatable = new FakeAnimatable();
@@ -54,7 +54,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (key1, key2);
 		}
 
-		[Test]
+		
 		public void ThrowsWhenKeysWithSameAnimatableAdded ()
 		{
 			var animatable = new FakeAnimatable();

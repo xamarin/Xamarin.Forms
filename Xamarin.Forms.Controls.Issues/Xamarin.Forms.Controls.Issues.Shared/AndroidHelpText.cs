@@ -42,7 +42,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST && __ANDROID__
-		[Test]
+		
 		public void AndroidHelpTextTest()
 		{
 			RunningApp.WaitForNoElement(q => q.Marked("."));

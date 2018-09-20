@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 
 #if UITEST
-		[Test]
+		
 		public void TabIconsAndTitlesChange() =>
 			Issue1898Setup.RunUITests(RunningApp);
 #endif
@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Controls.Issues
 			Issue1898Setup.SetupTabbedPage(this, AToolbarPlacement.Bottom);
 
 #if UITEST && __ANDROID__
-		[Test]
+		
 		public void TabBottomIconsAndTitlesChange() =>
 			Issue1898Setup.RunUITests(RunningApp);
 #endif

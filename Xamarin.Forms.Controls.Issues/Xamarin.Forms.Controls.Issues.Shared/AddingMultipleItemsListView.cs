@@ -417,7 +417,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void AddingMultipleListViewTests1AllElementsPresent()
 		{
 			RunningApp.WaitForElement(q => q.Marked("Big Job"));
@@ -435,7 +435,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Screenshot("All elements are present");
 		}
 
-		[Test]
+		
 		public void AddingMultipleListViewTests2AddOneElementToList()
 		{
 			RunningApp.Tap(q => q.Marked("Add One"));
@@ -444,7 +444,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Screenshot("One more element exists");
 		}
 
-		[Test]
+		
 		public void AddingMultipleListViewTests3AddTwoElementToList()
 		{
 			RunningApp.Screenshot("Click 'Add Two'");

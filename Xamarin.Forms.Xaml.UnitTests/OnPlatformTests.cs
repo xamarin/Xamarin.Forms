@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			base.TearDown();
 		}
 
-		[Test]
+		
 		public void ApplyToProperty ()
 		{
 			var xaml = @"
@@ -40,7 +40,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.NotNull (layout.Content);
 		}
 
-		[Test]
+		
 		public void UseTypeConverters ()
 		{
 			var xaml = @"
@@ -77,7 +77,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual (new Thickness (0, 20, 0, 20), layout.Padding);
 		}
 
-		[Test]
+		
 		//Issue 1480
 		public void TypeConverterAndDerivedTypes ()
 		{
@@ -104,7 +104,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 	[TestFixture]
 	public class OnIdiomTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void StackLayoutOrientation ()
 		{
 			var xaml = @"

@@ -67,7 +67,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void MovingItemInObservableCollectionBreaksListView()
 		{
 			RunningApp.WaitForElement(_instructions);

@@ -21,7 +21,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			return TabbedPage.GetIndex (page);
 		}
 
-		[Test]
+		
 		public void TestConstructor ()
 		{
 			TabbedPage page = new TabbedPage ();

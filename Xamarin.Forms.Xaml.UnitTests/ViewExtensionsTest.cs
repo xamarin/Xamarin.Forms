@@ -8,7 +8,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 	[TestFixture]
 	public class ViewExtensionsTest : BaseTestFixture
 	{
-		[Test]
+		
 		public void TestGetResource ()
 		{
 			var resource = new object ();
@@ -21,7 +21,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreSame (resource, found);
 		}
 
-		[Test]
+		
 		public void TestResourceNotFound ()
 		{
 			var view = new View ();
@@ -29,7 +29,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.Null (resource);
 		}
 
-		[Test]
+		
 		public void TestGetResourceInParents ()
 		{
 			var resource = new object ();

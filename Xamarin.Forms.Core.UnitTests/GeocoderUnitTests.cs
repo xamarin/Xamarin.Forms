@@ -10,7 +10,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class GeocoderUnitTests : BaseTestFixture
 	{
-		[Test]
+		
 		public async void AddressesForPosition ()
 		{
 			Geocoder.GetAddressesForPositionFuncAsync = GetAddressesForPositionFuncAsync;
@@ -25,7 +25,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			return new string[] {"abc", "def"};
 		}
 
-		[Test]
+		
 		public async void PositionsForAddress () {
 			Geocoder.GetPositionsForAddressAsyncFunc = GetPositionsForAddressAsyncFunc	;
 			var geocoder = new Geocoder ();

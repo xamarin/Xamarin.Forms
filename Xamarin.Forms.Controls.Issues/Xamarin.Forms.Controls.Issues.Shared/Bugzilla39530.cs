@@ -60,7 +60,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 #if __MACOS__
 		[Ignore("UITest.Desktop doesn't return empty NSView yet so it can't find the frame")]
 #endif
@@ -75,7 +75,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement (q => q.Marked ("Panning: Completed"));
 		}
 
-		[Test]
+		
 #if __MACOS__
 		[Ignore("UITest.Desktop doesn't return empty NSView yet so it can't find the frame")]
 #endif
@@ -85,7 +85,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement(q => q.Marked("Pinching: Completed"));
 		}
 
-		[Test]
+		
 #if __MACOS__
 		[Ignore("UITest.Desktop doesn't return empty NSView yet so it can't find the frame")]
 #endif

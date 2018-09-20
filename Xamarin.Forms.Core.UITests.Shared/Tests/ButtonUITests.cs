@@ -39,7 +39,7 @@ namespace Xamarin.Forms.Core.UITests
 		}
 
 		// Button Tests
-		[Test]
+		
 		[UiTest(typeof(Button), "BorderColor")]
 		[UiTestBroken(BrokenReason.CalabashAndroidUnsupported, "Figure out how to get Android Drawables")]
 		[UiTestBroken(BrokenReason.CalabashiOSUnsupported, "iOS nil result")]
@@ -50,7 +50,7 @@ namespace Xamarin.Forms.Core.UITests
 			remote.GoTo();
 		}
 
-		[Test]
+		
 		[UiTest(typeof(Button), "BorderRadius")]
 		[UiTestBroken(BrokenReason.CalabashAndroidUnsupported, "Figure out how to get Android Drawables")]
 		public void BorderRadius()
@@ -64,7 +64,7 @@ namespace Xamarin.Forms.Core.UITests
 #endif
 		}
 
-		[Test]
+		
 		[UiTest(typeof(Button), "BorderWidth")]
 		[UiTestBroken(BrokenReason.CalabashAndroidUnsupported, "Figure out how to get Android Drawables")]
 		public void BorderWidth()
@@ -78,7 +78,7 @@ namespace Xamarin.Forms.Core.UITests
 #endif
 		}
 
-		[Test]
+		
 		[UiTest(typeof(Button), "Clicked")]
 		public void Clicked()
 		{
@@ -95,7 +95,7 @@ namespace Xamarin.Forms.Core.UITests
 			Assert.AreEqual("Event: Clicked (fired 1)", textAfterClick);
 		}
 
-		[Test]
+		
 		[UiTest(typeof(Button), "Command")]
 		public void Command()
 		{
@@ -108,7 +108,7 @@ namespace Xamarin.Forms.Core.UITests
 			App.Tap(q => q.Marked("Destroy"));
 		}
 
-		[Test]
+		
 		[UiTest(typeof(Button), "Font")]
 		public void Font()
 		{
@@ -127,7 +127,7 @@ namespace Xamarin.Forms.Core.UITests
 #endif
 		}
 
-		[Test]
+		
 		[UiTest(typeof(Button), "Image")]
 		[UiTestExempt(ExemptReason.TimeConsuming, "Need way to check Android resources")]
 		public void Image()
@@ -137,7 +137,7 @@ namespace Xamarin.Forms.Core.UITests
 			remote.GoTo();
 		}
 
-		[Test]
+		
 		[UiTest(typeof(Button), "Text")]
 		public void Text()
 		{
@@ -151,7 +151,7 @@ namespace Xamarin.Forms.Core.UITests
 		//TODO iOS
 
 #if __ANDROID__
-		[Test]
+		
 		[UiTest (typeof (Button), "TextColor")]
 		public void TextColor ()
 		{

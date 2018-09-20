@@ -39,7 +39,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			return new Binding ("Text", mode, stringFormat: stringFormat);
 		}
 
-		[Test]
+		
 		public void Ctor()
 		{
 			const string path = "Foo";
@@ -49,7 +49,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (BindingMode.OneWayToSource, binding.Mode);
 		}
 
-		[Test]
+		
 		public void InvalidCtor()
 		{
 			Assert.Throws<ArgumentNullException> (() => new Binding (null),
@@ -65,7 +65,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				"Allowed invalid value for BindingMode");
 		}
 
-		[Test]
+		
 		[Description ("You should get an exception when trying to change a binding after it's been applied")]
 		public void ChangeBindingAfterApply()
 		{
@@ -81,7 +81,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (() => binding.ConverterParameter = new object(), Throws.InvalidOperationException);
 		}
 
-		[Test]
+		
 		public void NullPathIsSelf()
 		{
 			var property = BindableProperty.Create("Foo", typeof(string), typeof(MockBindable));
@@ -139,7 +139,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (bindable.Text, Is.EqualTo ("Value"));
 		}
 
-		[Test]
+		
 		[Category ("[Binding] Complex paths")]
 		public void ValueSetOnOneWayWithComplexPathBinding (
 			[Values (true, false)] bool setContextFirst,
@@ -1175,7 +1175,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void ValueConverter()
 		{
 			var converter = new TestConverter<string, int>();
@@ -1195,7 +1195,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				"An error was logged: " + log.Messages.FirstOrDefault());
 		}
 
-		[Test]
+		
 		public void ValueConverterBack()
 		{
 			var converter = new TestConverter<string, int>();
@@ -1226,7 +1226,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void ValueConverterParameter ()
 		{
 			var converter = new TestConverterParameter ();
@@ -1273,7 +1273,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 		#endif
 
-		[Test]
+		
 		public void SelfBindingConverter()
 		{
 			var converter = new TestConverter<int, string> ();
@@ -1355,7 +1355,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void MultiplePropertyUpdates()
 		{
 			var mpvm = new MultiplePropertyViewModel();
@@ -1422,7 +1422,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				"An error was logged: " + log.Messages.FirstOrDefault());
 		}
 
-		[Test]
+		
 		[Description ("OneWay bindings should not double apply on source updates.")]
 		public void OneWayBindingsDontDoubleApplyOnSourceUpdates()
 		{
@@ -1443,7 +1443,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (2, vm.count, "Source property was queried multiple times on a reapply");
 		}
 
-		[Test]
+		
 		[Description ("When there are multiple bindings, an update in one should not cause the other to udpate.")]
 		public void BindingsShouldNotTriggerOtherBindings()
 		{
@@ -1471,7 +1471,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		[Description ("The most derived version of a property should always be called.")]
 		public void MostDerviedPropertyOnContextSwitchOfSimilarType()
 		{
@@ -1513,7 +1513,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		[Description("Paths should not distinguish types, a context change to a completely different type should work.")]
 		public void DifferentContextTypeAccessedCorrectlyWithSamePath()
 		{
@@ -1531,7 +1531,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(dvm.Text, bindable.GetValue(MockBindable.TextProperty));
 		}
 
-		[Test]
+		
 		public void Clone()
 		{
 			object param = new object();
@@ -1545,7 +1545,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(binding.StringFormat, clone.StringFormat);
 		}
 
-		[Test]
+		
 		public void PropertyMissingOneWay()
 		{
 			var bindable = new MockBindable { BindingContext = new MockViewModel() };
@@ -1556,7 +1556,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (bindable.Text, Is.EqualTo (MockBindable.TextProperty.DefaultValue));
 		}
 
-		[Test]
+		
 		public void PropertyMissingOneWayToSource()
 		{
 			var bindable = new MockBindable { BindingContext = new MockViewModel() };
@@ -1567,7 +1567,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (bindable.Text, Is.EqualTo (bindable.Text));
 		}
 
-		[Test]
+		
 		public void PropertyMissingTwoWay()
 		{
 			var bindable = new MockBindable { BindingContext = new MockViewModel() };
@@ -1579,7 +1579,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (bindable.Text, Is.EqualTo (MockBindable.TextProperty.DefaultValue));
 		}
 
-		[Test]
+		
 		public void GetterMissingTwoWay()
 		{
 			var bindable = new MockBindable { BindingContext = new DifferentViewModel() };
@@ -1597,7 +1597,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (((DifferentViewModel) bindable.BindingContext).Text, Is.EqualTo (MockBindable.TextProperty.DefaultValue));
 		}
 
-		[Test]
+		
 		public void BindingAppliesAfterGetterPreviouslyMissing()
 		{
 			var bindable = new MockBindable { BindingContext = new EmptyViewModel() };
@@ -1614,7 +1614,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				"Text")));
 		}
 
-		[Test]
+		
 		public void SetterMissingTwoWay()
 		{
 			var bindable = new MockBindable { BindingContext = new DifferentViewModel() };
@@ -1630,7 +1630,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (() => bindable.SetValueCore (MockBindable.TextProperty, "foo"), Throws.Nothing);
 		}
 
-		[Test]
+		
 		public void PrivateSetterTwoWay()
 		{
 			var bindable = new MockBindable { BindingContext = new DifferentViewModel() };
@@ -1653,7 +1653,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				"Text")));
 		}
 
-		[Test]
+		
 		public void PropertyNotFound()
 		{
 			var bindable = new MockBindable { BindingContext = new MockViewModel() };
@@ -1667,7 +1667,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				"Text")));
 		}
 
-		[Test]
+		
 		[Description ("When binding with a multi-part path and part is null, no error should be thrown or logged")]
 		public void ChainedPartNull()
 		{
@@ -1676,7 +1676,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (log.Messages.Count, Is.EqualTo (0), "An error was logged");
 		}
 
-		[Test]
+		
 		public void PropertyNotFoundChained()
 		{
 			var bindable = new MockBindable {
@@ -1697,13 +1697,13 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (bindable.Text, Is.EqualTo (MockBindable.TextProperty.DefaultValue));
 		}
 
-		[Test]
+		
 		public void CreateBindingNull()
 		{
 			Assert.That (() => Binding.Create<MockViewModel> (null), Throws.InstanceOf<ArgumentNullException>());
 		}
 
-		[Test]
+		
 		public void CreateBindingSimple()
 		{
 			Binding binding = Binding.Create<MockViewModel> (mvm => mvm.Text);
@@ -1711,7 +1711,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("Text", binding.Path);
 		}
 
-		[Test]
+		
 		public void CreateBindingComplex()
 		{
 			Binding binding = Binding.Create<ComplexMockViewModel> (vm => vm.Model.Model.Text);
@@ -1719,7 +1719,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("Model.Model.Text", binding.Path);
 		}
 
-		[Test]
+		
 		public void CreateBindingIndexed()
 		{
 			Binding binding = Binding.Create<ComplexMockViewModel> (vm => vm.Model.Model[5]);
@@ -1727,7 +1727,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("Model.Model[5]", binding.Path);
 		}
 
-		[Test]
+		
 		public void CreateBindingIndexedNonConstant()
 		{
 			int x = 5;
@@ -1745,7 +1745,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void CreateBindingNullToIndexer()
 		{
 			Assert.That (
@@ -1753,7 +1753,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				Throws.Nothing);
 		}
 
-		[Test]
+		
 		public void CreateBindingWithMethod()
 		{
 			Assert.That (
@@ -1761,7 +1761,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				Throws.ArgumentException);
 		}
 
-		[Test]
+		
 		[Description ("Indexers are seen as methods, we don't want to get them confused with real methods.")]
 		public void CreateBindingWithMethodArgument()
 		{
@@ -1775,7 +1775,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			return vm.Text;
 		}
 
-		[Test]
+		
 		public void CreateBindingMethod()
 		{
 			Func<MockViewModel, object> func = vm => vm.Text;
@@ -1786,7 +1786,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				Throws.ArgumentException);
 		}
 
-		[Test]
+		
 		public void CreateBindingPrivateIndexer()
 		{
 			Assert.That (() => Binding.Create<InternalIndexerViewModel> (vm => vm[5]),
@@ -1801,7 +1801,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void CreateBindingInvalidExpression()
 		{
 			Assert.That (() => Binding.Create<MockViewModel> (vm => vm.Text + vm.Text),
@@ -1814,7 +1814,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				Throws.ArgumentException);
 		}
 
-		[Test]
+		
 		public void SetBindingContextBeforeContextBindingAndInnerBindings ()
 		{
 			var label = new Label ();
@@ -1827,7 +1827,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("Foo", label.Text);
 		}
 
-		[Test]
+		
 		public void SetBindingContextAndInnerBindingBeforeContextBinding ()
 		{
 			var label = new Label ();
@@ -1840,7 +1840,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("Foo", label.Text);
 		}
 
-		[Test]
+		
 		public void SetBindingContextAfterContextBindingAndInnerBindings ()
 		{
 			var label = new Label ();
@@ -1853,7 +1853,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("Foo", label.Text);
 		}
 
-		[Test]
+		
 		public void SetBindingContextAfterInnerBindingsAndContextBinding ()
 		{
 			var label = new Label ();
@@ -1866,7 +1866,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("Foo", label.Text);
 		}
 
-		[Test]
+		
 		public void Convert ()
 		{
 			var slider = new Slider ();
@@ -1900,7 +1900,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 		#endif
 
-		[Test]
+		
 		public void FailToConvert ()
 		{
 			var slider = new Slider ();
@@ -2004,7 +2004,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void BindingUnsubscribesForDeadTarget ()
 		{
 			TestViewModel viewmodel = new TestViewModel();
@@ -2035,7 +2035,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (0, viewmodel.InvocationListSize ());
 		}
 
-		[Test]
+		
 		public async Task BindingDoesNotStayAliveForDeadTarget()
 		{
 			TestViewModel viewModel = new TestViewModel();
@@ -2061,7 +2061,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsFalse(bindingRef.IsAlive, "Binding should not be alive!");
 		}
 
-		[Test]
+		
 		public void BindingCreatesSingleSubscription ()
 		{
 			TestViewModel viewmodel = new TestViewModel();
@@ -2096,7 +2096,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void IndexedViewModelPropertyChanged ()
 		{
 			var label = new Label ();
@@ -2131,7 +2131,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			public int Count { get; set; }
 		}
 
-		[Test]
+		
 		// https://bugzilla.xamarin.com/show_bug.cgi?id=57081
 		public void BindingWithSourceNotReappliedWhenBindingContextIsChanged()
 		{
@@ -2145,7 +2145,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(model.Count, Is.EqualTo(1));
 		}
 
-		[Test]
+		
 		// https://bugzilla.xamarin.com/show_bug.cgi?id=57081
 		public void BindingWithSourceNotReappliedWhenParented()
 		{
@@ -2164,7 +2164,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			public (string Foo, string Bar) Tuple { get; set; }
 		}
 
-		[Test]
+		
 		public void ValueTupleAsBindingContext()
 		{
 			var label = new Label {
@@ -2177,7 +2177,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("BAR", label.Text);
 		}
 
-		[Test]
+		
 		public void OneTimeBindingDoesntUpdateOnPropertyChanged()
 		{
 			var view = new VisualElement();
@@ -2195,7 +2195,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(view.GetValue(bp1t), Is.EqualTo("foobar"));
 		}
 
-		[Test]
+		
 		public void OneTimeBindingUpdatesOnBindingContextChanged()
 		{
 			var view = new VisualElement();
@@ -2212,7 +2212,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(view.GetValue(bp1t), Is.EqualTo("qux"));
 		}
 
-		[Test]
+		
 		public void FallbackValueWhenSourceIsNull()
 		{
 			var bindable = new MockBindable();
@@ -2221,7 +2221,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(bindable.GetValue(property), Is.EqualTo("fallback"));
 		}
 
-		[Test]
+		
 		//https://github.com/xamarin/Xamarin.Forms/issues/3467
 		public void TargetNullValueIgnoredWhenBindingIsResolved()
 		{
@@ -2233,7 +2233,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(bindable.GetValue(property), Is.EqualTo("Foo"));
 		}
 
-		[Test]
+		
 		public void TargetNullValueFallback()
 		{
 			var bindable = new MockBindable();
