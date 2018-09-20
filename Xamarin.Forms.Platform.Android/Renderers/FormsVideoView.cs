@@ -4,6 +4,7 @@ using Android.Runtime;
 using Android.Widget;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -13,6 +14,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		public FormsVideoView(Context context) : base(context) { }
 
+		public event EventHandler MetadataRetrieved;
+
 		public override void SetVideoPath(string path)
 		{
 			base.SetVideoPath(path);
@@ -20,21 +23,29 @@ namespace Xamarin.Forms.Platform.Android
 			if (System.IO.File.Exists(path))
 			{
 				MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-				try
+
+				// load metadata asynchronously
+				Task.Run(() =>
 				{
 					retriever.SetDataSource(path);
 					ExtractMetadata(retriever);
-				}
-				catch { }
+					MetadataRetrieved?.Invoke(this, EventArgs.Empty);
+				});
 			}
 		}
 
 		void ExtractMetadata(MediaMetadataRetriever retriever)
 		{
-			_videoWidth = 0;
-			int.TryParse(retriever.ExtractMetadata(MetadataKey.VideoWidth), out _videoWidth);
-			_videoHeight = 0;
-			int.TryParse(retriever.ExtractMetadata(MetadataKey.VideoHeight), out _videoHeight);
+			
+			if(!int.TryParse(retriever.ExtractMetadata(MetadataKey.VideoWidth), out _videoWidth))
+			{
+				_videoWidth = 0;
+			}
+			
+			if(!int.TryParse(retriever.ExtractMetadata(MetadataKey.VideoHeight), out _videoHeight))
+			{
+				_videoHeight = 0;
+			}
 
 			long durationMS;
 			string durationString = retriever.ExtractMetadata(MetadataKey.Duration);
@@ -63,9 +74,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		void GetMetaData(global::Android.Net.Uri uri, IDictionary<string, string> headers)
 		{
-			MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-			try
+			// load metadata asynchronously
+			Task.Run(() =>
 			{
+				MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+
 				if (uri.Scheme != null && uri.Scheme.StartsWith("http") && headers != null)
 				{
 					retriever.SetDataSource(uri.ToString(), headers);
@@ -76,8 +89,9 @@ namespace Xamarin.Forms.Platform.Android
 				}
 
 				ExtractMetadata(retriever);
-			}
-			catch { }
+
+				MetadataRetrieved?.Invoke(this, EventArgs.Empty);
+			});
 		}
 
 		public int VideoHeight

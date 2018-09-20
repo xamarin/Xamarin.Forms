@@ -94,8 +94,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			}
 
 			MediaElement.PropertyChanged += OnElementPropertyChanged;
-			MediaElement.SeekRequested += MediaElement_SeekRequested;
-			MediaElement.StateRequested += MediaElement_StateRequested;
+			MediaElement.SeekRequested += SeekRequested;
+			MediaElement.StateRequested += StateRequested;
 
 			if (_tracker == null)
 			{
@@ -110,7 +110,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			Performance.Stop(reference);
 		}
 
-		private void MediaElement_StateRequested(object sender, StateRequested e)
+		void StateRequested(object sender, StateRequested e)
 		{
 			switch (e.State)
 			{
@@ -128,8 +128,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					break;
 
 				case MediaElementState.Stopped:
+					_view.Pause();
 					_view.SeekTo(0);
-					_view.StopPlayback();
 
 					((IMediaElementController)MediaElement).CurrentState = _view.IsPlaying ? MediaElementState.Playing : MediaElementState.Stopped;
 					break;
@@ -139,7 +139,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			((IMediaElementController)MediaElement).Position = _view.Position;
 		}
 
-		private void MediaElement_SeekRequested(object sender, SeekRequested e)
+		void SeekRequested(object sender, SeekRequested e)
 		{
 			((IMediaElementController)MediaElement).Position = _view.Position;
 		}
@@ -220,6 +220,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				_view.SetOnPreparedListener(this);
 				_view.SetOnErrorListener(this);
 				_view.KeepScreenOn = e.NewElement.KeepScreenOn;
+				_view.MetadataRetrieved += MetadataRetrieved;
 
 				AddView(_view, -1,-1);
 
@@ -236,6 +237,13 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			}
 
 			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(e.OldElement, e.NewElement));
+		}
+
+		void MetadataRetrieved(object sender, EventArgs e)
+		{
+			((IMediaElementController)MediaElement).Duration = _view.DurationTimeSpan;
+			((IMediaElementController)MediaElement).VideoHeight = _view.VideoHeight;
+			((IMediaElementController)MediaElement).VideoWidth = _view.VideoWidth;
 		}
 
 		void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -305,10 +313,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					}
 				}
 
-				((IMediaElementController)MediaElement).Duration = _view.DurationTimeSpan;
-				((IMediaElementController)MediaElement).VideoHeight = _view.VideoHeight;
-				((IMediaElementController)MediaElement).VideoWidth = _view.VideoWidth;
-
+				
 
 				if (MediaElement.AutoPlay)
 				{
