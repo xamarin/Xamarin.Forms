@@ -42,7 +42,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (_view != null)
 				{
-					return _view.NaturalDuration;
+					return _view.DurationTimeSpan;
 				}
 
 				return null;
@@ -144,15 +144,11 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (e.OldElement != null)
 			{
-				e.OldElement.SetRenderer(null);
-
 				ReleaseControl();
 			}
 
 			if (e.NewElement != null)
 			{
-				e.NewElement.SetRenderer(this);
-
 				_view = new FormsVideoView(Context);
 				SetNativeControl(new FrameLayout(Context));
 
@@ -221,7 +217,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (Element.AutoPlay)
 				{
 					_view.Start();
-					Element.SendCurrentState(MediaElementState.Playing);
+					((IMediaElementController)Element).CurrentState = _view.IsPlaying ? MediaElementState.Playing : MediaElementState.Stopped;
 				}
 
 			}
@@ -254,13 +250,18 @@ namespace Xamarin.Forms.Platform.Android
 						case MediaElementState.Playing:
 							if (!_view.IsPlaying)
 							{
+								// To match other platforms seek to beginning if at end of video
+								if (_view.CurrentPosition == _view.Duration)
+									_view.SeekTo(0);
+
 								_view.Start();
 							}
-							Element.SendCurrentState(_view.IsPlaying ? MediaElementState.Playing : MediaElementState.Stopped);
+							((IMediaElementController)Element).CurrentState = _view.IsPlaying ? MediaElementState.Playing : MediaElementState.Stopped;
 							break;
 
 						case MediaElementState.Paused:
 							_view.Pause();
+							((IMediaElementController)Element).CurrentState = MediaElementState.Paused;
 							break;
 
 						case MediaElementState.Stopped:
@@ -269,7 +270,7 @@ namespace Xamarin.Forms.Platform.Android
 								_view.SeekTo(0);
 								_view.StopPlayback();
 							}
-							Element.SendCurrentState(_view.IsPlaying ? MediaElementState.Playing : MediaElementState.Stopped);
+							((IMediaElementController)Element).CurrentState = _view.IsPlaying ? MediaElementState.Playing : MediaElementState.Stopped;
 							break;
 					}
 
@@ -353,11 +354,6 @@ namespace Xamarin.Forms.Platform.Android
 
 		void MediaPlayer.IOnCompletionListener.OnCompletion(MediaPlayer mp)
 		{
-			if (mp.CurrentPosition > 0)
-			{
-				mp.SeekTo(0);
-			}
-
 			Element.OnMediaEnded();
 		}
 
@@ -373,7 +369,12 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (Element.AutoPlay)
 			{
-				Element.SendCurrentState(MediaElementState.Playing);
+				_mediaPlayer.Start();
+				((IMediaElementController)Element).CurrentState = MediaElementState.Playing;
+			}
+			else
+			{
+				((IMediaElementController)Element).CurrentState = MediaElementState.Paused;
 			}
 		}
 	}
