@@ -18,6 +18,9 @@ namespace Xamarin.Forms.Platform.Android
 		FormsVideoView _view;
 		MediaPlayer _mediaPlayer;
 
+		IMediaElementController Controller => Element as IMediaElementController;
+
+
 		public MediaElementRenderer(Context context) : base(context)
 		{
 			AutoPackage = false;
@@ -94,9 +97,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		void MetadataRetrieved(object sender, EventArgs e)
 		{
-			((IMediaElementController)Element).Duration = _view.DurationTimeSpan;
-			((IMediaElementController)Element).VideoHeight = _view.VideoHeight;
-			((IMediaElementController)Element).VideoWidth = _view.VideoWidth;
+			Controller.Duration = _view.DurationTimeSpan;
+			Controller.VideoHeight = _view.VideoHeight;
+			Controller.VideoWidth = _view.VideoWidth;
 		}
 
 		void StateRequested(object sender, StateRequested e)
@@ -105,14 +108,14 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				case MediaElementState.Playing:
 					_view.Start();
-					((IMediaElementController)Element).CurrentState = _view.IsPlaying ? MediaElementState.Playing : MediaElementState.Stopped;
+					Controller.CurrentState = _view.IsPlaying ? MediaElementState.Playing : MediaElementState.Stopped;
 					break;
 
 				case MediaElementState.Paused:
 					if (_view.CanPause())
 					{
 						_view.Pause();
-						((IMediaElementController)Element).CurrentState = MediaElementState.Paused;
+						Controller.CurrentState = MediaElementState.Paused;
 					}
 					break;
 
@@ -120,17 +123,17 @@ namespace Xamarin.Forms.Platform.Android
 					_view.Pause();
 					_view.SeekTo(0);
 
-					((IMediaElementController)Element).CurrentState = _view.IsPlaying ? MediaElementState.Playing : MediaElementState.Stopped;
+					Controller.CurrentState = _view.IsPlaying ? MediaElementState.Playing : MediaElementState.Stopped;
 					break;
 			}
 
 			UpdateLayoutParameters();
-			((IMediaElementController)Element).Position = _view.Position;
+			Controller.Position = _view.Position;
 		}
 
 		void SeekRequested(object sender, SeekRequested e)
 		{
-			((IMediaElementController)Element).Position = _view.Position;
+			Controller.Position = _view.Position;
 		}
 
 
@@ -183,7 +186,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (Element.AutoPlay)
 				{
 					_view.Start();
-					((IMediaElementController)Element).CurrentState = _view.IsPlaying ? MediaElementState.Playing : MediaElementState.Stopped;
+					Controller.CurrentState = _view.IsPlaying ? MediaElementState.Playing : MediaElementState.Stopped;
 				}
 
 			}
@@ -304,11 +307,11 @@ namespace Xamarin.Forms.Platform.Android
 			if (Element.AutoPlay)
 			{
 				_mediaPlayer.Start();
-				((IMediaElementController)Element).CurrentState = MediaElementState.Playing;
+				Controller.CurrentState = MediaElementState.Playing;
 			}
 			else
 			{
-				((IMediaElementController)Element).CurrentState = MediaElementState.Paused;
+				Controller.CurrentState = MediaElementState.Paused;
 			}
 		}
 	}
