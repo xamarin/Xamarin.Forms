@@ -21,6 +21,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		bool _isDisposed;
 		int? _defaultLabelFor;
 		MediaElement MediaElement { get; set; }
+		IMediaElementController Controller => MediaElement as IMediaElementController;
+
 		readonly AutomationPropertiesProvider _automationPropertiesProvider;
 		readonly EffectControlProvider _effectControlProvider;
 		VisualElementTracker _tracker;
@@ -116,14 +118,14 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			{
 				case MediaElementState.Playing:
 					_view.Start();
-					((IMediaElementController)MediaElement).CurrentState = _view.IsPlaying ? MediaElementState.Playing : MediaElementState.Stopped;
+					Controller.CurrentState = _view.IsPlaying ? MediaElementState.Playing : MediaElementState.Stopped;
 					break;
 
 				case MediaElementState.Paused:
 					if (_view.CanPause())
 					{
 						_view.Pause();
-						((IMediaElementController)MediaElement).CurrentState = MediaElementState.Paused;
+						Controller.CurrentState = MediaElementState.Paused;
 					}
 					break;
 
@@ -131,17 +133,17 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					_view.Pause();
 					_view.SeekTo(0);
 
-					((IMediaElementController)MediaElement).CurrentState = _view.IsPlaying ? MediaElementState.Playing : MediaElementState.Stopped;
+					Controller.CurrentState = _view.IsPlaying ? MediaElementState.Playing : MediaElementState.Stopped;
 					break;
 			}
 
 			UpdateLayoutParameters();
-			((IMediaElementController)MediaElement).Position = _view.Position;
+			Controller.Position = _view.Position;
 		}
 
 		void SeekRequested(object sender, SeekRequested e)
 		{
-			((IMediaElementController)MediaElement).Position = _view.Position;
+			Controller.Position = _view.Position;
 		}
 
 		void IVisualElementRenderer.SetLabelFor(int? id)
@@ -241,9 +243,9 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		void MetadataRetrieved(object sender, EventArgs e)
 		{
-			((IMediaElementController)MediaElement).Duration = _view.DurationTimeSpan;
-			((IMediaElementController)MediaElement).VideoHeight = _view.VideoHeight;
-			((IMediaElementController)MediaElement).VideoWidth = _view.VideoWidth;
+			Controller.Duration = _view.DurationTimeSpan;
+			Controller.VideoHeight = _view.VideoHeight;
+			Controller.VideoWidth = _view.VideoWidth;
 		}
 
 		void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -318,20 +320,20 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				if (MediaElement.AutoPlay)
 				{
 					_view.Start();
-					((IMediaElementController)MediaElement).CurrentState = _view.IsPlaying ? MediaElementState.Playing : MediaElementState.Stopped;
+					Controller.CurrentState = _view.IsPlaying ? MediaElementState.Playing : MediaElementState.Stopped;
 				}
 
 			}
 			else if (_view.IsPlaying)
 			{
 				_view.StopPlayback();
-				((IMediaElementController)MediaElement).CurrentState = MediaElementState.Stopped;
+				Controller.CurrentState = MediaElementState.Stopped;
 			}
 		}
 
 		void MediaPlayer.IOnCompletionListener.OnCompletion(MediaPlayer mp)
 		{
-			((IMediaElementController)Element).Position = TimeSpan.FromMilliseconds(_mediaPlayer.CurrentPosition);
+			Controller.Position = TimeSpan.FromMilliseconds(_mediaPlayer.CurrentPosition);
 			MediaElement.OnMediaEnded();
 		}
 
@@ -348,11 +350,11 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			if (MediaElement.AutoPlay)
 			{
 				_mediaPlayer.Start();
-				((IMediaElementController)Element).CurrentState = MediaElementState.Playing;
+				Controller.CurrentState = MediaElementState.Playing;
 			}
 			else
 			{
-				((IMediaElementController)Element).CurrentState = MediaElementState.Paused;
+				Controller.CurrentState = MediaElementState.Paused;
 			}
 		}
 
@@ -443,29 +445,29 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			switch (what)
 			{
 				case MediaInfo.BufferingStart:
-					((IMediaElementController)MediaElement).CurrentState = MediaElementState.Buffering;
+					Controller.CurrentState = MediaElementState.Buffering;
 					mp.BufferingUpdate += Mp_BufferingUpdate;
 					break;
 
 				case MediaInfo.BufferingEnd:
 					mp.BufferingUpdate -= Mp_BufferingUpdate;
-					((IMediaElementController)MediaElement).CurrentState = MediaElementState.Paused;
+					Controller.CurrentState = MediaElementState.Paused;
 					break;
 
 				case MediaInfo.VideoRenderingStart:
-					((IMediaElementController)MediaElement).CurrentState = MediaElementState.Playing;
+					Controller.CurrentState = MediaElementState.Playing;
 					break;
 			}
 
 			_mediaPlayer = mp;
-			//_mediaPlayer.SetVideoScalingMode(MediaElement.Aspect == Aspect.AspectFill ? VideoScalingMode.ScaleToFitWithCropping : VideoScalingMode.ScaleToFit);
+			
 			return true;
 		}
 
 		void Mp_BufferingUpdate(object sender, MediaPlayer.BufferingUpdateEventArgs e)
 		{
 			System.Diagnostics.Debug.WriteLine(e.Percent + "%");
-			((IMediaElementController)MediaElement).BufferingProgress = e.Percent / 100f;
+			Controller.BufferingProgress = e.Percent / 100f;
 		}
 	}
 }
