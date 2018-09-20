@@ -29,7 +29,7 @@ namespace Xamarin.Forms.Controls
 		public App()
 		{
 			_testCloudService = DependencyService.Get<ITestCloudService>();
-			
+
 			SetMainPage(CreateDefaultMainPage());
 
 			//// Uncomment to verify that there is no gray screen displayed between the blue splash and red MasterDetailPage.
@@ -54,8 +54,8 @@ namespace Xamarin.Forms.Controls
 		public Page CreateDefaultMainPage()
 		{
 			var layout = new StackLayout { BackgroundColor = Color.Red };
-			layout.Children.Add(new Label { Text ="This is master Page" });
-			var master = new ContentPage { Title = "Master", Content = layout,  BackgroundColor = Color.SkyBlue };
+			layout.Children.Add(new Label { Text = "This is master Page" });
+			var master = new ContentPage { Title = "Master", Content = layout, BackgroundColor = Color.SkyBlue };
 			master.On<iOS>().SetUseSafeArea(true);
 			return new MasterDetailPage
 			{
@@ -158,10 +158,10 @@ namespace Xamarin.Forms.Controls
 				// Set up a delegate to handle the navigation to the test page
 				EventHandler toTestPage = null;
 
-				toTestPage = delegate(object sender, EventArgs e) 
+				toTestPage = delegate (object sender, EventArgs e)
 				{
 					Current.MainPage.Navigation.PushModalAsync(TestCases.GetTestCases());
-					TestCases.TestCaseScreen.PageToAction();
+					TestCases.TestCaseScreen.PageToAction[test]();
 					Current.MainPage.Appearing -= toTestPage;
 				};
 
@@ -172,7 +172,7 @@ namespace Xamarin.Forms.Controls
 
 				return true;
 			}
-			catch (Exception ex) 
+			catch (Exception ex)
 			{
 				Log.Warning("UITests", $"Error attempting to navigate directly to {test}: {ex}");
 
@@ -180,7 +180,7 @@ namespace Xamarin.Forms.Controls
 
 			return false;
 		}
-		
+
 		public void Reset()
 		{
 			SetMainPage(CreateDefaultMainPage());
