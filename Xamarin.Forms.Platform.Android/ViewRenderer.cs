@@ -6,6 +6,7 @@ using Android.OS;
 using Android.Views;
 using AView = Android.Views.View;
 using Xamarin.Forms.Platform.Android.FastRenderers;
+using Android.Runtime;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -28,6 +29,11 @@ namespace Xamarin.Forms.Platform.Android
 
 	public abstract class ViewRenderer<TView, TNativeView> : VisualElementRenderer<TView>, IViewRenderer, ITabStop, AView.IOnFocusChangeListener where TView : View where TNativeView : AView
 	{
+
+		internal ViewRenderer(IntPtr handle, JniHandleOwnership ownership) : base(handle, ownership)
+		{
+		}
+
 		protected ViewRenderer(Context context) : base(context)
 		{
 		}

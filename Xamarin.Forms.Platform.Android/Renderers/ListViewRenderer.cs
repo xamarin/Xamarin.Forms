@@ -9,6 +9,7 @@ using Xamarin.Forms.Internals;
 using System;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using Android.Widget;
+using Android.Runtime;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -26,6 +27,10 @@ namespace Xamarin.Forms.Platform.Android
 		SwipeRefreshLayout _refresh;
 		IListViewController Controller => Element;
 		ITemplatedItemsView<Cell> TemplatedItemsView => Element;
+
+		internal ListViewRenderer(IntPtr handle, JniHandleOwnership ownership) : base(handle, ownership)
+		{
+		}
 
 		public ListViewRenderer(Context context) : base(context)
 		{
@@ -106,7 +111,8 @@ namespace Xamarin.Forms.Platform.Android
 			base.OnDetachedFromWindow();
 
 			_isAttached = false;
-			_adapter.IsAttachedToWindow = _isAttached;
+			if (_adapter != null)
+				_adapter.IsAttachedToWindow = _isAttached;
 		}
 
 		protected override AListView CreateNativeControl()
@@ -150,10 +156,10 @@ namespace Xamarin.Forms.Platform.Android
 				((IListViewController)e.NewElement).ScrollToRequested += OnScrollToRequested;
 
 				nativeListView.DividerHeight = 0;
+				nativeListView.Adapter = _adapter = e.NewElement.IsGroupingEnabled && e.NewElement.OnThisPlatform().IsFastScrollEnabled() ? new GroupedListViewAdapter(Context, nativeListView, e.NewElement) : new ListViewAdapter(Context, nativeListView, e.NewElement);
 				nativeListView.Focusable = false;
 				nativeListView.DescendantFocusability = DescendantFocusability.AfterDescendants;
 				nativeListView.OnFocusChangeListener = this;
-				nativeListView.Adapter = _adapter = e.NewElement.IsGroupingEnabled && e.NewElement.OnThisPlatform().IsFastScrollEnabled() ? new GroupedListViewAdapter(Context, nativeListView, e.NewElement) : new ListViewAdapter(Context, nativeListView, e.NewElement);
 				_adapter.HeaderView = _headerView;
 				_adapter.FooterView = _footerView;
 				_adapter.IsAttachedToWindow = _isAttached;

@@ -10,6 +10,7 @@ using AView = Android.Views.View;
 using AListView = Android.Widget.ListView;
 using Xamarin.Forms.Internals;
 using System.Collections;
+using Android.Runtime;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -43,6 +44,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		IListViewController Controller => _listView;
 		protected ITemplatedItemsView<Cell> TemplatedItemsView => _listView;
+
+		internal ListViewAdapter(IntPtr handle, JniHandleOwnership ownership) : base(handle, ownership)
+		{
+			throw new Exception("Unexpected ListViewAdapter resurrection.");
+		}
 
 		public ListViewAdapter(Context context, AListView realListView, ListView listView) : base(context)
 		{

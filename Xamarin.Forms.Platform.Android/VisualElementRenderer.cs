@@ -27,6 +27,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		readonly GestureManager _gestureManager;
 
+		internal VisualElementRenderer(IntPtr handle, JniHandleOwnership ownership) : base(handle, ownership)
+		{
+		}
+
 		protected VisualElementRenderer(Context context) : base(context)
 		{
 			_gestureManager = new GestureManager(this);

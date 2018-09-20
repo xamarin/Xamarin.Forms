@@ -10,6 +10,7 @@ using AView = Android.Views.View;
 using AListView = Android.Widget.ListView;
 using Android.Graphics.Drawables;
 using Android.Support.V7.App;
+using Android.Runtime;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -23,6 +24,10 @@ namespace Xamarin.Forms.Platform.Android
 		bool _actionModeNeedsUpdates;
 		AView _contextView;
 		global::Android.Support.V7.View.ActionMode _supportActionMode;
+
+		protected CellAdapter(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer)
+		{
+		}
 
 		protected CellAdapter(Context context)
 		{
