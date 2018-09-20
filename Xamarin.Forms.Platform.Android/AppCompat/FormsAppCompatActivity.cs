@@ -38,6 +38,8 @@ namespace Xamarin.Forms.Platform.Android
 		AndroidApplicationLifecycleState _previousState;
 
 		bool _renderersAdded;
+		bool _activityCreated;
+		PowerSaveModeBroadcastReceiver _powerSaveModeBroadcastReceiver;
 
 		// Override this if you want to handle the default Android behavior of restoring fragments on an application restart
 		protected virtual bool AllowFragmentRestore => false;
@@ -84,6 +86,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected void LoadApplication(Application application)
 		{
+			if(!_activityCreated)
+			{
+			    throw new InvalidOperationException("Activity OnCreate was not called prior to loading the application. Did you forget a base.OnCreate call?");
+			}
+			
 			if (!_renderersAdded)
 			{
 				RegisterHandlerForDefaultRenderer(typeof(NavigationPage), typeof(NavigationPageRenderer), typeof(NavigationRenderer));
@@ -141,6 +148,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void OnCreate(Bundle savedInstanceState)
 		{
+			_activityCreated = true;
 			if (!AllowFragmentRestore)
 			{
 				// Remove the automatically persisted fragment structure; we don't need them
@@ -178,6 +186,12 @@ namespace Xamarin.Forms.Platform.Android
 				// Allow for the status bar color to be changed
 				Window.AddFlags(WindowManagerFlags.DrawsSystemBarBackgrounds);
 			}
+
+			if (Forms.IsLollipopOrNewer)
+			{
+				// Listen for the device going into power save mode so we can handle animations being disabled	
+				_powerSaveModeBroadcastReceiver = new PowerSaveModeBroadcastReceiver();
+			}
 		}
 
 		protected override void OnDestroy()
@@ -208,6 +222,12 @@ namespace Xamarin.Forms.Platform.Android
 			_previousState = _currentState;
 			_currentState = AndroidApplicationLifecycleState.OnPause;
 
+			if (Forms.IsLollipopOrNewer)
+			{
+				// Don't listen for power save mode changes while we're paused
+				UnregisterReceiver(_powerSaveModeBroadcastReceiver);
+			}
+
 			OnStateChanged();
 		}
 
@@ -236,6 +256,14 @@ namespace Xamarin.Forms.Platform.Android
 
 			_previousState = _currentState;
 			_currentState = AndroidApplicationLifecycleState.OnResume;
+
+			if (Forms.IsLollipopOrNewer)
+			{
+				// Start listening for power save mode changes
+				RegisterReceiver(_powerSaveModeBroadcastReceiver, new IntentFilter(
+					PowerManager.ActionPowerSaveModeChanged
+				));
+			}
 
 			OnStateChanged();
 		}

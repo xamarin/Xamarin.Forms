@@ -1,23 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using WpfLightToolkit.Controls;
-using WpfLightToolkit.Extensions;
+using Xamarin.Forms.Platform.WPF.Controls;
+using Xamarin.Forms.Platform.WPF.Converters;
+using Xamarin.Forms.Platform.WPF.Extensions;
 
 namespace Xamarin.Forms.Platform.WPF
 {
 	public class VisualPageRenderer<TElement, TNativeElement> : ViewRenderer<TElement, TNativeElement>
 		where TElement : Page
-		where TNativeElement : LightPage
+		where TNativeElement : FormsPage
 	{
 		protected override void OnElementChanged(ElementChangedEventArgs<TElement> e)
 		{
@@ -56,7 +50,6 @@ namespace Xamarin.Forms.Platform.WPF
 				UpdateBackButtonTitle();
 			else if (e.PropertyName == NavigationPage.HasNavigationBarProperty.PropertyName)
 				UpdateNavigationBarVisible();
-
 		}
 
 		void UpdateTitle()
@@ -104,32 +97,22 @@ namespace Xamarin.Forms.Platform.WPF
 
 			foreach (var item in Element.ToolbarItems)
 			{
-				LightAppBarButton appBar = new LightAppBarButton()
+				var appBar = new FormsAppBarButton() { DataContext = item };
+
+				var iconBinding = new System.Windows.Data.Binding(nameof(item.Icon))
 				{
-					Label = item.Text,
-					Tag = item
+					Converter = new IconConveter()
 				};
 
+				appBar.SetBinding(FormsAppBarButton.IconProperty, iconBinding);
+				appBar.SetBinding(FormsAppBarButton.LabelProperty, nameof(item.Text));
 				appBar.SetValue(FrameworkElementAttached.PriorityProperty, item.Priority);
 
-				if(item.Icon != null)
-				{
-					Symbol symbol;
-					Geometry geometry;
-
-					if (Enum.TryParse(item.Icon.File, true, out symbol))
-						appBar.Icon = new LightSymbolIcon() { Symbol = symbol };
-					else if (TryParseGeometry(item.Icon.File, out geometry))
-						appBar.Icon = new LightPathIcon() { Data = geometry };
-					else if (Path.GetExtension(item.Icon.File) != null)
-						appBar.Icon = new LightBitmapIcon() { UriSource = new Uri(item.Icon.File, UriKind.RelativeOrAbsolute) };
-				}
-				
 				appBar.Click += (sender, e) =>
 				{
-					if (appBar.Tag != null && appBar.Tag is ToolbarItem)
+					if (appBar.DataContext is ToolbarItem toolbarItem)
 					{
-						(appBar.Tag as ToolbarItem).Activate();
+						toolbarItem.Activate();
 					}
 				};
 
@@ -157,20 +140,6 @@ namespace Xamarin.Forms.Platform.WPF
 			UpdateToolbar();
 		}
 		
-		private bool TryParseGeometry(string value, out Geometry geometry)
-		{
-			geometry = null;
-			try
-			{
-				geometry = Geometry.Parse(value);
-				return true;
-			}
-			catch(Exception)
-			{
-				return false;
-			}
-		}
-
 		bool _isDisposed;
 
 		protected override void Dispose(bool disposing)

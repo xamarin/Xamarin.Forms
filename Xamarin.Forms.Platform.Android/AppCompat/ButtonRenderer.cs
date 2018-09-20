@@ -15,11 +15,12 @@ using static System.String;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
-    public class ButtonRenderer : ViewRenderer<Button, AppCompatButton>, AView.IOnAttachStateChangeListener
+	public class ButtonRenderer : ViewRenderer<Button, AppCompatButton>, AView.IOnAttachStateChangeListener
 	{
 		ButtonBackgroundTracker _backgroundTracker;
 		TextColorSwitcher _textColorSwitcher;
 		float _defaultFontSize;
+		Thickness? _defaultPadding;
 		Typeface _defaultTypeface;
 		bool _isDisposed;
 		int _imageHeight = -1;
@@ -31,7 +32,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use ButtonRenderer(Context) instead.")]
-		public ButtonRenderer() 
+		public ButtonRenderer()
 		{
 			AutoPackage = false;
 		}
@@ -94,6 +95,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					_textColorSwitcher = null;
 				}
 				_backgroundTracker?.Dispose();
+				_backgroundTracker = null;
 			}
 
 			base.Dispose(disposing);
@@ -118,7 +120,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					button.Tag = this;
 
 					var useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
-					_textColorSwitcher = new TextColorSwitcher(button.TextColors, useLegacyColorManagement);  
+					_textColorSwitcher = new TextColorSwitcher(button.TextColors, useLegacyColorManagement);
 
 					SetNativeControl(button);
 					button.AddOnAttachStateChangeListener(this);
@@ -128,6 +130,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					_backgroundTracker = new ButtonBackgroundTracker(Element, Control);
 				else
 					_backgroundTracker.Button = e.NewElement;
+
+				_defaultFontSize = 0f;
+				_defaultPadding = null;
 
 				UpdateAll();
 			}
@@ -158,7 +163,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			if (Element == null || Control == null)
 				return;
 
-			_backgroundTracker?.UpdateBackgroundColor();
+			_backgroundTracker?.UpdateDrawable();
 		}
 
 		void UpdateAll()
@@ -169,16 +174,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			UpdateTextColor();
 			UpdateEnabled();
 			UpdateBackgroundColor();
-			UpdateDrawable();
 			UpdatePadding();
-		}
-
-		void UpdateDrawable()
-		{
-			if (Element == null || Control == null)
-				return;
-
-			_backgroundTracker?.UpdateDrawable();
 		}
 
 		void UpdateBitmap()
@@ -287,17 +283,35 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void UpdatePadding()
 		{
-			Control?.SetPadding(
-				(int)(Context.ToPixels(Element.Padding.Left) + _paddingDeltaPix.Left),
-				(int)(Context.ToPixels(Element.Padding.Top) + _paddingDeltaPix.Top),
-				(int)(Context.ToPixels(Element.Padding.Right) + _paddingDeltaPix.Right),
-				(int)(Context.ToPixels(Element.Padding.Bottom) + _paddingDeltaPix.Bottom)
-			);
+			if (Control == null)
+				return;
+
+			if (!_defaultPadding.HasValue)
+				_defaultPadding = new Thickness(Control.PaddingLeft, Control.PaddingTop, Control.PaddingRight, Control.PaddingBottom);
+
+			if (Element.IsSet(Button.PaddingProperty))
+			{
+				Control.SetPadding(
+					(int)(Context.ToPixels(Element.Padding.Left) + _paddingDeltaPix.Left),
+					(int)(Context.ToPixels(Element.Padding.Top) + _paddingDeltaPix.Top),
+					(int)(Context.ToPixels(Element.Padding.Right) + _paddingDeltaPix.Right),
+					(int)(Context.ToPixels(Element.Padding.Bottom) + _paddingDeltaPix.Bottom)
+				);
+			}
+			else
+			{
+				Control.SetPadding(
+						(int)_defaultPadding.Value.Left,
+						(int)_defaultPadding.Value.Top,
+						(int)_defaultPadding.Value.Right,
+						(int)_defaultPadding.Value.Bottom
+					);
+			}
 		}
 
-		void UpdateContentEdge (Thickness? delta = null)
+		void UpdateContentEdge(Thickness? delta = null)
 		{
-			_paddingDeltaPix = delta ?? new Thickness ();
+			_paddingDeltaPix = delta ?? new Thickness();
 			UpdatePadding();
 		}
 

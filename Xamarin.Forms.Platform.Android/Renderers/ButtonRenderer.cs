@@ -82,6 +82,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (disposing)
 			{
 				_backgroundTracker?.Dispose();
+				_backgroundTracker = null;
 			}
 
 			base.Dispose(disposing);
@@ -147,7 +148,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (Element == null || Control == null)
 				return;
 
-			_backgroundTracker?.UpdateBackgroundColor();
+			_backgroundTracker?.UpdateDrawable();
 		}
 
 		void UpdateAll()
@@ -157,7 +158,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateBitmap();
 			UpdateTextColor();
 			UpdateEnabled();
-			UpdateDrawable();
+			UpdateBackgroundColor();
 			UpdatePadding();
 		}
 
@@ -187,7 +188,7 @@ namespace Xamarin.Forms.Platform.Android
 				Control.SetCompoundDrawablesWithIntrinsicBounds(null, image, null, null);
 
 				// Keep track of the image height so we can use it in OnLayout
-				_imageHeight = image.IntrinsicHeight;
+				_imageHeight = image?.IntrinsicHeight ?? -1;
 
 				image?.Dispose();
 				return;
@@ -215,11 +216,6 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			image?.Dispose();
-		}
-
-		void UpdateDrawable()
-		{
-			_backgroundTracker.UpdateDrawable();
 		}
 
 		void UpdateEnabled()
@@ -270,7 +266,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdatePadding()
 		{
-			Control?.SetPadding (
+			Control?.SetPadding(
 				(int)(Context.ToPixels(Element.Padding.Left) + _paddingDeltaPix.Left),
 				(int)(Context.ToPixels(Element.Padding.Top) + _paddingDeltaPix.Top),
 				(int)(Context.ToPixels(Element.Padding.Right) + _paddingDeltaPix.Right),
@@ -278,9 +274,9 @@ namespace Xamarin.Forms.Platform.Android
 			);
 		}
 
-		void UpdateContentEdge (Thickness? delta = null)
+		void UpdateContentEdge(Thickness? delta = null)
 		{
-			_paddingDeltaPix = delta ?? new Thickness ();
+			_paddingDeltaPix = delta ?? new Thickness();
 			UpdatePadding();
 		}
 

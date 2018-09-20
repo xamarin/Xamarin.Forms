@@ -1,7 +1,11 @@
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using Xamarin.Forms;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.StyleSheets;
+
+[assembly: AssemblyVersion("2.0.0.0")]
+[assembly: AssemblyFileVersion("2.0.0.0")]
 
 [assembly: InternalsVisibleTo("iOSUnitTests")]
 [assembly: InternalsVisibleTo("Xamarin.Forms.Controls")]
@@ -38,8 +42,13 @@ using Xamarin.Forms.StyleSheets;
 [assembly: StyleProperty("background-color", typeof(VisualElement), nameof(VisualElement.BackgroundColorProperty))]
 [assembly: StyleProperty("background-image", typeof(Page), nameof(Page.BackgroundImageProperty))]
 [assembly: StyleProperty("border-color", typeof(IBorderElement), nameof(BorderElement.BorderColorProperty))]
+[assembly: StyleProperty("border-radius", typeof(ICornerElement), nameof(CornerElement.CornerRadiusProperty))]
 [assembly: StyleProperty("border-width", typeof(Button), nameof(Button.BorderWidthProperty))]
+[assembly: StyleProperty("color", typeof(IColorElement), nameof(ColorElement.ColorProperty), Inherited = true)]
 [assembly: StyleProperty("color", typeof(ITextElement), nameof(TextElement.TextColorProperty), Inherited = true)]
+[assembly: StyleProperty("color", typeof(ProgressBar), nameof(ProgressBar.ProgressColorProperty))]
+[assembly: StyleProperty("color", typeof(Switch), nameof(Switch.OnColorProperty))]
+[assembly: StyleProperty("column-gap", typeof(Grid), nameof(Grid.RowSpacingProperty))]
 [assembly: StyleProperty("direction", typeof(VisualElement), nameof(VisualElement.FlowDirectionProperty), Inherited = true)]
 [assembly: StyleProperty("font-family", typeof(IFontElement), nameof(FontElement.FontFamilyProperty), Inherited = true)]
 [assembly: StyleProperty("font-size", typeof(IFontElement), nameof(FontElement.FontSizeProperty), Inherited = true)]
@@ -58,7 +67,12 @@ using Xamarin.Forms.StyleSheets;
 [assembly: StyleProperty("padding-top", typeof(IPaddingElement), nameof(PaddingElement.PaddingTopProperty), PropertyOwnerType = typeof(PaddingElement))]
 [assembly: StyleProperty("padding-right", typeof(IPaddingElement), nameof(PaddingElement.PaddingRightProperty), PropertyOwnerType = typeof(PaddingElement))]
 [assembly: StyleProperty("padding-bottom", typeof(IPaddingElement), nameof(PaddingElement.PaddingBottomProperty), PropertyOwnerType = typeof(PaddingElement))]
+[assembly: StyleProperty("row-gap", typeof(Grid), nameof(Grid.RowSpacingProperty))]
 [assembly: StyleProperty("text-align", typeof(ITextAlignmentElement), nameof(TextAlignmentElement.HorizontalTextAlignmentProperty), Inherited = true)]
+[assembly: StyleProperty("text-decoration", typeof(IDecorableTextElement), nameof(DecorableTextElement.TextDecorationsProperty))]
+[assembly: StyleProperty("transform", typeof(VisualElement), nameof(VisualElement.TransformProperty))]
+[assembly: StyleProperty("transform-origin", typeof(VisualElement), nameof(VisualElement.TransformOriginProperty))]
+[assembly: StyleProperty("vertical-align", typeof(Label), nameof(Label.VerticalTextAlignment))]
 [assembly: StyleProperty("visibility", typeof(VisualElement), nameof(VisualElement.IsVisibleProperty), Inherited = true)]
 [assembly: StyleProperty("width", typeof(VisualElement), nameof(VisualElement.WidthRequestProperty))]
 [assembly: StyleProperty("line-height", typeof(ILineHeightElement), nameof(LineHeightElement.LineHeightProperty), Inherited = true)]
@@ -75,3 +89,18 @@ using Xamarin.Forms.StyleSheets;
 [assembly: StyleProperty("justify-content", typeof(FlexLayout), nameof(FlexLayout.JustifyContentProperty))]
 [assembly: StyleProperty("order", typeof(VisualElement), nameof(FlexLayout.OrderProperty), PropertyOwnerType = typeof(FlexLayout))]
 [assembly: StyleProperty("position", typeof(FlexLayout), nameof(FlexLayout.PositionProperty))]
+
+//xf specific
+[assembly: StyleProperty("-xf-placeholder", typeof(IPlaceholderElement), nameof(PlaceholderElement.PlaceholderProperty))]
+[assembly: StyleProperty("-xf-placeholder-color", typeof(IPlaceholderElement), nameof(PlaceholderElement.PlaceholderColorProperty))]
+[assembly: StyleProperty("-xf-max-length", typeof(InputView), nameof(InputView.MaxLengthProperty))]
+[assembly: StyleProperty("-xf-bar-background-color", typeof(IBarElement), nameof(BarElement.BarBackgroundColorProperty))]
+[assembly: StyleProperty("-xf-bar-text-color", typeof(IBarElement), nameof(BarElement.BarTextColorProperty))]
+[assembly: StyleProperty("-xf-orientation", typeof(ScrollView), nameof(ScrollView.OrientationProperty))]
+[assembly: StyleProperty("-xf-horizontal-scroll-bar-visibility", typeof(ScrollView), nameof(ScrollView.HorizontalScrollBarVisibilityProperty))]
+[assembly: StyleProperty("-xf-vertical-scroll-bar-visibility", typeof(ScrollView), nameof(ScrollView.VerticalScrollBarVisibilityProperty))]
+[assembly: StyleProperty("-xf-min-track-color", typeof(Slider), nameof(Slider.MinimumTrackColorProperty))]
+[assembly: StyleProperty("-xf-max-track-color", typeof(Slider), nameof(Slider.MaximumTrackColorProperty))]
+[assembly: StyleProperty("-xf-thumb-color", typeof(Slider), nameof(Slider.ThumbColorProperty))]
+[assembly: StyleProperty("-xf-spacing", typeof(StackLayout), nameof(StackLayout.SpacingProperty))]
+[assembly: StyleProperty("-xf-orientation", typeof(StackLayout), nameof(StackLayout.OrientationProperty))]

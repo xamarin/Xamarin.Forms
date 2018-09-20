@@ -14,7 +14,7 @@ using static System.String;
 namespace Xamarin.Forms.Platform.Android.FastRenderers
 {
 	internal sealed class ButtonRenderer : AppCompatButton, IVisualElementRenderer, AView.IOnAttachStateChangeListener,
-		AView.IOnFocusChangeListener, IEffectControlProvider, AView.IOnClickListener, AView.IOnTouchListener, IViewRenderer
+		AView.IOnFocusChangeListener, IEffectControlProvider, AView.IOnClickListener, AView.IOnTouchListener, IViewRenderer, ITabStop
 	{
 		float _defaultFontSize;
 		int? _defaultLabelFor;
@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		{
 			_automationPropertiesProvider = new AutomationPropertiesProvider(this);
 			_effectControlProvider = new EffectControlProvider(this);
-			
+
 			Initialize();
 		}
 
@@ -55,6 +55,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		VisualElementTracker IVisualElementRenderer.Tracker => _tracker;
 
 		Button Button { get; set; }
+
+		AView ITabStop.TabStop => this;
 
 		public void OnClick(AView v)
 		{
@@ -198,6 +200,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				_tracker?.Dispose();
 
 				_backgroundTracker?.Dispose();
+				_backgroundTracker = null;
 
 				if (Element != null)
 				{
@@ -244,7 +247,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				UpdateIsEnabled();
 				UpdateInputTransparent();
 				UpdateBackgroundColor();
-				UpdateDrawable();
 				UpdatePadding();
 
 				ElevationHelper.SetElevation(this, e.NewElement);
@@ -321,7 +323,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		void UpdateBackgroundColor()
 		{
-			_backgroundTracker?.UpdateBackgroundColor();
+			_backgroundTracker?.UpdateDrawable();
 		}
 
 		internal void OnNativeFocusChanged(bool hasFocus)
@@ -484,7 +486,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			_textColorSwitcher.Value.UpdateTextColor(this, Button.TextColor);
 		}
 
-		void UpdatePadding ()
+		void UpdatePadding()
 		{
 			SetPadding(
 				(int)(Context.ToPixels(Button.Padding.Left) + _paddingDeltaPix.Left),
@@ -494,15 +496,10 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			);
 		}
 
-		void UpdateContentEdge (Thickness? delta = null)
+		void UpdateContentEdge(Thickness? delta = null)
 		{
-			_paddingDeltaPix = delta ?? new Thickness ();
-			UpdatePadding ();
-		}
-
-		void UpdateDrawable()
-		{
-			_backgroundTracker?.UpdateDrawable();
+			_paddingDeltaPix = delta ?? new Thickness();
+			UpdatePadding();
 		}
 
 	}
