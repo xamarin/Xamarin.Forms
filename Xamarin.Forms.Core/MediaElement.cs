@@ -143,8 +143,8 @@ namespace Xamarin.Forms
 
 		public Aspect Aspect
 		{
-			get { return (Aspect)GetValue(AspectProperty); }
-			set { SetValue(AspectProperty, value); }
+			get => (Aspect)GetValue(AspectProperty);
+			set => SetValue(AspectProperty, value);
 		}
 
 		double IMediaElementController.BufferingProgress { get => (double)GetValue(BufferingProgressProperty); set => SetValue(BufferingProgressProperty, value); }
