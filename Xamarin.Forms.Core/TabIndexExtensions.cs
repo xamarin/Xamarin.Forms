@@ -1,13 +1,14 @@
 using System.Collections.Generic;
 using Xamarin.Forms.Internals;
+using System.Linq;
 
 namespace Xamarin.Forms
 {
 	public static class TabIndexExtensions
 	{
-		public static IDictionary<int, List<VisualElement>> GetTabIndexesOnParentPage(this VisualElement element, out int countChildrensWithTabStopWithoutThis)
+		public static IDictionary<int, List<VisualElement>> GetTabIndexesOnParentPage(this VisualElement element, out int countChildrenWithTabStopWithoutThis)
 		{
-			countChildrensWithTabStopWithoutThis = 0;
+			countChildrenWithTabStopWithoutThis = 0;
 
 			Element parentPage = element.Parent;
 			while (parentPage != null && !(parentPage is Page))
@@ -17,22 +18,24 @@ namespace Xamarin.Forms
 			if (descendantsOnPage == null)
 				return null;
 
-			var childrensWithTabStop = new List<VisualElement>();
+			var childrenWithTabStop = new List<VisualElement>();
 			foreach (var descendant in descendantsOnPage)
 			{
 				if (descendant is VisualElement visualElement && visualElement.IsTabStop)
-					childrensWithTabStop.Add(visualElement);
+					childrenWithTabStop.Add(visualElement);
 			}
-			if (!childrensWithTabStop.Contains(element))
+			if (!childrenWithTabStop.Contains(element))
 				return null;
 
-			countChildrensWithTabStopWithoutThis = childrensWithTabStop.Count - 1;
-			return childrensWithTabStop.GroupToDictionary(c => c.TabIndex);
+			countChildrenWithTabStopWithoutThis = childrenWithTabStop.Count - 1;
+			return childrenWithTabStop.GroupToDictionary(c => c.TabIndex);
 		}
 
 		public static VisualElement FindNextElement(this VisualElement element, bool forwardDirection, IDictionary<int, List<VisualElement>> tabIndexes, ref int tabIndex)
 		{
-			var tabGroup = tabIndexes[tabIndex];
+			if (!tabIndexes.TryGetValue(tabIndex, out var tabGroup))
+				return null;
+
 			if (!forwardDirection)
 			{
 				// search prev element in same TabIndex group
@@ -79,6 +82,25 @@ namespace Xamarin.Forms
 					return tabIndexes[tabIndex][0];
 				}
 			}
+		}
+
+		public static VisualElement GetFirstNonLayoutTabStop(IDictionary<int, List<VisualElement>> tabIndexes)
+		{
+			if (tabIndexes == null || tabIndexes.Count == 0)
+				return null;
+
+			var minIndex = tabIndexes.Min(x => x.Key);
+
+			var tabGroup = tabIndexes[minIndex];
+
+			for (int t = 0; t < tabGroup.Count; t++)
+			{
+				var ve = tabGroup[t];
+				if (!(ve is Layout) && ve.IsTabStop)
+					return ve;
+			}
+
+			return null;
 		}
 	}
 }
