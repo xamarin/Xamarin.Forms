@@ -86,7 +86,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			typeResolver = new Internals.XamlTypeResolver (nsManager, XamlParser.GetElementType, Assembly.GetCallingAssembly ());
 		}
 
-		[Test]
+		
 		public void BindingOnSelf ()
 		{
 			var bindingString = "{Binding}";
@@ -97,7 +97,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual (Binding.SelfPath, ((Binding)binding).Path);
 		}
 
-		[Test]
+		
 		public void BindingWithImplicitPath ()
 		{
 			var bindingString = "{Binding Foo}";
@@ -110,7 +110,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual ("Foo", ((Binding)binding).Path);
 		}
 
-		[Test]
+		
 		public void BindingWithPath ()
 		{
 			var bindingString = "{Binding Path=Foo}";
@@ -123,7 +123,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual ("Foo", ((Binding)binding).Path);
 		}
 
-		[Test]
+		
 		public void BindingWithComposedPath ()
 		{
 			var bindingString = "{Binding Path=Foo.Bar}";
@@ -136,7 +136,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual ("Foo.Bar", ((Binding)binding).Path);
 		}
 
-		[Test]
+		
 		public void BindingWithImplicitComposedPath ()
 		{
 			var bindingString = "{Binding Path=Foo.Bar}";
@@ -179,7 +179,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			public object TargetProperty { get; set; } = null;
 		}
 
-		[Test]
+		
 		public void BindingWithImplicitPathAndConverter ()
 		{
 			var bindingString = "{Binding Foo, Converter={StaticResource Bar}}";
@@ -194,7 +194,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.That (((Binding)binding).Converter, Is.InstanceOf<ReverseConverter> ());
 		}
 
-		[Test]
+		
 		public void BindingWithPathAndConverter ()
 		{
 			var bindingString = "{Binding Path=Foo, Converter={StaticResource Bar}}";
@@ -210,7 +210,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		}
 
 
-		[Test]
+		
 		public void TestBindingMode ()
 		{
 			var bindingString = "{Binding Foo, Mode=TwoWay}";
@@ -224,7 +224,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual (BindingMode.TwoWay, ((Binding)binding).Mode);
 		}
 
-		[Test]
+		
 		public void BindingStringFormat ()
 		{
 			var bindingString = "{Binding Foo, StringFormat=Bar}";
@@ -237,7 +237,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual ("Bar", ((Binding)binding).StringFormat);		
 		}
 
-		[Test]
+		
 		public void BindingStringFormatWithEscapes ()
 		{
 			var bindingString = "{Binding Foo, StringFormat='{}Hello {0}'}";
@@ -251,7 +251,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual ("Hello {0}", ((Binding)binding).StringFormat);		
 		}
 
-		[Test]
+		
 		public void BindingStringFormatWithoutEscaping ()
 		{
 			var bindingString = "{Binding Foo, StringFormat='{0,20}'}";
@@ -265,7 +265,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual ("{0,20}", ((Binding)binding).StringFormat);
 		}
 
-		[Test]
+		
 		public void BindingStringFormatNumeric ()
 		{
 			var bindingString = "{Binding Foo, StringFormat=P2}";
@@ -279,7 +279,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual ("P2", ((Binding)binding).StringFormat);	
 		}
 
-		[Test]
+		
 		public void BindingConverterParameter ()
 		{
 			var bindingString = "{Binding Foo, ConverterParameter='Bar'}";
@@ -293,7 +293,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual ("Bar", ((Binding)binding).ConverterParameter);	
 		}
 
-		[Test]
+		
 		public void BindingsCompleteString ()
 		{
 			var bindingString = "{Binding Path=Foo.Bar, StringFormat='{}Qux, {0}', Converter={StaticResource Baz}, Mode=OneWayToSource}";
@@ -310,7 +310,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual ("Qux, {0}", ((Binding)binding).StringFormat);	
 		}
 
-		[Test]
+		
 		public void BindingWithStaticConverter ()
 		{
 			var bindingString = "{Binding Converter={x:Static local:ReverseConverter.Instance}}";

@@ -29,7 +29,7 @@ namespace Xamarin.Forms.Controls.Issues
 		// NavigationBar should be visible in modal
 
 #if UITEST
-		[Test]
+		
 		[UiTest (typeof(NavigationPage))]
 		public void Issue416TestsNavBarPresent ()
 		{

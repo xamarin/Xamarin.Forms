@@ -95,7 +95,7 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST
 		protected override bool Isolate => true;
 
-		[Test]
+		
 		[Ignore("Failing without explanation on XTC, please run manually")]
 		public void Bugzilla58833Test()
 		{

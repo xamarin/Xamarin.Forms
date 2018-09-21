@@ -38,7 +38,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void DoesNotCrash()
 		{
 			RunningApp.WaitForElement(q => q.Text("Success"));

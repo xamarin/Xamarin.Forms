@@ -6,44 +6,44 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class CommandTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void Constructor ()
 		{
 			var cmd = new Command (() => { });
 			Assert.True (cmd.CanExecute (null));
 		}
 
-		[Test]
+		
 		public void ThrowsWithNullConstructor ()
 		{
 			Assert.Throws<ArgumentNullException> (() => new Command ((Action)null));
 		}
 
-		[Test]
+		
 		public void ThrowsWithNullParameterizedConstructor ()
 		{
 			Assert.Throws<ArgumentNullException> (() => new Command ((Action<object>)null));
 		}
 
-		[Test]
+		
 		public void ThrowsWithNullCanExecute ()
 		{
 			Assert.Throws<ArgumentNullException> (() => new Command (() => { }, null));
 		}
 
-		[Test]
+		
 		public void ThrowsWithNullParameterizedCanExecute ()
 		{
 			Assert.Throws<ArgumentNullException> (() => new Command (o => { }, null));
 		}
 
-		[Test]
+		
 		public void ThrowsWithNullExecuteValidCanExecute ()
 		{
 			Assert.Throws<ArgumentNullException> (() => new Command (null, () => true));
 		}
 
-		[Test]
+		
 		public void Execute ()
 		{
 			bool executed = false;
@@ -53,7 +53,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (executed);
 		}
 
-		[Test]
+		
 		public void ExecuteParameterized ()
 		{
 			object executed = null;
@@ -65,7 +65,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (expected, executed);
 		}
 
-		[Test]
+		
 		public void ExecuteWithCanExecute ()
 		{
 			bool executed = false;
@@ -75,7 +75,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (executed);
 		}
 
-		[Test]
+		
 		public void CanExecute ([Values (true, false)] bool expected)
 		{
 			bool canExecuteRan = false;
@@ -88,7 +88,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (canExecuteRan);
 		}
 
-		[Test]
+		
 		public void ChangeCanExecute ()
 		{
 			bool signaled = false;
@@ -100,25 +100,25 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (signaled);
 		}
 
-		[Test]
+		
 		public void GenericThrowsWithNullExecute ()
 		{
 			Assert.Throws<ArgumentNullException> (() => new Command<string> (null));
 		}
 
-		[Test]
+		
 		public void GenericThrowsWithNullExecuteAndCanExecuteValid ()
 		{
 			Assert.Throws<ArgumentNullException> (() => new Command<string> (null, s => true));
 		}
 
-		[Test]
+		
 		public void GenericThrowsWithValidExecuteAndCanExecuteNull ()
 		{
 			Assert.Throws<ArgumentNullException> (() => new Command<string> (s => { }, null));
 		}
 
-		[Test]
+		
 		public void GenericExecute ()
 		{
 			string result = null;
@@ -128,7 +128,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("Foo", result);
 		}
 
-		[Test]
+		
 		public void GenericExecuteWithCanExecute ()
 		{
 			string result = null;
@@ -138,7 +138,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("Foo", result);
 		}
 
-		[Test]
+		
 		public void GenericCanExecute ([Values (true, false)] bool expected)
 		{
 			string result = null;
@@ -160,7 +160,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 		}
 
-		[Test]
+		
 		public void CanExecuteReturnsFalseIfParameterIsWrongReferenceType()
 		{
 			var command = new Command<FakeChildContext>(context => { }, context => true);
@@ -168,7 +168,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsFalse(command.CanExecute(new FakeParentContext()), "the parameter is of the wrong type");
 		}
 
-		[Test]
+		
 		public void CanExecuteReturnsFalseIfParameterIsWrongValueType()
 		{
 			var command = new Command<int>(context => { }, context => true);
@@ -176,7 +176,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsFalse(command.CanExecute(10.5), "the parameter is of the wrong type");
 		}
 
-		[Test]
+		
 		public void CanExecuteUsesParameterIfReferenceTypeAndSetToNull()
 		{
 			var command = new Command<FakeChildContext>(context => { }, context => true);
@@ -184,7 +184,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue(command.CanExecute(null), "null is a valid value for a reference type");
 		}
 
-		[Test]
+		
 		public void CanExecuteUsesParameterIfNullableAndSetToNull()
 		{
 			var command = new Command<int?>(context => { }, context => true);
@@ -192,7 +192,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue(command.CanExecute(null), "null is a valid value for a Nullable<int> type");
 		}
 
-		[Test]
+		
 		public void CanExecuteIgnoresParameterIfValueTypeAndSetToNull()
 		{
 			var command = new Command<int>(context => { }, context => true);
@@ -200,7 +200,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsFalse(command.CanExecute(null), "null is not a valid valid for int");
 		}
 
-		[Test]
+		
 		public void ExecuteDoesNotRunIfParameterIsWrongReferenceType()
 		{
 			int executions = 0;
@@ -210,7 +210,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue(executions == 0, "the command should not have executed");
 		}
 
-		[Test]
+		
 		public void ExecuteDoesNotRunIfParameterIsWrongValueType()
 		{
 			int executions = 0;
@@ -220,7 +220,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue(executions == 0, "the command should not have executed");
 		}
 
-		[Test]
+		
 		public void ExecuteRunsIfReferenceTypeAndSetToNull()
 		{
 			int executions = 0;
@@ -230,7 +230,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue(executions == 1, "the command should have executed");
 		}
 
-		[Test]
+		
 		public void ExecuteRunsIfNullableAndSetToNull()
 		{
 			int executions = 0;
@@ -240,7 +240,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue(executions == 1, "the command should have executed");
 		}
 
-		[Test]
+		
 		public void ExecuteDoesNotRunIfValueTypeAndSetToNull()
 		{
 			int executions = 0;

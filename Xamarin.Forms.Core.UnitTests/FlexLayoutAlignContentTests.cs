@@ -6,7 +6,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class FlexLayoutAlignContentTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void TestAlignContentFlexStart()
 		{
 			var platform = new UnitPlatform((visual, width, height) => new SizeRequest(new Size(50, 10)));
@@ -47,7 +47,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(view4.Bounds, Is.EqualTo(new Rectangle(0, 20, 50, 10)));
 		}
 
-		[Test]
+		
 		public void TestAlignContentFlexStartWithoutHeightOnChildren()
 		{
 			var platform = new UnitPlatform((visual, width, height) => new SizeRequest(new Size(50, 10)));
@@ -85,7 +85,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(view4.Bounds, Is.EqualTo(new Rectangle(0, 40, 50, 10)));
 		}
 
-		[Test]
+		
 		public void TestAlignContentFlexStartWithFlex()
 		{
 			var platform = new UnitPlatform((visual, width, height) => new SizeRequest(new Size(0, 0)));
@@ -139,7 +139,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(view4.Bounds, Is.EqualTo(new Rectangle(0, 120, 50, 0)));
 		}
 
-		[Test]
+		
 		public void TestAlignContentFlexEnd()
 		{
 			var platform = new UnitPlatform((visual, width, height) => new SizeRequest(new Size(50, 10)));
@@ -188,7 +188,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		}
 
-		[Test]
+		
 		public void TestAlignContentStretch()
 		{
 			var platform = new UnitPlatform((visual, width, height) => new SizeRequest(new Size(0, 0)));
@@ -255,7 +255,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(0f, view4.Height);
 		}
 
-		[Test]
+		
 		public void TestAlignContentSpaceBetween()
 		{
 			var platform = new UnitPlatform((visual, width, height) => new SizeRequest(new Size(50, 10)));
@@ -295,7 +295,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(view4.Bounds, Is.EqualTo(new Rectangle(0, 90, 50, 10)));
 		}
 
-		[Test]
+		
 		public void TestAlignContentSpaceAround()
 		{
 			var platform = new UnitPlatform((visual, width, height) => new SizeRequest(new Size(50, 10)));
@@ -334,7 +334,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(view4.Bounds, Is.EqualTo(new Rectangle(0, 95, 50, 10)));
 		}
 
-		[Test]
+		
 		public void TestAlignContentStretchRow()
 		{
 			var platform = new UnitPlatform();
@@ -401,7 +401,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(20f, view4.Height);
 		}
 
-		[Test]
+		
 		public void TestAlignContentStretchRowWithChildren()
 		{
 			var platform = new UnitPlatform();
@@ -471,7 +471,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(50f, view4.Height);
 		}
 
-		[Test]
+		
 		public void TestAlignContentStretchRowWithFlex()
 		{
 			var platform = new UnitPlatform();
@@ -514,7 +514,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(view4.Bounds, Is.EqualTo(new Rectangle(100, 0, 50, 100)));
 		}
 
-		[Test]
+		
 		public void TestAlignContentStretchRowWithFlexNoShrink()
 		{
 			var platform = new UnitPlatform();
@@ -580,7 +580,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(100f, view4.Height);
 		}
 
-		[Test]
+		
 		[Ignore("")]
 		public void TestAlignContentStretchRowWithMargin()
 		{
@@ -643,7 +643,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(view4.Bounds, Is.EqualTo(new Rectangle(0, 80, 50, 20)));
 		}
 
-		[Test]
+		
 		public void TestAlignContentStretchRowWithSingleRow()
 		{
 			var platform = new UnitPlatform();
@@ -682,7 +682,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(100f, view1.Height);
 		}
 
-		[Test]
+		
 		public void TestAlignContentStretchRowWithFixedHeight()
 		{
 			var platform = new UnitPlatform((visual, width, height) => new SizeRequest(new Size(0, 0)));

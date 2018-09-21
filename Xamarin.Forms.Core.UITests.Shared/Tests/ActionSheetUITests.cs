@@ -29,7 +29,7 @@ namespace Xamarin.Forms.Core.UITests
 #endif
 		}
 
-		[Test]
+		
 		public void TestDisplayActionSheet()
 		{
 			ScrollAndTap("ActionSheet Extras");
@@ -37,7 +37,7 @@ namespace Xamarin.Forms.Core.UITests
 			App.Tap(c => c.Marked("Extra One"));
 		}
 
-		[Test]
+		
 		public void TestDisplayActionSheetCancel()
 		{
 			ScrollAndTap("ActionSheet Cancel");
@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Core.UITests
 				App.TapCoordinates(20, screenSize.Height / 2);
 		}
 
-		[Test]
+		
 		public void TestDisplayActionSheetCancelDestruction()
 		{
 			ScrollAndTap("ActionSheet Cancel Destruction");
@@ -60,7 +60,7 @@ namespace Xamarin.Forms.Core.UITests
 				App.TapCoordinates(20, screenSize.Height / 2);
 		}
 
-		[Test]
+		
 		public void TestDisplayActionSheetCancelExtras()
 		{
 			ScrollAndTap("ActionSheet Cancel Extras");
@@ -71,7 +71,7 @@ namespace Xamarin.Forms.Core.UITests
 				App.TapCoordinates(20, screenSize.Height / 2);
 		}
 
-		[Test]
+		
 		public void TestDisplayActionSheetCancelExtrasDestruction()
 		{
 			ScrollAndTap("ActionSheet Cancel Destruction Extras");
@@ -83,7 +83,7 @@ namespace Xamarin.Forms.Core.UITests
 				App.TapCoordinates(20, screenSize.Height / 2);
 		}
 
-		[Test]
+		
 		public void TestDisplayActionSheetDestruction()
 		{
 			ScrollAndTap("ActionSheet Destruction");
@@ -91,7 +91,7 @@ namespace Xamarin.Forms.Core.UITests
 			App.Tap(c => c.Marked("Destruction"));
 		}
 
-		[Test]
+		
 		public void TestDisplayActionSheetDestructionExtras()
 		{
 			ScrollAndTap("ActionSheet Destruction Extras");
@@ -99,7 +99,7 @@ namespace Xamarin.Forms.Core.UITests
 			App.Tap(c => c.Marked("Extra One"));
 		}
 
-		[Test]
+		
 		public void TestDisplayActionSheetTitleCancel()
 		{
 			ScrollAndTap("ActionSheet Title Cancel");
@@ -110,7 +110,7 @@ namespace Xamarin.Forms.Core.UITests
 				App.TapCoordinates(20, screenSize.Height / 2);
 		}
 
-		[Test]
+		
 		public void TestDisplayActionSheetTitleCancelDestruction()
 		{
 			ScrollAndTap("ActionSheet Title Cancel Destruction");
@@ -119,7 +119,7 @@ namespace Xamarin.Forms.Core.UITests
 			App.Tap(c => c.Marked("Destruction"));
 		}
 
-		[Test]
+		
 		public void TestDisplayActionSheetTitleCancelDestructionExtras()
 		{
 			ScrollAndTap("ActionSheet Title Cancel Destruction Extras");
@@ -128,7 +128,7 @@ namespace Xamarin.Forms.Core.UITests
 			App.Tap(c => c.Marked("Destruction"));
 		}
 
-		[Test]
+		
 		public void TestDisplayActionSheetTitleDestruction()
 		{
 			ScrollAndTap("ActionSheet Title Destruction");
@@ -137,7 +137,7 @@ namespace Xamarin.Forms.Core.UITests
 			App.Tap(c => c.Marked("Destruction"));
 		}
 
-		[Test]
+		
 		public void TestDisplayActionSheetTitleDestructionExtras()
 		{
 			ScrollAndTap("ActionSheet Title Destruction Extras");
@@ -147,7 +147,7 @@ namespace Xamarin.Forms.Core.UITests
 		}
 
 
-		[Test]
+		
 		public void TestDisplayActionSheetTitleExtras()
 		{
 			ScrollAndTap("ActionSheet Title Extras");

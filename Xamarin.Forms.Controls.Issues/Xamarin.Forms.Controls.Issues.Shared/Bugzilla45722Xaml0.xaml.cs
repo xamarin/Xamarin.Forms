@@ -93,7 +93,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST && __WINDOWS__
-		[Test]
+		
 		public void LabelsInListViewTemplatesShouldBeCollected()
 		{
 			RunningApp.WaitForElement(Update);

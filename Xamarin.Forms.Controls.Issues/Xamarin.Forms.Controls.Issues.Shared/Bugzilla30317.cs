@@ -174,7 +174,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST && __ANDROID__
-		[Test]
+		
 		public void Bugzilla30317ItemSourceOnAppearingContentPage ()
 		{
 			RunningApp.Screenshot ("I am at Bugzilla30317");
@@ -190,7 +190,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Screenshot ("I did not crash");
 		}
 
-		[Test]
+		
 		public void Bugzilla30317ItemSourceCtorContentPage ()
 		{
 			RunningApp.WaitForElement (q => q.Marked ("GoToPageTwoButton"));
@@ -208,7 +208,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Screenshot ("I did not crash");
 		}
 
-		[Test]
+		
 		public void Bugzilla30317ItemSourceTabbedPage ()
 		{
 			RunningApp.WaitForElement (q => q.Marked ("GoToPageTwoButton"));

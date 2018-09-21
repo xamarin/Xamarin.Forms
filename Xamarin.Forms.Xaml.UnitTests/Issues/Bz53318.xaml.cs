@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				Device.PlatformServices = null;
 			}
 
-			[Test]
+			
 			public void DoesCompilesArgsInsideDataTemplate()
 			{
 				Assert.DoesNotThrow(()=>MockCompiler.Compile(typeof(Bz53318)));

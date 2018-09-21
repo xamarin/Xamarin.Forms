@@ -32,7 +32,7 @@ namespace Xamarin.Forms.Core.UITests
 
 
 #if __ANDROID__ || __MACOS__
-		[Test]
+		
 		public void ContextActionsShow ()
 		{
 			// mark is an icon on android
@@ -41,7 +41,7 @@ namespace Xamarin.Forms.Core.UITests
 			App.Screenshot ("I have actions!");
 		}
 
-		[Test]
+		
 		public void ContextActionsDelete ()
 		{
 			// mark is an icon on android
@@ -56,7 +56,7 @@ namespace Xamarin.Forms.Core.UITests
 #endif
 
 #if __IOS__
-		[Test]
+		
 		public void PopoverDismiss()
 		{
 			var device = App.Device as iOSDevice;
@@ -103,7 +103,7 @@ namespace Xamarin.Forms.Core.UITests
 		const string cellWithNoContextActions = "I have no ContextActions";
 
 #if __ANDROID__ || __MACOS__
-		[Test]
+		
 		public void ContextActionsShowAndReset ()
 		{
 			// mark is an icon on android

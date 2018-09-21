@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Device.PlatformServices = null;
 		}
 
-		[Test]
+		
 		public void TestConstructor ()
 		{
 			var contentView = new ContentView ();
@@ -33,7 +33,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Thickness (0), contentView.Padding);
 		}
 
-		[Test]
+		
 		public void TestSetChild ()
 		{
 			var contentView = new ContentView ();
@@ -55,7 +55,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (added);
 		}
 
-		[Test]
+		
 		public void TestReplaceChild ()
 		{
 			var contentView = new ContentView ();
@@ -78,7 +78,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (child2, contentView.Content);
 		}
 
-		[Test]
+		
 		public void TestFrameLayout ()
 		{
 			View child;
@@ -101,7 +101,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (10, 10, 280, 280), child.Bounds);
 		}
 
-		[Test]
+		
 		public void WidthRequest ()
 		{
 			View child;
@@ -121,7 +121,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Size (40, 220), contentView.GetSizeRequest (double.PositiveInfinity, double.PositiveInfinity).Request);
 		}
 
-		[Test]
+		
 		public void HeightRequest ()
 		{
 			View child;
@@ -142,7 +142,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Size (120, 40), contentView.GetSizeRequest (double.PositiveInfinity, double.PositiveInfinity).Request);
 		}
 
-		[Test]
+		
 		public void LayoutVerticallyCenter()
 		{
 			View child;
@@ -163,7 +163,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (0, 50, 200, 100), child.Bounds);
 		}
 
-		[Test]
+		
 		public void LayoutVerticallyBegin()
 		{
 			View child;
@@ -184,7 +184,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (0, 0, 200, 100), child.Bounds);
 		}
 
-		[Test]
+		
 		public void LayoutVerticallyEnd()
 		{
 			View child;
@@ -205,7 +205,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (0, 100, 200, 100), child.Bounds);
 		}
 
-		[Test]
+		
 		public void LayoutHorizontallyCenter()
 		{
 			View child;
@@ -226,7 +226,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (50, 0, 100, 200), child.Bounds);
 		}
 
-		[Test]
+		
 		public void LayoutHorizontallyBegin()
 		{
 			View child;
@@ -247,7 +247,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (0, 0, 100, 200), child.Bounds);
 		}
 
-		[Test]
+		
 		public void LayoutHorizontallyEnd()
 		{
 			View child;
@@ -268,7 +268,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (100, 0, 100, 200), child.Bounds);
 		}
 
-		[Test]
+		
 		public void NullTemplateDirectlyHosts ()
 		{
 			// order of setting properties carefully picked to emulate running on real backend
@@ -293,7 +293,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 
-		[Test]
+		
 		public void TemplateInflates ()
 		{
 			var platform = new UnitPlatform ();
@@ -306,7 +306,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (((IElementController)contentView).LogicalChildren[0], Is.TypeOf<SimpleTemplate> ());
 		}
 
-		[Test]
+		
 		public void PacksContent ()
 		{
 			var platform = new UnitPlatform ();
@@ -322,7 +322,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (contentView.Descendants (), Contains.Item (child));
 		}
 
-		[Test]
+		
 		public void DoesNotInheritBindingContextToTemplate ()
 		{
 			var platform = new UnitPlatform ();
@@ -341,7 +341,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsNull (((IElementController)contentView).LogicalChildren[0].BindingContext);
 		}
 
-		[Test]
+		
 		public void ContentDoesGetBindingContext ()
 		{
 			var platform = new UnitPlatform ();
@@ -359,7 +359,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (bc, child.BindingContext);
 		}
 
-		[Test]
+		
 		public void ContentParentIsNotInsideTempalte ()
 		{
 			var platform = new UnitPlatform ();
@@ -374,7 +374,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (contentView, child.Parent);
 		}
 
-		[Test]
+		
 		public void NonTemplatedContentInheritsBindingContext ()
 		{
 			var platform = new UnitPlatform ();
@@ -389,7 +389,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("Foo", child.BindingContext);
 		}
 
-        [Test]
+        
         public void ContentView_should_have_the_InternalChildren_correctly_when_Content_changed()
         {
             var sut = new ContentView();

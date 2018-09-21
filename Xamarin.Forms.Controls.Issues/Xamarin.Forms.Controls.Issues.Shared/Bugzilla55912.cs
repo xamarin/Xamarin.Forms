@@ -80,7 +80,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void GestureBubblingInStackLayout()
 		{
 			RunningApp.WaitForElement(StackLabelId);
@@ -88,7 +88,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement(Success);
 		}
 
-		[Test]
+		
 		public void GestureBubblingInGrid()
 		{
 			RunningApp.WaitForElement(GridLabelId);

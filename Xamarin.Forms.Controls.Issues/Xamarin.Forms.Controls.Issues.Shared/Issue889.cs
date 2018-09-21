@@ -57,7 +57,7 @@ namespace Xamarin.Forms.Controls.Issues
 		// NavigationPage nested in MasterDetail not working as expected Android
 
 #if UITEST
-		[Test]
+		
 		[Description ("Reproduce app crash - Issue #983")]
 		[UiTest (typeof(MasterDetailPage), "Detail")]
 		public void Issue899TestsAppCrashWhenSwitchingTabs ()

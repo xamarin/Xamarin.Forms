@@ -6,7 +6,7 @@ namespace Xamarin.Forms.Core.UnitTests
     [TestFixture]
 	public class TemplatedViewUnitTests : BaseTestFixture 
 	{
-        [Test]
+        
         public void TemplatedView_should_have_the_InternalChildren_correctly_when_ControlTemplate_changed()
         {
             var sut = new TemplatedView();
@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void BindingsShouldBeAppliedOnTemplateChange()
 		{
 			var template0 = new ControlTemplate(typeof(MyTemplate));

@@ -5,7 +5,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class FlexLayoutAlignSelfTest : BaseTestFixture
 	{
-		[Test]
+		
 		public void TestAlignSelfCenter()
 		{
 			var platform = new UnitPlatform();
@@ -24,7 +24,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(view0.Bounds, Is.EqualTo(new Rectangle(45, 0, 10, 10)));
 		}
 
-		[Test]
+		
 		public void TestAlignSelfFlexEnd()
 		{
 			var platform = new UnitPlatform();
@@ -43,7 +43,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(view0.Bounds, Is.EqualTo(new Rectangle(90, 0, 10, 10)));
 		}
 
-		[Test]
+		
 		public void TestAlignSelfFlexStart()
 		{
 			var platform = new UnitPlatform();
@@ -62,7 +62,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(view0.Bounds, Is.EqualTo(new Rectangle(0, 0, 10, 10)));
 		}
 
-		[Test]
+		
 		public void TestAlignSelfFlexEndOverrideFlexStart()
 		{
 			var platform = new UnitPlatform();

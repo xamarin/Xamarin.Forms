@@ -35,7 +35,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				Device.PlatformServices = null;
 			}
 
-			[Test]
+			
 			public void ShouldntBeCompiled()
 			{
 				var p = new DefaultCtorRouting();

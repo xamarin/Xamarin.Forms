@@ -134,7 +134,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 
 #if UITEST
-		[Test]
+		
 		public async void BindingToValuesTypesAndScrollingNoCrash()
 		{
 			await Task.Delay(4000);

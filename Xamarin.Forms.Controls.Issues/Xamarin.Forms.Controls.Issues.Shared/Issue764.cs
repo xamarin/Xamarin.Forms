@@ -44,7 +44,7 @@ namespace Xamarin.Forms.Controls.Issues
 		// NavigationBar should be visible in modal
 
 #if UITEST
-		[Test]
+		
 		[Category(UITestCategories.ManualReview)]
 		public void Issue764TestsKeyboardDismissedForEnter ()
 		{

@@ -144,7 +144,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void MakeSureListGroupShowsUpAndItemsAreClickable()
 		{
 			RunningApp.WaitForElement("Group 1");

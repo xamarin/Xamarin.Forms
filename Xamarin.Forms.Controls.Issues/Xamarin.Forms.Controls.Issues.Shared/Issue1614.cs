@@ -38,7 +38,7 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST && __IOS__
 		protected override bool Isolate => true;
 
-		[Test]
+		
 		public void Issue1614Test ()
 		{
 			RunningApp.SetOrientationPortrait();

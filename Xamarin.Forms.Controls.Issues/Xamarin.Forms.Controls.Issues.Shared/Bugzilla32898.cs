@@ -80,7 +80,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Issu32898Test()
 		{
 			var timeout = Timeout + 1500; // Give this a little slop to set the result text

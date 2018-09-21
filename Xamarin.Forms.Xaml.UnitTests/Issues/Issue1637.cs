@@ -6,7 +6,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 	[TestFixture]
 	public class Issue1637
 	{
-		[Test]
+		
 		public void ImplicitCollectionWithSingleElement ()
 		{
 			var xaml = @"

@@ -8,7 +8,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	{
 		TestSubcriber _subscriber;
 
-		[Test]
+		
 		public void SingleSubscriber ()
 		{
 			string sentMessage = null;
@@ -21,7 +21,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			MessagingCenter.Unsubscribe<MessagingCenterTests, string> (this, "SimpleTest");
 		}
 
-		[Test]
+		
 		public void Filter ()
 		{
 			string sentMessage = null;
@@ -38,7 +38,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			MessagingCenter.Unsubscribe<MessagingCenterTests, string> (this, "SimpleTest");
 		}
 
-		[Test]
+		
 		public void MultiSubscriber ()
 		{
 			var sub1 = new object ();
@@ -57,7 +57,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			MessagingCenter.Unsubscribe<MessagingCenterTests, string> (sub2, "SimpleTest");
 		}
 
-		[Test]
+		
 		public void Unsubscribe ()
 		{
 			string sentMessage = null;
@@ -69,13 +69,13 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (sentMessage, Is.EqualTo (null));
 		}
 
-		[Test]
+		
 		public void SendWithoutSubscribers ()
 		{
 			Assert.DoesNotThrow (() => MessagingCenter.Send (this, "SimpleTest", "My Message"));
 		}
 
-		[Test]
+		
 		public void NoArgSingleSubscriber ()
 		{
 			bool sentMessage = false;
@@ -88,7 +88,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			MessagingCenter.Unsubscribe<MessagingCenterTests> (this, "SimpleTest");
 		}
 
-		[Test]
+		
 		public void NoArgFilter ()
 		{
 			bool sentMessage = false;
@@ -105,7 +105,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			MessagingCenter.Unsubscribe<MessagingCenterTests> (this, "SimpleTest");
 		}
 
-		[Test]
+		
 		public void NoArgMultiSubscriber ()
 		{
 			var sub1 = new object ();
@@ -124,7 +124,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			MessagingCenter.Unsubscribe<MessagingCenterTests> (sub2, "SimpleTest");
 		}
 
-		[Test]
+		
 		public void NoArgUnsubscribe ()
 		{
 			bool sentMessage = false;
@@ -136,13 +136,13 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (sentMessage, Is.False);
 		}
 
-		[Test]
+		
 		public void NoArgSendWithoutSubscribers ()
 		{
 			Assert.DoesNotThrow (() => MessagingCenter.Send (this, "SimpleTest"));
 		}
 
-		[Test]
+		
 		public void ThrowOnNullArgs ()
 		{
 			Assert.Throws<ArgumentNullException> (() => MessagingCenter.Subscribe<MessagingCenterTests, string> (null, "Foo", (sender, args) => { }));
@@ -166,7 +166,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Throws<ArgumentNullException> (() => MessagingCenter.Unsubscribe<MessagingCenterTests, string> (this, null));
 		}
 
-		[Test]
+		
 		public void UnsubscribeInCallback ()
 		{
 			int messageCount = 0;
@@ -189,7 +189,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (1, messageCount);
 		}
 
-		[Test]
+		
 		public void SubscriberShouldBeCollected()
 		{
 			new Action(() =>
@@ -205,7 +205,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			pub.Test(); // Assert.Fail() shouldn't be called, because the TestSubcriber object should have ben GCed
 		}
 
-		[Test]
+		
 		public void ShouldBeCollectedIfCallbackTargetIsSubscriber()
 		{
 			WeakReference wr = null;
@@ -228,7 +228,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsFalse(wr.IsAlive); // The Action target and subscriber were the same object, so both could be collected
 		}
 
-		[Test]
+		
 		public void NotCollectedIfSubscriberIsNotTheCallbackTarget()
 		{
 			WeakReference wr = null;
@@ -258,7 +258,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue(((TestSubcriber)wr.Target).Successful);  // Since it's still alive, the subscriber should still have received the message and updated the property
 		}
 
-		[Test]
+		
 		public void SubscriberCollectableAfterUnsubscribeEvenIfHeldByClosure()
 		{
 			WeakReference wr = null;
@@ -282,7 +282,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsFalse(wr.IsAlive); // The Action target and subscriber were the same object, so both could be collected
 		}
 
-		[Test]
+		
 		public void StaticCallback()
 		{
 			int i = 4;
@@ -300,7 +300,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue(i == 5, "The static method should have incremented 'i'");
 		}
 
-		[Test]
+		
 		public void NothingShouldBeCollected()
 		{
 			var success = false;
@@ -319,7 +319,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True(success); // TestCallbackSource.SuccessCallback() should be invoked to make success == true
 		}
 
-		[Test]
+		
 		public void MultipleSubscribersOfTheSameClass()
 		{
 			var sub1 = new object();

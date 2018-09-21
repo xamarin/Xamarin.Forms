@@ -60,7 +60,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Github1426Test ()
 		{
 			RunningApp.Screenshot ("You can see the coffe mug");

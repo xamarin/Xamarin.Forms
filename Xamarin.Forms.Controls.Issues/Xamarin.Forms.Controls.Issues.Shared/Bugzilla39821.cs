@@ -116,7 +116,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void DoesNotCrash()
 		{
 			RunningApp.Tap(q => q.Marked("Animate"));

@@ -53,7 +53,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void SwitchMainPageOnAppearing()
 		{
 			// Without the fix, this would crash. If we're here at all, the test passed.

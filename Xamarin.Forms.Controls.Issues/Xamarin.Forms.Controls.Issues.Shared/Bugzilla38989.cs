@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Controls.Issues
 		const string Success = "If you can see this, the test passed.";
 
 #if UITEST && __ANDROID__
-		[Test]
+		
 		public void Bugzilla38989Test()
 		{
 			RunningApp.WaitForElement(q => q.Marked(Success));

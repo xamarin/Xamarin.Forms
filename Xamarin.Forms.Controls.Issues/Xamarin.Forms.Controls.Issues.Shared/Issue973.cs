@@ -88,7 +88,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		[Description ("Test tab reset when swapping out detail")]
 		[UiTest (typeof(NavigationPage))]
 		[UiTest (typeof(TabbedPage))]

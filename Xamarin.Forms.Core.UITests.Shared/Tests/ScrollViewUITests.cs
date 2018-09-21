@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Core.UITests
 			App.NavigateToGallery (GalleryQueries.ScrollViewGallery);
 		}
 
-		[Test]
+		
 		[Description ("Scroll element to the start")]
 		public void ScrollToElement1Start ()
 		{
@@ -27,7 +27,7 @@ namespace Xamarin.Forms.Core.UITests
 			App.Screenshot ("Element is  on the top");
 		}
 
-		[Test]
+		
 		[Description ("Scroll element to the center")]
 		public void ScrollToElement2Center ()
 		{
@@ -38,7 +38,7 @@ namespace Xamarin.Forms.Core.UITests
 			App.Screenshot ("Element is in the center");
 		}
 
-		[Test]
+		
 		[Description ("Scroll element to the end")]
 		public void ScrollToElement3End ()
 		{
@@ -48,14 +48,14 @@ namespace Xamarin.Forms.Core.UITests
 			App.Screenshot ("Element is in the end");
 		}
 
-		[Test]
+		
 		[Description ("ScrollTo Y = 100")]
 		public void ScrollToY ()
 		{
 			App.Tap(c=> c.Marked("Scroll to 100"));
 		}
 
-		[Test]
+		
 		[Description ("ScrollTo Y = 100 no animation")]
 		public void ScrollToYNoAnim ()
 		{

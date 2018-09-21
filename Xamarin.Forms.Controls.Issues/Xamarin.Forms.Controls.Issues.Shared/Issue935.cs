@@ -65,7 +65,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		[Description ("Verify that OnTapped is fired every time a ViewCell is tapped")]
 		[UiTest (typeof(ViewCell))]
 		[UiTest (typeof(ListView))]

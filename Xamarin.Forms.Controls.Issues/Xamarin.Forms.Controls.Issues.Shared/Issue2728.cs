@@ -28,7 +28,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 
 #if UITEST
-		[Test]
+		
 		public void Issue2728TestsItalicLabel ()
 		{
 			RunningApp.WaitForElement(q => q.Text(_lblHome));

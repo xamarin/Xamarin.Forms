@@ -91,7 +91,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 
 #if UITEST
-		[Test]
+		
 		public void SwapMainPageWithMasterDetails()
 		{
 			RunningApp.WaitForElement(q => q.Text("MasterDetail Navigation"));

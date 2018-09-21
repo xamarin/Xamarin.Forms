@@ -19,7 +19,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Device.PlatformServices = null;
 		}
 
-		[Test]
+		
 		public void BPCollectionsWithSingleElement ()
 		{
 			var xaml = @"<?xml version=""1.0"" encoding=""utf-8"" ?>

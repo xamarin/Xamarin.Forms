@@ -46,7 +46,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Bugzilla51825Test ()
 		{
 			RunningApp.WaitForElement (q => q.Marked ("Bugzilla51825SearchBar"));

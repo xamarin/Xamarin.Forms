@@ -86,7 +86,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void ImageIsPresent()
 		{
 			RunningApp.WaitForElement(q => q.Marked("image1"));

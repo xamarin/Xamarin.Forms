@@ -25,14 +25,14 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void SwipeBackNavCrashTestsAllElementsPresent ()
 		{
 			RunningApp.WaitForElement (q => q.Marked ("Page One"));
 			RunningApp.WaitForElement (q => q.Button ("Go to second page"));
 		}
 
-		[Test]
+		
 		public void SwipeBackNavCrashTestsGoToSecondPage () 
 		{
 			RunningApp.WaitForElement (q => q.Marked ("Page One"));
@@ -41,7 +41,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if __IOS__
-		[Test]
+		
 		public void SwipeBackNavCrashTestsSwipeBackDoesNotCrash ()
 		{
 			RunningApp.WaitForElement (q => q.Marked ("Page One"));

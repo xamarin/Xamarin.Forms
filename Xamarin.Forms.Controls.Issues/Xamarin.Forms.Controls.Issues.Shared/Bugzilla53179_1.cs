@@ -74,7 +74,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void PopAsyncAfterRemovePageDoesNotCrash()
 		{
 			RunningApp.WaitForElement(StartTest);

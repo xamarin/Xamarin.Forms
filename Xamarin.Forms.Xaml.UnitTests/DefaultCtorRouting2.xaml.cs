@@ -32,14 +32,14 @@ namespace Xamarin.Forms.Xaml.UnitTests
 
 			}
 
-			[Test]
+			
 			public void ShouldBeCompiled()
 			{
 				var p = new DefaultCtorRouting2();
 				Assert.True(p.IsCompiled);
 			}
 
-			[Test]
+			
 			public void ShouldntBeCompiled()
 			{
 #pragma warning disable 0618

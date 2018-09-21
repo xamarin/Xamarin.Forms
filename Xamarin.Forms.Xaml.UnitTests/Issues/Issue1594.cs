@@ -19,7 +19,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Device.PlatformServices = null;
 		}
 
-		[Test]
+		
 		public void OnPlatformForButtonHeight ()
 		{
 			var xaml = @"

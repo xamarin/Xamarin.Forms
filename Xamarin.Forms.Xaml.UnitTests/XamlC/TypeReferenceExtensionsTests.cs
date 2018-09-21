@@ -110,7 +110,7 @@ namespace Xamarin.Forms.Xaml.XamlcUnitTests
 			return TypeReferenceExtensions.InheritsFromOrImplements(module.ImportReference(typeRef), module.ImportReference(baseClass));
 		}
 
-		[Test]
+		
 		public void TestSameTypeNamesFromDifferentAssemblies()
 		{
 			var core = typeof(BindableObject).Assembly;

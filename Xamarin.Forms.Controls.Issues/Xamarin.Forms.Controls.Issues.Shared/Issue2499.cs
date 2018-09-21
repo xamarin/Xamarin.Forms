@@ -33,7 +33,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Issue2499Test()
 		{
 			RunningApp.Tap("picker");

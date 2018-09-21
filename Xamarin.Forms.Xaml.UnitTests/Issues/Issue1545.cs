@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Device.PlatformServices = null;
 		}
 
-		[Test]
+		
 		public void BindingCanNotBeReused()
 		{
 			string xaml = @"<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
@@ -47,7 +47,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.That (cell.Text, Is.EqualTo ("Bar"));
 		}
 
-		[Test]
+		
 		public void ElementsCanNotBeReused()
 		{
 			string xaml = @"<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
@@ -93,7 +93,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual (Color.FromHex ("ff00aa"), ((StackLayout)cell1.View).Children [0].BackgroundColor);
 		}
 
-		[Test]
+		
 		public void ElementsFromCollectionsAreNotReused ()
 		{
 			var xaml = @"<ListView 
@@ -128,7 +128,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 
 		}
 
-		[Test]
+		
 		public void ResourcesDeclaredInDataTemplatesAreNotShared ()
 		{
 			var xaml = @"<ListView 

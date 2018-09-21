@@ -54,7 +54,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void ShouldNotCrash()
 		{
 			RunningApp.Tap(q => q.Marked("crashButton"));

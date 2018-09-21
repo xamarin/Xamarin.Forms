@@ -170,7 +170,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Bugzilla60524Test()
 		{
 			RunningApp.WaitForElement(q => q.Marked("Group 1"));

@@ -39,7 +39,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Unreported1Test()
 		{
 			RunningApp.Screenshot("ensure there is no crash");

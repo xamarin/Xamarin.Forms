@@ -239,7 +239,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Bugzilla57910Test()
 		{
 			for (int i = 0; i < 10; i++)

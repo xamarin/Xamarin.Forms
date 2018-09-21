@@ -158,7 +158,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void AddingItemsToNonVisibleListViewDoesntCrash()
 		{
 			RunningApp.Tap(add2);

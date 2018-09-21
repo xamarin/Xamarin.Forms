@@ -70,7 +70,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void AnimationCancel()
 		{
 			RunningApp.WaitForElement(ButtonId);

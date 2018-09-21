@@ -105,13 +105,13 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		MockItemsView bindable;
 
-		[Test]
+		
 		public void ListProxyNotNullWithNullItemsSource()
 		{
 			Assert.IsNotNull (bindable.TemplatedItems.ListProxy);
 		}
 
-		[Test]
+		
 		public void ResetOnItemsSourceChanged()
 		{
 			bool raised = false;
@@ -127,7 +127,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (NotifyCollectionChangedAction.Reset, action);
 		}
 		/*
-		[Test]
+		
 		public void ResetOnInfiniteScrollingChanged()
 		{
 			bool raised = false;
@@ -143,7 +143,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (NotifyCollectionChangedAction.Reset, action);
 		}*/
 
-		[Test]
+		
 		public void ResetOnTemplateChanged()
 		{
 			// Template changes won't trigger a reset if there's no items.
@@ -162,7 +162,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (NotifyCollectionChangedAction.Reset, action);
 		}
 
-		[Test]
+		
 		public void PassThroughChanges()
 		{
 			var collection = new ObservableCollection<string>();
@@ -186,7 +186,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreSame (str, ((Cell)args.NewItems[0]).BindingContext);
 		}
 
-		[Test]
+		
 		public void ListProxyUpdatesWithItemsSource()
 		{
 			var collection = new List<string> { "foo bar" };
@@ -196,7 +196,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (collection.Count, bindable.TemplatedItems.ListProxy.Count);
 		}
 
-		[Test]
+		
 		public void GetOrCreateContent ([Values (0, 1, 2)] int index)
 		{
 			var collection = new List<string> { "foo", "bar", "baz" };
@@ -219,7 +219,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreSame (content, content2);
 		}
 
-		[Test]
+		
 		public void GetOrCreateContentDefault()
 		{
 			Assert.IsNull (bindable.GetValue (ItemsView<BindableObject>.ItemTemplateProperty));
@@ -241,7 +241,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreSame (content, content2);
 		}
 
-		[Test]
+		
 		public void GetOrCreateContentAfterTemplateChange()
 		{
 			var collection = new List<string> { "foo", "bar", "baz" };
@@ -269,7 +269,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreSame (collection[index], switchCell.BindingContext);
 		}
 
-		[Test]
+		
 		public void GetOrCreateContentAfterItemsSourceChanged()
 		{
 			var collection = new List<string> { "foo", "bar", "baz" };
@@ -294,7 +294,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreSame (collection[index], content2.Text);
 		}
 
-		/*[Test]
+		/*
 		public void GetOrCreateContentAfterInfiniteScrollingChanged()
 		{
 			var collection = new List<string> { "foo", "bar", "baz" };
@@ -318,7 +318,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreSame (collection[index], content2.Text);
 		}*/
 
-		[Test]
+		
 		[Description ("Make sure we're not duplicate cell instances for an equal item if it's a different index")]
 		public void GetOrCreateContentEqualItemDifferentItemDifferentIndex()
 		{
@@ -343,7 +343,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreSame (collection[1], textCell.Text);
 		}
 
-		[Test]
+		
 		[Description ("Make sure we're not duplicate cell instances for the same item if it's a different index")]
 		public void GetOrCreateContentEqualItemSameItemDifferentIndex()
 		{
@@ -370,7 +370,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreSame (item, textCell.Text);
 		}
 
-		[Test]
+		
 		public void ItemsSourceInsertPreRealzied()
 		{
 			var collection = new ObservableCollection<string> { "foo", "bar" };
@@ -384,7 +384,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (bindable.TemplatedItems.GetOrCreateContent (2, collection[2]).BindingContext, Is.SameAs (collection[2]));
 		}
 
-		[Test]
+		
 		public void ItemsSourceInsertPostRealized()
 		{
 			var collection = new ObservableCollection<string> { "foo", "bar" };
@@ -438,7 +438,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (leftOver, Is.EqualTo (expectedLeftOver));
 		}
 
-		[Test]
+		
 		public void GetGroupAndIndexOfItem ([Values (0, 1, 2)] int group, [Values (0, 1, 2)] int index)
 		{
 			var collection = new[] {
@@ -464,7 +464,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (location.Item2, Is.EqualTo (index), "Item index was incorrect");
 		}
 
-		[Test]
+		
 		public void GetGroupAndIndexOfItemNotGrouped ()
 		{
 			var items = Enumerable.Range (0, 10).ToList ();
@@ -476,7 +476,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (location.Item2, Is.EqualTo (2));
 		}
 
-		[Test]
+		
 		public void ItemsSourcePropertyChangedWithBindable()
 		{
 			bool raised = false;
@@ -490,7 +490,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (raised, Is.True, "INPC not raised for ItemsSource");
 		}
 
-		[Test]
+		
 		public void IndexCorrectAfterMovingGroups()
 		{
 			var items = new ObservableCollection<ObservableCollection<string>> {
@@ -509,7 +509,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (index, Is.EqualTo (1));
 		}
 
-		[Test]
+		
 		public void ShortNameSetBeforeGrouping()
 		{
 			var items = new ObservableCollection<ObservableCollection<string>> {
@@ -525,7 +525,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (bindable.TemplatedItems.ShortNames[0], Is.EqualTo ("foo"));
 		}
 
-		[Test]
+		
 		public void ItemAddedWithShortNameSetButUngrouped()
 		{
 			var items = new ObservableCollection<string> { "foo", "bar" };
@@ -536,7 +536,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (() => items.Add ("baz"), Throws.Nothing);
 		}
 
-		[Test]
+		
 		public void ItemAddedWithShortNameSetButGroupingDisabled()
 		{
 			var items = new ObservableCollection<ObservableCollection<string>> {
@@ -557,7 +557,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			return TemplatedItemsList<ItemsView<BindableObject>, BindableObject>.GetIndex (item);
 		}
 
-		[Test]
+		
 		public void GetIndex()
 		{
 			var items = new List<string> { "foo", "bar", "baz" };
@@ -569,7 +569,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (index, Is.EqualTo (1));
 		}
 
-		[Test]
+		
 		public void GetIndexAfterInsert()
 		{
 			var items = new ObservableCollection<string> { "foo", "bar", "baz" };
@@ -589,7 +589,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (index, Is.EqualTo (2));
 		}
 
-		[Test]
+		
 		public void GetIndexAfterMove()
 		{
 			var items = new ObservableCollection<string> { "foo", "bar", "baz" };
@@ -607,7 +607,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (GetIndex (item2), Is.EqualTo (1));
 		}
 
-		[Test]
+		
 		public void GetIndexAfterRemove()
 		{
 			var items = new ObservableCollection<string> { "foo", "bar", "baz" };
@@ -623,7 +623,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (GetIndex (item2), Is.EqualTo (1));
 		}
 
-		[Test]
+		
 		public void GetGroup()
 		{
 			var items = new ObservableCollection<ObservableCollection<string>> {
@@ -643,7 +643,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (group, Is.SameAs (til));
 		}
 
-		[Test]
+		
 		public void GetIndexGrouped()
 		{
 			var items = new ObservableCollection<ObservableCollection<string>> {
@@ -662,7 +662,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (index, Is.EqualTo (1));
 		}
 
-		[Test]
+		
 		public void GetGroupAndIndexOfItem()
 		{
 			var items = new ObservableCollection<ObservableCollection<string>> {
@@ -680,7 +680,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (result.Item2, Is.EqualTo (1));
 		}
 
-		[Test]
+		
 		public void GetGroupAndIndexOfItemNoGroup()
 		{
 			var items = new ObservableCollection<ObservableCollection<string>> {
@@ -698,7 +698,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (result.Item2, Is.EqualTo (1));
 		}
 
-		[Test]
+		
 		public void GetGroupAndIndexOfItemNotFound()
 		{
 			var items = new ObservableCollection<ObservableCollection<string>> {
@@ -718,7 +718,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (result.Item2, Is.EqualTo (-1));
 		}
 
-		[Test]
+		
 		public void GetGroupAndIndexOfItemItemNotFound()
 		{
 			var items = new ObservableCollection<ObservableCollection<string>> {
@@ -736,7 +736,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (result.Item2, Is.EqualTo (-1));
 		}
 
-		[Test]
+		
 		[Description ("Issue #2464: ANE thrown when moving items in a ListView")]
 		public void MovingPastRealizedWindowAndBackDoesntThrow()
 		{
@@ -756,7 +756,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (GetIndex (bindable.TemplatedItems[3]), Is.EqualTo (3));
 		}
 
-		[Test]
+		
 		public void GetGlobalIndexOfItem ()
 		{
 			var items = new ObservableCollection<string> (Enumerable.Range (0, 100).Select (i => i.ToString()));
@@ -766,7 +766,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (global, Is.EqualTo (50));
 		}
 
-		[Test]
+		
 		public void GetGlobalIndexOfItemNotFound ()
 		{
 			var items = new ObservableCollection<string> (Enumerable.Range (0, 100).Select (i => i.ToString()));
@@ -776,7 +776,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (global, Is.EqualTo (-1));
 		}
 
-		[Test]
+		
 		public void GetGlobalIndexOfItemGrouped ()
 		{
 			var items = new ObservableCollection<ObservableCollection<string>> {
@@ -792,7 +792,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (global, Is.EqualTo (5));
 		}
 
-		[Test]
+		
 		public void GetGlobalIndexOfItemGroupedNotFound ()
 		{
 			var items = new ObservableCollection<ObservableCollection<string>> {
@@ -808,7 +808,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (global, Is.EqualTo (-1));
 		}
 
-		[Test]
+		
 		public void GetGlobalIndexOfGroupItemGrouped ()
 		{
 			var items = new ObservableCollection<ObservableCollection<string>> {
@@ -824,7 +824,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (global, Is.EqualTo (5));
 		}
 
-		[Test]
+		
 		public void GetGlobalIndexOfGroupItemGroupedNotFound ()
 		{
 			var items = new ObservableCollection<ObservableCollection<string>> {
@@ -840,7 +840,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (global, Is.EqualTo (-1));
 		}
 
-		[Test]
+		
 		public void GetGlobalIndexOfGroupItemGroupedGroupNotFound ()
 		{
 			var items = new ObservableCollection<ObservableCollection<string>> {
@@ -856,7 +856,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (global, Is.EqualTo (-1));
 		}
 
-		[Test]
+		
 		public void SetupContentOnCreation()
 		{
 			var items = new ObservableCollection<string> {
@@ -885,7 +885,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (count, Is.EqualTo (2));
 		}
 
-		[Test]
+		
 		public void UnhookGroupOnRemoval()
 		{
 			var inner = new ObservableCollection<string> {
@@ -931,7 +931,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (count, Is.EqualTo (2));
 		}
 
-		[Test]
+		
 		public void HookAndUnhookGroupOnReplace()
 		{
 			var items = new ObservableCollection<ObservableCollection<string>> {
@@ -977,7 +977,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (ucount, Is.EqualTo (2));
 		}
 
-		[Test]
+		
 		public void UnhookContentOnRemoval()
 		{
 			var items = new ObservableCollection<string> {
@@ -1010,7 +1010,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (count, Is.EqualTo (1));
 		}
 
-		[Test]
+		
 		public void HookAndUnhookContentOnReplace()
 		{
 			var items = new ObservableCollection<string> {

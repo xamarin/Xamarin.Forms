@@ -74,7 +74,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Issue3292Test ()
 		{
 			RunningApp.WaitForElement (q => q.Marked ("Hello World Changed"));

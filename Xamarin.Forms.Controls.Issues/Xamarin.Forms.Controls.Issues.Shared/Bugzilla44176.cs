@@ -119,7 +119,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Test()
 		{
 			RunningApp.WaitForElement(q => q.Marked("grid"));

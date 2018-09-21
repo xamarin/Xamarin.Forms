@@ -24,7 +24,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void Selected ()
 		{
 			var cell = new TestCell ();
@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue (tapped);
 		}
 
-		[Test]
+		
 		public void AppearingEvent ()
 		{
 			var cell = new TestCell ();
@@ -50,7 +50,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (cell.OnDisappearingSent);
 		}
 
-		[Test]
+		
 		public void DisappearingEvent ()
 		{
 			var cell = new TestCell ();
@@ -64,7 +64,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (cell.OnDisappearingSent);
 		}
 
-		[Test]
+		
 		public void TestBindingContextPropagationOnImageCell ()
 		{
 			var context = new object ();
@@ -81,7 +81,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreSame (context, source.BindingContext);
 		}
 
-		[Test]
+		
 		public void HasContextActions()
 		{
 			bool changed = false;
@@ -106,7 +106,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (changed, Is.True);
 		}
 
-		[Test]
+		
 		public void MenuItemsGetBindingContext()
 		{
 			var cell = new TextCell {
@@ -126,7 +126,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (cell.ContextActions [0].BindingContext, Is.SameAs (cell.BindingContext));
 		}
 
-		[Test]
+		
 		public void RenderHeightINPCFromParent()
 		{
 			var lv = new ListView();
@@ -152,7 +152,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (changed, Is.EqualTo (1));
 		}
 
-		[Test]
+		
 		public async void ForceUpdateSizeCallsAreRateLimited()
 		{
 			var lv = new ListView { HasUnevenRows = true };
@@ -171,7 +171,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (1, numberOfCalls);
 		}
 
-		[Test]
+		
 		public async void ForceUpdateSizeWillNotBeCalledIfParentIsNotAListViewWithUnevenRows ()
 		{
 			var lv = new ListView { HasUnevenRows = false };

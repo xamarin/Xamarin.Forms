@@ -54,7 +54,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void ScrollViewObjectDisposedTest ()
 		{
 			RunningApp.Tap(q => q.Marked(TestButtonId));

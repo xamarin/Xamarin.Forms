@@ -52,7 +52,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				Assert.That(((ResourceDictionary)layout.Resources["CompiledColors"])["MediumGrayTextColor"], Is.TypeOf<Color>());
 			}
 
-			[Test]
+			
 			public void XRIDIsGeneratedForRDWithoutCodeBehind()
 			{
 				var asm = typeof(ResourceDictionaryWithSource).Assembly;
@@ -62,7 +62,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				Assert.That(type, Is.Null);
 			}
 
-			[Test]
+			
 			public void CodeBehindIsGeneratedForRDWithXamlComp()
 			{
 				var asm = typeof(ResourceDictionaryWithSource).Assembly;

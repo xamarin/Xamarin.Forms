@@ -21,7 +21,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST && __IOS__
-		[Test]
+		
 		public void Bugzilla43941Test()
 		{
 			for (var n = 0; n < 10; n++)

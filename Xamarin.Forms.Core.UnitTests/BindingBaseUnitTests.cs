@@ -78,7 +78,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			ComplexMockViewModel model;
 		}
 
-		[Test]
+		
 		public void CloneMode()
 		{
 			var binding = CreateBinding (BindingMode.Default);
@@ -87,7 +87,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (binding.Mode, clone.Mode);
 		}
 
-		[Test]
+		
 		public void StringFormat()
 		{
 			var property = BindableProperty.Create("Foo", typeof(string), typeof(MockBindable));
@@ -100,7 +100,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (bo.GetValue (property), Is.EqualTo ("Foo Bar"));
 		}
 
-		[Test]
+		
 		public void StringFormatOnUpdate()
 		{
 			var property = BindableProperty.Create("Foo", typeof(string), typeof(MockBindable));
@@ -115,7 +115,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (bo.GetValue (property), Is.EqualTo ("Foo Baz"));
 		}
 
-		[Test]
+		
 		[Description ("StringFormat should not be applied to OneWayToSource bindings")]
 		public void StringFormatOneWayToSource()
 		{
@@ -131,7 +131,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (vm.Text, Is.EqualTo ("Bar"));
 		}
 
-		[Test]
+		
 		[Description ("StringFormat should only be applied from from source in TwoWay bindings")]
 		public void StringFormatTwoWay()
 		{
@@ -148,7 +148,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (bo.GetValue (property), Is.EqualTo ("Foo Baz"));
 		}
 
-		[Test]
+		
 		[Description ("You should get an exception when trying to change a binding after it's been applied")]
 		public void ChangeAfterApply()
 		{
@@ -178,7 +178,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(bo.GetValue(property), Is.EqualTo(string.Format(new System.Globalization.CultureInfo(culture),"{0:P2}",.95d))); //%95,00 or 95.00%
 		}
 
-		[Test]
+		
 		public void ReuseBindingInstance()
 		{
 			var vm = new MockViewModel();
@@ -521,7 +521,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				"An error was logged: " + log.Messages.FirstOrDefault());
 		}
 
-		[Test]
+		
 		public void BindingStaysOnUpdateValueFromBinding()
 		{
 			const string newvalue = "New Value";
@@ -547,7 +547,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				"An error was logged: " + log.Messages.FirstOrDefault());
 		}
 
-		[Test]
+		
 		public void OneWayToSourceContextSetToNull()
 		{
 			var binding = new Binding("Text", BindingMode.OneWayToSource);
@@ -603,7 +603,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				Assert.IsFalse(weakBindable.IsAlive, "Bindable wasn't collected");
 		}
 
-		[Test]
+		
 		public void PropertyChangeBindingsOccurThroughMainThread()
 		{
 			var vm = new MockViewModel { Text = "text" };
@@ -626,7 +626,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class BindingBaseTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void EnableCollectionSynchronizationInvalid()
 		{
 			Assert.That (() => BindingBase.EnableCollectionSynchronization (null, new object(),
@@ -637,7 +637,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				(collection, context, method, access) => { }), Throws.Nothing);
 		}
 
-		[Test]
+		
 		public void EnableCollectionSynchronization()
 		{
 			string[] stuff = new[] {"foo", "bar"};
@@ -654,7 +654,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (syncContext.ContextReference.Target, Is.SameAs (context));
 		}
 
-		[Test]
+		
 		public void DisableCollectionSynchronization()
 		{
 			string[] stuff = new[] {"foo", "bar"};
@@ -670,7 +670,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsNull (syncContext);
 		}
 
-		[Test]
+		
 		public void CollectionAndContextAreHeldWeakly()
 		{
 			WeakReference weakCollection = null, weakContext = null;
@@ -701,7 +701,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsFalse (weakContext.IsAlive);
 		}
 
-		[Test]
+		
 		public void CollectionAndContextAreHeldWeaklyClosingOverCollection()
 		{
 			WeakReference weakCollection = null, weakContext = null;
@@ -734,13 +734,13 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsFalse (weakContext.IsAlive);
 		}
 
-		[Test]
+		
 		public void DisableCollectionSynchronizationInvalid()
 		{
 			Assert.That (() => BindingBase.DisableCollectionSynchronization (null), Throws.InstanceOf<ArgumentNullException>());
 		}
 
-		[Test]
+		
 		public void TryGetSynchronizedCollectionInvalid()
 		{
 			CollectionSynchronizationContext context;

@@ -90,7 +90,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 	[TestFixture]
 	public class LoaderTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void TestRootName ()
 		{
 			var xaml = @"
@@ -107,7 +107,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreSame (view, ((Forms.Internals.INameScope)view).FindByName("customView"));
 		}
 
-		[Test]
+		
 		public void TestFindByXName ()
 		{
 			var xaml = @"
@@ -127,7 +127,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual ("Foo", label.Text);		
 		}
 
-		[Test]
+		
 		public void TestUnknownPropertyShouldThrow ()
 		{
 			var xaml = @"
@@ -141,7 +141,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.Throws (new XamlParseExceptionConstraint (5, 5), () => label.LoadFromXaml (xaml));
 		}
 
-		[Test]
+		
 		public void TestSetValueToBindableProperty ()
 		{
 			var xaml = @"
@@ -157,7 +157,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 
 		}
 
-		[Test]
+		
 		public void TestSetBindingToBindableProperty ()
 		{
 			var xaml = @"
@@ -175,7 +175,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual ("Foo", label.Text);
 		}
 
-		[Test]
+		
 		public void TestBindingAsElement ()
 		{
 			var xaml = @"
@@ -196,7 +196,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 
 		}
 
-		[Test]
+		
 		public void TestSetBindingToNonBindablePropertyShouldThrow ()
 		{
 			var xaml = @"
@@ -212,7 +212,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.Throws (new XamlParseExceptionConstraint (6, 5), () => view.LoadFromXaml (xaml));
 		}
 
-		[Test]
+		
 		public void TestBindingPath ()
 		{
 			var xaml = @"
@@ -245,7 +245,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			public string Text { get; set; }
 		}
 
-		[Test]
+		
 		public void TestBindingModeAndConverter ()
 		{
 			var xaml = @"
@@ -279,7 +279,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual ("baz", ((ViewModel)(contentPage.BindingContext)).Text);
 		}
 
-		[Test]
+		
 		public void TestNonEmptyCollectionMembers ()
 		{
 			var xaml = @"
@@ -302,7 +302,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.NotNull (grid1);
 		}
 
-		[Test]
+		
 		public void TestUnknownType ()
 		{
 			var xaml = @"
@@ -318,7 +318,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.Throws (new XamlParseExceptionConstraint (6, 8), () => stacklayout.LoadFromXaml (xaml));
 		}
 
-		[Test]
+		
 		public void TestResources ()
 		{
 			var xaml = @"
@@ -339,7 +339,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.True (label.Resources ["reverseConverter"] is ReverseConverter);
 		}
 
-		[Test]
+		
 		public void TestResourceDoesRequireKey ()
 		{
 			var xaml = @"
@@ -357,7 +357,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.Throws (new XamlParseExceptionConstraint (8, 9), () => label.LoadFromXaml (xaml));
 		}
 
-		[Test]
+		
 		public void UseResourcesOutsideOfBinding ()
 		{
 			var xaml = @"
@@ -378,7 +378,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual ("Foo", (((ContentView)(contentView.Content)).Content as Label).Text);
 		}
 
-		[Test]
+		
 		public void MissingStaticResourceShouldThrow ()
 		{
 			var xaml = @"<Label xmlns=""http://xamarin.com/schemas/2014/forms"" Text=""{StaticResource foo}""/>";
@@ -410,7 +410,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void StaticResourceLookForApplicationResources ()
 		{
 			Device.PlatformServices = new MockPlatformServices ();
@@ -442,7 +442,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual ("BAZ", label1.Text);
 		}
 
-		[Test]
+		
 		public void TestEvent ()
 		{
 			var xaml = @"
@@ -458,7 +458,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.True (view.fired);
 		}
 
-		[Test]
+		
 		public void TestFailingEvent ()
 		{
 			var xaml = @"
@@ -471,7 +471,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.Throws (new XamlParseExceptionConstraint (5, 53), () => view.LoadFromXaml (xaml));
 		}
 
-		[Test]
+		
 		public void TestConnectingEventOnMethodWithWrongSignature ()
 		{
 			var xaml = @"
@@ -496,7 +496,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 
 		}
 
-		[Test]
+		
 		public void TestEventWithCustomEventArgs ()
 		{
 			var xaml = @"
@@ -508,7 +508,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			new CustEntry ().LoadFromXaml (xaml);
 		}
 
-		[Test]
+		
 		public void TestEmptyTemplate ()
 		{
 			var xaml = @"
@@ -527,7 +527,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.Throws<InvalidOperationException>(() => template.CreateContent());
 		}
 
-		[Test]
+		
 		public void TestBoolValue ()
 		{
 			var xaml = @"
@@ -542,7 +542,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual (true, image.IsOpaque);
 		}
 
-		[Test]
+		
 		public void TestAttachedBP ()
 		{
 			var xaml = @"
@@ -557,7 +557,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual (2, Grid.GetRow (view));
 		}
 
-		[Test]
+		
 		public void TestAttachedBPWithDifferentNS ()
 		{
 			//If this looks very similar to Vernacular, well... it's on purpose :)
@@ -571,7 +571,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual ("raboof", label.Text);
 		}
 
-		[Test]
+		
 		public void TestBindOnAttachedBP ()
 		{
 			var xaml = @"
@@ -585,7 +585,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual ("raboof", label.Text);
 		}
 
-		[Test]
+		
 		public void TestContentProperties ()
 		{
 			var xaml = @"
@@ -601,7 +601,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreSame (customView.Content, ((Forms.Internals.INameScope)customView).FindByName("contentview"));
 		}
 
-		[Test]
+		
 		public void TestCollectionContentProperties ()
 		{
 			var xaml = @"
@@ -615,7 +615,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual ("Bar", ((Label)(layout.Children [1])).Text);
 		}
 
-		[Test]
+		
 		public void TestCollectionContentPropertiesWithSingleElement ()
 		{
 			var xaml = @"
@@ -627,7 +627,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual ("Foo", ((Label)(layout.Children [0])).Text);
 		}
 
-		[Test]
+		
 		public void TestPropertiesWithContentProperties ()
 		{
 			var xaml = @"
@@ -642,7 +642,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.NotNull (contentPage.Content);
 		}
 
-		[Test]
+		
 		public void LoadFromXamlResource ()
 		{
 			ContentView view = null;
@@ -652,14 +652,14 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual ("foobar", ((Label)view.Content).Text);
 		}
 
-		[Test]
+		
 		public void ThrowOnMissingXamlResource ()
 		{
 			var view = new CustomView ();
 			Assert.Throws (new XamlParseExceptionConstraint (), () => view.LoadFromXaml (typeof(CustomView)));
 		}
 
-		[Test]
+		
 		public void CreateNewChildrenCollection ()
 		{
 			var xaml = @"
@@ -682,7 +682,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.Contains (((Forms.Internals.INameScope)layout).FindByName ("child1"), layout.Children);
 		}
 
-		[Test]
+		
 		public void AddChildrenToCollectionContentProperty ()
 		{
 			var xaml = @"
@@ -701,7 +701,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.Contains (((Forms.Internals.INameScope)layout).FindByName ("child1"), layout.Children);
 		}
 
-		[Test]
+		
 		public void AddChildrenToExistingCollection ()
 		{
 			var xaml = @"
@@ -723,7 +723,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 
 		}
 
-		[Test]
+		
 		public void AddSingleChildToCollectionContentProperty ()
 		{
 			var xaml = @"
@@ -740,7 +740,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.Contains (((Forms.Internals.INameScope)layout).FindByName ("child0"), layout.Children);
 		}
 
-		[Test]
+		
 		public void FindResourceByName ()
 		{
 			var xaml = @"
@@ -763,7 +763,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.That (resource, Is.TypeOf<Button> ());
 		}
 
-		[Test]
+		
 		public void ParseEnum ()
 		{
 			var xaml = @"
@@ -778,7 +778,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 					
 		}
 
-		[Test]
+		
 		public void ParseFlags ()
 		{
 			var xaml = @"
@@ -792,7 +792,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual (MockFlags.Bar | MockFlags.Baz, view.MockFlags);
 		}
 
-		[Test]
+		
 		public void StyleWithoutTargetTypeThrows ()
 		{
 			var xaml = @"

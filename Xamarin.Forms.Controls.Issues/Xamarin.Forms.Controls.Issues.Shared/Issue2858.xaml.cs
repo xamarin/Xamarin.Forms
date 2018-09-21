@@ -66,7 +66,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 
 #if UITEST
-		[Test]
+		
 		public void CascadeInputTransparentGrids()
 		{
 			RunningApp.WaitForElement(InnerGrid);

@@ -24,7 +24,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Device.PlatformServices = null;
 		}
 
-		[Test]
+		
 		public void TextAndAttributedTextMutuallyExclusive ()
 		{
 			var label = new Label ();
@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsNull (label.FormattedText);
 		}
 
-		[Test]
+		
 		public void InvalidateMeasureWhenTextChanges ()
 		{
 			var label = new Label();
@@ -71,7 +71,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue (fired);
 		}
 
-		[Test]
+		
 		public void AssignToFontStructUpdatesFontFamily (
 			[Values (NamedSize.Default, NamedSize.Large, NamedSize.Medium, NamedSize.Small, NamedSize.Micro)] NamedSize size,
 			[Values (FontAttributes.None, FontAttributes.Bold, FontAttributes.Italic, FontAttributes.Bold | FontAttributes.Italic)] FontAttributes attributes)
@@ -97,7 +97,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (startAttributes != label.FontAttributes, firedAttributesChanged);
 		}
 
-		[Test]
+		
 		public void AssignToFontFamilyUpdatesFont ()
 		{
 			var label = new Label {Platform = new UnitPlatform ()};
@@ -106,7 +106,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (label.Font, Font.OfSize ("CrazyFont", label.FontSize));
 		}
 
-		[Test]
+		
 		public void AssignToFontSizeUpdatesFont ()
 		{
 			var label = new Label {Platform = new UnitPlatform ()};
@@ -115,7 +115,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (label.Font, Font.SystemFontOfSize (1000));
 		}
 
-		[Test]
+		
 		public void AssignedToFontSizeUpdatesFontDouble ()
 		{
 			var label = new Label {Platform = new UnitPlatform ()};
@@ -124,7 +124,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (label.Font, Font.SystemFontOfSize (10.7));
 		}
 
-		[Test]
+		
 		public void AssignedToFontSizeDouble ()
 		{
 			var label = new Label {Platform = new UnitPlatform ()};
@@ -134,7 +134,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 
-		[Test]
+		
 		public void AssignToFontAttributesUpdatesFont ()
 		{
 			var label = new Label {Platform = new UnitPlatform ()};
@@ -143,7 +143,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (label.Font, Font.SystemFontOfSize (label.FontSize, FontAttributes.Bold | FontAttributes.Italic));
 		}
 
-		[Test]
+		
 		public void LabelResizesWhenFontChanges ()
 		{
 			var label = new Label {Platform = new UnitPlatform ((ve, w, h) => {
@@ -166,7 +166,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (fired);
 		}
 
-		[Test]
+		
 		public void FontSizeConverterTests ()
 		{
 			var converter = new FontSizeConverter ();
@@ -174,7 +174,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (10.7, converter.ConvertFromInvariantString ("10.7"));
 		}
 
-		[Test]
+		
 		public void FontSizeCanBeSetFromStyle ()
 		{
 			var label = new Label ();
@@ -185,7 +185,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (1.0, label.FontSize);
 		}
 
-		[Test]
+		
 		public void ManuallySetFontSizeNotOverridenByStyle ()
 		{
 			var label = new Label ();
@@ -198,7 +198,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (2.0, label.FontSize);
 		}
 
-		[Test]
+		
 		public void ManuallySetFontSizeNotOverridenByFontSetInStyle()
 		{
 			var label = new Label();
@@ -211,7 +211,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(2.0, label.FontSize);
 		}
 
-		[Test]
+		
 		public void ChangingHorizontalTextAlignmentFiresXAlignChanged ()
 		{
 			var label = new Label () { HorizontalTextAlignment = TextAlignment.Center };
@@ -233,7 +233,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True(horizontalTextAlignmentFired);
 		}
 
-		[Test]
+		
 		public void ChangingVerticalTextAlignmentFiresYAlignChanged ()
 		{
 			var label = new Label () { VerticalTextAlignment = TextAlignment.Center };
@@ -255,7 +255,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (verticalTextAlignmentFired);
 		}
 
-		[Test]
+		
 		public void EntryCellXAlignBindingMatchesHorizontalTextAlignmentBinding ()
 		{
 			var vm = new ViewModel ();
@@ -276,7 +276,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (TextAlignment.End, labelHorizontalTextAlignment.HorizontalTextAlignment);
 		}
 
-		[Test]
+		
 		public void EntryCellYAlignBindingMatchesVerticalTextAlignmentBinding ()
 		{
 			var vm = new ViewModel ();

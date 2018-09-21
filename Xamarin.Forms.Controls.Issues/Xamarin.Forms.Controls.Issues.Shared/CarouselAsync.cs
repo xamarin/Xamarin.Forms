@@ -57,7 +57,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		[Description ("All elements renderered")]
 		public void CarouselAsyncTestsAllElementsPresent ()
 		{
@@ -65,7 +65,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Screenshot ("All elements present");
 		}
 
-		[Test]
+		
 		[Description ("Async Pages inserted into a CarouselPage")]
 		public void CarouselAsyncTestsAllPagesExistAfterAsyncAdding ()
 		{
@@ -93,7 +93,7 @@ namespace Xamarin.Forms.Controls.Issues
 /**************** Landscape tests **********************/
 /*******************************************************/
 
-		[Test]
+		
 		[Description ("All elements renderered - landscape")]
 		public void CarouselAsyncTestsAllElementsPresentLandscape ()
 		{
@@ -102,7 +102,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.SetOrientationPortrait ();
 		}
 
-		[Test]
+		
 		[Description ("Async Pages inserted into a CarouselPage - landscape")]
 		public void CarouselAsyncTestsAllPagesExistAfterAsyncAddingLandscape ()
 		{

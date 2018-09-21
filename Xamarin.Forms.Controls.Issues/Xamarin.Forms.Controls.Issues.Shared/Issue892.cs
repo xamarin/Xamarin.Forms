@@ -75,7 +75,7 @@ namespace Xamarin.Forms.Controls.Issues
 		// NavigationPage nested in MasterDetail not working as expected Android
 
 #if UITEST
-		[Test]
+		
 		[Description ("Change pages in the Master ListView, and navigate to the end and back")]
 		[UiTest (typeof(MasterDetailPage))]
 		[UiTest (typeof(NavigationPage))]

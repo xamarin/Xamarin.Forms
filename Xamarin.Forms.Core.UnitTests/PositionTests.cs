@@ -8,7 +8,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class PositionTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void Construction ()
 		{
 			Position position = new Position();
@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (position.Longitude, 0);
 		}
 
-		[Test]
+		
 		public void CopyConstructor ()
 		{
 			var position = new Position (12, 13);
@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (13, copy.Longitude);
 		}
 
-		[Test]
+		
 		public void EqualityOp ()
 		{
 			var position1 = new Position (-28, 180);
@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (position1 == position2);
 		}
 
-		[Test]
+		
 		public void InEqualityOp()
 		{
 			var position1 = new Position (-8, 180);
@@ -43,7 +43,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 
-		[Test]
+		
 		public void Equals ()
 		{
 			var position1 = new Position (78, 167);
@@ -54,7 +54,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (position2.Equals ("position2"));
 		}
 
-		[Test]
+		
 		public void LatitudeClamping () {
 			var position = new Position (-90.1, 0);
 			Assert.AreEqual (position.Latitude, -90);
@@ -66,7 +66,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (position.Latitude, 15.0);
 		}
 
-		[Test]
+		
 		public void LongitudeClamping () {
 			var position = new Position (0, -180.001);
 			Assert.AreEqual (position.Longitude, -180.0);
@@ -78,7 +78,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (position.Longitude, 0);
 		}
 
-		[Test]
+		
 		public void Hashcode ()
 		{
 			var position = new Position (20, 25);

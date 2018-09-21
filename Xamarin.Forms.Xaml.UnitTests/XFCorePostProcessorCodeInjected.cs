@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 	[TestFixture]
 	public class XFCorePostProcessorCodeInjected
 	{
-		[Test]
+		
 		public void InjectedCodeIsPresent()
 		{
 			var resLoader = typeof(Xamarin.Forms.Internals.ResourceLoader);

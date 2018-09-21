@@ -98,7 +98,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void _57114BothTypesOfGesturesFire()
 		{
 			RunningApp.WaitForElement(Testing);

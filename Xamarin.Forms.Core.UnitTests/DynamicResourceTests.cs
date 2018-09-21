@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Application.Current = null;
 		}
 
-		[Test]
+		
 		public void TestDynamicResourceOverride()
 		{
 			Application.Current.Resources = new ResourceDictionary();
@@ -53,7 +53,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(Color.Green, label.TextColor);
 		}
 
-		[Test]
+		
 		public void TestDynamicResource ()
 		{
 			var label = new Label ();
@@ -72,7 +72,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("FOO", label.Text);
 		}
 	
-		[Test]
+		
 		public void SetResourceTriggerSetValue ()
 		{
 			var label = new Label ();
@@ -84,7 +84,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("FOO", label.Text);
 		}
 
-		[Test]
+		
 		public void SetResourceOnParentTriggerSetValue ()
 		{
 			var label = new Label ();
@@ -97,7 +97,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("FOO", label.Text);
 		}
 
-		[Test]
+		
 		public void SettingResourceTriggersValueChanged ()
 		{
 			var label = new Label ();
@@ -108,7 +108,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("FOO", label.Text);
 		}
 
-		[Test]
+		
 		public void AddingAResourceDictionaryTriggersValueChangedForExistingValues ()
 		{
 			var label = new Label ();
@@ -119,7 +119,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("FOO", label.Text);
 		}
 
-		[Test]
+		
 		public void ValueChangedTriggeredOnSubscribeIfKeyAlreadyExists ()
 		{
 			var label = new Label ();
@@ -129,7 +129,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("FOO", label.Text);
 		}
 
-		[Test]
+		
 		public void RemoveDynamicResourceStopsUpdating ()
 		{
 			var label = new Label ();
@@ -142,7 +142,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("FOO", label.Text);
 		}
 
-		[Test]
+		
 		public void ReparentResubscribe ()
 		{
 			var layout0 = new ContentView { Resources = new ResourceDictionary {{"foo","FOO"}}};
@@ -160,7 +160,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("BAR", label.Text);
 		}
 
-		[Test]
+		
 		public void ClearedResourcesDoesNotClearValues ()
 		{
 			var layout0 = new ContentView { Resources = new ResourceDictionary {{"foo","FOO"}}};
@@ -174,7 +174,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("FOO", label.Text);
 		}
 
-		[Test]
+		
 		//Issue 2608
 		public void ResourcesCanBeChanged ()
 		{
@@ -191,7 +191,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("BAR", label.Text);
 		}
 
-		[Test]
+		
 		public void FallbackToApplicationCurrent()
 		{
 			Application.Current.Resources = new ResourceDictionary { { "foo", "FOO" } };

@@ -7,7 +7,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class FlexLayoutFlexDirectionTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void TestFlexDirectionColumnWithoutHeight()
 		{
 			var platform = new UnitPlatform();
@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(view2.Bounds, Is.EqualTo(new Rectangle(0, 20, 100, 10)));
 		}
 
-		[Test]
+		
 		public void TestFlexDirectionRowNoWidth()
 		{
 			var platform = new UnitPlatform();
@@ -62,7 +62,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(view2.Bounds, Is.EqualTo(new Rectangle(20, 0, 10, 100)));
 		}
 
-		[Test]
+		
 		public void TestFlexDirectionColumn()
 		{
 			var platform = new UnitPlatform();
@@ -88,7 +88,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(view2.Bounds, Is.EqualTo(new Rectangle(0, 20, 100, 10)));
 		}
 
-		[Test]
+		
 		public void TestFlexDirectionRow()
 		{
 			var platform = new UnitPlatform();
@@ -114,7 +114,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(view2.Bounds, Is.EqualTo(new Rectangle(20, 0, 10, 100)));
 		}
 
-		[Test]
+		
 		public void TestFlexDirectionColumnReverse()
 		{
 			var platform = new UnitPlatform();
@@ -140,7 +140,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(view2.Bounds, Is.EqualTo(new Rectangle(0, 70, 100, 10)));
 		}
 
-		[Test]
+		
 		public void TestFlexDirectionRowReverse()
 		{
 			var platform = new UnitPlatform();

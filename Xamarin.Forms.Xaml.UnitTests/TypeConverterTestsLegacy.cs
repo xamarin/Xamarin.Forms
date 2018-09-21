@@ -115,7 +115,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 	[TestFixture]
 	public class TypeConverterTestsLegacy : BaseTestFixture
 	{
-		[Test]
+		
 		public void TestSetPropertyWithoutConverter()
 		{
 			var baz = new Baz();
@@ -135,7 +135,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 
 		}
 
-		[Test]
+		
 		public void TestFailOnMissingOrWrongConverter()
 		{
 			var node = new ValueNode("baz", new MockNameSpaceResolver());
@@ -152,7 +152,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.Throws<XamlParseException>(() => node.Accept(new ApplyPropertiesVisitor(context), rootNode));
 		}
 
-		[Test]
+		
 		public void TestConvertNonBindableProperty()
 		{
 			var node = new ValueNode("foo", new MockNameSpaceResolver());
@@ -173,7 +173,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual("foo", bindable.Foo.Value);
 		}
 
-		[Test]
+		
 		public void TestConvertBindableProperty()
 		{
 			var node = new ValueNode("bar", new MockNameSpaceResolver());
@@ -193,7 +193,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual("bar", bindable.Bar.Value);
 		}
 
-		[Test]
+		
 		public void TestConvertAttachedBindableProperty()
 		{
 			var node = new ValueNode("qux", new MockNameSpaceResolver());
@@ -213,7 +213,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual("qux", Bindable.GetQux(bindable).Value);
 		}
 
-		[Test]
+		
 		public void TestConvertWithAttributeOnType()
 		{
 			var node = new ValueNode("foobar", new MockNameSpaceResolver());

@@ -22,14 +22,14 @@ namespace Xamarin.Forms.Core.UnitTests
 			Device.PlatformServices = null;
 		}
 
-		[Test]
+		
 		public void EmptyLayoutDoesntCrash ()
 		{
 			var stackLayout = new StackLayout ();
 			stackLayout.Layout (new Rectangle (0, 0, 200, 200));
 		}
 
-		[Test]
+		
 		public void TestLastChildNotVisible ()
 		{
 			View child1, child2;
@@ -47,7 +47,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new SizeRequest (new Size(20, 20)), r);
 		}
 
-		[Test]
+		
 		public void TestLayoutVertical ()
 		{
 			View child1, child2;
@@ -66,7 +66,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (0, 26, 100, 30), child2.Bounds);
 		}
 
-		[Test]
+		
 		public void ReinflatesViewsCorrectly ()
 		{
 			var child1 = new BoxView {
@@ -101,7 +101,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (0, 460, 100, 40), child2.Bounds);
 		}
 
-		[Test]
+		
 		public void TestLayoutHorizontal ()
 		{
 			View child1, child2;
@@ -121,7 +121,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (26, 0, 30, 100), child2.Bounds);
 		}
 
-		[Test]
+		
 		public void TestExpandVertical ()
 		{
 			View child1, child2, child3;
@@ -149,7 +149,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (10, 75, 80, 20), child3.Bounds);
 		}
 
-		[Test]
+		
 		public void TestExpandHorizontal() {
 			View child1, child2, child3;
 			var stack = new StackLayout {
@@ -175,7 +175,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (80, 0, 20, 100), child3.Bounds);
 		}
 
-		[Test]
+		
 		public void TestSizeRequestVertical ()
 		{
 			var stack = new StackLayout {
@@ -191,7 +191,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Size (30, 56), size);
 		}
 
-		[Test]
+		
 		public void TestSizeRequestHorizontal ()
 		{
 			var stack = new StackLayout {
@@ -208,7 +208,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Size (56, 30), size);
 		}
 
-		[Test]
+		
 		public void HorizontalRequestInVerticalLayout ()
 		{
 			var stack = new StackLayout {
@@ -233,7 +233,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (180, 72, 20, 30), stack.Children[2].Bounds);
 		}
 
-		[Test]
+		
 		public void VerticalRequestInHorizontalLayout ()
 		{
 			var stack = new StackLayout {
@@ -254,7 +254,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (52, 170, 20, 30), stack.Children.Cast<View>().ToArray()[2].Bounds);
 		}
 
-		[Test]
+		
 		public void RespectMinimumHeightRequest ()
 		{
 			var stack = new StackLayout {
@@ -275,7 +275,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (stack.Children.ToArray()[2].Bounds, Is.EqualTo (new Rectangle (0, 220, 100, 30)));
 		}
 
-		[Test]
+		
 		public void RespectMinimumWidthRequest ()
 		{
 			var stack = new StackLayout {
@@ -297,7 +297,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (stack.Children.ToArray()[2].Bounds, Is.EqualTo (new Rectangle (220, 0, 30, 100)));
 		}
 
-		[Test]
+		
 		public void GetMinimumSizeVertical ()
 		{
 			var stack = new StackLayout {
@@ -315,7 +315,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (result.Minimum, Is.EqualTo (new Size (100, 230)));
 		}
 
-		[Test]
+		
 		public void GetMinimumSizeHorizontal ()
 		{
 			var stack = new StackLayout {
@@ -334,7 +334,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (result.Minimum, Is.EqualTo (new Size (230, 100)));
 		}
 
-		[Test]
+		
 		public void TestVisibility ()
 		{
 			View child1, child2;
@@ -362,7 +362,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		}
 
-		[Test]
+		
 		public void OffOrientationMinimumSize ()
 		{
 			var stack = new StackLayout {
@@ -383,7 +383,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Size (10, 10), result.Minimum);
 		}
 
-		[Test]
+		
 		public void NestedMinimumSizeOverflow ()
 		{
 			var stack = new StackLayout {
@@ -469,7 +469,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (x2, y2, w2, h2), child2.Bounds);
 		}
 
-		[Test]
+		
 		public void RelayoutOnRemove ()
 		{
 			var child1 = new BoxView {
@@ -496,7 +496,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (0, 0, 200, 40), child2.Bounds);
 		}
 
-		[Test]
+		
 		public void FixedVerticalStackFixesExpander ()
 		{
 			var child1 = new BoxView {
@@ -520,7 +520,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (LayoutConstraint.Fixed, child2.Constraint);
 		}
 
-		[Test]
+		
 		public void HFixedVerticalStackFixesExpander ()
 		{
 			var child1 = new BoxView {
@@ -544,7 +544,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (LayoutConstraint.HorizontallyFixed, child2.Constraint);
 		}
 
-		[Test]
+		
 		public void FixedHorizontalStackFixesExpander ()
 		{
 			var child1 = new BoxView {
@@ -569,7 +569,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (LayoutConstraint.Fixed, child2.Constraint);
 		}
 
-			[Test]
+			
 		public void HFixedHorizontalStackFixesExpander ()
 		{
 			var child1 = new BoxView {
@@ -595,7 +595,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Ignore ("This test intended to test bz38416 however I just for the life of me cant figure it out in simplified form. I am failure.")]
-		[Test]
+		
 		public void TheWTFTest ()
 		{
 			var child1 = new BoxView {

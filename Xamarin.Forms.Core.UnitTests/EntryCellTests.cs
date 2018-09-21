@@ -14,7 +14,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Device.PlatformServices = new MockPlatformServices ();
 		}
 
-		[Test]
+		
 		public void ChangingHorizontalTextAlignmentFiresXAlignChanged ()
 		{
 			var entryCell = new EntryCell { HorizontalTextAlignment = TextAlignment.Center };
@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True(horizontalTextAlignmentFired);
 		}
 
-		[Test]
+		
 		public void EntryCellXAlignBindingMatchesHorizontalTextAlignmentBinding ()
 		{
 			var vm = new ViewModel ();

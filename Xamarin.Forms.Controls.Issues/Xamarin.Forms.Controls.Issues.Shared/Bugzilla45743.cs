@@ -60,7 +60,7 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST
 
 #if __IOS__
-		[Test]
+		
 		public void Bugzilla45743Test()
 		{
 			RunningApp.WaitForElement(q => q.Marked("ActionSheet Title"));

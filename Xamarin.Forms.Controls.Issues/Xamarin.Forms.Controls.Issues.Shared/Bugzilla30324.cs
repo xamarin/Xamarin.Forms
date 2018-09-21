@@ -82,7 +82,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 		#if UITEST
-		[Test]
+		
 		public void Bugzilla30324Test ()
 		{
 			RunningApp.Tap (q => q.Marked ("navigate"));

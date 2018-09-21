@@ -6,7 +6,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	public abstract class CommandSourceTests<T> : BaseTestFixture
 		where T : BindableObject
 	{
-		[Test]
+		
 		public void TestCommand ()
 		{
 			var source = CreateSource();
@@ -24,7 +24,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (executed);
 		}
 
-		[Test]
+		
 		public void CommandCanExecuteModifiesEnabled ([Values(true, false)] bool initial)
 		{
 			bool canExecute = initial;
@@ -40,7 +40,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (canExecute, source.GetValue (IsEnabledProperty));
 		}
 
-		[Test]
+		
 		public void ReenabledAfterCommandRemoved()
 		{
 			var source = CreateSource();
@@ -53,7 +53,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (source.GetValue (IsEnabledProperty), Is.True);
 		}
 
-		[Test]
+		
 		public void CommandUnhooksOnNull ()
 		{
 			bool canExecute = false;
@@ -75,7 +75,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (raised);
 		}
 
-		[Test]
+		
 		public void CommandCanExecuteInvokedOnCommandSet ()
 		{
 			bool fired = false;
@@ -91,7 +91,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (fired);
 		}
 
-		[Test]
+		
 		public void CommandCanExecuteInvokedOnCommandParameterSet ()
 		{
 			bool fired;
@@ -109,7 +109,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (fired);
 		}
 
-		[Test]
+		
 		public void CommandCanExecuteInvokedOnChange()
 		{
 			bool fired;
@@ -148,7 +148,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void EnabledUpdatesDoNotRemoveBindings()
 		{
 			var vm = new BoolViewModel { Toggle = true };

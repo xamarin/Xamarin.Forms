@@ -37,7 +37,7 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST
 		protected override bool Isolate => true;
 
-		[Test]
+		
 		public void Bugzilla29247Test ()
 		{
 			RunningApp.WaitForElement(q => q.Marked("btnOpenUri1"));
@@ -73,7 +73,7 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST
 		protected override bool Isolate => true;
 
-		[Test]
+		
 		public void Bugzilla29247EncodedParamsTest ()
 		{
 			RunningApp.WaitForElement(q => q.Marked("btnOpenUri2"));
@@ -110,7 +110,7 @@ namespace Xamarin.Forms.Controls.Issues
 #if UITEST
 		protected override bool Isolate => true;
 
-		[Test]
+		
 		public void Bugzilla29247DecodeParamsTest ()
 		{
 			RunningApp.WaitForElement(q => q.Marked("btnOpenUri3"));

@@ -12,7 +12,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 	[TestFixture]
 	public class XamlgTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void LoadXaml2006 ()
 		{
 			var xaml = @"<View
@@ -39,7 +39,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual ("Xamarin.Forms.Label", generator.NamedFields.First().Type.BaseType);
 		}
 
-		[Test]
+		
 		public void LoadXaml2009 ()
 		{
 			var xaml = @"<View
@@ -66,7 +66,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual("Xamarin.Forms.Label", generator.NamedFields.First().Type.BaseType);
 		}
 
-		[Test]
+		
 		//https://github.com/xamarin/Duplo/issues/1207#issuecomment-47159917
 		public void xNameInCustomTypes ()
 		{
@@ -98,7 +98,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual ("CustomListViewSample.CustomListView", generator.NamedFields.ToArray()[1].Type.BaseType);
 		}
 
-		[Test]
+		
 		public void xNameInDataTemplates ()
 		{
 			var xaml = @"<StackLayout 
@@ -126,7 +126,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual (1, generator.NamedFields.Count());
 		}
 
-		[Test]
+		
 		public void xNameInStyles ()
 		{
 			var xaml = @"<StackLayout 
@@ -154,7 +154,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual (0, generator.NamedFields.Count());
 		}
 
-		[Test]
+		
 		public void xTypeArgumentsOnRootElement ()
 		{
 			var xaml = @"<Foo 
@@ -174,7 +174,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual ("System.String", generator.BaseType.TypeArguments [0].BaseType);
 		}
 
-		[Test]
+		
 		public void MulipleXTypeArgumentsOnRootElement ()
 		{
 			var xaml = @"<Foo 
@@ -195,7 +195,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual ("System.Int32", generator.BaseType.TypeArguments [1].BaseType);
 		}
 
-		[Test]
+		
 		public void MulipleXTypeArgumentsOnRootElementWithWhitespace ()
 		{
 			var xaml = @"<Foo 
@@ -216,7 +216,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual ("System.Int32", generator.BaseType.TypeArguments [1].BaseType);
 		}
 
-		[Test]
+		
 		public void MulipleXTypeArgumentsMulitpleNamespacesOnRootElement ()
 		{
 			var xaml = @"<Foo 
@@ -240,7 +240,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual ("Xamarin.Forms.Xaml.UnitTests.Bugzilla24258.InterfacesTwo.IDummyInterfaceTwo", generator.BaseType.TypeArguments [1].BaseType);
 		}
 
-		[Test]
+		
 		public void MulipleXTypeArgumentsMulitpleNamespacesOnRootElementWithWhitespace ()
 		{
 			var xaml = @"<Foo 
@@ -264,7 +264,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual ("Xamarin.Forms.Xaml.UnitTests.Bugzilla24258.InterfacesTwo.IDummyInterfaceTwo", generator.BaseType.TypeArguments [1].BaseType);
 		}
 
-		[Test]
+		
 		//https://bugzilla.xamarin.com/show_bug.cgi?id=33256
 		public void AlwaysUseGlobalReference ()
 		{
@@ -285,7 +285,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void FieldModifier()
 		{
 			var xaml = @"
@@ -312,7 +312,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			}
 		}
 
-		[Test]
+		
 		//https://github.com/xamarin/Xamarin.Forms/issues/2574
 		public void xNameOnRoot()
 		{
@@ -331,7 +331,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual("Xamarin.Forms.ContentPage", generator.NamedFields.First().Type.BaseType);
 		}
 		
-		[Test]
+		
 		public void XamlGDifferentInputOutputLengths ()
 		{
 			var engine = new DummyBuildEngine ();

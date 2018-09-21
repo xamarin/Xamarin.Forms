@@ -19,7 +19,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Device.PlatformServices = null;
 		}
 
-		[Test]
+		
 		public void GetSizeRequestIncludesMargins ()
 		{
 			var platform = new UnitPlatform ((b, d, e) => new SizeRequest(new Size(100,50)));
@@ -42,7 +42,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Size (140, 110), result.Request);
 		}
 
-		[Test]
+		
 		public void MarginsAffectPositionInContentView ()
 		{
 			var platform = new UnitPlatform ((b, d, e) => new SizeRequest(new Size(100,50)));
@@ -65,7 +65,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (10, 20, 100, 50), child.Bounds);
 		}
 
-		[Test]
+		
 		public void ChangingMarginCausesRelayout ()
 		{
 			var platform = new UnitPlatform ((b, d, e) => new SizeRequest(new Size(100,50)));
@@ -90,7 +90,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Rectangle (10, 20, 100, 50), child.Bounds);
 		}
 
-		[Test]
+		
 		public void IntegrationTest ()
 		{
 			var platform = new UnitPlatform ((b, d, e) => new SizeRequest(new Size(100,50)));

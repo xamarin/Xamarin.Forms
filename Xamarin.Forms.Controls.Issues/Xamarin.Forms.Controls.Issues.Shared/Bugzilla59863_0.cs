@@ -60,7 +60,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test] 
+		 
 		public void TapsCountShouldMatch()
 		{
 			// Gonna add this test because we'd want to know if it _did_ start failing
@@ -79,7 +79,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement($"{tapsToTest} {Singles} on {SingleTapBoxId}");
 		}
 
-		[Test]
+		
 		public void DoubleTapWithOnlySingleTapRecognizerShouldRegisterTwoTaps()
 		{
 			RunningApp.WaitForElement(SingleTapBoxId);

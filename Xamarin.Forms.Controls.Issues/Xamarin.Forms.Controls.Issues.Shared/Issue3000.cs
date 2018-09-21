@@ -114,7 +114,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 
 #if UITEST
-		[Test]
+		
 		public void RtlScrollViewStartsScrollToRight()
 		{
 			RunningApp.WaitForElement(kSuccess);

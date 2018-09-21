@@ -6,14 +6,14 @@ namespace Xamarin.Forms.Core.UnitTests
 {
 	public class PinchGestureRecognizerTests  : BaseTestFixture
 	{
-		[Test]
+		
 		public void Constructor ()
 		{
 			var pinch = new PinchGestureRecognizer ();
 	
 		}
 
-		[Test]
+		
 		public void PinchStartedTest ()
 		{
 			var view = new View ();
@@ -32,7 +32,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (point, resultPoint);
 		}
 
-		[Test]
+		
 		public void PinchCompletedTest ()
 		{
 			var view = new View ();
@@ -47,7 +47,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (GestureStatus.Completed, result);
 		}
 
-		[Test]
+		
 		public void PinchUpdatedTest ()
 		{
 			var view = new View ();
@@ -64,7 +64,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (2, result);
 		}
 
-		[Test]
+		
 		public void OnlyOnePinchGesturePerViewTest ()
 		{
 			var view = new View ();

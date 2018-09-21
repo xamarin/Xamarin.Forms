@@ -62,7 +62,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST && __ANDROID__
-		[Test]
+		
 		public void BottomContentVisibleWithBottomBarAndNavigationPage()
 		{
 			RunningApp.WaitForElement("Bottom Text");

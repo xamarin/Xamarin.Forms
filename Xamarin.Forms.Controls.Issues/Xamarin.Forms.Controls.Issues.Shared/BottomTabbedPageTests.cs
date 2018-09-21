@@ -247,7 +247,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public async Task AddAndRemovePages()
 		{
 			RunningApp.WaitForElement(q => q.Marked("Test"));
@@ -267,7 +267,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement(q => q.Marked("Success"));
 		}
 
-		[Test]
+		
 		public void BottomTabbedPageWithModalIssueTestsAllElementsPresent()
 		{
 			RunningApp.WaitForElement(q => q.Marked("Page 1"));
@@ -277,7 +277,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Screenshot("All elements present");
 		}
 
-		[Test]
+		
 		public void BottomTabbedPageWithModalIssueTestsPopFromFirstTab()
 		{
 			RunningApp.Tap(q => q.Button("Pop"));
@@ -286,7 +286,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Screenshot("Popped from first tab");
 		}
 
-		[Test]
+		
 		public void BottomTabbedPageWithModalIssueTestsPopFromSecondTab()
 		{
 			RunningApp.Tap(q => q.Marked("Page 2"));

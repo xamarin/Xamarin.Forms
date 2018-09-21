@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Core.UnitTests
 {
 	public class FlexLayoutMarginTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void TestMarginLeft()
 		{
 			var platform = new UnitPlatform();
@@ -28,7 +28,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(view0.Bounds, Is.EqualTo(new Rectangle(10, 0, 10, 100)));
 		}
 
-		[Test]
+		
 		public void TestMarginTop()
 		{
 			var platform = new UnitPlatform();
@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(view0.Bounds, Is.EqualTo(new Rectangle(0, 10, 100, 10)));
 		}
 
-		[Test]
+		
 		public void TestMarginRight()
 		{
 			var platform = new UnitPlatform();
@@ -69,7 +69,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(view0.Bounds, Is.EqualTo(new Rectangle(80, 0, 10, 100)));
 		}
 
-		[Test]
+		
 		public void TestMarginBottom()
 		{
 			var platform = new UnitPlatform();
@@ -90,7 +90,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(view0.Bounds, Is.EqualTo(new Rectangle(0, 80, 100, 10)));
 		}
 
-		[Test]
+		
 		public void TestMarginAndFlexRow()
 		{
 			var platform = new UnitPlatform();
@@ -110,7 +110,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(view0.Bounds, Is.EqualTo(new Rectangle(10, 0, 80, 100)));
 		}
 
-		[Test]
+		
 		public void TestMarginAndFlexColumn()
 		{
 			var platform = new UnitPlatform();
@@ -130,7 +130,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(view0.Bounds, Is.EqualTo(new Rectangle(0, 10, 100, 80)));
 		}
 
-		[Test]
+		
 		public void TestMarginAndStretchRow()
 		{
 			var platform = new UnitPlatform();
@@ -151,7 +151,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(view0.Bounds, Is.EqualTo(new Rectangle(0, 10, 100, 80)));
 		}
 
-		[Test]
+		
 		public void TestMarginAndStretchColumn()
 		{
 
@@ -172,7 +172,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(view0.Bounds, Is.EqualTo(new Rectangle(10, 0, 80, 100)));
 		}
 
-		[Test]
+		
 		public void TestMarginWithSiblingRow()
 		{
 			var platform = new UnitPlatform((visual, width, height) => new SizeRequest(new Size(0, 0)));
@@ -197,7 +197,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(view1.Bounds, Is.EqualTo(new Rectangle(55, 0, 45, 100)));
 		}
 
-		[Test]
+		
 		public void TestMarginWithSiblingColumn()
 		{
 			var platform = new UnitPlatform();

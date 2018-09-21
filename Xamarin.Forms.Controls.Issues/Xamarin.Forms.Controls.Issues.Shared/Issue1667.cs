@@ -94,7 +94,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		[NUnit.Framework.Category(UITestCategories.ManualReview)]
 		public void TestCursorPositionAndSelection()
 		{
@@ -113,7 +113,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if __IOS__
-		[Test]
+		
 		[NUnit.Framework.Category(UITestCategories.ManualReview)]
 		public void TestCursorColorOniOS()
 		{

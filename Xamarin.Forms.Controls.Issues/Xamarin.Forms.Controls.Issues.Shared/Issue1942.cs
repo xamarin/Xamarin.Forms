@@ -38,7 +38,7 @@ namespace Xamarin.Forms.Controls.Issues
 		public class CustomGrid : Grid { }
 
 #if UITEST && __ANDROID__
-		[Test]
+		
 		public void ClickPropagatesToOnTouchListener()
 		{
 			RunningApp.Tap(ClickMeString);

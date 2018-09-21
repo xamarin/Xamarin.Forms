@@ -75,7 +75,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Issue3408Test ()
 		{
 			RunningApp.WaitForElement (q => q.Marked ("btn1"));

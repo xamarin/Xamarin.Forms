@@ -19,7 +19,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Device.PlatformServices = new MockPlatformServices ();
 		}
 
-		[Test]
+		
 		public void TestConstructors ()
 		{
 			var filesource = new FileImageSource { File = "File.png" };
@@ -30,7 +30,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (stream, streamsource.Stream);
 		}
 
-		[Test]
+		
 		public void TestHelpers ()
 		{
 			var imagesource = ImageSource.FromFile ("File.png");
@@ -46,7 +46,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("http://xamarin.com/img.png", ((UriImageSource)(urisource)).Uri.AbsoluteUri);
 		}
 
-		[Test]
+		
 		public void TestImplicitFileConversion ()
 		{
 			var image = new Image { Source = "File.png" };
@@ -55,7 +55,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("File.png", ((FileImageSource)(image.Source)).File);
 		}
 
-		[Test]
+		
 		public void TestImplicitStringConversionWhenNull()
 		{
 			string s = null;
@@ -64,7 +64,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsNull (((FileImageSource)sut).File);
 		}
 
-		[Test]
+		
 		public void TestImplicitUriConversion ()
 		{
 			var image = new Image { Source = new Uri ("http://xamarin.com/img.png") };
@@ -73,7 +73,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("http://xamarin.com/img.png", ((UriImageSource)(image.Source)).Uri.AbsoluteUri);
 		}
 
-		[Test]
+		
 		public void TestImplicitStringUriConversion ()
 		{
 			var image = new Image { Source = "http://xamarin.com/img.png" };
@@ -82,7 +82,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("http://xamarin.com/img.png", ((UriImageSource)(image.Source)).Uri.AbsoluteUri);
 		}
 
-		[Test]
+		
 		public void TestImplicitUriConversionWhenNull()
 		{
 			Uri u = null;
@@ -90,7 +90,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsNull(sut);
 		}
 
-		[Test]
+		
 		public void TestSetStringValue ()
 		{
 			var image = new Image ();
@@ -100,7 +100,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("foo.png", ((FileImageSource)(image.Source)).File);
 		}
 
-		[Test]
+		
 		public void TextBindToStringValue ()
 		{
 			var image = new Image ();
@@ -112,7 +112,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("foo.png", ((FileImageSource)(image.Source)).File);
 		}
 
-		[Test]
+		
 		public void TextBindToStringUriValue ()
 		{
 			var image = new Image ();
@@ -124,7 +124,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("http://xamarin.com/img.png", ((UriImageSource)(image.Source)).Uri.AbsoluteUri);
 		}
 
-		[Test]
+		
 		public void TextBindToUriValue ()
 		{
 			var image = new Image ();
@@ -140,7 +140,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 		}
 
-		[Test]
+		
 		public void TestBindingContextPropagation ()
 		{
 			var context = new object ();
@@ -157,7 +157,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreSame (context, source.BindingContext);
 		}
 
-		[Test]
+		
 		public void ImplicitCastOnAbsolutePathsShouldCreateAFileImageSource ()
 		{
 			var path = "/private/var/mobile/Containers/Data/Application/B1E5AB19-F815-4B4A-AB97-BD4571D53743/Documents/temp/IMG_20140603_150614_preview.jpg";

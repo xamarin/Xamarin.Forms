@@ -10,7 +10,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 	[TestFixture]
 	public class XamlLoaderCreateTests
 	{
-		[Test]
+		
 		public void CreateFromXaml ()
 		{
 			var xaml = @"
@@ -25,7 +25,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual ("Foo", ((Label)((ContentView)view).Content).Text);
 		}
 
-		[Test]
+		
 		public void CreateFromXamlDoesntFailOnMissingEventHandler ()
 		{
 			var xaml = @"

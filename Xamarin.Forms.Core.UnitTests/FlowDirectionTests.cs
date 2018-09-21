@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	public class FlowDirectionTests : BaseTestFixture
 	{
 
-		[Test]
+		
 		public void ListViewFlowDirectionIsInheritedByViewCells()
 		{
 			var lv = new ListView { FlowDirection = FlowDirection.RightToLeft, ItemTemplate = new DataTemplate(() => new ViewCell { View = new View() }) };
@@ -21,7 +21,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue(target.EffectiveFlowDirection.IsRightToLeft(), "ViewCell View is not RightToLeft");
 		}
 
-		[Test]
+		
 		public void ListViewFlowDirectionIsInheritedByImageInViewCells()
 		{
 			var lv = new ListView { FlowDirection = FlowDirection.RightToLeft, ItemTemplate = new DataTemplate(() => new ViewCell { View = new Label() }) };
@@ -33,7 +33,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue(target.EffectiveFlowDirection.IsRightToLeft(), "ViewCell View is not RightToLeft");
 		}
 
-		[Test]
+		
 		public void ScrollViewSetsFlowDirectionAndGrandchildMaintainsParentExplicitValue()
 		{
 			var layout = ImplicitLeftToRightScrollView();
@@ -56,7 +56,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(FlowDirection.RightToLeft, layout2.FlowDirection);
 		}
 
-		[Test]
+		
 		public void GrandparentSetsFlowDirectionAndGrandchildMaintainsParentExplicitValue()
 		{
 			var layout = ImplicitLeftToRightLayout();
@@ -79,7 +79,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(FlowDirection.LeftToRight, layout2.FlowDirection);
 		}
 
-		[Test]
+		
 		public void GrandparentSetsFlowDirectionAndImplicitDescendentsInheritValue()
 		{
 			var layout = ImplicitLeftToRightLayout();
@@ -109,7 +109,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(FlowDirection.MatchParent, layout2.FlowDirection);
 		}
 
-		[Test]
+		
 		public void GrandparentSetsOppositeFlowDirectionAndGrandchildInheritsParentExplicitValue()
 		{
 			var layout = ExplicitRightToLeftLayout();
@@ -136,7 +136,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(FlowDirection.MatchParent, target);
 		}
 
-		[Test]
+		
 		public void NotifyFlowDirectionChangedDoesNotTriggerFlowDirectionPropertyChangedUnnecessarily()
 		{
 			var layout = ExplicitRightToLeftLayout();
@@ -160,7 +160,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(1, target);
 		}
 
-		[Test]
+		
 		public void ReParentAndInheritNewParentValue()
 		{
 			var layout = ExplicitRightToLeftLayout();
@@ -184,7 +184,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(FlowDirection.MatchParent, ((View)view).FlowDirection);
 		}
 
-		[Test]
+		
 		public void ReParentParentAndInheritNewGrandParentValue()
 		{
 			var layout = ExplicitRightToLeftLayout();
@@ -208,7 +208,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(FlowDirection.MatchParent, target);
 		}
 
-		[Test]
+		
 		public void SetFlowDirectionToMatchParentAndInheritParentValue()
 		{
 			var layout = ImplicitLeftToRightLayout();
@@ -229,7 +229,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue(!target.IsLeftToRight(), "EffectiveFlowDirection should be RightToLeft");
 		}
 
-		[Test]
+		
 		public void SetGrandparentAndInheritExplicitParentValue()
 		{
 			var layout = ExplicitRightToLeftLayout();
@@ -253,7 +253,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue(target.IsLeftToRight(), "EffectiveFlowDirection should be LeftToRight");
 		}
 
-		[Test]
+		
 		public void SetGrandparentUsingAnonCtorAndMaintainExplicitParentValue()
 		{
 			var layout = new StackLayout
@@ -284,7 +284,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue(target.IsLeftToRight(), "EffectiveFlowDirection should be LeftToRight");
 		}
 
-		[Test]
+		
 		public void SetGrandparentUsingCtorAndMaintainExplicitParentValue()
 		{
 			IViewController view = ImplicitLeftToRightView();
@@ -305,7 +305,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue(target.IsLeftToRight(), "EffectiveFlowDirection should be LeftToRight");
 		}
 
-		[Test]
+		
 		public void SetParentAndGrandchildrenInheritValue()
 		{
 			var layout = ExplicitRightToLeftLayout();
@@ -324,7 +324,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue(!target.IsLeftToRight(), "EffectiveFlowDirection should be RightToLeft");
 		}
 
-		[Test]
+		
 		public void SetParentAndContentAndGrandchildrenInheritValue()
 		{
 			var layout = ExplicitRightToLeftLayout();
@@ -344,7 +344,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 
-		[Test]
+		
 		public void SetParentAndInheritExplicitParentValue()
 		{
 			var layout = ExplicitRightToLeftLayout();
@@ -360,7 +360,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsTrue(!target.IsLeftToRight(), "EffectiveFlowDirection should be RightToLeft");
 		}
 
-		[Test]
+		
 		public void SetParentAndMaintainExplicitValue()
 		{
 			var layout = ExplicitRightToLeftLayout();
@@ -377,7 +377,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(FlowDirection.LeftToRight, ((View)view).FlowDirection);
 		}
 
-		[Test]
+		
 		public void SetParentUsingCtorAndInheritParentValue()
 		{
 			IViewController view = ImplicitLeftToRightView();

@@ -88,7 +88,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 
 #if UITEST
-        [Test]
+        
         public void VerifyNestedStacklayoutTapsBubble()
         {
             RunningApp.WaitForElement(q => q.Marked(InnerLayout));

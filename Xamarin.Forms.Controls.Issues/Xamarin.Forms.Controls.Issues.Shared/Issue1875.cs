@@ -128,7 +128,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void NSRangeException()
 		{
 			RunningApp.WaitForElement(q => q.Marked("Load"));

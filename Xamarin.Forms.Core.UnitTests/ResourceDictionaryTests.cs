@@ -10,7 +10,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class ResourceDictionaryTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void Add ()
 		{
 			var rd = new ResourceDictionary ();
@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("bar", rd ["foo"]);
 		}
 
-		[Test]
+		
 		public void AddKVP ()
 		{
 			var rd = new ResourceDictionary ();
@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("bar", rd ["foo"]);
 		}
 
-		[Test]
+		
 		public void ResourceDictionaryTriggersValueChangedOnAdd ()
 		{
 			var rd = new ResourceDictionary ();
@@ -41,7 +41,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Fail ();
 		}
 
-		[Test]
+		
 		public void ResourceDictionaryTriggersValueChangedOnChange ()
 		{
 			var rd = new ResourceDictionary ();
@@ -57,14 +57,14 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Fail ();
 		}
 
-		[Test]
+		
 		public void ResourceDictionaryCtor ()
 		{
 			var rd = new ResourceDictionary ();
 			Assert.AreEqual (0, rd.Count());
 		}
 
-		[Test]
+		
 		public void ElementMergesParentRDWithCurrent ()
 		{
 			var elt = new VisualElement {
@@ -88,7 +88,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("BAR", value);
 		}
 
-		[Test]
+		
 		public void CurrentOverridesParentValues ()
 		{
 			var elt = new VisualElement {
@@ -113,7 +113,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("BAZ", value);
 		}
 
-		[Test]
+		
 		public void AddingToParentTriggersValuesChanged ()
 		{
 			var elt = new VisualElement {
@@ -142,7 +142,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Fail ();
 		}
 
-		[Test]
+		
 		public void ResourcesChangedNotRaisedIfKeyExistsInCurrent ()
 		{
 			var elt = new VisualElement {
@@ -164,7 +164,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Pass ();
 		}
 
-		[Test]
+		
 		public void SettingParentTriggersValuesChanged ()
 		{
 			var elt = new VisualElement {
@@ -191,7 +191,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Fail ();
 		}
 
-		[Test]
+		
 		public void SettingResourcesTriggersResourcesChanged ()
 		{
 			var elt = new VisualElement ();
@@ -216,7 +216,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Fail();
 		}
 
-		[Test]
+		
 		public void DontThrowOnReparenting ()
 		{
 			var elt = new View { Resources = new ResourceDictionary () };
@@ -226,7 +226,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.DoesNotThrow (() => parent.Children.Remove (elt));
 		}
 
-		[Test]
+		
 		public void MultiLevelMerge ()
 		{
 			var elt = new VisualElement {
@@ -255,7 +255,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Fail ();
 		}
 
-		[Test]
+		
 		public void ShowKeyInExceptionIfNotFound()
 		{
 			var rd = new ResourceDictionary();
@@ -276,7 +276,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			public static int CreationCount { get; set; }
 		}
 
-		[Test]
+		
 		public void MergedWithFailsToMergeAnythingButRDs()
 		{
 			var rd = new ResourceDictionary();
@@ -284,7 +284,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Throws<ArgumentException>(() => rd.MergedWith = typeof(ContentPage));
 		}
 
-		[Test]
+		
 		public void MergedResourcesAreFound()
 		{
 			var rd0 = new ResourceDictionary();
@@ -295,7 +295,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("Foo", _);
 		}
 
-		[Test]
+		
 		public void ThrowOnDuplicateKey()
 		{
 			var rd0 = new ResourceDictionary();
@@ -309,7 +309,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Fail();
 		}
 
-		[Test]
+		
 		public void ContainsReturnsValuesForMergedRD()
 		{
 			var rd = new ResourceDictionary {
@@ -321,7 +321,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(rd.Contains(new KeyValuePair<string, object>("foo", "Foo")), Is.True);
 		}
 
-		[Test]
+		
 		public void CountDoesNotIncludeMerged()
 		{
 			var rd = new ResourceDictionary {
@@ -333,7 +333,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(rd.Count, Is.EqualTo(2));
 		}
 
-		[Test]
+		
 		public void IndexerLookupInMerged()
 		{
 			var rd = new ResourceDictionary {
@@ -346,7 +346,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(rd["foo"], Is.EqualTo("Foo"));
 		}
 
-		[Test]
+		
 		public void TryGetValueLookupInMerged()
 		{
 			var rd = new ResourceDictionary {
@@ -360,7 +360,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(rd.TryGetValue("baz", out _), Is.True);
 		}
 
-		[Test]
+		
 		public void MergedDictionaryResourcesAreFound()
 		{
 			var rd0 = new ResourceDictionary();
@@ -371,7 +371,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("bar", value);
 		}
 
-		[Test]
+		
 		public void MergedDictionaryResourcesAreFoundLastDictionaryTakesPriority()
 		{
 			var rd0 = new ResourceDictionary();
@@ -384,7 +384,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("bar2", value);
 		}
 
-		[Test]
+		
 		public void CountDoesNotIncludeMergedDictionaries()
 		{
 			var rd = new ResourceDictionary {
@@ -396,7 +396,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(rd.Count, Is.EqualTo(2));
 		}
 
-		[Test]
+		
 		public void ClearMergedDictionaries()
 		{
 			var rd = new ResourceDictionary {
@@ -412,7 +412,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(rd.MergedDictionaries.Count, Is.EqualTo(0));
 		}
 
-		[Test]
+		
 		public void AddingMergedRDTriggersValueChanged()
 		{
 			var rd = new ResourceDictionary();
@@ -426,7 +426,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(label.Text, Is.EqualTo("Foo"));
 		}
 
-		[Test]
+		
 		//this is to keep the alignment with resources removed from RD
 		public void RemovingMergedRDDoesntTriggersValueChanged()
 		{
@@ -448,7 +448,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(label.Text, Is.EqualTo("Foo"));
 		}
 
-		[Test]
+		
 		public void AddingResourceInMergedRDTriggersValueChanged()
 		{
 			var rd0 = new ResourceDictionary ();

@@ -77,7 +77,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		[Category("ManualReview")]
 		public void Bugzilla38978Test ()
 		{

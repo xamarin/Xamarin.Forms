@@ -6,7 +6,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 	[TestFixture]
 	public class Issue1641
 	{
-		[Test]
+		
 		public void StaticResourceInTableView ()
 		{
 			var xaml = @"

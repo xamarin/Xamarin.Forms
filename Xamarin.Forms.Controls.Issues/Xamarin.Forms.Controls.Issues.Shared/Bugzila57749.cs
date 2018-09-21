@@ -37,7 +37,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public async void Bugzilla57749Test()
 		{
 			await Task.Delay(500);

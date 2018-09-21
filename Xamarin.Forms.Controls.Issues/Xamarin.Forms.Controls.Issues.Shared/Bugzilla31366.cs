@@ -66,7 +66,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 
 #if UITEST
-		[Test]
+		
 		[UiTest (typeof (NavigationPage))]
 		public void Issue31366PushingAndPoppingModallyCausesArgumentOutOfRangeException ()
 		{
@@ -74,7 +74,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement (q => q.Marked ("If this is visible, the PopOnAppearing test has passed."));
 		}
 
-		[Test]
+		
 		[UiTest (typeof (NavigationPage))]
 		public void Issue31366PushingWithModalStackCausesIncorrectStackOrder ()
 		{

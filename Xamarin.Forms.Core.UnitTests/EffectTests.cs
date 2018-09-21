@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class EffectTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void ResolveSetsId ()
 		{
 			string id = "Unknown";
@@ -17,14 +17,14 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (id, effect.ResolveId);
 		}
 
-		[Test]
+		
 		public void UnknownIdReturnsNullEffect ()
 		{
 			var effect = Effect.Resolve ("Foo");
 			Assert.IsInstanceOf<NullEffect> (effect);
 		}
 
-		[Test]
+		
 		public void SendAttachedSetsFlag ()
 		{
 			var effect = Effect.Resolve ("Foo");
@@ -32,7 +32,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (effect.IsAttached);
 		}
 
-		[Test]
+		
 		public void SendDetachedUnsetsFlag ()
 		{
 			var effect = Effect.Resolve ("Foo");
@@ -41,7 +41,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (effect.IsAttached);
 		}
 
-		[Test]
+		
 		public void EffectLifecyclePreProvider ()
 		{
 			var effect = new CustomEffect ();
@@ -59,7 +59,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (effect.OnDetachedCalled);
 		}
 
-		[Test]
+		
 		public void EffectLifecyclePostProvider ()
 		{
 			var effect = new CustomEffect ();
@@ -77,7 +77,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (effect.OnDetachedCalled);
 		}
 
-		[Test]
+		
 		public void EffectsClearDetachesEffect ()
 		{
 			var effect = new CustomEffect ();

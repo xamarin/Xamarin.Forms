@@ -10,7 +10,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class AcceleratorTypeConverterUnitTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void TestAcceleratorTypeConverter()
 		{
 			var converter = new AcceleratorTypeConverter();

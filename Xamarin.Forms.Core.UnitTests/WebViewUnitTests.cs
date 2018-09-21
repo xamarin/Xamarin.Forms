@@ -12,7 +12,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class WebViewUnitTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void TestSourceImplicitConversion ()
 		{
 			var web = new WebView ();
@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("http://www.google.com", ((UrlWebViewSource)web.Source).Url);
 		}
 
-		[Test]
+		
 		public void TestSourceChangedPropagation ()
 		{
 			var source = new UrlWebViewSource {Url ="http://www.google.com"};
@@ -38,7 +38,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (signaled);
 		}
 
-		[Test]
+		
 		public void TestSourceDisconnected ()
 		{
 			var source = new UrlWebViewSource {Url="http://www.google.com"};
@@ -62,7 +62,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		}
 
-		[Test]
+		
 		public void TestBindingContextPropagatesToSource ()
 		{
 			var htmlWebView = new WebView {
@@ -93,7 +93,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("http://xamarin.com", urlSource.Url);
 		}
 
-		[Test]
+		
 		public void TestAndroidMixedContent()
 		{
 			var defaultWebView = new WebView();
@@ -105,7 +105,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(mixedContentWebView.On<Android>().MixedContentMode(), MixedContentHandling.AlwaysAllow);
 		}
 
-		[Test]
+		
 		public void TestWindowsSetAllowJavaScriptAlertsFlag()
 		{
 			var defaultWebView = new WebView();

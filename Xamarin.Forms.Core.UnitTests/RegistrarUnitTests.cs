@@ -42,7 +42,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Device.PlatformServices = null;
 		}
 
-		[Test]
+		
 		public void GetButtonHandler ()
 		{
 			var buttonTarget = Internals.Registrar.Registered.GetHandler<ButtonTarget> (typeof (Button));
@@ -50,7 +50,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (buttonTarget, Is.InstanceOf<ButtonTarget>());
 		}
 
-		[Test]
+		
 		public void GetSliderHandler()
 		{
 			var sliderTarget = Internals.Registrar.Registered.GetHandler<SliderTarget> (typeof (Slider));
@@ -73,7 +73,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void TestConstructor ()
 		{
 			var registrar = new Internals.Registrar<MockRenderer> ();
@@ -83,7 +83,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Null (renderer);
 		}
 
-		[Test]
+		
 		public void TestGetRendererForKnownClass ()
 		{
 			var registrar = new Internals.Registrar<MockRenderer> ();
@@ -95,7 +95,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (renderer, Is.InstanceOf<MockRenderer>());
 		}
 
-		[Test]
+		
 		public void TestGetRendererForUnknownSubclass ()
 		{
 			var registrar = new Internals.Registrar<MockRenderer> ();
@@ -107,7 +107,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (renderer, Is.InstanceOf<MockRenderer>());
 		}
 
-		[Test]
+		
 		public void TestGetRendererWithRegisteredSubclass ()
 		{
 			var registrar = new Internals.Registrar<MockRenderer> ();
@@ -123,7 +123,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (viewRenderer, Is.InstanceOf<MockRenderer>());
 		}
 
-		[Test]
+		
 		public void TestReplaceRenderer ()
 		{
 			var registrar = new Internals.Registrar<MockRenderer> ();
@@ -137,7 +137,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (buttonRenderer, Is.InstanceOf<ShinyButtonMockRenderer>());
 		}
 
-		[Test]
+		
 		public void GetHandlerType()
 		{
 			var registrar = new Internals.Registrar<MockRenderer>();
@@ -146,7 +146,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (typeof (MockRenderer), registrar.GetHandlerType (typeof (View)));
 		}
 
-		[Test]
+		
 		public void GetHandlerTypeForObject()
 		{
 			var registrar = new Internals.Registrar<MockRenderer>();
@@ -156,7 +156,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (typeof (ButtonMockRenderer), registrar.GetHandlerTypeForObject (new Button ()));
 		}
 
-		[Test]
+		
 		public void GetHandlerForObject()
 		{
 			var registrar = new Internals.Registrar<MockRenderer>();
@@ -167,7 +167,7 @@ namespace Xamarin.Forms.Core.UnitTests
             Assert.That (buttonRenderer, Is.InstanceOf<ButtonMockRenderer> ());
 		}
 
-		[Test]
+		
 		public void TestGetRendererNullViewRenderer()
 		{
 			var registrar = new Internals.Registrar<MockRenderer>();

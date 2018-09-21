@@ -31,21 +31,21 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			};
 		}
 
-		[Test]
+		
 		public void TestxType ()
 		{
 			var markupString = @"{x:Type sys:String}";
 			Assert.AreEqual (typeof(string), (new MarkupExtensionParser ()).ParseExpression (ref markupString, serviceProvider));
 		}
 
-		[Test]
+		
 		public void TestWithoutPrefix ()
 		{
 			var markupString = @"{x:Type Grid}";
 			Assert.AreEqual (typeof(Grid), (new MarkupExtensionParser ()).ParseExpression (ref markupString, serviceProvider));
 		}
 
-		[Test]
+		
 		public void TestWithExplicitTypeName ()
 		{
 			var markupString = @"{x:Type TypeName=sys:String}";

@@ -211,7 +211,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 #if __MACOS__
 		[Ignore("EnterText on UITest.Desktop not implemented")]
 #endif
@@ -224,7 +224,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Tap(q => q.Marked("Focus Entry in ListView"));
 		}
 
-		[Test]
+		
 #if __MACOS__
 		[Ignore("EnterText on UITest.Desktop not implemented")]
 #endif
@@ -238,7 +238,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 		
-		[Test]
+		
 #if __MACOS__
 		[Ignore("EnterText on UITest.Desktop not implemented")]
 #endif
@@ -251,7 +251,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Tap(q => q.Marked("Focus Entry in Table"));
 		}
 
-		[Test]
+		
 #if __MACOS__
 		[Ignore("EnterText on UITest.Desktop not implemented")]
 #endif

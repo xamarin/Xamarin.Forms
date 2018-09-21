@@ -63,7 +63,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		[UiTest (typeof (Grid))]
 		public void Issue34007TestFirstElementHasLowestZOrder ()
 		{

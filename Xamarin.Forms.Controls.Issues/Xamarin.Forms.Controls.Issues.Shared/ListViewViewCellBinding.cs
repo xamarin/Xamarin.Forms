@@ -133,7 +133,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void ListViewViewCellBindingTestsAllElementsPresent ()
 		{
 			RunningApp.WaitForElement (q => q.Marked ("Remove"));
@@ -148,7 +148,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Screenshot ("All elements exist");
 		}
 
-		[Test]
+		
 		public void ListViewViewCellBindingTestsAddListItem () 
 		{
 			RunningApp.Tap (q => q.Button ("Add"));
@@ -157,7 +157,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.Screenshot ("List item added");
 		}
 
-		[Test]
+		
 		public void ListViewViewCellBindingTestsRemoveListItem () 
 		{
 			RunningApp.Tap (q => q.Button ("Remove"));

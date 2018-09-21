@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class TableRootUnitTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void Ctor()
 		{
 			const string title = "FooBar";
@@ -17,13 +17,13 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (title, model.Title);
 		}
 
-		[Test]
+		
 		public void CtorInvalid()
 		{
 			Assert.Throws<ArgumentNullException> (() => new TableRoot (null));
 		}
 
-		[Test]
+		
 		public void TestGetSections ()
 		{
 			var model = new TableRoot ("Name") {
@@ -42,7 +42,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (2, model.Count);
 		}
 
-		[Test]
+		
 		public void TestCollectionChanged ()
 		{
 			var model = new TableRoot ();
@@ -62,7 +62,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (changed);
 		}
 
-		[Test]
+		
 		public void TestTree ()
 		{
 			var model = new TableRoot ("Name") {
@@ -86,7 +86,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("Item 2.3", (model[1][2] as TextCell).Text);
 		}
 
-		//[Test]
+		//
 		//public void TestAddFromEnumerable ()
 		//{;
 		//	TableSection first, second;

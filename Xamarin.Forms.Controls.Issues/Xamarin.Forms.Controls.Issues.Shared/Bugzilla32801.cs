@@ -74,7 +74,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 		#if UITEST && __IOS__
-		[Test]
+		
 		public void Bugzilla32801Test ()
 		{
 			RunningApp.Tap (c => c.Marked ("btnAdd"));

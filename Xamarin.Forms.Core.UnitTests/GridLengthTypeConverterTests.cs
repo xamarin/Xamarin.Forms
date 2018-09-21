@@ -6,7 +6,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class GridLengthTypeConverterTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void TestAbsolute ()
 		{
 			var converter = new GridLengthTypeConverter ();
@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Throws<FormatException> (() => converter.ConvertFromInvariantString ("foo"));
 		}
 
-		[Test]
+		
 		public void TestAuto ()
 		{
 			var converter = new GridLengthTypeConverter ();
@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (GridLength.Auto, converter.ConvertFromInvariantString (" AuTo "));
 		}
 
-		[Test]
+		
 		public void TestStar ()
 		{
 			var converter = new GridLengthTypeConverter ();
@@ -36,14 +36,14 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		}
 
-		[Test]
+		
 		public void TestValue ()
 		{
 			var converter = new GridLengthTypeConverter ();
 			Assert.AreEqual (new GridLength(3.3), converter.ConvertFromInvariantString("3.3"));
 		}
 
-		[Test]
+		
 		public void TestValueStar ()
 		{
 			var converter = new GridLengthTypeConverter ();

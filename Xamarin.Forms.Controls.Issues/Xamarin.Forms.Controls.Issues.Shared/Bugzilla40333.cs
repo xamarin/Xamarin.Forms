@@ -206,7 +206,7 @@ namespace Xamarin.Forms.Controls.Issues
 			}
 		}
 
-		[Test]
+		
 		public void ClickingOnMenuItemInMasterDoesNotCrash_NavPageVersion()
 		{
 			IgnoreFormsApplicationActivity();
@@ -221,7 +221,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement(q => q.Marked(StillHereId)); // If the bug isn't fixed, the app will have crashed by now
 		}
 
-		[Test]
+		
 		public void ClickingOnMenuItemInMasterDoesNotCrash_TabPageVersion()
 		{
 			IgnoreFormsApplicationActivity();

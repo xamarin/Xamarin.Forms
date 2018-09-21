@@ -140,7 +140,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void UpdatingSourceOfDisposedListViewDoesNotCrash()
 		{
 			RunningApp.Tap(Go);

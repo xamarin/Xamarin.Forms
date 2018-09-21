@@ -83,7 +83,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST
 #if __MACOS__
-		[Test]
+		
 		public void Issue3012Test()
 		{
 			RunningApp.WaitForElement(q => q.Marked("DumbyEntry"));

@@ -46,7 +46,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Bugzilla32230Test ()
 		{
 			RunningApp.Tap (q => q.Marked ("btnOpen"));

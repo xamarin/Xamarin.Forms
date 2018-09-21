@@ -44,7 +44,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Issue1601Test()
 		{
 			RunningApp.Screenshot("Start G1601");

@@ -228,7 +228,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 		#if UITEST
-		[Test]
+		
 		public void Bugzilla32148Test ()
 		{
 			RunningApp.WaitForElement (q => q.Marked ("Contact0 LastName"));

@@ -131,7 +131,7 @@ The EntryCell should display '112358' and the TextCell should display '48151623'
 		}
 
 #if UITEST
-		[Test]
+		
 		public void TextAndEntryCellsDataBindInTableView()
 		{
 			RunningApp.WaitForElement("Generate");

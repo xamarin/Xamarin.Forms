@@ -12,7 +12,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class DynamicBindingContextTests
 	{
-		[Test]
+		
 		public void BindingTwoWayToDynamicModel ()
 		{
 			var view = new MockBindable ();

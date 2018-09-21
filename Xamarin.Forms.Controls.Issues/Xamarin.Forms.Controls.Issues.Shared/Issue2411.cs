@@ -27,7 +27,7 @@ namespace Xamarin.Forms.Controls.Issues
         }
 
 #if UITEST
-        [Test]
+        
 #if __ANDROID__
         [Ignore("Appearing event is tied to virtualization in TabbedPage for Material")]
 #endif
@@ -58,7 +58,7 @@ namespace Xamarin.Forms.Controls.Issues
             RunningApp.WaitForElement(q => q.Marked("99 99 99 99 99 99"));
         }
 
-        [Test]
+        
         [Issue(IssueTracker.Github, 2411, "ScrollToPosition.End crashing in TabbedPage", PlatformAffected.Android)]
 #if __MACOS__
         [Ignore("ScrollTo not implemented on MacOS")]
@@ -75,7 +75,7 @@ namespace Xamarin.Forms.Controls.Issues
             RunningApp.WaitForElement(q => q.Marked("2 99 99 99 99 99 99"));
         }
 
-        [Test]
+        
         [Issue(IssueTracker.Github, 2411, "ScrollToPositon.End crashing in TabbedPage", PlatformAffected.Android)]
         public void Issue2411ScrollToPositionWrongOnUneven()
         {

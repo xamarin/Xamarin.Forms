@@ -37,7 +37,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST && __ANDROID__
-		[Test]
+		
 		public void TestButtonUsingElevation ()
 		{
 			RunningApp.WaitForElement(Running);

@@ -101,7 +101,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		[Ignore("Fails intermittently on TestCloud")]
 		public void Bugzilla28570Test ()
 		{

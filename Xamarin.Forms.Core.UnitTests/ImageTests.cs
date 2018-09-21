@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Device.PlatformServices = null;
 		}
 
-		[Test]
+		
 		public void TestSizing ()
 		{
 			var image = new Image {Source = ImageSource.FromFile ("File.png"), Platform = new UnitPlatform (), IsPlatformEnabled = true};
@@ -37,7 +37,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (20, result.Request.Height);
 		}
 
-		[Test]
+		
 		public void TestAspectSizingWithConstrainedHeight ()
 		{
 			var image = new Image {Source = ImageSource.FromFile ("File.png"), Platform = new UnitPlatform (), IsPlatformEnabled = true};
@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (10, result.Request.Height);
 		}
 
-		[Test]
+		
 		public void TestAspectSizingWithConstrainedWidth ()
 		{
 			var image = new Image {Source = ImageSource.FromFile ("File.png"), Platform = new UnitPlatform (), IsPlatformEnabled = true};
@@ -59,7 +59,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (5, result.Request.Height);
 		}
 
-		[Test]
+		
 		public void TestAspectFillSizingWithConstrainedHeight ()
 		{
 			var image = new Image {Source = ImageSource.FromFile ("File.png"), Platform = new UnitPlatform (), IsPlatformEnabled = true};
@@ -71,7 +71,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (10, result.Request.Height);
 		}
 
-		[Test]
+		
 		public void TestAspectFillSizingWithConstrainedWidth ()
 		{
 			var image = new Image {Source = ImageSource.FromFile ("File.png"), Platform = new UnitPlatform (), IsPlatformEnabled = true};
@@ -83,7 +83,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (5, result.Request.Height);
 		}
 
-		[Test]
+		
 		public void TestFillSizingWithConstrainedHeight ()
 		{
 			var image = new Image {Source = ImageSource.FromFile ("File.png"), Platform = new UnitPlatform (), IsPlatformEnabled = true};
@@ -95,7 +95,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (10, result.Request.Height);
 		}
 
-		[Test]
+		
 		public void TestFillSizingWithConstrainedWidth ()
 		{
 			var image = new Image {Source = ImageSource.FromFile ("File.png"), Platform = new UnitPlatform (), IsPlatformEnabled = true};
@@ -107,7 +107,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (5, result.Request.Height);
 		}
 
-		[Test]
+		
 		public void TestSizeChanged ()
 		{
 			var image = new Image { Source = "File0.png" };
@@ -121,7 +121,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (preferredSizeChanged);
 		}
 
-		[Test]
+		
 		public void TestSource ()
 		{
 			var image = new Image ();
@@ -141,7 +141,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (signaled);
 		}
 
-		[Test]
+		
 		public void TestSourceDoubleSet ()
 		{
 			var image = new Image {Source = ImageSource.FromFile ("File.png")};
@@ -157,7 +157,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (signaled);
 		}
 
-		[Test]
+		
 		public void TestFileImageSourceChanged ()
 		{
 			var source = (FileImageSource)ImageSource.FromFile ("File.png");
@@ -173,7 +173,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (signaled);
 		}
 
-		[Test]
+		
 		public void TestFileImageSourcePropertiesChangedTriggerResize ()
 		{
 			var source = new FileImageSource ();
@@ -186,7 +186,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (fired);
 		}
 				
-		[Test]
+		
 		public void TestStreamImageSourcePropertiesChangedTriggerResize ()
 		{
 			var source = new StreamImageSource ();
@@ -199,7 +199,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (fired);
 		}
 
-		[Test]
+		
 		public void TestImageSourceToNullCancelsLoading ()
 		{
 			var image = new Image ();

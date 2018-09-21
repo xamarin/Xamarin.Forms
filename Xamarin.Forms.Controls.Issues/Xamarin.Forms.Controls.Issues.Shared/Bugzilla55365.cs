@@ -19,7 +19,7 @@ namespace Xamarin.Forms.Controls.Issues
 		readonly StackLayout _layout = new StackLayout();
 
 #if UITEST
-		[Test]
+		
 		public void ForcingGCDoesNotCrash()
 		{
 			RunningApp.WaitForElement("Clear");

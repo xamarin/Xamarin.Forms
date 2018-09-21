@@ -7,7 +7,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class MapTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void AddPin ()
 		{
 			var map = new Map ();
@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (map.Pins[1].Position.Latitude, -12);
 		}
 
-		[Test]
+		
 		public void AddPinWithoutName ()
 		{
 			var map = new Map ();
@@ -50,7 +50,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (exception.Message, Is.EqualTo ("Pin must have a Label to be added to a map"));
 		}
 
-		[Test]
+		
 		public void AddPinWithoutAddress ()
 		{
 			var map = new Map ();
@@ -66,7 +66,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (map.Pins[0].Address, null);
 		}
 
-		[Test]
+		
 		public void Constructor ()
 		{
 			var center = new Position (15.5, 176);
@@ -79,7 +79,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (position, map.LastMoveToRegion.Center);
 		}
 
-		[Test]
+		
 		public void RemovePin ()
 		{
 			var map = new Map ();
@@ -110,7 +110,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (map.Pins.Contains (genericPlace));
 		}
 
-		[Test]
+		
 		public void VisibleRegion ()
 		{
 			var map = new Map (new MapSpan (new Position (), 0, 0));
@@ -128,7 +128,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (signaled);
 		}
 
-		[Test]
+		
 		public void VisibleRegionDoubleSet ()
 		{
 			var map = new Map ();

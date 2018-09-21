@@ -46,7 +46,7 @@ namespace Xamarin.Forms.Core.UITests
 		}
 
 		// ActivityIndicator tests
-		[Test]
+		
 		[UiTest(typeof(ActivityIndicator), "IsRunning")]
 		public void IsRunning()
 		{

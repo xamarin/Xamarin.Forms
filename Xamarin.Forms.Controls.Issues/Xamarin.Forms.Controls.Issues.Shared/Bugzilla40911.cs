@@ -27,7 +27,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST && __IOS__
-		[Test]
+		
 		public void CanFinishLoginWithoutNRE ()
 		{
 			RunningApp.WaitForElement("Start");

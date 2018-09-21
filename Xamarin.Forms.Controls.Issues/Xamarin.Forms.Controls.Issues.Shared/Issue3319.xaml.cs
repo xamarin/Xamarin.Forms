@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Controls.Issues
 	public partial class Issue3319 : TestContentPage
 	{
 		#if UITEST
-		[Test]
+		
 		public void Issue3319Test ()
 		{
 			RunningApp.WaitForElement (q => q.Marked ("Will this repo work?"));

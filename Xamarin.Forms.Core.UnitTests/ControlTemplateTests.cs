@@ -60,7 +60,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void ResettingControlTemplateNullsPresenterContent ()
 		{
 			var testView = new TestView {
@@ -83,7 +83,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsNull (originalPresenter.Content);
 		}
 
-		[Test]
+		
 		public void NestedTemplateBindings ()
 		{
 			var testView = new TestView ();
@@ -100,7 +100,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("Bar", label.Text);
 		}
 
-		[Test]
+		
 		public void ParentControlTemplateDoesNotClearChildTemplate ()
 		{
 			var parentView = new TestView ();
@@ -119,7 +119,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsNotNull (childPresenter.Content);
 		}
 
-		[Test]
+		
 		public void NullConstructor ()
 		{
 			Assert.Throws<ArgumentNullException> (() => new ControlTemplate (null));
@@ -170,7 +170,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void DoubleTwoWayBindingWorks ()
 		{
 			var page = new TestPage ();

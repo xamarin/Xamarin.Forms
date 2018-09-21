@@ -111,7 +111,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST
 
-		[Test]
+		
 		public void Issue2104Test()
 		{
 			RunningApp.WaitForElement(q => q.Marked("Clear"));

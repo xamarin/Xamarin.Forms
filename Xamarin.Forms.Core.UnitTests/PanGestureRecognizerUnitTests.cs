@@ -7,7 +7,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 	public class PanGestureRecognizerUnitTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void PanRaisesStartedEventTest ()
 		{
 			var view = new View ();
@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (GestureStatus.Started, target);
 		}
 
-		[Test]
+		
 		public void PanRaisesRunningEventTest ()
 		{
 			var view = new View ();
@@ -37,7 +37,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (GestureStatus.Running, target);
 		}
 
-		[Test]
+		
 		public void PanRunningEventContainsTotalXTest ()
 		{
 			var view = new View ();
@@ -52,7 +52,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (5, target);
 		}
 
-		[Test]
+		
 		public void PanRunningEventContainsTotalYTest ()
 		{
 			var view = new View ();
@@ -67,7 +67,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (10, target);
 		}
 
-		[Test]
+		
 		public void PanRaisesCompletedEventTest ()
 		{
 			var view = new View ();
@@ -82,7 +82,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (GestureStatus.Completed, target);
 		}
 
-		[Test]
+		
 		public void PanRaisesCanceledEventTest ()
 		{
 			var view = new View ();

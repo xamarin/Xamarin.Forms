@@ -5,7 +5,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class BindingTypeConverterTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void CanConvertFrom()
 		{
 			var c = new BindingTypeConverter();
@@ -13,7 +13,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (c.CanConvertFrom (typeof (int)), Is.False);
 		}
 
-		[Test]
+		
 		public void Convert()
 		{
 			var c = new BindingTypeConverter();

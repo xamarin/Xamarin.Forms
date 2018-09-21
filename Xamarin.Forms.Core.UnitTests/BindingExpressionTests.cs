@@ -10,7 +10,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class BindingExpressionTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void Ctor()
 		{
 			string path = "Foo.Bar";
@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (path, be.Path);
 		}
 
-		[Test]
+		
 		public void CtorInvalid()
 		{
 			string path = "Foo.Bar";
@@ -35,7 +35,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				"Allowed the binding to be null");
 		}
 
-		[Test]
+		
 		public void ApplyNull()
 		{
 			const string path = "Foo.Bar";
@@ -61,7 +61,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				"FormatException did not contain an explanation");
 		}
 
-		[Test]
+		
 		public void ValidPaths (
 			[Values (
 				".", "[1]", "[1 ]", ".[1]", ". [1]",

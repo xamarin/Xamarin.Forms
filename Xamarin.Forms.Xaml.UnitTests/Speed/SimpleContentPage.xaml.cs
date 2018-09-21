@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				Device.PlatformServices = new MockPlatformServices ();
 			}
 
-			[Test]
+			
 			[Ignore]
 			public void XamlCIs20TimesFasterThanXaml ()
 			{
@@ -65,7 +65,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				Assert.Less (swXamlC.ElapsedMilliseconds * 20, swXaml.ElapsedMilliseconds);
 			}
 
-			[Test]
+			
 			[Ignore]
 			public void XamlCIsNotMuchSlowerThanCode ()
 			{

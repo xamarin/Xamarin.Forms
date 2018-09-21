@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 		}
 
-		[Test]
+		
 		public void SettersAppliedOnConditionChanged ()
 		{
 			var conditionbp = BindableProperty.Create ("foo", typeof(string), typeof(BindableObject), null);
@@ -33,7 +33,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("default", element.GetValue (setterbp));
 		}
 
-		[Test]
+		
 		public void SettersAppliedOnAttachIfConditionIsTrue ()
 		{
 			var conditionbp = BindableProperty.Create ("foo", typeof(string), typeof(BindableObject), null);
@@ -54,7 +54,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("qux", element.GetValue (setterbp));
 		}
 
-		[Test]
+		
 		public void SettersUnappliedOnDetach ()
 		{
 			var conditionbp = BindableProperty.Create ("foo", typeof(string), typeof(BindableObject), null);
@@ -78,7 +78,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("default", element.GetValue (setterbp));
 		}
 
-		[Test]
+		
 		public void EnterAndExitActionsTriggered ()
 		{
 			var conditionbp = BindableProperty.Create ("foo", typeof(string), typeof(BindableObject), null);
@@ -113,7 +113,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (exitaction.Invoked);
 		}
 
-		[Test]
+		
 		// https://bugzilla.xamarin.com/show_bug.cgi?id=32896
 		public void SettersWithBindingsUnappliedIfConditionIsFalse()
 		{

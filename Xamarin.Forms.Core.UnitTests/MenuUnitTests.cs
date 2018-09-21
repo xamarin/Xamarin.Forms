@@ -24,7 +24,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Application.Current = null;
 		}
 
-		[Test]
+		
 		public void SetMenuOnMenuItem()
 		{
 			var item = new MenuItem();
@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(menu, MenuItem.GetMenu(item));
 		}
 
-		[Test]
+		
 		public void AddSubMenuOnMenu()
 		{
 			var item = new MenuItem();
@@ -49,7 +49,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(MenuItem.GetMenu(item)[0].Text, submenu.Text);
 		}
 
-		[Test]
+		
 		public void SetMenuOnApplicationMainMenu()
 		{
 			var item = new MenuItem();
@@ -58,7 +58,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.GreaterOrEqual(1, Element.GetMenu(Application.Current).Count);
 		}
 
-		[Test]
+		
 		public void MenuText()
 		{
 			string text = "hello";
@@ -67,7 +67,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(text, menu.Text);
 		}
 
-		[Test]
+		
 		public void MenuInvalidateFiresPropertyChanged()
 		{
 			string text = "hello";
@@ -84,7 +84,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(1, count);
 		}
 
-		[Test]
+		
 		public void MenuInvalidateWorksOnAdd()
 		{
 			string text = "hello";
@@ -101,7 +101,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(1, count);
 		}
 
-		[Test]
+		
 		public void MenuInvalidateWorksOnClear()
 		{
 			string text = "hello";
@@ -119,7 +119,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(2, count);
 		}
 
-		[Test]
+		
 		public void MenuInvalidateWorksOnInsertAndRemove()
 		{
 			string text = "hello";
@@ -141,7 +141,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 
-		[Test]
+		
 		public void MenuFiresPropertyChangedOnAddItems()
 		{
 			string text = "hello";

@@ -21,7 +21,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Application.Current = null;
 		}
 
-		[Test]
+		
 		public void ApplyUnapplyStyle ()
 		{
 			var style = new Style (typeof(VisualElement)) {
@@ -42,7 +42,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (VisualElement.BackgroundColorProperty.DefaultValue, label.BackgroundColor);
 		}
 
-		[Test]
+		
 		public void BindingAndDynamicResourcesInStyle ()
 		{
 			var style = new Style (typeof(VisualElement)) {
@@ -70,7 +70,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (VisualElement.BackgroundColorProperty.DefaultValue, label.BackgroundColor);
 		}
 
-		[Test]
+		
 		public void StyleCanBeAppliedMultipleTimes ()
 		{
 			var style = new Style (typeof(VisualElement)) {
@@ -107,7 +107,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (VisualElement.BackgroundColorProperty.DefaultValue, label1.BackgroundColor);
 		}
 
-		[Test]
+		
 		public void BaseStyleIsAppliedUnapplied ()
 		{
 			var baseStyle = new Style (typeof(VisualElement)) {
@@ -128,7 +128,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (Label.TextProperty.DefaultValue, label.Text);
 		}
 
-		[Test]
+		
 		public void StyleOverrideBaseStyle ()
 		{
 			var baseStyle = new Style(typeof(VisualElement)) {
@@ -152,7 +152,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (Label.TextProperty.DefaultValue, label.Text);
 		}
 
-		[Test]
+		
 		public void AddImplicitStyleToResourceDictionary ()
 		{
 			var rd = new ResourceDictionary { 
@@ -172,7 +172,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Contains ("Xamarin.Forms.Label", (System.Collections.ICollection)rd.Keys);
 		}
 
-		[Test]
+		
 		public void ImplicitStylesAreAppliedOnSettingRD ()
 		{
 			var rd = new ResourceDictionary { 
@@ -196,7 +196,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (label.TextColor, Color.Pink);
 		}
 
-		[Test]
+		
 		public void ImplicitStylesAreAppliedOnSettingParrent ()
 		{
 			var rd = new ResourceDictionary { 
@@ -221,7 +221,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (label.TextColor, Color.Pink);
 		}
 
-		[Test]
+		
 		public void ImplicitStylesOverridenByStyle ()
 		{
 			var rd = new ResourceDictionary { 
@@ -244,7 +244,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (label.TextColor, Color.Purple);
 		}
 
-		[Test]
+		
 		public void UnsettingStyleReApplyImplicit ()
 		{
 			var rd = new ResourceDictionary { 
@@ -269,7 +269,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (label.TextColor, Color.Pink);
 		}
 
-		[Test]
+		
 		public void DynamicStyle ()
 		{
 			var baseStyle0 = new Style(typeof(Label)) {
@@ -335,7 +335,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("bar", label1.Text);
 		}
 
-		[Test]
+		
 		public void TestTriggersAndBehaviors ()
 		{
 			var behavior = new MockBehavior<Entry> ();
@@ -370,7 +370,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (behavior.detached);
 		}
 
-		[Test]
+		
 		//Issue #2124
 		public void SetValueOverridesStyle ()
 		{
@@ -384,7 +384,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (Color.White, label.TextColor);
 		}
 
-		[Test]
+		
 		//https://bugzilla.xamarin.com/show_bug.cgi?id=28556
 		public void TriggersAppliedAfterSetters ()
 		{
@@ -409,7 +409,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (Color.Yellow, entry.TextColor);
 		}
 
-		[Test]
+		
 		//https://bugzilla.xamarin.com/show_bug.cgi?id=31207
 		public async void StyleDontHoldStrongReferences ()
 		{
@@ -434,7 +434,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 		}
 
-		[Test]
+		
 		public void ImplicitStylesNotAppliedToDerivedTypesByDefault ()
 		{
 			var style = new Style (typeof (Label)) {
@@ -450,7 +450,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (Label.TextProperty.DefaultValue, ((MyLabel)view.Content).Text);
 		}
 
-		[Test]
+		
 		public void ImplicitStylesAreAppliedToDerivedIfSpecified ()
 		{
 			var style = new Style (typeof (Label)) {
@@ -467,7 +467,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("Foo", ((MyLabel)view.Content).Text);
 		}
 
-		[Test]
+		
 		public void ClassStylesAreApplied ()
 		{ 
 			var classstyle = new Style (typeof (Label)) {
@@ -492,7 +492,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (Color.Red, ((Label)view.Content).TextColor);
 		}
 
-		[Test]
+		
 		public void ImplicitStylesNotAppliedByDefaultIfAStyleExists ()
 		{ 
 			var implicitstyle = new Style (typeof (Label)) {
@@ -515,7 +515,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (Color.Red, ((Label)view.Content).TextColor);
 		}
 
-		[Test]
+		
 		public void ImplicitStylesAppliedIfStyleCanCascade ()
 		{ 
 			var implicitstyle = new Style (typeof (Label)) {
@@ -539,7 +539,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (Color.Red, ((Label)view.Content).TextColor);
 		}
 
-		[Test]
+		
 		public void MultipleStylesCanShareTheSameClassName ()
 		{
 			var buttonStyle = new Style (typeof(Button)) {
@@ -596,7 +596,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (Color.Default, myLabel.TextColor);
 		}
 
-		[Test]
+		
 		public void StyleClassAreCorrecltyMerged ()
 		{
 			var buttonStyle = new Style (typeof(Button)) {
@@ -639,7 +639,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (Color.Default, label.TextColor);
 		}
 
-		[Test]
+		
 		public void StyleClassAreCorrecltyMergedForAlreadyParentedPArents ()
 		{
 			var buttonStyle = new Style (typeof (Button)) {
@@ -681,7 +681,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (Color.Default, label.TextColor);
 		}
 
-		[Test]
+		
 		public void MultipleStyleClassAreApplied ()
 		{
 			var pinkStyle = new Style (typeof (Button)) {
@@ -711,7 +711,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (20d, button.FontSize);
 		}
 
-		[Test]
+		
 		public void ReplacingResourcesDoesNotOverrideManuallySetProperties()
 		{
 			var label0 = new Label {

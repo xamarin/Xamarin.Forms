@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Xaml.XamlcUnitTests
 			module = ModuleDefinition.CreateModule ("foo", ModuleKind.Dll);
 		}
 
-		[Test]
+		
 		public void ResolveGenericPropertyType ()
 		{
 			var type = module.ImportReference (typeof (GenericClass<bool, string, int>));

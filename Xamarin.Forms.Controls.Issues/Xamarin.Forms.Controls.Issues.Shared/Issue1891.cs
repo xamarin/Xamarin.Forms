@@ -69,7 +69,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		[UiTest (typeof(TabbedPage))]
 		public void Issue1891Tests ()
 		{

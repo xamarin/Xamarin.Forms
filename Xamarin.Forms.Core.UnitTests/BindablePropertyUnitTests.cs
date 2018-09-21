@@ -7,7 +7,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class BindablePropertyUnitTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void Create()
 		{
 			const BindingMode mode = BindingMode.OneWayToSource;
@@ -25,7 +25,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (mode, prop.DefaultBindingMode);
 		}
 
-		[Test]
+		
 		public void CreateWithDefaultMode ()
 		{
 			const BindingMode mode = BindingMode.Default;
@@ -33,7 +33,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (BindingMode.OneWay, prop.DefaultBindingMode);
 		}
 
-		[Test]
+		
 		public void CreateCasted()
 		{
 			var prop = BindableProperty.Create<Cell, bool> (c => c.IsEnabled, true);
@@ -43,7 +43,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (typeof (bool), prop.ReturnType);
 		}
 
-		[Test]
+		
 		public void CreateNonGeneric()
 		{
 			const BindingMode mode = BindingMode.OneWayToSource;
@@ -70,7 +70,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void CreateForGeneric()
 		{
 			const BindingMode mode = BindingMode.OneWayToSource;
@@ -88,7 +88,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (mode, prop.DefaultBindingMode);
 		}
 
-		[Test]
+		
 		public void ChangingBeforeChanged ()
 		{
 			bool changingfired = false;
@@ -115,7 +115,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (changedfired);
 		}
 
-		[Test]
+		
 		public void NullableProperty ()
 		{
 			var prop = BindableProperty.Create ("foo", typeof(DateTime?), typeof(MockBindable), null);
@@ -132,7 +132,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (null, bindable.GetValue (prop));
 		}
 
-		[Test]
+		
 		public void ValueTypePropertyDefaultValue ()
 		{
 			// Create BindableProperty without explicit default value
@@ -153,7 +153,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			One,Two,Three
 		}
 
-		[Test]
+		
 		public void EnumPropertyDefaultValue ()
 		{
 			// Create BindableProperty without explicit default value
@@ -174,7 +174,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			public int IntValue;
 		}
 
-		[Test]
+		
 		public void StructPropertyDefaultValue ()
 		{
 			// Create BindableProperty without explicit default value

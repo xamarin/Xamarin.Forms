@@ -80,7 +80,7 @@ namespace Xamarin.Forms.Controls.Issues
 		} 
 
 #if UITEST
-		[Test]
+		
 #if __WINDOWS__
 		[Ignore("Focus Behavior is different on UWP")]
 #endif

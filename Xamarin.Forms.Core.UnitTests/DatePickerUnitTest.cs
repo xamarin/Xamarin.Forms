@@ -7,7 +7,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class DatePickerUnitTest : BaseTestFixture
 	{
-		[Test]
+		
 		public void TestMinimumDateException ()
 		{
 			DatePicker picker = new DatePicker ();
@@ -19,7 +19,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (() => picker.MinimumDate = new DateTime (2200, 1, 1), Throws.ArgumentException);
 		}
 
-		[Test]
+		
 		public void TestMaximumDateException ()
 		{
 			DatePicker picker = new DatePicker ();
@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (() => picker.MaximumDate = new DateTime (1800, 1, 1), Throws.ArgumentException);
 		}
 
-		[Test]
+		
 		public void TestMaximumDateClamping ()
 		{
 			DatePicker picker = new DatePicker ();
@@ -65,7 +65,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (picker.MaximumDate, picker.Date);
 		}
 
-		[Test]
+		
 		public void TestMinimumDateClamping ()
 		{
 			DatePicker picker = new DatePicker ();
@@ -99,7 +99,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (picker.MinimumDate, picker.Date);
 		}
 
-		[Test]
+		
 		public void TestDateClamping ()
 		{
 			DatePicker picker = new DatePicker ();
@@ -113,7 +113,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (picker.MaximumDate, picker.Date);
 		}
 
-		[Test]
+		
 		public void TestDateSelected ()
 		{
 			var picker = new DatePicker ();
@@ -156,7 +156,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (finalDate, newDate);
 		}
 
-		[Test]
+		
 		//https://bugzilla.xamarin.com/show_bug.cgi?id=32144
 		public void SetNullValueDoesNotThrow ()
 		{
@@ -165,7 +165,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (DateTime.Today, datePicker.Date);
 		}
 
-		[Test]
+		
 		public void SetNullableDateTime ()
 		{
 			var datePicker = new DatePicker ();

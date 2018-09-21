@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 
 #if UITEST && __ANDROID__
-		[Test]
+		
 		public void Issue1908Test()
 		{
 			RunningApp.WaitForElement(q => q.Marked("OASIS1"));

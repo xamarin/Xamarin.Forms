@@ -125,7 +125,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 #endif
 #if UITEST
-		[Test]
+		
 		[UiTest (typeof(ContentPage))]
 		public void Issue852TestsEntriesClickable ()
 		{

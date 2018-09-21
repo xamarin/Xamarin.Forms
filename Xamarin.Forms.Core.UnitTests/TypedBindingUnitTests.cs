@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			};
 		}
 
-		[Test]
+		
 		public void InvalidCtor()
 		{
 			Assert.Throws<ArgumentNullException>(() => new TypedBinding<MockViewModel, string>(null, (mvm, s) => mvm.Text = s, null), "Allowed null getter");
@@ -698,7 +698,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void ValueConverter()
 		{
 			var converter = new TestConverter<string, int>();
@@ -722,7 +722,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				"An error was logged: " + log.Messages.FirstOrDefault());
 		}
 
-		[Test]
+		
 		public void ValueConverterBack()
 		{
 			var converter = new TestConverter<string, int>();
@@ -759,7 +759,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void ValueConverterParameter()
 		{
 			var converter = new TestConverterParameter();
@@ -819,7 +819,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 #endif
 
-		[Test]
+		
 		public void SelfBindingConverter()
 		{
 			var converter = new TestConverter<int, string>();
@@ -894,7 +894,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void MultiplePropertyUpdates()
 		{
 			var mpvm = new MultiplePropertyViewModel();
@@ -1003,7 +1003,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				"An error was logged: " + log.Messages.FirstOrDefault());
 		}
 
-		[Test]
+		
 		[Description("OneWay bindings should not double apply on source updates.")]
 		public void OneWayBindingsDontDoubleApplyOnSourceUpdates()
 		{
@@ -1025,7 +1025,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(2, vm.count, "Source property was queried multiple times on a reapply");
 		}
 
-		[Test]
+		
 		[Description("When there are multiple bindings, an update in one should not cause the other to udpate.")]
 		public void BindingsShouldNotTriggerOtherBindings()
 		{
@@ -1054,7 +1054,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		[Description("The most derived version of a property should always be called.")]
 		public void MostDerviedPropertyOnContextSwitchOfSimilarType()
 		{
@@ -1074,7 +1074,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(vm.Text, bindable.GetValue(MockBindable.TextProperty));
 		}
 
-		[Test]
+		
 		[Description("When binding with a multi-part path and part is null, no error should be thrown or logged")]
 		public void ChainedPartNull()
 		{
@@ -1090,7 +1090,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(log.Messages.Count, Is.EqualTo(0), "An error was logged");
 		}
 
-		[Test]
+		
 		public void SetBindingContextBeforeContextBindingAndInnerBindings()
 		{
 			var label = new Label();
@@ -1105,7 +1105,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("Foo", label.Text);
 		}
 
-		[Test]
+		
 		public void SetBindingContextAndInnerBindingBeforeContextBinding()
 		{
 			var label = new Label();
@@ -1120,7 +1120,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("Foo", label.Text);
 		}
 
-		[Test]
+		
 		public void SetBindingContextAfterContextBindingAndInnerBindings()
 		{
 			var label = new Label();
@@ -1135,7 +1135,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("Foo", label.Text);
 		}
 
-		[Test]
+		
 		public void SetBindingContextAfterInnerBindingsAndContextBinding()
 		{
 			var label = new Label();
@@ -1150,7 +1150,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("Foo", label.Text);
 		}
 
-		[Test]
+		
 		public void Convert()
 		{
 			var slider = new Slider();
@@ -1184,7 +1184,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 #endif
 
-		[Test]
+		
 		public void FailToConvert()
 		{
 			var slider = new Slider();
@@ -1286,7 +1286,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void BindingUnsubscribesForDeadTarget()
 		{
 			var viewmodel = new TestViewModel();
@@ -1319,7 +1319,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(0, viewmodel.InvocationListSize());
 		}
 
-		[Test]
+		
 		public void BindingDoesNotStayAliveForDeadTarget()
 		{
 			var viewModel = new TestViewModel();
@@ -1355,7 +1355,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsFalse(bindingRef.IsAlive, "Binding should not be alive!");
 		}
 
-		[Test]
+		
 		public void BindingCreatesSingleSubscription()
 		{
 			TestViewModel viewmodel = new TestViewModel();
@@ -1391,7 +1391,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void IndexedViewModelPropertyChanged()
 		{
 			var label = new Label();
@@ -1414,7 +1414,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("Baz", label.Text);
 		}
 
-		[Test]
+		
 		public void OneTimeBindingDoesntUpdateOnPropertyChanged()
 		{
 			var view = new VisualElement();
@@ -1435,7 +1435,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(view.GetValue(bp1t), Is.EqualTo("foobar"));
 		}
 
-		[Test]
+		
 		public void OneTimeBindingUpdatesOnBindingContextChanged()
 		{
 			var view = new VisualElement();
@@ -1455,7 +1455,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(view.GetValue(bp1t), Is.EqualTo("qux"));
 		}
 
-		[Test]
+		
 		public void OneTimeBindingDoesntUpdateNeedSettersOrHandlers()
 		{
 			var view = new VisualElement();
@@ -1473,7 +1473,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Pass(); //doesn't throw
 		}
 
-		[Test]
+		
 		[Ignore]
 		public void SpeedTestApply()
 		{
@@ -1543,7 +1543,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Fail($"Applying {it} Typedbindings\t\t\t: {swtb.ElapsedMilliseconds}ms.\nApplying {it} Typedbindings (without INPC)\t: {swtbh.ElapsedMilliseconds}ms.\nApplying {it} Bindings\t\t\t: {swb.ElapsedMilliseconds}ms.\nSetting  {it} values\t\t\t\t: {swsv.ElapsedMilliseconds}ms.");
 		}
 
-		[Test]
+		
 		[Ignore]
 		public void SpeedTestSetBC()
 		{

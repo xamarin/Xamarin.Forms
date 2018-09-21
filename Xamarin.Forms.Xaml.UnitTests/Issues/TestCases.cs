@@ -47,7 +47,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			bindable.SetValue (InnerViewProperty, value);
 		}
 
-		[Test]
+		
 		public void TestCase001 ()
 		{
 			var xaml = @"<?xml version=""1.0"" encoding=""UTF-8"" ?>
@@ -83,7 +83,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		}
 
 
-		[Test]
+		
 		public void TestCase002 ()
 		{
 			var xaml = @"<?xml version=""1.0"" encoding=""UTF-8"" ?>
@@ -100,7 +100,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.That (contentPage.Content, Is.InstanceOf<Label> ());
 		}
 
-		[Test]
+		
 		public void TestCase003 ()
 		{
 			var xaml = @"<?xml version=""1.0"" encoding=""UTF-8"" ?>
@@ -154,7 +154,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreSame (model [0], cell.BindingContext);
 		}
 
-		[Test]
+		
 		public void TestCase004 ()
 		{
 			var xaml = @"<?xml version=""1.0"" encoding=""UTF-8"" ?>
@@ -184,7 +184,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.DoesNotThrow (()=> page.LoadFromXaml (xaml));
 		}
 
-		[Test]
+		
 		public void Issue1415 ()
 		{
 			var xaml = @"<?xml version=""1.0"" encoding=""utf-8"" ?>

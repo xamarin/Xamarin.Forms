@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		[Issue (IssueTracker.Github, 773, "Horizontal ScrollView locks after rotation - relayout correctly after rotation", PlatformAffected.iOS)]
 		[UiTest (typeof(ScrollView))]
 		public void Issue773TestsRotationRelayoutIssue ()
@@ -41,7 +41,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.SetOrientationPortrait ();
 		}
 
-		//[Test]
+		//
 		//[Issue (IssueTracker.Github, 773, "Horizontal ScrollView locks after rotation - can scroll after rotation", PlatformAffected.iOS)]
 		//[UiTest (typeof (ScrollView))]
 		//public void Issue773TestsScrollingBeforeAndAfterRotation ()

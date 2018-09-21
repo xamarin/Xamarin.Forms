@@ -223,12 +223,12 @@ namespace Xamarin.Forms.Controls.Issues
 
 
 #if UITEST
-		[Test]
+		
 		public void Bugzilla40704HeaderPresentTest()
 		{
 			RunningApp.WaitForElement("Menu - 0");
 		}
-		[Test]
+		
 #if __MACOS__
 		[Ignore("ScrollDownTo not implemented in UITest.Desktop")]
 #endif

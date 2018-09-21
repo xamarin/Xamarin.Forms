@@ -50,7 +50,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 
 		#if UITEST
-		[Test]
+		
 		public void SelectedItemTap ()
 		{
 			var id = "1";

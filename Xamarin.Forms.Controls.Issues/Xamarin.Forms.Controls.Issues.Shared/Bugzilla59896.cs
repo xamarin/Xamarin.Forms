@@ -88,7 +88,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Bugzilla59896Test()
 		{
 			RunningApp.WaitForElement(q => q.Marked(btnAdd));

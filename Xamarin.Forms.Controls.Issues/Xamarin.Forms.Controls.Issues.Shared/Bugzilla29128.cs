@@ -24,7 +24,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Bugzilla29128Test ()
 		{
 			RunningApp.WaitForElement (q => q.Marked ("SliderId"));

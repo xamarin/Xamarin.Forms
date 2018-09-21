@@ -7,7 +7,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class SwitchCellTemplateTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void Create()
 		{
 			var template = new DataTemplate (typeof(SwitchCell));
@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (content, Is.InstanceOf<SwitchCell>());
 		}
 
-		[Test]
+		
 		public void Text()
 		{
 			var template = new DataTemplate (typeof (SwitchCell));
@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (cell.Text, Is.EqualTo ("text"));
 		}
 
-		[Test]
+		
 		public void On()
 		{
 			var template = new DataTemplate (typeof (SwitchCell));

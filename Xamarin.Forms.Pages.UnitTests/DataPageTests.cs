@@ -70,7 +70,7 @@ namespace Xamarin.Forms.Pages.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void DefaultBindingsLoad ()
 		{
 			IDataSource dataSource = new DataSource ();
@@ -83,7 +83,7 @@ namespace Xamarin.Forms.Pages.UnitTests
 			Assert.AreEqual ("Jason", detailpage.Name);
 		}
 
-		[Test]
+		
 		public void RebindingDataSource ()
 		{
 			IDataSource dataSource = new DataSource ();
@@ -97,7 +97,7 @@ namespace Xamarin.Forms.Pages.UnitTests
 			Assert.AreEqual ("Jason", detailpage.Name);
 		}
 
-		[Test]
+		
 		public void RebindingDataSourceNotMasked ()
 		{
 			IDataSource dataSource = new DataSource ();
@@ -113,7 +113,7 @@ namespace Xamarin.Forms.Pages.UnitTests
 			Assert.AreEqual (1, detailpage.DataSource.MaskedKeys.Count ());
 		}
 
-		[Test]
+		
 		public void UpdateDataSource ()
 		{
 			IDataSource dataSource = new DataSource ();
@@ -129,7 +129,7 @@ namespace Xamarin.Forms.Pages.UnitTests
 			Assert.AreEqual ("Jerry", detailpage.Name);
 		}
 
-		[Test]
+		
 		public void MaskedItemsNotInData ()
 		{
 			IDataSource dataSource = new DataSource ();
@@ -146,7 +146,7 @@ namespace Xamarin.Forms.Pages.UnitTests
 			Assert.AreEqual ("Other", detailpage.Data.First ().Name);
 		}
 
-		[Test]
+		
 		public void TwoWayDataSourceBinding ()
 		{
 			IDataSource dataSource = new DataSource ();

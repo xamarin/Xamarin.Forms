@@ -7,7 +7,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class TimePickerUnitTest : BaseTestFixture
 	{
-		[Test]
+		
 		public void TestConstructor ()
 		{
 			TimePicker picker = new TimePicker ();
@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new TimeSpan (), picker.Time);
 		}
 
-		[Test]
+		
 		public void TestTimeOutOfRange ()
 		{
 			TimePicker picker = new TimePicker ();
@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new TimeSpan (8, 30, 0), picker.Time);
 		}
 
-		[Test]
+		
 		[Description ("Issue #745")]
 		public void ZeroTimeIsValid()
 		{

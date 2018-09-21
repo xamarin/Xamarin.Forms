@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 	[TestFixture]
 	public class Issue1501
 	{
-		[Test]
+		
 		public void ConnectEventsInGestureRecognizers ()
 		{
 			var xaml = @"

@@ -7,7 +7,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class TableViewUnitTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void TestConstructor ()
 		{
 			var table = new TableView ();
@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (LayoutOptions.FillAndExpand, table.VerticalOptions);
 		}
 
-		[Test]
+		
 		public void TestModelChanged ()
 		{
 			var table = new TableView ();
@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (changed);
 		}
 
-		[Test]
+		
 		public void BindingsContextChainsToModel ()
 		{
 			const string context = "Context";
@@ -44,7 +44,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (context, table.Root.BindingContext);
 		}
 
-		[Test]
+		
 		public void ParentsViewCells ()
 		{
 			ViewCell viewCell = new ViewCell { View = new Label () };
@@ -62,7 +62,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (table.Platform, viewCell.View.Platform);
 		}
 
-		[Test]
+		
 		public void ParentsAddedViewCells ()
 		{
 			var viewCell = new ViewCell { View = new Label () };

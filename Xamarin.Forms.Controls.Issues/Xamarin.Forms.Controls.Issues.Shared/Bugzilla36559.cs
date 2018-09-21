@@ -43,7 +43,7 @@ namespace Xamarin.Forms.Controls.Issues
         }
 
 #if UITEST
-        [Test]
+        
         public void Bugzilla36559Test()
         {
             RunningApp.WaitForElement(q => q.Marked("entry"));

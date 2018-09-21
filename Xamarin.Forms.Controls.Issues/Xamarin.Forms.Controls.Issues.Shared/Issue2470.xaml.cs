@@ -110,7 +110,7 @@ namespace Xamarin.Forms.Controls.Issues
 #endif
 
 #if UITEST
-		[Test]
+		
 		public void OnservableCollectionChangeListView ()
 		{
 			// Tab 1

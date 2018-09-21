@@ -56,7 +56,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void TestSetSelectedIndexOnNullRows()
 		{
 			var picker = new Picker();
@@ -69,7 +69,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(-1, picker.SelectedIndex);
 		}
 
-		[Test]
+		
 		public void TestSelectedIndexInRange()
 		{
 			var picker = new Picker
@@ -90,7 +90,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(-1, picker.SelectedIndex);
 		}
 
-		[Test]
+		
 		public void TestSelectedIndexInRangeDefaultSelectedIndex()
 		{
 			var picker = new Picker
@@ -116,7 +116,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(-1, picker.SelectedIndex);
 		}
 
-		[Test]
+		
 		public void TestSelectedIndexChangedOnCollectionShrink()
 		{
 			var picker = new Picker { Items = { "John", "Paul", "George", "Ringo" }, SelectedIndex = 3 };
@@ -132,7 +132,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(-1, picker.SelectedIndex);
 		}
 
-		[Test]
+		
 		public void TestSelectedIndexOutOfRangeUpdatesSelectedItem()
 		{
 			var picker = new Picker
@@ -152,7 +152,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsNull(picker.SelectedItem);
 		}
 
-		[Test]
+		
 		public void TestUnsubscribeINotifyCollectionChanged()
 		{
 			var list = new ObservableCollection<string>();
@@ -167,7 +167,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(0, picker.Items.Count);
 		}
 
-		[Test]
+		
 		public void TestEmptyCollectionResetItems()
 		{
 			var list = new ObservableCollection<string>
@@ -185,7 +185,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(0, picker.Items.Count);
 		}
 
-		[Test]
+		
 		public void TestSetItemsSourceProperty()
 		{
 			var items = new ObservableCollection<object>
@@ -206,7 +206,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(null, picker.Items[3]);
 		}
 
-		[Test]
+		
 		public void TestDisplayConverter()
 		{
 			var obj = new PickerTestsContextFixture("John", "John Doe");
@@ -223,7 +223,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("John", picker.Items[0]);
 		}
 
-		[Test]
+		
 		public void TestItemsSourceCollectionChangedAppend()
 		{
 			var items = new ObservableCollection<object>
@@ -245,7 +245,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("George", picker.Items[picker.Items.Count - 1]);
 		}
 
-		[Test]
+		
 		public void TestItemsSourceCollectionChangedClear()
 		{
 			var items = new ObservableCollection<object>
@@ -265,7 +265,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(0, picker.Items.Count);
 		}
 
-		[Test]
+		
 		public void TestItemsSourceCollectionChangedInsert()
 		{
 			var items = new ObservableCollection<object>
@@ -287,7 +287,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("George", picker.Items[1]);
 		}
 
-		[Test]
+		
 		public void TestItemsSourceCollectionChangedReAssign()
 		{
 			var items = new ObservableCollection<object>
@@ -315,7 +315,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("Peach", picker.Items[0]);
 		}
 
-		[Test]
+		
 		public void TestItemsSourceCollectionChangedRemove()
 		{
 			var items = new ObservableCollection<object>
@@ -337,7 +337,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("Ringo", picker.Items[1]);
 		}
 
-		[Test]
+		
 		public void TestItemsSourceCollectionOfStrings()
 		{
 			var items = new ObservableCollection<string>
@@ -355,7 +355,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("John", picker.Items[0]);
 		}
 
-		[Test]
+		
 		public void TestSelectedItemDefault()
 		{
 			var bindingContext = new PickerTestsBindingContext
@@ -376,7 +376,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(bindingContext.SelectedItem, picker.SelectedItem);
 		}
 
-		[Test]
+		
 		public void ThrowsWhenModifyingItemsIfItemsSourceIsSet()
 		{
 			var picker = new Picker {
@@ -385,7 +385,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Throws<InvalidOperationException>(() => picker.Items.Add("foo"));
 		}
 
-		[Test]
+		
 		public void TestNestedDisplayMemberPathExpression()
 		{
 			var obj = new PickerTestsContextFixture
@@ -407,7 +407,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("NestedProperty", picker.Items[0]);
 		}
 
-		[Test]
+		
 		public void TestItemsSourceEnums()
 		{
 			var picker = new Picker
@@ -423,7 +423,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("Start", picker.Items[0]);
 		}
 
-		[Test]
+		
 		public void TestSelectedItemSet()
 		{
 			var obj = new PickerTestsContextFixture("John", "John");
@@ -447,7 +447,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(obj, picker.SelectedItem);
 		}
 
-		[Test]
+		
 		public void TestSelectedItemChangeSelectedIndex()
 		{
 			var obj = new PickerTestsContextFixture("John", "John");

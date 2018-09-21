@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Controls.Issues
 		Issue206ListScreen _listScreen;
 
 #if UITEST
-		[Test]
+		
 		[NUnit.Framework.Category ("ManualReview")]
 		[UiTest (typeof(ViewCell))]
 		public void Issue206TestsTextInTextCellResizes ()

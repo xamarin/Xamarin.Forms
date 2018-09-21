@@ -8,7 +8,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class FlexLayoutTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void TestBasicLayout()
 		{
 			var platform = new UnitPlatform();
@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(label2.Bounds, Is.EqualTo(new Rectangle(100, 0, 100, 912)));
 		}
 
-		[Test]
+		
 		public void TestBasicLayoutWithElementsWidth()
 		{
 			var platform = new UnitPlatform();
@@ -55,7 +55,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		}
 
-		[Test]
+		
 		public void TestBasicLayoutWithElementsWidthAndMargin()
 		{
 			var platform = new UnitPlatform();
@@ -80,7 +80,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(new Rectangle(110, 0, 100, 912), label2.Bounds);
 		}
 
-		[Test]
+		
 		public void TestSetBounds()
 		{
 			var layoutSize = new Size(320, 50);
@@ -119,7 +119,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(layoutSize.Width, totalWidth, 2);
 		}
 
-		[Test]
+		
 		public void TestRelayoutOnChildrenRemoved()
 		{
 			var layoutSize = new Size(300, 50);
@@ -156,7 +156,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(label3.Bounds.Width, Is.EqualTo(100));
 		}
 
-		[Test]
+		
 		public void TestFlexLayoutIsIncludeChangeWorksOnSecondPass()
 		{
 			var layoutSize = new Size(300, 50);
@@ -192,7 +192,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(100, label3.Bounds.Width);
 		}
 
-		[Test]
+		
 		// fixed at https://github.com/xamarin/flex/commit/0ccb9f1625abdc5400def29651373937bf6610cd
 		public void TestSwapChildrenOrder()
 		{
@@ -237,7 +237,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(new Rectangle(200, 0, 100, 50), label1.Bounds);
 		}
 
-		[Test]
+		
 		public void TestSizeThatFits()
 		{
 			var platform = new UnitPlatform(useRealisticLabelMeasure: true);
@@ -276,7 +276,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			//	var layoutSize = layout.Measure(-1, -1);
 		}
 
-		[Test]
+		
 		public void TestNesting()
 		{
 			var platform = new UnitPlatform();
@@ -327,7 +327,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(footer.Bounds, Is.EqualTo(new Rectangle(0, 550, 300, 50)));
 		}
 
-		[Test]
+		
 		public void TestMeasuring()
 		{
 			var platform = new UnitPlatform();
@@ -359,7 +359,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		}
 
-		[Test]
+		
 		public void TestMarginsWithWrap()
 		{
 			var platform = new UnitPlatform();
@@ -405,7 +405,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(label2.Bounds, Is.EqualTo(new Rectangle(0, 32, 300, 20)));
 		}
 
-		[Test]
+		
 		//https://github.com/xamarin/Xamarin.Forms/issues/2551
 		public void TestReverseWithGrow()
 		{
@@ -428,7 +428,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(label0.Bounds, Is.EqualTo(new Rectangle(0, 0, 300, 300)));
 		}
 
-		[Test]
+		
 		public void TestIsVisible()
 		//https://github.com/xamarin/Xamarin.Forms/issues/2593
 		{
@@ -471,7 +471,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(label2.Bounds, Is.EqualTo(new Rectangle(0, 20, 300, 20)));
 		}
 
-		[Test]
+		
 		public void ChangingGrowTriggersLayout()
 		//https://github.com/xamarin/Xamarin.Forms/issues/2821
 		{

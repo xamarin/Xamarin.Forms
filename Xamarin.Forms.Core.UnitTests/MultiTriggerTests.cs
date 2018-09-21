@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 		}
 
-		[Test]
+		
 		public void SettersAppliedOnAttachIfConditionIsTrue ()
 		{
 			var conditionbp = BindableProperty.Create ("foo", typeof(string), typeof(BindableObject), null);
@@ -47,7 +47,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("qux", element.GetValue (setterbp));
 		}
 
-		[Test]
+		
 		public void SettersNotAppliedOnAttachIfOneConditionIsFalse ()
 		{
 			var conditionbp = BindableProperty.Create ("foo", typeof(string), typeof(BindableObject), null);
@@ -71,7 +71,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("default", element.GetValue (setterbp));
 		}
 
-		[Test]
+		
 		public void SettersUnappliedOnDetach ()
 		{
 			var conditionbp = BindableProperty.Create ("foo", typeof(string), typeof(BindableObject), null);
@@ -101,7 +101,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual ("default", element.GetValue (setterbp));
 		}
 
-		[Test]
+		
 		public void SettersAppliedAndUnappliedOnConditionsChange ()
 		{
 			var conditionbp = BindableProperty.Create ("foo", typeof(string), typeof(BindableObject), null);

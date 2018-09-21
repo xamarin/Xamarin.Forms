@@ -58,7 +58,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		[Ignore("This test doesn't make a lot of sense and crashes 50% of the time; need to re-investigate it.")]
 		public void Bugzilla28498Test ()
 		{

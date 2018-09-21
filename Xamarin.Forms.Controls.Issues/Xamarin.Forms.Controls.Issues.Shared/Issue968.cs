@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		[Description ("Verify the layout lays out on rotations")]
 		[UiTest (typeof(StackLayout))]
 		public void Issue968TestsRotationRelayoutIssue ()

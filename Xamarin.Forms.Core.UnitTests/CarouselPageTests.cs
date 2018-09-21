@@ -19,7 +19,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			return CarouselPage.GetIndex (page);
 		}
 
-		[Test]
+		
 		public void TestConstructor()
 		{
 			var page = new CarouselPage();

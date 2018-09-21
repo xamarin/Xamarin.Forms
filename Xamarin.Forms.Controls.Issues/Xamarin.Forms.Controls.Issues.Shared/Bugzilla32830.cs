@@ -130,7 +130,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Bugzilla32830Test()
 		{
 			IgnoreFormsApplicationActivity();

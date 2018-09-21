@@ -44,7 +44,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 #if UITEST && __IOS__
 		[Ignore("Test failing due to unrelated issue, disable for moment")]
-		[Test]
+		
 		public void Bugzilla36955Test()
 		{
 			AppResult[] buttonFalse = RunningApp.Query(q => q.Button().Text("False"));

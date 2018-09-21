@@ -118,7 +118,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void GroupListViewHeaderIndexOutOfRangeTest()
 		{
 			RunningApp.WaitForElement(q => q.Marked(ButtonId));

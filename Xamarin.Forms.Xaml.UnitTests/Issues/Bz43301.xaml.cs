@@ -20,7 +20,7 @@ namespace Foo.Xamarin.Bar
 		{
 			[TestCase(true)]
 			[TestCase(false)]
-			//No need for any actual [Test]. If this compiles, the bug is fixed.
+			//No need for any actual . If this compiles, the bug is fixed.
 			public void DoesCompile(bool useCompiledXaml)
 			{
 				var layout = new Bz43301(useCompiledXaml);

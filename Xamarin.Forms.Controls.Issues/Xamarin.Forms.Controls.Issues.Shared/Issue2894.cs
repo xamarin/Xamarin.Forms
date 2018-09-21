@@ -219,7 +219,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void VariousSpanGesturePermutation()
 		{
 			RunningApp.WaitForElement($"{kGesture1}0");

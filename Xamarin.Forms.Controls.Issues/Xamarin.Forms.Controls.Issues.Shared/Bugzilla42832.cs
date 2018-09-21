@@ -51,7 +51,7 @@ namespace Xamarin.Forms.Controls.Issues
         }
 
 #if UITEST && __ANDROID__
-        [Test]
+        
         public void ContextActionsScrollNRE()
         {
             RunningApp.TouchAndHold(q => q.Marked("Item #0"));

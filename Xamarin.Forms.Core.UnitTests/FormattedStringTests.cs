@@ -21,7 +21,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Device.PlatformServices = null;
 		}
 
-		[Test]
+		
 		public void NullSpansNotAllowed()
 		{
 			var fs = new FormattedString();
@@ -35,7 +35,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}, Throws.InstanceOf<ArgumentNullException>());
 		}
 
-		[Test]
+		
 		public void SpanChangeTriggersSpansPropertyChange()
 		{
 			var span = new Span();
@@ -53,7 +53,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (spansChanged, Is.True);
 		}
 
-		[Test]
+		
 		public void SpanChangesUnsubscribes()
 		{
 			var span = new Span();
@@ -72,7 +72,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (spansChanged, Is.False);
 		}
 
-		[Test]
+		
 		public void AddingSpanTriggersSpansPropertyChange()
 		{
 			var span = new Span();
@@ -89,7 +89,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (spansChanged, Is.True);
 		}
 
-		[Test]
+		
 		public void ImplicitStringConversion()
 		{
 			string original = "fubar";
@@ -100,7 +100,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (fs.Spans[0].Text, Is.EqualTo (original));
 		}
 
-		[Test]
+		
 		public void ImplicitStringConversionNull()
 		{
 			string original = null;

@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class ContentPageUnitTests : BaseTestFixture 
 	{
-		[Test]
+		
 		public void PropagateBindingContextBefore()
 		{
 			var stack = new StackLayout();
@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreSame (context, stack.BindingContext);
 		}
 
-		[Test]
+		
 		public void PropagateBindingContextAfter()
 		{
 			var stack = new StackLayout();
@@ -38,7 +38,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreSame (context, stack.BindingContext);
 		}
 
-		[Test]
+		
 		public void PropagateToolbarItemBindingContextPreAdd ()
 		{
 			var page = new ContentPage ();
@@ -52,7 +52,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (context, toolbarItem.BindingContext);
 		}
 
-		[Test]
+		
 		public void PropagateToolbarItemBindingContextPostAdd ()
 		{
 			var page = new ContentPage ();
@@ -66,7 +66,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (context, toolbarItem.BindingContext);
 		}
 
-        [Test]
+        
         public void ContentPage_should_have_the_InternalChildren_correctly_when_Content_changed()
         {
             var sut = new ContentPage();

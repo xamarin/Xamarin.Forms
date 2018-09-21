@@ -7,7 +7,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class ColorUnitTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void TestHSLPostSetEquality ()
 		{
 			var color = new Color (1, 0.5, 0.2);
@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (color == color2);
 		}
 
-		[Test]
+		
 		public void TestHSLPostSetInequality ()
 		{
 			var color = new Color (1, 0.5, 0.2);
@@ -28,7 +28,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (color != color2);
 		}
 
-		[Test]
+		
 		public void TestHSLSetToDefaultValue ()
 		{
 			var color = new Color (0.2, 0.5, 0.8);
@@ -40,7 +40,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (color.R, color.B);
 		}
 
-		[Test]
+		
 		public void TestHSLModifiers ()
 		{
 			var color = Color.Default;
@@ -54,7 +54,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (Color.FromHsla (.8, .6, .1), color.WithLuminosity (.1));
 		}
 
-		[Test]
+		
 		public void TestMultiplyAlpha ()
 		{
 			var color = new Color (1, 1, 1, 1);
@@ -69,7 +69,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (.25, color.A);
 		}
 
-		[Test]
+		
 		public void TestClamping ()
 		{
 			var color = new Color (2, 2, 2, 2);
@@ -87,7 +87,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (0, color.A);
 		}
 
-		[Test]
+		
 		public void TestRGBToHSL ()
 		{
 			var color = new Color (.5, .1, .1);
@@ -97,7 +97,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (color.Luminosity, Is.EqualTo (0.302).Within (0.01));
 		}
 
-		[Test]
+		
 		public void TestHSLToRGB ()
 		{
 			var color = Color.FromHsla (0, .662, .302);
@@ -107,7 +107,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (color.B, Is.EqualTo (0.1).Within (0.01));
 		}
 
-		[Test]
+		
 		public void TestColorFromValue ()
 		{
 			var color = new Color (0.2);
@@ -115,7 +115,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Color (0.2, 0.2, 0.2, 1), color);
 		}
 
-		[Test]
+		
 		public void TestAddLuminosity ()
 		{
 			var color = new Color (0.2);
@@ -126,7 +126,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Throws<InvalidOperationException> (() => color.AddLuminosity (0.2));
 		}
 
-		[Test]
+		
 		public void TestZeroLuminosity ()
 		{
 			var color = new Color (0.1, 0.2, 0.3);
@@ -138,7 +138,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (0, color.B);
 		}
 
-		[Test]
+		
 		public void TestHashCode ()
 		{
 			var color1 = new Color (0.1);
@@ -150,7 +150,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (color1.GetHashCode () == color2.GetHashCode ());
 		}
 
-		[Test]
+		
 		public void TestHashCodeNamedColors ()
 		{
 			Color red = Color.Red; //R=1, G=0, B=0, A=1
@@ -162,7 +162,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (hashRed == hashBlue);
 		}
 
-		[Test]
+		
 		public void TestHashCodeAll ()
 		{
 			Dictionary<int,Color> colorsAndHashes = new Dictionary<int,Color> ();
@@ -186,7 +186,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.DoesNotThrow (() => colorsAndHashes.Add (Color.Yellow.GetHashCode (), Color.Yellow));
 		}
 
-		[Test]
+		
 		public void TestSetHue ()
 		{
 			var color = new Color (0.2, 0.5, 0.7);
@@ -197,7 +197,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (color.B, Is.EqualTo (0.2).Within (0.001));
 		}
 
-		[Test]
+		
 		public void ZeroLuminToRGB ()
 		{
 			var color = new Color (0);
@@ -206,14 +206,14 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (0, color.Saturation);
 		}
 
-		[Test]
+		
 		public void TestToString ()
 		{
 			var color = new Color (1, 1, 1, 0.5);
 			Assert.AreEqual ("[Color: A=0.5, R=1, G=1, B=1, Hue=0, Saturation=0, Luminosity=1]", color.ToString ());
 		}
 
-		[Test]
+		
 		public void TestFromHex ()
 		{
 			var color = Color.FromRgb(138, 43, 226);
@@ -224,7 +224,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (Color.FromHex ("#aabbccdd"), Color.FromHex ("#abcd"));
 		}
 
-		[Test]
+		
 		public void FromRGBDouble ()
 		{
 			var color = Color.FromRgb (0.2, 0.3, 0.4);
@@ -232,7 +232,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Color (0.2, 0.3, 0.4), color);
 		}
 
-		[Test]
+		
 		public void FromRGBADouble ()
 		{
 			var color = Color.FromRgba (0.2, 0.3, 0.4, 0.5);
@@ -240,7 +240,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual (new Color (0.2, 0.3, 0.4, 0.5), color);
 		}
 
-		[Test]
+		
 		public void TestColorTypeConverter()
 		{
 			var converter = new ColorTypeConverter();
@@ -271,14 +271,14 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.Throws<InvalidOperationException>(() => converter.ConvertFromInvariantString("rgba(0,0,255)"));
 		}
 
-		[Test]
+		
 		public void TestDefault ()
 		{
 			Assert.AreEqual (Color.Default, default(Color));
 			Assert.AreEqual (Color.Default, new Color ());
 		}
 		
-		[Test]
+		
 		public void TestImplicitConversionToSystemDrawingColor()
 		{
 			var color = Color.FromRgba(0.2, 0.3, 0.4, 0.5);
@@ -289,13 +289,13 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(127, sdColor.A);
 		}
 
-		[Test]
+		
 		public void TestDefaultColorToSystemDrawingColorEmpty()
 		{
 			Assert.AreEqual(System.Drawing.Color.Empty, (System.Drawing.Color)Color.Default);
 		}
 
-		[Test]
+		
 		public void TestImplicitConversionFromSystemDrawingColor()
 		{
 			System.Drawing.Color sdColor = System.Drawing.Color.FromArgb(32, 64, 128, 255);
@@ -306,7 +306,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(1, color.B, .01);
 		}
 
-		[Test]
+		
 		public void TestSystemDrawingColorEmptyToColorDefault()
 		{
 			Assert.AreEqual(Color.Default, (Color)System.Drawing.Color.Empty);

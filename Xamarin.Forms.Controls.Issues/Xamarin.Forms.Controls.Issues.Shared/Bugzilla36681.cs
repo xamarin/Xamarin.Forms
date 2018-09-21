@@ -65,7 +65,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST && __ANDROID__
-		[Test]
+		
 		public void Bugzilla36681Test ()
 		{
 				RunningApp.WaitForElement (q => q.Marked ("picker"));

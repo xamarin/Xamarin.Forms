@@ -40,7 +40,7 @@ namespace Xamarin.Forms.Pages.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void DataSourceListIndexer ()
 		{
 			var source = new TestDataSource ();
@@ -52,7 +52,7 @@ namespace Xamarin.Forms.Pages.UnitTests
 			Assert.AreEqual ("Bar", s.Data[0].Value);
 		}
 
-		[Test]
+		
 		public void CompoundListPrepend ()
 		{
 			var source = new TestDataSource ();

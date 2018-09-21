@@ -11,7 +11,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class NavigationMenuUnitTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void TestTargets ()
 		{
 			var menu = new NavigationMenu ();
@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (signaled);
 		}
 
-		[Test]
+		
 		public void TestTargetsDoubleSet ()
 		{
 			var menu = new NavigationMenu ();
@@ -50,7 +50,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (signaled);
 		}
 
-		[Test]
+		
 		public void TestAdd ()
 		{
 			var menu = new NavigationMenu ();
@@ -73,7 +73,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (signaled);
 		}
 
-		[Test]
+		
 		public void IconNotSet ()
 		{
 			var menu = new NavigationMenu ();
@@ -83,7 +83,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (ex.Message, Is.EqualTo ("Icon must be set for each page before adding them to a Navigation Menu"));
 		}
 
-		[Test]
+		
 		public void TestDoubleAdd ()
 		{
 			var menu = new NavigationMenu ();
@@ -110,7 +110,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (signaled);
 		}
 
-		[Test]
+		
 		public void TestRemove ()
 		{
 			var menu = new NavigationMenu ();
@@ -136,7 +136,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.True (signaled);
 		}
 
-		[Test]
+		
 		public void TestDoubleRemove ()
 		{
 			var menu = new NavigationMenu ();
@@ -163,7 +163,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.False (signaled);
 		}
 
-		[Test]
+		
 		public async Task TestSendTargetSelected ()
 		{
 			var menu = new NavigationMenu ();

@@ -6,7 +6,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class AnimationTests : BaseTestFixture
 	{
-		[Test]
+		
 		//https://bugzilla.xamarin.com/show_bug.cgi?id=51424
 		public async void AnimationRepeats()
 		{

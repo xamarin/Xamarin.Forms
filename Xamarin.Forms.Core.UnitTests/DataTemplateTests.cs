@@ -7,7 +7,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class DataTemplateTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void CtorInvalid()
 		{
 			Assert.Throws<ArgumentNullException> (() => new DataTemplate ((Func<object>)null),
@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Core.UnitTests
 				"Allowed null type");
 		}
 
-		[Test]
+		
 		public void CreateContent()
 		{
 			var template = new DataTemplate (() => new MockBindable());
@@ -27,7 +27,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (obj, Is.InstanceOf<MockBindable>());
 		}
 
-		[Test]
+		
 		public void CreateContentType()
 		{
 			var template = new DataTemplate (typeof (MockBindable));
@@ -37,7 +37,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (obj, Is.InstanceOf<MockBindable>());
 		}
 
-		[Test]
+		
 		public void CreateContentValues()
 		{
 			var template = new DataTemplate (typeof (MockBindable)) {
@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (bindable.GetValue (MockBindable.TextProperty), Is.EqualTo ("value"));
 		}
 
-		[Test]
+		
 		public void CreateContentBindings()
 		{
 			var template = new DataTemplate (() => new MockBindable()) {
@@ -60,7 +60,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (bindable.GetValue (MockBindable.TextProperty), Is.EqualTo ("text"));
 		}
 
-		[Test]
+		
 		public void SetBindingInvalid()
 		{
 			var template = new DataTemplate (typeof (MockBindable));
@@ -68,7 +68,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (() => template.SetBinding (MockBindable.TextProperty, null), Throws.InstanceOf<ArgumentNullException>());
 		}
 
-		[Test]
+		
 		public void SetBindingOverridesValue()
 		{
 			var template = new DataTemplate (typeof (MockBindable));
@@ -82,7 +82,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (bindable.GetValue (MockBindable.TextProperty), Is.EqualTo ("binding"));
 		}
 
-		[Test]
+		
 		public void SetValueOverridesBinding()
 		{
 			var template = new DataTemplate (typeof (MockBindable));
@@ -95,14 +95,14 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (bindable.GetValue (MockBindable.TextProperty), Is.EqualTo ("value"));
 		}
 
-		[Test]
+		
 		public void SetValueInvalid()
 		{
 			var template = new DataTemplate (typeof (MockBindable));
 			Assert.That (() => template.SetValue (null, "string"), Throws.InstanceOf<ArgumentNullException>());
 		}
 
-		[Test]
+		
 		public void SetValueAndBinding ()
 		{
 			var template = new DataTemplate (typeof (TextCell)) {

@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Device.PlatformServices = null;
 		}
 
-		[Test]
+		
 		public void BindingContextPropagatesFromParent()
 		{
 			NavigationPage navigationPage = new NavigationPage();

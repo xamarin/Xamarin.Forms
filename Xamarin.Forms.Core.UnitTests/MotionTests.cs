@@ -75,7 +75,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Ticker.Default = null;
 		}
 
-		[Test]
+		
 		public void TestLinearTween ()
 		{
 			var tweener = new Tweener (250);
@@ -92,25 +92,25 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That (updates, Is.GreaterThanOrEqualTo (10));
 		}
 
-		[Test]
+		
 		public void ThrowsWithNullCallback ()
 		{
 			Assert.Throws<ArgumentNullException> (() => new View().Animate ("Test", (Action<double>) null));
 		}
 
-		[Test]
+		
 		public void ThrowsWithNullTransform ()
 		{
 			Assert.Throws<ArgumentNullException> (() => new View().Animate<float> ("Test", null, f => { }));
 		}
 
-		[Test]
+		
 		public void ThrowsWithNullSelf ()
 		{
 			Assert.Throws<ArgumentNullException> (() => AnimationExtensions.Animate (null, "Foo", d => (float)d, f => { }));
 		}
 
-		[Test]
+		
 		public void Kinetic ()
 		{
 			var view = new View ();
@@ -135,7 +135,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			}
 		}
 
-		[Test]
+		
 		public void KineticFinished ()
 		{
 			var view = new View ();
@@ -226,7 +226,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.That(view.Opacity, Is.EqualTo(1));
 		}
 
-		[Test] 
+		 
 		public async Task NewAnimationsFinishImmediatelyWhenTickerDisabled()
 		{
 			var view = new View { Opacity = 1 };

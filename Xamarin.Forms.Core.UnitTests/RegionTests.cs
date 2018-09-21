@@ -6,7 +6,7 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class RegionTests : BaseTestFixture
 	{
-		[Test]
+		
 		public void RegionOneLineConstruction()
 		{
 			double[] lineHeights = { 20 };
@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		}
 
-		[Test]
+		
 		public void RegionTwoLineConstruction()
 		{
 			double[] lineHeights = { 20, 20 };
@@ -82,7 +82,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsFalse(region.Contains(new Point(40, 119)));
 		}
 
-		[Test]
+		
 		public void RegionThreeLineConstruction()
 		{
 			double[] lineHeights = { 20, 20, 20 };
@@ -135,7 +135,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsFalse(region.Contains(new Point(40, 139)));
 		}
 
-		[Test]
+		
 		public void RegionInflate()
 		{
 			double[] lineHeights = { 20 };
@@ -173,7 +173,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.IsFalse(region.Contains(new Point(190, 99)));
 		}
 
-		[Test]
+		
 		public void RegionDeflate()
 		{
 			double[] lineHeights = { 20 };

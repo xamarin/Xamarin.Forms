@@ -57,7 +57,7 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
-		[Test]
+		
 		public void Bugzilla23942Test()
 		{
 			RunningApp.WaitForElement(q => q.Marked("success"));
