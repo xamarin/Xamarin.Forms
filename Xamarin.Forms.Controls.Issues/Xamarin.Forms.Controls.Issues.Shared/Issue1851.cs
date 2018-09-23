@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
@@ -62,6 +57,7 @@ namespace Xamarin.Forms.Controls.TestCasesPages
 		}
 	}
 
+	[Preserve(AllMembers = true)]
 	public class CellTemplate : ViewCell
 	{
 		protected override void OnBindingContextChanged()
@@ -76,6 +72,7 @@ namespace Xamarin.Forms.Controls.TestCasesPages
 		}
 	}
 
+	[Preserve(AllMembers = true)]
 	public class Grouping<TKey, TElement> : ObservableCollection<TElement>
 	{
 		public Grouping(TKey key, IEnumerable<TElement> items)
@@ -86,8 +83,6 @@ namespace Xamarin.Forms.Controls.TestCasesPages
 		}
 
 		public TKey Key { get; private set; }
-
-
 	}
 }
 	
