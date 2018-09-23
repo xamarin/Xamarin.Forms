@@ -222,9 +222,10 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				UpdateLineHeight();
 				if (e.OldElement?.LineBreakMode != e.NewElement.LineBreakMode)
 					UpdateLineBreakMode();
-				if (e.OldElement?.HorizontalTextAlignment != e.NewElement.HorizontalTextAlignment
-				 || e.OldElement?.VerticalTextAlignment != e.NewElement.VerticalTextAlignment)
+				if (e.OldElement?.HorizontalTextAlignment != e.NewElement.HorizontalTextAlignment || e.OldElement?.VerticalTextAlignment != e.NewElement.VerticalTextAlignment)
 					UpdateGravity();
+				if (e.OldElement?.MaxLines != e.NewElement.MaxLines)
+					UpdateMaxLines();
 
 				ElevationHelper.SetElevation(this, e.NewElement);
 			}
@@ -246,6 +247,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				UpdateText();
 			else if (e.PropertyName == Label.LineHeightProperty.PropertyName)
 				UpdateLineHeight();
+			else if (e.PropertyName == Label.MaxLinesProperty.PropertyName)
+				UpdateMaxLines();
 		}
 
 		void UpdateColor()
@@ -313,6 +316,12 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		{
 			this.SetLineBreakMode(Element.LineBreakMode);
 			_lastSizeRequest = null;
+		}
+
+		void UpdateMaxLines()
+		{
+			SetSingleLine(Element.MaxLines == 1);
+			SetMaxLines(Element.MaxLines > 0 ? Element.MaxLines : 1);
 		}
 
 		void UpdateText()
