@@ -74,10 +74,10 @@ namespace Xamarin.Forms.Controls.TestCasesPages
 		public void Issue1851Test() 
 		{
 			RunningApp.WaitForElement(q => q.Marked("btn"));
-            RunningApp.Tap("btn");
-            RunningApp.WaitForElement(q => q.Marked("btn"));
 			RunningApp.Tap("btn");
-            RunningApp.WaitForElement(q => q.Marked("btn"));
+			RunningApp.WaitForElement(q => q.Marked("btn"));
+			RunningApp.Tap("btn");
+			RunningApp.WaitForElement(q => q.Marked("btn"));
 		}
 #endif
 	}
