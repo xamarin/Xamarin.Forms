@@ -14,14 +14,16 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		protected override void Init()
 		{
-			var text = "Lorem Ipsum";
+			var entryText = "Entry Lorem Ipsum";
+			var editorText = "Editor Lorem Ipsum";
 
-			var entryDefaults = new Entry { Text = text };
-			var editorDefaults = new Editor { Text = text };
-			var entryReadOnly = new Entry { Text = text, IsReadOnly = true };
-			var editorReadOnly = new Editor { Text = text, IsReadOnly = true };
-			var entryToggleable = new Entry { Text = text };
-			var editorToggleable = new Editor { Text = text };
+			var entryDefaults = new Entry { Text = entryText };
+			var editorDefaults = new Editor { Text = editorText };
+			var entryReadOnly = new Entry { Text = entryText, IsReadOnly = true };
+			var editorReadOnly = new Editor { Text = editorText, IsReadOnly = true };
+			var entryToggleable = new Entry { Text = entryText };
+			var editorToggleable = new Editor { Text = editorText };
+
 			var toggle = new Switch { IsToggled = false };
 
 			var stackLayout = new StackLayout();
