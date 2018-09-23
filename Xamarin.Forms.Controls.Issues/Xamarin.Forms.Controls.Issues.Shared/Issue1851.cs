@@ -3,19 +3,28 @@ using System.Collections.ObjectModel;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
+#if UITEST
+using Xamarin.Forms.Core.UITests;
+using Xamarin.UITest;
+using NUnit.Framework;
+#endif
+
 namespace Xamarin.Forms.Controls.TestCasesPages
 {
+#if UITEST
+	[Category(UITestCategories.ListView)]
+#endif
 	[Preserve (AllMembers=true)]
 	[Issue (IssueTracker.Github, 1851, "ObservableCollection in ListView gets Index out of range when removing item", PlatformAffected.Android)]
 	public class Issue1851 : ContentPage
 	{
 		public Issue1851 ()
 		{
-			var grouping = new Grouping<string, string>("number", new List<string> { "1", "2", "3", "4", "5", "6", "7", "8", "9" });
-			var groupings = new ObservableCollection<Grouping<string, string>>
+			var grouping = new Grouping1851<string, string>("number", new List<string> { "1", "2", "3", "4", "5", "6", "7", "8", "9" });
+			var groupings = new ObservableCollection<Grouping1851<string, string>>
 			{
-				new Grouping<string, string>("letters", new List<string> {"a", "b", "c", "d", "e", "f", "g", "h", "i"}),
-				new Grouping<string, string>("colours", new List<string> {"red", "green", "blue", "white", "orange", "purple", "grey", "mauve", "pink"}),
+				new Grouping1851<string, string>("letters", new List<string> {"a", "b", "c", "d", "e", "f", "g", "h", "i"}),
+				new Grouping1851<string, string>("colours", new List<string> {"red", "green", "blue", "white", "orange", "purple", "grey", "mauve", "pink"}),
 				grouping,
 			};
 
@@ -24,10 +33,10 @@ namespace Xamarin.Forms.Controls.TestCasesPages
 				HasUnevenRows = true,
 				IsGroupingEnabled = true,
 				ItemsSource = groupings,
-				ItemTemplate = new DataTemplate(typeof(CellTemplate)),
+				ItemTemplate = new DataTemplate(typeof(CellTemplate1851)),
 				GroupDisplayBinding = new Binding("Key")
 			};
-			var groupbtn = new Button() { Text = "add/remove group" };
+			var groupbtn = new Button() {AutomationId = "btn", Text = "add/remove group" };
 			bool group = true;
 			groupbtn.Clicked += (sender, args) =>
 			{
@@ -46,19 +55,34 @@ namespace Xamarin.Forms.Controls.TestCasesPages
 				}
 			};
 
-			Content = new StackLayout
+			Content = new ScrollView
 			{
-				Children =
+				Content = new StackLayout
 				{
-					groupbtn,
-					listview,
+					Children =
+					{
+						groupbtn,
+						listview,
+					}
 				}
 			};
 		}
+
+#if UITEST
+		[Test]
+		public void Issue1851Test() 
+		{
+			RunningApp.WaitForElement(q => q.Marked("btn"));
+            RunningApp.Tap("btn");
+            RunningApp.WaitForElement(q => q.Marked("btn"));
+			RunningApp.Tap("btn");
+            RunningApp.WaitForElement(q => q.Marked("btn"));
+		}
+#endif
 	}
 
 	[Preserve(AllMembers = true)]
-	public class CellTemplate : ViewCell
+	public class CellTemplate1851 : ViewCell
 	{
 		protected override void OnBindingContextChanged()
 		{
@@ -73,9 +97,9 @@ namespace Xamarin.Forms.Controls.TestCasesPages
 	}
 
 	[Preserve(AllMembers = true)]
-	public class Grouping<TKey, TElement> : ObservableCollection<TElement>
+	public class Grouping1851<TKey, TElement> : ObservableCollection<TElement>
 	{
-		public Grouping(TKey key, IEnumerable<TElement> items)
+		public Grouping1851(TKey key, IEnumerable<TElement> items)
 		{
 			Key = key;
 			foreach (var item in items)
