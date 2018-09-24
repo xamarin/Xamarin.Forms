@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using Foundation;
 using UIKit;
 
@@ -9,7 +8,7 @@ namespace Xamarin.Forms.Platform.iOS
 	// TODO hartez 2018/06/01 14:21:24 Add a method for updating the layout	
 	internal class CollectionViewController : UICollectionViewController
 	{
-		readonly IEnumerable _itemsSource;
+		readonly IItemsViewSource _itemsSource;
 		readonly ItemsView _itemsView;
 		readonly ItemsViewLayout _layout;
 		bool _initialConstraintsSet;
@@ -17,7 +16,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public CollectionViewController(ItemsView itemsView, ItemsViewLayout layout) : base(layout)
 		{
 			_itemsView = itemsView;
-			_itemsSource = _itemsView.ItemsSource;
+			_itemsSource =  ItemsSourceFactory.Create(_itemsView.ItemsSource, CollectionView);
 			_layout = layout;
 
 			_layout.GetPrototype = GetProtoType;
@@ -43,8 +42,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override nint GetItemsCount(UICollectionView collectionView, nint section)
 		{
-			// TODO hartez 2018/06/07 17:06:18 Obviously this needs to handle things which are not ILists	
-			return (_itemsSource as IList).Count;
+			return _itemsSource.Count;
 		}
 
 		public override void ViewDidLoad()
@@ -72,10 +70,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual void UpdateDefaultCell(DefaultCell cell, NSIndexPath indexPath)
 		{
-			if (_itemsSource is IList list)
-			{
-				cell.Label.Text = list[indexPath.Row].ToString();
-			}
+			cell.Label.Text = _itemsSource[indexPath.Row].ToString();
 
 			if (cell is ItemsViewCell constrainedCell)
 			{
@@ -99,9 +94,9 @@ namespace Xamarin.Forms.Platform.iOS
 			var templateElement = _itemsView.ItemTemplate.CreateContent() as View;
 			IVisualElementRenderer renderer = CreateRenderer(templateElement);
 
-			if (_itemsSource is IList list && renderer != null)
+			if (renderer != null)
 			{
-				BindableObject.SetInheritedBindingContext(renderer.Element, list[indexPath.Row]);
+				BindableObject.SetInheritedBindingContext(renderer.Element, _itemsSource[indexPath.Row]);
 				cell.SetRenderer(renderer);
 			}
 		}
