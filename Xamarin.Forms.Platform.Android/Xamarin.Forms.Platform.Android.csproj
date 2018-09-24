@@ -22,12 +22,6 @@
     <AndroidTlsProvider>
     </AndroidTlsProvider>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(BuildingInsideVisualStudio)' != 'true'">
-    <AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(BuildingInsideVisualStudio)' == 'true'">
-    <AndroidUseLatestPlatformSdk>False</AndroidUseLatestPlatformSdk>
-  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
@@ -165,6 +159,8 @@
     <Compile Include="ContextExtensions.cs" />
     <Compile Include="GetDesiredSizeDelegate.cs" />
     <Compile Include="IDeviceInfoProvider.cs" />
+    <Compile Include="ITabStop.cs" />
+    <Compile Include="Renderers\FormsWebViewClient.cs" />
     <Compile Include="Renderers\IImageViewHandler.cs" />
     <Compile Include="InnerGestureListener.cs" />
     <Compile Include="InnerScaleListener.cs" />
