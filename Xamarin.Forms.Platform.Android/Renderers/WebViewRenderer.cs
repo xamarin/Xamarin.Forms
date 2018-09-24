@@ -226,7 +226,6 @@ namespace Xamarin.Forms.Platform.Android
 				var value = Element.OnThisPlatform().EnableZoomControls();
 				Control.Settings.SetSupportZoom(value);
 				Control.Settings.BuiltInZoomControls = value;
-
 			}
 		}
 
@@ -235,9 +234,7 @@ namespace Xamarin.Forms.Platform.Android
 			// DisplayZoomControls supported as of API level 11
 			if (Control != null && ((int)Build.VERSION.SdkInt >= 11))
 			{
-				var value = Element.OnThisPlatform().DisplayZoomControls();
-				Control.Settings.DisplayZoomControls = value;
-
+				Control.Settings.DisplayZoomControls = Element.OnThisPlatform().DisplayZoomControls();
 			}
 		}
 
