@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Controls.Issues
 			PushAsync(new LandingPage43941());
 		}
 
-#if UITEST && __IOS__
+#if UITEST
 		[Test]
 		public void Bugzilla43941Test()
 		{
@@ -33,12 +33,10 @@ namespace Xamarin.Forms.Controls.Issues
 				RunningApp.Back();
 			}
 
-			// At this point, the counter can be any value, but it's most likely not zero.
 			// Invoking GC once is enough to clean up all garbage data and set counter to zero
 			RunningApp.WaitForElement(q => q.Marked("GC"));
 			RunningApp.Tap(q => q.Marked("GC"));
-
-			RunningApp.WaitForElement(q => q.Marked("Counter: 0"));
+			Assert.AreEqual(0, LandingPage43941.Counter);
 		}
 #endif
 	}
@@ -85,7 +83,7 @@ namespace Xamarin.Forms.Controls.Issues
 				HorizontalTextAlignment = TextAlignment.Center,
 				VerticalTextAlignment = TextAlignment.Center
 			};
-
+			var childPages = new List<ContentPage43941>();
 			Content = new StackLayout
 			{
 				Orientation = StackOrientation.Vertical,
@@ -106,9 +104,9 @@ namespace Xamarin.Forms.Controls.Issues
 						AutomationId = "GC",
 						Command = new Command(o =>
 						{
+							childPages = new List<ContentPage43941>();
 							GC.Collect();
 							GC.WaitForPendingFinalizers();
-							GC.Collect();
 							Label.Text = "Counter: " + Counter;
 						})
 					},
@@ -118,7 +116,9 @@ namespace Xamarin.Forms.Controls.Issues
 						AutomationId = "Push",
 						Command = new Command(async o =>
 						{
-							await Navigation.PushAsync(new ContentPage43941());
+							var childPage = new ContentPage43941();
+							childPages.Add(childPage);
+							await Navigation.PushAsync(childPage);
 						})
 					}
 				}
