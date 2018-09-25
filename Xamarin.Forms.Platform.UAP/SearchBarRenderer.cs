@@ -4,7 +4,8 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.SearchBar;
-using WVisualStateManager = Windows.UI.Xaml.VisualStateManager;
+using Xamarin.Forms.Internals;
+using Windows.UI.Xaml.Input;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -22,6 +23,19 @@ namespace Xamarin.Forms.Platform.UWP
 		Brush _defaultDeleteButtonForegroundColorBrush;
 		Brush _defaultDeleteButtonBackgroundColorBrush;
 
+		FocusNavigationDirection focusDirection;
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing && Control != null)
+			{
+				Control.GotFocus -= OnGotFocus;
+				Control.GettingFocus -= OnGettingFocus;
+			}
+
+			base.Dispose(disposing);
+		}
+
 		protected override void OnElementChanged(ElementChangedEventArgs<SearchBar> e)
 		{
 			if (e.NewElement != null)
@@ -33,6 +47,8 @@ namespace Xamarin.Forms.Platform.UWP
 					Control.TextChanged += OnTextChanged;
 					Control.Loaded += OnControlLoaded;
 					Control.AutoMaximizeSuggestionArea = false;
+					Control.GotFocus += OnGotFocus;
+					Control.GettingFocus += OnGettingFocus;
 				}
 
 				UpdateText();
@@ -47,7 +63,21 @@ namespace Xamarin.Forms.Platform.UWP
 
 			base.OnElementChanged(e);
 		}
-		
+
+		protected override void UpdateTabStop()
+		{
+			base.UpdateTabStop();
+			Control?.GetChildren<Control>().ForEach(c => c.IsTabStop = Element.IsTabStop);
+		}
+
+		void OnGettingFocus(UIElement sender, GettingFocusEventArgs args) => focusDirection = args.Direction;
+
+		void OnGotFocus(object sender, RoutedEventArgs e)
+		{
+			if (e.OriginalSource == Control)
+				FocusManager.TryMoveFocus(focusDirection);
+		}
+
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);

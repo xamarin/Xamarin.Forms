@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
 
@@ -13,6 +15,7 @@ namespace Xamarin.Forms.Platform.UWP
 		Brush _defaultBrush;
 		bool _fontApplied;
 		FontFamily _defaultFontFamily;
+		FocusNavigationDirection focusDirection;
 
 		protected override void Dispose(bool disposing)
 		{
@@ -20,6 +23,8 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				Control.TimeChanged -= OnControlTimeChanged;
 				Control.Loaded -= ControlOnLoaded;
+				Control.GotFocus -= OnGotFocus;
+				Control.GettingFocus -= OnGettingFocus;
 			}
 
 			base.Dispose(disposing);
@@ -39,6 +44,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 					Control.TimeChanged += OnControlTimeChanged;
 					Control.Loaded += ControlOnLoaded;
+					Control.GotFocus += OnGotFocus;
+					Control.GettingFocus += OnGettingFocus;
 				}
 				else
 				{
@@ -48,6 +55,20 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateTime();
 				UpdateFlowDirection();
 			}
+		}
+
+		protected override void UpdateTabStop()
+		{
+			base.UpdateTabStop();
+			Control?.GetChildren<Control>().ForEach(c => c.IsTabStop = Element.IsTabStop);
+		}
+
+		void OnGettingFocus(UIElement sender, GettingFocusEventArgs args) => focusDirection = args.Direction;
+
+		void OnGotFocus(object sender, RoutedEventArgs e)
+		{
+			if (e.OriginalSource == Control)
+				FocusManager.TryMoveFocus(focusDirection);
 		}
 
 		void ControlOnLoaded(object sender, RoutedEventArgs routedEventArgs)

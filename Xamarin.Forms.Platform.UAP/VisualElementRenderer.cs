@@ -297,16 +297,10 @@ namespace Xamarin.Forms.Platform.UWP
 				changed(this, e);
 		}
 
-		protected void UpdateTabStop()
+		protected virtual void UpdateTabStop()
 		{
-			if (_control == null)
-				return;
-			_control.IsTabStop = Element.IsTabStop;
-
-			// update TabStop of children for complex controls (like as DatePicker, TimePicker, SearchBar and Stepper)
-			var children = FrameworkElementExtensions.GetChildren<Control>(_control);
-			foreach (var child in children)
-				child.IsTabStop = _control.IsTabStop;
+			if (_control != null)
+				_control.IsTabStop = Element.IsTabStop;
 		}
 
 		protected void UpdateTabIndex()

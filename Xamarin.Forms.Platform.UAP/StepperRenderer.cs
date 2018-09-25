@@ -1,10 +1,27 @@
 ﻿using System;
 using System.ComponentModel;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Xamarin.Forms.Internals;
+using Windows.UI.Xaml.Input;
 
 namespace Xamarin.Forms.Platform.UWP
 {
 	public class StepperRenderer : ViewRenderer<Stepper, StepperControl>
 	{
+		FocusNavigationDirection focusDirection;
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing && Control != null)
+			{
+				Control.GotFocus -= OnGotFocus;
+				Control.GettingFocus -= OnGettingFocus;
+			}
+
+			base.Dispose(disposing);
+		}
+
 		protected override void OnElementChanged(ElementChangedEventArgs<Stepper> e)
 		{
 			base.OnElementChanged(e);
@@ -15,6 +32,8 @@ namespace Xamarin.Forms.Platform.UWP
 				{
 					SetNativeControl(new StepperControl());
 					Control.ValueChanged += OnControlValue;
+					Control.GettingFocus += OnGettingFocus;
+					Control.GotFocus += OnGotFocus;
 				}
 
 				UpdateMaximum();
@@ -41,6 +60,20 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateBackgroundColor();
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateFlowDirection();
+		}
+
+		protected override void UpdateTabStop()
+		{
+			base.UpdateTabStop();
+			Control?.GetChildren<Control>().ForEach(c => c.IsTabStop = Element.IsTabStop);
+		}
+
+		void OnGettingFocus(UIElement sender, GettingFocusEventArgs args) => focusDirection = args.Direction;
+
+		void OnGotFocus(object sender, RoutedEventArgs e)
+		{
+			if (e.OriginalSource == Control)
+				FocusManager.TryMoveFocus(focusDirection);
 		}
 
 		protected override void UpdateBackgroundColor()
