@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Controls.Issues
 			// Invoking GC once is enough to clean up all garbage data and set counter to zero
 			RunningApp.WaitForElement(q => q.Marked("GC"));
 			RunningApp.Tap(q => q.Marked("GC"));
-			Assert.AreEqual(0, LandingPage43941.Counter);
+			RunningApp.WaitForElement(q => q.Marked("Counter: 0"));
 		}
 #endif
 	}
