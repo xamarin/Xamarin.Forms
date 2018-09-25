@@ -10,7 +10,7 @@ using Xamarin.UITest;
 using NUnit.Framework;
 #endif
 
-namespace Xamarin.Forms.Controls.TestCasesPages
+namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
 	[Category(UITestCategories.ListView)]
@@ -69,6 +69,34 @@ namespace Xamarin.Forms.Controls.TestCasesPages
 			};
 		}
 
+		[Preserve(AllMembers = true)]
+		class CellTemplate1851 : ViewCell
+		{
+			protected override void OnBindingContextChanged()
+			{
+				base.OnBindingContextChanged();
+
+				var text = BindingContext as string;
+				if (text == null)
+					return;
+
+				View = new Label { Text = text };
+			}
+		}
+
+		[Preserve(AllMembers = true)]
+		class Grouping1851<TKey, TElement> : ObservableCollection<TElement>
+		{
+			public Grouping1851(TKey key, IEnumerable<TElement> items)
+			{
+				Key = key;
+				foreach (var item in items)
+					Items.Add(item);
+			}
+
+			public TKey Key { get; private set; }
+		}
+
 #if UITEST
 		[Test]
 		public void Issue1851Test() 
@@ -81,33 +109,4 @@ namespace Xamarin.Forms.Controls.TestCasesPages
 		}
 #endif
 	}
-
-	[Preserve(AllMembers = true)]
-	public class CellTemplate1851 : ViewCell
-	{
-		protected override void OnBindingContextChanged()
-		{
-			base.OnBindingContextChanged();
-
-			var text = BindingContext as string;
-			if (text == null)
-				return;
-
-			View = new Label { Text = text };
-		}
-	}
-
-	[Preserve(AllMembers = true)]
-	public class Grouping1851<TKey, TElement> : ObservableCollection<TElement>
-	{
-		public Grouping1851(TKey key, IEnumerable<TElement> items)
-		{
-			Key = key;
-			foreach (var item in items)
-				Items.Add(item);
-		}
-
-		public TKey Key { get; private set; }
-	}
 }
-	
