@@ -163,6 +163,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateIsSwipeToRefreshEnabled();
 				UpdateFastScrollEnabled();
 				UpdateSelectionMode();
+				UpdateHorizontalScrollBarVisibility();
+				UpdateVerticalScrollBarVisibility();
 			}
 		}
 
@@ -200,6 +202,10 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateFastScrollEnabled();
 			else if (e.PropertyName == ListView.SelectionModeProperty.PropertyName)
 				UpdateSelectionMode();
+			else if (e.PropertyName == ScrollView.HorizontalScrollBarVisibilityProperty.PropertyName)
+				UpdateHorizontalScrollBarVisibility();
+			else if (e.PropertyName == ScrollView.VerticalScrollBarVisibilityProperty.PropertyName)
+				UpdateVerticalScrollBarVisibility();
 		}
 
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)
@@ -396,6 +402,22 @@ namespace Xamarin.Forms.Platform.Android
 					Control.ChoiceMode = ChoiceMode.Single;
 				}
 			}
+		}
+
+		void UpdateHorizontalScrollBarVisibility()
+		{
+			var horizontalScrollBarVisibility = Element.HorizontalScrollBarVisibility;
+
+			Control.HorizontalScrollBarEnabled = horizontalScrollBarVisibility == ScrollBarVisibility.Always
+				|| horizontalScrollBarVisibility == ScrollBarVisibility.Default;
+		}
+
+		void UpdateVerticalScrollBarVisibility()
+		{
+			var verticalScrollBarVisibility = Element.VerticalScrollBarVisibility;
+
+			Control.VerticalScrollBarEnabled = verticalScrollBarVisibility == ScrollBarVisibility.Always
+				|| verticalScrollBarVisibility == ScrollBarVisibility.Default;
 		}
 
 		internal class Container : ViewGroup

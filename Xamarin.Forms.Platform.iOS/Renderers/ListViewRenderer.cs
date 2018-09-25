@@ -246,6 +246,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateSeparatorColor();
 				UpdateSeparatorVisibility();
 				UpdateSelectionMode();
+				UpdateVerticalScrollBarVisibility();
+				UpdateHorizontalScrollBarVisibility();
 
 				var selected = e.NewElement.SelectedItem;
 				if (selected != null)
@@ -284,6 +286,10 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdatePullToRefreshEnabled();
 			else if (e.PropertyName == Xamarin.Forms.ListView.SelectionModeProperty.PropertyName)
 				UpdateSelectionMode();
+			else if (e.PropertyName == ScrollView.VerticalScrollBarVisibilityProperty.PropertyName)
+				UpdateVerticalScrollBarVisibility();
+			else if (e.PropertyName == ScrollView.HorizontalScrollBarVisibilityProperty.PropertyName)
+				UpdateHorizontalScrollBarVisibility();
 		}
 
 		NSIndexPath[] GetPaths(int section, int index, int count)
@@ -673,6 +679,19 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		void UpdateVerticalScrollBarVisibility()
+		{
+			var verticalScrollBarVisibility = ListView.VerticalScrollBarVisibility;
+			Control.ShowsVerticalScrollIndicator = verticalScrollBarVisibility == ScrollBarVisibility.Always
+				|| verticalScrollBarVisibility == ScrollBarVisibility.Default;
+		}
+
+		void UpdateHorizontalScrollBarVisibility()
+		{
+			var horizontalScrollBarVisibility = ListView.HorizontalScrollBarVisibility;
+			Control.ShowsHorizontalScrollIndicator = horizontalScrollBarVisibility == ScrollBarVisibility.Always
+				|| horizontalScrollBarVisibility == ScrollBarVisibility.Default;
+		}
 
 		internal class UnevenListViewDataSource : ListViewDataSource
 		{

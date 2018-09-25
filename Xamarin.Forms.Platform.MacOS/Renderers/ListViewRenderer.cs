@@ -124,6 +124,8 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateIsRefreshing();
 				UpdateSeparatorColor();
 				UpdateSeparatorVisibility();
+				UpdateVerticalScrollBarVisibility();
+				UpdateHorizontalScrollBarVisibility();
 
 				var selected = e.NewElement.SelectedItem;
 				if (selected != null)
@@ -155,6 +157,10 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateFooter();
 			else if (e.PropertyName == "RefreshAllowed")
 				UpdatePullToRefreshEnabled();
+			else if (e.PropertyName == ScrollView.VerticalScrollBarVisibilityProperty.PropertyName)
+				UpdateVerticalScrollBarVisibility();
+			else if (e.PropertyName == ScrollView.HorizontalScrollBarVisibilityProperty.PropertyName)
+				UpdateHorizontalScrollBarVisibility();
 		}
 
 		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -323,6 +329,20 @@ namespace Xamarin.Forms.Platform.MacOS
 		//TODO: Implement Footer
 		void UpdateFooter()
 		{
+		}
+
+		void UpdateVerticalScrollBarVisibility()
+		{
+			var verticalScrollBarVisibility = Element.VerticalScrollBarVisibility;
+			_table.EnclosingScrollView.HasVerticalScroller = (verticalScrollBarVisibility == ScrollBarVisibility.Always
+															  || verticalScrollBarVisibility == ScrollBarVisibility.Default);
+		}
+
+		void UpdateHorizontalScrollBarVisibility()
+		{
+			var horizontalScrollBarVisibility = Element.HorizontalScrollBarVisibility;
+			_table.EnclosingScrollView.HasHorizontalScroller = (horizontalScrollBarVisibility == ScrollBarVisibility.Always
+															  || horizontalScrollBarVisibility == ScrollBarVisibility.Default);
 		}
 
 		class FormsNSTableView : NSTableView
