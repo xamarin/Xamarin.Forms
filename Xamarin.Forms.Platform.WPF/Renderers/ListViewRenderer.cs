@@ -10,6 +10,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Xamarin.Forms.Internals;
 using WList = System.Windows.Controls.ListView;
+using WpfScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility;
 
 namespace Xamarin.Forms.Platform.WPF
 {
@@ -52,6 +53,8 @@ namespace Xamarin.Forms.Platform.WPF
 				
 				// Update control property 
 				UpdateItemSource();
+				UpdateHorizontalScrollBarVisibility();
+				UpdateVerticalScrollBarVisibility();
 
 				//UpdateHeader();
 				//UpdateFooter();
@@ -78,7 +81,14 @@ namespace Xamarin.Forms.Platform.WPF
 			{
 				//UpdateGrouping();
 			}
-
+			else if (e.PropertyName == ScrollView.VerticalScrollBarVisibilityProperty.PropertyName)
+			{
+				UpdateVerticalScrollBarVisibility();
+			}
+			else if (e.PropertyName == ScrollView.HorizontalScrollBarVisibilityProperty.PropertyName)
+			{
+				UpdateHorizontalScrollBarVisibility();
+			}
 
 			/*if (e.PropertyName == ListView.SelectedItemProperty.PropertyName)
 				OnItemSelected(Element.SelectedItem);
@@ -123,6 +133,31 @@ namespace Xamarin.Forms.Platform.WPF
 			{
 				Control.ItemsSource = Element.TemplatedItems;
 			}
+		}
+
+		WpfScrollBarVisibility ScrollBarVisibilityToWpf(ScrollBarVisibility visibility)
+		{
+			switch (visibility)
+			{
+				case ScrollBarVisibility.Always:
+					return WpfScrollBarVisibility.Visible;
+				case ScrollBarVisibility.Default:
+					return WpfScrollBarVisibility.Auto;
+				case ScrollBarVisibility.Never:
+					return WpfScrollBarVisibility.Hidden;
+				default:
+					return WpfScrollBarVisibility.Auto;
+			}
+		}
+
+		void UpdateVerticalScrollBarVisibility()
+		{
+			ScrollViewer.SetVerticalScrollBarVisibility(Control, ScrollBarVisibilityToWpf(Element.VerticalScrollBarVisibility));
+		}
+
+		void UpdateHorizontalScrollBarVisibility()
+		{
+			ScrollViewer.SetHorizontalScrollBarVisibility(Control, ScrollBarVisibilityToWpf(Element.VerticalScrollBarVisibility));
 		}
 
 		void OnNativeKeyUp(object sender, KeyEventArgs e)

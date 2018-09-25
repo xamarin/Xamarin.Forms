@@ -19,6 +19,7 @@ using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.ListView;
 using System.Collections.ObjectModel;
+using UwpScrollBarVisibility = Windows.UI.Xaml.Controls.ScrollBarVisibility;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -78,6 +79,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateSelectionMode();
 				UpdateWindowsSpecificSelectionMode();
 				ClearSizeEstimate();
+				UpdateVerticalScrollBarVisibilty();
+				UpdateHorizontalScrollBarVisibility();
 			}
 		}
 
@@ -231,6 +234,14 @@ namespace Xamarin.Forms.Platform.UWP
 			else if (e.PropertyName == Specifics.SelectionModeProperty.PropertyName)
 			{
 				UpdateWindowsSpecificSelectionMode();
+			}
+			else if (e.PropertyName == ListView.VerticalScrollBarVisibilityProperty.PropertyName)
+			{
+				UpdateVerticalScrollBarVisibility();
+			}
+			else if (e.PropertyName == ListView.HorizontalScrollBarVisibilityProperty.PropertyName)
+			{
+				UpdateHorizontalScrollBarVisibility();
 			}
 		}
 
@@ -432,6 +443,31 @@ namespace Xamarin.Forms.Platform.UWP
 					List.ItemClick -= OnListItemClicked;
 				}
 			}
+		}
+
+		UwpScrollBarVisibility ScrollBarVisibilityToUwp(ScrollBarVisibility visibility)
+		{
+			switch (visibility)
+			{
+				case ScrollBarVisibility.Always:
+					return UwpScrollBarVisibility.Visible;
+				case ScrollBarVisibility.Default:
+					return UwpScrollBarVisibility.Auto;
+				case ScrollBarVisibility.Never:
+					return UwpScrollBarVisibility.Hidden;
+				default:
+					return UwpScrollBarVisibility.Auto;
+			}
+		}
+
+		void UpdateVerticalScrollBarVisibility()
+		{
+			ScrollViewer.SetVerticalScrollBarVisibility(Control, ScrollBarVisibilityToUwp(Element.VerticalScrollBarVisibility));
+		}
+
+		void UpdateHorizontalScrollBarVisibility()
+		{
+			ScrollViewer.SetVerticalScrollBarVisibility(Control, ScrollBarVisibilityToUwp(Element.HorizontalScrollBarVisibility));
 		}
 
 		async void OnViewChangeCompleted(object sender, SemanticZoomViewChangedEventArgs e)
