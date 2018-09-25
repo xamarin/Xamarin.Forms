@@ -17,9 +17,9 @@ namespace Xamarin.Forms.Controls.TestCasesPages
 #endif
 	[Preserve (AllMembers=true)]
 	[Issue (IssueTracker.Github, 1851, "ObservableCollection in ListView gets Index out of range when removing item", PlatformAffected.Android)]
-	public class Issue1851 : ContentPage
+	public class Issue1851 : TestContentPage
 	{
-		public Issue1851 ()
+		protected override void Init()
 		{
 			var grouping = new Grouping1851<string, string>("number", new List<string> { "1", "2", "3", "4", "5", "6", "7", "8", "9" });
 			var groupings = new ObservableCollection<Grouping1851<string, string>>
@@ -37,11 +37,11 @@ namespace Xamarin.Forms.Controls.TestCasesPages
 				ItemTemplate = new DataTemplate(typeof(CellTemplate1851)),
 				GroupDisplayBinding = new Binding("Key")
 			};
-			var groupbtn = new Button() {AutomationId = "btn", Text = "add/remove group" };
+			var groupbtn = new Button() { AutomationId = "btn", Text = "add/remove group" };
 			bool group = true;
 			groupbtn.Clicked += (sender, args) =>
 			{
-				listview.GroupShortNameBinding = new Binding ("Key");
+				listview.GroupShortNameBinding = new Binding("Key");
 				if (group)
 				{
 					group = false;
