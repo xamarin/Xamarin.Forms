@@ -19,7 +19,6 @@ using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.ListView;
 using System.Collections.ObjectModel;
-using UwpScrollBarVisibility = Windows.UI.Xaml.Controls.ScrollBarVisibility;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -79,7 +78,7 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateSelectionMode();
 				UpdateWindowsSpecificSelectionMode();
 				ClearSizeEstimate();
-				UpdateVerticalScrollBarVisibilty();
+				UpdateVerticalScrollBarVisibility();
 				UpdateHorizontalScrollBarVisibility();
 			}
 		}
@@ -445,29 +444,14 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		UwpScrollBarVisibility ScrollBarVisibilityToUwp(ScrollBarVisibility visibility)
-		{
-			switch (visibility)
-			{
-				case ScrollBarVisibility.Always:
-					return UwpScrollBarVisibility.Visible;
-				case ScrollBarVisibility.Default:
-					return UwpScrollBarVisibility.Auto;
-				case ScrollBarVisibility.Never:
-					return UwpScrollBarVisibility.Hidden;
-				default:
-					return UwpScrollBarVisibility.Auto;
-			}
-		}
-
 		void UpdateVerticalScrollBarVisibility()
 		{
-			ScrollViewer.SetVerticalScrollBarVisibility(Control, ScrollBarVisibilityToUwp(Element.VerticalScrollBarVisibility));
+			ScrollViewer.SetVerticalScrollBarVisibility(Control, Element.VerticalScrollBarVisibility.ToUwpScrollBarVisibility());
 		}
 
 		void UpdateHorizontalScrollBarVisibility()
 		{
-			ScrollViewer.SetVerticalScrollBarVisibility(Control, ScrollBarVisibilityToUwp(Element.HorizontalScrollBarVisibility));
+			ScrollViewer.SetVerticalScrollBarVisibility(Control, Element.HorizontalScrollBarVisibility.ToUwpScrollBarVisibility());
 		}
 
 		async void OnViewChangeCompleted(object sender, SemanticZoomViewChangedEventArgs e)

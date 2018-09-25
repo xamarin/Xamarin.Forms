@@ -6,6 +6,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 using Xamarin.Forms.Internals;
 using WImageSource = Windows.UI.Xaml.Media.ImageSource;
+using UwpScrollBarVisibility = Windows.UI.Xaml.Controls.ScrollBarVisibility;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -82,6 +83,21 @@ namespace Xamarin.Forms.Platform.UWP
 			};
 
 			return inputScope;
+		}
+
+		internal static UwpScrollBarVisibility ToUwpScrollBarVisibility(this ScrollBarVisibility visibility)
+		{
+			switch (visibility)
+			{
+				case ScrollBarVisibility.Always:
+					return UwpScrollBarVisibility.Visible;
+				case ScrollBarVisibility.Default:
+					return UwpScrollBarVisibility.Auto;
+				case ScrollBarVisibility.Never:
+					return UwpScrollBarVisibility.Hidden;
+				default:
+					return UwpScrollBarVisibility.Auto;
+			}
 		}
 	}
 }
