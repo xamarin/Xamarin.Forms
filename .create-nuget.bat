@@ -2,6 +2,7 @@ rem This is not our official nuget build script.
 rem This is used as a quick and dirty way create nuget packages used to test user issue reproductions.
 rem This is updated as XF developers use it to test reproductions. As such, it may not always work.
 rem This is not ideal, but it's better than nothing, and it usually works fine.
+rem This is a test comment.
 
 @echo off
 rem stub uncommon targets
