@@ -136,21 +136,6 @@ namespace Xamarin.Forms.Platform.WPF
 			}
 		}
 
-		WpfScrollBarVisibility ScrollBarVisibilityToWpf(ScrollBarVisibility visibility)
-		{
-			switch (visibility)
-			{
-				case ScrollBarVisibility.Always:
-					return WpfScrollBarVisibility.Visible;
-				case ScrollBarVisibility.Default:
-					return WpfScrollBarVisibility.Auto;
-				case ScrollBarVisibility.Never:
-					return WpfScrollBarVisibility.Hidden;
-				default:
-					return WpfScrollBarVisibility.Auto;
-			}
-		}
-
 		void UpdateVerticalScrollBarVisibility()
 		{
 			ScrollViewer.SetVerticalScrollBarVisibility(Control, Element.VerticalScrollBarVisibility.ToWpfScrollBarVisibility());
