@@ -9,6 +9,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.Platform.WPF.Extensions;
 using WList = System.Windows.Controls.ListView;
 using WpfScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility;
 
@@ -152,12 +153,12 @@ namespace Xamarin.Forms.Platform.WPF
 
 		void UpdateVerticalScrollBarVisibility()
 		{
-			ScrollViewer.SetVerticalScrollBarVisibility(Control, ScrollBarVisibilityToWpf(Element.VerticalScrollBarVisibility));
+			ScrollViewer.SetVerticalScrollBarVisibility(Control, Element.VerticalScrollBarVisibility.ToWpfScrollBarVisibility());
 		}
 
 		void UpdateHorizontalScrollBarVisibility()
 		{
-			ScrollViewer.SetHorizontalScrollBarVisibility(Control, ScrollBarVisibilityToWpf(Element.VerticalScrollBarVisibility));
+			ScrollViewer.SetHorizontalScrollBarVisibility(Control, Element.HorizontalScrollBarVisibility.ToWpfScrollBarVisibility());
 		}
 
 		void OnNativeKeyUp(object sender, KeyEventArgs e)
