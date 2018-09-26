@@ -33,6 +33,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 {
 	public class NavigationPageRenderer : VisualElementRenderer<NavigationPage>, IManageFragments, IOnClickListener, ILifeCycleState
 	{
+		const int DefaultDisabledToolbarAlpha = 127;
+	
 		readonly List<Fragment> _fragmentStack = new List<Fragment>();
 
 		Drawable _backgroundDrawable;
@@ -879,7 +881,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				{
 					if (!menuItem.IsEnabled)
 					{
-						iconDrawable.Mutate().SetAlpha(127);
+						iconDrawable.Mutate().SetAlpha(DefaultDisabledToolbarAlpha);
 					}
 
 					menuItem.SetIcon(iconDrawable);
