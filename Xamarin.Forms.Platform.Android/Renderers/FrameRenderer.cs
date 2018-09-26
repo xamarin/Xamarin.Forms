@@ -48,10 +48,19 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnElementChanged(e);
 
+			if (e.OldElement != null)
+			{
+				e.OldElement.PropertyChanged -= Element_PropertyChanged;
+			}
+			if (e.NewElement != null)
+			{
+				e.NewElement.PropertyChanged += Element_PropertyChanged;
+			}
+
+
 			if (e.NewElement != null && e.OldElement == null)
 			{
 				UpdateBackground();
-				UpdateCornerRadius();
 				_motionEventHelper.UpdateElement(e.NewElement);
 			}
 		}
@@ -61,9 +70,9 @@ namespace Xamarin.Forms.Platform.Android
 			this.SetBackground(new FrameDrawable(Element, Context.ToPixels));
 		}
 
-		void UpdateCornerRadius()
+		void Element_PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			this.SetBackground(new FrameDrawable(Element, Context.ToPixels));
+			UpdateBackground();
 		}
 
 		class FrameDrawable : Drawable
