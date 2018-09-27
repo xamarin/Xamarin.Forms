@@ -48,16 +48,6 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnElementChanged(e);
 
-			if (e.OldElement != null)
-			{
-				e.OldElement.PropertyChanged -= Element_PropertyChanged;
-			}
-			if (e.NewElement != null)
-			{
-				e.NewElement.PropertyChanged += Element_PropertyChanged;
-			}
-
-
 			if (e.NewElement != null && e.OldElement == null)
 			{
 				UpdateBackground();
@@ -65,14 +55,18 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
+		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			base.OnElementPropertyChanged(sender, e);
+			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName || e.PropertyName == Frame.CornerRadiusProperty.PropertyName)
+			{
+				UpdateBackground();
+			}
+		}
+
 		void UpdateBackground()
 		{
 			this.SetBackground(new FrameDrawable(Element, Context.ToPixels));
-		}
-
-		void Element_PropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			UpdateBackground();
 		}
 
 		class FrameDrawable : Drawable
