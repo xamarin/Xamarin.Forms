@@ -2,11 +2,11 @@
 {
 	internal class ObservableCollectionGallery : ContentPage
 	{
-		public ObservableCollectionGallery ()
+		public ObservableCollectionGallery()
 		{
 			var desc = "Observable Collection Galleries";
 
-			var descriptionLabel = new Label { Text = desc, Margin = new Thickness(2,2,2,2)};
+			var descriptionLabel = new Label { Text = desc, Margin = new Thickness(2, 2, 2, 2) };
 
 			Title = "Simple DataTemplate Galleries";
 
@@ -17,8 +17,12 @@
 					Children =
 					{
 						descriptionLabel,
-						GalleryBuilder.NavButton("Add/Remove Items", () => 
-							new ObservableCodeCollectionViewGridGallery (), Navigation),
+
+						GalleryBuilder.NavButton("Add/Remove Items (list)", () =>
+							new ObservableCodeCollectionViewGallery(grid: false), Navigation),
+
+						GalleryBuilder.NavButton("Add/Remove Items (grid)", () =>
+							new ObservableCodeCollectionViewGallery(), Navigation)
 					}
 				}
 			};

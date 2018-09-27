@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using Android.Content;
+using Android.Graphics;
 using Android.Support.V7.Widget;
 using Android.Util;
 using Android.Views;
@@ -24,6 +25,12 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			_automationPropertiesProvider = new AutomationPropertiesProvider(this);
 			_effectControlProvider = new EffectControlProvider(this);
+		}
+
+		protected override void OnLayout(bool changed, int l, int t, int r, int b)
+		{
+			base.OnLayout(changed, l, t, r, b);
+			ClipBounds = new Rect(0,0, Width, Height);
 		}
 
 		void IEffectControlProvider.RegisterEffect(Effect effect)
@@ -184,9 +191,7 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			// TODO hartez 2018/08/29 17:33:59 Should this use SwapAdapter if one exists? Probably	
-
-			SetAdapter(new ItemsViewAdapter(ItemsView, Context));
+			SwapAdapter(new ItemsViewAdapter(ItemsView, Context), false);
 		}
 
 		void SetUpNewElement(ItemsView newElement)

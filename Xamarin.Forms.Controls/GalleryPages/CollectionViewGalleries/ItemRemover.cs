@@ -1,49 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 {
-	internal class ItemRemover : ContentView
+	internal class ItemRemover : CollectionModifier 
 	{
-		readonly CollectionView _cv;
-		readonly Entry _entry;
-
-		public ItemRemover(CollectionView cv)
+		public ItemRemover(CollectionView cv) : base(cv, "Remove")
 		{
-			_cv = cv;
-
-			var layout = new StackLayout
-			{
-				Orientation = StackOrientation.Horizontal,
-				HorizontalOptions = LayoutOptions.Fill
-			};
-
-			var button = new Button { Text = "Remove" };
-			var label = new Label { Text = "Index:", VerticalTextAlignment = TextAlignment.Center };
-
-			_entry = new Entry { Keyboard = Keyboard.Numeric, Text = "0", WidthRequest = 200 };
-
-			layout.Children.Add(label);
-			layout.Children.Add(_entry);
-			layout.Children.Add(button);
-
-			button.Clicked += RemoveItem;
-
-			Content = layout;
 		}
 
-		void RemoveItem(object sender, EventArgs e)
+		protected override void ModifyCollection(ObservableCollection<TestItem> observableCollection, params int[] indexes)
 		{
-			if (!int.TryParse(_entry.Text, out int index))
-			{
-				return;
-			}
-
-			if (!(_cv.ItemsSource is ObservableCollection<TestItem> observableCollection))
-			{
-				return;
-			}
+			var index = indexes[0];
 
 			if (index > -1 && index < observableCollection.Count)
 			{

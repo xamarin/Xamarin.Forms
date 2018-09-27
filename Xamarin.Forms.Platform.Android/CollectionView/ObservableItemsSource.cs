@@ -19,9 +19,12 @@ namespace Xamarin.Forms.Platform.Android
 			((INotifyCollectionChanged)itemSource).CollectionChanged += CollectionChanged;
 		}
 
+		public int Count => _itemsSource.Count;
+
+		public object this[int index] => _itemsSource[index];
+
 		void CollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
 		{
-			// TODO hartez 2018/07/31 16:02:50 Handle the rest of these cases (implementing selection will make them much easier to test)	
 			switch (args.Action)
 			{
 				case NotifyCollectionChangedAction.Add:
@@ -31,14 +34,22 @@ namespace Xamarin.Forms.Platform.Android
 					Remove(args);
 					break;
 				case NotifyCollectionChangedAction.Replace:
+					Replace(args);
 					break;
 				case NotifyCollectionChangedAction.Move:
+					Move(args);
 					break;
 				case NotifyCollectionChangedAction.Reset:
+					_adapter.NotifyDataSetChanged();
 					break;
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
+		}
+
+		void Move(NotifyCollectionChangedEventArgs args)
+		{
+			_adapter.NotifyItemMoved(args.OldStartingIndex, args.NewStartingIndex);
 		}
 
 		void Add(NotifyCollectionChangedEventArgs args)
@@ -69,9 +80,18 @@ namespace Xamarin.Forms.Platform.Android
 			_adapter.NotifyItemRangeRemoved(startIndex, count);
 		}
 
+		void Replace(NotifyCollectionChangedEventArgs args)
+		{
+			var startIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : _itemsSource.IndexOf(args.NewItems[0]);
+			var count = args.NewItems.Count;
 
-		public int Count => _itemsSource.Count;
+			if (count == 1)
+			{
+				_adapter.NotifyItemChanged(startIndex);
+				return;
+			}
 
-		public object this[int index] => _itemsSource[index];
+			_adapter.NotifyItemRangeChanged(startIndex, count);
+		}
 	}
 }
