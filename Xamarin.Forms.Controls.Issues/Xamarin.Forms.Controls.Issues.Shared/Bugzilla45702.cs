@@ -51,7 +51,7 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			RunningApp.WaitForElement (q => q.Marked ("Click me"));
 			RunningApp.Tap (q => q.Marked ("Click me"));
-		    RunningApp.WaitForElement (q => q.Marked ("Success"));
+			RunningApp.WaitForElement (q => q.Marked ("Success"));
 		}
 #endif
 	}
