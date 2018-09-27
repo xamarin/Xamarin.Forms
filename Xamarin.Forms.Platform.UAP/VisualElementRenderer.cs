@@ -152,7 +152,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			OnElementChanged(new ElementChangedEventArgs<TElement>(oldElement, Element));
 
-			if (_control != null && this is ITabStopOnDescenants)
+			if (_control != null && this is ITabStopOnDescendants)
 			{
 				_control.GotFocus += OnGotFocus;
 				_control.GettingFocus += OnGettingFocus;
@@ -323,7 +323,7 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 			_control.IsTabStop = Element.IsTabStop;
 
-			if (this is ITabStopOnDescenants)
+			if (this is ITabStopOnDescendants)
 				_control?.GetChildren<Control>().ForEach(c => c.IsTabStop = Element.IsTabStop);
 		}
 

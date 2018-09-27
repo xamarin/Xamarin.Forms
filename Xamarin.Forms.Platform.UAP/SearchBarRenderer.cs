@@ -7,7 +7,7 @@ using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.SearchBar;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	public class SearchBarRenderer : ViewRenderer<SearchBar, AutoSuggestBox>, ITabStopOnDescenants
+	public class SearchBarRenderer : ViewRenderer<SearchBar, AutoSuggestBox>, ITabStopOnDescendants
 	{
 		Brush _defaultPlaceholderColorBrush;
 		Brush _defaultPlaceholderColorFocusBrush;
