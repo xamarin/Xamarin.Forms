@@ -35,7 +35,7 @@ namespace Xamarin.Forms.Controls.Issues
 		public void Issue35127Test() 
 		{
 			RunningApp.WaitForElement (q => q.Marked ("See me?"));
-		    var count = RunningApp.Query(q => q.Marked("scrollView")).Length;
+			var count = RunningApp.Query(q => q.Marked("scrollView")).Length;
 			Assert.IsTrue(count == 0);
 		    RunningApp.WaitForNoElement (q => q.Marked ("Click Me?"));
 		}
