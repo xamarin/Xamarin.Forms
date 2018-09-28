@@ -306,7 +306,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual async Task<bool> OnPopViewAsync(Page page, bool animated)
 		{
-			if (_ignorePopCall)
+			if (_ignorePopCall) 
 				return true;
 
 			var renderer = Platform.GetRenderer(page);
@@ -321,6 +321,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var task = GetAppearedOrDisappearedTask(page);
 
 			UIViewController poppedViewController;
+			_ignorePopCall = true;
 			poppedViewController = base.PopViewController(animated);
 
 			actuallyRemoved = (poppedViewController == null) ? true : !await task;
@@ -843,6 +844,10 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (NavPage == null)
 				return;
+			if (_ignorePopCall) {
+				_ignorePopCall = false;
+				return;
+			}
 			_ignorePopCall = true;
 			if (Element.Navigation.NavigationStack.Contains(pageBeingRemoved))
 				await (NavPage as INavigationPageController)?.RemoveAsyncInner(pageBeingRemoved, false, true);

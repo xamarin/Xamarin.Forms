@@ -34,7 +34,6 @@ namespace Xamarin.Forms
 
 		static readonly BindablePropertyKey RootPagePropertyKey = BindableProperty.CreateReadOnly(nameof(RootPage), typeof(Page), typeof(NavigationPage), null);
 		public static readonly BindableProperty RootPageProperty = RootPagePropertyKey.BindableProperty;
-		private bool _ignorePopCall = false;
 
 		public NavigationPage()
 		{
@@ -281,10 +280,6 @@ namespace Xamarin.Forms
 
 		async Task<Page> INavigationPageController.RemoveAsyncInner(Page page, bool animated, bool fast)
 		{
-			if (_ignorePopCall)
-			{
-				return page;
-			}
 			if (StackDepth == 1)
 			{
 				return null;
@@ -297,13 +292,10 @@ namespace Xamarin.Forms
 			EventHandler<NavigationRequestedEventArgs> requestPop = PopRequested;
 			if (requestPop != null)
 			{
-				_ignorePopCall = true;
 				requestPop(this, args);
 
 				if (args.Task != null && !fast)
 					removed = await args.Task;
-
-				_ignorePopCall = false;
 			}
 
 			if (!removed && !fast)
