@@ -306,7 +306,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected virtual async Task<bool> OnPopViewAsync(Page page, bool animated)
 		{
-			if (_ignorePopCall) 
+			if (_ignorePopCall)
 				return true;
 
 			var renderer = Platform.GetRenderer(page);
