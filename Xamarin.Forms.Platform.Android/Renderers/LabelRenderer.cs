@@ -7,7 +7,6 @@ using Android.Views;
 using Android.Widget;
 using System;
 using System.ComponentModel;
-using Xamarin.Forms.PlatformConfiguration.TizenSpecific;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -227,7 +226,11 @@ namespace Xamarin.Forms.Platform.Android
 		void UpdateMaxLines()
 		{
 			Control.SetSingleLine(Element.MaxLines == 1);
-			Control.SetMaxLines(Element.MaxLines > 0 ? Element.MaxLines : 1);
+
+			if (Element.MaxLines == (int)Label.MaxLinesProperty.DefaultValue)
+				Control.SetMaxLines(int.MaxValue);
+			else
+				Control.SetMaxLines(Element.MaxLines > 0 ? Element.MaxLines : 1);
 		}
 
 		void UpdateText()

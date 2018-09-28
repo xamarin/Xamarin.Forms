@@ -367,53 +367,30 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateMaxLines()
 		{
-			if (Element.MaxLines >= 0)
-			{
+
 #if __MOBILE__
-				Control.Lines = Element.MaxLines;
-
-				LayoutSubviews();
+			Control.Lines = Element.MaxLines >= 0 ? Element.MaxLines : GetLineCount();
+			LayoutSubviews();
 #else
-				Control.MaximumNumberOfLines = Element.MaxLines;
-
-				Layout();
+			Control.MaximumNumberOfLines = Element.MaxLines >= 0 ? Element.MaxLines : GetLineCount();
+			Layout();
 #endif
-			}
-			else
+		}
+
+		int GetLineCount()
+		{
+			switch (Element.LineBreakMode)
 			{
-#if __MOBILE__
-				switch (Element.LineBreakMode)
-				{
-					case LineBreakMode.WordWrap:
-					case LineBreakMode.CharacterWrap:
-						Control.Lines = 0;
-						break;
-					case LineBreakMode.NoWrap:
-					case LineBreakMode.HeadTruncation:
-					case LineBreakMode.MiddleTruncation:
-					case LineBreakMode.TailTruncation:
-						Control.Lines = 1;
-						break;
-				}
-
-				LayoutSubviews();
-#else
-				switch (Element.LineBreakMode)
-				{
-					case LineBreakMode.WordWrap:
-					case LineBreakMode.CharacterWrap:
-						Control.MaximumNumberOfLines = 0;
-						break;
-					case LineBreakMode.NoWrap:
-					case LineBreakMode.HeadTruncation:
-					case LineBreakMode.MiddleTruncation:
-					case LineBreakMode.TailTruncation:
-						Control.MaximumNumberOfLines = 1;
-						break;
-				}
-
-				Layout();
-#endif
+				case LineBreakMode.WordWrap:
+				case LineBreakMode.CharacterWrap:
+					return 0;
+				case LineBreakMode.NoWrap:
+				case LineBreakMode.HeadTruncation:
+				case LineBreakMode.MiddleTruncation:
+				case LineBreakMode.TailTruncation:
+					return 1;
+				default:
+					throw new InvalidOperationException();
 			}
 		}
 	}
