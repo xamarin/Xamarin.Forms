@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla60787.xaml.cs">
       <DependentUpon>Bugzilla60787.xaml</DependentUpon>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue1588.xaml.cs">
       <DependentUpon>Issue1588.xaml</DependentUpon>
@@ -992,9 +993,9 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Page Include="$(MSBuildThisFileDirectory)Bugzilla60787.xaml">
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Bugzilla60787.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>
