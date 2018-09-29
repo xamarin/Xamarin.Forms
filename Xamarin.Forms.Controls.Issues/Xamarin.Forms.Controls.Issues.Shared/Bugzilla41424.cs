@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Controls.Issues
 			var step1Label = new Label() { Text = "• Click 'Click to focus DatePicker'" };
 			var step2Label = new Label() { Text = "• Click 'Cancel' or back button" };
 			var step3Label = new Label() { Text = "• Click 'Click to focus DatePicker'" };
-			var step4Label = new Label() { Text = "• Check that date selector is appear" };
+			var step4Label = new Label() { Text = "• Check that date selector appears" };
 			var datePickerFocusStateLabel = new Label();
 			var datePicker = new DatePicker
 			{
