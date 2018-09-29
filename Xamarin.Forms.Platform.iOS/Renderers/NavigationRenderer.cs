@@ -1032,12 +1032,19 @@ namespace Xamarin.Forms.Platform.iOS
 				View titleView = NavigationPage.GetTitleView(page);
 				bool needContainer = titleView != null || titleIcon != null;
 
+				string backButtonText = NavigationPage.GetBackButtonTitle(page);
+				bool isBackButtonTextSet = page.IsSet(NavigationPage.BackButtonTitleProperty);
+
+				// on iOS 10 if the user hasn't set the back button text
+				// we set it to an empty string so it's consistent with iOS 11
+				if (!Forms.IsiOS11OrNewer && !isBackButtonTextSet)
+					backButtonText = "";
 
 				// First page and we have a master detail to contend with
 				UpdateLeftBarButtonItem();
-				UpdateBackButtonTitle(page);
+				UpdateBackButtonTitle(page.Title, backButtonText);
 
-				var hadTitleView = NavigationItem.TitleView != null;
+				//var hadTitleView = NavigationItem.TitleView != null;
 				ClearTitleViewContainer();
 				if (needContainer)
 				{
@@ -1045,35 +1052,10 @@ namespace Xamarin.Forms.Platform.iOS
 					if (!_navigation.TryGetTarget(out n))
 						return;
 
-					// if we're using a title view then we remove back button adornments
-					if (n.ViewControllers.Length > 0)
-					{
-						var previousController = n.ViewControllers[n.ViewControllers.Length - 1] as ParentingViewController;
-						if (previousController != this && previousController != null)
-							previousController.UpdateBackButtonTitle(null, "");
-						else if (n.ViewControllers.Length > 1)
-						{
-							previousController = n.ViewControllers[n.ViewControllers.Length - 2] as ParentingViewController;
-							if (previousController != null)
-								previousController.UpdateBackButtonTitle(null, "");
-						}
-					}
-
 					Container titleViewContainer = new Container(titleView, n.NavigationBar);
 
 					UpdateTitleImage(titleViewContainer, titleIcon);
 					NavigationItem.TitleView = titleViewContainer;
-				}
-				else if (hadTitleView)
-				{
-					// if the titleview is removed then we re-instate the backbutton and title for the previous controller
-					NavigationRenderer n;
-					if (!_navigation.TryGetTarget(out n))
-						return;
-
-					if (n.ViewControllers.Length > 1)
-						if (n.ViewControllers[n.ViewControllers.Length - 2] is ParentingViewController previousController)
-							previousController.UpdateBackButtonTitle(previousController.Child);
 				}
 			}
 
@@ -1288,22 +1270,8 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 			}
 
-			public UILabel BackButtonLabel
-			{
-				get
-				{
-					for (int i = 0; i < this.Subviews.Length; i++)
-						if (Subviews[i] is UIView view)
-							if (view.Class.Name == "UINavigationItemButtonView")
-								for (int j = 0; j < view.Subviews.Length; j++)
-									if (view.Subviews[j] is UILabel labelView)
-										return labelView;
-
-					return null;
-				}
-			}
-
 			public RectangleF BackButtonFrameSize { get; private set; }
+			public UILabel NavBarLabel { get; private set; }
 
 			public override void LayoutSubviews()
 			{
@@ -1321,6 +1289,13 @@ namespace Xamarin.Forms.Platform.iOS
 									BackButtonFrameSize = view.Frame;
 
 								break;
+							}
+							else if(view.Class.Name == "UINavigationItemButtonView")
+							{
+								if (view.Subviews.Length == 0)
+									NavBarLabel = null;
+								else if (view.Subviews[0] is UILabel titleLabel)
+									NavBarLabel = titleLabel;
 							}
 						}
 					}
@@ -1379,7 +1354,6 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 			}
 
-
 			public override CGRect Frame
 			{
 				get => base.Frame;
@@ -1391,7 +1365,7 @@ namespace Xamarin.Forms.Platform.iOS
 						{
 							value.Y = Superview.Bounds.Y;
 
-							if (_bar != null && _bar.BackButtonFrameSize != RectangleF.Empty)
+							if (_bar != null && String.IsNullOrWhiteSpace(_bar.NavBarLabel?.Text) && _bar.BackButtonFrameSize != RectangleF.Empty)
 							{
 								var xSpace = _bar.BackButtonFrameSize.Width + (_bar.BackButtonFrameSize.X * 2);
 								value.Width = (value.X - xSpace) + value.Width;

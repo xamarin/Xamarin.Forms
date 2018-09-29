@@ -54,12 +54,18 @@ namespace Xamarin.Forms.Controls.GalleryPages
 			var page = Navigation.NavigationStack.First();
 			var titleText = NavigationPage.GetBackButtonTitle(page);
 
-			if (string.IsNullOrEmpty(titleText))
-				NavigationPage.SetBackButtonTitle(page, "CustomText");
+			if (titleText == null)
+				titleText = "Custom Text";
+			else if (titleText == "Custom Text")
+				titleText = "";
 			else
-				NavigationPage.SetBackButtonTitle(page, null);
+				titleText = null;
 
+			NavigationPage.SetBackButtonTitle(page, titleText);
 			changeTitleView_Clicked(this, EventArgs.Empty);
+
+			string result = (titleText == null) ? "<null>" : titleText;
+			btnToggleBackButtonTitle.Text = $"Toggle Back Button Title Text: {result}";
 		}
 
 		void tabbedPage_Clicked(object sender, EventArgs e)

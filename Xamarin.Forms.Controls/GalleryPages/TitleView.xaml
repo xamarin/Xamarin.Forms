@@ -22,7 +22,7 @@
 			<Button Clicked="toggleSecondaryToolBarItem_Clicked" Text="Toggle Secondary Tool Bar Item" ></Button>
 			<Button Clicked="toggleLargeTitles_Clicked" Text="Toggle Large Titles" ></Button>
 			<Button Clicked="changeTitleView_Clicked" Text="Toggle Different Title Views"></Button>
-			<Button Clicked="toggleBackButtonText_Clicked" Text="Toggle Back Button Title Text"></Button>
+			<Button x:Name="btnToggleBackButtonTitle" Clicked="toggleBackButtonText_Clicked" Text="Toggle Back Button Title Text"></Button>
 			<Button Clicked="backToGallery_Clicked" Text="Back to Gallery"></Button>
 		</StackLayout>
 	</ScrollView>
