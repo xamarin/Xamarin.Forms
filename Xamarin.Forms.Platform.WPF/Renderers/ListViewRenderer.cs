@@ -18,6 +18,8 @@ namespace Xamarin.Forms.Platform.WPF
 	public class ListViewRenderer : ViewRenderer<ListView, WList>
 	{
 		ITemplatedItemsView<Cell> TemplatedItemsView => Element;
+		ScrollBarVisibility _defaultHorizontalScrollVisibility = ScrollBarVisibility.Default;
+		ScrollBarVisibility _defaultVerticalScrollVisibility = ScrollBarVisibility.Default;
 
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
@@ -138,12 +140,34 @@ namespace Xamarin.Forms.Platform.WPF
 
 		void UpdateVerticalScrollBarVisibility()
 		{
-			ScrollViewer.SetVerticalScrollBarVisibility(Control, Element.VerticalScrollBarVisibility.ToWpfScrollBarVisibility());
+			if (_defaultVerticalScrollVisibility == ScrollBarVisibility.Default)
+			{
+				_defaultVerticalScrollVisibility = ScrollViewer.GetVerticalScrollBarVisibility(Control) == WpfScrollBarVisibility.Visible
+					? ScrollBarVisibility.Always : ScrollBarVisibility.Never;
+			}
+
+			var newVerticalScrollVisibility = Element.VerticalScrollBarVisibility;
+
+			if (newVerticalScrollVisibility == ScrollBarVisibility.Default)
+				newVerticalScrollVisibility = _defaultVerticalScrollVisibility;
+
+			ScrollViewer.SetVerticalScrollBarVisibility(Control, newVerticalScrollVisibility.ToWpfScrollBarVisibility());
 		}
 
 		void UpdateHorizontalScrollBarVisibility()
 		{
-			ScrollViewer.SetHorizontalScrollBarVisibility(Control, Element.HorizontalScrollBarVisibility.ToWpfScrollBarVisibility());
+			if (_defaultHorizontalScrollVisibility == ScrollBarVisibility.Default)
+			{
+				_defaultHorizontalScrollVisibility = ScrollViewer.GetHorizontalScrollBarVisibility(Control) == WpfScrollBarVisibility.Visible
+					? ScrollBarVisibility.Always : ScrollBarVisibility.Never;
+			}
+
+			var newHorizontalScrollVisibility = Element.HorizontalScrollBarVisibility;
+
+			if (newHorizontalScrollVisibility == ScrollBarVisibility.Default)
+				newHorizontalScrollVisibility = _defaultVerticalScrollVisibility;
+
+			ScrollViewer.SetHorizontalScrollBarVisibility(Control, newHorizontalScrollVisibility.ToWpfScrollBarVisibility());
 		}
 
 		void OnNativeKeyUp(object sender, KeyEventArgs e)

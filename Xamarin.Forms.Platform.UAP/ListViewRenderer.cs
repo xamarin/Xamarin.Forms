@@ -19,6 +19,7 @@ using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.ListView;
 using System.Collections.ObjectModel;
+using UwpScrollBarVisibility = Windows.UI.Xaml.Controls.ScrollBarVisibility;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -32,6 +33,9 @@ namespace Xamarin.Forms.Platform.UWP
 		bool _subscribedToTapped;
 		bool _disposed;
 		CollectionViewSource _collectionViewSource;
+
+		ScrollBarVisibility _defaultHorizontalScrollVisibility = ScrollBarVisibility.Default;
+		ScrollBarVisibility _defaultVerticalScrollVisibility = ScrollBarVisibility.Default;
 
 		protected WListView List { get; private set; }
 
@@ -446,12 +450,34 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateVerticalScrollBarVisibility()
 		{
-			ScrollViewer.SetVerticalScrollBarVisibility(Control, Element.VerticalScrollBarVisibility.ToUwpScrollBarVisibility());
+			if (_defaultVerticalScrollVisibility == ScrollBarVisibility.Default)
+			{
+				_defaultVerticalScrollVisibility = ScrollViewer.GetVerticalScrollBarVisibility(Control) == UwpScrollBarVisibility.Visible
+					? ScrollBarVisibility.Always : ScrollBarVisibility.Never;
+			}
+
+			var newVerticalScrollVisibility = Element.VerticalScrollBarVisibility;
+
+			if (newVerticalScrollVisibility == ScrollBarVisibility.Default)
+				newVerticalScrollVisibility = _defaultVerticalScrollVisibility;
+
+			ScrollViewer.SetVerticalScrollBarVisibility(Control, newVerticalScrollVisibility.ToUwpScrollBarVisibility());
 		}
 
 		void UpdateHorizontalScrollBarVisibility()
 		{
-			ScrollViewer.SetVerticalScrollBarVisibility(Control, Element.HorizontalScrollBarVisibility.ToUwpScrollBarVisibility());
+			if (_defaultHorizontalScrollVisibility == ScrollBarVisibility.Default)
+			{
+				_defaultHorizontalScrollVisibility = ScrollViewer.GetHorizontalScrollBarVisibility(Control) == UwpScrollBarVisibility.Visible
+					? ScrollBarVisibility.Always : ScrollBarVisibility.Never;
+			}
+
+			var newHorizontalScrollVisibility = Element.HorizontalScrollBarVisibility;
+
+			if (newHorizontalScrollVisibility == ScrollBarVisibility.Default)
+				newHorizontalScrollVisibility = _defaultVerticalScrollVisibility;
+
+			ScrollViewer.SetHorizontalScrollBarVisibility(Control, newHorizontalScrollVisibility.ToUwpScrollBarVisibility());
 		}
 
 		async void OnViewChangeCompleted(object sender, SemanticZoomViewChangedEventArgs e)
