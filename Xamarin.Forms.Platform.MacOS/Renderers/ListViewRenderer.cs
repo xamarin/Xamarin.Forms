@@ -18,6 +18,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		ITemplatedItemsView<Cell> TemplatedItemsView => Element;
 
+		ScrollBarVisibility _defaultHorizontalScrollVisibility = ScrollBarVisibility.Default;
+		ScrollBarVisibility _defaultVerticalScrollVisibility = ScrollBarVisibility.Default;
+
 		public const int DefaultRowHeight = 44;
 
 		public NSTableView NativeTableView => _table;
@@ -333,16 +336,34 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateVerticalScrollBarVisibility()
 		{
-			var verticalScrollBarVisibility = Element.VerticalScrollBarVisibility;
-			_table.EnclosingScrollView.HasVerticalScroller = (verticalScrollBarVisibility == ScrollBarVisibility.Always
-															  || verticalScrollBarVisibility == ScrollBarVisibility.Default);
+			if (_table?.EnclosingScrollView != null)
+			{
+				if (_defaultVerticalScrollVisibility == ScrollBarVisibility.Default)
+					_defaultVerticalScrollVisibility = _table.EnclosingScrollView.HasVerticalScroller ? ScrollBarVisibility.Always : ScrollBarVisibility.Never;
+
+				var newVerticalScrollVisibility = Element.VerticalScrollBarVisibility;
+
+				if (newVerticalScrollVisibility == ScrollBarVisibility.Default)
+					newVerticalScrollVisibility = _defaultVerticalScrollVisibility;
+
+				_table.EnclosingScrollView.HasVerticalScroller = newVerticalScrollVisibility == ScrollBarVisibility.Always;
+			}
 		}
 
 		void UpdateHorizontalScrollBarVisibility()
 		{
-			var horizontalScrollBarVisibility = Element.HorizontalScrollBarVisibility;
-			_table.EnclosingScrollView.HasHorizontalScroller = (horizontalScrollBarVisibility == ScrollBarVisibility.Always
-															  || horizontalScrollBarVisibility == ScrollBarVisibility.Default);
+			if (_table?.EnclosingScrollView != null)
+			{
+				if (_defaultHorizontalScrollVisibility == ScrollBarVisibility.Default)
+					_defaultHorizontalScrollVisibility = _table.EnclosingScrollView.HasHorizontalScroller ? ScrollBarVisibility.Always : ScrollBarVisibility.Never;
+
+				var newHorizontalScrollVisibility = Element.HorizontalScrollBarVisibility;
+
+				if (newHorizontalScrollVisibility == ScrollBarVisibility.Default)
+					newHorizontalScrollVisibility = _defaultHorizontalScrollVisibility;
+
+				_table.EnclosingScrollView.HasHorizontalScroller = newHorizontalScrollVisibility == ScrollBarVisibility.Always;
+			}
 		}
 
 		class FormsNSTableView : NSTableView
