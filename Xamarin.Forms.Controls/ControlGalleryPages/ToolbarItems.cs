@@ -1,8 +1,4 @@
-﻿using System;
-
-using Xamarin.Forms;
-
-namespace Xamarin.Forms.Controls
+﻿namespace Xamarin.Forms.Controls
 {
 	public class ToolbarItems : ContentPage
 	{
@@ -48,7 +44,8 @@ namespace Xamarin.Forms.Controls
 			tb5.Text = "tb5";
 			tb5.Icon = "bank.png";
 			tb5.Order = ToolbarItemOrder.Secondary;
-			tb5.Command = new Command(async () => {
+			tb5.Command = new Command(async () =>
+			{
 				await Navigation.PushAsync(new ToolbarItems());
 			});
 			tb5.AutomationId = "toolbaritem_secondary5";
@@ -59,10 +56,19 @@ namespace Xamarin.Forms.Controls
 			ToolbarItems.Add(tb4);
 			ToolbarItems.Add(tb5);
 
+
+			var button = new Button { Text = "Change tb2 visibility" };
+
+			button.Clicked += (sender, args) =>
+			{
+				tb2.IsVisible = !tb2.IsVisible;
+			};
+
 			Content = new StackLayout
 			{
 				Children = {
-					label
+					label,
+					button
 				}
 			};
 		}

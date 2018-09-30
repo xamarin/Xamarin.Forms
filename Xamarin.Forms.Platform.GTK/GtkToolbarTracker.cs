@@ -35,9 +35,9 @@ namespace Xamarin.Forms.Platform.GTK
 			_toolbarTracker.CollectionChanged += ToolbarTrackerOnCollectionChanged;
 		}
 
-		public HBox Toolbar
+		public ToolbarTracker Tracker
 		{
-			get { return _toolbar; }
+			get { return _toolbarTracker; }
 		}
 
 		public NavigationPage Navigation

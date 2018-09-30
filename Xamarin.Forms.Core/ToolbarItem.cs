@@ -12,11 +12,34 @@ namespace Xamarin.Forms
 
 		static readonly BindableProperty PriorityProperty = BindableProperty.Create("Priority", typeof(int), typeof(ToolbarItem), 0);
 
+		public static readonly BindableProperty IsVisibleProperty = BindableProperty.Create("IsVisible", typeof(bool), typeof(ToolbarItem), true, BindingMode.TwoWay, propertyChanged: (bindable, oldvalue, newvalue) =>
+		{
+			var item = bindable as ToolbarItem;
+
+			if (item != null && item.Parent == null)
+				return;
+
+			if (item != null)
+			{
+				var items = ((ContentPage)item.Parent).ToolbarItems;
+
+				if ((bool)newvalue && !items.Contains(item))
+				{
+					items.Add(item);
+				}
+				else if (!(bool)newvalue && items.Contains(item))
+				{
+					items.Remove(item);
+				}
+			}
+		});
+
 		public ToolbarItem()
 		{
+	
 		}
 
-		public ToolbarItem(string name, string icon, Action activated, ToolbarItemOrder order = ToolbarItemOrder.Default, int priority = 0)
+		public ToolbarItem(string name, string icon, Action activated, ToolbarItemOrder order = ToolbarItemOrder.Default, int priority = 0, bool isVisible = true)
 		{
 			if (activated == null)
 				throw new ArgumentNullException("activated");
@@ -26,6 +49,7 @@ namespace Xamarin.Forms
 			Clicked += (s, e) => activated();
 			Order = order;
 			Priority = priority;
+			IsVisible = isVisible;
 		}
 
 		[Obsolete("Name is obsolete as of version 1.3.0. Please use Text instead.")]
@@ -45,6 +69,12 @@ namespace Xamarin.Forms
 		{
 			get { return (int)GetValue(PriorityProperty); }
 			set { SetValue(PriorityProperty, value); }
+		}
+
+		public bool IsVisible
+		{
+			get { return (bool)GetValue(IsVisibleProperty); }
+			set { SetValue(IsVisibleProperty, value); }
 		}
 
 		[Obsolete("Activated is obsolete as of version 1.3.0. Please use Clicked instead.")]

@@ -238,6 +238,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 			}
 
 			_currentPage = Page.CurrentPage;
+			NativeToolbarTracker.Tracker.Target = _currentPage;
 
 			if (_currentPage != null)
 			{
