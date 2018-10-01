@@ -7,16 +7,17 @@ namespace Xamarin.Forms.Controls
 	internal class MediaElementDemoPage : ContentPage
 	{
 		MediaElement element;
+		Label positionLabel;
 		Label consoleLabel;
 
 		public MediaElementDemoPage()
 		{
 			element = new MediaElement();
 			element.HorizontalOptions = new LayoutOptions(LayoutAlignment.Fill,true);
-			element.VerticalOptions = new LayoutOptions(LayoutAlignment.Fill,true);
+			element.VerticalOptions = new LayoutOptions(LayoutAlignment.Fill,false);
 			element.AutoPlay = false;
 			element.Aspect = Aspect.AspectFill;
-			element.AreTransportControlsEnabled = true;
+			element.ShowsPlaybackControls = true;
 			element.BackgroundColor = Color.Red;
 			element.MediaEnded += Element_MediaEnded;
 			element.MediaFailed += Element_MediaFailed;
@@ -42,9 +43,9 @@ namespace Xamarin.Forms.Controls
 			infoStack.Children.Add(widthLabel);
 			infoStack.Children.Add(durationLabel);
 
-			var positionLabel = new Label();
+			positionLabel = new Label();
 			positionLabel.TextColor = Color.Black;
-			positionLabel.SetBinding(Label.TextProperty, new Binding("Position", BindingMode.OneWay, null, null, "{0:g}", element));
+			//positionLabel.SetBinding(Label.TextProperty, new Binding("Position", BindingMode.OneWay, null, null, "{0:g}", element));
 
 			var playButton = new Button();
 			playButton.Text = "\u25b6\uFE0F";
@@ -64,12 +65,16 @@ namespace Xamarin.Forms.Controls
 			stopButton.HorizontalOptions = new LayoutOptions(LayoutAlignment.Center, true);
 			stopButton.Clicked += StopButton_Clicked;
 
+			var showControlsSwitch = new Switch();
+			showControlsSwitch.SetBinding(Switch.IsToggledProperty, new Binding("ShowsPlaybackControls", BindingMode.TwoWay, source: element));
+
 			var mediaControlStack = new StackLayout();
 			mediaControlStack.Orientation = StackOrientation.Horizontal;
 			mediaControlStack.HorizontalOptions = new LayoutOptions(LayoutAlignment.Center, false);
 			mediaControlStack.Children.Add(playButton);
 			mediaControlStack.Children.Add(pauseButton);
 			mediaControlStack.Children.Add(stopButton);
+			mediaControlStack.Children.Add(showControlsSwitch);
 
 			var stack = new StackLayout();
 			stack.Padding = new Thickness(10);
@@ -119,6 +124,24 @@ namespace Xamarin.Forms.Controls
 			base.OnAppearing();
 
 			element.Source = new Uri("https://sec.ch9.ms/ch9/5d93/a1eab4bf-3288-4faf-81c4-294402a85d93/XamarinShow_mid.mp4");
+
+			Device.StartTimer(TimeSpan.FromMilliseconds(100), ()=>{
+				Device.BeginInvokeOnMainThread(() =>
+				{
+					positionLabel.Text = element.Position.ToString("mm\\:ss\\.ff");
+				});
+
+				return polling;
+			});
+		}
+
+		bool polling = true;
+
+		protected override void OnDisappearing()
+		{
+			base.OnDisappearing();
+
+			polling = false;
 		}
 	}
 }

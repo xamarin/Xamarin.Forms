@@ -101,6 +101,7 @@ namespace Xamarin.Forms
 		{
 			get
 			{
+				PositionRequested?.Invoke(this, EventArgs.Empty);
 				return (TimeSpan)GetValue(PositionProperty);
 			}
 
@@ -126,6 +127,9 @@ namespace Xamarin.Forms
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public event EventHandler<StateRequested> StateRequested;
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public event EventHandler PositionRequested;
 
 		public void Play()
 		{

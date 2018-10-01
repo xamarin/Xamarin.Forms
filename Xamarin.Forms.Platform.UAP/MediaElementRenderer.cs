@@ -13,34 +13,48 @@ namespace Xamarin.Forms.Platform.UWP
 
 		long _positionChangedToken;
 
+		void ReleaseControl()
+		{
+			if (Control != null)
+			{
+				if (_bufferingProgressChangedToken != 0)
+				{
+					Control.UnregisterPropertyChangedCallback(Windows.UI.Xaml.Controls.MediaElement.BufferingProgressProperty, _bufferingProgressChangedToken);
+					_bufferingProgressChangedToken = 0;
+				}
+
+				if (_positionChangedToken != 0)
+				{
+					Control.UnregisterPropertyChangedCallback(Windows.UI.Xaml.Controls.MediaElement.PositionProperty, _positionChangedToken);
+					_positionChangedToken = 0;
+				}
+
+				Element.SeekRequested -= Element_SeekRequested;
+				Element.StateRequested -= Element_StateRequested;
+				Element.PositionRequested -= Element_PositionRequested;
+
+				Control.CurrentStateChanged -= Control_CurrentStateChanged;
+				Control.SeekCompleted -= Control_SeekCompleted;
+				Control.MediaOpened -= Control_MediaOpened;
+				Control.MediaEnded -= Control_MediaEnded;
+				Control.MediaFailed -= Control_MediaFailed;
+			}
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+
+			ReleaseControl();
+		}
+
 		protected override void OnElementChanged(ElementChangedEventArgs<MediaElement> e)
 		{
 			base.OnElementChanged(e);
 
 			if (e.OldElement != null)
 			{
-				if (Control != null)
-				{
-					if (_bufferingProgressChangedToken != 0)
-					{
-						Control.UnregisterPropertyChangedCallback(Windows.UI.Xaml.Controls.MediaElement.BufferingProgressProperty, _bufferingProgressChangedToken);
-						_bufferingProgressChangedToken = 0;
-					}
-
-					if (_positionChangedToken != 0)
-					{
-						Control.UnregisterPropertyChangedCallback(Windows.UI.Xaml.Controls.MediaElement.PositionProperty, _positionChangedToken);
-						_positionChangedToken = 0;
-					}
-
-					Element.SeekRequested -= Element_SeekRequested;
-					Element.StateRequested -= Element_StateRequested;
-					Control.CurrentStateChanged -= Control_CurrentStateChanged;
-					Control.SeekCompleted -= Control_SeekCompleted;
-					Control.MediaOpened -= Control_MediaOpened;
-					Control.MediaEnded -= Control_MediaEnded;
-					Control.MediaFailed -= Control_MediaFailed;
-				}
+				ReleaseControl();
 			}
 
 			if (e.NewElement != null)
@@ -59,6 +73,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 				Element.SeekRequested += Element_SeekRequested;
 				Element.StateRequested += Element_StateRequested;
+				Element.PositionRequested += Element_PositionRequested;
 				Control.SeekCompleted += Control_SeekCompleted;
 				Control.CurrentStateChanged += Control_CurrentStateChanged;
 				Control.MediaOpened += Control_MediaOpened;
@@ -69,6 +84,14 @@ namespace Xamarin.Forms.Platform.UWP
 				{
 					Control.Source = Element.Source;
 				}
+			}
+		}
+
+		void Element_PositionRequested(object sender, EventArgs e)
+		{
+			if (Control != null)
+			{
+				Controller.Position = Control.Position;
 			}
 		}
 

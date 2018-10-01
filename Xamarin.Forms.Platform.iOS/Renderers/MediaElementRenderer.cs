@@ -33,16 +33,6 @@ namespace Xamarin.Forms.Platform.iOS
 			AddSubview(_avPlayerViewController.View);
 		}
 
-		public override CGRect Frame
-		{
-			get => base.Frame;
-			set
-			{
-				base.Frame = value;
-				_avPlayerViewController.View.Frame = Bounds;				
-			}
-		}
-
 		VisualElement IVisualElementRenderer.Element => MediaElement;
 
 		UIView IVisualElementRenderer.NativeView => this;
@@ -246,6 +236,9 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			get
 			{
+				if (_avPlayerViewController.Player.CurrentTime.IsInvalid)
+					return TimeSpan.Zero;
+
 				return TimeSpan.FromSeconds(_avPlayerViewController.Player.CurrentTime.Seconds);
 			}
 		}
@@ -390,9 +383,26 @@ namespace Xamarin.Forms.Platform.iOS
 
 		SizeRequest IVisualElementRenderer.GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
-			return ((IVisualElementRenderer)this).NativeView.GetSizeRequest(widthConstraint, heightConstraint, 44, 44);
+			return ((UIView)this).GetSizeRequest(widthConstraint, heightConstraint, 44, 44);
 		}
 
+		/*SizeRequest IVisualElementRenderer.GetDesiredSize(double widthConstraint, double heightConstraint)
+		{
+			if (MediaElement.VideoWidth > 0)
+			{
+				if (double.IsInfinity(heightConstraint))
+				{
+					return ((IVisualElementRenderer)this).NativeView.GetSizeRequest(widthConstraint, (MediaElement.VideoWidth / MediaElement.VideoHeight) * widthConstraint, 44, 44);
+				}
+				else if (double.IsInfinity(widthConstraint))
+				{
+					return ((IVisualElementRenderer)this).NativeView.GetSizeRequest(heightConstraint / (MediaElement.VideoWidth / MediaElement.VideoHeight), heightConstraint, 44, 44);
+				}
+			}
+
+			return ((IVisualElementRenderer)this).NativeView.GetSizeRequest(widthConstraint, 200, 44, 44);
+		}*/
+		
 		void IVisualElementRenderer.SetElement(VisualElement element)
 		{
 			if (element == null)
@@ -413,6 +423,9 @@ namespace Xamarin.Forms.Platform.iOS
 			if (oldElement != null)
 			{
 				oldElement.PropertyChanged -= OnElementPropertyChanged;
+				oldElement.SeekRequested -= MediaElement_SeekRequested;
+				oldElement.StateRequested -= MediaElement_StateRequested;
+				oldElement.PositionRequested -= MediaElement_PositionRequested;
 			}
 
 			Color currentColor = oldElement?.BackgroundColor ?? Color.Default;
@@ -424,6 +437,9 @@ namespace Xamarin.Forms.Platform.iOS
 			MediaElement.PropertyChanged += OnElementPropertyChanged;
 			MediaElement.SeekRequested += MediaElement_SeekRequested;
 			MediaElement.StateRequested += MediaElement_StateRequested;
+			MediaElement.PositionRequested += MediaElement_PositionRequested;
+
+			AutosizesSubviews = true;
 
 			_tracker = new VisualElementTracker(this);
 
@@ -432,6 +448,11 @@ namespace Xamarin.Forms.Platform.iOS
 			EffectUtilities.RegisterEffectControlProvider(this, oldElement, element);
 
 			Performance.Stop(reference);
+		}
+
+		void MediaElement_PositionRequested(object sender, EventArgs e)
+		{
+			Controller.Position = Position;
 		}
 
 		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
@@ -444,6 +465,12 @@ namespace Xamarin.Forms.Platform.iOS
 		void IVisualElementRenderer.SetElementSize(Size size)
 		{
 			Layout.LayoutChildIntoBoundingRegion(MediaElement, new Rectangle(MediaElement.X, MediaElement.Y, size.Width, size.Height));
+		}
+
+		public override void LayoutSubviews()
+		{
+			base.LayoutSubviews();
+			_avPlayerViewController.View.Frame = Bounds;
 		}
 
 		void IEffectControlProvider.RegisterEffect(Effect effect)
