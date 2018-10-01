@@ -2,7 +2,7 @@
 {
 	internal class ScrollToCodeGallery : ContentPage
 	{
-		public ScrollToCodeGallery(IItemsLayout itemsLayout)
+		public ScrollToCodeGallery(IItemsLayout itemsLayout, ScrollToMode mode = ScrollToMode.Position)
 		{
 			Title = $"ScrollTo (Code, {itemsLayout})";
 
@@ -25,15 +25,23 @@
 			};
 
 			var generator = new ItemsSourceGenerator(collectionView, initialItems: 50);
-
-			var scrollToControl = new ScrollToIndexControl(collectionView);
-
 			layout.Children.Add(generator);
-			layout.Children.Add(scrollToControl);
-			
-			layout.Children.Add(collectionView);
 
-			Grid.SetRow(scrollToControl, 1);
+			if (mode == ScrollToMode.Position)
+			{
+				var scrollToControl = new ScrollToIndexControl(collectionView);
+				layout.Children.Add(scrollToControl);
+				Grid.SetRow(scrollToControl, 1);
+			}
+			else
+			{
+				var scrollToControl = new ScrollToItemControl(collectionView);
+				layout.Children.Add(scrollToControl);
+				Grid.SetRow(scrollToControl, 1);
+			}
+
+			layout.Children.Add(collectionView);
+			
 			Grid.SetRow(collectionView, 2);
 
 			Content = layout;

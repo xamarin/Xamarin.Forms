@@ -16,14 +16,23 @@
 					Children =
 					{
 						descriptionLabel,
-						GalleryBuilder.NavButton("ScrollTo (Code, Horizontal List)", () =>
+						GalleryBuilder.NavButton("ScrollTo Index (Code, Horizontal List)", () =>
 							new ScrollToCodeGallery(ListItemsLayout.HorizontalList), Navigation),
-						GalleryBuilder.NavButton("ScrollTo (Code, Vertical List)", () =>
+						GalleryBuilder.NavButton("ScrollTo Index (Code, Vertical List)", () =>
 							new ScrollToCodeGallery(ListItemsLayout.VerticalList), Navigation),
-						GalleryBuilder.NavButton("ScrollTo (Code, Horizontal Grid)", () =>
+						GalleryBuilder.NavButton("ScrollTo Index (Code, Horizontal Grid)", () =>
 							new ScrollToCodeGallery(new GridItemsLayout(3, ItemsLayoutOrientation.Horizontal)), Navigation),
-						GalleryBuilder.NavButton("ScrollTo (Code, Vertical Grid)", () =>
+						GalleryBuilder.NavButton("ScrollTo Index (Code, Vertical Grid)", () =>
 							new ScrollToCodeGallery(new GridItemsLayout(3, ItemsLayoutOrientation.Vertical)), Navigation),
+						
+						GalleryBuilder.NavButton("ScrollTo Item (Code, Horizontal List)", () =>
+							new ScrollToCodeGallery(ListItemsLayout.HorizontalList, ScrollToMode.Element), Navigation),
+						GalleryBuilder.NavButton("ScrollTo Item (Code, Vertical List)", () =>
+							new ScrollToCodeGallery(ListItemsLayout.VerticalList, ScrollToMode.Element), Navigation),
+						GalleryBuilder.NavButton("ScrollTo Item (Code, Horizontal Grid)", () =>
+							new ScrollToCodeGallery(new GridItemsLayout(3, ItemsLayoutOrientation.Horizontal), ScrollToMode.Element), Navigation),
+						GalleryBuilder.NavButton("ScrollTo Item (Code, Vertical Grid)", () =>
+							new ScrollToCodeGallery(new GridItemsLayout(3, ItemsLayoutOrientation.Vertical), ScrollToMode.Element), Navigation),
 					}
 				}
 			};

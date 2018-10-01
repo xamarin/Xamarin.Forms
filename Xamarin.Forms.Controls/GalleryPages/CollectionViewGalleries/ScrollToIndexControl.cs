@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 
 namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 {
@@ -73,10 +74,9 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 
 			layout.Children.Add(row3);
 
-			var row4 = new StackLayout { Orientation = StackOrientation.Horizontal };
-
 			if (showPositionSelector)
 			{
+				var row4 = new StackLayout { Orientation = StackOrientation.Horizontal };
 				var scrollPositionSelector = new EnumSelector<ScrollToPosition>(() => _currentScrollToPosition,
 					type => _currentScrollToPosition = type);
 				row4.Children.Add(scrollPositionSelector);

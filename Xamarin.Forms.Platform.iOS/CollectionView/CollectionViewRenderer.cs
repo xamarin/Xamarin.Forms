@@ -74,22 +74,31 @@ namespace Xamarin.Forms.Platform.iOS
 			newElement.ScrollToRequested += ScrollToRequested;
 		}
 
-		void ScrollToRequested(object sender, ScrollToRequestEventArgs args)
+		NSIndexPath DetermineIndex(ScrollToRequestEventArgs args)
 		{
 			if (args.Mode == ScrollToMode.Position)
 			{
 				// TODO hartez 2018/09/17 16:42:54 This will need to be overridden to account for grouping	
-
-				var indexPath = NSIndexPath.Create(0, args.Index);
-
 				// TODO hartez 2018/09/17 16:21:19 Handle LTR	
-
-				_collectionViewController.CollectionView.ScrollToItem(indexPath, 
-					args.ScrollToPosition.ToCollectionViewScrollPosition(_layout.ScrollDirection),
-					args.Animate);
+				return NSIndexPath.Create(0, args.Index);
 			}
 
-			// TODO hartez 2018/09/17 16:21:38 Handle scrollTo Item	
+			return _collectionViewController.GetIndexForItem(args.Item);
+		}
+
+		void ScrollToRequested(object sender, ScrollToRequestEventArgs args)
+		{
+			var indexPath = DetermineIndex(args);
+
+			if (indexPath.Row < 0 || indexPath.Section < 0)
+			{
+				// Nothing found, nowhere to scroll to
+				return;
+			}
+
+			_collectionViewController.CollectionView.ScrollToItem(indexPath, 
+				args.ScrollToPosition.ToCollectionViewScrollPosition(_layout.ScrollDirection),
+				args.Animate);
 		}
 
 		protected override void Dispose(bool disposing)

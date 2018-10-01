@@ -88,6 +88,19 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		public virtual NSIndexPath GetIndexForItem(object item)
+		{
+			for (int n = 0; n < _itemsSource.Count; n++)
+			{
+				if (_itemsSource[n] == item)
+				{
+					return NSIndexPath.Create(0, n);
+				}
+			}
+
+			return NSIndexPath.Create(-1, -1);
+		}
+
 		void ApplyTemplateAndDataContext(TemplatedCell cell, NSIndexPath indexPath)
 		{
 			// We need to create a renderer, which means we need a template
