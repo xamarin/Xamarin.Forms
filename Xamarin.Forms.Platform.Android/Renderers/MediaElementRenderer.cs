@@ -205,14 +205,10 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			switch (e.PropertyName)
 			{
-				case nameof(MediaElement.AreTransportControlsEnabled):
-					_controller.Visibility = Element.AreTransportControlsEnabled ? ViewStates.Visible : ViewStates.Gone;
+				case nameof(MediaElement.Aspect):
+					UpdateLayoutParameters();
 					break;
 
-				case nameof(MediaElement.Source):
-					UpdateSource();
-					break;
-				
 				case nameof(MediaElement.IsLooping):
 					if (_mediaPlayer != null)
 					{
@@ -224,8 +220,12 @@ namespace Xamarin.Forms.Platform.Android
 					_view.KeepScreenOn = Element.KeepScreenOn;
 					break;
 
-				case nameof(MediaElement.Aspect):
-					UpdateLayoutParameters();
+				case nameof(MediaElement.ShowsPlaybackControls):
+					_controller.Visibility = Element.ShowsPlaybackControls ? ViewStates.Visible : ViewStates.Gone;
+					break;
+
+				case nameof(MediaElement.Source):
+					UpdateSource();
 					break;
 			}
 

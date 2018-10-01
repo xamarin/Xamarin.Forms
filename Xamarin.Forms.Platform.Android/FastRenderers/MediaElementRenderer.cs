@@ -256,6 +256,21 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					UpdateLayoutParameters();
 					break;
 
+				case nameof(MediaElement.IsLooping):
+					if (_mediaPlayer != null)
+					{
+						_mediaPlayer.Looping = MediaElement.IsLooping;
+					}
+					break;
+
+				case nameof(MediaElement.KeepScreenOn):
+					_view.KeepScreenOn = MediaElement.KeepScreenOn;
+					break;
+
+				case nameof(MediaElement.ShowsPlaybackControls):
+					_controller.Visibility = MediaElement.ShowsPlaybackControls ? ViewStates.Visible : ViewStates.Gone;
+					break;
+
 				case nameof(MediaElement.Source):
 					UpdateSource();
 					break;

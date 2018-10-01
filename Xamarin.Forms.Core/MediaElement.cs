@@ -8,9 +8,6 @@ namespace Xamarin.Forms
 	[RenderWith(typeof(_MediaElementRenderer))]
 	public sealed class MediaElement : View, IMediaElementController
 	{
-		public static readonly BindableProperty AreTransportControlsEnabledProperty =
-		  BindableProperty.Create(nameof(AreTransportControlsEnabled), typeof(bool), typeof(MediaElement), false);
-
 		public static readonly BindableProperty AspectProperty =
 		  BindableProperty.Create(nameof(Aspect), typeof(Aspect), typeof(MediaElement), Aspect.AspectFit);
 
@@ -35,6 +32,9 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty PositionProperty =
 		  BindableProperty.Create(nameof(Position), typeof(TimeSpan), typeof(MediaElement), TimeSpan.Zero);
 
+		public static readonly BindableProperty ShowsPlaybackControlsProperty =
+		  BindableProperty.Create(nameof(ShowsPlaybackControls), typeof(bool), typeof(MediaElement), false);
+
 		public static readonly BindableProperty SourceProperty =
 		  BindableProperty.Create(nameof(Source), typeof(Uri), typeof(MediaElement));
 
@@ -44,12 +44,6 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty VideoWidthProperty =
 		  BindableProperty.Create(nameof(VideoWidth), typeof(int), typeof(MediaElement));
 				
-		public bool AreTransportControlsEnabled
-		{
-			get { return (bool)GetValue(AreTransportControlsEnabledProperty); }
-			set { SetValue(AreTransportControlsEnabledProperty, value); }
-		}
-		
 		public bool AutoPlay
 		{
 			get { return (bool)GetValue(AutoPlayProperty); }
@@ -65,7 +59,17 @@ namespace Xamarin.Forms
 		{
 			get { return Source != null && Duration.HasValue; }
 		}
-		
+
+		public MediaElementState CurrentState
+		{
+			get { return (MediaElementState)GetValue(CurrentStateProperty); }
+		}
+
+		public TimeSpan? Duration
+		{
+			get { return (TimeSpan?)GetValue(DurationProperty); }
+		}
+
 		public bool IsLooping
 		{
 			get { return (bool)GetValue(IsLoopingProperty); }
@@ -78,21 +82,12 @@ namespace Xamarin.Forms
 			set { SetValue(KeepScreenOnProperty, value); }
 		}
 
-		public TimeSpan? Duration
+		public bool ShowsPlaybackControls
 		{
-			get { return (TimeSpan?)GetValue(DurationProperty); }
+			get { return (bool)GetValue(ShowsPlaybackControlsProperty); }
+			set { SetValue(ShowsPlaybackControlsProperty, value); }
 		}
 
-		public int VideoHeight
-		{
-			get { return (int)GetValue(VideoHeightProperty); }
-		}
-
-		public int VideoWidth
-		{
-			get { return (int)GetValue(VideoWidthProperty); }
-		}
-		
 		[TypeConverter(typeof(UriTypeConverter))]
 		public Uri Source
 		{
@@ -101,11 +96,6 @@ namespace Xamarin.Forms
 		}
 
         public IDictionary<string, string> HttpHeaders { get; } = new Dictionary<string, string>();
-		
-		public MediaElementState CurrentState
-		{
-			get { return (MediaElementState)GetValue(CurrentStateProperty); }
-		}
 		
 		public TimeSpan Position
 		{
@@ -119,6 +109,17 @@ namespace Xamarin.Forms
 				SeekRequested?.Invoke(this, new SeekRequested(value));
 			}
 		}
+
+		public int VideoHeight
+		{
+			get { return (int)GetValue(VideoHeightProperty); }
+		}
+
+		public int VideoWidth
+		{
+			get { return (int)GetValue(VideoWidthProperty); }
+		}
+
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public event EventHandler<SeekRequested> SeekRequested;
