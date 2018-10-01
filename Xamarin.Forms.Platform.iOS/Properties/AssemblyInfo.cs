@@ -70,3 +70,5 @@ using UIKit;
 [assembly: Preserve]
 [assembly: AssemblyVersion("2.0.0.0")]
 [assembly: AssemblyFileVersion("2.0.0.0")]
+
+[assembly: InternalsVisibleTo("Xamarin.Forms.CollectionView.iOS")]

@@ -104,3 +104,5 @@ using Xamarin.Forms.StyleSheets;
 [assembly: StyleProperty("-xf-thumb-color", typeof(Slider), nameof(Slider.ThumbColorProperty))]
 [assembly: StyleProperty("-xf-spacing", typeof(StackLayout), nameof(StackLayout.SpacingProperty))]
 [assembly: StyleProperty("-xf-orientation", typeof(StackLayout), nameof(StackLayout.OrientationProperty))]
+
+[assembly: InternalsVisibleTo("Xamarin.Forms.CollectionView")]

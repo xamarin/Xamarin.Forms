@@ -1,9 +1,10 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.UWP;
 
 
-[assembly: Dependency(typeof(WindowsSerializer))]
+[assembly: Xamarin.Forms.Dependency(typeof(WindowsSerializer))]
 
 // Views
 
@@ -49,9 +50,11 @@ using Xamarin.Forms.Platform.UWP;
 [assembly: ExportCell(typeof(EntryCell), typeof(EntryCellRenderer))]
 [assembly: ExportCell(typeof(SwitchCell), typeof(SwitchCellRenderer))]
 [assembly: ExportCell(typeof(ViewCell), typeof(ViewCellRenderer))]
-[assembly: Dependency(typeof(WindowsResourcesProvider))]
+[assembly: Xamarin.Forms.Dependency(typeof(WindowsResourcesProvider))]
 [assembly: ExportRenderer(typeof(SearchBar), typeof(SearchBarRenderer))]
 [assembly: ExportRenderer(typeof(TabbedPage), typeof(TabbedPageRenderer))]
 
 [assembly: AssemblyVersion("2.0.0.0")]
 [assembly: AssemblyFileVersion("2.0.0.0")]
+
+[assembly: InternalsVisibleTo("Xamarin.Forms.CollectionView.UWP")]
