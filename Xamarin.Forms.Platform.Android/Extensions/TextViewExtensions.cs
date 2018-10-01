@@ -38,6 +38,7 @@ namespace Xamarin.Forms.Platform.Android
 			var lineBreakMode = label.LineBreakMode;
 
 			int maxLines = Int32.MaxValue;
+			bool singleLine = false;
 
 			switch (lineBreakMode)
 			{
@@ -53,6 +54,7 @@ namespace Xamarin.Forms.Platform.Android
 					break;
 				case LineBreakMode.HeadTruncation:
 					maxLines = 1;
+					singleLine = true; // Workaround for bug in older Android API versions (https://bugzilla.xamarin.com/show_bug.cgi?id=49069)
 					textView.Ellipsize = TextUtils.TruncateAt.Start;
 					break;
 				case LineBreakMode.TailTruncation:
@@ -61,10 +63,12 @@ namespace Xamarin.Forms.Platform.Android
 					break;
 				case LineBreakMode.MiddleTruncation:
 					maxLines = 1;
+					singleLine = true; // Workaround for bug in older Android API versions (https://bugzilla.xamarin.com/show_bug.cgi?id=49069)
 					textView.Ellipsize = TextUtils.TruncateAt.Middle;
 					break;
 			}
 
+			textView.SetSingleLine(singleLine);
 			textView.SetMaxLines(label, maxLines);
 		}
 
