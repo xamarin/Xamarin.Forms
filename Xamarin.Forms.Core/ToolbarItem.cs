@@ -25,11 +25,11 @@ namespace Xamarin.Forms
 
 				if ((bool)newvalue && !items.Contains(item))
 				{
-					items.Add(item);
+					Device.BeginInvokeOnMainThread(() => { items.Add(item); });
 				}
 				else if (!(bool)newvalue && items.Contains(item))
 				{
-					items.Remove(item);
+					Device.BeginInvokeOnMainThread(() => { items.Remove(item); });
 				}
 			}
 		});
