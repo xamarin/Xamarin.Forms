@@ -3,12 +3,12 @@ using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
 
-namespace Xamarin.Forms.Controls.Issues
+namespace Xamarin.Forms.Controls
 {
+#if APP
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 60787, "Frames with border radius preset have this radius reset when their background color is changed.",
 		PlatformAffected.Android, issueTestNumber: 1)]
-	[XamlCompilation(XamlCompilationOptions.Compile)]
 	public partial class Bugzilla60787 : ContentPage
 	{
 		bool _colourIndicator;
@@ -27,4 +27,5 @@ namespace Xamarin.Forms.Controls.Issues
 			_colourIndicator = !_colourIndicator;
 		}
 	}
+#endif
 }
