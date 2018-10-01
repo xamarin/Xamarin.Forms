@@ -61,6 +61,7 @@
     <Compile Include="ITitleProvider.cs" />
     <Compile Include="ITitleViewProvider.cs" />
     <Compile Include="IToolbarProvider.cs" />
+    <Compile Include="MediaElementRenderer.cs" />
     <Compile Include="NativeBindingExtensions.cs" />
     <Compile Include="NativeEventWrapper.cs" />
     <Compile Include="NativePropertyListener.cs" />
