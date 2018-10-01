@@ -43,13 +43,14 @@ namespace Xamarin.Forms.Platform.WPF
 					Control.TouchUp += OnNativeTouchUp;
 					Control.StylusUp += OnNativeStylusUp;
 				}
+				
+				// Suscribe element event
+				var templatedItems = TemplatedItemsView.TemplatedItems;
+				templatedItems.CollectionChanged += OnCollectionChanged;
+				templatedItems.GroupedCollectionChanged += OnGroupedCollectionChanged;
 
 				// Update control properties
 				UpdateItemSource();
-
-				// Suscribe element event
-				TemplatedItemsView.TemplatedItems.CollectionChanged += OnCollectionChanged;
-				TemplatedItemsView.TemplatedItems.GroupedCollectionChanged += OnGroupedCollectionChanged;
 			}
 
 			base.OnElementChanged(e);
@@ -85,7 +86,12 @@ namespace Xamarin.Forms.Platform.WPF
 			}
 			else
 			{
-				Control.ItemsSource = Element.TemplatedItems;
+				foreach (var item in TemplatedItemsView.TemplatedItems)
+				{
+					items.Add(item);
+				}
+
+				Control.ItemsSource = items;
 			}
 		}
 
@@ -133,6 +139,7 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			UpdateItemSource();
 		}
+
 		void OnGroupedCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
 		{
 			UpdateItemSource();
