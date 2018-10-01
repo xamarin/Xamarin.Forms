@@ -43,61 +43,12 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		/*double IMediaElementRenderer.BufferingProgress
-		{
-			get
-			{
-				return _avPlayerViewController.Player.Status == AVPlayerStatus.ReadyToPlay ? 1.0 : 0.0;
-			}
-		}*/
-
 		VisualElement IVisualElementRenderer.Element => MediaElement;
 
 		UIView IVisualElementRenderer.NativeView => this;
 
 		UIViewController IVisualElementRenderer.ViewController => _avPlayerViewController;
 		
-		/*protected override void OnElementChanged(ElementChangedEventArgs<MediaElement> e)
-		{
-			base.OnElementChanged(e);
-
-			if (e.OldElement != null)
-			{
-				if (_notificationHandle != null)
-				{
-					NSNotificationCenter.DefaultCenter.RemoveObserver(_notificationHandle);
-					_notificationHandle = null;
-				}
-
-				//stop video if playing
-				if (_avPlayerViewController?.Player?.CurrentItem != null)
-				{
-					RemoveStatusObserver();
-
-					_avPlayerViewController?.Player?.Pause();
-					_avPlayerViewController?.Player?.Seek(CMTime.Zero);
-					_avPlayerViewController?.Player?.ReplaceCurrentItemWithPlayerItem(null);
-					AVAudioSession.SharedInstance().SetActive(false);
-				}
-			}
-
-			if (e.NewElement != null)
-			{
-				SetNativeControl(_avPlayerViewController.View);
-
-				_avPlayerViewController.ShowsPlaybackControls = Element.AreTransportControlsEnabled;
-				_avPlayerViewController.VideoGravity = AVLayerVideoGravity.ResizeAspect;
-				if (Element.KeepScreenOn)
-				{
-					SetKeepScreenOn(true);
-				}
-
-				_notificationHandle = NSNotificationCenter.DefaultCenter.AddObserver(AVPlayerItem.DidPlayToEndTimeNotification, PlayedToEnd);
-
-				UpdateSource();
-			}
-		}*/
-
 		bool _idleTimerDisabled = false;
 		void SetKeepScreenOn(bool value)
 		{
@@ -325,12 +276,8 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			switch (e.PropertyName)
 			{
-				case nameof(MediaElement.AreTransportControlsEnabled):
-					_avPlayerViewController.ShowsPlaybackControls = MediaElement.AreTransportControlsEnabled;
-					break;
-
-				case nameof(MediaElement.Source):
-					UpdateSource();
+				case nameof(MediaElement.Aspect):
+					_avPlayerViewController.VideoGravity = AspectToGravity(MediaElement.Aspect);
 					break;
 
 				case nameof(MediaElement.KeepScreenOn):
@@ -345,8 +292,12 @@ namespace Xamarin.Forms.Platform.iOS
 					}
 					break;
 
-				case nameof(MediaElement.Aspect):
-					_avPlayerViewController.VideoGravity = AspectToGravity(MediaElement.Aspect);
+				case nameof(MediaElement.ShowsPlaybackControls):
+					_avPlayerViewController.ShowsPlaybackControls = MediaElement.ShowsPlaybackControls;
+					break;
+
+				case nameof(MediaElement.Source):
+					UpdateSource();
 					break;
 			}
 		}

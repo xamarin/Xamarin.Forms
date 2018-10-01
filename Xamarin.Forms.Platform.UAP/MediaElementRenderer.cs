@@ -48,8 +48,8 @@ namespace Xamarin.Forms.Platform.UWP
 				SetNativeControl(new Windows.UI.Xaml.Controls.MediaElement());
 				Control.HorizontalAlignment = HorizontalAlignment.Stretch;
 				Control.VerticalAlignment = VerticalAlignment.Stretch;
-				
-				Control.AreTransportControlsEnabled = Element.AreTransportControlsEnabled;
+
+				Control.AreTransportControlsEnabled = Element.ShowsPlaybackControls;
 				Control.AutoPlay = Element.AutoPlay;
 				Control.IsLooping = Element.IsLooping;
 				Control.Stretch = Element.Aspect.ToStretch();
@@ -200,11 +200,7 @@ namespace Xamarin.Forms.Platform.UWP
 		protected override void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
 			switch (e.PropertyName)
-			{
-				case nameof(MediaElement.AreTransportControlsEnabled):
-					Control.AreTransportControlsEnabled = Element.AreTransportControlsEnabled;
-					break;
-					
+			{	
 				case nameof(MediaElement.Aspect):
 					Control.Stretch = Element.Aspect.ToStretch();
 					break;
@@ -231,6 +227,10 @@ namespace Xamarin.Forms.Platform.UWP
 					}
 					break;
 
+				case nameof(MediaElement.ShowsPlaybackControls):
+					Control.AreTransportControlsEnabled = Element.ShowsPlaybackControls;
+					break;
+				
 				case nameof(MediaElement.Source):
 					Control.Source = Element.Source;
 					break;

@@ -100,46 +100,47 @@ namespace Xamarin.Forms.Platform.WPF
 
 		void UpdateSource()
 		{
-			if (Element.Source != null)
+			if (Element.Source == null)
+				return;
+
+
+			if (Control.Clock != null)
+				Control.Clock = null;
+
+			if (Element.Source.Scheme == "ms-appx")
 			{
-				if (Control.Clock != null)
-					Control.Clock = null;
+				Control.Source = new Uri(Element.Source.ToString().Replace("ms-appx://", "pack://application:,,,"));
+			}
+			else if (Element.Source.Scheme == "ms-appdata")
+			{
+				string filePath = string.Empty;
 
-				if (Element.Source.Scheme == "ms-appx")
+				if (Element.Source.LocalPath.StartsWith("/local"))
 				{
-					Control.Source = new Uri(Element.Source.ToString().Replace("ms-appx://", "pack://application:,,,"));
+					// WPF doesn't have the concept of an app package local folder so using My Documents as a placeholder
+					filePath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Element.Source.LocalPath.Substring(7));
 				}
-				else if (Element.Source.Scheme == "ms-appdata")
+				else if (Element.Source.LocalPath.StartsWith("/temp"))
 				{
-					string filePath = string.Empty;
-
-					if (Element.Source.LocalPath.StartsWith("/local"))
-					{
-						// WPF doesn't have the concept of an app package local folder so using My Documents as a placeholder
-						filePath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Element.Source.LocalPath.Substring(7));
-					}
-					else if (Element.Source.LocalPath.StartsWith("/temp"))
-					{
-						filePath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), Element.Source.LocalPath.Substring(6));
-					}
-					else
-					{
-						throw new ArgumentException("Invalid Uri", "Source");
-					}
-
-					Control.Source = new Uri(filePath);
-				}
-				else if (Element.Source.Scheme == "https")
-				{
-					throw new ArgumentException("HTTPS Not supported", "Source");
+					filePath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), Element.Source.LocalPath.Substring(6));
 				}
 				else
 				{
-					Control.Source = Element.Source;
+					throw new ArgumentException("Invalid Uri", "Source");
 				}
 
-				Controller.CurrentState = MediaElementState.Opening;
+				Control.Source = new Uri(filePath);
 			}
+			else if (Element.Source.Scheme == "https")
+			{
+				throw new ArgumentException("HTTPS Not supported", "Source");
+			}
+			else
+			{
+				Control.Source = Element.Source;
+			}
+
+			Controller.CurrentState = MediaElementState.Opening;
 		}
 
 		void Control_BufferingEnded(object sender, RoutedEventArgs e)
@@ -204,8 +205,6 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			switch (e.PropertyName)
 			{
-				//TODO: AreTransportControlsEnabled not supported for WPF
-
 				case nameof(MediaElement.Aspect):
 					Control.Stretch = Element.Aspect.ToStretch();
 					break;
@@ -234,18 +233,12 @@ namespace Xamarin.Forms.Platform.WPF
 
 		protected override void UpdateWidth()
 		{
-			if (Element.Width > 0)
-			{
-				Control.Width = Element.Width;
-			}
+			Control.Width = Math.Max(0, Element.Width);
 		}
 
 		protected override void UpdateHeight()
 		{
-			if (Element.Height > 0)
-			{
-				Control.Height = Element.Height;
-			}
+			Control.Height = Math.Max(0, Element.Height);
 		}
 
 		void DisplayRequestActive()
