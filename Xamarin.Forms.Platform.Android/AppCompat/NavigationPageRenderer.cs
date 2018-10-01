@@ -18,6 +18,7 @@ using Android.Views;
 using Xamarin.Forms.Internals;
 using ActionBarDrawerToggle = Android.Support.V7.App.ActionBarDrawerToggle;
 using AView = Android.Views.View;
+using AColor = Android.Graphics.Color;
 using AToolbar = Android.Support.V7.Widget.Toolbar;
 using Fragment = Android.Support.V4.App.Fragment;
 using FragmentManager = Android.Support.V4.App.FragmentManager;
@@ -32,6 +33,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 {
 	public class NavigationPageRenderer : VisualElementRenderer<NavigationPage>, IManageFragments, IOnClickListener, ILifeCycleState
 	{
+		const int DefaultDisabledToolbarAlpha = 127;
+	
 		readonly List<Fragment> _fragmentStack = new List<Fragment>();
 
 		Drawable _backgroundDrawable;
@@ -53,6 +56,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		ImageView _titleIconView;
 		ImageSource _imageSource;
 		bool _isAttachedToWindow;
+		Platform _platform;
 
 		// The following is based on https://android.googlesource.com/platform/frameworks/support.git/+/4a7e12af4ec095c3a53bb8481d8d92f63157c3b7/v4/java/android/support/v4/app/FragmentManager.java#677
 		// Must be overriden in a custom renderer to match durations in XML animation resource files
@@ -72,6 +76,22 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			AutoPackage = false;
 			Id = Platform.GenerateViewId();
 			Device.Info.PropertyChanged += DeviceInfoPropertyChanged;
+		}
+
+		Platform Platform
+		{
+			get
+			{
+				if (_platform == null)
+				{
+					if (Context is FormsAppCompatActivity activity)
+					{
+						_platform = activity.Platform;
+					}
+				}
+
+				return _platform;
+			}
 		}
 
 		internal int ContainerTopPadding { get; set; }
@@ -740,7 +760,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			Current?.SendDisappearing();
 			Current = page;
 
-			((Platform)Element.Platform).NavAnimationInProgress = true;
+			if (Platform != null)
+			{
+				Platform.NavAnimationInProgress = true;
+			}
+
 			FragmentTransaction transaction = FragmentManager.BeginTransactionEx();
 
 			if (animated)
@@ -810,7 +834,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				AddTransitionTimer(tcs, fragment, FragmentManager, fragmentsToRemove, 1, true);
 
 			Context.HideKeyboard(this);
-			((Platform)Element.Platform).NavAnimationInProgress = false;
+			
+			if (Platform != null)
+			{
+				Platform.NavAnimationInProgress = false;
+			}
 
 			return tcs.Task;
 		}
@@ -860,8 +888,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				else
 				{
 					IMenuItem menuItem = menu.Add(item.Text);
-					UpdateMenuItemIcon(context, menuItem, item);
 					menuItem.SetEnabled(controller.IsEnabled);
+					UpdateMenuItemIcon(context, menuItem, item);
 					menuItem.SetShowAsAction(ShowAsAction.Always);
 					menuItem.SetOnMenuItemClickListener(new GenericMenuClickListener(controller.Activate));
 				}
@@ -876,6 +904,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				Drawable iconDrawable = context.GetFormsDrawable(icon);
 				if (iconDrawable != null)
 				{
+					if (!menuItem.IsEnabled)
+					{
+						iconDrawable.Mutate().SetAlpha(DefaultDisabledToolbarAlpha);
+					}
+
 					menuItem.SetIcon(iconDrawable);
 					iconDrawable.Dispose();
 				}
