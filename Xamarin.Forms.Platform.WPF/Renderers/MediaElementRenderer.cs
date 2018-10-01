@@ -15,6 +15,7 @@ namespace Xamarin.Forms.Platform.WPF
 			{
 				Element.SeekRequested -= Element_SeekRequested;
 				Element.StateRequested -= Element_StateRequested;
+				Element.PositionRequested -= Element_PositionRequested;
 
 				if (Control != null)
 				{
@@ -45,14 +46,26 @@ namespace Xamarin.Forms.Platform.WPF
 
 				Element.SeekRequested += Element_SeekRequested;
 				Element.StateRequested += Element_StateRequested;
+				Element.PositionRequested += Element_PositionRequested;
 				UpdateSource();
 			}
 		}
 
+		void Element_PositionRequested(object sender, EventArgs e)
+		{
+			if (Control != null)
+			{
+				Controller.Position = Control.Position;
+			}
+		}
+
 		IMediaElementController Controller => Element as IMediaElementController;
+		MediaElementState _requestedState;
 
 		void Element_StateRequested(object sender, StateRequested e)
 		{
+			_requestedState = e.State;
+
 			switch(e.State)
 			{
 				case MediaElementState.Playing:
@@ -62,7 +75,7 @@ namespace Xamarin.Forms.Platform.WPF
 					}
 
 					Control.Play();
-					Controller.CurrentState = MediaElementState.Playing;
+					Controller.CurrentState = _requestedState;
 					break;
 
 				case MediaElementState.Paused:
@@ -74,7 +87,7 @@ namespace Xamarin.Forms.Platform.WPF
 						}
 
 						Control.Pause();
-						Controller.CurrentState = MediaElementState.Paused;
+						Controller.CurrentState = _requestedState;
 					}
 					break;
 
@@ -85,7 +98,7 @@ namespace Xamarin.Forms.Platform.WPF
 					}
 
 					Control.Stop();
-					Controller.CurrentState = MediaElementState.Stopped;
+					Controller.CurrentState = _requestedState;
 					break;
 			}
 
@@ -152,7 +165,7 @@ namespace Xamarin.Forms.Platform.WPF
 			}
 			else
 			{
-				Controller.CurrentState = MediaElementState.Paused;
+				Controller.CurrentState = _requestedState; ;
 			}
 		}
 
@@ -177,8 +190,12 @@ namespace Xamarin.Forms.Platform.WPF
 			}
 			else
 			{
+				_requestedState = MediaElementState.Stopped;
+				Controller.CurrentState = MediaElementState.Stopped;
 				Element.OnMediaEnded();
 			}
+
+			Controller.Position = Control.Position;
 		}
 
 		void Control_MediaOpened(object sender, RoutedEventArgs e)
@@ -192,12 +209,18 @@ namespace Xamarin.Forms.Platform.WPF
 			if(Element.AutoPlay)
 			{
 				Control.Play();
+				_requestedState = MediaElementState.Playing;
 				Controller.CurrentState = MediaElementState.Playing;
+			}
+			else
+			{
+				Controller.CurrentState = _requestedState;
 			}
 		}
 		
 		void Control_SeekCompleted(object sender, RoutedEventArgs e)
 		{
+			Controller.Position = Control.Position;
 			Element?.RaiseSeekCompleted();
 		}
 
