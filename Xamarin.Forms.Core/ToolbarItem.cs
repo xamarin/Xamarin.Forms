@@ -16,11 +16,11 @@ namespace Xamarin.Forms
 		{
 			var item = bindable as ToolbarItem;
 
-			if (item != null && item.Parent == null)
-				return;
-
 			if (item != null)
 			{
+				if (item.Parent == null)
+					return;
+
 				var items = ((Page)item.Parent).ToolbarItems;
 
 				if ((bool)newvalue && !items.Contains(item))
