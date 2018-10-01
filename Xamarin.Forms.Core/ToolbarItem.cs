@@ -21,7 +21,7 @@ namespace Xamarin.Forms
 
 			if (item != null)
 			{
-				var items = ((ContentPage)item.Parent).ToolbarItems;
+				var items = ((Page)item.Parent).ToolbarItems;
 
 				if ((bool)newvalue && !items.Contains(item))
 				{
