@@ -14,7 +14,9 @@ namespace Xamarin.Forms.Controls
 		{
 			element = new MediaElement();
 			element.HorizontalOptions = new LayoutOptions(LayoutAlignment.Fill,true);
-			element.VerticalOptions = new LayoutOptions(LayoutAlignment.Fill,false);
+			element.VerticalOptions = new LayoutOptions(LayoutAlignment.Fill,true);
+			element.MinimumWidthRequest = 320;
+			element.MinimumHeightRequest = 240;
 			element.AutoPlay = false;
 			element.Aspect = Aspect.AspectFill;
 			element.ShowsPlaybackControls = true;
