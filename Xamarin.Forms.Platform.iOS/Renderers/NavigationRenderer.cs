@@ -757,7 +757,59 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				containerController.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(masterDetailPage.Master.Title, UIBarButtonItemStyle.Plain, handler);
 			}
+			if (containerController.NavigationItem.LeftBarButtonItem != null)
+			{
+				if (masterDetailPage != null && !string.IsNullOrEmpty(masterDetailPage.AutomationId))
+					SetAutomationId(containerController.NavigationItem.LeftBarButtonItem, $"btn_{masterDetailPage.AutomationId}");
+#if __MOBILE__
+				SetAccessibilityLabel(containerController.NavigationItem.LeftBarButtonItem, masterDetailPage);
+				SetAccessibilityHint(containerController.NavigationItem.LeftBarButtonItem, masterDetailPage);
+				SetIsAccessibilityElement(containerController.NavigationItem.LeftBarButtonItem, masterDetailPage);
+#endif
+			}
 		}
+
+		static void SetAccessibilityHint(UIBarButtonItem uIBarButtonItem, Element element)
+		{
+			if (element == null)
+				return;
+
+			if (_defaultAccessibilityHint == null)
+				_defaultAccessibilityHint = uIBarButtonItem.AccessibilityHint;
+
+			uIBarButtonItem.AccessibilityHint = (string)element.GetValue(AutomationProperties.HelpTextProperty) ?? _defaultAccessibilityHint;
+		}
+
+		static void SetAccessibilityLabel(UIBarButtonItem uIBarButtonItem, Element element)
+		{
+			if (element == null)
+				return;
+
+			if (_defaultAccessibilityLabel == null)
+				_defaultAccessibilityLabel = uIBarButtonItem.AccessibilityLabel;
+
+			uIBarButtonItem.AccessibilityLabel = (string)element.GetValue(AutomationProperties.NameProperty) ?? _defaultAccessibilityLabel;
+		}
+
+		static void SetIsAccessibilityElement(UIBarButtonItem uIBarButtonItem, Element element)
+		{
+			if (element == null)
+				return;
+
+			if (!_defaultIsAccessibilityElement.HasValue)
+				_defaultIsAccessibilityElement = uIBarButtonItem.IsAccessibilityElement;
+
+			uIBarButtonItem.IsAccessibilityElement = (bool)((bool?)element.GetValue(AutomationProperties.IsInAccessibleTreeProperty) ?? _defaultIsAccessibilityElement);
+		}
+
+		static void SetAutomationId(UIBarButtonItem uIBarButtonItem, string id)
+		{
+			uIBarButtonItem.AccessibilityIdentifier = id;
+		}
+
+		static string _defaultAccessibilityLabel;
+		static string _defaultAccessibilityHint;
+		static bool? _defaultIsAccessibilityElement;
 
 		internal void ValidateInsets()
 		{
