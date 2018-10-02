@@ -1,22 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-		<SignAssembly>false</SignAssembly>
-		<_DisableStrongNamer>True</_DisableStrongNamer>
-		<DelaySign>false</DelaySign>
-	</PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <SignAssembly>false</SignAssembly>
+    <_DisableStrongNamer>True</_DisableStrongNamer>
+    <DelaySign>false</DelaySign>
+  </PropertyGroup>
 
-	<PropertyGroup>
-	    <_DisableStrongNamer Condition=" '$(_DisableStrongNamer)' != 'True' ">False</_DisableStrongNamer>
-	    <AssemblyName>Xamarin.Forms.Build.Tasks</AssemblyName>
-	    <TargetFramework>netstandard2.0</TargetFramework>
-	    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-	    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-	    <SignAssembly Condition=" '$(_DisableStrongNamer)' != 'True' ">True</SignAssembly>
-	    <DisableStrongNamer Condition=" '$(_DisableStrongNamer)' == 'True' ">True</DisableStrongNamer>
-	    <DelaySign>true</DelaySign>
-	    <AssemblyOriginatorKeyFile>..\xamarin.forms.snk</AssemblyOriginatorKeyFile>
-	    <StrongNamerKeyFile>..\xamarin.forms.snk</StrongNamerKeyFile>
-	</PropertyGroup>
+  <PropertyGroup>
+      <_DisableStrongNamer Condition=" '$(_DisableStrongNamer)' != 'True' ">False</_DisableStrongNamer>
+      <AssemblyName>Xamarin.Forms.Build.Tasks</AssemblyName>
+      <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
+      <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+      <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+      <SignAssembly Condition=" '$(_DisableStrongNamer)' != 'True' ">True</SignAssembly>
+      <DisableStrongNamer Condition=" '$(_DisableStrongNamer)' == 'True' ">True</DisableStrongNamer>
+      <DelaySign>true</DelaySign>
+      <AssemblyOriginatorKeyFile>..\xamarin.forms.snk</AssemblyOriginatorKeyFile>
+      <StrongNamerKeyFile>..\xamarin.forms.snk</StrongNamerKeyFile>
+  </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Mono.Cecil" Version="0.10.0-beta7" />
@@ -40,27 +40,28 @@
     </Compile>
   </ItemGroup>
 
-	<PropertyGroup Condition="'$(SnExe)' == '' And '$(OS)' != 'Windows_NT'">
-		<SnExe>sn</SnExe>
-	</PropertyGroup>
-	
-	<Target Name="_SetSnExe" Condition="'$(SnExe)' == '' And '$(OS)' == 'Windows_NT'">
-		<GetFrameworkSdkPath>
-			<Output TaskParameter="Path" PropertyName="WindowsSdkPath" />
-		</GetFrameworkSdkPath>
-		<Exec Command="WHERE /r &quot;$(WindowsSdkPath.TrimEnd('\\'))&quot; sn" ConsoleToMSBuild="true">
-			<Output TaskParameter="ConsoleOutput" PropertyName="SnExe" />
-		</Exec>
-		<PropertyGroup>
-		    <SnExe>$([System.Text.RegularExpressions.Regex]::Replace('$(SnExe)', ';.*', ''))</SnExe>
-	  </PropertyGroup>
-	</Target>
-	
-  <Target Name="_StrongName" AfterTargets="Build" DependsOnTargets="_SetSnExe">
-  	<Exec Command='"$(SnExe)" -R $(TargetPath) ..\xamarin.forms.snk' Condition=" '$(SignAssembly)' == 'true' " />
+  <PropertyGroup Condition="'$(SnExe)' == '' And '$(OS)' != 'Windows_NT'">
+    <SnExe>sn</SnExe>
+  </PropertyGroup>
+
+  <Target Name="_SetSnExe" Condition="'$(SnExe)' == '' And '$(OS)' == 'Windows_NT'">
+    <GetFrameworkSdkPath>
+      <Output TaskParameter="Path" PropertyName="WindowsSdkPath" />
+    </GetFrameworkSdkPath>
+    <Exec Command="WHERE /r &quot;$(WindowsSdkPath.TrimEnd('\\'))&quot; sn" ConsoleToMSBuild="true">
+      <Output TaskParameter="ConsoleOutput" PropertyName="SnExe" />
+    </Exec>
+    <PropertyGroup>
+        <SnExe>$([System.Text.RegularExpressions.Regex]::Replace('$(SnExe)', ';.*', ''))</SnExe>
+    </PropertyGroup>
   </Target>
 
-  <Target Name="_CopyToNuspecDir" AfterTargets="_StrongName;Build">
+  <Target Name="_StrongName" AfterTargets="Build" DependsOnTargets="_SetSnExe">
+    <Exec Command='"$(SnExe)" -R $(TargetPath) ..\xamarin.forms.snk' Condition="'$(SignAssembly)' == 'true'" />
+  </Target>
+
+  <Target Name="_CopyToNuspecDir" AfterTargets="_StrongName;Build"
+          Condition="'$(OS)' != 'Windows_NT' Or $(TargetFramework)' == 'net461'">
     <ItemGroup>
       <_CopyItems Include="$(TargetDir)*.dll" />
     </ItemGroup>
