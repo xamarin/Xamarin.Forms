@@ -18,9 +18,12 @@ namespace Xamarin.Forms
 	{
 		static ConditionalWeakTable<Type, ResourceDictionary> s_instances = new ConditionalWeakTable<Type, ResourceDictionary>();
 		readonly Dictionary<string, object> _innerDictionary = new Dictionary<string, object>();
+		internal ResourceDictionary Parent;
 		ResourceDictionary _mergedInstance;
 		Type _mergedWith;
 		Uri _source;
+		Assembly _assembly = null;
+		string _path = string.Empty;
 
 		[TypeConverter(typeof(TypeTypeConverter))]
 		[Obsolete("Use Source")]
@@ -68,7 +71,11 @@ namespace Xamarin.Forms
 			if (type != null)
 				_mergedInstance = s_instances.GetValue(type, (key) => (ResourceDictionary)Activator.CreateInstance(key));
 			else
-				_mergedInstance = DependencyService.Get<IResourcesLoader>().CreateFromResource<ResourceDictionary>(resourcePath, assembly, lineInfo);
+			{
+				_assembly = assembly;
+				_path = System.IO.Path.GetDirectoryName(resourcePath);
+				_mergedInstance = DependencyService.Get<IResourcesLoader>().CreateFromResource<ResourceDictionary>(resourcePath, assembly, lineInfo, this);
+			}
 			OnValuesChanged(_mergedInstance.ToArray());
 		}
 
@@ -323,7 +330,9 @@ namespace Xamarin.Forms
 				if (serviceProvider == null)
 					throw new ArgumentNullException(nameof(serviceProvider));
 
-				var targetRD = (serviceProvider.GetService(typeof(Xaml.IProvideValueTarget)) as Xaml.IProvideValueTarget)?.TargetObject as ResourceDictionary;
+				var service = serviceProvider.GetService(typeof(IProvideValueTarget)) as IProvideValueTarget;
+
+				var targetRD = service?.TargetObject as ResourceDictionary;
 				if (targetRD == null)
 					return null;
 
@@ -333,10 +342,24 @@ namespace Xamarin.Forms
 
 				var lineInfo = (serviceProvider.GetService(typeof(Xaml.IXmlLineInfoProvider)) as Xaml.IXmlLineInfoProvider)?.XmlLineInfo;
 				var rootTargetPath = XamlResourceIdAttribute.GetPathForType(rootObjectType);
+
+				var parent = ((service as IProvideParentValues)?.ParentObjects.Last() as ResourceDictionary)?.Parent;
+				if (parent != null)
+				{
+					targetRD.Parent = parent;
+					targetRD._assembly = parent._assembly;
+					value = System.IO.Path.Combine(parent._path, value).Replace("\\", "/");
+				}
+				else
+				{
+					targetRD._assembly = rootObjectType.GetTypeInfo().Assembly;
+				}
+
 				var uri = new Uri(value, UriKind.Relative); //we don't want file:// uris, even if they start with '/'
 				var resourcePath = GetResourcePath(uri, rootTargetPath);
 
-				targetRD.SetAndLoadSource(uri, resourcePath, rootObjectType.GetTypeInfo().Assembly, lineInfo);
+				targetRD.SetAndLoadSource(uri, resourcePath, targetRD._assembly, lineInfo);
+				targetRD.Parent?.Add(targetRD);
 				return uri;
 			}
 

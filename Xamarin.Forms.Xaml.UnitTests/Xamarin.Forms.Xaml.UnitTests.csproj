@@ -1084,6 +1084,8 @@
     </EmbeddedResource>
     <EmbeddedResource Include="AppResources\Colors.xaml" />
     <EmbeddedResource Include="AppResources\CompiledColors.xaml" />
+    <EmbeddedResource Include="AppResources\BaseStyle.xaml" />
+    <EmbeddedResource Include="AppResources\InheritedStyle.xaml" />
     <EmbeddedResource Include="ResourceDictionaryWithInvalidSource.xaml">
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>

@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ResourceDictionary xmlns="http://xamarin.com/schemas/2014/forms">
+	<ResourceDictionary Source="BaseStyle.xaml"/>
+    <ResourceDictionary Source="Colors.xaml"/>
+
+	<Style TargetType="Label" BasedOn="{StaticResource BaseLabelStyle}">
+		<Setter Property="BackgroundColor" Value="Green"/>
+		<Setter Property="TextColor" Value="Wheat"/>
+	</Style>
+</ResourceDictionary>

@@ -50,6 +50,8 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				Assert.That(((ResourceDictionary)layout.Resources["shortURI"])["sharedfoo"], Is.TypeOf<Style>());
 				Assert.That(((ResourceDictionary)layout.Resources["Colors"])["MediumGrayTextColor"], Is.TypeOf<Color>());
 				Assert.That(((ResourceDictionary)layout.Resources["CompiledColors"])["MediumGrayTextColor"], Is.TypeOf<Color>());
+				Assert.That(((ResourceDictionary)layout.Resources["BaseStyle"])["BaseLabelStyle"], Is.TypeOf<Style>());
+				Assert.That(((ResourceDictionary)layout.Resources["InheritedStyle"])[typeof(Label).FullName], Is.TypeOf<Style>());
 			}
 
 			[Test]
@@ -72,6 +74,14 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				Assert.That(type, Is.Not.Null);
 				var rd = Activator.CreateInstance(type);
 				Assert.That(rd as ResourceDictionary, Is.Not.Null);
+			}
+
+			[Test]
+			public void RealitiveResourceInResourceDictionary()
+			{
+				var asm = typeof(ResourceDictionaryWithSource).Assembly;
+				var resourceId = XamlResourceIdAttribute.GetResourceIdForPath(asm, "AppResources/InheritedStyle.xaml");
+				Assert.That(resourceId, Is.Not.Null);
 			}
 		}
 	}
