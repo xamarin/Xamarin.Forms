@@ -48,7 +48,8 @@ namespace Xamarin.Forms.Controls.Issues
 							Command = new Command(async () =>
 							{
 								await scroll.ScrollToAsync(0, 100, true);
-							})
+							}),
+							HorizontalOptions = LayoutOptions.Start
 						},
 						new BoxView { Color = Color.Red, HeightRequest = 500 },
 						new Button()
@@ -57,8 +58,9 @@ namespace Xamarin.Forms.Controls.Issues
 							AutomationId = _button2,
 							Command = new Command(() =>
 							{
-								scroll.TranslationX = 200;
-							})
+								scroll.TranslationX = 100;
+							}),
+							HorizontalOptions = LayoutOptions.Start
 						},
 						new Button()
 						{
@@ -68,7 +70,8 @@ namespace Xamarin.Forms.Controls.Issues
 							{
 								// using one because of a bug on UWP that doesn't react to being set back to zero
 								scroll.TranslationX = 1;
-							})
+							}),
+							HorizontalOptions = LayoutOptions.Start
 						},
 						new BoxView { Color = Color.Gray, HeightRequest = 500 },
 						new BoxView { Color = Color.Yellow, HeightRequest = 500 }
