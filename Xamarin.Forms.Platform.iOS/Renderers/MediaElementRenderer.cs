@@ -30,6 +30,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			_playToEndObserver = NSNotificationCenter.DefaultCenter.AddObserver(AVPlayerItem.DidPlayToEndTimeNotification, PlayedToEnd);
 			_avPlayerViewController.View.Frame = Bounds;
+			_avPlayerViewController.View.AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
 			AddSubview(_avPlayerViewController.View);
 		}
 
@@ -481,6 +482,7 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateBackgroundColor()
 		{
 			BackgroundColor = MediaElement.BackgroundColor.ToUIColor();
+			_avPlayerViewController.View.BackgroundColor = MediaElement.BackgroundColor.ToUIColor();
 		}
 	}
 }
