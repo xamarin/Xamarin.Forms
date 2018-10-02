@@ -1,5 +1,6 @@
 @echo off
 rem stub uncommon targets
+rem random comment
 set NUGET_EXE=%NUGET_DIR%NuGet.exe
 
 mkdir Xamarin.Forms.Platform.MacOS\bin\debug\
