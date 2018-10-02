@@ -11,12 +11,12 @@ namespace Xamarin.Forms.Platform.Android
 	// TODO hartez 2018/07/25 14:43:04 Experiment with an ItemSource property change as _adapter.notifyDataSetChanged	
 	// TODO hartez 2018/07/25 14:44:15 Template property changed should do a whole new adapter; and that way we can cache the template
 
-	internal class ItemsViewAdapter : RecyclerView.Adapter
+	public class ItemsViewAdapter : RecyclerView.Adapter
 	{
 		protected readonly ItemsView ItemsView;
 		readonly Context _context;
 		readonly Func<IVisualElementRenderer, Context, AView> _createView;
-		readonly IItemsViewSource _itemSource;
+		readonly IItemsViewSource _itemsSource;
 
 		internal ItemsViewAdapter(ItemsView itemsView, Context context, 
 			Func<IVisualElementRenderer, Context, AView> createView = null)
@@ -24,7 +24,7 @@ namespace Xamarin.Forms.Platform.Android
 			ItemsView = itemsView;
 			_context = context;
 			_createView = createView;
-			_itemSource = ItemsSourceFactory.Create(itemsView.ItemsSource, this);
+			_itemsSource = ItemsSourceFactory.Create(itemsView.ItemsSource, this);
 
 			if (_createView == null)
 			{
@@ -37,10 +37,10 @@ namespace Xamarin.Forms.Platform.Android
 			switch (holder)
 			{
 				case TextViewHolder textViewHolder:
-					textViewHolder.TextView.Text = _itemSource[position].ToString();
+					textViewHolder.TextView.Text = _itemsSource[position].ToString();
 					break;
 				case TemplatedItemViewHolder templateViewHolder:
-					BindableObject.SetInheritedBindingContext(templateViewHolder.View, _itemSource[position]);
+					BindableObject.SetInheritedBindingContext(templateViewHolder.View, _itemsSource[position]);
 					// TODO hartez 2018/07/25 16:12:30 Remove this next line once the platform PRs go through and we can rebase	
 					templateViewHolder.View.Platform = new Platform(_context);
 					break;
@@ -76,7 +76,7 @@ namespace Xamarin.Forms.Platform.Android
 			return renderer;
 		}
 
-		public override int ItemCount => _itemSource.Count;
+		public override int ItemCount => _itemsSource.Count;
 
 		public override int GetItemViewType(int position)
 		{
@@ -106,6 +106,19 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				View = rootElement;
 			}
+		}
+
+		public virtual int GetIndexForItem(object item)
+		{
+			for (int n = 0; n < _itemsSource.Count; n++)
+			{
+				if (_itemsSource[n] == item)
+				{
+					return n;
+				}
+			}
+
+			return -1;
 		}
 	}
 	

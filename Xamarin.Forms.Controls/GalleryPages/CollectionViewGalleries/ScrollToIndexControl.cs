@@ -85,8 +85,6 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			}
 
 			Content = layout;
-
-			IsClippedToBounds = true;
 		}
 
 		void ScrollToIndex(int index)

@@ -22,10 +22,10 @@ namespace Xamarin.Forms.Platform.Android
 			// But for the Carousel, we want it to create the items to fit the width/height of the viewport
 			// So we give it an alternate delegate for creating the views
 
-			var adapter = new ItemsViewAdapter(ItemsView, Context, 
+			ItemsViewAdapter = new ItemsViewAdapter(ItemsView, Context, 
 				(renderer, context) => new SizedItemContentControl(renderer, context, () => Width, () => Height));
 
-			SetAdapter(adapter);
+			SwapAdapter(ItemsViewAdapter, false);
 		}
 	}
 }

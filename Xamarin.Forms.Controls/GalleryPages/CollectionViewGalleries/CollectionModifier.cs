@@ -39,7 +39,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 				return;
 			}
 
-			if (!(_cv.ItemsSource is ObservableCollection<TestItem> observableCollection))
+			if (!(_cv.ItemsSource is ObservableCollection<CollectionViewGalleryTestItem> observableCollection))
 			{
 				return;
 			}
@@ -59,6 +59,6 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			return false;
 		}
 
-		protected abstract void ModifyCollection(ObservableCollection<TestItem> observableCollection, params int[] indexes);
+		protected abstract void ModifyCollection(ObservableCollection<CollectionViewGalleryTestItem> observableCollection, params int[] indexes);
 	}
 }

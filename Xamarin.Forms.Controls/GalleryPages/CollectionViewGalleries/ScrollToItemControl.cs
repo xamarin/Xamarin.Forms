@@ -50,6 +50,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			row2.Children.Add(animateLabel);
 			row2.Children.Add(_animateSwitch);
 
+			layout.Children.Add(row2);
+
 			if (showPositionSelector)
 			{
 				var row4 = new StackLayout { Orientation = StackOrientation.Horizontal };

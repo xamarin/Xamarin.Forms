@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 		{
 		}
 
-		protected override void ModifyCollection(ObservableCollection<TestItem> observableCollection, params int[] indexes)
+		protected override void ModifyCollection(ObservableCollection<CollectionViewGalleryTestItem> observableCollection, params int[] indexes)
 		{
 			var index = indexes[0];
 

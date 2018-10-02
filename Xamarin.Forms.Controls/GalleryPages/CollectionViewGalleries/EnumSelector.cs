@@ -35,8 +35,6 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			layout.Children.Add(_picker);
 
 			Content = layout;
-
-			IsClippedToBounds = true;
 		}
 
 		void PickerOnSelectedIndexChanged(object sender, EventArgs e)

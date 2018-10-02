@@ -6,15 +6,15 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 {
 	[Preserve(AllMembers = true)]
-	public class TestItem
+	public class CollectionViewGalleryTestItem
 	{
-		public string Date { get; set; }
+		public DateTime Date { get; set; }
 		public string Caption { get; set; }
 		public string Image { get; set; }
 
 		public override string ToString()
 		{
-			return $"{nameof(Date)}: {Date}";
+			return $"{Date:D}";
 		}
 	}
 
@@ -61,13 +61,13 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 		{
 			if (int.TryParse(_entry.Text, out int count))
 			{
-				var items = new List<TestItem>();
+				var items = new List<CollectionViewGalleryTestItem>();
 
 				for (int n = 0; n < count; n++)
 				{
-					items.Add(new TestItem
+					items.Add(new CollectionViewGalleryTestItem
 					{
-						Date = $"{DateTime.Now.AddDays(n).ToLongDateString()}", 
+						Date = DateTime.Now.AddDays(n), 
 						Image = _images[n % _images.Length],
 						Caption = $"{_images[n % _images.Length]}, {n}",
 					});
@@ -81,19 +81,19 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 		{
 			if (int.TryParse(_entry.Text, out int count))
 			{
-				var items = new List<TestItem>();
+				var items = new List<CollectionViewGalleryTestItem>();
 
 				for (int n = 0; n < count; n++)
 				{
-					items.Add(new TestItem
+					items.Add(new CollectionViewGalleryTestItem
 					{
-						Date = $"{DateTime.Now.AddDays(n).ToLongDateString()}", 
+						Date = DateTime.Now.AddDays(n), 
 						Image = _images[n % _images.Length],
 						Caption = $"{_images[n % _images.Length]}, {n}",
 					});
 				}
 
-				_cv.ItemsSource = new ObservableCollection<TestItem>(items);
+				_cv.ItemsSource = new ObservableCollection<CollectionViewGalleryTestItem>(items);
 			}
 		}
 

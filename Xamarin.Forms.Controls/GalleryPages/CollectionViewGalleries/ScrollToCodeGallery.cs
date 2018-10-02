@@ -16,7 +16,7 @@
 				}
 			};
 
-			var itemTemplate = ExampleTemplates.SnapPointsTemplate();
+			var itemTemplate = ExampleTemplates.ScrollToTemplate();
 
 			var collectionView = new CollectionView
 			{

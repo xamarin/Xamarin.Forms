@@ -15,6 +15,8 @@ namespace Xamarin.Forms.Platform.Android
 		readonly AutomationPropertiesProvider _automationPropertiesProvider;
 		readonly EffectControlProvider _effectControlProvider;
 
+		protected ItemsViewAdapter ItemsViewAdapter;
+
 		int? _defaultLabelFor;
 		bool _disposed;
 		protected ItemsView ItemsView;
@@ -191,7 +193,8 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			SwapAdapter(new ItemsViewAdapter(ItemsView, Context), false);
+			ItemsViewAdapter = new ItemsViewAdapter(ItemsView, Context);
+			SwapAdapter(ItemsViewAdapter, false);
 		}
 
 		void SetUpNewElement(ItemsView newElement)
@@ -328,31 +331,40 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		void ScrollToRequested(object sender, ScrollToRequestEventArgs args)
+		protected virtual int DetermineIndex(ScrollToRequestEventArgs args)
 		{
 			if (args.Mode == ScrollToMode.Position)
 			{
-				ScrollToPosition(args);
-				return;
+				// TODO hartez 2018/08/28 15:40:03 Need to handle group indices here as well	
+				return args.Index;
 			}
 
-			// TODO hartez 2018/08/28 15:40:26 handle scrolling to item	
+			return ItemsViewAdapter.GetIndexForItem(args.Item);
+		}
+
+		void ScrollToRequested(object sender, ScrollToRequestEventArgs args)
+		{
+			ScrollToPosition(args);
 		}
 
 		void ScrollToPosition(ScrollToRequestEventArgs args)
 		{
-			// TODO hartez 2018/08/28 15:40:03 Need to handle group indices here as well	
-
+			var index = DetermineIndex(args);
+			
 			// TODO hartez 2018/08/28 16:38:49 Handle args.ScrollToPosition; right now we're just doing MakeVisible by default	
-
 			if (args.Animate)
 			{
-				SmoothScrollToPosition(args.Index);
+				SmoothScrollToPosition(index);
 			}
 			else
 			{
-				ScrollToPosition(args.Index);	
+				ScrollToPosition(index);	
 			}
 		}
+	}
+
+	public interface IScrollToPosition
+	{
+
 	}
 }

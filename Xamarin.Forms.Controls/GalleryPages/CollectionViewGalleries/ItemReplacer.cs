@@ -10,14 +10,14 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 		{
 		}
 
-		protected override void ModifyCollection(ObservableCollection<TestItem> observableCollection, params int[] indexes)
+		protected override void ModifyCollection(ObservableCollection<CollectionViewGalleryTestItem> observableCollection, params int[] indexes)
 		{
 			var index = indexes[0];
 
 			if (index > -1 && index < observableCollection.Count)
 			{
-				var replacement = new TestItem
-					{ Caption = "Replacement", Date = DateTime.Now.Date.ToShortDateString(), Image = "coffee.png" };
+				var replacement = new CollectionViewGalleryTestItem
+					{ Caption = "Replacement", Date = DateTime.Now, Image = "coffee.png" };
 
 				observableCollection[index] = replacement;
 			}
@@ -50,7 +50,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			return indexes.Length == 2;
 		}
 
-		protected override void ModifyCollection(ObservableCollection<TestItem> observableCollection, params int[] indexes)
+		protected override void ModifyCollection(ObservableCollection<CollectionViewGalleryTestItem> observableCollection, params int[] indexes)
 		{
 			if (indexes.Length < 2)
 			{
