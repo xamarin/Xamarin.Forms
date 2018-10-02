@@ -106,14 +106,18 @@ namespace Xamarin.Forms.Controls
 		{
 			var layout = new StackLayout { BackgroundColor = Color.Red };
 			layout.Children.Add(new Label { Text = "This is master Page" });
-			var master = new ContentPage { Title = "Master", Content = layout, BackgroundColor = Color.SkyBlue };
+			var master = new ContentPage { Title = "Master", Content = layout, BackgroundColor = Color.SkyBlue, Icon ="menuIcon" };
 			master.On<iOS>().SetUseSafeArea(true);
-			return new MasterDetailPage
+			var mdp = new MasterDetailPage
 			{
 				AutomationId = DefaultMainPageId,
 				Master = master,
 				Detail = CoreGallery.GetMainPage()
 			};
+			master.Icon.AutomationId = "btnMDPAutomationID";
+			AutomationProperties.SetHelpText(mdp.Master.Icon, "This as MDP icon");
+			AutomationProperties.SetName(mdp.Master.Icon, "MDPICON");
+			return mdp;
 		}
 
 		protected override void OnAppLinkRequestReceived(Uri uri)
