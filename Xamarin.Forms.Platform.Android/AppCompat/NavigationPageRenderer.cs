@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 	public class NavigationPageRenderer : VisualElementRenderer<NavigationPage>, IManageFragments, IOnClickListener, ILifeCycleState
 	{
 		const int DefaultDisabledToolbarAlpha = 127;
-	
+
 		readonly List<Fragment> _fragmentStack = new List<Fragment>();
 
 		Drawable _backgroundDrawable;
@@ -631,7 +631,12 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				return;
 
 			_drawerLayout = renderer;
-			_drawerToggle = new ActionBarDrawerToggle((Activity)context, _drawerLayout, bar, global::Android.Resource.String.Ok, global::Android.Resource.String.Ok)
+
+			FastRenderers.AutomationPropertiesProvider.GetDrawerAccessibilityResources(context, _masterDetailPage, out int resourceIdOpen, out int resourceIdClose);
+
+			_drawerToggle = new ActionBarDrawerToggle((Activity)context, _drawerLayout, bar,
+													  resourceIdOpen == 0 ? global::Android.Resource.String.Ok : resourceIdOpen,
+													  resourceIdClose == 0 ? global::Android.Resource.String.Ok : resourceIdClose)
 			{
 				ToolbarNavigationClickListener = new ClickListener(Element)
 			};
@@ -644,6 +649,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			_drawerListener = new DrawerMultiplexedListener { Listeners = { _drawerToggle, renderer } };
 			_drawerLayout.AddDrawerListener(_drawerListener);
 		}
+
+
 
 		Fragment GetPageFragment(Page page)
 		{
@@ -834,7 +841,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				AddTransitionTimer(tcs, fragment, FragmentManager, fragmentsToRemove, 1, true);
 
 			Context.HideKeyboard(this);
-			
+
 			if (Platform != null)
 			{
 				Platform.NavAnimationInProgress = false;

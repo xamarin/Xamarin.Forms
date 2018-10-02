@@ -766,12 +766,15 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
+			FastRenderers.AutomationPropertiesProvider.GetDrawerAccessibilityResources(_activity, CurrentMasterDetailPage, out int resourceIdOpen, out int resourceIdClose);
 #pragma warning disable 618 // Eventually we will need to determine how to handle the v7 ActionBarDrawerToggle for AppCompat
-			MasterDetailPageToggle = new ActionBarDrawerToggle(_activity, drawer, icon, 0, 0);
+			MasterDetailPageToggle = new ActionBarDrawerToggle(_activity, drawer, icon,
+			                                                   resourceIdOpen == 0 ? global::Android.Resource.String.Ok : resourceIdOpen,
+													  		   resourceIdClose == 0 ? global::Android.Resource.String.Ok : resourceIdClose);
 #pragma warning restore 618
-
 			MasterDetailPageToggle.SyncState();
 		}
+
 
 		bool HandleBackPressed(object sender, EventArgs e)
 		{
