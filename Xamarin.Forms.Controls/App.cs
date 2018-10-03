@@ -115,8 +115,10 @@ namespace Xamarin.Forms.Controls
 				Detail = CoreGallery.GetMainPage()
 			};
 			master.Icon.AutomationId = "btnMDPAutomationID";
-			AutomationProperties.SetHelpText(mdp.Master.Icon, "This as MDP icon");
-			AutomationProperties.SetName(mdp.Master.Icon, "MDPICON");
+			mdp.SetAutomationPropertiesName("Main page");
+			mdp.SetAutomationPropertiesHelpText("Main page help text");
+			mdp.Master.Icon.SetAutomationPropertiesHelpText("This as MDP icon");
+			mdp.Master.Icon.SetAutomationPropertiesName("MDPICON");
 			return mdp;
 		}
 
