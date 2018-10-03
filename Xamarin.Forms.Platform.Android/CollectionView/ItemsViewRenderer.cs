@@ -351,20 +351,30 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			var index = DetermineIndex(args);
 			
-			// TODO hartez 2018/08/28 16:38:49 Handle args.ScrollToPosition; right now we're just doing MakeVisible by default	
 			if (args.Animate)
 			{
-				SmoothScrollToPosition(index);
+				if (args.ScrollToPosition == Xamarin.Forms.ScrollToPosition.MakeVisible)
+				{
+					// MakeVisible matches the Android default of SnapAny, so we can just use the default
+					SmoothScrollToPosition(index);
+				}
+				else
+				{
+					// If we want a different ScrollToPosition, we need to create a SmoothScroller which can handle it
+					var smoothScroller = new PositionalSmoothScroller(Context, args.ScrollToPosition)
+					{
+						TargetPosition = index
+					};
+
+					// And kick off the scroll operation
+					GetLayoutManager().StartSmoothScroll(smoothScroller);
+				}
 			}
 			else
 			{
+				// TODO hartez 2018/10/02 21:03:52 Still need to handle ScrollToPosition.Start, End, etc for non-animated	
 				ScrollToPosition(index);	
 			}
 		}
-	}
-
-	public interface IScrollToPosition
-	{
-
 	}
 }
