@@ -26,7 +26,6 @@ namespace Xamarin.Forms.Controls.Issues
 		const string _failedText = "Test Failed if Visible";
 		const string _button1 = "FirstClick";
 		const string _button2 = "SecondClick";
-		const string _button3 = "ThirdClick";
 
 		protected override void Init()
 		{
@@ -56,20 +55,13 @@ namespace Xamarin.Forms.Controls.Issues
 						{
 							Text = "Click Me Second",
 							AutomationId = _button2,
-							Command = new Command(() =>
+							Command = new Command(async () =>
 							{
 								scroll.TranslationX = 100;
-							}),
-							HorizontalOptions = LayoutOptions.Start
-						},
-						new Button()
-						{
-							Text = "Click Me Third",
-							AutomationId = _button3,
-							Command = new Command(() =>
-							{
+								await Task.Delay(100);
 								// using one because of a bug on UWP that doesn't react to being set back to zero
 								scroll.TranslationX = 1;
+
 							}),
 							HorizontalOptions = LayoutOptions.Start
 						},
@@ -92,7 +84,6 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement(_failedText);
 			RunningApp.Tap(_button1);
 			RunningApp.Tap(_button2);
-			RunningApp.Tap(_button3);
 			RunningApp.WaitForNoElement(_failedText);
 		}
 #endif
