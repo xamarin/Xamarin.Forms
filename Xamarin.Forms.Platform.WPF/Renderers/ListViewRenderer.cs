@@ -20,13 +20,17 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			if (e.OldElement != null) // Clear old element event
 			{
-				var templatedItems = TemplatedItemsView.TemplatedItems;
+				e.OldElement.ItemSelected -= OnElementItemSelected;
+
+				var templatedItems = ((ITemplatedItemsView<Cell>)e.OldElement).TemplatedItems;
 				templatedItems.CollectionChanged -= OnCollectionChanged;
 				templatedItems.GroupedCollectionChanged -= OnGroupedCollectionChanged;
 			}
 
 			if (e.NewElement != null)
 			{
+				e.NewElement.ItemSelected += OnElementItemSelected;
+
 				if (Control == null) // Construct and SetNativeControl and suscribe control event
 				{
 					var listView = new WList
@@ -44,13 +48,16 @@ namespace Xamarin.Forms.Platform.WPF
 					Control.StylusUp += OnNativeStylusUp;
 				}
 				
-				// Suscribe element event
+				// Suscribe element events
 				var templatedItems = TemplatedItemsView.TemplatedItems;
 				templatedItems.CollectionChanged += OnCollectionChanged;
 				templatedItems.GroupedCollectionChanged += OnGroupedCollectionChanged;
 
 				// Update control properties
 				UpdateItemSource();
+
+				if (Element.SelectedItem != null)
+					OnElementItemSelected(null, new SelectedItemChangedEventArgs(Element.SelectedItem));
 			}
 
 			base.OnElementChanged(e);
@@ -133,6 +140,36 @@ namespace Xamarin.Forms.Platform.WPF
 
 			_isDisposed = true;
 			base.Dispose(disposing);
+		}
+
+		void OnElementItemSelected(object sender, SelectedItemChangedEventArgs e)
+		{
+			if (Element == null)
+				return;
+
+			if (e.SelectedItem == null)
+			{
+				Control.SelectedIndex = -1;
+				return;
+			}
+
+			var templatedItems = TemplatedItemsView.TemplatedItems;
+			var index = 0;
+
+			if (Element.IsGroupingEnabled)
+			{
+				int selectedItemIndex = templatedItems.GetGlobalIndexOfItem(e.SelectedItem);
+				var leftOver = 0;
+				int groupIndex = templatedItems.GetGroupIndexFromGlobal(selectedItemIndex, out leftOver);
+
+				index = selectedItemIndex - (groupIndex + 1);
+			}
+			else
+			{
+				index = templatedItems.GetGlobalIndexOfItem(e.SelectedItem);
+			}
+
+			Control.SelectedIndex = index;
 		}
 
 		void OnCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
