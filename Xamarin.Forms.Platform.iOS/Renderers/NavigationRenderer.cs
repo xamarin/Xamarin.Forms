@@ -762,9 +762,8 @@ namespace Xamarin.Forms.Platform.iOS
 				if (masterDetailPage != null && !string.IsNullOrEmpty(masterDetailPage.AutomationId))
 					SetAutomationId(containerController.NavigationItem.LeftBarButtonItem, $"btn_{masterDetailPage.AutomationId}");
 #if __MOBILE__
-				SetAccessibilityLabel(containerController.NavigationItem.LeftBarButtonItem, masterDetailPage);
-				SetAccessibilityHint(containerController.NavigationItem.LeftBarButtonItem, masterDetailPage);
-				SetIsAccessibilityElement(containerController.NavigationItem.LeftBarButtonItem, masterDetailPage);
+				containerController.NavigationItem.LeftBarButtonItem.SetAccessibilityHint(masterDetailPage);
+				containerController.NavigationItem.LeftBarButtonItem.SetAccessibilityLabel(masterDetailPage);
 #endif
 			}
 		}
