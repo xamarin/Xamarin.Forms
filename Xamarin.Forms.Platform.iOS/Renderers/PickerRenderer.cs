@@ -29,6 +29,7 @@ namespace Xamarin.Forms.Platform.iOS
 		UIColor _defaultTextColor;
 		bool _disposed;
 		bool _useLegacyColorManagement;
+		readonly Color _defaultPlaceholderColor = ColorExtensions.SeventyPercentGrey.ToColor();
 
 		IElementController ElementController => Element as IElementController;
 
@@ -82,6 +83,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateFont();
 				UpdatePicker();
 				UpdateTextColor();
+				UpdatePlaceholder();
 
 				((INotifyCollectionChanged)e.NewElement.Items).CollectionChanged += RowsCollectionChanged;
 			}
@@ -100,6 +102,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateTextColor();
 			else if (e.PropertyName == Picker.FontAttributesProperty.PropertyName || e.PropertyName == Picker.FontFamilyProperty.PropertyName || e.PropertyName == Picker.FontSizeProperty.PropertyName)
 				UpdateFont();
+			else if (e.PropertyName == Picker.PlaceholderProperty.PropertyName || e.PropertyName == Picker.PlaceholderColorProperty.PropertyName)
+				UpdatePlaceholder();
 		}
 
 		void OnEditing(object sender, EventArgs eventArgs)
@@ -188,6 +192,28 @@ namespace Xamarin.Forms.Platform.iOS
 
 			// HACK This forces the color to update; there's probably a more elegant way to make this happen
 			Control.Text = Control.Text;
+		}
+
+		void UpdatePlaceholder()
+		{
+			var formatted = (FormattedString)Element.Placeholder;
+
+			if (formatted == null)
+				return;
+
+			var targetColor = Element.PlaceholderColor;
+
+			if (_useLegacyColorManagement)
+			{
+				var color = targetColor.IsDefault || !Element.IsEnabled ? _defaultPlaceholderColor : targetColor;
+				Control.AttributedPlaceholder = formatted.ToAttributed(Element, color);
+			}
+			else
+			{
+				// Using VSM color management; take whatever is in Element.PlaceholderColor
+				var color = targetColor.IsDefault ? _defaultPlaceholderColor : targetColor;
+				Control.AttributedPlaceholder = formatted.ToAttributed(Element, color);
+			}
 		}
 
 		protected override void Dispose(bool disposing)
