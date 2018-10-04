@@ -1,12 +1,14 @@
 ﻿using System;
+using System.Diagnostics;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Primitives;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	public class ItemContentControl : ContentControl
+	public class ItemContentControl : UserControl
 	{
 		public ItemContentControl()
 		{
@@ -86,6 +88,8 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				return;
 			}
+
+			Debug.WriteLine($">>>>> ItemContentControl SetFormsDataContext 91: {context}");
 
 			BindableObject.SetInheritedBindingContext(_rootElement, context);
 		}

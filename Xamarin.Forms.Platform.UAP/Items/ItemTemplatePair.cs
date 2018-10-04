@@ -8,7 +8,7 @@
 			Item = item;
 		}
 
-		public DataTemplate FormsDataTemplate { get; set; }
-		public object Item { get; set; }
+		public DataTemplate FormsDataTemplate { get; }
+		public object Item { get; }
 	}
 }

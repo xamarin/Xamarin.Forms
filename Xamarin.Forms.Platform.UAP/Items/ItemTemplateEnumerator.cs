@@ -14,8 +14,6 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				case IList list when itemsSource is INotifyCollectionChanged:
 					return new ObservableItemTemplateCollection(list, itemTemplate);
-				//case IList list:
-
 			}
 
 			return new ItemTemplateEnumerator(itemsSource, itemTemplate);

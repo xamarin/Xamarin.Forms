@@ -108,7 +108,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		public virtual int GetIndexForItem(object item)
+		public virtual int GetPositionForItem(object item)
 		{
 			for (int n = 0; n < _itemsSource.Count; n++)
 			{

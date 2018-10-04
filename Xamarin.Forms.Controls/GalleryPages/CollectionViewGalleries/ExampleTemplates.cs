@@ -142,27 +142,40 @@
 					HeightRequest = 140
 				};
 
-				var image = new Image
+				var box = new BoxView()
 				{
+					Color = Color.SkyBlue,
 					Margin = new Thickness(5),
 					HeightRequest = 100,
 					WidthRequest = 100,
 					HorizontalOptions = LayoutOptions.Center,
 					VerticalOptions = LayoutOptions.Center,
-					Aspect = Aspect.AspectFit
 				};
 
-				image.SetBinding(Image.SourceProperty, new Binding("Image"));
+				//var image = new Image
+				//{
+				//	Margin = new Thickness(5),
+				//	HeightRequest = 100,
+				//	WidthRequest = 100,
+				//	HorizontalOptions = LayoutOptions.Center,
+				//	VerticalOptions = LayoutOptions.Center,
+				//	Aspect = Aspect.AspectFit
+				//};
+
+				//image.SetBinding(Image.SourceProperty, new Binding("Image"));
 
 				var caption = new Label
 				{
 					HorizontalOptions = LayoutOptions.Fill,
-					HorizontalTextAlignment = TextAlignment.Center
+					HorizontalTextAlignment = TextAlignment.Center,
+					HeightRequest = 40, WidthRequest = 100,
+					BackgroundColor = Color.Crimson,
+					Text = "Caption"
 				};
 
 				caption.SetBinding(Label.TextProperty, new Binding("Date", stringFormat: "{0:d}"));
 				
-				templateLayout.Children.Add(image);
+				templateLayout.Children.Add(box);
 				templateLayout.Children.Add(caption);
 
 				Grid.SetRow(caption, 1);

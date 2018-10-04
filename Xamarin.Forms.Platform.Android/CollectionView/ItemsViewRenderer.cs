@@ -23,6 +23,7 @@ namespace Xamarin.Forms.Platform.Android
 		protected ItemsView ItemsView;
 		IItemsLayout _layout;
 		SnapManager _snapManager;
+		ScrollHelper _scrollHelper;
 
 		public ItemsViewRenderer(Context context) : base(context)
 		{
@@ -30,12 +31,18 @@ namespace Xamarin.Forms.Platform.Android
 			_effectControlProvider = new EffectControlProvider(this);
 		}
 
+		ScrollHelper ScrollHelper => _scrollHelper ?? (_scrollHelper = new ScrollHelper(this));
+
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)
 		{
 			base.OnLayout(changed, l, t, r, b);
 			ClipBounds = new Rect(0,0, Width, Height);
 
-			_scrollAdjustment?.Invoke();
+			// After a direct (non-animated) scroll operation, we may need to make adjustments
+			// to align the target item; if an adjustment is pending, execute it here.
+			// (Deliberately checking the private member here rather than the property accessor; the accessor will
+			// create a new ScrollHelper if needed, and there's no reason to do that until a Scroll is requested.)
+			_scrollHelper?.AdjustScroll();
 		}
 
 		void IEffectControlProvider.RegisterEffect(Effect effect)
@@ -334,7 +341,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		protected virtual int DetermineIndex(ScrollToRequestEventArgs args)
+		protected virtual int DeterminePosition(ScrollToRequestEventArgs args)
 		{
 			if (args.Mode == ScrollToMode.Position)
 			{
@@ -342,142 +349,26 @@ namespace Xamarin.Forms.Platform.Android
 				return args.Index;
 			}
 
-			return ItemsViewAdapter.GetIndexForItem(args.Item);
+			return ItemsViewAdapter.GetPositionForItem(args.Item);
 		}
 
 		void ScrollToRequested(object sender, ScrollToRequestEventArgs args)
 		{
-			ScrollToPosition(args);
+			ScrollTo(args);
 		}
 
-		protected virtual void ScrollToPosition(ScrollToRequestEventArgs args)
+		protected virtual void ScrollTo(ScrollToRequestEventArgs args)
 		{
-			var index = DetermineIndex(args);
+			var position = DeterminePosition(args);
 			
 			if (args.Animate)
 			{
-				if (args.ScrollToPosition == Xamarin.Forms.ScrollToPosition.MakeVisible)
-				{
-					// MakeVisible matches the Android default of SnapAny, so we can just use the default
-					SmoothScrollToPosition(index);
-				}
-				else
-				{
-					// If we want a different ScrollToPosition, we need to create a SmoothScroller which can handle it
-					var smoothScroller = new PositionalSmoothScroller(Context, args.ScrollToPosition)
-					{
-						TargetPosition = index
-					};
-
-					// And kick off the scroll operation
-					GetLayoutManager().StartSmoothScroll(smoothScroller);
-				}
+				ScrollHelper.AnimateScrollToPosition(position, args.ScrollToPosition);
 			}
 			else
 			{
-				if (!(GetLayoutManager() is LinearLayoutManager linearLayoutManager))
-				{
-					// We don't have the ScrollToPositionWithOffset method available, so we don't have a way to 
-					// handle ScrollToPosition; just default back to the MakeVisible behavior
-					ScrollToPosition(index);
-					return;
-				}
-
-				if (args.ScrollToPosition == Xamarin.Forms.ScrollToPosition.MakeVisible)
-				{
-					// MakeVisible is the default behavior, so we don't need to do anything special
-					ScrollToPosition(index);
-					return;
-				}
-
-				// If ScrollToPosition is Start, then we can just use an offset of 0 and we're fine
-				// (Though that may change in RTL situations or if we're stacking from the end)
-				if (args.ScrollToPosition == Xamarin.Forms.ScrollToPosition.Start)
-				{
-					linearLayoutManager.ScrollToPositionWithOffset(index, 0);
-					return;
-				}
-
-				// For handling End or Center, things get more complicated because we need to know the size of
-				// the View we're targeting. 
-
-				// If we're using ItemSizingStrategy MeasureFirstItem, we can use any item size as a guide to figure
-				// out the offset
-
-				// TODO hartez 2018/10/03 14:00:32 Handle the MeasureFirstItem case to determine the offset and call	
-				// `linearLayoutManager.ScrollToPositionWithOffset(index, offset);` here
-
-
-				// If we don't already know the size of the item, things get more complicated
-
-				// The item may not actually exist; it may have never been realized, or it may have been recycled
-				// So we need to get it on screen using ScrollToPosition, then once it's on screen we can use the 
-				// width/height to make adjustments for Center/End.
-
-				// ScrollToPosition queues up the scroll operation, it doesn't do it immediately; it requests a layout
-				
-				_scrollAdjustment = () =>
-				{
-					var holder = FindViewHolderForAdapterPosition(index);
-					var view = holder?.ItemView;
-
-					if (view == null)
-					{
-						return;
-					}
-
-					var offset = 0;
-
-					var rvRect = new Rect();
-					GetGlobalVisibleRect(rvRect);
-
-					var viewRect = new Rect();
-					view.GetGlobalVisibleRect(viewRect);
-
-					if (args.ScrollToPosition == Xamarin.Forms.ScrollToPosition.Center)
-					{
-						if (linearLayoutManager.CanScrollHorizontally())
-						{
-							offset = viewRect.CenterX() - rvRect.CenterX();
-						}
-						else
-						{
-							offset = viewRect.CenterY() - rvRect.CenterY();
-						}
-					}
-					else if (args.ScrollToPosition == Xamarin.Forms.ScrollToPosition.End)
-					{
-						if (linearLayoutManager.CanScrollHorizontally())
-						{
-							offset = viewRect.Right - rvRect.Right;
-						}
-						else
-						{
-							offset = viewRect.Bottom - rvRect.Bottom;
-						}
-					}
-
-					_scrollAdjustment = null;
-
-					if (linearLayoutManager.CanScrollHorizontally())
-					{
-						ScrollBy(offset, 0);
-					}
-					else
-					{
-						ScrollBy(0, offset);
-					}
-				};
-
-				ScrollToPosition(index);
+				ScrollHelper.JumpScrollToPosition(position, args.ScrollToPosition);
 			}
-
-			
 		}
-
-		Action _scrollAdjustment;
-
 	}
-
-	
 }
