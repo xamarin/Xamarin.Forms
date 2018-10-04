@@ -247,6 +247,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (isRTL)
 			{
 				masterFrame.X = (int)(masterFrame.Width * .25);
+				_masterController.View.SemanticContentAttribute = UISemanticContentAttribute.ForceLeftToRight;
 			}
 
 			_masterController.View.Frame = masterFrame;
