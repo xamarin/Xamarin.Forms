@@ -35,7 +35,11 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty FontSizeProperty = FontElement.FontSizeProperty;
 
 		public static readonly BindableProperty FontAttributesProperty = FontElement.FontAttributesProperty;
-		
+
+		public static readonly BindableProperty PlaceholderProperty = PlaceholderElement.PlaceholderProperty;
+
+		public static readonly BindableProperty PlaceholderColorProperty = PlaceholderElement.PlaceholderColorProperty;
+
 		readonly Lazy<PlatformConfigurationRegistry<Picker>> _platformConfigurationRegistry;
 
 		public Picker()
@@ -105,6 +109,18 @@ namespace Xamarin.Forms
 		public string Title {
 			get { return (string)GetValue(TitleProperty); }
 			set { SetValue(TitleProperty, value); }
+		}
+
+		public string Placeholder
+		{
+			get { return (string)GetValue(PlaceholderProperty); }
+			set { SetValue(PlaceholderProperty, value); }
+		}
+
+		public Color PlaceholderColor
+		{
+			get { return (Color)GetValue(PlaceholderColorProperty); }
+			set { SetValue(PlaceholderColorProperty, value); }
 		}
 
 		BindingBase _itemDisplayBinding;
