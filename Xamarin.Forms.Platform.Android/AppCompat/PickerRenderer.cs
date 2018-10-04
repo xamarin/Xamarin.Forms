@@ -197,7 +197,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void UpdatePlaceholderColor()
 		{
-			_hintColorSwitcher.UpdateTextColor(Control, Element.PlaceholderColor, Control.SetHintTextColor);
+			_hintColorSwitcher?.UpdateTextColor(Control, Element.PlaceholderColor, Control.SetHintTextColor);
 		}
 
 		class PickerListener : Object, IOnClickListener
