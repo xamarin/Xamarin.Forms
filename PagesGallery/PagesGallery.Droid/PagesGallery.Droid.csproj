@@ -177,6 +177,10 @@
     <None Include="Properties\AndroidManifest.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Stubs\Xamarin.Forms.Platform.Android\Xamarin.Forms.Platform.Android %28Forwarders%29.csproj">
+      <Project>{6E53FEB1-1100-46AE-8013-17BBA35CC197}</Project>
+      <Name>Xamarin.Forms.Platform.Android (Forwarders)</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">
       <Project>{57b8b73d-c3b5-4c42-869e-7b2f17d354ac}</Project>
       <Name>Xamarin.Forms.Core</Name>
@@ -204,10 +208,6 @@
     <ProjectReference Include="..\PagesGallery\PagesGallery.csproj">
       <Name>PagesGallery</Name>
       <Project>{7B5F9E6A-6334-4C74-9B77-A55B3DA60E41}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Stubs\Xamarin.Forms.Platform.Android\Xamarin.Forms.Platform.Android %28Forwarders%29.csproj">
-      <Project>{6E53FEB1-1100-46AE-8013-17BBA35CC197}</Project>
-      <Name>Xamarin.Forms.Platform.Android (Forwarders)</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
