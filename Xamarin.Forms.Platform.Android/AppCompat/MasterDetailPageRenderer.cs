@@ -8,7 +8,7 @@ using Android.Views;
 using Android.Support.V4.App;
 using AView = Android.Views.View;
 using Android.OS;
-using Xamarin.Forms.Internals;
+using ALayoutDirection = Android.Views.LayoutDirection;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
@@ -185,6 +185,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void IVisualElementRenderer.UpdateLayout()
 		{
+			LayoutDirection = ALayoutDirection.Locale;
 			_tracker?.UpdateLayout();
 		}
 
