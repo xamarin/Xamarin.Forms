@@ -7,6 +7,7 @@ using Android.Util;
 using Android.Views;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android.FastRenderers;
+using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -33,6 +34,8 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnLayout(changed, l, t, r, b);
 			ClipBounds = new Rect(0,0, Width, Height);
+
+			_scrollAdjustment?.Invoke();
 		}
 
 		void IEffectControlProvider.RegisterEffect(Effect effect)
@@ -228,7 +231,7 @@ namespace Xamarin.Forms.Platform.Android
 			// Listen for ScrollTo requests
 			newElement.ScrollToRequested += ScrollToRequested;
 		}
-
+		
 		void TearDownOldElement(ItemsView oldElement)
 		{
 			if (oldElement == null)
@@ -347,7 +350,7 @@ namespace Xamarin.Forms.Platform.Android
 			ScrollToPosition(args);
 		}
 
-		void ScrollToPosition(ScrollToRequestEventArgs args)
+		protected virtual void ScrollToPosition(ScrollToRequestEventArgs args)
 		{
 			var index = DetermineIndex(args);
 			
@@ -372,9 +375,109 @@ namespace Xamarin.Forms.Platform.Android
 			}
 			else
 			{
-				// TODO hartez 2018/10/02 21:03:52 Still need to handle ScrollToPosition.Start, End, etc for non-animated	
-				ScrollToPosition(index);	
+				if (!(GetLayoutManager() is LinearLayoutManager linearLayoutManager))
+				{
+					// We don't have the ScrollToPositionWithOffset method available, so we don't have a way to 
+					// handle ScrollToPosition; just default back to the MakeVisible behavior
+					ScrollToPosition(index);
+					return;
+				}
+
+				if (args.ScrollToPosition == Xamarin.Forms.ScrollToPosition.MakeVisible)
+				{
+					// MakeVisible is the default behavior, so we don't need to do anything special
+					ScrollToPosition(index);
+					return;
+				}
+
+				// If ScrollToPosition is Start, then we can just use an offset of 0 and we're fine
+				// (Though that may change in RTL situations or if we're stacking from the end)
+				if (args.ScrollToPosition == Xamarin.Forms.ScrollToPosition.Start)
+				{
+					linearLayoutManager.ScrollToPositionWithOffset(index, 0);
+					return;
+				}
+
+				// For handling End or Center, things get more complicated because we need to know the size of
+				// the View we're targeting. 
+
+				// If we're using ItemSizingStrategy MeasureFirstItem, we can use any item size as a guide to figure
+				// out the offset
+
+				// TODO hartez 2018/10/03 14:00:32 Handle the MeasureFirstItem case to determine the offset and call	
+				// `linearLayoutManager.ScrollToPositionWithOffset(index, offset);` here
+
+
+				// If we don't already know the size of the item, things get more complicated
+
+				// The item may not actually exist; it may have never been realized, or it may have been recycled
+				// So we need to get it on screen using ScrollToPosition, then once it's on screen we can use the 
+				// width/height to make adjustments for Center/End.
+
+				// ScrollToPosition queues up the scroll operation, it doesn't do it immediately; it requests a layout
+				
+				_scrollAdjustment = () =>
+				{
+					var holder = FindViewHolderForAdapterPosition(index);
+					var view = holder?.ItemView;
+
+					if (view == null)
+					{
+						return;
+					}
+
+					var offset = 0;
+
+					var rvRect = new Rect();
+					GetGlobalVisibleRect(rvRect);
+
+					var viewRect = new Rect();
+					view.GetGlobalVisibleRect(viewRect);
+
+					if (args.ScrollToPosition == Xamarin.Forms.ScrollToPosition.Center)
+					{
+						if (linearLayoutManager.CanScrollHorizontally())
+						{
+							offset = viewRect.CenterX() - rvRect.CenterX();
+						}
+						else
+						{
+							offset = viewRect.CenterY() - rvRect.CenterY();
+						}
+					}
+					else if (args.ScrollToPosition == Xamarin.Forms.ScrollToPosition.End)
+					{
+						if (linearLayoutManager.CanScrollHorizontally())
+						{
+							offset = viewRect.Right - rvRect.Right;
+						}
+						else
+						{
+							offset = viewRect.Bottom - rvRect.Bottom;
+						}
+					}
+
+					_scrollAdjustment = null;
+
+					if (linearLayoutManager.CanScrollHorizontally())
+					{
+						ScrollBy(offset, 0);
+					}
+					else
+					{
+						ScrollBy(0, offset);
+					}
+				};
+
+				ScrollToPosition(index);
 			}
+
+			
 		}
+
+		Action _scrollAdjustment;
+
 	}
+
+	
 }
