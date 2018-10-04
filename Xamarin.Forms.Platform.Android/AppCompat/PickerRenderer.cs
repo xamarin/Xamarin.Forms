@@ -20,6 +20,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		AlertDialog _dialog;
 		bool _disposed;
 		TextColorSwitcher _textColorSwitcher;
+		TextColorSwitcher _hintColorSwitcher;
 
 		HashSet<Keycode> availableKeys = new HashSet<Keycode>(new[] {
 			Keycode.Tab, Keycode.Forward, Keycode.Back, Keycode.DpadDown, Keycode.DpadLeft, Keycode.DpadRight, Keycode.DpadUp
@@ -70,15 +71,18 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					textField.InputType = InputTypes.Null;
 					textField.KeyPress += TextFieldKeyPress;
 					textField.SetOnClickListener(PickerListener.Instance);
+					textField.Hint = Element.Placeholder;
 
 					var useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
 					_textColorSwitcher = new TextColorSwitcher(textField.TextColors, useLegacyColorManagement);
-					
+					_hintColorSwitcher = new TextColorSwitcher(textField.HintTextColors, useLegacyColorManagement);
+
 					SetNativeControl(textField);
 				}
 				UpdateFont();
 				UpdatePicker();
 				UpdateTextColor();
+				UpdatePlaceholderColor();
 			}
 
 			base.OnElementChanged(e);
@@ -114,6 +118,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				UpdateTextColor();
 			else if (e.PropertyName == Picker.FontAttributesProperty.PropertyName || e.PropertyName == Picker.FontFamilyProperty.PropertyName || e.PropertyName == Picker.FontSizeProperty.PropertyName)
 				UpdateFont();
+			else if (e.PropertyName == Entry.PlaceholderColorProperty.PropertyName)
+				UpdatePlaceholderColor();
+			else if (e.PropertyName == Entry.PlaceholderProperty.PropertyName)
+				Control.Hint = Element.Placeholder;
 		}
 
 		internal override void OnFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
@@ -140,7 +148,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				{
 					builder.SetTitle(model.Title ?? "");
 					string[] items = model.Items.ToArray();
-					builder.SetItems(items, (s, e) => ((IElementController)model).SetValueFromRenderer(Picker.SelectedIndexProperty, e.Which));
+					//builder.SetItems(items, (s, e) => ((IElementController)model).SetValueFromRenderer(Picker.SelectedIndexProperty, e.Which));
+					builder.SetSingleChoiceItems(items, (int)Element.GetValue(Picker.SelectedIndexProperty), (s, e) => ((IElementController)model).SetValueFromRenderer(Picker.SelectedIndexProperty, e.Which));
 
 					builder.SetNegativeButton(global::Android.Resource.String.Cancel, (o, args) => { });
 					
@@ -184,6 +193,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		void UpdateTextColor()
 		{
 			_textColorSwitcher?.UpdateTextColor(Control, Element.TextColor);
+		}
+
+		void UpdatePlaceholderColor()
+		{
+			_hintColorSwitcher.UpdateTextColor(Control, Element.PlaceholderColor, Control.SetHintTextColor);
 		}
 
 		class PickerListener : Object, IOnClickListener
