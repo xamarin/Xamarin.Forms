@@ -16,6 +16,9 @@ namespace Xamarin.Forms.Platform.UWP
 		Brush _defaultBrush;
 		FontFamily _defaultFontFamily;
 
+		Brush _placeholderDefaultBrush;
+		Brush _defaultPlaceholderColorFocusBrush;
+
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing)
@@ -57,6 +60,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 				UpdateTitle();
 				UpdateSelectedIndex();
+				UpdatePlaceholder();
+				UpdatePlaceholderColor();
 			}
 
 			base.OnElementChanged(e);
@@ -74,6 +79,10 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateTextColor();
 			else if (e.PropertyName == Picker.FontAttributesProperty.PropertyName || e.PropertyName == Picker.FontFamilyProperty.PropertyName || e.PropertyName == Picker.FontSizeProperty.PropertyName)
 				UpdateFont();
+			else if (e.PropertyName == Picker.PlaceholderColorProperty.PropertyName)
+				UpdatePlaceholderColor();
+			else if (e.PropertyName == Picker.PlaceholderProperty.PropertyName)
+				UpdatePlaceholder();
 		}
 
 		void ControlOnLoaded(object sender, RoutedEventArgs routedEventArgs)
@@ -211,6 +220,22 @@ namespace Xamarin.Forms.Platform.UWP
 		void UpdateTitle()
 		{
 			Control.Header = Element.Title;
+		}
+
+		void UpdatePlaceholder()
+		{
+			Control.PlaceholderText = Element.Placeholder ?? "";
+		}
+
+		void UpdatePlaceholderColor()
+		{
+			Color placeholderColor = Element.PlaceholderColor;
+
+			BrushHelpers.UpdateColor(placeholderColor, ref _placeholderDefaultBrush,
+				() => Control.PlaceholderForeground, brush => Control.PlaceholderForeground = brush);
+
+			BrushHelpers.UpdateColor(placeholderColor, ref _defaultPlaceholderColorFocusBrush,
+				() => Control.PlaceholderForeground, brush => Control.PlaceholderForeground = brush);
 		}
 	}
 }
