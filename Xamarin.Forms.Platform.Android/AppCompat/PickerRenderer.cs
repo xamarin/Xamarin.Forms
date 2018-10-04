@@ -118,9 +118,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				UpdateTextColor();
 			else if (e.PropertyName == Picker.FontAttributesProperty.PropertyName || e.PropertyName == Picker.FontFamilyProperty.PropertyName || e.PropertyName == Picker.FontSizeProperty.PropertyName)
 				UpdateFont();
-			else if (e.PropertyName == Entry.PlaceholderColorProperty.PropertyName)
+			else if (e.PropertyName == Picker.PlaceholderColorProperty.PropertyName)
 				UpdatePlaceholderColor();
-			else if (e.PropertyName == Entry.PlaceholderProperty.PropertyName)
+			else if (e.PropertyName == Picker.PlaceholderProperty.PropertyName)
 				Control.Hint = Element.Placeholder;
 		}
 
