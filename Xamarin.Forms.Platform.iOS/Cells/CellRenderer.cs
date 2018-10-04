@@ -58,7 +58,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (cell.GetIsGroupHeader<ItemsView<Cell>, Cell>())
 			{
 				if (UIDevice.CurrentDevice.CheckSystemVersion(7, 0))
-					SetBackgroundColor(tableViewCell, cell, new UIColor(247f / 255f, 247f / 255f, 247f / 255f, 1));
+					SetBackgroundColor(tableViewCell, cell, UIColor.Clear);
 			}
 			else
 			{
