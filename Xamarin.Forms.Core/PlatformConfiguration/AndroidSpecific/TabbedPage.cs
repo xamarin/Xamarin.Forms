@@ -150,6 +150,48 @@
 			return GetMaxItemCount(config.Element);
 		}
 
+		public static readonly BindableProperty ToolbarShiftModeProperty =
+			BindableProperty.Create("ToolbarShiftMode", typeof(ToolbarShiftMode),
+			typeof(TabbedPage), ToolbarShiftMode.Default);
+
+		public static readonly BindableProperty ToolbarItemShiftModeProperty =
+			BindableProperty.Create("ToolbarItemShiftMode", typeof(ToolbarShiftMode),
+			typeof(TabbedPage), ToolbarShiftMode.Default);
+
+		public static ToolbarShiftMode GetToolbarShiftMode(BindableObject element)
+		{
+			return (ToolbarShiftMode)element.GetValue(ToolbarShiftModeProperty);
+		}
+
+		public static ToolbarShiftMode GetToolbarShiftMode(this IPlatformElementConfiguration<Android, FormsElement> config)
+		{
+			return GetToolbarShiftMode(config.Element);
+		}
+
+		public static ToolbarShiftMode GetToolbarItemShiftMode(BindableObject element)
+		{
+			return (ToolbarShiftMode)element.GetValue(ToolbarItemShiftModeProperty);
+		}
+
+		public static ToolbarShiftMode GetToolbarItemShiftMode(this IPlatformElementConfiguration<Android, FormsElement> config)
+		{
+			return GetToolbarItemShiftMode(config.Element);
+		}
+
+		public static void SetBottomToolbarShiftMode(BindableObject element, 
+			ToolbarShiftMode shiftMode, ToolbarShiftMode itemShiftMode)
+		{
+			element.SetValue(ToolbarShiftModeProperty, shiftMode);
+			element.SetValue(ToolbarItemShiftModeProperty, itemShiftMode);
+		}
+
+		public static IPlatformElementConfiguration<Android, FormsElement> SetBottomToolbarShiftMode(this IPlatformElementConfiguration<Android, FormsElement> config, 
+			ToolbarShiftMode toolbarShiftMode, ToolbarShiftMode toolbarItemShiftMode)
+		{
+			SetBottomToolbarShiftMode(config.Element, toolbarShiftMode, toolbarItemShiftMode);
+			return config;
+		}
+
 		public static readonly BindableProperty BarItemColorProperty =
 			BindableProperty.Create("BarItemColor", typeof(Color),
 			typeof(TabbedPage), Color.Default);

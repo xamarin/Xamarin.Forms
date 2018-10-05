@@ -7,6 +7,7 @@ using Android.Graphics;
 using Android.Graphics.Drawables;
 using Android.OS;
 using Android.Runtime;
+using Android.Support.Design.Internal;
 using Android.Support.Design.Widget;
 using Android.Support.V4.App;
 using Android.Support.V4.View;
@@ -74,6 +75,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		FragmentManager FragmentManager => _fragmentManager ?? (_fragmentManager = ((FormsAppCompatActivity)Context).SupportFragmentManager);
 		bool IsBottomTabPlacement => (Element != null) ? Element.OnThisPlatform().GetToolbarPlacement() == ToolbarPlacement.Bottom : false;
+		bool IsEnableShiftMode=> (Element != null) ? Element.OnThisPlatform().GetToolbarShiftMode() != ToolbarShiftMode.Fixed : true;
+		bool IsEnableItemShiftMode => (Element != null) ? Element.OnThisPlatform().GetToolbarItemShiftMode() != ToolbarShiftMode.Fixed : true;
 		public Color BarItemColor => (Element != null) ? Element.OnThisPlatform().GetBarItemColor() : Color.Default;
 		public Color BarSelectedItemColor => (Element != null) ? Element.OnThisPlatform().GetBarSelectedItemColor() : Color.Default;
 
@@ -307,6 +310,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			}
 			else if (e.PropertyName == PlatformConfiguration.AndroidSpecific.TabbedPage.IsSwipePagingEnabledProperty.PropertyName)
 				UpdateSwipePaging();
+			else if (e.PropertyName == PlatformConfiguration.AndroidSpecific.TabbedPage.ToolbarShiftModeProperty.PropertyName ||
+				e.PropertyName == PlatformConfiguration.AndroidSpecific.TabbedPage.ToolbarItemShiftModeProperty.PropertyName)
+				UpdateBottomNavigationShiftMode();
 		}
 
 		void SetNavigationRendererPadding(int paddingTop, int paddingBottom)
@@ -420,6 +426,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				}
 
 				UpdateIgnoreContainerAreas();
+				UpdateBottomNavigationShiftMode();
 			}
 			else
 			{
@@ -630,6 +637,42 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 				var menuItem = bottomNavigationView.Menu.GetItem(i);
 				menuItem.SetIcon(GetIconDrawable(icon));
+			}
+		}
+
+		void UpdateBottomNavigationShiftMode()
+		{
+			if (IsDisposed || _bottomNavigationView == null || !IsBottomTabPlacement)
+				return;
+			var bottomNavigationView = _bottomNavigationView;
+
+			try
+			{
+				var menuView = bottomNavigationView.GetChildAt(0) as BottomNavigationMenuView;
+				if (menuView == null)
+					return;
+
+				var shiftMode = menuView.Class.GetDeclaredField("mShiftingMode");
+				shiftMode.Accessible = true;
+				shiftMode.SetBoolean(menuView, IsEnableShiftMode);
+				shiftMode.Accessible = false;
+				shiftMode.Dispose();
+
+				for (int i = 0; i < menuView.ChildCount; i++)
+				{
+					var item = menuView.GetChildAt(i) as BottomNavigationItemView;
+					if (item == null)
+						continue;
+
+					item.SetShiftingMode(IsEnableItemShiftMode);
+					item.SetChecked(item.ItemData.IsChecked);
+				}
+
+				menuView.UpdateMenuView();
+			}
+			catch(Exception e)
+			{
+				System.Diagnostics.Debug.WriteLine($"Unable to set shift mode: {e}");
 			}
 		}
 
