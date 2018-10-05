@@ -18,8 +18,8 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		ITemplatedItemsView<Cell> TemplatedItemsView => Element;
 
-		ScrollBarVisibility _defaultHorizontalScrollVisibility = ScrollBarVisibility.Default;
-		ScrollBarVisibility _defaultVerticalScrollVisibility = ScrollBarVisibility.Default;
+		bool? _defaultHorizontalScrollVisibility;
+		bool? _defaultVerticalScrollVisibility;
 
 		public const int DefaultRowHeight = 44;
 
@@ -338,15 +338,21 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			if (_table?.EnclosingScrollView != null)
 			{
-				if (_defaultVerticalScrollVisibility == ScrollBarVisibility.Default)
-					_defaultVerticalScrollVisibility = _table.EnclosingScrollView.HasVerticalScroller ? ScrollBarVisibility.Always : ScrollBarVisibility.Never;
+				if (_defaultVerticalScrollVisibility == null)
+					_defaultVerticalScrollVisibility = _table.EnclosingScrollView.HasVerticalScroller;
 
-				var newVerticalScrollVisibility = Element.VerticalScrollBarVisibility;
-
-				if (newVerticalScrollVisibility == ScrollBarVisibility.Default)
-					newVerticalScrollVisibility = _defaultVerticalScrollVisibility;
-
-				_table.EnclosingScrollView.HasVerticalScroller = newVerticalScrollVisibility == ScrollBarVisibility.Always;
+				switch (Element.VerticalScrollBarVisibility)
+				{
+					case (ScrollBarVisibility.Always):
+						_table.EnclosingScrollView.HasVerticalScroller = true;
+						break;
+					case (ScrollBarVisibility.Never):
+						_table.EnclosingScrollView.HasVerticalScroller = false;
+						break;
+					case (ScrollBarVisibility.Default):
+						_table.EnclosingScrollView.HasVerticalScroller = (bool)_defaultVerticalScrollVisibility;
+						break;
+				}
 			}
 		}
 
@@ -354,15 +360,21 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			if (_table?.EnclosingScrollView != null)
 			{
-				if (_defaultHorizontalScrollVisibility == ScrollBarVisibility.Default)
-					_defaultHorizontalScrollVisibility = _table.EnclosingScrollView.HasHorizontalScroller ? ScrollBarVisibility.Always : ScrollBarVisibility.Never;
+				if (_defaultHorizontalScrollVisibility == null)
+					_defaultHorizontalScrollVisibility = _table.EnclosingScrollView.HasHorizontalScroller;
 
-				var newHorizontalScrollVisibility = Element.HorizontalScrollBarVisibility;
-
-				if (newHorizontalScrollVisibility == ScrollBarVisibility.Default)
-					newHorizontalScrollVisibility = _defaultHorizontalScrollVisibility;
-
-				_table.EnclosingScrollView.HasHorizontalScroller = newHorizontalScrollVisibility == ScrollBarVisibility.Always;
+				switch (Element.HorizontalScrollBarVisibility)
+				{
+					case (ScrollBarVisibility.Always):
+						_table.EnclosingScrollView.HasHorizontalScroller = true;
+						break;
+					case (ScrollBarVisibility.Never):
+						_table.EnclosingScrollView.HasHorizontalScroller = false;
+						break;
+					case (ScrollBarVisibility.Default):
+						_table.EnclosingScrollView.HasHorizontalScroller = (bool)_defaultHorizontalScrollVisibility;
+						break;
+				}
 			}
 		}
 

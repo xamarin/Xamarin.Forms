@@ -35,8 +35,8 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _disposed;
 		bool _usingLargeTitles;
 
-		ScrollBarVisibility _defaultHorizontalScrollVisibility = ScrollBarVisibility.Default;
-		ScrollBarVisibility _defaultVerticalScrollVisibility = ScrollBarVisibility.Default;
+		bool? _defaultHorizontalScrollVisibility;
+		bool? _defaultVerticalScrollVisibility;
 
 		protected UITableViewRowAnimation InsertRowsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
 		protected UITableViewRowAnimation DeleteRowsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
@@ -684,28 +684,40 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateVerticalScrollBarVisibility()
 		{
-			if (_defaultVerticalScrollVisibility == ScrollBarVisibility.Default)
-				_defaultVerticalScrollVisibility = Control.ShowsVerticalScrollIndicator ? ScrollBarVisibility.Always : ScrollBarVisibility.Never;
+			if (_defaultVerticalScrollVisibility == null)
+				_defaultVerticalScrollVisibility = Control.ShowsVerticalScrollIndicator;
 
-			var newVerticalScrollVisibility = Element.VerticalScrollBarVisibility;
-
-			if (newVerticalScrollVisibility == ScrollBarVisibility.Default)
-				newVerticalScrollVisibility = _defaultVerticalScrollVisibility;
-
-			Control.ShowsVerticalScrollIndicator = newVerticalScrollVisibility == ScrollBarVisibility.Always;
+			switch (Element.VerticalScrollBarVisibility)
+			{
+				case (ScrollBarVisibility.Always):
+					Control.ShowsVerticalScrollIndicator = true;
+					break;
+				case (ScrollBarVisibility.Never):
+					Control.ShowsVerticalScrollIndicator = false;
+					break;
+				case (ScrollBarVisibility.Default):
+					Control.ShowsVerticalScrollIndicator = (bool)_defaultVerticalScrollVisibility;
+					break;
+			}
 		}
 
 		void UpdateHorizontalScrollBarVisibility()
 		{
-			if (_defaultHorizontalScrollVisibility == ScrollBarVisibility.Default)
-				_defaultHorizontalScrollVisibility = Control.ShowsHorizontalScrollIndicator ? ScrollBarVisibility.Always : ScrollBarVisibility.Never;
+			if (_defaultHorizontalScrollVisibility == null)
+				_defaultHorizontalScrollVisibility = Control.ShowsHorizontalScrollIndicator;
 
-			var newHorizontalScrollVisibility = Element.HorizontalScrollBarVisibility;
-
-			if (newHorizontalScrollVisibility == ScrollBarVisibility.Default)
-				newHorizontalScrollVisibility = _defaultHorizontalScrollVisibility;
-
-			Control.ShowsHorizontalScrollIndicator = newHorizontalScrollVisibility == ScrollBarVisibility.Always;
+			switch (Element.HorizontalScrollBarVisibility)
+			{
+				case (ScrollBarVisibility.Always):
+					Control.ShowsHorizontalScrollIndicator = true;
+					break;
+				case (ScrollBarVisibility.Never):
+					Control.ShowsHorizontalScrollIndicator = false;
+					break;
+				case (ScrollBarVisibility.Default):
+					Control.ShowsHorizontalScrollIndicator = (bool)_defaultHorizontalScrollVisibility;
+					break;
+			}
 		}
 
 		internal class UnevenListViewDataSource : ListViewDataSource
