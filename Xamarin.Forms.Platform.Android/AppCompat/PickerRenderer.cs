@@ -148,8 +148,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				{
 					builder.SetTitle(model.Title ?? "");
 					string[] items = model.Items.ToArray();
-					//builder.SetItems(items, (s, e) => ((IElementController)model).SetValueFromRenderer(Picker.SelectedIndexProperty, e.Which));
-					builder.SetSingleChoiceItems(items, (int)Element.GetValue(Picker.SelectedIndexProperty), (s, e) => ((IElementController)model).SetValueFromRenderer(Picker.SelectedIndexProperty, e.Which));
+					builder.SetItems(items, (s, e) => ((IElementController)model).SetValueFromRenderer(Picker.SelectedIndexProperty, e.Which));
 
 					builder.SetNegativeButton(global::Android.Resource.String.Cancel, (o, args) => { });
 					
