@@ -93,7 +93,10 @@ namespace Xamarin.Forms
 
 #if __MOBILE__
 			Device.SetIdiom(UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad ? TargetIdiom.Tablet : TargetIdiom.Phone);
-			Device.SetFlowDirection(UIApplication.SharedApplication.UserInterfaceLayoutDirection.ToFlowDirection());
+			if (UIDevice.CurrentDevice.CheckSystemVersion(9, 0))
+				Device.SetFlowDirection(UIApplication.SharedApplication.UserInterfaceLayoutDirection.ToFlowDirection());
+			else
+				Device.SetFlowDirection(FlowDirection.MatchParent);
 #else
 			Device.SetIdiom(TargetIdiom.Desktop);
 			Device.SetFlowDirection(NSApplication.SharedApplication.UserInterfaceLayoutDirection.ToFlowDirection());

@@ -1,4 +1,3 @@
-
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -185,7 +184,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void IVisualElementRenderer.UpdateLayout()
 		{
-			LayoutDirection = ALayoutDirection.Locale;
+			UpdateFlowDirection();
 			_tracker?.UpdateLayout();
 		}
 
@@ -387,6 +386,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void UpdateFlowDirection()
 		{
+			// LayoutDirection set to local for correct position of hamburger.
+			LayoutDirection = ALayoutDirection.Locale;
 			this.UpdateFlowDirection(Element);
 		}
 
