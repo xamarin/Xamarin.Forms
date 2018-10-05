@@ -237,17 +237,25 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateBackground();
 		}
 
+		bool localeIsRTL {
+			get {
+				var layoutDirection = UIDevice.CurrentDevice.CheckSystemVersion(9, 0)
+					? UIApplication.SharedApplication.UserInterfaceLayoutDirection
+					: UIView.GetUserInterfaceLayoutDirection(_masterController.View.SemanticContentAttribute;
+				return layoutDirection == UIUserInterfaceLayoutDirection.RightToLeft;
+			}
+		}
+
 		void LayoutChildren(bool animated)
 		{
 			var frame = Element.Bounds.ToRectangleF();
 			var masterFrame = frame;
 			masterFrame.Width = (int)(Math.Min(masterFrame.Width, masterFrame.Height) * 0.8);
 
-			var isRTL = (Element as IVisualElementController)?.EffectiveFlowDirection.IsRightToLeft() == true;
+			var isRTL = (Element as IVisualElementController)?.EffectiveFlowDirection.IsRightToLeft() == true || localeIsRTL;
 			if (isRTL)
 			{
 				masterFrame.X = (int)(masterFrame.Width * .25);
-				_masterController.View.SemanticContentAttribute = UISemanticContentAttribute.ForceLeftToRight;
 			}
 
 			_masterController.View.Frame = masterFrame;
