@@ -3,13 +3,18 @@ using System.Globalization;
 
 namespace Xamarin.Forms
 {
-	internal class ToStringValueConverter : IValueConverter
+	public class ToStringValueConverter : IValueConverter
 	{
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
 			if (value == null)
 			{
 				return null;
+			}
+
+			if (value is IFormattable formattable)
+			{
+				return formattable.ToString(null, culture);
 			}
 
 			return value.ToString();
