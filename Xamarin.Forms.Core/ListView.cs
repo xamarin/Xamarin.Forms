@@ -46,6 +46,8 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty SeparatorColorProperty = BindableProperty.Create("SeparatorColor", typeof(Color), typeof(ListView), Color.Default);
 
+		static readonly ToStringValueConverter _toStringValueConverter = new ToStringValueConverter();
+
 		readonly Lazy<PlatformConfigurationRegistry<ListView>> _platformConfigurationRegistry;
 
 		BindingBase _groupDisplayBinding;
@@ -322,12 +324,8 @@ namespace Xamarin.Forms
 
 		protected override Cell CreateDefault(object item)
 		{
-			string text = null;
-			if (item != null)
-				text = item.ToString();
-
 			TextCell textCell = new TextCell();
-			textCell.SetBinding(TextCell.TextProperty, ".");
+			textCell.SetBinding(TextCell.TextProperty, ".", converter: _toStringValueConverter);
 			return textCell;
 		}
 
