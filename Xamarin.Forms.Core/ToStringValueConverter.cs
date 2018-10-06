@@ -14,7 +14,7 @@ namespace Xamarin.Forms
 
 			if (value is IFormattable formattable)
 			{
-				return formattable.ToString(null, culture);
+				return formattable.ToString(parameter?.ToString(), culture);
 			}
 
 			return value.ToString();

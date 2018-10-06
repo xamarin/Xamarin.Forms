@@ -159,6 +159,68 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
+		public void DoubleValueWithEmptyParameterConvertsToStringValue()
+		{
+			var toStringValueConverter = new ToStringValueConverter();
+
+			object result = toStringValueConverter.Convert(99123.567, typeof(string), string.Empty, null);
+
+			Assert.That(result, Is.EqualTo("99123.567"));
+		}
+
+		[Test]
+		public void DoubleValueWithEmptyParameterAndSkCultureConvertsToStringValue()
+		{
+			var toStringValueConverter = new ToStringValueConverter();
+
+			object result = toStringValueConverter.Convert(99123.567, typeof(string), string.Empty, _skSkCulture);
+
+			Assert.That(result, Is.EqualTo("99123,567"));
+		}
+
+		[Test]
+		public void DoubleValueWithNumberFormatConvertsToStringValue()
+		{
+			var toStringValueConverter = new ToStringValueConverter();
+
+			object result = toStringValueConverter.Convert(99123.567, typeof(string), "N2", null);
+
+			Assert.That(result, Is.EqualTo("99,123.57"));
+		}
+
+		[Test]
+		public void DoubleValueWithNumberFormatAndSkCultureConvertsToStringValue()
+		{
+			var toStringValueConverter = new ToStringValueConverter();
+
+			object result = toStringValueConverter.Convert(99123.567, typeof(string), "N2", _skSkCulture);
+
+			Assert.That(result, Is.EqualTo("99 123,57"));
+		}
+
+		[Test]
+		public void DoubleValueWithSpecificFormatConvertsToStringValue()
+		{
+			var toStringValueConverter = new ToStringValueConverter();
+
+			var format = new ToStringObject("#,##0.000");
+			object result = toStringValueConverter.Convert(99123.56, typeof(string), format, null);
+
+			Assert.That(result, Is.EqualTo("99,123.560"));
+		}
+
+		[Test]
+		public void DoubleValueWithSpecificFormatAndSkCultureConvertsToStringValue()
+		{
+			var toStringValueConverter = new ToStringValueConverter();
+
+			var format = new ToStringObject("#,##0.000");
+			object result = toStringValueConverter.Convert(99123.56, typeof(string), format, _skSkCulture);
+
+			Assert.That(result, Is.EqualTo("99 123,560"));
+		}
+
+		[Test]
 		public void NullObjectConvertsBackThrowsException()
 		{
 			var toStringValueConverter = new ToStringValueConverter();
