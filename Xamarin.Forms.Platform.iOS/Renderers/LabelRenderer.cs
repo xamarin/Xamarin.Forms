@@ -294,24 +294,21 @@ namespace Xamarin.Forms.Platform.MacOS
 #endif
 		}
 
-		bool isTextFormatted;
+		FormattedString formatted;
+		bool IsTextFormatted => formatted != null;
+
 		void UpdateText()
 		{
 			_perfectSizeValid = false;
-			var values = Element.GetValues(Label.FormattedTextProperty, Label.TextProperty, Label.TextColorProperty);
+			var values = Element.GetValues(Label.FormattedTextProperty, Label.TextProperty);
 
-			var formatted = values[0] as FormattedString;
+			formatted = values[0] as FormattedString;
 			if (formatted == null && Element.LineHeight >= 0)
 				formatted = (string)values[1];
 
-			if (formatted != null)
+			if (IsTextFormatted)
 			{
-#if __MOBILE__
-				Control.AttributedText = formatted.ToAttributed(Element, (Color)values[2], Element.LineHeight);
-#else
-				Control.AttributedStringValue = formatted.ToAttributed(Element, (Color)values[2], Element.LineHeight);
-#endif
-				isTextFormatted = true;
+				UpdateFormattedText();
 			}
 			else
 			{
@@ -320,15 +317,26 @@ namespace Xamarin.Forms.Platform.MacOS
 #else
 				Control.StringValue = (string)values[1] ?? "";
 #endif
-				isTextFormatted = false;
 			}
 			UpdateLayout();
 		}
 
+		void UpdateFormattedText()
+		{
+#if __MOBILE__
+			Control.AttributedText = formatted.ToAttributed(Element, Element.TextColor, Element.LineHeight);
+#else
+			Control.AttributedStringValue = formatted.ToAttributed(Element, Element.TextColor, Element.LineHeight);
+#endif
+		}
+
 		void UpdateFont()
 		{
-			if (isTextFormatted)
+			if (IsTextFormatted)
+			{
+				UpdateFormattedText();
 				return;
+			}
 			_perfectSizeValid = false;
 
 #if __MOBILE__
@@ -341,8 +349,11 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateTextColor()
 		{
-			if (isTextFormatted)
+			if (IsTextFormatted)
+			{
+				UpdateFormattedText();
 				return;
+			}
 
 			_perfectSizeValid = false;
 
