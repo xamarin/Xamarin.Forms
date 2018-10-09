@@ -1,4 +1,5 @@
-﻿using Windows.UI.Xaml;
+﻿using System;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Media;
 
 using WContentPresenter = Windows.UI.Xaml.Controls.ContentPresenter;
@@ -12,6 +13,18 @@ namespace Xamarin.Forms.Platform.UWP
 
 		public static readonly DependencyProperty BackgroundColorProperty = DependencyProperty.Register(nameof(BackgroundColor), typeof(Brush), typeof(FormsButton),
 			new PropertyMetadata(default(Brush), OnBackgroundColorChanged));
+
+		public static readonly DependencyProperty TextWrappingProperty = DependencyProperty.Register(
+			nameof(TextWrapping),
+			typeof(TextWrapping),
+			typeof(FormsButton),
+			new PropertyMetadata(TextWrapping.NoWrap, OnTextWrappingChanged));
+
+		//public static readonly DependencyProperty TextTrimmingProperty = DependencyProperty.Register(
+		//	nameof(TextTrimming),
+		//	typeof(TextTrimming),
+		//	typeof(FormsButton),
+		//	new PropertyMetadata(TextTrimming.None, OnTextTrimmingChanged));
 
 		WContentPresenter _contentPresenter;
 
@@ -39,14 +52,23 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
+		public TextWrapping TextWrapping
+		{
+			get { return (TextWrapping)GetValue(TextWrappingProperty); }
+			set { SetValue(TextWrappingProperty, value); }
+		}
+
 		protected override void OnApplyTemplate()
 		{
 			base.OnApplyTemplate();
 
 			_contentPresenter = GetTemplateChild("ContentPresenter") as WContentPresenter;
 
+			var a = _contentPresenter.GetChildren<Windows.UI.Xaml.Controls.TextBlock>();
+
 			UpdateBackgroundColor();
 			UpdateBorderRadius();
+			UpdateTextWrapping();
 		}
 
 		static void OnBackgroundColorChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -58,6 +80,15 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			((FormsButton)d).UpdateBorderRadius();
 		}
+
+		static void OnTextWrappingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		{
+			((FormsButton)d).UpdateTextWrapping();
+		}
+
+		//static void OnTextTrimmingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		//{
+		//}
 
 		void UpdateBackgroundColor()
 		{
@@ -74,6 +105,14 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (_contentPresenter != null)
 				_contentPresenter.CornerRadius = new Windows.UI.Xaml.CornerRadius(BorderRadius);
+		}
+
+		void UpdateTextWrapping()
+		{
+			if (_contentPresenter != null)
+			{
+				_contentPresenter.TextWrapping = TextWrapping;
+			}
 		}
 	}
 }

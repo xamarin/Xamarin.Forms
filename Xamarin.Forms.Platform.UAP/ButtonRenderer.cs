@@ -58,6 +58,9 @@ namespace Xamarin.Forms.Platform.UWP
 				if (Element.IsSet(Button.PaddingProperty) && Element.Padding != (Thickness)Button.PaddingProperty.DefaultValue)
 					UpdatePadding();
 
+				if (Element.IsSet(Button.LineBreakModeProperty) && Element.LineBreakMode != (LineBreakMode)Button.LineBreakModeProperty.DefaultValue)
+					UpdateLineBreakMode();
+
 				UpdateFont();
 			}
 		}
@@ -110,6 +113,10 @@ namespace Xamarin.Forms.Platform.UWP
 			else if (e.PropertyName == Button.PaddingProperty.PropertyName)
 			{
 				UpdatePadding();
+			}
+			else if (e.PropertyName ==Button.LineBreakModeProperty.PropertyName)
+			{
+				UpdateLineBreakMode();
 			}
 		}
 
@@ -266,6 +273,30 @@ namespace Xamarin.Forms.Platform.UWP
 				Element.Padding.Right,
 				Element.Padding.Bottom
 			);
+		}
+
+		void UpdateLineBreakMode()
+		{
+			switch (Element.LineBreakMode)
+			{
+				case LineBreakMode.WordWrap:
+					Control.TextWrapping = Windows.UI.Xaml.TextWrapping.WrapWholeWords;
+					//Control.TextTrimming = TextTrimming.None;
+					break;
+				case LineBreakMode.NoWrap:
+					Control.TextWrapping = Windows.UI.Xaml.TextWrapping.NoWrap;
+					//Control.TextTrimming = TextTrimming.CharacterEllipsis;
+					break;
+				case LineBreakMode.CharacterWrap:
+					Control.TextWrapping = Windows.UI.Xaml.TextWrapping.Wrap;
+					//Control.TextTrimming = TextTrimming.None;
+					break;
+				case LineBreakMode.TailTruncation:
+					Control.TextWrapping = TextWrapping.NoWrap;
+					//Control.TextTrimming = Windows.UI.Xaml.TextTrimming.Clip;
+					break;
+
+			}
 		}
 	}
 }

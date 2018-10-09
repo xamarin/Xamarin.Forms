@@ -82,6 +82,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateImage();
 				UpdateTextColor();
 				UpdatePadding();
+				UpdateLineBreakMode();
 			}
 		}
 
@@ -106,6 +107,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateImage();
 			else if (e.PropertyName == Button.PaddingProperty.PropertyName)
 				UpdatePadding();
+			else if (e.PropertyName == Button.LineBreakModeProperty.PropertyName)
+				UpdateLineBreakMode();
 		}
     
 		protected override void SetAccessibilityLabel()
@@ -313,6 +316,31 @@ namespace Xamarin.Forms.Platform.iOS
 
 			button.ImageEdgeInsets = new UIEdgeInsets(-imageVertOffset, horizontalImageOffset, imageVertOffset, -horizontalImageOffset);
 			button.TitleEdgeInsets = new UIEdgeInsets(titleVertOffset, -horizontalTitleOffset, -titleVertOffset, horizontalTitleOffset);
+		}
+
+		void UpdateLineBreakMode()
+		{
+			switch (Element.LineBreakMode)
+			{
+				case LineBreakMode.HeadTruncation:
+					Control.LineBreakMode = UILineBreakMode.HeadTruncation;
+					break;
+				case LineBreakMode.MiddleTruncation:
+					Control.LineBreakMode = UILineBreakMode.MiddleTruncation;
+					break;
+				case LineBreakMode.TailTruncation:
+					Control.LineBreakMode = UILineBreakMode.TailTruncation;
+					break;
+				case LineBreakMode.NoWrap:
+					Control.LineBreakMode = UILineBreakMode.Clip;
+					break;
+				case LineBreakMode.CharacterWrap:
+					Control.LineBreakMode = UILineBreakMode.CharacterWrap;
+					break;
+				case LineBreakMode.WordWrap:
+					Control.LineBreakMode = UILineBreakMode.WordWrap;
+					break;
+			}
 		}
 	}
 }

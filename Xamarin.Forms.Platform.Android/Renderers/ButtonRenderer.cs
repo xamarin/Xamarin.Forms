@@ -10,6 +10,7 @@ using AView = Android.Views.View;
 using AMotionEvent = Android.Views.MotionEvent;
 using AMotionEventActions = Android.Views.MotionEventActions;
 using Object = Java.Lang.Object;
+using Android.Text;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -139,6 +140,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateText();
 			else if (e.PropertyName == Button.PaddingProperty.PropertyName)
 				UpdatePadding();
+			else if (e.PropertyName == Button.LineBreakModeProperty.PropertyName)
+				UpdateLineBreakMode();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -160,6 +163,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateEnabled();
 			UpdateBackgroundColor();
 			UpdatePadding();
+			UpdateLineBreakMode();
 		}
 
 		void UpdateBitmap()
@@ -278,6 +282,38 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			_paddingDeltaPix = delta ?? new Thickness();
 			UpdatePadding();
+		}
+
+		void UpdateLineBreakMode()
+		{
+			switch (Element.LineBreakMode)
+			{
+				case LineBreakMode.HeadTruncation:
+					Control.Ellipsize = TextUtils.TruncateAt.Start;
+					Control.SetSingleLine(true);
+					break;
+				case LineBreakMode.MiddleTruncation:
+					Control.Ellipsize = TextUtils.TruncateAt.Middle;
+					Control.SetSingleLine(true);
+					break;
+				case LineBreakMode.TailTruncation:
+					Control.Ellipsize = TextUtils.TruncateAt.End;
+					Control.SetSingleLine(true);
+					break;
+				case LineBreakMode.NoWrap:
+					Control.Ellipsize = null;
+					Control.SetSingleLine(true);
+					break;
+				case LineBreakMode.CharacterWrap:
+					Element.Text = ((Button)Element).Text.Replace(' ', '\u00A0');
+					Control.Ellipsize = null;
+					Control.SetSingleLine(false);
+					break;
+				case LineBreakMode.WordWrap:
+					Control.Ellipsize = null;
+					Control.SetSingleLine(false);
+					break;
+			}
 		}
 
 		class ButtonClickListener : Object, IOnClickListener
