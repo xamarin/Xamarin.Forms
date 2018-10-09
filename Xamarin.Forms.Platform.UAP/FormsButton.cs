@@ -20,12 +20,6 @@ namespace Xamarin.Forms.Platform.UWP
 			typeof(FormsButton),
 			new PropertyMetadata(TextWrapping.NoWrap, OnTextWrappingChanged));
 
-		//public static readonly DependencyProperty TextTrimmingProperty = DependencyProperty.Register(
-		//	nameof(TextTrimming),
-		//	typeof(TextTrimming),
-		//	typeof(FormsButton),
-		//	new PropertyMetadata(TextTrimming.None, OnTextTrimmingChanged));
-
 		WContentPresenter _contentPresenter;
 
 		public Brush BackgroundColor
@@ -64,8 +58,6 @@ namespace Xamarin.Forms.Platform.UWP
 
 			_contentPresenter = GetTemplateChild("ContentPresenter") as WContentPresenter;
 
-			var a = _contentPresenter.GetChildren<Windows.UI.Xaml.Controls.TextBlock>();
-
 			UpdateBackgroundColor();
 			UpdateBorderRadius();
 			UpdateTextWrapping();
@@ -85,10 +77,6 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			((FormsButton)d).UpdateTextWrapping();
 		}
-
-		//static void OnTextTrimmingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-		//{
-		//}
 
 		void UpdateBackgroundColor()
 		{
