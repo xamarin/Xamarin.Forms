@@ -53,7 +53,7 @@ namespace Xamarin.Forms
 #pragma warning restore 618
 
 		public static readonly BindableProperty TextProperty
-			= BindableProperty.Create(nameof(Text), typeof(string), typeof(Span), "", defaultBindingMode: BindingMode.OneTime);
+			= BindableProperty.Create(nameof(Text), typeof(string), typeof(Span), "", defaultBindingMode: BindingMode.OneWay);
 
 		public string Text
 		{
