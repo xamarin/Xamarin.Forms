@@ -294,17 +294,17 @@ namespace Xamarin.Forms.Platform.MacOS
 #endif
 		}
 
-		FormattedString formatted;
-		bool IsTextFormatted => formatted != null;
+		FormattedString _formatted;
+		bool IsTextFormatted => _formatted != null;
 
 		void UpdateText()
 		{
 			_perfectSizeValid = false;
 			var values = Element.GetValues(Label.FormattedTextProperty, Label.TextProperty);
 
-			formatted = values[0] as FormattedString;
-			if (formatted == null && Element.LineHeight >= 0)
-				formatted = (string)values[1];
+			_formatted = values[0] as FormattedString;
+			if (_formatted == null && Element.LineHeight >= 0)
+				_formatted = (string)values[1];
 
 			if (IsTextFormatted)
 			{
@@ -324,9 +324,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		void UpdateFormattedText()
 		{
 #if __MOBILE__
-			Control.AttributedText = formatted.ToAttributed(Element, Element.TextColor, Element.LineHeight);
+			Control.AttributedText = _formatted.ToAttributed(Element, Element.TextColor, Element.LineHeight);
 #else
-			Control.AttributedStringValue = formatted.ToAttributed(Element, Element.TextColor, Element.LineHeight);
+			Control.AttributedStringValue = _formatted.ToAttributed(Element, Element.TextColor, Element.LineHeight);
 #endif
 		}
 
