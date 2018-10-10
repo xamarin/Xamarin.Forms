@@ -191,11 +191,6 @@ namespace Xamarin.Forms
 			SetValue(CurrentStateProperty, MediaElementState.Stopped);
 			MediaEnded?.Invoke(this, EventArgs.Empty);
 		}
-
-		internal void RaisePropertyChanged(string propertyName)
-		{
-			OnPropertyChanged(propertyName);
-		}
 	}
 
 	[EditorBrowsable(EditorBrowsableState.Never)]

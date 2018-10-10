@@ -146,7 +146,7 @@ namespace Xamarin.Forms.Platform.WPF
 			}
 			else if (Element.Source.Scheme == "https")
 			{
-				throw new ArgumentException("HTTPS Not supported", "Source");
+				throw new ArgumentException("HTTPS Not supported on WPF", "Source");
 			}
 			else
 			{

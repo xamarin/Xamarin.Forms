@@ -77,6 +77,7 @@
     <Compile Include="EffectiveFlowDirectionExtensions.cs" />
     <Compile Include="FlowDirectionTests.cs" />
     <Compile Include="LayoutChildIntoBoundingRegionTests.cs" />
+    <Compile Include="MediaElementTests.cs" />
     <Compile Include="MenuUnitTests.cs" />
     <Compile Include="RegionTests.cs" />
     <Compile Include="SpanTests.cs" />
