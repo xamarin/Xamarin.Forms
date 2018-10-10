@@ -136,50 +136,57 @@ namespace Xamarin.Forms.Platform.Android
 			Controller.Position = _view.Position;
 		}
 
-
 		void UpdateSource()
 		{
 			if (Element.Source != null)
 			{
-				if (Element.Source.Scheme == null)
+				var uriSource = Element.Source as UriMediaSource;
+				if (uriSource != null)
 				{
-					_view.SetVideoPath(Element.Source.AbsolutePath);
-				}
-				else if (Element.Source.Scheme == "ms-appx")
-				{
-					// video resources should be in the raw folder with Build Action set to AndroidResource
-					string uri = "android.resource://" + Context.PackageName + "/raw/" + Element.Source.LocalPath.Substring(1, Element.Source.LocalPath.LastIndexOf('.') - 1).ToLower();
-					_view.SetVideoURI(global::Android.Net.Uri.Parse(uri));
-				}
-				else if (Element.Source.Scheme == "ms-appdata")
-				{
-					string filePath = string.Empty;
-
-					if (Element.Source.LocalPath.StartsWith("/local"))
+					if (uriSource.Uri.Scheme == "ms-appx")
 					{
-						filePath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Element.Source.LocalPath.Substring(7));
+						// video resources should be in the raw folder with Build Action set to AndroidResource
+						string uri = "android.resource://" + Context.PackageName + "/raw/" + uriSource.Uri.LocalPath.Substring(1, uriSource.Uri.LocalPath.LastIndexOf('.') - 1).ToLower();
+						_view.SetVideoURI(global::Android.Net.Uri.Parse(uri));
 					}
-					else if (Element.Source.LocalPath.StartsWith("/temp"))
+					else if (uriSource.Uri.Scheme == "ms-appdata")
 					{
-						filePath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), Element.Source.LocalPath.Substring(6));
+						string filePath = string.Empty;
+
+						if (uriSource.Uri.LocalPath.StartsWith("/local"))
+						{
+							filePath = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), uriSource.Uri.LocalPath.Substring(7));
+						}
+						else if (uriSource.Uri.LocalPath.StartsWith("/temp"))
+						{
+							filePath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), uriSource.Uri.LocalPath.Substring(6));
+						}
+						else
+						{
+							throw new ArgumentException("Invalid Uri", "Source");
+						}
+
+						_view.SetVideoPath(filePath);
+
 					}
 					else
 					{
-						throw new ArgumentException("Invalid Uri", "Source");
+						if (uriSource.Uri.IsFile)
+						{
+							_view.SetVideoPath(uriSource.Uri.AbsolutePath);
+						}
+						else
+						{
+							_view.SetVideoURI(global::Android.Net.Uri.Parse(uriSource.Uri.AbsoluteUri), Element.HttpHeaders);
+						}
 					}
-
-					_view.SetVideoPath(filePath);
-
 				}
 				else
 				{
-					if (Element.Source.IsFile)
+					var fileSource = Element.Source as FileMediaSource;
+					if (fileSource != null)
 					{
-						_view.SetVideoPath(Element.Source.AbsolutePath);
-					}
-					else
-					{
-						_view.SetVideoURI(global::Android.Net.Uri.Parse(Element.Source.ToString()), Element.HttpHeaders);
+						_view.SetVideoPath(fileSource.File);
 					}
 				}
 
@@ -190,17 +197,13 @@ namespace Xamarin.Forms.Platform.Android
 				}
 
 			}
-			else
+			else if (_view.IsPlaying)
 			{
-				if (Element.CurrentState == MediaElementState.Playing || Element.CurrentState == MediaElementState.Buffering)
-				{
-					Element.Stop();
-				}
+				_view.StopPlayback();
+				Controller.CurrentState = MediaElementState.Stopped;
 			}
 		}
-
-
-
+		
 		protected override void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
 			switch (e.PropertyName)

@@ -88,40 +88,49 @@ namespace Xamarin.Forms.Platform.iOS
 			if (MediaElement.Source != null)
 			{
 				AVAsset asset = null;
-				if (MediaElement.Source.Scheme == null)
+				
+				var uriSource = MediaElement.Source as UriMediaSource;
+				if (uriSource != null)
 				{
-					// file path
-					asset = AVAsset.FromUrl(NSUrl.FromFilename(MediaElement.Source.OriginalString));
-				}
-				else if (MediaElement.Source.Scheme == "ms-appx")
-				{
-					// used for a file embedded in the application package
-					asset = AVAsset.FromUrl(NSUrl.FromFilename(MediaElement.Source.LocalPath.Substring(1)));
-				}
-				else if (MediaElement.Source.Scheme == "ms-appdata")
-				{
-					string filePath = string.Empty;
-
-					if (MediaElement.Source.LocalPath.StartsWith("/local"))
+					if (uriSource.Uri.Scheme == "ms-appx")
 					{
-						filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), MediaElement.Source.LocalPath.Substring(7));
+						// used for a file embedded in the application package
+						asset = AVAsset.FromUrl(NSUrl.FromFilename(uriSource.Uri.LocalPath.Substring(1)));
 					}
-					else if (MediaElement.Source.LocalPath.StartsWith("/temp"))
+					else if (uriSource.Uri.Scheme == "ms-appdata")
 					{
-						filePath = Path.Combine(Path.GetTempPath(), MediaElement.Source.LocalPath.Substring(6));
+						string filePath = string.Empty;
+
+						if (uriSource.Uri.LocalPath.StartsWith("/local"))
+						{
+							filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), uriSource.Uri.LocalPath.Substring(7));
+						}
+						else if (uriSource.Uri.LocalPath.StartsWith("/temp"))
+						{
+							filePath = Path.Combine(Path.GetTempPath(), uriSource.Uri.LocalPath.Substring(6));
+						}
+						else
+						{
+							throw new ArgumentException("Invalid Uri", "Source");
+						}
+
+						asset = AVAsset.FromUrl(NSUrl.FromFilename(filePath));
 					}
 					else
 					{
-						throw new ArgumentException("Invalid Uri", "Source");
+						asset = AVUrlAsset.Create(NSUrl.FromString(uriSource.Uri.AbsoluteUri), GetOptionsWithHeaders(MediaElement.HttpHeaders));
 					}
-
-					asset = AVAsset.FromUrl(NSUrl.FromFilename(filePath));
 				}
 				else
 				{
-					asset = AVUrlAsset.Create(NSUrl.FromString(MediaElement.Source.AbsoluteUri), GetOptionsWithHeaders(MediaElement.HttpHeaders));
+					var fileSource = MediaElement.Source as FileMediaSource;
+					if (fileSource != null)
+					{
+						asset = AVAsset.FromUrl(NSUrl.FromFilename(fileSource.File));
+					}
 				}
 
+				
 				AVPlayerItem item = new AVPlayerItem(asset);
 				RemoveStatusObserver();
 

@@ -80,10 +80,7 @@ namespace Xamarin.Forms.Platform.UWP
 				Control.MediaEnded += ControlMediaEnded;
 				Control.MediaFailed += ControlMediaFailed;
 
-				if (Element.Source != null)
-				{
-					Control.Source = Element.Source;
-				}
+				UpdateSource();
 			}
 		}
 
@@ -255,7 +252,7 @@ namespace Xamarin.Forms.Platform.UWP
 					break;
 				
 				case nameof(MediaElement.Source):
-					Control.Source = Element.Source;
+					UpdateSource();
 					break;
 
 				case nameof(MediaElement.Width):
@@ -274,6 +271,26 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 
 			base.OnElementPropertyChanged(sender, e);
+		}
+
+		void UpdateSource()
+		{
+			if (Element.Source == null)
+				return;
+			
+			var uriSource = Element.Source as UriMediaSource;
+			if (uriSource != null)
+			{
+				Control.Source = uriSource.Uri;
+			}
+			else
+			{
+				var fileSource = Element.Source as FileMediaSource;
+				if (fileSource != null)
+				{
+					Control.Source = new Uri(fileSource.File);
+				}
+			}
 		}
 	}
 }
