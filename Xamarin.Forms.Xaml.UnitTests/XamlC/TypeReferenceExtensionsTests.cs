@@ -43,6 +43,18 @@ namespace Xamarin.Forms.XamlcUnitTests
 		{
 		}
 
+		interface IGrault<T>
+		{
+		}
+
+		class Grault<T> : IGrault<T>
+		{
+		}
+
+		class Garply<T> : Grault<T>
+		{
+		}
+
 		ModuleDefinition module;
 
 		[SetUp]
@@ -142,6 +154,21 @@ namespace Xamarin.Forms.XamlcUnitTests
 
 			Assert.AreEqual("System", resolvedType.Namespace);
 			Assert.AreEqual("Byte", resolvedType.Name);
+		}
+
+		[Test]
+		public void TestImplementsGenericInterface()
+		{
+			GenericInstanceType igrault;
+			IList<TypeReference> arguments;
+			var garply = module.ImportReference(typeof(Garply<System.Byte>));
+
+			Assert.That(garply.ImplementsGenericInterface("Xamarin.Forms.XamlcUnitTests.TypeReferenceExtensionsTests/IGrault`1<T>", out igrault, out arguments));
+
+			Assert.AreEqual("System", igrault.GenericArguments[0].Namespace);
+			Assert.AreEqual("Byte", igrault.GenericArguments[0].Name);
+			Assert.AreEqual("System", arguments[0].Namespace);
+			Assert.AreEqual("Byte", arguments[0].Name);
 		}
 	}
 }
