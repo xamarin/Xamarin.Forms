@@ -29,15 +29,15 @@ namespace Xamarin.Forms.Platform.UWP
 					_positionChangedToken = 0;
 				}
 
-				Element.SeekRequested -= Element_SeekRequested;
-				Element.StateRequested -= Element_StateRequested;
-				Element.PositionRequested -= Element_PositionRequested;
+				Element.SeekRequested -= SeekRequested;
+				Element.StateRequested -= StateRequested;
+				Element.PositionRequested -= PositionRequested;
 
-				Control.CurrentStateChanged -= Control_CurrentStateChanged;
-				Control.SeekCompleted -= Control_SeekCompleted;
-				Control.MediaOpened -= Control_MediaOpened;
-				Control.MediaEnded -= Control_MediaEnded;
-				Control.MediaFailed -= Control_MediaFailed;
+				Control.CurrentStateChanged -= ControlCurrentStateChanged;
+				Control.SeekCompleted -= ControlSeekCompleted;
+				Control.MediaOpened -= ControlMediaOpened;
+				Control.MediaEnded -= ControlMediaEnded;
+				Control.MediaFailed -= ControlMediaFailed;
 			}
 		}
 
@@ -71,14 +71,14 @@ namespace Xamarin.Forms.Platform.UWP
 				_bufferingProgressChangedToken = Control.RegisterPropertyChangedCallback(Windows.UI.Xaml.Controls.MediaElement.BufferingProgressProperty, BufferingProgressChanged);
 				_positionChangedToken = Control.RegisterPropertyChangedCallback(Windows.UI.Xaml.Controls.MediaElement.PositionProperty, PositionChanged);
 
-				Element.SeekRequested += Element_SeekRequested;
-				Element.StateRequested += Element_StateRequested;
-				Element.PositionRequested += Element_PositionRequested;
-				Control.SeekCompleted += Control_SeekCompleted;
-				Control.CurrentStateChanged += Control_CurrentStateChanged;
-				Control.MediaOpened += Control_MediaOpened;
-				Control.MediaEnded += Control_MediaEnded;
-				Control.MediaFailed += Control_MediaFailed;
+				Element.SeekRequested += SeekRequested;
+				Element.StateRequested += StateRequested;
+				Element.PositionRequested += PositionRequested;
+				Control.SeekCompleted += ControlSeekCompleted;
+				Control.CurrentStateChanged += ControlCurrentStateChanged;
+				Control.MediaOpened += ControlMediaOpened;
+				Control.MediaEnded += ControlMediaEnded;
+				Control.MediaFailed += ControlMediaFailed;
 
 				if (Element.Source != null)
 				{
@@ -87,7 +87,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		void Element_PositionRequested(object sender, EventArgs e)
+		void PositionRequested(object sender, EventArgs e)
 		{
 			if (Control != null)
 			{
@@ -97,7 +97,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		IMediaElementController Controller => Element as IMediaElementController;
 
-		private void Element_StateRequested(object sender, StateRequested e)
+		void StateRequested(object sender, StateRequested e)
 		{
 			switch (e.State)
 			{
@@ -120,7 +120,7 @@ namespace Xamarin.Forms.Platform.UWP
 			Controller.Position = Control.Position;
 		}
 
-		private void Element_SeekRequested(object sender, SeekRequested e)
+		void SeekRequested(object sender, SeekRequested e)
 		{
 			if (Control.CanSeek)
 			{
@@ -129,19 +129,19 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		void Control_MediaFailed(object sender, ExceptionRoutedEventArgs e)
+		void ControlMediaFailed(object sender, ExceptionRoutedEventArgs e)
 		{
 			Element?.OnMediaFailed();
 		}
 
-		void Control_MediaEnded(object sender, RoutedEventArgs e)
+		void ControlMediaEnded(object sender, RoutedEventArgs e)
 		{
 			Controller.Position = Control.Position;
 			Controller.CurrentState = MediaElementState.Stopped;
 			Element?.OnMediaEnded();
 		}
 
-		void Control_MediaOpened(object sender, RoutedEventArgs e)
+		void ControlMediaOpened(object sender, RoutedEventArgs e)
 		{
 			Controller.Duration = Control.NaturalDuration.HasTimeSpan ? Control.NaturalDuration.TimeSpan : (TimeSpan?)null;
 			Controller.VideoHeight = Control.NaturalVideoHeight;
@@ -151,7 +151,7 @@ namespace Xamarin.Forms.Platform.UWP
 		}
 
 	
-		void Control_CurrentStateChanged(object sender, RoutedEventArgs e)
+		void ControlCurrentStateChanged(object sender, RoutedEventArgs e)
 		{
 			if (Element == null)
 				return;
@@ -214,7 +214,7 @@ namespace Xamarin.Forms.Platform.UWP
 			Controller.Position = ((Windows.UI.Xaml.Controls.MediaElement)sender).Position;
 		}
 
-		void Control_SeekCompleted(object sender, RoutedEventArgs e)
+		void ControlSeekCompleted(object sender, RoutedEventArgs e)
 		{
 			Controller.Position = ((Windows.UI.Xaml.Controls.MediaElement)sender).Position;
 			Element?.RaiseSeekCompleted();

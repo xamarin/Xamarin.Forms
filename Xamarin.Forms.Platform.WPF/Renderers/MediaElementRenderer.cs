@@ -13,17 +13,17 @@ namespace Xamarin.Forms.Platform.WPF
 
 			if (e.OldElement != null)
 			{
-				Element.SeekRequested -= Element_SeekRequested;
-				Element.StateRequested -= Element_StateRequested;
-				Element.PositionRequested -= Element_PositionRequested;
+				Element.SeekRequested -= ElementSeekRequested;
+				Element.StateRequested -= ElementStateRequested;
+				Element.PositionRequested -= ElementPositionRequested;
 
 				if (Control != null)
 				{
-					Control.BufferingStarted -= Control_BufferingStarted;
-					Control.BufferingEnded -= Control_BufferingEnded;
-					Control.MediaOpened -= Control_MediaOpened;
-					Control.MediaEnded -= Control_MediaEnded;
-					Control.MediaFailed -= Control_MediaFailed;
+					Control.BufferingStarted -= ControlBufferingStarted;
+					Control.BufferingEnded -= ControlBufferingEnded;
+					Control.MediaOpened -= ControlMediaOpened;
+					Control.MediaEnded -= ControlMediaEnded;
+					Control.MediaFailed -= ControlMediaFailed;
 				}
 				
 			}
@@ -38,20 +38,20 @@ namespace Xamarin.Forms.Platform.WPF
 				Control.UnloadedBehavior = MediaState.Close;
 				Control.Stretch = Element.Aspect.ToStretch();
 				
-				Control.BufferingStarted += Control_BufferingStarted;
-				Control.BufferingEnded += Control_BufferingEnded;
-				Control.MediaOpened += Control_MediaOpened;
-				Control.MediaEnded += Control_MediaEnded;
-				Control.MediaFailed += Control_MediaFailed;
+				Control.BufferingStarted += ControlBufferingStarted;
+				Control.BufferingEnded += ControlBufferingEnded;
+				Control.MediaOpened += ControlMediaOpened;
+				Control.MediaEnded += ControlMediaEnded;
+				Control.MediaFailed += ControlMediaFailed;
 
-				Element.SeekRequested += Element_SeekRequested;
-				Element.StateRequested += Element_StateRequested;
-				Element.PositionRequested += Element_PositionRequested;
+				Element.SeekRequested += ElementSeekRequested;
+				Element.StateRequested += ElementStateRequested;
+				Element.PositionRequested += ElementPositionRequested;
 				UpdateSource();
 			}
 		}
 
-		void Element_PositionRequested(object sender, EventArgs e)
+		void ElementPositionRequested(object sender, EventArgs e)
 		{
 			if (Control != null)
 			{
@@ -62,7 +62,7 @@ namespace Xamarin.Forms.Platform.WPF
 		IMediaElementController Controller => Element as IMediaElementController;
 		MediaElementState _requestedState;
 
-		void Element_StateRequested(object sender, StateRequested e)
+		void ElementStateRequested(object sender, StateRequested e)
 		{
 			_requestedState = e.State;
 
@@ -105,7 +105,7 @@ namespace Xamarin.Forms.Platform.WPF
 			Controller.Position = Control.Position;
 		}
 
-		private void Element_SeekRequested(object sender, SeekRequested e)
+		void ElementSeekRequested(object sender, SeekRequested e)
 		{
 			Control.Position = e.Position;
 			Controller.Position = Control.Position;
@@ -156,7 +156,7 @@ namespace Xamarin.Forms.Platform.WPF
 			Controller.CurrentState = MediaElementState.Opening;
 		}
 
-		void Control_BufferingEnded(object sender, RoutedEventArgs e)
+		void ControlBufferingEnded(object sender, RoutedEventArgs e)
 		{
 			Controller.BufferingProgress = 1.0;
 			if (Element.AutoPlay)
@@ -169,18 +169,18 @@ namespace Xamarin.Forms.Platform.WPF
 			}
 		}
 
-		void Control_BufferingStarted(object sender, RoutedEventArgs e)
+		void ControlBufferingStarted(object sender, RoutedEventArgs e)
 		{
 			Controller.BufferingProgress = 0.0;
 			Controller.CurrentState = MediaElementState.Buffering;
 		}
 
-		void Control_MediaFailed(object sender, ExceptionRoutedEventArgs e)
+		void ControlMediaFailed(object sender, ExceptionRoutedEventArgs e)
 		{
 			Element.OnMediaFailed();
 		}
 
-		void Control_MediaEnded(object sender, RoutedEventArgs e)
+		void ControlMediaEnded(object sender, RoutedEventArgs e)
 		{
 			if(Element.IsLooping)
 			{
@@ -198,7 +198,7 @@ namespace Xamarin.Forms.Platform.WPF
 			Controller.Position = Control.Position;
 		}
 
-		void Control_MediaOpened(object sender, RoutedEventArgs e)
+		void ControlMediaOpened(object sender, RoutedEventArgs e)
 		{
 			Controller.Duration = Control.NaturalDuration.HasTimeSpan ? Control.NaturalDuration.TimeSpan : (TimeSpan?)null;
 			Controller.VideoHeight = Control.NaturalVideoHeight;
@@ -218,7 +218,7 @@ namespace Xamarin.Forms.Platform.WPF
 			}
 		}
 		
-		void Control_SeekCompleted(object sender, RoutedEventArgs e)
+		void ControlSeekCompleted(object sender, RoutedEventArgs e)
 		{
 			Controller.Position = Control.Position;
 			Element?.RaiseSeekCompleted();
