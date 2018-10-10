@@ -271,49 +271,55 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		{
 			if (MediaElement.Source != null)
 			{
-				if (MediaElement.Source.Scheme == null)
+				var uriSource = MediaElement.Source as UriMediaSource;
+				if (uriSource != null)
 				{
-					_view.SetVideoPath(MediaElement.Source.AbsolutePath);
-				}
-				else if (MediaElement.Source.Scheme == "ms-appx")
-				{
-					// video resources should be in the raw folder with Build Action set to AndroidResource
-					string uri = "android.resource://" + Context.PackageName + "/raw/" + MediaElement.Source.LocalPath.Substring(1, MediaElement.Source.LocalPath.LastIndexOf('.') - 1).ToLower();
-					_view.SetVideoURI(global::Android.Net.Uri.Parse(uri));
-				}
-				else if (MediaElement.Source.Scheme == "ms-appdata")
-				{
-					string filePath = string.Empty;
-
-					if (MediaElement.Source.LocalPath.StartsWith("/local"))
+					if (uriSource.Uri.Scheme == "ms-appx")
 					{
-						filePath = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), MediaElement.Source.LocalPath.Substring(7));
+						// video resources should be in the raw folder with Build Action set to AndroidResource
+						string uri = "android.resource://" + Context.PackageName + "/raw/" + uriSource.Uri.LocalPath.Substring(1, uriSource.Uri.LocalPath.LastIndexOf('.') - 1).ToLower();
+						_view.SetVideoURI(global::Android.Net.Uri.Parse(uri));
 					}
-					else if (MediaElement.Source.LocalPath.StartsWith("/temp"))
+					else if (uriSource.Uri.Scheme == "ms-appdata")
 					{
-						filePath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), MediaElement.Source.LocalPath.Substring(6));
+						string filePath = string.Empty;
+
+						if (uriSource.Uri.LocalPath.StartsWith("/local"))
+						{
+							filePath = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), uriSource.Uri.LocalPath.Substring(7));
+						}
+						else if (uriSource.Uri.LocalPath.StartsWith("/temp"))
+						{
+							filePath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), uriSource.Uri.LocalPath.Substring(6));
+						}
+						else
+						{
+							throw new ArgumentException("Invalid Uri", "Source");
+						}
+
+						_view.SetVideoPath(filePath);
+
 					}
 					else
 					{
-						throw new ArgumentException("Invalid Uri", "Source");
+						if (uriSource.Uri.IsFile)
+						{
+							_view.SetVideoPath(uriSource.Uri.AbsolutePath);
+						}
+						else
+						{
+							_view.SetVideoURI(global::Android.Net.Uri.Parse(uriSource.Uri.AbsoluteUri), MediaElement.HttpHeaders);
+						}
 					}
-
-					_view.SetVideoPath(filePath);
-
 				}
 				else
 				{
-					if (MediaElement.Source.IsFile)
+					var fileSource = MediaElement.Source as FileMediaSource;
+					if (fileSource != null)
 					{
-						_view.SetVideoPath(MediaElement.Source.AbsolutePath);
-					}
-					else
-					{
-						_view.SetVideoURI(global::Android.Net.Uri.Parse(MediaElement.Source.AbsoluteUri), MediaElement.HttpHeaders);
+						_view.SetVideoPath(fileSource.File);
 					}
 				}
-
-				
 
 				if (MediaElement.AutoPlay)
 				{

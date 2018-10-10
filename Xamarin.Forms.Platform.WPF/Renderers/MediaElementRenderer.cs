@@ -24,8 +24,7 @@ namespace Xamarin.Forms.Platform.WPF
 					Control.MediaOpened -= ControlMediaOpened;
 					Control.MediaEnded -= ControlMediaEnded;
 					Control.MediaFailed -= ControlMediaFailed;
-				}
-				
+				}			
 			}
 
 			if (e.NewElement != null)
@@ -120,37 +119,51 @@ namespace Xamarin.Forms.Platform.WPF
 			if (Control.Clock != null)
 				Control.Clock = null;
 
-			if (Element.Source.Scheme == "ms-appx")
+			var uriSource = Element.Source as UriMediaSource;
+			if (uriSource != null)
 			{
-				Control.Source = new Uri(Element.Source.ToString().Replace("ms-appx://", "pack://application:,,,"));
-			}
-			else if (Element.Source.Scheme == "ms-appdata")
-			{
-				string filePath = string.Empty;
 
-				if (Element.Source.LocalPath.StartsWith("/local"))
+
+				if (uriSource.Uri.Scheme == "ms-appx")
 				{
-					// WPF doesn't have the concept of an app package local folder so using My Documents as a placeholder
-					filePath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), Element.Source.LocalPath.Substring(7));
+					Control.Source = new Uri(uriSource.Uri.ToString().Replace("ms-appx://", "pack://application:,,,"));
 				}
-				else if (Element.Source.LocalPath.StartsWith("/temp"))
+				else if (uriSource.Uri.Scheme == "ms-appdata")
 				{
-					filePath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), Element.Source.LocalPath.Substring(6));
+					string filePath = string.Empty;
+
+					if (uriSource.Uri.LocalPath.StartsWith("/local"))
+					{
+						// WPF doesn't have the concept of an app package local folder so using My Documents as a placeholder
+						filePath = System.IO.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), uriSource.Uri.LocalPath.Substring(7));
+					}
+					else if (uriSource.Uri.LocalPath.StartsWith("/temp"))
+					{
+						filePath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), uriSource.Uri.LocalPath.Substring(6));
+					}
+					else
+					{
+						throw new ArgumentException("Invalid Uri", "Source");
+					}
+
+					Control.Source = new Uri(filePath);
+				}
+				else if (uriSource.Uri.Scheme == "https")
+				{
+					throw new ArgumentException("HTTPS Not supported on WPF", "Source");
 				}
 				else
 				{
-					throw new ArgumentException("Invalid Uri", "Source");
+					Control.Source = uriSource.Uri;
 				}
-
-				Control.Source = new Uri(filePath);
-			}
-			else if (Element.Source.Scheme == "https")
-			{
-				throw new ArgumentException("HTTPS Not supported on WPF", "Source");
 			}
 			else
 			{
-				Control.Source = Element.Source;
+				var fileSource = Element.Source as FileMediaSource;
+				if(fileSource != null)
+				{
+					Control.Source = new Uri(fileSource.File);
+				}
 			}
 
 			Controller.CurrentState = MediaElementState.Opening;

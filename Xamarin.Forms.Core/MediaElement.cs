@@ -36,7 +36,7 @@ namespace Xamarin.Forms
 		  BindableProperty.Create(nameof(ShowsPlaybackControls), typeof(bool), typeof(MediaElement), false);
 
 		public static readonly BindableProperty SourceProperty =
-		  BindableProperty.Create(nameof(Source), typeof(Uri), typeof(MediaElement));
+		  BindableProperty.Create(nameof(Source), typeof(MediaSource), typeof(MediaElement));
 
 		public static readonly BindableProperty VideoHeightProperty =
 		  BindableProperty.Create(nameof(VideoHeight), typeof(int), typeof(MediaElement));
@@ -88,10 +88,10 @@ namespace Xamarin.Forms
 			set { SetValue(ShowsPlaybackControlsProperty, value); }
 		}
 
-		[TypeConverter(typeof(UriTypeConverter))]
-		public Uri Source
+		[TypeConverter(typeof(MediaSourceConverter))]
+		public MediaSource Source
 		{
-			get { return (Uri)GetValue(SourceProperty); }
+			get { return (MediaSource)GetValue(SourceProperty); }
 			set { SetValue(SourceProperty, value); }
 		}
 
@@ -120,7 +120,6 @@ namespace Xamarin.Forms
 		{
 			get { return (int)GetValue(VideoWidthProperty); }
 		}
-
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public event EventHandler<SeekRequested> SeekRequested;
@@ -223,10 +222,5 @@ namespace Xamarin.Forms
 		TimeSpan Position { get; set; }
 		int VideoHeight { get; set; }
 		int VideoWidth { get; set; }
-	}
-
-	public interface IMediaElementDelegate
-	{
-
 	}
 }
