@@ -49,7 +49,7 @@
     <JavaMaximumHeapSize>1G</JavaMaximumHeapSize>
     <EmbedAssembliesIntoApk>True</EmbedAssembliesIntoApk>
     <AndroidSupportedAbis>armeabi;armeabi-v7a;x86</AndroidSupportedAbis>
-    <Debugger>Xamarin</Debugger>
+    <Debugger>.Net (Xamarin)</Debugger>
     <DevInstrumentationEnabled>True</DevInstrumentationEnabled>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>

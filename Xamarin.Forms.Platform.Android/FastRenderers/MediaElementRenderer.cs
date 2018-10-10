@@ -35,8 +35,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		{
 			_automationPropertiesProvider = new AutomationPropertiesProvider(this);
 			_effectControlProvider = new EffectControlProvider(this);
-
-			Initialize();
 		}
 
 		public VisualElement Element => MediaElement;
@@ -58,10 +56,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			return new SizeRequest(new Size(MeasuredWidth, MeasuredHeight), new Size());
 		}
 
-		void Initialize()
-		{
-		}
-
 		void IViewRenderer.MeasureExactly()
 		{
 			ViewRenderer.MeasureExactly(this, Element, Context);
@@ -70,14 +64,10 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		void IVisualElementRenderer.SetElement(VisualElement element)
 		{
 			if (element == null)
-			{
 				throw new ArgumentNullException(nameof(element));
-			}
 
 			if (!(element is MediaElement))
-			{
 				throw new ArgumentException($"{nameof(element)} must be of type {nameof(MediaElement)}");
-			}
 
 			MediaElement oldElement = MediaElement;
 			MediaElement = (MediaElement)element;
@@ -165,15 +155,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			SetBackgroundColor(Element.BackgroundColor.ToAndroid());
 		}
 
-		void IVisualElementRenderer.UpdateLayout()
-		{
-			var lp = _view.LayoutParameters;
-			lp.Width = Width;
-			lp.Height = Height;
-			_view.LayoutParameters = lp;
+		void IVisualElementRenderer.UpdateLayout() => _tracker?.UpdateLayout();
 
-			_tracker?.UpdateLayout();
-		}
 
 		protected override void Dispose(bool disposing)
 		{
@@ -228,7 +211,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 				_controller = new MediaController(Context);
 				_controller.SetAnchorView(this);
-				_controller.Visibility = e.NewElement.AreTransportControlsEnabled ? ViewStates.Visible : ViewStates.Gone;
+				_controller.Visibility = e.NewElement.ShowsPlaybackControls ? ViewStates.Visible : ViewStates.Gone;
 				_view.SetMediaController(_controller);
 
 				UpdateLayoutParameters();

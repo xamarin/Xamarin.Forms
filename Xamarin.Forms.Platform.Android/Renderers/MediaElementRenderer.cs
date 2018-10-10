@@ -85,7 +85,7 @@ namespace Xamarin.Forms.Platform.Android
 
 				_controller = new MediaController(Context);
 				_controller.SetAnchorView(this);
-				_controller.Visibility = Element.AreTransportControlsEnabled ? ViewStates.Visible : ViewStates.Gone;
+				_controller.Visibility = Element.ShowsPlaybackControls ? ViewStates.Visible : ViewStates.Gone;
 				_view.SetMediaController(_controller);
 
 				Element.SeekRequested += SeekRequested;

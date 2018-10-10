@@ -70,6 +70,7 @@ namespace Xamarin.Forms.Controls
 			var showControlsSwitch = new Switch();
 			showControlsSwitch.SetBinding(Switch.IsToggledProperty, new Binding("ShowsPlaybackControls", BindingMode.TwoWay, source: element));
 
+			
 			var mediaControlStack = new StackLayout();
 			mediaControlStack.Orientation = StackOrientation.Horizontal;
 			mediaControlStack.HorizontalOptions = new LayoutOptions(LayoutAlignment.Center, false);
@@ -77,6 +78,18 @@ namespace Xamarin.Forms.Controls
 			mediaControlStack.Children.Add(pauseButton);
 			mediaControlStack.Children.Add(stopButton);
 			mediaControlStack.Children.Add(showControlsSwitch);
+
+			var aspectFitButton = new Button() { Text = "Aspect Fit" };
+			aspectFitButton.Clicked += (s, e) => { element.Aspect = Aspect.AspectFit; };
+			var aspectFillButton = new Button() { Text = "Aspect Fill" };
+			aspectFillButton.Clicked += (s, e) => { element.Aspect = Aspect.AspectFill; };
+			var fillButton = new Button() { Text = "Fill" };
+			fillButton.Clicked += (s, e) => { element.Aspect = Aspect.Fill; };
+
+			var aspectStack = new StackLayout { Orientation = StackOrientation.Horizontal, HorizontalOptions = new LayoutOptions(LayoutAlignment.Center, false) };
+			aspectStack.Children.Add(aspectFitButton);
+			aspectStack.Children.Add(aspectFillButton);
+			aspectStack.Children.Add(fillButton);
 
 			var stack = new StackLayout();
 			stack.Padding = new Thickness(10);
@@ -87,8 +100,14 @@ namespace Xamarin.Forms.Controls
 			stack.Children.Add(infoStack);
 			stack.Children.Add(positionLabel);
 			stack.Children.Add(mediaControlStack);
+			stack.Children.Add(aspectStack);
 			stack.Children.Add(consoleLabel);
 			Content = stack;	
+		}
+
+		private void AspectFitButton_Clicked(object sender, EventArgs e)
+		{
+			throw new NotImplementedException();
 		}
 
 		void Element_MediaOpened(object sender, EventArgs e)
@@ -125,7 +144,15 @@ namespace Xamarin.Forms.Controls
 		{
 			base.OnAppearing();
 
-			element.Source = new Uri("https://sec.ch9.ms/ch9/5d93/a1eab4bf-3288-4faf-81c4-294402a85d93/XamarinShow_mid.mp4");
+			if(Device.RuntimePlatform == Device.WPF)
+			{
+				// workaround for lack of https support on WPF
+				element.Source = new Uri("http://sec.ch9.ms/ch9/5d93/a1eab4bf-3288-4faf-81c4-294402a85d93/XamarinShow_mid.mp4");
+			}
+			else
+			{
+				element.Source = new Uri("https://sec.ch9.ms/ch9/5d93/a1eab4bf-3288-4faf-81c4-294402a85d93/XamarinShow_mid.mp4");			
+			}
 
 			Device.StartTimer(TimeSpan.FromMilliseconds(100), ()=>{
 				Device.BeginInvokeOnMainThread(() =>
