@@ -106,9 +106,9 @@ namespace Xamarin.Forms.Platform.GTK
 			MessagingCenter.Unsubscribe<Page, AlertArguments>(this, Page.AlertSignalName);
 			MessagingCenter.Unsubscribe<Page, bool>(this, Page.BusySetSignalName);
 
-			DisposeModelAndChildrenRenderers(Page);
 			foreach (var modal in _modals)
 				DisposeModelAndChildrenRenderers(modal);
+			DisposeModelAndChildrenRenderers(Page);
 
 			PlatformRenderer.Dispose();
 		}
