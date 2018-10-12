@@ -171,19 +171,13 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (model.IsSet(InputView.IsSpellCheckEnabledProperty))
 				{
-					if ((edit.InputType & InputTypes.TextFlagNoSuggestions) != InputTypes.TextFlagNoSuggestions)
-					{
-						if (!model.IsSpellCheckEnabled)
-							edit.InputType = edit.InputType | InputTypes.TextFlagNoSuggestions;
-					}
+					if (!model.IsSpellCheckEnabled)
+						edit.InputType = edit.InputType | InputTypes.TextFlagNoSuggestions;					
 				}
 				if (model.IsSet(Editor.IsTextPredictionEnabledProperty))
 				{
-					if ((edit.InputType & InputTypes.TextFlagNoSuggestions) != InputTypes.TextFlagNoSuggestions)
-					{
-						if (!model.IsTextPredictionEnabled)
-							edit.InputType = edit.InputType | InputTypes.TextFlagNoSuggestions;
-					}
+					if (!model.IsTextPredictionEnabled)
+						edit.InputType = edit.InputType | InputTypes.TextFlagNoSuggestions;					
 				}
 			}
 
