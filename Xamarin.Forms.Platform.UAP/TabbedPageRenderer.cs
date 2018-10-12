@@ -232,7 +232,7 @@ namespace Xamarin.Forms.Platform.UWP
 			else if (e.PropertyName == Specifics.HeaderIconsSizeProperty.PropertyName)
 				UpdateBarIcons();
 			else if (e.PropertyName == PageSpecifics.ToolbarPlacementProperty.PropertyName)
-				UpdateToolbarPlacement();			
+				UpdateToolbarPlacement();
 		}
 
 		void OnLoaded(object sender, RoutedEventArgs args)

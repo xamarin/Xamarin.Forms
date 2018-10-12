@@ -56,7 +56,6 @@ namespace Xamarin.Forms.Platform.UWP
 
 		TaskCompletionSource<CommandBar> _commandBarTcs;
 		Windows.UI.Xaml.Controls.ContentPresenter _presenter;
-		
 
 		public PageControl()
 		{
@@ -194,7 +193,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}	
 		}
 		
-		private void UpdateToolbarDynamicOverflowEnabled()
+		void UpdateToolbarDynamicOverflowEnabled()
 		{
 			if (_commandBar != null)
 			{
