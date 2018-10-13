@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
+using System.Windows.Controls;
 using System.Windows.Input;
 using WList = System.Windows.Controls.ListView;
 using WpfScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility;
