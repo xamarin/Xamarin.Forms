@@ -1,18 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-
-using Android.App;
-using Android.Content;
-using Android.OS;
-using Android.Runtime;
-using Android.Views;
-using AView = Android.Views.View;
-using Android.Widget;
-using Xamarin.Forms.Internals;
+﻿using Android.Content;
 using Android.Media;
+using Android.Views;
+using Android.Widget;
+using System;
+using System.ComponentModel;
+using Xamarin.Forms.Internals;
+using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android.FastRenderers
 {
@@ -308,7 +301,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 						}
 						else
 						{
-							_view.SetVideoURI(global::Android.Net.Uri.Parse(uriSource.Uri.AbsoluteUri), MediaElement.HttpHeaders);
+							_view.SetVideoURI(global::Android.Net.Uri.Parse(uriSource.Uri.AbsoluteUri));
 						}
 					}
 				}
@@ -338,12 +331,12 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		void MediaPlayer.IOnCompletionListener.OnCompletion(MediaPlayer mp)
 		{
 			Controller.Position = TimeSpan.FromMilliseconds(_mediaPlayer.CurrentPosition);
-			MediaElement.OnMediaEnded();
+			Controller.OnMediaEnded();
 		}
 
 		void MediaPlayer.IOnPreparedListener.OnPrepared(MediaPlayer mp)
 		{
-			MediaElement?.RaiseMediaOpened();
+			Controller.OnMediaOpened();
 
 			UpdateLayoutParameters();
 
@@ -438,7 +431,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		bool MediaPlayer.IOnErrorListener.OnError(MediaPlayer mp, MediaError what, int extra)
 		{
-			MediaElement.OnMediaFailed();
+			Controller.OnMediaFailed();
 			return false;
 		}
 		

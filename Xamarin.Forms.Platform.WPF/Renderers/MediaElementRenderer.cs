@@ -190,7 +190,7 @@ namespace Xamarin.Forms.Platform.WPF
 
 		void ControlMediaFailed(object sender, ExceptionRoutedEventArgs e)
 		{
-			Element.OnMediaFailed();
+			Controller.OnMediaFailed();
 		}
 
 		void ControlMediaEnded(object sender, RoutedEventArgs e)
@@ -205,7 +205,7 @@ namespace Xamarin.Forms.Platform.WPF
 			{
 				_requestedState = MediaElementState.Stopped;
 				Controller.CurrentState = MediaElementState.Stopped;
-				Element.OnMediaEnded();
+				Controller.OnMediaEnded();
 			}
 
 			Controller.Position = Control.Position;
@@ -216,8 +216,7 @@ namespace Xamarin.Forms.Platform.WPF
 			Controller.Duration = Control.NaturalDuration.HasTimeSpan ? Control.NaturalDuration.TimeSpan : (TimeSpan?)null;
 			Controller.VideoHeight = Control.NaturalVideoHeight;
 			Controller.VideoWidth = Control.NaturalVideoWidth;
-
-			Element?.RaiseMediaOpened();
+			Controller.OnMediaOpened();
 
 			if(Element.AutoPlay)
 			{
@@ -234,7 +233,7 @@ namespace Xamarin.Forms.Platform.WPF
 		void ControlSeekCompleted(object sender, RoutedEventArgs e)
 		{
 			Controller.Position = Control.Position;
-			Element?.RaiseSeekCompleted();
+			Controller.OnSeekCompleted();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
