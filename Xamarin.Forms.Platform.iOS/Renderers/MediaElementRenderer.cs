@@ -61,28 +61,6 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		AVUrlAssetOptions GetOptionsWithHeaders(IDictionary<string, string> headers)
-		{
-			if (headers == null || headers.Count == 0)
-				return null;
-
-			var nativeHeaders = new NSMutableDictionary();
-
-			foreach (var header in headers)
-			{
-				nativeHeaders.Add((NSString)header.Key, (NSString)header.Value);
-			}
-
-			var nativeHeadersKey = (NSString)"AVURLAssetHTTPHeaderFieldsKey";
-
-			var options = new AVUrlAssetOptions(NSDictionary.FromObjectAndKey(
-				nativeHeaders,
-				nativeHeadersKey
-			));
-
-			return options;
-		}
-
 		void UpdateSource()
 		{
 			if (MediaElement.Source != null)
@@ -118,7 +96,7 @@ namespace Xamarin.Forms.Platform.iOS
 					}
 					else
 					{
-						asset = AVUrlAsset.Create(NSUrl.FromString(uriSource.Uri.AbsoluteUri), GetOptionsWithHeaders(MediaElement.HttpHeaders));
+						asset = AVUrlAsset.Create(NSUrl.FromString(uriSource.Uri.AbsoluteUri));
 					}
 				}
 				else
@@ -228,14 +206,14 @@ namespace Xamarin.Forms.Platform.iOS
 				switch (_avPlayerViewController.Player.Status)
 				{
 					case AVPlayerStatus.Failed:
-						MediaElement.OnMediaFailed();
+						Controller.OnMediaFailed();
 						break;
 
 					case AVPlayerStatus.ReadyToPlay:
 						Controller.Duration = TimeSpan.FromSeconds(_avPlayerViewController.Player.CurrentItem.Duration.Seconds);
 						Controller.VideoHeight = (int)_avPlayerViewController.Player.CurrentItem.Asset.NaturalSize.Height;
 						Controller.VideoWidth = (int)_avPlayerViewController.Player.CurrentItem.Asset.NaturalSize.Width;
-						MediaElement?.RaiseMediaOpened();
+						Controller.OnMediaOpened();
 						Controller.Position = Position;
 						break;
 				}
@@ -268,7 +246,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				try
 				{
-					Device.BeginInvokeOnMainThread(MediaElement.OnMediaEnded);
+					Device.BeginInvokeOnMainThread(Controller.OnMediaEnded);
 				}
 				catch { }
 			}
@@ -387,7 +365,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (finished)
 			{
-				MediaElement.RaiseSeekCompleted();
+				Controller.OnSeekCompleted();
 			}
 		}
 

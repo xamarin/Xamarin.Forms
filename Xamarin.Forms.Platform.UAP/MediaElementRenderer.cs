@@ -128,14 +128,14 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void ControlMediaFailed(object sender, ExceptionRoutedEventArgs e)
 		{
-			Element?.OnMediaFailed();
+			Controller?.OnMediaFailed();
 		}
 
 		void ControlMediaEnded(object sender, RoutedEventArgs e)
 		{
 			Controller.Position = Control.Position;
 			Controller.CurrentState = MediaElementState.Stopped;
-			Element?.OnMediaEnded();
+			Controller.OnMediaEnded();
 		}
 
 		void ControlMediaOpened(object sender, RoutedEventArgs e)
@@ -144,7 +144,7 @@ namespace Xamarin.Forms.Platform.UWP
 			Controller.VideoHeight = Control.NaturalVideoHeight;
 			Controller.VideoWidth = Control.NaturalVideoWidth;
 
-			Element?.RaiseMediaOpened();
+			Controller.OnMediaOpened();
 		}
 
 	
@@ -214,7 +214,7 @@ namespace Xamarin.Forms.Platform.UWP
 		void ControlSeekCompleted(object sender, RoutedEventArgs e)
 		{
 			Controller.Position = ((Windows.UI.Xaml.Controls.MediaElement)sender).Position;
-			Element?.RaiseSeekCompleted();
+			Controller.OnSeekCompleted();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)

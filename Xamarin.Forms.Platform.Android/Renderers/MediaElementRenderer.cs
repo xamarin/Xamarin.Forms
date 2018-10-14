@@ -177,7 +177,7 @@ namespace Xamarin.Forms.Platform.Android
 						}
 						else
 						{
-							_view.SetVideoURI(global::Android.Net.Uri.Parse(uriSource.Uri.AbsoluteUri), Element.HttpHeaders);
+							_view.SetVideoURI(global::Android.Net.Uri.Parse(uriSource.Uri.AbsoluteUri));
 						}
 					}
 				}
@@ -294,12 +294,12 @@ namespace Xamarin.Forms.Platform.Android
 
 		void MediaPlayer.IOnCompletionListener.OnCompletion(MediaPlayer mp)
 		{
-			Element.OnMediaEnded();
+			Controller?.OnMediaEnded();
 		}
 
 		void MediaPlayer.IOnPreparedListener.OnPrepared(MediaPlayer mp)
 		{
-			Element?.RaiseMediaOpened();
+			Controller.OnMediaOpened();
 
 			UpdateLayoutParameters();
 
