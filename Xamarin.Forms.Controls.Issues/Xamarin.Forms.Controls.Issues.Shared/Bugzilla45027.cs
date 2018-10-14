@@ -13,6 +13,9 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Bugzilla, 45027, "App crashes when double tapping on ToolbarItem or MenuItem very quickly", PlatformAffected.Android)]
 	public class Bugzilla45027 : TestContentPage // or TestMasterDetailPage, etc ...
 	{
+		const string TOOLBAR_ACTION_TEXT = "Action";
+		const string TOOLBAR_DELETE_TEXT = "Delete";
+
 		protected override void Init()
 		{
 			var list = new List<int>();
@@ -48,11 +51,11 @@ namespace Xamarin.Forms.Controls.Issues
 						},
 						ContextActions = { new MenuItem
 						{
-							Text = "Action"
+							Text = TOOLBAR_ACTION_TEXT
 						},
 						new MenuItem
 						{
-							Text = "Delete",
+							Text = TOOLBAR_DELETE_TEXT,
 							IsDestructive = true
 						} }
 					};
@@ -62,5 +65,22 @@ namespace Xamarin.Forms.Controls.Issues
 
 			Content = stackLayout;
 		}
+
+#if UITEST
+		[Test]
+		public void Bugzilla45027Test()
+		{
+			var firstItemList = "0";
+			RunningApp.WaitForElement(q => q.Marked(firstItemList));
+
+			RunningApp.TouchAndHold(q => q.Marked(firstItemList));
+			RunningApp.WaitForElement(q => q.Marked(TOOLBAR_ACTION_TEXT));
+			RunningApp.DoubleTap(q => q.Marked(TOOLBAR_ACTION_TEXT));
+
+			RunningApp.TouchAndHold(q => q.Marked(firstItemList));
+			RunningApp.WaitForElement(q => q.Marked(TOOLBAR_DELETE_TEXT));
+			RunningApp.DoubleTap(q => q.Marked(TOOLBAR_DELETE_TEXT));
+		}
+#endif
 	}
 }
