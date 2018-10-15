@@ -2,9 +2,9 @@
 {
 	internal class SnapPointsCodeGallery : ContentPage
 	{
-		public SnapPointsCodeGallery(ItemsLayoutOrientation orientation)
+		public SnapPointsCodeGallery(ItemsLayout itemsLayout)
 		{
-			Title = $"Snap Points (Code, {orientation} List)";
+			Title = $"Snap Points (Code, {itemsLayout})";
 
 			var layout = new Grid
 			{
@@ -18,12 +18,8 @@
 				}
 			};
 
-			var itemsLayout =
-				new ListItemsLayout(orientation)
-				{
-					SnapPointsType = SnapPointsType.None,
-					SnapPointsAlignment = SnapPointsAlignment.Start
-				};
+			itemsLayout.SnapPointsAlignment = SnapPointsAlignment.Start;
+			itemsLayout.SnapPointsType = SnapPointsType.None;
 
 			var itemTemplate = ExampleTemplates.SnapPointsTemplate();
 

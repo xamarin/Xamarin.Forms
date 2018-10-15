@@ -19,9 +19,13 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 					{
 						descriptionLabel,
 						GalleryBuilder.NavButton("Snap Points (Code, Horizontal List)", () =>
-							new SnapPointsCodeGallery(ItemsLayoutOrientation.Horizontal), Navigation),
+							new SnapPointsCodeGallery(ListItemsLayout.HorizontalList as ItemsLayout), Navigation),
 						GalleryBuilder.NavButton("Snap Points (Code, Vertical List)", () =>
-							new SnapPointsCodeGallery(ItemsLayoutOrientation.Vertical), Navigation)
+							new SnapPointsCodeGallery(ListItemsLayout.VerticalList as ItemsLayout), Navigation),
+						GalleryBuilder.NavButton("Snap Points (Code, Horizontal Grid)", () =>
+							new SnapPointsCodeGallery(new GridItemsLayout(2, ItemsLayoutOrientation.Horizontal)), Navigation),
+						GalleryBuilder.NavButton("Snap Points (Code, Vertical Grid)", () =>
+							new SnapPointsCodeGallery(new GridItemsLayout(2, ItemsLayoutOrientation.Vertical)), Navigation),
 					}
 				}
 			};
