@@ -23,6 +23,12 @@ namespace Xamarin.Forms.Platform.Android
 				return null;
 			}
 
+			int span = 1;
+			if (layoutManager is GridLayoutManager gridLayoutManager)
+			{
+				span = gridLayoutManager.SpanCount;
+			}
+
 			// Find the first visible item; may be only partially on screen
 			var firstVisibleItemPosition = linearLayoutManager.FindFirstVisibleItemPosition();
 
@@ -34,8 +40,8 @@ namespace Xamarin.Forms.Platform.Android
 			// Get the view itself
 			var firstView = linearLayoutManager.FindViewByPosition(firstVisibleItemPosition);
 
-			// If the first visible item is the last one in the collection, snap to it
-			if(firstVisibleItemPosition == linearLayoutManager.ItemCount - 1)
+			// If the first visible item is in the last row/col of the collection, snap to it
+			if(firstVisibleItemPosition >= linearLayoutManager.ItemCount - span)
 			{
 				return firstView;
 			}
@@ -46,9 +52,16 @@ namespace Xamarin.Forms.Platform.Android
 				return firstView;
 			}
 
-			// The first item is mostly off screen, and it's not the last item in the collection
-			// So we'll snap to the start of the next item
-			return linearLayoutManager.FindViewByPosition(firstVisibleItemPosition + 1);
+			// The first item is mostly off screen, and it's not in the last row/col of the collection
+			// So we'll snap to the start of an item in the next row/col
+			var nextPos = firstVisibleItemPosition + span;
+			if (nextPos >= linearLayoutManager.ItemCount)
+			{
+				// If we were near the end of the collection, then jumping by "span" may have put us past the end
+				nextPos = linearLayoutManager.ItemCount - 1;
+			}
+
+			return linearLayoutManager.FindViewByPosition(nextPos);
 		}
 
 		protected override int VisiblePortion(AView view, OrientationHelper orientationHelper, bool rtl)
