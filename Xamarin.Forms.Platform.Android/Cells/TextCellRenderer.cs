@@ -27,6 +27,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void OnCellPropertyChanged(object sender, PropertyChangedEventArgs args)
 		{
+			base.OnCellPropertyChanged(sender, args);
 			if (args.PropertyName == TextCell.TextProperty.PropertyName || args.PropertyName == TextCell.TextColorProperty.PropertyName)
 				UpdateMainText();
 			else if (args.PropertyName == TextCell.DetailProperty.PropertyName || args.PropertyName == TextCell.DetailColorProperty.PropertyName)

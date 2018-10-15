@@ -23,6 +23,11 @@ namespace Xamarin.Forms.Platform.iOS
 				tvc.KeyboardDoneButtonPressed -= OnKeyBoardDoneButtonPressed;
 			}
 
+			tvc.SelectedBackgroundView = new UIView()
+			{
+				BackgroundColor = item.SelectedItemBackgroundColor.ToUIColor()
+			};
+
 			SetRealCell(item, tvc);
 
 			tvc.Cell = item;

@@ -21,6 +21,11 @@ namespace Xamarin.Forms.Platform.iOS
 			else
 				cell.ViewCell.PropertyChanged -= ViewCellPropertyChanged;
 
+			cell.SelectedBackgroundView = new UIView()
+			{
+				BackgroundColor = item.SelectedItemBackgroundColor.ToUIColor()
+			};
+
 			viewCell.PropertyChanged += ViewCellPropertyChanged;
 			cell.ViewCell = viewCell;
 

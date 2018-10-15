@@ -13,6 +13,15 @@ namespace Xamarin.Forms
 		public const int DefaultCellHeight = 40;
 		public static readonly BindableProperty IsEnabledProperty = BindableProperty.Create("IsEnabled", typeof(bool), typeof(Cell), true, propertyChanged: OnIsEnabledPropertyChanged);
 
+		public static readonly BindableProperty SelectedItemBackgroundColorProperty =
+		BindableProperty.Create(nameof(SelectedItemBackgroundColor), typeof(Color), typeof(Cell), Color.Default);
+
+		public Color SelectedItemBackgroundColor
+		{
+			get { return (Color)GetValue(SelectedItemBackgroundColorProperty); }
+			set { SetValue(SelectedItemBackgroundColorProperty, value); }
+		}
+
 		ObservableCollection<MenuItem> _contextActions;
 
 		double _height = -1;

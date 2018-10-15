@@ -20,6 +20,10 @@ namespace Xamarin.Forms.Platform.iOS
 				uiSwitch = tvc.AccessoryView as UISwitch;
 				tvc.PropertyChanged -= HandlePropertyChanged;
 			}
+			tvc.SelectedBackgroundView = new UIView()
+			{
+				BackgroundColor = item.SelectedItemBackgroundColor.ToUIColor()
+			};
 
 			SetRealCell(item, tvc);
 

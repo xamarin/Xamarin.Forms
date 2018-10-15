@@ -7,6 +7,7 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		static readonly Color DefaultDetailColor = new Color(.32, .4, .57);
 		static readonly Color DefaultTextColor = Color.Black;
+		UIColor defaultSelectedItemColor;
 
 		public override UITableViewCell GetCell(Cell item, UITableViewCell reusableCell, UITableView tv)
 		{
@@ -18,6 +19,15 @@ namespace Xamarin.Forms.Platform.iOS
 				tvc.PropertyChanged -= HandleCellPropertyChanged;
 
 			SetRealCell(item, tvc);
+
+			if (item.SelectedItemBackgroundColor != Color.Default)
+			{
+				defaultSelectedItemColor = tvc.SelectedBackgroundView.BackgroundColor;
+				tvc.SelectedBackgroundView = new UIView()
+				{
+					BackgroundColor = item.SelectedItemBackgroundColor.ToUIColor()
+				};
+			}
 
 			tvc.Cell = textCell;
 			tvc.PropertyChanged = HandleCellPropertyChanged;
@@ -59,14 +69,28 @@ namespace Xamarin.Forms.Platform.iOS
 				tvc.DetailTextLabel.TextColor = textCell.DetailColor.ToUIColor(DefaultTextColor);
 			else if (args.PropertyName == Cell.IsEnabledProperty.PropertyName)
 				UpdateIsEnabled(tvc, textCell);
+			else if (args.PropertyName == TextCell.SelectedItemBackgroundColorProperty.PropertyName)
+				UpdateSelectedItemBackgroundColor(textCell, tvc);
 
 			HandlePropertyChanged(tvc, args);
 		}
 
 		protected virtual void HandlePropertyChanged(object sender, PropertyChangedEventArgs args)
 		{
-			//keeping this method for backwards compatibility 
+			//keeping this method for backwards compatibility
 			//as the the sender for this method is a CellTableViewCell
+
+		}
+
+		private void UpdateSelectedItemBackgroundColor(TextCell cell, CellTableViewCell target)
+		{
+			if (cell.SelectedItemBackgroundColor == Color.Default)
+				target.SelectedBackgroundView.BackgroundColor = defaultSelectedItemColor;
+			else
+				target.SelectedBackgroundView = new UIView()
+				{
+					BackgroundColor = cell.SelectedItemBackgroundColor.ToUIColor()
+				};
 		}
 
 		static void UpdateIsEnabled(CellTableViewCell cell, TextCell entryCell)

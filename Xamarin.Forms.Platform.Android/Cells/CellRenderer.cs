@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using Android.Content;
+using Android.Graphics.Drawables;
 using Android.Views;
 using Android.Widget;
 using AView = Android.Views.View;
@@ -20,6 +21,9 @@ namespace Xamarin.Forms.Platform.Android
 		public View ParentView { get; set; }
 
 		protected Cell Cell { get; set; }
+		private AView _cellCore;
+		private Drawable _unselectedBackground;
+		private bool _selected;
 
 		public AView GetCell(Cell item, AView convertView, ViewGroup parent, Context context)
 		{
@@ -49,6 +53,9 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			AView view = GetCellCore(item, convertView, parent, context);
+			_selected = false;
+			_unselectedBackground = view.Background;
+			_cellCore = view;
 
 			WireUpForceUpdateSizeRequested(item, view);
 
@@ -86,6 +93,20 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void OnCellPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			if (e.PropertyName == "IsSelected")
+			{
+				_selected = !_selected;
+
+				if (_selected)
+				{
+					var basecell = (Cell)sender;
+					_cellCore.SetBackgroundColor(basecell.SelectedItemBackgroundColor.ToAndroid());
+				}
+				else
+				{
+					_cellCore.SetBackground(_unselectedBackground);
+				}
+			}
 		}
 
 		protected void WireUpForceUpdateSizeRequested(Cell cell, AView nativeCell)

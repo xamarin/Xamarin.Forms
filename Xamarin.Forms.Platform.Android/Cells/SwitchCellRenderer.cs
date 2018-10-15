@@ -30,6 +30,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void OnCellPropertyChanged(object sender, PropertyChangedEventArgs args)
 		{
+			base.OnCellPropertyChanged(sender, args);
 			if (args.PropertyName == SwitchCell.TextProperty.PropertyName)
 				UpdateText();
 			else if (args.PropertyName == SwitchCell.OnProperty.PropertyName)

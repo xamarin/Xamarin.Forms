@@ -390,7 +390,7 @@ namespace Xamarin.Forms.Controls
 				_pages.Insert(1, new GalleryPageFactory(() => new TitleView(true), "TitleView"));
 			}
 
-			var template = new DataTemplate(typeof(TextCell));
+			var template = new DataTemplate(() => { return new TextCell { SelectedItemBackgroundColor = Color.Red }; });
 			template.SetBinding(TextCell.TextProperty, "Title");
 
 			BindingContext = _pages;
