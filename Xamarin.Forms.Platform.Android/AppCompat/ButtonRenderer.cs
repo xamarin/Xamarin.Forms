@@ -12,6 +12,7 @@ using AView = Android.Views.View;
 using AMotionEvent = Android.Views.MotionEvent;
 using AMotionEventActions = Android.Views.MotionEventActions;
 using static System.String;
+using Xamarin.Forms.Platform.Android.FastRenderers;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
@@ -25,6 +26,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		bool _isDisposed;
 		int _imageHeight = -1;
 		Thickness _paddingDeltaPix = new Thickness();
+		string _defaultContentDescription;
 
 		public ButtonRenderer(Context context) : base(context)
 		{
@@ -136,6 +138,14 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 				UpdateAll();
 			}
+		}
+
+		protected override void SetContentDescription()
+		{
+			if (_defaultContentDescription == null)
+				_defaultContentDescription = Control.ContentDescription;
+			var value = AutomationPropertiesProvider.ConcatenateNameAndHelpText(Element);
+			Control.ContentDescription = !IsNullOrWhiteSpace(value) ? value : _defaultContentDescription;
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
