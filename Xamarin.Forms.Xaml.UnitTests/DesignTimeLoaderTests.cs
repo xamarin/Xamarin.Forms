@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		}
 
 		[Test]
-		public void ContenPageWithMissingClass()
+		public void ContentPageWithMissingClass()
 		{
 			var xaml = @"
 				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
@@ -47,7 +47,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		}
 
 		[Test]
-		public void ContenPageWithMissingType()
+		public void ContentPageWithMissingType()
 		{
 			XamlLoader.FallbackTypeResolver = (p, type) => type ?? typeof(MockView);
 
@@ -63,5 +63,107 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			var page = (ContentPage) XamlLoader.Create(xaml, true);
 			Assert.That(page.Content, Is.TypeOf<MockView>());
 		}
+
+		[Test]
+		public void MissingTypeWithKnownProperty()
+		{
+			XamlLoader.FallbackTypeResolver = (p, type) => type ?? typeof(Button);
+
+			var xaml = @"
+				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+					xmlns:local=""clr-namespace:MissingNamespace;assembly=MissingAssembly""
+					xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+					<ContentPage.Content>
+						<local:MyCustomButton BackgroundColor=""Red"" />
+					</ContentPage.Content>
+				</ContentPage>";
+
+			var page = (ContentPage)XamlLoader.Create(xaml, true);
+			Assert.That(page.Content, Is.TypeOf<Button>());
+			Assert.That(page.Content.BackgroundColor, Is.EqualTo(new Color(1,0,0)));
+		}
+
+		[Test]
+		public void MissingTypeWithUnknownProperty()
+		{
+			XamlLoader.FallbackTypeResolver = (p, type) => type ?? typeof(Button);
+
+			var xaml = @"
+				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+					xmlns:local=""clr-namespace:MissingNamespace;assembly=MissingAssembly""
+					xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+					<ContentPage.Content>
+						<local:MyCustomButton MyColor=""Red"" />
+					</ContentPage.Content>
+				</ContentPage>";
+
+			var page = (ContentPage)XamlLoader.Create(xaml, true);
+			Assert.That(page.Content, Is.TypeOf<Button>());
+		}
+
+		[Test]
+		public void ExplicitStyleAppliedToMissingType()
+		{
+			XamlLoader.FallbackTypeResolver = (p, type) => type ?? typeof(Button);
+
+			var xaml = @"
+				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+					xmlns:local=""clr-namespace:MissingNamespace;assembly=MissingAssembly""
+					xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml"">
+					<ContentPage.Resources>
+						<Style x:Key=""Test"" TargetType=""local:MyCustomButton"">
+							<Setter Property=""BackgroundColor"" Value=""Red"" />
+						</Style>
+					</ContentPage.Resources>
+					<local:MyCustomButton Style=""{StaticResource Test}"" />
+				</ContentPage>";
+
+			var page = (ContentPage)XamlLoader.Create(xaml, true);
+			Assert.That(page.Content, Is.TypeOf<Button>());
+			Assert.That(page.Content.BackgroundColor, Is.EqualTo(new Color(1, 0, 0)));
+		}
+
+		[Test]
+		public void ImplicitStyleAppliedToMissingType()
+		{
+			XamlLoader.FallbackTypeResolver = (p, type) => type ?? typeof(Button);
+
+			var xaml = @"
+				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+					xmlns:local=""clr-namespace:MissingNamespace;assembly=MissingAssembly"">
+					<ContentPage.Resources>
+						<Style TargetType=""local:MyCustomButton"">
+							<Setter Property=""BackgroundColor"" Value=""Red"" />
+						</Style>
+					</ContentPage.Resources>
+					<local:MyCustomButton />
+				</ContentPage>";
+
+			var page = (ContentPage)XamlLoader.Create(xaml, true);
+			Assert.That(page.Content, Is.TypeOf<Button>());
+			Assert.That(page.Content.BackgroundColor, Is.EqualTo(new Color(1, 0, 0)));
+		}
+
+		[Test]
+		public void ImplicitStyleNotAppliedToFallbackType()
+		{
+			XamlLoader.FallbackTypeResolver = (p, type) => type ?? typeof(Button);
+
+			var xaml = @"
+				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+					xmlns:local=""clr-namespace:MissingNamespace;assembly=MissingAssembly"">
+					<ContentPage.Resources>
+						<Style TargetType=""Button"">
+							<Setter Property=""BackgroundColor"" Value=""Red"" />
+						</Style>
+					</ContentPage.Resources>
+					<local:MyCustomButton />
+				</ContentPage>";
+
+			var page = (ContentPage)XamlLoader.Create(xaml, true);
+			Assert.That(page.Content, Is.TypeOf<Button>());
+			Assert.That(page.Content.BackgroundColor, Is.Not.EqualTo(new Color(1, 0, 0)));
+		}
+
 	}
 }
