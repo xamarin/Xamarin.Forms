@@ -209,6 +209,7 @@ namespace Xamarin.Forms.Platform.GTK
 		{
 			foreach (var child in _toolbarSection.Children)
 			{
+				child.Destroy();
 				_toolbarSection.Remove(child);
 			}
 
