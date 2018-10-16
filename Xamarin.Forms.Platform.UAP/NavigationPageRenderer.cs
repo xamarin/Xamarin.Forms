@@ -558,10 +558,10 @@ namespace Xamarin.Forms.Platform.UWP
 
 			// If the container TitleView gets initialized before the MDP TitleView it causes the 
 			// MDP TitleView to not render correctly
-			if (_parentMasterDetailPage != null && Platform.GetRenderer(_parentMasterDetailPage) is ITitleViewProvider parent)
+			if (_parentMasterDetailPage != null)
 			{
-				_container.TitleView = null;
-				parent.TitleView = TitleView;
+				if (Platform.GetRenderer(_parentMasterDetailPage) is ITitleViewProvider parent)
+					parent.TitleView = TitleView;
 			}
 			else if (_parentMasterDetailPage == null)
 				_container.TitleView = TitleView;
