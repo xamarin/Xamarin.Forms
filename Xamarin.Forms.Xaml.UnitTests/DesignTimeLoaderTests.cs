@@ -165,5 +165,50 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.That(page.Content.BackgroundColor, Is.Not.EqualTo(new Color(1, 0, 0)));
 		}
 
+		[Test]
+		public void UnknownGenericType()
+		{
+			XamlLoader.FallbackTypeResolver = (p, type) => type ?? typeof(MockView);
+
+			var xaml = @"
+				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+					xmlns:local=""clr-namespace:MissingNamespace;assembly=MissingAssembly""
+					xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml"">
+					<local:MyCustomButton x:TypeArguments=""local:MyCustomType"" />
+				 </ContentPage>";
+
+			var page = (ContentPage)XamlLoader.Create(xaml, true);
+			Assert.That(page.Content, Is.TypeOf<MockView>());
+		}
+
+		[Test]
+		public void UnknownMarkupExtensionOnUnknownType()
+		{
+			XamlLoader.FallbackTypeResolver = (p, type) => type ?? typeof(MockView);
+
+			var xaml = @"
+				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+					xmlns:local=""clr-namespace:MissingNamespace;assembly=MissingAssembly"">
+					<local:MyCustomButton Bar=""{local:Foo}"" />
+				</ContentPage>";
+
+			var page = (ContentPage)XamlLoader.Create(xaml, true);
+			Assert.That(page.Content, Is.TypeOf<MockView>());
+		}
+
+		[Test]
+		public void UnknownMarkupExtensionKnownType()
+		{
+			XamlLoader.FallbackTypeResolver = (p, type) => type ?? typeof(MockView);
+
+			var xaml = @"
+				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+					xmlns:local=""clr-namespace:MissingNamespace;assembly=MissingAssembly"">
+					<Button Style=""{local:Foo}"" />
+				</ContentPage>";
+
+			var page = (ContentPage)XamlLoader.Create(xaml, true);
+			Assert.That(page.Content, Is.TypeOf<Button>());
+		}
 	}
 }
