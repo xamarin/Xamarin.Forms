@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Android.Animation;
 using Android.Content;
 using Android.Graphics;
+using Android.Runtime;
 using Android.Views;
 using Android.Widget;
 using Xamarin.Forms.Internals;
@@ -334,7 +335,6 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				return;
 			}
-
 			_isEnabled = Element.IsEnabled;
 		}
 
@@ -378,64 +378,59 @@ namespace Xamarin.Forms.Platform.Android
 				x = (int)context.ToPixels(itemPosition.X);
 				y = (int)context.ToPixels(itemPosition.Y);
 			}
-			if (e.ShouldAnimate)
+
+			if (_hScrollView != null)
 			{
-				ValueAnimator animator = ValueAnimator.OfFloat(0f, 1f);
-				animator.SetDuration(1000);
-				animator.Update += (o, animatorUpdateEventArgs) =>
-				{
-					var v = (double)animatorUpdateEventArgs.Animation.AnimatedValue;
-					int distX = GetDistance(currentX, x, v);
-					int distY = GetDistance(currentY, y, v);
-
-					if (_view == null)
-					{
-						// This is probably happening because the page with this Scroll View
-						// was popped off the stack during animation
-						animator.Cancel();
-						return;
-					}
-
-					switch (_view.Orientation)
-					{
-						case ScrollOrientation.Horizontal:
-							_hScrollView.ScrollTo(distX, distY);
-							break;
-						case ScrollOrientation.Vertical:
-							ScrollTo(distX, distY);
-							break;
-						default:
-							_hScrollView.ScrollTo(distX, distY);
-							ScrollTo(distX, distY);
-							break;
-					}
-				};
-				animator.AnimationEnd += delegate
-				{
-					if (Controller == null)
-						return;
-					Controller.SendScrollFinished();
-				};
-
-				animator.Start();
+				_hScrollView.SmoothScrollingEnabled = true;
 			}
-			else
+			SmoothScrollingEnabled = true;
+
+			var animated = e.ShouldAnimate;
+			switch (_view.Orientation)
 			{
-				switch (_view.Orientation)
-				{
-					case ScrollOrientation.Horizontal:
-						_hScrollView.ScrollTo(x, y);
+				case ScrollOrientation.Horizontal:
+					if (animated)
+					{
+						ExecuteAsRunnable(() => _hScrollView?.SmoothScrollTo(x, y));
 						break;
-					case ScrollOrientation.Vertical:
-						ScrollTo(x, y);
+					}
+					_hScrollView?.ScrollTo(x, y);
+					break;
+
+				case ScrollOrientation.Vertical:
+					if (animated)
+					{
+						ExecuteAsRunnable(() => SmoothScrollTo(x, y));
 						break;
-					default:
-						_hScrollView.ScrollTo(x, y);
-						ScrollTo(x, y);
+					}
+					ScrollTo(x, y);
+					break;
+
+				default:
+					if (animated)
+					{
+						ExecuteAsRunnable(() => _hScrollView?.SmoothScrollTo(x, y));
+						ExecuteAsRunnable(() => SmoothScrollTo(x, y));
 						break;
-				}
-				Controller.SendScrollFinished();
+					}
+					_hScrollView?.ScrollTo(x, y);
+					ScrollTo(x, y);
+					break;
 			}
+			if (animated)
+			{
+				await Task.Delay(100); // we can't await SmoothScrollTo
+			}
+			Controller.SendScrollFinished();
+		}
+
+		void ExecuteAsRunnable(Action action)
+		{
+			if(action == null)
+			{
+				return;
+			}
+			new Java.Lang.Runnable(action).Run();
 		}
 
 		void IVisualElementRenderer.SetLabelFor(int? id)
