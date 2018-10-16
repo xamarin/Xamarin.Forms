@@ -97,7 +97,6 @@ namespace Xamarin.Forms.Xaml
 			}
 		}
 
-		[Obsolete ("Use the XamlFileProvider to provide xaml files. We will remove this when Cycle 8 hits Stable.")]
 		public static object Create (string xaml, bool doNotThrow = false)
 		{
 			object inflatedView = null;
