@@ -347,8 +347,7 @@ namespace Xamarin.Forms.Xaml
 			}
 
 			if (lookupAssemblies.Count == 0) {
-				string ns, asmstring, _;
-				XmlnsHelper.ParseXmlns(namespaceURI, out _, out ns, out asmstring, out _);
+				XmlnsHelper.ParseXmlns(namespaceURI, out _, out string ns, out string asmstring, out _);
 				lookupAssemblies.Add(new XmlnsDefinitionAttribute(namespaceURI, ns) {
 					AssemblyName = asmstring ?? currentAssembly.FullName
 				});
@@ -368,21 +367,21 @@ namespace Xamarin.Forms.Xaml
 			}
 
 			Type type = null;
-			foreach (var asm in lookupAssemblies) {
-				foreach (var name in lookupNames)
-					if ((type = Type.GetType($"{asm.ClrNamespace}.{name}, {asm.AssemblyName}")) != null)
-						break;
-				if (type != null)
+
+			IList<(string clrNamespace, string typeName, string assemblyName, string xmlNamespace)> potentialTypes = new List<(string, string, string, string)>();
+			for (var i = 0; i < lookupAssemblies.Count; i++)
+				for (var j = 0; j < lookupNames.Count; j++)
+					potentialTypes.Add((lookupAssemblies[i].ClrNamespace, lookupNames[j], lookupAssemblies[i].AssemblyName, lookupAssemblies[i].XmlNamespace));
+
+			for (var i = 0; i < potentialTypes.Count; i++)
+				if ((type = Type.GetType($"{potentialTypes[i].clrNamespace}.{potentialTypes[i].typeName}, {potentialTypes[i].assemblyName}")) != null)
 					break;
-			}
 
 			if (type != null && typeArguments != null)
 			{
 				XamlParseException innerexception = null;
-				var args = typeArguments.Select(delegate(XmlType xmltype)
-				{
-					XamlParseException xpe;
-					var t = GetElementType(xmltype, xmlInfo, currentAssembly, out xpe);
+				var args = typeArguments.Select(delegate(XmlType xmltype) {
+					var t = GetElementType(xmltype, xmlInfo, currentAssembly, out XamlParseException xpe);
 					if (xpe != null)
 					{
 						innerexception = xpe;
@@ -397,6 +396,9 @@ namespace Xamarin.Forms.Xaml
 				}
 				type = type.MakeGenericType(args);
 			}
+
+			if (XamlLoader.FallbackTypeResolver != null)
+				type = XamlLoader.FallbackTypeResolver(potentialTypes, type);
 
 			if (type == null)
 				exception = new XamlParseException($"Type {elementName} not found in xmlns {namespaceURI}", xmlInfo);
