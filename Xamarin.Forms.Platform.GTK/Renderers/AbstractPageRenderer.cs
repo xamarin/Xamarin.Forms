@@ -54,11 +54,6 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 			VisualElement oldElement = Element;
 			Element = element;
 
-			if (element != null)
-			{
-				element.PropertyChanged += _propertyChangedHandler;
-			}
-
 			OnElementChanged(new VisualElementChangedEventArgs(oldElement, element));
 
 			EffectUtilities.RegisterEffectControlProvider(this, oldElement, element);
