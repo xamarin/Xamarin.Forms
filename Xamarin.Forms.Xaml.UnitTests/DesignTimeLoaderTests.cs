@@ -1,7 +1,4 @@
-﻿using System;
-
-using NUnit.Framework;
-using Xamarin.Forms;
+﻿using NUnit.Framework;
 using Xamarin.Forms.Core.UnitTests;
 
 namespace Xamarin.Forms.Xaml.UnitTests
@@ -145,7 +142,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		}
 
 		[Test]
-		public void ImplicitStyleNotAppliedToFallbackType()
+		public void StyleTargetingRealTypeNotAppliedToUnknownType()
 		{
 			XamlLoader.FallbackTypeResolver = (p, type) => type ?? typeof(Button);
 
@@ -162,6 +159,26 @@ namespace Xamarin.Forms.Xaml.UnitTests
 
 			var page = (ContentPage)XamlLoader.Create(xaml, true);
 			Assert.That(page.Content, Is.TypeOf<Button>());
+			Assert.That(page.Content.BackgroundColor, Is.Not.EqualTo(new Color(1, 0, 0)));
+		}
+
+		[Test]
+		public void StyleTargetingUnknownTypeNotAppliedToFallbackType()
+		{
+			XamlLoader.FallbackTypeResolver = (p, type) => type ?? typeof(Button);
+
+			var xaml = @"
+				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+					xmlns:local=""clr-namespace:MissingNamespace;assembly=MissingAssembly"">
+					<ContentPage.Resources>
+						<Style TargetType=""local:MyCustomButton"">
+							<Setter Property=""BackgroundColor"" Value=""Red"" />
+						</Style>
+					</ContentPage.Resources>
+					<Button />
+				</ContentPage>";
+
+			var page = (ContentPage)XamlLoader.Create(xaml, true);
 			Assert.That(page.Content.BackgroundColor, Is.Not.EqualTo(new Color(1, 0, 0)));
 		}
 
@@ -205,6 +222,18 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
 					xmlns:local=""clr-namespace:MissingNamespace;assembly=MissingAssembly"">
 					<Button Style=""{local:Foo}"" />
+				</ContentPage>";
+
+			var page = (ContentPage)XamlLoader.Create(xaml, true);
+			Assert.That(page.Content, Is.TypeOf<Button>());
+		}
+
+		[Test]
+		public void StaticResourceKeyNotFound()
+		{
+			var xaml = @"
+				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms"">
+					<Button Style=""{StaticResource TestStyle}"" />
 				</ContentPage>";
 
 			var page = (ContentPage)XamlLoader.Create(xaml, true);
