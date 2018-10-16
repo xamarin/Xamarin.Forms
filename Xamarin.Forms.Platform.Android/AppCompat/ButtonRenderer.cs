@@ -41,6 +41,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		global::Android.Widget.Button NativeButton => Control;
 
+		protected override void SetContentDescription()
+			=> AutomationPropertiesProvider.SetBasicContentDescription(this, Element, ref _defaultContentDescription);
+
 		void AView.IOnAttachStateChangeListener.OnViewAttachedToWindow(AView attachedView)
 		{
 			UpdateText();
@@ -138,14 +141,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 				UpdateAll();
 			}
-		}
-
-		protected override void SetContentDescription()
-		{
-			if (_defaultContentDescription == null)
-				_defaultContentDescription = Control.ContentDescription;
-			var value = AutomationPropertiesProvider.ConcatenateNameAndHelpText(Element);
-			Control.ContentDescription = !IsNullOrWhiteSpace(value) ? value : _defaultContentDescription;
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)

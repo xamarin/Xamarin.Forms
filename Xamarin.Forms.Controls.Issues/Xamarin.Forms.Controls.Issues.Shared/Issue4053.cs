@@ -9,14 +9,17 @@ namespace Xamarin.Forms.Controls.Issues
 	{
 		protected override void Init()
 		{
-			Button button = new Button ();
+			Button button = new Button();
+			Switch _switch = new Switch();
 			AutomationProperties.SetName(button, "invisible text");
+			AutomationProperties.SetName(_switch, "invisible text");
 
 			Content = new StackLayout
 			{
 				Children = {
-					new Label { Text = "The text on the button below should be empty. But TalkBack should read 'invisible text'" },
-					button
+					new Label { Text = "The text on the controls below should be empty. But TalkBack should read 'invisible text'" },
+					button,
+					_switch
 				}
 			};
 		}
