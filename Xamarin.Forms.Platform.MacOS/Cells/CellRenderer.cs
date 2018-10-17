@@ -46,15 +46,15 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			_onForceUpdateSizeRequested = (sender, e) =>
 			{
-                var index = tableView?.RowForView(nativeCell);
-                if (index != null)
-                {
-                    NSAnimationContext.BeginGrouping();
-                    NSAnimationContext.CurrentContext.Duration = 0;
-                    var indexSetRow = NSIndexSet.FromIndex(index.Value);
-                    tableView.NoteHeightOfRowsWithIndexesChanged(indexSetRow);
-                    NSAnimationContext.EndGrouping();
-                }
+				var index = tableView?.RowForView(nativeCell);
+				if (index != null)
+				{
+					NSAnimationContext.BeginGrouping();
+					NSAnimationContext.CurrentContext.Duration = 0;
+					var indexSetRow = NSIndexSet.FromIndex(index.Value);
+					tableView.NoteHeightOfRowsWithIndexesChanged(indexSetRow);
+					NSAnimationContext.EndGrouping();
+				}
 			};
 
 			cell.ForceUpdateSizeRequested += _onForceUpdateSizeRequested;
