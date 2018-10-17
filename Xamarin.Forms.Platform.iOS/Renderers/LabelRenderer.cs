@@ -24,6 +24,10 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		bool _perfectSizeValid;
 
+		FormattedString _formatted;
+
+		bool IsTextFormatted => _formatted != null;
+
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
 			if (!_perfectSizeValid)
@@ -293,9 +297,6 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 #endif
 		}
-
-		FormattedString _formatted;
-		bool IsTextFormatted => _formatted != null;
 
 		void UpdateText()
 		{
