@@ -282,6 +282,14 @@ namespace Xamarin.Forms.Xaml
 			public object Root { get; internal set; }
 		}
 
-		internal static Func<IList<(string clrNamespace, string typeName, string assemblyName, string xmlNamespace)>, Type, Type> FallbackTypeResolver { get; set; }
+		public struct FallbackTypeInfo
+		{
+			public string ClrNamespace { get; internal set; }
+			public string TypeName { get; internal set; }
+			public string AssemblyName { get; internal set; }
+			public string XmlNamespace { get; internal set; }
+		}
+
+		internal static Func<IList<FallbackTypeInfo>, Type, Type> FallbackTypeResolver { get; set; }
 	}
 }
