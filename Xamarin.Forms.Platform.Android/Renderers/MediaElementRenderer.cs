@@ -28,10 +28,7 @@ namespace Xamarin.Forms.Platform.Android
 		
 		protected override void Dispose(bool disposing)
 		{
-			if (Control != null)
-			{
-				Control.RemoveAllViews();
-			}
+			Control?.RemoveAllViews();
 
 			ReleaseControl();
 			base.Dispose(disposing);
@@ -140,8 +137,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (Element.Source != null)
 			{
-				var uriSource = Element.Source as UriMediaSource;
-				if (uriSource != null)
+				if (Element.Source is UriMediaSource uriSource)
 				{
 					if (uriSource.Uri.Scheme == "ms-appx")
 					{
@@ -181,13 +177,9 @@ namespace Xamarin.Forms.Platform.Android
 						}
 					}
 				}
-				else
+				else if (Element.Source is FileMediaSource fileSource)
 				{
-					var fileSource = Element.Source as FileMediaSource;
-					if (fileSource != null)
-					{
-						_view.SetVideoPath(fileSource.File);
-					}
+					_view.SetVideoPath(fileSource.File);
 				}
 
 				if (Element.AutoPlay)

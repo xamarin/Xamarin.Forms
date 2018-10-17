@@ -1,6 +1,5 @@
 using Android.Content;
 using Android.Media;
-using Android.Runtime;
 using Android.Widget;
 using System;
 using System.Collections.Generic;
@@ -10,8 +9,6 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public class FormsVideoView : VideoView
 	{
-		int _videoHeight, _videoWidth;
-
 		public FormsVideoView(Context context) : base(context) { }
 
 		public event EventHandler MetadataRetrieved;
@@ -23,8 +20,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (System.IO.File.Exists(path))
 			{
 				MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-
-				// load metadata asynchronously
+				
 				Task.Run(() =>
 				{
 					retriever.SetDataSource(path);
@@ -36,15 +32,16 @@ namespace Xamarin.Forms.Platform.Android
 
 		void ExtractMetadata(MediaMetadataRetriever retriever)
 		{
-			
-			if(!int.TryParse(retriever.ExtractMetadata(MetadataKey.VideoWidth), out _videoWidth))
+			int videoWidth = 0;
+			if(!int.TryParse(retriever.ExtractMetadata(MetadataKey.VideoWidth), out videoWidth))
 			{
-				_videoWidth = 0;
+				VideoWidth = videoWidth;
 			}
-			
-			if(!int.TryParse(retriever.ExtractMetadata(MetadataKey.VideoHeight), out _videoHeight))
+
+			int videoHeight = 0;
+			if(!int.TryParse(retriever.ExtractMetadata(MetadataKey.VideoHeight), out videoHeight))
 			{
-				_videoHeight = 0;
+				VideoHeight = videoHeight;
 			}
 
 			long durationMS;
@@ -74,7 +71,6 @@ namespace Xamarin.Forms.Platform.Android
 
 		void GetMetaData(global::Android.Net.Uri uri, IDictionary<string, string> headers)
 		{
-			// load metadata asynchronously
 			Task.Run(() =>
 			{
 				MediaMetadataRetriever retriever = new MediaMetadataRetriever();
@@ -94,15 +90,9 @@ namespace Xamarin.Forms.Platform.Android
 			});
 		}
 
-		public int VideoHeight
-		{
-			get { return _videoHeight; }
-		}
+		public int VideoHeight { get; private set; }
 
-		public int VideoWidth
-		{
-			get { return _videoWidth; }
-		}
+		public int VideoWidth { get; private set; }
 
 		public TimeSpan? DurationTimeSpan { get; private set; }
 
