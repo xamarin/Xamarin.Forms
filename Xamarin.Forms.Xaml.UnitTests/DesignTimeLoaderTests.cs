@@ -196,6 +196,31 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		}
 
 		[Test]
+		public void StyleAppliedToDerivedTypesAppliesToDerivedUnknownType()
+		{
+			XamlLoader.FallbackTypeResolver = (p, type) => type ?? typeof(Button);
+
+			var xaml = @"
+				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+					xmlns:local=""clr-namespace:MissingNamespace;assembly=MissingAssembly"">
+					<ContentPage.Resources>
+						<Style TargetType=""Button"" ApplyToDerivedTypes=""True"">
+							<Setter Property=""BackgroundColor"" Value=""Red"" />
+						</Style>
+					</ContentPage.Resources>
+					<local:MyCustomButton />
+				</ContentPage>";
+
+			var page = (ContentPage)XamlLoader.Create(xaml, true);
+
+			var myButton = (Button)page.Content;
+			myButton._mergedStyle.ReRegisterImplicitStyles("MissingNamespace.MyCustomButton");
+
+			//Button Style should apply to MyCustomButton
+			Assert.That(myButton.BackgroundColor, Is.EqualTo(Color.Red));
+		}
+
+		[Test]
 		public void UnknownGenericType()
 		{
 			XamlLoader.FallbackTypeResolver = (p, type) => type ?? typeof(MockView);
