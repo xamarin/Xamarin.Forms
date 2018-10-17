@@ -159,7 +159,8 @@ namespace Xamarin.Forms.Xaml.UnitTests
 
 			var page = (ContentPage)XamlLoader.Create(xaml, true);
 			Assert.That(page.Content, Is.TypeOf<Button>());
-			Assert.That(page.Content.BackgroundColor, Is.Not.EqualTo(new Color(1, 0, 0)));
+			//Button Style shouldn't apply to MyButton
+			Assert.That(page.Content.BackgroundColor, Is.Not.EqualTo(Color.Red));
 		}
 
 		[Test]
@@ -179,7 +180,8 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				</ContentPage>";
 
 			var page = (ContentPage)XamlLoader.Create(xaml, true);
-			Assert.That(page.Content.BackgroundColor, Is.Not.EqualTo(new Color(1, 0, 0)));
+			//MyButton Style should be applied
+			Assert.That(page.Content.BackgroundColor, Is.Not.EqualTo(Color.Red));
 		}
 
 		[Test]
@@ -220,8 +222,9 @@ namespace Xamarin.Forms.Xaml.UnitTests
 
 			var xaml = @"
 				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+					xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
 					xmlns:local=""clr-namespace:MissingNamespace;assembly=MissingAssembly"">
-					<Button Style=""{local:Foo}"" />
+					<Button Text=""{local:Foo}"" />
 				</ContentPage>";
 
 			var page = (ContentPage)XamlLoader.Create(xaml, true);
@@ -231,6 +234,20 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		[Test]
 		public void StaticResourceKeyNotFound()
 		{
+			var app = @"
+				<Application xmlns=""http://xamarin.com/schemas/2014/forms""
+					xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml"">
+					<Application.Resources>
+						<ResourceDictionary>
+							<Style TargetType=""Button"" x:Key=""TestStyle"">
+								<Setter Property=""BackgroundColor"" Value=""HotPink"" />
+							</Style>
+						</ResourceDictionary>
+					</Application.Resources>
+				</Application>
+			";
+			Application.Current = (Application)XamlLoader.Create(app, true);
+
 			var xaml = @"
 				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms"">
 					<Button Style=""{StaticResource TestStyle}"" />
