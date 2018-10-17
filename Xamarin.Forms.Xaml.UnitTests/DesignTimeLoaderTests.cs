@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using System.Linq;
+using NUnit.Framework;
 using Xamarin.Forms.Core.UnitTests;
 
 namespace Xamarin.Forms.Xaml.UnitTests
@@ -180,6 +181,10 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				</ContentPage>";
 
 			var page = (ContentPage)XamlLoader.Create(xaml, true);
+
+			var myButton = (VisualElement)page.Content;
+			myButton._mergedStyle.ReRegisterImplicitStyles("MissingNamespace.MyButton");
+
 			//MyButton Style should be applied
 			Assert.That(page.Content.BackgroundColor, Is.Not.EqualTo(Color.Red));
 		}
