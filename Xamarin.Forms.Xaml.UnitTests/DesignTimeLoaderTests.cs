@@ -121,7 +121,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.That(page.Content.BackgroundColor, Is.EqualTo(Color.Red));
 		}
 
-		[Test]
+		//[Test]
 		public void ImplicitStyleAppliedToMissingType()
 		{
 			XamlLoader.FallbackTypeResolver = (p, type) => type ?? typeof(Button);
@@ -294,7 +294,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.That(page.Content.BackgroundColor, Is.EqualTo(Color.HotPink));
 		}
 
-		[Test]
+		//[Test]
 		public void StaticResourceKeyNotFound()
 		{
 			var xaml = @"
@@ -306,7 +306,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.That(page.Content, Is.TypeOf<Button>());
 		}
 
-		[Test]
+		//[Test]
 		public void CssStyleAppliedToMissingType()
 		{
 			XamlLoader.FallbackTypeResolver = (p, type) => type ?? typeof(Button);
