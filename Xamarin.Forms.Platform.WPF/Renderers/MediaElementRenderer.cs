@@ -6,7 +6,7 @@ using System.Windows.Controls;
 namespace Xamarin.Forms.Platform.WPF
 {
 	public sealed class MediaElementRenderer : ViewRenderer<MediaElement, System.Windows.Controls.MediaElement>
-	{		
+	{
 		protected override void OnElementChanged(ElementChangedEventArgs<MediaElement> e)
 		{
 			base.OnElementChanged(e);
@@ -24,7 +24,7 @@ namespace Xamarin.Forms.Platform.WPF
 					Control.MediaOpened -= ControlMediaOpened;
 					Control.MediaEnded -= ControlMediaEnded;
 					Control.MediaFailed -= ControlMediaFailed;
-				}			
+				}
 			}
 
 			if (e.NewElement != null)
@@ -32,11 +32,11 @@ namespace Xamarin.Forms.Platform.WPF
 				SetNativeControl(new System.Windows.Controls.MediaElement());
 				Control.HorizontalAlignment = HorizontalAlignment.Stretch;
 				Control.VerticalAlignment = VerticalAlignment.Stretch;
-				
+
 				Control.LoadedBehavior = MediaState.Manual;
 				Control.UnloadedBehavior = MediaState.Close;
 				Control.Stretch = Element.Aspect.ToStretch();
-				
+
 				Control.BufferingStarted += ControlBufferingStarted;
 				Control.BufferingEnded += ControlBufferingEnded;
 				Control.MediaOpened += ControlMediaOpened;
@@ -65,7 +65,7 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			_requestedState = e.State;
 
-			switch(e.State)
+			switch (e.State)
 			{
 				case MediaElementState.Playing:
 					if (Element.KeepScreenOn)
@@ -112,18 +112,14 @@ namespace Xamarin.Forms.Platform.WPF
 
 		void UpdateSource()
 		{
-			if (Element.Source == null)
+			if (Element.Source is null)
 				return;
-
 
 			if (Control.Clock != null)
 				Control.Clock = null;
 
-			var uriSource = Element.Source as UriMediaSource;
-			if (uriSource != null)
+			if (Element.Source is UriMediaSource uriSource)
 			{
-
-
 				if (uriSource.Uri.Scheme == "ms-appx")
 				{
 					Control.Source = new Uri(uriSource.Uri.ToString().Replace("ms-appx://", "pack://application:,,,"));
@@ -157,13 +153,9 @@ namespace Xamarin.Forms.Platform.WPF
 					Control.Source = uriSource.Uri;
 				}
 			}
-			else
+			else if (Element.Source is FileMediaSource fileSource)
 			{
-				var fileSource = Element.Source as FileMediaSource;
-				if(fileSource != null)
-				{
-					Control.Source = new Uri(fileSource.File);
-				}
+				Control.Source = new Uri(fileSource.File);
 			}
 
 			Controller.CurrentState = MediaElementState.Opening;
@@ -195,9 +187,8 @@ namespace Xamarin.Forms.Platform.WPF
 
 		void ControlMediaEnded(object sender, RoutedEventArgs e)
 		{
-			if(Element.IsLooping)
+			if (Element.IsLooping)
 			{
-				// restart media
 				Control.Position = TimeSpan.Zero;
 				Control.Play();
 			}
@@ -218,7 +209,7 @@ namespace Xamarin.Forms.Platform.WPF
 			Controller.VideoWidth = Control.NaturalVideoWidth;
 			Controller.OnMediaOpened();
 
-			if(Element.AutoPlay)
+			if (Element.AutoPlay)
 			{
 				Control.Play();
 				_requestedState = MediaElementState.Playing;
@@ -229,7 +220,7 @@ namespace Xamarin.Forms.Platform.WPF
 				Controller.CurrentState = _requestedState;
 			}
 		}
-		
+
 		void ControlSeekCompleted(object sender, RoutedEventArgs e)
 		{
 			Controller.Position = Control.Position;
@@ -243,7 +234,7 @@ namespace Xamarin.Forms.Platform.WPF
 				case nameof(MediaElement.Aspect):
 					Control.Stretch = Element.Aspect.ToStretch();
 					break;
-					
+
 				case nameof(MediaElement.KeepScreenOn):
 					if (Element.KeepScreenOn)
 					{

@@ -38,6 +38,13 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			_effectControlProvider.RegisterEffect(effect);
 		}
 
+		public void UpdateBackgroundColor(Color? color = null)
+		{		
+			if (_disposed || Element is null || Control is null)
+				return;
+
+			Control.SetBackgroundColor((color ?? Element.BackgroundColor).ToAndroid());
+		}
 
 		void UpdateFlowDirection()
 		{

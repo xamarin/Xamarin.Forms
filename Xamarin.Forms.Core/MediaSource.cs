@@ -29,7 +29,7 @@ namespace Xamarin.Forms
 
 		public static implicit operator MediaSource(Uri uri)
 		{
-			if (uri == null)
+			if (uri is null)
 				return null;
 
 			if (!uri.IsAbsoluteUri)

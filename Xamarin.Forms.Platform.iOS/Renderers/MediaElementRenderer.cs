@@ -51,13 +51,10 @@ namespace Xamarin.Forms.Platform.iOS
 					UIApplication.SharedApplication.IdleTimerDisabled = true;
 				}
 			}
-			else
+			else if (_idleTimerDisabled)
 			{
-				if (_idleTimerDisabled)
-				{
-					_idleTimerDisabled = false;
-					UIApplication.SharedApplication.IdleTimerDisabled = false;
-				}
+				_idleTimerDisabled = false;
+				UIApplication.SharedApplication.IdleTimerDisabled = false;
 			}
 		}
 
@@ -126,15 +123,7 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 				
 				if (MediaElement.AutoPlay)
-				{
-					var audioSession = AVAudioSession.SharedInstance();
-					NSError err = audioSession.SetCategory(AVAudioSession.CategoryPlayback);
-					audioSession.SetMode(AVAudioSession.ModeMoviePlayback, out err);
-					err = audioSession.SetActive(true);
-
-					_avPlayerViewController.Player.Play();
-					Controller.CurrentState = MediaElementState.Playing;
-				}
+					Play();
 			}
 			else
 			{
@@ -176,7 +165,6 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					_avPlayerViewController?.Player?.CurrentItem?.RemoveObserver(_statusObserver, "status");
 				}
-				catch { }
 				finally
 				{
 
@@ -201,22 +189,19 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 		void ObserveStatus(NSObservedChange e)
 		{
-			if (e.NewValue != null)
+			switch (_avPlayerViewController.Player.Status)
 			{
-				switch (_avPlayerViewController.Player.Status)
-				{
-					case AVPlayerStatus.Failed:
-						Controller.OnMediaFailed();
-						break;
+				case AVPlayerStatus.Failed:
+					Controller.OnMediaFailed();
+					break;
 
-					case AVPlayerStatus.ReadyToPlay:
-						Controller.Duration = TimeSpan.FromSeconds(_avPlayerViewController.Player.CurrentItem.Duration.Seconds);
-						Controller.VideoHeight = (int)_avPlayerViewController.Player.CurrentItem.Asset.NaturalSize.Height;
-						Controller.VideoWidth = (int)_avPlayerViewController.Player.CurrentItem.Asset.NaturalSize.Width;
-						Controller.OnMediaOpened();
-						Controller.Position = Position;
-						break;
-				}
+				case AVPlayerStatus.ReadyToPlay:
+					Controller.Duration = TimeSpan.FromSeconds(_avPlayerViewController.Player.CurrentItem.Duration.Seconds);
+					Controller.VideoHeight = (int)_avPlayerViewController.Player.CurrentItem.Asset.NaturalSize.Height;
+					Controller.VideoWidth = (int)_avPlayerViewController.Player.CurrentItem.Asset.NaturalSize.Width;
+					Controller.OnMediaOpened();
+					Controller.Position = Position;
+					break;
 			}
 		}
 
@@ -302,22 +287,34 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
+		void Play()
+		{
+			var audioSession = AVAudioSession.SharedInstance();
+			NSError err = audioSession.SetCategory(AVAudioSession.CategoryPlayback);
+			if (!(err is null))
+				Log.Warning("MediaElement", "Failed to set AVAudioSetting Category {0}", err.Code);
+
+			audioSession.SetMode(AVAudioSession.ModeMoviePlayback, out err);
+			if (!(err is null))
+				Log.Warning("MediaElement", "Failed to set AVAudioSetting Mode {0}", err.Code);
+			err = audioSession.SetActive(true);
+			if (!(err is null))
+				Log.Warning("MediaElement", "Failed to set AVAudioSetting Active {0}", err.Code);
+
+			_avPlayerViewController.Player.Play();
+			Controller.CurrentState = MediaElementState.Playing;
+			if (MediaElement.KeepScreenOn)
+			{
+				SetKeepScreenOn(true);
+			}
+		}
+
 		void MediaElement_StateRequested(object sender, StateRequested e)
 		{
 			switch (e.State)
 			{
 				case MediaElementState.Playing:
-					var audioSession = AVAudioSession.SharedInstance();
-					NSError err = audioSession.SetCategory(AVAudioSession.CategoryPlayback);
-					audioSession.SetMode(AVAudioSession.ModeMoviePlayback, out err);
-					err = audioSession.SetActive(true);
-
-					_avPlayerViewController.Player.Play();
-					Controller.CurrentState = MediaElementState.Playing;
-					if (MediaElement.KeepScreenOn)
-					{
-						SetKeepScreenOn(true);
-					}
+					Play();
 					break;
 
 				case MediaElementState.Paused:
@@ -373,23 +370,6 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			return ((UIView)this).GetSizeRequest(widthConstraint, heightConstraint, 44, 44);
 		}
-
-		/*SizeRequest IVisualElementRenderer.GetDesiredSize(double widthConstraint, double heightConstraint)
-		{
-			if (MediaElement.VideoWidth > 0)
-			{
-				if (double.IsInfinity(heightConstraint))
-				{
-					return ((IVisualElementRenderer)this).NativeView.GetSizeRequest(widthConstraint, (MediaElement.VideoWidth / MediaElement.VideoHeight) * widthConstraint, 44, 44);
-				}
-				else if (double.IsInfinity(widthConstraint))
-				{
-					return ((IVisualElementRenderer)this).NativeView.GetSizeRequest(heightConstraint / (MediaElement.VideoWidth / MediaElement.VideoHeight), heightConstraint, 44, 44);
-				}
-			}
-
-			return ((IVisualElementRenderer)this).NativeView.GetSizeRequest(widthConstraint, 200, 44, 44);
-		}*/
 		
 		void IVisualElementRenderer.SetElement(VisualElement element)
 		{

@@ -56,7 +56,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		void IVisualElementRenderer.SetElement(VisualElement element)
 		{
-			if (element == null)
+			if (element is null)
 				throw new ArgumentNullException(nameof(element));
 
 			if (!(element is MediaElement))
@@ -82,7 +82,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			MediaElement.SeekRequested += SeekRequested;
 			MediaElement.StateRequested += StateRequested;
 
-			if (_tracker == null)
+			if (_tracker is null)
 			{
 				// Can't set up the tracker in the constructor because it access the Element (for now)
 				SetTracker(new VisualElementTracker(this));
@@ -131,7 +131,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		void IVisualElementRenderer.SetLabelFor(int? id)
 		{
-			if (_defaultLabelFor == null)
+			if (_defaultLabelFor is null)
 			{
 				_defaultLabelFor = LabelFor;
 			}
@@ -187,7 +187,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				ReleaseControl();
 			}
 
-			if (e.NewElement != null && !_isDisposed)
+			if (e.NewElement != null && !(_view is null))
 			{
 				this.EnsureId();
 				
@@ -264,8 +264,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		{
 			if (MediaElement.Source != null)
 			{
-				var uriSource = MediaElement.Source as UriMediaSource;
-				if (uriSource != null)
+				if (MediaElement.Source is UriMediaSource uriSource)
 				{
 					if (uriSource.Uri.Scheme == "ms-appx")
 					{
@@ -305,13 +304,9 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 						}
 					}
 				}
-				else
+				else if (MediaElement.Source is FileMediaSource fileSource)
 				{
-					var fileSource = MediaElement.Source as FileMediaSource;
-					if (fileSource != null)
-					{
-						_view.SetVideoPath(fileSource.File);
-					}
+					_view.SetVideoPath(fileSource.File);
 				}
 
 				if (MediaElement.AutoPlay)

@@ -1,50 +1,47 @@
 ﻿using System;
-using Windows.Foundation;
+using Windows.System.Display;
 using Windows.UI.Xaml;
-using Windows.UI.Xaml.Controls;
+using Controls = Windows.UI.Xaml.Controls;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	public sealed class MediaElementRenderer : ViewRenderer<MediaElement, Windows.UI.Xaml.Controls.MediaElement>
+	public sealed class MediaElementRenderer : ViewRenderer<MediaElement, Controls.MediaElement>
 	{
-		Windows.System.Display.DisplayRequest _request = new Windows.System.Display.DisplayRequest();
-
 		long _bufferingProgressChangedToken;
-
 		long _positionChangedToken;
-
+		DisplayRequest _request = new DisplayRequest();
+		
 		void ReleaseControl()
 		{
-			if (Control != null)
+			if (Control is null)
+				return;
+
+			if (_bufferingProgressChangedToken != 0)
 			{
-				if (_bufferingProgressChangedToken != 0)
-				{
-					Control.UnregisterPropertyChangedCallback(Windows.UI.Xaml.Controls.MediaElement.BufferingProgressProperty, _bufferingProgressChangedToken);
-					_bufferingProgressChangedToken = 0;
-				}
-
-				if (_positionChangedToken != 0)
-				{
-					Control.UnregisterPropertyChangedCallback(Windows.UI.Xaml.Controls.MediaElement.PositionProperty, _positionChangedToken);
-					_positionChangedToken = 0;
-				}
-
-				Element.SeekRequested -= SeekRequested;
-				Element.StateRequested -= StateRequested;
-				Element.PositionRequested -= PositionRequested;
-
-				Control.CurrentStateChanged -= ControlCurrentStateChanged;
-				Control.SeekCompleted -= ControlSeekCompleted;
-				Control.MediaOpened -= ControlMediaOpened;
-				Control.MediaEnded -= ControlMediaEnded;
-				Control.MediaFailed -= ControlMediaFailed;
+				Control.UnregisterPropertyChangedCallback(Controls.MediaElement.BufferingProgressProperty, _bufferingProgressChangedToken);
+				_bufferingProgressChangedToken = 0;
 			}
+
+			if (_positionChangedToken != 0)
+			{
+				Control.UnregisterPropertyChangedCallback(Controls.MediaElement.PositionProperty, _positionChangedToken);
+				_positionChangedToken = 0;
+			}
+
+			Element.SeekRequested -= SeekRequested;
+			Element.StateRequested -= StateRequested;
+			Element.PositionRequested -= PositionRequested;
+
+			Control.CurrentStateChanged -= ControlCurrentStateChanged;
+			Control.SeekCompleted -= ControlSeekCompleted;
+			Control.MediaOpened -= ControlMediaOpened;
+			Control.MediaEnded -= ControlMediaEnded;
+			Control.MediaFailed -= ControlMediaFailed;
 		}
 
 		protected override void Dispose(bool disposing)
 		{
 			base.Dispose(disposing);
-
 			ReleaseControl();
 		}
 
@@ -59,7 +56,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (e.NewElement != null)
 			{
-				SetNativeControl(new Windows.UI.Xaml.Controls.MediaElement());
+				SetNativeControl(new Controls.MediaElement());
 				Control.HorizontalAlignment = HorizontalAlignment.Stretch;
 				Control.VerticalAlignment = VerticalAlignment.Stretch;
 
@@ -68,8 +65,8 @@ namespace Xamarin.Forms.Platform.UWP
 				Control.IsLooping = Element.IsLooping;
 				Control.Stretch = Element.Aspect.ToStretch();
 
-				_bufferingProgressChangedToken = Control.RegisterPropertyChangedCallback(Windows.UI.Xaml.Controls.MediaElement.BufferingProgressProperty, BufferingProgressChanged);
-				_positionChangedToken = Control.RegisterPropertyChangedCallback(Windows.UI.Xaml.Controls.MediaElement.PositionProperty, PositionChanged);
+				_bufferingProgressChangedToken = Control.RegisterPropertyChangedCallback(Controls.MediaElement.BufferingProgressProperty, BufferingProgressChanged);
+				_positionChangedToken = Control.RegisterPropertyChangedCallback(Controls.MediaElement.PositionProperty, PositionChanged);
 
 				Element.SeekRequested += SeekRequested;
 				Element.StateRequested += StateRequested;
@@ -150,10 +147,10 @@ namespace Xamarin.Forms.Platform.UWP
 	
 		void ControlCurrentStateChanged(object sender, RoutedEventArgs e)
 		{
-			if (Element == null)
+			if (Element is null)
 				return;
 
-			switch (((Windows.UI.Xaml.Controls.MediaElement)sender).CurrentState)
+			switch (Control.CurrentState)
 			{
 				case Windows.UI.Xaml.Media.MediaElementState.Playing:
 					if (Element.KeepScreenOn)
@@ -203,17 +200,17 @@ namespace Xamarin.Forms.Platform.UWP
 		
 		void BufferingProgressChanged(DependencyObject sender, DependencyProperty dp)
 		{
-			Controller.BufferingProgress = ((Windows.UI.Xaml.Controls.MediaElement)sender).BufferingProgress;
+			Controller.BufferingProgress = Control.BufferingProgress;
 		}
 
 		void PositionChanged(DependencyObject sender, DependencyProperty dp)
 		{
-			Controller.Position = ((Windows.UI.Xaml.Controls.MediaElement)sender).Position;
+			Controller.Position = Control.Position;
 		}
 
 		void ControlSeekCompleted(object sender, RoutedEventArgs e)
 		{
-			Controller.Position = ((Windows.UI.Xaml.Controls.MediaElement)sender).Position;
+			Controller.Position = Control.Position;
 			Controller.OnSeekCompleted();
 		}
 
@@ -256,17 +253,11 @@ namespace Xamarin.Forms.Platform.UWP
 					break;
 
 				case nameof(MediaElement.Width):
-					if (Element.Width > 0)
-					{
-						Width = Element.Width;
-					}
+					Width = Math.Max(0, Element.Width);
 					break;
 
 				case nameof(MediaElement.Height):
-					if (Element.Height > 0)
-					{
-						Height = Element.Height;
-					}
+					Height = Math.Max(0, Element.Height);
 					break;
 			}
 
@@ -275,22 +266,13 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateSource()
 		{
-			if (Element.Source == null)
+			if (Element.Source is null)
 				return;
-			
-			var uriSource = Element.Source as UriMediaSource;
-			if (uriSource != null)
-			{
+
+			if (Element.Source is UriMediaSource uriSource)
 				Control.Source = uriSource.Uri;
-			}
-			else
-			{
-				var fileSource = Element.Source as FileMediaSource;
-				if (fileSource != null)
-				{
-					Control.Source = new Uri(fileSource.File);
-				}
-			}
+			else if (Element.Source is FileMediaSource fileSource)
+				Control.Source = new Uri(fileSource.File);
 		}
 	}
 }
