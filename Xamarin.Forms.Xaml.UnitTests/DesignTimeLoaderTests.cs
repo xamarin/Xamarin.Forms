@@ -109,11 +109,11 @@ namespace Xamarin.Forms.Xaml.UnitTests
 					xmlns:local=""clr-namespace:MissingNamespace;assembly=MissingAssembly""
 					xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml"">
 					<ContentPage.Resources>
-						<Style x:Key=""Test"" TargetType=""local:MyCustomButton"">
+						<Style x:Key=""LocalStyle"" TargetType=""local:MyCustomButton"">
 							<Setter Property=""BackgroundColor"" Value=""Red"" />
 						</Style>
 					</ContentPage.Resources>
-					<local:MyCustomButton Style=""{StaticResource Test}"" />
+					<local:MyCustomButton Style=""{StaticResource LocalStyle}"" />
 				</ContentPage>";
 
 			var page = (ContentPage)XamlLoader.Create(xaml, true);
@@ -138,8 +138,11 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				</ContentPage>";
 
 			var page = (ContentPage)XamlLoader.Create(xaml, true);
-			Assert.That(page.Content, Is.TypeOf<Button>());
-			Assert.That(page.Content.BackgroundColor, Is.EqualTo(new Color(1, 0, 0)));
+
+			var myButton = (Button)page.Content;
+			myButton._mergedStyle.ReRegisterImplicitStyles("MissingNamespace.MyCustomButton");
+
+			Assert.That(myButton.BackgroundColor, Is.EqualTo(new Color(1, 0, 0)));
 		}
 
 		[Test]
@@ -159,9 +162,12 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				</ContentPage>";
 
 			var page = (ContentPage)XamlLoader.Create(xaml, true);
-			Assert.That(page.Content, Is.TypeOf<Button>());
-			//Button Style shouldn't apply to MyButton
-			Assert.That(page.Content.BackgroundColor, Is.Not.EqualTo(Color.Red));
+
+			var myButton = (Button)page.Content;
+			myButton._mergedStyle.ReRegisterImplicitStyles("MissingNamespace.MyCustomButton");
+
+			//Button Style shouldn't apply to MyCustomButton
+			Assert.That(myButton.BackgroundColor, Is.Not.EqualTo(Color.Red));
 		}
 
 		[Test]
@@ -182,11 +188,11 @@ namespace Xamarin.Forms.Xaml.UnitTests
 
 			var page = (ContentPage)XamlLoader.Create(xaml, true);
 
-			var myButton = (VisualElement)page.Content;
-			myButton._mergedStyle.ReRegisterImplicitStyles("MissingNamespace.MyButton");
+			var myButton = (Button)page.Content;
+			myButton._mergedStyle.ReRegisterImplicitStyles("MissingNamespace.MyCustomButton");
 
-			//MyButton Style should be applied
-			Assert.That(page.Content.BackgroundColor, Is.Not.EqualTo(Color.Red));
+			//MyCustomButton Style should not be applied
+			Assert.That(myButton.BackgroundColor, Is.Not.EqualTo(Color.Red));
 		}
 
 		[Test]
@@ -237,14 +243,14 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		}
 
 		[Test]
-		public void StaticResourceKeyNotFound()
+		public void StaticResourceKeyInApp()
 		{
 			var app = @"
 				<Application xmlns=""http://xamarin.com/schemas/2014/forms""
 					xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml"">
 					<Application.Resources>
 						<ResourceDictionary>
-							<Style TargetType=""Button"" x:Key=""TestStyle"">
+							<Style TargetType=""Button"" x:Key=""StyleInApp"">
 								<Setter Property=""BackgroundColor"" Value=""HotPink"" />
 							</Style>
 						</ResourceDictionary>
@@ -255,7 +261,20 @@ namespace Xamarin.Forms.Xaml.UnitTests
 
 			var xaml = @"
 				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms"">
-					<Button Style=""{StaticResource TestStyle}"" />
+					<Button Style=""{StaticResource StyleInApp}"" />
+				</ContentPage>";
+
+			var page = (ContentPage)XamlLoader.Create(xaml, true);
+			Assert.That(page.Content, Is.TypeOf<Button>());
+			Assert.That(page.Content.BackgroundColor, Is.EqualTo(Color.HotPink));
+		}
+
+		[Test]
+		public void StaticResourceKeyNotFound()
+		{
+			var xaml = @"
+				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms"">
+					<Button Style=""{StaticResource MissingStyle}"" />
 				</ContentPage>";
 
 			var page = (ContentPage)XamlLoader.Create(xaml, true);
