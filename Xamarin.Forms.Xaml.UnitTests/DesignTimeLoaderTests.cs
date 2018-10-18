@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using Xamarin.Forms.Core.UnitTests;
 
@@ -121,7 +123,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.That(page.Content.BackgroundColor, Is.EqualTo(Color.Red));
 		}
 
-		//[Test]
+		[Test][Ignore]
 		public void ImplicitStyleAppliedToMissingType()
 		{
 			XamlLoader.FallbackTypeResolver = (p, type) => type ?? typeof(Button);
@@ -294,7 +296,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.That(page.Content.BackgroundColor, Is.EqualTo(Color.HotPink));
 		}
 
-		//[Test]
+		[Test]
 		public void StaticResourceKeyNotFound()
 		{
 			var xaml = @"
@@ -302,11 +304,15 @@ namespace Xamarin.Forms.Xaml.UnitTests
 					<Button Style=""{StaticResource MissingStyle}"" />
 				</ContentPage>";
 
+			var exceptions = new List<Exception>();
+			Xamarin.Forms.Internals.ResourceLoader.ExceptionHandler = exceptions.Add;
+
 			var page = (ContentPage)XamlLoader.Create(xaml, true);
 			Assert.That(page.Content, Is.TypeOf<Button>());
+			Assert.That(exceptions.Count, Is.EqualTo(2));
 		}
 
-		//[Test]
+		[Test][Ignore]
 		public void CssStyleAppliedToMissingType()
 		{
 			XamlLoader.FallbackTypeResolver = (p, type) => type ?? typeof(Button);
