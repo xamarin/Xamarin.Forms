@@ -292,14 +292,14 @@ namespace Xamarin.Forms.Platform.iOS
 			var audioSession = AVAudioSession.SharedInstance();
 			NSError err = audioSession.SetCategory(AVAudioSession.CategoryPlayback);
 			if (!(err is null))
-				Log.Warning("MediaElement", "Failed to set AVAudioSetting Category {0}", err.Code);
+				Log.Warning("MediaElement", "Failed to set AVAudioSession Category {0}", err.Code);
 
 			audioSession.SetMode(AVAudioSession.ModeMoviePlayback, out err);
 			if (!(err is null))
-				Log.Warning("MediaElement", "Failed to set AVAudioSetting Mode {0}", err.Code);
+				Log.Warning("MediaElement", "Failed to set AVAudioSession Mode {0}", err.Code);
 			err = audioSession.SetActive(true);
 			if (!(err is null))
-				Log.Warning("MediaElement", "Failed to set AVAudioSetting Active {0}", err.Code);
+				Log.Warning("MediaElement", "Failed to set AVAudioSession Active {0}", err.Code);
 
 			_avPlayerViewController.Player.Play();
 			Controller.CurrentState = MediaElementState.Playing;
@@ -336,7 +336,9 @@ namespace Xamarin.Forms.Platform.iOS
 					_avPlayerViewController.Player.Seek(CMTime.Zero);
 					Controller.CurrentState = MediaElementState.Stopped;
 
-					err = AVAudioSession.SharedInstance().SetActive(false);
+					NSError err = AVAudioSession.SharedInstance().SetActive(false);
+					if (!(err is null))
+						Log.Warning("MediaElement", "Failed to set AVAudioSession Inactive {0}", err.Code);
 					break;
 			}
 
