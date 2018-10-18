@@ -87,11 +87,11 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		bool IsObservableCollection(object source)
+		bool IsObservableCollection()
 		{
-			var type = source.GetType();
+			var type = Element.ItemsSource.GetType();
 			return type.IsGenericType &&
-				   type.GetGenericTypeDefinition() == typeof(ObservableCollection<>);
+					type.GetGenericTypeDefinition() == typeof(ObservableCollection<>);
 		}
 
 		void ReloadData()
@@ -102,7 +102,11 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 			else
 			{
-				_collectionIsWrapped = !IsObservableCollection(Element.ItemsSource);
+				// if the collection is not implemented `IList`, then 
+				// each change will reset the entire collection (`Clear` action ListProxy class).
+				var isCorrectCustomCollection = Element.ItemsSource is IList && Element.ItemsSource is INotifyCollectionChanged;
+
+				_collectionIsWrapped = !(isCorrectCustomCollection || IsObservableCollection());
 				if (_collectionIsWrapped)
 				{
 					_collection = new ObservableCollection<object>();
