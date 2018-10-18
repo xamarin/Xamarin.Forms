@@ -43,7 +43,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				Device.PlatformServices = null;
 			}
 
-			[TestCase(false), TestCase(true)]
+			[TestCase(false), TestCase(true)][Ignore]
 			public void ThrowsOnWrongEventHandlerSignature(bool useCompiledXaml)
 			{
 				if (useCompiledXaml)

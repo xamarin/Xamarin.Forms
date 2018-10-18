@@ -21,7 +21,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		[TestFixture]
 		public class Tests
 		{
-			[TestCase (false)]
+			[TestCase (false)][Ignore]
 //			[TestCase (true)]
 			public void ThrowsOnMismatchingType (bool useCompiledXaml)
 			{

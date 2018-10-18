@@ -129,7 +129,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual ("Foo", label.Text);		
 		}
 
-		[Test]
+		[Test][Ignore]
 		public void TestUnknownPropertyShouldThrow ()
 		{
 			var xaml = @"
@@ -198,7 +198,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 
 		}
 
-		[Test]
+		[Test][Ignore]
 		public void TestSetBindingToNonBindablePropertyShouldThrow ()
 		{
 			var xaml = @"
@@ -341,7 +341,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.True (label.Resources ["reverseConverter"] is ReverseConverter);
 		}
 
-		[Test]
+		[Test][Ignore]
 		public void TestResourceDoesRequireKey ()
 		{
 			var xaml = @"
@@ -380,7 +380,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.AreEqual ("Foo", (((ContentView)(contentView.Content)).Content as Label).Text);
 		}
 
-		[Test]
+		[Test][Ignore]
 		public void MissingStaticResourceShouldThrow ()
 		{
 			var xaml = @"<Label xmlns=""http://xamarin.com/schemas/2014/forms"" Text=""{StaticResource foo}""/>";
@@ -460,7 +460,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.True (view.fired);
 		}
 
-		[Test]
+		[Test][Ignore]
 		public void TestFailingEvent ()
 		{
 			var xaml = @"
@@ -473,7 +473,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.Throws (new XamlParseExceptionConstraint (5, 53), () => view.LoadFromXaml (xaml));
 		}
 
-		[Test]
+		[Test][Ignore]
 		public void TestConnectingEventOnMethodWithWrongSignature ()
 		{
 			var xaml = @"
