@@ -97,6 +97,8 @@ namespace Xamarin.Forms.Xaml
 
 		public static object Create(string xaml, bool doNotThrow = false)
 		{
+			doNotThrow = doNotThrow || ResourceLoader.ExceptionHandler != null;
+			var exceptionHandler = doNotThrow ? (ResourceLoader.ExceptionHandler ?? (e => { })) : null;
 			object inflatedView = null;
 			using (var textreader = new StringReader(xaml))
 			using (var reader = XmlReader.Create(textreader)) {
@@ -114,7 +116,7 @@ namespace Xamarin.Forms.Xaml
 					var rootnode = new RuntimeRootNode(new XmlType(reader.NamespaceURI, reader.Name, null), null, (IXmlNamespaceResolver)reader);
 					XamlParser.ParseXaml(rootnode, reader);
 					var visitorContext = new HydrationContext {
-						ExceptionHandler = doNotThrow ? e => { } : (Action<Exception>)null,
+						ExceptionHandler = exceptionHandler,
 					};
 					var cvv = new CreateValuesVisitor(visitorContext);
 					cvv.Visit((ElementNode)rootnode, null);
