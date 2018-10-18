@@ -80,26 +80,6 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			SetBackgroundColor(tableViewCell, cell, uiBgColor);
-
-			if (cell.GetIsGroupHeader<ItemsView<Cell>, Cell>())
-			{
-				if (!UIDevice.CurrentDevice.CheckSystemVersion(7, 0))
-					return;
-
-				uiBgColor = new UIColor(247f / 255f, 247f / 255f, 247f / 255f, 1);
-			}
-			else
-			{
-				var element = cell.RealParent as VisualElement;
-				if (element != null && element.BackgroundColor != Color.Default)
-					uiBgColor = element.BackgroundColor.ToUIColor();
-			}
-
-			var defaultBgColor = cell.OnThisPlatform().DefaultBackgroundColor();
-			if (defaultBgColor != Color.Default)
-				uiBgColor = defaultBgColor.ToUIColor();
-
-			SetBackgroundColor(tableViewCell, cell, uiBgColor);
 		}
 
 		protected void WireUpForceUpdateSizeRequested(ICellController cell, UITableViewCell nativeCell, UITableView tableView)
