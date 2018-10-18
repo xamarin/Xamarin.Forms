@@ -58,6 +58,29 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var uiBgColor = UIColor.White; // Must be set to a solid color or blending issues will occur
 
+			var  defaultBgColor = cell.OnThisPlatform().DefaultBackgroundColor();
+			if (defaultBgColor != Color.Default)
+			{
+				uiBgColor = defaultBgColor.ToUIColor();
+			}
+			else
+			{
+				if (cell.GetIsGroupHeader<ItemsView<Cell>, Cell>())
+				{
+					if (!UIDevice.CurrentDevice.CheckSystemVersion(7, 0))
+						return;
+
+					uiBgColor = new UIColor(247f / 255f, 247f / 255f, 247f / 255f, 1);
+				}
+				else
+				{
+					if (cell.RealParent is VisualElement element && element.BackgroundColor != Color.Default)
+						uiBgColor = element.BackgroundColor.ToUIColor();
+				}
+			}
+
+			SetBackgroundColor(tableViewCell, cell, uiBgColor);
+
 			if (cell.GetIsGroupHeader<ItemsView<Cell>, Cell>())
 			{
 				if (!UIDevice.CurrentDevice.CheckSystemVersion(7, 0))
