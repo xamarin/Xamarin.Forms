@@ -117,6 +117,13 @@ namespace Xamarin.Forms.Xaml
 
 			if (value is BindableObject bindableValue && node.Namescope != (parentNode as IElementNode)?.Namescope)
 				NameScope.SetNameScope(bindableValue, node.Namescope);
+
+			if (XamlLoader.ValueCreatedCallback != null) {
+				var name = node.XmlType.Name;
+				if (name.Contains(":"))
+					name = name.Substring(name.LastIndexOf(':') + 1);
+				XamlLoader.ValueCreatedCallback(new XamlLoader.CallbackTypeInfo { XmlNamespace = node.XmlType.NamespaceUri, XmlTypeName = name }, value);
+			}
 		}
 
 		public void Visit(RootNode node, INode parentNode)
