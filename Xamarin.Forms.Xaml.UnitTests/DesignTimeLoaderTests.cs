@@ -13,6 +13,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		public void Setup()
 		{
 			Device.PlatformServices = new MockPlatformServices();
+			Xamarin.Forms.Internals.Registrar.RegisterAll(new Type[0]);
 		}
 
 		[TearDown]
@@ -351,20 +352,25 @@ namespace Xamarin.Forms.Xaml.UnitTests
 					<ContentPage.Resources>
 						<StyleSheet>
 							<![CDATA[
-							Button {
+							button {
 								background-color: red;
 							}
 							]]>
 						</StyleSheet>
 					</ContentPage.Resources>
-					<local:MyCustomButton />
+					<StackLayout>
+						<Button />
+						<MyCustomButton />
+					</StackLayout>
 				</ContentPage>";
 
 			var page = (ContentPage)XamlLoader.Create(xaml, true);
 
-			var myButton = (Button)page.Content;
+			var button = ((StackLayout)page.Content).Children[0];
+			var myButton = ((StackLayout)page.Content).Children[1];
 			myButton._mergedStyle.ReRegisterImplicitStyles("MissingNamespace.MyCustomButton");
 
+			Assert.That(button.BackgroundColor, Is.EqualTo(Color.Red));
 			Assert.That(myButton.BackgroundColor, Is.Not.EqualTo(Color.Red));
 		}
 
