@@ -292,6 +292,14 @@ namespace Xamarin.Forms.Xaml
 			public string XmlNamespace { get; internal set; }
 		}
 
+		public struct CallbackTypeInfo
+		{
+			public string XmlNamespace { get; internal set; }
+			public string XmlTypeName { get; internal set; }
+
+		}
+
 		internal static Func<IList<FallbackTypeInfo>, Type, Type> FallbackTypeResolver { get; set; }
+		internal static Action<CallbackTypeInfo, object> ValueCreatedCallback  { get; set; }
 	}
 }

@@ -19,8 +19,10 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		[TearDown]
 		public void TearDown()
 		{
-			XamlLoader.FallbackTypeResolver = null;
 			Device.PlatformServices = null;
+			XamlLoader.FallbackTypeResolver = null;
+			XamlLoader.ValueCreatedCallback = null;
+			Xamarin.Forms.Internals.ResourceLoader.ExceptionHandler = null;
 		}
 
 		[Test]
@@ -69,6 +71,11 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		public void MissingTypeWithKnownProperty()
 		{
 			XamlLoader.FallbackTypeResolver = (p, type) => type ?? typeof(Button);
+			XamlLoader.ValueCreatedCallback = (x, v) => {
+				if (x.XmlTypeName == "MyCustomButton" && v is VisualElement ve) {
+					ve._mergedStyle.ReRegisterImplicitStyles("MissingNamespace.MyCustomButton");
+				}
+			};
 
 			var xaml = @"
 				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
@@ -88,6 +95,11 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		public void MissingTypeWithUnknownProperty()
 		{
 			XamlLoader.FallbackTypeResolver = (p, type) => type ?? typeof(Button);
+			XamlLoader.ValueCreatedCallback = (x, v) => {
+				if (x.XmlTypeName == "MyCustomButton" && v is VisualElement ve) {
+					ve._mergedStyle.ReRegisterImplicitStyles("MissingNamespace.MyCustomButton");
+				}
+			};
 
 			var xaml = @"
 				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
@@ -106,6 +118,11 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		public void ExplicitStyleAppliedToMissingType()
 		{
 			XamlLoader.FallbackTypeResolver = (p, type) => type ?? typeof(Button);
+			XamlLoader.ValueCreatedCallback = (x, v) => {
+				if (x.XmlTypeName == "MyCustomButton" && v is VisualElement ve) {
+					ve._mergedStyle.ReRegisterImplicitStyles("MissingNamespace.MyCustomButton");
+				}
+			};
 
 			var xaml = @"
 				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
@@ -128,6 +145,11 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		public void ImplicitStyleAppliedToMissingType()
 		{
 			XamlLoader.FallbackTypeResolver = (p, type) => type ?? typeof(Button);
+			XamlLoader.ValueCreatedCallback = (x, v) => {
+				if (x.XmlTypeName == "MyCustomButton" && v is VisualElement ve) {
+					ve._mergedStyle.ReRegisterImplicitStyles("MissingNamespace.MyCustomButton");
+				}
+			};
 
 			var xaml = @"
 				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
@@ -143,7 +165,6 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			var page = (ContentPage)XamlLoader.Create(xaml, true);
 
 			var myButton = (Button)page.Content;
-			myButton._mergedStyle.ReRegisterImplicitStyles("MissingNamespace.MyCustomButton");
 
 			Assert.That(myButton.BackgroundColor, Is.EqualTo(Color.Red));
 		}
@@ -152,6 +173,11 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		public void StyleTargetingRealTypeNotAppliedToMissingType()
 		{
 			XamlLoader.FallbackTypeResolver = (p, type) => type ?? typeof(Button);
+			XamlLoader.ValueCreatedCallback = (x, v) => {
+				if (x.XmlTypeName == "MyCustomButton" && v is VisualElement ve) {
+					ve._mergedStyle.ReRegisterImplicitStyles("MissingNamespace.MyCustomButton");
+				}
+			};
 
 			var xaml = @"
 				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
@@ -167,16 +193,20 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			var page = (ContentPage)XamlLoader.Create(xaml, true);
 
 			var myButton = (Button)page.Content;
-			myButton._mergedStyle.ReRegisterImplicitStyles("MissingNamespace.MyCustomButton");
 
 			//Button Style shouldn't apply to MyCustomButton
 			Assert.That(myButton.BackgroundColor, Is.Not.EqualTo(Color.Red));
 		}
 
-		[Test]
+		[Test][Ignore]
 		public void StyleTargetingMissingTypeNotAppliedToFallbackType()
 		{
 			XamlLoader.FallbackTypeResolver = (p, type) => type ?? typeof(Button);
+			XamlLoader.ValueCreatedCallback = (x, v) => {
+				if (x.XmlTypeName == "MyCustomButton" && v is VisualElement ve) {
+					ve._mergedStyle.ReRegisterImplicitStyles("MissingNamespace.MyCustomButton");
+				}
+			};
 
 			var xaml = @"
 				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
@@ -192,7 +222,6 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			var page = (ContentPage)XamlLoader.Create(xaml, true);
 
 			var myButton = (Button)page.Content;
-			myButton._mergedStyle.ReRegisterImplicitStyles("MissingNamespace.MyCustomButton");
 
 			//MyCustomButton Style should not be applied
 			Assert.That(myButton.BackgroundColor, Is.Not.EqualTo(Color.Red));
@@ -202,6 +231,11 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		public void StyleAppliedToDerivedTypesAppliesToDerivedMissingType()
 		{
 			XamlLoader.FallbackTypeResolver = (p, type) => type ?? typeof(Button);
+			XamlLoader.ValueCreatedCallback = (x, v) => {
+				if (x.XmlTypeName == "MyCustomButton" && v is VisualElement ve) {
+					ve._mergedStyle.ReRegisterImplicitStyles("MissingNamespace.MyCustomButton");
+				}
+			};
 
 			var xaml = @"
 				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
@@ -217,7 +251,6 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			var page = (ContentPage)XamlLoader.Create(xaml, true);
 
 			var myButton = (Button)page.Content;
-			myButton._mergedStyle.ReRegisterImplicitStyles("MissingNamespace.MyCustomButton");
 
 			//Button Style should apply to MyCustomButton
 			Assert.That(myButton.BackgroundColor, Is.EqualTo(Color.Red));
@@ -313,10 +346,18 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.That(exceptions.Count, Is.EqualTo(2));
 		}
 
-		[Test][Ignore]
+		[Test]
 		public void CssStyleAppliedToMissingType()
 		{
 			XamlLoader.FallbackTypeResolver = (p, type) => type ?? typeof(Button);
+			XamlLoader.ValueCreatedCallback = (x, v) => {
+				if (x.XmlTypeName == "MyCustomButton" && v is Element e) {
+					e._cssFallbackTypeName = "MyCustomButton";
+				}
+				if (x.XmlTypeName == "MyCustomButton" && v is VisualElement ve) {
+					ve._mergedStyle.ReRegisterImplicitStyles("MissingNamespace.MyCustomButton");
+				}
+			};
 
 			var xaml = @"
 				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
@@ -336,7 +377,6 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			var page = (ContentPage)XamlLoader.Create(xaml, true);
 
 			var myButton = (Button)page.Content;
-			myButton._mergedStyle.ReRegisterImplicitStyles("MissingNamespace.MyCustomButton");
 
 			Assert.That(myButton.BackgroundColor, Is.EqualTo(Color.Blue));
 		}
@@ -345,6 +385,14 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		public void CssStyleTargetingRealTypeNotAppliedToMissingType()
 		{
 			XamlLoader.FallbackTypeResolver = (p, type) => type ?? typeof(Button);
+			XamlLoader.ValueCreatedCallback = (x, v) => {
+				if (x.XmlTypeName == "MyCustomButton" && v is Element e) {
+					e._cssFallbackTypeName = "MyCustomButton";
+				}
+				if (x.XmlTypeName == "MyCustomButton" && v is VisualElement ve) {
+					ve._mergedStyle.ReRegisterImplicitStyles("MissingNamespace.MyCustomButton");
+				}
+			};
 
 			var xaml = @"
 				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
@@ -368,7 +416,6 @@ namespace Xamarin.Forms.Xaml.UnitTests
 
 			var button = ((StackLayout)page.Content).Children[0];
 			var myButton = ((StackLayout)page.Content).Children[1];
-			myButton._mergedStyle.ReRegisterImplicitStyles("MissingNamespace.MyCustomButton");
 
 			Assert.That(button.BackgroundColor, Is.EqualTo(Color.Red));
 			Assert.That(myButton.BackgroundColor, Is.Not.EqualTo(Color.Red));
@@ -378,7 +425,11 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		public void CssStyleTargetingMissingTypeNotAppliedToFallbackType()
 		{
 			XamlLoader.FallbackTypeResolver = (p, type) => type ?? typeof(Button);
-
+			XamlLoader.ValueCreatedCallback = (x, v) => {
+				if (x.XmlTypeName == "MyCustomButton" && v is VisualElement ve) {
+					ve._mergedStyle.ReRegisterImplicitStyles("MissingNamespace.MyCustomButton");
+				}
+			};
 			var xaml = @"
 				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms"">
 					<ContentPage.Resources>
@@ -396,7 +447,6 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			var page = (ContentPage)XamlLoader.Create(xaml, true);
 
 			var myButton = (Button)page.Content;
-			myButton._mergedStyle.ReRegisterImplicitStyles("MissingNamespace.MyCustomButton");
 
 			Assert.That(myButton.BackgroundColor, Is.Not.EqualTo(Color.Blue));
 		}
