@@ -219,6 +219,8 @@ namespace Xamarin.Forms.Internals
 		Page Pop()
 		{
 			List<Page> list = _pushStack.Value;
+			if (list.Count == 0)
+				return null;
 			Page result = list[list.Count - 1];
 			list.RemoveAt(list.Count - 1);
 			return result;
@@ -227,6 +229,8 @@ namespace Xamarin.Forms.Internals
 		Page PopModal()
 		{
 			List<Page> list = _modalStack.Value;
+			if (list.Count == 0)
+				return null;
 			Page result = list[list.Count - 1];
 			list.RemoveAt(list.Count - 1);
 			return result;
