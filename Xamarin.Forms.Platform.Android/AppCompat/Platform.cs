@@ -7,6 +7,7 @@ using Android.OS;
 using Android.Views;
 using Android.Views.Animations;
 using ARelativeLayout = Android.Widget.RelativeLayout;
+using AView = Android.Views.View;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
@@ -206,6 +207,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void IPlatformLayout.OnLayout(bool changed, int l, int t, int r, int b)
 		{
+			if (Page == null)
+				return;
+
 			if (changed)
 			{
 				LayoutRootPage(Page, r - l, b - t);
@@ -215,7 +219,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			for (var i = 0; i < _renderer.ChildCount; i++)
 			{
-				global::Android.Views.View child = _renderer.GetChildAt(i);
+				AView child = _renderer.GetChildAt(i);
 				if (child is ModalContainer)
 				{
 					child.Measure(MeasureSpecFactory.MakeMeasureSpec(r - l, MeasureSpecMode.Exactly), MeasureSpecFactory.MakeMeasureSpec(t - b, MeasureSpecMode.Exactly));
@@ -262,12 +266,16 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		{
 			var layout = false;
 
+			var viewsToRemove = new List<AView>();
+			var renderersToDispose = new List<IVisualElementRenderer>();
+
 			if (Page != null)
 			{
-				_renderer.RemoveAllViews();
+				for (int i = 0; i < _renderer.ChildCount; i++)
+					viewsToRemove.Add(_renderer.GetChildAt(i));
 
-				foreach (IVisualElementRenderer rootRenderer in _navModel.Roots.Select(Android.Platform.GetRenderer))
-					rootRenderer.Dispose();
+				foreach (var root in _navModel.Roots)
+					renderersToDispose.Add(Android.Platform.GetRenderer(root));
 
 				_navModel = new NavigationModel();
 
@@ -275,7 +283,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			}
 
 			if (newRoot == null)
+			{
+				Cleanup(viewsToRemove, renderersToDispose);
 				return;
+			}
 
 			_navModel.Push(newRoot, null);
 
@@ -283,10 +294,31 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			Page.Platform = this;
 			AddChild(Page, layout);
 
+			Cleanup(viewsToRemove, renderersToDispose);
+
 			Application.Current.NavigationProxy.Inner = this;
 		}
+
+		void Cleanup(List<AView> viewsToRemove, List<IVisualElementRenderer> renderersToDispose)
+		{
+			for (int i = 0; i < viewsToRemove.Count; i++)
+			{
+				AView view = viewsToRemove[i];
+				_renderer?.RemoveView(view);
+			}
+
+			for (int i = 0; i < renderersToDispose.Count; i++)
+			{
+				IVisualElementRenderer rootRenderer = renderersToDispose[i];
+				rootRenderer?.Dispose();
+			}
+		}
+
 		void AddChild(Page page, bool layout = false)
 		{
+			if (page == null)
+				return;
+
 			if (Android.Platform.GetRenderer(page) != null)
 				return;
 
@@ -332,29 +364,26 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					OnEnd = a =>
 					{
 						source.TrySetResult(false);
-						NavAnimationInProgress = false;
 						modalContainer = null;
 					},
 					OnCancel = a =>
 					{
 						source.TrySetResult(true);
-						NavAnimationInProgress = false;
 						modalContainer = null;
 					}
 				});
 			}
 			else
 			{
-				NavAnimationInProgress = false;
 				source.TrySetResult(true);
 			}
 
-			return source.Task;
+			return source.Task.ContinueWith(task => NavAnimationInProgress = false);
 		}
 
 		sealed class ModalContainer : ViewGroup
 		{
-			global::Android.Views.View _backgroundView;
+			AView _backgroundView;
 			bool _disposed;
 			Page _modal;
 			IVisualElementRenderer _renderer;
@@ -363,7 +392,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			{
 				_modal = modal;
 
-				_backgroundView = new global::Android.Views.View(context);
+				_backgroundView = new AView(context);
 				_backgroundView.SetWindowBackground();
 				AddView(_backgroundView);
 

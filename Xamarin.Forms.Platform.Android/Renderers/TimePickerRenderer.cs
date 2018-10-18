@@ -9,6 +9,9 @@ using ATimePicker = Android.Widget.TimePicker;
 using Object = Java.Lang.Object;
 using AView = Android.Views.View;
 using Android.OS;
+using Android.Views;
+using System.Collections.Generic;
+using Android.Text;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -16,7 +19,11 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		AlertDialog _dialog;
 		TextColorSwitcher _textColorSwitcher;
-		protected bool _is24HourFormat;
+		 
+
+		HashSet<Keycode> availableKeys = new HashSet<Keycode>(new[] {
+			Keycode.Tab, Keycode.Forward, Keycode.Back, Keycode.DpadDown, Keycode.DpadLeft, Keycode.DpadRight, Keycode.DpadUp
+		});
 
 		bool Is24HourView
 		{
@@ -41,7 +48,6 @@ namespace Xamarin.Forms.Platform.Android
 			ElementController.SetValueFromRenderer(TimePicker.TimeProperty, new TimeSpan(hourOfDay, minute, 0));
 
 			ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
-			Control.ClearFocus();
 
 			if (Forms.IsLollipopOrNewer)
 				_dialog.CancelEvent -= OnCancelButtonClicked;
@@ -51,7 +57,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override EditText CreateNativeControl()
 		{
-			return new EditText(Context) { Focusable = false, Clickable = true, Tag = this };
+			return new EditText(Context) { Focusable = true, Clickable = true, Tag = this };
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<TimePicker> e)
@@ -63,6 +69,8 @@ namespace Xamarin.Forms.Platform.Android
 				var textField = CreateNativeControl();
 
 				textField.SetOnClickListener(TimePickerListener.Instance);
+				textField.InputType = InputTypes.Null;
+				textField.KeyPress += TextFieldKeyPress;
 				SetNativeControl(textField);
 
 				var useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
@@ -75,6 +83,24 @@ namespace Xamarin.Forms.Platform.Android
 
 			if ((int)Build.VERSION.SdkInt > 16)
 				Control.TextAlignment = global::Android.Views.TextAlignment.ViewStart;
+		}
+
+		void TextFieldKeyPress(object sender, KeyEventArgs e)
+		{
+			if (availableKeys.Contains(e.KeyCode))
+			{
+				e.Handled = false;
+				return;
+			}
+			e.Handled = true;
+			OnClick();
+		}
+
+		internal override void OnNativeFocusChanged(bool hasFocus)
+		{
+			base.OnNativeFocusChanged(hasFocus);
+			if (hasFocus)
+				OnClick();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -99,7 +125,6 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				_dialog.Hide();
 				ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
-				Control.ClearFocus();
 
 				if (Forms.IsLollipopOrNewer)
 					_dialog.CancelEvent -= OnCancelButtonClicked;
@@ -110,7 +135,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual TimePickerDialog CreateTimePickerDialog(int hours, int minutes)
 		{
-			var dialog = new TimePickerDialog(Context, this, hours, minutes, _is24HourFormat);
+			var dialog = new TimePickerDialog(Context, this, hours, minutes, Is24HourView);
 
 			if (Forms.IsLollipopOrNewer)
 				dialog.CancelEvent += OnCancelButtonClicked;
@@ -120,6 +145,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		void OnClick()
 		{
+			if (_dialog != null && _dialog.IsShowing)
+			{
+				return;
+			}
+
 			TimePicker view = Element;
 			ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, true);
 
