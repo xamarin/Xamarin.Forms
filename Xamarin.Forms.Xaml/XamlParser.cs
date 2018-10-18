@@ -368,19 +368,13 @@ namespace Xamarin.Forms.Xaml
 
 			Type type = null;
 
-			IList<XamlLoader.FallbackTypeInfo> potentialTypes = new List<XamlLoader.FallbackTypeInfo>();
+			IList<Tuple<string, string, string, string>> potentialTypes = new List<Tuple<string, string, string, string>>();
 			foreach (XmlnsDefinitionAttribute xmlnsDefinitionAttribute in lookupAssemblies)
 			foreach (string typeName in lookupNames)
-				potentialTypes.Add(new XamlLoader.FallbackTypeInfo
-				{
-					ClrNamespace = xmlnsDefinitionAttribute.ClrNamespace,
-					TypeName = typeName,
-					AssemblyName = xmlnsDefinitionAttribute.AssemblyName,
-					XmlNamespace = xmlnsDefinitionAttribute.XmlNamespace
-				});
+				potentialTypes.Add(new Tuple<string, string, string, string>(xmlnsDefinitionAttribute.ClrNamespace, typeName, xmlnsDefinitionAttribute.AssemblyName, xmlnsDefinitionAttribute.XmlNamespace));
 
-			foreach (XamlLoader.FallbackTypeInfo typeInfo in potentialTypes)
-				if ((type = Type.GetType($"{typeInfo.ClrNamespace}.{typeInfo.TypeName}, {typeInfo.AssemblyName}")) != null)
+			foreach (Tuple<string, string, string, string> typeInfo in potentialTypes)
+				if ((type = Type.GetType($"{typeInfo.Item1}.{typeInfo.Item2}, {typeInfo.Item3}")) != null)
 					break;
 
 			if (type != null && typeArguments != null)
