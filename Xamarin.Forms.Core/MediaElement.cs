@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
@@ -36,7 +37,8 @@ namespace Xamarin.Forms
 		  BindableProperty.Create(nameof(ShowsPlaybackControls), typeof(bool), typeof(MediaElement), false);
 
 		public static readonly BindableProperty SourceProperty =
-		  BindableProperty.Create(nameof(Source), typeof(MediaSource), typeof(MediaElement));
+		  BindableProperty.Create(nameof(Source), typeof(MediaSource), typeof(MediaElement),
+			  propertyChanging: OnSourcePropertyChanging, propertyChanged: OnSourcePropertyChanged);
 
 		public static readonly BindableProperty VideoHeightProperty =
 		  BindableProperty.Create(nameof(VideoHeight), typeof(int), typeof(MediaElement));
@@ -184,6 +186,49 @@ namespace Xamarin.Forms
 		}
 		
 		public event EventHandler SeekCompleted;
+
+		protected override void OnBindingContextChanged()
+		{
+			if (Source != null)
+				SetInheritedBindingContext(Source, BindingContext);
+
+			base.OnBindingContextChanged();
+		}
+
+		void OnSourceChanged(object sender, EventArgs eventArgs)
+		{
+			OnPropertyChanged(SourceProperty.PropertyName);
+			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
+		}
+
+		static void OnSourcePropertyChanged(BindableObject bindable, object oldvalue, object newvalue)
+		{
+			((MediaElement)bindable).OnSourcePropertyChanged((MediaSource)oldvalue, (MediaSource)newvalue);
+		}
+
+		void OnSourcePropertyChanged(MediaSource oldvalue, MediaSource newvalue)
+		{
+			if (newvalue != null)
+			{
+				newvalue.SourceChanged += OnSourceChanged;
+				SetInheritedBindingContext(newvalue, BindingContext);
+			}
+
+			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
+		}
+
+		static void OnSourcePropertyChanging(BindableObject bindable, object oldvalue, object newvalue)
+		{
+			((MediaElement)bindable).OnSourcePropertyChanging((MediaSource)oldvalue, (MediaSource)newvalue);
+		}
+
+		void OnSourcePropertyChanging(MediaSource oldvalue, MediaSource newvalue)
+		{
+			if (oldvalue == null)
+				return;
+
+			oldvalue.SourceChanged -= OnSourceChanged;
+		}
 	}
 
 	[EditorBrowsable(EditorBrowsableState.Never)]
