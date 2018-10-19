@@ -7,7 +7,7 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		public static string SetAccessibilityHint(this UIView Control, Element Element, string _defaultAccessibilityHint = null)
 		{
-			if (Element == null)
+			if (Element == null || Control == null)
 				return _defaultAccessibilityHint;
 
 			if (_defaultAccessibilityHint == null)
@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public static string SetAccessibilityLabel(this UIView Control, Element Element, string _defaultAccessibilityLabel = null)
 		{
-			if (Element == null)
+			if (Element == null || Control == null)
 				return _defaultAccessibilityLabel;
 
 			if (_defaultAccessibilityLabel == null)
@@ -33,7 +33,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public static string SetAccessibilityHint(this UIBarItem Control, Element Element, string _defaultAccessibilityHint = null)
 		{
-			if (Element == null)
+			if (Element == null || Control == null)
 				return _defaultAccessibilityHint;
 
 			if (_defaultAccessibilityHint == null)
@@ -47,7 +47,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public static string SetAccessibilityLabel(this UIBarItem Control, Element Element, string _defaultAccessibilityLabel = null)
 		{
-			if (Element == null)
+			if (Element == null || Control == null)
 				return _defaultAccessibilityLabel;
 
 			if (_defaultAccessibilityLabel == null)
@@ -60,7 +60,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public static bool? SetIsAccessibilityElement(this UIView Control, Element Element, bool? _defaultIsAccessibilityElement = null)
 		{
-			if (Element == null)
+			if (Element == null || Control == null)
 				return _defaultIsAccessibilityElement;
 
 			if (!_defaultIsAccessibilityElement.HasValue)
