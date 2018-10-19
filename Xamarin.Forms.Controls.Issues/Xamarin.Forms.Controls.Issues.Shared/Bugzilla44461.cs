@@ -1,5 +1,13 @@
-﻿using Xamarin.Forms.CustomAttributes;
+﻿using System;
+using System.Linq;
+using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
+
+#if UITEST
+using Xamarin.UITest;
+using Xamarin.UITest.Queries;
+using NUnit.Framework;
+#endif
 
 namespace Xamarin.Forms.Controls
 {
@@ -7,12 +15,21 @@ namespace Xamarin.Forms.Controls
 	[Issue(IssueTracker.Bugzilla, 44461, "ScrollToPosition.Center works differently on Android and iOS", PlatformAffected.iOS)]
 	public class Bugzilla44461 : TestContentPage
 	{
+		const string BtnPrefix= "Button";
+
 		protected override void Init()
 		{
 			var grid = new Grid
 			{
 				RowSpacing = 0,
 			};
+
+			var instructions = new Label
+			{
+				Text = @"Tap the first button (Button0). The button should be aligned with the left side of the screen. If it's not, the test failed."
+			};
+
+			grid.Children.Add(instructions);
 
 			var scrollView = new ScrollView
 			{
@@ -33,7 +50,7 @@ namespace Xamarin.Forms.Controls
 			{
 				var button = new Button
 				{
-					Text = "Button" + i
+					Text = $"{BtnPrefix}{i}"
 				};
 				button.Clicked += (sender, args) =>
 				{
@@ -45,5 +62,26 @@ namespace Xamarin.Forms.Controls
 			scrollView.Content = stackLayout;
 			Content = grid;
 		}
+
+#if UITEST && __IOS__
+		[Test]
+		public void Bugzilla44461Test()
+		{
+			var positions = TapButton(0);
+			Assert.AreEqual(positions.initialPosition, positions.finalPosition);
+			Assert.AreEqual(0, positions.finalPosition.X);
+			RunningApp.Screenshot ("Button0 is aligned with the left side of the screen");
+		}
+
+		(AppRect initialPosition, AppRect finalPosition ) TapButton(int position)
+		{
+			var buttonText = $"{BtnPrefix}{position}";
+			RunningApp.WaitForElement(q => q.Button(buttonText));
+			var initialPosition = RunningApp.Query(buttonText)[0].Rect;
+			RunningApp.Tap(q => q.Button(buttonText));
+			var finalPosition = RunningApp.Query(buttonText)[0].Rect;
+			return (initialPosition, finalPosition);
+		}
+#endif
 	}
 }
