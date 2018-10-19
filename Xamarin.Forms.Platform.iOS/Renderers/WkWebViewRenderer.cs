@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Threading.Tasks;
 using Foundation;
+using ObjCRuntime;
 using UIKit;
 using WebKit;
 using Xamarin.Forms.Internals;
@@ -45,6 +46,7 @@ namespace Xamarin.Forms.Platform.iOS
 			WebView.GoForwardRequested += OnGoForwardRequested;
 			WebView.ReloadRequested += OnReloadRequested;
 			NavigationDelegate = new CustomWebViewDelegate(this);
+			UIDelegate = new CustomWebViewUIDelegate(this);
 
 			BackgroundColor = UIColor.Clear;
 
@@ -271,6 +273,51 @@ namespace Xamarin.Forms.Platform.iOS
 			string GetCurrentUrl()
 			{
 				return _renderer?.Url?.AbsoluteUrl?.ToString();
+			}
+		}
+
+		class CustomWebViewUIDelegate : WKUIDelegate
+		{
+			static readonly NSBundle UIKit = NSBundle.FromIdentifier("com.apple.UIKit");
+			static readonly string LocalOk = UIKit.GetLocalizedString("Ok");
+			static readonly string LocalCancel = UIKit.GetLocalizedString("Cancel");
+			//readonly UIViewController _uiViewController;
+
+			public CustomWebViewUIDelegate(WkWebViewRenderer renderer)
+			{
+				//var	test = Platform.CreateRenderer(renderer.Element);
+				//_uiViewController = test.ViewController;
+			}
+
+			public override void RunJavaScriptAlertPanel(WKWebView webView, string message, WKFrameInfo frame, Action completionHandler)
+			{
+				var alertController = UIAlertController.Create("Test", message, UIAlertControllerStyle.Alert);
+
+				alertController.AddAction(UIAlertAction.Create(LocalOk, UIAlertActionStyle.Default, (_) => { completionHandler(); }));
+
+				UIApplication.SharedApplication.KeyWindow.RootViewController.PresentViewController(alertController, true, ()=> { });
+			}
+
+			public override void RunJavaScriptConfirmPanel(WKWebView webView, string message, WKFrameInfo frame, Action<bool> completionHandler)
+			{
+				var alertController = UIAlertController.Create("Test", message, UIAlertControllerStyle.Alert);
+
+				alertController.AddAction(UIAlertAction.Create(LocalOk, UIAlertActionStyle.Default, (_) => { completionHandler(true); }));
+				alertController.AddAction(UIAlertAction.Create(LocalCancel, UIAlertActionStyle.Cancel, (_) => { completionHandler(false); }));
+
+				UIApplication.SharedApplication.KeyWindow.RootViewController.PresentViewController(alertController, true, () => { });
+			}
+
+			public override void RunJavaScriptTextInputPanel(WKWebView webView, string prompt, string defaultText, WKFrameInfo frame, Action<string> completionHandler)
+			{
+				var alertController = UIAlertController.Create("Test", prompt, UIAlertControllerStyle.Alert);
+				alertController.AddTextField((textField) => textField.Text = defaultText);
+				var controllerTextField = alertController.TextFields[0];
+
+				alertController.AddAction(UIAlertAction.Create(LocalOk, UIAlertActionStyle.Default, (_) => { completionHandler(controllerTextField.Text); }));
+				alertController.AddAction(UIAlertAction.Create(LocalCancel, UIAlertActionStyle.Cancel, (_) => { completionHandler(null); }));
+
+				UIApplication.SharedApplication.KeyWindow.RootViewController.PresentViewController(alertController, true, () => { });
 			}
 		}
 
