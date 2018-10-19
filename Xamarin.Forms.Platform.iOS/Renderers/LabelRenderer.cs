@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using RectangleF = CoreGraphics.CGRect;
 using SizeF = CoreGraphics.CGSize;
+using Foundation;
 
 #if __MOBILE__
 using UIKit;
@@ -22,6 +23,10 @@ namespace Xamarin.Forms.Platform.MacOS
 		SizeRequest _perfectSize;
 
 		bool _perfectSizeValid;
+
+		FormattedString _formatted;
+
+		bool IsTextFormatted => _formatted != null;
 
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
@@ -110,7 +115,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			Control.RecalculateSpanPositions(Element);
 
-		}		
+		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Label> e)
 		{
@@ -129,8 +134,10 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateLineBreakMode();
 				UpdateAlignment();
 				UpdateText();
+				UpdateTextDecorations();
 				UpdateTextColor();
 				UpdateFont();
+				UpdateMaxLines();
 			}
 
 			base.OnElementChanged(e);
@@ -150,6 +157,8 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateFont();
 			else if (e.PropertyName == Label.TextProperty.PropertyName)
 				UpdateText();
+			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
+				UpdateTextDecorations();
 			else if (e.PropertyName == Label.FormattedTextProperty.PropertyName)
 				UpdateText();
 			else if (e.PropertyName == Label.LineBreakModeProperty.PropertyName)
@@ -158,6 +167,43 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateAlignment();
 			else if (e.PropertyName == Label.LineHeightProperty.PropertyName)
 				UpdateText();
+			else if (e.PropertyName == Label.MaxLinesProperty.PropertyName)
+				UpdateMaxLines();
+		}
+
+		void UpdateTextDecorations()
+		{
+			if (!Element.IsSet(Label.TextDecorationsProperty))
+				return;
+
+			var textDecorations = Element.TextDecorations;
+#if __MOBILE__
+			var newAttributedText = new NSMutableAttributedString(Control.AttributedText);
+			var strikeThroughStyleKey = UIStringAttributeKey.StrikethroughStyle;
+			var underlineStyleKey = UIStringAttributeKey.UnderlineStyle;
+
+#else
+			var newAttributedText = new NSMutableAttributedString(Control.AttributedStringValue);
+			var strikeThroughStyleKey = NSStringAttributeKey.StrikethroughStyle;
+			var underlineStyleKey = NSStringAttributeKey.UnderlineStyle;
+#endif
+			var range = new NSRange(0, newAttributedText.Length);
+
+			if ((textDecorations & TextDecorations.Strikethrough) == 0)
+				newAttributedText.RemoveAttribute(strikeThroughStyleKey, range);
+			else
+				newAttributedText.AddAttribute(strikeThroughStyleKey, NSNumber.FromInt32((int)NSUnderlineStyle.Single), range);
+
+			if ((textDecorations & TextDecorations.Underline) == 0)
+				newAttributedText.RemoveAttribute(underlineStyleKey, range);
+			else
+				newAttributedText.AddAttribute(underlineStyleKey, NSNumber.FromInt32((int)NSUnderlineStyle.Single), range);
+
+#if __MOBILE__
+			Control.AttributedText = newAttributedText;
+#else
+			Control.AttributedStringValue = newAttributedText;
+#endif
 		}
 
 #if __MOBILE__
@@ -210,27 +256,21 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				case LineBreakMode.NoWrap:
 					Control.LineBreakMode = UILineBreakMode.Clip;
-					Control.Lines = 1;
 					break;
 				case LineBreakMode.WordWrap:
 					Control.LineBreakMode = UILineBreakMode.WordWrap;
-					Control.Lines = 0;
 					break;
 				case LineBreakMode.CharacterWrap:
 					Control.LineBreakMode = UILineBreakMode.CharacterWrap;
-					Control.Lines = 0;
 					break;
 				case LineBreakMode.HeadTruncation:
 					Control.LineBreakMode = UILineBreakMode.HeadTruncation;
-					Control.Lines = 1;
 					break;
 				case LineBreakMode.MiddleTruncation:
 					Control.LineBreakMode = UILineBreakMode.MiddleTruncation;
-					Control.Lines = 1;
 					break;
 				case LineBreakMode.TailTruncation:
 					Control.LineBreakMode = UILineBreakMode.TailTruncation;
-					Control.Lines = 1;
 					break;
 			}
 #else
@@ -238,50 +278,38 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				case LineBreakMode.NoWrap:
 					Control.LineBreakMode = NSLineBreakMode.Clipping;
-					Control.MaximumNumberOfLines = 1;
 					break;
 				case LineBreakMode.WordWrap:
 					Control.LineBreakMode = NSLineBreakMode.ByWordWrapping;
-					Control.MaximumNumberOfLines = 0;
 					break;
 				case LineBreakMode.CharacterWrap:
 					Control.LineBreakMode = NSLineBreakMode.CharWrapping;
-					Control.MaximumNumberOfLines = 0;
 					break;
 				case LineBreakMode.HeadTruncation:
 					Control.LineBreakMode = NSLineBreakMode.TruncatingHead;
-					Control.MaximumNumberOfLines = 1;
 					break;
 				case LineBreakMode.MiddleTruncation:
 					Control.LineBreakMode = NSLineBreakMode.TruncatingMiddle;
-					Control.MaximumNumberOfLines = 1;
 					break;
 				case LineBreakMode.TailTruncation:
 					Control.LineBreakMode = NSLineBreakMode.TruncatingTail;
-					Control.MaximumNumberOfLines = 1;
 					break;
 			}
 #endif
 		}
 
-		bool isTextFormatted;
 		void UpdateText()
 		{
 			_perfectSizeValid = false;
-			var values = Element.GetValues(Label.FormattedTextProperty, Label.TextProperty, Label.TextColorProperty);
+			var values = Element.GetValues(Label.FormattedTextProperty, Label.TextProperty);
 
-			var formatted = values[0] as FormattedString;
-			if (formatted == null && Element.LineHeight >= 0)
-				formatted = (string)values[1];
+			_formatted = values[0] as FormattedString;
+			if (_formatted == null && Element.LineHeight >= 0)
+				_formatted = (string)values[1];
 
-			if (formatted != null)
+			if (IsTextFormatted)
 			{
-#if __MOBILE__
-				Control.AttributedText = formatted.ToAttributed(Element, (Color)values[2], Element.LineHeight);
-#else
-				Control.AttributedStringValue = formatted.ToAttributed(Element, (Color)values[2], Element.LineHeight);
-#endif
-				isTextFormatted = true;
+				UpdateFormattedText();
 			}
 			else
 			{
@@ -290,15 +318,26 @@ namespace Xamarin.Forms.Platform.MacOS
 #else
 				Control.StringValue = (string)values[1] ?? "";
 #endif
-				isTextFormatted = false;
 			}
 			UpdateLayout();
 		}
 
+		void UpdateFormattedText()
+		{
+#if __MOBILE__
+			Control.AttributedText = _formatted.ToAttributed(Element, Element.TextColor, Element.LineHeight);
+#else
+			Control.AttributedStringValue = _formatted.ToAttributed(Element, Element.TextColor, Element.LineHeight);
+#endif
+		}
+
 		void UpdateFont()
 		{
-			if (isTextFormatted)
+			if (IsTextFormatted)
+			{
+				UpdateFormattedText();
 				return;
+			}
 			_perfectSizeValid = false;
 
 #if __MOBILE__
@@ -311,8 +350,11 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateTextColor()
 		{
-			if (isTextFormatted)
+			if (IsTextFormatted)
+			{
+				UpdateFormattedText();
 				return;
+			}
 
 			_perfectSizeValid = false;
 
@@ -333,6 +375,58 @@ namespace Xamarin.Forms.Platform.MacOS
 #else
 			Layout();
 #endif
+		}
+
+		void UpdateMaxLines()
+		{
+			if (Element.MaxLines >= 0)
+			{
+#if __MOBILE__
+				Control.Lines = Element.MaxLines;
+
+				LayoutSubviews();
+#else
+				Control.MaximumNumberOfLines = Element.MaxLines;
+
+				Layout();
+#endif
+			}
+			else
+			{
+#if __MOBILE__
+				switch (Element.LineBreakMode)
+				{
+					case LineBreakMode.WordWrap:
+					case LineBreakMode.CharacterWrap:
+						Control.Lines = 0;
+						break;
+					case LineBreakMode.NoWrap:
+					case LineBreakMode.HeadTruncation:
+					case LineBreakMode.MiddleTruncation:
+					case LineBreakMode.TailTruncation:
+						Control.Lines = 1;
+						break;
+				}
+
+				LayoutSubviews();
+#else
+				switch (Element.LineBreakMode)
+				{
+					case LineBreakMode.WordWrap:
+					case LineBreakMode.CharacterWrap:
+						Control.MaximumNumberOfLines = 0;
+						break;
+					case LineBreakMode.NoWrap:
+					case LineBreakMode.HeadTruncation:
+					case LineBreakMode.MiddleTruncation:
+					case LineBreakMode.TailTruncation:
+						Control.MaximumNumberOfLines = 1;
+						break;
+				}
+
+				Layout();
+#endif
+			}
 		}
 	}
 }

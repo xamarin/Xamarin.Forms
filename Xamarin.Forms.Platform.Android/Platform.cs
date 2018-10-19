@@ -17,6 +17,7 @@ using Android.Widget;
 using Xamarin.Forms.Platform.Android.AppCompat;
 using FragmentManager = Android.Support.V4.App.FragmentManager;
 using Xamarin.Forms.Internals;
+using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -65,7 +66,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				_defaultActionBarTitleTextColor = SetDefaultActionBarTitleTextColor();
 			}
-			
+
 			_renderer = new PlatformRenderer(context, this);
 
 			if (embedded)
@@ -298,6 +299,23 @@ namespace Xamarin.Forms.Platform.Android
 			throw new InvalidOperationException("RemovePage is not supported globally on Android, please use a NavigationPage.");
 		}
 
+		public static void ClearRenderer(AView renderedView)
+		{
+			var element = (renderedView as IVisualElementRenderer)?.Element;
+			var view = element as View;
+			if (view != null)
+			{
+				var renderer = GetRenderer(view);
+				if (renderer == renderedView)
+					element.ClearValue(RendererProperty);
+				renderer?.Dispose();
+				renderer = null;
+			}
+			var layout = view as IVisualElementRenderer;
+			layout?.Dispose();
+			layout = null;
+		}
+
 		[Obsolete("CreateRenderer(VisualElement) is obsolete as of version 2.5. Please use CreateRendererWithContext(VisualElement, Context) instead.")]
 		public static IVisualElementRenderer CreateRenderer(VisualElement element)
 		{
@@ -323,7 +341,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public static IVisualElementRenderer GetRenderer(VisualElement bindable)
 		{
-			return (IVisualElementRenderer)bindable.GetValue(RendererProperty);
+			return (IVisualElementRenderer)bindable?.GetValue(RendererProperty);
 		}
 
 		public static void SetRenderer(VisualElement bindable, IVisualElementRenderer value)
@@ -698,24 +716,27 @@ namespace Xamarin.Forms.Platform.Android
 
 			NavAnimationInProgress = true;
 
+			SelectTab();
+
+			NavAnimationInProgress = false;
+		}
+
+		void SelectTab()
+		{
 			Page page = _currentTabbedPage.CurrentPage;
 			if (page == null)
 			{
 				ActionBar.SelectTab(null);
-				NavAnimationInProgress = false;
 				return;
 			}
 
 			int index = TabbedPage.GetIndex(page);
 			if (ActionBar.SelectedNavigationIndex == index || index >= ActionBar.NavigationItemCount)
 			{
-				NavAnimationInProgress = false;
 				return;
 			}
 
 			ActionBar.SelectTab(ActionBar.GetTabAt(index));
-
-			NavAnimationInProgress = false;
 		}
 
 		Drawable GetActionBarBackgroundDrawable()
@@ -824,6 +845,7 @@ namespace Xamarin.Forms.Platform.Android
 			_renderer.AddView(modalRenderer.View);
 
 			var source = new TaskCompletionSource<bool>();
+
 			NavAnimationInProgress = true;
 			if (animated)
 			{
@@ -835,22 +857,19 @@ namespace Xamarin.Forms.Platform.Android
 					OnEnd = a =>
 					{
 						source.TrySetResult(false);
-						NavAnimationInProgress = false;
 					},
 					OnCancel = a =>
 					{
 						source.TrySetResult(true);
-						NavAnimationInProgress = false;
 					}
 				});
 			}
 			else
 			{
-				NavAnimationInProgress = false;
 				source.TrySetResult(true);
 			}
 
-			return source.Task;
+			return source.Task.ContinueWith(task => NavAnimationInProgress = false);
 		}
 
 		void RegisterNavPageCurrent(Page page)
@@ -1105,8 +1124,8 @@ namespace Xamarin.Forms.Platform.Android
 		static int s_id = 0x00000400;
 
 		#region Previewer Stuff
-		
-		internal static readonly BindableProperty PageContextProperty = 
+
+		internal static readonly BindableProperty PageContextProperty =
 			BindableProperty.CreateAttached("PageContext", typeof(Context), typeof(Platform), null);
 
 		internal Platform(Context context) : this(context, false)
@@ -1115,12 +1134,12 @@ namespace Xamarin.Forms.Platform.Android
 			// the 'embedded' bool parameter so the previewer can find it via reflection
 		}
 
-		internal static void SetPageContext(BindableObject bindable, Context context)		
- 		{
+		internal static void SetPageContext(BindableObject bindable, Context context)
+		{
 			// Set a context for this page and its child controls
 			bindable.SetValue(PageContextProperty, context);
 		}
-		
+
 		static Context GetPreviewerContext(Element element)
 		{
 			// Walk up the tree and find the Page this element is hosted in
@@ -1138,7 +1157,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		internal class DefaultRenderer : VisualElementRenderer<View>
 		{
-			bool _notReallyHandled;
+			public bool NotReallyHandled { get; private set; }
+			IOnTouchListener _touchListener;
 
 			[Obsolete("This constructor is obsolete as of version 2.5. Please use DefaultRenderer(Context) instead.")]
 			public DefaultRenderer()
@@ -1154,7 +1174,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			internal void NotifyFakeHandling()
 			{
-				_notReallyHandled = true;
+				NotReallyHandled = true;
 			}
 
 			public override bool OnTouchEvent(MotionEvent e)
@@ -1197,20 +1217,38 @@ namespace Xamarin.Forms.Platform.Android
 				// it then knows to ignore that result and return false/unhandled. This allows the event to propagate up the tree.
 				#endregion
 
-				_notReallyHandled = false;
+				NotReallyHandled = false;
 
 				var result = base.DispatchTouchEvent(e);
 
-				if (result && _notReallyHandled)
+				if (result && NotReallyHandled)
 				{
 					// If the child control returned true from its touch event handler but signalled that it was a fake "true", then we
 					// don't consider the event truly "handled" yet. 
 					// Since a child control short-circuited the normal dispatchTouchEvent stuff, this layout never got the chance for
 					// IOnTouchListener.OnTouch and the OnTouchEvent override to try handling the touches; we'll do that now
-					return OnTouchEvent(e);
+					// Any associated Touch Listeners are called from DispatchTouchEvents if all children of this view return false
+					// So here we are simulating both calls that would have typically been called from inside DispatchTouchEvent
+					// but were not called due to the fake "true"
+					result = _touchListener?.OnTouch(this, e) ?? false;
+					return result || OnTouchEvent(e);
 				}
 
 				return result;
+			}
+
+			public override void SetOnTouchListener(IOnTouchListener l)
+			{
+				_touchListener = l;
+				base.SetOnTouchListener(l);
+			}
+
+			protected override void Dispose(bool disposing)
+			{
+				if (disposing)
+					_touchListener = null;
+
+				base.Dispose(disposing);
 			}
 		}
 
@@ -1232,8 +1270,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		SizeRequest IPlatform.GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
 		{
-			var reference = Guid.NewGuid().ToString();
-			Performance.Start(reference);
+			Performance.Start(out string reference);
 
 			// FIXME: potential crash
 			IVisualElementRenderer visualElementRenderer = GetRenderer(view);

@@ -1,14 +1,14 @@
 ### Description of Change ###
 
-Describe your changes here.
+<!-- Describe your changes here. -->
 
-### Bugs Fixed ###
+### Issues Resolved ### 
+<!-- Please use the format "fixes #xxxx" for each issue this PR addresses -->
 
-- Provide links to bugs here
+- fixes #
 
 ### API Changes ###
-
-List all API changes here (or just put None), example:
+<!-- List all API changes here (or just put None), example:
 
 Added:
  - string ListView.GroupName { get; set; } //Bindable Property
@@ -17,14 +17,37 @@ Added:
 
 Changed:
  - object ListView.SelectedItem => Cell ListView.SelectedItem
+ 
+ Removed:
+ - object ListView.SelectedItem => Cell ListView.SelectedItem
+ 
+ -->
+ 
+ None
 
-### Behavioral Changes ###
+### Platforms Affected ### 
+<!-- Please list all platforms affected by these changes -->
 
-Describe any non-bug related behavioral changes that may change how users app behaves when upgrading to this version of the codebase.
+- Core/XAML (all platforms)
+- iOS
+- Android
+- UWP
+
+### Behavioral/Visual Changes ###
+<!-- Describe any changes that may change how a user's app behaves or appears when upgrading to this version of the codebase. -->
+
+None
+
+### Before/After Screenshots ### 
+<!-- If possible, take a screenshot of your test case before these changes were made and another screenshot after the changes were made to show possible visual changes. -->
+
+Not applicable
+
+### Testing Procedure ###
+<!-- Please list the steps that should be taken to properly test these changes on each relevant platform. If you were unable to test these changes yourself on any or all platforms, please let us know. Also, if you are able to attach a video of your test run, you will be our personal hero. -->
 
 ### PR Checklist ###
 
-- [ ] Has tests (if omitted, state reason in description)
+- [ ] Has automated tests <!-- (if tests are omitted or manual, state reason in description) -->
 - [ ] Rebased on top of the target branch at time of PR
 - [ ] Changes adhere to coding standard
-- [ ] Consolidate commits as makes sense

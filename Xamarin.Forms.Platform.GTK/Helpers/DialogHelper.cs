@@ -5,128 +5,165 @@ using Xamarin.Forms.Platform.GTK.Extensions;
 
 namespace Xamarin.Forms.Platform.GTK.Helpers
 {
-    internal static class DialogHelper
-    {
-        public static void ShowAlert(PlatformRenderer platformRender, AlertArguments arguments)
-        {
-            MessageDialog messageDialog = new MessageDialog(
-                    platformRender.Toplevel as Window,
-                    DialogFlags.DestroyWithParent,
-                    MessageType.Other,
-                    ButtonsType.Ok,
-                    arguments.Message);
+	internal static class DialogHelper
+	{
+		public static void ShowAlert(PlatformRenderer platformRender, AlertArguments arguments)
+		{
+			MessageDialog messageDialog = new MessageDialog(
+					platformRender.Toplevel as Window,
+					DialogFlags.DestroyWithParent,
+					MessageType.Other,
+					GetAlertButtons(arguments),
+					arguments.Message);
 
-            SetDialogTitle(arguments.Title, messageDialog);
+			SetDialogTitle(arguments.Title, messageDialog);
+			SetButtonText(arguments.Accept, ButtonsType.Ok, messageDialog);
+			SetButtonText(arguments.Cancel, ButtonsType.Cancel, messageDialog);
 
-            ResponseType result = (ResponseType)messageDialog.Run();
+			ResponseType result = (ResponseType)messageDialog.Run();
 
-            if (result == ResponseType.Ok)
-            {
-                arguments.SetResult(true);
-            }
-            else
-            {
-                arguments.SetResult(false);
-            }
+			if (result == ResponseType.Ok)
+			{
+				arguments.SetResult(true);
+			}
+			else
+			{
+				arguments.SetResult(false);
+			}
 
-            messageDialog.Destroy();
-        }
+			messageDialog.Destroy();
+		}
 
-        public static void ShowActionSheet(PlatformRenderer platformRender, ActionSheetArguments arguments)
-        {
-            MessageDialog messageDialog = new MessageDialog(
-               platformRender.Toplevel as Window,
-               DialogFlags.DestroyWithParent,
-               MessageType.Other,
-               ButtonsType.Cancel,
-               null);
+		public static void ShowActionSheet(PlatformRenderer platformRender, ActionSheetArguments arguments)
+		{
+			MessageDialog messageDialog = new MessageDialog(
+			   platformRender.Toplevel as Window,
+			   DialogFlags.DestroyWithParent,
+			   MessageType.Other,
+			   ButtonsType.Cancel,
+			   null);
 
-            SetDialogTitle(arguments.Title, messageDialog);
-            SetCancelButton(arguments.Cancel, messageDialog);
-            SetDestructionButton(arguments.Destruction, messageDialog);
-            AddExtraButtons(arguments, messageDialog);
+			SetDialogTitle(arguments.Title, messageDialog);
+			SetButtonText(arguments.Cancel, ButtonsType.Cancel, messageDialog);
+			SetDestructionButton(arguments.Destruction, messageDialog);
+			AddExtraButtons(arguments, messageDialog);
 
-            int result = messageDialog.Run();
+			int result = messageDialog.Run();
 
-            if ((ResponseType)result == ResponseType.Cancel)
-            {
-                arguments.SetResult(arguments.Cancel);
-            }
-            else if ((ResponseType)result == ResponseType.Reject)
-            {
-                arguments.SetResult(arguments.Destruction);
-            }
+			if ((ResponseType)result == ResponseType.Cancel)
+			{
+				arguments.SetResult(arguments.Cancel);
+			}
+			else if ((ResponseType)result == ResponseType.Reject)
+			{
+				arguments.SetResult(arguments.Destruction);
+			}
 
-            messageDialog.Destroy();
-        }
+			messageDialog.Destroy();
+		}
 
-        private static void SetDialogTitle(string title, MessageDialog messageDialog)
-        {
-            messageDialog.Title = title ?? string.Empty;
-        }
+		private static void SetDialogTitle(string title, MessageDialog messageDialog)
+		{
+			messageDialog.Title = title ?? string.Empty;
+		}
 
-        private static void SetCancelButton(string cancel, MessageDialog messageDialog)
-        {
-            var buttonsBox = messageDialog.GetDescendants()
-                .OfType<HButtonBox>()
-                .FirstOrDefault();
+		private static void SetButtonText(string text, ButtonsType type, MessageDialog messageDialog)
+		{
+			string gtkLabel = string.Empty;
 
-            if (buttonsBox == null) return;
+			switch (type)
+			{
+				case ButtonsType.Ok:
+					gtkLabel = "gtk-ok";
+					break;
+				case ButtonsType.Cancel:
+					gtkLabel = "gtk-cancel";
+					break;
+			}
 
-            var cancelButton = buttonsBox.GetDescendants()
-                .OfType<Gtk.Button>()
-                .FirstOrDefault();
+			var buttonsBox = messageDialog.GetDescendants()
+				.OfType<HButtonBox>()
+				.FirstOrDefault();
 
-            if (cancelButton == null) return;
+			if (buttonsBox == null) return;
 
-            if (string.IsNullOrEmpty(cancel))
-            {
-                cancelButton.Hide();
-            }
-            else
-            {
-                cancelButton.Label = cancel;
-            }
-        }
+			var targetButton = buttonsBox.GetDescendants()
+				.OfType<Gtk.Button>()
+				.FirstOrDefault(x => x.Label == gtkLabel);
 
-        private static void SetDestructionButton(string destruction, MessageDialog messageDialog)
-        {
-            if (!string.IsNullOrEmpty(destruction))
-            {
-                var destructionButton =
-                    messageDialog.AddButton(destruction, ResponseType.Reject) as Gtk.Button;
+			if (targetButton == null) return;
 
-                var destructionColor = Color.Red.ToGtkColor();
-                destructionButton.Child.ModifyFg(StateType.Normal, destructionColor);
-                destructionButton.Child.ModifyFg(StateType.Prelight, destructionColor);
-                destructionButton.Child.ModifyFg(StateType.Active, destructionColor);
-            }
-        }
+			if (string.IsNullOrEmpty(text))
+			{
+				targetButton.Hide();
+			}
+			else
+			{
+				targetButton.Label = text;
+			}
+		}
 
-        private static void AddExtraButtons(ActionSheetArguments arguments, MessageDialog messageDialog)
-        {
-            var vbox = messageDialog.VBox;
+		private static void SetDestructionButton(string destruction, MessageDialog messageDialog)
+		{
+			if (!string.IsNullOrEmpty(destruction))
+			{
+				var destructionButton =
+					messageDialog.AddButton(destruction, ResponseType.Reject) as Gtk.Button;
 
-            // As we are not showing any message in this dialog, we just 
-            // hide default container and avoid it from using space
-            vbox.Children[0].Hide();
+				var destructionColor = Color.Red.ToGtkColor();
+				destructionButton.Child.ModifyFg(StateType.Normal, destructionColor);
+				destructionButton.Child.ModifyFg(StateType.Prelight, destructionColor);
+				destructionButton.Child.ModifyFg(StateType.Active, destructionColor);
+			}
+		}
 
-            if (arguments.Buttons.Any())
-            {
-                for (int i = 0; i < arguments.Buttons.Count(); i++)
-                {
-                    var button = new Gtk.Button();
-                    button.Label = arguments.Buttons.ElementAt(i);
-                    button.Clicked += (o, e) =>
-                    {
-                        arguments.SetResult(button.Label);
-                        messageDialog.Destroy();
-                    };
-                    button.Show();
+		private static void AddExtraButtons(ActionSheetArguments arguments, MessageDialog messageDialog)
+		{
+			var vbox = messageDialog.VBox;
 
-                    vbox.PackStart(button, false, false, 0);
-                }
-            }
-        }
-    }
+			// As we are not showing any message in this dialog, we just 
+			// hide default container and avoid it from using space
+			vbox.Children[0].Hide();
+
+			if (arguments.Buttons.Any())
+			{
+				for (int i = 0; i < arguments.Buttons.Count(); i++)
+				{
+					var button = new Gtk.Button();
+					button.Label = arguments.Buttons.ElementAt(i);
+					button.Clicked += (o, e) =>
+					{
+						arguments.SetResult(button.Label);
+						messageDialog.Destroy();
+					};
+					button.Show();
+
+					vbox.PackStart(button, false, false, 0);
+				}
+			}
+		}
+
+		private static ButtonsType GetAlertButtons(AlertArguments arguments)
+		{
+			bool hasAccept = !string.IsNullOrEmpty(arguments.Accept);
+			bool hasCancel = !string.IsNullOrEmpty(arguments.Cancel);
+
+			ButtonsType type = ButtonsType.None;
+
+			if (hasAccept && hasCancel)
+			{
+				type = ButtonsType.OkCancel;
+			}
+			else if (hasAccept && !hasCancel)
+			{
+				type = ButtonsType.Ok;
+			}
+			else if (!hasAccept && hasCancel)
+			{
+				type = ButtonsType.Cancel;
+			}
+
+			return type;
+		}
+	}
 }

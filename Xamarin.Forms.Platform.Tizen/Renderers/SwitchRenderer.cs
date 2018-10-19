@@ -26,7 +26,6 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				SetNativeControl(new Check(Forms.NativeParent)
 				{
-					PropagateEvents = false,
 					Style = SwitchStyle.Toggle
 				});
 				Control.StateChanged += OnStateChanged;
@@ -70,7 +69,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		void OnStateChanged(object sender, EventArgs e)
 		{
-			Element.SetValue(Switch.IsToggledProperty, Control.IsChecked);
+			Element.SetValueFromRenderer(Switch.IsToggledProperty, Control.IsChecked);
 		}
 
 		void HandleToggled()

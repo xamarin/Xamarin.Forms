@@ -83,6 +83,11 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		public string FontWeight { get; set; }
 
 		/// <summary>
+		/// Gets or sets the line height.
+		/// </summary>
+		public double LineHeight { get; set; }
+
+		/// <summary>
 		/// Gets or sets the line break mode for the text.
 		/// See <see cref="LineBreakMode"/> for information about LineBreakMode.
 		/// </summary>
@@ -120,6 +125,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			LineBreakMode = LineBreakMode.None;
 			Underline = false;
 			Strikethrough = false;
+			LineHeight = -1.0d;
 		}
 
 		/// <summary>
@@ -128,17 +134,11 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		internal string GetMarkupText()
 		{
 			StringBuilder sb = new StringBuilder();
-
-			sb.AppendFormat("<span ");
-
+			sb.Append("<span ");
 			sb = PrepareFormattingString(sb);
-
 			sb.Append(">");
-
 			sb.Append(GetDecoratedText());
-
 			sb.Append("</span>");
-
 			return sb.ToString();
 		}
 
@@ -229,6 +229,11 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 				case TextAlignment.None:
 					break;
+			}
+
+			if (LineHeight != -1.0d)
+			{
+				_formattingString.Append($"linerelsize={(int)(LineHeight*100)}%");
 			}
 
 			switch (LineBreakMode)

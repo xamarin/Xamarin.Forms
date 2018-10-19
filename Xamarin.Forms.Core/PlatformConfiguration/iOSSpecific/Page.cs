@@ -43,7 +43,7 @@
 				element.SetValue(PreferredStatusBarUpdateAnimationProperty, value);
 			else if (value == UIStatusBarAnimation.Slide)
 				element.SetValue(PreferredStatusBarUpdateAnimationProperty, value);
-			else 
+			else
 				element.SetValue(PreferredStatusBarUpdateAnimationProperty, value);
 		}
 
@@ -58,14 +58,7 @@
 			return config;
 		}
 
-		public static readonly BindableProperty UseSafeAreaProperty = BindableProperty.Create("UseSafeArea", typeof(bool), typeof(Page), false, propertyChanged: (bindable, oldValue, newValue) =>
-		{
-			var page = bindable as Xamarin.Forms.Page;
-			if ((bool)oldValue && !(bool)newValue)
-			{
-				page.Padding = default(Thickness);
-			}
-		});
+		public static readonly BindableProperty UseSafeAreaProperty = BindableProperty.Create("UseSafeArea", typeof(bool), typeof(Page), false);
 
 		public static bool GetUseSafeArea(BindableObject element)
 		{
@@ -111,14 +104,7 @@
 			return config;
 		}
 
-		static readonly BindablePropertyKey SafeAreaInsetsPropertyKey = BindableProperty.CreateReadOnly(nameof(SafeAreaInsets), typeof(Thickness), typeof(Page), default(Thickness), propertyChanged: (bindable, oldValue, newValue) =>
-		{
-			var page = bindable as Xamarin.Forms.Page;
-			if (page.On<iOS>().UsingSafeArea())
-			{
-				page.Padding = (Thickness)newValue;
-			}
-		});
+		static readonly BindablePropertyKey SafeAreaInsetsPropertyKey = BindableProperty.CreateReadOnly(nameof(SafeAreaInsets), typeof(Thickness), typeof(Page), default(Thickness));
 
 		public static readonly BindableProperty SafeAreaInsetsProperty = SafeAreaInsetsPropertyKey.BindableProperty;
 
@@ -144,5 +130,28 @@
 			return config;
 		}
 
+		public static readonly BindableProperty ModalPresentationStyleProperty =
+			BindableProperty.Create(nameof(ModalPresentationStyle), typeof(UIModalPresentationStyle), typeof(Page), UIModalPresentationStyle.FullScreen);
+		
+		public static UIModalPresentationStyle ModalPresentationStyle(this IPlatformElementConfiguration<iOS, FormsElement> config)
+		{
+			return GetModalPresentationStyle(config.Element);
+		}
+
+		public static IPlatformElementConfiguration<iOS, FormsElement> SetModalPresentationStyle(this IPlatformElementConfiguration<iOS, FormsElement> config, UIModalPresentationStyle value)
+		{
+			SetModalPresentationStyle(config.Element, value);
+			return config;
+		}
+
+		public static UIModalPresentationStyle GetModalPresentationStyle(BindableObject element)
+		{
+			return (UIModalPresentationStyle)element.GetValue(ModalPresentationStyleProperty);
+		}
+
+		static void SetModalPresentationStyle(BindableObject element, UIModalPresentationStyle value)
+		{
+			element.SetValue(ModalPresentationStyleProperty, value);
+		}
 	}
 }

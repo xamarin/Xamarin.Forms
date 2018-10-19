@@ -20,6 +20,11 @@ namespace Xamarin.Forms.Platform.Android
 		TextColorSwitcher _textColorSwitcher;
 		bool _disposed;
 		ImeAction _currentInputImeFlag;
+		IElementController ElementController => Element as IElementController;
+
+		bool _cursorPositionChangePending;
+		bool _selectionLengthChangePending;
+		bool _nativeSelectionIsUpdating;
 
 		public EntryRenderer(Context context) : base(context)
 		{
@@ -35,7 +40,7 @@ namespace Xamarin.Forms.Platform.Android
 		bool TextView.IOnEditorActionListener.OnEditorAction(TextView v, ImeAction actionId, KeyEvent e)
 		{
 			// Fire Completed and dismiss keyboard for hardware / physical keyboards
-			if (actionId == ImeAction.Done || actionId == _currentInputImeFlag || (actionId == ImeAction.ImeNull && e.KeyCode == Keycode.Enter && e.Action == KeyEventActions.Up) )
+			if (actionId == ImeAction.Done || actionId == _currentInputImeFlag || (actionId == ImeAction.ImeNull && e.KeyCode == Keycode.Enter && e.Action == KeyEventActions.Up))
 			{
 				Control.ClearFocus();
 				v.HideKeyboard();
@@ -75,10 +80,11 @@ namespace Xamarin.Forms.Platform.Android
 			if (e.OldElement == null)
 			{
 				var textView = CreateNativeControl();
-				
+
 				textView.AddTextChangedListener(this);
 				textView.SetOnEditorActionListener(this);
 				textView.OnKeyboardBackPressed += OnKeyboardBackPressed;
+				textView.SelectionChanged += SelectionChanged;
 
 				var useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
 
@@ -86,6 +92,11 @@ namespace Xamarin.Forms.Platform.Android
 				_hintColorSwitcher = new TextColorSwitcher(textView.HintTextColors, useLegacyColorManagement);
 				SetNativeControl(textView);
 			}
+
+			// When we set the control text, it triggers the SelectionChanged event, which updates CursorPosition and SelectionLength;
+			// These one-time-use variables will let us initialize a CursorPosition and SelectionLength via ctor/xaml/etc.
+			_cursorPositionChangePending = Element.IsSet(Entry.CursorPositionProperty);
+			_selectionLengthChangePending = Element.IsSet(Entry.SelectionLengthProperty);
 
 			Control.Hint = Element.Placeholder;
 			Control.Text = Element.Text;
@@ -98,6 +109,9 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateMaxLength();
 			UpdateImeOptions();
 			UpdateReturnType();
+
+			if (_cursorPositionChangePending || _selectionLengthChangePending)
+				UpdateCursorSelection();
 		}
 
 		protected override void Dispose(bool disposing)
@@ -114,6 +128,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (Control != null)
 				{
 					Control.OnKeyboardBackPressed -= OnKeyboardBackPressed;
+					Control.SelectionChanged -= SelectionChanged;
 				}
 			}
 
@@ -164,6 +179,10 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateImeOptions();
 			else if (e.PropertyName == Entry.ReturnTypeProperty.PropertyName)
 				UpdateReturnType();
+			else if (e.PropertyName == Entry.SelectionLengthProperty.PropertyName)
+				UpdateCursorSelection();
+			else if (e.PropertyName == Entry.CursorPositionProperty.PropertyName)
+				UpdateCursorSelection();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -187,7 +206,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateAlignment()
 		{
-			Control.UpdateHorizontalAlignment(Element.HorizontalTextAlignment);
+			Control.UpdateHorizontalAlignment(Element.HorizontalTextAlignment, Context.HasRtlSupport());
 		}
 
 		void UpdateColor()
@@ -236,6 +255,8 @@ namespace Xamarin.Forms.Platform.Android
 				Control.InputType = Control.InputType | InputTypes.TextVariationPassword;
 			if (model.IsPassword && ((Control.InputType & InputTypes.ClassNumber) == InputTypes.ClassNumber))
 				Control.InputType = Control.InputType | InputTypes.NumberVariationPassword;
+
+			UpdateFont();
 		}
 
 		void UpdatePlaceholderColor()
@@ -247,7 +268,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			Control?.ClearFocus();
 		}
-    
+
 		void UpdateMaxLength()
 		{
 			var currentFilters = new List<IInputFilter>(Control?.GetFilters() ?? new IInputFilter[0]);
@@ -275,9 +296,123 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (Control == null || Element == null)
 				return;
-			
+
 			Control.ImeOptions = Element.ReturnType.ToAndroidImeAction();
 			_currentInputImeFlag = Control.ImeOptions;
+		}
+
+		void SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (_nativeSelectionIsUpdating || Control == null || Element == null)
+				return;
+
+			int cursorPosition = Element.CursorPosition;
+			int selectionStart = Control.SelectionStart;
+
+			if (!_cursorPositionChangePending)
+			{
+				var start = cursorPosition;
+
+				if (selectionStart != start)
+					SetCursorPositionFromRenderer(selectionStart);
+			}
+
+			if (!_selectionLengthChangePending)
+			{
+				int elementSelectionLength = System.Math.Min(Control.Text.Length - cursorPosition, Element.SelectionLength);
+
+				var controlSelectionLength = Control.SelectionEnd - selectionStart;
+				if (controlSelectionLength != elementSelectionLength)
+					SetSelectionLengthFromRenderer(controlSelectionLength);
+			}
+		}
+
+		void UpdateCursorSelection()
+		{
+			if (_nativeSelectionIsUpdating || Control == null || Element == null)
+				return;
+
+			if (Control.RequestFocus())
+			{
+				try
+				{
+					int start = GetSelectionStart();
+					int end = GetSelectionEnd(start);
+
+					Control.SetSelection(start, end);
+				}
+				catch (System.Exception ex)
+				{
+					Internals.Log.Warning("Entry", $"Failed to set Control.Selection from CursorPosition/SelectionLength: {ex}");
+				}
+				finally
+				{
+					_cursorPositionChangePending = _selectionLengthChangePending = false;
+				}
+			}
+		}
+
+		int GetSelectionEnd(int start)
+		{
+			int end = start;
+			int selectionLength = Element.SelectionLength;
+
+			if (Element.IsSet(Entry.SelectionLengthProperty))
+				end = System.Math.Max(start, System.Math.Min(Control.Length(), start + selectionLength));
+
+			int newSelectionLength = System.Math.Max(0, end - start);
+			if (newSelectionLength != selectionLength)
+				SetSelectionLengthFromRenderer(newSelectionLength);
+
+			return end;
+		}
+
+		int GetSelectionStart()
+		{
+			int start = Control.Length();
+			int cursorPosition = Element.CursorPosition;
+
+			if (Element.IsSet(Entry.CursorPositionProperty))
+				start = System.Math.Min(Control.Text.Length, cursorPosition);
+
+			if (start != cursorPosition)
+				SetCursorPositionFromRenderer(start);
+
+			return start;
+		}
+
+		void SetCursorPositionFromRenderer(int start)
+		{
+			try
+			{
+				_nativeSelectionIsUpdating = true;
+				ElementController?.SetValueFromRenderer(Entry.CursorPositionProperty, start);
+			}
+			catch (System.Exception ex)
+			{
+				Internals.Log.Warning("Entry", $"Failed to set CursorPosition from renderer: {ex}");
+			}
+			finally
+			{
+				_nativeSelectionIsUpdating = false;
+			}
+		}
+
+		void SetSelectionLengthFromRenderer(int selectionLength)
+		{
+			try
+			{
+				_nativeSelectionIsUpdating = true;
+				ElementController?.SetValueFromRenderer(Entry.SelectionLengthProperty, selectionLength);
+			}
+			catch (System.Exception ex)
+			{
+				Internals.Log.Warning("Entry", $"Failed to set SelectionLength from renderer: {ex}");
+			}
+			finally
+			{
+				_nativeSelectionIsUpdating = false;
+			}
 		}
 	}
 }

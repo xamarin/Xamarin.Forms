@@ -68,6 +68,45 @@ namespace Xamarin.Forms.Controls
 			entryGroup.AddChild(entry, 1, 0);
 
 
+			var textCellA = new TextCell
+			{
+				Text = "A"
+			};
+			textCellA.SetAutomationPropertiesName("Option A");
+
+			var textCellB = new TextCell
+			{
+				Text = "B"
+			};
+			textCellB.SetAutomationPropertiesName("Option B");
+
+			var textCellC = new TextCell
+			{
+				Text = "C"
+			};
+			textCellC.SetAutomationPropertiesName("Option C");
+
+			var textCellD = new TextCell
+			{
+				Text = "D"
+			};
+			textCellD.SetAutomationPropertiesName("Option D");
+
+			TableView tbl = new TableView
+			{
+				Intent = TableIntent.Menu,
+				Root = new TableRoot
+					{
+						new TableSection("TableView")
+						{
+							textCellA,
+							textCellB,
+							textCellC,
+							textCellD,
+						}
+					}
+			};
+
 
 			var activityIndicator = new ActivityIndicator();
 			activityIndicator.SetAutomationPropertiesName("Progress indicator");
@@ -91,10 +130,6 @@ namespace Xamarin.Forms.Controls
 			image.GestureRecognizers.Add(new TapGestureRecognizer { Command = new Command(() => DisplayAlert("Success", "You tapped the image", "OK")) });
 			image.SetAutomationPropertiesName(ImageName);
 			image.SetAutomationPropertiesHelpText(ImageHelpText);
-			// Images are ignored by default on iOS (at least, Forms Images are); 
-			// make accessible in order to enable the gesture and narration
-			image.SetAutomationPropertiesIsInAccessibleTree(true);
-
 
 			var instructions6 = new Label { Text = boxInstructions };
 			var boxView = new BoxView { Color = Color.Purple };
@@ -102,7 +137,7 @@ namespace Xamarin.Forms.Controls
 			boxView.GestureRecognizers.Add(new TapGestureRecognizer { Command = new Command(() => DisplayAlert("Success", "You tapped the box", "OK")) });
 			boxView.SetAutomationPropertiesName(BoxName);
 			boxView.SetAutomationPropertiesHelpText(BoxHelpText);
-			// BoxViews are ignored by default on iOS and Win; 
+			// BoxViews are ignored by default on Win; 
 			// make accessible in order to enable the gesture and narration
 			boxView.SetAutomationPropertiesIsInAccessibleTree(true);
 
@@ -114,6 +149,7 @@ namespace Xamarin.Forms.Controls
 					instructions,
 					instructions2,
 					entryGroup,
+					tbl,
 					instructions3,
 					button,
 					activityIndicator,
@@ -130,42 +166,42 @@ namespace Xamarin.Forms.Controls
 
 	public static class AutomationPropertiesExtensions
 	{
-		public static void SetAutomationPropertiesName(this VisualElement element, string name)
+		public static void SetAutomationPropertiesName(this Element element, string name)
 		{
 			element.SetValue(AutomationProperties.NameProperty, name);
 		}
 
-		public static string GetAutomationPropertiesName(this VisualElement element)
+		public static string GetAutomationPropertiesName(this Element element)
 		{
 			return (string)element.GetValue(AutomationProperties.NameProperty);
 		}
 
-		public static void SetAutomationPropertiesHelpText(this VisualElement element, string HelpText)
+		public static void SetAutomationPropertiesHelpText(this Element element, string HelpText)
 		{
 			element.SetValue(AutomationProperties.HelpTextProperty, HelpText);
 		}
 
-		public static string GetAutomationPropertiesHelpText(this VisualElement element)
+		public static string GetAutomationPropertiesHelpText(this Element element)
 		{
 			return (string)element.GetValue(AutomationProperties.HelpTextProperty);
 		}
 
-		public static void SetAutomationPropertiesIsInAccessibleTree(this VisualElement element, bool value)
+		public static void SetAutomationPropertiesIsInAccessibleTree(this Element element, bool value)
 		{
 			element.SetValue(AutomationProperties.IsInAccessibleTreeProperty, value);
 		}
 
-		public static bool GetAutomationPropertiesIsInAccessibleTree(this VisualElement element)
+		public static bool GetAutomationPropertiesIsInAccessibleTree(this Element element)
 		{
 			return (bool)element.GetValue(AutomationProperties.IsInAccessibleTreeProperty);
 		}
 
-		public static void SetAutomationPropertiesLabeledBy(this VisualElement element, Element value)
+		public static void SetAutomationPropertiesLabeledBy(this Element element, Element value)
 		{
 			element.SetValue(AutomationProperties.LabeledByProperty, value);
 		}
 
-		public static Element GetAutomationPropertiesLabeledBy(this VisualElement element)
+		public static Element GetAutomationPropertiesLabeledBy(this Element element)
 		{
 			return (Element)element.GetValue(AutomationProperties.LabeledByProperty);
 		}

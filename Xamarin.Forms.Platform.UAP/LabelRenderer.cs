@@ -25,6 +25,9 @@ namespace Xamarin.Forms.Platform.UWP
 				run.ApplyFont(span.Font);
 #pragma warning restore 618
 
+			if (span.IsSet(Span.TextDecorationsProperty))
+				run.TextDecorations = (Windows.UI.Text.TextDecorations)span.TextDecorations;
+
 			return run;
 		}
 	}
@@ -37,16 +40,20 @@ namespace Xamarin.Forms.Platform.UWP
 		bool _perfectSizeValid;
 		IList<double> _inlineHeights = new List<double>();
 
-		protected override AutomationPeer OnCreateAutomationPeer()
-		{
-			// We need an automation peer so we can interact with this in automated tests
-			if (Control == null)
-			{
-				return new FrameworkElementAutomationPeer(this);
-			}
+		//TODO: We need to revisit this later when we complete the UI Tests for UWP.
+		// Changing the AutomationPeer here prevents the Narrator from functioning properly.
+		// Oddly, it affects more than just the TextBlocks. It seems to break the entire scan mode.
 
-			return new FrameworkElementAutomationPeer(Control);
-		}
+		//protected override AutomationPeer OnCreateAutomationPeer()
+		//{
+		//	// We need an automation peer so we can interact with this in automated tests
+		//	if (Control == null)
+		//	{
+		//		return new FrameworkElementAutomationPeer(this);
+		//	}
+
+		//	return new TextBlockAutomationPeer(Control);
+		//}
 
 		protected override Windows.Foundation.Size ArrangeOverride(Windows.Foundation.Size finalSize)
 		{
@@ -128,11 +135,14 @@ namespace Xamarin.Forms.Platform.UWP
 				_isInitiallyDefault = Element.IsDefault();
 
 				UpdateText(Control);
+				UpdateTextDecorations(Control);
 				UpdateColor(Control);
 				UpdateAlign(Control);
 				UpdateFont(Control);
 				UpdateLineBreakMode(Control);
+				UpdateMaxLines(Control);
 				UpdateDetectReadingOrderFromContent(Control);
+				UpdateLineHeight(Control);
 			}
 		}
 
@@ -146,6 +156,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateAlign(Control);
 			else if (e.PropertyName == Label.FontProperty.PropertyName)
 				UpdateFont(Control);
+			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
+				UpdateTextDecorations(Control);
 			else if (e.PropertyName == Label.LineBreakModeProperty.PropertyName)
 				UpdateLineBreakMode(Control);
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
@@ -154,7 +166,42 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateDetectReadingOrderFromContent(Control);
 			else if (e.PropertyName == Label.LineHeightProperty.PropertyName)
 				UpdateLineHeight(Control);
+			else if (e.PropertyName == Label.MaxLinesProperty.PropertyName)
+				UpdateMaxLines(Control);
 			base.OnElementPropertyChanged(sender, e);
+		}
+
+		void UpdateTextDecorations(TextBlock textBlock)
+		{
+			if (!Element.IsSet(Label.TextDecorationsProperty))
+				return;
+
+			var elementTextDecorations = Element.TextDecorations;
+
+			if ((elementTextDecorations & TextDecorations.Underline) == 0)
+				textBlock.TextDecorations &= ~Windows.UI.Text.TextDecorations.Underline;
+			else
+				textBlock.TextDecorations |= Windows.UI.Text.TextDecorations.Underline;
+
+			if ((elementTextDecorations & TextDecorations.Strikethrough) == 0)
+				textBlock.TextDecorations &= ~Windows.UI.Text.TextDecorations.Strikethrough;
+			else
+				textBlock.TextDecorations |= Windows.UI.Text.TextDecorations.Strikethrough;
+
+			//TextDecorations are not updated in the UI until the text changes
+			if (textBlock.Inlines != null && textBlock.Inlines.Count > 0)
+			{
+				for (var i = 0; i < textBlock.Inlines.Count; i++)
+				{
+					var run = (Run)textBlock.Inlines[i];
+					run.Text = run.Text;
+				}
+			}
+			else
+			{
+				textBlock.Text = textBlock.Text; 
+			}
+
 		}
 
 		void UpdateAlign(TextBlock textBlock)
@@ -306,6 +353,18 @@ namespace Xamarin.Forms.Platform.UWP
 			if (Element.LineHeight >= 0)
 			{
 				textBlock.LineHeight = Element.LineHeight * textBlock.FontSize;
+			}
+		}
+
+		void UpdateMaxLines(TextBlock textBlock)
+		{
+			if (Element.MaxLines >= 0)
+			{
+				textBlock.MaxLines = Element.MaxLines;
+			}
+			else
+			{
+				textBlock.MaxLines = 0;
 			}
 		}
 	}

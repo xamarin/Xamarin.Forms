@@ -21,11 +21,8 @@ namespace Xamarin.Forms.Platform.Tizen
 			RegisterPropertyHandler(Entry.ReturnTypeProperty, UpdateReturnType);
 			RegisterPropertyHandler(InputView.IsSpellCheckEnabledProperty, UpdateIsSpellCheckEnabled);
 			RegisterPropertyHandler(Entry.IsTextPredictionEnabledProperty, UpdateIsSpellCheckEnabled);
-
-			if (TizenPlatformServices.AppDomain.IsTizenSpecificAvailable)
-			{
-				RegisterPropertyHandler("FontWeight", UpdateFontWeight);
-			}
+			RegisterPropertyHandler(Specific.FontWeightProperty, UpdateFontWeight);
+			RegisterPropertyHandler(Entry.SelectionLengthProperty, UpdateSelectionLength);
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Entry> e)
@@ -35,12 +32,12 @@ namespace Xamarin.Forms.Platform.Tizen
 				var entry = new Native.EditfieldEntry(Forms.NativeParent)
 				{
 					IsSingleLine = true,
-					PropagateEvents = false,
 				};
 				entry.SetVerticalTextAlignment("elm.text", 0.5);
 				entry.SetVerticalTextAlignment("elm.guide", 0.5);
 				entry.TextChanged += OnTextChanged;
 				entry.Activated += OnCompleted;
+				entry.CursorChanged += OnCursorChanged;
 				entry.PrependMarkUpFilter(MaxLengthFilter);
 				SetNativeControl(entry);
 			}
@@ -55,6 +52,7 @@ namespace Xamarin.Forms.Platform.Tizen
 				{
 					Control.TextChanged -= OnTextChanged;
 					Control.Activated -= OnCompleted;
+					Control.CursorChanged -= OnCursorChanged;
 				}
 			}
 
@@ -68,7 +66,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		void OnTextChanged(object sender, EventArgs e)
 		{
-			Element.Text = Control.Text;
+			Element.SetValueFromRenderer(Entry.TextProperty, Control.Text);
 		}
 
 		void OnCompleted(object sender, EventArgs e)
@@ -162,6 +160,43 @@ namespace Xamarin.Forms.Platform.Tizen
 		void UpdateReturnType()
 		{
 			Control.SetInputPanelReturnKeyType(Element.ReturnType.ToInputPanelReturnKeyType());
+		}
+
+		void UpdateSelectionLength()
+		{
+			var selectionLength = Control.GetSelection()?.Length ?? 0;
+			if (selectionLength != Element.SelectionLength)
+			{
+				if (Element.SelectionLength == 0)
+				{
+					Control.SelectNone();
+				}
+				else
+				{
+					Control.SetSelectionRegion(Element.CursorPosition, Element.CursorPosition + Element.SelectionLength);
+				}
+			}
+			else if (selectionLength == 0)
+			{
+				Control.SelectNone();
+			}
+		}
+
+		void OnCursorChanged(object sender, EventArgs e)
+		{
+			Element.SetValueFromRenderer(Entry.CursorPositionProperty, GetCursorPosition());
+			Element.SetValueFromRenderer(Entry.SelectionLengthProperty, Control.GetSelection()?.Length ?? 0);
+		}
+
+		int GetCursorPosition()
+		{
+			var selection = Control.GetSelection();
+			if (string.IsNullOrEmpty(selection))
+			{
+				return Control.CursorPosition;
+			}
+
+			return Element.Text.IndexOf(selection, Math.Max(Control.CursorPosition - selection.Length, 0));
 		}
 	}
 }

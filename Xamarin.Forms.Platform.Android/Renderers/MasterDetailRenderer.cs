@@ -7,6 +7,7 @@ using Android.Support.V4.Widget;
 using Android.Views;
 using AView = Android.Views.View;
 using AColor = Android.Graphics.Drawables.ColorDrawable;
+using Android.OS;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -20,6 +21,7 @@ namespace Xamarin.Forms.Platform.Android
 		MasterDetailContainer _masterLayout;
 		MasterDetailPage _page;
 		bool _presented;
+		Platform _platform;
 
 		public MasterDetailRenderer(Context context) : base(context)
 		{
@@ -30,7 +32,23 @@ namespace Xamarin.Forms.Platform.Android
 		{
 		}
 
-		IMasterDetailPageController MasterDetailPageController => _page as IMasterDetailPageController;
+		Platform Platform
+		{
+			get
+			{
+				if (_platform == null)
+				{
+					if (Context is FormsApplicationActivity activity)
+					{
+						_platform = activity.Platform;
+					}
+				}
+
+				return _platform;
+			}
+		}
+
+		IMasterDetailPageController MasterDetailPageController => _page;
 
 		public bool Presented
 		{
@@ -109,8 +127,8 @@ namespace Xamarin.Forms.Platform.Android
 			AddView(_masterLayout);
 
 			var activity = Context as Activity;
-			activity.ActionBar.SetDisplayShowHomeEnabled(true);
-			activity.ActionBar.SetHomeButtonEnabled(true);
+			activity?.ActionBar?.SetDisplayShowHomeEnabled(true);
+			activity?.ActionBar?.SetHomeButtonEnabled(true);
 
 			UpdateBackgroundColor(_page);
 			UpdateBackgroundImage(_page);
@@ -243,7 +261,7 @@ namespace Xamarin.Forms.Platform.Android
 		void HandleMasterPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == Page.TitleProperty.PropertyName || e.PropertyName == Page.IconProperty.PropertyName)
-				((Platform)_page.Platform).UpdateMasterDetailToggle(true);
+				Platform?.UpdateMasterDetailToggle(true);
 		}
 
 		void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -254,7 +272,7 @@ namespace Xamarin.Forms.Platform.Android
 			else if (e.PropertyName == "Detail")
 			{
 				UpdateDetail();
-				((Platform)_page.Platform).UpdateActionBar();
+				Platform?.UpdateActionBar();
 			}
 			else if (e.PropertyName == MasterDetailPage.IsPresentedProperty.PropertyName)
 			{
@@ -326,8 +344,17 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateDetail()
 		{
-			Context.HideKeyboard(this);
-			_detailLayout.ChildView = _page.Detail;
+			if (_detailLayout.ChildView == null)
+				Update();
+			else
+				// Queue up disposal of the previous renderers after the current layout updates have finished
+				new Handler(Looper.MainLooper).Post(() => Update());
+
+			void Update()
+			{
+				Context.HideKeyboard(this);
+				_detailLayout.ChildView = _page.Detail;
+			}
 		}
 
 		void UpdateIsPresented()
@@ -340,25 +367,34 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateMaster()
 		{
-			if (_masterLayout != null && _masterLayout.ChildView != null)
-				_masterLayout.ChildView.PropertyChanged -= HandleMasterPropertyChanged;
-			_masterLayout.ChildView = _page.Master;
-			if (_page.Master != null)
-				_page.Master.PropertyChanged += HandleMasterPropertyChanged;
+			if (_masterLayout?.ChildView == null)
+				Update();
+			else
+				// Queue up disposal of the previous renderers after the current layout updates have finished
+				new Handler(Looper.MainLooper).Post(() => Update());
+
+			void Update()
+			{
+				if (_masterLayout != null && _masterLayout.ChildView != null)
+					_masterLayout.ChildView.PropertyChanged -= HandleMasterPropertyChanged;
+				_masterLayout.ChildView = _page.Master;
+				if (_page.Master != null)
+					_page.Master.PropertyChanged += HandleMasterPropertyChanged;
+			}
 		}
 
 		void UpdateSplitViewLayout()
 		{
 			if (Device.Idiom == TargetIdiom.Tablet)
 			{
-				bool isShowingSplit = MasterDetailPageController.ShouldShowSplitMode 
+				bool isShowingSplit = MasterDetailPageController.ShouldShowSplitMode
 					|| (MasterDetailPageController.ShouldShowSplitMode && _page.MasterBehavior != MasterBehavior.Default && _page.IsPresented);
 				SetLockMode(isShowingSplit ? LockModeLockedOpen : LockModeUnlocked);
 				unchecked
 				{
 					SetScrimColor(isShowingSplit ? Color.Transparent.ToAndroid() : (int)DefaultScrimColor);
 				}
-				((Platform)_page.Platform).UpdateMasterDetailToggle();
+				Platform?.UpdateMasterDetailToggle();
 			}
 		}
 	}

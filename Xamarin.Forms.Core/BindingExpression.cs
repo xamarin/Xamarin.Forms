@@ -162,7 +162,7 @@ namespace Xamarin.Forms
 					value = Binding.GetSourceValue(value, property.ReturnType);
 				}
 				else
-					value = property.DefaultValue;
+					value = Binding.FallbackValue ?? property.DefaultValue;
 
 				if (!TryConvert(part, ref value, property.ReturnType, true))
 				{
@@ -337,9 +337,13 @@ namespace Xamarin.Forms
 					}
 				}
 			}
-			else
-				property = sourceType.GetDeclaredProperty(part.Content) ?? sourceType.BaseType?.GetProperty(part.Content);
-
+			else {
+				TypeInfo type = sourceType;
+				while (type != null && property == null) {
+					property = type.GetDeclaredProperty(part.Content);
+					type = type.BaseType?.GetTypeInfo();
+				}
+			}
 			if (property != null)
 			{
 				if (property.CanRead && property.GetMethod.IsPublic && !property.GetMethod.IsStatic)
@@ -511,8 +515,7 @@ namespace Xamarin.Forms
 
 			void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
 			{
-				PropertyChangedEventHandler handler;
-				if (_listener.TryGetTarget(out handler) && handler != null)
+				if (_listener.TryGetTarget(out var handler) && handler != null)
 					handler(sender, e);
 				else
 					Unsubscribe();

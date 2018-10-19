@@ -242,19 +242,11 @@ namespace Xamarin.Forms.Controls
 				Root.Add(_section);
 			}
 
+			HashSet<string> _exemptNames = new HashSet<string> { "N0", "G342", "G1305", "G1461", "G1653", "G1700" };
+
 			// Legacy reasons, do not add to this list
 			// Going forward, make sure only one Issue attribute exist for a Tracker + Issue number pair
-			bool IsExempt (string name)
-			{
-				if (name == "G1461" || 
-					name == "G342" || 
-					name == "G1305" || 
-					name == "G1653" || 
-					name == "N0")
-					return true;
-				else
-					return false;
-			}
+			bool IsExempt(string name) => _exemptNames.Contains(name);
 		}
 
 		public static NavigationPage GetTestCases ()
@@ -267,7 +259,7 @@ namespace Xamarin.Forms.Controls
 			};
 
 			var searchBar = new SearchBar() {
-				HeightRequest = 42, // Need this for Android N, see https://bugzilla.xamarin.com/show_bug.cgi?id=43975
+				MinimumHeightRequest = 42, // Need this for Android N, see https://bugzilla.xamarin.com/show_bug.cgi?id=43975
 				AutomationId = "SearchBarGo"
 			};
 

@@ -102,7 +102,7 @@ namespace Xamarin.Forms
 
 		void IPaddingElement.OnPaddingPropertyChanged(Thickness oldValue, Thickness newValue)
 		{
-			UpdateChildrenLayout();
+			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 		}
 
 		internal ObservableCollection<Element> InternalChildren { get; } = new ObservableCollection<Element>();
@@ -137,7 +137,7 @@ namespace Xamarin.Forms
 		{
 			var parent = child.Parent as IFlowDirectionController;
 			bool isRightToLeft = false;
-			if (parent != null && (isRightToLeft = parent.EffectiveFlowDirection.IsRightToLeft()))
+			if (parent != null && (isRightToLeft = parent.ApplyEffectiveFlowDirectionToChildContainer && parent.EffectiveFlowDirection.IsRightToLeft()))
 				region = new Rectangle(parent.Width - region.Right, region.Y, region.Width, region.Height);
 
 			var view = child as View;
@@ -280,7 +280,7 @@ namespace Xamarin.Forms
 		{
 			var parent = child.Parent as IFlowDirectionController;
 			bool isRightToLeft = false;
-			if (parent != null && (isRightToLeft = parent.EffectiveFlowDirection.IsRightToLeft()))
+			if (parent != null && (isRightToLeft = parent.ApplyEffectiveFlowDirectionToChildContainer && parent.EffectiveFlowDirection.IsRightToLeft()))
 				region = new Rectangle(parent.Width - region.Right, region.Y, region.Width, region.Height);
 
 			if (region.Size != childSizeRequest.Request)

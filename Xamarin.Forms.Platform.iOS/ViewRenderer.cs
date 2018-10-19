@@ -18,11 +18,16 @@ using NativeControl = AppKit.NSControl;
 namespace Xamarin.Forms.Platform.MacOS
 #endif
 {
+	public interface ITabStop
+	{
+		NativeView TabStop { get; }
+	}
+
 	public abstract class ViewRenderer : ViewRenderer<View, NativeView>
 	{
 	}
 
-	public abstract class ViewRenderer<TView, TNativeView> : VisualElementRenderer<TView> where TView : View where TNativeView : NativeView
+	public abstract class ViewRenderer<TView, TNativeView> : VisualElementRenderer<TView>, ITabStop where TView : View where TNativeView : NativeView
 	{
 #if __MOBILE__
 		string _defaultAccessibilityLabel;
@@ -37,6 +42,8 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 
 		public TNativeView Control { get; private set; }
+
+		NativeView ITabStop.TabStop => Control;
 #if __MOBILE__
 		public override void LayoutSubviews()
 		{
@@ -205,6 +212,12 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 #if __MOBILE__
 			_defaultColor = uiview.BackgroundColor;
+
+			// UIKit UIViews created via storyboard default IsAccessibilityElement to true, BUT
+			// UIViews created programmatically default IsAccessibilityElement to false.
+			// We need to default to true to allow all elements to be accessible by default and
+			// allow users to override this later via AutomationProperties.IsInAccessibleTree
+			uiview.IsAccessibilityElement = true;
 #else
 			uiview.WantsLayer = true;
 			_defaultColor = uiview.Layer.BackgroundColor;

@@ -1,11 +1,11 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	public partial class VisualElement : Element, IAnimatable, IVisualElementController, IResourcesProvider, IFlowDirectionController
+	public partial class VisualElement : Element, IAnimatable, IVisualElementController, IResourcesProvider, IStyleElement, IFlowDirectionController
 	{
 		internal static readonly BindablePropertyKey NavigationPropertyKey = BindableProperty.CreateReadOnly("Navigation", typeof(INavigation), typeof(VisualElement), default(INavigation));
 
@@ -54,6 +54,65 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty ScaleYProperty = BindableProperty.Create(nameof(ScaleY), typeof(double), typeof(VisualElement), 1d);
 
+		internal static readonly BindableProperty TransformProperty = BindableProperty.Create("Transform", typeof(string), typeof(VisualElement), null, propertyChanged: OnTransformChanged);
+
+		static void OnTransformChanged(BindableObject bindable, object oldValue, object newValue)
+		{
+			if ((string)newValue == "none") {
+				bindable.ClearValue(TranslationXProperty);
+				bindable.ClearValue(TranslationYProperty);
+				bindable.ClearValue(RotationProperty);
+				bindable.ClearValue(RotationXProperty);
+				bindable.ClearValue(RotationYProperty);
+				bindable.ClearValue(ScaleProperty);
+				bindable.ClearValue(ScaleXProperty);
+				bindable.ClearValue(ScaleYProperty);
+				return;
+			}
+				var transforms = ((string)newValue).Split(' ');
+			foreach (var transform in transforms) {
+				if (string.IsNullOrEmpty(transform) || transform.IndexOf('(') < 0 || transform.IndexOf(')') < 0)
+					throw new FormatException("Format for transform is 'none | transform(value) [transform(value) ]*'");
+				var transformName = transform.Substring(0, transform.IndexOf('('));
+				var value = transform.Substring(transform.IndexOf('(') + 1, transform.IndexOf(')') - transform.IndexOf('(') - 1);
+				double translationX, translationY, scaleX, scaleY, rotateX, rotateY, rotate;
+				if (transformName.StartsWith("translateX", StringComparison.OrdinalIgnoreCase) && double.TryParse(value, out translationX))
+					bindable.SetValue(TranslationXProperty, translationX);
+				else if (transformName.StartsWith("translateY", StringComparison.OrdinalIgnoreCase) && double.TryParse(value, out translationY))
+					bindable.SetValue(TranslationYProperty, translationY);
+				else if (transformName.StartsWith("translate", StringComparison.OrdinalIgnoreCase)) {
+					var translate = value.Split(',');
+					if (double.TryParse(translate[0], out translationX) && double.TryParse(translate[1], out translationY)) {
+						bindable.SetValue(TranslationXProperty, translationX);
+						bindable.SetValue(TranslationYProperty, translationY);
+					}
+				}
+				else if (transformName.StartsWith("scaleX", StringComparison.OrdinalIgnoreCase) && double.TryParse(value, out scaleX))
+					bindable.SetValue(ScaleXProperty, scaleX);
+				else if (transformName.StartsWith("scaleY", StringComparison.OrdinalIgnoreCase) && double.TryParse(value, out scaleY))
+					bindable.SetValue(ScaleYProperty, scaleY);
+				else if (transformName.StartsWith("scale", StringComparison.OrdinalIgnoreCase)) {
+					var scale = value.Split(',');
+					if (double.TryParse(scale[0], out scaleX) && double.TryParse(scale[1], out scaleY)) {
+						bindable.SetValue(ScaleXProperty, scaleX);
+						bindable.SetValue(ScaleYProperty, scaleY);
+					}
+				}
+				else if (transformName.StartsWith("rotateX", StringComparison.OrdinalIgnoreCase) && double.TryParse(value, out rotateX))
+					bindable.SetValue(RotationXProperty, rotateX);
+				else if (transformName.StartsWith("rotateY", StringComparison.OrdinalIgnoreCase) && double.TryParse(value, out rotateY))
+					bindable.SetValue(RotationYProperty, rotateY);
+				else if (transformName.StartsWith("rotate", StringComparison.OrdinalIgnoreCase) && double.TryParse(value, out rotate))
+					bindable.SetValue(RotationProperty, rotate);
+				else
+					throw new FormatException("Invalid transform name");
+			}
+		}
+
+		internal static readonly BindableProperty TransformOriginProperty =
+			BindableProperty.Create("TransformOrigin", typeof(Point), typeof(VisualElement), new Point(.5d, .5d),
+									propertyChanged: (b, o, n) => { (((VisualElement)b).AnchorX, ((VisualElement)b).AnchorY) = (Point)n; });
+
 		public static readonly BindableProperty IsVisibleProperty = BindableProperty.Create("IsVisible", typeof(bool), typeof(VisualElement), true,
 			propertyChanged: (bindable, oldvalue, newvalue) => ((VisualElement)bindable).OnIsVisibleChanged((bool)oldvalue, (bool)newvalue));
 
@@ -99,6 +158,34 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty IsFocusedProperty = IsFocusedPropertyKey.BindableProperty;
 
 		public static readonly BindableProperty FlowDirectionProperty = BindableProperty.Create(nameof(FlowDirection), typeof(FlowDirection), typeof(VisualElement), FlowDirection.MatchParent, propertyChanged: FlowDirectionChanged);
+
+		public static readonly BindableProperty TabIndexProperty =
+			BindableProperty.Create(nameof(TabIndex),
+									typeof(int),
+									typeof(VisualElement),
+									defaultValue: 0,
+									propertyChanged: OnTabIndexPropertyChanged,
+									defaultValueCreator: TabIndexDefaultValueCreator);
+
+		public static readonly BindableProperty IsTabStopProperty =
+			BindableProperty.Create(nameof(IsTabStop),
+									typeof(bool),
+									typeof(VisualElement),
+									defaultValue: true,
+									propertyChanged: OnTabStopPropertyChanged,
+									defaultValueCreator: TabStopDefaultValueCreator);
+
+		static void OnTabIndexPropertyChanged(BindableObject bindable, object oldValue, object newValue) =>
+			((VisualElement)bindable).OnTabIndexPropertyChanged((int)oldValue, (int)newValue);
+
+		static object TabIndexDefaultValueCreator(BindableObject bindable) =>
+			((VisualElement)bindable).TabIndexDefaultValueCreator();
+
+		static void OnTabStopPropertyChanged(BindableObject bindable, object oldValue, object newValue) =>
+			((VisualElement)bindable).OnTabStopPropertyChanged((bool)oldValue, (bool)newValue);
+
+		static object TabStopDefaultValueCreator(BindableObject bindable) =>
+			((VisualElement)bindable).TabStopDefaultValueCreator();
 
 		IFlowDirectionController FlowController => this;
 
@@ -291,6 +378,25 @@ namespace Xamarin.Forms
 			set { SetValue(StyleProperty, value); }
 		}
 
+		public int TabIndex
+		{
+			get => (int)GetValue(TabIndexProperty);
+			set => SetValue(TabIndexProperty, value);
+		}
+
+		protected virtual void OnTabIndexPropertyChanged(int oldValue, int newValue) { }
+
+		protected virtual int TabIndexDefaultValueCreator() => 0;
+
+		public bool IsTabStop
+		{
+			get => (bool)GetValue(IsTabStopProperty);
+			set => SetValue(IsTabStopProperty, value);
+		}
+
+		protected virtual void OnTabStopPropertyChanged(bool oldValue, bool newValue) { }
+
+		protected virtual bool TabStopDefaultValueCreator() => true;
 
 		[TypeConverter(typeof(ListStringTypeConverter))]
 		public IList<string> StyleClass
@@ -895,6 +1001,8 @@ namespace Xamarin.Forms
 				unFocus(this, new FocusEventArgs(this, false));
 		}
 
+		bool IFlowDirectionController.ApplyEffectiveFlowDirectionToChildContainer => true;
+
 		void IFlowDirectionController.NotifyFlowDirectionChanged()
 		{
 			SetFlowDirectionFromParent(this);
@@ -931,13 +1039,14 @@ namespace Xamarin.Forms
 		{
 			public override object ConvertFromInvariantString(string value)
 			{
-				if (value != null)
+				value = value?.Trim();
+				if (!string.IsNullOrEmpty(value))
 				{
-					if (value.Equals("true", StringComparison.OrdinalIgnoreCase))
+					if (value.Equals(Boolean.TrueString, StringComparison.OrdinalIgnoreCase))
 						return true;
 					if (value.Equals("visible", StringComparison.OrdinalIgnoreCase))
 						return true;
-					if (value.Equals("false", StringComparison.OrdinalIgnoreCase))
+					if (value.Equals(Boolean.FalseString, StringComparison.OrdinalIgnoreCase))
 						return false;
 					if (value.Equals("hidden", StringComparison.OrdinalIgnoreCase))
 						return false;

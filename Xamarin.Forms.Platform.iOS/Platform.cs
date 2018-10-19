@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using CoreGraphics;
 using Foundation;
 using UIKit;
-using RectangleF = CoreGraphics.CGRect;
 using Xamarin.Forms.Internals;
+using RectangleF = CoreGraphics.CGRect;
 
 namespace Xamarin.Forms.Platform.iOS
 {
@@ -81,9 +81,9 @@ namespace Xamarin.Forms.Platform.iOS
 			MessagingCenter.Unsubscribe<Page, AlertArguments>(this, Page.AlertSignalName);
 			MessagingCenter.Unsubscribe<Page, bool>(this, Page.BusySetSignalName);
 
-			DisposeModelAndChildrenRenderers(Page);
+			Page.DisposeModalAndChildRenderers();
 			foreach (var modal in _modals)
-				DisposeModelAndChildrenRenderers(modal);
+				modal.DisposeModalAndChildRenderers();
 
 			_renderer.Dispose();
 		}
@@ -131,7 +131,7 @@ namespace Xamarin.Forms.Platform.iOS
 			else
 				await _renderer.DismissViewControllerAsync(animated);
 
-			DisposeModelAndChildrenRenderers(modal);
+			modal.DisposeModalAndChildRenderers();
 
 			return modal;
 		}
@@ -182,8 +182,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		SizeRequest IPlatform.GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
 		{
-			var reference = Guid.NewGuid().ToString();
-			Performance.Start(reference);
+			Performance.Start(out string reference);
 
 			var renderView = GetRenderer(view);
 			if (renderView == null || renderView.NativeView == null)
@@ -222,57 +221,6 @@ namespace Xamarin.Forms.Platform.iOS
 			_animateModals = false;
 			Application.Current.NavigationProxy.Inner = this;
 			_animateModals = true;
-		}
-
-		internal void DisposeModelAndChildrenRenderers(Element view)
-		{
-			IVisualElementRenderer renderer;
-			foreach (VisualElement child in view.Descendants())
-			{
-				renderer = GetRenderer(child);
-				child.ClearValue(RendererProperty);
-
-				if (renderer != null)
-				{
-					renderer.NativeView.RemoveFromSuperview();
-					renderer.Dispose();
-				}
-			}
-
-			renderer = GetRenderer((VisualElement)view);
-			if (renderer != null)
-			{
-				if (renderer.ViewController != null)
-				{
-					var modalWrapper = renderer.ViewController.ParentViewController as ModalWrapper;
-					if (modalWrapper != null)
-						modalWrapper.Dispose();
-				}
-
-				renderer.NativeView.RemoveFromSuperview();
-				renderer.Dispose();
-			}
-			view.ClearValue(RendererProperty);
-		}
-
-		internal void DisposeRendererAndChildren(IVisualElementRenderer rendererToRemove)
-		{
-			if (rendererToRemove == null)
-				return;
-
-			if (rendererToRemove.Element != null && GetRenderer(rendererToRemove.Element) == rendererToRemove)
-				rendererToRemove.Element.ClearValue(RendererProperty);
-
-			var subviews = rendererToRemove.NativeView.Subviews;
-			for (var i = 0; i < subviews.Length; i++)
-			{
-				var childRenderer = subviews[i] as IVisualElementRenderer;
-				if (childRenderer != null)
-					DisposeRendererAndChildren(childRenderer);
-			}
-
-			rendererToRemove.NativeView.RemoveFromSuperview();
-			rendererToRemove.Dispose();
 		}
 
 		internal void LayoutSubviews()
@@ -343,10 +291,10 @@ namespace Xamarin.Forms.Platform.iOS
 				Console.Error.WriteLine("Potential view double add");
 		}
 
-		void HandleChildRemoved(object sender, ElementEventArgs e)
+		static void HandleChildRemoved(object sender, ElementEventArgs e)
 		{
 			var view = e.Element;
-			DisposeModelAndChildrenRenderers(view);
+			view?.DisposeModalAndChildRenderers();
 		}
 
 		bool PageIsChildOfPlatform(Page page)
@@ -396,9 +344,10 @@ namespace Xamarin.Forms.Platform.iOS
 			var alert = UIAlertController.Create(arguments.Title, null, UIAlertControllerStyle.ActionSheet);
 			var window = new UIWindow { BackgroundColor = Color.Transparent.ToUIColor() };
 
-			if (arguments.Cancel != null)
+			// Clicking outside of an ActionSheet is an implicit cancel on iPads. If we don't handle it, it freezes the app.
+			if (arguments.Cancel != null || UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad)
 			{
-				alert.AddAction(CreateActionWithWindowHide(arguments.Cancel, UIAlertActionStyle.Cancel, () => arguments.SetResult(arguments.Cancel), window));
+				alert.AddAction(CreateActionWithWindowHide(arguments.Cancel ?? "", UIAlertActionStyle.Cancel, () => arguments.SetResult(arguments.Cancel), window));
 			}
 
 			if (arguments.Destruction != null)
@@ -478,7 +427,7 @@ namespace Xamarin.Forms.Platform.iOS
 			// One might wonder why these delays are here... well thats a great question. It turns out iOS will claim the 
 			// presentation is complete before it really is. It does not however inform you when it is really done (and thus 
 			// would be safe to dismiss the VC). Fortunately this is almost never an issue
-			
+
 			await _renderer.PresentViewControllerAsync(wrapper, animated);
 			await Task.Delay(5);
 		}

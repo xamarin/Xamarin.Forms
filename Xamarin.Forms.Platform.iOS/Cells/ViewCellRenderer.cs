@@ -11,8 +11,7 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		public override UITableViewCell GetCell(Cell item, UITableViewCell reusableCell, UITableView tv)
 		{
-			var reference = Guid.NewGuid().ToString();
-			Performance.Start(reference);
+			Performance.Start(out string reference);
 
 			var viewCell = (ViewCell)item;
 
@@ -77,8 +76,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			public override void LayoutSubviews()
 			{
-				var reference = Guid.NewGuid().ToString();
-				Performance.Start(reference);
+				Performance.Start(out string reference);
 
 				//This sets the content views frame.
 				base.LayoutSubviews();
@@ -107,8 +105,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			public override SizeF SizeThatFits(SizeF size)
 			{
-				var reference = Guid.NewGuid().ToString();
-				Performance.Start(reference);
+				Performance.Start(out string reference);
 
 				IVisualElementRenderer renderer;
 				if (!_rendererRef.TryGetTarget(out renderer))
@@ -139,10 +136,7 @@ namespace Xamarin.Forms.Platform.iOS
 					IVisualElementRenderer renderer;
 					if (_rendererRef != null && _rendererRef.TryGetTarget(out renderer) && renderer.Element != null)
 					{
-						var platform = renderer.Element.Platform as Platform;
-						if (platform != null)
-							platform.DisposeModelAndChildrenRenderers(renderer.Element);
-
+						renderer.Element.DisposeModalAndChildRenderers();
 						_rendererRef = null;
 					}
 
@@ -167,8 +161,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			void UpdateCell(ViewCell cell)
 			{
-				var reference = Guid.NewGuid().ToString();
-				Performance.Start(reference);
+				Performance.Start(out string reference);
 
 				if (_viewCell != null)
 					Device.BeginInvokeOnMainThread(_viewCell.SendDisappearing);
@@ -195,8 +188,8 @@ namespace Xamarin.Forms.Platform.iOS
 					{
 						//when cells are getting reused the element could be already set to another cell
 						//so we should dispose based on the renderer and not the renderer.Element
-						var platform = renderer.Element.Platform as Platform;
-						platform.DisposeRendererAndChildren(renderer);
+						renderer.DisposeRendererAndChildren();
+
 						renderer = GetNewRenderer();
 					}
 				}

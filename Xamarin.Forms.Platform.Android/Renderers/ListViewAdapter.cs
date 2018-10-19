@@ -15,6 +15,7 @@ namespace Xamarin.Forms.Platform.Android
 {
 	internal class ListViewAdapter : CellAdapter
 	{
+		bool _disposed;
 		static readonly object DefaultItemTypeOrDataTemplate = new object();
 		const int DefaultGroupHeaderTemplateId = 0;
 		const int DefaultItemTemplateId = 1;
@@ -27,6 +28,7 @@ namespace Xamarin.Forms.Platform.Android
 		protected readonly ListView _listView;
 		readonly AListView _realListView;
 		readonly Dictionary<DataTemplate, int> _templateToId = new Dictionary<DataTemplate, int>();
+		readonly List<ConditionalFocusLayout> _layoutsCreated = new List<ConditionalFocusLayout>();
 		int _dataTemplateIncrementer = 2; // lets start at not 0 because ... 
 
 		// We will use _dataTemplateIncrementer to get the proper ViewType key for the item's DataTemplate and store these keys in  _templateToId.
@@ -61,11 +63,8 @@ namespace Xamarin.Forms.Platform.Android
 			realListView.OnItemClickListener = this;
 			realListView.OnItemLongClickListener = this;
 
-			var platform = _listView.Platform;
-			if (platform.GetType() == typeof(AppCompat.Platform))
-				MessagingCenter.Subscribe<AppCompat.Platform>(this, AppCompat.Platform.CloseContextActionsSignalName, p => CloseContextActions());
-			else
-				MessagingCenter.Subscribe<Platform>(this, Platform.CloseContextActionsSignalName, p => CloseContextActions());
+			MessagingCenter.Subscribe<ListViewAdapter>(this, Platform.CloseContextActionsSignalName, lva => CloseContextActions());
+
 			InvalidateCount();
 		}
 
@@ -163,25 +162,36 @@ namespace Xamarin.Forms.Platform.Android
 			if (itemTemplate == null)
 				return DefaultItemTemplateId;
 
-			var selector = itemTemplate as DataTemplateSelector;
-			if (selector != null)
+			if (itemTemplate is DataTemplateSelector selector)
 			{
 				object item = null;
+
 				if (_listView.IsGroupingEnabled)
-					item = TemplatedItemsView.TemplatedItems.GetGroup(group).ListProxy[row];
+				{
+					if (TemplatedItemsView.TemplatedItems.GetGroup(group).ListProxy.Count > 0)
+						item = TemplatedItemsView.TemplatedItems.GetGroup(group).ListProxy[row];
+				}
 				else
-					item = TemplatedItemsView.TemplatedItems.ListProxy[position];
+				{
+					if (TemplatedItemsView.TemplatedItems.ListProxy.Count > 0)
+						item = TemplatedItemsView.TemplatedItems.ListProxy[position];
+				}
+
 				itemTemplate = selector.SelectTemplate(item, _listView);
 			}
-			int key;
-			if (!_templateToId.TryGetValue(itemTemplate, out key))
+
+			// check again to guard against DataTemplateSelectors that return null
+			if (itemTemplate == null)
+				return DefaultItemTemplateId;
+
+			if (!_templateToId.TryGetValue(itemTemplate, out int key))
 			{
 				_dataTemplateIncrementer++;
 				key = _dataTemplateIncrementer;
 				_templateToId[itemTemplate] = key;
 			}
 
-			if (key >= ViewTypeCount) 
+			if (key >= ViewTypeCount)
 			{
 				throw new Exception($"ItemTemplate count has exceeded the limit of {ViewTypeCount}" + Environment.NewLine +
 									 "Please make sure to reuse DataTemplate objects");
@@ -194,8 +204,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			Cell cell = null;
 
-			var reference = Guid.NewGuid().ToString();
-			Performance.Start(reference);
+			Performance.Start(out string reference);
 
 			ListViewCachingStrategy cachingStrategy = Controller.CachingStrategy;
 			var nextCellIsHeader = false;
@@ -227,7 +236,10 @@ namespace Xamarin.Forms.Platform.Android
 				convertView = layout.GetChildAt(0);
 			}
 			else
+			{
 				layout = new ConditionalFocusLayout(_context) { Orientation = Orientation.Vertical };
+				_layoutsCreated.Add(layout);
+			}
 
 			if (((cachingStrategy & ListViewCachingStrategy.RecycleElement) != 0) && convertView != null)
 			{
@@ -403,15 +415,18 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void Dispose(bool disposing)
 		{
+			if (_disposed)
+			{
+				return;
+			}
+
+			_disposed = true;
+
 			if (disposing)
 			{
 				CloseContextActions();
 
-				var platform = _listView.Platform;
-				if (platform.GetType() == typeof(AppCompat.Platform))
-					MessagingCenter.Unsubscribe<AppCompat.Platform>(this, Platform.CloseContextActionsSignalName);
-				else
-					MessagingCenter.Unsubscribe<Platform>(this, Platform.CloseContextActionsSignalName);
+				MessagingCenter.Unsubscribe<ListViewAdapter>(this, Platform.CloseContextActionsSignalName);
 
 				_realListView.OnItemClickListener = null;
 				_realListView.OnItemLongClickListener = null;
@@ -466,35 +481,41 @@ namespace Xamarin.Forms.Platform.Android
 
 		void DisposeCells()
 		{
-			var cellCount = _realListView?.ChildCount ?? 0;
+			var cellCount = _layoutsCreated.Count;
+
 			for (int i = 0; i < cellCount; i++)
 			{
-				var layout = _realListView.GetChildAt(i) as ConditionalFocusLayout;
+				var layout = _layoutsCreated[i];
 
-				// Headers and footers will be skipped. They are disposed elsewhere.
-				if (layout == null || layout.IsDisposed())
+				if (layout.IsDisposed())
 					continue;
-
-				var renderedView = layout?.GetChildAt(0);
-
-				var element = (renderedView as INativeElementView)?.Element;
-
-				var view = (element as ViewCell)?.View;
-
-				if (view != null)
-				{
-					var renderer = Platform.GetRenderer(view);
-
-					if (renderer == renderedView)
-						element.ClearValue(Platform.RendererProperty);
-
-					renderer?.Dispose();
-					renderer = null;
-				}
-
-				renderedView?.Dispose();
-				renderedView = null;
+				
+				DisposeOfConditionalFocusLayout(layout);
 			}
+
+			_layoutsCreated.Clear();
+		}
+
+		void DisposeOfConditionalFocusLayout(ConditionalFocusLayout layout)
+		{
+			var renderedView = layout?.GetChildAt(0);
+
+			var element = (renderedView as INativeElementView)?.Element;
+			var view = (element as ViewCell)?.View;
+
+			if (view != null)
+			{
+				var renderer = Platform.GetRenderer(view);
+
+				if (renderer == renderedView)
+					element.ClearValue(Platform.RendererProperty);
+
+				renderer?.Dispose();
+				renderer = null;
+			}
+
+			renderedView?.Dispose();
+			renderedView = null;
 		}
 
 		// TODO: We can optimize this by storing the last position, group index and global index

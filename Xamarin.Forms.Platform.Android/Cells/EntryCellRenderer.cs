@@ -92,7 +92,7 @@ namespace Xamarin.Forms.Platform.Android
 		void UpdateHorizontalTextAlignment()
 		{
 			var entryCell = (EntryCell)Cell;
-			_view.EditText.UpdateHorizontalAlignment(entryCell.HorizontalTextAlignment);
+			_view.EditText.UpdateHorizontalAlignment(entryCell.HorizontalTextAlignment, _view.Context.HasRtlSupport());
 		}
 
 		void UpdateIsEnabled()
@@ -120,7 +120,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateLabelColor()
 		{
-			_view.SetLabelTextColor(((EntryCell)Cell).LabelColor, global::Android.Resource.Color.PrimaryTextDark);
+			_view.SetLabelTextColor(((EntryCell)Cell).LabelColor, global::Android.Resource.Attribute.TextColor);
 		}
 
 		void UpdateFlowDirection()

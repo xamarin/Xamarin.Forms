@@ -17,12 +17,17 @@ using Android.Runtime;
 using Android.Util;
 using AButton = Android.Widget.Button;
 using AView = Android.Views.View;
+using AViewGroup = Android.Views.ViewGroup;
 using Android.OS;
 using System.Reflection;
 using Android.Text;
 using Android.Text.Method;
 using Xamarin.Forms.Controls.Issues;
 
+
+[assembly: ExportRenderer(typeof(Issue1942.CustomGrid), typeof(Issue1942GridRenderer))]
+[assembly: ExportRenderer(typeof(Xamarin.Forms.Controls.Effects.AttachedStateEffectLabel), typeof(AttachedStateEffectLabelRenderer))]
+[assembly: ExportRenderer(typeof(Xamarin.Forms.Controls.LegacyComponents.NonAppCompatSwitch), typeof(NonAppCompatSwitchRenderer))]
 [assembly: ExportRenderer(typeof(Bugzilla31395.CustomContentView), typeof(CustomContentRenderer))]
 [assembly: ExportRenderer(typeof(NativeListView), typeof(NativeListViewRenderer))]
 [assembly: ExportRenderer(typeof(NativeListView2), typeof(NativeAndroidListViewRenderer))]
@@ -45,6 +50,30 @@ using Xamarin.Forms.Controls.Issues;
 #endif
 namespace Xamarin.Forms.ControlGallery.Android
 {
+	public class NonAppCompatSwitchRenderer : Xamarin.Forms.Platform.Android.SwitchRenderer
+	{
+		public NonAppCompatSwitchRenderer(Context context) : base(context)
+		{
+		}
+	}
+
+	public class AttachedStateEffectLabelRenderer : LabelRenderer
+	{
+		public AttachedStateEffectLabelRenderer(Context context) : base(context)
+		{
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			foreach (var effect in Element.Effects.OfType<Controls.Effects.AttachedStateEffect>())
+			{
+				effect.Detached(Element);
+			}
+
+			base.Dispose(disposing);
+		}
+	}
+
 	public class NativeDroidMasterDetail : Xamarin.Forms.Platform.Android.AppCompat.MasterDetailPageRenderer
 	{
 		MasterDetailPage _page;
@@ -602,6 +631,49 @@ namespace Xamarin.Forms.ControlGallery.Android
 
 			Control.SetKeyboardFlags(FlagsToSet);
 			Control.TestKeyboardFlags(FlagsToTestFor);
+		}
+	}
+
+	public class Issue1942GridRenderer : VisualElementRenderer<Grid>, AView.IOnTouchListener, ViewTreeObserver.IOnGlobalLayoutListener
+	{
+		AView _gridChild;
+		public Issue1942GridRenderer(Context context) : base(context)
+		{
+		}
+
+		bool AView.IOnTouchListener.OnTouch(AView v, MotionEvent e)
+		{
+			((Element.Children.First() as Layout).Children.First() as Label).Text = Issue1942.SuccessString;
+			ViewGroup.ViewTreeObserver.RemoveOnGlobalLayoutListener(this);
+			_gridChild.SetOnTouchListener(null);
+			return true;
+		}
+
+		protected override void OnElementChanged(ElementChangedEventArgs<Grid> e)
+		{
+			base.OnElementChanged(e);
+			if (e.NewElement != null)
+			{
+				ViewGroup.ViewTreeObserver.AddOnGlobalLayoutListener(this);
+			}
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if(disposing)
+			{
+				ViewGroup.ViewTreeObserver.RemoveOnGlobalLayoutListener(this);
+				_gridChild.SetOnTouchListener(null);
+				_gridChild = null;
+			}
+
+			base.Dispose(disposing);
+		}
+
+		void ViewTreeObserver.IOnGlobalLayoutListener.OnGlobalLayout()
+		{
+			_gridChild = ViewGroup.GetChildAt(0);
+			_gridChild.SetOnTouchListener(this);
 		}
 	}
 
