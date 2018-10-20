@@ -10,6 +10,7 @@ namespace Xamarin.Forms
 	{
 		static bool s_initialized;
 
+		static readonly object Locker = new object();
 		static readonly List<Type> DependencyTypes = new List<Type>();
 		static readonly Dictionary<Type, DependencyData> DependencyImplementations = new Dictionary<Type, DependencyData>();
 
@@ -24,15 +25,18 @@ namespace Xamarin.Forms
 		{
 			Initialize();
 
-			Type targetType = typeof(T);
-
-			if (!DependencyImplementations.ContainsKey(targetType))
+			DependencyData dependencyImplementation;
+			lock (Locker)
 			{
-				Type implementor = FindImplementor(targetType);
-				DependencyImplementations[targetType] = implementor != null ? new DependencyData { ImplementorType = implementor } : null;
+				Type targetType = typeof(T);
+				if (!DependencyImplementations.ContainsKey(targetType))
+				{
+					Type implementor = FindImplementor(targetType);
+					DependencyImplementations[targetType] = implementor != null ? new DependencyData { ImplementorType = implementor } : null;
+				}
+				dependencyImplementation = DependencyImplementations[targetType];
 			}
 
-			DependencyData dependencyImplementation = DependencyImplementations[targetType];
 			if (dependencyImplementation == null)
 				return null;
 
@@ -61,7 +65,10 @@ namespace Xamarin.Forms
 			if (!DependencyTypes.Contains(targetType))
 				DependencyTypes.Add(targetType);
 
-			DependencyImplementations[targetType] = new DependencyData { ImplementorType = implementorType };
+			lock (Locker)
+			{
+				DependencyImplementations[targetType] = new DependencyData { ImplementorType = implementorType };
+			}
 		}
 
 		static Type FindImplementor(Type target)
