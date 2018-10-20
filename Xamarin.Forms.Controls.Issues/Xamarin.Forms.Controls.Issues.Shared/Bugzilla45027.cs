@@ -66,7 +66,7 @@ namespace Xamarin.Forms.Controls.Issues
 			Content = stackLayout;
 		}
 
-#if UITEST
+#if UITEST && __ANDROID__
 		[Test]
 		public void Bugzilla45027Test()
 		{
