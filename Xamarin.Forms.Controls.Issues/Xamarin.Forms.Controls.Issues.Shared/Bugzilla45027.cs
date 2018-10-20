@@ -82,5 +82,22 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.DoubleTap(q => q.Marked(TOOLBAR_DELETE_TEXT));
 		}
 #endif
+
+#if UITEST && __IOS__
+		[Test]
+		public void Bugzilla45027Test()
+		{
+			var firstItemList = "0";
+			RunningApp.WaitForElement(q => q.Marked(firstItemList));
+
+			RunningApp.SwipeRightToLeft(q => q.Marked(firstItemList));
+			RunningApp.WaitForElement(q => q.Marked(TOOLBAR_ACTION_TEXT));
+			RunningApp.DoubleTap(q => q.Marked(TOOLBAR_ACTION_TEXT));
+
+			RunningApp.SwipeRightToLeft(q => q.Marked(firstItemList));
+			RunningApp.WaitForElement(q => q.Marked(TOOLBAR_DELETE_TEXT));
+			RunningApp.DoubleTap(q => q.Marked(TOOLBAR_DELETE_TEXT));
+		}
+#endif
 	}
 }
