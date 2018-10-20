@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Appium.Windows;
+using OpenQA.Selenium.Interactions;
 using OpenQA.Selenium.Remote;
 using Xamarin.UITest;
 using Xamarin.UITest.Queries;
@@ -110,17 +111,21 @@ namespace Xamarin.Forms.Core.UITests
 
 		public void EnterText(string text)
 		{
-			_session.Keyboard.SendKeys(text);
+			new Actions(_session)
+					.SendKeys(text)
+					.Perform();
 		}
 
 		public void EnterText(Func<AppQuery, AppQuery> query, string text)
 		{
-			QueryWindows(query).First().SendKeys(text);
+			var result = QueryWindows(query).First();
+			result.SendKeys(text);
 		}
 
 		public void EnterText(string marked, string text)
 		{
-			QueryWindows(marked).First().SendKeys(text);
+			var results = QueryWindows(marked).First();
+			results.SendKeys(text);
 		}
 
 		public void EnterText(Func<AppQuery, AppWebQuery> query, string text)
@@ -189,7 +194,9 @@ namespace Xamarin.Forms.Core.UITests
 
 		public void PressEnter()
 		{
-			_session.Keyboard.PressKey(Keys.Enter);
+			new Actions(_session)
+					   .SendKeys(Keys.Enter)
+					   .Perform();
 		}
 
 		public void PressVolumeDown()
@@ -594,21 +601,25 @@ namespace Xamarin.Forms.Core.UITests
 			WindowsElement viewPort = GetViewPort();
 			int xOffset = viewPort.Coordinates.LocationInViewport.X;
 			int yOffset = viewPort.Coordinates.LocationInViewport.Y;
-			_session.Mouse.MouseMove(viewPort.Coordinates, (int)x - xOffset, (int)y - yOffset);
+
+			var actions = new Actions(_session)
+					   .MoveToElement(viewPort, (int)x - xOffset, (int)y - yOffset);
 
 			switch (clickType)
 			{
 				case ClickType.DoubleClick:
-					_session.Mouse.DoubleClick(null);
+					actions.DoubleClick();
 					break;
 				case ClickType.ContextClick:
-					_session.Mouse.ContextClick(null);
+					actions.ContextClick();					
 					break;
 				case ClickType.SingleClick:
 				default:
-					_session.Mouse.Click(null);
+					actions.Click();					
 					break;
 			}
+
+			actions.Perform();
 		}
 
 		void ClickOrTapElement(WindowsElement element)
@@ -784,7 +795,7 @@ namespace Xamarin.Forms.Core.UITests
 			WindowsElement viewPort = GetViewPort();
 			int xOffset = viewPort.Coordinates.LocationInViewport.X;
 			int yOffset = viewPort.Coordinates.LocationInViewport.Y;
-			_session.Mouse.MouseMove(viewPort.Coordinates, xOffset, yOffset);
+			new Actions(_session).MoveToElement(viewPort, xOffset, yOffset);
 		}
 
 		ReadOnlyCollection<WindowsElement> QueryWindows(WinQuery query)
