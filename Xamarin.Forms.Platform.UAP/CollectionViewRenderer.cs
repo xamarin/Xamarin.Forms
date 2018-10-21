@@ -280,7 +280,6 @@ namespace Xamarin.Forms.Platform.UWP
 				else
 				{
 					// Center and End are going to be more complicated.
-
 				}
 
 				await tcs.Task;
@@ -320,8 +319,6 @@ namespace Xamarin.Forms.Platform.UWP
 				var horizontalOffset = scrollViewer.HorizontalOffset;
 				var verticalOffset = scrollViewer.VerticalOffset;
 
-				Debug.WriteLine($">>>>> CollectionViewRenderer AnimateTo: Current offsets are {horizontalOffset},{verticalOffset}");
-
 				await JumpTo(list, targetItem, scrollToPosition);
 				targetContainer = list.ContainerFromItem(targetItem) as UIElement;
 				await ChangeViewAsync(scrollViewer, horizontalOffset, verticalOffset, true);
@@ -342,14 +339,10 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 			}
 
-			Debug.WriteLine($">>>>> CollectionViewRenderer AnimateTo: {targetContainer.DesiredSize}");
-
-
 			// TODO hartez 2018/10/05 17:23:23 The animated scroll works fine vertically if we are scrolling to a greater Y offset.	
 			// If we're scrolling back up to a lower Y offset, it just gives up and sends us to 0 (first item)
 			// Works fine if we disable animation, but that's not very helpful
 			
-
 			scrollViewer.ChangeView(position.Value.X, position.Value.Y, null, false);
 
 			//if (scrollToPosition == ScrollToPosition.End)
