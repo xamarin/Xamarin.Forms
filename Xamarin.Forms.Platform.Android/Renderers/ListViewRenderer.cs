@@ -27,8 +27,8 @@ namespace Xamarin.Forms.Platform.Android
 		IListViewController Controller => Element;
 		ITemplatedItemsView<Cell> TemplatedItemsView => Element;
 
-		bool? _defaultHorizontalScrollVisibility;
-		bool? _defaultVerticalScrollVisibility;
+		ScrollBarVisibility _defaultHorizontalScrollVisibility = 0;
+		ScrollBarVisibility _defaultVerticalScrollVisibility = 0;
 
 		public ListViewRenderer(Context context) : base(context)
 		{
@@ -421,42 +421,34 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateHorizontalScrollBarVisibility()
 		{
-			if (_defaultHorizontalScrollVisibility == null)
-				_defaultHorizontalScrollVisibility = Control.HorizontalScrollBarEnabled;
-
-			switch (Element.HorizontalScrollBarVisibility)
+			if (_defaultHorizontalScrollVisibility == 0)
 			{
-				case (ScrollBarVisibility.Always):
-					Control.HorizontalScrollBarEnabled = true;
-					break;
-				case (ScrollBarVisibility.Never):
-					Control.HorizontalScrollBarEnabled = false;
-					break;
-				case (ScrollBarVisibility.Default):
-					Control.HorizontalScrollBarEnabled = (bool)_defaultHorizontalScrollVisibility;
-					break;
+				_defaultHorizontalScrollVisibility = Control.HorizontalScrollBarEnabled ? ScrollBarVisibility.Always : ScrollBarVisibility.Never;
 			}
+
+			var newHorizontalScrollVisiblility = Element.HorizontalScrollBarVisibility;
+
+			if (newHorizontalScrollVisiblility == ScrollBarVisibility.Default)
+			{
+				newHorizontalScrollVisiblility = _defaultHorizontalScrollVisibility;
+			}
+
+			Control.HorizontalScrollBarEnabled = newHorizontalScrollVisiblility == ScrollBarVisibility.Always;
 		}
 
 		void UpdateVerticalScrollBarVisibility()
 		{
-			if (_defaultVerticalScrollVisibility == null)
-				_defaultVerticalScrollVisibility = Control.VerticalScrollBarEnabled;
+			if (_defaultVerticalScrollVisibility == 0)
+				_defaultVerticalScrollVisibility = Control.VerticalScrollBarEnabled ? ScrollBarVisibility.Always : ScrollBarVisibility.Never;
 
-			switch (Element.VerticalScrollBarVisibility)
-			{
-				case (ScrollBarVisibility.Always):
-					Control.VerticalScrollBarEnabled = true;
-					break;
-				case (ScrollBarVisibility.Never):
-					Control.VerticalScrollBarEnabled = false;
-					break;
-				case (ScrollBarVisibility.Default):
-					Control.VerticalScrollBarEnabled = (bool)_defaultVerticalScrollVisibility;
-					break;
-			}
+			var newVerticalScrollVisibility = Element.VerticalScrollBarVisibility;
+
+			if (newVerticalScrollVisibility == ScrollBarVisibility.Default)
+				newVerticalScrollVisibility = _defaultVerticalScrollVisibility;
+
+			Control.VerticalScrollBarEnabled = newVerticalScrollVisibility == ScrollBarVisibility.Always;
 		}
-
+		
 		internal class Container : ViewGroup
 		{
 			IVisualElementRenderer _child;
