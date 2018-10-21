@@ -21,18 +21,24 @@
 						GalleryBuilder.NavButton("ScrollTo Index (Code, Vertical List)", () =>
 							new ScrollToCodeGallery(ListItemsLayout.VerticalList), Navigation),
 						GalleryBuilder.NavButton("ScrollTo Index (Code, Horizontal Grid)", () =>
-							new ScrollToCodeGallery(new GridItemsLayout(3, ItemsLayoutOrientation.Horizontal)), Navigation),
+								new ScrollToCodeGallery(new GridItemsLayout(3, ItemsLayoutOrientation.Horizontal)),
+							Navigation),
 						GalleryBuilder.NavButton("ScrollTo Index (Code, Vertical Grid)", () =>
-							new ScrollToCodeGallery(new GridItemsLayout(3, ItemsLayoutOrientation.Vertical)), Navigation),
-						
+								new ScrollToCodeGallery(new GridItemsLayout(3, ItemsLayoutOrientation.Vertical)),
+							Navigation),
+
 						GalleryBuilder.NavButton("ScrollTo Item (Code, Horizontal List)", () =>
-							new ScrollToCodeGallery(ListItemsLayout.HorizontalList, ScrollToMode.Element), Navigation),
+							new ScrollToCodeGallery(ListItemsLayout.HorizontalList, ScrollToMode.Element,
+								ExampleTemplates.ScrollToItemTemplate), Navigation),
 						GalleryBuilder.NavButton("ScrollTo Item (Code, Vertical List)", () =>
-							new ScrollToCodeGallery(ListItemsLayout.VerticalList, ScrollToMode.Element), Navigation),
+							new ScrollToCodeGallery(ListItemsLayout.VerticalList, ScrollToMode.Element,
+								ExampleTemplates.ScrollToItemTemplate), Navigation),
 						GalleryBuilder.NavButton("ScrollTo Item (Code, Horizontal Grid)", () =>
-							new ScrollToCodeGallery(new GridItemsLayout(3, ItemsLayoutOrientation.Horizontal), ScrollToMode.Element), Navigation),
+							new ScrollToCodeGallery(new GridItemsLayout(3, ItemsLayoutOrientation.Horizontal),
+								ScrollToMode.Element, ExampleTemplates.ScrollToItemTemplate), Navigation),
 						GalleryBuilder.NavButton("ScrollTo Item (Code, Vertical Grid)", () =>
-							new ScrollToCodeGallery(new GridItemsLayout(3, ItemsLayoutOrientation.Vertical), ScrollToMode.Element), Navigation),
+							new ScrollToCodeGallery(new GridItemsLayout(3, ItemsLayoutOrientation.Vertical),
+								ScrollToMode.Element, ExampleTemplates.ScrollToItemTemplate), Navigation)
 					}
 				}
 			};

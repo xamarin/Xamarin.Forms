@@ -1,8 +1,10 @@
-﻿namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
+﻿using System;
+
+namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 {
 	internal class ScrollToCodeGallery : ContentPage
 	{
-		public ScrollToCodeGallery(IItemsLayout itemsLayout, ScrollToMode mode = ScrollToMode.Position)
+		public ScrollToCodeGallery(IItemsLayout itemsLayout, ScrollToMode mode = ScrollToMode.Position, Func<DataTemplate> dataTemplate = null)
 		{
 			Title = $"ScrollTo (Code, {itemsLayout})";
 
@@ -16,7 +18,7 @@
 				}
 			};
 
-			var itemTemplate = ExampleTemplates.ScrollToTemplate();
+			var itemTemplate = dataTemplate == null ? ExampleTemplates.ScrollToIndexTemplate() : dataTemplate();
 
 			var collectionView = new CollectionView
 			{

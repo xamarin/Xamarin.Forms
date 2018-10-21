@@ -16,9 +16,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 
 			if (index > -1 && index < observableCollection.Count)
 			{
-				var replacement = new CollectionViewGalleryTestItem
-					{ Caption = "Replacement", Date = DateTime.Now, Image = "coffee.png" };
-
+				var replacement = new CollectionViewGalleryTestItem(DateTime.Now, "Replacement", "coffee.png", index);
 				observableCollection[index] = replacement;
 			}
 		}

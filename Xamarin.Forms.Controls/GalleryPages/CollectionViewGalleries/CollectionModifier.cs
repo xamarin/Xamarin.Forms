@@ -56,7 +56,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			}
 
 			indexes = new[] {index};
-			return false;
+			return true;
 		}
 
 		protected abstract void ModifyCollection(ObservableCollection<CollectionViewGalleryTestItem> observableCollection, params int[] indexes);

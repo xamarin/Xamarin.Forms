@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 
 			if (index > -1 && index < observableCollection.Count)
 			{
-				var item = new CollectionViewGalleryTestItem { Image = "oasis.jpg", Date = DateTime.Now, Caption = "Inserted"};
+				var item = new CollectionViewGalleryTestItem(DateTime.Now, "Inserted", "oasis.jpg", index);
 				observableCollection.Insert(index, item);
 			}
 		}

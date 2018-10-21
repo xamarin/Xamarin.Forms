@@ -11,6 +11,15 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 		public DateTime Date { get; set; }
 		public string Caption { get; set; }
 		public string Image { get; set; }
+		public int Index { get; set; }
+
+		public CollectionViewGalleryTestItem(DateTime date, string caption, string image, int index)
+		{
+			Date = date;
+			Caption = caption;
+			Image = image;
+			Index = index;
+		}
 
 		public override string ToString()
 		{
@@ -65,12 +74,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 
 				for (int n = 0; n < count; n++)
 				{
-					items.Add(new CollectionViewGalleryTestItem
-					{
-						Date = DateTime.Now.AddDays(n), 
-						Image = _images[n % _images.Length],
-						Caption = $"{_images[n % _images.Length]}, {n}",
-					});
+					items.Add(new CollectionViewGalleryTestItem(DateTime.Now.AddDays(n),
+						$"{_images[n % _images.Length]}, {n}", _images[n % _images.Length], n));
 				}
 
 				_cv.ItemsSource = items;
@@ -85,12 +90,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 
 				for (int n = 0; n < count; n++)
 				{
-					items.Add(new CollectionViewGalleryTestItem
-					{
-						Date = DateTime.Now.AddDays(n), 
-						Image = _images[n % _images.Length],
-						Caption = $"{_images[n % _images.Length]}, {n}",
-					});
+					items.Add(new CollectionViewGalleryTestItem(DateTime.Now.AddDays(n),
+						$"{_images[n % _images.Length]}, {n}", _images[n % _images.Length], n));
 				}
 
 				_cv.ItemsSource = new ObservableCollection<CollectionViewGalleryTestItem>(items);
