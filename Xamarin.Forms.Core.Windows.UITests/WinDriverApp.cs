@@ -112,14 +112,33 @@ namespace Xamarin.Forms.Core.UITests
 			_session.Keyboard.SendKeys(text);
 		}
 
+		void SendKeysToControl(WindowsElement element, string text)
+		{
+			if (element.TagName == "ControlType.Group")
+			{
+				try
+				{
+					element.FindElementByTagName("Edit").SendKeys(text);
+				}
+				catch (InvalidOperationException)
+				{
+					element.SendKeys(text);
+				}
+			}
+			else
+			{
+				element.SendKeys(text);
+			}
+		}
+
 		public void EnterText(Func<AppQuery, AppQuery> query, string text)
 		{
-			QueryWindows(query).First().SendKeys(text);
+			SendKeysToControl(QueryWindows(query).First(), text);
 		}
 
 		public void EnterText(string marked, string text)
 		{
-			QueryWindows(marked).First().SendKeys(text);
+			SendKeysToControl(QueryWindows(marked).First(), text);
 		}
 
 		public void EnterText(Func<AppQuery, AppWebQuery> query, string text)
