@@ -58,7 +58,14 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void DisableTimer()
 		{
-			_val?.Cancel();
+			var handler = new Handler(Looper.MainLooper);
+			handler.Post(() =>
+			{
+				_val?.Cancel();
+
+				handler.Dispose();
+				handler = null;
+			});
 		}
 
 		protected override void EnableTimer()
