@@ -15,7 +15,7 @@ using Xamarin.UITest;
 using Xamarin.Forms.Core.UITests;
 #endif
 
-namespace Xamarin.Forms.Controls
+namespace Xamarin.Forms.Controls.Issues
 {
 	public class PropertyChangedBase : INotifyPropertyChanged
 	{

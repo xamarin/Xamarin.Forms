@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using Xamarin.Forms.Internals;
 
-namespace Xamarin.Forms.Controls
+namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
 	internal class PerformanceProvider : IPerformanceProvider
