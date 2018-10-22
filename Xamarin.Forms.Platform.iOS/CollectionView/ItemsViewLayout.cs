@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using CoreGraphics;
 using Foundation;
@@ -67,7 +68,7 @@ namespace Xamarin.Forms.Platform.iOS
 		[Export("collectionView:layout:insetForSectionAtIndex:")]
 		[CompilerGenerated]
 		public virtual UIEdgeInsets GetInsetForSection(UICollectionView collectionView, UICollectionViewLayout layout,
-			int section)
+			nint section)
 		{
 			return UIEdgeInsets.Zero;
 		}
@@ -75,7 +76,7 @@ namespace Xamarin.Forms.Platform.iOS
 		[Export("collectionView:layout:minimumInteritemSpacingForSectionAtIndex:")]
 		[CompilerGenerated]
 		public virtual nfloat GetMinimumInteritemSpacingForSection(UICollectionView collectionView,
-			UICollectionViewLayout layout, int section)
+			UICollectionViewLayout layout, nint section)
 		{
 			return (nfloat)0.0;
 		}
@@ -83,7 +84,7 @@ namespace Xamarin.Forms.Platform.iOS
 		[Export("collectionView:layout:minimumLineSpacingForSectionAtIndex:")]
 		[CompilerGenerated]
 		public virtual nfloat GetMinimumLineSpacingForSection(UICollectionView collectionView,
-			UICollectionViewLayout layout, int section)
+			UICollectionViewLayout layout, nint section)
 		{
 			return (nfloat)0.0;
 		}
