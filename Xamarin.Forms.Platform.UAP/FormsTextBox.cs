@@ -41,9 +41,7 @@ namespace Xamarin.Forms.Platform.UWP
 		public new static readonly DependencyProperty TextProperty = DependencyProperty.Register(nameof(Text), 
 			typeof(string), typeof(FormsTextBox), new PropertyMetadata("", TextPropertyChanged));
 
-		InputScope _passwordInputScope;
 		Border _borderElement;
-		InputScope _cachedInputScope;
 		bool _cachedPredictionsSetting;
 		bool _cachedSpellCheckSetting;
 		CancellationTokenSource _cts;
@@ -98,23 +96,6 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			get { return (string)GetValue(TextProperty); }
 			set { SetValue(TextProperty, value); }
-		}
-
-		InputScope PasswordInputScope
-		{
-			get
-			{
-				if (_passwordInputScope != null)
-				{
-					return _passwordInputScope;
-				}
-
-				_passwordInputScope = new InputScope();
-				var name = new InputScopeName { NameValue = InputScopeNameValue.Default };
-				_passwordInputScope.Names.Add(name);
-
-				return _passwordInputScope;
-			}
 		}
 
 		protected override void OnApplyTemplate()
@@ -337,16 +318,12 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (IsPassword)
 			{
-				_cachedInputScope = InputScope;
 				_cachedSpellCheckSetting = IsSpellCheckEnabled;
-				_cachedPredictionsSetting = IsTextPredictionEnabled;
-				InputScope = PasswordInputScope; // Change to default input scope so we don't have suggestions, etc.
 				IsTextPredictionEnabled = false; // Force the other text modification options off
 				IsSpellCheckEnabled = false;
 			}
 			else
 			{
-				InputScope = _cachedInputScope;
 				IsSpellCheckEnabled = _cachedSpellCheckSetting;
 				IsTextPredictionEnabled = _cachedPredictionsSetting;
 			}
