@@ -153,5 +153,13 @@ namespace Xamarin.Forms.Core.UnitTests
 			var mediaElement = new MediaElement { Source = path };
 			Assert.That(mediaElement.Source, Is.TypeOf<FileMediaSource>());
 		}
+
+		[Test]
+		public void ImplicitCastOnWindowsAbsolutePathsShouldCreateAFileMediaSource()
+		{
+			var path = "C:\\Users\\Username\\Videos\\video.mp4";
+			var mediaElement = new MediaElement { Source = path };
+			Assert.That(mediaElement.Source, Is.TypeOf<FileMediaSource>());
+		}
 	}
 }
