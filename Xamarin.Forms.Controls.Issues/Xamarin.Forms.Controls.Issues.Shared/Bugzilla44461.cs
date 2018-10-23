@@ -26,7 +26,8 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var instructions = new Label
 			{
-				Text = @"Tap the first button (Button0). The button should be aligned with the left side of the screen. If it's not, the test failed."
+				Text = @"Tap the first button (Button0). The button should be aligned with the left side of the screen "
+				+ "and should not move. If it's not, the test failed."
 			};
 
 			grid.Children.Add(instructions);
@@ -68,8 +69,8 @@ namespace Xamarin.Forms.Controls.Issues
 		public void Bugzilla44461Test()
 		{
 			var positions = TapButton(0);
-			Assert.AreEqual(positions.initialPosition, positions.finalPosition);
-			Assert.AreEqual(0, positions.finalPosition.X);
+			Assert.AreEqual(positions.initialPosition.X, positions.finalPosition.X);
+			Assert.LessOrEqual(positions.finalPosition.X, 1);
 			RunningApp.Screenshot ("Button0 is aligned with the left side of the screen");
 		}
 
