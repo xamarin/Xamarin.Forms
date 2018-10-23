@@ -319,6 +319,7 @@ namespace Xamarin.Forms.Platform.UWP
 			if (IsPassword)
 			{
 				_cachedSpellCheckSetting = IsSpellCheckEnabled;
+				_cachedPredictionsSetting = IsTextPredictionEnabled;
 				IsTextPredictionEnabled = false; // Force the other text modification options off
 				IsSpellCheckEnabled = false;
 			}
