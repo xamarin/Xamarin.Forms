@@ -12,8 +12,8 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 	/// </summary>
 	public class Entry : EEntry, IMeasurable, IBatchable
 	{
-		static readonly int s_VariationNormal = 0;
-		static readonly int s_VariationSignedAndDecimal = 3;
+		const int VariationNormal = 0;
+		const int VariationSignedAndDecimal = 3;
 
 		/// <summary>
 		/// Holds the formatted text of the entry.
@@ -80,10 +80,10 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 					_span.Text = value;
 					ApplyTextAndStyle();
 					Device.StartTimer(TimeSpan.FromTicks(1), () =>
-						{
-							TextChanged?.Invoke(this, new TextChangedEventArgs(old, value));
-							return false;
-						});
+					{
+						OnTextChanged(old, value);
+						return false;
+					});
 				}
 			}
 		}
@@ -295,7 +295,7 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		/// <summary>
 		/// Implementation of the IMeasurable.Measure() method.
 		/// </summary>
-		public ESize Measure(int availableWidth, int availableHeight)
+		public virtual ESize Measure(int availableWidth, int availableHeight)
 		{
 			var originalSize = Geometry;
 			// resize the control using the whole available width
@@ -345,6 +345,11 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 			}
 		}
 
+		protected virtual void OnTextChanged(string oldValue, string newValue)
+		{
+			TextChanged?.Invoke(this, new TextChangedEventArgs(oldValue, newValue));
+		}
+
 		void IBatchable.OnBatchCommitted()
 		{
 			ApplyTextAndStyle();
@@ -390,7 +395,8 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 		/// <param name="keyboard">Keyboard type to be used.</param>
 		void ApplyKeyboard(Keyboard keyboard)
 		{
-			SetInternalKeyboard(_keyboard = keyboard);
+			_keyboard = keyboard;
+			SetInternalKeyboard(keyboard);
 		}
 
 		/// <summary>
@@ -409,13 +415,13 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 				SetInputPanelEnabled(true);
 				SetInputPanelLayout(InputPanelLayout.NumberOnly);
 				// InputPanelVariation is used to allow using deciaml point.
-				InputPanelVariation = s_VariationSignedAndDecimal;
+				InputPanelVariation = VariationSignedAndDecimal;
 			}
 			else
 			{
 				SetInputPanelEnabled(true);
 				SetInputPanelLayout((InputPanelLayout)keyboard);
-				InputPanelVariation = s_VariationNormal;
+				InputPanelVariation = VariationNormal;
 			}
 		}
 

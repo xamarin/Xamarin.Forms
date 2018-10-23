@@ -17,6 +17,7 @@ using Android.Widget;
 using Xamarin.Forms.Platform.Android.AppCompat;
 using FragmentManager = Android.Support.V4.App.FragmentManager;
 using Xamarin.Forms.Internals;
+using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -298,6 +299,23 @@ namespace Xamarin.Forms.Platform.Android
 			throw new InvalidOperationException("RemovePage is not supported globally on Android, please use a NavigationPage.");
 		}
 
+		public static void ClearRenderer(AView renderedView)
+		{
+			var element = (renderedView as IVisualElementRenderer)?.Element;
+			var view = element as View;
+			if (view != null)
+			{
+				var renderer = GetRenderer(view);
+				if (renderer == renderedView)
+					element.ClearValue(RendererProperty);
+				renderer?.Dispose();
+				renderer = null;
+			}
+			var layout = view as IVisualElementRenderer;
+			layout?.Dispose();
+			layout = null;
+		}
+
 		[Obsolete("CreateRenderer(VisualElement) is obsolete as of version 2.5. Please use CreateRendererWithContext(VisualElement, Context) instead.")]
 		public static IVisualElementRenderer CreateRenderer(VisualElement element)
 		{
@@ -323,7 +341,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public static IVisualElementRenderer GetRenderer(VisualElement bindable)
 		{
-			return (IVisualElementRenderer)bindable.GetValue(RendererProperty);
+			return (IVisualElementRenderer)bindable?.GetValue(RendererProperty);
 		}
 
 		public static void SetRenderer(VisualElement bindable, IVisualElementRenderer value)
@@ -389,6 +407,7 @@ namespace Xamarin.Forms.Platform.Android
 					IMenuItem menuItem = menu.Add(item.Text);
 					menuItem.SetEnabled(controller.IsEnabled);
 					menuItem.SetOnMenuItemClickListener(new GenericMenuClickListener(controller.Activate));
+					menuItem.SetTitleOrContentDescription(item);
 				}
 				else
 				{
@@ -403,6 +422,7 @@ namespace Xamarin.Forms.Platform.Android
 					menuItem.SetEnabled(controller.IsEnabled);
 					menuItem.SetShowAsAction(ShowAsAction.Always);
 					menuItem.SetOnMenuItemClickListener(new GenericMenuClickListener(controller.Activate));
+					menuItem.SetTitleOrContentDescription(item);
 				}
 			}
 		}
@@ -698,24 +718,27 @@ namespace Xamarin.Forms.Platform.Android
 
 			NavAnimationInProgress = true;
 
+			SelectTab();
+
+			NavAnimationInProgress = false;
+		}
+
+		void SelectTab()
+		{
 			Page page = _currentTabbedPage.CurrentPage;
 			if (page == null)
 			{
 				ActionBar.SelectTab(null);
-				NavAnimationInProgress = false;
 				return;
 			}
 
 			int index = TabbedPage.GetIndex(page);
 			if (ActionBar.SelectedNavigationIndex == index || index >= ActionBar.NavigationItemCount)
 			{
-				NavAnimationInProgress = false;
 				return;
 			}
 
 			ActionBar.SelectTab(ActionBar.GetTabAt(index));
-
-			NavAnimationInProgress = false;
 		}
 
 		Drawable GetActionBarBackgroundDrawable()
@@ -745,12 +768,15 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
+			FastRenderers.AutomationPropertiesProvider.GetDrawerAccessibilityResources(_activity, CurrentMasterDetailPage, out int resourceIdOpen, out int resourceIdClose);
 #pragma warning disable 618 // Eventually we will need to determine how to handle the v7 ActionBarDrawerToggle for AppCompat
-			MasterDetailPageToggle = new ActionBarDrawerToggle(_activity, drawer, icon, 0, 0);
+			MasterDetailPageToggle = new ActionBarDrawerToggle(_activity, drawer, icon,
+			                                                   resourceIdOpen == 0 ? global::Android.Resource.String.Ok : resourceIdOpen,
+													  		   resourceIdClose == 0 ? global::Android.Resource.String.Ok : resourceIdClose);
 #pragma warning restore 618
-
 			MasterDetailPageToggle.SyncState();
 		}
+
 
 		bool HandleBackPressed(object sender, EventArgs e)
 		{
@@ -824,6 +850,7 @@ namespace Xamarin.Forms.Platform.Android
 			_renderer.AddView(modalRenderer.View);
 
 			var source = new TaskCompletionSource<bool>();
+
 			NavAnimationInProgress = true;
 			if (animated)
 			{
@@ -835,22 +862,19 @@ namespace Xamarin.Forms.Platform.Android
 					OnEnd = a =>
 					{
 						source.TrySetResult(false);
-						NavAnimationInProgress = false;
 					},
 					OnCancel = a =>
 					{
 						source.TrySetResult(true);
-						NavAnimationInProgress = false;
 					}
 				});
 			}
 			else
 			{
-				NavAnimationInProgress = false;
 				source.TrySetResult(true);
 			}
 
-			return source.Task;
+			return source.Task.ContinueWith(task => NavAnimationInProgress = false);
 		}
 
 		void RegisterNavPageCurrent(Page page)
@@ -1138,7 +1162,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		internal class DefaultRenderer : VisualElementRenderer<View>
 		{
-			bool _notReallyHandled;
+			public bool NotReallyHandled { get; private set; }
 			IOnTouchListener _touchListener;
 
 			[Obsolete("This constructor is obsolete as of version 2.5. Please use DefaultRenderer(Context) instead.")]
@@ -1155,7 +1179,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			internal void NotifyFakeHandling()
 			{
-				_notReallyHandled = true;
+				NotReallyHandled = true;
 			}
 
 			public override bool OnTouchEvent(MotionEvent e)
@@ -1198,11 +1222,11 @@ namespace Xamarin.Forms.Platform.Android
 				// it then knows to ignore that result and return false/unhandled. This allows the event to propagate up the tree.
 				#endregion
 
-				_notReallyHandled = false;
+				NotReallyHandled = false;
 
 				var result = base.DispatchTouchEvent(e);
 
-				if (result && _notReallyHandled)
+				if (result && NotReallyHandled)
 				{
 					// If the child control returned true from its touch event handler but signalled that it was a fake "true", then we
 					// don't consider the event truly "handled" yet. 

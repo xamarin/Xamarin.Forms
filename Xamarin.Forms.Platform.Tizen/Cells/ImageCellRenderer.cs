@@ -6,13 +6,15 @@ namespace Xamarin.Forms.Platform.Tizen
 	public class ImageCellRenderer : TextCellRenderer
 	{
 		const int _defaultHeight = 55;
-		Dictionary<EvasObject, Native.Image> _realizedViews = new Dictionary<EvasObject, Native.Image>();
 
-		public ImageCellRenderer() : this("default")
+		public ImageCellRenderer() : this(Device.Idiom == TargetIdiom.Watch ? "1icon_2text" : "default")
 		{
 			ImagePart = "elm.swallow.icon";
 		}
-		protected ImageCellRenderer(string style) : base(style) { }
+
+		protected ImageCellRenderer(string style) : base(style)
+		{
+		}
 
 		protected string ImagePart { get; set; }
 
@@ -55,6 +57,5 @@ namespace Xamarin.Forms.Platform.Tizen
 			}
 			return base.OnCellPropertyChanged(cell, property, realizedView);
 		}
-
 	}
 }

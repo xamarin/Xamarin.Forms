@@ -18,11 +18,16 @@ using NativeControl = AppKit.NSControl;
 namespace Xamarin.Forms.Platform.MacOS
 #endif
 {
+	public interface ITabStop
+	{
+		NativeView TabStop { get; }
+	}
+
 	public abstract class ViewRenderer : ViewRenderer<View, NativeView>
 	{
 	}
 
-	public abstract class ViewRenderer<TView, TNativeView> : VisualElementRenderer<TView> where TView : View where TNativeView : NativeView
+	public abstract class ViewRenderer<TView, TNativeView> : VisualElementRenderer<TView>, ITabStop where TView : View where TNativeView : NativeView
 	{
 #if __MOBILE__
 		string _defaultAccessibilityLabel;
@@ -37,6 +42,8 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 
 		public TNativeView Control { get; private set; }
+
+		NativeView ITabStop.TabStop => Control;
 #if __MOBILE__
 		public override void LayoutSubviews()
 		{
@@ -123,58 +130,23 @@ namespace Xamarin.Forms.Platform.MacOS
 			base.OnRegisterEffect(effect);
 			effect.SetControl(Control);
 		}
+
 #if __MOBILE__
 		protected override void SetAccessibilityHint()
 		{
-			if (Control == null)
-			{
-				base.SetAccessibilityHint();
-				return;
-			}
-
-			if (Element == null)
-				return;
-
-			if (_defaultAccessibilityHint == null)
-				_defaultAccessibilityHint = Control.AccessibilityHint;
-
-			Control.AccessibilityHint = (string)Element.GetValue(AutomationProperties.HelpTextProperty) ?? _defaultAccessibilityHint;
-
+			_defaultAccessibilityHint = Control.SetAccessibilityHint(Element, _defaultAccessibilityHint);
 		}
 
 		protected override void SetAccessibilityLabel()
 		{
-			if (Control == null)
-			{
-				base.SetAccessibilityLabel();
-				return;
-			}
-
-			if (Element == null)
-				return;
-
-			if (_defaultAccessibilityLabel == null)
-				_defaultAccessibilityLabel = Control.AccessibilityLabel;
-
-			Control.AccessibilityLabel = (string)Element.GetValue(AutomationProperties.NameProperty) ?? _defaultAccessibilityLabel;
+			_defaultAccessibilityLabel = Control.SetAccessibilityLabel(Element, _defaultAccessibilityLabel);
 		}
 
 		protected override void SetIsAccessibilityElement()
 		{
-			if (Control == null)
-			{
-				base.SetIsAccessibilityElement();
-				return;
-			}
-
-			if (Element == null)
-				return;
-
-			if (!_defaultIsAccessibilityElement.HasValue)
-				_defaultIsAccessibilityElement = Control.IsAccessibilityElement;
-
-			Control.IsAccessibilityElement = (bool)((bool?)Element.GetValue(AutomationProperties.IsInAccessibleTreeProperty) ?? _defaultIsAccessibilityElement);
+			_defaultIsAccessibilityElement = Control.SetIsAccessibilityElement(Element, _defaultIsAccessibilityElement);
 		}
+	
 #endif
 		protected override void SetAutomationId(string id)
 		{

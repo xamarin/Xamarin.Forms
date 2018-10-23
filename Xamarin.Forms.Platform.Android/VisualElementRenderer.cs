@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using Android.Content;
-using Android.Support.V4.View;
 using Android.Views;
 using Xamarin.Forms.Internals;
 using AView = Android.Views.View;
 using Xamarin.Forms.Platform.Android.FastRenderers;
+using Android.Runtime;
+using Android.Support.V4.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -21,7 +21,7 @@ namespace Xamarin.Forms.Platform.Android
 		string _defaultContentDescription;
 		bool? _defaultFocusable;
 		string _defaultHint;
-		bool _inputTransparentInherited = true;
+		bool _cascadeInputTransparent = true;
 
 		VisualElementPackager _packager;
 		PropertyChangedEventHandler _propertyChangeHandler;
@@ -73,7 +73,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override bool DispatchTouchEvent(MotionEvent e)
 		{
-			if (InputTransparent && _inputTransparentInherited)
+			if (InputTransparent && _cascadeInputTransparent)
 			{
 				// If the Element is InputTransparent, this ViewGroup will be marked InputTransparent
 				// If we're InputTransparent and our transparency should be applied to our child controls,
@@ -156,6 +156,40 @@ namespace Xamarin.Forms.Platform.Android
 			Performance.Stop(reference);
 		}
 
+		protected int TabIndex { get; set; } = 0;
+
+		protected bool TabStop { get; set; } = true;
+
+		protected void UpdateTabStop() => TabStop = Element.IsTabStop;
+
+		protected void UpdateTabIndex() => TabIndex = Element.TabIndex;
+
+		public override AView FocusSearch(AView focused, [GeneratedEnum] FocusSearchDirection direction)
+		{
+			VisualElement element = Element as VisualElement;
+			int maxAttempts = 0;
+			var tabIndexes = element?.GetTabIndexesOnParentPage(out maxAttempts);
+			if (tabIndexes == null)
+				return null;
+
+			int tabIndex = element.TabIndex;
+			AView control = null;
+			int attempt = 0;
+			bool forwardDirection = !(
+				(direction & FocusSearchDirection.Backward) != 0 ||
+				(direction & FocusSearchDirection.Left) != 0 ||
+				(direction & FocusSearchDirection.Up) != 0);
+
+			do
+			{
+				element = element.FindNextElement(forwardDirection, tabIndexes, ref tabIndex);
+				var renderer = element.GetRenderer();
+				control = (renderer as ITabStop)?.TabStop;
+			} while (!(control?.Focusable == true || ++attempt >= maxAttempts));
+
+			return control;
+		}
+
 		public ViewGroup ViewGroup => this;
 		AView IVisualElementRenderer.View => this;
 
@@ -218,6 +252,8 @@ namespace Xamarin.Forms.Platform.Android
 			SetFocusable();
 			UpdateInputTransparent();
 			UpdateInputTransparentInherited();
+			UpdateTabStop();
+			UpdateTabIndex();
 
 			Performance.Stop(reference);
 		}
@@ -261,8 +297,6 @@ namespace Xamarin.Forms.Platform.Android
 					}
 				}
 
-				RemoveAllViews();
-
 				if (Element != null)
 				{
 					Element.PropertyChanged -= _propertyChangeHandler;
@@ -285,7 +319,11 @@ namespace Xamarin.Forms.Platform.Android
 		protected virtual void OnElementChanged(ElementChangedEventArgs<TElement> e)
 		{
 			var args = new VisualElementChangedEventArgs(e.OldElement, e.NewElement);
-			foreach (EventHandler<VisualElementChangedEventArgs> handler in _elementChangedHandlers)
+
+			// The list of event handlers can be changed inside the handlers. (ex.: are used CompressedLayout)
+			// To avoid an exception, a copy of the handlers is called.
+			var handlers = _elementChangedHandlers.ToArray();
+			foreach (var handler in handlers)
 				handler(this, args);
 
 			ElementChanged?.Invoke(this, e);
@@ -307,6 +345,10 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateInputTransparent();
 			else if (e.PropertyName == Xamarin.Forms.Layout.CascadeInputTransparentProperty.PropertyName)
 				UpdateInputTransparentInherited();
+			else if (e.PropertyName == VisualElement.IsTabStopProperty.PropertyName)
+				UpdateTabStop();
+			else if (e.PropertyName == VisualElement.TabIndexProperty.PropertyName)
+				UpdateTabIndex();
 
 			ElementPropertyChanged?.Invoke(this, e);
 		}
@@ -362,7 +404,7 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			_inputTransparentInherited = layout.CascadeInputTransparent;
+			_cascadeInputTransparent = layout.CascadeInputTransparent;
 		}
 
 		protected void SetPackager(VisualElementPackager packager)
@@ -387,6 +429,6 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		void IVisualElementRenderer.SetLabelFor(int? id)
-			=> LabelFor = id ?? LabelFor;
+			=> ViewCompat.SetLabelFor(this, id ?? ViewCompat.GetLabelFor(this));
 	}
 }

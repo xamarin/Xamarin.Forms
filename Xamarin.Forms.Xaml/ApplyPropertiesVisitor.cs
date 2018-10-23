@@ -272,7 +272,10 @@ namespace Xamarin.Forms.Xaml
 #if NETSTANDARD1_0
 			var bindableFieldInfo = elementType.GetFields().FirstOrDefault(fi => fi.Name == localName + "Property");
 #else
-			var bindableFieldInfo = elementType.GetFields(BindingFlags.Static | BindingFlags.Public|BindingFlags.FlattenHierarchy).FirstOrDefault(fi => fi.Name == localName + "Property");
+			// F# does not support public fields, so allow internal (Assembly) as well as public
+			const BindingFlags supportedFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
+			var bindableFieldInfo = elementType.GetFields(supportedFlags)
+												.FirstOrDefault(fi => (fi.IsAssembly || fi.IsPublic) && fi.Name == localName + "Property");
 #endif
 			Exception exception = null;
 			if (exception == null && bindableFieldInfo == null) {
@@ -470,9 +473,23 @@ namespace Xamarin.Forms.Xaml
 
 			Func<MemberInfo> minforetriever;
 			if (attached)
-				minforetriever = () => property.DeclaringType.GetRuntimeMethod("Get" + property.PropertyName, new [] { typeof(BindableObject) });
+				minforetriever = () =>
+				{
+					try {
+						return property.DeclaringType.GetRuntimeMethod("Get" + property.PropertyName, new[] { typeof(BindableObject) });
+					} catch (AmbiguousMatchException e) {
+						throw new XamlParseException($"Multiple methods with name '{property.DeclaringType}.Get{property.PropertyName}' found.", lineInfo, innerException: e);
+					}
+				};
 			else
-				minforetriever = () => property.DeclaringType.GetRuntimeProperty(property.PropertyName);
+				minforetriever = () =>
+				{
+					try {
+						return property.DeclaringType.GetRuntimeProperty(property.PropertyName);
+					} catch (AmbiguousMatchException e) {
+						throw new XamlParseException($"Multiple properties with name '{property.DeclaringType}.{property.PropertyName}' found.", lineInfo, innerException: e);
+					}
+				};
 			var convertedValue = value.ConvertTo(property.ReturnType, minforetriever, serviceProvider);
 
 			if (bindable != null) {
@@ -556,7 +573,11 @@ namespace Xamarin.Forms.Xaml
 			}
 #else
 			while (elementType != null && propertyInfo == null) {
-				propertyInfo = elementType.GetProperty(localName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
+				try {
+					propertyInfo = elementType.GetProperty(localName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
+				} catch (AmbiguousMatchException e) {
+					throw new XamlParseException($"Multiple properties with name '{elementType}.{localName}' found.", lineInfo, innerException: e);
+				}
 				elementType = elementType.BaseType;
 			}
 #endif

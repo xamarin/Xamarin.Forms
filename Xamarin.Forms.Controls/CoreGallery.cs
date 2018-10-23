@@ -287,6 +287,7 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new PanGestureGalleryPage(), "Pan gesture Gallery"),
 				new GalleryPageFactory(() => new SwipeGestureGalleryPage(), "Swipe gesture Gallery"),
 				new GalleryPageFactory(() => new PinchGestureTestPage(), "Pinch gesture Gallery"),
+				new GalleryPageFactory(() => new ClickGestureGalleryPage(), "Click gesture Gallery"),
 				new GalleryPageFactory(() => new AutomationIdGallery(), "AutomationID Gallery"),
 				new GalleryPageFactory(() => new LayoutPerformanceGallery(), "Layout Perf Gallery"),
 				new GalleryPageFactory(() => new ListViewSelectionColor(), "ListView SelectionColor Gallery"),
@@ -384,9 +385,10 @@ namespace Xamarin.Forms.Controls
 			_titleToPage = _pages.ToDictionary(o => o.Title);
 
 			// avoid NRE for root pages without NavigationBar
-			if (navigationBehavior == NavigationBehavior.PushAsync && rootPage.GetType() == typeof(CoreNavigationPage))
+			if (navigationBehavior == NavigationBehavior.PushAsync && rootPage.GetType () == typeof (CoreNavigationPage))
 			{
-				_pages.Add(new GalleryPageFactory(() => new NavigationBarGallery((NavigationPage)rootPage), "NavigationBar Gallery - Legacy"));
+				_pages.Insert (0, new GalleryPageFactory(() => new NavigationBarGallery((NavigationPage)rootPage), "NavigationBar Gallery - Legacy"));
+				_pages.Insert(1, new GalleryPageFactory(() => new TitleView(true), "TitleView"));
 			}
 
 			var template = new DataTemplate(typeof(TextCell));
@@ -486,6 +488,9 @@ namespace Xamarin.Forms.Controls
 
 				}
 			};
+
+			this.SetAutomationPropertiesName("Gallery");
+			this.SetAutomationPropertiesHelpText("Lists all gallery pages");
 
 			Content = new AbsoluteLayout
 			{
