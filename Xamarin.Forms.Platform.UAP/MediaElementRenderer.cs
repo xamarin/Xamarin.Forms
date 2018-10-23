@@ -83,7 +83,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void PositionRequested(object sender, EventArgs e)
 		{
-			if (Control != null)
+			if (!(Control is null))
 			{
 				Controller.Position = Control.Position;
 			}
@@ -93,30 +93,33 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void StateRequested(object sender, StateRequested e)
 		{
-			switch (e.State)
+			if (!(Control is null))
 			{
-				case MediaElementState.Playing:
-					Control.Play();
-					break;
+				switch (e.State)
+				{
+					case MediaElementState.Playing:
+						Control.Play();
+						break;
 
-				case MediaElementState.Paused:
-					if (Control.CanPause)
-					{
-						Control.Pause();
-					}
-					break;
+					case MediaElementState.Paused:
+						if (Control.CanPause)
+						{
+							Control.Pause();
+						}
+						break;
 
-				case MediaElementState.Stopped:
-					Control.Stop();
-					break;
+					case MediaElementState.Stopped:
+						Control.Stop();
+						break;
+				}
+
+				Controller.Position = Control.Position;
 			}
-
-			Controller.Position = Control.Position;
 		}
 
 		void SeekRequested(object sender, SeekRequested e)
 		{
-			if (Control.CanSeek)
+			if (!(Control is null) && Control.CanSeek)
 			{
 				Control.Position = e.Position;
 				Controller.Position = Control.Position;
@@ -130,7 +133,11 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void ControlMediaEnded(object sender, RoutedEventArgs e)
 		{
-			Controller.Position = Control.Position;
+			if (!(Control is null))
+			{
+				Controller.Position = Control.Position;
+			}
+
 			Controller.CurrentState = MediaElementState.Stopped;
 			Controller.OnMediaEnded();
 		}
@@ -147,7 +154,7 @@ namespace Xamarin.Forms.Platform.UWP
 	
 		void ControlCurrentStateChanged(object sender, RoutedEventArgs e)
 		{
-			if (Element is null)
+			if (Element is null || Control is null)
 				return;
 
 			switch (Control.CurrentState)
@@ -200,18 +207,27 @@ namespace Xamarin.Forms.Platform.UWP
 		
 		void BufferingProgressChanged(DependencyObject sender, DependencyProperty dp)
 		{
-			Controller.BufferingProgress = Control.BufferingProgress;
+			if (!(Control is null))
+			{
+				Controller.BufferingProgress = Control.BufferingProgress;
+			}
 		}
 
 		void PositionChanged(DependencyObject sender, DependencyProperty dp)
 		{
-			Controller.Position = Control.Position;
+			if (!(Control is null))
+			{
+				Controller.Position = Control.Position;
+			}
 		}
 
 		void ControlSeekCompleted(object sender, RoutedEventArgs e)
 		{
-			Controller.Position = Control.Position;
-			Controller.OnSeekCompleted();
+			if (!(Control is null))
+			{
+				Controller.Position = Control.Position;
+				Controller.OnSeekCompleted();
+			}
 		}
 
 		protected override void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
