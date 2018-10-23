@@ -1,5 +1,16 @@
 ﻿namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 {
+	//internal class FilterCollectionViewGallery : ContentPage
+	//{
+	//	public FilterCollectionViewGallery()
+	//	{
+	//		var layout = new Grid
+	//		{
+	//			RowDefinitions = new RowDefinitionCollection()
+	//		};
+	//	}
+	//}
+
 	internal class ObservableCodeCollectionViewGallery : ContentPage
 	{
 		public ObservableCodeCollectionViewGallery(ItemsLayoutOrientation orientation = ItemsLayoutOrientation.Vertical, 

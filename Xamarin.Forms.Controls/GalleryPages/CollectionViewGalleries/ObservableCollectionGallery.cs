@@ -18,6 +18,8 @@
 					{
 						descriptionLabel,
 
+						GalleryBuilder.NavButton("Filter Items", () => new FilterCollectionView(), Navigation),
+
 						GalleryBuilder.NavButton("Add/Remove Items (list)", () =>
 							new ObservableCodeCollectionViewGallery(grid: false), Navigation),
 
