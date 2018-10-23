@@ -29,22 +29,17 @@ namespace Xamarin.Forms.Platform.Android
 		readonly GestureManager _gestureManager;
 
 		/// <summary>
-		/// The actual size is rounded in step of 0.8 points.
+		/// The actual size is rounded in step of 1 / ScalingFactor points.
 		/// But that the real size was not less than the given, it should be increased for rounding only in the big party.
 		/// </summary>
 		Rectangle PrepareLayout(Rectangle region)
 		{
-			float step = 0.8f;
-			float halfStep = step / 2;
-			float increment = halfStep + 0.1f;
-			double modH = region.Height % step;
-			double modW = region.Width % step;
+			if (region.IsEmpty)
+				return region;
 
-			if (region.Height > 0 && modH <= halfStep)
-				region.Height += increment - modH;
-
-			if (region.Width > 0 && modW <= halfStep)
-				region.Width += increment - modW;
+			var step = 1 / Device.Info.ScalingFactor;
+			region.Height = Math.Ceiling(region.Height / step) * step;
+			region.Width = Math.Ceiling(region.Width / step) * step;
 
 			return region;
 		}
