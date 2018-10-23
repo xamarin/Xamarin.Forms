@@ -9,10 +9,6 @@ using NUnit.Framework;
 
 namespace Xamarin.Forms.Controls.Issues
 {
-#if UITEST
-	[Category(UITestCategories.IsEnabled)]
-#endif
-
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Bugzilla, 44096, "Grid, StackLayout, and ContentView still participate in hit testing on " 
 		+ "Android after IsEnabled is set to false", PlatformAffected.Android)]
@@ -24,16 +20,29 @@ namespace Xamarin.Forms.Controls.Issues
 		const string ToggleColor = "color";
 		const string ToggleIsEnabled = "disabled";
 
+		const string ResultLabel = "resultLabel";
 		const string StackLayout = "stackLayout";
+		const string StackLayoutButton = "stackLayoutButton";
 		const string ContentView = "contentView";
+		const string ContentViewButton = "contentViewButton";
 		const string Grid = "grid";
+		const string GridButton = "gridButton";
 		const string RelativeLayout = "relativeLayout";
+		const string RelativeLayoutButton = "relativeLayoutButton";
 
 		protected override void Init()
 		{
+			var instructions = new Label
+			{
+				Text = @"Clicking the buttons or the buttons parent views should display their automation ids in the label." +
+				       "Clicking the \"Toggle IsEnabled\" button should prevent click events on buttons or their parent view to trigger."+
+				       "The label should then display \"Original\". If it does not, the test failed."
+			};
+
 			var result = new Label
 			{
-				Text = Original
+				Text = Original,
+				AutomationId = ResultLabel
 			};
 
 			var grid = new Grid
@@ -41,8 +50,17 @@ namespace Xamarin.Forms.Controls.Issues
 				IsEnabled = true,
 				WidthRequest = 250,
 				HeightRequest = 50,
-				AutomationId = Grid
+				AutomationId = Grid,
+				Padding = new Thickness(10)
 			};
+			grid.Children.Add(new Button
+			{
+				Text = GridButton,
+				Command = new Command(() =>
+				{
+					result.Text = GridButton;
+				})
+			});
 			AddTapGesture(result, grid);
 
 			var contentView = new ContentView
@@ -50,8 +68,19 @@ namespace Xamarin.Forms.Controls.Issues
 				IsEnabled = true,
 				WidthRequest = 250,
 				HeightRequest = 50,
-				AutomationId = ContentView
+				AutomationId = ContentView,
+				Padding = new Thickness(10),
+				Content = new Button
+				{
+					Text = ContentViewButton,
+					Command = new Command(() =>
+					{
+						result.Text = ContentViewButton;
+					})
+				}
 			};
+			 
+
 			AddTapGesture(result, contentView);
 
 			var stackLayout = new StackLayout
@@ -59,8 +88,18 @@ namespace Xamarin.Forms.Controls.Issues
 				IsEnabled = true,
 				WidthRequest = 250,
 				HeightRequest = 50,
-				AutomationId = StackLayout
+				AutomationId = StackLayout,
+				Padding = new Thickness(10)
 			};
+			stackLayout.Children.Add(new Button
+			{
+				Text = StackLayoutButton,
+				Command = new Command(() =>
+					{
+						result.Text = StackLayoutButton;
+					}),
+				VerticalOptions = LayoutOptions.Center
+			});
 			AddTapGesture(result, stackLayout);
 
 			var relativeLayout = new RelativeLayout
@@ -68,8 +107,21 @@ namespace Xamarin.Forms.Controls.Issues
 				IsEnabled = true,
 				WidthRequest = 250,
 				HeightRequest = 50,
-				AutomationId = RelativeLayout
+				AutomationId = RelativeLayout,
+				Padding = new Thickness(10)
 			};
+
+			relativeLayout.Children.Add(new Button
+			{
+				WidthRequest = 150,
+				HeightRequest = 40,
+				Text = RelativeLayoutButton,
+				Command = new Command(() =>
+				{
+					result.Text = RelativeLayoutButton;
+				})
+			},()=>0, ()=>0,()=>200,()=>50 );
+
 			AddTapGesture(result, relativeLayout);
 
 			var color = new Button
@@ -102,10 +154,10 @@ namespace Xamarin.Forms.Controls.Issues
 				Text = "Toggle IsEnabled",
 				Command = new Command(() =>
 				{
-					grid.IsEnabled = false;
-					contentView.IsEnabled = false;
-					stackLayout.IsEnabled = false;
-					relativeLayout.IsEnabled = false;
+					grid.IsEnabled = !grid.IsEnabled;
+					contentView.IsEnabled = !contentView.IsEnabled;
+					stackLayout.IsEnabled = !stackLayout.IsEnabled;
+					relativeLayout.IsEnabled = !relativeLayout.IsEnabled;
 
 					result.Text = Original;
 				}),
@@ -120,6 +172,7 @@ namespace Xamarin.Forms.Controls.Issues
 				VerticalOptions = LayoutOptions.Center,
 				Children =
 				{
+					instructions,
 					color,
 					disabled,
 					result,
@@ -139,65 +192,75 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				Command = new Command(() =>
 				{
-					result.Text = Child;
+					result.Text = view.AutomationId;
 				})
 			};
 			view.GestureRecognizers.Add(tapGestureRecognizer);
 		}
 
-#if UITEST
+#if UITEST && (__WINDOWS__ || __ANDROID__)
 
 		[Test]
 		public void TestGrid()
 		{
-			TestControl(Grid);
+			TestControl(Grid,GridButton);
 		}
 
 		[Test]
 		public void TestContentView()
 		{
-			TestControl(ContentView);
+			TestControl(ContentView, ContentViewButton);
 		}
 
 		[Test]
 		public void TestStackLayout()
 		{
-			TestControl(StackLayout);
+			TestControl(StackLayout, StackLayoutButton);
 		}
 
 		[Test]
 		public void TestRelativeLayout()
 		{
-			TestControl(RelativeLayout);
+			TestControl(RelativeLayout,RelativeLayoutButton);
 		}
 
-		void TestControl(string control)
+		void TestControl(string control, string controlButton=null)
 		{
-			RunningApp.WaitForElement(q => q.Marked(control));
-			RunningApp.Tap(q => q.Marked(control));
-			RunningApp.WaitForElement(q => q.Marked(Child));
+			//Tap the button inside the control and check it worked
+			TapControlAndAssert(controlButton, controlButton);
 
+			//Toggle the background color on the controls. Without color, tap is not triggered on UWP
 			RunningApp.WaitForElement(q => q.Marked(ToggleColor));
 			RunningApp.Tap(q => q.Marked(ToggleColor));
 
-			RunningApp.WaitForElement(q => q.Marked(control));
-			RunningApp.Tap(q => q.Marked(control));
-			RunningApp.WaitForElement(q => q.Marked(Child));
+			//Tap the control and check it worked
+			TapControlAndAssert(control, control);
+			//Tap the button inside the control and check it worked
+			TapControlAndAssert(controlButton, controlButton);
 
+			//Disable tap gestures on controls
 			RunningApp.WaitForElement(q => q.Marked(ToggleIsEnabled));
 			RunningApp.Tap(q => q.Marked(ToggleIsEnabled));
 
-			RunningApp.WaitForElement(q => q.Marked(control));
-			RunningApp.Tap(q => q.Marked(control));
-			RunningApp.WaitForElement(q => q.Marked(Original));
-
+			//Toggle the background color on the controls.
 			RunningApp.WaitForElement(q => q.Marked(ToggleColor));
 			RunningApp.Tap(q => q.Marked(ToggleColor));
 
-			RunningApp.WaitForElement(q => q.Marked(control));
-			RunningApp.Tap(q => q.Marked(control));
-			RunningApp.WaitForElement(q => q.Marked(Original));
+			//Tap the control and check it didn't trigger
+			TapControlAndAssert(control, Original);
+			//Tap the button inside the control and check it didn't trigger
+			TapControlAndAssert(controlButton, Original);
 		}
+
+		void TapControlAndAssert(string control, string expectedResult)
+		{
+			var element= RunningApp.WaitForElement(q => q.Marked(control))[0];
+			RunningApp.TapCoordinates(element.Rect.X + element.Rect.Width -5, element.Rect.Y + element.Rect.Height-5);
+
+			var label = RunningApp.WaitForElement(q => q.Marked(ResultLabel))[0];
+			Assert.AreEqual(expectedResult, label.Description);
+		}
+
 #endif
 	}
 }
