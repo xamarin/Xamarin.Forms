@@ -22,7 +22,20 @@ namespace Xamarin.Forms.Controls.Issues
 		protected override void OnAppearing()
 		{
 			base.OnAppearing();
-			var checkWebView = new WebView();
+			var checkWebView = new WebView
+			{
+				Source = new HtmlWebViewSource
+				{
+					Html = @"<html>
+<body>
+<h1>Hey, I'm still here.\n\n</h1>
+<h2>There is no crash</h2>
+<h3>WebView is shifted a little to the bottom.</h3>
+<h4>If I'm not shifted, i will crash in short time :(</h4>
+</body>
+</html>"
+				}
+			};
 			var checkPage = new ContentPage {
 				Content = checkWebView
 			};
