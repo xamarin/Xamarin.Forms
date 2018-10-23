@@ -173,6 +173,9 @@ namespace Xamarin.Forms.Internals
 			INavigation currentInner = Inner;
 			if (currentInner == null)
 			{
+				if (_pushStack.Value.Count == 0)
+					return Task.FromResult<Page>(null);
+
 				Page root = _pushStack.Value.Last();
 				_pushStack.Value.Clear();
 				_pushStack.Value.Add(root);
