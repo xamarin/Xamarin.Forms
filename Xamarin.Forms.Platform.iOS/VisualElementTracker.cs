@@ -261,7 +261,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 				transform = transform.Rotate(rotation * (float)Math.PI / 180.0f, 0.0f, 0.0f, 1.0f);
 
-				if(Foundation.NSThread.IsMain)
+				if (Foundation.NSThread.IsMain)
 				{
 					caLayer.Transform = transform;
 					return;
