@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			InitializeComponent ();
 
 			_source = new List<CollectionViewGalleryTestItem>();
-			var count = 50;
+			var count = 0;
 			string[] _images = 
 			{
 				"cover1.jpg", 

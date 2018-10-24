@@ -46,6 +46,15 @@ namespace Xamarin.Forms
 	{
 		// TODO hartez 2018/06/24 11:37:00 Give DisplayMemberPath some thought	
 
+		public static readonly BindableProperty EmptyViewProperty =
+			BindableProperty.Create(nameof(EmptyView), typeof(object), typeof(ItemsView), null);
+
+		public object EmptyView
+		{
+			get => GetValue(EmptyViewProperty );
+			set => SetValue(EmptyViewProperty , value);
+		}
+
 		public static readonly BindableProperty ItemsSourceProperty =
 			BindableProperty.Create(nameof(ItemsSource), typeof(IEnumerable), typeof(ItemsView), null);
 

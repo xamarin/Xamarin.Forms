@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Android.Content;
 using Android.Support.V7.Widget;
 using Android.Views;
@@ -31,6 +32,8 @@ namespace Xamarin.Forms.Platform.Android
 				_createView = (renderer, context1) => new ItemContentControl(renderer, context1);
 			}
 		}
+
+		
 
 		public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
 		{
