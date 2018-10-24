@@ -70,9 +70,8 @@ namespace Xamarin.Forms
 		{
 			var currentIdiom = Device.Idiom.ToString("G");
 			foreach (var idiomSetting in onIdiom.Idioms)
-			{
-				if (idiomSetting.Idiom?.FirstOrDefault(idiom =>
-					    idiom.Equals(currentIdiom, StringComparison.OrdinalIgnoreCase)) == null)
+			{				
+				if (!ContainsIdiomMatch(idiomSetting.Idiom, currentIdiom))
 					continue;
 				if (s_valueConverter == null)
 					continue;
@@ -93,6 +92,19 @@ namespace Xamarin.Forms
 #pragma warning restore 0618, 0612
 		}
 
+		static bool ContainsIdiomMatch(IList<string> idiomList, string currentIdiom)
+		{
+			if (idiomList == null) return false;
+			for (int i = 0; i < idiomList.Count; i++)
+			{
+				var current = idiomList[i];
+				if (current.Equals(currentIdiom, StringComparison.OrdinalIgnoreCase))
+				{
+					return true;
+				}
+			}
+			return false;
+		}
 
 		T GetLegacyValue( TargetIdiom idiom )
 		{
