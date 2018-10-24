@@ -54,7 +54,7 @@ namespace Xamarin.Forms.Platform.UWP
 		}
 
 		internal static InputScopeNameValue GetKeyboardButtonType(this ReturnType returnType)
-		{		
+		{
 			switch (returnType)
 			{
 				case ReturnType.Default:
@@ -98,6 +98,8 @@ namespace Xamarin.Forms.Platform.UWP
 				default:
 					return UwpScrollBarVisibility.Auto;
 			}
+		}
+
 		public static T Clamp<T>(this T value, T min, T max) where T : IComparable<T>
 		{
 			if (value.CompareTo(min) < 0)
