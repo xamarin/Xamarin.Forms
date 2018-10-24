@@ -22,5 +22,5 @@ using Xamarin.Forms.Internals;
 [assembly: TypeForwardedTo(typeof(Xamarin.Forms.Xaml.Internals.INameScopeProvider))]
 #pragma warning restore CS0612 // Type or member is obsolete
 
-[assembly: AssemblyVersion("2.0.0.0")]
-[assembly: AssemblyFileVersion("2.0.0.0")]
+[assembly: AssemblyVersion("3.3.0.912540")]
+[assembly: AssemblyFileVersion("3.3.0.912540")]
