@@ -5,6 +5,7 @@ using Android.Graphics.Drawables;
 using Android.Support.V4.View;
 using Android.Support.V7.Widget;
 using Android.Views;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android.FastRenderers;
 using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
@@ -80,8 +81,11 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			var frame = element as Frame;
 			if (frame == null)
 				throw new ArgumentException("Element must be of type Frame");
+			VisualElement oldElement = Element;
 			Element = frame;
 			_motionEventHelper.UpdateElement(frame);
+
+			EffectUtilities.RegisterEffectControlProvider(this, oldElement, element);
 
 			if (!string.IsNullOrEmpty(Element.AutomationId))
 				ContentDescription = Element.AutomationId;
