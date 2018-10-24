@@ -2,7 +2,7 @@
 
 using Xamarin.Forms;
 
-namespace Xamarin.Forms.Controls.Issues
+namespace Xamarin.Forms.Controls
 {
 	public class DisposePage : ContentPage
 	{

@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Xamarin.Forms.Controls.Issues
+namespace Xamarin.Forms.Controls
 {
 	public sealed class FailImageSource : ImageSource
 	{
