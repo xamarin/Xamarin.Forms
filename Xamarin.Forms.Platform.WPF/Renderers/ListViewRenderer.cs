@@ -59,7 +59,7 @@ namespace Xamarin.Forms.Platform.WPF
 
 				// Update control properties
 				UpdateItemSource();
-        UpdateHorizontalScrollBarVisibility();
+				UpdateHorizontalScrollBarVisibility();
 				UpdateVerticalScrollBarVisibility();
 
 				if (Element.SelectedItem != null)
@@ -73,7 +73,7 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-      if (e.PropertyName == ScrollView.VerticalScrollBarVisibilityProperty.PropertyName)
+			if (e.PropertyName == ScrollView.VerticalScrollBarVisibilityProperty.PropertyName)
 			{
 				UpdateVerticalScrollBarVisibility();
 			}
