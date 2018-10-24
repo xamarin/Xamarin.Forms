@@ -6,5 +6,5 @@ using Microsoft.Windows.Design.Metadata;
 
 [assembly: ProvideMetadata (typeof (Xamarin.Forms.Core.Design.RegisterMetadata))]
 
-[assembly: AssemblyVersion("2.0.0.0")]
-[assembly: AssemblyFileVersion("2.0.0.0")]
+[assembly: AssemblyVersion("3.3.0.912540")]
+[assembly: AssemblyFileVersion("3.3.0.912540")]
