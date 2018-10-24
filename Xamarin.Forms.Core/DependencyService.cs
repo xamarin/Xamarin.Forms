@@ -10,7 +10,7 @@ namespace Xamarin.Forms
 	{
 		static bool s_initialized;
 
-		static readonly object Locker = new object();
+		static readonly object SyncLock = new object();
 		static readonly List<Type> DependencyTypes = new List<Type>();
 		static readonly Dictionary<Type, DependencyData> DependencyImplementations = new Dictionary<Type, DependencyData>();
 
@@ -26,7 +26,7 @@ namespace Xamarin.Forms
 			Initialize();
 
 			DependencyData dependencyImplementation;
-			lock (Locker)
+			lock (SyncLock)
 			{
 				Type targetType = typeof(T);
 				if (!DependencyImplementations.ContainsKey(targetType))
@@ -65,7 +65,7 @@ namespace Xamarin.Forms
 			if (!DependencyTypes.Contains(targetType))
 				DependencyTypes.Add(targetType);
 
-			lock (Locker)
+			lock (SyncLock)
 			{
 				DependencyImplementations[targetType] = new DependencyData { ImplementorType = implementorType };
 			}
