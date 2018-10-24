@@ -9,7 +9,6 @@ using Android.Widget;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.Android.FastRenderers;
 using AView = Android.Views.View;
-using Object = Java.Lang.Object;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -19,13 +18,16 @@ namespace Xamarin.Forms.Platform.Android
 		readonly EffectControlProvider _effectControlProvider;
 
 		protected ItemsViewAdapter ItemsViewAdapter;
-
+		
 		int? _defaultLabelFor;
 		bool _disposed;
 		protected ItemsView ItemsView;
 		IItemsLayout _layout;
 		SnapManager _snapManager;
 		ScrollHelper _scrollHelper;
+
+		EmptyViewAdapter _emptyViewAdapter;
+		DataChangeObserver _dataChangeViewObserver;
 
 		public ItemsViewRenderer(Context context) : base(context)
 		{
@@ -45,16 +47,6 @@ namespace Xamarin.Forms.Platform.Android
 			// (Deliberately checking the private member here rather than the property accessor; the accessor will
 			// create a new ScrollHelper if needed, and there's no reason to do that until a Scroll is requested.)
 			_scrollHelper?.AdjustScroll();
-		}
-
-		public override ViewHolder GetChildViewHolder(AView child)
-		{
-			if (child is EmptyTextView)
-			{
-				System.Diagnostics.Debug.WriteLine($">>>>> ItemsViewRenderer GetChildViewHolder 54: Yep");
-			}
-
-			return base.GetChildViewHolder(child);
 		}
 
 		void IEffectControlProvider.RegisterEffect(Effect effect)
@@ -210,8 +202,6 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		EmptyObserver _obs;
-
 		public override ViewHolder FindViewHolderForAdapterPosition(int position)
 		{
 			System.Diagnostics.Debug.WriteLine($">>>>> ItemsViewRenderer FindViewHolderForAdapterPosition 217: MESSAGE");
@@ -244,74 +234,30 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			var oldAdapter = GetAdapter();
-			if (oldAdapter != null && _obs != null)
-			{
-				oldAdapter.UnregisterAdapterDataObserver(_obs);
-			}
-
+			Unwatch(GetAdapter());
+			
 			ItemsViewAdapter = new ItemsViewAdapter(ItemsView, Context);
 			SwapAdapter(ItemsViewAdapter, false);
 
-			if (_obs == null)
-			{
-				_obs = new EmptyObserver(this);
-			}
-
-			ItemsViewAdapter.RegisterAdapterDataObserver(_obs);
+			Watch(ItemsViewAdapter);
 		}
-		
-		private class EmptyObserver : AdapterDataObserver
+
+		void Unwatch(RecyclerView.Adapter adapter)
 		{
-			readonly ItemsViewRenderer _itemsViewRenderer;
-
-			public EmptyObserver(ItemsViewRenderer itemsViewRenderer) : base()
+			if (adapter != null && _dataChangeViewObserver != null)
 			{
-				System.Diagnostics.Debug.WriteLine($">>>>> EmptyObserver Constructor");
-				_itemsViewRenderer = itemsViewRenderer;
+				adapter.UnregisterAdapterDataObserver(_dataChangeViewObserver);
+			}
+		}
+
+		void Watch(RecyclerView.Adapter adapter)
+		{
+			if (_dataChangeViewObserver == null)
+			{
+				_dataChangeViewObserver = new DataChangeObserver(UpdateEmptyView);
 			}
 
-			public override void OnChanged()
-			{
-				base.OnChanged();
-				System.Diagnostics.Debug.WriteLine($">>>>> EmptyObserver OnChanged 243: MESSAGE");
-				_itemsViewRenderer.UpdateEmptyView();
-			}
-
-			public override void OnItemRangeInserted(int positionStart, int itemCount)
-			{
-				base.OnItemRangeInserted(positionStart, itemCount);
-				System.Diagnostics.Debug.WriteLine($">>>>> EmptyObserver OnItemRangeInserted 250: MESSAGE");
-				_itemsViewRenderer.UpdateEmptyView();
-			}
-
-			public override void OnItemRangeChanged(int positionStart, int itemCount)
-			{
-				base.OnItemRangeChanged(positionStart, itemCount);
-				System.Diagnostics.Debug.WriteLine($">>>>> EmptyObserver OnItemRangeChanged 256: MESSAGE");
-				_itemsViewRenderer.UpdateEmptyView();
-			}
-
-			public override void OnItemRangeChanged(int positionStart, int itemCount, Object payload)
-			{
-				base.OnItemRangeChanged(positionStart, itemCount, payload);
-				System.Diagnostics.Debug.WriteLine($">>>>> EmptyObserver OnItemRangeChanged 263: MESSAGE");
-				_itemsViewRenderer.UpdateEmptyView();
-			}
-
-			public override void OnItemRangeRemoved(int positionStart, int itemCount)
-			{
-				base.OnItemRangeRemoved(positionStart, itemCount);
-				System.Diagnostics.Debug.WriteLine($">>>>> EmptyObserver OnItemRangeRemoved 269: MESSAGE");
-				_itemsViewRenderer.UpdateEmptyView();
-			}
-
-			public override void OnItemRangeMoved(int fromPosition, int toPosition, int itemCount)
-			{
-				base.OnItemRangeMoved(fromPosition, toPosition, itemCount);
-				System.Diagnostics.Debug.WriteLine($">>>>> EmptyObserver OnItemRangeMoved 275: MESSAGE");
-				_itemsViewRenderer.UpdateEmptyView();
-			}
+			adapter.RegisterAdapterDataObserver(_dataChangeViewObserver);
 		}
 
 		void SetUpNewElement(ItemsView newElement)
@@ -333,11 +279,11 @@ namespace Xamarin.Forms.Platform.Android
 
 			UpdateItemsSource();
 
-			SetLayoutManager(SelectLayoutManager(newElement.ItemsLayout));
+			_layout = newElement.ItemsLayout;
+			SetLayoutManager(SelectLayoutManager(_layout));
 			UpdateSnapBehavior();
 
 			// Keep track of the ItemsLayout's property changes
-			_layout = newElement.ItemsLayout;
 			_layout.PropertyChanged += LayoutOnPropertyChanged;
 
 			// TODO hartez 2018/09/17 13:16:12 This propertychanged handler needs to be torn down in Dispose and TearDownElement	
@@ -480,56 +426,31 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		TextView _empty;
-
-		class EmptyTextView : TextView
-		{
-			public EmptyTextView(Context context) : base(context)
-			{
-				System.Diagnostics.Debug.WriteLine($">>>>> EmptyTextView EmptyTextView 452: MESSAGE");
-			}
-
-			protected override void OnLayout(bool changed, int left, int top, int right, int bottom)
-			{
-				System.Diagnostics.Debug.WriteLine($">>>>> EmptyTextView OnLayout 456: MESSAGE");
-				base.OnLayout(changed, left, top, right, bottom);
-			}
-
-			protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
-			{
-				System.Diagnostics.Debug.WriteLine($">>>>> EmptyTextView OnMeasure 462: MESSAGE");
-				base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
-			}
-		}
-
 		internal void UpdateEmptyView()
 		{
-			System.Diagnostics.Debug.WriteLine($">>>>> ItemsViewRenderer UpdateEmptyView 414: MESSAGE");
-
-			if (GetAdapter() != null)// && this.Parent is ViewGroup parent)
+			if (ItemsViewAdapter == null)
 			{
-				var showEmptyView = GetAdapter().ItemCount == 0;
+				return;
+			}
 
-				if (_empty == null)
+			var showEmptyView = ItemsViewAdapter.ItemCount == 0;
+
+			if (showEmptyView)
+			{
+				if (_emptyViewAdapter == null)
 				{
-					_empty = new EmptyTextView(this.Context) { Text = "Nothing to see here.", Visibility = ViewStates.Gone };
-					//var layoutParameters = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent,
-					//	ViewGroup.LayoutParams.MatchParent);
-					AddView(_empty);
+					_emptyViewAdapter = new EmptyViewAdapter();
 				}
 
-				//if (_empty != null)
-				//{
-				//	_empty.Visibility = showEmptyView ? ViewStates.Visible : ViewStates.Gone;
-				//	_empty.SetHeight(this.Height);
-				//	_empty.SetWidth(this.Width);
-				//	_empty.SetX(this.GetX());
-				//	_empty.SetY(this.GetY());
-				//	_empty.Elevation = 100;
-					
-				//	Visibility = showEmptyView ? ViewStates.Gone : ViewStates.Visible;
-				//	parent.Invalidate();
-				//}
+				SwapAdapter(_emptyViewAdapter, true);
+
+				// TODO hartez 2018/10/24 17:34:36 If this works, cache this layout manager as _emptyLayoutManager	
+				SetLayoutManager(new LinearLayoutManager(this.Context));
+			}
+			else
+			{
+				SwapAdapter(ItemsViewAdapter, true);
+				SetLayoutManager(SelectLayoutManager(_layout));
 			}
 		}
 	}
