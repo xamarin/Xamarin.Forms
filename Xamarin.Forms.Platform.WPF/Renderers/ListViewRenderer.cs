@@ -1,13 +1,17 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
+using System.Windows.Controls;
 using System.Windows.Input;
 using WList = System.Windows.Controls.ListView;
+using WpfScrollBarVisibility = System.Windows.Controls.ScrollBarVisibility;
 
 namespace Xamarin.Forms.Platform.WPF
 {
 	public class ListViewRenderer : ViewRenderer<ListView, WList>
 	{
 		ITemplatedItemsView<Cell> TemplatedItemsView => Element;
+		WpfScrollBarVisibility? _defaultHorizontalScrollVisibility;
+		WpfScrollBarVisibility? _defaultVerticalScrollVisibility;
 
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
@@ -21,9 +25,10 @@ namespace Xamarin.Forms.Platform.WPF
 			if (e.OldElement != null) // Clear old element event
 			{
 				e.OldElement.ItemSelected -= OnElementItemSelected;
+
 				var templatedItems = ((ITemplatedItemsView<Cell>)e.OldElement).TemplatedItems;
-				templatedItems.CollectionChanged -= TemplatedItems_GroupedCollectionChanged;
-				templatedItems.GroupedCollectionChanged -= TemplatedItems_GroupedCollectionChanged;
+				templatedItems.CollectionChanged -= OnCollectionChanged;
+				templatedItems.GroupedCollectionChanged -= OnGroupedCollectionChanged;
 			}
 
 			if (e.NewElement != null)
@@ -47,12 +52,15 @@ namespace Xamarin.Forms.Platform.WPF
 					Control.StylusUp += OnNativeStylusUp;
 				}
 
-				// Update control property 
-				UpdateItemSource();
+				// Suscribe element events
+				var templatedItems = TemplatedItemsView.TemplatedItems;
+				templatedItems.CollectionChanged += OnCollectionChanged;
+				templatedItems.GroupedCollectionChanged += OnGroupedCollectionChanged;
 
-				// Suscribe element event
-				TemplatedItemsView.TemplatedItems.CollectionChanged += TemplatedItems_GroupedCollectionChanged;
-				TemplatedItemsView.TemplatedItems.GroupedCollectionChanged += TemplatedItems_GroupedCollectionChanged;
+				// Update control properties
+				UpdateItemSource();
+				UpdateHorizontalScrollBarVisibility();
+				UpdateVerticalScrollBarVisibility();
 
 				if (Element.SelectedItem != null)
 					OnElementItemSelected(null, new SelectedItemChangedEventArgs(Element.SelectedItem));
@@ -61,19 +69,24 @@ namespace Xamarin.Forms.Platform.WPF
 			base.OnElementChanged(e);
 		}
 
-		private void TemplatedItems_GroupedCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-		{
-			UpdateItemSource();
-		}
-
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);
+
+			if (e.PropertyName == ScrollView.VerticalScrollBarVisibilityProperty.PropertyName)
+			{
+				UpdateVerticalScrollBarVisibility();
+			}
+			else if (e.PropertyName == ScrollView.HorizontalScrollBarVisibilityProperty.PropertyName)
+			{
+				UpdateHorizontalScrollBarVisibility();
+			}
 		}
 
 		void UpdateItemSource()
 		{
 			List<object> items = new List<object>();
+
 			if (Element.IsGroupingEnabled)
 			{
 				int index = 0;
@@ -90,11 +103,55 @@ namespace Xamarin.Forms.Platform.WPF
 
 					index++;
 				}
+
 				Control.ItemsSource = items;
 			}
 			else
 			{
-				Control.ItemsSource = Element.TemplatedItems;
+				foreach (var item in TemplatedItemsView.TemplatedItems)
+				{
+					items.Add(item);
+				}
+
+				Control.ItemsSource = items;
+			}
+		}
+
+		void UpdateVerticalScrollBarVisibility()
+		{
+			if (_defaultVerticalScrollVisibility == null)
+				_defaultVerticalScrollVisibility = ScrollViewer.GetVerticalScrollBarVisibility(Control);
+
+			switch (Element.VerticalScrollBarVisibility)
+			{
+				case (ScrollBarVisibility.Always):
+					ScrollViewer.SetVerticalScrollBarVisibility(Control, WpfScrollBarVisibility.Visible);
+					break;
+				case (ScrollBarVisibility.Never):
+					ScrollViewer.SetVerticalScrollBarVisibility(Control, WpfScrollBarVisibility.Hidden);
+					break;
+				case (ScrollBarVisibility.Default):
+					ScrollViewer.SetVerticalScrollBarVisibility(Control, (WpfScrollBarVisibility)_defaultVerticalScrollVisibility);
+					break;
+			}
+		}
+
+		void UpdateHorizontalScrollBarVisibility()
+		{
+			if (_defaultHorizontalScrollVisibility == null)
+				_defaultHorizontalScrollVisibility = ScrollViewer.GetHorizontalScrollBarVisibility(Control);
+
+			switch (Element.HorizontalScrollBarVisibility)
+			{
+				case (ScrollBarVisibility.Always):
+					ScrollViewer.SetHorizontalScrollBarVisibility(Control, WpfScrollBarVisibility.Visible);
+					break;
+				case (ScrollBarVisibility.Never):
+					ScrollViewer.SetHorizontalScrollBarVisibility(Control, WpfScrollBarVisibility.Hidden);
+					break;
+				case (ScrollBarVisibility.Default):
+					ScrollViewer.SetHorizontalScrollBarVisibility(Control, (WpfScrollBarVisibility)_defaultHorizontalScrollVisibility);
+					break;
 			}
 		}
 
@@ -129,8 +186,8 @@ namespace Xamarin.Forms.Platform.WPF
 
 				if (Element != null)
 				{
-					TemplatedItemsView.TemplatedItems.CollectionChanged -= TemplatedItems_GroupedCollectionChanged;
-					TemplatedItemsView.TemplatedItems.GroupedCollectionChanged -= TemplatedItems_GroupedCollectionChanged;
+					TemplatedItemsView.TemplatedItems.CollectionChanged -= OnCollectionChanged;
+					TemplatedItemsView.TemplatedItems.GroupedCollectionChanged -= OnGroupedCollectionChanged;
 				}
 			}
 
@@ -166,6 +223,16 @@ namespace Xamarin.Forms.Platform.WPF
 			}
 
 			Control.SelectedIndex = index;
+		}
+
+		void OnCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		{
+			UpdateItemSource();
+		}
+
+		void OnGroupedCollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+		{
+			UpdateItemSource();
 		}
 	}
 }
