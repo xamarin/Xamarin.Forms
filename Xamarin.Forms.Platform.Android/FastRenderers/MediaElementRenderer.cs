@@ -21,13 +21,27 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		VisualElementTracker _tracker;
 
 		MediaController _controller;
-		FormsVideoView _view;
 		MediaPlayer _mediaPlayer;
-
+		FormsVideoView _view;
+		
 		public MediaElementRenderer(Context context) : base(context)
 		{
 			_automationPropertiesProvider = new AutomationPropertiesProvider(this);
 			_effectControlProvider = new EffectControlProvider(this);
+
+			_view = new FormsVideoView(Context);
+			_view.SetZOrderMediaOverlay(true);
+			_view.SetOnCompletionListener(this);
+			_view.SetOnInfoListener(this);
+			_view.SetOnPreparedListener(this);
+			_view.SetOnErrorListener(this);
+			_view.MetadataRetrieved += MetadataRetrieved;
+
+			AddView(_view, -1, -1);
+
+			_controller = new MediaController(Context);
+			_controller.SetAnchorView(this);
+			_view.SetMediaController(_controller);
 		}
 
 		public VisualElement Element => MediaElement;
@@ -70,6 +84,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			if (oldElement != null)
 			{
 				oldElement.PropertyChanged -= OnElementPropertyChanged;
+				oldElement.SeekRequested -= SeekRequested;
+				oldElement.StateRequested -= StateRequested;
 			}
 
 			Color currentColor = oldElement?.BackgroundColor ?? Color.Default;
@@ -138,6 +154,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			LabelFor = (int)(id ?? _defaultLabelFor);
 		}
+
 		void SetTracker(VisualElementTracker tracker)
 		{
 			_tracker = tracker;
@@ -150,7 +167,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		void IVisualElementRenderer.UpdateLayout() => _tracker?.UpdateLayout();
 
-
 		protected override void Dispose(bool disposing)
 		{
 			if (_isDisposed)
@@ -159,6 +175,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			}
 
 			_isDisposed = true;
+
+			ReleaseControl();
 
 			if (disposing)
 			{
@@ -184,30 +202,16 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		{
 			if (e.OldElement != null)
 			{
-				ReleaseControl();
+				
 			}
 
-			if (e.NewElement != null && !(_view is null))
+			if (e.NewElement != null)
 			{
 				this.EnsureId();
-				
-				_view = new FormsVideoView(Context);
-				_view.SetZOrderMediaOverlay(true);
-				_view.SetOnCompletionListener(this);
-				_view.SetOnInfoListener(this);
-				_view.SetOnPreparedListener(this);
-				_view.SetOnErrorListener(this);
-				_view.KeepScreenOn = e.NewElement.KeepScreenOn;
-				_view.MetadataRetrieved += MetadataRetrieved;
 
-				AddView(_view, -1,-1);
-
-				_controller = new MediaController(Context);
-				_controller.SetAnchorView(this);
-				_controller.Visibility = e.NewElement.ShowsPlaybackControls ? ViewStates.Visible : ViewStates.Gone;
-				_view.SetMediaController(_controller);
-
+				UpdateKeepScreenOn();
 				UpdateLayoutParameters();
+				UpdateShowPlaybackControls();
 				UpdateSource();
 				UpdateBackgroundColor();
 
@@ -222,6 +226,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			Controller.Duration = _view.DurationTimeSpan;
 			Controller.VideoHeight = _view.VideoHeight;
 			Controller.VideoWidth = _view.VideoWidth;
+
+			Device.BeginInvokeOnMainThread(UpdateLayoutParameters);
 		}
 
 		void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -240,11 +246,11 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					break;
 
 				case nameof(MediaElement.KeepScreenOn):
-					_view.KeepScreenOn = MediaElement.KeepScreenOn;
+					UpdateKeepScreenOn();
 					break;
 
 				case nameof(MediaElement.ShowsPlaybackControls):
-					_controller.Visibility = MediaElement.ShowsPlaybackControls ? ViewStates.Visible : ViewStates.Gone;
+					UpdateShowPlaybackControls();
 					break;
 
 				case nameof(MediaElement.Source):
@@ -258,6 +264,16 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		public void RegisterEffect(Effect effect)
 		{
 			_effectControlProvider.RegisterEffect(effect);
+		}
+
+		void UpdateKeepScreenOn()
+		{
+			_view.KeepScreenOn = MediaElement.KeepScreenOn;
+		}
+
+		void UpdateShowPlaybackControls()
+		{
+			_controller.Visibility = MediaElement.ShowsPlaybackControls ? ViewStates.Visible : ViewStates.Gone;
 		}
 
 		void UpdateSource()
@@ -365,7 +381,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			{
 				case Aspect.Fill:
 					// TODO: this doesn't stretch like other platforms...
-					_view.LayoutParameters = new FrameLayout.LayoutParams(Width, Height, GravityFlags.FillHorizontal | GravityFlags.FillVertical | GravityFlags.CenterHorizontal | GravityFlags.CenterVertical) { LeftMargin = 0, RightMargin = 0, TopMargin = 0, BottomMargin = 0 };
+					_view.LayoutParameters = new FrameLayout.LayoutParams(Width, Height, GravityFlags.Fill) { LeftMargin = 0, RightMargin = 0, TopMargin = 0, BottomMargin = 0 };
 					break;
 
 				case Aspect.AspectFit:
@@ -405,6 +421,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		{
 			if (_view != null)
 			{
+				_view.MetadataRetrieved -= MetadataRetrieved;
+				RemoveView(_view);
 				_view.SetOnPreparedListener(null);
 				_view.SetOnCompletionListener(null);
 				_view.Dispose();
@@ -430,7 +448,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			return false;
 		}
 		
-
 		bool MediaPlayer.IOnInfoListener.OnInfo(MediaPlayer mp, MediaInfo what, int extra)
 		{
 			System.Diagnostics.Debug.WriteLine(what);
@@ -458,7 +475,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		void Mp_BufferingUpdate(object sender, MediaPlayer.BufferingUpdateEventArgs e)
 		{
-			System.Diagnostics.Debug.WriteLine(e.Percent + "%");
 			Controller.BufferingProgress = e.Percent / 100f;
 		}
 	}

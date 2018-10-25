@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using AVFoundation;
+﻿using AVFoundation;
 using AVKit;
-using CoreGraphics;
 using CoreMedia;
 using Foundation;
+using System;
+using System.IO;
 using UIKit;
 using Xamarin.Forms.Internals;
 
@@ -26,14 +24,6 @@ namespace Xamarin.Forms.Platform.iOS
 		NSObject _statusObserver;
 		NSObject _rateObserver;
 
-		public MediaElementRenderer()
-		{
-			_playToEndObserver = NSNotificationCenter.DefaultCenter.AddObserver(AVPlayerItem.DidPlayToEndTimeNotification, PlayedToEnd);
-			_avPlayerViewController.View.Frame = Bounds;
-			_avPlayerViewController.View.AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
-			AddSubview(_avPlayerViewController.View);
-		}
-
 		VisualElement IVisualElementRenderer.Element => MediaElement;
 
 		UIView IVisualElementRenderer.NativeView => this;
@@ -41,6 +31,15 @@ namespace Xamarin.Forms.Platform.iOS
 		UIViewController IVisualElementRenderer.ViewController => _avPlayerViewController;
 		
 		bool _idleTimerDisabled = false;
+
+		public MediaElementRenderer()
+		{
+			_playToEndObserver = NSNotificationCenter.DefaultCenter.AddObserver(AVPlayerItem.DidPlayToEndTimeNotification, PlayedToEnd);
+			_avPlayerViewController.View.Frame = Bounds;
+			_avPlayerViewController.View.AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
+			AddSubview(_avPlayerViewController.View);
+		}
+		
 		void SetKeepScreenOn(bool value)
 		{
 			if (value)
@@ -172,6 +171,7 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 			}
 		}
+
 		void ObserveRate(NSObservedChange e)
 		{
 			switch(_avPlayerViewController.Player.Rate)
@@ -187,6 +187,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			Controller.Position = Position;
 		}
+
 		void ObserveStatus(NSObservedChange e)
 		{
 			switch (_avPlayerViewController.Player.Status)
@@ -237,7 +238,6 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 		
-
 		void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
 			switch (e.PropertyName)
@@ -268,9 +268,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		
-
-		void MediaElement_SeekRequested(object sender, SeekRequested e)
+		void MediaElementSeekRequested(object sender, SeekRequested e)
 		{
 			if (_avPlayerViewController.Player.Status != AVPlayerStatus.ReadyToPlay || _avPlayerViewController.Player.CurrentItem == null)
 				return;
@@ -309,7 +307,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		void MediaElement_StateRequested(object sender, StateRequested e)
+		void MediaElementStateRequested(object sender, StateRequested e)
 		{
 			switch (e.State)
 			{
@@ -393,8 +391,8 @@ namespace Xamarin.Forms.Platform.iOS
 			if (oldElement != null)
 			{
 				oldElement.PropertyChanged -= OnElementPropertyChanged;
-				oldElement.SeekRequested -= MediaElement_SeekRequested;
-				oldElement.StateRequested -= MediaElement_StateRequested;
+				oldElement.SeekRequested -= MediaElementSeekRequested;
+				oldElement.StateRequested -= MediaElementStateRequested;
 				oldElement.PositionRequested -= MediaElement_PositionRequested;
 			}
 
@@ -405,8 +403,8 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			MediaElement.PropertyChanged += OnElementPropertyChanged;
-			MediaElement.SeekRequested += MediaElement_SeekRequested;
-			MediaElement.StateRequested += MediaElement_StateRequested;
+			MediaElement.SeekRequested += MediaElementSeekRequested;
+			MediaElement.StateRequested += MediaElementStateRequested;
 			MediaElement.PositionRequested += MediaElement_PositionRequested;
 
 			AutosizesSubviews = true;
