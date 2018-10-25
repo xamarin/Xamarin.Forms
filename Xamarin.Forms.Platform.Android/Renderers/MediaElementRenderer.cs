@@ -8,8 +8,6 @@ using Xamarin.Forms.Platform.Android;
 using Android.Graphics;
 using Android.Runtime;
 
-
-
 namespace Xamarin.Forms.Platform.Android
 {
 	public sealed class MediaElementRenderer : ViewRenderer<MediaElement, FrameLayout>, MediaPlayer.IOnCompletionListener, MediaPlayer.IOnPreparedListener
@@ -17,7 +15,6 @@ namespace Xamarin.Forms.Platform.Android
 		MediaController _controller;
 		FormsVideoView _view;
 		MediaPlayer _mediaPlayer;
-
 		IMediaElementController Controller => Element as IMediaElementController;
 
 

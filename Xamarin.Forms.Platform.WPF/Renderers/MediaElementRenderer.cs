@@ -7,6 +7,9 @@ namespace Xamarin.Forms.Platform.WPF
 {
 	public sealed class MediaElementRenderer : ViewRenderer<MediaElement, System.Windows.Controls.MediaElement>
 	{
+		IMediaElementController Controller => Element as IMediaElementController;
+		MediaElementState _requestedState;
+
 		protected override void OnElementChanged(ElementChangedEventArgs<MediaElement> e)
 		{
 			base.OnElementChanged(e);
@@ -52,15 +55,12 @@ namespace Xamarin.Forms.Platform.WPF
 
 		void ElementPositionRequested(object sender, EventArgs e)
 		{
-			if (Control != null)
+			if (!(Control is null))
 			{
 				Controller.Position = Control.Position;
 			}
 		}
-
-		IMediaElementController Controller => Element as IMediaElementController;
-		MediaElementState _requestedState;
-
+		
 		void ElementStateRequested(object sender, StateRequested e)
 		{
 			_requestedState = e.State;

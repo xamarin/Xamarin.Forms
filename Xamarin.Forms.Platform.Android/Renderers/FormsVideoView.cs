@@ -33,13 +33,13 @@ namespace Xamarin.Forms.Platform.Android
 		void ExtractMetadata(MediaMetadataRetriever retriever)
 		{
 			int videoWidth = 0;
-			if(!int.TryParse(retriever.ExtractMetadata(MetadataKey.VideoWidth), out videoWidth))
+			if(int.TryParse(retriever.ExtractMetadata(MetadataKey.VideoWidth), out videoWidth))
 			{
 				VideoWidth = videoWidth;
 			}
 
 			int videoHeight = 0;
-			if(!int.TryParse(retriever.ExtractMetadata(MetadataKey.VideoHeight), out videoHeight))
+			if(int.TryParse(retriever.ExtractMetadata(MetadataKey.VideoHeight), out videoHeight))
 			{
 				VideoHeight = videoHeight;
 			}
