@@ -40,6 +40,34 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			CollectionView.ItemsSource = _items;
 
 			SearchBar.TextChanged += SearchBarOnTextChanged;
+			UseEmptyView.Toggled += UseEmptyViewOnToggled;
+
+			UpdateEmptyView();
+		}
+
+		void UseEmptyViewOnToggled(object sender, ToggledEventArgs e)
+		{
+			UpdateEmptyView();
+		}
+
+		void UpdateEmptyView()
+		{
+			if (UseEmptyView.IsToggled)
+			{
+				CollectionView.EmptyView = new Label
+				{
+					Text = "Nothing to see here",
+					TextColor = Color.Coral,
+					HorizontalTextAlignment = TextAlignment.Center,
+					VerticalTextAlignment = TextAlignment.Center,
+					HorizontalOptions = LayoutOptions.Fill,
+					VerticalOptions = LayoutOptions.Fill
+				};
+			}
+			else
+			{
+				CollectionView.EmptyView = null;
+			}
 		}
 
 		void SearchBarOnTextChanged(object sender, TextChangedEventArgs e)

@@ -1,4 +1,3 @@
-using System;
 using Android.Content;
 using Android.Views;
 
@@ -45,35 +44,6 @@ namespace Xamarin.Forms.Platform.Android
 				? Content.Element.Height : measure.Request.Height);
 
 			SetMeasuredDimension(width, height);
-		}
-	}
-
-	internal class SizedItemContentControl : ItemContentControl
-	{
-		readonly Func<int> _width;
-		readonly Func<int> _height;
-
-		public SizedItemContentControl(IVisualElementRenderer content, Context context, Func<int> width, Func<int> height) 
-			: base(content, context)
-		{
-			_width = width;
-			_height = height;
-		}
-
-		protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
-		{
-			// TODO hartez 2018/08/29 15:43:47 Instead of caching width/height, perhaps it should come from the recyclerview directly	
-			// as two Func<int>
-			//var pixelWidth = Context.FromPixels(_width());
-			//var pixelHeight = Context.FromPixels(_height());
-
-			var pixelWidth = _width();
-			var pixelHeight =_height();
-
-
-			Content.Element.Measure(pixelWidth, pixelHeight, MeasureFlags.IncludeMargins);
-
-			SetMeasuredDimension((int)pixelWidth, (int)pixelHeight);
 		}
 	}
 }

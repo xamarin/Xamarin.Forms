@@ -5,7 +5,6 @@ using Android.Support.V7.Widget;
 using Android.Views;
 using Android.Widget;
 using AView = Android.Views.View;
-using AColor = Android.Graphics.Color;
 using ViewGroup = Android.Views.ViewGroup;
 
 namespace Xamarin.Forms.Platform.Android
@@ -13,39 +12,6 @@ namespace Xamarin.Forms.Platform.Android
 	// TODO hartez 2018/07/25 14:39:29 Split up CollectionViewAdapter into one for templates, one for text	
 	// TODO hartez 2018/07/25 14:43:04 Experiment with an ItemSource property change as _adapter.notifyDataSetChanged	
 	// TODO hartez 2018/07/25 14:44:15 Template property changed should do a whole new adapter; and that way we can cache the template
-
-	public class EmptyViewAdapter : RecyclerView.Adapter
-	{
-		public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
-		{
-		}
-
-		public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)
-		{
-			var textView = new TextView(parent.Context);
-
-			textView.Text = "Nothing to see here.";
-
-			var layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.MatchParent);
-			textView.LayoutParameters = layoutParams;
-
-			textView.SetBackgroundColor(AColor.CadetBlue);
-
-			return new EmptyViewHolder(textView, null);
-		}
-
-		public override int ItemCount => 1;
-
-		internal class EmptyViewHolder : RecyclerView.ViewHolder
-		{
-			public View View { get; }
-
-			public EmptyViewHolder(AView itemView, View rootElement) : base(itemView)
-			{
-				View = rootElement;
-			}
-		}
-	}
 
 	public class ItemsViewAdapter : RecyclerView.Adapter
 	{
@@ -78,6 +44,7 @@ namespace Xamarin.Forms.Platform.Android
 				case TemplatedItemViewHolder templateViewHolder:
 					BindableObject.SetInheritedBindingContext(templateViewHolder.View, _itemsSource[position]);
 					// TODO hartez 2018/07/25 16:12:30 Remove this next line once the platform PRs go through and we can rebase	
+					// This will also mean we can drop _context
 					templateViewHolder.View.Platform = new Platform(_context);
 					break;
 			}
@@ -85,28 +52,30 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)
 		{
+			var context = parent.Context;
+
 			// Does the ItemsView have a DataTemplate?
 			var template = ItemsView.ItemTemplate;
 			if (template == null)
 			{
 				// No template, just use the ToString view
-				var view = new TextView(_context);
+				var view = new TextView(context);
 				return new TextViewHolder(view);
 			}
 
 			// Realize the content, create a renderer out of it, and use that
 			var templateElement = template.CreateContent() as View;
-			var itemContentControl = _createView(CreateRenderer(templateElement), _context);
+			var itemContentControl = _createView(CreateRenderer(templateElement, context), context);
 
 			return new TemplatedItemViewHolder(itemContentControl, templateElement);
 		}
 
-		IVisualElementRenderer CreateRenderer(View view)
+		IVisualElementRenderer CreateRenderer(View view, Context context)
 		{
 			if (view == null)
 				throw new ArgumentNullException(nameof(view));
 
-			var renderer = Platform.CreateRenderer(view, _context);
+			var renderer = Platform.CreateRenderer(view, context);
 			Platform.SetRenderer(view, renderer);
 
 			return renderer;

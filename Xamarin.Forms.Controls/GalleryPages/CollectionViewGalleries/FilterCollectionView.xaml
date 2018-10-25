@@ -6,13 +6,19 @@
     <ContentPage.Content>
 	    <Grid>
 		    <Grid.RowDefinitions>
-			    <RowDefinition Height="Auto"></RowDefinition>
+				<RowDefinition Height="Auto"></RowDefinition>
+				<RowDefinition Height="Auto"></RowDefinition>
 			    <RowDefinition Height="*"></RowDefinition>
 		    </Grid.RowDefinitions>
 
-		    <SearchBar x:Name="SearchBar" Placeholder="Filter" />
+			<StackLayout Orientation="Horizontal">
+				<Label Text="Use EmptyView"></Label>
+				<Switch x:Name="UseEmptyView" IsToggled="True"></Switch>
+			</StackLayout>
+
+		    <SearchBar Grid.Row="1" x:Name="SearchBar" Placeholder="Filter" />
 			
-		    <CollectionView x:Name="CollectionView" Grid.Row="1">
+		    <CollectionView x:Name="CollectionView" Grid.Row="2">
 				<CollectionView.ItemsLayout>
 					<GridItemsLayout Span="2" Orientation="Vertical"></GridItemsLayout>
 				</CollectionView.ItemsLayout>

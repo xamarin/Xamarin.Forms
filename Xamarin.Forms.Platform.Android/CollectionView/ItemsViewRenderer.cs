@@ -37,6 +37,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		ScrollHelper ScrollHelper => _scrollHelper ?? (_scrollHelper = new ScrollHelper(this));
 
+		// TODO hartez 2018/10/24 19:27:12 Region all the interface implementations	
+
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)
 		{
 			base.OnLayout(changed, l, t, r, b);
@@ -200,6 +202,10 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateFlowDirection();
 			}
+			else if (changedProperty.Is(ItemsView.EmptyViewProperty))
+			{
+				UpdateEmptyView();
+			}
 		}
 
 		public override ViewHolder FindViewHolderForAdapterPosition(int position)
@@ -234,12 +240,13 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
+			// Stop watching the old adapter to see if it's empty (if we _are_ watching)
 			Unwatch(GetAdapter());
 			
 			ItemsViewAdapter = new ItemsViewAdapter(ItemsView, Context);
 			SwapAdapter(ItemsViewAdapter, false);
 
-			Watch(ItemsViewAdapter);
+			UpdateEmptyView();
 		}
 
 		void Unwatch(RecyclerView.Adapter adapter)
@@ -250,11 +257,12 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
+		// TODO hartez 2018/10/24 19:25:14 I don't like these method names; too generic 	
 		void Watch(RecyclerView.Adapter adapter)
 		{
 			if (_dataChangeViewObserver == null)
 			{
-				_dataChangeViewObserver = new DataChangeObserver(UpdateEmptyView);
+				_dataChangeViewObserver = new DataChangeObserver(UpdateEmptyViewVisibility);
 			}
 
 			adapter.RegisterAdapterDataObserver(_dataChangeViewObserver);
@@ -290,8 +298,6 @@ namespace Xamarin.Forms.Platform.Android
 
 			// Listen for ScrollTo requests
 			newElement.ScrollToRequested += ScrollToRequested;
-
-			UpdateEmptyView();
 		}
 		
 		void TearDownOldElement(ItemsView oldElement)
@@ -370,6 +376,33 @@ namespace Xamarin.Forms.Platform.Android
 			ReconcileFlowDirectionAndLayout();
 		}
 
+		protected virtual void UpdateEmptyView()
+		{
+			if (ItemsViewAdapter == null)
+			{
+				return;
+			}
+
+			var emptyView = ItemsView?.EmptyView;
+
+			if (emptyView != null)
+			{
+				if (_emptyViewAdapter == null)
+				{
+					_emptyViewAdapter = new EmptyViewAdapter();
+				}
+
+				_emptyViewAdapter.EmptyView = emptyView;
+				Watch(ItemsViewAdapter);
+			}
+			else
+			{
+				Unwatch(ItemsViewAdapter);
+			}
+
+			UpdateEmptyViewVisibility();
+		}
+
 		protected virtual void ReconcileFlowDirectionAndLayout()
 		{
 			if (!(GetLayoutManager() is LinearLayoutManager linearLayoutManager))
@@ -426,26 +459,21 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		internal void UpdateEmptyView()
+		internal void UpdateEmptyViewVisibility()
 		{
 			if (ItemsViewAdapter == null)
 			{
 				return;
 			}
 
-			var showEmptyView = ItemsViewAdapter.ItemCount == 0;
+			var showEmptyView = ItemsView?.EmptyView != null && ItemsViewAdapter.ItemCount == 0;
 
 			if (showEmptyView)
 			{
-				if (_emptyViewAdapter == null)
-				{
-					_emptyViewAdapter = new EmptyViewAdapter();
-				}
-
 				SwapAdapter(_emptyViewAdapter, true);
 
 				// TODO hartez 2018/10/24 17:34:36 If this works, cache this layout manager as _emptyLayoutManager	
-				SetLayoutManager(new LinearLayoutManager(this.Context));
+				SetLayoutManager(new LinearLayoutManager(Context));
 			}
 			else
 			{
