@@ -15,7 +15,6 @@ namespace Xamarin.Forms.Controls.Issues
 	public class Bugzilla44096 : TestContentPage
 	{
 		bool _flag;
-		const string Child = "Child";
 		const string Original = "Original";
 		const string ToggleColor = "color";
 		const string ToggleIsEnabled = "disabled";
@@ -79,8 +78,6 @@ namespace Xamarin.Forms.Controls.Issues
 					})
 				}
 			};
-			 
-
 			AddTapGesture(result, contentView);
 
 			var stackLayout = new StackLayout
@@ -110,7 +107,6 @@ namespace Xamarin.Forms.Controls.Issues
 				AutomationId = RelativeLayout,
 				Padding = new Thickness(10)
 			};
-
 			relativeLayout.Children.Add(new Button
 			{
 				WidthRequest = 150,
@@ -121,7 +117,6 @@ namespace Xamarin.Forms.Controls.Issues
 					result.Text = RelativeLayoutButton;
 				})
 			},()=>0, ()=>0,()=>200,()=>50 );
-
 			AddTapGesture(result, relativeLayout);
 
 			var color = new Button
@@ -260,7 +255,6 @@ namespace Xamarin.Forms.Controls.Issues
 			var label = RunningApp.WaitForElement(q => q.Marked(ResultLabel))[0];
 			Assert.AreEqual(expectedResult, label.Description);
 		}
-
 #endif
 	}
 }
