@@ -3,10 +3,11 @@ using System;
 using System.ComponentModel;
 using Xamarin.Forms.Platform.GTK.Controls;
 using Xamarin.Forms.Platform.GTK.Extensions;
+using GtkImageButton = Xamarin.Forms.Platform.GTK.Controls.ImageButton;
 
 namespace Xamarin.Forms.Platform.GTK.Renderers
 {
-	public class ButtonRenderer : ViewRenderer<Button, ImageButton>
+	public class ButtonRenderer : ViewRenderer<Button, GtkImageButton>
 	{
 		private const uint DefaultBorderWidth = 1;
 
@@ -32,7 +33,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 				{
 					// To allow all avalaible options in Xamarin.Forms, a custom control has been created.
 					// Can set text, text color, border, image, etc.
-					var btn = new ImageButton();
+					var btn = new GtkImageButton();
 					SetNativeControl(btn);
 
 					Control.Clicked += OnButtonClicked;
