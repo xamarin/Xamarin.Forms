@@ -84,6 +84,18 @@ namespace Xamarin.Forms
 			}
 		}
 
+		public static VisualElement GetFirstElementByTabIndex(IDictionary<int, List<VisualElement>> tabIndexes)
+		{
+			if (tabIndexes == null || tabIndexes.Count == 0)
+				return null;
+
+			var minIndex = tabIndexes.Min(x => x.Key);
+
+			var tabGroup = tabIndexes[minIndex];
+
+			return tabGroup[0];
+		}
+
 		public static VisualElement GetFirstNonLayoutTabStop(IDictionary<int, List<VisualElement>> tabIndexes)
 		{
 			if (tabIndexes == null || tabIndexes.Count == 0)
