@@ -82,6 +82,7 @@
     <Compile Include="CollectionView\ObservableItemsSource.cs" />
     <Compile Include="CollectionView\PositionalSmoothScroller.cs" />
     <Compile Include="CollectionView\ScrollHelper.cs" />
+    <Compile Include="CollectionView\SizedItemContentControl.cs" />
     <Compile Include="CollectionView\SnapManager.cs" />
     <Compile Include="CollectionView\StartPagerSnapHelper.cs" />
     <Compile Include="CollectionView\StartSnapHelper.cs" />

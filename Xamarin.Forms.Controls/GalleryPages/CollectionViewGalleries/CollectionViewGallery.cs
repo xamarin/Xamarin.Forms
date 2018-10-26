@@ -1,4 +1,6 @@
-﻿namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
+﻿using Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.EmptyViewGalleries;
+
+namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 {
 	public class CollectionViewGallery : ContentPage
 	{
@@ -14,6 +16,7 @@
 					GalleryBuilder.NavButton("Snap Points Galleries", () => new SnapPointsGallery(), Navigation),
 					GalleryBuilder.NavButton("ScrollTo Galleries", () => new ScrollToGallery(), Navigation),
 					GalleryBuilder.NavButton("CarouselView Galleries", () => new CarouselViewGallery(), Navigation),
+					GalleryBuilder.NavButton("EmptyView Galleries", () => new EmptyViewGallery(), Navigation),
 				}
 			};
 		}

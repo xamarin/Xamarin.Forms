@@ -61,6 +61,7 @@ namespace Xamarin.Forms.Platform.Android
 			var layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MatchParent,
 				ViewGroup.LayoutParams.MatchParent);
 			textView.LayoutParameters = layoutParams;
+			textView.Gravity = GravityFlags.Center;
 			return textView;
 		}
 

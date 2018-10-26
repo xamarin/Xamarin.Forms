@@ -16,6 +16,8 @@ namespace Xamarin.Forms.Platform.Android
 		void AddContent()
 		{
 			AddView(Content.View);
+
+			System.Diagnostics.Debug.WriteLine($">>>>> ItemContentControl AddContent 20: {Content.View.LayoutParameters}"); 
 		}
 
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)
