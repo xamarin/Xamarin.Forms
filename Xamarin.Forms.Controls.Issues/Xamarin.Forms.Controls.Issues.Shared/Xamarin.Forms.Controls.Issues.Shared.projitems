@@ -20,6 +20,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue3509.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Github3856.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1937.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue3843.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue4053.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3809.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue2894.cs" />
@@ -829,6 +830,7 @@
       <DependentUpon>Issue4040.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue4097.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue2223.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Bugzilla22229.xaml">
