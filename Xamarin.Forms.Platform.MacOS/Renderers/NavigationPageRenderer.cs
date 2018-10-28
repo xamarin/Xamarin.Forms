@@ -220,6 +220,22 @@ namespace Xamarin.Forms.Platform.MacOS
 				throw new ArgumentNullException(nameof(before));
 			if (page == null)
 				throw new ArgumentNullException(nameof(page));
+
+			var beforePageIndex = _currentStack.IndexOf(p => p.Page == before);
+			var pageWrapper = new NavigationChildPageWrapper(page);
+			var list = _currentStack.ToList();
+			list.Insert(beforePageIndex, pageWrapper);
+			_currentStack = new Stack<NavigationChildPageWrapper>(list);
+
+			var vc = CreateViewControllerForPage(page);
+			vc.SetElementSize(new Size(View.Bounds.Width, View.Bounds.Height));
+			page.Layout(new Rectangle(0, 0, View.Bounds.Width, View.Frame.Height));
+
+			var beforeViewController = Platform.GetRenderer(before).ViewController;
+			var beforeControllerIndex = ChildViewControllers.IndexOf(beforeViewController);
+
+			InsertChildViewController(vc.ViewController, beforeControllerIndex);
+			View.AddSubview(vc.NativeView);
 		}
 
 		void OnInsertPageBeforeRequested(object sender, NavigationRequestedEventArgs e)
