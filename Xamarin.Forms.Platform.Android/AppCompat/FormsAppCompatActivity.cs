@@ -86,11 +86,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected void LoadApplication(Application application)
 		{
-			if(!_activityCreated)
+			if (!_activityCreated)
 			{
-			    throw new InvalidOperationException("Activity OnCreate was not called prior to loading the application. Did you forget a base.OnCreate call?");
+				throw new InvalidOperationException("Activity OnCreate was not called prior to loading the application. Did you forget a base.OnCreate call?");
 			}
-			
+
 			if (!_renderersAdded)
 			{
 				RegisterHandlerForDefaultRenderer(typeof(NavigationPage), typeof(NavigationPageRenderer), typeof(NavigationRenderer));
@@ -99,6 +99,7 @@ namespace Xamarin.Forms.Platform.Android
 				RegisterHandlerForDefaultRenderer(typeof(Switch), typeof(AppCompat.SwitchRenderer), typeof(SwitchRenderer));
 				RegisterHandlerForDefaultRenderer(typeof(Picker), typeof(AppCompat.PickerRenderer), typeof(PickerRenderer));
 				RegisterHandlerForDefaultRenderer(typeof(CarouselPage), typeof(AppCompat.CarouselPageRenderer), typeof(CarouselPageRenderer));
+				RegisterHandlerForDefaultRenderer(typeof(Entry), typeof(AppCompat.EntryRenderer), typeof(EntryRenderer));
 
 				if (Forms.Flags.Contains(Flags.FastRenderersExperimental))
 				{

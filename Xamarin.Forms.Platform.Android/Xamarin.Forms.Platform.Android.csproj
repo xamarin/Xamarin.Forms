@@ -111,6 +111,8 @@
     <Compile Include="ActivityResultCallbackRegistry.cs" />
     <Compile Include="AndroidApplicationLifecycleState.cs" />
     <Compile Include="AndroidTitleBarVisibility.cs" />
+    <Compile Include="AppCompat\EntryRenderer.cs" />
+    <Compile Include="AppCompat\FormsAppCompatEditText.cs" />
     <Compile Include="AppCompat\FrameRenderer.cs" />
     <Compile Include="AppCompat\ILifeCycleState.cs" />
     <Compile Include="ButtonBackgroundTracker.cs" />
