@@ -182,7 +182,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 	class TrackingClickNSView : NSView
 	{
-		public TrackingClickNSView()
+		internal TrackingClickNSView()
 		{
 			AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable;
 		}
