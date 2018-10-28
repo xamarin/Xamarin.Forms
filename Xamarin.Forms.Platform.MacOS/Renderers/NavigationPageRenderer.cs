@@ -213,7 +213,6 @@ namespace Xamarin.Forms.Platform.MacOS
 			return pageRenderer;
 		}
 
-		//TODO: Implement InserPageBefore
 		void InsertPageBefore(Page page, Page before)
 		{
 			if (before == null)
