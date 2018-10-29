@@ -69,6 +69,7 @@
     <Compile Include="Items\ItemTemplateEnumerator.cs" />
     <Compile Include="Items\ItemTemplatePair.cs" />
     <Compile Include="ITitleProvider.cs" />
+    <Compile Include="ITitleViewRendererController.cs" />
     <Compile Include="IToolbarProvider.cs" />
     <Compile Include="IVisualNativeElementRenderer.cs" />
     <Compile Include="NativeBindingExtensions.cs" />
@@ -79,6 +80,9 @@
     <Compile Include="AccessKeyHelper.cs" />
     <Compile Include="PlatformConfigurationExtensions.cs" />
     <Compile Include="PlatformEffect.cs" />
+    <Compile Include="StepperControl.xaml.cs">
+      <DependentUpon>StepperControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="TextBlockExtensions.cs" />
     <Compile Include="TitleViewManager.cs" />
     <Compile Include="UriImageSourceHandler.cs" />
@@ -227,6 +231,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Page>
+    <Page Include="StepperControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="TabbedPageStyle.xaml">
       <SubType>Designer</SubType>
