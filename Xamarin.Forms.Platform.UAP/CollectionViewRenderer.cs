@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Windows.Foundation;
@@ -19,6 +20,17 @@ namespace Xamarin.Forms.Platform.UWP
 		CollectionViewSource _collectionViewSource;
 
 		protected ItemsControl ItemsControl { get; private set; }
+
+		public CollectionViewRenderer()
+		{
+			if (!Forms.Flags.Contains(Flags.CollectionViewExperimental))
+			{
+				var collectionViewFlagError = 
+					$"To use CollectionView on this platform, you must opt-in by calling " 
+					+ $"Forms.SetFlags(\"{Flags.CollectionViewExperimental}\") before Forms.Init().";
+				throw new InvalidOperationException(collectionViewFlagError);
+			}
+		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<CollectionView> args)
 		{
