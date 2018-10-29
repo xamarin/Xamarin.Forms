@@ -9,39 +9,52 @@ namespace Xamarin.Forms.Platform.Android
 	public class EmptyViewAdapter : RecyclerView.Adapter
 	{
 		public object EmptyView { get; set; }
+		public DataTemplate EmptyViewTemplate { get; set; }
 
 		public override int ItemCount => 1;
 
 		public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)
 		{
-			// TODO hartez 2018/10/25 10:12:47 If EmptyViewTemplate and EmptyView are both set, set binding context	
+			if (EmptyView == null || EmptyViewTemplate == null)
+			{
+				return;
+			}
+
+			if (!(holder is EmptyViewHolder emptyViewHolder))
+			{
+				return;
+			}
+
+			// Use EmptyView as the binding context for the template
+			BindableObject.SetInheritedBindingContext(emptyViewHolder.View, EmptyView);
 		}
 
 		public override RecyclerView.ViewHolder OnCreateViewHolder(ViewGroup parent, int viewType)
 		{
 			var context = parent.Context;
 
-			switch (EmptyView)
+			if (EmptyViewTemplate == null)
 			{
-				case View formsView:
+				if (!(EmptyView is View formsView))
 				{
-					var itemContentControl = new SizedItemContentControl(CreateRenderer(formsView, context), context,
-						() => parent.Width, () => parent.Height);
-					// TODO hartez 2018/10/29 08:10:02 Get rid of this once the platform removal is merged	
-					formsView.Platform = new Platform(parent.Context);
-					return new EmptyViewHolder(itemContentControl, formsView);
+					// No template, EmptyView is not a Forms View, so just display EmptyView.ToString
+					return new EmptyViewHolder(CreateTextView(EmptyView?.ToString(), context), null);
 				}
-				case string text:
-				{
-					return new EmptyViewHolder(CreateTextView(text, context), null);
-				}
-				case object obj:
-					// TODO hartez 2018/10/25 10:08:44 Use template	
-					break;
+
+				// EmptyView is a Forms View; display that
+				var itemContentControl = new SizedItemContentControl(CreateRenderer(formsView, context), context,
+					() => parent.Width, () => parent.Height);
+				// TODO hartez 2018/10/29 08:10:02 Get rid of this once the platform removal is merged	
+				formsView.Platform = new Platform(parent.Context);
+				return new EmptyViewHolder(itemContentControl, formsView);
 			}
 
-			// If all else fails, create a TextView with the string value of EmptyView
-			return new EmptyViewHolder(CreateTextView(EmptyView?.ToString(), context), null);
+			// We have a template, so create a view from it
+			var templateElement = EmptyViewTemplate.CreateContent() as View;
+			var templatedItemContentControl = new SizedItemContentControl(CreateRenderer(templateElement, context), context, () => parent.Width, () => parent.Height);
+			// TODO hartez 2018/10/29 08:10:02 Get rid of this once the platform removal is merged	
+			templateElement.Platform = new Platform(parent.Context);
+			return new EmptyViewHolder(templatedItemContentControl, templateElement);
 		}
 
 		IVisualElementRenderer CreateRenderer(View view, Context context)

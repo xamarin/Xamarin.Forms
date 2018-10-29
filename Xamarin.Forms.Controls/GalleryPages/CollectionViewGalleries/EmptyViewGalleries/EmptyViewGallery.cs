@@ -20,8 +20,8 @@
 							new EmptyViewStringGallery(), Navigation),
 						GalleryBuilder.NavButton("EmptyView (View)", () =>
 							new EmptyViewViewGallery(), Navigation),
-						GalleryBuilder.NavButton("EmptyView (Templated View)", () =>
-							new CarouselCodeGallery(ItemsLayoutOrientation.Vertical), Navigation)
+						GalleryBuilder.NavButton("EmptyView (Template View)", () =>
+							new EmptyViewTemplateGallery(), Navigation)
 					}
 				}
 			};

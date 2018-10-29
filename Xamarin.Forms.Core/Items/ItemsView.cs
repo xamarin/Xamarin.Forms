@@ -51,8 +51,17 @@ namespace Xamarin.Forms
 
 		public object EmptyView
 		{
-			get => GetValue(EmptyViewProperty );
-			set => SetValue(EmptyViewProperty , value);
+			get => GetValue(EmptyViewProperty);
+			set => SetValue(EmptyViewProperty, value);
+		}
+
+		public static readonly BindableProperty EmptyViewTemplateProperty =
+			BindableProperty.Create(nameof(EmptyView), typeof(DataTemplate), typeof(ItemsView), null);
+
+		public DataTemplate EmptyViewTemplate
+		{
+			get => (DataTemplate)GetValue(EmptyViewTemplateProperty);
+			set => SetValue(EmptyViewTemplateProperty, value);
 		}
 
 		public static readonly BindableProperty ItemsSourceProperty =

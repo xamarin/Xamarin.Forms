@@ -22,7 +22,7 @@
 								Text="No results matched your filter."></Label>
 						<Label FontAttributes="Italic" FontSize="12" 
 								HorizontalOptions="Fill" HorizontalTextAlignment="Center"
-								Text="Maybe try a broader search?"></Label>
+								Text="Maybe try a broader filter?"></Label>
 					</StackLayout>
 				</CollectionView.EmptyView>
 			</CollectionView>

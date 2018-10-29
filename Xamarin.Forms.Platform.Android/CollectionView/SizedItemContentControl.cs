@@ -17,8 +17,6 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
 		{
-			System.Diagnostics.Debug.WriteLine($">>>>> SizedItemContentControl OnMeasure 20: {Content.View.LayoutParameters}");
-
 			var pixelWidth = _width();
 			var pixelHeight =_height();
 

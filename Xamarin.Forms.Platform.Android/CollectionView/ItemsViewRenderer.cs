@@ -202,7 +202,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateFlowDirection();
 			}
-			else if (changedProperty.Is(ItemsView.EmptyViewProperty))
+			else if (changedProperty.IsOneOf(ItemsView.EmptyViewProperty, ItemsView.EmptyViewTemplateProperty))
 			{
 				UpdateEmptyView();
 			}
@@ -384,8 +384,9 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			var emptyView = ItemsView?.EmptyView;
+			var emptyViewTemplate = ItemsView?.EmptyViewTemplate;
 
-			if (emptyView != null)
+			if (emptyView != null || emptyViewTemplate != null)
 			{
 				if (_emptyViewAdapter == null)
 				{
@@ -393,6 +394,7 @@ namespace Xamarin.Forms.Platform.Android
 				}
 
 				_emptyViewAdapter.EmptyView = emptyView;
+				_emptyViewAdapter.EmptyViewTemplate = emptyViewTemplate;
 				Watch(ItemsViewAdapter);
 			}
 			else
