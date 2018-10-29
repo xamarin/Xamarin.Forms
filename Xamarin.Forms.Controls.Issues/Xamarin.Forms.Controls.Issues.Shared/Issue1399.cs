@@ -12,7 +12,9 @@ namespace Xamarin.Forms.Controls.Issues
 			Content = new AbsoluteLayout()
 			{
 				Children = {
-					new ActivityIndicator() { IsRunning = true }
+					new Label { Text = "cat", WidthRequest = 0},
+					new Image { Source = "coffee.png", WidthRequest = 0},
+					new ActivityIndicator { IsRunning = true }
 				}
 			};
 		}

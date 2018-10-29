@@ -250,19 +250,25 @@ namespace Xamarin.Forms
 
 			if (!widthIsProportional && bounds.Width == AutoSize)
 			{
-				sizeRequest = view.Measure(region.Width, region.Height, MeasureFlags.IncludeMargins);
-				result.Width = sizeRequest.Request.Width > 0 ? sizeRequest.Request.Width : region.Width;
 				if (!heightIsProportional && bounds.Width == AutoSize)
 				{
 					// Width and Height are auto
-					result.Height = sizeRequest.Request.Height > 0 ? sizeRequest.Request.Height : region.Height;
+					sizeRequest = view.Measure(region.Width, region.Height, MeasureFlags.IncludeMargins);
+					result.Width = sizeRequest.Request.Width;
+					result.Height = sizeRequest.Request.Height;
+				}
+				else
+				{
+					// Only width is auto
+					sizeRequest = view.Measure(region.Width, result.Height, MeasureFlags.IncludeMargins);
+					result.Width = sizeRequest.Request.Width;
 				}
 			}
 			else if (!heightIsProportional && bounds.Height == AutoSize)
 			{
 				// Only height is auto
 				sizeRequest = view.Measure(result.Width, region.Height, MeasureFlags.IncludeMargins);
-				result.Height = sizeRequest.Request.Height > 0 ? sizeRequest.Request.Height : region.Height;
+				result.Height = sizeRequest.Request.Height;
 			}
 
 			if (xIsProportional)
