@@ -34,7 +34,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 	public class LabelRenderer : ViewRenderer<Label, TextBlock>
 	{
-		//bool _fontApplied;
+		bool _fontApplied;
 		bool _isInitiallyDefault;
 		SizeRequest _perfectSize;
 		bool _perfectSizeValid;
@@ -77,7 +77,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 			rect.Height = childHeight;
 			rect.Width = finalSize.Width;
-			System.Diagnostics.Debug.WriteLine($">>>>> LabelRenderer ArrangeOverride 80: {rect}");
+			
 			Control.Arrange(rect);
 			Control.RecalculateSpanPositions(Element, _inlineHeights);
 			return finalSize;
@@ -119,13 +119,11 @@ namespace Xamarin.Forms.Platform.UWP
 				}
 			}
 
-			System.Diagnostics.Debug.WriteLine($">>>>> LabelRenderer GetDesiredSize 122: {result}");
 			return result;
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Label> e)
 		{
-			System.Diagnostics.Debug.WriteLine($">>>>> LabelRenderer OnElementChanged; e.NewElement is {e.NewElement}");
 			base.OnElementChanged(e);
 
 			if (e.NewElement != null)
@@ -154,8 +152,6 @@ namespace Xamarin.Forms.Platform.UWP
 			if (e.PropertyName == Label.TextProperty.PropertyName ||
 				e.PropertyName == Label.FormattedTextProperty.PropertyName)
 			{
-				System.Diagnostics.Debug.WriteLine($">>>>> LabelRenderer OnElementPropertyChanged; {e.PropertyName}");
-
 				UpdateText(Control);
 			}
 			else if (e.PropertyName == Label.TextColorProperty.PropertyName)
@@ -181,125 +177,125 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateTextDecorations(TextBlock textBlock)
 		{
-			//if (!Element.IsSet(Label.TextDecorationsProperty))
-			//	return;
+			if (!Element.IsSet(Label.TextDecorationsProperty))
+				return;
 
-			//var elementTextDecorations = Element.TextDecorations;
+			var elementTextDecorations = Element.TextDecorations;
 
-			//if ((elementTextDecorations & TextDecorations.Underline) == 0)
-			//	textBlock.TextDecorations &= ~Windows.UI.Text.TextDecorations.Underline;
-			//else
-			//	textBlock.TextDecorations |= Windows.UI.Text.TextDecorations.Underline;
+			if ((elementTextDecorations & TextDecorations.Underline) == 0)
+				textBlock.TextDecorations &= ~Windows.UI.Text.TextDecorations.Underline;
+			else
+				textBlock.TextDecorations |= Windows.UI.Text.TextDecorations.Underline;
 
-			//if ((elementTextDecorations & TextDecorations.Strikethrough) == 0)
-			//	textBlock.TextDecorations &= ~Windows.UI.Text.TextDecorations.Strikethrough;
-			//else
-			//	textBlock.TextDecorations |= Windows.UI.Text.TextDecorations.Strikethrough;
+			if ((elementTextDecorations & TextDecorations.Strikethrough) == 0)
+				textBlock.TextDecorations &= ~Windows.UI.Text.TextDecorations.Strikethrough;
+			else
+				textBlock.TextDecorations |= Windows.UI.Text.TextDecorations.Strikethrough;
 
-			////TextDecorations are not updated in the UI until the text changes
-			//if (textBlock.Inlines != null && textBlock.Inlines.Count > 0)
-			//{
-			//	for (var i = 0; i < textBlock.Inlines.Count; i++)
-			//	{
-			//		var run = (Run)textBlock.Inlines[i];
-			//		run.Text = run.Text;
-			//	}
-			//}
-			//else
-			//{
-			//	textBlock.Text = textBlock.Text; 
-			//}
+			//TextDecorations are not updated in the UI until the text changes
+			if (textBlock.Inlines != null && textBlock.Inlines.Count > 0)
+			{
+				for (var i = 0; i < textBlock.Inlines.Count; i++)
+				{
+					var run = (Run)textBlock.Inlines[i];
+					run.Text = run.Text;
+				}
+			}
+			else
+			{
+				textBlock.Text = textBlock.Text;
+			}
 
 		}
 
 		void UpdateAlign(TextBlock textBlock)
 		{
-			//_perfectSizeValid = false;
+			_perfectSizeValid = false;
 
-			//if (textBlock == null)
-			//	return;
+			if (textBlock == null)
+				return;
 
-			//Label label = Element;
-			//if (label == null)
-			//	return;
+			Label label = Element;
+			if (label == null)
+				return;
 
-			//textBlock.TextAlignment = label.HorizontalTextAlignment.ToNativeTextAlignment(((IVisualElementController)Element).EffectiveFlowDirection);
-			//textBlock.VerticalAlignment = label.VerticalTextAlignment.ToNativeVerticalAlignment();
+			textBlock.TextAlignment = label.HorizontalTextAlignment.ToNativeTextAlignment(((IVisualElementController)Element).EffectiveFlowDirection);
+			textBlock.VerticalAlignment = label.VerticalTextAlignment.ToNativeVerticalAlignment();
 		}
 
 		void UpdateColor(TextBlock textBlock)
 		{
-			//if (textBlock == null)
-			//	return;
+			if (textBlock == null)
+				return;
 
-			//Label label = Element;
-			//if (label != null && label.TextColor != Color.Default)
-			//{
-			//	textBlock.Foreground = label.TextColor.ToBrush();
-			//}
-			//else
-			//{
-			//	textBlock.ClearValue(TextBlock.ForegroundProperty);
-			//}
+			Label label = Element;
+			if (label != null && label.TextColor != Color.Default)
+			{
+				textBlock.Foreground = label.TextColor.ToBrush();
+			}
+			else
+			{
+				textBlock.ClearValue(TextBlock.ForegroundProperty);
+			}
 		}
 
 		void UpdateFont(TextBlock textBlock)
 		{
-//			_perfectSizeValid = false;
+			_perfectSizeValid = false;
 
-//			if (textBlock == null)
-//				return;
+			if (textBlock == null)
+				return;
 
-//			Label label = Element;
-//			if (label == null || (label.IsDefault() && !_fontApplied))
-//				return;
+			Label label = Element;
+			if (label == null || (label.IsDefault() && !_fontApplied))
+				return;
 
-//#pragma warning disable 618
-//			Font fontToApply = label.IsDefault() && _isInitiallyDefault ? Font.SystemFontOfSize(NamedSize.Medium) : label.Font;
-//#pragma warning restore 618
+#pragma warning disable 618
+			Font fontToApply = label.IsDefault() && _isInitiallyDefault ? Font.SystemFontOfSize(NamedSize.Medium) : label.Font;
+#pragma warning restore 618
 
-//			textBlock.ApplyFont(fontToApply);
-//			_fontApplied = true;
+			textBlock.ApplyFont(fontToApply);
+			_fontApplied = true;
 		}
 
 		void UpdateLineBreakMode(TextBlock textBlock)
 		{
-			//_perfectSizeValid = false;
+			_perfectSizeValid = false;
 
-			//if (textBlock == null)
-			//	return;
+			if (textBlock == null)
+				return;
 
-			//switch (Element.LineBreakMode)
-			//{
-			//	case LineBreakMode.NoWrap:
-			//		textBlock.TextTrimming = TextTrimming.Clip;
-			//		textBlock.TextWrapping = TextWrapping.NoWrap;
-			//		break;
-			//	case LineBreakMode.WordWrap:
-			//		textBlock.TextTrimming = TextTrimming.None;
-			//		textBlock.TextWrapping = TextWrapping.Wrap;
-			//		break;
-			//	case LineBreakMode.CharacterWrap:
-			//		textBlock.TextTrimming = TextTrimming.WordEllipsis;
-			//		textBlock.TextWrapping = TextWrapping.Wrap;
-			//		break;
-			//	case LineBreakMode.HeadTruncation:
-			//		// TODO: This truncates at the end.
-			//		textBlock.TextTrimming = TextTrimming.WordEllipsis;
-			//		textBlock.TextWrapping = TextWrapping.NoWrap;
-			//		break;
-			//	case LineBreakMode.TailTruncation:
-			//		textBlock.TextTrimming = TextTrimming.CharacterEllipsis;
-			//		textBlock.TextWrapping = TextWrapping.NoWrap;
-			//		break;
-			//	case LineBreakMode.MiddleTruncation:
-			//		// TODO: This truncates at the end.
-			//		textBlock.TextTrimming = TextTrimming.WordEllipsis;
-			//		textBlock.TextWrapping = TextWrapping.NoWrap;
-			//		break;
-			//	default:
-			//		throw new ArgumentOutOfRangeException();
-			//}
+			switch (Element.LineBreakMode)
+			{
+				case LineBreakMode.NoWrap:
+					textBlock.TextTrimming = TextTrimming.Clip;
+					textBlock.TextWrapping = TextWrapping.NoWrap;
+					break;
+				case LineBreakMode.WordWrap:
+					textBlock.TextTrimming = TextTrimming.None;
+					textBlock.TextWrapping = TextWrapping.Wrap;
+					break;
+				case LineBreakMode.CharacterWrap:
+					textBlock.TextTrimming = TextTrimming.WordEllipsis;
+					textBlock.TextWrapping = TextWrapping.Wrap;
+					break;
+				case LineBreakMode.HeadTruncation:
+					// TODO: This truncates at the end.
+					textBlock.TextTrimming = TextTrimming.WordEllipsis;
+					textBlock.TextWrapping = TextWrapping.NoWrap;
+					break;
+				case LineBreakMode.TailTruncation:
+					textBlock.TextTrimming = TextTrimming.CharacterEllipsis;
+					textBlock.TextWrapping = TextWrapping.NoWrap;
+					break;
+				case LineBreakMode.MiddleTruncation:
+					// TODO: This truncates at the end.
+					textBlock.TextTrimming = TextTrimming.WordEllipsis;
+					textBlock.TextWrapping = TextWrapping.NoWrap;
+					break;
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
 		}
 
 		void Debug(string msg)
@@ -363,40 +359,40 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateDetectReadingOrderFromContent(TextBlock textBlock)
 		{
-			//if (Element.IsSet(Specifics.DetectReadingOrderFromContentProperty))
-			//{
-			//	if (Element.OnThisPlatform().GetDetectReadingOrderFromContent())
-			//	{
-			//		textBlock.TextReadingOrder = TextReadingOrder.DetectFromContent;
-			//	}
-			//	else
-			//	{
-			//		textBlock.TextReadingOrder = TextReadingOrder.UseFlowDirection;
-			//	}
-			//}
+			if (Element.IsSet(Specifics.DetectReadingOrderFromContentProperty))
+			{
+				if (Element.OnThisPlatform().GetDetectReadingOrderFromContent())
+				{
+					textBlock.TextReadingOrder = TextReadingOrder.DetectFromContent;
+				}
+				else
+				{
+					textBlock.TextReadingOrder = TextReadingOrder.UseFlowDirection;
+				}
+			}
 		}
 
 		void UpdateLineHeight(TextBlock textBlock) 
 		{
-			//if (textBlock == null)
-			//	return;
-			
-			//if (Element.LineHeight >= 0)
-			//{
-			//	textBlock.LineHeight = Element.LineHeight * textBlock.FontSize;
-			//}
+			if (textBlock == null)
+				return;
+
+			if (Element.LineHeight >= 0)
+			{
+				textBlock.LineHeight = Element.LineHeight * textBlock.FontSize;
+			}
 		}
 
 		void UpdateMaxLines(TextBlock textBlock)
 		{
-			//if (Element.MaxLines >= 0)
-			//{
-			//	textBlock.MaxLines = Element.MaxLines;
-			//}
-			//else
-			//{
-			//	textBlock.MaxLines = 0;
-			//}
+			if (Element.MaxLines >= 0)
+			{
+				textBlock.MaxLines = Element.MaxLines;
+			}
+			else
+			{
+				textBlock.MaxLines = 0;
+			}
 		}
 	}
 }
