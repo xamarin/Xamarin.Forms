@@ -52,7 +52,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		SoftInput _startingInputMode;
 
-		internal bool HandleKeyboardOnFocus;
+		protected bool HandleKeyboardOnFocus;
 
 		public TNativeView Control { get; private set; }
 
