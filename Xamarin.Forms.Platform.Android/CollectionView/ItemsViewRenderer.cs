@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Linq;
 using Android.Content;
 using Android.Graphics;
 using Android.Support.V7.Widget;
@@ -31,6 +32,14 @@ namespace Xamarin.Forms.Platform.Android
 
 		public ItemsViewRenderer(Context context) : base(context)
 		{
+			if (!Forms.Flags.Contains(Flags.CollectionViewExperimental))
+			{
+				var collectionViewFlagError = 
+					$"To use CollectionView on this platform, you must opt-in by calling " 
+					+ $"Forms.SetFlags(\"{Flags.CollectionViewExperimental}\") before Forms.Init().";
+				throw new InvalidOperationException(collectionViewFlagError);
+			}
+
 			_automationPropertiesProvider = new AutomationPropertiesProvider(this);
 			_effectControlProvider = new EffectControlProvider(this);
 		}
