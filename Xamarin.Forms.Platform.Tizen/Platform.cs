@@ -86,9 +86,9 @@ namespace Xamarin.Forms.Platform.Tizen
 		bool _disposed;
 		Native.Dialog _pageBusyDialog;
 		int _pageBusyCount;
-		Naviframe _internalNaviframe;
+		readonly Naviframe _internalNaviframe;
 
-		HashSet<EvasObject> _alerts = new HashSet<EvasObject>();
+		readonly HashSet<EvasObject> _alerts = new HashSet<EvasObject>();
 
 		public event EventHandler<RootNativeViewChangedEventArgs> RootNativeViewChanged;
 
@@ -119,8 +119,6 @@ namespace Xamarin.Forms.Platform.Tizen
 		public Page Page { get; private set; }
 
 		public bool HasAlpha { get; set; }
-
-		Action BackPressedAction { get; set; }
 
 		Task CurrentModalNavigationTask { get; set; }
 		TaskCompletionSource<bool> CurrentTaskCompletionSource { get; set; }
@@ -402,13 +400,18 @@ namespace Xamarin.Forms.Platform.Tizen
 			{
 				_pageBusyDialog = new Native.Dialog(Forms.NativeParent)
 				{
-					Orientation = PopupOrientation.Top,
+					Orientation = PopupOrientation.Center,
+					BackgroundColor = EColor.Transparent
 				};
 
-				if (Device.Idiom == TargetIdiom.Watch)
+				if (Device.Idiom == TargetIdiom.Phone)
+				{
+					_pageBusyDialog.SetPartColor("bg_title", EColor.Transparent);
+					_pageBusyDialog.SetPartColor("bg_content", EColor.Transparent);
+				}
+				else if (Device.Idiom == TargetIdiom.Watch)
 				{
 					_pageBusyDialog.Style = "circle";
-					_pageBusyDialog.BackgroundColor = EColor.Transparent;
 				}
 
 				var activity = new EProgressBar(_pageBusyDialog)

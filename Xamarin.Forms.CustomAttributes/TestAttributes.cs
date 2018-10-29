@@ -429,7 +429,8 @@ namespace Xamarin.Forms.CustomAttributes
 			GroupDisplayBinding,
 			GroupShortNameBinding,
 			ScrollTo,
-			FastScroll
+			FastScroll,
+			ScrollBarVisibility
 		}
 
 		public enum TableView
@@ -600,6 +601,7 @@ namespace Xamarin.Forms.CustomAttributes
 			VerticalTextAlignmentStart,
 			VerticalTextAlignmentCenter,
 			VerticalTextAlignmentEnd,
+			MaxLines
 		}
 
 		public enum MasterDetailPage {

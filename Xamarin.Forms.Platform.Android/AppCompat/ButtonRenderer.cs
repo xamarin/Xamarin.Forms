@@ -12,6 +12,7 @@ using AView = Android.Views.View;
 using AMotionEvent = Android.Views.MotionEvent;
 using AMotionEventActions = Android.Views.MotionEventActions;
 using static System.String;
+using Xamarin.Forms.Platform.Android.FastRenderers;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
@@ -25,6 +26,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		bool _isDisposed;
 		int _imageHeight = -1;
 		Thickness _paddingDeltaPix = new Thickness();
+		string _defaultContentDescription;
 
 		public ButtonRenderer(Context context) : base(context)
 		{
@@ -38,6 +40,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		}
 
 		global::Android.Widget.Button NativeButton => Control;
+
+		protected override void SetContentDescription()
+			=> AutomationPropertiesProvider.SetBasicContentDescription(this, Element, ref _defaultContentDescription);
 
 		void AView.IOnAttachStateChangeListener.OnViewAttachedToWindow(AView attachedView)
 		{
@@ -95,6 +100,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					_textColorSwitcher = null;
 				}
 				_backgroundTracker?.Dispose();
+				_backgroundTracker = null;
 			}
 
 			base.Dispose(disposing);
@@ -162,7 +168,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			if (Element == null || Control == null)
 				return;
 
-			_backgroundTracker?.UpdateBackgroundColor();
+			_backgroundTracker?.UpdateDrawable();
 		}
 
 		void UpdateAll()
@@ -173,16 +179,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			UpdateTextColor();
 			UpdateEnabled();
 			UpdateBackgroundColor();
-			UpdateDrawable();
 			UpdatePadding();
-		}
-
-		void UpdateDrawable()
-		{
-			if (Element == null || Control == null)
-				return;
-
-			_backgroundTracker?.UpdateDrawable();
 		}
 
 		void UpdateBitmap()

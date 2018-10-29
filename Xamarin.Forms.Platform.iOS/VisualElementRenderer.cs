@@ -139,6 +139,8 @@ namespace Xamarin.Forms.Platform.MacOS
 		void IVisualElementRenderer.SetElement(VisualElement element)
 		{
 			SetElement((TElement)element);
+			UpdateTabStop();
+			UpdateTabIndex();
 		}
 
 		public void SetElementSize(Size size)
@@ -149,6 +151,71 @@ namespace Xamarin.Forms.Platform.MacOS
 		public virtual NativeViewController ViewController => null;
 
 		public event EventHandler<ElementChangedEventArgs<TElement>> ElementChanged;
+
+		protected int TabIndex { get; set; } = 0;
+
+		protected bool TabStop { get; set; } = true;
+
+		protected void UpdateTabStop () => TabStop = Element?.IsTabStop ?? true;
+
+		protected void UpdateTabIndex() => TabIndex = Element?.TabIndex ?? 0;
+
+		public NativeView FocusSearch(bool forwardDirection)
+		{
+			VisualElement element = Element as VisualElement;
+			int maxAttempts = 0;
+			var tabIndexes = element?.GetTabIndexesOnParentPage(out maxAttempts);
+			if (tabIndexes == null)
+				return null;
+
+			int tabIndex = Element.TabIndex;
+			int attempt = 0;
+			NativeView control = null;
+
+			do
+			{
+				element = element.FindNextElement(forwardDirection, tabIndexes, ref tabIndex);
+#if __MACOS__
+				var renderer = Platform.GetRenderer(element);
+				control = (renderer as ITabStop)?.TabStop;
+#else
+				element.Focus();
+#endif
+			} while (!(control != null || element.IsFocused || ++attempt >= maxAttempts));
+			return control;
+		}
+
+#if __MACOS__
+		public override NativeView NextKeyView {
+			get {
+				return Element == null ? null : (FocusSearch(forwardDirection: true) ?? base.NextKeyView);
+			}
+			set {
+				if (Element != null && value != null) // setting the value to null throws an exception
+					base.NextKeyView = value;
+			}
+		}
+
+		public override NativeView PreviousKeyView {
+			get {
+				return Element == null ? null : (FocusSearch(forwardDirection: false) ?? base.PreviousKeyView);
+			}
+		}
+#else
+		UIKeyCommand [] tabCommands = {
+			UIKeyCommand.Create ((Foundation.NSString)"\t", 0, new ObjCRuntime.Selector ("tabForward:")),
+			UIKeyCommand.Create ((Foundation.NSString)"\t", UIKeyModifierFlags.Shift, new ObjCRuntime.Selector ("tabBackward:"))
+		};
+
+		public override UIKeyCommand [] KeyCommands => tabCommands;
+
+
+		[Foundation.Export ("tabForward:")]
+		void TabForward (UIKeyCommand cmd) => FocusSearch (forwardDirection: true);
+
+		[Foundation.Export ("tabBackward:")]
+		void TabBackward (UIKeyCommand cmd) => FocusSearch (forwardDirection: false);
+#endif
 
 		public void SetElement(TElement element)
 		{
@@ -295,6 +362,10 @@ namespace Xamarin.Forms.Platform.MacOS
 				SetBackgroundColor(Element.BackgroundColor);
 			else if (e.PropertyName == Xamarin.Forms.Layout.IsClippedToBoundsProperty.PropertyName)
 				UpdateClipToBounds();
+			else if (e.PropertyName == VisualElement.IsTabStopProperty.PropertyName)
+				UpdateTabStop();
+			else if (e.PropertyName == VisualElement.TabIndexProperty.PropertyName)
+				UpdateTabIndex();
 #if __MOBILE__
 			else if (e.PropertyName == PlatformConfiguration.iOSSpecific.VisualElement.BlurEffectProperty.PropertyName)
 				SetBlur((BlurEffectStyle)Element.GetValue(PlatformConfiguration.iOSSpecific.VisualElement.BlurEffectProperty));
@@ -315,35 +386,17 @@ namespace Xamarin.Forms.Platform.MacOS
 #if __MOBILE__
 		protected virtual void SetAccessibilityHint()
 		{
-			if (Element == null)
-				return;
-
-			if (_defaultAccessibilityHint == null)
-				_defaultAccessibilityHint = AccessibilityHint;
-
-			AccessibilityHint = (string)Element.GetValue(AutomationProperties.HelpTextProperty) ?? _defaultAccessibilityHint;
+			_defaultAccessibilityHint = this.SetAccessibilityHint(Element, _defaultAccessibilityHint);
 		}
 
 		protected virtual void SetAccessibilityLabel()
 		{
-			if (Element == null)
-				return;
-
-			if (_defaultAccessibilityLabel == null)
-				_defaultAccessibilityLabel = AccessibilityLabel;
-
-			AccessibilityLabel = (string)Element.GetValue(AutomationProperties.NameProperty) ?? _defaultAccessibilityLabel;
+			_defaultAccessibilityLabel = this.SetAccessibilityLabel(Element, _defaultAccessibilityLabel);
 		}
 
 		protected virtual void SetIsAccessibilityElement()
 		{
-			if (Element == null)
-				return;
-
-			if (!_defaultIsAccessibilityElement.HasValue)
-				_defaultIsAccessibilityElement = IsAccessibilityElement;
-
-			IsAccessibilityElement = (bool)((bool?)Element.GetValue(AutomationProperties.IsInAccessibleTreeProperty) ?? _defaultIsAccessibilityElement);
+			_defaultIsAccessibilityElement = this.SetIsAccessibilityElement(Element, _defaultIsAccessibilityElement);
 		}
 #endif
 		protected virtual void SetAutomationId(string id)

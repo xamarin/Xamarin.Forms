@@ -4,7 +4,7 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms
 {
 	[ContentProperty("Text")]
-	public sealed class Span : GestureElement, IFontElement, ITextElement, ILineHeightElement, IDecorableTextElement
+	public sealed class Span : GestureElement, IFontElement, IStyleElement, ITextElement, ILineHeightElement, IDecorableTextElement
 	{
 		internal readonly MergedStyle _mergedStyle;
 
@@ -103,9 +103,16 @@ namespace Xamarin.Forms
 			set { SetValue(TextDecorationsProperty, value); }
 		}
 
-		public double LineHeight {
+		public double LineHeight
+		{
 			get { return (double)GetValue(LineHeightElement.LineHeightProperty); }
 			set { SetValue(LineHeightElement.LineHeightProperty, value); }
+		}
+
+		protected override void OnBindingContextChanged()
+		{
+			this.PropagateBindingContext(GestureRecognizers);
+			base.OnBindingContextChanged();
 		}
 
 		void IFontElement.OnFontFamilyChanged(string oldValue, string newValue)
@@ -133,12 +140,16 @@ namespace Xamarin.Forms
 
 		internal override void ValidateGesture(IGestureRecognizer gesture)
 		{
-			if (gesture == null)
-				return;
-			if (gesture is PanGestureRecognizer)
-				throw new InvalidOperationException($"{nameof(PanGestureRecognizer)} is not supported on a {nameof(Span)}");
-			if (gesture is PinchGestureRecognizer)
-				throw new InvalidOperationException($"{nameof(PinchGestureRecognizer)} is not supported on a {nameof(Span)}");
+			switch (gesture)
+			{
+				case ClickGestureRecognizer click:
+				case TapGestureRecognizer tap:
+				case null:
+					break;
+				default:
+					throw new InvalidOperationException($"{gesture.GetType().Name} is not supported on a {nameof(Span)}");
+
+			}
 		}
 
 		void ILineHeightElement.OnLineHeightChanged(double oldValue, double newValue)
