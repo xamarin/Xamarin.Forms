@@ -18,7 +18,7 @@ using Xamarin.Forms.Platform.Android.FastRenderers;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
-	internal sealed class ImageButtonRenderer :
+	public class ImageButtonRenderer :
 		AppCompatImageButton,
 		IVisualElementRenderer,
 		IBorderVisualElementRenderer,
@@ -74,6 +74,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			Tag = this;
 			_backgroundTracker = new BorderBackgroundManager(this, false);
 		}
+
 		protected override void Dispose(bool disposing)
 		{
 			if (_disposed)
