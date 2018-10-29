@@ -14,7 +14,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 		public DemoFilteredItemSource()
 		{
 			_source = new List<CollectionViewGalleryTestItem>();
-			var count = 0;
+			var count = 50;
 			string[] images = 
 			{
 				"cover1.jpg", 

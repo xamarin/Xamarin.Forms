@@ -27,6 +27,8 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					var itemContentControl = new SizedItemContentControl(CreateRenderer(formsView, context), context,
 						() => parent.Width, () => parent.Height);
+					// TODO hartez 2018/10/29 08:10:02 Get rid of this once the platform removal is merged	
+					formsView.Platform = new Platform(parent.Context);
 					return new EmptyViewHolder(itemContentControl, formsView);
 				}
 				case string text:

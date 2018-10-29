@@ -16,9 +16,13 @@
 					<GridItemsLayout Span="3" Orientation="Vertical"></GridItemsLayout>
 				</CollectionView.ItemsLayout>
 				<CollectionView.EmptyView>
-					<StackLayout BackgroundColor="Aqua" >
-						<Label Text="No results matched your filter." ></Label>
-						<Label Text="Maybe try a broader search?" ></Label>
+					<StackLayout> 
+						<Label FontAttributes="Bold" FontSize="18" Margin="10,25,10,10"
+								HorizontalOptions="Fill" HorizontalTextAlignment="Center" 
+								Text="No results matched your filter."></Label>
+						<Label FontAttributes="Italic" FontSize="12" 
+								HorizontalOptions="Fill" HorizontalTextAlignment="Center"
+								Text="Maybe try a broader search?"></Label>
 					</StackLayout>
 				</CollectionView.EmptyView>
 			</CollectionView>
