@@ -421,10 +421,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateIsReadOnly()
 		{
-			Control.Clickable = !Element.IsReadOnly;
-			Control.LongClickable = !Element.IsReadOnly;
-			Control.SetCursorVisible(!Element.IsReadOnly);
 			Control.FocusableInTouchMode = !Element.IsReadOnly;
+			Control.Focusable = !Element.IsReadOnly;
+			Control.SetCursorVisible(!Element.IsReadOnly);
 		}
 	}
 }
