@@ -46,7 +46,7 @@ namespace Xamarin.Forms.Platform.iOS
 			WebView.GoForwardRequested += OnGoForwardRequested;
 			WebView.ReloadRequested += OnReloadRequested;
 			NavigationDelegate = new CustomWebViewDelegate(this);
-			UIDelegate = new CustomWebViewUIDelegate(this);
+			UIDelegate = new CustomWebViewUIDelegate();
 
 			BackgroundColor = UIColor.Clear;
 
@@ -153,7 +153,7 @@ namespace Xamarin.Forms.Platform.iOS
 		async Task<string> OnEvaluateJavaScriptRequested(string script)
 		{
 			var result = await EvaluateJavaScriptAsync(script);
-			return result.ToString();
+			return result?.ToString();
 		}
 
 		void OnGoBackRequested(object sender, EventArgs eventArgs)
@@ -278,46 +278,72 @@ namespace Xamarin.Forms.Platform.iOS
 
 		class CustomWebViewUIDelegate : WKUIDelegate
 		{
-			static readonly NSBundle UIKit = NSBundle.FromIdentifier("com.apple.UIKit");
-			static readonly string LocalOk = UIKit.GetLocalizedString("Ok");
-			static readonly string LocalCancel = UIKit.GetLocalizedString("Cancel");
-			//readonly UIViewController _uiViewController;
-
-			public CustomWebViewUIDelegate(WkWebViewRenderer renderer)
-			{
-				//var	test = Platform.CreateRenderer(renderer.Element);
-				//_uiViewController = test.ViewController;
-			}
+			static string LocalOK = NSBundle.FromIdentifier("com.apple.UIKit").GetLocalizedString("OK");
+			static string LocalCancel = NSBundle.FromIdentifier("com.apple.UIKit").GetLocalizedString("Cancel");
 
 			public override void RunJavaScriptAlertPanel(WKWebView webView, string message, WKFrameInfo frame, Action completionHandler)
 			{
-				var alertController = UIAlertController.Create("Test", message, UIAlertControllerStyle.Alert);
+				var alertController = UIAlertController.Create(GetJsAlertTitle(webView), message, UIAlertControllerStyle.Alert);
 
-				alertController.AddAction(UIAlertAction.Create(LocalOk, UIAlertActionStyle.Default, (_) => { completionHandler(); }));
+				alertController.AddAction(UIAlertAction.Create(LocalOK, UIAlertActionStyle.Default, (_) => { completionHandler(); }));
 
-				UIApplication.SharedApplication.KeyWindow.RootViewController.PresentViewController(alertController, true, ()=> { });
+				PresentAlertController(alertController);
 			}
 
 			public override void RunJavaScriptConfirmPanel(WKWebView webView, string message, WKFrameInfo frame, Action<bool> completionHandler)
 			{
-				var alertController = UIAlertController.Create("Test", message, UIAlertControllerStyle.Alert);
+				var alertController = UIAlertController.Create(GetJsAlertTitle(webView), message, UIAlertControllerStyle.Alert);
+				var okAction = UIAlertAction.Create(LocalOK, UIAlertActionStyle.Default, (_) => { completionHandler(true); });
+				var cancelAction = UIAlertAction.Create(LocalCancel, UIAlertActionStyle.Cancel, (_) => { completionHandler(true); });
 
-				alertController.AddAction(UIAlertAction.Create(LocalOk, UIAlertActionStyle.Default, (_) => { completionHandler(true); }));
-				alertController.AddAction(UIAlertAction.Create(LocalCancel, UIAlertActionStyle.Cancel, (_) => { completionHandler(false); }));
+				alertController.AddAction(okAction);
+				alertController.AddAction(cancelAction);
 
-				UIApplication.SharedApplication.KeyWindow.RootViewController.PresentViewController(alertController, true, () => { });
+				alertController.PreferredAction = okAction;
+
+				PresentAlertController(alertController);
 			}
 
 			public override void RunJavaScriptTextInputPanel(WKWebView webView, string prompt, string defaultText, WKFrameInfo frame, Action<string> completionHandler)
 			{
-				var alertController = UIAlertController.Create("Test", prompt, UIAlertControllerStyle.Alert);
+				var alertController = UIAlertController.Create(GetJsAlertTitle(webView), prompt, UIAlertControllerStyle.Alert);
 				alertController.AddTextField((textField) => textField.Text = defaultText);
 				var controllerTextField = alertController.TextFields[0];
 
-				alertController.AddAction(UIAlertAction.Create(LocalOk, UIAlertActionStyle.Default, (_) => { completionHandler(controllerTextField.Text); }));
-				alertController.AddAction(UIAlertAction.Create(LocalCancel, UIAlertActionStyle.Cancel, (_) => { completionHandler(null); }));
+				var okAction = UIAlertAction.Create(LocalOK, UIAlertActionStyle.Default, (_) => { completionHandler(controllerTextField.Text); });
+				var cancelAction = UIAlertAction.Create(LocalCancel, UIAlertActionStyle.Cancel, (_) => { completionHandler(null); });
 
-				UIApplication.SharedApplication.KeyWindow.RootViewController.PresentViewController(alertController, true, () => { });
+				alertController.AddAction(okAction);
+				alertController.AddAction(cancelAction);
+
+				alertController.PreferredAction = okAction;
+
+				PresentAlertController(alertController);
+			}
+
+			static string GetJsAlertTitle(WKWebView webView)
+			{
+				// Emulate the behavior of UIWebView dialogs.
+				// The scheme and host are used unless local html content is what the webview is displaying,
+				// in which case the bundle file name is used.
+				return webView.Url == null ? $"{webView.Url.Scheme}://{webView.Url.Host}" : new NSString(NSBundle.MainBundle.BundlePath).LastPathComponent;
+			}
+
+			static void PresentAlertController(UIAlertController alertController)
+			{
+				if (alertController != null)
+					GetTopViewController(UIApplication.SharedApplication.KeyWindow.RootViewController).PresentViewController(alertController, true, null);
+			}
+
+			static UIViewController GetTopViewController(UIViewController viewController)
+			{
+				if (viewController is UINavigationController)
+					return GetTopViewController(((UINavigationController)viewController).VisibleViewController);
+
+				if (viewController is UITabBarController)
+					return GetTopViewController(((UITabBarController)viewController).SelectedViewController);
+
+				return viewController.PresentedViewController == null ? viewController : GetTopViewController(viewController.PresentedViewController);
 			}
 		}
 
