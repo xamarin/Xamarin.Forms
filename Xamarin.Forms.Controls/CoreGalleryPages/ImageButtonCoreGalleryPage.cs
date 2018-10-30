@@ -113,10 +113,10 @@ namespace Xamarin.Forms.Controls
 			Add(borderButtonContainer);
 			Add(borderWidthContainer);
 			Add(clickedContainer);
-			Add(pressedContainer);
 			Add(commandContainer);
 			Add(corderRadiusContainer);
 			Add(imageContainer);
+			Add(pressedContainer);
 		}
 	}
 }
