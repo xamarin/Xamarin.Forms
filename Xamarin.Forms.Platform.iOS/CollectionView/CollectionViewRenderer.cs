@@ -4,6 +4,11 @@ using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
+	/// <summary>
+	/// /////////////////////////////////  Add the flag requirement; then add that for all the CarouselViewRenderers
+	/// </summary>
+
+
 	public class CarouselViewRenderer
 	{
 	}
