@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Platform.iOS
 			WebView.GoBackRequested += OnGoBackRequested;
 			WebView.GoForwardRequested += OnGoForwardRequested;
 			WebView.ReloadRequested += OnReloadRequested;
-			NavigationDelegate = new CustomWebViewDelegate(this);
+			NavigationDelegate = new CustomWebViewNavigationDelegate(this);
 			UIDelegate = new CustomWebViewUIDelegate();
 
 			BackgroundColor = UIColor.Clear;
@@ -189,12 +189,12 @@ namespace Xamarin.Forms.Platform.iOS
 			((IWebViewController)WebView).CanGoForward = CanGoForward;
 		}
 
-		class CustomWebViewDelegate : WKNavigationDelegate
+		class CustomWebViewNavigationDelegate : WKNavigationDelegate
 		{
 			readonly WkWebViewRenderer _renderer;
 			WebNavigationEvent _lastEvent;
 
-			public CustomWebViewDelegate(WkWebViewRenderer renderer)
+			public CustomWebViewNavigationDelegate(WkWebViewRenderer renderer)
 			{
 				if (renderer == null)
 					throw new ArgumentNullException("renderer");
