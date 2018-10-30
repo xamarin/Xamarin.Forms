@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Controls.Issues
 	public class Issue1931 : TestNavigationPage
 	{
 		const string Go = "Go";
-		const string Back = "Back";
+		const string Back = "GoBack";
 		const string Success = "Success";
 		Label _result;
 		Label _instructions2;
