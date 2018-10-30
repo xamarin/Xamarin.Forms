@@ -109,7 +109,8 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				Children = {
 					statusLabel,
-					new Label() { Text = "Sumulate collection with latency. It should load part of 1000 elements if necessary" },
+					new Label() { Text = "Simulates loading items into a non-observable custom collection." +
+						"It should load part of 1000 elements if necessary" },
 					listView,
 					successLabel
 				}
