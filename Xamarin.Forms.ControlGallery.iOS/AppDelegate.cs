@@ -158,7 +158,7 @@ namespace Xamarin.Forms.ControlGallery.iOS
 			var versionPart = UIDevice.CurrentDevice.SystemVersion.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
 			App.IOSVersion = int.Parse(versionPart[0]);
 
-			//Xamarin.Calabash.Start();
+			Xamarin.Calabash.Start();
 			
 			Forms.SetFlags("CollectionView_Experimental");
 
