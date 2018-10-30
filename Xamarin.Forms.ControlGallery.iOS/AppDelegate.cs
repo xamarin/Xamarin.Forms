@@ -169,12 +169,13 @@ namespace Xamarin.Forms.ControlGallery.iOS
 					//	e.NativeView.AccessibilityIdentifier = e.View.StyleId;
 				}
 
-				if (e.NativeView != null)
-				{
-					var view = e.NativeView;
-					var tapGestureRecognizer = new UITapGestureRecognizer(() => Reset("")) { NumberOfTapsRequired = 5 };
-					view.AddGestureRecognizer(tapGestureRecognizer);
-				}
+				// Used shakegesture insted https://github.com/xamarin/Xamarin.Forms/issues/3724 
+				//if (e.NativeView != null)
+				//{
+				//	var view = e.NativeView;
+				//	var tapGestureRecognizer = new UITapGestureRecognizer(() => Reset("")) { NumberOfTapsRequired = 5 };
+				//	view.AddGestureRecognizer(tapGestureRecognizer);
+				//}
 			};
 
 			if (App.IOSVersion == 11)
