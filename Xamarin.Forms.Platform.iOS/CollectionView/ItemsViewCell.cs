@@ -23,8 +23,8 @@ namespace Xamarin.Forms.Platform.iOS
 			ContentView.TrailingAnchor.ConstraintEqualTo(nativeView.TrailingAnchor).Active = true;
 		}
 
-		public abstract void Constrain(nfloat constant);
-		public abstract void Constrain(CGSize constraint);
+		public abstract void ConstrainTo(nfloat constant);
+		public abstract void ConstrainTo(CGSize constraint);
 		public abstract CGSize Measure();
 	}
 }

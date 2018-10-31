@@ -98,11 +98,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (EstimatedItemSize == CGSize.Empty)
 			{
-				cell.Constrain(ItemSize);
+				cell.ConstrainTo(ItemSize);
 			}
 			else
 			{
-				cell.Constrain(ConstrainedDimension);
+				cell.ConstrainTo(ConstrainedDimension);
 			}
 		}
 
@@ -132,7 +132,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 			}
 
-			prototype.Constrain(ConstrainedDimension);
+			prototype.ConstrainTo(ConstrainedDimension);
 
 			var measure = prototype.Measure();
 

@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return new CGSize(ConstrainedDimension, height);
 		}
 
-		public override void Constrain(CGSize constraint)
+		public override void ConstrainTo(CGSize constraint)
 		{
 			ConstrainedDimension = constraint.Width;
 			Layout(constraint);

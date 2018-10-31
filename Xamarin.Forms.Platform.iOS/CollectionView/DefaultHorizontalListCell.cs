@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Platform.iOS
 			Constraint.Active = true;
 		}
 
-		public override void Constrain(CGSize constraint)
+		public override void ConstrainTo(CGSize constraint)
 		{
 			Constraint.Constant = constraint.Height;
 		}

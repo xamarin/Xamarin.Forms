@@ -27,7 +27,7 @@ namespace Xamarin.Forms.Platform.iOS
 			InitializeContentConstraints(Label);
 		}
 
-		public override void Constrain(nfloat constant)
+		public override void ConstrainTo(nfloat constant)
 		{
 			Constraint.Constant = constant;
 		}

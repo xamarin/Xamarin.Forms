@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public IVisualElementRenderer VisualElementRenderer { get; private set; }
 
-		public override void Constrain(nfloat constant)
+		public override void ConstrainTo(nfloat constant)
 		{
 			ConstrainedDimension = constant;
 		}
