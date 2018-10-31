@@ -56,7 +56,7 @@ namespace Xamarin.Forms
 		}
 
 		public static readonly BindableProperty EmptyViewTemplateProperty =
-			BindableProperty.Create(nameof(EmptyView), typeof(DataTemplate), typeof(ItemsView), null);
+			BindableProperty.Create(nameof(EmptyViewTemplate), typeof(DataTemplate), typeof(ItemsView), null);
 
 		public DataTemplate EmptyViewTemplate
 		{
