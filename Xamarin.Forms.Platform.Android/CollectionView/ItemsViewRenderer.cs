@@ -460,7 +460,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			var position = DeterminePosition(args);
 			
-			if (args.Animate)
+			if (args.IsAnimated)
 			{
 				ScrollHelper.AnimateScrollToPosition(position, args.ScrollToPosition);
 			}

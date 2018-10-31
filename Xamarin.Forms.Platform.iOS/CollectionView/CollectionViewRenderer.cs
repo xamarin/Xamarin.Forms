@@ -121,7 +121,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			_collectionViewController.CollectionView.ScrollToItem(indexPath, 
 				args.ScrollToPosition.ToCollectionViewScrollPosition(_layout.ScrollDirection),
-				args.Animate);
+				args.IsAnimated);
 		}
 
 		protected override void Dispose(bool disposing)

@@ -374,7 +374,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			var targetItem = FindBoundItem(args);
 
-			if (args.Animate)
+			if (args.IsAnimated)
 			{
 				await AnimateTo(list, targetItem, args.ScrollToPosition);
 			}

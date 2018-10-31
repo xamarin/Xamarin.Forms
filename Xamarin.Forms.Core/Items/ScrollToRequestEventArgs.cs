@@ -7,7 +7,7 @@ namespace Xamarin.Forms
 		public ScrollToMode Mode { get; }
 
 		public ScrollToPosition ScrollToPosition { get; }
-		public bool Animate { get; }
+		public bool IsAnimated { get; }
 
 		public int Index { get; }
 		public int GroupIndex { get; }
@@ -16,25 +16,25 @@ namespace Xamarin.Forms
 		public object Group { get; }
 
 		public ScrollToRequestEventArgs(int index, int groupIndex, 
-			ScrollToPosition scrollToPosition, bool animate)
+			ScrollToPosition scrollToPosition, bool isAnimated)
 		{
 			Mode = ScrollToMode.Position;
 
 			Index = index;
 			GroupIndex = groupIndex;
 			ScrollToPosition = scrollToPosition;
-			Animate = animate;
+			IsAnimated = isAnimated;
 		}
 
 		public ScrollToRequestEventArgs(object item, object group, 
-			ScrollToPosition scrollToPosition, bool animate)
+			ScrollToPosition scrollToPosition, bool isAnimated)
 		{
 			Mode = ScrollToMode.Element;
 
 			Item = item;
 			Group = group;
 			ScrollToPosition = scrollToPosition;
-			Animate = animate;
+			IsAnimated = isAnimated;
 		}
 	}
 }
