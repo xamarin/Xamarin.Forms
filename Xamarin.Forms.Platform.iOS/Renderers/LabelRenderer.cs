@@ -327,7 +327,7 @@ namespace Xamarin.Forms.Platform.MacOS
 #if __MOBILE__
 			Control.AttributedText = _formatted.ToAttributed(Element, Element.TextColor, Element.HorizontalTextAlignment, Element.LineHeight);
 #else
-			Control.AttributedStringValue = _formatted.ToAttributed(Element, Element.TextColor, Element.LineHeight);
+			Control.AttributedStringValue = _formatted.ToAttributed(Element, Element.TextColor, Element.HorizontalTextAlignment, Element.LineHeight);
 #endif
 		}
 
