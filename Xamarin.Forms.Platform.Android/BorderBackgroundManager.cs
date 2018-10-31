@@ -24,6 +24,7 @@ namespace Xamarin.Forms.Platform.Android
 		readonly bool _drawOutlineWithBackground;
 
 		public bool DrawOutlineWithBackground { get; set; } = true;
+		public BorderDrawable BackgroundDrawable => _backgroundDrawable;
 
 		public BorderBackgroundManager(IBorderVisualElementRenderer renderer) : this(renderer, true)
 		{
@@ -85,6 +86,7 @@ namespace Xamarin.Forms.Platform.Android
 					Control.SetBackground(_defaultDrawable);
 
 				_drawableEnabled = false;
+				Reset();
 			}
 			else
 			{
@@ -133,16 +135,19 @@ namespace Xamarin.Forms.Platform.Android
 				if (_defaultDrawable == null)
 					_defaultDrawable = Control.Background;
 
-				if (Forms.IsLollipopOrNewer)
+				if (!backgroundColorIsDefault || _drawOutlineWithBackground)
 				{
-					var rippleColor = _backgroundDrawable.PressedBackgroundColor.ToAndroid();
+					if (Forms.IsLollipopOrNewer)
+					{
+						var rippleColor = _backgroundDrawable.PressedBackgroundColor.ToAndroid();
 
-					_rippleDrawable = new RippleDrawable(ColorStateList.ValueOf(rippleColor), _backgroundDrawable, null);
-					Control.SetBackground(_rippleDrawable);
-				}
-				else
-				{
-					Control.SetBackground(_backgroundDrawable);
+						_rippleDrawable = new RippleDrawable(ColorStateList.ValueOf(rippleColor), _backgroundDrawable, null);
+						Control.SetBackground(_rippleDrawable);
+					}
+					else
+					{
+						Control.SetBackground(_backgroundDrawable);
+					}
 				}
 
 				_drawableEnabled = true;
@@ -207,7 +212,11 @@ namespace Xamarin.Forms.Platform.Android
 				e.PropertyName.Equals(BorderElement.CornerRadiusProperty.PropertyName) ||
 				e.PropertyName.Equals(VisualElement.BackgroundColorProperty.PropertyName) ||
 				e.PropertyName.Equals(Specifics.Button.UseDefaultPaddingProperty.PropertyName) ||
-				e.PropertyName.Equals(Specifics.Button.UseDefaultShadowProperty.PropertyName))
+				e.PropertyName.Equals(Specifics.Button.UseDefaultShadowProperty.PropertyName) ||
+				e.PropertyName.Equals(Specifics.ImageButton.IsShadowEnabledProperty.PropertyName) ||
+				e.PropertyName.Equals(Specifics.ImageButton.ShadowColorProperty.PropertyName) ||
+				e.PropertyName.Equals(Specifics.ImageButton.ShadowOffsetProperty.PropertyName) ||
+				e.PropertyName.Equals(Specifics.ImageButton.ShadowRadiusProperty.PropertyName))
 			{
 				Reset();
 				UpdateDrawable();

@@ -212,6 +212,13 @@ namespace Xamarin.Forms.Platform.Android
 			return _convertToPixels(cornerRadius);
 		}
 
+		public RectF GetPaddingBounds(int width, int height)
+		{
+			RectF rect = new RectF(0, 0, width, height);
+			rect.Inset(PaddingLeft, PaddingTop);
+			return rect;
+		}
+
 		public void DrawOutline(Canvas canvas, int width, int height)
 		{
 			if (BorderController.BorderWidth <= 0)

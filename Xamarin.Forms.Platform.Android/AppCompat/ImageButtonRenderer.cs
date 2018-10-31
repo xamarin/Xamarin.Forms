@@ -60,19 +60,28 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		bool IImageRendererController.IsDisposed => _disposed;
 
 		AppCompatImageButton Control => this;
-
+		static int _selectableItemBackgroundResourceId = 0;
 		public ImageButtonRenderer(Context context) : base(context)
 		{
 			// These set the defaults so visually it matches up with other platforms
-			Background = new AStateListDrawable();
 			SetPadding(0, 0, 0, 0);
 			SoundEffectsEnabled = false;
 			SetOnClickListener(this);
 			SetOnTouchListener(this);
 			OnFocusChangeListener = this;
+			//SetAdjustViewBounds(true);
 
 			Tag = this;
 			_backgroundTracker = new BorderBackgroundManager(this, false);
+			if (_selectableItemBackgroundResourceId == 0)
+			{
+				var backgroundBorderles = global::Android.Resource.Attribute.SelectableItemBackground;
+				using (global::Android.Util.TypedValue outValue = new global::Android.Util.TypedValue())
+					context.Theme.ResolveAttribute(backgroundBorderles, outValue, true);
+			}
+
+			if (_selectableItemBackgroundResourceId != 0)
+				SetBackgroundResource(_selectableItemBackgroundResourceId);
 		}
 
 		protected override void Dispose(bool disposing)
@@ -182,23 +191,49 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(oldElement, ImageButton));
 			ImageButton?.SendViewInitialized(Control);
 		}
-
+		
 		public override void Draw(Canvas canvas)
 		{
-			base.Draw(canvas);
-			var background = Background;
+			if (ImageButton == null)
+				return;
 
-			if (background is RippleDrawable rd)
+			var backgroundDrawable = _backgroundTracker?.BackgroundDrawable;
+
+			RectF _drawableBounds = null;
+			RectF _outlineBounds = null;
+
+			if (backgroundDrawable != null)
 			{
-				if (rd.GetDrawable(0) is BorderDrawable bd)
+				_outlineBounds = backgroundDrawable.GetPaddingBounds(canvas.Width, canvas.Height);
+				var width = (float)MeasuredWidth;
+				var height = (float)MeasuredHeight;
+
+				var widthRatio = 1f;
+				var heightRatio = 1f;
+
+				switch (ImageButton.Aspect)
 				{
-					bd.DrawOutline(canvas, canvas.Width, canvas.Height);
+					case Aspect.Fill:
+						break;
+					case Aspect.AspectFill:
+					// AspectFill isn't fully supported right now with shadows because we would need to crop the image ourselves 
+					// at the point where it hits the border
+					case Aspect.AspectFit:
+						heightRatio = (float)Drawable.IntrinsicHeight / height;
+						widthRatio = (float)Drawable.IntrinsicWidth / width;
+						break;
 				}
+
+				_drawableBounds = new RectF(_outlineBounds.Left * widthRatio, _outlineBounds.Top * heightRatio, _outlineBounds.Right * widthRatio, _outlineBounds.Bottom * heightRatio);
 			}
-			else if (background is BorderDrawable bd)
-			{
-				bd.DrawOutline(canvas, canvas.Width, canvas.Height);
-			}
+
+			if (_drawableBounds != null)
+				Drawable.SetBounds((int)_drawableBounds.Left, (int)_drawableBounds.Top, (int)_drawableBounds.Right, (int)_drawableBounds.Bottom);
+			
+
+			base.Draw(canvas);
+			if(_backgroundTracker.BackgroundDrawable != null)
+				_backgroundTracker.BackgroundDrawable.DrawOutline(canvas, canvas.Width, canvas.Height);
 		}
 
 		void IVisualElementRenderer.SetLabelFor(int? id)
@@ -242,13 +277,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == VisualElement.InputTransparentProperty.PropertyName)
-			{
 				UpdateInputTransparent();
-			}
 			else if (e.PropertyName == ImageButton.PaddingProperty.PropertyName)
-			{
 				UpdatePadding();
-			}
 
 			ElementPropertyChanged?.Invoke(this, e);
 		}
