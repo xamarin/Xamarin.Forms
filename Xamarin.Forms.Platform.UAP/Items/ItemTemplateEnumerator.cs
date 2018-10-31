@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void InnerCollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
 		{
-			// TODO hartez 2018/07/31 16:02:50 Handle the reset of these cases (implementing selection will make them much easier to test)	
+			// TODO hartez 2018/07/31 16:02:50 Handle the rest of these cases 
 			switch (args.Action)
 			{
 				case NotifyCollectionChangedAction.Add:

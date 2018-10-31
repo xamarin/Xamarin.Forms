@@ -89,8 +89,6 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 			}
 
-			Debug.WriteLine($">>>>> ItemContentControl SetFormsDataContext 91: {context}");
-
 			BindableObject.SetInheritedBindingContext(_rootElement, context);
 		}
 

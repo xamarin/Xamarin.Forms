@@ -19,7 +19,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_itemsSource =  ItemsSourceFactory.Create(_itemsView.ItemsSource, CollectionView);
 			_layout = layout;
 
-			_layout.GetPrototype = GetProtoType;
+			_layout.GetPrototype = GetPrototype;
 			_layout.UniformSize = false; // todo hartez Link this to ItemsView.ItemSizingStrategy hint
 		}
 
@@ -141,7 +141,7 @@ namespace Xamarin.Forms.Platform.iOS
 				: DefaultVerticalListCell.ReuseId;
 		}
 
-		UICollectionViewCell GetProtoType()
+		UICollectionViewCell GetPrototype()
 		{
 			// TODO hartez assuming this works, we'll need to evaluate using this nsindexpath (what about groups?)
 			// TODO hartez Also, what about situations where there is no data which matches the path?

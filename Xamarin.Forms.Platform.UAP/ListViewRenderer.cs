@@ -70,8 +70,6 @@ namespace Xamarin.Forms.Platform.UWP
 					};
 
 					List.SelectionChanged += OnControlSelectionChanged;
-
-					List.SetBinding(WItemsControl.ItemsSourceProperty, "");
 				}
 
 				ReloadData();

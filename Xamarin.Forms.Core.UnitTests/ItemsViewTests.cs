@@ -21,8 +21,6 @@ namespace Xamarin.Forms.Core.UnitTests
 			Device.Info = null;
 		}
 
-		// TODO hartez 2018/07/11 10:26:40 Long-term, these next two tests' values are not right for a non-scrolling items view	
-
 		[Test]
 		public void VerticalListMeasurement()
 		{

@@ -131,12 +131,6 @@ namespace Xamarin.Forms.Platform.UWP
 			// TODO hartez 2018/06/23 13:47:27 Handle DataTemplateSelector case
 			// Actually, DataTemplateExtensions CreateContent might handle the selector for us
 
-			// TODO hartez 2018/06/23 13:57:05 This loads a ContentControl; what we need is a custom subclass of ContentControl	
-			// which has a binding to the item and to formsTemplate and will take those two values
-			// and call formsTemplate.CreateContent with the item (this may require modifying DataTemplateSelector.cs)
-			// and then doing something like GetOrCreateRenderer
-			// and then set the content of the ContentControl to the result
-
 			ItemsControl.ItemTemplate =
 				(Windows.UI.Xaml.DataTemplate)Windows.UI.Xaml.Application.Current.Resources["ItemsViewDefaultTemplate"];
 

@@ -298,20 +298,12 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		void Debug(string msg)
-		{
-			System.Diagnostics.Debug.WriteLineIf(Element.BackgroundColor == Color.Crimson, msg);
-		}
-
 		void UpdateText(TextBlock textBlock)
 		{
-			Debug($"UpdateText; TextBlock.Text is '{textBlock?.Text}' and Element.Text is '{Element.Text}'");
-
 			_perfectSizeValid = false;
 
 			if (textBlock == null)
 			{
-				Debug("textBlock is null");
 				return;
 			}
 
@@ -322,20 +314,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 				if (formatted == null)
 				{
-					Debug($"Setting textBlock.Text to {label.Text}");
-					if (textBlock.Text == "")
-					{
-						textBlock.Text = label.Text ?? string.Empty;
-					}
-					else
-					{
-						if (label.Text != null && label.Text.Contains("28"))
-						{
-							System.Diagnostics.Debug.WriteLine($">>>>> LabelRenderer UpdateText 338: Long shot");
-							textBlock.Text = "derp";
-							textBlock.InvalidateMeasure();
-						}
-					}
+					textBlock.Text = label.Text ?? string.Empty;
 				}
 				else
 				{
