@@ -8,7 +8,6 @@ namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_CollectionViewRenderer))]
 	public class CollectionView : ItemsView
-    {
-	    
-    }
+	{
+	}
 }
