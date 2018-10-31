@@ -124,9 +124,11 @@ namespace Xamarin.Forms.Platform.Android
 					shadowColor = _renderer.ShadowColor;
 				}
 
+				_backgroundDrawable.SetPadding(paddingTop, paddingLeft);
 				if (_renderer.IsShadowEnabled())
 				{
-					_backgroundDrawable.SetShadow(shadowDy, shadowDx, shadowColor, shadowRadius);
+					_backgroundDrawable
+						.SetShadow(shadowDy, shadowDx, shadowColor, shadowRadius);
 				}
 
 				if (_drawableEnabled)

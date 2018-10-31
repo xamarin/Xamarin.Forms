@@ -15,6 +15,7 @@ using ARect = Android.Graphics.Rect;
 using Android.Graphics.Drawables;
 using Android.Graphics;
 using Xamarin.Forms.Platform.Android.FastRenderers;
+using Android.OS;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
@@ -199,12 +200,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			var backgroundDrawable = _backgroundTracker?.BackgroundDrawable;
 
-			RectF _drawableBounds = null;
-			RectF _outlineBounds = null;
+			RectF drawableBounds = null;
 
-			if (backgroundDrawable != null)
+			if ((int)Build.VERSION.SdkInt >= 18 && backgroundDrawable != null)
 			{
-				_outlineBounds = backgroundDrawable.GetPaddingBounds(canvas.Width, canvas.Height);
+				var outlineBounds = backgroundDrawable.GetPaddingBounds(canvas.Width, canvas.Height);
 				var width = (float)MeasuredWidth;
 				var height = (float)MeasuredHeight;
 
@@ -224,11 +224,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 						break;
 				}
 
-				_drawableBounds = new RectF(_outlineBounds.Left * widthRatio, _outlineBounds.Top * heightRatio, _outlineBounds.Right * widthRatio, _outlineBounds.Bottom * heightRatio);
+				drawableBounds = new RectF(outlineBounds.Left * widthRatio, outlineBounds.Top * heightRatio, outlineBounds.Right * widthRatio, outlineBounds.Bottom * heightRatio);
 			}
 
-			if (_drawableBounds != null)
-				Drawable.SetBounds((int)_drawableBounds.Left, (int)_drawableBounds.Top, (int)_drawableBounds.Right, (int)_drawableBounds.Bottom);
+			if (drawableBounds != null)
+				Drawable.SetBounds((int)drawableBounds.Left, (int)drawableBounds.Top, (int)drawableBounds.Right, (int)drawableBounds.Bottom);
 			
 
 			base.Draw(canvas);
