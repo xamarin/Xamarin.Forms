@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using Android.Widget;
 using AScaleType = Android.Widget.ImageView.ScaleType;
 using ARect = Android.Graphics.Rect;
+using System;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android.FastRenderers
 {
@@ -51,7 +53,18 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			var ImageElementManager = (IImageController)renderer.Element;
 			if (e.PropertyName == ImageElementManager.SourceProperty?.PropertyName)
 			{
-				await TryUpdateBitmap(renderer as IImageRendererController, (ImageView)renderer.View, (IImageController)renderer.Element).ConfigureAwait(false);
+				try
+				{
+					await TryUpdateBitmap(renderer as IImageRendererController, (ImageView)renderer.View, (IImageController)renderer.Element).ConfigureAwait(false);
+				}
+				catch (Exception ex)
+				{
+					Log.Warning(renderer.GetType().Name, "Error loading image: {0}", ex);
+				}
+				finally
+				{
+					ImageElementManager?.SetIsLoading(false);
+				}
 			}
 			else if (e.PropertyName == ImageElementManager.AspectProperty?.PropertyName)
 			{
