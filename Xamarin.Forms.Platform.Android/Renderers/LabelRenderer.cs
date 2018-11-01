@@ -108,6 +108,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateText();
 				UpdateLineBreakMode();
+				UpdateLineHeight();
 				UpdateGravity();
 				UpdateMaxLines();
 			}
@@ -211,12 +212,13 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateLineBreakMode()
 		{
-			_view.SetLineBreakMode(Element.LineBreakMode);
+			_view.SetLineBreakMode(Element);
 			_lastSizeRequest = null;
 		}
 
 		void UpdateLineHeight()
 		{
+			_lastSizeRequest = null;
 			if (Element.LineHeight == -1)
 				_view.SetLineSpacing(_lineSpacingExtraDefault, _lineSpacingMultiplierDefault);
 			else if (Element.LineHeight >= 0)
@@ -225,16 +227,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateMaxLines()
 		{
-			if (Element.MaxLines > 0)
-			{
-				Control.SetSingleLine(Element.MaxLines == 1);
-				Control.SetMaxLines(Element.MaxLines);
-			}
-			else
-			{
-				Control.SetSingleLine(false);
-				Control.SetMaxLines(1);
-			}
+			Control.SetMaxLines(Element);	
 		}
 
 		void UpdateText()

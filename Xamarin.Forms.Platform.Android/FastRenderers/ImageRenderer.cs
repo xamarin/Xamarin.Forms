@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Android.Content;
+using Android.Graphics;
 using AImageView = Android.Widget.ImageView;
 using AView = Android.Views.View;
 using Android.Views;
@@ -9,7 +10,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android.FastRenderers
 {
-	internal sealed class ImageRenderer : AImageView, IVisualElementRenderer, IImageRendererController, IViewRenderer
+	internal sealed class ImageRenderer : AImageView, IVisualElementRenderer, IImageRendererController, IViewRenderer, ITabStop
 	{
 		bool _disposed;
 		Image _element;
@@ -155,6 +156,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		AView IVisualElementRenderer.View => this;
 
+		AView ITabStop.TabStop => this;
+
 		ViewGroup IVisualElementRenderer.ViewGroup => null;
 
 		void IImageRendererController.SkipInvalidate() => _skipInvalidate = true;
@@ -211,6 +214,12 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			}
 
 			await Control.UpdateBitmap(_element, previous);
+		}
+
+		protected override void OnLayout(bool changed, int left, int top, int right, int bottom)
+		{
+			base.OnLayout(changed, left, top, right, bottom);
+			ClipBounds = GetScaleType() == ScaleType.CenterCrop ? new Rect(0, 0, right - left, bottom - top) : null;
 		}
 
 		void UpdateAspect()

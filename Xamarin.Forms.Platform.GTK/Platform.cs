@@ -9,281 +9,250 @@ using Xamarin.Forms.Platform.GTK.Renderers;
 
 namespace Xamarin.Forms.Platform.GTK
 {
-    public class Platform : BindableObject, IPlatform, INavigation, IDisposable
-    {
-        private bool _disposed;
-        readonly List<Page> _modals;
-        private readonly PlatformRenderer _renderer;
+	public class Platform : BindableObject, IPlatform, INavigation, IDisposable
+	{
+		private bool _disposed;
+		readonly List<Page> _modals;
+		private readonly PlatformRenderer _renderer;
 
-        internal static readonly BindableProperty RendererProperty =
-            BindableProperty.CreateAttached("Renderer", typeof(IVisualElementRenderer),
-                typeof(Platform), default(IVisualElementRenderer),
-            propertyChanged: (bindable, oldvalue, newvalue) =>
-            {
-                var view = bindable as VisualElement;
-                if (view != null)
-                    view.IsPlatformEnabled = newvalue != null;
-            });
+		internal static readonly BindableProperty RendererProperty =
+			BindableProperty.CreateAttached("Renderer", typeof(IVisualElementRenderer),
+				typeof(Platform), default(IVisualElementRenderer),
+			propertyChanged: (bindable, oldvalue, newvalue) =>
+			{
+				var view = bindable as VisualElement;
+				if (view != null)
+					view.IsPlatformEnabled = newvalue != null;
+			});
 
-        internal PlatformRenderer PlatformRenderer => _renderer;
+		internal PlatformRenderer PlatformRenderer => _renderer;
 
-        Page Page { get; set; }
+		Page Page { get; set; }
 
-        IReadOnlyList<Page> INavigation.ModalStack
-        {
-            get { return _modals; }
-        }
+		IReadOnlyList<Page> INavigation.ModalStack
+		{
+			get { return _modals; }
+		}
 
-        IReadOnlyList<Page> INavigation.NavigationStack
-        {
-            get { return new List<Page>(); }
-        }
+		IReadOnlyList<Page> INavigation.NavigationStack
+		{
+			get { return new List<Page>(); }
+		}
 
-        internal Platform()
-        {
-            _renderer = new PlatformRenderer(this);
-            _modals = new List<Page>();
-            Application.Current.NavigationProxy.Inner = this;
+		internal Platform()
+		{
+			_renderer = new PlatformRenderer(this);
+			_modals = new List<Page>();
+			Application.Current.NavigationProxy.Inner = this;
 
-            MessagingCenter.Subscribe(this, Page.AlertSignalName, (Page sender, AlertArguments arguments) => DialogHelper.ShowAlert(PlatformRenderer, arguments));
-            MessagingCenter.Subscribe(this, Page.ActionSheetSignalName, (Page sender, ActionSheetArguments arguments) => DialogHelper.ShowActionSheet(PlatformRenderer, arguments));
-        }
+			MessagingCenter.Subscribe(this, Page.AlertSignalName, (Page sender, AlertArguments arguments) => DialogHelper.ShowAlert(PlatformRenderer, arguments));
+			MessagingCenter.Subscribe(this, Page.ActionSheetSignalName, (Page sender, ActionSheetArguments arguments) => DialogHelper.ShowActionSheet(PlatformRenderer, arguments));
+		}
 
-        internal static void DisposeModelAndChildrenRenderers(Element view)
-        {
-            IVisualElementRenderer renderer;
+		internal static void DisposeModelAndChildrenRenderers(Element view)
+		{
+			IVisualElementRenderer renderer;
 
-            foreach (VisualElement child in view.Descendants())
-                DisposeModelAndChildrenRenderers(child);
+			foreach (VisualElement child in view.Descendants())
+				DisposeModelAndChildrenRenderers(child);
 
-            renderer = GetRenderer((VisualElement)view);
+			renderer = GetRenderer((VisualElement)view);
 
-            renderer?.Dispose();
+			renderer?.Dispose();
 
-            view.ClearValue(RendererProperty);
-        }
+			view.ClearValue(RendererProperty);
+		}
 
-        SizeRequest IPlatform.GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
-        {
-            var renderView = GetRenderer(view);
+		SizeRequest IPlatform.GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
+		{
+			var renderView = GetRenderer(view);
 
-            if (renderView == null || renderView.Container == null)
-                return new SizeRequest(Size.Zero);
+			if (renderView == null || renderView.Container == null)
+				return new SizeRequest(Size.Zero);
 
-            return renderView.GetDesiredSize(widthConstraint, heightConstraint);
-        }
+			return renderView.GetDesiredSize(widthConstraint, heightConstraint);
+		}
 
-        public static IVisualElementRenderer GetRenderer(VisualElement element)
-        {
-            return (IVisualElementRenderer)element.GetValue(RendererProperty);
-        }
+		public static IVisualElementRenderer GetRenderer(VisualElement element)
+		{
+			return (IVisualElementRenderer)element.GetValue(RendererProperty);
+		}
 
-        public static void SetRenderer(VisualElement element, IVisualElementRenderer value)
-        {
-            if (element != null)
-            {
-                element.SetValue(RendererProperty, value);
-                element.IsPlatformEnabled = value != null;
-            }
-        }
+		public static void SetRenderer(VisualElement element, IVisualElementRenderer value)
+		{
+			if (element != null)
+			{
+				element.SetValue(RendererProperty, value);
+				element.IsPlatformEnabled = value != null;
+			}
+		}
 
-        public static IVisualElementRenderer CreateRenderer(VisualElement element)
-        {
-            var renderer = Registrar.Registered.GetHandlerForObject<IVisualElementRenderer>(element) ?? new DefaultRenderer();
-            renderer.SetElement(element);
+		public static IVisualElementRenderer CreateRenderer(VisualElement element)
+		{
+			var renderer = Registrar.Registered.GetHandlerForObject<IVisualElementRenderer>(element) ?? new DefaultRenderer();
+			renderer.SetElement(element);
 
-            return renderer;
-        }
+			return renderer;
+		}
 
-        void IDisposable.Dispose()
-        {
-            if (_disposed)
-                return;
+		void IDisposable.Dispose()
+		{
+			if (_disposed)
+				return;
 
-            _disposed = true;
-    
-            MessagingCenter.Unsubscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName);
-            MessagingCenter.Unsubscribe<Page, AlertArguments>(this, Page.AlertSignalName);
-            MessagingCenter.Unsubscribe<Page, bool>(this, Page.BusySetSignalName);
+			_disposed = true;
 
-            DisposeModelAndChildrenRenderers(Page);
-            foreach (var modal in _modals)
-                DisposeModelAndChildrenRenderers(modal);
+			MessagingCenter.Unsubscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName);
+			MessagingCenter.Unsubscribe<Page, AlertArguments>(this, Page.AlertSignalName);
+			MessagingCenter.Unsubscribe<Page, bool>(this, Page.BusySetSignalName);
 
-            PlatformRenderer.Dispose();
-        }
+			DisposeModelAndChildrenRenderers(Page);
+			foreach (var modal in _modals)
+				DisposeModelAndChildrenRenderers(modal);
 
-        internal void SetPage(Page newRoot)
-        {
-            if (newRoot == null)
-                return;
+			PlatformRenderer.Dispose();
+		}
 
-            if (Page != null)
-                throw new NotImplementedException();
+		internal void SetPage(Page newRoot)
+		{
+			if (newRoot == null)
+				return;
 
-            Page = newRoot;
-            Page.Platform = this;
+			if (Page != null)
+				throw new NotImplementedException();
 
-            AddChild(Page);
+			Page = newRoot;
+			Page.Platform = this;
 
-            Application.Current.NavigationProxy.Inner = this;
-        }
+			AddChild(Page);
 
-        private void AddChild(Page mainPage)
-        {
-            var viewRenderer = GetRenderer(mainPage);
+			Application.Current.NavigationProxy.Inner = this;
+		}
 
-            if (viewRenderer == null)
-            {
-                viewRenderer = CreateRenderer(mainPage);
-                SetRenderer(mainPage, viewRenderer);
+		private void AddChild(Page mainPage)
+		{
+			var viewRenderer = GetRenderer(mainPage);
 
-                PlatformRenderer.Add(viewRenderer.Container);
-                PlatformRenderer.ShowAll();
-            }
-        }
+			if (viewRenderer == null)
+			{
+				viewRenderer = CreateRenderer(mainPage);
+				SetRenderer(mainPage, viewRenderer);
 
-        private void HandleChildRemoved(object sender, ElementEventArgs e)
-        {
-            var view = e.Element;
-            DisposeModelAndChildrenRenderers(view);
-        }
+				PlatformRenderer.Add(viewRenderer.Container);
+				PlatformRenderer.ShowAll();
+			}
+		}
 
-        void INavigation.InsertPageBefore(Page page, Page before)
-        {
-            throw new InvalidOperationException("InsertPageBefore is not supported globally on GTK, please use a NavigationPage.");
-        }
+		private void HandleChildRemoved(object sender, ElementEventArgs e)
+		{
+			var view = e.Element;
+			DisposeModelAndChildrenRenderers(view);
+		}
 
-        Task<Page> INavigation.PopAsync()
-        {
-            return ((INavigation)this).PopAsync(true);
-        }
+		void INavigation.InsertPageBefore(Page page, Page before)
+		{
+			throw new InvalidOperationException("InsertPageBefore is not supported globally on GTK, please use a NavigationPage.");
+		}
 
-        Task<Page> INavigation.PopAsync(bool animated)
-        {
-            throw new InvalidOperationException("PopAsync is not supported globally on GTK, please use a NavigationPage.");
-        }
+		Task<Page> INavigation.PopAsync()
+		{
+			return ((INavigation)this).PopAsync(true);
+		}
 
-        Task<Page> INavigation.PopModalAsync()
-        {
-            return ((INavigation)this).PopModalAsync(true);
-        }
+		Task<Page> INavigation.PopAsync(bool animated)
+		{
+			throw new InvalidOperationException("PopAsync is not supported globally on GTK, please use a NavigationPage.");
+		}
 
-        Task<Page> INavigation.PopModalAsync(bool animated)
-        {
-            var modal = _modals.Last();
-            _modals.Remove(modal);
-            modal.DescendantRemoved -= HandleChildRemoved;
+		Task<Page> INavigation.PopModalAsync()
+		{
+			return ((INavigation)this).PopModalAsync(true);
+		}
 
-            var modalPage = GetRenderer(modal) as Container;
+		Task<Page> INavigation.PopModalAsync(bool animated)
+		{
+			var modal = _modals.Last();
+			_modals.Remove(modal);
+			modal.DescendantRemoved -= HandleChildRemoved;
 
-            var pageControl = PlatformRenderer.Child as IPageControl;
+			var modalPage = GetRenderer(modal) as Container;
 
-            Device.BeginInvokeOnMainThread(() =>
-            {
-                if (pageControl != null)
-                {
-                    var page = pageControl.Control;
+			var pageControl = PlatformRenderer.Child as IPageControl;
 
-                    if (page != null)
-                    {
-                        if (page.Children.Length > 0)
-                        {
-                            page.Remove(modalPage);
-                        }
+			Device.BeginInvokeOnMainThread(() =>
+			{
+				pageControl?.Control?.PopModal(modalPage);
 
-                        if (page.Children != null)
-                        {
-                            foreach (var child in page.Children)
-                            {
-                                child.ShowAll();
-                            }
+				DisposeModelAndChildrenRenderers(modal);
+			});
 
-                            page.ShowAll();
-                        }
-                    }
-                }
+			return Task.FromResult<Page>(modal);
+		}
 
-                DisposeModelAndChildrenRenderers(modal);
-            });
+		Task INavigation.PopToRootAsync()
+		{
+			return ((INavigation)this).PopToRootAsync(true);
+		}
 
-            return Task.FromResult<Page>(modal);
-        }
+		Task INavigation.PopToRootAsync(bool animated)
+		{
+			throw new InvalidOperationException("PopToRootAsync is not supported globally on GTK, please use a NavigationPage.");
+		}
 
-        Task INavigation.PopToRootAsync()
-        {
-            return ((INavigation)this).PopToRootAsync(true);
-        }
+		Task INavigation.PushAsync(Page root)
+		{
+			return ((INavigation)this).PushAsync(root, true);
+		}
 
-        Task INavigation.PopToRootAsync(bool animated)
-        {
-            throw new InvalidOperationException("PopToRootAsync is not supported globally on GTK, please use a NavigationPage.");
-        }
+		Task INavigation.PushAsync(Page root, bool animated)
+		{
+			throw new InvalidOperationException("PushAsync is not supported globally on GTK, please use a NavigationPage.");
+		}
 
-        Task INavigation.PushAsync(Page root)
-        {
-            return ((INavigation)this).PushAsync(root, true);
-        }
+		Task INavigation.PushModalAsync(Page modal)
+		{
+			return ((INavigation)this).PushModalAsync(modal, true);
+		}
 
-        Task INavigation.PushAsync(Page root, bool animated)
-        {
-            throw new InvalidOperationException("PushAsync is not supported globally on GTK, please use a NavigationPage.");
-        }
+		Task INavigation.PushModalAsync(Page modal, bool animated)
+		{
+			_modals.Add(modal);
+			modal.Platform = this;
+			modal.DescendantRemoved += HandleChildRemoved;
 
-        Task INavigation.PushModalAsync(Page modal)
-        {
-            return ((INavigation)this).PushModalAsync(modal, true);
-        }
+			var modalRenderer = GetRenderer(modal);
+			if (modalRenderer == null)
+			{
+				modalRenderer = CreateRenderer(modal);
+				SetRenderer(modal, modalRenderer);
+			}
 
-        Task INavigation.PushModalAsync(Page modal, bool animated)
-        {
-            _modals.Add(modal);
-            modal.Platform = this;
-            modal.DescendantRemoved += HandleChildRemoved;
+			var pageControl = PlatformRenderer.Child as IPageControl;
 
-            var modalRenderer = GetRenderer(modal);
-            if (modalRenderer == null)
-            {
-                modalRenderer = CreateRenderer(modal);
-                SetRenderer(modal, modalRenderer);
-            }
+			Device.BeginInvokeOnMainThread(() =>
+			{
+				if (pageControl != null)
+				{
+					var page = pageControl.Control;
 
-            var pageControl = PlatformRenderer.Child as IPageControl;
+					if (page != null)
+					{
+						page.PushModal(modalRenderer.Container);
+					}
+				}
+			});
 
-            Device.BeginInvokeOnMainThread(() =>
-            {
-                if (pageControl != null)
-                {
-                    var page = pageControl.Control;
+			return Task.FromResult<object>(null);
+		}
 
-                    if (page != null)
-                    {
-                        page.Attach(modalRenderer.Container, 0, 1, 0, 1);
+		void INavigation.RemovePage(Page page)
+		{
+			throw new InvalidOperationException("RemovePage is not supported globally on GTK, please use a NavigationPage.");
+		}
 
-                        if (page.Children != null)
-                        {
-                            foreach (var child in page.Children)
-                            {
-                                child.ShowAll();
-                            }
+		internal class DefaultRenderer : VisualElementRenderer<VisualElement, Widget>
+		{
 
-                            page.ShowAll();
-                        }
-                    }
-                }
-            });
-
-            return Task.FromResult<object>(null);
-        }
-
-        void INavigation.RemovePage(Page page)
-        {
-            throw new InvalidOperationException("RemovePage is not supported globally on GTK, please use a NavigationPage.");
-        }
-
-        internal class DefaultRenderer : VisualElementRenderer<VisualElement, Widget>
-        {
-
-        }
-    }
+		}
+	}
 }

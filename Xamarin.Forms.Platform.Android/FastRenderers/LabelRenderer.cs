@@ -10,7 +10,7 @@ using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android.FastRenderers
 {
-	internal sealed class LabelRenderer : FormsTextView, IVisualElementRenderer, IViewRenderer
+	internal sealed class LabelRenderer : FormsTextView, IVisualElementRenderer, IViewRenderer, ITabStop
 	{
 		int? _defaultLabelFor;
 		bool _disposed;
@@ -52,6 +52,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		VisualElementTracker IVisualElementRenderer.Tracker => _visualElementTracker;
 
 		AView IVisualElementRenderer.View => this;
+
+		AView ITabStop.TabStop => this;
 
 		ViewGroup IVisualElementRenderer.ViewGroup => null;
 
@@ -218,11 +220,13 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				SkipNextInvalidate();
 				UpdateText();
 				UpdateLineHeight();
+				UpdateTextDecorations();
 				if (e.OldElement?.LineBreakMode != e.NewElement.LineBreakMode)
 					UpdateLineBreakMode();
-				if (e.OldElement?.HorizontalTextAlignment != e.NewElement.HorizontalTextAlignment
-				 || e.OldElement?.VerticalTextAlignment != e.NewElement.VerticalTextAlignment)
+				if (e.OldElement?.HorizontalTextAlignment != e.NewElement.HorizontalTextAlignment || e.OldElement?.VerticalTextAlignment != e.NewElement.VerticalTextAlignment)
 					UpdateGravity();
+				if (e.OldElement?.MaxLines != e.NewElement.MaxLines)
+					UpdateMaxLines();
 
 				ElevationHelper.SetElevation(this, e.NewElement);
 			}
@@ -240,10 +244,14 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				UpdateText();
 			else if (e.PropertyName == Label.LineBreakModeProperty.PropertyName)
 				UpdateLineBreakMode();
+			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
+				UpdateTextDecorations();
 			else if (e.PropertyName == Label.TextProperty.PropertyName || e.PropertyName == Label.FormattedTextProperty.PropertyName)
 				UpdateText();
 			else if (e.PropertyName == Label.LineHeightProperty.PropertyName)
 				UpdateLineHeight();
+			else if (e.PropertyName == Label.MaxLinesProperty.PropertyName)
+				UpdateMaxLines();
 		}
 
 		void UpdateColor()
@@ -309,8 +317,13 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		void UpdateLineBreakMode()
 		{
-			this.SetLineBreakMode(Element.LineBreakMode);
+			this.SetLineBreakMode(Element);
 			_lastSizeRequest = null;
+		}
+
+		void UpdateMaxLines()
+		{
+			this.SetMaxLines(Element);
 		}
 
 		void UpdateText()
