@@ -21,17 +21,6 @@ namespace Xamarin.Forms.Platform.UWP
 
 		protected ItemsControl ItemsControl { get; private set; }
 
-		public CollectionViewRenderer()
-		{
-			if (!Forms.Flags.Contains(Flags.CollectionViewExperimental))
-			{
-				var collectionViewFlagError = 
-					$"To use CollectionView on this platform, you must opt-in by calling " 
-					+ $"Forms.SetFlags(\"{Flags.CollectionViewExperimental}\") before Forms.Init().";
-				throw new InvalidOperationException(collectionViewFlagError);
-			}
-		}
-
 		protected override void OnElementChanged(ElementChangedEventArgs<CollectionView> args)
 		{
 			base.OnElementChanged(args);

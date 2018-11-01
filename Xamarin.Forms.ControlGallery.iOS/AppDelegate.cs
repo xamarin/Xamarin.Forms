@@ -160,8 +160,6 @@ namespace Xamarin.Forms.ControlGallery.iOS
 
 			Xamarin.Calabash.Start();
 			
-			Forms.SetFlags("CollectionView_Experimental");
-
 			Forms.Init();
 			FormsMaps.Init();
 			Forms.ViewInitialized += (object sender, ViewInitializedEventArgs e) =>

@@ -17,6 +17,7 @@ namespace Xamarin.Forms
 
 		protected ItemsLayout(ItemsLayoutOrientation orientation)
 		{
+			Flags.VerifyCollectionView(constructorHint: nameof(ItemsLayout));
 			Orientation = orientation;
 		}
 
@@ -96,9 +97,7 @@ namespace Xamarin.Forms
 	public enum SnapPointsType
 	{
 		None,
-		Optional,
 		Mandatory,
-		OptionalSingle,
-		MandatorySingle,
+		MandatorySingle
 	}
 }

@@ -7,16 +7,6 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class CarouselViewRenderer
 	{
-		public CarouselViewRenderer()
-		{
-			if (!Forms.Flags.Contains(Flags.CollectionViewExperimental))
-			{
-				var collectionViewFlagError = 
-					$"To use CarouselView on this platform, you must opt-in by calling " 
-					+ $"Forms.SetFlags(\"{Flags.CollectionViewExperimental}\") before Forms.Init().";
-				throw new InvalidOperationException(collectionViewFlagError);
-			}
-		}
 	}
 
 	// TODO hartez 2018/05/30 08:58:42 This follows the same basic scheme as RecyclerView.Adapter; you should be able to reuse the same wrapper class for the IEnumerable	
@@ -26,17 +16,6 @@ namespace Xamarin.Forms.Platform.iOS
 		CollectionViewController _collectionViewController;
 		ItemsViewLayout _layout;
 		bool _disposed;
-
-		public CollectionViewRenderer()
-		{
-			if (!Forms.Flags.Contains(Flags.CollectionViewExperimental))
-			{
-				var collectionViewFlagError = 
-					$"To use CollectionView on this platform, you must opt-in by calling " 
-					+ $"Forms.SetFlags(\"{Flags.CollectionViewExperimental}\") before Forms.Init().";
-				throw new InvalidOperationException(collectionViewFlagError);
-			}
-		}
 
 		public override UIViewController ViewController => _collectionViewController;
 

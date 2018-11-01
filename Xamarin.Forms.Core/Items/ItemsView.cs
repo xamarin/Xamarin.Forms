@@ -12,11 +12,13 @@ namespace Xamarin.Forms
 	{
 		public static bool Is(this PropertyChangedEventArgs args, BindableProperty property)
 		{
+			Flags.VerifyCollectionView();
 			return args.PropertyName == property.PropertyName;
 		}
 
 		public static bool IsOneOf(this PropertyChangedEventArgs args, params BindableProperty[] properties)
 		{
+			Flags.VerifyCollectionView();
 			for (int n = 0; n < properties.Length; n++)
 			{
 				if (args.PropertyName == properties[n].PropertyName)
@@ -34,6 +36,7 @@ namespace Xamarin.Forms
 	{
 		public CarouselView()
 		{
+			Flags.VerifyCollectionView(constructorHint: nameof(CarouselView));
 			ItemsLayout = new ListItemsLayout(ItemsLayoutOrientation.Horizontal)
 			{
 				SnapPointsType = SnapPointsType.MandatorySingle,
@@ -44,6 +47,11 @@ namespace Xamarin.Forms
 
 	public class ItemsView : View
 	{
+		protected internal ItemsView()
+		{
+			Flags.VerifyCollectionView(constructorHint: nameof(ItemsView));
+		}
+
 		// TODO hartez 2018/06/24 11:37:00 Give DisplayMemberPath some thought	
 
 		public static readonly BindableProperty EmptyViewProperty =

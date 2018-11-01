@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -30,6 +32,9 @@ namespace Xamarin.Forms.Controls
 		public App()
 		{
 			_testCloudService = DependencyService.Get<ITestCloudService>();
+
+			// Allow use of CollectionView in Control Gallery
+			SetFlags("CollectionView_Experimental");
 
 			SetMainPage(CreateDefaultMainPage());
 

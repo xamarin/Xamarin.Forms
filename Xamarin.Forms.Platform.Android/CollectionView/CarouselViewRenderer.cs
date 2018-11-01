@@ -10,13 +10,6 @@ namespace Xamarin.Forms.Platform.Android
 
 		public CarouselViewRenderer(Context context) : base(context)
 		{
-			if (!Forms.Flags.Contains(Flags.CollectionViewExperimental))
-			{
-				var collectionViewFlagError = 
-					$"To use CarouselView on this platform, you must opt-in by calling " 
-					+ $"Forms.SetFlags(\"{Flags.CollectionViewExperimental}\") before Forms.Init().";
-				throw new InvalidOperationException(collectionViewFlagError);
-			}
 		}
 
 		protected override void UpdateItemsSource()
