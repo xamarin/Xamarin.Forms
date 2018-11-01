@@ -32,7 +32,7 @@ namespace Xamarin.Forms.Controls.Issues
 			var page = new ContentPage();
 			page.Title = "GH1931 Root";
 
-			var button = new Button { Text = Go };
+			var button = new Button { Text = Go , AutomationId = Go };
 			button.Clicked += (sender, args) => PushAsync(ListViewPage());
 
 			var instructions = new Label { Text = $"Tap the {Go} button" };
@@ -68,7 +68,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			var instructions = new Label { Text = $"Tap the {Back} button" };
 
-			var button = new Button { Text = Back };
+			var button = new Button { Text = Back, AutomationId = Back };
 			button.Clicked += (sender, args) => PopAsync();
 
 			layout.Children.Add(instructions);
