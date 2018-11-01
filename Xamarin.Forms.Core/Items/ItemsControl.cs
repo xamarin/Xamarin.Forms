@@ -17,7 +17,7 @@ namespace Xamarin.Forms
 
 		protected ItemsLayout(ItemsLayoutOrientation orientation)
 		{
-			Flags.VerifyCollectionView(constructorHint: nameof(ItemsLayout));
+			CoreFlags.VerifyCollectionViewFlagEnabled(constructorHint: nameof(ItemsLayout));
 			Orientation = orientation;
 		}
 

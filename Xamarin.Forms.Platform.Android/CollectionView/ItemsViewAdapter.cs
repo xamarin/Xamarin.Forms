@@ -23,6 +23,8 @@ namespace Xamarin.Forms.Platform.Android
 		internal ItemsViewAdapter(ItemsView itemsView, Context context, 
 			Func<IVisualElementRenderer, Context, AView> createView = null)
 		{
+			CoreFlags.VerifyCollectionViewFlagEnabled(nameof(ItemsViewAdapter));
+
 			ItemsView = itemsView;
 			_context = context;
 			_createView = createView;

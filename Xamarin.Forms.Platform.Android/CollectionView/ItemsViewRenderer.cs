@@ -32,6 +32,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		public ItemsViewRenderer(Context context) : base(context)
 		{
+			CoreFlags.VerifyCollectionViewFlagEnabled(nameof(ItemsViewRenderer));
+
 			_automationPropertiesProvider = new AutomationPropertiesProvider(this);
 			_effectControlProvider = new EffectControlProvider(this);
 		}

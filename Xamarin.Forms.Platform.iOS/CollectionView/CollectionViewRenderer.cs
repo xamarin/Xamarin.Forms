@@ -7,6 +7,10 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class CarouselViewRenderer
 	{
+		public CarouselViewRenderer()
+		{
+			CoreFlags.VerifyCollectionViewFlagEnabled(nameof(CarouselViewRenderer));
+		}
 	}
 
 	// TODO hartez 2018/05/30 08:58:42 This follows the same basic scheme as RecyclerView.Adapter; you should be able to reuse the same wrapper class for the IEnumerable	
@@ -16,6 +20,11 @@ namespace Xamarin.Forms.Platform.iOS
 		CollectionViewController _collectionViewController;
 		ItemsViewLayout _layout;
 		bool _disposed;
+
+		public CollectionViewRenderer()
+		{
+			CoreFlags.VerifyCollectionViewFlagEnabled(nameof(CollectionViewRenderer));
+		}
 
 		public override UIViewController ViewController => _collectionViewController;
 
@@ -129,6 +138,8 @@ namespace Xamarin.Forms.Platform.iOS
 		public static UICollectionViewScrollPosition ToCollectionViewScrollPosition(this ScrollToPosition scrollToPosition, 
 			UICollectionViewScrollDirection scrollDirection = UICollectionViewScrollDirection.Vertical, bool isLtr = false)
 		{
+			CoreFlags.VerifyCollectionViewFlagEnabled();
+
 			if (scrollDirection == UICollectionViewScrollDirection.Horizontal)
 			{
 				return scrollToPosition.ToHorizontalCollectionViewScrollPosition(isLtr);
@@ -139,6 +150,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public static UICollectionViewScrollPosition ToHorizontalCollectionViewScrollPosition(this ScrollToPosition scrollToPosition, bool isLtr)
 		{
+			CoreFlags.VerifyCollectionViewFlagEnabled();
+
 			switch (scrollToPosition)
 			{
 				case ScrollToPosition.MakeVisible:
@@ -154,6 +167,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public static UICollectionViewScrollPosition ToVerticalCollectionViewScrollPosition(this ScrollToPosition scrollToPosition)
 		{
+			CoreFlags.VerifyCollectionViewFlagEnabled();
+
 			switch (scrollToPosition)
 			{
 				case ScrollToPosition.MakeVisible:

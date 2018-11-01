@@ -9,6 +9,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public PositionalSmoothScroller(Context context, ScrollToPosition scrollToPosition) : base(context)
 		{
+			CoreFlags.VerifyCollectionViewFlagEnabled(nameof(PositionalSmoothScroller));
 			_scrollToPosition = scrollToPosition;
 		}
 

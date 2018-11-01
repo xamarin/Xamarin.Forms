@@ -11,6 +11,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public SnapManager(ItemsView itemsView, RecyclerView recyclerView)
 		{
+			CoreFlags.VerifyCollectionViewFlagEnabled(nameof(SnapManager));
 			_recyclerView = recyclerView;
 			_itemsView = itemsView;
 		}

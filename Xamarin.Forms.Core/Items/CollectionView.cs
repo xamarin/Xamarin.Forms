@@ -12,7 +12,7 @@ namespace Xamarin.Forms
 	{
 		public CollectionView()
 		{
-			Flags.VerifyCollectionView(constructorHint: nameof(CollectionView));
+			CoreFlags.VerifyCollectionViewFlagEnabled(constructorHint: nameof(CollectionView));
 		}
 	}
 }
