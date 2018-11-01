@@ -9,6 +9,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		[SetUp]
 		public override void Setup()
 		{
+			Application.SetFlags(CoreFlags.CollectionViewExperimental);
 			base.Setup();
 			var mockDeviceInfo = new TestDeviceInfo();
 			Device.Info = mockDeviceInfo;
