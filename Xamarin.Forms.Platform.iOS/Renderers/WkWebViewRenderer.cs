@@ -283,42 +283,33 @@ namespace Xamarin.Forms.Platform.iOS
 
 			public override void RunJavaScriptAlertPanel(WKWebView webView, string message, WKFrameInfo frame, Action completionHandler)
 			{
-				var alertController = UIAlertController.Create(GetJsAlertTitle(webView), message, UIAlertControllerStyle.Alert);
-
-				alertController.AddAction(UIAlertAction.Create(LocalOK, UIAlertActionStyle.Default, (_) => { completionHandler(); }));
-
-				PresentAlertController(alertController);
+				PresentAlertController(
+					webView,
+					message,
+					okAction: _ => completionHandler()
+				);
 			}
 
 			public override void RunJavaScriptConfirmPanel(WKWebView webView, string message, WKFrameInfo frame, Action<bool> completionHandler)
 			{
-				var alertController = UIAlertController.Create(GetJsAlertTitle(webView), message, UIAlertControllerStyle.Alert);
-				var okAction = UIAlertAction.Create(LocalOK, UIAlertActionStyle.Default, (_) => { completionHandler(true); });
-				var cancelAction = UIAlertAction.Create(LocalCancel, UIAlertActionStyle.Cancel, (_) => { completionHandler(true); });
-
-				alertController.AddAction(okAction);
-				alertController.AddAction(cancelAction);
-
-				alertController.PreferredAction = okAction;
-
-				PresentAlertController(alertController);
+				PresentAlertController(
+					webView, 
+					message,
+					okAction: _ => completionHandler(true),
+					cancelAction: _ => completionHandler(false)
+				);
 			}
 
-			public override void RunJavaScriptTextInputPanel(WKWebView webView, string prompt, string defaultText, WKFrameInfo frame, Action<string> completionHandler)
+			public override void RunJavaScriptTextInputPanel(
+				WKWebView webView, string prompt, string defaultText, WKFrameInfo frame, Action<string> completionHandler)
 			{
-				var alertController = UIAlertController.Create(GetJsAlertTitle(webView), prompt, UIAlertControllerStyle.Alert);
-				alertController.AddTextField((textField) => textField.Text = defaultText);
-				var controllerTextField = alertController.TextFields[0];
-
-				var okAction = UIAlertAction.Create(LocalOK, UIAlertActionStyle.Default, (_) => { completionHandler(controllerTextField.Text); });
-				var cancelAction = UIAlertAction.Create(LocalCancel, UIAlertActionStyle.Cancel, (_) => { completionHandler(null); });
-
-				alertController.AddAction(okAction);
-				alertController.AddAction(cancelAction);
-
-				alertController.PreferredAction = okAction;
-
-				PresentAlertController(alertController);
+				PresentAlertController(
+					webView, 
+					prompt,
+					defaultText: defaultText,
+					okAction: x => completionHandler(x.TextFields[0].Text),
+					cancelAction: _ => completionHandler(null)
+				);
 			}
 
 			static string GetJsAlertTitle(WKWebView webView)
@@ -326,24 +317,62 @@ namespace Xamarin.Forms.Platform.iOS
 				// Emulate the behavior of UIWebView dialogs.
 				// The scheme and host are used unless local html content is what the webview is displaying,
 				// in which case the bundle file name is used.
-				return webView.Url == null ? $"{webView.Url.Scheme}://{webView.Url.Host}" : new NSString(NSBundle.MainBundle.BundlePath).LastPathComponent;
+
+				if (webView.Url == null)
+					return $"{webView.Url.Scheme}://{webView.Url.Host}";
+				
+				return new NSString(NSBundle.MainBundle.BundlePath).LastPathComponent;
 			}
 
-			static void PresentAlertController(UIAlertController alertController)
+			static UIAlertAction AddOkAction(UIAlertController controller, Action handler)
 			{
-				if (alertController != null)
-					GetTopViewController(UIApplication.SharedApplication.KeyWindow.RootViewController).PresentViewController(alertController, true, null);
+				var action = UIAlertAction.Create(LocalOK, UIAlertActionStyle.Default, (_) => handler());
+				controller.AddAction(action);
+				return action;
+			}
+
+			static UIAlertAction AddCancelAction(UIAlertController controller, Action handler)
+			{
+				var action = UIAlertAction.Create(LocalCancel, UIAlertActionStyle.Cancel, (_) => handler());
+				controller.AddAction(action);
+				controller.PreferredAction = action;
+				return action;
+			}
+
+			static void PresentAlertController(
+				WKWebView webView,
+				string message,
+				string defaultText = null,
+				Action<UIAlertController> okAction = null,
+				Action<UIAlertController> cancelAction = null)
+			{
+				var controller = UIAlertController.Create(GetJsAlertTitle(webView), message, UIAlertControllerStyle.Alert);
+
+				if (defaultText != null)
+					controller.AddTextField((textField) => textField.Text = defaultText);
+
+				if (okAction != null)
+					AddOkAction(controller, () => okAction(controller));
+
+				if (cancelAction != null)
+					AddCancelAction(controller, () => cancelAction(controller));
+
+				GetTopViewController(UIApplication.SharedApplication.KeyWindow.RootViewController)
+					.PresentViewController(controller, true, null);
 			}
 
 			static UIViewController GetTopViewController(UIViewController viewController)
 			{
-				if (viewController is UINavigationController)
-					return GetTopViewController(((UINavigationController)viewController).VisibleViewController);
+				if (viewController is UINavigationController navigationController)
+					return GetTopViewController(navigationController.VisibleViewController);
 
-				if (viewController is UITabBarController)
-					return GetTopViewController(((UITabBarController)viewController).SelectedViewController);
+				if (viewController is UITabBarController tabBarController)
+					return GetTopViewController(tabBarController.SelectedViewController);
 
-				return viewController.PresentedViewController == null ? viewController : GetTopViewController(viewController.PresentedViewController);
+				if (viewController.PresentedViewController != null)
+					return GetTopViewController(viewController.PresentedViewController);
+
+				return viewController;
 			}
 		}
 
