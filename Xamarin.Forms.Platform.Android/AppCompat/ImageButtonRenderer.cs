@@ -1,23 +1,18 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Threading.Tasks;
 using Android.Content;
 using Android.Support.V7.Widget;
-using AImageButton = Android.Widget.ImageButton;
 using AView = Android.Views.View;
 using Android.Views;
 using Xamarin.Forms.Internals;
-using AMotionEventActions = Android.Views.MotionEventActions;
 using AColor = Android.Graphics.Color;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
-using AStateListDrawable = Android.Graphics.Drawables.StateListDrawable;
-using ARect = Android.Graphics.Rect;
 using Android.Graphics.Drawables;
 using Android.Graphics;
 using Xamarin.Forms.Platform.Android.FastRenderers;
 using Android.OS;
 
-namespace Xamarin.Forms.Platform.Android.AppCompat
+namespace Xamarin.Forms.Platform.Android
 {
 	public class ImageButtonRenderer :
 		AppCompatImageButton,
@@ -61,7 +56,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		bool IImageRendererController.IsDisposed => _disposed;
 
 		AppCompatImageButton Control => this;
-		static int _selectableItemBackgroundResourceId = 0;
 		public ImageButtonRenderer(Context context) : base(context)
 		{
 			// These set the defaults so visually it matches up with other platforms
@@ -70,19 +64,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			SetOnClickListener(this);
 			SetOnTouchListener(this);
 			OnFocusChangeListener = this;
-			//SetAdjustViewBounds(true);
 
 			Tag = this;
 			_backgroundTracker = new BorderBackgroundManager(this, false);
-			if (_selectableItemBackgroundResourceId == 0)
-			{
-				var backgroundBorderles = global::Android.Resource.Attribute.SelectableItemBackground;
-				using (global::Android.Util.TypedValue outValue = new global::Android.Util.TypedValue())
-					context.Theme.ResolveAttribute(backgroundBorderles, outValue, true);
-			}
-
-			if (_selectableItemBackgroundResourceId != 0)
-				SetBackgroundResource(_selectableItemBackgroundResourceId);
 		}
 
 		protected override void Dispose(bool disposing)
@@ -161,8 +145,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			ImageButton oldElement = ImageButton;
 			ImageButton = image;
 
-			var reference = Guid.NewGuid().ToString();
-			Performance.Start(reference);
+			Performance.Start(out string reference);
 
 			if (oldElement != null)
 			{
@@ -192,7 +175,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(oldElement, ImageButton));
 			ImageButton?.SendViewInitialized(Control);
 		}
-		
+
 		public override void Draw(Canvas canvas)
 		{
 			if (ImageButton == null)
@@ -211,13 +194,14 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				var widthRatio = 1f;
 				var heightRatio = 1f;
 
+				if (ImageButton.Aspect == Aspect.AspectFill && OnThisPlatform().GetIsShadowEnabled())
+					Internals.Log.Warning(nameof(ImageButtonRenderer), "AspectFill isn't fully supported when using shadows. Image may be clipped incorrectly to Border");
+
 				switch (ImageButton.Aspect)
 				{
 					case Aspect.Fill:
 						break;
 					case Aspect.AspectFill:
-					// AspectFill isn't fully supported right now with shadows because we would need to crop the image ourselves 
-					// at the point where it hits the border
 					case Aspect.AspectFit:
 						heightRatio = (float)Drawable.IntrinsicHeight / height;
 						widthRatio = (float)Drawable.IntrinsicWidth / width;
@@ -229,10 +213,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			if (drawableBounds != null)
 				Drawable.SetBounds((int)drawableBounds.Left, (int)drawableBounds.Top, (int)drawableBounds.Right, (int)drawableBounds.Bottom);
-			
+
+
 
 			base.Draw(canvas);
-			if(_backgroundTracker.BackgroundDrawable != null)
+			if (_backgroundTracker.BackgroundDrawable != null)
 				_backgroundTracker.BackgroundDrawable.DrawOutline(canvas, canvas.Width, canvas.Height);
 		}
 

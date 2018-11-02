@@ -52,7 +52,7 @@ namespace Xamarin.Forms.Platform
 	internal class _ButtonRenderer { }
 
 #if __ANDROID__
-	[RenderWith(typeof(Android.AppCompat.ImageButtonRenderer))]
+	[RenderWith(typeof(ImageButtonRenderer))]
 #elif !TIZEN4_0
 	[RenderWith(typeof(ImageButtonRenderer))]
 #endif

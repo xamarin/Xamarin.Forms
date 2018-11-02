@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 			{
 				if (Control == null)
 				{
-					// To allow all avalaible options in Xamarin.Forms, a custom control has been created.
+					// To allow all available options in Xamarin.Forms, a custom control has been created.
 					// Can set text, text color, border, image, etc.
 					var btn = new GtkImageButton();
 					SetNativeControl(btn);
@@ -94,7 +94,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 		{
 			var elemValue = (string)Element?.GetValue(AutomationProperties.NameProperty);
 
-			if (string.IsNullOrWhiteSpace(elemValue) 
+			if (string.IsNullOrWhiteSpace(elemValue)
 				&& Control?.Accessible.Description == Control?.LabelWidget.Text)
 				return;
 
