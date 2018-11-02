@@ -60,7 +60,7 @@ namespace Xamarin.Forms
 #endif	
 		
 		
-		static bool MainPageSet { get; set; }
+		bool MainPageSet { get; set; }
 		
 
 		public Application()
@@ -221,7 +221,7 @@ namespace Xamarin.Forms
 
 		public static void SetFlags(params string[] flags)
 		{
-			if (MainPageSet)
+			if (Current.MainPageSet)
 			{
 				throw new InvalidOperationException($"{nameof(SetFlags)} must be called before MainPage is set");
 			}
