@@ -20,6 +20,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue3509.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Github3856.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1937.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue3555.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3843.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue4053.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3809.cs" />
@@ -273,6 +274,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue1556.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1799.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1931.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue1399.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue2187.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3001.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3271.cs" />
@@ -403,6 +405,7 @@
       <DependentUpon>Issue3979.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Issue4136.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LegacyComponents\NonAppCompatSwitch.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MapsModalCrash.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ModalActivityIndicatorTest.cs" />
@@ -519,6 +522,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue2837.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue2740.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1939.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue3385.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3343.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue2842.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1666.cs" />
@@ -830,7 +834,9 @@
       <DependentUpon>Issue4040.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue4097.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue1480.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue2223.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue4001.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Bugzilla22229.xaml">
