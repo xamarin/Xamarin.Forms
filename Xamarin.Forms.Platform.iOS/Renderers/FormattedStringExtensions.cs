@@ -8,7 +8,7 @@ namespace Xamarin.Forms.Platform.iOS
 #else
 using AppKit;
 using UIColor = AppKit.NSColor;
-
+using UITextAlignment = AppKit.NSTextAlignment;
 namespace Xamarin.Forms.Platform.MacOS
 #endif
 {
@@ -70,7 +70,6 @@ namespace Xamarin.Forms.Platform.MacOS
 				style.LineHeightMultiple = new nfloat(lineHeight);
 			}
 
-#if __MOBILE__
 			switch (textAlignment)
 			{
 				case TextAlignment.Start:
@@ -86,23 +85,7 @@ namespace Xamarin.Forms.Platform.MacOS
 					style.Alignment = UITextAlignment.Left;
 					break;
 			}
-#else
-			switch (textAlignment)
-			{
-				case TextAlignment.Start:
-					style.Alignment = NSTextAlignment.Left;
-					break;
-				case TextAlignment.Center:
-					style.Alignment = NSTextAlignment.Center;
-					break;
-				case TextAlignment.End:
-					style.Alignment = NSTextAlignment.Right;
-					break;
-				default:
-					style.Alignment = NSTextAlignment.Left;
-					break;
-			}
-#endif
+
 
 #if __MOBILE__
 			UIFont targetFont;
