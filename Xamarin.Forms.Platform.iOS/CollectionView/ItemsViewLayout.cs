@@ -129,6 +129,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 			_determiningCellSize = true;
 
+			if (!Forms.IsiOS10OrNewer)
+			{
+				// iOS 9 will throw an exception during auto layout if no EstimatedSize is set
+				EstimatedItemSize = new CGSize(1, 1);
+			}
+
 			if (!(GetPrototype() is ItemsViewCell prototype))
 			{
 				return;
@@ -141,6 +147,9 @@ namespace Xamarin.Forms.Platform.iOS
 			if (UniformSize)
 			{
 				ItemSize = measure;
+
+				// Make sure autolayout is disabled 
+				EstimatedItemSize = CGSize.Empty;
 			}
 			else
 			{
