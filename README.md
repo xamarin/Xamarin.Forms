@@ -60,7 +60,7 @@ By default, the `Xamarin.Forms.Controls` project does not have a configuration f
 
 You will have to obtain your own API keys for each of these services, inserted directly after the identifier (e.g. `UWPMapsAuthKey:abcdefghijklmnopqrstuvwxyz`). You can find out how to obtain each of these as follows:
 
-- `UWPMapsAuthKey` at https://microsoft.com/maps/create-a-bing-maps-key
+- `UWPMapsAuthKey` at https://microsoft.com/maps/create-a-bing-maps-key.aspx
 
 Due to the way that Android works, the maps API key cannot be injected at runtime. As a result, you will have to add this key to the `MapsKey.cs` file under `Xamarin.Forms.ControlGallery.Android/Properties`:
 
