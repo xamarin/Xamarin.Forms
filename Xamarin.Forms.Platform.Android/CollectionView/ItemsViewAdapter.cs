@@ -45,9 +45,6 @@ namespace Xamarin.Forms.Platform.Android
 					break;
 				case TemplatedItemViewHolder templateViewHolder:
 					BindableObject.SetInheritedBindingContext(templateViewHolder.View, _itemsSource[position]);
-					// TODO hartez 2018/07/25 16:12:30 Remove this next line once the platform PRs go through and we can rebase	
-					// This will also mean we can drop _context
-					templateViewHolder.View.Platform = new Platform(_context);
 					break;
 			}
 		}
