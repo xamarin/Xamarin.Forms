@@ -65,6 +65,9 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal
 
                 rootFrame.NavigationFailed += OnNavigationFailed;
 
+				// Allow Control Gallery to use CollectionView/CarouselView
+				Forms.SetFlags("CollectionView_Experimental");
+
 				Forms.Init (e);
 				//FormsMaps.Init (Controls.App.Config["UWPMapsAuthKey"]);
 

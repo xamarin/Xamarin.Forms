@@ -33,9 +33,6 @@ namespace Xamarin.Forms.Controls
 		{
 			_testCloudService = DependencyService.Get<ITestCloudService>();
 
-			// Allow use of CollectionView in Control Gallery
-			SetFlags("CollectionView_Experimental");
-
 			SetMainPage(CreateDefaultMainPage());
 
 			//TestMainPageSwitches();

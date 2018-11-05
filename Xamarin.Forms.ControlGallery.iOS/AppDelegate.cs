@@ -160,6 +160,9 @@ namespace Xamarin.Forms.ControlGallery.iOS
 
 			Xamarin.Calabash.Start();
 			
+			// Allow Control Gallery to use CollectionView/CarouselView
+			Forms.SetFlags("CollectionView_Experimental");
+
 			Forms.Init();
 			FormsMaps.Init();
 			Forms.ViewInitialized += (object sender, ViewInitializedEventArgs e) =>

@@ -18,7 +18,7 @@ namespace Xamarin.Forms
 		public ScrollToRequestEventArgs(int index, int groupIndex, 
 			ScrollToPosition scrollToPosition, bool isAnimated)
 		{
-			CoreFlags.VerifyCollectionViewFlagEnabled(nameof(ScrollToRequestEventArgs));
+			CollectionView.VerifyCollectionViewFlagEnabled(nameof(ScrollToRequestEventArgs));
 
 			Mode = ScrollToMode.Position;
 
@@ -31,7 +31,7 @@ namespace Xamarin.Forms
 		public ScrollToRequestEventArgs(object item, object group, 
 			ScrollToPosition scrollToPosition, bool isAnimated)
 		{
-			CoreFlags.VerifyCollectionViewFlagEnabled(nameof(ScrollToRequestEventArgs));
+			CollectionView.VerifyCollectionViewFlagEnabled(nameof(ScrollToRequestEventArgs));
 
 			Mode = ScrollToMode.Element;
 

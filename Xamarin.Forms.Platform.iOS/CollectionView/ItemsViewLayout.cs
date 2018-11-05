@@ -16,7 +16,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		protected ItemsViewLayout(ItemsLayout itemsLayout)
 		{
-			CoreFlags.VerifyCollectionViewFlagEnabled(nameof(ItemsViewLayout));
+			Xamarin.Forms.CollectionView.VerifyCollectionViewFlagEnabled(nameof(ItemsViewLayout));
 
 			_itemsLayout = itemsLayout;
 			_itemsLayout.PropertyChanged += LayoutOnPropertyChanged;

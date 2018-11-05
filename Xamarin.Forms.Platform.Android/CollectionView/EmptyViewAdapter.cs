@@ -15,7 +15,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public EmptyViewAdapter()
 		{
-			CoreFlags.VerifyCollectionViewFlagEnabled(nameof(EmptyViewAdapter));
+			CollectionView.VerifyCollectionViewFlagEnabled(nameof(EmptyViewAdapter));
 		}
 
 		public override void OnBindViewHolder(RecyclerView.ViewHolder holder, int position)

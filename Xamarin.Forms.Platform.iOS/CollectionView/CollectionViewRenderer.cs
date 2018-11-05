@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		public CarouselViewRenderer()
 		{
-			CoreFlags.VerifyCollectionViewFlagEnabled(nameof(CarouselViewRenderer));
+			CollectionView.VerifyCollectionViewFlagEnabled(nameof(CarouselViewRenderer));
 		}
 	}
 
@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public CollectionViewRenderer()
 		{
-			CoreFlags.VerifyCollectionViewFlagEnabled(nameof(CollectionViewRenderer));
+			CollectionView.VerifyCollectionViewFlagEnabled(nameof(CollectionViewRenderer));
 		}
 
 		public override UIViewController ViewController => _collectionViewController;
@@ -138,7 +138,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public static UICollectionViewScrollPosition ToCollectionViewScrollPosition(this ScrollToPosition scrollToPosition, 
 			UICollectionViewScrollDirection scrollDirection = UICollectionViewScrollDirection.Vertical, bool isLtr = false)
 		{
-			CoreFlags.VerifyCollectionViewFlagEnabled();
+			CollectionView.VerifyCollectionViewFlagEnabled();
 
 			if (scrollDirection == UICollectionViewScrollDirection.Horizontal)
 			{
@@ -150,7 +150,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public static UICollectionViewScrollPosition ToHorizontalCollectionViewScrollPosition(this ScrollToPosition scrollToPosition, bool isLtr)
 		{
-			CoreFlags.VerifyCollectionViewFlagEnabled();
+			CollectionView.VerifyCollectionViewFlagEnabled();
 
 			switch (scrollToPosition)
 			{
@@ -167,7 +167,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public static UICollectionViewScrollPosition ToVerticalCollectionViewScrollPosition(this ScrollToPosition scrollToPosition)
 		{
-			CoreFlags.VerifyCollectionViewFlagEnabled();
+			CollectionView.VerifyCollectionViewFlagEnabled();
 
 			switch (scrollToPosition)
 			{

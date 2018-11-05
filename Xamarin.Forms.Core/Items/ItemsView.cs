@@ -1,55 +1,15 @@
 ﻿using System;
 using System.Collections;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
-using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
 {
-	// TODO hartez 2018/06/23 13:42:22 Trying this out for a nicer read in OnElementPropertyChanged, not sure if I like it yet	
-	public static class PropertyChangedEventArgsExtensions
-	{
-		public static bool Is(this PropertyChangedEventArgs args, BindableProperty property)
-		{
-			CoreFlags.VerifyCollectionViewFlagEnabled();
-			return args.PropertyName == property.PropertyName;
-		}
-
-		public static bool IsOneOf(this PropertyChangedEventArgs args, params BindableProperty[] properties)
-		{
-			CoreFlags.VerifyCollectionViewFlagEnabled();
-			for (int n = 0; n < properties.Length; n++)
-			{
-				if (args.PropertyName == properties[n].PropertyName)
-				{
-					return true;
-				}
-			}
-
-			return false;
-		}
-	}
-
-	[RenderWith(typeof(_CarouselViewRenderer))]
-	public class CarouselView : ItemsView
-	{
-		public CarouselView()
-		{
-			CoreFlags.VerifyCollectionViewFlagEnabled(constructorHint: nameof(CarouselView));
-			ItemsLayout = new ListItemsLayout(ItemsLayoutOrientation.Horizontal)
-			{
-				SnapPointsType = SnapPointsType.MandatorySingle,
-				SnapPointsAlignment = SnapPointsAlignment.Center
-			};
-		}
-	}
-
 	public class ItemsView : View
 	{
 		protected internal ItemsView()
 		{
-			CoreFlags.VerifyCollectionViewFlagEnabled(constructorHint: nameof(ItemsView));
+			CollectionView.VerifyCollectionViewFlagEnabled(constructorHint: nameof(ItemsView));
 		}
 
 		// TODO hartez 2018/06/24 11:37:00 Give DisplayMemberPath some thought	
