@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace Xamarin.Forms.Core.UnitTests
@@ -10,7 +11,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		public override void Setup()
 		{
 			Application.Current = new MockApplication();
-			Application.SetFlags(CoreFlags.CollectionViewExperimental);
+			Device.SetFlags(new List<string>(){CollectionView.CollectionViewExperimental}); 
 			base.Setup();
 			var mockDeviceInfo = new TestDeviceInfo();
 			Device.Info = mockDeviceInfo;

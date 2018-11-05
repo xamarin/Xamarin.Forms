@@ -52,14 +52,6 @@ namespace Xamarin.Forms
 			}
 		}
 
-		static IReadOnlyList<string> s_flags;
-#if NETSTANDARD1_0
-		public static IReadOnlyList<string> Flags => s_flags ?? (s_flags = new ReadOnlyCollection<string>(new List<string>()));
-#else
-		public static IReadOnlyList<string> Flags => s_flags ?? (s_flags = new List<string>().AsReadOnly());
-#endif	
-		
-		
 		bool MainPageSet { get; set; }
 		
 
@@ -218,20 +210,6 @@ namespace Xamarin.Forms
 		public event EventHandler<Page> PageAppearing;
 
 		public event EventHandler<Page> PageDisappearing;
-
-		public static void SetFlags(params string[] flags)
-		{
-			if (Current.MainPageSet)
-			{
-				throw new InvalidOperationException($"{nameof(SetFlags)} must be called before MainPage is set");
-			}
-
-#if NETSTANDARD1_0
-			s_flags = new ReadOnlyCollection<string>(flags.ToList());
-#else
-			s_flags = flags.ToList().AsReadOnly();
-#endif
-		}
 
 		async void SaveProperties()
 		{
