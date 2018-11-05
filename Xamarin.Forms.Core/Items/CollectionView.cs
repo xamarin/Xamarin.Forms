@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -18,6 +19,7 @@ namespace Xamarin.Forms
 			VerifyCollectionViewFlagEnabled(constructorHint: nameof(CollectionView));
 		}
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static void VerifyCollectionViewFlagEnabled(
 			string constructorHint = null,
 			[CallerMemberName] string memberName = "")
