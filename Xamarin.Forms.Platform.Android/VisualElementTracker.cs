@@ -74,8 +74,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void UpdateLayout()
 		{
-			var reference = Guid.NewGuid().ToString();
-			Performance.Start(reference);
+			Performance.Start(out string reference);
 
 			VisualElement view = _renderer.Element;
 			AView aview = _renderer.View;
@@ -102,6 +101,13 @@ namespace Xamarin.Forms.Platform.Android
 				Performance.Start(reference, "MeasureAndLayout");
 				formsViewGroup.MeasureAndLayout(MeasureSpecFactory.MakeMeasureSpec(width, MeasureSpecMode.Exactly), MeasureSpecFactory.MakeMeasureSpec(height, MeasureSpecMode.Exactly), x, y, x + width, y + height);
 				Performance.Stop(reference, "MeasureAndLayout");
+			}
+
+			// If we're running sufficiently new Android, we have to make sure to update the ClipBounds to
+			// match the new size of the ViewGroup
+			if ((int)Build.VERSION.SdkInt >= 18)
+			{
+				UpdateClipToBounds();
 			}
 
 			Performance.Stop(reference);
@@ -147,7 +153,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateAnchorX();
 			else if (e.PropertyName == VisualElement.AnchorYProperty.PropertyName)
 				UpdateAnchorY();
-			else if (   e.PropertyName == VisualElement.ScaleProperty.PropertyName
+			else if (e.PropertyName == VisualElement.ScaleProperty.PropertyName
 					 || e.PropertyName == VisualElement.ScaleXProperty.PropertyName
 					 || e.PropertyName == VisualElement.ScaleYProperty.PropertyName)
 				UpdateScale();
