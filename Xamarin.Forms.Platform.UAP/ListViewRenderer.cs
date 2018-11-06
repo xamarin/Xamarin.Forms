@@ -17,7 +17,6 @@ using WBinding = Windows.UI.Xaml.Data.Binding;
 using WApp = Windows.UI.Xaml.Application;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
-using WItemsControl = Windows.UI.Xaml.Controls.ItemsControl;
 using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.ListView;
 using System.Collections.ObjectModel;
 using UwpScrollBarVisibility = Windows.UI.Xaml.Controls.ScrollBarVisibility;
