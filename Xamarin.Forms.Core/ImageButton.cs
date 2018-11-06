@@ -190,10 +190,10 @@ namespace Xamarin.Forms
 			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 		}
 
-		void IImageController.OnImageSourcesSourceChanged(object sender, EventArgs e) =>
+		void IImageElement.OnImageSourcesSourceChanged(object sender, EventArgs e) =>
 			ImageElement.ImageSourcesSourceChanged(this, EventArgs.Empty);
 
-		void IButtonController.OnCommandCanExecuteChanged(object sender, EventArgs e) =>
+		void IButtonElement.OnCommandCanExecuteChanged(object sender, EventArgs e) =>
 			ButtonElement.CommandCanExecuteChanged(this, EventArgs.Empty);
 	}
 }

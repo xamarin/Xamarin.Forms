@@ -14,5 +14,13 @@ namespace Xamarin.Forms.Internals
 		ICommand Command { get; set; }
 		bool IsEnabledCore { set; }
 		bool IsPressed { get; }
+
+
+		//note to implementor: but implement these methods explicitly
+		void PropagateUpClicked();
+		void PropagateUpPressed();
+		void PropagateUpReleased();
+		void SetIsPressed(bool isPressed);
+		void OnCommandCanExecuteChanged(object sender, EventArgs e);
 	}
 }

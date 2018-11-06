@@ -20,7 +20,7 @@ namespace Xamarin.Forms
 		static void OnImageSourceChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			ImageSource newSource = (ImageSource)newValue;
-			IImageController image = (IImageController)bindable;
+			IImageElement image = (IImageElement)bindable;
 			if (newSource != null && image != null)
 			{
 				newSource.SourceChanged += image.OnImageSourcesSourceChanged;
@@ -31,7 +31,7 @@ namespace Xamarin.Forms
 		static void OnImageSourceChanging(BindableObject bindable, object oldValue, object newValue)
 		{
 			ImageSource oldSource = (ImageSource)oldValue;
-			IImageController image = (IImageController)bindable;
+			IImageElement image = (IImageElement)bindable;
 
 			if (oldSource != null && image != null)
 			{
@@ -132,7 +132,7 @@ namespace Xamarin.Forms
 
 		public static void ImageSourcesSourceChanged(object sender, EventArgs e)
 		{
-			if (sender is IImageController imageController)
+			if (sender is IImageElement imageController)
 				imageController.RaiseImageSourcePropertyChanged();
 
 			((VisualElement)sender).InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);

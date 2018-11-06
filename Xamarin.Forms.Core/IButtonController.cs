@@ -8,10 +8,5 @@ namespace Xamarin.Forms
 		void SendClicked();
 		void SendPressed();
 		void SendReleased();
-		void PropagateUpClicked();
-		void PropagateUpPressed();
-		void PropagateUpReleased();
-		void SetIsPressed(bool isPressed);
-		void OnCommandCanExecuteChanged(object sender, EventArgs e);
 	}
 }

@@ -147,7 +147,7 @@ namespace Xamarin.Forms
 		public bool IsPressed => (bool)GetValue(IsPressedProperty);
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		void IButtonController.SetIsPressed(bool isPressed) => SetValue(IsPressedPropertyKey, isPressed);
+		void IButtonElement.SetIsPressed(bool isPressed) => SetValue(IsPressedPropertyKey, isPressed);
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SendPressed() => ButtonElement.ElementPressed(this, this);
@@ -156,13 +156,13 @@ namespace Xamarin.Forms
 		public void SendReleased() => ButtonElement.ElementReleased(this, this);
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		void IButtonController.PropagateUpClicked() => Clicked?.Invoke(this, EventArgs.Empty);
+		void IButtonElement.PropagateUpClicked() => Clicked?.Invoke(this, EventArgs.Empty);
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		void IButtonController.PropagateUpPressed() => Pressed?.Invoke(this, EventArgs.Empty);
+		void IButtonElement.PropagateUpPressed() => Pressed?.Invoke(this, EventArgs.Empty);
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		void IButtonController.PropagateUpReleased() => Released?.Invoke(this, EventArgs.Empty);
+		void IButtonElement.PropagateUpReleased() => Released?.Invoke(this, EventArgs.Empty);
 
 		public FontAttributes FontAttributes
 		{
@@ -239,7 +239,7 @@ namespace Xamarin.Forms
 		bool IImageElement.IsOpaque => false;
 
 
-		void IImageController.RaiseImageSourcePropertyChanged() => OnPropertyChanged(ImageProperty.PropertyName);
+		void IImageElement.RaiseImageSourcePropertyChanged() => OnPropertyChanged(ImageProperty.PropertyName);
 
 		bool IBorderOrCornerRadius.cornerOrBorderRadiusSetting { get; set; } = false;
 
@@ -257,10 +257,10 @@ namespace Xamarin.Forms
 		{
 		}
 
-		void IImageController.OnImageSourcesSourceChanged(object sender, EventArgs e) =>
+		void IImageElement.OnImageSourcesSourceChanged(object sender, EventArgs e) =>
 			ImageElement.ImageSourcesSourceChanged(this, EventArgs.Empty);
 
-		void IButtonController.OnCommandCanExecuteChanged(object sender, EventArgs e) =>
+		void IButtonElement.OnCommandCanExecuteChanged(object sender, EventArgs e) =>
 			ButtonElement.CommandCanExecuteChanged(this, EventArgs.Empty);
 
 		void IImageController.SetIsLoading(bool isLoading)

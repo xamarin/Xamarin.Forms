@@ -10,6 +10,11 @@ namespace Xamarin.Forms
 	{
 		Aspect Aspect { get; }
 		ImageSource Source { get; }
-		bool IsOpaque { get; }		
+		bool IsOpaque { get; }
+
+
+		//note to implementor: but implement these methods explicitly
+		void RaiseImageSourcePropertyChanged();
+		void OnImageSourcesSourceChanged(object sender, EventArgs e);
 	}
 }

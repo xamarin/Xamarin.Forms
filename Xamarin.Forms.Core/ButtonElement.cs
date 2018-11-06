@@ -13,15 +13,17 @@ namespace Xamarin.Forms
 
 		static void OnCommandChanged(BindableObject bo, object o, object n)
 		{
-			if (n is ICommand newCommand && bo is IButtonController button)
+			IButtonElement button = (IButtonElement)bo;
+			if (n is ICommand newCommand)
 				newCommand.CanExecuteChanged += button.OnCommandCanExecuteChanged;
 
-			CommandChanged((IButtonElement)bo);
+			CommandChanged(button);
 		}
 
 		static void OnCommandChanging(BindableObject bo, object o, object n)
 		{
-			if (o != null && bo is IButtonController button)
+			IButtonElement button = (IButtonElement)bo;
+			if (o != null)
 			{
 				(o as ICommand).CanExecuteChanged -= button.OnCommandCanExecuteChanged;
 			}
@@ -58,9 +60,8 @@ namespace Xamarin.Forms
 		{
 			if (visualElement.IsEnabled == true)
 			{
-				IButtonController buttonController = ButtonElementManager as IButtonController;
 				ButtonElementManager.Command?.Execute(ButtonElementManager.CommandParameter);
-				buttonController?.PropagateUpClicked();
+				ButtonElementManager.PropagateUpClicked();
 			}
 		}
 
@@ -68,10 +69,9 @@ namespace Xamarin.Forms
 		{
 			if (visualElement.IsEnabled == true)
 			{
-				IButtonController buttonController = ButtonElementManager as IButtonController;
-				buttonController?.SetIsPressed(true);
+				ButtonElementManager.SetIsPressed(true);
 				visualElement.ChangeVisualStateInternal();
-				buttonController?.PropagateUpPressed();
+				ButtonElementManager.PropagateUpPressed();
 			}
 		}
 
@@ -80,9 +80,9 @@ namespace Xamarin.Forms
 			if (visualElement.IsEnabled == true)
 			{
 				IButtonController buttonController = ButtonElementManager as IButtonController;
-				buttonController?.SetIsPressed(false);
+				ButtonElementManager.SetIsPressed(false);
 				visualElement.ChangeVisualStateInternal();
-				buttonController?.PropagateUpReleased();
+				ButtonElementManager.PropagateUpReleased();
 			}
 		}
 	}
