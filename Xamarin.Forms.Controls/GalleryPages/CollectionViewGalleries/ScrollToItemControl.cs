@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 
 			_itemsView.PropertyChanged += (sender, args) =>
 			{
-				if (args.Is(ItemsView.ItemsSourceProperty))
+				if (args.PropertyName == ItemsView.ItemsSourceProperty.PropertyName)
 				{
 					var items = new List<object>();
 					foreach (var item in itemsView.ItemsSource)
