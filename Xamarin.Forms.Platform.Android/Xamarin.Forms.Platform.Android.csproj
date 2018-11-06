@@ -64,7 +64,6 @@
     <Compile Include="BackgroundManager.cs" />
     <Compile Include="AppCompat\ILifeCycleState.cs" />
     <Compile Include="BorderBackgroundManager.cs" />
-    <Compile Include="ButtonBackgroundTracker.cs" />
     <Compile Include="CollectionView\CarouselViewRenderer.cs" />
     <Compile Include="CollectionView\DataChangeObserver.cs" />
     <Compile Include="CollectionView\EmptyViewAdapter.cs" />
@@ -157,10 +156,8 @@
     <Compile Include="LayoutExtensions.cs" />
     <Compile Include="PowerSaveModeBroadcastReceiver.cs" />
     <Compile Include="Renderers\AHorizontalScrollView.cs" />
-    <Compile Include="Renderers\AlignmentExtensions.cs" />
     <Compile Include="Renderers\BorderDrawable.cs" />
     <Compile Include="Renderers\ButtonRenderer.cs" />
-    <Compile Include="Renderers\ButtonDrawable.cs" />
     <Compile Include="Renderers\AlignmentExtensions.cs" />
     <Compile Include="CollectionView\CollectionViewRenderer.cs" />
     <Compile Include="Renderers\ConditionalFocusLayout.cs" />

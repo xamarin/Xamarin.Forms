@@ -457,7 +457,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			_paddingDeltaPix = delta ?? new Thickness();
 			UpdatePadding();
 		}
-<<<<<<< HEAD
 
 		float IBorderVisualElementRenderer.ShadowRadius => ShadowRadius;
 		float IBorderVisualElementRenderer.ShadowDx => ShadowDx;
@@ -475,7 +474,5 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			return _platformElementConfiguration;
 		}
-=======
->>>>>>> fab71ee1... Remove debugging code; remove outdated todos; remove unnecessary comments
 	}
 }
