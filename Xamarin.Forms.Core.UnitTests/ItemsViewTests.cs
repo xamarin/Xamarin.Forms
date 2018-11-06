@@ -10,8 +10,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		[SetUp]
 		public override void Setup()
 		{
-			Application.Current = new MockApplication();
-			Device.SetFlags(new List<string>(){CollectionView.CollectionViewExperimental}); 
+			Device.SetFlags(new List<string> {CollectionView.CollectionViewExperimental}); 
 			base.Setup();
 			var mockDeviceInfo = new TestDeviceInfo();
 			Device.Info = mockDeviceInfo;
