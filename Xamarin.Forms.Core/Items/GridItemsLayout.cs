@@ -12,17 +12,14 @@
 			set => SetValue(SpanProperty, value);
 		}
 
-		public GridItemsLayout([Parameter("Span")] int span, [Parameter("Orientation")] ItemsLayoutOrientation orientation) :
+		public GridItemsLayout([Parameter("Orientation")] ItemsLayoutOrientation orientation) : base(orientation)
+		{
+		}
+
+		public GridItemsLayout(int span, [Parameter("Orientation")] ItemsLayoutOrientation orientation) :
 			base(orientation)
 		{
 			Span = span;
-		}
-
-		public override string ToString()
-		{
-			var orientation = Orientation == ItemsLayoutOrientation.Horizontal ? "Horizontal Grid" : "Vertical Grid";
-			
-			return $"{orientation}, {nameof(Span)} {Span}";
 		}
 	}
 }

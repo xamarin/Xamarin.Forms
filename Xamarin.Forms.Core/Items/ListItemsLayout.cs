@@ -12,10 +12,5 @@
 		public static readonly IItemsLayout HorizontalList = new ListItemsLayout(ItemsLayoutOrientation.Horizontal);
 
 		// TODO hartez 2018/08/29 20:31:54 Need something like these previous two, but as a carousel default	
-
-		public override string ToString()
-		{
-			return Orientation == ItemsLayoutOrientation.Horizontal ? "Horizontal List" : "Vertical List";
-		}
 	}
 }
