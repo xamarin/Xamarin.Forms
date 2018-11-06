@@ -10,7 +10,7 @@ namespace Xamarin.Forms.Controls.Issues
 		public Issue4262()
 		{
 			var label = new Label() { Text = "This is center aligned&#x0a;line 2.", HorizontalTextAlignment = TextAlignment.Center };
-			var label2 = new Label() { Text = "This is center aligned&#x0a;line 2.", HorizontalTextAlignment = TextAlignment.Center, LineHeight = 1.5 };
+			var label2 = new Label() { Text = "If this is not center aligned, this test has failed.", HorizontalTextAlignment = TextAlignment.Center, LineHeight = 1.5 };
 
 			Content = new StackLayout()
 			{
