@@ -9,7 +9,7 @@ Read more about the platform at https://www.xamarin.com/forms.
 
 ## Build Status ##
 
-![Visual Studio Team Services](https://img.shields.io/vso/build/devdiv/0bdbc590-a062-4c3f-b0f6-9383f67865ee/7981.svg?style=flat&label=VSTS%20Master "VSTS")
+![Azure DevOps](https://devdiv.visualstudio.com/DevDiv/_apis/build/status/Xamarin/XamarinForms/Xamarin%20Forms?branchName=master "Azure Pipelines")
 
 ## Packages ##
 
