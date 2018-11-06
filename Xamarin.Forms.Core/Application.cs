@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform;
 using System.Diagnostics;
-using System.Linq;
 
 namespace Xamarin.Forms
 {
