@@ -31,6 +31,9 @@
 			<Snippet>
 				<CollectionView ItemsSource="">
 					<CollectionView.ItemTemplate>
+						<CollectionView.ItemsLayout>
+							<GridItemsLayout Span="2" Orientation="Vertical"/>
+						</CollectionView.ItemsLayout>
 						<DataTemplate>
 						</DataTemplate>
 					</CollectionView.ItemTemplate>
