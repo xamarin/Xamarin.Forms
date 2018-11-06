@@ -17,6 +17,26 @@
 				<Button Text="" />
 			</Snippet>
 		</Item>
+		<Item Class="Xamarin.Forms.CarouselView" Name="CarouselView" Image="view-ListView.png">
+			<Snippet>
+				<CarouselView ItemsSource="">
+					<CarouselView.ItemTemplate>
+						<DataTemplate>
+						</DataTemplate>
+					</CarouselView.ItemTemplate>
+				</CarouselView>
+			</Snippet>
+		</Item>
+		<Item Class="Xamarin.Forms.CollectionView" Name="CollectionView" Image="view-ListView.png">
+			<Snippet>
+				<CollectionView ItemsSource="">
+					<CollectionView.ItemTemplate>
+						<DataTemplate>
+						</DataTemplate>
+					</CollectionView.ItemTemplate>
+				</CollectionView>
+			</Snippet>
+		</Item>
 		<Item Class="Xamarin.Forms.DatePicker" Name="DatePicker" Image="view-DatePicker.png">
 			<Snippet>
 				<DatePicker />
