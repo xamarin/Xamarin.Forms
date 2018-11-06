@@ -211,31 +211,6 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		public override ViewHolder FindViewHolderForAdapterPosition(int position)
-		{
-			System.Diagnostics.Debug.WriteLine($">>>>> ItemsViewRenderer FindViewHolderForAdapterPosition 217: MESSAGE");
-			return base.FindViewHolderForAdapterPosition(position);
-		}
-
-		public override ViewHolder FindViewHolderForLayoutPosition(int position)
-		{
-			System.Diagnostics.Debug.WriteLine($">>>>> ItemsViewRenderer FindViewHolderForLayoutPosition 223: MESSAGE");
-			
-			return base.FindViewHolderForLayoutPosition(position);
-		}
-
-		public override ViewHolder FindViewHolderForItemId(long id)
-		{
-			System.Diagnostics.Debug.WriteLine($">>>>> ItemsViewRenderer FindViewHolderForItemId 230: MESSAGE");
-			return base.FindViewHolderForItemId(id);
-		}
-
-		public override ViewHolder FindContainingViewHolder(AView view)
-		{
-			System.Diagnostics.Debug.WriteLine($">>>>> ItemsViewRenderer FindContainingViewHolder 217: {view.GetType()}");
-			return base.FindContainingViewHolder(view);
-		}
-
 		protected virtual void UpdateItemsSource()
 		{
 			if (ItemsView == null)
