@@ -54,6 +54,17 @@ namespace Xamarin.Forms
 			set { SetValue(CornerRadiusProperty, value); }
 		}
 
+		int IBorderElement.CornerRadius => (int)CornerRadius;
+
+		// not currently used by frame
+		double IBorderElement.BorderWidth => -1d;
+
+		int IBorderElement.CornerRadiusDefaultValue => (int)CornerRadiusProperty.DefaultValue;
+
+		Color IBorderElement.BorderColorDefaultValue => (Color)BorderColorProperty.DefaultValue;
+
+		double IBorderElement.BorderWidthDefaultValue => -1d;
+
 		public IPlatformElementConfiguration<T, Frame> On<T>() where T : IConfigPlatform
 		{
 			return _platformConfigurationRegistry.Value.On<T>();
