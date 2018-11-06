@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.System;
@@ -359,9 +360,9 @@ namespace Xamarin.Forms.Platform.UWP
 				_cachedSpellCheckSetting = IsSpellCheckEnabled;
 				_cachedPredictionsSetting = IsTextPredictionEnabled;
 
-				if (InputScope.Names.Contains(new InputScopeName(InputScopeNameValue.Number)))
+				if (InputScope.Names.Any(i => i.NameValue == InputScopeNameValue.Number))
 				{
-					InputScope = NumericPasswordInputScope; // When the input scope was numeric, go to numeric password scope
+					InputScope = NumericPasswordInputScope;
 				}
 				else
 				{
