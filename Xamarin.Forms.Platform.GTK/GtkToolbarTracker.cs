@@ -150,7 +150,7 @@ namespace Xamarin.Forms.Platform.GTK
 				e.PropertyName.Equals(Page.IconProperty.PropertyName))
 				UpdateToolBar();
 		}
-		
+
 		private string GetCurrentPageTitle()
 		{
 			if (_navigation == null)
@@ -169,15 +169,7 @@ namespace Xamarin.Forms.Platform.GTK
 		{
 			if (Navigation != null)
 			{
-				if (Navigation.BarBackgroundColor.IsDefaultOrTransparent())
-				{
-					page?.SetToolbarColor(null);
-				}
-				else
-				{
-					var backgroundColor = Navigation.BarBackgroundColor.ToGtkColor();
-					page?.SetToolbarColor(backgroundColor);
-				}
+				page?.SetToolbarColor(Navigation.BarBackgroundColor);
 			}
 		}
 
@@ -217,6 +209,7 @@ namespace Xamarin.Forms.Platform.GTK
 		{
 			foreach (var child in _toolbarSection.Children)
 			{
+				child.Destroy();
 				_toolbarSection.Remove(child);
 			}
 
@@ -378,17 +371,20 @@ namespace Xamarin.Forms.Platform.GTK
 
 			if (NavigationPage.GetHasNavigationBar(currentPage))
 			{
-				_toolbar = ConfigureToolbar();
-
-				_toolbarIcon = new ImageControl
+				if (_toolbar == null)
 				{
-					WidthRequest = 1,
-					Aspect = ImageAspect.AspectFit
-				};
-				_toolbarTitleSection.PackStart(_toolbarIcon, false, false, 8);
+					_toolbar = ConfigureToolbar();
 
-				_toolbarTitle = new Gtk.Label();
-				_toolbarTitleSection.PackEnd(_toolbarTitle, true, true, 0);
+					_toolbarIcon = new ImageControl
+					{
+						WidthRequest = 1,
+						Aspect = ImageAspect.AspectFit
+					};
+					_toolbarTitleSection.PackStart(_toolbarIcon, false, false, 8);
+
+					_toolbarTitle = new Gtk.Label();
+					_toolbarTitleSection.PackEnd(_toolbarTitle, true, true, 0);
+				}
 
 				FindParentMasterDetail();
 

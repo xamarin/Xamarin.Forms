@@ -38,6 +38,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			_effectControlProvider.RegisterEffect(effect);
 		}
 
+<<<<<<< HEAD
 		public void UpdateBackgroundColor(Color? color = null)
 		{		
 			if (_disposed || Element is null || Control is null)
@@ -45,6 +46,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			Control.SetBackgroundColor((color ?? Element.BackgroundColor).ToAndroid());
 		}
+=======
+>>>>>>> pr/6
 
 		void UpdateFlowDirection()
 		{
@@ -55,11 +58,11 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		}
 
 		public bool OnTouchEvent(MotionEvent e)
-	    {
-	        return _gestureManager.OnTouchEvent(e);
-	    }
+		{
+			return _gestureManager.OnTouchEvent(e);
+		}
 
-	    public void Dispose()
+		public void Dispose()
 		{
 			Dispose(true);
 			GC.SuppressFinalize(this);
@@ -88,6 +91,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		void OnElementChanged(object sender, VisualElementChangedEventArgs e)
 		{
+			Performance.Start(out string reference);
 			if (e.OldElement != null)
 			{
 				e.OldElement.PropertyChanged -= OnElementPropertyChanged;
@@ -96,19 +100,34 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			if (e.NewElement != null)
 			{
 				e.NewElement.PropertyChanged += OnElementPropertyChanged;
-				UpdateBackgroundColor();
 				UpdateFlowDirection();
+				UpdateIsEnabled();
 			}
 
 			EffectUtilities.RegisterEffectControlProvider(this, e.OldElement, e.NewElement);
+			Performance.Stop(reference);
+		}
+
+		void UpdateIsEnabled()
+		{
+			if (Element == null || _disposed)
+			{
+				return;
+			}
+
+			Control.Enabled = Element.IsEnabled;
 		}
 
 		void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
-				UpdateBackgroundColor();
-			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
+			if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
+			{
 				UpdateFlowDirection();
+			}
+			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
+			{
+				UpdateIsEnabled();
+			}
 		}
 	}
 }

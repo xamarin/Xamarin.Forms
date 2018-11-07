@@ -21,7 +21,7 @@ using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class Platform : BindableObject, IPlatform, INavigation, IDisposable, IPlatformLayout
+	public class Platform : BindableObject, INavigation, IDisposable, IPlatformLayout
 	{
 		internal const string CloseContextActionsSignalName = "Xamarin.CloseContextActions";
 
@@ -281,8 +281,6 @@ namespace Xamarin.Forms.Platform.Android
 
 			_navModel.PushModal(modal);
 
-			modal.Platform = this;
-
 			await PresentModal(modal, animated);
 
 			// Verify that the modal is still on the stack
@@ -407,6 +405,7 @@ namespace Xamarin.Forms.Platform.Android
 					IMenuItem menuItem = menu.Add(item.Text);
 					menuItem.SetEnabled(controller.IsEnabled);
 					menuItem.SetOnMenuItemClickListener(new GenericMenuClickListener(controller.Activate));
+					menuItem.SetTitleOrContentDescription(item);
 				}
 				else
 				{
@@ -421,6 +420,7 @@ namespace Xamarin.Forms.Platform.Android
 					menuItem.SetEnabled(controller.IsEnabled);
 					menuItem.SetShowAsAction(ShowAsAction.Always);
 					menuItem.SetOnMenuItemClickListener(new GenericMenuClickListener(controller.Activate));
+					menuItem.SetTitleOrContentDescription(item);
 				}
 			}
 		}
@@ -465,7 +465,6 @@ namespace Xamarin.Forms.Platform.Android
 			_navModel.Push(newRoot, null);
 
 			Page = newRoot;
-			Page.Platform = this;
 			AddChild(Page, layout);
 
 			Application.Current.NavigationProxy.Inner = this;
@@ -766,12 +765,15 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
+			FastRenderers.AutomationPropertiesProvider.GetDrawerAccessibilityResources(_activity, CurrentMasterDetailPage, out int resourceIdOpen, out int resourceIdClose);
 #pragma warning disable 618 // Eventually we will need to determine how to handle the v7 ActionBarDrawerToggle for AppCompat
-			MasterDetailPageToggle = new ActionBarDrawerToggle(_activity, drawer, icon, 0, 0);
+			MasterDetailPageToggle = new ActionBarDrawerToggle(_activity, drawer, icon,
+			                                                   resourceIdOpen == 0 ? global::Android.Resource.String.Ok : resourceIdOpen,
+													  		   resourceIdClose == 0 ? global::Android.Resource.String.Ok : resourceIdClose);
 #pragma warning restore 618
-
 			MasterDetailPageToggle.SyncState();
 		}
+
 
 		bool HandleBackPressed(object sender, EventArgs e)
 		{
@@ -1268,16 +1270,18 @@ namespace Xamarin.Forms.Platform.Android
 				view?.UpdateLayout();
 		}
 
-		SizeRequest IPlatform.GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
+		public static SizeRequest GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
 		{
 			Performance.Start(out string reference);
 
 			// FIXME: potential crash
 			IVisualElementRenderer visualElementRenderer = GetRenderer(view);
 
+			var context = visualElementRenderer.View.Context;
+
 			// negative numbers have special meanings to android they don't to us
-			widthConstraint = widthConstraint <= -1 ? double.PositiveInfinity : _context.ToPixels(widthConstraint);
-			heightConstraint = heightConstraint <= -1 ? double.PositiveInfinity : _context.ToPixels(heightConstraint);
+			widthConstraint = widthConstraint <= -1 ? double.PositiveInfinity : context.ToPixels(widthConstraint);
+			heightConstraint = heightConstraint <= -1 ? double.PositiveInfinity : context.ToPixels(heightConstraint);
 
 			bool widthConstrained = !double.IsPositiveInfinity(widthConstraint);
 			bool heightConstrained = !double.IsPositiveInfinity(heightConstraint);
@@ -1293,8 +1297,8 @@ namespace Xamarin.Forms.Platform.Android
 			SizeRequest rawResult = visualElementRenderer.GetDesiredSize(widthMeasureSpec, heightMeasureSpec);
 			if (rawResult.Minimum == Size.Zero)
 				rawResult.Minimum = rawResult.Request;
-			var result = new SizeRequest(new Size(_context.FromPixels(rawResult.Request.Width), _context.FromPixels(rawResult.Request.Height)),
-				new Size(_context.FromPixels(rawResult.Minimum.Width), _context.FromPixels(rawResult.Minimum.Height)));
+			var result = new SizeRequest(new Size(context.FromPixels(rawResult.Request.Width), context.FromPixels(rawResult.Request.Height)),
+				new Size(context.FromPixels(rawResult.Minimum.Width), context.FromPixels(rawResult.Minimum.Height)));
 
 			if ((widthConstrained && result.Request.Width < widthConstraint)
 				|| (heightConstrained && result.Request.Height < heightConstraint))

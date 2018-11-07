@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform.GTK.Extensions;
-using Container = Gtk.EventBox;
+using Container = Xamarin.Forms.Platform.GTK.GtkFormsContainer;
 
 namespace Xamarin.Forms.Platform.GTK.Renderers
 {
@@ -20,6 +20,7 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
 		protected AbstractPageRenderer()
 		{
+			VisibleWindow = true;
 			_propertyChangedHandler = OnElementPropertyChanged;
 		}
 
@@ -53,11 +54,6 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 			VisualElement oldElement = Element;
 			Element = element;
 
-			if (element != null)
-			{
-				element.PropertyChanged += _propertyChangedHandler;
-			}
-
 			OnElementChanged(new VisualElementChangedEventArgs(oldElement, element));
 
 			EffectUtilities.RegisterEffectControlProvider(this, oldElement, element);
@@ -83,9 +79,9 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 			return Container.GetDesiredSize(widthConstraint, heightConstraint);
 		}
 
-		public override void Dispose()
+		public override void Destroy()
 		{
-			base.Dispose();
+			base.Destroy();
 
 			if (!_disposed)
 			{
@@ -122,18 +118,6 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 			_appeared = true;
 
 			PageController.SendAppearing();
-		}
-
-		protected override void OnDestroyed()
-		{
-			base.OnDestroyed();
-
-			if (!_appeared || _disposed)
-				return;
-
-			_appeared = false;
-
-			PageController.SendDisappearing();
 		}
 
 		protected override void OnSizeAllocated(Gdk.Rectangle allocation)
@@ -196,21 +180,11 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 
 		protected virtual void UpdateBackgroundColor()
 		{
-			Color backgroundColor = Element.BackgroundColor;
-
-			if (backgroundColor.IsDefaultOrTransparent())
-			{
-				Control.SetBackgroundColor(null);
-			}
-			else
-			{
-				Control.SetBackgroundColor(backgroundColor.ToGtkColor());
-			}
+			Control.SetBackgroundColor(Element.BackgroundColor);
 		}
 
 		protected virtual void UpdateBackgroundImage()
 		{
-			VisibleWindow = Page.ShouldDisplayNativeWindow();
 			Control.SetBackgroundImage(Page.BackgroundImage);
 		}
 
@@ -254,10 +228,9 @@ namespace Xamarin.Forms.Platform.GTK.Renderers
 				if (hasParentNavigation) break;
 
 				current = parent;
+
 			}
-
 			var hasAncestorNavigationPage = hasParentNavigation && NavigationPage.GetHasNavigationBar(current);
-
 			return hasAncestorNavigationPage;
 		}
 	}

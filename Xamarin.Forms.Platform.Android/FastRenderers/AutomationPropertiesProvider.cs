@@ -7,6 +7,27 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 {
 	internal class AutomationPropertiesProvider : IDisposable 
 	{
+		static readonly string s_defaultDrawerId = "drawer";
+		static readonly string s_defaultDrawerIdOpenSuffix = "_open";
+		static readonly string s_defaultDrawerIdCloseSuffix = "_close";
+
+		internal static void GetDrawerAccessibilityResources(global::Android.Content.Context context, MasterDetailPage page, out int resourceIdOpen, out int resourceIdClose)
+		{
+			resourceIdOpen = 0;
+			resourceIdClose = 0;
+			if (page == null)
+				return;
+
+			var automationIdParent = s_defaultDrawerId;
+			if (!string.IsNullOrEmpty(page.Master?.Icon))
+				automationIdParent = page.Master.Icon.AutomationId;
+			else if (!string.IsNullOrEmpty(page.AutomationId))
+				automationIdParent = page.AutomationId;
+
+			resourceIdOpen = context.Resources.GetIdentifier($"{automationIdParent}{s_defaultDrawerIdOpenSuffix}", "string", context.ApplicationInfo.PackageName);
+			resourceIdClose = context.Resources.GetIdentifier($"{automationIdParent}{s_defaultDrawerIdCloseSuffix}", "string", context.ApplicationInfo.PackageName);
+		}
+
 		internal static void SetAutomationId(AView control, VisualElement element, string value = null)
 		{
 			if (element == null || control == null)
@@ -22,37 +43,31 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			}
 		}
 
+		internal static void SetBasicContentDescription(
+			AView control,
+			VisualElement element,
+			ref string defaultContentDescription)
+		{
+			if (element == null || control == null)
+				return;
+
+			if (defaultContentDescription == null)
+				defaultContentDescription = control.ContentDescription;
+
+			string value = ConcatenateNameAndHelpText(element);
+			control.ContentDescription = !string.IsNullOrWhiteSpace(value) ? value : defaultContentDescription;
+		}
+
 		internal static void SetContentDescription(
 			AView control, 
 			VisualElement element, 
 			ref string defaultContentDescription,
 			ref string defaultHint)
 		{
-			if (element == null || control == null)
-			{
+			if (element == null || control == null || SetHint(control, element, ref defaultHint))
 				return;
-			}
 
-			if (SetHint(control, element, ref defaultHint))
-			{
-				return;
-			}
-
-			if (defaultContentDescription == null)
-			{
-				defaultContentDescription = control.ContentDescription;
-			}
-
-			string value = ConcatenateNameAndHelpText(element);
-
-			if (!string.IsNullOrWhiteSpace(value))
-			{
-				control.ContentDescription = value;
-			}
-			else
-			{
-				control.ContentDescription = defaultContentDescription;
-			}
+			SetBasicContentDescription(control, element, ref defaultContentDescription);
 		}
 
 		internal static void SetFocusable(AView control, VisualElement element, ref bool? defaultFocusable)

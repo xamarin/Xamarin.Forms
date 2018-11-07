@@ -24,6 +24,10 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		bool _perfectSizeValid;
 
+		FormattedString _formatted;
+
+		bool IsTextFormatted => _formatted != null;
+
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
 			if (!_perfectSizeValid)
@@ -152,7 +156,10 @@ namespace Xamarin.Forms.Platform.MacOS
 			else if (e.PropertyName == Label.FontProperty.PropertyName)
 				UpdateFont();
 			else if (e.PropertyName == Label.TextProperty.PropertyName)
+			{
 				UpdateText();
+				UpdateTextDecorations();
+			}
 			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
 				UpdateTextDecorations();
 			else if (e.PropertyName == Label.FormattedTextProperty.PropertyName)
@@ -294,24 +301,18 @@ namespace Xamarin.Forms.Platform.MacOS
 #endif
 		}
 
-		bool isTextFormatted;
 		void UpdateText()
 		{
 			_perfectSizeValid = false;
-			var values = Element.GetValues(Label.FormattedTextProperty, Label.TextProperty, Label.TextColorProperty);
+			var values = Element.GetValues(Label.FormattedTextProperty, Label.TextProperty);
 
-			var formatted = values[0] as FormattedString;
-			if (formatted == null && Element.LineHeight >= 0)
-				formatted = (string)values[1];
+			_formatted = values[0] as FormattedString;
+			if (_formatted == null && Element.LineHeight >= 0)
+				_formatted = (string)values[1];
 
-			if (formatted != null)
+			if (IsTextFormatted)
 			{
-#if __MOBILE__
-				Control.AttributedText = formatted.ToAttributed(Element, (Color)values[2], Element.LineHeight);
-#else
-				Control.AttributedStringValue = formatted.ToAttributed(Element, (Color)values[2], Element.LineHeight);
-#endif
-				isTextFormatted = true;
+				UpdateFormattedText();
 			}
 			else
 			{
@@ -320,15 +321,26 @@ namespace Xamarin.Forms.Platform.MacOS
 #else
 				Control.StringValue = (string)values[1] ?? "";
 #endif
-				isTextFormatted = false;
 			}
 			UpdateLayout();
 		}
 
+		void UpdateFormattedText()
+		{
+#if __MOBILE__
+			Control.AttributedText = _formatted.ToAttributed(Element, Element.TextColor, Element.HorizontalTextAlignment, Element.LineHeight);
+#else
+			Control.AttributedStringValue = _formatted.ToAttributed(Element, Element.TextColor, Element.HorizontalTextAlignment, Element.LineHeight);
+#endif
+		}
+
 		void UpdateFont()
 		{
-			if (isTextFormatted)
+			if (IsTextFormatted)
+			{
+				UpdateFormattedText();
 				return;
+			}
 			_perfectSizeValid = false;
 
 #if __MOBILE__
@@ -341,8 +353,11 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateTextColor()
 		{
-			if (isTextFormatted)
+			if (IsTextFormatted)
+			{
+				UpdateFormattedText();
 				return;
+			}
 
 			_perfectSizeValid = false;
 
