@@ -357,17 +357,20 @@ namespace Xamarin.Forms
 			set { SetValue(RotationYProperty, value); }
 		}
 
-		public double Scale {
+		public double Scale
+		{
 			get => (double)GetValue(ScaleProperty);
 			set => SetValue(ScaleProperty, value);
 		}
 
-		public double ScaleX {
+		public double ScaleX
+		{
 			get => (double)GetValue(ScaleXProperty);
 			set => SetValue(ScaleXProperty, value);
 		}
 
-		public double ScaleY {
+		public double ScaleY
+		{
 			get => (double)GetValue(ScaleYProperty);
 			set => SetValue(ScaleYProperty, value);
 		}
@@ -786,11 +789,12 @@ namespace Xamarin.Forms
 		[Obsolete("OnSizeRequest is obsolete as of version 2.2.0. Please use OnMeasure instead.")]
 		protected virtual SizeRequest OnSizeRequest(double widthConstraint, double heightConstraint)
 		{
-			if (Platform == null || !IsPlatformEnabled)
+			if (!IsPlatformEnabled)
 			{
 				return new SizeRequest(new Size(-1, -1));
 			}
-			return Platform.GetNativeSize(this, widthConstraint, heightConstraint);
+
+			return Device.PlatformServices.GetNativeSize(this, widthConstraint, heightConstraint);
 		}
 
 		protected void SizeAllocated(double width, double height)
@@ -910,6 +914,9 @@ namespace Xamarin.Forms
 			if (focus != null)
 				focus(this, new FocusEventArgs(this, true));
 		}
+
+		internal void ChangeVisualStateInternal() => ChangeVisualState();
+
 
 		protected internal virtual void ChangeVisualState()
 		{

@@ -20,6 +20,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue3509.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Github3856.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1937.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue3555.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3843.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue4053.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3809.cs" />
@@ -27,6 +28,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue3306.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3308.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3788.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue1724.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3524.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue2004.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3333.cs" />
@@ -273,6 +275,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue1556.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1799.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1931.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue1399.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue2187.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3001.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3271.cs" />
@@ -330,7 +333,6 @@
       <DependentUpon>Bugzilla38416.xaml</DependentUpon>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Effects.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)FailImageSource.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)GestureBubblingTests.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Github1461.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)CascadeInputTransparent.cs" />
@@ -404,6 +406,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue4136.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue4262.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)LegacyComponents\NonAppCompatSwitch.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MapsModalCrash.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ModalActivityIndicatorTest.cs" />
@@ -446,7 +449,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)PerformanceGallery\Scenarios\ButtonScenarios.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PerformanceGallery\Scenarios\ImageScenarios.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PerformanceGallery\Scenarios\ListViewScenarios.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PerformanceProvider.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla53179_2.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ScrollViewIsEnabled.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PlatformSpecifics_iOSTranslucentNavBarX.xaml.cs">
@@ -520,6 +522,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue2837.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue2740.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1939.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue3385.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3343.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue2842.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1666.cs" />
@@ -721,7 +724,6 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla29453.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla28001.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)DisposedSharedPages.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla28575.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla30935.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla26032.xaml.cs">
@@ -830,8 +832,17 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue4040.xaml.cs">
       <DependentUpon>Issue4040.xaml</DependentUpon>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Issue1480.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue2223.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue4001.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\GridExtension.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\ViewModelBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\DisposedSharedPages.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\PerformanceProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\GenericValueConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\ContactsPage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\FailImageSource.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Controls\ICacheService.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Bugzilla22229.xaml">
@@ -1023,13 +1034,16 @@
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Bugzilla60787.xaml">
       <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue3979.xaml">
       <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Controls\" />
   </ItemGroup>
 </Project>
