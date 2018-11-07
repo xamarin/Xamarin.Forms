@@ -8,6 +8,7 @@ namespace Xamarin.Forms
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	public interface IImageElement
 	{
+		//note to implementor: implement this property publicly
 		Aspect Aspect { get; }
 		ImageSource Source { get; }
 		bool IsOpaque { get; }

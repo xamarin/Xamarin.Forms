@@ -191,7 +191,7 @@ namespace Xamarin.Forms
 		}
 
 		void IImageElement.OnImageSourcesSourceChanged(object sender, EventArgs e) =>
-			ImageElement.ImageSourcesSourceChanged(this, EventArgs.Empty);
+			ImageElement.ImageSourcesSourceChanged(this, e);
 
 		void IButtonElement.OnCommandCanExecuteChanged(object sender, EventArgs e) =>
 			ButtonElement.CommandCanExecuteChanged(this, EventArgs.Empty);

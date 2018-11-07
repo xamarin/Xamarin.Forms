@@ -9,12 +9,12 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty FileImageProperty = BindableProperty.Create("Image", typeof(FileImageSource), typeof(IImageElement), default(FileImageSource),
 	propertyChanging: OnImageSourceChanging, propertyChanged: OnImageSourceChanged);
 
-		public static readonly BindableProperty SourceProperty = BindableProperty.Create("Source", typeof(ImageSource), typeof(IImageElement), default(ImageSource),
+		public static readonly BindableProperty SourceProperty = BindableProperty.Create(nameof(IImageElement.Source), typeof(ImageSource), typeof(IImageElement), default(ImageSource),
 	propertyChanging: OnImageSourceChanging, propertyChanged: OnImageSourceChanged);
 
-		public static readonly BindableProperty AspectProperty = BindableProperty.Create("Aspect", typeof(Aspect), typeof(IImageElement), Aspect.AspectFit);
+		public static readonly BindableProperty AspectProperty = BindableProperty.Create(nameof(IImageElement.Aspect), typeof(Aspect), typeof(IImageElement), Aspect.AspectFit);
 
-		public static readonly BindableProperty IsOpaqueProperty = BindableProperty.Create("IsOpaque", typeof(bool), typeof(IImageElement), false);
+		public static readonly BindableProperty IsOpaqueProperty = BindableProperty.Create(nameof(IImageElement.IsOpaque), typeof(bool), typeof(IImageElement), false);
 
 
 		static void OnImageSourceChanged(BindableObject bindable, object oldValue, object newValue)
@@ -40,13 +40,7 @@ namespace Xamarin.Forms
 			ImageSourceChanging(oldSource);
 		}
 
-
-
-		public static SizeRequest Measure(
-			IImageElement ImageElementManager,
-			SizeRequest desiredSize,
-			double widthConstraint,
-			double heightConstraint)
+		public static SizeRequest Measure(IImageElement ImageElementManager, SizeRequest desiredSize, double widthConstraint, double heightConstraint)
 		{
 			double desiredAspect = desiredSize.Request.Width / desiredSize.Request.Height;
 			double constraintAspect = widthConstraint / heightConstraint;
@@ -101,7 +95,7 @@ namespace Xamarin.Forms
 			return new SizeRequest(new Size(width, height));
 		}
 
-		internal static void OnBindingContextChanged(IImageElement image, VisualElement visualElement)
+		public static void OnBindingContextChanged(IImageElement image, VisualElement visualElement)
 		{
 			if (image.Source != null)
 				BindableObject.SetInheritedBindingContext(image.Source, visualElement?.BindingContext);

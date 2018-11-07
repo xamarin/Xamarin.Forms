@@ -6,9 +6,9 @@ namespace Xamarin.Forms
 {
 	static class ButtonElement
 	{
-		public static readonly BindableProperty CommandProperty = BindableProperty.Create("Command", typeof(ICommand), typeof(IButtonElement), null, propertyChanging: OnCommandChanging, propertyChanged: OnCommandChanged);
+		public static readonly BindableProperty CommandProperty = BindableProperty.Create(nameof(IButtonElement.Command), typeof(ICommand), typeof(IButtonElement), null, propertyChanging: OnCommandChanging, propertyChanged: OnCommandChanged);
 
-		public static readonly BindableProperty CommandParameterProperty = BindableProperty.Create("CommandParameter", typeof(object), typeof(IButtonElement), null,
+		public static readonly BindableProperty CommandParameterProperty = BindableProperty.Create(nameof(IButtonElement.CommandParameter), typeof(object), typeof(IButtonElement), null,
 			propertyChanged: (bindable, oldvalue, newvalue) => CommandCanExecuteChanged(bindable, EventArgs.Empty));
 
 		static void OnCommandChanged(BindableObject bo, object o, object n)
@@ -28,8 +28,6 @@ namespace Xamarin.Forms
 				(o as ICommand).CanExecuteChanged -= button.OnCommandCanExecuteChanged;
 			}
 		}
-
-
 
 		public const string PressedVisualState = "Pressed";
 
@@ -54,7 +52,6 @@ namespace Xamarin.Forms
 				ButtonElementManager.IsEnabledCore = cmd.CanExecute(ButtonElementManager.CommandParameter);
 			}
 		}
-
 
 		public static void ElementClicked(VisualElement visualElement, IButtonElement ButtonElementManager)
 		{

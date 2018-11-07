@@ -76,7 +76,7 @@ namespace Xamarin.Forms
 		}
 
 		void IImageElement.OnImageSourcesSourceChanged(object sender, EventArgs e) =>
-			ImageElement.ImageSourcesSourceChanged(this, EventArgs.Empty);
+			ImageElement.ImageSourcesSourceChanged(this, e);
 
 		void IImageElement.RaiseImageSourcePropertyChanged() => OnPropertyChanged(nameof(Source));
 	}

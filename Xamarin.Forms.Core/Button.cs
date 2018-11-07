@@ -8,8 +8,9 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_ButtonRenderer))]
-	public class Button : View, IFontElement, ITextElement, IBorderElement, IButtonController, IElementConfiguration<Button>, IPaddingElement, IImageController, IViewController, IButtonElement, IBorderOrCornerRadius, IImageElement
+	public class Button : View, IFontElement, ITextElement, IBorderElement, IButtonController, IElementConfiguration<Button>, IPaddingElement, IImageController, IViewController, IButtonElement, IImageElement
 	{
+		const int DefaultBorderRadius = 5;
 		const double DefaultSpacing = 10;
 
 		public static readonly BindableProperty CommandProperty = ButtonElement.CommandProperty;
@@ -37,9 +38,11 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty BorderColorProperty = BorderElement.BorderColorProperty;
 
 		[Obsolete("BorderRadiusProperty is obsolete as of 2.5.0. Please use CornerRadius instead.")]
-		public static readonly BindableProperty BorderRadiusProperty = BorderElement.BorderRadiusProperty;
+		public static readonly BindableProperty BorderRadiusProperty = BindableProperty.Create("BorderRadius", typeof(int), typeof(Button), defaultValue: DefaultBorderRadius,
+			propertyChanged: BorderRadiusPropertyChanged);
 
-		public static readonly BindableProperty CornerRadiusProperty = BorderElement.CornerRadiusProperty;
+		public static readonly BindableProperty CornerRadiusProperty = BindableProperty.Create("CornerRadius", typeof(int), typeof(Button), defaultValue: BorderElement.DefaultCornerRadius,
+			propertyChanged: CornerRadiusPropertyChanged);
 
 		public static readonly BindableProperty ImageProperty = ImageElement.FileImageProperty;
 
@@ -241,13 +244,60 @@ namespace Xamarin.Forms
 
 		void IImageElement.RaiseImageSourcePropertyChanged() => OnPropertyChanged(ImageProperty.PropertyName);
 
-		bool IBorderOrCornerRadius.cornerOrBorderRadiusSetting { get; set; } = false;
-
 		int IBorderElement.CornerRadiusDefaultValue => (int)CornerRadiusProperty.DefaultValue;
 
 		Color IBorderElement.BorderColorDefaultValue => (Color)BorderColorProperty.DefaultValue;
 
 		double IBorderElement.BorderWidthDefaultValue => (double)BorderWidthProperty.DefaultValue;
+
+		/// <summary>
+		/// Flag to prevent overwriting the value of CornerRadius
+		/// </summary>
+		bool cornerOrBorderRadiusSetting = false;
+
+		static void BorderRadiusPropertyChanged(BindableObject bindable, object oldvalue, object newvalue)
+		{
+			if (newvalue == oldvalue)
+				return;
+
+			var button = (Button)bindable;
+			var val = (int)newvalue;
+			if (val == DefaultBorderRadius && !button.cornerOrBorderRadiusSetting)
+				val = BorderElement.DefaultCornerRadius;
+
+			var oldVal = (int)bindable.GetValue(Button.CornerRadiusProperty);
+
+			if (oldVal == val)
+				return;
+
+			button.cornerOrBorderRadiusSetting = true;
+			bindable.SetValue(Button.CornerRadiusProperty, val);
+			button.cornerOrBorderRadiusSetting = false;
+		}
+
+		static void CornerRadiusPropertyChanged(BindableObject bindable, object oldvalue, object newvalue)
+		{
+			if (newvalue == oldvalue)
+				return;
+
+			var button = (Button)bindable;
+			var val = (int)newvalue;
+			if (val == BorderElement.DefaultCornerRadius && !button.cornerOrBorderRadiusSetting)
+				val = DefaultBorderRadius;
+
+#pragma warning disable 0618 // retain until BorderRadiusProperty removed
+			var oldVal = (int)bindable.GetValue(Button.BorderRadiusProperty);
+#pragma warning restore
+
+			if (oldVal == val)
+				return;
+
+#pragma warning disable 0618 // retain until BorderRadiusProperty removed
+			button.cornerOrBorderRadiusSetting = true;
+			bindable.SetValue(Button.BorderRadiusProperty, val);
+			button.cornerOrBorderRadiusSetting = false;
+#pragma warning restore
+		}
 
 		void ITextElement.OnTextColorPropertyChanged(Color oldValue, Color newValue)
 		{
@@ -258,7 +308,7 @@ namespace Xamarin.Forms
 		}
 
 		void IImageElement.OnImageSourcesSourceChanged(object sender, EventArgs e) =>
-			ImageElement.ImageSourcesSourceChanged(this, EventArgs.Empty);
+			ImageElement.ImageSourcesSourceChanged(this, e);
 
 		void IButtonElement.OnCommandCanExecuteChanged(object sender, EventArgs e) =>
 			ButtonElement.CommandCanExecuteChanged(this, EventArgs.Empty);

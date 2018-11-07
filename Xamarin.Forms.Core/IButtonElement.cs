@@ -12,7 +12,6 @@ namespace Xamarin.Forms.Internals
 		//note to implementor: implement this property publicly
 		object CommandParameter { get; set; }
 		ICommand Command { get; set; }
-		bool IsEnabledCore { set; }
 		bool IsPressed { get; }
 
 
@@ -22,5 +21,6 @@ namespace Xamarin.Forms.Internals
 		void PropagateUpReleased();
 		void SetIsPressed(bool isPressed);
 		void OnCommandCanExecuteChanged(object sender, EventArgs e);
+		bool IsEnabledCore { set; }
 	}
 }
