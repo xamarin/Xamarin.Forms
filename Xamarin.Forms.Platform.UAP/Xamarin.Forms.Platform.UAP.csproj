@@ -67,11 +67,8 @@
     <Compile Include="ITitleViewProvider.cs" />
     <Compile Include="ITitleViewRendererController.cs" />
     <Compile Include="IToolbarProvider.cs" />
-<<<<<<< HEAD
     <Compile Include="MediaElementRenderer.cs" />
-=======
     <Compile Include="IVisualNativeElementRenderer.cs" />
->>>>>>> pr/6
     <Compile Include="NativeBindingExtensions.cs" />
     <Compile Include="NativeEventWrapper.cs" />
     <Compile Include="NativePropertyListener.cs" />
