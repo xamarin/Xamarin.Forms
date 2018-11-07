@@ -123,7 +123,7 @@ namespace Xamarin.Forms.Platform.Android
 				if (e.OldElement.MaxLines != e.NewElement.MaxLines)
 					UpdateMaxLines();
 			}
-			UpdateTextDecorations();
+			UpdateTextDecorations(true);
 			_motionEventHelper.UpdateElement(e.NewElement);
 		}
 
@@ -140,7 +140,7 @@ namespace Xamarin.Forms.Platform.Android
 			else if (e.PropertyName == Label.LineBreakModeProperty.PropertyName)
 				UpdateLineBreakMode();
 			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
-				UpdateTextDecorations();
+				UpdateTextDecorations(false);
 			else if (e.PropertyName == Label.TextProperty.PropertyName || e.PropertyName == Label.FormattedTextProperty.PropertyName)
 				UpdateText();
 			else if (e.PropertyName == Label.LineHeightProperty.PropertyName)
@@ -183,9 +183,9 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		void UpdateTextDecorations()
+		void UpdateTextDecorations(bool isNewElement)
 		{
-			if (!Element.IsSet(Label.TextDecorationsProperty))
+			if (!Element.IsSet(Label.TextDecorationsProperty) && isNewElement)
 				return;
 
 			var textDecorations = Element.TextDecorations;

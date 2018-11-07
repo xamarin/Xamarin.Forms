@@ -135,7 +135,7 @@ namespace Xamarin.Forms.Platform.UWP
 				_isInitiallyDefault = Element.IsDefault();
 
 				UpdateText(Control);
-				UpdateTextDecorations(Control);
+				UpdateTextDecorations(Control, true);
 				UpdateColor(Control);
 				UpdateAlign(Control);
 				UpdateFont(Control);
@@ -157,7 +157,7 @@ namespace Xamarin.Forms.Platform.UWP
 			else if (e.PropertyName == Label.FontProperty.PropertyName)
 				UpdateFont(Control);
 			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
-				UpdateTextDecorations(Control);
+				UpdateTextDecorations(Control, false);
 			else if (e.PropertyName == Label.LineBreakModeProperty.PropertyName)
 				UpdateLineBreakMode(Control);
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
@@ -171,9 +171,9 @@ namespace Xamarin.Forms.Platform.UWP
 			base.OnElementPropertyChanged(sender, e);
 		}
 
-		void UpdateTextDecorations(TextBlock textBlock)
+		void UpdateTextDecorations(TextBlock textBlock, bool isNewElement)
 		{
-			if (!Element.IsSet(Label.TextDecorationsProperty))
+			if (!Element.IsSet(Label.TextDecorationsProperty) && isNewElement)
 				return;
 
 			var elementTextDecorations = Element.TextDecorations;

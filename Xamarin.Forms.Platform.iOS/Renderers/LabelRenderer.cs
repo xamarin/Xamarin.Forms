@@ -134,7 +134,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateLineBreakMode();
 				UpdateAlignment();
 				UpdateText();
-				UpdateTextDecorations();
+				UpdateTextDecorations(true);
 				UpdateTextColor();
 				UpdateFont();
 				UpdateMaxLines();
@@ -161,7 +161,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateTextDecorations();
 			}
 			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
-				UpdateTextDecorations();
+				UpdateTextDecorations(false);
 			else if (e.PropertyName == Label.FormattedTextProperty.PropertyName)
 				UpdateText();
 			else if (e.PropertyName == Label.LineBreakModeProperty.PropertyName)
@@ -174,9 +174,9 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateMaxLines();
 		}
 
-		void UpdateTextDecorations()
+		void UpdateTextDecorations(bool isNewElement)
 		{
-			if (!Element.IsSet(Label.TextDecorationsProperty))
+			if (!Element.IsSet(Label.TextDecorationsProperty) && isNewElement)
 				return;
 
 			var textDecorations = Element.TextDecorations;
