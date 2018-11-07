@@ -92,12 +92,9 @@
     <Compile Include="ExportImageSourceHandlerAttribute.cs" />
     <Compile Include="ExportRendererAttribute.cs" />
     <Compile Include="Extensions\FlowDirectionExtensions.cs" />
-<<<<<<< HEAD
     <Compile Include="FastRenderers\MediaElementRenderer.cs" />
-=======
     <Compile Include="AppCompat\ImageButtonRenderer.cs" />
     <Compile Include="FastRenderers\ImageElementManager.cs" />
->>>>>>> pr/6
     <Compile Include="GestureManager.cs" />
     <Compile Include="FastRenderers\LabelRenderer.cs" />
     <Compile Include="FastRenderers\VisualElementRenderer.cs" />
