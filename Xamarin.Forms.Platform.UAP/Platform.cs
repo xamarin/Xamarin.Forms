@@ -11,10 +11,11 @@ using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Xamarin.Forms.Internals;
+using NativeAutomationProperties = Windows.UI.Xaml.Automation.AutomationProperties;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	public abstract class Platform : IPlatform, INavigation
+	public abstract class Platform : INavigation
 	{
 		static Task<bool> s_currentAlert;
 
@@ -98,11 +99,6 @@ namespace Xamarin.Forms.Platform.UWP
 			Application.Current.NavigationProxy.Inner = this;
 		}
 
-		internal void SetPlatformDisconnected(VisualElement visualElement)
-		{
-			visualElement.Platform = this;
-		}
-
 		public IReadOnlyList<Page> NavigationStack
 		{
 			get { return _navModel.Tree.Last(); }
@@ -184,7 +180,7 @@ namespace Xamarin.Forms.Platform.UWP
 			return tcs.Task;
 		}
 
-		SizeRequest IPlatform.GetNativeSize(VisualElement element, double widthConstraint, double heightConstraint)
+		public static SizeRequest GetNativeSize(VisualElement element, double widthConstraint, double heightConstraint)
 		{
 			// Hack around the fact that Canvas ignores the child constraints.
 			// It is entirely possible using Canvas as our base class is not wise.
@@ -276,8 +272,6 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (newPage == _currentPage)
 				return;
-
-			newPage.Platform = this;
 
 			if (_currentPage != null)
 			{
@@ -401,6 +395,11 @@ namespace Xamarin.Forms.Platform.UWP
 				button.SetBinding(AppBarButton.IconProperty, "Icon", _fileImageSourcePathConverter);
 				button.Command = new MenuItemCommand(item);
 				button.DataContext = item;
+				button.SetValue(NativeAutomationProperties.AutomationIdProperty, item.AutomationId);
+				button.SetAutomationPropertiesName(item);
+				button.SetAutomationPropertiesAccessibilityView(item);							   
+				button.SetAutomationPropertiesHelpText(item);
+				button.SetAutomationPropertiesLabeledBy(item);
 
 				ToolbarItemOrder order = item.Order == ToolbarItemOrder.Default ? ToolbarItemOrder.Primary : item.Order;
 				if (order == ToolbarItemOrder.Primary)
