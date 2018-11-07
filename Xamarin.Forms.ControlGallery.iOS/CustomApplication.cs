@@ -3,7 +3,6 @@ using UIKit;
 
 namespace Xamarin.Forms.ControlGallery.iOS
 {
-	[Register("Application")]
 	public class CustomApplication : UIApplication
 	{
 		public CustomApplication()
