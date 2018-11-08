@@ -48,6 +48,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
     <PackageReference Include="Xam.Plugin.DeviceInfo" Version="3.0.2" />
   </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Update="GalleryPages\BindableLayoutGalleryPage.xaml">
          <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
