@@ -442,6 +442,6 @@ namespace Xamarin.Forms
 		// Platform isn't needed anymore, but the Previewer will still try to set it via reflection
 		// and throw an NRE if it's not available; this fake property keeps it happy.
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public object Platform { get; set; }
+		internal object Platform { get; set; }
 	}
 }
