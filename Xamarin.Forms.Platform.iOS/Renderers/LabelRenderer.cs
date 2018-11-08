@@ -156,7 +156,10 @@ namespace Xamarin.Forms.Platform.MacOS
 			else if (e.PropertyName == Label.FontProperty.PropertyName)
 				UpdateFont();
 			else if (e.PropertyName == Label.TextProperty.PropertyName)
+			{
 				UpdateText();
+				UpdateTextDecorations();
+			}
 			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
 				UpdateTextDecorations();
 			else if (e.PropertyName == Label.FormattedTextProperty.PropertyName)
@@ -325,9 +328,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		void UpdateFormattedText()
 		{
 #if __MOBILE__
-			Control.AttributedText = _formatted.ToAttributed(Element, Element.TextColor, Element.LineHeight);
+			Control.AttributedText = _formatted.ToAttributed(Element, Element.TextColor, Element.HorizontalTextAlignment, Element.LineHeight);
 #else
-			Control.AttributedStringValue = _formatted.ToAttributed(Element, Element.TextColor, Element.LineHeight);
+			Control.AttributedStringValue = _formatted.ToAttributed(Element, Element.TextColor, Element.HorizontalTextAlignment, Element.LineHeight);
 #endif
 		}
 

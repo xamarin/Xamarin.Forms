@@ -129,12 +129,17 @@ namespace Xamarin.Forms.Platform.MacOS
 			remove { _elementChangedHandlers.Remove(value); }
 		}
 
+
+
 		public virtual SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
 			return NativeView.GetSizeRequest(widthConstraint, heightConstraint);
 		}
 
 		public NativeView NativeView => this;
+
+
+		protected internal virtual NativeView GetControl() => NativeView;
 
 		void IVisualElementRenderer.SetElement(VisualElement element)
 		{
@@ -156,9 +161,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected bool TabStop { get; set; } = true;
 
-		protected void UpdateTabStop () => TabStop = Element.IsTabStop;
+		protected void UpdateTabStop () => TabStop = Element?.IsTabStop ?? true;
 
-		protected void UpdateTabIndex () => TabIndex = Element.TabIndex;
+		protected void UpdateTabIndex() => TabIndex = Element?.TabIndex ?? 0;
 
 		public NativeView FocusSearch(bool forwardDirection)
 		{
@@ -186,19 +191,19 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 
 #if __MACOS__
-		public override NativeView NextKeyView { 
+		public override NativeView NextKeyView {
 			get {
-				return FocusSearch (forwardDirection: true) ?? base.NextKeyView;
+				return Element == null ? null : (FocusSearch(forwardDirection: true) ?? base.NextKeyView);
 			}
 			set {
-				if (value != null) // setting the value to null throws an exception
+				if (Element != null && value != null) // setting the value to null throws an exception
 					base.NextKeyView = value;
 			}
 		}
 
 		public override NativeView PreviousKeyView {
 			get {
-				return FocusSearch (forwardDirection: false) ?? base.PreviousKeyView;
+				return Element == null ? null : (FocusSearch(forwardDirection: false) ?? base.PreviousKeyView);
 			}
 		}
 #else
@@ -376,6 +381,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			else if (e.PropertyName == AutomationProperties.IsInAccessibleTreeProperty.PropertyName)
 				SetIsAccessibilityElement();
 #endif
+
 		}
 
 		protected virtual void OnRegisterEffect(PlatformEffect effect)
