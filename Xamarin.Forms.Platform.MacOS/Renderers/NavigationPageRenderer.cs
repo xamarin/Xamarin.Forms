@@ -220,11 +220,11 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (page == null)
 				throw new ArgumentNullException(nameof(page));
 
-			var beforePageIndex = _currentStack.IndexOf(p => p.Page == before);
+			var currentList = _currentStack.Reverse().ToList();
+			var beforePageIndex = currentList.IndexOf(p => p.Page == before);
 			var pageWrapper = new NavigationChildPageWrapper(page);
-			var list = _currentStack.ToList();
-			list.Insert(beforePageIndex, pageWrapper);
-			_currentStack = new Stack<NavigationChildPageWrapper>(list);
+			currentList.Insert(beforePageIndex, pageWrapper);
+			_currentStack = new Stack<NavigationChildPageWrapper>(currentList);
 
 			var vc = CreateViewControllerForPage(page);
 			vc.SetElementSize(new Size(View.Bounds.Width, View.Bounds.Height));
