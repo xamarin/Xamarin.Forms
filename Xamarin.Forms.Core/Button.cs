@@ -317,6 +317,11 @@ namespace Xamarin.Forms
 		{
 		}
 
+		bool IBorderElement.IsCornerRadiusSet() => IsSet(CornerRadiusProperty);
+		bool IBorderElement.IsBackgroundColorSet() => IsSet(BackgroundColorProperty);
+		bool IBorderElement.IsBorderColorSet() => IsSet(BorderColorProperty);
+		bool IBorderElement.IsBorderWidthSet() => IsSet(BorderWidthProperty);
+
 		[DebuggerDisplay("Image Position = {Position}, Spacing = {Spacing}")]
 		[TypeConverter(typeof(ButtonContentTypeConverter))]
 		public sealed class ButtonContentLayout

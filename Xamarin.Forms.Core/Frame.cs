@@ -76,5 +76,13 @@ namespace Xamarin.Forms
 			OnPropertyChanged(nameof(OutlineColor));
 #pragma warning restore
 		}
+
+		bool IBorderElement.IsCornerRadiusSet() => IsSet(CornerRadiusProperty);
+
+		bool IBorderElement.IsBackgroundColorSet() => IsSet(BackgroundColorProperty);
+
+		bool IBorderElement.IsBorderColorSet() => IsSet(BorderColorProperty);
+
+		bool IBorderElement.IsBorderWidthSet() => false;
 	}
 }

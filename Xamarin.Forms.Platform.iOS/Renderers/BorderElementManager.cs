@@ -56,7 +56,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			nfloat cornerRadius = _defaultCornerRadius;
 
-			if (ImageButton.IsSet(Button.CornerRadiusProperty) && ImageButton.CornerRadius != ImageButton.CornerRadiusDefaultValue)
+			if (ImageButton.IsCornerRadiusSet() && ImageButton.CornerRadius != ImageButton.CornerRadiusDefaultValue)
 				cornerRadius = ImageButton.CornerRadius;
 
 			control.Layer.CornerRadius = cornerRadius;

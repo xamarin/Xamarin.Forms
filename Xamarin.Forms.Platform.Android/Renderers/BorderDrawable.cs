@@ -206,7 +206,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			int cornerRadius = DefaultCornerRadius;
 
-			if (BorderElement.IsSet(Button.CornerRadiusProperty) && BorderElement.CornerRadius != (int)BorderElement.CornerRadiusDefaultValue)
+			if (BorderElement.IsCornerRadiusSet() && BorderElement.CornerRadius != (int)BorderElement.CornerRadiusDefaultValue)
 				cornerRadius = BorderElement.CornerRadius;
 
 			return _convertToPixels(cornerRadius);

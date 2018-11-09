@@ -80,10 +80,10 @@ namespace Xamarin.Forms.Platform.Android
 			if (BorderElement == null || Control == null)
 				return;
 
-			bool cornerRadiusIsDefault = !BorderElement.IsSet(Button.CornerRadiusProperty) || (BorderElement.CornerRadius == (int)BorderElement.CornerRadiusDefaultValue || BorderElement.CornerRadius == BorderDrawable.DefaultCornerRadius);
-			bool backgroundColorIsDefault = !BorderElement.IsSet(VisualElement.BackgroundColorProperty) || BorderElement.BackgroundColor == (Color)VisualElement.BackgroundColorProperty.DefaultValue;
-			bool borderColorIsDefault = !BorderElement.IsSet(Button.BorderColorProperty) || BorderElement.BorderColor == (Color)BorderElement.BorderColorDefaultValue;
-			bool borderWidthIsDefault = !BorderElement.IsSet(Button.BorderWidthProperty) || BorderElement.BorderWidth == (double)BorderElement.BorderWidthDefaultValue;
+			bool cornerRadiusIsDefault = !BorderElement.IsCornerRadiusSet() || (BorderElement.CornerRadius == (int)BorderElement.CornerRadiusDefaultValue || BorderElement.CornerRadius == BorderDrawable.DefaultCornerRadius);
+			bool backgroundColorIsDefault = !BorderElement.IsBackgroundColorSet() || BorderElement.BackgroundColor == (Color)VisualElement.BackgroundColorProperty.DefaultValue;
+			bool borderColorIsDefault = !BorderElement.IsBorderColorSet() || BorderElement.BorderColor == (Color)BorderElement.BorderColorDefaultValue;
+			bool borderWidthIsDefault = !BorderElement.IsBorderWidthSet() || BorderElement.BorderWidth == (double)BorderElement.BorderWidthDefaultValue;
 
 			if (backgroundColorIsDefault
 				&& cornerRadiusIsDefault

@@ -195,5 +195,11 @@ namespace Xamarin.Forms
 
 		void IButtonElement.OnCommandCanExecuteChanged(object sender, EventArgs e) =>
 			ButtonElement.CommandCanExecuteChanged(this, EventArgs.Empty);
+
+
+		bool IBorderElement.IsCornerRadiusSet() => IsSet(CornerRadiusProperty);
+		bool IBorderElement.IsBackgroundColorSet() => IsSet(BackgroundColorProperty);
+		bool IBorderElement.IsBorderColorSet() => IsSet(BorderColorProperty);
+		bool IBorderElement.IsBorderWidthSet() => IsSet(BorderWidthProperty);
 	}
 }
