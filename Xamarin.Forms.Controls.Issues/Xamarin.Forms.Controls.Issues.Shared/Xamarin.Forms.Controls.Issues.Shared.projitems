@@ -1024,6 +1024,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Controls\" /
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue2858.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
@@ -1053,5 +1054,5 @@
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
   </ItemGroup>
-  <Folder Include="$(MSBuildThisFileDirectory)Controls\" />
+ >
 </Project>
