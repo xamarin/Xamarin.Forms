@@ -45,6 +45,7 @@ If you want to use the latest dev build then you should read [this blog post]( h
 ##### Install Visual Studio 2017 #####
 VS 2017 is required for developing Xamarin.Forms. If you do not already have it installed, you can download it [here](https://www.visualstudio.com/downloads/download-visual-studio-vs). VS 2017 Community is completely free. If you are installing VS 2017 for the first time, select the "Custom" installation type and select the following from the features list to install:
 
+- .NET desktop development - In the `Summary > Optional select .NET Framework 4.7 SDK, .NET Framework 4.7 targeting pack`. 
 - Universal Windows Platform Development - In the `Summary > Optional select the Windows 10 Mobile Emulator`.
 - Mobile Development with .NET - In the `Summary > Optional select Xamarin Remoted Simulator, Xamarin SDK Manager, Intel Hardware Accelerated Execution Manager (HAXM)`
 
@@ -72,8 +73,7 @@ You can find out how to obtain a Google Maps API key [here](https://developer.xa
 Make sure you have Nuget.exe 4.0 or above and the latest dotnet core sdk (2.0.3). On OSX you should specify the platform in the msbuild command (`/p:Platform=iPhoneSimulator`)
   
 
-     nuget restore Xamarin.Forms.sln
-     msbuild Xamarin.Forms.sln
+     msbuild /restore Xamarin.Forms.sln
  
 ### UI Tests ###
 
