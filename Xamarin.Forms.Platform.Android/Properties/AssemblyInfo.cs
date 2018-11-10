@@ -30,6 +30,7 @@ using Xamarin.Forms.Platform.Android;
 [assembly: ExportRenderer (typeof (ActivityIndicator), typeof (ActivityIndicatorRenderer))]
 [assembly: ExportRenderer (typeof (Frame), typeof (FrameRenderer))]
 [assembly: ExportRenderer (typeof (OpenGLView), typeof (OpenGLViewRenderer))]
+[assembly: ExportRenderer (typeof (CheckBox), typeof (CheckBoxRenderer))]
 
 [assembly: ExportRenderer (typeof (TabbedPage), typeof (TabbedRenderer))]
 [assembly: ExportRenderer (typeof (NavigationPage), typeof (NavigationRenderer))]
@@ -47,6 +48,7 @@ using Xamarin.Forms.Platform.Android;
 [assembly: ExportCell(typeof(TextCell), typeof(TextCellRenderer))]
 [assembly: ExportCell(typeof(ImageCell), typeof(ImageCellRenderer))]
 [assembly: ExportCell(typeof(ViewCell), typeof(ViewCellRenderer))]
+[assembly: ExportCell(typeof(CheckBoxCell), typeof(CheckBoxCellRenderer))]
 [assembly: ExportImageSourceHandler(typeof(FileImageSource), typeof(FileImageSourceHandler))]
 [assembly: ExportImageSourceHandler(typeof(StreamImageSource), typeof(StreamImagesourceHandler))]
 [assembly: ExportImageSourceHandler(typeof(UriImageSource), typeof(ImageLoaderSourceHandler))]

@@ -105,6 +105,10 @@ namespace Xamarin.Forms.Platform
 	[RenderWith (typeof (FrameRenderer))]
 	internal class _FrameRenderer { }
 
+#if __ANDROID__
+	[RenderWith(typeof(CheckBoxRenderer))]
+	internal class _CheckBoxRenderer { }
+#endif
 
 #if !WINDOWS_PHONE && !WINDOWS_PHONE_APP && !TIZEN4_0
 	[RenderWith (typeof (OpenGLViewRenderer))]
