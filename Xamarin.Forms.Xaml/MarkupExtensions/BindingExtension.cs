@@ -17,6 +17,7 @@ namespace Xamarin.Forms.Xaml
 		public object TargetNullValue { get; set; }
 		public object FallbackValue { get; set; }
 		public TypedBindingBase TypedBinding { get; set; }
+		public RelativeBindingSource RelativeSource { get; set; }
 
 		BindingBase IMarkupExtension<BindingBase>.ProvideValue(IServiceProvider serviceProvider)
 		{
@@ -25,6 +26,7 @@ namespace Xamarin.Forms.Xaml
 					UpdateSourceEventName = UpdateSourceEventName,
 					FallbackValue = FallbackValue,
 					TargetNullValue = TargetNullValue,
+					RelativeSource = RelativeSource
 				};
 
 			TypedBinding.Mode = Mode;

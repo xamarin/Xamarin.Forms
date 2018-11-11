@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Xamarin.Forms.Xaml.UnitTests.Gh3847">
+	<ContentPage.Resources>
+		<ControlTemplate x:Key="CustomControlTemplate">
+			<Label Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=StyleId}"/>
+		</ControlTemplate>
+	</ContentPage.Resources>
+	<ContentPage.Content>
+		<StackLayout x:Name="Stack0">
+			<StackLayout x:Name="Stack1">
+				<!-- Text = "" -->
+				<Label x:Name="AncestorLevel3Label"
+					   Text="{Binding RelativeSource={RelativeSource AncestorType={x:Type StackLayout}, AncestorLevel=3}, Path=StyleId}"/>
+
+				<!-- Text = "Stack0" -->
+				<Label x:Name="AncestorLevel2Label"
+					   Text="{Binding RelativeSource={RelativeSource AncestorType={x:Type StackLayout}, AncestorLevel=2}, Path=StyleId}"/>
+
+				<!-- Text = "Stack1" -->
+				<Label x:Name="AncestorLevel1Label"
+					   Text="{Binding RelativeSource={RelativeSource AncestorType={x:Type StackLayout}}, Path=StyleId}"/>
+
+				<!-- Text = "SelfBindingLabel" -->
+				<Label x:Name="SelfBindingLabel"
+					   Text="{Binding RelativeSource={RelativeSource Self}, Path=StyleId}"/>
+
+				<!-- Text = "contentView" -->
+				<ContentView x:Name="contentView"
+							 ControlTemplate="{StaticResource CustomControlTemplate}"/>
+			</StackLayout>
+		</StackLayout>
+	</ContentPage.Content>
+</ContentPage>

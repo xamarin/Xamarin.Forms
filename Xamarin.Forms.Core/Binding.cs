@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
@@ -10,7 +11,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	public sealed class Binding : BindingBase
+	public class Binding : BindingBase
 	{
 		internal const string SelfPath = ".";
 		IValueConverter _converter;
@@ -20,6 +21,7 @@ namespace Xamarin.Forms
 		string _path;
 		object _source;
 		string _updateSourceEventName;
+		RelativeBindingSource _relativeSource;
 
 		public Binding()
 		{
@@ -84,6 +86,16 @@ namespace Xamarin.Forms
 			}
 		}
 
+		public RelativeBindingSource RelativeSource
+		{
+			get { return _relativeSource; }
+			set
+			{
+				ThrowIfApplied();
+				_relativeSource = value;
+			}
+		}
+
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public string UpdateSourceEventName {
 			get { return _updateSourceEventName; }
@@ -113,7 +125,7 @@ namespace Xamarin.Forms
 			_expression.Apply(fromTarget);
 		}
 
-		internal override void Apply(object context, BindableObject bindObj, BindableProperty targetProperty, bool fromBindingContextChanged = false)
+		internal override async void Apply(object context, BindableObject bindObj, BindableProperty targetProperty, bool fromBindingContextChanged = false)
 		{
 			object src = _source;
 			var isApplied = IsApplied;
@@ -123,11 +135,46 @@ namespace Xamarin.Forms
 			if (src != null && isApplied && fromBindingContextChanged)
 				return;
 
-			object bindingContext = src ?? Context ?? context;
+			object bindingContext = this.RelativeSource == null
+				? src ?? Context ?? context
+				: await ResolveRelativeSource(bindObj);
 			if (_expression == null && bindingContext != null)
 				_expression = new BindingExpression(this, SelfPath);
 
 			_expression.Apply(bindingContext, bindObj, targetProperty);
+		}
+
+		private async Task<object> ResolveRelativeSource(BindableObject bindObj)
+		{
+			switch (this.RelativeSource.Mode)
+			{
+				case RelativeBindingSourceMode.Self:
+					return bindObj;
+				case RelativeBindingSourceMode.TemplatedParent:
+					{
+						var view = bindObj as Element;
+						if (view == null)
+							throw new InvalidOperationException();
+						return await TemplateUtilities.FindTemplatedParentAsync(view);							
+					}
+				case RelativeBindingSourceMode.FindAncestor:
+					{
+						if (!(bindObj is Element elem))
+							throw new InvalidOperationException();
+						Element parent = await TemplateUtilities.GetRealParentAsync(elem);
+						int currentLevel = 1;
+						while (parent != null &&
+							   (currentLevel < this.RelativeSource.AncestorLevel ||
+							    !this.RelativeSource.AncestorType.IsInstanceOfType(parent)))
+						{
+							parent = await TemplateUtilities.GetRealParentAsync(parent);
+							currentLevel++;
+						}
+						return parent;
+					};
+				default:
+					throw new NotImplementedException();
+			}
 		}
 
 		internal override BindingBase Clone()
