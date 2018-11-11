@@ -187,6 +187,7 @@ namespace Xamarin.Forms
 				UpdateSourceEventName = UpdateSourceEventName,
 				TargetNullValue = TargetNullValue,
 				FallbackValue = FallbackValue,
+				RelativeSource = RelativeSource
 			};
 		}
 
