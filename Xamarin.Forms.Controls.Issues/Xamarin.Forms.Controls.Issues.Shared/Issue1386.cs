@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				new TextCell
 				{
-					Text = "MAIN BUTTON",
+					Text = "CHANGE THE SECOND CELL",
 					Command = new Command(() =>
 					{
 						root.Remove(_selectionOne);
@@ -70,16 +70,16 @@ namespace Xamarin.Forms.Controls.Issues
 				Children = {
 					new Label
 					{
-						Text = "1) Tap MAIN BUTTON and make sure, that the second cell has numeric keyboard" +
-							"\n2) Tap MAIN BUTTON again and make sure, that the second cel has plain keyboard"          
+						Margin (15, 0),
+						Text = "1) Tap 'CHANGE THE SECOND CELL' and make sure, that the second cell has numeric keyboard" +
+							"\n2) Tap 'CHANGE THE SECOND CELL' again and make sure, that the second cel has plain keyboard"
+					},
+					new TableView
+					{
+						Intent = TableIntent.Form,
+						Root = root
 					}
 				}
-			};
-
-			Content = new TableView
-			{
-				Intent = TableIntent.Form,
-				Root = root
 			};
 		}
 	}
