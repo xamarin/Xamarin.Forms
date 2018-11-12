@@ -134,7 +134,10 @@ namespace Xamarin.Forms.Platform.Android
 				bline = layout.GetChildAt(1);
 
 			if (isHeader)
+			{
 				bline.SetBackgroundColor(Color.Accent.ToAndroid());
+				var textView = ((((bline as LinearLayout).GetChildAt(0) as LinearLayout).GetChildAt(1) as LinearLayout).GetChildAt(0) as TextView);
+			}
 			else if (nextIsHeader)
 				bline.SetBackgroundColor(global::Android.Graphics.Color.Transparent);
 			else

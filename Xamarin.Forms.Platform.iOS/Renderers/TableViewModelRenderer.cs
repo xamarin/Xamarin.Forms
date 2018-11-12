@@ -63,6 +63,14 @@ namespace Xamarin.Forms.Platform.iOS
 			return null;
 		}
 
+		public override void WillDisplayHeaderView(UITableView tableView, UIView headerView, nint section)
+		{
+			if (headerView is UITableViewHeaderFooterView header)
+			{
+				header.TextLabel.TextColor = View.Model.GetSectionTextColor((int)section).ToUIColor();
+			}
+		}
+
 		public void LongPress(UILongPressGestureRecognizer gesture)
 		{
 			var point = gesture.LocationInView(Table);
