@@ -30,6 +30,13 @@ namespace Xamarin.Forms.Controls.Issues
 			var entry = new Entry { AutomationId = TheEntry };
 			var result = new Label();
 
+			var instructions = new Label
+			{
+				Text = "Wait 4 seconds; the Entry (third control from the top) should be focused, and the keyboard" 
+						+ " should be visible. Typing on the keyboard should enter text into the Entry."
+						+ " If the typing does not enter text into the Entry, this test has failed."
+			};
+
 			editor.Unfocused += (sender, e) => entry.Focus();
 			entry.TextChanged += (sender, args) => result.Text = args.NewTextValue;
 
@@ -37,6 +44,7 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				Children =
 				{
+					instructions,
 					editor,
 					entry,
 					result
