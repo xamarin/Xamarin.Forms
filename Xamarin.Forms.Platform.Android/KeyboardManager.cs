@@ -1,4 +1,5 @@
 using System;
+using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Views.InputMethods;
@@ -34,10 +35,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (inputView is EditText || inputView is TextView || inputView is SearchView)
 				{
-					if (inputMethodManager != null) {
-						inputMethodManager.ShowSoftInput(inputView, ShowFlags.Forced);
-						inputMethodManager.ToggleSoftInput(ShowFlags.Forced, HideSoftInputFlags.ImplicitOnly);
-					}
+					inputMethodManager?.ShowSoftInput(inputView, ShowFlags.Forced);
 				}
 				else
 					throw new ArgumentException("inputView should be of type EditText, SearchView, or TextView");
