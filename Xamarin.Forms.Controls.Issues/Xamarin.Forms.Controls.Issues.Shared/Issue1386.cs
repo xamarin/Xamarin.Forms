@@ -70,7 +70,7 @@ namespace Xamarin.Forms.Controls.Issues
 				Children = {
 					new Label
 					{
-						Margin (15, 0),
+						Margin = new Thickness (15, 0),
 						Text = "1) Tap 'CHANGE THE SECOND CELL' and make sure, that the second cell has numeric keyboard" +
 							"\n2) Tap 'CHANGE THE SECOND CELL' again and make sure, that the second cel has plain keyboard"
 					},
