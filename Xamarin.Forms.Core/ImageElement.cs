@@ -1,16 +1,46 @@
-using System;
+﻿using System;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-
-	internal static class ImageElementManager
+	static class ImageElement
 	{
-		public static SizeRequest Measure(
-			IImageController ImageElementManager,
-			SizeRequest desiredSize,
-			double widthConstraint,
-			double heightConstraint)
+
+		public static readonly BindableProperty FileImageProperty = BindableProperty.Create("Image", typeof(FileImageSource), typeof(IImageElement), default(FileImageSource),
+	propertyChanging: OnImageSourceChanging, propertyChanged: OnImageSourceChanged);
+
+		public static readonly BindableProperty SourceProperty = BindableProperty.Create(nameof(IImageElement.Source), typeof(ImageSource), typeof(IImageElement), default(ImageSource),
+	propertyChanging: OnImageSourceChanging, propertyChanged: OnImageSourceChanged);
+
+		public static readonly BindableProperty AspectProperty = BindableProperty.Create(nameof(IImageElement.Aspect), typeof(Aspect), typeof(IImageElement), Aspect.AspectFit);
+
+		public static readonly BindableProperty IsOpaqueProperty = BindableProperty.Create(nameof(IImageElement.IsOpaque), typeof(bool), typeof(IImageElement), false);
+
+
+		static void OnImageSourceChanged(BindableObject bindable, object oldValue, object newValue)
+		{
+			ImageSource newSource = (ImageSource)newValue;
+			IImageElement image = (IImageElement)bindable;
+			if (newSource != null && image != null)
+			{
+				newSource.SourceChanged += image.OnImageSourcesSourceChanged;
+			}
+			ImageSourceChanged(bindable, newSource);
+		}
+
+		static void OnImageSourceChanging(BindableObject bindable, object oldValue, object newValue)
+		{
+			ImageSource oldSource = (ImageSource)oldValue;
+			IImageElement image = (IImageElement)bindable;
+
+			if (oldSource != null && image != null)
+			{
+				oldSource.SourceChanged -= image.OnImageSourcesSourceChanged;
+			}
+			ImageSourceChanging(oldSource);
+		}
+
+		public static SizeRequest Measure(IImageElement ImageElementManager, SizeRequest desiredSize, double widthConstraint, double heightConstraint)
 		{
 			double desiredAspect = desiredSize.Request.Width / desiredSize.Request.Height;
 			double constraintAspect = widthConstraint / heightConstraint;
@@ -65,7 +95,7 @@ namespace Xamarin.Forms
 			return new SizeRequest(new Size(width, height));
 		}
 
-		internal static void OnBindingContextChanged(IImageController image, VisualElement visualElement)
+		public static void OnBindingContextChanged(IImageElement image, VisualElement visualElement)
 		{
 			if (image.Source != null)
 				BindableObject.SetInheritedBindingContext(image.Source, visualElement?.BindingContext);
@@ -96,7 +126,9 @@ namespace Xamarin.Forms
 
 		public static void ImageSourcesSourceChanged(object sender, EventArgs e)
 		{
-			((IImageController)sender).RaiseImageSourcePropertyChanged();
+			if (sender is IImageElement imageController)
+				imageController.RaiseImageSourcePropertyChanged();
+
 			((VisualElement)sender).InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 		}
 	}
