@@ -67,7 +67,12 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (headerView is UITableViewHeaderFooterView header)
 			{
-				header.TextLabel.TextColor = View.Model.GetSectionTextColor((int)section).ToUIColor();
+				var sectionHeaderTextColor = View.Model.GetSectionTextColor((int)section);
+
+				if (sectionHeaderTextColor != Color.Default)
+				{
+					header.TextLabel.TextColor = sectionHeaderTextColor.ToUIColor();
+				}
 			}
 		}
 
