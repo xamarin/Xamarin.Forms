@@ -13,8 +13,8 @@ namespace Xamarin.Forms.Controls.Issues
 	[Category(UITestCategories.ContextActions)]
 #endif
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Github, 4341, "When ListView items is removed and it is empty, Xamarin Forms crash", PlatformAffected.iOS)]
-	public class Issue4341 : TestNavigationPage // or TestMasterDetailPage, etc ...
+	[Issue(IssueTracker.Github, 4314, "When ListView items is removed and it is empty, Xamarin Forms crash", PlatformAffected.iOS)]
+	public class Issue4314 : TestNavigationPage // or TestMasterDetailPage, etc ...
 	{
 		const string Success = "Success";
 #if !UITEST
