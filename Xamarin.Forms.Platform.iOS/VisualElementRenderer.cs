@@ -129,12 +129,17 @@ namespace Xamarin.Forms.Platform.MacOS
 			remove { _elementChangedHandlers.Remove(value); }
 		}
 
+
+
 		public virtual SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
 			return NativeView.GetSizeRequest(widthConstraint, heightConstraint);
 		}
 
 		public NativeView NativeView => this;
+
+
+		protected internal virtual NativeView GetControl() => NativeView;
 
 		void IVisualElementRenderer.SetElement(VisualElement element)
 		{
@@ -376,6 +381,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			else if (e.PropertyName == AutomationProperties.IsInAccessibleTreeProperty.PropertyName)
 				SetIsAccessibilityElement();
 #endif
+
 		}
 
 		protected virtual void OnRegisterEffect(PlatformEffect effect)
@@ -386,35 +392,17 @@ namespace Xamarin.Forms.Platform.MacOS
 #if __MOBILE__
 		protected virtual void SetAccessibilityHint()
 		{
-			if (Element == null)
-				return;
-
-			if (_defaultAccessibilityHint == null)
-				_defaultAccessibilityHint = AccessibilityHint;
-
-			AccessibilityHint = (string)Element.GetValue(AutomationProperties.HelpTextProperty) ?? _defaultAccessibilityHint;
+			_defaultAccessibilityHint = this.SetAccessibilityHint(Element, _defaultAccessibilityHint);
 		}
 
 		protected virtual void SetAccessibilityLabel()
 		{
-			if (Element == null)
-				return;
-
-			if (_defaultAccessibilityLabel == null)
-				_defaultAccessibilityLabel = AccessibilityLabel;
-
-			AccessibilityLabel = (string)Element.GetValue(AutomationProperties.NameProperty) ?? _defaultAccessibilityLabel;
+			_defaultAccessibilityLabel = this.SetAccessibilityLabel(Element, _defaultAccessibilityLabel);
 		}
 
 		protected virtual void SetIsAccessibilityElement()
 		{
-			if (Element == null)
-				return;
-
-			if (!_defaultIsAccessibilityElement.HasValue)
-				_defaultIsAccessibilityElement = IsAccessibilityElement;
-
-			IsAccessibilityElement = (bool)((bool?)Element.GetValue(AutomationProperties.IsInAccessibleTreeProperty) ?? _defaultIsAccessibilityElement);
+			_defaultIsAccessibilityElement = this.SetIsAccessibilityElement(Element, _defaultIsAccessibilityElement);
 		}
 #endif
 		protected virtual void SetAutomationId(string id)

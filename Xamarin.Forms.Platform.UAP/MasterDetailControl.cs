@@ -73,7 +73,8 @@ namespace Xamarin.Forms.Platform.UWP
 		FrameworkElement _masterPresenter;
 		FrameworkElement _detailPresenter;
 		SplitView _split;
-		ToolbarPlacement _toolbarPlacement;
+	    ToolbarPlacement _toolbarPlacement;
+		bool _toolbarDynamicOverflowEnabled = true;
 		FrameworkElement _titleViewPresenter;
 		TitleViewManager _titleViewManager;
 
@@ -216,13 +217,23 @@ namespace Xamarin.Forms.Platform.UWP
 			set { SetValue(CollapseStyleProperty, value); }
 		}
 
-		public ToolbarPlacement ToolbarPlacement
+	    public ToolbarPlacement ToolbarPlacement
+	    {
+	        get { return _toolbarPlacement; }
+	        set
+	        {
+	            _toolbarPlacement = value;
+	            _toolbarPlacementHelper.UpdateToolbarPlacement();
+	        }
+	    }
+		
+		public bool ToolbarDynamicOverflowEnabled
 		{
-			get { return _toolbarPlacement; }
+			get { return _toolbarDynamicOverflowEnabled; }
 			set
 			{
-				_toolbarPlacement = value;
-				_toolbarPlacementHelper.UpdateToolbarPlacement();
+				_toolbarDynamicOverflowEnabled = value;
+				UpdateToolbarDynamicOverflowEnabled();
 			}
 		}
 
@@ -292,8 +303,9 @@ namespace Xamarin.Forms.Platform.UWP
 
 			_commandBar = GetTemplateChild("CommandBar") as CommandBar;
 			_toolbarPlacementHelper.Initialize(_commandBar, () => ToolbarPlacement, GetTemplateChild);
-
-			UpdateMode();
+			UpdateToolbarDynamicOverflowEnabled();
+			
+			UpdateMode(); 
 
 			if (_commandBarTcs != null)
 				_commandBarTcs.SetResult(_commandBar);
@@ -371,5 +383,13 @@ namespace Xamarin.Forms.Platform.UWP
 
 		CommandBar ITitleViewRendererController.CommandBar { get => _commandBar; }
 
-	}
+        void UpdateToolbarDynamicOverflowEnabled()
+        {
+            if (_commandBar != null)
+            {
+                _commandBar.IsDynamicOverflowEnabled = ToolbarDynamicOverflowEnabled;
+            }
+        }
+
+    }
 }

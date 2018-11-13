@@ -5,6 +5,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Automation.Peers;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.MasterDetailPage;
 using WImageSource = Windows.UI.Xaml.Media.ImageSource;
@@ -16,6 +17,11 @@ namespace Xamarin.Forms.Platform.UWP
 		Page _master;
 		Page _detail;
 		bool _showTitle;
+
+		string _defaultAutomationPropertiesName;
+		AccessibilityView? _defaultAutomationPropertiesAccessibilityView;
+		string _defaultAutomationPropertiesHelpText;
+		UIElement _defaultAutomationPropertiesLabeledBy;
 
 		VisualElementTracker<Page, FrameworkElement> _tracker;
 
@@ -173,6 +179,12 @@ namespace Xamarin.Forms.Platform.UWP
 
 				((ITitleProvider)this).BarBackgroundBrush = (Brush)Windows.UI.Xaml.Application.Current.Resources["SystemControlBackgroundChromeMediumLowBrush"];
 				UpdateToolbarPlacement();
+				UpdateToolbarDynamicOverflowEnabled();
+
+				_defaultAutomationPropertiesName = Control.SetAutomationPropertiesName(Element, _defaultAutomationPropertiesName);
+				_defaultAutomationPropertiesHelpText = Control.SetAutomationPropertiesHelpText(Element, _defaultAutomationPropertiesHelpText);
+				_defaultAutomationPropertiesLabeledBy = Control.SetAutomationPropertiesLabeledBy(Element, _defaultAutomationPropertiesLabeledBy);
+				_defaultAutomationPropertiesAccessibilityView = Control.SetAutomationPropertiesAccessibilityView(Element, _defaultAutomationPropertiesAccessibilityView);
 			}
 		}
 
@@ -190,8 +202,18 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateMode();
 			else if (e.PropertyName == PlatformConfiguration.WindowsSpecific.Page.ToolbarPlacementProperty.PropertyName)
 				UpdateToolbarPlacement();
+			else if (e.PropertyName == PlatformConfiguration.WindowsSpecific.Page.ToolbarDynamicOverflowEnabledProperty.PropertyName)
+				UpdateToolbarDynamicOverflowEnabled();
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateFlowDirection();
+			else if (e.PropertyName == AutomationProperties.NameProperty.PropertyName)
+				_defaultAutomationPropertiesName = Control.SetAutomationPropertiesName(Element, _defaultAutomationPropertiesName);
+			else if (e.PropertyName == AutomationProperties.HelpTextProperty.PropertyName)
+				_defaultAutomationPropertiesHelpText = Control.SetAutomationPropertiesHelpText(Element, _defaultAutomationPropertiesHelpText);
+			else if (e.PropertyName == AutomationProperties.LabeledByProperty.PropertyName)
+				_defaultAutomationPropertiesLabeledBy = Control.SetAutomationPropertiesLabeledBy(Element, _defaultAutomationPropertiesLabeledBy);
+			else if (e.PropertyName == AutomationProperties.IsInAccessibleTreeProperty.PropertyName)
+				_defaultAutomationPropertiesAccessibilityView = Control.SetAutomationPropertiesAccessibilityView(Element, _defaultAutomationPropertiesAccessibilityView);
 		}
 
 		void ClearDetail()
@@ -382,6 +404,11 @@ namespace Xamarin.Forms.Platform.UWP
 		void UpdateToolbarPlacement()
 		{
 			Control.ToolbarPlacement = Element.OnThisPlatform().GetToolbarPlacement();
+		}
+
+		void UpdateToolbarDynamicOverflowEnabled()
+		{
+			Control.ToolbarDynamicOverflowEnabled = Element.OnThisPlatform().GetToolbarDynamicOverflowEnabled();
 		}
 
 		void UpdateToolbarVisibilty()

@@ -59,6 +59,7 @@
     <Compile Include="AnimatableKeyTests.cs" />
     <Compile Include="BaseTestFixture.cs" />
     <Compile Include="AbsoluteLayoutTests.cs" />
+    <Compile Include="BindableLayoutTests.cs" />
     <Compile Include="BindableObjectExtensionTests.cs" />
     <Compile Include="BindableObjectUnitTests.cs" />
     <Compile Include="BindablePropertyUnitTests.cs" />
@@ -76,8 +77,10 @@
     <Compile Include="DependencyResolutionTests.cs" />
     <Compile Include="EffectiveFlowDirectionExtensions.cs" />
     <Compile Include="FlowDirectionTests.cs" />
+    <Compile Include="ImageButtonUnitTest.cs" />
     <Compile Include="LayoutChildIntoBoundingRegionTests.cs" />
     <Compile Include="MenuUnitTests.cs" />
+    <Compile Include="PreviewerReflectionTests.cs" />
     <Compile Include="RegionTests.cs" />
     <Compile Include="SpanTests.cs" />
     <Compile Include="TitleViewUnitTests.cs" />
@@ -155,6 +158,7 @@
     <Compile Include="TimePickerUnitTest.cs" />
     <Compile Include="ToolbarItemTests.cs" />
     <Compile Include="ToolbarTrackerTests.cs" />
+    <Compile Include="ToStringValueConverterTests.cs" />
     <Compile Include="TypeUnitTests.cs" />
     <Compile Include="ViewCellTests.cs" />
     <Compile Include="ViewUnitTests.cs" />
@@ -167,7 +171,6 @@
     <Compile Include="ContentViewUnitTest.cs" />
     <Compile Include="MockPlatformServices.cs" />
     <Compile Include="GridTests.cs" />
-    <Compile Include="UnitPlatform.cs" />
     <Compile Include="GridLengthTypeConverterTests.cs" />
     <Compile Include="BoxViewUnitTests.cs" />
     <Compile Include="NotifiedPropertiesTests.cs" />
