@@ -29,8 +29,14 @@ namespace Xamarin.Forms.Controls
 
 			section1.Add(new TextCell { Text = "Workeding!" });
 
+			var section2 = new TableSection("Test old")
+			{
+				new TextCell { Text = "Worked old!" }
+			};
+
 			tableSectionContainer.View.Root.Add(section);
 			tableSectionContainer.View.Root.Add(section1);
+			tableSectionContainer.View.Root.Add(section2);
 
 			Add(tableSectionContainer);
 		}

@@ -134,10 +134,7 @@ namespace Xamarin.Forms.Platform.Android
 				bline = layout.GetChildAt(1);
 
 			if (isHeader)
-			{
 				bline.SetBackgroundColor(Color.Accent.ToAndroid());
-				var textView = ((((bline as LinearLayout).GetChildAt(0) as LinearLayout).GetChildAt(1) as LinearLayout).GetChildAt(0) as TextView);
-			}
 			else if (nextIsHeader)
 				bline.SetBackgroundColor(global::Android.Graphics.Color.Transparent);
 			else
@@ -220,13 +217,14 @@ namespace Xamarin.Forms.Platform.Android
 			for (var sectionIndex = 0; sectionIndex < sectionCount; sectionIndex++)
 			{
 				var sectionTitle = model.GetSectionTitle(sectionIndex);
+				var sectionTextColor = model.GetSectionTextColor(sectionIndex);
 				var sectionRowCount = model.GetRowCount(sectionIndex);
 
 				if (!string.IsNullOrEmpty(sectionTitle))
 				{
 					Cell headerCell = model.GetHeaderCell(sectionIndex);
 					if (headerCell == null)
-						headerCell = new TextCell { Text = sectionTitle };
+						headerCell = new TextCell { Text = sectionTitle, TextColor = sectionTextColor };
 					headerCell.Parent = _view;
 
 					newIsHeaderCache.Add(true);
