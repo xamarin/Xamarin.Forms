@@ -16,9 +16,9 @@ steps:
   - task: PowerShell@1
     displayName: 'Generate docs from docs repo'
     inputs:
-      scriptName: 'Xamarin.Forms.Build/scripts/generate-docs.ps1'
+      scriptName: 'build/scripts/generate-docs.ps1'
       arguments: '"$(Build.SourceBranch)" "$(GitHub.Token)"'
-      workingFolder: '$(System.DefaultWorkingDirectory)/Xamarin.Forms.Build/scripts'
+      workingFolder: '$(System.DefaultWorkingDirectory)/build/scripts'
       failOnStandardError: false
 
 

@@ -106,20 +106,11 @@ steps:
 
 
   - task: CopyFiles@2
-    displayName: 'Copy build scripts'
-    inputs:
-      Contents: 'Xamarin.Forms.Build/scripts/**'
-      TargetFolder: '$(build.artifactstagingdirectory)/build'
-      CleanTargetFolder: true
-
-
-  - task: CopyFiles@2
     displayName: 'Copy iOS Files for UITest'
     inputs:
       Contents: |
        **/$(IpaName)
        Xamarin.Forms.Core.iOS.UITests/bin/$(BuildConfiguration)/**
-
       TargetFolder: '$(build.artifactstagingdirectory)/ios'
       CleanTargetFolder: true
       flattenFolders: true
