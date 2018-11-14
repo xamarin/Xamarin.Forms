@@ -848,6 +848,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ContactsPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\FailImageSource.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ICacheService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue3622.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Bugzilla22229.xaml">
@@ -1052,7 +1053,7 @@
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue4194.xaml">
       <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
     </EmbeddedResource>
   </ItemGroup>
 </Project>
