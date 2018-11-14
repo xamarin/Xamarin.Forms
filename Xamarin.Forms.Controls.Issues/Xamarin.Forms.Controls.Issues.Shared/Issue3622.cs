@@ -42,22 +42,20 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				var nameLabel = new Label
 				{
-					FontSize = Device.GetNamedSize(NamedSize.Medium, typeof(Label)),
-					FontAttributes = FontAttributes.Bold
-				};
+					Style = Device.Styles.TitleStyle
+				};	
 				nameLabel.SetBinding(Label.TextProperty, "Name");
 
 				var ageLabel = new Label
 				{
-					FontSize = Device.GetNamedSize(NamedSize.Medium, typeof(Label)),
-					FontAttributes = FontAttributes.Bold
+					Style = Device.Styles.CaptionStyle
+
 				};
 				ageLabel.SetBinding(Label.TextProperty, "Age");
 
 				var occupationLabel = new Label
 				{
-					FontSize = Device.GetNamedSize(NamedSize.Medium, typeof(Label)),
-					FontAttributes = FontAttributes.Bold
+					Style = Device.Styles.BodyStyle
 				};
 				occupationLabel.SetBinding(Label.TextProperty, "Occupation");
 
