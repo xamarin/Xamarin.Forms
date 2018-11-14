@@ -3,23 +3,37 @@ using System.Collections.Generic;
 
 namespace Xamarin.Forms
 {
-	public class DataTemplate : ElementTemplate
+	public class DataTemplate : ElementTemplate, IDataTemplateController
 	{
+		static int idCounter = 1;
+
+		int _id;
+		string _idString;
 		public DataTemplate()
 		{
+			_idString = GetType().FullName + idCounter++;
+			_id = idCounter;
 		}
 
 		public DataTemplate(Type type) : base(type)
 		{
+			_idString = type.FullName;
+			_id = idCounter++;
 		}
 
 		public DataTemplate(Func<object> loadTemplate) : base(loadTemplate)
 		{
+			_idString = GetType().FullName + idCounter++;
+			_id = idCounter;
 		}
 
 		public IDictionary<BindableProperty, BindingBase> Bindings { get; } = new Dictionary<BindableProperty, BindingBase>();
 
 		public IDictionary<BindableProperty, object> Values { get; } = new Dictionary<BindableProperty, object>();
+
+		string IDataTemplateController.IdString => _idString;
+
+		int IDataTemplateController.Id => _id;
 
 		public void SetBinding(BindableProperty property, BindingBase binding)
 		{
