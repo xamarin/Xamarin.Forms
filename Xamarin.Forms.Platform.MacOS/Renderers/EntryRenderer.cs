@@ -203,7 +203,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			UpdateFont();
 			UpdateAlignment();
 			UpdateMaxLength();
-            UpdateIsReadOnly()
+			UpdateIsReadOnly();
         }
 
 		void TextFieldFocusChanged(object sender, BoolEventArgs e)
