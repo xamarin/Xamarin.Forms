@@ -687,7 +687,9 @@ namespace Xamarin.Forms.CustomAttributes
 			MinimumTrackColor,
 			MaximumTrackColor,
 			ThumbColor,
-			ThumbImage
+			ThumbImage,
+			DragStarted,
+			DragCompleted
 		}
 
 		public enum StackLayout
