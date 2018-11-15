@@ -215,5 +215,68 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			_needCellSizeUpdate = true;
 		}
+		
+		public override CGPoint TargetContentOffset(CGPoint proposedContentOffset, CGPoint scrollingVelocity)
+		{
+			var snapPointsType = _itemsLayout.SnapPointsType;
+
+			if (snapPointsType == SnapPointsType.None)
+			{
+				// Nothing to do here; fall back to the default
+				return base.TargetContentOffset(proposedContentOffset, scrollingVelocity);
+			}
+
+			// Get the viewport of the UICollectionView
+			var viewport = new CGRect(proposedContentOffset, CollectionView.Bounds.Size);
+
+			// And find all the elements currently visible in the viewport
+			var visibleElements = LayoutAttributesForElementsInRect(viewport);
+
+			if (visibleElements.Length == 0)
+			{
+				// Nothing to see here; fall back to the default
+				return base.TargetContentOffset(proposedContentOffset, scrollingVelocity);
+			}
+
+			var alignment = _itemsLayout.SnapPointsAlignment;
+
+			if (visibleElements.Length == 1)
+			{
+				// If there is only one item in the viewport and snapping is mandatory,
+				// then we need to align the viewport with it
+				if (snapPointsType == SnapPointsType.Mandatory || snapPointsType == SnapPointsType.MandatorySingle)
+				{
+					return SnapHelpers.AdjustContentOffset(proposedContentOffset, visibleElements[0].Frame, viewport,
+						alignment, ScrollDirection);
+				}
+			}
+
+			// If there are multiple items in the viewport, we need to choose the one which is 
+			// closest to the relevant part of the viewport while being sufficiently visible
+
+			// Find the spot in the viewport we're trying to align with
+			var alignmentTarget = SnapHelpers.FindAlignmentTarget(alignment, proposedContentOffset, 
+				CollectionView, ScrollDirection);
+
+			// Find the closest sufficiently visible candidate
+			var bestCandidate = SnapHelpers.FindBestSnapCandidate(visibleElements, viewport, alignmentTarget);
+			
+			if (bestCandidate != null)
+			{
+				return SnapHelpers.AdjustContentOffset(proposedContentOffset, bestCandidate.Frame, viewport, alignment,
+					ScrollDirection);
+			}
+
+			// If we got this far an nothing matched, it means that we have multiple items but somehow
+			// none of them fit at least half in the viewport. So just fall back to the first item, if 
+			// snapping is mandatory
+			if (snapPointsType == SnapPointsType.Mandatory || snapPointsType == SnapPointsType.MandatorySingle)
+			{
+				return SnapHelpers.AdjustContentOffset(proposedContentOffset, visibleElements[0].Frame, viewport, alignment,
+					ScrollDirection);
+			}
+
+			return base.TargetContentOffset(proposedContentOffset, scrollingVelocity);
+		}
 	}
 }

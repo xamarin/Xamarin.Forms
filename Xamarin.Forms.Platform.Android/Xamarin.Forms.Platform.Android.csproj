@@ -78,6 +78,7 @@
     <Compile Include="CollectionView\DataChangeObserver.cs" />
     <Compile Include="CollectionView\EmptySource.cs" />
     <Compile Include="CollectionView\EmptyViewAdapter.cs" />
+    <Compile Include="CollectionView\EndPagerSnapHelper.cs" />
     <Compile Include="CollectionView\ItemsViewAdapter.cs" />
     <Compile Include="CollectionView\EdgeSnapHelper.cs" />
     <Compile Include="CollectionView\EndSnapHelper.cs" />

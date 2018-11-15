@@ -2,7 +2,7 @@ using Android.Support.V7.Widget;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	internal class StartPagerSnapHelper : PagerSnapHelper
+	internal class EndPagerSnapHelper : PagerSnapHelper
 	{
 		protected static OrientationHelper CreateOrientationHelper(RecyclerView.LayoutManager layoutManager)
 		{
@@ -34,17 +34,17 @@ namespace Xamarin.Forms.Platform.Android
 				return null;
 			}
 
-			// Find the first fully visible item
-			var firstVisibleItemPosition = linearLayoutManager.FindFirstCompletelyVisibleItemPosition();
+			// Find the last fully visible item
+			var lastVisibleItemPosition = linearLayoutManager.FindLastVisibleItemPosition();
 
-			if (firstVisibleItemPosition == RecyclerView.NoPosition)
+			if (lastVisibleItemPosition == RecyclerView.NoPosition)
 			{
 				// If there are no fully visible items, drop back to default PagerSnapHelper behavior
 				return base.FindSnapView(layoutManager);
 			}
 
 			// Return the view to snap
-			return linearLayoutManager.FindViewByPosition(firstVisibleItemPosition);
+			return linearLayoutManager.FindViewByPosition(lastVisibleItemPosition);
 		}
 
 		public override int[] CalculateDistanceToFinalSnap(RecyclerView.LayoutManager layoutManager, global::Android.Views.View targetView)
@@ -54,8 +54,8 @@ namespace Xamarin.Forms.Platform.Android
 			var rtl = isHorizontal && IsLayoutReversed(layoutManager);
 
 			var distance = rtl
-				? -orientationHelper.GetDecoratedEnd(targetView)
-				: orientationHelper.GetDecoratedStart(targetView);
+				? -orientationHelper.GetDecoratedStart(targetView)
+				: orientationHelper.GetDecoratedEnd(targetView);
 
 			return isHorizontal
 				? new[] { distance, 1 }

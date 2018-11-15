@@ -48,15 +48,15 @@
 				var templateLayout = new Grid
 				{
 					RowDefinitions = new RowDefinitionCollection { new RowDefinition(), new RowDefinition {Height = GridLength.Auto} },
-					WidthRequest = 100,
-					HeightRequest = 130
+					WidthRequest = 200,
+					HeightRequest = 230
 				};
 
 				var image = new Image
 				{
 					Margin = new Thickness(5),
-					HeightRequest = 100,
-					WidthRequest = 100,
+					HeightRequest = 200,
+					WidthRequest = 200,
 					HorizontalOptions = LayoutOptions.Center,
 					VerticalOptions = LayoutOptions.Center,
 					Aspect = Aspect.AspectFit

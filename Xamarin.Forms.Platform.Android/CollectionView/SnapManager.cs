@@ -69,7 +69,7 @@ namespace Xamarin.Forms.Platform.Android
 					case SnapPointsAlignment.Center:
 						return new PagerSnapHelper();
 					case SnapPointsAlignment.End:
-						break;
+						return new EndPagerSnapHelper();
 					default:
 						throw new ArgumentOutOfRangeException(nameof(alignment), alignment, null);
 				}
