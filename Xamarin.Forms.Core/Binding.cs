@@ -88,7 +88,7 @@ namespace Xamarin.Forms
 
 		public RelativeBindingSource RelativeSource
 		{
-			get { return _relativeSource; }
+			get { return _relativeSource ?? this.Source as RelativeBindingSource; }
 			set
 			{
 				ThrowIfApplied();
@@ -125,7 +125,7 @@ namespace Xamarin.Forms
 			_expression.Apply(fromTarget);
 		}
 
-		internal override async void Apply(object context, BindableObject bindObj, BindableProperty targetProperty, bool fromBindingContextChanged = false)
+		internal override void Apply(object context, BindableObject bindObj, BindableProperty targetProperty, bool fromBindingContextChanged = false)
 		{
 			object src = _source;
 			var isApplied = IsApplied;
@@ -135,27 +135,34 @@ namespace Xamarin.Forms
 			if (src != null && isApplied && fromBindingContextChanged)
 				return;
 
-			object bindingContext = this.RelativeSource == null
-				? src ?? Context ?? context
-				: await ResolveRelativeSource(bindObj);
+			if (this.RelativeSource == null)
+				CompleteApplyBinding(src ?? Context ?? context, bindObj, targetProperty);
+			else
+				ResolveRelativeSource(bindObj, targetProperty);
+		}
+
+		private void CompleteApplyBinding(object bindingContext, BindableObject bindObj, BindableProperty targetProperty)
+		{
 			if (_expression == null && bindingContext != null)
 				_expression = new BindingExpression(this, SelfPath);
-
 			_expression.Apply(bindingContext, bindObj, targetProperty);
 		}
 
-		private async Task<object> ResolveRelativeSource(BindableObject bindObj)
+		private async void ResolveRelativeSource(BindableObject bindObj, BindableProperty targetProperty)
 		{
+			object bindingContext = null;
 			switch (this.RelativeSource.Mode)
 			{
 				case RelativeBindingSourceMode.Self:
-					return bindObj;
+					bindingContext = bindObj;
+					break;
 				case RelativeBindingSourceMode.TemplatedParent:
 					{
 						var view = bindObj as Element;
 						if (view == null)
 							throw new InvalidOperationException();
-						return await TemplateUtilities.FindTemplatedParentAsync(view);							
+						bindingContext = await TemplateUtilities.FindTemplatedParentAsync(view);
+						break;
 					}
 				case RelativeBindingSourceMode.FindAncestor:
 					{
@@ -163,18 +170,32 @@ namespace Xamarin.Forms
 							throw new InvalidOperationException();
 						Element parent = await TemplateUtilities.GetRealParentAsync(elem);
 						int currentLevel = 1;
-						while (parent != null &&
-							   (currentLevel < this.RelativeSource.AncestorLevel ||
-							    !this.RelativeSource.AncestorType.IsInstanceOfType(parent)))
+
+						while (parent != null)
 						{
+							if (currentLevel >= this.RelativeSource.AncestorLevel)
+							{
+								if (this.RelativeSource.AncestorType.IsInstanceOfType(parent))
+								{
+									bindingContext = parent;
+									break;
+								}
+								else if (this.RelativeSource.AncestorType.IsInstanceOfType(parent.BindingContext))
+								{
+									bindingContext = parent.BindingContext;
+									break;
+								}
+							}
 							parent = await TemplateUtilities.GetRealParentAsync(parent);
 							currentLevel++;
 						}
-						return parent;
+						break;
 					};
 				default:
 					throw new NotImplementedException();
 			}
+
+			CompleteApplyBinding(bindingContext, bindObj, targetProperty);
 		}
 
 		internal override BindingBase Clone()

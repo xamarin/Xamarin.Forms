@@ -51,9 +51,11 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				var level1Label = view.FindByName<Label>("AncestorLevel1Label");
 				var level2Label = view.FindByName<Label>("AncestorLevel2Label");
 				var level3Label = view.FindByName<Label>("AncestorLevel3Label");
+				var ancestorBindingContextLabel = view.FindByName<Label>("AncestorBindingContextLabel");
 
 				Assert.AreEqual(level1Label.Text, stack1.StyleId);
 				Assert.AreEqual(level2Label.Text, stack0.StyleId);
+				Assert.AreEqual(ancestorBindingContextLabel.Text, "Foo");
 				Assert.IsNull(level3Label.Text);
 			}
 
@@ -66,5 +68,10 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				Assert.AreEqual(label.Text, cv.StyleId);
 			}
 		}
+	}
+
+	public class Gh3847ViewModel
+	{
+		public string Foo => "Foo";
 	}
 }
