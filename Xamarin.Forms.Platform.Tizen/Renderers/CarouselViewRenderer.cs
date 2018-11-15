@@ -136,7 +136,8 @@ namespace Xamarin.Forms.Platform.Tizen
 			}
 			UpdatePosition(false);
 			_indicator.Update(0);
-			_indicatorItems[Element.Position].Select(true);
+			if ((Element.Position < _indicatorItems.Count) && (Element.Position > 0))
+				_indicatorItems[Element.Position].Select(true);
 		}
 
 		void UpdateItemTemplate(bool init)
