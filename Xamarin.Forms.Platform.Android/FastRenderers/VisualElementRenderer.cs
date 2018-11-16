@@ -10,7 +10,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 	internal sealed class VisualElementRenderer : IDisposable, IEffectControlProvider, ITabStop
 	{
 		bool _disposed;
-
+		
 		IVisualElementRenderer _renderer;
 		readonly GestureManager _gestureManager;
 		readonly AutomationPropertiesProvider _automationPropertiesProvider;

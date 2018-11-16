@@ -145,6 +145,7 @@
     <Compile Include="Renderers\AlignmentExtensions.cs" />
     <Compile Include="Forms.cs" />
     <Compile Include="PageExtensions.cs" />
+    <Compile Include="Renderers\MediaElementRenderer.cs" />
     <Compile Include="Renderers\WkWebViewRenderer.cs" />
     <Compile Include="Renderers\BorderElementManager.cs" />
     <Compile Include="Renderers\ButtonElementManager.cs" />

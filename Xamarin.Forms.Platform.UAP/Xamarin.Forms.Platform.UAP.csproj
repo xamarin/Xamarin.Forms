@@ -59,7 +59,6 @@
     <Compile Include="FormsSlider.cs" />
     <Compile Include="FormsTextBox.cs" />
     <Compile Include="FormsComboBox.cs" />
-    <Compile Include="ITabStopOnDescendants.cs" /> 
     <Compile Include="ImageExtensions.cs" />
     <Compile Include="ITabStopOnDescendants.cs" />
     <Compile Include="ImageElementManager.cs" />
@@ -73,6 +72,7 @@
     <Compile Include="ITitleProvider.cs" />
     <Compile Include="ITitleViewRendererController.cs" />
     <Compile Include="IToolbarProvider.cs" />
+    <Compile Include="MediaElementRenderer.cs" />
     <Compile Include="IVisualNativeElementRenderer.cs" />
     <Compile Include="MediaElementRenderer.cs" />
     <Compile Include="NativeBindingExtensions.cs" />

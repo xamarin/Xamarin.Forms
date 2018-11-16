@@ -111,9 +111,6 @@
     <Compile Include="ExportImageSourceHandlerAttribute.cs" />
     <Compile Include="ExportRendererAttribute.cs" />
     <Compile Include="Extensions\FlowDirectionExtensions.cs" />
-<<<<<<< HEAD
-    <Compile Include="FastRenderers\MediaElementRenderer.cs" />
-=======
     <Compile Include="AppCompat\ImageButtonRenderer.cs" />
     <Compile Include="FastRenderers\ImageElementManager.cs" />
     <Compile Include="FastRenderers\MediaElementRenderer.cs" />
