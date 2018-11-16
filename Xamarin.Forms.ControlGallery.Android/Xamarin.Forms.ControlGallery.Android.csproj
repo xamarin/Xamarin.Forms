@@ -349,7 +349,6 @@
     </CreateItem>
     <Copy SourceFiles="@(MapsKey)" DestinationFiles="Properties\MapsKey.cs" Condition="!Exists('Properties\MapsKey.cs')" />
   </Target>
-<<<<<<< HEAD
   <Import Project="..\packages\Xamarin.Android.Support.Annotations.27.0.2\build\MonoAndroid81\Xamarin.Android.Support.Annotations.targets" Condition="Exists('..\packages\Xamarin.Android.Support.Annotations.27.0.2\build\MonoAndroid81\Xamarin.Android.Support.Annotations.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -404,6 +403,4 @@
   <Import Project="..\packages\Xamarin.Firebase.Common.60.1142.1\build\MonoAndroid80\Xamarin.Firebase.Common.targets" Condition="Exists('..\packages\Xamarin.Firebase.Common.60.1142.1\build\MonoAndroid80\Xamarin.Firebase.Common.targets')" />
   <Import Project="..\packages\Xamarin.GooglePlayServices.Base.60.1142.1\build\MonoAndroid80\Xamarin.GooglePlayServices.Base.targets" Condition="Exists('..\packages\Xamarin.GooglePlayServices.Base.60.1142.1\build\MonoAndroid80\Xamarin.GooglePlayServices.Base.targets')" />
   <Import Project="..\packages\Xamarin.Firebase.AppIndexing.60.1142.1\build\MonoAndroid80\Xamarin.Firebase.AppIndexing.targets" Condition="Exists('..\packages\Xamarin.Firebase.AppIndexing.60.1142.1\build\MonoAndroid80\Xamarin.Firebase.AppIndexing.targets')" />
-=======
->>>>>>> pr/6
 </Project>
