@@ -48,6 +48,7 @@ namespace Xamarin.Forms
 
 					formattedString.SpansCollectionChanged -= label.Span_CollectionChanged;
 					formattedString.PropertyChanged -= label.OnFormattedTextChanged;
+					formattedString.PropertyChanging -= label.OnFormattedTextChanging;
 					formattedString.Parent = null;
 					label.RemoveSpans(formattedString.Spans);
 				}
@@ -59,6 +60,7 @@ namespace Xamarin.Forms
 				{
 					var formattedString = (FormattedString)newvalue;
 					formattedString.Parent = label;
+					formattedString.PropertyChanging += label.OnFormattedTextChanging;
 					formattedString.PropertyChanged += label.OnFormattedTextChanged;
 					formattedString.SpansCollectionChanged += label.Span_CollectionChanged;
 					label.SetupSpans(formattedString.Spans);
@@ -208,6 +210,10 @@ namespace Xamarin.Forms
 		void ILineHeightElement.OnLineHeightChanged(double oldValue, double newValue) =>
 			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 
+		void OnFormattedTextChanging(object sender, PropertyChangingEventArgs e)
+		{
+			OnPropertyChanging("FormattedText");
+		}
 		void OnFormattedTextChanged(object sender, PropertyChangedEventArgs e)
 		{
 			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);

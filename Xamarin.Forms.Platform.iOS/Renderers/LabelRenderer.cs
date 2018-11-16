@@ -117,12 +117,27 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		}
 
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+			if (disposing)
+			{
+				Element.PropertyChanging -= ElementPropertyChanging;
+			}
+		}
+
 		protected override void OnElementChanged(ElementChangedEventArgs<Label> e)
 		{
+			if (e.OldElement != null)
+			{
+				Element.PropertyChanging -= ElementPropertyChanging;
+			}
+
 			if (e.NewElement != null)
 			{
 				if (Control == null)
 				{
+					Element.PropertyChanging += ElementPropertyChanging;
 					SetNativeControl(new NativeLabel(RectangleF.Empty));
 #if !__MOBILE__
 					Control.Editable = false;
@@ -141,6 +156,18 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 
 			base.OnElementChanged(e);
+		}
+
+		void ElementPropertyChanging(object sender, PropertyChangingEventArgs e)
+		{
+			if (e.PropertyName == Label.TextProperty.PropertyName
+				|| e.PropertyName == Label.FormattedTextProperty.PropertyName
+				|| e.PropertyName == Label.LineBreakModeProperty.PropertyName
+				|| e.PropertyName == Label.LineHeightProperty.PropertyName
+				|| e.PropertyName == Label.TextColorProperty.PropertyName)
+			{
+				_perfectSizeValid = false;
+			}
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -253,7 +280,6 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateLineBreakMode()
 		{
-			_perfectSizeValid = false;
 #if __MOBILE__
 			switch (Element.LineBreakMode)
 			{
@@ -303,7 +329,6 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateText()
 		{
-			_perfectSizeValid = false;
 			var values = Element.GetValues(Label.FormattedTextProperty, Label.TextProperty);
 
 			_formatted = values[0] as FormattedString;
@@ -341,7 +366,6 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateFormattedText();
 				return;
 			}
-			_perfectSizeValid = false;
 
 #if __MOBILE__
 			Control.Font = Element.ToUIFont();
@@ -358,8 +382,6 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateFormattedText();
 				return;
 			}
-
-			_perfectSizeValid = false;
 
 			var textColor = (Color)Element.GetValue(Label.TextColorProperty);
 
