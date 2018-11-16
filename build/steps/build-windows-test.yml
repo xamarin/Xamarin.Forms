@@ -3,7 +3,9 @@ steps:
       displayName: 'Download build artifact win_build'
       inputs:
         downloadType: specific
-        itemPattern: '**/*.UnitTests/bin/$(BuildConfiguration)/*'
+        itemPattern: |
+          **/*.UnitTests/bin/$(BuildConfiguration)/*
+          **/*.Xaml.UnitTests/bin/$(BuildConfiguration)/**/*
         downloadPath: '$(Build.BinariesDirectory)'
         parallelizationLimit: 20
 
