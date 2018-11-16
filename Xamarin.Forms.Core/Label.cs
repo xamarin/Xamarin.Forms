@@ -216,8 +216,8 @@ namespace Xamarin.Forms
 		}
 		void OnFormattedTextChanged(object sender, PropertyChangedEventArgs e)
 		{
-			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 			OnPropertyChanged("FormattedText");
+			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
 		}
 
 		void SetupSpans(System.Collections.IEnumerable spans)
