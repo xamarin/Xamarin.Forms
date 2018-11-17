@@ -20,6 +20,12 @@ namespace Xamarin.Forms.Controls
 
 			var isCheckedContainer = new ValueViewContainer<CheckBox>(Test.CheckBox.IsChecked, new CheckBox(), "IsChecked", value => value.ToString());
 			Add(isCheckedContainer);
+
+			var checkedColorContainer = new ValueViewContainer<CheckBox>(Test.CheckBox.CheckedColor, new CheckBox() { CheckedColor = Color.Orange }, "Color", value => value.ToString());
+			Add(checkedColorContainer);
+
+			var unCheckedColorContainer = new ValueViewContainer<CheckBox>(Test.CheckBox.UnCheckedColor, new CheckBox() { UnCheckedColor = Color.Pink }, "Color", value => value.ToString());
+			Add(unCheckedColorContainer);
 		}
 	}
 }
