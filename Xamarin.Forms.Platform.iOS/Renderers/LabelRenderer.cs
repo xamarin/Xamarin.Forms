@@ -164,7 +164,8 @@ namespace Xamarin.Forms.Platform.MacOS
 				|| e.PropertyName == Label.FormattedTextProperty.PropertyName
 				|| e.PropertyName == Label.LineBreakModeProperty.PropertyName
 				|| e.PropertyName == Label.LineHeightProperty.PropertyName
-				|| e.PropertyName == Label.TextColorProperty.PropertyName)
+				|| e.PropertyName == Label.TextColorProperty.PropertyName
+				|| e.PropertyName == Label.FontProperty.PropertyName)
 			{
 				_perfectSizeValid = false;
 			}
