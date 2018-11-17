@@ -186,7 +186,6 @@
     <Compile Include="Renderers\PageContainer.cs" />
     <Compile Include="Renderers\ScrollViewContainer.cs" />
     <Compile Include="Renderers\StreamImagesourceHandler.cs" />
-    <Compile Include="Renderers\CheckBoxRenderer.cs" />
     <Compile Include="Renderers\ToolbarButton.cs" />
     <Compile Include="Renderers\ToolbarImageButton.cs" />
     <Compile Include="Renderers\ViewCellExtensions.cs" />

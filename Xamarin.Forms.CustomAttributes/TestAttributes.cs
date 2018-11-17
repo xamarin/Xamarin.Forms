@@ -720,7 +720,9 @@ namespace Xamarin.Forms.CustomAttributes
 
 		public enum CheckBox
 		{
-			IsChecked
+			IsChecked,
+			CheckedColor,
+			UnCheckedColor
 		}
 
 		public enum TimePicker
