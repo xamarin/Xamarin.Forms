@@ -18,11 +18,16 @@ using NativeControl = AppKit.NSControl;
 namespace Xamarin.Forms.Platform.MacOS
 #endif
 {
+	public interface ITabStop
+	{
+		NativeView TabStop { get; }
+	}
+
 	public abstract class ViewRenderer : ViewRenderer<View, NativeView>
 	{
 	}
 
-	public abstract class ViewRenderer<TView, TNativeView> : VisualElementRenderer<TView> where TView : View where TNativeView : NativeView
+	public abstract class ViewRenderer<TView, TNativeView> : VisualElementRenderer<TView>, IVisualNativeElementRenderer, ITabStop where TView : View where TNativeView : NativeView
 	{
 #if __MOBILE__
 		string _defaultAccessibilityLabel;
@@ -31,12 +36,40 @@ namespace Xamarin.Forms.Platform.MacOS
 #endif
 		NativeColor _defaultColor;
 
+		event EventHandler<PropertyChangedEventArgs> _elementPropertyChanged;
+		event EventHandler _controlChanging;
+		event EventHandler _controlChanged;
+
+
+
 		protected virtual TNativeView CreateNativeControl()
 		{
 			return default(TNativeView);
 		}
 
 		public TNativeView Control { get; private set; }
+		NativeView IVisualNativeElementRenderer.Control => Control;
+
+
+		event EventHandler<PropertyChangedEventArgs> IVisualNativeElementRenderer.ElementPropertyChanged
+		{
+			add { _elementPropertyChanged += value; }
+			remove { _elementPropertyChanged -= value; }
+		}
+
+		event EventHandler IVisualNativeElementRenderer.ControlChanging
+		{
+			add { _controlChanging += value; }
+			remove { _controlChanging -= value; }
+		}
+		event EventHandler IVisualNativeElementRenderer.ControlChanged
+		{
+			add { _controlChanged += value; }
+			remove { _controlChanged -= value; }
+		}
+
+
+		NativeView ITabStop.TabStop => Control;
 #if __MOBILE__
 		public override void LayoutSubviews()
 		{
@@ -116,6 +149,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 
 			base.OnElementPropertyChanged(sender, e);
+			_elementPropertyChanged?.Invoke(this, e);
 		}
 
 		protected override void OnRegisterEffect(PlatformEffect effect)
@@ -123,58 +157,23 @@ namespace Xamarin.Forms.Platform.MacOS
 			base.OnRegisterEffect(effect);
 			effect.SetControl(Control);
 		}
+
 #if __MOBILE__
 		protected override void SetAccessibilityHint()
 		{
-			if (Control == null)
-			{
-				base.SetAccessibilityHint();
-				return;
-			}
-
-			if (Element == null)
-				return;
-
-			if (_defaultAccessibilityHint == null)
-				_defaultAccessibilityHint = Control.AccessibilityHint;
-
-			Control.AccessibilityHint = (string)Element.GetValue(AutomationProperties.HelpTextProperty) ?? _defaultAccessibilityHint;
-
+			_defaultAccessibilityHint = Control.SetAccessibilityHint(Element, _defaultAccessibilityHint);
 		}
 
 		protected override void SetAccessibilityLabel()
 		{
-			if (Control == null)
-			{
-				base.SetAccessibilityLabel();
-				return;
-			}
-
-			if (Element == null)
-				return;
-
-			if (_defaultAccessibilityLabel == null)
-				_defaultAccessibilityLabel = Control.AccessibilityLabel;
-
-			Control.AccessibilityLabel = (string)Element.GetValue(AutomationProperties.NameProperty) ?? _defaultAccessibilityLabel;
+			_defaultAccessibilityLabel = Control.SetAccessibilityLabel(Element, _defaultAccessibilityLabel);
 		}
 
 		protected override void SetIsAccessibilityElement()
 		{
-			if (Control == null)
-			{
-				base.SetIsAccessibilityElement();
-				return;
-			}
-
-			if (Element == null)
-				return;
-
-			if (!_defaultIsAccessibilityElement.HasValue)
-				_defaultIsAccessibilityElement = Control.IsAccessibilityElement;
-
-			Control.IsAccessibilityElement = (bool)((bool?)Element.GetValue(AutomationProperties.IsInAccessibleTreeProperty) ?? _defaultIsAccessibilityElement);
+			_defaultIsAccessibilityElement = Control.SetIsAccessibilityElement(Element, _defaultIsAccessibilityElement);
 		}
+	
 #endif
 		protected override void SetAutomationId(string id)
 		{
@@ -203,6 +202,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected void SetNativeControl(TNativeView uiview)
 		{
+			_controlChanging?.Invoke(this, EventArgs.Empty);
 #if __MOBILE__
 			_defaultColor = uiview.BackgroundColor;
 
@@ -225,6 +225,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			UpdateFlowDirection();
 
 			AddSubview(uiview);
+
+			_controlChanged?.Invoke(this, EventArgs.Empty);
 		}
 
 #if __MOBILE__

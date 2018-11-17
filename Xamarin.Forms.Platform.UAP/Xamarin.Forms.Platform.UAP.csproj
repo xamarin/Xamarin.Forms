@@ -43,9 +43,14 @@
     </NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AccessibilityExtensions.cs" />
+    <Compile Include="IImageVisualElementRenderer.cs" />
+    <Compile Include="ImageButtonRenderer.cs" />
+    <Compile Include="CollectionViewRenderer.cs" />
     <Compile Include="ColorExtensions.cs" />
     <Compile Include="FormsCancelButton.cs" />
     <Compile Include="AlertDialog.cs" />
+    <Compile Include="Items\ItemContentControl.cs" />
     <Compile Include="FormsPivot.cs" />
     <Compile Include="AlignmentExtensions.cs" />
     <Compile Include="BrushHelpers.cs" />
@@ -54,12 +59,19 @@
     <Compile Include="FormsSlider.cs" />
     <Compile Include="FormsTextBox.cs" />
     <Compile Include="FormsComboBox.cs" />
+    <Compile Include="ITabStopOnDescendants.cs" />
+    <Compile Include="ImageElementManager.cs" />
     <Compile Include="InterceptVisualStateManager.cs" />
     <Compile Include="HorizontalTextAlignmentConverter.cs" />
     <Compile Include="ITitleIconProvider.cs" />
-    <Compile Include="ITitleProvider.cs" />
     <Compile Include="ITitleViewProvider.cs" />
+    <Compile Include="Items\FormsGridView.cs" />
+    <Compile Include="Items\ItemTemplateEnumerator.cs" />
+    <Compile Include="Items\ItemTemplatePair.cs" />
+    <Compile Include="ITitleProvider.cs" />
+    <Compile Include="ITitleViewRendererController.cs" />
     <Compile Include="IToolbarProvider.cs" />
+    <Compile Include="IVisualNativeElementRenderer.cs" />
     <Compile Include="NativeBindingExtensions.cs" />
     <Compile Include="NativeEventWrapper.cs" />
     <Compile Include="NativePropertyListener.cs" />
@@ -68,7 +80,12 @@
     <Compile Include="AccessKeyHelper.cs" />
     <Compile Include="PlatformConfigurationExtensions.cs" />
     <Compile Include="PlatformEffect.cs" />
+    <Compile Include="PropertyChangedEventArgsExtensions.cs" />
+    <Compile Include="StepperControl.xaml.cs">
+      <DependentUpon>StepperControl.xaml</DependentUpon>
+    </Compile>
     <Compile Include="TextBlockExtensions.cs" />
+    <Compile Include="TitleViewManager.cs" />
     <Compile Include="UriImageSourceHandler.cs" />
     <Compile Include="ViewExtensions.cs" />
     <Compile Include="LayoutExtensions.cs" />
@@ -81,9 +98,7 @@
     <Compile Include="IToolBarForegroundBinder.cs" />
     <Compile Include="NativeBindingService.cs" />
     <Compile Include="NativeValueConverterService.cs" />
-    <Compile Include="NavigationPageRendererUWP.cs" />
     <Compile Include="PageExtensions.cs" />
-    <Compile Include="PlatformUWP.cs" />
     <Compile Include="SearchBarRenderer.cs" />
     <Compile Include="TextAlignmentToHorizontalAlignmentConverter.cs" />
     <Compile Include="StepperControl.cs" />
@@ -197,6 +212,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Items\ItemsViewStyles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MasterDetailControlStyle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -213,6 +232,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Page>
+    <Page Include="StepperControl.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="TabbedPageStyle.xaml">
       <SubType>Designer</SubType>

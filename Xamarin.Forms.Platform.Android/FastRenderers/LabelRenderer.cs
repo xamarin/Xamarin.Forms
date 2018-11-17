@@ -3,6 +3,7 @@ using System.ComponentModel;
 using Android.Content;
 using Android.Content.Res;
 using Android.Graphics;
+using Android.Support.V4.View;
 using Android.Text;
 using Android.Util;
 using Android.Views;
@@ -10,7 +11,7 @@ using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android.FastRenderers
 {
-	internal sealed class LabelRenderer : FormsTextView, IVisualElementRenderer, IViewRenderer
+	internal sealed class LabelRenderer : FormsTextView, IVisualElementRenderer, IViewRenderer, ITabStop
 	{
 		int? _defaultLabelFor;
 		bool _disposed;
@@ -35,13 +36,15 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		{
 			_labelTextColorDefault = TextColors;
 			_visualElementRenderer = new VisualElementRenderer(this);
+			BackgroundManager.Init(this);
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use LabelRenderer(Context) instead.")]
-		public LabelRenderer(): base(Forms.Context)
+		public LabelRenderer() : base(Forms.Context)
 		{
 			_labelTextColorDefault = TextColors;
 			_visualElementRenderer = new VisualElementRenderer(this);
+			BackgroundManager.Init(this);
 		}
 
 		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
@@ -52,6 +55,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		VisualElementTracker IVisualElementRenderer.Tracker => _visualElementTracker;
 
 		AView IVisualElementRenderer.View => this;
+
+		AView ITabStop.TabStop => this;
 
 		ViewGroup IVisualElementRenderer.ViewGroup => null;
 
@@ -68,17 +73,17 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 				OnElementChanged(new ElementChangedEventArgs<Label>(oldElement, _element));
 
-			    _element?.SendViewInitialized(this);
+				_element?.SendViewInitialized(this);
 			}
 		}
 
 		SizeRequest IVisualElementRenderer.GetDesiredSize(int widthConstraint, int heightConstraint)
 		{
-		 	if (_disposed)
- 			{
- 				return new SizeRequest();
- 			}
-		
+			if (_disposed)
+			{
+				return new SizeRequest();
+			}
+
 			if (_lastSizeRequest.HasValue)
 			{
 				// if we are measuring the same thing, no need to waste the time
@@ -136,9 +141,9 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		void IVisualElementRenderer.SetLabelFor(int? id)
 		{
 			if (_defaultLabelFor == null)
-				_defaultLabelFor = LabelFor;
+				_defaultLabelFor = ViewCompat.GetLabelFor(this);
 
-			LabelFor = (int)(id ?? _defaultLabelFor);
+			ViewCompat.SetLabelFor(this, (int)(id ?? _defaultLabelFor));
 		}
 
 		void IVisualElementRenderer.UpdateLayout()
@@ -161,6 +166,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			if (disposing)
 			{
+				BackgroundManager.Dispose(this);
 				if (_visualElementTracker != null)
 				{
 					_visualElementTracker.Dispose();
@@ -185,17 +191,17 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			base.Dispose(disposing);
 		}
 
-        public override bool OnTouchEvent(MotionEvent e)
-        {
-	        if (_visualElementRenderer.OnTouchEvent(e) || base.OnTouchEvent(e))
-	        {
-		        return true;
-	        }
+		public override bool OnTouchEvent(MotionEvent e)
+		{
+			if (_visualElementRenderer.OnTouchEvent(e) || base.OnTouchEvent(e))
+			{
+				return true;
+			}
 
-	        return _motionEventHelper.HandleMotionEvent(Parent, e);
-        }
+			return _motionEventHelper.HandleMotionEvent(Parent, e);
+		}
 
-        void OnElementChanged(ElementChangedEventArgs<Label> e)
+		void OnElementChanged(ElementChangedEventArgs<Label> e)
 		{
 			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(e.OldElement, e.NewElement));
 
@@ -218,11 +224,13 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				SkipNextInvalidate();
 				UpdateText();
 				UpdateLineHeight();
+				UpdateTextDecorations();
 				if (e.OldElement?.LineBreakMode != e.NewElement.LineBreakMode)
 					UpdateLineBreakMode();
-				if (e.OldElement?.HorizontalTextAlignment != e.NewElement.HorizontalTextAlignment
-				 || e.OldElement?.VerticalTextAlignment != e.NewElement.VerticalTextAlignment)
+				if (e.OldElement?.HorizontalTextAlignment != e.NewElement.HorizontalTextAlignment || e.OldElement?.VerticalTextAlignment != e.NewElement.VerticalTextAlignment)
 					UpdateGravity();
+				if (e.OldElement?.MaxLines != e.NewElement.MaxLines)
+					UpdateMaxLines();
 
 				ElevationHelper.SetElevation(this, e.NewElement);
 			}
@@ -240,10 +248,14 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				UpdateText();
 			else if (e.PropertyName == Label.LineBreakModeProperty.PropertyName)
 				UpdateLineBreakMode();
+			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
+				UpdateTextDecorations();
 			else if (e.PropertyName == Label.TextProperty.PropertyName || e.PropertyName == Label.FormattedTextProperty.PropertyName)
 				UpdateText();
 			else if (e.PropertyName == Label.LineHeightProperty.PropertyName)
 				UpdateLineHeight();
+			else if (e.PropertyName == Label.MaxLinesProperty.PropertyName)
+				UpdateMaxLines();
 		}
 
 		void UpdateColor()
@@ -280,6 +292,24 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			}
 		}
 
+		void UpdateTextDecorations()
+		{
+			if (!Element.IsSet(Label.TextDecorationsProperty))
+				return;
+
+			var textDecorations = Element.TextDecorations;
+
+			if ((textDecorations & TextDecorations.Strikethrough) == 0)
+				PaintFlags &= ~PaintFlags.StrikeThruText;
+			else
+				PaintFlags |= PaintFlags.StrikeThruText;
+
+			if ((textDecorations & TextDecorations.Underline) == 0)
+				PaintFlags &= ~PaintFlags.UnderlineText;
+			else
+				PaintFlags |= PaintFlags.UnderlineText;
+		}
+
 		void UpdateGravity()
 		{
 			Label label = Element;
@@ -291,8 +321,13 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		void UpdateLineBreakMode()
 		{
-			this.SetLineBreakMode(Element.LineBreakMode);
+			this.SetLineBreakMode(Element);
 			_lastSizeRequest = null;
+		}
+
+		void UpdateMaxLines()
+		{
+			this.SetMaxLines(Element);
 		}
 
 		void UpdateText()

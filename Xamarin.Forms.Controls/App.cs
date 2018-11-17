@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using Xamarin.Forms.Controls.Issues;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
@@ -32,9 +35,7 @@ namespace Xamarin.Forms.Controls
 
 			SetMainPage(CreateDefaultMainPage());
 
-			//TestBugzilla44596();
-
-			//TestBugzilla45702();
+			//TestMainPageSwitches();
 		}
 
 		protected override void OnStart()
@@ -42,23 +43,28 @@ namespace Xamarin.Forms.Controls
 			//TestIssue2393();
 		}
 
-		void TestBugzilla44596()
+		async Task TestBugzilla44596()
 		{
+			await Task.Delay(50);
 			// verify that there is no gray screen displayed between the blue splash and red MasterDetailPage.
-			SetMainPage(new Bugzilla44596SplashPage(() =>
+			SetMainPage(new Bugzilla44596SplashPage(async () =>
 			{
 				var newTabbedPage = new TabbedPage();
-				newTabbedPage.Children.Add(new ContentPage { BackgroundColor = Color.Red, Content = new Label { Text = "yay" } });
+				newTabbedPage.Children.Add(new ContentPage { BackgroundColor = Color.Red, Content = new Label { Text = "Success" } });
 				MainPage = new MasterDetailPage
 				{
 					Master = new ContentPage { Title = "Master", BackgroundColor = Color.Red },
 					Detail = newTabbedPage
 				};
+
+				await Task.Delay(50);
+				SetMainPage(CreateDefaultMainPage());
 			}));
 		}
 
-		void TestBugzilla45702()
+		async Task TestBugzilla45702()
 		{
+			await Task.Delay(50);
 			// verify that there is no crash when switching MainPage from MDP inside NavPage
 			SetMainPage(new Bugzilla45702());
 		}
@@ -72,20 +78,50 @@ namespace Xamarin.Forms.Controls
 			view.Navigated += (s, e) => MainPage.DisplayAlert("Navigated", $"If this popup appears multiple times, this test has failed", "ok"); ;
 
 			MainPage.Navigation.PushAsync(new ContentPage { Content = view, Title = "Issue 2393" });
+			//// Uncomment to verify that there is no gray screen displayed between the blue splash and red MasterDetailPage.
+			//SetMainPage(new Bugzilla44596SplashPage(() =>
+			//{
+			//	var newTabbedPage = new TabbedPage();
+			//	newTabbedPage.Children.Add(new ContentPage { BackgroundColor = Color.Red, Content = new Label { Text = "yay" } });
+			//	MainPage = new MasterDetailPage
+			//	{
+			//		Master = new ContentPage { Title = "Master", BackgroundColor = Color.Red },
+			//		Detail = newTabbedPage
+			//	};
+			//}));
+
+			//// Uncomment to verify that there is no crash when switching MainPage from MDP inside NavPage
+			//SetMainPage(new Bugzilla45702());
+
+			//// Uncomment to verify that there is no crash when rapidly switching pages that contain lots of buttons
+			//SetMainPage(new Issues.Issue2004());
+		}
+
+		async Task TestMainPageSwitches()
+		{
+			await TestBugzilla45702();
+
+			await TestBugzilla44596();
 		}
 
 		public Page CreateDefaultMainPage()
 		{
 			var layout = new StackLayout { BackgroundColor = Color.Red };
 			layout.Children.Add(new Label { Text = "This is master Page" });
-			var master = new ContentPage { Title = "Master", Content = layout, BackgroundColor = Color.SkyBlue };
+			var master = new ContentPage { Title = "Master", Content = layout, BackgroundColor = Color.SkyBlue, Icon ="menuIcon" };
 			master.On<iOS>().SetUseSafeArea(true);
-			return new MasterDetailPage
+			var mdp = new MasterDetailPage
 			{
 				AutomationId = DefaultMainPageId,
 				Master = master,
 				Detail = CoreGallery.GetMainPage()
 			};
+			master.Icon.AutomationId = "btnMDPAutomationID";
+			mdp.SetAutomationPropertiesName("Main page");
+			mdp.SetAutomationPropertiesHelpText("Main page help text");
+			mdp.Master.Icon.SetAutomationPropertiesHelpText("This as MDP icon");
+			mdp.Master.Icon.SetAutomationPropertiesName("MDPICON");
+			return mdp;
 		}
 
 		protected override void OnAppLinkRequestReceived(Uri uri)
@@ -106,8 +142,7 @@ namespace Xamarin.Forms.Controls
 					string page = parts[1].Trim();
 					var pageForms = Activator.CreateInstance(Type.GetType(page));
 
-					var appLinkPageGallery = pageForms as AppLinkPageGallery;
-					if (appLinkPageGallery != null)
+					if (pageForms is AppLinkPageGallery appLinkPageGallery)
 					{
 						appLinkPageGallery.ShowLabel = true;
 						(MainPage as MasterDetailPage)?.Detail.Navigation.PushAsync((pageForms as Page));
@@ -161,8 +196,7 @@ namespace Xamarin.Forms.Controls
 
 		static async Task<string> LoadResource(string filename)
 		{
-			string assemblystring;
-			Assembly assembly = GetAssembly(out assemblystring);
+			Assembly assembly = GetAssembly(out string assemblystring);
 
 			Stream stream = assembly.GetManifestResourceStream($"{assemblystring}.{filename}");
 			string text;
@@ -181,9 +215,9 @@ namespace Xamarin.Forms.Controls
 				// Set up a delegate to handle the navigation to the test page
 				EventHandler toTestPage = null;
 
-				toTestPage = delegate (object sender, EventArgs e)
+				toTestPage = async delegate (object sender, EventArgs e)
 				{
-					Current.MainPage.Navigation.PushModalAsync(TestCases.GetTestCases());
+					await Current.MainPage.Navigation.PushModalAsync(TestCases.GetTestCases());
 					TestCases.TestCaseScreen.PageToAction[test]();
 					Current.MainPage.Appearing -= toTestPage;
 				};

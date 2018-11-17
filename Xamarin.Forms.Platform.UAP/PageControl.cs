@@ -7,7 +7,7 @@ using WImageSource = Windows.UI.Xaml.Media.ImageSource;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	public sealed class PageControl : ContentControl, IToolbarProvider
+	public sealed class PageControl : ContentControl, IToolbarProvider, ITitleViewRendererController
 	{
 		public static readonly DependencyProperty TitleVisibilityProperty = DependencyProperty.Register(nameof(TitleVisibility), typeof(Visibility), typeof(PageControl), new PropertyMetadata(Visibility.Visible));
 
@@ -33,7 +33,8 @@ namespace Xamarin.Forms.Platform.UWP
 		FrameworkElement _titleViewPresenter;
 
         ToolbarPlacement _toolbarPlacement;
-	    readonly ToolbarPlacementHelper _toolbarPlacementHelper = new ToolbarPlacementHelper();
+		bool _toolbarDynamicOverflowEnabled = true;
+		readonly ToolbarPlacementHelper _toolbarPlacementHelper = new ToolbarPlacementHelper();
 
 		public bool ShouldShowToolbar
 		{
@@ -55,10 +56,11 @@ namespace Xamarin.Forms.Platform.UWP
 
 		TaskCompletionSource<CommandBar> _commandBarTcs;
 		Windows.UI.Xaml.Controls.ContentPresenter _presenter;
-	    		
+		TitleViewManager _titleViewManager;
+
 		public PageControl()
 		{
-			DefaultStyleKey = typeof(PageControl);
+			Style = Windows.UI.Xaml.Application.Current.Resources["DefaultPageControlStyle"] as Windows.UI.Xaml.Style;
 		}
 
 		public string BackButtonTitle
@@ -99,6 +101,16 @@ namespace Xamarin.Forms.Platform.UWP
             }
         }
 
+		public bool ToolbarDynamicOverflowEnabled
+		{
+			get { return _toolbarDynamicOverflowEnabled; }
+			set
+			{
+				_toolbarDynamicOverflowEnabled = value;
+				UpdateToolbarDynamicOverflowEnabled();
+			}
+		}
+
 		public Visibility TitleVisibility
 		{
 			get { return (Visibility)GetValue(TitleVisibilityProperty); }
@@ -123,6 +135,9 @@ namespace Xamarin.Forms.Platform.UWP
 			set { SetValue(TitleInsetProperty, value); }
 		}
 
+		FrameworkElement ITitleViewRendererController.TitleViewPresenter => _titleViewPresenter;
+		CommandBar ITitleViewRendererController.CommandBar => _commandBar;
+
 		Task<CommandBar> IToolbarProvider.GetCommandBarAsync()
 		{
 			if (_commandBar != null)
@@ -143,8 +158,10 @@ namespace Xamarin.Forms.Platform.UWP
 
 			_commandBar = GetTemplateChild("CommandBar") as CommandBar;
 
+			_titleViewManager = new TitleViewManager(this);
 
 			_toolbarPlacementHelper.Initialize(_commandBar, () => ToolbarPlacement, GetTemplateChild);
+			UpdateToolbarDynamicOverflowEnabled();
 
 			TaskCompletionSource<CommandBar> tcs = _commandBarTcs;
 		    tcs?.SetResult(_commandBar);
@@ -152,33 +169,15 @@ namespace Xamarin.Forms.Platform.UWP
 
 		static void OnTitleViewPropertyChanged(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs e)	
 		{	
-			((PageControl)dependencyObject).UpdateTitleViewPresenter();	
-		}	
-			
-		void OnTitleViewPresenterLoaded(object sender, RoutedEventArgs e)	
-		{	
-			if (TitleView == null || _titleViewPresenter == null || _commandBar == null)	
-				return;	
-		
-			_titleViewPresenter.Width = _commandBar.ActualWidth;	
+			((PageControl)dependencyObject)._titleViewManager?.OnTitleViewPropertyChanged();	
 		}
 		
-		void UpdateTitleViewPresenter()	
-		{	
-			if (TitleView == null)	
-			{	
-				TitleViewVisibility = Visibility.Collapsed;	
-					
-				if (_titleViewPresenter != null)	
-					_titleViewPresenter.Loaded -= OnTitleViewPresenterLoaded;	
-			}	
-			else	
-			{	
-					TitleViewVisibility = Visibility.Visible;	
-				
-					if (_titleViewPresenter != null)	
-						_titleViewPresenter.Loaded += OnTitleViewPresenterLoaded;	
-			}	
+		void UpdateToolbarDynamicOverflowEnabled()
+		{
+			if (_commandBar != null)
+			{
+				_commandBar.IsDynamicOverflowEnabled = ToolbarDynamicOverflowEnabled;
+			}
 		}
-    }
+	}
 }

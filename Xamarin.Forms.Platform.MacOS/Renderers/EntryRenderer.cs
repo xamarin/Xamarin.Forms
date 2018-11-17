@@ -11,6 +11,8 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			public EventHandler<BoolEventArgs> FocusChanged;
 
+			public EventHandler Completed;
+
 			bool _windowEventsSet;
 
 			bool _disposed;
@@ -40,8 +42,16 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				if (CurrentEditor != Window.FirstResponder)
 					FocusChanged?.Invoke(this, new BoolEventArgs(false));
-				
+
 				base.DidEndEditing(notification);
+			}
+
+			public override void KeyUp(NSEvent theEvent)
+			{
+				base.KeyUp(theEvent);
+
+				if (theEvent.KeyCode == (ushort)NSKey.Return)
+					Completed?.Invoke(this, EventArgs.Empty);
 			}
 
 			protected override void Dispose(bool disposing)
@@ -67,7 +77,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			void HandleWindowDidBecomeKey(object sender, EventArgs args)
 			{
-				if (CurrentEditor == Window.FirstResponder)
+				if (Window != null && CurrentEditor == Window.FirstResponder)
 					FocusChanged?.Invoke(this, new BoolEventArgs(true));
 			}
 		}
@@ -85,32 +95,12 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			if (Control == null)
 			{
-				NSTextField textField;
-				if (e.NewElement.IsPassword)
-					textField = new NSSecureTextField();
-				else
-				{
-					textField = new FormsNSTextField();
-					(textField as FormsNSTextField).FocusChanged += TextFieldFocusChanged;
-				}
-
-				SetNativeControl(textField);
-
-				_defaultTextColor = textField.TextColor;
-
-				textField.Changed += OnChanged;
-				textField.EditingBegan += OnEditingBegan;
-				textField.EditingEnded += OnEditingEnded;
+				CreateControl();
 			}
 
 			if (e.NewElement != null)
 			{
-				UpdatePlaceholder();
-				UpdateText();
-				UpdateColor();
-				UpdateFont();
-				UpdateAlignment();
-				UpdateMaxLength();
+				UpdateControl();
 			}
 		}
 
@@ -160,19 +150,59 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (disposing && !_disposed)
 			{
 				_disposed = true;
-				if (Control != null)
-				{
-					Control.EditingBegan -= OnEditingBegan;
-					Control.Changed -= OnChanged;
-					Control.EditingEnded -= OnEditingEnded;
-					var formsNSTextField = (Control as FormsNSTextField);
-					if (formsNSTextField != null)
-						formsNSTextField.FocusChanged -= TextFieldFocusChanged;
-				}
+				ClearControl();
 			}
 
 			base.Dispose(disposing);
 		}
+
+		void CreateControl()
+		{
+			NSTextField textField;
+			if (Element.IsPassword)
+				textField = new NSSecureTextField();
+			else
+			{
+				textField = new FormsNSTextField();
+				(textField as FormsNSTextField).FocusChanged += TextFieldFocusChanged;
+				(textField as FormsNSTextField).Completed += OnCompleted;
+			}
+
+			SetNativeControl(textField);
+
+			_defaultTextColor = textField.TextColor;
+
+			textField.Changed += OnChanged;
+			textField.EditingBegan += OnEditingBegan;
+			textField.EditingEnded += OnEditingEnded;
+		}
+
+		void ClearControl()
+		{
+			if (Control != null)
+			{
+				Control.EditingBegan -= OnEditingBegan;
+				Control.Changed -= OnChanged;
+				Control.EditingEnded -= OnEditingEnded;
+				var formsNSTextField = (Control as FormsNSTextField);
+				if (formsNSTextField != null)
+				{
+					formsNSTextField.FocusChanged -= TextFieldFocusChanged;
+					formsNSTextField.Completed -= OnCompleted;
+				}
+			}
+		}
+
+		void UpdateControl()
+		{
+			UpdatePlaceholder();
+			UpdateText();
+			UpdateColor();
+			UpdateFont();
+			UpdateAlignment();
+			UpdateMaxLength();
+		}
+
 		void TextFieldFocusChanged(object sender, BoolEventArgs e)
 		{
 			ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, e.Value);
@@ -193,6 +223,10 @@ namespace Xamarin.Forms.Platform.MacOS
 		void OnEditingEnded(object sender, EventArgs e)
 		{
 			ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
+		}
+
+		void OnCompleted(object sender, EventArgs e)
+		{
 			EntryController?.SendCompleted();
 		}
 
@@ -213,10 +247,10 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdatePassword()
 		{
-			if (Element.IsPassword && (Control is NSSecureTextField))
-				return;
-			if (!Element.IsPassword && !(Control is NSSecureTextField))
-				return;
+			ClearControl();
+			CreateControl();
+			UpdateControl();
+			Layout();
 		}
 
 		void UpdateFont()

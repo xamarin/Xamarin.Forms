@@ -16,9 +16,12 @@ using WImageSource = Windows.UI.Xaml.Media.ImageSource;
 
 
 using Windows.UI.Core;
+using Windows.UI.Xaml.Data;
+
 namespace Xamarin.Forms.Platform.UWP
 {
-	public partial class NavigationPageRenderer : IVisualElementRenderer, ITitleProvider, ITitleIconProvider, ITitleViewProvider, IToolbarProvider
+	public class NavigationPageRenderer : IVisualElementRenderer, ITitleProvider, ITitleIconProvider, 
+		ITitleViewProvider, IToolbarProvider, IToolBarForegroundBinder
 	{
 		PageControl _container;
 		Page _currentPage;
@@ -32,6 +35,10 @@ namespace Xamarin.Forms.Platform.UWP
 		WImageSource _titleIcon;
 		VisualElementTracker<Page, PageControl> _tracker;
 		EntranceThemeTransition _transition;
+		Platform _platform;
+		bool _parentsLookedUp = false;
+
+		Platform Platform => _platform ?? (_platform = Platform.Current);
 
 		public NavigationPage Element { get; private set; }
 
@@ -195,6 +202,7 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateTitleColor();
 				UpdateNavigationBarBackground();
 				UpdateToolbarPlacement();
+				UpdateToolbarDynamicOverflowEnabled();
 				UpdateTitleIcon();
 				UpdateTitleView();
 
@@ -302,12 +310,8 @@ namespace Xamarin.Forms.Platform.UWP
 				_parentMasterDetailPage.PropertyChanged += MultiPagePropertyChanged;
 
 			UpdateShowTitle();
-
 			UpdateTitleOnParents();
-
-			UpdateTitleIcon();
-
-			UpdateTitleView();
+			_parentsLookedUp = true;
 		}
 
 		void MultiPagePropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -362,6 +366,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdatePadding();
 			else if (e.PropertyName == ToolbarPlacementProperty.PropertyName)
 				UpdateToolbarPlacement();
+			else if (e.PropertyName == ToolbarDynamicOverflowEnabledProperty.PropertyName)
+				UpdateToolbarDynamicOverflowEnabled();
 			else if (e.PropertyName == NavigationPage.TitleIconProperty.PropertyName)
 				UpdateTitleIcon();
 			else if (e.PropertyName == NavigationPage.TitleViewProperty.PropertyName)
@@ -377,6 +383,12 @@ namespace Xamarin.Forms.Platform.UWP
 			Element.SendAppearing();
 			UpdateBackButton();
 			UpdateTitleOnParents();
+
+			if (_parentMasterDetailPage != null)
+			{
+				UpdateTitleView();
+				UpdateTitleIcon();
+			}
 		}
 
 		void OnNativeSizeChanged(object sender, SizeChangedEventArgs e)
@@ -460,7 +472,6 @@ namespace Xamarin.Forms.Platform.UWP
 
 			UpdateTitleVisible();
 			UpdateTitleOnParents();
-			UpdateTitleIcon();
 			UpdateTitleView();
 
 			if (isAnimated && _transition == null)
@@ -543,13 +554,118 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateTitleView()
 		{
-			if (_currentPage == null)
+			// if the life cycle hasn't reached the point where _parentMasterDetailPage gets wired up then 
+			// don't update the title view
+			if (_currentPage == null || !_parentsLookedUp)
 				return;
 
-			_container.TitleView = TitleView;
+			// If the container TitleView gets initialized before the MDP TitleView it causes the 
+			// MDP TitleView to not render correctly
+			if (_parentMasterDetailPage != null)
+			{
+				if (Platform.GetRenderer(_parentMasterDetailPage) is ITitleViewProvider parent)
+					parent.TitleView = TitleView;
+			}
+			else if (_parentMasterDetailPage == null)
+				_container.TitleView = TitleView;
 
-			if (_parentMasterDetailPage != null && Platform.GetRenderer(_parentMasterDetailPage) is ITitleViewProvider parent)
-				parent.TitleView = TitleView;
+		}
+
+		SystemNavigationManager _navManager;
+
+		public void BindForegroundColor(AppBar appBar)
+		{
+			SetAppBarForegroundBinding(appBar);
+		}
+
+		public void BindForegroundColor(AppBarButton button)
+		{
+			SetAppBarForegroundBinding(button);
+		}
+
+		void SetAppBarForegroundBinding(FrameworkElement element)
+		{
+			element.SetBinding(Control.ForegroundProperty,
+				new Windows.UI.Xaml.Data.Binding { Path = new PropertyPath("TitleBrush"), Source = _container, RelativeSource = new RelativeSource { Mode = RelativeSourceMode.TemplatedParent } });
+		}
+
+		void UpdateToolbarPlacement()
+		{
+			if (_container == null)
+			{
+				return;
+			}
+
+			_container.ToolbarPlacement = Element.OnThisPlatform().GetToolbarPlacement();
+		}
+
+		void UpdateToolbarDynamicOverflowEnabled()
+		{
+			if (_container == null)
+			{
+				return;
+			}
+
+			_container.ToolbarDynamicOverflowEnabled = Element.OnThisPlatform().GetToolbarDynamicOverflowEnabled();
+		}
+		
+
+		void UpdateShowTitle()
+		{
+			((ITitleProvider)this).ShowTitle = _parentTabbedPage == null && _parentMasterDetailPage == null;
+		}
+
+		static object GetDefaultColor()
+		{
+			return Windows.UI.Xaml.Application.Current.Resources["SystemControlBackgroundChromeMediumLowBrush"];
+		}
+
+		void UpdateBackButton()
+		{
+			if (_navManager == null || _currentPage == null)
+			{
+				return;
+			}
+
+			bool showBackButton = Element.InternalChildren.Count > 1 && NavigationPage.GetHasBackButton(_currentPage);
+			_navManager.AppViewBackButtonVisibility = showBackButton ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed;
+			_container.SetBackButtonTitle(Element);
+		}
+
+		async void UpdateTitleOnParents()
+		{
+			if (Element == null)
+				return;
+
+			ITitleProvider render = null;
+			if (_parentTabbedPage != null)
+			{
+				render = Platform.GetRenderer(_parentTabbedPage) as ITitleProvider;
+				if (render != null)
+					render.ShowTitle = (_parentTabbedPage.CurrentPage == Element) && NavigationPage.GetHasNavigationBar(_currentPage);
+			}
+
+			if (_parentMasterDetailPage != null)
+			{
+				render = Platform.GetRenderer(_parentMasterDetailPage) as ITitleProvider;
+				if (render != null)
+					render.ShowTitle = (_parentMasterDetailPage.Detail == Element) && NavigationPage.GetHasNavigationBar(_currentPage);
+			}
+
+			if (render != null && render.ShowTitle)
+			{
+				render.Title = _currentPage.Title;
+				render.BarBackgroundBrush = GetBarBackgroundBrush();
+				render.BarForegroundBrush = GetBarForegroundBrush();
+			}
+
+			if (_showTitle || (render != null && render.ShowTitle))
+			{
+				if (Platform != null)
+				{
+					await Platform.UpdateToolbarItems();
+				}
+			}
 		}
 	}
 }

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -59,6 +59,7 @@
     <Compile Include="AnimatableKeyTests.cs" />
     <Compile Include="BaseTestFixture.cs" />
     <Compile Include="AbsoluteLayoutTests.cs" />
+    <Compile Include="BindableLayoutTests.cs" />
     <Compile Include="BindableObjectExtensionTests.cs" />
     <Compile Include="BindableObjectUnitTests.cs" />
     <Compile Include="BindablePropertyUnitTests.cs" />
@@ -76,10 +77,14 @@
     <Compile Include="DependencyResolutionTests.cs" />
     <Compile Include="EffectiveFlowDirectionExtensions.cs" />
     <Compile Include="FlowDirectionTests.cs" />
+    <Compile Include="ImageButtonUnitTest.cs" />
+    <Compile Include="ItemsViewTests.cs" />
     <Compile Include="LayoutChildIntoBoundingRegionTests.cs" />
     <Compile Include="MenuUnitTests.cs" />
+    <Compile Include="PreviewerReflectionTests.cs" />
     <Compile Include="RegionTests.cs" />
     <Compile Include="SpanTests.cs" />
+    <Compile Include="TitleViewUnitTests.cs" />
     <Compile Include="TemplatedViewUnitTests.cs" />
     <Compile Include="TemplatedPageUnitTests.cs" />
     <Compile Include="ContentFormUnitTests.cs" />
@@ -149,10 +154,12 @@
     <Compile Include="TapGestureRecognizerTests.cs" />
     <Compile Include="TemplatedItemsListTests.cs" />
     <Compile Include="TextCellTests.cs" />
+    <Compile Include="TextDecorationUnitTests.cs" />
     <Compile Include="ThicknessTests.cs" />
     <Compile Include="TimePickerUnitTest.cs" />
     <Compile Include="ToolbarItemTests.cs" />
     <Compile Include="ToolbarTrackerTests.cs" />
+    <Compile Include="ToStringValueConverterTests.cs" />
     <Compile Include="TypeUnitTests.cs" />
     <Compile Include="ViewCellTests.cs" />
     <Compile Include="ViewUnitTests.cs" />
@@ -165,7 +172,6 @@
     <Compile Include="ContentViewUnitTest.cs" />
     <Compile Include="MockPlatformServices.cs" />
     <Compile Include="GridTests.cs" />
-    <Compile Include="UnitPlatform.cs" />
     <Compile Include="GridLengthTypeConverterTests.cs" />
     <Compile Include="BoxViewUnitTests.cs" />
     <Compile Include="NotifiedPropertiesTests.cs" />
@@ -196,6 +202,7 @@
     <Compile Include="FlexLayoutAlignContentTests.cs" />
     <Compile Include="FlexLayoutAlignSelfTests.cs" />
     <Compile Include="FlexOrderTests.cs" />
+    <Compile Include="FontAttributeConverterUnitTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Core\Xamarin.Forms.Core.csproj">

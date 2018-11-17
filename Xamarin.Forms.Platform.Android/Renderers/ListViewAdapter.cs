@@ -15,6 +15,7 @@ namespace Xamarin.Forms.Platform.Android
 {
 	internal class ListViewAdapter : CellAdapter
 	{
+		bool _disposed;
 		static readonly object DefaultItemTypeOrDataTemplate = new object();
 		const int DefaultGroupHeaderTemplateId = 0;
 		const int DefaultItemTemplateId = 1;
@@ -62,11 +63,8 @@ namespace Xamarin.Forms.Platform.Android
 			realListView.OnItemClickListener = this;
 			realListView.OnItemLongClickListener = this;
 
-			var platform = _listView.Platform;
-			if (platform?.GetType() == typeof(AppCompat.Platform))
-				MessagingCenter.Subscribe<AppCompat.Platform>(this, AppCompat.Platform.CloseContextActionsSignalName, p => CloseContextActions());
-			else
-				MessagingCenter.Subscribe<Platform>(this, Platform.CloseContextActionsSignalName, p => CloseContextActions());
+			MessagingCenter.Subscribe<ListViewAdapter>(this, Platform.CloseContextActionsSignalName, lva => CloseContextActions());
+
 			InvalidateCount();
 		}
 
@@ -255,7 +253,6 @@ namespace Xamarin.Forms.Platform.Android
 				// We are going to re-set the Platform here because in some cases (headers mostly) its possible this is unset and
 				// when the binding context gets updated the measure passes will all fail. By applying this here the Update call
 				// further down will result in correct layouts.
-				cell.Platform = _listView.Platform;
 
 				ICellController cellController = cell;
 				cellController.SendDisappearing();
@@ -417,15 +414,18 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override void Dispose(bool disposing)
 		{
+			if (_disposed)
+			{
+				return;
+			}
+
+			_disposed = true;
+
 			if (disposing)
 			{
 				CloseContextActions();
 
-				var platform = _listView.Platform;
-				if (platform.GetType() == typeof(AppCompat.Platform))
-					MessagingCenter.Unsubscribe<AppCompat.Platform>(this, Platform.CloseContextActionsSignalName);
-				else
-					MessagingCenter.Unsubscribe<Platform>(this, Platform.CloseContextActionsSignalName);
+				MessagingCenter.Unsubscribe<ListViewAdapter>(this, Platform.CloseContextActionsSignalName);
 
 				_realListView.OnItemClickListener = null;
 				_realListView.OnItemLongClickListener = null;

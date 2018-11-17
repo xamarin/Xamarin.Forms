@@ -428,12 +428,16 @@ namespace Xamarin.Forms
 				var stringValue = value as string ?? string.Empty;
 				// see: https://bugzilla.xamarin.com/show_bug.cgi?id=32871
 				// do not canonicalize "*.[.]"; "1." should not update bound BindableProperty
-				if (stringValue.EndsWith(".") && DecimalTypes.Contains(convertTo))
-					throw new FormatException();
+				if (stringValue.EndsWith(".", StringComparison.Ordinal) && DecimalTypes.Contains(convertTo)) {
+					value = original;
+					return false;
+				}
 
 				// do not canonicalize "-0"; user will likely enter a period after "-0"
-				if (stringValue == "-0" && DecimalTypes.Contains(convertTo))
-					throw new FormatException();
+				if (stringValue == "-0" && DecimalTypes.Contains(convertTo)) {
+					value = original;
+					return false;
+				}
 
 				value = Convert.ChangeType(value, convertTo, CultureInfo.InvariantCulture);
 				return true;
@@ -515,8 +519,7 @@ namespace Xamarin.Forms
 
 			void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
 			{
-				PropertyChangedEventHandler handler;
-				if (_listener.TryGetTarget(out handler) && handler != null)
+				if (_listener.TryGetTarget(out var handler) && handler != null)
 					handler(sender, e);
 				else
 					Unsubscribe();
