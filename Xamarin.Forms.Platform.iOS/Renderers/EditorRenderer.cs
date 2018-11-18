@@ -136,8 +136,6 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateKeyboard();
 			else if (e.PropertyName == Editor.IsTextPredictionEnabledProperty.PropertyName)
 				UpdateKeyboard();
-			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
-				UpdateEditable();
 			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName || e.PropertyName == Xamarin.Forms.InputView.IsReadOnlyProperty.PropertyName)
 				UpdateUserInteraction();
 			else if (e.PropertyName == Editor.TextColorProperty.PropertyName)
