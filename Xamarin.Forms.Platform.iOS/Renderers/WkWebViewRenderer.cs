@@ -318,7 +318,7 @@ namespace Xamarin.Forms.Platform.iOS
 				// The scheme and host are used unless local html content is what the webview is displaying,
 				// in which case the bundle file name is used.
 
-				if (webView.Url == null)
+				if (webView.Url != null && webView.Url.AbsoluteString != $"file://{NSBundle.MainBundle.BundlePath}/")
 					return $"{webView.Url.Scheme}://{webView.Url.Host}";
 				
 				return new NSString(NSBundle.MainBundle.BundlePath).LastPathComponent;
@@ -328,6 +328,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				var action = UIAlertAction.Create(LocalOK, UIAlertActionStyle.Default, (_) => handler());
 				controller.AddAction(action);
+				controller.PreferredAction = action;
 				return action;
 			}
 
@@ -335,7 +336,6 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				var action = UIAlertAction.Create(LocalCancel, UIAlertActionStyle.Cancel, (_) => handler());
 				controller.AddAction(action);
-				controller.PreferredAction = action;
 				return action;
 			}
 
