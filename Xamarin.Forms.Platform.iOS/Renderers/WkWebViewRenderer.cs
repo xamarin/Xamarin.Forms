@@ -216,8 +216,11 @@ namespace Xamarin.Forms.Platform.iOS
 				if (webView.IsLoading)
 					return;
 
-				_renderer._ignoreSourceChanges = true;
 				var url = GetCurrentUrl();
+				if (url == $"file://{NSBundle.MainBundle.BundlePath}/")
+					return;
+
+				_renderer._ignoreSourceChanges = true;
 				WebView.SetValueFromRenderer(WebView.SourceProperty, new UrlWebViewSource { Url = url });
 				_renderer._ignoreSourceChanges = false;
 
