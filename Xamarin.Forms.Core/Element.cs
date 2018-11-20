@@ -462,6 +462,25 @@ namespace Xamarin.Forms
 			}
 		}
 
+		internal static void SetVisualfromParent(Element child)
+		{
+			IVisualController controller = child as IVisualController;
+			if (controller == null)
+				return;
+
+			if (controller.Visual != VisualMarker.MatchParent)
+			{
+				controller.EffectiveVisual = controller.Visual;
+				return;
+			}
+
+			if (child.Parent is IVisualController parentView)
+				controller.EffectiveVisual = parentView.EffectiveVisual;
+		}
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public event EventHandler PlatformSet;
+
 		internal virtual void SetChildInheritedBindingContext(Element child, object context)
 		{
 			SetInheritedBindingContext(child, context);
