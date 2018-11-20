@@ -43,7 +43,7 @@
     <Reference Include="System.Xaml" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference id="Xamarin.Forms.Design" Version="1.0.26-pre" Condition=" '$(OS)' != 'Unix'" />
+    <PackageReference Include="Xamarin.Forms.Design" Version="1.0.26-pre" Condition=" '$(OS)' != 'Unix' " />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Xamarin.Forms.Core\Properties\GlobalAssemblyInfo.cs">
