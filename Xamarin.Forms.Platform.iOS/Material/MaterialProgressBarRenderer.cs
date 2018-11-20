@@ -29,7 +29,6 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			base.OnElementChanged(e);
 			Control.SetHidden(false, true, (completion) => { });
 			Element.WidthRequest = 10;
-
 		}
 
 
@@ -67,16 +66,18 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		{
 			base.SetBackgroundColor(color);
 
-			if (Control == null)
+			if (Control == null || color == Color.Default)
 				return;
 
-			Control.TrackTintColor = color != Color.Default ? color.ToUIColor() : null;
+			Control.TrackTintColor = color.ToUIColor();
 		}
 
 		void UpdateProgressColor()
 		{
-			//Doesn't work on material
-			//Control.ProgressTintColor = Element.ProgressColor == Color.Default ? null : Element.ProgressColor.ToUIColor();
+			if (Element.ProgressColor == Color.Default)
+				return;
+
+			Control.ProgressTintColor = Element.ProgressColor.ToUIColor();
 		}
 
 		void UpdateProgress()

@@ -2,4 +2,6 @@
 <resources>
   <style name="XamarinFormsMaterialTheme" parent="Theme.MaterialComponents">
   </style>
+  <style name="XamarinFormsMaterialProgressBarHorizontal" parent="android:Widget.ProgressBar.Horizontal">
+  </style>
 </resources>
