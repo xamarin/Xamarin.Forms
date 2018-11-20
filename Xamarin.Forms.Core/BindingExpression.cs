@@ -164,7 +164,7 @@ namespace Xamarin.Forms
 				else
 					value = Binding.FallbackValue ?? property.DefaultValue;
 
-				if (!TryConvert(part, ref value, property.ReturnType, true))
+				if (!TryConvert(ref value, property, property.ReturnType, true))
 				{
 					Log.Warning("Binding", "{0} can not be converted to type '{1}'", value, property.ReturnType);
 					return;
@@ -176,7 +176,7 @@ namespace Xamarin.Forms
 			{
 				object value = Binding.GetTargetValue(target.GetValue(property), part.SetterType);
 
-				if (!TryConvert(part, ref value, part.SetterType, false))
+				if (!TryConvert(ref value, property, part.SetterType, false))
 				{
 					Log.Warning("Binding", "{0} can not be converted to type '{1}'", value, part.SetterType);
 					return;
@@ -415,41 +415,33 @@ namespace Xamarin.Forms
 		}
 		static Type[] DecimalTypes = new[] { typeof(float), typeof(decimal), typeof(double) };
 
-		bool TryConvert(BindingExpressionPart part, ref object value, Type convertTo, bool toTarget)
+		internal static bool TryConvert(ref object value, BindableProperty targetProperty, Type convertTo, bool toTarget)
 		{
 			if (value == null)
-				return true;
-			if ((toTarget && _targetProperty.TryConvert(ref value)) || (!toTarget && convertTo.IsInstanceOfType(value)))
+				return !convertTo.GetTypeInfo().IsValueType;
+			if ((toTarget && targetProperty.TryConvert(ref value)) || (!toTarget && convertTo.IsInstanceOfType(value)))
 				return true;
 
 			object original = value;
-			try
-			{
+			try {
 				var stringValue = value as string ?? string.Empty;
 				// see: https://bugzilla.xamarin.com/show_bug.cgi?id=32871
 				// do not canonicalize "*.[.]"; "1." should not update bound BindableProperty
-				if (stringValue.EndsWith(".") && DecimalTypes.Contains(convertTo))
-					throw new FormatException();
+				if (stringValue.EndsWith(".", StringComparison.Ordinal) && DecimalTypes.Contains(convertTo)) {
+					value = original;
+					return false;
+				}
 
 				// do not canonicalize "-0"; user will likely enter a period after "-0"
-				if (stringValue == "-0" && DecimalTypes.Contains(convertTo))
-					throw new FormatException();
+				if (stringValue == "-0" && DecimalTypes.Contains(convertTo)) {
+					value = original;
+					return false;
+				}
 
 				value = Convert.ChangeType(value, convertTo, CultureInfo.InvariantCulture);
 				return true;
 			}
-			catch (InvalidCastException)
-			{
-				value = original;
-				return false;
-			}
-			catch (FormatException)
-			{
-				value = original;
-				return false;
-			}
-			catch (OverflowException)
-			{
+			catch (Exception ex) when (ex is InvalidCastException || ex is FormatException || ex is OverflowException) {
 				value = original;
 				return false;
 			}
