@@ -617,6 +617,16 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				RemoveBackgroundLayer();
 				IsHitTestVisible = Element.IsEnabled && !Element.InputTransparent;
+
+				if (!IsHitTestVisible)
+				{
+					return;
+				}
+
+				if (Element is Layout && Background == null)
+				{
+					Background = new SolidColorBrush(Windows.UI.Colors.Transparent);
+				}
 			}
 		}
 
