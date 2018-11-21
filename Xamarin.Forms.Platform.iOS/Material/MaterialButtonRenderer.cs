@@ -200,7 +200,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 					ComputeEdgeInsets(Control, Element.ContentLayout);
 
-					Control.SetImageTintColor(UIColor.Black, UIControlState.Normal);
+					Control.SetImageTintColor(UIColor.White, UIControlState.Normal);
 				}
 			}
 			else
@@ -247,12 +247,16 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			var uiElement = button ?? Control;
 			if (uiElement == null)
 				return;
-			uiElement.ContentEdgeInsets = new UIEdgeInsets(
-				(float)(Element.Padding.Top + _paddingDelta.Top),
-				(float)(Element.Padding.Left + _paddingDelta.Left),
-				(float)(Element.Padding.Bottom + _paddingDelta.Bottom),
-				(float)(Element.Padding.Right + _paddingDelta.Right)
-			);
+
+			if (Element.IsSet(Button.PaddingProperty))
+			{
+				uiElement.ContentEdgeInsets = new UIEdgeInsets(
+					(float)(Element.Padding.Top + _paddingDelta.Top),
+					(float)(Element.Padding.Left + _paddingDelta.Left),
+					(float)(Element.Padding.Bottom + _paddingDelta.Bottom),
+					(float)(Element.Padding.Right + _paddingDelta.Right)
+				);
+			}
 		}
 
 		void UpdateContentEdge(UIButton button, UIEdgeInsets? delta = null)
