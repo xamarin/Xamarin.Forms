@@ -398,8 +398,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void UpdateFlowDirection()
 		{
-			// LayoutDirection set to local for correct position of hamburger.
-			LayoutDirection = ALayoutDirection.Locale;
+			if (Element.FlowDirection == FlowDirection.MatchParent)
+				// LayoutDirection set to local for correct position of hamburger.
+				LayoutDirection = ALayoutDirection.Locale;
 			this.UpdateFlowDirection(Element);
 		}
 
