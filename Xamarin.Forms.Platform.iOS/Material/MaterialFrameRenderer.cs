@@ -49,12 +49,12 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 			if (oldElement != null)
 			{
-				oldElement.PropertyChanged -= HandlePropertyChanged;
+				oldElement.PropertyChanged -= OnElementPropertyChanged;
 			}
 
 			if (element != null)
 			{
-				element.PropertyChanged += HandlePropertyChanged;
+				element.PropertyChanged += OnElementPropertyChanged;
 				if (_packager == null)
 				{
 					_packager = new VisualElementPackager(this);
@@ -79,7 +79,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			OnElementChanged(new VisualElementChangedEventArgs(oldElement, element));
 		}
 
-		void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
+		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName ||
 				e.PropertyName == Xamarin.Forms.Frame.BorderColorProperty.PropertyName ||
