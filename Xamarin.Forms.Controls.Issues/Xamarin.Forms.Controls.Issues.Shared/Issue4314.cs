@@ -42,10 +42,10 @@ namespace Xamarin.Forms.Controls.Issues
 		public void Issue4341Test() 
 		{
 			RunningApp.WaitForElement(c=> c.Marked("Email"));
-			RunningApp.SwipeRightToLeft("Subject Line 0");
+			RunningApp.ActivateContextMenu("Subject Line 0");
 			RunningApp.WaitForElement("Delete");
 			RunningApp.Tap("Delete");
-			RunningApp.SwipeRightToLeft("Subject Line 1");
+			RunningApp.ActivateContextMenu("Subject Line 1");
 			RunningApp.Tap("Delete");
 			RunningApp.WaitForElement(c=> c.Marked(Success));
 		}
