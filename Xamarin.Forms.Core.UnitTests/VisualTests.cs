@@ -417,17 +417,6 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assume.That(child.Visual == Forms.VisualMarker.MatchParent, "child view Visual should be MatchParent");
 		}
 
-		//static void AddImplicitToDefaultScrollView(ScrollView parent, View child)
-		//{
-		//	parent.Content = child;
-
-		//	IVisualController controller = child;
-
-		//	Assume.That(controller.EffectiveVisual.IsImplicit(), "child view EffectiveVisual should be Implicit");
-		//	Assume.That(controller.EffectiveVisual.IsDefault(), "child view EffectiveVisual should be Default");
-		//	Assume.That(child.Visual == Visual.MatchParent, "child view Visual should be MatchParent");
-		//}
-
 		static void AddImplicitToMaterial(StackLayout parent, View child)
 		{
 			parent.Children.Add(child);
@@ -448,18 +437,6 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assume.That(controller.EffectiveVisual == Forms.VisualMarker.Material, "child view EffectiveVisual should be Material");
 			Assume.That(child.Visual == Forms.VisualMarker.MatchParent, "child view Visual should be MatchParent");
 		}
-
-		//static ScrollView ExplicitDefaultScrollView()
-		//{
-		//	var layout = new ScrollView { Visual = Visual.Default };
-
-		//	IVisualController controller = layout;
-
-		//	Assume.That(controller.EffectiveVisual.IsExplicit(), "Explicit Default view EffectiveVisual should be Explicit");
-		//	Assume.That(controller.EffectiveVisual.IsDefault(), "Explicit Default view EffectiveVisual should be Default");
-		//	Assume.That(layout.Visual == Visual.Default, "Explicit Default view Visual should be Default");
-		//	return layout;
-		//}
 
 		static StackLayout ExplicitDefaultLayout()
 		{
@@ -507,19 +484,6 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			return layout;
 		}
-
-		//static View ExplicitMaterialView()
-		//{
-		//	var view = new View { Visual = Visual.Material };
-
-		//	IVisualController controller = view;
-
-		//	Assume.That(controller.EffectiveVisual.IsExplicit(), "Explicit RTL view EffectiveVisual should be Explicit");
-		//	Assume.That(controller.EffectiveVisual.IsMaterial(), "Explicit RTL view EffectiveVisual should be Material");
-		//	Assume.That(((View)view).Visual == Visual.Material, "Explicit RTL view Visual should be Material");
-
-		//	return view;
-		//}
 
 		static ScrollView ImplicitDefaultScrollView()
 		{
