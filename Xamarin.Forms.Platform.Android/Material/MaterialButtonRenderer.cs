@@ -27,7 +27,7 @@ using ADrawableCompat = Android.Support.V4.Graphics.Drawable.DrawableCompat;
 [assembly: ExportRenderer(typeof(Xamarin.Forms.Button), typeof(MaterialButtonRenderer), new[] { typeof(VisualRendererMarker.Material) })]
 namespace Xamarin.Forms.Platform.Android.Material
 {
-	internal sealed class MaterialButtonRenderer : MButton, IVisualElementRenderer, AView.IOnAttachStateChangeListener,
+	public class MaterialButtonRenderer : MButton, IVisualElementRenderer, AView.IOnAttachStateChangeListener,
 		AView.IOnFocusChangeListener, AView.IOnClickListener, AView.IOnTouchListener, IViewRenderer, ITabStop, IBorderVisualElementRenderer
 	{
 		float _defaultFontSize;
@@ -51,9 +51,16 @@ namespace Xamarin.Forms.Platform.Android.Material
 
 		public MaterialButtonRenderer(Context context) : base(new ContextThemeWrapper(context, Resource.Style.XamarinFormsMaterialTheme))
 		{
+			VisualElement.VerifyVisualFlagEnabled();
 			_automationPropertiesProvider = new AutomationPropertiesProvider(this);
 
-			Initialize();
+			SoundEffectsEnabled = false;
+			SetOnClickListener(this);
+			SetOnTouchListener(this);
+			AddOnAttachStateChangeListener(this);
+			OnFocusChangeListener = this;
+
+			Tag = this;
 		}
 
 		public Color BackgroundColor => Element?.BackgroundColor != Color.Default ? Element.BackgroundColor : Color.Black;
@@ -209,7 +216,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 			return new Size();
 		}
 
-		void OnElementChanged(ElementChangedEventArgs<Button> e)
+		protected virtual void OnElementChanged(ElementChangedEventArgs<Button> e)
 		{
 			if (e.NewElement != null && !_isDisposed)
 			{
@@ -232,7 +239,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(e.OldElement, e.NewElement));
 		}
 
-		void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == Button.TextProperty.PropertyName)
 			{
@@ -327,7 +334,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 
 
 
-			
+
 			base.OnLayout(changed, l, t, r, b);
 		}
 
@@ -375,17 +382,6 @@ namespace Xamarin.Forms.Platform.Android.Material
 			element.SendViewInitialized(nativeView);
 		}
 
-		void Initialize()
-		{
-			SoundEffectsEnabled = false;
-			SetOnClickListener(this);
-			SetOnTouchListener(this);
-			AddOnAttachStateChangeListener(this);
-			OnFocusChangeListener = this;
-
-			Tag = this;
-		}
-
 		void UpdateBitmap()
 		{
 			if (Element == null || _isDisposed)
@@ -412,10 +408,12 @@ namespace Xamarin.Forms.Platform.Android.Material
 			if (_defaultIconPadding == -1)
 				_defaultIconPadding = 0;
 
+			// disable tint for now
+			IconTint = null;
 			Icon = image;
 
 			if (layout.Position == Button.ButtonContentLayout.ImagePosition.Right || layout.Position == Button.ButtonContentLayout.ImagePosition.Left)
-			{ 
+			{
 				IconGravity = IconGravityTextStart;
 				// setting the icon property causes the base class to calculate things like padding
 				// required to set the image to the start of the text
@@ -446,7 +444,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 			}
 		}
 
-	
+
 
 		void UpdateFont()
 		{
@@ -520,7 +518,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 
 		void UpdatePadding()
 		{
-			if(Element.IsSet(Button.PaddingProperty))
+			if (Element.IsSet(Button.PaddingProperty))
 				SetPadding(
 					(int)(Context.ToPixels(Button.Padding.Left) + _paddingDeltaPix.Left),
 					(int)(Context.ToPixels(Button.Padding.Top) + _paddingDeltaPix.Top),

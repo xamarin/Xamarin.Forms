@@ -194,13 +194,14 @@ namespace Xamarin.Forms.Platform.iOS.Material
 				UIButton button = Control;
 				if (button != null && uiimage != null)
 				{
-					button.SetImage(uiimage.ImageWithRenderingMode(UIImageRenderingMode.AlwaysTemplate), UIControlState.Normal);
+					button.SetImage(uiimage.ImageWithRenderingMode(UIImageRenderingMode.AlwaysOriginal), UIControlState.Normal);
 
 					button.ImageView.ContentMode = UIViewContentMode.ScaleAspectFit;
 
 					ComputeEdgeInsets(Control, Element.ContentLayout);
 
-					Control.SetImageTintColor(UIColor.White, UIControlState.Normal);
+					// disable tint for now
+					// Control.SetImageTintColor(UIColor.White, UIControlState.Normal);
 				}
 			}
 			else
