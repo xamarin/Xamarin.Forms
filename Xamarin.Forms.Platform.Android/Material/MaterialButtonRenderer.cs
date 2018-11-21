@@ -35,6 +35,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 		readonly int _defaultCornerRadius = 5;
 		Typeface _defaultTypeface;
 		int _imageHeight = -1;
+		int _defaultIconPadding = -1;
 		bool _isDisposed;
 		bool _inputTransparent;
 		Lazy<TextColorSwitcher> _textColorSwitcher;
@@ -48,7 +49,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
 		public event EventHandler<PropertyChangedEventArgs> ElementPropertyChanged;
 
-		public MaterialButtonRenderer(Context context) : base(context)
+		public MaterialButtonRenderer(Context context) : base(new ContextThemeWrapper(context, Resource.Style.XamarinFormsMaterialTheme))
 		{
 			_automationPropertiesProvider = new AutomationPropertiesProvider(this);
 
@@ -324,7 +325,25 @@ namespace Xamarin.Forms.Platform.Android.Material
 				UpdateContentEdge();
 			}
 
+
+
+			
 			base.OnLayout(changed, l, t, r, b);
+		}
+
+		protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
+		{
+
+			base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
+			var images = TextViewCompat.GetCompoundDrawablesRelative(this);
+			if (images.Length > 0 && images[0] != null && Button.ContentLayout.Position == Button.ButtonContentLayout.ImagePosition.Right)
+			{
+				var bounds = images[0].Bounds;
+				int width = images[0].IntrinsicWidth;
+				Icon.SetBounds(-bounds.Left, bounds.Top, width - bounds.Left, bounds.Bottom);
+				TextViewCompat.SetCompoundDrawablesRelative(this, null, null, Icon, null);
+			}
+
 		}
 
 		void SetTracker(VisualElementTracker tracker)
@@ -386,50 +405,48 @@ namespace Xamarin.Forms.Platform.Android.Material
 
 			Drawable image = Context.GetDrawable(imageFile);
 			Button.ButtonContentLayout layout = Button.ContentLayout;
-			CompoundDrawablePadding = (int)layout.Spacing;
-			image = ADrawableCompat.Wrap(image).Mutate();
-			ADrawableCompat.SetTintList(image, IconTint);
-			IconGravity = IconGravityTextStart;
 
-			if (IsNullOrEmpty(Button.Text))
-			{
-				// No text, so no need for relative position; just center the image
-				// There's no option for just plain-old centering, so we'll use Top 
-				// (which handles the horizontal centering) and some tricksy padding (in OnLayout)
-				// to handle the vertical centering 
+			if (_defaultIconPadding == -1)
+				_defaultIconPadding = IconPadding;
 
-				// Clear any previous padding and set the image as top/center
-				UpdateContentEdge();
-				SetCompoundDrawablesWithIntrinsicBounds(null, image, null, null);
+			if (_defaultIconPadding == -1)
+				_defaultIconPadding = 0;
 
-				// Keep track of the image height so we can use it in OnLayout
-				_imageHeight = image.IntrinsicHeight;
+			Icon = image;
 
-				image.Dispose();
-				return;
+			if (layout.Position == Button.ButtonContentLayout.ImagePosition.Right || layout.Position == Button.ButtonContentLayout.ImagePosition.Left)
+			{ 
+				IconGravity = IconGravityTextStart;
+				// setting the icon property causes the base class to calculate things like padding
+				// required to set the image to the start of the text
+				if (IsNullOrEmpty(Button.Text))
+					IconPadding = 0;
+				else
+					IconPadding = (int)Context.ToPixels(layout.Spacing) + _defaultIconPadding;
+
+				image?.Dispose();
+				image = TextViewCompat.GetCompoundDrawablesRelative(this)[0];
 			}
-
-			
 
 			switch (layout.Position)
 			{
 				case Button.ButtonContentLayout.ImagePosition.Top:
-					SetCompoundDrawablesWithIntrinsicBounds(null, image, null, null);
+					TextViewCompat.SetCompoundDrawablesRelativeWithIntrinsicBounds(this, null, image, null, null);
 					break;
 				case Button.ButtonContentLayout.ImagePosition.Bottom:
-					SetCompoundDrawablesWithIntrinsicBounds(null, null, null, image);
+					TextViewCompat.SetCompoundDrawablesRelativeWithIntrinsicBounds(this, null, null, null, image);
 					break;
 				case Button.ButtonContentLayout.ImagePosition.Right:
-					SetCompoundDrawablesWithIntrinsicBounds(null, null, image, null);
+					// this gets set and updated inside OnMeasure
 					break;
 				default:
 					// Defaults to image on the left
-					SetCompoundDrawablesWithIntrinsicBounds(image, null, null, null);
+					TextViewCompat.SetCompoundDrawablesRelative(this, image, null, null, null);
 					break;
-			}			
-
-			image?.Dispose();
+			}
 		}
+
+	
 
 		void UpdateFont()
 		{
@@ -503,12 +520,13 @@ namespace Xamarin.Forms.Platform.Android.Material
 
 		void UpdatePadding()
 		{
-			SetPadding(
-				(int)(Context.ToPixels(Button.Padding.Left) + _paddingDeltaPix.Left),
-				(int)(Context.ToPixels(Button.Padding.Top) + _paddingDeltaPix.Top),
-				(int)(Context.ToPixels(Button.Padding.Right) + _paddingDeltaPix.Right),
-				(int)(Context.ToPixels(Button.Padding.Bottom) + _paddingDeltaPix.Bottom)
-			);
+			if(Element.IsSet(Button.PaddingProperty))
+				SetPadding(
+					(int)(Context.ToPixels(Button.Padding.Left) + _paddingDeltaPix.Left),
+					(int)(Context.ToPixels(Button.Padding.Top) + _paddingDeltaPix.Top),
+					(int)(Context.ToPixels(Button.Padding.Right) + _paddingDeltaPix.Right),
+					(int)(Context.ToPixels(Button.Padding.Bottom) + _paddingDeltaPix.Bottom)
+				);
 		}
 
 		void UpdateContentEdge(Thickness? delta = null)

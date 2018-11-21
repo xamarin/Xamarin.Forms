@@ -1,3 +1,5 @@
+#if __ANDROID81__
+#else
 using System;
 using System.ComponentModel;
 using Android.Content;
@@ -78,3 +80,4 @@ namespace Xamarin.Forms.Platform.Android.Material
 		}
 	}
 }
+#endif
