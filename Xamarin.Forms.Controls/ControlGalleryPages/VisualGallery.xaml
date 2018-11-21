@@ -23,7 +23,7 @@
 						<Label Text="Discover modern interpretations of traditional architectural styles."
 									 TextColor="#666"
 									 FontSize="18"/>
-						<Button Image="coffee" Text="learn more">
+						<Button Image="bank" Text="learn more">
 
 						</Button>
 					</StackLayout>
