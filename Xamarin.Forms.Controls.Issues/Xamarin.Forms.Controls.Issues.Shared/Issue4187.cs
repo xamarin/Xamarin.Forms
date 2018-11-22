@@ -38,10 +38,7 @@ namespace Xamarin.Forms.Controls.Issues
 				VerticalOptions = LayoutOptions.FillAndExpand,
 				HasUnevenRows = true,
 				ItemsSource = items,
-				ItemTemplate = new DataTemplate(() =>
-				{
-					return GetViewCell();
-				})
+				ItemTemplate = new DataTemplate(() => GetViewCell())
 			};
 
 			var tableView = new TableView
@@ -115,12 +112,12 @@ namespace Xamarin.Forms.Controls.Issues
 				{
 					BackgroundColor = Color.Pink,
 					Children = {
-								label,
-								picker,
-								datePicker,
-								new TimePicker(),
-								entry
-							}
+						label,
+						picker,
+						datePicker,
+						new TimePicker(),
+						entry
+					}
 				}
 			};
 		}
@@ -191,7 +188,7 @@ namespace Xamarin.Forms.Controls.Issues
 			{
 				if (layout.Rect.X > 0 && layout.Rect.Y > 0 && layout.Description.Contains(@"id/content"))
 				{
-					// tap on close button
+					// close dialog
 					RunningApp.Back();
 					Thread.Sleep(1500);
 					return true;
