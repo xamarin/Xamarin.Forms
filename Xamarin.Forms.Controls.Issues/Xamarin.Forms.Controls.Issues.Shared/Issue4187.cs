@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
@@ -21,13 +22,15 @@ namespace Xamarin.Forms.Controls.Issues
 				{
 					Label = "Label 1",
 					PickerSource = new List<string> {"Flower", "Harvest", "Propagation", "Vegetation"},
-					Text = "Text 1"
+					Text = "Text 1",
+					Date = DateTime.Now
 				},
 				new Issue4187Model
 				{
 					Label = "Label 2",
 					PickerSource = new List<string> {"1", "2", "3", "4"},
-					Text = "Text 2"
+					Text = "Text 2",
+					Date = DateTime.Now.AddDays(1)
 				}
 			};
 			var listView = new ListView
@@ -37,27 +40,30 @@ namespace Xamarin.Forms.Controls.Issues
 				ItemsSource = items,
 				ItemTemplate = new DataTemplate(() =>
 				{
-					var label = new Label { Text = "Status" };
-					label.SetBinding(Label.TextProperty, new Binding(nameof(Issue4187Model.Label)));
-					var picker = new Picker();
-					picker.SetBinding(Picker.ItemsSourceProperty, new Binding(nameof(Issue4187Model.PickerSource)));
-					var entry = new Entry();
-					entry.SetBinding(Entry.TextProperty, new Binding(nameof(Issue4187Model.Text)));
-
-					return new ViewCell
-					{
-						View = new StackLayout
-						{
-							Children = {
-								label,
-								picker,
-								new DatePicker(),
-								new TimePicker(),
-								entry
-							}
-						}
-					};
+					return GetViewCell();
 				})
+			};
+
+			var tableView = new TableView
+			{
+				BackgroundColor = Color.Wheat,
+				HasUnevenRows = true,
+				RowHeight = 100
+			};
+			tableView.Root = new TableRoot
+			{
+				new TableSection
+				{
+					GetViewCell(),
+					GetViewCell(),
+				}
+			};
+			tableView.BindingContext = new Issue4187Model
+			{
+				Label = "Label 1",
+				PickerSource = new List<string> { "Flower", "Harvest", "Propagation", "Vegetation" },
+				Text = "Text 1",
+				Date = DateTime.Now
 			};
 
 			Children.Add(new ContentPage
@@ -76,7 +82,7 @@ namespace Xamarin.Forms.Controls.Issues
 				BackgroundColor = Color.Red,
 				Content = new StackLayout
 				{
-					Children = { GenerateNewPicker() }
+					Children = { GenerateNewPicker(), tableView }
 				}
 			});
 
@@ -88,6 +94,35 @@ namespace Xamarin.Forms.Controls.Issues
 					Children = { GenerateNewPicker() }
 				}
 			});
+		}
+
+		static ViewCell GetViewCell()
+		{
+			var label = new Label { Text = "Status" };
+			label.SetBinding(Label.TextProperty, new Binding(nameof(Issue4187Model.Label)));
+			var picker = new Picker();
+			picker.SetBinding(Picker.ItemsSourceProperty, new Binding(nameof(Issue4187Model.PickerSource)));
+
+			var datePicker = new DatePicker();
+			datePicker.SetBinding(DatePicker.DateProperty, new Binding(nameof(Issue4187Model.Date)));
+
+			var entry = new Entry();
+			entry.SetBinding(Entry.TextProperty, new Binding(nameof(Issue4187Model.Text)));
+
+			return new ViewCell
+			{
+				View = new StackLayout
+				{
+					BackgroundColor = Color.Pink,
+					Children = {
+								label,
+								picker,
+								datePicker,
+								new TimePicker(),
+								entry
+							}
+				}
+			};
 		}
 
 		Picker GenerateNewPicker()
@@ -104,6 +139,7 @@ namespace Xamarin.Forms.Controls.Issues
 			public string Label { get; set; }
 			public List<string> PickerSource { get; set; }
 			public string Text { get; set; }
+			public DateTime Date { get; set; }
 		}
 
 #if UITEST && __ANDROID__
