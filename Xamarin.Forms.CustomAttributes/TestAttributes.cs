@@ -431,7 +431,7 @@ namespace Xamarin.Forms.CustomAttributes
 			GroupShortNameBinding,
 			ScrollTo,
 			FastScroll,
-			RefreshControlColor
+			RefreshControlColor,
 			ScrollBarVisibility
 		}
 
