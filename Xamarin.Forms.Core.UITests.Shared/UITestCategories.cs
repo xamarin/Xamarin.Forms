@@ -4,6 +4,7 @@
 	{
 		public const string ActionSheet = "ActionSheet";
 		public const string ActivityIndicator = "ActivityIndicator";
+		public const string Animation = "Animation";
 		public const string AutomationId = "AutomationID";
 		public const string BoxView = "BoxView";
 		public const string Button = "Button";
@@ -17,6 +18,7 @@
 		public const string Image = "Image";
 		public const string Label = "Label";
 		public const string ListView = "ListView";
+		public const string UwpIgnore = "UwpIgnore";
 		public const string LifeCycle = "Lifecycle";
 		public const string MasterDetailPage = "MasterDetailPage";
 		public const string Picker = "Picker";
@@ -27,6 +29,7 @@
 		public const string Slider = "Slider";
 		public const string Stepper = "Stepper";
 		public const string Switch = "Switch";
+		public const string TableView = "TableView";
 		public const string TimePicker = "TimePicker";
 		public const string ToolbarItem = "ToolbarItem";
 		public const string WebView = "WebView";

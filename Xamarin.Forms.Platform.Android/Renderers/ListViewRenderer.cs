@@ -27,6 +27,9 @@ namespace Xamarin.Forms.Platform.Android
 		IListViewController Controller => Element;
 		ITemplatedItemsView<Cell> TemplatedItemsView => Element;
 
+		ScrollBarVisibility _defaultHorizontalScrollVisibility = 0;
+		ScrollBarVisibility _defaultVerticalScrollVisibility = 0;
+
 		public ListViewRenderer(Context context) : base(context)
 		{
 			AutoPackage = false;
@@ -57,7 +60,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (_headerRenderer != null)
 				{
-					ClearRenderer(_headerRenderer.View);
+					Platform.ClearRenderer(_headerRenderer.View);
 					_headerRenderer.Dispose();
 					_headerRenderer = null;
 				}
@@ -67,13 +70,19 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (_footerRenderer != null)
 				{
-					ClearRenderer(_footerRenderer.View);
+					Platform.ClearRenderer(_footerRenderer.View);
 					_footerRenderer.Dispose();
 					_footerRenderer = null;
 				}
 
 				_footerView?.Dispose();
 				_footerView = null;
+
+				// Unhook the adapter from the ListView before disposing of it
+				if (Control != null)
+				{
+					Control.Adapter = null;
+				}
 
 				if (_adapter != null)
 				{
@@ -124,6 +133,12 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (_adapter != null)
 				{
+					// Unhook the adapter from the ListView before disposing of it
+					if (Control != null)
+					{
+						Control.Adapter = null;
+					}
+
 					_adapter.Dispose();
 					_adapter = null;
 				}
@@ -164,6 +179,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateFastScrollEnabled();
 				UpdateSelectionMode();
 				UpdateSpinnerColor();
+				UpdateHorizontalScrollBarVisibility();
+				UpdateVerticalScrollBarVisibility();
 			}
 		}
 
@@ -203,6 +220,10 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateSelectionMode();
 			else if (e.PropertyName == ListView.RefreshControlColorProperty.PropertyName)
 				UpdateSpinnerColor();
+			else if (e.PropertyName == ScrollView.HorizontalScrollBarVisibilityProperty.PropertyName)
+				UpdateHorizontalScrollBarVisibility();
+			else if (e.PropertyName == ScrollView.VerticalScrollBarVisibilityProperty.PropertyName)
+				UpdateVerticalScrollBarVisibility();
 		}
 
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)
@@ -289,23 +310,6 @@ namespace Xamarin.Forms.Platform.Android
 				Control.SetSelectionFromTop(realPositionWithHeader, y);
 		}
 
-		void ClearRenderer(AView renderedView)
-		{
-			var element = (renderedView as IVisualElementRenderer)?.Element;
-			var view = element as View;
-			if (view != null)
-			{
-				var renderer = Platform.GetRenderer(view);
-				if (renderer == renderedView)
-					element.ClearValue(Platform.RendererProperty);
-				renderer?.Dispose();
-				renderer = null;
-			}
-			var layout = view as IVisualElementRenderer;
-			layout?.Dispose();
-			layout = null;
-		}
-
 		void UpdateFooter()
 		{
 			var footer = (VisualElement)Controller.FooterElement;
@@ -317,7 +321,7 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					if (_footerView != null)
 						_footerView.Child = null;
-					ClearRenderer(_footerRenderer.View);
+					Platform.ClearRenderer(_footerRenderer.View);
 					_footerRenderer.Dispose();
 					_footerRenderer = null;
 				}
@@ -349,7 +353,7 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					if (_headerView != null)
 						_headerView.Child = null;
-					ClearRenderer(_headerRenderer.View);
+					Platform.ClearRenderer(_headerRenderer.View);
 					_headerRenderer.Dispose();
 					_headerRenderer = null;
 				}
@@ -424,6 +428,36 @@ namespace Xamarin.Forms.Platform.Android
 				_refresh.SetColorSchemeColors(Element.RefreshControlColor.ToAndroid());
 		}
 
+		void UpdateHorizontalScrollBarVisibility()
+		{
+			if (_defaultHorizontalScrollVisibility == 0)
+			{
+				_defaultHorizontalScrollVisibility = Control.HorizontalScrollBarEnabled ? ScrollBarVisibility.Always : ScrollBarVisibility.Never;
+			}
+
+			var newHorizontalScrollVisiblility = Element.HorizontalScrollBarVisibility;
+
+			if (newHorizontalScrollVisiblility == ScrollBarVisibility.Default)
+			{
+				newHorizontalScrollVisiblility = _defaultHorizontalScrollVisibility;
+			}
+
+			Control.HorizontalScrollBarEnabled = newHorizontalScrollVisiblility == ScrollBarVisibility.Always;
+		}
+
+		void UpdateVerticalScrollBarVisibility()
+		{
+			if (_defaultVerticalScrollVisibility == 0)
+				_defaultVerticalScrollVisibility = Control.VerticalScrollBarEnabled ? ScrollBarVisibility.Always : ScrollBarVisibility.Never;
+
+			var newVerticalScrollVisibility = Element.VerticalScrollBarVisibility;
+
+			if (newVerticalScrollVisibility == ScrollBarVisibility.Default)
+				newVerticalScrollVisibility = _defaultVerticalScrollVisibility;
+
+			Control.VerticalScrollBarEnabled = newVerticalScrollVisibility == ScrollBarVisibility.Always;
+		}
+		
 		internal class Container : ViewGroup
 		{
 			IVisualElementRenderer _child;

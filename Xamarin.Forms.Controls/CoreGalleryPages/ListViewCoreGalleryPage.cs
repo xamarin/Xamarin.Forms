@@ -7,6 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms.CustomAttributes;
+using System.Threading;
 using Xamarin.Forms.Internals;
 
 using Xamarin.Forms.PlatformConfiguration;
@@ -278,6 +279,14 @@ namespace Xamarin.Forms.Controls
 			};
 			refreshControlColorContainer.View.ItemsSource = viewModel.Employees;
 
+			var scrollbarVisibilityContainer = new ViewContainer<ListView>(Test.ListView.ScrollBarVisibility, new ListView());
+			InitializeElement(scrollbarVisibilityContainer.View);
+			scrollbarVisibilityContainer.View.HorizontalScrollBarVisibility = ScrollBarVisibility.Never;
+			scrollbarVisibilityContainer.View.VerticalScrollBarVisibility = ScrollBarVisibility.Never;
+			scrollbarVisibilityContainer.View.ItemsSource = viewModel.CategorizedEmployees;
+			scrollbarVisibilityContainer.View.IsGroupingEnabled = true;
+			scrollbarVisibilityContainer.View.GroupDisplayBinding = new Binding("Key");
+
 			Add(groupDisplayBindingContainer);
 			Add(groupHeaderTemplateContainer);
 			Add(groupShortNameContainer);
@@ -291,6 +300,7 @@ namespace Xamarin.Forms.Controls
 			Add(selectedItemContainer);
 			Add(fastScrollItemContainer);
 			Add(refreshControlColorContainer);
+			Add(scrollbarVisibilityContainer);
 		}
 	}
 }

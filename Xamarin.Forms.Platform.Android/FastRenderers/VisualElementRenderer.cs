@@ -7,10 +7,10 @@ using AView = Android.Views.View;
 namespace Xamarin.Forms.Platform.Android.FastRenderers
 {
 	// TODO hartez 2017/03/03 14:11:17 It's weird that this class is called VisualElementRenderer but it doesn't implement that interface. The name should probably be different.
-	internal sealed class VisualElementRenderer : IDisposable, IEffectControlProvider
+	internal sealed class VisualElementRenderer : IDisposable, IEffectControlProvider, ITabStop
 	{
 		bool _disposed;
-		
+
 		IVisualElementRenderer _renderer;
 		readonly GestureManager _gestureManager;
 		readonly AutomationPropertiesProvider _automationPropertiesProvider;
@@ -31,18 +31,13 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		AView Control => _renderer?.View;
 
+		AView ITabStop.TabStop => Control;
+
 		void IEffectControlProvider.RegisterEffect(Effect effect)
 		{
 			_effectControlProvider.RegisterEffect(effect);
 		}
 
-		public void UpdateBackgroundColor(Color? color = null)
-		{		
-			if (_disposed || Element == null || Control == null)
-				return;
-
-			Control.SetBackgroundColor((color ?? Element.BackgroundColor).ToAndroid());
-		}
 
 		void UpdateFlowDirection()
 		{
@@ -53,11 +48,11 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		}
 
 		public bool OnTouchEvent(MotionEvent e)
-	    {
-	        return _gestureManager.OnTouchEvent(e);
-	    }
+		{
+			return _gestureManager.OnTouchEvent(e);
+		}
 
-	    public void Dispose()
+		public void Dispose()
 		{
 			Dispose(true);
 			GC.SuppressFinalize(this);
@@ -86,6 +81,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		void OnElementChanged(object sender, VisualElementChangedEventArgs e)
 		{
+			Performance.Start(out string reference);
 			if (e.OldElement != null)
 			{
 				e.OldElement.PropertyChanged -= OnElementPropertyChanged;
@@ -94,19 +90,34 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			if (e.NewElement != null)
 			{
 				e.NewElement.PropertyChanged += OnElementPropertyChanged;
-				UpdateBackgroundColor();
 				UpdateFlowDirection();
+				UpdateIsEnabled();
 			}
 
 			EffectUtilities.RegisterEffectControlProvider(this, e.OldElement, e.NewElement);
+			Performance.Stop(reference);
+		}
+
+		void UpdateIsEnabled()
+		{
+			if (Element == null || _disposed)
+			{
+				return;
+			}
+
+			Control.Enabled = Element.IsEnabled;
 		}
 
 		void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
-				UpdateBackgroundColor();
-			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
+			if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
+			{
 				UpdateFlowDirection();
+			}
+			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
+			{
+				UpdateIsEnabled();
+			}
 		}
 	}
 }

@@ -15,7 +15,11 @@
 									<RowDefinition Height="*" />
 								</Grid.RowDefinitions>
 								<StackPanel Grid.Row="0" Orientation="Horizontal" Visibility="{TemplateBinding MasterToolbarVisibility}"  Background="{TemplateBinding ToolbarBackground}">
-									<Button Name="PaneTogglePane" Style="{ThemeResource PaneButton}" Foreground="{TemplateBinding ToolbarForeground}" />
+									<Button Name="PaneTogglePane" Style="{ThemeResource PaneButton}" Foreground="{TemplateBinding ToolbarForeground}"
+											AutomationProperties.Name="{Binding Path=(AutomationProperties.Name), RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"  
+											AutomationProperties.HelpText="{Binding Path=(AutomationProperties.HelpText), RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"  
+											AutomationProperties.LabeledBy="{Binding Path=(AutomationProperties.LabeledBy), RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"  
+											AutomationProperties.AccessibilityView="{Binding Path=(AutomationProperties.AccessibilityView), RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"  />
 									<TextBlock Margin="10,0,0,0" Style="{ThemeResource TitleTextBlockStyle}" VerticalAlignment="Center" Text="{TemplateBinding MasterTitle}" Visibility="{TemplateBinding MasterTitleVisibility}" Foreground="{TemplateBinding ToolbarForeground}"/>
 								</StackPanel>
 								<ContentPresenter x:Name="MasterPresenter" Grid.Row="1" Content="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Master}" />
@@ -30,19 +34,30 @@
 								</Grid.RowDefinitions>
 
 								<Border x:Name="TopCommandBarArea" HorizontalAlignment="Stretch" Background="{TemplateBinding ToolbarBackground}">
-									<uwp:FormsCommandBar x:Name="CommandBar" Background="{TemplateBinding ToolbarBackground}" MinHeight="{ThemeResource TitleBarHeight}">
+									<uwp:FormsCommandBar x:Name="CommandBar" Background="{TemplateBinding ToolbarBackground}" MinHeight="{ThemeResource TitleBarHeight}" HorizontalAlignment="Stretch">
 										<uwp:FormsCommandBar.Content>
-											<Border x:Name="TitleArea" Height="{ThemeResource TitleBarHeight}" Visibility="{TemplateBinding DetailTitleVisibility}">
-												<StackPanel Orientation="Horizontal" VerticalAlignment="Center" Background="{TemplateBinding ToolbarBackground}" >
+											<Border x:Name="TitleArea" Height="{ThemeResource TitleBarHeight}" Visibility="{TemplateBinding DetailTitleVisibility}" HorizontalAlignment="Stretch">
+												<Grid x:Name="TitleViewPresenter" VerticalAlignment="Center" Background="{TemplateBinding ToolbarBackground}" HorizontalAlignment="Stretch">
 
-													<Button Name="ContentTogglePane" Style="{ThemeResource PaneButton}" Foreground="{TemplateBinding ToolbarForeground}"  
+													<Grid.ColumnDefinitions>
+														<ColumnDefinition Width="Auto"/>
+														<ColumnDefinition Width="Auto"/>
+														<ColumnDefinition Width="Auto"/>
+														<ColumnDefinition Width="*"/>
+													</Grid.ColumnDefinitions>
+
+													<Button Grid.Column="0" Name="ContentTogglePane" Style="{ThemeResource PaneButton}" Foreground="{TemplateBinding ToolbarForeground}"  
 															Visibility="{TemplateBinding ContentTogglePaneButtonVisibility}" />
 
-													<Border Height="{ThemeResource TitleBarHeight}" Visibility="{TemplateBinding DetailTitleVisibility}">
+													<Image Grid.Column="1" Source="{TemplateBinding DetailTitleIcon}" />
+
+													<Border Grid.Column="2" Height="{ThemeResource TitleBarHeight}" Visibility="{TemplateBinding DetailTitleVisibility}">
 														<TextBlock Text="{TemplateBinding DetailTitle}" VerticalAlignment="Center" Margin="10,0,0,0" Foreground="{TemplateBinding ToolbarForeground}" Style="{ThemeResource TitleTextBlockStyle}" />
 													</Border>
 
-												</StackPanel>
+													<ContentPresenter Grid.Column="3" Content="{Binding DetailTitleView, RelativeSource={RelativeSource Mode=TemplatedParent}, Converter={StaticResource ViewToRenderer}}" Visibility="{TemplateBinding DetailTitleViewVisibility}" HorizontalAlignment="Stretch" />
+
+												</Grid>
 											</Border>
 										</uwp:FormsCommandBar.Content>
 									</uwp:FormsCommandBar>

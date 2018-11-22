@@ -25,6 +25,9 @@ namespace Xamarin.Forms.Platform.UWP
 				run.ApplyFont(span.Font);
 #pragma warning restore 618
 
+			if (span.IsSet(Span.TextDecorationsProperty))
+				run.TextDecorations = (Windows.UI.Text.TextDecorations)span.TextDecorations;
+
 			return run;
 		}
 	}
@@ -74,6 +77,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 			rect.Height = childHeight;
 			rect.Width = finalSize.Width;
+			
 			Control.Arrange(rect);
 			Control.RecalculateSpanPositions(Element, _inlineHeights);
 			return finalSize;
@@ -132,24 +136,32 @@ namespace Xamarin.Forms.Platform.UWP
 				_isInitiallyDefault = Element.IsDefault();
 
 				UpdateText(Control);
+				UpdateTextDecorations(Control);
 				UpdateColor(Control);
 				UpdateAlign(Control);
 				UpdateFont(Control);
 				UpdateLineBreakMode(Control);
+				UpdateMaxLines(Control);
 				UpdateDetectReadingOrderFromContent(Control);
+				UpdateLineHeight(Control);
 			}
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == Label.TextProperty.PropertyName || e.PropertyName == Label.FormattedTextProperty.PropertyName)
+			if (e.PropertyName == Label.TextProperty.PropertyName ||
+				e.PropertyName == Label.FormattedTextProperty.PropertyName)
+			{
 				UpdateText(Control);
+			}
 			else if (e.PropertyName == Label.TextColorProperty.PropertyName)
 				UpdateColor(Control);
 			else if (e.PropertyName == Label.HorizontalTextAlignmentProperty.PropertyName || e.PropertyName == Label.VerticalTextAlignmentProperty.PropertyName)
 				UpdateAlign(Control);
 			else if (e.PropertyName == Label.FontProperty.PropertyName)
 				UpdateFont(Control);
+			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
+				UpdateTextDecorations(Control);
 			else if (e.PropertyName == Label.LineBreakModeProperty.PropertyName)
 				UpdateLineBreakMode(Control);
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
@@ -158,7 +170,42 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateDetectReadingOrderFromContent(Control);
 			else if (e.PropertyName == Label.LineHeightProperty.PropertyName)
 				UpdateLineHeight(Control);
+			else if (e.PropertyName == Label.MaxLinesProperty.PropertyName)
+				UpdateMaxLines(Control);
 			base.OnElementPropertyChanged(sender, e);
+		}
+
+		void UpdateTextDecorations(TextBlock textBlock)
+		{
+			if (!Element.IsSet(Label.TextDecorationsProperty))
+				return;
+
+			var elementTextDecorations = Element.TextDecorations;
+
+			if ((elementTextDecorations & TextDecorations.Underline) == 0)
+				textBlock.TextDecorations &= ~Windows.UI.Text.TextDecorations.Underline;
+			else
+				textBlock.TextDecorations |= Windows.UI.Text.TextDecorations.Underline;
+
+			if ((elementTextDecorations & TextDecorations.Strikethrough) == 0)
+				textBlock.TextDecorations &= ~Windows.UI.Text.TextDecorations.Strikethrough;
+			else
+				textBlock.TextDecorations |= Windows.UI.Text.TextDecorations.Strikethrough;
+
+			//TextDecorations are not updated in the UI until the text changes
+			if (textBlock.Inlines != null && textBlock.Inlines.Count > 0)
+			{
+				for (var i = 0; i < textBlock.Inlines.Count; i++)
+				{
+					var run = (Run)textBlock.Inlines[i];
+					run.Text = run.Text;
+				}
+			}
+			else
+			{
+				textBlock.Text = textBlock.Text;
+			}
+
 		}
 
 		void UpdateAlign(TextBlock textBlock)
@@ -256,7 +303,9 @@ namespace Xamarin.Forms.Platform.UWP
 			_perfectSizeValid = false;
 
 			if (textBlock == null)
+			{
 				return;
+			}
 
 			Label label = Element;
 			if (label != null)
@@ -306,10 +355,22 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			if (textBlock == null)
 				return;
-			
+
 			if (Element.LineHeight >= 0)
 			{
 				textBlock.LineHeight = Element.LineHeight * textBlock.FontSize;
+			}
+		}
+
+		void UpdateMaxLines(TextBlock textBlock)
+		{
+			if (Element.MaxLines >= 0)
+			{
+				textBlock.MaxLines = Element.MaxLines;
+			}
+			else
+			{
+				textBlock.MaxLines = 0;
 			}
 		}
 	}

@@ -282,7 +282,7 @@ namespace Xamarin.Forms
 				{
 					_scalingFactor = display.Density;
 					_pixelScreenSize = new Size(display.WidthPixels, display.HeightPixels);
-					ScaledScreenSize = new Size(_pixelScreenSize.Width / _scalingFactor, _pixelScreenSize.Width / _scalingFactor);
+					ScaledScreenSize = new Size(_pixelScreenSize.Width / _scalingFactor, _pixelScreenSize.Height / _scalingFactor);
 				}
 
 				CheckOrientationChanged(formsActivity.Resources.Configuration.Orientation);
@@ -520,6 +520,8 @@ namespace Xamarin.Forms
 			{
 				global::Android.Net.Uri aUri = global::Android.Net.Uri.Parse(uri.ToString());
 				var intent = new Intent(Intent.ActionView, aUri);
+				intent.SetFlags(ActivityFlags.ClearTop);
+				intent.SetFlags(ActivityFlags.NewTask);
 
 				// This seems to work fine even if the context has been destroyed (while another activity is in the
 				// foreground). If we run into a situation where that's not the case, we'll have to do some work to
@@ -587,6 +589,11 @@ namespace Xamarin.Forms
 			public void QuitApplication()
 			{
 				Internals.Log.Warning(nameof(AndroidPlatformServices), "Platform doesn't implement QuitApp");
+			}
+
+			public SizeRequest GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
+			{
+				return Platform.Android.Platform.GetNativeSize(view, widthConstraint, heightConstraint);
 			}
 
 			public class _IsolatedStorageFile : IIsolatedStorageFile

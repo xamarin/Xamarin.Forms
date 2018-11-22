@@ -4,39 +4,49 @@ using Android.Content;
 using Android.Graphics;
 using Android.Support.V7.Widget;
 using Android.Util;
-using Xamarin.Forms.Internals;
-using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
-using GlobalResource = Android.Resource;
 using Object = Java.Lang.Object;
 using AView = Android.Views.View;
 using AMotionEvent = Android.Views.MotionEvent;
 using AMotionEventActions = Android.Views.MotionEventActions;
 using static System.String;
+using AColor = Android.Graphics.Color;
+using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
+using Xamarin.Forms.Platform.Android.FastRenderers;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
-    public class ButtonRenderer : ViewRenderer<Button, AppCompatButton>, AView.IOnAttachStateChangeListener
+	public class ButtonRenderer : ViewRenderer<Button, AppCompatButton>, AView.IOnAttachStateChangeListener, IBorderVisualElementRenderer
 	{
-		ButtonBackgroundTracker _backgroundTracker;
+		BorderBackgroundManager _backgroundTracker;
 		TextColorSwitcher _textColorSwitcher;
 		float _defaultFontSize;
+		Thickness? _defaultPadding;
 		Typeface _defaultTypeface;
 		bool _isDisposed;
 		int _imageHeight = -1;
 		Thickness _paddingDeltaPix = new Thickness();
+		IVisualElementRenderer _visualElementRenderer;
+		string _defaultContentDescription;
 
 		public ButtonRenderer(Context context) : base(context)
 		{
 			AutoPackage = false;
+			_visualElementRenderer = this;
+			_backgroundTracker = new BorderBackgroundManager(this);
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use ButtonRenderer(Context) instead.")]
-		public ButtonRenderer() 
+		public ButtonRenderer()
 		{
 			AutoPackage = false;
+			_visualElementRenderer = this;
+			_backgroundTracker = new BorderBackgroundManager(this);
 		}
 
 		global::Android.Widget.Button NativeButton => Control;
+
+		protected override void SetContentDescription()
+			=> AutomationPropertiesProvider.SetBasicContentDescription(this, Element, ref _defaultContentDescription);
 
 		void AView.IOnAttachStateChangeListener.OnViewAttachedToWindow(AView attachedView)
 		{
@@ -94,6 +104,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					_textColorSwitcher = null;
 				}
 				_backgroundTracker?.Dispose();
+				_backgroundTracker = null;
+				_visualElementRenderer = null;
 			}
 
 			base.Dispose(disposing);
@@ -102,10 +114,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		protected override void OnElementChanged(ElementChangedEventArgs<Button> e)
 		{
 			base.OnElementChanged(e);
-
-			if (e.OldElement != null)
-			{
-			}
 
 			if (e.NewElement != null)
 			{
@@ -118,16 +126,15 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					button.Tag = this;
 
 					var useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
-					_textColorSwitcher = new TextColorSwitcher(button.TextColors, useLegacyColorManagement);  
+					_textColorSwitcher = new TextColorSwitcher(button.TextColors, useLegacyColorManagement);
 
 					SetNativeControl(button);
 					button.AddOnAttachStateChangeListener(this);
 				}
 
-				if (_backgroundTracker == null)
-					_backgroundTracker = new ButtonBackgroundTracker(Element, Control);
-				else
-					_backgroundTracker.Button = e.NewElement;
+
+				_defaultFontSize = 0f;
+				_defaultPadding = null;
 
 				UpdateAll();
 			}
@@ -158,7 +165,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			if (Element == null || Control == null)
 				return;
 
-			_backgroundTracker?.UpdateBackgroundColor();
+			_backgroundTracker?.UpdateDrawable();
 		}
 
 		void UpdateAll()
@@ -169,16 +176,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			UpdateTextColor();
 			UpdateEnabled();
 			UpdateBackgroundColor();
-			UpdateDrawable();
 			UpdatePadding();
-		}
-
-		void UpdateDrawable()
-		{
-			if (Element == null || Control == null)
-				return;
-
-			_backgroundTracker?.UpdateDrawable();
 		}
 
 		void UpdateBitmap()
@@ -287,18 +285,51 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void UpdatePadding()
 		{
-			Control?.SetPadding(
-				(int)(Context.ToPixels(Element.Padding.Left) + _paddingDeltaPix.Left),
-				(int)(Context.ToPixels(Element.Padding.Top) + _paddingDeltaPix.Top),
-				(int)(Context.ToPixels(Element.Padding.Right) + _paddingDeltaPix.Right),
-				(int)(Context.ToPixels(Element.Padding.Bottom) + _paddingDeltaPix.Bottom)
-			);
+			if (Control == null)
+				return;
+
+			if (!_defaultPadding.HasValue)
+				_defaultPadding = new Thickness(Control.PaddingLeft, Control.PaddingTop, Control.PaddingRight, Control.PaddingBottom);
+
+			if (Element.IsSet(Button.PaddingProperty))
+			{
+				Control.SetPadding(
+					(int)(Context.ToPixels(Element.Padding.Left) + _paddingDeltaPix.Left),
+					(int)(Context.ToPixels(Element.Padding.Top) + _paddingDeltaPix.Top),
+					(int)(Context.ToPixels(Element.Padding.Right) + _paddingDeltaPix.Right),
+					(int)(Context.ToPixels(Element.Padding.Bottom) + _paddingDeltaPix.Bottom)
+				);
+			}
+			else
+			{
+				Control.SetPadding(
+						(int)_defaultPadding.Value.Left,
+						(int)_defaultPadding.Value.Top,
+						(int)_defaultPadding.Value.Right,
+						(int)_defaultPadding.Value.Bottom
+					);
+			}
 		}
 
-		void UpdateContentEdge (Thickness? delta = null)
+		void UpdateContentEdge(Thickness? delta = null)
 		{
-			_paddingDeltaPix = delta ?? new Thickness ();
-			UpdatePadding();
+			_paddingDeltaPix = delta ?? new Thickness();
+			UpdatePadding();			
+		}
+
+		float IBorderVisualElementRenderer.ShadowRadius => Control.ShadowRadius;
+		float IBorderVisualElementRenderer.ShadowDx => Control.ShadowDx;
+		float IBorderVisualElementRenderer.ShadowDy => Control.ShadowDy;
+		AColor IBorderVisualElementRenderer.ShadowColor => Control.ShadowColor;
+		bool IBorderVisualElementRenderer.UseDefaultPadding() => Element.OnThisPlatform().UseDefaultPadding();
+		bool IBorderVisualElementRenderer.UseDefaultShadow() => Element.OnThisPlatform().UseDefaultShadow();
+		bool IBorderVisualElementRenderer.IsShadowEnabled() => true;
+		VisualElement IBorderVisualElementRenderer.Element => Element;
+		AView IBorderVisualElementRenderer.View => Control;
+		event EventHandler<VisualElementChangedEventArgs> IBorderVisualElementRenderer.ElementChanged
+		{
+			add => _visualElementRenderer.ElementChanged += value;
+			remove => _visualElementRenderer.ElementChanged -= value;
 		}
 
 		class ButtonClickListener : Object, AView.IOnClickListener

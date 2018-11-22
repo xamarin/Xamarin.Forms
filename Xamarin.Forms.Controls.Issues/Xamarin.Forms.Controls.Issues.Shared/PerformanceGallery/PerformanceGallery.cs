@@ -6,6 +6,7 @@ using System.Reflection;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 using System.IO;
+using System.Threading.Tasks;
 
 #if UITEST
 using Xamarin.UITest;
@@ -15,9 +16,9 @@ using NUnit.Framework;
 namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
-	[Category(Xamarin.Forms.Core.UITests.UITestCategories.Performance)]
+	[Category(Xamarin.Forms.Core.UITests.UITestCategories.Performance)] 
+	[NUnit.Framework.Category(Core.UITests.UITestCategories.UwpIgnore)]
 #endif
-
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.None, 0, "Performance Testing")]
 	public class PerformanceGallery : TestContentPage
@@ -43,7 +44,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 		PerformanceViewModel ViewModel => BindingContext as PerformanceViewModel;
 
-		protected override async void Init()
+		protected override void Init()
 		{
 			_BuildInfo = GetBuildNumber();
 
@@ -82,7 +83,7 @@ namespace Xamarin.Forms.Controls.Issues
 
 			Content = new StackLayout { Children = { testRunRef, nextButton, _PerformanceTracker } };
 
-			ViewModel.BenchmarkResults = await PerformanceDataManager.GetScenarioResults(_DeviceIdentifier);
+			ViewModel.BenchmarkResults = Task.Run(() => PerformanceDataManager.GetScenarioResults(_DeviceIdentifier)).GetAwaiter().GetResult();
 
 			nextButton.IsEnabled = true;
 			nextButton.Text = Next;

@@ -8,7 +8,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	public class DatePickerRenderer : ViewRenderer<DatePicker, Windows.UI.Xaml.Controls.DatePicker>
+	public class DatePickerRenderer : ViewRenderer<DatePicker, Windows.UI.Xaml.Controls.DatePicker>, ITabStopOnDescendants
 	{
 		Brush _defaultBrush;
 		bool _fontApplied;
@@ -103,7 +103,15 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (Element.Date.CompareTo(e.NewDate.Date) != 0)
 			{
-				Element.Date = e.NewDate.Date;
+				var date = e.NewDate.Date.Clamp(Element.MinimumDate, Element.MaximumDate);
+				Element.Date = date;
+
+				// set the control date-time to clamped value, if it exceeded the limits at the time of installation.
+				if (date != e.NewDate.Date)
+				{
+					UpdateDate(date);
+					Control.UpdateLayout();
+				}
 				((IVisualElementController)Element).InvalidateMeasure(InvalidationTrigger.SizeRequestChanged);
 			}
 		}

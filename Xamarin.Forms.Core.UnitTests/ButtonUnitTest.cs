@@ -149,7 +149,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			[Values (NamedSize.Default, NamedSize.Large, NamedSize.Medium, NamedSize.Small, NamedSize.Micro)] NamedSize size,
 			[Values (FontAttributes.None, FontAttributes.Bold, FontAttributes.Italic, FontAttributes.Bold | FontAttributes.Italic)] FontAttributes attributes)
 		{
-			var button = new Button {Platform = new UnitPlatform ()};
+			var button = new Button();
 			double startSize = button.FontSize;
 			var startAttributes = button.FontAttributes;
 
@@ -173,7 +173,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public void AssignToFontFamilyUpdatesFont ()
 		{
-			var button = new Button {Platform = new UnitPlatform ()};
+			var button = new Button();
 
 			button.FontFamily = "CrazyFont";
 			Assert.AreEqual (button.Font, Font.OfSize ("CrazyFont", button.FontSize));
@@ -182,7 +182,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public void AssignToFontSizeUpdatesFont ()
 		{
-			var button = new Button {Platform = new UnitPlatform ()};
+			var button = new Button();
 
 			button.FontSize = 1000;
 			Assert.AreEqual (button.Font, Font.SystemFontOfSize (1000));
@@ -191,7 +191,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public void AssignToFontAttributesUpdatesFont ()
 		{
-			var button = new Button {Platform = new UnitPlatform ()};
+			var button = new Button();
 
 			button.FontAttributes = FontAttributes.Italic | FontAttributes.Bold;
 			Assert.AreEqual (button.Font, Font.SystemFontOfSize (button.FontSize, FontAttributes.Bold | FontAttributes.Italic));
@@ -253,7 +253,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		
 		public void ButtonBorderRadiusForwardsToButtonCornerRadius()
 		{
-			var button = new Button { Platform = new UnitPlatform() };
+			var button = new Button();
 			button.BorderRadius = 10;
 
 			Assert.AreEqual(10, button.CornerRadius);
@@ -262,7 +262,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public void ButtonCornerRadiusForwardsToButtonBorderRadius()
 		{
-			var button = new Button { Platform = new UnitPlatform() };
+			var button = new Button();
 			button.CornerRadius = 10;
 
 			Assert.AreEqual(10, button.BorderRadius);
@@ -271,7 +271,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public void ButtonCornerRadiusClearValueForwardsToButtonBorderRadius()
 		{
-			var button = new Button { Platform = new UnitPlatform() };
+			var button = new Button();
 			
 			button.CornerRadius = 10;
 
@@ -283,13 +283,37 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public void ButtonBorderRadiusClearValueForwardsToButtonCornerRadius()
 		{
-			var button = new Button { Platform = new UnitPlatform() };
+			var button = new Button();
 
 			button.BorderRadius = 10;
 
 			button.ClearValue(Button.BorderRadiusProperty);
 
 			Assert.AreEqual((int)Button.CornerRadiusProperty.DefaultValue, button.CornerRadius);
+		}
+
+		[Test]
+		public void ButtonCornerRadiusSetToFive()
+		{
+			var button = new Button();
+
+			button.CornerRadius = 25;
+			Assert.AreEqual(25, button.CornerRadius);
+
+			button.CornerRadius = 5;
+			Assert.AreEqual(5, button.CornerRadius);
+		}
+
+		[Test]
+		public void ButtonBorderRadiusSetMinusOne()
+		{
+			var button = new Button();
+
+			button.BorderRadius = 25;
+			Assert.AreEqual(25, button.BorderRadius);
+
+			button.BorderRadius = -1;
+			Assert.AreEqual(-1, button.BorderRadius);
 		}
 
 		private void AssertButtonContentLayoutsEqual(Button.ButtonContentLayout layout1, object layout2)

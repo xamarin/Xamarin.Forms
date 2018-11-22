@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.ComponentModel;
 using Android.Content;
 using Android.Graphics;
@@ -10,28 +10,34 @@ using AView = Android.Views.View;
 using AMotionEvent = Android.Views.MotionEvent;
 using AMotionEventActions = Android.Views.MotionEventActions;
 using Object = Java.Lang.Object;
+using AColor = Android.Graphics.Color;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class ButtonRenderer : ViewRenderer<Button, AButton>, AView.IOnAttachStateChangeListener
+	public class ButtonRenderer : ViewRenderer<Button, AButton>, AView.IOnAttachStateChangeListener, IBorderVisualElementRenderer
 	{
-		ButtonBackgroundTracker _backgroundTracker;
+		BorderBackgroundManager _backgroundTracker;
 		TextColorSwitcher _textColorSwitcher;
 		float _defaultFontSize;
 		Typeface _defaultTypeface;
 		bool _isDisposed;
 		int _imageHeight = -1;
 		Thickness _paddingDeltaPix = new Thickness();
+		IVisualElementRenderer _visualElementRenderer;
 
 		public ButtonRenderer(Context context) : base(context)
 		{
 			AutoPackage = false;
+			_visualElementRenderer = this;
+			_backgroundTracker = new BorderBackgroundManager(this);
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use ButtonRenderer(Context) instead.")]
 		public ButtonRenderer()
 		{
 			AutoPackage = false;
+			_visualElementRenderer = this;
+			_backgroundTracker = new BorderBackgroundManager(this);
 		}
 
 		AButton NativeButton
@@ -82,6 +88,8 @@ namespace Xamarin.Forms.Platform.Android
 			if (disposing)
 			{
 				_backgroundTracker?.Dispose();
+				_backgroundTracker = null;
+				_visualElementRenderer = null;
 			}
 
 			base.Dispose(disposing);
@@ -114,11 +122,6 @@ namespace Xamarin.Forms.Platform.Android
 				}
 			}
 
-			if (_backgroundTracker == null)
-				_backgroundTracker = new ButtonBackgroundTracker(Element, Control);
-			else
-				_backgroundTracker.Button = e.NewElement;
-
 			UpdateAll();
 		}
 
@@ -147,7 +150,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (Element == null || Control == null)
 				return;
 
-			_backgroundTracker?.UpdateBackgroundColor();
+			_backgroundTracker?.UpdateDrawable();
 		}
 
 		void UpdateAll()
@@ -157,7 +160,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateBitmap();
 			UpdateTextColor();
 			UpdateEnabled();
-			UpdateDrawable();
+			UpdateBackgroundColor();
 			UpdatePadding();
 		}
 
@@ -187,7 +190,7 @@ namespace Xamarin.Forms.Platform.Android
 				Control.SetCompoundDrawablesWithIntrinsicBounds(null, image, null, null);
 
 				// Keep track of the image height so we can use it in OnLayout
-				_imageHeight = image.IntrinsicHeight;
+				_imageHeight = image?.IntrinsicHeight ?? -1;
 
 				image?.Dispose();
 				return;
@@ -215,11 +218,6 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			image?.Dispose();
-		}
-
-		void UpdateDrawable()
-		{
-			_backgroundTracker.UpdateDrawable();
 		}
 
 		void UpdateEnabled()
@@ -268,9 +266,24 @@ namespace Xamarin.Forms.Platform.Android
 			_textColorSwitcher?.UpdateTextColor(Control, Element.TextColor);
 		}
 
+		float IBorderVisualElementRenderer.ShadowRadius => Control.ShadowRadius;
+		float IBorderVisualElementRenderer.ShadowDx => Control.ShadowDx;
+		float IBorderVisualElementRenderer.ShadowDy => Control.ShadowDy;
+		AColor IBorderVisualElementRenderer.ShadowColor => Control.ShadowColor;
+		bool IBorderVisualElementRenderer.UseDefaultPadding() => Element.OnThisPlatform().UseDefaultPadding();
+		bool IBorderVisualElementRenderer.UseDefaultShadow() => Element.OnThisPlatform().UseDefaultShadow();
+		bool IBorderVisualElementRenderer.IsShadowEnabled() => true;
+		VisualElement IBorderVisualElementRenderer.Element => Element;
+		AView IBorderVisualElementRenderer.View => Control;
+		event EventHandler<VisualElementChangedEventArgs> IBorderVisualElementRenderer.ElementChanged
+		{
+			add => _visualElementRenderer.ElementChanged += value;
+			remove => _visualElementRenderer.ElementChanged -= value;
+		}
+
 		void UpdatePadding()
 		{
-			Control?.SetPadding (
+			Control?.SetPadding(
 				(int)(Context.ToPixels(Element.Padding.Left) + _paddingDeltaPix.Left),
 				(int)(Context.ToPixels(Element.Padding.Top) + _paddingDeltaPix.Top),
 				(int)(Context.ToPixels(Element.Padding.Right) + _paddingDeltaPix.Right),
@@ -278,9 +291,9 @@ namespace Xamarin.Forms.Platform.Android
 			);
 		}
 
-		void UpdateContentEdge (Thickness? delta = null)
+		void UpdateContentEdge(Thickness? delta = null)
 		{
-			_paddingDeltaPix = delta ?? new Thickness ();
+			_paddingDeltaPix = delta ?? new Thickness();
 			UpdatePadding();
 		}
 

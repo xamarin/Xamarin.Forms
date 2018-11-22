@@ -42,6 +42,7 @@ namespace Xamarin.Forms.Platform.iOS
 			WebView.EvaluateJavaScriptRequested += OnEvaluateJavaScriptRequested;
 			WebView.GoBackRequested += OnGoBackRequested;
 			WebView.GoForwardRequested += OnGoForwardRequested;
+			WebView.ReloadRequested += OnReloadRequested;
 			Delegate = new CustomWebViewDelegate(this);
 
 			BackgroundColor = UIColor.Clear;
@@ -83,7 +84,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public void LoadUrl(string url)
 		{
 			var uri = new Uri(url);
-			var safeHostUri = new Uri($"{uri.Scheme}://{uri.IdnHost}", UriKind.Absolute);
+			var safeHostUri = new Uri($"{uri.Scheme}://{uri.Authority}", UriKind.Absolute);
 			var safeRelativeUri = new Uri($"{uri.PathAndQuery}{uri.Fragment}", UriKind.Relative);
 			LoadRequest(new NSUrlRequest(new Uri(safeHostUri, safeRelativeUri)));
 		}
@@ -108,6 +109,7 @@ namespace Xamarin.Forms.Platform.iOS
 				WebView.EvaluateJavaScriptRequested -= OnEvaluateJavaScriptRequested;
 				WebView.GoBackRequested -= OnGoBackRequested;
 				WebView.GoForwardRequested -= OnGoForwardRequested;
+				WebView.ReloadRequested -= OnReloadRequested;
 
 				_tracker?.Dispose();
 				_packager?.Dispose();
@@ -175,6 +177,11 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			UpdateCanGoBackForward();
+		}
+
+		void OnReloadRequested(object sender, EventArgs eventArgs)
+		{
+			Reload();
 		}
 
 		void UpdateCanGoBackForward()

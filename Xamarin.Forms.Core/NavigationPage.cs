@@ -10,7 +10,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_NavigationPageRenderer))]
-	public class NavigationPage : Page, IPageContainer<Page>, INavigationPageController, IElementConfiguration<NavigationPage> 
+	public class NavigationPage : Page, IPageContainer<Page>, IBarElement, INavigationPageController, IElementConfiguration<NavigationPage> 
 	{
 		public static readonly BindableProperty BackButtonTitleProperty = BindableProperty.CreateAttached("BackButtonTitle", typeof(string), typeof(Page), null);
 
@@ -21,11 +21,13 @@ namespace Xamarin.Forms
 		[Obsolete("TintProperty is obsolete as of version 1.2.0. Please use BarBackgroundColorProperty and BarTextColorProperty to change NavigationPage bar color properties.")] 
 		public static readonly BindableProperty TintProperty = BindableProperty.Create("Tint", typeof(Color), typeof(NavigationPage), Color.Default);
 
-		public static readonly BindableProperty BarBackgroundColorProperty = BindableProperty.Create("BarBackgroundColor", typeof(Color), typeof(NavigationPage), Color.Default);
+		public static readonly BindableProperty BarBackgroundColorProperty = BarElement.BarBackgroundColorProperty;
 
-		public static readonly BindableProperty BarTextColorProperty = BindableProperty.Create("BarTextColor", typeof(Color), typeof(NavigationPage), Color.Default);
+		public static readonly BindableProperty BarTextColorProperty = BarElement.BarTextColorProperty;
 
 		public static readonly BindableProperty TitleIconProperty = BindableProperty.CreateAttached("TitleIcon", typeof(FileImageSource), typeof(NavigationPage), default(FileImageSource));
+
+		public static readonly BindableProperty TitleViewProperty = BindableProperty.CreateAttached("TitleView", typeof(View), typeof(NavigationPage), null, propertyChanging: TitleViewPropertyChanging);
 
 		static readonly BindablePropertyKey CurrentPagePropertyKey = BindableProperty.CreateReadOnly("CurrentPage", typeof(Page), typeof(NavigationPage), null);
 		public static readonly BindableProperty CurrentPageProperty = CurrentPagePropertyKey.BindableProperty;
@@ -45,16 +47,14 @@ namespace Xamarin.Forms
 			PushPage(root);
 		}
 
-		public Color BarBackgroundColor
-		{
-			get { return (Color)GetValue(BarBackgroundColorProperty); }
-			set { SetValue(BarBackgroundColorProperty, value); }
+		public Color BarBackgroundColor {
+			get => (Color)GetValue(BarElement.BarBackgroundColorProperty);
+			set => SetValue(BarElement.BarBackgroundColorProperty, value);
 		}
 
-		public Color BarTextColor
-		{
-			get { return (Color)GetValue(BarTextColorProperty); }
-			set { SetValue(BarTextColorProperty, value); }
+		public Color BarTextColor {
+			get => (Color)GetValue(BarElement.BarTextColorProperty);
+			set => SetValue(BarElement.BarTextColorProperty, value);
 		}
 
 		[Obsolete("Tint is obsolete as of version 1.2.0. Please use BarBackgroundColor and BarTextColor to change NavigationPage bar color properties.")]
@@ -103,6 +103,22 @@ namespace Xamarin.Forms
 			private set { SetValue(RootPagePropertyKey, value); }
 		}
 
+		static void TitleViewPropertyChanging(BindableObject bindable, object oldValue, object newValue)
+		{
+			if (oldValue == newValue)
+				return;
+
+			if(bindable is Page page)
+			{
+				page.SetTitleView((View)oldValue, (View)newValue);
+			}
+			else if (oldValue != null)
+			{
+				var oldElem = (View)oldValue;
+				oldElem.Parent = null;
+			}
+		}
+
 		public static string GetBackButtonTitle(BindableObject page)
 		{
 			return (string)page.GetValue(BackButtonTitleProperty);
@@ -123,6 +139,11 @@ namespace Xamarin.Forms
 		public static FileImageSource GetTitleIcon(BindableObject bindable)
 		{
 			return (FileImageSource)bindable.GetValue(TitleIconProperty);
+		}
+
+		public static View GetTitleView(BindableObject bindable)
+		{
+			return (View)bindable.GetValue(TitleViewProperty);
 		}
 
 		public Task<Page> PopAsync()
@@ -220,6 +241,11 @@ namespace Xamarin.Forms
 		public static void SetTitleIcon(BindableObject bindable, FileImageSource value)
 		{
 			bindable.SetValue(TitleIconProperty, value);
+		}
+
+		public static void SetTitleView(BindableObject bindable, View value)
+		{
+			bindable.SetValue(TitleViewProperty, value);
 		}
 
 		protected override bool OnBackButtonPressed()

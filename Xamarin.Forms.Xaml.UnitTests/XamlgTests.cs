@@ -7,7 +7,7 @@ using Xamarin.Forms.Build.Tasks;
 
 using Xamarin.Forms.Core.UnitTests;
 
-namespace Xamarin.Forms.Xaml.UnitTests
+namespace Xamarin.Forms.MSBuild.UnitTests
 {
 	[TestFixture]
 	public class XamlgTests : BaseTestFixture
@@ -74,6 +74,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
     xmlns=""http://xamarin.com/schemas/2014/forms""
     xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
     xmlns:local=""clr-namespace:CustomListViewSample;assembly=CustomListViewSample""
+    xmlns:localusing=""using:CustomListViewSample""
     x:Class=""CustomListViewSample.TestPage"">
     <StackLayout 
         VerticalOptions=""CenterAndExpand""
@@ -81,6 +82,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
         <Label Text=""Hello, Custom Renderer!"" />
         <local:CustomListView x:Name=""listView""
             WidthRequest=""960"" CornerRadius=""50"" OutlineColor=""Blue"" />
+		<localusing:CustomListView x:Name=""listViewusing"" />
     </StackLayout>
 </ContentPage>";
 
@@ -89,9 +91,11 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			var generator = new XamlGenerator();
 			generator.ParseXaml(reader);
 
-			Assert.AreEqual (1, generator.NamedFields.Count());
-			Assert.AreEqual ("listView", generator.NamedFields.First ().Name);
-			Assert.AreEqual ("CustomListViewSample.CustomListView", generator.NamedFields.First ().Type.BaseType);
+			Assert.AreEqual (2, generator.NamedFields.Count());
+			Assert.AreEqual("listView", generator.NamedFields.ToArray()[0].Name);
+			Assert.AreEqual ("CustomListViewSample.CustomListView", generator.NamedFields.ToArray()[0].Type.BaseType);
+			Assert.AreEqual("listViewusing", generator.NamedFields.ToArray()[1].Name);
+			Assert.AreEqual ("CustomListViewSample.CustomListView", generator.NamedFields.ToArray()[1].Type.BaseType);
 		}
 
 		[Test]
@@ -330,7 +334,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		[Test]
 		public void XamlGDifferentInputOutputLengths ()
 		{
-			var engine = new DummyBuildEngine ();
+			var engine = new MSBuild.UnitTests.DummyBuildEngine();
 			var generator = new XamlGTask () {
 				BuildEngine = engine,
 				AssemblyName = "test",

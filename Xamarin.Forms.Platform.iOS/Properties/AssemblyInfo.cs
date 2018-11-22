@@ -41,6 +41,7 @@ using UIKit;
 [assembly: ExportRenderer(typeof(Frame), typeof(FrameRenderer))]
 [assembly: ExportRenderer(typeof(NavigationMenu), typeof(NavigationMenuRenderer))]
 [assembly: ExportRenderer(typeof(ListView), typeof(ListViewRenderer))]
+[assembly: ExportRenderer (typeof (CollectionView), typeof (CollectionViewRenderer))]
 [assembly: ExportRenderer(typeof(OpenGLView), typeof(OpenGLViewRenderer))]
 [assembly: ExportRenderer(typeof(TabbedPage), typeof(TabbedRenderer))]
 [assembly: ExportRenderer(typeof(NavigationPage), typeof(NavigationRenderer))]
@@ -68,3 +69,5 @@ using UIKit;
 [assembly: Xamarin.Forms.Dependency(typeof(ResourcesProvider))]
 [assembly: ResolutionGroupName("Xamarin")]
 [assembly: Preserve]
+[assembly: AssemblyVersion("2.0.0.0")]
+[assembly: AssemblyFileVersion("2.0.0.0")]

@@ -4,6 +4,7 @@ using System.Linq;
 
 using Xamarin.Forms.Build.Tasks;
 using Mono.Cecil;
+using Xamarin.Forms.MSBuild.UnitTests;
 
 namespace Xamarin.Forms.Xaml.UnitTests
 {
@@ -30,7 +31,8 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				OptimizeIL = true,
 				DebugSymbols = false,
 				ReadOnly = true,
-				Type = type.FullName
+				Type = type.FullName,
+				BuildEngine = new MSBuild.UnitTests.DummyBuildEngine()
 			};
 
 			IList<Exception> exceptions;

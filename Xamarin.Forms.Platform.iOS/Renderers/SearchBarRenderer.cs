@@ -120,8 +120,7 @@ namespace Xamarin.Forms.Platform.iOS
 			
 			Control.BarTintColor = color.ToUIColor(_defaultTintColor);
 
-			if (color.A < 1)
-				Control.SetBackgroundImage(new UIImage(), UIBarPosition.Any, UIBarMetrics.Default);
+			Control.SetBackgroundImage(new UIImage(), UIBarPosition.Any, UIBarMetrics.Default);
 
 			// updating BarTintColor resets the button color so we need to update the button color again
 			UpdateCancelButton();
@@ -129,10 +128,18 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override CoreGraphics.CGSize SizeThatFits(CoreGraphics.CGSize size)
 		{
-			if (nfloat.IsInfinity(size.Width) && Forms.IsiOS11OrNewer)
-				size.Width = nfloat.MaxValue;
-			
-			return base.SizeThatFits(size);
+			if (nfloat.IsInfinity(size.Width))
+				size.Width = (nfloat)(Element?.Parent is VisualElement parent ? parent.Width : Device.Info.ScaledScreenSize.Width);
+
+			var sizeThatFits = Control.SizeThatFits(size);
+
+			if (Forms.IsiOS11OrNewer)
+				return sizeThatFits;
+
+			////iOS10 hack because SizeThatFits always returns a width of 0
+			sizeThatFits.Width = (nfloat)Math.Max(sizeThatFits.Width, size.Width);
+
+			return sizeThatFits;
 		}
 
 		void OnCancelClicked(object sender, EventArgs args)

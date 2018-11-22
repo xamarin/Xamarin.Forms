@@ -43,6 +43,8 @@ namespace Xamarin.Forms
 
 		ReadOnlyCollection<Element> _logicalChildren;
 
+		View _titleView;
+
 		public Page()
 		{
 			var toolbarItems = new ObservableCollection<ToolbarItem>();
@@ -214,6 +216,9 @@ namespace Xamarin.Forms
 			{
 				SetInheritedBindingContext(toolbarItem, BindingContext);
 			}
+
+			if(_titleView != null)
+				SetInheritedBindingContext(_titleView, BindingContext);
 		}
 
 		protected virtual void OnChildMeasureInvalidated(object sender, EventArgs e)
@@ -421,5 +426,23 @@ namespace Xamarin.Forms
 		{
 			return _platformConfigurationRegistry.Value.On<T>();
 		}
+
+		internal void SetTitleView(View oldTitleView, View newTitleView)
+		{
+			if (oldTitleView != null)
+				oldTitleView.Parent = null;
+
+			if (newTitleView != null)
+				newTitleView.Parent = this;
+
+			_titleView = newTitleView;
+		}
+
+		// This is a dummy property for the Previewer
+		// Platform isn't needed anymore, but the Previewer will still try to set it via reflection
+		// and throw an NRE if it's not available; this fake property keeps it happy.
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		[Obsolete("This property is no longer used as of version 3.4.")]
+		internal object Platform { get; set; }
 	}
 }

@@ -159,6 +159,10 @@ namespace Xamarin.Forms.Controls.Issues
 					from Layout element in layout.InternalChildren
 					from Button button in element.InternalChildren
 					let text = button.Text
+					// UwpIgnore
+#if __WINDOWS__
+					where text != "Stepper" && text != "Entry"
+#endif
 					select new object[]
 					{
 						text,
@@ -201,7 +205,9 @@ namespace Xamarin.Forms.Controls.Issues
 				LineBreakMode = LineBreakMode.WordWrap,
 				Text = "Lorem ipsum dolor sit amet"
 			}));
-			col1.Children.Add(MenuButton(nameof(SearchBar), () => new SearchBar()));
+
+			// We don't use 'SearchBar' here because on Android it sometimes finds the wrong control
+			col1.Children.Add(MenuButton("TestSearchBar", () => new SearchBar()));
 
 			col2.Children.Add(MenuButton(nameof(DatePicker), () => new DatePicker()));
 			col2.Children.Add(MenuButton(nameof(TimePicker), () => new TimePicker()));

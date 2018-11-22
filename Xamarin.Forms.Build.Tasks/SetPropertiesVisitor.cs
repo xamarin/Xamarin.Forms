@@ -137,7 +137,7 @@ namespace Xamarin.Forms.Build.Tasks
 				var parentVar = Context.Variables[(IElementNode)parentNode];
 				string contentProperty;
 
-				if (CanAddToResourceDictionary(parentVar.VariableType, node, node, Context)) {
+				if (CanAddToResourceDictionary(parentVar, parentVar.VariableType, node, node, Context)) {
 					Context.IL.Emit(Ldloc, parentVar);
 					Context.IL.Append(AddToResourceDictionary(node, node, Context));
 				}
@@ -186,7 +186,7 @@ namespace Xamarin.Forms.Build.Tasks
 				TypeReference propertyType;
 				Context.IL.Append(GetPropertyValue(parent, parentList.XmlName, Context, node, out propertyType));
 
-				if (CanAddToResourceDictionary(propertyType, node, node, Context)) {
+				if (CanAddToResourceDictionary(parent, propertyType, node, node, Context)) {
 					Context.IL.Append(AddToResourceDictionary(node, node, Context));
 					return;
 				} 
@@ -283,7 +283,9 @@ namespace Xamarin.Forms.Build.Tasks
 				out markupExtension, out genericArguments))
 			{
 				var acceptEmptyServiceProvider = vardefref.VariableDefinition.VariableType.GetCustomAttribute(module, ("Xamarin.Forms.Core", "Xamarin.Forms.Xaml", "AcceptEmptyServiceProviderAttribute")) != null;
-				if (vardefref.VariableDefinition.VariableType.FullName == "Xamarin.Forms.Xaml.BindingExtension")
+				if (   vardefref.VariableDefinition.VariableType.FullName == "Xamarin.Forms.Xaml.BindingExtension"
+				    && (   node.Properties == null
+				        || !node.Properties.ContainsKey(new XmlName("", "Source"))))
 					foreach (var instruction in CompileBindingPath(node, context, vardefref.VariableDefinition))
 						yield return instruction;
 
@@ -390,7 +392,11 @@ namespace Xamarin.Forms.Build.Tasks
 				yield break; //throw
 
 			var properties = ParsePath(path, tSourceRef, node as IXmlLineInfo, module);
-			var tPropertyRef = properties != null && properties.Any() ? properties.Last().Item1.PropertyType : tSourceRef;
+			TypeReference tPropertyRef = tSourceRef;
+			if (properties != null && properties.Count > 0) {
+				var lastProp = properties[properties.Count - 1];
+				tPropertyRef = lastProp.property.ResolveGenericPropertyType(lastProp.propDeclTypeRef, module);
+			}
 			tPropertyRef = module.ImportReference(tPropertyRef);
 
 			var funcRef = module.ImportReference(module.ImportReference(("mscorlib", "System", "Func`2")).MakeGenericInstanceType(new [] { tSourceRef, tPropertyRef }));
@@ -419,16 +425,15 @@ namespace Xamarin.Forms.Build.Tasks
 			yield return Instruction.Create(OpCodes.Callvirt, module.ImportPropertySetterReference(("Xamarin.Forms.Xaml", "Xamarin.Forms.Xaml", "BindingExtension"), propertyName: "TypedBinding"));
 		}
 
-		static IList<Tuple<PropertyDefinition, string>> ParsePath(string path, TypeReference tSourceRef, IXmlLineInfo lineInfo, ModuleDefinition module)
+		static IList<(PropertyDefinition property, TypeReference propDeclTypeRef, string indexArg)> ParsePath(string path, TypeReference tSourceRef, IXmlLineInfo lineInfo, ModuleDefinition module)
 		{
 			if (string.IsNullOrWhiteSpace(path))
 				return null;
 			path = path.Trim(' ', '.'); //trim leading or trailing dots
 			var parts = path.Split(new [] { '.' }, StringSplitOptions.RemoveEmptyEntries);
-			var properties = new List<Tuple<PropertyDefinition, string>>();
+			var properties = new List<(PropertyDefinition property, TypeReference propDeclTypeRef, string indexArg)>();
 
 			var previousPartTypeRef = tSourceRef;
-			TypeReference _;
 			foreach (var part in parts) {
 				var p = part;
 				string indexArg = null;
@@ -451,16 +456,16 @@ namespace Xamarin.Forms.Build.Tasks
 				}
 
 				if (p.Length > 0) {
-					var property = previousPartTypeRef.GetProperty(pd => pd.Name == p && pd.GetMethod != null && pd.GetMethod.IsPublic, out _)
+					var property = previousPartTypeRef.GetProperty(pd => pd.Name == p && pd.GetMethod != null && pd.GetMethod.IsPublic, out var propDeclTypeRef)
 					                                  ?? throw new XamlParseException($"Binding: Property '{p}' not found on '{previousPartTypeRef}'", lineInfo);
-					properties.Add(new Tuple<PropertyDefinition, string>(property,null));
+					properties.Add((property, propDeclTypeRef, null));
 					previousPartTypeRef = property.PropertyType;
 				}
 				if (indexArg != null) {
 					var defaultMemberAttribute = previousPartTypeRef.GetCustomAttribute(module, ("mscorlib", "System.Reflection", "DefaultMemberAttribute"));
 					var indexerName = defaultMemberAttribute?.ConstructorArguments?.FirstOrDefault().Value as string ?? "Item";
-					var indexer = previousPartTypeRef.GetProperty(pd => pd.Name == indexerName && pd.GetMethod != null && pd.GetMethod.IsPublic, out _);
-					properties.Add(new Tuple<PropertyDefinition, string>(indexer, indexArg));
+					var indexer = previousPartTypeRef.GetProperty(pd => pd.Name == indexerName && pd.GetMethod != null && pd.GetMethod.IsPublic, out var indexerDeclTypeRef);
+					properties.Add((indexer, indexerDeclTypeRef, indexArg));
 					if (indexer.PropertyType != module.TypeSystem.String && indexer.PropertyType != module.TypeSystem.Int32)
 						throw new XamlParseException($"Binding: Unsupported indexer index type: {indexer.PropertyType.FullName}", lineInfo);
 					previousPartTypeRef = indexer.PropertyType;
@@ -469,7 +474,7 @@ namespace Xamarin.Forms.Build.Tasks
 			return properties;
 		}
 
-		static IEnumerable<Instruction> CompiledBindingGetGetter(TypeReference tSourceRef, TypeReference tPropertyRef, IList<Tuple<PropertyDefinition, string>> properties, ElementNode node, ILContext context)
+		static IEnumerable<Instruction> CompiledBindingGetGetter(TypeReference tSourceRef, TypeReference tPropertyRef, IList<(PropertyDefinition property, TypeReference propDeclTypeRef, string indexArg)> properties, ElementNode node, ILContext context)
 		{
 //			.method private static hidebysig default string '<Main>m__0' (class ViewModel vm)  cil managed
 //			{
@@ -506,22 +511,25 @@ namespace Xamarin.Forms.Build.Tasks
 					il.Emit(Ldarg_0);
 
 				foreach (var propTuple in properties) {
-					var property = propTuple.Item1;
-					var indexerArg = propTuple.Item2;
+					var property = propTuple.property;
+					var propDeclType = propTuple.propDeclTypeRef;
+					var indexerArg = propTuple.indexArg;
 					if (indexerArg != null) {
 						if (property.GetMethod.Parameters[0].ParameterType == module.TypeSystem.String)
 							il.Emit(Ldstr, indexerArg);
 						else if (property.GetMethod.Parameters[0].ParameterType == module.TypeSystem.Int32) {
-							int index;
-							if (!int.TryParse(indexerArg, out index))
+							if (!int.TryParse(indexerArg, out int index))
 								throw new XamlParseException($"Binding: {indexerArg} could not be parsed as an index for a {property.Name}", node as IXmlLineInfo);
 							il.Emit(Ldc_I4, index);
 						}
 					}
+					var getMethod = module.ImportReference(property.GetMethod);
+					getMethod = module.ImportReference(getMethod.ResolveGenericParameters(propDeclType, module));
+
 					if (property.GetMethod.IsVirtual)
-						il.Emit(Callvirt, module.ImportReference(property.GetMethod));
+						il.Emit(Callvirt, getMethod);
 					else
-						il.Emit(Call, module.ImportReference(property.GetMethod));
+						il.Emit(Call, getMethod);
 					}
 
 				il.Emit(Ret);
@@ -537,10 +545,10 @@ namespace Xamarin.Forms.Build.Tasks
 			yield return Create(Newobj, module.ImportCtorReference(("mscorlib", "System", "Func`2"), paramCount: 2, classArguments: new[] { tSourceRef, tPropertyRef }));
 		}
 
-		static IEnumerable<Instruction> CompiledBindingGetSetter(TypeReference tSourceRef, TypeReference tPropertyRef, IList<Tuple<PropertyDefinition, string>> properties, ElementNode node, ILContext context)
+		static IEnumerable<Instruction> CompiledBindingGetSetter(TypeReference tSourceRef, TypeReference tPropertyRef, IList<(PropertyDefinition property, TypeReference propDeclTypeRef, string indexArg)> properties, ElementNode node, ILContext context)
 		{
 			if (properties == null || properties.Count == 0) {
-				yield return Instruction.Create(OpCodes.Ldnull);
+				yield return Create(Ldnull);
 				yield break;
 			}
 
@@ -570,58 +578,62 @@ namespace Xamarin.Forms.Build.Tasks
 			setter.Body.InitLocals = true;
 
 			var il = setter.Body.GetILProcessor();
-			var lastProperty = properties.LastOrDefault();
-			var setterRef = lastProperty?.Item1.SetMethod;
-			if (setterRef == null) {
-				yield return Instruction.Create(OpCodes.Ldnull); //throw or not ?
+			if (!properties.Any() || properties.Last().property.SetMethod == null) {
+				yield return Create(Ldnull); //throw or not ?
 				yield break;
 			}
+
+			var setterRef = module.ImportReference(properties.Last().property.SetMethod);
+			setterRef = module.ImportReference(setterRef.ResolveGenericParameters(properties.Last().propDeclTypeRef, module));
 
 			if (tSourceRef.IsValueType)
 				il.Emit(Ldarga_S, (byte)0);
 			else
 				il.Emit(Ldarg_0);
 			for (int i = 0; i < properties.Count - 1; i++) {
-				var property = properties[i].Item1;
-				var indexerArg = properties[i].Item2;
+				var property = properties[i].property;
+				var propDeclType = properties[i].propDeclTypeRef;
+				var indexerArg = properties[i].indexArg;
+
 				if (indexerArg != null) {
 					if (property.GetMethod.Parameters [0].ParameterType == module.TypeSystem.String)
-						il.Emit(OpCodes.Ldstr, indexerArg);
+						il.Emit(Ldstr, indexerArg);
 					else if (property.GetMethod.Parameters [0].ParameterType == module.TypeSystem.Int32) {
 						int index;
 						if (!int.TryParse(indexerArg, out index))
 							throw new XamlParseException($"Binding: {indexerArg} could not be parsed as an index for a {property.Name}", node as IXmlLineInfo);
-						il.Emit(OpCodes.Ldc_I4, index);
+						il.Emit(Ldc_I4, index);
 					}
 				}
+
+				var getMethod = module.ImportReference(property.GetMethod);
+				getMethod = module.ImportReference(getMethod.ResolveGenericParameters(propDeclType, module));
+
 				if (property.GetMethod.IsVirtual)
-					il.Emit(Callvirt, module.ImportReference(property.GetMethod));
+					il.Emit(Callvirt, getMethod);
 				else
-					il.Emit(Call, module.ImportReference(property.GetMethod));
+					il.Emit(Call, getMethod);
 			}
 
-			var indexer = properties.Last().Item2;
+			var indexer = properties.Last().indexArg;
 			if (indexer != null) {
-				if (lastProperty.Item1.GetMethod.Parameters [0].ParameterType == module.TypeSystem.String)
-					il.Emit(OpCodes.Ldstr, indexer);
-				else if (lastProperty.Item1.GetMethod.Parameters [0].ParameterType == module.TypeSystem.Int32) {
-					int index;
-					if (!int.TryParse(indexer, out index))
-						throw new XamlParseException($"Binding: {indexer} could not be parsed as an index for a {lastProperty.Item1.Name}", node as IXmlLineInfo);
-					il.Emit(OpCodes.Ldc_I4, index);
+				if (properties.Last().property.GetMethod.Parameters [0].ParameterType == module.TypeSystem.String)
+					il.Emit(Ldstr, indexer);
+				else if (properties.Last().property.GetMethod.Parameters [0].ParameterType == module.TypeSystem.Int32) {
+					if (!int.TryParse(indexer, out int index))
+						throw new XamlParseException($"Binding: {indexer} could not be parsed as an index for a {properties.Last().property.Name}", node as IXmlLineInfo);
+					il.Emit(Ldc_I4, index);
 				}
 			}
-			if (tPropertyRef.IsValueType)
-				il.Emit(Ldarga_S, (byte)1);
-			else
-				il.Emit(Ldarg_1);
 
-			if (setterRef.IsVirtual)
-				il.Emit(Callvirt, module.ImportReference(setterRef));
-			else
-				il.Emit(Call, module.ImportReference(setterRef));
+			il.Emit(Ldarg_1);
 
-			il.Emit(OpCodes.Ret);
+			if (properties.Last().property.SetMethod.IsVirtual)
+				il.Emit(Callvirt, setterRef);
+			else
+				il.Emit(Call, setterRef);
+
+			il.Emit(Ret);
 
 			context.Body.Method.DeclaringType.Methods.Add(setter);
 
@@ -636,7 +648,7 @@ namespace Xamarin.Forms.Build.Tasks
 																   new[] { tSourceRef, tPropertyRef }));
 		}
 
-		static IEnumerable<Instruction> CompiledBindingGetHandlers(TypeReference tSourceRef, TypeReference tPropertyRef, IList<Tuple<PropertyDefinition, string>> properties, ElementNode node, ILContext context)
+		static IEnumerable<Instruction> CompiledBindingGetHandlers(TypeReference tSourceRef, TypeReference tPropertyRef, IList<(PropertyDefinition property, TypeReference propDeclTypeRef, string indexArg)> properties, ElementNode node, ILContext context)
 		{
 //			.method private static hidebysig default object '<Main>m__2'(class ViewModel vm)  cil managed {
 //				.custom instance void class [mscorlib] System.Runtime.CompilerServices.CompilerGeneratedAttribute::'.ctor'() =  (01 00 00 00 ) // ....
@@ -655,7 +667,7 @@ namespace Xamarin.Forms.Build.Tasks
 
 			var partGetters = new List<MethodDefinition>();
 			if (properties == null || properties.Count == 0) {
-				yield return Instruction.Create(OpCodes.Ldnull);
+				yield return Create(Ldnull);
 				yield break;
 			}
 				
@@ -690,28 +702,35 @@ namespace Xamarin.Forms.Build.Tasks
 				var lastGetterTypeRef = tSourceRef;
 				for (int j = 0; j < i; j++) {
 					var propTuple = properties [j];
-					var property = propTuple.Item1;
-					var indexerArg = propTuple.Item2;
+					var property = propTuple.property;
+					var indexerArg = propTuple.indexArg;
+					var propDeclType = propTuple.propDeclTypeRef;
+
 					if (indexerArg != null) {
 						if (property.GetMethod.Parameters [0].ParameterType == module.TypeSystem.String)
-							il.Emit(OpCodes.Ldstr, indexerArg);
+							il.Emit(Ldstr, indexerArg);
 						else if (property.GetMethod.Parameters [0].ParameterType == module.TypeSystem.Int32) {
 							int index;
 							if (!int.TryParse(indexerArg, out index))
 								throw new XamlParseException($"Binding: {indexerArg} could not be parsed as an index for a {property.Name}", node as IXmlLineInfo);
-							il.Emit(OpCodes.Ldc_I4, index);
+							il.Emit(Ldc_I4, index);
 						}
 					}
+
+					var getMethod = module.ImportReference(property.GetMethod);
+					getMethod = module.ImportReference(getMethod.ResolveGenericParameters(propDeclType, module));
+
 					if (property.GetMethod.IsVirtual)
-						il.Emit(Callvirt, module.ImportReference(property.GetMethod));
+						il.Emit(Callvirt, getMethod);
 					else
-						il.Emit(Call, module.ImportReference(property.GetMethod));
+						il.Emit(Call, getMethod);
+
 					lastGetterTypeRef = property.PropertyType;
 				}
 				if (lastGetterTypeRef.IsValueType)
 					il.Emit(Box, module.ImportReference(lastGetterTypeRef));
 
-				il.Emit(OpCodes.Ret);
+				il.Emit(Ret);
 				context.Body.Method.DeclaringType.Methods.Add(partGetter);
 				partGetters.Add(partGetter);
 			}
@@ -799,7 +818,6 @@ namespace Xamarin.Forms.Build.Tasks
 			var localName = propertyName.LocalName;
 			bool attached;
 			var bpRef = GetBindablePropertyReference(parent, propertyName.NamespaceURI, ref localName, out attached, context, lineInfo);
-			TypeReference _;
 
 			//If it's a BP, GetValue ()
 			if (CanGetValue(parent, bpRef, attached, lineInfo, context, out _))
@@ -823,7 +841,7 @@ namespace Xamarin.Forms.Build.Tasks
 			var name = $"{localName}Property";
 			FieldReference bpRef = bpOwnerType.GetField(fd => fd.Name == name &&
 														fd.IsStatic &&
-														fd.IsPublic, out declaringTypeReference);
+														(fd.IsPublic || fd.IsAssembly), out declaringTypeReference);
 			if (bpRef != null) {
 				bpRef = module.ImportReference(bpRef.ResolveGenericParameters(declaringTypeReference));
 				bpRef.FieldType = module.ImportReference(bpRef.FieldType);
@@ -856,12 +874,12 @@ namespace Xamarin.Forms.Build.Tasks
 
 			var value = ((ValueNode)valueNode).Value;
 
-			yield return Instruction.Create(OpCodes.Ldloc, parent);
+			yield return Create(Ldloc, parent);
 			if (context.Root is VariableDefinition)
-				yield return Instruction.Create(OpCodes.Ldloc, context.Root as VariableDefinition);
+				yield return Create(Ldloc, context.Root as VariableDefinition);
 			else if (context.Root is FieldDefinition) {
-				yield return Instruction.Create(OpCodes.Ldarg_0);
-				yield return Instruction.Create(OpCodes.Ldfld, context.Root as FieldDefinition);
+				yield return Create(Ldarg_0);
+				yield return Create(Ldfld, context.Root as FieldDefinition);
 			} else 
 				throw new InvalidProgramException();
 			var declaringType = context.Body.Method.DeclaringType;
@@ -870,19 +888,34 @@ namespace Xamarin.Forms.Build.Tasks
 			var handler = declaringType.AllMethods().FirstOrDefault(md => md.Name == value as string);
 			if (handler == null) 
 				throw new XamlParseException($"EventHandler \"{value}\" not found in type \"{context.Body.Method.DeclaringType.FullName}\"", iXmlLineInfo);
+
+			//check if the handler signature matches the Invoke signature;
+			var invoke = module.ImportReference(eventinfo.EventType.ResolveCached().GetMethods().First(md => md.Name == "Invoke"));
+			invoke = invoke.ResolveGenericParameters(eventinfo.EventType, module);
+			if (!handler.ReturnType.InheritsFromOrImplements(invoke.ReturnType))
+				throw new XamlParseException($"Signature (return type) of EventHandler \"{context.Body.Method.DeclaringType.FullName}.{value}\" doesn't match the event type", iXmlLineInfo);
+			if (invoke.Parameters.Count != handler.Parameters.Count)
+				throw new XamlParseException($"Signature (number of arguments) of EventHandler \"{context.Body.Method.DeclaringType.FullName}.{value}\" doesn't match the event type", iXmlLineInfo);
+			if (!invoke.ContainsGenericParameter)
+				for (var i = 0; i < invoke.Parameters.Count;i++)
+					if (!invoke.Parameters[i].ParameterType.InheritsFromOrImplements(handler.Parameters[i].ParameterType))
+						throw new XamlParseException($"Signature (parameter {i}) of EventHandler \"{context.Body.Method.DeclaringType.FullName}.{value}\" doesn't match the event type", iXmlLineInfo);
+			//TODO check generic parameters if any
+
 			if (handler.IsVirtual) {
-				yield return Instruction.Create(OpCodes.Ldarg_0);
-				yield return Instruction.Create(OpCodes.Ldvirtftn, handler);
+				yield return Create(Ldarg_0);
+				yield return Create(Ldvirtftn, handler);
 			} else
-				yield return Instruction.Create(OpCodes.Ldftn, handler);
+				yield return Create(Ldftn, handler);
 
 			//FIXME: eventually get the right ctor instead fo the First() one, just in case another one could exists (not even sure it's possible).
 			var ctor = module.ImportReference(eventinfo.EventType.ResolveCached().GetConstructors().First());
 			ctor = ctor.ResolveGenericParameters(eventinfo.EventType, module);
-			yield return Instruction.Create(OpCodes.Newobj, module.ImportReference(ctor));
+			yield return Create(Newobj, module.ImportReference(ctor));
+			//Check if the handler has the same signature as the ctor (it should)
 			var adder = module.ImportReference(eventinfo.AddMethod);
 			adder = adder.ResolveGenericParameters(eventDeclaringTypeRef, module);
-			yield return Instruction.Create(OpCodes.Callvirt, module.ImportReference(adder));
+			yield return Create(Callvirt, module.ImportReference(adder));
 		}
 
 		static bool CanSetDynamicResource(FieldReference bpRef, INode valueNode, ILContext context)
@@ -1167,8 +1200,7 @@ namespace Xamarin.Forms.Build.Tasks
 		static IEnumerable<Instruction> Get(VariableDefinition parent, string localName, IXmlLineInfo iXmlLineInfo, ILContext context, out TypeReference propertyType)
 		{
 			var module = context.Body.Method.Module;
-			TypeReference declaringTypeReference;
-			var property = parent.VariableType.GetProperty(pd => pd.Name == localName, out declaringTypeReference);
+			var property = parent.VariableType.GetProperty(pd => pd.Name == localName, out var declaringTypeReference);
 			var propertyGetter = property.GetMethod;
 
 			module.ImportReference(parent.VariableType.ResolveCached());
@@ -1208,15 +1240,23 @@ namespace Xamarin.Forms.Build.Tasks
 			return true;
 		}
 
-		static bool CanAddToResourceDictionary(TypeReference collectionType, IElementNode node, IXmlLineInfo lineInfo, ILContext context)
+		static Dictionary<VariableDefinition, IList<string>> resourceNamesInUse = new Dictionary<VariableDefinition, IList<string>>();
+		static bool CanAddToResourceDictionary(VariableDefinition parent, TypeReference collectionType, IElementNode node, IXmlLineInfo lineInfo, ILContext context)
 		{
 			if (   collectionType.FullName != "Xamarin.Forms.ResourceDictionary"
 				&& collectionType.ResolveCached().BaseType?.FullName != "Xamarin.Forms.ResourceDictionary")
 				return false;
 
 
-			if (node.Properties.ContainsKey(XmlName.xKey))
+			if (node.Properties.ContainsKey(XmlName.xKey)) {
+				var key = (node.Properties[XmlName.xKey] as ValueNode).Value as string;
+				if (!resourceNamesInUse.TryGetValue(parent, out var names))
+					resourceNamesInUse[parent] = (names = new List<string>());
+				if (names.Contains(key))
+					throw new XamlParseException($"A resource with the key '{key}' is already present in the ResourceDictionary.", lineInfo);
+				names.Add(key);
 				return true;
+			}
 
 			//is there a RD.Add() overrides that accepts this ?
 			var nodeTypeRef = context.Variables[node].VariableType;
@@ -1239,7 +1279,7 @@ namespace Xamarin.Forms.Build.Tasks
 			foreach (var instruction in GetPropertyValue(parent, propertyName, context, iXmlLineInfo, out propertyType))
 				yield return instruction;
 
-			if (CanAddToResourceDictionary(propertyType, elementNode, iXmlLineInfo, context)) {
+			if (CanAddToResourceDictionary(parent, propertyType, elementNode, iXmlLineInfo, context)) {
 				foreach (var instruction in AddToResourceDictionary(elementNode, iXmlLineInfo, context))
 					yield return instruction;
 				yield break;
