@@ -80,6 +80,6 @@
     <ItemGroup>
       <_NUnitTestAdapterFiles Include="$(NuGetPackageRoot)NUnitTestAdapter\%(Version)\*" Condition="@(PackageReference -> '%(Identity)') == 'NUnitTestAdapter'" InProject="False" />
     </ItemGroup>
-    <Copy SourceFiles="@(_NUnitTestAdapterFiles)" DestinationFolder="..\packages\NUnitTestAdapter.AnyVersion" ContinueOnError="true" Retries="0" />
+    <Copy SourceFiles="@(_NUnitTestAdapterFiles)" DestinationFolder="$(SolutionDir)\packages\NUnitTestAdapter.AnyVersion" ContinueOnError="true" Retries="0" />
   </Target>
 </Project>
