@@ -29,13 +29,13 @@ namespace Xamarin.Forms
 		{
 			if (value != null)
 			{
-				switch (value.Trim().ToLowerInvariant())
-				{
-					case "matchparent": return VisualMarker.MatchParent;
-					case "material": return VisualMarker.Material;
-					case "default":
-					default: return VisualMarker.Default;
-				}
+				var sc = StringComparison.OrdinalIgnoreCase;
+				if (value.Equals(nameof(VisualMarker.MatchParent), sc))
+					return VisualMarker.MatchParent;
+				else if (value.Equals(nameof(VisualMarker.Material), sc))
+					return VisualMarker.Material;
+				else
+					return VisualMarker.Default;
 			}
 			throw new InvalidOperationException($"Cannot convert \"{value}\" into {typeof(IVisual)}");
 		}
