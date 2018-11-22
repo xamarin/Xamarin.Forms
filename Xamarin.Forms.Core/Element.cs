@@ -478,9 +478,6 @@ namespace Xamarin.Forms
 				controller.EffectiveVisual = parentView.EffectiveVisual;
 		}
 
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public event EventHandler PlatformSet;
-
 		internal virtual void SetChildInheritedBindingContext(Element child, object context)
 		{
 			SetInheritedBindingContext(child, context);

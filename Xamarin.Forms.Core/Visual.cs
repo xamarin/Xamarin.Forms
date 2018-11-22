@@ -11,9 +11,9 @@ namespace Xamarin.Forms
 
 	public static class VisualRendererMarker
 	{
-		public sealed class Material : IVisual { }
-		public sealed class Default : IVisual { }
-		internal sealed class MatchParent : IVisual { }
+		public sealed class Material : IVisual { internal Material() { } }
+		public sealed class Default : IVisual { internal Default() { } }
+		internal sealed class MatchParent : IVisual { internal MatchParent() { } }
 	}
 
 	[TypeConverter(typeof(VisualTypeConverter))]
