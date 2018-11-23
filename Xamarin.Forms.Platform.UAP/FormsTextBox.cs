@@ -360,7 +360,7 @@ namespace Xamarin.Forms.Platform.UWP
 				_cachedSpellCheckSetting = IsSpellCheckEnabled;
 				_cachedPredictionsSetting = IsTextPredictionEnabled;
 
-				if (InputScope.Names.Any(i => i.NameValue == InputScopeNameValue.Number))
+				if (InputScope != null && InputScope.Names.Any(i => i.NameValue == InputScopeNameValue.Number))
 				{
 					InputScope = NumericPasswordInputScope;
 				}
