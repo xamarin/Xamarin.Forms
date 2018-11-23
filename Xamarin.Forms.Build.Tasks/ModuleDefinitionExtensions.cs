@@ -193,6 +193,18 @@ namespace Xamarin.Forms.Build.Tasks
 		}
 
 		public static MethodReference ImportMethodReference(this ModuleDefinition module,
+															TypeReference type,
+															string methodName)
+		{
+			var methodKey = $"{type}.{methodName}()";
+			if (MethodRefCache.TryGetValue((module, methodKey), out var methodReference))
+				return methodReference;
+			methodReference = module.ImportMethodReference(type, methodName, null, null);
+			MethodRefCache.Add((module, methodKey), methodReference);
+			return methodReference;
+		}
+
+		public static MethodReference ImportMethodReference(this ModuleDefinition module,
 															(string assemblyName, string clrNamespace, string typeName) type,
 															string methodName,
 															(string assemblyName, string clrNamespace, string typeName)[] parameterTypes,

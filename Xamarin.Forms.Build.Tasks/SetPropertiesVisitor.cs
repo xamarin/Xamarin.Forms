@@ -395,7 +395,10 @@ namespace Xamarin.Forms.Build.Tasks
 			TypeReference tPropertyRef = tSourceRef;
 			if (properties != null && properties.Count > 0) {
 				var lastProp = properties[properties.Count - 1];
-				tPropertyRef = lastProp.property.ResolveGenericPropertyType(lastProp.propDeclTypeRef, module);
+				if (lastProp.property is null) //we set the property null for array-types
+					tPropertyRef = (lastProp.propDeclTypeRef as ArrayType).ElementType;
+				else
+					tPropertyRef = lastProp.property.ResolveGenericPropertyType(lastProp.propDeclTypeRef, module);
 			}
 			tPropertyRef = module.ImportReference(tPropertyRef);
 
@@ -465,10 +468,17 @@ namespace Xamarin.Forms.Build.Tasks
 					var defaultMemberAttribute = previousPartTypeRef.GetCustomAttribute(module, ("mscorlib", "System.Reflection", "DefaultMemberAttribute"));
 					var indexerName = defaultMemberAttribute?.ConstructorArguments?.FirstOrDefault().Value as string ?? "Item";
 					var indexer = previousPartTypeRef.GetProperty(pd => pd.Name == indexerName && pd.GetMethod != null && pd.GetMethod.IsPublic, out var indexerDeclTypeRef);
-					properties.Add((indexer, indexerDeclTypeRef, indexArg));
-					if (indexer.PropertyType != module.TypeSystem.String && indexer.PropertyType != module.TypeSystem.Int32)
-						throw new XamlParseException($"Binding: Unsupported indexer index type: {indexer.PropertyType.FullName}", lineInfo);
-					previousPartTypeRef = indexer.PropertyType;
+
+					if (indexer == null && previousPartTypeRef.IsArray) {
+						properties.Add((null, indexerDeclTypeRef, indexArg));
+						previousPartTypeRef = (previousPartTypeRef as ArrayType).ElementType;
+					}
+					else {
+						properties.Add((indexer, indexerDeclTypeRef, indexArg));
+						if (indexer.PropertyType != module.TypeSystem.String && indexer.PropertyType != module.TypeSystem.Int32)
+							throw new XamlParseException($"Binding: Unsupported indexer index type: {indexer.PropertyType.FullName}", lineInfo);
+						previousPartTypeRef = indexer.PropertyType;
+					}
 				}
 			}
 			return properties;
@@ -515,23 +525,28 @@ namespace Xamarin.Forms.Build.Tasks
 					var propDeclType = propTuple.propDeclTypeRef;
 					var indexerArg = propTuple.indexArg;
 					if (indexerArg != null) {
-						if (property.GetMethod.Parameters[0].ParameterType == module.TypeSystem.String)
+						if (property != null && property.GetMethod.Parameters[0].ParameterType == module.TypeSystem.String)
 							il.Emit(Ldstr, indexerArg);
-						else if (property.GetMethod.Parameters[0].ParameterType == module.TypeSystem.Int32) {
+						else if (property == null || property.GetMethod.Parameters[0].ParameterType == module.TypeSystem.Int32) {
 							if (!int.TryParse(indexerArg, out int index))
 								throw new XamlParseException($"Binding: {indexerArg} could not be parsed as an index for a {property.Name}", node as IXmlLineInfo);
 							il.Emit(Ldc_I4, index);
 						}
 					}
-					var getMethod = module.ImportReference(property.GetMethod);
-					getMethod = module.ImportReference(getMethod.ResolveGenericParameters(propDeclType, module));
-
-					if (property.GetMethod.IsVirtual)
-						il.Emit(Callvirt, getMethod);
-					else
-						il.Emit(Call, getMethod);
+					MethodReference getMethod = null;
+					if (property == null) { //array type, again
+						il.Emit(Ldelem_Ref); //TODO: fix for value types
 					}
+					else {
+						getMethod = module.ImportReference(property.GetMethod);
+						getMethod = module.ImportReference(getMethod.ResolveGenericParameters(propDeclType, module));
 
+						if (property.GetMethod.IsVirtual)
+							il.Emit(Callvirt, getMethod);
+						else
+							il.Emit(Call, getMethod);
+					}
+				}
 				il.Emit(Ret);
 			}
 			context.Body.Method.DeclaringType.Methods.Add(getter);
@@ -578,7 +593,7 @@ namespace Xamarin.Forms.Build.Tasks
 			setter.Body.InitLocals = true;
 
 			var il = setter.Body.GetILProcessor();
-			if (!properties.Any() || properties.Last().property.SetMethod == null) {
+			if (!properties.Any() || properties.Last().property?.SetMethod == null) {
 				yield return Create(Ldnull); //throw or not ?
 				yield break;
 			}
@@ -767,6 +782,8 @@ namespace Xamarin.Forms.Build.Tasks
 			yield return Instruction.Create(OpCodes.Newarr, tupleRef);
 
 			for (var i = 0; i < properties.Count; i++) {
+				if (properties[i].property is null)
+					continue;
 				yield return Instruction.Create(OpCodes.Dup);
 				yield return Instruction.Create(OpCodes.Ldc_I4, i);
 				yield return Instruction.Create(OpCodes.Ldnull);
