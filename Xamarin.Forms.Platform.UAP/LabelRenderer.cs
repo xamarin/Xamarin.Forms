@@ -282,20 +282,28 @@ namespace Xamarin.Forms.Platform.UWP
 				case LineBreakMode.HeadTruncation:
 					// TODO: This truncates at the end.
 					textBlock.TextTrimming = TextTrimming.WordEllipsis;
-					textBlock.TextWrapping = TextWrapping.NoWrap;
+					DetermineTextWrapping(textBlock);
 					break;
 				case LineBreakMode.TailTruncation:
 					textBlock.TextTrimming = TextTrimming.CharacterEllipsis;
-					textBlock.TextWrapping = TextWrapping.NoWrap;
+					DetermineTextWrapping(textBlock);
 					break;
 				case LineBreakMode.MiddleTruncation:
 					// TODO: This truncates at the end.
 					textBlock.TextTrimming = TextTrimming.WordEllipsis;
-					textBlock.TextWrapping = TextWrapping.NoWrap;
+					DetermineTextWrapping(textBlock);
 					break;
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
+		}
+
+		void DetermineTextWrapping(TextBlock textBlock)
+		{
+			if (Element.MaxLines > 1)
+				textBlock.TextWrapping = TextWrapping.Wrap;
+			else
+				textBlock.TextWrapping = TextWrapping.NoWrap;
 		}
 
 		void UpdateText(TextBlock textBlock)
@@ -367,12 +375,10 @@ namespace Xamarin.Forms.Platform.UWP
 			if (Element.MaxLines >= 0)
 			{
 				textBlock.MaxLines = Element.MaxLines;
-				textBlock.TextWrapping = TextWrapping.Wrap;
 			}
 			else
 			{
 				textBlock.MaxLines = 0;
-				textBlock.TextWrapping = TextWrapping.NoWrap;
 			}
 		}
 	}
