@@ -116,7 +116,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			var started = false;
 
 			slider.DragStarted += (sender, arg) => started = true;
-			slider.SendDragStarted();
+			((ISliderController)slider).SendDragStarted();
 
 			Assert.True(started);			
 		}
@@ -128,7 +128,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			var completed = false;
 
 			slider.DragCompleted += (sender, arg) => completed = true;
-			slider.SendDragCompleted();
+			((ISliderController)slider).SendDragCompleted();
 
 			Assert.True(completed);
 		}
