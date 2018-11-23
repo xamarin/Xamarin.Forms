@@ -138,8 +138,7 @@ namespace Xamarin.Forms
 		public event EventHandler DragStarted;
 		public event EventHandler DragCompleted;
 
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public void SendDragStarted()
+		void ISliderController.SendDragStarted()
 		{
 			if (IsEnabled)
 			{
@@ -148,8 +147,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public void SendDragCompleted()
+		void ISliderController.SendDragCompleted()
 		{
 			if (IsEnabled)
 			{
