@@ -1045,7 +1045,7 @@ namespace Xamarin.Forms
 
 			for (int i = 0; i < LogicalChildren.Count; i++)
 			{
-				if (element is IPropertyPropagationController view)
+				if (LogicalChildren[i] is IPropertyPropagationController view)
 					view.PropagatePropertyChanged(propertyName);
 			}
 		}

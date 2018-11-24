@@ -6,6 +6,14 @@ namespace Xamarin.Forms.Core.UnitTests
 	[TestFixture]
 	public class ShellTests : BaseTestFixture
 	{
+		[SetUp]
+		public override void Setup()
+		{
+			Device.SetFlags(new[] { Shell.ShellExperimental });
+			base.Setup();
+
+		}
+
 		[Test]
 		public void DefaultState()
 		{
