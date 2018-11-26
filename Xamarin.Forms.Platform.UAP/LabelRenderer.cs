@@ -282,16 +282,16 @@ namespace Xamarin.Forms.Platform.UWP
 				case LineBreakMode.HeadTruncation:
 					// TODO: This truncates at the end.
 					textBlock.TextTrimming = TextTrimming.WordEllipsis;
-					DetermineTextWrapping(textBlock);
+					DetermineTruncatedTextWrapping(textBlock);
 					break;
 				case LineBreakMode.TailTruncation:
 					textBlock.TextTrimming = TextTrimming.CharacterEllipsis;
-					DetermineTextWrapping(textBlock);
+					DetermineTruncatedTextWrapping(textBlock);
 					break;
 				case LineBreakMode.MiddleTruncation:
 					// TODO: This truncates at the end.
 					textBlock.TextTrimming = TextTrimming.WordEllipsis;
-					DetermineTextWrapping(textBlock);
+					DetermineTruncatedTextWrapping(textBlock);
 					break;
 				default:
 					throw new ArgumentOutOfRangeException();
