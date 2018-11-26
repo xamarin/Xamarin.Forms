@@ -298,7 +298,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		void DetermineTextWrapping(TextBlock textBlock)
+		void DetermineTruncatedTextWrapping(TextBlock textBlock)
 		{
 			if (Element.MaxLines > 1)
 				textBlock.TextWrapping = TextWrapping.Wrap;
