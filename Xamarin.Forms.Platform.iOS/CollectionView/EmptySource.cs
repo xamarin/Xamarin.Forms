@@ -6,6 +6,6 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		public int Count => 0;
 
-		public object this[int index] => null;
+		public object this[int index] => throw new IndexOutOfRangeException("IItemsViewSource is empty");
 	}
 }
