@@ -42,7 +42,7 @@ namespace Xamarin.Forms.Platform.Android
 		ViewGroup IVisualElementRenderer.ViewGroup => null;
 		VisualElementTracker IVisualElementRenderer.Tracker => _tracker;
 
-		ImageButton ImageButton
+		public ImageButton ImageButton
 		{
 			get => _imageButton;
 			set
