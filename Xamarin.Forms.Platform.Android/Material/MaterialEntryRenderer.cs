@@ -1,5 +1,4 @@
-﻿#if __ANDROID81__
-#else
+﻿#if __ANDROID_28__
 using System;
 using System.ComponentModel;
 using Android.Content;

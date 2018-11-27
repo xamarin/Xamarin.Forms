@@ -46,12 +46,6 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>CS0109</NoWarn>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v8.1' ">
-    <DefineConstants>$(DefineConstants);__ANDROID81__</DefineConstants>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v9.0' ">
-    <DefineConstants>$(DefineConstants);__ANDROID90__</DefineConstants>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Android" />
     <Reference Include="mscorlib" />
