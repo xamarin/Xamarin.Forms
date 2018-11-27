@@ -48,6 +48,9 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.ActivateContextMenu("Subject Line 1");
 			RunningApp.Tap("Delete");
 			RunningApp.WaitForElement(c=> c.Marked(Success));
+			RunningApp.Back();
+			RunningApp.WaitForElement(c => c.Marked("Email"));
+			RunningApp.SwipeRightToLeft();
 		}
 #endif
 	}
