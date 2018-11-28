@@ -137,7 +137,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (disposing)
 				{
-					((IShellSectionController)_shellSection).RemoveContentInsetObserver(this);
+					(_shellSection as IShellSectionController)?.RemoveContentInsetObserver(this);
 				}
 
 				_renderer = null;
