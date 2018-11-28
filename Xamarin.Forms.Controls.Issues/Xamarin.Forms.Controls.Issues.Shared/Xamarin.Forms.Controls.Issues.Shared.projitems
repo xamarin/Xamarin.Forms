@@ -17,6 +17,7 @@
       <DependentUpon>Issue1588.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Issue4484.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3509.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Github3856.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1937.cs" />
@@ -536,6 +537,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue3049.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewClipBoundsShouldUpdate.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3988.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue2580.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)_Template.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla56298.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla42620.cs" />
@@ -848,6 +850,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ContactsPage.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\FailImageSource.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ICacheService.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue4138.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Bugzilla22229.xaml">
