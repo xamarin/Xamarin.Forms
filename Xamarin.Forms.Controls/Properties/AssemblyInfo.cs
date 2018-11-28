@@ -1,5 +1,5 @@
 using System.Runtime.CompilerServices;
-using Xamarin.Forms.Internals;
+using Xamarin.Forms;
 
 [assembly: InternalsVisibleTo ("Xamarin.Forms.ControlGallery.Android")]
 

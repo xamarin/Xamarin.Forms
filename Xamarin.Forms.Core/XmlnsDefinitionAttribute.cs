@@ -2,7 +2,7 @@
 using System.Diagnostics;
 
 
-namespace Xamarin.Forms.Internals
+namespace Xamarin.Forms
 {
 	[AttributeUsage(AttributeTargets.Assembly, AllowMultiple = true)]
 	[DebuggerDisplay("{XmlNamespace}, {ClrNamespace}, {AssemblyName}")]
