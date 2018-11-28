@@ -113,7 +113,7 @@ namespace Xamarin.Forms.Platform.Android
 			IVisualElementRenderer childRenderer = Platform.GetRenderer(_childView);
 			if (childRenderer != null)
 				childRenderer.Dispose();
-			_childView.ClearValue(Platform.RendererProperty);
+			_childView?.ClearValue(Platform.RendererProperty);
 		}
 
 		Rectangle GetBounds(bool isMasterPage, int left, int top, int right, int bottom)
