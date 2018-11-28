@@ -159,9 +159,9 @@ namespace Xamarin.Forms.Platform.Android
 				if (Element != null && _focusChangeHandler != null)
 				{
 					Element.FocusChangeRequested -= _focusChangeHandler;
-					_focusChangeHandler = null;
+				
 				}
-
+				_focusChangeHandler = null;
 				_disposed = true;
 			}
 
@@ -266,7 +266,8 @@ namespace Xamarin.Forms.Platform.Android
 				var handler = new Handler(looper);
 				handler.Post(() =>
 				{
-					Control?.RequestFocus();
+					if(!_disposed)
+						Control?.RequestFocus();
 				});
 			}
 			else
