@@ -34,4 +34,5 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			return Windows.UI.Color.FromArgb((byte)(color.A * 255), (byte)(color.R * 255), (byte)(color.G * 255), (byte)(color.B * 255));
 		}
+	}
 }
