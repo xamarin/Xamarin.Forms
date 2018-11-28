@@ -149,7 +149,7 @@ namespace Xamarin.Forms.Platform.Android
 			int maxAttempts = 0;
 			var tabIndexes = element?.GetTabIndexesOnParentPage(out maxAttempts);
 			if (tabIndexes == null)
-				return null;
+				return base.FocusSearch(focused, direction);
 
 			int tabIndex = element.TabIndex;
 			AView control = null;
@@ -183,8 +183,7 @@ namespace Xamarin.Forms.Platform.Android
 			TElement oldElement = Element;
 			Element = element;
 
-			var reference = Guid.NewGuid().ToString();
-			Performance.Start(reference);
+			Performance.Start(out string reference);
 
 			if (oldElement != null)
 			{
