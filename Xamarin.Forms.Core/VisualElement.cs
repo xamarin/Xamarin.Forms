@@ -337,7 +337,7 @@ namespace Xamarin.Forms
 		[TypeConverter(typeof(VisibilityConverter))]
 		public bool IsVisible
 		{
-			get { return (bool)GetValue(IsVisibleProperty); }
+			get { return IsVisibleProperty != null ? (bool)GetValue(IsVisibleProperty) : false; }
 			set { SetValue(IsVisibleProperty, value); }
 		}
 
