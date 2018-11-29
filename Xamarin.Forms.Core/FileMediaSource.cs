@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Xamarin.Forms
 {
-	[TypeConverter(typeof(FileImageSourceConverter))]
+	[TypeConverter(typeof(FileMediaSourceConverter))]
 	public sealed class FileMediaSource : MediaSource
 	{
 		public static readonly BindableProperty FileProperty = BindableProperty.Create("File", typeof(string), typeof(FileMediaSource), default(string));

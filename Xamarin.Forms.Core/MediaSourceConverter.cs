@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Xamarin.Forms
 {
-	[Xaml.TypeConversion(typeof(ImageSource))]
+	[Xaml.TypeConversion(typeof(MediaSource))]
 	public sealed class MediaSourceConverter : TypeConverter
 	{
 		public override object ConvertFromInvariantString(string value)
