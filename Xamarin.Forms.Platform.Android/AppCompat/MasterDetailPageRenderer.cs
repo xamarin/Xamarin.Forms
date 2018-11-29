@@ -233,7 +233,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 				Device.Info.PropertyChanged -= DeviceInfoPropertyChanged;
 
-				RemoveDrawerListener(this);
+				if (!this.IsDisposed())
+				{
+					RemoveDrawerListener(this);
+				}
 
 				if (Element != null)
 				{
