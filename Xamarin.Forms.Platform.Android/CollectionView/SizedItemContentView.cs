@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Platform.Android
 		protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
 		{
 			var targetWidth = _width();
-			var targetHeight =_height();
+			var targetHeight = _height();
 
 			Content.Element.Measure(Context.FromPixels(targetWidth), Context.FromPixels(targetHeight), 
 				MeasureFlags.IncludeMargins);
