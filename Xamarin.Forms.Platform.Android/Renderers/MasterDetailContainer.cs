@@ -111,8 +111,7 @@ namespace Xamarin.Forms.Platform.Android
 		void DisposeChildRenderers()
 		{
 			IVisualElementRenderer childRenderer = Platform.GetRenderer(_childView);
-			if (childRenderer != null)
-				childRenderer.Dispose();
+			childRenderer?.Dispose();
 			_childView?.ClearValue(Platform.RendererProperty);
 		}
 
