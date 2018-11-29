@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
@@ -18,14 +19,14 @@ namespace Xamarin.Forms
 
 		public DataTemplate(Type type) : base(type)
 		{
+			_id = Interlocked.Increment(ref idCounter);
 			_idString = type.FullName;
-			_id = idCounter++;
 		}
 
 		public DataTemplate(Func<object> loadTemplate) : base(loadTemplate)
 		{
-			_idString = GetType().FullName + idCounter++;
-			_id = idCounter;
+			_id = Interlocked.Increment(ref idCounter);
+			_idString = GetType().FullName + _id;
 		}
 
 		public IDictionary<BindableProperty, BindingBase> Bindings { get; } = new Dictionary<BindableProperty, BindingBase>();
