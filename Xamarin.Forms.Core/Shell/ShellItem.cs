@@ -5,11 +5,12 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
 	[ContentProperty("Items")]
-	public class ShellItem : ShellGroupItem, IShellItemController, IElementConfiguration<ShellItem>
+	public class ShellItem : ShellGroupItem, IShellItemController, IElementConfiguration<ShellItem>, IPropertyPropagationController
 	{
 		#region PropertyKeys
 
@@ -69,6 +70,13 @@ namespace Xamarin.Forms
 		}
 
 		#endregion IShellItemController
+
+		#region IPropertyPropagationController
+		void IPropertyPropagationController.PropagatePropertyChanged(string propertyName)
+		{
+			PropertyPropagationExtensions.PropagatePropertyChanged(propertyName, this, Items);
+		}
+		#endregion
 
 		public static readonly BindableProperty CurrentItemProperty =
 			BindableProperty.Create(nameof(CurrentItem), typeof(ShellSection), typeof(ShellItem), null, BindingMode.TwoWay,

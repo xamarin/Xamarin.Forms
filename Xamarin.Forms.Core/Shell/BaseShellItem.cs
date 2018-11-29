@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	public class BaseShellItem : NavigableElement
+	public class BaseShellItem : NavigableElement, IPropertyPropagationController, IVisualController
 	{
 		#region PropertyKeys
 
@@ -59,6 +60,18 @@ namespace Xamarin.Forms
 			set { SetValue(TitleProperty, value); }
 		}
 
+		IVisual _effectiveVisual = Xamarin.Forms.VisualMarker.Default;
+		IVisual IVisualController.EffectiveVisual
+		{
+			get { return _effectiveVisual; }
+			set
+			{
+				_effectiveVisual = value;
+				OnPropertyChanged(VisualElement.VisualProperty.PropertyName);
+			}
+		}
+		IVisual IVisualController.Visual => Xamarin.Forms.VisualMarker.MatchParent;
+
 		private static void OnIconChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			if (newValue == null || bindable.IsSet(FlyoutIconProperty))
@@ -66,6 +79,11 @@ namespace Xamarin.Forms
 
 			var shellItem = (BaseShellItem)bindable;
 			shellItem.FlyoutIcon = (ImageSource)newValue;
+		}
+
+		void IPropertyPropagationController.PropagatePropertyChanged(string propertyName)
+		{
+			PropertyPropagationExtensions.PropagatePropertyChanged(propertyName, this, LogicalChildren);
 		}
 	}
 }

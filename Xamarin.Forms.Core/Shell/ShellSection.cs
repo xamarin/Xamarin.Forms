@@ -9,7 +9,7 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms
 {
 	[ContentProperty("Items")]
-	public class ShellSection : ShellGroupItem, IShellSectionController
+	public class ShellSection : ShellGroupItem, IShellSectionController, IPropertyPropagationController
 	{
 		#region PropertyKeys
 
@@ -128,6 +128,13 @@ namespace Xamarin.Forms
 		}
 
 		#endregion IShellSectionController
+
+		#region IPropertyPropagationController
+		void IPropertyPropagationController.PropagatePropertyChanged(string propertyName)
+		{
+			PropertyPropagationExtensions.PropagatePropertyChanged(propertyName, this, Items);
+		}
+		#endregion
 
 		public static readonly BindableProperty CurrentItemProperty =
 			BindableProperty.Create(nameof(CurrentItem), typeof(ShellContent), typeof(ShellSection), null, BindingMode.TwoWay,

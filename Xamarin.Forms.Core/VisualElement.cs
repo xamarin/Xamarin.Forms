@@ -1037,17 +1037,7 @@ namespace Xamarin.Forms
 
 		void IPropertyPropagationController.PropagatePropertyChanged(string propertyName)
 		{
-			if (propertyName == null || propertyName == VisualElement.FlowDirectionProperty.PropertyName)
-				SetFlowDirectionFromParent(this);
-
-			if (propertyName == null || propertyName == VisualElement.VisualProperty.PropertyName)
-				SetVisualfromParent(this);
-
-			for (int i = 0; i < LogicalChildren.Count; i++)
-			{
-				if (LogicalChildren[i] is IPropertyPropagationController view)
-					view.PropagatePropertyChanged(propertyName);
-			}
+			PropertyPropagationExtensions.PropagatePropertyChanged(propertyName, this, LogicalChildren);
 		}
 
 		void SetSize(double width, double height)
