@@ -12,7 +12,7 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms
 {
 	[ContentProperty("Items")]
-	public class Shell : Page, IShellController
+	public class Shell : Page, IShellController, IPropertyPropagationController
 	{
 		public static readonly BindableProperty BackButtonBehaviorProperty =
 			BindableProperty.CreateAttached("BackButtonBehavior", typeof(BackButtonBehavior), typeof(Shell), null, BindingMode.OneTime);
@@ -1065,5 +1065,15 @@ namespace Xamarin.Forms
 
 			return element;
 		}
+
+
+		#region IPropertyPropagationController
+		void IPropertyPropagationController.PropagatePropertyChanged(string propertyName)
+		{
+			PropertyPropagationExtensions.PropagatePropertyChanged(propertyName, this, LogicalChildren);
+			if(FlyoutHeaderView != null)
+				PropertyPropagationExtensions.PropagatePropertyChanged(propertyName, this, new[] { FlyoutHeaderView });
+		}
+		#endregion
 	}
 }

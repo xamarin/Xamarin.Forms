@@ -5,7 +5,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	public class BaseShellItem : NavigableElement, IPropertyPropagationController, IVisualController
+	public class BaseShellItem : NavigableElement, IPropertyPropagationController, IVisualController, IFlowDirectionController
 	{
 		#region PropertyKeys
 
@@ -85,5 +85,24 @@ namespace Xamarin.Forms
 		{
 			PropertyPropagationExtensions.PropagatePropertyChanged(propertyName, this, LogicalChildren);
 		}
+
+		EffectiveFlowDirection _effectiveFlowDirection = default(EffectiveFlowDirection);
+		EffectiveFlowDirection IFlowDirectionController.EffectiveFlowDirection
+		{
+			get { return _effectiveFlowDirection; }
+			set
+			{
+				if (value == _effectiveFlowDirection)
+					return;
+
+				_effectiveFlowDirection = value;
+
+				var ve = (Parent as VisualElement);
+				ve?.InvalidateMeasureInternal(InvalidationTrigger.Undefined);
+				OnPropertyChanged(VisualElement.FlowDirectionProperty.PropertyName);
+			}
+		}
+		bool IFlowDirectionController.ApplyEffectiveFlowDirectionToChildContainer => true;
+		double IFlowDirectionController.Width => (Parent as VisualElement)?.Width ?? 0;
 	}
 }

@@ -784,9 +784,7 @@ namespace Xamarin.Forms
 			{
 				NavigationProxy.Inner = null;
 			}
-#pragma warning restore 0618
-
-			PropertyPropagationController.PropagatePropertyChanged(null);		    
+#pragma warning restore 0618	    
 		}
 
 		protected virtual void OnSizeAllocated(double width, double height)
