@@ -412,6 +412,10 @@
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue4136.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue4262.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue4360.xaml.cs">
+      <DependentUpon>Issue4360.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)LegacyComponents\NonAppCompatSwitch.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MapsModalCrash.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ModalActivityIndicatorTest.cs" />
@@ -538,6 +542,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)ViewClipBoundsShouldUpdate.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3988.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue2580.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue4026.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)_Template.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla56298.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla42620.cs" />
@@ -851,6 +856,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Controls\FailImageSource.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Controls\ICacheService.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1386.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue3622.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue4138.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -1055,6 +1061,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue4194.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:UpdateDesignTimeXaml</Generator>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)Issue4360.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </EmbeddedResource>
