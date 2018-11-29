@@ -4,9 +4,9 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class SafeShellTabBarAppearanceTracker : IShellTabBarAppearanceTracker
 	{
-		private UIColor _defaultBarTint;
-		private UIColor _defaultTint;
-		private UIColor _defaultUnselectedTint;
+		UIColor _defaultBarTint;
+		UIColor _defaultTint;
+		UIColor _defaultUnselectedTint;
 
 		public void ResetAppearance(UITabBarController controller)
 		{

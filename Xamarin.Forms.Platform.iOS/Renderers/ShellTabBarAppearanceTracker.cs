@@ -4,11 +4,12 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class ShellTabBarAppearanceTracker : IShellTabBarAppearanceTracker
 	{
-		private UIView _blurView;
-		private UIView _colorView;
-		private UIImage _defaultBackgroundImage;
-		private UIColor _defaultTint;
-		private UIColor _defaultUnselectedTint;
+		UIView _blurView;
+		UIView _colorView;
+		UIImage _defaultBackgroundImage;
+		UIColor _defaultTint;
+		UIColor _defaultUnselectedTint;
+		bool _disposed = false;
 
 		public void ResetAppearance(UITabBarController controller)
 		{
@@ -68,8 +69,7 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 
 		#region IDisposable Support
-		private bool _disposed = false;
-
+		
 		protected virtual void Dispose(bool disposing)
 		{
 			if (!_disposed)

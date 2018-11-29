@@ -11,11 +11,9 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		#region IAppearanceObserver
 
-		private Color _defaultBackgroundColor = new Color(0.964);
-
-		private Color _defaultForegroundColor = Color.Black;
-
-		private Color _defaultUnselectedColor = Color.Black.MultiplyAlpha(0.7);
+		Color _defaultBackgroundColor = new Color(0.964);
+		Color _defaultForegroundColor = Color.Black;
+		Color _defaultUnselectedColor = Color.Black.MultiplyAlpha(0.7);
 
 		void IAppearanceObserver.OnAppearanceChanged(ShellAppearance appearance)
 		{
@@ -37,7 +35,7 @@ namespace Xamarin.Forms.Platform.iOS
 				appearance.UnselectedColor.IsDefault ? _defaultUnselectedColor : appearance.UnselectedColor);
 		}
 
-		private void SetValues(Color backgroundColor, Color foregroundColor, Color unselectedColor)
+		void SetValues(Color backgroundColor, Color foregroundColor, Color unselectedColor)
 		{
 			CollectionView.BackgroundColor = new Color(backgroundColor.R, backgroundColor.G, backgroundColor.B, .863).ToUIColor();
 
@@ -52,13 +50,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 		#endregion IAppearanceObserver
 
-		private static readonly NSString CellId = new NSString("HeaderCell");
+		static readonly NSString CellId = new NSString("HeaderCell");
 
-		private readonly IShellContext _shellContext;
-		private UIView _bar;
-		private UIView _bottomShadow;
-		private Color _selectedColor;
-		private Color _unselectedColor;
+		readonly IShellContext _shellContext;
+		UIView _bar;
+		UIView _bottomShadow;
+		Color _selectedColor;
+		Color _unselectedColor;
 
 		public ShellSectionRootHeader(IShellContext shellContext) : base(new UICollectionViewFlowLayout())
 		{
@@ -224,7 +222,7 @@ namespace Xamarin.Forms.Platform.iOS
 			CollectionView.SelectItem(NSIndexPath.FromItemSection((int)SelectedIndex, 0), false, UICollectionViewScrollPosition.CenteredHorizontally);
 		}
 
-		private void OnShellSectionItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
+		void OnShellSectionItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			CollectionView.ReloadData();
 		}

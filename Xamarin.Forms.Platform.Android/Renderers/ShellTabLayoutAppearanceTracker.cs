@@ -5,8 +5,8 @@ namespace Xamarin.Forms.Platform.Android
 {
 	internal class ShellTabLayoutAppearanceTracker : IShellTabLayoutAppearanceTracker
 	{
-		private bool _disposed;
-		private IShellContext _shellContext;
+		bool _disposed;
+		IShellContext _shellContext;
 
 		public ShellTabLayoutAppearanceTracker(IShellContext shellContext)
 		{

@@ -6,8 +6,8 @@ namespace Xamarin.Forms.Platform.Android
 
 	public class ShellToolbarAppearanceTracker : IShellToolbarAppearanceTracker
 	{
-		private bool _disposed;
-		private IShellContext _shellContext;
+		bool _disposed;
+		IShellContext _shellContext;
 
 		public ShellToolbarAppearanceTracker(IShellContext shellContext)
 		{

@@ -45,24 +45,23 @@ namespace Xamarin.Forms.Platform.iOS
 
 		#endregion IShellPageRendererTracker
 
-		private readonly IShellContext _context;
-		private bool _disposed;
-		private FlyoutBehavior _flyoutBehavior;
-		private WeakReference<UIViewController> _rendererRef;
-		private IShellSearchResultsRenderer _resultsRenderer;
-		private UISearchController _searchController;
-		private SearchHandler _searchHandler;
-		private Page _page;
+		readonly IShellContext _context;
+		bool _disposed;
+		FlyoutBehavior _flyoutBehavior;
+		WeakReference<UIViewController> _rendererRef;
+		IShellSearchResultsRenderer _resultsRenderer;
+		UISearchController _searchController;
+		SearchHandler _searchHandler;
+		Page _page;
+
+		BackButtonBehavior BackButtonBehavior { get; set; }
+		UINavigationItem NavigationItem { get; set; }
 
 		public ShellPageRendererTracker(IShellContext context)
 		{
 			_context = context;
 		}
-
-		private BackButtonBehavior BackButtonBehavior { get; set; }
-		private UINavigationItem NavigationItem { get; set; }
 		
-
 		public async void OnFlyoutBehaviorChanged(FlyoutBehavior behavior)
 		{
 			_flyoutBehavior = behavior;
@@ -223,17 +222,17 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		private void OnMenuButtonPressed(object sender, EventArgs e)
+		void OnMenuButtonPressed(object sender, EventArgs e)
 		{
 			_context.Shell.SetValueFromRenderer(Shell.FlyoutIsPresentedProperty, true);
 		}
 
-		private async void OnToolbarItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
+		async void OnToolbarItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			await UpdateToolbarItems().ConfigureAwait(false);
 		}
 
-		private async void SetBackButtonBehavior(BackButtonBehavior value)
+		async void SetBackButtonBehavior(BackButtonBehavior value)
 		{
 			if (BackButtonBehavior == value)
 				return;
@@ -283,7 +282,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		#region SearchHandler
 
-		private SearchHandler SearchHandler
+		SearchHandler SearchHandler
 		{
 			get { return _searchHandler; }
 			set
@@ -373,7 +372,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		private void AttachSearchController()
+		void AttachSearchController()
 		{
 			if (SearchHandler.ShowsResults)
 			{
@@ -429,12 +428,12 @@ namespace Xamarin.Forms.Platform.iOS
 			searchBar.ShowsBookmarkButton = SearchHandler.ClearPlaceholderEnabled;
 		}
 
-		private void BookmarkButtonClicked(object sender, EventArgs e)
+		void BookmarkButtonClicked(object sender, EventArgs e)
 		{
 			((ISearchHandlerController)SearchHandler).ClearPlaceholderClicked();
 		}
 
-		private void DettachSearchController()
+		void DettachSearchController()
 		{
 			if (Forms.IsiOS11OrNewer)
 			{
@@ -450,19 +449,19 @@ namespace Xamarin.Forms.Platform.iOS
 			_searchController = null;
 		}
 
-		private void OnSearchItemSelected(object sender, object e)
+		void OnSearchItemSelected(object sender, object e)
 		{
 			_searchController.Active = false;
 			((ISearchHandlerController)SearchHandler).ItemSelected(e);
 		}
 
-		private void SearchButtonClicked(object sender, EventArgs e)
+		void SearchButtonClicked(object sender, EventArgs e)
 		{
 			_searchController.Active = false;
 			((ISearchHandlerController)SearchHandler).QueryConfirmed();
 		}
 
-		private async void SetSearchBarIcon(UISearchBar searchBar, ImageSource source, UISearchBarIcon icon)
+		async void SetSearchBarIcon(UISearchBar searchBar, ImageSource source, UISearchBarIcon icon)
 		{
 			var image = Internals.Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(source);
 			var result = await image.LoadImageAsync(source);

@@ -6,13 +6,13 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class ShellTableViewController : UITableViewController
 	{
-		private readonly IShellContext _context;
-		private readonly UIView _headerView;
-		private readonly ShellTableViewSource _source;
-		private double _headerMax = 200;
-		private double _headerMin = 44;
-		private double _headerOffset = 0;
-		private double _headerSize;
+		readonly IShellContext _context;
+		readonly UIView _headerView;
+		readonly ShellTableViewSource _source;
+		double _headerMax = 200;
+		double _headerMin = 44;
+		double _headerOffset = 0;
+		double _headerSize;
 
 		public ShellTableViewController(IShellContext context, UIView headerView, Action<Element> onElementSelected)
 		{
@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Platform.iOS
 			((IShellController)_context.Shell).StructureChanged += OnStructureChanged;
 		}
 
-		private void OnStructureChanged(object sender, EventArgs e)
+		void OnStructureChanged(object sender, EventArgs e)
 		{
 			_source.ClearCache();
 			TableView.ReloadData();
@@ -57,7 +57,18 @@ namespace Xamarin.Forms.Platform.iOS
 			TableView.Source = _source;
 		}
 
-		private void OnScrolled(object sender, UIScrollView e)
+		protected override void Dispose(bool disposing)
+		{
+			if(disposing)
+			{
+				if ((_context?.Shell as IShellController) != null)
+					((IShellController)_context.Shell).StructureChanged -= OnStructureChanged;
+			}
+			
+			base.Dispose(disposing);
+		}
+
+		void OnScrolled(object sender, UIScrollView e)
 		{
 			var headerBehavior = _context.Shell.FlyoutHeaderBehavior;
 

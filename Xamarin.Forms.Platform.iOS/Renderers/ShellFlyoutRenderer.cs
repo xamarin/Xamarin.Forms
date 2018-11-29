@@ -53,23 +53,24 @@ namespace Xamarin.Forms.Platform.iOS
 
 		#endregion IFlyoutBehaviorObserver
 
-		private bool _disposed;
-		private FlyoutBehavior _flyoutBehavior;
-		private bool _gestureActive;
-		private bool _isOpen;
+		const string FlyoutAnimationName = "Flyout";
+		bool _disposed;
+		FlyoutBehavior _flyoutBehavior;
+		bool _gestureActive;
+		bool _isOpen;
 		public UIViewAnimationCurve AnimationCurve { get; set; } = UIViewAnimationCurve.EaseOut;
 
 		public int AnimationDuration { get; set; } = 250;
 
 		public IShellFlyoutTransition FlyoutTransition { get; set; }
 
-		private IShellContext Context { get; set; }
+		IShellContext Context { get; set; }
 
-		private UIViewController Detail { get; set; }
+		UIViewController Detail { get; set; }
 
-		private IShellFlyoutContentRenderer Flyout { get; set; }
+		IShellFlyoutContentRenderer Flyout { get; set; }
 
-		private bool IsOpen
+		bool IsOpen
 		{
 			get { return _isOpen; }
 			set
@@ -82,11 +83,11 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		private UIPanGestureRecognizer PanGestureRecognizer { get; set; }
+		UIPanGestureRecognizer PanGestureRecognizer { get; set; }
 
-		private Shell Shell { get; set; }
+		Shell Shell { get; set; }
 
-		private UIView TapoffView { get; set; }
+		UIView TapoffView { get; set; }
 
 		public override void ViewDidLayoutSubviews()
 		{
@@ -143,7 +144,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		private void AddTapoffView()
+		void AddTapoffView()
 		{
 			if (TapoffView != null)
 				return;
@@ -157,7 +158,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}));
 		}
 
-		private void HandlePanGesture(UIPanGestureRecognizer pan)
+		void HandlePanGesture(UIPanGestureRecognizer pan)
 		{
 			var translation = pan.TranslationInView(View).X;
 			double openProgress = 0;
@@ -201,16 +202,16 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		private void LayoutSidebar(bool animate)
+		void LayoutSidebar(bool animate)
 		{
 			if (_gestureActive)
 				return;
 
 			if (animate)
-			{
-				UIView.BeginAnimations("Flyout");
-			}
+				UIView.BeginAnimations(FlyoutAnimationName);
+
 			FlyoutTransition.LayoutViews(View.Bounds, IsOpen ? 1 : 0, Flyout.ViewController.View, Detail.View, _flyoutBehavior);
+
 			if (animate)
 			{
 				UIView.SetAnimationCurve(AnimationCurve);
@@ -225,7 +226,7 @@ namespace Xamarin.Forms.Platform.iOS
 				RemoveTapoffView();
 		}
 
-		private void RemoveTapoffView()
+		void RemoveTapoffView()
 		{
 			if (TapoffView == null)
 				return;

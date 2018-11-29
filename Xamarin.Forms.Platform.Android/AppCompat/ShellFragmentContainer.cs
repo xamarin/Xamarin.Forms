@@ -9,7 +9,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 {
 	internal class ShellFragmentContainer : FragmentContainer
 	{
-		private Page _page;
+		Page _page;
 
 		public ShellContent ShellContentTab { get; private set; }
 

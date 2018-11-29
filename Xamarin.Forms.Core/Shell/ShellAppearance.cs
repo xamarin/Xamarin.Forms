@@ -6,7 +6,7 @@ namespace Xamarin.Forms
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	public class ShellAppearance : IShellAppearanceElement
 	{
-		static BindableProperty[] IngestArray = new[]
+		static readonly BindableProperty[] s_ingestArray = new[]
 		{
 			Shell.ShellBackgroundColorProperty,
 			Shell.ShellDisabledColorProperty,
@@ -20,7 +20,7 @@ namespace Xamarin.Forms
 			Shell.ShellUnselectedColorProperty
 		};
 
-		private Color?[] _colorArray = new Color?[IngestArray.Length];
+		Color?[] _colorArray = new Color?[s_ingestArray.Length];
 
 		public Color BackgroundColor => _colorArray[0].Value;
 
@@ -98,8 +98,8 @@ namespace Xamarin.Forms
 		{
 			bool anySet = false;
 
-			var dataSet = pivot.GetValues<Color>(IngestArray);
-			for (int i = 0; i < IngestArray.Length; i++)
+			var dataSet = pivot.GetValues<Color>(s_ingestArray);
+			for (int i = 0; i < s_ingestArray.Length; i++)
 			{
 				if (!_colorArray[i].HasValue && dataSet[i].IsSet)
 				{
@@ -113,7 +113,7 @@ namespace Xamarin.Forms
 
 		public void MakeComplete()
 		{
-			for (int i = 0; i < IngestArray.Length; i++)
+			for (int i = 0; i < s_ingestArray.Length; i++)
 			{
 				if (_colorArray[i] == null)
 					_colorArray[i] = Color.Default;

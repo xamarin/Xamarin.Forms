@@ -13,9 +13,12 @@ namespace Xamarin.Forms.Platform.Android
 	{
 		public const string DoNotUpdateMarker = "__DO_NOT_UPDATE__";
 
-		private SearchHandler _searchHandler;
-		private IShellContext _shellContext;
-		private DataTemplate _defaultTemplate;
+		SearchHandler _searchHandler;
+		IShellContext _shellContext;
+		DataTemplate _defaultTemplate;
+		Filter _filter;
+		IReadOnlyList<object> _emptyList = new List<object>();
+		IReadOnlyList<object> ListProxy => SearchController.ListProxy ?? _emptyList;
 
 		public ShellSearchViewAdapter(SearchHandler searchHandler, IShellContext shellContext)
 		{
@@ -41,17 +44,12 @@ namespace Xamarin.Forms.Platform.Android
 			_searchHandler = null;
 			_defaultTemplate = null;
 		}
-
-		private Filter _filter;
-
+		
 		public Filter Filter => _filter ?? (_filter = new CustomFilter(this));
 
 		public override int Count => ListProxy.Count;
 
-		private IReadOnlyList<object> _emptyList = new List<object>();
-		private IReadOnlyList<object> ListProxy => SearchController.ListProxy ?? _emptyList;
-
-		private DataTemplate DefaultTemplate
+		DataTemplate DefaultTemplate
 		{
 			get
 			{
@@ -71,7 +69,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		private ISearchHandlerController SearchController => _searchHandler;
+		ISearchHandlerController SearchController => _searchHandler;
 
 		public override Java.Lang.Object GetItem(int position)
 		{
@@ -114,12 +112,12 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		private void OnListPropxyChanged(object sender, ListProxyChangedEventArgs e)
+		void OnListPropxyChanged(object sender, ListProxyChangedEventArgs e)
 		{
 			NotifyDataSetChanged();
 		}
 
-		private class CustomFilter : Filter
+		class CustomFilter : Filter
 		{
 			private readonly BaseAdapter _adapter;
 
@@ -142,14 +140,14 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		private class ObjectWrapper : Java.Lang.Object
+		class ObjectWrapper : Java.Lang.Object
 		{
 			public ObjectWrapper(object obj)
 			{
 				Object = obj;
 			}
 
-			private object Object { get; set; }
+			object Object { get; set; }
 
 			public override string ToString() => DoNotUpdateMarker;
 		}

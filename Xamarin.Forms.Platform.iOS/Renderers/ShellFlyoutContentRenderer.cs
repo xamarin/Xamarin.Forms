@@ -7,10 +7,10 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class ShellFlyoutContentRenderer : UIViewController, IShellFlyoutContentRenderer
 	{
-		private UIVisualEffectView _blurView;
-		private readonly IShellContext _shellContext;
-		private UIView _headerView;
-		private ShellTableViewController _tableViewController;
+		UIVisualEffectView _blurView;
+		readonly IShellContext _shellContext;
+		UIView _headerView;
+		ShellTableViewController _tableViewController;
 
 		public event EventHandler WillAppear;
 		public event EventHandler WillDisappear;
@@ -93,7 +93,7 @@ namespace Xamarin.Forms.Platform.iOS
 			WillDisappear?.Invoke(this, EventArgs.Empty);
 		}
 
-		private void OnElementSelected(Element element)
+		void OnElementSelected(Element element)
 		{
 			((IShellController)_shellContext.Shell).OnFlyoutItemSelected(element);
 		}

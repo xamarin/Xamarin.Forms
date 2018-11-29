@@ -8,7 +8,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Linq;
 using System.Threading.Tasks;
 using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
@@ -45,10 +44,10 @@ namespace Xamarin.Forms.Platform.Android
 		#endregion IAppearanceObserver
 
 		protected const int MoreTabId = 99;
-		private BottomNavigationView _bottomView;
-		private FrameLayout _navigationArea;
-		private AView _outerLayout;
-		private IShellBottomNavViewAppearanceTracker _appearanceTracker;
+		BottomNavigationView _bottomView;
+		FrameLayout _navigationArea;
+		AView _outerLayout;
+		IShellBottomNavViewAppearanceTracker _appearanceTracker;
 
 		public ShellItemRenderer(IShellContext shellContext) : base(shellContext)
 		{
@@ -345,18 +344,18 @@ namespace Xamarin.Forms.Platform.Android
 				menuItem.SetEnabled(tabEnabled);
 		}
 
-		private void OnDisplayedElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		void OnDisplayedElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == Shell.TabBarIsVisibleProperty.PropertyName)
 				UpdateTabBarVisibility();
 		}
 
-		private async void SetImage(ImageView image, ImageSource source)
+		async void SetImage(ImageView image, ImageSource source)
 		{
 			image.SetImageDrawable(await Context.GetFormsDrawable(source));
 		}
 
-		private async Task SetMenuItemIcon(IMenuItem menuItem, ImageSource source)
+		async Task SetMenuItemIcon(IMenuItem menuItem, ImageSource source)
 		{
 			if (source == null)
 				return;
@@ -365,13 +364,13 @@ namespace Xamarin.Forms.Platform.Android
 			drawable.Dispose();
 		}
 
-		private void SetupMenu()
+		void SetupMenu()
 		{
 			using (var menu = _bottomView.Menu)
 				SetupMenu(menu, _bottomView.MaxItemCount, ShellItem);
 		}
 
-		private void UpdateTabBarVisibility()
+		void UpdateTabBarVisibility()
 		{
 			if (DisplayedPage == null)
 				return;

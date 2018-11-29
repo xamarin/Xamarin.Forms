@@ -47,28 +47,23 @@ namespace Xamarin.Forms.Platform.iOS
 
 		#endregion IAppearanceObserver
 
-		private readonly IShellContext _context;
+		readonly IShellContext _context;
 
-		private readonly Dictionary<Element, IShellPageRendererTracker> _trackers =
+		readonly Dictionary<Element, IShellPageRendererTracker> _trackers =
 			new Dictionary<Element, IShellPageRendererTracker>();
 
-		private IShellNavBarAppearanceTracker _appearanceTracker;
+		IShellNavBarAppearanceTracker _appearanceTracker;
 
-		private Dictionary<UIViewController, TaskCompletionSource<bool>> _completionTasks =
+		Dictionary<UIViewController, TaskCompletionSource<bool>> _completionTasks =
 							new Dictionary<UIViewController, TaskCompletionSource<bool>>();
 
-		private Page _displayedPage;
-		private bool _disposed;
-
-		private bool _firstLayoutCompleted;
-
-		private bool _ignorePop;
-
-		private TaskCompletionSource<bool> _popCompletionTask;
-
-		private IShellSectionRootRenderer _renderer;
-
-		private ShellSection _shellSection;
+		Page _displayedPage;
+		bool _disposed;
+		bool _firstLayoutCompleted;
+		bool _ignorePop;
+		TaskCompletionSource<bool> _popCompletionTask;
+		IShellSectionRootRenderer _renderer;
+		ShellSection _shellSection;
 
 		public ShellSectionRenderer(IShellContext context)
 		{
@@ -331,7 +326,7 @@ namespace Xamarin.Forms.Platform.iOS
 			TabBarItem = new UITabBarItem(ShellSection.Title, icon, null);
 		}
 
-		private void DisposePage(Page page)
+		void DisposePage(Page page)
 		{
 			if (_trackers.TryGetValue(page, out var tracker))
 			{
@@ -347,7 +342,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		private Element ElementForViewController(UIViewController viewController)
+		Element ElementForViewController(UIViewController viewController)
 		{
 			if (_renderer.ViewController == viewController)
 				return ShellSection;
@@ -364,13 +359,13 @@ namespace Xamarin.Forms.Platform.iOS
 			return null;
 		}
 
-		private void OnDisplayedPagePropertyChanged(object sender, PropertyChangedEventArgs e)
+		void OnDisplayedPagePropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == Shell.NavBarIsVisibleProperty.PropertyName)
 				UpdateNavigationBarHidden();
 		}
 
-		private void PushPage(Page page, bool animated, TaskCompletionSource<bool> completionSource = null)
+		void PushPage(Page page, bool animated, TaskCompletionSource<bool> completionSource = null)
 		{
 			var renderer = Platform.CreateRenderer(page);
 			Platform.SetRenderer(page, renderer);
@@ -387,7 +382,7 @@ namespace Xamarin.Forms.Platform.iOS
 			PushViewController(renderer.ViewController, animated);
 		}
 
-		private async void SendPoppedOnCompletion(Task popTask)
+		async void SendPoppedOnCompletion(Task popTask)
 		{
 			if (popTask == null)
 			{
@@ -401,7 +396,7 @@ namespace Xamarin.Forms.Platform.iOS
 			DisposePage(poppedPage);
 		}
 
-		private bool ShouldPop()
+		bool ShouldPop()
 		{
 			var shellItem = _context.Shell.CurrentItem;
 			var shellSection = shellItem?.CurrentItem;
@@ -413,20 +408,20 @@ namespace Xamarin.Forms.Platform.iOS
 			return ((IShellController)_context.Shell).ProposeNavigation(ShellNavigationSource.Pop, shellItem, shellSection, shellContent, stack, true);
 		}
 
-		private void UpdateNavigationBarHidden()
+		void UpdateNavigationBarHidden()
 		{
 			SetNavigationBarHidden(!Shell.GetNavBarIsVisible(_displayedPage), true);
 		}
 
-		private void UpdateShadowImages()
+		void UpdateShadowImages()
 		{
 			NavigationBar.SetValueForKey(NSObject.FromObject(true), new NSString("hidesShadow"));
 		}
 
-		private class GestureDelegate : UIGestureRecognizerDelegate
+		class GestureDelegate : UIGestureRecognizerDelegate
 		{
-			private readonly UINavigationController _parent;
-			private readonly Func<bool> _shouldPop;
+			readonly UINavigationController _parent;
+			readonly Func<bool> _shouldPop;
 
 			public GestureDelegate(UINavigationController parent, Func<bool> shouldPop)
 			{
@@ -442,9 +437,9 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		private class NavDelegate : UINavigationControllerDelegate
+		class NavDelegate : UINavigationControllerDelegate
 		{
-			private readonly ShellSectionRenderer _self;
+			readonly ShellSectionRenderer _self;
 
 			public NavDelegate(ShellSectionRenderer renderer)
 			{

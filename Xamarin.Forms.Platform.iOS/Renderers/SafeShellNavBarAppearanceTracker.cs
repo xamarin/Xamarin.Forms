@@ -4,9 +4,9 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class SafeShellNavBarAppearanceTracker : IShellNavBarAppearanceTracker
 	{
-		private UIColor _defaultBarTint;
-		private UIColor _defaultTint;
-		private UIStringAttributes _defaultTitleAttributes;
+		UIColor _defaultBarTint;
+		UIColor _defaultTint;
+		UIStringAttributes _defaultTitleAttributes;
 
 		public void UpdateLayout(UINavigationController controller)
 		{

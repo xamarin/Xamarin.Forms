@@ -45,15 +45,15 @@ namespace Xamarin.Forms.Platform.Android
 
 		#endregion IAppearanceObserver
 
-		private readonly IShellContext _shellContext;
-		private IShellToolbarAppearanceTracker _appearanceTracker;
-		private Page _page;
-		private IVisualElementRenderer _renderer;
-		private AView _root;
-		private ShellPageContainer _shellPageContainer;
-		private ShellContent _shellContent;
-		private Toolbar _toolbar;
-		private IShellToolbarTracker _toolbarTracker;
+		readonly IShellContext _shellContext;
+		IShellToolbarAppearanceTracker _appearanceTracker;
+		Page _page;
+		IVisualElementRenderer _renderer;
+		AView _root;
+		ShellPageContainer _shellPageContainer;
+		ShellContent _shellContent;
+		Toolbar _toolbar;
+		IShellToolbarTracker _toolbarTracker;
 
 		public ShellContentFragment(IShellContext shellContext, ShellContent shellContent)
 		{

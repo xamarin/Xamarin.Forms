@@ -33,19 +33,19 @@ namespace Xamarin.Forms.Platform.Android
 
 		#endregion IFlyoutBehaviorObserver
 
-		private bool _canNavigateBack;
-		private bool _disposed;
-		private DrawerLayout _drawerLayout;
-		private ActionBarDrawerToggle _drawerToggle;
-		private FlyoutBehavior _flyoutBehavior = FlyoutBehavior.Flyout;
-		private Page _page;
-		private SearchHandler _searchHandler;
-		private IShellSearchView _searchView;
-		private ContainerView _titleViewContainer;
-		private IShellContext _shellContext;
-		//assume teh default
-		private Color _tintColor = Color.Default;
-		private Toolbar _toolbar;
+		bool _canNavigateBack;
+		bool _disposed;
+		DrawerLayout _drawerLayout;
+		ActionBarDrawerToggle _drawerToggle;
+		FlyoutBehavior _flyoutBehavior = FlyoutBehavior.Flyout;
+		Page _page;
+		SearchHandler _searchHandler;
+		IShellSearchView _searchView;
+		ContainerView _titleViewContainer;
+		IShellContext _shellContext;
+		//assume the default
+		Color _tintColor = Color.Default;
+		Toolbar _toolbar;
 
 		public ShellToolbarTracker(IShellContext shellContext, Toolbar toolbar, DrawerLayout drawerLayout)
 		{
@@ -416,7 +416,7 @@ namespace Xamarin.Forms.Platform.Android
 			menu.Dispose();
 		}
 
-		private void OnSearchViewAttachedToWindow(object sender, AView.ViewAttachedToWindowEventArgs e)
+		void OnSearchViewAttachedToWindow(object sender, AView.ViewAttachedToWindowEventArgs e)
 		{
 			// We only need to do this tint hack when using collapsed search handlers
 			if (SearchHandler.SearchBoxVisibility != SearchBoxVisiblity.Collapsable)
@@ -438,17 +438,17 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		private void UpdateLeftBarButtonItem()
+		void UpdateLeftBarButtonItem()
 		{
 			UpdateLeftBarButtonItem(_shellContext.AndroidContext, _toolbar, _drawerLayout, Page);
 		}
 
-		private void UpdateTitleView()
+		void UpdateTitleView()
 		{
 			UpdateTitleView(_shellContext.AndroidContext, _toolbar, Shell.GetTitleView(Page));
 		}
 
-		private void UpdateToolbarItems()
+		void UpdateToolbarItems()
 		{
 			UpdateToolbarItems(_toolbar, Page);
 		}

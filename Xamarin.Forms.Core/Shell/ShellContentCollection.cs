@@ -7,7 +7,7 @@ namespace Xamarin.Forms
 {
 	public sealed class ShellContentCollection : IList<ShellContent>, INotifyCollectionChanged
 	{
-		private ObservableCollection<ShellContent> _inner = new ObservableCollection<ShellContent>();
+		ObservableCollection<ShellContent> _inner = new ObservableCollection<ShellContent>();
 
 		event NotifyCollectionChangedEventHandler INotifyCollectionChanged.CollectionChanged
 		{

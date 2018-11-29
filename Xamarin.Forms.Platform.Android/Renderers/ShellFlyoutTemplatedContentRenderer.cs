@@ -24,11 +24,11 @@ namespace Xamarin.Forms.Platform.Android
 
         #endregion IShellFlyoutContentRenderer
 
-        private IShellContext _shellContext;
-        private bool _disposed;
-        private HeaderContainer _headerView;
-        private AView _rootView;
-        private Drawable _defaultBackground;
+        IShellContext _shellContext;
+        bool _disposed;
+        HeaderContainer _headerView;
+        AView _rootView;
+        Drawable _defaultBackground;
 
         public ShellFlyoutTemplatedContentRenderer(IShellContext shellContext)
         {

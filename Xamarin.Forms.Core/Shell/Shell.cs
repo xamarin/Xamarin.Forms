@@ -254,7 +254,7 @@ namespace Xamarin.Forms
 			ShellContent shellContent = null;
 
 			switch (element) {
-			case ShellItem.MenuShellItem menuShellItem:
+			case MenuShellItem menuShellItem:
 				menuShellItem.MenuItem.Activate();
 				break;
 			case ShellItem i:
@@ -781,7 +781,7 @@ namespace Xamarin.Forms
 		{
 			base.OnChildAdded(child);
 
-			if (child is ShellItem shellItem && CurrentItem == null && !(child is ShellItem.MenuShellItem))
+			if (child is ShellItem shellItem && CurrentItem == null && !(child is MenuShellItem))
 			{
 				((IShellController)this).OnFlyoutItemSelected(shellItem);
 			}
@@ -821,7 +821,7 @@ namespace Xamarin.Forms
 			_lastNavigating = args.Target;
 		}
 
-		private static void OnCurrentItemChanged(BindableObject bindable, object oldValue, object newValue)
+		static void OnCurrentItemChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			var shell = (Shell)bindable;
 			UpdateChecked(shell);

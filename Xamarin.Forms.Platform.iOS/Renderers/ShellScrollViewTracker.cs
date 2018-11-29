@@ -15,12 +15,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 		#endregion IShellContentInsetObserver
 
-		private bool _disposed;
-		private bool _isInShell;
-		private bool _isInItems;
-		private IVisualElementRenderer _renderer;
-		private UIScrollView _scrollView;
-		private ShellSection _shellSection;
+		bool _disposed;
+		bool _isInShell;
+		bool _isInItems;
+		IVisualElementRenderer _renderer;
+		UIScrollView _scrollView;
+		ShellSection _shellSection;
 
 		public ShellScrollViewTracker(IVisualElementRenderer renderer)
 		{
@@ -68,7 +68,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		private void UpdateContentInset(Thickness inset, double tabThickness)
+		void UpdateContentInset(Thickness inset, double tabThickness)
 		{
 			if (Forms.IsiOS11OrNewer)
 			{
@@ -100,7 +100,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		private void UpdateVerticalBounce()
+		void UpdateVerticalBounce()
 		{
 			// Normally we dont want to do this unless this scrollview is vertical and its
 			// element is the child of a Page with a SearchHandler that is collapsable.

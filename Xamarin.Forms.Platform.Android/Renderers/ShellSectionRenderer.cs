@@ -89,15 +89,15 @@ namespace Xamarin.Forms.Platform.Android
 
 		#endregion IOnClickListener
 
-		private readonly IShellContext _shellContext;
-		private AView _rootView;
-		private bool _selecting;
-		private TabLayout _tablayout;
-		private IShellTabLayoutAppearanceTracker _tabLayoutAppearanceTracker;
-		private Toolbar _toolbar;
-		private IShellToolbarAppearanceTracker _toolbarAppearanceTracker;
-		private IShellToolbarTracker _toolbarTracker;
-		private ViewPager _viewPager;
+		readonly IShellContext _shellContext;
+		AView _rootView;
+		bool _selecting;
+		TabLayout _tablayout;
+		IShellTabLayoutAppearanceTracker _tabLayoutAppearanceTracker;
+		Toolbar _toolbar;
+		IShellToolbarAppearanceTracker _toolbarAppearanceTracker;
+		IShellToolbarTracker _toolbarTracker;
+		ViewPager _viewPager;
 
 		public ShellSectionRenderer(IShellContext shellContext)
 		{
@@ -233,14 +233,14 @@ namespace Xamarin.Forms.Platform.Android
 			_tabLayoutAppearanceTracker.SetAppearance(_tablayout, appearance);
 		}
 
-		private void HookEvents()
+		void HookEvents()
 		{
 			((INotifyCollectionChanged)ShellSection.Items).CollectionChanged += OnItemsCollectionChagned;
 			((IShellController)_shellContext.Shell).AddAppearanceObserver(this, ShellSection);
 			ShellSection.PropertyChanged += OnShellItemPropertyChanged;
 		}
 
-		private void UnhookEvents()
+		void UnhookEvents()
 		{
 			((INotifyCollectionChanged)ShellSection.Items).CollectionChanged -= OnItemsCollectionChagned;
 			((IShellController)_shellContext.Shell).RemoveAppearanceObserver(this);

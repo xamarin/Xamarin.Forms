@@ -4,8 +4,8 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class UIContainerCell : UITableViewCell
 	{
-		private IVisualElementRenderer _renderer;
-		private object _bindingContext;
+		IVisualElementRenderer _renderer;
+		object _bindingContext;
 
 		public UIContainerCell(string cellId, View view) : base(UITableViewCellStyle.Default, cellId)
 		{
@@ -49,7 +49,7 @@ namespace Xamarin.Forms.Platform.iOS
 			View.Layout(Bounds.ToRectangle());
 		}
 
-		private void UpdateVisualState()
+		void UpdateVisualState()
 		{
 			if (BindingContext is BaseShellItem baseShellItem && baseShellItem != null)
 			{
@@ -60,7 +60,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		private void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == BaseShellItem.IsCheckedProperty.PropertyName)
 			{

@@ -53,18 +53,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 		#endregion IShellContext
 
-		private IShellItemRenderer _currentShellItemRenderer;
-		private bool _disposed;
-		private IShellFlyoutRenderer _flyoutRenderer;
+		IShellItemRenderer _currentShellItemRenderer;
+		bool _disposed;
+		IShellFlyoutRenderer _flyoutRenderer;
 
-		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
-
-		public VisualElement Element { get; private set; }
-		public UIView NativeView => FlyoutRenderer.View;
-		public Shell Shell => (Shell)Element;
-		public UIViewController ViewController => FlyoutRenderer.ViewController;
-
-		private IShellFlyoutRenderer FlyoutRenderer
+		IShellFlyoutRenderer FlyoutRenderer
 		{
 			get
 			{
@@ -78,6 +71,13 @@ namespace Xamarin.Forms.Platform.iOS
 			set { _flyoutRenderer = value; }
 		}
 
+		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
+
+		public VisualElement Element { get; private set; }
+		public UIView NativeView => FlyoutRenderer.View;
+		public Shell Shell => (Shell)Element;
+		public UIViewController ViewController => FlyoutRenderer.ViewController;
+		
 		public SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint) => new SizeRequest(new Size(100, 100));
 
 		public void RegisterEffect(Effect effect)
@@ -244,7 +244,7 @@ namespace Xamarin.Forms.Platform.iOS
 			FlyoutRenderer.View.BackgroundColor = color.ToUIColor();
 		}
 
-		private void SetupCurrentShellItem()
+		void SetupCurrentShellItem()
 		{
 			if (Shell.CurrentItem == null)
 			{

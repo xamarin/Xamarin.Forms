@@ -10,11 +10,11 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public class ShellBottomNavViewAppearanceTracker : IShellBottomNavViewAppearanceTracker
 	{
-		private IShellContext _shellContext;
-		private ShellItem _shellItem;
-		private ColorStateList _defaultList;
-		private bool _disposed;
-		private Color _lastColor = Color.Default;
+		IShellContext _shellContext;
+		ShellItem _shellItem;
+		ColorStateList _defaultList;
+		bool _disposed;
+		Color _lastColor = Color.Default;
 
 		public ShellBottomNavViewAppearanceTracker(IShellContext shellContext, ShellItem shellItem)
 		{
@@ -90,7 +90,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		private ColorStateList MakeColorStateList(Color titleColor, Color disabledColor, Color unselectedColor)
+		ColorStateList MakeColorStateList(Color titleColor, Color disabledColor, Color unselectedColor)
 		{
 			var states = new int[][] {
 				new int[] { -R.Attribute.StateEnabled },
@@ -113,7 +113,7 @@ namespace Xamarin.Forms.Platform.Android
 			return MakeColorStateList(checkedInt, disabledInt, defaultColor);
 		}
 
-		private ColorStateList MakeColorStateList(int titleColorInt, int disabledColorInt, int defaultColor)
+		ColorStateList MakeColorStateList(int titleColorInt, int disabledColorInt, int defaultColor)
 		{
 			var states = new int[][] {
 				new int[] { -R.Attribute.StateEnabled },

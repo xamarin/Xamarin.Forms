@@ -5,9 +5,9 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class UIContainerView : UIView
 	{
-		private readonly View _view;
-		private IVisualElementRenderer _renderer;
-		private bool _disposed;
+		readonly View _view;
+		IVisualElementRenderer _renderer;
+		bool _disposed;
 
 		public UIContainerView(View view)
 		{

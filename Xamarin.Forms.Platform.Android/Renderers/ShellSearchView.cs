@@ -84,12 +84,12 @@ namespace Xamarin.Forms.Platform.Android
 
 		#endregion ITextWatcher
 
-		private IShellContext _shellContext;
-		private CardView _cardView;
-		private AImageButton _clearButton;
-		private AImageButton _clearPlaceholderButton;
-		private AImageButton _searchButton;
-		private AppCompatAutoCompleteTextView _textBlock;
+		IShellContext _shellContext;
+		CardView _cardView;
+		AImageButton _clearButton;
+		AImageButton _clearPlaceholderButton;
+		AImageButton _searchButton;
+		AppCompatAutoCompleteTextView _textBlock;
 		bool _disposed;
 
 		public ShellSearchView(Context context, IShellContext shellContext) : base(context)
@@ -97,7 +97,7 @@ namespace Xamarin.Forms.Platform.Android
 			_shellContext = shellContext;
 		}
 
-		private ISearchHandlerController Controller => SearchHandler;
+		ISearchHandlerController Controller => SearchHandler;
 
 		bool TextView.IOnEditorActionListener.OnEditorAction(TextView v, ImeAction actionId, KeyEvent e)
 		{
@@ -296,7 +296,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 		}
 
-		private AImageButton CreateImageButton(Context context, ImageSource image, int defaultImage, int leftMargin, int rightMargin)
+		AImageButton CreateImageButton(Context context, ImageSource image, int defaultImage, int leftMargin, int rightMargin)
 		{
 			var result = new AImageButton(context);
 			result.SetPadding(0, 0, 0, 0);
@@ -319,7 +319,7 @@ namespace Xamarin.Forms.Platform.Android
 			return result;
 		}
 
-		private void OnTextBlockItemClicked(object sender, AdapterView.ItemClickEventArgs e)
+		void OnTextBlockItemClicked(object sender, AdapterView.ItemClickEventArgs e)
 		{
 			var index = e.Position;
 			var item = Controller.ListProxy[index];
@@ -330,7 +330,7 @@ namespace Xamarin.Forms.Platform.Android
 			Controller.ItemSelected(item);
 		}
 
-		private async void SetImage(AImageButton button, ImageSource image, int defaultValue)
+		async void SetImage(AImageButton button, ImageSource image, int defaultValue)
 		{
 			button.SetScaleType(ImageView.ScaleType.FitCenter);
 			if (image != null)
@@ -348,7 +348,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		private void UpdateClearButtonState()
+		void UpdateClearButtonState()
 		{
 			if (string.IsNullOrEmpty(_textBlock.Text))
 			{
@@ -365,7 +365,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		private class ClipDrawableWrapper : DrawableWrapper
+		class ClipDrawableWrapper : DrawableWrapper
 		{
 			public ClipDrawableWrapper(Drawable dr) : base(dr)
 			{

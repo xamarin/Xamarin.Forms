@@ -8,11 +8,11 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class ShellTableViewSource : UITableViewSource
 	{
-		private readonly IShellContext _context;
-		private readonly Action<Element> _onElementSelected;
-		private DataTemplate _defaultItemTemplate;
-		private DataTemplate _defaultMenuItemTemplate;
-		private List<List<Element>> _groups;
+		readonly IShellContext _context;
+		readonly Action<Element> _onElementSelected;
+		DataTemplate _defaultItemTemplate;
+		DataTemplate _defaultMenuItemTemplate;
+		List<List<Element>> _groups;
 
 		public ShellTableViewSource(IShellContext context, Action<Element> onElementSelected)
 		{
@@ -121,7 +121,7 @@ namespace Xamarin.Forms.Platform.iOS
 			cell.BackgroundColor = UIColor.Clear;
 		}
 
-		private View GenerateDefaultCell(string textBinding, string iconBinding)
+		View GenerateDefaultCell(string textBinding, string iconBinding)
 		{
 			var grid = new Grid();
 
@@ -167,9 +167,9 @@ namespace Xamarin.Forms.Platform.iOS
 			return grid;
 		}
 
-		private class SeparatorView : UIView
+		class SeparatorView : UIView
 		{
-			private UIView _line;
+			UIView _line;
 
 			public SeparatorView()
 			{

@@ -21,11 +21,11 @@ namespace Xamarin.Forms
 
 		#region IShellSectionController
 
-		private readonly List<(object Observer, Action<Page> Callback)> _displayedPageObservers =
+		readonly List<(object Observer, Action<Page> Callback)> _displayedPageObservers =
 			new List<(object Observer, Action<Page> Callback)>();
-		private readonly List<IShellContentInsetObserver> _observers = new List<IShellContentInsetObserver>();
-		private Thickness _lastInset;
-		private double _lastTabThickness;
+		readonly List<IShellContentInsetObserver> _observers = new List<IShellContentInsetObserver>();
+		Thickness _lastInset;
+		double _lastTabThickness;
 
 		event EventHandler<NavigationRequestedEventArgs> IShellSectionController.NavigationRequested
 		{
@@ -33,7 +33,7 @@ namespace Xamarin.Forms
 			remove { _navigationRequested -= value; }
 		}
 
-		private event EventHandler<NavigationRequestedEventArgs> _navigationRequested;
+		event EventHandler<NavigationRequestedEventArgs> _navigationRequested;
 
 		Page IShellSectionController.PresentedPage
 		{
@@ -142,12 +142,12 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty ItemsProperty = ItemsPropertyKey.BindableProperty;
 
-		private Page _displayedPage;
-		private IList<Element> _logicalChildren = new List<Element>();
+		Page _displayedPage;
+		IList<Element> _logicalChildren = new List<Element>();
 
-		private ReadOnlyCollection<Element> _logicalChildrenReadOnly;
+		ReadOnlyCollection<Element> _logicalChildrenReadOnly;
 
-		private List<Page> _navStack = new List<Page> { null };
+		List<Page> _navStack = new List<Page> { null };
 
 		public ShellSection()
 		{
@@ -167,7 +167,7 @@ namespace Xamarin.Forms
 
 		internal override ReadOnlyCollection<Element> LogicalChildrenInternal => _logicalChildrenReadOnly ?? (_logicalChildrenReadOnly = new ReadOnlyCollection<Element>(_logicalChildren));
 
-		private Page DisplayedPage
+		Page DisplayedPage
 		{
 			get { return _displayedPage; }
 			set
@@ -181,9 +181,9 @@ namespace Xamarin.Forms
 			}
 		}
 
-		private Shell Shell => Parent?.Parent as Shell;
+		Shell Shell => Parent?.Parent as Shell;
 
-		private ShellItem ShellItem => Parent as ShellItem;
+		ShellItem ShellItem => Parent as ShellItem;
 
 #if DEBUG
 		[Obsolete("Please dont use this in core code... its SUPER hard to debug when this happens", true)]
@@ -481,7 +481,7 @@ namespace Xamarin.Forms
 			SendUpdateCurrentState(ShellNavigationSource.Remove);
 		}
 
-		private static void OnCurrentItemChanged(BindableObject bindable, object oldValue, object newValue)
+		static void OnCurrentItemChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			var shellSection = (ShellSection)bindable;
 
@@ -496,13 +496,13 @@ namespace Xamarin.Forms
 			shellSection.UpdateDisplayedPage();
 		}
 
-		private void AddPage(Page page)
+		void AddPage(Page page)
 		{
 			_logicalChildren.Add(page);
 			OnChildAdded(page);
 		}
 
-		private void ItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		void ItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			if (e.NewItems != null)
 			{
@@ -519,15 +519,15 @@ namespace Xamarin.Forms
 			SendStructureChanged();
 		}
 
-		private void RemovePage(Page page)
+		void RemovePage(Page page)
 		{
 			if (_logicalChildren.Remove(page))
 				OnChildRemoved(page);
 		}
 
-		private void SendAppearanceChanged() => ((IShellController)Parent?.Parent)?.AppearanceChanged(this, false);
+		void SendAppearanceChanged() => ((IShellController)Parent?.Parent)?.AppearanceChanged(this, false);
 
-		private void SendUpdateCurrentState(ShellNavigationSource source)
+		void SendUpdateCurrentState(ShellNavigationSource source)
 		{
 			if (Parent?.Parent is IShellController shell)
 			{
@@ -537,7 +537,7 @@ namespace Xamarin.Forms
 
 		public class NavigationImpl : NavigationProxy
 		{
-			private readonly ShellSection _owner;
+			readonly ShellSection _owner;
 
 			public NavigationImpl(ShellSection owner) => _owner = owner;
 

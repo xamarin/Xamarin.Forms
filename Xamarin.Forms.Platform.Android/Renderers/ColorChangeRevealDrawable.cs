@@ -8,10 +8,10 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public class ColorChangeRevealDrawable : AnimationDrawable
 	{
-		private readonly Point _center;
-		private readonly AColor _endColor;
-		private readonly AColor _startColor;
-		private float _progress;
+		readonly Point _center;
+		readonly AColor _endColor;
+		readonly AColor _startColor;
+		float _progress;
 
 		public ColorChangeRevealDrawable(AColor startColor, AColor endColor, Point center) : base()
 		{
@@ -57,7 +57,7 @@ namespace Xamarin.Forms.Platform.Android
 			canvas.DrawCircle(centerX, centerY, radius * _progress, paint);
 		}
 
-		private void OnUpdate(object sender, ValueAnimator.AnimatorUpdateEventArgs e)
+		void OnUpdate(object sender, ValueAnimator.AnimatorUpdateEventArgs e)
 		{
 			_progress = (float)e.Animation.AnimatedValue;
 			InvalidateSelf();

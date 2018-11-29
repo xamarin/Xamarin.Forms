@@ -7,7 +7,7 @@ namespace Xamarin.Forms
 {
 	public sealed class MenuItemCollection : IEnumerable<MenuItem>, IList<MenuItem>, INotifyCollectionChanged
 	{
-		private ObservableCollection<MenuItem> _inner = new ObservableCollection<MenuItem>();
+		ObservableCollection<MenuItem> _inner = new ObservableCollection<MenuItem>();
 
 		event NotifyCollectionChangedEventHandler INotifyCollectionChanged.CollectionChanged
 		{

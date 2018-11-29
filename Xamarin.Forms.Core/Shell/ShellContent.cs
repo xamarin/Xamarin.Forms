@@ -10,7 +10,7 @@ namespace Xamarin.Forms
 	{
 		#region PropertyKeys
 
-		private static readonly BindablePropertyKey MenuItemsPropertyKey =
+		static readonly BindablePropertyKey MenuItemsPropertyKey =
 			BindableProperty.CreateReadOnly(nameof(MenuItems), typeof(MenuItemCollection), typeof(ShellContent), null,
 				defaultValueCreator: bo => new MenuItemCollection());
 
@@ -62,9 +62,9 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty MenuItemsProperty = MenuItemsPropertyKey.BindableProperty;
 
-		private Page _contentCache;
-		private IList<Element> _logicalChildren = new List<Element>();
-		private ReadOnlyCollection<Element> _logicalChildrenReadOnly;
+		Page _contentCache;
+		IList<Element> _logicalChildren = new List<Element>();
+		ReadOnlyCollection<Element> _logicalChildrenReadOnly;
 
 		public ShellContent()
 		{
@@ -86,7 +86,7 @@ namespace Xamarin.Forms
 		public MenuItemCollection MenuItems => (MenuItemCollection)GetValue(MenuItemsProperty);
 		internal override ReadOnlyCollection<Element> LogicalChildrenInternal => _logicalChildrenReadOnly ?? (_logicalChildrenReadOnly = new ReadOnlyCollection<Element>(_logicalChildren));
 
-		private Page ContentCache {
+		Page ContentCache {
 			get { return _contentCache; }
 			set
 			{
@@ -111,7 +111,7 @@ namespace Xamarin.Forms
 			return shellContent;
 		}
 
-		private static void OnContentChanged(BindableObject bindable, object oldValue, object newValue)
+		static void OnContentChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			var shellContent = (ShellContent)bindable;
 			// This check is wrong but will work for testing
@@ -136,12 +136,10 @@ namespace Xamarin.Forms
 			}
 
 			if (shellContent.Parent?.Parent is ShellItem shellItem)
-			{
 				shellItem?.SendStructureChanged();
-			}
 		}
 
-		private void MenuItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		void MenuItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			if (e.NewItems != null)
 			{

@@ -9,8 +9,8 @@ namespace Xamarin.Forms.Platform.Android
 {
 	internal class ShellFragmentPagerAdapter : FragmentPagerAdapter
 	{
-		private bool _disposed;
-		private ShellSection _shellSection;
+		bool _disposed;
+		ShellSection _shellSection;
 
 		public ShellFragmentPagerAdapter(ShellSection shellSection, FragmentManager fragmentManager) : base(fragmentManager)
 		{

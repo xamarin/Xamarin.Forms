@@ -1,15 +1,15 @@
-﻿using System;
-using UIKit;
+﻿using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
 	public class ShellNavBarAppearanceTracker : IShellNavBarAppearanceTracker
 	{
-		private UIView _blurView;
-		private UIView _colorView;
-		private UIImage _defaultBackgroundImage;
-		private UIColor _defaultTint;
-		private UIStringAttributes _defaultTitleAttributes;
+		UIView _blurView;
+		UIView _colorView;
+		UIImage _defaultBackgroundImage;
+		UIColor _defaultTint;
+		UIStringAttributes _defaultTitleAttributes;
+		bool _disposed = false;
 
 		public void UpdateLayout (UINavigationController controller)
 		{
@@ -98,8 +98,7 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 
 		#region IDisposable Support
-		private bool _disposed = false;
-
+		
 		protected virtual void Dispose(bool disposing)
 		{
 			if (!_disposed)

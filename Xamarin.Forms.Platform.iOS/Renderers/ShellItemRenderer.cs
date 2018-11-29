@@ -38,13 +38,16 @@ namespace Xamarin.Forms.Platform.iOS
 
 		#endregion IAppearanceObserver
 
-		private readonly IShellContext _context;
-		private readonly Dictionary<UIViewController, IShellSectionRenderer> _sectionRenderers = new Dictionary<UIViewController, IShellSectionRenderer>();
-		private IShellTabBarAppearanceTracker _appearanceTracker;
-		private ShellSection _currentSection;
-		private Page _displayedPage;
-		private bool _disposed;
-		private ShellItem _shellItem;
+		readonly IShellContext _context;
+		readonly Dictionary<UIViewController, IShellSectionRenderer> _sectionRenderers = new Dictionary<UIViewController, IShellSectionRenderer>();
+		IShellTabBarAppearanceTracker _appearanceTracker;
+		ShellSection _currentSection;
+		Page _displayedPage;
+		bool _disposed;
+		ShellItem _shellItem;
+		bool _switched = true;
+
+		IShellSectionRenderer CurrentRenderer { get; set; }
 
 		public ShellItemRenderer(IShellContext context)
 		{
@@ -65,9 +68,7 @@ namespace Xamarin.Forms.Platform.iOS
 					CurrentRenderer = renderer;
 				}
 			}
-		}
-
-		private IShellSectionRenderer CurrentRenderer { get; set; }
+		}		
 
 		public override void ViewDidLayoutSubviews()
 		{
@@ -214,7 +215,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_appearanceTracker.SetAppearance(this, appearance);
 		}
 
-		private void AddRenderer(IShellSectionRenderer renderer)
+		void AddRenderer(IShellSectionRenderer renderer)
 		{
 			if (_sectionRenderers.ContainsKey(renderer.ViewController))
 				return;
@@ -222,7 +223,7 @@ namespace Xamarin.Forms.Platform.iOS
 			renderer.ShellSection.PropertyChanged += OnShellSectionPropertyChanged;
 		}
 
-		private void CreateTabRenderers()
+		void CreateTabRenderers()
 		{
 			var count = ShellItem.Items.Count;
 			int maxTabs = 5; // fetch this a better way
@@ -259,9 +260,8 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 			}
 		}
-
-		bool _switched = true;
-		private void GoTo(ShellSection shellSection)
+			   
+		void GoTo(ShellSection shellSection)
 		{
 			if (shellSection == null || _currentSection == shellSection)
 				return;
@@ -284,15 +284,13 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		private void OnDisplayedPageChanged(Page page)
+		void OnDisplayedPageChanged(Page page)
 		{
 			if (page == _displayedPage)
 				return;
 
 			if (_displayedPage != null)
-			{
 				_displayedPage.PropertyChanged -= OnDisplayedPagePropertyChanged;
-			}
 
 			_displayedPage = page;
 
@@ -308,23 +306,19 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		private void OnDisplayedPagePropertyChanged(object sender, PropertyChangedEventArgs e)
+		void OnDisplayedPagePropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == Shell.TabBarIsVisibleProperty.PropertyName)
-			{
 				UpdateTabBarHidden();
-			}
 		}
 
-		private void RemoveRenderer(IShellSectionRenderer renderer)
+		void RemoveRenderer(IShellSectionRenderer renderer)
 		{
 			if (_sectionRenderers.Remove(renderer.ViewController))
-			{
 				renderer.ShellSection.PropertyChanged -= OnShellSectionPropertyChanged;
-			}
 		}
 
-		private IShellSectionRenderer RendererForShellContent(ShellSection shellSection)
+		IShellSectionRenderer RendererForShellContent(ShellSection shellSection)
 		{
 			// Not Efficient!
 			foreach (var item in _sectionRenderers)
@@ -335,7 +329,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return null;
 		}
 
-		private IShellSectionRenderer RendererForViewController(UIViewController viewController)
+		IShellSectionRenderer RendererForViewController(UIViewController viewController)
 		{
 			// Efficient!
 			if (_sectionRenderers.TryGetValue(viewController, out var value))
@@ -343,7 +337,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return null;
 		}
 
-		private void SetTabBarHidden(bool hidden)
+		void SetTabBarHidden(bool hidden)
 		{
 			TabBar.Hidden = hidden;
 
@@ -361,7 +355,7 @@ namespace Xamarin.Forms.Platform.iOS
 			CurrentRenderer.ViewController.View.Frame = View.Bounds;
 		}
 
-		private void UpdateTabBarHidden()
+		void UpdateTabBarHidden()
 		{
 			if (_displayedPage == null || ShellItem == null)
 				return;

@@ -8,9 +8,9 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public class ContainerView : ViewGroup
 	{
-		private Context _context;
-		private IVisualElementRenderer _renderer;
-		private View _view;
+		Context _context;
+		IVisualElementRenderer _renderer;
+		View _view;
 
 		public ContainerView(Context context, View view) : base(context)
 		{

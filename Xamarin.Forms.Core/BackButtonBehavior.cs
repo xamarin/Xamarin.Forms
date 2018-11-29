@@ -52,9 +52,9 @@ namespace Xamarin.Forms
 			set { SetValue(TextOverrideProperty, value); }
 		}
 
-		private bool IsEnabledCore { set => SetValueCore(IsEnabledProperty, value); }
+		bool IsEnabledCore { set => SetValueCore(IsEnabledProperty, value); }
 
-		private static void OnCommandChanged(BindableObject bindable, object oldValue, object newValue)
+		static void OnCommandChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			var self = (BackButtonBehavior)bindable;
 			var oldCommand = (ICommand)oldValue;
@@ -62,17 +62,17 @@ namespace Xamarin.Forms
 			self.OnCommandChanged(oldCommand, newCommand);
 		}
 
-		private static void OnCommandParameterChanged(BindableObject bindable, object oldValue, object newValue)
+		static void OnCommandParameterChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			((BackButtonBehavior)bindable).OnCommandParameterChanged();
 		}
 
-		private void CanExecuteChanged(object sender, EventArgs e)
+		void CanExecuteChanged(object sender, EventArgs e)
 		{
 			IsEnabledCore = Command.CanExecute(CommandParameter);
 		}
 
-		private void OnCommandChanged(ICommand oldCommand, ICommand newCommand)
+		void OnCommandChanged(ICommand oldCommand, ICommand newCommand)
 		{
 			if (oldCommand != null)
 			{
@@ -90,7 +90,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		private void OnCommandParameterChanged()
+		void OnCommandParameterChanged()
 		{
 			if (Command != null)
 				IsEnabledCore = Command.CanExecute(CommandParameter);

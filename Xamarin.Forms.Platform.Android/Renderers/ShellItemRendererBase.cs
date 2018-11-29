@@ -27,10 +27,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		#endregion IShellItemRenderer
 
-		private readonly Dictionary<Element, IShellObservableFragment> _fragmentMap = new Dictionary<Element, IShellObservableFragment>();
-		private IShellObservableFragment _currentFragment;
-		private ShellSection _shellSection;
-		private Page _displayedPage;
+		readonly Dictionary<Element, IShellObservableFragment> _fragmentMap = new Dictionary<Element, IShellObservableFragment>();
+		IShellObservableFragment _currentFragment;
+		ShellSection _shellSection;
+		Page _displayedPage;
 
 		protected ShellItemRendererBase(IShellContext shellContext)
 		{
@@ -265,11 +265,6 @@ namespace Xamarin.Forms.Platform.Android
 			HandleFragmentUpdate(ShellNavigationSource.ShellSectionChanged, ShellSection, null, false);
 		}
 
-		private void UpdateDisplayedPage(Page page)
-		{
-			DisplayedPage = page;
-		}
-
 		protected virtual void OnDisplayedPageChanged(Page newPage, Page oldPage)
 		{
 
@@ -341,7 +336,12 @@ namespace Xamarin.Forms.Platform.Android
 		{
 		}
 
-		private void RemoveAllButCurrent(Fragment skip)
+		void UpdateDisplayedPage(Page page)
+		{
+			DisplayedPage = page;
+		}
+
+		void RemoveAllButCurrent(Fragment skip)
 		{
 			var trans = ChildFragmentManager.BeginTransaction();
 			foreach (var kvp in _fragmentMap)
@@ -354,7 +354,7 @@ namespace Xamarin.Forms.Platform.Android
 			trans.CommitAllowingStateLoss();
 		}
 
-		private void RemoveAllPushedPages(ShellSection shellSection, bool keepCurrent)
+		void RemoveAllPushedPages(ShellSection shellSection, bool keepCurrent)
 		{
 			if (shellSection.Stack.Count <= 1 || (keepCurrent && shellSection.Stack.Count == 2))
 				return;
@@ -377,7 +377,7 @@ namespace Xamarin.Forms.Platform.Android
 			t.CommitAllowingStateLoss();
 		}
 
-		private void RemoveFragment(Fragment fragment)
+		void RemoveFragment(Fragment fragment)
 		{
 			var t = ChildFragmentManager.BeginTransaction();
 			t.Remove(fragment);

@@ -72,7 +72,7 @@ namespace Xamarin.Forms.Platform.Android
 			return self.FontFamily == null && self.FontSize == Device.GetNamedSize(NamedSize.Default, typeof(Label), true) && self.FontAttributes == FontAttributes.None;
 		}
 
-		private static bool IsAssetFontFamily (string name)
+		static bool IsAssetFontFamily (string name)
 		{
 			return name.Contains(".ttf#") || name.Contains(".otf#");
 		}

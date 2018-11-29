@@ -24,13 +24,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 		#endregion IShellSearchResultsRenderer
 
-		private readonly IShellContext _context;
-		private DataTemplate _defaultTemplate;
-
-		public event EventHandler<object> ItemSelected;
+		readonly IShellContext _context;
+		DataTemplate _defaultTemplate;
 
 		// If data templates were horses, this is a donkey
-		private DataTemplate DefaultTemplate
+		DataTemplate DefaultTemplate
 		{
 			get
 			{
@@ -45,6 +43,8 @@ namespace Xamarin.Forms.Platform.iOS
 					}));
 			}
 		}
+
+		public event EventHandler<object> ItemSelected;
 
 		public ShellSearchResultsRenderer(IShellContext context)
 		{
@@ -125,7 +125,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return SearchController.ListProxy.Count;
 		}
 
-		private NSIndexPath[] GetPaths(int section, int index, int count)
+		NSIndexPath[] GetPaths(int section, int index, int count)
 		{
 			var paths = new NSIndexPath[count];
 			for (var i = 0; i < paths.Length; i++)
@@ -134,7 +134,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return paths;
 		}
 
-		private void OnListProxyChanged(object sender, ListProxyChangedEventArgs e)
+		void OnListProxyChanged(object sender, ListProxyChangedEventArgs e)
 		{
 			if (e.OldList != null)
 			{
@@ -149,7 +149,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		private void OnProxyCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		void OnProxyCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			int section = 0;
 			switch (e.Action)
@@ -208,7 +208,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		private void OnSearchHandlerSet()
+		void OnSearchHandlerSet()
 		{
 			SearchController.ListProxyChanged += OnListProxyChanged;
 		}

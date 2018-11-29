@@ -17,23 +17,23 @@ namespace Xamarin.Forms.Platform.iOS
 
 		#endregion IShellSectionRootRenderer
 
-		private const int HeaderHeight = 35;
-		private readonly IShellContext _shellContext;
-		private UIView _blurView;
-		private UIView _containerArea;
-		private int _currentIndex;
-		private ShellSectionRootHeader _header;
-		private bool _isAnimating;
-		private Dictionary<ShellContent, IVisualElementRenderer> _renderers = new Dictionary<ShellContent, IVisualElementRenderer>();
-		private IShellPageRendererTracker _tracker;
+		const int HeaderHeight = 35;
+		readonly IShellContext _shellContext;
+		UIView _blurView;
+		UIView _containerArea;
+		int _currentIndex;
+		ShellSectionRootHeader _header;
+		bool _isAnimating;
+		Dictionary<ShellContent, IVisualElementRenderer> _renderers = new Dictionary<ShellContent, IVisualElementRenderer>();
+		IShellPageRendererTracker _tracker;
+
+		ShellSection ShellSection { get; set; }
 
 		public ShellSectionRootRenderer(ShellSection shellSection, IShellContext shellContext)
 		{
 			ShellSection = shellSection ?? throw new ArgumentNullException(nameof(shellSection));
 			_shellContext = shellContext;
 		}
-
-		private ShellSection ShellSection { get; set; }
 
 		public override void ViewDidLayoutSubviews()
 		{
@@ -76,37 +76,6 @@ namespace Xamarin.Forms.Platform.iOS
 			tracker.ViewController = this;
 			tracker.Page = ((IShellContentController)ShellSection.CurrentItem).GetOrCreateContent();
 			_tracker = tracker;
-		}
-
-		private void OnShellSectionItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
-		{
-			// Make sure we do this after the header has a chance to react
-			Device.BeginInvokeOnMainThread(UpdateHeaderVisibility);
-
-			if (e.OldItems != null)
-			{
-				foreach (ShellContent oldItem in e.OldItems)
-				{
-					var oldRenderer = _renderers[oldItem];
-					_renderers.Remove(oldItem);
-					oldRenderer.NativeView.RemoveFromSuperview();
-					oldRenderer.ViewController.RemoveFromParentViewController();
-					oldRenderer.Dispose();
-				}
-			}
-
-			if (e.NewItems != null)
-			{
-				foreach (ShellContent newItem in e.NewItems)
-				{
-					var page = ((IShellContentController)newItem).GetOrCreateContent();
-					var renderer = Platform.CreateRenderer(page);
-					Platform.SetRenderer(page, renderer);
-
-					AddChildViewController(renderer.ViewController);
-					_renderers[newItem] = renderer;
-				}
-			}
 		}
 
 		public override void ViewSafeAreaInsetsDidChange()
@@ -254,7 +223,38 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		private void LayoutHeader()
+		void OnShellSectionItemsChanged(object sender, NotifyCollectionChangedEventArgs e)
+		{
+			// Make sure we do this after the header has a chance to react
+			Device.BeginInvokeOnMainThread(UpdateHeaderVisibility);
+
+			if (e.OldItems != null)
+			{
+				foreach (ShellContent oldItem in e.OldItems)
+				{
+					var oldRenderer = _renderers[oldItem];
+					_renderers.Remove(oldItem);
+					oldRenderer.NativeView.RemoveFromSuperview();
+					oldRenderer.ViewController.RemoveFromParentViewController();
+					oldRenderer.Dispose();
+				}
+			}
+
+			if (e.NewItems != null)
+			{
+				foreach (ShellContent newItem in e.NewItems)
+				{
+					var page = ((IShellContentController)newItem).GetOrCreateContent();
+					var renderer = Platform.CreateRenderer(page);
+					Platform.SetRenderer(page, renderer);
+
+					AddChildViewController(renderer.ViewController);
+					_renderers[newItem] = renderer;
+				}
+			}
+		}
+
+		void LayoutHeader()
 		{
 			if (_header == null)
 				return;

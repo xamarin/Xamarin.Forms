@@ -72,7 +72,7 @@ namespace Xamarin.Forms
 		}
 		IVisual IVisualController.Visual => Xamarin.Forms.VisualMarker.MatchParent;
 
-		private static void OnIconChanged(BindableObject bindable, object oldValue, object newValue)
+		static void OnIconChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			if (newValue == null || bindable.IsSet(FlyoutIconProperty))
 				return;

@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using System.ComponentModel;
 using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
 
@@ -14,7 +12,7 @@ namespace Xamarin.Forms
 	{
 		#region PropertyKeys
 
-		private static readonly BindablePropertyKey ItemsPropertyKey = BindableProperty.CreateReadOnly(nameof(Items), typeof(ShellSectionCollection), typeof(ShellItem), null,
+		static readonly BindablePropertyKey ItemsPropertyKey = BindableProperty.CreateReadOnly(nameof(Items), typeof(ShellSectionCollection), typeof(ShellItem), null,
 				defaultValueCreator: bo => new ShellSectionCollection { Inner = new ElementCollection<ShellSection>(((ShellItem)bo)._children) });
 
 		#endregion PropertyKeys
@@ -85,9 +83,9 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty ItemsProperty = ItemsPropertyKey.BindableProperty;
 
-		private readonly ObservableCollection<Element> _children = new ObservableCollection<Element>();
-		private ReadOnlyCollection<Element> _logicalChildren;
-		private Lazy<PlatformConfigurationRegistry<ShellItem>> _platformConfigurationRegistry;
+		readonly ObservableCollection<Element> _children = new ObservableCollection<Element>();
+		ReadOnlyCollection<Element> _logicalChildren;
+		Lazy<PlatformConfigurationRegistry<ShellItem>> _platformConfigurationRegistry;
 
 		public ShellItem()
 		{
@@ -144,6 +142,11 @@ namespace Xamarin.Forms
 #endif
 		public static implicit operator ShellItem(MenuItem menuItem) => new MenuShellItem(menuItem);
 
+		public IPlatformElementConfiguration<T, ShellItem> On<T>() where T : IConfigPlatform
+		{
+			return _platformConfigurationRegistry.Value.On<T>();
+		}
+
 		protected override void OnChildAdded(Element child)
 		{
 			base.OnChildAdded(child);
@@ -163,7 +166,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		private static void OnCurrentItemChanged(BindableObject bindable, object oldValue, object newValue)
+		static void OnCurrentItemChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			var shellItem = (ShellItem)bindable;
 
@@ -176,7 +179,7 @@ namespace Xamarin.Forms
 			((IShellController)shellItem?.Parent)?.AppearanceChanged(shellItem, false);
 		}
 
-		private void ItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+		void ItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
 			if (e.NewItems != null)
 			{
@@ -191,24 +194,6 @@ namespace Xamarin.Forms
 			}
 
 			SendStructureChanged();
-		}
-
-		public IPlatformElementConfiguration<T, ShellItem> On<T>() where T : IConfigPlatform
-		{
-			return _platformConfigurationRegistry.Value.On<T>();
-		}
-
-		public class MenuShellItem : ShellItem
-		{
-			internal MenuShellItem(MenuItem menuItem)
-			{
-				MenuItem = menuItem;
-
-				SetBinding(TitleProperty, new Binding("Text", BindingMode.OneWay, source: menuItem));
-				SetBinding(IconProperty, new Binding("Icon", BindingMode.OneWay, source: menuItem));
-			}
-
-			public MenuItem MenuItem { get; }
-		}
+		}	
 	}
 }

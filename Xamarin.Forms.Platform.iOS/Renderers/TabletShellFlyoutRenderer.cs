@@ -58,27 +58,27 @@ namespace Xamarin.Forms.Platform.iOS
 
 		#endregion
 
-		private IShellContext _context;
-		private UIViewController _content;
-		private bool _isPresented;
-		private FlyoutBehavior _flyoutBehavior;
-		private bool _disposed;
+		IShellContext _context;
+		UIViewController _content;
+		bool _isPresented;
+		FlyoutBehavior _flyoutBehavior;
+		bool _disposed;
 
-		private IShellFlyoutContentRenderer FlyoutContent { get; set; }
+		IShellFlyoutContentRenderer FlyoutContent { get; set; }
 
-		private void OnFlyoutContentWillAppear(object sender, EventArgs e)
+		void OnFlyoutContentWillAppear(object sender, EventArgs e)
 		{
 			_isPresented = true;
 			_context.Shell.SetValueFromRenderer(Shell.FlyoutIsPresentedProperty, true);
 		}
 
-		private void OnFlyoutContentWillDisappear(object sender, EventArgs e)
+		void OnFlyoutContentWillDisappear(object sender, EventArgs e)
 		{
 			_isPresented = false;
 			_context.Shell.SetValueFromRenderer(Shell.FlyoutIsPresentedProperty, false);
 		}
 
-		private void OnShellPropertyChanged(object sender, PropertyChangedEventArgs e)
+		void OnShellPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == Shell.FlyoutIsPresentedProperty.PropertyName)
 			{

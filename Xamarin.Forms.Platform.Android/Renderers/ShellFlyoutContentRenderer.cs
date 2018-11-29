@@ -17,10 +17,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		#endregion IShellFlyoutContentRenderer
 
-		private AView _headerView;
-		private readonly Dictionary<IMenuItem, Element> _lookupTable = new Dictionary<IMenuItem, Element>();
-		private IShellContext _shellContext;
-		private bool _disposed;
+		AView _headerView;
+		readonly Dictionary<IMenuItem, Element> _lookupTable = new Dictionary<IMenuItem, Element>();
+		IShellContext _shellContext;
+		bool _disposed;
 
 		public ShellFlyoutContentRenderer(IShellContext shellContext, Context context) : base(context)
 		{
@@ -66,7 +66,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		private void BuildMenu()
+		void BuildMenu()
 		{
 			_lookupTable.Clear();
 
@@ -103,12 +103,12 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		private void OnShellStructureChanged(object sender, EventArgs e)
+		void OnShellStructureChanged(object sender, EventArgs e)
 		{
 			BuildMenu();
 		}
 
-		private async void SetMenuItemIcon(IMenuItem menuItem, ImageSource source)
+		async void SetMenuItemIcon(IMenuItem menuItem, ImageSource source)
 		{
 			var drawable = await Context.GetFormsDrawable(source);
 			menuItem.SetIcon(drawable);

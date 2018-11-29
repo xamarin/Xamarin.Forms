@@ -1,5 +1,4 @@
-﻿using Android.Content;
-using Android.Support.V7.Widget;
+﻿using Android.Support.V7.Widget;
 using Android.Views;
 using Android.Widget;
 using System;
@@ -12,16 +11,16 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public class ShellFlyoutRecyclerAdapter : RecyclerView.Adapter
 	{
-		private readonly IShellContext _shellContext;
+		readonly IShellContext _shellContext;
 
-		private DataTemplate _defaultItemTemplate;
+		DataTemplate _defaultItemTemplate;
 
-		private DataTemplate _defaultMenuItemTemplate;
+		DataTemplate _defaultMenuItemTemplate;
 
-		private List<AdapterListItem> _listItems;
+		List<AdapterListItem> _listItems;
 
-		private Dictionary<int, DataTemplate> _templateMap = new Dictionary<int, DataTemplate>();
-		private readonly Action<Element> _selectedCallback;
+		Dictionary<int, DataTemplate> _templateMap = new Dictionary<int, DataTemplate>();
+		readonly Action<Element> _selectedCallback;
 
 		public ShellFlyoutRecyclerAdapter(IShellContext shellContext, Action<Element> selectedCallback)
 		{
@@ -120,7 +119,7 @@ namespace Xamarin.Forms.Platform.Android
 			NotifyDataSetChanged();
 		}
 
-		private View GenerateDefaultCell(string textBinding, string iconBinding)
+		View GenerateDefaultCell(string textBinding, string iconBinding)
 		{
 			var grid = new Grid();
 			var groups = new VisualStateGroupList();
@@ -182,8 +181,8 @@ namespace Xamarin.Forms.Platform.Android
 
 		public class ElementViewHolder : RecyclerView.ViewHolder
 		{
-			private readonly Action<Element> _selectedCallback;
-			private Element _element;
+			readonly Action<Element> _selectedCallback;
+			Element _element;
 
 			public ElementViewHolder(View view, AView itemView, AView bar, Action<Element> selectedCallback) : base(itemView)
 			{
@@ -191,14 +190,6 @@ namespace Xamarin.Forms.Platform.Android
 				View = view;
 				Bar = bar;
 				_selectedCallback = selectedCallback;
-			}
-
-			private void OnClicked(object sender, EventArgs e)
-			{
-				if (Element == null)
-					return;
-
-				_selectedCallback(Element);
 			}
 
 			public View View { get; }
@@ -225,7 +216,7 @@ namespace Xamarin.Forms.Platform.Android
 				}
 			}
 
-			private void UpdateVisualState()
+			void UpdateVisualState()
 			{
 				if (Element is BaseShellItem baseShellItem && baseShellItem != null)
 				{
@@ -236,12 +227,18 @@ namespace Xamarin.Forms.Platform.Android
 				}
 			}
 
-			private void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+			void OnElementPropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
 			{
 				if (e.PropertyName == BaseShellItem.IsCheckedProperty.PropertyName)
-				{
 					UpdateVisualState();
-				}
+			}
+
+			void OnClicked(object sender, EventArgs e)
+			{
+				if (Element == null)
+					return;
+
+				_selectedCallback(Element);
 			}
 		}
 	}

@@ -53,12 +53,12 @@ namespace Xamarin.Forms.Platform.Android
 
 		#endregion IFlyoutBehaviorObserver
 
-		private const uint DefaultScrimColor = 0x99000000;
-		private readonly IShellContext _shellContext;
-		private AView _content;
-		private IShellFlyoutContentRenderer _flyoutContent;
-		private int _flyoutWidth;
-		private int _currentLockMode;
+		const uint DefaultScrimColor = 0x99000000;
+		readonly IShellContext _shellContext;
+		AView _content;
+		IShellFlyoutContentRenderer _flyoutContent;
+		int _flyoutWidth;
+		int _currentLockMode;
 
 		public ShellFlyoutRenderer(IShellContext shellContext, Context context) : base(context)
 		{
@@ -67,7 +67,7 @@ namespace Xamarin.Forms.Platform.Android
 			Shell.PropertyChanged += OnShellPropertyChanged;
 		}
 
-		private Shell Shell => _shellContext.Shell;
+		Shell Shell => _shellContext.Shell;
 
 		public override bool OnInterceptTouchEvent(MotionEvent ev)
 		{

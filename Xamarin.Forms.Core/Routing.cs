@@ -6,7 +6,8 @@ namespace Xamarin.Forms
 {
 	public static class Routing
 	{
-		private static int routeCount = 0;
+		static int s_routeCount = 0;
+		static Dictionary<string, RouteFactory> s_routes = new Dictionary<string, RouteFactory>();
 
 		internal const string ImplicitPrefix = "IMPL_";
 
@@ -32,18 +33,16 @@ namespace Xamarin.Forms
 			BindableProperty.CreateAttached("Route", typeof(string), typeof(Routing), null, 
 				defaultValueCreator: CreateDefaultRoute);
 
-		private static object CreateDefaultRoute(BindableObject bindable)
+		static object CreateDefaultRoute(BindableObject bindable)
 		{
-			return bindable.GetType().Name + ++routeCount;
+			return bindable.GetType().Name + ++s_routeCount;
 		}
-
-		private static Dictionary<string, RouteFactory> _routes = new Dictionary<string, RouteFactory>();
 
 		public static Element GetOrCreateContent(string route)
 		{
 			Element result = null;
 
-			if (_routes.TryGetValue(route, out var content))
+			if (s_routes.TryGetValue(route, out var content))
 				result = content.GetOrCreate();
 
 			if (result == null)
@@ -70,7 +69,7 @@ namespace Xamarin.Forms
 			if (!ValidateRoute(route))
 				throw new ArgumentException("Route must contain only lowercase letters");
 
-			_routes[route] = factory;
+			s_routes[route] = factory;
 		}
 
 		public static void RegisterRoute(string route, Type type)
@@ -78,7 +77,7 @@ namespace Xamarin.Forms
 			if (!ValidateRoute(route))
 				throw new ArgumentException("Route must contain only lowercase letters");
 
-			_routes[route] = new TypeRouteFactory(type);
+			s_routes[route] = new TypeRouteFactory(type);
 		}
 
 		public static void SetRoute(Element obj, string value)
@@ -86,7 +85,7 @@ namespace Xamarin.Forms
 			obj.SetValue(RouteProperty, value);
 		}
 
-		private static bool ValidateRoute(string route)
+		static bool ValidateRoute(string route)
 		{
 			// Honestly this could probably be expanded to allow any URI allowable character
 			// I just dont want to figure out what that validation looks like.
@@ -95,9 +94,9 @@ namespace Xamarin.Forms
 			return r.IsMatch(route);
 		}
 
-		private class TypeRouteFactory : RouteFactory
+		class TypeRouteFactory : RouteFactory
 		{
-			private readonly Type _type;
+			readonly Type _type;
 
 			public TypeRouteFactory(Type type)
 			{

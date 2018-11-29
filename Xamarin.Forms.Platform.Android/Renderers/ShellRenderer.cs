@@ -141,9 +141,9 @@ namespace Xamarin.Forms.Platform.Android
 		public static readonly Color DefaultTitleColor = Color.White;
 		public static readonly Color DefaultUnselectedColor = Color.FromRgba(255, 255, 255, 180);
 
-		private bool _disposed;
-		private IShellFlyoutRenderer _flyoutRenderer;
-		private FrameLayout _frameLayout;
+		bool _disposed;
+		IShellFlyoutRenderer _flyoutRenderer;
+		FrameLayout _frameLayout;
 
 		public ShellRenderer(Context context)
 		{
@@ -260,7 +260,7 @@ namespace Xamarin.Forms.Platform.Android
 				previousRenderer.Destroyed += OnDestroyed;
 		}
 
-		private void OnElementSizeChanged(object sender, EventArgs e)
+		void OnElementSizeChanged(object sender, EventArgs e)
 		{
 			int width = (int)AndroidContext.ToPixels(Element.Width);
 			int height = (int)AndroidContext.ToPixels(Element.Height);
@@ -269,7 +269,7 @@ namespace Xamarin.Forms.Platform.Android
 			_flyoutRenderer.AndroidView.Layout(0, 0, width, height);
 		}
 
-		private void UpdateStatusBarColor(ShellAppearance appearance)
+		void UpdateStatusBarColor(ShellAppearance appearance)
 		{
 			var activity = ((FormsAppCompatActivity)AndroidContext);
 			var window = activity.Window;
@@ -306,11 +306,11 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		private class SplitDrawable : Drawable
+		class SplitDrawable : Drawable
 		{
-			private readonly int _bottomSize;
-			private readonly AColor _color;
-			private readonly int _topSize;
+			readonly int _bottomSize;
+			readonly AColor _color;
+			readonly int _topSize;
 
 			public SplitDrawable(AColor color, int topSize, int bottomSize)
 			{
