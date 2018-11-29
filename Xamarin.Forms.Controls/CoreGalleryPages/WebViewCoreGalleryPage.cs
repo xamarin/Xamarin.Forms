@@ -30,7 +30,10 @@ namespace Xamarin.Forms.Controls
 				}
 			);
 
-			const string html = "<html><div class=\"test\"><h2>I am raw html</h2></div></html>";
+			const string html = "<!DOCTYPE html><html>" +
+				"<head><meta name='viewport' content='width=device-width,initial-scale=1.0'></head>" +
+				"<body><div class=\"test\"><h2>I am raw html</h2></div></body></html>";
+
 			var htmlWebViewSourceContainer = new ViewContainer<WebView> (Test.WebView.HtmlWebViewSource, 
 				new WebView {
 					Source = new HtmlWebViewSource { Html = html },
@@ -40,9 +43,11 @@ namespace Xamarin.Forms.Controls
 
 			var htmlFileWebSourceContainer = new ViewContainer<WebView> (Test.WebView.LoadHtml,
 				new WebView {
-					Source = new HtmlWebViewSource { 
-						Html = @"<html>
+					Source = new HtmlWebViewSource
+					{
+						Html = @"<!DOCTYPE html><html>
 <head>
+<meta name='viewport' content='width=device-width,initial-scale=1.0'>
 <link rel=""stylesheet"" href=""default.css"">
 </head>
 <body>
@@ -90,8 +95,9 @@ namespace Xamarin.Forms.Controls
 			{
 				Source = new HtmlWebViewSource
 				{
-					Html = @"<html>
+					Html = @"<!DOCTYPE html><html>
 <head>
+<meta name='viewport' content='width=device-width,initial-scale=1.0'>
 <link rel=""stylesheet"" href=""default.css"">
 </head>
 <body>
