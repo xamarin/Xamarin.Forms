@@ -274,7 +274,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			if (pageRenderer?.View == null)
 				return;
 			pageRenderer.View.ImportantForAccessibility = importantForAccessibility;
-			if(forceFocus)
+			if (forceFocus)
 				pageRenderer.View.SendAccessibilityEvent(global::Android.Views.Accessibility.EventTypes.ViewFocused);
 			
 		}
