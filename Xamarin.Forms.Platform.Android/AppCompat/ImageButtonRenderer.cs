@@ -65,7 +65,9 @@ namespace Xamarin.Forms.Platform.Android
 			SetOnTouchListener(this);
 			OnFocusChangeListener = this;
 
-			Tag = this;
+			// Setting the tag will break Glide
+			// Tag = this;
+
 			_backgroundTracker = new BorderBackgroundManager(this, false);
 		}
 
@@ -172,8 +174,13 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateInputTransparent();
 			UpdatePadding();
 
-			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(oldElement, ImageButton));
+			OnElementChanged(new ElementChangedEventArgs<ImageButton>(oldElement, ImageButton));
 			ImageButton?.SendViewInitialized(Control);
+		}
+
+		protected virtual void OnElementChanged(ElementChangedEventArgs<ImageButton> e)
+		{
+			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(e.OldElement, e.NewElement));
 		}
 
 		public override void Draw(Canvas canvas)
@@ -258,8 +265,7 @@ namespace Xamarin.Forms.Platform.Android
 			_inputTransparent = ImageButton.InputTransparent;
 		}
 
-		// Image related
-		void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == VisualElement.InputTransparentProperty.PropertyName)
 				UpdateInputTransparent();
