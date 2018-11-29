@@ -39,7 +39,6 @@ namespace Xamarin.Forms.Platform.MacOS
 			_sizeChangedEventHandler = HandleSizeChanged;
 			_batchCommittedHandler = HandleRedrawNeeded;
 
-			Renderer = renderer;
 			TrackFrame = trackFrame;
 			renderer.ElementChanged += OnRendererElementChanged;
 			SetElement(null, renderer.Element);

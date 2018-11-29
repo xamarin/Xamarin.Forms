@@ -145,14 +145,15 @@ namespace Xamarin.Forms.Platform.Android
 		IShellFlyoutRenderer _flyoutRenderer;
 		FrameLayout _frameLayout;
 
+		event EventHandler<VisualElementChangedEventArgs> _elementChanged;
+		event EventHandler<PropertyChangedEventArgs> _elementPropertyChanged;
+
 		public ShellRenderer(Context context)
 		{
 			AndroidContext = context;
 		}
 
-		private event EventHandler<VisualElementChangedEventArgs> _elementChanged;
-
-		private event EventHandler<PropertyChangedEventArgs> _elementPropertyChanged;
+		
 
 		protected Context AndroidContext { get; }
 		protected Shell Element { get; private set; }

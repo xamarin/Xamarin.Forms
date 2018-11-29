@@ -15,11 +15,11 @@ namespace Xamarin.Forms
 			remove { _listProxyChanged -= value; }
 		}
 
-		private event EventHandler<ListProxyChangedEventArgs> _listProxyChanged;
+		event EventHandler<ListProxyChangedEventArgs> _listProxyChanged;
 
 		IReadOnlyList<object> ISearchHandlerController.ListProxy => ListProxy;
 
-		private ListProxy ListProxy
+		ListProxy ListProxy
 		{
 			get { return _listProxy; }
 			set
@@ -263,9 +263,9 @@ namespace Xamarin.Forms
 			set { SetValue(ShowsResultsProperty, value); }
 		}
 
-		private bool ClearPlaceholderEnabledCore { set => SetValueCore(ClearPlaceholderEnabledProperty, value); }
+		bool ClearPlaceholderEnabledCore { set => SetValueCore(ClearPlaceholderEnabledProperty, value); }
 
-		private bool IsSearchEnabledCore { set => SetValueCore(IsSearchEnabledProperty, value); }
+		bool IsSearchEnabledCore { set => SetValueCore(IsSearchEnabledProperty, value); }
 
 		protected virtual void OnClearPlaceholderClicked()
 		{
@@ -295,7 +295,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		private static void OnClearPlaceholderCommandChanged(BindableObject bindable, object oldValue, object newValue)
+		static void OnClearPlaceholderCommandChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			var self = (SearchHandler)bindable;
 			var oldCommand = (ICommand)oldValue;
@@ -303,12 +303,12 @@ namespace Xamarin.Forms
 			self.OnClearPlaceholderCommandChanged(oldCommand, newCommand);
 		}
 
-		private static void OnClearPlaceholderCommandParameterChanged(BindableObject bindable, object oldValue, object newValue)
+		static void OnClearPlaceholderCommandParameterChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			((SearchHandler)bindable).OnClearPlaceholderCommandParameterChanged();
 		}
 
-		private static void OnCommandChanged(BindableObject bindable, object oldValue, object newValue)
+		static void OnCommandChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			var self = (SearchHandler)bindable;
 			var oldCommand = (ICommand)oldValue;
@@ -316,12 +316,12 @@ namespace Xamarin.Forms
 			self.OnCommandChanged(oldCommand, newCommand);
 		}
 
-		private static void OnCommandParameterChanged(BindableObject bindable, object oldValue, object newValue)
+		static void OnCommandParameterChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			((SearchHandler)bindable).OnCommandParameterChanged();
 		}
 
-		private static void OnItemsSourceChanged(BindableObject bindable, object oldValue, object newValue)
+		static void OnItemsSourceChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			var self = (SearchHandler)bindable;
 			if (newValue == null)
@@ -330,23 +330,23 @@ namespace Xamarin.Forms
 				self.ListProxy = new ListProxy((IEnumerable)newValue);
 		}
 
-		private static void OnQueryChanged(BindableObject bindable, object oldValue, object newValue)
+		static void OnQueryChanged(BindableObject bindable, object oldValue, object newValue)
 		{
 			var searchHandler = (SearchHandler)bindable;
 			searchHandler.OnQueryChanged((string)oldValue, (string)newValue);
 		}
 
-		private void CanExecuteChanged(object sender, EventArgs e)
+		void CanExecuteChanged(object sender, EventArgs e)
 		{
 			IsSearchEnabledCore = Command.CanExecute(CommandParameter);
 		}
 
-		private void ClearPlaceholderCanExecuteChanged(object sender, EventArgs e)
+		void ClearPlaceholderCanExecuteChanged(object sender, EventArgs e)
 		{
 			ClearPlaceholderEnabledCore = ClearPlaceholderCommand.CanExecute(ClearPlaceholderCommandParameter);
 		}
 
-		private void OnClearPlaceholderCommandChanged(ICommand oldCommand, ICommand newCommand)
+		void OnClearPlaceholderCommandChanged(ICommand oldCommand, ICommand newCommand)
 		{
 			if (oldCommand != null)
 			{
@@ -364,13 +364,13 @@ namespace Xamarin.Forms
 			}
 		}
 
-		private void OnClearPlaceholderCommandParameterChanged()
+		void OnClearPlaceholderCommandParameterChanged()
 		{
 			if (ClearPlaceholderCommand != null)
 				ClearPlaceholderEnabledCore = ClearPlaceholderCommand.CanExecute(CommandParameter);
 		}
 
-		private void OnCommandChanged(ICommand oldCommand, ICommand newCommand)
+		void OnCommandChanged(ICommand oldCommand, ICommand newCommand)
 		{
 			if (oldCommand != null)
 			{
@@ -388,13 +388,13 @@ namespace Xamarin.Forms
 			}
 		}
 
-		private void OnCommandParameterChanged()
+		void OnCommandParameterChanged()
 		{
 			if (Command != null)
 				IsSearchEnabledCore = Command.CanExecute(CommandParameter);
 		}
 
-		private void UpdateAutomationProperties()
+		void UpdateAutomationProperties()
 		{
 			var queryIcon = QueryIcon;
 			var clearIcon = ClearIcon;

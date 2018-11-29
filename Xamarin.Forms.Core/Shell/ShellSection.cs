@@ -13,7 +13,7 @@ namespace Xamarin.Forms
 	{
 		#region PropertyKeys
 
-		private static readonly BindablePropertyKey ItemsPropertyKey =
+		static readonly BindablePropertyKey ItemsPropertyKey =
 			BindableProperty.CreateReadOnly(nameof(Items), typeof(ShellContentCollection), typeof(ShellSection), null,
 				defaultValueCreator: bo => new ShellContentCollection());
 
