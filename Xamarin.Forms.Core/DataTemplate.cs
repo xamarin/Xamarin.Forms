@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
@@ -37,21 +38,13 @@ namespace Xamarin.Forms
 
 		public void SetBinding(BindableProperty property, BindingBase binding)
 		{
-			if (property == null)
-				throw new ArgumentNullException("property");
-			if (binding == null)
-				throw new ArgumentNullException("binding");
-
-			Values.Remove(property);
-			Bindings[property] = binding;
+			Values.Remove(property ?? throw new ArgumentNullException(nameof(property)));
+			Bindings[property] = binding ?? throw new ArgumentNullException(nameof(binding));
 		}
 
 		public void SetValue(BindableProperty property, object value)
 		{
-			if (property == null)
-				throw new ArgumentNullException("property");
-
-			Bindings.Remove(property);
+			Bindings.Remove(property ?? throw new ArgumentNullException(nameof(property)));
 			Values[property] = value;
 		}
 
