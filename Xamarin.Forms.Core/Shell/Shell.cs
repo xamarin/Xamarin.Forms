@@ -597,29 +597,12 @@ namespace Xamarin.Forms
 			((INotifyCollectionChanged)Items).CollectionChanged += (s, e) => SendStructureChanged();
 		}
 
-		internal const string ShellExperimental = "Shell_Experimental";
+		internal const string ShellExperimental = ExperimentalFlags.ShellExperimental;
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		internal static void VerifyShellFlagEnabled(string constructorHint = null, [CallerMemberName] string memberName = "")
 		{
-			if (Device.Flags == null || !Device.Flags.Contains(ShellExperimental)) {
-				if (!string.IsNullOrEmpty(memberName)) {
-					if (!string.IsNullOrEmpty(constructorHint))
-						constructorHint = constructorHint + " ";
-
-					var call = $"('{constructorHint}{memberName}')";
-
-					var errorMessage = $"The class, property, or method you are attempting to use {call} is part of "
-										+ "Shell; to use it, you must opt-in by calling "
-										+ $"Forms.SetFlags(\"{ShellExperimental}\") before calling Forms.Init().";
-					throw new InvalidOperationException(errorMessage);
-				}
-
-				var genericErrorMessage =
-					$"To use Shell or associated classes, you must opt-in by calling "
-					+ $"Forms.SetFlags(\"{ShellExperimental}\") before calling Forms.Init().";
-				throw new InvalidOperationException(genericErrorMessage);
-			}
+			ExperimentalFlags.VerifyFlagEnabled("Shell", ShellExperimental, constructorHint, memberName);
 		}
 
 		public event EventHandler<ShellNavigatedEventArgs> Navigated;
