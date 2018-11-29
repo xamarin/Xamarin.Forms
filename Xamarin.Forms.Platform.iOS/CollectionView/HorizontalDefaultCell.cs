@@ -5,7 +5,7 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	internal sealed class HorizontalDefaultCell : DefaultCell
 	{
-		public static NSString ReuseId = new NSString("Xamarin.Forms.Platform.iOS.DefaultHorizontalListCell");
+		public static NSString ReuseId = new NSString("Xamarin.Forms.Platform.iOS.HorizontalDefaultCell");
 
 		[Export("initWithFrame:")]
 		public HorizontalDefaultCell(CGRect frame) : base(frame)

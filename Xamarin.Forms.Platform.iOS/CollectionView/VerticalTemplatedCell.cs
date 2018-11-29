@@ -8,7 +8,7 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	internal sealed class VerticalTemplatedCell : TemplatedCell
 	{
-		public static NSString ReuseId = new NSString("Xamarin.Forms.Platform.iOS.TemplatedVerticalListCell");
+		public static NSString ReuseId = new NSString("Xamarin.Forms.Platform.iOS.VerticalTemplatedCell");
 
 		[Export("initWithFrame:")]
 		public VerticalTemplatedCell(CGRect frame) : base(frame)

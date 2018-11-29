@@ -5,7 +5,7 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	internal sealed class VerticalDefaultCell : DefaultCell
 	{
-		public static NSString ReuseId = new NSString("Xamarin.Forms.Platform.iOS.DefaultVerticalListCell");
+		public static NSString ReuseId = new NSString("Xamarin.Forms.Platform.iOS.VerticalDefaultCell");
 
 		[Export("initWithFrame:")]
 		public VerticalDefaultCell(CGRect frame) : base(frame)
