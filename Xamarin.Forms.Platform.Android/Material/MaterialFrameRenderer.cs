@@ -1,21 +1,12 @@
 ﻿#if __ANDROID_28__
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Threading.Tasks;
 using Android.Content;
-using Android.Content.Res;
-using Android.Graphics;
-using Android.Graphics.Drawables;
-using Android.Support.Design.Card;
 using Android.Support.V4.View;
-using Android.Support.V7.Widget;
 using Android.Views;
-using Android.Widget;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android.FastRenderers;
 using Xamarin.Forms.Platform.Android.Material;
-using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
 using MaterialCardView = Android.Support.Design.Card.MaterialCardView;
 
@@ -233,6 +224,8 @@ namespace Xamarin.Forms.Platform.Android.Material
 			else
 			{
 				StrokeColor = borderColor.ToAndroid();
+
+				// TODO: this should be 1, but it is high here to demonstrate the layout issue
 				StrokeWidth = (int)Context.ToPixels(10);
 			}
 		}
