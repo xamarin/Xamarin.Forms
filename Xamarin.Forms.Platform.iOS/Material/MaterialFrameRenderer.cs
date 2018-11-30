@@ -1,6 +1,5 @@
 using System;
 using System.ComponentModel;
-using MaterialComponents;
 using UIKit;
 using Xamarin.Forms;
 using MCard = MaterialComponents.Card;
@@ -15,6 +14,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		double _defaultElevation = -1f;
 		nfloat _defaultCornerRadius = -1f;
 		nfloat _defaultStrokeWidth = -1f;
+		UIColor _defaultBackgroundColor;
 		UIColor _defaultStrokeColor;
 
 		VisualElementPackager _packager;
@@ -157,9 +157,12 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 		void UpdateBackgroundColor()
 		{
+			if (_defaultBackgroundColor == null)
+				_defaultBackgroundColor = BackgroundColor;
+
 			var bgColor = Element.BackgroundColor;
 			if (bgColor.IsDefault)
-				BackgroundColor = UIColor.White;
+				BackgroundColor = _defaultBackgroundColor;
 			else
 				BackgroundColor = bgColor.ToUIColor();
 		}
