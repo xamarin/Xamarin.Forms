@@ -78,6 +78,10 @@ namespace Xamarin.Forms.Controls.Issues
 		}
 
 #if UITEST
+
+		// Test scenario: Tapping the GoBack link triggers a PopAsync 2500ms after the tap event.
+		//   Right before PopAsync is triggered, manually navigate back pressing the back arrow in the navigation bar
+
 		[Test]
 		public async void Issue59172Test()
 		{
