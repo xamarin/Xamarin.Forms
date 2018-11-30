@@ -1,63 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ContentPage
-	xmlns="http://xamarin.com/schemas/2014/forms"
-	xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-	x:Class="Xamarin.Forms.Controls.VisualGallery"
-	Visual="Material"
-	>
-	<ContentPage.Content>
-		<ScrollView>
-			<StackLayout Spacing="20">
-				<ProgressBar x:Name="progressBar" />
-				<Frame
-							 HasShadow="true"
-							 CornerRadius="0"
-							 Margin="10"
-							 Padding="0">
-					<StackLayout BackgroundColor="White" Padding="20,10" Spacing="20">
-						<Image Source="photo.jpg" Margin="-20,-10" Aspect="AspectFit"/>
-						<Label Text="Walk below the arches"
-									 Margin="0,10,0,0"
-									 FontSize="28"
-									 TextColor="Black" />
-						<Label Text="Discover modern interpretations of traditional architectural styles."
-									 TextColor="#666"
-									 FontSize="18"/>
-						<Button Image="bank" Text="learn more">
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Xamarin.Forms.Controls.VisualGallery"
+             Visual="Material">
 
-						</Button>
-					</StackLayout>
-				</Frame>
+    <ScrollView>
+        <StackLayout Spacing="20" Padding="10">
 
-				<FlexLayout Direction="Row" Margin="10" Wrap="Wrap" JustifyContent="SpaceBetween">
-					<Entry
-							Placeholder="Title"
-							PlaceholderColor="Green"
-							Text="Vintage Dress"
-							BackgroundColor="#ddd"
-							FlexLayout.Grow="1"
-							TextColor="Green" />
+            <ProgressBar x:Name="progressBar" Margin="-10,-10,-10,0" />
+<!--
+            <Frame BackgroundColor="White" Padding="16">
+                <StackLayout Spacing="16">
+                    <Image Source="photo.jpg"
+                           Margin="-16,-16,-16,0" Aspect="AspectFit" />
+                    <Label Text="Walk below the arches"
+                           FontSize="24" TextColor="Black" />
+                    <Label Text="Discover modern interpretations of traditional architectural styles."
+                           TextColor="#666" FontSize="14" />
+                    <Button Image="bank" Text="more" HorizontalOptions="End" />
+                </StackLayout>
+            </Frame>
+-->
+            <Frame BackgroundColor="#FFEEEE" Padding="0" HasShadow="true" CornerRadius="10" BorderColor="#FFCCCC" WidthRequest="200" HeightRequest="200">
+            </Frame>
+<!--
+            <Frame BackgroundColor="#FFEEEE" Margin="0" Padding="0" HasShadow="true" CornerRadius="10" BorderColor="#FFCCCC">
+                <StackLayout Spacing="16" Margin="0" Padding="0">
+                    <Label Text="Customized Card"
+                           FontSize="24" TextColor="Black" />
+                    <Image Source="photo.jpg"
+                           Margin="-16,0" Aspect="AspectFit" />
+                    <Label Text="This card has a few small tweaks to test whether or not changing properties is supported."
+                           TextColor="#666" FontSize="14" />
+                    <Button Image="bank" Text="more" HorizontalOptions="End" />
+                </StackLayout>
+            </Frame>
+-->
+            <Button Image="bank" Text="learn more" />
 
-					<Entry
-							Placeholder="Price"
-							PlaceholderColor="Purple"
-							Text="$10" FlexLayout.Basis="30%"
-							BackgroundColor="#ddd"
-							TextColor="Purple"/>
+            <!--
+            TODO: this text box is basically invisible
+            <Entry Placeholder="Default" HorizontalOptions="FillAndExpand" />
+            -->
 
-					<Entry
-							Placeholder="Location"
-							PlaceholderColor="Black"
-							BackgroundColor="#ddd"
-							FlexLayout.Basis="60%"
-							TextColor="Black"  />
-				</FlexLayout>
+            <FlexLayout Direction="Row" Wrap="Wrap" JustifyContent="SpaceBetween">
+                <Entry Placeholder="Title" Text="Vintage Dress"
+                       PlaceholderColor="Green" TextColor="Green" BackgroundColor="#ddd"
+                       FlexLayout.Grow="1" />
+                <Entry Placeholder="Price" Text="$10"
+                       PlaceholderColor="Purple" TextColor="Purple" BackgroundColor="#ddd"
+                       FlexLayout.Basis="30%" />
+                <Entry Placeholder="Location"
+                       PlaceholderColor="Black" TextColor="Black" BackgroundColor="#ddd"
+                       FlexLayout.Basis="60%" />
+            </FlexLayout>
 
-				<!--
-                <Button Text="Material Button" Visual="Material"/>
-                <Button Text="Any Button" />
-                -->
-			</StackLayout>
-		</ScrollView>
-	</ContentPage.Content>
+            <!--
+            <Button Text="Material Button" Visual="Material"/>
+            <Button Text="Any Button" />
+            -->
+
+        </StackLayout>
+    </ScrollView>
+
 </ContentPage>
