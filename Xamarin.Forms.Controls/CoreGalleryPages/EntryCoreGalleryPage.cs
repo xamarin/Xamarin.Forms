@@ -67,6 +67,25 @@ namespace Xamarin.Forms.Controls
 			var maxLengthContainer = new ViewContainer<Entry>(Test.Entry.MaxLength,	new Entry { MaxLength = 3 });
 
 			var readOnlyContainer = new ViewContainer<Entry>(Test.Entry.IsReadOnly, new Entry { Text = "This is read-only Entry", IsReadOnly = true });
+			var isPasswordInputScopeContainer = new ViewContainer<Entry>(Test.Entry.IsPasswordNumeric,	new Entry { Keyboard = Keyboard.Numeric });
+			var switchPasswordButton = new Button
+			{
+				Text = "Toggle IsPassword"
+			};
+			var switchNumericButton = new Button
+			{
+				Text = "Toggle numeric"
+			};
+			switchPasswordButton.Clicked += (o, a) =>
+			{
+				isPasswordInputScopeContainer.View.IsPassword = !isPasswordInputScopeContainer.View.IsPassword;
+			};
+			switchNumericButton.Clicked += (o, a) =>
+			{
+				isPasswordInputScopeContainer.View.Keyboard = isPasswordInputScopeContainer.View.Keyboard == Keyboard.Numeric ? Keyboard.Default : Keyboard.Numeric;
+			};
+			isPasswordInputScopeContainer.ContainerLayout.Children.Add(switchPasswordButton);
+			isPasswordInputScopeContainer.ContainerLayout.Children.Add(switchNumericButton);
 
 			Add (isPasswordContainer);
 			Add (completedContainer);
@@ -93,6 +112,7 @@ namespace Xamarin.Forms.Controls
 			Add (passwordColorContainer);
 			Add (maxLengthContainer);
 			Add (readOnlyContainer);
+			Add (isPasswordInputScopeContainer);
 		}
 	}
 }

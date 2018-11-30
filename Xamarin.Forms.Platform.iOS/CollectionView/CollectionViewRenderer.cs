@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Linq;
 using Foundation;
 using UIKit;
@@ -13,7 +14,6 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 	}
 
-	// TODO hartez 2018/05/30 08:58:42 This follows the same basic scheme as RecyclerView.Adapter; you should be able to reuse the same wrapper class for the IEnumerable	
 	//// TODO hartez 2018/05/30 09:05:38 Think about whether this Controller and/or the new Adapter should be internal or public
 	public class CollectionViewRenderer : ViewRenderer<CollectionView, UIView>
 	{
@@ -39,6 +39,16 @@ namespace Xamarin.Forms.Platform.iOS
 			SetUpNewElement(e.NewElement);
 			
 			base.OnElementChanged(e);
+		}
+
+		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs changedProperty)
+		{
+			base.OnElementPropertyChanged(sender, changedProperty);
+
+			if (changedProperty.Is(ItemsView.ItemsSourceProperty))
+			{
+				_collectionViewController.UpdateItemsSource();
+			}
 		}
 
 		protected virtual ItemsViewLayout SelectLayout(IItemsLayout layoutSpecification)

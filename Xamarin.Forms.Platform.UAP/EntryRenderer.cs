@@ -56,15 +56,15 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdatePlaceholder();
 				UpdateTextColor();
 				UpdateFont();
-				UpdateInputScope();
 				UpdateAlignment();
 				UpdatePlaceholderColor();
 				UpdateMaxLength();
 				UpdateDetectReadingOrderFromContent();
 				UpdateReturnType();
-                UpdateIsReadOnly();
-
-                if (_cursorPositionChangePending)
+        UpdateIsReadOnly();
+        UpdateInputScope();
+        
+        if (_cursorPositionChangePending)
 					UpdateCursorPosition();
 
 				if (_selectionLengthChangePending)
@@ -137,9 +137,9 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateCursorPosition();
 			else if (e.PropertyName == Entry.SelectionLengthProperty.PropertyName)
 				UpdateSelectionLength();
-            else if (e.PropertyName == InputView.IsReadOnlyProperty.PropertyName)
-                UpdateIsReadOnly();
-        }
+      else if (e.PropertyName == InputView.IsReadOnlyProperty.PropertyName)
+        UpdateIsReadOnly();
+    }
 
 		protected override void UpdateBackgroundColor()
 		{
@@ -427,10 +427,10 @@ namespace Xamarin.Forms.Platform.UWP
 				_nativeSelectionIsUpdating = false;
 			}
 		}
-
-        void UpdateIsReadOnly()
-        {
-            Control.IsReadOnly = Element.IsReadOnly;
-        }
+    
+    void UpdateIsReadOnly()
+    {
+      Control.IsReadOnly = Element.IsReadOnly;
+    }
     }
 }
