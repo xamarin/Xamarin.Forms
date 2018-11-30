@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using System.Xml;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
@@ -26,9 +25,9 @@ namespace Xamarin.Forms
 
 		internal static readonly ReadOnlyCollection<Element> EmptyChildren = new ReadOnlyCollection<Element>(new Element[0]);
 
-		public static readonly BindableProperty ClassIdProperty = BindableProperty.Create("ClassId", typeof(string), typeof(View), null);
+		public static readonly BindableProperty AutomationIdProperty = BindableProperty.Create(nameof(AutomationId), typeof(string), typeof(Element), null);
 
-		string _automationId;
+		public static readonly BindableProperty ClassIdProperty = BindableProperty.Create(nameof(ClassId), typeof(string), typeof(Element), null);
 
 		IList<BindableObject> _bindableResources;
 
@@ -44,18 +43,17 @@ namespace Xamarin.Forms
 
 		Element _parentOverride;
 
-		IPlatform _platform;
-
 		string _styleId;
 
 		public string AutomationId
 		{
-			get { return _automationId; }
+			get { return (string)GetValue(AutomationIdProperty); }
 			set
 			{
-				if (_automationId != null)
-					throw new InvalidOperationException("AutomationId may only be set one time");
-				_automationId = value;
+				if (AutomationId != null)
+					throw new InvalidOperationException($"{nameof(AutomationId)} may only be set one time.");
+
+				SetValue(AutomationIdProperty, value);
 			}
 		}
 
@@ -147,29 +145,6 @@ namespace Xamarin.Forms
 			}
 		}
 
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public IPlatform Platform
-		{
-			get
-			{
-				if (_platform == null && RealParent != null)
-					return RealParent.Platform;
-				return _platform;
-			}
-			set
-			{
-				if (_platform == value)
-					return;
-				_platform = value;
-				PlatformSet?.Invoke(this, EventArgs.Empty);
-				foreach (Element descendant in Descendants())
-				{
-					descendant._platform = _platform;
-					descendant.PlatformSet?.Invoke(this, EventArgs.Empty);
-				}
-			}
-		}
-
 		// you're not my real dad
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public Element RealParent { get; private set; }
@@ -215,13 +190,6 @@ namespace Xamarin.Forms
 				}
 
 				OnParentSet();
-
-				if (RealParent != null)
-				{
-					IPlatform platform = RealParent.Platform;
-					if (platform != null)
-						Platform = platform;
-				}
 
 				OnPropertyChanged();
 			}
@@ -336,8 +304,6 @@ namespace Xamarin.Forms
 		protected virtual void OnChildAdded(Element child)
 		{
 			child.Parent = this;
-			if (Platform != null)
-				child.Platform = Platform;
 
 			child.ApplyBindings(skipBindingContext: false, fromBindingContextChanged:true);
 
@@ -363,6 +329,7 @@ namespace Xamarin.Forms
 		{
 			ParentSet?.Invoke(this, EventArgs.Empty);
 			ApplyStyleSheetsOnParentSet();
+			(this as IPropertyPropagationController)?.PropagatePropertyChanged(null);
 		}
 
 		protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -496,8 +463,21 @@ namespace Xamarin.Forms
 			}
 		}
 
-		[EditorBrowsable(EditorBrowsableState.Never)]
-		public event EventHandler PlatformSet;
+		internal static void SetVisualfromParent(Element child)
+		{
+			IVisualController controller = child as IVisualController;
+			if (controller == null)
+				return;
+
+			if (controller.Visual != VisualMarker.MatchParent)
+			{
+				controller.EffectiveVisual = controller.Visual;
+				return;
+			}
+
+			if (child.Parent is IVisualController parentView)
+				controller.EffectiveVisual = parentView.EffectiveVisual;
+		}
 
 		internal virtual void SetChildInheritedBindingContext(Element child, object context)
 		{

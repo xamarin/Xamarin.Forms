@@ -33,7 +33,7 @@ namespace Xamarin.Forms.Platform.Android
 		AndroidApplicationLifecycleState _currentState;
 		ARelativeLayout _layout;
 
-		AppCompat.Platform _platform;
+		internal AppCompat.Platform Platform { get; private set; }
 
 		AndroidApplicationLifecycleState _previousState;
 
@@ -50,8 +50,6 @@ namespace Xamarin.Forms.Platform.Android
 			_currentState = AndroidApplicationLifecycleState.Uninitialized;
 			PopupManager.Subscribe(this);
 		}
-
-		IApplicationController Controller => _application;
 
 		public event EventHandler ConfigurationChanged;
 
@@ -129,11 +127,11 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (application?.MainPage != null)
 			{
-				var iver = Platform.GetRenderer(application.MainPage);
+				var iver = Android.Platform.GetRenderer(application.MainPage);
 				if (iver != null)
 				{
 					iver.Dispose();
-					application.MainPage.ClearValue(Platform.RendererProperty);
+					application.MainPage.ClearValue(Android.Platform.RendererProperty);
 				}
 			}
 
@@ -197,7 +195,7 @@ namespace Xamarin.Forms.Platform.Android
 		protected override void OnDestroy()
 		{
 			PopupManager.Unsubscribe(this);
-			_platform?.Dispose();
+			Platform?.Dispose();
 
 			// call at the end to avoid race conditions with Platform dispose
 			base.OnDestroy();
@@ -322,19 +320,18 @@ namespace Xamarin.Forms.Platform.Android
 			if (!Forms.IsInitialized)
 				throw new InvalidOperationException("Call Forms.Init (Activity, Bundle) before this");
 
-			if (_platform != null)
+			if (Platform != null)
 			{
-				_platform.SetPage(page);
+				Platform.SetPage(page);
 				return;
 			}
 
 			PopupManager.ResetBusyCount(this);
 
-			_platform = new AppCompat.Platform(this);
-			if (_application != null)
-				_application.Platform = _platform;
-			_platform.SetPage(page);
-			_layout.AddView(_platform);
+			Platform = new AppCompat.Platform(this);
+			
+			Platform.SetPage(page);
+			_layout.AddView(Platform);
 			_layout.BringToFront();
 		}
 

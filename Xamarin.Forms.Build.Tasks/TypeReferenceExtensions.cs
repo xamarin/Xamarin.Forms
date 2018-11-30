@@ -68,6 +68,15 @@ namespace Xamarin.Forms.Build.Tasks
 			var properties = typeDef.Properties.Where(predicate);
 			if (properties.Any())
 				return properties.Single();
+			if (typeDef.IsInterface) {
+				foreach (var face in typeDef.Interfaces) {
+					var p = face.InterfaceType.GetProperty(predicate, out var interfaceDeclaringTypeRef);
+					if (p != null) {
+						declaringTypeRef = interfaceDeclaringTypeRef;
+						return p;
+					}
+				}
+			}
 			if (typeDef.BaseType == null || typeDef.BaseType.FullName == "System.Object")
 				return null;
 			return typeDef.BaseType.ResolveGenericParameters(typeRef).GetProperty(predicate, out declaringTypeRef);
@@ -334,13 +343,10 @@ namespace Xamarin.Forms.Build.Tasks
 			if (genericdeclType == null)
 				return self;
 
-			if (!genericself.GenericArguments.Any(arg => arg.IsGenericParameter))
-				return self;
-
 			List<TypeReference> args = new List<TypeReference>();
 			for (var i = 0; i < genericself.GenericArguments.Count; i++) {
 				if (!genericself.GenericArguments[i].IsGenericParameter)
-					args.Add(genericself.GenericArguments[i]);
+					args.Add(genericself.GenericArguments[i].ResolveGenericParameters(declaringTypeReference));
 				else
 					args.Add(genericdeclType.GenericArguments[(genericself.GenericArguments[i] as GenericParameter).Position]);
 			}

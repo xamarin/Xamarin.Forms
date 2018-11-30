@@ -161,7 +161,7 @@ namespace Xamarin.Forms.Xaml
 
 				MethodInfo addMethod;
 				if (xpe == null && (addMethod = collection.GetType().GetRuntimeMethods().First(mi => mi.Name == "Add" && mi.GetParameters().Length == 1)) != null) {
-					addMethod.Invoke(collection, new[] { Values[node] });
+					addMethod.Invoke(collection, new[] { value });
 					return;
 				}
 				xpe = xpe ?? new XamlParseException($"Value of {parentList.XmlName.LocalName} does not have a Add() method", node);
@@ -231,10 +231,17 @@ namespace Xamarin.Forms.Xaml
 			if (serviceProvider != null && propertyName != XmlName.Empty)
 				((XamlValueTargetProvider)serviceProvider.IProvideValueTarget).TargetProperty = GetTargetProperty(source, propertyName, Context, node);
 
-			if (markupExtension != null)
-				value = markupExtension.ProvideValue(serviceProvider);
-			else if (valueProvider != null)
-				value = valueProvider.ProvideValue(serviceProvider);
+			try {
+				if (markupExtension != null)
+					value = markupExtension.ProvideValue(serviceProvider);
+				else if (valueProvider != null)
+					value = valueProvider.ProvideValue(serviceProvider);
+			} catch (Exception e) {
+				if (Context.ExceptionHandler != null)
+					Context.ExceptionHandler(e);
+				else
+					throw e;
+			}
 		}
 
 		static string GetContentPropertyName(IEnumerable<CustomAttributeData> attributes)
@@ -473,9 +480,23 @@ namespace Xamarin.Forms.Xaml
 
 			Func<MemberInfo> minforetriever;
 			if (attached)
-				minforetriever = () => property.DeclaringType.GetRuntimeMethod("Get" + property.PropertyName, new [] { typeof(BindableObject) });
+				minforetriever = () =>
+				{
+					try {
+						return property.DeclaringType.GetRuntimeMethod("Get" + property.PropertyName, new[] { typeof(BindableObject) });
+					} catch (AmbiguousMatchException e) {
+						throw new XamlParseException($"Multiple methods with name '{property.DeclaringType}.Get{property.PropertyName}' found.", lineInfo, innerException: e);
+					}
+				};
 			else
-				minforetriever = () => property.DeclaringType.GetRuntimeProperty(property.PropertyName);
+				minforetriever = () =>
+				{
+					try {
+						return property.DeclaringType.GetRuntimeProperty(property.PropertyName);
+					} catch (AmbiguousMatchException e) {
+						throw new XamlParseException($"Multiple properties with name '{property.DeclaringType}.{property.PropertyName}' found.", lineInfo, innerException: e);
+					}
+				};
 			var convertedValue = value.ConvertTo(property.ReturnType, minforetriever, serviceProvider);
 
 			if (bindable != null) {
@@ -559,7 +580,11 @@ namespace Xamarin.Forms.Xaml
 			}
 #else
 			while (elementType != null && propertyInfo == null) {
-				propertyInfo = elementType.GetProperty(localName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
+				try {
+					propertyInfo = elementType.GetProperty(localName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
+				} catch (AmbiguousMatchException e) {
+					throw new XamlParseException($"Multiple properties with name '{elementType}.{localName}' found.", lineInfo, innerException: e);
+				}
 				elementType = elementType.BaseType;
 			}
 #endif

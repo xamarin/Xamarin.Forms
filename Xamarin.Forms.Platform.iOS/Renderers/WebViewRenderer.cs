@@ -42,6 +42,7 @@ namespace Xamarin.Forms.Platform.iOS
 			WebView.EvaluateJavaScriptRequested += OnEvaluateJavaScriptRequested;
 			WebView.GoBackRequested += OnGoBackRequested;
 			WebView.GoForwardRequested += OnGoForwardRequested;
+			WebView.ReloadRequested += OnReloadRequested;
 			Delegate = new CustomWebViewDelegate(this);
 
 			BackgroundColor = UIColor.Clear;
@@ -108,6 +109,7 @@ namespace Xamarin.Forms.Platform.iOS
 				WebView.EvaluateJavaScriptRequested -= OnEvaluateJavaScriptRequested;
 				WebView.GoBackRequested -= OnGoBackRequested;
 				WebView.GoForwardRequested -= OnGoForwardRequested;
+				WebView.ReloadRequested -= OnReloadRequested;
 
 				_tracker?.Dispose();
 				_packager?.Dispose();
@@ -177,6 +179,11 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateCanGoBackForward();
 		}
 
+		void OnReloadRequested(object sender, EventArgs eventArgs)
+		{
+			Reload();
+		}
+
 		void UpdateCanGoBackForward()
 		{
 			((IWebViewController)WebView).CanGoBack = CanGoBack;
@@ -213,8 +220,12 @@ namespace Xamarin.Forms.Platform.iOS
 				if (webView.IsLoading)
 					return;
 
-				_renderer._ignoreSourceChanges = true;
 				var url = GetCurrentUrl();
+
+				if (url == $"file://{NSBundle.MainBundle.BundlePath}/")
+					return;
+
+				_renderer._ignoreSourceChanges = true;
 				WebView.SetValueFromRenderer(WebView.SourceProperty, new UrlWebViewSource { Url = url });
 				_renderer._ignoreSourceChanges = false;
 

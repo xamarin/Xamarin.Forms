@@ -154,10 +154,12 @@ namespace Xamarin.Forms.ControlGallery.iOS
 
 		public override bool FinishedLaunching(UIApplication uiApplication, NSDictionary launchOptions)
 		{
+			UISwitch.Appearance.OnTintColor = UIColor.Red;
 			var versionPart = UIDevice.CurrentDevice.SystemVersion.Split(new char[] { '.' }, StringSplitOptions.RemoveEmptyEntries);
 			App.IOSVersion = int.Parse(versionPart[0]);
 
 			Xamarin.Calabash.Start();
+			// Forms.SetFlags("CollectionView_Experimental", "Visual_Experimental", "Shell_Experimental");
 			Forms.Init();
 			FormsMaps.Init();
 			Forms.ViewInitialized += (object sender, ViewInitializedEventArgs e) =>
@@ -166,13 +168,6 @@ namespace Xamarin.Forms.ControlGallery.iOS
 				if (null != e.View.AutomationId && null != e.NativeView)
 				{
 					//	e.NativeView.AccessibilityIdentifier = e.View.StyleId;
-				}
-
-				if (e.NativeView != null)
-				{
-					var view = e.NativeView;
-					var tapGestureRecognizer = new UITapGestureRecognizer(() => Reset("")) { NumberOfTapsRequired = 5 };
-					view.AddGestureRecognizer(tapGestureRecognizer);
 				}
 			};
 

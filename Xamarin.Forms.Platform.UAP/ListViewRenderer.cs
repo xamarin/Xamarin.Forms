@@ -19,6 +19,7 @@ using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.ListView;
 using System.Collections.ObjectModel;
+using UwpScrollBarVisibility = Windows.UI.Xaml.Controls.ScrollBarVisibility;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -32,6 +33,9 @@ namespace Xamarin.Forms.Platform.UWP
 		bool _subscribedToTapped;
 		bool _disposed;
 		CollectionViewSource _collectionViewSource;
+
+		UwpScrollBarVisibility? _defaultHorizontalScrollVisibility;
+		UwpScrollBarVisibility? _defaultVerticalScrollVisibility;
 
 		protected WListView List { get; private set; }
 
@@ -64,7 +68,7 @@ namespace Xamarin.Forms.Platform.UWP
 						GroupStyleSelector = (GroupStyleSelector)WApp.Current.Resources["ListViewGroupSelector"]
 					};
 
-					List.SelectionChanged += OnControlSelectionChanged;	
+					List.SelectionChanged += OnControlSelectionChanged;
 				}
 
 				ReloadData();
@@ -78,6 +82,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateSelectionMode();
 				UpdateWindowsSpecificSelectionMode();
 				ClearSizeEstimate();
+				UpdateVerticalScrollBarVisibility();
+				UpdateHorizontalScrollBarVisibility();
 			}
 		}
 
@@ -117,7 +123,7 @@ namespace Xamarin.Forms.Platform.UWP
 				Source = _collection,
 				IsSourceGrouped = Element.IsGroupingEnabled
 			};
-			
+
 			List.ItemsSource = _collectionViewSource.View;
 		}
 
@@ -152,22 +158,34 @@ namespace Xamarin.Forms.Platform.UWP
 							_collection.RemoveAt(e.OldStartingIndex);
 						break;
 					case NotifyCollectionChangedAction.Move:
-						for (var i = 0; i < e.OldItems.Count; i++)
 						{
-							var oldi = e.OldStartingIndex;
-							var newi = e.NewStartingIndex;
-
-							if (e.NewStartingIndex < e.OldStartingIndex)
+							var collection = (ObservableCollection<object>)_collection;
+							for (var i = 0; i < e.OldItems.Count; i++)
 							{
-								oldi += i;
-								newi += i;
-							}
+								var oldi = e.OldStartingIndex;
+								var newi = e.NewStartingIndex;
 
-							// we know that wrapped collection is an ObservableCollection<object>
-							((ObservableCollection<object>)_collection).Move(oldi, newi);
+								if (e.NewStartingIndex < e.OldStartingIndex)
+								{
+									oldi += i;
+									newi += i;
+								}
+
+								collection.Move(oldi, newi);
+							}
 						}
 						break;
 					case NotifyCollectionChangedAction.Replace:
+						{
+							var collection = (ObservableCollection<object>)_collection;
+							var newi = e.NewStartingIndex;
+							for (var i = 0; i < e.NewItems.Count; i++)
+							{
+								newi += i;
+								collection[newi] = (e.NewItems[i] as BindableObject).BindingContext;
+							}
+						}
+						break;
 					case NotifyCollectionChangedAction.Reset:
 					default:
 						ClearSizeEstimate();
@@ -219,6 +237,14 @@ namespace Xamarin.Forms.Platform.UWP
 			else if (e.PropertyName == Specifics.SelectionModeProperty.PropertyName)
 			{
 				UpdateWindowsSpecificSelectionMode();
+			}
+			else if (e.PropertyName == ListView.VerticalScrollBarVisibilityProperty.PropertyName)
+			{
+				UpdateVerticalScrollBarVisibility();
+			}
+			else if (e.PropertyName == ListView.HorizontalScrollBarVisibilityProperty.PropertyName)
+			{
+				UpdateHorizontalScrollBarVisibility();
 			}
 		}
 
@@ -419,6 +445,44 @@ namespace Xamarin.Forms.Platform.UWP
 					_subscribedToItemClick = false;
 					List.ItemClick -= OnListItemClicked;
 				}
+			}
+		}
+
+		void UpdateVerticalScrollBarVisibility()
+		{
+			if (_defaultVerticalScrollVisibility == null)
+				_defaultVerticalScrollVisibility = ScrollViewer.GetVerticalScrollBarVisibility(Control);
+
+			switch (Element.VerticalScrollBarVisibility)
+			{
+				case (ScrollBarVisibility.Always):
+					ScrollViewer.SetVerticalScrollBarVisibility(Control, UwpScrollBarVisibility.Visible);
+					break;
+				case (ScrollBarVisibility.Never):
+					ScrollViewer.SetVerticalScrollBarVisibility(Control, UwpScrollBarVisibility.Hidden);
+					break;
+				case (ScrollBarVisibility.Default):
+					ScrollViewer.SetVerticalScrollBarVisibility(Control, (UwpScrollBarVisibility)_defaultVerticalScrollVisibility);
+					break;
+			}
+		}
+
+		void UpdateHorizontalScrollBarVisibility()
+		{
+			if (_defaultHorizontalScrollVisibility == null)
+				_defaultHorizontalScrollVisibility = ScrollViewer.GetHorizontalScrollBarVisibility(Control);
+
+			switch (Element.HorizontalScrollBarVisibility)
+			{
+				case (ScrollBarVisibility.Always):
+					ScrollViewer.SetHorizontalScrollBarVisibility(Control, UwpScrollBarVisibility.Visible);
+					break;
+				case (ScrollBarVisibility.Never):
+					ScrollViewer.SetHorizontalScrollBarVisibility(Control, UwpScrollBarVisibility.Hidden);
+					break;
+				case (ScrollBarVisibility.Default):
+					ScrollViewer.SetHorizontalScrollBarVisibility(Control, (UwpScrollBarVisibility)_defaultHorizontalScrollVisibility);
+					break;
 			}
 		}
 

@@ -5,9 +5,11 @@ using UIKit;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using PointF = CoreGraphics.CGPoint;
 using RectangleF = CoreGraphics.CGRect;
+using CoreGraphics;
 
 namespace Xamarin.Forms.Platform.iOS
 {
+
 	public class ScrollViewRenderer : UIScrollView, IVisualElementRenderer, IEffectControlProvider
 	{
 		EventTracker _events;
@@ -20,6 +22,8 @@ namespace Xamarin.Forms.Platform.iOS
 		VisualElementTracker _tracker;
 		bool _checkedForRtlScroll = false;
 		bool _previousLTR = true;
+
+		ShellScrollViewTracker _shellScrollTracker;
 
 		public ScrollViewRenderer() : base(RectangleF.Empty)
 		{
@@ -87,6 +91,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateVerticalScrollBarVisibility();
 				UpdateHorizontalScrollBarVisibility();
 
+				_shellScrollTracker = new ShellScrollViewTracker(this);
+
 				OnElementChanged(new VisualElementChangedEventArgs(oldElement, element));
 
 				EffectUtilities.RegisterEffectControlProvider(this, oldElement, element);
@@ -109,8 +115,12 @@ namespace Xamarin.Forms.Platform.iOS
 			get { return null; }
 		}
 
+		
+
 		public override void LayoutSubviews()
 		{
+			_shellScrollTracker.OnLayoutSubviews();
+
 			base.LayoutSubviews();
 
 			if(Superview != null)
@@ -160,7 +170,11 @@ namespace Xamarin.Forms.Platform.iOS
 				if (_packager == null)
 					return;
 
+				Element?.ClearValue(Platform.RendererProperty);
 				SetElement(null);
+
+				_shellScrollTracker.Dispose();
+				_shellScrollTracker = null;
 
 				_packager.Dispose();
 				_packager = null;
@@ -236,8 +250,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void OnNativeControlUpdated(object sender, EventArgs eventArgs)
 		{
-			ContentSize = Bounds.Size;
-			UpdateContentSize();
+			var elementContentSize = RetrieveElementContentSize();
+			ContentSize = elementContentSize.IsEmpty ? Bounds.Size : elementContentSize;
 		}
 
 		void OnScrollToRequested(object sender, ScrollToRequestedEventArgs e)
@@ -287,9 +301,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateContentSize()
 		{
-			var contentSize = ((ScrollView)Element).ContentSize.ToSizeF();
+			var contentSize = RetrieveElementContentSize();
 			if (!contentSize.IsEmpty)
 				ContentSize = contentSize;
+		}
+
+		CoreGraphics.CGSize RetrieveElementContentSize()
+		{
+			return ((ScrollView)Element).ContentSize.ToSizeF();
 		}
 
 		void UpdateScrollPosition()

@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using Xamarin.Forms.Internals;
 using UIKit;
 using PageUIStatusBarAnimation = Xamarin.Forms.PlatformConfiguration.iOSSpecific.UIStatusBarAnimation;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
@@ -17,6 +16,9 @@ namespace Xamarin.Forms.Platform.iOS
 		VisualElementTracker _tracker;
 
 		Page Page => Element as Page;
+
+		bool UsingSafeArea => (Forms.IsiOS11OrNewer) ? Page.On<PlatformConfiguration.iOS>().UsingSafeArea() : false;
+		Thickness SafeAreaInsets => Page.On<PlatformConfiguration.iOS>().SafeAreaInsets();
 
 		public PageRenderer()
 		{
@@ -63,20 +65,31 @@ namespace Xamarin.Forms.Platform.iOS
 			Element.Layout(new Rectangle(Element.X, Element.Y, size.Width, size.Height));
 		}
 
+		public override void ViewDidLayoutSubviews()
+		{
+			base.ViewDidLayoutSubviews();
+
+			if (Element.Parent is BaseShellItem)
+				Element.Layout(View.Bounds.ToRectangle());
+
+			UpdateShellInsetPadding();
+		}
+
 		public override void ViewSafeAreaInsetsDidChange()
 		{
-
+			UpdateShellInsetPadding();
 			var page = (Element as Page);
 			if (page != null && Forms.IsiOS11OrNewer)
 			{
 				var insets = NativeView.SafeAreaInsets;
-				if(page.Parent is TabbedPage)
+				if (page.Parent is TabbedPage)
 				{
 					insets.Bottom = 0;
 				}
 				page.On<PlatformConfiguration.iOS>().SetSafeAreaInsets(new Thickness(insets.Left, insets.Top, insets.Right, insets.Bottom));
-			
+
 			}
+
 			base.ViewSafeAreaInsetsDidChange();
 		}
 
@@ -90,8 +103,12 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			_appeared = true;
-			Page.SendAppearing();
 			UpdateStatusBarPrefersHidden();
+
+			if (Element.Parent is CarouselPage)
+				return;
+
+			Page.SendAppearing();
 		}
 
 		public override void ViewDidDisappear(bool animated)
@@ -102,6 +119,10 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 
 			_appeared = false;
+
+			if (Element.Parent is CarouselPage)
+				return;
+
 			Page.SendDisappearing();
 		}
 
@@ -123,7 +144,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_packager.Load();
 
 			Element.PropertyChanged += OnHandlePropertyChanged;
-			_tracker = new VisualElementTracker(this);
+			_tracker = new VisualElementTracker(this, !(Element.Parent is BaseShellItem));
 
 			_events = new EventTracker(this);
 			_events.LoadEvents(View);
@@ -195,6 +216,10 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateTitle();
 			else if (e.PropertyName == PlatformConfiguration.iOSSpecific.Page.PrefersStatusBarHiddenProperty.PropertyName)
 				UpdateStatusBarPrefersHidden();
+			else if (Forms.IsiOS11OrNewer && e.PropertyName == PlatformConfiguration.iOSSpecific.Page.UseSafeAreaProperty.PropertyName)
+				UpdateUseSafeArea();
+			else if (Forms.IsiOS11OrNewer && e.PropertyName == PlatformConfiguration.iOSSpecific.Page.SafeAreaInsetsProperty.PropertyName)
+				UpdateUseSafeArea();
 		}
 
 		public override UIKit.UIStatusBarAnimation PreferredStatusBarUpdateAnimation
@@ -212,6 +237,45 @@ namespace Xamarin.Forms.Platform.iOS
 					default:
 						return UIKit.UIStatusBarAnimation.None;
 				}
+			}
+		}
+
+		void UpdateUseSafeArea()
+		{
+			if (!Forms.IsiOS11OrNewer) return;
+
+			if (!UsingSafeArea)
+			{
+				var safeAreaInsets = SafeAreaInsets;
+				if (safeAreaInsets == Page.Padding)
+					Page.Padding = default(Thickness);
+			}
+			else
+			{
+				Page.Padding = SafeAreaInsets;
+			}
+		}
+
+		void UpdateShellInsetPadding()
+		{
+			var setInsets = Shell.GetSetPaddingInsets(Element);
+			if (setInsets)
+			{
+				nfloat topPadding = 0;
+				nfloat bottomPadding = 0;
+
+				if (Forms.IsiOS11OrNewer)
+				{
+					topPadding = View.SafeAreaInsets.Top;
+					bottomPadding = View.SafeAreaInsets.Bottom;
+				}
+				else
+				{
+					topPadding = TopLayoutGuide.Length;
+					bottomPadding = BottomLayoutGuide.Length;
+				}
+
+				(Element as Page).Padding = new Thickness(0, topPadding, 0, bottomPadding);
 			}
 		}
 
@@ -271,7 +335,7 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateTitle()
 		{
 			if (!string.IsNullOrWhiteSpace(((Page)Element).Title))
-				Title = ((Page)Element).Title;
+				NavigationItem.Title = ((Page)Element).Title;
 		}
 
 		IEnumerable<UIView> ViewAndSuperviewsOfView(UIView view)

@@ -36,6 +36,7 @@ namespace Xamarin.Forms.Platform.UWP
 		VisualElementTracker<Page, PageControl> _tracker;
 		EntranceThemeTransition _transition;
 		Platform _platform;
+		bool _parentsLookedUp = false;
 
 		Platform Platform => _platform ?? (_platform = Platform.Current);
 
@@ -201,6 +202,7 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateTitleColor();
 				UpdateNavigationBarBackground();
 				UpdateToolbarPlacement();
+				UpdateToolbarDynamicOverflowEnabled();
 				UpdateTitleIcon();
 				UpdateTitleView();
 
@@ -308,12 +310,8 @@ namespace Xamarin.Forms.Platform.UWP
 				_parentMasterDetailPage.PropertyChanged += MultiPagePropertyChanged;
 
 			UpdateShowTitle();
-
 			UpdateTitleOnParents();
-
-			UpdateTitleIcon();
-
-			UpdateTitleView();
+			_parentsLookedUp = true;
 		}
 
 		void MultiPagePropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -368,6 +366,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdatePadding();
 			else if (e.PropertyName == ToolbarPlacementProperty.PropertyName)
 				UpdateToolbarPlacement();
+			else if (e.PropertyName == ToolbarDynamicOverflowEnabledProperty.PropertyName)
+				UpdateToolbarDynamicOverflowEnabled();
 			else if (e.PropertyName == NavigationPage.TitleIconProperty.PropertyName)
 				UpdateTitleIcon();
 			else if (e.PropertyName == NavigationPage.TitleViewProperty.PropertyName)
@@ -383,6 +383,12 @@ namespace Xamarin.Forms.Platform.UWP
 			Element.SendAppearing();
 			UpdateBackButton();
 			UpdateTitleOnParents();
+
+			if (_parentMasterDetailPage != null)
+			{
+				UpdateTitleView();
+				UpdateTitleIcon();
+			}
 		}
 
 		void OnNativeSizeChanged(object sender, SizeChangedEventArgs e)
@@ -466,7 +472,6 @@ namespace Xamarin.Forms.Platform.UWP
 
 			UpdateTitleVisible();
 			UpdateTitleOnParents();
-			UpdateTitleIcon();
 			UpdateTitleView();
 
 			if (isAnimated && _transition == null)
@@ -549,13 +554,21 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateTitleView()
 		{
-			if (_currentPage == null)
+			// if the life cycle hasn't reached the point where _parentMasterDetailPage gets wired up then 
+			// don't update the title view
+			if (_currentPage == null || !_parentsLookedUp)
 				return;
 
-			_container.TitleView = TitleView;
+			// If the container TitleView gets initialized before the MDP TitleView it causes the 
+			// MDP TitleView to not render correctly
+			if (_parentMasterDetailPage != null)
+			{
+				if (Platform.GetRenderer(_parentMasterDetailPage) is ITitleViewProvider parent)
+					parent.TitleView = TitleView;
+			}
+			else if (_parentMasterDetailPage == null)
+				_container.TitleView = TitleView;
 
-			if (_parentMasterDetailPage != null && Platform.GetRenderer(_parentMasterDetailPage) is ITitleViewProvider parent)
-				parent.TitleView = TitleView;
 		}
 
 		SystemNavigationManager _navManager;
@@ -586,6 +599,17 @@ namespace Xamarin.Forms.Platform.UWP
 			_container.ToolbarPlacement = Element.OnThisPlatform().GetToolbarPlacement();
 		}
 
+		void UpdateToolbarDynamicOverflowEnabled()
+		{
+			if (_container == null)
+			{
+				return;
+			}
+
+			_container.ToolbarDynamicOverflowEnabled = Element.OnThisPlatform().GetToolbarDynamicOverflowEnabled();
+		}
+		
+
 		void UpdateShowTitle()
 		{
 			((ITitleProvider)this).ShowTitle = _parentTabbedPage == null && _parentMasterDetailPage == null;
@@ -605,6 +629,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			bool showBackButton = Element.InternalChildren.Count > 1 && NavigationPage.GetHasBackButton(_currentPage);
 			_navManager.AppViewBackButtonVisibility = showBackButton ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed;
+			_container.SetBackButtonTitle(Element);
 		}
 
 		async void UpdateTitleOnParents()

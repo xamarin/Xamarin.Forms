@@ -27,6 +27,10 @@
 	{
 	}
 
+	internal class _ImageButtonRenderer
+	{
+	}
+
 	internal class _ButtonRenderer
 	{
 	}
@@ -36,6 +40,10 @@
 	}
 
 	internal class _ListViewRenderer
+	{
+	}
+
+	internal class _CollectionViewRenderer
 	{
 	}
 

@@ -5,11 +5,10 @@ using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.SearchBar;
-using WVisualStateManager = Windows.UI.Xaml.VisualStateManager;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	public class SearchBarRenderer : ViewRenderer<SearchBar, AutoSuggestBox>
+	public class SearchBarRenderer : ViewRenderer<SearchBar, AutoSuggestBox>, ITabStopOnDescendants
 	{
 		Brush _defaultPlaceholderColorBrush;
 		Brush _defaultPlaceholderColorFocusBrush;
@@ -48,7 +47,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			base.OnElementChanged(e);
 		}
-		
+
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);

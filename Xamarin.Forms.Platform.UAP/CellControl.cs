@@ -9,6 +9,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.UWP
@@ -23,6 +24,7 @@ namespace Xamarin.Forms.Platform.UWP
 		internal static readonly BindableProperty MeasuredEstimateProperty = BindableProperty.Create("MeasuredEstimate", typeof(double), typeof(ListView), -1d);
 		readonly Lazy<ListView> _listView;
 		readonly PropertyChangedEventHandler _propertyChangedHandler;
+		Brush _defaultOnColor;
 
 		IList<MenuItem> _contextActions;
 		Windows.UI.Xaml.DataTemplate _currentTemplate;
@@ -101,6 +103,7 @@ namespace Xamarin.Forms.Platform.UWP
 			if (lv != null)
 			{
 				lv.SetValue(MeasuredEstimateProperty, result.Height);
+				SetDafaultColor();
 			}
 
 			return result;
@@ -138,6 +141,77 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateFlowDirection(Cell);
+			else if (e.PropertyName == SwitchCell.OnProperty.PropertyName ||
+				e.PropertyName == SwitchCell.OnColorProperty.PropertyName)
+			{
+				UpdateOnColor();
+			}
+		}
+
+		void UpdateOnColor()
+		{
+			if (!(Cell is SwitchCell switchCell))
+				return;
+
+			var color = switchCell.OnColor == Color.Default
+				? _defaultOnColor
+				: new SolidColorBrush(switchCell.OnColor.ToWindowsColor());
+
+			var nativeSwitch = FrameworkElementExtensions.GetFirstDescendant<ToggleSwitch>(this);
+
+			// change fill color in switch rectangle
+			var rects = nativeSwitch.GetDescendantsByName<Windows.UI.Xaml.Shapes.Rectangle>("SwitchKnobBounds");
+			foreach (var rect in rects)
+				rect.Fill = color;
+
+			// change color in animation on PointerOver
+			var grid = nativeSwitch.GetFirstDescendant<Windows.UI.Xaml.Controls.Grid>();
+			var gridVisualStateGroups = Windows.UI.Xaml.VisualStateManager.GetVisualStateGroups(grid);
+			Windows.UI.Xaml.VisualStateGroup vsGroup = null;
+			foreach (var visualGroup in gridVisualStateGroups)
+			{
+				if (visualGroup.Name == "CommonStates")
+				{
+					vsGroup = visualGroup;
+					break;
+				}
+			}
+			if (vsGroup == null)
+				return;
+
+			Windows.UI.Xaml.VisualState vState = null;
+			foreach (var visualState in vsGroup.States)
+			{
+				if (visualState.Name == "PointerOver")
+				{
+					vState = visualState;
+					break;
+				}
+			}
+			if (vState == null)
+				return;
+
+			var visualStates = vState.Storyboard.Children;
+			foreach (ObjectAnimationUsingKeyFrames item in visualStates)
+			{
+				if ((string)item.GetValue(Storyboard.TargetNameProperty) == "SwitchKnobBounds")
+				{
+					item.KeyFrames[0].Value = color;
+					break;
+				}
+			}
+		}
+
+		void SetDafaultColor()
+		{
+			if (_defaultOnColor == null && Cell is SwitchCell)
+			{
+				var nativeSwitch = FrameworkElementExtensions.GetFirstDescendant<ToggleSwitch>(this);
+				var rects = nativeSwitch.GetDescendantsByName<Windows.UI.Xaml.Shapes.Rectangle>("SwitchKnobBounds");
+				foreach (var rect in rects)
+					_defaultOnColor = rect.Fill;
+				UpdateOnColor();
+			}
 		}
 
 		void OnClick(object sender, PointerRoutedEventArgs e)
@@ -151,7 +225,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void OnContextActionsChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			var flyout = FlyoutBase.GetAttachedFlyout(CellContent) as MenuFlyout;
+			var flyout = GetAttachedFlyout();
 			if (flyout != null)
 			{
 				flyout.Items.Clear();
@@ -177,9 +251,30 @@ namespace Xamarin.Forms.Platform.UWP
 				OpenContextMenu();
 		}
 
+		/// <summary>
+		/// To check the context, not just the text.
+		/// </summary>
+		MenuFlyout GetAttachedFlyout()
+		{
+			if (FlyoutBase.GetAttachedFlyout(CellContent) is MenuFlyout flyout)
+			{
+				var actions = Cell.ContextActions;
+				if (flyout.Items.Count != actions.Count)
+					return null;
+
+				for (int i = 0; i < flyout.Items.Count; i++)
+				{
+					if (flyout.Items[i].DataContext != actions[i])
+						return null;
+				}
+				return flyout;
+			}
+			return null;
+		}
+
 		void OpenContextMenu()
 		{
-			if (FlyoutBase.GetAttachedFlyout(CellContent) == null)
+			if (GetAttachedFlyout() == null)
 			{
 				var flyout = new MenuFlyout();
 				SetupMenuItems(flyout);

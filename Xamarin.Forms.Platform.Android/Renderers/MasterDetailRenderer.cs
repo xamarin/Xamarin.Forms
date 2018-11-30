@@ -8,9 +8,11 @@ using Android.Views;
 using AView = Android.Views.View;
 using AColor = Android.Graphics.Drawables.ColorDrawable;
 using Android.OS;
+using Xamarin.Forms.Platform.Android.FastRenderers;
 
 namespace Xamarin.Forms.Platform.Android
 {
+
 	public class MasterDetailRenderer : DrawerLayout, IVisualElementRenderer, DrawerLayout.IDrawerListener
 	{
 		//from Android source code
@@ -21,6 +23,10 @@ namespace Xamarin.Forms.Platform.Android
 		MasterDetailContainer _masterLayout;
 		MasterDetailPage _page;
 		bool _presented;
+		Platform _platform;
+
+		string _defaultContentDescription;
+		string _defaultHint;
 
 		public MasterDetailRenderer(Context context) : base(context)
 		{
@@ -31,7 +37,23 @@ namespace Xamarin.Forms.Platform.Android
 		{
 		}
 
-		IMasterDetailPageController MasterDetailPageController => _page as IMasterDetailPageController;
+		Platform Platform
+		{
+			get
+			{
+				if (_platform == null)
+				{
+					if (Context is FormsApplicationActivity activity)
+					{
+						_platform = activity.Platform;
+					}
+				}
+
+				return _platform;
+			}
+		}
+
+		IMasterDetailPageController MasterDetailPageController => _page;
 
 		public bool Presented
 		{
@@ -145,8 +167,17 @@ namespace Xamarin.Forms.Platform.Android
 				element.SendViewInitialized(this);
 
 			if (element != null && !string.IsNullOrEmpty(element.AutomationId))
-				ContentDescription = element.AutomationId;
+					SetAutomationId(element.AutomationId);
+
+			SetContentDescription();
 		}
+
+		protected virtual void SetAutomationId(string id)
+		=> AutomationPropertiesProvider.SetAutomationId(this, Element, id);
+
+		protected virtual void SetContentDescription()
+			=> AutomationPropertiesProvider.SetContentDescription(this, Element, ref _defaultContentDescription, ref _defaultHint);
+
 
 		public VisualElementTracker Tracker { get; private set; }
 
@@ -244,7 +275,7 @@ namespace Xamarin.Forms.Platform.Android
 		void HandleMasterPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == Page.TitleProperty.PropertyName || e.PropertyName == Page.IconProperty.PropertyName)
-				((Platform)_page.Platform).UpdateMasterDetailToggle(true);
+				Platform?.UpdateMasterDetailToggle(true);
 		}
 
 		void HandlePropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -255,7 +286,7 @@ namespace Xamarin.Forms.Platform.Android
 			else if (e.PropertyName == "Detail")
 			{
 				UpdateDetail();
-				((Platform)_page.Platform).UpdateActionBar();
+				Platform?.UpdateActionBar();
 			}
 			else if (e.PropertyName == MasterDetailPage.IsPresentedProperty.PropertyName)
 			{
@@ -300,9 +331,7 @@ namespace Xamarin.Forms.Platform.Android
 			SetDrawerLockMode(_page.IsGestureEnabled ? LockModeUnlocked : LockModeLockedClosed);
 		}
 
-		void IVisualElementRenderer.SetLabelFor(int? id)
-		{
-		}
+		void IVisualElementRenderer.SetLabelFor(int? id) => LabelFor = id ?? LabelFor;
 
 		void SetLockMode(int lockMode)
 		{
@@ -377,7 +406,7 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					SetScrimColor(isShowingSplit ? Color.Transparent.ToAndroid() : (int)DefaultScrimColor);
 				}
-				((Platform)_page.Platform).UpdateMasterDetailToggle();
+				Platform?.UpdateMasterDetailToggle();
 			}
 		}
 	}

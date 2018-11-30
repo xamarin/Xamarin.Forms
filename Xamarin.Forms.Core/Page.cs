@@ -43,6 +43,8 @@ namespace Xamarin.Forms
 
 		ReadOnlyCollection<Element> _logicalChildren;
 
+		View _titleView;
+
 		public Page()
 		{
 			var toolbarItems = new ObservableCollection<ToolbarItem>();
@@ -214,6 +216,9 @@ namespace Xamarin.Forms
 			{
 				SetInheritedBindingContext(toolbarItem, BindingContext);
 			}
+
+			if(_titleView != null)
+				SetInheritedBindingContext(_titleView, BindingContext);
 		}
 
 		protected virtual void OnChildMeasureInvalidated(object sender, EventArgs e)
@@ -228,7 +233,7 @@ namespace Xamarin.Forms
 
 		protected override void OnParentSet()
 		{
-			if (!Application.IsApplicationOrNull(RealParent) && !(RealParent is Page))
+			if (!Application.IsApplicationOrNull(RealParent) && !(RealParent is Page) && !(RealParent is BaseShellItem))
 				throw new InvalidOperationException("Parent of a Page must also be a Page");
 			base.OnParentSet();
 		}
@@ -246,9 +251,10 @@ namespace Xamarin.Forms
 				return;
 
 			var startingLayout = new List<Rectangle>(LogicalChildren.Count);
-			foreach (VisualElement c in LogicalChildren)
+			foreach (Element el in LogicalChildren)
 			{
-				startingLayout.Add(c.Bounds);
+				if (el is VisualElement c)
+					startingLayout.Add(c.Bounds);
 			}
 
 			double x = Padding.Left;
@@ -260,12 +266,14 @@ namespace Xamarin.Forms
 
 			for (var i = 0; i < LogicalChildren.Count; i++)
 			{
-				var c = (VisualElement)LogicalChildren[i];
-
-				if (c.Bounds != startingLayout[i])
+				var element = LogicalChildren[i];
+				if (element is VisualElement c)
 				{
-					LayoutChanged?.Invoke(this, EventArgs.Empty);
-					return;
+					if (c.Bounds != startingLayout[i])
+					{
+						LayoutChanged?.Invoke(this, EventArgs.Empty);
+						return;
+					}
 				}
 			}
 		}
@@ -349,14 +357,24 @@ namespace Xamarin.Forms
 		{
 			if (e.OldItems != null)
 			{
-				foreach (VisualElement item in e.OldItems.OfType<VisualElement>())
-					OnInternalRemoved(item);
+				foreach (Element item in e.OldItems)
+				{
+					if (item is VisualElement visual)
+						OnInternalRemoved(visual);
+					else
+						OnChildRemoved(item);
+				}
 			}
 
 			if (e.NewItems != null)
 			{
-				foreach (VisualElement item in e.NewItems.OfType<VisualElement>())
-					OnInternalAdded(item);
+				foreach (Element item in e.NewItems)
+				{
+					if (item is VisualElement visual)
+						OnInternalAdded(visual);
+					else
+						OnChildAdded(item);
+				}
 			}
 		}
 
@@ -421,5 +439,23 @@ namespace Xamarin.Forms
 		{
 			return _platformConfigurationRegistry.Value.On<T>();
 		}
+
+		internal void SetTitleView(View oldTitleView, View newTitleView)
+		{
+			if (oldTitleView != null)
+				oldTitleView.Parent = null;
+
+			if (newTitleView != null)
+				newTitleView.Parent = this;
+
+			_titleView = newTitleView;
+		}
+
+		// This is a dummy property for the Previewer
+		// Platform isn't needed anymore, but the Previewer will still try to set it via reflection
+		// and throw an NRE if it's not available; this fake property keeps it happy.
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		[Obsolete("This property is no longer used as of version 3.4.")]
+		internal object Platform { get; set; }
 	}
 }

@@ -13,6 +13,32 @@ namespace Xamarin.Forms.Core.UnitTests
 			s_count++;
 		}
 
+		internal class TestSource
+		{
+			public int Count = 0;
+			public TestEventSource EventSource { get; set; }
+			public TestSource()
+			{
+				EventSource = new TestEventSource();
+				EventSource.TestEvent += EventSource_TestEvent;
+			}
+			public void Clean()
+			{
+				EventSource.TestEvent -= EventSource_TestEvent;
+			}
+
+			public void Fire()
+			{
+				EventSource.FireTestEvent();
+			}
+
+
+			void EventSource_TestEvent(object sender, EventArgs e)
+			{
+				Count++;
+			}
+		}
+
 		internal class TestEventSource
 		{
 			readonly WeakEventManager _weakEventManager;
@@ -71,6 +97,19 @@ namespace Xamarin.Forms.Core.UnitTests
 		{
 			var wem = new WeakEventManager();
 			Assert.Throws<ArgumentNullException>(() => wem.AddEventHandler(null, (sender, args) => { }));
+		}
+
+		[Test]
+		public void CanRemoveEventHandler()
+		{
+			var source = new TestSource();
+			int beforeRun = source.Count;
+			source.Fire();
+
+			Assert.IsTrue(source.Count == 1);
+			source.Clean();
+			source.Fire();
+			Assert.IsTrue(source.Count == 1);
 		}
 
 		[Test]
@@ -148,6 +187,21 @@ namespace Xamarin.Forms.Core.UnitTests
 			var wem = new WeakEventManager();
 			wem.RemoveEventHandler("fake", (sender, args) => { });
 			wem.RemoveEventHandler("alsofake", Handler);
+		}
+
+		[Test]
+		public void RemoveHandlerWithMultipleSubscriptionsRemovesOne()
+		{
+			int beforeRun = s_count;
+
+			var source = new TestEventSource();
+			source.TestEvent += Handler;
+			source.TestEvent += Handler;
+			source.TestEvent -= Handler;
+
+			source.FireTestEvent();
+
+			Assert.AreEqual (beforeRun + 1, s_count);
 		}
 
 		[Test]
