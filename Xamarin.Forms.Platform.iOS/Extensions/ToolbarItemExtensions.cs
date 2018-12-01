@@ -9,9 +9,11 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public static class ToolbarItemExtensions
 	{
-		public static UIBarButtonItem ToUIBarButtonItem(this ToolbarItem item, bool forceName = false)
+		public static UIBarButtonItem ToUIBarButtonItem(this ToolbarItem item, bool forceName = false, bool forcePrimary = false)
 		{
-			return item.Order == ToolbarItemOrder.Secondary ? new SecondaryToolbarItem(item) : (UIBarButtonItem)new PrimaryToolbarItem(item, forceName);
+			if (item.Order == ToolbarItemOrder.Secondary && !forcePrimary)
+				return new SecondaryToolbarItem(item);
+			return new PrimaryToolbarItem(item, forceName);
 		}
 
 		sealed class PrimaryToolbarItem : UIBarButtonItem
@@ -35,6 +37,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (item != null && !string.IsNullOrEmpty(item.AutomationId))
 					AccessibilityIdentifier = item.AutomationId;
+
+				this.SetAccessibilityHint(item);
+				this.SetAccessibilityLabel(item);
 			}
 
 			protected override void Dispose(bool disposing)
@@ -63,6 +68,10 @@ namespace Xamarin.Forms.Platform.iOS
 							UpdateTextAndStyle();
 					}
 				}
+				else if (e.PropertyName == AutomationProperties.HelpTextProperty.PropertyName)
+					this.SetAccessibilityHint(_item);
+				else if (e.PropertyName == AutomationProperties.NameProperty.PropertyName)
+					this.SetAccessibilityLabel(_item);
 			}
 
 			async void UpdateIconAndStyle()
@@ -102,6 +111,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (item != null && !string.IsNullOrEmpty(item.AutomationId))
 					AccessibilityIdentifier = item.AutomationId;
+
+				this.SetAccessibilityHint(item);
+				this.SetAccessibilityLabel(item);
 			}
 
 			protected override void Dispose(bool disposing)
@@ -119,6 +131,10 @@ namespace Xamarin.Forms.Platform.iOS
 					UpdateIcon();
 				else if (e.PropertyName == _item.IsEnabledPropertyName)
 					UpdateIsEnabled();
+				else if (e.PropertyName == AutomationProperties.HelpTextProperty.PropertyName)
+					this.SetAccessibilityHint(_item);
+				else if (e.PropertyName == AutomationProperties.NameProperty.PropertyName)
+					this.SetAccessibilityLabel(_item);
 			}
 
 			async void UpdateIcon()

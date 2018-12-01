@@ -12,7 +12,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
-	internal class Platform : BindableObject, IPlatform, IPlatformLayout, INavigation, IDisposable
+	internal class Platform : BindableObject, IPlatformLayout, INavigation, IDisposable
 	{
 		readonly Context _context;
 		readonly PlatformRenderer _renderer;
@@ -115,6 +115,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				}
 			}
 
+			UpdateAccessibilityImportance(CurrentPageController as Page, ImportantForAccessibility.Auto, true);
+
 			return source.Task;
 		}
 
@@ -146,14 +148,15 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		async Task INavigation.PushModalAsync(Page modal, bool animated)
 		{
 			CurrentPageController?.SendDisappearing();
+			UpdateAccessibilityImportance(CurrentPageController as Page, ImportantForAccessibility.NoHideDescendants, false);
 
 			_navModel.PushModal(modal);
-
-			modal.Platform = this;
 
 			Task presentModal = PresentModal(modal, animated);
 
 			await presentModal;
+
+			UpdateAccessibilityImportance(modal, ImportantForAccessibility.Auto, true);
 
 			// Verify that the modal is still on the stack
 			if (_navModel.CurrentPage == modal)
@@ -165,16 +168,18 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			throw new InvalidOperationException("RemovePage is not supported globally on Android, please use a NavigationPage.");
 		}
 
-		SizeRequest IPlatform.GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
+		public static SizeRequest GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
 		{
 			Performance.Start(out string reference);
 
 			// FIXME: potential crash
 			IVisualElementRenderer visualElementRenderer = Android.Platform.GetRenderer(view);
 
+			var context = visualElementRenderer.View.Context;
+
 			// negative numbers have special meanings to android they don't to us
-			widthConstraint = widthConstraint <= -1 ? double.PositiveInfinity : _context.ToPixels(widthConstraint);
-			heightConstraint = heightConstraint <= -1 ? double.PositiveInfinity : _context.ToPixels(heightConstraint);
+			widthConstraint = widthConstraint <= -1 ? double.PositiveInfinity : context.ToPixels(widthConstraint);
+			heightConstraint = heightConstraint <= -1 ? double.PositiveInfinity : context.ToPixels(heightConstraint);
 
 			bool widthConstrained = !double.IsPositiveInfinity(widthConstraint);
 			bool heightConstrained = !double.IsPositiveInfinity(heightConstraint);
@@ -190,8 +195,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			SizeRequest rawResult = visualElementRenderer.GetDesiredSize(widthMeasureSpec, heightMeasureSpec);
 			if (rawResult.Minimum == Size.Zero)
 				rawResult.Minimum = rawResult.Request;
-			var result = new SizeRequest(new Size(_context.FromPixels(rawResult.Request.Width), _context.FromPixels(rawResult.Request.Height)),
-				new Size(_context.FromPixels(rawResult.Minimum.Width), _context.FromPixels(rawResult.Minimum.Height)));
+			var result = new SizeRequest(new Size(context.FromPixels(rawResult.Request.Width), context.FromPixels(rawResult.Request.Height)),
+				new Size(context.FromPixels(rawResult.Minimum.Width), context.FromPixels(rawResult.Minimum.Height)));
 
 			if ((widthConstrained && result.Request.Width < widthConstraint)
 				|| (heightConstrained && result.Request.Height < heightConstraint))
@@ -262,6 +267,18 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			}
 		}
 
+		void UpdateAccessibilityImportance(Page page, ImportantForAccessibility importantForAccessibility, bool forceFocus)
+		{
+
+			var pageRenderer = Android.Platform.GetRenderer(page);
+			if (pageRenderer?.View == null)
+				return;
+			pageRenderer.View.ImportantForAccessibility = importantForAccessibility;
+			if (forceFocus)
+				pageRenderer.View.SendAccessibilityEvent(global::Android.Views.Accessibility.EventTypes.ViewFocused);
+			
+		}
+
 		void SetPageInternal(Page newRoot)
 		{
 			var layout = false;
@@ -291,7 +308,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			_navModel.Push(newRoot, null);
 
 			Page = newRoot;
-			Page.Platform = this;
 			AddChild(Page, layout);
 
 			Cleanup(viewsToRemove, renderersToDispose);

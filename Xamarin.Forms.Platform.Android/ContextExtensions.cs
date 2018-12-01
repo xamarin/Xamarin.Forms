@@ -23,12 +23,26 @@ namespace Xamarin.Forms.Platform.Android
 			return pixels / s_displayDensity;
 		}
 
+		[MethodImpl(MethodImplOptions.AggressiveInlining)]
+		public static Size FromPixels(this Context context, double width, double height)
+		{
+			return new Size(context.FromPixels(width), context.FromPixels(height));
+		}
+
 		public static void HideKeyboard(this Context self, global::Android.Views.View view)
 		{
 			var service = (InputMethodManager)self.GetSystemService(Context.InputMethodService);
 			// Can happen in the context of the Android Designer
 			if (service != null)
 				service.HideSoftInputFromWindow(view.WindowToken, 0);
+		}
+
+		public static void ShowKeyboard(this Context self, global::Android.Views.View view)
+		{
+			var service = (InputMethodManager)self.GetSystemService(Context.InputMethodService);
+			// Can happen in the context of the Android Designer
+			if (service != null)
+				service.ShowSoftInput(view, ShowFlags.Implicit);
 		}
 
 		[MethodImpl(MethodImplOptions.AggressiveInlining)]

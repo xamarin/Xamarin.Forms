@@ -9,7 +9,7 @@ using Xamarin.Forms.Platform.GTK.Renderers;
 
 namespace Xamarin.Forms.Platform.GTK
 {
-	public class Platform : BindableObject, IPlatform, INavigation, IDisposable
+	public class Platform : BindableObject, INavigation, IDisposable
 	{
 		private bool _disposed;
 		readonly List<Page> _modals;
@@ -58,12 +58,11 @@ namespace Xamarin.Forms.Platform.GTK
 
 			renderer = GetRenderer((VisualElement)view);
 
-			renderer?.Dispose();
-
+			(renderer as Widget)?.Destroy();
 			view.ClearValue(RendererProperty);
 		}
 
-		SizeRequest IPlatform.GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
+		public static SizeRequest GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
 		{
 			var renderView = GetRenderer(view);
 
@@ -101,16 +100,16 @@ namespace Xamarin.Forms.Platform.GTK
 				return;
 
 			_disposed = true;
-	
+
 			MessagingCenter.Unsubscribe<Page, ActionSheetArguments>(this, Page.ActionSheetSignalName);
 			MessagingCenter.Unsubscribe<Page, AlertArguments>(this, Page.AlertSignalName);
 			MessagingCenter.Unsubscribe<Page, bool>(this, Page.BusySetSignalName);
 
-			DisposeModelAndChildrenRenderers(Page);
 			foreach (var modal in _modals)
 				DisposeModelAndChildrenRenderers(modal);
+			DisposeModelAndChildrenRenderers(Page);
 
-			PlatformRenderer.Dispose();
+			PlatformRenderer.Destroy();
 		}
 
 		internal void SetPage(Page newRoot)
@@ -122,7 +121,6 @@ namespace Xamarin.Forms.Platform.GTK
 				throw new NotImplementedException();
 
 			Page = newRoot;
-			Page.Platform = this;
 
 			AddChild(Page);
 
@@ -217,7 +215,6 @@ namespace Xamarin.Forms.Platform.GTK
 		Task INavigation.PushModalAsync(Page modal, bool animated)
 		{
 			_modals.Add(modal);
-			modal.Platform = this;
 			modal.DescendantRemoved += HandleChildRemoved;
 
 			var modalRenderer = GetRenderer(modal);

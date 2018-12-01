@@ -12,7 +12,7 @@ using Windows.UI.Xaml.Input;
 
 namespace Xamarin.Forms.Platform.UWP
 {
-	public class VisualElementRenderer<TElement, TNativeElement> : Panel, IVisualElementRenderer, IDisposable, IEffectControlProvider where TElement : VisualElement
+	public class VisualElementRenderer<TElement, TNativeElement> : Panel, IVisualNativeElementRenderer, IDisposable, IEffectControlProvider where TElement : VisualElement
 																																	  where TNativeElement : FrameworkElement
 	{
 		string _defaultAutomationPropertiesName;
@@ -22,6 +22,9 @@ namespace Xamarin.Forms.Platform.UWP
 		bool _disposed;
 		FocusNavigationDirection focusDirection;
 		EventHandler<VisualElementChangedEventArgs> _elementChangedHandlers;
+		event EventHandler<PropertyChangedEventArgs> _elementPropertyChanged;
+		event EventHandler _controlChanging;
+		event EventHandler _controlChanged;
 		VisualElementTracker<TElement, TNativeElement> _tracker;
 		Windows.UI.Xaml.Controls.Page _containingPage; // Cache of containing page used for unfocusing
 		Control _control => Control as Control;
@@ -138,7 +141,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 				if (AutoTrack && Tracker == null)
 				{
-					Tracker = new VisualElementTracker<TElement, TNativeElement>();	
+					Tracker = new VisualElementTracker<TElement, TNativeElement>();
 				}
 
 				// Disabled until reason for crashes with unhandled exceptions is discovered
@@ -174,10 +177,26 @@ namespace Xamarin.Forms.Platform.UWP
 		void OnGotFocus(object sender, RoutedEventArgs e)
 		{
 			if (e.OriginalSource == Control)
-				FocusManager.TryMoveFocus(focusDirection);
+				FocusManager.TryMoveFocus(focusDirection != FocusNavigationDirection.None ? focusDirection : FocusNavigationDirection.Next);
 		}
 
 		public event EventHandler<ElementChangedEventArgs<TElement>> ElementChanged;
+		event EventHandler<PropertyChangedEventArgs> IVisualNativeElementRenderer.ElementPropertyChanged
+		{
+			add => _elementPropertyChanged += value;
+			remove => _elementPropertyChanged -= value;
+		}
+
+		event EventHandler IVisualNativeElementRenderer.ControlChanging
+		{
+			add { _controlChanging += value; }
+			remove { _controlChanging -= value; }
+		}
+		event EventHandler IVisualNativeElementRenderer.ControlChanged
+		{
+			add { _controlChanged += value; }
+			remove { _controlChanged -= value; }
+		}
 
 		protected override Windows.Foundation.Size ArrangeOverride(Windows.Foundation.Size finalSize)
 		{
@@ -347,7 +366,7 @@ namespace Xamarin.Forms.Platform.UWP
 				SetAutomationPropertiesAccessibilityView();
 			else if (e.PropertyName == AutomationProperties.LabeledByProperty.PropertyName)
 				SetAutomationPropertiesLabeledBy();
-			else if (e.PropertyName == VisualElement.InputTransparentProperty.PropertyName || 
+			else if (e.PropertyName == VisualElement.InputTransparentProperty.PropertyName ||
 					e.PropertyName == Layout.CascadeInputTransparentProperty.PropertyName)
 				UpdateInputTransparent();
 			if (e.PropertyName == Specifics.AccessKeyProperty.PropertyName ||
@@ -359,6 +378,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateTabStop();
 			else if (e.PropertyName == VisualElement.TabIndexProperty.PropertyName)
 				UpdateTabIndex();
+
+			_elementPropertyChanged?.Invoke(this, e);
 		}
 
 		protected virtual void OnRegisterEffect(PlatformEffect effect)
@@ -369,80 +390,44 @@ namespace Xamarin.Forms.Platform.UWP
 
 		protected virtual void SetAutomationId(string id)
 		{
-			SetValue(Windows.UI.Xaml.Automation.AutomationProperties.AutomationIdProperty, id);
+			this.SetAutomationPropertiesAutomationId(id);
 		}
 
 		protected virtual void SetAutomationPropertiesName()
 		{
-			if (Element == null || Control == null)
+			if (Control == null)
 				return;
 
-			if (_defaultAutomationPropertiesName == null)
-				_defaultAutomationPropertiesName = (string)Control.GetValue(Windows.UI.Xaml.Automation.AutomationProperties.NameProperty);
-
-			var elemValue = (string)Element.GetValue(AutomationProperties.NameProperty);
-
-			if (!string.IsNullOrWhiteSpace(elemValue))
-				Control.SetValue(Windows.UI.Xaml.Automation.AutomationProperties.NameProperty, elemValue);
-			else
-				Control.SetValue(Windows.UI.Xaml.Automation.AutomationProperties.NameProperty, _defaultAutomationPropertiesName);
+			_defaultAutomationPropertiesName = Control.SetAutomationPropertiesName(Element, _defaultAutomationPropertiesName);
 		}
 
 		protected virtual void SetAutomationPropertiesAccessibilityView()
 		{
-			if (Element == null || Control == null)
+			if (Control == null)
 				return;
 
-			if (!_defaultAutomationPropertiesAccessibilityView.HasValue)
-				_defaultAutomationPropertiesAccessibilityView = (AccessibilityView)Control.GetValue(Windows.UI.Xaml.Automation.AutomationProperties.AccessibilityViewProperty);
-
-			var newValue = _defaultAutomationPropertiesAccessibilityView;
-			var elemValue = (bool?)Element.GetValue(AutomationProperties.IsInAccessibleTreeProperty);
-
-			if (elemValue == true)
-				newValue = AccessibilityView.Content;
-			else if (elemValue == false)
-				newValue = AccessibilityView.Raw;
-
-			Control.SetValue(Windows.UI.Xaml.Automation.AutomationProperties.AccessibilityViewProperty, newValue);
+			_defaultAutomationPropertiesAccessibilityView = Control.SetAutomationPropertiesAccessibilityView(Element, _defaultAutomationPropertiesAccessibilityView);
 		}
 
 		protected virtual void SetAutomationPropertiesHelpText()
 		{
-			if (Element == null || Control == null)
+			if (Control == null)
 				return;
 
-			if (_defaultAutomationPropertiesHelpText == null)
-				_defaultAutomationPropertiesHelpText = (string)Control.GetValue(Windows.UI.Xaml.Automation.AutomationProperties.HelpTextProperty);
-
-			var elemValue = (string)Element.GetValue(AutomationProperties.HelpTextProperty);
-
-			if (!string.IsNullOrWhiteSpace(elemValue))
-				Control.SetValue(Windows.UI.Xaml.Automation.AutomationProperties.HelpTextProperty, elemValue);
-			else
-				Control.SetValue(Windows.UI.Xaml.Automation.AutomationProperties.HelpTextProperty, _defaultAutomationPropertiesHelpText);
+			_defaultAutomationPropertiesHelpText = Control.SetAutomationPropertiesHelpText(Element, _defaultAutomationPropertiesHelpText);
 		}
 
 		protected virtual void SetAutomationPropertiesLabeledBy()
 		{
-			if (Element == null || Control == null)
+			if (Control == null)
 				return;
 
-			if (_defaultAutomationPropertiesLabeledBy == null)
-				_defaultAutomationPropertiesLabeledBy = (UIElement)Control.GetValue(Windows.UI.Xaml.Automation.AutomationProperties.LabeledByProperty);
-
-			var elemValue = (VisualElement)Element.GetValue(AutomationProperties.LabeledByProperty);
-			var renderer = elemValue?.GetOrCreateRenderer();
-			var nativeElement = renderer?.GetNativeElement();
-
-			if (nativeElement != null)
-				Control.SetValue(Windows.UI.Xaml.Automation.AutomationProperties.LabeledByProperty, nativeElement);
-			else
-				Control.SetValue(Windows.UI.Xaml.Automation.AutomationProperties.LabeledByProperty, _defaultAutomationPropertiesLabeledBy);
+			_defaultAutomationPropertiesLabeledBy = Control.SetAutomationPropertiesLabeledBy(Element, _defaultAutomationPropertiesLabeledBy);
 		}
 
 		protected void SetNativeControl(TNativeElement control)
 		{
+			_controlChanging?.Invoke(this, EventArgs.Empty);
 			TNativeElement oldControl = Control;
 			Control = control;
 
@@ -458,7 +443,10 @@ namespace Xamarin.Forms.Platform.UWP
 			UpdateTracker();
 
 			if (control == null)
+			{
+				_controlChanged?.Invoke(this, EventArgs.Empty);
 				return;
+			}
 
 			Control.HorizontalAlignment = HorizontalAlignment.Stretch;
 			Control.VerticalAlignment = VerticalAlignment.Stretch;
@@ -478,6 +466,8 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (Element != null && !string.IsNullOrEmpty(Element.AutomationId))
 				SetAutomationId(Element.AutomationId);
+
+			_controlChanged?.Invoke(this, EventArgs.Empty);
 		}
 
 		protected virtual void UpdateBackgroundColor()
@@ -627,6 +617,19 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				RemoveBackgroundLayer();
 				IsHitTestVisible = Element.IsEnabled && !Element.InputTransparent;
+
+				if (!IsHitTestVisible)
+				{
+					return;
+				}
+
+				// If this Panel's background brush is null, the UWP considers it transparent to hit testing (even 
+				// when IsHitTestVisible is true). So we have to explicitly set a background brush to make it show up
+				// in hit testing. 
+				if (Element is Layout && Background == null)
+				{
+					Background = new SolidColorBrush(Windows.UI.Colors.Transparent);
+				}
 			}
 		}
 

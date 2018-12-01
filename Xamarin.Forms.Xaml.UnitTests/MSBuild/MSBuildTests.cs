@@ -5,12 +5,13 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
-using static Xamarin.Forms.Xaml.UnitTests.MSBuildXmlExtensions;
+using static Xamarin.Forms.MSBuild.UnitTests.MSBuildXmlExtensions;
 
-namespace Xamarin.Forms.Xaml.UnitTests
+namespace Xamarin.Forms.MSBuild.UnitTests
 {
 	//This set of tests is for validating Xamarin.Forms.targets
 	[TestFixture]
+	[Category("LongRunning")]
 	public class MSBuildTests
 	{
 		const string XamarinFormsTargets = "Xamarin.Forms.targets";
@@ -67,7 +68,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Directory.CreateDirectory (tempDirectory);
 
 			//We need to copy Xamarin.Forms.targets to the test directory, to reliably import them
-			var xamarinFormsTargets = Path.Combine (testDirectory, "..", "..", "..", ".nuspec", XamarinFormsTargets);
+			var xamarinFormsTargets = Path.Combine (testDirectory, "..", "..", "..", "..", ".nuspec", XamarinFormsTargets);
 			if (!File.Exists (xamarinFormsTargets)) {
 				//NOTE: VSTS may be running tests in a staging directory, so we can use an environment variable to find the source
 				//	https://docs.microsoft.com/en-us/vsts/build-release/concepts/definitions/build/variables?view=vsts&tabs=batch#buildsourcesdirectory
@@ -130,6 +131,8 @@ namespace Xamarin.Forms.Xaml.UnitTests
 				propertyGroup.Add (NewElement ("OutputPath").WithValue ("bin\\Debug"));
 				propertyGroup.Add (NewElement ("TargetFrameworkVersion").WithValue ("v4.7"));
 			}
+			propertyGroup.Add(NewElement("_XFBuildTasksLocation").WithValue($"{testDirectory}\\"));
+
 			project.Add (propertyGroup);
 
 			var itemGroup = NewElement ("ItemGroup");

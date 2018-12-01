@@ -17,6 +17,7 @@ using SizeF = CoreGraphics.CGSize;
 
 namespace Xamarin.Forms.Platform.iOS
 {
+
 	public class NavigationRenderer : UINavigationController, IVisualElementRenderer, IEffectControlProvider
 	{
 		internal const string UpdateToolbarButtons = "Xamarin.UpdateToolbarButtons";
@@ -321,9 +322,11 @@ namespace Xamarin.Forms.Platform.iOS
 			var task = GetAppearedOrDisappearedTask(page);
 
 			UIViewController poppedViewController;
+			_ignorePopCall = true;
 			poppedViewController = base.PopViewController(animated);
 
 			actuallyRemoved = (poppedViewController == null) ? true : !await task;
+			_ignorePopCall = false;
 
 			poppedViewController?.Dispose();
 
@@ -720,6 +723,9 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (NavPage == null)
 				return;
+			if (_ignorePopCall) 
+				return;
+			
 			_ignorePopCall = true;
 			if (Element.Navigation.NavigationStack.Contains(pageBeingRemoved))
 				await (NavPage as INavigationPageController)?.RemoveAsyncInner(pageBeingRemoved, false, true);
@@ -757,7 +763,58 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				containerController.NavigationItem.LeftBarButtonItem = new UIBarButtonItem(masterDetailPage.Master.Title, UIBarButtonItemStyle.Plain, handler);
 			}
+			if (containerController.NavigationItem.LeftBarButtonItem != null)
+			{
+				if (masterDetailPage != null && !string.IsNullOrEmpty(masterDetailPage.AutomationId))
+					SetAutomationId(containerController.NavigationItem.LeftBarButtonItem, $"btn_{masterDetailPage.AutomationId}");
+#if __MOBILE__
+				containerController.NavigationItem.LeftBarButtonItem.SetAccessibilityHint(masterDetailPage);
+				containerController.NavigationItem.LeftBarButtonItem.SetAccessibilityLabel(masterDetailPage);
+#endif
+			}
 		}
+
+		static void SetAccessibilityHint(UIBarButtonItem uIBarButtonItem, Element element)
+		{
+			if (element == null)
+				return;
+
+			if (_defaultAccessibilityHint == null)
+				_defaultAccessibilityHint = uIBarButtonItem.AccessibilityHint;
+
+			uIBarButtonItem.AccessibilityHint = (string)element.GetValue(AutomationProperties.HelpTextProperty) ?? _defaultAccessibilityHint;
+		}
+
+		static void SetAccessibilityLabel(UIBarButtonItem uIBarButtonItem, Element element)
+		{
+			if (element == null)
+				return;
+
+			if (_defaultAccessibilityLabel == null)
+				_defaultAccessibilityLabel = uIBarButtonItem.AccessibilityLabel;
+
+			uIBarButtonItem.AccessibilityLabel = (string)element.GetValue(AutomationProperties.NameProperty) ?? _defaultAccessibilityLabel;
+		}
+
+		static void SetIsAccessibilityElement(UIBarButtonItem uIBarButtonItem, Element element)
+		{
+			if (element == null)
+				return;
+
+			if (!_defaultIsAccessibilityElement.HasValue)
+				_defaultIsAccessibilityElement = uIBarButtonItem.IsAccessibilityElement;
+
+			uIBarButtonItem.IsAccessibilityElement = (bool)((bool?)element.GetValue(AutomationProperties.IsInAccessibleTreeProperty) ?? _defaultIsAccessibilityElement);
+		}
+
+		static void SetAutomationId(UIBarButtonItem uIBarButtonItem, string id)
+		{
+			uIBarButtonItem.AccessibilityIdentifier = id;
+		}
+
+		static string _defaultAccessibilityLabel;
+		static string _defaultAccessibilityHint;
+		static bool? _defaultIsAccessibilityElement;
 
 		internal void ValidateInsets()
 		{
@@ -1414,9 +1471,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (_child?.Element != null)
 				{
-					var layoutBounds = new Rectangle(IconWidth, 0, Bounds.Width - IconWidth, height);
+					Rectangle layoutBounds = new Rectangle(IconWidth, 0, Bounds.Width - IconWidth, height);
 					if (_child.Element.Bounds != layoutBounds)
 						Layout.LayoutChildIntoBoundingRegion(_child.Element, layoutBounds);
+				}
+				else if(_icon != null && Superview != null)
+				{
+					_icon.Center = new PointF(Superview.Frame.Width / 2 - Frame.X, Superview.Frame.Height / 2);
 				}
 			}
 

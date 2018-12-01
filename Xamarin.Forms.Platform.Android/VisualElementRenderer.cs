@@ -7,6 +7,7 @@ using Xamarin.Forms.Internals;
 using AView = Android.Views.View;
 using Xamarin.Forms.Platform.Android.FastRenderers;
 using Android.Runtime;
+using Android.Support.V4.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -25,7 +26,7 @@ namespace Xamarin.Forms.Platform.Android
 		VisualElementPackager _packager;
 		PropertyChangedEventHandler _propertyChangeHandler;
 
-		readonly GestureManager _gestureManager;
+		GestureManager _gestureManager;
 
 		protected VisualElementRenderer(Context context) : base(context)
 		{
@@ -148,7 +149,7 @@ namespace Xamarin.Forms.Platform.Android
 			int maxAttempts = 0;
 			var tabIndexes = element?.GetTabIndexesOnParentPage(out maxAttempts);
 			if (tabIndexes == null)
-				return null;
+				return base.FocusSearch(focused, direction);
 
 			int tabIndex = element.TabIndex;
 			AView control = null;
@@ -182,8 +183,7 @@ namespace Xamarin.Forms.Platform.Android
 			TElement oldElement = Element;
 			Element = element;
 
-			var reference = Guid.NewGuid().ToString();
-			Performance.Start(reference);
+			Performance.Start(out string reference);
 
 			if (oldElement != null)
 			{
@@ -251,6 +251,8 @@ namespace Xamarin.Forms.Platform.Android
 				SetOnClickListener(null);
 				SetOnTouchListener(null);
 
+				EffectUtilities.UnregisterEffectControlProvider(this, Element);
+
 				if (Tracker != null)
 				{
 					Tracker.Dispose();
@@ -261,6 +263,12 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					_packager.Dispose();
 					_packager = null;
+				}
+
+				if (_gestureManager != null)
+				{
+					_gestureManager.Dispose();
+					_gestureManager = null;
 				}
 
 				if (ManageNativeControlLifetime)
@@ -405,6 +413,6 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		void IVisualElementRenderer.SetLabelFor(int? id)
-			=> LabelFor = id ?? LabelFor;
+			=> ViewCompat.SetLabelFor(this, id ?? ViewCompat.GetLabelFor(this));
 	}
 }

@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -106,17 +108,26 @@ namespace Xamarin.Forms.Controls
 		{
 			var layout = new StackLayout { BackgroundColor = Color.Red };
 			layout.Children.Add(new Label { Text = "This is master Page" });
-			var master = new ContentPage { Title = "Master", Content = layout, BackgroundColor = Color.SkyBlue };
+			var master = new ContentPage { Title = "Master", Content = layout, BackgroundColor = Color.SkyBlue, Icon ="menuIcon" };
 			master.On<iOS>().SetUseSafeArea(true);
-			return new MasterDetailPage
+			var mdp = new MasterDetailPage
 			{
 				AutomationId = DefaultMainPageId,
 				Master = master,
 				Detail = CoreGallery.GetMainPage()
 			};
-		}
+			master.Icon.AutomationId = "btnMDPAutomationID";
+			mdp.SetAutomationPropertiesName("Main page");
+			mdp.SetAutomationPropertiesHelpText("Main page help text");
+			mdp.Master.Icon.SetAutomationPropertiesHelpText("This as MDP icon");
+			mdp.Master.Icon.SetAutomationPropertiesName("MDPICON");
+			return mdp;
 
-		protected override void OnAppLinkRequestReceived(Uri uri)
+			//Device.SetFlags(new[] { "Shell_Experimental" });
+            //return new XamStore.StoreShell();
+        }
+
+        protected override void OnAppLinkRequestReceived(Uri uri)
 		{
 			var appDomain = "http://" + AppName.ToLowerInvariant() + "/";
 

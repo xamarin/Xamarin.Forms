@@ -41,6 +41,7 @@ using UIKit;
 [assembly: ExportRenderer(typeof(Frame), typeof(FrameRenderer))]
 [assembly: ExportRenderer(typeof(NavigationMenu), typeof(NavigationMenuRenderer))]
 [assembly: ExportRenderer(typeof(ListView), typeof(ListViewRenderer))]
+[assembly: ExportRenderer (typeof (CollectionView), typeof (CollectionViewRenderer))]
 [assembly: ExportRenderer(typeof(OpenGLView), typeof(OpenGLViewRenderer))]
 [assembly: ExportRenderer(typeof(TabbedPage), typeof(TabbedRenderer))]
 [assembly: ExportRenderer(typeof(NavigationPage), typeof(NavigationRenderer))]
@@ -51,7 +52,7 @@ using UIKit;
 
 [assembly: ExportRenderer(typeof(MasterDetailPage), typeof(TabletMasterDetailRenderer), UIUserInterfaceIdiom.Pad)]
 [assembly: ExportRenderer(typeof(NativeViewWrapper), typeof(NativeViewWrapperRenderer))]
-
+[assembly: ExportRenderer(typeof(Shell), typeof(ShellRenderer))]
 [assembly: ExportCell(typeof(Cell), typeof(CellRenderer))]
 [assembly: ExportCell(typeof(ImageCell), typeof(ImageCellRenderer))]
 [assembly: ExportCell(typeof(EntryCell), typeof(EntryCellRenderer))]

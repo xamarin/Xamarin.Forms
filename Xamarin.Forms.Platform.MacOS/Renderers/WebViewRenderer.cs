@@ -87,6 +87,7 @@ namespace Xamarin.Forms.Platform.MacOS
 					Element.EvaluateJavaScriptRequested += OnEvaluateJavaScriptRequested;
 					Element.GoBackRequested += OnGoBackRequested;
 					Element.GoForwardRequested += OnGoForwardRequested;
+					Element.ReloadRequested += OnReloadRequested;
 
 					Control.FrameLoadDelegate = new FormsWebFrameDelegate(this);
 					Control.PolicyDelegate = this;
@@ -114,6 +115,13 @@ namespace Xamarin.Forms.Platform.MacOS
 				Element.EvaluateJavaScriptRequested -= OnEvaluateJavaScriptRequested;
 				Element.GoBackRequested -= OnGoBackRequested;
 				Element.GoForwardRequested -= OnGoForwardRequested;
+				Element.ReloadRequested -= OnReloadRequested;
+
+				if (Control?.FrameLoadDelegate is FormsWebFrameDelegate frameDelegate)
+					frameDelegate.Renderer = null;
+
+				Control.FrameLoadDelegate = null;
+				Control.PolicyDelegate = null;
 			}
 			base.Dispose(disposing);
 		}
@@ -175,40 +183,48 @@ namespace Xamarin.Forms.Platform.MacOS
 			UpdateCanGoBackForward();
 		}
 
+		void OnReloadRequested(object sender, EventArgs eventArgs)
+		{
+			Control.Reload(this);
+		}
+
 		internal class FormsWebFrameDelegate : WebKit.WebFrameLoadDelegate
 		{
-			WebViewRenderer _renderer;
+			internal WebViewRenderer Renderer { private get; set; }
 			internal FormsWebFrameDelegate(WebViewRenderer renderer)
 			{
-				_renderer = renderer;
+				Renderer = renderer;
 			}
 
 			public override void FinishedLoad(WebKit.WebView sender, WebFrame forFrame)
 			{
-				_renderer._sentNavigating = false;
+				Renderer._sentNavigating = false;
 				
-				if (_renderer.Control.IsLoading)
+				if (Renderer.Control.IsLoading)
 					return;
 
-				_renderer._ignoreSourceChanges = true;
-				_renderer.Element?.SetValueFromRenderer(WebView.SourceProperty, new UrlWebViewSource { Url = _renderer.Control.MainFrameUrl });
-				_renderer._ignoreSourceChanges = false;
+				if (Renderer.Control.MainFrameUrl == $"file://{NSBundle.MainBundle.BundlePath}/")
+					return;
 
-				_renderer._lastEvent = _renderer._lastBackForwardEvent;
-				_renderer.Element?.SendNavigated(new WebNavigatedEventArgs(_renderer._lastEvent, _renderer.Element?.Source, _renderer.Control.MainFrameUrl, WebNavigationResult.Success));
+				Renderer._ignoreSourceChanges = true;
+				Renderer.Element?.SetValueFromRenderer(WebView.SourceProperty, new UrlWebViewSource { Url = Renderer.Control.MainFrameUrl });
+				Renderer._ignoreSourceChanges = false;
 
-				_renderer.UpdateCanGoBackForward();
+				Renderer._lastEvent = Renderer._lastBackForwardEvent;
+				Renderer.Element?.SendNavigated(new WebNavigatedEventArgs(Renderer._lastEvent, Renderer.Element?.Source, Renderer.Control.MainFrameUrl, WebNavigationResult.Success));
+
+				Renderer.UpdateCanGoBackForward();
 			}
 
 			public override void FailedLoadWithError(WebKit.WebView sender, NSError error, WebFrame forFrame)
 			{
-				_renderer._sentNavigating = false;
+				Renderer._sentNavigating = false;
 				
-				_renderer._lastEvent = _renderer._lastBackForwardEvent;
+				Renderer._lastEvent = Renderer._lastBackForwardEvent;
 
-				_renderer.Element?.SendNavigated(new WebNavigatedEventArgs(_renderer._lastEvent, new UrlWebViewSource { Url = _renderer.Control.MainFrameUrl }, _renderer.Control.MainFrameUrl, WebNavigationResult.Failure));
+				Renderer.Element?.SendNavigated(new WebNavigatedEventArgs(Renderer._lastEvent, new UrlWebViewSource { Url = Renderer.Control.MainFrameUrl }, Renderer.Control.MainFrameUrl, WebNavigationResult.Failure));
 
-				_renderer.UpdateCanGoBackForward();
+				Renderer.UpdateCanGoBackForward();
 			}
 		}
 	}

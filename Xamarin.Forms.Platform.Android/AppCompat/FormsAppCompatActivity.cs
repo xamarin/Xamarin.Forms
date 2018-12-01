@@ -51,8 +51,6 @@ namespace Xamarin.Forms.Platform.Android
 			PopupManager.Subscribe(this);
 		}
 
-		IApplicationController Controller => _application;
-
 		public event EventHandler ConfigurationChanged;
 
 		public override void OnBackPressed()
@@ -331,8 +329,7 @@ namespace Xamarin.Forms.Platform.Android
 			PopupManager.ResetBusyCount(this);
 
 			Platform = new AppCompat.Platform(this);
-			if (_application != null)
-				_application.Platform = Platform;
+			
 			Platform.SetPage(page);
 			_layout.AddView(Platform);
 			_layout.BringToFront();
