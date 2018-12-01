@@ -154,6 +154,7 @@
     <Compile Include="PageExtensions.cs" />
     <Compile Include="Renderers\IAccessibilityElementsController.cs" />
     <Compile Include="Renderers\PageContainer.cs" />
+    <Compile Include="Renderers\CheckBoxRenderer.cs" />
     <Compile Include="Renderers\WkWebViewRenderer.cs" />
     <Compile Include="Renderers\ElementSelectedEventArgs.cs" />
     <Compile Include="Renderers\IShellContext.cs" />
