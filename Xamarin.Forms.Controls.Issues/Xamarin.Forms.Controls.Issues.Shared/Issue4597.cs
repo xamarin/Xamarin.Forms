@@ -111,15 +111,25 @@ namespace Xamarin.Forms.Controls.Issues
 			var elementsBefore = RunningApp.WaitForElement("coffee");
 			var imageCell = RunningApp.Query(app => app.Marked(_theListView).Descendant()).Where(x => x.Class.Contains("Image")).FirstOrDefault();
 
+#if __IOS__
+			Assert.AreEqual(4, elementsBefore.Where(x=> x.Class.Contains("Image")).Count());
+#else
 			Assert.AreEqual(3, elementsBefore.Length);
+#endif
+
 			Assert.IsNotNull(imageCell);
 
 			RunningApp.Tap("ClickMe");
 			var elementsAfter = RunningApp.WaitForElement("coffee");
 			var imageCellAfter = RunningApp.Query(app => app.Marked(_theListView).Descendant()).Where(x => x.Class.Contains("Image")).FirstOrDefault();
 			Assert.IsNull(imageCellAfter);
+#if __IOS__
+			Assert.AreEqual(0, elementsAfter.Where(x => x.Class.Contains("Image")).Count());
+#else
 			Assert.AreEqual(2, elementsAfter.Length);
+#endif
 
+#if __ANDROID__
 			foreach(var newElement in elementsAfter)
 			{
 				foreach(var oldElement in elementsBefore)
@@ -131,7 +141,9 @@ namespace Xamarin.Forms.Controls.Issues
 					}
 				}
 			}
+#endif
+
 		}
 #endif
-	}
+		}
 }
