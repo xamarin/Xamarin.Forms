@@ -182,6 +182,10 @@ namespace Xamarin.Forms.Platform.iOS
 					return;
 
 				_isEnabled = value;
+
+				Alpha = IsEnabled ? 1.0f : 0.6f;
+				UserInteractionEnabled = IsEnabled;
+
 				SetNeedsDisplay();
 			}
 		}
@@ -227,8 +231,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void Draw(CGRect rect)
 		{
 			//base.Draw(rect);
-
-			BackgroundColor = UIColor.Clear;
+			
 			FillColor.SetFill();
 			BorderColor.SetStroke();
 
@@ -254,20 +257,7 @@ namespace Xamarin.Forms.Platform.iOS
 				checkPath.AddLineTo(new CGPoint(width / 5, height / 2));
 				CheckColor.SetStroke();
 				checkPath.Stroke();
-			}
-
-			if(IsEnabled)
-			{
-				Alpha = 1.0f;
-				UserInteractionEnabled = true;
-			}
-			else
-			{
-				Alpha = 0.6f;
-				UserInteractionEnabled = false;
-			}
-
-			SetNeedsDisplay();
+			}			
 		}
 
 		public override bool BeginTracking(UITouch uitouch, UIEvent uievent)
