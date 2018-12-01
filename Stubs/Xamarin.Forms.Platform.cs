@@ -105,7 +105,7 @@ namespace Xamarin.Forms.Platform
 	[RenderWith (typeof (FrameRenderer))]
 	internal class _FrameRenderer { }
 
-#if __ANDROID__
+#if __ANDROID__ || __IOS__
 	[RenderWith(typeof(CheckBoxRenderer))]
 	internal class _CheckBoxRenderer { }
 #endif
