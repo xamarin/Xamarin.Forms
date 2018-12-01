@@ -125,8 +125,6 @@ namespace Xamarin.Forms.Controls.Issues
 			Assert.IsNull(imageCellAfter);
 #if __IOS__
 			Assert.AreEqual(0, elementsAfter.Where(x => x.Class.Contains("Image")).Count());
-#else
-			Assert.AreEqual(2, elementsAfter.Length);
 #endif
 
 #if __ANDROID__
