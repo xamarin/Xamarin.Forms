@@ -29,8 +29,11 @@ using Xamarin.Forms.Platform.Android;
 [assembly: ExportRenderer (typeof (Label), typeof (LabelRenderer))]
 [assembly: ExportRenderer (typeof (Image), typeof (ImageRenderer))]
 [assembly: ExportRenderer (typeof (Button), typeof (ButtonRenderer))]
+[assembly: ExportRenderer (typeof (ImageButton), typeof (ImageButtonRenderer))]
 [assembly: ExportRenderer (typeof (TableView), typeof (TableViewRenderer))]
 [assembly: ExportRenderer (typeof (ListView), typeof (ListViewRenderer))]
+[assembly: ExportRenderer (typeof (CollectionView), typeof (CollectionViewRenderer))]
+[assembly: ExportRenderer (typeof (CarouselView), typeof (CarouselViewRenderer))]
 [assembly: ExportRenderer (typeof (Slider), typeof (SliderRenderer))]
 [assembly: ExportRenderer (typeof (WebView), typeof (WebViewRenderer))]
 [assembly: ExportRenderer (typeof (SearchBar), typeof (SearchBarRenderer))]
@@ -52,6 +55,8 @@ using Xamarin.Forms.Platform.Android;
 [assembly: ExportRenderer (typeof (Page), typeof (PageRenderer))]
 [assembly: ExportRenderer (typeof (MasterDetailPage), typeof (MasterDetailRenderer))]
 #endif
+
+[assembly: ExportRenderer(typeof(Shell), typeof(ShellRenderer))]
 
 [assembly: ExportRenderer(typeof(NativeViewWrapper), typeof(NativeViewWrapperRenderer))]
 [assembly: ExportCell(typeof(Cell), typeof(CellRenderer))]

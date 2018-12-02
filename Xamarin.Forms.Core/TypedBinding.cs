@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Collections.Generic;
 using Xamarin.Forms.Internals;
+using System.Reflection;
 
 namespace Xamarin.Forms.Internals
 {
@@ -147,11 +148,7 @@ namespace Xamarin.Forms.Internals
 			if (Converter != null)
 				value = Converter.Convert(value, targetPropertyType, ConverterParameter, CultureInfo.CurrentUICulture);
 
-			//return base.GetSourceValue(value, targetPropertyType);
-			if (StringFormat != null)
-				return string.Format(StringFormat, value);
-
-			return value;
+			return base.GetSourceValue(value, targetPropertyType);
 		}
 
 		internal override object GetTargetValue(object value, Type sourcePropertyType)
@@ -196,14 +193,14 @@ namespace Xamarin.Forms.Internals
 				Subscribe((TSource)sourceObject);
 
 			if (needsGetter) {
-				var value = FallbackValue ?? property.DefaultValue;
+				var value = FallbackValue ?? property.GetDefaultValue(target);
 				if (isTSource) {
 					try {
 						value = GetSourceValue(_getter((TSource)sourceObject), property.ReturnType);
-					} catch (Exception ex) when (ex is NullReferenceException || ex is KeyNotFoundException) {
+					} catch (Exception ex) when (ex is NullReferenceException || ex is KeyNotFoundException || ex is IndexOutOfRangeException) {
 					}
 				}
-				if (!TryConvert(ref value, property, property.ReturnType, true)) {
+				if (!BindingExpression.TryConvert(ref value, property, property.ReturnType, true)) {
 					Log.Warning("Binding", "{0} can not be converted to type '{1}'", value, property.ReturnType);
 					return;
 				}
@@ -214,28 +211,11 @@ namespace Xamarin.Forms.Internals
 			var needsSetter = (mode == BindingMode.TwoWay && fromTarget) || mode == BindingMode.OneWayToSource;
 			if (needsSetter && _setter != null && isTSource) {
 				var value = GetTargetValue(target.GetValue(property), typeof(TProperty));
-				if (!TryConvert(ref value, property, typeof(TProperty), false)) {
+				if (!BindingExpression.TryConvert(ref value, property, typeof(TProperty), false)) {
 					Log.Warning("Binding", "{0} can not be converted to type '{1}'", value, typeof(TProperty));
 					return;
 				}
 				_setter((TSource)sourceObject, (TProperty)value);
-			}
-		}
-
-		static bool TryConvert(ref object value, BindableProperty targetProperty, Type convertTo, bool toTarget)
-		{
-			if (value == null)
-				return true;
-			if ((toTarget && targetProperty.TryConvert(ref value)) || (!toTarget && convertTo.IsInstanceOfType(value)))
-				return true;
-
-			object original = value;
-			try {
-				value = Convert.ChangeType(value, convertTo, CultureInfo.InvariantCulture);
-				return true;
-			} catch (Exception ex ) when (ex is InvalidCastException || ex is FormatException||ex is OverflowException) {
-				value = original;
-				return false;
 			}
 		}
 

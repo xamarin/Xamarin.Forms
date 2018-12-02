@@ -118,10 +118,14 @@ namespace Xamarin.Forms
 				// Naive implementation can easily take over a second to run
 				foreach (Assembly assembly in assemblies)
 				{
-					Attribute[] attributes;
+					object[] attributes;
 					try
 					{
+#if NETSTANDARD2_0
+						attributes = assembly.GetCustomAttributes(targetAttrType, true);
+#else
 						attributes = assembly.GetCustomAttributes(targetAttrType).ToArray();
+#endif
 					}
 					catch (System.IO.FileNotFoundException)
 					{
@@ -130,7 +134,8 @@ namespace Xamarin.Forms
 						continue;
 					}
 
-					if (attributes.Length == 0)
+					var length = attributes.Length;
+					if (length == 0)
 						continue;
 
 					foreach (DependencyAttribute attribute in attributes)
