@@ -138,8 +138,9 @@ namespace Xamarin.Forms
 					if (length == 0)
 						continue;
 
-					foreach (DependencyAttribute attribute in attributes)
+					for (int i = 0; i < length; i++)
 					{
+						DependencyAttribute attribute = (DependencyAttribute)attributes[i];
 						if (!DependencyTypes.Contains(attribute.Implementor))
 						{
 							DependencyTypes.Add(attribute.Implementor);
