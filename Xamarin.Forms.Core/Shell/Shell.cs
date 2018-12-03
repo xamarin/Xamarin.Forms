@@ -402,32 +402,31 @@ namespace Xamarin.Forms
 				prefix = route + ".";
 			}
 
-			var type = element.GetType();
-			var typeInfo = type.GetTypeInfo();
-#if NETSTANDARD1_0
-			var effectAttributes = typeInfo.GetCustomAttributes(typeof(QueryPropertyAttribute), true).ToArray();
-#else
-			var effectAttributes = typeInfo.GetCustomAttributes(typeof(QueryPropertyAttribute), true);
-#endif
+			//if the lastItem is implicitly wrapped, get the actual ShellContent
+			if (isLastItem) {
+				if (element is ShellItem shellitem && shellitem.Items.FirstOrDefault() is ShellSection section)
+					element = section;
+				if (element is ShellSection shellsection && shellsection.Items.FirstOrDefault() is ShellContent content)
+					element = content;
+				if (element is ShellContent shellcontent && shellcontent.Content is Element e)
+					element = e;
+			}
 
-			if (effectAttributes.Length == 0)
+			if (!(element is BaseShellItem baseShellItem))
 				return;
 
-			foreach (var a in effectAttributes)
-			{
-				if (a is QueryPropertyAttribute attrib)
-				{
-					if (query.TryGetValue(prefix + attrib.QueryId, out var value))
-					{
-						PropertyInfo prop = type.GetRuntimeProperty(attrib.Name);
-
-						if (prop != null && prop.CanWrite && prop.SetMethod.IsPublic)
-						{
-							prop.SetValue(element, value);
-						}
-					}
-				}
+			//filter the query to only apply the keys with matching prefix
+			var filteredQuery = new Dictionary<string, string>(query.Count);
+			foreach (var q in query) {
+				if (!q.Key.StartsWith(prefix, StringComparison.Ordinal))
+					continue;
+				var key = q.Key.Substring(prefix.Length);
+				if (key.Contains('.'))
+					continue;
+				filteredQuery.Add(key, q.Value);
 			}
+
+			baseShellItem.ApplyQueryAttributes(filteredQuery);
 		}
 
 		static string GenerateQueryString(Dictionary<string, string> queryData)
@@ -450,41 +449,41 @@ namespace Xamarin.Forms
 
 		static void GetQueryStringData(Element element, bool isLastItem, Dictionary<string, string> result)
 		{
-			string prefix = string.Empty;
-			if (!isLastItem)
-			{
-				var route = Routing.GetRoute(element);
-				if (string.IsNullOrEmpty(route) || route.StartsWith(Routing.ImplicitPrefix, StringComparison.Ordinal))
-					return;
-				prefix = route + ".";
-			}
+//			string prefix = string.Empty;
+//			if (!isLastItem)
+//			{
+//				var route = Routing.GetRoute(element);
+//				if (string.IsNullOrEmpty(route) || route.StartsWith(Routing.ImplicitPrefix, StringComparison.Ordinal))
+//					return;
+//				prefix = route + ".";
+//			}
 
-			var type = element.GetType();
-			var typeInfo = type.GetTypeInfo();
+//			var type = element.GetType();
+//			var typeInfo = type.GetTypeInfo();
 
-#if NETSTANDARD1_0
-			var effectAttributes = typeInfo.GetCustomAttributes(typeof(QueryPropertyAttribute), true).ToArray();
-#else
-			var effectAttributes = type.GetCustomAttributes(typeof(QueryPropertyAttribute), true);
-#endif
+//#if NETSTANDARD1_0
+//			var effectAttributes = typeInfo.GetCustomAttributes(typeof(QueryPropertyAttribute), true).ToArray();
+//#else
+//			var effectAttributes = type.GetCustomAttributes(typeof(QueryPropertyAttribute), true);
+//#endif
 
-			if (effectAttributes.Length == 0)
-				return;
+			//if (effectAttributes.Length == 0)
+			//	return;
 
-			for (int i = 0; i < effectAttributes.Length; i++)
-			{
-				if (effectAttributes[i] is QueryPropertyAttribute attrib)
-				{
-					PropertyInfo prop = type.GetRuntimeProperty(attrib.Name);
+			//for (int i = 0; i < effectAttributes.Length; i++)
+			//{
+			//	if (effectAttributes[i] is QueryPropertyAttribute attrib)
+			//	{
+			//		PropertyInfo prop = type.GetRuntimeProperty(attrib.Name);
 
-					if (prop != null && prop.CanRead && prop.GetMethod.IsPublic)
-					{
-						var val = (string)prop.GetValue(element);
-						var key = isLastItem ? prefix + attrib.QueryId : attrib.QueryId;
-						result[key] = val;
-					}
-				}
-			}
+			//		if (prop != null && prop.CanRead && prop.GetMethod.IsPublic)
+			//		{
+			//			var val = (string)prop.GetValue(element);
+			//			var key = isLastItem ? prefix + attrib.QueryId : attrib.QueryId;
+			//			result[key] = val;
+			//		}
+			//	}
+			//}
 		}
 
 		ShellNavigationState GetNavigationState(ShellItem shellItem, ShellSection shellSection, ShellContent shellContent, IReadOnlyList<Page> sectionStack)
