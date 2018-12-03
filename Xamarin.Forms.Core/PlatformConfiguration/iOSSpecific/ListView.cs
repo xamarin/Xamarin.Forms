@@ -37,7 +37,6 @@
 		public static void SetGroupHeaderStyle(BindableObject element, GroupHeaderStyle value)
 		{
 			element.SetValue(GroupHeaderStyleProperty, value);
-			var v = (GroupHeaderStyle)element.GetValue(GroupHeaderStyleProperty);
 		}
 
 		public static GroupHeaderStyle GetGroupHeaderStyle(this IPlatformElementConfiguration<iOS, FormsElement> config)
