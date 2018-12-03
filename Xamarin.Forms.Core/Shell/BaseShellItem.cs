@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Reflection;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
@@ -112,7 +110,7 @@ namespace Xamarin.Forms
 		}
 	}
 
-	public interface IQuerryAttributable
+	public interface IQueryAttributable
 	{
 		void ApplyQueryAttributes(IDictionary<string, string> query);
 	}

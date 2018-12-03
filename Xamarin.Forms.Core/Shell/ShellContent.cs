@@ -170,7 +170,7 @@ namespace Xamarin.Forms
 
 		static void ApplyQueryAttributes(object content, IDictionary<string, string> query)
 		{
-			if (content is IQuerryAttributable attributable)
+			if (content is IQueryAttributable attributable)
 				attributable.ApplyQueryAttributes(query);
 
 			if (content is BindableObject bindable && bindable.BindingContext != null)

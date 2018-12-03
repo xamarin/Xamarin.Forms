@@ -429,71 +429,12 @@ namespace Xamarin.Forms
 			baseShellItem.ApplyQueryAttributes(filteredQuery);
 		}
 
-		static string GenerateQueryString(Dictionary<string, string> queryData)
-		{
-			if (queryData.Count == 0)
-				return string.Empty;
-			string result = "?";
-
-			bool addAnd = false;
-			foreach (var kvp in queryData)
-			{
-				if (addAnd)
-					result += "&";
-				result += kvp.Key + "=" + kvp.Value;
-				addAnd = true;
-			}
-
-			return result;
-		}
-
-		static void GetQueryStringData(Element element, bool isLastItem, Dictionary<string, string> result)
-		{
-//			string prefix = string.Empty;
-//			if (!isLastItem)
-//			{
-//				var route = Routing.GetRoute(element);
-//				if (string.IsNullOrEmpty(route) || route.StartsWith(Routing.ImplicitPrefix, StringComparison.Ordinal))
-//					return;
-//				prefix = route + ".";
-//			}
-
-//			var type = element.GetType();
-//			var typeInfo = type.GetTypeInfo();
-
-//#if NETSTANDARD1_0
-//			var effectAttributes = typeInfo.GetCustomAttributes(typeof(QueryPropertyAttribute), true).ToArray();
-//#else
-//			var effectAttributes = type.GetCustomAttributes(typeof(QueryPropertyAttribute), true);
-//#endif
-
-			//if (effectAttributes.Length == 0)
-			//	return;
-
-			//for (int i = 0; i < effectAttributes.Length; i++)
-			//{
-			//	if (effectAttributes[i] is QueryPropertyAttribute attrib)
-			//	{
-			//		PropertyInfo prop = type.GetRuntimeProperty(attrib.Name);
-
-			//		if (prop != null && prop.CanRead && prop.GetMethod.IsPublic)
-			//		{
-			//			var val = (string)prop.GetValue(element);
-			//			var key = isLastItem ? prefix + attrib.QueryId : attrib.QueryId;
-			//			result[key] = val;
-			//		}
-			//	}
-			//}
-		}
-
 		ShellNavigationState GetNavigationState(ShellItem shellItem, ShellSection shellSection, ShellContent shellContent, IReadOnlyList<Page> sectionStack)
 		{
 			StringBuilder stateBuilder = new StringBuilder($"{RouteScheme}://{RouteHost}/{Route}/");
 			Dictionary<string, string> queryData = new Dictionary<string, string>();
 
 			bool stackAtRoot = sectionStack == null || sectionStack.Count <= 1;
-
-			GetQueryStringData(this, false, queryData);
 
 			if (shellItem != null)
 			{
@@ -504,8 +445,6 @@ namespace Xamarin.Forms
 					stateBuilder.Append("/");
 				}
 
-				GetQueryStringData(shellItem, shellSection == null, queryData);
-
 				if (shellSection != null)
 				{
 					var shellSectionRoute = shellSection.Route;
@@ -515,8 +454,6 @@ namespace Xamarin.Forms
 						stateBuilder.Append("/");
 					}
 
-					GetQueryStringData(shellSection, shellContent == null && stackAtRoot, queryData);
-
 					if (shellContent != null)
 					{
 						var shellContentRoute = shellContent.Route;
@@ -525,8 +462,6 @@ namespace Xamarin.Forms
 							stateBuilder.Append(shellContentRoute);
 							stateBuilder.Append("/");
 						}
-
-						GetQueryStringData(shellContent, stackAtRoot, queryData);
 					}
 
 					if (!stackAtRoot)
@@ -535,7 +470,6 @@ namespace Xamarin.Forms
 						{
 							var page = sectionStack[i];
 							stateBuilder.Append(Routing.GetRoute(page));
-							GetQueryStringData(page, i == sectionStack.Count - 1, queryData);
 							if (i < sectionStack.Count - 1)
 								stateBuilder.Append("/");
 						}
@@ -543,7 +477,6 @@ namespace Xamarin.Forms
 				}
 			}
 
-			stateBuilder.Append(GenerateQueryString(queryData));
 			return stateBuilder.ToString();
 		}
 
