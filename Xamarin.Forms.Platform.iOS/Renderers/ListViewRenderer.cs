@@ -911,13 +911,14 @@ namespace Xamarin.Forms.Platform.iOS
 			readonly nfloat _defaultSectionHeight;
 			Dictionary<DataTemplate, int> _templateToId = new Dictionary<DataTemplate, int>();
 			UITableView _uiTableView;
+			UITableViewCell _lastSelected;
 			FormsUITableViewController _uiTableViewController;
 			protected ListView List;
 			protected ITemplatedItemsView<Cell> TemplatedItemsView => List;
 			bool _isDragging;
 			bool _selectionFromNative;
 			bool _disposed;
-			UITableViewCell _lastSelected;
+
 			public UITableViewRowAnimation ReloadSectionsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
 
 			public ListViewDataSource(ListViewDataSource source)
