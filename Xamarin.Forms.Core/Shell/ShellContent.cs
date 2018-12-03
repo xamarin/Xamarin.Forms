@@ -2,6 +2,11 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+
+#if NETSTANDARD1_0
+using System.Linq;
+#endif
+
 using System.Reflection;
 using Xamarin.Forms.Internals;
 
