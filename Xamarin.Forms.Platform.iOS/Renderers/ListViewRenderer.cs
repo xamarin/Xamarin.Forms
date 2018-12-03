@@ -917,6 +917,7 @@ namespace Xamarin.Forms.Platform.iOS
 			bool _isDragging;
 			bool _selectionFromNative;
 			bool _disposed;
+			UITableViewCell _lastSelected;
 			public UITableViewRowAnimation ReloadSectionsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
 
 			public ListViewDataSource(ListViewDataSource source)
@@ -1136,6 +1137,16 @@ namespace Xamarin.Forms.Platform.iOS
 
 				tableView.EndEditing(true);
 				List.NotifyRowTapped(indexPath.Section, indexPath.Row, formsCell);
+				
+				if (cell.Equals(_lastSelected))
+				{
+					tableView.DeselectRow(indexPath, false);
+					_lastSelected = null; //Need this to be null otherwise can not select same item again.
+				}
+				else
+				{
+					_lastSelected = cell;
+				}
 			}
 
 			public override nint RowsInSection(UITableView tableview, nint section)
@@ -1320,6 +1331,11 @@ namespace Xamarin.Forms.Platform.iOS
 					_templateToId = null;
 					_uiTableView = null;
 					_uiTableViewController = null;
+					if (_lastSelected != null)
+					{
+						_lastSelected.Dispose();
+						_lastSelected = null;
+					}
 				}
 
 				_disposed = true;
