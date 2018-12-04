@@ -14,7 +14,11 @@
       <DependentUpon>Bugzilla60787.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+<<<<<<< HEAD
     <Compile Include="$(MSBuildThisFileDirectory)Issue1332.cs" />
+=======
+    <Compile Include="$(MSBuildThisFileDirectory)Issue2102.cs" />
+>>>>>>> [UWP] Fixes throws NullReferenceException on empty NavigationPage (#3325) fixes #2102
     <Compile Include="$(MSBuildThisFileDirectory)Issue1588.xaml.cs">
       <DependentUpon>Issue1588.xaml</DependentUpon>
       <SubType>Code</SubType>
