@@ -31,40 +31,29 @@ namespace Xamarin.Forms.Controls.Issues
 		string _disappearText = "You should see 4 images. Clicking this should cause the images to all disappear";
 		string _appearText = "Clicking this should cause the images to all appear";
 		string _theListView = "theListViewAutomationId";
+		string _fileName = "coffee";
 
 		protected override void Init()
 		{
-			string fileName = "coffee";
-			_image = new Image() { Source = fileName, AutomationId = fileName };
-			_button = new Button() { Image = fileName, AutomationId = fileName };
-			_imageButton = new ImageButton() { Source = fileName, AutomationId = fileName };
+			_image = new Image() { Source = _fileName, AutomationId = _fileName };
+			_button = new Button() { Image = _fileName, AutomationId = _fileName };
+			_imageButton = new ImageButton() { Source = _fileName, AutomationId = _fileName };
 			_listView = new ListView()
 			{
 				ItemTemplate = new DataTemplate(() =>
 				{
 					var cell = new ImageCell();
-					cell.Disappearing += (_, __) =>
-					{
-						var height = cell.Height;
-						var cellHeight = cell.RenderHeight;
-					};
-					cell.Appearing += (_, __) =>
-					{
-						var height = cell.Height;
-						var cellHeight = cell.RenderHeight;
-
-					};
 					cell.SetBinding(ImageCell.ImageSourceProperty, ".");
 					return cell;
 				}),
 				AutomationId = _theListView,
-				ItemsSource = new[] { fileName },
+				ItemsSource = new[] { _fileName },
 				HasUnevenRows = true,
 				BackgroundColor = Color.Purple
 			};
 
 			Button button = null;
-			button =new Button()
+			button = new Button()
 			{
 				AutomationId = "ClickMe",
 				Text = _disappearText,
@@ -80,10 +69,10 @@ namespace Xamarin.Forms.Controls.Issues
 					}
 					else
 					{
-						_image.Source = fileName;
-						_button.Image = fileName;
-						_imageButton.Source = fileName;
-						_listView.ItemsSource = new string[] { fileName };
+						_image.Source = _fileName;
+						_button.Image = _fileName;
+						_imageButton.Source = _fileName;
+						_listView.ItemsSource = new string[] { _fileName };
 						button.Text = _disappearText;
 					}
 				})
@@ -107,12 +96,12 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void TestImagesDisappearCorrectly()
 		{
-			RunningApp.WaitForElement("coffee");
-			var elementsBefore = RunningApp.WaitForElement("coffee");
+			RunningApp.WaitForElement(_fileName);
+			var elementsBefore = RunningApp.WaitForElement(_fileName);
 			var imageCell = RunningApp.Query(app => app.Marked(_theListView).Descendant()).Where(x => x.Class.Contains("Image")).FirstOrDefault();
 
 #if __IOS__
-			Assert.AreEqual(4, elementsBefore.Where(x=> x.Class.Contains("Image")).Count());
+			Assert.AreEqual(4, elementsBefore.Where(x => x.Class.Contains("Image")).Count());
 #else
 			Assert.AreEqual(3, elementsBefore.Length);
 #endif
@@ -120,7 +109,7 @@ namespace Xamarin.Forms.Controls.Issues
 			Assert.IsNotNull(imageCell);
 
 			RunningApp.Tap("ClickMe");
-			var elementsAfter = RunningApp.WaitForElement("coffee");
+			var elementsAfter = RunningApp.WaitForElement(_fileName);
 			var imageCellAfter = RunningApp.Query(app => app.Marked(_theListView).Descendant()).Where(x => x.Class.Contains("Image")).FirstOrDefault();
 			Assert.IsNull(imageCellAfter);
 #if __IOS__
@@ -140,8 +129,7 @@ namespace Xamarin.Forms.Controls.Issues
 				}
 			}
 #endif
-
 		}
 #endif
-		}
+	}
 }
