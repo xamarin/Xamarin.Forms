@@ -49,7 +49,6 @@
 					RowDefinitions = new RowDefinitionCollection { new RowDefinition(), new RowDefinition {Height = GridLength.Auto} },
 					WidthRequest = 280,
 					HeightRequest = 310,
-					BackgroundColor = Color.Aquamarine
 				};
 
 				var image = new Image

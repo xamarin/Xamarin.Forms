@@ -14,8 +14,7 @@ namespace Xamarin.Forms.Platform.iOS
 		}
 
 		public static CGPoint FindAlignmentTarget(SnapPointsAlignment snapPointsAlignment,
-			CGPoint proposedContentOffset,
-			UICollectionView collectionView, UICollectionViewScrollDirection scrollDirection)
+			CGPoint contentOffset, UICollectionView collectionView, UICollectionViewScrollDirection scrollDirection)
 		{
 			var inset = collectionView.ContentInset;
 			var bounds = collectionView.Bounds;
@@ -23,13 +22,13 @@ namespace Xamarin.Forms.Platform.iOS
 			switch (scrollDirection)
 			{
 				case UICollectionViewScrollDirection.Vertical:
-					var y = FindAlignmentTarget(snapPointsAlignment, proposedContentOffset.Y, inset.Top,
-						proposedContentOffset.Y + bounds.Height, inset.Bottom);
-					return new CGPoint(proposedContentOffset.X, y);
+					var y = FindAlignmentTarget(snapPointsAlignment, contentOffset.Y, inset.Top,
+						contentOffset.Y + bounds.Height, inset.Bottom);
+					return new CGPoint(contentOffset.X, y);
 				case UICollectionViewScrollDirection.Horizontal:
-					var x = FindAlignmentTarget(snapPointsAlignment, proposedContentOffset.X, inset.Left,
-						proposedContentOffset.X + bounds.Width, inset.Right);
-					return new CGPoint(x, proposedContentOffset.Y);
+					var x = FindAlignmentTarget(snapPointsAlignment, contentOffset.X, inset.Left,
+						contentOffset.X + bounds.Width, inset.Right);
+					return new CGPoint(x, contentOffset.Y);
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
@@ -69,6 +68,21 @@ namespace Xamarin.Forms.Platform.iOS
 
 			return (target.X - rectCenter.X) * (target.X - rectCenter.X) +
 					(target.Y - rectCenter.Y) * (target.Y - rectCenter.Y);
+		}
+
+		static int Clamp(int n, int min, int max)
+		{
+			if (n < min)
+			{
+				return min;
+			}
+
+			if (n > max)
+			{
+				return max;
+			}
+
+			return n;
 		}
 
 		static nfloat FindAlignmentTarget(SnapPointsAlignment snapPointsAlignment, nfloat start, nfloat startInset,
@@ -150,6 +164,35 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			return b;
+		}
+
+		public static UICollectionViewLayoutAttributes FindNextItem(UICollectionViewLayoutAttributes[] items,
+			UICollectionViewScrollDirection direction, int step, CGPoint scrollingVelocity, int currentIndex)
+		{
+			var velocity = direction == UICollectionViewScrollDirection.Horizontal
+				? scrollingVelocity.X
+				: scrollingVelocity.Y;
+
+			if (velocity == 0)
+			{
+				// The user isn't scrolling at all, just stay where we are
+				return items[currentIndex];
+			}
+
+			// Move the index up or down by increment, depending on the velocity
+			if (velocity > 0)
+			{
+				currentIndex = currentIndex + step;
+			}
+			else if (velocity < 0)
+			{
+				currentIndex = currentIndex - step;
+			}
+
+			// Make sure we're not out of bounds
+			currentIndex = Clamp(currentIndex, 0, items.Length - 1);
+
+			return items[currentIndex];
 		}
 	}
 }
