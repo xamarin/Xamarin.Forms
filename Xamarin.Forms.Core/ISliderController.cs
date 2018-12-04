@@ -1,6 +1,6 @@
 ﻿namespace Xamarin.Forms
 {
-     [EditorBrowsable(EditorBrowsableState.Never)]
+	[EditorBrowsable(EditorBrowsableState.Never)]
 	public interface ISliderController
 	{
 		void SendDragStarted();
