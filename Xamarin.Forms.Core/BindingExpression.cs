@@ -152,12 +152,11 @@ namespace Xamarin.Forms
 			if (needsGetter)
 			{
 				object value = property.DefaultValue;
-				if (part.TryGetValue(current, out value) || part.IsSelf)
-				{
+				if (part.TryGetValue(current, out value) || part.IsSelf) {
 					value = Binding.GetSourceValue(value, property.ReturnType);
 				}
 				else
-					value = Binding.FallbackValue ?? property.DefaultValue;
+					value = Binding.FallbackValue ?? property.GetDefaultValue(target);
 
 				if (!TryConvert(ref value, property, property.ReturnType, true))
 				{
@@ -278,7 +277,16 @@ namespace Xamarin.Forms
 					part.SetterType = sourceType.GetElementType();
 				}
 
-				DefaultMemberAttribute defaultMember = sourceType.GetCustomAttributes(typeof(DefaultMemberAttribute), true).OfType<DefaultMemberAttribute>().FirstOrDefault();
+				DefaultMemberAttribute defaultMember = null;
+				foreach (var attrib in sourceType.GetCustomAttributes(typeof(DefaultMemberAttribute), true))
+				{
+					if (attrib is DefaultMemberAttribute d)
+					{
+						defaultMember = d;
+						break;
+					}
+				}
+
 				string indexerName = defaultMember != null ? defaultMember.MemberName : "Item";
 
 				part.IndexerName = indexerName;
@@ -289,8 +297,8 @@ namespace Xamarin.Forms
 				}
 				catch (AmbiguousMatchException) {
 					// Get most derived instance of property
-					foreach (var p in sourceType.GetProperties().Where(prop => prop.Name == indexerName)) {
-						if (property == null || property.DeclaringType.IsAssignableFrom(property.DeclaringType))
+					foreach (var p in sourceType.GetProperties()) {
+						if (p.Name == indexerName && (property == null || property.DeclaringType.IsAssignableFrom(property.DeclaringType)))
 							property = p;
 					}
 				}
@@ -312,7 +320,14 @@ namespace Xamarin.Forms
 
 				if (property != null)
 				{
-					ParameterInfo parameter = property.GetIndexParameters().FirstOrDefault();
+					ParameterInfo parameter = null;
+					ParameterInfo[] array = property.GetIndexParameters();
+					for (int i = 0; i < array.Length; i++)
+					{
+						parameter = array[i];
+						break;
+					}
+
 					if (parameter != null)
 					{
 						try
@@ -346,7 +361,8 @@ namespace Xamarin.Forms
 				if (property.CanWrite && property.SetMethod.IsPublic && !property.SetMethod.IsStatic)
 				{
 					part.LastSetter = property.SetMethod;
-					part.SetterType = part.LastSetter.GetParameters().Last().ParameterType;
+					var lastSetterParameters = part.LastSetter.GetParameters();
+					part.SetterType = lastSetterParameters[lastSetterParameters.Length - 1].ParameterType;
 
 					if (Binding.AllowChaining)
 					{

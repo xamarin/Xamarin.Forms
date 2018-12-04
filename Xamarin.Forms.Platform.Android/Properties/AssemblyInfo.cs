@@ -58,6 +58,8 @@ using Xamarin.Forms.Platform.Android;
 [assembly: ExportRenderer (typeof (MediaElement), typeof(MediaElementRenderer))]
 #endif
 
+[assembly: ExportRenderer(typeof(Shell), typeof(ShellRenderer))]
+
 [assembly: ExportRenderer(typeof(NativeViewWrapper), typeof(NativeViewWrapperRenderer))]
 [assembly: ExportCell(typeof(Cell), typeof(CellRenderer))]
 [assembly: ExportCell(typeof(EntryCell), typeof(EntryCellRenderer))]

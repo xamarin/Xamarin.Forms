@@ -431,6 +431,7 @@ namespace Xamarin.Forms.CustomAttributes
 			GroupShortNameBinding,
 			ScrollTo,
 			FastScroll,
+			RefreshControlColor,
 			ScrollBarVisibility
 		}
 
@@ -689,7 +690,9 @@ namespace Xamarin.Forms.CustomAttributes
 			MinimumTrackColor,
 			MaximumTrackColor,
 			ThumbColor,
-			ThumbImage
+			ThumbImage,
+			DragStarted,
+			DragCompleted
 		}
 
 		public enum StackLayout
