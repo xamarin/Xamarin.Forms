@@ -173,7 +173,7 @@ namespace Xamarin.Forms
 			if (content is IQueryAttributable attributable)
 				attributable.ApplyQueryAttributes(query);
 
-			if (content is BindableObject bindable && bindable.BindingContext != null)
+			if (content is BindableObject bindable && bindable.BindingContext != null && content != bindable.BindingContext)
 				ApplyQueryAttributes(bindable.BindingContext, query);
 
 			var type = content.GetType();
