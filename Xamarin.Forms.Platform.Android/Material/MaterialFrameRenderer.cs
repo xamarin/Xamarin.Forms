@@ -224,10 +224,13 @@ namespace Xamarin.Forms.Platform.Android.Material
 			else
 			{
 				StrokeColor = borderColor.ToAndroid();
-
-				// TODO: this should be 1, but it is high here to demonstrate the layout issue
-				StrokeWidth = (int)Context.ToPixels(10);
+				StrokeWidth = (int)Context.ToPixels(1);
 			}
+
+			// update the native and forms view with the border
+			SetContentPadding(StrokeWidth, StrokeWidth, StrokeWidth, StrokeWidth);
+			if (Element is IFrameController frame)
+				frame.SetContentPadding(Context.FromPixels(StrokeWidth));
 		}
 
 		void UpdateBackgroundColor()

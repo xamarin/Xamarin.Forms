@@ -5,7 +5,7 @@ namespace Xamarin.Forms
 {
 	[ContentProperty("Content")]
 	[RenderWith(typeof(_FrameRenderer))]
-	public class Frame : ContentView, IElementConfiguration<Frame>, IPaddingElement, IBorderElement
+	public class Frame : ContentView, IElementConfiguration<Frame>, IPaddingElement, IBorderElement, IFrameController
 	{
 		[Obsolete("OutlineColorProperty is obsolete as of version 3.0.0. Please use BorderColorProperty instead.")]
 		public static readonly BindableProperty OutlineColorProperty = BorderElement.BorderColorProperty;
@@ -18,6 +18,8 @@ namespace Xamarin.Forms
 									validateValue: (bindable, value) => ((float)value) == -1.0f || ((float)value) >= 0f);
 
 		readonly Lazy<PlatformConfigurationRegistry<Frame>> _platformConfigurationRegistry;
+
+		Thickness _contentPadding;
 
 		public Frame()
 		{
@@ -55,6 +57,29 @@ namespace Xamarin.Forms
 		}
 
 		int IBorderElement.CornerRadius => (int)CornerRadius;
+
+		void IFrameController.SetContentPadding(Thickness value)
+		{
+			_contentPadding = value;
+			InvalidateLayout();
+		}
+
+		protected override void LayoutChildren(double x, double y, double width, double height)
+		{
+			var r = new Rectangle(
+				x + _contentPadding.Left,
+				y + _contentPadding.Top,
+				width - _contentPadding.HorizontalThickness,
+				height - _contentPadding.VerticalThickness);
+
+			for (var i = 0; i < LogicalChildrenInternal.Count; i++)
+			{
+				Element element = LogicalChildrenInternal[i];
+				var child = element as View;
+				if (child != null)
+					LayoutChildIntoBoundingRegion(child, r);
+			}
+		}
 
 		// not currently used by frame
 		double IBorderElement.BorderWidth => -1d;
