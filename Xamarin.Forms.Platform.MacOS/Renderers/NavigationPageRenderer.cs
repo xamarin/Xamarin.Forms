@@ -102,6 +102,7 @@ namespace Xamarin.Forms.Platform.MacOS
 					}
 					((Element as IPageContainer<Page>)?.CurrentPage as Page)?.SendDisappearing();
 					Element.PropertyChanged -= OnElementPropertyChanged;
+					Platform.SetRenderer(Element, null);
 					Element = null;
 				}
 
@@ -111,7 +112,19 @@ namespace Xamarin.Forms.Platform.MacOS
 				_events?.Dispose();
 				_events = null;
 
+				if(_currentStack != null)
+				{
+					foreach (var childPageWrapper in _currentStack)
+					{
+						childPageWrapper.Dispose();
+					}
+					_currentStack.Clear();
+					_currentStack = null;
+				}
+
+				Platform.NativeToolbarTracker.Navigation = null;
 				_disposed = true;
+
 			}
 			base.Dispose(disposing);
 		}
@@ -345,11 +358,11 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			if (animated)
 			{
-				var previousPageRenderer = Platform.GetRenderer(previousPage);
+				var previousPageRenderer = CreateViewControllerForPage(previousPage);
 				var transitionStyle = NavigationPage.OnThisPlatform().GetNavigationTransitionPopStyle();
 
 				return await this.HandleAsyncAnimation(target.ViewController, previousPageRenderer.ViewController,
-					ToViewControllerTransitionOptions(transitionStyle), () => Platform.DisposeRendererAndChildren(target), true);
+					ToViewControllerTransitionOptions(transitionStyle), () => target.DisposeRendererAndChildren(), true);
 			}
 
 			RemovePage(page, false);
