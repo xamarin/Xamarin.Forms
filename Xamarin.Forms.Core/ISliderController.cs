@@ -1,4 +1,6 @@
-﻿namespace Xamarin.Forms
+using System.ComponentModel;
+
+namespace Xamarin.Forms
 {
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	public interface ISliderController
