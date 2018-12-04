@@ -55,7 +55,7 @@ namespace Xamarin.Forms.Build.Tasks
 				}
 
 				if (!string.IsNullOrEmpty(ReferencePath)) {
-					var paths = ReferencePath.Replace("//", "/").Split(';');
+					var paths = ReferencePath.Replace("//", "/").Split(';').Distinct();
 					foreach (var p in paths) {
 						var searchpath = Path.GetDirectoryName(p);
 						LoggingHelper.LogMessage(Low, $"{new string(' ', 2)}Adding searchpath {searchpath}");
