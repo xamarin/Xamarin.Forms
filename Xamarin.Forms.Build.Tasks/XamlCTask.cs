@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Build.Tasks
 			var resolver = DefaultAssemblyResolver ?? new XamlCAssemblyResolver();
 			if (resolver is XamlCAssemblyResolver xamlCResolver) {
 				if (!string.IsNullOrEmpty(DependencyPaths)) {
-					foreach (var dep in DependencyPaths.Split(';')) {
+					foreach (var dep in DependencyPaths.Split(';').Distinct()) {
 						LoggingHelper.LogMessage(Low, $"{new string(' ', 2)}Adding searchpath {dep}");
 						xamlCResolver.AddSearchDirectory(dep);
 					}
