@@ -247,6 +247,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			var vc = CreateViewControllerForPage(page);
 			vc.SetElementSize(new Size(View.Bounds.Width, View.Bounds.Height));
 			page.Layout(new Rectangle(0, 0, View.Bounds.Width, View.Frame.Height));
+			vc.NativeView.WantsLayer = true;
 
 			var beforeRenderer = Platform.GetRenderer(before);
 			var beforeControllerIndex = ChildViewControllers.IndexOf(beforeRenderer.ViewController);
