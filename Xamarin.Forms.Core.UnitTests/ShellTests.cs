@@ -162,6 +162,30 @@ namespace Xamarin.Forms.Core.UnitTests
 
 		}
 
+
+		[Test]
+		public async Task NavigationWithQueryStringAndNoDataTemplate()
+		{
+			var shell = new Shell();
+			shell.Route = "s";
+
+			var one = new ShellItem { Route = "one" };
+			var two = new ShellItem { Route = "two" };
+
+			var tabone = MakeSimpleShellSection("tabone", "content");
+			var tabfour = MakeSimpleShellSection("tabfour", "content");
+
+			one.Items.Add(tabone);
+			two.Items.Add(tabfour);
+
+			shell.Items.Add(one);
+			shell.Items.Add(two);
+
+			await shell.GoToAsync(new ShellNavigationState($"app:///s/two/tabfour/content?{nameof(ShellTestPage.SomeQueryParameter)}=1234"));
+			Assert.AreEqual("1234", (two.CurrentItem.CurrentItem.Content as ShellTestPage).SomeQueryParameter);
+
+		}
+
 		[Test]
 		public void CancelNavigation()
 		{

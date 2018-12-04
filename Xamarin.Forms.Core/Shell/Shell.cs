@@ -413,7 +413,11 @@ namespace Xamarin.Forms
 			}
 
 			if (!(element is BaseShellItem baseShellItem))
-				return;
+			{
+				baseShellItem = element?.Parent as BaseShellItem;
+				if(baseShellItem == null)
+					return;
+			}
 
 			//filter the query to only apply the keys with matching prefix
 			var filteredQuery = new Dictionary<string, string>(query.Count);
