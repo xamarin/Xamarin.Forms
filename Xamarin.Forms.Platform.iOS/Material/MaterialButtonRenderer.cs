@@ -14,7 +14,6 @@ namespace Xamarin.Forms.Platform.iOS.Material
 {
 	public class MaterialButtonRenderer : ViewRenderer<Button, MButton>
 	{
-
 		UIColor _buttonTextColorDefaultDisabled;
 		UIColor _buttonTextColorDefaultHighlighted;
 		UIColor _buttonTextColorDefaultNormal;

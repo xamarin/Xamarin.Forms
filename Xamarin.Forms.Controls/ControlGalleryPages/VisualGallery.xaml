@@ -21,6 +21,30 @@
                 </StackLayout>
             </Frame>
 
+            <Frame Padding="0" BorderColor="Red" CornerRadius="10" BackgroundColor="Blue">
+                <StackLayout Spacing="16" BackgroundColor="Lime" Padding="8">
+                    <Image Source="photo.jpg"
+                           Margin="-8,-8,-8,0" Aspect="AspectFit" />
+                    <Label Text="Walk below the arches"
+                           FontSize="24" TextColor="Black" />
+                    <Label Text="Discover modern interpretations of traditional architectural styles."
+                           TextColor="#666" FontSize="14" />
+                    <Button Image="bank" Text="more" HorizontalOptions="End" />
+                </StackLayout>
+            </Frame>
+
+            <Frame BackgroundColor="#FFEEEE" Margin="0" Padding="0" HasShadow="true" CornerRadius="10" BorderColor="#FFCCCC">
+                <StackLayout Spacing="16" Margin="0" Padding="0">
+                    <Label Text="Customized Card"
+                           FontSize="24" TextColor="Black" />
+                    <Image Source="photo.jpg"
+                           Margin="-16,0" Aspect="AspectFit" />
+                    <Label Text="This card has a few small tweaks to test whether or not changing properties is supported."
+                           TextColor="#666" FontSize="14" />
+                    <Button Image="bank" Text="more" HorizontalOptions="End" BackgroundColor="Red" />
+                </StackLayout>
+            </Frame>
+
             <Button Image="bank" Text="learn more" />
 
             <!--

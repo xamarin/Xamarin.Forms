@@ -4,12 +4,12 @@ using UIKit;
 using Xamarin.Forms;
 using MCard = MaterialComponents.Card;
 
-// this won't go here permanently it's just for testing at this point
 [assembly: ExportRenderer(typeof(Xamarin.Forms.Frame), typeof(Xamarin.Forms.Platform.iOS.Material.MaterialFrameRenderer), new[] { typeof(VisualRendererMarker.Material) })]
 
 namespace Xamarin.Forms.Platform.iOS.Material
 {
-	public class MaterialFrameRenderer : MCard, IVisualElementRenderer
+	public class MaterialFrameRenderer : MCard,
+		IVisualElementRenderer
 	{
 		double _defaultElevation = -1f;
 		nfloat _defaultCornerRadius = -1f;
