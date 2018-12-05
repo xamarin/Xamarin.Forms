@@ -10,12 +10,12 @@ using Xamarin.Forms.Platform.Android.Material;
 using AView = Android.Views.View;
 using MaterialCardView = Android.Support.Design.Card.MaterialCardView;
 
-// this won't go here permanently it's just for testing at this point
 [assembly: ExportRenderer(typeof(Xamarin.Forms.Frame), typeof(MaterialFrameRenderer), new[] { typeof(VisualRendererMarker.Material) })]
 
 namespace Xamarin.Forms.Platform.Android.Material
 {
-	public class MaterialFrameRenderer : MaterialCardView, IVisualElementRenderer, IEffectControlProvider, IViewRenderer, ITabStop
+	public class MaterialFrameRenderer : MaterialCardView,
+		IVisualElementRenderer, IEffectControlProvider, IViewRenderer, ITabStop
 	{
 		float _defaultElevation = -1f;
 		float _defaultCornerRadius = -1f;
@@ -63,7 +63,12 @@ namespace Xamarin.Forms.Platform.Android.Material
 
 				OnElementChanged(new ElementChangedEventArgs<Frame>(oldElement, _element));
 
-				_element?.SendViewInitialized(Control);
+				_element?.SendViewInitialized(this);
+
+				_motionEventHelper.UpdateElement(_element);
+
+				if (!string.IsNullOrEmpty(Element.AutomationId))
+					ContentDescription = Element.AutomationId;
 			}
 		}
 
@@ -173,7 +178,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 
 		void UpdateShadow()
 		{
-			if (_disposed)
+			if (_disposed || Element == null)
 				return;
 
 			// set the default elevation on the first time
@@ -188,34 +193,38 @@ namespace Xamarin.Forms.Platform.Android.Material
 
 		void UpdateCornerRadius()
 		{
-			if (_disposed)
+			if (_disposed || Element == null)
 				return;
 
-			// set the default radius on the first time
-			if (_defaultCornerRadius < 0)
+			var cornerRadius = Element.CornerRadius;
+			if (cornerRadius < 0f && _defaultCornerRadius < 0f)
+				return;
+
+			if (_defaultCornerRadius < 0f)
 				_defaultCornerRadius = Radius;
 
-			var cornerRadius = Element.CornerRadius;
-			if (cornerRadius < 0)
+			if (cornerRadius < 0f)
 				Radius = _defaultCornerRadius;
 			else
-				Radius = Context.ToPixels(cornerRadius);
+				Radius = (int)Context.ToPixels(cornerRadius);
 
 			UpdateBorder();
 		}
 
 		void UpdateBorder()
 		{
-			if (_disposed)
+			if (_disposed || Element == null)
 				return;
 
-			// set the default stroke properties on the first time
+			var borderColor = Element.BorderColor;
+			if (borderColor.IsDefault && _defaultStrokeColor == null && _defaultStrokeWidth < 0f)
+				return;
+
 			if (_defaultStrokeColor == null)
 				_defaultStrokeColor = StrokeColor;
 			if (_defaultStrokeWidth < 0)
 				_defaultStrokeWidth = StrokeWidth;
 
-			var borderColor = Element.BorderColor;
 			if (borderColor.IsDefault)
 			{
 				StrokeColor = _defaultStrokeColor.Value;
@@ -235,13 +244,16 @@ namespace Xamarin.Forms.Platform.Android.Material
 
 		void UpdateBackgroundColor()
 		{
-			if (_disposed)
+			if (_disposed || Element == null)
+				return;
+
+			var bgColor = Element.BackgroundColor;
+			if (bgColor.IsDefault && _defaultBackgroundColor == null)
 				return;
 
 			if (_defaultBackgroundColor == null)
 				_defaultBackgroundColor = CardBackgroundColor.DefaultColor;
 
-			var bgColor = Element.BackgroundColor;
 			SetCardBackgroundColor(bgColor.IsDefault ? _defaultBackgroundColor.Value : bgColor.ToAndroid());
 		}
 
@@ -261,19 +273,8 @@ namespace Xamarin.Forms.Platform.Android.Material
 			return new SizeRequest(new Size(context.ToPixels(20), context.ToPixels(20)));
 		}
 
-		void IVisualElementRenderer.SetElement(VisualElement element)
-		{
-			var frame = element as Frame;
-			if (frame == null)
-				throw new ArgumentException("Element must be of type Frame");
-
-			Element = frame;
-
-			_motionEventHelper.UpdateElement(frame);
-
-			if (!string.IsNullOrEmpty(Element.AutomationId))
-				ContentDescription = Element.AutomationId;
-		}
+		void IVisualElementRenderer.SetElement(VisualElement element) =>
+			Element = (element as Frame) ?? throw new ArgumentException("Element must be of type Frame.");
 
 		void IVisualElementRenderer.SetLabelFor(int? id)
 		{

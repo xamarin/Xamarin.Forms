@@ -10,13 +10,17 @@ using MButton = MaterialComponents.Button;
 using Xamarin.Forms;
 
 [assembly: ExportRenderer(typeof(Xamarin.Forms.Button), typeof(Xamarin.Forms.Platform.iOS.Material.MaterialButtonRenderer), new[] { typeof(VisualRendererMarker.Material) })]
+
 namespace Xamarin.Forms.Platform.iOS.Material
 {
 	public class MaterialButtonRenderer : ViewRenderer<Button, MButton>
 	{
-		UIColor _buttonTextColorDefaultDisabled;
-		UIColor _buttonTextColorDefaultHighlighted;
-		UIColor _buttonTextColorDefaultNormal;
+		static readonly UIControlState[] _controlStates = { UIControlState.Normal, UIControlState.Highlighted, UIControlState.Disabled };
+
+		UIColor _defaultTextColorDisabled;
+		UIColor _defaultTextColorHighlighted;
+		UIColor _defaultTextColorNormal;
+
 		bool _useLegacyColorManagement;
 		bool _titleChanged;
 		SizeF _titleSize;
@@ -30,23 +34,9 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		readonly nfloat _minimumButtonHeight = 44; // Apple docs
 		readonly nfloat _defaultCornerRadius = 5;
 
-		static readonly UIControlState[] s_controlStates = { UIControlState.Normal, UIControlState.Highlighted, UIControlState.Disabled };
-
 		public MaterialButtonRenderer()
 		{
 			VisualElement.VerifyVisualFlagEnabled();
-		}
-
-		public override SizeF SizeThatFits(SizeF size)
-		{
-			var result = base.SizeThatFits(size);
-
-			if (result.Height < _minimumButtonHeight)
-			{
-				result.Height = _minimumButtonHeight;
-			}
-
-			return result;
 		}
 
 		protected override void Dispose(bool disposing)
@@ -58,6 +48,16 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			}
 
 			base.Dispose(disposing);
+		}
+
+		public override SizeF SizeThatFits(SizeF size)
+		{
+			var result = base.SizeThatFits(size);
+
+			if (result.Height < _minimumButtonHeight)
+				result.Height = _minimumButtonHeight;
+
+			return result;
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Button> e)
@@ -76,9 +76,9 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 					_useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
 
-					_buttonTextColorDefaultNormal = Control.TitleColor(UIControlState.Normal);
-					_buttonTextColorDefaultHighlighted = Control.TitleColor(UIControlState.Highlighted);
-					_buttonTextColorDefaultDisabled = Control.TitleColor(UIControlState.Disabled);
+					_defaultTextColorNormal = Control.TitleColor(UIControlState.Normal);
+					_defaultTextColorHighlighted = Control.TitleColor(UIControlState.Highlighted);
+					_defaultTextColorDisabled = Control.TitleColor(UIControlState.Disabled);
 
 					Control.TouchUpInside += OnButtonTouchUpInside;
 					Control.TouchDown += OnButtonTouchDown;
@@ -131,25 +131,26 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			base.SetAccessibilityLabel();
 		}
 
-		void SetControlPropertiesFromProxy()
-		{
-			foreach (UIControlState uiControlState in s_controlStates)
-			{
-				Control.SetTitleColor(UIButton.Appearance.TitleColor(uiControlState), uiControlState); // if new values are null, old values are preserved.
-				Control.SetTitleShadowColor(UIButton.Appearance.TitleShadowColor(uiControlState), uiControlState);
-				Control.SetBackgroundImage(UIButton.Appearance.BackgroundImageForState(uiControlState), uiControlState);
-			}
-		}
-
 		void OnButtonTouchUpInside(object sender, EventArgs eventArgs)
 		{
-			((IButtonController)Element)?.SendReleased();
-			((IButtonController)Element)?.SendClicked();
+			Element?.SendReleased();
+			Element?.SendClicked();
 		}
 
 		void OnButtonTouchDown(object sender, EventArgs eventArgs)
 		{
-			((IButtonController)Element)?.SendPressed();
+			Element?.SendPressed();
+		}
+
+		void SetControlPropertiesFromProxy()
+		{
+			// if new values are null, old values are preserved.
+			foreach (UIControlState uiControlState in _controlStates)
+			{
+				Control.SetTitleColor(UIButton.Appearance.TitleColor(uiControlState), uiControlState);
+				Control.SetTitleShadowColor(UIButton.Appearance.TitleShadowColor(uiControlState), uiControlState);
+				Control.SetBackgroundImage(UIButton.Appearance.BackgroundImageForState(uiControlState), uiControlState);
+			}
 		}
 
 		void UpdateBorder()
@@ -167,7 +168,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			if (button.IsSet(Button.CornerRadiusProperty) && button.CornerRadius != (int)Button.CornerRadiusProperty.DefaultValue)
 				cornerRadius = button.CornerRadius;
 
-			uiButton.Layer.CornerRadius = cornerRadius; 
+			uiButton.Layer.CornerRadius = cornerRadius;
 		}
 
 		void UpdateFont()
@@ -226,9 +227,9 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		{
 			if (Element.TextColor == Color.Default)
 			{
-				Control.SetTitleColor(_buttonTextColorDefaultNormal, UIControlState.Normal);
-				Control.SetTitleColor(_buttonTextColorDefaultHighlighted, UIControlState.Highlighted);
-				Control.SetTitleColor(_buttonTextColorDefaultDisabled, UIControlState.Disabled);
+				Control.SetTitleColor(_defaultTextColorNormal, UIControlState.Normal);
+				Control.SetTitleColor(_defaultTextColorHighlighted, UIControlState.Highlighted);
+				Control.SetTitleColor(_defaultTextColorDisabled, UIControlState.Disabled);
 			}
 			else
 			{
@@ -236,7 +237,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 				Control.SetTitleColor(color, UIControlState.Normal);
 				Control.SetTitleColor(color, UIControlState.Highlighted);
-				Control.SetTitleColor(_useLegacyColorManagement ? _buttonTextColorDefaultDisabled : color, UIControlState.Disabled);
+				Control.SetTitleColor(_useLegacyColorManagement ? _defaultTextColorDisabled : color, UIControlState.Disabled);
 
 				Control.TintColor = color;
 			}
@@ -329,7 +330,6 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			button.ImageEdgeInsets = new UIEdgeInsets(-imageVertOffset, horizontalImageOffset, imageVertOffset, -horizontalImageOffset);
 			button.TitleEdgeInsets = new UIEdgeInsets(titleVertOffset, -horizontalTitleOffset, -titleVertOffset, horizontalTitleOffset);
 		}
-
 
 		//protected override void OnElementChanged(ElementChangedEventArgs<Button> e)
 		//{
