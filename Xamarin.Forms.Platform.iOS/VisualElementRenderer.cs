@@ -38,11 +38,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		readonly List<EventHandler<VisualElementChangedEventArgs>> _elementChangedHandlers = new List<EventHandler<VisualElementChangedEventArgs>>();
 
 		readonly PropertyChangedEventHandler _propertyChangedHandler;
-#if __MOBILE__
-		string _defaultAccessibilityLabel;
-		string _defaultAccessibilityHint;
-		bool? _defaultIsAccessibilityElement;
-#endif
+
 		EventTracker _events;
 
 		VisualElementRendererFlags _flags = VisualElementRendererFlags.AutoPackage | VisualElementRendererFlags.AutoTrack;
@@ -53,7 +49,34 @@ namespace Xamarin.Forms.Platform.MacOS
 #if __MOBILE__
 		UIVisualEffectView _blur;
 		BlurEffectStyle _previousBlur;
+
+		string ControlAccessibilityHint
+		{
+			get => AccessibilityHint;
+			set => AccessibilityHint = value;
+		}
+		bool ControlAccessibilityElement
+		{
+			get => IsAccessibilityElement;
+			set => IsAccessibilityElement = value;
+		}
+#else
+		string ControlAccessibilityHint
+		{
+			get => AccessibilityTitle;
+			set => AccessibilityTitle = value;
+		}
+		bool ControlAccessibilityElement
+		{
+			get => AccessibilityElement;
+			set => AccessibilityElement = value;
+		}
 #endif
+		string ControlAccessibilityLabel
+		{
+			get => AccessibilityLabel;
+			set => AccessibilityLabel = value;
+		}
 
 		protected VisualElementRenderer() : base(RectangleF.Empty)
 		{
@@ -270,11 +293,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			if (Element != null && !string.IsNullOrEmpty(Element.AutomationId))
 				SetAutomationId(Element.AutomationId);
-#if __MOBILE__
 			SetAccessibilityLabel();
 			SetAccessibilityHint();
 			SetIsAccessibilityElement();
-#endif
 			Performance.Stop(reference);
 		}
 
@@ -308,7 +329,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			var menu = Xamarin.Forms.Element.GetMenu(Element);
 			if (menu != null && NativeView != null)
 				NSMenu.PopUpContextMenu(menu.ToNSMenu(), theEvent, NativeView);
-		
+
 			base.RightMouseUp(theEvent);
 		}
 #endif
@@ -374,14 +395,13 @@ namespace Xamarin.Forms.Platform.MacOS
 #if __MOBILE__
 			else if (e.PropertyName == PlatformConfiguration.iOSSpecific.VisualElement.BlurEffectProperty.PropertyName)
 				SetBlur((BlurEffectStyle)Element.GetValue(PlatformConfiguration.iOSSpecific.VisualElement.BlurEffectProperty));
+#endif
 			else if (e.PropertyName == AutomationProperties.HelpTextProperty.PropertyName)
 				SetAccessibilityHint();
 			else if (e.PropertyName == AutomationProperties.NameProperty.PropertyName)
 				SetAccessibilityLabel();
 			else if (e.PropertyName == AutomationProperties.IsInAccessibleTreeProperty.PropertyName)
 				SetIsAccessibilityElement();
-#endif
-
 		}
 
 		protected virtual void OnRegisterEffect(PlatformEffect effect)
@@ -389,22 +409,21 @@ namespace Xamarin.Forms.Platform.MacOS
 			effect.SetContainer(this);
 		}
 
-#if __MOBILE__
 		protected virtual void SetAccessibilityHint()
 		{
-			_defaultAccessibilityHint = this.SetAccessibilityHint(Element, _defaultAccessibilityHint);
+			ControlAccessibilityHint = (string)Element.GetValue(AutomationProperties.HelpTextProperty) ?? ControlAccessibilityHint;
 		}
 
 		protected virtual void SetAccessibilityLabel()
 		{
-			_defaultAccessibilityLabel = this.SetAccessibilityLabel(Element, _defaultAccessibilityLabel);
+			ControlAccessibilityLabel = (string)Element.GetValue(AutomationProperties.NameProperty) ?? ControlAccessibilityLabel;
 		}
 
 		protected virtual void SetIsAccessibilityElement()
 		{
-			_defaultIsAccessibilityElement = this.SetIsAccessibilityElement(Element, _defaultIsAccessibilityElement);
+			ControlAccessibilityElement = (bool?)Element.GetValue(AutomationProperties.IsInAccessibleTreeProperty) ?? ControlAccessibilityElement;
 		}
-#endif
+
 		protected virtual void SetAutomationId(string id)
 		{
 			AccessibilityIdentifier = id;

@@ -71,8 +71,9 @@ namespace Xamarin.Forms.Platform.iOS
 					entry.InputAccessoryView.AutoresizingMask = UIViewAutoresizing.FlexibleHeight;
 
 					_defaultTextColor = entry.TextColor;
-					
+
 					_useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
+					entry.AccessibilityLabel = nameof(Button);
 
 					SetNativeControl(entry);
 				}
@@ -87,6 +88,27 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			base.OnElementChanged(e);
+		}
+
+		protected override void SetAccessibilityLabel()
+		{
+			base.SetAccessibilityLabel();
+			if (Control != null && _picker != null)
+				_picker.AccessibilityLabel = Control.AccessibilityLabel;
+		}
+
+		protected override void SetAccessibilityHint()
+		{
+			base.SetAccessibilityHint();
+			if (Control != null && _picker != null)
+				_picker.AccessibilityHint = Control.AccessibilityHint;
+		}
+
+		protected override void SetIsAccessibilityElement()
+		{
+			base.SetIsAccessibilityElement();
+			if (Control != null && _picker != null)
+				_picker.IsAccessibilityElement = Control.IsAccessibilityElement;
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -188,6 +210,7 @@ namespace Xamarin.Forms.Platform.iOS
 			source.SelectedIndex = formsIndex;
 			source.SelectedItem = formsIndex >= 0 ? Element.Items[formsIndex] : null;
 			_picker.Select(Math.Max(formsIndex, 0), 0, true);
+			_picker.AccessibilityValue = Control.Text;
 		}
 
 		void UpdateTextColor()

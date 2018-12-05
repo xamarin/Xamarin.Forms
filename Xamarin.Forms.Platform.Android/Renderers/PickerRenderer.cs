@@ -3,6 +3,7 @@ using Android.Util;
 using Android.Views;
 using Android.Widget;
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
@@ -11,6 +12,7 @@ using Android.Content;
 using AColor = Android.Graphics.Color;
 using Android.Text;
 using Android.Text.Style;
+using Android.Views.Accessibility;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -20,6 +22,11 @@ namespace Xamarin.Forms.Platform.Android
 		bool _isDisposed;
 		TextColorSwitcher _textColorSwitcher;
 		int _originalHintTextColor;
+		PickerAccessibilityDelegate _pickerAccessibilityDelegate;
+
+		HashSet<Keycode> availableKeys = new HashSet<Keycode>(new[] {
+			Keycode.Tab, Keycode.Forward, Keycode.Back, Keycode.DpadDown, Keycode.DpadLeft, Keycode.DpadRight, Keycode.DpadUp
+		});
 
 		public PickerRenderer(Context context) : base(context)
 		{
@@ -62,6 +69,11 @@ namespace Xamarin.Forms.Platform.Android
 				if (Control == null)
 				{
 					var textField = CreateNativeControl();
+
+					_pickerAccessibilityDelegate = new PickerAccessibilityDelegate();
+					textField.SetAccessibilityDelegate(_pickerAccessibilityDelegate);
+					if (e.NewElement.GetValue(AutomationProperties.NameProperty) == null && e.NewElement.GetValue(AutomationProperties.HelpTextProperty) == null)
+						e.NewElement.SetValue(AutomationProperties.NameProperty, nameof(Picker));
 
 					var useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
 					_textColorSwitcher = new TextColorSwitcher(textField.TextColors, useLegacyColorManagement);
@@ -198,11 +210,25 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (oldText != Control.Text)
 				((IVisualElementController)Element).NativeSizeChanged();
+
+			_pickerAccessibilityDelegate.ValueText = Control.Text;
 		}
 
 		void UpdateTextColor()
 		{
 			_textColorSwitcher?.UpdateTextColor(Control, Element.TextColor);
+		}
+
+		class PickerAccessibilityDelegate : AccessibilityDelegate
+		{
+			public string ValueText { get; set; }
+
+			public override void OnInitializeAccessibilityNodeInfo(global::Android.Views.View host, AccessibilityNodeInfo info)
+			{
+				base.OnInitializeAccessibilityNodeInfo(host, info);
+				info.ClassName = "android.widget.Button";
+				info.Text = ValueText;
+			}
 		}
 	}
 }
