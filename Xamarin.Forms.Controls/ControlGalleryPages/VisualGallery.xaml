@@ -29,7 +29,7 @@
                            FontSize="24" TextColor="Black" />
                     <Label Text="Discover modern interpretations of traditional architectural styles."
                            TextColor="#666" FontSize="14" />
-                    <Button Image="bank" Text="more" HorizontalOptions="End" />
+                    <Button Image="bank" Text="more" HorizontalOptions="End" BackgroundColor="Black" />
                 </StackLayout>
             </Frame>
 

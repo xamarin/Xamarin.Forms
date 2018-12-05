@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using MaterialComponents;
 using UIKit;
 using Xamarin.Forms;
 using MCard = MaterialComponents.Card;
@@ -51,6 +52,14 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			base.Dispose(disposing);
 		}
 
+		protected virtual CardScheme CreateCardScheme()
+		{
+			return new CardScheme
+			{
+				ColorScheme = MaterialColors.Light.CreateColorScheme()
+			};
+		}
+
 		public void SetElement(VisualElement element)
 		{
 			var oldElement = Element;
@@ -68,6 +77,8 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 			if (element != null)
 			{
+				CardThemer.ApplyScheme(CreateCardScheme(), this);
+
 				if (_packager == null)
 				{
 					_packager = new VisualElementPackager(this);
