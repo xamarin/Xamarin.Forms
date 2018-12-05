@@ -198,7 +198,6 @@
     <Compile Include="Renderers\ImageButtonRenderer.cs" />
     <Compile Include="CollectionView\CollectionViewRenderer.cs" />
     <Compile Include="Renderers\MediaElementRenderer.cs" />
-    <Compile Include="Renderers\WkWebViewRenderer.cs" />
     <Compile Include="Resources\StringResources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
