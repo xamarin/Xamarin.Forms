@@ -14,8 +14,7 @@ namespace Xamarin.Forms.Xaml
 				throw new InvalidOperationException("TypeName isn't set.");
 			if (serviceProvider == null)
 				throw new ArgumentNullException(nameof(serviceProvider));
-			var typeResolver = serviceProvider.GetService(typeof (IXamlTypeResolver)) as IXamlTypeResolver;
-			if (typeResolver == null)
+			if (!(serviceProvider.GetService(typeof(IXamlTypeResolver)) is IXamlTypeResolver typeResolver))
 				throw new ArgumentException("No IXamlTypeResolver in IServiceProvider");
 
 			return typeResolver.Resolve(TypeName, serviceProvider);
