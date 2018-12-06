@@ -10,7 +10,7 @@
 			=> (Color) element.GetValue(DefaultBackgroundColorProperty);
 
 		public static void SetDefaultBackgroundColor(BindableObject element, Color value)
-		=> element.SetValue(DefaultBackgroundColorProperty, value);
+			=> element.SetValue(DefaultBackgroundColorProperty, value);
 
 		public static Color DefaultBackgroundColor(this IPlatformElementConfiguration<iOS, FormsElement> config)
 		=> GetDefaultBackgroundColor(config.Element);
