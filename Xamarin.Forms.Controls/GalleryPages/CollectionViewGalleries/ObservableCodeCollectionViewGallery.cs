@@ -3,7 +3,7 @@
 	internal class ObservableCodeCollectionViewGallery : ContentPage
 	{
 		public ObservableCodeCollectionViewGallery(ItemsLayoutOrientation orientation = ItemsLayoutOrientation.Vertical,
-			bool grid = true, int initialItems = 1000)
+			bool grid = true, int initialItems = 1000, bool addItemsWithTimer = false)
 		{
 			var layout = new Grid
 			{
@@ -57,7 +57,10 @@
 
 			Content = layout;
 
-			generator.GenerateItems();
+			if (addItemsWithTimer)
+				generator.GenerateEmptyObservableCollectionAndAddItemsEverySecond();
+			else
+				generator.GenerateObservableCollection();
 		}
 	}
 }
