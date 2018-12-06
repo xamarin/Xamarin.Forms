@@ -1,12 +1,12 @@
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
+using CoreGraphics;
 using Foundation;
 using MaterialComponents;
 using UIKit;
 using Xamarin.Forms;
 using MButton = MaterialComponents.Button;
-using SizeF = CoreGraphics.CGSize;
 
 [assembly: ExportRenderer(typeof(Xamarin.Forms.Button), typeof(Xamarin.Forms.Platform.iOS.Material.MaterialButtonRenderer), new[] { typeof(VisualRendererMarker.Material) })]
 
@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 		bool _useLegacyColorManagement;
 		bool _titleChanged;
-		SizeF _titleSize;
+		CGSize _titleSize;
 		UIEdgeInsets _paddingDelta = new UIEdgeInsets();
 
 		public MaterialButtonRenderer()
@@ -45,7 +45,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			base.Dispose(disposing);
 		}
 
-		public override SizeF SizeThatFits(SizeF size)
+		public override CGSize SizeThatFits(CGSize size)
 		{
 			var result = base.SizeThatFits(size);
 
