@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 
@@ -96,31 +95,6 @@ namespace Xamarin.Forms
 		protected virtual void OnScrollToRequested(ScrollToRequestEventArgs e)
 		{
 			ScrollToRequested?.Invoke(this, e);
-		}
-	}
-
-	public enum SelectionMode 
-	{
-		None,
-		Single,
-		Multiple
-	}
-
-	public class SelectionChangedEventArgs : EventArgs
-	{
-		public IReadOnlyList<object> PreviousSelection { get; }
-		public IReadOnlyList<object> CurrentSelection { get; }
-
-		public SelectionChangedEventArgs(object previousSelection, object currentSelection)
-		{
-			PreviousSelection = previousSelection != null ? new List<object> { previousSelection } : new List<object>();
-			CurrentSelection = currentSelection != null ? new List<object> { currentSelection } : new List<object>();
-		}
-
-		public SelectionChangedEventArgs(List<object> previousSelection, List<object> currentSelection)
-		{
-			PreviousSelection = previousSelection ?? throw new ArgumentNullException(nameof(previousSelection));
-			CurrentSelection = currentSelection ?? throw new ArgumentNullException(nameof(currentSelection));
 		}
 	}
 }

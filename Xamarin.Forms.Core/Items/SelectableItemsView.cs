@@ -48,11 +48,19 @@ namespace Xamarin.Forms
 
 		protected virtual void OnSelectionChanged(SelectionChangedEventArgs args)
 		{
-			var command = SelectionChangedCommand;
+		}
+
+		static void SelectedItemPropertyChanged(BindableObject bindable, object oldValue, object newValue)
+		{
+			var selectableItemsView = (SelectableItemsView)bindable;
+
+			var args = new SelectionChangedEventArgs(oldValue, newValue);
+
+			var command = selectableItemsView.SelectionChangedCommand;
 
 			if (command != null)
 			{
-				var commandParameter = SelectionChangedCommandParameter;
+				var commandParameter = selectableItemsView.SelectionChangedCommandParameter;
 
 				if (command.CanExecute(commandParameter))
 				{
@@ -60,12 +68,8 @@ namespace Xamarin.Forms
 				}
 			}
 			
-			SelectionChanged?.Invoke(this, args);
-		}
+			selectableItemsView.SelectionChanged?.Invoke(selectableItemsView, args);
 
-		static void SelectedItemPropertyChanged(BindableObject bindable, object oldValue, object newValue)
-		{
-			var args = new SelectionChangedEventArgs(oldValue, newValue);
 			((SelectableItemsView)bindable).OnSelectionChanged(args);
 		}
 	}
