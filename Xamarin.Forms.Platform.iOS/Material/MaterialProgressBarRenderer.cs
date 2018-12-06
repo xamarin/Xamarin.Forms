@@ -1,15 +1,18 @@
 using System.ComponentModel;
-using UIKit;
-using SizeF = CoreGraphics.CGSize;
-using MProgressView = MaterialComponents.ProgressView;
-using Xamarin.Forms;
 using CoreGraphics;
+using UIKit;
+using Xamarin.Forms;
+using MProgressView = MaterialComponents.ProgressView;
 
 [assembly: ExportRenderer(typeof(Xamarin.Forms.ProgressBar), typeof(Xamarin.Forms.Platform.iOS.Material.MaterialProgressBarRenderer), new[] { typeof(VisualRendererMarker.Material) })]
+
 namespace Xamarin.Forms.Platform.iOS.Material
 {
 	public class MaterialProgressBarRenderer : ViewRenderer<ProgressBar, MProgressView>
 	{
+		UIColor _defaultTrackColor;
+		UIColor _defaultProgressColor;
+
 		public MaterialProgressBarRenderer()
 		{
 			VisualElement.VerifyVisualFlagEnabled();
@@ -17,29 +20,46 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 		protected override void OnElementChanged(ElementChangedEventArgs<ProgressBar> e)
 		{
+			base.OnElementChanged(e);
+
 			if (e.NewElement != null)
 			{
 				if (Control == null)
-					SetNativeControl(new MProgressView());
+				{
+					SetNativeControl(CreateNativeControl());
+				}
 
 				UpdateProgressColor();
 				UpdateProgress();
 			}
 
-			base.OnElementChanged(e);
-			Control.SetHidden(false, true, (completion) => { });
+			Control.SetHidden(false, true, null);
+
 			Element.WidthRequest = 10;
 		}
 
+		// TODO: wait for Google to implement the themer
+		//protected virtual IColorScheming CreateColorScheme()
+		//{
+		//	return MaterialColors.Light.CreateColorScheme();
+		//}
 
-		public override SizeF SizeThatFits(SizeF size)
+		protected override MProgressView CreateNativeControl()
+		{
+			var progressBar = new MProgressView();
+			// TODO: wait for Google to implement this:
+			//       ProgressViewColorThemer
+			return progressBar;
+		}
+
+		public override CGSize SizeThatFits(CGSize size)
 		{
 			var result = base.SizeThatFits(size);
 			var height = result.Height;
 
-			if(height == 0)
+			if (height == 0)
 			{
-				if(System.nfloat.IsInfinity(size.Height))
+				if (System.nfloat.IsInfinity(size.Height))
 				{
 					height = 5;
 				}
@@ -49,7 +69,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 				}
 
 			}
-			return new SizeF(10, height);
+			return new CGSize(10, height);
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -66,18 +86,34 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		{
 			base.SetBackgroundColor(color);
 
-			if (Control == null || color == Color.Default)
+			if (Control == null)
 				return;
 
-			Control.TrackTintColor = color.ToUIColor();
+			if (color.IsDefault && _defaultTrackColor == null)
+				return;
+
+			if (_defaultTrackColor == null)
+				_defaultTrackColor = Control.TrackTintColor;
+
+			if (color.IsDefault)
+				Control.TrackTintColor = _defaultTrackColor;
+			else
+				Control.TrackTintColor = color.ToUIColor();
 		}
 
 		void UpdateProgressColor()
 		{
-			if (Element.ProgressColor == Color.Default)
+			Color color = Element.ProgressColor;
+			if (color.IsDefault && _defaultProgressColor == null)
 				return;
 
-			Control.ProgressTintColor = Element.ProgressColor.ToUIColor();
+			if (_defaultProgressColor == null)
+				_defaultProgressColor = Control.ProgressTintColor;
+
+			if (color.IsDefault)
+				Control.ProgressTintColor = _defaultProgressColor;
+			else
+				Control.ProgressTintColor = color.ToUIColor();
 		}
 
 		void UpdateProgress()
