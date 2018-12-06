@@ -3,9 +3,9 @@ using System.Collections.ObjectModel;
 
 namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 {
-	internal class ItemAdder : ObservableCollectionModifier
+	internal class ItemInserter : ObservableCollectionModifier
 	{
-		public ItemAdder(CollectionView cv) : base(cv, "Adder")
+		public ItemInserter(CollectionView cv) : base(cv, "Insert")
 		{
 		}
 
@@ -13,7 +13,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 		{
 			var index = indexes[0];
 
-			if (index > -1 && (index < observableCollection.Count || index == 0))
+			if (index > -1 && index < observableCollection.Count)
 			{
 				var item = new CollectionViewGalleryTestItem(DateTime.Now, "Inserted", "oasis.jpg", index);
 				observableCollection.Insert(index, item);
@@ -21,3 +21,4 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 		}
 	}
 }
+
