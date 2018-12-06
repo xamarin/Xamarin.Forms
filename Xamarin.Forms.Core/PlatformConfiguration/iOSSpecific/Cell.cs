@@ -13,7 +13,7 @@
 			=> element.SetValue(DefaultBackgroundColorProperty, value);
 
 		public static Color DefaultBackgroundColor(this IPlatformElementConfiguration<iOS, FormsElement> config)
-		=> GetDefaultBackgroundColor(config.Element);
+			=> GetDefaultBackgroundColor(config.Element);
 
 		public static IPlatformElementConfiguration<iOS, FormsElement> SetDefaultBackgroundColor(this IPlatformElementConfiguration<iOS, FormsElement> config, Color value)
 		{
