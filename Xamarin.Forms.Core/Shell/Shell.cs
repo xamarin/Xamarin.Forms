@@ -322,7 +322,7 @@ namespace Xamarin.Forms
 			OnNavigated(new ShellNavigatedEventArgs(oldState, CurrentState, source));
 		}
 
-		public static Shell CurrentShell => Application.Current?.MainPage as Shell ?? throw new InvalidOperationException("Application.Current.MainPage is not a Shell");
+		public static Shell CurrentShell => Application.Current?.MainPage as Shell;
 
 		public async Task GoToAsync(ShellNavigationState state, bool animate = true)
 		{
