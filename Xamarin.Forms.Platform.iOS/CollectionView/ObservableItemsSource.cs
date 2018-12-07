@@ -11,10 +11,10 @@ namespace Xamarin.Forms.Platform.iOS
 		readonly UICollectionView _collectionView;
 		readonly IList _itemsSource;
 
-		public ObservableItemsSource(IEnumerable itemSource, UICollectionView collectionView)
+		public ObservableItemsSource(IList itemSource, UICollectionView collectionView)
 		{
 			_collectionView = collectionView;
-			_itemsSource = (IList)itemSource;
+			_itemsSource = itemSource;
 
 			((INotifyCollectionChanged)itemSource).CollectionChanged += CollectionChanged;
 		}
