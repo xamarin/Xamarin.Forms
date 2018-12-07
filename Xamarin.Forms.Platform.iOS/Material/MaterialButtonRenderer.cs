@@ -86,12 +86,17 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			}
 		}
 
+		protected virtual IColorScheming CreateColorScheme()
+		{
+			return MaterialColors.Light.CreateColorScheme();
+		}
+
 		protected virtual ButtonScheme CreateButtonScheme()
 		{
 			return new ButtonScheme
 			{
 				TypographyScheme = new TypographyScheme(),
-				ColorScheme = MaterialColors.Light.CreateColorScheme()
+				ColorScheme = CreateColorScheme()
 			};
 		}
 
@@ -227,35 +232,24 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 		async void UpdateImage()
 		{
-			IImageSourceHandler handler;
-			FileImageSource source = Element.Image;
+			UIButton button = Control;
+			if (button == null)
+				return;
 
-			if (source != null && (handler = Internals.Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(source)) != null)
+			var uiimage = await Element.Image.GetNativeImageAsync();
+			if (uiimage != null)
 			{
-				UIImage uiimage;
-				try
-				{
-					uiimage = await handler.LoadImageAsync(source, scale: (float)UIScreen.MainScreen.Scale);
-				}
-				catch (OperationCanceledException)
-				{
-					uiimage = null;
-				}
-				UIButton button = Control;
-				if (button != null && uiimage != null)
-				{
-					button.SetImage(uiimage.ImageWithRenderingMode(UIImageRenderingMode.AlwaysOriginal), UIControlState.Normal);
-					button.ImageView.ContentMode = UIViewContentMode.ScaleAspectFit;
+				button.SetImage(uiimage.ImageWithRenderingMode(UIImageRenderingMode.AlwaysOriginal), UIControlState.Normal);
+				button.ImageView.ContentMode = UIViewContentMode.ScaleAspectFit;
 
-					ComputeEdgeInsets(Control, Element.ContentLayout);
+				ComputeEdgeInsets(Control, Element.ContentLayout);
 
-					// disable tint for now
-					// button.SetImageTintColor(UIColor.White, UIControlState.Normal);
-				}
+				// disable tint for now
+				// button.SetImageTintColor(UIColor.White, UIControlState.Normal);
 			}
 			else
 			{
-				Control.SetImage(null, UIControlState.Normal);
+				button.SetImage(null, UIControlState.Normal);
 				ClearEdgeInsets();
 			}
 

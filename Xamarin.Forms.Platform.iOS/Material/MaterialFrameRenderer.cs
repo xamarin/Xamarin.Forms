@@ -52,11 +52,16 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			base.Dispose(disposing);
 		}
 
+		protected virtual IColorScheming CreateColorScheme()
+		{
+			return MaterialColors.Light.CreateColorScheme();
+		}
+
 		protected virtual CardScheme CreateCardScheme()
 		{
 			return new CardScheme
 			{
-				ColorScheme = MaterialColors.Light.CreateColorScheme()
+				ColorScheme = CreateColorScheme()
 			};
 		}
 

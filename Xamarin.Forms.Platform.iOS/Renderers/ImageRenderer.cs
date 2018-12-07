@@ -120,6 +120,27 @@ namespace Xamarin.Forms.Platform.iOS
 		Task<UIImage> LoadImageAsync(ImageSource imagesource, CancellationToken cancelationToken = default(CancellationToken), float scale = 1);
 	}
 
+	internal static class ImageSourceExtensions
+	{
+		public static async Task<UIImage> GetNativeImageAsync(this ImageSource source)
+		{
+			IImageSourceHandler handler;
+			if (source != null && (handler = Internals.Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(source)) != null)
+			{
+				try
+				{
+					return await handler.LoadImageAsync(source, scale: (float)UIScreen.MainScreen.Scale);
+				}
+				catch (OperationCanceledException)
+				{
+					// no-op
+				}
+			}
+
+			return null;
+		}
+	}
+
 	public sealed class FileImageSourceHandler : IImageSourceHandler
 	{
 		public Task<UIImage> LoadImageAsync(ImageSource imagesource, CancellationToken cancelationToken = default(CancellationToken), float scale = 1f)
