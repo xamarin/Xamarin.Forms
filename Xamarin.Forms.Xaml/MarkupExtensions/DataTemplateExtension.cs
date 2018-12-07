@@ -2,7 +2,7 @@
 
 namespace Xamarin.Forms.Xaml
 {
-	[ContentProperty("TypeName")]
+	[ContentProperty(nameof(TypeName))]
 	[ProvideCompiled("Xamarin.Forms.Build.Tasks.DataTemplateExtension")]
 	public sealed class DataTemplateExtension : IMarkupExtension<DataTemplate>
 	{
