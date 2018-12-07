@@ -118,7 +118,7 @@
     <file src="..\Xamarin.Forms.Build.Tasks\bin\$Configuration$\net46\Mono.Cecil.Mdb.dll" target="build\net46" />
     <file src="..\Xamarin.Forms.Build.Tasks\bin\$Configuration$\net46\Mono.Cecil.Pdb.dll" target="build\net46" />
     <file src="..\Xamarin.Forms.Build.Tasks\bin\$Configuration$\net46\Mono.Cecil.Rocks.dll" target="build\net46" />
-    <file src="..\Xamarin.Forms.Build.Tasks\bin\$Configuration$\net46\System.CodeDom.dll" target="build\net46" />
+    <file src="..\Xamarin.Forms.Build.Tasks\bin\$Configuration$\net46\System.ValueTuple.dll" target="build\net46" />
 
     <!-- Xaml Design-time Stuff -->
     <file src="..\Xamarin.Forms.Core.Design\bin\$Configuration$\Xamarin.Forms.Core.Design.dll" target="lib\netstandard2.0\Design" />
