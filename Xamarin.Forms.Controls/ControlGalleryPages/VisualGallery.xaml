@@ -69,6 +69,10 @@
             <Button Text="Any Button" />
             -->
 
+            <Slider Minimum="-100" Maximum="100" />
+
+            <Slider Minimum="-100" Maximum="100" ThumbColor="Red" MaximumTrackColor="Blue" MinimumTrackColor="Green" />
+
         </StackLayout>
     </ScrollView>
 

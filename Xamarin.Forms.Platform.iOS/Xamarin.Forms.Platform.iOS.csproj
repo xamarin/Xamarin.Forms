@@ -212,6 +212,7 @@
     <Compile Include="Extensions\AccessibilityExtensions.cs" />
     <Compile Include="Material\MaterialFrameRenderer.cs" />
     <Compile Include="Material\MaterialColors.cs" />
+    <Compile Include="Material\MaterialSliderRenderer.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\StringResources.ar.resx" />
