@@ -2,7 +2,6 @@ using System;
 using Android.Content;
 using Android.Support.V7.Widget;
 using Android.Widget;
-using Java.Lang;
 using AView = Android.Views.View;
 using Object = Java.Lang.Object;
 using ViewGroup = Android.Views.ViewGroup;
