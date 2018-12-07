@@ -66,7 +66,7 @@ namespace Xamarin.Forms
 
 		bool IsEnabledCore
 		{
-			set => SetValueCore(IsEnabledProperty, value);
+			set => SetValueCore(IsEnabledPropertyKey, value);
 		}
 
 		public event EventHandler Clicked;
