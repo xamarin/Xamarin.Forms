@@ -12,6 +12,7 @@ namespace Xamarin.Forms.Platform.iOS
 		readonly ItemsView _itemsView;
 		readonly ItemsViewLayout _layout;
 		bool _initialConstraintsSet;
+		int _previousCount = -1;
 
 		public CollectionViewController(ItemsView itemsView, ItemsViewLayout layout) : base(layout)
 		{
@@ -42,7 +43,18 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override nint GetItemsCount(UICollectionView collectionView, nint section)
 		{
-			return _itemsSource.Count;
+			var count = _itemsSource.Count;
+
+			if (_previousCount == 0 && count > 0)
+			{
+				// We've moved from no items to having at least one item; it's likely that the layout needs to update
+				// its cell size/estimate
+				_layout?.SetNeedCellSizeUpdate();
+			}
+
+			_previousCount = count;
+
+			return count;
 		}
 
 		public override void ViewDidLoad()
@@ -50,7 +62,6 @@ namespace Xamarin.Forms.Platform.iOS
 			base.ViewDidLoad();
 			AutomaticallyAdjustsScrollViewInsets = false;
 			RegisterCells();
-			CollectionView.WeakDelegate = _layout;
 		}
 
 		public override void ViewWillLayoutSubviews()
