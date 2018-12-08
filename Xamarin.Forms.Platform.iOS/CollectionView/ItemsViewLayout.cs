@@ -138,10 +138,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 			// We set the EstimatedItemSize here for two reasons:
 			// 1. If we don't set it, iOS versions below 10 will crash
-			// 2. If GetProtoType() cannot return a cell because the items source is empty, we need to have
+			// 2. If GetPrototype() cannot return a cell because the items source is empty, we need to have
 			//		an estimate set so that when a cell _does_ become available (i.e., when the items source
 			//		has at least one item), Autolayout will kick in for the first cell and size it correctly
-			// If GetProtoType() _can_ return a cell, this estimate will be updated once that cell is measured
+			// If GetPrototype() _can_ return a cell, this estimate will be updated once that cell is measured
 			EstimatedItemSize = new CGSize(1, 1);
 			
 			if (!(GetPrototype() is ItemsViewCell prototype))
