@@ -70,7 +70,7 @@ namespace Xamarin.Forms
 			
 			selectableItemsView.SelectionChanged?.Invoke(selectableItemsView, args);
 
-			((SelectableItemsView)bindable).OnSelectionChanged(args);
+			selectableItemsView.OnSelectionChanged(args);
 		}
 	}
 }
