@@ -67,8 +67,9 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		{
 			base.LayoutSubviews();
 
+			// if the card's shadow has a path/shape, then use that to clip the contents
 			var content = Element?.Content;
-			if (content != null && Layer is ShapedShadowLayer shadowLayer)
+			if (content != null && Layer is ShapedShadowLayer shadowLayer && shadowLayer.ShapeLayer.Path is CGPath shapePath)
 			{
 				var renderer = Platform.GetRenderer(content);
 				if (renderer is UIView uiview)
@@ -77,7 +78,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 					var offset = CGAffineTransform.MakeTranslation((nfloat)(-padding.Left), (nfloat)(-padding.Top));
 					uiview.Layer.Mask = new CAShapeLayer
 					{
-						Path = new CGPath(shadowLayer.ShapeLayer.Path, offset)
+						Path = new CGPath(shapePath, offset)
 					};
 				}
 			}
@@ -160,7 +161,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		{
 			// set the default elevation on the first time
 			if (_defaultElevation < 0)
-				_defaultElevation = GetShadowElevation(UIControlState.Normal);
+				_defaultElevation = (nfloat)GetShadowElevation(UIControlState.Normal);
 
 			if (Element.HasShadow)
 				SetShadowElevation(_defaultElevation, UIControlState.Normal);
