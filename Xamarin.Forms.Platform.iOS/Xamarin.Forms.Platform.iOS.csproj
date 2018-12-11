@@ -44,7 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Xamarin.iOS.MaterialComponents">
-      <Version>60.1.0</Version>
+      <Version>72.1.0</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>

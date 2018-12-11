@@ -33,10 +33,6 @@ namespace Xamarin.Forms.Platform.iOS.Material
 				UpdateProgressColor();
 				UpdateProgress();
 			}
-
-			Control.SetHidden(false, true, null);
-
-			Element.WidthRequest = 10;
 		}
 
 		protected virtual IColorScheming CreateColorScheme()
@@ -109,6 +105,9 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 		void UpdateProgressColor()
 		{
+			if (Control == null)
+				return;
+
 			Color color = Element.ProgressColor;
 			if (color.IsDefault && _defaultProgressColor == null)
 				return;
@@ -124,6 +123,9 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 		void UpdateProgress()
 		{
+			if (Control == null)
+				return;
+
 			Control.Progress = (float)Element.Progress;
 		}
 	}

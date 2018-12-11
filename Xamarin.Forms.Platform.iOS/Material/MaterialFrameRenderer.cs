@@ -100,18 +100,17 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		{
 			var oldElement = Element;
 
-			var frame = element as Frame;
-			if (frame == null)
-				throw new ArgumentException("Element must be of type Frame");
-
-			Element = frame;
-
 			if (oldElement != null)
 			{
 				oldElement.PropertyChanged -= OnElementPropertyChanged;
 			}
 
-			if (element != null)
+			if (element is null)
+				Element = null;
+			else
+				Element = element as Frame ?? throw new ArgumentException("Element must be of type Frame.");
+
+			if (Element != null)
 			{
 				CardThemer.ApplyScheme(CreateCardScheme(), this);
 				Interactable = false;
@@ -125,7 +124,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 					_tracker.NativeControlUpdated += OnNativeControlUpdated;
 				}
 
-				element.PropertyChanged += OnElementPropertyChanged;
+				Element.PropertyChanged += OnElementPropertyChanged;
 
 				UpdateShadow();
 				UpdateCornerRadius();
