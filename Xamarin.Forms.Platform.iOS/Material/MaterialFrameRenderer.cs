@@ -1,5 +1,7 @@
 using System;
 using System.ComponentModel;
+using CoreAnimation;
+using CoreGraphics;
 using MaterialComponents;
 using UIKit;
 using Xamarin.Forms;
@@ -12,7 +14,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 	public class MaterialFrameRenderer : MCard,
 		IVisualElementRenderer
 	{
-		double _defaultElevation = -1f;
+		nfloat _defaultElevation = -1f;
 		nfloat _defaultCornerRadius = -1f;
 		nfloat _defaultStrokeWidth = -1f;
 		UIColor _defaultBackgroundColor;
@@ -26,8 +28,6 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		public MaterialFrameRenderer()
 		{
 			VisualElement.VerifyVisualFlagEnabled();
-
-			Interactable = false;
 		}
 
 		public Frame Element { get; private set; }
@@ -50,6 +50,37 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			}
 
 			base.Dispose(disposing);
+		}
+
+		public override void WillRemoveSubview(UIView uiview)
+		{
+			var content = Element?.Content;
+			if (content != null && uiview == Platform.GetRenderer(content))
+			{
+				uiview.Layer.Mask = null;
+			}
+
+			base.WillRemoveSubview(uiview);
+		}
+
+		public override void LayoutSubviews()
+		{
+			base.LayoutSubviews();
+
+			var content = Element?.Content;
+			if (content != null && Layer is ShapedShadowLayer shadowLayer)
+			{
+				var renderer = Platform.GetRenderer(content);
+				if (renderer is UIView uiview)
+				{
+					var padding = Element.Padding;
+					var offset = CGAffineTransform.MakeTranslation((nfloat)(-padding.Left), (nfloat)(-padding.Top));
+					uiview.Layer.Mask = new CAShapeLayer
+					{
+						Path = new CGPath(shadowLayer.ShapeLayer.Path, offset)
+					};
+				}
+			}
 		}
 
 		protected virtual IColorScheming CreateColorScheme()
@@ -83,6 +114,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			if (element != null)
 			{
 				CardThemer.ApplyScheme(CreateCardScheme(), this);
+				Interactable = false;
 
 				if (_packager == null)
 				{
