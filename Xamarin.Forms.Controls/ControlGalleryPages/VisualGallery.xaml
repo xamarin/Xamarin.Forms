@@ -45,7 +45,7 @@
                 </StackLayout>
             </Frame>
 
-            <Button Image="bank" Text="learn more" />
+            <Button Image="bank" Text="Show Alert" Clicked="OnShowAlertClicked" />
 
             <!--
             TODO: this text box is basically invisible

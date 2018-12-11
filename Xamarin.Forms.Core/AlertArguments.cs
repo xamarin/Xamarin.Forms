@@ -6,13 +6,14 @@ namespace Xamarin.Forms.Internals
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	public class AlertArguments
 	{
-		public AlertArguments(string title, string message, string accept, string cancel)
+		public AlertArguments(string title, string message, string accept, string cancel, IVisual visual = null)
 		{
 			Title = title;
 			Message = message;
 			Accept = accept;
 			Cancel = cancel;
 			Result = new TaskCompletionSource<bool>();
+			Visual = visual ?? VisualMarker.Default;
 		}
 
 		/// <summary>
@@ -36,6 +37,8 @@ namespace Xamarin.Forms.Internals
 		///     Gets the title for the alert. Can be null.
 		/// </summary>
 		public string Title { get; private set; }
+
+		public IVisual Visual { get; }
 
 		public void SetResult(bool result)
 		{
