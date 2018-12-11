@@ -1,5 +1,4 @@
 using System;
-using System.Runtime.Serialization;
 
 namespace Xamarin.Forms
 {
@@ -22,9 +21,11 @@ namespace Xamarin.Forms
 		{
 		}
 
-		protected UnsolvableConstraintsException(SerializationInfo info, StreamingContext context)
+#if NETSTANDARD2_0
+		protected UnsolvableConstraintsException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context)
 			: base(info, context)
 		{
 		}
+#endif
 	}
 }
