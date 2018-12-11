@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CoreGraphics;
 using Foundation;
+using MaterialComponents;
 using UIKit;
 using Xamarin.Forms.Internals;
 using RectangleF = CoreGraphics.CGRect;
@@ -316,6 +317,38 @@ namespace Xamarin.Forms.Platform.iOS
 		void PresentAlert(AlertArguments arguments)
 		{
 			var window = new UIWindow { BackgroundColor = Color.Transparent.ToUIColor() };
+
+			if (arguments.Visual.IsMaterial())
+			{
+				var malert = AlertController.Create(arguments.Title, arguments.Message);
+
+				if (arguments.Cancel != null)
+				{
+					malert.AddAction(AlertAction.Create(arguments.Cancel, ActionEmphasis.Low, act => {
+						window.Hidden = true;
+						arguments.SetResult(false);
+					}));
+				}
+
+				if (arguments.Accept != null)
+				{
+					malert.AddAction(AlertAction.Create(arguments.Accept, ActionEmphasis.Low, act => {
+						window.Hidden = true;
+						arguments.SetResult(true);
+					}));
+				}
+
+				var scheme = new AlertScheme();
+				AlertControllerThemer.ApplyScheme(scheme, malert);
+
+				window.RootViewController = new UIViewController();
+				window.RootViewController.View.BackgroundColor = Color.Transparent.ToUIColor();
+				window.WindowLevel = UIWindowLevel.Alert + 1;
+				window.MakeKeyAndVisible();
+				window.RootViewController.PresentViewController(malert, true, null);
+
+				return;
+			}
 
 			var alert = UIAlertController.Create(arguments.Title, arguments.Message, UIAlertControllerStyle.Alert);
 			var oldFrame = alert.View.Frame;

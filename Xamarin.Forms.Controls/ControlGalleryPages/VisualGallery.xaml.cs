@@ -35,5 +35,11 @@ namespace Xamarin.Forms.Controls
 
 			base.OnDisappearing();
 		}
+
+		async void OnShowAlertClicked(object sender, EventArgs e)
+		{
+			var result = await DisplayAlert("Material Design", "This should be a material alert.", "YAY!", "NAH");
+			await DisplayAlert("Material Design", $"You selected: {result}.", "OK");
+		}
 	}
 }
