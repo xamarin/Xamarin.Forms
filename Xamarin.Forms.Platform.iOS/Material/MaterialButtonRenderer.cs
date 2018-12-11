@@ -95,7 +95,6 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		{
 			return new ButtonScheme
 			{
-				TypographyScheme = new TypographyScheme(),
 				ColorScheme = CreateColorScheme()
 			};
 		}

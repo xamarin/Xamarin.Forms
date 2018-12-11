@@ -1,20 +1,16 @@
 using System;
 using System.ComponentModel;
 using CoreGraphics;
-using Foundation;
 using MaterialComponents;
 using UIKit;
 using Xamarin.Forms;
-using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using MSlider = MaterialComponents.Slider;
-using Specifics = Xamarin.Forms.PlatformConfiguration.iOSSpecific.Slider;
 
 [assembly: ExportRenderer(typeof(Xamarin.Forms.Slider), typeof(Xamarin.Forms.Platform.iOS.Material.MaterialSliderRenderer), new[] { typeof(VisualRendererMarker.Material) })]
 
 namespace Xamarin.Forms.Platform.iOS.Material
 {
-	public class MaterialSliderRenderer : ViewRenderer<Slider, MSlider>,
-		ISliderDelegate
+	public class MaterialSliderRenderer : ViewRenderer<Slider, MSlider>
 	{
 		UIColor _defaultMinimumTrackColor;
 		UIColor _defaultMaximumTrackColor;
@@ -47,7 +43,6 @@ namespace Xamarin.Forms.Platform.iOS.Material
 					SetNativeControl(CreateNativeControl());
 
 					Control.Continuous = true;
-					Control.Delegate = this;
 					Control.ValueChanged += OnControlValueChanged;
 				}
 
@@ -172,12 +167,5 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		{
 			Element.SetValueFromRenderer(Slider.ValueProperty, Control.Value);
 		}
-
-		// TODO: decide if we want to just by default like Android does
-		//[Export("slider:shouldJumpToValue:")]
-		//public virtual bool ShouldJumpToValue(MSlider slider, nfloat value)
-		//{
-		//	return Element?.IsSet(Specifics.UpdateOnTapProperty) == true && Element.OnThisPlatform().GetUpdateOnTap();
-		//}
 	}
 }

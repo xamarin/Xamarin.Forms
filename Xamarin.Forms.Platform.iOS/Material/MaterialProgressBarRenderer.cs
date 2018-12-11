@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using CoreGraphics;
+using MaterialComponents;
 using UIKit;
 using Xamarin.Forms;
 using MProgressView = MaterialComponents.ProgressView;
@@ -38,17 +39,22 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			Element.WidthRequest = 10;
 		}
 
-		// TODO: wait for Google to implement the themer
-		//protected virtual IColorScheming CreateColorScheme()
-		//{
-		//	return MaterialColors.Light.CreateColorScheme();
-		//}
+		protected virtual IColorScheming CreateColorScheme()
+		{
+			return MaterialColors.Light.CreateColorScheme();
+		}
 
 		protected override MProgressView CreateNativeControl()
 		{
 			var progressBar = new MProgressView();
-			// TODO: wait for Google to implement this:
-			//       ProgressViewColorThemer
+
+			// TODO: fix this once Google implements the new way
+#pragma warning disable CS0618 // Type or member is obsolete
+			var cs = CreateColorScheme();
+			var temp = new BasicColorScheme(cs.PrimaryColor);
+			ProgressViewColorThemer.ApplyColorScheme(temp, progressBar);
+#pragma warning restore CS0618 // Type or member is obsolete
+
 			return progressBar;
 		}
 
