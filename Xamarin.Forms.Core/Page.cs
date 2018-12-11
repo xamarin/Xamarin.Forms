@@ -146,7 +146,7 @@ namespace Xamarin.Forms
 			if (string.IsNullOrEmpty(cancel))
 				throw new ArgumentNullException("cancel");
 
-			var args = new AlertArguments(title, message, accept, cancel, Visual);
+			var args = new AlertArguments(title, message, accept, cancel);
 			MessagingCenter.Send(this, AlertSignalName, args);
 			return args.Result.Task;
 		}
