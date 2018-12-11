@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Concurrent;
 using System.ComponentModel;
-using System.Linq;
 using Android.App;
 using Android.Content;
 using Android.Content.Res;
@@ -9,7 +7,6 @@ using Android.OS;
 using Android.Views;
 using Android.Widget;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
-using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -53,8 +50,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnConfigurationChanged(newConfig);
 			EventHandler handler = ConfigurationChanged;
-			if (handler != null)
-				handler(this, new EventArgs());
+			handler?.Invoke(this, new EventArgs());
 		}
 
 		// FIXME: THIS SHOULD NOT BE MANDATORY
@@ -85,26 +81,17 @@ namespace Xamarin.Forms.Platform.Android
 		protected void LoadApplication(Application application)
 		{
 			if (application == null)
-				throw new ArgumentNullException("application");
+				throw new ArgumentNullException(nameof(application));
 
-			(application as IApplicationController)?.SetAppIndexingProvider(new AndroidAppIndexProvider(this));
+			(application as IApplicationController).SetAppIndexingProvider(new AndroidAppIndexProvider(this));
 
 			_application = application;
 			Xamarin.Forms.Application.SetCurrentApplication(application);
 
 			SetSoftInputMode();
 
+			application.PropertyChanged -= AppOnPropertyChanged;
 			application.PropertyChanged += AppOnPropertyChanged;
-
-			if (application?.MainPage != null)
-			{
-				var iver = Platform.GetRenderer(application.MainPage);
-				if (iver != null)
-				{
-					iver.Dispose();
-					application.MainPage.ClearValue(Platform.RendererProperty);
-				}
-			}
 
 			SetMainPage();
 		}
@@ -131,7 +118,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (Forms.IsLollipopOrNewer)
 			{
-				// Listen for the device going into power save mode so we can handle animations being disabled	
+				// Listen for the device going into power save mode so we can handle animations being disabled
 				_powerSaveModeBroadcastReceiver = new PowerSaveModeBroadcastReceiver();
 			}
 

@@ -285,7 +285,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			pageRenderer.View.ImportantForAccessibility = importantForAccessibility;
 			if (forceFocus)
 				pageRenderer.View.SendAccessibilityEvent(global::Android.Views.Accessibility.EventTypes.ViewFocused);
-			
+
 		}
 
 		void SetPageInternal(Page newRoot)
@@ -302,6 +302,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 				foreach (var root in _navModel.Roots)
 					renderersToDispose.Add(Android.Platform.GetRenderer(root));
+
+				if (Android.Platform.GetRenderer(Page) != null)
+					Page.ClearValue(Android.Platform.RendererProperty);
 
 				_navModel = new NavigationModel();
 
