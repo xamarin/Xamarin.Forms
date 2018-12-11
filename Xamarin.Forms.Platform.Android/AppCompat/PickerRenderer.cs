@@ -72,7 +72,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == Picker.TitleProperty.PropertyName)
+			if (e.PropertyName == Picker.TitleProperty.PropertyName || e.PropertyName == Picker.TitleColorProperty.PropertyName)
 				UpdatePicker();
 			else if (e.PropertyName == Picker.SelectedIndexProperty.PropertyName)
 				UpdatePicker();
@@ -140,6 +140,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		void UpdatePicker()
 		{
 			Control.Hint = Element.Title;
+
+			if (Element.TitleColor != default(Color))
+				Control.SetHintTextColor(Element.TitleColor.ToAndroid());
 
 			if (Element.SelectedIndex == -1 || Element.Items == null || Element.SelectedIndex >= Element.Items.Count)
 				Control.Text = null;

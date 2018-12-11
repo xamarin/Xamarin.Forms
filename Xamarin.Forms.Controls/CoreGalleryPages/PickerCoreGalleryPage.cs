@@ -23,6 +23,10 @@ namespace Xamarin.Forms.Controls
 			var titleContainer = new ViewContainer<Picker>(Test.Picker.Title, new Picker());
 			titleContainer.View.Title = "Title";
 
+			var titleColorContainer = new ViewContainer<Picker>(Test.Picker.Title, new Picker());
+			titleColorContainer.View.Title = "Title";
+			titleColorContainer.View.TitleColor = Color.Red;
+
 			var textColorContainer = new ViewContainer<Picker>(Test.Picker.TextColor, new Picker());
 			textColorContainer.View.Items.Add("Item 1");
 			textColorContainer.View.Items.Add("Item 2");
@@ -62,6 +66,7 @@ namespace Xamarin.Forms.Controls
 			Add(itemsContainer);
 			Add(selectedIndexContainer);
 			Add(titleContainer);
+			Add(titleColorContainer);
 			Add(textColorContainer);
 			Add(fontAttributesContainer);
 			Add(fontFamilyContainer);
