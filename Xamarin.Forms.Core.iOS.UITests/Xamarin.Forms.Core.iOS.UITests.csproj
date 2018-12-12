@@ -51,9 +51,6 @@
     <PackageReference Include="NUnit" Version="2.6.4" />
     <PackageReference Include="Xam.Plugin.DeviceInfo" Version="3.0.2" />
     <PackageReference Include="Xamarin.UITest" Version="2.2.7" />
-    <PackageReference Include="NUnitTestAdapter">
-      <Version>2.1.1</Version>
-    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseViewContainerRemoteiOS.cs" />
