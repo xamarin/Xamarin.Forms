@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -100,6 +100,7 @@
     <Compile Include="CustomRenderers.cs" />
     <Compile Include="RegistrarValidationService.cs" />
     <Compile Include="SampleNativeControl.cs" />
+    <Compile Include="SeparatorMenuItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Controls\Xamarin.Forms.Controls.csproj">
