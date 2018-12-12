@@ -49,9 +49,6 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="NUnit" Version="2.6.4" />
-    <PackageReference Include="NUnitTestAdapter">
-      <Version>2.1.1</Version>
-    </PackageReference>
     <PackageReference Include="ServiceStack.Client" Version="4.5.12" />
     <PackageReference Include="ServiceStack.Interfaces" Version="4.5.12" />
     <PackageReference Include="ServiceStack.Text" Version="4.5.12" />
