@@ -210,8 +210,9 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateTitle()
 		{
-			if (Element.TitleColor == default(Color))
+			if (!Element.IsSet(Picker.TitleColorProperty))
 			{
+				Control.HeaderTemplate = null;
 				Control.Header = Element.Title;
 			}
 			else

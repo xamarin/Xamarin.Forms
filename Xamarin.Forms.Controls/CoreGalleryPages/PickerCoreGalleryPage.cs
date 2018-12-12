@@ -23,9 +23,16 @@ namespace Xamarin.Forms.Controls
 			var titleContainer = new ViewContainer<Picker>(Test.Picker.Title, new Picker());
 			titleContainer.View.Title = "Title";
 
-			var titleColorContainer = new ViewContainer<Picker>(Test.Picker.Title, new Picker());
-			titleColorContainer.View.Title = "Title";
+			var titleColorContainer = new ViewContainer<Picker>(Test.Picker.TitleColor, new Picker());
+			titleColorContainer.View.Title = "Title Color";
 			titleColorContainer.View.TitleColor = Color.Red;
+
+			var button = new Button() { Text = "Reset color to default" };
+			button.Clicked += (o, a) => {
+				titleColorContainer.View.ClearValue(Picker.TitleColorProperty);
+			};
+
+			titleColorContainer.ContainerLayout.Children.Add(button);
 
 			var textColorContainer = new ViewContainer<Picker>(Test.Picker.TextColor, new Picker());
 			textColorContainer.View.Items.Add("Item 1");
