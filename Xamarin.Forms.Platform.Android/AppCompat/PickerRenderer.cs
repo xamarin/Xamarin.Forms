@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Linq;
 using Android.Content;
 using Android.Widget;
+using AColor = Android.Graphics.Color;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
@@ -14,6 +15,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		AlertDialog _dialog;
 		bool _disposed;
 		TextColorSwitcher _textColorSwitcher;
+		int _originalHintTextColor;
 
 		public PickerRenderer(Context context) : base(context)
 		{
@@ -59,6 +61,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					_textColorSwitcher = new TextColorSwitcher(textField.TextColors, useLegacyColorManagement);
 
 					SetNativeControl(textField);
+
+					_originalHintTextColor = Control.CurrentHintTextColor;
 				}
 				UpdateFont();
 				UpdatePicker();
@@ -140,9 +144,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		void UpdatePicker()
 		{
 			Control.Hint = Element.Title;
-
-			if (Element.TitleColor != default(Color))
+			
+			if (Element.IsSet(Picker.TitleColorProperty))
 				Control.SetHintTextColor(Element.TitleColor.ToAndroid());
+			else
+				Control.SetHintTextColor(new AColor(_originalHintTextColor));
 
 			if (Element.SelectedIndex == -1 || Element.Items == null || Element.SelectedIndex >= Element.Items.Count)
 				Control.Text = null;

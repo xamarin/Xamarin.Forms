@@ -142,8 +142,9 @@ namespace Xamarin.Forms.Platform.iOS
 			var selectedIndex = Element.SelectedIndex;
 			var items = Element.Items;
 
-			if (Element.TitleColor == default(Color))
+			if (!Element.IsSet(Picker.TitleColorProperty))
 			{
+				Control.AttributedPlaceholder = null;
 				Control.Placeholder = Element.Title;
 			}
 			else

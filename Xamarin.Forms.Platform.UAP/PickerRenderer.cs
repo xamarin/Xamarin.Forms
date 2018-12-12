@@ -217,6 +217,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 			else
 			{
+				Control.Header = null;
 				Control.HeaderTemplate = (Windows.UI.Xaml.DataTemplate)Windows.UI.Xaml.Application.Current.Resources["ComboBoxHeader"];
 				Control.DataContext = Element;
 			}
