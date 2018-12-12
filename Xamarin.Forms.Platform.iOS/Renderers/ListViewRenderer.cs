@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
@@ -41,11 +40,6 @@ namespace Xamarin.Forms.Platform.iOS
 		protected UITableViewRowAnimation InsertRowsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
 		protected UITableViewRowAnimation DeleteRowsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
 		protected UITableViewRowAnimation ReloadRowsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
-		protected UITableViewRowAnimation ReloadSectionsAnimation
-		{
-			get { return _dataSource.ReloadSectionsAnimation; }
-			set { _dataSource.ReloadSectionsAnimation = value; }
-		}
 
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
@@ -272,7 +266,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				_estimatedRowHeight = false;
 				Control.Source = _dataSource = Element.HasUnevenRows ? new UnevenListViewDataSource(_dataSource) : new ListViewDataSource(_dataSource);
-				Control.ReloadData();
+				ReloadData();
 			}
 			else if (e.PropertyName == Xamarin.Forms.ListView.IsPullToRefreshEnabledProperty.PropertyName)
 				UpdatePullToRefreshEnabled();
@@ -560,44 +554,26 @@ namespace Xamarin.Forms.Platform.iOS
 					if (e.NewStartingIndex == -1 || groupReset)
 						goto case NotifyCollectionChangedAction.Reset;
 
-					Control.BeginUpdates();
-					Control.InsertRows(GetPaths(section, e.NewStartingIndex, e.NewItems.Count), InsertRowsAnimation);
-					Control.EndUpdates();
+					InsertRows(e, section);
 
 					break;
 
 				case NotifyCollectionChangedAction.Remove:
 					if (e.OldStartingIndex == -1 || groupReset)
 						goto case NotifyCollectionChangedAction.Reset;
-					Control.BeginUpdates();
-					Control.DeleteRows(GetPaths(section, e.OldStartingIndex, e.OldItems.Count), DeleteRowsAnimation);
 
-					Control.EndUpdates();
+					DeleteRows(e, section);
 
 					if (_estimatedRowHeight && TemplatedItemsView.TemplatedItems.Count == 0)
 						InvalidateCellCache();
-
 
 					break;
 
 				case NotifyCollectionChangedAction.Move:
 					if (e.OldStartingIndex == -1 || e.NewStartingIndex == -1 || groupReset)
 						goto case NotifyCollectionChangedAction.Reset;
-					Control.BeginUpdates();
-					for (var i = 0; i < e.OldItems.Count; i++)
-					{
-						var oldi = e.OldStartingIndex;
-						var newi = e.NewStartingIndex;
 
-						if (e.NewStartingIndex < e.OldStartingIndex)
-						{
-							oldi += i;
-							newi += i;
-						}
-
-						Control.MoveRow(NSIndexPath.FromRowSection(oldi, section), NSIndexPath.FromRowSection(newi, section));
-					}
-					Control.EndUpdates();
+					MoveRows(e, section);
 
 					if (_estimatedRowHeight && e.OldStartingIndex == 0)
 						InvalidateCellCache();
@@ -607,21 +583,99 @@ namespace Xamarin.Forms.Platform.iOS
 				case NotifyCollectionChangedAction.Replace:
 					if (e.OldStartingIndex == -1 || groupReset)
 						goto case NotifyCollectionChangedAction.Reset;
-					Control.BeginUpdates();
-					Control.ReloadRows(GetPaths(section, e.OldStartingIndex, e.OldItems.Count), ReloadRowsAnimation);
-					Control.EndUpdates();
+
+					ReloadRows(e, section);
 
 					if (_estimatedRowHeight && e.OldStartingIndex == 0)
 						InvalidateCellCache();
-
 
 					break;
 
 				case NotifyCollectionChangedAction.Reset:
 					InvalidateCellCache();
-					Control.ReloadData();
+					ReloadData();
 					return;
 			}
+		}
+
+		void InsertRows(NotifyCollectionChangedEventArgs e, int section)
+		{
+			var action = new Action(() =>
+			{
+				Control.BeginUpdates();
+				Control.InsertRows(GetPaths(section, e.NewStartingIndex, e.NewItems.Count), InsertRowsAnimation);
+				Control.EndUpdates();
+			});
+
+			if (Element.OnThisPlatform().RowAnimationsEnabled())
+				action.Invoke();
+			else
+				PerformWithoutAnimation(() => { action.Invoke(); });
+		}
+
+		void DeleteRows(NotifyCollectionChangedEventArgs e, int section)
+		{
+			var action = new Action(() =>
+			{
+				Control.BeginUpdates();
+				Control.DeleteRows(GetPaths(section, e.OldStartingIndex, e.OldItems.Count), DeleteRowsAnimation);
+				Control.EndUpdates();
+			});
+
+			if (Element.OnThisPlatform().RowAnimationsEnabled())
+				action.Invoke();
+			else
+				PerformWithoutAnimation(() => { action.Invoke(); });
+		}
+
+		void MoveRows(NotifyCollectionChangedEventArgs e, int section)
+		{
+			var action = new Action(() =>
+			{
+				Control.BeginUpdates();
+				for (var i = 0; i < e.OldItems.Count; i++)
+				{
+					var oldIndex = e.OldStartingIndex;
+					var newIndex = e.NewStartingIndex;
+
+					if (e.NewStartingIndex < e.OldStartingIndex)
+					{
+						oldIndex += i;
+						newIndex += i;
+					}
+
+					Control.MoveRow(NSIndexPath.FromRowSection(oldIndex, section), NSIndexPath.FromRowSection(newIndex, section));
+				}
+				Control.EndUpdates();
+			});
+
+			if (Element.OnThisPlatform().RowAnimationsEnabled())
+				action.Invoke();
+			else
+				PerformWithoutAnimation(() => { action.Invoke(); });
+		}
+
+		void ReloadRows(NotifyCollectionChangedEventArgs e, int section)
+		{
+			var action = new Action(() =>
+			{
+				Control.BeginUpdates();
+				Control.ReloadRows(GetPaths(section, e.OldStartingIndex, e.OldItems.Count), ReloadRowsAnimation);
+				Control.EndUpdates();
+			});
+
+			if (Element.OnThisPlatform().RowAnimationsEnabled())
+				action.Invoke();
+			else
+				PerformWithoutAnimation(() => { action.Invoke(); });
+		}
+
+		void ReloadData()
+		{
+			if (Element.OnThisPlatform().RowAnimationsEnabled())
+				Control.ReloadData();
+			else
+				PerformWithoutAnimation(() => { Control.ReloadData(); });
 		}
 
 		void InvalidateCellCache()
@@ -917,7 +971,6 @@ namespace Xamarin.Forms.Platform.iOS
 			bool _isDragging;
 			bool _selectionFromNative;
 			bool _disposed;
-			public UITableViewRowAnimation ReloadSectionsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
 
 			public ListViewDataSource(ListViewDataSource source)
 			{
@@ -1195,7 +1248,11 @@ namespace Xamarin.Forms.Platform.iOS
 			public void UpdateGrouping()
 			{
 				UpdateShortNameListener();
-				_uiTableView.ReloadData();
+
+				if(List.OnThisPlatform().RowAnimationsEnabled())
+					_uiTableView.ReloadData();
+				else
+					PerformWithoutAnimation(() => { _uiTableView.ReloadData(); });
 			}
 
 			protected bool IsValidIndexPath(NSIndexPath indexPath)
@@ -1245,7 +1302,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 			void OnShortNamesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 			{
-				_uiTableView.ReloadSectionIndexTitles();
+				if (List.OnThisPlatform().RowAnimationsEnabled())
+					_uiTableView.ReloadSectionIndexTitles();
+				else
+					PerformWithoutAnimation(() => { _uiTableView.ReloadSectionIndexTitles(); });
 			}
 
 			static void SetCellBackgroundColor(UITableViewCell cell, UIColor color)
