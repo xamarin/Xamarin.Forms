@@ -29,19 +29,12 @@ namespace Xamarin.Forms.Xaml
 		}
 #endif
 
-        readonly string _unformattedMessage;
-
-        internal XamlParseException(string message, IServiceProvider serviceProvider, Exception innerException = null)
-            : this(message, GetLineInfo(serviceProvider), innerException)
-        {
-        }
-
-        public XamlParseException(string message, IXmlLineInfo xmlInfo, Exception innerException = null)
-            : base(FormatMessage(message, xmlInfo), innerException)
-        {
-            _unformattedMessage = message;
-            XmlInfo = xmlInfo;
-        }
+		public XamlParseException(string message, IXmlLineInfo xmlInfo, Exception innerException = null)
+			: this(FormatMessage(message, xmlInfo), innerException)
+		{
+			_unformattedMessage = message;
+			XmlInfo = xmlInfo;
+		}
 
         public IXmlLineInfo XmlInfo { get; private set; }
         internal string UnformattedMessage => _unformattedMessage ?? Message;
