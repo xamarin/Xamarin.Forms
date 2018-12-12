@@ -5,6 +5,8 @@ using System.Threading;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.Platform;
+using System.Diagnostics;
 
 namespace Xamarin.Forms
 {
@@ -29,6 +31,9 @@ namespace Xamarin.Forms
 
 		public Application()
 		{
+			var f = false;
+			if (f)
+				Loader.Load();
 			NavigationProxy = new NavigationImpl(this);
 			SetCurrentApplication(this);
 
