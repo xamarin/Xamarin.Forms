@@ -114,7 +114,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			_application = application ?? throw new ArgumentNullException(nameof(application));
-			(application as IApplicationController).SetAppIndexingProvider(new AndroidAppIndexProvider(this));
+			((IApplicationController)application).SetAppIndexingProvider(new AndroidAppIndexProvider(this));
 			Xamarin.Forms.Application.SetCurrentApplication(application);
 
 			if (Xamarin.Forms.Application.Current.OnThisPlatform().GetWindowSoftInputModeAdjust() != WindowSoftInputModeAdjust.Unspecified)
