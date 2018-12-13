@@ -10,7 +10,7 @@ namespace Xamarin.Forms
 				SelectionMode.None);
 
 		public static readonly BindableProperty SelectedItemProperty =
-			BindableProperty.Create(nameof(SelectedItem), typeof(object), typeof(SelectableItemsView),
+			BindableProperty.Create(nameof(SelectedItem), typeof(object), typeof(SelectableItemsView), default(object),
 				propertyChanged: SelectedItemPropertyChanged);
 
 		public static readonly BindableProperty SelectionChangedCommandProperty =
