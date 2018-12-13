@@ -1190,7 +1190,7 @@ namespace Xamarin.Forms.Platform.iOS
 						// its cell size/estimate
 						_estimatedRowHeight = false;
 					}
-					_previousCount = countOverride;
+					_wasEmpty = countOverride == 0;
 					return countOverride;
 				}
 
