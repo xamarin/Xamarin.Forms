@@ -47,12 +47,10 @@ namespace Xamarin.Forms.Platform.Android
 			for (int i = 0, size = ChildCount; i < size; i++)
 			{
 				var holder = GetChildViewHolder(GetChildAt(i));
-				if (holder != null)
+				
+				if (holder is SelectableViewHolder selectable)
 				{
-					if (holder is SelectableViewHolder selectable)
-					{
-						selectable.IsSelected = false;
-					}
+					selectable.IsSelected = false;
 				}
 			}
 		}
