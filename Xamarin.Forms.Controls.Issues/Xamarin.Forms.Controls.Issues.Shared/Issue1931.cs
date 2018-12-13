@@ -189,14 +189,13 @@ namespace Xamarin.Forms.Controls.Issues
 		{
 			RunningApp.WaitForElement(Go);
 			RunningApp.Tap(Go);
-
 			RunningApp.WaitForElement("Chicken");
 			RunningApp.Tap("Chicken");
 			RunningApp.WaitForElement(Go);
 			RunningApp.Tap(Go);
 			RunningApp.WaitForElement("Chicken");
 			RunningApp.Tap("Chicken");
-			RunningApp.WaitForElement(Success);
+			RunningApp.WaitForNoElement(Success);
 		}
 #endif
 	}
