@@ -11,7 +11,7 @@ namespace Xamarin.Forms.Controls.Issues
 {
 #if UITEST
 	[Category(UITestCategories.ManualReview)]
-	[Explicit] // Marked explicit until we have a lane for CollectionView tests
+	[Ignore("Ignoring until we have a lane to run CollectionView test (or CV is not behind a flag")] 
 #endif
 	[Preserve(AllMembers = true)]
 	[Issue(IssueTracker.Github, 4600, "[iOS] CollectionView crash with empty ObservableCollection", PlatformAffected.iOS)]
