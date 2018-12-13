@@ -12,7 +12,7 @@ namespace Xamarin.Forms.Platform.iOS
 		readonly ItemsView _itemsView;
 		readonly ItemsViewLayout _layout;
 		bool _initialConstraintsSet;
-		int _previousCount = -1;
+		bool _wasEmpty;
 
 		public CollectionViewController(ItemsView itemsView, ItemsViewLayout layout) : base(layout)
 		{
@@ -45,14 +45,14 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			var count = _itemsSource.Count;
 
-			if (_previousCount == 0 && count > 0)
+			if (_wasEmpty && count > 0)
 			{
 				// We've moved from no items to having at least one item; it's likely that the layout needs to update
 				// its cell size/estimate
 				_layout?.SetNeedCellSizeUpdate();
 			}
 
-			_previousCount = count;
+			_wasEmpty = count == 0;
 
 			return count;
 		}
