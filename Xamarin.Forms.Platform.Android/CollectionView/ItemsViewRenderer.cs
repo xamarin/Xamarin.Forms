@@ -88,10 +88,10 @@ namespace Xamarin.Forms.Platform.Android
 			var oldElement = ItemsView;
 			var newElement = (ItemsView)element;
 
-			OnElementChanged(oldElement, newElement);
-
 			TearDownOldElement(oldElement);
 			SetUpNewElement(newElement);
+
+			OnElementChanged(oldElement, newElement);
 
 			// TODO hartez 2018/06/06 20:57:12 Find out what this does, and whether we really need it	
 			element.SendViewInitialized(this);
