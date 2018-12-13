@@ -1554,6 +1554,11 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateIsRefreshing(true);
 		}
 
+		public override void ViewWillLayoutSubviews()
+		{
+			(TableView?.Source as ListViewRenderer.ListViewDataSource)?.DetermineEstimatedRowHeight();
+		}
+
 		public void UpdateRefreshControlColor(UIColor color)
 		{
 			if (RefreshControl != null)
