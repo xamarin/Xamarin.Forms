@@ -1184,7 +1184,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (Counts.TryGetValue((int)section, out countOverride))
 				{
 					Counts.Remove((int)section);
-					if (_previousCount == 0 && countOverride > 0)
+					if (_wasEmpty && countOverride > 0)
 					{
 						// We've moved from no items to having at least one item; it's likely that the layout needs to update
 						// its cell size/estimate
