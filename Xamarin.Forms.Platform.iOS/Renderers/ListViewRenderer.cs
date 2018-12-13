@@ -809,7 +809,7 @@ namespace Xamarin.Forms.Platform.iOS
 				return CalculateHeightForCell(table, firstCell);
 			}
 
-			internal override void InvalidatePrototypicalCellCache()
+			internal override void InvalidatingPrototypicalCellCache()
 			{
 				ClearPrototype();
 				_prototypicalCellByTypeOrDataTemplate.Clear();
@@ -974,9 +974,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 			UIColor DefaultBackgroundColor => UIColor.Clear;
 
-			internal virtual void InvalidatePrototypicalCellCache()
+			internal void InvalidatePrototypicalCellCache()
 			{
 				_estimatedRowHeight = false;
+				InvalidatingPrototypicalCellCache();
+			}
+
+			internal virtual void InvalidatingPrototypicalCellCache()
+			{
 			}
 
 			public override void DraggingEnded(UIScrollView scrollView, bool willDecelerate)
