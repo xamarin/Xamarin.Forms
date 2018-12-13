@@ -80,17 +80,15 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected void LoadApplication(Application application)
 		{
-			if (application == null)
-				throw new ArgumentNullException(nameof(application));
+			if (_application != null)
+				_application.PropertyChanged -= AppOnPropertyChanged;
 
+			_application = application ?? throw new ArgumentNullException(nameof(application));
 			((IApplicationController)application).SetAppIndexingProvider(new AndroidAppIndexProvider(this));
-
-			_application = application;
 			Xamarin.Forms.Application.SetCurrentApplication(application);
 
 			SetSoftInputMode();
 
-			application.PropertyChanged -= AppOnPropertyChanged;
 			application.PropertyChanged += AppOnPropertyChanged;
 
 			SetMainPage();

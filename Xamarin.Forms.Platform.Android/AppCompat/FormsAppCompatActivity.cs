@@ -113,6 +113,9 @@ namespace Xamarin.Forms.Platform.Android
 				_renderersAdded = true;
 			}
 
+			if (_application != null)
+				_application.PropertyChanged -= AppOnPropertyChanged;
+
 			_application = application ?? throw new ArgumentNullException(nameof(application));
 			((IApplicationController)application).SetAppIndexingProvider(new AndroidAppIndexProvider(this));
 			Xamarin.Forms.Application.SetCurrentApplication(application);
@@ -122,7 +125,6 @@ namespace Xamarin.Forms.Platform.Android
 
 			CheckForAppLink(Intent);
 
-			application.PropertyChanged -= AppOnPropertyChanged;
 			application.PropertyChanged += AppOnPropertyChanged;
 
 			SetMainPage();
