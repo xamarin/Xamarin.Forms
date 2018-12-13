@@ -942,7 +942,7 @@ namespace Xamarin.Forms.Platform.iOS
 			bool _isDragging;
 			bool _selectionFromNative;
 			bool _disposed;
-			int _previousCount = -1;
+			bool _wasEmpty;
 			bool _estimatedRowHeight;
 
 			public UITableViewRowAnimation ReloadSectionsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
