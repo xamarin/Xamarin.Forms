@@ -14,11 +14,10 @@ namespace Xamarin.Forms.Platform.iOS.Material
 	public class MaterialFrameRenderer : MCard,
 		IVisualElementRenderer
 	{
-		nfloat _defaultElevation = -1f;
+		CardScheme _defaultCardScheme;
+		CardScheme _cardScheme;
+
 		nfloat _defaultCornerRadius = -1f;
-		nfloat _defaultStrokeWidth = -1f;
-		UIColor _defaultBackgroundColor;
-		UIColor _defaultStrokeColor;
 
 		VisualElementPackager _packager;
 		VisualElementTracker _tracker;
@@ -84,21 +83,35 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			}
 		}
 
-		protected virtual IColorScheming CreateColorScheme()
-		{
-			return MaterialColors.Light.CreateColorScheme();
-		}
-
 		protected virtual CardScheme CreateCardScheme()
 		{
 			return new CardScheme
 			{
-				ColorScheme = CreateColorScheme()
+				ColorScheme = MaterialColors.Light.CreateColorScheme(),
+				ShapeScheme = new ShapeScheme(),
 			};
+		}
+
+		protected virtual void ApplyTheme()
+		{
+			if (Element.BorderColor == (Color)Xamarin.Forms.Frame.BorderColorProperty.DefaultValue)
+				CardThemer.ApplyScheme(_cardScheme, this);
+			else
+				CardThemer.ApplyOutlinedVariant(_cardScheme, this);
+
+			// a special case for no shadow
+			if (!Element.HasShadow)
+				SetShadowElevation(0, UIControlState.Normal);
+
+			// this is set in the theme, so we must always disable it
+			Interactable = false;
 		}
 
 		public void SetElement(VisualElement element)
 		{
+			_cardScheme?.Dispose();
+			_cardScheme = CreateCardScheme();
+
 			var oldElement = Element;
 
 			if (oldElement != null)
@@ -113,11 +126,10 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 			if (Element != null)
 			{
-				CardThemer.ApplyScheme(CreateCardScheme(), this);
-				Interactable = false;
-
 				if (_packager == null)
 				{
+					_defaultCardScheme = CreateCardScheme();
+
 					_packager = new VisualElementPackager(this);
 					_packager.Load();
 
@@ -127,10 +139,11 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 				Element.PropertyChanged += OnElementPropertyChanged;
 
-				UpdateShadow();
 				UpdateCornerRadius();
 				UpdateBorderColor();
 				UpdateBackgroundColor();
+
+				ApplyTheme();
 			}
 
 			OnElementChanged(new VisualElementChangedEventArgs(oldElement, element));
@@ -138,14 +151,30 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
+			var updatedTheme = false;
+
 			if (e.PropertyName == Xamarin.Forms.Frame.HasShadowProperty.PropertyName)
-				UpdateShadow();
+			{
+				// this is handled in ApplyTheme
+				updatedTheme = true;
+			}
 			else if (e.PropertyName == Xamarin.Forms.Frame.CornerRadiusProperty.PropertyName)
+			{
 				UpdateCornerRadius();
+			}
 			else if (e.PropertyName == Xamarin.Forms.Frame.BorderColorProperty.PropertyName)
+			{
 				UpdateBorderColor();
+				updatedTheme = true;
+			}
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
+			{
 				UpdateBackgroundColor();
+				updatedTheme = true;
+			}
+
+			if (updatedTheme)
+				ApplyTheme();
 		}
 
 		protected virtual void OnElementChanged(VisualElementChangedEventArgs e)
@@ -155,18 +184,6 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 		void OnNativeControlUpdated(object sender, EventArgs eventArgs)
 		{
-		}
-
-		void UpdateShadow()
-		{
-			// set the default elevation on the first time
-			if (_defaultElevation < 0)
-				_defaultElevation = (nfloat)GetShadowElevation(UIControlState.Normal);
-
-			if (Element.HasShadow)
-				SetShadowElevation(_defaultElevation, UIControlState.Normal);
-			else
-				SetShadowElevation(0, UIControlState.Normal);
 		}
 
 		void UpdateCornerRadius()
@@ -184,35 +201,26 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 		void UpdateBorderColor()
 		{
-			// set the default stroke properties on the first time
-			if (_defaultStrokeColor == null)
-				_defaultStrokeColor = GetBorderColorForState(UIControlState.Normal);
-			if (_defaultStrokeWidth < 0)
-				_defaultStrokeWidth = GetBorderWidth(UIControlState.Normal);
-
-			var borderColor = Element.BorderColor;
-			if (borderColor.IsDefault)
+			if (_cardScheme.ColorScheme is SemanticColorScheme colorScheme)
 			{
-				SetBorderColor(_defaultStrokeColor, UIControlState.Normal);
-				SetBorderWidth(_defaultStrokeWidth, UIControlState.Normal);
-			}
-			else
-			{
-				SetBorderColor(borderColor.ToUIColor(), UIControlState.Normal);
-				SetBorderWidth(1f, UIControlState.Normal);
+				var borderColor = Element.BorderColor;
+				if (borderColor == (Color)Xamarin.Forms.Frame.BorderColorProperty.DefaultValue)
+					colorScheme.OnSurfaceColor = _defaultCardScheme.ColorScheme.OnSurfaceColor;
+				else
+					colorScheme.OnSurfaceColor = borderColor.ToUIColor();
 			}
 		}
 
 		void UpdateBackgroundColor()
 		{
-			if (_defaultBackgroundColor == null)
-				_defaultBackgroundColor = BackgroundColor;
-
-			var bgColor = Element.BackgroundColor;
-			if (bgColor.IsDefault)
-				BackgroundColor = _defaultBackgroundColor;
-			else
-				BackgroundColor = bgColor.ToUIColor();
+			if (_cardScheme.ColorScheme is SemanticColorScheme colorScheme)
+			{
+				var bgColor = Element.BackgroundColor;
+				if (bgColor == (Color)VisualElement.BackgroundColorProperty.DefaultValue)
+					colorScheme.SurfaceColor = _defaultCardScheme.ColorScheme.SurfaceColor;
+				else
+					colorScheme.SurfaceColor = bgColor.ToUIColor();
+			}
 		}
 
 		// IVisualElementRenderer

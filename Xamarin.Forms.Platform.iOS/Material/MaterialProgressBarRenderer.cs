@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel;
 using CoreGraphics;
 using MaterialComponents;
@@ -11,8 +12,10 @@ namespace Xamarin.Forms.Platform.iOS.Material
 {
 	public class MaterialProgressBarRenderer : ViewRenderer<ProgressBar, MProgressView>
 	{
-		UIColor _defaultTrackColor;
-		UIColor _defaultProgressColor;
+		const float BackgroundAlpha = 0.3f;
+
+		BasicColorScheme _defaultColorScheme;
+		BasicColorScheme _colorScheme;
 
 		public MaterialProgressBarRenderer()
 		{
@@ -21,37 +24,51 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 		protected override void OnElementChanged(ElementChangedEventArgs<ProgressBar> e)
 		{
+			_colorScheme?.Dispose();
+			_colorScheme = CreateColorScheme();
+
 			base.OnElementChanged(e);
 
 			if (e.NewElement != null)
 			{
 				if (Control == null)
 				{
+					_defaultColorScheme = CreateColorScheme();
+
 					SetNativeControl(CreateNativeControl());
 				}
 
 				UpdateProgressColor();
 				UpdateProgress();
+
+				ApplyTheme();
 			}
 		}
 
-		protected virtual IColorScheming CreateColorScheme()
+		protected virtual BasicColorScheme CreateColorScheme()
 		{
-			return MaterialColors.Light.CreateColorScheme();
+			// TODO: Fix this once Google implements the new way.
+			//       Right now, copy what is done with the activity indicator.
+
+			var cs = MaterialColors.Light.CreateColorScheme();
+			return new BasicColorScheme(
+				cs.PrimaryColor,
+				cs.PrimaryColor.ColorWithAlpha(BackgroundAlpha),
+				cs.PrimaryColor);
+		}
+
+		protected virtual void ApplyTheme()
+		{
+			// TODO: Fix this once Google implements the new way.
+
+#pragma warning disable CS0618 // Type or member is obsolete
+			ProgressViewColorThemer.ApplyColorScheme(_colorScheme, Control);
+#pragma warning restore CS0618 // Type or member is obsolete
 		}
 
 		protected override MProgressView CreateNativeControl()
 		{
-			var progressBar = new MProgressView();
-
-			// TODO: fix this once Google implements the new way
-#pragma warning disable CS0618 // Type or member is obsolete
-			var cs = CreateColorScheme();
-			var temp = new BasicColorScheme(cs.PrimaryColor);
-			ProgressViewColorThemer.ApplyColorScheme(temp, progressBar);
-#pragma warning restore CS0618 // Type or member is obsolete
-
-			return progressBar;
+			return new MProgressView();
 		}
 
 		public override CGSize SizeThatFits(CGSize size)
@@ -61,16 +78,12 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 			if (height == 0)
 			{
-				if (System.nfloat.IsInfinity(size.Height))
-				{
-					height = 5;
-				}
+				if (nfloat.IsInfinity(size.Height))
+					height = 4;
 				else
-				{
 					height = size.Height;
-				}
-
 			}
+
 			return new CGSize(10, height);
 		}
 
@@ -78,47 +91,85 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		{
 			base.OnElementPropertyChanged(sender, e);
 
+			var updatedTheme = false;
 			if (e.PropertyName == ProgressBar.ProgressColorProperty.PropertyName)
+			{
 				UpdateProgressColor();
+				updatedTheme = true;
+			}
 			else if (e.PropertyName == ProgressBar.ProgressProperty.PropertyName)
+			{
 				UpdateProgress();
+			}
+
+			if (updatedTheme)
+				ApplyTheme();
 		}
 
 		protected override void SetBackgroundColor(Color color)
 		{
-			base.SetBackgroundColor(color);
+			// Do not call base to avoid the actual background view changing color.
+			//base.SetBackgroundColor(color);
 
 			if (Control == null)
 				return;
 
-			if (color.IsDefault && _defaultTrackColor == null)
-				return;
-
-			if (_defaultTrackColor == null)
-				_defaultTrackColor = Control.TrackTintColor;
-
-			if (color.IsDefault)
-				Control.TrackTintColor = _defaultTrackColor;
-			else
-				Control.TrackTintColor = color.ToUIColor();
+			UpdateAllColors();
+			ApplyTheme();
 		}
 
 		void UpdateProgressColor()
 		{
-			if (Control == null)
-				return;
+			UpdateAllColors();
+		}
 
-			Color color = Element.ProgressColor;
-			if (color.IsDefault && _defaultProgressColor == null)
-				return;
+		void UpdateAllColors()
+		{
+			// TODO: Fix this once Google implements the new way.
+			//       Right now, copy what is done with the activity indicator.
 
-			if (_defaultProgressColor == null)
-				_defaultProgressColor = Control.ProgressTintColor;
+			Color progressColor = Element.ProgressColor;
+			Color backgroundColor = Element.BackgroundColor;
 
-			if (color.IsDefault)
-				Control.ProgressTintColor = _defaultProgressColor;
+			var isDefaultProgress = progressColor == (Color)ActivityIndicator.ColorProperty.DefaultValue;
+			var isDefaultBackground = backgroundColor == (Color)VisualElement.BackgroundColorProperty.DefaultValue;
+
+			// reset everything to defaults
+			if (isDefaultProgress && isDefaultBackground)
+			{
+				_colorScheme = new BasicColorScheme(
+					_defaultColorScheme.PrimaryColor,
+					_defaultColorScheme.PrimaryLightColor,
+					_defaultColorScheme.PrimaryColor);
+			}
+			else if (isDefaultProgress && !isDefaultBackground)
+			{
+				// handle the case where only the progress is set
+				var background = backgroundColor.ToUIColor();
+				_colorScheme = new BasicColorScheme(
+					background,
+					background.ColorWithAlpha(BackgroundAlpha),
+					background);
+			}
+			else if (!isDefaultProgress && isDefaultBackground)
+			{
+				// handle the case where only the background is set
+				var progress = progressColor.ToUIColor();
+				_colorScheme = new BasicColorScheme(
+					progress,
+					progress.ColorWithAlpha(BackgroundAlpha),
+					progress);
+			}
 			else
-				Control.ProgressTintColor = color.ToUIColor();
+			{
+				var background = backgroundColor.ToUIColor();
+				var progress = progressColor.ToUIColor();
+
+				_colorScheme = new BasicColorScheme(
+					progress,
+					background.ColorWithAlpha(BackgroundAlpha),
+					progress);
+			}
 		}
 
 		void UpdateProgress()

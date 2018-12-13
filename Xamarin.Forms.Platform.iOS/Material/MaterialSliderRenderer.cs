@@ -12,9 +12,8 @@ namespace Xamarin.Forms.Platform.iOS.Material
 {
 	public class MaterialSliderRenderer : ViewRenderer<Slider, MSlider>
 	{
-		UIColor _defaultMinimumTrackColor;
-		UIColor _defaultMaximumTrackColor;
-		UIColor _defaultThumbColor;
+		SemanticColorScheme _defaultColorScheme;
+		SemanticColorScheme _colorScheme;
 
 		public MaterialSliderRenderer()
 		{
@@ -34,12 +33,17 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Slider> e)
 		{
+			_colorScheme?.Dispose();
+			_colorScheme = CreateColorScheme();
+
 			base.OnElementChanged(e);
 
 			if (e.NewElement != null)
 			{
 				if (Control == null)
 				{
+					_defaultColorScheme = CreateColorScheme();
+
 					SetNativeControl(CreateNativeControl());
 
 					Control.Continuous = true;
@@ -49,20 +53,30 @@ namespace Xamarin.Forms.Platform.iOS.Material
 				UpdateMaximum();
 				UpdateMinimum();
 				UpdateValue();
-				UpdateSliderColors();
+
+				ApplyTheme();
 			}
 		}
 
-		protected virtual IColorScheming CreateColorScheme()
+		protected virtual SemanticColorScheme CreateColorScheme()
 		{
 			return MaterialColors.Light.CreateColorScheme();
 		}
 
+		protected virtual void ApplyTheme()
+		{
+			SliderColorThemer.ApplySemanticColorScheme(CreateColorScheme(), Control);
+
+			// TODO: This is not very safe as Google may change the way it
+			//       colors the control.
+			//       Right now, this must always come after the theme as this
+			//       is an unsupported operation.
+			OverrideThemeColors();
+		}
+
 		protected override MSlider CreateNativeControl()
 		{
-			var slider = new MSlider { StatefulApiEnabled = true };
-			SliderColorThemer.ApplySemanticColorScheme(CreateColorScheme(), slider);
-			return slider;
+			return new MSlider { StatefulApiEnabled = true };
 		}
 
 		public override CGSize SizeThatFits(CGSize size)
@@ -80,18 +94,26 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		{
 			base.OnElementPropertyChanged(sender, e);
 
+			var updatedTheme = false;
 			if (e.PropertyName == Slider.MaximumProperty.PropertyName)
+			{
 				UpdateMaximum();
+			}
 			else if (e.PropertyName == Slider.MinimumProperty.PropertyName)
+			{
 				UpdateMinimum();
+			}
 			else if (e.PropertyName == Slider.ValueProperty.PropertyName)
+			{
 				UpdateValue();
-			else if (e.PropertyName == Slider.MinimumTrackColorProperty.PropertyName)
-				UpdateMinimumTrackColor();
-			else if (e.PropertyName == Slider.MaximumTrackColorProperty.PropertyName)
-				UpdateMaximumTrackColor();
-			else if (e.PropertyName == Slider.ThumbColorProperty.PropertyName)
-				UpdateThumbColor();
+			}
+			else if (e.PropertyName == Slider.MinimumTrackColorProperty.PropertyName || e.PropertyName == Slider.MaximumTrackColorProperty.PropertyName || e.PropertyName == Slider.ThumbColorProperty.PropertyName)
+			{
+				updatedTheme = true;
+			}
+
+			if (updatedTheme)
+				ApplyTheme();
 		}
 
 		void UpdateMaximum()
@@ -111,56 +133,32 @@ namespace Xamarin.Forms.Platform.iOS.Material
 				Control.Value = value;
 		}
 
-		void UpdateSliderColors()
+		void OverrideThemeColors()
 		{
-			UpdateMinimumTrackColor();
-			UpdateMaximumTrackColor();
-			UpdateThumbColor();
-		}
+			Color minColor = Element.MinimumTrackColor;
+			Color maxColor = Element.MaximumTrackColor;
+			Color thumbColor = Element.ThumbColor;
 
-		void UpdateMinimumTrackColor()
-		{
-			Color color = Element.MinimumTrackColor;
-			if (color.IsDefault && _defaultMinimumTrackColor == null)
+			var isDefaultMin = minColor == (Color)Slider.MinimumTrackColorProperty.DefaultValue;
+			var isDefaultMax = maxColor == (Color)Slider.MaximumTrackColorProperty.DefaultValue;
+			var isDefaultThumb = thumbColor == (Color)Slider.ThumbColorProperty.DefaultValue;
+
+			// jump out as we want the defaults
+			if (isDefaultMin && isDefaultMax && isDefaultThumb)
 				return;
 
-			if (_defaultMinimumTrackColor == null)
-				_defaultMinimumTrackColor = Control.GetTrackFillColor(UIControlState.Normal);
+			if (!isDefaultMin)
+				Control.SetTrackFillColor(MatchAlpha(minColor, Control.GetTrackFillColor(UIControlState.Normal)), UIControlState.Normal);
+			if (!isDefaultMax)
+				Control.SetTrackBackgroundColor(MatchAlpha(maxColor, Control.GetTrackBackgroundColor(UIControlState.Normal)), UIControlState.Normal);
+			if (!isDefaultThumb)
+				Control.SetThumbColor(MatchAlpha(thumbColor, Control.GetThumbColor(UIControlState.Normal)), UIControlState.Normal);
 
-			if (color.IsDefault)
-				Control.SetTrackFillColor(_defaultMinimumTrackColor, UIControlState.Normal);
-			else
-				Control.SetTrackFillColor(color.ToUIColor(), UIControlState.Normal);
-		}
-
-		void UpdateMaximumTrackColor()
-		{
-			Color color = Element.MaximumTrackColor;
-			if (color.IsDefault && _defaultMaximumTrackColor == null)
-				return;
-
-			if (_defaultMaximumTrackColor == null)
-				_defaultMaximumTrackColor = Control.GetTrackBackgroundColor(UIControlState.Normal);
-
-			if (color.IsDefault)
-				Control.SetTrackBackgroundColor(_defaultMaximumTrackColor, UIControlState.Normal);
-			else
-				Control.SetTrackBackgroundColor(color.ToUIColor(), UIControlState.Normal);
-		}
-
-		void UpdateThumbColor()
-		{
-			Color color = Element.ThumbColor;
-			if (color.IsDefault && _defaultThumbColor == null)
-				return;
-
-			if (_defaultThumbColor == null)
-				_defaultThumbColor = Control.GetThumbColor(UIControlState.Normal);
-
-			if (color.IsDefault)
-				Control.SetThumbColor(_defaultThumbColor, UIControlState.Normal);
-			else
-				Control.SetThumbColor(color.ToUIColor(), UIControlState.Normal);
+			UIColor MatchAlpha(Color color, UIColor alphaColor)
+			{
+				alphaColor.GetRGBA(out _, out _, out _, out var a);
+				return color.ToUIColor().ColorWithAlpha(a);
+			}
 		}
 
 		void OnControlValueChanged(object sender, EventArgs eventArgs)

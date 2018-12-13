@@ -5,11 +5,26 @@ namespace Xamarin.Forms.Controls
 	public partial class VisualGallery : ContentPage
 	{
 		bool isVisible = false;
+		double percentage = 0.0;
 
 		public VisualGallery()
 		{
 			InitializeComponent();
+
+			BindingContext = this;
 		}
+
+		public double PercentageCounter
+		{
+			get { return percentage; }
+			set
+			{
+				percentage = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public double Counter => percentage * 10;
 
 		protected override void OnAppearing()
 		{
@@ -19,11 +34,11 @@ namespace Xamarin.Forms.Controls
 
 			Device.StartTimer(TimeSpan.FromSeconds(1), () =>
 			{
-				var progress = progressBar.Progress + 0.1;
+				var progress = PercentageCounter + 0.1;
 				if (progress > 1)
 					progress = 0;
 
-				progressBar.Progress = progress;
+				PercentageCounter = progress;
 
 				return isVisible;
 			});
@@ -34,12 +49,6 @@ namespace Xamarin.Forms.Controls
 			isVisible = false;
 
 			base.OnDisappearing();
-		}
-
-		async void OnShowAlertClicked(object sender, EventArgs e)
-		{
-			var result = await DisplayAlert("Material Design", "This should be a material alert.", "YAY!", "NAH");
-			await DisplayAlert("Material Design", $"You selected: {result}.", "OK");
 		}
 	}
 }
