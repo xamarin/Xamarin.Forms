@@ -554,7 +554,7 @@ namespace Xamarin.Forms.Platform.iOS
 					if (e.NewStartingIndex == -1 || groupReset)
 						goto case NotifyCollectionChangedAction.Reset;
 
-					InsertRows(e, section);
+					InsertRows(e.NewStartingIndex, e.NewItems.Count, section);
 
 					break;
 
@@ -562,7 +562,7 @@ namespace Xamarin.Forms.Platform.iOS
 					if (e.OldStartingIndex == -1 || groupReset)
 						goto case NotifyCollectionChangedAction.Reset;
 
-					DeleteRows(e, section);
+					DeleteRows(e.OldStartingIndex, e.OldItems.Count, section);
 
 					if (_estimatedRowHeight && TemplatedItemsView.TemplatedItems.Count == 0)
 						InvalidateCellCache();
@@ -573,7 +573,7 @@ namespace Xamarin.Forms.Platform.iOS
 					if (e.OldStartingIndex == -1 || e.NewStartingIndex == -1 || groupReset)
 						goto case NotifyCollectionChangedAction.Reset;
 
-					MoveRows(e, section);
+					MoveRows(e.NewStartingIndex, e.OldStartingIndex, e.OldItems.Count, section);
 
 					if (_estimatedRowHeight && e.OldStartingIndex == 0)
 						InvalidateCellCache();
@@ -584,7 +584,7 @@ namespace Xamarin.Forms.Platform.iOS
 					if (e.OldStartingIndex == -1 || groupReset)
 						goto case NotifyCollectionChangedAction.Reset;
 
-					ReloadRows(e, section);
+					ReloadRows(e.OldStartingIndex, e.OldItems.Count, section);
 
 					if (_estimatedRowHeight && e.OldStartingIndex == 0)
 						InvalidateCellCache();
@@ -598,12 +598,12 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		void InsertRows(NotifyCollectionChangedEventArgs e, int section)
+		void InsertRows(int newStartingIndex, int newItemsCount, int section)
 		{
 			var action = new Action(() =>
 			{
 				Control.BeginUpdates();
-				Control.InsertRows(GetPaths(section, e.NewStartingIndex, e.NewItems.Count), InsertRowsAnimation);
+				Control.InsertRows(GetPaths(section, newStartingIndex, newItemsCount), InsertRowsAnimation);
 				Control.EndUpdates();
 			});
 
@@ -613,12 +613,12 @@ namespace Xamarin.Forms.Platform.iOS
 				PerformWithoutAnimation(() => { action.Invoke(); });
 		}
 
-		void DeleteRows(NotifyCollectionChangedEventArgs e, int section)
+		void DeleteRows(int oldStartingIndex, int oldItemsCount, int section)
 		{
 			var action = new Action(() =>
 			{
 				Control.BeginUpdates();
-				Control.DeleteRows(GetPaths(section, e.OldStartingIndex, e.OldItems.Count), DeleteRowsAnimation);
+				Control.DeleteRows(GetPaths(section, oldStartingIndex, oldItemsCount), DeleteRowsAnimation);
 				Control.EndUpdates();
 			});
 
@@ -628,17 +628,17 @@ namespace Xamarin.Forms.Platform.iOS
 				PerformWithoutAnimation(() => { action.Invoke(); });
 		}
 
-		void MoveRows(NotifyCollectionChangedEventArgs e, int section)
+		void MoveRows(int newStartingIndex, int oldStartingIndex, int oldItemsCount, int section)
 		{
 			var action = new Action(() =>
 			{
 				Control.BeginUpdates();
-				for (var i = 0; i < e.OldItems.Count; i++)
+				for (var i = 0; i < oldItemsCount; i++)
 				{
-					var oldIndex = e.OldStartingIndex;
-					var newIndex = e.NewStartingIndex;
+					var oldIndex = oldStartingIndex;
+					var newIndex = newStartingIndex;
 
-					if (e.NewStartingIndex < e.OldStartingIndex)
+					if (newStartingIndex < oldStartingIndex)
 					{
 						oldIndex += i;
 						newIndex += i;
@@ -655,12 +655,12 @@ namespace Xamarin.Forms.Platform.iOS
 				PerformWithoutAnimation(() => { action.Invoke(); });
 		}
 
-		void ReloadRows(NotifyCollectionChangedEventArgs e, int section)
+		void ReloadRows(int oldStartingIndex, int oldItemsCount, int section)
 		{
 			var action = new Action(() =>
 			{
 				Control.BeginUpdates();
-				Control.ReloadRows(GetPaths(section, e.OldStartingIndex, e.OldItems.Count), ReloadRowsAnimation);
+				Control.ReloadRows(GetPaths(section, oldStartingIndex, oldItemsCount), ReloadRowsAnimation);
 				Control.EndUpdates();
 			});
 
