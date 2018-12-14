@@ -67,6 +67,7 @@ namespace Xamarin.Forms.Controls.Issues
 		public void DatePickerCancelShouldUnfocus()
 		{
 			RunningApp.Tap(q => q.Marked(DatePicker));
+			RunningApp.WaitForElement(q => q.Marked("OK"));
 			RunningApp.Back();
 
 			RunningApp.WaitForElement(q => q.Marked("Click to view focus state"));
@@ -74,6 +75,7 @@ namespace Xamarin.Forms.Controls.Issues
 			RunningApp.WaitForElement(q => q.Marked("unfocused"));
 
 			RunningApp.Tap(q => q.Marked("Click to focus DatePicker"));
+			RunningApp.WaitForElement(q => q.Marked("OK"));
 			RunningApp.Back();
 
 			RunningApp.WaitForElement(q => q.Marked("Click to view focus state"));
