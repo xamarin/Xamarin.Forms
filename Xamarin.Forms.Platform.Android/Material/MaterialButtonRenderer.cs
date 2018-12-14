@@ -30,7 +30,6 @@ namespace Xamarin.Forms.Platform.Android.Material
 		int _defaultCornerRadius = -1;
 		int _defaultBorderWidth = -1;
 		ColorStateList _defaultBorderColor;
-		ColorStateList _defaultBackgroundColor;
 		float _defaultFontSize = -1;
 		int? _defaultLabelFor;
 		int _defaultIconPadding = -1;
@@ -38,7 +37,6 @@ namespace Xamarin.Forms.Platform.Android.Material
 
 		bool _disposed;
 		bool _inputTransparent;
-		Lazy<TextColorSwitcher> _textColorSwitcher;
 		Thickness _paddingDeltaPix;
 		int _imageHeight = -1;
 
@@ -151,16 +149,12 @@ namespace Xamarin.Forms.Platform.Android.Material
 			{
 				this.EnsureId();
 
-				_textColorSwitcher = new Lazy<TextColorSwitcher>(
-					() => new TextColorSwitcher(TextColors, e.NewElement.UseLegacyColorManagement()));
-
 				UpdateBorder();
 				UpdateFont();
 				UpdateImage();
 				UpdatePadding();
 				UpdateText();
-				UpdateTextColor();
-				UpdateBackgroundColor();
+				UpdatePrimaryColors();
 				UpdateInputTransparent();
 
 				ElevationHelper.SetElevation(this, e.NewElement);
@@ -181,10 +175,8 @@ namespace Xamarin.Forms.Platform.Android.Material
 				UpdatePadding();
 			else if (e.PropertyName == Button.TextProperty.PropertyName || e.PropertyName == VisualElement.IsVisibleProperty.PropertyName)
 				UpdateText();
-			else if (e.PropertyName == Button.TextColorProperty.PropertyName)
-				UpdateTextColor();
-			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
-				UpdateBackgroundColor();
+			else if (e.PropertyName == Button.TextColorProperty.PropertyName || e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
+				UpdatePrimaryColors();
 			else if (e.PropertyName == VisualElement.InputTransparentProperty.PropertyName)
 				UpdateInputTransparent();
 
@@ -327,14 +319,6 @@ namespace Xamarin.Forms.Platform.Android.Material
 			}
 		}
 
-		void UpdateTextColor()
-		{
-			if (_disposed || Element == null || _textColorSwitcher == null)
-				return;
-
-			_textColorSwitcher.Value.UpdateTextColor(this, Element.TextColor);
-		}
-
 		void UpdatePadding()
 		{
 			if (Element.IsSet(Button.PaddingProperty))
@@ -397,28 +381,30 @@ namespace Xamarin.Forms.Platform.Android.Material
 			_inputTransparent = Element.InputTransparent;
 		}
 
-		void UpdateBackgroundColor()
+		void UpdatePrimaryColors()
 		{
 			if (_disposed || Element == null)
 				return;
 
+			// background
 			Color backgroundColor = Element.BackgroundColor;
-			if (backgroundColor.IsDefault && _defaultBackgroundColor == null)
-				return;
-
-			if (_defaultBackgroundColor == null)
-				_defaultBackgroundColor = AViewCompat.GetBackgroundTintList(this);
-
+			AColor background;
 			if (backgroundColor.IsDefault)
-			{
-				AViewCompat.SetBackgroundTintList(this, _defaultBackgroundColor);
-			}
+				background = MaterialColors.Light.PrimaryColor;
 			else
-			{
-				int[][] states = { new int[0] { } };
-				var bg = new ColorStateList(states, new int[] { backgroundColor.ToAndroid() });
-				AViewCompat.SetBackgroundTintList(this, bg);
-			}
+				background = backgroundColor.ToAndroid();
+
+			// text
+			Color textColor = Element.TextColor;
+			AColor text;
+			if (textColor.IsDefault)
+				text = MaterialColors.Light.OnPrimaryColor;
+			else
+				text = textColor.ToAndroid();
+
+			// apply
+			SetTextColor(MaterialColors.CreateButtonTextColors(background, text));
+			AViewCompat.SetBackgroundTintList(this, MaterialColors.CreateButtonBackgroundColors(background));
 		}
 
 		void UpdateContentEdge(Thickness? delta = null)
