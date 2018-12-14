@@ -29,6 +29,39 @@ namespace Xamarin.Forms.Platform.Android.Material
 			return new ColorStateList(ButtonStates, colors);
 		}
 
+		// State list from material-components-android
+		// https://github.com/material-components/material-components-android/blob/71694616056012fe1162adb9144be903d1e510d5/lib/java/com/google/android/material/textfield/res/values/colors.xml#L28
+		public static int CreateTextInputFilledInputBackgroundColor(AColor primary)
+		{
+			return primary.WithAlpha(0.0392);
+		}
+
+		public static ColorStateList CreateTextInputFilledPlaceholderColors(AColor color)
+		{
+			int[][] States =
+			{
+				new []{ global::Android.Resource.Attribute.StateEnabled, global::Android.Resource.Attribute.StatePressed  },
+				new int[0] { }
+			};
+
+			return new ColorStateList(
+						States,
+						new int[]{
+							color,
+							color
+						}
+				);
+
+			// this is the default 
+			//return new ColorStateList(
+			//			States,
+			//			new int[]{
+			//				-1979711488,
+			//				1627389952
+			//			}
+			//	);
+		}
+
 		internal static AColor WithAlpha(this AColor color, double alpha) =>
 			new AColor(color.R, color.G, color.B, (byte)(alpha * 255));
 

@@ -137,6 +137,7 @@
     <Compile Include="IBorderVisualElementRenderer.cs" />
     <Compile Include="IDeviceInfoProvider.cs" />
     <Compile Include="ITabStop.cs" />
+    <Compile Include="Material\MaterialContextThemeWrapper.cs" />
     <Compile Include="Material\MaterialFrameRenderer.cs" />
     <Compile Include="Material\MaterialFormsEditText.cs" />
     <Compile Include="Material\MaterialButtonRenderer.cs" />
@@ -145,6 +146,7 @@
     <Compile Include="IPickerRenderer.cs" />
     <Compile Include="Renderers\PickerEditText.cs" />
     <Compile Include="Renderers\FormsWebViewClient.cs" />
+    <Compile Include="Renderers\IFormsEditText.cs" />
     <Compile Include="Renderers\IImageViewHandler.cs" />
     <Compile Include="InnerGestureListener.cs" />
     <Compile Include="InnerScaleListener.cs" />
@@ -376,12 +378,23 @@
     </ProjectToBuild>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Resources\Layout\" />
+    <AndroidResource Include="Resources\Layout\TextInputLayoutFilledBox.axml">
+      <Generator>MSBuild:UpdateGeneratedFiles</Generator>
+      <SubType>Designer</SubType>
+    </AndroidResource>
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFrameworkVersion)' == 'v9.0' ">
     <AndroidResource Include="Resources\values\styles.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\Layout\TextInputLayoutOutlinedBox.axml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\Layout\Material\" />
   </ItemGroup>
   <Target Name="BeforeBuild" Condition=" '$(CreateAllAndroidTargets)' == 'true' ">
     <!--  create 8.1 binaries-->
