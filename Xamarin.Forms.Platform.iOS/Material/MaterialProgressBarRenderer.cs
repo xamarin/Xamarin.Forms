@@ -144,17 +144,21 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			}
 			else if (isDefaultProgress && !isDefaultBackground)
 			{
-				// handle the case where only the progress is set
+				// handle the case where only the background is set
 				var background = backgroundColor.ToUIColor();
+
+				// TODO: Potentially override background alpha to match material design.
+				// TODO: Potentially override primary color to match material design.
 				_colorScheme = new BasicColorScheme(
+					_defaultColorScheme.PrimaryColor,
 					background,
-					background.ColorWithAlpha(BackgroundAlpha),
-					background);
+					_defaultColorScheme.PrimaryColor);
 			}
 			else if (!isDefaultProgress && isDefaultBackground)
 			{
-				// handle the case where only the background is set
+				// handle the case where only the progress is set
 				var progress = progressColor.ToUIColor();
+
 				_colorScheme = new BasicColorScheme(
 					progress,
 					progress.ColorWithAlpha(BackgroundAlpha),
@@ -165,9 +169,10 @@ namespace Xamarin.Forms.Platform.iOS.Material
 				var background = backgroundColor.ToUIColor();
 				var progress = progressColor.ToUIColor();
 
+				// TODO: Potentially override alpha to match material design.
 				_colorScheme = new BasicColorScheme(
 					progress,
-					background.ColorWithAlpha(BackgroundAlpha),
+					background,
 					progress);
 			}
 		}
