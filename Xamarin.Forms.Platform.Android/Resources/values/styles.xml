@@ -4,4 +4,6 @@
   </style>
   <style name="XamarinFormsMaterialProgressBarHorizontal" parent="Widget.AppCompat.ProgressBar.Horizontal">
   </style>
+  <style name="XamarinFormsMaterialProgressBarCircular" parent="Widget.AppCompat.ProgressBar">
+  </style>
 </resources>
