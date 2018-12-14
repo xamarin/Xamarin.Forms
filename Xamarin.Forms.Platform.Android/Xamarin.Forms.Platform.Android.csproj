@@ -377,7 +377,7 @@
       <Properties>CreateAllAndroidTargets=false;Configuration=$(Configuration);Platform=$(Platform);AndroidTargetFrameworkVersion=v8.1</Properties>
     </ProjectToBuild>
   </ItemGroup>
-  <ItemGroup>
+  <ItemGroup Condition=" '$(TargetFrameworkVersion)' == 'v9.0' ">
     <AndroidResource Include="Resources\Layout\TextInputLayoutFilledBox.axml">
       <Generator>MSBuild:UpdateGeneratedFiles</Generator>
       <SubType>Designer</SubType>
@@ -388,7 +388,7 @@
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>
-  <ItemGroup>
+  <ItemGroup Condition=" '$(TargetFrameworkVersion)' == 'v9.0' ">
     <AndroidResource Include="Resources\Layout\TextInputLayoutOutlinedBox.axml">
       <SubType>Designer</SubType>
     </AndroidResource>
