@@ -91,7 +91,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			//       layer and change the color. This will be brittle.
 			//       For now, just show/hide the track.
 
-			if (color == (Color)VisualElement.BackgroundColorProperty.DefaultValue)
+			if (color.IsDefault)
 				Control.TrackEnabled = false;
 			else
 				Control.TrackEnabled = true;
@@ -105,12 +105,9 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			Color color = Element.Color;
 			Color backColor = Element.BackgroundColor;
 
-			var isDefaultColor = color == (Color)ActivityIndicator.ColorProperty.DefaultValue;
-			var isDefaultBackColor = backColor == (Color)VisualElement.BackgroundColorProperty.DefaultValue;
-
-			if (!isDefaultColor)
+			if (!color.IsDefault)
 				_colorScheme.PrimaryColor = color.ToUIColor();
-			else if (!isDefaultBackColor)
+			else if (!backColor.IsDefault)
 				_colorScheme.PrimaryColor = backColor.ToUIColor();
 			else
 				_colorScheme.PrimaryColor = _defaultColorScheme.PrimaryColor;

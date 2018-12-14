@@ -139,29 +139,25 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			Color maxColor = Element.MaximumTrackColor;
 			Color thumbColor = Element.ThumbColor;
 
-			var isDefaultMin = minColor == (Color)Slider.MinimumTrackColorProperty.DefaultValue;
-			var isDefaultMax = maxColor == (Color)Slider.MaximumTrackColorProperty.DefaultValue;
-			var isDefaultThumb = thumbColor == (Color)Slider.ThumbColorProperty.DefaultValue;
-
 			// jump out as we want the defaults
-			if (isDefaultMin && isDefaultMax && isDefaultThumb)
+			if (minColor.IsDefault && maxColor.IsDefault && thumbColor.IsDefault)
 				return;
 
 			// TODO: Potentially override alpha to match material design.
 
-			if (!isDefaultMin)
+			if (!minColor.IsDefault)
 			{
 				Control.SetTrackFillColor(minColor.ToUIColor(), UIControlState.Normal);
 
 				// if no max color was specified, then use a shade of the min
-				if (isDefaultMax)
+				if (maxColor.IsDefault)
 					Control.SetTrackBackgroundColor(MatchAlpha(minColor, Control.GetTrackBackgroundColor(UIControlState.Normal)), UIControlState.Normal);
 			}
 
-			if (!isDefaultMax)
+			if (!maxColor.IsDefault)
 				Control.SetTrackBackgroundColor(maxColor.ToUIColor(), UIControlState.Normal);
 
-			if (!isDefaultThumb)
+			if (!thumbColor.IsDefault)
 				Control.SetThumbColor(thumbColor.ToUIColor(), UIControlState.Normal);
 
 			UIColor MatchAlpha(Color color, UIColor alphaColor)

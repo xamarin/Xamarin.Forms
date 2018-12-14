@@ -29,7 +29,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 			return new ColorStateList(ButtonStates, colors);
 		}
 
-		private static AColor WithAlpha(this AColor color, double alpha) =>
+		internal static AColor WithAlpha(this AColor color, double alpha) =>
 			new AColor(color.R, color.G, color.B, (byte)(alpha * 255));
 
 		public static class Light

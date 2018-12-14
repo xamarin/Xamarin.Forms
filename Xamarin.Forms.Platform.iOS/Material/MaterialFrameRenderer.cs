@@ -94,7 +94,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 		protected virtual void ApplyTheme()
 		{
-			if (Element.BorderColor == (Color)Xamarin.Forms.Frame.BorderColorProperty.DefaultValue)
+			if (Element.BorderColor.IsDefault)
 				CardThemer.ApplyScheme(_cardScheme, this);
 			else
 				CardThemer.ApplyOutlinedVariant(_cardScheme, this);
@@ -204,7 +204,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			if (_cardScheme.ColorScheme is SemanticColorScheme colorScheme)
 			{
 				var borderColor = Element.BorderColor;
-				if (borderColor == (Color)Xamarin.Forms.Frame.BorderColorProperty.DefaultValue)
+				if (borderColor.IsDefault)
 					colorScheme.OnSurfaceColor = _defaultCardScheme.ColorScheme.OnSurfaceColor;
 				else
 					colorScheme.OnSurfaceColor = borderColor.ToUIColor();
@@ -216,7 +216,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			if (_cardScheme.ColorScheme is SemanticColorScheme colorScheme)
 			{
 				var bgColor = Element.BackgroundColor;
-				if (bgColor == (Color)VisualElement.BackgroundColorProperty.DefaultValue)
+				if (bgColor.IsDefault)
 					colorScheme.SurfaceColor = _defaultCardScheme.ColorScheme.SurfaceColor;
 				else
 					colorScheme.SurfaceColor = bgColor.ToUIColor();

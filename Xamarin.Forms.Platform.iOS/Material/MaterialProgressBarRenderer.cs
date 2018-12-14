@@ -131,18 +131,15 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			Color progressColor = Element.ProgressColor;
 			Color backgroundColor = Element.BackgroundColor;
 
-			var isDefaultProgress = progressColor == (Color)ActivityIndicator.ColorProperty.DefaultValue;
-			var isDefaultBackground = backgroundColor == (Color)VisualElement.BackgroundColorProperty.DefaultValue;
-
-			// reset everything to defaults
-			if (isDefaultProgress && isDefaultBackground)
+			if (progressColor.IsDefault && backgroundColor.IsDefault)
 			{
+				// reset everything to defaults
 				_colorScheme = new BasicColorScheme(
 					_defaultColorScheme.PrimaryColor,
 					_defaultColorScheme.PrimaryLightColor,
 					_defaultColorScheme.PrimaryColor);
 			}
-			else if (isDefaultProgress && !isDefaultBackground)
+			else if (progressColor.IsDefault && !backgroundColor.IsDefault)
 			{
 				// handle the case where only the background is set
 				var background = backgroundColor.ToUIColor();
@@ -154,7 +151,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 					background,
 					_defaultColorScheme.PrimaryColor);
 			}
-			else if (!isDefaultProgress && isDefaultBackground)
+			else if (!progressColor.IsDefault && backgroundColor.IsDefault)
 			{
 				// handle the case where only the progress is set
 				var progress = progressColor.ToUIColor();
@@ -166,6 +163,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			}
 			else
 			{
+				// handle the case where both are set
 				var background = backgroundColor.ToUIColor();
 				var progress = progressColor.ToUIColor();
 
