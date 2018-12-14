@@ -204,7 +204,7 @@
 
             <Label Text="Custom Primary Color" Margin="0,0,0,-10" />
             <Slider Minimum="-100" Maximum="100"
-                    ThumbColor="{StaticResource PrimaryColor}" MaximumTrackColor="{StaticResource PrimaryColor}" MinimumTrackColor="{StaticResource PrimaryColor}" />
+                    ThumbColor="{StaticResource PrimaryColor}" MinimumTrackColor="{StaticResource PrimaryColor}" />
 
             <Label Text="Custom Primary Color (Disabled)" Margin="0,0,0,-10" />
             <Slider Minimum="-100" Maximum="100" IsEnabled="false"

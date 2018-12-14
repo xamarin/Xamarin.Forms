@@ -147,12 +147,22 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			if (isDefaultMin && isDefaultMax && isDefaultThumb)
 				return;
 
+			// TODO: Potentially override alpha to match material design.
+
 			if (!isDefaultMin)
-				Control.SetTrackFillColor(MatchAlpha(minColor, Control.GetTrackFillColor(UIControlState.Normal)), UIControlState.Normal);
+			{
+				Control.SetTrackFillColor(minColor.ToUIColor(), UIControlState.Normal);
+
+				// if no max color was specified, then use a shade of the min
+				if (isDefaultMax)
+					Control.SetTrackBackgroundColor(MatchAlpha(minColor, Control.GetTrackBackgroundColor(UIControlState.Normal)), UIControlState.Normal);
+			}
+
 			if (!isDefaultMax)
-				Control.SetTrackBackgroundColor(MatchAlpha(maxColor, Control.GetTrackBackgroundColor(UIControlState.Normal)), UIControlState.Normal);
+				Control.SetTrackBackgroundColor(maxColor.ToUIColor(), UIControlState.Normal);
+
 			if (!isDefaultThumb)
-				Control.SetThumbColor(MatchAlpha(thumbColor, Control.GetThumbColor(UIControlState.Normal)), UIControlState.Normal);
+				Control.SetThumbColor(thumbColor.ToUIColor(), UIControlState.Normal);
 
 			UIColor MatchAlpha(Color color, UIColor alphaColor)
 			{
