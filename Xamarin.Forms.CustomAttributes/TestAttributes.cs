@@ -722,7 +722,7 @@ namespace Xamarin.Forms.CustomAttributes
 		{
 			IsChecked,
 			CheckedColor,
-			UnCheckedColor
+			UncheckedColor
 		}
 
 		public enum TimePicker

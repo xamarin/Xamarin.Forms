@@ -19,12 +19,12 @@ namespace Xamarin.Forms
 			set { SetValue(CheckedColorProperty, value); }
 		}
 
-		public static readonly BindableProperty UnCheckedColorProperty = BindableProperty.Create(nameof(UnCheckedColor), typeof(Color), typeof(CheckBox), Color.Default);
+		public static readonly BindableProperty UncheckedColorProperty = BindableProperty.Create(nameof(UncheckedColor), typeof(Color), typeof(CheckBox), Color.Default);
 
-		public Color UnCheckedColor
+		public Color UncheckedColor
 		{
-			get { return (Color)GetValue(UnCheckedColorProperty); }
-			set { SetValue(UnCheckedColorProperty, value); }
+			get { return (Color)GetValue(UncheckedColorProperty); }
+			set { SetValue(UncheckedColorProperty, value); }
 		}
 
 
