@@ -9,21 +9,23 @@ using WPFCheckBox = System.Windows.Controls.CheckBox;
 
 namespace Xamarin.Forms.Platform.WPF
 {
-	public class SwitchRenderer : ViewRenderer<Switch, WPFCheckBox>
+	public class CheckBoxRenderer : ViewRenderer<CheckBox, WPFCheckBox>
 	{
-		protected override void OnElementChanged(ElementChangedEventArgs<Switch> e)
+		protected override void OnElementChanged(ElementChangedEventArgs<CheckBox> e)
 		{
 			if (e.NewElement != null)
 			{
 				if (Control == null) // construct and SetNativeControl and suscribe control event
 				{
 					SetNativeControl(new WPFCheckBox());
-					Control.Checked += OnNativeToggled;
-					Control.Unchecked += OnNativeToggled;
+					Control.Checked += OnNativeChecked;
+					Control.Unchecked += OnNativeChecked;
+
+					
 				}
 
 				// Update control property 
-				UpdateIsToggled();
+				UpdateIsChecked();
 			}
 
 			base.OnElementChanged(e);
@@ -33,20 +35,20 @@ namespace Xamarin.Forms.Platform.WPF
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == Switch.IsToggledProperty.PropertyName)
+			if (e.PropertyName == CheckBox.IsCheckedProperty.PropertyName)
 			{
-				UpdateIsToggled();
+				UpdateIsChecked();
 			}
 		}
 
-		void UpdateIsToggled()
+		void UpdateIsChecked()
 		{
-			Control.IsChecked = Element.IsToggled;
+			Control.IsChecked = Element.IsChecked;
 		}
 
-		void OnNativeToggled(object sender, System.Windows.RoutedEventArgs e)
+		void OnNativeChecked(object sender, System.Windows.RoutedEventArgs e)
 		{
-			((IElementController)Element).SetValueFromRenderer(Switch.IsToggledProperty, Control.IsChecked);
+			((IElementController)Element).SetValueFromRenderer(CheckBox.IsCheckedProperty, Control.IsChecked);
 		}
 
 		bool _isDisposed;
@@ -60,8 +62,8 @@ namespace Xamarin.Forms.Platform.WPF
 			{
 				if (Control != null)
 				{
-					Control.Checked -= OnNativeToggled;
-					Control.Unchecked -= OnNativeToggled;
+					Control.Checked -= OnNativeChecked;
+					Control.Unchecked -= OnNativeChecked;
 				}
 			}
 
