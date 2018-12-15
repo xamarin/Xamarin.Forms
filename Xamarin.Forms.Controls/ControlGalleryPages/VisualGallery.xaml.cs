@@ -21,6 +21,7 @@ namespace Xamarin.Forms.Controls
 			{
 				percentage = value;
 				OnPropertyChanged();
+				OnPropertyChanged(nameof(Counter));
 			}
 		}
 
