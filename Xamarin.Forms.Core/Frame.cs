@@ -19,8 +19,6 @@ namespace Xamarin.Forms
 
 		readonly Lazy<PlatformConfigurationRegistry<Frame>> _platformConfigurationRegistry;
 
-		Thickness _contentPadding;
-
 		public Frame()
 		{
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Frame>>(() => new PlatformConfigurationRegistry<Frame>(this));
@@ -57,23 +55,6 @@ namespace Xamarin.Forms
 		}
 
 		int IBorderElement.CornerRadius => (int)CornerRadius;
-
-		protected override void LayoutChildren(double x, double y, double width, double height)
-		{
-			var r = new Rectangle(
-				x + _contentPadding.Left,
-				y + _contentPadding.Top,
-				width - _contentPadding.HorizontalThickness,
-				height - _contentPadding.VerticalThickness);
-
-			for (var i = 0; i < LogicalChildrenInternal.Count; i++)
-			{
-				Element element = LogicalChildrenInternal[i];
-				var child = element as View;
-				if (child != null)
-					LayoutChildIntoBoundingRegion(child, r);
-			}
-		}
 
 		// not currently used by frame
 		double IBorderElement.BorderWidth => -1d;
