@@ -166,7 +166,7 @@ namespace Xamarin.Forms.Platform.Android
 		void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == CheckBox.CheckedColorProperty.PropertyName ||
-				e.PropertyName == CheckBox.UnCheckedColorProperty.PropertyName)
+				e.PropertyName == CheckBox.UncheckedColorProperty.PropertyName)
 			{
 				UpdateOnColor();
 			}
@@ -207,7 +207,7 @@ namespace Xamarin.Forms.Platform.Android
 					{
 						disabledColor,
 						CheckBox.CheckedColor == Color.Default ? Color.Accent.ToAndroid() : CheckBox.CheckedColor.ToAndroid(),
-						CheckBox.UnCheckedColor == Color.Default ? uncheckedDefault : CheckBox.UnCheckedColor.ToAndroid(),
+						CheckBox.UncheckedColor == Color.Default ? uncheckedDefault : CheckBox.UncheckedColor.ToAndroid(),
 						disabledColor,
 					});
 				

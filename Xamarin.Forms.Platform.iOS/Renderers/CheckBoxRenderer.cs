@@ -8,7 +8,7 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class CheckBoxRenderer : ViewRenderer<CheckBox, XFCheckBox>
 	{
-		internal const float MinimumHeightWidth = 30.0f;
+		internal const float DefaultSize = 30.0f;
 
 		protected override void Dispose(bool disposing)
 		{
@@ -24,14 +24,14 @@ namespace Xamarin.Forms.Platform.iOS
 			var height = result.Height;
 			var width = result.Width;
 
-			if (height < MinimumHeightWidth)
+			if (height < DefaultSize)
 			{
-				height = MinimumHeightWidth;
+				height = DefaultSize;
 			}
 
-			if (width < MinimumHeightWidth)
+			if (width < DefaultSize)
 			{
-				width = MinimumHeightWidth;
+				width = DefaultSize;
 			}
 
 			var final = (nfloat)Math.Min(width, height);
@@ -53,7 +53,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (widthConstraint <= 0 || double.IsInfinity(widthConstraint))
 				{
-					width = MinimumHeightWidth;
+					width = DefaultSize;
 					set = true;
 				}
 			}
@@ -62,7 +62,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (heightConstraint <= 0 || double.IsInfinity(heightConstraint))
 				{
-					height = MinimumHeightWidth;
+					height = DefaultSize;
 					set = true;
 				}
 			}
@@ -71,7 +71,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if(set)
 			{
-				sizeConstraint = new SizeRequest(new Size(width, height), new Size(MinimumHeightWidth, MinimumHeightWidth));
+				sizeConstraint = new SizeRequest(new Size(width, height), new Size(DefaultSize, DefaultSize));
 			}
 
 			return sizeConstraint;
@@ -91,11 +91,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 				Control.IsChecked = Element.IsChecked;
 				Control.IsEnabled = Element.IsEnabled;
-				Control.CheckColor = UIColor.White;
+				Control.DisabledColor = Color.Default;
+				Control.CheckColor = Color.Default;
 
 				e.NewElement.CheckedChanged += OnElementChecked;
 				UpdateCheckedColor();
-				UpdateUnCheckedColor();
+				UpdateUncheckedColor();
 			}
 
 			base.OnElementChanged(e);
@@ -106,21 +107,15 @@ namespace Xamarin.Forms.Platform.iOS
 			if (Element == null)
 				return;
 
-			if (Element.CheckedColor == Color.Default)
-				Control.FillColor = null;
-			else
-				Control.FillColor = Element.CheckedColor.ToUIColor();
+			Control.CheckedColor = Element.CheckedColor;
 		}
 
-		void UpdateUnCheckedColor()
+		void UpdateUncheckedColor()
 		{
 			if (Element == null)
 				return;
 
-			if (Element.UnCheckedColor == Color.Default)
-				Control.BorderColor = null;
-			else
-				Control.BorderColor = Element.UnCheckedColor.ToUIColor();
+			Control.UncheckedColor = Element.UncheckedColor;
 		}
 
 		void OnElementCheckedChanged(object sender, EventArgs e)
@@ -139,8 +134,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (e.PropertyName == CheckBox.CheckedColorProperty.PropertyName)
 				UpdateCheckedColor();
-			else if (e.PropertyName == CheckBox.UnCheckedColorProperty.PropertyName)
-				UpdateUnCheckedColor();
+			else if (e.PropertyName == CheckBox.UncheckedColorProperty.PropertyName)
+				UpdateUncheckedColor();
 			else if (e.PropertyName == CheckBox.IsEnabledProperty.PropertyName)
 				Control.IsEnabled = Element.IsEnabled;
 		}
@@ -186,8 +181,21 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		UIColor _checkColor, _fillColor, _borderColor;
-		public UIColor CheckColor
+		Color _checkColor, _checkedColor, _uncheckedColor, _disabledColor;
+		public Color DisabledColor
+		{
+			get => _disabledColor;
+			set
+			{
+				if (_disabledColor == value)
+					return;
+
+				_disabledColor = value;
+				SetNeedsDisplay();
+			}
+		}
+
+		public Color CheckColor
 		{
 			get => _checkColor;
 			set
@@ -199,27 +207,27 @@ namespace Xamarin.Forms.Platform.iOS
 				SetNeedsDisplay();
 			}
 		}
-		public UIColor FillColor
+		public Color CheckedColor
 		{
-			get => _fillColor;
+			get => _checkedColor;
 			set
 			{
-				if (_fillColor == value)
+				if (_checkedColor == value)
 					return;
 
-				_fillColor = value;
+				_checkedColor = value;
 				SetNeedsDisplay();
 			}
 		}
-		public UIColor BorderColor
+		public Color UncheckedColor
 		{
-			get => _borderColor;
+			get => _uncheckedColor;
 			set
 			{
-				if (_borderColor == value)
+				if (_uncheckedColor == value)
 					return;
 
-				_borderColor = value;
+				_uncheckedColor = value;
 				SetNeedsDisplay();
 			}
 		}		
@@ -230,47 +238,59 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (IsEnabled)
 			{
-				(FillColor ?? TintColor).SetFill();
-				(BorderColor ?? TintColor).SetStroke();
+				var checkedColor = (CheckedColor.IsDefault ? TintColor : CheckedColor.ToUIColor());
+				checkedColor.SetFill();
+				if (IsChecked)
+				{
+					checkedColor.SetStroke();
+				}
+				else
+				{
+					(UncheckedColor.IsDefault ? TintColor : UncheckedColor.ToUIColor()).SetStroke();
+				}
 			}
 			else
 			{
-				UIColor.DarkTextColor.ColorWithAlpha(.5f).SetColor();
+				(DisabledColor.IsDefault ? UIColor.Black.ColorWithAlpha(.5f) : DisabledColor.ToUIColor()).SetColor();
 			}
 
 			var width = Bounds.Size.Width;
 			var height = Bounds.Size.Height;
 
-			width = height = (nfloat)Math.Min(width, height);
+			var outerDiameter = Math.Min (width, height);
+			var lineWidth = 2.0 / CheckBoxRenderer.DefaultSize * outerDiameter;
+			var diameter = outerDiameter - 3 * lineWidth;
+			var radius = diameter / 2;
 
-            var padding = (nfloat)(2.0 / CheckBoxRenderer.MinimumHeightWidth * width);
-			var r = new CGRect(padding, padding, width - 2*padding, height - 2*padding);
-			var boxPath = UIBezierPath.FromRoundedRect(r, width / 8);
-			
+			var xOffset = diameter + lineWidth * 2 <= width ? lineWidth * 2 : (width - diameter) / 2;
+			var hPadding = xOffset;
+			var vPadding = (nfloat)((height - diameter) / 2);
+
+			var backgroundRect = new CGRect(xOffset, vPadding, diameter, diameter);
+			var boxPath = UIBezierPath.FromOval(backgroundRect);
+			boxPath.LineWidth = (nfloat)lineWidth;
+			boxPath.Stroke();
 			if (IsChecked)
 			{
 				boxPath.Fill();
 				var checkPath = new UIBezierPath
 				{
-					LineWidth = 3,
+					LineWidth = (nfloat)0.077,
 					LineCapStyle = CGLineCap.Round,
 					LineJoinStyle = CGLineJoin.Round
 				};
 				var context = UIGraphics.GetCurrentContext ();
 				context.SaveState ();
-				context.TranslateCTM (padding, padding);
-				checkPath.MoveTo(new CGPoint(width * 0.72f, height * 0.22f));
-				checkPath.AddLineTo(new CGPoint(width * 0.33f, height * 0.6f));
-				checkPath.AddLineTo(new CGPoint(width * 0.15f, height * 0.42f));
-				CheckColor.SetStroke();
+				context.TranslateCTM ((nfloat)hPadding + (nfloat)(0.05 * diameter), vPadding + (nfloat)(0.1 * diameter));
+				context.ScaleCTM ((nfloat)diameter, (nfloat)diameter);
+				checkPath.MoveTo(new CGPoint(0.72f, 0.22f));
+				checkPath.AddLineTo(new CGPoint(0.33f, 0.6f));
+				checkPath.AddLineTo(new CGPoint(0.15f, 0.42f));
+				(CheckColor.IsDefault ? UIColor.White : CheckColor.ToUIColor()).SetStroke();
 				checkPath.Stroke();
 				context.RestoreState ();
 			}
-			else
-			{
-				boxPath.LineWidth = 2;
-				boxPath.Stroke();
-			}
+
 		}
 
 		public override bool BeginTracking(UITouch uitouch, UIEvent uievent)
