@@ -237,9 +237,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 			}
 
 			// update the native and forms view with the border
-			SetContentPadding(StrokeWidth, StrokeWidth, StrokeWidth, StrokeWidth);
-			if (Element is IFrameController frame)
-				frame.SetContentPadding(Context.FromPixels(StrokeWidth));
+			SetContentPadding(0, 0, 0, 0);
 		}
 
 		void UpdateBackgroundColor()

@@ -5,7 +5,7 @@ namespace Xamarin.Forms
 {
 	[ContentProperty("Content")]
 	[RenderWith(typeof(_FrameRenderer))]
-	public class Frame : ContentView, IElementConfiguration<Frame>, IPaddingElement, IBorderElement, IFrameController
+	public class Frame : ContentView, IElementConfiguration<Frame>, IPaddingElement, IBorderElement
 	{
 		[Obsolete("OutlineColorProperty is obsolete as of version 3.0.0. Please use BorderColorProperty instead.")]
 		public static readonly BindableProperty OutlineColorProperty = BorderElement.BorderColorProperty;
@@ -57,12 +57,6 @@ namespace Xamarin.Forms
 		}
 
 		int IBorderElement.CornerRadius => (int)CornerRadius;
-
-		void IFrameController.SetContentPadding(Thickness value)
-		{
-			_contentPadding = value;
-			InvalidateLayout();
-		}
 
 		protected override void LayoutChildren(double x, double y, double width, double height)
 		{
