@@ -46,6 +46,8 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty SeparatorColorProperty = BindableProperty.Create("SeparatorColor", typeof(Color), typeof(ListView), Color.Default);
 
+		public static readonly BindableProperty RefreshControlColorProperty = BindableProperty.Create(nameof(RefreshControlColor), typeof(Color), typeof(ListView), Color.Default);
+    
 		public static readonly BindableProperty HorizontalScrollBarVisibilityProperty = BindableProperty.Create(nameof(HorizontalScrollBarVisibility), typeof(ScrollBarVisibility), typeof(ListView), ScrollBarVisibility.Default);
 
 		public static readonly BindableProperty VerticalScrollBarVisibilityProperty = BindableProperty.Create(nameof(VerticalScrollBarVisibility), typeof(ScrollBarVisibility), typeof(ListView), ScrollBarVisibility.Default);
@@ -221,6 +223,12 @@ namespace Xamarin.Forms
 		{
 			get { return (Color)GetValue(SeparatorColorProperty); }
 			set { SetValue(SeparatorColorProperty, value); }
+		}
+
+		public Color RefreshControlColor
+		{
+			get { return (Color)GetValue(RefreshControlColorProperty); }
+			set { SetValue(RefreshControlColorProperty, value); }
 		}
 
 		public SeparatorVisibility SeparatorVisibility
@@ -498,7 +506,7 @@ namespace Xamarin.Forms
 			if (newValue != null && lv.GroupDisplayBinding != null)
 			{
 				lv.GroupDisplayBinding = null;
-				Debug.WriteLine("GroupHeaderTemplate and GroupDisplayBinding can not be set at the same time, setting GroupDisplayBinding to null");
+				Log.Warning("ListView", "GroupHeaderTemplate and GroupDisplayBinding can not be set at the same time, setting GroupDisplayBinding to null");
 			}
 		}
 

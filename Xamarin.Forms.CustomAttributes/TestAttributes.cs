@@ -440,6 +440,7 @@ namespace Xamarin.Forms.CustomAttributes
 			GroupShortNameBinding,
 			ScrollTo,
 			FastScroll,
+			RefreshControlColor,
 			ScrollBarVisibility
 		}
 
@@ -449,6 +450,7 @@ namespace Xamarin.Forms.CustomAttributes
 			Intent,
 			RowHeight,
 			HasUnevenRows,
+			TableSection
 		}
 
 		public enum TableSectionBase
@@ -501,6 +503,7 @@ namespace Xamarin.Forms.CustomAttributes
 		public enum InputView
 		{
 			Keyboard,
+			MaxLength,
 		}
 
 		public enum Editor
@@ -513,7 +516,6 @@ namespace Xamarin.Forms.CustomAttributes
 			FontAttributes,
 			FontFamily,
 			FontSize,
-			MaxLength
 		}
 
 		public enum Entry
@@ -524,7 +526,6 @@ namespace Xamarin.Forms.CustomAttributes
 			IsPassword,
 			Text,
 			TextColor,
-			Keyboard,
 			HorizontalTextAlignmentStart,
 			HorizontalTextAlignmentCenter,
 			HorizontalTextAlignmentEnd,
@@ -538,7 +539,7 @@ namespace Xamarin.Forms.CustomAttributes
 			TextDisabledColor,
 			PlaceholderDisabledColor,
 			PasswordColor,
-			MaxLength
+			IsPasswordNumeric
 		}
 
 		public enum Frame
@@ -696,7 +697,9 @@ namespace Xamarin.Forms.CustomAttributes
 			MinimumTrackColor,
 			MaximumTrackColor,
 			ThumbColor,
-			ThumbImage
+			ThumbImage,
+			DragStarted,
+			DragCompleted
 		}
 
 		public enum StackLayout

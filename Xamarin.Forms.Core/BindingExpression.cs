@@ -124,8 +124,7 @@ namespace Xamarin.Forms
 				if (!part.IsSelf && current != null)
 				{
 					// Allow the object instance itself to provide its own TypeInfo 
-					var reflectable = current as IReflectableType;
-					TypeInfo currentType = reflectable != null ? reflectable.GetTypeInfo() : current.GetType().GetTypeInfo();
+					TypeInfo currentType = current is IReflectableType reflectable ? reflectable.GetTypeInfo() : current.GetType().GetTypeInfo();
 					if (part.LastGetter == null || !part.LastGetter.DeclaringType.GetTypeInfo().IsAssignableFrom(currentType))
 						SetupPart(currentType, part);
 
@@ -133,21 +132,17 @@ namespace Xamarin.Forms
 						part.TryGetValue(current, out current);
 				}
 
-				if (!part.IsSelf && current != null)
-				{
-					if ((needsGetter && part.LastGetter == null) || (needsSetter && part.NextPart == null && part.LastSetter == null))
-					{
-						Log.Warning("Binding", PropertyNotFoundErrorMessage, part.Content, current, target.GetType(), property.PropertyName);
-						break;
-					}
+				if (   !part.IsSelf
+				    && current != null
+				    && (   (needsGetter && part.LastGetter == null)
+				        || (needsSetter && part.NextPart == null && part.LastSetter == null))) {
+					Log.Warning("Binding", PropertyNotFoundErrorMessage, part.Content, current, target.GetType(), property.PropertyName);
+					break;
 				}
 
-				if (mode == BindingMode.OneWay || mode == BindingMode.TwoWay)
-				{
-					var inpc = current as INotifyPropertyChanged;
-					if (inpc != null && !ReferenceEquals(current, previous))
+				if (part.NextPart != null &&   (mode == BindingMode.OneWay || mode == BindingMode.TwoWay)
+				    && current is INotifyPropertyChanged inpc)
 						part.Subscribe(inpc);
-				}
 
 				previous = current;
 			}
@@ -157,14 +152,13 @@ namespace Xamarin.Forms
 			if (needsGetter)
 			{
 				object value = property.DefaultValue;
-				if (part.TryGetValue(current, out value) || part.IsSelf)
-				{
+				if (part.TryGetValue(current, out value) || part.IsSelf) {
 					value = Binding.GetSourceValue(value, property.ReturnType);
 				}
 				else
-					value = Binding.FallbackValue ?? property.DefaultValue;
+					value = Binding.FallbackValue ?? property.GetDefaultValue(target);
 
-				if (!TryConvert(part, ref value, property.ReturnType, true))
+				if (!TryConvert(ref value, property, property.ReturnType, true))
 				{
 					Log.Warning("Binding", "{0} can not be converted to type '{1}'", value, property.ReturnType);
 					return;
@@ -176,7 +170,7 @@ namespace Xamarin.Forms
 			{
 				object value = Binding.GetTargetValue(target.GetValue(property), part.SetterType);
 
-				if (!TryConvert(part, ref value, part.SetterType, false))
+				if (!TryConvert(ref value, property, part.SetterType, false))
 				{
 					Log.Warning("Binding", "{0} can not be converted to type '{1}'", value, part.SetterType);
 					return;
@@ -283,7 +277,16 @@ namespace Xamarin.Forms
 					part.SetterType = sourceType.GetElementType();
 				}
 
-				DefaultMemberAttribute defaultMember = sourceType.GetCustomAttributes(typeof(DefaultMemberAttribute), true).OfType<DefaultMemberAttribute>().FirstOrDefault();
+				DefaultMemberAttribute defaultMember = null;
+				foreach (var attrib in sourceType.GetCustomAttributes(typeof(DefaultMemberAttribute), true))
+				{
+					if (attrib is DefaultMemberAttribute d)
+					{
+						defaultMember = d;
+						break;
+					}
+				}
+
 				string indexerName = defaultMember != null ? defaultMember.MemberName : "Item";
 
 				part.IndexerName = indexerName;
@@ -294,8 +297,8 @@ namespace Xamarin.Forms
 				}
 				catch (AmbiguousMatchException) {
 					// Get most derived instance of property
-					foreach (var p in sourceType.GetProperties().Where(prop => prop.Name == indexerName)) {
-						if (property == null || property.DeclaringType.IsAssignableFrom(property.DeclaringType))
+					foreach (var p in sourceType.GetProperties()) {
+						if (p.Name == indexerName && (property == null || property.DeclaringType.IsAssignableFrom(property.DeclaringType)))
 							property = p;
 					}
 				}
@@ -317,7 +320,14 @@ namespace Xamarin.Forms
 
 				if (property != null)
 				{
-					ParameterInfo parameter = property.GetIndexParameters().FirstOrDefault();
+					ParameterInfo parameter = null;
+					ParameterInfo[] array = property.GetIndexParameters();
+					for (int i = 0; i < array.Length; i++)
+					{
+						parameter = array[i];
+						break;
+					}
+
 					if (parameter != null)
 					{
 						try
@@ -351,7 +361,8 @@ namespace Xamarin.Forms
 				if (property.CanWrite && property.SetMethod.IsPublic && !property.SetMethod.IsStatic)
 				{
 					part.LastSetter = property.SetMethod;
-					part.SetterType = part.LastSetter.GetParameters().Last().ParameterType;
+					var lastSetterParameters = part.LastSetter.GetParameters();
+					part.SetterType = lastSetterParameters[lastSetterParameters.Length - 1].ParameterType;
 
 					if (Binding.AllowChaining)
 					{
@@ -415,16 +426,15 @@ namespace Xamarin.Forms
 		}
 		static Type[] DecimalTypes = new[] { typeof(float), typeof(decimal), typeof(double) };
 
-		bool TryConvert(BindingExpressionPart part, ref object value, Type convertTo, bool toTarget)
+		internal static bool TryConvert(ref object value, BindableProperty targetProperty, Type convertTo, bool toTarget)
 		{
 			if (value == null)
-				return true;
-			if ((toTarget && _targetProperty.TryConvert(ref value)) || (!toTarget && convertTo.IsInstanceOfType(value)))
+				return !convertTo.GetTypeInfo().IsValueType;
+			if ((toTarget && targetProperty.TryConvert(ref value)) || (!toTarget && convertTo.IsInstanceOfType(value)))
 				return true;
 
 			object original = value;
-			try
-			{
+			try {
 				var stringValue = value as string ?? string.Empty;
 				// see: https://bugzilla.xamarin.com/show_bug.cgi?id=32871
 				// do not canonicalize "*.[.]"; "1." should not update bound BindableProperty
@@ -442,18 +452,7 @@ namespace Xamarin.Forms
 				value = Convert.ChangeType(value, convertTo, CultureInfo.InvariantCulture);
 				return true;
 			}
-			catch (InvalidCastException)
-			{
-				value = original;
-				return false;
-			}
-			catch (FormatException)
-			{
-				value = original;
-				return false;
-			}
-			catch (OverflowException)
-			{
+			catch (Exception ex) when (ex is InvalidCastException || ex is FormatException || ex is OverflowException) {
 				value = original;
 				return false;
 			}
@@ -627,15 +626,16 @@ namespace Xamarin.Forms
 				{
 					if (IsIndexer)
 					{
-						try
-						{
+						try {
 							value = LastGetter.Invoke(value, Arguments);
 						}
-						catch (TargetInvocationException ex)
-						{
-							if (!(ex.InnerException is KeyNotFoundException))
-								throw;
-							value = null;
+						catch (TargetInvocationException ex) {
+							if (ex.InnerException is KeyNotFoundException || ex.InnerException is IndexOutOfRangeException) {
+								value = null;
+								return false;
+							}
+							else
+								throw ex.InnerException;
 						}
 						return true;
 					}
