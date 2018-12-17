@@ -24,32 +24,10 @@ namespace Xamarin.Forms
 
 		static SemaphoreSlim SaveSemaphore = new SemaphoreSlim(1, 1);
 
-		static Lazy<DelegateLogListener> _applicationOutputListener;
-		static bool _logWarningsToApplicationOutput;
+		[Obsolete("Assign the LogWarningsListener")]
+		public static bool LogWarningsToApplicationOutput { get; set; }
 
-		public static bool LogWarningsToApplicationOutput
-		{
-			get => _logWarningsToApplicationOutput;
-			set
-			{
-				_logWarningsToApplicationOutput = value;
-
-				if (_logWarningsToApplicationOutput)
-				{
-					if (!Log.Listeners.Contains(_applicationOutputListener.Value))
-					{
-						Log.Listeners.Add(_applicationOutputListener.Value);
-					}
-				}
-				else
-				{
-					if (Log.Listeners.Contains(_applicationOutputListener.Value))
-					{
-						Log.Listeners.Remove(_applicationOutputListener.Value);
-					}
-				}
-			}
-		}
+		bool MainPageSet { get; set; }
 
 		public Application()
 		{
@@ -62,10 +40,6 @@ namespace Xamarin.Forms
 			SystemResources = DependencyService.Get<ISystemResourcesProvider>().GetSystemResources();
 			SystemResources.ValuesChanged += OnParentResourcesChanged;
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Application>>(() => new PlatformConfigurationRegistry<Application>(this));
-			_applicationOutputListener = new Lazy<DelegateLogListener>(() => new DelegateLogListener((arg1, arg2) =>
-			{
-				Debug.WriteLine($"{arg1}: {arg2}");
-			}));
 		}
 
 		public void Quit()
@@ -120,6 +94,7 @@ namespace Xamarin.Forms
 				}
 
 				_mainPage = value;
+				MainPageSet = true;
 
 				if (_mainPage != null)
 				{
@@ -205,7 +180,6 @@ namespace Xamarin.Forms
 		public event EventHandler<Page> PageAppearing;
 
 		public event EventHandler<Page> PageDisappearing;
-
 
 		async void SaveProperties()
 		{

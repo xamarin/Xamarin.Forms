@@ -329,6 +329,7 @@ namespace Xamarin.Forms
 		{
 			ParentSet?.Invoke(this, EventArgs.Empty);
 			ApplyStyleSheetsOnParentSet();
+			(this as IPropertyPropagationController)?.PropagatePropertyChanged(null);
 		}
 
 		protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
@@ -460,6 +461,22 @@ namespace Xamarin.Forms
 					controller.EffectiveFlowDirection = flowDirection.ToEffectiveFlowDirection();
 				}
 			}
+		}
+
+		internal static void SetVisualfromParent(Element child)
+		{
+			IVisualController controller = child as IVisualController;
+			if (controller == null)
+				return;
+
+			if (controller.Visual != VisualMarker.MatchParent)
+			{
+				controller.EffectiveVisual = controller.Visual;
+				return;
+			}
+
+			if (child.Parent is IVisualController parentView)
+				controller.EffectiveVisual = parentView.EffectiveVisual;
 		}
 
 		internal virtual void SetChildInheritedBindingContext(Element child, object context)
