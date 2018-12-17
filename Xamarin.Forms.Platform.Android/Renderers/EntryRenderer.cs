@@ -99,12 +99,15 @@ namespace Xamarin.Forms.Platform.Android
 			if (e.OldElement == null)
 			{
 				SetNativeControl(CreateNativeControl());
-				var formsEditText = EditText as IFormsEditText;
 
 				EditText.AddTextChangedListener(this);
 				EditText.SetOnEditorActionListener(this);
-				formsEditText.OnKeyboardBackPressed += OnKeyboardBackPressed;
-				formsEditText.SelectionChanged += SelectionChanged;
+
+				if (EditText is IFormsEditText formsEditText)
+				{
+					formsEditText.OnKeyboardBackPressed += OnKeyboardBackPressed;
+					formsEditText.SelectionChanged += SelectionChanged;
+				}
 
 				var useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
 
@@ -117,7 +120,7 @@ namespace Xamarin.Forms.Platform.Android
 			_cursorPositionChangePending = Element.IsSet(Entry.CursorPositionProperty);
 			_selectionLengthChangePending = Element.IsSet(Entry.SelectionLengthProperty);
 
-			UpdatePlaceHolderText();			
+			UpdatePlaceHolderText();
 			EditText.Text = Element.Text;
 			UpdateInputType();
 
