@@ -72,6 +72,10 @@ namespace Xamarin.Forms
 		public static FlowDirection FlowDirection { get; internal set; }
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
+		public static void SetIsVirtual(bool value) => IsVirtual = value;
+		public static bool IsVirtual { get; internal set; }
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static bool IsInvokeRequired
 		{
 			get { return PlatformServices.IsInvokeRequired; }

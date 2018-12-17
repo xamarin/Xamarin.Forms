@@ -13,6 +13,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Forms.Internals;
 using Foundation;
+using ObjCRuntime;
 #if __MOBILE__
 using UIKit;
 using Xamarin.Forms.Platform.iOS;
@@ -94,6 +95,8 @@ namespace Xamarin.Forms
 #if __MOBILE__
 			Device.SetIdiom(UIDevice.CurrentDevice.UserInterfaceIdiom == UIUserInterfaceIdiom.Pad ? TargetIdiom.Tablet : TargetIdiom.Phone);
 			Device.SetFlowDirection(UIApplication.SharedApplication.UserInterfaceLayoutDirection.ToFlowDirection());
+			if (Runtime.Arch == Arch.SIMULATOR)
+				Device.SetIsVirtual(true);
 #else
 			Device.SetIdiom(TargetIdiom.Desktop);
 			Device.SetFlowDirection(NSApplication.SharedApplication.UserInterfaceLayoutDirection.ToFlowDirection());

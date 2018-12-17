@@ -14,6 +14,7 @@ using Android.App;
 using Android.Content;
 using Android.Content.Res;
 using Android.OS;
+using Android.Provider;
 using Android.Util;
 using Android.Views;
 using Xamarin.Forms.Internals;
@@ -182,6 +183,20 @@ namespace Xamarin.Forms
 			// This could change as a result of a config change, so we need to check it every time
 			int minWidthDp = activity.Resources.Configuration.SmallestScreenWidthDp;
 			Device.SetIdiom(minWidthDp >= TabletCrossover ? TargetIdiom.Tablet : TargetIdiom.Phone);
+
+			// From https://github.com/xamarin/Essentials/blob/master/Xamarin.Essentials/DeviceInfo/DeviceInfo.android.cs
+			var isEmulator =
+				Build.Fingerprint.StartsWith("generic", StringComparison.InvariantCulture) ||
+				Build.Fingerprint.StartsWith("unknown", StringComparison.InvariantCulture) ||
+				Build.Model.Contains("google_sdk") ||
+				Build.Model.Contains("Emulator") ||
+				Build.Model.Contains("Android SDK built for x86") ||
+				Build.Manufacturer.Contains("Genymotion") ||
+				(Build.Brand.StartsWith("generic", StringComparison.InvariantCulture) && Build.Device.StartsWith("generic", StringComparison.InvariantCulture)) ||
+				Build.Product.Equals("google_sdk", StringComparison.InvariantCulture);
+
+			if (isEmulator)
+				Device.SetIsVirtual(true);
 
 			if (Build.VERSION.SdkInt >= BuildVersionCodes.JellyBeanMr1)
 				Device.SetFlowDirection(activity.Resources.Configuration.LayoutDirection.ToFlowDirection());
