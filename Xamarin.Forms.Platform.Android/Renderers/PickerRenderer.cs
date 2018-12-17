@@ -9,6 +9,8 @@ using System.Linq;
 using Orientation = Android.Widget.Orientation;
 using Android.Content;
 using AColor = Android.Graphics.Color;
+using Android.Text;
+using Android.Text.Style;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -126,7 +128,19 @@ namespace Xamarin.Forms.Platform.Android
 
 			var builder = new AlertDialog.Builder(Context);
 			builder.SetView(layout);
-			builder.SetTitle(model.Title ?? "");
+
+			if (!Element.IsSet(Picker.TitleColorProperty))
+			{
+				builder.SetTitle(model.Title ?? "");
+			}
+			else
+			{
+				var title = new SpannableString(model.Title ?? "");
+				title.SetSpan(new ForegroundColorSpan(model.TitleColor.ToAndroid()), 0, title.Length(), SpanTypes.ExclusiveExclusive);
+
+				builder.SetTitle(title);
+			}
+
 			builder.SetNegativeButton(global::Android.Resource.String.Cancel, (s, a) =>
 			{
 				ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);

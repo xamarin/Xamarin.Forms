@@ -7,6 +7,8 @@ using System.Linq;
 using Android.Content;
 using Android.Widget;
 using AColor = Android.Graphics.Color;
+using Android.Text;
+using Android.Text.Style;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
@@ -108,7 +110,18 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			{
 				using (var builder = new AlertDialog.Builder(Context))
 				{
-					builder.SetTitle(model.Title ?? "");
+					if (!Element.IsSet(Picker.TitleColorProperty))
+					{
+						builder.SetTitle(model.Title ?? "");
+					}
+					else
+					{
+						var title = new SpannableString(model.Title ?? "");
+						title.SetSpan(new ForegroundColorSpan(model.TitleColor.ToAndroid()), 0, title.Length(), SpanTypes.ExclusiveExclusive);
+
+						builder.SetTitle(title);
+					}
+
 					string[] items = model.Items.ToArray();
 					builder.SetItems(items, (s, e) => ((IElementController)model).SetValueFromRenderer(Picker.SelectedIndexProperty, e.Which));
 
@@ -144,7 +157,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		void UpdatePicker()
 		{
 			Control.Hint = Element.Title;
-			
+
 			if (Element.IsSet(Picker.TitleColorProperty))
 				Control.SetHintTextColor(Element.TitleColor.ToAndroid());
 			else
