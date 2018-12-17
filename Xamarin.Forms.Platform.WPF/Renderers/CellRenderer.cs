@@ -82,6 +82,14 @@ namespace Xamarin.Forms.Platform.WPF
 		}
 	}
 
+	public class CheckBoxCellRenderer : ICellRenderer
+	{
+		public virtual System.Windows.DataTemplate GetTemplate(Cell cell)
+		{
+			return (System.Windows.DataTemplate)System.Windows.Application.Current.Resources["CheckBoxCell"];
+		}
+	}
+
 	public class ImageCellRenderer : ICellRenderer
 	{
 		public virtual System.Windows.DataTemplate GetTemplate(Cell cell)

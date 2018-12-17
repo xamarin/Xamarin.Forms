@@ -32,7 +32,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (args.PropertyName == CheckBoxCell.TextProperty.PropertyName)
 				UpdateText();
-			else if (args.PropertyName == CheckBoxCell.OnProperty.PropertyName)
+			else if (args.PropertyName == CheckBoxCell.IsCheckedProperty.PropertyName)
 				UpdateChecked();
 			else if (args.PropertyName == "RenderHeight")
 				UpdateHeight();
@@ -44,7 +44,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateChecked()
 		{
-			((ACheckBox)_view.AccessoryView).Checked = ((CheckBoxCell)Cell).On;
+			((ACheckBox)_view.AccessoryView).Checked = ((CheckBoxCell)Cell).IsChecked;
 		}
 
 		void UpdateIsEnabled(CheckBoxCellView cell, CheckBoxCell checkBoxCell)

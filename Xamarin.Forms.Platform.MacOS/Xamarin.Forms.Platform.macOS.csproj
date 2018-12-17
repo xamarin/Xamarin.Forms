@@ -77,6 +77,7 @@
     <Compile Include="..\Xamarin.Forms.Platform.iOS\Flags.cs">
       <Link>Flags.cs</Link>
     </Compile>
+    <Compile Include="Cells\CheckBoxCellRenderer.cs" />
     <Compile Include="Controls\FormsBoxView.cs" />
     <Compile Include="..\Xamarin.Forms.Platform.iOS\IVisualNativeElementRenderer.cs">
       <Link>IVisualNativeElementRenderer.cs</Link>
@@ -128,6 +129,7 @@
     <Compile Include="Renderers\SearchBarRenderer.cs" />
     <Compile Include="Renderers\SliderRenderer.cs" />
     <Compile Include="Renderers\StepperRenderer.cs" />
+    <Compile Include="Renderers\CheckBoxRenderer.cs" />
     <Compile Include="Renderers\SwitchRenderer.cs" />
     <Compile Include="Renderers\TimePickerRenderer.cs" />
     <Compile Include="Renderers\WebViewRenderer.cs" />
