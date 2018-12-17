@@ -50,6 +50,7 @@ using Xamarin.Forms.Platform.UWP;
 [assembly: ExportCell(typeof(ImageCell), typeof(ImageCellRenderer))]
 [assembly: ExportCell(typeof(EntryCell), typeof(EntryCellRenderer))]
 [assembly: ExportCell(typeof(SwitchCell), typeof(SwitchCellRenderer))]
+[assembly: ExportCell(typeof(CheckBoxCell), typeof(CheckBoxCellRenderer))]
 [assembly: ExportCell(typeof(ViewCell), typeof(ViewCellRenderer))]
 [assembly: Dependency(typeof(WindowsResourcesProvider))]
 [assembly: ExportRenderer(typeof(SearchBar), typeof(SearchBarRenderer))]
