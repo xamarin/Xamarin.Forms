@@ -290,7 +290,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 			if (_defaultTypeface == null)
 				_defaultTypeface = Typeface;
 
-			if (Element.Font == Font.Default)
+			if (font == Font.Default)
 				Typeface = _defaultTypeface;
 			else
 				Typeface = font.ToTypeface();
