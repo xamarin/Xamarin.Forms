@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Controls
 			var dataTemplate = new DataTemplate (typeof (CheckBoxCell)) {
 				Bindings = {
 					{CheckBoxCell.TextProperty, new Binding ("Label")},
-					{CheckBoxCell.OnProperty, new Binding ("CheckBoxOn")},
+					{CheckBoxCell.IsCheckedProperty, new Binding ("CheckBoxOn")},
 				}
 			};
 

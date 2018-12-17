@@ -19,7 +19,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void OnCheckedChanged(CompoundButton buttonView, bool isChecked)
 		{
-			Cell.On = isChecked;
+			Cell.IsChecked = isChecked;
 		}
 	}
 }
