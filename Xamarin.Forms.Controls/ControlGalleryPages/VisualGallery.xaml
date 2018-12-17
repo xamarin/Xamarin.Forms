@@ -17,7 +17,7 @@
     <ScrollView>
         <StackLayout Spacing="20" Padding="10">
 
-            <Label Text="Activity Indicators" FontSize="Large" />
+			<Label Text="Activity Indicators" FontSize="Large" />
 
             <Label Text="Default" Margin="0,0,0,-10" />
             <StackLayout Orientation="Horizontal">
@@ -173,27 +173,45 @@
             </Frame>
 
 
-            <Label Text="Entries" FontSize="Large" />
+			<Label Text="Entries" FontSize="Large" />
+			<Label Text="Default" Margin="0,0,0,-10" />
 
-            <!--
-            TODO: this text box is basically invisible
-            <Entry Placeholder="Default" HorizontalOptions="FillAndExpand" />
-            -->
+			<!-- currently setting these orientations to Horizontal crashes ios so leaving as Vertical-->
+			<StackLayout Orientation="Vertical">
+				<Entry Placeholder="Default Entry" Text="With Text" HorizontalOptions="FillAndExpand"  />
+				<Entry Placeholder="Default Entry" HorizontalOptions="FillAndExpand"  />
+			</StackLayout>
 
-            <FlexLayout Direction="Row" Wrap="Wrap" JustifyContent="SpaceBetween">
-                <Entry Placeholder="Title" Text="Vintage Dress"
-                       PlaceholderColor="Green" TextColor="Green" BackgroundColor="#ddd"
-                       FlexLayout.Grow="1" />
-                <Entry Placeholder="Price" Text="$10"
-                       PlaceholderColor="Purple" TextColor="Purple" BackgroundColor="#ddd"
-                       FlexLayout.Basis="30%" />
-                <Entry Placeholder="Location"
-                       PlaceholderColor="Black" TextColor="Black" BackgroundColor="#ddd"
-                       FlexLayout.Basis="60%" />
-            </FlexLayout>
+			<Label Text="Placeholder Color Variations" Margin="0,0,0,-10" />
+
+			<StackLayout Orientation="Vertical">
+				<Entry Placeholder="Green Placeholder" PlaceholderColor="Green" HorizontalOptions="FillAndExpand"  />
+				<Entry Placeholder="Purple Placeholder" PlaceholderColor="Purple" HorizontalOptions="FillAndExpand"  />
+			</StackLayout>
+
+			<Label Text="Text Color Variations" Margin="0,0,0,-10" />
+
+			<StackLayout Orientation="Vertical">
+				<Entry TextColor="Green" Text="Green Text Color" HorizontalOptions="FillAndExpand"  />
+				<Entry TextColor="Purple" Text="Purple Text Color"  HorizontalOptions="FillAndExpand"  />
+			</StackLayout>
+
+			<StackLayout Orientation="Vertical">
+				<Entry TextColor="Green" Placeholder="Green Text Color" HorizontalOptions="FillAndExpand"  />
+				<Entry TextColor="Purple" Placeholder="Purple Text Color"  HorizontalOptions="FillAndExpand"  />
+			</StackLayout>
 
 
-            <Label Text="Sliders" FontSize="Large" />
+			<Label Text="Background Color Variations" Margin="0,0,0,-10" />
+
+			<StackLayout Orientation="Vertical">
+				<Entry BackgroundColor="Yellow" Text="Yellow Background Color" HorizontalOptions="FillAndExpand"  />
+				<Entry BackgroundColor="Cyan" Text="Cyan Background Color"  HorizontalOptions="FillAndExpand"  />
+			</StackLayout>
+
+
+
+			<Label Text="Sliders" FontSize="Large" />
 
 
             <Label Text="Default" Margin="0,0,0,-10" />

@@ -101,8 +101,14 @@ namespace Xamarin.Forms.Platform.Android.Material
 
 		protected override void OnFocusChanged(bool gainFocus, [GeneratedEnum] FocusSearchDirection direction, Rect previouslyFocusedRect)
 		{
-			UpdatePadding();
 			base.OnFocusChanged(gainFocus, direction, previouslyFocusedRect);
+
+			// Delay padding update until after the keyboard has showed up otherwise updating the padding
+			// stops the keyboard from showing up
+			if (gainFocus)
+				Device.BeginInvokeOnMainThread(() => UpdatePadding());
+			else
+				UpdatePadding();
 		}
 
 		bool IDescendantFocusToggler.RequestFocus(global::Android.Views.View control, Func<bool> baseRequestFocus)

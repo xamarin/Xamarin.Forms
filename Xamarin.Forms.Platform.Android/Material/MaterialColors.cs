@@ -13,6 +13,18 @@ namespace Xamarin.Forms.Platform.Android.Material
 			new int[] { }
 		};
 
+		public static readonly int[][] EntryHintTextStates =
+		{
+			new []{ global::Android.Resource.Attribute.StateEnabled, global::Android.Resource.Attribute.StatePressed  },
+			new int[0] { }
+		};
+
+		public static readonly int[][] EntryUnderlineStates =
+		{
+			new []{ global::Android.Resource.Attribute.StateFocused  },
+			new []{ -global::Android.Resource.Attribute.StateFocused  },
+		};
+
 		// State list from material-components-android
 		// https://github.com/material-components/material-components-android/blob/3637c23078afc909e42833fd1c5fd47bb3271b5f/lib/java/com/google/android/material/button/res/color/mtrl_btn_bg_color_selector.xml
 		public static ColorStateList CreateButtonBackgroundColors(AColor primary)
@@ -31,12 +43,12 @@ namespace Xamarin.Forms.Platform.Android.Material
 
 		// State list from material-components-android
 		// https://github.com/material-components/material-components-android/blob/71694616056012fe1162adb9144be903d1e510d5/lib/java/com/google/android/material/textfield/res/values/colors.xml#L28
-		public static int CreateTextInputFilledInputBackgroundColor(AColor primary)
+		public static int CreateEntryFilledInputBackgroundColor(AColor primary)
 		{
 			return primary.WithAlpha(0.0392);
 		}
 
-		public static ColorStateList CreateTextInputFilledPlaceholderColors(AColor color)
+		public static ColorStateList CreateEntryFilledPlaceholderColors(AColor color)
 		{
 			int[][] States =
 			{
@@ -44,22 +56,14 @@ namespace Xamarin.Forms.Platform.Android.Material
 				new int[0] { }
 			};
 
-			return new ColorStateList(
-						States,
-						new int[]{
-							color,
-							color
-						}
-				);
+			var colors = new int[] { color, color };
+			return new ColorStateList(States, colors);
+		}
 
-			// this is the default 
-			//return new ColorStateList(
-			//			States,
-			//			new int[]{
-			//				-1979711488,
-			//				1627389952
-			//			}
-			//	);
+		public static ColorStateList CreateEntryUnderlineColors(AColor focusedColor, AColor unfocusedColor)
+		{
+			var colors = new int[] { focusedColor, unfocusedColor };
+			return new ColorStateList(EntryUnderlineStates, colors);
 		}
 
 		internal static AColor WithAlpha(this AColor color, double alpha) =>

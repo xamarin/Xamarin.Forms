@@ -234,10 +234,9 @@ namespace Xamarin.Forms.Platform.Android
 			EditText.UpdateHorizontalAlignment(Element.HorizontalTextAlignment, Context.HasRtlSupport());
 		}
 
-		internal protected virtual void UpdateColor()
-		{
-			_textColorSwitcher.UpdateTextColor(EditText, Element.TextColor);
-		}
+		internal protected virtual void UpdateColor() => UpdateTextColor(Element.TextColor);
+
+		internal protected void UpdateTextColor(Color color) => _textColorSwitcher.UpdateTextColor(EditText, color);
 
 		protected internal virtual void UpdateFont()
 		{
