@@ -6,6 +6,6 @@
   </style>
   <style name="XamarinFormsMaterialProgressBarCircular" parent="Widget.AppCompat.ProgressBar">
   </style>
-  <style name="XamarinFormsMaterialTextInputLayoutFilledBox" parent="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+  <style name="XamarinFormsMaterialTextInputLayoutFilledBox" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
   </style>
 </resources>
