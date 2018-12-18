@@ -176,27 +176,26 @@
 			<Label Text="Entries" FontSize="Large" />
 			<Label Text="Default" Margin="0,0,0,-10" />
 
-			<!-- currently setting these orientations to Horizontal crashes ios so leaving as Vertical-->
-			<StackLayout Orientation="Vertical">
+			<StackLayout Orientation="Horizontal">
 				<Entry Placeholder="Default Entry" Text="With Text" HorizontalOptions="FillAndExpand"  />
 				<Entry Placeholder="Default Entry" HorizontalOptions="FillAndExpand"  />
 			</StackLayout>
 
 			<Label Text="Placeholder Color Variations" Margin="0,0,0,-10" />
 
-			<StackLayout Orientation="Vertical">
+			<StackLayout Orientation="Horizontal">
 				<Entry Placeholder="Green Placeholder" PlaceholderColor="Green" HorizontalOptions="FillAndExpand"  />
 				<Entry Placeholder="Purple Placeholder" PlaceholderColor="Purple" HorizontalOptions="FillAndExpand"  />
 			</StackLayout>
 
 			<Label Text="Text Color Variations" Margin="0,0,0,-10" />
 
-			<StackLayout Orientation="Vertical">
+			<StackLayout Orientation="Horizontal">
 				<Entry TextColor="Green" Text="Green Text Color" HorizontalOptions="FillAndExpand"  />
 				<Entry TextColor="Purple" Text="Purple Text Color"  HorizontalOptions="FillAndExpand"  />
 			</StackLayout>
 
-			<StackLayout Orientation="Vertical">
+			<StackLayout Orientation="Horizontal">
 				<Entry TextColor="Green" Placeholder="Green Text Color" HorizontalOptions="FillAndExpand"  />
 				<Entry TextColor="Purple" Placeholder="Purple Text Color"  HorizontalOptions="FillAndExpand"  />
 			</StackLayout>
@@ -204,7 +203,7 @@
 
 			<Label Text="Background Color Variations" Margin="0,0,0,-10" />
 
-			<StackLayout Orientation="Vertical">
+			<StackLayout Orientation="Horizontal">
 				<Entry BackgroundColor="Yellow" Text="Yellow Background Color" HorizontalOptions="FillAndExpand"  />
 				<Entry BackgroundColor="Cyan" Text="Cyan Background Color"  HorizontalOptions="FillAndExpand"  />
 			</StackLayout>

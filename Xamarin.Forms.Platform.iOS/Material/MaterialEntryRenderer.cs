@@ -47,6 +47,21 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			_typographyScheme = CreateTypographyScheme();
 		}
 
+		public override void LayoutSubviews()
+		{
+			base.LayoutSubviews();
+		}
+
+
+		public override CGSize SizeThatFits(CGSize size)
+		{
+			var result =  base.SizeThatFits(size);
+			if (nfloat.IsInfinity(result.Width))
+				result = Control.SystemLayoutSizeFittingSize(result, (float)UILayoutPriority.FittingSizeLevel, (float)UILayoutPriority.DefaultHigh);
+
+			return result;
+		}
+
 		IElementController ElementController => Element as IElementController;
 		MTextInputControllerBase _activeTextinputController;
 
