@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Threading.Tasks;
+using Android.OS;
 using Android.Widget;
 using AScaleType = Android.Widget.ImageView.ScaleType;
 using ARect = Android.Graphics.Rect;
@@ -19,8 +20,11 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		static void OnLayoutChange(object sender, global::Android.Views.View.LayoutChangeEventArgs e)
 		{
-			if(sender is IVisualElementRenderer renderer && renderer.View is ImageView imageView)
-				imageView.ClipBounds = imageView.GetScaleType() == AScaleType.CenterCrop ? new ARect(0, 0, e.Right - e.Left, e.Bottom - e.Top) : null;
+			if ((int)Build.VERSION.SdkInt >= 18)
+			{
+				if (sender is IVisualElementRenderer renderer && renderer.View is ImageView imageView)
+					imageView.ClipBounds = imageView.GetScaleType() == AScaleType.CenterCrop ? new ARect(0, 0, e.Right - e.Left, e.Bottom - e.Top) : null;
+			}
 		}
 
 		public static void Dispose(IVisualElementRenderer renderer)

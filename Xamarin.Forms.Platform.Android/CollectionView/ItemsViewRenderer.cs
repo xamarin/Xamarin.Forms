@@ -4,6 +4,7 @@ using System.Linq;
 using Android.Content;
 using Android.Graphics;
 using Android.Support.V7.Widget;
+using Android.OS;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
@@ -45,7 +46,8 @@ namespace Xamarin.Forms.Platform.Android
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)
 		{
 			base.OnLayout(changed, l, t, r, b);
-			ClipBounds = new Rect(0,0, Width, Height);
+			if ((int)Build.VERSION.SdkInt >= 18)
+				ClipBounds = new Rect(0,0, Width, Height);
 
 			// After a direct (non-animated) scroll operation, we may need to make adjustments
 			// to align the target item; if an adjustment is pending, execute it here.
