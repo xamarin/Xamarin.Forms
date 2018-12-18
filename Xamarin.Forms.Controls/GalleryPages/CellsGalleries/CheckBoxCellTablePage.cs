@@ -10,22 +10,22 @@ namespace Xamarin.Forms.Controls
 				Padding = new Thickness(0, 0, 0, 60);
 
 			var tableSection = new TableSection ("Section One") {
-				new CheckBoxCell { Text = "text 1", IsChecked = true },
+				new CheckBoxCell { Text = "text 1", IsChecked = true, CheckedColor = Color.HotPink, UncheckedColor = Color.DeepPink },
 				new CheckBoxCell { Text = "text 2" },
 				new CheckBoxCell { Text = "text 3", IsChecked = true },
 				new CheckBoxCell { Text = "text 4", IsChecked = false },
-				new CheckBoxCell { Text = "text 5", IsChecked = true },
+				new CheckBoxCell { Text = "text 5", IsChecked = true, CheckedColor = Color.HotPink, UncheckedColor = Color.DeepPink },
 				new CheckBoxCell { Text = "text 6" },
 				new CheckBoxCell { Text = "text 7", IsChecked = true },
 				new CheckBoxCell { Text = "text 8", IsChecked = false },
-				new CheckBoxCell { Text = "text 9", IsChecked = true },
+				new CheckBoxCell { Text = "text 9", IsChecked = true, CheckedColor = Color.HotPink, UncheckedColor = Color.DeepPink },
 				new CheckBoxCell { Text = "text 10" },
 				new CheckBoxCell { Text = "text 11", IsChecked = true },
 				new CheckBoxCell { Text = "text 12", IsChecked = false },
 				new CheckBoxCell { Text = "text 13", IsChecked = true },
 				new CheckBoxCell { Text = "text 14" },
 				new CheckBoxCell { Text = "text 15", IsChecked = true },
-				new CheckBoxCell { Text = "text 16", IsChecked = false },
+				new CheckBoxCell { Text = "text 16", IsChecked = false, CheckedColor = Color.HotPink, UncheckedColor = Color.DeepPink },
 			};
 
 			var tableSectionTwo = new TableSection ("Section Two") {
@@ -39,7 +39,7 @@ namespace Xamarin.Forms.Controls
 				new CheckBoxCell { Text = "text 24", IsChecked = false },
 				new CheckBoxCell { Text = "text 25", IsChecked = true },
 				new CheckBoxCell { Text = "text 26" },
-				new CheckBoxCell { Text = "text 27", IsChecked = true },
+				new CheckBoxCell { Text = "text 27", IsChecked = true, CheckedColor = Color.HotPink, UncheckedColor = Color.DeepPink },
 				new CheckBoxCell { Text = "text 28", IsChecked = false },
 				new CheckBoxCell { Text = "text 29", IsChecked = true },
 				new CheckBoxCell { Text = "text 30" },
