@@ -86,7 +86,7 @@ namespace Xamarin.Forms.Xaml
 				catch (TargetInvocationException e) when (e.InnerException is XamlParseException || e.InnerException is XmlException) {
 					throw e.InnerException;
 				}
-				catch (MissingMethodException mme) {
+				catch (MissingMemberException mme) {
 					throw new XamlParseException(mme.Message, node, mme);
 				}
 			}
