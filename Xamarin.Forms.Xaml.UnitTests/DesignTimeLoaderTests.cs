@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using NUnit.Framework;
 using Xamarin.Forms.Core.UnitTests;
 
@@ -304,6 +303,68 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		}
 
 		[Test]
+		public void InstantiateWithDefaultConstructorThrows()
+		{
+			var xaml = @"
+				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+					xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
+					xmlns:local=""clr-namespace:Xamarin.Forms.Xaml.UnitTests;assembly=Xamarin.Forms.Xaml.UnitTests"">
+					<local:InstantiateThrows />
+				</ContentPage>";
+
+			Assert.DoesNotThrow(() => XamlLoader.Create(xaml, true));
+		}
+
+		[Test]
+		public void InstantiateWithFactoryMethodThrows()
+		{
+			var xaml = @"
+				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+					xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
+					xmlns:local=""clr-namespace:Xamarin.Forms.Xaml.UnitTests;assembly=Xamarin.Forms.Xaml.UnitTests"">
+					<local:InstantiateThrows x:FactoryMethod=""CreateInstance"" />
+				</ContentPage>";
+
+			Assert.DoesNotThrow(() => XamlLoader.Create(xaml, true));
+		}
+
+		[Test]
+		public void InstantiateWithNonDefaultConstructorThrows()
+		{
+			var xaml = @"
+				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+					xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
+					xmlns:local=""clr-namespace:Xamarin.Forms.Xaml.UnitTests;assembly=Xamarin.Forms.Xaml.UnitTests"">
+					<local:InstantiateThrows>
+						<x:Arguments>
+							<x:Int32>1</x:Int32>
+						</x:Arguments>
+					</local:InstantiateThrows>
+				</ContentPage>";
+
+			Assert.DoesNotThrow(() => XamlLoader.Create(xaml, true));
+		}
+
+		[Test]
+		public void FormsFallbackWithUnsupportedNonDefaultConstructor()
+		{
+			XamlLoader.FallbackTypeResolver = (p, type) => type ?? typeof(Button);
+
+			var xaml = @"
+				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+					xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
+					xmlns:local=""clr-namespace:MissingNamespace;assembly=MissingAssembly"">
+					<local:Test>
+						<x:Arguments>
+							<x:Int32>1</x:Int32>
+						</x:Arguments>
+					</local:Test>
+				</ContentPage>";
+
+			Assert.DoesNotThrow(() => XamlLoader.Create(xaml, true));
+		}
+
+		[Test]
 		public void StaticResourceKeyInApp()
 		{
 			var app = @"
@@ -449,6 +510,24 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			var myButton = (Button)page.Content;
 
 			Assert.That(myButton.BackgroundColor, Is.Not.EqualTo(Color.Blue));
+		}
+	}
+
+	public class InstantiateThrows
+	{
+		public InstantiateThrows()
+		{
+			throw new InvalidOperationException();
+		}
+
+		public static InstantiateThrows CreateInstance()
+		{
+			throw new InvalidOperationException();
+		}
+
+		public InstantiateThrows(int value)
+		{
+			throw new InvalidOperationException();
 		}
 	}
 }
