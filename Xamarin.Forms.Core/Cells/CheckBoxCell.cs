@@ -9,13 +9,29 @@ namespace Xamarin.Forms
 			((CheckBoxCell)obj).IsCheckedChanged?.Invoke(obj, new CheckedChangedEventArgs((bool)newValue));
 		}, defaultBindingMode: BindingMode.TwoWay);
 
-		public static readonly BindableProperty TextProperty = BindableProperty.Create("Text", typeof(string), typeof(CheckBoxCell), default(string));
-
 		public bool IsChecked
 		{
 			get { return (bool)GetValue(IsCheckedProperty); }
 			set { SetValue(IsCheckedProperty, value); }
 		}
+
+		public static readonly BindableProperty CheckedColorProperty = BindableProperty.Create(nameof(CheckedColor), typeof(Color), typeof(CheckBoxCell), Color.Default);
+
+		public Color CheckedColor
+		{
+			get { return (Color)GetValue(CheckedColorProperty); }
+			set { SetValue(CheckedColorProperty, value); }
+		}
+
+		public static readonly BindableProperty UncheckedColorProperty = BindableProperty.Create(nameof(UncheckedColor), typeof(Color), typeof(CheckBoxCell), Color.Default);
+
+		public Color UncheckedColor
+		{
+			get { return (Color)GetValue(UncheckedColorProperty); }
+			set { SetValue(UncheckedColorProperty, value); }
+		}
+
+		public static readonly BindableProperty TextProperty = BindableProperty.Create("Text", typeof(string), typeof(CheckBoxCell), default(string));
 
 		public string Text
 		{

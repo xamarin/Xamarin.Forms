@@ -26,6 +26,10 @@ namespace Xamarin.Forms.Platform.iOS
 			if (checkBox == null)
 			{
 				checkBox = new XFCheckBox();
+				checkBox.Bounds = new CoreGraphics.CGRect(0, 0, 30, 30);
+
+				checkBox.DisabledColor = Color.Default;
+				checkBox.CheckColor = Color.Default;
 				checkBox.ValueChanged += OnCheckedValueChanged;
 				tvc.AccessoryView = checkBox;
 			}
@@ -38,12 +42,14 @@ namespace Xamarin.Forms.Platform.iOS
 			tvc.TextLabel.Text = boolCell.Text;
 
 			checkBox.IsChecked = boolCell.IsChecked;
+			checkBox.IsEnabled = boolCell.IsEnabled;
 
 			WireUpForceUpdateSizeRequested(item, tvc, tv);
 
 			UpdateBackground(tvc, item);
 			UpdateIsEnabled(tvc, boolCell);
 			UpdateFlowDirection(tvc, boolCell);
+			UpdateColors(tvc, boolCell);
 
 			return tvc;
 		}
@@ -61,7 +67,13 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateIsEnabled(realCell, boolCell);
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateFlowDirection(realCell, boolCell);
+			else if (e.PropertyName == CheckBox.CheckedColorProperty.PropertyName ||
+				e.PropertyName == CheckBox.UncheckedColorProperty.PropertyName)
+			{
+				UpdateColors(realCell, boolCell);
+			}
 		}
+		
 
 		void OnCheckedValueChanged(object sender, EventArgs eventArgs)
 		{
@@ -86,6 +98,16 @@ namespace Xamarin.Forms.Platform.iOS
 			var checkBox = cell.AccessoryView as XFCheckBox;
 
 			checkBox.UpdateFlowDirection(controller);
+		}
+
+		void UpdateColors(CellTableViewCell cell, CheckBoxCell checkBoxCell)
+		{
+			var checkBox = cell.AccessoryView as XFCheckBox;
+			if (checkBox == null)
+				return;
+
+			checkBox.CheckedColor = checkBoxCell.CheckedColor;
+			checkBox.UncheckedColor = checkBoxCell.UncheckedColor;
 		}
 
 		void UpdateIsEnabled(CellTableViewCell cell, CheckBoxCell checkBoxCell)
