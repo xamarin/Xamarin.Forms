@@ -75,10 +75,6 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateMinimumDate();
 			UpdateTextColor();
 			UpdateFlowDirection();
-
-			Control.SpellCheckingType = UITextSpellCheckingType.No;
-			Control.AutocorrectionType = UITextAutocorrectionType.No;
-			Control.AutocapitalizationType = UITextAutocapitalizationType.None;
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
