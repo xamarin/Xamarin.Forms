@@ -550,6 +550,9 @@ namespace Xamarin.Forms.Controls
 				case Device.iOS:
 					fontFamily = "Ionicons";
 					break;
+				case Device.UWP:
+					fontFamily = "Assets/Fonts/ionicons.ttf#ionicons";
+					break;
 				case Device.Android:
 				default:
 					fontFamily = "fonts/ionicons.ttf#";
