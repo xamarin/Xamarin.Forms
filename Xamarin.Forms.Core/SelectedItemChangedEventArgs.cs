@@ -4,7 +4,7 @@ namespace Xamarin.Forms
 {
 	public class SelectedItemChangedEventArgs : EventArgs
 	{
-		[Obsolete("Please use the constructor that reports the items index")]
+		[Obsolete("This constructor is obsolete as of version 3.5. Please use SelectedItemChangedEventArgs(object selectedItem, int selectedItemIndex) instead.")]
 		public SelectedItemChangedEventArgs(object selectedItem)
 			: this(selectedItem, -1)
 		{
