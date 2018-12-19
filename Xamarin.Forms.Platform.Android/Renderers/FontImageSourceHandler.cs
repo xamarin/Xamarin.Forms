@@ -29,12 +29,12 @@ namespace Xamarin.Forms.Platform.Android
 				using (var typeface = fontsource.FontFamily.ToTypeFace())
 					paint.SetTypeface(typeface);
 
-				var width = (int)(paint.MeasureText(fontsource.Glyph.ToString()) + .5f);
+				var width = (int)(paint.MeasureText(fontsource.Glyph) + .5f);
 				var baseline = (int)(-paint.Ascent() + .5f);
 				var height = (int)(baseline + paint.Descent() + .5f);
 				image = Bitmap.CreateBitmap(width, height, Bitmap.Config.Argb8888);
 				var canvas = new Canvas(image);
-				canvas.DrawText(fontsource.Glyph.ToString(), 0, baseline, paint);
+				canvas.DrawText(fontsource.Glyph, 0, baseline, paint);
 			}
 
 			return Task.FromResult(image);

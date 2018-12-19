@@ -32,7 +32,7 @@ namespace Xamarin.Forms.Platform.UWP
 					Options = CanvasDrawTextOptions.Default,
 				};
 				var iconcolor = (fontsource.Color != Color.Default ? fontsource.Color : Color.White).ToWindowsColor();
-				ds.DrawText(fontsource.Glyph.ToString(), textFormat.FontSize / 2, 0, iconcolor, textFormat);
+				ds.DrawText(fontsource.Glyph, textFormat.FontSize / 2, 0, iconcolor, textFormat);
 			}
 
 			return Task.FromResult((Windows.UI.Xaml.Media.ImageSource)imageSource);

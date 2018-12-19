@@ -40,7 +40,7 @@ namespace Xamarin.Forms.Platform.Android
 			return (float)self.FontSize;
 		}
 
-		public static Typeface ToTypeFace(this string fontfamily, FontAttributes attr = FontAttributes.None)
+		internal static Typeface ToTypeFace(this string fontfamily, FontAttributes attr = FontAttributes.None)
 		{
 			Typeface result;
 			

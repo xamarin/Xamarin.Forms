@@ -16,7 +16,47 @@ namespace Xamarin.Forms.Controls
 			grid.AddRowDef(count: 53);
 			grid.AddColumnDef(count: 10);
 
-			char[] ionicons = new char[] {
+			var fontFamily = "";
+			switch (Device.RuntimePlatform)
+			{
+				case Device.iOS:
+					fontFamily = "Ionicons";
+					break;
+				case Device.UWP:
+					fontFamily = "Assets/Fonts/ionicons.ttf#ionicons";
+					break;
+				case Device.Android:
+				default:
+					fontFamily = "fonts/ionicons.ttf#";
+					break;
+			}
+
+			var i = 0;
+			foreach (char c in Ionicons)
+			{
+				grid.Children.Add(new Image
+				{
+					Source = new FontImageSource
+					{
+						Glyph = c.ToString(),
+						FontFamily = fontFamily,
+						Size = 20
+					},
+					BackgroundColor = Color.Black,
+					VerticalOptions = LayoutOptions.Center,
+					HorizontalOptions = LayoutOptions.Center,
+				}, i % 10, i / 10);
+				i++;
+			}
+			Content = new ScrollView
+			{
+				VerticalOptions = LayoutOptions.FillAndExpand,
+				HorizontalOptions = LayoutOptions.FillAndExpand,
+				Content = grid
+			};
+		}
+
+		static readonly char[] Ionicons = new char[] {
 				'\uf101',
 				'\uf100',
 				'\uf2c7',
@@ -543,45 +583,5 @@ namespace Xamarin.Forms.Controls
 				'\uf2ba',
 				'\uf30c',
 			};
-
-			var fontFamily = "";
-			switch (Device.RuntimePlatform)
-			{
-				case Device.iOS:
-					fontFamily = "Ionicons";
-					break;
-				case Device.UWP:
-					fontFamily = "Assets/Fonts/ionicons.ttf#ionicons";
-					break;
-				case Device.Android:
-				default:
-					fontFamily = "fonts/ionicons.ttf#";
-					break;
-			}
-
-			var i = 0;
-			foreach (char c in ionicons)
-			{
-				grid.Children.Add(new Image
-				{
-					Source = new FontImageSource
-					{
-						Glyph = c,
-						FontFamily = fontFamily,
-						Size = 20
-					},
-					BackgroundColor = Color.Black,
-					VerticalOptions = LayoutOptions.Center,
-					HorizontalOptions = LayoutOptions.Center,
-				}, i % 10, i / 10);
-				i++;
-			}
-			Content = new ScrollView
-			{
-				VerticalOptions = LayoutOptions.FillAndExpand,
-				HorizontalOptions = LayoutOptions.FillAndExpand,
-				Content = grid
-			};
-		}
 	}
 }

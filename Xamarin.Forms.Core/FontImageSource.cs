@@ -11,27 +11,21 @@ namespace Xamarin.Forms
 	{
 		private static BindableProperty CreateBindableProperty<T>(
 			string name,
-			T defaultValue = default(T),
-			Func<T, bool> validateValue = null)
+			T defaultValue = default(T))
 		{
-			ValidateValueDelegate validate = null;
-			if (validateValue != null)
-				validate = (bindable, value) => validateValue((T)value);
-
 			return BindableProperty.Create(
 				propertyName: name,
 				returnType: typeof(T),
 				declaringType: typeof(FontImageSource),
-				defaultValue: defaultValue,
-				validateValue: validate
+				defaultValue: defaultValue
 			);
 		}
 
 		public double Size { get => (double)GetValue(SizeProperty); set => SetValue(SizeProperty, value); }
 		public static readonly BindableProperty SizeProperty = CreateBindableProperty(nameof(Size), 30d);
 
-		public char Glyph { get => (char)GetValue(GlyphProperty); set => SetValue(GlyphProperty, value); }
-		public static readonly BindableProperty GlyphProperty = CreateBindableProperty<char>(nameof(Glyph));
+		public string Glyph { get => (string)GetValue(GlyphProperty); set => SetValue(GlyphProperty, value); }
+		public static readonly BindableProperty GlyphProperty = CreateBindableProperty<string>(nameof(Glyph));
 
 		public Color Color { get => (Color)GetValue(ColorProperty); set => SetValue(ColorProperty, value); }
 		public static readonly BindableProperty ColorProperty = CreateBindableProperty<Color>(nameof(Color));

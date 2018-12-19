@@ -208,7 +208,7 @@ namespace Xamarin.Forms.Platform.iOS
 					UIFont.SystemFontOfSize((float)fontsource.Size);
 
 				UIGraphics.BeginImageContextWithOptions(imagesize, false, 0f);
-				var attString = new NSAttributedString(fontsource.Glyph.ToString(), font: font, foregroundColor: iconcolor.ToUIColor());
+				var attString = new NSAttributedString(fontsource.Glyph, font: font, foregroundColor: iconcolor.ToUIColor());
 				var ctx = new NSStringDrawingContext();
 				var boundingRect = attString.GetBoundingRect(imagesize, (NSStringDrawingOptions)0, ctx);
 				attString.DrawString(new RectangleF(
