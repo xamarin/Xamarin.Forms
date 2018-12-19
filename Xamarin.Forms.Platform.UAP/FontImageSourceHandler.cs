@@ -16,7 +16,6 @@ namespace Xamarin.Forms.Platform.UWP
 			BitmapSource image = null;
 			if (imagesource is FontImageSource fontsource)
 			{
-				var iconcolor = fontsource.Color != Color.Default ? fontsource.Color : Color.White;
 				var device = CanvasDevice.GetSharedDevice();
 				var localDpi = Windows.Graphics.Display.DisplayInformation.GetForCurrentView().LogicalDpi;
 				var canvasSize = (float)fontsource.Size + 2;
@@ -27,31 +26,23 @@ namespace Xamarin.Forms.Platform.UWP
 					ds.Clear(Windows.UI.Colors.Transparent);
 					var textFormat = new CanvasTextFormat
 					{
-						FontFamily = ToWindowsFontFamily(fontsource.FontFamily),
+						FontFamily = fontsource.FontFamily,
 						FontSize = (float)fontsource.Size,
 						HorizontalAlignment = CanvasHorizontalAlignment.Center,
 						Options = CanvasDrawTextOptions.Default
 					};
-					ds.DrawText(fontsource.Glyph.ToString(), textFormat.FontSize / 2, 0, iconcolor.ToWindowsColor(), textFormat);
+					var iconcolor = (fontsource.Color != Color.Default ? fontsource.Color : Color.White).ToWindowsColor();
+					ds.DrawText(fontsource.Glyph.ToString(), textFormat.FontSize / 2, 0, iconcolor, textFormat);
 				}
-				image = new BitmapImage();
+
 				using (var stream = new InMemoryRandomAccessStream())
 				{
 					await renderTarget.SaveAsync(stream, CanvasBitmapFileFormat.Png);
+					image = new BitmapImage();
 					await image.SetSourceAsync(stream);
 				}
 			}
 			return image;
-		}
-
-		string ToWindowsFontFamily(string fontFamily)
-		{
-			var ff = fontFamily.Split("#");
-			var fontFile = ff[0];
-			var fontName = string.IsNullOrEmpty(ff[1]) || ff.Length == 1 
-				? System.IO.Path.GetFileNameWithoutExtension(fontFile) 
-				: ff[1];
-			return $"/Assets/{fontFile}#{fontName}";
 		}
 	}
 }
