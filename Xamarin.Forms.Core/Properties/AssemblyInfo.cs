@@ -43,7 +43,11 @@ using Xamarin.Forms.StyleSheets;
 [assembly: XmlnsDefinition("http://xamarin.com/schemas/2014/forms/design", "Xamarin.Forms")]
 =======
 [assembly: XmlnsPrefix("http://xamarin.com/schemas/2014/forms", "xf")]
+<<<<<<< HEAD
 >>>>>>> [Xaml] expose XmlnsPrefixAttribute (#4562)
+=======
+[assembly: XmlnsPrefix("http://xamarin.com/schemas/2014/forms/design", "d")]
+>>>>>>> XmlnsPrefix d: (#4781)
 
 [assembly: StyleProperty("background-color", typeof(VisualElement), nameof(VisualElement.BackgroundColorProperty))]
 [assembly: StyleProperty("background-image", typeof(Page), nameof(Page.BackgroundImageProperty))]
