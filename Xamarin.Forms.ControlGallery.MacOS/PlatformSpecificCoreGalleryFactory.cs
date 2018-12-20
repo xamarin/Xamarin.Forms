@@ -12,6 +12,10 @@ namespace Xamarin.Forms.ControlGallery.MacOS
 	{
 		public string Title => "macOS Core Gallery";
 
-		public IEnumerable<(Func<Page> Create, string Title)> GetPages() => null;
+		public IEnumerable<(Func<Page> Create, string Title)> GetPages()
+		{
+			yield return (() => new BasicOpenGLGallery(), "Basic OpenGL Gallery - Legacy");
+			yield return (() => new AdvancedOpenGLGallery(), "Advanced OpenGL Gallery - Legacy");
+		}
 	}
 }

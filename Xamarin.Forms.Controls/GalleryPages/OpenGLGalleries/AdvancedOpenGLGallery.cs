@@ -2,7 +2,7 @@
 using System;
 using OpenTK;
 
-#if __WPF__ || __GTK__
+#if __WPF__ || __GTK__ || __MACOS__
 using OpenTK.Graphics.OpenGL;
 #elif __ANDROID__ || __IOS__
 using OpenTK.Graphics.ES20;
