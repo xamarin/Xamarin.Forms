@@ -6,7 +6,6 @@ using Android.Content;
 using Android.OS;
 using Android.Views;
 using Android.Views.Animations;
-using ARelativeLayout = Android.Widget.RelativeLayout;
 using AView = Android.Views.View;
 using Xamarin.Forms.Internals;
 
@@ -302,9 +301,6 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 				foreach (var root in _navModel.Roots)
 					renderersToDispose.Add(Android.Platform.GetRenderer(root));
-
-				if (Android.Platform.GetRenderer(Page) != null)
-					Page.ClearValue(Android.Platform.RendererProperty);
 
 				_navModel = new NavigationModel();
 
