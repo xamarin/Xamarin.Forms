@@ -282,7 +282,6 @@ namespace Xamarin.Forms.Platform.Android
 
 		internal virtual void OnNativeFocusChanged(bool hasFocus)
 		{
-
 		}
 
 		internal override void SendVisualElementInitialized(VisualElement element, AView nativeView)
