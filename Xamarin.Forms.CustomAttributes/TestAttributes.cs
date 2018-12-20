@@ -494,6 +494,7 @@ namespace Xamarin.Forms.CustomAttributes
 		public enum InputView
 		{
 			Keyboard,
+			MaxLength,
 		}
 
 		public enum Editor
@@ -692,7 +693,9 @@ namespace Xamarin.Forms.CustomAttributes
 			MinimumTrackColor,
 			MaximumTrackColor,
 			ThumbColor,
-			ThumbImage
+			ThumbImage,
+			DragStarted,
+			DragCompleted
 		}
 
 		public enum StackLayout
@@ -768,6 +771,7 @@ namespace Xamarin.Forms.CustomAttributes
 		public enum Picker
 		{
 			Title,
+			TitleColor,
 			Items,
 			SelectedIndex,
 			Focus,
