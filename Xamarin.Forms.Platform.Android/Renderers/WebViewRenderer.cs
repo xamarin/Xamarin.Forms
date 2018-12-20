@@ -220,22 +220,14 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateEnableZoomControls()
 		{
-			// BuiltInZoomControls supported as of API level 3
-			if (Control != null && ((int)Build.VERSION.SdkInt >= 3))
-			{
-				var value = Element.OnThisPlatform().EnableZoomControls();
-				Control.Settings.SetSupportZoom(value);
-				Control.Settings.BuiltInZoomControls = value;
-			}
+			var value = Element.OnThisPlatform().EnableZoomControls();
+			Control.Settings.SetSupportZoom(value);
+			Control.Settings.BuiltInZoomControls = value;
 		}
 
 		void UpdateDisplayZoomControls()
 		{
-			// DisplayZoomControls supported as of API level 11
-			if (Control != null && ((int)Build.VERSION.SdkInt >= 11))
-			{
-				Control.Settings.DisplayZoomControls = Element.OnThisPlatform().DisplayZoomControls();
-			}
+			Control.Settings.DisplayZoomControls = Element.OnThisPlatform().DisplayZoomControls();
 		}
 
 		class JavascriptResult : Java.Lang.Object, IValueCallback
