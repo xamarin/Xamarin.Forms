@@ -51,7 +51,7 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public void InvalidCtor()
 		{
-			Assert.Throws<ArgumentNullException>(() => new TypedBinding<MockViewModel, string>(null, (mvm, s) => mvm.Text = s, null), "Allowed null getter");
+			Assert.Throws<ArgumentNullException>(() => new TypedBinding<MockViewModel, string>((Func<MockViewModel, string>)null, (mvm, s) => mvm.Text = s, null), "Allowed null getter");
 		}
 
 		[Test, NUnit.Framework.Category("[Binding] Set Value")]
@@ -1001,6 +1001,22 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual("fallback", bindable.GetValue(property));
 			Assert.That(log.Messages.Count, Is.EqualTo(0),
 				"An error was logged: " + log.Messages.FirstOrDefault());
+		}
+
+		[Test]
+		//https://github.com/xamarin/Xamarin.Forms/issues/4103
+		public void TestTargetNullValue()
+		{
+			var property = BindableProperty.Create("Text", typeof(string), typeof(MockBindable), default(string));
+			var binding = new TypedBinding<MockViewModel, string>(vm => vm.Text, null, null) { TargetNullValue = "target null"};
+			var bindable = new MockBindable();
+			bindable.SetBinding(property, binding);
+			bindable.BindingContext = new MockViewModel("initial");
+			Assert.That(bindable.GetValue(property), Is.EqualTo("initial"));
+
+			bindable.BindingContext = new MockViewModel(null);
+			Assert.That(bindable.GetValue(property), Is.EqualTo("target null"));
+
 		}
 
 		[Test]

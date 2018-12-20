@@ -8,12 +8,17 @@ using Xamarin.Forms.Build.Tasks;
 using NUnit.Framework;
 using System.Collections.Generic;
 
-namespace Xamarin.Forms.Xaml.XamlcUnitTests
+namespace Xamarin.Forms.XamlcUnitTests
 {
 	[TestFixture]
 	public class MethodReferenceExtensionsTests
 	{
 		ModuleDefinition module;
+
+		abstract class TestClass<T>
+		{
+			public abstract T UnresolvedGenericReturnType ();
+		}
 
 		[SetUp]
 		public void SetUp ()
@@ -87,6 +92,16 @@ namespace Xamarin.Forms.Xaml.XamlcUnitTests
 			Assert.AreEqual ("System.Void System.Collections.Generic.ICollection`1::Add(T)", adderRef.FullName);
 			adderRef = adderRef.ResolveGenericParameters (ptype, module);
 			Assert.AreEqual ("System.Void System.Collections.Generic.ICollection`1<Xamarin.Forms.View>::Add(T)", adderRef.FullName);
+		}
+
+		[Test]
+		public void GenericParameterReturnType ()
+		{
+			var type = module.ImportReference (typeof (TestClass<int>));
+			var method = type.Resolve ().Methods.Where (md => md.Name == "UnresolvedGenericReturnType").Single ();
+			var resolved = method.ResolveGenericParameters (type, module);
+
+			Assert.AreEqual ("T", resolved.ReturnType.Name);
 		}
 	}
 }

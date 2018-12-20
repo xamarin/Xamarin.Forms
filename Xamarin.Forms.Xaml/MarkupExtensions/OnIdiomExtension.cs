@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Globalization;
 using System.Reflection;
+using System.Xml;
 
 namespace Xamarin.Forms.Xaml
 {
-	[ContentProperty("Default")]
+	[ContentProperty(nameof(Default))]
 	public class OnIdiomExtension : IMarkupExtension
 	{
 		// See Device.Idiom
@@ -23,14 +24,12 @@ namespace Xamarin.Forms.Xaml
 		public object ProvideValue(IServiceProvider serviceProvider)
 		{
 			if (   Default == null
-			    && Phone == null
-			    && Tablet == null
-			    && Desktop == null
-			    && TV == null
-			    && Watch == null) {
-				var lineInfo = serviceProvider?.GetService<IXmlLineInfoProvider>()?.XmlLineInfo;
-				throw new XamlParseException("OnIdiomExtension requires a non-null value to be specified for at least one idiom or Default.", lineInfo ?? new XmlLineInfo());
-			}
+				&& Phone == null
+				&& Tablet == null
+				&& Desktop == null
+				&& TV == null
+				&& Watch == null)
+				throw new XamlParseException("OnIdiomExtension requires a non-null value to be specified for at least one idiom or Default.", serviceProvider);
 
 			var valueProvider = serviceProvider?.GetService<IProvideValueTarget>() ?? throw new ArgumentException();
 
@@ -58,29 +57,52 @@ namespace Xamarin.Forms.Xaml
 				return Converter.Convert(value, propertyType, ConverterParameter, CultureInfo.CurrentUICulture);
 
 			var converterProvider = serviceProvider?.GetService<IValueConverterProvider>();
+			if (converterProvider != null) {
+				MemberInfo minforetriever()
+				{
+					if (pi != null)
+						return pi;
 
+					MemberInfo minfo = null;
+					try {
+						minfo = bp.DeclaringType.GetRuntimeProperty(bp.PropertyName);
+					}
+					catch (AmbiguousMatchException e) {
+						throw new XamlParseException($"Multiple properties with name '{bp.DeclaringType}.{bp.PropertyName}' found.", serviceProvider, innerException: e);
+					}
+					if (minfo != null)
+						return minfo;
+					try {
+						return bp.DeclaringType.GetRuntimeMethod("Get" + bp.PropertyName, new[] { typeof(BindableObject) });
+					}
+					catch (AmbiguousMatchException e) {
+						throw new XamlParseException($"Multiple methods with name '{bp.DeclaringType}.Get{bp.PropertyName}' found.", serviceProvider, innerException: e);
+					}
+				}
+
+				return converterProvider.Convert(value, propertyType, minforetriever, serviceProvider);
+			}
 			if (converterProvider != null)
 				return converterProvider.Convert(value, propertyType, () => pi, serviceProvider);
-			else
-				return value.ConvertTo(propertyType, () => pi, serviceProvider);
+
+			return value.ConvertTo(propertyType, () => pi, serviceProvider);
 		}
 
 		object GetValue()
 		{
-			switch (Device.Idiom)
-			{
-				case TargetIdiom.Phone:
-					return Phone ?? Default;
-				case TargetIdiom.Tablet:
-					return Tablet ?? Default;
-				case TargetIdiom.Desktop:
-					return Desktop ?? Default;
-				case TargetIdiom.TV:
-					return TV ?? Default;
-				case TargetIdiom.Watch:
-					return Watch ?? Default;
-				default:
-					return Default;
+			switch (Device.Idiom) {
+			case TargetIdiom.Phone:
+				return Phone ?? Default;
+			case TargetIdiom.Tablet:
+				return Tablet ?? Default;
+			case TargetIdiom.Desktop:
+				return Desktop ?? Default;
+			case TargetIdiom.TV:
+				return TV ?? Default;
+			case TargetIdiom.Watch:
+				return Watch ?? Default;
+			default:
+				return Default;
 			}
 		}
 	}

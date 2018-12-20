@@ -3,6 +3,7 @@ using System.ComponentModel;
 using RectangleF = CoreGraphics.CGRect;
 using SizeF = CoreGraphics.CGSize;
 using Foundation;
+using System.Collections.Generic;
 
 #if __MOBILE__
 using UIKit;
@@ -27,6 +28,16 @@ namespace Xamarin.Forms.Platform.MacOS
 		FormattedString _formatted;
 
 		bool IsTextFormatted => _formatted != null;
+
+		static HashSet<string> s_perfectSizeSet = new HashSet<string>
+		{
+			Label.TextProperty.PropertyName,
+			Label.TextColorProperty.PropertyName,
+			Label.FontProperty.PropertyName,
+			Label.FormattedTextProperty.PropertyName,
+			Label.LineBreakModeProperty.PropertyName,
+			Label.LineHeightProperty.PropertyName,
+		};
 
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
@@ -117,12 +128,30 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		}
 
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(disposing);
+			if (disposing)
+			{
+				if(Element != null)
+				{
+					Element.PropertyChanging -= ElementPropertyChanging;
+				}
+			}
+		}
+
 		protected override void OnElementChanged(ElementChangedEventArgs<Label> e)
 		{
+			if (e.OldElement != null)
+			{
+				e.OldElement.PropertyChanging -= ElementPropertyChanging;
+			}
+
 			if (e.NewElement != null)
 			{
 				if (Control == null)
 				{
+					e.NewElement.PropertyChanging += ElementPropertyChanging;
 					SetNativeControl(new NativeLabel(RectangleF.Empty));
 #if !__MOBILE__
 					Control.Editable = false;
@@ -156,7 +185,10 @@ namespace Xamarin.Forms.Platform.MacOS
 			else if (e.PropertyName == Label.FontProperty.PropertyName)
 				UpdateFont();
 			else if (e.PropertyName == Label.TextProperty.PropertyName)
+			{
 				UpdateText();
+				UpdateTextDecorations();
+			}
 			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
 				UpdateTextDecorations();
 			else if (e.PropertyName == Label.FormattedTextProperty.PropertyName)
@@ -169,6 +201,12 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateText();
 			else if (e.PropertyName == Label.MaxLinesProperty.PropertyName)
 				UpdateMaxLines();
+		}
+
+		void ElementPropertyChanging(object sender, PropertyChangingEventArgs e)
+		{
+			if (s_perfectSizeSet.Contains(e.PropertyName))
+				_perfectSizeValid = false;
 		}
 
 		void UpdateTextDecorations()
@@ -250,7 +288,6 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateLineBreakMode()
 		{
-			_perfectSizeValid = false;
 #if __MOBILE__
 			switch (Element.LineBreakMode)
 			{
@@ -300,7 +337,6 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateText()
 		{
-			_perfectSizeValid = false;
 			var values = Element.GetValues(Label.FormattedTextProperty, Label.TextProperty);
 
 			_formatted = values[0] as FormattedString;
@@ -325,9 +361,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		void UpdateFormattedText()
 		{
 #if __MOBILE__
-			Control.AttributedText = _formatted.ToAttributed(Element, Element.TextColor, Element.LineHeight);
+			Control.AttributedText = _formatted.ToAttributed(Element, Element.TextColor, Element.HorizontalTextAlignment, Element.LineHeight);
 #else
-			Control.AttributedStringValue = _formatted.ToAttributed(Element, Element.TextColor, Element.LineHeight);
+			Control.AttributedStringValue = _formatted.ToAttributed(Element, Element.TextColor, Element.HorizontalTextAlignment, Element.LineHeight);
 #endif
 		}
 
@@ -338,7 +374,6 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateFormattedText();
 				return;
 			}
-			_perfectSizeValid = false;
 
 #if __MOBILE__
 			Control.Font = Element.ToUIFont();
@@ -355,8 +390,6 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateFormattedText();
 				return;
 			}
-
-			_perfectSizeValid = false;
 
 			var textColor = (Color)Element.GetValue(Label.TextColorProperty);
 

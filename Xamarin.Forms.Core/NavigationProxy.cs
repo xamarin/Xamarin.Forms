@@ -7,6 +7,12 @@ using System.Threading.Tasks;
 namespace Xamarin.Forms.Internals
 {
 	[EditorBrowsable(EditorBrowsableState.Never)]
+	public interface INavigationProxy
+	{
+		NavigationProxy NavigationProxy { get; }
+	}
+
+	[EditorBrowsable(EditorBrowsableState.Never)]
 	public class NavigationProxy : INavigation
 	{
 		INavigation _inner;
@@ -173,6 +179,9 @@ namespace Xamarin.Forms.Internals
 			INavigation currentInner = Inner;
 			if (currentInner == null)
 			{
+				if (_pushStack.Value.Count == 0)
+					return Task.FromResult<Page>(null);
+
 				Page root = _pushStack.Value.Last();
 				_pushStack.Value.Clear();
 				_pushStack.Value.Add(root);
@@ -219,6 +228,8 @@ namespace Xamarin.Forms.Internals
 		Page Pop()
 		{
 			List<Page> list = _pushStack.Value;
+			if (list.Count == 0)
+				return null;
 			Page result = list[list.Count - 1];
 			list.RemoveAt(list.Count - 1);
 			return result;
@@ -227,6 +238,8 @@ namespace Xamarin.Forms.Internals
 		Page PopModal()
 		{
 			List<Page> list = _modalStack.Value;
+			if (list.Count == 0)
+				return null;
 			Page result = list[list.Count - 1];
 			list.RemoveAt(list.Count - 1);
 			return result;

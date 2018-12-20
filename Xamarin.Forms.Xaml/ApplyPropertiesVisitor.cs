@@ -161,7 +161,7 @@ namespace Xamarin.Forms.Xaml
 
 				MethodInfo addMethod;
 				if (xpe == null && (addMethod = collection.GetType().GetRuntimeMethods().First(mi => mi.Name == "Add" && mi.GetParameters().Length == 1)) != null) {
-					addMethod.Invoke(collection, new[] { Values[node] });
+					addMethod.Invoke(collection, new[] { value });
 					return;
 				}
 				xpe = xpe ?? new XamlParseException($"Value of {parentList.XmlName.LocalName} does not have a Add() method", node);
@@ -231,10 +231,17 @@ namespace Xamarin.Forms.Xaml
 			if (serviceProvider != null && propertyName != XmlName.Empty)
 				((XamlValueTargetProvider)serviceProvider.IProvideValueTarget).TargetProperty = GetTargetProperty(source, propertyName, Context, node);
 
-			if (markupExtension != null)
-				value = markupExtension.ProvideValue(serviceProvider);
-			else if (valueProvider != null)
-				value = valueProvider.ProvideValue(serviceProvider);
+			try {
+				if (markupExtension != null)
+					value = markupExtension.ProvideValue(serviceProvider);
+				else if (valueProvider != null)
+					value = valueProvider.ProvideValue(serviceProvider);
+			} catch (Exception e) {
+				if (Context.ExceptionHandler != null)
+					Context.ExceptionHandler(e);
+				else
+					throw e;
+			}
 		}
 
 		static string GetContentPropertyName(IEnumerable<CustomAttributeData> attributes)
