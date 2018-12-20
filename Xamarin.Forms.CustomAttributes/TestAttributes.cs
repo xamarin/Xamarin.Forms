@@ -519,7 +519,6 @@ namespace Xamarin.Forms.CustomAttributes
 			IsPassword,
 			Text,
 			TextColor,
-			Keyboard,
 			HorizontalTextAlignmentStart,
 			HorizontalTextAlignmentCenter,
 			HorizontalTextAlignmentEnd,
