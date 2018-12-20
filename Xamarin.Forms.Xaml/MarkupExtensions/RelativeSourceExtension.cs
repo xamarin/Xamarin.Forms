@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Xaml
 				case RelativeBindingSourceMode.FindAncestor:
 					if (AncestorType == null)
 						throw new Exception(
-							$"{nameof(RelativeBindingSourceMode.FindAncestor)} {nameof(Binding.RelativeSource)} " +
+							$"{nameof(RelativeBindingSourceMode.FindAncestor)} " +
 							$"binding must specify valid {nameof(AncestorType)}");
 					return new RelativeBindingSource(RelativeBindingSourceMode.FindAncestor)
 					{

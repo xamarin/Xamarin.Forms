@@ -32,7 +32,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			};
 			label.SetBinding(Label.TextProperty, new Binding(nameof(Label.StyleId))
 			{
-				RelativeSource = RelativeBindingSource.Self
+				Source = RelativeBindingSource.Self
 			});
 			Assert.AreEqual(label.Text, label.StyleId);
 		}
@@ -40,14 +40,25 @@ namespace Xamarin.Forms.Core.UnitTests
 		[Test]
 		public void RelativeSourceAncestorTypeBinding()
 		{
+			string bindingContext0 = "bc0";
+			string bindingContext1 = "bc1";
+			string bindingContext2 = "bc2";
+
 			StackLayout stack0 = new StackLayout
 			{
-				StyleId = "stack0"
+				StyleId = "stack0",
+				BindingContext = bindingContext0,
 			};
 
 			StackLayout stack1 = new StackLayout
 			{
-				StyleId = "stack1"
+				StyleId = "stack1",				
+			};
+
+			StackLayout stack2 = new StackLayout
+			{
+				StyleId = "stack2",
+				BindingContext = bindingContext2
 			};
 
 			Label label0 = new Label();
@@ -61,7 +72,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			label0.SetBinding(Label.TextProperty, new Binding
 			{
 				Path = nameof(StackLayout.StyleId),
-				RelativeSource = new RelativeBindingSource
+				Source = new RelativeBindingSource
 				{
 					AncestorType = typeof(StackLayout)
 				}
@@ -69,7 +80,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			label1.SetBinding(Label.TextProperty, new Binding
 			{
 				Path = nameof(StackLayout.StyleId),
-				RelativeSource = new RelativeBindingSource
+				Source = new RelativeBindingSource
 				{
 					AncestorType = typeof(StackLayout),
 					AncestorLevel = 2
@@ -78,7 +89,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			label2.SetBinding(Label.TextProperty, new Binding
 			{
 				Path = nameof(StackLayout.StyleId),
-				RelativeSource = new RelativeBindingSource
+				Source = new RelativeBindingSource
 				{
 					AncestorType = typeof(StackLayout),
 					AncestorLevel = 10
@@ -88,6 +99,24 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(label0.Text, stack1.StyleId);
 			Assert.AreEqual(label1.Text, stack0.StyleId);
 			Assert.IsNull(label2.Text);
+
+			// Ensures RelativeBindingSource.AncestorType
+			// works correctly after immediate ancestor changed.
+			stack1.Children.Remove(label0);
+			stack0.Children.Add(label0);
+			Assert.AreEqual(label0.Text, stack0.StyleId);
+			Assert.AreEqual(label0.BindingContext, stack0.BindingContext);
+
+			// And after distant ancestor changed
+			stack0.Children.Remove(stack1);
+			stack2.Children.Add(stack1);
+			Assert.AreEqual(label1.Text, stack2.StyleId);
+			Assert.AreEqual(label1.BindingContext, stack2.BindingContext);
+
+			// And after parent binding context changed
+			stack2.BindingContext = "foobar";
+			Assert.AreEqual(label1.Text, stack2.StyleId);
+			Assert.AreEqual(label1.BindingContext, "foobar");
 		}
 
 		[Test]
@@ -134,11 +163,11 @@ namespace Xamarin.Forms.Core.UnitTests
 	{
 		public MyCustomControlTemplate()
 		{
-			this.SetBinding(TextProperty, new Binding()
-			{
-				RelativeSource = RelativeBindingSource.TemplatedParent,
-				Path = nameof(CustomControl.CustomText)
-			});
+			this.SetBinding(
+				TextProperty, 
+				new Binding(
+					nameof(CustomControl.CustomText), 
+					source: RelativeBindingSource.TemplatedParent));
 		}
 	}
 }

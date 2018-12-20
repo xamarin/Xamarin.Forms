@@ -98,7 +98,7 @@ namespace Xamarin.Forms
 			IsApplied = true;
 		}
 
-		internal virtual void Apply(object context, BindableObject bindObj, BindableProperty targetProperty, bool fromBindingContextChanged = false)
+		internal virtual void Apply(object context, BindableObject bindObj, BindableProperty targetProperty, bool fromBindingContextChanged = false, bool fromAncestorChanged = false)
 		{
 			IsApplied = true;
 		}
@@ -129,7 +129,7 @@ namespace Xamarin.Forms
 			return SynchronizedCollections.TryGetValue(collection, out synchronizationContext);
 		}
 
-		internal virtual void Unapply(bool fromBindingContextChanged = false)
+		internal virtual void Unapply(bool fromBindingContextChanged = false, bool fromAncestorChanged = false)
 		{
 			IsApplied = false;
 		}

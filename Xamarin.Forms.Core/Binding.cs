@@ -11,7 +11,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	public class Binding : BindingBase
+	public sealed class Binding : BindingBase
 	{
 		internal const string SelfPath = ".";
 		IValueConverter _converter;
@@ -21,7 +21,6 @@ namespace Xamarin.Forms
 		string _path;
 		object _source;
 		string _updateSourceEventName;
-		RelativeBindingSource _relativeSource;
 
 		public Binding()
 		{
@@ -83,16 +82,8 @@ namespace Xamarin.Forms
 			{
 				ThrowIfApplied();
 				_source = value;
-			}
-		}
-
-		public RelativeBindingSource RelativeSource
-		{
-			get { return _relativeSource ?? this.Source as RelativeBindingSource; }
-			set
-			{
-				ThrowIfApplied();
-				_relativeSource = value;
+				if ((value as RelativeBindingSource)?.Mode == RelativeBindingSourceMode.TemplatedParent)
+					this.AllowChaining = true;
 			}
 		}
 
@@ -125,20 +116,20 @@ namespace Xamarin.Forms
 			_expression.Apply(fromTarget);
 		}
 
-		internal override void Apply(object context, BindableObject bindObj, BindableProperty targetProperty, bool fromBindingContextChanged = false)
+		internal override void Apply(object context, BindableObject bindObj, BindableProperty targetProperty, bool fromBindingContextChanged = false, bool fromAncestorChanged = false)
 		{
 			object src = _source;
 			var isApplied = IsApplied;
 
 			base.Apply(src ?? context, bindObj, targetProperty, fromBindingContextChanged: fromBindingContextChanged);
 
-			if (src != null && isApplied && fromBindingContextChanged)
+			if (isApplied && !ShouldReapply(fromBindingContextChanged, fromAncestorChanged))
 				return;
 
-			if (this.RelativeSource == null)
-				CompleteApplyBinding(src ?? Context ?? context, bindObj, targetProperty);
-			else
+			if ( this.Source is RelativeBindingSource )
 				ResolveRelativeSource(bindObj, targetProperty);
+			else
+				CompleteApplyBinding(src ?? Context ?? context, bindObj, targetProperty);
 		}
 
 		private void CompleteApplyBinding(object bindingContext, BindableObject bindObj, BindableProperty targetProperty)
@@ -150,8 +141,9 @@ namespace Xamarin.Forms
 
 		private async void ResolveRelativeSource(BindableObject bindObj, BindableProperty targetProperty)
 		{
+			RelativeBindingSource relSource = this.Source as RelativeBindingSource;
 			object bindingContext = null;
-			switch (this.RelativeSource.Mode)
+			switch (relSource.Mode)
 			{
 				case RelativeBindingSourceMode.Self:
 					bindingContext = bindObj;
@@ -173,14 +165,14 @@ namespace Xamarin.Forms
 
 						while (parent != null)
 						{
-							if (currentLevel >= this.RelativeSource.AncestorLevel)
+							if (currentLevel >= relSource.AncestorLevel)
 							{
-								if (this.RelativeSource.AncestorType.IsInstanceOfType(parent))
+								if (relSource.AncestorType.IsInstanceOfType(parent))
 								{
 									bindingContext = parent;
 									break;
 								}
-								else if (this.RelativeSource.AncestorType.IsInstanceOfType(parent.BindingContext))
+								else if (relSource.AncestorType.IsInstanceOfType(parent.BindingContext))
 								{
 									bindingContext = parent.BindingContext;
 									break;
@@ -207,8 +199,7 @@ namespace Xamarin.Forms
 				Source = Source,
 				UpdateSourceEventName = UpdateSourceEventName,
 				TargetNullValue = TargetNullValue,
-				FallbackValue = FallbackValue,
-				RelativeSource = RelativeSource
+				FallbackValue = FallbackValue
 			};
 		}
 
@@ -228,15 +219,40 @@ namespace Xamarin.Forms
 			return base.GetTargetValue(value, sourcePropertyType);
 		}
 
-		internal override void Unapply(bool fromBindingContextChanged = false)
+		internal override void Unapply(bool fromBindingContextChanged = false, bool fromAncestorChange = false)
 		{
-			if (Source != null && fromBindingContextChanged && IsApplied)
+			if ( this.IsApplied && !ShouldReapply(fromBindingContextChanged, fromAncestorChange))
 				return;
 			
-			base.Unapply(fromBindingContextChanged: fromBindingContextChanged);
+			base.Unapply(fromBindingContextChanged: fromBindingContextChanged, fromAncestorChanged: fromAncestorChange);
 
 			if (_expression != null)
 				_expression.Unapply();
+		}
+
+		private bool ShouldReapply(bool fromBindingContextChanged, bool fromAncestorChange)
+		{
+			if ( this.Source is RelativeBindingSource relSource )
+			{
+				if (relSource.Mode == RelativeBindingSourceMode.Self ||
+					 relSource.Mode == RelativeBindingSourceMode.TemplatedParent)
+					// We never need to reapply bindings in these
+					// relative source modes because the resolved binding
+					// source will never change during the life of the
+					// target.
+					return false;
+				else if (relSource.Mode == RelativeBindingSourceMode.FindAncestor)
+					// Avoids a potentially expensive re-calculation
+					// of the ancestor every time the BindingContext
+					// changes.
+					return !fromBindingContextChanged || fromAncestorChange;
+				else
+					return true;
+			}
+			else
+			{
+				return (Source == null || !fromBindingContextChanged) && !fromAncestorChange;
+			}
 		}
 
 		[Obsolete]

@@ -108,7 +108,7 @@ namespace Xamarin.Forms.Internals
 		}
 
 		// Applies the binding to a new source or target.
-		internal override void Apply(object context, BindableObject bindObj, BindableProperty targetProperty, bool fromBindingContextChanged = false)
+		internal override void Apply(object context, BindableObject bindObj, BindableProperty targetProperty, bool fromBindingContextChanged = false, bool fromAncestorChanged = false)
 		{
 			_targetProperty = targetProperty;
 			var source = Source ?? Context ?? context;
@@ -168,7 +168,7 @@ namespace Xamarin.Forms.Internals
 			return value;
 		}
 
-		internal override void Unapply(bool fromBindingContextChanged = false)
+		internal override void Unapply(bool fromBindingContextChanged = false, bool fromAncestorChanged = false)
 		{
 			if (Source != null && fromBindingContextChanged && IsApplied)
 				return;

@@ -8,7 +8,7 @@ namespace Xamarin.Forms
 
 		public ContentPresenter()
 		{
-			SetBinding(ContentProperty, new TemplateBinding("Content"));
+			SetBinding(ContentProperty, new Binding("Content", source: RelativeBindingSource.TemplatedParent));
 		}
 
 		public View Content

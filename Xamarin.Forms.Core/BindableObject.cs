@@ -437,7 +437,7 @@ namespace Xamarin.Forms
 			}
 		}
 
-		internal void ApplyBindings(bool skipBindingContext, bool fromBindingContextChanged)
+		internal void ApplyBindings(bool skipBindingContext, bool fromBindingContextChanged, bool fromAncestorChanged = false)
 		{
 			var prop = _properties.Values.ToArray();
 			for (int i = 0, propLength = prop.Length; i < propLength; i++) {
@@ -449,8 +449,8 @@ namespace Xamarin.Forms
 				if (skipBindingContext && ReferenceEquals(context.Property, BindingContextProperty))
 					continue;
 
-				binding.Unapply(fromBindingContextChanged: fromBindingContextChanged);
-				binding.Apply(BindingContext, this, context.Property, fromBindingContextChanged: fromBindingContextChanged);
+				binding.Unapply(fromBindingContextChanged: fromBindingContextChanged, fromAncestorChanged: fromAncestorChanged);
+				binding.Apply(BindingContext, this, context.Property, fromBindingContextChanged: fromBindingContextChanged, fromAncestorChanged: fromAncestorChanged);
 			}
 		}
 

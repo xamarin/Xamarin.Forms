@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Xaml
 		{
 			return new Binding
 			{
-				RelativeSource = RelativeBindingSource.TemplatedParent,
+				Source = RelativeBindingSource.TemplatedParent,
 				Path = Path,
 				Mode = Mode,
 				Converter = Converter,
