@@ -40,6 +40,11 @@ namespace Xamarin.Forms.Platform.iOS
 		protected UITableViewRowAnimation InsertRowsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
 		protected UITableViewRowAnimation DeleteRowsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
 		protected UITableViewRowAnimation ReloadRowsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
+		protected UITableViewRowAnimation ReloadSectionsAnimation
+		{
+			get { return _dataSource.ReloadSectionsAnimation; }
+			set { _dataSource.ReloadSectionsAnimation = value; }
+		}
 
 		public override SizeRequest GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
@@ -971,6 +976,7 @@ namespace Xamarin.Forms.Platform.iOS
 			bool _isDragging;
 			bool _selectionFromNative;
 			bool _disposed;
+			public UITableViewRowAnimation ReloadSectionsAnimation { get; set; } = UITableViewRowAnimation.Automatic;
 
 			public ListViewDataSource(ListViewDataSource source)
 			{

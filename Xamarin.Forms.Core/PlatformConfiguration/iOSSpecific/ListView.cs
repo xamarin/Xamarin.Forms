@@ -50,7 +50,6 @@
 			return config;
 		}
 
-		#region RowAnimationsEnabled
 		public static readonly BindableProperty RowAnimationsEnabledProperty = BindableProperty.Create(nameof(RowAnimationsEnabled), typeof(bool), typeof(ListView), true);
 
 		public static bool GetRowAnimationsEnabled(BindableObject element)
@@ -73,6 +72,5 @@
 		{
 			return GetRowAnimationsEnabled(config.Element);
 		}
-		#endregion
 	}
 }
