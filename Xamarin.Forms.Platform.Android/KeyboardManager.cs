@@ -33,12 +33,48 @@ namespace Xamarin.Forms.Platform.Android
 
 			using (var inputMethodManager = (InputMethodManager)inputView.Context.GetSystemService(Context.InputMethodService))
 			{
-				if (inputView is EditText || inputView is TextView || inputView is SearchView)
+				if (inputView is EditText || inputView is TextView)
 				{
-					inputMethodManager?.ShowSoftInput(inputView, ShowFlags.Forced);
+					// The zero value for the second parameter comes from 
+					// https://developer.android.com/reference/android/view/inputmethod/InputMethodManager#showSoftInput(android.view.View,%20int)
+					// Apparently there's no named value for zero in this case
+					inputMethodManager?.ShowSoftInput(inputView, 0);
 				}
 				else
-					throw new ArgumentException("inputView should be of type EditText, SearchView, or TextView");
+					throw new ArgumentException("inputView should be of type EditText or TextView");
+			}
+		}
+
+		internal static void ShowKeyboard(this SearchView searchView)
+		{
+			if (searchView == null)
+			{
+				throw new ArgumentNullException(nameof(searchView));
+			}
+
+			// Dig into the SearchView and find the actual TextView that we want to show keyboard input for
+			int searchViewTextViewId = searchView.Resources.GetIdentifier("android:id/search_src_text", null, null);
+
+			if (searchViewTextViewId == 0)
+			{
+				// Cannot find the resource Id; nothing else to do
+				return;
+			}
+
+			var textView = searchView.FindViewById(searchViewTextViewId);
+
+			if (textView == null)
+			{
+				// Cannot find the TextView; nothing else to do
+				return;
+			}
+
+			using (var inputMethodManager = (InputMethodManager)searchView.Context.GetSystemService(Context.InputMethodService))
+			{
+				// The zero value for the second parameter comes from 
+				// https://developer.android.com/reference/android/view/inputmethod/InputMethodManager#showSoftInput(android.view.View,%20int)
+				// Apparently there's no named value for zero in this case
+				inputMethodManager?.ShowSoftInput(textView, 0);
 			}
 		}
 	}
