@@ -25,7 +25,8 @@ namespace Xamarin.Forms.Platform.WPF
 
 				// Update control property 
 				UpdateText();
-				UpdateTextDecorations(true);
+				if (e.OldElement?.TextDecorations != e.NewElement?.TextDecorations)
+					UpdateTextDecorations();
 				UpdateColor();
 				UpdateAlign();
 				UpdateFont();
@@ -49,7 +50,7 @@ namespace Xamarin.Forms.Platform.WPF
 			if (e.PropertyName == Label.TextProperty.PropertyName || e.PropertyName == Label.FormattedTextProperty.PropertyName)
 				UpdateText();
 			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
-				UpdateTextDecorations(false);
+				UpdateTextDecorations();
 			else if (e.PropertyName == Label.TextColorProperty.PropertyName)
 				UpdateColor();
 			else if (e.PropertyName == Label.HorizontalTextAlignmentProperty.PropertyName || e.PropertyName == Label.VerticalTextAlignmentProperty.PropertyName)
@@ -65,11 +66,8 @@ namespace Xamarin.Forms.Platform.WPF
 			Control.UpdateDependencyColor(TextBlock.BackgroundProperty, Element.BackgroundColor);
 		}
 
-		void UpdateTextDecorations(bool isNewElement)
+		void UpdateTextDecorations()
 		{
-			if (!Element.IsSet(Label.TextDecorationsProperty) && isNewElement)
-				return;
-
 			var textDecorations = Element.TextDecorations;
 
 			var newTextDecorations = new System.Windows.TextDecorationCollection(Control.TextDecorations);

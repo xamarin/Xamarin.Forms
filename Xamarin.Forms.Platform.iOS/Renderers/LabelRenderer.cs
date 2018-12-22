@@ -162,8 +162,13 @@ namespace Xamarin.Forms.Platform.MacOS
 
 				UpdateLineBreakMode();
 				UpdateAlignment();
-				UpdateText();
-				UpdateTextDecorations(true);
+				if (e.OldElement?.Text != e.NewElement?.Text)
+				{
+					UpdateText();
+					UpdateTextDecorations();
+				}
+				if (e.OldElement?.TextDecorations != e.NewElement?.TextDecorations)
+					UpdateTextDecorations();
 				UpdateTextColor();
 				UpdateFont();
 				UpdateMaxLines();
@@ -187,10 +192,10 @@ namespace Xamarin.Forms.Platform.MacOS
 			else if (e.PropertyName == Label.TextProperty.PropertyName)
 			{
 				UpdateText();
-				UpdateTextDecorations(false);
+				UpdateTextDecorations();
 			}
 			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
-				UpdateTextDecorations(false);
+				UpdateTextDecorations();
 			else if (e.PropertyName == Label.FormattedTextProperty.PropertyName)
 				UpdateText();
 			else if (e.PropertyName == Label.LineBreakModeProperty.PropertyName)
@@ -209,40 +214,37 @@ namespace Xamarin.Forms.Platform.MacOS
 				_perfectSizeValid = false;
 		}
     
-    void UpdateTextDecorations(bool isNewElement)
-		{
-			if (!Element.IsSet(Label.TextDecorationsProperty) && isNewElement)
-				return;
+		void UpdateTextDecorations()
+			{
+				var textDecorations = Element.TextDecorations;
+	#if __MOBILE__
+				var newAttributedText = new NSMutableAttributedString(Control.AttributedText);
+				var strikeThroughStyleKey = UIStringAttributeKey.StrikethroughStyle;
+				var underlineStyleKey = UIStringAttributeKey.UnderlineStyle;
 
-			var textDecorations = Element.TextDecorations;
-#if __MOBILE__
-			var newAttributedText = new NSMutableAttributedString(Control.AttributedText);
-			var strikeThroughStyleKey = UIStringAttributeKey.StrikethroughStyle;
-			var underlineStyleKey = UIStringAttributeKey.UnderlineStyle;
+	#else
+				var newAttributedText = new NSMutableAttributedString(Control.AttributedStringValue);
+				var strikeThroughStyleKey = NSStringAttributeKey.StrikethroughStyle;
+				var underlineStyleKey = NSStringAttributeKey.UnderlineStyle;
+	#endif
+				var range = new NSRange(0, newAttributedText.Length);
 
-#else
-			var newAttributedText = new NSMutableAttributedString(Control.AttributedStringValue);
-			var strikeThroughStyleKey = NSStringAttributeKey.StrikethroughStyle;
-			var underlineStyleKey = NSStringAttributeKey.UnderlineStyle;
-#endif
-			var range = new NSRange(0, newAttributedText.Length);
+				if ((textDecorations & TextDecorations.Strikethrough) == 0)
+					newAttributedText.RemoveAttribute(strikeThroughStyleKey, range);
+				else
+					newAttributedText.AddAttribute(strikeThroughStyleKey, NSNumber.FromInt32((int)NSUnderlineStyle.Single), range);
 
-			if ((textDecorations & TextDecorations.Strikethrough) == 0)
-				newAttributedText.RemoveAttribute(strikeThroughStyleKey, range);
-			else
-				newAttributedText.AddAttribute(strikeThroughStyleKey, NSNumber.FromInt32((int)NSUnderlineStyle.Single), range);
+				if ((textDecorations & TextDecorations.Underline) == 0)
+					newAttributedText.RemoveAttribute(underlineStyleKey, range);
+				else
+					newAttributedText.AddAttribute(underlineStyleKey, NSNumber.FromInt32((int)NSUnderlineStyle.Single), range);
 
-			if ((textDecorations & TextDecorations.Underline) == 0)
-				newAttributedText.RemoveAttribute(underlineStyleKey, range);
-			else
-				newAttributedText.AddAttribute(underlineStyleKey, NSNumber.FromInt32((int)NSUnderlineStyle.Single), range);
-
-#if __MOBILE__
-			Control.AttributedText = newAttributedText;
-#else
-			Control.AttributedStringValue = newAttributedText;
-#endif
-		}
+	#if __MOBILE__
+				Control.AttributedText = newAttributedText;
+	#else
+				Control.AttributedStringValue = newAttributedText;
+	#endif
+			}
 
 #if __MOBILE__
 		protected override void SetAccessibilityLabel()
