@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<_XFBuildTasksLocation Condition="'$(_XFBuildTasksLocation)' == '' AND '$(MSBuildRuntimeType)' == 'Core'">$(MSBuildThisFileDirectory)netstandard2.0\</_XFBuildTasksLocation>
-		<_XFBuildTasksLocation Condition="'$(_XFBuildTasksLocation)' == ''">$(MSBuildThisFileDirectory)net461\</_XFBuildTasksLocation>
+		<_XFBuildTasksLocation Condition="'$(_XFBuildTasksLocation)' == ''">$(MSBuildThisFileDirectory)net46\</_XFBuildTasksLocation>
 	</PropertyGroup>
 	
 	<UsingTask TaskName="Xamarin.Forms.Build.Tasks.XamlGTask" AssemblyFile="$(_XFBuildTasksLocation)Xamarin.Forms.Build.Tasks.dll" />
@@ -51,7 +51,9 @@
 	</Target>
 
 	<!-- XamlG -->
-	<Target Name="UpdateDesignTimeXaml" DependsOnTargets="XamlG"/>
+	<Target
+		Name="UpdateDesignTimeXaml"
+		DependsOnTargets="XamlG"/>
 
 	<PropertyGroup>
 		<CoreCompileDependsOn>
@@ -60,18 +62,32 @@
 		</CoreCompileDependsOn>
 	</PropertyGroup>
 
-	<Target Name="_FindXamlGFiles" DependsOnTargets="PrepareResourceNames">
+	<Target
+		Name="_FindXamlGFiles"
+		DependsOnTargets="PrepareResourceNames">
 		<ItemGroup>
-			<_XamlGInputs Include="@(EmbeddedResource)" Condition="'%(Extension)' == '.xaml' AND '$(DefaultLanguageSourceExtension)' == '.cs' AND '%(TargetPath)' != ''" />
-			<_XamlGOutputs Include="@(_XamlGInputs->'$(IntermediateOutputPath)%(TargetPath).g.cs')" />
+			<_XamlGInputs
+				Include="@(EmbeddedResource)"
+				Condition="'%(Extension)' == '.xaml' AND '$(DefaultLanguageSourceExtension)' == '.cs' AND '%(TargetPath)' != ''" />
+			<_XamlGOutputs
+				Include="@(_XamlGInputs->'$(IntermediateOutputPath)%(TargetPath).g.cs')" />
 		</ItemGroup>
 	</Target>
 
-	<Target Name="XamlG" BeforeTargets="BeforeCompile" DependsOnTargets="_FindXamlGFiles" Inputs="@(_XamlGInputs)" Outputs="@(_XamlGOutputs)">
+	<Target
+		Name="XamlG"
+		BeforeTargets="BeforeCompile"
+		DependsOnTargets="_FindXamlGFiles; PrepareResourceNames; AfterResolveReferences"
+		Inputs="@(_XamlGInputs)"
+		Outputs="@(_XamlGOutputs)">
+		<PropertyGroup>
+			<ReferencedAssemblies>@(ReferencePath)</ReferencedAssemblies>
+		</PropertyGroup>
 		<XamlGTask
 			XamlFiles="@(_XamlGInputs)"
 			OutputFiles="@(_XamlGOutputs)"
 			Language="$(Language)"
+			References = "$(ReferencedAssemblies)"
 			AssemblyName="$(AssemblyName)" />
 		<ItemGroup>
 			<FileWrites Include="@(_XamlGOutputs)" />

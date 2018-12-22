@@ -8,10 +8,11 @@ namespace Xamarin.Forms.Platform.iOS
 	// TODO hartez 2018/06/01 14:21:24 Add a method for updating the layout	
 	internal class CollectionViewController : UICollectionViewController
 	{
-		readonly IItemsViewSource _itemsSource;
+		IItemsViewSource _itemsSource;
 		readonly ItemsView _itemsView;
 		readonly ItemsViewLayout _layout;
 		bool _initialConstraintsSet;
+		bool _wasEmpty;
 
 		public CollectionViewController(ItemsView itemsView, ItemsViewLayout layout) : base(layout)
 		{
@@ -42,7 +43,18 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override nint GetItemsCount(UICollectionView collectionView, nint section)
 		{
-			return _itemsSource.Count;
+			var count = _itemsSource.Count;
+
+			if (_wasEmpty && count > 0)
+			{
+				// We've moved from no items to having at least one item; it's likely that the layout needs to update
+				// its cell size/estimate
+				_layout?.SetNeedCellSizeUpdate();
+			}
+
+			_wasEmpty = count == 0;
+
+			return count;
 		}
 
 		public override void ViewDidLoad()
@@ -50,7 +62,6 @@ namespace Xamarin.Forms.Platform.iOS
 			base.ViewDidLoad();
 			AutomaticallyAdjustsScrollViewInsets = false;
 			RegisterCells();
-			CollectionView.WeakDelegate = _layout;
 		}
 
 		public override void ViewWillLayoutSubviews()
@@ -66,6 +77,13 @@ namespace Xamarin.Forms.Platform.iOS
 				_layout.ConstrainTo(CollectionView.Bounds.Size);
 				_initialConstraintsSet = true;
 			}
+		}
+
+		public virtual void UpdateItemsSource()
+		{
+			_itemsSource =  ItemsSourceFactory.Create(_itemsView.ItemsSource, CollectionView);
+			CollectionView.ReloadData();
+			CollectionView.CollectionViewLayout.InvalidateLayout();
 		}
 
 		protected virtual void UpdateDefaultCell(DefaultCell cell, NSIndexPath indexPath)
@@ -132,30 +150,34 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_itemsView.ItemTemplate != null)
 			{
 				return _layout.ScrollDirection == UICollectionViewScrollDirection.Horizontal
-					? TemplatedHorizontalListCell.ReuseId
-					: TemplatedVerticalListCell.ReuseId;
+					? HorizontalTemplatedCell.ReuseId
+					: VerticalTemplatedCell.ReuseId;
 			}
 
 			return _layout.ScrollDirection == UICollectionViewScrollDirection.Horizontal
-				? DefaultHorizontalListCell.ReuseId
-				: DefaultVerticalListCell.ReuseId;
+				? HorizontalDefaultCell.ReuseId
+				: VerticalDefaultCell.ReuseId;
 		}
 
 		UICollectionViewCell GetPrototype()
 		{
+			if (_itemsSource.Count == 0)
+			{
+				return null;
+			}
+
 			// TODO hartez assuming this works, we'll need to evaluate using this nsindexpath (what about groups?)
-			// TODO hartez Also, what about situations where there is no data which matches the path?
 			var indexPath = NSIndexPath.Create(0, 0);
 			return GetCell(CollectionView, indexPath);
 		}
 
 		void RegisterCells()
 		{
-			CollectionView.RegisterClassForCell(typeof(DefaultHorizontalListCell), DefaultHorizontalListCell.ReuseId);
-			CollectionView.RegisterClassForCell(typeof(DefaultVerticalListCell), DefaultVerticalListCell.ReuseId);
-			CollectionView.RegisterClassForCell(typeof(TemplatedHorizontalListCell),
-				TemplatedHorizontalListCell.ReuseId);
-			CollectionView.RegisterClassForCell(typeof(TemplatedVerticalListCell), TemplatedVerticalListCell.ReuseId);
+			CollectionView.RegisterClassForCell(typeof(HorizontalDefaultCell), HorizontalDefaultCell.ReuseId);
+			CollectionView.RegisterClassForCell(typeof(VerticalDefaultCell), VerticalDefaultCell.ReuseId);
+			CollectionView.RegisterClassForCell(typeof(HorizontalTemplatedCell),
+				HorizontalTemplatedCell.ReuseId);
+			CollectionView.RegisterClassForCell(typeof(VerticalTemplatedCell), VerticalTemplatedCell.ReuseId);
 		}
 	}
 }

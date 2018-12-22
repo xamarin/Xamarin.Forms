@@ -14,7 +14,8 @@
     <FileAlignment>512</FileAlignment>
     <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-    <TargetFrameworkVersion>v8.1</TargetFrameworkVersion>
+    <AndroidTargetFrameworkVersion Condition="'$(AndroidTargetFrameworkVersion)' == ''">v9.0</AndroidTargetFrameworkVersion>
+    <TargetFrameworkVersion>$(AndroidTargetFrameworkVersion)</TargetFrameworkVersion>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
     <NuGetPackageImportStamp>
@@ -26,7 +27,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>portable</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath Condition=" '$(TargetFrameworkVersion)' == 'v8.1' ">bin\Debug\monoandroid81\</OutputPath>
+    <OutputPath Condition=" '$(TargetFrameworkVersion)' == 'v9.0' ">bin\Debug\monoandroid90\</OutputPath>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -36,12 +38,19 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>portable</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath Condition=" '$(TargetFrameworkVersion)' == 'v8.1' ">bin\Release\monoandroid81\</OutputPath>
+    <OutputPath Condition=" '$(TargetFrameworkVersion)' == 'v9.0' ">bin\Release\monoandroid90\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <NoWarn>CS0109</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v8.1' ">
+    <DefineConstants>$(DefineConstants);__ANDROID81__</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v9.0' ">
+    <DefineConstants>$(DefineConstants);__ANDROID90__</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Android" />
@@ -63,15 +72,17 @@
     <Compile Include="AppCompat\FrameRenderer.cs" />
     <Compile Include="BackgroundManager.cs" />
     <Compile Include="AppCompat\ILifeCycleState.cs" />
+    <Compile Include="AppCompat\ShellFragmentContainer.cs" />
     <Compile Include="BorderBackgroundManager.cs" />
     <Compile Include="CollectionView\CarouselViewRenderer.cs" />
     <Compile Include="CollectionView\DataChangeObserver.cs" />
+    <Compile Include="CollectionView\EmptySource.cs" />
     <Compile Include="CollectionView\EmptyViewAdapter.cs" />
     <Compile Include="CollectionView\ItemsViewAdapter.cs" />
     <Compile Include="CollectionView\EdgeSnapHelper.cs" />
     <Compile Include="CollectionView\EndSnapHelper.cs" />
     <Compile Include="CollectionView\IItemsViewSource.cs" />
-    <Compile Include="CollectionView\ItemContentControl.cs" />
+    <Compile Include="CollectionView\ItemContentView.cs" />
     <Compile Include="CollectionView\ItemsSourceFactory.cs" />
     <Compile Include="CollectionView\ItemsViewRenderer.cs" />
     <Compile Include="CollectionView\ListSource.cs" />
@@ -79,7 +90,7 @@
     <Compile Include="CollectionView\PositionalSmoothScroller.cs" />
     <Compile Include="CollectionView\PropertyChangedEventArgsExtensions.cs" />
     <Compile Include="CollectionView\ScrollHelper.cs" />
-    <Compile Include="CollectionView\SizedItemContentControl.cs" />
+    <Compile Include="CollectionView\SizedItemContentView.cs" />
     <Compile Include="CollectionView\SnapManager.cs" />
     <Compile Include="CollectionView\StartPagerSnapHelper.cs" />
     <Compile Include="CollectionView\StartSnapHelper.cs" />
@@ -98,7 +109,6 @@
     <Compile Include="AppCompat\IManageFragments.cs" />
     <Compile Include="AppCompat\MasterDetailContainer.cs" />
     <Compile Include="AppCompat\Platform.cs" />
-    <Compile Include="AppCompat\Resource.cs" />
     <Compile Include="CellAdapter.cs" />
     <Compile Include="Cells\EntryCellEditText.cs" />
     <Compile Include="Cells\EntryCellView.cs" />
@@ -133,6 +143,13 @@
     <Compile Include="IBorderVisualElementRenderer.cs" />
     <Compile Include="IDeviceInfoProvider.cs" />
     <Compile Include="ITabStop.cs" />
+    <Compile Include="Material\MaterialFrameRenderer.cs" />
+    <Compile Include="Material\MaterialFormsEditText.cs" />
+    <Compile Include="Material\MaterialButtonRenderer.cs" />
+    <Compile Include="Material\MaterialEntryRenderer.cs" />
+    <Compile Include="Material\MaterialProgressBarRenderer.cs" />
+    <Compile Include="IPickerRenderer.cs" />
+    <Compile Include="Renderers\PickerEditText.cs" />
     <Compile Include="Renderers\FormsWebViewClient.cs" />
     <Compile Include="Renderers\IImageViewHandler.cs" />
     <Compile Include="InnerGestureListener.cs" />
@@ -156,12 +173,17 @@
     <Compile Include="LayoutExtensions.cs" />
     <Compile Include="PowerSaveModeBroadcastReceiver.cs" />
     <Compile Include="Renderers\AHorizontalScrollView.cs" />
+    <Compile Include="Renderers\BottomNavigationViewUtils.cs" />
+    <Compile Include="Renderers\AlignmentExtensions.cs" />
+    <Compile Include="Renderers\ColorChangeRevealDrawable.cs" />
     <Compile Include="Renderers\BorderDrawable.cs" />
     <Compile Include="Renderers\ButtonRenderer.cs" />
-    <Compile Include="Renderers\AlignmentExtensions.cs" />
     <Compile Include="CollectionView\CollectionViewRenderer.cs" />
     <Compile Include="Renderers\ConditionalFocusLayout.cs" />
+    <Compile Include="Renderers\ContainerView.cs" />
+    <Compile Include="Renderers\CustomFrameLayout.cs" />
     <Compile Include="Renderers\DescendantFocusToggler.cs" />
+    <Compile Include="Renderers\ElementSelectedEventArgs.cs" />
     <Compile Include="Renderers\FormsEditText.cs" />
     <Compile Include="Renderers\FileImageSourceHandler.cs" />
     <Compile Include="Renderers\FormattedStringExtensions.cs" />
@@ -173,6 +195,17 @@
     <Compile Include="Renderers\IImageSourceHandler.cs" />
     <Compile Include="Renderers\ImageExtensions.cs" />
     <Compile Include="Renderers\ImageLoaderSourceHandler.cs" />
+    <Compile Include="Renderers\IShellBottomNavigationViewAppearanceTracker.cs" />
+    <Compile Include="Renderers\IShellContext.cs" />
+    <Compile Include="Renderers\IShellFlyoutContentRenderer.cs" />
+    <Compile Include="Renderers\IShellFlyoutRenderer.cs" />
+    <Compile Include="Renderers\IShellItemRenderer.cs" />
+    <Compile Include="Renderers\IShellObservableFragment.cs" />
+    <Compile Include="Renderers\IShellSearchView.cs" />
+    <Compile Include="Renderers\IShellSectionRenderer.cs" />
+    <Compile Include="Renderers\IShellTabLayoutAppearanceTracker.cs" />
+    <Compile Include="Renderers\IShellToolbarAppearanceTracker.cs" />
+    <Compile Include="Renderers\IShellToolbarTracker.cs" />
     <Compile Include="Renderers\IToolbarButton.cs" />
     <Compile Include="Renderers\KeyboardExtensions.cs" />
     <Compile Include="AppCompat\PickerRenderer.cs" />
@@ -182,11 +215,29 @@
     <Compile Include="Renderers\MotionEventHelper.cs" />
     <Compile Include="Renderers\PageContainer.cs" />
     <Compile Include="Renderers\ScrollViewContainer.cs" />
+    <Compile Include="Renderers\ShellBottomNavViewAppearanceTracker.cs" />
+    <Compile Include="Renderers\ShellItemRenderer.cs" />
+    <Compile Include="Renderers\ShellContentFragment.cs" />
+    <Compile Include="Renderers\ShellFlyoutContentRenderer.cs" />
+    <Compile Include="Renderers\ShellFlyoutRecyclerAdapter.cs" />
+    <Compile Include="Renderers\ShellFlyoutRenderer.cs" />
+    <Compile Include="Renderers\ShellFlyoutTemplatedContentRenderer.cs" />
+    <Compile Include="Renderers\ShellFragmentPagerAdapter.cs" />
+    <Compile Include="Renderers\ShellItemRendererBase.cs" />
+    <Compile Include="Renderers\ShellPageContainer.cs" />
+    <Compile Include="Renderers\ShellRenderer.cs" />
+    <Compile Include="Renderers\ShellSearchView.cs" />
+    <Compile Include="Renderers\ShellSearchViewAdapter.cs" />
+    <Compile Include="Renderers\ShellTabLayoutAppearanceTracker.cs" />
+    <Compile Include="Renderers\ShellToolbarAppearanceTracker.cs" />
+    <Compile Include="Renderers\ShellToolbarTracker.cs" />
+    <Compile Include="Renderers\ShellSectionRenderer.cs" />
     <Compile Include="Renderers\StreamImagesourceHandler.cs" />
     <Compile Include="Renderers\ToolbarButton.cs" />
     <Compile Include="Renderers\ToolbarImageButton.cs" />
     <Compile Include="Renderers\ViewCellExtensions.cs" />
     <Compile Include="Renderers\ViewGroupExtensions.cs" />
+    <AndroidResource Include="Resources\Layout\RootLayout.axml" />
     <Compile Include="TapGestureHandler.cs" />
     <Compile Include="TextColorSwitcher.cs" />
     <Compile Include="ViewInitializedEventArgs.cs" />
@@ -256,9 +307,11 @@
     <Compile Include="Extensions\TextViewExtensions.cs" />
     <Compile Include="SwipeGestureHandler.cs" />
     <Compile Include="Extensions\AccessibilityExtensions.cs" />
+    <Compile Include="Resources\Resource.Designer.cs" />
+    <Compile Include="Renderers\IPopupTrigger.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
   </Target>
@@ -275,16 +328,76 @@
       <Name>Xamarin.Forms.Platform.Android.FormsViewGroup</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
+  <ItemGroup Condition=" '$(TargetFrameworkVersion)' == 'v9.0' ">
     <PackageReference Include="Xamarin.Android.Support.Design">
-      <Version>27.0.2</Version>
+      <Version>28.0.0-preview9</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.Android.Support.v4">
-      <Version>27.0.2</Version>
+      <Version>28.0.0-preview9</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.Android.Support.v7.CardView">
-      <Version>27.0.2</Version>
+      <Version>28.0.0-preview9</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFrameworkVersion)' == 'v8.1' ">
+    <PackageReference Include="Xamarin.Android.Support.Design">
+      <Version>27.0.2.1</Version>
+    </PackageReference>
+    <PackageReference Include="Xamarin.Android.Support.v4">
+      <Version>27.0.2.1</Version>
+    </PackageReference>
+    <PackageReference Include="Xamarin.Android.Support.v7.CardView">
+      <Version>27.0.2.1</Version>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\Layout\ShellContent.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\Layout\FlyoutContent.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\Layout\BottomTabLayout.axml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\anim\EnterFromLeft.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\anim\EnterFromRight.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\anim\ExitToLeft.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\anim\ExitToRight.xml" />
+  </ItemGroup>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <ItemGroup>
+    <ProjectToBuild Include="../Stubs/Xamarin.Forms.Platform.Android/Xamarin.Forms.Platform.Android (Forwarders).csproj">
+      <Properties>CreateAllAndroidTargets=false;Configuration=$(Configuration);Platform=$(Platform);AndroidTargetFrameworkVersion=v8.1</Properties>
+    </ProjectToBuild>
+    <ProjectToBuild Include="Xamarin.Forms.Platform.Android.csproj">
+      <Properties>CreateAllAndroidTargets=false;Configuration=$(Configuration);Platform=$(Platform);AndroidTargetFrameworkVersion=v8.1</Properties>
+    </ProjectToBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\Layout\" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFrameworkVersion)' == 'v9.0' ">
+    <AndroidResource Include="Resources\values\styles.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+  </ItemGroup>
+  <Target Name="BeforeBuild" Condition=" '$(CreateAllAndroidTargets)' == 'true' ">
+    <!--  create 8.1 binaries-->
+    <MSBuild Targets="Restore" Projects="@(ProjectToBuild)">
+    </MSBuild>
+    <MSBuild Projects="@(ProjectToBuild)">
+    </MSBuild>
+    <!-- restore 9.0 binaries-->
+    <MSBuild Targets="Restore" Projects="../Stubs/Xamarin.Forms.Platform.Android/Xamarin.Forms.Platform.Android (Forwarders).csproj" Properties="CreateAllAndroidTargets=false;Configuration=$(Configuration);Platform=$(Platform);">
+    </MSBuild>
+    <MSBuild Targets="Restore" Projects="Xamarin.Forms.Platform.Android.csproj" Properties="CreateAllAndroidTargets=false;Configuration=$(Configuration);Platform=$(Platform);">
+    </MSBuild>
+  </Target>
 </Project>
