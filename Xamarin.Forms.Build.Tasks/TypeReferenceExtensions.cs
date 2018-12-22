@@ -206,8 +206,6 @@ namespace Xamarin.Forms.Build.Tasks
 			if (typeRef.FullName == "System.Object")
 				return false;
 			var typeDef = typeRef.ResolveCached();
-			if (TypeRefComparer.Default.Equals(typeDef, baseClass.ResolveCached()))
-				return true;
 			if (typeDef.Interfaces.Any(ir => TypeRefComparer.Default.Equals(ir.InterfaceType.ResolveGenericParameters(typeRef), baseClass)))
 				return true;
 			if (typeDef.BaseType == null)
@@ -327,7 +325,7 @@ namespace Xamarin.Forms.Build.Tasks
 						returnType = ((GenericInstanceType)opDeclTypeRef).GenericArguments [((GenericParameter)returnType).Position];
 					if (!returnType.InheritsFromOrImplements(toType))
 						continue;
-					var paramType = cast.Parameters[0].ParameterType;
+					var paramType = cast.Parameters[0].ParameterType.ResolveGenericParameters(castDef);
 					if (!fromType.InheritsFromOrImplements(paramType))
 						continue;
 					return castDef;
@@ -337,6 +335,7 @@ namespace Xamarin.Forms.Build.Tasks
 		}
 
 		public static TypeReference ResolveGenericParameters(this TypeReference self, MethodReference declaringMethodReference)
+<<<<<<< HEAD
 		{
 			var genericself = self as GenericParameter;
 			if (genericself != null) {
@@ -369,12 +368,50 @@ namespace Xamarin.Forms.Build.Tasks
 		}
 
 		public static TypeReference ResolveGenericParameters(this TypeReference self, TypeReference declaringTypeReference)
+=======
+>>>>>>> [XamlC] Test generic parameters to evaluate equality of types (#4062)
 		{
+			var genericParameterSelf = self as GenericParameter;
+			var genericdeclMethod = declaringMethodReference as GenericInstanceMethod;
+			var declaringTypeReference = declaringMethodReference.DeclaringType;
+			var genericdeclType = declaringTypeReference as GenericInstanceType;
+
+			if (genericParameterSelf != null) {
+				switch (genericParameterSelf.Type) {
+				case GenericParameterType.Method:
+					self = genericdeclMethod.GenericArguments[genericParameterSelf.Position];
+					break;
+
+				case GenericParameterType.Type:
+					self = genericdeclType.GenericArguments[genericParameterSelf.Position];
+					break;
+				}
+			}
+
 			var genericself = self as GenericInstanceType;
 			return genericself == null ? self : ResolveGenericParameters(genericself, declaringTypeReference);
 		}
 
+<<<<<<< HEAD
 		static GenericInstanceType ResolveGenericParameters(this GenericInstanceType self, TypeReference declaringTypeReference)
+=======
+			genericself = genericself.ResolveGenericParameters(declaringTypeReference);
+			for (var i = 0; i < genericself.GenericArguments.Count; i++) {
+				var genericParameter = genericself.GenericArguments[i] as GenericParameter;
+				if (genericParameter != null)
+					genericself.GenericArguments[i] = genericdeclMethod.GenericArguments[genericParameter.Position];
+			}
+			return genericself;
+		}
+
+		public static TypeReference ResolveGenericParameters(this TypeReference self, TypeReference declaringTypeReference)
+		{
+			var genericself = self as GenericInstanceType;
+			return genericself == null ? self : genericself.ResolveGenericParameters(declaringTypeReference);
+		}
+
+		public static GenericInstanceType ResolveGenericParameters(this GenericInstanceType self, TypeReference declaringTypeReference)
+>>>>>>> [XamlC] Test generic parameters to evaluate equality of types (#4062)
 		{
 			var genericdeclType = declaringTypeReference as GenericInstanceType;
 			if (genericdeclType == null)
@@ -382,10 +419,18 @@ namespace Xamarin.Forms.Build.Tasks
 
 			List<TypeReference> args = new List<TypeReference>();
 			for (var i = 0; i < self.GenericArguments.Count; i++) {
+<<<<<<< HEAD
 				if (!self.GenericArguments[i].IsGenericParameter)
 					args.Add(self.GenericArguments[i].ResolveGenericParameters(declaringTypeReference));
 				else
 					args.Add(genericdeclType.GenericArguments[(self.GenericArguments[i] as GenericParameter).Position]);
+=======
+				var genericParameter = self.GenericArguments[i] as GenericParameter;
+				if (genericParameter == null)
+					args.Add(self.GenericArguments[i].ResolveGenericParameters(declaringTypeReference));
+				else if (genericParameter.Type == GenericParameterType.Type)
+					args.Add(genericdeclType.GenericArguments[genericParameter.Position]);
+>>>>>>> [XamlC] Test generic parameters to evaluate equality of types (#4062)
 			}
 			return self.ElementType.MakeGenericInstanceType(args.ToArray());
 		}
