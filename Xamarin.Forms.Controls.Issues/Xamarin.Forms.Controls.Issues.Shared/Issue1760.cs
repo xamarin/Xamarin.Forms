@@ -3,6 +3,10 @@ using System.Threading.Tasks;
 using Xamarin.Forms.CustomAttributes;
 using Xamarin.Forms.Internals;
 
+#if UITEST
+using NUnit.Framework;
+#endif
+
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
@@ -90,5 +94,18 @@ namespace Xamarin.Forms.Controls.Issues
 				};
 			}
 		}
+
+#if UITEST && __ANDROID__
+		[Test]
+		public void Issue1760Test()
+		{
+			RunningApp.WaitForElement(Before);
+			RunningApp.WaitForElement(After);
+
+			RunningApp.Tap("Test Page 1");
+			RunningApp.WaitForElement(Before);
+			RunningApp.WaitForElement(After);
+		}
+#endif
 	}
 }
