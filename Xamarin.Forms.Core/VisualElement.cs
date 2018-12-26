@@ -679,11 +679,9 @@ namespace Xamarin.Forms
 			return r;
 		}
 
-		public Func<Rectangle, Rectangle> PrepareLayout;
-
 		public void Layout(Rectangle bounds)
 		{
-			Bounds = PrepareLayout != null ? PrepareLayout(bounds) : bounds;
+			Bounds = bounds;
 		}
 
 		public SizeRequest Measure(double widthConstraint, double heightConstraint, MeasureFlags flags = MeasureFlags.None)

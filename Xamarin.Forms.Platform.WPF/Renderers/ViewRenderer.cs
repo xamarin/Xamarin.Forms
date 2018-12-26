@@ -67,28 +67,6 @@ namespace Xamarin.Forms.Platform.WPF
 			get { return Element; }
 		}
 
-		/// <summary>
-		/// With a scaled monitor layout, the actual size is rounded in 1/scale.
-		/// But that the real size was not less than the given, it should be increased for rounding only in the big party.
-		/// </summary>
-		Rectangle PrepareLayout(Rectangle region)
-		{
-			var source = Control != null ? PresentationSource.FromVisual(Control) : null;
-			if (source == null || region.IsEmpty)
-				return region;
-
-			var stepX = source.CompositionTarget.TransformFromDevice.M11;
-			var stepY = source.CompositionTarget.TransformFromDevice.M22;
-
-			if (stepX == 1 || stepY == 1 || stepX == 0 || stepY == 0)
-				return region;
-
-			region.Height = Math.Ceiling(region.Height / stepY) * stepY;
-			region.Width = Math.Ceiling(region.Width / stepX) * stepX;
-
-			return region;
-		}
-
 		public FrameworkElement GetNativeElement()
 		{
 			return Control;
@@ -131,7 +109,6 @@ namespace Xamarin.Forms.Platform.WPF
 
 			Element.PropertyChanged += OnElementPropertyChanged;
 			Element.FocusChangeRequested += OnModelFocusChangeRequested;
-			Element.PrepareLayout = PrepareLayout;
 
 			OnElementChanged(new ElementChangedEventArgs<TElement>(oldElement, Element));
 
