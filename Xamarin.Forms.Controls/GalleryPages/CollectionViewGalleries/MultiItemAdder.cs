@@ -20,7 +20,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			{
 				var newItems = new List<CollectionViewGalleryTestItem>();
 
-				for (int n = 0; n < 3; n++)
+				for (int n = 0; n < 4; n++)
 				{
 					newItems.Add(new CollectionViewGalleryTestItem(DateTime.Now.AddDays(n),
 						$"Added", "coffee.png", n));

@@ -49,7 +49,17 @@ namespace Xamarin.Forms.Platform.Android
 
 		void Move(NotifyCollectionChangedEventArgs args)
 		{
-			_adapter.NotifyItemMoved(args.OldStartingIndex, args.NewStartingIndex);
+			var count = args.NewItems.Count;
+
+			if (args.NewItems.Count == 1)
+			{
+				// For a single item, we can use NotifyItemMoved and get the animation
+				_adapter.NotifyItemMoved(args.OldStartingIndex, args.NewStartingIndex);
+				return;
+			}
+
+			_adapter.NotifyItemRangeChanged(args.OldStartingIndex, count);
+			_adapter.NotifyItemRangeChanged(args.NewStartingIndex, count);
 		}
 
 		void Add(NotifyCollectionChangedEventArgs args)
@@ -93,15 +103,27 @@ namespace Xamarin.Forms.Platform.Android
 		void Replace(NotifyCollectionChangedEventArgs args)
 		{
 			var startIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : _itemsSource.IndexOf(args.NewItems[0]);
-			var count = args.NewItems.Count;
+			var newCount = args.NewItems.Count;
 
-			if (count == 1)
+			if (newCount == args.OldItems.Count)
 			{
-				_adapter.NotifyItemChanged(startIndex);
+				// We are replacing one set of items with a set of equal size; we can do a simple item or range 
+				// notification to the adapter
+				if (newCount == 1)
+				{
+					_adapter.NotifyItemChanged(startIndex);
+				}
+				else
+				{
+					_adapter.NotifyItemRangeChanged(startIndex, newCount);
+				}
+
 				return;
 			}
-
-			_adapter.NotifyItemRangeChanged(startIndex, count);
+			
+			// The original and replacement sets are of unequal size; this means that everything currently in view will 
+			// have to be updated. So we just have to use NotifyDataSetChanged and let the RecyclerView update everything
+			_adapter.NotifyDataSetChanged();
 		}
 	}
 }

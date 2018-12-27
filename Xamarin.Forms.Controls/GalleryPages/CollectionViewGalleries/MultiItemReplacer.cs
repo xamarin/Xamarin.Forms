@@ -1,10 +1,13 @@
-﻿namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
+﻿using System;
+using System.Collections.Generic;
+
+namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 {
-	internal class MultiItemRemover : MultiTestObservableCollectionModifier
+	internal class MultiItemReplacer : MultiTestObservableCollectionModifier
 	{
 		private readonly bool _withIndex;
 
-		public MultiItemRemover(CollectionView cv, bool withIndex = false) : base(cv, "Remove")
+		public MultiItemReplacer(CollectionView cv, bool withIndex = false) : base(cv, "Replace")
 		{
 			Entry.Keyboard = Keyboard.Default;
 			_withIndex = withIndex;
@@ -28,13 +31,21 @@
 			if (index1 > -1 && index2 > -1 && index1 < observableCollection.Count &&
 				index2 < observableCollection.Count && index1 < index2)
 			{
+				var newItems = new List<CollectionViewGalleryTestItem>();
+
+				for (int n = 0; n < 4; n++)
+				{
+					newItems.Add(new CollectionViewGalleryTestItem(DateTime.Now.AddDays(n),
+						$"Added", "coffee.png", n));
+				}
+
 				if (_withIndex)
 				{
-					observableCollection.TestRemoveWithListAndIndex(index1, index2 - index1);
+					observableCollection.TestReplaceWithListAndIndex(index1, index2 - index1, newItems);
 				}
 				else
 				{
-					observableCollection.TestRemoveWithList(index1, index2 - index1);
+					observableCollection.TestReplaceWithList(index1, index2 - index1, newItems);
 				}
 			}
 		}

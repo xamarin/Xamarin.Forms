@@ -18,7 +18,7 @@
 				}
 			};
 
-			IItemsLayout itemsLayout = grid 
+			var itemsLayout = grid 
 				? new GridItemsLayout(3, orientation) 
 				: new ListItemsLayout(orientation) as IItemsLayout;
 
@@ -31,8 +31,8 @@
 			var remover = new MultiItemRemover(collectionView, withIndex);
 
 			var adder = new MultiItemAdder(collectionView, withIndex);
-			//var replacer = new ItemReplacer(collectionView);
-			//var mover = new ItemMover(collectionView);
+			var replacer = new MultiItemReplacer(collectionView);
+			var mover = new MultiItemMover(collectionView);
 
 			layout.Children.Add(generator);
 
@@ -42,11 +42,13 @@
 			layout.Children.Add(adder);
 			Grid.SetRow(adder, 2);
 
-			//layout.Children.Add(replacer);
-			//Grid.SetRow(replacer, 3);
+			layout.Children.Add(replacer);
+			Grid.SetRow(replacer, 3);
 
-			//layout.Children.Add(mover);
-			//Grid.SetRow(mover, 4);
+			// Also need one for reset
+
+			layout.Children.Add(mover);
+			Grid.SetRow(mover, 4);
 
 			layout.Children.Add(collectionView);
 			Grid.SetRow(collectionView, 5);

@@ -13,30 +13,65 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 
 		public void TestAddWithList(IEnumerable<T> newItems, int insertAt)
 		{
-			List<T> list = newItems.ToList();
+			var list = newItems.ToList();
 			InsertRange(insertAt, list);
 			OnNotifyCollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, list));
 		}
 
 		public void TestRemoveWithList(int removeStart, int count)
 		{
-			List<T> list = new List<T>(GetRange(removeStart, count));
+			var list = new List<T>(GetRange(removeStart, count));
 			RemoveRange(removeStart, count);
 			OnNotifyCollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, list));
 		}
 
 		public void TestAddWithListAndIndex(IEnumerable<T> newItems, int insertAt)
 		{
-			List<T> list = newItems.ToList();
+			var list = newItems.ToList();
 			InsertRange(insertAt, newItems);
 			OnNotifyCollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, list, insertAt));
 		}
 
 		public void TestRemoveWithListAndIndex(int removeStart, int count)
 		{
-			List<T> list = new List<T>(GetRange(removeStart, count));
+			var list = new List<T>(GetRange(removeStart, count));
 			RemoveRange(removeStart, count);
 			OnNotifyCollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, list, removeStart));
+		}
+
+		public void TestMoveWithList(int moveFrom, int count, int moveTo) {
+
+			var movedItems = new List<T>(GetRange(moveFrom, count));
+
+			RemoveRange(moveFrom, count);
+			InsertRange(moveTo, movedItems);
+			
+			var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, movedItems, moveTo, moveFrom);
+			OnNotifyCollectionChanged(this, args);
+		}
+
+		public void TestReplaceWithList(int index, int count, IEnumerable<T> newItems) {
+			
+			var oldList = new List<T>(GetRange(index, count));
+			var newList = newItems.ToList();
+			
+			RemoveRange(index, count);
+			InsertRange(index, newItems);
+
+			var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newList, oldList);
+			OnNotifyCollectionChanged(this, args);
+		}
+
+		public void TestReplaceWithListAndIndex(int index, int count, IEnumerable<T> newItems) {
+			
+			var oldList = new List<T>(GetRange(index, count));
+			var newList = newItems.ToList();
+			
+			RemoveRange(index, count);
+			InsertRange(index, newItems);
+
+			var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, newList, oldList, index);
+			OnNotifyCollectionChanged(this, args);
 		}
 
 		private void OnNotifyCollectionChanged(object sender, NotifyCollectionChangedEventArgs eventArgs)

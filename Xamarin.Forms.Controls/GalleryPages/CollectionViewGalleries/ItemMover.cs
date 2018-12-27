@@ -10,23 +10,9 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			Entry.Keyboard = Keyboard.Default;
 		}
 
-		static int ParseToken(string value)
-		{
-			if (!int.TryParse(value, out int index))
-			{
-				return -1;
-			}
-
-			return index;
-		}
-
 		protected override bool ParseIndexes(out int[] indexes)
 		{
-			var text = Entry.Text;
-
-			indexes = text.Split(',').Select(v => ParseToken(v.Trim())).ToArray();
-
-			return indexes.Length == 2;
+			return IndexParser.ParseIndexes(Entry.Text, 2, out indexes);
 		}
 
 		protected override void ModifyObservableCollection(ObservableCollection<CollectionViewGalleryTestItem> observableCollection, params int[] indexes)
