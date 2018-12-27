@@ -26,22 +26,17 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		internal static void ShowKeyboard(this AView inputView)
+		internal static void ShowKeyboard(this TextView inputView)
 		{
 			if (inputView == null)
 				throw new ArgumentNullException(nameof(inputView) + " must be set before the keyboard can be shown.");
 
 			using (var inputMethodManager = (InputMethodManager)inputView.Context.GetSystemService(Context.InputMethodService))
 			{
-				if (inputView is EditText || inputView is TextView)
-				{
-					// The zero value for the second parameter comes from 
-					// https://developer.android.com/reference/android/view/inputmethod/InputMethodManager#showSoftInput(android.view.View,%20int)
-					// Apparently there's no named value for zero in this case
-					inputMethodManager?.ShowSoftInput(inputView, 0);
-				}
-				else
-					throw new ArgumentException("inputView should be of type EditText or TextView");
+				// The zero value for the second parameter comes from 
+				// https://developer.android.com/reference/android/view/inputmethod/InputMethodManager#showSoftInput(android.view.View,%20int)
+				// Apparently there's no named value for zero in this case
+				inputMethodManager?.ShowSoftInput(inputView, 0);
 			}
 		}
 
@@ -76,6 +71,36 @@ namespace Xamarin.Forms.Platform.Android
 				// Apparently there's no named value for zero in this case
 				inputMethodManager?.ShowSoftInput(textView, 0);
 			}
+		}
+
+		internal static void ShowKeyboard(this AView view)
+		{
+			switch (view)
+			{
+				case SearchView searchView:
+					searchView.ShowKeyboard();
+					break;
+				case TextView textView:
+					textView.ShowKeyboard();
+					break;
+			}
+		}
+
+		internal static void PostShowKeyboard(this AView view)
+		{
+			void ShowKeyboard()
+			{
+				// Since we're posting this on the queue, it's possible something else will have disposed of the view
+				// by the time the looper is running this, so we have to verify that the view is still usable
+				if (view.IsDisposed())
+				{
+					return;
+				}
+
+				view.ShowKeyboard();
+			};
+
+			Device.BeginInvokeOnMainThread(ShowKeyboard);
 		}
 	}
 }
