@@ -41,7 +41,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		private void Move(NotifyCollectionChangedEventArgs args)
+		void Move(NotifyCollectionChangedEventArgs args)
 		{
 			var oldPath = NSIndexPath.Create(0, args.OldStartingIndex);
 			var newPath = NSIndexPath.Create(0, args.NewStartingIndex);
