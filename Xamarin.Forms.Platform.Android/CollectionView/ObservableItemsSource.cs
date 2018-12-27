@@ -68,7 +68,17 @@ namespace Xamarin.Forms.Platform.Android
 
 		void Remove(NotifyCollectionChangedEventArgs args)
 		{
-			var startIndex = args.OldStartingIndex > -1 ? args.OldStartingIndex : _itemsSource.IndexOf(args.OldItems[0]);
+			var startIndex = args.OldStartingIndex;
+
+			if (startIndex < 0)
+			{
+				// INCC implementation isn't giving us enough information to know where the removed items were in the
+				// collection. So the best we can do is a NotifyDataSetChanged()
+				_adapter.NotifyDataSetChanged();
+				return;
+			}
+
+			// If we have a start index, we can be more clever about removing the item(s) (and get the nifty animations)
 			var count = args.OldItems.Count;
 
 			if (count == 1)

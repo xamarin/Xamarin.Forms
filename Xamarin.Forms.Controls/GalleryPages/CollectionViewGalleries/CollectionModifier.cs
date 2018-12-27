@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.ObjectModel;
 
 namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 {
 	internal abstract class CollectionModifier : ContentView
 	{
-		readonly CollectionView _cv;
+		protected readonly CollectionView _cv;
 		protected readonly Entry Entry;
 
-		protected CollectionModifier (CollectionView cv, string buttonText)
+		protected CollectionModifier(CollectionView cv, string buttonText)
 		{
 			_cv = cv;
 
@@ -32,19 +31,13 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			Content = layout;
 		}
 
-		void ButtonOnClicked(object sender, EventArgs e)
+		private void ButtonOnClicked(object sender, EventArgs e)
 		{
-			if (!ParseIndexes(out int[] indexes))
-			{
-				return;
-			}
+			OnButtonClicked();
+		}
 
-			if (!(_cv.ItemsSource is ObservableCollection<CollectionViewGalleryTestItem> observableCollection))
-			{
-				return;
-			}
-
-			ModifyCollection(observableCollection, indexes);
+		protected virtual void OnButtonClicked()
+		{
 		}
 
 		protected virtual bool ParseIndexes(out int[] indexes)
@@ -55,10 +48,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 				return false;
 			}
 
-			indexes = new[] {index};
+			indexes = new[] { index };
 			return true;
 		}
-
-		protected abstract void ModifyCollection(ObservableCollection<CollectionViewGalleryTestItem> observableCollection, params int[] indexes);
 	}
 }

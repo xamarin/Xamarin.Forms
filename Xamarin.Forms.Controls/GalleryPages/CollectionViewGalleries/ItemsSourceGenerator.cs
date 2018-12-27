@@ -98,6 +98,22 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			}
 		}
 
+		public void GenerateMultiTestObservableCollection()
+		{
+			if (int.TryParse(_entry.Text, out int count))
+			{
+				var items = new MultiTestObservableCollection<CollectionViewGalleryTestItem>();
+
+				for (int n = 0; n < count; n++)
+				{
+					items.Add(new CollectionViewGalleryTestItem(DateTime.Now.AddDays(n),
+						$"{_images[n % _images.Length]}, {n}", _images[n % _images.Length], n));
+				}
+
+				_cv.ItemsSource = items;
+			}
+		}
+
 		void GenerateItems(object sender, EventArgs e)
 		{
 			GenerateItems();
