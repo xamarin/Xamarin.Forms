@@ -30,7 +30,7 @@
 			
 			var remover = new MultiItemRemover(collectionView, withIndex);
 
-			//var adder = new ItemAdder(collectionView);
+			var adder = new MultiItemAdder(collectionView, withIndex);
 			//var replacer = new ItemReplacer(collectionView);
 			//var mover = new ItemMover(collectionView);
 
@@ -39,8 +39,8 @@
 			layout.Children.Add(remover);
 			Grid.SetRow(remover, 1);
 
-			//layout.Children.Add(adder);
-			//Grid.SetRow(adder, 2);
+			layout.Children.Add(adder);
+			Grid.SetRow(adder, 2);
 
 			//layout.Children.Add(replacer);
 			//Grid.SetRow(replacer, 3);
