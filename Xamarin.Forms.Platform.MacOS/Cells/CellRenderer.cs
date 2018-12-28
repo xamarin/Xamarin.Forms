@@ -31,6 +31,10 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			tableViewCell.WantsLayer = true;
 			var bgColor = NSColor.White;
+
+			if (cell.IsSet(Cell.BackgroundColorProperty))
+				bgColor = cell.BackgroundColor.ToNSColor();
+
 			var element = cell.RealParent as VisualElement;
 			if (element != null)
 				bgColor = element.BackgroundColor == Color.Default ? bgColor : element.BackgroundColor.ToNSColor();
