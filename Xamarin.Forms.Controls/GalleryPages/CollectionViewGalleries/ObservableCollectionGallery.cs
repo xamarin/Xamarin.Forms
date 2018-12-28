@@ -33,7 +33,9 @@
 							() => new ObservableMultiItemCollectionViewGallery(), Navigation),
 
 						GalleryBuilder.NavButton("Multi-item add/remove, with index", 
-							() => new ObservableMultiItemCollectionViewGallery(withIndex: true), Navigation)
+							() => new ObservableMultiItemCollectionViewGallery(withIndex: true), Navigation),
+
+						GalleryBuilder.NavButton("Reset", () => new ObservableCollectionResetGallery(), Navigation)
 					}
 				}
 			};

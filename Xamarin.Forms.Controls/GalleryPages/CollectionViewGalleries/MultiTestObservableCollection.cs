@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 
@@ -39,22 +40,22 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			OnNotifyCollectionChanged(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, list, removeStart));
 		}
 
-		public void TestMoveWithList(int moveFrom, int count, int moveTo) {
-
+		public void TestMoveWithList(int moveFrom, int count, int moveTo)
+		{
 			var movedItems = new List<T>(GetRange(moveFrom, count));
 
 			RemoveRange(moveFrom, count);
 			InsertRange(moveTo, movedItems);
-			
+
 			var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Move, movedItems, moveTo, moveFrom);
 			OnNotifyCollectionChanged(this, args);
 		}
 
-		public void TestReplaceWithList(int index, int count, IEnumerable<T> newItems) {
-			
+		public void TestReplaceWithList(int index, int count, IEnumerable<T> newItems)
+		{
 			var oldList = new List<T>(GetRange(index, count));
 			var newList = newItems.ToList();
-			
+
 			RemoveRange(index, count);
 			InsertRange(index, newItems);
 
@@ -62,11 +63,11 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			OnNotifyCollectionChanged(this, args);
 		}
 
-		public void TestReplaceWithListAndIndex(int index, int count, IEnumerable<T> newItems) {
-			
+		public void TestReplaceWithListAndIndex(int index, int count, IEnumerable<T> newItems)
+		{
 			var oldList = new List<T>(GetRange(index, count));
 			var newList = newItems.ToList();
-			
+
 			RemoveRange(index, count);
 			InsertRange(index, newItems);
 
@@ -74,9 +75,19 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			OnNotifyCollectionChanged(this, args);
 		}
 
-		private void OnNotifyCollectionChanged(object sender, NotifyCollectionChangedEventArgs eventArgs)
+		public void TestReset()
 		{
-			CollectionChanged?.Invoke(this, eventArgs);
+			var random = new Random();
+			var randomized = GetRange(0, Count).Select(item => new { Item = item, Index = random.Next(100000) })
+				.OrderBy(x => x.Index).Select(x => x.Item).ToList();
+
+			RemoveRange(0, Count);
+			InsertRange(0, randomized);
+
+			var args = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
+			OnNotifyCollectionChanged(this, args);
 		}
+
+		private void OnNotifyCollectionChanged(object sender, NotifyCollectionChangedEventArgs eventArgs) => CollectionChanged?.Invoke(this, eventArgs);
 	}
 }
