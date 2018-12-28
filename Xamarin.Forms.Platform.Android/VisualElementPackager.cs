@@ -165,20 +165,6 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (ElementController.LogicalChildren.LastOrDefault() != view)
 				EnsureChildOrder();
-
-			MaybeRequestLayoutOnParent(ElementController.RealParent as Layout);
-		}
-
-		void MaybeRequestLayoutOnParent(Layout layout)
-		{
-			if (layout == null)
-				return;
-
-			var view = layout.GetRenderer().View;
-			if (!view.IsInLayout && !view.IsLayoutRequested)
-				view.RequestLayout();
-
-			MaybeRequestLayoutOnParent(layout.RealParent as Layout);
 		}
 
 		void OnChildRemoved(object sender, ElementEventArgs e)
