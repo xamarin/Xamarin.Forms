@@ -13,12 +13,10 @@
 				return;
 			}
 
-			if (!(_cv.ItemsSource is MultiTestObservableCollection<CollectionViewGalleryTestItem> observableCollection))
+			if (_cv.ItemsSource is MultiTestObservableCollection<CollectionViewGalleryTestItem> observableCollection)
 			{
-				return;
+				ModifyObservableCollection(observableCollection, indexes);
 			}
-
-			ModifyObservableCollection(observableCollection, indexes);
 		}
 
 		protected abstract void ModifyObservableCollection(MultiTestObservableCollection<CollectionViewGalleryTestItem> observableCollection, params int[] indexes);

@@ -25,7 +25,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			var index1 = indexes[0];
 			var index2 = indexes[1];
 
-			if (index1 > -1 && index2 > -1 && index1 < observableCollection.Count &&
+			if (index1 != index2 && index1 > -1 && index2 > -1 && index1 < observableCollection.Count &&
 				index2 < observableCollection.Count)
 			{
 				observableCollection.Move(index1, index2);
