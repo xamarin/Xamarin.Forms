@@ -3,7 +3,7 @@ using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	internal class StartPagerSnapHelper : EdgePagerSnapHelper
+	internal class StartSingleSnapHelper : SingleSnapHelper
 	{
 		public override int[] CalculateDistanceToFinalSnap(RecyclerView.LayoutManager layoutManager, AView targetView)
 		{

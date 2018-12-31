@@ -3,7 +3,7 @@ using AView = Android.Views.View;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	internal abstract class EdgePagerSnapHelper : PagerSnapHelper
+	internal class SingleSnapHelper : PagerSnapHelper
 	{
 		// CurrentTargetPosition will have this value until the user scrolls around
 		protected int CurrentTargetPosition = -1;
@@ -50,7 +50,36 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override int FindTargetSnapPosition(RecyclerView.LayoutManager layoutManager, int velocityX, int velocityY)
 		{
-			CurrentTargetPosition = base.FindTargetSnapPosition(layoutManager, velocityX, velocityY);
+			if (CurrentTargetPosition == -1)
+			{
+				CurrentTargetPosition = base.FindTargetSnapPosition(layoutManager, velocityX, velocityY);
+				return CurrentTargetPosition;
+			}
+
+			var increment = 1;
+
+			if (layoutManager.CanScrollHorizontally())
+			{
+				if (velocityX < 0)
+				{
+					increment = -1;
+				}
+			}
+			else if (layoutManager.CanScrollVertically())
+			{
+				if (velocityY < 0)
+				{
+					increment = -1;
+				}
+			}
+
+			if (IsLayoutReversed(layoutManager))
+			{
+				increment = increment * -1;
+			}
+
+			CurrentTargetPosition = CurrentTargetPosition + increment;
+
 			return CurrentTargetPosition;
 		}
 	}
