@@ -14,9 +14,9 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _initialConstraintsSet;
 		bool _wasEmpty;
 
-		UIView _backgroundView;
-		UIView _emptyView;
-		VisualElement _emptyViewElement;
+		UIView _backgroundUIView;
+		UIView _emptyUIView;
+		VisualElement _emptyViewFormsElement;
 
 		public CollectionViewController(ItemsView itemsView, ItemsViewLayout layout) : base(layout)
 		{
@@ -58,7 +58,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			_wasEmpty = count == 0;
 
-			UpdateEmptyView(_wasEmpty);
+			UpdateEmptyViewVisibility(_wasEmpty);
 
 			return count;
 		}
@@ -186,54 +186,60 @@ namespace Xamarin.Forms.Platform.iOS
 			CollectionView.RegisterClassForCell(typeof(VerticalTemplatedCell), VerticalTemplatedCell.ReuseId);
 		}
 
-		void UpdateEmptyView(bool isEmpty)
+		internal void UpdateEmptyView()
+		{
+			// Is EmptyView set on the ItemsView?
+			var emptyView = _itemsView?.EmptyView;
+
+			if (emptyView == null)
+			{
+				// Nope, no EmptyView set. So nothing to display. If there _was_ a background view on the UICollectionView, 
+				// we should restore it here (in case the EmptyView _used to be_ set, and has been un-set)
+				if(_backgroundUIView != null)
+				{
+					CollectionView.BackgroundView = _backgroundUIView;
+				}
+
+				// Also, clear the cached version
+				_emptyUIView = null;
+
+				return;
+			}
+
+			if (_emptyUIView == null)
+			{
+				// Create the native renderer for the EmptyView, and keep the actual Forms element (if any)
+				// around for updating the layout later
+				var (NativeView, FormsElement) = RealizeEmptyView(emptyView, _itemsView.EmptyViewTemplate);
+				_emptyUIView = NativeView;
+				_emptyViewFormsElement = FormsElement;
+			}
+		}
+
+		void UpdateEmptyViewVisibility(bool isEmpty)
 		{
 			if (isEmpty)
 			{
-				// Is EmptyView set on the ItemsView?
-				var emptyView = _itemsView?.EmptyView;
-
-				if (emptyView == null)
-				{
-					// Nope, no EmptyView set. So nothing to display. If there _was_ a background view on the UICollectionView, 
-					// we should restore it here (in case the EmptyView _used to be_ set, and has been un-set)
-					if(_backgroundView != null)
-					{
-						CollectionView.BackgroundView = _backgroundView;
-					}
-
-					return;
-				}
-
 				// Cache any existing background view so we can restore it later
-				_backgroundView = CollectionView.BackgroundView;
-
-				if (_emptyView == null)
-				{
-					// Create the native renderer for the EmptyView, and keep the actual Forms element (if any)
-					// around for updating the layout later
-					var (NativeView, FormsElement) = RealizeEmptyView(emptyView, _itemsView.EmptyViewTemplate);
-					_emptyView = NativeView;
-					_emptyViewElement = FormsElement;
-				}
+				_backgroundUIView = CollectionView.BackgroundView;
 
 				// Replace any current background with the EmptyView. This will also set the native view's frame
 				// to match the UICollectionView's frame
-				CollectionView.BackgroundView = _emptyView;
+				CollectionView.BackgroundView = _emptyUIView;
 
-				if (_emptyViewElement != null)
+				if (_emptyViewFormsElement != null)
 				{
 					// Now that the native empty view's frame is sized to the UICollectionView, we need to handle
 					// the Forms layout for its content
-					_emptyViewElement.Layout(_emptyView.Frame.ToRectangle());
+					_emptyViewFormsElement.Layout(_emptyUIView.Frame.ToRectangle());
 				}
 			}
 			else
 			{
 				// Is the empty view currently in the background? Swap back to the default.
-				if (CollectionView.BackgroundView == _emptyView)
+				if (CollectionView.BackgroundView == _emptyUIView)
 				{
-					CollectionView.BackgroundView = _backgroundView;
+					CollectionView.BackgroundView = _backgroundUIView;
 				}
 			}
 		}
@@ -242,14 +248,12 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (emptyViewTemplate != null)
 			{
-				// We have a template; turn it into a Forms view and set EmptyView as its BindingContext
+				// We have a template; turn it into a Forms view 
 				var templateElement = emptyViewTemplate.CreateContent() as View;
 				var renderer = CreateRenderer(templateElement);
 
-				if (renderer != null)
-				{
-					BindableObject.SetInheritedBindingContext(renderer.Element, emptyView);
-				}
+				// and set the EmptyView as its BindingContext
+				BindableObject.SetInheritedBindingContext(renderer.Element, emptyView);
 
 				return (renderer.NativeView, renderer.Element);
 			}
