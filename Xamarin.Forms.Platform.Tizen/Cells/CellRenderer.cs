@@ -6,6 +6,7 @@ namespace Xamarin.Forms.Platform.Tizen
 	public abstract class CellRenderer : IRegisterable
 	{
 		const string HeightProperty = "Height";
+		const string BackgroundColorProperty = "BackgroundColor";
 		readonly Dictionary<Cell, Dictionary<string, EvasObject>> _realizedNativeViews = new Dictionary<Cell, Dictionary<string, EvasObject>>();
 
 		Native.ListView.ItemContext _currentItem;
@@ -50,7 +51,7 @@ namespace Xamarin.Forms.Platform.Tizen
 
 		protected virtual bool OnCellPropertyChanged(Cell cell, string property, Dictionary<string, EvasObject> realizedView)
 		{
-			if (property == HeightProperty)
+			if (property == HeightProperty || property == BackgroundColorProperty)
 			{
 				return true;
 			}
@@ -147,6 +148,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			_currentItem = data as Native.ListView.ItemContext;
 			var cell = _currentItem.Cell;
+			_currentItem.Item.SetPartColor("bg", cell.BackgroundColor.ToNative());
 			EvasObject nativeView = OnGetContent(cell, part);
 			UpdateRealizedView(cell, part, nativeView);
 			return nativeView;
