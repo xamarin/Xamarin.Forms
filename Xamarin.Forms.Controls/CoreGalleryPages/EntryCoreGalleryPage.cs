@@ -64,7 +64,27 @@ namespace Xamarin.Forms.Controls
 			var passwordColorContainer = new ViewContainer<Entry> (Test.Entry.PasswordColor,
 				new Entry { IsPassword = true, Text = "12345", TextColor = Color.Red });
 
-			var maxLengthContainer = new ViewContainer<Entry>(Test.Entry.MaxLength,	new Entry { MaxLength = 3 });
+			var maxLengthContainer = new ViewContainer<Entry>(Test.InputView.MaxLength,	new Entry { MaxLength = 3 });
+
+			var isPasswordInputScopeContainer = new ViewContainer<Entry>(Test.Entry.IsPasswordNumeric,	new Entry { Keyboard = Keyboard.Numeric });
+			var switchPasswordButton = new Button
+			{
+				Text = "Toggle IsPassword"
+			};
+			var switchNumericButton = new Button
+			{
+				Text = "Toggle numeric"
+			};
+			switchPasswordButton.Clicked += (o, a) =>
+			{
+				isPasswordInputScopeContainer.View.IsPassword = !isPasswordInputScopeContainer.View.IsPassword;
+			};
+			switchNumericButton.Clicked += (o, a) =>
+			{
+				isPasswordInputScopeContainer.View.Keyboard = isPasswordInputScopeContainer.View.Keyboard == Keyboard.Numeric ? Keyboard.Default : Keyboard.Numeric;
+			};
+			isPasswordInputScopeContainer.ContainerLayout.Children.Add(switchPasswordButton);
+			isPasswordInputScopeContainer.ContainerLayout.Children.Add(switchNumericButton);
 
 			Add (isPasswordContainer);
 			Add (completedContainer);
@@ -90,6 +110,7 @@ namespace Xamarin.Forms.Controls
 			Add (placeholderColorDisabledContainer);
 			Add (passwordColorContainer);
 			Add (maxLengthContainer);
+			Add (isPasswordInputScopeContainer);
 		}
 	}
 }
