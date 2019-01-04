@@ -75,12 +75,16 @@ namespace Xamarin.Forms.Controls.Issues
 				{
 					if (On<Android>().GetBarItemColor() == Color.Default)
 					{
+#pragma warning disable CS0618 // Type or member is obsolete
 						On<Android>().SetBarItemColor(new Color(0, 255, 0, 128));
+#pragma warning restore CS0618 // Type or member is obsolete
 						btnChangeBarItemColorText.Text = $"Item Color: Less Green";
 					}
 					else
 					{
+#pragma warning disable CS0618 // Type or member is obsolete
 						On<Android>().SetBarItemColor(Color.Default);
+#pragma warning restore CS0618 // Type or member is obsolete
 						btnChangeBarItemColorText.Text = $"Item Color: Default";
 					}
 				})
@@ -94,12 +98,16 @@ namespace Xamarin.Forms.Controls.Issues
 				{
 					if (On<Android>().GetBarSelectedItemColor() == Color.Default)
 					{
+#pragma warning disable CS0618 // Type or member is obsolete
 						On<Android>().SetBarSelectedItemColor(Color.Green);
+#pragma warning restore CS0618 // Type or member is obsolete
 						btnChangeBarSelectedItemColorText.Text = $"Selected Item Color: Green";
 					}
 					else
 					{
+#pragma warning disable CS0618 // Type or member is obsolete
 						On<Android>().SetBarSelectedItemColor(Color.Default);
+#pragma warning restore CS0618 // Type or member is obsolete
 						btnChangeBarSelectedItemColorText.Text = $"Selected Item Color: Default";
 					}
 				})
