@@ -74,8 +74,38 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		FragmentManager FragmentManager => _fragmentManager ?? (_fragmentManager = ((FormsAppCompatActivity)Context).SupportFragmentManager);
 		bool IsBottomTabPlacement => (Element != null) ? Element.OnThisPlatform().GetToolbarPlacement() == ToolbarPlacement.Bottom : false;
-		public Color BarItemColor => (Element != null) ? Element.OnThisPlatform().GetBarItemColor() : Color.Default;
-		public Color BarSelectedItemColor => (Element != null) ? Element.OnThisPlatform().GetBarSelectedItemColor() : Color.Default;
+
+		public Color BarItemColor
+		{
+			get
+			{
+				if (Element != null)
+				{
+					if (Element.IsSet(TabbedPage.UnselectedTabColorProperty))
+						return Element.UnselectedTabColor;
+
+					return Element.OnThisPlatform().GetBarItemColor();
+				}
+
+				return Color.Default;
+			}
+		}
+
+		public Color BarSelectedItemColor
+		{
+			get
+			{
+				if (Element != null)
+				{
+					if (Element.IsSet(TabbedPage.SelectedTabColorProperty))
+						return Element.SelectedTabColor;
+
+					return Element.OnThisPlatform().GetBarSelectedItemColor();
+				}
+
+				return Color.Default;
+			}
+		}
 
 		IPageController PageController => Element as IPageController;
 
@@ -302,7 +332,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				UpdateBarBackgroundColor();
 			else if (e.PropertyName == NavigationPage.BarTextColorProperty.PropertyName ||
 				e.PropertyName == PlatformConfiguration.AndroidSpecific.TabbedPage.BarItemColorProperty.PropertyName ||
-				e.PropertyName == PlatformConfiguration.AndroidSpecific.TabbedPage.BarSelectedItemColorProperty.PropertyName)
+				e.PropertyName == PlatformConfiguration.AndroidSpecific.TabbedPage.BarSelectedItemColorProperty.PropertyName ||
+				e.PropertyName == TabbedPage.UnselectedTabColorProperty.PropertyName ||
+				e.PropertyName == TabbedPage.SelectedTabColorProperty.PropertyName)
 			{
 				_newTabTextColors = null;
 				_newTabIconColors = null;

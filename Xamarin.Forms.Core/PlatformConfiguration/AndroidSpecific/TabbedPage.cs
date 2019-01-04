@@ -170,6 +170,7 @@
 			return GetBarItemColor(config.Element);
 		}
 
+		[Obsolete("This method is obsolete as of version 3.5. Please use TabbedPage.UnselectedTabColor instead.")]
 		public static IPlatformElementConfiguration<Android, FormsElement> SetBarItemColor(this IPlatformElementConfiguration<Android, FormsElement> config, Color value)
 		{
 			SetBarItemColor(config.Element, value);
@@ -190,6 +191,8 @@
 		{
 			element.SetValue(BarSelectedItemColorProperty, value);
 		}
+
+		[Obsolete("This method is obsolete as of version 3.5. Please use TabbedPage.SelectedTabColor instead.")]
 		public static IPlatformElementConfiguration<Android, FormsElement> SetBarSelectedItemColor(this IPlatformElementConfiguration<Android, FormsElement> config, Color value)
 		{
 			SetBarSelectedItemColor(config.Element, value);
