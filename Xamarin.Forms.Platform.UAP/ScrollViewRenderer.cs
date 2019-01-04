@@ -111,7 +111,7 @@ namespace Xamarin.Forms.Platform.UWP
 			else if (e.PropertyName == ScrollView.OrientationProperty.PropertyName)
 				UpdateOrientation();
 			else if (e.PropertyName == ScrollView.VerticalScrollBarVisibilityProperty.PropertyName)
-				UpdateVerticalScrollBarVisibiilty();
+				UpdateVerticalScrollBarVisibility();
 			else if (e.PropertyName == ScrollView.HorizontalScrollBarVisibilityProperty.PropertyName)
 				UpdateHorizontalScrollBarVisibility();
 		}
@@ -297,7 +297,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		void UpdateVerticalScrollBarVisibiilty()
+		void UpdateVerticalScrollBarVisibility()
 		{
 			Control.VerticalScrollBarVisibility = ScrollBarVisibilityToUwp(Element.VerticalScrollBarVisibility);
 		}
