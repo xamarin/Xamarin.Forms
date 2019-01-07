@@ -165,9 +165,10 @@ namespace Xamarin.Forms.Platform.MacOS
 				if (e.OldElement?.Text != e.NewElement?.Text)
 				{
 					UpdateText();
-					UpdateTextDecorations();
+					if (e.NewElement.TextDecorations != TextDecorations.None)
+						UpdateTextDecorations();
 				}
-				if (e.OldElement?.TextDecorations != e.NewElement?.TextDecorations)
+				if (e.NewElement.TextDecorations != TextDecorations.None || (e.OldElement != null && e.OldElement.TextDecorations != e.NewElement.TextDecorations))
 					UpdateTextDecorations();
 				UpdateTextColor();
 				UpdateFont();
@@ -192,7 +193,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			else if (e.PropertyName == Label.TextProperty.PropertyName)
 			{
 				UpdateText();
-				UpdateTextDecorations();
+				if (Element.TextDecorations != TextDecorations.None)
+					UpdateTextDecorations();
 			}
 			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
 				UpdateTextDecorations();

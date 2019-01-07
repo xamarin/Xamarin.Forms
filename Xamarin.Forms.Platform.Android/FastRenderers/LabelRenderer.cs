@@ -224,8 +224,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				SkipNextInvalidate();
 				UpdateText();
 				UpdateLineHeight();
-                if (e.OldElement.TextDecorations != e.NewElement.TextDecorations)
-                    UpdateTextDecorations();
+				if (e.NewElement.TextDecorations != TextDecorations.None || (e.OldElement != null && e.OldElement.TextDecorations != e.NewElement.TextDecorations))
+					UpdateTextDecorations();
 				if (e.OldElement?.LineBreakMode != e.NewElement.LineBreakMode)
 					UpdateLineBreakMode();
 				if (e.OldElement?.HorizontalTextAlignment != e.NewElement.HorizontalTextAlignment || e.OldElement?.VerticalTextAlignment != e.NewElement.VerticalTextAlignment)

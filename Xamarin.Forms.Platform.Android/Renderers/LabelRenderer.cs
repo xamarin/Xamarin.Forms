@@ -133,7 +133,7 @@ namespace Xamarin.Forms.Platform.Android
 					UpdateMaxLines();
 			}
 
-			if (e.OldElement?.TextDecorations != e.NewElement?.TextDecorations)
+			if (e.NewElement.TextDecorations != TextDecorations.None || (e.OldElement != null && e.OldElement.TextDecorations != e.NewElement.TextDecorations))
 				UpdateTextDecorations();
 
 			_motionEventHelper.UpdateElement(e.NewElement);
