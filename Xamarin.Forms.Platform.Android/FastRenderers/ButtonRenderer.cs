@@ -319,17 +319,16 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				return;
 			}
 
-			FileImageSource elementImage = Button.Image;
-			string imageFile = elementImage?.File;
+			ImageSource elementImage = Button.Image;
 			_imageHeight = -1;
 
-			if (elementImage == null || IsNullOrEmpty(imageFile))
+			if (elementImage == null)
 			{
 				SetCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
 				return;
 			}
 
-			Drawable image = Context.GetDrawable(imageFile);
+			Drawable image = Context.GetFormsDrawable(elementImage);
 
 			if (IsNullOrEmpty(Button.Text))
 			{

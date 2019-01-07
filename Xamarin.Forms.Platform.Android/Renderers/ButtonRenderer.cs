@@ -167,16 +167,15 @@ namespace Xamarin.Forms.Platform.Android
 		void UpdateBitmap()
 		{
 			var elementImage = Element.Image;
-			var imageFile = elementImage?.File;
 			_imageHeight = -1;
 
-			if (elementImage == null || IsNullOrEmpty(imageFile))
+			if (elementImage == null)
 			{
 				Control.SetCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
 				return;
 			}
 
-			var image = Context.GetDrawable(imageFile);
+			var image = Context.GetFormsDrawable(elementImage);
 
 			if (IsNullOrEmpty(Element.Text))
 			{

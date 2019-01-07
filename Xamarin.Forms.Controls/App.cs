@@ -31,55 +31,295 @@ namespace Xamarin.Forms.Controls
 
 		public App()
 		{
-			MainPage = new NavigationPage(new ContentPage
+			_testCloudService = DependencyService.Get<ITestCloudService>();
+
+			SetMainPage(CreateDefaultMainPage());
+
+			//TestMainPageSwitches();
+			//SetupImagesTests();
+		}
+
+		private void SetupImagesTests()
+		{
+			MainPage = new NavigationPage(CreateRootPage());
+
+			Page CreateRootPage()
 			{
-				Title = "Image Source Tests",
-				Content = new StackLayout
+				bool? toolbarIcon = null;
+				bool? titleIcon = null;
+				ToolbarItem toolbarItem;
+
+				ContentPage thisPage = null;
+				thisPage = new ContentPage
 				{
-					Padding = 20,
-					Children =
+					Title = "Image Source Tests",
+					ToolbarItems =
 					{
-						new Button
+						(toolbarItem = new ToolbarItem("MENU", null, delegate { }))
+					},
+					Content = new ScrollView
+					{
+						Content = new StackLayout
 						{
-							Text = "ListView Context Actions",
-							Command = new Command(() => 
+							Padding = 20,
+							Children =
 							{
-								MainPage.Navigation.PushAsync(new ContentPage
+								new Button
 								{
-									Content = new StackLayout
+									Text = "Toggle Title Icon",
+									Command = new Command(() =>
 									{
-										Padding = 20,
-										Children =
+										if (titleIcon == null)
 										{
-											new Label
-											{
-												Text = "Each of the items should have the 'bank.png' as the context menu icon.",
-												LineBreakMode = LineBreakMode.WordWrap,
-											},
-											new ListView
-											{
-												Margin = new Thickness(-20, 0, -20, -20),
-												ItemsSource = new[] { "one", "two", "three", "four", "five" },
-												ItemTemplate = new DataTemplate(() =>
-												{
-													var cell = new TextCell();
-													cell.ContextActions.Add(new MenuItem
-													{
-														Text = "bank",
-														Icon = "bank.png"
-													});
-													cell.SetBinding(TextCell.TextProperty, new Binding("."));
-													return cell;
-												}),
-											}
+											titleIcon = true;
+											NavigationPage.SetTitleIcon(thisPage, "bank.png");
 										}
-									}
-								});
-							})
+										else if (titleIcon == true)
+										{
+											titleIcon = false;
+											NavigationPage.SetTitleIcon(thisPage, "calculator.png");
+										}
+										else
+										{
+											titleIcon = null;
+											NavigationPage.SetTitleIcon(thisPage, null);
+										}
+									})
+								},
+								new Button
+								{
+									Text = "Toggle Menu Icon",
+									Command = new Command(() =>
+									{
+										if (toolbarIcon == null)
+										{
+											toolbarIcon = true;
+											toolbarItem.Icon = "bank.png";
+										}
+										else if (toolbarIcon == true)
+										{
+											toolbarIcon = false;
+											toolbarItem.Icon = "calculator.png";
+										}
+										else
+										{
+											toolbarIcon = null;
+											toolbarItem.Icon = null;
+										}
+									})
+								},
+								new Button
+								{
+									Text = "ListView Context Actions",
+									Command = new Command(() => MainPage.Navigation.PushAsync(CreateListViewContextActionsPage()))
+								},
+								new Button
+								{
+									Text = "Image View",
+									Command = new Command(() => MainPage.Navigation.PushAsync(CreateImageViewPage()))
+								},
+								new Button
+								{
+									Text = "Buttons",
+									Command = new Command(() => MainPage.Navigation.PushAsync(CreateButtonsPage()))
+								},
+							}
 						}
 					}
-				}
-			});
+				};
+				return thisPage;
+			}
+
+			Page CreateListViewContextActionsPage()
+			{
+				return new ContentPage
+				{
+					Content = new ScrollView
+					{
+						Content = new StackLayout
+						{
+							Padding = 20,
+							Children =
+							{
+								new Label
+								{
+									Text = "Each of the items should have the 'bank.png' as the context menu icon.",
+									LineBreakMode = LineBreakMode.WordWrap,
+								},
+								new ListView
+								{
+									Margin = new Thickness(-20, 0, -20, -20),
+									ItemsSource = new[] { "one", "two", "three", "four", "five" },
+									ItemTemplate = new DataTemplate(() =>
+									{
+										var cell = new TextCell();
+										cell.ContextActions.Add(new MenuItem
+										{
+											Text = "bank",
+											Icon = "bank.png"
+										});
+										cell.SetBinding(TextCell.TextProperty, new Binding("."));
+										return cell;
+									}),
+								}
+							}
+						}
+					}
+				};
+			}
+
+			Page CreateImageViewPage()
+			{
+				Image image = null;
+				ActivityIndicator loading = null;
+				var page = new ContentPage
+				{
+					Content = new ScrollView
+					{
+						Content = new StackLayout
+						{
+							Padding = 20,
+							Children =
+							{
+								new Label
+								{
+									Text = "Tap the buttons to swap out the images.",
+									LineBreakMode = LineBreakMode.WordWrap,
+								},
+								new Grid
+								{
+									Children =
+									{
+										(image = new Image
+										{
+											WidthRequest = 200,
+											HeightRequest = 200,
+											Source = "bank.png",
+										}),
+										(loading = new ActivityIndicator()),
+									}
+								},
+								new Button
+								{
+									Text = "Clear Image",
+									Command = new Command(() => image.Source = null)
+								},
+								new Button
+								{
+									Text = "Resource Image",
+									Command = new Command(() => image.Source = ImageSource.FromFile("bank.png"))
+								},
+								new Button
+								{
+									Text = "Embedded Image",
+									Command = new Command(() => image.Source = ImageSource.FromResource("Xamarin.Forms.Controls.GalleryPages.crimson.jpg", typeof(App)))
+								},
+								new Button
+								{
+									Text = "Stream Image",
+									Command = new Command(() => image.Source = ImageSource.FromStream(() => typeof(App).Assembly.GetManifestResourceStream("Xamarin.Forms.Controls.coffee.png")))
+								},
+								new Button
+								{
+									Text = "URI Image",
+									Command = new Command(() => image.Source = new UriImageSource
+									{
+										Uri = new Uri("https://raw.githubusercontent.com/xamarin/Xamarin.Forms/master/banner.png"),
+										CachingEnabled = false
+									})
+								},
+								new Button
+								{
+									Text = "Font Image",
+									Command = new Command(() =>
+									{
+										var fontFamily = "";
+										switch (Device.RuntimePlatform)
+										{
+											case Device.iOS:
+												fontFamily = "Ionicons";
+												break;
+											case Device.UWP:
+												fontFamily = "Assets/Fonts/ionicons.ttf#ionicons";
+												break;
+											case Device.Android:
+											default:
+												fontFamily = "fonts/ionicons.ttf#";
+												break;
+										}
+										image.Source = new FontImageSource
+										{
+											Color = Color.Black,
+											FontFamily = fontFamily,
+											Glyph = "\uf233",
+											Size = 100,
+										};
+									})
+								},
+							}
+						}
+					}
+				};
+				loading.SetBinding(ActivityIndicator.IsRunningProperty, new Binding(Image.IsLoadingProperty.PropertyName));
+				loading.SetBinding(ActivityIndicator.IsVisibleProperty, new Binding(Image.IsLoadingProperty.PropertyName));
+				loading.BindingContext = image;
+				return page;
+			}
+
+			Page CreateButtonsPage()
+			{
+				return new ContentPage
+				{
+					Content = new ScrollView
+					{
+						Content = new StackLayout
+						{
+							Padding = 20,
+							Children =
+							{
+								new Label
+								{
+									Text = "The default Button type.",
+									LineBreakMode = LineBreakMode.WordWrap,
+								},
+								new Button
+								{
+									Text = "Image & Text",
+									Image = "bank.png"
+								},
+								new Button
+								{
+									Image = "bank.png"
+								},
+								new Button
+								{
+									Text = "Just Text",
+									Image = null
+								},
+								new Label
+								{
+									Text = "The ImageButton type.",
+									LineBreakMode = LineBreakMode.WordWrap,
+								},
+								new ImageButton
+								{
+									HeightRequest = 100,
+									Source = "bank.png"
+								},
+								new ImageButton
+								{
+									HeightRequest = 100,
+									Source = new UriImageSource
+									{
+										Uri = new Uri("https://raw.githubusercontent.com/xamarin/Xamarin.Forms/master/banner.png"),
+										CachingEnabled = false
+									}
+								},
+							}
+						}
+					}
+				};
+			}
 		}
 
 		protected override void OnStart()
