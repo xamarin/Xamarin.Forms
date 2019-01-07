@@ -19,6 +19,7 @@ using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.TabbedPage
 using VisualElementSpecifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.VisualElement;
 using PageSpecifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.Page;
 using Windows.UI.Xaml.Input;
+using System.Linq;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -554,9 +555,17 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateSelectedTabColors()
 		{
-			foreach (WTextBlock tabBarTextBlock in Control.GetDescendantsByName<WTextBlock>(TabBarHeaderTextBlockName))
+			// Retrieve all tab header textblocks
+			var allTabHeaderTextBlocks = Control.GetDescendantsByName<WTextBlock>(TabBarHeaderTextBlockName).ToArray();
+
+			// Loop through all pages in the Pivot control
+			foreach (Page page in Control.Items)
 			{
-				if (tabBarTextBlock.Text == Element.CurrentPage.Title)
+				// Fetch just the textblock for the current page
+				var tabBarTextBlock = allTabHeaderTextBlocks[Control.Items.IndexOf(page)];
+
+				// Apply selected or unselected style to the current textblock
+				if (page == Element.CurrentPage)
 				{
 					if (_defaultSelectedColor == null)
 						_defaultSelectedColor = tabBarTextBlock.Foreground;
