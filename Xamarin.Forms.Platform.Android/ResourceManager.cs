@@ -1,14 +1,15 @@
 using System;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using Android.Content;
 using Android.Content.Res;
 using Android.Graphics;
 using Android.Graphics.Drawables;
-using Android.Support.V4.Content;
-using Path = System.IO.Path;
 using Xamarin.Forms.Internals;
+using Path = System.IO.Path;
 using AndroidAppCompat = Android.Support.V7.Content.Res.AppCompatResources;
 
 namespace Xamarin.Forms.Platform.Android
@@ -21,33 +22,80 @@ namespace Xamarin.Forms.Platform.Android
 
 		public static Type StyleClass { get; set; }
 
-		internal static async Task<Drawable> GetFormsDrawable(this Context context, ImageSource imageSource)
+		internal static async Task<Drawable> GetFormsDrawableAsync(this Context context, ImageSource imageSource)
 		{
-			if (imageSource is FileImageSource fileSource)
-				return context.GetFormsDrawable(fileSource);
+			if (imageSource == null)
+				return null;
 
-			var handler = Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(imageSource);
-			var icon = await handler.LoadImageAsync(imageSource, context);
-			var drawable = new BitmapDrawable(context.Resources, icon);
-			return drawable;
+			// try take a shortcut for files
+			if (imageSource is FileImageSource fileImageSource)
+			{
+				var file = fileImageSource.File;
+				var id = IdFromTitle(file, DrawableClass);
+
+				// try the drawables via id
+				if (id != 0)
+				{
+					var drawable = AndroidAppCompat.GetDrawable(context, id);
+					if (drawable != null)
+						return drawable;
+				}
+
+				// try a direct file on the file system
+				if (File.Exists(file))
+				{
+					using (var bitmap = await BitmapFactory.DecodeFileAsync(file).ConfigureAwait(false))
+					{
+						if (bitmap != null)
+							return new BitmapDrawable(context.Resources, bitmap);
+					}
+				}
+
+				// try the bitmap resources via id
+				if (id != 0)
+				{
+					using (var bitmap = await BitmapFactory.DecodeResourceAsync(context.Resources, id).ConfigureAwait(false))
+					{
+						if (bitmap != null)
+							return new BitmapDrawable(context.Resources, bitmap);
+					}
+				}
+			}
+
+			// fall back to the handler
+			using (var bitmap = await context.GetFormsBitmapAsync(imageSource).ConfigureAwait(false))
+			{
+				if (bitmap != null)
+					return new BitmapDrawable(context.Resources, bitmap);
+			}
+
+			return null;
 		}
 
-		internal static Drawable GetFormsDrawable(this Context context, FileImageSource fileImageSource)
+		internal static Drawable GetFormsDrawable(this Context context, ImageSource imageSource)
 		{
-			var file = fileImageSource.File;
-			Drawable drawable = context.GetDrawable(fileImageSource);
-			if (drawable == null)
+			return context.GetFormsDrawableAsync(imageSource).GetAwaiter().GetResult();
+		}
+
+		internal static async Task<Bitmap> GetFormsBitmapAsync(this Context context, ImageSource imageSource, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			if (imageSource == null)
+				return null;
+
+			var handler = Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(imageSource);
+			if (handler == null)
+				return null;
+
+			try
 			{
-				var bitmap = GetBitmap(context.Resources, file) ?? BitmapFactory.DecodeFile(file);
-				if (bitmap == null)
-				{
-					var source = Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(fileImageSource);
-					bitmap = source.LoadImageAsync(fileImageSource, context).GetAwaiter().GetResult();
-				}
-				if (bitmap != null)
-					drawable = new BitmapDrawable(context.Resources, bitmap);
+				return await handler.LoadImageAsync(imageSource, context, cancellationToken).ConfigureAwait(false);
 			}
-			return drawable;
+			catch (OperationCanceledException)
+			{
+				// no-op
+			}
+
+			return null;
 		}
 
 		public static Bitmap GetBitmap(this Resources resource, FileImageSource fileImageSource)

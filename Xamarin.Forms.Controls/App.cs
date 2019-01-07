@@ -31,11 +31,55 @@ namespace Xamarin.Forms.Controls
 
 		public App()
 		{
-			_testCloudService = DependencyService.Get<ITestCloudService>();
-
-			SetMainPage(CreateDefaultMainPage());
-
-			//TestMainPageSwitches();
+			MainPage = new NavigationPage(new ContentPage
+			{
+				Title = "Image Source Tests",
+				Content = new StackLayout
+				{
+					Padding = 20,
+					Children =
+					{
+						new Button
+						{
+							Text = "ListView Context Actions",
+							Command = new Command(() => 
+							{
+								MainPage.Navigation.PushAsync(new ContentPage
+								{
+									Content = new StackLayout
+									{
+										Padding = 20,
+										Children =
+										{
+											new Label
+											{
+												Text = "Each of the items should have the 'bank.png' as the context menu icon.",
+												LineBreakMode = LineBreakMode.WordWrap,
+											},
+											new ListView
+											{
+												Margin = new Thickness(-20, 0, -20, -20),
+												ItemsSource = new[] { "one", "two", "three", "four", "five" },
+												ItemTemplate = new DataTemplate(() =>
+												{
+													var cell = new TextCell();
+													cell.ContextActions.Add(new MenuItem
+													{
+														Text = "bank",
+														Icon = "bank.png"
+													});
+													cell.SetBinding(TextCell.TextProperty, new Binding("."));
+													return cell;
+												}),
+											}
+										}
+									}
+								});
+							})
+						}
+					}
+				}
+			});
 		}
 
 		protected override void OnStart()

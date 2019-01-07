@@ -237,7 +237,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (backButtonHandler != null)
 			{
-				using (var icon = await context.GetFormsDrawable(backButtonHandler.IconOverride))
+				using (var icon = await context.GetFormsDrawableAsync(backButtonHandler.IconOverride))
 				using (var mutatedIcon = icon.GetConstantState().NewDrawable().Mutate())
 				{
 					mutatedIcon.SetColorFilter(TintColor.ToAndroid(Color.White), PorterDuff.Mode.SrcAtop);
@@ -285,16 +285,17 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void UpdateMenuItemIcon(Context context, IMenuItem menuItem, ToolbarItem toolBarItem)
 		{
-			FileImageSource icon = toolBarItem.Icon;
-			if (!string.IsNullOrEmpty(icon))
+			using (var baseDrawable = context.GetFormsDrawable(toolBarItem.Icon))
 			{
-				using (var baseDrawable = context.GetFormsDrawable(icon))
-				using (var constant = baseDrawable.GetConstantState())
-				using (var newDrawable = constant.NewDrawable())
-				using (var iconDrawable = newDrawable.Mutate())
+				if (baseDrawable != null)
 				{
-					iconDrawable.SetColorFilter(TintColor.ToAndroid(Color.White), PorterDuff.Mode.SrcAtop);
-					menuItem.SetIcon(iconDrawable);
+					using (var constant = baseDrawable.GetConstantState())
+					using (var newDrawable = constant.NewDrawable())
+					using (var iconDrawable = newDrawable.Mutate())
+					{
+						iconDrawable.SetColorFilter(TintColor.ToAndroid(Color.White), PorterDuff.Mode.SrcAtop);
+						menuItem.SetIcon(iconDrawable);
+					}
 				}
 			}
 		}

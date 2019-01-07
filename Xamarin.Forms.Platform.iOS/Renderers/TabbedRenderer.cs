@@ -413,14 +413,13 @@ namespace Xamarin.Forms.Platform.iOS
 		/// </returns>
 		protected virtual async Task<Tuple<UIImage, UIImage>> GetIcon(Page page)
 		{
-		    if (!string.IsNullOrEmpty(page.Icon?.File))
-		    {
-				var source = Internals.Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(page.Icon);
-				var icon = await source.LoadImageAsync(page.Icon);
-		        return Tuple.Create(icon, (UIImage)null);
-		    }
-		
-		    return null;
+			if (!string.IsNullOrEmpty(page.Icon?.File))
+			{
+				var icon = await page.Icon.GetNativeImageAsync();
+				return Tuple.Create(icon, (UIImage)null);
+			}
+
+			return null;
 		}
 	}
 }

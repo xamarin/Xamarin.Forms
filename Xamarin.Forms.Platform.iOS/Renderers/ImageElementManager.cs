@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Foundation;
 using UIKit;
@@ -88,8 +89,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public static async Task SetImage(IImageVisualElementRenderer renderer, IImageElement imageElement, Image oldElement = null)
 		{
-			_ = renderer ?? throw new ArgumentNullException($"{nameof(ImageElementManager)}.{nameof(SetImage)} {nameof(renderer)} cannot be null");
-			_ = imageElement ?? throw new ArgumentNullException($"{nameof(ImageElementManager)}.{nameof(SetImage)} {nameof(imageElement)} cannot be null");
+			_ = renderer ?? throw new ArgumentNullException(nameof(renderer), $"{nameof(ImageElementManager)}.{nameof(SetImage)} {nameof(renderer)} cannot be null");
+			_ = imageElement ?? throw new ArgumentNullException(nameof(imageElement), $"{nameof(ImageElementManager)}.{nameof(SetImage)} {nameof(imageElement)} cannot be null");
 
 			var Element = renderer.Element;
 			var Control = renderer.GetImage();
@@ -109,50 +110,55 @@ namespace Xamarin.Forms.Platform.iOS
 				if (Equals(oldSource, source))
 					return;
 
-				if (oldSource is FileImageSource && source is FileImageSource && ((FileImageSource)oldSource).File == ((FileImageSource)source).File)
+				if (oldSource is FileImageSource oldFile && source is FileImageSource newFile && oldFile == newFile)
 					return;
 
 				renderer.SetImage(null);
 			}
 
-			IImageSourceHandler handler;
 			imageController?.SetIsLoading(true);
 			try
 			{
-				if (source != null &&
-				   (handler = Internals.Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(source)) != null)
-				{
-					UIImage uiimage;
-					try
-					{
-						uiimage = await handler.LoadImageAsync(source, scale: (float)UIScreen.MainScreen.Scale);
-					}
-					catch (OperationCanceledException)
-					{
-						uiimage = null;
-					}
+				var uiimage = await source.GetNativeImageAsync();
 
-					if (renderer.IsDisposed)
-						return;
+				if (renderer.IsDisposed)
+					return;
 
-					var imageView = Control;
-					if (imageView != null)
-					{
-						renderer.SetImage(uiimage);
-					}
-				}
+				// only set if we are still on the same image
+				if (Control != null && imageElement.Source == source)
+					renderer.SetImage(uiimage);
 				else
-				{
-					renderer.SetImage(null);
-				}
-
+					uiimage?.Dispose();
 			}
 			finally
 			{
-				imageController?.SetIsLoading(false);
+				// only mark as finished if we are still on the same image
+				if (imageElement.Source == source)
+					imageController?.SetIsLoading(false);
 			}
 
 			(imageElement as IViewController)?.NativeSizeChanged();
+		}
+
+		internal static async Task<UIImage> GetNativeImageAsync(this ImageSource source, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			if (source == null)
+				return null;
+
+			var handler = Internals.Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(source);
+			if (handler == null)
+				return null;
+
+			try
+			{
+				return await handler.LoadImageAsync(source, scale: (float)UIScreen.MainScreen.Scale, cancelationToken: cancellationToken);
+			}
+			catch (OperationCanceledException)
+			{
+				// no-op
+			}
+
+			return null;
 		}
 	}
 }

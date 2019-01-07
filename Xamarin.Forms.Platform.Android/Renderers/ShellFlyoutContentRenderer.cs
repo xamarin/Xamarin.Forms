@@ -110,8 +110,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		async void SetMenuItemIcon(IMenuItem menuItem, ImageSource source)
 		{
-			var drawable = await Context.GetFormsDrawable(source);
-			menuItem.SetIcon(drawable);
+			using (var drawable = await Context.GetFormsDrawableAsync(source))
+			{
+				if (drawable != null)
+					menuItem.SetIcon(drawable);
+			}
 		}
 	}
 }

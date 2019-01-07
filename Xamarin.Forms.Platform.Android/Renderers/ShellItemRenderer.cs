@@ -353,16 +353,19 @@ namespace Xamarin.Forms.Platform.Android
 
 		async void SetImage(ImageView image, ImageSource source)
 		{
-			image.SetImageDrawable(await Context.GetFormsDrawable(source));
+			using (var drawable = await Context.GetFormsDrawableAsync(source))
+			{
+				image.SetImageDrawable(drawable);
+			}
 		}
 
 		async Task SetMenuItemIcon(IMenuItem menuItem, ImageSource source)
 		{
-			if (source == null)
-				return;
-			var drawable = await Context.GetFormsDrawable(source);
-			menuItem.SetIcon(drawable);
-			drawable.Dispose();
+			using (var drawable = await Context.GetFormsDrawableAsync(source))
+			{
+				if (drawable != null)
+					menuItem.SetIcon(drawable);
+			}
 		}
 
 		void SetupMenu()

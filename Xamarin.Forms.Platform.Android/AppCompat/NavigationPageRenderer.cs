@@ -914,19 +914,14 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		protected virtual void UpdateMenuItemIcon(Context context, IMenuItem menuItem, ToolbarItem toolBarItem)
 		{
-			FileImageSource icon = toolBarItem.Icon;
-			if (!string.IsNullOrEmpty(icon))
+			using (Drawable iconDrawable = context.GetFormsDrawable(toolBarItem.Icon))
 			{
-				Drawable iconDrawable = context.GetFormsDrawable(icon);
 				if (iconDrawable != null)
 				{
 					if (!menuItem.IsEnabled)
-					{
 						iconDrawable.Mutate().SetAlpha(DefaultDisabledToolbarAlpha);
-					}
 
 					menuItem.SetIcon(iconDrawable);
-					iconDrawable.Dispose();
 				}
 			}
 		}
@@ -1041,30 +1036,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			_titleIconView.SetImageResource(global::Android.Resource.Color.Transparent);
 
-			Bitmap bitmap = null;
-			IImageSourceHandler handler;
-
-			if (source != null && (handler = Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(source)) != null)
+			using (var drawable = await ResourceManager.GetFormsDrawableAsync(Context, source))
 			{
-				try
-				{
-					bitmap = await handler.LoadImageAsync(source, Context);
-				}
-				catch (TaskCanceledException)
-				{
-				}
-				catch (IOException ex)
-				{
-					Internals.Log.Warning("Xamarin.Forms.Platform.Android.AppCompat.NavigationPageRenderer", "Error updating bitmap: {0}", ex);
-				}
+				_titleIconView.SetImageDrawable(drawable);
 			}
-
-			if (bitmap == null && source is FileImageSource)
-				_titleIconView.SetImageResource(ResourceManager.GetDrawableByName(((FileImageSource)source).File));
-			else
-				_titleIconView.SetImageBitmap(bitmap);
-
-			bitmap?.Dispose();
 		}
 
 		void UpdateTitleView()

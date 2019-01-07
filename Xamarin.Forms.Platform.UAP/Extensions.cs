@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml;
@@ -32,25 +33,25 @@ namespace Xamarin.Forms.Platform.UWP
 			self.SetBinding(property, new Windows.UI.Xaml.Data.Binding { Path = new PropertyPath(path), Converter = converter });
 		}
 
-		public static async Task<WImageSource> ToWindowsImageSource(this ImageSource source)
+		public static async Task<WImageSource> ToWindowsImageSource(this ImageSource source, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			IImageSourceHandler handler;
-			if (source != null && (handler = Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(source)) != null)
-			{
-				try
-				{
-					return await handler.LoadImageAsync(source);
-				}
-				catch (OperationCanceledException)
-				{
-					return null;
-				}
-
-			}
-			else
-			{
+			if (source == null)
 				return null;
+
+			var handler = Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(source);
+			if (handler == null)
+				return null;
+
+			try
+			{
+				return await handler.LoadImageAsync(source, cancellationToken);
 			}
+			catch (OperationCanceledException)
+			{
+				// no-op
+			}
+
+			return null;
 		}
 
 		internal static InputScopeNameValue GetKeyboardButtonType(this ReturnType returnType)

@@ -333,18 +333,14 @@ namespace Xamarin.Forms.Platform.Android
 		async void SetImage(AImageButton button, ImageSource image, int defaultValue)
 		{
 			button.SetScaleType(ImageView.ScaleType.FitCenter);
-			if (image != null)
+			using (var drawable = await Context.GetFormsDrawableAsync(image))
 			{
-				using (var drawable = await Context.GetFormsDrawable(image))
+				if (drawable != null)
 					button.SetImageDrawable(drawable);
-			}
-			else if (defaultValue > 0)
-			{
-				await Task.Run(() => button.SetImageResource(defaultValue)).ConfigureAwait(false);
-			}
-			else
-			{
-				button.SetImageDrawable(null);
+				else if (defaultValue > 0)
+					button.SetImageResource(defaultValue);
+				else
+					button.SetImageDrawable(null);
 			}
 		}
 
