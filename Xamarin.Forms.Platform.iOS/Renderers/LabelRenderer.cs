@@ -217,7 +217,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
     
 		void UpdateTextDecorations()
-			{
+		{
 				var textDecorations = Element.TextDecorations;
 	#if __MOBILE__
 				var newAttributedText = new NSMutableAttributedString(Control.AttributedText);
@@ -246,7 +246,7 @@ namespace Xamarin.Forms.Platform.MacOS
 	#else
 				Control.AttributedStringValue = newAttributedText;
 	#endif
-			}
+		}
 
 #if __MOBILE__
 		protected override void SetAccessibilityLabel()
