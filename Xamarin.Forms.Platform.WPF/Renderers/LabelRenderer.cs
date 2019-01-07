@@ -25,7 +25,7 @@ namespace Xamarin.Forms.Platform.WPF
 
 				// Update control property 
 				UpdateText();
-				if (e.NewElement.TextDecorations != TextDecorations.None || (e.OldElement != null && e.OldElement.TextDecorations != e.NewElement.TextDecorations))
+				if ((e.OldElement == null && e.NewElement.TextDecorations != TextDecorations.None) || (e.OldElement?.TextDecorations != e.NewElement.TextDecorations))
 					UpdateTextDecorations();
 				UpdateColor();
 				UpdateAlign();

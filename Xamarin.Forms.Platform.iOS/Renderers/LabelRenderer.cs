@@ -168,7 +168,7 @@ namespace Xamarin.Forms.Platform.MacOS
 					if (e.NewElement.TextDecorations != TextDecorations.None)
 						UpdateTextDecorations();
 				}
-				if (e.NewElement.TextDecorations != TextDecorations.None || (e.OldElement != null && e.OldElement.TextDecorations != e.NewElement.TextDecorations))
+				if ((e.OldElement == null && e.NewElement.TextDecorations != TextDecorations.None) || (e.OldElement?.TextDecorations != e.NewElement.TextDecorations))
 					UpdateTextDecorations();
 				UpdateTextColor();
 				UpdateFont();
