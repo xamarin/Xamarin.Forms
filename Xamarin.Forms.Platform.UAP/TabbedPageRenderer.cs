@@ -20,6 +20,7 @@ using VisualElementSpecifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecif
 using PageSpecifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.Page;
 using Windows.UI.Xaml.Input;
 using System.Linq;
+using WSelectionChangedEventArgs = Windows.UI.Xaml.Controls.SelectionChangedEventArgs;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -304,7 +305,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+		void OnSelectionChanged(object sender, WSelectionChangedEventArgs e)
 		{
 			if (Element == null)
 				return;
