@@ -21,6 +21,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 		VisualElementPackager _packager;
 		VisualElementTracker _tracker;
+		bool _disposed = false;
 
 		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
 
@@ -33,8 +34,9 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 		protected override void Dispose(bool disposing)
 		{
-			if (disposing)
+			if (disposing && !_disposed)
 			{
+				_disposed = true;
 				if (_packager == null)
 					return;
 

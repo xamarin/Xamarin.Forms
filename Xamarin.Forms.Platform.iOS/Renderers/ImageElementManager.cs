@@ -142,9 +142,9 @@ namespace Xamarin.Forms.Platform.iOS
 				{
 					return await handler.LoadImageAsync(source, scale: (float)UIScreen.MainScreen.Scale, cancelationToken: cancellationToken);
 				}
-				catch (OperationCanceledException)
+				catch (OperationCanceledException ex)
 				{
-					// no-op
+					Internals.Log.Warning(source.GetType().Name, "Error loading image: {0}", ex);
 				}
 			}
 

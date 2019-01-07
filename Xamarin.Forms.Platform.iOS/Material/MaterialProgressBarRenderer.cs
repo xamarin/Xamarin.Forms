@@ -131,47 +131,54 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			Color progressColor = Element.ProgressColor;
 			Color backgroundColor = Element.BackgroundColor;
 
-			if (progressColor.IsDefault && backgroundColor.IsDefault)
+			if (progressColor.IsDefault)
 			{
-				// reset everything to defaults
-				_colorScheme = new BasicColorScheme(
-					_defaultColorScheme.PrimaryColor,
-					_defaultColorScheme.PrimaryLightColor,
-					_defaultColorScheme.PrimaryColor);
-			}
-			else if (progressColor.IsDefault && !backgroundColor.IsDefault)
-			{
-				// handle the case where only the background is set
-				var background = backgroundColor.ToUIColor();
+				if(backgroundColor.IsDefault)
+				{
+					// reset everything to defaults
+					_colorScheme = new BasicColorScheme(
+						_defaultColorScheme.PrimaryColor,
+						_defaultColorScheme.PrimaryLightColor,
+						_defaultColorScheme.PrimaryColor);
+				}
+				else
+				{
+					// handle the case where only the background is set
+					var background = backgroundColor.ToUIColor();
 
-				// TODO: Potentially override background alpha to match material design.
-				// TODO: Potentially override primary color to match material design.
-				_colorScheme = new BasicColorScheme(
-					_defaultColorScheme.PrimaryColor,
-					background,
-					_defaultColorScheme.PrimaryColor);
-			}
-			else if (!progressColor.IsDefault && backgroundColor.IsDefault)
-			{
-				// handle the case where only the progress is set
-				var progress = progressColor.ToUIColor();
+					// TODO: Potentially override background alpha to match material design.
+					// TODO: Potentially override primary color to match material design.
+					_colorScheme = new BasicColorScheme(
+						_defaultColorScheme.PrimaryColor,
+						background,
+						_defaultColorScheme.PrimaryColor);
 
-				_colorScheme = new BasicColorScheme(
-					progress,
-					progress.ColorWithAlpha(BackgroundAlpha),
-					progress);
+				}
 			}
-			else
+			else if (!progressColor.IsDefault)
 			{
-				// handle the case where both are set
-				var background = backgroundColor.ToUIColor();
-				var progress = progressColor.ToUIColor();
+				if (backgroundColor.IsDefault)
+				{
+					// handle the case where only the progress is set
+					var progress = progressColor.ToUIColor();
 
-				// TODO: Potentially override alpha to match material design.
-				_colorScheme = new BasicColorScheme(
-					progress,
-					background,
-					progress);
+					_colorScheme = new BasicColorScheme(
+						progress,
+						progress.ColorWithAlpha(BackgroundAlpha),
+						progress);
+				}
+				else
+				{
+					// handle the case where both are set
+					var background = backgroundColor.ToUIColor();
+					var progress = progressColor.ToUIColor();
+
+					// TODO: Potentially override alpha to match material design.
+					_colorScheme = new BasicColorScheme(
+						progress,
+						background,
+						progress);
+				}
 			}
 		}
 
