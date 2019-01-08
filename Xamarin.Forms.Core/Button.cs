@@ -45,7 +45,7 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty CornerRadiusProperty = BindableProperty.Create("CornerRadius", typeof(int), typeof(Button), defaultValue: BorderElement.DefaultCornerRadius,
 			propertyChanged: CornerRadiusPropertyChanged);
 
-		public static readonly BindableProperty ImageProperty = ImageElement.FileImageProperty;
+		public static readonly BindableProperty ImageProperty = ImageElement.ImageProperty;
 
 
 		public static readonly BindableProperty PaddingProperty = PaddingElement.PaddingProperty;
