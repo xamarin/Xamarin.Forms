@@ -109,7 +109,6 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateMaxLength();
 			UpdateImeOptions();
 			UpdateReturnType();
-			UpdateCursorSelection();
 			UpdateIsReadOnly();
 
 			if (_cursorPositionChangePending || _selectionLengthChangePending)
@@ -336,7 +335,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (_nativeSelectionIsUpdating || Control == null || Element == null)
 				return;
 
-			if (Control.RequestFocus())
+			if (!Element.IsReadOnly && Control.RequestFocus())
 			{
 				try
 				{
