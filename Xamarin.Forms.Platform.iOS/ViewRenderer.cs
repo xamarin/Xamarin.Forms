@@ -119,8 +119,16 @@ namespace Xamarin.Forms.Platform.MacOS
 				var control = Control;
 				System.Threading.Tasks.Task.Run(async () =>
 				{
-					await System.Threading.Tasks.Task.Delay(10);
-					control.Dispose();
+					await System.Threading.Tasks.Task.Delay(16);
+					try
+					{
+						control.Dispose();
+					}
+#pragma warning disable RECS0022 // A catch clause that catches System.Exception and has an empty body
+					catch //TODO: find the reason, why xamarin_release_managed_ref causes crashes
+#pragma warning restore RECS0022 // A catch clause that catches System.Exception and has an empty body
+					{
+					}
 					control = null;
 				});
 #endif
