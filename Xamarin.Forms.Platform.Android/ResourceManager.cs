@@ -22,7 +22,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public static Type StyleClass { get; set; }
 
-		internal static async Task<Drawable> GetFormsDrawableAsync(this Context context, ImageSource imageSource)
+		internal static async Task<Drawable> GetFormsDrawableAsync(this Context context, ImageSource imageSource, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (imageSource == null || imageSource.IsEmpty)
 				return null;
@@ -63,7 +63,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			// fall back to the handler
-			using (var bitmap = await context.GetFormsBitmapAsync(imageSource).ConfigureAwait(false))
+			using (var bitmap = await context.GetFormsBitmapAsync(imageSource, cancellationToken).ConfigureAwait(false))
 			{
 				if (bitmap != null)
 					return new BitmapDrawable(context.Resources, bitmap);
