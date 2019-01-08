@@ -293,9 +293,12 @@ namespace Xamarin.Forms.Platform.MacOS
 				Control.StringValue = currentControlText.Substring(0, Element.MaxLength);
 		}
 
+
 		void UpdateIsReadOnly()
 		{
 			Control.Editable = !Element.IsReadOnly;
+			if (Element.IsReadOnly && Control.Window?.FirstResponder == Control.CurrentEditor)
+				Control.Window?.MakeFirstResponder(null);
 		}
 	}
 }

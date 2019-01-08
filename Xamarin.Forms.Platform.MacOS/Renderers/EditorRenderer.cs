@@ -155,6 +155,8 @@ namespace Xamarin.Forms.Platform.MacOS
 		void UpdateIsReadOnly()
 		{
 			Control.Editable = !Element.IsReadOnly;
+			if (Element.IsReadOnly && Control.Window?.FirstResponder == Control.CurrentEditor)
+				Control.Window?.MakeFirstResponder(null);
 		}
 	}
 }
