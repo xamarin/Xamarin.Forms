@@ -31,13 +31,13 @@ namespace Xamarin.Forms.Controls
 
 		public App()
 		{
-			// _testCloudService = DependencyService.Get<ITestCloudService>();
+			_testCloudService = DependencyService.Get<ITestCloudService>();
 
-			// SetMainPage(CreateDefaultMainPage());
+			SetMainPage(CreateDefaultMainPage());
 
-			// //TestMainPageSwitches();
+			//TestMainPageSwitches();
 
-			SetMainPage(new ImageSourcesGallery());
+			//SetMainPage(new ImageSourcesGallery());
 		}
 
 		protected override void OnStart()
