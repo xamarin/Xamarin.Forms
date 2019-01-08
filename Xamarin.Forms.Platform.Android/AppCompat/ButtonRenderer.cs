@@ -184,7 +184,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			var elementImage = Element.Image;
 			_imageHeight = -1;
 
-			if (elementImage == null)
+			if (elementImage == null || elementImage.IsEmpty)
 			{
 				Control.SetCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
 				return;

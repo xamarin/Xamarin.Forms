@@ -1036,7 +1036,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			_titleIconView.SetImageResource(global::Android.Resource.Color.Transparent);
 
-			using (var drawable = await ResourceManager.GetFormsDrawableAsync(Context, source))
+			using (var drawable = await Context.GetFormsDrawableAsync(source))
 			{
 				_titleIconView.SetImageDrawable(drawable);
 			}

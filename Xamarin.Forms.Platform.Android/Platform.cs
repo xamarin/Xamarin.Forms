@@ -1052,21 +1052,13 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				actionBar.Title = view.Title;
 				FileImageSource titleIcon = NavigationPage.GetTitleIcon(view);
-				if (!string.IsNullOrWhiteSpace(titleIcon))
+				using (var drawable = _context.GetFormsDrawable(titleIcon))
 				{
-					var iconBitmap = new BitmapDrawable(_context.Resources, ResourceManager.GetBitmap(_context.Resources, titleIcon));
-					if (iconBitmap != null && iconBitmap.Bitmap != null)
-						actionBar.SetLogo(iconBitmap);
-
-					useLogo = true;
-					showHome = true;
-					showTitle = true;
+					useLogo = drawable != null;
+					actionBar.SetLogo(drawable);
 				}
-				else
-				{
-					showHome = true;
-					showTitle = true;
-				}
+				showHome = true;
+				showTitle = true;
 			}
 
 			ActionBarDisplayOptions options = 0;

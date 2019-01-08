@@ -36,6 +36,7 @@ namespace Xamarin.Forms.Controls
 			SetMainPage(CreateDefaultMainPage());
 
 			//TestMainPageSwitches();
+
 			//SetupImagesTests();
 		}
 
@@ -47,6 +48,7 @@ namespace Xamarin.Forms.Controls
 			{
 				bool? toolbarIcon = null;
 				bool? titleIcon = null;
+				bool? backgroundImage = null;
 				ToolbarItem toolbarItem;
 
 				ContentPage thisPage = null;
@@ -110,6 +112,28 @@ namespace Xamarin.Forms.Controls
 								},
 								new Button
 								{
+									Text = "Toggle Background",
+									Command = new Command(() =>
+									{
+										if (backgroundImage == null)
+										{
+											backgroundImage = true;
+											thisPage.BackgroundImage = "photo.jpg";
+										}
+										else if (backgroundImage == true)
+										{
+											backgroundImage = false;
+											thisPage.BackgroundImage = "oasis.jpg";
+										}
+										else
+										{
+											backgroundImage = null;
+											thisPage.BackgroundImage = null;
+										}
+									})
+								},
+								new Button
+								{
 									Text = "ListView Context Actions",
 									Command = new Command(() => MainPage.Navigation.PushAsync(CreateListViewContextActionsPage()))
 								},
@@ -122,6 +146,11 @@ namespace Xamarin.Forms.Controls
 								{
 									Text = "Buttons",
 									Command = new Command(() => MainPage.Navigation.PushAsync(CreateButtonsPage()))
+								},
+								new Button
+								{
+									Text = "Slider",
+									Command = new Command(() => MainPage.Navigation.PushAsync(CreateSliderPage()))
 								},
 							}
 						}
@@ -314,6 +343,51 @@ namespace Xamarin.Forms.Controls
 										Uri = new Uri("https://raw.githubusercontent.com/xamarin/Xamarin.Forms/master/banner.png"),
 										CachingEnabled = false
 									}
+								},
+							}
+						}
+					}
+				};
+			}
+
+			Page CreateSliderPage()
+			{
+				Slider slider = null;
+				return new ContentPage
+				{
+					Content = new ScrollView
+					{
+						Content = new StackLayout
+						{
+							Padding = 20,
+							Children =
+							{
+								new Label
+								{
+									Text = "Tap the buttons to swap out the thumb image.",
+									LineBreakMode = LineBreakMode.WordWrap,
+								},
+								(slider = new Slider
+								{
+									Minimum = 0,
+									Maximum = 1,
+									Value = 0.5,
+									HeightRequest = 50
+								}),
+								new Button
+								{
+									Text = "Bank",
+									Command = new Command(() => slider.ThumbImage = "bank.png")
+								},
+								new Button
+								{
+									Text = "Calculator",
+									Command = new Command(() => slider.ThumbImage = "calculator.png")
+								},
+								new Button
+								{
+									Text = "<none>",
+									Command = new Command(() => slider.ThumbImage = null)
 								},
 							}
 						}

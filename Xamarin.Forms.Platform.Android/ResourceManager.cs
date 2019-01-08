@@ -24,7 +24,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		internal static async Task<Drawable> GetFormsDrawableAsync(this Context context, ImageSource imageSource)
 		{
-			if (imageSource == null)
+			if (imageSource == null || imageSource.IsEmpty)
 				return null;
 
 			// try take a shortcut for files

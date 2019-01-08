@@ -196,10 +196,10 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (Element != null)
 			{
-				if (string.IsNullOrEmpty(Element.ThumbImage))
-					Control.SetThumb(defaultthumb);
-				else
-					Control.SetThumb(Context.GetDrawable(Element.ThumbImage));
+				using (var drawable = Context.GetFormsDrawable(Element.ThumbImage))
+				{
+					Control.SetThumb(drawable ?? defaultthumb);
+				}
 			}
 		}
 

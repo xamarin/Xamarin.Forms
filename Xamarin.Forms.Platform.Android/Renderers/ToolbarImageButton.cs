@@ -14,12 +14,12 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			Item = item ?? throw new ArgumentNullException(nameof(item), "you should specify a ToolbarItem");
 			Enabled = MenuItem.IsEnabled;
-			Bitmap bitmap;
-			bitmap = Context.Resources.GetBitmap(Item.Icon);
-			SetImageBitmap(bitmap);
+			using (var drawable = Context.GetFormsDrawable(Item.Icon))
+			{
+				SetImageDrawable(drawable);
+			}
 			SetBackgroundColor(new Color(0, 0, 0, 0).ToAndroid());
 			Click += (sender, e) => ((IMenuItemController)MenuItem).Activate();
-			bitmap.Dispose();
 			Item.PropertyChanged += HandlePropertyChanged;
 		}
 

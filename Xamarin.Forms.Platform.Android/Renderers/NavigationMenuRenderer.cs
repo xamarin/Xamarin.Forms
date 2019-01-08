@@ -105,8 +105,10 @@ namespace Xamarin.Forms.Platform.Android
 				set
 				{
 					_icon = value;
-					Bitmap bitmap = Context.Resources.GetBitmap(_icon);
-					_image.SetImageBitmap(bitmap);
+					using (var drawable = Context.GetFormsDrawable(_icon))
+					{
+						_image.SetImageDrawable(drawable);
+					}
 				}
 			}
 

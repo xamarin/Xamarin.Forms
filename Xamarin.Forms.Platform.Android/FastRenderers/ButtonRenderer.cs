@@ -322,7 +322,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			ImageSource elementImage = Button.Image;
 			_imageHeight = -1;
 
-			if (elementImage == null)
+			if (elementImage == null || elementImage.IsEmpty)
 			{
 				SetCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
 				return;
