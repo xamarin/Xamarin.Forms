@@ -12,16 +12,7 @@ namespace Xamarin.Forms.Platform.WPF
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
 			var source = (ImageSource)value;
-			IImageSourceHandler handler;
-			
-			if (source != null && (handler = Internals.Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(source)) != null)
-			{
-				Task<System.Windows.Media.ImageSource> image = handler.LoadImageAsync(source);
-				image.Wait();
-				return image.Result;
-			}
-
-			return null;
+			return source.ToWindowsImageSource();
 		}
 		
 		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

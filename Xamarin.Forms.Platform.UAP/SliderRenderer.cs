@@ -180,7 +180,7 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 			}
 
-			Control.ThumbImage = new BitmapImage(new Uri($"ms-appx:///{thumbImage.File}"));
+			Control.ThumbImage = thumbImage.ToWindowsImageSource();
 		}
 
 		protected override void UpdateBackgroundColor()

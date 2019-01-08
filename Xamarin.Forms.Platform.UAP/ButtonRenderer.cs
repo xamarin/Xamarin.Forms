@@ -157,7 +157,7 @@ namespace Xamarin.Forms.Platform.UWP
 		void UpdateContent()
 		{
 			var text = Element.Text;
-			var elementImage = Element.Image;
+			var elementImage = Element.Image.ToWindowsImageSource();
 
 			// No image, just the text
 			if (elementImage == null)
@@ -166,21 +166,24 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 			}
 
-			var bmp = new BitmapImage(new Uri("ms-appx:///" + elementImage.File));
-
 			var image = new WImage
 			{
-				Source = bmp,
+				Source = elementImage,
 				VerticalAlignment = VerticalAlignment.Center,
 				HorizontalAlignment = HorizontalAlignment.Center,
 				Stretch = Stretch.Uniform
 			};
 
-			bmp.ImageOpened += (sender, args) => {
-				image.Width = bmp.PixelWidth;
-				image.Height = bmp.PixelHeight;
-				Element?.InvalidateMeasureNonVirtual(InvalidationTrigger.RendererReady);
-			};
+			// BitmapImage is a special case that has an event when the image is loaded
+			// when this happens, we want to resize the button
+			if (elementImage is BitmapImage bmp)
+			{
+				bmp.ImageOpened += (sender, args) => {
+					image.Width = bmp.PixelWidth;
+					image.Height = bmp.PixelHeight;
+					Element?.InvalidateMeasureNonVirtual(InvalidationTrigger.RendererReady);
+				};
+			}
 
 			// No text, just the image
 			if (string.IsNullOrEmpty(text))

@@ -389,17 +389,16 @@ namespace Xamarin.Forms.Platform.Android.Material
 				return;
 			}
 
-			FileImageSource elementImage = Button.Image;
-			string imageFile = elementImage?.File;
+			ImageSource elementImage = Button.Image;
 			_imageHeight = -1;
 
-			if (elementImage == null || IsNullOrEmpty(imageFile))
+			if (elementImage == null || elementImage.IsEmpty)
 			{
 				SetCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
 				return;
 			}
 
-			Drawable image = Context.GetDrawable(imageFile);
+			Drawable image = Context.GetFormsDrawable(elementImage);
 			Button.ButtonContentLayout layout = Button.ContentLayout;
 
 			if (_defaultIconPadding == -1)

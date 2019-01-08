@@ -88,7 +88,7 @@ namespace Xamarin.Forms.Platform.WPF
 
 			var image = new WImage
 			{
-				Source = new BitmapImage(new Uri("/" + elementImage.File, UriKind.Relative)),
+				Source = elementImage.ToWindowsImageSource(),
 				Width = 30,
 				Height = 30,
 				VerticalAlignment = VerticalAlignment.Center,

@@ -1084,7 +1084,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (page == null)
 					return;
 
-				FileImageSource titleIcon = NavigationPage.GetTitleIcon(page);
+				ImageSource titleIcon = NavigationPage.GetTitleIcon(page);
 				View titleView = NavigationPage.GetTitleView(page);
 				bool needContainer = titleView != null || titleIcon != null;
 
@@ -1115,12 +1115,12 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 			}
 
-			async void UpdateTitleImage(Container titleViewContainer, FileImageSource titleIcon)
+			async void UpdateTitleImage(Container titleViewContainer, ImageSource titleIcon)
 			{
 				if (titleViewContainer == null)
 					return;
 
-				if (string.IsNullOrWhiteSpace(titleIcon))
+				if (titleIcon == null || titleIcon.IsEmpty)
 				{
 					titleViewContainer.Icon = null;
 				}

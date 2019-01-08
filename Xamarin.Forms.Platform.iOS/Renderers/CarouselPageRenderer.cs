@@ -358,10 +358,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateBackground()
 		{
-			string bgImage = ((Page)Element).BackgroundImage;
-			if (!string.IsNullOrEmpty(bgImage))
+			UIImage bgImage = ((Page)Element).BackgroundImage.GetNativeImage();
+			if (bgImage != null)
 			{
-				View.BackgroundColor = UIColor.FromPatternImage(UIImage.FromBundle(bgImage));
+				View.BackgroundColor = UIColor.FromPatternImage(bgImage);
 				return;
 			}
 			Color bgColor = Element.BackgroundColor;

@@ -8,7 +8,7 @@ namespace Xamarin.Forms.Platform.UWP
 		public object Convert(object value, Type targetType, object parameter, string language)
 		{
 			var source = (ImageSource)value;
-			var task = source.ToWindowsImageSource();
+			var task = source.ToWindowsImageSourceAsync();
 			return new AsyncValue<Windows.UI.Xaml.Media.ImageSource>(task, null);
 		}
 

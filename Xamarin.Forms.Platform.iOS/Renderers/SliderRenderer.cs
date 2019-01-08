@@ -76,7 +76,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			UpdateMinimumTrackColor();
 			UpdateMaximumTrackColor();
-			if (!string.IsNullOrEmpty(Element.ThumbImage))
+			if (!Element.ThumbImage.IsEmpty)
 			{
 				UpdateThumbImage();
 			}

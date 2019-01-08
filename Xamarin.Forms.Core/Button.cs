@@ -122,9 +122,9 @@ namespace Xamarin.Forms
 			set { SetValue(FontProperty, value); }
 		}
 
-		public FileImageSource Image
+		public ImageSource Image
 		{
-			get { return (FileImageSource)GetValue(ImageProperty); }
+			get { return (ImageSource)GetValue(ImageProperty); }
 			set { SetValue(ImageProperty, value); }
 		}
 
@@ -216,7 +216,7 @@ namespace Xamarin.Forms
 
 		protected override void OnBindingContextChanged()
 		{
-			FileImageSource image = Image;
+			ImageSource image = Image;
 			if (image != null)
 				SetInheritedBindingContext(image, BindingContext);
 

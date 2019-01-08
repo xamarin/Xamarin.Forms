@@ -49,7 +49,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty ThumbColorProperty = BindableProperty.Create(nameof(ThumbColor), typeof(Color), typeof(Slider), Color.Default);
 
-		public static readonly BindableProperty ThumbImageProperty = BindableProperty.Create(nameof(ThumbImage), typeof(FileImageSource), typeof(Slider), default(FileImageSource));
+		public static readonly BindableProperty ThumbImageProperty = BindableProperty.Create(nameof(ThumbImage), typeof(ImageSource), typeof(Slider), default(ImageSource));
 
 		public static readonly BindableProperty DragStartedCommandProperty = BindableProperty.Create(nameof(DragStartedCommand), typeof(ICommand), typeof(Slider), default(ICommand));
 
@@ -98,9 +98,9 @@ namespace Xamarin.Forms
 			set { SetValue(ThumbColorProperty, value); }
 		}
 
-		public FileImageSource ThumbImage
+		public ImageSource ThumbImage
 		{
-			get { return (FileImageSource)GetValue(ThumbImageProperty); }
+			get { return (ImageSource)GetValue(ThumbImageProperty); }
 			set { SetValue(ThumbImageProperty, value); }
 		}
 

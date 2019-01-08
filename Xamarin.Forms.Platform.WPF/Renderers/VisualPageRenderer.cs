@@ -75,14 +75,10 @@ namespace Xamarin.Forms.Platform.WPF
 
 		protected override void UpdateBackground()
 		{
-			string bgImage = Element.BackgroundImage;
-			if (!string.IsNullOrEmpty(bgImage))
+			var bgImage = Element.BackgroundImage.ToWindowsImageSource();
+			if (bgImage != null)
 			{
-				ImageBrush imgBrush = new ImageBrush()
-				{
-					ImageSource = new BitmapImage(new Uri(bgImage, UriKind.RelativeOrAbsolute))
-				};
-				Control.Background = imgBrush;
+				Control.Background = new ImageBrush { ImageSource = bgImage };
 			}
 			else
 			{

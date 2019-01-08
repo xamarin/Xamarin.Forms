@@ -552,7 +552,7 @@ namespace Xamarin.Forms.Platform.Android
 				ClearMasterDetailToggle();
 				return;
 			}
-			if (!CurrentMasterDetailPage.ShouldShowToolbarButton() || string.IsNullOrEmpty(CurrentMasterDetailPage.Master.Icon) ||
+			if (!CurrentMasterDetailPage.ShouldShowToolbarButton() || CurrentMasterDetailPage.Master.Icon.IsEmpty ||
 				(MasterDetailPageController.ShouldShowSplitMode && CurrentMasterDetailPage.IsPresented))
 			{
 				//clear out existing icon;
@@ -753,7 +753,14 @@ namespace Xamarin.Forms.Platform.Android
 
 		void GetNewMasterDetailToggle()
 		{
-			int icon = ResourceManager.GetDrawableByName(CurrentMasterDetailPage.Master.Icon);
+			// TODO: this must be changed to support the other image source types
+			//       and we should probably use the new toggle - as this one does not support
+			//       anything other that an int resource ID as the toggle
+			var fileImageSource = CurrentMasterDetailPage.Master.Icon as FileImageSource;
+			if (fileImageSource == null)
+				return;
+
+			int icon = ResourceManager.GetDrawableByName(fileImageSource);
 			var drawer = GetRenderer(CurrentMasterDetailPage) as MasterDetailRenderer;
 			if (drawer == null)
 				return;
@@ -1051,7 +1058,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (ShouldShowActionBarTitleArea())
 			{
 				actionBar.Title = view.Title;
-				FileImageSource titleIcon = NavigationPage.GetTitleIcon(view);
+				var titleIcon = NavigationPage.GetTitleIcon(view);
 				using (var drawable = _context.GetFormsDrawable(titleIcon))
 				{
 					useLogo = drawable != null;

@@ -497,7 +497,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			{
 				var page = (Page)sender;
 				var index = Element.Children.IndexOf(page);
-				FileImageSource icon = page.Icon;
+				ImageSource icon = page.Icon;
 
 				if (IsBottomTabPlacement)
 				{
@@ -628,8 +628,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			for (var i = 0; i < Element.Children.Count; i++)
 			{
 				Page child = Element.Children[i];
-				FileImageSource icon = child.Icon;
-				if (string.IsNullOrEmpty(icon))
+				ImageSource icon = child.Icon;
+				if (icon == null || icon.IsEmpty)
 					continue;
 
 				var menuItem = bottomNavigationView.Menu.GetItem(i);
@@ -650,8 +650,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			for (var i = 0; i < Element.Children.Count; i++)
 			{
 				Page child = Element.Children[i];
-				FileImageSource icon = child.Icon;
-				if (string.IsNullOrEmpty(icon))
+				ImageSource icon = child.Icon;
+				if (icon == null || icon.IsEmpty)
 					continue;
 
 				TabLayout.Tab tab = tabs.GetTabAt(i);
@@ -659,10 +659,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			}
 		}
 
-		protected virtual Drawable GetIconDrawable(FileImageSource icon) =>
+		protected virtual Drawable GetIconDrawable(ImageSource icon) =>
 			Context.GetFormsDrawable(icon);
 
-		protected virtual void SetTabIcon(TabLayout.Tab tab, FileImageSource icon)
+		protected virtual void SetTabIcon(TabLayout.Tab tab, ImageSource icon)
 		{
 			tab.SetIcon(GetIconDrawable(icon));
 			this.SetIconColorFilter(tab);

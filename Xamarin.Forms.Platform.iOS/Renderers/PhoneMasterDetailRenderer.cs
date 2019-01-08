@@ -301,8 +301,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateBackground()
 		{
-			if (!string.IsNullOrEmpty(((Page)Element).BackgroundImage))
-				View.BackgroundColor = UIColor.FromPatternImage(UIImage.FromBundle(((Page)Element).BackgroundImage));
+			UIImage bgImage = ((Page)Element).BackgroundImage.GetNativeImage();
+			if (bgImage != null)
+				View.BackgroundColor = UIColor.FromPatternImage(bgImage);
 			else if (Element.BackgroundColor == Color.Default)
 				View.BackgroundColor = UIColor.White;
 			else

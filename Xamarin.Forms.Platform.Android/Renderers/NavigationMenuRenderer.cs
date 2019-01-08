@@ -81,7 +81,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			readonly AImageButton _image;
 			readonly TextView _label;
-			string _icon;
+			ImageSource _icon;
 
 			public MenuElementView(Context context) : base(context)
 			{
@@ -99,7 +99,7 @@ namespace Xamarin.Forms.Platform.Android
 				AddView(_label, new LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent));
 			}
 
-			public string Icon
+			public ImageSource Icon
 			{
 				get { return _icon; }
 				set

@@ -132,7 +132,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			UpdateMinimumTrackColor();
 			UpdateMaximumTrackColor();
-			if (!string.IsNullOrEmpty(Element.ThumbImage))
+			if (!Element.ThumbImage.IsEmpty)
 			{
 				UpdateThumbImage();
 			}

@@ -25,7 +25,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty BarTextColorProperty = BarElement.BarTextColorProperty;
 
-		public static readonly BindableProperty TitleIconProperty = BindableProperty.CreateAttached("TitleIcon", typeof(FileImageSource), typeof(NavigationPage), default(FileImageSource));
+		public static readonly BindableProperty TitleIconProperty = BindableProperty.CreateAttached("TitleIcon", typeof(ImageSource), typeof(NavigationPage), default(ImageSource));
 
 		public static readonly BindableProperty TitleViewProperty = BindableProperty.CreateAttached("TitleView", typeof(View), typeof(NavigationPage), null, propertyChanging: TitleViewPropertyChanging);
 
@@ -136,9 +136,9 @@ namespace Xamarin.Forms
 			return (bool)page.GetValue(HasNavigationBarProperty);
 		}
 
-		public static FileImageSource GetTitleIcon(BindableObject bindable)
+		public static ImageSource GetTitleIcon(BindableObject bindable)
 		{
-			return (FileImageSource)bindable.GetValue(TitleIconProperty);
+			return (ImageSource)bindable.GetValue(TitleIconProperty);
 		}
 
 		public static View GetTitleView(BindableObject bindable)
@@ -248,7 +248,7 @@ namespace Xamarin.Forms
 			page.SetValue(HasNavigationBarProperty, value);
 		}
 
-		public static void SetTitleIcon(BindableObject bindable, FileImageSource value)
+		public static void SetTitleIcon(BindableObject bindable, ImageSource value)
 		{
 			bindable.SetValue(TitleIconProperty, value);
 		}

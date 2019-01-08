@@ -46,14 +46,10 @@ namespace Xamarin.Forms.Platform.UWP
 			if (element == null)
 				return;
 
-			string backgroundImage = Element.BackgroundImage;
+			var backgroundImage = Element.BackgroundImage.ToWindowsImageSource();
 			if (backgroundImage != null)
 			{
-				Uri uri;
-				if (!Uri.TryCreate(backgroundImage, UriKind.RelativeOrAbsolute, out uri) || !uri.IsAbsoluteUri)
-					uri = new Uri("ms-appx:///" + backgroundImage);
-
-				element.SetValue(_backgroundProperty, new ImageBrush { ImageSource = new BitmapImage(uri) });
+				element.SetValue(_backgroundProperty, new ImageBrush { ImageSource = backgroundImage });
 			}
 			else
 			{

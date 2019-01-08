@@ -4,7 +4,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
+using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
 using WImageSource = Windows.UI.Xaml.Media.ImageSource;
 using UwpScrollBarVisibility = Windows.UI.Xaml.Controls.ScrollBarVisibility;
@@ -33,9 +35,40 @@ namespace Xamarin.Forms.Platform.UWP
 			self.SetBinding(property, new Windows.UI.Xaml.Data.Binding { Path = new PropertyPath(path), Converter = converter });
 		}
 
-		public static async Task<WImageSource> ToWindowsImageSource(this ImageSource source, CancellationToken cancellationToken = default(CancellationToken))
+		public static IconElement ToWindowsIconElement(this ImageSource source)
 		{
-			if (source == null)
+			return source.ToWindowsIconElementAsync().GetAwaiter().GetResult();
+		}
+
+		public static async Task<IconElement> ToWindowsIconElementAsync(this ImageSource source, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			if (source == null || source.IsEmpty)
+				return null;
+
+			var handler = Registrar.Registered.GetHandlerForObject<IIconElementHandler>(source);
+			if (handler == null)
+				return null;
+
+			try
+			{
+				return await handler.LoadIconElementAsync(source, cancellationToken);
+			}
+			catch (OperationCanceledException)
+			{
+				// no-op
+			}
+
+			return null;
+		}
+
+		public static WImageSource ToWindowsImageSource(this ImageSource source)
+		{
+			return source.ToWindowsImageSourceAsync().GetAwaiter().GetResult();
+		}
+
+		public static async Task<WImageSource> ToWindowsImageSourceAsync(this ImageSource source, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			if (source == null || source.IsEmpty)
 				return null;
 
 			var handler = Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(source);

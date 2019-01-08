@@ -114,7 +114,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			try
 			{
-				var imagesource = await imageElement.Source.ToWindowsImageSource();
+				var imagesource = await imageElement.Source.ToWindowsImageSourceAsync();
 
 				if (renderer.IsDisposed)
 					return;

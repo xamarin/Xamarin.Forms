@@ -140,6 +140,11 @@ namespace Xamarin.Forms.Platform.iOS
 			(imageElement as IViewController)?.NativeSizeChanged();
 		}
 
+		internal static UIImage GetNativeImage(this ImageSource source)
+		{
+			return source.GetNativeImageAsync().GetAwaiter().GetResult();
+		}
+
 		internal static async Task<UIImage> GetNativeImageAsync(this ImageSource source, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			if (source == null)

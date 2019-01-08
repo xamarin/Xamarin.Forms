@@ -179,7 +179,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		async void UpdateImage()
 		{
 			IImageSourceHandler handler;
-			FileImageSource source = Element.Image;
+			ImageSource source = Element.Image;
 			if (source != null && (handler = Internals.Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(source)) != null)
 			{
 				UIImage uiimage;

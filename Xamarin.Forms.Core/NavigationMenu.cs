@@ -74,7 +74,7 @@ namespace Xamarin.Forms.Internals
 
 		void VerifyTarget(Page target)
 		{
-			if (target.Icon == null || string.IsNullOrWhiteSpace(target.Icon.File))
+			if (target.Icon == null || target.Icon.IsEmpty)
 				throw new Exception("Icon must be set for each page before adding them to a Navigation Menu");
 		}
 	}

@@ -43,7 +43,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			readonly UILabel _nameLabel = new UILabel(RectangleF.Empty) { BackgroundColor = UIColor.Clear, TextAlignment = UITextAlignment.Center, Font = UIFont.SystemFontOfSize(14) };
 
-			string _icon;
+			UIImage _icon;
 
 			[Export("initWithFrame:")]
 			public NavigationCell(RectangleF frame) : base(frame)
@@ -61,13 +61,13 @@ namespace Xamarin.Forms.Platform.iOS
 				ContentView.AddSubview(_nameLabel);
 			}
 
-			public string Icon
+			public UIImage Icon
 			{
 				get { return _icon; }
 				set
 				{
 					_icon = value;
-					_image.SetImage(new UIImage(_icon), UIControlState.Normal);
+					_image.SetImage(_icon, UIControlState.Normal);
 				}
 			}
 
@@ -118,13 +118,13 @@ namespace Xamarin.Forms.Platform.iOS
 				if (target != null)
 				{
 					cell.Name = target.Title;
-					cell.Icon = target.Icon?.File;
+					cell.Icon = target.Icon.GetNativeImage();
 					cell.Selected = () => _menu.SendTargetSelected(target);
 				}
 				else
 				{
 					cell.Selected = null;
-					cell.Icon = "";
+					cell.Icon = null;
 					cell.Name = "";
 				}
 

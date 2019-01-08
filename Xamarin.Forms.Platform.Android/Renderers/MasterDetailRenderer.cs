@@ -350,7 +350,6 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateBackgroundImage(Page view)
 		{
-			var image = new FileImageSource { File = view.BackgroundImage };
 			using (var drawable = Context.GetFormsDrawable(view.BackgroundImage))
 			{
 				this.SetBackground(drawable);
