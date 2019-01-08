@@ -3,7 +3,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Xaml
 {
-	[ContentProperty("Key")]
+	[ContentProperty(nameof(Key))]
 	public sealed class DynamicResourceExtension : IMarkupExtension<DynamicResource>
 	{
 		public string Key { get; set; }
@@ -16,11 +16,7 @@ namespace Xamarin.Forms.Xaml
 		DynamicResource IMarkupExtension<DynamicResource>.ProvideValue(IServiceProvider serviceProvider)
 		{
 			if (Key == null)
-			{
-				var lineInfoProvider = serviceProvider.GetService(typeof (IXmlLineInfoProvider)) as IXmlLineInfoProvider;
-				var lineInfo = (lineInfoProvider != null) ? lineInfoProvider.XmlLineInfo : new XmlLineInfo();
-				throw new XamlParseException("DynamicResource markup require a Key", lineInfo);
-			}
+				throw new XamlParseException("DynamicResource markup require a Key", serviceProvider);
 			return new DynamicResource(Key);
 		}
 	}

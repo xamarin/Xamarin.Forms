@@ -494,6 +494,7 @@ namespace Xamarin.Forms.CustomAttributes
 		public enum InputView
 		{
 			Keyboard,
+			MaxLength,
 		}
 
 		public enum Editor
@@ -506,7 +507,6 @@ namespace Xamarin.Forms.CustomAttributes
 			FontAttributes,
 			FontFamily,
 			FontSize,
-			MaxLength
 		}
 
 		public enum Entry
@@ -517,7 +517,6 @@ namespace Xamarin.Forms.CustomAttributes
 			IsPassword,
 			Text,
 			TextColor,
-			Keyboard,
 			HorizontalTextAlignmentStart,
 			HorizontalTextAlignmentCenter,
 			HorizontalTextAlignmentEnd,
@@ -531,7 +530,6 @@ namespace Xamarin.Forms.CustomAttributes
 			TextDisabledColor,
 			PlaceholderDisabledColor,
 			PasswordColor,
-			MaxLength,
 			IsPasswordNumeric
 		}
 
@@ -690,7 +688,9 @@ namespace Xamarin.Forms.CustomAttributes
 			MinimumTrackColor,
 			MaximumTrackColor,
 			ThumbColor,
-			ThumbImage
+			ThumbImage,
+			DragStarted,
+			DragCompleted
 		}
 
 		public enum StackLayout
@@ -766,6 +766,7 @@ namespace Xamarin.Forms.CustomAttributes
 		public enum Picker
 		{
 			Title,
+			TitleColor,
 			Items,
 			SelectedIndex,
 			Focus,
