@@ -386,7 +386,7 @@ namespace Xamarin.Forms.Platform.Android
 					_refresh.Refreshing = false;
 					_refresh.Post(() =>
 					{
-					    if(Control == null || Control.IsDisposed())
+					    if(_refresh.IsDisposed())
 						    return;
 						
 						_refresh.Refreshing = true;
