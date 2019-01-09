@@ -177,7 +177,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		void HandleRedrawNeeded(object sender, EventArg<VisualElement> e)
 		{
-			foreach (string propertyName in _batchedProperties)
+			// local version of _batchedProperties created to prevent 'Collection was modified' error
+			var batchedProperties = _batchedProperties as List<string>;
+		
+			foreach (string propertyName in batchedProperties)
 				HandlePropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 			_batchedProperties.Clear();
 
