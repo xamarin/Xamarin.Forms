@@ -8,6 +8,7 @@ using Android.Views;
 using AView = Android.Views.View;
 using Object = Java.Lang.Object;
 using Xamarin.Forms.Internals;
+using System.Linq;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -177,10 +178,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void HandleRedrawNeeded(object sender, EventArg<VisualElement> e)
 		{
-			// local version of _batchedProperties created to prevent 'Collection was modified' error
-			var batchedProperties = _batchedProperties as List<string>;
-		
-			foreach (string propertyName in batchedProperties)
+			foreach (string propertyName in _batchedProperties.ToList())
 				HandlePropertyChanged(this, new PropertyChangedEventArgs(propertyName));
 			_batchedProperties.Clear();
 
