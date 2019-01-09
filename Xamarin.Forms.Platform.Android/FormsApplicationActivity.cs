@@ -91,15 +91,6 @@ namespace Xamarin.Forms.Platform.Android
 
 			application.PropertyChanged += AppOnPropertyChanged;
 
-			if (application.MainPage != null)
-			{
-				var oldPageRenderer = Platform.GetRenderer(application.MainPage);
-				if (oldPageRenderer != null)
-				{
-					application.MainPage.ClearValue(Platform.RendererProperty);
-				}
-			}
-
 			SetMainPage();
 		}
 

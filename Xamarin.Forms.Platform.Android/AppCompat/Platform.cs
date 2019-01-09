@@ -250,6 +250,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		internal void SetPage(Page newRoot)
 		{
+			if (Page == newRoot)
+			{
+				return;
+			}
+
 			if (Page != null)
 			{
 				foreach (var rootPage in _navModel.Roots)
