@@ -7,7 +7,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 	{
 		private readonly bool _withIndex;
 
-		public MultiItemReplacer(CollectionView cv, bool withIndex = false) : base(cv, "Replace")
+		public MultiItemReplacer(CollectionView cv, bool withIndex = false) : base(cv, "Replace w/ 4 Items")
 		{
 			Entry.Keyboard = Keyboard.Default;
 			_withIndex = withIndex;
@@ -17,6 +17,10 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 		{
 			return IndexParser.ParseIndexes(Entry.Text, 2, out indexes);
 		}
+
+		protected override string InitialEntryText => "1,3";
+
+		protected override string LabelText => "Indexes (start, end):";
 
 		protected override void ModifyObservableCollection(MultiTestObservableCollection<CollectionViewGalleryTestItem> observableCollection, params int[] indexes)
 		{

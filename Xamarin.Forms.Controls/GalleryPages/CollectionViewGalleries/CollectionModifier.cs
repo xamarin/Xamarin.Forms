@@ -18,9 +18,9 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			};
 
 			var button = new Button { Text = buttonText };
-			var label = new Label { Text = "Index:", VerticalTextAlignment = TextAlignment.Center };
+			var label = new Label { Text = LabelText, VerticalTextAlignment = TextAlignment.Center };
 
-			Entry = new Entry { Keyboard = Keyboard.Numeric, Text = "0", WidthRequest = 200 };
+			Entry = new Entry { Keyboard = Keyboard.Numeric, Text = InitialEntryText, WidthRequest = 100 };
 
 			layout.Children.Add(label);
 			layout.Children.Add(Entry);
@@ -35,6 +35,10 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 		{
 			OnButtonClicked();
 		}
+
+		protected virtual string LabelText => "Index:";
+
+		protected virtual string InitialEntryText => "0";
 
 		protected virtual void OnButtonClicked()
 		{

@@ -15,6 +15,10 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			return IndexParser.ParseIndexes(Entry.Text, 2, out indexes);
 		}
 
+		protected override string InitialEntryText => "1,3";
+
+		protected override string LabelText => "Indexes (from, to):";
+
 		protected override void ModifyObservableCollection(ObservableCollection<CollectionViewGalleryTestItem> observableCollection, params int[] indexes)
 		{
 			if (indexes.Length < 2)

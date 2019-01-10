@@ -7,7 +7,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 	{
 		readonly bool _withIndex;
 
-		public MultiItemAdder (CollectionView cv, bool withIndex = false) : base(cv, "Add")
+		public MultiItemAdder (CollectionView cv, bool withIndex = false) : base(cv, "Add 4 Items")
 		{
 			_withIndex = withIndex;
 		}

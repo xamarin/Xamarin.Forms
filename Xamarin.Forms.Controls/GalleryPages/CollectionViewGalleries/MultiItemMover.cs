@@ -12,6 +12,10 @@
 			return IndexParser.ParseIndexes(Entry.Text, 3, out indexes);
 		}
 
+		protected override string InitialEntryText => "0,3,5";
+
+		protected override string LabelText => "Indexes (start, end, destination):";
+
 		protected override void ModifyObservableCollection(MultiTestObservableCollection<CollectionViewGalleryTestItem> observableCollection, params int[] indexes)
 		{
 			if (indexes.Length < 3)
