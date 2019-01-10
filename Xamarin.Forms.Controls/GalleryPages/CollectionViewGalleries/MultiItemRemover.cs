@@ -2,7 +2,7 @@
 {
 	internal class MultiItemRemover : MultiTestObservableCollectionModifier
 	{
-		private readonly bool _withIndex;
+		readonly bool _withIndex;
 
 		public MultiItemRemover(CollectionView cv, bool withIndex = false) : base(cv, "Remove")
 		{
