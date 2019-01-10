@@ -5,7 +5,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 {
 	internal class MultiItemAdder : MultiTestObservableCollectionModifier
 	{
-		private readonly bool _withIndex;
+		readonly bool _withIndex;
 
 		public MultiItemAdder (CollectionView cv, bool withIndex = false) : base(cv, "Add")
 		{
