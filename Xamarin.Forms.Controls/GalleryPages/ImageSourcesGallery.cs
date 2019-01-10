@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Xamarin.Forms.Controls
 {
@@ -14,11 +9,95 @@ namespace Xamarin.Forms.Controls
 		{
 		}
 
+		static Picker CreateImageSourcePicker(string title, Action<Func<ImageSource>> onSelected)
+		{
+			var items = new[]
+			{
+				new ImageSourcePickerItem
+				{
+					Text = "<none>",
+					Getter = () => null
+				},
+				new ImageSourcePickerItem
+				{
+					Text = "App Resource",
+					Getter = () => ImageSource.FromFile("bank.png")
+				},
+				new ImageSourcePickerItem
+				{
+					Text = "Embedded",
+					Getter = () => ImageSource.FromResource("Xamarin.Forms.Controls.GalleryPages.crimson.jpg", typeof(App))
+				},
+				new ImageSourcePickerItem
+				{
+					Text = "Stream",
+					Getter = () => ImageSource.FromStream(() => typeof(App).Assembly.GetManifestResourceStream("Xamarin.Forms.Controls.coffee.png"))
+				},
+				new ImageSourcePickerItem
+				{
+					Text = "URI",
+					Getter = () => new UriImageSource
+					{
+						Uri = new Uri("https://beehive.blob.core.windows.net/staticimages/FeatureImages/MutantLizard01.png"),
+						CachingEnabled = false
+					}
+				},
+				new ImageSourcePickerItem
+				{
+					Text = "Font Glyph",
+					Getter = () =>
+					{
+						var fontFamily = "";
+						switch (Device.RuntimePlatform)
+						{
+							case Device.iOS:
+								fontFamily = "Ionicons";
+								break;
+							case Device.UWP:
+								fontFamily = "Assets/Fonts/ionicons.ttf#ionicons";
+								break;
+							case Device.Android:
+							default:
+								fontFamily = "fonts/ionicons.ttf#";
+								break;
+						}
+						return new FontImageSource
+						{
+							Color = Color.Black,
+							FontFamily = fontFamily,
+							Glyph = "\uf233",
+							Size = 24,
+						};
+					}
+				},
+			};
+
+			var picker = new Picker
+			{
+				Title = title,
+				ItemsSource = items,
+				ItemDisplayBinding = new Binding("Text"),
+			};
+
+			picker.SelectedIndexChanged += (sender, e) =>
+			{
+				var item = (ImageSourcePickerItem)picker.SelectedItem;
+				var text = item.Text;
+				onSelected?.Invoke(() => item.Getter());
+			};
+
+			return picker;
+		}
+
+		class ImageSourcePickerItem
+		{
+			public string Text { get; set; }
+
+			public Func<ImageSource> Getter { get; set; }
+		}
+
 		class RootPage : ContentPage
 		{
-			bool? _toolbarIcon = null;
-			bool? _titleIcon = null;
-			bool? _backgroundImage = null;
 			ToolbarItem _toolbarItem;
 
 			public RootPage()
@@ -34,74 +113,12 @@ namespace Xamarin.Forms.Controls
 					Content = new StackLayout
 					{
 						Padding = 20,
+						Spacing = 10,
 						Children =
 						{
-							new Button
-							{
-								Text = "Toggle Title Icon",
-								Command = new Command(() =>
-								{
-									if (_titleIcon == null)
-									{
-										_titleIcon = true;
-										NavigationPage.SetTitleIcon(this, "bank.png");
-									}
-									else if (_titleIcon == true)
-									{
-										_titleIcon = false;
-										NavigationPage.SetTitleIcon(this, "calculator.png");
-									}
-									else
-									{
-										_titleIcon = null;
-										NavigationPage.SetTitleIcon(this, null);
-									}
-								})
-							},
-							new Button
-							{
-								Text = "Toggle Menu Icon",
-								Command = new Command(() =>
-								{
-									if (_toolbarIcon == null)
-									{
-										_toolbarIcon = true;
-										_toolbarItem.Icon = "bank.png";
-									}
-									else if (_toolbarIcon == true)
-									{
-										_toolbarIcon = false;
-										_toolbarItem.Icon = "calculator.png";
-									}
-									else
-									{
-										_toolbarIcon = null;
-										_toolbarItem.Icon = null;
-									}
-								})
-							},
-							new Button
-							{
-								Text = "Toggle Background",
-								Command = new Command(() =>
-								{
-									if (_backgroundImage == null)
-									{
-										_backgroundImage = true;
-										BackgroundImage = "photo.jpg";
-									}
-									else if (_backgroundImage == true)
-									{
-										_backgroundImage = false;
-										BackgroundImage = "oasis.jpg";
-									}
-									else
-									{
-										_backgroundImage = null;
-										BackgroundImage = null;
-									}
-								})
-							},
+							CreateImageSourcePicker("Change Title Icon", getter => NavigationPage.SetTitleIcon(this, getter())),
+							CreateImageSourcePicker("Change Toolbar Icon", getter => _toolbarItem.Icon = getter()),
+							CreateImageSourcePicker("Change Background", getter => BackgroundImage = getter()),
 							new Button
 							{
 								Text = "ListView Context Actions",
@@ -130,9 +147,14 @@ namespace Xamarin.Forms.Controls
 
 		class ListViewContextActionsPage : ContentPage
 		{
+			ImageSource _source;
+			ListView _listView;
+
 			public ListViewContextActionsPage()
 			{
 				Title = "ListView Context Actions";
+
+				var items = new[] { "one", "two", "three", "four", "five" };
 
 				Content = new ScrollView
 				{
@@ -143,25 +165,31 @@ namespace Xamarin.Forms.Controls
 						{
 							new Label
 							{
-								Text = "Each of the items should have the 'bank.png' as the context menu icon.",
+								Text = "Select the item source from the picker and then view the context menu of each item.",
 								LineBreakMode = LineBreakMode.WordWrap,
 							},
-							new ListView
+							CreateImageSourcePicker("Select Icon Source", getter =>
+							{
+								_source = getter();
+								_listView.ItemsSource = null;
+								_listView.ItemsSource = items;
+							}),
+							(_listView = new ListView
 							{
 								Margin = new Thickness(-20, 0, -20, -20),
-								ItemsSource = new[] { "one", "two", "three", "four", "five" },
+								ItemsSource = items,
 								ItemTemplate = new DataTemplate(() =>
 								{
 									var cell = new TextCell();
 									cell.ContextActions.Add(new MenuItem
 									{
 										Text = "bank",
-										Icon = "bank.png"
+										Icon = _source
 									});
 									cell.SetBinding(TextCell.TextProperty, new Binding("."));
 									return cell;
 								}),
-							}
+							})
 						}
 					}
 				};
@@ -184,11 +212,7 @@ namespace Xamarin.Forms.Controls
 						Padding = 20,
 						Children =
 						{
-							new Label
-							{
-								Text = "Tap the buttons to swap out the images.",
-								LineBreakMode = LineBreakMode.WordWrap,
-							},
+							CreateImageSourcePicker("Select Image Source", getter => _image.Source = getter()),
 							new Grid
 							{
 								Children =
@@ -206,63 +230,6 @@ namespace Xamarin.Forms.Controls
 									}),
 								}
 							},
-							new Button
-							{
-								Text = "Clear Image",
-								Command = new Command(() => _image.Source = null)
-							},
-							new Button
-							{
-								Text = "Resource Image",
-								Command = new Command(() => _image.Source = ImageSource.FromFile("bank.png"))
-							},
-							new Button
-							{
-								Text = "Embedded Image",
-								Command = new Command(() => _image.Source = ImageSource.FromResource("Xamarin.Forms.Controls.GalleryPages.crimson.jpg", typeof(App)))
-							},
-							new Button
-							{
-								Text = "Stream Image",
-								Command = new Command(() => _image.Source = ImageSource.FromStream(() => typeof(App).Assembly.GetManifestResourceStream("Xamarin.Forms.Controls.coffee.png")))
-							},
-							new Button
-							{
-								Text = "URI Image",
-								Command = new Command(() => _image.Source = new UriImageSource
-								{
-									Uri = new Uri("https://raw.githubusercontent.com/xamarin/Xamarin.Forms/master/banner.png"),
-									CachingEnabled = false
-								})
-							},
-							new Button
-							{
-								Text = "Font Image",
-								Command = new Command(() =>
-								{
-									var fontFamily = "";
-									switch (Device.RuntimePlatform)
-									{
-										case Device.iOS:
-											fontFamily = "Ionicons";
-											break;
-										case Device.UWP:
-											fontFamily = "Assets/Fonts/ionicons.ttf#ionicons";
-											break;
-										case Device.Android:
-										default:
-											fontFamily = "fonts/ionicons.ttf#";
-											break;
-									}
-									_image.Source = new FontImageSource
-									{
-										Color = Color.Black,
-										FontFamily = fontFamily,
-										Glyph = "\uf233",
-										Size = 100,
-									};
-								})
-							},
 						}
 					}
 				};
@@ -275,6 +242,10 @@ namespace Xamarin.Forms.Controls
 
 		class ButtonsPage : ContentPage
 		{
+			Button _buttonWithImageAndText;
+			Button _buttonWithImage;
+			ImageButton _imageButton;
+
 			public ButtonsPage()
 			{
 				Title = "Buttons";
@@ -286,20 +257,26 @@ namespace Xamarin.Forms.Controls
 						Padding = 20,
 						Children =
 						{
+							CreateImageSourcePicker("Select Image Source", getter =>
+							{
+								_buttonWithImageAndText.Image = getter();
+								_buttonWithImage.Image = getter();
+								_imageButton.Source = getter();
+							}),
 							new Label
 							{
 								Text = "The default Button type.",
 								LineBreakMode = LineBreakMode.WordWrap,
 							},
-							new Button
+							(_buttonWithImageAndText = new Button
 							{
 								Text = "Image & Text",
 								Image = "bank.png"
-							},
-							new Button
+							}),
+							(_buttonWithImage = new Button
 							{
 								Image = "bank.png"
-							},
+							}),
 							new Button
 							{
 								Text = "Just Text",
@@ -310,22 +287,11 @@ namespace Xamarin.Forms.Controls
 								Text = "The ImageButton type.",
 								LineBreakMode = LineBreakMode.WordWrap,
 							},
-							new ImageButton
+							(_imageButton = new ImageButton
 							{
-								HeightRequest = 100,
 								Padding = 10,
-								Source = "bank.png"
-							},
-							new ImageButton
-							{
-								HeightRequest = 100,
-								Padding = 10,
-								Source = new UriImageSource
-								{
-									Uri = new Uri("https://raw.githubusercontent.com/xamarin/Xamarin.Forms/master/banner.png"),
-									CachingEnabled = false
-								}
-							},
+								Source = "bank.png",
+							}),
 						}
 					}
 				};
@@ -347,11 +313,7 @@ namespace Xamarin.Forms.Controls
 						Padding = 20,
 						Children =
 						{
-							new Label
-							{
-								Text = "Tap the buttons to swap out the thumb image.",
-								LineBreakMode = LineBreakMode.WordWrap,
-							},
+							CreateImageSourcePicker("Select Image Source", getter => _slider.ThumbImage = getter()),
 							(_slider = new Slider
 							{
 								Minimum = 0,
@@ -359,21 +321,6 @@ namespace Xamarin.Forms.Controls
 								Value = 0.5,
 								HeightRequest = 50
 							}),
-							new Button
-							{
-								Text = "Bank",
-								Command = new Command(() => _slider.ThumbImage = "bank.png")
-							},
-							new Button
-							{
-								Text = "Calculator",
-								Command = new Command(() => _slider.ThumbImage = "calculator.png")
-							},
-							new Button
-							{
-								Text = "<none>",
-								Command = new Command(() => _slider.ThumbImage = null)
-							},
 						}
 					}
 				};

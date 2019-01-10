@@ -497,17 +497,21 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			{
 				var page = (Page)sender;
 				var index = Element.Children.IndexOf(page);
-				ImageSource icon = page.Icon;
-
 				if (IsBottomTabPlacement)
 				{
 					var menuItem = _bottomNavigationView.Menu.GetItem(index);
-					menuItem.SetIcon(GetIconDrawable(icon));
+					_ = this.ApplyDrawableAsync(page, Page.IconProperty, Context, icon =>
+					{
+						menuItem.SetIcon(icon);
+					});
 				}
 				else
 				{
 					TabLayout.Tab tab = _tabLayout.GetTabAt(index);
-					SetTabIcon(tab, icon);
+					_ = this.ApplyDrawableAsync(page, Page.IconProperty, Context, icon =>
+					{
+						SetTabIcon(tab, icon);
+					});
 				}
 			}
 		}
@@ -628,12 +632,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			for (var i = 0; i < Element.Children.Count; i++)
 			{
 				Page child = Element.Children[i];
-				ImageSource icon = child.Icon;
-				if (icon == null || icon.IsEmpty)
-					continue;
-
 				var menuItem = bottomNavigationView.Menu.GetItem(i);
-				menuItem.SetIcon(GetIconDrawable(icon));
+				_ = this.ApplyDrawableAsync(child, Page.IconProperty, Context, icon =>
+				{
+					menuItem.SetIcon(icon);
+				});
 			}
 		}
 
@@ -650,22 +653,18 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			for (var i = 0; i < Element.Children.Count; i++)
 			{
 				Page child = Element.Children[i];
-				ImageSource icon = child.Icon;
-				if (icon == null || icon.IsEmpty)
-					continue;
-
 				TabLayout.Tab tab = tabs.GetTabAt(i);
-				SetTabIcon(tab, icon);
+				_ = this.ApplyDrawableAsync(child, Page.IconProperty, Context, icon =>
+				{
+					SetTabIcon(tab, icon);
+				});
 			}
 		}
 
-		protected virtual Drawable GetIconDrawable(ImageSource icon) =>
-			Context.GetFormsDrawable(icon);
-
-		protected virtual void SetTabIcon(TabLayout.Tab tab, ImageSource icon)
+		void SetTabIcon(TabLayout.Tab tab, Drawable icon)
 		{
-			tab.SetIcon(GetIconDrawable(icon));
-			this.SetIconColorFilter(tab);
+			tab.SetIcon(icon);
+			SetIconColorFilter(tab);
 		}
 
 		void UpdateBarBackgroundColor()

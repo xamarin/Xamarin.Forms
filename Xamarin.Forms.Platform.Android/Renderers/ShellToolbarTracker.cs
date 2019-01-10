@@ -230,19 +230,26 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		protected virtual async void UpdateLeftBarButtonItem(Context context, Toolbar toolbar, DrawerLayout drawerLayout, Page page)
+		protected virtual void UpdateLeftBarButtonItem(Context context, Toolbar toolbar, DrawerLayout drawerLayout, Page page)
 		{
 			var backButtonHandler = Shell.GetBackButtonBehavior(page);
 			toolbar.SetNavigationOnClickListener(this);
 
 			if (backButtonHandler != null)
 			{
-				using (var icon = await context.GetFormsDrawableAsync(backButtonHandler.IconOverride))
-				using (var mutatedIcon = icon.GetConstantState().NewDrawable().Mutate())
+				_shellContext.ApplyDrawableAsync(backButtonHandler, BackButtonBehavior.IconOverrideProperty, icon =>
 				{
-					mutatedIcon.SetColorFilter(TintColor.ToAndroid(Color.White), PorterDuff.Mode.SrcAtop);
-					toolbar.NavigationIcon = mutatedIcon;
-				}
+					if (icon != null)
+					{
+						using (var state = icon.GetConstantState())
+						using (var newIcon = state.NewDrawable())
+						using (var mutatedIcon = newIcon.Mutate())
+						{
+							mutatedIcon.SetColorFilter(TintColor.ToAndroid(Color.White), PorterDuff.Mode.SrcAtop);
+							toolbar.NavigationIcon = mutatedIcon;
+						}
+					}
+				});
 			}
 			else
 			{
@@ -285,7 +292,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected virtual void UpdateMenuItemIcon(Context context, IMenuItem menuItem, ToolbarItem toolBarItem)
 		{
-			using (var baseDrawable = context.GetFormsDrawable(toolBarItem.Icon))
+			_shellContext.ApplyDrawableAsync(toolBarItem, ToolbarItem.IconProperty, baseDrawable =>
 			{
 				if (baseDrawable != null)
 				{
@@ -297,7 +304,7 @@ namespace Xamarin.Forms.Platform.Android
 						menuItem.SetIcon(iconDrawable);
 					}
 				}
-			}
+			});
 		}
 
 		protected virtual void UpdateNavBarVisible(Toolbar toolbar, Page page)

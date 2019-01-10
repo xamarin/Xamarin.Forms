@@ -72,14 +72,9 @@ namespace Xamarin.Forms.Platform.Android
 			return null;
 		}
 
-		internal static Drawable GetFormsDrawable(this Context context, ImageSource imageSource)
-		{
-			return context.GetFormsDrawableAsync(imageSource).GetAwaiter().GetResult();
-		}
-
 		internal static async Task<Bitmap> GetFormsBitmapAsync(this Context context, ImageSource imageSource, CancellationToken cancellationToken = default(CancellationToken))
 		{
-			if (imageSource == null)
+			if (imageSource == null || imageSource.IsEmpty)
 				return null;
 
 			var handler = Registrar.Registered.GetHandlerForObject<IImageSourceHandler>(imageSource);
@@ -96,6 +91,108 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			return null;
+		}
+
+		internal static Task ApplyDrawableAsync(this IShellContext shellContext, BindableObject bindable, BindableProperty imageSourceProperty, Action<Drawable> onSet, Action<bool> onLoading = null, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			_ = shellContext ?? throw new ArgumentNullException(nameof(shellContext));
+			var renderer = shellContext as IVisualElementRenderer ?? throw new InvalidOperationException($"The shell context {shellContext.GetType()} must be a {typeof(IVisualElementRenderer)}.");
+
+			return renderer.ApplyDrawableAsync(bindable, imageSourceProperty, shellContext.AndroidContext, onSet, onLoading, cancellationToken);
+		}
+
+		internal static Task ApplyDrawableAsync(this IVisualElementRenderer renderer, BindableProperty imageSourceProperty, Context context, Action<Drawable> onSet, Action<bool> onLoading = null, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			return renderer.ApplyDrawableAsync(null, imageSourceProperty, context, onSet, onLoading, cancellationToken);
+		}
+
+		internal static async Task ApplyDrawableAsync(this IVisualElementRenderer renderer, BindableObject bindable, BindableProperty imageSourceProperty, Context context, Action<Drawable> onSet, Action<bool> onLoading = null, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			_ = renderer ?? throw new ArgumentNullException(nameof(renderer));
+			_ = context ?? throw new ArgumentNullException(nameof(context));
+			_ = imageSourceProperty ?? throw new ArgumentNullException(nameof(imageSourceProperty));
+			_ = onSet ?? throw new ArgumentNullException(nameof(onSet));
+
+			// TODO: it might be good to make sure the renderer has not been disposed
+
+			// makse sure things are good before we start
+			var element = bindable ?? renderer.Element;
+
+			if (element == null || renderer.View == null)
+				return;
+
+			onLoading?.Invoke(true);
+			if (element.GetValue(imageSourceProperty) is ImageSource initialSource)
+			{
+				try
+				{
+					using (var drawable = await context.GetFormsDrawableAsync(initialSource))
+					{
+						// TODO: it might be good to make sure the renderer has not been disposed
+
+						// we are back, so update the working element
+						element = bindable ?? renderer.Element;
+
+						// makse sure things are good now that we are back
+						if (element == null || renderer.View == null)
+							return;
+
+						// only set if we are still on the same image
+						if (element.GetValue(imageSourceProperty) == initialSource)
+							onSet(drawable);
+					}
+				}
+				finally
+				{
+					if (element != null && onLoading != null)
+					{
+						// only mark as finished if we are still on the same image
+						if (element.GetValue(imageSourceProperty) == initialSource)
+							onLoading.Invoke(false);
+					}
+				}
+			}
+			else
+			{
+				onSet(null);
+				onLoading?.Invoke(false);
+			}
+		}
+
+		internal static async Task ApplyDrawableAsync(this Context context, BindableObject bindable, BindableProperty imageSourceProperty, Action<Drawable> onSet, Action<bool> onLoading = null, CancellationToken cancellationToken = default(CancellationToken))
+		{
+			_ = context ?? throw new ArgumentNullException(nameof(context));
+			_ = bindable ?? throw new ArgumentNullException(nameof(bindable));
+			_ = imageSourceProperty ?? throw new ArgumentNullException(nameof(imageSourceProperty));
+			_ = onSet ?? throw new ArgumentNullException(nameof(onSet));
+
+			onLoading?.Invoke(true);
+			if (bindable.GetValue(imageSourceProperty) is ImageSource initialSource)
+			{
+				try
+				{
+					using (var drawable = await context.GetFormsDrawableAsync(initialSource))
+					{
+						// only set if we are still on the same image
+						if (bindable.GetValue(imageSourceProperty) == initialSource)
+							onSet(drawable);
+					}
+				}
+				finally
+				{
+					if (onLoading != null)
+					{
+						// only mark as finished if we are still on the same image
+						if (bindable.GetValue(imageSourceProperty) == initialSource)
+							onLoading.Invoke(false);
+					}
+				}
+			}
+			else
+			{
+				onSet(null);
+				onLoading?.Invoke(false);
+			}
 		}
 
 		public static Bitmap GetBitmap(this Resources resource, FileImageSource fileImageSource)

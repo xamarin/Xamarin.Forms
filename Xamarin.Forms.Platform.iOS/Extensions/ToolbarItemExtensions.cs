@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Platform.iOS
 				_forceName = forceName;
 				_item = item;
 
-				if (item.Icon?.IsEmpty == false && !forceName)
+				if (item.Icon != null && !item.Icon.IsEmpty && !forceName)
 					UpdateIconAndStyle();
 				else
 					UpdateTextAndStyle();
@@ -55,14 +55,14 @@ namespace Xamarin.Forms.Platform.iOS
 					UpdateIsEnabled();
 				else if (e.PropertyName == MenuItem.TextProperty.PropertyName)
 				{
-					if (_item.Icon?.IsEmpty != false || _forceName)
+					if (_item.Icon == null || _item.Icon.IsEmpty || _forceName)
 						UpdateTextAndStyle();
 				}
 				else if (e.PropertyName == MenuItem.IconProperty.PropertyName)
 				{
 					if (!_forceName)
 					{
-						if (_item.Icon?.IsEmpty == false)
+						if (_item.Icon != null && !_item.Icon.IsEmpty)
 							UpdateIconAndStyle();
 						else
 							UpdateTextAndStyle();
@@ -138,7 +138,7 @@ namespace Xamarin.Forms.Platform.iOS
 			async void UpdateIcon()
 			{
 				UIImage image = null;
-				if (_item.Icon?.IsEmpty != false)
+				if (_item.Icon != null && !_item.Icon.IsEmpty)
 				{
 					image = await _item.Icon.GetNativeImageAsync();
 				}

@@ -12,6 +12,7 @@ using static System.String;
 using AColor = Android.Graphics.Color;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using Xamarin.Forms.Platform.Android.FastRenderers;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
@@ -190,48 +191,51 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				return;
 			}
 
-			var image = Context.GetFormsDrawable(elementImage);
-
 			if (IsNullOrEmpty(Element.Text))
 			{
 				// No text, so no need for relative position; just center the image
 				// There's no option for just plain-old centering, so we'll use Top 
 				// (which handles the horizontal centering) and some tricksy padding (in OnLayout)
 				// to handle the vertical centering 
+				this.ApplyDrawableAsync(Button.ImageProperty, Context, image =>
+				{
+					// Clear any previous padding and set the image as top/center
+					UpdateContentEdge();
+					Control.SetCompoundDrawablesWithIntrinsicBounds(null, image, null, null);
 
-				// Clear any previous padding and set the image as top/center
-				UpdateContentEdge();
-				Control.SetCompoundDrawablesWithIntrinsicBounds(null, image, null, null);
+					// Keep track of the image height so we can use it in OnLayout
+					_imageHeight = image.IntrinsicHeight;
 
-				// Keep track of the image height so we can use it in OnLayout
-				_imageHeight = image.IntrinsicHeight;
-
-				image?.Dispose();
+					Element.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged);
+				});
 				return;
 			}
 
-			var layout = Element.ContentLayout;
-
-			Control.CompoundDrawablePadding = (int)layout.Spacing;
-
-			switch (layout.Position)
+			this.ApplyDrawableAsync(Button.ImageProperty, Context, image =>
 			{
-				case Button.ButtonContentLayout.ImagePosition.Top:
-					Control.SetCompoundDrawablesWithIntrinsicBounds(null, image, null, null);
-					break;
-				case Button.ButtonContentLayout.ImagePosition.Bottom:
-					Control.SetCompoundDrawablesWithIntrinsicBounds(null, null, null, image);
-					break;
-				case Button.ButtonContentLayout.ImagePosition.Right:
-					Control.SetCompoundDrawablesWithIntrinsicBounds(null, null, image, null);
-					break;
-				default:
-					// Defaults to image on the left
-					Control.SetCompoundDrawablesWithIntrinsicBounds(image, null, null, null);
-					break;
-			}
+				var layout = Element.ContentLayout;
 
-			image?.Dispose();
+				Control.CompoundDrawablePadding = (int)layout.Spacing;
+
+				switch (layout.Position)
+				{
+					case Button.ButtonContentLayout.ImagePosition.Top:
+						Control.SetCompoundDrawablesWithIntrinsicBounds(null, image, null, null);
+						break;
+					case Button.ButtonContentLayout.ImagePosition.Bottom:
+						Control.SetCompoundDrawablesWithIntrinsicBounds(null, null, null, image);
+						break;
+					case Button.ButtonContentLayout.ImagePosition.Right:
+						Control.SetCompoundDrawablesWithIntrinsicBounds(null, null, image, null);
+						break;
+					default:
+						// Defaults to image on the left
+						Control.SetCompoundDrawablesWithIntrinsicBounds(image, null, null, null);
+						break;
+				}
+
+				Element.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged);
+			});
 		}
 
 		void UpdateEnabled()

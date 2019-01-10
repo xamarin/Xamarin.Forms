@@ -132,7 +132,8 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			UpdateMinimumTrackColor();
 			UpdateMaximumTrackColor();
-			if (!Element.ThumbImage.IsEmpty)
+			var thumbImage = Element.ThumbImage;
+			if (thumbImage != null && !thumbImage.IsEmpty)
 			{
 				UpdateThumbImage();
 			}
@@ -194,13 +195,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		private void UpdateThumbImage()
 		{
-			if (Element != null)
+			this.ApplyDrawableAsync(Slider.ThumbImageProperty, Context, drawable =>
 			{
-				using (var drawable = Context.GetFormsDrawable(Element.ThumbImage))
-				{
-					Control.SetThumb(drawable ?? defaultthumb);
-				}
-			}
+				Control.SetThumb(drawable ?? defaultthumb);
+			});
 		}
 
 		protected override void OnLayout(bool changed, int l, int t, int r, int b)

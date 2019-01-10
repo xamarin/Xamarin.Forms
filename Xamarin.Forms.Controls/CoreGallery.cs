@@ -361,7 +361,6 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new MapGallery(), "Map Gallery - Legacy"),
 				new GalleryPageFactory(() => new MinimumSizeGallery(), "MinimumSize Gallery - Legacy"),
 				new GalleryPageFactory(() => new MultiGallery(), "Multi Gallery - Legacy"),
-				new GalleryPageFactory(() => new NavigationMenuGallery(), "NavigationMenu Gallery - Legacy"),
 				new GalleryPageFactory(() => new NavigationPropertiesGallery(), "Navigation Properties"),
 #if HAVE_OPENTK
 				new GalleryPageFactory(() => new OpenGLGallery(), "OpenGLGallery - Legacy"),

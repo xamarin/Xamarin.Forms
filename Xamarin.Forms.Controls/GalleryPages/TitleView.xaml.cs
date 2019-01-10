@@ -197,7 +197,7 @@ namespace Xamarin.Forms.Controls.GalleryPages
 		{
 			if (App.Current.MainPage is MasterDetailPage mdp)
 			{
-				if (String.IsNullOrWhiteSpace(mdp.Master.Icon))
+				if (mdp.Master.Icon == null || mdp.Master.Icon.IsEmpty)
 					mdp.Master.Icon = "menuIcon";
 				else
 					mdp.Master.Icon = null;

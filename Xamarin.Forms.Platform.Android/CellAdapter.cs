@@ -193,11 +193,12 @@ namespace Xamarin.Forms.Platform.Android
 				MenuItem action = ActionModeContext.ContextActions[i];
 
 				IMenuItem item = menu.Add(global::Android.Views.Menu.None, i,global::Android.Views.Menu.None, action.Text);
-				using (Drawable iconDrawable = _context.GetFormsDrawable(action.Icon))
+
+				_ = _context.ApplyDrawableAsync(action, MenuItem.IconProperty, iconDrawable =>
 				{
 					if (iconDrawable != null)
 						item.SetIcon(iconDrawable);
-				}
+				});
 
 				action.PropertyChanged += changed;
 				action.PropertyChanging += changing;

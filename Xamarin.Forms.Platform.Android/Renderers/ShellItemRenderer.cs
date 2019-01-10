@@ -156,7 +156,11 @@ namespace Xamarin.Forms.Platform.Android
 					lp.Dispose();
 
 					image.ImageTintList = ColorStateList.ValueOf(Color.Black.MultiplyAlpha(0.6).ToAndroid());
-					SetImage(image, shellContent.Icon);
+					ShellContext.ApplyDrawableAsync(shellContent, ShellSection.IconProperty, icon =>
+					{
+						if (!image.IsDisposed())
+							image.SetImageDrawable(icon);
+					});
 
 					innerLayout.AddView(image);
 
@@ -307,7 +311,11 @@ namespace Xamarin.Forms.Platform.Android
 				{
 					var menuItem = menu.Add(0, i, 0, title);
 					menuItems.Add(menuItem);
-					loadTasks.Add(SetMenuItemIcon(menuItem, item.Icon));
+					loadTasks.Add(ShellContext.ApplyDrawableAsync(item, ShellSection.IconProperty, icon =>
+					{
+						if (icon != null)
+							menuItem.SetIcon(icon);
+					}));
 					UpdateShellSectionEnabled(item, menuItem);
 					if (item == ShellSection)
 					{
@@ -349,23 +357,6 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (e.PropertyName == Shell.TabBarIsVisibleProperty.PropertyName)
 				UpdateTabBarVisibility();
-		}
-
-		async void SetImage(ImageView image, ImageSource source)
-		{
-			using (var drawable = await Context.GetFormsDrawableAsync(source))
-			{
-				image.SetImageDrawable(drawable);
-			}
-		}
-
-		async Task SetMenuItemIcon(IMenuItem menuItem, ImageSource source)
-		{
-			using (var drawable = await Context.GetFormsDrawableAsync(source))
-			{
-				if (drawable != null)
-					menuItem.SetIcon(drawable);
-			}
 		}
 
 		void SetupMenu()

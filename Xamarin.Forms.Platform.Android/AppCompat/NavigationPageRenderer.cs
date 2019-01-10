@@ -912,18 +912,20 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			}
 		}
 
-		protected virtual void UpdateMenuItemIcon(Context context, IMenuItem menuItem, ToolbarItem toolBarItem)
+		void UpdateMenuItemIcon(Context context, IMenuItem menuItem, ToolbarItem toolBarItem)
 		{
-			using (Drawable iconDrawable = context.GetFormsDrawable(toolBarItem.Icon))
+			_ = this.ApplyDrawableAsync(toolBarItem, ToolbarItem.IconProperty, Context, iconDrawable =>
 			{
 				if (iconDrawable != null)
 				{
 					if (!menuItem.IsEnabled)
+					{
 						iconDrawable.Mutate().SetAlpha(DefaultDisabledToolbarAlpha);
+					}
 
 					menuItem.SetIcon(iconDrawable);
 				}
-			}
+			});
 		}
 
 		void UpdateToolbar()
@@ -1008,9 +1010,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		void UpdateTitleIcon()
 		{
 			Page currentPage = Element.CurrentPage;
-			var source = NavigationPage.GetTitleIcon(currentPage);
+			ImageSource source = NavigationPage.GetTitleIcon(currentPage);
 
-			if (source == null)
+			if (source == null || source.IsEmpty)
 			{
 				_toolbar.RemoveView(_titleIconView);
 				_titleIconView?.Dispose();
@@ -1025,20 +1027,14 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				_toolbar.AddView(_titleIconView, 0);
 			}
 
-			UpdateBitmap(source, _imageSource);
-			_imageSource = source;
-		}
-
-		async void UpdateBitmap(ImageSource source, ImageSource previousSource = null)
-		{
-			if (Equals(source, previousSource))
-				return;
-
-			_titleIconView.SetImageResource(global::Android.Resource.Color.Transparent);
-
-			using (var drawable = await Context.GetFormsDrawableAsync(source))
+			if (_imageSource != source)
 			{
-				_titleIconView.SetImageDrawable(drawable);
+				_imageSource = source;
+				_titleIconView.SetImageResource(global::Android.Resource.Color.Transparent);
+				_ = this.ApplyDrawableAsync(currentPage, NavigationPage.TitleIconProperty, Context, drawable =>
+				{
+					_titleIconView.SetImageDrawable(drawable);
+				});
 			}
 		}
 

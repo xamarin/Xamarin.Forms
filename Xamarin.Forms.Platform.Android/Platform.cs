@@ -410,11 +410,11 @@ namespace Xamarin.Forms.Platform.Android
 				else
 				{
 					IMenuItem menuItem = menu.Add(item.Text);
-					using (Drawable iconDrawable = _context.GetFormsDrawable(item.Icon))
+					_ = _context.ApplyDrawableAsync(item, MenuItem.IconProperty, iconDrawable =>
 					{
 						if (iconDrawable != null)
 							menuItem.SetIcon(iconDrawable);
-					}
+					});
 					menuItem.SetEnabled(controller.IsEnabled);
 					menuItem.SetShowAsAction(ShowAsAction.Always);
 					menuItem.SetOnMenuItemClickListener(new GenericMenuClickListener(controller.Activate));
@@ -753,14 +753,6 @@ namespace Xamarin.Forms.Platform.Android
 
 		void GetNewMasterDetailToggle()
 		{
-			// TODO: this must be changed to support the other image source types
-			//       and we should probably use the new toggle - as this one does not support
-			//       anything other that an int resource ID as the toggle
-			var fileImageSource = CurrentMasterDetailPage.Master.Icon as FileImageSource;
-			if (fileImageSource == null)
-				return;
-
-			int icon = ResourceManager.GetDrawableByName(fileImageSource);
 			var drawer = GetRenderer(CurrentMasterDetailPage) as MasterDetailRenderer;
 			if (drawer == null)
 				return;
@@ -769,6 +761,13 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				return;
 			}
+
+			// TODO: this must be changed to support the other image source types
+			var fileImageSource = CurrentMasterDetailPage.Master.Icon as FileImageSource;
+			if (fileImageSource == null)
+					throw new InvalidOperationException("Icon property must be a FileImageSource on Master page");
+
+			int icon = ResourceManager.GetDrawableByName(fileImageSource);
 
 			FastRenderers.AutomationPropertiesProvider.GetDrawerAccessibilityResources(_activity, CurrentMasterDetailPage, out int resourceIdOpen, out int resourceIdClose);
 #pragma warning disable 618 // Eventually we will need to determine how to handle the v7 ActionBarDrawerToggle for AppCompat
@@ -1058,12 +1057,13 @@ namespace Xamarin.Forms.Platform.Android
 			if (ShouldShowActionBarTitleArea())
 			{
 				actionBar.Title = view.Title;
-				var titleIcon = NavigationPage.GetTitleIcon(view);
-				using (var drawable = _context.GetFormsDrawable(titleIcon))
+				_ = _context.ApplyDrawableAsync(view, NavigationPage.TitleIconProperty, icon =>
 				{
-					useLogo = drawable != null;
-					actionBar.SetLogo(drawable);
-				}
+					if (icon != null)
+						actionBar.SetLogo(icon);
+				});
+				var titleIcon = NavigationPage.GetTitleIcon(view);
+				useLogo = titleIcon != null && titleIcon.IsEmpty;
 				showHome = true;
 				showTitle = true;
 			}

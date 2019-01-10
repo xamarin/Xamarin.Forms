@@ -18,6 +18,7 @@ namespace Xamarin.Forms.Platform.Android
 			ImageSource newImageSource,
 			ImageSource previousImageSource)
 		{
+
 			IImageController imageController = newView as IImageController;
 			newImageSource = newImageSource ?? newView?.Source;
 			previousImageSource = previousImageSource ?? previousView?.Source;

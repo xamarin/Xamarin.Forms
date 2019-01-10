@@ -118,10 +118,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateBackgroundImage(Page view)
 		{
-			using (var drawable = Context.GetFormsDrawable(view.BackgroundImage))
+			_ = this.ApplyDrawableAsync(view, Page.BackgroundImageProperty, Context, drawable =>
 			{
 				this.SetBackground(drawable);
-			}
+			});
 		}
 	}
 }

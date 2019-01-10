@@ -398,7 +398,6 @@ namespace Xamarin.Forms.Platform.Android.Material
 				return;
 			}
 
-			Drawable image = Context.GetFormsDrawable(elementImage);
 			Button.ButtonContentLayout layout = Button.ContentLayout;
 
 			if (_defaultIconPadding == -1)
@@ -409,38 +408,41 @@ namespace Xamarin.Forms.Platform.Android.Material
 
 			// disable tint for now
 			IconTint = null;
-			Icon = image;
 
-			if (layout.Position == Button.ButtonContentLayout.ImagePosition.Right || layout.Position == Button.ButtonContentLayout.ImagePosition.Left)
+			this.ApplyDrawableAsync(Button.ImageProperty, Context, image =>
 			{
-				IconGravity = IconGravityTextStart;
-				// setting the icon property causes the base class to calculate things like padding
-				// required to set the image to the start of the text
-				if (IsNullOrEmpty(Button.Text))
-					IconPadding = 0;
-				else
-					IconPadding = (int)Context.ToPixels(layout.Spacing) + _defaultIconPadding;
+				Icon = image;
 
-				image?.Dispose();
-				image = TextViewCompat.GetCompoundDrawablesRelative(this)[0];
-			}
+				if (layout.Position == Button.ButtonContentLayout.ImagePosition.Right || layout.Position == Button.ButtonContentLayout.ImagePosition.Left)
+				{
+					IconGravity = IconGravityTextStart;
+					// setting the icon property causes the base class to calculate things like padding
+					// required to set the image to the start of the text
+					if (IsNullOrEmpty(Button.Text))
+						IconPadding = 0;
+					else
+						IconPadding = (int)Context.ToPixels(layout.Spacing) + _defaultIconPadding;
 
-			switch (layout.Position)
-			{
-				case Button.ButtonContentLayout.ImagePosition.Top:
-					TextViewCompat.SetCompoundDrawablesRelativeWithIntrinsicBounds(this, null, image, null, null);
-					break;
-				case Button.ButtonContentLayout.ImagePosition.Bottom:
-					TextViewCompat.SetCompoundDrawablesRelativeWithIntrinsicBounds(this, null, null, null, image);
-					break;
-				case Button.ButtonContentLayout.ImagePosition.Right:
-					// this gets set and updated inside OnMeasure
-					break;
-				default:
-					// Defaults to image on the left
-					TextViewCompat.SetCompoundDrawablesRelative(this, image, null, null, null);
-					break;
-			}
+					image = TextViewCompat.GetCompoundDrawablesRelative(this)[0];
+				}
+
+				switch (layout.Position)
+				{
+					case Button.ButtonContentLayout.ImagePosition.Top:
+						TextViewCompat.SetCompoundDrawablesRelativeWithIntrinsicBounds(this, null, image, null, null);
+						break;
+					case Button.ButtonContentLayout.ImagePosition.Bottom:
+						TextViewCompat.SetCompoundDrawablesRelativeWithIntrinsicBounds(this, null, null, null, image);
+						break;
+					case Button.ButtonContentLayout.ImagePosition.Right:
+						// this gets set and updated inside OnMeasure
+						break;
+					default:
+						// Defaults to image on the left
+						TextViewCompat.SetCompoundDrawablesRelative(this, image, null, null, null);
+						break;
+				}
+			});
 		}
 
 

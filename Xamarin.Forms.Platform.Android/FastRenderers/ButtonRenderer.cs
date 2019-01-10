@@ -328,48 +328,51 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				return;
 			}
 
-			Drawable image = Context.GetFormsDrawable(elementImage);
-
 			if (IsNullOrEmpty(Button.Text))
 			{
 				// No text, so no need for relative position; just center the image
 				// There's no option for just plain-old centering, so we'll use Top 
 				// (which handles the horizontal centering) and some tricksy padding (in OnLayout)
 				// to handle the vertical centering 
+				this.ApplyDrawableAsync(Button.ImageProperty, Context, image =>
+				{
+					// Clear any previous padding and set the image as top/center
+					UpdateContentEdge();
+					SetCompoundDrawablesWithIntrinsicBounds(null, image, null, null);
 
-				// Clear any previous padding and set the image as top/center
-				UpdateContentEdge();
-				SetCompoundDrawablesWithIntrinsicBounds(null, image, null, null);
+					// Keep track of the image height so we can use it in OnLayout
+					_imageHeight = image.IntrinsicHeight;
 
-				// Keep track of the image height so we can use it in OnLayout
-				_imageHeight = image.IntrinsicHeight;
-
-				image.Dispose();
+					Element.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged);
+				});
 				return;
 			}
 
-			Button.ButtonContentLayout layout = Button.ContentLayout;
+			this.ApplyDrawableAsync(Button.ImageProperty, Context, image =>
+			{ 
+				Button.ButtonContentLayout layout = Button.ContentLayout;
 
-			CompoundDrawablePadding = (int)layout.Spacing;
+				CompoundDrawablePadding = (int)layout.Spacing;
 
-			switch (layout.Position)
-			{
-				case Button.ButtonContentLayout.ImagePosition.Top:
-					SetCompoundDrawablesWithIntrinsicBounds(null, image, null, null);
-					break;
-				case Button.ButtonContentLayout.ImagePosition.Bottom:
-					SetCompoundDrawablesWithIntrinsicBounds(null, null, null, image);
-					break;
-				case Button.ButtonContentLayout.ImagePosition.Right:
-					SetCompoundDrawablesWithIntrinsicBounds(null, null, image, null);
-					break;
-				default:
-					// Defaults to image on the left
-					SetCompoundDrawablesWithIntrinsicBounds(image, null, null, null);
-					break;
-			}
+				switch (layout.Position)
+				{
+					case Button.ButtonContentLayout.ImagePosition.Top:
+						SetCompoundDrawablesWithIntrinsicBounds(null, image, null, null);
+						break;
+					case Button.ButtonContentLayout.ImagePosition.Bottom:
+						SetCompoundDrawablesWithIntrinsicBounds(null, null, null, image);
+						break;
+					case Button.ButtonContentLayout.ImagePosition.Right:
+						SetCompoundDrawablesWithIntrinsicBounds(null, null, image, null);
+						break;
+					default:
+						// Defaults to image on the left
+						SetCompoundDrawablesWithIntrinsicBounds(image, null, null, null);
+						break;
+				}
 
-			image?.Dispose();
+				Element.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged);
+			});
 		}
 
 		void UpdateFont()
