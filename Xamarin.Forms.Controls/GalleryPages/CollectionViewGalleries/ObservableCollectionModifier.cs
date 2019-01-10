@@ -15,12 +15,10 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 				return;
 			}
 
-			if (!(_cv.ItemsSource is ObservableCollection<CollectionViewGalleryTestItem> observableCollection))
+			if (_cv.ItemsSource is ObservableCollection<CollectionViewGalleryTestItem> observableCollection)
 			{
-				return;
+				ModifyObservableCollection(observableCollection, indexes);
 			}
-
-			ModifyObservableCollection(observableCollection, indexes);
 		}
 
 		protected abstract void ModifyObservableCollection(ObservableCollection<CollectionViewGalleryTestItem> observableCollection, params int[] indexes);
