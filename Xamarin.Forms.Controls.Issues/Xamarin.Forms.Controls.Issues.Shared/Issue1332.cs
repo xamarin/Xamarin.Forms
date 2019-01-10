@@ -51,12 +51,21 @@ namespace Xamarin.Forms.Controls.Issues
 			AbsoluteLayout.SetLayoutBounds(stack, new Rectangle(1, 0, layoutWidth / 2, 1));
 			AbsoluteLayout.SetLayoutFlags(stack, AbsoluteLayoutFlags.All);
 
+			var desc = new Label
+			{
+				Text = "Click on Visibility, then click on Width button few times." +
+					"The layout of the second frame must be updated to match the first."
+			};
+			AbsoluteLayout.SetLayoutBounds(desc, new Rectangle(0, 0.5, 1, 0.5));
+			AbsoluteLayout.SetLayoutFlags(desc, AbsoluteLayoutFlags.All);
+
 			Content = new AbsoluteLayout
 			{
 				Children =
 				{
 					red,
-					stack
+					stack,
+					desc
 				}
 			};
 		}
