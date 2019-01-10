@@ -387,7 +387,13 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			if (_detailLayout.ChildView == null)
 				Update();
 			else
-				new Handler(Looper.MainLooper).Post(() => Update());
+				new Handler(Looper.MainLooper).Post(() =>
+				{
+					if (_detailLayout == null || _detailLayout.IsDisposed())
+						return;
+
+					Update();
+				});
 
 			void Update()
 			{
@@ -412,9 +418,14 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void UpdateMaster()
 		{
-
 			if (_masterLayout.ChildView == null)
-				new Handler(Looper.MainLooper).Post(() => Update());
+				new Handler(Looper.MainLooper).Post(() =>
+				{
+					if (_masterLayout == null || _masterLayout.IsDisposed())
+						return;
+
+					Update();
+				});
 			else
 				Update();
 
