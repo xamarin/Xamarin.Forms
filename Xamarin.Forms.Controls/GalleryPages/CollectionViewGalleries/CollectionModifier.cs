@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			Content = layout;
 		}
 
-		private void ButtonOnClicked(object sender, EventArgs e)
+		void ButtonOnClicked(object sender, EventArgs e)
 		{
 			OnButtonClicked();
 		}
