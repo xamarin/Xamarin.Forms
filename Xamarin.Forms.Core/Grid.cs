@@ -280,8 +280,8 @@ namespace Xamarin.Forms
 
 		public interface IGridList<T> : IList<T> where T : View
 		{
-			void Add(View view, int left, int top);
-			void Add(View view, int left, int right, int top, int bottom);
+			void Add(View view, int column, int row);
+			void Add(View view, int column, int columnSpanTo, int row, int rowSpanTo);
 			void AddHorizontal(IEnumerable<View> views);
 			void AddHorizontal(View view);
 			void AddVertical(IEnumerable<View> views);
@@ -297,32 +297,46 @@ namespace Xamarin.Forms
 
 			internal Grid Parent { get; set; }
 
-			public void Add(View view, int left, int top)
+			/// <summary>
+			/// Adds a view to the List at the specified location with a RowSpan and HeightSpan of 1.
+			/// </summary>
+			/// <param name="view">View. The View to insert.</param>
+			/// <param name="column">Int32. The column where the View should be placed.</param>
+			/// <param name="row">Int32. The row where the View should be placed.</param>
+			public void Add(View view, int column, int row)
 			{
-				if (left < 0)
-					throw new ArgumentOutOfRangeException("left");
-				if (top < 0)
-					throw new ArgumentOutOfRangeException("top");
-				Add(view, left, left + 1, top, top + 1);
+				if (column < 0)
+					throw new ArgumentOutOfRangeException("column");
+				if (row < 0)
+					throw new ArgumentOutOfRangeException("row");
+				Add(view, column, column + 1, row, row + 1);
 			}
 
-			public void Add(View view, int left, int right, int top, int bottom)
+			/// <summary>
+			/// Adds a view to the List at the specified row and column spans.
+			/// </summary>
+			/// <param name="view">View. The View to insert.</param>
+			/// <param name="column">Int32. The column where the View should be placed.</param>
+			/// <param name="columnSpanTo">Int32. The column to which the View should span.</param>
+			/// <param name="row">Int32. The row where the View should be placed.</param>
+			/// <param name="rowSpanTo">Int32. The row to which the View should span.</param>
+			public void Add(View view, int column, int columnSpanTo, int row, int rowSpanTo)
 			{
-				if (left < 0)
-					throw new ArgumentOutOfRangeException("left");
-				if (top < 0)
-					throw new ArgumentOutOfRangeException("top");
-				if (left >= right)
-					throw new ArgumentOutOfRangeException("right");
-				if (top >= bottom)
-					throw new ArgumentOutOfRangeException("bottom");
+				if (column < 0)
+					throw new ArgumentOutOfRangeException("column");
+				if (row < 0)
+					throw new ArgumentOutOfRangeException("row");
+				if (column >= columnSpanTo)
+					throw new ArgumentOutOfRangeException("columnSpanTo");
+				if (row >= rowSpanTo)
+					throw new ArgumentOutOfRangeException("rowSpanTo");
 				if (view == null)
 					throw new ArgumentNullException("view");
 
-				SetRow(view, top);
-				SetRowSpan(view, bottom - top);
-				SetColumn(view, left);
-				SetColumnSpan(view, right - left);
+				SetRow(view, row);
+				SetRowSpan(view, rowSpanTo - row);
+				SetColumn(view, column);
+				SetColumnSpan(view, columnSpanTo - column);
 
 				Add(view);
 			}
