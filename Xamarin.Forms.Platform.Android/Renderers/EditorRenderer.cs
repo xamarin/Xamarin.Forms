@@ -92,6 +92,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateMaxLength();
 			UpdatePlaceholderColor();
 			UpdatePlaceholderText();
+			UpdateIsReadOnly();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -118,6 +119,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdatePlaceholderText();
 			else if (e.PropertyName == Editor.PlaceholderColorProperty.PropertyName)
 				UpdatePlaceholderColor();
+			else if (e.PropertyName == InputView.IsReadOnlyProperty.PropertyName)
+				UpdateIsReadOnly();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -248,6 +251,15 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (currentControlText.Length > Element.MaxLength)
 				Control.Text = currentControlText.Substring(0, Element.MaxLength);
+		}
+
+		void UpdateIsReadOnly()
+		{
+			bool isReadOnly = !Element.IsReadOnly;
+
+			Control.FocusableInTouchMode = isReadOnly;
+			Control.Focusable = isReadOnly;
+			Control.SetCursorVisible(isReadOnly);
 		}
 	}
 }

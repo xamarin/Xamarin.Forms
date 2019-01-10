@@ -133,6 +133,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateMaxLength();
 			UpdateImeOptions();
 			UpdateReturnType();
+			UpdateIsReadOnly();
 
 			if (_cursorPositionChangePending || _selectionLengthChangePending)
 				UpdateCursorSelection();
@@ -210,6 +211,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateCursorSelection();
 			else if (e.PropertyName == Entry.CursorPositionProperty.PropertyName)
 				UpdateCursorSelection();
+			else if (e.PropertyName == InputView.IsReadOnlyProperty.PropertyName)
+				UpdateIsReadOnly();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -358,7 +361,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (_nativeSelectionIsUpdating || Control == null || Element == null)
 				return;
 
-			if (Control.RequestFocus())
+			if (!Element.IsReadOnly && Control.RequestFocus())
 			{
 				try
 				{
@@ -439,6 +442,15 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				_nativeSelectionIsUpdating = false;
 			}
+		}
+
+		void UpdateIsReadOnly()
+		{
+			bool isReadOnly = !Element.IsReadOnly;
+
+			Control.FocusableInTouchMode = isReadOnly;
+			Control.Focusable = isReadOnly;
+			Control.SetCursorVisible(isReadOnly);
 		}
 	}
 }
