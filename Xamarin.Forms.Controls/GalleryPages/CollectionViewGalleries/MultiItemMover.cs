@@ -14,7 +14,7 @@
 
 		protected override void ModifyObservableCollection(MultiTestObservableCollection<CollectionViewGalleryTestItem> observableCollection, params int[] indexes)
 		{
-			if (indexes.Length < 2)
+			if (indexes.Length < 3)
 			{
 				return;
 			}
@@ -23,12 +23,23 @@
 			var endIndex = indexes[1];
 			var destinationIndex = indexes[2];
 
-			if (startIndex  > -1 && endIndex > -1 && startIndex < observableCollection.Count &&
-				endIndex < observableCollection.Count && startIndex < endIndex &&
-				observableCollection.Count - (endIndex - startIndex) > destinationIndex)
+			var count = observableCollection.Count;
+
+			// -1 < startIndex < endIndex < count
+			if (startIndex < 0 || endIndex >= count || endIndex <= startIndex)
 			{
-				observableCollection.TestMoveWithList(startIndex, endIndex - startIndex, destinationIndex);
+				return;
 			}
+
+			var itemsToMove = endIndex - startIndex;
+
+			// Can't move the items past the end of the list
+			if (destinationIndex > (count - itemsToMove))
+			{
+				return;
+			}
+
+			observableCollection.TestMoveWithList(startIndex, endIndex - startIndex, destinationIndex);
 		}
 	}
 }
