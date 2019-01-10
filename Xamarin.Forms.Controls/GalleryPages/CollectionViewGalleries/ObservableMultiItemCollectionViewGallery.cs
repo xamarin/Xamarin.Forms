@@ -26,7 +26,7 @@
 
 			var collectionView = new CollectionView {ItemsLayout = itemsLayout, ItemTemplate = itemTemplate};
 
-			var generator = new ItemsSourceGenerator(collectionView, initialItems);
+			var generator = new ItemsSourceGenerator(collectionView, initialItems, ItemsSourceType.MultiTestObservableCollection);
 			
 			var remover = new MultiItemRemover(collectionView, withIndex);
 
@@ -53,7 +53,7 @@
 
 			Content = layout;
 
-			generator.GenerateMultiTestObservableCollection();
+			generator.GenerateItems();
 		}
 	}
 
@@ -77,7 +77,7 @@
 
 			var collectionView = new CollectionView { ItemsLayout = itemsLayout, ItemTemplate = itemTemplate };
 
-			var generator = new ItemsSourceGenerator(collectionView, 100);
+			var generator = new ItemsSourceGenerator(collectionView, 100, ItemsSourceType.MultiTestObservableCollection);
 
 			layout.Children.Add(generator);
 
@@ -90,7 +90,7 @@
 
 			Content = layout;
 
-			generator.GenerateMultiTestObservableCollection();
+			generator.GenerateItems();
 		}
 	}
 }
