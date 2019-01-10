@@ -88,6 +88,6 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			OnNotifyCollectionChanged(this, args);
 		}
 
-		private void OnNotifyCollectionChanged(object sender, NotifyCollectionChangedEventArgs eventArgs) => CollectionChanged?.Invoke(this, eventArgs);
+		void OnNotifyCollectionChanged(object sender, NotifyCollectionChangedEventArgs eventArgs) => CollectionChanged?.Invoke(this, eventArgs);
 	}
 }
