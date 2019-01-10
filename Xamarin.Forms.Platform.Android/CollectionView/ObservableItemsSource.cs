@@ -51,7 +51,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			var count = args.NewItems.Count;
 
-			if (args.NewItems.Count == 1)
+			if (count == 1)
 			{
 				// For a single item, we can use NotifyItemMoved and get the animation
 				_adapter.NotifyItemMoved(args.OldStartingIndex, args.NewStartingIndex);
