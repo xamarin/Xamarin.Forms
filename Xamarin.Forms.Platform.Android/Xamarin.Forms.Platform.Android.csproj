@@ -270,7 +270,6 @@
     <Compile Include="Renderers\ListViewAdapter.cs" />
     <Compile Include="Renderers\ListViewRenderer.cs" />
     <Compile Include="Renderers\MasterDetailRenderer.cs" />
-    <Compile Include="Renderers\NavigationMenuRenderer.cs" />
     <Compile Include="Renderers\NavigationRenderer.cs" />
     <Compile Include="Renderers\ObjectJavaBox.cs" />
     <Compile Include="Renderers\CarouselPageAdapter.cs" />
