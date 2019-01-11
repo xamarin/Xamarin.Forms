@@ -1,0 +1,56 @@
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+			 xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+			 xmlns:local="clr-namespace:Xamarin.Forms.Controls"
+			 x:Class="Xamarin.Forms.Controls.ButtonLayoutGalleryPage"
+			 Title="Button Layout">
+
+	<ContentPage.Resources>
+		<ResourceDictionary>
+			<local:ThicknessConverter x:Key="ThicknessConverter" />
+		</ResourceDictionary>
+	</ContentPage.Resources>
+
+	<ScrollView>
+		<StackLayout Padding="20" Spacing="10">
+
+			<Label Text="Buttons:" Margin="0,5,0,0" FontAttributes="Bold" />
+
+			<Label Text="Defaults:" Margin="0,0,0,-5" />
+			<StackLayout Orientation="Vertical" Padding="0" Spacing="5">
+				<Button />
+				<Button Text="Some Text" />
+				<Button Image="bank.png" />
+				<Button Text="Some Text" Image="bank.png" />
+			</StackLayout>
+
+			<Label Text="Autosized:" Margin="0,0,0,-5" />
+			<StackLayout Orientation="Horizontal" Padding="0" Spacing="5">
+				<Button Text="{Binding ButtonText}" Image="{Binding ButtonImage}" Padding="{Binding ButtonPadding}" ContentLayout="{Binding ButtonImageLayout}" />
+			</StackLayout>
+
+			<Label Text="Stretched:" Margin="0,0,0,-5" />
+			<StackLayout Orientation="Vertical" Padding="0" Spacing="5">
+				<Button Text="{Binding ButtonText}" Image="{Binding ButtonImage}" Padding="{Binding ButtonPadding}" ContentLayout="{Binding ButtonImageLayout}" />
+			</StackLayout>
+
+			<Label Text="Options:" Margin="0,5,0,0" FontAttributes="Bold" />
+
+			<Label Text="Text:" Margin="0,0,0,-5" />
+			<Entry Text="{Binding ButtonText}" />
+
+			<Label Text="Image:" Margin="0,0,0,-5" />
+			<Picker ItemsSource="{Binding ButtonImages}" SelectedItem="{Binding ButtonImage}" />
+
+			<Label Text="Padding:" Margin="0,0,0,-5" />
+			<Entry Text="{Binding ButtonPadding, Converter={StaticResource ThicknessConverter}, Mode=OneWayToSource, TargetNullValue='0, 0, 0, 0'}" />
+
+			<Label Text="Content Spacing:" Margin="0,0,0,-5" />
+			<Entry Text="{Binding ButtonImageSpacing}" />
+
+			<Label Text="Content Position:" Margin="0,0,0,-5" />
+			<Picker ItemsSource="{Binding ButtonImagePositions}" SelectedItem="{Binding ButtonImagePosition}" />
+
+		</StackLayout>
+	</ScrollView>
+
+</ContentPage>

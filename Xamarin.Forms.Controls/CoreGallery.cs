@@ -304,6 +304,8 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new ContextActionsGallery (tableView: true), "ContextActions Table Gallery"),
 				new GalleryPageFactory(() => new CoreBoxViewGalleryPage(), "BoxView Gallery"),
 				new GalleryPageFactory(() => new ButtonCoreGalleryPage(), "Button Gallery"),
+				new GalleryPageFactory(() => new ButtonLayoutGalleryPage(), "Button Layout Gallery"),
+				new GalleryPageFactory(() => new ButtonLayoutGalleryPage(VisualMarker.Material), "Button Layout Gallery (Material)"),
 				new GalleryPageFactory(() => new DatePickerCoreGalleryPage(), "DatePicker Gallery"),
 				new GalleryPageFactory(() => new EditorCoreGalleryPage(), "Editor Gallery"),
 				new GalleryPageFactory(() => new FrameCoreGalleryPage(), "Frame Gallery"),
