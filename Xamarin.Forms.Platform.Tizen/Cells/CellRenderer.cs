@@ -158,6 +158,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			_currentItem = data as Native.ListView.ItemContext;
 			var cell = _currentItem.Cell;
+			_currentItem.Item.SetPartColor("bg", cell.BackgroundColor.ToNative());
 			EvasObject nativeView = OnReusableContent(cell, part, old);
 			UpdateRealizedView(cell, part, nativeView);
 			return nativeView;
