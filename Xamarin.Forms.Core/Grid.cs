@@ -298,7 +298,7 @@ namespace Xamarin.Forms
 			internal Grid Parent { get; set; }
 
 			/// <summary>
-			/// Adds a view to the List at the specified location with a RowSpan and HeightSpan of 1.
+			/// Adds a view to the Grid at the specified location with a RowSpan and HeightSpan of 1.
 			/// </summary>
 			/// <param name="view">View. The View to insert.</param>
 			/// <param name="column">Int32. The column where the View should be placed.</param>
@@ -313,7 +313,7 @@ namespace Xamarin.Forms
 			}
 
 			/// <summary>
-			/// Adds a view to the List at the specified row and column spans.
+			/// Adds a view to the Grid at the specified row and column spans.
 			/// </summary>
 			/// <param name="view">View. The View to insert.</param>
 			/// <param name="column">Int32. The column where the View should be placed.</param>
