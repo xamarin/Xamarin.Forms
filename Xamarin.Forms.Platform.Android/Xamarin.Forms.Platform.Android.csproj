@@ -82,7 +82,7 @@
     <Compile Include="CollectionView\EdgeSnapHelper.cs" />
     <Compile Include="CollectionView\EndSnapHelper.cs" />
     <Compile Include="CollectionView\IItemsViewSource.cs" />
-    <Compile Include="CollectionView\ItemContentControl.cs" />
+    <Compile Include="CollectionView\ItemContentView.cs" />
     <Compile Include="CollectionView\ItemsSourceFactory.cs" />
     <Compile Include="CollectionView\ItemsViewRenderer.cs" />
     <Compile Include="CollectionView\ListSource.cs" />
@@ -90,10 +90,15 @@
     <Compile Include="CollectionView\PositionalSmoothScroller.cs" />
     <Compile Include="CollectionView\PropertyChangedEventArgsExtensions.cs" />
     <Compile Include="CollectionView\ScrollHelper.cs" />
-    <Compile Include="CollectionView\SizedItemContentControl.cs" />
+    <Compile Include="CollectionView\SelectableItemsViewAdapter.cs" />
+    <Compile Include="CollectionView\SelectableItemsViewRenderer.cs" />
+    <Compile Include="CollectionView\SelectableViewHolder.cs" />
+    <Compile Include="CollectionView\SizedItemContentView.cs" />
     <Compile Include="CollectionView\SnapManager.cs" />
     <Compile Include="CollectionView\StartPagerSnapHelper.cs" />
     <Compile Include="CollectionView\StartSnapHelper.cs" />
+    <Compile Include="CollectionView\TemplatedItemViewHolder.cs" />
+    <Compile Include="CollectionView\TextViewHolder.cs" />
     <Compile Include="Elevation.cs" />
     <Compile Include="Extensions\EntryRendererExtensions.cs" />
     <Compile Include="Extensions\FragmentManagerExtensions.cs" />
@@ -150,6 +155,7 @@
     <Compile Include="Material\MaterialProgressBarRenderer.cs" />
     <Compile Include="IPickerRenderer.cs" />
     <Compile Include="Renderers\PickerEditText.cs" />
+    <Compile Include="Renderers\FontImageSourceHandler.cs" />
     <Compile Include="Renderers\FormsWebViewClient.cs" />
     <Compile Include="Renderers\IImageViewHandler.cs" />
     <Compile Include="InnerGestureListener.cs" />
@@ -308,6 +314,7 @@
     <Compile Include="SwipeGestureHandler.cs" />
     <Compile Include="Extensions\AccessibilityExtensions.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
+    <Compile Include="Renderers\IPopupTrigger.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
@@ -329,13 +336,13 @@
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFrameworkVersion)' == 'v9.0' ">
     <PackageReference Include="Xamarin.Android.Support.Design">
-      <Version>28.0.0-preview8</Version>
+      <Version>28.0.0-preview9</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.Android.Support.v4">
-      <Version>28.0.0-preview8</Version>
+      <Version>28.0.0-preview9</Version>
     </PackageReference>
     <PackageReference Include="Xamarin.Android.Support.v7.CardView">
-      <Version>28.0.0-preview8</Version>
+      <Version>28.0.0-preview9</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFrameworkVersion)' == 'v8.1' ">
