@@ -37,12 +37,14 @@ namespace Xamarin.Forms.Platform.Android
 		Thickness? _defaultPaddingPix;
 		Button _element;
 		bool _alignIconWithText;
+		bool _preserveInitialPadding;
 
-		public ButtonLayoutManager(IButtonLayoutRenderer renderer, bool alignIconWithText = false)
+		public ButtonLayoutManager(IButtonLayoutRenderer renderer, bool alignIconWithText = false, bool preserveInitialPadding = true)
 		{
 			_renderer = renderer;
 			_renderer.ElementChanged += OnElementChanged;
 			_alignIconWithText = alignIconWithText;
+			_preserveInitialPadding = preserveInitialPadding;
 		}
 
 		AppCompatButton View => _renderer?.View;
@@ -180,20 +182,24 @@ namespace Xamarin.Forms.Platform.Android
 			if (!_defaultPaddingPix.HasValue)
 				_defaultPaddingPix = new Thickness(view.PaddingLeft, view.PaddingTop, view.PaddingRight, view.PaddingBottom);
 
-			Thickness padding = _element.Padding;
+			var padding = _element.Padding;
 
 			var adjustment = 0.0;
 			if (_element.IsSet(Specifics.Button.BorderAdjustsPaddingProperty) && _element.OnThisPlatform().GetBorderAdjustsPadding() &&
 				_element is IBorderElement borderElement && borderElement.IsBorderWidthSet() && borderElement.BorderWidth != borderElement.BorderWidthDefaultValue)
 				adjustment = borderElement.BorderWidth;
 
+			var defaultPadding = _preserveInitialPadding
+				? _defaultPaddingPix.Value
+				: default(Thickness);
+
 			// TODO: The padding options here are both wrong. Need to sort this out.
 
 			view.SetPadding(
-				(int)(Context.ToPixels(padding.Left + adjustment) + _defaultPaddingPix.Value.Left),
-				(int)(Context.ToPixels(padding.Top + adjustment) + _defaultPaddingPix.Value.Top),
-				(int)(Context.ToPixels(padding.Right + adjustment) + _defaultPaddingPix.Value.Right),
-				(int)(Context.ToPixels(padding.Bottom + adjustment) + _defaultPaddingPix.Value.Bottom));
+				(int)(Context.ToPixels(padding.Left + adjustment) + defaultPadding.Left),
+				(int)(Context.ToPixels(padding.Top + adjustment) + defaultPadding.Top),
+				(int)(Context.ToPixels(padding.Right + adjustment) + defaultPadding.Right),
+				(int)(Context.ToPixels(padding.Bottom + adjustment) + defaultPadding.Bottom));
 
 			//if (_element.IsSet(Button.PaddingProperty))
 			//{
