@@ -4,7 +4,9 @@ using System.Diagnostics;
 using System.Linq;
 using Foundation;
 using UIKit;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
+using Specifics = Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using SizeF = CoreGraphics.CGSize;
 
 namespace Xamarin.Forms.Platform.iOS
@@ -44,6 +46,14 @@ namespace Xamarin.Forms.Platform.iOS
 			if (result.Height < _minimumButtonHeight)
 			{
 				result.Height = _minimumButtonHeight;
+			}
+
+			if (Element.IsSet(Specifics.Button.BorderAdjustsPaddingProperty) && Element.OnThisPlatform().GetBorderAdjustsPadding() &&
+				Element is IBorderElement borderElement && borderElement.IsBorderWidthSet() && borderElement.BorderWidth != borderElement.BorderWidthDefaultValue)
+			{
+				var adjustment = (nfloat)(Element.BorderWidth * 2.0);
+				result.Width += adjustment;
+				result.Height += adjustment;
 			}
 
 			return result;
@@ -117,6 +127,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateImage();
 			else if (e.PropertyName == Button.PaddingProperty.PropertyName)
 				UpdatePadding();
+			else if (e.PropertyName == Button.BorderWidthProperty.PropertyName || e.PropertyName == Specifics.Button.BorderAdjustsPaddingProperty.PropertyName)
+				Element.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged);
 		}
 
 		protected override void SetAccessibilityLabel()

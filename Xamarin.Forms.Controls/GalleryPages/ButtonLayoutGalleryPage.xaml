@@ -7,6 +7,9 @@
 	<ContentPage.Resources>
 		<ResourceDictionary>
 			<local:ThicknessConverter x:Key="ThicknessConverter" />
+			<Style TargetType="Label">
+				<Setter Property="FontSize" Value="12" />
+			</Style>
 		</ResourceDictionary>
 	</ContentPage.Resources>
 
@@ -25,30 +28,69 @@
 
 			<Label Text="Autosized:" Margin="0,0,0,-5" />
 			<StackLayout Orientation="Horizontal" Padding="0" Spacing="5">
-				<Button Text="{Binding ButtonText}" Image="{Binding ButtonImage}" Padding="{Binding ButtonPadding}" ContentLayout="{Binding ButtonImageLayout}" />
+				<Button x:Name="autosizedButton" Text="{Binding ButtonText}" Image="{Binding ButtonImage}" Padding="{Binding ButtonPadding}" ContentLayout="{Binding ButtonImageLayout}" />
 			</StackLayout>
 
 			<Label Text="Stretched:" Margin="0,0,0,-5" />
 			<StackLayout Orientation="Vertical" Padding="0" Spacing="5">
-				<Button Text="{Binding ButtonText}" Image="{Binding ButtonImage}" Padding="{Binding ButtonPadding}" ContentLayout="{Binding ButtonImageLayout}" />
+				<Button x:Name="stretchedButton" Text="{Binding ButtonText}" Image="{Binding ButtonImage}" Padding="{Binding ButtonPadding}" ContentLayout="{Binding ButtonImageLayout}" />
 			</StackLayout>
 
 			<Label Text="Options:" Margin="0,5,0,0" FontAttributes="Bold" />
 
-			<Label Text="Text:" Margin="0,0,0,-5" />
-			<Entry Text="{Binding ButtonText}" />
+			<StackLayout Orientation="Horizontal" Padding="0" Spacing="5" HorizontalOptions="FillAndExpand">
 
-			<Label Text="Image:" Margin="0,0,0,-5" />
-			<Picker ItemsSource="{Binding ButtonImages}" SelectedItem="{Binding ButtonImage}" />
+				<StackLayout Orientation="Vertical" Padding="0" Spacing="0" HorizontalOptions="FillAndExpand">
+					<Label Text="Text:" />
+					<Entry Text="{Binding ButtonText}" HorizontalOptions="FillAndExpand" />
+				</StackLayout>
 
-			<Label Text="Padding:" Margin="0,0,0,-5" />
-			<Entry Text="{Binding ButtonPadding, Converter={StaticResource ThicknessConverter}, Mode=OneWayToSource, TargetNullValue='0, 0, 0, 0'}" />
+				<StackLayout Orientation="Vertical" Padding="0" Spacing="0" HorizontalOptions="FillAndExpand">
+					<Label Text="Image:" />
+					<Picker ItemsSource="{Binding ButtonImages}" SelectedItem="{Binding ButtonImage}" HorizontalOptions="FillAndExpand" />
+				</StackLayout>
 
-			<Label Text="Content Spacing:" Margin="0,0,0,-5" />
-			<Entry Text="{Binding ButtonImageSpacing}" />
+			</StackLayout>
 
-			<Label Text="Content Position:" Margin="0,0,0,-5" />
-			<Picker ItemsSource="{Binding ButtonImagePositions}" SelectedItem="{Binding ButtonImagePosition}" />
+			<StackLayout Orientation="Horizontal" Padding="0" Spacing="5" HorizontalOptions="FillAndExpand">
+
+				<StackLayout Orientation="Vertical" Padding="0" Spacing="0" HorizontalOptions="FillAndExpand">
+					<Label Text="Content Position:" />
+					<Picker ItemsSource="{Binding ButtonImagePositions}" SelectedItem="{Binding ButtonImagePosition}" HorizontalOptions="FillAndExpand" />
+				</StackLayout>
+
+				<StackLayout Orientation="Vertical" Padding="0" Spacing="0">
+					<Label Text="Content Spacing:" />
+					<StackLayout Orientation="Horizontal" Padding="0" Spacing="5">
+						<Stepper Minimum="-100" Maximum="100" Value="{Binding ButtonImageSpacing}" VerticalOptions="Center" HorizontalOptions="FillAndExpand" />
+						<Label Text="{Binding ButtonImageSpacing}" VerticalOptions="Center" />
+					</StackLayout>
+				</StackLayout>
+
+			</StackLayout>
+
+			<StackLayout Orientation="Horizontal" Padding="0" Spacing="5" HorizontalOptions="FillAndExpand">
+
+				<StackLayout Orientation="Vertical" Padding="0" Spacing="0" HorizontalOptions="FillAndExpand">
+					<Label Text="Padding:" />
+					<Entry Text="{Binding ButtonPadding, Converter={StaticResource ThicknessConverter}, Mode=OneWayToSource, TargetNullValue='0, 0, 0, 0'}" HorizontalOptions="FillAndExpand" />
+				</StackLayout>
+
+				<StackLayout Orientation="Vertical" Padding="0" Spacing="0">
+					<Label Text="Border Width:" />
+					<StackLayout Orientation="Horizontal" Padding="0" Spacing="5">
+						<Stepper Minimum="-1" Maximum="100" Value="{Binding ButtonBorderWidth}" VerticalOptions="Center" HorizontalOptions="FillAndExpand" />
+						<Label Text="{Binding ButtonBorderWidth}" VerticalOptions="Center" />
+					</StackLayout>
+				</StackLayout>
+
+			</StackLayout>
+
+			<Label Text="Border Adjustment:" Margin="0,0,0,-5" />
+			<Picker ItemsSource="{Binding ButtonFlags}" SelectedIndexChanged="OnButtonBorderAdjustmentChanged" />
+
+			<Label Text="Use Default Shadow/Padding:" Margin="0,0,0,-5" />
+			<Picker ItemsSource="{Binding ButtonFlags}" SelectedIndexChanged="OnButtonDefaultShadowChanged" />
 
 		</StackLayout>
 	</ScrollView>

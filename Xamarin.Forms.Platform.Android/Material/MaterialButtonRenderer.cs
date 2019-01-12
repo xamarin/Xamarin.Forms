@@ -98,7 +98,6 @@ namespace Xamarin.Forms.Platform.Android.Material
 				OnElementChanged(new ElementChangedEventArgs<Button>(oldElement, Element));
 
 				_button.SendViewInitialized(this);
-				_buttonLayoutManager?.Update();
 
 				Performance.Stop(reference);
 			}
@@ -149,6 +148,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 			{
 				this.EnsureId();
 
+				_buttonLayoutManager?.Update();
 				UpdateBorder();
 				UpdateFont();
 				UpdatePrimaryColors();
@@ -182,8 +182,8 @@ namespace Xamarin.Forms.Platform.Android.Material
 
 		protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
 		{
+			_buttonLayoutManager?.Update();
 			base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
-			_buttonLayoutManager?.OnLayout(true, Left, Top, Left + MeasuredWidth, Top + MeasuredHeight);
 		}
 
 		void UpdateFont()

@@ -80,7 +80,6 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		SizeRequest IVisualElementRenderer.GetDesiredSize(int widthConstraint, int heightConstraint)
 		{
-			_buttonLayoutManager?.Update();
 			Measure(widthConstraint, heightConstraint);
 			return new SizeRequest(new Size(MeasuredWidth, MeasuredHeight), MinimumSize());
 		}
@@ -235,6 +234,12 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		{
 			_buttonLayoutManager?.OnLayout(changed, l, t, r, b);
 			base.OnLayout(changed, l, t, r, b);
+		}
+
+		protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
+		{
+			_buttonLayoutManager?.Update();
+			base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
 		}
 
 		void SetTracker(VisualElementTracker tracker)

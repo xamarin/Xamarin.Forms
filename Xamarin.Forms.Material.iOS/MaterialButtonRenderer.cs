@@ -6,6 +6,8 @@ using Foundation;
 using MaterialComponents;
 using UIKit;
 using Xamarin.Forms;
+using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
+using Specifics = Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using MButton = MaterialComponents.Button;
 
 namespace Xamarin.Forms.Platform.iOS.Material
@@ -45,6 +47,14 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			if (result.Height < _buttonScheme.MinimumHeight)
 				result.Height = _buttonScheme.MinimumHeight;
 
+			if (Element.IsSet(Specifics.Button.BorderAdjustsPaddingProperty) && Element.OnThisPlatform().GetBorderAdjustsPadding() &&
+				Element is IBorderElement borderElement && borderElement.IsBorderWidthSet() && borderElement.BorderWidth != borderElement.BorderWidthDefaultValue)
+			{
+				var adjustment = (nfloat)(Element.BorderWidth * 2.0);
+				result.Width += adjustment;
+				result.Height += adjustment;
+			}
+
 			return result;
 		}
 
@@ -70,6 +80,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 				UpdateText();
 				UpdateFont();
+				UpdateCornerRadius();
 				UpdateBorder();
 				UpdateImage();
 				UpdateTextColor();
@@ -220,9 +231,19 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			int cornerRadius = Element.CornerRadius;
 
 			if (cornerRadius == (int)Button.CornerRadiusProperty.DefaultValue)
+			{
 				_buttonScheme.CornerRadius = _defaultButtonScheme.CornerRadius;
+			}
 			else
+			{
 				_buttonScheme.CornerRadius = cornerRadius;
+				if (_buttonScheme.ShapeScheme is ShapeScheme shapeScheme)
+				{
+					shapeScheme.SmallComponentShape = new ShapeCategory(ShapeCornerFamily.Rounded, cornerRadius);
+					shapeScheme.MediumComponentShape = new ShapeCategory(ShapeCornerFamily.Rounded, cornerRadius);
+					shapeScheme.LargeComponentShape = new ShapeCategory(ShapeCornerFamily.Rounded, cornerRadius);
+				}
+			}
 		}
 
 		void UpdateFont()
