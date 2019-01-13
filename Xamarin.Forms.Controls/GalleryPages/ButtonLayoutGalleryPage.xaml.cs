@@ -71,7 +71,7 @@ namespace Xamarin.Forms.Controls
 		}
 
 		public string[] ButtonImages =>
-			new string[] { "<none>", "bank.png", "cover1.jpg" };
+			new string[] { "<none>", "bank.png", "oasissmall.jpg", "cover1.jpg" };
 
 		public string ButtonImage
 		{
