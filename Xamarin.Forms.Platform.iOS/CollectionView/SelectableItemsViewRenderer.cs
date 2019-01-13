@@ -1,26 +1,29 @@
-using System;
+﻿using System;
 using System.ComponentModel;
-using Android.Content;
 
-namespace Xamarin.Forms.Platform.Android
+namespace Xamarin.Forms.Platform.iOS
 {
 	public class SelectableItemsViewRenderer : ItemsViewRenderer
 	{
-		SelectableItemsView SelectableItemsView => (SelectableItemsView)ItemsView;
+		SelectableItemsView SelectableItemsView => (SelectableItemsView)Element;
+		SelectableItemsViewController SelectableItemsViewController => (SelectableItemsViewController)ItemsViewController;
 
-		SelectableItemsViewAdapter SelectableItemsViewAdapter => (SelectableItemsViewAdapter)ItemsViewAdapter; 
-
-		public SelectableItemsViewRenderer(Context context) : base(context)
+		protected override ItemsViewController CreateController(ItemsView itemsView, ItemsViewLayout layout)
 		{
+			return new SelectableItemsViewController(itemsView as SelectableItemsView, layout);
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs changedProperty)
 		{
 			base.OnElementPropertyChanged(sender, changedProperty);
-			
+
 			if (changedProperty.Is(SelectableItemsView.SelectedItemProperty))
 			{
 				UpdateNativeSelection();
+			}
+			else if (changedProperty.Is(SelectableItemsView.SelectionModeProperty))
+			{
+				SelectableItemsViewController.UpdateSelectionMode();
 			}
 		}
 
@@ -33,45 +36,17 @@ namespace Xamarin.Forms.Platform.Android
 
 			base.SetUpNewElement(newElement);
 
+			SelectableItemsViewController.UpdateSelectionMode();
 			UpdateNativeSelection();
-		}
-
-		protected override void UpdateAdapter()
-		{
-			ItemsViewAdapter = new SelectableItemsViewAdapter(SelectableItemsView);
-			SwapAdapter(ItemsViewAdapter, true);
-		}
-
-		void ClearSelection()
-		{
-			for (int i = 0, size = ChildCount; i < size; i++)
-			{
-				var holder = GetChildViewHolder(GetChildAt(i));
-				
-				if (holder is SelectableViewHolder selectable)
-				{
-					selectable.IsSelected = false;
-				}
-			}
-		}
-
-		void MarkItemSelected(object selectedItem)
-		{
-			var position = ItemsViewAdapter.GetPositionForItem(selectedItem);
-			var selectedHolder = FindViewHolderForAdapterPosition(position);
-			if (selectedHolder == null)
-			{
-				return;
-			}
-
-			if (selectedHolder is SelectableViewHolder selectable)
-			{
-				selectable.IsSelected = true;
-			}
 		}
 
 		void UpdateNativeSelection()
 		{
+			if (SelectableItemsView == null)
+			{
+				return;
+			}
+
 			var mode = SelectableItemsView.SelectionMode;
 			var selectedItem = SelectableItemsView.SelectedItem;
 
@@ -89,10 +64,15 @@ namespace Xamarin.Forms.Platform.Android
 			if (mode != SelectionMode.Multiple)
 			{
 				ClearSelection();
-				MarkItemSelected(selectedItem);
+				SelectableItemsViewController.SelectItem(selectedItem);
 			}
 
 			// TODO hartez 2018/11/06 22:32:07 This doesn't cover all the possible cases yet; need to handle multiple selection	
+		}
+
+		void ClearSelection()
+		{
+			SelectableItemsViewController.ClearSelection();
 		}
 	}
 }
