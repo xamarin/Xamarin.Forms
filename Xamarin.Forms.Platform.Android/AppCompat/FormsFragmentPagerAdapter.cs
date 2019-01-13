@@ -1,17 +1,25 @@
-﻿using Android.OS;
+using System.Collections.Generic;
+using Android.OS;
 using Android.Support.V4.App;
 using Java.Lang;
 using Xamarin.Forms.Internals;
+using FragmentTransit = Android.App.FragmentTransit;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
 	internal class FormsFragmentPagerAdapter<T> : FragmentPagerAdapter where T : Page
 	{
 		MultiPage<T> _page;
+		bool _disposed;
+
+		readonly FragmentManager _fragmentManager;
+		readonly List<Fragment> _fragments;
 
 		public FormsFragmentPagerAdapter(MultiPage<T> page, FragmentManager fragmentManager) : base(fragmentManager)
 		{
 			_page = page;
+			_fragmentManager = fragmentManager;
+			_fragments = new List<Fragment>();
 		}
 
 		public override int Count => CountOverride;
@@ -20,7 +28,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		public override Fragment GetItem(int position)
 		{
-			return FragmentContainer.CreateInstance(_page.Children[position]);
+			var fragment = FragmentContainer.CreateInstance(_page.Children[position]);
+
+			_fragments.Add(fragment);
+
+			return fragment;
 		}
 
 		public override long GetItemId(int position)
@@ -31,7 +43,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		public override int GetItemPosition(Object objectValue)
 		{
 			var fragContainer = objectValue as FragmentContainer;
-			if (fragContainer != null && fragContainer.Page != null)
+			if (fragContainer?.Page != null)
 			{
 				int index = _page.Children.IndexOf(fragContainer.Page);
 				if (index >= 0)
@@ -52,8 +64,28 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		protected override void Dispose(bool disposing)
 		{
-			if (disposing)
+			if (disposing && !_disposed)
+			{
+				_disposed = true;
+
 				_page = null;
+
+				if (!_fragmentManager.IsDestroyed)
+				{
+					FragmentTransaction transaction = _fragmentManager.BeginTransactionEx();
+			
+					foreach (Fragment fragment in _fragments)
+					{
+						transaction.RemoveEx(fragment);
+						transaction.SetTransitionEx((int)FragmentTransit.None);
+					}
+
+					transaction.CommitAllowingStateLossEx();
+
+					_fragmentManager.ExecutePendingTransactionsEx();
+				}
+			}
+
 			base.Dispose(disposing);
 		}
 	}
