@@ -10,8 +10,8 @@ namespace Xamarin.Forms.Platform.UWP
 {
 	public class SwitchRenderer : ViewRenderer<Switch, ToggleSwitch>
 	{
-		private object _originalOnColor;
-		private Brush _originalOnColorBrush;
+		object _originalOnColor;
+		Brush _originalOnColorBrush;
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Switch> e)
 		{
@@ -23,7 +23,7 @@ namespace Xamarin.Forms.Platform.UWP
 				{
 					var control = new ToggleSwitch();
 					control.Toggled += OnNativeToggled;
-					control.Loaded += Control_Loaded;
+					control.Loaded += OnControlLoaded;
 					control.ClearValue(ToggleSwitch.OnContentProperty);
 					control.ClearValue(ToggleSwitch.OffContentProperty);
 
@@ -34,12 +34,6 @@ namespace Xamarin.Forms.Platform.UWP
 
 				UpdateFlowDirection();
 			}
-		}
-
-		private void Control_Loaded(object sender, RoutedEventArgs e)
-		{
-			UpdateOnColor();
-			Control.Loaded -= Control_Loaded;
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -59,6 +53,12 @@ namespace Xamarin.Forms.Platform.UWP
 		}
 
 		protected override bool PreventGestureBubbling { get; set; } = true;
+
+		void OnControlLoaded(object sender, RoutedEventArgs e)
+		{
+			UpdateOnColor();
+			Control.Loaded -= OnControlLoaded;
+		}
 
 		void OnNativeToggled(object sender, RoutedEventArgs routedEventArgs)
 		{
@@ -98,7 +98,7 @@ namespace Xamarin.Forms.Platform.UWP
 							if (_originalOnColor == null)
 								_originalOnColor = frame.Value;
 
-							if (Element.IsSet(Switch.OnColorProperty) && !Element.OnColor.IsDefault)
+							if (!Element.OnColor.IsDefault)
 								frame.Value = new SolidColorBrush(Element.OnColor.ToWindowsColor()) { Opacity = .7 };
 							else
 								frame.Value = _originalOnColor;
@@ -108,12 +108,12 @@ namespace Xamarin.Forms.Platform.UWP
 				}
 			}
 
-			var rect = Control.GetDescendantsByName<Windows.UI.Xaml.Shapes.Rectangle>("SwitchKnobBounds").FirstOrDefault();
+			var rect = Control.GetDescendantsByName<Windows.UI.Xaml.Shapes.Rectangle>("SwitchKnobBounds").First();
 
 			if (_originalOnColorBrush == null)
 				_originalOnColorBrush = rect.Fill;
 
-			if (Element.IsSet(Switch.OnColorProperty) && !Element.OnColor.IsDefault)
+			if (!Element.OnColor.IsDefault)
 				rect.Fill = new SolidColorBrush(Element.OnColor.ToWindowsColor());
 			else
 				rect.Fill = _originalOnColorBrush;
