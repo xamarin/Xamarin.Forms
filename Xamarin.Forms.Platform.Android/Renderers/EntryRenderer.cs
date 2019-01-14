@@ -96,11 +96,6 @@ namespace Xamarin.Forms.Platform.Android
 <<<<<<< HEAD
 =======
 
-		protected override FormsEditText CreateNativeControl()
-		{
-			return new FormsEditText(Context);
-		}
-
 		protected override void OnFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
 		{
 			if (!e.Focus)
