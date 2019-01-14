@@ -11,7 +11,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public ItemsViewRenderer()
 		{
-			CollectionView.VerifyCollectionViewFlagEnabled(nameof(CollectionViewRenderer));
+			CollectionView.VerifyCollectionViewFlagEnabled(nameof(ItemsViewRenderer));
 		}
 
 		public override UIViewController ViewController => ItemsViewController;
