@@ -1,7 +1,4 @@
 ﻿using System;
-using Xamarin.Forms.PlatformConfiguration;
-using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
-using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 using Xamarin.Forms.Xaml;
 
 namespace Xamarin.Forms.Controls
@@ -42,13 +39,6 @@ namespace Xamarin.Forms.Controls
 					}
 				}
 			}
-		}
-
-		void Handle_Clicked(object sender, System.EventArgs e)
-		{
-			(sender as Button).BorderWidth = 15;
-			(sender as Button).BorderColor = Color.Red;
-			(sender as Button).On<Android>().SetBorderAdjustsPadding(true);
 		}
 
 		void HandleChecks_Clicked(object sender, System.EventArgs e)

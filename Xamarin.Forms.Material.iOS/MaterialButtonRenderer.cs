@@ -47,7 +47,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			if (result.Height < _buttonScheme.MinimumHeight)
 				result.Height = _buttonScheme.MinimumHeight;
 
-			if (Element.IsSet(Specifics.Button.BorderAdjustsPaddingProperty) && Element.OnThisPlatform().GetBorderAdjustsPadding() &&
+			if (true &&
 				Element is IBorderElement borderElement && borderElement.IsBorderWidthSet() && borderElement.BorderWidth != borderElement.BorderWidthDefaultValue)
 			{
 				var adjustment = (nfloat)(Element.BorderWidth * 2.0);

@@ -50,7 +50,6 @@
 				<Button Text="Width: 0" BorderWidth="0" BorderColor="Red" />
 				<Button Text="Width: 15" BorderWidth="15" BorderColor="Red" />
 				<Button Text="Width: 15, Image" BorderWidth="15" BorderColor="Red" Image="bank.png" />
-				<Button Text="Width: 15, Adjusted" BorderWidth="15" BorderColor="Red" android:Button.BorderAdjustsPadding="true" ios:Button.BorderAdjustsPadding="true" />
 			</StackLayout>
 
 			<Label Text="Border Colors: (various border colors, width 5)" Margin="0,0,0,-5" />

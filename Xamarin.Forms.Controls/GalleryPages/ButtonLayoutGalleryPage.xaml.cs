@@ -149,27 +149,6 @@ namespace Xamarin.Forms.Controls
 			}
 		}
 
-		void OnButtonBorderAdjustmentChanged(object sender, EventArgs e)
-		{
-			if (sender is Picker picker)
-			{
-				if (picker.SelectedItem is string item && bool.TryParse(item, out var value))
-				{
-					autosizedButton.On<Android>().SetBorderAdjustsPadding(value);
-					autosizedButton.On<iOS>().SetBorderAdjustsPadding(value);
-					stretchedButton.On<Android>().SetBorderAdjustsPadding(value);
-					stretchedButton.On<iOS>().SetBorderAdjustsPadding(value);
-				}
-				else
-				{
-					autosizedButton.ClearValue(AndroidSpecific.Button.BorderAdjustsPaddingProperty);
-					autosizedButton.ClearValue(iOSSpecific.Button.BorderAdjustsPaddingProperty);
-					stretchedButton.ClearValue(AndroidSpecific.Button.BorderAdjustsPaddingProperty);
-					stretchedButton.ClearValue(iOSSpecific.Button.BorderAdjustsPaddingProperty);
-				}
-			}
-		}
-
 		void OnButtonDefaultShadowChanged(object sender, EventArgs e)
 		{
 			if (sender is Picker picker)

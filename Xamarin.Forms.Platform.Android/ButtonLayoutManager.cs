@@ -38,13 +38,18 @@ namespace Xamarin.Forms.Platform.Android
 		Button _element;
 		bool _alignIconWithText;
 		bool _preserveInitialPadding;
+		bool _borderAdjustsPadding;
 
-		public ButtonLayoutManager(IButtonLayoutRenderer renderer, bool alignIconWithText = false, bool preserveInitialPadding = true)
+		public ButtonLayoutManager(IButtonLayoutRenderer renderer,
+			bool alignIconWithText = false,
+			bool preserveInitialPadding = true,
+			bool borderAdjustsPadding = false)
 		{
-			_renderer = renderer;
+			_renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
 			_renderer.ElementChanged += OnElementChanged;
 			_alignIconWithText = alignIconWithText;
 			_preserveInitialPadding = preserveInitialPadding;
+			_borderAdjustsPadding = borderAdjustsPadding;
 		}
 
 		AppCompatButton View => _renderer?.View;
@@ -166,7 +171,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateImage();
 			else if (e.PropertyName == Button.TextProperty.PropertyName || e.PropertyName == VisualElement.IsVisibleProperty.PropertyName)
 				UpdateTextAndImage();
-			else if (e.PropertyName == Button.BorderWidthProperty.PropertyName || e.PropertyName == Specifics.Button.BorderAdjustsPaddingProperty.PropertyName)
+			else if (e.PropertyName == Button.BorderWidthProperty.PropertyName && _borderAdjustsPadding)
 				_element.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged);
 		}
 
@@ -185,8 +190,7 @@ namespace Xamarin.Forms.Platform.Android
 			var padding = _element.Padding;
 
 			var adjustment = 0.0;
-			if (_element.IsSet(Specifics.Button.BorderAdjustsPaddingProperty) && _element.OnThisPlatform().GetBorderAdjustsPadding() &&
-				_element is IBorderElement borderElement && borderElement.IsBorderWidthSet() && borderElement.BorderWidth != borderElement.BorderWidthDefaultValue)
+			if (_borderAdjustsPadding && _element is IBorderElement borderElement && borderElement.IsBorderWidthSet() && borderElement.BorderWidth != borderElement.BorderWidthDefaultValue)
 				adjustment = borderElement.BorderWidth;
 
 			var defaultPadding = _preserveInitialPadding

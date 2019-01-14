@@ -26,6 +26,7 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _spacingAdjustsHorizontalPadding;
 		bool _spacingAdjustsVerticalPadding;
 		bool _collapseHorizontalPadding;
+		bool _borderAdjustsPadding;
 
 		bool _titleChanged;
 		CGSize _titleSize;
@@ -34,13 +35,15 @@ namespace Xamarin.Forms.Platform.iOS
 		public ButtonLayoutManager(IButtonLayoutRenderer renderer,
 			bool spacingAdjustsHorizontalPadding = true,
 			bool spacingAdjustsVerticalPadding = true,
-			bool collapseHorizontalPadding = false)
+			bool collapseHorizontalPadding = false,
+			bool borderAdjustsPadding = false)
 		{
-			_renderer = renderer;
+			_renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
 			_renderer.ElementChanged += OnElementChanged;
 			_spacingAdjustsHorizontalPadding = spacingAdjustsHorizontalPadding;
 			_spacingAdjustsVerticalPadding = spacingAdjustsVerticalPadding;
 			_collapseHorizontalPadding = collapseHorizontalPadding;
+			_borderAdjustsPadding = borderAdjustsPadding;
 
 			ImageElementManager.Init(renderer.ImageVisualElementRenderer);
 		}
@@ -83,8 +86,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (result.Height < minHeight)
 				result.Height = minHeight;
 
-			if (_element.IsSet(Specifics.Button.BorderAdjustsPaddingProperty) && _element.OnThisPlatform().GetBorderAdjustsPadding() &&
-				_element is IBorderElement borderElement && borderElement.IsBorderWidthSet() && borderElement.BorderWidth != borderElement.BorderWidthDefaultValue)
+			if (_borderAdjustsPadding && _element is IBorderElement borderElement && borderElement.IsBorderWidthSet() && borderElement.BorderWidth != borderElement.BorderWidthDefaultValue)
 			{
 				var adjustment = (nfloat)(_element.BorderWidth * 2.0);
 				result.Width += adjustment;
@@ -151,7 +153,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateText();
 			else if (e.PropertyName == Button.ContentLayoutProperty.PropertyName)
 				ComputeEdgeInsets();
-			else if (e.PropertyName == Button.BorderWidthProperty.PropertyName || e.PropertyName == Specifics.Button.BorderAdjustsPaddingProperty.PropertyName)
+			else if (e.PropertyName == Button.BorderWidthProperty.PropertyName && _borderAdjustsPadding)
 				_element.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged);
 		}
 

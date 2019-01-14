@@ -53,7 +53,9 @@ namespace Xamarin.Forms.Platform.Android.Material
 			VisualElement.VerifyVisualFlagEnabled();
 
 			_automationPropertiesProvider = new AutomationPropertiesProvider(this);
-			_buttonLayoutManager = new ButtonLayoutManager(this, true);
+			_buttonLayoutManager = new ButtonLayoutManager(this,
+				alignIconWithText: true,
+				borderAdjustsPadding: true);
 
 			SoundEffectsEnabled = false;
 			SetOnClickListener(this);

@@ -86,9 +86,6 @@
 
 			</StackLayout>
 
-			<Label Text="Border Adjustment:" Margin="0,0,0,-5" />
-			<Picker ItemsSource="{Binding ButtonFlags}" SelectedIndexChanged="OnButtonBorderAdjustmentChanged" />
-
 			<Label Text="Use Default Shadow/Padding:" Margin="0,0,0,-5" />
 			<Picker ItemsSource="{Binding ButtonFlags}" SelectedIndexChanged="OnButtonDefaultShadowChanged" />
 
