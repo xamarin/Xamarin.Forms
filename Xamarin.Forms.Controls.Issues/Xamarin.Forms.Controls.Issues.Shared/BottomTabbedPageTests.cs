@@ -73,7 +73,10 @@ namespace Xamarin.Forms.Controls.Issues
 				Text = "Change Item Color",
 				Command = new Command(() =>
 				{
+#pragma warning disable CS0618 // Type or member is obsolete
 					if (On<Android>().GetBarItemColor() == Color.Default)
+#pragma warning restore CS0618 // Type or member is obsolete
+
 					{
 #pragma warning disable CS0618 // Type or member is obsolete
 						On<Android>().SetBarItemColor(new Color(0, 255, 0, 128));
@@ -96,7 +99,10 @@ namespace Xamarin.Forms.Controls.Issues
 				Text = "Change Selected Item Color",
 				Command = new Command(() =>
 				{
+#pragma warning disable CS0618 // Type or member is obsolete
 					if (On<Android>().GetBarSelectedItemColor() == Color.Default)
+#pragma warning restore CS0618 // Type or member is obsolete
+
 					{
 #pragma warning disable CS0618 // Type or member is obsolete
 						On<Android>().SetBarSelectedItemColor(Color.Green);

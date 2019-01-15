@@ -10,9 +10,9 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty BarTextColorProperty = BarElement.BarTextColorProperty;
 
-		public static readonly BindableProperty UnselectedTabColorProperty = BindableProperty.Create(nameof(UnselectedTabColor), typeof(Color),	typeof(TabbedPage), Color.Default);
+		public static readonly BindableProperty UnselectedTabColorProperty = BindableProperty.Create(nameof(UnselectedTabColor), typeof(Color),	typeof(TabbedPage), default(Color));
 
-		public static readonly BindableProperty SelectedTabColorProperty = BindableProperty.Create(nameof(SelectedTabColor), typeof(Color),	typeof(TabbedPage), Color.Default);
+		public static readonly BindableProperty SelectedTabColorProperty = BindableProperty.Create(nameof(SelectedTabColor), typeof(Color),	typeof(TabbedPage), default(Color));
 
 		readonly Lazy<PlatformConfigurationRegistry<TabbedPage>> _platformConfigurationRegistry;
 

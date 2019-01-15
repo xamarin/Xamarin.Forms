@@ -1,6 +1,7 @@
 ﻿namespace Xamarin.Forms.PlatformConfiguration.AndroidSpecific
 {
 	using System;
+	using System.ComponentModel;
 	using FormsElement = Forms.TabbedPage;
 
 	public static class TabbedPage
@@ -150,6 +151,8 @@
 			return GetMaxItemCount(config.Element);
 		}
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		[Obsolete("This property is obsolete as of version 3.5. Please use TabbedPage.UnselectedTabColor instead.")]
 		public static readonly BindableProperty BarItemColorProperty =
 			BindableProperty.Create("BarItemColor", typeof(Color),
 			typeof(TabbedPage), Color.Default);
@@ -165,11 +168,14 @@
 			element.SetValue(BarItemColorProperty, value);
 		}
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		[Obsolete("This method is obsolete as of version 3.5. Please use TabbedPage.UnselectedTabColor instead.")]
 		public static Color GetBarItemColor(this IPlatformElementConfiguration<Android, FormsElement> config)
 		{
 			return GetBarItemColor(config.Element);
 		}
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		[Obsolete("This method is obsolete as of version 3.5. Please use TabbedPage.UnselectedTabColor instead.")]
 		public static IPlatformElementConfiguration<Android, FormsElement> SetBarItemColor(this IPlatformElementConfiguration<Android, FormsElement> config, Color value)
 		{
@@ -177,10 +183,11 @@
 			return config;
 		}
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		[Obsolete("This property is obsolete as of version 3.5. Please use TabbedPage.UnselectedTabColor instead.")]
 		public static readonly BindableProperty BarSelectedItemColorProperty =
 			BindableProperty.Create("BarSelectedItemColor", typeof(Color),
 			typeof(TabbedPage), Color.Default);
-
 
 		public static Color GetBarSelectedItemColor(BindableObject element)
 		{
@@ -192,6 +199,7 @@
 			element.SetValue(BarSelectedItemColorProperty, value);
 		}
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		[Obsolete("This method is obsolete as of version 3.5. Please use TabbedPage.SelectedTabColor instead.")]
 		public static IPlatformElementConfiguration<Android, FormsElement> SetBarSelectedItemColor(this IPlatformElementConfiguration<Android, FormsElement> config, Color value)
 		{
@@ -199,6 +207,8 @@
 			return config;
 		}
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		[Obsolete("This method is obsolete as of version 3.5. Please use TabbedPage.UnselectedTabColor instead.")]
 		public static Color GetBarSelectedItemColor(this IPlatformElementConfiguration<Android, FormsElement> config)
 		{
 			return GetBarSelectedItemColor(config.Element);
