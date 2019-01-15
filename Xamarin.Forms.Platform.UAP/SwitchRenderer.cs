@@ -91,7 +91,7 @@ namespace Xamarin.Forms.Platform.UWP
 					{
 						var property = Storyboard.GetTargetProperty(timeline);
 						var target = Storyboard.GetTargetName(timeline);
-						if ((target == "SwitchKnobBounds") && (property == "Fill"))
+						if (target == "SwitchKnobBounds" && property == "Fill")
 						{
 							var frame = timeline.KeyFrames.First();
 
