@@ -10,7 +10,7 @@ namespace Xamarin.Forms.Platform.UWP
 {
 	public class SwitchRenderer : ViewRenderer<Switch, ToggleSwitch>
 	{
-		object _originalOnColor;
+		Brush _originalOnHoverColor;
 		Brush _originalOnColorBrush;
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Switch> e)
@@ -95,13 +95,13 @@ namespace Xamarin.Forms.Platform.UWP
 						{
 							var frame = timeline.KeyFrames.First();
 
-							if (_originalOnColor == null)
-								_originalOnColor = frame.Value;
+							if (_originalOnHoverColor == null)
+								_originalOnHoverColor = (Brush)frame.Value;
 
 							if (!Element.OnColor.IsDefault)
-								frame.Value = new SolidColorBrush(Element.OnColor.ToWindowsColor()) { Opacity = .7 };
+								frame.Value = new SolidColorBrush(Element.OnColor.ToWindowsColor()) { Opacity = _originalOnHoverColor.Opacity };
 							else
-								frame.Value = _originalOnColor;
+								frame.Value = _originalOnHoverColor;
 							break;
 						}
 					}
