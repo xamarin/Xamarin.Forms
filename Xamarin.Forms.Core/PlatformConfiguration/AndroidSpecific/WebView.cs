@@ -65,7 +65,7 @@ namespace Xamarin.Forms.PlatformConfiguration.AndroidSpecific
 			return (bool)element.GetValue(DisplayZoomControlsProperty);
 		}
 
-		public static void SetDisplayZoomControls(BindableObject element, bool value)
+		public static void SetDisplayZoomControls(FormsElement element, bool value)
 		{
 			element.SetValue(DisplayZoomControlsProperty, value);
 		}
