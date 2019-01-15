@@ -166,27 +166,10 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			var itemsSource = new ObservableCollection<int>(Enumerable.Range(0, 10));
 			BindableLayout.SetItemsSource(layout, itemsSource);
-			BindableLayout.SetItemTemplateSelector(layout, new DataTemplateSelectorFrame());
+			BindableLayout.SetItemTemplate(layout, new DataTemplateSelectorFrame());
 
 			Assert.IsTrue(IsLayoutWithItemsSource(itemsSource, layout));
 			Assert.AreEqual(itemsSource.Count, layout.Children.Cast<Frame>().Count());
-		}
-
-		[Test]
-		public void ItemTemplateTakesPrecendenceOverItemTemplateSelector()
-		{
-			var layout = new StackLayout
-			{
-				IsPlatformEnabled = true,
-			};
-
-			var itemsSource = new ObservableCollection<int>(Enumerable.Range(0, 10));
-			BindableLayout.SetItemsSource(layout, itemsSource);
-			BindableLayout.SetItemTemplate(layout, new DataTemplateBoxView());
-			BindableLayout.SetItemTemplateSelector(layout, new DataTemplateSelectorFrame());
-
-			Assert.IsTrue(IsLayoutWithItemsSource(itemsSource, layout));
-			Assert.AreEqual(itemsSource.Count, layout.Children.Cast<BoxView>().Count());
 		}
 
 		[Test]
@@ -309,8 +292,7 @@ namespace Xamarin.Forms.Core.UnitTests
 			int i = 0;
 			foreach (object item in itemsSource)
 			{
-				if (BindableLayout.GetItemTemplate(layout) is DataTemplate dataTemplate ||
-					BindableLayout.GetItemTemplateSelector(layout) is DataTemplateSelector dataTemplateSelector)
+				if (BindableLayout.GetItemTemplate(layout) is DataTemplate)
 				{
 					if (!Equals(item, layout.Children[i].BindingContext))
 					{

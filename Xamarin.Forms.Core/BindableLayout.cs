@@ -14,9 +14,8 @@ namespace Xamarin.Forms
 			BindableProperty.CreateAttached("ItemTemplate", typeof(DataTemplate), typeof(Layout<View>), default(DataTemplate),
 				propertyChanged: (b, o, n) => { GetBindableLayoutController(b).ItemTemplate = (DataTemplate)n; });
 
-		public static readonly BindableProperty ItemTemplateSelectorProperty =
-			BindableProperty.CreateAttached("ItemTemplateSelector", typeof(DataTemplateSelector), typeof(Layout<View>), default(DataTemplateSelector),
-				propertyChanged: (b, o, n) => { GetBindableLayoutController(b).ItemTemplateSelector = (DataTemplateSelector)n; });
+		[Obsolete("ItemTemplateSelectorProperty is obsolete. Please use ItemTemplateProperty instead.")]
+		public static readonly BindableProperty ItemTemplateSelectorProperty = ItemTemplateProperty;
 
 		static readonly BindableProperty BindableLayoutControllerProperty =
 			 BindableProperty.CreateAttached("BindableLayoutController", typeof(BindableLayoutController), typeof(Layout<View>), default(BindableLayoutController),
@@ -43,14 +42,16 @@ namespace Xamarin.Forms
 			return (DataTemplate)b.GetValue(ItemTemplateProperty);
 		}
 
+		[Obsolete("SetItemTemplateSelector is obsolete. Please use SetItemTemplate instead.")]
 		public static void SetItemTemplateSelector(BindableObject b, DataTemplateSelector value)
 		{
-			b.SetValue(ItemTemplateSelectorProperty, value);
+			b.SetValue(ItemTemplateProperty, value);
 		}
 
+		[Obsolete("GetItemTemplateSelector is obsolete. Please use GetItemTemplate instead.")]
 		public static DataTemplateSelector GetItemTemplateSelector(BindableObject b)
 		{
-			return (DataTemplateSelector)b.GetValue(ItemTemplateSelectorProperty);
+			return (DataTemplateSelector)b.GetValue(ItemTemplateProperty);
 		}
 
 		static BindableLayoutController GetBindableLayoutController(BindableObject b)
@@ -78,7 +79,6 @@ namespace Xamarin.Forms
 			newC.StartBatchUpdate();
 			newC.ItemsSource = GetItemsSource(b);
 			newC.ItemTemplate = GetItemTemplate(b);
-			newC.ItemTemplateSelector = GetItemTemplateSelector(b);
 			newC.EndBatchUpdate();
 		}
 	}
@@ -88,12 +88,10 @@ namespace Xamarin.Forms
 		readonly WeakReference<Layout<View>> _layoutWeakReference;
 		IEnumerable _itemsSource;
 		DataTemplate _itemTemplate;
-		DataTemplateSelector _itemTemplateSelector;
 		bool _isBatchUpdate;
 
 		public IEnumerable ItemsSource { get => _itemsSource; set => SetItemsSource(value); }
 		public DataTemplate ItemTemplate { get => _itemTemplate; set => SetItemTemplate(value); }
-		public DataTemplateSelector ItemTemplateSelector { get => _itemTemplateSelector; set => SetItemTemplateSelector(value); }
 
 
 		public BindableLayoutController(Layout<View> layout)
@@ -134,22 +132,7 @@ namespace Xamarin.Forms
 
 		void SetItemTemplate(DataTemplate itemTemplate)
 		{
-			if (itemTemplate is DataTemplateSelector)
-			{
-				throw new NotSupportedException($"You are using an instance of {nameof(DataTemplateSelector)} to set the {nameof(BindableLayout)}.{BindableLayout.ItemTemplateProperty.PropertyName} property. Use {nameof(BindableLayout)}.{BindableLayout.ItemTemplateSelectorProperty.PropertyName} property instead to set an item template selector");
-			}
-
 			_itemTemplate = itemTemplate;
-
-			if (!_isBatchUpdate)
-			{
-				CreateChildren();
-			}
-		}
-
-		void SetItemTemplateSelector(DataTemplateSelector itemTemplateSelector)
-		{
-			_itemTemplateSelector = itemTemplateSelector;
 
 			if (!_isBatchUpdate)
 			{
@@ -181,7 +164,12 @@ namespace Xamarin.Forms
 
 		View CreateItemView(object item, int index)
 		{
-			return CreateItemView(item, index, _itemTemplate ?? _itemTemplateSelector?.SelectTemplate(item, null));
+			var template = _itemTemplate;
+			while (template is DataTemplateSelector selector)
+			{
+				template = selector.SelectTemplate(item, null);
+			}
+			return CreateItemView(item, index, template);
 		}
 
 		View CreateItemView(object item, int index, DataTemplate dataTemplate)
