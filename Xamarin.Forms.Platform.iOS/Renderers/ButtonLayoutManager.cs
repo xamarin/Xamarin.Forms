@@ -7,7 +7,7 @@ using UIKit;
 namespace Xamarin.Forms.Platform.iOS
 {
 	// TODO: The entire layout system. iOS buttons were not designed for
-	//       anyting but image left, text right, single line layouts.
+	//       anything but image left, text right, single line layouts.
 
 	public class ButtonLayoutManager : IDisposable
 	{
@@ -81,54 +81,6 @@ namespace Xamarin.Forms.Platform.iOS
 				measured.Height = minHeight;
 
 			return measured;
-
-			// TODO: Calculate the best size and then render the button properly
-
-			//EnsureDefaultInsets();
-
-			//var layout = _element.ContentLayout;
-			//var padding = GetPaddingInsets();
-
-			//// calculate the content area after removing the borders and paddings
-			//var subtractedSize = new CGSize(padding.Left + padding.Right, padding.Top + padding.Bottom);
-			//if (_borderAdjustsPadding && _element is IBorderElement borderElement && borderElement.IsBorderWidthSet() && borderElement.BorderWidth != borderElement.BorderWidthDefaultValue)
-			//{
-			//	var adjustment = (nfloat)(_element.BorderWidth * 2.0);
-			//	subtractedSize += new CGSize(adjustment, adjustment);
-			//}
-
-			//// make image and spacing adjustments
-			//var imageSize = control.CurrentImage?.Size ?? new CGSize();
-			//if (!imageSize.IsEmpty)
-			//{
-			//	if (_spacingAdjustsPadding)
-			//	{
-			//		var adjustment = layout.Spacing / 2;
-			//		subtractedSize += new CGSize(adjustment, adjustment);
-			//	}
-
-			//	subtractedSize += new CGSize(
-			//		layout.IsHorizontal ? imageSize.Width + layout.Spacing : 0,
-			//		layout.IsVertical ? imageSize.Height + layout.Spacing : 0);
-			//}
-
-			//var availableSize = size - subtractedSize;
-			//var t = control.TitleRectForContentRect(new CGRect(CGPoint.Empty, availableSize));
-			//var textSize = control.TitleRectForContentRect(new CGRect(CGPoint.Empty, availableSize)).Size;
-
-			//var minContentSize = new CGSize(
-			//	layout.IsVertical ? Math.Max(imageSize.Width, textSize.Width) : 0,
-			//	layout.IsHorizontal ? Math.Max(imageSize.Height, textSize.Height) : 0);
-
-			//var newSize = textSize + subtractedSize;
-			//if (newSize.Width < minContentSize.Width)
-			//	newSize.Width = minContentSize.Width;
-			//if (newSize.Height < minContentSize.Height)
-			//	newSize.Height = minContentSize.Height;
-
-			//Console.WriteLine($"{_element.TabIndex}: size={size}, newSize={newSize}, subtractedSize={subtractedSize}, textSize={textSize}, minContentSize={minContentSize}");
-
-			//return newSize;
 		}
 
 		public void Update()

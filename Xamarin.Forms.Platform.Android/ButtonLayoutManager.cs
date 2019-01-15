@@ -19,11 +19,6 @@ namespace Xamarin.Forms.Platform.Android
 	//       be made to find the drawable in the view and just re-position.
 	//       If we do this, we must remember to undo the offset in OnLayout.
 
-	// TODO: The padding options here need investigation. See UpdatePadding().
-
-	// TODO: Sometimes the border/padding does not affect the bounds of the 
-	//       button due to minimum size constraints. See UpdateBounds(bool).
-
 	public class ButtonLayoutManager : IDisposable
 	{
 		// we use left/right as this does not resize the button when there is no text
@@ -197,72 +192,12 @@ namespace Xamarin.Forms.Platform.Android
 				? _defaultPaddingPix.Value
 				: new Thickness();
 
-			// TODO: The padding options here are both wrong. Need to sort this out.
-
 			view.SetPadding(
 				(int)(Context.ToPixels(padding.Left + adjustment) + defaultPadding.Left),
 				(int)(Context.ToPixels(padding.Top + adjustment) + defaultPadding.Top),
 				(int)(Context.ToPixels(padding.Right + adjustment) + defaultPadding.Right),
 				(int)(Context.ToPixels(padding.Bottom + adjustment) + defaultPadding.Bottom));
-
-			//if (_element.IsSet(Button.PaddingProperty))
-			//{
-			//	view.SetPadding(
-			//		(int)(Context.ToPixels(padding.Left)),
-			//		(int)(Context.ToPixels(padding.Top)),
-			//		(int)(Context.ToPixels(padding.Right)),
-			//		(int)(Context.ToPixels(padding.Bottom)));
-			//}
-			//else
-			//{
-			//	view.SetPadding(
-			//		(int)_defaultPaddingPix.Value.Left,
-			//		(int)_defaultPaddingPix.Value.Top,
-			//		(int)_defaultPaddingPix.Value.Right,
-			//		(int)_defaultPaddingPix.Value.Bottom);
-			//}
 		}
-
-		//Size? _defaultMinSizePix;
-
-		//void UpdateBounds(bool invalidateMeasure)
-		//{
-		//	if (_disposed || _renderer == null || _element == null)
-		//		return;
-
-		//	AppCompatButton view = View;
-		//	if (view == null)
-		//		return;
-
-		//	// the defaults
-		//	if (!_defaultMinSizePix.HasValue)
-		//		_defaultMinSizePix = new Size(view.MinWidth, view.MinHeight);
-		//	if (!_defaultPaddingPix.HasValue)
-		//		_defaultPaddingPix = new Thickness(view.PaddingLeft, view.PaddingTop, view.PaddingRight, view.PaddingBottom);
-
-		//	// get the border width, if we are going to adjust the bounds
-		//	var adjustment = 0;
-		//	if (_element.IsSet(Specifics.Button.BorderAdjustsPaddingProperty) && _element.OnThisPlatform().GetBorderAdjustsPadding() &&
-		//		_element is IBorderElement borderElement && borderElement.IsBorderWidthSet() && borderElement.BorderWidth != borderElement.BorderWidthDefaultValue)
-		//		adjustment = (int)Context.ToPixels(borderElement.BorderWidth);
-
-		//	// we need to increase the minimum bounds
-		//	if (_defaultMinSizePix?.Width is double width && width > 0)
-		//		view.SetMinWidth((int)(width + (adjustment * 2)));
-		//	if (_defaultMinSizePix?.Height is double height && height > 0)
-		//		view.SetMinHeight((int)(height + (adjustment * 2)));
-
-		//	// we need to increase the padding
-		//	var padding = _element.Padding;
-		//	view.SetPadding(
-		//		(int)(Context.ToPixels(padding.Left) + _defaultPaddingPix.Value.Left),
-		//		(int)(Context.ToPixels(padding.Top) + _defaultPaddingPix.Value.Top),
-		//		(int)(Context.ToPixels(padding.Right) + _defaultPaddingPix.Value.Right),
-		//		(int)(Context.ToPixels(padding.Bottom) + _defaultPaddingPix.Value.Bottom));
-
-		//	if (invalidateMeasure)
-		//		_element.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged);
-		//}
 
 		bool UpdateTextAndImage()
 		{
