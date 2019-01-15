@@ -16,7 +16,6 @@ namespace Xamarin.Forms.Platform.UWP
 		protected override void OnElementChanged(ElementChangedEventArgs<Switch> e)
 		{
 			base.OnElementChanged(e);
-			
 			if (e.NewElement != null)
 			{
 				if (Control == null)
