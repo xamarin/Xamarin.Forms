@@ -43,7 +43,7 @@
 				return;
 			}
 
-			observableCollection.TestMoveWithList(startIndex, endIndex - startIndex, destinationIndex);
+			observableCollection.TestMoveWithList(startIndex, (endIndex - startIndex) + 1, destinationIndex);
 		}
 	}
 }
