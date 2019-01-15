@@ -58,7 +58,7 @@ namespace Xamarin.Forms.PlatformConfiguration.AndroidSpecific
 			return config;
 		}
 
-		public static readonly BindableProperty DisplayZoomControlsProperty = BindableProperty.Create("DisplayZoomControls", typeof(bool), typeof(WebView), true);
+		public static readonly BindableProperty DisplayZoomControlsProperty = BindableProperty.Create("DisplayZoomControls", typeof(bool), typeof(FormsElement), true);
 
 		public static bool GetDisplayZoomControls(FormsElement element)
 		{
