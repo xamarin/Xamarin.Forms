@@ -37,7 +37,7 @@ namespace Xamarin.Forms.PlatformConfiguration.AndroidSpecific
 
 		public static readonly BindableProperty EnableZoomControlProperty = BindableProperty.Create("EnableZoomControls", typeof(bool), typeof(WebView), false);
 
-		public static bool GetEnableZoomControls(BindableObject element)
+		public static bool GetEnableZoomControls(FormsElement element)
 		{
 			return (bool)element.GetValue(EnableZoomControlProperty);
 		}
