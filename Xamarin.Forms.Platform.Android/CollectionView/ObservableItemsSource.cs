@@ -58,8 +58,12 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			_adapter.NotifyItemRangeChanged(args.OldStartingIndex, count);
-			_adapter.NotifyItemRangeChanged(args.NewStartingIndex, count);
+			var start = Math.Min(args.OldStartingIndex, args.NewStartingIndex);
+			var end = Math.Max(args.OldStartingIndex, args.NewStartingIndex) + count;
+			_adapter.NotifyItemRangeChanged(start, end);
+
+			//_adapter.NotifyItemRangeChanged(args.OldStartingIndex, count);
+			//_adapter.NotifyItemRangeChanged(args.NewStartingIndex, count);
 		}
 
 		void Add(NotifyCollectionChangedEventArgs args)
