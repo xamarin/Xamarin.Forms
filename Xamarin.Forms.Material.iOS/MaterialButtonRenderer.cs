@@ -31,7 +31,8 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			_buttonLayoutManager = new ButtonLayoutManager(this,
 				preserveInitialPadding: true,
 				spacingAdjustsPadding: false,
-				borderAdjustsPadding: true);
+				borderAdjustsPadding: true,
+				collapseHorizontalPadding: true);
 		}
 
 		protected override void Dispose(bool disposing)

@@ -17,6 +17,7 @@ namespace Xamarin.Forms.Platform.iOS
 		bool _preserveInitialPadding;
 		bool _spacingAdjustsPadding;
 		bool _borderAdjustsPadding;
+		bool _collapseHorizontalPadding;
 
 		UIEdgeInsets? _defaultImageInsets;
 		UIEdgeInsets? _defaultTitleInsets;
@@ -27,13 +28,15 @@ namespace Xamarin.Forms.Platform.iOS
 		public ButtonLayoutManager(IButtonLayoutRenderer renderer,
 			bool preserveInitialPadding = false,
 			bool spacingAdjustsPadding = true,
-			bool borderAdjustsPadding = false)
+			bool borderAdjustsPadding = false,
+			bool collapseHorizontalPadding = false)
 		{
 			_renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
 			_renderer.ElementChanged += OnElementChanged;
 			_preserveInitialPadding = preserveInitialPadding;
 			_spacingAdjustsPadding = spacingAdjustsPadding;
 			_borderAdjustsPadding = borderAdjustsPadding;
+			_collapseHorizontalPadding = collapseHorizontalPadding;
 
 			ImageElementManager.Init(renderer.ImageVisualElementRenderer);
 		}
@@ -256,7 +259,7 @@ namespace Xamarin.Forms.Platform.iOS
 			var halfSpacing = spacing / 2;
 
 			var image = control.CurrentImage;
-			if (image != null)
+			if (image != null && !string.IsNullOrEmpty(control.CurrentTitle))
 			{
 				// TODO: Do not use the title label as it is not yet updated and
 				//       if we move the image, then we technically have more
@@ -308,7 +311,9 @@ namespace Xamarin.Forms.Platform.iOS
 					var titleVertical = (imageHeight / 2) + halfSpacing;
 
 					// the width will be different now that the image is no longer next to the text
-					var horizontalAdjustment = (nfloat)(titleWidth + imageWidth - Math.Max(titleWidth, imageWidth)) / 2;
+					nfloat horizontalAdjustment = 0;
+					if (_collapseHorizontalPadding)
+						horizontalAdjustment = (nfloat)(titleWidth + imageWidth - Math.Max(titleWidth, imageWidth)) / 2;
 					_paddingAdjustments.Left -= horizontalAdjustment;
 					_paddingAdjustments.Right -= horizontalAdjustment;
 
