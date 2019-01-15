@@ -42,7 +42,7 @@ namespace Xamarin.Forms.PlatformConfiguration.AndroidSpecific
 			return (bool)element.GetValue(EnableZoomControlProperty);
 		}
 
-		public static void SetEnableZoomControls(BindableObject element, bool value)
+		public static void SetEnableZoomControls(FormsElement element, bool value)
 		{
 			element.SetValue(EnableZoomControlProperty, value);
 		}
