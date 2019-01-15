@@ -31,6 +31,28 @@
 				<Button x:Name="autosizedButton" Text="{Binding ButtonText}" Image="{Binding ButtonImage}" Padding="{Binding ButtonPadding}" ContentLayout="{Binding ButtonImageLayout}" />
 			</StackLayout>
 
+			<Label Text="Explicit Size:" Margin="0,0,0,-5" />
+			<Grid Padding="0" RowSpacing="5" ColumnSpacing="5">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="*" />
+					<RowDefinition Height="*" />
+				</Grid.RowDefinitions>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*" />
+					<ColumnDefinition Width="*" />
+				</Grid.ColumnDefinitions>
+
+				<Button
+					x:Name="explicitButton" Text="{Binding ButtonText}" Image="{Binding ButtonImage}" Padding="{Binding ButtonPadding}" ContentLayout="{Binding ButtonImageLayout}"
+					WidthRequest="120" HeightRequest="60" HorizontalOptions="Start" VerticalOptions="Start" />
+				<Button
+					x:Name="explicitWidthButton" Text="{Binding ButtonText}" Image="{Binding ButtonImage}" Padding="{Binding ButtonPadding}" ContentLayout="{Binding ButtonImageLayout}"
+					Grid.Column="1" Grid.RowSpan="2" WidthRequest="120" HorizontalOptions="Start" VerticalOptions="Start" />
+				<Button
+					x:Name="explicitHeightButton" Text="{Binding ButtonText}" Image="{Binding ButtonImage}" Padding="{Binding ButtonPadding}" ContentLayout="{Binding ButtonImageLayout}"
+					Grid.Row="1" Grid.ColumnSpan="2" HeightRequest="60" HorizontalOptions="Start" VerticalOptions="Start" />
+			</Grid>
+
 			<Label Text="Stretched:" Margin="0,0,0,-5" />
 			<StackLayout Orientation="Vertical" Padding="0" Spacing="5">
 				<Button x:Name="stretchedButton" Text="{Binding ButtonText}" Image="{Binding ButtonImage}" Padding="{Binding ButtonPadding}" ContentLayout="{Binding ButtonImageLayout}" />
@@ -86,7 +108,7 @@
 
 			</StackLayout>
 
-			<Label Text="Use Default Shadow/Padding:" Margin="0,0,0,-5" />
+			<Label Text="Use Default Shadow/Padding: (Android only)" Margin="0,0,0,-5" />
 			<Picker ItemsSource="{Binding ButtonFlags}" SelectedIndexChanged="OnButtonDefaultShadowChanged" />
 
 		</StackLayout>

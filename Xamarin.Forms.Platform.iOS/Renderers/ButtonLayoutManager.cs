@@ -1,48 +1,38 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Threading.Tasks;
 using CoreGraphics;
-using Foundation;
 using UIKit;
-using Xamarin.Forms.Internals;
-using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
-using Specifics = Xamarin.Forms.PlatformConfiguration.iOSSpecific;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public interface IButtonLayoutRenderer
-	{
-		UIButton Control { get; }
-		Button Element { get; }
-		IImageVisualElementRenderer ImageVisualElementRenderer { get; }
-		nfloat MinimumHeight { get; }
-		event EventHandler<ElementChangedEventArgs<Button>> ElementChanged;
-	}
+	// TODO: The entire layout system. iOS buttons were not designed for
+	//       anyting but image left, text right, single line layouts.
 
 	public class ButtonLayoutManager : IDisposable
 	{
 		bool _disposed;
 		IButtonLayoutRenderer _renderer;
 		Button _element;
-		bool _spacingAdjustsHorizontalPadding;
-		bool _spacingAdjustsVerticalPadding;
-		bool _collapseHorizontalPadding;
+		bool _preserveInitialPadding;
+		bool _spacingAdjustsPadding;
 		bool _borderAdjustsPadding;
 
-		bool _titleChanged;
-		CGSize _titleSize;
-		UIEdgeInsets _paddingDelta = new UIEdgeInsets();
+		UIEdgeInsets? _defaultImageInsets;
+		UIEdgeInsets? _defaultTitleInsets;
+		UIEdgeInsets? _defaultContentInsets;
+
+		UIEdgeInsets _paddingAdjustments = new UIEdgeInsets();
 
 		public ButtonLayoutManager(IButtonLayoutRenderer renderer,
-			bool spacingAdjustsHorizontalPadding = true,
-			bool spacingAdjustsVerticalPadding = true,
-			bool collapseHorizontalPadding = false,
+			bool preserveInitialPadding = false,
+			bool spacingAdjustsPadding = true,
 			bool borderAdjustsPadding = false)
 		{
 			_renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
 			_renderer.ElementChanged += OnElementChanged;
-			_spacingAdjustsHorizontalPadding = spacingAdjustsHorizontalPadding;
-			_spacingAdjustsVerticalPadding = spacingAdjustsVerticalPadding;
-			_collapseHorizontalPadding = collapseHorizontalPadding;
+			_preserveInitialPadding = preserveInitialPadding;
+			_spacingAdjustsPadding = spacingAdjustsPadding;
 			_borderAdjustsPadding = borderAdjustsPadding;
 
 			ImageElementManager.Init(renderer.ImageVisualElementRenderer);
@@ -77,28 +67,76 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		internal void SizeThatFits(ref CGSize result)
+		public CGSize SizeThatFits(CGSize size, CGSize measured)
 		{
 			if (_disposed || _renderer == null || _element == null)
-				return;
+				return measured;
+
+			var control = Control;
+			if (control == null)
+				return measured;
 
 			var minHeight = _renderer.MinimumHeight;
-			if (result.Height < minHeight)
-				result.Height = minHeight;
+			if (measured.Height < minHeight)
+				measured.Height = minHeight;
 
-			if (_borderAdjustsPadding && _element is IBorderElement borderElement && borderElement.IsBorderWidthSet() && borderElement.BorderWidth != borderElement.BorderWidthDefaultValue)
-			{
-				var adjustment = (nfloat)(_element.BorderWidth * 2.0);
-				result.Width += adjustment;
-				result.Height += adjustment;
-			}
+			return measured;
+
+			// TODO: Calculate the best size and then render the button properly
+
+			//EnsureDefaultInsets();
+
+			//var layout = _element.ContentLayout;
+			//var padding = GetPaddingInsets();
+
+			//// calculate the content area after removing the borders and paddings
+			//var subtractedSize = new CGSize(padding.Left + padding.Right, padding.Top + padding.Bottom);
+			//if (_borderAdjustsPadding && _element is IBorderElement borderElement && borderElement.IsBorderWidthSet() && borderElement.BorderWidth != borderElement.BorderWidthDefaultValue)
+			//{
+			//	var adjustment = (nfloat)(_element.BorderWidth * 2.0);
+			//	subtractedSize += new CGSize(adjustment, adjustment);
+			//}
+
+			//// make image and spacing adjustments
+			//var imageSize = control.CurrentImage?.Size ?? new CGSize();
+			//if (!imageSize.IsEmpty)
+			//{
+			//	if (_spacingAdjustsPadding)
+			//	{
+			//		var adjustment = layout.Spacing / 2;
+			//		subtractedSize += new CGSize(adjustment, adjustment);
+			//	}
+
+			//	subtractedSize += new CGSize(
+			//		layout.IsHorizontal ? imageSize.Width + layout.Spacing : 0,
+			//		layout.IsVertical ? imageSize.Height + layout.Spacing : 0);
+			//}
+
+			//var availableSize = size - subtractedSize;
+			//var t = control.TitleRectForContentRect(new CGRect(CGPoint.Empty, availableSize));
+			//var textSize = control.TitleRectForContentRect(new CGRect(CGPoint.Empty, availableSize)).Size;
+
+			//var minContentSize = new CGSize(
+			//	layout.IsVertical ? Math.Max(imageSize.Width, textSize.Width) : 0,
+			//	layout.IsHorizontal ? Math.Max(imageSize.Height, textSize.Height) : 0);
+
+			//var newSize = textSize + subtractedSize;
+			//if (newSize.Width < minContentSize.Width)
+			//	newSize.Width = minContentSize.Width;
+			//if (newSize.Height < minContentSize.Height)
+			//	newSize.Height = minContentSize.Height;
+
+			//Console.WriteLine($"{_element.TabIndex}: size={size}, newSize={newSize}, subtractedSize={subtractedSize}, textSize={textSize}, minContentSize={minContentSize}");
+
+			//return newSize;
 		}
 
 		public void Update()
 		{
 			UpdatePadding();
-			UpdateImage();
+			_ = UpdateImageAsync();
 			UpdateText();
+			UpdateEdgeInsets();
 		}
 
 		public void SetImage(UIImage image)
@@ -114,13 +152,13 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				control.SetImage(image.ImageWithRenderingMode(UIImageRenderingMode.AlwaysOriginal), UIControlState.Normal);
 				control.ImageView.ContentMode = UIViewContentMode.ScaleAspectFit;
-				ComputeEdgeInsets();
 			}
 			else
 			{
 				control.SetImage(null, UIControlState.Normal);
-				ClearEdgeInsets();
 			}
+
+			UpdateEdgeInsets();
 		}
 
 		void OnElementChanged(object sender, ElementChangedEventArgs<Button> e)
@@ -148,13 +186,13 @@ namespace Xamarin.Forms.Platform.iOS
 			if (e.PropertyName == Button.PaddingProperty.PropertyName)
 				UpdatePadding();
 			else if (e.PropertyName == Button.ImageProperty.PropertyName)
-				UpdateImage();
+				_ = UpdateImageAsync();
 			else if (e.PropertyName == Button.TextProperty.PropertyName)
 				UpdateText();
 			else if (e.PropertyName == Button.ContentLayoutProperty.PropertyName)
-				ComputeEdgeInsets();
+				UpdateEdgeInsets();
 			else if (e.PropertyName == Button.BorderWidthProperty.PropertyName && _borderAdjustsPadding)
-				_element.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged);
+				UpdateEdgeInsets();
 		}
 
 		void UpdateText()
@@ -166,12 +204,12 @@ namespace Xamarin.Forms.Platform.iOS
 			if (control == null)
 				return;
 
-			_titleChanged = true;
 			control.SetTitle(_element.Text, UIControlState.Normal);
-			ComputeEdgeInsets();
+
+			UpdateEdgeInsets();
 		}
 
-		async void UpdateImage()
+		async Task UpdateImageAsync()
 		{
 			if (_disposed || _renderer == null || _element == null)
 				return;
@@ -199,35 +237,25 @@ namespace Xamarin.Forms.Platform.iOS
 			if (control == null)
 				return;
 
-			control.ContentEdgeInsets = new UIEdgeInsets(
-				(float)(_element.Padding.Top + _paddingDelta.Top),
-				(float)(_element.Padding.Left + _paddingDelta.Left),
-				(float)(_element.Padding.Bottom + _paddingDelta.Bottom),
-				(float)(_element.Padding.Right + _paddingDelta.Right)
-			);
+			EnsureDefaultInsets();
+
+			control.ContentEdgeInsets = GetPaddingInsets(_paddingAdjustments);
 		}
 
-		void UpdateContentEdge(UIEdgeInsets? delta = null)
+		UIEdgeInsets GetPaddingInsets(UIEdgeInsets adjustments = default(UIEdgeInsets))
 		{
-			_paddingDelta = delta ?? new UIEdgeInsets();
-			UpdatePadding();
+			var defaultPadding = _preserveInitialPadding && _defaultContentInsets.HasValue
+				? _defaultContentInsets.Value
+				: new UIEdgeInsets();
+
+			return new UIEdgeInsets(
+				(nfloat)_element.Padding.Top + defaultPadding.Top + adjustments.Top,
+				(nfloat)_element.Padding.Left + defaultPadding.Left + adjustments.Left,
+				(nfloat)_element.Padding.Bottom + defaultPadding.Bottom + adjustments.Bottom,
+				(nfloat)_element.Padding.Right + defaultPadding.Right + adjustments.Right);
 		}
 
-		void ClearEdgeInsets()
-		{
-			if (_disposed || _renderer == null || _element == null)
-				return;
-
-			var control = Control;
-			if (control == null)
-				return;
-
-			control.ImageEdgeInsets = new UIEdgeInsets(0, 0, 0, 0);
-			control.TitleEdgeInsets = new UIEdgeInsets(0, 0, 0, 0);
-			UpdateContentEdge();
-		}
-
-		void ComputeEdgeInsets()
+		void EnsureDefaultInsets()
 		{
 			if (_disposed || _renderer == null || _element == null)
 				return;
@@ -236,69 +264,133 @@ namespace Xamarin.Forms.Platform.iOS
 			if (control == null)
 				return;
 
-			if (control.ImageView?.Image == null || string.IsNullOrEmpty(control.TitleLabel?.Text))
+			if (_defaultImageInsets == null)
+				_defaultImageInsets = control.ImageEdgeInsets;
+			if (_defaultTitleInsets == null)
+				_defaultTitleInsets = control.TitleEdgeInsets;
+			if (_defaultContentInsets == null)
+				_defaultContentInsets = control.ContentEdgeInsets;
+		}
+
+		void UpdateEdgeInsets()
+		{
+			if (_disposed || _renderer == null || _element == null)
 				return;
+
+			var control = Control;
+			if (control == null)
+				return;
+
+			EnsureDefaultInsets();
+
+			_paddingAdjustments = new UIEdgeInsets();
+
+			var imageInsets = new UIEdgeInsets();
+			var titleInsets = new UIEdgeInsets();
+
+			// adjust for the border
+			if (_borderAdjustsPadding && _element is IBorderElement borderElement && borderElement.IsBorderWidthSet() && borderElement.BorderWidth != borderElement.BorderWidthDefaultValue)
+			{
+				var width = (nfloat)_element.BorderWidth;
+				_paddingAdjustments.Top += width;
+				_paddingAdjustments.Bottom += width;
+				_paddingAdjustments.Left += width;
+				_paddingAdjustments.Right += width;
+			}
 
 			var layout = _element.ContentLayout;
-			var position = layout.Position;
-			var spacing = (nfloat)(layout.Spacing / 2);
 
-			// left and right
+			var spacing = (nfloat)layout.Spacing;
+			var halfSpacing = spacing / 2;
 
-			var horizontalPadding = _spacingAdjustsHorizontalPadding ? spacing * 2 : spacing;
-
-			if (position == Button.ButtonContentLayout.ImagePosition.Left)
+			var image = control.CurrentImage;
+			if (image != null)
 			{
-				control.ImageEdgeInsets = new UIEdgeInsets(0, -spacing, 0, spacing);
-				control.TitleEdgeInsets = new UIEdgeInsets(0, spacing, 0, -spacing);
-				UpdateContentEdge(new UIEdgeInsets(0, horizontalPadding, 0, horizontalPadding));
-				return;
+				// TODO: Do not use the title label as it is not yet updated and
+				//       if we move the image, then we technically have more
+				//       space and will require a new laoyt pass.
+
+				var titleRect = control.TitleLabel.Bounds.Size;
+
+				var titleWidth = titleRect.Width;
+				var titleHeight = titleRect.Height;
+				var imageWidth = image.Size.Width;
+				var imageHeight = image.Size.Height;
+
+				// adjust the padding for the spacing
+				if (layout.IsHorizontal)
+				{
+					var adjustment = _spacingAdjustsPadding ? halfSpacing * 2 : halfSpacing;
+					_paddingAdjustments.Left += adjustment;
+					_paddingAdjustments.Right += adjustment;
+				}
+				else
+				{
+					var adjustment = _spacingAdjustsPadding ? halfSpacing * 2 : halfSpacing;
+
+					_paddingAdjustments.Top += adjustment;
+					_paddingAdjustments.Bottom += adjustment;
+				}
+
+				// move the images according to the layout
+				if (layout.Position == Button.ButtonContentLayout.ImagePosition.Left)
+				{
+					// add a bit of spacing
+					imageInsets.Left -= halfSpacing;
+					imageInsets.Right += halfSpacing;
+					titleInsets.Left += halfSpacing;
+					titleInsets.Right -= halfSpacing;
+				}
+				else if (layout.Position == Button.ButtonContentLayout.ImagePosition.Right)
+				{
+					// swap the elements and add spacing
+					imageInsets.Left += titleWidth + halfSpacing;
+					imageInsets.Right -= titleWidth + halfSpacing;
+					titleInsets.Left -= imageWidth + halfSpacing;
+					titleInsets.Right += imageWidth + halfSpacing;
+				}
+				else
+				{
+					// we will move the image and title vertically
+					var imageVertical = (titleHeight / 2) + halfSpacing;
+					var titleVertical = (imageHeight / 2) + halfSpacing;
+
+					// the width will be different now that the image is no longer next to the text
+					var horizontalAdjustment = (nfloat)(titleWidth + imageWidth - Math.Max(titleWidth, imageWidth)) / 2;
+					_paddingAdjustments.Left -= horizontalAdjustment;
+					_paddingAdjustments.Right -= horizontalAdjustment;
+
+					// the height will also be different
+					var verticalAdjustment = (nfloat)Math.Min(imageVertical, titleVertical);
+					_paddingAdjustments.Top += verticalAdjustment;
+					_paddingAdjustments.Bottom += verticalAdjustment;
+
+					// if the image is at the bottom, swap the direction
+					if (layout.Position == Button.ButtonContentLayout.ImagePosition.Bottom)
+					{
+						imageVertical = -imageVertical;
+						titleVertical = -titleVertical;
+					}
+
+					// move the image and title vertically
+					imageInsets.Top -= imageVertical;
+					imageInsets.Bottom += imageVertical;
+					titleInsets.Top += titleVertical;
+					titleInsets.Bottom -= titleVertical;
+
+					// center the elements horizontally
+					var imageHorizontal = titleWidth / 2;
+					var titleHorizontal = imageWidth / 2;
+					imageInsets.Left += imageHorizontal;
+					imageInsets.Right -= imageHorizontal;
+					titleInsets.Left -= titleHorizontal;
+					titleInsets.Right += titleHorizontal;
+				}
 			}
 
-			if (_titleChanged)
-			{
-				var stringToMeasure = new NSString(_element.Text);
-				UIStringAttributes attribs = new UIStringAttributes { Font = control.TitleLabel.Font };
-				_titleSize = stringToMeasure.GetSizeUsingAttributes(attribs);
-				_titleChanged = false;
-			}
-
-			var labelWidth = _titleSize.Width;
-			var imageWidth = control.ImageView.Image.Size.Width;
-
-			if (position == Button.ButtonContentLayout.ImagePosition.Right)
-			{
-				control.ImageEdgeInsets = new UIEdgeInsets(0, labelWidth + spacing, 0, -(labelWidth + spacing));
-				control.TitleEdgeInsets = new UIEdgeInsets(0, -(imageWidth + spacing), 0, imageWidth + spacing);
-				UpdateContentEdge(new UIEdgeInsets(0, horizontalPadding, 0, horizontalPadding));
-				return;
-			}
-
-			// top and bottom
-
-			var imageVertOffset = (_titleSize.Height / 2) + spacing;
-			var titleVertOffset = (control.ImageView.Image.Size.Height / 2) + spacing;
-
-			var horizontalImageOffset = labelWidth / 2;
-			var horizontalTitleOffset = imageWidth / 2;
-
-			var edgeOffset = (nfloat)Math.Min(imageVertOffset, titleVertOffset);
-			if (_spacingAdjustsVerticalPadding)
-				edgeOffset += spacing;
-
-			if (position == Button.ButtonContentLayout.ImagePosition.Bottom)
-			{
-				imageVertOffset = -imageVertOffset;
-				titleVertOffset = -titleVertOffset;
-			}
-
-			nfloat collapseAdjustment = 0;
-			if (_collapseHorizontalPadding)
-				collapseAdjustment = (nfloat)(labelWidth + imageWidth - Math.Max(labelWidth, imageWidth)) / 2;
-
-			control.ImageEdgeInsets = new UIEdgeInsets(-imageVertOffset, horizontalImageOffset, imageVertOffset, -horizontalImageOffset);
-			control.TitleEdgeInsets = new UIEdgeInsets(titleVertOffset, -horizontalTitleOffset, -titleVertOffset, horizontalTitleOffset);
-			UpdateContentEdge(new UIEdgeInsets(edgeOffset, -collapseAdjustment, edgeOffset, -collapseAdjustment));
+			UpdatePadding();
+			control.ImageEdgeInsets = imageInsets;
+			control.TitleEdgeInsets = titleInsets;
 		}
 	}
 }

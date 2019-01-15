@@ -23,6 +23,8 @@ namespace Xamarin.Forms.Controls
 		double _buttonBorderWidth = -1;
 		ButtonImagePosition _buttonImagePosition = ButtonImagePosition.Left;
 
+		Button[] _buttons;
+
 		public ButtonLayoutGalleryPage()
 			: this(VisualMarker.MatchParent)
 		{
@@ -32,6 +34,15 @@ namespace Xamarin.Forms.Controls
 		{
 			InitializeComponent();
 			Visual = visual;
+
+			_buttons = new[]
+			{
+				autosizedButton,
+				explicitButton,
+				explicitWidthButton,
+				explicitHeightButton,
+				stretchedButton
+			};
 
 			// buttons are transparent on default iOS, so we have to give them something
 			if (Device.RuntimePlatform == Device.iOS)
@@ -132,19 +143,18 @@ namespace Xamarin.Forms.Controls
 				_buttonBorderWidth = value;
 				OnPropertyChanged();
 
-				if (value != -1d)
+				foreach (var button in _buttons)
 				{
-					autosizedButton.BorderWidth = value;
-					autosizedButton.BorderColor = Color.Red;
-					stretchedButton.BorderWidth = value;
-					stretchedButton.BorderColor = Color.Red;
-				}
-				else
-				{
-					autosizedButton.ClearValue(Button.BorderWidthProperty);
-					autosizedButton.ClearValue(Button.BorderColorProperty);
-					stretchedButton.ClearValue(Button.BorderWidthProperty);
-					stretchedButton.ClearValue(Button.BorderColorProperty);
+					if (value != -1d)
+					{
+						button.BorderWidth = value;
+						button.BorderColor = Color.Red;
+					}
+					else
+					{
+						button.ClearValue(Button.BorderWidthProperty);
+						button.ClearValue(Button.BorderColorProperty);
+					}
 				}
 			}
 		}
@@ -153,17 +163,17 @@ namespace Xamarin.Forms.Controls
 		{
 			if (sender is Picker picker)
 			{
-				if (picker.SelectedItem is string item && bool.TryParse(item, out var value))
+				foreach (var button in _buttons)
 				{
-					autosizedButton.On<Android>().SetUseDefaultShadow(value).SetUseDefaultPadding(value);
-					stretchedButton.On<Android>().SetUseDefaultShadow(value).SetUseDefaultPadding(value);
-				}
-				else
-				{
-					autosizedButton.ClearValue(AndroidSpecific.Button.UseDefaultShadowProperty);
-					autosizedButton.ClearValue(AndroidSpecific.Button.UseDefaultPaddingProperty);
-					stretchedButton.ClearValue(AndroidSpecific.Button.UseDefaultShadowProperty);
-					stretchedButton.ClearValue(AndroidSpecific.Button.UseDefaultPaddingProperty);
+					if (picker.SelectedItem is string item && bool.TryParse(item, out var value))
+					{
+						button.On<Android>().SetUseDefaultShadow(value).SetUseDefaultPadding(value);
+					}
+					else
+					{
+						button.ClearValue(AndroidSpecific.Button.UseDefaultShadowProperty);
+						button.ClearValue(AndroidSpecific.Button.UseDefaultPaddingProperty);
+					}
 				}
 			}
 		}

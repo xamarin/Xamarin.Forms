@@ -193,9 +193,9 @@ namespace Xamarin.Forms.Platform.Android
 			if (_borderAdjustsPadding && _element is IBorderElement borderElement && borderElement.IsBorderWidthSet() && borderElement.BorderWidth != borderElement.BorderWidthDefaultValue)
 				adjustment = borderElement.BorderWidth;
 
-			var defaultPadding = _preserveInitialPadding
+			var defaultPadding = _preserveInitialPadding && _defaultPaddingPix.HasValue
 				? _defaultPaddingPix.Value
-				: default(Thickness);
+				: new Thickness();
 
 			// TODO: The padding options here are both wrong. Need to sort this out.
 

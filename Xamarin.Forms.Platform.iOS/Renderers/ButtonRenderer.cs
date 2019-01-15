@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -35,7 +35,7 @@ namespace Xamarin.Forms.Platform.iOS
 		IImageVisualElementRenderer IButtonLayoutRenderer.ImageVisualElementRenderer => this;
 		nfloat IButtonLayoutRenderer.MinimumHeight => _minimumButtonHeight;
 
-		public ButtonRenderer() : base()
+		public ButtonRenderer()
 		{
 			BorderElementManager.Init(this);
 
@@ -44,9 +44,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public override SizeF SizeThatFits(SizeF size)
 		{
-			var result = base.SizeThatFits(size);
-			_buttonLayoutManager?.SizeThatFits(ref result);
-			return result;
+			var measured = base.SizeThatFits(size);
+			return _buttonLayoutManager?.SizeThatFits(size, measured) ?? measured;
 		}
 
 		protected override void Dispose(bool disposing)
@@ -152,8 +151,7 @@ namespace Xamarin.Forms.Platform.iOS
 			Control.TitleLabel.Font = Element.ToUIFont();
 		}
 
-		public void SetImage(UIImage image) =>
-			_buttonLayoutManager.SetImage(image);
+		public void SetImage(UIImage image) => _buttonLayoutManager.SetImage(image);
 
 		public UIImageView GetImage() => Control?.ImageView;
 
