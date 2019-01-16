@@ -55,7 +55,8 @@ namespace Xamarin.Forms.Platform.Android.Material
 			_automationPropertiesProvider = new AutomationPropertiesProvider(this);
 			_buttonLayoutManager = new ButtonLayoutManager(this,
 				alignIconWithText: true,
-				borderAdjustsPadding: true);
+				preserveInitialPadding: true,
+				borderAdjustsPadding: false);
 
 			SoundEffectsEnabled = false;
 			SetOnClickListener(this);
@@ -240,7 +241,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 				if (borderColor.IsDefault)
 					StrokeColor = _defaultBorderColor;
 				else
-					base.StrokeColor = new ColorStateList(new[] { new int[0] }, new int[] { borderColor.ToAndroid() });
+					StrokeColor = new ColorStateList(new[] { new int[0] }, new int[] { borderColor.ToAndroid() });
 			}
 
 			double borderWidth = Element.BorderWidth;
@@ -249,10 +250,15 @@ namespace Xamarin.Forms.Platform.Android.Material
 				if (_defaultBorderWidth < 0)
 					_defaultBorderWidth = StrokeWidth;
 
+				// TODO: The Material button does not support borders:
+				//       https://github.com/xamarin/Xamarin.Forms/issues/4951
+				if (borderWidth > 1)
+					borderWidth = 1;
+
 				if (borderWidth < 0f)
 					StrokeWidth = _defaultBorderWidth;
 				else
-					base.StrokeWidth = (int)Context.ToPixels(borderWidth);
+					StrokeWidth = (int)Context.ToPixels(borderWidth);
 			}
 		}
 

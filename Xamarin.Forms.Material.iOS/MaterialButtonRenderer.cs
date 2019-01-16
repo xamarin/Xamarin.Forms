@@ -31,7 +31,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			_buttonLayoutManager = new ButtonLayoutManager(this,
 				preserveInitialPadding: true,
 				spacingAdjustsPadding: false,
-				borderAdjustsPadding: true,
+				borderAdjustsPadding: false,
 				collapseHorizontalPadding: true);
 		}
 
@@ -206,6 +206,11 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 			if (_defaultBorderWidth == -1)
 				_defaultBorderWidth = Control.GetBorderWidth(UIControlState.Normal);
+
+			// TODO: The Material button does not support borders:
+			//       https://github.com/xamarin/Xamarin.Forms/issues/4951
+			if (borderWidth > 1)
+				borderWidth = 1;
 
 			if (borderWidth == (double)Button.BorderWidthProperty.DefaultValue)
 				Control.SetBorderWidth(_defaultBorderWidth, UIControlState.Normal);
