@@ -14,9 +14,6 @@ namespace Xamarin.Forms
 			BindableProperty.CreateAttached("ItemTemplate", typeof(DataTemplate), typeof(Layout<View>), default(DataTemplate),
 				propertyChanged: (b, o, n) => { GetBindableLayoutController(b).ItemTemplate = (DataTemplate)n; });
 
-		[Obsolete("ItemTemplateSelectorProperty is obsolete. Please use ItemTemplateProperty instead.")]
-		public static readonly BindableProperty ItemTemplateSelectorProperty = ItemTemplateProperty;
-
 		static readonly BindableProperty BindableLayoutControllerProperty =
 			 BindableProperty.CreateAttached("BindableLayoutController", typeof(BindableLayoutController), typeof(Layout<View>), default(BindableLayoutController),
 				 defaultValueCreator: (b) => new BindableLayoutController((Layout<View>)b),
@@ -40,18 +37,6 @@ namespace Xamarin.Forms
 		public static DataTemplate GetItemTemplate(BindableObject b)
 		{
 			return (DataTemplate)b.GetValue(ItemTemplateProperty);
-		}
-
-		[Obsolete("SetItemTemplateSelector is obsolete. Please use SetItemTemplate instead.")]
-		public static void SetItemTemplateSelector(BindableObject b, DataTemplateSelector value)
-		{
-			b.SetValue(ItemTemplateProperty, value);
-		}
-
-		[Obsolete("GetItemTemplateSelector is obsolete. Please use GetItemTemplate instead.")]
-		public static DataTemplateSelector GetItemTemplateSelector(BindableObject b)
-		{
-			return (DataTemplateSelector)b.GetValue(ItemTemplateProperty);
 		}
 
 		static BindableLayoutController GetBindableLayoutController(BindableObject b)
