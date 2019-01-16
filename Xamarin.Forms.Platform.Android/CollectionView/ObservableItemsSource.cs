@@ -61,9 +61,6 @@ namespace Xamarin.Forms.Platform.Android
 			var start = Math.Min(args.OldStartingIndex, args.NewStartingIndex);
 			var end = Math.Max(args.OldStartingIndex, args.NewStartingIndex) + count;
 			_adapter.NotifyItemRangeChanged(start, end);
-
-			//_adapter.NotifyItemRangeChanged(args.OldStartingIndex, count);
-			//_adapter.NotifyItemRangeChanged(args.NewStartingIndex, count);
 		}
 
 		void Add(NotifyCollectionChangedEventArgs args)
