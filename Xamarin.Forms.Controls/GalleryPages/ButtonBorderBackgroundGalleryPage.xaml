@@ -36,8 +36,8 @@
 
 			<Label Text="Corners: (various corner radii)" Margin="0,0,0,-5" />
 			<StackLayout Padding="0" Spacing="5">
-				<Button Text="Radius: -5" CornerRadius="-5" />
 				<Button Text="Radius: 0" CornerRadius="0" />
+				<Button Text="Radius: 5" CornerRadius="5" />
 				<Button Text="Radius: 15" CornerRadius="15" />
 				<Button Text="Radius: 15, Image" CornerRadius="15" Image="bank.png" />
 				<Button Text="Radius: 15, Width: 5" CornerRadius="15" BorderWidth="5" BorderColor="Red" />
@@ -46,8 +46,8 @@
 			<Label Text="Border Widths: (various border widths, red color)" Margin="0,0,0,-5" />
 			<StackLayout Padding="0" Spacing="5">
 				<Button Text="Width: 5, Color: &lt;none&gt;" BorderWidth="5" />
-				<Button Text="Width: -5" BorderWidth="-5" BorderColor="Red" />
 				<Button Text="Width: 0" BorderWidth="0" BorderColor="Red" />
+				<Button Text="Width: 1" BorderWidth="1" BorderColor="Red" />
 				<Button Text="Width: 15" BorderWidth="15" BorderColor="Red" />
 				<Button Text="Width: 15, Image" BorderWidth="15" BorderColor="Red" Image="bank.png" />
 			</StackLayout>
