@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Foundation;
 using UIKit;
-using PageUIStatusBarAnimation = Xamarin.Forms.PlatformConfiguration.iOSSpecific.UIStatusBarAnimation;
 using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
+using PageUIStatusBarAnimation = Xamarin.Forms.PlatformConfiguration.iOSSpecific.UIStatusBarAnimation;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public class PageRenderer : UIViewController, IVisualElementRenderer, IEffectControlProvider
+	public class PageRenderer : AccessibleUIViewController, IVisualElementRenderer, IEffectControlProvider
 	{
 		bool _appeared;
 		bool _disposed;
@@ -26,7 +27,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void IEffectControlProvider.RegisterEffect(Effect effect)
 		{
-			VisualElementRenderer<VisualElement>.RegisterEffect(effect, View);
+			VisualElementRenderer<VisualElement>.RegisterEffect(effect, NativeView);
 		}
 
 		public VisualElement Element { get; private set; }
@@ -40,16 +41,18 @@ namespace Xamarin.Forms.Platform.iOS
 
 		public UIView NativeView
 		{
-			get { return _disposed ? null : View; }
+			get { return _disposed ? null : Container; }
 		}
 
-		public void SetElement(VisualElement element)
+		public override void SetElement(VisualElement element)
 		{
 			VisualElement oldElement = Element;
 			Element = element;
 			UpdateTitle();
 
 			OnElementChanged(new VisualElementChangedEventArgs(oldElement, element));
+
+			base.SetElement(element);
 
 			if (Element != null && !string.IsNullOrEmpty(Element.AutomationId))
 				SetAutomationId(Element.AutomationId);
@@ -82,11 +85,11 @@ namespace Xamarin.Forms.Platform.iOS
 			if (page != null && Forms.IsiOS11OrNewer)
 			{
 				var insets = NativeView.SafeAreaInsets;
-				if (page.Parent is TabbedPage)
+				if (Page.Parent is TabbedPage)
 				{
 					insets.Bottom = 0;
 				}
-				page.On<PlatformConfiguration.iOS>().SetSafeAreaInsets(new Thickness(insets.Left, insets.Top, insets.Right, insets.Bottom));
+				Page.On<PlatformConfiguration.iOS>().SetSafeAreaInsets(new Thickness(insets.Left, insets.Top, insets.Right, insets.Bottom));
 
 			}
 
@@ -130,13 +133,16 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.ViewDidLoad();
 
-			var uiTapGestureRecognizer = new UITapGestureRecognizer(a => View.EndEditing(true));
+			if (NativeView == null)
+				return;
+
+			var uiTapGestureRecognizer = new UITapGestureRecognizer(a => NativeView.EndEditing(true));
 
 			uiTapGestureRecognizer.ShouldRecognizeSimultaneously = (recognizer, gestureRecognizer) => true;
 			uiTapGestureRecognizer.ShouldReceiveTouch = OnShouldReceiveTouch;
 			uiTapGestureRecognizer.DelaysTouchesBegan =
 				uiTapGestureRecognizer.DelaysTouchesEnded = uiTapGestureRecognizer.CancelsTouchesInView = false;
-			View.AddGestureRecognizer(uiTapGestureRecognizer);
+			NativeView.AddGestureRecognizer(uiTapGestureRecognizer);
 
 			UpdateBackground();
 
@@ -147,16 +153,16 @@ namespace Xamarin.Forms.Platform.iOS
 			_tracker = new VisualElementTracker(this, !(Element.Parent is BaseShellItem));
 
 			_events = new EventTracker(this);
-			_events.LoadEvents(View);
+			_events.LoadEvents(NativeView);
 
-			Element.SendViewInitialized(View);
+			Element.SendViewInitialized(NativeView);
 		}
 
 		public override void ViewWillDisappear(bool animated)
 		{
 			base.ViewWillDisappear(animated);
 
-			View.Window?.EndEditing(true);
+			NativeView?.Window?.EndEditing(true);
 		}
 
 		protected override void Dispose(bool disposing)
@@ -297,7 +303,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UIView.Animate(0.25, () => SetNeedsStatusBarAppearanceUpdate());
 			else
 				SetNeedsStatusBarAppearanceUpdate();
-			View.SetNeedsLayout();
+			NativeView?.SetNeedsLayout();
 		}
 
 		bool OnShouldReceiveTouch(UIGestureRecognizer recognizer, UITouch touch)
@@ -327,17 +333,20 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateBackground()
 		{
+			if (NativeView == null)
+				return;
+
 			string bgImage = ((Page)Element).BackgroundImage;
 			if (!string.IsNullOrEmpty(bgImage))
 			{
-				View.BackgroundColor = ColorExtensions.FromPatternImageFromBundle(bgImage);
+				NativeView.BackgroundColor = ColorExtensions.FromPatternImageFromBundle(bgImage);
 				return;
 			}
 			Color bgColor = Element.BackgroundColor;
 			if (bgColor.IsDefault)
-				View.BackgroundColor = UIColor.White;
+				NativeView.BackgroundColor = UIColor.White;
 			else
-				View.BackgroundColor = bgColor.ToUIColor();
+				NativeView.BackgroundColor = bgColor.ToUIColor();
 		}
 
 		void UpdateTitle()
