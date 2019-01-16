@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Xamarin.Forms.Controls.Issues.A11yTabIndex">
+    <Grid RowSpacing="2">
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="50"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+            <RowDefinition Height="Auto"></RowDefinition>
+        </Grid.RowDefinitions>
+
+        <BoxView Color="Blue"></BoxView>
+        <Button x:Name="First" Text="-2" TabIndex="-2" TextColor="White" />
+
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+                <ColumnDefinition></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+
+            <Button Text="-1 (-1)" TabIndex="-1"  TextColor="Gray"></Button>
+            <Label Text="0 2" TextColor="Red" Grid.Column="1"></Label>
+            <Button Text="0 3" TextColor="Gray" Grid.Column="2"></Button>
+            <Button Text="0 4" TextColor="Gray" Grid.Column="3"></Button>
+            <Button Text="1 5" TabIndex="1" Grid.Column="4" TextColor="Gray"></Button>
+
+        </Grid>
+
+        <Button Text="Skip 3 6" AutomationProperties.IsInAccessibleTree="False" TabIndex="3" Grid.Row="2"></Button>
+
+        <Frame BackgroundColor="Cornsilk" Margin="20" CornerRadius="2" BorderColor="Gray" Grid.Row="3">
+            <StackLayout>
+                <Button Text="3 7" TabIndex="3"  ></Button>
+                <Button Text="2 8" TabIndex="2"  ></Button>
+            </StackLayout>
+        </Frame>
+
+        <Frame BackgroundColor="Cornsilk" Margin="20" CornerRadius="2" BorderColor="Gray" Grid.Row="4">
+            <StackLayout>
+                <StackLayout>
+                    <Button Text="Not set (0) 9"  ></Button>
+                    <StackLayout Orientation="Horizontal">
+                        <Button Text="1 10" TabIndex="1"  ></Button>
+                        <Button Text="3 11" TabIndex="3"  ></Button>
+                    </StackLayout>
+                </StackLayout>
+                <StackLayout>
+                    <Button Text="Not set (0) 12"  ></Button>
+                    <StackLayout Orientation="Horizontal">
+                        <Button Text="2 13" TabIndex="2"  ></Button>
+                        <Button Text="4 14" TabIndex="4"  ></Button>
+                    </StackLayout>
+                </StackLayout>
+            </StackLayout>
+        </Frame>
+
+    </Grid>
+</ContentPage>
