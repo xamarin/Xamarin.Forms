@@ -46,7 +46,6 @@ using Xamarin.Forms.Platform.Android;
 [assembly: ExportRenderer (typeof (ScrollView), typeof (ScrollViewRenderer))]
 [assembly: ExportRenderer (typeof (ActivityIndicator), typeof (ActivityIndicatorRenderer))]
 [assembly: ExportRenderer (typeof (Frame), typeof (FrameRenderer))]
-[assembly: ExportRenderer (typeof (NavigationMenu), typeof (NavigationMenuRenderer))]
 [assembly: ExportRenderer (typeof (OpenGLView), typeof (OpenGLViewRenderer))]
 
 [assembly: ExportRenderer (typeof (TabbedPage), typeof (TabbedRenderer))]
@@ -70,6 +69,7 @@ using Xamarin.Forms.Platform.Android;
 [assembly: ExportImageSourceHandler(typeof(FileImageSource), typeof(FileImageSourceHandler))]
 [assembly: ExportImageSourceHandler(typeof(StreamImageSource), typeof(StreamImagesourceHandler))]
 [assembly: ExportImageSourceHandler(typeof(UriImageSource), typeof(ImageLoaderSourceHandler))]
+[assembly: ExportImageSourceHandler(typeof(FontImageSource), typeof(FontImageSourceHandler))]
 [assembly: Xamarin.Forms.Dependency(typeof(Deserializer))]
 [assembly: Xamarin.Forms.Dependency(typeof(ResourcesProvider))]
 [assembly: Preserve]

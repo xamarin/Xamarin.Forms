@@ -38,9 +38,11 @@ namespace Xamarin.Forms.Xaml
 	static class XamlParser
 	{
 		public const string XFUri = "http://xamarin.com/schemas/2014/forms";
+		public const string XFDesignUri = "http://xamarin.com/schemas/2014/forms/design";
 		public const string X2006Uri = "http://schemas.microsoft.com/winfx/2006/xaml";
 		public const string X2009Uri = "http://schemas.microsoft.com/winfx/2009/xaml";
 		public const string McUri = "http://schemas.openxmlformats.org/markup-compatibility/2006";
+
 
 		public static void ParseXaml(RootNode rootNode, XmlReader reader)
 		{
@@ -71,36 +73,34 @@ namespace Xamarin.Forms.Xaml
 						return;
 					case XmlNodeType.Element:
 						// 1. Property Element.
-						if (reader.Name.Contains("."))
-						{
+						if (reader.Name.Contains(".")) {
 							XmlName name;
 							if (reader.Name.StartsWith(elementName + ".", StringComparison.Ordinal))
 								name = new XmlName(reader.NamespaceURI, reader.Name.Substring(elementName.Length + 1));
-							else //Attached DP
+							else //Attached BP
 								name = new XmlName(reader.NamespaceURI, reader.LocalName);
 
+							if (reader.IsEmptyElement)
+								throw new XamlParseException($"Unexpected empty element '<{reader.Name}/>'", (IXmlLineInfo)reader);
 							var prop = ReadNode(reader);
 							if (prop != null)
 								node.Properties.Add(name, prop);
 						}
 						// 2. Xaml2009 primitives, x:Arguments, ...
-						else if (reader.NamespaceURI == X2009Uri && reader.LocalName == "Arguments")
-						{
+						else if (reader.NamespaceURI == X2009Uri && reader.LocalName == "Arguments") {
 							var prop = ReadNode(reader);
 							if (prop != null)
 								node.Properties.Add(XmlName.xArguments, prop);
 						}
 						// 3. DataTemplate (should be handled by 4.)
 						else if (node.XmlType.NamespaceUri == XFUri &&
-						         (node.XmlType.Name == "DataTemplate" || node.XmlType.Name == "ControlTemplate"))
-						{
+								 (node.XmlType.Name == "DataTemplate" || node.XmlType.Name == "ControlTemplate")) {
 							var prop = ReadNode(reader, true);
 							if (prop != null)
 								node.Properties.Add(XmlName._CreateContent, prop);
 						}
 						// 4. Implicit content, implicit collection, or collection syntax. Add to CollectionItems, resolve case later.
-						else
-						{
+						else {
 							var item = ReadNode(reader, true);
 							if (item != null)
 								node.CollectionItems.Add(item);
@@ -429,7 +429,7 @@ namespace Xamarin.Forms.Xaml
 
 				XmlnsHelper.ParseXmlns(namespaceURI, out typename, out ns, out asmstring, out targetPlatform);
 				asmstring = asmstring ?? defaultAssemblyName;
-				if (ns != null)
+				if (namespaceURI != null && ns != null)
 					lookupAssemblies.Add(new XmlnsDefinitionAttribute(namespaceURI, ns)
 					{
 						AssemblyName = asmstring

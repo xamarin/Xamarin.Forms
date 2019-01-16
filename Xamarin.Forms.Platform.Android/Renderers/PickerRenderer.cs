@@ -1,5 +1,4 @@
 using Android.App;
-using Android.Content.Res;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
@@ -7,26 +6,20 @@ using System;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
-using ADatePicker = Android.Widget.DatePicker;
-using ATimePicker = Android.Widget.TimePicker;
-using Object = Java.Lang.Object;
 using Orientation = Android.Widget.Orientation;
 using Android.Content;
-using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
-using System.Collections.Generic;
+using AColor = Android.Graphics.Color;
 using Android.Text;
+using Android.Text.Style;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class PickerRenderer : ViewRenderer<Picker, EditText>
+	public class PickerRenderer : ViewRenderer<Picker, EditText>, IPickerRenderer
 	{
 		AlertDialog _dialog;
 		bool _isDisposed;
 		TextColorSwitcher _textColorSwitcher;
-
-		HashSet<Keycode> availableKeys = new HashSet<Keycode>(new[] {
-			Keycode.Tab, Keycode.Forward, Keycode.Back, Keycode.DpadDown, Keycode.DpadLeft, Keycode.DpadRight, Keycode.DpadUp
-		});
+		int _originalHintTextColor;
 
 		public PickerRenderer(Context context) : base(context)
 		{
@@ -34,6 +27,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use PickerRenderer(Context) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public PickerRenderer()
 		{
 			AutoPackage = false;
@@ -54,7 +48,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override EditText CreateNativeControl()
 		{
-			return new EditText(Context) { Focusable = true, Clickable = true, Tag = this };
+			return new PickerEditText(Context, this);
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Picker> e)
@@ -68,16 +62,15 @@ namespace Xamarin.Forms.Platform.Android
 				if (Control == null)
 				{
 					var textField = CreateNativeControl();
-					textField.SetOnClickListener(PickerListener.Instance);
-					textField.InputType = InputTypes.Null;
-					textField.KeyPress += TextFieldKeyPress;
 
 					var useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
 					_textColorSwitcher = new TextColorSwitcher(textField.TextColors, useLegacyColorManagement);
 
 					SetNativeControl(textField);
+
+					_originalHintTextColor = Control.CurrentHintTextColor;
 				}
-				
+
 				UpdateFont();
 				UpdatePicker();
 				UpdateTextColor();
@@ -86,29 +79,11 @@ namespace Xamarin.Forms.Platform.Android
 			base.OnElementChanged(e);
 		}
 
-		void TextFieldKeyPress(object sender, KeyEventArgs e)
-		{
-			if (availableKeys.Contains(e.KeyCode))
-			{
-				e.Handled = false;
-				return;
-			}
-			e.Handled = true;
-			OnClick();
-		}
-
-		internal override void OnNativeFocusChanged(bool hasFocus)
-		{
-			base.OnNativeFocusChanged(hasFocus);
-			if (hasFocus)
-				OnClick();
-		}
-
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == Picker.TitleProperty.PropertyName)
+			if (e.PropertyName == Picker.TitleProperty.PropertyName || e.PropertyName == Picker.TitleColorProperty.PropertyName)
 				UpdatePicker();
 			else if (e.PropertyName == Picker.SelectedIndexProperty.PropertyName)
 				UpdatePicker();
@@ -118,12 +93,12 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateFont();
 		}
 
-		internal override void OnFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
+		protected override void OnFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
 		{
 			base.OnFocusChangeRequested(sender, e);
 
 			if (e.Focus)
-				OnClick();
+				CallOnClick();
 			else if (_dialog != null)
 			{
 				_dialog.Hide();
@@ -132,7 +107,7 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		void OnClick()
+		void IPickerRenderer.OnClick()
 		{
 			Picker model = Element;
 
@@ -154,7 +129,19 @@ namespace Xamarin.Forms.Platform.Android
 
 			var builder = new AlertDialog.Builder(Context);
 			builder.SetView(layout);
-			builder.SetTitle(model.Title ?? "");
+
+			if (!Element.IsSet(Picker.TitleColorProperty))
+			{
+				builder.SetTitle(model.Title ?? "");
+			}
+			else
+			{
+				var title = new SpannableString(model.Title ?? "");
+				title.SetSpan(new ForegroundColorSpan(model.TitleColor.ToAndroid()), 0, title.Length(), SpanTypes.ExclusiveExclusive);
+
+				builder.SetTitle(title);
+			}
+
 			builder.SetNegativeButton(global::Android.Resource.String.Cancel, (s, a) =>
 			{
 				ElementController.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, false);
@@ -197,6 +184,11 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			Control.Hint = Element.Title;
 
+			if (Element.IsSet(Picker.TitleColorProperty))
+				Control.SetHintTextColor(Element.TitleColor.ToAndroid());
+			else
+				Control.SetHintTextColor(new AColor(_originalHintTextColor));
+
 			string oldText = Control.Text;
 
 			if (Element.SelectedIndex == -1 || Element.Items == null || Element.SelectedIndex >= Element.Items.Count)
@@ -211,20 +203,6 @@ namespace Xamarin.Forms.Platform.Android
 		void UpdateTextColor()
 		{
 			_textColorSwitcher?.UpdateTextColor(Control, Element.TextColor);
-		}
-
-		class PickerListener : Object, IOnClickListener
-		{
-			public static readonly PickerListener Instance = new PickerListener();
-
-			public void OnClick(global::Android.Views.View v)
-			{
-				var renderer = v.Tag as PickerRenderer;
-				if (renderer == null)
-					return;
-
-				renderer.OnClick();
-			}
 		}
 	}
 }
