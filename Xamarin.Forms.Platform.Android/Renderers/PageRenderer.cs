@@ -194,18 +194,22 @@ namespace Xamarin.Forms.Platform.Android
 				return null;
 
 			VisualElement ve = TabIndexExtensions.GetFirstNonLayoutTabStop(tabIndexes);
-			var renderer = ve?.GetRenderer();
 
-			var control = (renderer as ITabStop)?.TabStop;
-			if (control?.Focusable == true)
-				return control;
+			if (AutomationProperties.GetIsInAccessibleTree(ve) != false)
+			{
+				var renderer = ve?.GetRenderer();
+
+				var control = (renderer as ITabStop)?.TabStop;
+				if (control?.Focusable == true)
+					return control;
+			}
 
 			return GetNextTabStop(ve, true, tabIndexes, maxAttempts);
 		}
 
 		static AView GetNextTabStop(VisualElement ve, bool forwardDirection, IDictionary<int, List<VisualElement>> tabIndexes, int maxAttempts)
 		{
-			if (maxAttempts <= 0 || tabIndexes == null)
+			if (maxAttempts <= 0 || tabIndexes == null || ve == null)
 				return null;
 
 			int tabIndex = ve.TabIndex;
@@ -216,9 +220,14 @@ namespace Xamarin.Forms.Platform.Android
 			do
 			{
 				nextElement = nextElement?.FindNextElement(forwardDirection, tabIndexes, ref tabIndex);
-				var renderer = nextElement?.GetRenderer();
-				nextControl = (renderer as ITabStop)?.TabStop;
-			} while (!(nextControl?.Focusable == true || ++attempt >= maxAttempts));
+
+				if (AutomationProperties.GetIsInAccessibleTree(nextElement) != false)
+				{
+					var renderer = nextElement?.GetRenderer();
+					nextControl = (renderer as ITabStop)?.TabStop;
+				}
+
+			} while (++attempt < maxAttempts && nextControl?.Focusable != true);
 			return nextControl;
 		}
 	}

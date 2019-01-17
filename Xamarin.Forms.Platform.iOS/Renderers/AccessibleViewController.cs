@@ -111,27 +111,26 @@ namespace Xamarin.Forms.Platform.iOS
 
 		static VisualElement GetNextTabStopVisualElement(VisualElement ve, bool forwardDirection, IDictionary<int, List<VisualElement>> tabIndexes, int maxAttempts)
 		{
-			if (maxAttempts <= 0 || tabIndexes == null)
-				return null;
-
-			VisualElement element = ve as VisualElement;
-			if (tabIndexes == null)
+			if (maxAttempts <= 0 || tabIndexes == null || ve == null)
 				return null;
 
 			int tabIndex = ve.TabIndex;
-			int attempt = 0;
-			UIView control = null;
 
+			VisualElement nextElement = ve;
+			UIView nextControl = null;
+			int attempt = 0;
 			do
 			{
-				element = element.FindNextElement(forwardDirection, tabIndexes, ref tabIndex);
+				nextElement = nextElement.FindNextElement(forwardDirection, tabIndexes, ref tabIndex);
 
-				var renderer = Platform.GetRenderer(element);
-				control = (renderer as ITabStop)?.TabStop;
+				if (AutomationProperties.GetIsInAccessibleTree(nextElement) != false)
+				{
+					var renderer = Platform.GetRenderer(nextElement);
+					nextControl = (renderer as ITabStop)?.TabStop;
+				}
 
-			} while (++attempt < maxAttempts && control == null);
-
-			return element;
+			} while (++attempt < maxAttempts && nextControl == null);
+			return nextElement;
 		}
 	}
 }
