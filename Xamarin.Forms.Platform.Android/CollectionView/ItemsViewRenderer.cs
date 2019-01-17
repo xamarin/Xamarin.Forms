@@ -195,6 +195,11 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(oldElement, newElement));
 			EffectUtilities.RegisterEffectControlProvider(this, oldElement, newElement);
+			OnElementChanged(new ElementChangedEventArgs<ItemsView>(oldElement, newElement));
+		}
+
+		protected virtual void OnElementChanged(ElementChangedEventArgs<ItemsView> elementChangedEvent)
+		{
 		}
 
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs changedProperty)

@@ -13,6 +13,7 @@
 		<Compile Remove="Internals\Legacy\**" />
 		<EmbeddedResource Remove="Internals\Legacy\**" />
 		<None Remove="Internals\Legacy\**" />
+		<None Remove="Items\PositionChangedEventArgs.json" />
 	</ItemGroup>
 	<ItemGroup Condition=" '$(TargetFramework)' == 'netstandard1.0' ">
 		<Compile Include="Internals\Legacy\**" />
