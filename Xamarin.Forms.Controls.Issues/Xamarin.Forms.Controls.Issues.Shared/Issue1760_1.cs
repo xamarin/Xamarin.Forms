@@ -22,12 +22,12 @@ namespace Xamarin.Forms.Controls.Issues
 		[Test]
 		public void Issue1760_1Test()
 		{
-			RunningApp.WaitForElement(Before);
-			RunningApp.WaitForElement(After);
+			RunningApp.WaitForElement(Issue1760.Before);
+			RunningApp.WaitForElement(Issue1760.After);
 
 			RunningApp.Tap("Test Page 1");
-			RunningApp.WaitForElement(Before);
-			RunningApp.WaitForElement(After);
+			RunningApp.WaitForElement(Issue1760.Before);
+			RunningApp.WaitForElement(Issue1760.After);
 		}
 #endif
 	}

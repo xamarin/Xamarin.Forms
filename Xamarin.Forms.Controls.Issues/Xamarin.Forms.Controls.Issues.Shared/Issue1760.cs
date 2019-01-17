@@ -13,8 +13,8 @@ namespace Xamarin.Forms.Controls.Issues
 	[Issue(IssueTracker.Github, 1760, "Content set after an await is not visible", PlatformAffected.Android)]
 	public class Issue1760 : TestMasterDetailPage
 	{
-		const string Before = "Before";
-		const string After = "After";
+		public const string Before = "Before";
+		public const string After = "After";
 		const int Wait = 3;
 
 		protected override void Init()
