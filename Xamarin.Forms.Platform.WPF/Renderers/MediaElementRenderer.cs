@@ -146,7 +146,7 @@ namespace Xamarin.Forms.Platform.WPF
 				}
 				else if (uriSource.Uri.Scheme == "https")
 				{
-					throw new ArgumentException("HTTPS Not supported on WPF", "Source");
+					throw new ArgumentException("WPF supports only HTTP remote sources and not the HTTPS URI scheme.", "Source");
 				}
 				else
 				{
