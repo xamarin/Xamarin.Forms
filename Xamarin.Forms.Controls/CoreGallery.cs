@@ -399,6 +399,8 @@ namespace Xamarin.Forms.Controls
 				_pages.Insert(1, new GalleryPageFactory(() => new TitleView(true), "TitleView"));
 			}
 
+			_pages.Sort((x, y) => string.Compare(x.Title, y.Title, true));
+
 			var template = new DataTemplate(() =>
 			{
 				var cell = new TextCell();
