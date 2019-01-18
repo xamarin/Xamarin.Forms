@@ -1,14 +1,12 @@
 using System;
 using System.ComponentModel;
 using Android.Content;
-using Android.Views;
 using Android.Widget;
 using AButton = Android.Widget.Button;
-using Object = Java.Lang.Object;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class StepperRenderer : ViewRenderer<Stepper, LinearLayout>
+	public class StepperRenderer : ViewRenderer<Stepper, LinearLayout>, IStepperRenderer
 	{
 		AButton _downButton;
 		AButton _upButton;
@@ -36,74 +34,31 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (e.OldElement == null)
 			{
-				_downButton = new AButton(Context) { Text = "-", Gravity = GravityFlags.Center, Tag = this };
-				_downButton.SetHeight((int)Context.ToPixels(10.0));
-
-				_downButton.SetOnClickListener(StepperListener.Instance);
-
-				_upButton = new AButton(Context) { Text = "+", Tag = this };
-
-				_upButton.SetOnClickListener(StepperListener.Instance);
-				_upButton.SetHeight((int)Context.ToPixels(10.0));
-
 				var layout = CreateNativeControl();
-
-				layout.AddView(_downButton);
-				layout.AddView(_upButton);
-
+				StepperRendererManager.CreateStepperButtons(this, out _downButton, out _upButton);
+				layout.AddView(_downButton, new LinearLayout.LayoutParams(LayoutParams.WrapContent, LayoutParams.MatchParent));
+				layout.AddView(_upButton, new LinearLayout.LayoutParams(LayoutParams.WrapContent, LayoutParams.MatchParent));
 				SetNativeControl(layout);
 			}
 
-			UpdateButtonEnabled();
+			StepperRendererManager.UpdateButtons(this, null, _downButton, _upButton);
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);
-
-			switch (e.PropertyName)
-			{
-				case "Minimum":
-					UpdateButtonEnabled();
-					break;
-				case "Maximum":
-					UpdateButtonEnabled();
-					break;
-				case "Value":
-					UpdateButtonEnabled();
-					break;
-				case "IsEnabled":
-					UpdateButtonEnabled();
-					break;
-			}
+			StepperRendererManager.UpdateButtons(this, e, _downButton, _upButton);
 		}
 
-		void UpdateButtonEnabled()
+		Stepper IStepperRenderer.Element => Element;
+
+		AButton IStepperRenderer.GetButton(bool upButton) => upButton ? _upButton : _downButton;
+
+		AButton IStepperRenderer.CreateButton(bool isUpButton)
 		{
-			Stepper view = Element;
-			_upButton.Enabled = view.IsEnabled ? view.Value < view.Maximum : view.IsEnabled;
-			_downButton.Enabled = view.IsEnabled ? view.Value > view.Minimum : view.IsEnabled;
-		}
-
-		class StepperListener : Object, IOnClickListener
-		{
-			public static readonly StepperListener Instance = new StepperListener();
-
-			public void OnClick(global::Android.Views.View v)
-			{
-				var renderer = v.Tag as StepperRenderer;
-				if (renderer == null)
-					return;
-
-				Stepper stepper = renderer.Element;
-				if (stepper == null)
-					return;
-
-				if (v == renderer._upButton)
-					((IElementController)stepper).SetValueFromRenderer(Stepper.ValueProperty, stepper.Value + stepper.Increment);
-				else if (v == renderer._downButton)
-					((IElementController)stepper).SetValueFromRenderer(Stepper.ValueProperty, stepper.Value - stepper.Increment);
-			}
+			var button = new AButton(Context);
+			button.SetHeight((int)Context.ToPixels(10.0));
+			return button;
 		}
 	}
 }
