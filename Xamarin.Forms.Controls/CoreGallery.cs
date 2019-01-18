@@ -399,7 +399,27 @@ namespace Xamarin.Forms.Controls
 				_pages.Insert(1, new GalleryPageFactory(() => new TitleView(true), "TitleView"));
 			}
 
-			var template = new DataTemplate(typeof(TextCell));
+			var template = new DataTemplate(() =>
+			{
+				var cell = new TextCell();
+				cell.ContextActions.Add(new MenuItem
+				{
+					Text = "Select Visual",
+					Command = new Command(async () =>
+					{
+						var buttons = typeof(VisualMarker).GetProperties().Select(p => p.Name);
+						var selection = await rootPage.DisplayActionSheet("Select Visual", "Cancel", null, buttons.ToArray());
+						if (cell.BindingContext is GalleryPageFactory pageFactory)
+						{
+							var page = pageFactory.Realize();
+							if (typeof(VisualMarker).GetProperty(selection)?.GetValue(null) is IVisual visual)
+								page.Visual = visual;
+							await PushPage(page);
+						}
+					})
+				});
+				return cell;
+			});
 			template.SetBinding(TextCell.TextProperty, "Title");
 
 			BindingContext = _pages;
