@@ -448,6 +448,14 @@ namespace Xamarin.Forms.Controls
 
 			await PushPage(page);
 		}
+
+		public void FilterPages(string filter)
+		{
+			if (string.IsNullOrWhiteSpace(filter))
+				ItemsSource = _pages;
+			else
+				ItemsSource = _pages.Where(p => p.Title.IndexOf(filter, StringComparison.InvariantCultureIgnoreCase) != -1);
+		}
 	}
 	[Preserve(AllMembers = true)]
 	internal class CoreRootPage : ContentPage
@@ -465,6 +473,11 @@ namespace Xamarin.Forms.Controls
 			var searchBar = new SearchBar()
 			{
 				AutomationId = "SearchBar"
+			};
+
+			searchBar.TextChanged += (sender, e) =>
+			{
+				corePageView.FilterPages(e.NewTextValue);
 			};
 
 			var testCasesButton = new Button
