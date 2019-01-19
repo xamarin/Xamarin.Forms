@@ -10,6 +10,7 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		readonly AccessibleUIViewController _parent;
 		List<NSObject> _accessibilityElements = new List<NSObject>();
+		bool _disposed;
 
 		public PageContainer(AccessibleUIViewController parent)
 		{
@@ -45,6 +46,16 @@ namespace Xamarin.Forms.Platform.iOS
 		public void ClearAccessibilityElements()
 		{
 			_accessibilityElements = null;
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing && !_disposed)
+			{
+				ClearAccessibilityElements();
+				_disposed = true;
+			}
+			base.Dispose(disposing);
 		}
 
 		[Export("accessibilityElementCount")]

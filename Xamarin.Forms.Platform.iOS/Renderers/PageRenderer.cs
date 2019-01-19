@@ -54,11 +54,13 @@ namespace Xamarin.Forms.Platform.iOS
 
 			base.SetElement(element);
 
-			if (Element != null && !string.IsNullOrEmpty(Element.AutomationId))
-				SetAutomationId(Element.AutomationId);
-
 			if (element != null)
+			{
+				if (!string.IsNullOrEmpty(element.AutomationId))
+					SetAutomationId(element.AutomationId);
+
 				element.SendViewInitialized(NativeView);
+			}
 
 			EffectUtilities.RegisterEffectControlProvider(this, oldElement, element);
 		}
@@ -72,6 +74,9 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.ViewDidLayoutSubviews();
 
+			if (_disposed)
+				return;
+
 			if (Element.Parent is BaseShellItem)
 				Element.Layout(View.Bounds.ToRectangle());
 
@@ -81,8 +86,7 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void ViewSafeAreaInsetsDidChange()
 		{
 			UpdateShellInsetPadding();
-			var page = (Element as Page);
-			if (page != null && Forms.IsiOS11OrNewer)
+			if (Page != null && Forms.IsiOS11OrNewer)
 			{
 				var insets = NativeView.SafeAreaInsets;
 				if (Page.Parent is TabbedPage)
@@ -90,7 +94,6 @@ namespace Xamarin.Forms.Platform.iOS
 					insets.Bottom = 0;
 				}
 				Page.On<PlatformConfiguration.iOS>().SetSafeAreaInsets(new Thickness(insets.Left, insets.Top, insets.Right, insets.Bottom));
-
 			}
 
 			base.ViewSafeAreaInsetsDidChange();
