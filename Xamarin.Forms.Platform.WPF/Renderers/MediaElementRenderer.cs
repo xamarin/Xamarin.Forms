@@ -252,6 +252,10 @@ namespace Xamarin.Forms.Platform.WPF
 				case nameof(MediaElement.Source):
 					UpdateSource();
 					break;
+
+				case nameof(MediaElement.Volume):
+					Control.Volume = Element.Volume;
+					break;
 			}
 
 			base.OnElementPropertyChanged(sender, e);

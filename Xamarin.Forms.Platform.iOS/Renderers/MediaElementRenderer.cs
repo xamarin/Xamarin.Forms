@@ -191,6 +191,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void ObserveStatus(NSObservedChange e)
 		{
+			Controller.Volume = _avPlayerViewController.Player.Volume;
+
 			switch (_avPlayerViewController.Player.Status)
 			{
 				case AVPlayerStatus.Failed:
@@ -266,6 +268,10 @@ namespace Xamarin.Forms.Platform.iOS
 				case nameof(MediaElement.Source):
 					UpdateSource();
 					break;
+
+				case nameof(MediaElement.Volume):
+					_avPlayerViewController.Player.Volume = (float)MediaElement.Volume;
+					break;
 			}
 		}
 
@@ -310,6 +316,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void MediaElementStateRequested(object sender, StateRequested e)
 		{
+			MediaElementVolumeRequested(this, EventArgs.Empty);
+
 			switch (e.State)
 			{
 				case MediaElementState.Playing:
@@ -394,7 +402,8 @@ namespace Xamarin.Forms.Platform.iOS
 				oldElement.PropertyChanged -= OnElementPropertyChanged;
 				oldElement.SeekRequested -= MediaElementSeekRequested;
 				oldElement.StateRequested -= MediaElementStateRequested;
-				oldElement.PositionRequested -= MediaElement_PositionRequested;
+				oldElement.PositionRequested -= MediaElementPositionRequested;
+				MediaElement.VolumeRequested -= MediaElementVolumeRequested;
 			}
 
 			Color currentColor = oldElement?.BackgroundColor ?? Color.Default;
@@ -406,7 +415,8 @@ namespace Xamarin.Forms.Platform.iOS
 			MediaElement.PropertyChanged += OnElementPropertyChanged;
 			MediaElement.SeekRequested += MediaElementSeekRequested;
 			MediaElement.StateRequested += MediaElementStateRequested;
-			MediaElement.PositionRequested += MediaElement_PositionRequested;
+			MediaElement.PositionRequested += MediaElementPositionRequested;
+			MediaElement.VolumeRequested += MediaElementVolumeRequested;
 
 			AutosizesSubviews = true;
 
@@ -419,7 +429,12 @@ namespace Xamarin.Forms.Platform.iOS
 			Performance.Stop(reference);
 		}
 
-		void MediaElement_PositionRequested(object sender, EventArgs e)
+		private void MediaElementVolumeRequested(object sender, EventArgs e)
+		{
+			Controller.Volume = _avPlayerViewController.Player.Volume;
+		}
+
+		void MediaElementPositionRequested(object sender, EventArgs e)
 		{
 			Controller.Position = Position;
 		}

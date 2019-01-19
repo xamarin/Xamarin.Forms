@@ -38,12 +38,14 @@ namespace Xamarin.Forms.Controls
 			widthLabel.SetBinding(Label.TextProperty, new Binding("VideoWidth", BindingMode.OneWay, null, null, "w:{0}", element));
 			var durationLabel = new Label();
 			durationLabel.SetBinding(Label.TextProperty, new Binding("Duration", BindingMode.OneWay, null, null, "d:{0:g}", element));
-
+			var volumeLabel = new Label();
+			volumeLabel.SetBinding(Label.TextProperty, new Binding("Volume", BindingMode.OneWay, null, null, "v:{0}", element));
 			infoStack.Children.Add(stateLabel);
 			infoStack.Children.Add(bufferingLabel);
 			infoStack.Children.Add(heightLabel);
 			infoStack.Children.Add(widthLabel);
 			infoStack.Children.Add(durationLabel);
+			infoStack.Children.Add(volumeLabel);
 
 			positionLabel = new Label();
 			positionLabel.TextColor = Color.Black;

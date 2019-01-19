@@ -275,6 +275,10 @@ namespace Xamarin.Forms.Platform.UWP
 				case nameof(MediaElement.Height):
 					Height = Math.Max(0, Element.Height);
 					break;
+
+				case nameof(MediaElement.Volume):
+					Control.Volume = Element.Volume;
+					break;
 			}
 
 			base.OnElementPropertyChanged(sender, e);

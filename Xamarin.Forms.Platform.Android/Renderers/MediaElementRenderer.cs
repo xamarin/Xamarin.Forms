@@ -219,6 +219,10 @@ namespace Xamarin.Forms.Platform.Android
 				case nameof(MediaElement.Source):
 					UpdateSource();
 					break;
+
+				case nameof(MediaElement.Volume):
+					_mediaPlayer?.SetVolume((float)Element.Volume, (float)Element.Volume);
+					break;
 			}
 
 			base.OnElementPropertyChanged(sender, e);

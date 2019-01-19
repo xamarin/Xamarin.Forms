@@ -46,6 +46,16 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty VideoWidthProperty =
 		  BindableProperty.Create(nameof(VideoWidth), typeof(int), typeof(MediaElement));
 
+		public static readonly BindableProperty VolumeProperty =
+		  BindableProperty.Create(nameof(Volume), typeof(double), typeof(MediaElement), 1.0, BindingMode.TwoWay, new BindableProperty.ValidateValueDelegate(ValidateVolume));
+
+		private static bool ValidateVolume(BindableObject o, object newValue)
+		{
+			double d = (double)newValue;
+
+			return d >= 0.0 && d <= 1.0;
+		}
+
 		public Aspect Aspect
 		{
 			get => (Aspect)GetValue(AspectProperty);
@@ -127,6 +137,19 @@ namespace Xamarin.Forms
 			get { return (int)GetValue(VideoWidthProperty); }
 		}
 
+		public double Volume
+		{
+			get
+			{
+				VolumeRequested?.Invoke(this, EventArgs.Empty);
+				return (double)GetValue(VolumeProperty);
+			}
+			set
+			{
+				SetValue(VolumeProperty, value);
+			}
+		}
+
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public event EventHandler<SeekRequested> SeekRequested;
 
@@ -135,6 +158,10 @@ namespace Xamarin.Forms
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public event EventHandler PositionRequested;
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public event EventHandler VolumeRequested;
+
 
 		public void Play()
 		{
@@ -157,7 +184,8 @@ namespace Xamarin.Forms
 		TimeSpan IMediaElementController.Position { get => (TimeSpan)GetValue(PositionProperty); set => SetValue(PositionProperty, value); }
 		int IMediaElementController.VideoHeight { get => (int)GetValue(VideoHeightProperty); set => SetValue(VideoHeightProperty, value); }
 		int IMediaElementController.VideoWidth { get => (int)GetValue(VideoWidthProperty); set => SetValue(VideoWidthProperty, value); }
-
+		double IMediaElementController.Volume { get => (double)GetValue(VolumeProperty); set => SetValue(VolumeProperty, value);
+		}
 		void IMediaElementController.OnMediaEnded()
 		{
 			SetValue(CurrentStateProperty, MediaElementState.Stopped);
@@ -261,6 +289,7 @@ namespace Xamarin.Forms
 		TimeSpan Position { get; set; }
 		int VideoHeight { get; set; }
 		int VideoWidth { get; set; }
+		double Volume { get; set; }
 
 		void OnMediaEnded();
 		void OnMediaFailed();

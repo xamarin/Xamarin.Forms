@@ -256,6 +256,10 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				case nameof(MediaElement.Source):
 					UpdateSource();
 					break;
+
+				case nameof(MediaElement.Volume):
+					_mediaPlayer?.SetVolume((float)MediaElement.Volume, (float)MediaElement.Volume);
+					break;
 			}
 
 			ElementPropertyChanged?.Invoke(this, e);
