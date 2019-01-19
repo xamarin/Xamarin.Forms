@@ -63,7 +63,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void IAccessibilityElementsController.ResetAccessibilityElements()
 		{
-			Container.ClearAccessibilityElements();
+			Container?.ClearAccessibilityElements();
 		}
 
 		public virtual void SetElement(VisualElement element)
@@ -77,7 +77,7 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.ViewWillLayoutSubviews();
 
-			AccessibilityElementsController.ResetAccessibilityElements();
+			AccessibilityElementsController?.ResetAccessibilityElements();
 		}
 
 		protected override void Dispose(bool disposing)
@@ -98,7 +98,7 @@ namespace Xamarin.Forms.Platform.iOS
 			Container?.RemoveFromSuperview();
 
 			Container = new PageContainer(this);
-			View.AddSubview(Container);
+			View?.AddSubview(Container);
 		}
 
 		static VisualElement GetFirstTabStopVisualElement(IDictionary<int, List<VisualElement>> tabIndexes)
