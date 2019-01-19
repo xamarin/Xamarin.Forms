@@ -11,16 +11,22 @@ namespace Xamarin.Forms.Platform.Android
 			where TButton : AButton
 		{
 			downButton = (TButton)renderer.CreateButton(false);
+			downButton.Id = Platform.GenerateViewId();
+			downButton.Focusable = true;
 			downButton.Text = "-";
 			downButton.Gravity = GravityFlags.Center;
 			downButton.Tag = renderer as Java.Lang.Object;
 			downButton.SetOnClickListener(StepperListener.Instance);
 
 			upButton = (TButton)renderer.CreateButton(true);
+			upButton.Id = Platform.GenerateViewId();
+			upButton.Focusable = true;
 			upButton.Text = "+";
 			upButton.Gravity = GravityFlags.Center;
 			upButton.Tag = renderer as Java.Lang.Object;
 			upButton.SetOnClickListener(StepperListener.Instance);
+
+			downButton.NextFocusForwardId = upButton.Id;
 		}
 
 		public static void UpdateButtons<TButton>(IStepperRenderer renderer, PropertyChangedEventArgs e, TButton downButton, TButton upButton)

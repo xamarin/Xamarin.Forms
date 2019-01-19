@@ -46,6 +46,8 @@ namespace Xamarin.Forms.Platform.Android.Material
 			_motionEventHelper = new MotionEventHelper();
 
 			Orientation = Orientation.Horizontal;
+			Focusable = true;
+			DescendantFocusability = DescendantFocusability.AfterDescendants;
 
 			StepperRendererManager.CreateStepperButtons(this, out _downButton, out _upButton);
 			AddView(_downButton, new LinearLayout.LayoutParams(LayoutParams.WrapContent, LayoutParams.MatchParent));

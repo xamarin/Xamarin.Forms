@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using Android.Content;
 using Android.Widget;
+using Android.Views;
 using AButton = Android.Widget.Button;
 
 namespace Xamarin.Forms.Platform.Android
@@ -25,7 +26,12 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override LinearLayout CreateNativeControl()
 		{
-			return new LinearLayout(Context) { Orientation = Orientation.Horizontal };
+			return new LinearLayout(Context)
+			{
+				Orientation = Orientation.Horizontal,
+				Focusable = true,
+				DescendantFocusability = DescendantFocusability.AfterDescendants
+			};
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Stepper> e)
