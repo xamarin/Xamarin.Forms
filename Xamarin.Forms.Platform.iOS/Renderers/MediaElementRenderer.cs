@@ -77,7 +77,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 						if (uriSource.Uri.LocalPath.StartsWith("/local"))
 						{
-							filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), uriSource.Uri.LocalPath.Substring(7));
+							var libraryPath = NSFileManager.DefaultManager.GetUrls(NSSearchPathDirectory.LibraryDirectory, NSSearchPathDomain.User)[0].Path;
+							filePath = Path.Combine(libraryPath, uriSource.Uri.LocalPath.Substring(7));
 						}
 						else if (uriSource.Uri.LocalPath.StartsWith("/temp"))
 						{
