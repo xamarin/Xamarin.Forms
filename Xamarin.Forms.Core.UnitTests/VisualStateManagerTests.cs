@@ -281,6 +281,43 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
+		public void VisualElementGoesToCorrectStateWhenSetterHasTarget()
+		{
+			double defaultMargin = default(double);
+			double targetMargin = 1.5;
+
+			var label1 = new Label();
+			var label2 = new Label();
+
+			var list = new VisualStateGroupList
+			{
+				new VisualStateGroup
+				{
+					States =
+					{
+						new VisualState
+						{
+							Name = NormalStateName,
+							Setters =
+							{
+								new Setter { Property = View.MarginBottomProperty, Value = targetMargin },
+								new Setter { Target = label2, Property = View.MarginTopProperty, Value = targetMargin }
+							}
+						}
+					}
+				}
+			};
+
+			VisualStateManager.SetVisualStateGroups(label1, list);
+
+			Assert.That(label1.Margin.Top, Is.EqualTo(defaultMargin));
+			Assert.That(label1.Margin.Bottom, Is.EqualTo(targetMargin));
+
+			Assert.That(label2.Margin.Top, Is.EqualTo(targetMargin));
+			Assert.That(label2.Margin.Bottom, Is.EqualTo(defaultMargin));
+		}
+
+		[Test]
 		public void CanRemoveAStateAndAddANewStateWithTheSameName()
 		{
 			var stateGroups = new VisualStateGroupList();

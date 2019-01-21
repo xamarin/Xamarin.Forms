@@ -14,6 +14,8 @@ namespace Xamarin.Forms
 	{
 		readonly ConditionalWeakTable<BindableObject, object> _originalValues = new ConditionalWeakTable<BindableObject, object>();
 
+		public BindableObject Target { get; set; }
+
 		public BindableProperty Property { get; set; }
 
 		public object Value { get; set; }
@@ -29,7 +31,10 @@ namespace Xamarin.Forms
 				{
 					MemberInfo minfo = null;
 					try {
-						minfo = Property.DeclaringType.GetRuntimeProperty(Property.PropertyName);
+						if (Target != null)
+							minfo = Target.GetType().GetRuntimeProperty(Property.PropertyName);
+						else
+							minfo = Property.DeclaringType.GetRuntimeProperty(Property.PropertyName);
 					} catch (AmbiguousMatchException e) {
 						throw new XamlParseException($"Multiple properties with name '{Property.DeclaringType}.{Property.PropertyName}' found.", serviceProvider, innerException: e);
 					}
@@ -47,8 +52,9 @@ namespace Xamarin.Forms
 			return this;
 		}
 
-		internal void Apply(BindableObject target, bool fromStyle = false)
+		internal void Apply(BindableObject bindableObject, bool fromStyle = false)
 		{
+			var target = Target ?? bindableObject;
 			if (target == null)
 				throw new ArgumentNullException(nameof(target));
 			if (Property == null)
@@ -76,8 +82,9 @@ namespace Xamarin.Forms
 			}
 		}
 
-		internal void UnApply(BindableObject target, bool fromStyle = false)
+		internal void UnApply(BindableObject bindableObject, bool fromStyle = false)
 		{
+			var target = Target ?? bindableObject;
 			if (target == null)
 				throw new ArgumentNullException(nameof(target));
 			if (Property == null)
