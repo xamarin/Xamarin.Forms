@@ -43,9 +43,6 @@
     <Reference Include="System.Net.Http" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Xamarin.iOS.MaterialComponents" Version="72.2.0.1" />
-  </ItemGroup>
-  <ItemGroup>
     <BundleResource Include="Resources\3bar%402x.png" />
   </ItemGroup>
   <ItemGroup>
