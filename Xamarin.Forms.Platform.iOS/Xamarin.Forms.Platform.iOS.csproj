@@ -208,6 +208,11 @@
     <Compile Include="NativeValueConverterService.cs" />
     <Compile Include="NativeBindingService.cs" />
     <Compile Include="Extensions\AccessibilityExtensions.cs" />
+    <Compile Include="Material\MaterialFrameRenderer.cs" />
+    <Compile Include="Material\MaterialColors.cs" />
+    <Compile Include="Material\MaterialSliderRenderer.cs" />
+    <Compile Include="Material\MaterialActivityIndicatorRenderer.cs" />
+    <Compile Include="Material\MaterialStepperRenderer.cs" />
     <Compile Include="Renderers\ButtonLayoutManager.cs" />
     <Compile Include="Renderers\IButtonLayoutRenderer.cs" />
   </ItemGroup>
