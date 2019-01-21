@@ -116,7 +116,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Xamarin.iOS.MaterialComponents" Version="72.2.0" />
+    <PackageReference Include="Xamarin.iOS.MaterialComponents" Version="72.2.0.1" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
 </Project>
