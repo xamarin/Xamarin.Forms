@@ -21,6 +21,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use DatePickerRenderer(Context) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public DatePickerRenderer()
 		{
 			AutoPackage = false;
@@ -92,7 +93,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateFont();
 		}
 
-		internal override void OnFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
+		protected override void OnFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
 		{
 			base.OnFocusChangeRequested(sender, e);
 

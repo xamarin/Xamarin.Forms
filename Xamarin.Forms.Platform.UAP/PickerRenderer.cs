@@ -6,6 +6,7 @@ using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
+using WSelectionChangedEventArgs = Windows.UI.Xaml.Controls.SelectionChangedEventArgs;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -68,7 +69,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (e.PropertyName == Picker.SelectedIndexProperty.PropertyName)
 				UpdateSelectedIndex();
-			else if (e.PropertyName == Picker.TitleProperty.PropertyName)
+			else if (e.PropertyName == Picker.TitleProperty.PropertyName || e.PropertyName == Picker.TitleColorProperty.PropertyName)
 				UpdateTitle();
 			else if (e.PropertyName == Picker.TextColorProperty.PropertyName)
 				UpdateTextColor();
@@ -116,7 +117,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		void OnControlSelectionChanged(object sender, SelectionChangedEventArgs e)
+		void OnControlSelectionChanged(object sender, WSelectionChangedEventArgs e)
 		{
 			if (Element != null)
 				Element.SelectedIndex = Control.SelectedIndex;
@@ -210,7 +211,17 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateTitle()
 		{
-			Control.Header = Element.Title;
+			if (!Element.IsSet(Picker.TitleColorProperty))
+			{
+				Control.HeaderTemplate = null;
+				Control.Header = Element.Title;
+			}
+			else
+			{
+				Control.Header = null;
+				Control.HeaderTemplate = (Windows.UI.Xaml.DataTemplate)Windows.UI.Xaml.Application.Current.Resources["ComboBoxHeader"];
+				Control.DataContext = Element;
+			}
 		}
 	}
 }

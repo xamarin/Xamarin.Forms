@@ -271,6 +271,7 @@ namespace Xamarin.Forms.Controls
 		}
 
 		List<GalleryPageFactory> _pages = new List<GalleryPageFactory> {
+				new GalleryPageFactory(() => new FontImageSourceGallery(), "Font ImageSource"),
 				new GalleryPageFactory(() => new CollectionViewGallery(), "CollectionView Gallery"),
 				new GalleryPageFactory(() => new CollectionViewCoreGalleryPage(), "CollectionView Core Gallery"),
 				new GalleryPageFactory(() => new Issues.PerformanceGallery(), "Performance"),
@@ -359,9 +360,9 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new ListRefresh(), "ListView.PullToRefresh"),
 				new GalleryPageFactory(() => new ListViewDemoPage(), "ListView Demo Gallery - Legacy"),
 				new GalleryPageFactory(() => new MapGallery(), "Map Gallery - Legacy"),
+				new GalleryPageFactory(() => new MapWithItemsSourceGallery(), "Map With ItemsSource Gallery - Legacy"),
 				new GalleryPageFactory(() => new MinimumSizeGallery(), "MinimumSize Gallery - Legacy"),
 				new GalleryPageFactory(() => new MultiGallery(), "Multi Gallery - Legacy"),
-				new GalleryPageFactory(() => new NavigationMenuGallery(), "NavigationMenu Gallery - Legacy"),
 				new GalleryPageFactory(() => new NavigationPropertiesGallery(), "Navigation Properties"),
 #if HAVE_OPENTK
 				new GalleryPageFactory(() => new OpenGLGallery(), "OpenGLGallery - Legacy"),

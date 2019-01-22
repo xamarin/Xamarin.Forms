@@ -516,6 +516,8 @@ namespace Xamarin.Forms.CustomAttributes
 			FontAttributes,
 			FontFamily,
 			FontSize,
+			MaxLength,
+			IsReadOnly
 		}
 
 		public enum Entry
@@ -539,6 +541,8 @@ namespace Xamarin.Forms.CustomAttributes
 			TextDisabledColor,
 			PlaceholderDisabledColor,
 			PasswordColor,
+			MaxLength,
+			IsReadOnly,
 			IsPasswordNumeric
 		}
 
@@ -718,7 +722,8 @@ namespace Xamarin.Forms.CustomAttributes
 
 		public enum Switch
 		{
-			IsToggled
+			IsToggled,
+			OnColor
 		}
 
 		public enum CheckBox
@@ -782,6 +787,7 @@ namespace Xamarin.Forms.CustomAttributes
 		public enum Picker
 		{
 			Title,
+			TitleColor,
 			Items,
 			SelectedIndex,
 			Focus,

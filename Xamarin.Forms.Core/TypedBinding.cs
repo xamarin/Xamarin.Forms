@@ -63,6 +63,7 @@ namespace Xamarin.Forms.Internals
 		readonly PropertyChangedProxy [] _handlers;
 
 		[Obsolete("deprecated one. kept for backcompat")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public TypedBinding(Func<TSource, TProperty> getter, Action<TSource, TProperty> setter, Tuple<Func<TSource, object>, string> [] handlers)
 				: this (s=>(getter(s), true), setter, handlers)
 		{
@@ -207,7 +208,7 @@ namespace Xamarin.Forms.Internals
 						(var retval, bool success) = _getter((TSource)sourceObject);
 						if (success) //if the getter failed, return the FallbackValue
 							value = GetSourceValue(retval, property.ReturnType);
-					} catch (Exception ex) when (ex is NullReferenceException || ex is KeyNotFoundException || ex is IndexOutOfRangeException) {
+					} catch (Exception ex) when (ex is NullReferenceException || ex is KeyNotFoundException || ex is IndexOutOfRangeException || ex is ArgumentOutOfRangeException) {
 					}
 				}
 				if (!BindingExpression.TryConvert(ref value, property, property.ReturnType, true)) {
