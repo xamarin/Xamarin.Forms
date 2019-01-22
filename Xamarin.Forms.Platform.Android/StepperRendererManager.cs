@@ -10,7 +10,7 @@ namespace Xamarin.Forms.Platform.Android
 		public static void CreateStepperButtons<TButton>(IStepperRenderer renderer, out TButton downButton, out TButton upButton)
 			where TButton : AButton
 		{
-			downButton = (TButton)renderer.CreateButton(false);
+			downButton = (TButton)renderer.CreateButton();
 			downButton.Id = Platform.GenerateViewId();
 			downButton.Focusable = true;
 			downButton.Text = "-";
@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Platform.Android
 			downButton.Tag = renderer as Java.Lang.Object;
 			downButton.SetOnClickListener(StepperListener.Instance);
 
-			upButton = (TButton)renderer.CreateButton(true);
+			upButton = (TButton)renderer.CreateButton();
 			upButton.Id = Platform.GenerateViewId();
 			upButton.Focusable = true;
 			upButton.Text = "+";
@@ -29,17 +29,15 @@ namespace Xamarin.Forms.Platform.Android
 			downButton.NextFocusForwardId = upButton.Id;
 		}
 
-		public static void UpdateButtons<TButton>(IStepperRenderer renderer, PropertyChangedEventArgs e, TButton downButton, TButton upButton)
+		public static void UpdateButtons<TButton>(IStepperRenderer renderer, TButton downButton, TButton upButton, PropertyChangedEventArgs e = null)
 			where TButton : AButton
 		{
 			if (!(renderer?.Element is Stepper stepper))
 				return;
 
+			// NOTE: a value of `null` means that we are forcing an update
 			if (e == null ||
-				e.PropertyName == Stepper.MinimumProperty.PropertyName ||
-				e.PropertyName == Stepper.MaximumProperty.PropertyName ||
-				e.PropertyName == Stepper.ValueProperty.PropertyName ||
-				e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
+				e.IsOneOf(Stepper.MinimumProperty, Stepper.MaximumProperty, Stepper.ValueProperty, VisualElement.IsEnabledProperty))
 			{
 				downButton.Enabled = stepper.IsEnabled && stepper.Value > stepper.Minimum;
 				upButton.Enabled = stepper.IsEnabled && stepper.Value < stepper.Maximum;
@@ -58,10 +56,11 @@ namespace Xamarin.Forms.Platform.Android
 				if (!(renderer?.Element is Stepper stepper))
 					return;
 
-				if (v == renderer.GetButton(true))
-					((IElementController)stepper).SetValueFromRenderer(Stepper.ValueProperty, stepper.Value + stepper.Increment);
-				else if (v == renderer.GetButton(false))
-					((IElementController)stepper).SetValueFromRenderer(Stepper.ValueProperty, stepper.Value - stepper.Increment);
+				var increment = stepper.Increment;
+				if (v == renderer.DownButton)
+					increment = -increment;
+
+				((IElementController)stepper).SetValueFromRenderer(Stepper.ValueProperty, stepper.Value + increment);
 			}
 		}
 	}

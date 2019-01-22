@@ -5,7 +5,11 @@ namespace Xamarin.Forms.Platform.Android
 	public interface IStepperRenderer
 	{
 		Stepper Element { get; }
-		AButton GetButton(bool upButton);
-		AButton CreateButton(bool isUpButton);
+
+		AButton UpButton { get; }
+
+		AButton DownButton { get; }
+
+		AButton CreateButton();
 	}
 }

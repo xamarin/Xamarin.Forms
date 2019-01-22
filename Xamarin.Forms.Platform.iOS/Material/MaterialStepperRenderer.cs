@@ -23,8 +23,8 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		{
 			if (Control is MaterialStepper control)
 			{
-				control.DecrementButton.TouchUpInside += OnDecrement;
-				control.IncrementButton.TouchUpInside += OnIncrement;
+				control.DecrementButton.TouchUpInside -= OnStep;
+				control.IncrementButton.TouchUpInside -= OnStep;
 			}
 
 			base.Dispose(disposing);
@@ -42,8 +42,8 @@ namespace Xamarin.Forms.Platform.iOS.Material
 				if (Control == null)
 				{
 					var stepper = CreateNativeControl();
-					stepper.DecrementButton.TouchUpInside += OnDecrement;
-					stepper.IncrementButton.TouchUpInside += OnIncrement;
+					stepper.DecrementButton.TouchUpInside += OnStep;
+					stepper.IncrementButton.TouchUpInside += OnStep;
 					SetNativeControl(stepper);
 				}
 
@@ -95,16 +95,16 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			}
 		}
 
-		private void OnDecrement(object sender, EventArgs e)
+		private void OnStep(object sender, EventArgs e)
 		{
-			if (Element is Stepper stepper)
-				stepper.SetValueFromRenderer(Stepper.ValueProperty, stepper.Value - stepper.Increment);
-		}
+			if (Element is Stepper stepper && sender is MButton button)
+			{
+				var increment = stepper.Increment;
+				if (button == Control.DecrementButton)
+					increment = -increment;
 
-		private void OnIncrement(object sender, EventArgs e)
-		{
-			if (Element is Stepper stepper)
-				stepper.SetValueFromRenderer(Stepper.ValueProperty, stepper.Value + stepper.Increment);
+				stepper.SetValueFromRenderer(Stepper.ValueProperty, stepper.Value + increment);
+			}
 		}
 	}
 
@@ -129,27 +129,26 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 		public override CGSize SizeThatFits(CGSize size)
 		{
-			var dec = DecrementButton.SizeThatFits(CGSize.Empty);
-			var inc = IncrementButton.SizeThatFits(CGSize.Empty);
-			var btn = new CGSize(
-				Math.Max(dec.Width, inc.Width),
-				Math.Max(dec.Height, inc.Height));
-
-			return new CGSize(btn.Width + DefaultButtonSpacing + btn.Width, btn.Height);
+			var btn = GetButtonSize();
+			return new CGSize(btn.Width * 2 + DefaultButtonSpacing, btn.Height);
 		}
 
 		public override void LayoutSubviews()
 		{
 			base.LayoutSubviews();
 
-			var dec = DecrementButton.SizeThatFits(CGSize.Empty);
-			var inc = IncrementButton.SizeThatFits(CGSize.Empty);
-			var btn = new CGSize(
-				Math.Max(dec.Width, inc.Width),
-				Math.Max(dec.Height, inc.Height));
-
+			var btn = GetButtonSize();
 			DecrementButton.Frame = new CGRect(0, 0, btn.Width, btn.Height);
 			IncrementButton.Frame = new CGRect(btn.Width + DefaultButtonSpacing, 0, btn.Width, btn.Height);
+		}
+
+		private CGSize GetButtonSize()
+		{
+			var dec = DecrementButton.SizeThatFits(CGSize.Empty);
+			var inc = IncrementButton.SizeThatFits(CGSize.Empty);
+			return new CGSize(
+				Math.Max(dec.Width, inc.Width),
+				Math.Max(dec.Height, inc.Height));
 		}
 	}
 }

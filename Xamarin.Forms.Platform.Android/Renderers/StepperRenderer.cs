@@ -47,20 +47,22 @@ namespace Xamarin.Forms.Platform.Android
 				SetNativeControl(layout);
 			}
 
-			StepperRendererManager.UpdateButtons(this, null, _downButton, _upButton);
+			StepperRendererManager.UpdateButtons(this, _downButton, _upButton);
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			base.OnElementPropertyChanged(sender, e);
-			StepperRendererManager.UpdateButtons(this, e, _downButton, _upButton);
+			StepperRendererManager.UpdateButtons(this, _downButton, _upButton, e);
 		}
 
 		Stepper IStepperRenderer.Element => Element;
 
-		AButton IStepperRenderer.GetButton(bool upButton) => upButton ? _upButton : _downButton;
+		AButton IStepperRenderer.UpButton => _upButton;
 
-		AButton IStepperRenderer.CreateButton(bool isUpButton)
+		AButton IStepperRenderer.DownButton => _downButton;
+
+		AButton IStepperRenderer.CreateButton()
 		{
 			var button = new AButton(Context);
 			button.SetHeight((int)Context.ToPixels(10.0));
