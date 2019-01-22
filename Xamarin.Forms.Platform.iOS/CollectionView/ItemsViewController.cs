@@ -163,12 +163,22 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void ApplyTemplateAndDataContext(TemplatedCell cell, NSIndexPath indexPath)
 		{
+			var oldView = cell.VisualElementRenderer?.Element;
+			if (oldView != null)
+			{
+				// This is not the ideal place to handle this, but it will have to do until  
+				// we get the selection stuff merged and we can properly use CellDisplayingEnded
+				// TODO When the selection stuff is merged, move this to CellDisplayingEnded
+				_itemsView.RemoveLogicalChild(oldView);
+			}
+
 			// We need to create a renderer, which means we need a template
 			var templateElement = _itemsView.ItemTemplate.CreateContent() as View;
 			IVisualElementRenderer renderer = CreateRenderer(templateElement);
 
 			if (renderer != null)
 			{
+				_itemsView.AddLogicalChild(renderer.Element);
 				BindableObject.SetInheritedBindingContext(renderer.Element, _itemsSource[indexPath.Row]);
 				cell.SetRenderer(renderer);
 			}

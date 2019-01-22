@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 
@@ -7,6 +9,8 @@ namespace Xamarin.Forms
 {
 	public class ItemsView : View
 	{
+		List<Element> _logicalChildren = new List<Element>();
+
 		protected internal ItemsView()
 		{
 			CollectionView.VerifyCollectionViewFlagEnabled(constructorHint: nameof(ItemsView));
@@ -38,6 +42,26 @@ namespace Xamarin.Forms
 			get => (IEnumerable)GetValue(ItemsSourceProperty);
 			set => SetValue(ItemsSourceProperty, value);
 		}
+
+		public void AddLogicalChild(Element element)
+		{
+			_logicalChildren.Add(element);
+			element.Parent = this;
+		}
+
+		public void RemoveLogicalChild(Element element)
+		{
+			element.Parent = null;
+			_logicalChildren.Remove(element);
+		}
+
+#if NETSTANDARD1_0
+		ReadOnlyCollection<Element> _readOnlyLogicalChildren;
+		internal override ReadOnlyCollection<Element> LogicalChildrenInternal => _readOnlyLogicalChildren ?? 
+			(_readOnlyLogicalChildren = new ReadOnlyCollection<Element>(_logicalChildren));
+#else
+		internal override ReadOnlyCollection<Element> LogicalChildrenInternal => _logicalChildren.AsReadOnly();
+#endif
 
 		// TODO hartez 2018/08/29 17:35:10 Should ItemsView be abstract? With ItemsLayout as an interface?
 		// Trying to come up with a reasonable way to restrict CarouselView to ListItemsLayout(LinearLayout) 
