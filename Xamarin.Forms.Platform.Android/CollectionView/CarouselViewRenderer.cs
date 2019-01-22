@@ -1,123 +1,84 @@
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Android.Support.V4.View;
 using System.ComponentModel;
-
-using AViews = Android.Views;
-using System.Collections.Specialized;
-using System.Collections.Generic;
 using Android.Content;
-using Android.Widget;
-using Android.App;
-using AShapeType = Android.Graphics.Drawables.ShapeType;
-using AImageViewCompat = Android.Support.V4.Widget.ImageViewCompat;
-using AColorStateList = Android.Content.Res.ColorStateList;
-using AndroidAppCompat = Android.Support.V7.Content.Res.AppCompatResources;
-using Android.Graphics;
 using Android.Support.V7.Widget;
+using Android.Views;
 
 namespace Xamarin.Forms.Platform.Android
 {
-
-	public class IndicatorsDecoration: global::Android.Support.V7.Widget.RecyclerView.ItemDecoration
+	public class CarouselViewRenderer : SelectableItemsViewRenderer
 	{
-		PageIndicator _pageIndicator;
-		float mIndicatorItemLength = 10;
-		float mIndicatorItemPadding = 3;
-		int indicatorHeight = 200;
-		public IndicatorsDecoration(PageIndicator indicator)
+		//should this move to ItemsViewREnderer and be shared ?
+		class ScrollListener : global::Android.Support.V7.Widget.RecyclerView.OnScrollListener
 		{
-			_pageIndicator = indicator;
+			CarouselViewRenderer _renderer;
+			int _oldPosition;
 
-			_pageIndicator.SetBackgroundColor(Xamarin.Forms.Color.Red.ToAndroid());
-		}
-
-		public override void GetItemOffsets(Rect outRect, AViews.View view, RecyclerView parent, RecyclerView.State state)
-		{
-			base.GetItemOffsets(outRect, view, parent, state);
-			outRect.Bottom = indicatorHeight;
-			_pageIndicator.Layout(0, parent.Height - indicatorHeight, parent.Width, parent.Height);
-
-		}
-
-		public override void OnDrawOver(Canvas c, RecyclerView parent, RecyclerView.State state)
-		{
-			base.OnDrawOver(c, parent, state);
-			int itemCount = parent.GetAdapter().ItemCount;
-
-			// center horizontally, calculate width and subtract half from center
-			float totalLength = mIndicatorItemLength * itemCount;
-			float paddingBetweenItems = Math.Max(0, itemCount - 1) * mIndicatorItemPadding;
-			float indicatorTotalWidth = totalLength + paddingBetweenItems;
-			float indicatorStartX = (parent.Width - indicatorTotalWidth) / 2F;
-
-			// center vertically in the allotted space
-			float indicatorPosY = parent.Height - indicatorHeight / 2F;
-			_pageIndicator.UpdateIndicatorCount();
-			//_pageIndicator.Draw(c);
-			drawInactiveIndicators(c, indicatorStartX, indicatorPosY, itemCount);
-		}
-
-		void drawInactiveIndicators(Canvas c, float indicatorStartX, float indicatorPosY, int itemCount)
-		{
-			var mPaint = new Paint();
-			mPaint.Color = Color.Yellow.ToAndroid();
-			
-
-			// width of item indicator including padding
-			var itemWidth = mIndicatorItemLength + mIndicatorItemPadding;
-
-			float start = indicatorStartX;
-			for (int i = 0; i < itemCount; i++)
+			public ScrollListener(CarouselViewRenderer renderer)
 			{
-				// draw the line for every item
-				c.DrawLine(start, indicatorPosY,
-					start + mIndicatorItemLength, indicatorPosY, mPaint);
-				start += itemWidth;
+				_renderer = renderer;
+			}
+
+			public override void OnScrolled(global::Android.Support.V7.Widget.RecyclerView recyclerView, int dx, int dy)
+			{
+				var layoutManager = (recyclerView.GetLayoutManager() as LinearLayoutManager);
+				var adapterPosition = layoutManager.FindFirstVisibleItemPosition();
+				if (_oldPosition != adapterPosition)
+				{
+					_oldPosition = adapterPosition;
+					_renderer.UpdatePosition(adapterPosition);
+				}
+				base.OnScrolled(recyclerView, dx, dy);
 			}
 		}
-	}
 
-	public class CarouselViewRenderer : ItemsViewRenderer
-	{
 		// TODO hartez 2018/08/29 17:13:17 Does this need to override SelectLayout so it ignores grids?	(Yes, and so it can warn on unknown layouts)
 		Context _context;
-
-		PageIndicator _pageIndicator;
-
-		CarouselView Carousel => Element as CarouselView;
+		ScrollListener _scrollListener;
+		protected CarouselView Carousel;
+		bool _isSwipeEnabled;
 
 		public CarouselViewRenderer(Context context) : base(context)
 		{
 			_context = context;
-			_pageIndicator = new PageIndicator(_context, null);
+			_scrollListener = new ScrollListener(this);
+			AddOnScrollListener(_scrollListener);
 		}
 
-		protected override void OnElementChanged(ElementChangedEventArgs<ItemsView> elementChangedEvent)
+		protected override void Dispose(bool disposing)
 		{
-			var oldElement = elementChangedEvent.OldElement;
-			var newElement = elementChangedEvent.NewElement;
-			//if (newElement != null)
-			//{
-			//	AddView(_pageIndicator);
-			//}
+			if (disposing)
+			{
+				if (_scrollListener != null)
+				{
+					RemoveOnScrollListener(_scrollListener);
+					_scrollListener.Dispose();
+					_scrollListener = null;
+				}
+			}
+			base.Dispose(disposing);
+		}
 
+		protected override void SetUpNewElement(ItemsView newElement)
+		{
+			base.SetUpNewElement(newElement);
+			if (newElement == null)
+			{
+				Carousel = null;
+				return;
+			}
 
-			AddItemDecoration(new IndicatorsDecoration(_pageIndicator));
+			Carousel = newElement as CarouselView;
+
 			UpdateSpacing();
 			UpdateIsSwipeEnabled();
-			UpdateIndicators();
-		}
 
-		private void UpdateSpacing()
-		{
-
+			//Goto to the Correct Position
+			Carousel.ScrollTo(Carousel.Position);
 		}
 
 		protected override void UpdateItemsSource()
 		{
-			if (ItemsView == null)
+			if (SelectableItemsView == null)
 			{
 				return;
 			}
@@ -130,65 +91,39 @@ namespace Xamarin.Forms.Platform.Android
 				(view, context) => new SizedItemContentView(context, () => Width, () => Height));
 
 			SwapAdapter(ItemsViewAdapter, false);
-			_pageIndicator.UpdateRecyclerView(this);
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == CarouselView.IsSwipeEnabledProperty.PropertyName)
 				UpdateIsSwipeEnabled();
-			else if (e.PropertyName == CarouselView.IndicatorsTintColorProperty.PropertyName)
-				UpdateIndicatorsTintColor();
-			else if (e.PropertyName == CarouselView.SelectedIndicatorTintColorProperty.PropertyName)
-				UpdateSelectedIndicatorsTintColor();
-			else if (e.PropertyName == CarouselView.IndicatorsShapeProperty.PropertyName)
-				UpdateIndicatorsShape();
-			else if (e.PropertyName == CarouselView.IndicatorsVisibilityProperty.PropertyName)
-				UpdateIndicators();
 		}
 
-		void UpdateIndicatorsTintColor()
+		public override bool OnTouchEvent(MotionEvent e)
 		{
-
-			_pageIndicator?.UpdatePageIndicatorTintColor(Carousel.IndicatorsTintColor.ToAndroid());
-			UpdateIndicatorsShape();
+			//TODO: this doesn't work because we need to interact with the Views
+			if (!_isSwipeEnabled)
+			{
+				return false;
+			}
+			return base.OnTouchEvent(e);
 		}
 
 		void UpdateIsSwipeEnabled()
 		{
-			//((IViewPager)_viewPager)?.SetPagingEnabled(Element.IsSwipeEnabled);
+			_isSwipeEnabled = Carousel.IsSwipeEnabled;
 		}
 
-		void UpdateSelectedIndicatorsTintColor()
+		void UpdatePosition(int position)
 		{
-			_pageIndicator?.UpdateCurrentPageIndicatorTintColor(Carousel.SelectedIndicatorTintColor.ToAndroid());
-			UpdateIndicatorsShape();
+			if (position == -1)
+				return;
+			(ItemsViewAdapter as SelectableItemsViewAdapter)?.UpdateSelection(position);
+
+			Carousel.SetValueCore(CarouselView.PositionProperty, position);
 		}
 
-		void UpdateIndicatorsShape()
-		{
-			_pageIndicator?.UpdateShapeType(Carousel.IndicatorsShape == IndicatorsShape.Circle ? AShapeType.Oval : AShapeType.Rectangle);
-		}
-
-		void UpdateIndicators()
-		{
-			if (Carousel.IndicatorsVisibility != IndicatorVisibility.Hidden)
-			{
-				_pageIndicator.Visibility = AViews.ViewStates.Visible;
-				UpdateIndicatorsTintColor();
-				UpdateSelectedIndicatorsTintColor();
-				UpdateIndicatorsShape();
-			}
-			else
-			{
-				_pageIndicator.Visibility = AViews.ViewStates.Gone;
-			}
-
-			_pageIndicator.UpdateIndicatorCount();
-			UpdateIndicatorPosition();
-		}
-
-		void UpdateIndicatorPosition()
+		void UpdateSpacing()
 		{
 
 		}

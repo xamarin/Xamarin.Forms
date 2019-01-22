@@ -51,6 +51,10 @@
 	{
 	}
 
+	internal class _IndicatorsViewRenderer
+	{
+	}
+
 	internal class _SliderRenderer
 	{
 	}

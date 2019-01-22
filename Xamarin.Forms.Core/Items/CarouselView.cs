@@ -1,24 +1,10 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
+using System.Windows.Input;
 using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
 {
-
-	public enum IndicatorVisibility
-	{
-		Bottom,
-		Top,
-		Left,
-		Right,
-		Hidden,
-	}
-
-	public enum IndicatorsShape
-	{
-		Circle,
-		Square
-	}
-
 	public class ScrolledDirectionEventArgs : EventArgs
 	{
 		public double NewValue { get; set; }
@@ -40,7 +26,7 @@ namespace Xamarin.Forms
 	}
 
 	[RenderWith(typeof(_CarouselViewRenderer))]
-	public class CarouselView : IndexableSelectableItemsView
+	public class CarouselView : SelectableItemsView
 	{
 		public static readonly BindableProperty IsSwipeEnabledProperty = BindableProperty.Create(nameof(IsSwipeEnabled), typeof(bool), typeof(CarouselView), true);
 
@@ -48,16 +34,6 @@ namespace Xamarin.Forms
 		{
 			get { return (bool)GetValue(IsSwipeEnabledProperty); }
 			set { SetValue(IsSwipeEnabledProperty, value); }
-		}
-
-		public static readonly BindableProperty IndicatorsVisibilityProperty =
-				BindableProperty.Create(nameof(IndicatorsVisibility), typeof(IndicatorVisibility), typeof(CarouselView),
-					IndicatorVisibility.Bottom);
-
-		public IndicatorVisibility IndicatorsVisibility
-		{
-			get { return (IndicatorVisibility)GetValue(IndicatorsVisibilityProperty); }
-			set { SetValue(IndicatorsVisibilityProperty, value); }
 		}
 
 		public static readonly BindableProperty ItemSpacingProperty =
@@ -69,31 +45,8 @@ namespace Xamarin.Forms
 			set { SetValue(ItemSpacingProperty, value); }
 		}
 
-		public static readonly BindableProperty IndicatorsTintColorProperty = BindableProperty.Create(nameof(IndicatorsTintColor), typeof(Color), typeof(CarouselView), Color.Silver);
-
-		public Color IndicatorsTintColor
-		{
-			get { return (Color)GetValue(IndicatorsTintColorProperty); }
-			set { SetValue(IndicatorsTintColorProperty, value); }
-		}
-
-		public static readonly BindableProperty SelectedIndicatorTintColorProperty = BindableProperty.Create(nameof(SelectedIndicatorTintColor), typeof(Color), typeof(CarouselView), Color.Gray);
-
-		public Color SelectedIndicatorTintColor
-		{
-			get { return (Color)GetValue(SelectedIndicatorTintColorProperty); }
-			set { SetValue(SelectedIndicatorTintColorProperty, value); }
-		}
-
-		public static readonly BindableProperty IndicatorsShapeProperty = BindableProperty.Create(nameof(IndicatorsShape), typeof(IndicatorsShape), typeof(CarouselView), IndicatorsShape.Circle);
-
-		public IndicatorsShape IndicatorsShape
-		{
-			get { return (IndicatorsShape)GetValue(IndicatorsShapeProperty); }
-			set { SetValue(IndicatorsShapeProperty, value); }
-		}
-
-		public static readonly BindableProperty AnimateTransitionProperty = BindableProperty.Create(nameof(AnimateTransition), typeof(bool), typeof(CarouselView), true);
+		public static readonly BindableProperty AnimateTransitionProperty = 
+		BindableProperty.Create(nameof(AnimateTransition), typeof(bool), typeof(CarouselView), true);
 
 		public bool AnimateTransition
 		{
@@ -101,37 +54,64 @@ namespace Xamarin.Forms
 			set { SetValue(AnimateTransitionProperty, value); }
 		}
 
-		public static readonly BindableProperty ShowArrowsProperty = BindableProperty.Create(nameof(ShowArrows), typeof(bool), typeof(CarouselView), false);
+		public static readonly BindableProperty PositionProperty =
+		BindableProperty.Create(nameof(Position), typeof(int), typeof(CarouselView), default(int), BindingMode.TwoWay,
+			propertyChanged: PositionPropertyChanged);
 
-		public bool ShowArrows
+		public static readonly BindableProperty PositionChangedCommandProperty =
+			BindableProperty.Create(nameof(PositionChangedCommand), typeof(ICommand), typeof(CarouselView));
+
+		public static readonly BindableProperty PositionChangedCommandPropertyProperty =
+			BindableProperty.Create(nameof(PositionChangedCommandParameter), typeof(object),
+				typeof(CarouselView));
+
+		public int Position
 		{
-			get { return (bool)GetValue(ShowArrowsProperty); }
-			set { SetValue(ShowArrowsProperty, value); }
+			get => (int)GetValue(PositionProperty);
+			set => SetValue(PositionProperty, value);
 		}
 
-		public static readonly BindableProperty ArrowsBackgroundColorProperty = BindableProperty.Create(nameof(ArrowsBackgroundColor), typeof(Color), typeof(CarouselView), Color.Black);
-
-		public Color ArrowsBackgroundColor
+		public ICommand PositionChangedCommand
 		{
-			get { return (Color)GetValue(ArrowsBackgroundColorProperty); }
-			set { SetValue(ArrowsBackgroundColorProperty, value); }
+			get => (ICommand)GetValue(SelectionChangedCommandProperty);
+			set => SetValue(SelectionChangedCommandProperty, value);
 		}
 
-		public static readonly BindableProperty ArrowsTintColorProperty = BindableProperty.Create(nameof(ArrowsTintColor), typeof(Color), typeof(CarouselView), Color.White);
-
-		public Color ArrowsTintColor
+		public object PositionChangedCommandParameter
 		{
-			get { return (Color)GetValue(ArrowsTintColorProperty); }
-			set { SetValue(ArrowsTintColorProperty, value); }
+			get => GetValue(SelectionChangedCommandParameterProperty);
+			set => SetValue(SelectionChangedCommandParameterProperty, value);
 		}
 
-		// Not working on UWP
-		public static readonly BindableProperty ArrowsTransparencyProperty = BindableProperty.Create(nameof(ArrowsTransparency), typeof(float), typeof(CarouselView), 0.5f);
+		public event EventHandler<PositionChangedEventArgs> PositionChanged;
 
-		public float ArrowsTransparency
+		protected virtual void OnPositionChanged(PositionChangedEventArgs args)
 		{
-			get { return (float)GetValue(ArrowsTransparencyProperty); }
-			set { SetValue(ArrowsTransparencyProperty, value); }
+			ScrollTo(args.CurrentPosition, animate: AnimateTransition);
+		}
+
+		static void PositionPropertyChanged(BindableObject bindable, object oldValue, object newValue)
+		{
+			var carousel = (CarouselView)bindable;
+
+			var args = new PositionChangedEventArgs((int)oldValue, (int)newValue);
+
+			var command = carousel.PositionChangedCommand;
+
+			if (command != null)
+			{
+				var commandParameter = carousel.PositionChangedCommandParameter;
+
+				if (command.CanExecute(commandParameter))
+				{
+					command.Execute(commandParameter);
+				}
+			}
+
+			carousel.PositionChanged?.Invoke(carousel, args);
+
+
+			carousel.OnPositionChanged(args);
 		}
 
 		public event EventHandler<ScrolledDirectionEventArgs> Scrolled;
@@ -145,6 +125,7 @@ namespace Xamarin.Forms
 				SnapPointsType = SnapPointsType.MandatorySingle,
 				SnapPointsAlignment = SnapPointsAlignment.Center
 			};
+			SelectionMode = SelectionMode.Single;
 		}
 	}
 }

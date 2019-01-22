@@ -113,16 +113,18 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 
 				image.SetBinding(Image.SourceProperty, new Binding("Image"));
 
-				var caption = new Label
+				var caption = new Button
 				{
 					BackgroundColor = Color.Gray,
 					HorizontalOptions = LayoutOptions.Fill,
-					HorizontalTextAlignment = TextAlignment.Center,
 					Margin = new Thickness(5)
 				};
 
-				caption.SetBinding(Label.TextProperty, new Binding("Caption"));
-
+				caption.SetBinding(Button.TextProperty, new Binding("Caption"));
+				caption.Clicked += (sender, e) => {
+					App.Current.MainPage.DisplayAlert("Button works", (sender as Button).Text, "Ok");
+				};
+				
 				grid.Children.Add(image);
 				grid.Children.Add(caption);
 

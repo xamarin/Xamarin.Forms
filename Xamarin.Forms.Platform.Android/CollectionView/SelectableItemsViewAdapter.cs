@@ -35,7 +35,7 @@ namespace Xamarin.Forms.Platform.Android
 			// Make sure that if this item is one of the selected items, it's marked as selected
 			selectable.IsSelected = PostionIsSelected(position);
 		}
-	
+
 		public override void OnViewRecycled(Object holder)
 		{
 			if (holder is SelectableViewHolder selectable)
@@ -125,7 +125,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateFormsSelection(adapterPosition);
 		}
 
-		void UpdateFormsSelection(int adapterPosition)
+		internal void UpdateFormsSelection(int adapterPosition)
 		{
 			var mode = SelectableItemsView.SelectionMode;
 

@@ -68,6 +68,8 @@ namespace Xamarin.Forms.Platform
 	internal class _CollectionViewRenderer { }
 	[RenderWith (typeof (CarouselViewRenderer))]
 	internal class _CarouselViewRenderer { }
+	[RenderWith(typeof(IndicatorsViewRenderer))]
+	internal class _IndicatorsViewRenderer { }
 #endif
 	[RenderWith (typeof (SliderRenderer))]
 	internal class _SliderRenderer { }
