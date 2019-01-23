@@ -32,10 +32,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_layout.GetPrototype = GetPrototype;
 			_layout.UniformSize = false; // todo hartez Link this to ItemsView.ItemSizingStrategy hint
 
-			Delegator = new UICollectionViewDelegator
-			{
-				ItemsViewLayout = _layout
-			};
+			Delegator = new UICollectionViewDelegator(_layout);
 
 			CollectionView.Delegate = Delegator;
 		}

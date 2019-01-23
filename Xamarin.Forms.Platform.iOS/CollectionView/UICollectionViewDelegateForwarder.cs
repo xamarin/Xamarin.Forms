@@ -6,8 +6,10 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class UICollectionViewDelegator : UICollectionViewDelegateFlowLayout
 	{
-		public ItemsViewLayout ItemsViewLayout { get; set; }
+		public ItemsViewLayout ItemsViewLayout { get; private set; }
 		public SelectableItemsViewController SelectableItemsViewController { get; set; }
+
+		public UICollectionViewDelegator(ItemsViewLayout itemsViewLayout) => ItemsViewLayout = itemsViewLayout;
 
 		public override void WillDisplayCell(UICollectionView collectionView, UICollectionViewCell cell, NSIndexPath path)
 		{
