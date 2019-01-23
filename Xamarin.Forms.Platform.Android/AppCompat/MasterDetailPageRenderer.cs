@@ -419,6 +419,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		void UpdateMaster()
 		{
 			if (_masterLayout.ChildView == null)
+				Update();
+			else
 				new Handler(Looper.MainLooper).Post(() =>
 				{
 					if (_masterLayout == null || _masterLayout.IsDisposed())
@@ -426,23 +428,17 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 					Update();
 				});
-			else
-				Update();
 
 			void Update()
 			{
-				Android.MasterDetailContainer masterContainer = _masterLayout;
-				if (masterContainer == null)
-					return;
+				if (_masterLayout.ChildView != null)
+					_masterLayout.ChildView.PropertyChanged -= HandleMasterPropertyChanged;
 
-				if (masterContainer.ChildView != null)
-					masterContainer.ChildView.PropertyChanged -= HandleMasterPropertyChanged;
+				_masterLayout.ChildView = Element.Master;
 
-				masterContainer.ChildView = Element.Master;
-				if (Element.Master != null)
-					Element.Master.PropertyChanged += HandleMasterPropertyChanged;
+				if (_masterLayout.ChildView != null)
+					_masterLayout.ChildView.PropertyChanged += HandleMasterPropertyChanged;
 			}
-
 		}
 
 		void UpdateSplitViewLayout()
