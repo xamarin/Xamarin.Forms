@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using NUnit.Framework;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Core.UnitTests
 {
@@ -288,6 +289,11 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			var label1 = new Label();
 			var label2 = new Label();
+			INameScope nameScope = new NameScope();
+			NameScope.SetNameScope(label1, nameScope);
+			nameScope.RegisterName("Label1", label1);
+			NameScope.SetNameScope(label2, nameScope);
+			nameScope.RegisterName("Label2", label2);
 
 			var list = new VisualStateGroupList
 			{
@@ -301,7 +307,7 @@ namespace Xamarin.Forms.Core.UnitTests
 							Setters =
 							{
 								new Setter { Property = View.MarginBottomProperty, Value = targetMargin },
-								new Setter { Target = label2, Property = View.MarginTopProperty, Value = targetMargin }
+								new Setter { TargetName = "Label2", Property = View.MarginTopProperty, Value = targetMargin }
 							}
 						}
 					}

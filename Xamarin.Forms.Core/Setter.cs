@@ -14,8 +14,6 @@ namespace Xamarin.Forms
 	{
 		readonly ConditionalWeakTable<BindableObject, object> _originalValues = new ConditionalWeakTable<BindableObject, object>();
 
-		public BindableObject Target { get; set; }
-
 		public string TargetName { get; set; }
 
 		public BindableProperty Property { get; set; }
@@ -33,10 +31,7 @@ namespace Xamarin.Forms
 				{
 					MemberInfo minfo = null;
 					try {
-						if (Target != null)
-							minfo = Target.GetType().GetRuntimeProperty(Property.PropertyName);
-						else
-							minfo = Property.DeclaringType.GetRuntimeProperty(Property.PropertyName);
+						minfo = Property.DeclaringType.GetRuntimeProperty(Property.PropertyName);
 					} catch (AmbiguousMatchException e) {
 						throw new XamlParseException($"Multiple properties with name '{Property.DeclaringType}.{Property.PropertyName}' found.", serviceProvider, innerException: e);
 					}
@@ -56,7 +51,7 @@ namespace Xamarin.Forms
 
 		internal void Apply(BindableObject bindableObject, bool fromStyle = false)
 		{
-			var target = FindTargetObject(bindableObject, Target, TargetName);
+			var target = FindTargetObject(bindableObject, TargetName);
 			if (target == null)
 				throw new ArgumentNullException(nameof(target));
 			if (Property == null)
@@ -85,7 +80,7 @@ namespace Xamarin.Forms
 
 		internal void UnApply(BindableObject bindableObject, bool fromStyle = false)
 		{
-			var target = FindTargetObject(bindableObject, Target, TargetName);
+			var target = FindTargetObject(bindableObject, TargetName);
 			if (target == null)
 				throw new ArgumentNullException(nameof(target));
 			if (Property == null)
@@ -109,23 +104,18 @@ namespace Xamarin.Forms
 				target.ClearValue(Property);
 		}
 
-		BindableObject FindTargetObject(BindableObject root, BindableObject target, string targetName)
+		BindableObject FindTargetObject(BindableObject root, string targetName)
 		{
-			root = target ?? root;
-			if (root == null)
-				return null;
-			if (!string.IsNullOrWhiteSpace(targetName))
-			{
-				if (root is Element element)
-				{
-					if (element.FindByName(TargetName) is BindableObject locatedTarget)
-						return locatedTarget;
-				}
+			if (root == null || string.IsNullOrWhiteSpace(targetName))
+				return root;
 
-				return null;
+			if (root is Element element)
+			{
+				if (element.FindByName(targetName) is BindableObject locatedTarget)
+					return locatedTarget;
 			}
 
-			return root;
+			return null;
 		}
 	}
 }
