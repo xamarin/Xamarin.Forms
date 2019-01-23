@@ -81,7 +81,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 				if (element != null)
 				{
-					VisualStateManager.GoToState(VisualElementRenderer.Element, value ? "Selected" : "Normal");
+					VisualStateManager.GoToState(element, value 
+						? VisualStateManager.CommonStates.Selected 
+						: VisualStateManager.CommonStates.Normal);
 				}
 			}
 		}
