@@ -16,6 +16,8 @@ namespace Xamarin.Forms
 
 		public BindableObject Target { get; set; }
 
+		public string TargetName { get; set; }
+
 		public BindableProperty Property { get; set; }
 
 		public object Value { get; set; }
@@ -54,7 +56,7 @@ namespace Xamarin.Forms
 
 		internal void Apply(BindableObject bindableObject, bool fromStyle = false)
 		{
-			var target = Target ?? bindableObject;
+			var target = FindTargetObject(bindableObject, Target, TargetName);
 			if (target == null)
 				throw new ArgumentNullException(nameof(target));
 			if (Property == null)
@@ -68,8 +70,7 @@ namespace Xamarin.Forms
 			}
 
 			var dynamicResource = Value as DynamicResource;
-			var binding = Value as BindingBase;
-			if (binding != null)
+			if (Value is BindingBase binding)
 				target.SetBinding(Property, binding.Clone(), fromStyle);
 			else if (dynamicResource != null)
 				target.SetDynamicResource(Property, dynamicResource.Key, fromStyle);
@@ -84,7 +85,7 @@ namespace Xamarin.Forms
 
 		internal void UnApply(BindableObject bindableObject, bool fromStyle = false)
 		{
-			var target = Target ?? bindableObject;
+			var target = FindTargetObject(bindableObject, Target, TargetName);
 			if (target == null)
 				throw new ArgumentNullException(nameof(target));
 			if (Property == null)
@@ -98,8 +99,7 @@ namespace Xamarin.Forms
 				return;
 			}
 
-			object defaultValue;
-			if (_originalValues.TryGetValue(target, out defaultValue))
+			if (_originalValues.TryGetValue(target, out object defaultValue))
 			{
 				//reset default value, unapply bindings and dynamicResource
 				target.SetValue(Property, defaultValue, fromStyle);
@@ -107,6 +107,25 @@ namespace Xamarin.Forms
 			}
 			else
 				target.ClearValue(Property);
+		}
+
+		BindableObject FindTargetObject(BindableObject root, BindableObject target, string targetName)
+		{
+			root = target ?? root;
+			if (root == null)
+				return null;
+			if (!string.IsNullOrWhiteSpace(targetName))
+			{
+				if (root is Element element)
+				{
+					if (element.FindByName(TargetName) is BindableObject locatedTarget)
+						return locatedTarget;
+				}
+
+				return null;
+			}
+
+			return root;
 		}
 	}
 }
