@@ -76,7 +76,7 @@
 		<VisualStateGroup Name="ColorStates">
 			<VisualState Name="Red">
 				<VisualState.Setters>
-					<Setter Target="{x:Reference TargetLabel1}" Property="Label.BackgroundColor" Value="#340002" />
+					<Setter TargetName="TargetLabel1" Property="Label.BackgroundColor" Value="#340002" />
 					<Setter TargetName="TargetLabel1" Property="Label.TextColor" Value="#920e0c" />
 					<Setter TargetName="TargetLabel1" Property="Label.Text" Value="Red" />
 				</VisualState.Setters>
@@ -84,7 +84,7 @@
 
 			<VisualState Name="Blue">
 				<VisualState.Setters>
-					<Setter Target="{x:Reference TargetLabel1}" Property="Label.BackgroundColor" Value="#4a707a" />
+					<Setter TargetName="TargetLabel1" Property="Label.BackgroundColor" Value="#4a707a" />
 					<Setter TargetName="TargetLabel1" Property="Label.TextColor" Value="#94b0b7" />
 					<Setter TargetName="TargetLabel1" Property="Label.Text" Value="Blue" />
 				</VisualState.Setters>
