@@ -36,6 +36,9 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		// and then all the other colors decrease according to the Material theme setup
 		static float kFilledPlaceHolderOffset = 1f - kFilledTextFieldActiveAlpha;
 
+		// this is about the natural height. We just picked 63 to standarize the height between platforms
+		const float _minimumHeight = 63;
+
 		public MaterialEntryRenderer()
 		{
 			VisualElement.VerifyVisualFlagEnabled();
@@ -45,6 +48,11 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 		public override void LayoutSubviews()
 		{
+			var thing = Control.TextInsets;
+			thing.Left = 0f;
+			thing.Top = 0f;
+
+
 			base.LayoutSubviews();
 		}
 
@@ -54,6 +62,9 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			var result =  base.SizeThatFits(size);
 			if (nfloat.IsInfinity(result.Width))
 				result = Control.SystemLayoutSizeFittingSize(result, (float)UILayoutPriority.FittingSizeLevel, (float)UILayoutPriority.DefaultHigh);
+
+			if (result.Height < _minimumHeight)
+				result.Height = _minimumHeight;
 
 			return result;
 		}
@@ -69,9 +80,14 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			Control = field;
 			field.ClearButtonMode = UITextFieldViewMode.Never;
 			_activeTextinputController = new MTextInputControllerFilled(field);
-
+			field.TextInsetsMode = TextInputTextInsetsMode.IfContent;
 			ApplyTypographyScheme();
 			ApplyTheme();
+
+			_activeTextinputController.TextInsets(new UIEdgeInsets(0, 0, 0, 0));
+			var thing = Control.TextInsets;
+			thing.Left = 0f;
+			thing.Top = 0f;
 
 			return field;
 		}
