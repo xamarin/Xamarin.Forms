@@ -88,7 +88,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 					ThumbColor = Color.Red,
 					WidthRequest = 100,
 					BindingContext = carousel,
-					Maximum = itemsCount,
+					Maximum = itemsCount - 1,
 				};
 				slider.SetBinding(Slider.ValueProperty, nameof(carousel.Position));
 

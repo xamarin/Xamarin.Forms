@@ -85,7 +85,6 @@ namespace Xamarin.Forms.Platform.Android
 			SetUpNewElement(newElement);
 
 			OnElementChanged(oldElement, newElement);
-
 		}
 
 		void IVisualElementRenderer.SetLabelFor(int? id)
