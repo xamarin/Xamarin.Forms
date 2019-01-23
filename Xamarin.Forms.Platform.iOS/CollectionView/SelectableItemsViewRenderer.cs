@@ -50,21 +50,14 @@ namespace Xamarin.Forms.Platform.iOS
 			var mode = SelectableItemsView.SelectionMode;
 			var selectedItem = SelectableItemsView.SelectedItem;
 
-			if (selectedItem == null)
-			{
-				if (mode == SelectionMode.None || mode == SelectionMode.Single)
-				{
-					ClearSelection();
-				}
-
-				// If the mode is Multiple and SelectedItem is set to null, don't do anything
-				return;
-			}
-
 			if (mode != SelectionMode.Multiple)
 			{
 				ClearSelection();
-				SelectableItemsViewController.SelectItem(selectedItem);
+
+				if (selectedItem != null)
+				{
+					SelectableItemsViewController.SelectItem(selectedItem);
+				}
 			}
 
 			// TODO hartez 2018/11/06 22:32:07 This doesn't cover all the possible cases yet; need to handle multiple selection	
