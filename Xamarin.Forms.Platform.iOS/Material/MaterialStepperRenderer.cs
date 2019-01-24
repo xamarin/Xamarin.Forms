@@ -86,7 +86,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			}
 		}
 
-		private void UpdateButtons()
+		void UpdateButtons()
 		{
 			if (Element is Stepper stepper && Control is MaterialStepper control)
 			{
@@ -95,7 +95,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			}
 		}
 
-		private void OnStep(object sender, EventArgs e)
+		void OnStep(object sender, EventArgs e)
 		{
 			if (Element is Stepper stepper && sender is MButton button)
 			{
@@ -142,7 +142,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			IncrementButton.Frame = new CGRect(btn.Width + DefaultButtonSpacing, 0, btn.Width, btn.Height);
 		}
 
-		private CGSize GetButtonSize()
+		CGSize GetButtonSize()
 		{
 			var dec = DecrementButton.SizeThatFits(CGSize.Empty);
 			var inc = IncrementButton.SizeThatFits(CGSize.Empty);
