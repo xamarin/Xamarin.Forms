@@ -44,10 +44,21 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void Move(NotifyCollectionChangedEventArgs args)
 		{
-			var oldPath = NSIndexPath.Create(0, args.OldStartingIndex);
-			var newPath = NSIndexPath.Create(0, args.NewStartingIndex);
+			var count = args.NewItems.Count;
 
-			_collectionView.MoveItem(oldPath, newPath);
+			if (count == 1)
+			{
+				// For a single item, we can use MoveItem and get the animation
+				var oldPath = NSIndexPath.Create(0, args.OldStartingIndex);
+				var newPath = NSIndexPath.Create(0, args.NewStartingIndex);
+
+				_collectionView.MoveItem(oldPath, newPath);
+				return;
+			}
+
+			var start = Math.Min(args.OldStartingIndex, args.NewStartingIndex);
+			var end = Math.Max(args.OldStartingIndex, args.NewStartingIndex) + count;
+			_collectionView.ReloadItems(CreateIndexesFrom(start, end));
 		}
 		
 		private void Replace(NotifyCollectionChangedEventArgs args)
