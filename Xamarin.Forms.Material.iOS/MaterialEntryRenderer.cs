@@ -23,8 +23,6 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		SemanticColorScheme _colorScheme;
 		TypographyScheme _typographyScheme;
 
-		// this is about the natural height. We just picked 63 to standarize the height between platforms
-		const float _minimumHeight = 63;
 
 		public MaterialEntryRenderer()
 		{
@@ -38,9 +36,6 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			var result =  base.SizeThatFits(size);
 			if (nfloat.IsInfinity(result.Width))
 				result = Control.SystemLayoutSizeFittingSize(result, (float)UILayoutPriority.FittingSizeLevel, (float)UILayoutPriority.DefaultHigh);
-
-			if (result.Height < _minimumHeight)
-				result.Height = _minimumHeight;
 
 			return result;
 		}
@@ -82,9 +77,18 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 		void ApplyTypographyScheme()
 		{
+			if (Control == null)
+				return;
 
+			_typographyScheme.Subtitle1 = Control.Font;
 			TextFieldTypographyThemer.ApplyTypographyScheme(_typographyScheme, Control);
 			TextFieldTypographyThemer.ApplyTypographyScheme(_typographyScheme, _activeTextinputController);
+		}
+
+		protected internal override void UpdateFont()
+		{
+			base.UpdateFont();
+			ApplyTypographyScheme();
 		}
 
 

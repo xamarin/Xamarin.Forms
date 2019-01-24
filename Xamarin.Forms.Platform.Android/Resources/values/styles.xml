@@ -15,7 +15,6 @@
     <item name="android:paddingBottom">8dp</item>
   </style>
   <style name="XamarinFormsMaterialEntryFilled" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
-    <item name="android:minHeight">63dp</item>
     <item name="boxCollapsedPaddingTop">8dp</item>
   </style>
 </resources>
