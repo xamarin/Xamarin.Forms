@@ -157,15 +157,18 @@
 			BindableProperty.Create("BarItemColor", typeof(Color),
 			typeof(TabbedPage), Color.Default);
 
-
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		[Obsolete("This property is obsolete as of version 3.5. Please use TabbedPage.UnselectedTabColor instead.")]
 		public static Color GetBarItemColor(BindableObject element)
 		{
-			return (Color)element.GetValue(BarItemColorProperty);
+			return (Color)element.GetValue(FormsElement.UnselectedTabColorProperty);
 		}
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		[Obsolete("This property is obsolete as of version 3.5. Please use TabbedPage.UnselectedTabColor instead.")]
 		public static void SetBarItemColor(BindableObject element, Color value)
 		{
-			element.SetValue(BarItemColorProperty, value);
+			element.SetValue(FormsElement.UnselectedTabColorProperty, value);
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
@@ -184,19 +187,23 @@
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		[Obsolete("This property is obsolete as of version 3.5. Please use TabbedPage.UnselectedTabColor instead.")]
+		[Obsolete("This property is obsolete as of version 3.5. Please use TabbedPage.SelectedTabColor instead.")]
 		public static readonly BindableProperty BarSelectedItemColorProperty =
 			BindableProperty.Create("BarSelectedItemColor", typeof(Color),
 			typeof(TabbedPage), Color.Default);
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		[Obsolete("This property is obsolete as of version 3.5. Please use TabbedPage.SelectedTabColor instead.")]
 		public static Color GetBarSelectedItemColor(BindableObject element)
 		{
-			return (Color)element.GetValue(BarSelectedItemColorProperty);
+			return (Color)element.GetValue(FormsElement.SelectedTabColorProperty);
 		}
 
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		[Obsolete("This property is obsolete as of version 3.5. Please use TabbedPage.SelectedTabColor instead.")]
 		public static void SetBarSelectedItemColor(BindableObject element, Color value)
 		{
-			element.SetValue(BarSelectedItemColorProperty, value);
+			element.SetValue(FormsElement.SelectedTabColorProperty, value);
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
@@ -208,7 +215,7 @@
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		[Obsolete("This method is obsolete as of version 3.5. Please use TabbedPage.UnselectedTabColor instead.")]
+		[Obsolete("This property is obsolete as of version 3.5. Please use TabbedPage.SelectedTabColor instead.")]
 		public static Color GetBarSelectedItemColor(this IPlatformElementConfiguration<Android, FormsElement> config)
 		{
 			return GetBarSelectedItemColor(config.Element);

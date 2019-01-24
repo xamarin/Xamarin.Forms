@@ -45,8 +45,6 @@ namespace Xamarin.Forms.Controls
 
 			Children.Add (tabOne);
 			Children.Add (tabTwo);
-		
 		}
 	}
 }
-

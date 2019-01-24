@@ -84,7 +84,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					if (Element.IsSet(TabbedPage.UnselectedTabColorProperty))
 						return Element.UnselectedTabColor;
 
-					return Element.UnselectedTabColor;
+#pragma warning disable CS0618 // Type or member is obsolete
+					return Element.OnThisPlatform().GetBarItemColor();
+#pragma warning restore CS0618 // Type or member is obsolete
 				}
 
 				return Color.Default;
@@ -100,7 +102,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 					if (Element.IsSet(TabbedPage.SelectedTabColorProperty))
 						return Element.SelectedTabColor;
 
-					return Element.SelectedTabColor;
+#pragma warning disable CS0618 // Type or member is obsolete
+					return Element.OnThisPlatform().GetBarSelectedItemColor();
+#pragma warning restore CS0618 // Type or member is obsolete
 				}
 
 				return Color.Default;
@@ -331,8 +335,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			else if (e.PropertyName == NavigationPage.BarBackgroundColorProperty.PropertyName)
 				UpdateBarBackgroundColor();
 			else if (e.PropertyName == NavigationPage.BarTextColorProperty.PropertyName ||
-				e.PropertyName == TabbedPage.UnselectedTabColorProperty.PropertyName ||
-				e.PropertyName == TabbedPage.SelectedTabColorProperty.PropertyName ||
+#pragma warning disable CS0618 // Type or member is obsolete
+				e.PropertyName == PlatformConfiguration.AndroidSpecific.TabbedPage.BarItemColorProperty.PropertyName ||
+				e.PropertyName == PlatformConfiguration.AndroidSpecific.TabbedPage.BarSelectedItemColorProperty.PropertyName ||
+#pragma warning restore CS0618 // Type or member is obsolete
 				e.PropertyName == TabbedPage.UnselectedTabColorProperty.PropertyName ||
 				e.PropertyName == TabbedPage.SelectedTabColorProperty.PropertyName)
 			{
