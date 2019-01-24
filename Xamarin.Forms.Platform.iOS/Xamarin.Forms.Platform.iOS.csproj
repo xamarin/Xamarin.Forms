@@ -127,7 +127,7 @@
     <Compile Include="CollectionView\ScrollToPositionExtensions.cs" />
     <Compile Include="CollectionView\SelectableItemsViewController.cs" />
     <Compile Include="CollectionView\SelectableItemsViewRenderer.cs" />
-    <Compile Include="CollectionView\UICollectionViewDelegateForwarder.cs" />
+    <Compile Include="CollectionView\UICollectionViewDelegator.cs" />
     <Compile Include="CollectionView\VerticalDefaultCell.cs" />
     <Compile Include="CollectionView\GridViewLayout.cs" />
     <Compile Include="CollectionView\ItemsViewLayout.cs" />
