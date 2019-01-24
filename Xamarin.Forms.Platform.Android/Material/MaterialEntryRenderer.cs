@@ -135,7 +135,9 @@ namespace Xamarin.Forms.Platform.Android.Material
 			UpdateTextColor(Color.FromUint((uint)textColor.ToArgb()));
 
 			var placeHolderColors = MaterialColors.GetPlaceHolderColor(Element.PlaceholderColor, Element.TextColor);
-			var colors = MaterialColors.CreateEntryUnderlineColors(placeHolderColors.FloatingColor, placeHolderColors.InlineColor);
+			var underlineColors = MaterialColors.GetUnderlineColor(Element.TextColor);
+
+			var colors = MaterialColors.CreateEntryUnderlineColors(underlineColors.FocusedColor, underlineColors.UnFocusedColor);
 
 			ViewCompat.SetBackgroundTintList(_textInputEditText, colors);
 

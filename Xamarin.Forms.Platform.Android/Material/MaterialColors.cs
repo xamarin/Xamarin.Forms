@@ -71,6 +71,12 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			return (inlineColor, floatingColor);
 		}
 
+		public static (AColor FocusedColor, AColor UnFocusedColor) GetUnderlineColor(Color textColor)
+		{
+			AColor color = GetEntryTextColor(textColor);
+			return (color, WithAlpha(color, kFilledTextFieldIndicatorLineAlpha));
+		}
+
 		public static AColor GetEntryTextColor(Color textColor)
 		{
 			return textColor != Color.Default ? ToPlatformColor(textColor) : MaterialColors.Light.PrimaryColor;
@@ -90,10 +96,9 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		};
 
 		public static readonly int[][] EntryUnderlineStates =
-		{
-			new int[]{ global::Android.Resource.Attribute.StateFocused, global::Android.Resource.Attribute.ColorControlNormal, global::Android.Resource.Attribute.ColorControlActivated, global::Android.Resource.Attribute.ColorControlHighlight  },
-			new int[]{ -global::Android.Resource.Attribute.StateFocused  },
-			new int[]{ },
+{
+			new []{ global::Android.Resource.Attribute.StateFocused  },
+			new []{ -global::Android.Resource.Attribute.StateFocused  },
 		};
 
 		// State list from material-components-android
@@ -126,7 +131,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 		public static ColorStateList CreateEntryUnderlineColors(AColor focusedColor, AColor unfocusedColor)
 		{
-			var colors = new int[] { focusedColor, focusedColor, unfocusedColor };
+			var colors = new int[] { focusedColor, unfocusedColor };
 			return new ColorStateList(EntryUnderlineStates, colors);
 		}
 

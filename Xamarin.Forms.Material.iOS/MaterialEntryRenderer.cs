@@ -113,6 +113,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		{
 			var textColor = MaterialColors.GetEntryTextColor(Element.TextColor);
 			var placeHolderColors = MaterialColors.GetPlaceHolderColor(Element.PlaceholderColor, Element.TextColor);
+			var underlineColors = MaterialColors.GetUnderlineColor(Element.TextColor);
 
 			Control.TextColor = textColor;
 			_activeTextinputController.InlinePlaceholderColor = placeHolderColors.InlineColor;
@@ -121,6 +122,9 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 			// BackgroundColor
 			_activeTextinputController.BorderFillColor = MaterialColors.CreateEntryFilledInputBackgroundColor(Element.BackgroundColor, Element.TextColor);
+
+			_activeTextinputController.ActiveColor = underlineColors.FocusedColor;
+			_activeTextinputController.NormalColor = underlineColors.UnFocusedColor;
 		}
 
 		protected internal override void UpdatePlaceholder()
