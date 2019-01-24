@@ -273,7 +273,7 @@ namespace Xamarin.Forms.Platform.iOS
 				var imageHeight = image.Size.Height;
 
 				// adjust the padding for the spacing
-				if (layout.IsHorizontal)
+				if (layout.IsHorizontal())
 				{
 					var adjustment = _spacingAdjustsPadding ? halfSpacing * 2 : halfSpacing;
 					_paddingAdjustments.Left += adjustment;

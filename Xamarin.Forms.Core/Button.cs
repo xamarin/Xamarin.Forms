@@ -348,10 +348,6 @@ namespace Xamarin.Forms
 
 			public double Spacing { get; }
 
-			public bool IsHorizontal => Position == ImagePosition.Left || Position == ImagePosition.Right;
-
-			public bool IsVertical => Position == ImagePosition.Top || Position == ImagePosition.Bottom;
-
 			public override string ToString()
 			{
 				return $"Image Position = {Position}, Spacing = {Spacing}";

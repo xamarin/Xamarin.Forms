@@ -97,7 +97,7 @@ namespace Xamarin.Forms.Platform.Android
 				}
 				else
 				{
-					if (_alignIconWithText && _element.ContentLayout.IsHorizontal)
+					if (_alignIconWithText && _element.ContentLayout.IsHorizontal())
 					{
 						var buttonText = view.TextFormatted;
 
