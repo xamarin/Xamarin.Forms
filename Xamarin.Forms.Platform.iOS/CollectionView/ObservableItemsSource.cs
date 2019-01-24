@@ -19,6 +19,10 @@ namespace Xamarin.Forms.Platform.iOS
 			((INotifyCollectionChanged)itemSource).CollectionChanged += CollectionChanged;
 		}
 
+		public int Count => _itemsSource.Count;
+
+		public object this[int index] => _itemsSource[index];
+
 		void CollectionChanged(object sender, NotifyCollectionChangedEventArgs args)
 		{
 			switch (args.Action)
@@ -64,9 +68,18 @@ namespace Xamarin.Forms.Platform.iOS
 		private void Replace(NotifyCollectionChangedEventArgs args)
 		{
 			var startIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : _itemsSource.IndexOf(args.NewItems[0]);
-			var count = args.NewItems.Count;
+			var newCount = args.NewItems.Count;
 
-			_collectionView.ReloadItems(CreateIndexesFrom(startIndex, count));
+			if (newCount == args.OldItems.Count)
+			{
+				// We are replacing one set of items with a set of equal size; we can do a simple item range update
+				_collectionView.ReloadItems(CreateIndexesFrom(startIndex, newCount));
+				return;
+			}
+			
+			// The original and replacement sets are of unequal size; this means that everything currently in view will 
+			// have to be updated. So we just have to use ReloadData and let the UICollectionView update everything
+			_collectionView.ReloadData();
 		}
 
 		static NSIndexPath[] CreateIndexesFrom(int startIndex, int count)
@@ -96,9 +109,5 @@ namespace Xamarin.Forms.Platform.iOS
 
 			_collectionView.DeleteItems(CreateIndexesFrom(startIndex, count));
 		}
-
-		public int Count => _itemsSource.Count;
-
-		public object this[int index] => _itemsSource[index];
 	}
 }
