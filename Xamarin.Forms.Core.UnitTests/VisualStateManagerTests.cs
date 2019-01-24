@@ -307,7 +307,8 @@ namespace Xamarin.Forms.Core.UnitTests
 							Setters =
 							{
 								new Setter { Property = View.MarginBottomProperty, Value = targetMargin },
-								new Setter { TargetName = "Label2", Property = View.MarginTopProperty, Value = targetMargin }
+								new Setter { Target = "Label2", Property = View.MarginTopProperty, Value = targetMargin },
+								new Setter { Target = label2, Property = View.MarginLeftProperty, Value = targetMargin }
 							}
 						}
 					}
@@ -318,9 +319,11 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			Assert.That(label1.Margin.Top, Is.EqualTo(defaultMargin));
 			Assert.That(label1.Margin.Bottom, Is.EqualTo(targetMargin));
+			Assert.That(label1.Margin.Left, Is.EqualTo(defaultMargin));
 
 			Assert.That(label2.Margin.Top, Is.EqualTo(targetMargin));
 			Assert.That(label2.Margin.Bottom, Is.EqualTo(defaultMargin));
+			Assert.That(label2.Margin.Left, Is.EqualTo(targetMargin));
 		}
 
 		[Test]

@@ -14,7 +14,18 @@ namespace Xamarin.Forms
 	{
 		readonly ConditionalWeakTable<BindableObject, object> _originalValues = new ConditionalWeakTable<BindableObject, object>();
 
-		public string TargetName { get; set; }
+		/// <summary>
+		///		Set the target for the property to be changed.  Can be a <c>x:Reference</c> to a <see cref="BindableObject"/>
+		///		or the Name of an object in the attached scope.
+		/// </summary>
+		/// <example>
+		/// The following example shows the two ways of targeting a named object.
+		/// <code>
+		///		<Setter Target="{x:Reference TargetLabel1}" Property="Label.TextColor" Value="#94b0b7" />
+		///		<Setter Target="TargetLabel1" Property="Label.TextColor" Value="#94b0b7" />
+		/// </code>
+		/// </example>
+		public object Target { get; set; }
 
 		public BindableProperty Property { get; set; }
 
@@ -49,70 +60,73 @@ namespace Xamarin.Forms
 			return this;
 		}
 
-		internal void Apply(BindableObject bindableObject, bool fromStyle = false)
+		internal void Apply(BindableObject scope, bool fromStyle = false)
 		{
-			var target = FindTargetObject(bindableObject, TargetName);
-			if (target == null)
-				throw new ArgumentNullException(nameof(target));
+			var targetObject = FindTargetObject(scope, Target);
+			if (targetObject == null)
+				throw new ArgumentNullException(nameof(targetObject));
 			if (Property == null)
 				return;
 
-			object originalValue = target.GetValue(Property);
+			object originalValue = targetObject.GetValue(Property);
 			if (!Equals(originalValue, Property.DefaultValue))
 			{
-				_originalValues.Remove(target);
-				_originalValues.Add(target, originalValue);
+				_originalValues.Remove(targetObject);
+				_originalValues.Add(targetObject, originalValue);
 			}
 
 			var dynamicResource = Value as DynamicResource;
 			if (Value is BindingBase binding)
-				target.SetBinding(Property, binding.Clone(), fromStyle);
+				targetObject.SetBinding(Property, binding.Clone(), fromStyle);
 			else if (dynamicResource != null)
-				target.SetDynamicResource(Property, dynamicResource.Key, fromStyle);
+				targetObject.SetDynamicResource(Property, dynamicResource.Key, fromStyle);
 			else
 			{
 				if (Value is IList<VisualStateGroup> visualStateGroupCollection)
-					target.SetValue(Property, visualStateGroupCollection.Clone(), fromStyle);
+					targetObject.SetValue(Property, visualStateGroupCollection.Clone(), fromStyle);
 				else
-					target.SetValue(Property, Value, fromStyle);
+					targetObject.SetValue(Property, Value, fromStyle);
 			}
 		}
 
-		internal void UnApply(BindableObject bindableObject, bool fromStyle = false)
+		internal void UnApply(BindableObject scope, bool fromStyle = false)
 		{
-			var target = FindTargetObject(bindableObject, TargetName);
-			if (target == null)
-				throw new ArgumentNullException(nameof(target));
+			var targetObject = FindTargetObject(scope, Target);
+			if (targetObject == null)
+				throw new ArgumentNullException(nameof(targetObject));
 			if (Property == null)
 				return;
 
-			object actual = target.GetValue(Property);
+			object actual = targetObject.GetValue(Property);
 			if (!Equals(actual, Value) && !(Value is Binding) && !(Value is DynamicResource))
 			{
 				//Do not reset default value if the value has been changed
-				_originalValues.Remove(target);
+				_originalValues.Remove(targetObject);
 				return;
 			}
 
-			if (_originalValues.TryGetValue(target, out object defaultValue))
+			if (_originalValues.TryGetValue(targetObject, out object defaultValue))
 			{
 				//reset default value, unapply bindings and dynamicResource
-				target.SetValue(Property, defaultValue, fromStyle);
-				_originalValues.Remove(target);
+				targetObject.SetValue(Property, defaultValue, fromStyle);
+				_originalValues.Remove(targetObject);
 			}
 			else
-				target.ClearValue(Property);
+				targetObject.ClearValue(Property);
 		}
 
-		BindableObject FindTargetObject(BindableObject root, string targetName)
+		BindableObject FindTargetObject(BindableObject scope, object target)
 		{
-			if (root == null || string.IsNullOrWhiteSpace(targetName))
-				return root;
+			if (scope == null || target == null)
+				return scope;
 
-			if (root is Element element)
+			if (target is BindableObject bindableObject)
+				return bindableObject;
+
+			if (scope is Element element && target is string targetName)
 			{
-				if (element.FindByName(targetName) is BindableObject locatedTarget)
-					return locatedTarget;
+				if (element.FindByName(targetName) is BindableObject targetObject)
+					return targetObject;
 			}
 
 			return null;
