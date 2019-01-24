@@ -155,6 +155,15 @@ namespace Xamarin.Forms
 			return InvokeOnMainThreadAsync(dummyFunc);
 		}
 
+		public static async Task<SynchronizationContext> GetMainThreadSynchronizationContextAsync()
+		{
+			SynchronizationContext ret = null;
+			await InvokeOnMainThreadAsync(() =>
+				ret = SynchronizationContext.Current
+			).ConfigureAwait(false);
+			return ret;
+		}
+
 		public static double GetNamedSize(NamedSize size, Element targetElement)
 		{
 			return GetNamedSize(size, targetElement.GetType());
