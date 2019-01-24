@@ -16,7 +16,6 @@ namespace Xamarin.Forms.Platform.Android.Material
 {
 	public sealed class MaterialEntryRenderer : EntryRendererBase<MaterialFormsTextInputLayout>
 	{
-		AColor _previousTextColor = AColor.Transparent;
 		bool _disposed;
 		private MaterialFormsEditText _textInputEditText;
 		private MaterialFormsTextInputLayout _textInputLayout;
@@ -136,17 +135,10 @@ namespace Xamarin.Forms.Platform.Android.Material
 			UpdateTextColor(Color.FromUint((uint)textColor.ToArgb()));
 
 			var placeHolderColors = MaterialColors.GetPlaceHolderColor(Element.PlaceholderColor, Element.TextColor);
-			var colors = MaterialColors.CreateEntryUnderlineColors(textColor, textColor);
+			var colors = MaterialColors.CreateEntryUnderlineColors(placeHolderColors.FloatingColor, placeHolderColors.InlineColor);
 
-			// Ensure that we SetBackgroundTintList when focused to override the themes accent color which gets
-			// applied to the underline
-			if (_previousTextColor != textColor)
-			{
-				if(HasFocus)
-					_previousTextColor = textColor;				
+			ViewCompat.SetBackgroundTintList(_textInputEditText, colors);
 
-				ViewCompat.SetBackgroundTintList(_textInputEditText, colors);
-			}
 						
 			if (HasFocus || !string.IsNullOrWhiteSpace(_textInputEditText.Text))
 				_textInputLayout.DefaultHintTextColor = MaterialColors.CreateEntryFilledPlaceholderColors(placeHolderColors.FloatingColor, placeHolderColors.FloatingColor);
