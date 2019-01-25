@@ -19,6 +19,8 @@ namespace Xamarin.Forms.Controls
 
 		Thickness _buttonPadding = default(Thickness);
 
+		double _buttonFontSize = -1.0;
+
 		double _buttonImageSpacing = 10;
 		double _buttonBorderWidth = -1;
 		ButtonImagePosition _buttonImagePosition = ButtonImagePosition.Left;
@@ -34,6 +36,8 @@ namespace Xamarin.Forms.Controls
 		{
 			InitializeComponent();
 			Visual = visual;
+
+			_buttonFontSize = Device.GetNamedSize(NamedSize.Default, typeof(Button));
 
 			_buttons = new[]
 			{
@@ -100,6 +104,16 @@ namespace Xamarin.Forms.Controls
 			set
 			{
 				_buttonPadding = value;
+				OnPropertyChanged();
+			}
+		}
+
+		public double ButtonFontSize
+		{
+			get => _buttonFontSize;
+			set
+			{
+				_buttonFontSize = value;
 				OnPropertyChanged();
 			}
 		}
