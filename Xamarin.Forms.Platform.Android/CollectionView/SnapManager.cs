@@ -52,7 +52,7 @@ namespace Xamarin.Forms.Platform.Android
 					case SnapPointsAlignment.Start:
 						return new StartSnapHelper();
 					case SnapPointsAlignment.Center:
-						return new LinearSnapHelper();
+						return new CenterSnapHelper();
 					case SnapPointsAlignment.End:
 						return new EndSnapHelper();
 					default:
@@ -75,8 +75,8 @@ namespace Xamarin.Forms.Platform.Android
 				}
 			}
 
-			// The default LinearSnapHelper snaps to center
-			return new LinearSnapHelper();
+			// Use center snapping as the default
+			return new CenterSnapHelper();
 		}
 
 		public void Dispose()
