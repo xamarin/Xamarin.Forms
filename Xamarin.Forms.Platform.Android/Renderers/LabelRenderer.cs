@@ -118,6 +118,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateText();
 				UpdateLineBreakMode();
+				UpdateLetterSpacing();
 				UpdateLineHeight();
 				UpdateGravity();
 				UpdateMaxLines();
@@ -132,6 +133,9 @@ namespace Xamarin.Forms.Platform.Android
 					UpdateGravity();
 				if (e.OldElement.MaxLines != e.NewElement.MaxLines)
 					UpdateMaxLines();
+				if (e.OldElement.LetterSpacing != e.NewElement.LetterSpacing)
+					UpdateLetterSpacing();
+
 			}
 			UpdateTextDecorations();
 			_motionEventHelper.UpdateElement(e.NewElement);
@@ -147,6 +151,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateText();
 			else if (e.PropertyName == Label.FontProperty.PropertyName)
 				UpdateText();
+			else if (e.PropertyName == DatePicker.LetterSpacingProperty.PropertyName)
+				UpdateLetterSpacing();
 			else if (e.PropertyName == Label.LineBreakModeProperty.PropertyName)
 				UpdateLineBreakMode();
 			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
@@ -225,6 +231,14 @@ namespace Xamarin.Forms.Platform.Android
 			_view.SetLineBreakMode(Element);
 			_lastSizeRequest = null;
 		}
+		void UpdateLetterSpacing()
+		{
+			if (Control is EditText textEdit)
+			{
+				textEdit.LetterSpacing = Element.LetterSpacing.ToEm();
+			}
+		}
+
 
 		void UpdateLineHeight()
 		{

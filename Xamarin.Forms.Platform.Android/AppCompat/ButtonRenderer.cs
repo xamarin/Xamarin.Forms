@@ -175,6 +175,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			UpdateText();
 			UpdateBitmap();
 			UpdateTextColor();
+			UpdateLetterSpacing();
 			UpdateEnabled();
 			UpdateBackgroundColor();
 			UpdatePadding();
@@ -282,6 +283,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		void UpdateTextColor()
 		{
 			_textColorSwitcher?.UpdateTextColor(Control, Element.TextColor);
+		}
+
+		void UpdateLetterSpacing()
+		{
+			Control.LetterSpacing = Element.LetterSpacing.ToEm();
 		}
 
 		void UpdatePadding()

@@ -104,6 +104,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateText();
 			UpdateInputType();
 			UpdateTextColor();
+			UpdateLetterSpacing();
 			UpdateFont();
 			UpdateMaxLength();
 			UpdatePlaceholderColor();
@@ -123,6 +124,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateInputType();
 			else if (e.PropertyName == Editor.TextColorProperty.PropertyName)
 				UpdateTextColor();
+			else if (e.PropertyName == DatePicker.LetterSpacingProperty.PropertyName)
+				UpdateLetterSpacing();
 			else if (e.PropertyName == Editor.FontAttributesProperty.PropertyName)
 				UpdateFont();
 			else if (e.PropertyName == Editor.FontFamilyProperty.PropertyName)
@@ -206,6 +209,11 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				edit.KeyListener = GetDigitsKeyListener(edit.InputType);
 			}
+		}
+
+		void UpdateLetterSpacing()
+		{
+			Control.LetterSpacing = Element.LetterSpacing.ToEm();
 		}
 
 		void UpdateText()

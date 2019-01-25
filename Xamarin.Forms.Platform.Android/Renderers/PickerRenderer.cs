@@ -74,6 +74,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateFont();
 				UpdatePicker();
 				UpdateTextColor();
+				UpdateLetterSpacing();
 			}
 
 			base.OnElementChanged(e);
@@ -87,6 +88,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdatePicker();
 			else if (e.PropertyName == Picker.SelectedIndexProperty.PropertyName)
 				UpdatePicker();
+			else if (e.PropertyName == DatePicker.LetterSpacingProperty.PropertyName)
+				UpdateLetterSpacing();
 			else if (e.PropertyName == Picker.TextColorProperty.PropertyName)
 				UpdateTextColor();
 			else if (e.PropertyName == Picker.FontAttributesProperty.PropertyName || e.PropertyName == Picker.FontFamilyProperty.PropertyName || e.PropertyName == Picker.FontSizeProperty.PropertyName)
@@ -172,6 +175,14 @@ namespace Xamarin.Forms.Platform.Android
 		void RowsCollectionChanged(object sender, EventArgs e)
 		{
 			UpdatePicker();
+		}
+
+		void UpdateLetterSpacing()
+		{
+			if (Control is EditText textEdit)
+			{
+				textEdit.LetterSpacing = Element.LetterSpacing.ToEm();
+			}
 		}
 
 		void UpdateFont()

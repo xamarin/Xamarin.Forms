@@ -75,6 +75,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateMinimumDate();
 			UpdateMaximumDate();
 			UpdateTextColor();
+			UpdateLetterSpacing();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -89,6 +90,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateMaximumDate();
 			else if (e.PropertyName == DatePicker.TextColorProperty.PropertyName)
 				UpdateTextColor();
+			else if (e.PropertyName == DatePicker.LetterSpacingProperty.PropertyName)
+				UpdateLetterSpacing();
 			else if (e.PropertyName == DatePicker.FontAttributesProperty.PropertyName || e.PropertyName == DatePicker.FontFamilyProperty.PropertyName || e.PropertyName == DatePicker.FontSizeProperty.PropertyName)
 				UpdateFont();
 		}
@@ -173,6 +176,11 @@ namespace Xamarin.Forms.Platform.Android
 		void SetDate(DateTime date)
 		{
 			Control.Text = date.ToString(Element.Format);
+		}
+
+		void UpdateLetterSpacing()
+		{
+			Control.LetterSpacing = Element.LetterSpacing.ToEm();
 		}
 
 		void UpdateFont()

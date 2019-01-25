@@ -7,7 +7,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_SearchBarRenderer))]
-	public class SearchBar : InputView, IFontElement, IPlaceholderElement, ITextElement, ITextAlignmentElement, ISearchBarController, IElementConfiguration<SearchBar>
+	public class SearchBar : InputView, IFontElement, IPlaceholderElement, ITextElement, ILetterSpacingElement, ITextAlignmentElement, ISearchBarController, IElementConfiguration<SearchBar>
 	{
 		public static readonly BindableProperty SearchCommandProperty = BindableProperty.Create("SearchCommand", typeof(ICommand), typeof(SearchBar), null, propertyChanged: OnCommandChanged);
 
@@ -37,6 +37,8 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty HorizontalTextAlignmentProperty = TextAlignmentElement.HorizontalTextAlignmentProperty;
 
 		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
+
+		public static readonly BindableProperty LetterSpacingProperty = LetterSpacingElement.LetterSpacingProperty;
 
 		readonly Lazy<PlatformConfigurationRegistry<SearchBar>> _platformConfigurationRegistry;
 
@@ -84,6 +86,12 @@ namespace Xamarin.Forms
 		{
 			get { return (Color)GetValue(TextElement.TextColorProperty); }
 			set { SetValue(TextElement.TextColorProperty, value); }
+		}
+
+		public double LetterSpacing
+		{
+			get { return (double)GetValue(LetterSpacingElement.LetterSpacingProperty); }
+			set { SetValue(LetterSpacingElement.LetterSpacingProperty, value); }
 		}
 
 		bool IsEnabledCore
@@ -185,6 +193,10 @@ namespace Xamarin.Forms
 		}
 
 		void ITextElement.OnTextColorPropertyChanged(Color oldValue, Color newValue)
+		{
+		}
+
+		void ILetterSpacingElement.OnLetterSpacingChanged(double oldValue, double newValue)
 		{
 		}
 

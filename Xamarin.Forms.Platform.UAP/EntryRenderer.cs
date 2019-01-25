@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using Windows.System;
+using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Input;
@@ -56,6 +57,7 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdatePlaceholder();
 				UpdateTextColor();
 				UpdateFont();
+				UpdateLetterSpacing();
 				UpdateAlignment();
 				UpdatePlaceholderColor();
 				UpdateMaxLength();
@@ -109,6 +111,10 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdatePlaceholder();
 			else if (e.PropertyName == Entry.TextColorProperty.PropertyName)
 				UpdateTextColor();
+			else if (e.PropertyName == DatePicker.LetterSpacingProperty.PropertyName)
+			{
+				UpdateLetterSpacing();
+			}
 			else if (e.PropertyName == InputView.KeyboardProperty.PropertyName)
 				UpdateInputScope();
 			else if (e.PropertyName == InputView.IsSpellCheckEnabledProperty.PropertyName)
@@ -209,6 +215,11 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 
 			_fontApplied = true;
+		}
+
+		void UpdateLetterSpacing()
+		{
+			Control.FontStretch = FontStretch.Normal;// (float)Element.LetterSpacing / 1000;
 		}
 
 		void UpdateInputScope()

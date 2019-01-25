@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Threading.Tasks;
 using Windows.UI.Core;
+using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -58,6 +59,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 				UpdateTitle();
 				UpdateSelectedIndex();
+				UpdateLetterSpacing();
 			}
 
 			base.OnElementChanged(e);
@@ -71,6 +73,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateSelectedIndex();
 			else if (e.PropertyName == Picker.TitleProperty.PropertyName || e.PropertyName == Picker.TitleColorProperty.PropertyName)
 				UpdateTitle();
+			else if (e.PropertyName == DatePicker.LetterSpacingProperty.PropertyName)
+				UpdateLetterSpacing();
 			else if (e.PropertyName == Picker.TextColorProperty.PropertyName)
 				UpdateTextColor();
 			else if (e.PropertyName == Picker.FontAttributesProperty.PropertyName || e.PropertyName == Picker.FontFamilyProperty.PropertyName || e.PropertyName == Picker.FontSizeProperty.PropertyName)
@@ -163,6 +167,11 @@ namespace Xamarin.Forms.Platform.UWP
 					await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => ((IVisualElementController)Element)?.InvalidateMeasure(InvalidationTrigger.MeasureChanged));
 				}
 			});
+		}
+
+		void UpdateLetterSpacing()
+		{
+			Control.FontStretch = FontStretch.Normal;// (float)Element.LetterSpacing / 1000;
 		}
 
 		void UpdateFont()

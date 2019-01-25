@@ -11,9 +11,11 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_PickerRenderer))]
-	public class Picker : View, IFontElement, ITextElement, IElementConfiguration<Picker>
+	public class Picker : View, IFontElement, ITextElement, ILetterSpacingElement, IElementConfiguration<Picker>
 	{
 		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
+
+		public static readonly BindableProperty LetterSpacingProperty = LetterSpacingElement.LetterSpacingProperty;
 
 		public static readonly BindableProperty TitleProperty =
 			BindableProperty.Create(nameof(Title), typeof(string), typeof(Picker), default(string));
@@ -100,12 +102,19 @@ namespace Xamarin.Forms
 			set { SetValue(SelectedItemProperty, value); }
 		}
 
-		public Color TextColor {
+		public Color TextColor
+		{
 			get { return (Color)GetValue(TextElement.TextColorProperty); }
 			set { SetValue(TextElement.TextColorProperty, value); }
 		}
 
-		public string Title {
+		public double LetterSpacing
+		{
+			get { return (double)GetValue(LetterSpacingElement.LetterSpacingProperty); }
+			set { SetValue(LetterSpacingElement.LetterSpacingProperty, value); }
+		}
+		public string Title
+		{
 			get { return (string)GetValue(TitleProperty); }
 			set { SetValue(TitleProperty, value); }
 		}
@@ -272,6 +281,10 @@ namespace Xamarin.Forms
 		}
 
 		void ITextElement.OnTextColorPropertyChanged(Color oldValue, Color newValue)
+		{
+		}
+
+		void ILetterSpacingElement.OnLetterSpacingChanged(double oldValue, double newValue)
 		{
 		}
 	}

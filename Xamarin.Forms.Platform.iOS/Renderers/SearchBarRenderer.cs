@@ -77,6 +77,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateCancelButton();
 				UpdateAlignment();
 				UpdateTextColor();
+				UpdateLetterSpacing();
 				UpdateMaxLength();
 				UpdateKeyboard();
 			}
@@ -98,6 +99,8 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else if (e.PropertyName == SearchBar.TextColorProperty.PropertyName)
 				UpdateTextColor();
+			else if (e.PropertyName == DatePicker.LetterSpacingProperty.PropertyName)
+				UpdateLetterSpacing();
 			else if (e.PropertyName == SearchBar.TextProperty.PropertyName)
 				UpdateText();
 			else if (e.PropertyName == SearchBar.CancelButtonColorProperty.PropertyName)
@@ -185,6 +188,27 @@ namespace Xamarin.Forms.Platform.iOS
 			_textWasTyped = true;
 			_typedText = a.SearchText;
 			UpdateOnTextChanged();
+		}
+
+		void UpdateLetterSpacing()
+		{
+			_textField = _textField ?? Control.FindDescendantView<UITextField>();
+			if (_textField == null)
+				return;
+
+			if (!string.IsNullOrEmpty(_textField.Text))
+			{
+				var attributedString = new NSMutableAttributedString(_textField.Text);
+				if (Element.LetterSpacing > 0 && !string.IsNullOrEmpty(_textField.Text))
+				{
+					var nsKern = new NSString("NSKern");
+					NSObject spacing = FromObject(Element.LetterSpacing * 0.01);
+					var range = new NSRange(0, _textField.Text.Length);
+					attributedString.AddAttribute(nsKern, spacing, range);
+				}
+
+				_textField.AttributedText = attributedString;
+			}
 		}
 
 		void UpdateAlignment()

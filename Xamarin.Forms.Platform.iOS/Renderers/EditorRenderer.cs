@@ -73,6 +73,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdatePlaceholderColor();
 			UpdateTextColor();
 			UpdateText();
+			UpdateLetterSpacing();
 			UpdateFont();
 			UpdateKeyboard();
 			UpdateEditable();
@@ -140,6 +141,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateUserInteraction();
 			else if (e.PropertyName == Editor.TextColorProperty.PropertyName)
 				UpdateTextColor();
+			else if (e.PropertyName == DatePicker.LetterSpacingProperty.PropertyName)
+				UpdateLetterSpacing();
 			else if (e.PropertyName == Editor.FontAttributesProperty.PropertyName)
 				UpdateFont();
 			else if (e.PropertyName == Editor.FontFamilyProperty.PropertyName)
@@ -226,6 +229,23 @@ namespace Xamarin.Forms.Platform.iOS
 				}
 			}
 			Control.ReloadInputViews();
+		}
+
+		void UpdateLetterSpacing()
+		{
+			if (!string.IsNullOrEmpty(Control.Text))
+			{
+				var attributedString = new NSMutableAttributedString(Control.Text);
+				if (Element.LetterSpacing > 0 && !string.IsNullOrEmpty(Control.Text))
+				{
+					var nsKern = new NSString("NSKern");
+					NSObject spacing = FromObject(Element.LetterSpacing * 0.01);
+					var range = new NSRange(0, Control.Text.Length);
+					attributedString.AddAttribute(nsKern, spacing, range);
+				}
+
+				Control.AttributedText = attributedString;
+			}
 		}
 
 		void UpdateText()

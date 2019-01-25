@@ -6,7 +6,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_EditorRenderer))]
-	public class Editor : InputView, IEditorController, IFontElement, IPlaceholderElement, ITextElement, IElementConfiguration<Editor>
+	public class Editor : InputView, IEditorController, IFontElement, IPlaceholderElement, ITextElement, ILetterSpacingElement, IElementConfiguration<Editor>
 	{
 		public static readonly BindableProperty TextProperty = BindableProperty.Create(nameof(Text), typeof(string), typeof(Editor), null, BindingMode.TwoWay, propertyChanged: (bindable, oldValue, newValue)
 			=> OnTextChanged((Editor)bindable, (string)oldValue, (string)newValue));
@@ -18,6 +18,8 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty FontAttributesProperty = FontElement.FontAttributesProperty;
 
 		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
+
+		public static readonly BindableProperty LetterSpacingProperty = LetterSpacingElement.LetterSpacingProperty;
 
 		public static readonly BindableProperty PlaceholderProperty = PlaceholderElement.PlaceholderProperty;
 
@@ -46,6 +48,12 @@ namespace Xamarin.Forms
 		{
 			get { return (Color)GetValue(TextElement.TextColorProperty); }
 			set { SetValue(TextElement.TextColorProperty, value); }
+		}
+
+		public double LetterSpacing
+		{
+			get { return (double)GetValue(LetterSpacingElement.LetterSpacingProperty); }
+			set { SetValue(LetterSpacingElement.LetterSpacingProperty, value); }
 		}
 
 		public string Placeholder {
@@ -133,6 +141,10 @@ namespace Xamarin.Forms
 			=> Completed?.Invoke(this, EventArgs.Empty);
 
 		void ITextElement.OnTextColorPropertyChanged(Color oldValue, Color newValue)
+		{
+		}
+
+		void ILetterSpacingElement.OnLetterSpacingChanged(double oldValue, double newValue)
 		{
 		}
 

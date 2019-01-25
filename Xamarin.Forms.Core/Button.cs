@@ -9,7 +9,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_ButtonRenderer))]
-	public class Button : View, IFontElement, ITextElement, IBorderElement, IButtonController, IElementConfiguration<Button>, IPaddingElement, IImageController, IViewController, IButtonElement, IImageElement
+	public class Button : View, IFontElement, ITextElement, IBorderElement, IButtonController, IElementConfiguration<Button>, IPaddingElement, IImageController, IViewController, IButtonElement, IImageElement, ILetterSpacingElement
 	{
 		const int DefaultBorderRadius = 5;
 		const double DefaultSpacing = 10;
@@ -25,6 +25,8 @@ namespace Xamarin.Forms
 			propertyChanged: (bindable, oldVal, newVal) => ((Button)bindable).InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged));
 
 		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
+
+		public static readonly BindableProperty LetterSpacingProperty = LetterSpacingElement.LetterSpacingProperty;
 
 		public static readonly BindableProperty FontProperty = FontElement.FontProperty;
 
@@ -140,6 +142,12 @@ namespace Xamarin.Forms
 		{
 			get { return (Color)GetValue(TextElement.TextColorProperty); }
 			set { SetValue(TextElement.TextColorProperty, value); }
+		}
+
+		public double LetterSpacing
+		{
+			get { return (double)GetValue(LetterSpacingElement.LetterSpacingProperty); }
+			set { SetValue(LetterSpacingElement.LetterSpacingProperty, value); }
 		}
 
 		bool IButtonElement.IsEnabledCore
@@ -303,6 +311,10 @@ namespace Xamarin.Forms
 		}
 
 		void ITextElement.OnTextColorPropertyChanged(Color oldValue, Color newValue)
+		{
+		}
+
+		void ILetterSpacingElement.OnLetterSpacingChanged(double oldValue, double newValue)
 		{
 		}
 

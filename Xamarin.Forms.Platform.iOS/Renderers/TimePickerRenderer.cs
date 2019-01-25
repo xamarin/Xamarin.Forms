@@ -82,6 +82,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateFont();
 				UpdateTime();
 				UpdateTextColor();
+				UpdateLetterSpacing();
 				UpdateFlowDirection();
 			}
 
@@ -96,6 +97,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateTime();
 			else if (e.PropertyName == TimePicker.TextColorProperty.PropertyName || e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateTextColor();
+			else if (e.PropertyName == DatePicker.LetterSpacingProperty.PropertyName)
+				UpdateLetterSpacing();
 			else if (e.PropertyName == TimePicker.FontAttributesProperty.PropertyName || e.PropertyName == TimePicker.FontFamilyProperty.PropertyName || e.PropertyName == TimePicker.FontSizeProperty.PropertyName)
 				UpdateFont();
 
@@ -139,6 +142,23 @@ namespace Xamarin.Forms.Platform.iOS
 
 			// HACK This forces the color to update; there's probably a more elegant way to make this happen
 			Control.Text = Control.Text;
+		}
+
+		void UpdateLetterSpacing()
+		{
+			if (!string.IsNullOrEmpty(Control.Text))
+			{
+				var attributedString = new NSMutableAttributedString(Control.Text);
+				if (Element.LetterSpacing > 0 && !string.IsNullOrEmpty(Control.Text))
+				{
+					var nsKern = new NSString("NSKern");
+					NSObject spacing = FromObject(Element.LetterSpacing * 0.01);
+					var range = new NSRange(0, Control.Text.Length);
+					attributedString.AddAttribute(nsKern, spacing, range);
+				}
+
+				Control.AttributedText = attributedString;
+			}
 		}
 
 		void UpdateTime()

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Linq;
+using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -45,6 +46,7 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateMaximumDate();
 				UpdateDate(e.NewElement.Date);
 				UpdateFlowDirection();
+				UpdateLetterSpacing();
 			}
 
 			base.OnElementChanged(e);
@@ -88,6 +90,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateMinimumDate();
 			else if (e.PropertyName == DatePicker.TextColorProperty.PropertyName)
 				UpdateTextColor();
+			else if (e.PropertyName == DatePicker.LetterSpacingProperty.PropertyName)
+				UpdateLetterSpacing();
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateFlowDirection();
 			else if (e.PropertyName == DatePicker.FontAttributesProperty.PropertyName || e.PropertyName == DatePicker.FontFamilyProperty.PropertyName || e.PropertyName == DatePicker.FontSizeProperty.PropertyName)
@@ -126,7 +130,12 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			Control.UpdateFlowDirection(Element);
 		}
-		
+
+		void UpdateLetterSpacing()
+		{
+			Control.FontStretch = FontStretch.Normal;// (float)Element.LetterSpacing / 1000;
+		}
+
 		void UpdateFont()
 		{
 			if (Control == null)

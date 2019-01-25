@@ -7,7 +7,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_EntryRenderer))]
-	public class Entry : InputView, IFontElement, IPlaceholderElement, ITextElement, ITextAlignmentElement, IEntryController, IElementConfiguration<Entry>
+	public class Entry : InputView, IFontElement, IPlaceholderElement, ITextElement, ILetterSpacingElement, ITextAlignmentElement, IEntryController, IElementConfiguration<Entry>
 	{
 		public static readonly BindableProperty ReturnTypeProperty = BindableProperty.Create(nameof(ReturnType), typeof(ReturnType), typeof(Entry), ReturnType.Default);
 
@@ -24,6 +24,8 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty TextProperty = BindableProperty.Create("Text", typeof(string), typeof(Entry), null, BindingMode.TwoWay, propertyChanged: OnTextChanged);
 
 		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
+
+		public static readonly BindableProperty LetterSpacingProperty = LetterSpacingElement.LetterSpacingProperty;
 
 		public static readonly BindableProperty HorizontalTextAlignmentProperty = TextAlignmentElement.HorizontalTextAlignmentProperty;
 
@@ -80,6 +82,12 @@ namespace Xamarin.Forms
 		{
 			get { return (Color)GetValue(TextElement.TextColorProperty); }
 			set { SetValue(TextElement.TextColorProperty, value); }
+		}
+
+		public double LetterSpacing
+		{
+			get { return (double)GetValue(LetterSpacingElement.LetterSpacingProperty); }
+			set { SetValue(LetterSpacingElement.LetterSpacingProperty, value); }
 		}
 
 		public FontAttributes FontAttributes
@@ -183,6 +191,10 @@ namespace Xamarin.Forms
 		}
 
 		void ITextElement.OnTextColorPropertyChanged(Color oldValue, Color newValue)
+		{
+		}
+
+		void ILetterSpacingElement.OnLetterSpacingChanged(double oldValue, double newValue)
 		{
 		}
 

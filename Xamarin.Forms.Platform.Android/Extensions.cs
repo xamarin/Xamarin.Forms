@@ -37,5 +37,10 @@ namespace Xamarin.Forms.Platform.Android
 					return DeviceOrientation.Other;
 			}
 		}
+
+		internal static float ToEm(this double pt)
+		{
+			return (float)pt * 0.0624f;
+		}
 	}
 }

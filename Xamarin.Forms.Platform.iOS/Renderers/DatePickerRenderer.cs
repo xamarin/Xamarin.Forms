@@ -74,6 +74,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateMaximumDate();
 			UpdateMinimumDate();
 			UpdateTextColor();
+			UpdateLetterSpacing();
 			UpdateFlowDirection();
 		}
 
@@ -87,6 +88,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateMinimumDate();
 			else if (e.PropertyName == DatePicker.MaximumDateProperty.PropertyName)
 				UpdateMaximumDate();
+			else if (e.PropertyName == DatePicker.LetterSpacingProperty.PropertyName)
+				UpdateLetterSpacing();
 			else if (e.PropertyName == DatePicker.TextColorProperty.PropertyName || e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateTextColor();
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
@@ -128,6 +131,22 @@ namespace Xamarin.Forms.Platform.iOS
 			Control.Font = Element.ToUIFont();
 		}
 
+		void UpdateLetterSpacing()
+		{
+			if (!string.IsNullOrEmpty(Control.Text))
+			{
+				var attributedString = new NSMutableAttributedString(Control.Text);
+				if (Element.LetterSpacing > 0 && !string.IsNullOrEmpty(Control.Text))
+				{
+					var nsKern = new NSString("NSKern");
+					NSObject spacing = FromObject(Element.LetterSpacing * 0.01);
+					var range = new NSRange(0, Control.Text.Length);
+					attributedString.AddAttribute(nsKern, spacing, range);
+				}
+
+				Control.AttributedText = attributedString;
+			}
+		}
 		void UpdateMaximumDate()
 		{
 			_picker.MaximumDate = Element.MaximumDate.ToNSDate();

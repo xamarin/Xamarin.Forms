@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
@@ -55,6 +56,7 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateText();
 				UpdateInputScope();
 				UpdateTextColor();
+				UpdateLetterSpacing();
 				UpdateFont();
 				UpdateTextAlignment();
 				UpdateFlowDirection();
@@ -114,6 +116,10 @@ namespace Xamarin.Forms.Platform.UWP
 			else if (e.PropertyName == Editor.TextProperty.PropertyName)
 			{
 				UpdateText();
+			}
+			else if (e.PropertyName == DatePicker.LetterSpacingProperty.PropertyName)
+			{
+				UpdateLetterSpacing();
 			}
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 			{
@@ -302,6 +308,10 @@ namespace Xamarin.Forms.Platform.UWP
 			Control.InputScope = editor.Keyboard.ToInputScope();
 		}
 
+		void UpdateLetterSpacing()
+		{
+			Control.FontStretch = FontStretch.Normal;// (float)Element.LetterSpacing / 1000;
+		}
 		void UpdateText()
 		{
 			string newText = Element.Text ?? "";

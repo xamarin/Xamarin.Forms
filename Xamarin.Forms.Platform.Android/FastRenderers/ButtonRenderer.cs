@@ -215,10 +215,11 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				UpdateText();
 				UpdateBitmap();
 				UpdateTextColor();
+				UpdateLetterSpacing();
 				UpdateInputTransparent();
 				UpdateBackgroundColor();
 				UpdatePadding();
-
+				
 				ElevationHelper.SetElevation(this, e.NewElement);
 			}
 
@@ -460,6 +461,11 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		{
 			_paddingDeltaPix = delta ?? new Thickness();
 			UpdatePadding();
+		}
+
+		void UpdateLetterSpacing()
+		{
+			LetterSpacing = Button.LetterSpacing.ToEm();
 		}
 
 		float IBorderVisualElementRenderer.ShadowRadius => ShadowRadius;

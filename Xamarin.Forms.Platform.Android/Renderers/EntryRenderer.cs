@@ -152,6 +152,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateInputType();
 
 			UpdateColor();
+			UpdateLetterSpacing();
 			UpdateAlignment();
 			UpdateFont();
 			UpdatePlaceholderColor();
@@ -216,6 +217,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateInputType();
 			else if (e.PropertyName == Entry.HorizontalTextAlignmentProperty.PropertyName)
 				UpdateAlignment();
+			else if (e.PropertyName == DatePicker.LetterSpacingProperty.PropertyName)
+				UpdateLetterSpacing();
 			else if (e.PropertyName == Entry.FontAttributesProperty.PropertyName)
 				UpdateFont();
 			else if (e.PropertyName == Entry.FontFamilyProperty.PropertyName)
@@ -344,6 +347,14 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (currentControlText.Length > Element.MaxLength)
 				EditText.Text = currentControlText.Substring(0, Element.MaxLength);
+		}
+
+		void UpdateLetterSpacing()
+		{
+			if (Control is EditText)
+			{
+				(Control as EditText).LetterSpacing = Element.LetterSpacing.ToEm();
+			}
 		}
 
 		void UpdateReturnType()

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using Windows.Foundation;
+using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
@@ -139,6 +140,7 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateTextDecorations(Control);
 				UpdateColor(Control);
 				UpdateAlign(Control);
+				UpdateLetterSpacing(Control);
 				UpdateFont(Control);
 				UpdateLineBreakMode(Control);
 				UpdateMaxLines(Control);
@@ -162,6 +164,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateFont(Control);
 			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
 				UpdateTextDecorations(Control);
+			else if (e.PropertyName == DatePicker.LetterSpacingProperty.PropertyName)
+				UpdateLetterSpacing(Control);
 			else if (e.PropertyName == Label.LineBreakModeProperty.PropertyName)
 				UpdateLineBreakMode(Control);
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
@@ -297,6 +301,12 @@ namespace Xamarin.Forms.Platform.UWP
 					throw new ArgumentOutOfRangeException();
 			}
 		}
+
+		void UpdateLetterSpacing(TextBlock textBlock)
+		{
+			textBlock.FontStretch = FontStretch.Normal;// (float)Element.LetterSpacing / 1000;
+		}
+
 
 		void DetermineTruncatedTextWrapping(TextBlock textBlock)
 		{

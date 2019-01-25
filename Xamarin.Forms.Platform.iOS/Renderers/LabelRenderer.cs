@@ -169,6 +169,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateTextColor();
 				UpdateFont();
 				UpdateMaxLines();
+				UpdateLetterSpacing();
 			}
 
 			base.OnElementChanged(e);
@@ -190,7 +191,10 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				UpdateText();
 				UpdateTextDecorations();
+				UpdateLetterSpacing();
 			}
+			else if (e.PropertyName == DatePicker.LetterSpacingProperty.PropertyName)
+				UpdateLetterSpacing();
 			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
 				UpdateTextDecorations();
 			else if (e.PropertyName == Label.FormattedTextProperty.PropertyName)
@@ -335,6 +339,23 @@ namespace Xamarin.Forms.Platform.MacOS
 					break;
 			}
 #endif
+		}
+
+		void UpdateLetterSpacing()
+		{
+			if (!string.IsNullOrEmpty(Control.Text))
+			{
+				var attributedString = new NSMutableAttributedString(Control.Text);
+				if (Element.LetterSpacing > 0 && !string.IsNullOrEmpty(Control.Text))
+				{
+					var nsKern = new NSString("NSKern");
+					NSObject spacing = FromObject(Element.LetterSpacing );
+					var range = new NSRange(0, Control.Text.Length-1);
+					attributedString.AddAttribute(nsKern, spacing, range);
+				}
+
+				Control.AttributedText = attributedString;
+			}
 		}
 
 		void UpdateText()

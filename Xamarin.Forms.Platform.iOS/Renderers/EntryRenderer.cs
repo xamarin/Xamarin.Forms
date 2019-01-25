@@ -119,6 +119,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdatePlaceholder();
 			UpdatePassword();
 			UpdateText();
+			UpdateLetterSpacing();
 			UpdateColor();
 			UpdateFont();
 			UpdateKeyboard();
@@ -144,6 +145,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateText();
 			else if (e.PropertyName == Entry.TextColorProperty.PropertyName)
 				UpdateColor();
+			else if (e.PropertyName == DatePicker.LetterSpacingProperty.PropertyName)
+				UpdateLetterSpacing();
 			else if (e.PropertyName == Xamarin.Forms.InputView.KeyboardProperty.PropertyName)
 				UpdateKeyboard();
 			else if (e.PropertyName == Xamarin.Forms.InputView.IsSpellCheckEnabledProperty.PropertyName)
@@ -321,6 +324,23 @@ namespace Xamarin.Forms.Platform.iOS
 			// ReSharper disable once RedundantCheckBeforeAssignment
 			if (Control.Text != Element.Text)
 				Control.Text = Element.Text;
+		}
+
+		void UpdateLetterSpacing()
+		{
+			if (!string.IsNullOrEmpty(Control.Text))
+			{
+				var attributedString = new NSMutableAttributedString(Control.Text);
+				if (Element.LetterSpacing > 0 && !string.IsNullOrEmpty(Control.Text))
+				{
+					var nsKern = new NSString("NSKern");
+					NSObject spacing = FromObject(Element.LetterSpacing * 0.01);
+					var range = new NSRange(0, Control.Text.Length);
+					attributedString.AddAttribute(nsKern, spacing, range);
+				}
+
+				Control.AttributedText = attributedString;
+			}
 		}
 
 		void UpdateMaxLength()

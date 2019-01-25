@@ -102,6 +102,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateFont();
 			UpdateAlignment();
 			UpdateTextColor();
+			UpdateLetterSpacing();
 			UpdatePlaceholderColor();
 			UpdateMaxLength();
 
@@ -128,6 +129,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateFont();
 			else if (e.PropertyName == SearchBar.FontFamilyProperty.PropertyName)
 				UpdateFont();
+			else if (e.PropertyName == DatePicker.LetterSpacingProperty.PropertyName)
+				UpdateLetterSpacing();
 			else if (e.PropertyName == SearchBar.FontSizeProperty.PropertyName)
 				UpdateFont();
 			else if (e.PropertyName == SearchBar.HorizontalTextAlignmentProperty.PropertyName)
@@ -235,6 +238,16 @@ namespace Xamarin.Forms.Platform.Android
 			string query = Control.Query;
 			if (query != Element.Text)
 				Control.SetQuery(Element.Text, false);
+		}
+
+		void UpdateLetterSpacing()
+		{
+			_editText = _editText ?? Control.GetChildrenOfType<EditText>().FirstOrDefault();
+
+			if (_editText != null)
+			{
+				_editText.LetterSpacing = Element.LetterSpacing.ToEm();
+			}
 		}
 
 		void UpdateTextColor()
