@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using CoreGraphics;
 using Foundation;
 using UIKit;
 
@@ -38,7 +35,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 			// If we're updating from a previous layout, we should keep any settings for the SelectableItemsViewController around
 			var selectableItemsViewController = Delegator?.SelectableItemsViewController;
-			Delegator = new UICollectionViewDelegator(_layout)
+			Delegator = new UICollectionViewDelegator(_layout, this);
 			{
 				SelectableItemsViewController = selectableItemsViewController
 			};
@@ -163,15 +160,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void ApplyTemplateAndDataContext(TemplatedCell cell, NSIndexPath indexPath)
 		{
-			var oldView = cell.VisualElementRenderer?.Element;
-			if (oldView != null)
-			{
-				// This is not the ideal place to handle this, but it will have to do until  
-				// we get the selection stuff merged and we can properly use CellDisplayingEnded
-				// TODO When the selection stuff is merged, move this to CellDisplayingEnded
-				_itemsView.RemoveLogicalChild(oldView);
-			}
-
 			// We need to create a renderer, which means we need a template
 			var templateElement = _itemsView.ItemTemplate.CreateContent() as View;
 			IVisualElementRenderer renderer = CreateRenderer(templateElement);
@@ -181,6 +169,18 @@ namespace Xamarin.Forms.Platform.iOS
 				_itemsView.AddLogicalChild(renderer.Element);
 				BindableObject.SetInheritedBindingContext(renderer.Element, _itemsSource[indexPath.Row]);
 				cell.SetRenderer(renderer);
+			}
+		}
+
+		internal void RemoveLogicalChild(UICollectionViewCell cell)
+		{
+			if (cell is TemplatedCell templatedCell)
+			{
+				var oldView = templatedCell.VisualElementRenderer?.Element;
+				if (oldView != null)
+				{
+					_itemsView.RemoveLogicalChild(oldView);
+				}
 			}
 		}
 
