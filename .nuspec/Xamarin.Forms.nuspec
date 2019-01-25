@@ -35,9 +35,6 @@
       <group targetFramework="tizen40">
         <dependency id="Tizen.NET" version="4.0.0"/>
       </group>
-      <group targetFramework="Xamarin.iOS10">
-        <dependency id="Xamarin.iOS.MaterialComponents" version="72.2.0.1"/>
-      </group>
     </dependencies>
     <references>    
         <group> 
@@ -50,7 +47,6 @@
             <reference file="Xamarin.Forms.Platform.dll" /> 
             <reference file="Xamarin.Forms.Xaml.dll" /> 
             <reference file="Xamarin.Forms.Platform.iOS.dll" />
-            <reference file="Xamarin.Forms.Material.iOS.dll" />
         </group>    
         <group targetFramework="MonoAndroid90"> 
             <reference file="Xamarin.Forms.Core.dll" /> 
@@ -187,9 +183,6 @@
     <file src="..\Xamarin.Forms.Platform.iOS\bin\$Configuration$\Xamarin.Forms.Platform.iOS.dll" target="lib\Xamarin.iOS10" />
     <file src="..\Xamarin.Forms.Platform.iOS\bin\$Configuration$\Xamarin.Forms.Platform.iOS.*pdb" target="lib\Xamarin.iOS10" />
     <file src="..\Xamarin.Forms.Platform.iOS\bin\$Configuration$\Xamarin.Forms.Platform.iOS.*mdb" target="lib\Xamarin.iOS10" />
-    <file src="..\Xamarin.Forms.Material.iOS\bin\$Configuration$\Xamarin.Forms.Material.iOS.dll" target="lib\Xamarin.iOS10" />
-    <file src="..\Xamarin.Forms.Material.iOS\bin\$Configuration$\Xamarin.Forms.Material.iOS.*pdb" target="lib\Xamarin.iOS10" />
-    <file src="..\Xamarin.Forms.Material.iOS\bin\$Configuration$\Xamarin.Forms.Material.iOS.*mdb" target="lib\Xamarin.iOS10" />
     <file src="..\Xamarin.Forms.Core\bin\$Configuration$\netstandard2.0\Xamarin.Forms.Core.dll" target="lib\Xamarin.iOS10" />
     <file src="..\Xamarin.Forms.Core\bin\$Configuration$\netstandard2.0\Xamarin.Forms.Core.*pdb" target="lib\Xamarin.iOS10" />
     <file src="..\Xamarin.Forms.Core\bin\$Configuration$\netstandard2.0\Xamarin.Forms.Core.*mdb" target="lib\Xamarin.iOS10" />
