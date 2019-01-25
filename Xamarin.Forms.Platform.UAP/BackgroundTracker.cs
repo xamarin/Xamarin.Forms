@@ -37,7 +37,7 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateBackground();
 		}
 
-		void UpdateBackground()
+		async void UpdateBackground()
 		{
 			if (Element == null)
 				return;
@@ -46,7 +46,7 @@ namespace Xamarin.Forms.Platform.UWP
 			if (element == null)
 				return;
 
-			var backgroundImage = Element.BackgroundImage.ToWindowsImageSource();
+			var backgroundImage = await Element.BackgroundImage.ToWindowsImageSourceAsync();
 			if (backgroundImage != null)
 			{
 				element.SetValue(_backgroundProperty, new ImageBrush { ImageSource = backgroundImage });

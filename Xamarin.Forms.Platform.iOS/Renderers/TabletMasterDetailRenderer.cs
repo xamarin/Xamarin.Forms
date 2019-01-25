@@ -316,9 +316,9 @@ namespace Xamarin.Forms.Platform.iOS
 			PerformButtonSelector();
 		}
 
-		void UpdateBackground()
+		async void UpdateBackground()
 		{
-			UIImage bgImage = ((Page)Element).BackgroundImage.GetNativeImage();
+			UIImage bgImage = await ((Page)Element).BackgroundImage.GetNativeImageAsync();
 			if (bgImage != null)
 				View.BackgroundColor = UIColor.FromPatternImage(bgImage);
 			else if (Element.BackgroundColor == Color.Default)

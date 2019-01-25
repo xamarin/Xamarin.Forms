@@ -125,7 +125,7 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 
 			onLoading?.Invoke(true);
-			if (element.GetValue(imageSourceProperty) is ImageSource initialSource)
+			if (element.GetValue(imageSourceProperty) is ImageSource initialSource && !initialSource.IsEmpty)
 			{
 				try
 				{

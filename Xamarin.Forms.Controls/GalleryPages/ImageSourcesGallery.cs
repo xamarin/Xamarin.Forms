@@ -98,15 +98,9 @@ namespace Xamarin.Forms.Controls
 
 		class RootPage : ContentPage
 		{
-			ToolbarItem _toolbarItem;
-
 			public RootPage()
 			{
 				Title = "Image Source Tests";
-
-				ToolbarItems.Add(_toolbarItem = new ToolbarItem("MENU", null, delegate
-				{
-				}));
 
 				Content = new ScrollView
 				{
@@ -117,8 +111,11 @@ namespace Xamarin.Forms.Controls
 						Children =
 						{
 							CreateImageSourcePicker("Change Title Icon", getter => NavigationPage.SetTitleIcon(this, getter())),
-							CreateImageSourcePicker("Change Toolbar Icon", getter => _toolbarItem.Icon = getter()),
-							CreateImageSourcePicker("Change Background", getter => BackgroundImage = getter()),
+							new Button
+							{
+								Text = "Page",
+								Command = new Command(() => Navigation.PushAsync(new PagePropertiesPage()))
+							},
 							new Button
 							{
 								Text = "ListView Context Actions",
@@ -145,6 +142,45 @@ namespace Xamarin.Forms.Controls
 			}
 		}
 
+		class PagePropertiesPage : TabbedPage
+		{
+			public PagePropertiesPage()
+			{
+				Title = "Page";
+
+				Children.Add(new TabPage { Title = "Tab 1" });
+				Children.Add(new TabPage { Title = "Tab 2" });
+				Children.Add(new TabPage { Title = "Tab 3" });
+			}
+
+			class TabPage : ContentPage
+			{
+				ToolbarItem _toolbarItem;
+
+				public TabPage()
+				{
+					ToolbarItems.Add(_toolbarItem = new ToolbarItem("MENU", null, delegate
+					{
+					}));
+
+					Content = new ScrollView
+					{
+						Content = new StackLayout
+						{
+							Padding = 20,
+							Spacing = 10,
+							Children =
+							{
+								CreateImageSourcePicker("Change Tab Icon", getter => Icon = getter()),
+								CreateImageSourcePicker("Change Toolbar Icon", getter => _toolbarItem.Icon = getter()),
+								CreateImageSourcePicker("Change Background", getter => BackgroundImage = getter()),
+							}
+						}
+					};
+				}
+			}
+		}
+
 		class ListViewContextActionsPage : ContentPage
 		{
 			ImageSource _source;
@@ -161,6 +197,7 @@ namespace Xamarin.Forms.Controls
 					Content = new StackLayout
 					{
 						Padding = 20,
+						Spacing = 10,
 						Children =
 						{
 							new Label
@@ -199,6 +236,7 @@ namespace Xamarin.Forms.Controls
 		class ImageViewPage : ContentPage
 		{
 			Image _image = null;
+			Image _imageAutosize = null;
 			ActivityIndicator _loading = null;
 
 			public ImageViewPage()
@@ -210,26 +248,41 @@ namespace Xamarin.Forms.Controls
 					Content = new StackLayout
 					{
 						Padding = 20,
+						Spacing = 10,
 						Children =
 						{
-							CreateImageSourcePicker("Select Image Source", getter => _image.Source = getter()),
-							new Grid
+							CreateImageSourcePicker("Select Image Source", getter =>
+							{
+								_image.Source = getter();
+								_imageAutosize.Source = getter();
+							}),
+							new StackLayout
 							{
 								Children =
 								{
-									(_image = new Image
+									new Grid
 									{
-										WidthRequest = 200,
-										HeightRequest = 200,
-										Source = "bank.png",
-									}),
-									(_loading = new ActivityIndicator
+										Children =
+										{
+											(_image = new Image
+											{
+												WidthRequest = 200,
+												HeightRequest = 200,
+												Source = "bank.png"
+											}),
+											(_loading = new ActivityIndicator
+											{
+												WidthRequest = 100,
+												HeightRequest = 100
+											}),
+										}
+									},
+									(_imageAutosize = new Image
 									{
-										WidthRequest = 100,
-										HeightRequest = 100
+										Source = "bank.png"
 									}),
 								}
-							},
+							}
 						}
 					}
 				};
@@ -243,6 +296,7 @@ namespace Xamarin.Forms.Controls
 		class ButtonsPage : ContentPage
 		{
 			Button _buttonWithImageAndText;
+			Button _buttonWithPositionedImageAndText;
 			Button _buttonWithImage;
 			ImageButton _imageButton;
 
@@ -255,11 +309,13 @@ namespace Xamarin.Forms.Controls
 					Content = new StackLayout
 					{
 						Padding = 20,
+						Spacing = 10,
 						Children =
 						{
 							CreateImageSourcePicker("Select Image Source", getter =>
 							{
 								_buttonWithImageAndText.Image = getter();
+								_buttonWithPositionedImageAndText.Image = getter();
 								_buttonWithImage.Image = getter();
 								_imageButton.Source = getter();
 							}),
@@ -271,6 +327,12 @@ namespace Xamarin.Forms.Controls
 							(_buttonWithImageAndText = new Button
 							{
 								Text = "Image & Text",
+								Image = "bank.png"
+							}),
+							(_buttonWithPositionedImageAndText = new Button
+							{
+								Text = "Image Above & Text",
+								ContentLayout = new Button.ButtonContentLayout(Button.ButtonContentLayout.ImagePosition.Top, 5),
 								Image = "bank.png"
 							}),
 							(_buttonWithImage = new Button
@@ -311,6 +373,7 @@ namespace Xamarin.Forms.Controls
 					Content = new StackLayout
 					{
 						Padding = 20,
+						Spacing = 10,
 						Children =
 						{
 							CreateImageSourcePicker("Select Image Source", getter => _slider.ThumbImage = getter()),

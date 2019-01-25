@@ -7,8 +7,11 @@ namespace Xamarin.Forms.Platform.UWP
 	{
 		public object Convert(object value, Type targetType, object parameter, string language)
 		{
-			if (value is ImageSource imageSource)
-				return imageSource.ToWindowsIconElement();
+			// TODO: investigate whether we can use AsyncValye<T> instead of blocking
+
+			if (value is ImageSource source)
+				return source.ToWindowsIconElement();
+
 			return null;
 		}
 

@@ -356,9 +356,9 @@ namespace Xamarin.Forms.Platform.iOS
 			_scrollView.SetContentOffset(new PointF(index * _scrollView.Frame.Width, 0), animated);
 		}
 
-		void UpdateBackground()
+		async void UpdateBackground()
 		{
-			UIImage bgImage = ((Page)Element).BackgroundImage.GetNativeImage();
+			UIImage bgImage = await ((Page)Element).BackgroundImage.GetNativeImageAsync();
 			if (bgImage != null)
 			{
 				View.BackgroundColor = UIColor.FromPatternImage(bgImage);

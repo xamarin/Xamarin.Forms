@@ -165,7 +165,7 @@ namespace Xamarin.Forms.Platform.UWP
 				() => thumb.Background, brush => thumb.Background = brush);
 		}
 
-		void UpdateThumbImage()
+		async void UpdateThumbImage()
 		{
 			if (Element == null || Control == null)
 			{
@@ -180,7 +180,7 @@ namespace Xamarin.Forms.Platform.UWP
 				return;
 			}
 
-			Control.ThumbImage = thumbImage.ToWindowsImageSource();
+			Control.ThumbImage = await thumbImage.ToWindowsImageSourceAsync();
 		}
 
 		protected override void UpdateBackgroundColor()

@@ -252,7 +252,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 					IconGravity = IconGravityTextStart;
 					// setting the icon property causes the base class to calculate things like padding
 					// required to set the image to the start of the text
-					if (IsNullOrEmpty(Button.Text))
+					if (string.IsNullOrEmpty(Element.Text))
 						IconPadding = 0;
 					else
 						IconPadding = (int)Context.ToPixels(layout.Spacing) + _defaultIconPadding;

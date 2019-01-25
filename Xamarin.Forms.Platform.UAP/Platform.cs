@@ -398,7 +398,7 @@ namespace Xamarin.Forms.Platform.UWP
 				button.DataContext = item;
 				button.SetValue(NativeAutomationProperties.AutomationIdProperty, item.AutomationId);
 				button.SetAutomationPropertiesName(item);
-				button.SetAutomationPropertiesAccessibilityView(item);							   
+				button.SetAutomationPropertiesAccessibilityView(item);
 				button.SetAutomationPropertiesHelpText(item);
 				button.SetAutomationPropertiesLabeledBy(item);
 

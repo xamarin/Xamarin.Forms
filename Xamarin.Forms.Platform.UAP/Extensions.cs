@@ -10,6 +10,8 @@ using Windows.UI.Xaml.Media;
 using Xamarin.Forms.Internals;
 using WImageSource = Windows.UI.Xaml.Media.ImageSource;
 using UwpScrollBarVisibility = Windows.UI.Xaml.Controls.ScrollBarVisibility;
+using Windows.UI.Xaml.Media.Imaging;
+using Microsoft.Graphics.Canvas.UI.Xaml;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -33,6 +35,32 @@ namespace Xamarin.Forms.Platform.UWP
 		public static void SetBinding(this FrameworkElement self, DependencyProperty property, string path, Windows.UI.Xaml.Data.IValueConverter converter)
 		{
 			self.SetBinding(property, new Windows.UI.Xaml.Data.Binding { Path = new PropertyPath(path), Converter = converter });
+		}
+
+		public static Size GetImageSourceSize(this WImageSource source)
+		{
+			if (source is null)
+			{
+				return Size.Zero;
+			}
+			else if (source is BitmapSource bitmap)
+			{
+				return new Size
+				{
+					Width = bitmap.PixelWidth,
+					Height = bitmap.PixelHeight
+				};
+			}
+			else if (source is CanvasImageSource canvas)
+			{
+				return new Size
+				{
+					Width = canvas.Size.Width,
+					Height = canvas.Size.Height
+				};
+			}
+
+			throw new InvalidCastException($"\"{source.GetType().FullName}\" is not supported.");
 		}
 
 		public static IconElement ToWindowsIconElement(this ImageSource source)

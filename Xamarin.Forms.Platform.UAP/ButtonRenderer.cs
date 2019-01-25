@@ -154,24 +154,28 @@ namespace Xamarin.Forms.Platform.UWP
 			Control.BorderThickness = Element.BorderWidth == (double)Button.BorderWidthProperty.DefaultValue ? new WThickness(3) : new WThickness(Element.BorderWidth);
 		}
 
-		void UpdateContent()
+		async void UpdateContent()
 		{
 			var text = Element.Text;
-			var elementImage = Element.Image.ToWindowsImageSource();
+			var elementImage = await Element.Image.ToWindowsImageSourceAsync();
 
 			// No image, just the text
 			if (elementImage == null)
 			{
 				Control.Content = text;
+				Element?.InvalidateMeasureNonVirtual(InvalidationTrigger.RendererReady);
 				return;
 			}
 
+			var size = elementImage.GetImageSourceSize();
 			var image = new WImage
 			{
 				Source = elementImage,
 				VerticalAlignment = VerticalAlignment.Center,
 				HorizontalAlignment = HorizontalAlignment.Center,
-				Stretch = Stretch.Uniform
+				Stretch = Stretch.Uniform,
+				Width = size.Width,
+				Height = size.Height,
 			};
 
 			// BitmapImage is a special case that has an event when the image is loaded
@@ -179,8 +183,9 @@ namespace Xamarin.Forms.Platform.UWP
 			if (elementImage is BitmapImage bmp)
 			{
 				bmp.ImageOpened += (sender, args) => {
-					image.Width = bmp.PixelWidth;
-					image.Height = bmp.PixelHeight;
+					var actualSize = bmp.GetImageSourceSize();
+					image.Width = actualSize.Width;
+					image.Height = actualSize.Height;
 					Element?.InvalidateMeasureNonVirtual(InvalidationTrigger.RendererReady);
 				};
 			}
@@ -189,11 +194,13 @@ namespace Xamarin.Forms.Platform.UWP
 			if (string.IsNullOrEmpty(text))
 			{
 				Control.Content = image;
+				Element?.InvalidateMeasureNonVirtual(InvalidationTrigger.RendererReady);
 				return;
 			}
 
 			// Both image and text, so we need to build a container for them
 			Control.Content = CreateContentContainer(Element.ContentLayout, image, text);
+			Element?.InvalidateMeasureNonVirtual(InvalidationTrigger.RendererReady);
 		}
 
 		static StackPanel CreateContentContainer(Button.ButtonContentLayout layout, WImage image, string text)
