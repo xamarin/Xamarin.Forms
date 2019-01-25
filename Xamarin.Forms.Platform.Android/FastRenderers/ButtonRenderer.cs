@@ -335,6 +335,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				// There's no option for just plain-old centering, so we'll use Top 
 				// (which handles the horizontal centering) and some tricksy padding (in OnLayout)
 				// to handle the vertical centering 
+
 				this.ApplyDrawableAsync(Button.ImageProperty, Context, image =>
 				{
 					// Clear any previous padding and set the image as top/center

@@ -26,7 +26,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty BarTextColorProperty = BarElement.BarTextColorProperty;
 
-		public static readonly BindableProperty TitleIconProperty = BindableProperty.CreateAttached("TitleIcon", typeof(ImageSource), typeof(NavigationPage), default(ImageSource));
+		public static readonly BindableProperty TitleIconProperty = BindableProperty.CreateAttached(nameof(TitleIcon), typeof(ImageSource), typeof(NavigationPage), default(ImageSource));
 
 		public static readonly BindableProperty TitleViewProperty = BindableProperty.CreateAttached("TitleView", typeof(View), typeof(NavigationPage), null, propertyChanging: TitleViewPropertyChanging);
 
