@@ -36,6 +36,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use MasterDetailPageRenderer(Context) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public MasterDetailPageRenderer() : base(Forms.Context)
 		{
 		}
@@ -399,6 +400,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		void UpdateFlowDirection()
 		{
 			this.UpdateFlowDirection(Element);
+			_detailLayout.UpdateFlowDirection();
 		}
 
 		void UpdateIsPresented()

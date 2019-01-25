@@ -403,7 +403,7 @@ namespace Xamarin.Forms.Platform.iOS
 			icons?.Item1?.Dispose();
 			icons?.Item2?.Dispose();
 		}
-		
+
 		/// <summary>
 		/// Get the icon for the tab bar item of this page
 		/// </summary>

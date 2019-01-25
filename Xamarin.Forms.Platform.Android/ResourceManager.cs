@@ -11,6 +11,7 @@ using Android.Graphics.Drawables;
 using Xamarin.Forms.Internals;
 using Path = System.IO.Path;
 using AndroidAppCompat = Android.Support.V7.Content.Res.AppCompatResources;
+using System.ComponentModel;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -21,6 +22,8 @@ namespace Xamarin.Forms.Platform.Android
 		public static Type ResourceClass { get; set; }
 
 		public static Type StyleClass { get; set; }
+
+		public static Type LayoutClass { get; set; }
 
 		internal static async Task<Drawable> GetFormsDrawableAsync(this Context context, ImageSource imageSource, CancellationToken cancellationToken = default(CancellationToken))
 		{
@@ -218,6 +221,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		[Obsolete("GetDrawable(this Resources, string) is obsolete as of version 2.5. "
 			+ "Please use GetDrawable(this Context, string) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static Drawable GetDrawable(this Resources resource, string name)
 		{
 			int id = IdFromTitle(name, DrawableClass);
@@ -252,6 +256,11 @@ namespace Xamarin.Forms.Platform.Android
 			return IdFromTitle(name, ResourceClass);
 		}
 
+		public static int GetLayoutByName(string name)
+		{
+			return IdFromTitle(name, LayoutClass);
+		}
+
 		public static int GetStyleByName(string name)
 		{
 			return IdFromTitle(name, StyleClass);
@@ -262,7 +271,7 @@ namespace Xamarin.Forms.Platform.Android
 			DrawableClass = masterAssembly.GetTypes().FirstOrDefault(x => x.Name == "Drawable" || x.Name == "Resource_Drawable");
 			ResourceClass = masterAssembly.GetTypes().FirstOrDefault(x => x.Name == "Id" || x.Name == "Resource_Id");
 			StyleClass = masterAssembly.GetTypes().FirstOrDefault(x => x.Name == "Style" || x.Name == "Resource_Style");
-			
+			LayoutClass = masterAssembly.GetTypes().FirstOrDefault(x => x.Name == "Layout" || x.Name == "Resource_Layout");
 		}
 
 		internal static int IdFromTitle(string title, Type type)

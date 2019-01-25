@@ -18,7 +18,8 @@ namespace Xamarin.Forms.Platform.iOS
 	public class CollectionViewRenderer : ViewRenderer<CollectionView, UIView>
 	{
 		CollectionViewController _collectionViewController;
-		ItemsViewLayout _layout;
+		ItemsViewLayout _flowLayout;
+		IItemsLayout _layout;
 		bool _disposed;
 
 		public CollectionViewRenderer()
@@ -48,6 +49,10 @@ namespace Xamarin.Forms.Platform.iOS
 			if (changedProperty.Is(ItemsView.ItemsSourceProperty))
 			{
 				_collectionViewController.UpdateItemsSource();
+			}
+			else if (changedProperty.IsOneOf(ItemsView.EmptyViewProperty, ItemsView.EmptyViewTemplateProperty))
+			{
+				_collectionViewController.UpdateEmptyView();
 			}
 		}
 
@@ -85,11 +90,13 @@ namespace Xamarin.Forms.Platform.iOS
 				return;
 			}
 
-			_layout = SelectLayout(newElement.ItemsLayout);
-			_collectionViewController = new CollectionViewController(newElement, _layout);
+			_layout = newElement.ItemsLayout;
+			_flowLayout = SelectLayout(_layout);
+			_collectionViewController = new CollectionViewController(newElement, _flowLayout);
 			SetNativeControl(_collectionViewController.View);
 			_collectionViewController.CollectionView.BackgroundColor = UIColor.Clear;
-			_collectionViewController.CollectionView.WeakDelegate = _layout;
+			_collectionViewController.CollectionView.WeakDelegate = _flowLayout;
+			_collectionViewController.UpdateEmptyView();
 
 			// Listen for ScrollTo requests
 			newElement.ScrollToRequested += ScrollToRequested;
@@ -118,7 +125,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			_collectionViewController.CollectionView.ScrollToItem(indexPath, 
-				args.ScrollToPosition.ToCollectionViewScrollPosition(_layout.ScrollDirection),
+				args.ScrollToPosition.ToCollectionViewScrollPosition(_flowLayout.ScrollDirection),
 				args.IsAnimated);
 		}
 
