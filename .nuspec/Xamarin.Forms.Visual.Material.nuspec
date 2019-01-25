@@ -10,7 +10,7 @@
     <iconUrl>http://xamarin.com/content/images/nuget/xamarin.png</iconUrl>
     <projectUrl>http://xamarin.com/forms</projectUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <description>Material renderers for Xamarin.Forms iOS</description>
+    <description>Material renderers for Xamarin.Forms</description>
     <copyright>© Microsoft Corporation. All rights reserved.</copyright>
     <dependencies>
       <group>
@@ -28,6 +28,10 @@
     </dependencies>
   </metadata>
   <files>
+    <file src="_._" target="lib\netstandard1.0\_._" />    
+    <file src="_._" target="lib\MonoAndroid81\_._" />
+    <file src="_._" target="lib\MonoAndroid90\_._" />
+     
     <file src="..\Xamarin.Forms.Material.iOS\bin\$Configuration$\Xamarin.Forms.Material.iOS.dll" target="lib\Xamarin.iOS10" />
     <file src="..\Xamarin.Forms.Material.iOS\bin\$Configuration$\Xamarin.Forms.Material.iOS.*pdb" target="lib\Xamarin.iOS10" />
     <file src="..\Xamarin.Forms.Material.iOS\bin\$Configuration$\Xamarin.Forms.Material.iOS.*mdb" target="lib\Xamarin.iOS10" />
