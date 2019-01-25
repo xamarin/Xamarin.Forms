@@ -10,7 +10,7 @@
     <iconUrl>http://xamarin.com/content/images/nuget/xamarin.png</iconUrl>
     <projectUrl>http://xamarin.com/forms</projectUrl>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <description>Material renderers for Xamarin.Forms for iOS</description>
+    <description>Material renderers for Xamarin.Forms iOS</description>
     <copyright>© Microsoft Corporation. All rights reserved.</copyright>
     <dependencies>
       <group>
