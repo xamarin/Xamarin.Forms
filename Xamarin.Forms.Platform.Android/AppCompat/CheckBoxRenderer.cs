@@ -165,8 +165,7 @@ namespace Xamarin.Forms.Platform.Android
 		// CheckBox related
 		void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			if (e.PropertyName == CheckBox.CheckedColorProperty.PropertyName ||
-				e.PropertyName == CheckBox.UncheckedColorProperty.PropertyName)
+			if (e.PropertyName == CheckBox.TintColorProperty.PropertyName)
 			{
 				UpdateOnColor();
 			}
@@ -190,10 +189,13 @@ namespace Xamarin.Forms.Platform.Android
 
 			var stateChecked = global::Android.Resource.Attribute.StateChecked;
 			var stateEnabled = global::Android.Resource.Attribute.StateEnabled;
+			var statePressed = global::Android.Resource.Attribute.StatePressed;
 
 			//Need to find a way to get this color out of Android somehow.
 			var uncheckedDefault = AColor.Gray;
 			var disabledColor = AColor.LightGray;
+
+			var tintColor = CheckBox.TintColor == Color.Default ? Color.Accent.ToAndroid() : CheckBox.TintColor.ToAndroid();
 
 			var list = new ColorStateList(
 					new int[][] 
@@ -201,13 +203,15 @@ namespace Xamarin.Forms.Platform.Android
 						new int[] { -stateEnabled, stateChecked },
 						new int[] { stateEnabled, stateChecked },
 						new int[] { stateEnabled, -stateChecked },
+						new int[] { stateEnabled, statePressed },
 						new int[] { },
 					},
 					new int[]
 					{
 						disabledColor,
-						CheckBox.CheckedColor == Color.Default ? Color.Accent.ToAndroid() : CheckBox.CheckedColor.ToAndroid(),
-						CheckBox.UncheckedColor == Color.Default ? uncheckedDefault : CheckBox.UncheckedColor.ToAndroid(),
+						tintColor,
+						tintColor,
+						tintColor,
 						disabledColor,
 					});
 				

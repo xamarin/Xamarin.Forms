@@ -1,4 +1,5 @@
-﻿using Xamarin.Forms.CustomAttributes;
+﻿using System.Collections.Generic;
+using Xamarin.Forms.CustomAttributes;
 
 namespace Xamarin.Forms.Controls
 {
@@ -21,10 +22,41 @@ namespace Xamarin.Forms.Controls
 			var isCheckedContainer = new ValueViewContainer<CheckBox>(Test.CheckBox.IsChecked, new CheckBox() { HorizontalOptions = LayoutOptions.Start }, "IsChecked", value => value.ToString());
 			Add(isCheckedContainer);
 
-			var checkedColorContainer = new ValueViewContainer<CheckBox>(Test.CheckBox.CheckedColor, new CheckBox() { CheckedColor = Color.Orange, HorizontalOptions = LayoutOptions.Start }, "Color", value => value.ToString());
+			var checkedColorContainer = new ValueViewContainer<CheckBox>(Test.CheckBox.CheckedColor, new CheckBox() { TintColor = Color.Orange, HorizontalOptions = LayoutOptions.Start }, "Color", value => value.ToString());
 			Add(checkedColorContainer);
 
-			var unCheckedColorContainer = new ValueViewContainer<CheckBox>(Test.CheckBox.UncheckedColor, new CheckBox() { UncheckedColor = Color.Pink, HorizontalOptions = LayoutOptions.Start }, "Color", value => value.ToString());
+			var groupList = new VisualStateGroupList();
+			var group = new VisualStateGroup();
+			var checkedVisualState = new VisualState
+			{
+				Name = "IsChecked"
+			};
+			checkedVisualState.Setters.Add(new Setter
+			{
+				Property = CheckBox.TintColorProperty,
+				Value = Color.Orange
+			});
+
+			group.States.Add(checkedVisualState);
+
+			var normalVisualState = new VisualState
+			{
+				Name = "Normal"
+			};
+			normalVisualState.Setters.Add(new Setter
+			{
+				Property = CheckBox.TintColorProperty,
+				Value = Color.Red
+			});
+			group.States.Add(normalVisualState);
+			groupList.Add(group);
+
+
+			var checkBoxStateManaged = new CheckBox() { TintColor = Color.Red, HorizontalOptions = LayoutOptions.Start };
+			VisualStateManager.SetVisualStateGroups(checkBoxStateManaged, groupList);
+
+
+			var unCheckedColorContainer = new ValueViewContainer<CheckBox>(Test.CheckBox.UncheckedColor, checkBoxStateManaged, "Color", value => value.ToString());
 			Add(unCheckedColorContainer);
 		}
 	}
