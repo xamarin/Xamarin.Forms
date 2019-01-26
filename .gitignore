@@ -63,3 +63,4 @@ AndroidNative/gradlew.bat
 *.pdb
 # temporary vim files
 *.swp
+tools/
