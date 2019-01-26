@@ -47,7 +47,6 @@ using Xamarin.Forms.Internals;
 [assembly: ExportRenderer(typeof(NativeViewWrapper), typeof(NativeViewWrapperRenderer))]
 [assembly: ExportRenderer(typeof(Layout), typeof(LayoutRenderer))]
 [assembly: ExportCell(typeof(Cell), typeof(CellRenderer))]
-[assembly: ExportCell(typeof(CheckBoxCell), typeof(CheckBoxCellRenderer))]
 [assembly: ExportCell(typeof(TextCell), typeof(TextCellRenderer))]
 [assembly: ExportCell(typeof(ImageCell), typeof(ImageCellRenderer))]
 [assembly: ExportCell(typeof(EntryCell), typeof(EntryCellRenderer))]

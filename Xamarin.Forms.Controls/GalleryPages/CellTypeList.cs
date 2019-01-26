@@ -46,8 +46,6 @@ namespace Xamarin.Forms.Controls
 				new CellNavigation ("SwitchCell Table", new SwitchCellTablePage ()),
 				new CellNavigation ("EntryCell List", new EntryCellListPage ()),
 				new CellNavigation ("EntryCell Table", new EntryCellTablePage ()),
-				new CellNavigation ("CheckBox List", new CheckBoxCellListPage ()),
-				new CellNavigation ("CheckBox Table", new CheckBoxCellTablePage ()),
 				new CellNavigation ("ViewCell Image url table", new UrlImageViewCellListPage())
 			};
 			

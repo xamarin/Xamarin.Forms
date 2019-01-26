@@ -64,14 +64,6 @@ namespace Xamarin.Forms.Platform.UWP
 		}
 	}
 
-	public class CheckBoxCellRenderer : ICellRenderer
-	{
-		public virtual WDataTemplate GetTemplate(Cell cell)
-		{
-			return (WDataTemplate)WApplication.Current.Resources["CheckBoxCell"];
-		}
-	}
-
 	public class ImageCellRenderer : ICellRenderer
 	{
 		public virtual WDataTemplate GetTemplate(Cell cell)
