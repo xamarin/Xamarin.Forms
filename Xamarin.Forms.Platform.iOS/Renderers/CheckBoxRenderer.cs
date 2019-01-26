@@ -95,27 +95,18 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.CheckColor = Color.Default;
 
 				e.NewElement.CheckedChanged += OnElementChecked;
-				UpdateCheckedColor();
-				UpdateUncheckedColor();
+				UpdateTintColor();
 			}
 
 			base.OnElementChanged(e);
 		}
 
-		void UpdateCheckedColor()
+		void UpdateTintColor()
 		{
 			if (Element == null)
 				return;
 
-			Control.CheckedColor = Element.CheckedColor;
-		}
-
-		void UpdateUncheckedColor()
-		{
-			if (Element == null)
-				return;
-
-			Control.UncheckedColor = Element.UncheckedColor;
+			Control.CheckBoxTintColor = Element.TintColor;
 		}
 
 		void OnElementCheckedChanged(object sender, EventArgs e)
@@ -132,10 +123,8 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == CheckBox.CheckedColorProperty.PropertyName)
-				UpdateCheckedColor();
-			else if (e.PropertyName == CheckBox.UncheckedColorProperty.PropertyName)
-				UpdateUncheckedColor();
+			if (e.PropertyName == CheckBox.TintColorProperty.PropertyName)
+				UpdateTintColor();
 			else if (e.PropertyName == CheckBox.IsEnabledProperty.PropertyName)
 				Control.IsEnabled = Element.IsEnabled;
 		}
@@ -181,7 +170,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		Color _checkColor, _checkedColor, _uncheckedColor, _disabledColor;
+		Color _checkColor, _tintColor, _disabledColor;
 		public Color DisabledColor
 		{
 			get => _disabledColor;
@@ -207,30 +196,18 @@ namespace Xamarin.Forms.Platform.iOS
 				SetNeedsDisplay();
 			}
 		}
-		public Color CheckedColor
+		public Color CheckBoxTintColor
 		{
-			get => _checkedColor;
+			get => _tintColor;
 			set
 			{
-				if (_checkedColor == value)
+				if (_tintColor == value)
 					return;
 
-				_checkedColor = value;
+				_tintColor = value;
 				SetNeedsDisplay();
 			}
 		}
-		public Color UncheckedColor
-		{
-			get => _uncheckedColor;
-			set
-			{
-				if (_uncheckedColor == value)
-					return;
-
-				_uncheckedColor = value;
-				SetNeedsDisplay();
-			}
-		}		
 
 		public override void Draw(CGRect rect)
 		{
@@ -238,16 +215,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (IsEnabled)
 			{
-				var checkedColor = (CheckedColor.IsDefault ? TintColor : CheckedColor.ToUIColor());
+				var checkedColor = (CheckBoxTintColor.IsDefault ? base.TintColor : CheckBoxTintColor.ToUIColor());
 				checkedColor.SetFill();
-				if (IsChecked)
-				{
-					checkedColor.SetStroke();
-				}
-				else
-				{
-					(UncheckedColor.IsDefault ? TintColor : UncheckedColor.ToUIColor()).SetStroke();
-				}
+				checkedColor.SetStroke();
 			}
 			else
 			{
