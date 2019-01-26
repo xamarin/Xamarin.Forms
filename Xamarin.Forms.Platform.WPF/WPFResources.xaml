@@ -328,30 +328,19 @@
 			</TextBlock>
 		</StackPanel>
 	</DataTemplate>
-	
-	<DataTemplate x:Key="SwitchCell">
-		<Grid HorizontalAlignment="Stretch">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="*" />
-				<ColumnDefinition Width="Auto" />
-			</Grid.ColumnDefinitions>
-			<TextBlock Grid.Column="0" Text="{Binding Text}" Style="{StaticResource ListViewItemTextBlockStyle}" VerticalAlignment="Center" />
-			<CheckBox Grid.Column="1" IsChecked="{Binding On, Mode=TwoWay}" VerticalAlignment="Center" />
-		</Grid>
-	</DataTemplate>
 
-	<DataTemplate x:Key="CheckBoxCell">
-		<Grid HorizontalAlignment="Stretch">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="*" />
-				<ColumnDefinition Width="Auto" />
-			</Grid.ColumnDefinitions>
-			<TextBlock Grid.Column="0" Text="{Binding Text}" Style="{StaticResource ListViewItemTextBlockStyle}" VerticalAlignment="Center" />
-			<CheckBox Grid.Column="1" IsChecked="{Binding On, Mode=TwoWay}" VerticalAlignment="Center" />
-		</Grid>
-	</DataTemplate>
+    <DataTemplate x:Key="SwitchCell">
+        <Grid HorizontalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="{Binding Text}" Style="{StaticResource ListViewItemTextBlockStyle}" VerticalAlignment="Center" />
+            <CheckBox Grid.Column="1" IsChecked="{Binding On, Mode=TwoWay}" VerticalAlignment="Center" />
+        </Grid>
+    </DataTemplate>
 
-	<DataTemplate x:Key="ImageCell">
+    <DataTemplate x:Key="ImageCell">
 		<Grid>
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="Auto"/>

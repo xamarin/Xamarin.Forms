@@ -300,34 +300,21 @@
 				x:Name="detail" />
 		</Grid>
 	</DataTemplate>
-	
-	<DataTemplate x:Key="SwitchCell">
-		<Grid HorizontalAlignment="Stretch" x:Name="ParentGrid">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="*" />
-				<ColumnDefinition Width="Auto" />
-			</Grid.ColumnDefinitions>
 
-			<TextBlock Grid.Column="0" Text="{Binding Text}" VerticalAlignment="Center" Style="{ThemeResource BaseTextBlockStyle}" />
+    <DataTemplate x:Key="SwitchCell">
+        <Grid HorizontalAlignment="Stretch" x:Name="ParentGrid">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
 
-			<ToggleSwitch Grid.Column="1" IsOn="{Binding On, Mode=TwoWay}" OnContent="" OffContent="" VerticalAlignment="Center" FlowDirection="{Binding FlowDirection, ElementName=ParentGrid }" IsEnabled="{Binding IsEnabled}" />
-		</Grid>
-	</DataTemplate>
+            <TextBlock Grid.Column="0" Text="{Binding Text}" VerticalAlignment="Center" Style="{ThemeResource BaseTextBlockStyle}" />
 
-	<DataTemplate x:Key="CheckBoxCell">
-		<Grid HorizontalAlignment="Stretch" x:Name="ParentGrid">
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="*" />
-				<ColumnDefinition Width="Auto" />
-			</Grid.ColumnDefinitions>
+            <ToggleSwitch Grid.Column="1" IsOn="{Binding On, Mode=TwoWay}" OnContent="" OffContent="" VerticalAlignment="Center" FlowDirection="{Binding FlowDirection, ElementName=ParentGrid }" IsEnabled="{Binding IsEnabled}" />
+        </Grid>
+    </DataTemplate>
 
-			<TextBlock Grid.Column="0" Text="{Binding Text}" VerticalAlignment="Center" Style="{ThemeResource BaseTextBlockStyle}" />
-
-			<CheckBox Grid.Column="1" IsChecked="{Binding IsChecked, Mode=TwoWay}" Content="" VerticalAlignment="Center" FlowDirection="{Binding FlowDirection, ElementName=ParentGrid }" IsEnabled="{Binding IsEnabled}" />
-		</Grid>
-	</DataTemplate>
-
-	<DataTemplate x:Key="EntryCell">
+    <DataTemplate x:Key="EntryCell">
         <uwp:EntryCellTextBox IsEnabled="{Binding IsEnabled}" Header="{Binding}" Text="{Binding Text, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextAlignment="{Binding HorizontalTextAlignment,Converter={StaticResource HorizontalTextAlignmentConverter}}" PlaceholderText="{Binding Placeholder}"  InputScope="{Binding Keyboard,Converter={StaticResource KeyboardConverter}}" HorizontalAlignment="Stretch">
 			<uwp:EntryCellTextBox.HeaderTemplate>
 				<DataTemplate>

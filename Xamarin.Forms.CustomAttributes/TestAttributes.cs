@@ -200,8 +200,7 @@ namespace Xamarin.Forms.CustomAttributes
 			EntryCell,
 			Editor,
 			DatePicker,
-			CheckBox,
-			CheckBoxCell
+			CheckBox
 		}
 
 		public enum Layouts
@@ -404,13 +403,6 @@ namespace Xamarin.Forms.CustomAttributes
 			Name,
 			Order,
 			Priority
-		}
-
-		public enum CheckBoxCell
-		{
-			OnChanged,
-			On,
-			Text,
 		}
 
 		public enum SwitchCell
