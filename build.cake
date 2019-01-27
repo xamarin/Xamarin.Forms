@@ -6,8 +6,7 @@
 // examples
 /*
 
-./build.ps1 -Target NugetPack -ScriptArgs '-version="9.9.9-custom"'
-./build.sh --target NugetPack --version="9.9.9-custom"
+./build.ps1 -Target NugetPack -ScriptArgs '-packageVersion="9.9.9-custom"'
 
 
 
@@ -30,7 +29,7 @@
 
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Debug");
-var version = Argument("version", "9.9.9-beta");
+var nugetversion = Argument<string>("packageVersion", "9.9.9-beta");
 
 
 //////////////////////////////////////////////////////////////////////
@@ -62,7 +61,7 @@ Task("_NuGetPack")
         var nuGetPackSettings = new NuGetPackSettings
         {   
             OutputDirectory = nugetPackageDir,
-            Version = version
+            Version = nugetversion
         };
 
         var nugetFilePaths = 
