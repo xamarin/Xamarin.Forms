@@ -39,8 +39,8 @@ var nugetversion = Argument<string>("packageVersion", "9.9.9-beta");
 Task("Clean")
     .Does(() =>
 {
-    CleanDirectories("./**/obj", (fsi)=> !fsi.Path.FullPath.Contains("XFCorePostProcessor") && !fsi.Path.FullPath.StartsWith("tools"));
-    CleanDirectories("./**/bin", (fsi)=> !fsi.Path.FullPath.Contains("XFCorePostProcessor") && !fsi.Path.FullPath.StartsWith("tools"));
+    //CleanDirectories("./**/obj", (fsi)=> !fsi.Path.FullPath.Contains("XFCorePostProcessor") && !fsi.Path.FullPath.StartsWith("tools"));
+    //CleanDirectories("./**/bin", (fsi)=> !fsi.Path.FullPath.Contains("XFCorePostProcessor") && !fsi.Path.FullPath.StartsWith("tools"));
 
     Information(MakeAbsolute(Directory("./")));
 
@@ -127,16 +127,6 @@ Task("Android81")
                         .WithProperty("AndroidTargetFrameworkVersion", "v8.1"));
     });
 
-Task("Deploy")
-    .IsDependentOn("DeployiOS")
-    .IsDependentOn("DeployAndroid")
-    .Does(() =>
-    { 
-        // not sure how to get this to deploy to iOS
-        BuildiOSIpa("./Xamarin.Forms.sln", platform:"iPhoneSimulator", configuration:"Debug");
-
-    });
-
 Task("VSMAC")
     .IsDependentOn("BuildHack")
     .Does(() =>
@@ -144,6 +134,11 @@ Task("VSMAC")
         StartProcess("open", new ProcessSettings{ Arguments = "Xamarin.Forms.sln" });
         
     });
+
+Task("Deploy")
+    .IsDependentOn("DeployiOS")
+    .IsDependentOn("DeployAndroid");
+
 
 // TODO? Not sure how to make this work
 Task("DeployiOS")
@@ -157,7 +152,9 @@ Task("DeployiOS")
 Task("DeployAndroid")
     .Does(() =>
     { 
-        BuildAndroidApk("./Xamarin.Forms.ControlGallery.Android/Xamarin.Forms.ControlGallery.Android.csproj", sign:true, configuration:"Debug");
+        MSBuild("./Xamarin.Forms.Build.Tasks/Xamarin.Forms.Build.Tasks.csproj", GetMSBuildSettings().WithRestore());
+        MSBuild("./Xamarin.Forms.ControlGallery.Android/Xamarin.Forms.ControlGallery.Android.csproj", GetMSBuildSettings().WithRestore());
+        BuildAndroidApk("./Xamarin.Forms.ControlGallery.Android/Xamarin.Forms.ControlGallery.Android.csproj", sign:true, configuration:configuration);
         AdbUninstall("AndroidControlGallery.AndroidControlGallery");
         AdbInstall("./Xamarin.Forms.ControlGallery.Android/bin/Debug/AndroidControlGallery.AndroidControlGallery-Signed.apk");
 
