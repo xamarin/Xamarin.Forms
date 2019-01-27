@@ -50,16 +50,22 @@ Task("Clean")
 
 Task("NuGetPack")
     .IsDependentOn("Build")
+    .IsDependentOn("Android81")
+    .IsDependentOn("_NuGetPack");
+
+
+Task("_NuGetPack")
     .Does(() =>
     {
-        var nugetFilePaths = GetFiles("./.nuspec/*.nuspec");
         var nugetPackageDir = Directory("./artifacts");
-
         var nuGetPackSettings = new NuGetPackSettings
         {   
             OutputDirectory = nugetPackageDir,
             Version = version
         };
+
+        var nugetFilePaths = 
+            GetFiles("./.nuspec/*.nuspec");
 
         nuGetPackSettings.Properties.Add("configuration", configuration);
         nuGetPackSettings.Properties.Add("platform", "anycpu");
@@ -71,12 +77,8 @@ Task("BuildHack")
     .Does(() =>
     {
         if(!IsRunningOnWindows())
-        {
-            MSBuild("./Xamarin.Forms.Build.Tasks/Xamarin.Forms.Build.Tasks.csproj", settings =>
-            {
-                settings.SetConfiguration(configuration);
-            });
-        }
+            MSBuild("./Xamarin.Forms.Build.Tasks/Xamarin.Forms.Build.Tasks.csproj", GetMSBuildSettings().WithRestore());
+        
     });
 
 Task("Build")
@@ -85,25 +87,45 @@ Task("Build")
 { 
     try
     {
-        MSBuild("./Xamarin.Forms.sln", settings =>
-        {
-            settings
-                .SetPlatformTarget(PlatformTarget.MSIL)
-                .SetConfiguration(configuration)
-                .WithProperty("CreateAllAndroidTargets", "true")
-                .WithRestore();
-
-            settings.ToolVersion = MSBuildToolVersion.VS2017;
-            settings.MSBuildPlatform = (Cake.Common.Tools.MSBuild.MSBuildPlatform)1;
-
-        });
+        MSBuild("./Xamarin.Forms.sln", GetMSBuildSettings()
+                .WithTarget("restore"));
     }
     catch(Exception)
     {
-        // ignore exceptions for now
+        if(!IsRunningOnWindows())
+            throw;
+    }
+
+
+    try{
+        MSBuild("./Xamarin.Forms.sln", GetMSBuildSettings());
+    }
+    catch(Exception)
+    {
+        if(!IsRunningOnWindows())
+            throw;
     }
 });
 
+Task("Android81")
+    .IsDependentOn("BuildHack")
+    .Does(() =>
+    {
+        string[] androidProjects = 
+            new []
+            {
+                "./Xamarin.Forms.Platform.Android/Xamarin.Forms.Platform.Android.csproj",
+                "./Xamarin.Forms.Platform.Android.AppLinks/Xamarin.Forms.Platform.Android.AppLinks.csproj",
+                "./Xamarin.Forms.Maps.Android/Xamarin.Forms.Maps.Android.csproj",
+                "./Stubs/Xamarin.Forms.Platform.Android/Xamarin.Forms.Platform.Android (Forwarders).csproj"
+            };
+
+        foreach(var project in androidProjects)
+            MSBuild(project, 
+                    GetMSBuildSettings()
+                        .WithRestore()
+                        .WithProperty("AndroidTargetFrameworkVersion", "v8.1"));
+    });
 
 Task("Deploy")
     .IsDependentOn("DeployiOS")
@@ -113,6 +135,14 @@ Task("Deploy")
         // not sure how to get this to deploy to iOS
         BuildiOSIpa("./Xamarin.Forms.sln", platform:"iPhoneSimulator", configuration:"Debug");
 
+    });
+
+Task("VSMAC")
+    .IsDependentOn("BuildHack")
+    .Does(() =>
+    {
+        StartProcess("open", new ProcessSettings{ Arguments = "Xamarin.Forms.sln" });
+        
     });
 
 // TODO? Not sure how to make this work
@@ -136,22 +166,12 @@ Task("DeployAndroid")
 
     });
 
-Task("Run-Unit-Tests")
-    .IsDependentOn("Build")
-    .Does(() =>
-{
-    NUnit3("./src/**/bin/" + configuration + "/*.Tests.dll", new NUnit3Settings {
-        NoResults = true
-        });
-});
-
 //////////////////////////////////////////////////////////////////////
 // TASK TARGETS
 //////////////////////////////////////////////////////////////////////
 
 Task("Default")
     .IsDependentOn("Build")
-    //.IsDependentOn("Run-Unit-Tests")
     ;
 
 //////////////////////////////////////////////////////////////////////
@@ -159,3 +179,16 @@ Task("Default")
 //////////////////////////////////////////////////////////////////////
 
 RunTarget(target);
+
+
+MSBuildSettings GetMSBuildSettings()
+{
+    var msbuildSettings =  new MSBuildSettings();
+
+    msbuildSettings.ToolVersion = MSBuildToolVersion.VS2017;
+    msbuildSettings.PlatformTarget = PlatformTarget.MSIL;
+    msbuildSettings.MSBuildPlatform = (Cake.Common.Tools.MSBuild.MSBuildPlatform)1;
+    msbuildSettings.Configuration = configuration;
+    return msbuildSettings;
+
+}
