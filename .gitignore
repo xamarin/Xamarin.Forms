@@ -63,4 +63,5 @@ AndroidNative/gradlew.bat
 *.pdb
 # temporary vim files
 *.swp
-caketools/
+tools/
+!tools/mdoc/**/*
