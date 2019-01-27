@@ -17,11 +17,11 @@
 #addin "nuget:?package=Cake.Xamarin&version=3.0.0"
 #addin "nuget:?package=Cake.Android.Adb&version=3.0.0"
 #addin "nuget:?package=Cake.Git&version=0.19.0"
-
 //////////////////////////////////////////////////////////////////////
 // TOOLS
 //////////////////////////////////////////////////////////////////////
 #tool nuget:?package=NUnit.ConsoleRunner&version=3.4.0
+#tool nuget:?package=GitVersion.CommandLine&version=4.0.0
 
 //////////////////////////////////////////////////////////////////////
 // ARGUMENTS
@@ -29,8 +29,12 @@
 
 var target = Argument("target", "Default");
 var configuration = Argument("configuration", "Debug");
-var nugetversion = Argument<string>("packageVersion", "9.9.9-beta");
 
+var gitVersion = GitVersion();
+var majorMinorPatch = gitVersion.MajorMinorPatch;
+var informationalVersion = gitVersion.InformationalVersion;
+var buildVersion = gitVersion.FullBuildMetaData;
+var nugetversion = Argument<string>("packageVersion", gitVersion.NuGetVersion);
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
@@ -50,13 +54,14 @@ Task("Clean")
 
 Task("NuGetPack")
     .IsDependentOn("Build")
-    .IsDependentOn("Android81")
     .IsDependentOn("_NuGetPack");
 
 
 Task("_NuGetPack")
     .Does(() =>
     {
+        Information("Nuget Version: {0}", nugetversion);
+        
         var nugetPackageDir = Directory("./artifacts");
         var nuGetPackSettings = new NuGetPackSettings
         {   
@@ -83,6 +88,7 @@ Task("BuildHack")
 
 Task("Build")
     .IsDependentOn("BuildHack")
+    .IsDependentOn("Android81")
     .Does(() =>
 { 
     try
