@@ -65,3 +65,4 @@ AndroidNative/gradlew.bat
 *.swp
 tools/
 !tools/mdoc/**/*
+caketools/
