@@ -7,9 +7,11 @@ using System.Threading.Tasks;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class FormsVideoView : VideoView
+	internal class FormsVideoView : VideoView
 	{
-		public FormsVideoView(Context context) : base(context) { }
+		public FormsVideoView(Context context) : base(context)
+		{
+		}
 
 		public event EventHandler MetadataRetrieved;
 
@@ -19,7 +21,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (System.IO.File.Exists(path))
 			{
-				MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+				var retriever = new MediaMetadataRetriever();
 				
 				Task.Run(() =>
 				{
@@ -73,7 +75,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			Task.Run(() =>
 			{
-				MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+				var retriever = new MediaMetadataRetriever();
 
 				if (uri.Scheme != null && uri.Scheme.StartsWith("http") && headers != null)
 				{

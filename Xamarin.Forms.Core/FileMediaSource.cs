@@ -7,7 +7,7 @@ namespace Xamarin.Forms
 	[TypeConverter(typeof(FileMediaSourceConverter))]
 	public sealed class FileMediaSource : MediaSource
 	{
-		public static readonly BindableProperty FileProperty = BindableProperty.Create("File", typeof(string), typeof(FileMediaSource), default(string));
+		public static readonly BindableProperty FileProperty = BindableProperty.Create(nameof(File), typeof(string), typeof(FileMediaSource), default(string));
 
 		public string File
 		{

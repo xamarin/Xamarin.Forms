@@ -403,7 +403,7 @@ namespace Xamarin.Forms.Platform.iOS
 				oldElement.SeekRequested -= MediaElementSeekRequested;
 				oldElement.StateRequested -= MediaElementStateRequested;
 				oldElement.PositionRequested -= MediaElementPositionRequested;
-				MediaElement.VolumeRequested -= MediaElementVolumeRequested;
+				oldElement.VolumeRequested -= MediaElementVolumeRequested;
 			}
 
 			Color currentColor = oldElement?.BackgroundColor ?? Color.Default;
