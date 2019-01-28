@@ -16,10 +16,7 @@
       <group>
         <dependency id="Xamarin.Forms" version="$version$"/>
       </group>
-      <group targetFramework="MonoAndroid81">
-        <dependency id="Xamarin.Forms" version="$version$"/>
-      </group>
-      <group targetFramework="MonoAndroid90">
+      <group targetFramework="MonoAndroid10">
         <dependency id="Xamarin.Forms" version="$version$"/>
       </group>
       <group targetFramework="Xamarin.iOS10">
@@ -28,10 +25,11 @@
     </dependencies>
   </metadata>
   <files>
-    <file src="_._" target="lib\netstandard1.0\_._" />    
-    <file src="_._" target="lib\MonoAndroid81\_._" />
-    <file src="_._" target="lib\MonoAndroid90\_._" />
-     
+    <file src="_._" target="lib\netstandard1.0\_._" />
+
+    <file src="_._" target="lib\MonoAndroid10\_._" />
+    <file src="Xamarin.Forms.Visual.Material.targets" target="build\MonoAndroid10\Xamarin.Forms.Visual.Material.targets" />  
+       
     <file src="..\Xamarin.Forms.Material.iOS\bin\$Configuration$\Xamarin.Forms.Material.iOS.dll" target="lib\Xamarin.iOS10" />
     <file src="..\Xamarin.Forms.Material.iOS\bin\$Configuration$\Xamarin.Forms.Material.iOS.*pdb" target="lib\Xamarin.iOS10" />
     <file src="..\Xamarin.Forms.Material.iOS\bin\$Configuration$\Xamarin.Forms.Material.iOS.*mdb" target="lib\Xamarin.iOS10" />
