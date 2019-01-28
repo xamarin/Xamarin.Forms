@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using CoreGraphics;
 using Foundation;
+using MaterialComponents;
 using UIKit;
 using Xamarin.Forms.Internals;
 using RectangleF = CoreGraphics.CGRect;
@@ -54,10 +55,6 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (!PageIsChildOfPlatform(sender))
 					return;
-
-				var pageRoot = sender;
-				while (!Application.IsApplicationOrNull(pageRoot.RealParent))
-					pageRoot = (Page)pageRoot.RealParent;
 
 				PresentActionSheet(arguments);
 			});
