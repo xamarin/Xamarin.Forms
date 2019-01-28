@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Linq;
 using Android.Content;
 using Android.Graphics;
 using Android.Graphics.Drawables;
@@ -34,17 +33,24 @@ namespace Xamarin.Forms.Platform.Android
 		bool _alignIconWithText;
 		bool _preserveInitialPadding;
 		bool _borderAdjustsPadding;
+		bool _maintainLegacyMeasurements;
+
+		public ButtonLayoutManager(IButtonLayoutRenderer renderer) : this(renderer, false, false, false, true)
+		{
+		}
 
 		public ButtonLayoutManager(IButtonLayoutRenderer renderer,
-			bool alignIconWithText = false,
-			bool preserveInitialPadding = true,
-			bool borderAdjustsPadding = false)
+			bool alignIconWithText,
+			bool preserveInitialPadding,
+			bool borderAdjustsPadding,
+			bool maintainLegacyMeasurements)
 		{
 			_renderer = renderer ?? throw new ArgumentNullException(nameof(renderer));
 			_renderer.ElementChanged += OnElementChanged;
 			_alignIconWithText = alignIconWithText;
 			_preserveInitialPadding = preserveInitialPadding;
 			_borderAdjustsPadding = borderAdjustsPadding;
+			_maintainLegacyMeasurements = maintainLegacyMeasurements;
 		}
 
 		AppCompatButton View => _renderer?.View;
@@ -81,7 +87,22 @@ namespace Xamarin.Forms.Platform.Android
 			if (view == null || view.Layout == null)
 				return;
 
-			if (TextViewCompat.GetCompoundDrawablesRelative(view)?.FirstOrDefault(d => d != null) is Drawable drawable)
+			Drawable drawable = null;
+			Drawable[] drawables = TextViewCompat.GetCompoundDrawablesRelative(view);
+			if(drawables != null)
+			{
+				foreach (var compoundDrawable in drawables)
+				{
+					if (compoundDrawable != null)
+					{
+						drawable = compoundDrawable;						
+						break;
+					}
+				}
+			}
+
+
+			if (drawable != null)
 			{
 				int iconWidth = drawable.IntrinsicWidth;
 				drawable.CopyBounds(_drawableBounds);
@@ -172,9 +193,6 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdatePadding()
 		{
-			if (_disposed || _renderer == null || _element == null)
-				return;
-
 			AppCompatButton view = View;
 			if (view == null)
 				return;
@@ -182,8 +200,14 @@ namespace Xamarin.Forms.Platform.Android
 			if (!_defaultPaddingPix.HasValue)
 				_defaultPaddingPix = new Thickness(view.PaddingLeft, view.PaddingTop, view.PaddingRight, view.PaddingBottom);
 
-			var padding = _element.Padding;
+			// Currently the Padding Bindable property uses a creator factory so once it is set it can't become unset
+			// I would say this is currently a bug but it's a bug that exists already in the code base.
+			// Having this comment and this code more accurately demonstrates behavior then
+			// having an else clause for when the PaddingProperty isn't set
+			if (_disposed || _renderer == null || _element == null || !_element.IsSet(Button.PaddingProperty))
+				return;
 
+			var padding = _element.Padding;
 			var adjustment = 0.0;
 			if (_borderAdjustsPadding && _element is IBorderElement borderElement && borderElement.IsBorderWidthSet() && borderElement.BorderWidth != borderElement.BorderWidthDefaultValue)
 				adjustment = borderElement.BorderWidth;
@@ -247,7 +271,10 @@ namespace Xamarin.Forms.Platform.Android
 				// to handle the vertical centering 
 				var layout = string.IsNullOrEmpty(_element.Text) ? _imageOnlyLayout : _element.ContentLayout;
 
-				view.CompoundDrawablePadding = (int)Context.ToPixels(layout.Spacing);
+				if(_maintainLegacyMeasurements)
+					view.CompoundDrawablePadding = (int)layout.Spacing;
+				else
+					view.CompoundDrawablePadding = (int)Context.ToPixels(layout.Spacing);
 
 				switch (layout.Position)
 				{

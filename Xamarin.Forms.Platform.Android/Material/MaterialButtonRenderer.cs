@@ -56,7 +56,8 @@ namespace Xamarin.Forms.Platform.Android.Material
 			_buttonLayoutManager = new ButtonLayoutManager(this,
 				alignIconWithText: true,
 				preserveInitialPadding: true,
-				borderAdjustsPadding: false);
+				borderAdjustsPadding: false,
+				maintainLegacyMeasurements: false);
 
 			SoundEffectsEnabled = false;
 			SetOnClickListener(this);
