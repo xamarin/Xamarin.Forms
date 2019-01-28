@@ -20,13 +20,12 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 					new RowDefinition { Height = 50 }
 				}
 			};
-
 			var itemsLayout =
-				new ListItemsLayout(orientation)
-				{
-					SnapPointsType = SnapPointsType.MandatorySingle,
-					SnapPointsAlignment = SnapPointsAlignment.Center
-				};
+			new ListItemsLayout(orientation)
+			{
+				SnapPointsType = SnapPointsType.MandatorySingle,
+				SnapPointsAlignment = SnapPointsAlignment.Center
+			};
 
 			var itemTemplate = ExampleTemplates.CarouselTemplate();
 
@@ -37,6 +36,10 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 				Position = 2
 			};
 
+			carouselView.Scrolled += (object sender, ScrolledDirectionEventArgs e) => {
+				System.Diagnostics.Debug.WriteLine($"Scrolling {e.Direction}, value : {e.NewValue}");
+			};
+
 			var indicatorsView = new IndicatorsView
 			{
 				//BackgroundColor = Color.Red,
@@ -45,7 +48,6 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 				//IndicatorsShape = IndicatorsShape.Square,
 				HorizontalOptions = LayoutOptions.Center,
 				VerticalOptions = LayoutOptions.Center,
-
 			};
 
 			IndicatorsView.SetItemsSourceBy(indicatorsView, carouselView);

@@ -21,6 +21,7 @@ namespace Xamarin.Forms.Platform.iOS
 			ItemsViewLayout = itemsViewLayout;
 			ItemsViewController = itemsViewController;
 		}
+		public CarouselViewController CarouselViewController { get; set; }
 
 		public override void DraggingStarted(UIScrollView scrollView)
 		{
@@ -157,6 +158,16 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			return GroupableItemsViewController.GetReferenceSizeForFooter(collectionView, layout, section);
+		}
+		
+		public override void Scrolled(UIScrollView scrollView)
+		{
+			CarouselViewController?.Scrolled(scrollView);
+		}
+
+		public override void DecelerationEnded(UIScrollView scrollView)
+		{
+			CarouselViewController?.DecelerationEnded(scrollView);
 		}
 	}
 }
