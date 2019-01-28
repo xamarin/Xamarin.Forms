@@ -197,6 +197,9 @@ namespace Xamarin.Forms.Platform.Android
 			if (view == null)
 				return;
 
+			if (_disposed || _renderer == null || _element == null)
+				return;
+
 			if (!_defaultPaddingPix.HasValue)
 				_defaultPaddingPix = new Thickness(view.PaddingLeft, view.PaddingTop, view.PaddingRight, view.PaddingBottom);
 
@@ -204,7 +207,7 @@ namespace Xamarin.Forms.Platform.Android
 			// I would say this is currently a bug but it's a bug that exists already in the code base.
 			// Having this comment and this code more accurately demonstrates behavior then
 			// having an else clause for when the PaddingProperty isn't set
-			if (_disposed || _renderer == null || _element == null || !_element.IsSet(Button.PaddingProperty))
+			if (!_element.IsSet(Button.PaddingProperty))
 				return;
 
 			var padding = _element.Padding;
