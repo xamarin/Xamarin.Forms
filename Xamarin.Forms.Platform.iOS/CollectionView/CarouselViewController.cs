@@ -12,7 +12,7 @@ namespace Xamarin.Forms.Platform.iOS
 		: base(itemsView, layout)
 		{
 			_carouselView = itemsView;
-			Delegator.ItemsViewController = this;
+			Delegator.CarouselViewController = this;
 		}
 
 		public override void DecelerationEnded(UIScrollView scrollView)
@@ -25,8 +25,9 @@ namespace Xamarin.Forms.Platform.iOS
 			var context = formsCell?.VisualElementRenderer?.Element?.BindingContext;
 
 			if (context == null)
-				throw new InvalidOperationException("Visible item not foud");
-			_carouselView.SelectedItem = context;
+				throw new InvalidOperationException("Visible item not found");
+
+			_carouselView.SetCurrentItem(context);
 		}
 
 		public override void Scrolled(UIScrollView scrollView)

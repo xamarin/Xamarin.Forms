@@ -125,7 +125,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateFormsSelection(adapterPosition);
 		}
 
-		internal void UpdateFormsSelection(int adapterPosition)
+		void UpdateFormsSelection(int adapterPosition)
 		{
 			var mode = SelectableItemsView.SelectionMode;
 

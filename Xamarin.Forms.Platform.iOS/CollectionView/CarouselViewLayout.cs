@@ -7,7 +7,7 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		public CarouselViewLayout(ListItemsLayout itemsLayout) : base(itemsLayout)
 		{
-			UniformSize = true;
+			
 		}
 
 		public override void ConstrainTo(CGSize size)

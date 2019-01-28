@@ -31,10 +31,11 @@ namespace Xamarin.Forms
 	public interface ICarouselViewController : IViewController
 	{
 		void SendScrolled(double value, ScrollDirection direction);
+		void SetCurrentItem(object item);
 	}
 
 	[RenderWith(typeof(_CarouselViewRenderer))]
-	public class CarouselView : SelectableItemsView, ICarouselViewController
+	public class CarouselView : ItemsView, ICarouselViewController
 	{
 		public static readonly BindableProperty IsSwipeEnabledProperty = BindableProperty.Create(nameof(IsSwipeEnabled), typeof(bool), typeof(CarouselView), true);
 
@@ -60,6 +61,65 @@ namespace Xamarin.Forms
 		{
 			get { return (bool)GetValue(AnimateTransitionProperty); }
 			set { SetValue(AnimateTransitionProperty, value); }
+		}
+
+		public static readonly BindableProperty CurrentItemProperty =
+		BindableProperty.Create(nameof(CurrentItem), typeof(object), typeof(CarouselView), default(object), 
+			propertyChanged: CurrentItemPropertyChanged);
+
+		public static readonly BindableProperty CurrentItemChangedCommandProperty =
+			BindableProperty.Create(nameof(CurrentItemChangedCommand), typeof(ICommand), typeof(CarouselView));
+
+		public static readonly BindableProperty CurrentItemChangedCommandParameterProperty =
+			BindableProperty.Create(nameof(CurrentItemChangedCommandParameter), typeof(object), typeof(CarouselView));
+
+		public object CurrentItem
+		{
+			get => GetValue(CurrentItemProperty);
+			set => SetValue(CurrentItemProperty, value);
+		}
+
+		public ICommand CurrentItemChangedCommand
+		{
+			get => (ICommand)GetValue(CurrentItemChangedCommandProperty);
+			set => SetValue(CurrentItemChangedCommandProperty, value);
+		}
+
+		public object CurrentItemChangedCommandParameter
+		{
+			get => GetValue(CurrentItemChangedCommandParameterProperty);
+			set => SetValue(CurrentItemChangedCommandParameterProperty, value);
+		}
+
+		public event EventHandler<CurrentItemChangedEventArgs> CurrentItemChanged;
+
+		static void CurrentItemPropertyChanged(BindableObject bindable, object oldValue, object newValue)
+		{
+			var carouselView = (CarouselView)bindable;
+
+			var args = new CurrentItemChangedEventArgs(oldValue,newValue);
+
+			var command = carouselView.CurrentItemChangedCommand;
+
+			if (command != null)
+			{
+				var commandParameter = carouselView.CurrentItemChangedCommandParameter;
+
+				if (command.CanExecute(commandParameter))
+				{
+					command.Execute(commandParameter);
+				}
+			}
+
+			carouselView.SetValueCore(PositionProperty, GetPositionForItem(carouselView, newValue));
+
+			carouselView.CurrentItemChanged?.Invoke(carouselView, args);
+
+			carouselView.OnCurrentItemChanged(args);
+		}
+
+		protected virtual void OnCurrentItemChanged(EventArgs args)
+		{
 		}
 
 		public static readonly BindableProperty PositionProperty =
@@ -131,21 +191,21 @@ namespace Xamarin.Forms
 				SnapPointsType = SnapPointsType.MandatorySingle,
 				SnapPointsAlignment = SnapPointsAlignment.Center
 			};
-			SelectionMode = SelectionMode.Single;
 		}
 
 		protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
 		{
-			if (propertyName.Equals(SelectableItemsView.SelectedItemProperty.PropertyName))
+			if (propertyName.Equals(CarouselView.CurrentItemProperty.PropertyName))
 			{
-				SetValueCore(PositionProperty, GetPositionForItem(SelectedItem));
+
 			}
 			base.OnPropertyChanged(propertyName);
 		}
 
-		int GetPositionForItem(object item)
+		static int GetPositionForItem(CarouselView carouselView, object item)
 		{
-			var itemSource = ItemsSource as IList;
+			var itemSource = carouselView.ItemsSource as IList;
+
 			for (int n = 0; n < itemSource.Count; n++)
 			{
 				if (itemSource[n] == item)
@@ -159,6 +219,11 @@ namespace Xamarin.Forms
 		public void SendScrolled(double value, ScrollDirection direction)
 		{
 			Scrolled?.Invoke(this, new ScrolledDirectionEventArgs(direction, value));
+		}
+
+		public void SetCurrentItem(object item)
+		{
+			CurrentItem = item;
 		}
 	}
 }

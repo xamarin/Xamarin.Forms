@@ -4,6 +4,8 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class CarouselViewRenderer : ItemsViewRenderer
 	{
+		CarouselView CarouselView => (CarouselView)Element;
+
 		CarouselViewController CarouselViewController => (CarouselViewController)ItemsViewController;
 
 		protected override ItemsViewController CreateController(ItemsView newElement, ItemsViewLayout layout)
@@ -25,34 +27,6 @@ namespace Xamarin.Forms.Platform.iOS
 
 			// Fall back to horizontal carousel
 			return new CarouselViewLayout(new ListItemsLayout(ItemsLayoutOrientation.Horizontal));
-		}
-
-		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs changedProperty)
-		{
-			base.OnElementPropertyChanged(sender, changedProperty);
-
-			if (changedProperty.Is(CarouselView.SelectedItemProperty))
-			{
-				UpdateNativeSelection();
-			}
-		}
-
-		void UpdateNativeSelection()
-		{
-			var selectedItem = (Element as CarouselView).SelectedItem;
-
-			if (selectedItem == null)
-			{
-				//if we set to null just do nothing
-				return;
-			}
-
-			MarkItemSelected(selectedItem);
-		}
-
-		void MarkItemSelected(object selectedItem)
-		{
-
 		}
 	}
 }

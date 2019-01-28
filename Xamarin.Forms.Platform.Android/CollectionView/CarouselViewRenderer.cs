@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel;
 using Android.Content;
 using Android.Support.V7.Widget;
@@ -5,29 +6,39 @@ using Android.Views;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class CarouselViewRenderer : SelectableItemsViewRenderer
+	public class CarouselViewRenderer : ItemsViewRenderer
 	{
 		//should this move to ItemsViewREnderer and be shared ?
 		class ScrollListener : global::Android.Support.V7.Widget.RecyclerView.OnScrollListener
 		{
 			CarouselViewRenderer _renderer;
 			int _oldPosition;
+			int _initialPosition;
+			bool _scrollingToInitialPosition = true;
 
-			public ScrollListener(CarouselViewRenderer renderer)
+			public ScrollListener(CarouselViewRenderer renderer, int initialPosition)
 			{
 				_renderer = renderer;
+				_initialPosition = initialPosition;
 			}
 
 			public override void OnScrolled(global::Android.Support.V7.Widget.RecyclerView recyclerView, int dx, int dy)
 			{
+				base.OnScrolled(recyclerView, dx, dy);
 				var layoutManager = (recyclerView.GetLayoutManager() as LinearLayoutManager);
 				var adapterPosition = layoutManager.FindFirstVisibleItemPosition();
+				System.Diagnostics.Debug.WriteLine(adapterPosition);
+				if (_scrollingToInitialPosition)
+				{
+					_scrollingToInitialPosition = !(_initialPosition == adapterPosition);
+					return;
+				}
+
 				if (_oldPosition != adapterPosition)
 				{
 					_oldPosition = adapterPosition;
 					_renderer.UpdatePosition(adapterPosition);
 				}
-				base.OnScrolled(recyclerView, dx, dy);
 			}
 		}
 
@@ -36,12 +47,12 @@ namespace Xamarin.Forms.Platform.Android
 		ScrollListener _scrollListener;
 		protected CarouselView Carousel;
 		bool _isSwipeEnabled;
+		bool _isUpdatingPositionFromForms;
 
 		public CarouselViewRenderer(Context context) : base(context)
 		{
 			_context = context;
-			_scrollListener = new ScrollListener(this);
-			AddOnScrollListener(_scrollListener);
+
 		}
 
 		protected override void Dispose(bool disposing)
@@ -71,17 +82,16 @@ namespace Xamarin.Forms.Platform.Android
 
 			UpdateSpacing();
 			UpdateIsSwipeEnabled();
-
+			_isUpdatingPositionFromForms = true;
 			//Goto to the Correct Position
 			Carousel.ScrollTo(Carousel.Position);
+			_isUpdatingPositionFromForms = false;
+			_scrollListener = new ScrollListener(this, Carousel.Position);
+			AddOnScrollListener(_scrollListener);
 		}
 
 		protected override void UpdateItemsSource()
 		{
-			if (SelectableItemsView == null)
-			{
-				return;
-			}
 
 			// By default the CollectionViewAdapter creates the items at whatever size the template calls for
 			// But for the Carousel, we want it to create the items to fit the width/height of the viewport
@@ -116,9 +126,14 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdatePosition(int position)
 		{
-			if (position == -1)
+			if (position == -1 || _isUpdatingPositionFromForms)
 				return;
-			(ItemsViewAdapter as SelectableItemsViewAdapter)?.UpdateFormsSelection(position);
+
+			var context = ItemsViewAdapter?.ItemsSource[position];
+			if (context == null)
+				throw new InvalidOperationException("Visible item not found");
+
+			Carousel.SetCurrentItem(context);
 		}
 
 		void UpdateSpacing()
