@@ -17,7 +17,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 					new RowDefinition { Height = GridLength.Auto },
 					new RowDefinition { Height = GridLength.Auto },
 					new RowDefinition { Height = GridLength.Star },
-					new RowDefinition { Height = 50 }
+					new RowDefinition { Height = 100 }
 				}
 			};
 			var itemsLayout =
@@ -33,12 +33,13 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			{
 				ItemsLayout = itemsLayout,
 				ItemTemplate = itemTemplate,
-				Position = 2
+				Position = 2,
+				NumberOfVisibleItems = 3,
+				ItemSpacing = 10
+
 			};
 
-			carouselView.Scrolled += (object sender, ScrolledDirectionEventArgs e) => {
-				System.Diagnostics.Debug.WriteLine($"Scrolling {e.Direction}, value : {e.NewValue}");
-			};
+			layout.Children.Add(carouselView);
 
 			var indicatorsView = new IndicatorsView
 			{
@@ -47,8 +48,11 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 				//SelectedIndicatorTintColor = Color.Yellow,
 				//IndicatorsShape = IndicatorsShape.Square,
 				HorizontalOptions = LayoutOptions.Center,
-				VerticalOptions = LayoutOptions.Center,
+				VerticalOptions = LayoutOptions.Start,
+				HeightRequest = 30,
+				InputTransparent = true
 			};
+			StackLayout stacklayoutInfo = GetReadOnlyInfo(carouselView);
 
 			IndicatorsView.SetItemsSourceBy(indicatorsView, carouselView);
 
@@ -61,15 +65,48 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			var positionControl = new PositionControl(carouselView, nItems);
 			layout.Children.Add(positionControl);
 
-			layout.Children.Add(carouselView);
+			layout.Children.Add(stacklayoutInfo);
 
 			Grid.SetRow(positionControl, 1);
 			Grid.SetRow(carouselView, 3);
-			Grid.SetRow(indicatorsView, 4);
+			Grid.SetRow(indicatorsView, 3);
+			Grid.SetRow(stacklayoutInfo, 4);
 
 			Content = layout;
 
 			generator.GenerateItems();
+		}
+
+		static StackLayout GetReadOnlyInfo(CarouselView carouselView)
+		{
+			var stacklayoutInfo = new StackLayout
+			{
+				Orientation = StackOrientation.Horizontal,
+				BindingContext = carouselView
+			};
+
+			var labelScrolling = new Label { Text = nameof(carouselView.IsScrolling) };
+			var switchScrolling = new Switch { IsEnabled = false };
+			switchScrolling.SetBinding(Switch.IsToggledProperty, nameof(carouselView.IsScrolling));
+
+			var labelDragging = new Label { Text = nameof(carouselView.IsDragging) };
+			var switchDragging = new Switch();
+			switchDragging.SetBinding(Switch.IsToggledProperty, nameof(carouselView.IsDragging));
+
+			var labelScrolled = new Label { Text = nameof(carouselView.Scrolled) };
+
+
+			carouselView.Scrolled += (object sender, ScrolledDirectionEventArgs e) =>
+			{
+				labelScrolled.Text = $"{nameof(carouselView.Scrolled)}:{e.Direction} value:{e.NewValue.ToString("F")}";
+			};
+
+
+			stacklayoutInfo.Children.Add(labelScrolling);
+			stacklayoutInfo.Children.Add(switchScrolling);
+			stacklayoutInfo.Children.Add(labelDragging);
+			stacklayoutInfo.Children.Add(switchDragging);
+			return new StackLayout { Children = { stacklayoutInfo, labelScrolled } };
 		}
 
 		internal class PositionControl : ContentView
@@ -80,9 +117,9 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 				var animateSwitch = new Switch { BindingContext = carousel };
 				animateSwitch.SetBinding(Switch.IsToggledProperty, nameof(carousel.AnimateTransition), BindingMode.TwoWay);
 
-				var swypeLabel = new Label { Text = "Swype: ", VerticalTextAlignment = TextAlignment.Center };
-				var swypeSwitch = new Switch { BindingContext = carousel };
-				swypeSwitch.SetBinding(Switch.IsToggledProperty, nameof(carousel.IsSwipeEnabled), BindingMode.TwoWay);
+				var swipeLabel = new Label { Text = "Swipe: ", VerticalTextAlignment = TextAlignment.Center };
+				var swipeSwitch = new Switch { BindingContext = carousel };
+				swipeSwitch.SetBinding(Switch.IsToggledProperty, nameof(carousel.IsSwipeEnabled), BindingMode.TwoWay);
 
 				var slider = new Slider
 				{
@@ -126,7 +163,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 				var stacklayout = new StackLayout
 				{
 					Orientation = StackOrientation.Horizontal,
-					Children = { animateLabel, animateSwitch, swypeLabel, swypeSwitch }
+					Children = { animateLabel, animateSwitch, swipeLabel, swipeSwitch }
 				};
 
 				layout.Children.Add(stacklayout);

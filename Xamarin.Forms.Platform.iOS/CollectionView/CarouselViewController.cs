@@ -1,23 +1,53 @@
 ﻿using System;
 using System.Linq;
+using Foundation;
 using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS
 {
 	public class CarouselViewController : ItemsViewController
 	{
+		ICarouselViewController CarouselController => _carouselView as ICarouselViewController;
 		CarouselView _carouselView;
 		ItemsViewLayout _layout;
 		nfloat _previousOffSetX;
 		nfloat _previousOffSetY;
-		public CarouselViewController(CarouselView itemsView, ItemsViewLayout layout)
-		: base(itemsView, layout)
+
+		public CarouselViewController(CarouselView itemsView, ItemsViewLayout layout) : base(itemsView, layout)
 		{
 			_carouselView = itemsView;
+			_carouselView.ScrollToRequested += ScrollToRequested;
 			_layout = layout;
 			Delegator.CarouselViewController = this;
 		}
 
+		internal void TeardDown()
+		{
+			_carouselView.ScrollToRequested -= ScrollToRequested;
+		}
+
+		public override void DecelerationStarted(UIScrollView scrollView)
+		{
+
+		}
+
+		public override void DraggingStarted(UIScrollView scrollView)
+		{
+			CarouselController.SetIsDragging(true);
+		}
+
+		public override void DraggingEnded(UIScrollView scrollView, bool willDecelerate)
+		{
+			CarouselController.SetIsDragging(false);
+		}
+
+		public override void ScrollAnimationEnded(UIScrollView scrollView)
+		{
+			CarouselController.SetIsScrolling(false);
+		}
+
+		object _currentItem;
+		NSIndexPath _currentItemIdex;
 		public override void DecelerationEnded(UIScrollView scrollView)
 		{
 			//TODO: Handle default cell 
@@ -25,8 +55,11 @@ namespace Xamarin.Forms.Platform.iOS
 
 			var context = formsCell?.VisualElementRenderer?.Element?.BindingContext;
 
+			_currentItem = context;
+
+			_currentItemIdex = GetIndexForItem(_currentItem);
 			if (context != null)
-				_carouselView.SetCurrentItem(context);
+				CarouselController.SetCurrentItem(context);
 
 		}
 
@@ -37,12 +70,21 @@ namespace Xamarin.Forms.Platform.iOS
 			var newOffSetY = scrollView.ContentOffset.Y;
 			//TODO: rmarinho Handle RTL
 			if (_layout.ScrollDirection == UICollectionViewScrollDirection.Horizontal)
-				_carouselView.SendScrolled(scrollView.ContentOffset.X, (_previousOffSetX > newOffSetX) ? ScrollDirection.Left : ScrollDirection.Right);
+				CarouselController.SendScrolled(scrollView.ContentOffset.X, (_previousOffSetX > newOffSetX) ? ScrollDirection.Left : ScrollDirection.Right);
 			else
-				_carouselView.SendScrolled(scrollView.ContentOffset.Y, (_previousOffSetY > newOffSetY) ? ScrollDirection.Up : ScrollDirection.Down);
+				CarouselController.SendScrolled(scrollView.ContentOffset.Y, (_previousOffSetY > newOffSetY) ? ScrollDirection.Up : ScrollDirection.Down);
 
 			_previousOffSetX = newOffSetX;
 			_previousOffSetY = newOffSetY;
+		}
+
+
+		void ScrollToRequested(object sender, ScrollToRequestEventArgs e)
+		{
+			//We are ending dragging and position is being update
+			if (e.Item == _currentItem || e.Index == _currentItemIdex.Row)
+				return;
+			CarouselController.SetIsScrolling(true);
 		}
 
 		TemplatedCell FindCenteredCell()

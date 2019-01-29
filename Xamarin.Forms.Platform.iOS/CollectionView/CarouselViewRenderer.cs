@@ -37,7 +37,14 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			base.SetUpNewElement(newElement);
+
 			UpdateInitialPosition();
+		}
+
+		protected override void TearDownOldElement(ItemsView oldElement)
+		{
+			CarouselViewController?.TeardDown();
+			base.TearDownOldElement(oldElement);
 		}
 
 		void UpdateInitialPosition()
