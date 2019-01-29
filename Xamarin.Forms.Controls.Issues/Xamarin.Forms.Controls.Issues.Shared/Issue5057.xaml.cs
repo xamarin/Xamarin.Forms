@@ -38,4 +38,5 @@ namespace Xamarin.Forms.Controls.Issues
 			BackgroundImage = null;
 		}
 	}
+#endif
 }
