@@ -1,4 +1,3 @@
-
 using System;
 using System.ComponentModel;
 using System.Threading.Tasks;
@@ -227,6 +226,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 				if (_masterLayout != null)
 				{
+					if (_masterLayout.ChildView != null)
+						_masterLayout.ChildView.PropertyChanged -= HandleMasterPropertyChanged;
+
 					RemoveView(_masterLayout);
 					_masterLayout.Dispose();
 					_masterLayout = null;
@@ -387,16 +389,14 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			if (_detailLayout.ChildView == null)
 				Update();
 			else
-				new Handler(Looper.MainLooper).Post(() =>
-				{
-					if (_detailLayout == null || _detailLayout.IsDisposed())
-						return;
-
-					Update();
-				});
+				// Queue up disposal of the previous renderers after the current layout updates have finished
+				new Handler(Looper.MainLooper).Post(Update);
 
 			void Update()
 			{
+				if (_detailLayout == null || _detailLayout.IsDisposed())
+					return;
+
 				Context.HideKeyboard(this);
 				_detailLayout.ChildView = Element.Detail;
 			}
@@ -421,16 +421,14 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			if (_masterLayout.ChildView == null)
 				Update();
 			else
-				new Handler(Looper.MainLooper).Post(() =>
-				{
-					if (_masterLayout == null || _masterLayout.IsDisposed())
-						return;
-
-					Update();
-				});
+				// Queue up disposal of the previous renderers after the current layout updates have finished
+				new Handler(Looper.MainLooper).Post(Update);
 
 			void Update()
 			{
+				if (_masterLayout == null || _masterLayout.IsDisposed())
+					return;
+
 				if (_masterLayout.ChildView != null)
 					_masterLayout.ChildView.PropertyChanged -= HandleMasterPropertyChanged;
 

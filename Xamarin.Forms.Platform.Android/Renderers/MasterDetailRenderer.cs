@@ -208,6 +208,9 @@ namespace Xamarin.Forms.Platform.Android
 
 				if (_masterLayout != null)
 				{
+					if (_masterLayout.ChildView != null)
+						_masterLayout.ChildView.PropertyChanged -= HandleMasterPropertyChanged;
+
 					_masterLayout.Dispose();
 					_masterLayout = null;
 				}
@@ -360,16 +363,13 @@ namespace Xamarin.Forms.Platform.Android
 				Update();
 			else
 				// Queue up disposal of the previous renderers after the current layout updates have finished
-				new Handler(Looper.MainLooper).Post(() =>
-				{
-					if (_detailLayout == null || _detailLayout.IsDisposed())
-						return;
-
-					Update();
-				});
+				new Handler(Looper.MainLooper).Post(Update);
 
 			void Update()
 			{
+				if (_detailLayout == null || _detailLayout.IsDisposed())
+					return;
+
 				Context.HideKeyboard(this);
 				_detailLayout.ChildView = _page.Detail;
 			}
@@ -389,24 +389,20 @@ namespace Xamarin.Forms.Platform.Android
 				Update();
 			else
 				// Queue up disposal of the previous renderers after the current layout updates have finished
-				new Handler(Looper.MainLooper).Post(() =>
-				{
-					if (_masterLayout == null || _masterLayout.IsDisposed())
-						return;
-
-					Update();
-				});
+				new Handler(Looper.MainLooper).Post(Update);
 
 			void Update()
 			{
-				if (_masterLayout?.ChildView != null)
+				if (_masterLayout == null || _masterLayout.IsDisposed())
+					return;
+
+				if (_masterLayout.ChildView != null)
 					_masterLayout.ChildView.PropertyChanged -= HandleMasterPropertyChanged;
 
-				if (_masterLayout != null)
-					_masterLayout.ChildView = _page.Master;
+				_masterLayout.ChildView = _page.Master;
 
-				if (_page.Master != null)
-					_page.Master.PropertyChanged += HandleMasterPropertyChanged;
+				if (_masterLayout.ChildView != null)
+					_masterLayout.ChildView.PropertyChanged += HandleMasterPropertyChanged;
 			}
 		}
 
