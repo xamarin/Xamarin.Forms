@@ -8,12 +8,6 @@ namespace Xamarin.Forms.Controls
 		{
 		}
 
-
-		public EntryCoreGalleryPage(IVisual visual)
-		{
-			Visual = visual;
-		}
-
 		protected override bool SupportsTapGestureRecognizer
 		{
 			get { return false; }
