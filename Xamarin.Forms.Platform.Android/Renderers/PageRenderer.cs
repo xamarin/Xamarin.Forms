@@ -62,8 +62,7 @@ namespace Xamarin.Forms.Platform.Android
 				Id = Platform.GenerateViewId();
 			}
 
-			UpdateBackgroundColor(view);
-			UpdateBackgroundImage(view);
+			UpdateBackground();
 
 			Clickable = true;
 		}
@@ -72,9 +71,9 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.OnElementPropertyChanged(sender, e);
 			if (e.PropertyName == Page.BackgroundImageProperty.PropertyName)
-				UpdateBackgroundImage(Element);
+				UpdateBackground();
 			else if (e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
-				UpdateBackgroundColor(Element);
+				UpdateBackground();
 			else if (e.PropertyName == VisualElement.HeightProperty.PropertyName)
 				UpdateHeight();
 		}
@@ -105,24 +104,27 @@ namespace Xamarin.Forms.Platform.Android
 			_previousHeight = newHeight;
 		}
 
-		void UpdateBackgroundColor(Page view)
+		void UpdateBackground()
 		{
-			if (view.Parent is BaseShellItem)
-			{
-				var background = view.BackgroundColor;
-				var color = Context.Resources.GetColor(global::Android.Resource.Color.BackgroundLight, Context.Theme);
-				SetBackgroundColor(background.IsDefault ? color : background.ToAndroid());
-			}
-			else if (view.BackgroundColor != Color.Default)
-				SetBackgroundColor(view.BackgroundColor.ToAndroid());
+			string bkgndImage = Element.BackgroundImage;
+			if (!string.IsNullOrEmpty(bkgndImage))
+				this.SetBackground(Context.GetDrawable(bkgndImage));
+			else
+				UpdatePageBackgroundColor();
 		}
 
-		void UpdateBackgroundImage(Page view)
+		void UpdatePageBackgroundColor()
 		{
-			if (!string.IsNullOrEmpty(view.BackgroundImage))
-				this.SetBackground(Context.GetDrawable(view.BackgroundImage));
+			if (Element.Parent is BaseShellItem)
+			{
+				Color background = Element.BackgroundColor;
+				if (background.IsDefault)
+					base.UpdateBackgroundColor();
+				else
+					SetBackgroundColor(Context.Resources.GetColor(global::Android.Resource.Color.BackgroundLight, Context.Theme));
+			}
 			else
-				this.SetBackground(null);
+				base.UpdateBackgroundColor();
 		}
 	}
 }
