@@ -27,7 +27,6 @@ namespace Xamarin.Forms.Platform.Android
 				base.OnScrolled(recyclerView, dx, dy);
 				var layoutManager = (recyclerView.GetLayoutManager() as LinearLayoutManager);
 				var adapterPosition = layoutManager.FindFirstVisibleItemPosition();
-				System.Diagnostics.Debug.WriteLine(adapterPosition);
 				if (_scrollingToInitialPosition)
 				{
 					_scrollingToInitialPosition = !(_initialPosition == adapterPosition);

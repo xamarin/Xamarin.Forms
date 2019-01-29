@@ -37,7 +37,34 @@ namespace Xamarin.Forms
 	[RenderWith(typeof(_CarouselViewRenderer))]
 	public class CarouselView : ItemsView, ICarouselViewController
 	{
-		public static readonly BindableProperty IsSwipeEnabledProperty = BindableProperty.Create(nameof(IsSwipeEnabled), typeof(bool), typeof(CarouselView), true);
+		public static readonly BindableProperty IsDraggingProperty = BindableProperty.Create(nameof(IsDragging), typeof(bool), typeof(CarouselView), false);
+
+		public bool IsDragging
+		{
+			get { return (bool)GetValue(IsDraggingProperty); }
+			set { SetValue(IsDraggingProperty, value); }
+		}
+
+		public static readonly BindableProperty IsBounceEnabledProperty = 
+			BindableProperty.Create(nameof(IsBounceEnabled), typeof(bool), typeof(CarouselView), true);
+
+		public bool IsBounceEnabled
+		{
+			get { return (bool)GetValue(IsBounceEnabledProperty); }
+			set { SetValue(IsBounceEnabledProperty, value); }
+		}
+
+		public static readonly BindableProperty NumberOfVisibleItemsProperty = 
+			BindableProperty.Create(nameof(NumberOfVisibleItems), typeof(int), typeof(CarouselView), 1);
+
+		public int NumberOfVisibleItems
+		{
+			get { return (int)GetValue(NumberOfVisibleItemsProperty); }
+			set { SetValue(NumberOfVisibleItemsProperty, value); }
+		}
+
+		public static readonly BindableProperty IsSwipeEnabledProperty = 
+			BindableProperty.Create(nameof(IsSwipeEnabled), typeof(bool), typeof(CarouselView), true);
 
 		public bool IsSwipeEnabled
 		{
@@ -155,7 +182,7 @@ namespace Xamarin.Forms
 
 		protected virtual void OnPositionChanged(PositionChangedEventArgs args)
 		{
-			ScrollTo(args.CurrentPosition, animate: AnimateTransition);
+			ScrollTo(args.CurrentPosition, -1, ScrollToPosition.Center, animate: AnimateTransition);
 		}
 
 		static void PositionPropertyChanged(BindableObject bindable, object oldValue, object newValue)
@@ -188,9 +215,11 @@ namespace Xamarin.Forms
 			CollectionView.VerifyCollectionViewFlagEnabled(constructorHint: nameof(CarouselView));
 			ItemsLayout = new ListItemsLayout(ItemsLayoutOrientation.Horizontal)
 			{
+				
 				SnapPointsType = SnapPointsType.MandatorySingle,
 				SnapPointsAlignment = SnapPointsAlignment.Center
 			};
+
 		}
 
 		protected override void OnPropertyChanged([CallerMemberName] string propertyName = null)
