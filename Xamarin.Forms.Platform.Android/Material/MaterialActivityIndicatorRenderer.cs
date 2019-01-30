@@ -178,7 +178,8 @@ namespace Xamarin.Forms.Platform.Android.Material
 		}
 
 		void IVisualElementRenderer.SetElement(VisualElement element) =>
-			Element = (element as ActivityIndicator) ?? throw new ArgumentException($"{nameof(element)} must be of type {typeof(ActivityIndicator).Name}.");
+			Element = (element as ActivityIndicator) ??
+				throw new ArgumentException($"{element?.GetType().FullName} is not compatible. {nameof(element)} must be of type {nameof(ActivityIndicator)}.");
 
 		void IVisualElementRenderer.SetLabelFor(int? id)
 		{

@@ -400,7 +400,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <AndroidResource Include="Resources\drawable\MaterialActivityIndicatorBackgroud.xml">
+    <AndroidResource Include="Resources\drawable\MaterialActivityIndicatorBackground.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
   </ItemGroup>
