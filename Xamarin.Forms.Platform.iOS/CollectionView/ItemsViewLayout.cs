@@ -122,7 +122,7 @@ namespace Xamarin.Forms.Platform.iOS
 			return shouldInvalidate;
 		}
 
-		protected internal void DetermineCellSize()
+		protected void DetermineCellSize()
 		{
 			if (GetPrototype == null)
 			{
