@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using CoreAnimation;
+using CoreGraphics;
 using MaterialComponents;
 using UIKit;
 using Xamarin.Forms;
@@ -14,6 +15,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		SemanticColorScheme _colorScheme;
 
 		CAShapeLayer _backgroundLayer;
+		CGPoint _center;
 
 		public MaterialActivityIndicatorRenderer()
 		{
@@ -74,6 +76,12 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		public override void LayoutSubviews()
 		{
 			base.LayoutSubviews();
+
+			if (_center != Control.Center)
+			{
+				_center = Control.Center;
+				_backgroundLayer.Path = UIBezierPath.FromArc(_center, Control.Radius - 2, 0, 360, true).CGPath;
+			}
 			SetBackgroundColor(Element.BackgroundColor);
 		}
 
@@ -98,10 +106,9 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 		protected override void SetBackgroundColor(Color color)
 		{
-			if (Control == null || _backgroundLayer == null)
+			if (_backgroundLayer == null)
 				return;
 
-			_backgroundLayer.Path = UIBezierPath.FromArc(Control.Center, Control.Radius - Control.StrokeWidth / 2, 0, 360, true).CGPath;
 			_backgroundLayer.Hidden = color.IsDefault;
 			_backgroundLayer.StrokeColor = color.ToCGColor();
 		}
