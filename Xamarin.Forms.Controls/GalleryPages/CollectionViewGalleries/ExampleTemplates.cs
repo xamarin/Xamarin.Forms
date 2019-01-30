@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 
 namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 {
@@ -225,29 +226,68 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 
 		public static DataTemplate VariableSizeTemplate()
 		{
-			var height1 = 50;
-			var width1 = 100;
-
-			var height2 = 150;
-			var width2 = 300;
-
-			var index = 0;
+			var indexHeightConverter = new IndexRequestConverter(3, 50, 150);
+			var indexWidthConverter = new IndexRequestConverter(3, 100, 300);
+			var colorConverter = new IndexColorConverter();
 
 			return new DataTemplate(() =>
 			{
+				var layout = new Frame();
+
+				layout.SetBinding(VisualElement.HeightRequestProperty, new Binding("Index", converter: indexHeightConverter));
+				layout.SetBinding(VisualElement.WidthRequestProperty, new Binding("Index", converter: indexWidthConverter));
+				layout.SetBinding(VisualElement.BackgroundColorProperty, new Binding("Index", converter: colorConverter));
+
 				var image = new Image
 				{
-					HeightRequest = index == 0 ? height1 : height2,
-					WidthRequest = index == 0 ? width1 : width2,
 					Aspect = Aspect.AspectFit
 				};
 
+				image.SetBinding(VisualElement.HeightRequestProperty, new Binding("Index", converter: indexHeightConverter));
+				image.SetBinding(VisualElement.WidthRequestProperty, new Binding("Index", converter: indexWidthConverter));
+
 				image.SetBinding(Image.SourceProperty, new Binding("Image"));
 
-				index += 1;
+				layout.Content = image;
 
-				return image;
+				return layout;
 			});
+		}
+
+		private class IndexRequestConverter : IValueConverter
+		{
+			private readonly int _cutoff;
+			private readonly int _lowValue;
+			private readonly int _highValue;
+
+			public IndexRequestConverter(int cutoff, int lowValue, int highValue)
+			{
+				_cutoff = cutoff;
+				_lowValue = lowValue;
+				_highValue = highValue;
+			}
+
+			public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+			{
+				var index = (int)value;
+
+				return index < _cutoff ? _lowValue : (object)_highValue;
+			}
+
+			public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
+		}
+
+		private class IndexColorConverter : IValueConverter
+		{
+			Color[] _colors = new Color[] { Color.Red, Color.Green, Color.Blue, Color.Orange, Color.BlanchedAlmond };
+
+			public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+			{
+				var index = (int)value;
+				return _colors[index % _colors.Length];
+			}
+
+			public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
 		}
 	}
 }
