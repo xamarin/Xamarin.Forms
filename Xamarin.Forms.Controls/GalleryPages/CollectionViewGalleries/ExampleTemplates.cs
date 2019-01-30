@@ -1,4 +1,6 @@
-﻿namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
+﻿using System;
+
+namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 {
 	internal class ExampleTemplates
 	{
@@ -218,6 +220,33 @@
 				Grid.SetRow(caption, 1);
 
 				return templateLayout;
+			});
+		}
+
+		public static DataTemplate VariableSizeTemplate()
+		{
+			var height1 = 50;
+			var width1 = 100;
+
+			var height2 = 150;
+			var width2 = 300;
+
+			var index = 0;
+
+			return new DataTemplate(() =>
+			{
+				var image = new Image
+				{
+					HeightRequest = index == 0 ? height1 : height2,
+					WidthRequest = index == 0 ? width1 : width2,
+					Aspect = Aspect.AspectFit
+				};
+
+				image.SetBinding(Image.SourceProperty, new Binding("Image"));
+
+				index += 1;
+
+				return image;
 			});
 		}
 	}
