@@ -303,7 +303,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		}
 
 		[Test]
-		public void InstantiateWithDefaultConstructorThrows()
+		public void CanReplaceTypeWhenDefaultConstructorThrows()
 		{
 			var xaml = @"
 				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
@@ -316,7 +316,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		}
 
 		[Test]
-		public void InstantiateWithFactoryMethodThrows()
+		public void CanReplaceTypeWhenFactoryMethodThrows()
 		{
 			var xaml = @"
 				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
@@ -329,7 +329,7 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		}
 
 		[Test]
-		public void InstantiateWithNonDefaultConstructorThrows()
+		public void CanReplaceTypeWhenNonDefaultConstructorThrows()
 		{
 			var xaml = @"
 				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
@@ -340,6 +340,19 @@ namespace Xamarin.Forms.Xaml.UnitTests
 							<x:Int32>1</x:Int32>
 						</x:Arguments>
 					</local:InstantiateThrows>
+				</ContentPage>";
+
+			Assert.DoesNotThrow(() => XamlLoader.Create(xaml, true));
+		}
+
+		[Test]
+		public void CanIgnoreSettingPropertyThatThrows()
+		{
+			var xaml = @"
+				<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+					xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
+					xmlns:local=""clr-namespace:Xamarin.Forms.Xaml.UnitTests;assembly=Xamarin.Forms.Xaml.UnitTests"">
+					<local:SettingPropertyThrows TestValue=""Test"" />
 				</ContentPage>";
 
 			Assert.DoesNotThrow(() => XamlLoader.Create(xaml, true));
@@ -528,6 +541,16 @@ namespace Xamarin.Forms.Xaml.UnitTests
 		public InstantiateThrows(int value)
 		{
 			throw new InvalidOperationException();
+		}
+	}
+
+	public class SettingPropertyThrows : BindableObject
+	{
+		public static readonly BindableProperty TestValueProperty = BindableProperty.Create("TestValue", typeof(string), typeof(SettingPropertyThrows), "", propertyChanged: TestValuePropertyChanged);
+
+		static void TestValuePropertyChanged(BindableObject bindable, object oldValue, object newValue)
+		{
+			throw new InvalidOperationException("Setting this property throws an exception.");
 		}
 	}
 }
