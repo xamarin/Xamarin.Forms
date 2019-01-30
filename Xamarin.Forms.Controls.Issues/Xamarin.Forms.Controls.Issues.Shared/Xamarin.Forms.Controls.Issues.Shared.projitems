@@ -13,11 +13,13 @@
       <DependentUpon>Bugzilla60787.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Issue1332.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1588.xaml.cs">
       <DependentUpon>Issue1588.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue4629.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue1760_1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue4782.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue4484.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3509.cs" />
@@ -288,6 +290,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue3273.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3053.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue2617.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue3139.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3087.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3089.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1342.cs" />
@@ -404,6 +407,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue3558.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3541.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3840.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue4561.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3913.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3979.xaml.cs">
       <DependentUpon>Issue3979.xaml</DependentUpon>
