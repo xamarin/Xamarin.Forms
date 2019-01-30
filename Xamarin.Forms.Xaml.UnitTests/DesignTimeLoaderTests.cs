@@ -355,7 +355,14 @@ namespace Xamarin.Forms.Xaml.UnitTests
 					<local:SettingPropertyThrows TestValue=""Test"" />
 				</ContentPage>";
 
+			var exceptions = new List<Exception>();
+			Xamarin.Forms.Internals.ResourceLoader.ExceptionHandler = exceptions.Add;
+
 			Assert.DoesNotThrow(() => XamlLoader.Create(xaml, true));
+
+			// Assuming we use ResourceLoader.ExceptionHandler to handle exceptions like this... if we use a different approach,
+			// we'll need to change this assertion...
+			Assert.That(exceptions.Count, Is.EqualTo(1));
 		}
 
 		[Test]
