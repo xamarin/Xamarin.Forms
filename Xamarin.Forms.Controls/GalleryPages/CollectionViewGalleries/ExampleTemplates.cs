@@ -90,6 +90,14 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			});
 		}
 
+		public static DataTemplate CarouselXamlTemplate()
+		{
+			return new DataTemplate(() =>
+			{
+				return new ExampleTemplateCarousel();
+			});
+		}
+
 		public static DataTemplate CarouselTemplate()
 		{
 			return new DataTemplate(() =>
@@ -121,10 +129,11 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 				};
 
 				caption.SetBinding(Button.TextProperty, new Binding("Caption"));
-				caption.Clicked += (sender, e) => {
+				caption.Clicked += (sender, e) =>
+				{
 					App.Current.MainPage.DisplayAlert("Button works", (sender as Button).Text, "Ok");
 				};
-				
+
 				grid.Children.Add(image);
 				grid.Children.Add(caption);
 

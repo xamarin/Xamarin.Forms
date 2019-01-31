@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Frame BackgroundColor="LightBlue" Scale="0.5" xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.ExampleTemplateCarousel">
+    <VisualStateManager.VisualStateGroups>
+        <VisualStateGroup x:Name="CarouselViewStates">
+            <VisualState x:Name="CurrentItem">
+                <VisualState.Setters>
+                    <Setter Property="BackgroundColor" Value="Red" />
+					<Setter Property="Opacity" Value="1" />
+                </VisualState.Setters>
+            </VisualState>
+            <VisualState x:Name="PreviousItem">
+                <VisualState.Setters>
+                    <Setter Property="BackgroundColor" Value="Red" />
+					<Setter Property="Opacity" Value="0.5" />
+                </VisualState.Setters>
+            </VisualState>
+            <VisualState x:Name="NextItem">
+                <VisualState.Setters>
+                    <Setter Property="BackgroundColor" Value="Red" />
+					<Setter Property="Opacity" Value="0.5" />
+                </VisualState.Setters>
+            </VisualState>
+			<VisualState x:Name="DefaultItem">
+                <VisualState.Setters>
+                    <Setter Property="BackgroundColor" Value="LightBlue" />
+                </VisualState.Setters>
+            </VisualState>
+        </VisualStateGroup>
+    </VisualStateManager.VisualStateGroups>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Image Aspect="AspectFill" Source="{Binding Image}" HorizontalOptions="Center" VerticalOptions="Center" />
+        <Button Grid.Row="1" Text="{Binding Caption}" Margin="5" BackgroundColor="Gray" HorizontalOptions="Fill" />
+    </Grid>
+</Frame>

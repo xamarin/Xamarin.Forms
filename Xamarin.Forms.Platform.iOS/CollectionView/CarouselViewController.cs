@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Foundation;
 using UIKit;
@@ -12,6 +13,9 @@ namespace Xamarin.Forms.Platform.iOS
 		ItemsViewLayout _layout;
 		nfloat _previousOffSetX;
 		nfloat _previousOffSetY;
+		object _currentItem;
+		NSIndexPath _currentItemIdex;
+		List<UICollectionViewCell> _cells;
 
 		public CarouselViewController(CarouselView itemsView, ItemsViewLayout layout) : base(itemsView, layout)
 		{
@@ -19,6 +23,22 @@ namespace Xamarin.Forms.Platform.iOS
 			_carouselView.ScrollToRequested += ScrollToRequested;
 			_layout = layout;
 			Delegator.CarouselViewController = this;
+		}
+
+		public override UICollectionViewCell GetCell(UICollectionView collectionView, NSIndexPath indexPath)
+		{
+			var cell = base.GetCell(collectionView, indexPath);
+
+			var element = (cell as TemplatedCell).VisualElementRenderer?.Element;
+			VisualStateManager.GoToState(element, CarouselView.DefaultItemVisualState);
+			return cell;
+		}
+
+		public override void ViewDidAppear(bool animated)
+		{
+			base.ViewDidAppear(animated);
+			UpdateIntialPosition();
+			UpdateVisualStates();
 		}
 
 		internal void TeardDown()
@@ -34,11 +54,13 @@ namespace Xamarin.Forms.Platform.iOS
 		public override void DraggingStarted(UIScrollView scrollView)
 		{
 			CarouselController.SetIsDragging(true);
+			UpdateVisualStates();
 		}
 
 		public override void DraggingEnded(UIScrollView scrollView, bool willDecelerate)
 		{
 			CarouselController.SetIsDragging(false);
+			UpdateVisualStates();
 		}
 
 		public override void ScrollAnimationEnded(UIScrollView scrollView)
@@ -46,21 +68,16 @@ namespace Xamarin.Forms.Platform.iOS
 			CarouselController.SetIsScrolling(false);
 		}
 
-		object _currentItem;
-		NSIndexPath _currentItemIdex;
 		public override void DecelerationEnded(UIScrollView scrollView)
 		{
-			//TODO: Handle default cell 
-			TemplatedCell formsCell = FindCenteredCell();
+			var templatedCells = FindVisibleCells();
 
-			var context = formsCell?.VisualElementRenderer?.Element?.BindingContext;
-
-			_currentItem = context;
-
+			//TODO: Improve storing this state here
+			_currentItem = templatedCells.currentCell?.VisualElementRenderer?.Element?.BindingContext;
 			_currentItemIdex = GetIndexForItem(_currentItem);
-			if (context != null)
-				CarouselController.SetCurrentItem(context);
 
+			if (_currentItem != null)
+				CarouselController.SetCurrentItem(_currentItem);
 		}
 
 		public override void Scrolled(UIScrollView scrollView)
@@ -74,10 +91,36 @@ namespace Xamarin.Forms.Platform.iOS
 			else
 				CarouselController.SendScrolled(scrollView.ContentOffset.Y, (_previousOffSetY > newOffSetY) ? ScrollDirection.Up : ScrollDirection.Down);
 
+			UpdateVisualStateForOfScreenCell();
+
+			UpdateVisualStates();
+
 			_previousOffSetX = newOffSetX;
 			_previousOffSetY = newOffSetY;
 		}
 
+		void UpdateVisualStateForOfScreenCell()
+		{
+			var newCells = CollectionView.VisibleCells.ToList();
+
+			if (_cells != null)
+			{
+				foreach (var _oldCell in _cells)
+				{
+					if (!newCells.Contains(_oldCell))
+					{
+						var oldElement = (_oldCell as TemplatedCell)?.VisualElementRenderer?.Element;
+						if (oldElement != null)
+						{
+							VisualStateManager.GoToState(oldElement, CarouselView.DefaultItemVisualState);
+						}
+					}
+
+				}
+			}
+
+			_cells = newCells;
+		}
 
 		void ScrollToRequested(object sender, ScrollToRequestEventArgs e)
 		{
@@ -87,17 +130,83 @@ namespace Xamarin.Forms.Platform.iOS
 			CarouselController.SetIsScrolling(true);
 		}
 
-		TemplatedCell FindCenteredCell()
+		void UpdateVisualStates()
+		{
+			var templatedCells = FindVisibleCells();
+
+			if (templatedCells.previousCell != null)
+			{
+				var previousElement = templatedCells.previousCell.VisualElementRenderer?.Element;
+				VisualStateManager.GoToState(previousElement, CarouselView.PreviousItemVisualState);
+			}
+			if (templatedCells.nextCell != null)
+			{
+				var nextElement = templatedCells.nextCell.VisualElementRenderer?.Element;
+				VisualStateManager.GoToState(nextElement, CarouselView.NextItemVisualState);
+			}
+			if (templatedCells.currentCell != null)
+			{
+				var currentElement = templatedCells.currentCell.VisualElementRenderer?.Element;
+				VisualStateManager.GoToState(currentElement, CarouselView.CurrentItemVisualState);
+			}
+		}
+
+		void UpdateDefaultVisualState()
 		{
 			var cells = CollectionView.VisibleCells;
+			for (int i = 0; i < cells.Count(); i++)
+			{
+				var cell = (cells[i] as TemplatedCell)?.VisualElementRenderer.Element;
+				VisualStateManager.GoToState(cell, CarouselView.DefaultItemVisualState);
+			}
+		}
+
+		(TemplatedCell currentCell, TemplatedCell previousCell, TemplatedCell nextCell) FindVisibleCells()
+		{
+			var cells = CollectionView.VisibleCells;
+
+
+			TemplatedCell currentCell = null;
+			TemplatedCell previousCell = null;
+			TemplatedCell nextCell = null;
 
 			var x = CollectionView.Center.X + CollectionView.ContentOffset.X;
 			var y = CollectionView.Center.Y + CollectionView.ContentOffset.Y;
 
-			var formsCell = cells.FirstOrDefault(c => c.Center.X == x && c.Center.Y == y) as TemplatedCell;
+			var previousIndex = -1;
+			var currentIndex = -1;
+			var nextIndex = -1;
+			for (int i = 0; i < cells.Count(); i++)
+			{
+				var cell = cells[i];
+				if (cell.Center.X == x && cell.Center.Y == y)
+				{
+					currentIndex = i;
+					if (i > 0)
+					{
+						previousIndex = currentIndex - 1;
+					}
+					if (i < cells.Count() - 1)
+					{
+						nextIndex = currentIndex + 1;
+					}
+				}
+			}
 
-			return formsCell;
+			if (currentIndex != -1)
+				currentCell = cells[currentIndex] as TemplatedCell;
+			if (previousIndex != -1)
+				previousCell = cells[previousIndex] as TemplatedCell;
+			if (nextIndex != -1)
+				nextCell = cells[nextIndex] as TemplatedCell;
+
+			return (currentCell, previousCell, nextCell);
 		}
 
+		void UpdateIntialPosition()
+		{
+			if (_carouselView.Position != 0)
+				_carouselView.ScrollTo(_carouselView.Position, -1, ScrollToPosition.Center);
+		}
 	}
 }
