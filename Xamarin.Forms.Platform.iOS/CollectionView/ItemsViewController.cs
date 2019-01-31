@@ -161,15 +161,11 @@ namespace Xamarin.Forms.Platform.iOS
 		void ApplyTemplateAndDataContext(TemplatedCell cell, NSIndexPath indexPath)
 		{
 			// We need to create a renderer, which means we need a template
-			var templateElement = _itemsView.ItemTemplate.CreateContent() as View;
-			IVisualElementRenderer renderer = CreateRenderer(templateElement);
-
-			if (renderer != null)
-			{
-				_itemsView.AddLogicalChild(renderer.Element);
-				BindableObject.SetInheritedBindingContext(renderer.Element, _itemsSource[indexPath.Row]);
-				cell.SetRenderer(renderer);
-			}
+			var view = _itemsView.ItemTemplate.CreateContent() as View;
+			_itemsView.AddLogicalChild(view);
+			var renderer = CreateRenderer(view);
+			BindableObject.SetInheritedBindingContext(view, _itemsSource[indexPath.Row]);
+			cell.SetRenderer(renderer);
 		}
 
 		internal void RemoveLogicalChild(UICollectionViewCell cell)

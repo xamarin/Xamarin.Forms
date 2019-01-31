@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
@@ -46,6 +47,9 @@ namespace Xamarin.Forms
 		public void AddLogicalChild(Element element)
 		{
 			_logicalChildren.Add(element);
+
+			PropertyPropagationExtensions.PropagatePropertyChanged(null, element);
+
 			element.Parent = this;
 		}
 

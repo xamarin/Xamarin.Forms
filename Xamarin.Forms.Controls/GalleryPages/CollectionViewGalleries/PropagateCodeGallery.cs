@@ -15,7 +15,8 @@
 					new RowDefinition { Height = GridLength.Auto },
 					new RowDefinition { Height = GridLength.Star }
 				},
-				FlowDirection = FlowDirection.RightToLeft
+				FlowDirection = FlowDirection.RightToLeft,
+				Visual = VisualMarker.Material
 			};
 
 			var itemTemplate = ExampleTemplates.PropagationTemplate();
