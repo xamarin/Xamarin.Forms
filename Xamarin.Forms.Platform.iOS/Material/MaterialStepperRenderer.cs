@@ -26,6 +26,8 @@ namespace Xamarin.Forms.Platform.iOS.Material
 				control.DecrementButton.TouchUpInside -= OnStep;
 				control.IncrementButton.TouchUpInside -= OnStep;
 			}
+			
+			_buttonScheme?.Dispose();
 
 			base.Dispose(disposing);
 		}
@@ -115,10 +117,10 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		public MaterialStepper()
 		{
 			DecrementButton = new MButton();
-			DecrementButton.SetTitle("-", UIControlState.Normal);
+			DecrementButton.SetTitle("－", UIControlState.Normal);
 
 			IncrementButton = new MButton();
-			IncrementButton.SetTitle("+", UIControlState.Normal);
+			IncrementButton.SetTitle("＋", UIControlState.Normal);
 
 			AddSubviews(DecrementButton, IncrementButton);
 		}
