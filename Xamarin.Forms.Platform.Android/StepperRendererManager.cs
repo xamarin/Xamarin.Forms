@@ -13,7 +13,7 @@ namespace Xamarin.Forms.Platform.Android
 			downButton = (TButton)renderer.CreateButton();
 			downButton.Id = Platform.GenerateViewId();
 			downButton.Focusable = true;
-			downButton.Text = "-";
+			downButton.Text = "－";
 			downButton.Gravity = GravityFlags.Center;
 			downButton.Tag = renderer as Java.Lang.Object;
 			downButton.SetOnClickListener(StepperListener.Instance);
@@ -21,7 +21,7 @@ namespace Xamarin.Forms.Platform.Android
 			upButton = (TButton)renderer.CreateButton();
 			upButton.Id = Platform.GenerateViewId();
 			upButton.Focusable = true;
-			upButton.Text = "+";
+			upButton.Text = "＋";
 			upButton.Gravity = GravityFlags.Center;
 			upButton.Tag = renderer as Java.Lang.Object;
 			upButton.SetOnClickListener(StepperListener.Instance);
