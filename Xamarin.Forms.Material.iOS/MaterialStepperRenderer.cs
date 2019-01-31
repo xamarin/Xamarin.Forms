@@ -26,8 +26,9 @@ namespace Xamarin.Forms.Platform.iOS.Material
 				control.DecrementButton.TouchUpInside -= OnStep;
 				control.IncrementButton.TouchUpInside -= OnStep;
 			}
-			
+
 			_buttonScheme?.Dispose();
+			_buttonScheme = null;
 
 			base.Dispose(disposing);
 		}
