@@ -48,7 +48,6 @@ namespace Xamarin.Forms.Platform.Android
 					textViewHolder.TextView.Text = ItemsSource[position].ToString();
 					break;
 				case TemplatedItemViewHolder templatedItemViewHolder:
-					ItemsView.AddLogicalChild(templatedItemViewHolder.View);
 					BindableObject.SetInheritedBindingContext(templatedItemViewHolder.View, ItemsSource[position]);
 					break;
 			}
@@ -69,6 +68,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			// Realize the content, create a renderer out of it, and use that
 			var templateElement = (View)template.CreateContent();
+			ItemsView.AddLogicalChild(templateElement);
 			var itemContentControl = _createView(CreateRenderer(templateElement, context), context);
 
 			return new TemplatedItemViewHolder(itemContentControl, templateElement);
