@@ -113,7 +113,7 @@ namespace Xamarin.Forms.Platform.Android
 				this.SetBackground(Context.GetDrawable(bkgndImage));
 			else
 			{
-				Color bkgndColor = Element.BackgroundColor;
+				Color bkgndColor = page.BackgroundColor;
 				bool isDefaultBkgndColor = bkgndColor.IsDefault;
 				if (page.Parent is BaseShellItem && isDefaultBkgndColor)
 				{
