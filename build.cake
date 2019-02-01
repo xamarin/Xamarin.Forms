@@ -6,6 +6,7 @@
 // examples
 /*
 
+./build.ps1 -Target NugetPack
 ./build.ps1 -Target NugetPack -ScriptArgs '-packageVersion="9.9.9-custom"'
 
 
@@ -106,7 +107,7 @@ Task("Build")
     .Does(() =>
 { 
     try{
-        MSBuild("./Xamarin.Forms.sln", GetMSBuildSettings());
+        MSBuild("./Xamarin.Forms.sln", GetMSBuildSettings().WithRestore());
     }
     catch(Exception)
     {
@@ -195,7 +196,6 @@ MSBuildSettings GetMSBuildSettings()
 {
     var msbuildSettings =  new MSBuildSettings();
 
-    msbuildSettings.ToolVersion = MSBuildToolVersion.VS2017;
     msbuildSettings.PlatformTarget = PlatformTarget.MSIL;
     msbuildSettings.MSBuildPlatform = (Cake.Common.Tools.MSBuild.MSBuildPlatform)1;
     msbuildSettings.Configuration = configuration;
