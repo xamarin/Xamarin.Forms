@@ -23,6 +23,8 @@ namespace Xamarin.Forms.Platform.iOS
 			_carouselView.ScrollToRequested += ScrollToRequested;
 			_layout = layout;
 			Delegator.CarouselViewController = this;
+			CollectionView.AllowsSelection = false;
+			CollectionView.AllowsMultipleSelection = false;
 		}
 
 		public override UICollectionViewCell GetCell(UICollectionView collectionView, NSIndexPath indexPath)

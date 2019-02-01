@@ -6,32 +6,59 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 {
 	public partial class ExampleTemplateCarousel : Grid
 	{
+		double initialY = -1;
+		bool delete;
+		double maxYScroll = 300;
+		double diffYScroll = -150;
+		double minYScroll = -30;
+
 		public ExampleTemplateCarousel()
 		{
 			InitializeComponent();
-			this.PropertyChanged += Handle_PropertyChanged;
-		}
 
-		void Handle_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
-		{
-			//var vsmGroups = VisualStateManager.GetVisualStateGroups(this);
-			//if (vsmGroups.Count > 0)
-			//{
-				//var carouselVSM = vsmGroups[0];
-				//if (carouselVSM.CurrentState?.Name == "DefaultItem")
-				//{
-				//	this.ScaleTo(0.2);
-				//}
-				//if (carouselVSM.CurrentState?.Name == "CurrentItem")
-				//{
-				//	this.ScaleTo(1);
-				//}
-				//if (carouselVSM.CurrentState?.Name == "PreviousItem" ||
-				//	carouselVSM.CurrentState?.Name == "NextItem")
-				//{
-				//	this.ScaleTo(0.5);
-				//}
-			//}
+			var gesture = new PanGestureRecognizer();
+
+			gesture.PanUpdated += (sender, e) =>
+			{
+				if (e.StatusType == GestureStatus.Started)
+				{
+					initialY = Y;
+				}
+
+				if (e.StatusType == GestureStatus.Running)
+				{
+					if (e.TotalY < minYScroll)
+					{
+						var scaledValue = 1 - (Math.Abs(e.TotalY) / maxYScroll);
+						this.ScaleTo(0.9);
+						this.FadeTo(scaledValue);
+						this.TranslateTo(X, Y + e.TotalY);
+					}
+					if (e.TotalY < diffYScroll)
+					{
+						delete = true;
+					}
+				}
+
+				if (e.StatusType == GestureStatus.Completed || e.StatusType == GestureStatus.Canceled)
+				{
+					if (delete)
+					{
+						this.FadeTo(0.1);
+						this.TranslateTo(X, Y - 1000);
+						MessagingCenter.Send<ExampleTemplateCarousel>(this, "remove");
+					}
+					else
+					{
+						this.ScaleTo(1);
+						this.FadeTo(1);
+						this.TranslateTo(X, initialY);
+					}
+				}
+
+				System.Diagnostics.Debug.WriteLine(delete);
+			};
+			GestureRecognizers.Add(gesture);
 		}
 	}
 }

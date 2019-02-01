@@ -16,8 +16,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 					new RowDefinition { Height = GridLength.Auto },
 					new RowDefinition { Height = GridLength.Auto },
 					new RowDefinition { Height = GridLength.Auto },
-					new RowDefinition { Height = GridLength.Auto },
-					//
+					new RowDefinition { Height = GridLength.Auto }
 				}
 			};
 			var itemsLayout =
@@ -36,8 +35,9 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 				Position = 2,
 				NumberOfVisibleItems = 1,
 				ItemSpacing = 10,
-				HeightRequest = 580,
-				Padding = new Thickness(60,0,60,0)
+				HeightRequest = 500,
+				Padding = new Thickness(60,0,60,0),
+				//BackgroundColor = Color.Green
 			};
 
 			layout.Children.Add(carouselView);
@@ -59,7 +59,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 
 			layout.Children.Add(indicatorsView);
 
-			var generator = new ItemsSourceGenerator(carouselView, initialItems: nItems);
+			var generator = new ItemsSourceGenerator(carouselView, initialItems: nItems, itemsSourceType: ItemsSourceType.ObservableCollection);
 
 			layout.Children.Add(generator);
 
@@ -74,6 +74,9 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			Grid.SetRow(indicatorsView, 3);
 
 			Content = layout;
+			generator.CollectionChanged += (sender, e) => {
+				positionControl.UpdatePositionCount(generator.Count);
+			};
 
 			generator.GenerateItems();
 		}
@@ -96,83 +99,16 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 
 			var labelScrolled = new Label { Text = nameof(carouselView.Scrolled) };
 
-
 			carouselView.Scrolled += (object sender, ScrolledDirectionEventArgs e) =>
 			{
-				labelScrolled.Text = $"{nameof(carouselView.Scrolled)}:{e.Direction} value:{e.NewValue.ToString("F")}";
+				labelScrolled.Text = $"{nameof(carouselView.Scrolled)}:{e.Direction} value:{e.NewValue.ToString("F")} delta: {e.Delta.ToString("F")}";
 			};
-
 
 			stacklayoutInfo.Children.Add(labelScrolling);
 			stacklayoutInfo.Children.Add(switchScrolling);
 			stacklayoutInfo.Children.Add(labelDragging);
 			stacklayoutInfo.Children.Add(switchDragging);
 			return new StackLayout { Children = { stacklayoutInfo, labelScrolled } };
-		}
-
-		internal class PositionControl : ContentView
-		{
-			public PositionControl(CarouselView carousel, int itemsCount)
-			{
-				var animateLabel = new Label { Text = "Animate: ", VerticalTextAlignment = TextAlignment.Center };
-				var animateSwitch = new Switch { BindingContext = carousel };
-				animateSwitch.SetBinding(Switch.IsToggledProperty, nameof(carousel.AnimateTransition), BindingMode.TwoWay);
-
-				var swipeLabel = new Label { Text = "Swipe: ", VerticalTextAlignment = TextAlignment.Center };
-				var swipeSwitch = new Switch { BindingContext = carousel };
-				swipeSwitch.SetBinding(Switch.IsToggledProperty, nameof(carousel.IsSwipeEnabled), BindingMode.TwoWay);
-
-				var slider = new Slider
-				{
-					BackgroundColor = Color.Pink,
-					ThumbColor = Color.Red,
-					WidthRequest = 100,
-					BindingContext = carousel,
-					Maximum = itemsCount - 1,
-				};
-				slider.SetBinding(Slider.ValueProperty, nameof(carousel.Position));
-
-				var indexLabel = new Label { Text = "Go To Position: ", VerticalTextAlignment = TextAlignment.Center };
-				var label = new Label { WidthRequest = 20, BackgroundColor = Color.LightCyan };
-				label.SetBinding(Label.TextProperty, nameof(carousel.Position));
-				label.BindingContext = carousel;
-				var indexButton = new Button { Text = "Go" };
-
-				var layout = new Grid
-				{
-					RowDefinitions = new RowDefinitionCollection {
-								new RowDefinition { Height = GridLength.Auto },
-								new RowDefinition { Height = GridLength.Auto },
-								new RowDefinition { Height = GridLength.Auto },
-					},
-					ColumnDefinitions = new ColumnDefinitionCollection
-					{
-								new ColumnDefinition(),
-								new ColumnDefinition(),
-								new ColumnDefinition(),
-					}
-				};
-
-				layout.Children.Add(indexLabel);
-
-				layout.Children.Add(slider);
-				Grid.SetColumn(slider, 1);
-
-				layout.Children.Add(label);
-				Grid.SetColumn(label, 2);
-
-				var stacklayout = new StackLayout
-				{
-					Orientation = StackOrientation.Horizontal,
-					Children = { animateLabel, animateSwitch, swipeLabel, swipeSwitch }
-				};
-
-				layout.Children.Add(stacklayout);
-				Grid.SetRow(stacklayout, 2);
-				Grid.SetColumnSpan(stacklayout, 3);
-
-				Content = layout;
-			}
 		}
 	}
 }

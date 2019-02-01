@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Grid xmlns="http://xamarin.com/schemas/2014/forms" Padding="10" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.ExampleTemplateCarousel">
+<Grid xmlns="http://xamarin.com/schemas/2014/forms" Padding="10,0,10,0" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.ExampleTemplateCarousel">
     <VisualStateManager.VisualStateGroups>
         <VisualStateGroup x:Name="CarouselViewStates">
             <VisualState x:Name="CurrentItem">
@@ -24,7 +24,7 @@
             </VisualState>
         </VisualStateGroup>
     </VisualStateManager.VisualStateGroups>
-    <Frame HasShadow="True" Padding="0" HorizontalOptions="Center" VerticalOptions="Center">
+    <Frame x:Name="frame" HasShadow="True" Padding="0" HorizontalOptions="Center" VerticalOptions="Center">
         <Image Source="cardBackground" InputTransparent="true" Aspect="AspectFit" />
     </Frame>
 </Grid>
