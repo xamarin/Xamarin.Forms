@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Platform.iOS
 			//TODO: Should we scale the items 
 			var aspectRation = size.Width / size.Height;
 
-			var width = (size.Width - _carouselView.Padding.Left - _carouselView.Padding.Right ) / _carouselView.NumberOfVisibleItems;
+			var width = (size.Width - _carouselView.Padding.Left - _carouselView.Padding.Right) / _carouselView.NumberOfVisibleItems;
 			var height = size.Height / _carouselView.NumberOfVisibleItems;
 
 			if (ScrollDirection == UICollectionViewScrollDirection.Horizontal)
@@ -39,20 +39,27 @@ namespace Xamarin.Forms.Platform.iOS
 		public override UIEdgeInsets GetInsetForSection(UICollectionView collectionView, UICollectionViewLayout layout, nint section)
 		{
 			var insets = base.GetInsetForSection(collectionView, layout, section);
-			if (_carouselView.NumberOfVisibleItems == 1)
-			{
-				return insets;
-			}
+			var left = insets.Left + (float)_carouselView.Padding.Left;
+			var right = insets.Right + (float)_carouselView.Padding.Right;
+			var top = insets.Top + (float)_carouselView.Padding.Top;
+			var bottom = insets.Bottom + (float)_carouselView.Padding.Bottom;
 
 			//We give some insets so the user can be able to scroll to the first and last item
-			if (ScrollDirection == UICollectionViewScrollDirection.Horizontal)
+			if (_carouselView.NumberOfVisibleItems > 1)
 			{
-				return new UIEdgeInsets(insets.Top, ItemSize.Width, insets.Bottom, ItemSize.Width);
+				if (ScrollDirection == UICollectionViewScrollDirection.Horizontal)
+				{
+					left = left + ItemSize.Width;
+					right = right + ItemSize.Width;
+					return new UIEdgeInsets(insets.Top, ItemSize.Width, insets.Bottom, ItemSize.Width);
+				}
+				else
+				{
+					return new UIEdgeInsets(ItemSize.Height, insets.Left, ItemSize.Height, insets.Right);
+				}
 			}
-			else
-			{
-				return new UIEdgeInsets(ItemSize.Height, insets.Left, ItemSize.Height, insets.Right);
-			}
+
+			return new UIEdgeInsets(top, left, bottom, right);
 
 		}
 	}

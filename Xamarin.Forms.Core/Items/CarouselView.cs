@@ -45,6 +45,7 @@ namespace Xamarin.Forms
 		public const string CurrentItemVisualState = "CurrentItem";
 		public const string NextItemVisualState = "NextItem";
 		public const string PreviousItemVisualState = "PreviousItem";
+		public const string VisibleItemVisualState = "VisibleItem";
 		public const string DefaultItemVisualState = "DefaultItem";
 
 		double _previousScrolled;
@@ -226,8 +227,7 @@ namespace Xamarin.Forms
 
 				SnapPointsType = SnapPointsType.MandatorySingle,
 				SnapPointsAlignment = SnapPointsAlignment.Center
-			}; ;
-
+			};
 		}
 
 		protected virtual void OnPositionChanged(PositionChangedEventArgs args)
