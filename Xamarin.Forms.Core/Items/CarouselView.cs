@@ -11,12 +11,13 @@ namespace Xamarin.Forms
 {
 	public class ScrolledDirectionEventArgs : EventArgs
 	{
-		public ScrolledDirectionEventArgs(ScrollDirection direction, double newValue)
+		public ScrolledDirectionEventArgs(ScrollDirection direction, double newValue, double delta)
 		{
 			Direction = direction;
 			NewValue = newValue;
-
+			Delta = delta;
 		}
+		public double Delta { get; private set; }
 		public double NewValue { get; private set; }
 		public ScrollDirection Direction { get; private set; }
 	}
@@ -45,6 +46,9 @@ namespace Xamarin.Forms
 		public const string NextItemVisualState = "NextItem";
 		public const string PreviousItemVisualState = "PreviousItem";
 		public const string DefaultItemVisualState = "DefaultItem";
+
+		double _previousScrolled;
+		ScrollDirection _previousScrolledDirection;
 
 		public static readonly BindableProperty PaddingProperty = PaddingElement.PaddingProperty;
 
@@ -214,7 +218,6 @@ namespace Xamarin.Forms
 		public event EventHandler<PositionChangedEventArgs> PositionChanged;
 		public event EventHandler<ScrolledDirectionEventArgs> Scrolled;
 
-
 		public CarouselView()
 		{
 			CollectionView.VerifyCollectionViewFlagEnabled(constructorHint: nameof(CarouselView));
@@ -223,7 +226,7 @@ namespace Xamarin.Forms
 
 				SnapPointsType = SnapPointsType.MandatorySingle,
 				SnapPointsAlignment = SnapPointsAlignment.Center
-			};
+			}; ;
 
 		}
 
@@ -279,12 +282,19 @@ namespace Xamarin.Forms
 
 		void ICarouselViewController.SendScrolled(double value, ScrollDirection direction)
 		{
-			Scrolled?.Invoke(this, new ScrolledDirectionEventArgs(direction, value));
+			if (_previousScrolledDirection != direction)
+			{
+				_previousScrolled = 0;
+			}
+			var delta = Math.Abs(value - _previousScrolled);
+			Scrolled?.Invoke(this, new ScrolledDirectionEventArgs(direction, value, delta));
+			_previousScrolled = value;
+			_previousScrolledDirection = direction;
 		}
 
 		void ICarouselViewController.SetCurrentItem(object item)
 		{
-			SetValueFromRenderer(CurrentItemProperty,item);
+			SetValueFromRenderer(CurrentItemProperty, item);
 		}
 
 		void ICarouselViewController.SetIsScrolling(bool value)
