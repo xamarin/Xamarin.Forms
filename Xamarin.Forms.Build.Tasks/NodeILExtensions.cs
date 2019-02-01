@@ -55,6 +55,8 @@ namespace Xamarin.Forms.Build.Tasks
 			}
 
 			//check if it's assignable from a string
+			if (targetTypeRef.ResolveCached().FullName == "System.Nullable`1")
+				targetTypeRef = ((GenericInstanceType)targetTypeRef).GenericArguments[0];
 			if (targetTypeRef.ResolveCached().BaseType != null && targetTypeRef.ResolveCached().BaseType.FullName == "System.Enum")
 				return true;
 			if (targetTypeRef.FullName == "System.Char")
