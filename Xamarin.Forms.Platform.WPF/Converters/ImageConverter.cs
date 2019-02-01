@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.WPF
 {
@@ -11,10 +12,11 @@ namespace Xamarin.Forms.Platform.WPF
 	{
 		public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
 		{
-			var source = (ImageSource)value;
-			return source.ToWindowsImageSource();
+			return value is ImageSource source
+				? source.ToWindowsImageSourceAsync().AsAsyncValue()
+				: null;
 		}
-		
+
 		public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
 		{
 			throw new NotImplementedException();

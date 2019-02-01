@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Xamarin.Forms.Controls
 {
@@ -83,7 +85,7 @@ namespace Xamarin.Forms.Controls
 			{
 				var item = (ImageSourcePickerItem)picker.SelectedItem;
 				var text = item.Text;
-				onSelected?.Invoke(() => item.Getter());
+				onSelected?.Invoke(item.Getter);
 			};
 
 			return picker;
@@ -113,12 +115,12 @@ namespace Xamarin.Forms.Controls
 							CreateImageSourcePicker("Change Title Icon", getter => NavigationPage.SetTitleIcon(this, getter())),
 							new Button
 							{
-								Text = "Page",
+								Text = "Page & Toolbar",
 								Command = new Command(() => Navigation.PushAsync(new PagePropertiesPage()))
 							},
 							new Button
 							{
-								Text = "ListView Context Actions",
+								Text = "ListView & Context Actions",
 								Command = new Command(() => Navigation.PushAsync(new ListViewContextActionsPage()))
 							},
 							new Button
@@ -146,7 +148,7 @@ namespace Xamarin.Forms.Controls
 		{
 			public PagePropertiesPage()
 			{
-				Title = "Page";
+				Title = "Page & Toolbar";
 
 				Children.Add(new TabPage { Title = "Tab 1" });
 				Children.Add(new TabPage { Title = "Tab 2" });
@@ -183,14 +185,12 @@ namespace Xamarin.Forms.Controls
 
 		class ListViewContextActionsPage : ContentPage
 		{
-			ImageSource _source;
 			ListView _listView;
+			string[] _items = new[] { "one", "two", "three", "four", "five" };
 
 			public ListViewContextActionsPage()
 			{
-				Title = "ListView Context Actions";
-
-				var items = new[] { "one", "two", "three", "four", "five" };
+				Title = "ListView & Context Actions";
 
 				Content = new ScrollView
 				{
@@ -207,29 +207,49 @@ namespace Xamarin.Forms.Controls
 							},
 							CreateImageSourcePicker("Select Icon Source", getter =>
 							{
-								_source = getter();
 								_listView.ItemsSource = null;
-								_listView.ItemsSource = items;
+								_listView.ItemsSource = CreateDataItems(getter);
 							}),
 							(_listView = new ListView
 							{
 								Margin = new Thickness(-20, 0, -20, -20),
-								ItemsSource = items,
+								ItemsSource = CreateDataItems(),
 								ItemTemplate = new DataTemplate(() =>
 								{
-									var cell = new TextCell();
-									cell.ContextActions.Add(new MenuItem
-									{
-										Text = "bank",
-										Icon = _source
-									});
-									cell.SetBinding(TextCell.TextProperty, new Binding("."));
+									var menuItem = new MenuItem();
+									menuItem.SetBinding(MenuItem.TextProperty, new Binding(nameof(ListItem.Text)));
+									menuItem.SetBinding(MenuItem.IconProperty, new Binding(nameof(ListItem.ContextImage)));
+
+									var cell = new ImageCell();
+									cell.ContextActions.Add(menuItem);
+									cell.SetBinding(ImageCell.TextProperty, new Binding(nameof(ListItem.Text)));
+									cell.SetBinding(ImageCell.ImageSourceProperty, new Binding(nameof(ListItem.Image)));
+
 									return cell;
 								}),
 							})
 						}
 					}
 				};
+			}
+
+			IEnumerable<ListItem> CreateDataItems(Func<ImageSource> getter = null)
+			{
+				return _items.Select(i => new ListItem
+				{
+					Text = i,
+					Image = getter?.Invoke(),
+					ContextImage = getter?.Invoke(),
+				});
+			}
+
+			class ListItem
+			{
+				public string Text { get; set; }
+
+				public ImageSource Image { get; set; }
+
+				public ImageSource ContextImage { get; set; }
 			}
 		}
 

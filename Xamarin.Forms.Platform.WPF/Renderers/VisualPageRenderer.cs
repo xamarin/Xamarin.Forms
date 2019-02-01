@@ -73,17 +73,17 @@ namespace Xamarin.Forms.Platform.WPF
 			this.Control.HasNavigationBar = NavigationPage.GetHasNavigationBar(Element);
 		}
 
-		protected override void UpdateBackground()
+		protected override async void UpdateBackground()
 		{
-			var bgImage = Element.BackgroundImage.ToWindowsImageSource();
-			if (bgImage != null)
-			{
-				Control.Background = new ImageBrush { ImageSource = bgImage };
-			}
-			else
+			var bgImage = Element.BackgroundImage;
+			if (bgImage == null || bgImage.IsEmpty)
 			{
 				base.UpdateBackground();
+				return;
 			}
+
+			var img = await bgImage.ToWindowsImageSourceAsync();
+			Control.Background = new ImageBrush { ImageSource = img };
 		}
 		
 		void UpdateToolbar()
