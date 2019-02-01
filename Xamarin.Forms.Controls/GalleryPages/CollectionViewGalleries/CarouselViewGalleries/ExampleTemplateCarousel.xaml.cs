@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Xamarin.Forms;
 
-namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
+namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselViewGalleries
 {
 	public partial class ExampleTemplateCarousel : Grid
 	{
@@ -55,8 +55,6 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 						this.TranslateTo(X, initialY);
 					}
 				}
-
-				System.Diagnostics.Debug.WriteLine(delete);
 			};
 			GestureRecognizers.Add(gesture);
 		}

@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 
-namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
+namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselViewGalleries
 {
 	internal class CarouselCodeGallery : ContentPage
 	{

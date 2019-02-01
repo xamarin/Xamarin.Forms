@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Grid xmlns="http://xamarin.com/schemas/2014/forms" Padding="10,0,10,0" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.ExampleTemplateCarousel">
+<Grid xmlns="http://xamarin.com/schemas/2014/forms" Padding="10,0,10,0" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselViewGalleries.ExampleTemplateCarousel">
     <VisualStateManager.VisualStateGroups>
         <VisualStateGroup x:Name="CarouselViewStates">
             <VisualState x:Name="CurrentItem">
@@ -9,12 +9,17 @@
             </VisualState>
             <VisualState x:Name="PreviousItem">
                 <VisualState.Setters>
-                    <Setter Property="Opacity" Value="0.5" />
+                    <Setter Property="Opacity" Value="0.7" />
                 </VisualState.Setters>
             </VisualState>
             <VisualState x:Name="NextItem">
                 <VisualState.Setters>
-                    <Setter Property="Opacity" Value="0.5" />
+                    <Setter Property="Opacity" Value="0.7" />
+                </VisualState.Setters>
+            </VisualState>
+			  <VisualState x:Name="VisibleItem">
+                <VisualState.Setters>
+                    <Setter Property="Opacity" Value="0.6" />
                 </VisualState.Setters>
             </VisualState>
             <VisualState x:Name="DefaultItem">

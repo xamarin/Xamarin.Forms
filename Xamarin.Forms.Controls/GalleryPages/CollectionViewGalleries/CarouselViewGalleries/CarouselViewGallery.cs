@@ -1,4 +1,6 @@
-﻿namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
+﻿using Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselViewGalleries;
+
+namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselViewGalleries
 {
 	internal class CarouselViewGallery : ContentPage
 	{
@@ -19,7 +21,9 @@
 						GalleryBuilder.NavButton("CarouselView (Code, Horizontal)", () =>
 							new CarouselCodeGallery(ItemsLayoutOrientation.Horizontal), Navigation),
 						GalleryBuilder.NavButton("CarouselView (Code, Vertical)", () =>
-							new CarouselCodeGallery(ItemsLayoutOrientation.Vertical), Navigation)
+							new CarouselCodeGallery(ItemsLayoutOrientation.Vertical), Navigation),
+						GalleryBuilder.NavButton("CarouselView (XAML, Horizontal)", () =>
+							new CarouselXamlGallery(), Navigation),
 					}
 				}
 			};
