@@ -16,8 +16,8 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 					new RowDefinition { Height = GridLength.Auto },
 					new RowDefinition { Height = GridLength.Auto },
 					new RowDefinition { Height = GridLength.Auto },
-					new RowDefinition { Height = GridLength.Star },
-					new RowDefinition { Height = 100 }
+					new RowDefinition { Height = GridLength.Auto },
+					//
 				}
 			};
 			var itemsLayout =
@@ -34,8 +34,10 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 				ItemsLayout = itemsLayout,
 				ItemTemplate = itemTemplate,
 				Position = 2,
-				NumberOfVisibleItems = 3,
+				NumberOfVisibleItems = 1,
 				ItemSpacing = 10,
+				HeightRequest = 580,
+				Padding = new Thickness(60,0,60,0)
 			};
 
 			layout.Children.Add(carouselView);
@@ -47,7 +49,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 				//SelectedIndicatorTintColor = Color.Yellow,
 				//IndicatorsShape = IndicatorsShape.Square,
 				HorizontalOptions = LayoutOptions.Center,
-				VerticalOptions = LayoutOptions.Start,
+				VerticalOptions = LayoutOptions.End,
 				HeightRequest = 30,
 				InputTransparent = true
 			};
@@ -67,9 +69,9 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			layout.Children.Add(stacklayoutInfo);
 
 			Grid.SetRow(positionControl, 1);
+			Grid.SetRow(stacklayoutInfo, 2);
 			Grid.SetRow(carouselView, 3);
 			Grid.SetRow(indicatorsView, 3);
-			Grid.SetRow(stacklayoutInfo, 4);
 
 			Content = layout;
 

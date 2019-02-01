@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Platform.iOS
 			//TODO: Should we scale the items 
 			var aspectRation = size.Width / size.Height;
 
-			var width = size.Width / _carouselView.NumberOfVisibleItems;
+			var width = (size.Width - _carouselView.Padding.Left - _carouselView.Padding.Right ) / _carouselView.NumberOfVisibleItems;
 			var height = size.Height / _carouselView.NumberOfVisibleItems;
 
 			if (ScrollDirection == UICollectionViewScrollDirection.Horizontal)

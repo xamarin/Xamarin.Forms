@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using Xamarin.Forms.Internals;
 using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
@@ -38,12 +39,30 @@ namespace Xamarin.Forms
 	}
 
 	[RenderWith(typeof(_CarouselViewRenderer))]
-	public class CarouselView : ItemsView, ICarouselViewController
+	public class CarouselView : ItemsView, ICarouselViewController, IPaddingElement
 	{
 		public const string CurrentItemVisualState = "CurrentItem";
 		public const string NextItemVisualState = "NextItem";
 		public const string PreviousItemVisualState = "PreviousItem";
 		public const string DefaultItemVisualState = "DefaultItem";
+
+		public static readonly BindableProperty PaddingProperty = PaddingElement.PaddingProperty;
+
+		public Thickness Padding
+		{
+			get { return (Thickness)GetValue(PaddingElement.PaddingProperty); }
+			set { SetValue(PaddingElement.PaddingProperty, value); }
+		}
+
+		Thickness IPaddingElement.PaddingDefaultValueCreator()
+		{
+			return default(Thickness);
+		}
+
+		void IPaddingElement.OnPaddingPropertyChanged(Thickness oldValue, Thickness newValue)
+		{
+			InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
+		}
 
 		public static readonly BindablePropertyKey VisibleViewsPropertyKey = BindableProperty.CreateReadOnly(nameof(VisibleViews), typeof(List<View>), typeof(CarouselView), null);
 
