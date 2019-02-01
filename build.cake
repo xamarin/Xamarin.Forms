@@ -46,10 +46,6 @@ Task("Clean")
     CleanDirectories("./**/obj", (fsi)=> !fsi.Path.FullPath.Contains("XFCorePostProcessor") && !fsi.Path.FullPath.StartsWith("tools"));
     CleanDirectories("./**/bin", (fsi)=> !fsi.Path.FullPath.Contains("XFCorePostProcessor") && !fsi.Path.FullPath.StartsWith("tools"));
 
-    Information(MakeAbsolute(Directory("./")));
-
-    // this doesn't work
-    GitClean(MakeAbsolute(Directory("./")));
 });
 
 Task("NuGetPack")
@@ -134,13 +130,29 @@ Task("Android81")
     });
 
 Task("VSMAC")
-    .IsDependentOn("BuildHack")
+    .IsDependentOn("BuildAndroidControlGallery")
     .Does(() =>
     {
         StartProcess("open", new ProcessSettings{ Arguments = "Xamarin.Forms.sln" });
         
     });
 
+Task("BuildAndroidControlGallery")
+    .IsDependentOn("BuildHack")
+    .Does(() =>
+    {
+                MSBuild("./Xamarin.Forms.ControlGallery.Android/Xamarin.Forms.ControlGallery.Android.csproj", 
+                    GetMSBuildSettings()
+                    .WithRestore()
+                    // work around bug on vs mac where resources generate wrong first time
+                    .WithTarget("rebuild")
+                    );
+
+        StartProcess("open", new ProcessSettings{ Arguments = "Xamarin.Forms.sln" });
+        
+    });
+
+/* 
 Task("Deploy")
     .IsDependentOn("DeployiOS")
     .IsDependentOn("DeployAndroid");
@@ -154,12 +166,11 @@ Task("DeployiOS")
         BuildiOSIpa("./Xamarin.Forms.sln", platform:"iPhoneSimulator", configuration:"Debug");
 
     });
-
+*/
 Task("DeployAndroid")
+    .IsDependentOn("BuildAndroidControlGallery")
     .Does(() =>
     { 
-        MSBuild("./Xamarin.Forms.Build.Tasks/Xamarin.Forms.Build.Tasks.csproj", GetMSBuildSettings().WithRestore());
-        MSBuild("./Xamarin.Forms.ControlGallery.Android/Xamarin.Forms.ControlGallery.Android.csproj", GetMSBuildSettings().WithRestore());
         BuildAndroidApk("./Xamarin.Forms.ControlGallery.Android/Xamarin.Forms.ControlGallery.Android.csproj", sign:true, configuration:configuration);
         AdbUninstall("AndroidControlGallery.AndroidControlGallery");
         AdbInstall("./Xamarin.Forms.ControlGallery.Android/bin/Debug/AndroidControlGallery.AndroidControlGallery-Signed.apk");
