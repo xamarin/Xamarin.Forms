@@ -1,6 +1,9 @@
 ---
 name: Feature request
 about: Suggest an idea for this project
+title: "[Enhancement] YOUR IDEA!"
+labels: t/enhancement ➕
+assignees: ''
 
 ---
 
