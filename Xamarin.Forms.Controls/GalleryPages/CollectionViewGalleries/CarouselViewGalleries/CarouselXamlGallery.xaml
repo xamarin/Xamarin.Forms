@@ -1,45 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ContentPage xmlns:gallery="Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselViewGalleries" xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselViewGalleries.CarouselXamlGallery">
-    <ContentPage.Content>
-        <CarouselView ItemsSource="{Binding Items}" Padding="60,0,60,0">
+<ContentPage xmlns:gallery="clr-namespace:Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselViewGalleries" xmlns="http://xamarin.com/schemas/2014/forms" xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" x:Class="Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselViewGalleries.CarouselXamlGallery">
+    <Grid Margin="0,50,0,0">
+        <Grid.RowDefinitions>
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+			<RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+		<Slider Value="{Binding Position, Mode=TwoWay}" Maximum="{Binding Count}"></Slider>
+		
+        <CarouselView x:Name="carousel" ItemsSource="{Binding Items}" Position="{Binding Position}" Padding="60,0,60,0" Grid.Row="1" HeightRequest="500">
             <CarouselView.ItemTemplate>
                 <DataTemplate>
-                    <Grid Padding="10,0,10,0" >
-                        <VisualStateManager.VisualStateGroups>
-                            <VisualStateGroup x:Name="CarouselViewStates">
-                                <VisualState x:Name="CurrentItem">
-                                    <VisualState.Setters>
-                                        <Setter Property="Opacity" Value="1" />
-                                    </VisualState.Setters>
-                                </VisualState>
-                                <VisualState x:Name="PreviousItem">
-                                    <VisualState.Setters>
-                                        <Setter Property="Opacity" Value="0.7" />
-                                    </VisualState.Setters>
-                                </VisualState>
-                                <VisualState x:Name="NextItem">
-                                    <VisualState.Setters>
-                                        <Setter Property="Opacity" Value="0.7" />
-                                    </VisualState.Setters>
-                                </VisualState>
-                                <VisualState x:Name="VisibleItem">
-                                    <VisualState.Setters>
-                                        <Setter Property="Opacity" Value="0.6" />
-                                    </VisualState.Setters>
-                                </VisualState>
-                                <VisualState x:Name="DefaultItem">
-                                    <VisualState.Setters>
-                                        <Setter Property="Opacity" Value="0.5" />
-                                    </VisualState.Setters>
-                                </VisualState>
-                            </VisualStateGroup>
-                        </VisualStateManager.VisualStateGroups>
-                        <Frame x:Name="frame" HasShadow="True" Padding="0" HorizontalOptions="Center" VerticalOptions="Center">
-                            <Image Source="cardBackground" InputTransparent="true" Aspect="AspectFit" />
-                        </Frame>
-                    </Grid>
+                  <gallery:ExampleTemplateCarousel />
                 </DataTemplate>
             </CarouselView.ItemTemplate>
         </CarouselView>
-    </ContentPage.Content>
+        <IndicatorsView IndicatorsView.ItemsSourceBy="carousel"
+						Grid.Row="1" 
+						HeightRequest="30" 
+						HorizontalOptions="Center" VerticalOptions="End" InputTransparent="true" />
+    </Grid>
 </ContentPage>

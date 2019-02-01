@@ -4,7 +4,7 @@ using Xamarin.Forms;
 
 namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselViewGalleries
 {
-	public partial class ExampleTemplateCarousel : Grid
+	public partial class ExampleTemplateCarousel
 	{
 		double initialY = -1;
 		bool delete;
