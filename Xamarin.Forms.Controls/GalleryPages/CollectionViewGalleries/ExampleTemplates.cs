@@ -254,11 +254,11 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			});
 		}
 
-		private class IndexRequestConverter : IValueConverter
+		class IndexRequestConverter : IValueConverter
 		{
-			private readonly int _cutoff;
-			private readonly int _lowValue;
-			private readonly int _highValue;
+			readonly int _cutoff;
+			readonly int _lowValue;
+			readonly int _highValue;
 
 			public IndexRequestConverter(int cutoff, int lowValue, int highValue)
 			{
@@ -277,7 +277,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => throw new NotImplementedException();
 		}
 
-		private class IndexColorConverter : IValueConverter
+		class IndexColorConverter : IValueConverter
 		{
 			Color[] _colors = new Color[] { Color.Red, Color.Green, Color.Blue, Color.Orange, Color.BlanchedAlmond };
 
