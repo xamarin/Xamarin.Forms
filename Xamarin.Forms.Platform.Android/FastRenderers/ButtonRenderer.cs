@@ -344,13 +344,5 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 			return _platformElementConfiguration;
 		}
-
-		Button IButtonLayoutRenderer.Element => Button;
-		AppCompatButton IButtonLayoutRenderer.View => this;
-		event EventHandler<VisualElementChangedEventArgs> IButtonLayoutRenderer.ElementChanged
-		{
-			add => ((IVisualElementRenderer)this).ElementChanged += value;
-			remove => ((IVisualElementRenderer)this).ElementChanged -= value;
-		}
 	}
 }

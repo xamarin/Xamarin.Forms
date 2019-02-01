@@ -35,7 +35,8 @@ namespace Xamarin.Forms.Platform.Android
 		bool _borderAdjustsPadding;
 		bool _maintainLegacyMeasurements;
 
-		public ButtonLayoutManager(IButtonLayoutRenderer renderer) : this(renderer, false, false, false, true)
+		public ButtonLayoutManager(IButtonLayoutRenderer renderer)
+			: this(renderer, false, false, false, true)
 		{
 		}
 
@@ -53,7 +54,7 @@ namespace Xamarin.Forms.Platform.Android
 			_maintainLegacyMeasurements = maintainLegacyMeasurements;
 		}
 
-		AppCompatButton View => _renderer?.View;
+		AppCompatButton View => _renderer?.View as AppCompatButton;
 
 		Context Context => _renderer?.View?.Context;
 
@@ -89,18 +90,17 @@ namespace Xamarin.Forms.Platform.Android
 
 			Drawable drawable = null;
 			Drawable[] drawables = TextViewCompat.GetCompoundDrawablesRelative(view);
-			if(drawables != null)
+			if (drawables != null)
 			{
 				foreach (var compoundDrawable in drawables)
 				{
 					if (compoundDrawable != null)
 					{
-						drawable = compoundDrawable;						
+						drawable = compoundDrawable;
 						break;
 					}
 				}
 			}
-
 
 			if (drawable != null)
 			{
@@ -257,28 +257,27 @@ namespace Xamarin.Forms.Platform.Android
 			if (view == null)
 				return;
 
-			FileImageSource elementImage = _element.Image;
-			string imageFile = elementImage?.File;
+			ImageSource elementImage = _element.Image;
 
-			if (elementImage == null || string.IsNullOrEmpty(imageFile))
+			if (elementImage == null || elementImage.IsEmpty)
 			{
 				view.SetCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
 				return;
 			}
 
-			using (var image = Context.GetDrawable(imageFile))
+			// No text, so no need for relative position; just center the image
+			// There's no option for just plain-old centering, so we'll use Top 
+			// (which handles the horizontal centering) and some tricksy padding (in OnLayout)
+			// to handle the vertical centering 
+			var layout = string.IsNullOrEmpty(_element.Text) ? _imageOnlyLayout : _element.ContentLayout;
+
+			if (_maintainLegacyMeasurements)
+				view.CompoundDrawablePadding = (int)layout.Spacing;
+			else
+				view.CompoundDrawablePadding = (int)Context.ToPixels(layout.Spacing);
+
+			_renderer.ApplyDrawableAsync(Button.ImageProperty, Context, image =>
 			{
-				// No text, so no need for relative position; just center the image
-				// There's no option for just plain-old centering, so we'll use Top 
-				// (which handles the horizontal centering) and some tricksy padding (in OnLayout)
-				// to handle the vertical centering 
-				var layout = string.IsNullOrEmpty(_element.Text) ? _imageOnlyLayout : _element.ContentLayout;
-
-				if(_maintainLegacyMeasurements)
-					view.CompoundDrawablePadding = (int)layout.Spacing;
-				else
-					view.CompoundDrawablePadding = (int)Context.ToPixels(layout.Spacing);
-
 				switch (layout.Position)
 				{
 					case Button.ButtonContentLayout.ImagePosition.Top:
@@ -295,7 +294,9 @@ namespace Xamarin.Forms.Platform.Android
 						TextViewCompat.SetCompoundDrawablesRelativeWithIntrinsicBounds(view, image, null, null, null);
 						break;
 				}
-			}
+
+				_element?.InvalidateMeasureNonVirtual(InvalidationTrigger.MeasureChanged);
+			});
 		}
 	}
 }

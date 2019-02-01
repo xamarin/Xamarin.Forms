@@ -335,11 +335,6 @@ namespace Xamarin.Forms.Platform.Android.Material
 		VisualElement IBorderVisualElementRenderer.Element => Element;
 		AView IBorderVisualElementRenderer.View => this;
 
-		// IButtonLayoutRenderer
-
-		Button IButtonLayoutRenderer.Element => Element;
-		AppCompatButton IButtonLayoutRenderer.View => this;
-
 		// IVisualElementRenderer
 
 		VisualElement IVisualElementRenderer.Element => Element;
