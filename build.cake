@@ -74,37 +74,43 @@ Task("_NuGetPack")
         NuGetPack(nugetFilePaths, nuGetPackSettings);
     });
 
+
+Task("Restore")
+    .Does(() =>
+    {
+        try{
+            MSBuild("./Xamarin.Forms.sln", GetMSBuildSettings().WithTarget("restore"));
+        }
+        catch{
+            // ignore restore errors that come from uwp
+            if(IsRunningOnWindows())
+                throw;
+        }
+    });
+
+
 Task("BuildHack")
+    .IsDependentOn("Restore")
     .Does(() =>
     {
         if(!IsRunningOnWindows())
+        {
             MSBuild("./Xamarin.Forms.Build.Tasks/Xamarin.Forms.Build.Tasks.csproj", GetMSBuildSettings().WithRestore());
-        
+        }  
     });
 
 Task("Build")
+    .IsDependentOn("Restore")
     .IsDependentOn("BuildHack")
     .IsDependentOn("Android81")
     .Does(() =>
 { 
-    try
-    {
-        MSBuild("./Xamarin.Forms.sln", GetMSBuildSettings()
-                .WithTarget("restore"));
-    }
-    catch(Exception)
-    {
-        if(!IsRunningOnWindows())
-            throw;
-    }
-
-
     try{
         MSBuild("./Xamarin.Forms.sln", GetMSBuildSettings());
     }
     catch(Exception)
     {
-        if(!IsRunningOnWindows())
+        if(IsRunningOnWindows())
             throw;
     }
 });
@@ -130,26 +136,17 @@ Task("Android81")
     });
 
 Task("VSMAC")
-    .IsDependentOn("BuildAndroidControlGallery")
-    .Does(() =>
-    {
-        StartProcess("open", new ProcessSettings{ Arguments = "Xamarin.Forms.sln" });
-        
-    });
-
-Task("BuildAndroidControlGallery")
     .IsDependentOn("BuildHack")
     .Does(() =>
     {
-                MSBuild("./Xamarin.Forms.ControlGallery.Android/Xamarin.Forms.ControlGallery.Android.csproj", 
-                    GetMSBuildSettings()
+        MSBuild("./Xamarin.Forms.ControlGallery.Android/Xamarin.Forms.ControlGallery.Android.csproj", 
+                GetMSBuildSettings()
                     .WithRestore()
                     // work around bug on vs mac where resources generate wrong first time
                     .WithTarget("rebuild")
-                    );
+        );
 
-        StartProcess("open", new ProcessSettings{ Arguments = "Xamarin.Forms.sln" });
-        
+        StartProcess("open", new ProcessSettings{ Arguments = "Xamarin.Forms.sln" });        
     });
 
 /* 
@@ -168,16 +165,15 @@ Task("DeployiOS")
     });
 */
 Task("DeployAndroid")
-    .IsDependentOn("BuildAndroidControlGallery")
+    .IsDependentOn("BuildHack")
     .Does(() =>
     { 
+        MSBuild("./Xamarin.Forms.Build.Tasks/Xamarin.Forms.Build.Tasks.csproj", GetMSBuildSettings().WithRestore());
+        MSBuild("./Xamarin.Forms.ControlGallery.Android/Xamarin.Forms.ControlGallery.Android.csproj", GetMSBuildSettings().WithRestore());
         BuildAndroidApk("./Xamarin.Forms.ControlGallery.Android/Xamarin.Forms.ControlGallery.Android.csproj", sign:true, configuration:configuration);
         AdbUninstall("AndroidControlGallery.AndroidControlGallery");
         AdbInstall("./Xamarin.Forms.ControlGallery.Android/bin/Debug/AndroidControlGallery.AndroidControlGallery-Signed.apk");
-
-        // how to grab this dynamically?
         AmStartActivity("AndroidControlGallery.AndroidControlGallery/md546303760447087909496d02dc7b17ae8.Activity1");
-
     });
 
 //////////////////////////////////////////////////////////////////////
