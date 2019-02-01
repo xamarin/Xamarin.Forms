@@ -26,8 +26,7 @@ namespace Xamarin.Forms.Platform.Android
 			var snapPointsType = itemsLayout.SnapPointsType;
 
 			// Clear our the existing snap helper (if any)
-			_snapHelper?.AttachToRecyclerView(null);
-			_snapHelper = null;
+			DetachSnapHelper();
 
 			if (snapPointsType == SnapPointsType.None)
 			{
@@ -79,10 +78,16 @@ namespace Xamarin.Forms.Platform.Android
 			return new CenterSnapHelper();
 		}
 
+		void DetachSnapHelper()
+		{
+			_snapHelper?.AttachToRecyclerView(null);
+			_snapHelper?.Dispose();
+			_snapHelper = null;
+		}
+
 		public void Dispose()
 		{
-			_recyclerView?.Dispose();
-			_snapHelper?.Dispose();
+			DetachSnapHelper();
 		}
 	}
 }

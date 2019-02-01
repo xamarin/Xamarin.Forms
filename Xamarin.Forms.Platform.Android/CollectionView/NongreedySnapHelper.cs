@@ -8,16 +8,44 @@ namespace Xamarin.Forms.Platform.Android
 		// (otherwise, this would start trying to snap the view as soon as we attached it to the RecyclerView)
 		protected bool CanSnap { get; set; }
 
-		public override int FindTargetSnapPosition(RecyclerView.LayoutManager layoutManager, int velocityX, int velocityY)
+		bool _disposed;
+		RecyclerView _recyclerView;
+
+		public override void AttachToRecyclerView(RecyclerView recyclerView)
 		{
-			CanSnap = true;
-			return base.FindTargetSnapPosition(layoutManager, velocityX, velocityY);
+			base.AttachToRecyclerView(recyclerView);
+
+			_recyclerView = recyclerView;
+
+			if (_recyclerView != null)
+			{
+				_recyclerView.ScrollChange += RecyclerView_ScrollChange;
+			}
 		}
 
-		public override int[] CalculateScrollDistance(int velocityX, int velocityY)
+		protected override void Dispose(bool disposing)
+		{
+			if (_disposed)
+			{
+				return;
+			}
+
+			_disposed = true;
+
+			if (disposing)
+			{
+				if (_recyclerView != null)
+				{
+					_recyclerView.ScrollChange -= RecyclerView_ScrollChange;
+				}
+			}
+
+			base.Dispose(disposing);
+		}
+
+		void RecyclerView_ScrollChange(object sender, global::Android.Views.View.ScrollChangeEventArgs e)
 		{
 			CanSnap = true;
-			return base.CalculateScrollDistance(velocityX, velocityY);
 		}
 	}
 }
