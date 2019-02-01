@@ -379,7 +379,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		{
 			_ = this.ApplyDrawableAsync(view, Page.BackgroundImageProperty, Context, drawable =>
 			{
-				this.SetBackground(drawable);
+				if (drawable != null)
+					this.SetBackground(drawable);
 			});
 		}
 
