@@ -5,18 +5,18 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public static class Extensions
 	{
-		public static void ApplyKeyboard(this IUITextInput textInput, Keyboard keyboard)
+		public static void ApplyKeyboard(this IUITextInputTraits textInput, Keyboard keyboard)
 		{
 			textInput.AutocapitalizationType = UITextAutocapitalizationType.None;
 			textInput.AutocorrectionType = UITextAutocorrectionType.No;
 			textInput.SpellCheckingType = UITextSpellCheckingType.No;
+			textInput.KeyboardType = UIKeyboardType.Default;
 
 			if (keyboard == Keyboard.Default)
 			{
 				textInput.AutocapitalizationType = UITextAutocapitalizationType.Sentences;
 				textInput.AutocorrectionType = UITextAutocorrectionType.Default;
 				textInput.SpellCheckingType = UITextSpellCheckingType.Default;
-				textInput.KeyboardType = UIKeyboardType.Default;
 			}
 			else if (keyboard == Keyboard.Chat)
 			{
@@ -105,5 +105,9 @@ namespace Xamarin.Forms.Platform.iOS
 					return DeviceOrientation.Other;
 			}
 		}
+
+		internal static bool IsHorizontal(this Button.ButtonContentLayout layout) =>
+			layout.Position == Button.ButtonContentLayout.ImagePosition.Left ||
+			layout.Position == Button.ButtonContentLayout.ImagePosition.Right;
 	}
 }
