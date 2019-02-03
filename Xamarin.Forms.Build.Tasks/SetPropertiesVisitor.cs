@@ -929,22 +929,26 @@ namespace Xamarin.Forms.Build.Tasks
 			var declaringType = context.Body.Method.DeclaringType;
 			while (declaringType.IsNested)
 				declaringType = declaringType.DeclaringType;
-			var handler = declaringType.AllMethods().FirstOrDefault(md => md.Name == value as string);
-			if (handler == null) 
-				throw new XamlParseException($"EventHandler \"{value}\" not found in type \"{context.Body.Method.DeclaringType.FullName}\"", iXmlLineInfo);
+			var handler = declaringType.AllMethods().FirstOrDefault(md => {
+				if (md.Name != value as string)
+					return false;
 
-			//check if the handler signature matches the Invoke signature;
-			var invoke = module.ImportReference(eventinfo.EventType.ResolveCached().GetMethods().First(md => md.Name == "Invoke"));
-			invoke = invoke.ResolveGenericParameters(eventinfo.EventType, module);
-			if (!handler.ReturnType.InheritsFromOrImplements(invoke.ReturnType))
-				throw new XamlParseException($"Signature (return type) of EventHandler \"{context.Body.Method.DeclaringType.FullName}.{value}\" doesn't match the event type", iXmlLineInfo);
-			if (invoke.Parameters.Count != handler.Parameters.Count)
-				throw new XamlParseException($"Signature (number of arguments) of EventHandler \"{context.Body.Method.DeclaringType.FullName}.{value}\" doesn't match the event type", iXmlLineInfo);
-			if (!invoke.ContainsGenericParameter)
-				for (var i = 0; i < invoke.Parameters.Count;i++)
-					if (!invoke.Parameters[i].ParameterType.InheritsFromOrImplements(handler.Parameters[i].ParameterType))
-						throw new XamlParseException($"Signature (parameter {i}) of EventHandler \"{context.Body.Method.DeclaringType.FullName}.{value}\" doesn't match the event type", iXmlLineInfo);
-			//TODO check generic parameters if any
+				//check if the handler signature matches the Invoke signature;
+				var invoke = module.ImportReference(eventinfo.EventType.ResolveCached().GetMethods().First(eventmd => eventmd.Name == "Invoke"));
+				invoke = invoke.ResolveGenericParameters(eventinfo.EventType, module);
+				if (!md.ReturnType.InheritsFromOrImplements(invoke.ReturnType) || invoke.Parameters.Count != md.Parameters.Count)
+					return false;
+
+				if (!invoke.ContainsGenericParameter)
+					for (var i = 0; i < invoke.Parameters.Count;i++)
+						if (!invoke.Parameters[i].ParameterType.InheritsFromOrImplements(md.Parameters[i].ParameterType))
+							return false;
+				//TODO check generic parameters if any
+
+				return true;
+			});
+			if (handler == null) 
+				throw new XamlParseException($"EventHandler \"{value}\" with correct signature not found in type \"{context.Body.Method.DeclaringType.FullName}\"", iXmlLineInfo);
 
 			if (handler.IsVirtual) {
 				yield return Create(Ldarg_0);
