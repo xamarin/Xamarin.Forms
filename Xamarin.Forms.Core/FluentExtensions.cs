@@ -88,6 +88,28 @@ namespace Xamarin.Forms.Fluent
 
 		#endregion
 
+		#region Layout Section
+
+		public static TView Children<TView>(this TView self, params View[] children) where TView : Layout<View>
+		{
+			if (self == null)
+				throw new ArgumentNullException(nameof(self));
+			if (children == null)
+				throw new ArgumentNullException(nameof(children));
+
+			foreach(var child in children)
+			{
+				if(child != null)
+				{
+					self.Children.Add(child);
+				}
+			}
+
+			return self;
+		}
+
+		#endregion
+
 		#region Button Section
 
 		public static TView Command<TView>(this TView self,
