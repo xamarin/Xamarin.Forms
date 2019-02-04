@@ -24,7 +24,27 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			UpdateBackground(tvc, item);
 
+			SetAccessibility(tvc, item);
+
 			return tvc;
+		}
+
+		public virtual void SetAccessibility(NSView tableViewCell, Cell cell)
+		{
+			if (cell.IsSet(AutomationProperties.IsInAccessibleTreeProperty))
+				tableViewCell.AccessibilityElement = cell.GetValue(AutomationProperties.IsInAccessibleTreeProperty).Equals(true);
+			else
+				tableViewCell.AccessibilityElement = false;
+
+			if (cell.IsSet(AutomationProperties.NameProperty))
+				tableViewCell.AccessibilityLabel = cell.GetValue(AutomationProperties.NameProperty).ToString();
+			else
+				tableViewCell.AccessibilityLabel = null;
+
+			if (cell.IsSet(AutomationProperties.HelpTextProperty))
+				tableViewCell.AccessibilityTitle = cell.GetValue(AutomationProperties.HelpTextProperty).ToString();
+			else
+				tableViewCell.AccessibilityTitle = null;
 		}
 
 		protected void UpdateBackground(NSView tableViewCell, Cell cell)
