@@ -10,8 +10,15 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 		public CarouselXamlGallery()
 		{
 			InitializeComponent();
-			BindingContext = new CarouselViewModel();
+			BindingContext = new CarouselViewModel(CarouselXamlSampleType.Peek);
+			carouselNormal.BindingContext = new CarouselViewModel(CarouselXamlSampleType.Normal);
 		}
+	}
+
+	public enum CarouselXamlSampleType
+	{
+		Normal,
+		Peek
 	}
 
 	internal class CarouselViewModel : ViewModelBase2
@@ -19,13 +26,23 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 		int _count;
 		int _position;
 		ObservableCollection<CarouselItem> _items;
-
-		public CarouselViewModel(int intialItems = 5)
+		CarouselXamlSampleType _type;
+		public CarouselViewModel(CarouselXamlSampleType type, int intialItems = 5)
 		{
+			_type = type;
+
 			var items = new List<CarouselItem>();
 			for (int i = 0; i < intialItems; i++)
 			{
-				items.Add(new CarouselItem("cardBackground"));
+				switch (_type)
+				{
+					case CarouselXamlSampleType.Peek:
+						items.Add(new CarouselItem(i, "cardBackground"));
+						break;
+					default:
+						items.Add(new CarouselItem(i));
+						break;
+				}
 			}
 
 			MessagingCenter.Subscribe<ExampleTemplateCarousel>(this, "remove", (obj) => Items.Remove(obj.BindingContext as CarouselItem));
@@ -61,11 +78,18 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 
 	internal class CarouselItem
 	{
-		public CarouselItem(string image)
+		public CarouselItem(int index, string image = null)
 		{
-			Image = image;
+			if (!string.IsNullOrEmpty(image))
+				FeaturedImage = image;
+			Index = index;
+			Image = "https://placeimg.com/700/300/any";
 		}
 
+		public int Index { get; set; }
+
 		public string Image { get; set; }
+
+		public string FeaturedImage { get; set; }
 	}
 }
