@@ -1,6 +1,7 @@
 using Android.App;
 using Android.Util;
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
@@ -16,6 +17,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 	{
 		AlertDialog _dialog;
 		bool _disposed;
+		EntryAccessibilityDelegate _pickerAccessibilityDelegate;
 
 		public PickerRendererBase(Context context) : base(context)
 		{
@@ -38,6 +40,9 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				_disposed = true;
 
 				((INotifyCollectionChanged)Element.Items).CollectionChanged -= RowsCollectionChanged;
+
+				_pickerAccessibilityDelegate?.Dispose();
+				_pickerAccessibilityDelegate = null;
 			}
 
 			base.Dispose(disposing);
@@ -54,6 +59,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				if (Control == null)
 				{
 					var textField = CreateNativeControl();
+
+					_pickerAccessibilityDelegate = new EntryAccessibilityDelegate();
+					ControlUsedForAutomation.SetAccessibilityDelegate(_pickerAccessibilityDelegate);
+
 					SetNativeControl(textField);
 				}
 				UpdateFont();
@@ -153,6 +162,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				EditText.Text = null;
 			else
 				EditText.Text = Element.Items[Element.SelectedIndex];
+
+			_pickerAccessibilityDelegate.ValueText = EditText.Text;
 		}
 
 		abstract protected void UpdateTextColor();

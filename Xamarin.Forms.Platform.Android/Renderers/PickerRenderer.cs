@@ -20,6 +20,7 @@ namespace Xamarin.Forms.Platform.Android
 		bool _isDisposed;
 		TextColorSwitcher _textColorSwitcher;
 		int _originalHintTextColor;
+		EntryAccessibilityDelegate _pickerAccessibilityDelegate;
 
 		public PickerRenderer(Context context) : base(context)
 		{
@@ -62,6 +63,9 @@ namespace Xamarin.Forms.Platform.Android
 				if (Control == null)
 				{
 					var textField = CreateNativeControl();
+
+					_pickerAccessibilityDelegate = new EntryAccessibilityDelegate();
+					textField.SetAccessibilityDelegate(_pickerAccessibilityDelegate);
 
 					var useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
 					_textColorSwitcher = new TextColorSwitcher(textField.TextColors, useLegacyColorManagement);
@@ -201,6 +205,8 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (oldText != Control.Text)
 				((IVisualElementController)Element).NativeSizeChanged();
+
+			_pickerAccessibilityDelegate.ValueText = Control.Text;
 		}
 
 		void UpdateTextColor()
