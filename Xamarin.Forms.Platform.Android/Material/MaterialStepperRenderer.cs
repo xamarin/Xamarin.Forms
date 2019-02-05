@@ -46,12 +46,17 @@ namespace Xamarin.Forms.Platform.Android.Material
 				{
 					var layout = CreateNativeControl();
 					StepperRendererManager.CreateStepperButtons(this, out _downButton, out _upButton);
-					layout.AddView(_downButton, new LinearLayout.LayoutParams(LayoutParams.WrapContent, LayoutParams.MatchParent));
+					layout.AddView(_downButton, new LinearLayout.LayoutParams(LayoutParams.WrapContent, LayoutParams.MatchParent)
+					{
+						Weight = 1,
+						RightMargin = (int)(Context.ToPixels(DefaultButtonSpacing) / 2),
+					});
 					layout.AddView(_upButton, new LinearLayout.LayoutParams(LayoutParams.WrapContent, LayoutParams.MatchParent)
 					{
-						// because the buttons have no inset, we add spacing in the form of a margin to one button
-						LeftMargin = (int)Context.ToPixels(DefaultButtonSpacing)
+						Weight = 1,
+						LeftMargin = (int)(Context.ToPixels(DefaultButtonSpacing) / 2),
 					});
+
 					SetNativeControl(layout);
 				}
 			}

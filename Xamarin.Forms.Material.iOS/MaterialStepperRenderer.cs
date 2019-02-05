@@ -132,7 +132,11 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 		public override CGSize SizeThatFits(CGSize size)
 		{
-			var btn = GetButtonSize();
+			var dec = DecrementButton.SizeThatFits(CGSize.Empty);
+			var inc = IncrementButton.SizeThatFits(CGSize.Empty);
+			var btn = new CGSize(
+				Math.Max(dec.Width, inc.Width),
+				Math.Max(dec.Height, inc.Height));
 			return new CGSize(btn.Width * 2 + DefaultButtonSpacing, btn.Height);
 		}
 
@@ -140,18 +144,9 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		{
 			base.LayoutSubviews();
 
-			var btn = GetButtonSize();
+			var btn = new CGSize((Bounds.Width - DefaultButtonSpacing) / 2, Bounds.Height);
 			DecrementButton.Frame = new CGRect(0, 0, btn.Width, btn.Height);
 			IncrementButton.Frame = new CGRect(btn.Width + DefaultButtonSpacing, 0, btn.Width, btn.Height);
-		}
-
-		CGSize GetButtonSize()
-		{
-			var dec = DecrementButton.SizeThatFits(CGSize.Empty);
-			var inc = IncrementButton.SizeThatFits(CGSize.Empty);
-			return new CGSize(
-				Math.Max(dec.Width, inc.Width),
-				Math.Max(dec.Height, inc.Height));
 		}
 	}
 }

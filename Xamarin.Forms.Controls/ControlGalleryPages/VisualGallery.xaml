@@ -237,7 +237,7 @@
             
             <Label Text="Steppers" FontSize="Large" />
             <Label Text="Default" Margin="0,0,0,-10" />
-            <Stepper />
+            <Stepper HorizontalOptions="Start" />
 
             <Label Text="Height 100" Margin="0,0,0,-10" />
             <Stepper HeightRequest="100"></Stepper>
