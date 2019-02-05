@@ -68,13 +68,11 @@ namespace Xamarin.Forms.Controls
 
 			BindingContext = new BoundContentPageViewModel ();
 
-			var button = new Button ();
-			button.SetBinding (Button.TextProperty, "ButtonText");
-			button.SetBinding (Button.CommandProperty, "ButtonCommand");
-
 			SetBinding (NavigationProperty, new Binding ("Navigation", converter: new NavWrapperConverter ()));
 
-			Content = button;
+			Content = new Button()
+				.SetBinding(Button.TextProperty, "ButtonText")
+				.SetBinding(Button.CommandProperty, "ButtonCommand");
 		}
 	}
 }

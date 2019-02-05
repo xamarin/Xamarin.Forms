@@ -29,16 +29,17 @@ namespace Xamarin.Forms
 			}
 		}
 
-		public static void SetBinding(this BindableObject self, BindableProperty targetProperty, string path, BindingMode mode = BindingMode.Default, IValueConverter converter = null,
-									  string stringFormat = null)
+		public static TBindable SetBinding<TBindable>(this TBindable self, BindableProperty targetProperty, string path, BindingMode mode = BindingMode.Default, IValueConverter converter = null,
+									  string stringFormat = null) where TBindable : BindableObject
 		{
 			if (self == null)
-				throw new ArgumentNullException("self");
+				throw new ArgumentNullException(nameof(self));
 			if (targetProperty == null)
-				throw new ArgumentNullException("targetProperty");
+				throw new ArgumentNullException(nameof(targetProperty));
 
 			var binding = new Binding(path, mode, converter, stringFormat: stringFormat);
 			self.SetBinding(targetProperty, binding);
+			return self;
 		}
 
 		[Obsolete]

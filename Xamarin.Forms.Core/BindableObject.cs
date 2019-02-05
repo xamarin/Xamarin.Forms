@@ -112,9 +112,10 @@ namespace Xamarin.Forms
 			RemoveBinding(property, context);
 		}
 
-		public void SetBinding(BindableProperty targetProperty, BindingBase binding)
+		public BindableObject SetBinding(BindableProperty targetProperty, BindingBase binding)
 		{
 			SetBinding(targetProperty, binding, false);
+			return this;
 		}
 
 		public void SetValue(BindableProperty property, object value)

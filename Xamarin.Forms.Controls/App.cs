@@ -35,7 +35,6 @@ namespace Xamarin.Forms.Controls
 
 			SetMainPage(CreateDefaultMainPage());
 
-			//MainPage = new RootPages.RootFluentPage(); // fluent test
 			//TestMainPageSwitches();
 		}
 
