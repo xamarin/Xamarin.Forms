@@ -56,7 +56,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty TextProperty
 			= BindableProperty.Create(nameof(Text), typeof(string), typeof(Span), "", defaultBindingMode: BindingMode.OneWay,
-				validateValue: (b, v) => !(b is NewLine));
+				validateValue: (b, v) => !(b is LineBreak));
 
 		public string Text
 		{
