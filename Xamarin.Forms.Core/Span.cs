@@ -163,6 +163,6 @@ namespace Xamarin.Forms
 
 	public class NewLine : Span
 	{
-		public NewLine() => Text = Environment.NewLine;
+		public LineBreak() => Text = Environment.NewLine;
 	}
 }
