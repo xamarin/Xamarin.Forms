@@ -55,7 +55,8 @@ namespace Xamarin.Forms
 #pragma warning restore 618
 
 		public static readonly BindableProperty TextProperty
-			= BindableProperty.Create(nameof(Text), typeof(string), typeof(Span), "", defaultBindingMode: BindingMode.OneWay);
+			= BindableProperty.Create(nameof(Text), typeof(string), typeof(Span), "", defaultBindingMode: BindingMode.OneWay,
+				validateValue: (b, v) => !(b is NewLine));
 
 		public string Text
 		{
@@ -158,5 +159,10 @@ namespace Xamarin.Forms
 		void ILineHeightElement.OnLineHeightChanged(double oldValue, double newValue)
 		{
 		}
+	}
+
+	public class NewLine : Span
+	{
+		public NewLine() => Text = Environment.NewLine;
 	}
 }
