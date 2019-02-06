@@ -34,6 +34,13 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		protected override EditText EditText => Control;
+
+		protected override void UpdateIsReadOnly()
+		{
+			base.UpdateIsReadOnly();
+			bool isReadOnly = !Element.IsReadOnly;
+			Control.SetCursorVisible(isReadOnly);
+		}
 	}
 
 	public abstract class EntryRendererBase<TControl> : ViewRenderer<Entry, TControl>, ITextWatcher, TextView.IOnEditorActionListener
@@ -92,11 +99,6 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 
 			((IElementController)Element).SetValueFromRenderer(Entry.TextProperty, s.ToString());
-		}
-
-		protected override FormsEditText CreateNativeControl()
-		{
-			return new FormsEditText(Context);
 		}
 
 		protected override void OnFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
@@ -467,13 +469,12 @@ namespace Xamarin.Forms.Platform.Android
 			}
 		}
 
-		void UpdateIsReadOnly()
+		protected virtual void UpdateIsReadOnly()
 		{
 			bool isReadOnly = !Element.IsReadOnly;
 
 			Control.FocusableInTouchMode = isReadOnly;
 			Control.Focusable = isReadOnly;
-			Control.SetCursorVisible(isReadOnly);
 		}
 	}
 }

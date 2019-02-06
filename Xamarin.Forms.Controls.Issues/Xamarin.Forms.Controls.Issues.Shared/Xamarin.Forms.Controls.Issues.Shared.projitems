@@ -14,12 +14,14 @@
       <DependentUpon>Bugzilla60787.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="$(MSBuildThisFileDirectory)Issue1332.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue2102.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1588.xaml.cs">
       <DependentUpon>Issue1588.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="$(MSBuildThisFileDirectory)Issue4384.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue1760_1.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue4782.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue4484.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3509.cs" />
@@ -85,6 +87,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla31145.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla31333.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla31366.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue4653.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla31964.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla32033.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Bugzilla32034.cs" />
@@ -291,6 +294,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue3273.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3053.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue2617.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue3139.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3087.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3089.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue1342.cs" />
@@ -407,6 +411,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue3558.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3541.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3840.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue4561.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3913.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3979.xaml.cs">
       <DependentUpon>Issue3979.xaml</DependentUpon>
@@ -546,6 +551,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue3342.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3415.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3049.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue5030.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ViewClipBoundsShouldUpdate.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3988.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue2580.cs" />
