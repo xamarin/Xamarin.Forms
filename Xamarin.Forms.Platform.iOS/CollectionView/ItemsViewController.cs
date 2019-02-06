@@ -36,9 +36,6 @@ namespace Xamarin.Forms.Platform.iOS
 			// If we're updating from a previous layout, we should keep any settings for the SelectableItemsViewController around
 			var selectableItemsViewController = Delegator?.SelectableItemsViewController;
 			Delegator = new UICollectionViewDelegator(_layout, this);
-			{
-				SelectableItemsViewController = selectableItemsViewController
-			};
 
 			CollectionView.Delegate = Delegator;
 
