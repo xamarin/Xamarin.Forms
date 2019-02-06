@@ -19,7 +19,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (_recyclerView != null)
 			{
-				_recyclerView.ScrollChange += RecyclerView_ScrollChange;
+				_recyclerView.ScrollChange += RecyclerViewScrollChange;
 			}
 		}
 
@@ -36,14 +36,14 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				if (_recyclerView != null)
 				{
-					_recyclerView.ScrollChange -= RecyclerView_ScrollChange;
+					_recyclerView.ScrollChange -= RecyclerViewScrollChange;
 				}
 			}
 
 			base.Dispose(disposing);
 		}
 
-		void RecyclerView_ScrollChange(object sender, global::Android.Views.View.ScrollChangeEventArgs e)
+		void RecyclerViewScrollChange(object sender, global::Android.Views.View.ScrollChangeEventArgs e)
 		{
 			CanSnap = true;
 		}
