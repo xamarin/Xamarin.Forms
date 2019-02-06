@@ -155,6 +155,7 @@
     
     <!--Android 10-->
     <file src="Xamarin.Forms.Android.targets" target="build\MonoAndroid10\Xamarin.Forms.targets" />
+    <file src="proguard.cfg" target="build\MonoAndroid10\proguard.cfg" />
     
     <!--Android 81-->
     <file src="..\Xamarin.Forms.Platform.Android\bin\$Configuration$\MonoAndroid81\Xamarin.Forms.Platform.Android.dll" target="lib\MonoAndroid81" />
