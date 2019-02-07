@@ -10,7 +10,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 {
 	public class MaterialProgressBarRenderer : ViewRenderer<ProgressBar, MProgressView>
 	{
-		const float BackgroundAlpha = 0.3f;
+		const float BackgroundAlpha = 0.6f;
 
 		BasicColorScheme _defaultColorScheme;
 		BasicColorScheme _colorScheme;
