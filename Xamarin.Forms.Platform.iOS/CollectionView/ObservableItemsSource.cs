@@ -67,11 +67,12 @@ namespace Xamarin.Forms.Platform.iOS
 		
 		private void Replace(NotifyCollectionChangedEventArgs args)
 		{
-			var startIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : _itemsSource.IndexOf(args.NewItems[0]);
 			var newCount = args.NewItems.Count;
 
 			if (newCount == args.OldItems.Count)
 			{
+				var startIndex = args.NewStartingIndex > -1 ? args.NewStartingIndex : _itemsSource.IndexOf(args.NewItems[0]);
+
 				// We are replacing one set of items with a set of equal size; we can do a simple item range update
 				_collectionView.ReloadItems(CreateIndexesFrom(startIndex, newCount));
 				return;
