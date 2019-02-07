@@ -83,7 +83,10 @@ namespace Xamarin.Forms.Platform.iOS
 			base.OnElementPropertyChanged(sender, e);
 
 			if (e.PropertyName == DatePicker.DateProperty.PropertyName || e.PropertyName == DatePicker.FormatProperty.PropertyName)
+			{
 				UpdateDateFromModel(true);
+				UpdateLetterSpacing();
+			}
 			else if (e.PropertyName == DatePicker.MinimumDateProperty.PropertyName)
 				UpdateMinimumDate();
 			else if (e.PropertyName == DatePicker.MaximumDateProperty.PropertyName)
@@ -94,8 +97,12 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateTextColor();
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateFlowDirection();
-			else if (e.PropertyName == DatePicker.FontAttributesProperty.PropertyName || e.PropertyName == DatePicker.FontFamilyProperty.PropertyName || e.PropertyName == DatePicker.FontSizeProperty.PropertyName)
+			else if (e.PropertyName == DatePicker.FontAttributesProperty.PropertyName ||
+			         e.PropertyName == DatePicker.FontFamilyProperty.PropertyName || e.PropertyName == DatePicker.FontSizeProperty.PropertyName)
+			{
 				UpdateFont();
+				UpdateLetterSpacing();
+			}
 		}
 
 		void HandleValueChanged(object sender, EventArgs e)
@@ -133,19 +140,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateLetterSpacing()
 		{
-			if (!string.IsNullOrEmpty(Control.Text))
-			{
-				var attributedString = new NSMutableAttributedString(Control.Text);
-				if (Element.LetterSpacing > 0 && !string.IsNullOrEmpty(Control.Text))
-				{
-					var nsKern = new NSString("NSKern");
-					NSObject spacing = FromObject(Element.LetterSpacing * 0.01);
-					var range = new NSRange(0, Control.Text.Length);
-					attributedString.AddAttribute(nsKern, spacing, range);
-				}
-
-				Control.AttributedText = attributedString;
-			}
+			Control.AttributedText = Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text);
 		}
 		void UpdateMaximumDate()
 		{

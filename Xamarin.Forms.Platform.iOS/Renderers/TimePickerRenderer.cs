@@ -94,13 +94,20 @@ namespace Xamarin.Forms.Platform.iOS
 			base.OnElementPropertyChanged(sender, e);
 
 			if (e.PropertyName == TimePicker.TimeProperty.PropertyName || e.PropertyName == TimePicker.FormatProperty.PropertyName)
+			{
 				UpdateTime();
+				UpdateLetterSpacing();
+			}
 			else if (e.PropertyName == TimePicker.TextColorProperty.PropertyName || e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateTextColor();
 			else if (e.PropertyName == DatePicker.LetterSpacingProperty.PropertyName)
 				UpdateLetterSpacing();
-			else if (e.PropertyName == TimePicker.FontAttributesProperty.PropertyName || e.PropertyName == TimePicker.FontFamilyProperty.PropertyName || e.PropertyName == TimePicker.FontSizeProperty.PropertyName)
+			else if (e.PropertyName == TimePicker.FontAttributesProperty.PropertyName ||
+			         e.PropertyName == TimePicker.FontFamilyProperty.PropertyName || e.PropertyName == TimePicker.FontSizeProperty.PropertyName)
+			{
 				UpdateFont();
+				UpdateLetterSpacing();
+			}
 
 			if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateFlowDirection();
@@ -146,19 +153,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateLetterSpacing()
 		{
-			if (!string.IsNullOrEmpty(Control.Text))
-			{
-				var attributedString = new NSMutableAttributedString(Control.Text);
-				if (Element.LetterSpacing > 0 && !string.IsNullOrEmpty(Control.Text))
-				{
-					var nsKern = new NSString("NSKern");
-					NSObject spacing = FromObject(Element.LetterSpacing * 0.01);
-					var range = new NSRange(0, Control.Text.Length);
-					attributedString.AddAttribute(nsKern, spacing, range);
-				}
-
-				Control.AttributedText = attributedString;
-			}
+			Control.AttributedText = Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text);
 		}
 
 		void UpdateTime()

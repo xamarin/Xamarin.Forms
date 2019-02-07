@@ -142,7 +142,10 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.PropertyName == Entry.IsPasswordProperty.PropertyName)
 				UpdatePassword();
 			else if (e.PropertyName == Entry.TextProperty.PropertyName)
+			{
 				UpdateText();
+				UpdateLetterSpacing();
+			}
 			else if (e.PropertyName == Entry.TextColorProperty.PropertyName)
 				UpdateColor();
 			else if (e.PropertyName == DatePicker.LetterSpacingProperty.PropertyName)
@@ -156,11 +159,20 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.PropertyName == Entry.HorizontalTextAlignmentProperty.PropertyName)
 				UpdateAlignment();
 			else if (e.PropertyName == Entry.FontAttributesProperty.PropertyName)
+			{
 				UpdateFont();
+				UpdateLetterSpacing();
+			}
 			else if (e.PropertyName == Entry.FontFamilyProperty.PropertyName)
+			{
 				UpdateFont();
+				UpdateLetterSpacing();
+			}
 			else if (e.PropertyName == Entry.FontSizeProperty.PropertyName)
+			{
 				UpdateFont();
+				UpdateLetterSpacing();
+			}
 			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 			{
 				UpdateColor();
@@ -310,12 +322,14 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				var color = targetColor.IsDefault || !Element.IsEnabled ? _defaultPlaceholderColor : targetColor;
 				Control.AttributedPlaceholder = formatted.ToAttributed(Element, color);
+				Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text, Control.AttributedPlaceholder);
 			}
 			else
 			{
 				// Using VSM color management; take whatever is in Element.PlaceholderColor
 				var color = targetColor.IsDefault ? _defaultPlaceholderColor : targetColor;
 				Control.AttributedPlaceholder = formatted.ToAttributed(Element, color);
+				Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text, Control.AttributedPlaceholder);
 			}
 		}
 
@@ -328,19 +342,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateLetterSpacing()
 		{
-			if (!string.IsNullOrEmpty(Control.Text))
-			{
-				var attributedString = new NSMutableAttributedString(Control.Text);
-				if (Element.LetterSpacing > 0 && !string.IsNullOrEmpty(Control.Text))
-				{
-					var nsKern = new NSString("NSKern");
-					NSObject spacing = FromObject(Element.LetterSpacing * 0.01);
-					var range = new NSRange(0, Control.Text.Length);
-					attributedString.AddAttribute(nsKern, spacing, range);
-				}
-
-				Control.AttributedText = attributedString;
-			}
+			Control.AttributedText = Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text);
 		}
 
 		void UpdateMaxLength()

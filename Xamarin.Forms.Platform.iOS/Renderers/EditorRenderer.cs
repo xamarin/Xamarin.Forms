@@ -73,7 +73,6 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdatePlaceholderColor();
 			UpdateTextColor();
 			UpdateText();
-			UpdateLetterSpacing();
 			UpdateFont();
 			UpdateKeyboard();
 			UpdateEditable();
@@ -82,6 +81,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateAutoSizeOption();
 			UpdateReadOnly();
 			UpdateUserInteraction();
+			UpdateLetterSpacing();
 		}
 
 		private void UpdateAutoSizeOption()
@@ -130,7 +130,10 @@ namespace Xamarin.Forms.Platform.iOS
 			base.OnElementPropertyChanged(sender, e);
 
 			if (e.PropertyName == Editor.TextProperty.PropertyName)
+			{
 				UpdateText();
+				UpdateLetterSpacing();
+			}
 			else if (e.PropertyName == Xamarin.Forms.InputView.KeyboardProperty.PropertyName)
 				UpdateKeyboard();
 			else if (e.PropertyName == Xamarin.Forms.InputView.IsSpellCheckEnabledProperty.PropertyName)
@@ -144,11 +147,20 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.PropertyName == DatePicker.LetterSpacingProperty.PropertyName)
 				UpdateLetterSpacing();
 			else if (e.PropertyName == Editor.FontAttributesProperty.PropertyName)
+			{
 				UpdateFont();
+				UpdateLetterSpacing();
+			}
 			else if (e.PropertyName == Editor.FontFamilyProperty.PropertyName)
+			{
 				UpdateFont();
+				UpdateLetterSpacing();
+			}
 			else if (e.PropertyName == Editor.FontSizeProperty.PropertyName)
+			{
 				UpdateFont();
+				UpdateLetterSpacing();
+			}
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateTextAlignment();
 			else if (e.PropertyName == Xamarin.Forms.InputView.MaxLengthProperty.PropertyName)
@@ -233,19 +245,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateLetterSpacing()
 		{
-			if (!string.IsNullOrEmpty(Control.Text))
-			{
-				var attributedString = new NSMutableAttributedString(Control.Text);
-				if (Element.LetterSpacing > 0 && !string.IsNullOrEmpty(Control.Text))
-				{
-					var nsKern = new NSString("NSKern");
-					NSObject spacing = FromObject(Element.LetterSpacing * 0.01);
-					var range = new NSRange(0, Control.Text.Length);
-					attributedString.AddAttribute(nsKern, spacing, range);
-				}
-
-				Control.AttributedText = attributedString;
-			}
+			Control.AttributedText = Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text);
 		}
 
 		void UpdateText()

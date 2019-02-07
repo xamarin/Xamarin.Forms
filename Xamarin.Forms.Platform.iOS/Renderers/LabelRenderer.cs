@@ -191,7 +191,6 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				UpdateText();
 				UpdateTextDecorations();
-				UpdateLetterSpacing();
 			}
 			else if (e.PropertyName == DatePicker.LetterSpacingProperty.PropertyName)
 				UpdateLetterSpacing();
@@ -245,8 +244,10 @@ namespace Xamarin.Forms.Platform.MacOS
 
 #if __MOBILE__
 			Control.AttributedText = newAttributedText;
+			Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text, Control.AttributedText);
 #else
 			Control.AttributedStringValue = newAttributedText;
+			Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text, Control.AttributedStringValue);
 #endif
 		}
 
@@ -343,19 +344,11 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		void UpdateLetterSpacing()
 		{
-			if (!string.IsNullOrEmpty(Control.Text))
-			{
-				var attributedString = new NSMutableAttributedString(Control.Text);
-				if (Element.LetterSpacing > 0 && !string.IsNullOrEmpty(Control.Text))
-				{
-					var nsKern = new NSString("NSKern");
-					NSObject spacing = FromObject(Element.LetterSpacing );
-					var range = new NSRange(0, Control.Text.Length-1);
-					attributedString.AddAttribute(nsKern, spacing, range);
-				}
-
-				Control.AttributedText = attributedString;
-			}
+#if __MOBILE__
+			Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text, Control.AttributedText);
+#else
+			Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text, Control.AttributedStringValue);
+#endif
 		}
 
 		void UpdateText()
@@ -385,8 +378,10 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 #if __MOBILE__
 			Control.AttributedText = _formatted.ToAttributed(Element, Element.TextColor, Element.HorizontalTextAlignment, Element.LineHeight);
+			Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text, Control.AttributedText);
 #else
 			Control.AttributedStringValue = _formatted.ToAttributed(Element, Element.TextColor, Element.HorizontalTextAlignment, Element.LineHeight);
+			Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text, Control.AttributedStringValue);
 #endif
 		}
 

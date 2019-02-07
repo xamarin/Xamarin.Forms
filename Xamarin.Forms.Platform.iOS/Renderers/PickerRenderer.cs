@@ -94,15 +94,25 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			base.OnElementPropertyChanged(sender, e);
 			if (e.PropertyName == Picker.TitleProperty.PropertyName || e.PropertyName == Picker.TitleColorProperty.PropertyName)
+			{
 				UpdatePicker();
+				UpdateLetterSpacing();
+			}
 			else if (e.PropertyName == Picker.SelectedIndexProperty.PropertyName)
+			{
 				UpdatePicker();
+				UpdateLetterSpacing();
+			}
 			else if (e.PropertyName == DatePicker.LetterSpacingProperty.PropertyName)
 				UpdateLetterSpacing();
 			else if (e.PropertyName == Picker.TextColorProperty.PropertyName || e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateTextColor();
-			else if (e.PropertyName == Picker.FontAttributesProperty.PropertyName || e.PropertyName == Picker.FontFamilyProperty.PropertyName || e.PropertyName == Picker.FontSizeProperty.PropertyName)
+			else if (e.PropertyName == Picker.FontAttributesProperty.PropertyName || e.PropertyName == Picker.FontFamilyProperty.PropertyName ||
+			         e.PropertyName == Picker.FontSizeProperty.PropertyName)
+			{
 				UpdateFont();
+				UpdateLetterSpacing();
+			}
 		}
 
 		void OnEditing(object sender, EventArgs eventArgs)
@@ -133,23 +143,12 @@ namespace Xamarin.Forms.Platform.iOS
 		void RowsCollectionChanged(object sender, EventArgs e)
 		{
 			UpdatePicker();
+			UpdateLetterSpacing();
 		}
 
 		void UpdateLetterSpacing()
 		{
-			if (!string.IsNullOrEmpty(Control.Text))
-			{
-				var attributedString = new NSMutableAttributedString(Control.Text);
-				if (Element.LetterSpacing > 0 && !string.IsNullOrEmpty(Control.Text))
-				{
-					var nsKern = new NSString("NSKern");
-					NSObject spacing = FromObject(Element.LetterSpacing * 0.01);
-					var range = new NSRange(0, Control.Text.Length);
-					attributedString.AddAttribute(nsKern, spacing, range);
-				}
-
-				Control.AttributedText = attributedString;
-			}
+			Control.AttributedText = Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text);
 		}
 
 		void UpdateFont()
@@ -164,16 +163,18 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (!Element.IsSet(Picker.TitleColorProperty))
 			{
-				Control.AttributedPlaceholder = null;
 				Control.Placeholder = Element.Title;
+				Control.AttributedPlaceholder = Element.LetterSpacing.ToLetterSpacingAttribute(Control.Placeholder);
 			}
 			else
 			{
-				Control.AttributedPlaceholder = new NSAttributedString(Element.Title, new UIStringAttributes
+				Control.AttributedPlaceholder = new NSMutableAttributedString(Element.Title, new UIStringAttributes
 				{
 					ForegroundColor = Element.TitleColor.ToUIColor()
 				});
+				Element.LetterSpacing.ToLetterSpacingAttribute(Control.Placeholder, Control.AttributedPlaceholder);
 			}
+
 
 			var oldText = Control.Text;
 			Control.Text = selectedIndex == -1 || items == null || selectedIndex >= items.Count ? "" : items[selectedIndex];

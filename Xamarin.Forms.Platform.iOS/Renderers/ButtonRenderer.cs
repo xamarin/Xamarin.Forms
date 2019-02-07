@@ -109,13 +109,19 @@ namespace Xamarin.Forms.Platform.iOS
 			base.OnElementPropertyChanged(sender, e);
 
 			if (e.PropertyName == Button.TextProperty.PropertyName)
+			{
 				UpdateText();
+				UpdateLetterSpacing();
+			}
 			else if (e.PropertyName == Button.TextColorProperty.PropertyName)
 				UpdateTextColor();
 			else if (e.PropertyName == Button.LetterSpacingProperty.PropertyName)
 				UpdateLetterSpacing();
 			else if (e.PropertyName == Button.FontProperty.PropertyName)
+			{
 				UpdateFont();
+				UpdateLetterSpacing();
+			}
 			else if (e.PropertyName == Button.ImageProperty.PropertyName)
 				UpdateImage();
 			else if (e.PropertyName == Button.PaddingProperty.PropertyName)
@@ -226,21 +232,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateLetterSpacing()
 		{
-			if (!string.IsNullOrEmpty(Control.TitleLabel?.Text))
-			{
-				var attributedString = new NSMutableAttributedString(Control.TitleLabel.Text);
-				if (Element.LetterSpacing > 0 && !string.IsNullOrEmpty(Control.TitleLabel.Text))
-				{
-					var nsKern = new NSString("NSKern");
-					NSObject spacing = FromObject(Element.LetterSpacing * 0.01);
-					var range = new NSRange(0, Control.TitleLabel.Text.Length);
-					attributedString.AddAttribute(nsKern, spacing, range);
-				}
-
-				Control.SetAttributedTitle(attributedString, UIControlState.Normal);
-				Control.SetAttributedTitle(attributedString, UIControlState.Highlighted);
-				Control.SetAttributedTitle(attributedString, UIControlState.Disabled);
-			}
+			var attributedString = Element.LetterSpacing.ToLetterSpacingAttribute(Control.TitleLabel.Text);
+			Control.SetAttributedTitle(attributedString, UIControlState.Normal);
+			Control.SetAttributedTitle(attributedString, UIControlState.Highlighted);
+			Control.SetAttributedTitle(attributedString, UIControlState.Disabled);
 		}
 
 		void UpdatePadding(UIButton button = null)
