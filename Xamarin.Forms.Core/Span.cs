@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
@@ -14,7 +15,7 @@ namespace Xamarin.Forms
 		}
 
 		public static readonly BindableProperty StyleProperty = BindableProperty.Create(nameof(Style), typeof(Style), typeof(Span), default(Style),
-			propertyChanged: (bindable, oldvalue, newvalue) => ((Span)bindable)._mergedStyle.Style = (Style)newvalue, defaultBindingMode: BindingMode.OneTime);
+			propertyChanged: (bindable, oldvalue, newvalue) => ((Span)bindable)._mergedStyle.Style = (Style)newvalue, defaultBindingMode: BindingMode.OneWay);
 
 		public static readonly BindableProperty TextDecorationsProperty = DecorableTextElement.TextDecorationsProperty;
 
@@ -25,7 +26,7 @@ namespace Xamarin.Forms
 		}
 
 		public static readonly BindableProperty BackgroundColorProperty
-			= BindableProperty.Create(nameof(BackgroundColor), typeof(Color), typeof(Span), default(Color), defaultBindingMode: BindingMode.OneTime);
+			= BindableProperty.Create(nameof(BackgroundColor), typeof(Color), typeof(Span), default(Color), defaultBindingMode: BindingMode.OneWay);
 
 		public Color BackgroundColor
 		{
@@ -42,6 +43,7 @@ namespace Xamarin.Forms
 		}
 
 		[Obsolete("Foreground is obsolete as of version 3.1.0. Please use the TextColor property instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static readonly BindableProperty ForegroundColorProperty = TextColorProperty;
 
 #pragma warning disable 618
@@ -53,7 +55,7 @@ namespace Xamarin.Forms
 #pragma warning restore 618
 
 		public static readonly BindableProperty TextProperty
-			= BindableProperty.Create(nameof(Text), typeof(string), typeof(Span), "", defaultBindingMode: BindingMode.OneTime);
+			= BindableProperty.Create(nameof(Text), typeof(string), typeof(Span), "", defaultBindingMode: BindingMode.OneWay);
 
 		public string Text
 		{
@@ -72,6 +74,7 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty LineHeightProperty = LineHeightElement.LineHeightProperty;
 
 		[Obsolete("Font is obsolete as of version 1.3.0. Please use the Font properties directly.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public Font Font
 		{
 			get { return (Font)GetValue(FontElement.FontProperty); }

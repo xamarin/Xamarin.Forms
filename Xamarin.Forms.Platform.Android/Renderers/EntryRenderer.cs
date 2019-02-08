@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Android.Content;
 using Android.Content.Res;
+using Android.OS;
 using Android.Text;
 using Android.Text.Method;
 using Android.Util;
@@ -14,7 +15,36 @@ using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	public class EntryRenderer : ViewRenderer<Entry, FormsEditText>, ITextWatcher, TextView.IOnEditorActionListener
+	public class EntryRenderer : EntryRendererBase<FormsEditText>
+	{
+		public EntryRenderer(Context context) : base(context)
+		{
+		}
+
+		[Obsolete("This constructor is obsolete as of version 2.5. Please use EntryRenderer(Context) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public EntryRenderer()
+		{
+			AutoPackage = false;
+		}
+
+		protected override FormsEditText CreateNativeControl()
+		{
+			return new FormsEditText(Context);
+		}
+
+		protected override EditText EditText => Control;
+
+		protected override void UpdateIsReadOnly()
+		{
+			base.UpdateIsReadOnly();
+			bool isReadOnly = !Element.IsReadOnly;
+			Control.SetCursorVisible(isReadOnly);
+		}
+	}
+
+	public abstract class EntryRendererBase<TControl> : ViewRenderer<Entry, TControl>, ITextWatcher, TextView.IOnEditorActionListener
+		where TControl : global::Android.Views.View
 	{
 		TextColorSwitcher _hintColorSwitcher;
 		TextColorSwitcher _textColorSwitcher;
@@ -26,13 +56,18 @@ namespace Xamarin.Forms.Platform.Android
 		bool _selectionLengthChangePending;
 		bool _nativeSelectionIsUpdating;
 
-		public EntryRenderer(Context context) : base(context)
+
+		protected abstract EditText EditText { get; }
+
+
+		public EntryRendererBase(Context context) : base(context)
 		{
 			AutoPackage = false;
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use EntryRenderer(Context) instead.")]
-		public EntryRenderer()
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		internal EntryRendererBase()
 		{
 			AutoPackage = false;
 		}
@@ -66,31 +101,45 @@ namespace Xamarin.Forms.Platform.Android
 			((IElementController)Element).SetValueFromRenderer(Entry.TextProperty, s.ToString());
 		}
 
-		protected override FormsEditText CreateNativeControl()
+		protected override void OnFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
 		{
-			return new FormsEditText(Context);
+			if (!e.Focus)
+			{
+				Control.HideKeyboard();
+			}
+
+			base.OnFocusChangeRequested(sender, e);
+
+			if (e.Focus)
+			{
+				// Post this to the main looper queue so it doesn't happen until the other focus stuff has resolved
+				// Otherwise, ShowKeyboard will be called before this control is truly focused, and we will potentially
+				// be displaying the wrong keyboard
+				Control?.PostShowKeyboard();
+			}
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Entry> e)
 		{
 			base.OnElementChanged(e);
 
-			HandleKeyboardOnFocus = true;
-
 			if (e.OldElement == null)
 			{
-				var textView = CreateNativeControl();
+				SetNativeControl(CreateNativeControl());
 
-				textView.AddTextChangedListener(this);
-				textView.SetOnEditorActionListener(this);
-				textView.OnKeyboardBackPressed += OnKeyboardBackPressed;
-				textView.SelectionChanged += SelectionChanged;
+				EditText.AddTextChangedListener(this);
+				EditText.SetOnEditorActionListener(this);
+
+				if (EditText is IFormsEditText formsEditText)
+				{
+					formsEditText.OnKeyboardBackPressed += OnKeyboardBackPressed;
+					formsEditText.SelectionChanged += SelectionChanged;
+				}
 
 				var useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
 
-				_textColorSwitcher = new TextColorSwitcher(textView.TextColors, useLegacyColorManagement);
-				_hintColorSwitcher = new TextColorSwitcher(textView.HintTextColors, useLegacyColorManagement);
-				SetNativeControl(textView);
+				_textColorSwitcher = new TextColorSwitcher(EditText.TextColors, useLegacyColorManagement);
+				_hintColorSwitcher = new TextColorSwitcher(EditText.HintTextColors, useLegacyColorManagement);
 			}
 
 			// When we set the control text, it triggers the SelectionChanged event, which updates CursorPosition and SelectionLength;
@@ -98,8 +147,8 @@ namespace Xamarin.Forms.Platform.Android
 			_cursorPositionChangePending = Element.IsSet(Entry.CursorPositionProperty);
 			_selectionLengthChangePending = Element.IsSet(Entry.SelectionLengthProperty);
 
-			Control.Hint = Element.Placeholder;
-			Control.Text = Element.Text;
+			UpdatePlaceHolderText();
+			EditText.Text = Element.Text;
 			UpdateInputType();
 
 			UpdateColor();
@@ -109,6 +158,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateMaxLength();
 			UpdateImeOptions();
 			UpdateReturnType();
+			UpdateIsReadOnly();
 
 			if (_cursorPositionChangePending || _selectionLengthChangePending)
 				UpdateCursorSelection();
@@ -125,30 +175,33 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (disposing)
 			{
-				if (Control != null)
+				if (Control != null && Control is IFormsEditText formsEditContext)
 				{
-					Control.OnKeyboardBackPressed -= OnKeyboardBackPressed;
-					Control.SelectionChanged -= SelectionChanged;
+					formsEditContext.OnKeyboardBackPressed -= OnKeyboardBackPressed;
+					formsEditContext.SelectionChanged -= SelectionChanged;
 				}
 			}
 
 			base.Dispose(disposing);
 		}
 
+
+		internal protected virtual void UpdatePlaceHolderText() => EditText.Hint = Element.Placeholder;
+
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == Entry.PlaceholderProperty.PropertyName)
-				Control.Hint = Element.Placeholder;
+				EditText.Hint = Element.Placeholder;
 			else if (e.PropertyName == Entry.IsPasswordProperty.PropertyName)
 				UpdateInputType();
 			else if (e.PropertyName == Entry.TextProperty.PropertyName)
 			{
-				if (Control.Text != Element.Text)
+				if (EditText.Text != Element.Text)
 				{
-					Control.Text = Element.Text;
+					EditText.Text = Element.Text;
 					if (Control.IsFocused)
 					{
-						Control.SetSelection(Control.Text.Length);
+						EditText.SetSelection(EditText.Text.Length);
 						Control.ShowKeyboard();
 					}
 				}
@@ -183,6 +236,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateCursorSelection();
 			else if (e.PropertyName == Entry.CursorPositionProperty.PropertyName)
 				UpdateCursorSelection();
+			else if (e.PropertyName == InputView.IsReadOnlyProperty.PropertyName)
+				UpdateIsReadOnly();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -201,23 +256,22 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			var imeOptions = Element.OnThisPlatform().ImeOptions();
 			_currentInputImeFlag = imeOptions.ToAndroidImeOptions();
-			Control.ImeOptions = _currentInputImeFlag;
+			EditText.ImeOptions = _currentInputImeFlag;
 		}
 
 		void UpdateAlignment()
 		{
-			Control.UpdateHorizontalAlignment(Element.HorizontalTextAlignment, Context.HasRtlSupport());
+			EditText.UpdateHorizontalAlignment(Element.HorizontalTextAlignment, Context.HasRtlSupport());
 		}
 
-		void UpdateColor()
-		{
-			_textColorSwitcher.UpdateTextColor(Control, Element.TextColor);
-		}
+		internal protected virtual void UpdateColor() => UpdateTextColor(Element.TextColor);
 
-		void UpdateFont()
+		internal protected void UpdateTextColor(Color color) => _textColorSwitcher.UpdateTextColor(EditText, color);
+
+		protected internal virtual void UpdateFont()
 		{
-			Control.Typeface = Element.ToTypeface();
-			Control.SetTextSize(ComplexUnitType.Sp, (float)Element.FontSize);
+			EditText.Typeface = Element.ToTypeface();
+			EditText.SetTextSize(ComplexUnitType.Sp, (float)Element.FontSize);
 		}
 
 		void UpdateInputType()
@@ -225,43 +279,43 @@ namespace Xamarin.Forms.Platform.Android
 			Entry model = Element;
 			var keyboard = model.Keyboard;
 
-			Control.InputType = keyboard.ToInputType();
+			EditText.InputType = keyboard.ToInputType();
 			if (!(keyboard is Internals.CustomKeyboard))
 			{
 				if (model.IsSet(InputView.IsSpellCheckEnabledProperty))
 				{
-					if ((Control.InputType & InputTypes.TextFlagNoSuggestions) != InputTypes.TextFlagNoSuggestions)
+					if ((EditText.InputType & InputTypes.TextFlagNoSuggestions) != InputTypes.TextFlagNoSuggestions)
 					{
 						if (!model.IsSpellCheckEnabled)
-							Control.InputType = Control.InputType | InputTypes.TextFlagNoSuggestions;
+							EditText.InputType = EditText.InputType | InputTypes.TextFlagNoSuggestions;
 					}
 				}
 				if (model.IsSet(Entry.IsTextPredictionEnabledProperty))
 				{
-					if ((Control.InputType & InputTypes.TextFlagNoSuggestions) != InputTypes.TextFlagNoSuggestions)
+					if ((EditText.InputType & InputTypes.TextFlagNoSuggestions) != InputTypes.TextFlagNoSuggestions)
 					{
 						if (!model.IsTextPredictionEnabled)
-							Control.InputType = Control.InputType | InputTypes.TextFlagNoSuggestions;
+							EditText.InputType = EditText.InputType | InputTypes.TextFlagNoSuggestions;
 					}
 				}
 			}
 
 			if (keyboard == Keyboard.Numeric)
 			{
-				Control.KeyListener = GetDigitsKeyListener(Control.InputType);
+				EditText.KeyListener = GetDigitsKeyListener(EditText.InputType);
 			}
 
-			if (model.IsPassword && ((Control.InputType & InputTypes.ClassText) == InputTypes.ClassText))
-				Control.InputType = Control.InputType | InputTypes.TextVariationPassword;
-			if (model.IsPassword && ((Control.InputType & InputTypes.ClassNumber) == InputTypes.ClassNumber))
-				Control.InputType = Control.InputType | InputTypes.NumberVariationPassword;
+			if (model.IsPassword && ((EditText.InputType & InputTypes.ClassText) == InputTypes.ClassText))
+				EditText.InputType = EditText.InputType | InputTypes.TextVariationPassword;
+			if (model.IsPassword && ((EditText.InputType & InputTypes.ClassNumber) == InputTypes.ClassNumber))
+				EditText.InputType = EditText.InputType | InputTypes.NumberVariationPassword;
 
 			UpdateFont();
 		}
 
-		void UpdatePlaceholderColor()
+		protected internal virtual void UpdatePlaceholderColor()
 		{
-			_hintColorSwitcher.UpdateTextColor(Control, Element.PlaceholderColor, Control.SetHintTextColor);
+			_hintColorSwitcher.UpdateTextColor(EditText, Element.PlaceholderColor, EditText.SetHintTextColor);
 		}
 
 		void OnKeyboardBackPressed(object sender, EventArgs eventArgs)
@@ -271,7 +325,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateMaxLength()
 		{
-			var currentFilters = new List<IInputFilter>(Control?.GetFilters() ?? new IInputFilter[0]);
+			var currentFilters = new List<IInputFilter>(EditText?.GetFilters() ?? new IInputFilter[0]);
 
 			for (var i = 0; i < currentFilters.Count; i++)
 			{
@@ -284,12 +338,12 @@ namespace Xamarin.Forms.Platform.Android
 
 			currentFilters.Add(new InputFilterLengthFilter(Element.MaxLength));
 
-			Control?.SetFilters(currentFilters.ToArray());
+			EditText?.SetFilters(currentFilters.ToArray());
 
-			var currentControlText = Control?.Text;
+			var currentControlText = EditText?.Text;
 
 			if (currentControlText.Length > Element.MaxLength)
-				Control.Text = currentControlText.Substring(0, Element.MaxLength);
+				EditText.Text = currentControlText.Substring(0, Element.MaxLength);
 		}
 
 		void UpdateReturnType()
@@ -297,8 +351,8 @@ namespace Xamarin.Forms.Platform.Android
 			if (Control == null || Element == null)
 				return;
 
-			Control.ImeOptions = Element.ReturnType.ToAndroidImeAction();
-			_currentInputImeFlag = Control.ImeOptions;
+			EditText.ImeOptions = Element.ReturnType.ToAndroidImeAction();
+			_currentInputImeFlag = EditText.ImeOptions;
 		}
 
 		void SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -307,7 +361,7 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 
 			int cursorPosition = Element.CursorPosition;
-			int selectionStart = Control.SelectionStart;
+			int selectionStart = EditText.SelectionStart;
 
 			if (!_cursorPositionChangePending)
 			{
@@ -319,9 +373,9 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (!_selectionLengthChangePending)
 			{
-				int elementSelectionLength = System.Math.Min(Control.Text.Length - cursorPosition, Element.SelectionLength);
+				int elementSelectionLength = System.Math.Min(EditText.Text.Length - cursorPosition, Element.SelectionLength);
 
-				var controlSelectionLength = Control.SelectionEnd - selectionStart;
+				var controlSelectionLength = EditText.SelectionEnd - selectionStart;
 				if (controlSelectionLength != elementSelectionLength)
 					SetSelectionLengthFromRenderer(controlSelectionLength);
 			}
@@ -332,14 +386,14 @@ namespace Xamarin.Forms.Platform.Android
 			if (_nativeSelectionIsUpdating || Control == null || Element == null)
 				return;
 
-			if (Control.RequestFocus())
+			if (!Element.IsReadOnly && Control.RequestFocus())
 			{
 				try
 				{
 					int start = GetSelectionStart();
 					int end = GetSelectionEnd(start);
 
-					Control.SetSelection(start, end);
+					EditText.SetSelection(start, end);
 				}
 				catch (System.Exception ex)
 				{
@@ -358,7 +412,7 @@ namespace Xamarin.Forms.Platform.Android
 			int selectionLength = Element.SelectionLength;
 
 			if (Element.IsSet(Entry.SelectionLengthProperty))
-				end = System.Math.Max(start, System.Math.Min(Control.Length(), start + selectionLength));
+				end = System.Math.Max(start, System.Math.Min(EditText.Length(), start + selectionLength));
 
 			int newSelectionLength = System.Math.Max(0, end - start);
 			if (newSelectionLength != selectionLength)
@@ -369,11 +423,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		int GetSelectionStart()
 		{
-			int start = Control.Length();
+			int start = EditText.Length();
 			int cursorPosition = Element.CursorPosition;
 
 			if (Element.IsSet(Entry.CursorPositionProperty))
-				start = System.Math.Min(Control.Text.Length, cursorPosition);
+				start = System.Math.Min(EditText.Text.Length, cursorPosition);
 
 			if (start != cursorPosition)
 				SetCursorPositionFromRenderer(start);
@@ -413,6 +467,14 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				_nativeSelectionIsUpdating = false;
 			}
+		}
+
+		protected virtual void UpdateIsReadOnly()
+		{
+			bool isReadOnly = !Element.IsReadOnly;
+
+			Control.FocusableInTouchMode = isReadOnly;
+			Control.Focusable = isReadOnly;
 		}
 	}
 }
