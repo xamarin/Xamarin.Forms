@@ -145,5 +145,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 			return attributedString;
 		}
+
+
+		internal static bool IsHorizontal(this Button.ButtonContentLayout layout) =>
+			layout.Position == Button.ButtonContentLayout.ImagePosition.Left ||
+			layout.Position == Button.ButtonContentLayout.ImagePosition.Right;
 	}
 }

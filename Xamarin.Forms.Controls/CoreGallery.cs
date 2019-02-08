@@ -287,6 +287,8 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new CellForceUpdateSizeGalleryPage(), "Cell Force Update Size Gallery"),
 				new GalleryPageFactory(() => new AppearingGalleryPage(), "Appearing Gallery"),
 				new GalleryPageFactory(() => new EntryCoreGalleryPage(), "Entry Gallery"),
+				new GalleryPageFactory(() => new EntryCoreGalleryPage{ Visual = VisualMarker.Material }, "Entry Gallery (Material)"),
+				new GalleryPageFactory(() => new MaterialEntryGalleryPage(), "Entry Material Demos"),
 				new GalleryPageFactory(() => new NavBarTitleTestPage(), "Titles And Navbar Windows"),
 				new GalleryPageFactory(() => new PanGestureGalleryPage(), "Pan gesture Gallery"),
 				new GalleryPageFactory(() => new SwipeGestureGalleryPage(), "Swipe gesture Gallery"),
@@ -304,6 +306,10 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new ContextActionsGallery (tableView: true), "ContextActions Table Gallery"),
 				new GalleryPageFactory(() => new CoreBoxViewGalleryPage(), "BoxView Gallery"),
 				new GalleryPageFactory(() => new ButtonCoreGalleryPage(), "Button Gallery"),
+				new GalleryPageFactory(() => new ButtonLayoutGalleryPage(), "Button Layout Gallery"),
+				new GalleryPageFactory(() => new ButtonLayoutGalleryPage(VisualMarker.Material), "Button Layout Gallery (Material)"),
+				new GalleryPageFactory(() => new ButtonBorderBackgroundGalleryPage(), "Button Border & Background Gallery"),
+				new GalleryPageFactory(() => new ButtonBorderBackgroundGalleryPage(VisualMarker.Material), "Button Border & Background Gallery (Material)"),
 				new GalleryPageFactory(() => new DatePickerCoreGalleryPage(), "DatePicker Gallery"),
 				new GalleryPageFactory(() => new EditorCoreGalleryPage(), "Editor Gallery"),
 				new GalleryPageFactory(() => new FrameCoreGalleryPage(), "Frame Gallery"),
@@ -399,7 +405,29 @@ namespace Xamarin.Forms.Controls
 				_pages.Insert(1, new GalleryPageFactory(() => new TitleView(true), "TitleView"));
 			}
 
-			var template = new DataTemplate(typeof(TextCell));
+			_pages.Sort((x, y) => string.Compare(x.Title, y.Title, true));
+
+			var template = new DataTemplate(() =>
+			{
+				var cell = new TextCell();
+				cell.ContextActions.Add(new MenuItem
+				{
+					Text = "Select Visual",
+					Command = new Command(async () =>
+					{
+						var buttons = typeof(VisualMarker).GetProperties().Select(p => p.Name);
+						var selection = await rootPage.DisplayActionSheet("Select Visual", "Cancel", null, buttons.ToArray());
+						if (cell.BindingContext is GalleryPageFactory pageFactory)
+						{
+							var page = pageFactory.Realize();
+							if (typeof(VisualMarker).GetProperty(selection)?.GetValue(null) is IVisual visual)
+								page.Visual = visual;
+							await PushPage(page);
+						}
+					})
+				});
+				return cell;
+			});
 			template.SetBinding(TextCell.TextProperty, "Title");
 
 			BindingContext = _pages;
@@ -448,6 +476,14 @@ namespace Xamarin.Forms.Controls
 
 			await PushPage(page);
 		}
+
+		public void FilterPages(string filter)
+		{
+			if (string.IsNullOrWhiteSpace(filter))
+				ItemsSource = _pages;
+			else
+				ItemsSource = _pages.Where(p => p.Title.IndexOf(filter, StringComparison.InvariantCultureIgnoreCase) != -1);
+		}
 	}
 	[Preserve(AllMembers = true)]
 	internal class CoreRootPage : ContentPage
@@ -465,6 +501,11 @@ namespace Xamarin.Forms.Controls
 			var searchBar = new SearchBar()
 			{
 				AutomationId = "SearchBar"
+			};
+
+			searchBar.TextChanged += (sender, e) =>
+			{
+				corePageView.FilterPages(e.NewTextValue);
 			};
 
 			var testCasesButton = new Button

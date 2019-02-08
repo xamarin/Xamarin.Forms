@@ -16,10 +16,6 @@ using MTextInputControllerUnderline = MaterialComponents.TextInputControllerUnde
 using Xamarin.Forms;
 using MaterialComponents;
 
-// for now using separate renderer as there's some areas of conflict (like place holder)
-// plus we want the linker to be able to link this out if not used
-// possibly use base class for common behavior
-[assembly: ExportRenderer(typeof(Xamarin.Forms.Entry), typeof(Xamarin.Forms.Platform.iOS.Material.MaterialEntryRenderer), new[] { typeof(VisualRendererMarker.Material) })]
 namespace Xamarin.Forms.Platform.iOS.Material
 {
 	public class MaterialEntryRenderer : EntryRenderer
@@ -27,18 +23,6 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		SemanticColorScheme _colorScheme;
 		TypographyScheme _typographyScheme;
 
-		// values based on
-		// https://github.com/material-components/material-components-ios/blob/develop/components/TextFields/src/ColorThemer/MDCFilledTextFieldColorThemer.m		
-		const float kFilledTextFieldActiveAlpha = 0.87f;
-		const float kFilledTextFieldOnSurfaceAlpha = 0.6f;
-		const float kFilledTextFieldDisabledAlpha = 0.38f;
-		const float kFilledTextFieldSurfaceOverlayAlpha = 0.04f;
-		const float kFilledTextFieldIndicatorLineAlpha = 0.42f;
-		const float kFilledTextFieldIconAlpha = 0.54f;
-
-		// the idea of this value is that I want Active to be the exact color the user specified
-		// and then all the other colors decrease according to the Material theme setup
-		static float kFilledPlaceHolderOffset = 1f - kFilledTextFieldActiveAlpha;
 
 		public MaterialEntryRenderer()
 		{
@@ -46,12 +30,6 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			_colorScheme = (SemanticColorScheme)CreateColorScheme();
 			_typographyScheme = CreateTypographyScheme();
 		}
-
-		public override void LayoutSubviews()
-		{
-			base.LayoutSubviews();
-		}
-
 
 		public override CGSize SizeThatFits(CGSize size)
 		{
@@ -73,7 +51,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			Control = field;
 			field.ClearButtonMode = UITextFieldViewMode.Never;
 			_activeTextinputController = new MTextInputControllerFilled(field);
-
+			field.TextInsetsMode = TextInputTextInsetsMode.IfContent;
 			ApplyTypographyScheme();
 			ApplyTheme();
 
@@ -83,6 +61,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		protected virtual IColorScheming CreateColorScheme()
 		{
 			var returnValue = MaterialColors.Light.CreateColorScheme();		
+			
 			return returnValue;
 		}
 
@@ -96,26 +75,31 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			ApplyTheme();
 		}
 
+		void ApplyTypographyScheme()
+		{
+			if (Control == null)
+				return;
+
+			_typographyScheme.Subtitle1 = Control.Font;
+			TextFieldTypographyThemer.ApplyTypographyScheme(_typographyScheme, Control);
+			TextFieldTypographyThemer.ApplyTypographyScheme(_typographyScheme, _activeTextinputController);
+		}
+
+		protected internal override void UpdateFont()
+		{
+			base.UpdateFont();
+			ApplyTypographyScheme();
+		}
+
+
 		protected internal override void UpdateColor()
 		{
-			var textColor = Element.TextColor;
-			UIColor uIColor;
-			if (Element.TextColor == Color.Default)
-				uIColor  = MaterialColors.Light.PrimaryColor;
-			else
-				uIColor = textColor.ToUIColor();
+			var uIColor = MaterialColors.GetEntryTextColor(Element.TextColor);
 
 			_colorScheme.OnSurfaceColor = uIColor;
 			_colorScheme.PrimaryColor = uIColor;			
 
 			ApplyTheme();
-		}
-
-		void ApplyTypographyScheme()
-		{
-
-			TextFieldTypographyThemer.ApplyTypographyScheme(_typographyScheme, Control);
-			TextFieldTypographyThemer.ApplyTypographyScheme(_typographyScheme, _activeTextinputController);
 		}
 
 
@@ -125,23 +109,26 @@ namespace Xamarin.Forms.Platform.iOS.Material
 				return;
 
 			FilledTextFieldColorThemer.ApplySemanticColorScheme(_colorScheme, (MTextInputControllerFilled)_activeTextinputController);
+
 			OverrideThemeColors();
 		}
 
 		protected virtual void OverrideThemeColors()
 		{
-			// Placeholder
-			if(Element.PlaceholderColor != Color.Default)
-			{
-				var placeholderColor = Element.PlaceholderColor.ToUIColor();
-				_activeTextinputController.InlinePlaceholderColor = placeholderColor.ColorWithAlpha(kFilledTextFieldOnSurfaceAlpha + kFilledPlaceHolderOffset);
-				_activeTextinputController.FloatingPlaceholderNormalColor = placeholderColor.ColorWithAlpha(kFilledTextFieldOnSurfaceAlpha + kFilledPlaceHolderOffset);
-				_activeTextinputController.FloatingPlaceholderActiveColor = placeholderColor.ColorWithAlpha(kFilledTextFieldActiveAlpha + kFilledPlaceHolderOffset);
-			}
+			var textColor = MaterialColors.GetEntryTextColor(Element.TextColor);
+			var placeHolderColors = MaterialColors.GetPlaceHolderColor(Element.PlaceholderColor, Element.TextColor);
+			var underlineColors = MaterialColors.GetUnderlineColor(Element.TextColor);
 
-			// Backgroundcolor
-			if(Element.BackgroundColor != Color.Default)
-				_activeTextinputController.BorderFillColor = Element.BackgroundColor.ToUIColor();
+			Control.TextColor = textColor;
+			_activeTextinputController.InlinePlaceholderColor = placeHolderColors.InlineColor;
+			_activeTextinputController.FloatingPlaceholderNormalColor = placeHolderColors.InlineColor;
+			_activeTextinputController.FloatingPlaceholderActiveColor = placeHolderColors.FloatingColor;
+
+			// BackgroundColor
+			_activeTextinputController.BorderFillColor = MaterialColors.CreateEntryFilledInputBackgroundColor(Element.BackgroundColor, Element.TextColor);
+
+			_activeTextinputController.ActiveColor = underlineColors.FocusedColor;
+			_activeTextinputController.NormalColor = underlineColors.UnFocusedColor;
 		}
 
 		protected internal override void UpdatePlaceholder()
