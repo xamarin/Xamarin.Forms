@@ -138,11 +138,6 @@ namespace Xamarin.Forms.Platform.UWP
 				return FontStretch.UltraExpanded;
 			}
 
-			if (letterSpacing >= 0 && letterSpacing <= 1.1255)
-			{
-				return FontStretch.SemiExpanded;
-			}
-
 			if (letterSpacing <= 0 && letterSpacing >= 0.875)
 			{
 				return FontStretch.SemiCondensed;
