@@ -13,6 +13,9 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
 	internal class Platform : BindableObject, IPlatformLayout, INavigation, IDisposable
+#pragma warning disable CS0618
+		, IPlatform
+#pragma warning restore
 	{
 		readonly Context _context;
 		readonly PlatformRenderer _renderer;
@@ -468,6 +471,15 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		public static implicit operator ViewGroup(Platform canvas)
 		{
 			return canvas._renderer;
+		}
+
+		#endregion
+
+		#region Obsolete 
+
+		SizeRequest IPlatform.GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
+		{
+			return GetNativeSize(view, widthConstraint, heightConstraint);
 		}
 
 		#endregion

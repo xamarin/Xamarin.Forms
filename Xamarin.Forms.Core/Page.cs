@@ -456,6 +456,6 @@ namespace Xamarin.Forms
 		// and throw an NRE if it's not available; this fake property keeps it happy.
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		[Obsolete("This property is no longer used as of version 3.4.")]
-		internal object Platform { get; set; }
+		internal new object Platform { get; set; }
 	}
 }

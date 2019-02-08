@@ -22,6 +22,9 @@ using AView = Android.Views.View;
 namespace Xamarin.Forms.Platform.Android
 {
 	public class Platform : BindableObject, INavigation, IDisposable, IPlatformLayout
+#pragma warning disable CS0618
+		, IPlatform
+#pragma warning restore
 	{
 		internal const string CloseContextActionsSignalName = "Xamarin.CloseContextActions";
 
@@ -1154,6 +1157,15 @@ namespace Xamarin.Forms.Platform.Android
 
 			// If a page is found, return the PageContext set by the previewer for that page (if any)
 			return (parent as Page)?.GetValue(PageContextProperty) as Context;
+		}
+
+		#endregion
+
+		#region Obsolete 
+
+		SizeRequest IPlatform.GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
+		{
+			return GetNativeSize(view, widthConstraint, heightConstraint);
 		}
 
 		#endregion

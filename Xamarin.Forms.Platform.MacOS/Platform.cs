@@ -7,6 +7,9 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms.Platform.MacOS
 {
 	public class Platform : BindableObject, IDisposable
+#pragma warning disable CS0618
+		, IPlatform
+#pragma warning restore
 	{
 		internal static readonly BindableProperty RendererProperty = BindableProperty.CreateAttached("Renderer",
 			typeof(IVisualElementRenderer), typeof(Platform), default(IVisualElementRenderer),
@@ -273,5 +276,14 @@ namespace Xamarin.Forms.Platform.MacOS
 			var view = e.Element;
 			DisposeModelAndChildrenRenderers(view);
 		}
+
+		#region Obsolete 
+
+		SizeRequest IPlatform.GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
+		{
+			return GetNativeSize(view, widthConstraint, heightConstraint);
+		}
+
+		#endregion
 	}
 }

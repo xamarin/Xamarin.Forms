@@ -228,6 +228,10 @@ namespace Xamarin.Forms
 			}
 		}
 
+		[EditorBrowsable(EditorBrowsableState.Never)]	
+		[Obsolete("IPlatform is obsolete as of 3.5.0. Do not use this property.")]
+		public IPlatform Platform { get; set; }
+
 		void IElementController.SetValueFromRenderer(BindableProperty property, object value) => SetValueFromRenderer(property, value);
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SetValueFromRenderer(BindableProperty property, object value)

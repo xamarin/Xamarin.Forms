@@ -10,6 +10,9 @@ using Xamarin.Forms.Platform.GTK.Renderers;
 namespace Xamarin.Forms.Platform.GTK
 {
 	public class Platform : BindableObject, INavigation, IDisposable
+#pragma warning disable CS0618
+		, IPlatform
+#pragma warning restore
 	{
 		private bool _disposed;
 		readonly List<Page> _modals;
@@ -251,5 +254,14 @@ namespace Xamarin.Forms.Platform.GTK
 		{
 
 		}
+
+		#region Obsolete 
+
+		SizeRequest IPlatform.GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
+		{
+			return GetNativeSize(view, widthConstraint, heightConstraint);
+		}
+
+		#endregion
 	}
 }

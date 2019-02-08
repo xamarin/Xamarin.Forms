@@ -16,5 +16,8 @@ namespace Xamarin.Forms
 		ReadOnlyCollection<Element> LogicalChildren { get; }
 		Element RealParent { get; }
 		IEnumerable<Element> Descendants();
+
+		[Obsolete("IPlatform is obsolete as of 3.5.0. Do not use this property.")]
+		IPlatform Platform { get; set; }
 	}
 }

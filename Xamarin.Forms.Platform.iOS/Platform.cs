@@ -11,6 +11,9 @@ using RectangleF = CoreGraphics.CGRect;
 namespace Xamarin.Forms.Platform.iOS
 {
 	public class Platform : BindableObject, INavigation, IDisposable
+#pragma warning disable CS0618
+		, IPlatform
+#pragma warning restore
 	{
 		internal static readonly BindableProperty RendererProperty = BindableProperty.CreateAttached("Renderer", typeof(IVisualElementRenderer), typeof(Platform), default(IVisualElementRenderer),
 			propertyChanged: (bindable, oldvalue, newvalue) =>
@@ -487,5 +490,14 @@ namespace Xamarin.Forms.Platform.iOS
 				return result;
 			}
 		}
+
+		#region Obsolete 
+
+		SizeRequest IPlatform.GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
+		{
+			return GetNativeSize(view, widthConstraint, heightConstraint);
+		}
+
+		#endregion
 	}
 }

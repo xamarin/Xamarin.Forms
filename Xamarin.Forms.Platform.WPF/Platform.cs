@@ -10,6 +10,9 @@ using Xamarin.Forms.Platform.WPF.Controls;
 namespace Xamarin.Forms.Platform.WPF
 {
 	public class Platform : BindableObject, INavigation
+#pragma warning disable CS0618
+		, IPlatform
+#pragma warning restore
 	{
 		readonly FormsApplicationPage _page;
 		Page Page { get; set; }
@@ -246,5 +249,14 @@ namespace Xamarin.Forms.Platform.WPF
 			tcs.SetResult(page); 
 			return tcs.Task;
 		}
+
+		#region Obsolete 
+
+		SizeRequest IPlatform.GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
+		{
+			return GetNativeSize(view, widthConstraint, heightConstraint);
+		}
+
+		#endregion
 	}
 } 
