@@ -304,7 +304,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateLetterSpacing(TextBlock textBlock)
 		{
-			textBlock.FontStretch = FontStretch.Normal;// (float)Element.LetterSpacing / 1000;
+			textBlock.FontStretch = Element.LetterSpacing.ToFontStretch();
 		}
 
 

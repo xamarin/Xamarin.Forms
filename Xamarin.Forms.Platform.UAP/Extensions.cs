@@ -2,6 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using Windows.Foundation;
+using Windows.UI.Text;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 using Xamarin.Forms.Internals;
@@ -107,6 +108,62 @@ namespace Xamarin.Forms.Platform.UWP
 			if (value.CompareTo(max) > 0)
 				return max;
 			return value;
+		}
+
+		internal static FontStretch ToFontStretch(this double letterSpacing)
+		{
+
+			if (letterSpacing == 0.0)
+			{
+				return FontStretch.Normal;
+			}
+
+			if (letterSpacing >= 0 && letterSpacing <= 1.1255)
+			{
+				return FontStretch.SemiExpanded;
+			}
+
+			if (letterSpacing >= 1.1255 && letterSpacing <= 1.25)
+			{
+				return FontStretch.Expanded;
+			}
+
+			if (letterSpacing >= 1.25 && letterSpacing <= 1.5)
+			{
+				return FontStretch.ExtraExpanded;
+			}
+
+			if (letterSpacing >= 1.5)
+			{
+				return FontStretch.UltraExpanded;
+			}
+
+			if (letterSpacing >= 0 && letterSpacing <= 1.1255)
+			{
+				return FontStretch.SemiExpanded;
+			}
+
+			if (letterSpacing <= 0 && letterSpacing >= 0.875)
+			{
+				return FontStretch.SemiCondensed;
+			}
+
+			if (letterSpacing <= 0.875 && letterSpacing >= 0.75)
+			{
+				return FontStretch.Condensed;
+			}
+
+			if (letterSpacing <= 0.75 && letterSpacing >= 0.625)
+			{
+				return FontStretch.ExtraCondensed;
+			}
+
+			if (letterSpacing <= 0.5)
+			{
+				return FontStretch.UltraCondensed;
+			}
+
+			return FontStretch.Normal;
 		}
 	}
 }
