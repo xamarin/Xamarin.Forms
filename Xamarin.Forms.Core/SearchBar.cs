@@ -196,10 +196,6 @@ namespace Xamarin.Forms
 		{
 		}
 
-		void ILetterSpacingElement.OnLetterSpacingChanged(double oldValue, double newValue)
-		{
-		}
-
 		void ITextAlignmentElement.OnHorizontalTextAlignmentPropertyChanged(TextAlignment oldValue, TextAlignment newValue)
 		{
 		}

@@ -343,9 +343,6 @@ namespace Xamarin.Forms
 		{
 		}
 
-		void ILetterSpacingElement.OnLetterSpacingChanged(double oldValue, double newValue)
-		{
-		}
 
 		public override IList<GestureElement> GetChildElements(Point point)
 		{

@@ -99,8 +99,5 @@ namespace Xamarin.Forms
 		{
 		}
 
-		void ILetterSpacingElement.OnLetterSpacingChanged(double oldValue, double newValue)
-		{
-		}
 	}
 }

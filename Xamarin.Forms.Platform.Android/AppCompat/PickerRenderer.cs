@@ -162,7 +162,10 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		{
 			if (Control is EditText textEdit)
 			{
-				textEdit.LetterSpacing = Element.LetterSpacing.ToEm();
+				if (Forms.IsLollipopOrNewer)
+				{
+					textEdit.LetterSpacing = Element.LetterSpacing.ToEm();
+				}
 			}
 		}
 
