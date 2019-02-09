@@ -9,7 +9,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.iOS
 {
-	public sealed class MediaElementRenderer : UIView, IVisualElementRenderer, IEffectControlProvider
+	public sealed class MediaElementRenderer : AVPlayerViewController, IVisualElementRenderer, IEffectControlProvider
 	{
 		MediaElement MediaElement { get; set; }
 		IMediaElementController Controller => MediaElement as IMediaElementController;
@@ -17,27 +17,24 @@ namespace Xamarin.Forms.Platform.iOS
 #pragma warning disable 0414
 		VisualElementTracker _tracker;
 #pragma warning restore 0414
-
-		AVPlayerViewController _avPlayerViewController = new AVPlayerViewController();
-
+		
 		NSObject _playToEndObserver;
 		NSObject _statusObserver;
 		NSObject _rateObserver;
 
 		VisualElement IVisualElementRenderer.Element => MediaElement;
 
-		UIView IVisualElementRenderer.NativeView => this;
+		UIView IVisualElementRenderer.NativeView => View;
 
-		UIViewController IVisualElementRenderer.ViewController => _avPlayerViewController;
+		UIViewController IVisualElementRenderer.ViewController => this;
 		
 		bool _idleTimerDisabled = false;
 
 		public MediaElementRenderer()
 		{
 			_playToEndObserver = NSNotificationCenter.DefaultCenter.AddObserver(AVPlayerItem.DidPlayToEndTimeNotification, PlayedToEnd);
-			_avPlayerViewController.View.Frame = Bounds;
-			_avPlayerViewController.View.AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
-			AddSubview(_avPlayerViewController.View);
+			View.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
+			View.AutosizesSubviews = true;
 		}
 		
 		void SetKeepScreenOn(bool value)
@@ -112,14 +109,14 @@ namespace Xamarin.Forms.Platform.iOS
 				_statusObserver = (NSObject)item.AddObserver("status", NSKeyValueObservingOptions.New, ObserveStatus);
 				
 				
-				if (_avPlayerViewController.Player != null)
+				if (Player != null)
 				{
-					_avPlayerViewController.Player.ReplaceCurrentItemWithPlayerItem(item);
+					Player.ReplaceCurrentItemWithPlayerItem(item);
 				}
 				else
 				{
-					_avPlayerViewController.Player = new AVPlayer(item);
-					_rateObserver = (NSObject)_avPlayerViewController.Player.AddObserver("rate", NSKeyValueObservingOptions.New, ObserveRate);
+					Player = new AVPlayer(item);
+					_rateObserver = (NSObject)Player.AddObserver("rate", NSKeyValueObservingOptions.New, ObserveRate);
 				}
 				
 				if (MediaElement.AutoPlay)
@@ -129,7 +126,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				if (MediaElement.CurrentState == MediaElementState.Playing || MediaElement.CurrentState == MediaElementState.Buffering)
 				{
-					_avPlayerViewController.Player.Pause();
+					Player.Pause();
 					Controller.CurrentState = MediaElementState.Stopped;
 				}
 			}
@@ -145,14 +142,14 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if(_rateObserver != null)
 			{
-				_avPlayerViewController?.Player.RemoveObserver(_rateObserver, "rate");
+				Player.RemoveObserver(_rateObserver, "rate");
 				_rateObserver = null;
 			}
 
 			RemoveStatusObserver();
 
-			_avPlayerViewController?.Player?.Pause();
-			_avPlayerViewController?.Player?.ReplaceCurrentItemWithPlayerItem(null);
+			Player?.Pause();
+			Player?.ReplaceCurrentItemWithPlayerItem(null);
 
 			base.Dispose(disposing);
 		}
@@ -163,7 +160,7 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				try
 				{
-					_avPlayerViewController?.Player?.CurrentItem?.RemoveObserver(_statusObserver, "status");
+					Player?.CurrentItem?.RemoveObserver(_statusObserver, "status");
 				}
 				finally
 				{
@@ -175,7 +172,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void ObserveRate(NSObservedChange e)
 		{
-			switch(_avPlayerViewController.Player.Rate)
+			switch(Player.Rate)
 			{
 				case 0.0f:
 					Controller.CurrentState = MediaElementState.Paused;
@@ -191,18 +188,18 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void ObserveStatus(NSObservedChange e)
 		{
-			Controller.Volume = _avPlayerViewController.Player.Volume;
+			Controller.Volume = Player.Volume;
 
-			switch (_avPlayerViewController.Player.Status)
+			switch (Player.Status)
 			{
 				case AVPlayerStatus.Failed:
 					Controller.OnMediaFailed();
 					break;
 
 				case AVPlayerStatus.ReadyToPlay:
-					Controller.Duration = TimeSpan.FromSeconds(_avPlayerViewController.Player.CurrentItem.Duration.Seconds);
-					Controller.VideoHeight = (int)_avPlayerViewController.Player.CurrentItem.Asset.NaturalSize.Height;
-					Controller.VideoWidth = (int)_avPlayerViewController.Player.CurrentItem.Asset.NaturalSize.Width;
+					Controller.Duration = TimeSpan.FromSeconds(Player.CurrentItem.Duration.Seconds);
+					Controller.VideoHeight = (int)Player.CurrentItem.Asset.NaturalSize.Height;
+					Controller.VideoWidth = (int)Player.CurrentItem.Asset.NaturalSize.Width;
 					Controller.OnMediaOpened();
 					Controller.Position = Position;
 					break;
@@ -213,10 +210,10 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			get
 			{
-				if (_avPlayerViewController.Player.CurrentTime.IsInvalid)
+				if (Player.CurrentTime.IsInvalid)
 					return TimeSpan.Zero;
 
-				return TimeSpan.FromSeconds(_avPlayerViewController.Player.CurrentTime.Seconds);
+				return TimeSpan.FromSeconds(Player.CurrentTime.Seconds);
 			}
 		}
 
@@ -224,9 +221,9 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			if (MediaElement.IsLooping)
 			{
-				_avPlayerViewController.Player.Seek(CMTime.Zero);
+				Player.Seek(CMTime.Zero);
 				Controller.Position = Position;
-				_avPlayerViewController.Player.Play();
+				Player.Play();
 			}
 			else
 			{
@@ -246,7 +243,7 @@ namespace Xamarin.Forms.Platform.iOS
 			switch (e.PropertyName)
 			{
 				case nameof(MediaElement.Aspect):
-					_avPlayerViewController.VideoGravity = AspectToGravity(MediaElement.Aspect);
+					VideoGravity = AspectToGravity(MediaElement.Aspect);
 					break;
 
 				case nameof(MediaElement.KeepScreenOn):
@@ -262,7 +259,7 @@ namespace Xamarin.Forms.Platform.iOS
 					break;
 
 				case nameof(MediaElement.ShowsPlaybackControls):
-					_avPlayerViewController.ShowsPlaybackControls = MediaElement.ShowsPlaybackControls;
+					ShowsPlaybackControls = MediaElement.ShowsPlaybackControls;
 					break;
 
 				case nameof(MediaElement.Source):
@@ -270,23 +267,23 @@ namespace Xamarin.Forms.Platform.iOS
 					break;
 
 				case nameof(MediaElement.Volume):
-					_avPlayerViewController.Player.Volume = (float)MediaElement.Volume;
+					Player.Volume = (float)MediaElement.Volume;
 					break;
 			}
 		}
 
 		void MediaElementSeekRequested(object sender, SeekRequested e)
 		{
-			if (_avPlayerViewController.Player.Status != AVPlayerStatus.ReadyToPlay || _avPlayerViewController.Player.CurrentItem == null)
+			if (Player.Status != AVPlayerStatus.ReadyToPlay || Player.CurrentItem == null)
 				return;
 
-			NSValue[] ranges = _avPlayerViewController.Player.CurrentItem.SeekableTimeRanges;
+			NSValue[] ranges = Player.CurrentItem.SeekableTimeRanges;
 			CMTime seekTo = new CMTime(Convert.ToInt64(e.Position.TotalMilliseconds), 1000);
 			foreach (NSValue v in ranges)
 			{
 				if (seekTo >= v.CMTimeRangeValue.Start && seekTo < (v.CMTimeRangeValue.Start + v.CMTimeRangeValue.Duration))
 				{
-					_avPlayerViewController.Player.Seek(seekTo, SeekComplete);
+					Player.Seek(seekTo, SeekComplete);
 					break;
 				}
 			}
@@ -306,7 +303,7 @@ namespace Xamarin.Forms.Platform.iOS
 			if (!(err is null))
 				Log.Warning("MediaElement", "Failed to set AVAudioSession Active {0}", err.Code);
 
-			_avPlayerViewController.Player.Play();
+			Player.Play();
 			Controller.CurrentState = MediaElementState.Playing;
 			if (MediaElement.KeepScreenOn)
 			{
@@ -329,7 +326,7 @@ namespace Xamarin.Forms.Platform.iOS
 					{
 						SetKeepScreenOn(false);
 					}
-					_avPlayerViewController.Player.Pause();
+					Player.Pause();
 					Controller.CurrentState = MediaElementState.Paused;
 					break;
 
@@ -339,8 +336,8 @@ namespace Xamarin.Forms.Platform.iOS
 						SetKeepScreenOn(false);
 					}
 					//ios has no stop...
-					_avPlayerViewController.Player.Pause();
-					_avPlayerViewController.Player.Seek(CMTime.Zero);
+					Player.Pause();
+					Player.Seek(CMTime.Zero);
 					Controller.CurrentState = MediaElementState.Stopped;
 
 					NSError err = AVAudioSession.SharedInstance().SetActive(false);
@@ -377,7 +374,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		SizeRequest IVisualElementRenderer.GetDesiredSize(double widthConstraint, double heightConstraint)
 		{
-			return ((UIView)this).GetSizeRequest(widthConstraint, heightConstraint, 44, 44);
+			return View.GetSizeRequest(widthConstraint, heightConstraint, 44, 44);
 		}
 		
 		void IVisualElementRenderer.SetElement(VisualElement element)
@@ -417,9 +414,7 @@ namespace Xamarin.Forms.Platform.iOS
 			MediaElement.StateRequested += MediaElementStateRequested;
 			MediaElement.PositionRequested += MediaElementPositionRequested;
 			MediaElement.VolumeRequested += MediaElementVolumeRequested;
-
-			AutosizesSubviews = true;
-
+			
 			_tracker = new VisualElementTracker(this);
 
 			OnElementChanged(new VisualElementChangedEventArgs(oldElement, MediaElement));
@@ -431,7 +426,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		private void MediaElementVolumeRequested(object sender, EventArgs e)
 		{
-			Controller.Volume = _avPlayerViewController.Player.Volume;
+			Controller.Volume = Player.Volume;
 		}
 
 		void MediaElementPositionRequested(object sender, EventArgs e)
@@ -451,21 +446,14 @@ namespace Xamarin.Forms.Platform.iOS
 			Layout.LayoutChildIntoBoundingRegion(MediaElement, new Rectangle(MediaElement.X, MediaElement.Y, size.Width, size.Height));
 		}
 
-		public override void LayoutSubviews()
-		{
-			base.LayoutSubviews();
-			_avPlayerViewController.View.Frame = Bounds;
-		}
-
 		void IEffectControlProvider.RegisterEffect(Effect effect)
 		{
-			VisualElementRenderer<VisualElement>.RegisterEffect(effect, this);
+			VisualElementRenderer<VisualElement>.RegisterEffect(effect, View);
 		}
 
 		void UpdateBackgroundColor()
 		{
-			BackgroundColor = MediaElement.BackgroundColor.ToUIColor();
-			_avPlayerViewController.View.BackgroundColor = MediaElement.BackgroundColor.ToUIColor();
+			View.BackgroundColor = MediaElement.BackgroundColor.ToUIColor();
 		}
 	}
 }
