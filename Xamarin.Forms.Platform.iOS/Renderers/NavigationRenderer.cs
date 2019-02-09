@@ -666,9 +666,13 @@ namespace Xamarin.Forms.Platform.iOS
 			var statusBarColorMode = NavPage.OnThisPlatform().GetStatusBarTextColorMode();
 
 			// set Tint color (i. e. Back Button arrow and Text)
-			NavigationBar.TintColor = barTextColor == Color.Default || statusBarColorMode == StatusBarTextColorMode.DoNotAdjust
+			var iconColor = NavigationPage.GetIconColor(Current);
+			if (iconColor.IsDefault)
+				iconColor = barTextColor;
+
+			NavigationBar.TintColor = iconColor == Color.Default || statusBarColorMode == StatusBarTextColorMode.DoNotAdjust
 				? UINavigationBar.Appearance.TintColor
-				: barTextColor.ToUIColor();
+				: iconColor.ToUIColor();
 		}
 
 		void SetStatusBarStyle()
@@ -926,6 +930,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 					UpdateHasBackButton();
 					UpdateLargeTitles();
+					UpdateIconColor();
 				}
 			}
 
@@ -1041,6 +1046,8 @@ namespace Xamarin.Forms.Platform.iOS
 				else if (e.PropertyName == NavigationPage.TitleIconImageSourceProperty.PropertyName ||
 					 e.PropertyName == NavigationPage.TitleViewProperty.PropertyName)
 					UpdateTitleArea(Child);
+				else if (e.PropertyName == NavigationPage.IconColorProperty.PropertyName)
+					UpdateIconColor();
 			}
 
 
@@ -1117,6 +1124,12 @@ namespace Xamarin.Forms.Platform.iOS
 					UpdateTitleImage(titleViewContainer, titleIcon);
 					NavigationItem.TitleView = titleViewContainer;
 				}
+			}
+			
+			void UpdateIconColor()
+			{
+				if (_navigation.TryGetTarget(out NavigationRenderer navigationRenderer))
+					navigationRenderer.UpdateBarTextColor();
 			}
 
 			async void UpdateTitleImage(Container titleViewContainer, ImageSource titleIcon)
