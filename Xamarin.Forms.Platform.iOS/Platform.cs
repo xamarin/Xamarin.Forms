@@ -166,6 +166,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 			_modals.Add(modal);
 
+#pragma warning disable CS0618 // Type or member is obsolete
+			// The Platform property is no longer necessary, but we have to set it because some third-party
+			// library might still be retrieving it and using it
+			modal.Platform = this;
+#pragma warning restore CS0618 // Type or member is obsolete
+
 			modal.DescendantRemoved += HandleChildRemoved;
 
 			if (_appeared)
@@ -245,6 +251,12 @@ namespace Xamarin.Forms.Platform.iOS
 			if (_appeared == false)
 				return;
 
+#pragma warning disable CS0618 // Type or member is obsolete
+			// The Platform property is no longer necessary, but we have to set it because some third-party
+			// library might still be retrieving it and using it
+			Page.Platform = this;
+#pragma warning restore CS0618 // Type or member is obsolete
+
 			AddChild(Page);
 
 			Page.DescendantRemoved += HandleChildRemoved;
@@ -259,6 +271,12 @@ namespace Xamarin.Forms.Platform.iOS
 
 			_renderer.View.BackgroundColor = UIColor.White;
 			_renderer.View.ContentMode = UIViewContentMode.Redraw;
+
+#pragma warning disable CS0618 // Type or member is obsolete
+				// The Platform property is no longer necessary, but we have to set it because some third-party
+				// library might still be retrieving it and using it
+				Page.Platform = this;
+#pragma warning restore CS0618 // Type or member is obsolete
 
 			AddChild(Page);
 

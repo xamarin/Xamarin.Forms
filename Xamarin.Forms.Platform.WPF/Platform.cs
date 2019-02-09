@@ -164,6 +164,13 @@ namespace Xamarin.Forms.Platform.WPF
 				return;
 
 			Page = newRoot;
+
+#pragma warning disable CS0618 // Type or member is obsolete
+			// The Platform property is no longer necessary, but we have to set it because some third-party
+			// library might still be retrieving it and using it
+			Page.Platform = this;
+#pragma warning restore CS0618 // Type or member is obsolete
+
 			_page.StartupPage = Page;
 			Application.Current.NavigationProxy.Inner = this;
 		}
@@ -237,6 +244,13 @@ namespace Xamarin.Forms.Platform.WPF
 				throw new ArgumentNullException(nameof(page));
 
 			var tcs = new TaskCompletionSource<bool>();
+
+#pragma warning disable CS0618 // Type or member is obsolete
+				// The Platform property is no longer necessary, but we have to set it because some third-party
+				// library might still be retrieving it and using it
+				page.Platform = this;
+#pragma warning restore CS0618 // Type or member is obsolete
+
 			_page.PushModal(page, animated);
 			tcs.SetResult(true);
 			return tcs.Task;

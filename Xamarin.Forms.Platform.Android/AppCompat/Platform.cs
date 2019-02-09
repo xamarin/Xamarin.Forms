@@ -155,6 +155,12 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 			_navModel.PushModal(modal);
 
+#pragma warning disable CS0618 // Type or member is obsolete
+			// The Platform property is no longer necessary, but we have to set it because some third-party
+			// library might still be retrieving it and using it
+			modal.Platform = this;
+#pragma warning restore CS0618 // Type or member is obsolete
+
 			Task presentModal = PresentModal(modal, animated);
 
 			await presentModal;

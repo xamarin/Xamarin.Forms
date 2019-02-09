@@ -202,6 +202,12 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (_appeared == false)
 				return;
 
+#pragma warning disable CS0618 // Type or member is obsolete
+			// The Platform property is no longer necessary, but we have to set it because some third-party
+			// library might still be retrieving it and using it
+			Page.Platform = this;
+#pragma warning restore CS0618 // Type or member is obsolete
+
 			AddChild(Page);
 
 			Page.DescendantRemoved += HandleChildRemoved;
@@ -220,6 +226,12 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 			if (_appeared)
 				return;
+
+#pragma warning disable CS0618 // Type or member is obsolete
+			// The Platform property is no longer necessary, but we have to set it because some third-party
+			// library might still be retrieving it and using it
+			Page.Platform = this;
+#pragma warning restore CS0618 // Type or member is obsolete
 
 			AddChild(Page);
 
