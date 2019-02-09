@@ -40,18 +40,22 @@ namespace Xamarin.Forms
 			Device.SetFlags(s_flags);
 			Device.Info = new WindowsDeviceInfo();
 
-			switch (DetectPlatform())
+			switch (Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily)
 			{
-				case Windows.Foundation.Metadata.Platform.Windows:
+				case "Windows.Desktop":
 					Device.SetIdiom(TargetIdiom.Desktop);
 					break;
-				case Windows.Foundation.Metadata.Platform.WindowsPhone:
+				case "Windows.Mobile":
 					Device.SetIdiom(TargetIdiom.Phone);
+					break;
+				case "Windows.Xbox":
+					Device.SetIdiom(TargetIdiom.TV);
 					break;
 				default:
 					Device.SetIdiom(TargetIdiom.Tablet);
 					break;
 			}
+
 			ExpressionSearch.Default = new WindowsExpressionSearch();
 
 			Registrar.ExtraAssemblies = rendererAssemblies?.ToArray();
@@ -63,16 +67,7 @@ namespace Xamarin.Forms
 
 			Platform.UWP.Platform.SubscribeAlertsAndActionSheets();
 		}
-
-		static Windows.Foundation.Metadata.Platform DetectPlatform()
-		{
-			bool isHardwareButtonsAPIPresent = ApiInformation.IsTypePresent("Windows.Phone.UI.Input.HardwareButtons");
-
-			if (isHardwareButtonsAPIPresent)
-				return Windows.Foundation.Metadata.Platform.WindowsPhone;
-			return Windows.Foundation.Metadata.Platform.Windows;
-		}
-
+		 
 		static FlowDirection GetFlowDirection()
 		{
 			string resourceFlowDirection = ResourceContext.GetForCurrentView().QualifierValues["LayoutDirection"];
