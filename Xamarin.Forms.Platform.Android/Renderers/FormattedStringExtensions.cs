@@ -11,7 +11,7 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public static class FormattedStringExtensions
 	{
-		public static SpannableString ToAttributed(this FormattedString formattedString, Font defaultFont, Color defaultForegroundColor, TextView view)
+		public static SpannableString ToAttributed(this FormattedString formattedString, Font defaultFont, Color defaultForegroundColor, double letterSpacing, TextView view)
 		{
 			if (formattedString == null)
 				return null;
@@ -60,27 +60,31 @@ namespace Xamarin.Forms.Platform.Android
 				}
 				if (!span.IsDefault())
 #pragma warning disable 618 // We will need to update this when .Font goes away
-					spannable.SetSpan(new FontSpan(span.Font, view), start, end, SpanTypes.InclusiveInclusive);
+					spannable.SetSpan(new FontSpan(span.Font, view, (float)span.LetterSpacing), start, end, SpanTypes.InclusiveInclusive);
 #pragma warning restore 618
 				else
-					spannable.SetSpan(new FontSpan(defaultFont, view), start, end, SpanTypes.InclusiveInclusive);
+					spannable.SetSpan(new FontSpan(defaultFont, view, (float)span.LetterSpacing), start, end, SpanTypes.InclusiveInclusive);
 				if (span.IsSet(Span.TextDecorationsProperty))
 					spannable.SetSpan(new TextDecorationSpan(span), start, end, SpanTypes.InclusiveInclusive);
+
 			}
 			return spannable;
 		}
 
 		class FontSpan : MetricAffectingSpan
 		{
-			public FontSpan(Font font, TextView view)
+			public FontSpan(Font font, TextView view, float letterSpacing)
 			{
 				Font = font;
 				TextView = view;
+				LetterSpacing = letterSpacing;
 			}
 
 			public Font Font { get; }
 
 			public TextView TextView { get; }
+
+			public float LetterSpacing { get; }
 
 			public override void UpdateDrawState(TextPaint tp)
 			{
@@ -97,6 +101,7 @@ namespace Xamarin.Forms.Platform.Android
 				paint.SetTypeface(Font.ToTypeface());
 				float value = Font.ToScaledPixel();
 				paint.TextSize = TypedValue.ApplyDimension(ComplexUnitType.Sp, value, TextView.Resources.DisplayMetrics);
+				paint.LetterSpacing = LetterSpacing;
 			}
 		}
 

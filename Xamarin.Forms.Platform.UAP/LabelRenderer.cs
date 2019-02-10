@@ -29,6 +29,8 @@ namespace Xamarin.Forms.Platform.UWP
 			if (span.IsSet(Span.TextDecorationsProperty))
 				run.TextDecorations = (Windows.UI.Text.TextDecorations)span.TextDecorations;
 
+			run.CharacterSpacing = span.LetterSpacing.ToEm();
+
 			return run;
 		}
 	}
@@ -304,7 +306,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateLetterSpacing(TextBlock textBlock)
 		{
-			textBlock.FontStretch = Element.LetterSpacing.ToFontStretch();
+			textBlock.CharacterSpacing = Element.LetterSpacing.ToEm();
 		}
 
 

@@ -7,7 +7,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_SearchBarRenderer))]
-	public class SearchBar : InputView, IFontElement, IPlaceholderElement, ITextElement, ILetterSpacingElement, ITextAlignmentElement, ISearchBarController, IElementConfiguration<SearchBar>
+	public class SearchBar : InputView, IFontElement, IPlaceholderElement, ITextElement, ITextAlignmentElement, ISearchBarController, IElementConfiguration<SearchBar>
 	{
 		public static readonly BindableProperty SearchCommandProperty = BindableProperty.Create("SearchCommand", typeof(ICommand), typeof(SearchBar), null, propertyChanged: OnCommandChanged);
 
@@ -38,7 +38,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
 
-		public static readonly BindableProperty LetterSpacingProperty = LetterSpacingElement.LetterSpacingProperty;
+		public static readonly BindableProperty LetterSpacingProperty = TextElement.LetterSpacingProperty;
 
 		readonly Lazy<PlatformConfigurationRegistry<SearchBar>> _platformConfigurationRegistry;
 
@@ -90,8 +90,8 @@ namespace Xamarin.Forms
 
 		public double LetterSpacing
 		{
-			get { return (double)GetValue(LetterSpacingElement.LetterSpacingProperty); }
-			set { SetValue(LetterSpacingElement.LetterSpacingProperty, value); }
+			get { return (double)GetValue(TextElement.LetterSpacingProperty); }
+			set { SetValue(TextElement.LetterSpacingProperty, value); }
 		}
 
 		bool IsEnabledCore

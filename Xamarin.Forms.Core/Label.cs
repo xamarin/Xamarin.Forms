@@ -11,7 +11,7 @@ namespace Xamarin.Forms
 {
 	[ContentProperty("Text")]
 	[RenderWith(typeof(_LabelRenderer))]
-	public class Label : View, IFontElement, ITextElement, ILetterSpacingElement, ITextAlignmentElement, ILineHeightElement, IElementConfiguration<Label>, IDecorableTextElement
+	public class Label : View, IFontElement, ITextElement, ITextAlignmentElement, ILineHeightElement, IElementConfiguration<Label>, IDecorableTextElement
 	{
 		public static readonly BindableProperty HorizontalTextAlignmentProperty = TextAlignmentElement.HorizontalTextAlignmentProperty;
 
@@ -28,7 +28,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
 
-		public static readonly BindableProperty LetterSpacingProperty = LetterSpacingElement.LetterSpacingProperty;
+		public static readonly BindableProperty LetterSpacingProperty = TextElement.LetterSpacingProperty;
 
 		public static readonly BindableProperty FontProperty = FontElement.FontProperty;
 
@@ -142,8 +142,8 @@ namespace Xamarin.Forms
 
 		public double LetterSpacing
 		{
-			get { return (double)GetValue(LetterSpacingElement.LetterSpacingProperty); }
-			set { SetValue(LetterSpacingElement.LetterSpacingProperty, value); }
+			get { return (double)GetValue(TextElement.LetterSpacingProperty); }
+			set { SetValue(TextElement.LetterSpacingProperty, value); }
 		}
 		public TextAlignment VerticalTextAlignment
 		{

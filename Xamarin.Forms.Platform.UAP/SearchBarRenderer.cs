@@ -192,7 +192,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateLetterSpacing()
 		{
-			Control.FontStretch = Element.LetterSpacing.ToFontStretch();
+			Control.CharacterSpacing = Element.LetterSpacing.ToEm();
 		}
 
 		void UpdatePlaceholder()

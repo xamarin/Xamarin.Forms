@@ -5,7 +5,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_DatePickerRenderer))]
-	public class DatePicker : View, IFontElement, ITextElement, ILetterSpacingElement, IElementConfiguration<DatePicker>
+	public class DatePicker : View, IFontElement, ITextElement, IElementConfiguration<DatePicker>
 	{
 		public static readonly BindableProperty FormatProperty = BindableProperty.Create(nameof(Format), typeof(string), typeof(DatePicker), "d");
 
@@ -22,7 +22,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
 
-		public static readonly BindableProperty LetterSpacingProperty = LetterSpacingElement.LetterSpacingProperty;
+		public static readonly BindableProperty LetterSpacingProperty = TextElement.LetterSpacingProperty;
 
 		public static readonly BindableProperty FontFamilyProperty = FontElement.FontFamilyProperty;
 
@@ -69,8 +69,8 @@ namespace Xamarin.Forms
 
 		public double LetterSpacing
 		{
-			get { return (double)GetValue(LetterSpacingElement.LetterSpacingProperty); }
-			set { SetValue(LetterSpacingElement.LetterSpacingProperty, value); }
+			get { return (double)GetValue(TextElement.LetterSpacingProperty); }
+			set { SetValue(TextElement.LetterSpacingProperty, value); }
 		}
 
 		public FontAttributes FontAttributes

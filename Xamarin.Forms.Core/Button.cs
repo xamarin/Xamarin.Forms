@@ -9,7 +9,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_ButtonRenderer))]
-	public class Button : View, IFontElement, ITextElement, IBorderElement, IButtonController, IElementConfiguration<Button>, IPaddingElement, IImageController, IViewController, IButtonElement, IImageElement, ILetterSpacingElement
+	public class Button : View, IFontElement, ITextElement, IBorderElement, IButtonController, IElementConfiguration<Button>, IPaddingElement, IImageController, IViewController, IButtonElement, IImageElement
 	{
 		const int DefaultBorderRadius = 5;
 		const double DefaultSpacing = 10;
@@ -27,7 +27,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
 
-		public static readonly BindableProperty LetterSpacingProperty = LetterSpacingElement.LetterSpacingProperty;
+		public static readonly BindableProperty LetterSpacingProperty = TextElement.LetterSpacingProperty;
 
 		public static readonly BindableProperty FontProperty = FontElement.FontProperty;
 
@@ -147,8 +147,8 @@ namespace Xamarin.Forms
 
 		public double LetterSpacing
 		{
-			get { return (double)GetValue(LetterSpacingElement.LetterSpacingProperty); }
-			set { SetValue(LetterSpacingElement.LetterSpacingProperty, value); }
+			get { return (double)GetValue(TextElement.LetterSpacingProperty); }
+			set { SetValue(TextElement.LetterSpacingProperty, value); }
 		}
 
 		bool IButtonElement.IsEnabledCore
