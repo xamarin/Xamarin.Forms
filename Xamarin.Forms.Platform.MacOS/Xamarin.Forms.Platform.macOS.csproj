@@ -237,6 +237,7 @@
       <Link>VisualElementRenderer.cs</Link>
     </Compile>
     <Compile Include="Extensions\NSMenuExtensions.cs" />
+    <Compile Include="Controls\FormsNSSlider.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj">
