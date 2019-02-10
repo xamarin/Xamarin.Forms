@@ -27,6 +27,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use EditorRenderer(Context) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public EditorRenderer()
 		{
 			AutoPackage = false;
@@ -56,11 +57,27 @@ namespace Xamarin.Forms.Platform.Android
 			return new FormsEditText(Context);
 		}
 
+		protected override void OnFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
+		{
+			if (!e.Focus)
+			{
+				Control.HideKeyboard();
+			}
+
+			base.OnFocusChangeRequested(sender, e);
+
+			if (e.Focus)
+			{
+				// Post this to the main looper queue so it doesn't happen until the other focus stuff has resolved
+				// Otherwise, ShowKeyboard will be called before this control is truly focused, and we will potentially
+				// be displaying the wrong keyboard
+				Control?.PostShowKeyboard();
+			}
+		}
+
 		protected override void OnElementChanged(ElementChangedEventArgs<Editor> e)
 		{
 			base.OnElementChanged(e);
-
-			HandleKeyboardOnFocus = true;
 
 			var edit = Control;
 			if (edit == null)
@@ -69,7 +86,8 @@ namespace Xamarin.Forms.Platform.Android
 
 				SetNativeControl(edit);
 				edit.AddTextChangedListener(this);
-				edit.OnKeyboardBackPressed += OnKeyboardBackPressed;
+				if(edit is IFormsEditText formsEditText)
+					formsEditText.OnKeyboardBackPressed += OnKeyboardBackPressed;
 
 				var useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
 				_textColorSwitcher = new TextColorSwitcher(edit.TextColors, useLegacyColorManagement);
@@ -134,9 +152,9 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (disposing)
 			{
-				if (Control != null)
+				if (Control != null && Control is IFormsEditText formsEditText)
 				{
-					Control.OnKeyboardBackPressed -= OnKeyboardBackPressed;
+					formsEditText.OnKeyboardBackPressed -= OnKeyboardBackPressed;
 				}
 			}
 
