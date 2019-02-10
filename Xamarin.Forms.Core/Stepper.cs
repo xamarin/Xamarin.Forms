@@ -32,7 +32,11 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty ValueProperty = BindableProperty.Create("Value", typeof(double), typeof(Stepper), 0.0, BindingMode.TwoWay, coerceValue: (bindable, value) =>
 		{
 			var stepper = (Stepper)bindable;
-			return ((double)value).Clamp(stepper.Minimum, stepper.Maximum);
+			var result = ((double)value).Clamp(stepper.Minimum, stepper.Maximum);
+			var increment = stepper.Increment;
+			return Math.Abs(increment) > double.Epsilon
+				? Math.Round(result / increment) * increment
+				: result;
 		}, propertyChanged: (bindable, oldValue, newValue) =>
 		{
 			var stepper = (Stepper)bindable;
