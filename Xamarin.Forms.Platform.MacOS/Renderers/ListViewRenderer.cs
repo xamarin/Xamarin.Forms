@@ -154,7 +154,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 				var selected = e.NewElement.SelectedItem;
 				if (selected != null)
-					_dataSource.OnItemSelected(null, new SelectedItemChangedEventArgs(selected));
+					_dataSource.OnItemSelected(null, new SelectedItemChangedEventArgs(selected, templatedItems.GetGlobalIndexOfItem(selected)));
 			}
 
 			base.OnElementChanged(e);

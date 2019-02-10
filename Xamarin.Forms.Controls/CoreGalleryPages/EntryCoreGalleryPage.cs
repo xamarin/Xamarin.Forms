@@ -4,6 +4,10 @@ namespace Xamarin.Forms.Controls
 {
 	internal class EntryCoreGalleryPage : CoreGalleryPage<Entry>
 	{
+		public EntryCoreGalleryPage()
+		{
+		}
+
 		protected override bool SupportsTapGestureRecognizer
 		{
 			get { return false; }
@@ -66,6 +70,7 @@ namespace Xamarin.Forms.Controls
 
 			var maxLengthContainer = new ViewContainer<Entry>(Test.InputView.MaxLength,	new Entry { MaxLength = 3 });
 
+			var readOnlyContainer = new ViewContainer<Entry>(Test.Entry.IsReadOnly, new Entry { Text = "This is read-only Entry", IsReadOnly = true });
 			var isPasswordInputScopeContainer = new ViewContainer<Entry>(Test.Entry.IsPasswordNumeric,	new Entry { Keyboard = Keyboard.Numeric });
 			var switchPasswordButton = new Button
 			{
@@ -110,6 +115,7 @@ namespace Xamarin.Forms.Controls
 			Add (placeholderColorDisabledContainer);
 			Add (passwordColorContainer);
 			Add (maxLengthContainer);
+			Add (readOnlyContainer);
 			Add (isPasswordInputScopeContainer);
 		}
 	}
