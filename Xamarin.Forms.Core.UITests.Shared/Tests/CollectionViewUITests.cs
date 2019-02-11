@@ -49,22 +49,22 @@ namespace Xamarin.Forms.Core.UITests
 		//	"ScrollToItemCode,HorizontalList", "ScrollToItemCode,VerticalList", "ScrollToItemCode,HorizontalGrid", "ScrollToItemCode,VerticalGrid",
 		//  }, 19, 3)]
 		//[TestCase("Snap Points", new string[] { "SnapPointsCode,HorizontalList", "SnapPointsCode,VerticalList", "SnapPointsCode,HorizontalGrid", "SnapPointsCode,VerticalGrid" }, 19, 2)]
-		//[TestCase("Observable Collection", new string[] { "FilterItems", "Add/RemoveItemsList", "Add/RemoveItemsGrid" }, 19, 6)]
-		//[TestCase("Default Text", new string[] { "VerticalListCode", "HorizontalListCode", "VerticalGridCode", "HorizontalGridCode" }, 101, 11)]
-		//[TestCase("DataTemplate", new string[] { "VerticalListCode", "HorizontalListCode", "VerticalGridCode", "HorizontalGridCode" }, 19, 6)]
-		//public void VisitAndUpdateItemsSource(string collectionTestName, string[] subGalleries, int firstItem, int lastItem)
-		//{
-		//	VisitInitialGallery(collectionTestName);
+		[TestCase("Observable Collection", new string[] { "Add/RemoveItemsList", "Add/RemoveItemsGrid" }, 19, 6)]
+		[TestCase("Default Text", new string[] { "VerticalListCode", "HorizontalListCode", "VerticalGridCode", "HorizontalGridCode" }, 101, 11)]
+		[TestCase("DataTemplate", new string[] { "VerticalListCode", "HorizontalListCode", "VerticalGridCode", "HorizontalGridCode" }, 19, 6)]
+		public void VisitAndUpdateItemsSource(string collectionTestName, string[] subGalleries, int firstItem, int lastItem)
+		{
+			VisitInitialGallery(collectionTestName);
 
-		//	foreach (var gallery in subGalleries)
-		//	{
-		//		if (gallery == "FilterItems")
-		//			continue;
+			foreach (var gallery in subGalleries)
+			{
+				if (gallery == "FilterItems")
+					continue;
 
-		//		VisitSubGallery(gallery, !gallery.Contains("Horizontal"), $"Item: {firstItem}", $"Item: {lastItem}", lastItem - 1, true, false);
-		//		App.NavigateBack();
-		//	}
-		//}
+				VisitSubGallery(gallery, !gallery.Contains("Horizontal"), $"Item: {firstItem}", $"Item: {lastItem}", lastItem - 1, true, false);
+				App.NavigateBack();
+			}
+		}
 
 		//[TestCase("ScrollTo", new string[] {
 		//	"ScrollToIndexCode,HorizontalList", "ScrollToIndexCode,VerticalList", "ScrollToIndexCode,HorizontalGrid", "ScrollToIndexCode,VerticalGrid",
@@ -146,7 +146,7 @@ namespace Xamarin.Forms.Core.UITests
 		}
 		}
 
-		[TestCase("Observable Collection", new string[] { "FilterItems", "Add/RemoveItemsList", "Add/RemoveItemsGrid" }, 19, 6)]
+		[TestCase("Observable Collection", new string[] { "Add/RemoveItemsList", "Add/RemoveItemsGrid" }, 19, 6)]
 		[TestCase("Default Text", new string[] { "VerticalListCode", "HorizontalListCode", "VerticalGridCode" }, 101, 11)] //HorizontalGridCode
 		[TestCase("DataTemplate", new string[] { "VerticalListCode", "HorizontalListCode", "VerticalGridCode", "HorizontalGridCode" }, 19, 6)]
 		public void VisitAndTestItemsPosition(string collectionTestName, string[] subGalleries, int firstItem, int lastItem)
