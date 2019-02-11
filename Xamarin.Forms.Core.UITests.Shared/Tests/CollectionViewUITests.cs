@@ -131,22 +131,22 @@ namespace Xamarin.Forms.Core.UITests
 			App.WaitForElement(c => c.Marked(itemToCheck));
 		}
 
-		//[TestCase("Observable Collection", new string[] { "FilterItems", "Add/RemoveItemsList", "Add/RemoveItemsGrid" }, 1, 6)]
-		//public void AddRemoveItems(string collectionTestName, string[] subGalleries, int firstItem, int lastItem)
-		//{
-		//VisitInitialGallery(collectionTestName);
+		[TestCase("Observable Collection", new string[] { "Add/RemoveItemsList", "Add/RemoveItemsGrid" }, 1, 6)]
+		public void AddRemoveItems(string collectionTestName, string[] subGalleries, int firstItem, int lastItem)
+		{
+		VisitInitialGallery(collectionTestName);
 
-		//foreach (var gallery in subGalleries)
-		//{
-		//	if (gallery == "FilterItems")
-		//		continue;
+		foreach (var gallery in subGalleries)
+		{
+			if (gallery == "FilterItems")
+				continue;
 
-		//	VisitSubGallery(gallery, !gallery.Contains("Horizontal"), $"Item: {firstItem}", $"Item: {lastItem}", lastItem - 1, false, true);
-		//	App.NavigateBack();
-		//}
-		//}
+			VisitSubGallery(gallery, !gallery.Contains("Horizontal"), $"Item: {firstItem}", $"Item: {lastItem}", lastItem - 1, false, true);
+			App.NavigateBack();
+		}
+		}
 
-		//[TestCase("Observable Collection", new string[] { "FilterItems", "Add/RemoveItemsList", "Add/RemoveItemsGrid" }, 19, 6)]
+		[TestCase("Observable Collection", new string[] { "FilterItems", "Add/RemoveItemsList", "Add/RemoveItemsGrid" }, 19, 6)]
 		[TestCase("Default Text", new string[] { "VerticalListCode", "HorizontalListCode", "VerticalGridCode" }, 101, 11)] //HorizontalGridCode
 		[TestCase("DataTemplate", new string[] { "VerticalListCode", "HorizontalListCode", "VerticalGridCode", "HorizontalGridCode" }, 19, 6)]
 		public void VisitAndTestItemsPosition(string collectionTestName, string[] subGalleries, int firstItem, int lastItem)
