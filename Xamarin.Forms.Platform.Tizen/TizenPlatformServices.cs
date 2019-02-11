@@ -223,7 +223,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			}
 		}
 
-		SizeRequest IPlatform.GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
+		public SizeRequest GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
 		{
 			return Platform.GetNativeSize(view, widthConstraint, heightConstraint);
 		}
