@@ -44,9 +44,12 @@ namespace Xamarin.Forms.ControlGallery.WindowsUniversal
         /// <param name="e">Details about the launch request and process.</param>
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
-			if (!String.IsNullOrWhiteSpace(e.Arguments) &&
+			/* uncomment if you want to run tests without preloading
+			 * issues list or change other behavior based on if tests
+			 * are running in UI Harness
+			 * if (!String.IsNullOrWhiteSpace(e.Arguments) &&
 				e.Arguments.Contains("RunningAsUITests"))
-				Controls.App.PreloadTestCasesIssuesList = false;
+				Controls.App.PreloadTestCasesIssuesList = false;*/
 #if DEBUG
 			if (System.Diagnostics.Debugger.IsAttached)
             {
