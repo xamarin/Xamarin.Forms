@@ -80,13 +80,15 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		{
 			base.OnElementPropertyChanged(sender, e);
 
-			if (e.PropertyName == Stepper.MinimumProperty.PropertyName ||
-				e.PropertyName == Stepper.MaximumProperty.PropertyName ||
-				e.PropertyName == Stepper.ValueProperty.PropertyName ||
-				e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
+			if (e.IsOneOf(Stepper.MinimumProperty, Stepper.MaximumProperty, Stepper.ValueProperty, VisualElement.IsEnabledProperty))
 			{
 				UpdateButtons();
 			}
+		}
+
+		protected override void SetBackgroundColor(Color color)
+		{
+			// don't call base
 		}
 
 		void UpdateButtons()

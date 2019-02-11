@@ -71,6 +71,11 @@ namespace Xamarin.Forms.Platform.Android.Material
 			StepperRendererManager.UpdateButtons(this, _downButton, _upButton, e);
 		}
 
+		protected override void UpdateBackgroundColor()
+		{
+			// don't call base
+		}
+
 		// IStepperRenderer
 
 		Stepper IStepperRenderer.Element => Element;
