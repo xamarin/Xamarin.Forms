@@ -242,7 +242,7 @@
             <Label Text="Height 100" Margin="0,0,0,-10" />
             <Stepper HeightRequest="100"></Stepper>
             
-            <Label Text="Height 100" Margin="0,0,0,-10" />
+            <Label Text="Red background" Margin="0,0,0,-10" />
             <Stepper BackgroundColor="Red"></Stepper>
             
         </StackLayout>
