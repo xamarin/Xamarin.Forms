@@ -54,7 +54,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			return attributed;
 		}
 		
-		internal static NSAttributedString ToAttributed(this Span span, Element owner, Color defaultForegroundColor, TextAlignment textAlignment, double lineHeight = -1.0)
+		internal static NSAttributedString ToAttributed(this Span span, Element owner, Color defaultForegroundColor, TextAlignment textAlignment, double lineHeight = -1.0, double letterSpacing = 0)
 		{
 			if (span == null)
 				return null;
@@ -136,7 +136,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		}
 
 		internal static NSAttributedString ToAttributed(this FormattedString formattedString, Element owner,
-			Color defaultForegroundColor, TextAlignment textAlignment = TextAlignment.Start, double lineHeight = -1.0)
+			Color defaultForegroundColor, TextAlignment textAlignment = TextAlignment.Start, double lineHeight = -1.0, double letterSpacing = 0)
 		{
 			if (formattedString == null)
 				return null;
@@ -146,7 +146,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			{
 				Span span = formattedString.Spans[i];
 
-				var attributedString = span.ToAttributed(owner, defaultForegroundColor, textAlignment, lineHeight);
+				var attributedString = span.ToAttributed(owner, defaultForegroundColor, textAlignment, lineHeight, letterSpacing);
 
 				if (attributedString == null)
 					continue;
