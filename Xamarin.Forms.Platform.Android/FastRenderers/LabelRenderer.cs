@@ -346,7 +346,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			{
 				FormattedString formattedText = Element.FormattedText ?? Element.Text;
 #pragma warning disable 618 // We will need to update this when .Font goes away
-				TextFormatted = _spannableString = formattedText.ToAttributed(Element.Font, Element.TextColor, Element.LetterSpacing, this);
+				TextFormatted = _spannableString = formattedText.ToAttributed(Element.Font, Element.TextColor, this);
 #pragma warning restore 618
 				_wasFormatted = true;
 			}

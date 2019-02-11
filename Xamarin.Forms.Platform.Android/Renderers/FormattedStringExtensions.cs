@@ -11,7 +11,7 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public static class FormattedStringExtensions
 	{
-		public static SpannableString ToAttributed(this FormattedString formattedString, Font defaultFont, Color defaultForegroundColor, double letterSpacing, TextView view)
+		public static SpannableString ToAttributed(this FormattedString formattedString, Font defaultFont, Color defaultForegroundColor, TextView view)
 		{
 			if (formattedString == null)
 				return null;
@@ -37,7 +37,6 @@ namespace Xamarin.Forms.Platform.Android
 				if (text == null)
 					continue;
 
-				var ls = (letterSpacing != span.LetterSpacing && span.LetterSpacing == 0) ? (float)letterSpacing : (float)span.LetterSpacing;
 				int start = c;
 				int end = start + text.Length;
 				c = end;
@@ -61,10 +60,10 @@ namespace Xamarin.Forms.Platform.Android
 				}
 				if (!span.IsDefault())
 #pragma warning disable 618 // We will need to update this when .Font goes away
-					spannable.SetSpan(new FontSpan(span.Font, view, ls), start, end, SpanTypes.InclusiveInclusive);
+					spannable.SetSpan(new FontSpan(span.Font, view, (float)span.LetterSpacing), start, end, SpanTypes.InclusiveInclusive);
 #pragma warning restore 618
 				else
-					spannable.SetSpan(new FontSpan(defaultFont, view, ls), start, end, SpanTypes.InclusiveInclusive);
+					spannable.SetSpan(new FontSpan(defaultFont, view, (float)span.LetterSpacing), start, end, SpanTypes.InclusiveInclusive);
 				if (span.IsSet(Span.TextDecorationsProperty))
 					spannable.SetSpan(new TextDecorationSpan(span), start, end, SpanTypes.InclusiveInclusive);
 

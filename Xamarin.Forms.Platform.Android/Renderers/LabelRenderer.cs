@@ -260,7 +260,7 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				FormattedString formattedText = Element.FormattedText ?? Element.Text;
 #pragma warning disable 618 // We will need to update this when .Font goes away
-				_view.TextFormatted = _spannableString = formattedText.ToAttributed(Element.Font, Element.TextColor, Element.LetterSpacing, _view);
+				_view.TextFormatted = _spannableString = formattedText.ToAttributed(Element.Font, Element.TextColor, _view);
 #pragma warning restore 618
 				_wasFormatted = true;
 			}

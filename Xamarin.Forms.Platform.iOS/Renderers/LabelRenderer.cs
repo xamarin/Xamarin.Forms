@@ -378,10 +378,8 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 #if __MOBILE__
 			Control.AttributedText = _formatted.ToAttributed(Element, Element.TextColor, Element.HorizontalTextAlignment, Element.LineHeight);
-			Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text, Control.AttributedText);
 #else
 			Control.AttributedStringValue = _formatted.ToAttributed(Element, Element.TextColor, Element.HorizontalTextAlignment, Element.LineHeight);
-			Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text, Control.AttributedStringValue);
 #endif
 		}
 
