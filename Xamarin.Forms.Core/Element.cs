@@ -614,7 +614,7 @@ namespace Xamarin.Forms
 
 		// Platform isn't needed anymore, but the Previewer will still try to set it via reflection
 		// and throw an NRE if it's not available
-		// So even if this property eventuall gets removed, we still need to keep something settable on
+		// So even if this property eventually gets removed, we still need to keep something settable on
 		// Page called Platform
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
