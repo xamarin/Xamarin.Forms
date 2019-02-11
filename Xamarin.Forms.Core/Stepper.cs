@@ -32,11 +32,7 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty ValueProperty = BindableProperty.Create("Value", typeof(double), typeof(Stepper), 0.0, BindingMode.TwoWay, coerceValue: (bindable, value) =>
 		{
 			var stepper = (Stepper)bindable;
-			var result = ((double)value).Clamp(stepper.Minimum, stepper.Maximum);
-			var increment = stepper.Increment;
-			return Math.Abs(increment) > double.Epsilon
-				? Math.Round(result / increment) * increment
-				: result;
+			return Math.Round(((double)value).Clamp(stepper.Minimum, stepper.Maximum), stepper.ValueRoundDigits);
 		}, propertyChanged: (bindable, oldValue, newValue) =>
 		{
 			var stepper = (Stepper)bindable;
@@ -46,6 +42,8 @@ namespace Xamarin.Forms
 		});
 
 		public static readonly BindableProperty IncrementProperty = BindableProperty.Create("Increment", typeof(double), typeof(Stepper), 1.0);
+
+		public static readonly BindableProperty ValueRoundDigitsProperty = BindableProperty.Create("ValueRoundDigits", typeof(int), typeof(Stepper), 10);
 
 		readonly Lazy<PlatformConfigurationRegistry<Stepper>> _platformConfigurationRegistry;
 
@@ -77,6 +75,12 @@ namespace Xamarin.Forms
 		{
 			get { return (double)GetValue(IncrementProperty); }
 			set { SetValue(IncrementProperty, value); }
+		}
+
+		public int ValueRoundDigits
+		{
+			get { return (int)GetValue(ValueRoundDigitsProperty); }
+			set { SetValue(ValueRoundDigitsProperty, value); }
 		}
 
 		public double Maximum
