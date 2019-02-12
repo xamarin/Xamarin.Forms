@@ -12,7 +12,7 @@ namespace Xamarin.Forms.Platform.macOS.Controls
 			Continuous = true;
 			SizeToFit();
 			var size = Bounds.Size;
-			_fitSize = new CGSize(size.Width > 0 ? size.Width : 100, size.Height > 0 ? size.Height : 20);
+			_fitSize = size.Width > 0 && size.Height > 0 ? size : new CGSize(96, 21);
 		}
 
 		public override CGSize SizeThatFits(CGSize size) => _fitSize;
