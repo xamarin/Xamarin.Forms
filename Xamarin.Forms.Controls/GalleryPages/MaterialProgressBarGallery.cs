@@ -1,4 +1,6 @@
-﻿namespace Xamarin.Forms.Controls
+using System;
+
+namespace Xamarin.Forms.Controls
 {
 	public class MaterialProgressBarGallery : ContentPage
 	{
@@ -6,97 +8,111 @@
 		{
 			Visual = VisualMarker.Material;
 
-			var progressBar = new ProgressBar();
+			var progressBar = new ProgressBar { Progress = 0.5 };
+			var slider = new Slider { Value = 0.5 };
 
-			Slider[] ColorSlider =
+			var primaryPicker = new ColorPicker { Title = "Primary Color" };
+			primaryPicker.ColorPicked += (_, e) =>
 			{
-				new Slider(0, 1, 0.5),
-				new Slider(0, 1, 0.5),
-				new Slider(0, 1, 0.5),
-				new Slider(0, 1, 0.5)
+				progressBar.ProgressColor = e.Color;
+				slider.MinimumTrackColor = e.Color;
 			};
-			Slider[] BackColorSlider =
+			var backgroundPicker = new ColorPicker { Title = "Background Color" };
+			backgroundPicker.ColorPicked += (_, e) =>
 			{
-				new Slider(0, 1, 0.5),
-				new Slider(0, 1, 0.5),
-				new Slider(0, 1, 0.5),
-				new Slider(0, 1, 0.5)
+				progressBar.BackgroundColor = e.Color;
+				slider.MaximumTrackColor = e.Color;
 			};
-
-			var actions = new Grid()
+			var thumbPicker = new ColorPicker { Title = "Thumb Color" };
+			thumbPicker.ColorPicked += (_, e) =>
 			{
-				ColumnDefinitions =
-				{
-					new ColumnDefinition { Width = 10 },
-					new ColumnDefinition { Width = GridLength.Star },
-					new ColumnDefinition { Width = 30 },
-					new ColumnDefinition { Width = 10 },
-					new ColumnDefinition { Width = GridLength.Star },
-					new ColumnDefinition { Width = 30 },
-				}
+				slider.ThumbColor = e.Color;
 			};
 
-			actions.AddChild(new Label { Text = "Primary color" }, 0, 0, 3);
-			for (int i = 0; i < ColorSlider.Length; i++)
+			var valuePicker = CreateValuePicker("Value / Progress", value =>
 			{
-				var valueLabel = new Label();
-				ColorSlider[i].ValueChanged += (_, e) =>
-				{
-					progressBar.ProgressColor = Color.FromRgba(ColorSlider[0].Value, ColorSlider[1].Value, ColorSlider[2].Value, ColorSlider[3].Value);
-					valueLabel.Text = ((int)(e.NewValue * 255)).ToString();
-				};
-				actions.AddChild(new Label { Text = GetColorLetter(i) }, 0, i + 1);
-				actions.AddChild(ColorSlider[i], 1, i + 1);
-				actions.AddChild(valueLabel, 2, i + 1);
-			}
-
-			actions.AddChild(new Label { Text = "Background color" }, 3, 0, 3);
-			for (int i = 0; i < BackColorSlider.Length; i++)
+				progressBar.Progress = value / 100.0;
+				slider.Value = value / 100.0;
+			});
+			var heightPicker = CreateValuePicker("Height", value =>
 			{
-				var valueLabel = new Label();
-				BackColorSlider[i].ValueChanged += (_, e) =>
-				{
-					progressBar.BackgroundColor = Color.FromRgba(BackColorSlider[0].Value, BackColorSlider[1].Value, BackColorSlider[2].Value, BackColorSlider[3].Value);
-					valueLabel.Text = ((int)(e.NewValue * 255)).ToString();
-				};
-				actions.AddChild(new Label { Text = GetColorLetter(i) }, 3, i + 1);
-				actions.AddChild(BackColorSlider[i], 4, i + 1);
-				actions.AddChild(valueLabel, 5, i + 1);
-			}
-
-			var valueSlider = new Slider(0, 1, progressBar.Progress);
-			valueSlider.ValueChanged += (_, e) => progressBar.Progress = e.NewValue;
-			actions.AddChild(new Label { Text = "Value" }, 0, 5, 6);
-			actions.AddChild(valueSlider, 0, 6, 6);
-
-			var heightSlider = new Slider(0, 100, 4);
-			heightSlider.ValueChanged += (_, e) => progressBar.HeightRequest = e.NewValue;
-			actions.AddChild(new Label { Text = "HeightRequest" }, 0, 7, 6);
-			actions.AddChild(heightSlider, 0, 8, 6);
+				progressBar.HeightRequest = value;
+				slider.HeightRequest = value;
+			});
 
 			Content = new StackLayout
 			{
+				Padding = 10,
+				Spacing = 10,
 				Children =
 				{
-					actions,
-					progressBar
+					new ScrollView
+					{
+						Margin = new Thickness(-10, 0),
+						Content = new StackLayout
+						{
+							Padding = 10,
+							Spacing = 10,
+							Children =
+							{
+								primaryPicker,
+								backgroundPicker,
+								thumbPicker,
+								valuePicker,
+								heightPicker,
+							}
+						}
+					},
+
+					new BoxView
+					{
+						HeightRequest = 1,
+						Margin = new Thickness(-10, 0),
+						Color = Color.Black
+					},
+
+					progressBar,
+					slider
 				}
 			};
 		}
 
-		string GetColorLetter(int index)
+		Grid CreateValuePicker(string title, Action<double> changed)
 		{
-			switch (index)
+			// 50%
+			Slider slider = new Slider(0, 100, 50);
+
+			var actions = new Grid
 			{
-				case 0:
-					return "R";
-				case 1:
-					return "G";
-				case 2:
-					return "B";
-				default:
-					return "A";
-			}
+				Padding = 0,
+				ColumnSpacing = 6,
+				RowSpacing = 6,
+				ColumnDefinitions =
+				{
+					new ColumnDefinition { Width = 10 },
+					new ColumnDefinition { Width = GridLength.Star },
+					new ColumnDefinition { Width = 30 }
+				}
+			};
+
+			actions.AddChild(new Label { Text = title }, 0, 0, 3);
+
+			var valueLabel = new Label
+			{
+				Text = slider.Value.ToString(),
+				HorizontalOptions = LayoutOptions.End
+			};
+
+			slider.ValueChanged += (_, e) =>
+			{
+				changed?.Invoke(slider.Value);
+				valueLabel.Text = e.NewValue.ToString("0");
+			};
+			actions.AddChild(new Label { Text = "V" }, 0, 1);
+			actions.AddChild(slider, 1, 1);
+			actions.AddChild(valueLabel, 2, 1);
+
+			return actions;
 		}
 	}
 }
