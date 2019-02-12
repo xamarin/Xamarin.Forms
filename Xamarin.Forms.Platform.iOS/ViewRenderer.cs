@@ -107,6 +107,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected override void Dispose(bool disposing)
 		{
+			//this needs to be here
+			base.Dispose(disposing);
+
 			if (disposing)
 			{
 				_elementPropertyChanged = null;
@@ -121,7 +124,6 @@ namespace Xamarin.Forms.Platform.MacOS
 				}
 			}
 
-			base.Dispose(disposing);
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<TView> e)
