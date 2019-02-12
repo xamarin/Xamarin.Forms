@@ -7,8 +7,7 @@ namespace Xamarin.Forms.Platform.Android
 	public class SelectableItemsViewRenderer : ItemsViewRenderer
 	{
 		SelectableItemsView SelectableItemsView => (SelectableItemsView)ItemsView;
-
-		SelectableItemsViewAdapter SelectableItemsViewAdapter => (SelectableItemsViewAdapter)ItemsViewAdapter; 
+		SelectableItemsViewAdapter SelectableItemsViewAdapter => (SelectableItemsViewAdapter)ItemsViewAdapter;
 
 		public SelectableItemsViewRenderer(Context context) : base(context)
 		{
@@ -17,8 +16,10 @@ namespace Xamarin.Forms.Platform.Android
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs changedProperty)
 		{
 			base.OnElementPropertyChanged(sender, changedProperty);
-			
-			if (changedProperty.Is(SelectableItemsView.SelectedItemProperty))
+
+			if (changedProperty.IsOneOf(SelectableItemsView.SelectedItemProperty, 
+				SelectableItemsView.SelectedItemsProperty, 
+				SelectableItemsView.SelectionModeProperty))
 			{
 				UpdateNativeSelection();
 			}
@@ -44,6 +45,11 @@ namespace Xamarin.Forms.Platform.Android
 
 		void MarkItemSelected(object selectedItem)
 		{
+			if(selectedItem == null)
+			{
+				return;
+			}
+
 			var position = ItemsViewAdapter.GetPositionForItem(selectedItem);
 			var selectedHolder = FindViewHolderForAdapterPosition(position);
 			if (selectedHolder == null)
@@ -80,6 +86,28 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			// TODO hartez 2018/11/06 22:32:07 This doesn't cover all the possible cases yet; need to handle multiple selection	
+
+			ClearNativeSelection();
+
+			switch (mode)
+			{
+				case SelectionMode.None:
+					return;
+
+				case SelectionMode.Single:
+					var selectedItem = SelectableItemsView.SelectedItem;
+					MarkItemSelected(selectedItem);
+					return;
+
+				case SelectionMode.Multiple:
+					var selectedItems = SelectableItemsView.SelectedItems;
+					
+					foreach(var item in selectedItems)
+					{
+						MarkItemSelected(item);
+					}
+					return;
+			}
 		}
 	}
 }

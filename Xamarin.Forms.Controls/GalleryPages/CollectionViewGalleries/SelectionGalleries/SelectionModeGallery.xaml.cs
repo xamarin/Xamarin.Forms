@@ -24,8 +24,39 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.SelectionG
 			CollectionView.SelectionChanged += CollectionViewOnSelectionChanged;
 			CollectionView.SelectionChangedCommand = new Command(UpdateSelectionInfoCommand);
 
+			CollectionView.PropertyChanged += CollectionView_PropertyChanged;
+
 			UpdateSelectionInfo(Enumerable.Empty<CollectionViewGalleryTestItem>(), Enumerable.Empty<CollectionViewGalleryTestItem>());
 			UpdateSelectionInfoCommand();
+		}
+
+		private void CollectionView_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+		{
+			if (e.PropertyName == CollectionView.SelectionModeProperty.PropertyName)
+			{
+				UpdateSelectionInfoCommand();
+
+				switch (CollectionView.SelectionMode)
+				{
+					case SelectionMode.None:
+						UpdateSelectionInfo(null, null);
+						break;
+					case SelectionMode.Single:
+
+						if (CollectionView.SelectedItem == null)
+						{
+							UpdateSelectionInfo(null, null);
+						}
+						else
+						{
+							UpdateSelectionInfo(new List<object> { CollectionView.SelectedItem }, null);
+						}
+						break;
+					case SelectionMode.Multiple:
+						UpdateSelectionInfo(CollectionView.SelectedItems, null);
+						break;
+				}
+			}
 		}
 
 		void CollectionViewOnSelectionChanged(object sender, SelectionChangedEventArgs args)
@@ -56,7 +87,11 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.SelectionG
 		{
 			var current = "[none]";
 
-			if (CollectionView.SelectedItem != null)
+			if(CollectionView.SelectionMode == SelectionMode.Multiple)
+			{
+				current = ToList(CollectionView?.SelectedItems);
+			}
+			else if (CollectionView.SelectionMode == SelectionMode.Single)
 			{
 				current = ((CollectionViewGalleryTestItem)CollectionView?.SelectedItem)?.Caption;
 			}
