@@ -29,7 +29,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				var contents = Layer?.Contents;
 				if(contents == null)
 				{
-					return CGSize.Empty;
+					return base.FittingSize;
 				}
 				var scale = (float)NSScreen.MainScreen.BackingScaleFactor;
 				var width = contents.Width / scale;
