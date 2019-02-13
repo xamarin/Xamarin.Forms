@@ -22,17 +22,21 @@ namespace Xamarin.Forms.Platform.iOS
 			    e.PropertyName == Xamarin.Forms.Frame.BorderColorProperty.PropertyName ||
 				e.PropertyName == Xamarin.Forms.Frame.HasShadowProperty.PropertyName ||
 				e.PropertyName == Xamarin.Forms.Frame.CornerRadiusProperty.PropertyName)
+			{
 				SetupLayer();
+				return;
+			}
+
+			if (e.PropertyName == VisualElement.WidthProperty.PropertyName ||
+				e.PropertyName == VisualElement.HeightProperty.PropertyName)
+			{
+				UpdateCornerRadius();
+			}
 		}
 
 		void SetupLayer()
 		{
-			float cornerRadius = Element.CornerRadius;
-
-			if (cornerRadius == -1f)
-				cornerRadius = 5f; // default corner radius
-
-			Layer.CornerRadius = cornerRadius;
+			UpdateCornerRadius();
 
 			if (Element.BackgroundColor == Color.Default)
 				Layer.BackgroundColor = UIColor.White.CGColor;
@@ -59,6 +63,23 @@ namespace Xamarin.Forms.Platform.iOS
 
 			Layer.RasterizationScale = UIScreen.MainScreen.Scale;
 			Layer.ShouldRasterize = true;
+		}
+
+		void UpdateCornerRadius()
+		{
+			var width = Element.Width;
+			var height = Element.Height;
+
+			if (width < 0 || height < 0)
+				return;
+
+			float cornerRadius = Element.CornerRadius;
+
+			if (cornerRadius == -1f)
+				cornerRadius = 5f; // default corner radius
+
+			var halfSize = (float)System.Math.Min(width, height) / 2;
+			Layer.CornerRadius = System.Math.Min(cornerRadius, halfSize);
 		}
 	}
 }
