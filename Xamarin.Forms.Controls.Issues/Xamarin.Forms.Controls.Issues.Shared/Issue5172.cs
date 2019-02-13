@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Controls.Issues
 						new ImageCell
 						{
                             // Some differences with loading images in initial release.
-                            ImageSource = ImageSource.FromUri(new Uri("https://i0.wp.com/www.thedudes.com.br/wp-content/uploads/2018/06/Vitrine-Perfil-dos-Dudes-04.png")),
+                            ImageSource = ImageSource.FromUri(new Uri("https://raw.githubusercontent.com/xamarin/Xamarin.Forms/543da8aec914efc6ce98794302792ef948cc28c8/Xamarin.Forms.ControlGallery.Android/Resources/drawable/coffee.png")),
 							Text = "This is an ImageCell",
 							Detail = "This is some detail text",
 						}
