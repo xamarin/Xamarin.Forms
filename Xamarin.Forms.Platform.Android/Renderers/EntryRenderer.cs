@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using Android.Content;
 using Android.Content.Res;
+using Android.OS;
 using Android.Text;
 using Android.Text.Method;
 using Android.Util;
@@ -33,6 +34,13 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		protected override EditText EditText => Control;
+
+		protected override void UpdateIsReadOnly()
+		{
+			base.UpdateIsReadOnly();
+			bool isReadOnly = !Element.IsReadOnly;
+			Control.SetCursorVisible(isReadOnly);
+		}
 	}
 
 	public abstract class EntryRendererBase<TControl> : ViewRenderer<Entry, TControl>, ITextWatcher, TextView.IOnEditorActionListener
@@ -92,11 +100,28 @@ namespace Xamarin.Forms.Platform.Android
 
 			((IElementController)Element).SetValueFromRenderer(Entry.TextProperty, s.ToString());
 		}
+
+		protected override void OnFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
+		{
+			if (!e.Focus)
+			{
+				Control.HideKeyboard();
+			}
+
+			base.OnFocusChangeRequested(sender, e);
+
+			if (e.Focus)
+			{
+				// Post this to the main looper queue so it doesn't happen until the other focus stuff has resolved
+				// Otherwise, ShowKeyboard will be called before this control is truly focused, and we will potentially
+				// be displaying the wrong keyboard
+				Control?.PostShowKeyboard();
+			}
+		}
+
 		protected override void OnElementChanged(ElementChangedEventArgs<Entry> e)
 		{
 			base.OnElementChanged(e);
-
-			HandleKeyboardOnFocus = true;
 
 			if (e.OldElement == null)
 			{
@@ -133,6 +158,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateMaxLength();
 			UpdateImeOptions();
 			UpdateReturnType();
+			UpdateIsReadOnly();
 
 			if (_cursorPositionChangePending || _selectionLengthChangePending)
 				UpdateCursorSelection();
@@ -210,6 +236,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateCursorSelection();
 			else if (e.PropertyName == Entry.CursorPositionProperty.PropertyName)
 				UpdateCursorSelection();
+			else if (e.PropertyName == InputView.IsReadOnlyProperty.PropertyName)
+				UpdateIsReadOnly();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -358,7 +386,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (_nativeSelectionIsUpdating || Control == null || Element == null)
 				return;
 
-			if (Control.RequestFocus())
+			if (!Element.IsReadOnly && Control.RequestFocus())
 			{
 				try
 				{
@@ -439,6 +467,14 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				_nativeSelectionIsUpdating = false;
 			}
+		}
+
+		protected virtual void UpdateIsReadOnly()
+		{
+			bool isReadOnly = !Element.IsReadOnly;
+
+			Control.FocusableInTouchMode = isReadOnly;
+			Control.Focusable = isReadOnly;
 		}
 	}
 }

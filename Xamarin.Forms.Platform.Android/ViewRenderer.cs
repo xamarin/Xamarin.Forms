@@ -54,8 +54,6 @@ namespace Xamarin.Forms.Platform.Android
 
 		SoftInput _startingInputMode;
 
-		internal bool HandleKeyboardOnFocus;
-
 		public TNativeView Control { get; private set; }
 
 		AView ITabStop.TabStop => Control;
@@ -118,6 +116,7 @@ namespace Xamarin.Forms.Platform.Android
 						window.SetSoftInputMode(_startingInputMode);
 				}
 			}
+
 			OnNativeFocusChanged(hasFocus);
 
 			((IElementController)Element).SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, hasFocus);
@@ -254,7 +253,7 @@ namespace Xamarin.Forms.Platform.Android
 			SetNativeControl(control, this);
 		}
 
-		internal virtual void OnFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
+		protected virtual void OnFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
 		{
 			if (Control == null)
 				return;
@@ -263,32 +262,23 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (e.Focus)
 			{
-				// use post being BeginInvokeOnMainThread will not delay on android
-				Looper looper = Context.MainLooper;
-				var handler = new Handler(looper);
-				handler.Post(() =>
-				{
+				// Android does the actual focus/unfocus work on the main looper
+				// So in case we're setting the focus in response to another control's un-focusing,
+				// we need to post the handling of it to the main looper so that it happens _after_ all the other focus
+				// work is done; otherwise, a call to ClearFocus on another control will kill the focus we set here
+				Device.BeginInvokeOnMainThread(() => {
 					if (Control == null || Control.IsDisposed())
 						return;
 
 					if (Control is IPopupTrigger popupElement)
 						popupElement.ShowPopupOnFocus = true;
 
-					Control.RequestFocus();
+					Control?.RequestFocus();
 				});
 			}
 			else
 			{
 				Control.ClearFocus();
-			}
-
-			//handles keyboard on focus for Editor, Entry and SearchBar
-			if (HandleKeyboardOnFocus)
-			{
-				if (e.Focus)
-					Control.ShowKeyboard();
-				else
-					Control.HideKeyboard();
 			}
 		}
 

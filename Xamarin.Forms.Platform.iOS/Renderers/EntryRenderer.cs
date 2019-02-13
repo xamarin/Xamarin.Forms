@@ -116,11 +116,12 @@ namespace Xamarin.Forms.Platform.iOS
 			_cursorPositionChangePending = Element.IsSet(Entry.CursorPositionProperty);
 			_selectionLengthChangePending = Element.IsSet(Entry.SelectionLengthProperty);
 
+			// Font needs to be set before Text and Placeholder so that they layout correctly when set
+			UpdateFont();
 			UpdatePlaceholder();
 			UpdatePassword();
 			UpdateText();
 			UpdateColor();
-			UpdateFont();
 			UpdateKeyboard();
 			UpdateAlignment();
 			UpdateAdjustsFontSizeToFitWidth();
@@ -131,6 +132,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateCursorSelection();
 
 			UpdateCursorColor();
+			UpdateIsReadOnly();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -176,6 +178,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateCursorSelection();
 			else if (e.PropertyName == Specifics.CursorColorProperty.PropertyName)
 				UpdateCursorColor();
+			else if (e.PropertyName == Xamarin.Forms.InputView.IsReadOnlyProperty.PropertyName)
+				UpdateIsReadOnly();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -243,7 +247,7 @@ namespace Xamarin.Forms.Platform.iOS
 			Control.AdjustsFontSizeToFitWidth = Element.OnThisPlatform().AdjustsFontSizeToFitWidth();
 		}
 
-		void UpdateFont()
+		protected internal virtual void UpdateFont()
 		{
 			if (initialSize == CGSize.Empty)
 			{
@@ -483,5 +487,10 @@ namespace Xamarin.Forms.Platform.iOS
 				_nativeSelectionIsUpdating = false;
 			}
 		}
-	}
+
+        void UpdateIsReadOnly()
+        {
+            Control.UserInteractionEnabled = !Element.IsReadOnly;
+        }
+    }
 }
