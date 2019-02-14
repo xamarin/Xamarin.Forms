@@ -38,11 +38,9 @@ namespace Xamarin.Forms.Platform.MacOS
 		readonly List<EventHandler<VisualElementChangedEventArgs>> _elementChangedHandlers = new List<EventHandler<VisualElementChangedEventArgs>>();
 
 		readonly PropertyChangedEventHandler _propertyChangedHandler;
-
 		string _defaultAccessibilityLabel;
 		string _defaultAccessibilityHint;
 		bool? _defaultIsAccessibilityElement;
-
 		EventTracker _events;
 
 		VisualElementRendererFlags _flags = VisualElementRendererFlags.AutoPackage | VisualElementRendererFlags.AutoTrack;
@@ -54,11 +52,6 @@ namespace Xamarin.Forms.Platform.MacOS
 		UIVisualEffectView _blur;
 		BlurEffectStyle _previousBlur;
 #endif
-		string ControlAccessibilityLabel
-		{
-			get => AccessibilityLabel;
-			set => AccessibilityLabel = value;
-		}
 
 		protected VisualElementRenderer() : base(RectangleF.Empty)
 		{
