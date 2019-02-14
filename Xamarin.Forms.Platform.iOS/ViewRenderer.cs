@@ -29,34 +29,9 @@ namespace Xamarin.Forms.Platform.MacOS
 
 	public abstract class ViewRenderer<TView, TNativeView> : VisualElementRenderer<TView>, IVisualNativeElementRenderer, ITabStop where TView : View where TNativeView : NativeView
 	{
-#if __MOBILE__
-		string ControlAccessibilityHint
-		{
-			get => Control.AccessibilityHint;
-			set => Control.AccessibilityHint = value;
-		}
-		bool ControlAccessibilityElement
-		{
-			get => Control.IsAccessibilityElement;
-			set => Control.IsAccessibilityElement = value;
-		}
-#else
-		string ControlAccessibilityHint
-		{
-			get => Control.AccessibilityTitle;
-			set => Control.AccessibilityTitle = value;
-		}
-		bool ControlAccessibilityElement
-		{
-			get => Control.AccessibilityElement;
-			set => Control.AccessibilityElement = value;
-		}
-#endif
-		string ControlAccessibilityLabel
-		{
-			get => Control.AccessibilityLabel;
-			set => Control.AccessibilityLabel = value;
-		}
+		string _defaultAccessibilityLabel;
+		string _defaultAccessibilityHint;
+		bool? _defaultIsAccessibilityElement;
 
 		NativeColor _defaultColor;
 
@@ -184,17 +159,17 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected override void SetAccessibilityHint()
 		{
-			ControlAccessibilityHint = (string)Element?.GetValue(AutomationProperties.HelpTextProperty) ?? ControlAccessibilityHint;
+			_defaultAccessibilityHint = Control.SetAccessibilityHint(Element, _defaultAccessibilityHint);
 		}
 
 		protected override void SetAccessibilityLabel()
 		{
-			ControlAccessibilityLabel = (string)Element?.GetValue(AutomationProperties.NameProperty) ?? ControlAccessibilityLabel;
+			_defaultAccessibilityLabel = Control.SetAccessibilityLabel(Element, _defaultAccessibilityLabel);
 		}
 
 		protected override void SetIsAccessibilityElement()
 		{
-			ControlAccessibilityElement = (bool?)Element?.GetValue(AutomationProperties.IsInAccessibleTreeProperty) ?? ControlAccessibilityElement;
+			_defaultIsAccessibilityElement = Control.SetIsAccessibilityElement(Element, _defaultIsAccessibilityElement);
 		}
 
 		protected override void SetAutomationId(string id)

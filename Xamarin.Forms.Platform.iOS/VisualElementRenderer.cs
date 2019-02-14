@@ -39,6 +39,10 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		readonly PropertyChangedEventHandler _propertyChangedHandler;
 
+		string _defaultAccessibilityLabel;
+		string _defaultAccessibilityHint;
+		bool? _defaultIsAccessibilityElement;
+
 		EventTracker _events;
 
 		VisualElementRendererFlags _flags = VisualElementRendererFlags.AutoPackage | VisualElementRendererFlags.AutoTrack;
@@ -49,28 +53,6 @@ namespace Xamarin.Forms.Platform.MacOS
 #if __MOBILE__
 		UIVisualEffectView _blur;
 		BlurEffectStyle _previousBlur;
-
-		string ControlAccessibilityHint
-		{
-			get => AccessibilityHint;
-			set => AccessibilityHint = value;
-		}
-		bool ControlAccessibilityElement
-		{
-			get => IsAccessibilityElement;
-			set => IsAccessibilityElement = value;
-		}
-#else
-		string ControlAccessibilityHint
-		{
-			get => AccessibilityTitle;
-			set => AccessibilityTitle = value;
-		}
-		bool ControlAccessibilityElement
-		{
-			get => AccessibilityElement;
-			set => AccessibilityElement = value;
-		}
 #endif
 		string ControlAccessibilityLabel
 		{
@@ -410,17 +392,17 @@ namespace Xamarin.Forms.Platform.MacOS
 
 		protected virtual void SetAccessibilityHint()
 		{
-			ControlAccessibilityHint = (string)Element?.GetValue(AutomationProperties.HelpTextProperty) ?? ControlAccessibilityHint;
+			_defaultAccessibilityHint = this.SetAccessibilityHint(Element, _defaultAccessibilityHint);
 		}
 
 		protected virtual void SetAccessibilityLabel()
 		{
-			ControlAccessibilityLabel = (string)Element?.GetValue(AutomationProperties.NameProperty) ?? ControlAccessibilityLabel;
+			_defaultAccessibilityLabel = this.SetAccessibilityLabel(Element, _defaultAccessibilityLabel);
 		}
 
 		protected virtual void SetIsAccessibilityElement()
 		{
-			ControlAccessibilityElement = (bool?)Element?.GetValue(AutomationProperties.IsInAccessibleTreeProperty) ?? ControlAccessibilityElement;
+			_defaultIsAccessibilityElement = this.SetIsAccessibilityElement(Element, _defaultIsAccessibilityElement);
 		}
 
 		protected virtual void SetAutomationId(string id)
