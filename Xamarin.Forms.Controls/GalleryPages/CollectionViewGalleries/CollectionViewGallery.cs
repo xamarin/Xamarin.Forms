@@ -11,7 +11,7 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 			{
 				Children =
 				{   
-					new Button { Text ="Enable CollectionView", AutomationId = "EnableCollectionView", Command = new Command(()=> Device.SetFlags(new[] { "CollectionView_Experimental" })) },
+					new Button { Text ="Enable CollectionView", AutomationId = "EnableCollectionView", Command = new Command(() => Device.SetFlags(new[] { ExperimentalFlags.CollectionViewExperimental })) },
 					GalleryBuilder.NavButton("Default Text Galleries", () => new DefaultTextGallery(), Navigation),
 					GalleryBuilder.NavButton("DataTemplate Galleries", () => new DataTemplateGallery(), Navigation),
 					GalleryBuilder.NavButton("Observable Collection Galleries", () => new ObservableCollectionGallery(), Navigation),
