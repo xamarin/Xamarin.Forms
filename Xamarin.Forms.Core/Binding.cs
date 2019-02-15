@@ -7,6 +7,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using System.Diagnostics;
+using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
