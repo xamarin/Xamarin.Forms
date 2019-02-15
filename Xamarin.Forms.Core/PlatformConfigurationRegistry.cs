@@ -7,7 +7,7 @@ namespace Xamarin.Forms
 	/// Helper that handles storing and lookup of platform specifics implementations
 	/// </summary>
 	/// <typeparam name="TElement">The Element type</typeparam>
-	internal class PlatformConfigurationRegistry<TElement> : IElementConfiguration<TElement>
+	internal class PlatformConfigurationRegistry<TElement> : IFastElementConfiguration<TElement>
 		where TElement : Element
 	{
 		readonly TElement _element;

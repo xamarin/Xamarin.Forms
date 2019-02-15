@@ -50,7 +50,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
-		internal static bool UseFormsVsm<T>(this T element) where T : VisualElement, IElementConfiguration<T>
+		internal static bool UseFormsVsm<T>(this T element) where T : VisualElement, IFastElementConfiguration<T>
 		{
 			// Determine whether we're letting the VSM handle the colors or doing it the old way
 			// or disabling the legacy color management and doing it the old-old (pre 2.0) way

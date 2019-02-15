@@ -10,7 +10,7 @@ namespace Xamarin.Forms.Platform.MacOS
 	public static class PlatformConfigurationExtensions
 	{
 		public static IPlatformElementConfiguration<CurrentPlatform, T> OnThisPlatform<T>(this T element)
-			where T : Element, IElementConfiguration<T>
+			where T : Element, IFastElementConfiguration<T>
 		{
 			return (element).On<CurrentPlatform>();
 		}

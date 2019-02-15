@@ -7,7 +7,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	public partial class Grid : Layout<View>, IGridController, IElementConfiguration<Grid>
+	public partial class Grid : Layout<View>, IGridController, IFastElementConfiguration<Grid>
 	{
 		public static readonly BindableProperty RowProperty = BindableProperty.CreateAttached("Row", typeof(int), typeof(Grid), default(int), validateValue: (bindable, value) => (int)value >= 0);
 

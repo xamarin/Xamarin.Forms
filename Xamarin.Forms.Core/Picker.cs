@@ -11,7 +11,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_PickerRenderer))]
-	public class Picker : View, IFontElement, ITextElement, IElementConfiguration<Picker>
+	public class Picker : View, IFontElement, ITextElement, IFastElementConfiguration<Picker>
 	{
 		public static readonly BindableProperty TextColorProperty = TextElement.TextColorProperty;
 

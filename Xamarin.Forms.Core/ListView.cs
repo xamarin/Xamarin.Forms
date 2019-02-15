@@ -10,7 +10,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_ListViewRenderer))]
-	public class ListView : ItemsView<Cell>, IListViewController, IElementConfiguration<ListView>
+	public class ListView : ItemsView<Cell>, IListViewController, IFastElementConfiguration<ListView>
 	{
 		public static readonly BindableProperty IsPullToRefreshEnabledProperty = BindableProperty.Create("IsPullToRefreshEnabled", typeof(bool), typeof(ListView), false);
 

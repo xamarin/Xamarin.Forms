@@ -8,7 +8,7 @@ namespace Xamarin.Forms
 {
 	[ContentProperty("Content")]
 	[RenderWith(typeof(_ScrollViewRenderer))]
-	public class ScrollView : Layout, IScrollViewController, IElementConfiguration<ScrollView>, IFlowDirectionController
+	public class ScrollView : Layout, IScrollViewController, IFastElementConfiguration<ScrollView>, IFlowDirectionController
 	{
 		#region IScrollViewController
 

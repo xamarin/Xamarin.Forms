@@ -6,7 +6,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	public class AbsoluteLayout : Layout<View>, IElementConfiguration<AbsoluteLayout>
+	public class AbsoluteLayout : Layout<View>, IFastElementConfiguration<AbsoluteLayout>
 	{
 		public static readonly BindableProperty LayoutFlagsProperty = BindableProperty.CreateAttached("LayoutFlags", typeof(AbsoluteLayoutFlags), typeof(AbsoluteLayout), AbsoluteLayoutFlags.None);
 

@@ -8,7 +8,7 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms
 {
 	[ContentProperty("Items")]
-	public class ShellItem : ShellGroupItem, IShellItemController, IElementConfiguration<ShellItem>, IPropertyPropagationController
+	public class ShellItem : ShellGroupItem, IShellItemController, IFastElementConfiguration<ShellItem>, IPropertyPropagationController
 	{
 		#region PropertyKeys
 

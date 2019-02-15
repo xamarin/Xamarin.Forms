@@ -12,7 +12,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_PageRenderer))]
-	public class Page : VisualElement, ILayout, IPageController, IElementConfiguration<Page>, IPaddingElement
+	public class Page : VisualElement, ILayout, IPageController, IFastElementConfiguration<Page>, IPaddingElement
 	{
 		public const string BusySetSignalName = "Xamarin.BusySet";
 

@@ -6,7 +6,7 @@ namespace Xamarin.Forms
 {
 	[ContentProperty("Content")]
 	[RenderWith(typeof(_FrameRenderer))]
-	public class Frame : ContentView, IElementConfiguration<Frame>, IPaddingElement, IBorderElement
+	public class Frame : ContentView, IFastElementConfiguration<Frame>, IPaddingElement, IBorderElement
 	{
 		[Obsolete("OutlineColorProperty is obsolete as of version 3.0.0. Please use BorderColorProperty instead.")]
 		[EditorBrowsable(EditorBrowsableState.Never)]

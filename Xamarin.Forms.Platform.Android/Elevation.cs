@@ -11,7 +11,7 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			var iec = element as IElementConfiguration<VisualElement>;
+			var iec = element as IFastElementConfiguration<VisualElement>;
 			var elevation = iec?.On<PlatformConfiguration.Android>().GetElevation();
 
 			if (!elevation.HasValue)

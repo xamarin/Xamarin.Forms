@@ -8,7 +8,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_ImageRenderer))]
-	public class Image : View, IImageController, IElementConfiguration<Image>, IViewController, IImageElement
+	public class Image : View, IImageController, IFastElementConfiguration<Image>, IViewController, IImageElement
 	{
 		public static readonly BindableProperty SourceProperty = ImageElement.SourceProperty;
 

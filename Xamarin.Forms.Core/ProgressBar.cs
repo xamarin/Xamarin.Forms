@@ -7,7 +7,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_ProgressBarRenderer))]
-	public class ProgressBar : View, IElementConfiguration<ProgressBar>
+	public class ProgressBar : View, IFastElementConfiguration<ProgressBar>
 	{
 		public static readonly BindableProperty ProgressColorProperty = BindableProperty.Create(nameof(ProgressColor), typeof(Color), typeof(ProgressBar), Color.Default);
 

@@ -4,7 +4,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_SwitchRenderer))]
-	public class Switch : View, IElementConfiguration<Switch>
+	public class Switch : View, IFastElementConfiguration<Switch>
 	{
 		public static readonly BindableProperty IsToggledProperty = BindableProperty.Create("IsToggled", typeof(bool), typeof(Switch), false, propertyChanged: (bindable, oldValue, newValue) =>
 		{

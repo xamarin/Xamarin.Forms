@@ -5,7 +5,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_BoxViewRenderer))]
-	public class BoxView : View, IColorElement, ICornerElement, IElementConfiguration<BoxView>
+	public class BoxView : View, IColorElement, ICornerElement, IFastElementConfiguration<BoxView>
 	{
 		public static readonly BindableProperty ColorProperty = ColorElement.ColorProperty;
 

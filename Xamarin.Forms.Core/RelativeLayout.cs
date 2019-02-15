@@ -8,7 +8,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms
 {
-	public class RelativeLayout : Layout<View>, IElementConfiguration<RelativeLayout>
+	public class RelativeLayout : Layout<View>, IFastElementConfiguration<RelativeLayout>
 	{
 		public static readonly BindableProperty XConstraintProperty = BindableProperty.CreateAttached("XConstraint", typeof(Constraint), typeof(RelativeLayout), null, propertyChanged: ConstraintChanged);
 

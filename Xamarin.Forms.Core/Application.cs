@@ -10,7 +10,7 @@ using System.Diagnostics;
 
 namespace Xamarin.Forms
 {
-	public class Application : Element, IResourcesProvider, IApplicationController, IElementConfiguration<Application>
+	public class Application : Element, IResourcesProvider, IApplicationController, IFastElementConfiguration<Application>
 	{
 		static Application s_current;
 		Task<IDictionary<string, object>> _propertiesTask;

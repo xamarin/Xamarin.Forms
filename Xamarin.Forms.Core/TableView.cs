@@ -9,7 +9,7 @@ namespace Xamarin.Forms
 {
 	[ContentProperty("Root")]
 	[RenderWith(typeof(_TableViewRenderer))]
-	public class TableView : View, ITableViewController, IElementConfiguration<TableView>
+	public class TableView : View, ITableViewController, IFastElementConfiguration<TableView>
 	{
 		public static readonly BindableProperty RowHeightProperty = BindableProperty.Create("RowHeight", typeof(int), typeof(TableView), -1);
 

@@ -10,7 +10,7 @@ using System.Collections.Generic;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_WebViewRenderer))]
-	public class WebView : View, IWebViewController, IElementConfiguration<WebView>
+	public class WebView : View, IWebViewController, IFastElementConfiguration<WebView>
 	{
 		public static readonly BindableProperty SourceProperty = BindableProperty.Create("Source", typeof(WebViewSource), typeof(WebView), default(WebViewSource),
 			propertyChanging: (bindable, oldvalue, newvalue) =>

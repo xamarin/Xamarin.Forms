@@ -507,7 +507,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		protected void UpdateAccessKey() {
 			var control = Control;
-			var element = Element as IElementConfiguration<TElement>;
+			var element = Element as IFastElementConfiguration<TElement>;
 
 			if (element != null && control != null)
 				AccessKeyHelper.UpdateAccessKey(Control, Element);

@@ -11,7 +11,7 @@ namespace Xamarin.Forms
 {
 	[ContentProperty("Text")]
 	[RenderWith(typeof(_LabelRenderer))]
-	public class Label : View, IFontElement, ITextElement, ITextAlignmentElement, ILineHeightElement, IElementConfiguration<Label>, IDecorableTextElement
+	public class Label : View, IFontElement, ITextElement, ITextAlignmentElement, ILineHeightElement, IFastElementConfiguration<Label>, IDecorableTextElement
 	{
 		public static readonly BindableProperty HorizontalTextAlignmentProperty = TextAlignmentElement.HorizontalTextAlignmentProperty;
 

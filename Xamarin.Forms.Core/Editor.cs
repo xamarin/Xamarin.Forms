@@ -6,7 +6,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_EditorRenderer))]
-	public class Editor : InputView, IEditorController, IFontElement, IPlaceholderElement, ITextElement, IElementConfiguration<Editor>
+	public class Editor : InputView, IEditorController, IFontElement, IPlaceholderElement, ITextElement, IFastElementConfiguration<Editor>
 	{
 		public static readonly BindableProperty TextProperty = BindableProperty.Create(nameof(Text), typeof(string), typeof(Editor), null, BindingMode.TwoWay, propertyChanged: (bindable, oldValue, newValue)
 			=> OnTextChanged((Editor)bindable, (string)oldValue, (string)newValue));

@@ -8,10 +8,9 @@ namespace Xamarin.Forms.Platform.UWP
 {
 	static class AccessKeyHelper
 	{
-
 		public static void UpdateAccessKey(FrameworkElement control, VisualElement element) {
 
-			if (control != null && element is IElementConfiguration<VisualElement> elementConfig)
+			if (control != null && element is IFastElementConfiguration<VisualElement> elementConfig)
 			{
 				var windowsElement = elementConfig.On<PlatformConfiguration.Windows>();
 				if (element.IsSet(VisualElementSpecifics.AccessKeyProperty))

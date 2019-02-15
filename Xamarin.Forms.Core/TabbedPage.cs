@@ -4,7 +4,7 @@ using Xamarin.Forms.Platform;
 namespace Xamarin.Forms
 {
 	[RenderWith(typeof(_TabbedPageRenderer))]
-	public class TabbedPage : MultiPage<Page>, IBarElement, IElementConfiguration<TabbedPage>
+	public class TabbedPage : MultiPage<Page>, IBarElement, IFastElementConfiguration<TabbedPage>
 	{
 		public static readonly BindableProperty BarBackgroundColorProperty = BarElement.BarBackgroundColorProperty;
 
