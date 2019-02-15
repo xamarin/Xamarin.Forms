@@ -72,6 +72,16 @@ namespace Xamarin.Forms.Controls.Issues
 #else
 			RunningApp.Tap(x => x.Text("+"));
 #endif
+
+			RunningApp.WaitForElement(q => q.Marked("Stepper value is 0"));
+
+
+#if __IOS__
+			RunningApp.Tap(x => x.Marked("Decrement"));
+#else
+			RunningApp.Tap(x => x.Text("−"));
+#endif
+
 			RunningApp.WaitForElement(q => q.Marked("Stepper value is 0"));
 		}
 #endif

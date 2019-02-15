@@ -13,18 +13,30 @@ namespace Xamarin.Forms.Platform.Android
 			downButton = (TButton)renderer.CreateButton();
 			downButton.Id = Platform.GenerateViewId();
 			downButton.Focusable = true;
-			downButton.Text = "－";
-			downButton.Gravity = GravityFlags.Center;
-			downButton.Tag = renderer as Java.Lang.Object;
-			downButton.SetOnClickListener(StepperListener.Instance);
-
 			upButton = (TButton)renderer.CreateButton();
 			upButton.Id = Platform.GenerateViewId();
 			upButton.Focusable = true;
-			upButton.Text = "＋";
+
+			downButton.Gravity = GravityFlags.Center;
+			downButton.Tag = renderer as Java.Lang.Object;
+			downButton.SetOnClickListener(StepperListener.Instance);
 			upButton.Gravity = GravityFlags.Center;
 			upButton.Tag = renderer as Java.Lang.Object;
 			upButton.SetOnClickListener(StepperListener.Instance);
+
+			// IMPORTANT:
+			// Do not be decieved. These are NOT the same characters. Neither are a "minus" either.
+			// The Text is a visually pleasing "minus", and the description is the phonetically correct "minus".
+			// The little key on your keyboard is a dash/hyphen.
+			downButton.Text = "－";
+			downButton.ContentDescription = "−";
+
+			// IMPORTANT:
+			// Do not be decieved. These are NOT the same characters.
+			// The Text is a visually pleasing "plus", and the description is the phonetically correct "plus"
+			// (which, unlike the minus, IS found on your keyboard).
+			upButton.Text = "＋";
+			upButton.ContentDescription = "+";
 
 			downButton.NextFocusForwardId = upButton.Id;
 		}
