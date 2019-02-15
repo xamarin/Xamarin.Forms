@@ -73,6 +73,21 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
+		public void TracksRemoveAll()
+		{
+			var layout = new StackLayout
+			{
+				IsPlatformEnabled = true,
+			};
+
+			var itemsSource = new ObservableRangeCollection<int>(Enumerable.Range(0, 10));
+			BindableLayout.SetItemsSource(layout, itemsSource);
+
+			itemsSource.RemoveAll();
+			Assert.IsTrue(IsLayoutWithItemsSource(itemsSource, layout));
+		}
+
+		[Test]
 		public void TracksReplace()
 		{
 			var layout = new StackLayout
@@ -352,6 +367,27 @@ namespace Xamarin.Forms.Core.UnitTests
 			protected override DataTemplate OnSelectTemplate(object item, BindableObject container)
 			{
 				return dt;
+			}
+		}
+
+		class ObservableRangeCollection<T> : ObservableCollection<T>
+		{
+			public ObservableRangeCollection(IEnumerable<T> collection)
+				: base(collection)
+			{
+			}
+
+			public void RemoveAll()
+			{
+				CheckReentrancy();
+
+				var changedItems = new List<T>(Items);
+				foreach (var i in changedItems)
+					Items.Remove(i);
+
+				OnPropertyChanged(new PropertyChangedEventArgs("Count"));
+				OnPropertyChanged(new PropertyChangedEventArgs("Item[]"));
+				OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, changedItems, 0));
 			}
 		}
 	}
