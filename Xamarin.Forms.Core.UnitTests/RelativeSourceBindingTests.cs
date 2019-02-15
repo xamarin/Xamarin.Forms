@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using NUnit.Framework;
@@ -61,39 +62,46 @@ namespace Xamarin.Forms.Core.UnitTests
 				BindingContext = bindingContext2
 			};
 
-			Label label0 = new Label();
-			Label label1 = new Label();
-			Label label2 = new Label();
+			Label label0 = new Label
+			{
+				StyleId = "label0",
+			};
+			Label label1 = new Label
+			{
+				StyleId = "label1",
+			};
+			Label label2 = new Label
+			{
+				StyleId = "label2",
+			};
 
 			stack0.Children.Add(stack1);
+			stack0.Children.Add(label2);
 			stack1.Children.Add(label0);
 			stack1.Children.Add(label1);
 
 			label0.SetBinding(Label.TextProperty, new Binding
 			{
 				Path = nameof(StackLayout.StyleId),
-				Source = new RelativeBindingSource
-				{
-					AncestorType = typeof(StackLayout)
-				}
+				Source = new RelativeBindingSource(
+					mode: RelativeBindingSourceMode.FindAncestor,
+					ancestorType: typeof(StackLayout))
 			});
 			label1.SetBinding(Label.TextProperty, new Binding
 			{
 				Path = nameof(StackLayout.StyleId),
-				Source = new RelativeBindingSource
-				{
-					AncestorType = typeof(StackLayout),
-					AncestorLevel = 2
-				}
+				Source = new RelativeBindingSource(
+					mode: RelativeBindingSourceMode.FindAncestor,
+					ancestorType: typeof(StackLayout),
+					ancestorLevel: 2)
 			});
 			label2.SetBinding(Label.TextProperty, new Binding
 			{
 				Path = nameof(StackLayout.StyleId),
-				Source = new RelativeBindingSource
-				{
-					AncestorType = typeof(StackLayout),
-					AncestorLevel = 10
-				}
+				Source = new RelativeBindingSource(
+					mode: RelativeBindingSourceMode.FindAncestor,
+					ancestorType: typeof(StackLayout),
+					ancestorLevel: 10)
 			});
 
 			Assert.AreEqual(label0.Text, stack1.StyleId);
@@ -103,13 +111,17 @@ namespace Xamarin.Forms.Core.UnitTests
 			// Ensures RelativeBindingSource.AncestorType
 			// works correctly after immediate ancestor changed.
 			stack1.Children.Remove(label0);
+			Assert.IsNull(label0.Text);
+		
 			stack0.Children.Add(label0);
+
 			Assert.AreEqual(label0.Text, stack0.StyleId);
 			Assert.AreEqual(label0.BindingContext, stack0.BindingContext);
 
 			// And after distant ancestor changed
 			stack0.Children.Remove(stack1);
 			stack2.Children.Add(stack1);
+
 			Assert.AreEqual(label1.Text, stack2.StyleId);
 			Assert.AreEqual(label1.BindingContext, stack2.BindingContext);
 

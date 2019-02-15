@@ -19,6 +19,7 @@ namespace Xamarin.Forms
 		BindableProperty _targetProperty;
 		WeakReference<object> _weakSource;
 		WeakReference<BindableObject> _weakTarget;
+		List<WeakReference<Element>> _relativeParentChain;
 
 		internal BindingExpression(BindingBase binding, string path)
 		{
@@ -98,6 +99,8 @@ namespace Xamarin.Forms
 
 			_weakSource = null;
 			_weakTarget = null;
+
+			ClearParentChangeSubscriptions(0);
 		}
 
 		/// <summary>
@@ -455,6 +458,81 @@ namespace Xamarin.Forms
 			catch (Exception ex) when (ex is InvalidCastException || ex is FormatException || ex is OverflowException) {
 				value = original;
 				return false;
+			}
+		}
+
+		internal void SubscribeToParentChanges(List<Element> chain)
+		{
+			if (chain == null)
+				return;
+			_relativeParentChain = new List<WeakReference<Element>>();
+			foreach (var elem in chain)
+			{
+				elem.ParentSet += OnElementParentChainChange;
+				_relativeParentChain.Add(new WeakReference<Element>(elem));
+			}
+		}
+
+		private void ClearParentChangeSubscriptions(int beginningWith)
+		{
+			if (_relativeParentChain == null || _relativeParentChain.Count == 0)
+				return;
+			for (int i = beginningWith; i < _relativeParentChain.Count; i++)
+			{
+				Element elem;
+				var weakElement = _relativeParentChain.Last();
+				if (weakElement.TryGetTarget(out elem))
+					elem.ParentSet -= OnElementParentChainChange;
+				_relativeParentChain.RemoveAt(_relativeParentChain.Count - 1);
+			}
+		}
+
+		private int FindParentChainMember(Element elem)
+		{
+			for (int i = 0; i < _relativeParentChain.Count; i++)
+			{
+				WeakReference<Element> weak = _relativeParentChain[i];
+				Element chainMember = null;
+				if (!weak.TryGetTarget(out chainMember))
+					return -1;
+				else if (object.Equals(elem, chainMember))
+					return i;
+			}
+			return -1;
+		}
+
+		private void OnElementParentChainChange(object sender, EventArgs e)
+		{
+			if (!(sender is Element elem) ||
+				!(this.Binding is Binding binding))
+				return;
+
+			BindableObject target = null;
+			if (_weakTarget?.TryGetTarget(out target) != true)
+				return;
+
+			if (elem.Parent == null)
+			{
+				// Remove anyone higher on the chain
+				// than the element with the new parent
+				int index = FindParentChainMember(elem);
+				if (index == -1)
+				{
+					binding.Unapply();
+					return;
+				}
+				if (index + 1 < _relativeParentChain.Count)
+					ClearParentChangeSubscriptions(index + 1);
+
+				// Force the binding expression to resolve to null
+				// for now, until someone in the chain gets a new
+				// non-null parent.
+				this.ApplyCore(null, target, _targetProperty);
+			}
+			else
+			{
+				binding.Unapply();
+				binding.Apply(null, target, _targetProperty);
 			}
 		}
 

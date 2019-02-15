@@ -76,7 +76,7 @@ namespace Xamarin.Forms
 			_expression.Apply(fromTarget);
 		}
 
-		internal override async void Apply(object newContext, BindableObject bindObj, BindableProperty targetProperty, bool fromBindingContextChanged = false, bool fromAncestorChanged = false)
+		internal override async void Apply(object newContext, BindableObject bindObj, BindableProperty targetProperty, bool fromBindingContextChanged = false)
 		{
 			var view = bindObj as Element;
 			if (view == null)
@@ -84,7 +84,9 @@ namespace Xamarin.Forms
 
 			base.Apply(newContext, bindObj, targetProperty, fromBindingContextChanged);
 
-			Element templatedParent = await TemplateUtilities.FindTemplatedParentAsync(view);
+			Element templatedParent = await TemplateUtilities.FindAncestorAsync(
+				RelativeBindingSource.TemplatedParent,
+				view);
 			ApplyInner(templatedParent, bindObj, targetProperty);
 		}
 
@@ -109,7 +111,7 @@ namespace Xamarin.Forms
 			return base.GetTargetValue(value, sourcePropertyType);
 		}
 
-		internal override void Unapply(bool fromBindingContextChanged = false, bool fromAncestorChanged = false)
+		internal override void Unapply(bool fromBindingContextChanged = false)
 		{
 			base.Unapply(fromBindingContextChanged: fromBindingContextChanged);
 

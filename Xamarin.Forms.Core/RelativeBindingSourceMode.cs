@@ -6,6 +6,7 @@
 		// PreviousData = 0,
 		TemplatedParent = 1,
 		Self = 2,
-		FindAncestor = 3
+		FindAncestor = 3,
+		FindAncestorBindingContext = 4,
 	}
 }

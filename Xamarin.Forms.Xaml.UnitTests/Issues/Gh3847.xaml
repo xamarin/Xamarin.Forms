@@ -5,7 +5,7 @@
 			 xmlns:local="clr-namespace:Xamarin.Forms.Xaml.UnitTests">
 	<ContentPage.Resources>
 		<ControlTemplate x:Key="CustomControlTemplate">
-			<Label Text="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=StyleId}"/>
+			<Label Text="{Binding Source={RelativeSource TemplatedParent}, Path=StyleId}"/>
 		</ControlTemplate>
 	</ContentPage.Resources>
 	<ContentPage.Content>
@@ -18,20 +18,20 @@
 				
 				<!-- Text = "" -->
 				<Label x:Name="AncestorLevel3Label"
-					   Text="{Binding RelativeSource={RelativeSource AncestorType={x:Type StackLayout}, AncestorLevel=3}, Path=StyleId}"/>
+					   Text="{Binding Source={RelativeSource AncestorType={x:Type StackLayout}, AncestorLevel=3}, Path=StyleId}"/>
 
 				<!-- Text = "Stack0" -->
 				<Label x:Name="AncestorLevel2Label"
-					   Text="{Binding RelativeSource={RelativeSource AncestorType={x:Type StackLayout}, AncestorLevel=2}, Path=StyleId}"/>
+					   Text="{Binding Source={RelativeSource AncestorType={x:Type StackLayout}, AncestorLevel=2}, Path=StyleId}"/>
 
 				<!-- Text = "Foo" -->
 				<!-- (Finding Ancestor by BindingContext (view model) type rather than control (view) type) -->
 				<Label x:Name="AncestorBindingContextLabel"
-					   Text="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:Gh3847ViewModel}}, Path=Foo}"/>
+					   Text="{Binding Source={RelativeSource AncestorType={x:Type local:Gh3847ViewModel}}, Path=Foo}"/>
 
 				<!-- Text = "Stack1" -->
 				<Label x:Name="AncestorLevel1Label"
-					   Text="{Binding RelativeSource={RelativeSource AncestorType={x:Type StackLayout}}, Path=StyleId}"/>
+					   Text="{Binding Source={RelativeSource AncestorType={x:Type StackLayout}}, Path=StyleId}"/>
 
 				<!-- Text = "SelfBindingLabel" -->
 				<!-- Note that "Source=" and "RelativeSource=" are both allowed, different from UWP/WPF -->

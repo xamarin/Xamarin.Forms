@@ -6,9 +6,6 @@ namespace Xamarin.Forms.Xaml
 	[AcceptEmptyServiceProvider]
 	public sealed class RelativeSourceExtension : IMarkupExtension<RelativeBindingSource>
 	{
-		Type _ancestorType;
-		int _ancestorLevel = 1;
-
 		public RelativeBindingSourceMode Mode
 		{
 			get;
@@ -17,46 +14,55 @@ namespace Xamarin.Forms.Xaml
 
 		public int AncestorLevel
 		{
-			get => _ancestorLevel;
-			set
-			{
-				_ancestorLevel = value;
-				if (_ancestorLevel > 0)
-					this.Mode = RelativeBindingSourceMode.FindAncestor;
-			}
+			get;
+			set;
 		}
 
 		public Type AncestorType
 		{
-			get => _ancestorType;
-			set
-			{
-				_ancestorType = value;
-				if (_ancestorType != null)
-					this.Mode = RelativeBindingSourceMode.FindAncestor;
-			}
+			get;
+			set;
 		}
 
 		RelativeBindingSource IMarkupExtension<RelativeBindingSource>.ProvideValue(IServiceProvider serviceProvider)
 		{
-			switch (this.Mode)
+			if (AncestorType != null)
 			{
-				case RelativeBindingSourceMode.Self:
-					return RelativeBindingSource.Self;
-				case RelativeBindingSourceMode.TemplatedParent:
-					return RelativeBindingSource.TemplatedParent;
-				case RelativeBindingSourceMode.FindAncestor:
-					if (AncestorType == null)
-						throw new Exception(
-							$"{nameof(RelativeBindingSourceMode.FindAncestor)} " +
-							$"binding must specify valid {nameof(AncestorType)}");
-					return new RelativeBindingSource(RelativeBindingSourceMode.FindAncestor)
-					{
-						AncestorType = AncestorType,
-						AncestorLevel = AncestorLevel
-					};
-				default:
-					throw new NotImplementedException();
+				RelativeBindingSourceMode mode;
+
+				if ( Mode != RelativeBindingSourceMode.FindAncestor && 
+					Mode != RelativeBindingSourceMode.FindAncestorBindingContext )
+				{
+					// Note to documenters:
+
+					// This permits "{Binding Source={RelativeSource AncestorType={x:Type MyType}}}" syntax
+					// where Mode hasn't been explicitly set, consistent with WPF/UWP.
+
+					// Also, we assume FindAncestor is meant if the ancestor type is a visual 
+					// Element, otherwise assume FindAncestorBindingContext is intended. (The
+					// mode can also be explicitly set in XAML)
+					mode = typeof(Element).IsAssignableFrom(AncestorType)
+						? RelativeBindingSourceMode.FindAncestor
+						: RelativeBindingSourceMode.FindAncestorBindingContext;
+				}
+				else
+				{
+					mode = Mode;
+				}
+
+				return new RelativeBindingSource(mode, AncestorType, AncestorLevel);
+			}
+			else if (Mode == RelativeBindingSourceMode.Self)
+			{
+				return RelativeBindingSource.Self;
+			}
+			else if (Mode == RelativeBindingSourceMode.TemplatedParent)
+			{
+				return RelativeBindingSource.TemplatedParent;
+			}
+			else
+			{
+				throw new InvalidOperationException($"Invalid {nameof(Mode)}");
 			}
 		}
 

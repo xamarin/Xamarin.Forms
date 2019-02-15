@@ -1,51 +1,46 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Reflection;
 
 namespace Xamarin.Forms
 {
-	public class RelativeBindingSource
+	public sealed class RelativeBindingSource
 	{
 		static RelativeBindingSource _self;
 		static RelativeBindingSource _templatedParent;
-		Type _ancestorType = null;
-		int _ancestorLevel = 1;
 
-		public RelativeBindingSource()
+		public RelativeBindingSource(
+			RelativeBindingSourceMode mode,
+			Type ancestorType = null,
+			int ancestorLevel = 1)
 		{
-		}
+			if ((mode == RelativeBindingSourceMode.FindAncestor ||
+				 mode == RelativeBindingSourceMode.FindAncestorBindingContext) &&
+				ancestorType == null)
+			{
+				throw new InvalidOperationException(
+					$"{nameof(RelativeBindingSourceMode.FindAncestor)} and " +
+					$"{nameof(RelativeBindingSourceMode.FindAncestorBindingContext)} " +
+					$"require non-null {nameof(AncestorType)}");
+			}
 
-		public RelativeBindingSource(RelativeBindingSourceMode mode)
-		{
-			this.Mode = mode;
+			Mode = mode;
+			AncestorType = ancestorType;
+			AncestorLevel = ancestorLevel;
 		}
 
 		public RelativeBindingSourceMode Mode
 		{
 			get;
-			set;
 		}
 
 		public Type AncestorType
 		{
-			get => _ancestorType;
-			set
-			{
-				_ancestorType = value;
-				if (_ancestorType != null)
-					this.Mode = RelativeBindingSourceMode.FindAncestor;
-			}
+			get;
 		}
 
 		public int AncestorLevel
 		{
-			get => _ancestorLevel;
-			set
-			{
-				_ancestorLevel = value;
-				if (_ancestorLevel > 0)
-					this.Mode = RelativeBindingSourceMode.FindAncestor;
-			}
+			get;
 		}
 
 		public static RelativeBindingSource Self
@@ -62,6 +57,6 @@ namespace Xamarin.Forms
 			{
 				return _templatedParent ?? (_templatedParent = new RelativeBindingSource(RelativeBindingSourceMode.TemplatedParent));
 			}
-		}
+		}		
 	}
 }

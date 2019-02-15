@@ -18,13 +18,6 @@ namespace Xamarin.Forms.Xaml
 		public object FallbackValue { get; set; }
 		public TypedBindingBase TypedBinding { get; set; }
 
-		// Here to maintain parity with other XAML flavors.
-		public RelativeBindingSource RelativeSource
-		{
-			get => this.Source as RelativeBindingSource;
-			set => this.Source = value;
-		}
-
 		BindingBase IMarkupExtension<BindingBase>.ProvideValue(IServiceProvider serviceProvider)
 		{
 			if (TypedBinding == null)
