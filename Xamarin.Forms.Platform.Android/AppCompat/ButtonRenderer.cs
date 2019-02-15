@@ -126,6 +126,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				UpdateEnabled();
 			else if (e.PropertyName == Button.FontProperty.PropertyName)
 				UpdateFont();
+			else if (e.PropertyName == Button.MaxLinesProperty.PropertyName)
+				UpdateMaxLines();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -180,6 +182,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		void UpdateTextColor()
 		{
 			_textColorSwitcher?.UpdateTextColor(Control, Element.TextColor);
+		}
+
+		void UpdateMaxLines()
+		{
+			Control.SetMaxLines(Element.MaxLines);
 		}
 
 		void IOnClickListener.OnClick(AView v) => ButtonElementManager.OnClick(Element, Element, v);

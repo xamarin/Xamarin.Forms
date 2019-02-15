@@ -49,8 +49,9 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty ImageProperty = ImageElement.FileImageProperty;
 
-
 		public static readonly BindableProperty PaddingProperty = PaddingElement.PaddingProperty;
+
+		public static readonly BindableProperty MaxLinesProperty = BindableProperty.Create("MaxLines", typeof(int), typeof(Button), 1);
 
 		public Thickness Padding
 		{
@@ -71,7 +72,6 @@ namespace Xamarin.Forms
 
 		internal static readonly BindablePropertyKey IsPressedPropertyKey = BindableProperty.CreateReadOnly(nameof(IsPressed), typeof(bool), typeof(Button), default(bool));
 		public static readonly BindableProperty IsPressedProperty = IsPressedPropertyKey.BindableProperty;
-
 
 		readonly Lazy<PlatformConfigurationRegistry<Button>> _platformConfigurationRegistry;
 
@@ -141,6 +141,12 @@ namespace Xamarin.Forms
 		{
 			get { return (Color)GetValue(TextElement.TextColorProperty); }
 			set { SetValue(TextElement.TextColorProperty, value); }
+		}
+
+		public int MaxLines
+		{
+			get { return (int)GetValue(MaxLinesProperty); }
+			set { SetValue(MaxLinesProperty, value); }
 		}
 
 		bool IButtonElement.IsEnabledCore

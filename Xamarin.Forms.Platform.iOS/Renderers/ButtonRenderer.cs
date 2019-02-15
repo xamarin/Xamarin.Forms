@@ -109,6 +109,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateTextColor();
 			else if (e.PropertyName == Button.FontProperty.PropertyName)
 				UpdateFont();
+			else if (e.PropertyName == Button.MaxLinesProperty.PropertyName)
+				UpdateMaxLines();
 		}
 
 		protected override void SetAccessibilityLabel()
@@ -149,6 +151,11 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateFont()
 		{
 			Control.TitleLabel.Font = Element.ToUIFont();
+		}
+
+		void UpdateMaxLines()
+		{
+			Control.TitleLabel.Lines = Element.MaxLines;
 		}
 
 		public void SetImage(UIImage image) => _buttonLayoutManager.SetImage(image);

@@ -142,6 +142,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateText();
 			else if (e.PropertyName == Button.PaddingProperty.PropertyName)
 				UpdatePadding();
+			else if (e.PropertyName == Button.MaxLinesProperty.PropertyName)
+				UpdateMaxLines();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -265,6 +267,11 @@ namespace Xamarin.Forms.Platform.Android
 		void UpdateTextColor()
 		{
 			_textColorSwitcher?.UpdateTextColor(Control, Element.TextColor);
+		}
+
+		void UpdateMaxLines()
+		{
+			Control.SetMaxLines(Element.MaxLines);
 		}
 
 		float IBorderVisualElementRenderer.ShadowRadius => Control.ShadowRadius;
