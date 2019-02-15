@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 
 namespace Xamarin.Forms.Xaml
 {
@@ -41,7 +42,7 @@ namespace Xamarin.Forms.Xaml
 					// Also, we assume FindAncestor is meant if the ancestor type is a visual 
 					// Element, otherwise assume FindAncestorBindingContext is intended. (The
 					// mode can also be explicitly set in XAML)
-					mode = typeof(Element).IsAssignableFrom(AncestorType)
+					mode = typeof(Element).GetTypeInfo().IsAssignableFrom(AncestorType.GetTypeInfo())
 						? RelativeBindingSourceMode.FindAncestor
 						: RelativeBindingSourceMode.FindAncestorBindingContext;
 				}
@@ -51,6 +52,14 @@ namespace Xamarin.Forms.Xaml
 				}
 
 				return new RelativeBindingSource(mode, AncestorType, AncestorLevel);
+			}
+			else if (Mode == RelativeBindingSourceMode.FindAncestor || 
+					Mode == RelativeBindingSourceMode.FindAncestorBindingContext)
+			{
+				throw new XamlParseException(
+					$"{nameof(RelativeBindingSourceMode.FindAncestor)} and " +
+					$"{nameof(RelativeBindingSourceMode.FindAncestorBindingContext)} " +
+					$"require {nameof(AncestorType)}.");
 			}
 			else if (Mode == RelativeBindingSourceMode.Self)
 			{
@@ -62,7 +71,7 @@ namespace Xamarin.Forms.Xaml
 			}
 			else
 			{
-				throw new InvalidOperationException($"Invalid {nameof(Mode)}");
+				throw new XamlParseException($"Invalid {nameof(Mode)}");
 			}
 		}
 

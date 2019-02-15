@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace Xamarin.Forms
 {
@@ -60,6 +61,12 @@ namespace Xamarin.Forms
 				
 				currentLevel++;
 			}
+
+			Debug.WriteLine(
+				$"RelativeSource Error. No suitable relative source for Element " +
+				$"(id: {element.StyleId}, type: {element.GetType().Name}) " +
+				$"found. RelativeBindingSourceMode: {relativeSource.Mode}." +
+				(relativeSource.AncestorType != null ? ($" AncestorType: {relativeSource.AncestorType}." ) : null));
 
 			return null;
 		}

@@ -2,8 +2,8 @@
 {
 	public enum RelativeBindingSourceMode
 	{
-		// TODO? (much tricker than the other three)
-		// PreviousData = 0,
+		// 0 reserved for possible future implementation of PreviousData 
+
 		TemplatedParent = 1,
 		Self = 2,
 		FindAncestor = 3,

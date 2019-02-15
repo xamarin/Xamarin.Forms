@@ -126,8 +126,8 @@ namespace Xamarin.Forms
 			if (src != null && isApplied && fromBindingContextChanged)
 				return;
 
-			if (Source is RelativeBindingSource relSource)
-				ResolveRelativeSourceAsync(relSource, bindObj, targetProperty);
+			if (Source is RelativeBindingSource relativeSource)
+				ResolveRelativeSourceAsync(relativeSource, bindObj, targetProperty);
 			else
 				CompleteApplyBinding(context, src, bindObj, targetProperty);
 		}
@@ -141,46 +141,40 @@ namespace Xamarin.Forms
 		}
 
 		private async void ResolveRelativeSourceAsync(
-			RelativeBindingSource source,
+			RelativeBindingSource relativeSource,
 			BindableObject bindableObject, 
 			BindableProperty targetProperty)
 		{
 			object resolvedSource = null;			
 			List<Element> parentChain = null;
 
-			switch (source.Mode)
+			switch (relativeSource.Mode)
 			{
 				case RelativeBindingSourceMode.Self:
 					resolvedSource = bindableObject;
 					break;
 
 				case RelativeBindingSourceMode.TemplatedParent:
-					var view = bindableObject as Element;
-					if (view == null)
+					if ( !(bindableObject is Element templatedElement))
 						throw new InvalidOperationException();					
 					resolvedSource = await TemplateUtilities.FindAncestorAsync(
-						source,
-						view,
+						relativeSource,
+						templatedElement,
 						parentChain = new List<Element>());
 					break;
 
 				case RelativeBindingSourceMode.FindAncestor:
 				case RelativeBindingSourceMode.FindAncestorBindingContext:
-					if (!(bindableObject is Element elem))
+					if (!(bindableObject is Element childElement))
 						throw new InvalidOperationException();
-
-					System.Diagnostics.Debug.WriteLine($"Looking for parent of {elem.StyleId} ({elem.GetType()})");
 					Element parent = await TemplateUtilities.FindAncestorAsync(
-						source,
-						elem,
+						relativeSource,
+						childElement,
 						parentChain = new List<Element>());
-					System.Diagnostics.Debug.WriteLine($"Found parent of {elem.StyleId} ({elem.GetType()})");
-
-					if (source.Mode == RelativeBindingSourceMode.FindAncestor)
+					if (relativeSource.Mode == RelativeBindingSourceMode.FindAncestor)
 						resolvedSource = parent;
 					else
 						resolvedSource = parent.BindingContext;
-
 					break;
 
 				default:
