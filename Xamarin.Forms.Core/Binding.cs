@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
@@ -7,7 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using Xamarin.Forms.Internals;
+using System.Diagnostics;
 
 namespace Xamarin.Forms
 {
@@ -16,11 +15,12 @@ namespace Xamarin.Forms
 		internal const string SelfPath = ".";
 		IValueConverter _converter;
 		object _converterParameter;
+
 		BindingExpression _expression;
 		string _path;
 		object _source;
 		string _updateSourceEventName;
-		
+
 		public Binding()
 		{
 		}
@@ -126,25 +126,24 @@ namespace Xamarin.Forms
 			if (src != null && isApplied && fromBindingContextChanged)
 				return;
 
-			if (Source is RelativeBindingSource relativeSource)
-				ResolveRelativeSourceAsync(relativeSource, bindObj, targetProperty);
-			else
-				CompleteApplyBinding(context, src, bindObj, targetProperty);
+			if (Source is RelativeBindingSource relativeSource) { 
+				ApplyRelativeSourceAsync(relativeSource, bindObj, targetProperty);
+			} else {
+				object bindingContext = src ?? Context ?? context;
+				if (_expression == null && bindingContext != null)
+					_expression = new BindingExpression(this, SelfPath);
+				_expression.Apply(bindingContext, bindObj, targetProperty);
+			}
 		}
 
-		private void CompleteApplyBinding(object context, object src, BindableObject bindableObject, BindableProperty targetProperty)
-		{
-			if (_expression == null && context != null)
-				_expression = new BindingExpression(this, SelfPath);
-
-			_expression.Apply(src ?? Context ?? context, bindableObject, targetProperty);		
-		}
-
-		private async void ResolveRelativeSourceAsync(
+		private async void ApplyRelativeSourceAsync(
 			RelativeBindingSource relativeSource,
 			BindableObject bindableObject, 
 			BindableProperty targetProperty)
 		{
+			if (!(bindableObject is Element elem))
+				throw new InvalidOperationException();
+
 			object resolvedSource = null;			
 			List<Element> parentChain = null;
 
@@ -154,22 +153,18 @@ namespace Xamarin.Forms
 					resolvedSource = bindableObject;
 					break;
 
-				case RelativeBindingSourceMode.TemplatedParent:
-					if ( !(bindableObject is Element templatedElement))
-						throw new InvalidOperationException();					
+				case RelativeBindingSourceMode.TemplatedParent:	
 					resolvedSource = await TemplateUtilities.FindAncestorAsync(
 						relativeSource,
-						templatedElement,
+						elem,
 						parentChain = new List<Element>());
 					break;
 
 				case RelativeBindingSourceMode.FindAncestor:
 				case RelativeBindingSourceMode.FindAncestorBindingContext:
-					if (!(bindableObject is Element childElement))
-						throw new InvalidOperationException();
 					Element parent = await TemplateUtilities.FindAncestorAsync(
 						relativeSource,
-						childElement,
+						elem,
 						parentChain = new List<Element>());
 					if (relativeSource.Mode == RelativeBindingSourceMode.FindAncestor)
 						resolvedSource = parent;
@@ -181,11 +176,16 @@ namespace Xamarin.Forms
 					throw new InvalidOperationException();
 			}
 
-			if (resolvedSource != null)
-			{
-				CompleteApplyBinding(null, resolvedSource, bindableObject, targetProperty);
+			if (resolvedSource != null) {
+				_expression.Apply(resolvedSource, bindableObject, targetProperty);
 				if (parentChain != null)
 					_expression.SubscribeToParentChanges(parentChain);
+			} else {
+				Debug.WriteLine(
+					$"RelativeSource Binding Error. No suitable relative source for Element " +
+					$"(id: {elem.StyleId}, type: {elem.GetType().Name}) " +
+					$"found. RelativeBindingSourceMode: {relativeSource.Mode}." +
+					(relativeSource.AncestorType != null ? ($" AncestorType: {relativeSource.AncestorType}.") : null));
 			}
 		}		
 
@@ -222,7 +222,7 @@ namespace Xamarin.Forms
 		{
 			if (Source != null && fromBindingContextChanged && IsApplied)
 				return;
-
+			
 			base.Unapply(fromBindingContextChanged: fromBindingContextChanged);
 
 			if (_expression != null)

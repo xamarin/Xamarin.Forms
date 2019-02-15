@@ -61,19 +61,11 @@ namespace Xamarin.Forms
 				
 				currentLevel++;
 			}
-
-			Debug.WriteLine(
-				$"RelativeSource Error. No suitable relative source for Element " +
-				$"(id: {element.StyleId}, type: {element.GetType().Name}) " +
-				$"found. RelativeBindingSourceMode: {relativeSource.Mode}." +
-				(relativeSource.AncestorType != null ? ($" AncestorType: {relativeSource.AncestorType}." ) : null));
-
+			
 			return null;
 		}
 
-		public static Task<Element> GetRealParentAsync(
-			Element element,
-			Binding forBinding = null)
+		public static Task<Element> GetRealParentAsync(Element element)
 		{
 			Element parent = element.RealParent;
 			if (parent is Application)

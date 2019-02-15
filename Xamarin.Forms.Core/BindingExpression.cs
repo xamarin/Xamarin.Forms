@@ -100,7 +100,7 @@ namespace Xamarin.Forms
 			_weakSource = null;
 			_weakTarget = null;
 
-			ClearParentChangeSubscriptions(0);
+			ClearParentChangeSubscriptions();
 		}
 
 		/// <summary>
@@ -461,8 +461,14 @@ namespace Xamarin.Forms
 			}
 		}
 
+		// SubscribeToParentChanges, ClearParentChangeSubscriptions, FindParentChainMemberIndex,
+		// OnElementParentChainChange are used with RelativeSource bindings, to detect when
+		// there has been an ancestor change requiring re-applying the binding. This is preferable
+		// to propagating ancestor change notifications down the entire visual tree, the vast majority of
+		// which will not be using RelativeSource binding.
 		internal void SubscribeToParentChanges(List<Element> chain)
 		{
+			ClearParentChangeSubscriptions();
 			if (chain == null)
 				return;
 			_relativeParentChain = new List<WeakReference<Element>>();
@@ -473,11 +479,12 @@ namespace Xamarin.Forms
 			}
 		}
 
-		private void ClearParentChangeSubscriptions(int beginningWith)
+		private void ClearParentChangeSubscriptions(int beginningWith = 0)
 		{
 			if (_relativeParentChain == null || _relativeParentChain.Count == 0)
 				return;
-			for (int i = beginningWith; i < _relativeParentChain.Count; i++)
+			int count = _relativeParentChain.Count;
+			for (int i = beginningWith; i < count; i++)
 			{
 				Element elem;
 				var weakElement = _relativeParentChain.Last();
@@ -487,7 +494,9 @@ namespace Xamarin.Forms
 			}
 		}
 
-		private int FindParentChainMember(Element elem)
+		// Returns -1 if the member is not in the chain or the
+		// chain is no longer valid.
+		private int FindParentChainMemberIndex(Element elem)
 		{
 			for (int i = 0; i < _relativeParentChain.Count; i++)
 			{
@@ -513,9 +522,9 @@ namespace Xamarin.Forms
 
 			if (elem.Parent == null)
 			{
-				// Remove anyone higher on the chain
-				// than the element with the new parent
-				int index = FindParentChainMember(elem);
+				// Remove anything further up in the chain
+				// than the element with the null parent
+				int index = FindParentChainMemberIndex(elem);
 				if (index == -1)
 				{
 					binding.Unapply();
