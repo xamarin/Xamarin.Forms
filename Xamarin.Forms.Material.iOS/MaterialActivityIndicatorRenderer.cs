@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel;
 using CoreAnimation;
 using CoreGraphics;
@@ -39,7 +40,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 					_backgroundLayer = new CAShapeLayer
 					{
-						LineWidth = 4,
+						LineWidth = Control.StrokeWidth,
 						FillColor = UIColor.Clear.CGColor,
 						Hidden = true
 					};
@@ -80,9 +81,22 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			if (_center != Control.Center)
 			{
 				_center = Control.Center;
-				_backgroundLayer.Path = UIBezierPath.FromArc(_center, Control.Radius - 2, 0, 360, true).CGPath;
+				_backgroundLayer.LineWidth = Control.StrokeWidth;
+				var pathRadius = Control.Radius - Control.StrokeWidth / 2;
+				_backgroundLayer.Path = UIBezierPath.FromArc(_center, pathRadius, 0, 360, true).CGPath;
 			}
 			SetBackgroundColor(Element.BackgroundColor);
+		}
+
+		public override CGSize SizeThatFits(CGSize size)
+		{
+			var radius = NMath.Min(size.Width, size.Height) / 2;
+			if (!nfloat.IsInfinity(radius))
+			{
+				Control.Radius = radius;
+				Control.StrokeWidth = Control.Radius / 6;
+			}
+			return base.SizeThatFits(size);
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)

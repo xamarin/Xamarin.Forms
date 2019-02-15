@@ -40,9 +40,16 @@ namespace Xamarin.Forms.Platform.Android.Material
 		{
 			VisualElement.VerifyVisualFlagEnabled();
 
-			_control = new AProgressBar(new ContextThemeWrapper(context, Resource.Style.XamarinFormsMaterialProgressBarCircular), null, Resource.Style.XamarinFormsMaterialProgressBarCircular);
-			_control.Indeterminate = true;
-			AddView(_control);
+			_control = new AProgressBar(new ContextThemeWrapper(context, Resource.Style.XamarinFormsMaterialProgressBarCircular), null, Resource.Style.XamarinFormsMaterialProgressBarCircular)
+			{
+				Indeterminate = true
+			};
+			var squareLayout = new SquareLayout(context)
+			{
+				LayoutParameters = new LayoutParams(LayoutParams.MatchParent, LayoutParams.MatchParent, GravityFlags.Center)
+			};
+			squareLayout.AddView(_control);
+			AddView(squareLayout);
 
 			_visualElementRenderer = new VisualElementRenderer(this);
 			_motionEventHelper = new MotionEventHelper();
