@@ -294,20 +294,10 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 					}
 					else if (uriSource.Uri.Scheme == "ms-appdata")
 					{
-						string filePath = string.Empty;
+						string filePath = Platform.ResolveMsAppDataUri(uriSource.Uri);
 
-						if (uriSource.Uri.LocalPath.StartsWith("/local"))
-						{
-							filePath = System.IO.Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.MyDocuments), uriSource.Uri.LocalPath.Substring(7));
-						}
-						else if (uriSource.Uri.LocalPath.StartsWith("/temp"))
-						{
-							filePath = System.IO.Path.Combine(System.IO.Path.GetTempPath(), uriSource.Uri.LocalPath.Substring(6));
-						}
-						else
-						{
+						if (string.IsNullOrEmpty(filePath))
 							throw new ArgumentException("Invalid Uri", "Source");
-						}
 
 						_view.SetVideoPath(filePath);
 
