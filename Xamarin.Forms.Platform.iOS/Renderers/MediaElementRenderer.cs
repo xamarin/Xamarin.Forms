@@ -1,5 +1,6 @@
 ﻿using AVFoundation;
 using AVKit;
+using CoreGraphics;
 using CoreMedia;
 using Foundation;
 using System;
@@ -34,9 +35,13 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			_playToEndObserver = NSNotificationCenter.DefaultCenter.AddObserver(AVPlayerItem.DidPlayToEndTimeNotification, PlayedToEnd);
 			View.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
-			View.AutosizesSubviews = true;
 		}
-		
+
+		public override void ViewDidLayoutSubviews()
+		{
+			MediaElement.Layout(View.Frame.ToRectangle());
+		}
+
 		void SetKeepScreenOn(bool value)
 		{
 			if (value)
