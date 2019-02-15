@@ -165,6 +165,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateEnabled();
 			UpdateBackgroundColor();
 			UpdatePadding();
+			UpdateMaxLines();
 		}
 
 		void UpdateBitmap()

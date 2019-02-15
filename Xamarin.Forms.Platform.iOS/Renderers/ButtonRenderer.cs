@@ -92,6 +92,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 				UpdateFont();
 				UpdateTextColor();
+				UpdateMaxLines();
 				_buttonLayoutManager?.Update();
 			}
 		}

@@ -146,6 +146,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			UpdateTextColor();
 			UpdateEnabled();
 			UpdateBackgroundColor();
+			UpdateMaxLines();
 		}
 
 		void UpdateEnabled()
