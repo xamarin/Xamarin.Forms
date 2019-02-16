@@ -33,7 +33,9 @@ namespace Xamarin.Forms.Internals
 			return result;
 		}
 
-		internal static object ResolveOrCreate(Type type, params object[] args)
+		internal static object ResolveOrCreate(Type type) => ResolveOrCreate(type, null, null);
+
+		internal static object ResolveOrCreate(Type type, object source, Type visualType, params object[] args)
 		{
 			var result = Resolve(type, args);
 
@@ -41,6 +43,10 @@ namespace Xamarin.Forms.Internals
 
 			if (args.Length > 0)
 			{
+				if(visualType != typeof(VisualRendererMarker.Default))
+					if (type.GetTypeInfo().DeclaredConstructors.Any(info => info.GetParameters().Length == 2))
+						return Activator.CreateInstance(type, new[] { args[0], source });
+
 				// This is by no means a general solution to matching with the correct constructor, but it'll
 				// do for finding Android renderers which need Context (vs older custom renderers which may still use
 				// parameterless constructors)
