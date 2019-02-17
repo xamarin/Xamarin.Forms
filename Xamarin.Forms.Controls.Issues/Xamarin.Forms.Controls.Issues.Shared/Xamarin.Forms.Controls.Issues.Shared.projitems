@@ -877,6 +877,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Issue4138.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue4314.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue3318.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Issue5150.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Issue5172.cs" />
   </ItemGroup>
   <ItemGroup>

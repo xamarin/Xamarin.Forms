@@ -55,6 +55,17 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				defaultContentDescription = control.ContentDescription;
 
 			string value = ConcatenateNameAndHelpText(element);
+
+			var button = element as Button;
+			if (button != null)
+			{
+				var viewGroup = control as global::Android.Views.ViewGroup;
+				if (viewGroup != null)
+				{
+					control = viewGroup.GetChildAt(0);
+				}
+			}
+
 			control.ContentDescription = !string.IsNullOrWhiteSpace(value) ? value : defaultContentDescription;
 		}
 
@@ -191,12 +202,17 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		internal static string ConcatenateNameAndHelpText(BindableObject Element)
 		{
+			var button = Element as Button;
+
+			var text = button?.Text;
 			var name = (string)Element.GetValue(AutomationProperties.NameProperty);
 			var helpText = (string)Element.GetValue(AutomationProperties.HelpTextProperty);
 
-			if (string.IsNullOrWhiteSpace(name))
+			if (!string.IsNullOrWhiteSpace(text) && string.IsNullOrWhiteSpace(name))
+				name = text;
+			else if (string.IsNullOrWhiteSpace(name))
 				return helpText;
-			if (string.IsNullOrWhiteSpace(helpText))
+			else if (string.IsNullOrWhiteSpace(helpText))
 				return name;
 
 			return $"{name}. {helpText}";
