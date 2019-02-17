@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<!-- innerRadius = (diameter / 2) - (thickness * 2) = 16dp -->
+<!--  thickness = width / thicknessRatio = 48 / 12 = 4
+      thicknessRatio = width / thickness = 48 / 4 = 12 -->
 <shape
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="ring"

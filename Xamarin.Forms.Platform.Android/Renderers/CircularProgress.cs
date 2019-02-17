@@ -1,20 +1,17 @@
 using System;
 using Android.Content;
-using Android.Runtime;
+using Android.Util;
 using Android.Views;
-using Android.Widget;
+using AProgressBar = Android.Widget.ProgressBar;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	internal class SquareLayout : FrameLayout, ViewTreeObserver.IOnPreDrawListener
+	internal class CircularProgress : AProgressBar, ViewTreeObserver.IOnPreDrawListener
 	{
-		public SquareLayout(Context context) : base(context)
+		public CircularProgress(Context context, IAttributeSet attrs, int defStyleAttr) : base(context, attrs, defStyleAttr)
 		{
 			ViewTreeObserver.AddOnPreDrawListener(this);
-		}
-
-		protected SquareLayout(IntPtr javaReference, JniHandleOwnership transfer) : base(javaReference, transfer)
-		{
+			Indeterminate = true;
 		}
 
 		protected override void Dispose(bool disposing)

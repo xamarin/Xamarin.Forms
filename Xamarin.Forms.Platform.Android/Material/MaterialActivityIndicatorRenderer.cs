@@ -26,7 +26,6 @@ namespace Xamarin.Forms.Platform.Android.Material
 		bool _disposed;
 
 		ActivityIndicator _element;
-		AProgressBar _control;
 
 		VisualElementTracker _visualElementTracker;
 		VisualElementRenderer _visualElementRenderer;
@@ -40,22 +39,14 @@ namespace Xamarin.Forms.Platform.Android.Material
 		{
 			VisualElement.VerifyVisualFlagEnabled();
 
-			_control = new AProgressBar(new ContextThemeWrapper(context, Resource.Style.XamarinFormsMaterialProgressBarCircular), null, Resource.Style.XamarinFormsMaterialProgressBarCircular)
-			{
-				Indeterminate = true
-			};
-			var squareLayout = new SquareLayout(context)
-			{
-				LayoutParameters = new LayoutParams(LayoutParams.MatchParent, LayoutParams.MatchParent, GravityFlags.Center)
-			};
-			squareLayout.AddView(_control);
-			AddView(squareLayout);
+			Control = new CircularProgress(new ContextThemeWrapper(context, Resource.Style.XamarinFormsMaterialProgressBarCircular), null, Resource.Style.XamarinFormsMaterialProgressBarCircular);
+			AddView(Control, new LayoutParams(LayoutParams.MatchParent, LayoutParams.MatchParent, GravityFlags.Center));
 
 			_visualElementRenderer = new VisualElementRenderer(this);
 			_motionEventHelper = new MotionEventHelper();
 		}
 
-		protected AProgressBar Control => _control;
+		protected AProgressBar Control { get; private set; }
 
 		protected ActivityIndicator Element
 		{
@@ -150,21 +141,21 @@ namespace Xamarin.Forms.Platform.Android.Material
 			var background = Element.BackgroundColor.IsDefault 
 				? AColor.Transparent 
 				: Element.BackgroundColor.ToAndroid();
-			(_control.Background as GradientDrawable)?.SetColor(background);
+			(Control.Background as GradientDrawable)?.SetColor(background);
 
 			if (Element.IsRunning)
 			{
 				var progress = Element.Color.IsDefault 
 					? MaterialColors.Light.PrimaryColor 
 					: Element.Color.ToAndroid();
-				_control.IndeterminateTintList = ColorStateList.ValueOf(progress);
+				Control.IndeterminateTintList = ColorStateList.ValueOf(progress);
 			}
 			else
 			{
-				_control.Visibility = Element.BackgroundColor.IsDefault 
+				Control.Visibility = Element.BackgroundColor.IsDefault 
 					? ViewStates.Gone 
 					: ViewStates.Visible;
-				_control.IndeterminateTintList = ColorStateList.ValueOf(AColor.Transparent);
+				Control.IndeterminateTintList = ColorStateList.ValueOf(AColor.Transparent);
 			}
 		}
 
@@ -180,7 +171,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 
 		SizeRequest IVisualElementRenderer.GetDesiredSize(int widthConstraint, int heightConstraint)
 		{
-			_control.Measure(widthConstraint, heightConstraint);
+			Control.Measure(widthConstraint, heightConstraint);
 			return new SizeRequest(new Size(Control.MeasuredWidth, Control.MeasuredHeight), new Size());
 		}
 
@@ -202,11 +193,11 @@ namespace Xamarin.Forms.Platform.Android.Material
 		// IViewRenderer
 
 		void IViewRenderer.MeasureExactly() =>
-			ViewRenderer.MeasureExactly(_control, Element, Context);
+			ViewRenderer.MeasureExactly(Control, Element, Context);
 
 		// ITabStop
 
-		AView ITabStop.TabStop => _control;
+		AView ITabStop.TabStop => Control;
 	}
 }
 #endif
