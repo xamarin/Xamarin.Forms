@@ -40,7 +40,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 			VisualElement.VerifyVisualFlagEnabled();
 
 			Control = new CircularProgress(new ContextThemeWrapper(context, Resource.Style.XamarinFormsMaterialProgressBarCircular), null, Resource.Style.XamarinFormsMaterialProgressBarCircular);
-			AddView(Control, new LayoutParams(LayoutParams.MatchParent, LayoutParams.MatchParent, GravityFlags.Center));
+			AddView(Control);
 
 			_visualElementRenderer = new VisualElementRenderer(this);
 			_motionEventHelper = new MotionEventHelper();

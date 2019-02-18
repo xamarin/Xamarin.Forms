@@ -1,51 +1,25 @@
 using System;
 using Android.Content;
 using Android.Util;
-using Android.Views;
 using AProgressBar = Android.Widget.ProgressBar;
 
 namespace Xamarin.Forms.Platform.Android
 {
-	internal class CircularProgress : AProgressBar, ViewTreeObserver.IOnPreDrawListener
+	internal class CircularProgress : AProgressBar
 	{
 		public CircularProgress(Context context, IAttributeSet attrs, int defStyleAttr) : base(context, attrs, defStyleAttr)
 		{
-			ViewTreeObserver.AddOnPreDrawListener(this);
 			Indeterminate = true;
 		}
 
-		protected override void Dispose(bool disposing)
+		public override void Layout(int l, int t, int r, int b)
 		{
-			base.Dispose(disposing);
-			if (disposing && !this.IsDisposed())
-				ViewTreeObserver.RemoveOnPreDrawListener(this);
-		}
-
-		protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
-		{
-			base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
-
-			if (IsInEditMode)
-			{
-				if (Math.Abs(heightMeasureSpec) < Math.Abs(widthMeasureSpec))
-					OnMeasure(heightMeasureSpec, heightMeasureSpec);
-				else
-					OnMeasure(widthMeasureSpec, widthMeasureSpec);
-			}
-		}
-
-		public bool OnPreDraw()
-		{
-			if (Width != Height)
-			{
-				var squareSize = Math.Min(Width, Height);
-				var lp = LayoutParameters;
-				lp.Width = squareSize;
-				lp.Height = squareSize;
-				RequestLayout();
-				return false;
-			}
-			return true;
+			var width = r - l;
+			var height = b - t;
+			var squareSize = Math.Min(width, height);
+			l += (width - squareSize) / 2;
+			t += (height - squareSize) / 2;
+			base.Layout(l, t, l + squareSize, t + squareSize);
 		}
 	}
 }
