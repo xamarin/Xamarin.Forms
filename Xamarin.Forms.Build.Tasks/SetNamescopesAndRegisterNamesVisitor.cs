@@ -44,11 +44,11 @@ namespace Xamarin.Forms.Build.Tasks
 		public void Visit(ElementNode node, INode parentNode)
 		{
 			VariableDefinition namescopeVarDef;
-			IList<string> namesInNamescope;
+			Dictionary<string, VariableDefinition> namesInNamescope;
 			var setNameScope = false;
 			if (parentNode == null || IsDataTemplate(node, parentNode) || IsStyle(node, parentNode) || IsVisualStateGroupList(node)) {
 				namescopeVarDef = CreateNamescope();
-				namesInNamescope = new List<string>();
+				namesInNamescope = new Dictionary<string, VariableDefinition>();
 				setNameScope = true;
 			} else {
 				namescopeVarDef = Context.Scopes[parentNode].Item1;
@@ -56,16 +56,16 @@ namespace Xamarin.Forms.Build.Tasks
 			}
 			if (setNameScope && Context.Variables[node].VariableType.InheritsFromOrImplements(Context.Body.Method.Module.ImportReference(("Xamarin.Forms.Core","Xamarin.Forms","BindableObject"))))
 				SetNameScope(node, namescopeVarDef);
-			Context.Scopes[node] = new Tuple<VariableDefinition, IList<string>>(namescopeVarDef, namesInNamescope);
+			Context.Scopes[node] = (namescopeVarDef, namesInNamescope);
 		}
 	
 		public void Visit(RootNode node, INode parentNode)
 		{
 			var namescopeVarDef = GetOrCreateNameScope(node);
-			IList<string> namesInNamescope = new List<string>();
+			Dictionary<string, VariableDefinition> namesInNamescope = new Dictionary<string, VariableDefinition>();
 			if (Context.Variables[node].VariableType.InheritsFromOrImplements(Context.Body.Method.Module.ImportReference(("Xamarin.Forms.Core", "Xamarin.Forms", "BindableObject"))))
 				SetNameScope(node, namescopeVarDef);
-			Context.Scopes[node] = new System.Tuple<VariableDefinition, IList<string>>(namescopeVarDef, namesInNamescope);
+			Context.Scopes[node] = (namescopeVarDef, namesInNamescope);
 		}
 
 		public void Visit(ListNode node, INode parentNode)
@@ -133,11 +133,11 @@ namespace Xamarin.Forms.Build.Tasks
 																	   isStatic: true));
 		}
 
-		void RegisterName(string str, VariableDefinition namescopeVarDef, IList<string> namesInNamescope, VariableDefinition element, INode node)
+		void RegisterName(string str, VariableDefinition namescopeVarDef, IDictionary<string, VariableDefinition> namesInNamescope, VariableDefinition element, INode node)
 		{
-			if (namesInNamescope.Contains(str))
+			if (namesInNamescope.ContainsKey(str))
 				throw new XamlParseException($"An element with the name \"{str}\" already exists in this NameScope", node as IXmlLineInfo);
-			namesInNamescope.Add(str);
+			namesInNamescope.Add(str, element);
 
 			var module = Context.Body.Method.Module;
 			var namescopeType = ("Xamarin.Forms.Core", "Xamarin.Forms.Internals", "INameScope");

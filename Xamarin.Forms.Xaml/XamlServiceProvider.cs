@@ -123,12 +123,14 @@ namespace Xamarin.Forms.Xaml.Internals
 		{
 		}
 
-		[Obsolete("SimpleValueTargetProvider(object[] objectAndParents) is obsolete as of version 3.3.0. Please use SimpleValueTargetProvider(object[] objectAndParents, object targetProperty, NameScope scope) instead.")]
-		[EditorBrowsable(EditorBrowsableState.Never)]
+#pragma warning disable 618
 		public SimpleValueTargetProvider(object[] objectAndParents, object targetProperty) : this (objectAndParents, targetProperty, null)
 		{
 		}
+#pragma warning restore 618
 
+		[Obsolete("SimpleValueTargetProvider(object[] objectAndParents) is obsolete as of version 4.0.0. Please use SimpleValueTargetProvider(object[] objectAndParents, object targetProperty) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public SimpleValueTargetProvider(object[] objectAndParents, object targetProperty, INameScope scope)
 		{
 			if (objectAndParents == null)

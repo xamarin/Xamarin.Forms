@@ -7,6 +7,7 @@ using Xamarin.Forms.Core.UnitTests;
 
 namespace Xamarin.Forms.Xaml.UnitTests
 {
+	[XamlCompilation(XamlCompilationOptions.Skip)]
 	public partial class Gh2007 : ContentPage
 	{
 		public Gh2007()
@@ -37,7 +38,9 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			[TestCase(false), TestCase(true)]
 			public void UsefullxResourceErrorMessages(bool useCompiledXaml)
 			{
-				Assert.Throws<XamlParseException>(() => new Gh2007(useCompiledXaml));
+				Assert.Throws<XamlParseException>(useCompiledXaml ?
+					(TestDelegate)(() => MockCompiler.Compile(typeof(Gh2007))) :
+					() => new Gh2007(useCompiledXaml));
 			}
 		}
 	}
