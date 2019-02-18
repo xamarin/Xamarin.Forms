@@ -9,7 +9,7 @@
         
         <Button Text="Material" Visual="Material" />
         
-        <Button Text="SkiaSharp" Visual="SkiaSharp" />
+        <Button Text="SkiaSharp" Visual="SkiaSharp" WidthRequest="100" HeightRequest="100" />
         
     </StackLayout>
 
