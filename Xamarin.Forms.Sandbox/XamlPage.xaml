@@ -1,0 +1,16 @@
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Xamarin.Forms.Sandbox.XamlPage"
+             Title="XAML Page">
+             
+    <StackLayout Padding="20" Spacing="20">
+        
+        <Button Text="Default" />
+        
+        <Button Text="Material" Visual="Material" />
+        
+        <Button Text="SkiaSharp" Visual="SkiaSharp" />
+        
+    </StackLayout>
+
+</ContentPage>
