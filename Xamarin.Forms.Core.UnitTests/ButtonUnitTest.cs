@@ -316,6 +316,14 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(-1, button.BorderRadius);
 		}
 
+		[Test]
+		public void SetLetterSpacing()
+		{
+			var control = new Button();
+			control.PropertyChanged += (sender, args) => Assert.AreEqual(nameof(ITextElement.LetterSpacing), args.PropertyName);
+			control.LetterSpacing = 1.0;
+		}
+
 		private void AssertButtonContentLayoutsEqual(Button.ButtonContentLayout layout1, object layout2)
 		{
 			var bcl = (Button.ButtonContentLayout)layout2;

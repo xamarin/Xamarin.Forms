@@ -169,5 +169,13 @@ namespace Xamarin.Forms.Core.UnitTests
 			Entry entry = new Entry();
 			Assert.AreEqual(entry.IsReadOnly, false);
 		}
+
+		[Test]
+		public void SetLetterSpacing()
+		{
+			var control = new Entry();
+			control.PropertyChanged += (sender, args) => Assert.AreEqual(nameof(ITextElement.LetterSpacing), args.PropertyName);
+			control.LetterSpacing = 1.0;
+		}
 	}
 }

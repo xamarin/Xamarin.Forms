@@ -78,6 +78,14 @@ namespace Xamarin.Forms.Core.UnitTests
 			Assert.AreEqual(vm.Text, span.Text);
 		}
 
+		[Test]
+		public void SetLetterSpacing()
+		{
+			var control = new Span();
+			control.PropertyChanged += (sender, args) => Assert.AreEqual(nameof(ITextElement.LetterSpacing), args.PropertyName);
+			control.LetterSpacing = 1.0;
+		}
+
 		class ViewModel
 		{
 			public string Text { get; set; }

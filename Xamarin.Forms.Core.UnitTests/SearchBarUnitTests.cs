@@ -129,5 +129,13 @@ namespace Xamarin.Forms.Core.UnitTests
 	        var searchBar = new SearchBar();
             Assert.DoesNotThrow(() => searchBar.SearchCommand = new MyCommand());
 	    }
+
+	    [Test]
+	    public void SetLetterSpacing()
+	    {
+		    var control = new SearchBar();
+		    control.PropertyChanged += (sender, args) => Assert.AreEqual(nameof(ITextElement.LetterSpacing), args.PropertyName);
+		    control.LetterSpacing = 1.0;
+	    }
 	}
 }

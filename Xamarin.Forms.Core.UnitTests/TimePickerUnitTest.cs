@@ -39,5 +39,13 @@ namespace Xamarin.Forms.Core.UnitTests
 
 			Assert.That (() => picker.Time = new TimeSpan (0, 0, 0), Throws.Nothing);
 		}
+
+		[Test]
+		public void SetLetterSpacing()
+		{
+			var control = new TimePicker();
+			control.PropertyChanged += (sender, args) => Assert.AreEqual(nameof(ITextElement.LetterSpacing), args.PropertyName);
+			control.LetterSpacing = 1.0;
+		}
 	}
 }
