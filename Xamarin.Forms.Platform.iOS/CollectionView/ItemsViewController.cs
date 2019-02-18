@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Runtime.CompilerServices;
-using CoreGraphics;
 using Foundation;
 using UIKit;
 
@@ -13,7 +10,7 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		IItemsViewSource _itemsSource;
 		readonly ItemsView _itemsView;
-		readonly ItemsViewLayout _layout;
+		ItemsViewLayout _layout;
 		bool _initialConstraintsSet;
 		bool _wasEmpty;
 
@@ -27,14 +24,33 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			_itemsView = itemsView;
 			_itemsSource = ItemsSourceFactory.Create(_itemsView.ItemsSource, CollectionView);
+
+			UpdateLayout(layout);
+		}
+
+		public void UpdateLayout(ItemsViewLayout layout)
+		{
 			_layout = layout;
-
 			_layout.GetPrototype = GetPrototype;
-			_layout.UniformSize = false; // todo hartez Link this to ItemsView.ItemSizingStrategy hint
 
-			Delegator = new UICollectionViewDelegator(_layout);
+			// If we're updating from a previous layout, we should keep any settings for the SelectableItemsViewController around
+			var selectableItemsViewController = Delegator?.SelectableItemsViewController;
+			Delegator = new UICollectionViewDelegator(_layout, this);
 
 			CollectionView.Delegate = Delegator;
+
+			if (CollectionView.CollectionViewLayout != _layout)
+			{
+				// We're updating from a previous layout
+
+				// Make sure the new layout is sized properly
+				_layout.ConstrainTo(CollectionView.Bounds.Size);
+				
+				CollectionView.SetCollectionViewLayout(_layout, false);
+				
+				// Reload the data so the currently visible cells get laid out according to the new layout
+				CollectionView.ReloadData();
+			}
 		}
 
 		public override UICollectionViewCell GetCell(UICollectionView collectionView, NSIndexPath indexPath)
@@ -142,13 +158,22 @@ namespace Xamarin.Forms.Platform.iOS
 		void ApplyTemplateAndDataContext(TemplatedCell cell, NSIndexPath indexPath)
 		{
 			// We need to create a renderer, which means we need a template
-			var templateElement = _itemsView.ItemTemplate.CreateContent() as View;
-			IVisualElementRenderer renderer = CreateRenderer(templateElement);
+			var view = _itemsView.ItemTemplate.CreateContent() as View;
+			_itemsView.AddLogicalChild(view);
+			var renderer = CreateRenderer(view);
+			BindableObject.SetInheritedBindingContext(view, _itemsSource[indexPath.Row]);
+			cell.SetRenderer(renderer);
+		}
 
-			if (renderer != null)
+		internal void RemoveLogicalChild(UICollectionViewCell cell)
+		{
+			if (cell is TemplatedCell templatedCell)
 			{
-				BindableObject.SetInheritedBindingContext(renderer.Element, _itemsSource[indexPath.Row]);
-				cell.SetRenderer(renderer);
+				var oldView = templatedCell.VisualElementRenderer?.Element;
+				if (oldView != null)
+				{
+					_itemsView.RemoveLogicalChild(oldView);
+				}
 			}
 		}
 

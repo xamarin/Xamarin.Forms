@@ -2,18 +2,15 @@
 using System;
 using System.ComponentModel;
 using Android.Content;
-using Android.Content.Res;
-using Android.Graphics;
 using Android.Support.V4.View;
 using Android.Views;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android.FastRenderers;
 using Xamarin.Forms.Platform.Android.Material;
-using AColor = Android.Graphics.Color;
 using AProgressBar = Android.Widget.ProgressBar;
 using AView = Android.Views.View;
 
-[assembly: ExportRenderer(typeof(Xamarin.Forms.ProgressBar), typeof(MaterialProgressBarRenderer), new[] { typeof(VisualRendererMarker.Material) })]
+[assembly: ExportRenderer(typeof(ProgressBar), typeof(MaterialProgressBarRenderer), new[] { typeof(VisualRendererMarker.Material) })]
 
 namespace Xamarin.Forms.Platform.Android.Material
 {
@@ -122,7 +119,6 @@ namespace Xamarin.Forms.Platform.Android.Material
 		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			ElementPropertyChanged?.Invoke(this, e);
-
 			if (e.PropertyName == ProgressBar.ProgressProperty.PropertyName)
 				UpdateProgress();
 			else if (e.PropertyName == ProgressBar.ProgressColorProperty.PropertyName || e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
@@ -142,51 +138,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 			if (Element == null || Control == null)
 				return;
 
-			Color progressColor = Element.ProgressColor;
-			Color backgroundColor = Element.BackgroundColor;
-
-			var defaultProgress = MaterialColors.Light.PrimaryColor;
-
-			if (progressColor.IsDefault && backgroundColor.IsDefault)
-			{
-				// reset everything to defaults
-				ProgressTintList = ColorStateList.ValueOf(defaultProgress);
-				ProgressBackgroundTintList = ColorStateList.ValueOf(defaultProgress);
-				ProgressBackgroundTintMode = PorterDuff.Mode.SrcIn;
-			}
-			else if (progressColor.IsDefault && !backgroundColor.IsDefault)
-			{
-				// handle the case where only the background is set
-				var background = backgroundColor.ToAndroid();
-
-				// TODO: Potentially override primary color to match material design.
-				ProgressTintList = ColorStateList.ValueOf(defaultProgress);
-				ProgressBackgroundTintList = ColorStateList.ValueOf(background);
-
-				// TODO: Potentially override background alpha to match material design.
-				ProgressBackgroundTintMode = PorterDuff.Mode.SrcOver;
-			}
-			else if (!progressColor.IsDefault && backgroundColor.IsDefault)
-			{
-				// handle the case where only the progress is set
-				var progress = progressColor.ToAndroid();
-
-				ProgressTintList = ColorStateList.ValueOf(progress);
-				ProgressBackgroundTintList = ColorStateList.ValueOf(progress);
-				ProgressBackgroundTintMode = PorterDuff.Mode.SrcIn;
-			}
-			else
-			{
-				// handle the case where both are set
-				var background = backgroundColor.ToAndroid();
-				var progress = progressColor.ToAndroid();
-
-				ProgressTintList = ColorStateList.ValueOf(progress);
-				ProgressBackgroundTintList = ColorStateList.ValueOf(background);
-
-				// TODO: Potentially override alpha to match material design.
-				ProgressBackgroundTintMode = PorterDuff.Mode.SrcOver;
-			}
+			this.ApplyProgressBarColors(Element.ProgressColor, Element.BackgroundColor);
 		}
 
 		void UpdateProgress()
@@ -207,7 +159,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 		SizeRequest IVisualElementRenderer.GetDesiredSize(int widthConstraint, int heightConstraint)
 		{
 			Measure(widthConstraint, heightConstraint);
-			return new SizeRequest(new Size(Control.MeasuredWidth, Control.MeasuredHeight), new Size());
+			return new SizeRequest(new Size(Control.MeasuredWidth, Context.ToPixels(4)), new Size(Context.ToPixels(4), Context.ToPixels(4)));
 		}
 
 		void IVisualElementRenderer.SetElement(VisualElement element) =>

@@ -321,6 +321,7 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new OpenGLViewCoreGalleryPage(), "OpenGLView Gallery"),
 				new GalleryPageFactory(() => new PickerCoreGalleryPage(), "Picker Gallery"),
 				new GalleryPageFactory(() => new ProgressBarCoreGalleryPage(), "ProgressBar Gallery"),
+				new GalleryPageFactory(() => new MaterialProgressBarGallery(), "[Material] ProgressBar & Slider Gallery"),
 				new GalleryPageFactory(() => new ScrollGallery(), "ScrollView Gallery"),
 				new GalleryPageFactory(() => new ScrollGallery(ScrollOrientation.Horizontal), "ScrollView Gallery Horizontal"),
 				new GalleryPageFactory(() => new ScrollGallery(ScrollOrientation.Both), "ScrollView Gallery 2D"),
@@ -370,7 +371,8 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new MultiGallery(), "Multi Gallery - Legacy"),
 				new GalleryPageFactory(() => new NavigationPropertiesGallery(), "Navigation Properties"),
 #if HAVE_OPENTK
-				new GalleryPageFactory(() => new OpenGLGallery(), "OpenGLGallery - Legacy"),
+				new GalleryPageFactory(() => new BasicOpenGLGallery(), "Basic OpenGL Gallery - Legacy"),
+				new GalleryPageFactory(() => new AdvancedOpenGLGallery(), "Advanced OpenGL Gallery - Legacy"),
 #endif
 				new GalleryPageFactory(() => new PickerGallery(), "Picker Gallery - Legacy"),
 				new GalleryPageFactory(() => new ProgressBarGallery(), "ProgressBar Gallery - Legacy"),
@@ -396,6 +398,12 @@ namespace Xamarin.Forms.Controls
 
 		public CorePageView(Page rootPage, NavigationBehavior navigationBehavior = NavigationBehavior.PushAsync)
 		{
+			var galleryFactory = DependencyService.Get<IPlatformSpecificCoreGalleryFactory>();
+
+			var platformPages = galleryFactory?.GetPages();
+			if (platformPages != null)
+				_pages.AddRange(platformPages.Select(p => new GalleryPageFactory(p.Create, p.Title + " (Platform Specifc)")));
+
 			_titleToPage = _pages.ToDictionary(o => o.Title);
 
 			// avoid NRE for root pages without NavigationBar
@@ -492,9 +500,9 @@ namespace Xamarin.Forms.Controls
 		{
 			ValidateRegistrar();
 
-			IStringProvider stringProvider = DependencyService.Get<IStringProvider>();
+			var galleryFactory = DependencyService.Get<IPlatformSpecificCoreGalleryFactory>();
 
-			Title = stringProvider.CoreGalleryTitle;
+			Title = galleryFactory?.Title ?? "Core Gallery";
 
 			var corePageView = new CorePageView(rootPage, navigationBehavior);
 
@@ -568,9 +576,11 @@ namespace Xamarin.Forms.Controls
 	}
 
 	[Preserve(AllMembers = true)]
-	public interface IStringProvider
+	public interface IPlatformSpecificCoreGalleryFactory
 	{
-		string CoreGalleryTitle { get; }
+		string Title { get; }
+
+		IEnumerable<(Func<Page> Create, string Title)> GetPages();
 	}
 	[Preserve(AllMembers = true)]
 	public static class CoreGallery
