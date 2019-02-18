@@ -11,6 +11,8 @@ using AMotionEvent = Android.Views.MotionEvent;
 using AMotionEventActions = Android.Views.MotionEventActions;
 using Object = Java.Lang.Object;
 using AColor = Android.Graphics.Color;
+using Android.Content.Res;
+using AResource =  Android.Resource;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -142,6 +144,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateText();
 			else if (e.PropertyName == Button.PaddingProperty.PropertyName)
 				UpdatePadding();
+			else if (e.PropertyName == Button.DisabledTextColorProperty.PropertyName)
+				UpdateDisabledTextColor();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -163,6 +167,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateEnabled();
 			UpdateBackgroundColor();
 			UpdatePadding();
+			UpdateDisabledTextColor();
 		}
 
 		void UpdateBitmap()
@@ -260,6 +265,16 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				UpdateBitmap();
 			}
+		}
+
+		void UpdateDisabledTextColor()
+		{
+			int[][] states = { new[] { AResource.Attribute.StateEnabled }, new[] { -AResource.Attribute.StateEnabled } };
+			int[] colors = { Control.TextColors.GetColorForState(states[0], Element.TextColor.ToAndroid()), Element.DisabledTextColor.ToAndroid().ToArgb() };
+
+			var colorStateList = new ColorStateList(states, colors);
+
+			Control.SetTextColor(colorStateList);
 		}
 
 		void UpdateTextColor()

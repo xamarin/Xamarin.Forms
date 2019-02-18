@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using Android.Content;
+using Android.Content.Res;
 using Android.Graphics;
 using Android.Support.V7.Widget;
 using Android.Util;
@@ -9,6 +10,7 @@ using Xamarin.Forms.Platform.Android.FastRenderers;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
+using AResource = Android.Resource;
 
 namespace Xamarin.Forms.Platform.Android.AppCompat
 {
@@ -126,6 +128,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				UpdateEnabled();
 			else if (e.PropertyName == Button.FontProperty.PropertyName)
 				UpdateFont();
+			else if (e.PropertyName == Button.DisabledTextColorProperty.PropertyName)
+				UpdateDisabledTextColor();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -144,6 +148,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 			UpdateTextColor();
 			UpdateEnabled();
 			UpdateBackgroundColor();
+			UpdateDisabledTextColor();
 		}
 
 		void UpdateEnabled()
@@ -180,6 +185,16 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 		void UpdateTextColor()
 		{
 			_textColorSwitcher?.UpdateTextColor(Control, Element.TextColor);
+		}
+
+		void UpdateDisabledTextColor()
+		{
+			int[][] states = { new[] { AResource.Attribute.StateEnabled }, new[] { -AResource.Attribute.StateEnabled } };
+			int[] colors = { Control.TextColors.GetColorForState(states[0], Element.TextColor.ToAndroid()), Element.DisabledTextColor.ToAndroid().ToArgb() };
+
+			var colorStateList = new ColorStateList(states, colors);
+
+			Control.SetTextColor(colorStateList);
 		}
 
 		void IOnClickListener.OnClick(AView v) => ButtonElementManager.OnClick(Element, Element, v);
