@@ -188,6 +188,28 @@ namespace Xamarin.Forms.Core.UnitTests
 		}
 
 		[Test]
+		public void ContainerIsPassedInSelectTemplate()
+		{
+			var layout = new StackLayout
+			{
+				IsPlatformEnabled = true,
+			};
+
+			var itemsSource = new ObservableCollection<int>(Enumerable.Range(0, 10));
+			BindableLayout.SetItemsSource(layout, itemsSource);
+
+			int containerPassedCount = 0;
+			BindableLayout.SetItemTemplateSelector(layout, new MyDataTemplateSelectorTest((item, container) =>
+			{
+				if (container == layout)
+					++containerPassedCount;
+				return null;
+			}));
+
+			Assert.AreEqual(containerPassedCount, itemsSource.Count);
+		}
+
+		[Test]
 		public void ItemTemplateTakesPrecendenceOverItemTemplateSelector()
 		{
 			var layout = new StackLayout
@@ -389,6 +411,17 @@ namespace Xamarin.Forms.Core.UnitTests
 				OnPropertyChanged(new PropertyChangedEventArgs("Item[]"));
 				OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, changedItems, 0));
 			}
+ 		}     
+      
+		class MyDataTemplateSelectorTest : DataTemplateSelector
+		{
+			readonly Func<object, BindableObject, DataTemplate> _func;
+
+			public MyDataTemplateSelectorTest(Func<object, BindableObject, DataTemplate> func)
+				=> _func = func;
+
+			protected override DataTemplate OnSelectTemplate(object item, BindableObject container)
+				=> _func(item, container);
 		}
 	}
 }
