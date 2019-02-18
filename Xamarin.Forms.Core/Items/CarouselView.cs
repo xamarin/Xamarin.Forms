@@ -9,6 +9,48 @@ using Xamarin.Forms.Platform;
 
 namespace Xamarin.Forms
 {
+
+	public class CoverFlowItemsLayout : ItemsLayout
+	{
+		public CoverFlowItemsLayout(ItemsLayoutOrientation orientation) : base(orientation)
+		{
+		}
+		public static readonly BindableProperty ViewPointOffSetProperty =
+			BindableProperty.Create(nameof(SnapPointsAlignment), typeof(double), typeof(CoverFlowItemsLayout), 2.2);
+
+		public double ViewPointOffSet
+		{
+			get => (double)GetValue(ViewPointOffSetProperty);
+			set => SetValue(ViewPointOffSetProperty, value);
+		}
+
+		public static readonly IItemsLayout Vertical = new CoverFlowItemsLayout(ItemsLayoutOrientation.Vertical);
+		public static readonly IItemsLayout Horizontal = new CoverFlowItemsLayout(ItemsLayoutOrientation.Horizontal);
+	}
+
+	public class StackedItemsLayout : ItemsLayout
+	{
+		// TODO hartez 2018/08/29 17:28:42 Consider changing this name to LinearItemsLayout; not everything using it is a list (e.g., Carousel)	
+		public StackedItemsLayout(ItemsLayoutOrientation orientation) : base(orientation)
+		{
+		}
+
+		public static readonly BindableProperty ViewPointOffSetProperty =
+			BindableProperty.Create(nameof(SnapPointsAlignment), typeof(double), typeof(CoverFlowItemsLayout), 2.2);
+
+		public double ViewPointOffSet
+		{
+			get => (double)GetValue(ViewPointOffSetProperty);
+			set => SetValue(ViewPointOffSetProperty, value);
+		}
+
+		public static readonly IItemsLayout Vertical = new StackedItemsLayout(ItemsLayoutOrientation.Vertical);
+		public static readonly IItemsLayout Horizontal = new StackedItemsLayout(ItemsLayoutOrientation.Horizontal);
+
+		// TODO hartez 2018/08/29 20:31:54 Need something like these previous two, but as a carousel default	
+	}
+
+
 	public class ScrolledDirectionEventArgs : EventArgs
 	{
 		public ScrolledDirectionEventArgs(ScrollDirection direction, double newValue, double delta)

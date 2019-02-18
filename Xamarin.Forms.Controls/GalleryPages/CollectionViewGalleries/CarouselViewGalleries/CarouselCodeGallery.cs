@@ -26,14 +26,14 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.CarouselVi
 				SnapPointsAlignment = SnapPointsAlignment.Center
 			};
 
-			var itemTemplate = ExampleTemplates.CarouselXamlTemplate();
+			var itemTemplate = ExampleTemplates.CarouselTemplate();
 
 			var carouselView = new CarouselView
 			{
 				ItemsLayout = itemsLayout,
 				ItemTemplate = itemTemplate,
 				Position = 2,
-				NumberOfVisibleItems = 1,
+				NumberOfVisibleItems = 3,
 				ItemSpacing = 10,
 				HeightRequest = 500,
 				Padding = new Thickness(60,0,60,0),
