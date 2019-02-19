@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="Xamarin.Forms.Controls.GalleryPages.LetterSpacingGallery">
+
+    <StackLayout>
+        <Label>
+            <Label.FormattedText>
+                <FormattedString>
+                    <Span Text="LettersSpacing" />
+                    <Span Text=": " />
+                    <Span Text="0" x:Name="LetterSpacingValue" />
+                </FormattedString>
+            </Label.FormattedText>
+        </Label>
+        <Slider Minimum="-10" Maximum="10" Value="0" ValueChanged="Slider_OnValueChanged" MaximumTrackColor="Gray"
+                MinimumTrackColor="Gray" />
+
+        <ScrollView>
+            <StackLayout>
+                <Label Text="Welcome to Xamarin.Forms!" LetterSpacing="0" x:Name="Label" />
+                <Label>
+                    <Label.FormattedText>
+                        <FormattedString>
+                            <Span Text="Welcome to Xamarin.Forms!" LetterSpacing="0" x:Name="Span" />
+                        </FormattedString>
+                    </Label.FormattedText>
+                </Label>
+                <Entry Text="Welcome to Xamarin.Forms!" LetterSpacing="0" x:Name="Entry" />
+                <Editor Text="Welcome to Xamarin.Forms!" LetterSpacing="0" x:Name="Editor" />
+                <DatePicker Date="2019-01-01" LetterSpacing="0" x:Name="DatePicker" />
+                <TimePicker Time="10:10" LetterSpacing="0" x:Name="TimePicker" />
+                <Picker Title="Welcome to Xamarin.Forms!" LetterSpacing="0" x:Name="Picker" />
+                <SearchBar Text="Welcome to Xamarin.Forms!" LetterSpacing="0" x:Name="SearchBar" />
+                <Button Text="Welcome to Xamarin.Forms!" LetterSpacing="0" x:Name="Button" />
+            </StackLayout>
+        </ScrollView>
+    </StackLayout>
+
+
+</ContentPage>

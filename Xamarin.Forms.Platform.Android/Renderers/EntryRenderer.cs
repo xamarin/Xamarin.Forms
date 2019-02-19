@@ -351,9 +351,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateLetterSpacing()
 		{
-			if (Forms.IsLollipopOrNewer && Control is EditText editText)
+			if (Forms.IsLollipopOrNewer && Control is EditText)
 			{
-				editText.LetterSpacing = Element.LetterSpacing.ToEm();
+				(Control as EditText).LetterSpacing = Element.LetterSpacing.ToEm();
 			}
 		}
 
