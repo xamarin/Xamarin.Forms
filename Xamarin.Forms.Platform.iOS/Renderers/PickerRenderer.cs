@@ -106,7 +106,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdatePicker();
 				UpdateLetterSpacing();
 			}
-			else if (e.PropertyName == DatePicker.LetterSpacingProperty.PropertyName)
+			else if (e.PropertyName == Picker.LetterSpacingProperty.PropertyName)
 				UpdateLetterSpacing();
 			else if (e.PropertyName == Picker.TextColorProperty.PropertyName || e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 				UpdateTextColor();

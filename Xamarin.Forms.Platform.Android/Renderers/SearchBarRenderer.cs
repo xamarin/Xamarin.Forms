@@ -129,7 +129,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateFont();
 			else if (e.PropertyName == SearchBar.FontFamilyProperty.PropertyName)
 				UpdateFont();
-			else if (e.PropertyName == DatePicker.LetterSpacingProperty.PropertyName)
+			else if (e.PropertyName == SearchBar.LetterSpacingProperty.PropertyName)
 				UpdateLetterSpacing();
 			else if (e.PropertyName == SearchBar.FontSizeProperty.PropertyName)
 				UpdateFont();

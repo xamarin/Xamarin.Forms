@@ -99,7 +99,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else if (e.PropertyName == SearchBar.TextColorProperty.PropertyName)
 				UpdateTextColor();
-			else if (e.PropertyName == DatePicker.LetterSpacingProperty.PropertyName)
+			else if (e.PropertyName == SearchBar.LetterSpacingProperty.PropertyName)
 				UpdateLetterSpacing();
 			else if (e.PropertyName == SearchBar.TextProperty.PropertyName)
 			{

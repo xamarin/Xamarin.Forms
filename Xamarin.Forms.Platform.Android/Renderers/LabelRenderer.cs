@@ -151,7 +151,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateText();
 			else if (e.PropertyName == Label.FontProperty.PropertyName)
 				UpdateText();
-			else if (e.PropertyName == DatePicker.LetterSpacingProperty.PropertyName)
+			else if (e.PropertyName == Label.LetterSpacingProperty.PropertyName)
 				UpdateLetterSpacing();
 			else if (e.PropertyName == Label.LineBreakModeProperty.PropertyName)
 				UpdateLineBreakMode();

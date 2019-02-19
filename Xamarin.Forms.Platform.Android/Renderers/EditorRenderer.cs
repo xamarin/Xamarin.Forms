@@ -124,7 +124,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateInputType();
 			else if (e.PropertyName == Editor.TextColorProperty.PropertyName)
 				UpdateTextColor();
-			else if (e.PropertyName == DatePicker.LetterSpacingProperty.PropertyName)
+			else if (e.PropertyName == Editor.LetterSpacingProperty.PropertyName)
 				UpdateLetterSpacing();
 			else if (e.PropertyName == Editor.FontAttributesProperty.PropertyName)
 				UpdateFont();

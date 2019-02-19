@@ -73,7 +73,7 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateSelectedIndex();
 			else if (e.PropertyName == Picker.TitleProperty.PropertyName || e.PropertyName == Picker.TitleColorProperty.PropertyName)
 				UpdateTitle();
-			else if (e.PropertyName == DatePicker.LetterSpacingProperty.PropertyName)
+			else if (e.PropertyName == Picker.LetterSpacingProperty.PropertyName)
 				UpdateLetterSpacing();
 			else if (e.PropertyName == Picker.TextColorProperty.PropertyName)
 				UpdateTextColor();

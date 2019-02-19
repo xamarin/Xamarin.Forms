@@ -193,7 +193,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				UpdateTextDecorations();
 				UpdateLetterSpacing();
 			}
-			else if (e.PropertyName == DatePicker.LetterSpacingProperty.PropertyName)
+			else if (e.PropertyName == Label.LetterSpacingProperty.PropertyName)
 				UpdateLetterSpacing();
 			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
 				UpdateTextDecorations();

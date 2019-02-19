@@ -104,7 +104,10 @@ namespace Xamarin.Forms.Platform.Android
 				paint.SetTypeface(Font.ToTypeface());
 				float value = Font.ToScaledPixel();
 				paint.TextSize = TypedValue.ApplyDimension(ComplexUnitType.Sp, value, TextView.Resources.DisplayMetrics);
-				paint.LetterSpacing = LetterSpacing;
+				if (Forms.IsLollipopOrNewer)
+				{
+					paint.LetterSpacing = LetterSpacing;
+				}
 			}
 		}
 

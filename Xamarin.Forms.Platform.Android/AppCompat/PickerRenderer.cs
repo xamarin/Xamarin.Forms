@@ -84,7 +84,7 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				UpdatePicker();
 			else if (e.PropertyName == Picker.SelectedIndexProperty.PropertyName)
 				UpdatePicker();
-			else if (e.PropertyName == DatePicker.LetterSpacingProperty.PropertyName)
+			else if (e.PropertyName == Picker.LetterSpacingProperty.PropertyName)
 				UpdateLetterSpacing();
 			else if (e.PropertyName == Picker.TextColorProperty.PropertyName)
 				UpdateTextColor();

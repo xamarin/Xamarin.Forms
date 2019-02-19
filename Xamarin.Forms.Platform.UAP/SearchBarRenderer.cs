@@ -64,7 +64,7 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateAlignment();
 			else if (e.PropertyName == SearchBar.FontAttributesProperty.PropertyName)
 				UpdateFont();
-			else if (e.PropertyName == DatePicker.LetterSpacingProperty.PropertyName)
+			else if (e.PropertyName == SearchBar.LetterSpacingProperty.PropertyName)
 				UpdateLetterSpacing();
 			else if (e.PropertyName == SearchBar.FontFamilyProperty.PropertyName)
 				UpdateFont();

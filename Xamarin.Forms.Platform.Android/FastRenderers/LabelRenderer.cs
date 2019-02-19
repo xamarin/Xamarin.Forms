@@ -251,7 +251,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				UpdateText();
 			else if (e.PropertyName == Label.LineBreakModeProperty.PropertyName)
 				UpdateLineBreakMode();
-			else if (e.PropertyName == DatePicker.LetterSpacingProperty.PropertyName)
+			else if (e.PropertyName == Label.LetterSpacingProperty.PropertyName)
 				UpdateLetterSpacing();
 			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
 				UpdateTextDecorations();

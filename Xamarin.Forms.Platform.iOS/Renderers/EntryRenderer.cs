@@ -149,7 +149,7 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 			else if (e.PropertyName == Entry.TextColorProperty.PropertyName)
 				UpdateColor();
-			else if (e.PropertyName == DatePicker.LetterSpacingProperty.PropertyName)
+			else if (e.PropertyName == Entry.LetterSpacingProperty.PropertyName)
 				UpdateLetterSpacing();
 			else if (e.PropertyName == Xamarin.Forms.InputView.KeyboardProperty.PropertyName)
 				UpdateKeyboard();

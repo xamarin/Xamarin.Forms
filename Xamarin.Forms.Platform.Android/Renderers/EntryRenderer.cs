@@ -217,7 +217,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateInputType();
 			else if (e.PropertyName == Entry.HorizontalTextAlignmentProperty.PropertyName)
 				UpdateAlignment();
-			else if (e.PropertyName == DatePicker.LetterSpacingProperty.PropertyName)
+			else if (e.PropertyName == Entry.LetterSpacingProperty.PropertyName)
 				UpdateLetterSpacing();
 			else if (e.PropertyName == Entry.FontAttributesProperty.PropertyName)
 				UpdateFont();
@@ -351,9 +351,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateLetterSpacing()
 		{
-			if (Forms.IsLollipopOrNewer && Control is EditText)
+			if (Forms.IsLollipopOrNewer && Control is EditText editText)
 			{
-				(Control as EditText).LetterSpacing = Element.LetterSpacing.ToEm();
+				editText.LetterSpacing = Element.LetterSpacing.ToEm();
 			}
 		}
 
