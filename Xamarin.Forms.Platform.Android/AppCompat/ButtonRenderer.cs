@@ -126,6 +126,8 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 				UpdateEnabled();
 			else if (e.PropertyName == Button.FontProperty.PropertyName)
 				UpdateFont();
+			else if (e.PropertyName == Button.LetterSpacingProperty.PropertyName)
+				UpdateLetterSpacing();
 
 			base.OnElementPropertyChanged(sender, e);
 		}

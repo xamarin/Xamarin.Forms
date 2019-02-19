@@ -223,6 +223,10 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			{
 				UpdateFont();
 			}
+			else if (e.PropertyName == Button.LetterSpacingProperty.PropertyName)
+			{
+				UpdateLetterSpacing();
+			}
 			else if (e.PropertyName == VisualElement.InputTransparentProperty.PropertyName)
 			{
 				UpdateInputTransparent();

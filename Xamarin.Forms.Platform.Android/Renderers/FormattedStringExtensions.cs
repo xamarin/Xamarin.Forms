@@ -60,10 +60,10 @@ namespace Xamarin.Forms.Platform.Android
 				}
 				if (!span.IsDefault())
 #pragma warning disable 618 // We will need to update this when .Font goes away
-					spannable.SetSpan(new FontSpan(span.Font, view, (float)span.LetterSpacing), start, end, SpanTypes.InclusiveInclusive);
+					spannable.SetSpan(new FontSpan(span.Font, view, span.LetterSpacing.ToEm()), start, end, SpanTypes.InclusiveInclusive);
 #pragma warning restore 618
 				else
-					spannable.SetSpan(new FontSpan(defaultFont, view, (float)span.LetterSpacing), start, end, SpanTypes.InclusiveInclusive);
+					spannable.SetSpan(new FontSpan(defaultFont, view, span.LetterSpacing.ToEm()), start, end, SpanTypes.InclusiveInclusive);
 				if (span.IsSet(Span.TextDecorationsProperty))
 					spannable.SetSpan(new TextDecorationSpan(span), start, end, SpanTypes.InclusiveInclusive);
 

@@ -233,9 +233,9 @@ namespace Xamarin.Forms.Platform.Android
 		}
 		void UpdateLetterSpacing()
 		{
-			if (Forms.IsLollipopOrNewer && Control is EditText textEdit)
+			if (Forms.IsLollipopOrNewer && Control is TextView textControl)
 			{
-				textEdit.LetterSpacing = Element.LetterSpacing.ToEm();
+				textControl.LetterSpacing = Element.LetterSpacing.ToEm();
 			}
 		}
 
