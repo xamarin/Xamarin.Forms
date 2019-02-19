@@ -242,6 +242,9 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateLetterSpacing()
 		{
+			if(!Forms.IsLollipopOrNewer)
+				return;
+
 			_editText = _editText ?? Control.GetChildrenOfType<EditText>().FirstOrDefault();
 
 			if (_editText != null)

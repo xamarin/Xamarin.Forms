@@ -185,7 +185,11 @@ namespace Xamarin.Forms.Platform.Android.AppCompat
 
 		void UpdateLetterSpacing()
 		{
-			NativeButton.LetterSpacing = Element.LetterSpacing.ToEm();
+			if (Forms.IsLollipopOrNewer)
+			{
+				NativeButton.LetterSpacing = Element.LetterSpacing.ToEm();
+			}
+			
 		}
 
 		void IOnClickListener.OnClick(AView v) => ButtonElementManager.OnClick(Element, Element, v);

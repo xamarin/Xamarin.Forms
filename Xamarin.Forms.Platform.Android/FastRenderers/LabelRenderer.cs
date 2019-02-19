@@ -326,7 +326,10 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		void UpdateLetterSpacing()
 		{
-			LetterSpacing = Element.LetterSpacing.ToEm();
+			if (Forms.IsLollipopOrNewer)
+			{
+				LetterSpacing = Element.LetterSpacing.ToEm();
+			}
 		}
 
 		void UpdateLineBreakMode()

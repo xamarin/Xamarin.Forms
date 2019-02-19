@@ -331,7 +331,10 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		void UpdateLetterSpacing()
 		{
-			LetterSpacing = Button.LetterSpacing.ToEm();
+			if (Forms.IsLollipopOrNewer)
+			{
+				LetterSpacing = Button.LetterSpacing.ToEm();
+			}
 		}
 
 		float IBorderVisualElementRenderer.ShadowRadius => ShadowRadius;

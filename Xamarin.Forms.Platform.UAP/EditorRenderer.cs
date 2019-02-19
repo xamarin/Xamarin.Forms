@@ -117,7 +117,7 @@ namespace Xamarin.Forms.Platform.UWP
 			{
 				UpdateText();
 			}
-			else if (e.PropertyName == DatePicker.LetterSpacingProperty.PropertyName)
+			else if (e.PropertyName == Editor.LetterSpacingProperty.PropertyName)
 			{
 				UpdateLetterSpacing();
 			}

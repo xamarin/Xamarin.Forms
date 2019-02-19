@@ -88,7 +88,7 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateTextColor();
 			else if (e.PropertyName == TimePicker.FontAttributesProperty.PropertyName || e.PropertyName == TimePicker.FontFamilyProperty.PropertyName || e.PropertyName == TimePicker.FontSizeProperty.PropertyName)
 				UpdateFont();
-			else if (e.PropertyName == DatePicker.LetterSpacingProperty.PropertyName)
+			else if (e.PropertyName == TimePicker.LetterSpacingProperty.PropertyName)
 				UpdateLetterSpacing();
 
 			if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)

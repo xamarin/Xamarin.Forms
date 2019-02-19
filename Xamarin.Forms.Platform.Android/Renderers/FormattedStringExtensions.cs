@@ -77,7 +77,10 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				Font = font;
 				TextView = view;
-				LetterSpacing = letterSpacing;
+				if (Forms.IsLollipopOrNewer)
+				{
+					LetterSpacing = letterSpacing;
+				}
 			}
 
 			public Font Font { get; }
