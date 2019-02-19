@@ -82,6 +82,11 @@ namespace Xamarin.Forms.Maps
 			set { SetValue(ItemTemplateProperty, value); }
 		}
 
+		public event EventHandler<MapClickedEventArgs> MapClicked;
+
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public void SendMapClicked(Position position) => MapClicked?.Invoke(this, new MapClickedEventArgs(position));
+
 		[EditorBrowsable(EditorBrowsableState.Never)]
 		public void SetVisibleRegion(MapSpan value) => VisibleRegion = value;
 		public MapSpan VisibleRegion
