@@ -63,6 +63,7 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdatePlaceholderText();
 				UpdatePlaceholderColor();
 				UpdateIsReadOnly();
+				UpdateReturnType();
 			}
 
 			base.OnElementChanged(e);
@@ -130,6 +131,8 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdatePlaceholderColor();
 			else if (e.PropertyName == InputView.IsReadOnlyProperty.PropertyName)
 				UpdateIsReadOnly();
+			else if (e.PropertyName == InputView.ReturnTypeProperty.PropertyName)
+				UpdateReturnType();
 		}
 
 		void OnLostFocus(object sender, RoutedEventArgs e)
@@ -364,6 +367,14 @@ namespace Xamarin.Forms.Platform.UWP
 		void UpdateIsReadOnly()
 		{
 			Control.IsReadOnly = Element.IsReadOnly;
+		}
+
+		void UpdateReturnType()
+		{
+			if (Control == null || Element == null)
+				return;
+
+			Control.InputScope = Element.ReturnType.ToInputScope();
 		}
 	}
 }

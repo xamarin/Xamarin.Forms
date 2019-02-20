@@ -131,7 +131,7 @@ namespace Xamarin.Forms.Platform.UWP
 				UpdateMaxLength();
 			else if (e.PropertyName == Specifics.DetectReadingOrderFromContentProperty.PropertyName)
 				UpdateDetectReadingOrderFromContent();
-			else if (e.PropertyName == Entry.ReturnTypeProperty.PropertyName)
+			else if (e.PropertyName == InputView.ReturnTypeProperty.PropertyName)
 				UpdateReturnType();
 			else if (e.PropertyName == Entry.CursorPositionProperty.PropertyName)
 				UpdateCursorPosition();

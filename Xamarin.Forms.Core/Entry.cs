@@ -9,8 +9,6 @@ namespace Xamarin.Forms
 	[RenderWith(typeof(_EntryRenderer))]
 	public class Entry : InputView, IFontElement, IPlaceholderElement, ITextElement, ITextAlignmentElement, IEntryController, IElementConfiguration<Entry>
 	{
-		public static readonly BindableProperty ReturnTypeProperty = BindableProperty.Create(nameof(ReturnType), typeof(ReturnType), typeof(Entry), ReturnType.Default);
-
 		public static readonly BindableProperty ReturnCommandProperty = BindableProperty.Create(nameof(ReturnCommand), typeof(ICommand), typeof(Entry), default(ICommand));
 
 		public static readonly BindableProperty ReturnCommandParameterProperty = BindableProperty.Create(nameof(ReturnCommandParameter), typeof(object), typeof(Entry), default(object));
@@ -105,12 +103,6 @@ namespace Xamarin.Forms
 		{
 			get { return (bool)GetValue(IsTextPredictionEnabledProperty); }
 			set { SetValue(IsTextPredictionEnabledProperty, value); }
-		}
-    
-		public ReturnType ReturnType
-		{
-			get => (ReturnType)GetValue(ReturnTypeProperty);
-			set => SetValue(ReturnTypeProperty, value);
 		}
 
 		public int CursorPosition

@@ -181,7 +181,7 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateAlignment();
 			else if (e.PropertyName == Xamarin.Forms.InputView.MaxLengthProperty.PropertyName)
 				UpdateMaxLength();
-			else if (e.PropertyName == Entry.ReturnTypeProperty.PropertyName)
+			else if (e.PropertyName == Xamarin.Forms.InputView.ReturnTypeProperty.PropertyName)
 				UpdateReturnType();
 			else if (e.PropertyName == Entry.CursorPositionProperty.PropertyName)
 				UpdateCursorSelection();

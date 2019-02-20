@@ -13,6 +13,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			RegisterPropertyHandler(Editor.FontAttributesProperty, UpdateFontAttributes);
 			RegisterPropertyHandler(InputView.KeyboardProperty, UpdateKeyboard);
 			RegisterPropertyHandler(InputView.MaxLengthProperty, UpdateMaxLength);
+			RegisterPropertyHandler(InputView.ReturnTypeProperty, UpdateReturnType);
 			RegisterPropertyHandler(InputView.IsSpellCheckEnabledProperty, UpdateIsSpellCheckEnabled);
 			RegisterPropertyHandler(Editor.PlaceholderProperty, UpdatePlaceholder);
 			RegisterPropertyHandler(Editor.PlaceholderColorProperty, UpdatePlaceholderColor);
@@ -135,6 +136,11 @@ namespace Xamarin.Forms.Platform.Tizen
 		{
 			if (Control.Text.Length > Element.MaxLength)
 				Control.Text = Control.Text.Substring(0, Element.MaxLength);
+		}
+
+		void UpdateReturnType()
+		{
+			Control.SetInputPanelReturnKeyType(Element.ReturnType.ToInputPanelReturnKeyType());
 		}
 
 		void UpdatePlaceholder()

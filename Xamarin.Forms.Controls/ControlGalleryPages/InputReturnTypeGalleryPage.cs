@@ -3,12 +3,13 @@ using System.Threading.Tasks;
 
 namespace Xamarin.Forms.Controls
 {
-	public class EntryReturnTypeGalleryPage: ContentPage
+	public class InputReturnTypeGalleryPage: ContentPage
 	{
 		Picker picker;
 		Entry returnTypeEntry;
+		Editor returnTypeEditor;
 		Label lblCompleted;
-		public EntryReturnTypeGalleryPage()
+		public InputReturnTypeGalleryPage()
 		{
 			BackgroundColor = Color.LightBlue;
 			var layout = new StackLayout
@@ -45,9 +46,24 @@ namespace Xamarin.Forms.Controls
 
 			returnTypeEntry.PropertyChanged += (s, e) =>
 			{
-				if (e.PropertyName == Entry.ReturnTypeProperty.PropertyName)
+				if (e.PropertyName == InputView.ReturnTypeProperty.PropertyName)
 				{
 					returnTypeEntry.Placeholder = $"Entry with {returnTypeEntry.ReturnType}";
+				}
+			};
+
+			returnTypeEditor = new Editor
+			{
+				HorizontalOptions = LayoutOptions.Fill,
+				Placeholder = $"Editor with {ReturnType.Go}",
+				AutomationId = "returnTypeEditor"
+			};
+
+			returnTypeEditor.PropertyChanged += (s, e) =>
+			{
+				if (e.PropertyName == InputView.ReturnTypeProperty.PropertyName)
+				{
+					returnTypeEditor.Placeholder = $"Editor with {returnTypeEditor.ReturnType}";
 				}
 			};
 
@@ -56,30 +72,37 @@ namespace Xamarin.Forms.Controls
 				if (picker.SelectedItem.ToString() == ReturnType.Done.ToString())
 				{
 					returnTypeEntry.ReturnType = ReturnType.Done;
+					returnTypeEditor.ReturnType = ReturnType.Done;
 				}
 				if (picker.SelectedItem.ToString() == ReturnType.Go.ToString())
 				{
 					returnTypeEntry.ReturnType = ReturnType.Go;
+					returnTypeEditor.ReturnType = ReturnType.Go;
 				}
 				if (picker.SelectedItem.ToString() == ReturnType.Next.ToString())
 				{
 					returnTypeEntry.ReturnType = ReturnType.Next;
+					returnTypeEditor.ReturnType = ReturnType.Next;
 				}
 				if (picker.SelectedItem.ToString() == ReturnType.Search.ToString())
 				{
 					returnTypeEntry.ReturnType = ReturnType.Search;
+					returnTypeEditor.ReturnType = ReturnType.Search;
 				}
 				if (picker.SelectedItem.ToString() == ReturnType.Send.ToString())
 				{
 					returnTypeEntry.ReturnType = ReturnType.Send;
+					returnTypeEditor.ReturnType = ReturnType.Send;
 				}
 				if (picker.SelectedItem.ToString() == ReturnType.Default.ToString())
 				{
 					returnTypeEntry.ReturnType = ReturnType.Default;
+					returnTypeEditor.ReturnType = ReturnType.Default;
 				}
 			};
 
 			layout.Children.Add(returnTypeEntry);
+			layout.Children.Add(returnTypeEditor);
 			layout.Children.Add(picker);
 			layout.Children.Add(lblCompleted);
 			picker.SelectedIndex = 0;

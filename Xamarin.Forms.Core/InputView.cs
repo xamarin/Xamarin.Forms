@@ -10,6 +10,8 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty IsReadOnlyProperty = BindableProperty.Create(nameof(IsReadOnly), typeof(bool), typeof(InputView), false);
 
+		public static readonly BindableProperty ReturnTypeProperty = BindableProperty.Create(nameof(ReturnType), typeof(ReturnType), typeof(InputView), ReturnType.Default);
+
 		public int MaxLength
 		{
 			get { return (int)GetValue(MaxLengthProperty); }
@@ -36,6 +38,12 @@ namespace Xamarin.Forms
 		{
 			get { return (bool)GetValue(IsReadOnlyProperty); }
 			set { SetValue(IsReadOnlyProperty, value); }
+		}
+
+		public ReturnType ReturnType
+		{
+			get => (ReturnType)GetValue(ReturnTypeProperty);
+			set => SetValue(ReturnTypeProperty, value);
 		}
 	}
 }

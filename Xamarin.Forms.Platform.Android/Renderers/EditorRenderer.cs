@@ -133,6 +133,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdatePlaceholderColor();
 			UpdatePlaceholderText();
 			UpdateIsReadOnly();
+			UpdateReturnType();
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -161,6 +162,8 @@ namespace Xamarin.Forms.Platform.Android
 				UpdatePlaceholderColor();
 			else if (e.PropertyName == InputView.IsReadOnlyProperty.PropertyName)
 				UpdateIsReadOnly();
+			else if (e.PropertyName == InputView.ReturnTypeProperty.PropertyName)
+				UpdateReturnType();
 
 			base.OnElementPropertyChanged(sender, e);
 		}
@@ -291,6 +294,14 @@ namespace Xamarin.Forms.Platform.Android
 			EditText.FocusableInTouchMode = isReadOnly;
 			EditText.Focusable = isReadOnly;
 			EditText.SetCursorVisible(isReadOnly);
+		}
+
+		void UpdateReturnType()
+		{
+			if (Control == null || Element == null)
+				return;
+
+			Control.ImeOptions = Element.ReturnType.ToAndroidImeAction();
 		}
 	}
 }

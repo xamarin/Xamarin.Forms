@@ -239,7 +239,7 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateMaxLength();
 			else if (e.PropertyName == PlatformConfiguration.AndroidSpecific.Entry.ImeOptionsProperty.PropertyName)
 				UpdateImeOptions();
-			else if (e.PropertyName == Entry.ReturnTypeProperty.PropertyName)
+			else if (e.PropertyName == InputView.ReturnTypeProperty.PropertyName)
 				UpdateReturnType();
 			else if (e.PropertyName == Entry.SelectionLengthProperty.PropertyName)
 				UpdateCursorSelection();

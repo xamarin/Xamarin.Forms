@@ -175,6 +175,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateAutoSizeOption();
 			UpdateReadOnly();
 			UpdateUserInteraction();
+			UpdateReturnType();
 		}
 
 		protected internal virtual void UpdateAutoSizeOption()
@@ -219,6 +220,8 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdatePlaceholderColor();
 			else if (e.PropertyName == Editor.AutoSizeProperty.PropertyName)
 				UpdateAutoSizeOption();
+			else if (e.PropertyName == Xamarin.Forms.InputView.ReturnTypeProperty.PropertyName)
+				UpdateReturnType();
 		}
 
 		void HandleChanged(object sender, EventArgs e)
@@ -345,6 +348,13 @@ namespace Xamarin.Forms.Platform.iOS
 				UpdateReadOnly();
 			else
 				UpdateEditable();
+		}
+
+		void UpdateReturnType()
+		{
+			if (Control == null || Element == null)
+				return;
+			Control.ReturnKeyType = Element.ReturnType.ToUIReturnKeyType();
 		}
 
 		internal class FormsUITextView : UITextView, IFormsUITextView

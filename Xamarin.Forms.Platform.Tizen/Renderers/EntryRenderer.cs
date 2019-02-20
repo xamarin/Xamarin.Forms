@@ -18,7 +18,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			RegisterPropertyHandler(Entry.PlaceholderProperty, UpdatePlaceholder);
 			RegisterPropertyHandler(Entry.PlaceholderColorProperty, UpdatePlaceholderColor);
 			RegisterPropertyHandler(InputView.MaxLengthProperty, UpdateMaxLength);
-			RegisterPropertyHandler(Entry.ReturnTypeProperty, UpdateReturnType);
+			RegisterPropertyHandler(InputView.ReturnTypeProperty, UpdateReturnType);
 			RegisterPropertyHandler(InputView.IsSpellCheckEnabledProperty, UpdateIsSpellCheckEnabled);
 			RegisterPropertyHandler(Entry.IsTextPredictionEnabledProperty, UpdateIsSpellCheckEnabled);
 			RegisterPropertyHandler(Specific.FontWeightProperty, UpdateFontWeight);

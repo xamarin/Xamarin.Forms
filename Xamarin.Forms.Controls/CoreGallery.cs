@@ -275,7 +275,7 @@ namespace Xamarin.Forms.Controls
 				new GalleryPageFactory(() => new CollectionViewGallery(), "CollectionView Gallery"),
 				new GalleryPageFactory(() => new CollectionViewCoreGalleryPage(), "CollectionView Core Gallery"),
 				new GalleryPageFactory(() => new Issues.PerformanceGallery(), "Performance"),
-				new GalleryPageFactory(() => new EntryReturnTypeGalleryPage(), "Entry ReturnType "),
+				new GalleryPageFactory(() => new InputReturnTypeGalleryPage(), "InputView ReturnType "),
 				new GalleryPageFactory(() => new VisualStateManagerGallery(), "VisualStateManager Gallery"),
 				new GalleryPageFactory(() => new FlowDirectionGalleryLandingPage(), "FlowDirection"),
 				new GalleryPageFactory(() => new AutomationPropertiesGallery(), "Accessibility"),
