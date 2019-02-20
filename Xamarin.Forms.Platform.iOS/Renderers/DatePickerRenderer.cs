@@ -11,6 +11,9 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		public NoCaretField() : base(new RectangleF())
 		{
+			SpellCheckingType = UITextSpellCheckingType.No;
+			AutocorrectionType = UITextAutocorrectionType.No;
+			AutocapitalizationType = UITextAutocapitalizationType.None;
 		}
 
 		public override RectangleF GetCaretRectForPosition(UITextPosition position)
@@ -58,6 +61,9 @@ namespace Xamarin.Forms.Platform.iOS
 
 				entry.InputView.AutoresizingMask = UIViewAutoresizing.FlexibleHeight;
 				entry.InputAccessoryView.AutoresizingMask = UIViewAutoresizing.FlexibleHeight;
+				
+				entry.InputAssistantItem.LeadingBarButtonGroups = null;
+				entry.InputAssistantItem.TrailingBarButtonGroups = null;
 
 				_defaultTextColor = entry.TextColor;
 

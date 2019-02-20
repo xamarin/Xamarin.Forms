@@ -29,6 +29,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use WebViewRenderer(Context) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public WebViewRenderer()
 		{
 			AutoPackage = false;
@@ -128,6 +129,8 @@ namespace Xamarin.Forms.Platform.Android
 				newElementController.ReloadRequested += OnReloadRequested;
 
 				UpdateMixedContentMode();
+				UpdateEnableZoomControls();
+				UpdateDisplayZoomControls();
 			}
 
 			Load();
@@ -144,6 +147,12 @@ namespace Xamarin.Forms.Platform.Android
 					break;
 				case "MixedContentMode":
 					UpdateMixedContentMode();
+					break;
+				case "EnableZoomControls":
+					UpdateEnableZoomControls();
+					break;
+				case "DisplayZoomControls":
+					UpdateDisplayZoomControls();
 					break;
 			}
 		}
@@ -207,6 +216,18 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				Control.Settings.MixedContentMode = (MixedContentHandling)Element.OnThisPlatform().MixedContentMode();
 			}
+		}
+
+		void UpdateEnableZoomControls()
+		{
+			var value = Element.OnThisPlatform().EnableZoomControls();
+			Control.Settings.SetSupportZoom(value);
+			Control.Settings.BuiltInZoomControls = value;
+		}
+
+		void UpdateDisplayZoomControls()
+		{
+			Control.Settings.DisplayZoomControls = Element.OnThisPlatform().DisplayZoomControls();
 		}
 
 		class JavascriptResult : Java.Lang.Object, IValueCallback

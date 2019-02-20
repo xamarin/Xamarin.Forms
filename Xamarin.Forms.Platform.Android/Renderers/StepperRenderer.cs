@@ -19,6 +19,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		[Obsolete("This constructor is obsolete as of version 2.5. Please use StepperRenderer(Context) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public StepperRenderer()
 		{
 			AutoPackage = false;
@@ -26,7 +27,12 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override LinearLayout CreateNativeControl()
 		{
-			return new LinearLayout(Context) { Orientation = Orientation.Horizontal };
+			return new LinearLayout(Context)
+			{
+				Orientation = Orientation.Horizontal,
+				Focusable = true,
+				DescendantFocusability = DescendantFocusability.AfterDescendants
+			};
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Stepper> e)
@@ -35,15 +41,17 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (e.OldElement == null)
 			{
-				_downButton = new AButton(Context) { Text = "-", Gravity = GravityFlags.Center, Tag = this };
+				_downButton = new AButton(Context) { Text = "-", Gravity = GravityFlags.Center, Tag = this, Focusable = true };
 				_downButton.SetHeight((int)Context.ToPixels(10.0));
 
 				_downButton.SetOnClickListener(StepperListener.Instance);
 
-				_upButton = new AButton(Context) { Text = "+", Tag = this };
+				_upButton = new AButton(Context) { Text = "+", Tag = this, Focusable = true };
 
 				_upButton.SetOnClickListener(StepperListener.Instance);
 				_upButton.SetHeight((int)Context.ToPixels(10.0));
+
+				_downButton.NextFocusForwardId = _upButton.Id = Platform.GenerateViewId();
 
 				var layout = CreateNativeControl();
 

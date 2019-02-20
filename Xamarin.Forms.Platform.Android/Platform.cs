@@ -22,6 +22,9 @@ using AView = Android.Views.View;
 namespace Xamarin.Forms.Platform.Android
 {
 	public class Platform : BindableObject, INavigation, IDisposable, IPlatformLayout
+#pragma warning disable CS0618
+		, IPlatform
+#pragma warning restore
 	{
 		internal const string CloseContextActionsSignalName = "Xamarin.CloseContextActions";
 
@@ -281,6 +284,12 @@ namespace Xamarin.Forms.Platform.Android
 
 			_navModel.PushModal(modal);
 
+#pragma warning disable CS0618 // Type or member is obsolete
+			// The Platform property is no longer necessary, but we have to set it because some third-party
+			// library might still be retrieving it and using it
+			modal.Platform = this;
+#pragma warning restore CS0618 // Type or member is obsolete
+
 			await PresentModal(modal, animated);
 
 			// Verify that the modal is still on the stack
@@ -315,6 +324,7 @@ namespace Xamarin.Forms.Platform.Android
 		}
 
 		[Obsolete("CreateRenderer(VisualElement) is obsolete as of version 2.5. Please use CreateRendererWithContext(VisualElement, Context) instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public static IVisualElementRenderer CreateRenderer(VisualElement element)
 		{
 			// If there's a previewer context set, use that when created 
@@ -465,6 +475,13 @@ namespace Xamarin.Forms.Platform.Android
 			_navModel.Push(newRoot, null);
 
 			Page = newRoot;
+
+#pragma warning disable CS0618 // Type or member is obsolete
+			// The Platform property is no longer necessary, but we have to set it because some third-party
+			// library might still be retrieving it and using it
+			Page.Platform = this;
+#pragma warning restore CS0618 // Type or member is obsolete
+
 			AddChild(Page, layout);
 
 			Application.Current.NavigationProxy.Inner = this;
@@ -1157,12 +1174,22 @@ namespace Xamarin.Forms.Platform.Android
 
 		#endregion
 
+		#region Obsolete 
+
+		SizeRequest IPlatform.GetNativeSize(VisualElement view, double widthConstraint, double heightConstraint)
+		{
+			return GetNativeSize(view, widthConstraint, heightConstraint);
+		}
+
+		#endregion
+
 		internal class DefaultRenderer : VisualElementRenderer<View>
 		{
 			public bool NotReallyHandled { get; private set; }
 			IOnTouchListener _touchListener;
 
 			[Obsolete("This constructor is obsolete as of version 2.5. Please use DefaultRenderer(Context) instead.")]
+			[EditorBrowsable(EditorBrowsableState.Never)]
 			public DefaultRenderer()
 			{
 			}

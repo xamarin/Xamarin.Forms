@@ -344,6 +344,8 @@ namespace Xamarin.Forms
 			if (   e.PropertyName == WidthRequestProperty.PropertyName
 				|| e.PropertyName == HeightRequestProperty.PropertyName) {
 				var item = (sender as FlexLayout)?._root ?? GetFlexItem((BindableObject)sender);
+				if (item == null)
+					return;
 				item.Width = ((View)sender).WidthRequest < 0 ? float.NaN : (float)((View)sender).WidthRequest;
 				item.Height = ((View)sender).HeightRequest < 0 ? float.NaN : (float)((View)sender).HeightRequest;
 				InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
@@ -391,7 +393,7 @@ namespace Xamarin.Forms
 			if (_root == null)
 				return;
 			
-			Layout(x, y, width, height);
+			Layout(width, height);
 			foreach (var child in Children) {
 				var frame = GetFlexItem(child).GetFrame();
 				if (double.IsNaN(frame.X)
@@ -399,7 +401,8 @@ namespace Xamarin.Forms
 					|| double.IsNaN(frame.Width)
 					|| double.IsNaN(frame.Height))
 					throw new Exception("something is deeply wrong");
-				child.Layout(GetFlexItem(child).GetFrame());
+				frame = frame.Offset(x, y); //flex doesn't support offset on _root
+				child.Layout(frame);
 			}
 		}
 
@@ -418,7 +421,7 @@ namespace Xamarin.Forms
 				item.Shrink = 0;
 				item.AlignSelf = Flex.AlignSelf.Start;
 			}
-			Layout(0, 0, widthConstraint, heightConstraint);
+			Layout(widthConstraint, heightConstraint);
 
 			//2. look at the children location
 			if (double.IsPositiveInfinity(widthConstraint)) {
@@ -442,12 +445,10 @@ namespace Xamarin.Forms
 			return new SizeRequest(new Size(widthConstraint, heightConstraint));
 		}
 
-		void Layout(double x, double y, double width, double height)
+		void Layout(double width, double height)
 		{
 			if (_root.Parent != null)	//Layout is only computed at root level
 				return;
-			_root.Left = (float)x;
-			_root.Top = (float)y;
 			_root.Width = !double.IsPositiveInfinity((width)) ? (float)width : 0;
 			_root.Height = !double.IsPositiveInfinity((height)) ? (float)height : 0;
 			_root.Layout();

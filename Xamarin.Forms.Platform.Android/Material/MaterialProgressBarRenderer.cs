@@ -1,83 +1,189 @@
-#if __ANDROID81__
-#else
+#if __ANDROID_28__
 using System;
 using System.ComponentModel;
 using Android.Content;
-using Android.Content.Res;
-using Android.Graphics;
-using Android.OS;
-using Android.Support.V7.View;
+using Android.Support.V4.View;
+using Android.Views;
 using Xamarin.Forms;
+using Xamarin.Forms.Platform.Android.FastRenderers;
 using Xamarin.Forms.Platform.Android.Material;
 using AProgressBar = Android.Widget.ProgressBar;
-using AViewCompat = Android.Support.V4.View.ViewCompat;
+using AView = Android.Views.View;
 
-[assembly: ExportRenderer(typeof(Xamarin.Forms.ProgressBar), typeof(MaterialProgressBarRenderer), new[] { typeof(VisualRendererMarker.Material) })]
+[assembly: ExportRenderer(typeof(ProgressBar), typeof(MaterialProgressBarRenderer), new[] { typeof(VisualRendererMarker.Material) })]
+
 namespace Xamarin.Forms.Platform.Android.Material
 {
-	public class MaterialProgressBarRenderer : ProgressBarRenderer
+	public class MaterialProgressBarRenderer : AProgressBar,
+		IVisualElementRenderer, IViewRenderer, ITabStop
 	{
-		public MaterialProgressBarRenderer(Context context) : base(context)
+		const int MaximumValue = 10000;
+
+		int? _defaultLabelFor;
+
+		bool _disposed;
+
+		ProgressBar _element;
+
+		VisualElementTracker _visualElementTracker;
+		VisualElementRenderer _visualElementRenderer;
+		MotionEventHelper _motionEventHelper;
+
+		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
+		public event EventHandler<PropertyChangedEventArgs> ElementPropertyChanged;
+
+		public MaterialProgressBarRenderer(Context context)
+			: base(new ContextThemeWrapper(context, Resource.Style.XamarinFormsMaterialProgressBarHorizontal), null, Resource.Style.XamarinFormsMaterialProgressBarHorizontal)
 		{
-			AutoPackage = false;
+			VisualElement.VerifyVisualFlagEnabled();
+
+			Indeterminate = false;
+			Max = MaximumValue;
+
+			_visualElementRenderer = new VisualElementRenderer(this);
+			_motionEventHelper = new MotionEventHelper();
 		}
 
-		protected override AProgressBar CreateNativeControl()
+		protected AProgressBar Control => this;
+
+		protected ProgressBar Element
 		{
-			if (Build.VERSION.SdkInt >= BuildVersionCodes.Lollipop)
+			get { return _element; }
+			set
 			{
-				return new AProgressBar(new ContextThemeWrapper(Context, Resource.Style.XamarinFormsMaterialProgressBarHorizontal), null, Resource.Style.XamarinFormsMaterialProgressBarHorizontal)
+				if (_element == value)
+					return;
+
+				var oldElement = _element;
+				_element = value;
+
+				OnElementChanged(new ElementChangedEventArgs<ProgressBar>(oldElement, _element));
+
+				_element?.SendViewInitialized(this);
+
+				_motionEventHelper.UpdateElement(_element);
+			}
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (_disposed)
+				return;
+			_disposed = true;
+
+			if (disposing)
+			{
+				_visualElementTracker?.Dispose();
+				_visualElementTracker = null;
+
+				_visualElementRenderer?.Dispose();
+				_visualElementRenderer = null;
+
+				if (Element != null)
 				{
-					Indeterminate = false,
-					Max = 10000,
+					Element.PropertyChanged -= OnElementPropertyChanged;
 
-				};
+					if (Platform.GetRenderer(Element) == this)
+						Element.ClearValue(Platform.RendererProperty);
+				}
 			}
 
-			return base.CreateNativeControl();
-
+			base.Dispose(disposing);
 		}
 
-		protected override void UpdateBackgroundColor()
+		protected virtual void OnElementChanged(ElementChangedEventArgs<ProgressBar> e)
 		{
-			if (Control == null)
-				return;
+			ElementChanged?.Invoke(this, new VisualElementChangedEventArgs(e.OldElement, e.NewElement));
 
-			var color = Element.BackgroundColor;
-			if (color != Color.Default)
-				Control.ProgressBackgroundTintList = ColorStateList.ValueOf(color.ToAndroid());
-		}
-
-		internal protected override void UpdateProgressColor()
-		{
-			if (Build.VERSION.SdkInt < BuildVersionCodes.Lollipop)
+			if (e.OldElement != null)
 			{
-				base.UpdateProgressColor();
-				return;
+				e.OldElement.PropertyChanged -= OnElementPropertyChanged;
 			}
 
+			if (e.NewElement != null)
+			{
+				this.EnsureId();
+
+				if (_visualElementTracker == null)
+					_visualElementTracker = new VisualElementTracker(this);
+
+				e.NewElement.PropertyChanged += OnElementPropertyChanged;
+
+				UpdateProgress();
+				UpdateColors();
+
+				ElevationHelper.SetElevation(this, e.NewElement);
+			}
+		}
+
+		protected virtual void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			ElementPropertyChanged?.Invoke(this, e);
+			if (e.PropertyName == ProgressBar.ProgressProperty.PropertyName)
+				UpdateProgress();
+			else if (e.PropertyName == ProgressBar.ProgressColorProperty.PropertyName || e.PropertyName == VisualElement.BackgroundColorProperty.PropertyName)
+				UpdateColors();
+		}
+
+		public override bool OnTouchEvent(MotionEvent e)
+		{
+			if (_visualElementRenderer.OnTouchEvent(e) || base.OnTouchEvent(e))
+				return true;
+
+			return _motionEventHelper.HandleMotionEvent(Parent, e);
+		}
+
+		void UpdateColors()
+		{
 			if (Element == null || Control == null)
 				return;
 
-			Color color = Element.ProgressColor;
-			if (color == Color.Default)
-				return;
-
-			var tintList = ColorStateList.ValueOf(color.ToAndroid());
-			if (Control.Indeterminate)
-				Control.IndeterminateTintList = tintList;
-			else
-				Control.ProgressTintList = tintList;
-
+			this.ApplyProgressBarColors(Element.ProgressColor, Element.BackgroundColor);
 		}
 
-		protected override void OnElementChanged(ElementChangedEventArgs<ProgressBar> e)
+		void UpdateProgress()
 		{
-			base.OnElementChanged(e);
-
-			if (e.NewElement != null)
-				UpdateBackgroundColor();
+			Control.Progress = (int)(Element.Progress * MaximumValue);
 		}
+
+		// IVisualElementRenderer
+
+		VisualElement IVisualElementRenderer.Element => Element;
+
+		VisualElementTracker IVisualElementRenderer.Tracker => _visualElementTracker;
+
+		ViewGroup IVisualElementRenderer.ViewGroup => null;
+
+		AView IVisualElementRenderer.View => this;
+
+		SizeRequest IVisualElementRenderer.GetDesiredSize(int widthConstraint, int heightConstraint)
+		{
+			Measure(widthConstraint, heightConstraint);
+			return new SizeRequest(new Size(Control.MeasuredWidth, Context.ToPixels(4)), new Size(Context.ToPixels(4), Context.ToPixels(4)));
+		}
+
+		void IVisualElementRenderer.SetElement(VisualElement element) =>
+			Element = (element as ProgressBar) ?? throw new ArgumentException("Element must be of type ProgressBar.");
+
+		void IVisualElementRenderer.SetLabelFor(int? id)
+		{
+			if (_defaultLabelFor == null)
+				_defaultLabelFor = ViewCompat.GetLabelFor(this);
+
+			ViewCompat.SetLabelFor(this, (int)(id ?? _defaultLabelFor));
+		}
+
+		void IVisualElementRenderer.UpdateLayout() =>
+			_visualElementTracker?.UpdateLayout();
+
+		// IViewRenderer
+
+		void IViewRenderer.MeasureExactly() =>
+			ViewRenderer.MeasureExactly(this, Element, Context);
+
+		// ITabStop
+
+		AView ITabStop.TabStop => this;
 	}
 }
 #endif

@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 
 namespace Xamarin.Forms
 {
@@ -16,12 +17,12 @@ namespace Xamarin.Forms
 		{
 		}
 
-		public ToolbarItem(string text, string icon, Action activated, ToolbarItemOrder order = ToolbarItemOrder.Default, int priority = 0)
+		public ToolbarItem(string name, string icon, Action activated, ToolbarItemOrder order = ToolbarItemOrder.Default, int priority = 0)
 		{
 			if (activated == null)
 				throw new ArgumentNullException("activated");
 
-			Text = text;
+			Text = name;
 			Icon = icon;
 			Clicked += (s, e) => activated();
 			Order = order;
@@ -29,6 +30,7 @@ namespace Xamarin.Forms
 		}
 
 		[Obsolete("Name is obsolete as of version 1.3.0. Please use Text instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public string Name
 		{
 			get { return Text; }
@@ -48,6 +50,7 @@ namespace Xamarin.Forms
 		}
 
 		[Obsolete("Activated is obsolete as of version 1.3.0. Please use Clicked instead.")]
+		[EditorBrowsable(EditorBrowsableState.Never)]
 		public event EventHandler Activated
 		{
 			add { Clicked += value; }

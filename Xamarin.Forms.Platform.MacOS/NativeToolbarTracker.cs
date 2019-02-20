@@ -193,6 +193,32 @@ namespace Xamarin.Forms.Platform.MacOS
 			}
 		}
 
+		internal void UpdateNavigationItems(bool forceShowBackButton = false)
+		{
+			if (_toolbar == null || _navigation == null || _navigationGroup == null)
+				return;
+			var items = new List<ToolbarItem>();
+			if (ShowBackButton(forceShowBackButton))
+			{
+				var backButtonItem = new ToolbarItem
+				{
+					Text = GetPreviousPageTitle(),
+					Command = new Command(async () => await NavigateBackFrombackButton())
+				};
+				items.Add(backButtonItem);
+			}
+
+			UpdateGroup(_navigationGroup, items, BackButtonItemWidth, -1);
+
+			var navItemBack = _navigationGroup.Items.FirstOrDefault();
+			if (navItemBack != null)
+			{
+				navItemBack.Button.Image = NSImage.ImageNamed(NSImageName.GoLeftTemplate);
+				navItemBack.Button.SizeToFit();
+				navItemBack.Button.AccessibilityTitle = "NSBackButton";
+			}
+		}
+
 		void UpdateBarBackgroundColor()
 		{
 			var bgColor = GetBackgroundColor().CGColor;
@@ -223,12 +249,12 @@ namespace Xamarin.Forms.Platform.MacOS
 				await popAsyncInner;
 		}
 
-		bool ShowBackButton()
+		bool ShowBackButton(bool forceShowBackButton)
 		{
 			if (_navigation == null)
 				return false;
 
-			return NavigationPage.GetHasBackButton(_navigation.CurrentPage) && !IsRootPage();
+			return NavigationPage.GetHasBackButton(_navigation.CurrentPage) && (forceShowBackButton || !IsRootPage());
 		}
 
 		bool IsRootPage()
@@ -320,32 +346,6 @@ namespace Xamarin.Forms.Platform.MacOS
 			UpdateGroup(_toolbarGroup, currentPage.ToolbarItems, ToolbarItemWidth, ToolbarItemSpacing);
 		}
 
-		void UpdateNavigationItems()
-		{
-			if (_toolbar == null || _navigation == null || _navigationGroup == null)
-				return;
-			var items = new List<ToolbarItem>();
-			if (ShowBackButton())
-			{
-				var backButtonItem = new ToolbarItem
-				{
-					Text = GetPreviousPageTitle(),
-					Command = new Command(async () => await NavigateBackFrombackButton())
-				};
-				items.Add(backButtonItem);
-			}
-
-			UpdateGroup(_navigationGroup, items, BackButtonItemWidth, -1);
-
-			var navItemBack = _navigationGroup.Items.FirstOrDefault();
-			if (navItemBack != null)
-			{
-				navItemBack.Button.Image = NSImage.ImageNamed(NSImageName.GoLeftTemplate);
-				navItemBack.Button.SizeToFit();
-				navItemBack.Button.AccessibilityTitle = "NSBackButton";
-			}
-		}
-
 		void UpdateTabbedItems()
 		{
 			if (_toolbar == null || _navigation == null || _tabbedGroup == null)
@@ -387,7 +387,7 @@ namespace Xamarin.Forms.Platform.MacOS
 					var element = toolbarItems[i];
 
 					var item = new NSToolbarItem(element.Text ?? "");
-					item.Activated += (sender, e) => element.Activate();
+					item.Activated += (sender, e) => ((IMenuItemController)element).Activate();
 
 					var button = new NSButton();
 					button.Title = element.Text ?? "";
@@ -401,7 +401,7 @@ namespace Xamarin.Forms.Platform.MacOS
 					button.Frame = new CGRect(currentX + i * itemSpacing, 0, buttonWidth, ToolbarItemHeight);
 					currentX += buttonWidth;
 					totalWidth += button.Frame.Width;
-					button.Activated += (sender, e) => element.Activate();
+					button.Activated += (sender, e) => ((IMenuItemController)element).Activate();
 
 					button.BezelStyle = NSBezelStyle.TexturedRounded;
 					if (!string.IsNullOrEmpty(element.Icon))

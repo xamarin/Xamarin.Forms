@@ -17,6 +17,7 @@
 		public const string Entry = "Entry";
 		public const string Frame = "Frame";
 		public const string Image = "Image";
+		public const string ImageButton = "ImageButton";
 		public const string Label = "Label";
 		public const string ListView = "ListView";
 		public const string UwpIgnore = "UwpIgnore";
@@ -40,6 +41,7 @@
 		public const string Gestures = "Gestures";
 		public const string Navigation = "Navigation";
 		public const string Effects = "Effects";
+		public const string Focus = "Focus";
 
 		public const string ManualReview = "ManualReview";
 		public const string Performance = "Performance";

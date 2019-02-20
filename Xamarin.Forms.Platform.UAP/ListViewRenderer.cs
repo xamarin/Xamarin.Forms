@@ -20,6 +20,7 @@ using Xamarin.Forms.PlatformConfiguration.WindowsSpecific;
 using Specifics = Xamarin.Forms.PlatformConfiguration.WindowsSpecific.ListView;
 using System.Collections.ObjectModel;
 using UwpScrollBarVisibility = Windows.UI.Xaml.Controls.ScrollBarVisibility;
+using WSelectionChangedEventArgs = Windows.UI.Xaml.Controls.SelectionChangedEventArgs;
 
 namespace Xamarin.Forms.Platform.UWP
 {
@@ -32,7 +33,7 @@ namespace Xamarin.Forms.Platform.UWP
 		bool _subscribedToItemClick;
 		bool _subscribedToTapped;
 		bool _disposed;
-		CollectionViewSource _collectionViewSource;
+		CollectionViewSource _collectionViewSource;	
 
 		UwpScrollBarVisibility? _defaultHorizontalScrollVisibility;
 		UwpScrollBarVisibility? _defaultVerticalScrollVisibility;
@@ -74,7 +75,7 @@ namespace Xamarin.Forms.Platform.UWP
 				ReloadData();
 
 				if (Element.SelectedItem != null)
-					OnElementItemSelected(null, new SelectedItemChangedEventArgs(Element.SelectedItem));
+					OnElementItemSelected(null, new SelectedItemChangedEventArgs(Element.SelectedItem, TemplatedItemsView.TemplatedItems.GetGlobalIndexOfItem(Element.SelectedItem)));
 
 				UpdateGrouping();
 				UpdateHeader();
@@ -721,9 +722,9 @@ namespace Xamarin.Forms.Platform.UWP
 			List.SelectedIndex = index;
 		}
 
-		void OnListItemClicked(int index)
+		void OnListItemClicked(int index, Cell cell = null)
 		{
-			Element.NotifyRowTapped(index, cell: null);
+			Element.NotifyRowTapped(index, cell);
 			_itemWasClicked = true;
 		}
 
@@ -734,11 +735,11 @@ namespace Xamarin.Forms.Platform.UWP
 				var templatedItems = TemplatedItemsView.TemplatedItems;
 				var selectedItemIndex = templatedItems.GetGlobalIndexOfItem(e.ClickedItem);
 
-				OnListItemClicked(selectedItemIndex);
+				OnListItemClicked(selectedItemIndex, e.ClickedItem as Cell);
 			}
 		}
 
-		void OnControlSelectionChanged(object sender, SelectionChangedEventArgs e)
+		void OnControlSelectionChanged(object sender, WSelectionChangedEventArgs e)
 		{
 			if (Element.SelectedItem != List.SelectedItem)
 			{
