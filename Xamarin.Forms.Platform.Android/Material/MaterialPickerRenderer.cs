@@ -56,7 +56,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 			if (Element == null)
 				return;
 
-			_textInputLayout.Hint = (string)Element.GetValue(Xamarin.Forms.Material.Picker.PlaceholderProperty);
+			_textInputLayout.Hint = Xamarin.Forms.Material.Picker.GetPlaceholder(Element);
 		}
 
 		protected internal override void UpdateTitleColor() => ApplyTheme();

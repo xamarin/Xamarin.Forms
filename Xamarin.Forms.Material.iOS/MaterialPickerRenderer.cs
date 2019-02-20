@@ -1,4 +1,5 @@
-﻿using UIKit;
+﻿using System.ComponentModel;
+using UIKit;
 
 namespace Xamarin.Forms.Platform.iOS.Material
 {
@@ -43,9 +44,26 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			Control?.UpdatePlaceholder(this);
 		}
 
+		protected override void OnElementChanged(ElementChangedEventArgs<Picker> e)
+		{
+			base.OnElementChanged(e);
+			UpdatePlaceholder();
+		}
+
+		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			base.OnElementPropertyChanged(sender, e);
+			if (e.PropertyName == Xamarin.Forms.Material.Picker.PlaceholderProperty.PropertyName)
+				UpdatePlaceholder();
+			else if (e.PropertyName == Xamarin.Forms.Material.Picker.PlaceholderColorProperty.PropertyName)
+				UpdatePlaceholder();
+
+		}
+
+		string IMaterialEntryRenderer.Placeholder => Xamarin.Forms.Material.Picker.GetPlaceholder(Element);
+		Color IMaterialEntryRenderer.PlaceholderColor => Xamarin.Forms.Material.Picker.GetPlaceholderColor(Element);
 		Color IMaterialEntryRenderer.TextColor => Element?.TextColor ?? Color.Default;
-		Color IMaterialEntryRenderer.PlaceholderColor => Element?.TitleColor ?? Color.Default;
 		Color IMaterialEntryRenderer.BackgroundColor => Element?.BackgroundColor ?? Color.Default;
-		string IMaterialEntryRenderer.Placeholder => Element?.Title ?? string.Empty;
+		
 	}
 }
