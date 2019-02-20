@@ -1,4 +1,5 @@
 #if __ANDROID_28__
+using System.ComponentModel;
 using Android.Content;
 using Android.Support.V4.View;
 using Android.Views;
@@ -31,6 +32,29 @@ namespace Xamarin.Forms.Platform.Android.Material
 			return _textInputLayout;
 		}
 
+		protected override void OnElementChanged(ElementChangedEventArgs<DatePicker> e)
+		{
+			base.OnElementChanged(e);
+			UpdatePlaceHolderText();
+		}
+
+		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
+		{
+			base.OnElementPropertyChanged(sender, e);
+			if (e.PropertyName == Xamarin.Forms.Material.DatePicker.PlaceholderProperty.PropertyName)
+				UpdatePlaceHolderText();
+			else if (e.PropertyName == Xamarin.Forms.Material.TimePicker.PlaceholderColorProperty.PropertyName)
+				ApplyTheme();
+
+		}
+
+		internal void UpdatePlaceHolderText()
+		{
+			if (Element == null)
+				return;
+
+			_textInputLayout.Hint = (string)Element.GetValue(Xamarin.Forms.Material.DatePicker.PlaceholderProperty);
+		}
 
 		protected override void UpdateBackgroundColor()
 		{
@@ -41,7 +65,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 		}
 
 		protected override void UpdateTextColor() => ApplyTheme();
-		void ApplyTheme() => _textInputLayout?.ApplyTheme(Element.TextColor, Color.Default);
+		void ApplyTheme() => _textInputLayout?.ApplyTheme(Element.TextColor, Xamarin.Forms.Material.DatePicker.GetPlaceholderColor(Element));
 
 	}
 }
