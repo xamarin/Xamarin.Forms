@@ -24,7 +24,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			try
 			{
-				var menuView = bottomNavigationView.GetChildAt(0) as BottomNavigationMenuView)
+				var menuView = bottomNavigationView.GetChildAt(0) as BottomNavigationMenuView;
 				if (menuView == null)
 				{
 					System.Diagnostics.Debug.WriteLine("Unable to find BottomNavigationMenuView");
