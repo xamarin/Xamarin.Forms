@@ -251,7 +251,6 @@ namespace Xamarin.Forms.Platform.MacOS
 			Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text, Control.AttributedText);
 #else
 			Control.AttributedStringValue = newAttributedText;
-			Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text, Control.AttributedStringValue);
 #endif
 		}
 
@@ -350,8 +349,6 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 #if __MOBILE__
 			Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text, Control.AttributedText);
-#else
-			Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text, Control.AttributedStringValue);
 #endif
 		}
 
