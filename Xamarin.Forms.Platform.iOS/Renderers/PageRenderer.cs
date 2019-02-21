@@ -322,7 +322,9 @@ namespace Xamarin.Forms.Platform.iOS
 			string bgImage = ((Page)Element).BackgroundImage;
 			if (!string.IsNullOrEmpty(bgImage))
 			{
-				View.BackgroundColor = UIColor.FromPatternImage(UIImage.FromBundle(bgImage) ?? throw new Exception($"Image: File '{bgImage}' not found in app bundle"));
+				var image = UIImage.FromBundle(bgImage);
+				if (image != null)
+					View.BackgroundColor = UIColor.FromPatternImage(image);
 				return;
 			}
 			Color bgColor = Element.BackgroundColor;
