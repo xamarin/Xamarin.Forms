@@ -28,6 +28,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			_colorScheme = (SemanticColorScheme)CreateColorScheme();
 			ApplyTypographyScheme(fontElement);
 			ApplyTheme(element);
+
 		}
 
 		public override CGSize SizeThatFits(CGSize size)
@@ -79,6 +80,15 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			var placeholderText = element.Placeholder ?? String.Empty;
 			_activeTextinputController.PlaceholderText = placeholderText;
 			ApplyTheme(element);
+
+			var previous = _activeTextinputController.FloatingPlaceholderScale;
+			if (String.IsNullOrWhiteSpace(placeholderText))
+				_activeTextinputController.FloatingPlaceholderScale = 0;
+			else
+				_activeTextinputController.FloatingPlaceholderScale = (float)TextInputControllerBase.FloatingPlaceholderScaleDefault;
+
+			if (previous != _activeTextinputController.FloatingPlaceholderScale && element is IVisualElementRenderer controller)
+				controller.Element?.InvalidateMeasureInternal(InvalidationTrigger.VerticalOptionsChanged);
 		}
 
 

@@ -195,7 +195,7 @@ namespace Xamarin.Forms.Platform.Android
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == Entry.PlaceholderProperty.PropertyName)
-				EditText.Hint = Element.Placeholder;
+				UpdatePlaceHolderText();
 			else if (e.PropertyName == Entry.IsPasswordProperty.PropertyName)
 				UpdateInputType();
 			else if (e.PropertyName == Entry.TextProperty.PropertyName)

@@ -105,6 +105,19 @@ namespace Xamarin.Forms.Platform.Android.Material
 		void OnFocusChange(object sender, FocusChangeEventArgs e) => 
 			Device.BeginInvokeOnMainThread(() => ApplyTheme());
 
+
+		internal void SetHint(string hint)
+		{
+			HintEnabled = !String.IsNullOrWhiteSpace(hint);
+
+			Device.BeginInvokeOnMainThread(() =>
+			{
+				Hint = hint ?? String.Empty;
+				EditText.Hint = String.Empty;
+			});
+		}
+
+
 		protected override void Dispose(bool disposing)
 		{
 			if (EditText != null)

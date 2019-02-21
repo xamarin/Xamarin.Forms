@@ -42,6 +42,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		protected internal override void UpdatePlaceholder()
 		{
 			Control?.UpdatePlaceholder(this);
+			
 		}
 
 

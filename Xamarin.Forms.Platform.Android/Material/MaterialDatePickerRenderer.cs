@@ -32,6 +32,11 @@ namespace Xamarin.Forms.Platform.Android.Material
 			return _textInputLayout;
 		}
 
+		protected override void OnElementChanged(ElementChangedEventArgs<DatePicker> e)
+		{
+			base.OnElementChanged(e);
+			_textInputLayout.SetHint(string.Empty);
+		}
 
 		protected override void UpdateBackgroundColor()
 		{

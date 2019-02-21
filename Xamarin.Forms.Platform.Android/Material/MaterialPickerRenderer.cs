@@ -25,7 +25,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 
 		protected override MaterialPickerTextInputLayout CreateNativeControl()
 		{
-			LayoutInflater inflater = LayoutInflater.FromContext(Context);
+			var inflater = LayoutInflater.FromContext(Context);
 			var view = inflater.Inflate(Resource.Layout.MaterialPickerTextInput, null);
 			_textInputLayout = (MaterialPickerTextInputLayout)view;
 			_textInputEditText = _textInputLayout.FindViewById<MaterialPickerEditText>(Resource.Id.materialformsedittext);
@@ -43,7 +43,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 
 		protected internal override void UpdatePlaceHolderText()
 		{
-
+			_textInputLayout.SetHint(string.Empty);
 		}
 
 		protected internal override void UpdateTitleColor() => ApplyTheme();

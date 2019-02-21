@@ -1,13 +1,8 @@
 ﻿#if __ANDROID_28__
 using System;
 using Android.Content;
-using Android.Support.Design.Widget;
 using Android.Runtime;
 using Android.Util;
-using Android.Support.V4.View;
-using Android.Widget;
-using Android.Views;
-using Android.Graphics;
 
 namespace Xamarin.Forms.Platform.Android.Material
 {
