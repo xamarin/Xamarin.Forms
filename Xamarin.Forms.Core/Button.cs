@@ -52,7 +52,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty PaddingProperty = PaddingElement.PaddingProperty;
 
-		public static readonly BindableProperty DisabledTextColorProperty = BindableProperty.Create("DisabledTextColor", typeof(Color), typeof(Button), Color.Default);
+		public static readonly BindableProperty DisabledTextColorProperty = BindableProperty.Create(nameof(DisabledTextColor), typeof(Color), typeof(Button), Color.Default);
 
 		public Thickness Padding
 		{
