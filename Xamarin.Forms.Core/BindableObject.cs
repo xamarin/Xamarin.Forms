@@ -113,11 +113,11 @@ namespace Xamarin.Forms
 		}
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		[Obsolete("There's no perf gain(anymore), but more allocation. use GetValue()")]
+		[Obsolete("GetValues is obsolete as of 4.0.0. Please use GetValue instead.")]
 		public object[] GetValues(BindableProperty property0, BindableProperty property1) => new object[] { GetValue(property0), GetValue(property1) };
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		[Obsolete("There's no perf gain(anymore), but more allocation. use GetValue()")]
+		[Obsolete("GetValues is obsolete as of 4.0.0. Please use GetValue instead.")]
 		public object[] GetValues(BindableProperty property0, BindableProperty property1, BindableProperty property2) => new object[] { GetValue(property0), GetValue(property1), GetValue(property2) };
 
 		public bool IsSet(BindableProperty targetProperty)
