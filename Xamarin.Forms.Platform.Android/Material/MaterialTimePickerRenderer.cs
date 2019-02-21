@@ -45,31 +45,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 
 		void ApplyTheme()
 		{
-			_textInputLayout?.ApplyTheme(Element.TextColor, Xamarin.Forms.Material.TimePicker.GetPlaceholderColor(Element));
-		}
-
-		protected override void OnElementChanged(ElementChangedEventArgs<TimePicker> e)
-		{
-			base.OnElementChanged(e);
-			UpdatePlaceHolderText();
-		}
-
-		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			base.OnElementPropertyChanged(sender, e);
-			if (e.PropertyName == Xamarin.Forms.Material.TimePicker.PlaceholderProperty.PropertyName)
-				UpdatePlaceHolderText();
-			else if (e.PropertyName == Xamarin.Forms.Material.TimePicker.PlaceholderColorProperty.PropertyName)
-				ApplyTheme();
-
-		}
-
-		internal void UpdatePlaceHolderText()
-		{
-			if (Element == null)
-				return;
-
-			_textInputLayout.Hint = Xamarin.Forms.Material.TimePicker.GetPlaceholder(Element);
+			_textInputLayout?.ApplyTheme(Element.TextColor, Color.Default);
 		}
 
 	}

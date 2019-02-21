@@ -49,18 +49,8 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			UpdatePlaceholder();
 		}
 
-		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			base.OnElementPropertyChanged(sender, e);
-			if (e.PropertyName == Xamarin.Forms.Material.TimePicker.PlaceholderProperty.PropertyName)
-				UpdatePlaceholder();
-			else if (e.PropertyName == Xamarin.Forms.Material.TimePicker.PlaceholderColorProperty.PropertyName)
-				UpdatePlaceholder();
-
-		}
-
-		string IMaterialEntryRenderer.Placeholder => Xamarin.Forms.Material.TimePicker.GetPlaceholder(Element);
-		Color IMaterialEntryRenderer.PlaceholderColor => Xamarin.Forms.Material.TimePicker.GetPlaceholderColor(Element);
+		string IMaterialEntryRenderer.Placeholder => string.Empty;
+		Color IMaterialEntryRenderer.PlaceholderColor => Color.Default;
 
 		Color IMaterialEntryRenderer.TextColor => Element?.TextColor ?? Color.Default;
 		Color IMaterialEntryRenderer.BackgroundColor => Element?.BackgroundColor ?? Color.Default;

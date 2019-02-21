@@ -41,28 +41,15 @@ namespace Xamarin.Forms.Platform.Android.Material
 			_textInputLayout.BoxBackgroundColor = MaterialColors.CreateEntryFilledInputBackgroundColor(Element.BackgroundColor, Element.TextColor);
 		}
 
-		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
-		{
-			base.OnElementPropertyChanged(sender, e);
-			if (e.PropertyName == Xamarin.Forms.Material.Picker.PlaceholderProperty.PropertyName)
-				UpdatePlaceHolderText();
-			else if (e.PropertyName == Xamarin.Forms.Material.Picker.PlaceholderColorProperty.PropertyName)
-				ApplyTheme();
-
-		}
-
 		protected internal override void UpdatePlaceHolderText()
 		{
-			if (Element == null)
-				return;
 
-			_textInputLayout.Hint = Xamarin.Forms.Material.Picker.GetPlaceholder(Element);
 		}
 
 		protected internal override void UpdateTitleColor() => ApplyTheme();
 		protected override void UpdateTextColor() => ApplyTheme();
 
-		void ApplyTheme() => _textInputLayout?.ApplyTheme(Element.TextColor, Xamarin.Forms.Material.Picker.GetPlaceholderColor(Element));
+		void ApplyTheme() => _textInputLayout?.ApplyTheme(Element.TextColor, Color.Default);
 	}
 }
 #endif
