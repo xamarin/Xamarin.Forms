@@ -104,8 +104,12 @@ namespace Xamarin.Forms
 		{
 			InvalidateLayout();
 		}
-
-		internal ObservableCollection<Element> InternalChildren { get; } = new ObservableCollection<Element>();
+		
+		/// <summary>For internal use by the Xamarin.Forms platform.</summary>
+		/// <value>To be added.</value>
+		/// <remarks>To be added.</remarks>
+		[EditorBrowsable(EditorBrowsableState.Never)]
+		public ObservableCollection<Element> InternalChildren { get; } = new ObservableCollection<Element>();
 
 		internal override ReadOnlyCollection<Element> LogicalChildrenInternal
 		{
