@@ -115,15 +115,9 @@ namespace Xamarin.Forms.Platform.Android.Material
 			if (HintEnabled != !String.IsNullOrWhiteSpace(hint))
 			{
 				HintEnabled = !String.IsNullOrWhiteSpace(hint);
-				Device.BeginInvokeOnMainThread(() =>
-				{
-					if (!_isDisposed)
-					{
-						Hint = hint ?? String.Empty;
-						EditText.Hint = String.Empty;
-						element?.InvalidateMeasureNonVirtual(Internals.InvalidationTrigger.VerticalOptionsChanged);
-					}
-				});
+				Hint = hint ?? String.Empty;
+				EditText.Hint = String.Empty;
+				element?.InvalidateMeasureNonVirtual(Internals.InvalidationTrigger.VerticalOptionsChanged);
 			}
 			else
 			{
