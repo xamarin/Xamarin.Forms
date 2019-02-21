@@ -5,7 +5,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="ring"
     android:thicknessRatio="12"
-    android:innerRadiusRatio="2.8"
+    android:innerRadiusRatio="3"
     android:useLevel="false">
   <solid android:color="#000" />
 </shape>
