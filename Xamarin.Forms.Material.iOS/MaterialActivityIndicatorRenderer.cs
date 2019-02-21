@@ -69,7 +69,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			return new MActivityIndicator
 			{
 				IndicatorMode = ActivityIndicatorMode.Indeterminate,
-				StrokeWidth = 4,
+				StrokeWidth = 4.8f, // = radius / 5
 				Radius = 24
 			};
 		}
@@ -94,7 +94,9 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			if (!nfloat.IsInfinity(radius))
 			{
 				Control.Radius = radius;
-				Control.StrokeWidth = Control.Radius / 6;
+				// by Material spec the stroke width is 1/12 of the diameter, 
+				// but Android’s native progress indicator is 1/10 of the diameter.
+				Control.StrokeWidth = Control.Radius / 5;
 			}
 			return base.SizeThatFits(size);
 		}

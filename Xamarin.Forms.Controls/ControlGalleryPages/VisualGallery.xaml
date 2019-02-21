@@ -37,10 +37,10 @@
                 <ActivityIndicator HeightRequest="200" BackgroundColor="{StaticResource SecondaryColor}" IsRunning="false" HorizontalOptions="FillAndExpand" />
             </StackLayout>
 
-            <Label Text="Custom + Height 150" Margin="0,0,0,-10" />
+            <Label Text="Custom + Height 144 (Max)" Margin="0,0,0,-10" />
             <StackLayout Orientation="Horizontal">
-                <ActivityIndicator HeightRequest="150" Color="{StaticResource PrimaryColor}" BackgroundColor="{StaticResource SecondaryColor}" IsRunning="true" HorizontalOptions="FillAndExpand" />
-                <ActivityIndicator HeightRequest="150" Color="{StaticResource PrimaryColor}" BackgroundColor="{StaticResource SecondaryColor}" IsRunning="false" HorizontalOptions="FillAndExpand" />
+                <ActivityIndicator HeightRequest="144" Color="{StaticResource PrimaryColor}" BackgroundColor="{StaticResource SecondaryColor}" IsRunning="true" HorizontalOptions="FillAndExpand" />
+                <ActivityIndicator HeightRequest="144" Color="{StaticResource PrimaryColor}" BackgroundColor="{StaticResource SecondaryColor}" IsRunning="false" HorizontalOptions="FillAndExpand" />
             </StackLayout>
 
             <Label Text="Default size" Margin="0,0,0,-10" />
