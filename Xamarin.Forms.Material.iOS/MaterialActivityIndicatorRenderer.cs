@@ -85,12 +85,12 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		{
 			base.LayoutSubviews();
 
-            // try get the radius for this size
+			// try get the radius for this size
 			var min = NMath.Min(Control.Bounds.Width, Control.Bounds.Height);
 			var stroke = min / _strokeRatio;
-			var radius = min / 2 - stroke;
+			var radius = min / 2;
 
-            // but, in the end use the limit set by the control
+			// but, in the end use the limit set by the control
 			Control.Radius = radius;
 			Control.StrokeWidth = Control.Radius / (_strokeRatio / 2);
 
