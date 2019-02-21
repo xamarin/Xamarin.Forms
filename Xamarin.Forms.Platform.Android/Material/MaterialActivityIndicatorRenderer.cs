@@ -39,7 +39,13 @@ namespace Xamarin.Forms.Platform.Android.Material
 		{
 			VisualElement.VerifyVisualFlagEnabled();
 
-			Control = new CircularProgress(new ContextThemeWrapper(context, Resource.Style.XamarinFormsMaterialProgressBarCircular), null, Resource.Style.XamarinFormsMaterialProgressBarCircular);
+			Control = new CircularProgress(new ContextThemeWrapper(context, Resource.Style.XamarinFormsMaterialProgressBarCircular), null, Resource.Style.XamarinFormsMaterialProgressBarCircular)
+			{
+				// limiting size to compare iOS realization
+				// https://github.com/material-components/material-components-ios/blob/develop/components/ActivityIndicator/src/MDCActivityIndicator.m#L425
+				MinSize = (int)Context.ToPixels(10),
+				MaxSize = (int)Context.ToPixels(144)
+			};
 			AddView(Control);
 
 			_visualElementRenderer = new VisualElementRenderer(this);
