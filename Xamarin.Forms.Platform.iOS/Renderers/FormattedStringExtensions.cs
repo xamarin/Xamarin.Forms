@@ -32,7 +32,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			return new NSAttributedString(span.Text, font == Font.Default ? null : font.ToUIFont(), fgcolor.ToUIColor(), span.BackgroundColor.ToUIColor(), kerning: (float)span.LetterSpacing);
 #else
 			return new NSAttributedString(span.Text, font == Font.Default ? null : font.ToNSFont(), fgcolor.ToNSColor(),
-				span.BackgroundColor.ToNSColor(), kerning: (float)span.LetterSpacing);
+				span.BackgroundColor.ToNSColor(), kerningAdjustment: (float)span.LetterSpacing));
 #endif
 		}
 
@@ -127,10 +127,15 @@ namespace Xamarin.Forms.Platform.MacOS
 				hasUnderline = (textDecorations & TextDecorations.Underline) != 0;
 				hasStrikethrough = (textDecorations & TextDecorations.Strikethrough) != 0;
 			}
-
+#if __MOBILE__
 			var attrString = new NSAttributedString(text, targetFont, spanFgColor, spanBgColor,
 				underlineStyle: hasUnderline ? NSUnderlineStyle.Single : NSUnderlineStyle.None,
 				strikethroughStyle: hasStrikethrough ? NSUnderlineStyle.Single : NSUnderlineStyle.None, paragraphStyle: style, kerning: (float)span.LetterSpacing);
+#else
+			var attrString = new NSAttributedString(text, targetFont, spanFgColor, spanBgColor,
+				underlineStyle: hasUnderline ? NSUnderlineStyle.Single : NSUnderlineStyle.None,
+				strikethroughStyle: hasStrikethrough ? NSUnderlineStyle.Single : NSUnderlineStyle.None, paragraphStyle: style, kerningAdjustment: (float)span.LetterSpacing);
+#endif
 
 			return attrString;
 		}

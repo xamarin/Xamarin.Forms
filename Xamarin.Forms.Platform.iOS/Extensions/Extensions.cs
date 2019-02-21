@@ -119,28 +119,21 @@ namespace Xamarin.Forms.Platform.iOS
 				attributedString = new NSMutableAttributedString(text);
 			}
 
-			if (!string.IsNullOrEmpty(text) && text.Length > 0)
+			if (!string.IsNullOrEmpty(text))
 			{
 				attributedString.AddAttribute
 				(
-#if __MOBILE__
 					UIStringAttributeKey.KerningAdjustment,
-#else
-					NSStringAttributeKey.KerningAdjustment,
-#endif
 					NSObject.FromObject(letterSpacing), new NSRange(0, text.Length - 1)
 				);
 			}
 			else
 			{
-				attributedString.RemoveAttribute(
-#if __MOBILE__
+				attributedString.RemoveAttribute
+				(
 					UIStringAttributeKey.KerningAdjustment,
-#else
-					NSStringAttributeKey.KerningAdjustment,
-#endif
 					new NSRange(0, 0)
-					);
+				);
 			}
 
 			return attributedString;
