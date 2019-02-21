@@ -21,6 +21,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 		private ColorStateList _unfocusedUnderlineColorsList;
 		private ColorStateList _focusedUnderlineColorsList;
 		static readonly int[][] s_colorStates = { new[] { global::Android.Resource.Attribute.StateEnabled }, new[] { -global::Android.Resource.Attribute.StateEnabled } };
+		bool _isDisposed = false;
 
 		public MaterialFormsTextInputLayoutBase(Context context) : base(context)
 		{
@@ -71,6 +72,9 @@ namespace Xamarin.Forms.Platform.Android.Material
 
 		internal void ApplyTheme(Color formsTextColor, Color formsPlaceHolderColor)
 		{
+			if (_isDisposed)
+				return;
+
 			if(!_isSetup)
 			{
 				_isSetup = true;
@@ -106,22 +110,36 @@ namespace Xamarin.Forms.Platform.Android.Material
 			Device.BeginInvokeOnMainThread(() => ApplyTheme());
 
 
-		internal void SetHint(string hint)
+		internal void SetHint(string hint, VisualElement element)
 		{
-			HintEnabled = !String.IsNullOrWhiteSpace(hint);
-
-			Device.BeginInvokeOnMainThread(() =>
+			if (HintEnabled != !String.IsNullOrWhiteSpace(hint))
+			{
+				HintEnabled = !String.IsNullOrWhiteSpace(hint);
+				Device.BeginInvokeOnMainThread(() =>
+				{
+					if (!_isDisposed)
+					{
+						Hint = hint ?? String.Empty;
+						EditText.Hint = String.Empty;
+						element?.InvalidateMeasureNonVirtual(Internals.InvalidationTrigger.VerticalOptionsChanged);
+					}
+				});
+			}
+			else
 			{
 				Hint = hint ?? String.Empty;
-				EditText.Hint = String.Empty;
-			});
+			}
 		}
 
 
 		protected override void Dispose(bool disposing)
 		{
-			if (EditText != null)
-				EditText.FocusChange -= OnFocusChange;
+			if (!_isDisposed)
+			{
+				_isDisposed = true;
+				if (EditText != null)
+					EditText.FocusChange -= OnFocusChange;
+			}
 
 			base.Dispose(disposing);
 		}

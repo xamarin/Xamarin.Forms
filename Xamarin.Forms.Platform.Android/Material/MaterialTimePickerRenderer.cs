@@ -36,7 +36,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 		protected override void OnElementChanged(ElementChangedEventArgs<TimePicker> e)
 		{
 			base.OnElementChanged(e);
-			_textInputLayout.SetHint(string.Empty);
+			_textInputLayout.SetHint(string.Empty, Element);
 		}
 
 		protected override void UpdateBackgroundColor()

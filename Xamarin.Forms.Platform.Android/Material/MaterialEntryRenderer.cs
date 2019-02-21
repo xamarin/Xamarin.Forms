@@ -33,7 +33,6 @@ namespace Xamarin.Forms.Platform.Android.Material
 			var view = inflater.Inflate(Resource.Layout.TextInputLayoutFilledBox, null);
 			_textInputLayout = (MaterialFormsTextInputLayout)view;
 			_textInputEditText = _textInputLayout.FindViewById<MaterialFormsEditText>(Resource.Id.materialformsedittext);
-			_textInputLayout.SetHint(Element.Placeholder);
 
 			return _textInputLayout;
 		}
@@ -107,7 +106,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 
 		protected internal override void UpdatePlaceHolderText()
 		{
-			_textInputLayout.SetHint(Element.Placeholder);
+			_textInputLayout.SetHint(Element.Placeholder, Element);
 			Element.InvalidateMeasureNonVirtual(Internals.InvalidationTrigger.VerticalOptionsChanged);
 		}
 

@@ -43,7 +43,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 
 		protected internal override void UpdatePlaceHolderText()
 		{
-			_textInputLayout.SetHint(string.Empty);
+			_textInputLayout.SetHint(string.Empty, Element);
 		}
 
 		protected internal override void UpdateTitleColor() => ApplyTheme();
