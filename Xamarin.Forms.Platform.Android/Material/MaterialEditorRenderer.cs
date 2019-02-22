@@ -56,7 +56,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 
 		protected internal override void UpdatePlaceholderText()
 		{
-			_textInputLayout.SetHint(Element.Placeholder, Element);
+			_textInputLayout?.SetHint(Element.Placeholder, Element);
 		}
 
 		
