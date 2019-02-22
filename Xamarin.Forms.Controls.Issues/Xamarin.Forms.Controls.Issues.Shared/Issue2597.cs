@@ -70,7 +70,7 @@ namespace Xamarin.Forms.Controls.Issues
 #if __IOS__
 			RunningApp.Tap(x => x.Marked("Increment"));
 #else
-			RunningApp.Tap(x => x.Text("+"));
+			RunningApp.Tap("+");
 #endif
 
 			RunningApp.WaitForElement(q => q.Marked("Stepper value is 0"));
@@ -79,7 +79,7 @@ namespace Xamarin.Forms.Controls.Issues
 #if __IOS__
 			RunningApp.Tap(x => x.Marked("Decrement"));
 #else
-			RunningApp.Tap(x => x.Text("−"));
+			RunningApp.Tap("−");
 #endif
 
 			RunningApp.WaitForElement(q => q.Marked("Stepper value is 0"));
