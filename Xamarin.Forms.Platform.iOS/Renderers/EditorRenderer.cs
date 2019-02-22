@@ -111,7 +111,8 @@ namespace Xamarin.Forms.Platform.iOS
 					TextView.Started -= OnStarted;
 					TextView.Ended -= OnEnded;
 					TextView.ShouldChangeText -= ShouldChangeText;
-					(Control as IFormsUITextView).FrameChanged -= OnFrameChanged;
+					if(Control is IFormsUITextView formsUITextView)
+						formsUITextView.FrameChanged -= OnFrameChanged;
 				}
 			}
 
