@@ -13,7 +13,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 {
 	public sealed class MaterialEditorRenderer : EditorRendererBase<MaterialFormsTextInputLayout>
 	{
-		bool _disposed;
+		//bool _disposed;
 		MaterialFormsEditText _textInputEditText;
 		MaterialFormsTextInputLayout _textInputLayout;
 

@@ -13,7 +13,6 @@ namespace Xamarin.Forms.Platform.Android.Material
 {
 	public sealed class MaterialEntryRenderer : EntryRendererBase<MaterialFormsTextInputLayout>
 	{
-		bool _disposed;
 		MaterialFormsEditText _textInputEditText;
 		MaterialFormsTextInputLayout _textInputLayout;
 
@@ -40,57 +39,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 		protected override void OnElementChanged(ElementChangedEventArgs<Entry> e)
 		{
 			base.OnElementChanged(e);
-			var oldElement = e.OldElement;
-
-			if (oldElement != null)
-			{
-				oldElement.FocusChangeRequested -= OnFocusChangeRequested;
-			}
-
-			if (e.NewElement != null)
-				Element.FocusChangeRequested += OnFocusChangeRequested;
-
 			UpdateBackgroundColor();
-		}
-
-
-		protected override void OnFocusChangeRequested(object sender, VisualElement.FocusRequestArgs e)
-		{
-			e.Result = true;
-
-			if (e.Focus)
-			{
-				// use post being BeginInvokeOnMainThread will not delay on android
-				Looper looper = Context.MainLooper;
-				var handler = new Handler(looper);
-				handler.Post(() =>
-				{
-					_textInputEditText.RequestFocus();
-				});
-			}
-			else
-			{
-				_textInputEditText.ClearFocus();
-			}
-
-			if (e.Focus)
-				this.ShowKeyboard();
-			else
-				this.HideKeyboard();
-		}
-
-
-		protected override void Dispose(bool disposing)
-		{
-			if (_disposed)
-				return;
-
-			_disposed = true;
-
-			if (disposing && Element != null)
-				Element.FocusChangeRequested -= OnFocusChangeRequested;
-
-			base.Dispose(disposing);
 		}
 
 		protected override void UpdateTextColor() => ApplyTheme();
