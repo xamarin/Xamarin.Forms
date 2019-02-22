@@ -9,6 +9,7 @@ namespace Xamarin.Forms.Controls
 			var activityIndicator = new ActivityIndicator()
 			{
 				IsRunning = false,
+				BackgroundColor = Color.Red,
 				HeightRequest = 50
 			};
 

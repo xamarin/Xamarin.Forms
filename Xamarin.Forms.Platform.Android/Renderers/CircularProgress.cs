@@ -7,6 +7,7 @@ using Android.Graphics.Drawables;
 using AColor = Android.Graphics.Color;
 using Android.Content.Res;
 using Android.Views;
+using Android.Graphics;
 
 namespace Xamarin.Forms.Platform.Android
 {
@@ -31,6 +32,13 @@ namespace Xamarin.Forms.Platform.Android
 			Indeterminate = true;
 		}
 
+		public override void Draw(Canvas canvas)
+		{
+			base.Draw(canvas);
+			if (_isRunning != IsRunning)
+				IsRunning = _isRunning;
+		}
+
 		public void SetColor(Color color)
 		{
 			var progress = color.IsDefault ? DefaultColor : color.ToAndroid();
@@ -41,13 +49,6 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			_backgroudColor = color.IsDefault ? AColor.Transparent : color.ToAndroid();
 			(Background as GradientDrawable)?.SetColor(_backgroudColor);
-		}
-
-		public override ViewStates Visibility {
-			get => !_isRunning && _backgroudColor == AColor.Transparent 
-				? ViewStates.Invisible 
-				: base.Visibility;
-			set => base.Visibility = value;
 		}
 
 		AnimatedVectorDrawable CurrentDrawable => IndeterminateDrawable.Current as AnimatedVectorDrawable;
