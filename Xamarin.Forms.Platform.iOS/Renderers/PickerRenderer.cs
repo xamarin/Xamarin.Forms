@@ -144,13 +144,12 @@ namespace Xamarin.Forms.Platform.iOS
 		void RowsCollectionChanged(object sender, EventArgs e)
 		{
 			UpdatePicker();
-			UpdateLetterSpacing();
 		}
 
 		void UpdateLetterSpacing()
 		{
-			Element.LetterSpacing.ToLetterSpacingAttribute(!string.IsNullOrEmpty(Control.Text) ? Control.Text : Control.Placeholder,
-				Control.AttributedText);
+			Control.AttributedPlaceholder = Element.LetterSpacing.ToLetterSpacingAttribute(Control.Placeholder, Control.AttributedPlaceholder);
+			Control.AttributedText = Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text, Control.AttributedText);
 		}
 
 		void UpdateFont()

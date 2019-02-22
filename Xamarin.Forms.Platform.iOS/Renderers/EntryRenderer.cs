@@ -164,7 +164,7 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.PropertyName == Entry.FontFamilyProperty.PropertyName)
 				UpdateFont();
 			else if (e.PropertyName == Entry.FontSizeProperty.PropertyName)
-				UpdateLetterSpacing();
+				UpdateFont();
 			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 			{
 				UpdateColor();
@@ -314,14 +314,12 @@ namespace Xamarin.Forms.Platform.iOS
 			{
 				var color = targetColor.IsDefault || !Element.IsEnabled ? _defaultPlaceholderColor : targetColor;
 				Control.AttributedPlaceholder = formatted.ToAttributed(Element, color);
-				Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text, Control.AttributedPlaceholder);
 			}
 			else
 			{
 				// Using VSM color management; take whatever is in Element.PlaceholderColor
 				var color = targetColor.IsDefault ? _defaultPlaceholderColor : targetColor;
 				Control.AttributedPlaceholder = formatted.ToAttributed(Element, color);
-				Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text, Control.AttributedPlaceholder);
 			}
 		}
 
@@ -334,7 +332,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateLetterSpacing()
 		{
-			Control.AttributedText = Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text);
+			Control.AttributedText = Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text, Control.AttributedText);
+			Control.AttributedPlaceholder = Element.LetterSpacing.ToLetterSpacingAttribute(Control.Placeholder, Control.AttributedPlaceholder);
 		}
 
 		void UpdateMaxLength()

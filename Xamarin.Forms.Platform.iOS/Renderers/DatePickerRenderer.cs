@@ -104,7 +104,6 @@ namespace Xamarin.Forms.Platform.iOS
 			         e.PropertyName == DatePicker.FontFamilyProperty.PropertyName || e.PropertyName == DatePicker.FontSizeProperty.PropertyName)
 			{
 				UpdateFont();
-				UpdateLetterSpacing();
 			}
 		}
 

@@ -109,7 +109,6 @@ namespace Xamarin.Forms.Platform.iOS
 			         e.PropertyName == TimePicker.FontFamilyProperty.PropertyName || e.PropertyName == TimePicker.FontSizeProperty.PropertyName)
 			{
 				UpdateFont();
-				UpdateLetterSpacing();
 			}
 
 			if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)

@@ -107,12 +107,12 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 		}
 
-		internal static NSAttributedString ToLetterSpacingAttribute(this double letterSpacing, string text, NSAttributedString attributedString)
+		internal static NSMutableAttributedString ToLetterSpacingAttribute(this double letterSpacing, string text, NSAttributedString attributedString)
 		{
 			return ToLetterSpacingAttribute(letterSpacing, text, ConvertAttributedString(attributedString));
 		}
 
-		internal static NSAttributedString ToLetterSpacingAttribute(this double letterSpacing, string text, NSMutableAttributedString attributedString = null)
+		internal static NSMutableAttributedString ToLetterSpacingAttribute(this double letterSpacing, string text, NSMutableAttributedString attributedString = null)
 		{
 			if (attributedString == null)
 			{
@@ -122,18 +122,15 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (!string.IsNullOrEmpty(text))
 			{
+				attributedString.RemoveAttribute
+				(
+					UIStringAttributeKey.KerningAdjustment,
+					new NSRange(0, text.Length - 1)
+				);
 				attributedString.AddAttribute
 				(
 					UIStringAttributeKey.KerningAdjustment,
 					NSObject.FromObject(letterSpacing), new NSRange(0, text.Length - 1)
-				);
-			}
-			else
-			{
-				attributedString.RemoveAttribute
-				(
-					UIStringAttributeKey.KerningAdjustment,
-					new NSRange(0, 0)
 				);
 			}
 
@@ -149,11 +146,16 @@ namespace Xamarin.Forms.Platform.iOS
 
 			if (attributedString is NSMutableAttributedString mutableAttributed)
 			{
-				return mutableAttributed;
-
+				return new NSMutableAttributedString(mutableAttributed);
 			}
 
-			return new NSMutableAttributedString(attributedString);
+			if (attributedString is NSAttributedString attributed && attributed.Length > 0)
+			{
+		
+				return new NSMutableAttributedString(attributed);
+			}
+
+			return null;
 
 		}
 

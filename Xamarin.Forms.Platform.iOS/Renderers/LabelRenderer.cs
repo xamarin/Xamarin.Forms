@@ -198,10 +198,7 @@ namespace Xamarin.Forms.Platform.MacOS
 			else if (e.PropertyName == Label.TextDecorationsProperty.PropertyName)
 				UpdateTextDecorations();
 			else if (e.PropertyName == Label.FormattedTextProperty.PropertyName)
-			{
 				UpdateText();
-				UpdateLetterSpacing();
-			}
 			else if (e.PropertyName == Label.LineBreakModeProperty.PropertyName)
 				UpdateLineBreakMode();
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
@@ -247,8 +244,9 @@ namespace Xamarin.Forms.Platform.MacOS
 				newAttributedText.AddAttribute(underlineStyleKey, NSNumber.FromInt32((int)NSUnderlineStyle.Single), range);
 
 #if __MOBILE__
-			
-			Control.AttributedText = Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text, newAttributedText);
+
+			newAttributedText = Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text, newAttributedText);
+			Control.AttributedText = newAttributedText; 
 #else
 			Control.AttributedStringValue = newAttributedText;
 #endif

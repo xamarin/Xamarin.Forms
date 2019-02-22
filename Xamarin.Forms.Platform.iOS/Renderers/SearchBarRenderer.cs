@@ -113,13 +113,9 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.PropertyName == SearchBar.FontFamilyProperty.PropertyName)
 			{
 				UpdateFont();
-				UpdateLetterSpacing();
 			}
 			else if (e.PropertyName == SearchBar.FontSizeProperty.PropertyName)
-			{
 				UpdateFont();
-				UpdateLetterSpacing();
-			}
 			else if (e.PropertyName == SearchBar.HorizontalTextAlignmentProperty.PropertyName)
 				UpdateAlignment();
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
