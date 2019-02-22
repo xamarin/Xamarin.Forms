@@ -32,6 +32,7 @@ namespace Xamarin.Forms.Platform.MacOS
 #endif
 		}
 
+#if __MOBILE__
 		public static UIColor FromPatternImageFromBundle(string bgImage)
 		{
 			var image = UIImage.FromBundle(bgImage);
@@ -40,6 +41,7 @@ namespace Xamarin.Forms.Platform.MacOS
 
 			return UIColor.FromPatternImage(image);
 		}
+#endif
 
 		public static Color ToColor(this UIColor color)
 		{
