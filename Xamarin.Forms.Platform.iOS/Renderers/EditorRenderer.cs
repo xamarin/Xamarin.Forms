@@ -165,7 +165,7 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdateUserInteraction();
 		}
 
-		private void UpdateAutoSizeOption()
+		protected internal virtual void UpdateAutoSizeOption()
 		{
 			if (Control is IFormsUITextView textView)
 			{

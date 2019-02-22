@@ -69,6 +69,12 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			InitialPlaceholderSetupHack();
 		}
 
+		protected internal override void UpdateAutoSizeOption()
+		{
+			base.UpdateAutoSizeOption();
+			Control.ExpandsOnOverflow = Element.AutoSize == EditorAutoSizeOption.TextChanges;
+		}
+
 
 		// this is required to force the placeholder to size correctly if it starts out prefilled
 		void InitialPlaceholderSetupHack()
@@ -78,12 +84,10 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 			if(String.IsNullOrWhiteSpace(Element.Text) || String.IsNullOrWhiteSpace(Element.Placeholder))
 			{
-
 				_hackHasRan = true;
 				UpdateText();
 				UpdatePlaceholderText();
 				return;
-
 			}
 
 			TextView.BecomeFirstResponder();
@@ -95,6 +99,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 				TextView.ResignFirstResponder();
 			});
 		}
+
 
 		// Placeholder is currently broken upstream and doesn't animate to the correct scale
 		string IMaterialEntryRenderer.Placeholder => Element?.Placeholder;

@@ -9,7 +9,7 @@ using Xamarin.Forms.Internals;
 
 namespace Xamarin.Forms.Platform.iOS.Material
 {
-	public class MaterialMultilineTextField : MMultilineTextField, IFormsUITextView, IMaterialTextField
+	public class MaterialMultilineTextField : MMultilineTextField, IMaterialTextField
 	{
 		public SemanticColorScheme ColorScheme { get; set; }
 		public TypographyScheme TypographyScheme { get; set; }
@@ -17,12 +17,11 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 		public ITextInput TextInput => this;
 
-		public event EventHandler FrameChanged;
-
 		public MaterialMultilineTextField(IMaterialEntryRenderer element, IFontElement fontElement)
 		{
 			VisualElement.VerifyVisualFlagEnabled();
 			MaterialTextManager.Init(element, this, fontElement);
+			ExpandsOnOverflow = false;
 		}
 
 		public override CGSize SizeThatFits(CGSize size)
@@ -44,14 +43,5 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 		internal void UpdateTextColor(IMaterialEntryRenderer element) => MaterialTextManager.UpdateTextColor(this, element);
 
-		public override CGRect Frame
-		{
-			get => base.Frame;
-			set
-			{
-				base.Frame = value;
-				FrameChanged?.Invoke(this, EventArgs.Empty);
-			}
-		}
 	}
 }
