@@ -37,7 +37,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 		{
 			VisualElement.VerifyVisualFlagEnabled();
 
-			Control = _control = new CircularProgress(new ContextThemeWrapper(context, Resource.Style.XamarinFormsMaterialProgressBarCircular), null, Resource.Style.XamarinFormsMaterialProgressBarCircular)
+			_control = new CircularProgress(new ContextThemeWrapper(context, Resource.Style.XamarinFormsMaterialProgressBarCircular), null, Resource.Style.XamarinFormsMaterialProgressBarCircular)
 			{
 				// limiting size to compare iOS realization
 				// https://github.com/material-components/material-components-ios/blob/develop/components/ActivityIndicator/src/MDCActivityIndicator.m#L425
@@ -51,7 +51,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 			_motionEventHelper = new MotionEventHelper();
 		}
 
-		protected AProgressBar Control { get; private set; }
+		protected AProgressBar Control => _control;
 
 		protected ActivityIndicator Element
 		{
@@ -146,19 +146,19 @@ namespace Xamarin.Forms.Platform.Android.Material
 
 		void UpdateIsRunning()
 		{
-			if (Element != null && Control != null)
+			if (Element != null && _control != null)
 				_control.IsRunning = Element.IsRunning;
 		}
 
 		void UpdateColor()
 		{
-			if (Element != null && Control != null)
+			if (Element != null && _control != null)
 				_control.SetColor(Element.Color);
 		}
 
 		void UpdateBackgroundColor()
 		{
-			if (Element != null && Control != null)
+			if (Element != null && _control != null)
 				_control.SetBackgroundColor(Element.BackgroundColor);
 		}
 
@@ -174,7 +174,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 
 		SizeRequest IVisualElementRenderer.GetDesiredSize(int widthConstraint, int heightConstraint)
 		{
-			Control.Measure(widthConstraint, heightConstraint);
+			_control.Measure(widthConstraint, heightConstraint);
 			return new SizeRequest(new Size(Control.MeasuredWidth, Control.MeasuredHeight), new Size());
 		}
 
@@ -196,11 +196,11 @@ namespace Xamarin.Forms.Platform.Android.Material
 		// IViewRenderer
 
 		void IViewRenderer.MeasureExactly() =>
-			ViewRenderer.MeasureExactly(Control, Element, Context);
+			ViewRenderer.MeasureExactly(_control, Element, Context);
 
 		// ITabStop
 
-		AView ITabStop.TabStop => Control;
+		AView ITabStop.TabStop => _control;
 	}
 }
 #endif
