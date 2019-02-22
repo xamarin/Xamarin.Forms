@@ -55,6 +55,6 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		string IMaterialEntryRenderer.Placeholder => Element?.Placeholder ?? string.Empty;
 
 		protected IntrinsicHeightTextView IntrinsicHeightTextView => (IntrinsicHeightTextView)TextView;
-		protected override UITextView TextView => Control.TextView;
+		protected override UITextView TextView => Control?.TextView;
 	}
 }
