@@ -6,13 +6,12 @@ using AProgressBar = Android.Widget.ProgressBar;
 using Android.Graphics.Drawables;
 using AColor = Android.Graphics.Color;
 using Android.Content.Res;
+using Android.Views;
 
 namespace Xamarin.Forms.Platform.Android
 {
 	internal class CircularProgress : AProgressBar
 	{
-		bool _lastIsRunning = false;
-
 		public int MaxSize { get; set; } = int.MaxValue;
 
 		public int MinSize { get; set; } = 0;
@@ -23,6 +22,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		const int _paddingRatio23 = 14;
 
+		bool _isRunning;
+
+		AColor _backgroudColor;
+
 		public CircularProgress(Context context, IAttributeSet attrs, int defStyleAttr) : base(context, attrs, defStyleAttr)
 		{
 			Indeterminate = true;
@@ -30,18 +33,21 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void SetColor(Color color)
 		{
-			var progress = color.IsDefault
-				? DefaultColor
-				: color.ToAndroid();
+			var progress = color.IsDefault ? DefaultColor : color.ToAndroid();
 			IndeterminateTintList = ColorStateList.ValueOf(progress);
 		}
 
 		public void SetBackgroundColor(Color color)
 		{
-			var background = color.IsDefault
-				? AColor.Transparent
-				: color.ToAndroid();
-			(Background as GradientDrawable)?.SetColor(background);
+			_backgroudColor = color.IsDefault ? AColor.Transparent : color.ToAndroid();
+			(Background as GradientDrawable)?.SetColor(_backgroudColor);
+		}
+
+		public override ViewStates Visibility {
+			get => !_isRunning && _backgroudColor == AColor.Transparent 
+				? ViewStates.Invisible 
+				: base.Visibility;
+			set => base.Visibility = value;
 		}
 
 		AnimatedVectorDrawable CurrentDrawable => IndeterminateDrawable.Current as AnimatedVectorDrawable;
@@ -54,11 +60,13 @@ namespace Xamarin.Forms.Platform.Android
 				if (CurrentDrawable == null)
 					return;
 
-				_lastIsRunning = value;
-				if (_lastIsRunning && !CurrentDrawable.IsRunning)
-					CurrentDrawable.Start();
-				else if (!_lastIsRunning && CurrentDrawable.IsRunning)
-					CurrentDrawable.Stop();
+				_isRunning = value;
+				if (_isRunning && !CurrentDrawable.IsRunning)
+						CurrentDrawable.Start();
+				else if (CurrentDrawable.IsRunning)
+						CurrentDrawable.Stop();
+				
+				PostInvalidate();
 			}
 		}
 
