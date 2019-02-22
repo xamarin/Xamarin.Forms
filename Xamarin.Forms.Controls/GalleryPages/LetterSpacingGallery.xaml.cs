@@ -24,6 +24,8 @@ namespace Xamarin.Forms.Controls.GalleryPages
 			DatePicker.LetterSpacing = e.NewValue;
 			Editor.LetterSpacing = e.NewValue;
 			Entry.LetterSpacing = e.NewValue;
+			PlaceholderEntry.LetterSpacing = e.NewValue;
+			PlaceholderEditor.LetterSpacing = e.NewValue;
 			Label.LetterSpacing = e.NewValue;
 			Picker.LetterSpacing = e.NewValue;
 			SearchBar.LetterSpacing = e.NewValue;

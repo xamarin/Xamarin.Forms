@@ -29,10 +29,11 @@ namespace Xamarin.Forms.Platform.MacOS
 				fgcolor = Color.Black; // as defined by apple docs		
 
 #if __MOBILE__
-			return new NSAttributedString(span.Text, font == Font.Default ? null : font.ToUIFont(), fgcolor.ToUIColor(), span.BackgroundColor.ToUIColor(), kerning: (float)span.LetterSpacing);
+			return new NSAttributedString(span.Text, font == Font.Default ? null : font.ToUIFont(), fgcolor.ToUIColor(), 
+				span.BackgroundColor.ToUIColor(), kerning: (float)span.LetterSpacing);
 #else
 			return new NSAttributedString(span.Text, font == Font.Default ? null : font.ToNSFont(), fgcolor.ToNSColor(),
-				span.BackgroundColor.ToNSColor(), kerningAdjustment: (float)span.LetterSpacing));
+				span.BackgroundColor.ToNSColor(), kerningAdjustment: (float)span.LetterSpacing);
 #endif
 		}
 

@@ -27,10 +27,12 @@
                         </FormattedString>
                     </Label.FormattedText>
                 </Label>
-                <Entry Text="Welcome to Xamarin.Forms!" LetterSpacing="0" x:Name="Entry" />
-                <Editor Text="Welcome to Xamarin.Forms!" LetterSpacing="0" x:Name="Editor" />
-                <DatePicker Date="2019-01-01" LetterSpacing="0" x:Name="DatePicker" />
-                <TimePicker Time="10:10" LetterSpacing="0" x:Name="TimePicker" />
+                <Entry Text="Welcome to Xamarin.Forms!" LetterSpacing="0" x:Name="Entry"/>
+                <Entry Placeholder="Welcome to Xamarin.Forms!" LetterSpacing="0" x:Name="PlaceholderEntry"/>
+                <Editor Text="Welcome to Xamarin.Forms!" LetterSpacing="0" x:Name="Editor"/>
+                <Editor Placeholder="Welcome to Xamarin.Forms!" LetterSpacing="0" x:Name="PlaceholderEditor"/>
+                <DatePicker Date="2019-01-01" LetterSpacing="0" x:Name="DatePicker"/>
+                <TimePicker Time="10:10" LetterSpacing="0" x:Name="TimePicker"/>
                 <Picker Title="Welcome to Xamarin.Forms!" LetterSpacing="0" x:Name="Picker" />
                 <SearchBar Text="Welcome to Xamarin.Forms!" LetterSpacing="0" x:Name="SearchBar" />
                 <Button Text="Welcome to Xamarin.Forms!" LetterSpacing="0" x:Name="Button" />

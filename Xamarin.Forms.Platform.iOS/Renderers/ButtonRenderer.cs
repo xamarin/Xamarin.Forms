@@ -111,9 +111,12 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.PropertyName == Button.FontProperty.PropertyName)
 			{
 				UpdateFont();
+			}
+			else if (e.PropertyName == Button.LetterSpacingProperty.PropertyName)
+			{
 				UpdateLetterSpacing();
 			}
-				
+
 		}
 
 		protected override void SetAccessibilityLabel()

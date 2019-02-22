@@ -160,20 +160,11 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.PropertyName == Entry.HorizontalTextAlignmentProperty.PropertyName)
 				UpdateAlignment();
 			else if (e.PropertyName == Entry.FontAttributesProperty.PropertyName)
-			{
 				UpdateFont();
-				UpdateLetterSpacing();
-			}
 			else if (e.PropertyName == Entry.FontFamilyProperty.PropertyName)
-			{
 				UpdateFont();
-				UpdateLetterSpacing();
-			}
 			else if (e.PropertyName == Entry.FontSizeProperty.PropertyName)
-			{
-				UpdateFont();
 				UpdateLetterSpacing();
-			}
 			else if (e.PropertyName == VisualElement.IsEnabledProperty.PropertyName)
 			{
 				UpdateColor();

@@ -164,7 +164,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void UpdateLetterSpacing()
 		{
-			Control.CharacterSpacing = Element.LetterSpacing.ToEm();
+			Control.LetterSpacing = Element.LetterSpacing.ToEm();
 		}
 
 		void UpdateContent()

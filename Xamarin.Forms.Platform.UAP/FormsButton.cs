@@ -13,6 +13,9 @@ namespace Xamarin.Forms.Platform.UWP
 		public static readonly DependencyProperty BackgroundColorProperty = DependencyProperty.Register(nameof(BackgroundColor), typeof(Brush), typeof(FormsButton),
 			new PropertyMetadata(default(Brush), OnBackgroundColorChanged));
 
+		public static readonly DependencyProperty LetterSpacingProperty = DependencyProperty.Register(nameof(LetterSpacing), typeof(int), typeof(FormsButton),
+			new PropertyMetadata(default(int), OnLetterSpacingChanged));
+
 		WContentPresenter _contentPresenter;
 
 		public Brush BackgroundColor
@@ -39,6 +42,18 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 		}
 
+		public int LetterSpacing
+		{
+			get
+			{
+				return (int)GetValue(LetterSpacingProperty);
+			}
+			set
+			{
+				SetValue(LetterSpacingProperty, value);
+			}
+		}
+
 		protected override void OnApplyTemplate()
 		{
 			base.OnApplyTemplate();
@@ -59,6 +74,11 @@ namespace Xamarin.Forms.Platform.UWP
 			((FormsButton)d).UpdateBorderRadius();
 		}
 
+		static void OnLetterSpacingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+		{
+			((FormsButton)d).LetterSpacingChanged();
+		}
+
 		void UpdateBackgroundColor()
 		{
 			if (BackgroundColor == null)
@@ -74,6 +94,13 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (_contentPresenter != null)
 				_contentPresenter.CornerRadius = new Windows.UI.Xaml.CornerRadius(BorderRadius);
+		}
+
+		void LetterSpacingChanged()
+		{
+			CharacterSpacing = LetterSpacing;
+			if (_contentPresenter != null)
+				_contentPresenter.CharacterSpacing = LetterSpacing;
 		}
 	}
 }

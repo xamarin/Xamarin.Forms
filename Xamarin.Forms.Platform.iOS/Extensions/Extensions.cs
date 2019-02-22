@@ -109,15 +109,16 @@ namespace Xamarin.Forms.Platform.iOS
 
 		internal static NSAttributedString ToLetterSpacingAttribute(this double letterSpacing, string text, NSAttributedString attributedString)
 		{
-			return ToLetterSpacingAttribute(letterSpacing, text, attributedString as NSMutableAttributedString);
+			return ToLetterSpacingAttribute(letterSpacing, text, ConvertAttributedString(attributedString));
 		}
 
 		internal static NSAttributedString ToLetterSpacingAttribute(this double letterSpacing, string text, NSMutableAttributedString attributedString = null)
 		{
 			if (attributedString == null)
 			{
-				attributedString = new NSMutableAttributedString(text);
+				attributedString = text == null ? new NSMutableAttributedString() : new NSMutableAttributedString(text);
 			}
+
 
 			if (!string.IsNullOrEmpty(text))
 			{
@@ -137,6 +138,23 @@ namespace Xamarin.Forms.Platform.iOS
 			}
 
 			return attributedString;
+		}
+
+		internal static NSMutableAttributedString ConvertAttributedString(NSAttributedString attributedString)
+		{
+			if(attributedString == null)
+			{
+				return null;
+			}
+
+			if (attributedString is NSMutableAttributedString mutableAttributed)
+			{
+				return mutableAttributed;
+
+			}
+
+			return new NSMutableAttributedString(attributedString);
+
 		}
 
 

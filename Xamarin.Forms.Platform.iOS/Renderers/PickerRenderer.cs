@@ -104,7 +104,6 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.PropertyName == Picker.SelectedIndexProperty.PropertyName)
 			{
 				UpdatePicker();
-				UpdateLetterSpacing();
 			}
 			else if (e.PropertyName == Picker.LetterSpacingProperty.PropertyName)
 				UpdateLetterSpacing();
@@ -114,7 +113,6 @@ namespace Xamarin.Forms.Platform.iOS
 			         e.PropertyName == Picker.FontSizeProperty.PropertyName)
 			{
 				UpdateFont();
-				UpdateLetterSpacing();
 			}
 		}
 
@@ -151,7 +149,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateLetterSpacing()
 		{
-			Control.AttributedText = Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text);
+			Element.LetterSpacing.ToLetterSpacingAttribute(!string.IsNullOrEmpty(Control.Text) ? Control.Text : Control.Placeholder,
+				Control.AttributedText);
 		}
 
 		void UpdateFont()

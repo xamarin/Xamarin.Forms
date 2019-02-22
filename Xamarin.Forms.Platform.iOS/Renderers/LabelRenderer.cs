@@ -247,8 +247,8 @@ namespace Xamarin.Forms.Platform.MacOS
 				newAttributedText.AddAttribute(underlineStyleKey, NSNumber.FromInt32((int)NSUnderlineStyle.Single), range);
 
 #if __MOBILE__
-			Control.AttributedText = newAttributedText;
-			Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text, Control.AttributedText);
+			
+			Control.AttributedText = Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text, newAttributedText);
 #else
 			Control.AttributedStringValue = newAttributedText;
 #endif
@@ -348,7 +348,7 @@ namespace Xamarin.Forms.Platform.MacOS
 		void UpdateLetterSpacing()
 		{
 #if __MOBILE__
-			Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text, Control.AttributedText);
+			Control.AttributedText = Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text, Control.AttributedText);
 #endif
 		}
 

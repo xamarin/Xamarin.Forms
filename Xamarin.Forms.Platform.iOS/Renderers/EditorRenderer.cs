@@ -147,20 +147,11 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.PropertyName == Editor.LetterSpacingProperty.PropertyName)
 				UpdateLetterSpacing();
 			else if (e.PropertyName == Editor.FontAttributesProperty.PropertyName)
-			{
-				UpdateFont();
 				UpdateLetterSpacing();
-			}
 			else if (e.PropertyName == Editor.FontFamilyProperty.PropertyName)
-			{
 				UpdateFont();
-				UpdateLetterSpacing();
-			}
 			else if (e.PropertyName == Editor.FontSizeProperty.PropertyName)
-			{
 				UpdateFont();
-				UpdateLetterSpacing();
-			}
 			else if (e.PropertyName == VisualElement.FlowDirectionProperty.PropertyName)
 				UpdateTextAlignment();
 			else if (e.PropertyName == Xamarin.Forms.InputView.MaxLengthProperty.PropertyName)
@@ -246,6 +237,7 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateLetterSpacing()
 		{
 			Control.AttributedText = Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text);
+			_placeholderLabel.AttributedText = Element.LetterSpacing.ToLetterSpacingAttribute(_placeholderLabel.Text);
 		}
 
 		void UpdateText()
@@ -255,11 +247,13 @@ namespace Xamarin.Forms.Platform.iOS
 				Control.Text = Element.Text;
 			}
 			_placeholderLabel.Hidden = !string.IsNullOrEmpty(Control.Text);
+			_placeholderLabel.AttributedText = Element.LetterSpacing.ToLetterSpacingAttribute(_placeholderLabel.Text);
 		}
 
 		void UpdatePlaceholderText()
 		{
 			_placeholderLabel.Text = Element.Placeholder;
+			_placeholderLabel.AttributedText = Element.LetterSpacing.ToLetterSpacingAttribute(_placeholderLabel.Text);
 		}
 
 		void UpdatePlaceholderColor()
