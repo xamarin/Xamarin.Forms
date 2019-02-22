@@ -9,6 +9,8 @@ namespace Xamarin.Forms.Platform.iOS
 {
 	public class EditorRenderer : EditorRendererBase<UITextView>
 	{
+		UILabel _placeholderLabel;
+
 		public EditorRenderer()
 		{
 			Frame = new RectangleF(0, 20, 320, 40);
@@ -18,7 +20,73 @@ namespace Xamarin.Forms.Platform.iOS
 		{
 			return new FormsUITextView(RectangleF.Empty);
 		}
+
 		protected override UITextView TextView => Control;
+
+		protected internal override void UpdateText()
+		{
+			base.UpdateText();
+			_placeholderLabel.Hidden = !string.IsNullOrEmpty(TextView.Text);
+		}
+
+		protected override void OnElementChanged(ElementChangedEventArgs<Editor> e)
+		{
+			// create label so it can get updated during the initial setup loop
+			_placeholderLabel = new UILabel
+			{
+				BackgroundColor = UIColor.Clear
+			};
+
+			base.OnElementChanged(e);
+
+			CreatePlaceholderLabel();
+		}
+
+		protected internal override void UpdateFont()
+		{
+			base.UpdateFont();
+			_placeholderLabel.Font = Element.ToUIFont();
+		}
+
+		protected internal override void UpdatePlaceholderText()
+		{
+			_placeholderLabel.Text = Element.Placeholder;
+		}
+
+		protected internal override void UpdatePlaceholderColor()
+		{
+			if (Element.PlaceholderColor == Color.Default)
+				_placeholderLabel.TextColor = UIColor.DarkGray;
+			else
+				_placeholderLabel.TextColor = Element.PlaceholderColor.ToUIColor();
+		}
+
+		void CreatePlaceholderLabel()
+		{
+			Control.AddSubview(_placeholderLabel);
+
+			var edgeInsets = TextView.TextContainerInset;
+			var lineFragmentPadding = TextView.TextContainer.LineFragmentPadding;
+
+			var vConstraints = NSLayoutConstraint.FromVisualFormat(
+				"V:|-" + edgeInsets.Top + "-[_placeholderLabel]-" + edgeInsets.Bottom + "-|", 0, new NSDictionary(),
+				NSDictionary.FromObjectsAndKeys(
+					new NSObject[] { _placeholderLabel }, new NSObject[] { new NSString("_placeholderLabel") })
+			);
+
+			var hConstraints = NSLayoutConstraint.FromVisualFormat(
+				"H:|-" + lineFragmentPadding + "-[_placeholderLabel]-" + lineFragmentPadding + "-|",
+				0, new NSDictionary(),
+				NSDictionary.FromObjectsAndKeys(
+					new NSObject[] { _placeholderLabel }, new NSObject[] { new NSString("_placeholderLabel") })
+			);
+
+			_placeholderLabel.TranslatesAutoresizingMaskIntoConstraints = false;
+
+			Control.AddConstraints(hConstraints);
+			Control.AddConstraints(vConstraints);
+		}
+
 	}
 
 	public abstract class EditorRendererBase<TControl> : ViewRenderer<Editor, TControl>
@@ -26,7 +94,6 @@ namespace Xamarin.Forms.Platform.iOS
 	{
 		bool _disposed;
 		IEditorController ElementController => Element;
-		UILabel _placeholderLabel;
 		protected abstract UITextView TextView { get; }
 
 		protected override void Dispose(bool disposing)
@@ -71,7 +138,7 @@ namespace Xamarin.Forms.Platform.iOS
 					var spacer = new UIBarButtonItem(UIBarButtonSystemItem.FlexibleSpace);
 					var doneButton = new UIBarButtonItem(UIBarButtonSystemItem.Done, (o, a) =>
 					{
-						Control.ResignFirstResponder();
+						TextView.ResignFirstResponder();
 						ElementController.SendCompleted();
 					});
 					accessoryView.SetItems(new[] { spacer, doneButton }, false);
@@ -84,12 +151,11 @@ namespace Xamarin.Forms.Platform.iOS
 				TextView.ShouldChangeText += ShouldChangeText;
 			}
 
-			CreatePlaceholderLabel();
+			UpdateFont();
 			UpdatePlaceholderText();
 			UpdatePlaceholderColor();
 			UpdateTextColor();
 			UpdateText();
-			UpdateFont();
 			UpdateKeyboard();
 			UpdateEditable();
 			UpdateTextAlignment();
@@ -107,37 +173,6 @@ namespace Xamarin.Forms.Platform.iOS
 				if (Element.AutoSize == EditorAutoSizeOption.TextChanges)
 					textView.FrameChanged += OnFrameChanged;
 			}
-		}
-
-		void CreatePlaceholderLabel()
-		{
-			_placeholderLabel = new UILabel
-			{
-				BackgroundColor = UIColor.Clear
-			};
-
-			Control.AddSubview(_placeholderLabel);
-
-			var edgeInsets = TextView.TextContainerInset;
-			var lineFragmentPadding = TextView.TextContainer.LineFragmentPadding;
-
-			var vConstraints = NSLayoutConstraint.FromVisualFormat(
-			"V:|-" + edgeInsets.Top + "-[_placeholderLabel]-" + edgeInsets.Bottom + "-|", 0, new NSDictionary(),
-			NSDictionary.FromObjectsAndKeys(
-				new NSObject[] { _placeholderLabel }, new NSObject[] { new NSString("_placeholderLabel") })
-		);
-
-			var hConstraints = NSLayoutConstraint.FromVisualFormat(
-				"H:|-" + lineFragmentPadding + "-[_placeholderLabel]-" + lineFragmentPadding + "-|",
-				0, new NSDictionary(),
-				NSDictionary.FromObjectsAndKeys(
-					new NSObject[] { _placeholderLabel }, new NSObject[] { new NSString("_placeholderLabel") })
-			);
-
-			_placeholderLabel.TranslatesAutoresizingMaskIntoConstraints = false;
-
-			Control.AddConstraints(hConstraints);
-			Control.AddConstraints(vConstraints);
 		}
 
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -207,17 +242,16 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateEditable()
 		{
 			TextView.Editable = Element.IsEnabled;
-			Control.UserInteractionEnabled = Element.IsEnabled;
+			TextView.UserInteractionEnabled = Element.IsEnabled;
 
-			if (Control.InputAccessoryView != null)
-				Control.InputAccessoryView.Hidden = !Element.IsEnabled;
+			if (TextView.InputAccessoryView != null)
+				TextView.InputAccessoryView.Hidden = !Element.IsEnabled;
 		}
 
 		protected internal virtual void UpdateFont()
 		{
 			var font = Element.ToUIFont();
 			TextView.Font = font;
-			_placeholderLabel.Font = font;
 		}
 
 		void UpdateKeyboard()
@@ -241,30 +275,20 @@ namespace Xamarin.Forms.Platform.iOS
 					}
 				}
 			}
-			Control.ReloadInputViews();
+			TextView.ReloadInputViews();
 		}
 
-		void UpdateText()
+		protected internal virtual void UpdateText()
 		{
 			if (TextView.Text != Element.Text)
 			{
 				TextView.Text = Element.Text;
 			}
-			_placeholderLabel.Hidden = !string.IsNullOrEmpty(TextView.Text);
 		}
 
-		protected internal virtual void UpdatePlaceholderText()
-		{
-			_placeholderLabel.Text = Element.Placeholder;
-		}
+		protected internal abstract void UpdatePlaceholderText();
+		protected internal abstract void UpdatePlaceholderColor();
 
-		protected internal virtual void UpdatePlaceholderColor()
-		{
-			if (Element.PlaceholderColor == Color.Default)
-				_placeholderLabel.TextColor = UIColor.DarkGray;
-			else
-				_placeholderLabel.TextColor = Element.PlaceholderColor.ToUIColor();
-		}
 
 		void UpdateTextAlignment()
 		{
@@ -297,7 +321,7 @@ namespace Xamarin.Forms.Platform.iOS
 
 		void UpdateReadOnly()
 		{
-			Control.UserInteractionEnabled = !Element.IsReadOnly;
+			TextView.UserInteractionEnabled = !Element.IsReadOnly;
 		}
 
 		void UpdateUserInteraction()

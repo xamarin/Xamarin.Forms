@@ -1,16 +1,15 @@
 ﻿using CoreGraphics;
 using UIKit;
 using MaterialComponents;
+using System.Threading.Tasks;
+using Foundation;
+using System;
 
 namespace Xamarin.Forms.Platform.iOS.Material
 {
 	public class MaterialEditorRenderer : EditorRendererBase<MaterialMultilineTextField>, IMaterialEntryRenderer
 	{
-		public MaterialEditorRenderer()
-		{
-			VisualElement.VerifyVisualFlagEnabled();
-			ClipsToBounds = true;
-		}
+		bool _hackHasRan = false;
 
 		protected override MaterialMultilineTextField CreateNativeControl()
 		{			
@@ -20,12 +19,6 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		protected override void SetBackgroundColor(Color color)
 		{
 			ApplyTheme();			
-		}
-
-		protected internal override void UpdateFont()
-		{
-			base.UpdateFont();
-			Control?.ApplyTypographyScheme(Element);
 		}
 
 
@@ -40,21 +33,79 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			Control?.ApplyTheme(this);
 		}
 
+		protected internal override void UpdateFont()
+		{
+			base.UpdateFont();
+			Control?.ApplyTypographyScheme(Element);
+		}	
+
 		protected internal override void UpdatePlaceholderText()
 		{
-			Control?.UpdatePlaceholder(this);
+			if (Control == null || !_hackHasRan)
+				return;
+
+			Control.UpdatePlaceholder(this);
 		}
+
 		protected internal override void UpdatePlaceholderColor()
 		{
-			Control?.UpdatePlaceholder(this);
+			if (Control == null || !_hackHasRan)
+				return;
+
+			Control.UpdatePlaceholder(this);
 		}
+
+		protected internal override void UpdateText()
+		{
+			if (!_hackHasRan)
+				return;
+
+			base.UpdateText();
+		}
+
+		protected override void OnElementChanged(ElementChangedEventArgs<Editor> e)
+		{
+			base.OnElementChanged(e);
+			InitialPlaceholderSetupHack();
+		}
+
+
+		// this is required to force the placeholder to size correctly if it starts out prefilled
+		void InitialPlaceholderSetupHack()
+		{
+			if (Element == null)
+				return;
+
+			if(String.IsNullOrWhiteSpace(Element.Text) || String.IsNullOrWhiteSpace(Element.Placeholder))
+			{
+
+				_hackHasRan = true;
+				UpdateText();
+				UpdatePlaceholderText();
+				return;
+
+			}
+
+			TextView.BecomeFirstResponder();
+			Control.UpdatePlaceholder(this);
+			Device.BeginInvokeOnMainThread(() =>
+			{
+				_hackHasRan = true;
+				UpdateText();
+				TextView.ResignFirstResponder();
+			});
+		}
+
+		// Placeholder is currently broken upstream and doesn't animate to the correct scale
+		string IMaterialEntryRenderer.Placeholder => Element?.Placeholder;
+		// string IMaterialEntryRenderer.Placeholder => String.Empty;
 
 		Color IMaterialEntryRenderer.TextColor => Element?.TextColor ?? Color.Default;
 		Color IMaterialEntryRenderer.PlaceholderColor => Element?.PlaceholderColor ?? Color.Default;
 		Color IMaterialEntryRenderer.BackgroundColor => Element?.BackgroundColor ?? Color.Default;
-		string IMaterialEntryRenderer.Placeholder => Element?.Placeholder ?? string.Empty;
 
 		protected IntrinsicHeightTextView IntrinsicHeightTextView => (IntrinsicHeightTextView)TextView;
 		protected override UITextView TextView => Control?.TextView;
+
 	}
 }

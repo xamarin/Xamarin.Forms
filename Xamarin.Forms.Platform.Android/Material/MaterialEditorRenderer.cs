@@ -13,7 +13,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 {
 	public sealed class MaterialEditorRenderer : EditorRendererBase<MaterialFormsTextInputLayout>
 	{
-		//bool _disposed;
+		bool _disposed;
 		MaterialFormsEditText _textInputEditText;
 		MaterialFormsTextInputLayout _textInputLayout;
 
@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 
 		protected override void UpdateBackgroundColor()
 		{
-			if (_textInputLayout == null)
+			if (_disposed || _textInputLayout == null)
 				return;
 
 			_textInputLayout.BoxBackgroundColor = MaterialColors.CreateEntryFilledInputBackgroundColor(Element.BackgroundColor, Element.TextColor);
@@ -56,6 +56,9 @@ namespace Xamarin.Forms.Platform.Android.Material
 
 		protected internal override void UpdatePlaceholderText()
 		{
+			if (_disposed || _textInputLayout == null)
+				return;
+
 			_textInputLayout?.SetHint(Element.Placeholder, Element);
 		}
 
@@ -65,9 +68,18 @@ namespace Xamarin.Forms.Platform.Android.Material
 
 		protected internal override void UpdateFont()
 		{
+			if (_disposed || _textInputLayout == null)
+				return;
+
 			base.UpdateFont();
 			_textInputLayout.Typeface = Element.ToTypeface();
 			_textInputEditText.SetTextSize(ComplexUnitType.Sp, (float)Element.FontSize);
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			_disposed = true;
+			base.Dispose(disposing);
 		}
 	}
 }
