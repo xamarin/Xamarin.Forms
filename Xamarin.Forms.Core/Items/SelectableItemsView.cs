@@ -141,6 +141,15 @@ namespace Xamarin.Forms
 					break;
 			}
 
+			if (previousSelection.Count == newSelection.Count)
+			{
+				if (previousSelection.Count == 0 || (previousSelection[0] == newSelection[0]))
+				{
+					// Both selections are empty or have the same single item; no reason to signal a change
+					return;
+				}
+			}
+
 			var args = new SelectionChangedEventArgs(previousSelection, newSelection);
 
 			SelectionPropertyChanged(selectableItemsView, args);
