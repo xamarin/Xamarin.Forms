@@ -8,7 +8,7 @@ namespace Xamarin.Forms
 	{
 		public static readonly BindableProperty SelectionModeProperty =
 			BindableProperty.Create(nameof(SelectionMode), typeof(SelectionMode), typeof(SelectableItemsView),
-				SelectionMode.None);
+				SelectionMode.None, propertyChanged: SelectionModePropertyChanged );
 
 		public static readonly BindableProperty SelectedItemProperty =
 			BindableProperty.Create(nameof(SelectedItem), typeof(object), typeof(SelectableItemsView), default(object),
@@ -97,6 +97,51 @@ namespace Xamarin.Forms
 			var selectableItemsView = (SelectableItemsView)bindable;
 
 			var args = new SelectionChangedEventArgs(oldValue, newValue);
+
+			SelectionPropertyChanged(selectableItemsView, args);
+		}
+
+		static void SelectionModePropertyChanged(BindableObject bindable, object oldValue, object newValue)
+		{
+			var selectableItemsView = (SelectableItemsView)bindable;
+
+			var oldMode = (SelectionMode)oldValue;
+			var newMode = (SelectionMode)newValue;
+
+			IList<object> previousSelection = new List<object>();
+			IList<object> newSelection = new List<object>();
+
+			switch (oldMode)
+			{
+				case SelectionMode.None:
+					break;
+				case SelectionMode.Single:
+					if (selectableItemsView.SelectedItem != null)
+					{
+						previousSelection.Add(selectableItemsView.SelectedItem);
+					}
+					break;
+				case SelectionMode.Multiple:
+					previousSelection = selectableItemsView.SelectedItems;
+					break;
+			}
+
+			switch (newMode)
+			{
+				case SelectionMode.None:
+					break;
+				case SelectionMode.Single:
+					if (selectableItemsView.SelectedItem != null)
+					{
+						newSelection.Add(selectableItemsView.SelectedItem);
+					}
+					break;
+				case SelectionMode.Multiple:
+					newSelection = selectableItemsView.SelectedItems;
+					break;
+			}
+
+			var args = new SelectionChangedEventArgs(previousSelection, newSelection);
 
 			SelectionPropertyChanged(selectableItemsView, args);
 		}
