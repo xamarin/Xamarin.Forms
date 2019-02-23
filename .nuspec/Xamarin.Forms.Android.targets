@@ -2,7 +2,7 @@
   <ItemGroup>
     <ProguardConfiguration Include="$(MSBuildThisFileDirectory)proguard.cfg" />
   </ItemGroup>
-  <Target Name="ValidateTargetFrameworkVersionForForms" BeforeTargets="BeforeCompile">
+  <Target Name="ValidateTargetFrameworkVersionForForms" BeforeTargets="CoreCompile">
     <PropertyGroup>
       <MinTargetFrameworkVersionForForms>8.1</MinTargetFrameworkVersionForForms>
       <TargetFrameworkVersionWithoutV>$(TargetFrameworkVersion.TrimStart('vV'))</TargetFrameworkVersionWithoutV>
