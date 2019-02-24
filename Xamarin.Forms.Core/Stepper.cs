@@ -32,7 +32,11 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty ValueProperty = BindableProperty.Create("Value", typeof(double), typeof(Stepper), 0.0, BindingMode.TwoWay, coerceValue: (bindable, value) =>
 		{
 			var stepper = (Stepper)bindable;
-			return Math.Round(((double)value).Clamp(stepper.Minimum, stepper.Maximum), stepper.ValueRoundDigits);
+			var clampedValue = ((double)value).Clamp(stepper.Minimum, stepper.Maximum);
+			var decimalPlaces = stepper.DecimalPlaces;
+			return decimalPlaces >= 0 && decimalPlaces <= 15
+				? Math.Round(clampedValue, decimalPlaces)
+				: clampedValue;
 		}, propertyChanged: (bindable, oldValue, newValue) =>
 		{
 			var stepper = (Stepper)bindable;
@@ -43,7 +47,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty IncrementProperty = BindableProperty.Create("Increment", typeof(double), typeof(Stepper), 1.0);
 
-		public static readonly BindableProperty ValueRoundDigitsProperty = BindableProperty.Create("ValueRoundDigits", typeof(int), typeof(Stepper), 10);
+		public static readonly BindableProperty DecimalPlacesProperty = BindableProperty.Create("DecimalPlaces", typeof(int), typeof(Stepper), -1);
 
 		readonly Lazy<PlatformConfigurationRegistry<Stepper>> _platformConfigurationRegistry;
 
@@ -77,10 +81,10 @@ namespace Xamarin.Forms
 			set { SetValue(IncrementProperty, value); }
 		}
 
-		public int ValueRoundDigits
+		public int DecimalPlaces
 		{
-			get { return (int)GetValue(ValueRoundDigitsProperty); }
-			set { SetValue(ValueRoundDigitsProperty, value); }
+			get { return (int)GetValue(DecimalPlacesProperty); }
+			set { SetValue(DecimalPlacesProperty, value); }
 		}
 
 		public double Maximum
