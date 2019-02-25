@@ -15,7 +15,18 @@ namespace Xamarin.Forms.Platform.Tizen.Native
 
 		public static EmptyItemAdaptor Create(ItemsView itemsView)
 		{
-			DataTemplate template = itemsView.EmptyViewTemplate ?? s_defaultEmptyTemplate;
+			DataTemplate template = null;
+			if (itemsView.EmptyView is View emptyView)
+			{
+				template = new DataTemplate(() =>
+				{
+					return emptyView;
+				});
+			}
+			else
+			{
+				template = itemsView.EmptyViewTemplate ?? s_defaultEmptyTemplate;
+			}
 			var empty = new List<object>
 			{
 				itemsView.EmptyView ?? new object()
