@@ -9,8 +9,8 @@ using Xamarin.Forms.Internals;
 namespace Xamarin.Forms.Controls.Issues
 {
 	[Preserve(AllMembers = true)]
-	[Issue(IssueTracker.Github, 5207, "[MacOS] Image size issue (not rendered if skip setting WidthRequest and HeightRequest", PlatformAffected.macOS)]
-	public class Issue5207 : TestContentPage
+	[Issue(IssueTracker.Github, 5204, "[MacOS] Image size issue (not rendered if skip setting WidthRequest and HeightRequest", PlatformAffected.macOS)]
+	public class Issue5204 : TestContentPage
 	{
 		protected override void Init()
 		{
