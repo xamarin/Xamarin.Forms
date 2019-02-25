@@ -5,9 +5,9 @@
 	using System.ComponentModel;
 	using System;
 
-	public class VisualTypes : TypeConverter
+	public class VisualDesignTypeConverter : TypeConverter
 	{
-		public VisualTypes()
+		public VisualDesignTypeConverter()
 		{
 		}
 
