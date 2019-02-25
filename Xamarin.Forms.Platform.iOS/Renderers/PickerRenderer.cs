@@ -23,7 +23,16 @@ namespace Xamarin.Forms.Platform.iOS
 			=> enableActions.Contains(action.Name);
 	}
 
-	public class PickerRenderer : ViewRenderer<Picker, UITextField>
+	public class PickerRenderer : PickerRendererBase<UITextField>
+	{
+		protected override UITextField CreateNativeControl()
+		{
+			return new ReadOnlyField { BorderStyle = UITextBorderStyle.RoundedRect };
+		}
+	}
+
+	public abstract class PickerRendererBase<TControl> : ViewRenderer<Picker, TControl>
+		where TControl : UITextField
 	{
 		UIPickerView _picker;
 		UIColor _defaultTextColor;
@@ -32,6 +41,8 @@ namespace Xamarin.Forms.Platform.iOS
 
 		IElementController ElementController => Element as IElementController;
 
+
+		protected abstract override TControl CreateNativeControl();
 		protected override void OnElementChanged(ElementChangedEventArgs<Picker> e)
 		{
 			if (e.OldElement != null)
@@ -42,7 +53,7 @@ namespace Xamarin.Forms.Platform.iOS
 				if (Control == null)
 				{
 					// disabled cut, delete, and toggle actions because they can throw an unhandled native exception
-					var entry = new ReadOnlyField { BorderStyle = UITextBorderStyle.RoundedRect };
+					var entry = CreateNativeControl();
 
 					entry.EditingDidBegin += OnStarted;
 					entry.EditingDidEnd += OnEnded;
@@ -146,36 +157,49 @@ namespace Xamarin.Forms.Platform.iOS
 			UpdatePicker();
 		}
 
-		void UpdateLetterSpacing()
-		{
+        void UpdateLetterSpacing()
+        {
+	        Control.AttributedText = Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text, Control.AttributedText);
 			Control.AttributedPlaceholder = Element.LetterSpacing.ToLetterSpacingAttribute(Control.Placeholder, Control.AttributedPlaceholder);
-			Control.AttributedText = Element.LetterSpacing.ToLetterSpacingAttribute(Control.Text, Control.AttributedText);
-		}
+        }
 
-		void UpdateFont()
+        protected internal virtual void UpdateFont()
 		{
 			Control.Font = Element.ToUIFont();
 		}
+
+		readonly Color _defaultPlaceholderColor = ColorExtensions.SeventyPercentGrey.ToColor();
+		protected internal virtual void UpdatePlaceholder()
+		{
+			var formatted = (FormattedString)Element.Title;
+
+			if (formatted == null)
+				return;
+
+			var targetColor = Element.TitleColor;
+
+			if (_useLegacyColorManagement)
+			{
+				var color = targetColor.IsDefault || !Element.IsEnabled ? _defaultPlaceholderColor : targetColor;
+				Control.AttributedPlaceholder = formatted.ToAttributed(Element, color);
+			}
+			else
+			{
+				// Using VSM color management; take whatever is in Element.PlaceholderColor
+				var color = targetColor.IsDefault ? _defaultPlaceholderColor : targetColor;
+				Control.AttributedPlaceholder = formatted.ToAttributed(Element, color);
+            }
+
+			Control.AttributedPlaceholder = Element.LetterSpacing.ToLetterSpacingAttribute(Control.Placeholder, Control.AttributedPlaceholder);
+		}
+
 
 		void UpdatePicker()
 		{
 			var selectedIndex = Element.SelectedIndex;
 			var items = Element.Items;
 
-			if (!Element.IsSet(Picker.TitleColorProperty))
-			{
-				Control.Placeholder = Element.Title;
-				Control.AttributedPlaceholder = Element.LetterSpacing.ToLetterSpacingAttribute(Control.Placeholder);
-			}
-			else
-			{
-				Control.AttributedPlaceholder = new NSMutableAttributedString(Element.Title, new UIStringAttributes
-				{
-					ForegroundColor = Element.TitleColor.ToUIColor()
-				});
-				Element.LetterSpacing.ToLetterSpacingAttribute(Control.Placeholder, Control.AttributedPlaceholder);
-			}
-
+			UpdatePlaceholder();
 
 			var oldText = Control.Text;
 			Control.Text = selectedIndex == -1 || items == null || selectedIndex >= items.Count ? "" : items[selectedIndex];
@@ -212,7 +236,7 @@ namespace Xamarin.Forms.Platform.iOS
 			_picker.Select(Math.Max(formsIndex, 0), 0, true);
 		}
 
-		void UpdateTextColor()
+		protected internal virtual void UpdateTextColor()
 		{
 			var textColor = Element.TextColor;
 
@@ -265,10 +289,10 @@ namespace Xamarin.Forms.Platform.iOS
 
 		class PickerSource : UIPickerViewModel
 		{
-			PickerRenderer _renderer;
+			PickerRendererBase<TControl> _renderer;
 			bool _disposed;
 
-			public PickerSource(PickerRenderer renderer)
+			public PickerSource(PickerRendererBase<TControl> renderer)
 			{
 				_renderer = renderer;
 			}
