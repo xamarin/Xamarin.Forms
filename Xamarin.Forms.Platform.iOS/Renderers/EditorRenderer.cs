@@ -323,6 +323,9 @@ namespace Xamarin.Forms.Platform.iOS
 		void UpdateReadOnly()
 		{
 			TextView.UserInteractionEnabled = !Element.IsReadOnly;
+
+			// Control and TextView might be different
+			Control.UserInteractionEnabled = !Element.IsReadOnly;
 		}
 
 		void UpdateUserInteraction()

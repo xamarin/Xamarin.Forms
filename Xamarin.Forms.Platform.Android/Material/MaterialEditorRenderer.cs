@@ -1,7 +1,5 @@
 ﻿#if __ANDROID_28__
 using Android.Content;
-using Android.OS;
-using Android.Support.V4.View;
 using Android.Util;
 using Android.Views;
 using Android.Widget;

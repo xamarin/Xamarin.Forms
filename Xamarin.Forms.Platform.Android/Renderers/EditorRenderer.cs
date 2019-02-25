@@ -53,7 +53,6 @@ namespace Xamarin.Forms.Platform.Android
 		where TControl : global::Android.Views.View
 	{
 		bool _disposed;
-		ColorStateList defaultPlaceholdercolor;
 		protected abstract EditText EditText { get; }
 
 		public EditorRendererBase(Context context) : base(context)
@@ -91,7 +90,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (!e.Focus)
 			{
-				Control.HideKeyboard();
+				EditText.HideKeyboard();
 			}
 
 			base.OnFocusChangeRequested(sender, e);
@@ -101,7 +100,7 @@ namespace Xamarin.Forms.Platform.Android
 				// Post this to the main looper queue so it doesn't happen until the other focus stuff has resolved
 				// Otherwise, ShowKeyboard will be called before this control is truly focused, and we will potentially
 				// be displaying the wrong keyboard
-				Control?.PostShowKeyboard();
+				EditText?.PostShowKeyboard();
 			}
 		}
 
@@ -116,16 +115,14 @@ namespace Xamarin.Forms.Platform.Android
 
 				SetNativeControl(edit);
 				EditText.AddTextChangedListener(this);
-				if(edit is IFormsEditText formsEditText)
+				if(EditText is IFormsEditText formsEditText)
 					formsEditText.OnKeyboardBackPressed += OnKeyboardBackPressed;
-
-				defaultPlaceholdercolor = EditText.HintTextColors;
 			}
 
 			EditText.SetSingleLine(false);
 			EditText.Gravity = GravityFlags.Top;
 			if ((int)Build.VERSION.SdkInt > 16)
-				edit.TextAlignment = global::Android.Views.TextAlignment.ViewStart;
+				EditText.TextAlignment = global::Android.Views.TextAlignment.ViewStart;
 			EditText.SetHorizontallyScrolling(false);
 
 			UpdateText();
@@ -179,7 +176,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (disposing)
 			{
-				if (Control != null && Control is IFormsEditText formsEditText)
+				if (EditText != null && EditText is IFormsEditText formsEditText)
 				{
 					formsEditText.OnKeyboardBackPressed -= OnKeyboardBackPressed;
 				}
@@ -261,7 +258,7 @@ namespace Xamarin.Forms.Platform.Android
 		void OnKeyboardBackPressed(object sender, EventArgs eventArgs)
 		{
 			ElementController?.SendCompleted();
-			Control?.ClearFocus();
+			EditText?.ClearFocus();
 		}
 
 		void UpdateMaxLength()
@@ -291,8 +288,8 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			bool isReadOnly = !Element.IsReadOnly;
 
-			Control.FocusableInTouchMode = isReadOnly;
-			Control.Focusable = isReadOnly;
+			EditText.FocusableInTouchMode = isReadOnly;
+			EditText.Focusable = isReadOnly;
 			EditText.SetCursorVisible(isReadOnly);
 		}
 	}

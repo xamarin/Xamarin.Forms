@@ -1,9 +1,7 @@
-﻿using CoreGraphics;
-using UIKit;
+﻿using UIKit;
 using MaterialComponents;
-using System.Threading.Tasks;
-using Foundation;
 using System;
+using CoreGraphics;
 
 namespace Xamarin.Forms.Platform.iOS.Material
 {
@@ -72,9 +70,22 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		protected internal override void UpdateAutoSizeOption()
 		{
 			base.UpdateAutoSizeOption();
-			Control.ExpandsOnOverflow = Element.AutoSize == EditorAutoSizeOption.TextChanges;
+			Control.AutoSizeWithChanges = Element.AutoSize == EditorAutoSizeOption.TextChanges;
+
+			if(!Control.ExpandsOnOverflow)
+				Control.ExpandsOnOverflow = Element.AutoSize == EditorAutoSizeOption.TextChanges;
 		}
 
+
+		public override CGRect Frame
+		{
+			get => base.Frame; 
+			set
+			{
+				base.Frame = value;
+
+			}
+		}
 
 		// this is required to force the placeholder to size correctly if it starts out prefilled
 		void InitialPlaceholderSetupHack()
