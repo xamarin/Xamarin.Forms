@@ -53,9 +53,19 @@ namespace Xamarin.Forms
 
 		static void Register(Assembly assembly, Dictionary<string, IVisual> mappings)
 		{
-			foreach (var type in assembly.GetExportedTypes())
-				if (typeof(IVisual).IsAssignableFrom(type) && type != typeof(IVisual))
-					Register(type, mappings);
+			if (assembly.IsDynamic)
+				return;
+
+			try
+			{
+				foreach (var type in assembly.GetExportedTypes())
+					if (typeof(IVisual).IsAssignableFrom(type) && type != typeof(IVisual))
+						Register(type, mappings);
+			}
+			catch(NotSupportedException)
+			{
+				Log.Warning("Visual", $"Can't scan {assembly.FullName} for Visual types.");
+			}
 		}
 
 		static void Register(Type visual, Dictionary<string, IVisual> mappings)
