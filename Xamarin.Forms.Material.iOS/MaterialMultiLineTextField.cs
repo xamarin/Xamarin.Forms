@@ -14,8 +14,9 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		public TypographyScheme TypographyScheme { get; set; }
 		public MTextInputControllerBase ActiveTextInputController { get; set; }
 		public ITextInput TextInput => this;
-		CGSize ContainerSize { get; set; }
 		internal bool AutoSizeWithChanges { get; set; } = false;
+		CGSize _contentSize;
+
 
 		public MaterialMultilineTextField(IMaterialEntryRenderer element, IFontElement fontElement)
 		{
@@ -25,22 +26,49 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 		public override CGSize SizeThatFits(CGSize size)
 		{
+			bool expandTurnedBackOn = NumberOfLinesCheck();
 			var result = base.SizeThatFits(size);
 
 			if (nfloat.IsInfinity(result.Width))
 				result = SystemLayoutSizeFittingSize(result, (float)UILayoutPriority.FittingSizeLevel, (float)UILayoutPriority.DefaultHigh);
 
-			ContainerSize = result;
-			UpdateExpandsOnOverflow();
+			if (ExpandsOnOverflow)
+				_contentSize = result;
+			else
+				_contentSize = TextView.ContentSize;
+
+			if (!expandTurnedBackOn)
+				UpdateExpandsOnOverflow();
 
 			return result;
 		}
 
+		bool NumberOfLinesCheck()
+		{
+			if (!ExpandsOnOverflow &&
+				!AutoSizeWithChanges &&
+				!shouldRestrainSize())
+			{
+				ExpandsOnOverflow = true;
+				return true;
+			}
+
+			return false;
+		}
+
+		bool shouldRestrainSize()
+		{
+			if (TextView?.Font == null)
+				return false;
+
+			return (((NumberOfLines + 1) * TextView.Font.LineHeight) > Frame.Height);
+		}
+
 		void UpdateExpandsOnOverflow()
 		{
-			if (!AutoSizeWithChanges && ExpandsOnOverflow && Frame.Height > 0) 
+			if (!NumberOfLinesCheck() && !AutoSizeWithChanges && ExpandsOnOverflow && Frame.Height > 0 && TextView?.Font != null) 
 			{
-				if ((ContainerSize.Height + TextView.Font.LineHeight) > Frame.Height)
+				if (shouldRestrainSize())
 				{
 					ExpandsOnOverflow = false;
 				}
@@ -56,6 +84,16 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			}
 		}
 
+		int NumberOfLines
+		{
+			get
+			{
+				if (TextView?.ContentSize == null || TextView?.Font == null || TextView.Font.LineHeight == 0)
+					return 0;
+
+				return (int)(_contentSize.Height / TextView.Font.LineHeight);
+			}
+		}
 
 		internal void ApplyTypographyScheme(IFontElement fontElement) => MaterialTextManager.ApplyTypographyScheme(this, fontElement);
 
