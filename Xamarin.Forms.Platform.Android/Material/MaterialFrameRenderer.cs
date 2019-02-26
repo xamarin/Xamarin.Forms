@@ -23,29 +23,31 @@ namespace Xamarin.Forms.Platform.Android.Material
 		int? _defaultBackgroundColor;
 		int? _defaultStrokeColor;
 		int? _defaultLabelFor;
-
 		bool _disposed;
-
 		Frame _element;
-
 		VisualElementTracker _visualElementTracker;
 		VisualElementPackager _visualElementPackager;
-
 		readonly GestureManager _gestureManager;
 		readonly EffectControlProvider _effectControlProvider;
 		readonly MotionEventHelper _motionEventHelper;
 
-		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
-		public event EventHandler<PropertyChangedEventArgs> ElementPropertyChanged;
-
 		public MaterialFrameRenderer(Context context)
 			: base(new ContextThemeWrapper(context, Resource.Style.XamarinFormsMaterialTheme))
 		{
-			VisualElement.VerifyVisualFlagEnabled();
-
 			_gestureManager = new GestureManager(this);
 			_effectControlProvider = new EffectControlProvider(this);
 			_motionEventHelper = new MotionEventHelper();
+		}
+
+		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
+		public event EventHandler<PropertyChangedEventArgs> ElementPropertyChanged;
+
+		public override bool OnTouchEvent(MotionEvent e)
+		{
+			if (_gestureManager.OnTouchEvent(e) || base.OnTouchEvent(e))
+				return true;
+
+			return _motionEventHelper.HandleMotionEvent(Parent, e);
 		}
 
 		protected MaterialCardView Control => this;
@@ -168,14 +170,6 @@ namespace Xamarin.Forms.Platform.Android.Material
 			}
 		}
 
-		public override bool OnTouchEvent(MotionEvent e)
-		{
-			if (_gestureManager.OnTouchEvent(e) || base.OnTouchEvent(e))
-				return true;
-
-			return _motionEventHelper.HandleMotionEvent(Parent, e);
-		}
-
 		void UpdateShadow()
 		{
 			if (_disposed || Element == null)
@@ -256,23 +250,20 @@ namespace Xamarin.Forms.Platform.Android.Material
 		}
 
 		// IVisualElementRenderer
-
 		VisualElement IVisualElementRenderer.Element => Element;
-
 		VisualElementTracker IVisualElementRenderer.Tracker => _visualElementTracker;
-
 		ViewGroup IVisualElementRenderer.ViewGroup => this;
-
 		AView IVisualElementRenderer.View => this;
+		void IVisualElementRenderer.SetElement(VisualElement element) =>
+			Element = (element as Frame) ?? throw new ArgumentException("Element must be of type Frame.");
+		void IVisualElementRenderer.UpdateLayout() =>
+			_visualElementTracker?.UpdateLayout();
 
 		SizeRequest IVisualElementRenderer.GetDesiredSize(int widthConstraint, int heightConstraint)
 		{
 			var context = Context;
 			return new SizeRequest(new Size(context.ToPixels(20), context.ToPixels(20)));
 		}
-
-		void IVisualElementRenderer.SetElement(VisualElement element) =>
-			Element = (element as Frame) ?? throw new ArgumentException("Element must be of type Frame.");
 
 		void IVisualElementRenderer.SetLabelFor(int? id)
 		{
@@ -282,21 +273,15 @@ namespace Xamarin.Forms.Platform.Android.Material
 			ViewCompat.SetLabelFor(this, (int)(id ?? _defaultLabelFor));
 		}
 
-		void IVisualElementRenderer.UpdateLayout() =>
-			_visualElementTracker?.UpdateLayout();
-
 		// IEffectControlProvider
-
 		void IEffectControlProvider.RegisterEffect(Effect effect) =>
 			_effectControlProvider?.RegisterEffect(effect);
 
 		// IViewRenderer
-
 		void IViewRenderer.MeasureExactly() =>
 			ViewRenderer.MeasureExactly(this, Element, Context);
 
 		// ITabStop
-
 		AView ITabStop.TabStop => this;
 	}
 }

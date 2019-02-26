@@ -19,12 +19,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 		public MaterialEntryRenderer(Context context) :
 			base(MaterialContextThemeWrapper.Create(context))
 		{
-			VisualElement.VerifyVisualFlagEnabled();
 		}
-
-		IElementController ElementController => Element as IElementController;
-
-		protected override EditText EditText => _textInputEditText;
 
 		protected override MaterialFormsTextInputLayout CreateNativeControl()
 		{
@@ -52,12 +47,8 @@ namespace Xamarin.Forms.Platform.Android.Material
 			_textInputLayout.BoxBackgroundColor = MaterialColors.CreateEntryFilledInputBackgroundColor(Element.BackgroundColor, Element.TextColor);
 		}
 
-		protected internal override void UpdatePlaceHolderText()
-		{
-			_textInputLayout.SetHint(Element.Placeholder, Element);
-		}
-
-		
+		protected internal override void UpdatePlaceHolderText() => _textInputLayout.SetHint(Element.Placeholder, Element);
+		protected override EditText EditText => _textInputEditText;
 		protected override void UpdatePlaceholderColor() => ApplyTheme();
 		void ApplyTheme() => _textInputLayout?.ApplyTheme(Element.TextColor, Element.PlaceholderColor);
 

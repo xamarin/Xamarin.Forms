@@ -21,8 +21,6 @@ namespace Xamarin.Forms.Platform.Android.Material
 
 		public MaterialStepperRenderer(Context context) : base(context)
 		{
-			VisualElement.VerifyVisualFlagEnabled();
-
 			AutoPackage = false;
 		}
 

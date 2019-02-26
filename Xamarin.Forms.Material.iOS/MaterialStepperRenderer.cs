@@ -11,11 +11,6 @@ namespace Xamarin.Forms.Platform.iOS.Material
 	{
 		ButtonScheme _buttonScheme;
 
-		public MaterialStepperRenderer()
-		{
-			VisualElement.VerifyVisualFlagEnabled();
-		}
-
 		protected override void Dispose(bool disposing)
 		{
 			if (Control is MaterialStepper control)

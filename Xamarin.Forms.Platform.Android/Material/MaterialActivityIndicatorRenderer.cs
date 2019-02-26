@@ -19,24 +19,16 @@ namespace Xamarin.Forms.Platform.Android.Material
 		IVisualElementRenderer, IViewRenderer, ITabStop
 	{
 		int? _defaultLabelFor;
-
 		bool _disposed;
-
 		ActivityIndicator _element;
 		CircularProgress _control;
-
 		VisualElementTracker _visualElementTracker;
 		VisualElementRenderer _visualElementRenderer;
 		MotionEventHelper _motionEventHelper;
 
-		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
-		public event EventHandler<PropertyChangedEventArgs> ElementPropertyChanged;
-
 		public MaterialActivityIndicatorRenderer(Context context)
 			: base(context)
 		{
-			VisualElement.VerifyVisualFlagEnabled();
-
 			_control = new CircularProgress(new ContextThemeWrapper(context, Resource.Style.XamarinFormsMaterialProgressBarCircular), null, Resource.Style.XamarinFormsMaterialProgressBarCircular)
 			{
 				// limiting size to compare iOS realization
@@ -49,6 +41,18 @@ namespace Xamarin.Forms.Platform.Android.Material
 
 			_visualElementRenderer = new VisualElementRenderer(this);
 			_motionEventHelper = new MotionEventHelper();
+		}
+
+		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
+
+		public event EventHandler<PropertyChangedEventArgs> ElementPropertyChanged;
+
+		public override bool OnTouchEvent(MotionEvent e)
+		{
+			if (_visualElementRenderer.OnTouchEvent(e) || base.OnTouchEvent(e))
+				return true;
+
+			return _motionEventHelper.HandleMotionEvent(Parent, e);
 		}
 
 		protected AProgressBar Control => _control;
@@ -136,14 +140,6 @@ namespace Xamarin.Forms.Platform.Android.Material
 				UpdateBackgroundColor();
 		}
 
-		public override bool OnTouchEvent(MotionEvent e)
-		{
-			if (_visualElementRenderer.OnTouchEvent(e) || base.OnTouchEvent(e))
-				return true;
-
-			return _motionEventHelper.HandleMotionEvent(Parent, e);
-		}
-
 		void UpdateIsRunning()
 		{
 			if (Element != null && _control != null)
@@ -163,13 +159,9 @@ namespace Xamarin.Forms.Platform.Android.Material
 		}
 
 		// IVisualElementRenderer
-
 		VisualElement IVisualElementRenderer.Element => Element;
-
 		VisualElementTracker IVisualElementRenderer.Tracker => _visualElementTracker;
-
 		ViewGroup IVisualElementRenderer.ViewGroup => null;
-
 		AView IVisualElementRenderer.View => this;
 
 		SizeRequest IVisualElementRenderer.GetDesiredSize(int widthConstraint, int heightConstraint)
@@ -194,12 +186,10 @@ namespace Xamarin.Forms.Platform.Android.Material
 			_visualElementTracker?.UpdateLayout();
 
 		// IViewRenderer
-
 		void IViewRenderer.MeasureExactly() =>
 			ViewRenderer.MeasureExactly(_control, Element, Context);
 
 		// ITabStop
-
 		AView ITabStop.TabStop => _control;
 	}
 }

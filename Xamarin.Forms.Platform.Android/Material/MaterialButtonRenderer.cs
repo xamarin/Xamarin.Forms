@@ -31,27 +31,18 @@ namespace Xamarin.Forms.Platform.Android.Material
 		float _defaultFontSize = -1;
 		int? _defaultLabelFor;
 		Typeface _defaultTypeface;
-
 		bool _disposed;
 		bool _inputTransparent;
-
 		Button _button;
-
 		IPlatformElementConfiguration<PlatformConfiguration.Android, Button> _platformElementConfiguration;
 		VisualElementTracker _tracker;
 		VisualElementRenderer _visualElementRenderer;
 		ButtonLayoutManager _buttonLayoutManager;
-
 		readonly AutomationPropertiesProvider _automationPropertiesProvider;
-
-		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
-		public event EventHandler<PropertyChangedEventArgs> ElementPropertyChanged;
-
+		
 		public MaterialButtonRenderer(Context context)
 			: base(new ContextThemeWrapper(context, Resource.Style.XamarinFormsMaterialTheme))
 		{
-			VisualElement.VerifyVisualFlagEnabled();
-
 			_automationPropertiesProvider = new AutomationPropertiesProvider(this);
 			_buttonLayoutManager = new ButtonLayoutManager(this,
 				alignIconWithText: true,
@@ -68,6 +59,8 @@ namespace Xamarin.Forms.Platform.Android.Material
 			Tag = this;
 		}
 
+		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
+		public event EventHandler<PropertyChangedEventArgs> ElementPropertyChanged;
 		protected MButton Control => this;
 
 		protected Button Element
@@ -301,7 +294,6 @@ namespace Xamarin.Forms.Platform.Android.Material
 			_platformElementConfiguration ?? (_platformElementConfiguration = Element.OnThisPlatform());
 
 		// IOnAttachStateChangeListener
-
 		void IOnAttachStateChangeListener.OnViewAttachedToWindow(AView attachedView) =>
 			_buttonLayoutManager?.OnViewAttachedToWindow(attachedView);
 
@@ -309,22 +301,18 @@ namespace Xamarin.Forms.Platform.Android.Material
 			_buttonLayoutManager?.OnViewDetachedFromWindow(detachedView);
 
 		// IOnFocusChangeListener
-
 		void IOnFocusChangeListener.OnFocusChange(AView v, bool hasFocus) =>
 			Element.SetValueFromRenderer(VisualElement.IsFocusedPropertyKey, hasFocus);
 
 		// IOnClickListener
-
 		void IOnClickListener.OnClick(AView v) =>
 			ButtonElementManager.OnClick(Element, Element, v);
 
 		// IOnTouchListener
-
 		bool IOnTouchListener.OnTouch(AView v, MotionEvent e) =>
 			ButtonElementManager.OnTouch(Element, Element, v, e);
 
 		// IBorderVisualElementRenderer
-
 		float IBorderVisualElementRenderer.ShadowRadius => ShadowRadius;
 		float IBorderVisualElementRenderer.ShadowDx => ShadowDx;
 		float IBorderVisualElementRenderer.ShadowDy => ShadowDy;
@@ -336,12 +324,10 @@ namespace Xamarin.Forms.Platform.Android.Material
 		AView IBorderVisualElementRenderer.View => this;
 
 		// IButtonLayoutRenderer
-
 		Button IButtonLayoutRenderer.Element => Element;
 		AppCompatButton IButtonLayoutRenderer.View => this;
 
 		// IVisualElementRenderer
-
 		VisualElement IVisualElementRenderer.Element => Element;
 		VisualElementTracker IVisualElementRenderer.Tracker => _tracker;
 		ViewGroup IVisualElementRenderer.ViewGroup => null;
@@ -368,12 +354,10 @@ namespace Xamarin.Forms.Platform.Android.Material
 			_tracker?.UpdateLayout();
 
 		// IViewRenderer
-
 		void IViewRenderer.MeasureExactly() =>
 			ViewRenderer.MeasureExactly(this, Element, Context);
 
 		// ITabStop
-
 		AView ITabStop.TabStop => this;
 	}
 }

@@ -13,11 +13,6 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		BasicColorScheme _defaultColorScheme;
 		BasicColorScheme _colorScheme;
 
-		public MaterialProgressBarRenderer()
-		{
-			VisualElement.VerifyVisualFlagEnabled();
-		}
-
 		protected override void OnElementChanged(ElementChangedEventArgs<ProgressBar> e)
 		{
 			_colorScheme?.Dispose();
@@ -62,10 +57,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 #pragma warning restore CS0618 // Type or member is obsolete
 		}
 
-		protected override MProgressView CreateNativeControl()
-		{
-			return new MProgressView();
-		}
+		protected override MProgressView CreateNativeControl() => new MProgressView();
 
 		public override CGSize SizeThatFits(CGSize size)
 		{
@@ -114,10 +106,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			ApplyTheme();
 		}
 
-		void UpdateProgressColor()
-		{
-			UpdateAllColors();
-		}
+		void UpdateProgressColor() => UpdateAllColors();
 
 		void UpdateAllColors()
 		{

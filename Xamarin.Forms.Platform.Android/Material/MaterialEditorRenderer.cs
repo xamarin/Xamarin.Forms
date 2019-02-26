@@ -9,7 +9,7 @@ using Xamarin.Forms.Platform.Android.Material;
 [assembly: ExportRenderer(typeof(Xamarin.Forms.Editor), typeof(MaterialEditorRenderer), new[] { typeof(VisualMarker.MaterialVisual) })]
 namespace Xamarin.Forms.Platform.Android.Material
 {
-	public sealed class MaterialEditorRenderer : EditorRendererBase<MaterialFormsTextInputLayout>
+	public class MaterialEditorRenderer : EditorRendererBase<MaterialFormsTextInputLayout>
 	{
 		bool _disposed;
 		MaterialFormsEditText _textInputEditText;
@@ -18,12 +18,7 @@ namespace Xamarin.Forms.Platform.Android.Material
 		public MaterialEditorRenderer(Context context) :
 			base(MaterialContextThemeWrapper.Create(context))
 		{
-			VisualElement.VerifyVisualFlagEnabled();
-		}
-
-		IElementController ElementController => Element as IElementController;
-
-		protected override EditText EditText => _textInputEditText;
+		}		
 
 		protected override MaterialFormsTextInputLayout CreateNativeControl()
 		{
@@ -42,8 +37,6 @@ namespace Xamarin.Forms.Platform.Android.Material
 			UpdateBackgroundColor();
 		}
 
-		protected override void UpdateTextColor() => ApplyTheme();
-
 		protected override void UpdateBackgroundColor()
 		{
 			if (_disposed || _textInputLayout == null)
@@ -52,19 +45,20 @@ namespace Xamarin.Forms.Platform.Android.Material
 			_textInputLayout.BoxBackgroundColor = MaterialColors.CreateEntryFilledInputBackgroundColor(Element.BackgroundColor, Element.TextColor);
 		}
 
-		protected internal override void UpdatePlaceholderText()
+		protected override void UpdatePlaceholderText()
 		{
 			if (_disposed || _textInputLayout == null)
 				return;
 
 			_textInputLayout?.SetHint(Element.Placeholder, Element);
 		}
-
 		
 		protected override void UpdatePlaceholderColor() => ApplyTheme();
-		void ApplyTheme() => _textInputLayout?.ApplyTheme(Element.TextColor, Element.PlaceholderColor);
+		protected virtual void ApplyTheme() => _textInputLayout?.ApplyTheme(Element.TextColor, Element.PlaceholderColor);
+		protected override void UpdateTextColor() => ApplyTheme();
+		protected override EditText EditText => _textInputEditText;
 
-		protected internal override void UpdateFont()
+		protected override void UpdateFont()
 		{
 			if (_disposed || _textInputLayout == null)
 				return;
