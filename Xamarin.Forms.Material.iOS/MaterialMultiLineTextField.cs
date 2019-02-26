@@ -26,7 +26,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 
 		public override CGSize SizeThatFits(CGSize size)
 		{
-			bool expandTurnedBackOn = NumberOfLinesCheck();
+			bool expandTurnedBackOn = UpdateIfTextViewShouldCollapse();
 			var result = base.SizeThatFits(size);
 
 			if (nfloat.IsInfinity(result.Width))
@@ -38,16 +38,16 @@ namespace Xamarin.Forms.Platform.iOS.Material
 				_contentSize = TextView.ContentSize;
 
 			if (!expandTurnedBackOn)
-				UpdateExpandsOnOverflow();
+				UpdateIfTextViewShouldStopExpanding();
 
 			return result;
 		}
 
-		bool NumberOfLinesCheck()
+		bool UpdateIfTextViewShouldCollapse()
 		{
 			if (!ExpandsOnOverflow &&
 				!AutoSizeWithChanges &&
-				!shouldRestrainSize())
+				!ShouldRestrainSize())
 			{
 				ExpandsOnOverflow = true;
 				return true;
@@ -56,7 +56,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			return false;
 		}
 
-		bool shouldRestrainSize()
+		bool ShouldRestrainSize()
 		{
 			if (TextView?.Font == null)
 				return false;
@@ -64,23 +64,24 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			return (((NumberOfLines + 1) * TextView.Font.LineHeight) > Frame.Height);
 		}
 
-		void UpdateExpandsOnOverflow()
+		void UpdateIfTextViewShouldStopExpanding()
 		{
-			if (!NumberOfLinesCheck() && !AutoSizeWithChanges && ExpandsOnOverflow && Frame.Height > 0 && TextView?.Font != null) 
+			if (!UpdateIfTextViewShouldCollapse() &&
+				!AutoSizeWithChanges &&
+				ExpandsOnOverflow &&
+				ShouldRestrainSize()) 
 			{
-				if (shouldRestrainSize())
-				{
-					ExpandsOnOverflow = false;
-				}
+				ExpandsOnOverflow = false;
 			}
 		}
 
 		public override CGRect Frame
 		{
-			get => base.Frame; set
+			get => base.Frame;
+			set
 			{
 				base.Frame = value;
-				UpdateExpandsOnOverflow();
+				UpdateIfTextViewShouldStopExpanding();
 			}
 		}
 
