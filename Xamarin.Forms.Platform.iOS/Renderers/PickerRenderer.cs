@@ -71,6 +71,7 @@ namespace Xamarin.Forms.Platform.iOS
 							UpdatePickerSelectedIndex(0);
 						UpdatePickerFromModel(s);
 						entry.ResignFirstResponder();
+						UpdateLetterSpacing();
 					});
 
 					toolbar.SetItems(new[] { spacer, doneButton }, false);
@@ -115,6 +116,7 @@ namespace Xamarin.Forms.Platform.iOS
 			else if (e.PropertyName == Picker.SelectedIndexProperty.PropertyName)
 			{
 				UpdatePicker();
+				UpdateLetterSpacing();
 			}
 			else if (e.PropertyName == Picker.LetterSpacingProperty.PropertyName)
 				UpdateLetterSpacing();
@@ -155,6 +157,7 @@ namespace Xamarin.Forms.Platform.iOS
 		void RowsCollectionChanged(object sender, EventArgs e)
 		{
 			UpdatePicker();
+			UpdateLetterSpacing();
 		}
 
         void UpdateLetterSpacing()

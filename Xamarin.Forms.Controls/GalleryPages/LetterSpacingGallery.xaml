@@ -33,7 +33,12 @@
                 <Editor Placeholder="Welcome to Xamarin.Forms!" LetterSpacing="0" x:Name="PlaceholderEditor"/>
                 <DatePicker Date="2019-01-01" LetterSpacing="0" x:Name="DatePicker"/>
                 <TimePicker Time="10:10" LetterSpacing="0" x:Name="TimePicker"/>
-                <Picker Title="Welcome to Xamarin.Forms!" LetterSpacing="0" x:Name="Picker" />
+                <Picker Title="Welcome to Xamarin.Forms!" LetterSpacing="0" x:Name="Picker" >
+                    <Picker.Items>
+                        <x:String>Welcome to Xamarin.Forms1</x:String>
+                        <x:String>Welcome to Xamarin.Forms2</x:String>
+                    </Picker.Items>
+                </Picker>
                 <SearchBar Text="Welcome to Xamarin.Forms!" LetterSpacing="0" x:Name="SearchBar" />
                 <Button Text="Welcome to Xamarin.Forms!" LetterSpacing="0" x:Name="Button" />
             </StackLayout>
