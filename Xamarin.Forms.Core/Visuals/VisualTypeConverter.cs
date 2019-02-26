@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using Xamarin.Forms.Internals;
 using Xamarin.Forms.Xaml;
@@ -64,7 +65,11 @@ namespace Xamarin.Forms
 			}
 			catch(NotSupportedException)
 			{
-				Log.Warning("Visual", $"Can't scan {assembly.FullName} for Visual types.");
+				Log.Warning("Visual", $"Cannot scan assembly {assembly.FullName} for Visual types.");
+			}
+			catch (FileNotFoundException)
+			{
+				Log.Warning("Visual", $"Unable to load a dependent assembly for {assembly.FullName}. It cannot be scanned for Visual types.");
 			}
 		}
 
