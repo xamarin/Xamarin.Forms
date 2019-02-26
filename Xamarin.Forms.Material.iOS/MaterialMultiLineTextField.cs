@@ -88,7 +88,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		{
 			get
 			{
-				if (TextView?.ContentSize == null || TextView?.Font == null || TextView.Font.LineHeight == 0)
+				if (TextView?.ContentSize == null || TextView.Font == null || TextView.Font.LineHeight == 0)
 					return 0;
 
 				return (int)(_contentSize.Height / TextView.Font.LineHeight);
