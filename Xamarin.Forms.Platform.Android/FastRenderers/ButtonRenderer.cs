@@ -10,6 +10,8 @@ using Xamarin.Forms.Internals;
 using Xamarin.Forms.PlatformConfiguration.AndroidSpecific;
 using AColor = Android.Graphics.Color;
 using AView = Android.Views.View;
+using AResource = Android.Resource;
+using Android.Content.Res;
 
 namespace Xamarin.Forms.Platform.Android.FastRenderers
 {
@@ -204,6 +206,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				UpdateTextColor();
 				UpdateInputTransparent();
 				UpdateBackgroundColor();
+				UpdateDisabledTextColor();
 				_buttonLayoutManager?.Update();
 
 				ElevationHelper.SetElevation(this, e.NewElement);
@@ -226,6 +229,8 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			{
 				UpdateInputTransparent();
 			}
+			else if (e.PropertyName == Button.DisabledTextColorProperty.PropertyName)
+				UpdateDisabledTextColor();
 
 			ElementPropertyChanged?.Invoke(this, e);
 		}
@@ -245,6 +250,16 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		void SetTracker(VisualElementTracker tracker)
 		{
 			_tracker = tracker;
+		}
+
+		void UpdateDisabledTextColor()
+		{
+			int[][] states = { new[] { AResource.Attribute.StateEnabled }, new[] { -AResource.Attribute.StateEnabled } };
+			int[] colors = { TextColors.GetColorForState(states[0], Button.TextColor.ToAndroid()), Button.DisabledTextColor.ToAndroid().ToArgb() };
+
+			var colorStateList = new ColorStateList(states, colors);
+
+			SetTextColor(colorStateList);
 		}
 
 		void UpdateBackgroundColor()
