@@ -104,6 +104,7 @@
     <file src="..\Xamarin.Forms.Core\bin\$Configuration$\netstandard2.0\Xamarin.Forms.Core.*pdb" target="lib\netstandard2.0" />
     <file src="..\Xamarin.Forms.Core\bin\$Configuration$\netstandard2.0\Xamarin.Forms.Core.*mdb" target="lib\netstandard2.0" />
     <file src="..\docs\Xamarin.Forms.Core.xml" target="lib\netstandard2.0" />
+    <file src="..\docs\**\Xamarin.Forms.Core.xml" target="lib\netstandard2.0" />
     <file src="..\Xamarin.Forms.Xaml\bin\$Configuration$\netstandard2.0\Xamarin.Forms.Xaml.dll" target="lib\netstandard2.0" />
     <file src="..\Xamarin.Forms.Xaml\bin\$Configuration$\netstandard2.0\Xamarin.Forms.Xaml.*pdb" target="lib\netstandard2.0" />
     <file src="..\Xamarin.Forms.Xaml\bin\$Configuration$\netstandard2.0\Xamarin.Forms.Xaml.*mdb" target="lib\netstandard2.0" />
