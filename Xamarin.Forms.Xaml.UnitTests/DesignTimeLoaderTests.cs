@@ -550,6 +550,25 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.DoesNotThrow(() => XamlLoader.Create(xaml, true));
 			Assert.That(exceptions.Count, Is.EqualTo(1));
 		}
+
+		[Test]
+		public void IgnoreMarkupExtensionException()
+		{
+			// The user scenario is a user type with a static member referenced in an x:Static markup extension. The
+			// previewer replaces the user type, so the static member does not exist. However we should handle general
+			// cases where x:Static and other markup extensions fail.
+
+			var xaml = @"
+					<ContentPage xmlns=""http://xamarin.com/schemas/2014/forms""
+						xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml"">
+						<ListView ItemsSource=""{x:Static Foo}"" />
+					</ContentPage>";
+
+			var exceptions = new List<Exception>();
+			Xamarin.Forms.Internals.ResourceLoader.ExceptionHandler = exceptions.Add;
+			Assert.DoesNotThrow(() => XamlLoader.Create(xaml, true));
+			Assert.That(exceptions.Count, Is.EqualTo(1));
+		}
 	}
 
 	public class InstantiateThrows
