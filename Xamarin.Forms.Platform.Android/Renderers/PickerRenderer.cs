@@ -48,7 +48,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		protected override EditText CreateNativeControl()
 		{
-			return new PickerEditText(Context, this);
+			return new PickerEditText(Context);
 		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Picker> e)
@@ -111,6 +111,9 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			Picker model = Element;
 
+			if (_dialog != null)
+				return;
+			
 			var picker = new NumberPicker(Context);
 			if (model.Items != null && model.Items.Any())
 			{
