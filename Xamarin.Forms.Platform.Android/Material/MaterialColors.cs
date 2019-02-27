@@ -156,17 +156,39 @@ namespace Xamarin.Forms.Material.iOS
 		{
 			seekBar.ApplyProgressBarColors(progressColor, backgroundColor);
 
-			if (thumbColor.IsDefault)
+			if (Forms.IsLollipopOrNewer)
 			{
-				// reset everything to defaults
-				seekBar.ThumbTintList = seekBar.ProgressTintList;
+				if (thumbColor.IsDefault)
+				{
+					// reset everything to defaults
+					seekBar.ThumbTintList = seekBar.ProgressTintList;
+				}
+				else
+				{
+					// handle the case where the thumb is set
+					var thumb = thumbColor.ToAndroid();
+					seekBar.ThumbTintList = ColorStateList.ValueOf(thumb);
+				}
 			}
 			else
 			{
-				// handle the case where the thumb is set
-				var thumb = thumbColor.ToAndroid();
+				seekBar.Thumb.SetColorFilter(thumbColor.ToAndroid(), PorterDuff.Mode.SrcIn);
+			}
+		}
 
-				seekBar.ThumbTintList = ColorStateList.ValueOf(thumb);
+		internal static void ApplyProgressBarColors(this AProgressBar progressBar, PlatformColor progressColor, PlatformColor backgroundColor, PorterDuff.Mode mode)
+		{
+			if(Forms.IsLollipopOrNewer)
+			{
+				progressBar.ProgressTintList = ColorStateList.ValueOf(progressColor);
+				progressBar.ProgressBackgroundTintList = ColorStateList.ValueOf(backgroundColor);
+				progressBar.ProgressBackgroundTintMode = mode;
+			}
+			else
+			{
+				(progressBar.Indeterminate ? progressBar.IndeterminateDrawable :
+						   progressBar.ProgressDrawable).SetColorFilter(progressColor, PorterDuff.Mode.SrcIn);
+
 			}
 		}
 
@@ -179,18 +201,13 @@ namespace Xamarin.Forms.Material.iOS
 				if (backgroundColor.IsDefault)
 				{
 					// reset everything to defaults
-					progressBar.ProgressTintList = ColorStateList.ValueOf(defaultProgress);
-					progressBar.ProgressBackgroundTintList = ColorStateList.ValueOf(defaultProgress);
-					progressBar.ProgressBackgroundTintMode = PorterDuff.Mode.SrcIn;
+					progressBar.ApplyProgressBarColors(defaultProgress, defaultProgress, PorterDuff.Mode.SrcIn);
 				}
 				else
 				{
 					// handle the case where only the background is set
 					var background = backgroundColor.ToAndroid();
-
-					progressBar.ProgressTintList = ColorStateList.ValueOf(defaultProgress);
-					progressBar.ProgressBackgroundTintList = ColorStateList.ValueOf(background);
-					progressBar.ProgressBackgroundTintMode = PorterDuff.Mode.SrcOver;
+					progressBar.ApplyProgressBarColors(defaultProgress, background, PorterDuff.Mode.SrcOver);
 				}
 			}
 			else
@@ -199,20 +216,14 @@ namespace Xamarin.Forms.Material.iOS
 				{
 					// handle the case where only the progress is set
 					var progress = progressColor.ToAndroid();
-
-					progressBar.ProgressTintList = ColorStateList.ValueOf(progress);
-					progressBar.ProgressBackgroundTintList = ColorStateList.ValueOf(progress);
-					progressBar.ProgressBackgroundTintMode = PorterDuff.Mode.SrcIn;
+					progressBar.ApplyProgressBarColors(progress, progress, PorterDuff.Mode.SrcIn);
 				}
 				else
 				{
 					// handle the case where both are set
 					var background = backgroundColor.ToAndroid();
 					var progress = progressColor.ToAndroid();
-
-					progressBar.ProgressTintList = ColorStateList.ValueOf(progress);
-					progressBar.ProgressBackgroundTintList = ColorStateList.ValueOf(background);
-					progressBar.ProgressBackgroundTintMode = PorterDuff.Mode.SrcOver;
+					progressBar.ApplyProgressBarColors(progress, background, PorterDuff.Mode.SrcOver);
 				}
 			}
 		}
