@@ -5,9 +5,10 @@ using CoreGraphics;
 using MaterialComponents;
 using UIKit;
 using Xamarin.Forms;
+using Xamarin.Forms.Platform.iOS;
 using MCard = MaterialComponents.Card;
 
-namespace Xamarin.Forms.Platform.iOS.Material
+namespace Xamarin.Forms.Material.iOS
 {
 	public class MaterialFrameRenderer : MCard,
 		IVisualElementRenderer
@@ -25,7 +26,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 		public override void WillRemoveSubview(UIView uiview)
 		{
 			var content = Element?.Content;
-			if (content != null && uiview == Platform.GetRenderer(content))
+			if (content != null && uiview == Platform.iOS.Platform.GetRenderer(content))
 			{
 				uiview.Layer.Mask = null;
 			}
@@ -41,7 +42,7 @@ namespace Xamarin.Forms.Platform.iOS.Material
 			var content = Element?.Content;
 			if (content != null && Layer is ShapedShadowLayer shadowLayer && shadowLayer.ShapeLayer.Path is CGPath shapePath)
 			{
-				var renderer = Platform.GetRenderer(content);
+				var renderer = Platform.iOS.Platform.GetRenderer(content);
 				if (renderer is UIView uiview)
 				{
 					var padding = Element.Padding;

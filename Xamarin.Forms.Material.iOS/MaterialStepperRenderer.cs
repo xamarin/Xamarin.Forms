@@ -3,9 +3,10 @@ using System.ComponentModel;
 using CoreGraphics;
 using MaterialComponents;
 using UIKit;
+using Xamarin.Forms.Platform.iOS;
 using MButton = MaterialComponents.Button;
 
-namespace Xamarin.Forms.Platform.iOS.Material
+namespace Xamarin.Forms.Material.iOS
 {
 	public class MaterialStepperRenderer : ViewRenderer<Stepper, MaterialStepper>
 	{

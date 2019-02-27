@@ -6,13 +6,14 @@ using Android.Support.V4.View;
 using Android.Views;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android.FastRenderers;
-using Xamarin.Forms.Platform.Android.Material;
+using Xamarin.Forms.Material.Android;
 using AProgressBar = Android.Widget.ProgressBar;
 using AView = Android.Views.View;
+using Xamarin.Forms.Platform.Android;
 
 [assembly: ExportRenderer(typeof(ProgressBar), typeof(MaterialProgressBarRenderer), new[] { typeof(VisualMarker.MaterialVisual) })]
 
-namespace Xamarin.Forms.Platform.Android.Material
+namespace Xamarin.Forms.Material.Android
 {
 	public class MaterialProgressBarRenderer : AProgressBar,
 		IVisualElementRenderer, IViewRenderer, ITabStop
@@ -85,8 +86,8 @@ namespace Xamarin.Forms.Platform.Android.Material
 				{
 					Element.PropertyChanged -= OnElementPropertyChanged;
 
-					if (Platform.GetRenderer(Element) == this)
-						Element.ClearValue(Platform.RendererProperty);
+					if (Platform.Android.Platform.GetRenderer(Element) == this)
+						Element.ClearValue(Platform.Android.Platform.RendererProperty);
 				}
 			}
 

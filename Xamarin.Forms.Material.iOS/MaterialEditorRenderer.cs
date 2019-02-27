@@ -1,8 +1,9 @@
 ﻿using UIKit;
 using MaterialComponents;
 using System;
+using Xamarin.Forms.Platform.iOS;
 
-namespace Xamarin.Forms.Platform.iOS.Material
+namespace Xamarin.Forms.Material.iOS
 {
 	public class MaterialEditorRenderer : EditorRendererBase<MaterialMultilineTextField>, IMaterialEntryRenderer
 	{

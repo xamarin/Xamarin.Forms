@@ -5,8 +5,9 @@ using Android.Graphics;
 using Android.Runtime;
 using Android.Util;
 using Android.Views;
+using Xamarin.Forms.Platform.Android;
 
-namespace Xamarin.Forms.Platform.Android.Material
+namespace Xamarin.Forms.Material.Android
 {
 	public class MaterialPickerEditText : MaterialFormsEditTextBase
 	{

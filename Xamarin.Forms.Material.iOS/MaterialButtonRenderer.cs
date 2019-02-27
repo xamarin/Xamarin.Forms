@@ -1,16 +1,12 @@
 ﻿using System;
 using System.ComponentModel;
-using System.Diagnostics;
 using CoreGraphics;
-using Foundation;
 using MaterialComponents;
 using UIKit;
-using Xamarin.Forms;
-using Xamarin.Forms.PlatformConfiguration.iOSSpecific;
-using Specifics = Xamarin.Forms.PlatformConfiguration.iOSSpecific;
+using Xamarin.Forms.Platform.iOS;
 using MButton = MaterialComponents.Button;
 
-namespace Xamarin.Forms.Platform.iOS.Material
+namespace Xamarin.Forms.Material.iOS
 {
 	public class MaterialButtonRenderer : ViewRenderer<Button, MButton>, IImageVisualElementRenderer, IButtonLayoutRenderer
 	{

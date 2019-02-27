@@ -6,7 +6,7 @@ using MMultilineTextField = MaterialComponents.MultilineTextField;
 using MTextInputControllerBase = MaterialComponents.TextInputControllerBase;
 using Xamarin.Forms.Internals;
 
-namespace Xamarin.Forms.Platform.iOS.Material
+namespace Xamarin.Forms.Material.iOS
 {
 	public class MaterialMultilineTextField : MMultilineTextField, IMaterialTextField
 	{

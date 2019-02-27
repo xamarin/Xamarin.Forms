@@ -7,12 +7,13 @@ using Android.Views;
 using Android.Widget;
 using Xamarin.Forms;
 using Xamarin.Forms.Platform.Android.FastRenderers;
-using Xamarin.Forms.Platform.Android.Material;
+using Xamarin.Forms.Material.Android;
 using AView = Android.Views.View;
+using Xamarin.Forms.Platform.Android;
 
 [assembly: ExportRenderer(typeof(Xamarin.Forms.Slider), typeof(MaterialSliderRenderer), new[] { typeof(VisualMarker.MaterialVisual) })]
 
-namespace Xamarin.Forms.Platform.Android.Material
+namespace Xamarin.Forms.Material.Android
 {
 	public class MaterialSliderRenderer : SeekBar,
 		SeekBar.IOnSeekBarChangeListener,
@@ -90,8 +91,8 @@ namespace Xamarin.Forms.Platform.Android.Material
 				{
 					Element.PropertyChanged -= OnElementPropertyChanged;
 
-					if (Platform.GetRenderer(Element) == this)
-						Element.ClearValue(Platform.RendererProperty);
+					if (Platform.Android.Platform.GetRenderer(Element) == this)
+						Element.ClearValue(Platform.Android.Platform.RendererProperty);
 				}
 			}
 

@@ -7,7 +7,7 @@ using Android.Util;
 using Android.Support.V4.View;
 using Android.Content.Res;
 
-namespace Xamarin.Forms.Platform.Android.Material
+namespace Xamarin.Forms.Material.Android
 {
 	public class MaterialFormsTextInputLayoutBase : TextInputLayout
 	{

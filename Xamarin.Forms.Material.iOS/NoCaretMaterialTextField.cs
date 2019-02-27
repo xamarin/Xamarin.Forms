@@ -2,7 +2,7 @@
 using UIKit;
 using Xamarin.Forms.Internals;
 
-namespace Xamarin.Forms.Platform.iOS.Material
+namespace Xamarin.Forms.Material.iOS
 {
 	internal class NoCaretMaterialTextField : MaterialTextField
 	{

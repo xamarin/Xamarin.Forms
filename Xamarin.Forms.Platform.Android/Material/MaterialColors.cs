@@ -7,15 +7,17 @@ using Android.Graphics;
 using AProgressBar = Android.Widget.ProgressBar;
 using ASeekBar = Android.Widget.AbsSeekBar;
 using PlatformColor = Android.Graphics.Color;
+using Xamarin.Forms.Platform.Android;
 #else
 using MaterialComponents;
+using Xamarin.Forms.Platform.iOS;
 using PlatformColor = UIKit.UIColor;
 #endif
 
 #if __ANDROID__
-namespace Xamarin.Forms.Platform.Android.Material
+namespace Xamarin.Forms.Material.Android
 #else
-namespace Xamarin.Forms.Platform.iOS.Material
+namespace Xamarin.Forms.Material.iOS
 #endif
 {
 	// Colors from material-components-android

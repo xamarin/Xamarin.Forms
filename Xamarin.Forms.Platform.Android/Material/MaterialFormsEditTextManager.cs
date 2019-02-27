@@ -2,9 +2,9 @@
 using System;
 using Android.Content;
 using Android.Support.Design.Widget;
+using Xamarin.Forms.Platform.Android;
 
-
-namespace Xamarin.Forms.Platform.Android.Material
+namespace Xamarin.Forms.Material.Android
 {
 	internal static class MaterialFormsEditTextManager
 	{

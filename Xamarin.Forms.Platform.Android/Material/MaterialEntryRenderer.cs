@@ -1,15 +1,14 @@
 ﻿#if __ANDROID_28__
 using Android.Content;
-using Android.OS;
-using Android.Support.V4.View;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
 using Xamarin.Forms;
-using Xamarin.Forms.Platform.Android.Material;
+using Xamarin.Forms.Material.Android;
+using Xamarin.Forms.Platform.Android;
 
 [assembly: ExportRenderer(typeof(Xamarin.Forms.Entry), typeof(MaterialEntryRenderer), new[] { typeof(VisualMarker.MaterialVisual) })]
-namespace Xamarin.Forms.Platform.Android.Material
+namespace Xamarin.Forms.Material.Android
 {
 	public sealed class MaterialEntryRenderer : EntryRendererBase<MaterialFormsTextInputLayout>
 	{

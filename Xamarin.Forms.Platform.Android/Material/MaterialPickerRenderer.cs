@@ -3,13 +3,14 @@ using Android.Content;
 using Android.Views;
 using Android.Widget;
 using Xamarin.Forms;
-using Xamarin.Forms.Platform.Android.Material;
+using Xamarin.Forms.Material.Android;
+using Xamarin.Forms.Platform.Android;
 
 [assembly: ExportRenderer(typeof(Xamarin.Forms.Picker), typeof(MaterialPickerRenderer), new[] { typeof(VisualMarker.MaterialVisual) })]
 
-namespace Xamarin.Forms.Platform.Android.Material
+namespace Xamarin.Forms.Material.Android
 {
-	public class MaterialPickerRenderer : AppCompat.PickerRendererBase<MaterialPickerTextInputLayout>
+	public class MaterialPickerRenderer : Platform.Android.AppCompat.PickerRendererBase<MaterialPickerTextInputLayout>
 	{
 		MaterialPickerTextInputLayout _textInputLayout;
 		MaterialPickerEditText _textInputEditText;

@@ -1,7 +1,8 @@
 ﻿using CoreGraphics;
 using UIKit;
+using Xamarin.Forms.Platform.iOS;
 
-namespace Xamarin.Forms.Platform.iOS.Material
+namespace Xamarin.Forms.Material.iOS
 {
 	public class MaterialEntryRenderer : EntryRendererBase<MaterialTextField>, IMaterialEntryRenderer
 	{

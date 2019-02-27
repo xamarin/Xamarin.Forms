@@ -3,7 +3,7 @@ using ObjCRuntime;
 using Foundation;
 using Xamarin.Forms.Internals;
 
-namespace Xamarin.Forms.Platform.iOS.Material
+namespace Xamarin.Forms.Material.iOS
 {
 	internal class ReadOnlyMaterialTextField : NoCaretMaterialTextField
 	{
