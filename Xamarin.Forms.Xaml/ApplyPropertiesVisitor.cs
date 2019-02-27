@@ -497,7 +497,15 @@ namespace Xamarin.Forms.Xaml
 						throw new XamlParseException($"Multiple properties with name '{property.DeclaringType}.{property.PropertyName}' found.", lineInfo, innerException: e);
 					}
 				};
-			var convertedValue = value.ConvertTo(property.ReturnType, minforetriever, serviceProvider);
+
+			object convertedValue;
+			try {
+				convertedValue = value.ConvertTo(property.ReturnType, minforetriever, serviceProvider);
+			}
+			catch (Exception e) {
+				exception = e;
+				return false;
+			}
 
 			if (bindable != null) {
 				//SetValue doesn't throw on mismatching type, so check before to get a chance to try the property setting or the collection adding
