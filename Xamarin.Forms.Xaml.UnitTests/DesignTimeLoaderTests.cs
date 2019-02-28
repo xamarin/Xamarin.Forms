@@ -550,6 +550,34 @@ namespace Xamarin.Forms.Xaml.UnitTests
 			Assert.DoesNotThrow(() => XamlLoader.Create(xaml, true));
 			Assert.That(exceptions.Count, Is.EqualTo(1));
 		}
+
+		[Test]
+		public void CanResolveRootNode()
+		{
+			string assemblyName = null;
+			string clrNamespace = null;
+			string typeName = null;
+
+
+			XamlLoader.FallbackTypeResolver = (fallbackTypeInfos, type) =>
+			{
+				assemblyName = fallbackTypeInfos?[1].AssemblyName;
+				clrNamespace = fallbackTypeInfos?[1].ClrNamespace;
+				typeName = fallbackTypeInfos?[1].TypeName;
+				return type ?? typeof(MockView);
+			};
+
+			var xaml = @"
+						<local:MissingType xmlns=""http://xamarin.com/schemas/2014/forms""
+							xmlns:x=""http://schemas.microsoft.com/winfx/2009/xaml""
+							xmlns:local=""clr-namespace:my.namespace;assembly=my.assembly"">
+						</local:MissingType>";
+
+			XamlLoader.Create(xaml, true);
+			Assert.That(assemblyName, Is.EqualTo("my.assembly"));
+			Assert.That(clrNamespace, Is.EqualTo("my.namespace"));
+			Assert.That(typeName, Is.EqualTo("MissingType"));
+		}
 	}
 
 	public class InstantiateThrows
