@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using Android.Content;
-using Android.Content.Res;
-using Android.OS;
 using Android.Text;
 using Android.Text.Method;
 using Android.Util;
@@ -17,6 +15,9 @@ namespace Xamarin.Forms.Platform.Android
 {
 	public class EntryRenderer : EntryRendererBase<FormsEditText>
 	{
+		TextColorSwitcher _hintColorSwitcher;
+		TextColorSwitcher _textColorSwitcher;
+
 		public EntryRenderer(Context context) : base(context)
 		{
 		}
@@ -39,15 +40,25 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			base.UpdateIsReadOnly();
 			bool isReadOnly = !Element.IsReadOnly;
-			Control.SetCursorVisible(isReadOnly);
+			EditText.SetCursorVisible(isReadOnly);
+		}
+
+		protected override void UpdatePlaceholderColor()
+		{
+			_hintColorSwitcher = _hintColorSwitcher ?? new TextColorSwitcher(EditText.HintTextColors, Element.UseLegacyColorManagement());
+			_hintColorSwitcher.UpdateTextColor(EditText, Element.PlaceholderColor, EditText.SetHintTextColor);
+		}
+
+		protected override void UpdateTextColor()
+		{
+			_textColorSwitcher = _textColorSwitcher ?? new TextColorSwitcher(EditText.TextColors, Element.UseLegacyColorManagement());
+			_textColorSwitcher.UpdateTextColor(EditText, Element.TextColor);
 		}
 	}
 
 	public abstract class EntryRendererBase<TControl> : ViewRenderer<Entry, TControl>, ITextWatcher, TextView.IOnEditorActionListener
 		where TControl : global::Android.Views.View
 	{
-		TextColorSwitcher _hintColorSwitcher;
-		TextColorSwitcher _textColorSwitcher;
 		bool _disposed;
 		ImeAction _currentInputImeFlag;
 		IElementController ElementController => Element as IElementController;
@@ -56,9 +67,7 @@ namespace Xamarin.Forms.Platform.Android
 		bool _selectionLengthChangePending;
 		bool _nativeSelectionIsUpdating;
 
-
 		protected abstract EditText EditText { get; }
-
 
 		public EntryRendererBase(Context context) : base(context)
 		{
@@ -77,7 +86,7 @@ namespace Xamarin.Forms.Platform.Android
 			// Fire Completed and dismiss keyboard for hardware / physical keyboards
 			if (actionId == ImeAction.Done || actionId == _currentInputImeFlag || (actionId == ImeAction.ImeNull && e.KeyCode == Keycode.Enter && e.Action == KeyEventActions.Up))
 			{
-				Control.ClearFocus();
+				EditText.ClearFocus();
 				v.HideKeyboard();
 				((IEntryController)Element).SendCompleted();
 			}
@@ -105,7 +114,7 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			if (!e.Focus)
 			{
-				Control.HideKeyboard();
+				EditText.HideKeyboard();
 			}
 
 			base.OnFocusChangeRequested(sender, e);
@@ -115,7 +124,7 @@ namespace Xamarin.Forms.Platform.Android
 				// Post this to the main looper queue so it doesn't happen until the other focus stuff has resolved
 				// Otherwise, ShowKeyboard will be called before this control is truly focused, and we will potentially
 				// be displaying the wrong keyboard
-				Control?.PostShowKeyboard();
+				EditText?.PostShowKeyboard();
 			}
 		}
 
@@ -135,11 +144,6 @@ namespace Xamarin.Forms.Platform.Android
 					formsEditText.OnKeyboardBackPressed += OnKeyboardBackPressed;
 					formsEditText.SelectionChanged += SelectionChanged;
 				}
-
-				var useLegacyColorManagement = e.NewElement.UseLegacyColorManagement();
-
-				_textColorSwitcher = new TextColorSwitcher(EditText.TextColors, useLegacyColorManagement);
-				_hintColorSwitcher = new TextColorSwitcher(EditText.HintTextColors, useLegacyColorManagement);
 			}
 
 			// When we set the control text, it triggers the SelectionChanged event, which updates CursorPosition and SelectionLength;
@@ -151,7 +155,7 @@ namespace Xamarin.Forms.Platform.Android
 			EditText.Text = Element.Text;
 			UpdateInputType();
 
-			UpdateColor();
+			UpdateTextColor();
 			UpdateAlignment();
 			UpdateFont();
 			UpdatePlaceholderColor();
@@ -175,7 +179,7 @@ namespace Xamarin.Forms.Platform.Android
 
 			if (disposing)
 			{
-				if (Control != null && Control is IFormsEditText formsEditContext)
+				if (EditText != null && EditText is IFormsEditText formsEditContext)
 				{
 					formsEditContext.OnKeyboardBackPressed -= OnKeyboardBackPressed;
 					formsEditContext.SelectionChanged -= SelectionChanged;
@@ -191,7 +195,7 @@ namespace Xamarin.Forms.Platform.Android
 		protected override void OnElementPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == Entry.PlaceholderProperty.PropertyName)
-				EditText.Hint = Element.Placeholder;
+				UpdatePlaceHolderText();
 			else if (e.PropertyName == Entry.IsPasswordProperty.PropertyName)
 				UpdateInputType();
 			else if (e.PropertyName == Entry.TextProperty.PropertyName)
@@ -199,15 +203,15 @@ namespace Xamarin.Forms.Platform.Android
 				if (EditText.Text != Element.Text)
 				{
 					EditText.Text = Element.Text;
-					if (Control.IsFocused)
+					if (EditText.IsFocused)
 					{
 						EditText.SetSelection(EditText.Text.Length);
-						Control.ShowKeyboard();
+						EditText.ShowKeyboard();
 					}
 				}
 			}
 			else if (e.PropertyName == Entry.TextColorProperty.PropertyName)
-				UpdateColor();
+				UpdateTextColor();
 			else if (e.PropertyName == InputView.KeyboardProperty.PropertyName)
 				UpdateInputType();
 			else if (e.PropertyName == InputView.IsSpellCheckEnabledProperty.PropertyName)
@@ -264,9 +268,7 @@ namespace Xamarin.Forms.Platform.Android
 			EditText.UpdateHorizontalAlignment(Element.HorizontalTextAlignment, Context.HasRtlSupport());
 		}
 
-		internal protected virtual void UpdateColor() => UpdateTextColor(Element.TextColor);
-
-		internal protected void UpdateTextColor(Color color) => _textColorSwitcher.UpdateTextColor(EditText, color);
+		abstract protected void UpdateTextColor();
 
 		protected internal virtual void UpdateFont()
 		{
@@ -313,10 +315,7 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateFont();
 		}
 
-		protected internal virtual void UpdatePlaceholderColor()
-		{
-			_hintColorSwitcher.UpdateTextColor(EditText, Element.PlaceholderColor, EditText.SetHintTextColor);
-		}
+		abstract protected void UpdatePlaceholderColor();
 
 		void OnKeyboardBackPressed(object sender, EventArgs eventArgs)
 		{
@@ -383,10 +382,10 @@ namespace Xamarin.Forms.Platform.Android
 
 		void UpdateCursorSelection()
 		{
-			if (_nativeSelectionIsUpdating || Control == null || Element == null)
+			if (_nativeSelectionIsUpdating || Control == null || Element == null || EditText == null)
 				return;
 
-			if (!Element.IsReadOnly && Control.RequestFocus())
+			if (!Element.IsReadOnly && EditText.RequestFocus())
 			{
 				try
 				{
@@ -473,8 +472,8 @@ namespace Xamarin.Forms.Platform.Android
 		{
 			bool isReadOnly = !Element.IsReadOnly;
 
-			Control.FocusableInTouchMode = isReadOnly;
-			Control.Focusable = isReadOnly;
+			EditText.FocusableInTouchMode = isReadOnly;
+			EditText.Focusable = isReadOnly;
 		}
 	}
 }

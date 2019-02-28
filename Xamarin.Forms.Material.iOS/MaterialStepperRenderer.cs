@@ -3,21 +3,14 @@ using System.ComponentModel;
 using CoreGraphics;
 using MaterialComponents;
 using UIKit;
-using Xamarin.Forms;
+using Xamarin.Forms.Platform.iOS;
 using MButton = MaterialComponents.Button;
 
-[assembly: ExportRenderer(typeof(Xamarin.Forms.Stepper), typeof(Xamarin.Forms.Platform.iOS.Material.MaterialStepperRenderer), new[] { typeof(VisualRendererMarker.Material) })]
-
-namespace Xamarin.Forms.Platform.iOS.Material
+namespace Xamarin.Forms.Material.iOS
 {
 	public class MaterialStepperRenderer : ViewRenderer<Stepper, MaterialStepper>
 	{
 		ButtonScheme _buttonScheme;
-
-		public MaterialStepperRenderer()
-		{
-			VisualElement.VerifyVisualFlagEnabled();
-		}
 
 		protected override void Dispose(bool disposing)
 		{
