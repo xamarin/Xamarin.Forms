@@ -43,15 +43,12 @@ namespace Xamarin.Forms.Xaml
 		{
 			object value = null;
 
+			XamlParseException xpe;
 			var type = XamlParser.GetElementType(node.XmlType, node, Context.RootElement?.GetType().GetTypeInfo().Assembly,
-				out XamlParseException xpe);
-			if (xpe != null) {
-				if (Context.ExceptionHandler != null) {
-					Context.ExceptionHandler(xpe);
-					return;
-				}
+				out xpe);
+			if (xpe != null)
 				throw xpe;
-			}
+
 			Context.Types[node] = type;
 			if (IsXaml2009LanguagePrimitive(node))
 				value = CreateLanguagePrimitive(type, node);
