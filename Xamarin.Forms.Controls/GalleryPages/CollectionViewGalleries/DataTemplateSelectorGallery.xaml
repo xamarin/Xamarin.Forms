@@ -3,8 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries;assembly=Xamarin.Forms.Controls"
              x:Class="Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries.DataTemplateSelectorGallery">
-
-    
     
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -17,10 +15,10 @@
 
                     <Image Source="coffee.png"/>
 
-                    <Label Grid.Row="1" Text="{Binding Date, StringFormat='{}{0:d}'}"></Label>
+                    <Label Grid.Row="1" Text="{Binding Date, StringFormat='{}{0:dddd}'}"></Label>
                 </Grid>
             </DataTemplate>
-            <DataTemplate x:Key="FridayTemplate">
+            <DataTemplate x:Key="WeekendTemplate">
                 <Grid HeightRequest="100">
                     <Grid.RowDefinitions>
                         <RowDefinition></RowDefinition>
@@ -29,23 +27,30 @@
                     
                     <Image Source="oasis.jpg"/>
 
-                    <Label Grid.Row="1" Text="Friday! Woot!"></Label>
+                    <Label Grid.Row="1" Text="It's the weekend! Woot!"></Label>
                 </Grid>
             </DataTemplate>
-            <local:TGIFDataTemplateSelector x:Key="tgifDataTemplateSelector"
-                    DefaultTemplate="{StaticResource DefaultTemplate}"
-                    FridayTemplate="{StaticResource FridayTemplate}" />
-
+            
             <DataTemplate x:Key="EmptyTemplate">
-
-                <!-- TODO This needs datattemplateselector for Empty View so we can verify it works -->
-                
                 <StackLayout>
                     <Label Text="{Binding ., StringFormat='({0}) does not match any day of the week.'}"></Label>
                 </StackLayout>
-                
             </DataTemplate>
-            
+
+            <DataTemplate x:Key="SymbolsTemplate">
+                <StackLayout BackgroundColor="Red">
+                    <Label Text="{Binding ., StringFormat='({0}) _definitely_ does not match any day of the week.'}"></Label>
+                </StackLayout>
+            </DataTemplate>
+
+            <local:WeekendSelector x:Key="WeekendSelector"
+                    DefaultTemplate="{StaticResource DefaultTemplate}"
+                    FridayTemplate="{StaticResource WeekendTemplate}" />
+
+            <local:SearchTermSelector x:Key="SearchTermSelector"
+                    DefaultTemplate="{StaticResource EmptyTemplate}"
+                    SymbolsTemplate="{StaticResource SymbolsTemplate}" />
+
         </ResourceDictionary>
     </ContentPage.Resources>
 
@@ -55,8 +60,8 @@
 
             <SearchBar x:Name="SearchBar" Placeholder="Day of Week Filter" />
 
-            <CollectionView x:Name="CollectionView" ItemTemplate="{StaticResource tgifDataTemplateSelector}" 
-                            EmptyViewTemplate="{StaticResource EmptyTemplate}"/>
+            <CollectionView x:Name="CollectionView" ItemTemplate="{StaticResource WeekendSelector}" 
+                            EmptyViewTemplate="{StaticResource SearchTermSelector}"/>
 
         </StackLayout>
     </ContentPage.Content>

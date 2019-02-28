@@ -40,16 +40,33 @@ namespace Xamarin.Forms.Controls.GalleryPages.CollectionViewGalleries
 		}
 	}
 
-    public class TGIFDataTemplateSelector : DataTemplateSelector
+    public class WeekendSelector : DataTemplateSelector
     {
         public DataTemplate FridayTemplate { get; set; }
         public DataTemplate DefaultTemplate { get; set; }
 
         protected override DataTemplate OnSelectTemplate(object item, BindableObject container)
         {
-            return ((CollectionViewGalleryTestItem)item).Date.DayOfWeek == DayOfWeek.Friday
+			var dow = ((CollectionViewGalleryTestItem)item).Date.DayOfWeek;
+
+			return dow == DayOfWeek.Saturday || dow == DayOfWeek.Sunday
                 ? FridayTemplate 
 				: DefaultTemplate;
         }
     }
+
+	public class SearchTermSelector : DataTemplateSelector
+	{
+		public DataTemplate DefaultTemplate { get; set; }
+		public DataTemplate SymbolsTemplate { get; set; }
+
+		protected override DataTemplate OnSelectTemplate(object item, BindableObject container)
+		{
+			var search = ((string)item);
+
+			return search.Any(c => !char.IsLetter(c))
+				? SymbolsTemplate
+				: DefaultTemplate;
+		}
+	}
 }
